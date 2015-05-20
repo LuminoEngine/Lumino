@@ -1,6 +1,3 @@
-[submodule "external/Lumino.Core"]
-	path = external/Lumino.Core
-	url = https://github.com/lriki/Lumino.Core.git
 [submodule "external/Lumino.Math"]
 	path = external/Lumino.Math
 	url = https://github.com/lriki/Lumino.Math.git
