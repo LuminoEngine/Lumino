@@ -1,6 +1,6 @@
 #include "TestConfig.h"
 
-Platform::Application*		TestEnvironment::Application = NULL;
+Platform::PlatformManager*	TestEnvironment::Application = NULL;
 Physics::PhysicsManager*	TestEnvironment::PhysicsManager = NULL;
 GraphicsManager*			TestEnvironment::Manager = NULL;
 Graphics::Renderer*			TestEnvironment::Renderer = NULL;
@@ -46,7 +46,7 @@ void TestEnvironment::SetUp()
 
 	Platform::ApplicationSettings s;
 	s.MainWindowSettings.ClientSize.Set(160, 120);
-	Application = LN_NEW Platform::Application(s);
+	Application = LN_NEW Platform::PlatformManager(s);
 
 	PhysicsManager = LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync);
 

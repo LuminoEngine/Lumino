@@ -1,7 +1,7 @@
 
 #pragma once
 #include <map>
-#include "../Physics/PhysicsManager.h"
+#include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
 #include "Common.h"

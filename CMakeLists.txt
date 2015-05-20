@@ -33,27 +33,28 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 # Source files.
 
 set(LN_SOURCES_Platform
-	include/Lumino/Platform/Application.h
 	include/Lumino/Platform/EventArgs.h
 	include/Lumino/Platform/EventListener.h
+	include/Lumino/Platform/PlatformManager.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/Window.h
+	src/Platform/PlatformManager.cpp
 	src/Platform/WindowManagerBase.cpp
 	src/Platform/WindowBase.cpp
-	src/Platform/Window.cpp
-	src/Platform/Application.cpp)
+	src/Platform/Window.cpp)
 
 set(LN_SOURCES_Physics
+	include/Lumino/Physics/BodyBase.h
+	include/Lumino/Physics/Common.h
+	include/Lumino/Physics/IDebugRenderer.h
+	include/Lumino/Physics/Joint.h
+	include/Lumino/Physics/PhysicsManager.h
+	include/Lumino/Physics/RigidBody.h
 	src/Physics/BodyBase.cpp
-	src/Physics/BodyBase.h
-	src/Physics/Common.h
-	src/Physics/IDebugRenderer.h
+	src/Physics/BulletUtils.h
 	src/Physics/Joint.cpp
-	src/Physics/Joint.h
-	src/Physics/PhysicsManager.h
 	src/Physics/PhysicsManager.cpp
-	src/Physics/RigidBody.cpp
-	src/Physics/RigidBody.h)
+	src/Physics/RigidBody.cpp)
 	
 set(LN_SOURCES_Graphics
 	external/GL/glew.c
@@ -127,7 +128,15 @@ set(LN_SOURCES_Scene
 	src/Scene/MME/MMEShaderTechnique.cpp
 	src/Scene/MME/MMEShaderTechnique.h
 	src/Scene/MME/MMETypes.h)
+	
+set(LN_SOURCES_Game
+	include/Lumino/Game/FpsController.h
+	src/Game/FpsController.cpp)
 
+set(LN_SOURCES_Application
+	include/Lumino/Application.h
+	src/Application.cpp)
+	
 #--------------------------------------
 # Platform source files.
 if (WIN32)
@@ -183,16 +192,20 @@ endif()
 
 #--------------------------------------
 # Grouping.
-source_group("Platform"	FILES ${LN_SOURCES_Platform})
-source_group("Physics"	FILES ${LN_SOURCES_Physics})
-source_group("Graphics"	FILES ${LN_SOURCES_Graphics})
-source_group("Scene"	FILES ${LN_SOURCES_Scene})
+source_group("Platform"		FILES ${LN_SOURCES_Platform})
+source_group("Physics"		FILES ${LN_SOURCES_Physics})
+source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
+source_group("Scene"		FILES ${LN_SOURCES_Scene})
+source_group("Game"			FILES ${LN_SOURCES_Game})
+source_group("Application"	FILES ${LN_SOURCES_Application})
 
 set(LN_SOURCES
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
-	${LN_SOURCES_Scene})
+	${LN_SOURCES_Scene}
+	${LN_SOURCES_Game}
+	${LN_SOURCES_Application})
 
 #------------------------------------------------------------------------------
 # Apply options
@@ -336,6 +349,10 @@ add_custom_command(
 #------------------------------
 # Unit test.
 add_subdirectory(test)
+
+#------------------------------
+# Demo.
+add_subdirectory(demo)
 
 #------------------------------
 # samples.

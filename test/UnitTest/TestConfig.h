@@ -2,11 +2,8 @@
 
 #include <gtest/gtest.h>
 #include <LuminoCore.h>
-#include <LuminoGraphics.h>
+#include <Lumino.h>
 #include <Lumino/Testing/TestUtils.h>
-
-#include "../../../src/Physics/PhysicsManager.h"
-#include "../../../src/Physics/RigidBody.h"
 
 #include "../../../src/Scene/SceneGraphManager.h"
 #include "../../../src/Scene/ViewPane.h"
@@ -29,7 +26,7 @@ using namespace Lumino::Scene;
 class TestEnvironment : public ::testing::Environment
 {
 public:
-	static Platform::Application*	Application;
+	static Platform::PlatformManager*	Application;
 	static Physics::PhysicsManager*	PhysicsManager;
 	static GraphicsManager*			Manager;
 	static Graphics::Renderer*		Renderer;

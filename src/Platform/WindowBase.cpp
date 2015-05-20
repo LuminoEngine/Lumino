@@ -1,44 +1,44 @@
-
+﻿
 #include "../Internal.h"
-#include <btBulletDynamicsCommon.h>
-#include <Lumino/Physics/PhysicsManager.h>
-#include <Lumino/Physics/BodyBase.h>
+#include "WindowBase.h"
 
 namespace Lumino
 {
-namespace Physics
+namespace Platform
 {
 
 //=============================================================================
-// BodyBase
+// WindowBase
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-BodyBase::BodyBase()
-	: m_manager(NULL)
-	, m_userData(NULL)
-	, m_contactList()
+WindowBase::WindowBase(WindowManagerBase* windowManager)
+	: m_windowManager(windowManager)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-BodyBase::~BodyBase()
+WindowBase::~WindowBase()
 {
-	LN_SAFE_RELEASE(m_manager);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void BodyBase::Create(PhysicsManager* manager, btCollisionObject* obj)
+bool WindowBase::SendEventToAllListener(const EventArgs& e)
 {
-	LN_REFOBJ_SET(m_manager, manager);
-	obj->setUserPointer( this );
+	LN_FOREACH(IEventListener* listener, m_listenerEntryArray)
+	{
+		if (listener->OnEvent(e)) {
+			return true;
+		}
+	}
+	return false;
 }
 
-} // namespace Physics
+} // namespace Platform
 } // namespace Lumino

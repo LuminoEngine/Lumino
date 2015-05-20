@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Lumino/Graphics/GeometryRenderer.h>
-#include "../Physics/IDebugRenderer.h"
+#include <Lumino/Physics/IDebugRenderer.h>
 
 namespace Lumino
 {

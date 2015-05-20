@@ -1,9 +1,9 @@
 
 #include "../Internal.h"
 #include <btBulletDynamicsCommon.h>
+#include <Lumino/Physics/RigidBody.h>
+#include <Lumino/Physics/Joint.h>
 #include "BulletUtils.h"
-#include "RigidBody.h"
-#include "Joint.h"
 
 namespace Lumino
 {

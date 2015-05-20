@@ -1,6 +1,16 @@
 ﻿
 #pragma once
 
+#include <LuminoCore.h>
+#include <LuminoMath.h>
+
+#include "Lumino/Physics/BodyBase.h"
+#include "Lumino/Physics/Joint.h"
+#include "Lumino/Physics/PhysicsManager.h"
+#include "Lumino/Physics/RigidBody.h"
+#include "Lumino/Physics/Common.h"
+#include "Lumino/Physics/IDebugRenderer.h"
+
 #include "Lumino/Graphics/Common.h"
 #include "Lumino/Graphics/GraphicsManager.h"
 #include "Lumino/Graphics/RenderState.h"
@@ -16,3 +26,11 @@
 #include "Lumino/Graphics/GeometryRenderer.h"
 
 #include "Lumino/Imaging/Bitmap.h"
+
+#include "Lumino/Platform/PlatformSupport.h"
+#include "Lumino/Platform/Window.h"
+#include "Lumino/Platform/PlatformManager.h"
+#include "Lumino/Platform/EventArgs.h"
+#include "Lumino/Platform/EventListener.h"
+
+#include "Lumino/Application.h"

@@ -98,9 +98,9 @@
 //#include <BulletMultiThreaded/btParallelConstraintSolver.h>
 //#include <BulletMultiThreaded/SequentialThreadSupport.h>
 
-#include "RigidBody.h"
-#include "Joint.h"
-#include "PhysicsManager.h"
+#include <Lumino/Physics/RigidBody.h>
+#include <Lumino/Physics/Joint.h>
+#include <Lumino/Physics/PhysicsManager.h>
 
 namespace Lumino
 {
