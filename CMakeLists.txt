@@ -31,8 +31,19 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 #------------------------------------------------------------------------------
 #------------------------------
 # Source files.
-	
-set(LN_SOURCES_PHYSICS
+
+set(LN_SOURCES_Platform
+	include/Lumino/Platform/Application.h
+	include/Lumino/Platform/EventArgs.h
+	include/Lumino/Platform/EventListener.h
+	include/Lumino/Platform/PlatformSupport.h
+	include/Lumino/Platform/Window.h
+	src/Platform/WindowManagerBase.cpp
+	src/Platform/WindowBase.cpp
+	src/Platform/Window.cpp
+	src/Platform/Application.cpp)
+
+set(LN_SOURCES_Physics
 	src/Physics/BodyBase.cpp
 	src/Physics/BodyBase.h
 	src/Physics/Common.h
@@ -43,10 +54,8 @@ set(LN_SOURCES_PHYSICS
 	src/Physics/PhysicsManager.cpp
 	src/Physics/RigidBody.cpp
 	src/Physics/RigidBody.h)
-set(LN_HEADERS_PHYSICS "")
-source_group("Physics" FILES ${LN_SOURCES_PHYSICS} ${LN_HEADERS_PHYSICS})
 	
-set(LN_SOURCES_GRAPHICS
+set(LN_SOURCES_Graphics
 	external/GL/glew.c
 	src/Imaging/Bitmap.cpp
 	src/Imaging/BitmapPainter.cpp
@@ -76,7 +85,9 @@ set(LN_SOURCES_GRAPHICS
 	src/Graphics/Device/OpenGL/GLShader.cpp
 	src/Graphics/Device/OpenGL/GLSwapChain.cpp
 	src/Graphics/Device/OpenGL/GLTexture.cpp
-	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
+	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp)
+	
+set(LN_SOURCES_Scene
 	src/Scene/Camera.cpp
 	src/Scene/Camera.h
 	src/Scene/Common.h
@@ -117,13 +128,50 @@ set(LN_SOURCES_GRAPHICS
 	src/Scene/MME/MMEShaderTechnique.h
 	src/Scene/MME/MMETypes.h)
 
+#--------------------------------------
+# Platform source files.
 if (WIN32)
-	
+	set(LN_SOURCES_Platform
+		${LN_SOURCES_Platform}
+		src/Platform/Win32/Win32WindowManager.cpp
+		src/Platform/Win32/Win32WindowBase.cpp
+		src/Platform/Win32/Win32Window.cpp
+		src/Platform/Win32/PlatformSupport_Win32.cpp)
+
+ 	set(LN_SOURCES_Graphics
+ 		${LN_SOURCES_Graphics}
+		src/Graphics/Device/DirectX9/DX9Texture.h
+		src/Graphics/Device/DirectX9/DX9VertexBuffer.h
+		src/Graphics/Device/DirectX9/DX9GraphicsDevice.h
+		src/Graphics/Device/DirectX9/DX9IndexBuffer.h
+		src/Graphics/Device/DirectX9/DX9Module.h
+		src/Graphics/Device/DirectX9/DX9Renderer.h
+		src/Graphics/Device/DirectX9/DX9Shader.h
+		src/Graphics/Device/DirectX9/DX9SwapChain.h
+		src/Graphics/Device/OpenGL/WGLGraphicsDevice.h
+		src/Graphics/Device/OpenGL/WGLSwapChain.h
+	 	src/Graphics/Device/DirectX9/DX9Texture.cpp
+		src/Graphics/Device/DirectX9/DX9VertexBuffer.cpp
+		src/Graphics/Device/DirectX9/DX9GraphicsDevice.cpp
+		src/Graphics/Device/DirectX9/DX9IndexBuffer.cpp
+		src/Graphics/Device/DirectX9/DX9Module.cpp
+		src/Graphics/Device/DirectX9/DX9Renderer.cpp
+		src/Graphics/Device/DirectX9/DX9Shader.cpp
+		src/Graphics/Device/DirectX9/DX9SwapChain.cpp
+		src/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
+		src/Graphics/Device/OpenGL/WGLSwapChain.cpp)
+
 elseif (APPLE)
 
 elseif (UNIX)
-	set(LN_SOURCES_GRAPHICS
-		${LN_SOURCES_GRAPHICS}
+	set(LN_SOURCES_Platform
+		${LN_SOURCES_Platform}
+		src/Platform/X11/X11WindowManager.cpp
+		src/Platform/X11/X11Window.cpp
+		src/Platform/X11/PlatformSupport_X11.cpp)
+		
+	set(LN_SOURCES_Graphics
+		${LN_SOURCES_Graphics}
 		src/Graphics/Device/OpenGL/GLXGraphicsDevice.cpp
 		src/Graphics/Device/OpenGL/GLXSwapChain.cpp)
 		
@@ -133,11 +181,18 @@ elseif (UNIX)
 	#add_definitions(-DGLEW_STATIC)
 endif()
 
-source_group("Graphics" FILES ${LN_SOURCES_GRAPHICS})
-source_group("Physics" FILES ${LN_SOURCES_PHYSICS} ${LN_HEADERS_PHYSICS})
+#--------------------------------------
+# Grouping.
+source_group("Platform"	FILES ${LN_SOURCES_Platform})
+source_group("Physics"	FILES ${LN_SOURCES_Physics})
+source_group("Graphics"	FILES ${LN_SOURCES_Graphics})
+source_group("Scene"	FILES ${LN_SOURCES_Scene})
 
-set(LN_SOURCES ${LN_SOURCES_GRAPHICS} ${LN_SOURCES_PHYSICS})
-set(LN_HEADERS ${LN_HEADERS_PHYSICS})
+set(LN_SOURCES
+	${LN_SOURCES_Platform}
+	${LN_SOURCES_Physics}
+	${LN_SOURCES_Graphics}
+	${LN_SOURCES_Scene})
 
 #------------------------------------------------------------------------------
 # Apply options
@@ -209,32 +264,6 @@ if (WIN32)
 	list(APPEND LN_LINK_LIBS
 		"imagehlp.lib"
 		"Opengl32.lib")
-		
-	# platform sources.
- 	set(LN_PLATFORM_SOURCES
-	 	src/Graphics/Device/DirectX9/DX9Texture.cpp
-		src/Graphics/Device/DirectX9/DX9VertexBuffer.cpp
-		src/Graphics/Device/DirectX9/DX9GraphicsDevice.cpp
-		src/Graphics/Device/DirectX9/DX9IndexBuffer.cpp
-		src/Graphics/Device/DirectX9/DX9Module.cpp
-		src/Graphics/Device/DirectX9/DX9Renderer.cpp
-		src/Graphics/Device/DirectX9/DX9Shader.cpp
-		src/Graphics/Device/DirectX9/DX9SwapChain.cpp
-		src/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
-		src/Graphics/Device/OpenGL/WGLSwapChain.cpp)
-			
-	# platform headers.
-	set(LN_PLATFORM_HEADERS 
-		src/Graphics/Device/DirectX9/DX9Texture.h
-		src/Graphics/Device/DirectX9/DX9VertexBuffer.h
-		src/Graphics/Device/DirectX9/DX9GraphicsDevice.h
-		src/Graphics/Device/DirectX9/DX9IndexBuffer.h
-		src/Graphics/Device/DirectX9/DX9Module.h
-		src/Graphics/Device/DirectX9/DX9Renderer.h
-		src/Graphics/Device/DirectX9/DX9Shader.h
-		src/Graphics/Device/DirectX9/DX9SwapChain.h
-		src/Graphics/Device/OpenGL/WGLGraphicsDevice.h
-		src/Graphics/Device/OpenGL/WGLSwapChain.h)
 
 elseif (APPLE)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")
@@ -252,13 +281,6 @@ elseif (UNIX)
 
 	#list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND LN_LINK_LIBS ${OPENGL_gl_LIBRARY})
-
-	# platform sources.
-	set(LN_PLATFORM_SOURCES
-		src/IO/Unix/FileUtils_unix.cpp
-		src/Platform/Environment_unix.cpp
-		src/Platform/X11/X11WindowManager.cpp
-		src/Platform/X11/X11Window.cpp)
 	
 else()
 	# Not support.
@@ -302,7 +324,7 @@ link_libraries(LuminoMath_Static)
 
 #------------------------------
 # Static library.
-add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES} ${LN_PLATFORM_SOURCES} ${LN_HEADERS} ${LN_PLATFORM_HEADERS})
+add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
 #set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
