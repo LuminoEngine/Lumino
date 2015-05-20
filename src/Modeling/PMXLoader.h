@@ -1,0 +1,85 @@
+
+#pragma once
+#include <Lumino/IO/BinaryReader.h>
+#include "Common.h"
+#include "ModelCore.h"
+
+namespace Lumino
+{
+namespace Modeling
+{
+
+class PMXLoader
+{
+public:
+
+#pragma pack( push, 1 )
+
+	enum PMX_Encode
+	{
+		PMX_Encode_UTF16	= 0,
+		PMX_Encode_UTF8		= 1,
+	};
+
+	struct PMX_Header
+	{
+		char	Magic[4];		// "PMX " (PMX1.0は"Pmx ")
+		float	Version;		// PMDバージョン番号
+		int		DataSize;		// 後続するデータ列のバイトサイズ  PMX2.0は 8 で固定
+		byte_t	Data[8];		// [0] - エンコード方式  | 0:UTF16 1:UTF8
+								// [1] - 追加UV数 	| 0～4 詳細は頂点参照
+								// [2] - 頂点Indexサイズ | 1,2,4 のいずれか
+								// [3] - テクスチャIndexサイズ | 1,2,4 のいずれか
+								// [4] - 材質Indexサイズ | 1,2,4 のいずれか
+								// [5] - ボーンIndexサイズ | 1,2,4 のいずれか
+								// [6] - モーフIndexサイズ | 1,2,4 のいずれか
+								// [7] - 剛体Indexサイズ | 1,2,4 のいずれか
+	};
+
+#pragma pack( pop )
+
+public:
+	~PMXLoader();
+
+public:
+
+	/// 読み込み
+	///		baseDir	: .pmx ファイルの存在するフォルダパス
+	ModelCore* Load(ModelManager* manager, Stream* stream, const PathNameW& baseDir, bool isDynamic);
+
+private:
+	PMX_Encode getEncode() { return (PMX_Encode)m_pmxHeader.Data[0]; }
+	int getAdditionalUVCount() { return m_pmxHeader.Data[1]; }
+	int getVertexIndexSize() { return m_pmxHeader.Data[2]; }
+	int getTextureIndexSize() { return m_pmxHeader.Data[3]; }
+	int getMaterialIndexSize() { return m_pmxHeader.Data[4]; }
+	int getBoneIndexSize() { return m_pmxHeader.Data[5]; }
+	int getMorphIndexSize() { return m_pmxHeader.Data[6]; }
+	int getRigidBodyIndexSize() { return m_pmxHeader.Data[7]; }
+
+private:
+	void LoadModelInfo(BinaryReader* reader);
+	void LoadVertices(BinaryReader* reader);
+	void LoadIndices(BinaryReader* reader);
+	void LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir);
+	void LoadMaterials(BinaryReader* reader);
+	void LoadBones(BinaryReader* reader);
+	void LoadMorphs(BinaryReader* reader);
+	void LoadDisplayFrame(BinaryReader* reader);
+	void LoadRigidBodys(BinaryReader* reader);
+	void LoadJoints(BinaryReader* reader);
+
+	StringW ReadString(BinaryReader* reader);
+
+private:
+	ModelManager*					m_manager;
+	bool							m_isDynamic;
+	//uint32_t						mFlags;
+	RefPtr<ModelCore>				m_modelCore;		///< 最終出力
+	PMX_Header						m_pmxHeader;
+	ArrayList<Graphics::Texture*>	m_textureTable;
+	ByteBuffer						m_tmpBuffer;
+};
+
+} // namespace Modeling
+} // namespace Lumino

@@ -1,0 +1,194 @@
+﻿
+#pragma once
+
+#include <string>
+#include <Lumino/Base/Typedef.h>
+#include <Lumino/Base/Array.h>
+#include <Lumino/Base/RefObject.h>
+#include <Lumino/Base/Rect.h>
+#include <Lumino/Base/String.h>
+#include <Lumino/Platform/Window.h>
+#include <LuminoMath.h>
+
+namespace Lumino
+{
+namespace Graphics
+{
+namespace Device
+{
+class IGraphicsDevice;
+class ISwapChain;
+class IRenderer;
+class IVertexBuffer;
+class IIndexBuffer;
+class ITexture;
+class IShader;
+class IShaderVariable;
+class IShaderTechnique;
+class IShaderPass;
+
+} // namespace Device
+
+
+/// グラフィックス API
+enum GraphicsAPI
+{
+	GraphicsAPI_DirectX9 = 0,	///< DirectX9
+	//GraphicsAPI_DIRECTX11,	///< DirectX11
+	GraphicsAPI_OpenGL,			///< OpenGL
+
+	GraphicsAPI_Max,
+};
+
+/// 頂点宣言の要素の型
+enum VertexElementType
+{
+	VertexElementType_Unknown = 0,
+	VertexElementType_Float1,		///< float
+	VertexElementType_Float2,		///< float[2] (Vector2)
+	VertexElementType_Float3,		///< float[3] (Vector3)
+	VertexElementType_Float4,		///< float[4] (Vector4)
+	VertexElementType_Ubyte4,		///< uint8_t[4]
+	VertexElementType_Color4,		///< 32ビット色コード (使用非推奨。DirectX と OpenGL ではバイトオーダが異なる。DXは0xAARRGGBB、GLは0xAABBGGRRで、GLES ではオーダーの変更ができない)
+	VertexElementType_Short2,		///< short[2]
+	VertexElementType_Short4,		///< short[4]
+
+	VertexElementType_Max,
+};
+
+/// 頂点宣言の要素の用途
+enum VertexElementUsage
+{
+	VertexElementUsage_Unknown = 0,
+	VertexElementUsage_Position,
+	VertexElementUsage_Normal,
+	VertexElementUsage_Color,
+	VertexElementUsage_TexCoord,
+	VertexElementUsage_PointSize,	///< MME との互換性のために残している。
+	VertexElementUsage_BlendIndices,
+	VertexElementUsage_BlendWeight,
+
+	VertexElementUsage_Max,
+};
+
+/// 頂点宣言の1要素
+struct VertexElement
+{
+	uint32_t			StreamIndex;    ///< ストリーム番号 (現在使用していない)
+	VertexElementType	Type;			///< 要素の型
+	VertexElementUsage	Usage;			///< 要素の用途
+	uint8_t				UsageIndex;     ///< (OpenGL で許可しているのは TEXCOORD0～8、PSIZE15 のみ。それ以外は 0)
+};
+
+/// デバイスリソースの使用方法
+enum DeviceResourceUsage
+{
+	DeviceResourceUsage_Static = 0,		///< 頻繁に更新を行わないリソース
+	DeviceResourceUsage_Dynamic,		///< 頻繁に更新を行うリソース
+};
+
+/// インデックスバッファのフォーマット
+enum IndexBufferFormat
+{
+	IndexBufferFormat_UInt16 = 0,
+	IndexBufferFormat_UInt32,
+};
+
+/// テクスチャのピクセルフォーマット
+enum TextureFormat
+{
+	TextureFormat_Unknown = 0,
+
+	TextureFormat_R8G8B8A8,				///< 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM)
+	TextureFormat_R8G8B8X8,				///< 32 ビットのアルファ無しフォーマット
+
+	TextureFormat_B8G8R8A8,				///< 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している)
+	TextureFormat_B8G8R8X8,				///< 32 ビットのアルファ無しフォーマット
+	
+	TextureFormat_R16G16B16A16_Float,	///< 64 ビットの浮動小数点フォーマット
+	TextureFormat_R32G32B32A32_Float,	///< 128 ビットの浮動小数点フォーマット
+	TextureFormat_D24S8,				///< S8 32 ビットの Z バッファフォーマット
+	TextureFormat_R16_Float,
+	TextureFormat_R32_Float,
+
+	TextureFormat_Max,					///< (terminator)
+
+	/*
+		↑の定数のRGBA の並びは、実際のメモリ上のバイトシーケンス。エンディアンは関係ない。
+
+		DX11とOpenGLはGPUネイティブフォーマット (RGBA)
+		DX9は、バックバッファはGDI互換フォーマット (BGRA) でなければならない。
+		TIFFやPNGは (RGBA)
+
+		DX9は RGBA フォーマットを扱えない。(D3DFMT_ に定義されていない)
+
+	*/
+};
+
+
+/// シェーダプログラムのコンパイル結果の概要
+enum ShaderCompileResultLevel
+{
+	ShaderCompileResultLevel_Success = 0,	///< 成功
+	ShaderCompileResultLevel_Warning,		///< 警告が発生している (実行は可能)
+	ShaderCompileResultLevel_Error,			///< エラーが発生している
+};
+
+/// シェーダプログラムのコンパイル結果
+struct ShaderCompileResult
+{
+	ShaderCompileResultLevel	Level;		///< 結果の概要
+	StringA						Message;	///< メッセージ (警告・エラーメッセージが格納される)
+};
+
+/// シェーダ変数の型
+enum ShaderVariableType
+{
+	ShaderVariableType_Unknown = 0,
+	ShaderVariableType_Bool,
+	ShaderVariableType_Int,
+	ShaderVariableType_Float,
+	ShaderVariableType_Vector,				///< Vector2～4
+	ShaderVariableType_VectorArray,
+	ShaderVariableType_Matrix,
+	ShaderVariableType_MatrixArray,
+	ShaderVariableType_Texture,
+	ShaderVariableType_String,
+
+	/*
+	*	ShaderVariableType_Texture は、DirectX9HLSL では texture 型を表し、GLSL では sampler 型を表す。
+	*	GLSL では sampler しか無いが、DirectX9HLSL では texture と sampler の2種類が存在する。
+	*/
+
+	ShaderVariableType_Max,				///< (terminator)
+};
+
+/// プリミティブの種類
+enum PrimitiveType
+{
+	PrimitiveType_TriangleList = 1,
+	PrimitiveType_TriangleStrip,
+	PrimitiveType_LineList,
+	PrimitiveType_LineStrip,
+	PrimitiveType_PointList,
+
+	PrimitiveType_Max,				///< (terminator)
+};
+
+/// デバイスリソースのロック方法
+enum LockMode
+{
+	LockMode_Write = 0,		///< 書き込み
+	LockMode_Read,			///< 読み込み
+};
+
+/// 描画方式
+enum RenderingType
+{
+	RenderingType_Immediate	= 0,	///< 
+	RenderingType_Deferred,
+};
+
+} // namespace Graphics
+} // namespace Lumino
+
