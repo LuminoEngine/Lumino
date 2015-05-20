@@ -1,3 +1,4 @@
+
 set(LN_TEST_SOURCES
 	gtest/src/gtest-all.cc
 	UnitTest/Main.cpp
@@ -19,7 +20,7 @@ include_directories(
 	"${PROJECT_SOURCE_DIR}/external/Lumino.Core/include"
 	"${PROJECT_SOURCE_DIR}/external/Lumino.Math/include")
 	
-link_libraries(LuminoGraphics_Static)
+link_libraries(Lumino_Static)
 
 add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
-add_executable(LuminoGraphics_UnitTest ${LN_TEST_SOURCES})
+add_executable(Lumino_UnitTest ${LN_TEST_SOURCES})

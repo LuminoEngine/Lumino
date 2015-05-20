@@ -70,7 +70,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Texture::Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1, GraphicsManager* manager = NULL)
+Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
 	Device::IGraphicsDevice* device = manager->GetGraphicsDevice()->GetDeviceObject();

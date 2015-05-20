@@ -2,9 +2,9 @@
 
 
 cmake_minimum_required (VERSION 2.8.7)
-project (LuminoGraphics)
+project (Lumino)
 
-set(LN_STATIC_LIB_OUTPUT_NAME "LuminoGraphics")
+set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
 set(LN_LIB_POSTFIX "")
@@ -33,6 +33,8 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 # Source files.
 	
 set(LN_SOURCES_PHYSICS
+	src/Physics/BodyBase.cpp
+	src/Physics/BodyBase.h
 	src/Physics/Common.h
 	src/Physics/IDebugRenderer.h
 	src/Physics/Joint.cpp
@@ -300,31 +302,14 @@ link_libraries(LuminoMath_Static)
 
 #------------------------------
 # Static library.
-add_library(LuminoGraphics_Static STATIC ${LN_SOURCES} ${LN_PLATFORM_SOURCES} ${LN_HEADERS} ${LN_PLATFORM_HEADERS})
-set_target_properties(LuminoGraphics_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
-#set_target_properties(LuminoGraphics_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-target_link_libraries(LuminoGraphics_Static ${LN_LINK_LIBS})
+add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES} ${LN_PLATFORM_SOURCES} ${LN_HEADERS} ${LN_PLATFORM_HEADERS})
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
+#set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
+target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 add_custom_command(
-	TARGET LuminoGraphics_Static
+	TARGET ${PROJECT_NAME}_Static
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoGraphics_Static> "${PROJECT_SOURCE_DIR}/lib")
-
-#------------------------------
-# Shared library.
-#add_library(LuminoGraphics_Shared SHARED ${LN_SOURCES})
-#set_target_properties(LuminoGraphics_Shared PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-#set_target_properties(LuminoGraphics_Shared PROPERTIES DEBUG_POSTFIX "_d")
-#set_target_properties(LuminoGraphics_Shared PROPERTIES COMPILE_DEFINITIONS "LUMINO_BUILD_DLL")
-#set_target_properties(LuminoGraphics_Shared PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-#target_link_libraries(LuminoGraphics_Shared ${LN_LINK_LIBS})
-#add_custom_command(
-#	TARGET LuminoGraphics_Shared
-#	POST_BUILD
-#	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoGraphics_Shared> "${PROJECT_SOURCE_DIR}/lib")
-#add_custom_command(
-#	TARGET LuminoGraphics_Shared
-#	POST_BUILD
-#	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_LINKER_FILE:LuminoGraphics_Shared> "${PROJECT_SOURCE_DIR}/lib")
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}_Static> "${PROJECT_SOURCE_DIR}/lib")
 
 #------------------------------
 # Unit test.
