@@ -22,12 +22,12 @@ private:
 /**
 	@brief		
 */
-class Desktop
+class Workbench
 	: public UIElement
 {
 public:
-	Desktop();
-	virtual ~Desktop();
+	Workbench();
+	virtual ~Workbench();
 
 private:
 };

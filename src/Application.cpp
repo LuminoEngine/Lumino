@@ -99,6 +99,20 @@ void Application::InitialzeGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Application::InitialzeGUIManager()
+{
+	if (m_guiManager.IsNull())
+	{
+		InitialzePlatformManager();
+		InitialzeGraphicsManager();
+
+		m_guiManager.Attach(LN_NEW GUI::GUIManager());
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 bool Application::UpdateFrame()
 {
 	m_endRequested = !m_platformManager->DoEvents();

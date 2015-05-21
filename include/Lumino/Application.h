@@ -9,6 +9,7 @@
 #include "Platform/PlatformManager.h"
 #include "Physics/PhysicsManager.h"
 #include "Graphics/GraphicsManager.h"
+#include "GUI/GUIManager.h"
 #include "Game/FpsController.h"
 
 namespace Lumino
@@ -47,12 +48,14 @@ private:
 	void InitialzePlatformManager();
 	void InitialzePhysicsManager();
 	void InitialzeGraphicsManager();
+	void InitialzeGUIManager();
 
 private:
 	FpsController						m_fpsController;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<GUI::GUIManager>				m_guiManager;
 	bool								m_endRequested;
 };
 

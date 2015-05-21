@@ -1,5 +1,6 @@
 
 #pragma once
+#include "Common.h"
 
 namespace Lumino
 {
@@ -15,6 +16,9 @@ class GUIManager
 public:
 	GUIManager();
 	virtual ~GUIManager();
+
+public:
+	Workbench* CreateWorkbench();
 
 private:
 };
