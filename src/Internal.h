@@ -18,6 +18,7 @@
 #endif
 
 #include "Graphics/Device/OpenGL/LNGL.h"
+#include <Lumino/Variant.h>
 #include <Lumino/Platform/PlatformSupport.h>
 #include "Graphics/Device/DeviceInterface.h"
 #include "../include/Lumino/Graphics/GraphicsException.h"
