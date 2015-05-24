@@ -160,6 +160,14 @@ void GLVertexBuffer::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_ty
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GLVertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+{
+	LN_THROW(0, NotImplementedException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void* GLVertexBuffer::Lock()
 {
 	/*	glMapBuffer は使わない。

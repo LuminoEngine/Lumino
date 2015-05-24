@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 
+#include "Common.h"
 #include "GraphicsDevice.h"
 #include "SwapChain.h"
 
@@ -10,6 +11,7 @@ namespace Graphics
 {
 class Renderer;
 class RenderingThread;
+class PainterEngine;
 
 struct GraphicsManagerConfigData
 {
@@ -34,6 +36,8 @@ public:
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 
+	PainterEngine* GetPainterEngine() { return m_painterEngine; }
+
 	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
 	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
@@ -55,6 +59,8 @@ private:
 
 	Renderer*				m_renderer;
 	RenderingThread*		m_renderingThread;
+
+	PainterEngine*			m_painterEngine;
 };
 
 } // namespace Graphics

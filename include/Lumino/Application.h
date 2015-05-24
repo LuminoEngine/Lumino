@@ -41,6 +41,10 @@ public:
 	*/
 	bool IsEndRequested() const { return m_endRequested; }
 
+
+	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	GUI::GUIManager* GetGUIManager() const { return m_guiManager; }
+
 private:
 	Application();
 	virtual ~Application();

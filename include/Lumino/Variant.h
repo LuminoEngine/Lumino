@@ -43,11 +43,21 @@ public:
 	Variant();
 	~Variant();
 	Variant(const Variant& obj);
-	Variant& operator = (const Variant& obj);
+	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
+
+	Variant(CoreObject* obj);
 
 public:
 	VariantType GetType() const { return m_type; }
 	bool GetBool() const;
+
+	void Set(CoreObject* obj);
+
+	CoreObject* GetObject();
+
+private:
+	void Copy(const Variant& obj);
+	void Release();
 
 private:
 	VariantType	m_type;
@@ -55,11 +65,13 @@ private:
 	{
 		uint64_t		m_uint;
 		bool			m_bool;
-		double			m_double;
-		String*			m_string;
+		uint64_t		m_int;
+		float			m_float;
+		/*String*			m_string;*/
 		VariantList*	m_valueList;
 		CoreObject*		m_object;
 	};
+	String			m_string;
 };
 
 /**

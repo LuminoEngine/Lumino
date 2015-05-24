@@ -233,6 +233,9 @@ public:
 	/// 頂点バッファリソースの使用方法の取得
 	virtual DeviceResourceUsage GetUsage() const = 0;
 
+	/// データを転送する
+	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
+
 	/// ロック
 	virtual void* Lock() = 0;
 

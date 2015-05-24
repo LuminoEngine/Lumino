@@ -104,6 +104,7 @@ public:
 
 	Imaging::Bitmap* Lock();
 	void Unlock();
+	Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
 	Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Imaging::Bitmap* primarySurface = NULL);

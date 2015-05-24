@@ -376,6 +376,7 @@
 
 */
 #include "../Internal.h"
+#include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/GUIManager.h>
 
 namespace Lumino
@@ -399,6 +400,24 @@ GUIManager::GUIManager()
 //-----------------------------------------------------------------------------
 GUIManager::~GUIManager()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::Initialize(const ConfigData& configData)
+{
+	LN_VERIFY(configData.GraphicsManager != NULL) { return; }
+
+	m_graphicsManager = configData.GraphicsManager;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Workbench* GUIManager::CreateWorkbench()
+{
+	return LN_NEW Workbench(this);
 }
 
 } // namespace GUI

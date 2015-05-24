@@ -76,6 +76,8 @@ protected:
 
 	inline static size_t Alloc(CmdInfo& cmd, size_t byteCount, const void* copyData);
 
+	//inline void MarkGC(RefObject* obj);
+
 private:
 	friend class RenderingCommandList;
 	//static void* operator new(size_t size, RenderingCommandList* cmmandList);
@@ -189,11 +191,13 @@ public:
 public:
 	size_t Alloc(size_t byteCount, const void* copyData);	// 返すのは m_commandDataBuffer の要素番号 (バッファ拡張時の再配置に備える)
 	void* GetBuffer(size_t bufferIndex);
+	void MarkGC(RefObject* obj) { obj->AddRef();  m_markGCList.Add(obj); }
 
 private:
 	ArrayList<size_t>		m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;
+	ArrayList<RefObject*>	m_markGCList;
 
 	friend class RenderingThread;
 	friend class UserRenderingCommand;

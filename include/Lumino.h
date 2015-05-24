@@ -33,4 +33,7 @@
 #include "Lumino/Platform/EventArgs.h"
 #include "Lumino/Platform/EventListener.h"
 
+#include "Lumino/GUI/GUIManager.h"
+#include "Lumino/GUI/UIElement.h"
+
 #include "Lumino/Application.h"

@@ -647,6 +647,7 @@
 #include "../../include/Lumino/Graphics/GraphicsManager.h"
 #include "../../include/Lumino/Graphics/Renderer.h"
 #include "RenderingThread.h"
+#include "PainterEngine.h"
 
 namespace Lumino
 {
@@ -666,6 +667,7 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 	: m_fileManager(NULL)
 	, m_renderer(NULL)
 	, m_renderingThread(NULL)
+	, m_painterEngine(NULL)
 {
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
 
@@ -687,6 +689,9 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 		Internal::Manager = this;
 	}
 
+	m_painterEngine = LN_NEW PainterEngine();
+	m_painterEngine->Create(this);
+
 	// 描画スレッドを立ち上げる
 	m_renderingThread = LN_NEW RenderingThread();
 	m_renderingThread->Initialize(m_graphicsDevice->GetDeviceObject());
@@ -703,6 +708,7 @@ GraphicsManager::~GraphicsManager()
 		LN_SAFE_DELETE(m_renderingThread);
 	}
 
+	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
 

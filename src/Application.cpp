@@ -46,6 +46,7 @@ void Application::Initialize()
 	InitialzePlatformManager();
 	InitialzePhysicsManager();
 	InitialzeGraphicsManager();
+	InitialzeGUIManager();
 }
 
 //-----------------------------------------------------------------------------
@@ -89,10 +90,10 @@ void Application::InitialzeGraphicsManager()
 		InitialzePlatformManager();
 		InitialzePhysicsManager();
 
-		Graphics::GraphicsManagerConfigData gmcd;
-		gmcd.MainWindow = m_platformManager->GetMainWindow();
-		gmcd.FileManager = &FileManager::GetInstance();
-		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(gmcd));
+		Graphics::GraphicsManagerConfigData data;
+		data.MainWindow = m_platformManager->GetMainWindow();
+		data.FileManager = &FileManager::GetInstance();
+		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(data));
 	}
 }
 
@@ -106,7 +107,10 @@ void Application::InitialzeGUIManager()
 		InitialzePlatformManager();
 		InitialzeGraphicsManager();
 
+		GUI::GUIManager::ConfigData data;
+		data.GraphicsManager = m_graphicsManager;
 		m_guiManager.Attach(LN_NEW GUI::GUIManager());
+		m_guiManager->Initialize(data);
 	}
 }
 

@@ -82,6 +82,13 @@ void RenderingCommandList::PostExecute()
 	}
 	m_commandList.Clear();
 	m_commandDataBufferUsed = 0;
+
+
+	LN_FOREACH(RefObject* obj, m_markGCList)
+	{
+		obj->Release();
+	}
+	m_markGCList.Clear();
 }
 
 //-----------------------------------------------------------------------------

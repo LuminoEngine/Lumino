@@ -58,6 +58,7 @@ public:
 public:
 	virtual size_t GetByteCount() const { return m_byteCount; }
 	virtual DeviceResourceUsage GetUsage() const { return m_format; }
+	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void* Lock();
 	virtual void Unlock();
 	virtual void OnLostDevice();
