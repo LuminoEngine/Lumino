@@ -35,8 +35,11 @@ void PainterEngine::Create(GraphicsManager* manager)
 {
 	m_vertexBuffer.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateVertexBuffer(
 		PainterVertex::Elements(), PainterVertex::ElementCount, 1024, NULL, DeviceResourceUsage_Dynamic));
+	m_indexBuffer.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateIndexBuffer(
+		1024, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
 	m_vertexCache.Reserve(1024);
+	m_indexCache.Reserve(1024);
 
 	RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(_T("D:/Proj/Lumino/src/Graphics/Resource/Painter.fx")));
 	ShaderCompileResult r;
@@ -46,6 +49,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_shader.varWorldMatrix = m_shader.Shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shader.varViewProjMatrix = m_shader.Shader->GetVariableByName(_T("g_viewProjMatrix"));
 	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("g_texture"));
+	m_shader.varViewportSize = m_shader.Shader->GetVariableByName(_T("g_viewportSize"));
 
 	m_renderer = manager->GetGraphicsDevice()->GetDeviceObject()->GetRenderer();
 
@@ -82,6 +86,29 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+//void PainterEngine::SetViewPixelSize(const Size& size)
+//{
+//	if (m_shader.varViewportSize != NULL) {
+//		m_shader.varViewportSize->SetVector(Vector4((float)size.Width, (float)size.Height, 0, 0));
+//	}
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::DrawRectangle(Brush* brush, const RectF& rect)
+{
+	if (brush->GetType() == BrushType_Texture) {
+
+	}
+	else {
+		LN_THROW(0, NotImplementedException);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect_)
 {
 	if (srcTexture == NULL) {
@@ -97,6 +124,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	}
 
 	m_vertexCache.Clear();
+	m_indexCache.Clear();
 
 	SizeF texSize(srcTexture->GetSize().Width, srcTexture->GetSize().Height);
 	texSize.Width = 1.0f / texSize.Width;
@@ -104,112 +132,120 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
 	float uvFrameWidthW = frameWidth * texSize.Width;
 	float uvFrameWidthH = frameWidth * texSize.Height;
+	int frameWidthI = (int)frameWidth;	// 型変換回数を減らすため、あらかじめ int 化しておく
 
 	RectF outerRect = rect;
 	RectF innerRect(outerRect.X + frameWidth, outerRect.Y + frameWidth, outerRect.Width - frameWidth * 2, outerRect.Height - frameWidth * 2);
 	RectF outerUVRect = uvSrcRect;
 	RectF innerUVRect(outerUVRect.X + uvFrameWidthW, outerUVRect.Y + uvFrameWidthH, outerUVRect.Width - uvFrameWidthW * 2, outerUVRect.Height - uvFrameWidthH * 2);
-	// ↑外側に広げるモードがあってもいいかも
+	Rect  outerSrcRect = srcRect;
+	Rect  innerSrcRect(outerSrcRect.X + frameWidthI, outerSrcRect.Y + frameWidthI, outerSrcRect.Width - frameWidthI * 2, outerSrcRect.Height - frameWidthI * 2);
 
-	/* 上
-		□■□
-		□　□
-		□□□
-	*/
-	InternalDrawRectangle(
-		RectF(innerRect.X, outerRect.Y, innerRect.Width, innerRect.Y - outerRect.Y),
-		srcTexture,
-		Rect(srcRect.X + frameWidth, srcRect.Y, srcRect.Width - frameWidth * 2, frameWidth),
-		RectF(innerUVRect.X, outerUVRect.Y, innerUVRect.Width, innerUVRect.Y - outerUVRect.Y));
+	// 左上	■□□
+	//		□　□
+	//		□□□
+	InternalDrawRectangleTiling(
+		RectF(outerRect.GetLeft(),		outerRect.GetTop(),		frameWidth,		frameWidth),
+		Rect(outerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	frameWidthI,	frameWidthI),
+		RectF(outerUVRect.GetLeft(),	outerUVRect.GetTop(),	uvFrameWidthW,	uvFrameWidthH),
+		srcTexture);
+
+	// 上	□■□
+	//		□　□
+	//		□□□
+	InternalDrawRectangleTiling(
+		RectF(innerRect.GetLeft(),		outerRect.GetTop(),		innerRect.Width,	frameWidth),
+		Rect(innerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	innerSrcRect.Width,	frameWidthI),
+		RectF(innerUVRect.GetLeft(),	outerUVRect.GetTop(),	innerUVRect.Width,	uvFrameWidthH),
+		srcTexture);
+
+	// 右上	□□■
+	//		□　□
+	//		□□□
+	InternalDrawRectangleTiling(
+		RectF(innerRect.GetRight(),		outerRect.GetTop(),		frameWidth,		frameWidth),
+		Rect(innerSrcRect.GetRight(),	outerSrcRect.GetTop(),	frameWidthI,	frameWidthI),
+		RectF(innerUVRect.GetRight(),	outerUVRect.GetTop(),	uvFrameWidthW,	uvFrameWidthH),
+		srcTexture);
+
+	// 右	□□□
+	//		□　■
+	//		□□□
+	InternalDrawRectangleTiling(
+		RectF(innerRect.GetRight(),		innerRect.GetTop(),		frameWidth,		innerRect.Height),
+		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetTop(),	frameWidthI,	innerSrcRect.Height),
+		RectF(innerUVRect.GetRight(),	innerUVRect.GetTop(),	uvFrameWidthW,	innerUVRect.Height),
+		srcTexture);
+
+	// 右下	□□□
+	//		□　□
+	//		□□■
+	InternalDrawRectangleTiling(
+		RectF(innerRect.GetRight(),		innerRect.GetBottom(),		frameWidth,		frameWidth),
+		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetBottom(),	frameWidthI,	frameWidthI),
+		RectF(innerUVRect.GetRight(),	innerUVRect.GetBottom(),	uvFrameWidthW,	uvFrameWidthH),
+		srcTexture);
+
+	// 下	□□□
+	//		□　□
+	//		□■□
+	InternalDrawRectangleTiling(
+		RectF(innerRect.GetLeft(),		innerRect.GetBottom(),		innerRect.Width,	frameWidth),
+		Rect(innerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	innerSrcRect.Width,	frameWidthI),
+		RectF(innerUVRect.GetLeft(),	innerUVRect.GetBottom(),	innerUVRect.Width,	uvFrameWidthH),
+		srcTexture);
+
+	// 左下	□□□
+	//		□　□
+	//		■□□
+	InternalDrawRectangleTiling(
+		RectF(outerRect.GetLeft(),		innerRect.GetBottom(),		frameWidth,		frameWidth),
+		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	frameWidthI,	frameWidthI),
+		RectF(outerUVRect.GetLeft(),	innerUVRect.GetBottom(),	uvFrameWidthW,	uvFrameWidthH),
+		srcTexture);
+
+	// 左	□□□
+	//		■　□
+	//		□□□
+	InternalDrawRectangleTiling(
+		RectF(outerRect.GetLeft(),		innerRect.GetTop(),		frameWidth,		innerRect.Height),
+		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetTop(),	frameWidthI,	innerSrcRect.Height),
+		RectF(outerUVRect.GetLeft(),	innerUVRect.GetTop(),	uvFrameWidthW,	innerUVRect.Height),
+		srcTexture);
 
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 	m_renderer->SetVertexBuffer(m_vertexBuffer);
+	m_renderer->SetIndexBuffer(m_indexBuffer);
 	m_shader.varTexture->SetTexture(srcTexture);
 	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
-
-#if 0
-	//TextureBrush* textureBrush = static_cast<TextureBrush*>(brush);
-	SizeF texSize(srcTexture->GetSize().Width, srcTexture->GetSize().Height);
-	texSize.Width = 1.0f / texSize.Width;
-	texSize.Height = 1.0f / texSize.Height;
-	RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
-	float uvFrameWidthW = frameWidth * texSize.Width;
-	float uvFrameWidthH = frameWidth * texSize.Height;
-
-	// 位置も UV もローカル座標系上で作る。複雑な図形でも、境界ボックスの左上が原点になる。
-
-
-
-	// 上
-	/*
-		□■■□
-		□　　□
-		□　　□
-		□□□□
-	*/
-
-	float width = innerRect.Width;
-	float height = innerRect.Y;
-	float uvX = innerUVRect.X;
-	float uvY = outerUVRect.Y;
-	float uvWidth = innerUVRect.Width;
-	float uvHeight = innerUVRect.Y;
-
-	float blockCountW = (width / uvWidth) + fmod(width, uvWidth);		// 横方向にいくつのタイルを並べられるか (端数も含む)
-	float blockCountH = (height / uvHeight) + fmod(height, uvHeight);	// 縦方向にいくつのタイルを並べられるか (端数も含む)
-
-
-	float lu = uvX;
-	float ru = uvX + uvWidth * blockCountW;
-	float tv = uvY;
-	float bv = uvY + uvHeight * blockCountH;
-
-	PainterVertex v;
-	v.Color.Set(1, 1, 1, 1);
-	v.Position.Set(innerRect.GetLeft(),  outerRect.GetTop(), 0); v.UVOffset.Set(lu, tv, lu - lu, tv - tv); v.UVTileUnit.Set(0, 0);	// 左上
-	m_vertexCache.Add(v);
-	v.Position.Set(innerRect.GetRight(), outerRect.GetTop(), 0); v.UVOffset.Set(ru, tv, ru - lu, tv - tv); v.UVTileUnit.Set(blockCountW, 0);	// 右上
-	m_vertexCache.Add(v);
-	v.Position.Set(innerRect.GetLeft(),  innerRect.GetTop(), 0); v.UVOffset.Set(lu, bv, lu - lu, bv - tv); v.UVTileUnit.Set(0, 0);	// 左下
-	m_vertexCache.Add(v);
-	v.Position.Set(innerRect.GetRight(), innerRect.GetTop(), 0); v.UVOffset.Set(ru, bv, ru - lu, bv - tv); v.UVTileUnit.Set(blockCountW, blockCountH);	// 右下
-	m_vertexCache.Add(v);
-
-
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	
-
-
-	m_renderer->SetVertexBuffer(m_vertexBuffer);
-
-	m_shader.varTexture->SetTexture(srcTexture);
-	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
-#endif
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::InternalDrawRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, const RectF& srcUVRect)
+void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture)
 {
-
-	float width = rect.Width;
-	float height = rect.Height;
 	float uvX = srcUVRect.X;
 	float uvY = srcUVRect.Y;
 	float uvWidth = srcUVRect.Width;
 	float uvHeight = srcUVRect.Height;
-
-	float blockCountW = (width / srcRect.Width)/* + fmod(width, srcRect.Width)*/;		// 横方向にいくつのタイルを並べられるか (端数も含む)
-	float blockCountH = (height / srcRect.Height)/* + fmod(height, srcRect.Height)*/;	// 縦方向にいくつのタイルを並べられるか (端数も含む)
-
+	float blockCountW = (rect.Width / srcRect.Width);	// 横方向にいくつのタイルを並べられるか (端数も含む)
+	float blockCountH = (rect.Height / srcRect.Height);	// 縦方向にいくつのタイルを並べられるか (端数も含む)
 
 	float lu = uvX;
 	float ru = uvX + uvWidth * blockCountW;
 	float tv = uvY;
 	float bv = uvY + uvHeight * blockCountH;
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
 
 	PainterVertex v;
 	v.Color.Set(1, 1, 1, 1);
@@ -217,20 +253,9 @@ void PainterEngine::InternalDrawRectangle(const RectF& rect, Device::ITexture* s
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1);	// 右上
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, bv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// 左下
+	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1.0f + blockCountH);	// 左下
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, bv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// 右下
-	m_vertexCache.Add(v);
-
-	//PainterVertex v;
-	//v.Color.Set(1, 1, 1, 1);
-	//v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, lu - lu, tv - tv); v.UVTileUnit.Set(1, 1);	// 左上
-	//m_vertexCache.Add(v);
-	//v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(ru, tv, ru - uvWidth, tv - tv); v.UVTileUnit.Set(1.0f + blockCountW, 1);	// 右上
-	//m_vertexCache.Add(v);
-	//v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.UVOffset.Set(lu, bv, lu - lu, bv - uvHeight); v.UVTileUnit.Set(1, 1);	// 左下
-	//m_vertexCache.Add(v);
-	//v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(ru, bv, ru - uvWidth, bv - uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// 右下
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// 右下
 	m_vertexCache.Add(v);
 }
 

@@ -65,18 +65,21 @@ class SetProjectionCommand : public RenderingCommand
 {
 	PainterEngine* engine;
 	Matrix matrix;
+	//Size viewSize;
 
 public:
-	static void Create(CmdInfo& cmd, PainterEngine* engine, const Matrix& matrix)
+	static void Create(CmdInfo& cmd, PainterEngine* engine, const Matrix& matrix/*, const Size& size*/)
 	{
 		HandleCast<SetProjectionCommand>(cmd)->engine = engine;
 		HandleCast<SetProjectionCommand>(cmd)->matrix = matrix;
+		//HandleCast<SetProjectionCommand>(cmd)->viewSize = size;
 	}
 
 private:
 	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
 	{
 		engine->SetViewProjMatrix(matrix);
+		//engine->SetViewPixelSize(viewSize);
 	}
 };
 
@@ -149,7 +152,7 @@ void Painter::SetProjection(const Size& viewSize, float nearZ, float farZ)
 {
 	Matrix mat;
 	perspective2DLH(&mat, viewSize.Width, viewSize.Height, nearZ, farZ);
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetProjectionCommand>(m_manager->GetPainterEngine(), mat);
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetProjectionCommand>(m_manager->GetPainterEngine(), mat/*, viewSize*/);
 }
 
 //-----------------------------------------------------------------------------

@@ -325,6 +325,7 @@ public:
 
 public:
 
+	/// 名前を指定して変数を取得する (見つからなければ NULL を返す)
 	IShaderVariable* GetVariableByName(const TCHAR* name) const;
 
 protected:

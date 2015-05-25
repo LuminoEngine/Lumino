@@ -88,6 +88,7 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 	printf("TODO:");
 	m_brush.Attach(LN_NEW Graphics::TextureBrush());
 	m_brush->Create(_T("D:/Proj/Lumino/src/GUI/Resource/001-Blue01.png"), m_manager->GetGraphicsManager());
+	m_brush->SetSrcRect(Rect(128, 0, 64, 64));
 }
 
 //-----------------------------------------------------------------------------
@@ -105,7 +106,7 @@ void ButtonChrome::OnRender()
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.SetBrush(m_brush);
 	painter.SetProjection(Size(640, 480), 0, 1000);
-	painter.DrawFrameRectangle(RectF(10, 20, 400, 80), 16);
+	painter.DrawFrameRectangle(RectF(10, 20, 400, 80), 8);
 }
 
 

@@ -2,6 +2,10 @@
 float4x4	g_worldMatrix;
 float4x4	g_viewProjMatrix;
 
+
+float2 g_viewportSize;
+static float2 g_pixelStep = (float2(2.0, 2.0) / g_viewportSize);
+
 texture		g_texture;
 sampler2D	g_texSampler = sampler_state
 {
@@ -27,9 +31,11 @@ VS_OUTPUT vsBasic(
 	float4 inUVOffset	: TEXCOORD0,
 	float2 inUVTileUnit	: TEXCOORD1)
 {
+	inPos.xy -= 0.5;
 	VS_OUTPUT o;
 	o.Pos			= mul(float4(inPos, 1.0f), g_worldMatrix);
 	o.Pos			= mul(o.Pos, g_viewProjMatrix);
+	//o.Pos.xy -= g_pixelStep;
 	o.Color			= inColor;
 	o.UVOffset		= inUVOffset;
 	o.UVTileUnit	= inUVTileUnit;
@@ -54,10 +60,9 @@ float4 psBasic(
 	float2 uvRatio = fmod(inUVTileUnit, 1.0);
 	
 	float2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
-
+	//uv -= g_pixelStep;
 	
-	
-    return tex2D(g_texSampler, uv) * inColor;
+    return tex2D(g_texSampler, uv);// * inColor;
 }
 
 //-------------------------------------------------------------------------

@@ -41,8 +41,10 @@ public:
 		m_count = 0;
 	}
 
+	int GetCount() const { return m_count; }
 	byte_t* GetBuffer() { return m_buffer.GetData(); }
 	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
+
 
 private:
 	ByteBuffer	m_buffer;
@@ -62,13 +64,17 @@ public:
 	void Create(GraphicsManager* manager);
 	//void PushTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
+	void SetViewPixelSize(const Size& size);
+
+
+	void DrawRectangle(Brush* brush, const RectF& rect);
 
 	// srcTexture は NULL ならダミーテクスチャが使われる
 	/// srcRect はサイズが INT_MAX であれば全体を転送することを示す
 	void DrawFrameRectangle(const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect);
 
 private:
-	void InternalDrawRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, const RectF& srcUVRect);
+	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture);
 
 private:
 	struct PainterVertex
@@ -98,6 +104,7 @@ private:
 	
 	Device::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
+	CacheBuffer<uint16_t>			m_indexCache;
 	RefPtr<Device::IVertexBuffer>	m_vertexBuffer;
 	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
 	RefPtr<Device::ITexture>		m_dummyTexture;
@@ -110,6 +117,7 @@ private:
 		Device::IShaderVariable*	varWorldMatrix;
 		Device::IShaderVariable*	varViewProjMatrix;
 		Device::IShaderVariable*	varTexture;
+		Device::IShaderVariable*	varViewportSize;	///< DX9 HLSL 用のピクセルオフセット計算用。GLSL では最適化により消えることもある
 
 	} m_shader;
 };

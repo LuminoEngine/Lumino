@@ -125,7 +125,7 @@ void DX9VertexBuffer::Create(DX9GraphicsDevice* device, const VertexElement* ele
 void DX9VertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
 	byte_t* buf = (byte_t*)Lock();
-	memcpy(buf + offsetBytes, data, dataBytes);
+	memcpy(buf + offsetBytes, data, dataBytes);	// TOOD: IndexBuffer と同じサイズチェック
 	Unlock();
 }
 

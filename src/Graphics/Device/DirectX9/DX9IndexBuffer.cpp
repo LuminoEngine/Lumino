@@ -89,7 +89,11 @@ void DX9IndexBuffer::Create(DX9GraphicsDevice* device, int indexCount, const voi
 //-----------------------------------------------------------------------------
 void DX9IndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	LN_THROW(0, NotImplementedException);
+	byte_t* buf;
+	size_t lockedSize;
+	Lock((void**)&buf, &lockedSize);
+	memcpy(buf + offsetBytes, data, std::min(lockedSize - offsetBytes, dataBytes));
+	Unlock();
 }
 
 //-----------------------------------------------------------------------------

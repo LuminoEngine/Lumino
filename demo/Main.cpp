@@ -17,6 +17,11 @@ int main()
 		r->SetRenderTarget(0, swap1->GetBackBuffer());
 		r->SetDepthBuffer(swap1->GetBackBufferDepth());
 		r->Clear(true, true, Graphics::ColorF::Gray, 1.0f);
+
+		Graphics::RenderState state;
+		state.Blend = Graphics::BlendMode_Alpha;
+		r->SetRenderState(state);
+
 		workbench1->Render();
 		swap1->Present();
 

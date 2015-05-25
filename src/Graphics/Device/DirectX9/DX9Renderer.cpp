@@ -37,6 +37,8 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	D3DVIEWPORT9 vp;
 	m_dxDevice->GetViewport(&vp);
 	SetViewport(Rect(0, 0, vp.Width, vp.Height));
+
+	OnResetDevice();
 }
 
 //-----------------------------------------------------------------------------

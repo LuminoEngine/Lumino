@@ -93,6 +93,7 @@ void Application::InitialzeGraphicsManager()
 		Graphics::GraphicsManagerConfigData data;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.FileManager = &FileManager::GetInstance();
+		data.PlatformTextureLoading = true;
 		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(data));
 	}
 }
