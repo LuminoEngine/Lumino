@@ -5,6 +5,7 @@
 #include "../Camera.h"
 #include "../Light.h"
 #include "../VisualNodeParams.h"
+#include "MMEShaderBuilder.h"
 #include "MMEShaderTechnique.h"
 #include "MMEShader.h"
 
@@ -16,6 +17,29 @@ namespace Scene
 //=============================================================================
 // MMEShader
 //=============================================================================
+
+static const unsigned char MMM_EffectHeader_Data[] =
+{
+#include "../Resource/MMM_EffectHeader.fxh.h"
+};
+static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeader_Data) - 1;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager)
+{
+	StringA newCode((const char*)MMM_EffectHeader_Data, MMM_EffectHeader_Data_Len);
+	newCode += StringA::GetNewLine();
+	newCode += "#line 1";
+	newCode += StringA::GetNewLine();
+	newCode += StringA(code, codeLength);
+
+	RefPtr<Graphics::Shader> shader(Graphics::Shader::Create(newCode.GetCStr(), newCode.GetLength()));
+	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo));
+	mmeShader.SafeAddRef();
+	return mmeShader;
+}
 
 //-----------------------------------------------------------------------------
 //

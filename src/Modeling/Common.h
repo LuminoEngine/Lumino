@@ -1,10 +1,30 @@
 
 #pragma once
 
+#include <Lumino/Graphics/Material.h>
+
 namespace Lumino
 {
 namespace Modeling
 {
+class ModelManager;
+class ModelCore;
+class ModelBoneCore;
+class ModelIKCore;
+class ModelMorphCore;
+class ModelRigidBodyCore;
+class ModelJointCore;
+
+typedef ArrayList<Graphics::Material>	MaterialList;
+typedef ArrayList<ModelBoneCore*>		ModelBoneCoreList;
+typedef ArrayList<ModelIKCore*>			ModelIKCoreList;
+typedef ArrayList<ModelMorphCore*>		ModelMorphCoreList;
+typedef ArrayList<ModelRigidBodyCore*>	ModelRigidBodyCoreList;
+typedef ArrayList<ModelJointCore*>		ModelJointCoreList;
+
+class ModelBone;
+typedef ArrayList<ModelBone*>			ModelBoneList;
+
 
 /// モデルファイルのフォーマット
 enum ModelFormat
@@ -21,6 +41,7 @@ struct MeshAttribute
 	int		StartIndex;     ///< 開始インデックス
 	int		PrimitiveNum;   ///< 描画プリミティブ数 (三角形の数)
 };
+typedef ArrayList<MeshAttribute>		MeshAttributeList;
 
 /// 材質の描画オプション
 enum MMDDrawingFlags

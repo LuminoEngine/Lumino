@@ -10,17 +10,6 @@ namespace Lumino
 {
 namespace Modeling
 {
-class ModelManager;
-
-
-typedef ArrayList<Graphics::Material>	MaterialList;
-typedef ArrayList<MeshAttribute>		MeshAttributeList;
-
-typedef ArrayList<ModelBoneCore*>		ModelBoneCoreList;
-typedef ArrayList<ModelIKCore*>			ModelIKCoreList;
-typedef ArrayList<ModelMorphCore*>		ModelMorphCoreList;
-typedef ArrayList<ModelRigidBodyCore*>	ModelRigidBodyCoreList;
-typedef ArrayList<ModelJointCore*>		ModelJointCoreList;
 
 /// 共有マテリアルデータ
 class ModelMaterialCore
@@ -54,43 +43,48 @@ class ModelBoneCore
 {
 public:
 	ModelBoneCore(ModelCore* owner, int boneIndex);
+	void RefreshInitialValues();
+	const Vector3& GetOffsetFromParent() const { return m_offsetFromParent; }
+	const Matrix& GetInitialTranstormInv() const { return m_initialTranstormInv; }
 
 public:
-	String		Name;							///< ボーン名
-	//String	EnglishName;					///< ボーン英名
-	Vector3		OrgPosition;					///< モデル原点からの位置
-	int			ParentBoneIndex;				///< 親ボーンのインデックス (-1 は無し)
-	int			TransformLevel;					///< 変形階層  TOOD: IKボーン及びそのIKを親としている系列の変形階層を 0→1、回転影響下以下の変形階層を 0→2 (SortVal の考え方な気がする。MMM では使ってないみたい)
+	String				Name;						///< ボーン名
+	//String			EnglishName;				///< ボーン英名
+	Vector3				OrgPosition;				///< モデル原点からの位置
+	int					ParentBoneIndex;			///< 親ボーンのインデックス (-1 は無し)
+	int					TransformLevel;				///< 変形階層  TOOD: IKボーン及びそのIKを親としている系列の変形階層を 0→1、回転影響下以下の変形階層を 0→2 (SortVal の考え方な気がする。MMM では使ってないみたい)
 
 	// ↓ボーンフラグ
-	BoneConnectType		BoneConnect;			///< 接続先(PMD子ボーン指定)表示方法 -> 0:座標オフセットで指定 1:ボーンで指定
-	bool				CanRotate;				///< 回転可能
-	bool				CanMove;				///< 移動可能
-	bool				IsVisible;				///< 表示
-	bool				CanOperate;				///< 操作可
-	bool				IsIK;					///< IK
-	LocalProvideType	LocalProvide;			///< ローカル付与 | 付与対象 0:ユーザー変形値／IKリンク／多重付与 1:親のローカル変形量
-	bool				IsRotateProvided;		///< 回転付与
-	bool				IsMoveProvided;			///< 移動付与
-	bool				IsFixAxis;				///< 軸固定
-	bool				IsLocalAxis;			///< ローカル軸
-	bool				TransformAfterPhysics;	///< 物理後変形
-	bool				ParentTransform;		///< 外部親変形
+	BoneConnectType		BoneConnect;				///< 接続先(PMD子ボーン指定)表示方法 -> 0:座標オフセットで指定 1:ボーンで指定
+	bool				CanRotate;					///< 回転可能
+	bool				CanMove;					///< 移動可能
+	bool				IsVisible;					///< 表示
+	bool				CanOperate;					///< 操作可
+	bool				IsIK;						///< IK
+	LocalProvideType	LocalProvide;				///< ローカル付与 | 付与対象 0:ユーザー変形値／IKリンク／多重付与 1:親のローカル変形量
+	bool				IsRotateProvided;			///< 回転付与
+	bool				IsMoveProvided;				///< 移動付与
+	bool				IsFixAxis;					///< 軸固定
+	bool				IsLocalAxis;				///< ローカル軸
+	bool				TransformAfterPhysics;		///< 物理後変形
+	bool				ParentTransform;			///< 外部親変形
 	// ↑ボーンフラグ
 
 	// ↓ボーンフラグにより使用するデータ
-	Vector3		PositionOffset;					///< [接続先:0 の場合] 座標オフセット, ボーン位置からの相対分
-	int			ConnectedBoneIndex;				///< [接続先:1 の場合] 接続先ボーンのボーンIndex
-	int			ProvidedParentBoneIndex;		///< [回転付与:1 または 移動付与:1 の場合] 付与親ボーンのボーンIndex
-	float		ProvidedRatio;					///< [回転付与:1 または 移動付与:1 の場合] 付与率
-	Vector3		AxisDirectionVector;			///< [軸固定:1 の場合] 軸の方向ベクトル
-	Vector3		DimentionXDirectionVector;		///< [ローカル軸:1 の場合] X軸の方向ベクトル
-	Vector3		DimentionZDirectionVector;		///< [ローカル軸:1 の場合] Z軸の方向ベクトル
-	int			KeyValue;						///< [外部親変形:1 の場合] Key値
+	Vector3				PositionOffset;				///< [接続先:0 の場合] 座標オフセット, ボーン位置からの相対分
+	int					ConnectedBoneIndex;			///< [接続先:1 の場合] 接続先ボーンのボーンIndex
+	int					ProvidedParentBoneIndex;	///< [回転付与:1 または 移動付与:1 の場合] 付与親ボーンのボーンIndex
+	float				ProvidedRatio;				///< [回転付与:1 または 移動付与:1 の場合] 付与率
+	Vector3				AxisDirectionVector;		///< [軸固定:1 の場合] 軸の方向ベクトル
+	Vector3				DimentionXDirectionVector;	///< [ローカル軸:1 の場合] X軸の方向ベクトル
+	Vector3				DimentionZDirectionVector;	///< [ローカル軸:1 の場合] Z軸の方向ベクトル
+	int					KeyValue;					///< [外部親変形:1 の場合] Key値
 
 private:
-	ModelCore*	m_owner;
-	int			m_boneIndex;
+	ModelCore*			m_owner;
+	int					m_boneIndex;
+	Vector3				m_offsetFromParent;			///< (RefreshInitialValues() で設定される) 親ボーンのからの相対位置 (親OrgPosition - OrgPosition)
+	Matrix				m_initialTranstormInv;		///< (RefreshInitialValues() で設定される) モデル座標系内の初期姿勢の逆行列
 };
 
 
@@ -141,8 +135,8 @@ class ModelMorphCore
 //	};
 
 public:
-	ModelMorphCore();
-	virtual ~ModelMorphCore();
+	//ModelMorphCore();
+	//virtual ~ModelMorphCore();
 
 public:
 
@@ -247,12 +241,12 @@ public:
 	uint16_t			GroupMask;			///< 衝突グループマスク
 	RigidBodyType		RigidBodyType;		///< 形状
 	CollisionShapeData	ColShapeData;		///< 形状サイズ
-	Matrix				InitialTransform;	///< ボーン座標空間内での初期姿勢 (これに [RelatedBone のアニメーション適用済み Position] と [モデルのワールド行列] を乗算すると、物理ワールド内の WorldTransform になる)
+	Matrix				InitialTransform;	///< モデル座標空間内での初期姿勢 (そのまま剛体の初期姿勢になる)
 
 
 
-	LMatrix				BoneOffset;			///< ボーン行列 → 剛体行列変換用 (グローバル行列ではない)
-	LMatrix				InvBoneOffset;		///< 剛体行列 → ボーン行列変換用
+	//Matrix				BoneOffset;			///< ボーン行列 → 剛体行列変換用 (グローバル行列ではない)
+	//Matrix				InvBoneOffset;		///< 剛体行列 → ボーン行列変換用
 
 
 	float				Mass;				///< 質量
@@ -290,9 +284,10 @@ class ModelCore
 	LN_CACHE_OBJECT_DECL;
 public:
 	virtual ~ModelCore();
+	void RefreshInitialValues();
 
 public:
-	ModelManager*			Manager;
+	ModelFormat				Format;
 
 	String					Name;				///< モデル名
 	//String				EnglishName;		///< モデル英名

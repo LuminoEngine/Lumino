@@ -20,7 +20,7 @@ Camera::Camera(SceneGraphManager* manager, CameraProjection proj)
 	, m_nearClip(1.0f)
 	, m_farClip(1000.0f)
 {
-	m_transform.Translation.Set(0, 0, -10.0f);
+	m_transform.Translation.Set(0, 0, -20.0f);
 }
 
 //-----------------------------------------------------------------------------

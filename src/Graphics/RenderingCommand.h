@@ -429,35 +429,35 @@ private:
 };
 
 //=============================================================================
-class SetTextureSubDataCommand : public RenderingCommand
-{
-	Device::ITexture*		m_targetTexture;
-	size_t					m_sourceBitmapDataHandle;
-	Size					m_size;
-	Imaging::PixelFormat	m_format;
-
-public:
-	static void Create(CmdInfo& cmd, Device::ITexture* texture, Imaging::Bitmap* bitmap)
-	{
-		// メモリ確保は一度ハンドルをローカル変数に置く。1つの式の中で複数回 HandleCast を使用してはならないため。
-		size_t tmpData = Alloc(cmd, bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetBitmapBuffer()->GetData());
-
-		HandleCast<SetTextureSubDataCommand>(cmd)->m_targetTexture = texture;
-		HandleCast<SetTextureSubDataCommand>(cmd)->m_sourceBitmapDataHandle = tmpData;
-		HandleCast<SetTextureSubDataCommand>(cmd)->m_size = bitmap->GetSize();
-		HandleCast<SetTextureSubDataCommand>(cmd)->m_format = bitmap->GetPixelFormat();
-	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		// 参照モードで一時メモリを Bitmap 化する (メモリコピーを行わない)
-		ByteBuffer refData(commandList->GetBuffer(m_sourceBitmapDataHandle), Imaging::Bitmap::GetPixelFormatByteCount(m_format, m_size), true);
-		Imaging::Bitmap lockedBmp(&refData, m_size, m_format);
-
-		m_targetTexture->SetSubData(&lockedBmp);
-	}
-};
+//class SetTextureSubDataCommand : public RenderingCommand
+//{
+//	Device::ITexture*		m_targetTexture;
+//	size_t					m_sourceBitmapDataHandle;
+//	Size					m_size;
+//	Imaging::PixelFormat	m_format;
+//
+//public:
+//	static void Create(CmdInfo& cmd, Device::ITexture* texture, Imaging::Bitmap* bitmap)
+//	{
+//		// メモリ確保は一度ハンドルをローカル変数に置く。1つの式の中で複数回 HandleCast を使用してはならないため。
+//		size_t tmpData = Alloc(cmd, bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetBitmapBuffer()->GetData());
+//
+//		HandleCast<SetTextureSubDataCommand>(cmd)->m_targetTexture = texture;
+//		HandleCast<SetTextureSubDataCommand>(cmd)->m_sourceBitmapDataHandle = tmpData;
+//		HandleCast<SetTextureSubDataCommand>(cmd)->m_size = bitmap->GetSize();
+//		HandleCast<SetTextureSubDataCommand>(cmd)->m_format = bitmap->GetPixelFormat();
+//	}
+//
+//private:
+//	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+//	{
+//		// 参照モードで一時メモリを Bitmap 化する (メモリコピーを行わない)
+//		ByteBuffer refData(commandList->GetBuffer(m_sourceBitmapDataHandle), Imaging::Bitmap::GetPixelFormatByteCount(m_format, m_size), true);
+//		Imaging::Bitmap lockedBmp(&refData, m_size, m_format);
+//
+//		m_targetTexture->SetSubData(&lockedBmp);
+//	}
+//};
 
 //=============================================================================
 class SetShaderVariableCommand : public RenderingCommand
@@ -615,6 +615,37 @@ private:
 		// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。
 		m_targetSwapChain->m_waiting.SetTrue();
 		LN_SAFE_RELEASE(m_targetSwapChain);
+	}
+};
+	
+//=============================================================================
+class SetSubDataTextureCommand : public RenderingCommand	// TODO: ↑似たようなコマンドが残っている
+{
+	Device::ITexture*		m_targetTexture;
+	Point					m_offset;
+	size_t					m_bmpDataIndex;
+	Size					m_bmpSize;
+	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
+
+public:
+	static void Create(CmdInfo& cmd, Device::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const Size& bmpSize)
+	{
+		size_t tmpData = Alloc(cmd, dataSize, data);
+		HandleCast<SetSubDataTextureCommand>(cmd)->m_targetTexture = texture;
+		HandleCast<SetSubDataTextureCommand>(cmd)->m_offset = offset;
+		HandleCast<SetSubDataTextureCommand>(cmd)->m_bmpDataIndex = tmpData;
+		HandleCast<SetSubDataTextureCommand>(cmd)->m_bmpSize = bmpSize;
+		LN_SAFE_ADDREF(texture);
+	}
+
+private:
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		m_targetTexture->SetSubData(m_offset, commandList->GetBuffer(m_bmpDataIndex), m_bmpSize);
+	}
+	virtual void Release(RenderingCommandList* commandList)
+	{
+		LN_SAFE_RELEASE(m_targetTexture);
 	}
 };
 

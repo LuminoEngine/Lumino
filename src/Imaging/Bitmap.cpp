@@ -178,6 +178,7 @@ int Bitmap::GetPixelFormatByteCount(PixelFormat format)
 		4,	// PixelFormat_BYTE_R8G8B8X8,
 		4,	// PixelFormat_BYTE_B8G8R8A8,
 		4,	// PixelFormat_BYTE_B8G8R8X8,
+		16,	// PixelFormat_R32G32B32A32_Float,
 	};
 	assert(LN_ARRAY_SIZE_OF(table) == PixelFormat_Max);
 	return table[format];

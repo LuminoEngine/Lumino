@@ -46,6 +46,9 @@ void DrawingLayer::PreRender(const SizeF& viewSize)
 {
 	LN_THROW(m_camera != NULL, InvalidOperationException);
 	LN_THROW(m_renderingRootNode != NULL, InvalidOperationException);
+
+	m_renderingNodeList.Clear();
+	m_renderingLightList.Clear();
 	
 	// カメラ行列の更新 (TODO: ここで更新すると、複数レイヤーが同じカメラを参照している時に無駄な計算になるかも)
 	m_camera->UpdateMatrices(viewSize);

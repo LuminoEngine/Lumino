@@ -109,6 +109,9 @@ public:
 	/// ノード種別の取得
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_BaseNode; }
 
+	/// 1フレーム分の更新処理
+	virtual void UpdateFrame(float elapsedTime) {}
+
 	/// グローバル座標変換行列と各プロパティを階層的に更新する
 	///		この処理は1フレーム内で開始時に1度だけ呼ばれる。
 	///		座標変換行列を更新し、描画するべきノードであるかをフィルタリングする。

@@ -670,6 +670,7 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 	, m_painterEngine(NULL)
 {
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
+	m_platformTextureLoading = configData.PlatformTextureLoading;
 
 	GraphicsDeviceConfigData d;
 	d.API = GraphicsAPI_DirectX9;

@@ -284,12 +284,12 @@ void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, 
 		if (m_currentIndexBuffer->GetFormat() == IndexBufferFormat_UInt16)
 		{
 			ib_fmt = D3DFMT_INDEX16;
-			index_data = &((uint16_t*)m_currentIndexBuffer->Lock())[startIndex];
+			index_data = &((uint16_t*)m_currentIndexBuffer->GetDynamicData())[startIndex];
 		}
 		else
 		{
 			ib_fmt = D3DFMT_INDEX32;
-			index_data = &((uint32_t*)m_currentIndexBuffer->Lock())[startIndex];
+			index_data = &((uint32_t*)m_currentIndexBuffer->GetDynamicData())[startIndex];
 		}
 
 		LN_COMCALL(

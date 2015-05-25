@@ -100,7 +100,10 @@ public:
 	virtual void UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList);
 	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
 	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount);
-	//virtual void Render(RenderingParams& params);
+
+	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
+	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
+
 
 	// IMMESubsetRenerer
 //	virtual void OnDrawSubset(int subsetIndex, void* userData, MMEShader* shader, pass) { DrawSubset(*((RenderingParams*)userData), subsetIndex); }

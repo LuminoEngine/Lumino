@@ -8,6 +8,7 @@ namespace Lumino
 {
 namespace Scene
 {
+class MMEShaderErrorInfo;
 class MMEShaderVariable;
 class MMEShaderTechnique;
 	
@@ -17,6 +18,9 @@ class MMEShader
 {
 public:
 	static const int MaxAffectLights = 4;	///< ‰e‹¿‚ðŽó‚¯‚éƒ‰ƒCƒg‚ÌÅ‘å” (MMM ‚Í 3)
+
+	/// ì¬
+	static MMEShader* Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager);
 
 public:
 

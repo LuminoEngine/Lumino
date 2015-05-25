@@ -27,12 +27,15 @@ public:
 	/// IDirect3DIndexBuffer9 へのポインタ取得
 	IDirect3DIndexBuffer9* GetDxIndexBuffer() const { return m_indexBuffer; }
 
+	/// オンメモリデータの取得
+	void* GetDynamicData() { return m_indices; }
+
 public:
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
 	virtual DeviceResourceUsage GetUsage() const { return (m_indices != NULL) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static; }
-	virtual void* Lock();
-	virtual void Unlock(); 
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+	virtual void Lock(void** lockedBuffer, size_t* lockedSize);
+	virtual void Unlock();
 	virtual void OnLostDevice() {}
 	virtual void OnResetDevice() {}
 

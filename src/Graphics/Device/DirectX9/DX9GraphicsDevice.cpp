@@ -161,6 +161,21 @@ ITexture* DX9GraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels,
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ITexture* DX9GraphicsDevice::CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format)
+{
+	ByteBuffer buffer;
+	buffer.Resize((size_t)stream->GetLength(), false);
+	stream->Read(buffer.GetData(), buffer.GetSize());
+
+	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color::Transparency, mipLevels, format));
+	AddDeviceResource(obj);
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ITexture* DX9GraphicsDevice::CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, Size(width, height), format, mipLevels));

@@ -30,6 +30,8 @@ public:
 	virtual IndexBufferFormat GetFormat() const { return m_format; }
 	virtual DeviceResourceUsage GetUsage() const { return m_usage; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+	virtual void Lock(void** lockedBuffer, size_t* lockedSize);
+	virtual void Unlock();
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
 

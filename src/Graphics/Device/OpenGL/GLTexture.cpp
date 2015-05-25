@@ -145,10 +145,12 @@ void GLTexture::SetSamplerState(const SamplerState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLTexture::SetSubData(const Imaging::Bitmap* bitmap)
+void GLTexture::SetSubData(const Point& point, const void* data, const Size& dataBitmapSize)
 {
+	LN_THROW(point.IsZero(), NotImplementedException);
+
 	// フォーマットが同一ならそのまま転送すればよい
-	if (bitmap->GetPixelFormat() == Utils::TranslatePixelFormat(m_format))
+	//if (bitmap->GetPixelFormat() == Utils::TranslatePixelFormat(m_format))
 	{
 		// テクスチャフォーマット選択
 		GLenum internalFormat, pixelFormat, elementType;
@@ -162,11 +164,11 @@ void GLTexture::SetSubData(const Imaging::Bitmap* bitmap)
 			0,//mMipLevel,
 			0,
 			0,//m_realSize.Height - bitmap->GetSize().Height,
-			m_size.Width,//bitmap->GetSize().Width,
-			m_size.Height,///bitmap->GetSize().Height,
+			dataBitmapSize.Width,//bitmap->GetSize().Width,
+			dataBitmapSize.Height,///bitmap->GetSize().Height,
 			pixelFormat,
 			elementType,
-			bitmap->GetBitmapBuffer()->GetData());
+			data);
 		LN_CHECK_GLERROR();
 		//glEnable(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -174,10 +176,10 @@ void GLTexture::SetSubData(const Imaging::Bitmap* bitmap)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	// フォーマットが違う場合は一時ビットマップを作って変換する必要がある
-	else
-	{
-		LN_THROW(0, NotImplementedException);
-	}
+	//else
+	//{
+	//	LN_THROW(0, NotImplementedException);
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -194,7 +196,7 @@ Imaging::Bitmap* GLTexture::Lock()
 //-----------------------------------------------------------------------------
 void GLTexture::Unlock()
 {
-	SetSubData(m_lockedTexture);
+	SetSubData(Point(0, 0), m_lockedTexture->GetBitmapBuffer()->GetData(), m_size);
 	m_lockedTexture.SafeRelease();
 }
 

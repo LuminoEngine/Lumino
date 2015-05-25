@@ -87,18 +87,23 @@ void DX9IndexBuffer::Create(DX9GraphicsDevice* device, int indexCount, const voi
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void* DX9IndexBuffer::Lock()
+void DX9IndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	if (m_indexBuffer != NULL)
-	{
-		void* r = NULL;
-		LN_COMCALL(m_indexBuffer->Lock(0, 0, &r, 0));
-		return r;
+	LN_THROW(0, NotImplementedException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DX9IndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
+{
+	if (m_indexBuffer != NULL) {
+		LN_COMCALL(m_indexBuffer->Lock(0, 0, lockedBuffer, 0));
 	}
-	else
-	{
-		return m_indices;
+	else {
+		*lockedBuffer = m_indices;
 	}
+	*lockedSize = m_indexStride * m_indexCount;
 }
 
 //-----------------------------------------------------------------------------
@@ -109,14 +114,6 @@ void DX9IndexBuffer::Unlock()
 	if (m_indexBuffer != NULL) {
 		LN_COMCALL(m_indexBuffer->Unlock());
 	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void DX9IndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
-{
-	LN_THROW(0, NotImplementedException);
 }
 
 } // namespace Device

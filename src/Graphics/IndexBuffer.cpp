@@ -34,6 +34,7 @@ IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const
 //-----------------------------------------------------------------------------
 IndexBuffer::IndexBuffer(Device::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format)
 	: m_deviceObj(deviceObj)
+	, m_initialUpdate(true)
 {
 	LN_SAFE_ADDREF(m_deviceObj);
 
@@ -47,6 +48,37 @@ IndexBuffer::IndexBuffer(Device::IIndexBuffer* deviceObj, int indexCount, IndexB
 IndexBuffer::~IndexBuffer()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ByteBuffer* IndexBuffer::Lock()
+{
+	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
+	if (m_initialUpdate) {
+		void* buffer;
+		size_t size;
+		m_deviceObj->Lock(&buffer, &size);
+		m_lockedBuffer.Attach(buffer, size);
+	}
+	else {
+		LN_THROW(0, NotImplementedException);
+	}
+	return &m_lockedBuffer;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void IndexBuffer::Unlock()
+{
+	if (m_initialUpdate) {
+		m_deviceObj->Unlock();
+	}
+	else {
+		LN_THROW(0, NotImplementedException);
+	}
 }
 
 //-----------------------------------------------------------------------------

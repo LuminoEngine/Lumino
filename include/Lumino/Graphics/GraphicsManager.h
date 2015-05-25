@@ -17,6 +17,13 @@ struct GraphicsManagerConfigData
 {
 	Platform::Window*		MainWindow;
 	Lumino::FileManager*	FileManager;
+	bool					PlatformTextureLoading;
+
+	GraphicsManagerConfigData()
+		: MainWindow(NULL)
+		, FileManager(NULL)
+		, PlatformTextureLoading(false)
+	{}
 };
 
 /**
@@ -37,6 +44,7 @@ public:
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
+	bool IsPlatformTextureLoading() const { return m_platformTextureLoading; }
 
 	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
@@ -61,6 +69,7 @@ private:
 	RenderingThread*		m_renderingThread;
 
 	PainterEngine*			m_painterEngine;
+	bool					m_platformTextureLoading;
 };
 
 } // namespace Graphics

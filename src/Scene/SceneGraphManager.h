@@ -4,6 +4,7 @@
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
+#include "../Modeling/ModelManager.h"
 #include "Common.h"
 
 #include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
@@ -25,6 +26,7 @@ public:
 		Lumino::FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
 		Graphics::GraphicsManager*	GraphicsManager;
+		Modeling::ModelManager*		ModelManager;
 	};
 
 public:
@@ -40,6 +42,9 @@ public:
 	SceneNode* GetRootNode() { return m_defaultRoot; }
 	SceneNode* Get2DRootNode() { return m_default2DRoot; }
 	SceneNode* Get3DRootNode() { return m_default3DRoot; }
+	Camera* GetDefault3DCamera() { return m_default3DCamera; }
+
+	
 
 
 	/// 名前を指定してノードを検索する (同名ノードの場合は最初のノード)
@@ -58,11 +63,14 @@ public:	// internal
 
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	Graphics::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	Modeling::ModelManager* GetModelManager() { return m_modelManager; }
 	Graphics::GeometryRenderer* GetGeometryRenderer() { return m_geometryRenderer; }
 	Graphics::Texture* GetDummyTexture() { return m_dummyTexture; }
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
+	void AddNode(SceneNode* node) { m_allNodes.Add(node); }
+	void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
 	void AddRenderingPass(RenderingPass* pass);
 	void RemoveRenderingPass(RenderingPass* pass);
 	void AddLight(Light* light);
@@ -80,12 +88,14 @@ private:
 	RefPtr<FileManager>					m_fileManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<Modeling::ModelManager>		m_modelManager;
 	RefPtr<Graphics::GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Graphics::Texture>			m_dummyTexture;
 
 	double								m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float								m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
 
+	SceneNodeList						m_allNodes;
 
 	Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ

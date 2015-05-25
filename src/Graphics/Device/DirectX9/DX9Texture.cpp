@@ -170,26 +170,31 @@ DX9Texture::~DX9Texture()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DX9Texture::SetSubData(const Imaging::Bitmap* bitmap)
+void DX9Texture::SetSubData(const Point& point, const void* data, const Size& dataBitmapSize)
 {
+	LN_THROW(point.IsZero(), NotImplementedException);
+
+	RECT lockRect = { point.X, point.Y, point.X + dataBitmapSize.Width, point.Y + dataBitmapSize.Height };
 	D3DLOCKED_RECT lockedRect;
-	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD));
+	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, D3DLOCK_DISCARD));
 
-	try
-	{
-		// 参照モードでロック領域を Bitmap 化する (メモリコピーを行わない)
-		ByteBuffer refData(lockedRect.pBits, lockedRect.Pitch * m_realSize.Height, true);
-		Imaging::Bitmap lockedBmp(&refData, m_realSize, Imaging::PixelFormat_BYTE_B8G8R8A8);	// GDI 互換フォーマット
+	memcpy(lockedRect.pBits, data, lockedRect.Pitch * m_realSize.Height);
 
-		// 全体を転送する
-		Rect rc(0, 0, m_realSize);
-		lockedBmp.BitBlt(rc, bitmap, rc, false);
-	}
-	catch (...)
-	{
-		m_dxTexture->UnlockRect(0);
-		throw;
-	}
+	//try
+	//{
+	//	// 参照モードでロック領域を Bitmap 化する (メモリコピーを行わない)
+	//	ByteBuffer refData(lockedRect.pBits, lockedRect.Pitch * m_realSize.Height, true);
+	//	Imaging::Bitmap lockedBmp(&refData, m_realSize, Imaging::PixelFormat_BYTE_B8G8R8A8);	// GDI 互換フォーマット
+
+	//	// 全体を転送する
+	//	Rect rc(0, 0, m_realSize);
+	//	lockedBmp.BitBlt(rc, bitmap, rc, false);
+	//}
+	//catch (...)
+	//{
+	//	m_dxTexture->UnlockRect(0);
+	//	throw;
+	//}
 
 	m_dxTexture->UnlockRect(0);
 }

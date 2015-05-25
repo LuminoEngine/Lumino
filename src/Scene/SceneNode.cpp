@@ -47,7 +47,11 @@ SceneNode::SceneNode()
 //-----------------------------------------------------------------------------
 SceneNode::~SceneNode()
 {
-	LN_SAFE_RELEASE(m_manager);
+	if (m_manager != NULL)
+	{
+		m_manager->RemoveNode(this);
+		LN_SAFE_RELEASE(m_manager);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -58,6 +62,7 @@ void SceneNode::Create(SceneGraphManager* manager)
 	LN_THROW(m_manager == NULL, InvalidOperationException);	// 初期化済みチェック
 	LN_THROW(manager != NULL, ArgumentException);
 	LN_REFOBJ_SET(m_manager, manager);
+	m_manager->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------

@@ -39,13 +39,60 @@ public:
 	*/
 	static VertexBuffer* Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 	
+public:
+
+	/**
+		@brief		リソースをロックします。
+	*/
+	ByteBuffer* Lock();
+	//ByteBuffer* Lock(int offset, int byteCount);	// テスト用
+
+	/**
+		@brief		リソースをアンロックします。
+	*/
+	void Unlock();
+
 protected:
 	VertexBuffer(Device::IVertexBuffer* deviceObj);
 	virtual ~VertexBuffer();
 
-private:
+public:	// TODO
 	friend class SetVertexBufferCommand;
 	Device::IVertexBuffer*	m_deviceObj;
+	ByteBuffer				m_lockedBuffer;
+	bool					m_initialUpdate;
+};
+
+/**
+	@brief		VertexBuffer のリソースロックを補助します。
+*/
+class ScopedVertexBufferLock
+{
+public:
+	ScopedVertexBufferLock(VertexBuffer* indexBuffer)
+	{
+		m_vertexBuffer = indexBuffer;
+		m_lockedBuffer = m_vertexBuffer->Lock();
+	}
+	
+	~ScopedVertexBufferLock()
+	{
+		m_vertexBuffer->Unlock();
+	}
+
+	byte_t* GetData()
+	{
+		return m_lockedBuffer->GetData();
+	}
+
+	size_t GetSize()
+	{
+		return m_lockedBuffer->GetSize();
+	}
+
+private:
+	VertexBuffer*	m_vertexBuffer;
+	ByteBuffer*		m_lockedBuffer;
 };
 
 } // namespace Graphics

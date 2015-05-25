@@ -111,6 +111,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	: m_fileManager(configData.FileManager, true)
 	, m_physicsManager(configData.PhysicsManager, true)
 	, m_graphicsManager(configData.GraphicsManager, true)
+	, m_modelManager(configData.ModelManager, true)
 	//, m_rootNode(NULL)
 	, m_time(0.0)
 	, m_defaultRoot(NULL)
@@ -226,6 +227,10 @@ SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 //-----------------------------------------------------------------------------
 void SceneGraphManager::UpdateFrame(float elapsedTime)
 {
+	LN_FOREACH(SceneNode* node, m_allNodes) {
+		node->UpdateFrame(elapsedTime);
+	}
+
 	m_elapsedTime = elapsedTime;
 	m_time += elapsedTime;
 	m_defaultRoot->UpdateFrameHierarchy(NULL, &m_renderingNodeList);

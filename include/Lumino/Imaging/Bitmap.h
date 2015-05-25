@@ -21,6 +21,7 @@ enum PixelFormat
 	PixelFormat_BYTE_B8G8R8A8,		///< BB GG RR AA (GDI 互換フォーマット)
 	PixelFormat_BYTE_B8G8R8X8,		///< BB GG RR XX (GDI 互換のアルファ無しフォーマット)
 
+	PixelFormat_R32G32B32A32_Float,
 
 	//PixelFormat_INT32_A8R8G8B8,	///< AA RR GG BB (U32値。リトルエンディアン環境での実際のメモリ上は BGRA)
 	//PixelFormat_INT32_A8B8G8R8,	///< AA BB GG RR

@@ -101,6 +101,11 @@ public:
 		@return		テクスチャの実サイズ (ピクセル単位)
 	*/
 	const Size& GetRealSize() const;
+	/*
+		@brief		
+	*/
+	void SetSubData(const Point& offset, const Imaging::Bitmap* data);
+	void SetSubData(const Point& offset, const void* data);
 
 	Imaging::Bitmap* Lock();
 	void Unlock();

@@ -54,8 +54,9 @@ void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 		}
 		params.Shader = priorityParams.Shader;
 
-		// シェーダのノード単位データを更新する
+		// ノード単位データを更新する
 		priorityParams.Shader->UpdateNodeParams(visualNode, params.CurrentCamera, *visualNode->GetAffectLightList());
+		visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
 		const Graphics::Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(iSubset).Material;
 

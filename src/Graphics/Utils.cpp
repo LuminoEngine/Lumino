@@ -25,7 +25,7 @@ Imaging::PixelFormat Utils::TranslatePixelFormat(TextureFormat textureFormat)
 		Imaging::PixelFormat_BYTE_B8G8R8X8,	// TextureFormat_B8G8R8X8,            ///< 32 ビットのアルファ無しフォーマット
 
 		Imaging::PixelFormat_Unknown,		// TextureFormat_A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
-		Imaging::PixelFormat_Unknown,		// TextureFormat_A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
+		Imaging::PixelFormat_R32G32B32A32_Float,		// TextureFormat_A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
 		Imaging::PixelFormat_Unknown,		// TextureFormat_D24S8,               ///< 32 ビットの Z バッファフォーマット
 		Imaging::PixelFormat_Unknown,		// TextureFormat_R16F,
 		Imaging::PixelFormat_Unknown,		// TextureFormat_R32F,

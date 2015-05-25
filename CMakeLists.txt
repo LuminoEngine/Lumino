@@ -66,6 +66,9 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsDevice.cpp
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/IndexBuffer.cpp
+	src/Graphics/Painter.cpp
+	src/Graphics/PainterEngine.cpp
+	src/Graphics/PainterEngine.h
 	src/Graphics/Renderer.cpp
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingThread.cpp
@@ -129,13 +132,23 @@ set(LN_SOURCES_Scene
 	src/Scene/MME/MMEShaderTechnique.h
 	src/Scene/MME/MMETypes.h)
 	
+set(LN_SOURCES_GUI
+	include/Lumino/GUI/Property.h
+	include/Lumino/GUI/UIElement.h
+	include/Lumino/GUI/Common.h
+	include/Lumino/GUI/EventArgs.h
+	include/Lumino/GUI/GUIManager.h
+	src/GUI/UIElement.cpp
+	src/GUI/GUIManager.cpp)
+	
 set(LN_SOURCES_Game
 	include/Lumino/Game/FpsController.h
 	src/Game/FpsController.cpp)
 
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
-	src/Application.cpp)
+	src/Application.cpp
+	src/Variant.cpp)
 	
 #--------------------------------------
 # Platform source files.
@@ -196,6 +209,7 @@ source_group("Platform"		FILES ${LN_SOURCES_Platform})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
+source_group("GUI"			FILES ${LN_SOURCES_GUI})
 source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
 
@@ -204,6 +218,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Scene}
+	${LN_SOURCES_GUI}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application})
 

@@ -13,7 +13,7 @@ class PMXLoader
 {
 public:
 
-#pragma pack( push, 1 )
+#pragma pack(push, 1)
 
 	enum PMX_Encode
 	{
@@ -25,7 +25,7 @@ public:
 	{
 		char	Magic[4];		// "PMX " (PMX1.0は"Pmx ")
 		float	Version;		// PMDバージョン番号
-		int		DataSize;		// 後続するデータ列のバイトサイズ  PMX2.0は 8 で固定
+		byte_t	DataSize;		// 後続するデータ列のバイトサイズ  PMX2.0は 8 で固定
 		byte_t	Data[8];		// [0] - エンコード方式  | 0:UTF16 1:UTF8
 								// [1] - 追加UV数 	| 0～4 詳細は頂点参照
 								// [2] - 頂点Indexサイズ | 1,2,4 のいずれか

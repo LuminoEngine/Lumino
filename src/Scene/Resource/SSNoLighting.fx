@@ -51,12 +51,12 @@ float4 psBasic(
     float4 in_color_    : COLOR0,
     float2 in_uv_       : TEXCOORD0 ) : COLOR0
 {
-    float4 out_color = tex2D( gTexSampler, in_uv_ ) * in_color_ * gColor;
+    float4 out_color = tex2D( gTexSampler, in_uv_ );// * in_color_ * gColor;
     
-    out_color.rgb = lerp( out_color.rgb, gBlendColor.rgb, gBlendColor.a );
+    //out_color.rgb = lerp( out_color.rgb, gBlendColor.rgb, gBlendColor.a );
     
-	float y = ( 0.208012 * out_color.r + 0.586611 * out_color.g + 0.114478 * out_color.b ) * gTone.w;
-    out_color.rgb = ( out_color.rgb * ( 1.0 - gTone.w ) ) + y + gTone.rgb;
+	//float y = ( 0.208012 * out_color.r + 0.586611 * out_color.g + 0.114478 * out_color.b ) * gTone.w;
+    //out_color.rgb = ( out_color.rgb * ( 1.0 - gTone.w ) ) + y + gTone.rgb;
 
     return out_color;
 }

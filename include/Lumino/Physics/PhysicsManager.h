@@ -20,6 +20,8 @@ public:
 
 public:
 
+	void Finalize();
+
 	/// 非同期シミュレーションの実行状態の取得
 	ASyncSimulationState GetASyncSimulationState() const { return m_asyncSimulationState; }
 

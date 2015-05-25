@@ -4,7 +4,9 @@
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Texture.h>
-#include "../Physics/PhysicsManager.h"
+#include "../Animation/AnimationClip.h"
+#include <Lumino/Physics/PhysicsManager.h>
+#include "Common.h"
 
 namespace Lumino
 {
@@ -45,6 +47,9 @@ public:
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	Graphics::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Graphics::Texture* GetMMDDefaultToonTexture(int index);
+	
+	ModelCore* CreateModelCore(const PathName& filePath);
+	Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 private:
 	RefPtr<Lumino::FileManager>			m_fileManager;

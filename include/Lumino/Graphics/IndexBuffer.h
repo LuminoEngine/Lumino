@@ -39,6 +39,16 @@ public:
 
 public:
 
+	/**
+		@brief		リソースをロックします。
+	*/
+	ByteBuffer* Lock();
+
+	/**
+		@brief		リソースをアンロックします。
+	*/
+	void Unlock();
+
 	/*
 		@brief		インデックスデータを更新します。
 		@param[in]	offsetBytes		: 更新先領域の先頭オフセット (バイト単位)
@@ -55,6 +65,40 @@ private:
 	friend class SetIndexBufferCommand;
 	Device::IIndexBuffer*	m_deviceObj;
 	RefPtr<ByteBuffer>		m_data;
+	ByteBuffer				m_lockedBuffer;
+	bool					m_initialUpdate;
+};
+
+/**
+	@brief		IndexBuffer のリソースロックを補助します。
+*/
+class ScopedIndexBufferLock
+{
+public:
+	ScopedIndexBufferLock(IndexBuffer* indexBuffer)
+	{
+		m_indexBuffer = indexBuffer;
+		m_lockedBuffer = m_indexBuffer->Lock();
+	}
+	
+	~ScopedIndexBufferLock()
+	{
+		m_indexBuffer->Unlock();
+	}
+
+	byte_t* GetData()
+	{
+		return m_lockedBuffer->GetData();
+	}
+
+	size_t GetSize()
+	{
+		return m_lockedBuffer->GetSize();
+	}
+
+private:
+	IndexBuffer*	m_indexBuffer;
+	ByteBuffer*		m_lockedBuffer;
 };
 
 } // namespace Graphics

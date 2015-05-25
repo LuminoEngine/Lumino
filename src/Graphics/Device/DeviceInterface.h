@@ -84,8 +84,8 @@ public:
 	/// テクスチャの作成
 	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format) = 0;
 
-	/// テクスチャの作成
-	//virtual ITexture* CreateTexture(const Imaging::Bitmap* bitmap, uint32_t mipLevels, TextureFormat format) = 0;
+	/// テクスチャの作成 (環境依存の画像ファイル読み込み)
+	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;
 
 	/// レンダーターゲットテクスチャの作成
 	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
@@ -261,6 +261,12 @@ public:
 	/// データを転送する
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
 
+	/// ロック
+	virtual void Lock(void** lockedBuffer, size_t* lockedSize) = 0;
+
+	/// アンロック
+	virtual void Unlock() = 0;
+
 protected:
 	virtual ~IIndexBuffer() {};
 };
@@ -287,7 +293,7 @@ public:
 	virtual void SetSamplerState(const SamplerState& state) = 0;
 
 	/// データ転送 (TODO:部分更新は未実装…)
-	virtual void SetSubData(const Imaging::Bitmap* bitmap) = 0;
+	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) = 0;
 
 	/// ロック
 	virtual Imaging::Bitmap* Lock() = 0;

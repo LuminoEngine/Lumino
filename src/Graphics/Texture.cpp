@@ -52,6 +52,17 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 	manager = (manager != NULL) ? manager : Internal::Manager;
 	Device::IGraphicsDevice* device = manager->GetGraphicsDevice()->GetDeviceObject();
 
+	if (manager->IsPlatformTextureLoading())
+	{
+		RefPtr<Device::ITexture> obj(device->CreateTexturePlatformLoading(stream, mipLevels, format));
+		if (!obj.IsNull())
+		{
+			RefPtr<Imaging::Bitmap> bitmap(LN_NEW Imaging::Bitmap(obj->GetSize(), Utils::TranslatePixelFormat(format)));
+			obj.SafeAddRef();
+			return LN_NEW Texture(manager, obj, bitmap);
+		}
+	}
+
 	// ビットマップを作る
 	RefPtr<Imaging::Bitmap> bitmap(LN_NEW Imaging::Bitmap(stream));
 
@@ -60,7 +71,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 
 	// ビットマップを転送する
 	Device::IGraphicsDevice::ScopedLockContext lock(device);
-	obj->SetSubData(bitmap);
+	obj->SetSubData(Point(0, 0), bitmap->GetBitmapBuffer()->GetData(), obj->GetSize());
 
 	// TODO: primarySurface のフォーマットは、format に合わせて変換するべきかも
 	obj.SafeAddRef();
@@ -159,6 +170,28 @@ const Size& Texture::GetRealSize() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Texture::SetSubData(const Point& offset, const Imaging::Bitmap* data)
+{
+	LN_VERIFY(data != NULL) { return; }
+	LN_VERIFY(data->GetPixelFormat() == Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) { return; }	// ピクセルフォーマットが一致していること
+
+	LN_THROW(0, NotImplementedException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture::SetSubData(const Point& offset, const void* data)
+{
+	LN_VERIFY(data != NULL) { return; }
+	// TODO: m_primarySurface にもセット
+	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<SetSubDataTextureCommand>(
+		m_deviceObj, offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Imaging::Bitmap* Texture::Lock()
 {
 	if (m_deviceObj->GetTextureType() == Device::TextureType_Normal)
@@ -199,8 +232,10 @@ void Texture::Unlock()
 
 		// TODO: 遅延転送
 		//cmdList->SetTextureSubData(m_deviceObj, m_primarySurface);
-		cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
+		//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
 		//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
+		cmdList->AddCommand<SetSubDataTextureCommand>(
+			m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
 	}
 	else if (m_deviceObj->GetTextureType() == Device::TextureType_RenderTarget)
 	{

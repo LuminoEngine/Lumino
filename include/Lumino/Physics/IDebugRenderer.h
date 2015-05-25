@@ -1,5 +1,6 @@
 
 #pragma once
+#include <Lumino/Math/Vector3.h>
 
 namespace Lumino
 {
