@@ -37,6 +37,7 @@ Brush::~Brush()
 //-----------------------------------------------------------------------------
 TextureBrush::TextureBrush()
 	: m_srcRect(0, 0, INT_MAX, INT_MAX)
+	, m_wrapMode(BrushWrapMode_Stretch)
 {
 }
 
@@ -80,6 +81,32 @@ private:
 	{
 		engine->SetViewProjMatrix(matrix);
 		//engine->SetViewPixelSize(viewSize);
+	}
+};
+
+//=============================================================================
+class DrawFillRectangleCommand : public RenderingCommand
+{
+	PainterEngine* engine;
+	RectF rect;
+	Device::ITexture* srcTexture;
+	Rect srcRect;
+	BrushWrapMode wrapMode;
+
+public:
+	static void Create(CmdInfo& cmd, PainterEngine* engine, const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
+	{
+		cmd.m_commandList->MarkGC(srcTexture);
+		HandleCast<DrawFillRectangleCommand>(cmd)->engine = engine;
+		HandleCast<DrawFillRectangleCommand>(cmd)->rect = rect;
+		HandleCast<DrawFillRectangleCommand>(cmd)->srcTexture = srcTexture;
+		HandleCast<DrawFillRectangleCommand>(cmd)->srcRect = srcRect;
+		HandleCast<DrawFillRectangleCommand>(cmd)->wrapMode = wrapMode;
+	}
+
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		engine->DrawFillRectangle(rect, srcTexture, srcRect, wrapMode);
 	}
 };
 
@@ -166,6 +193,22 @@ void Painter::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Painter::DrawRectangle(const RectF& rect)
+{
+	if (m_currentBrush->GetType() == BrushType_Texture)
+	{
+		TextureBrush* b = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
+		m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawFillRectangleCommand>(
+			m_manager->GetPainterEngine(), rect, b->GetTexture()->GetDeviceObject(), b->GetSourceRect(), b->GetWrapMode());
+	}
+	else {
+		LN_THROW(0, NotImplementedException);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 {
 	Device::ITexture* srcTexture;
@@ -176,7 +219,7 @@ void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 		if (tb->GetTexture() != NULL)
 		{
 			srcTexture = tb->GetTexture()->GetDeviceObject();
-			srcRect = tb->GetSrcRect();
+			srcRect = tb->GetSourceRect();
 		}
 	}
 

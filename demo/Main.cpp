@@ -8,6 +8,7 @@ int main()
 
 	//app->GetGUIManager()->CreateUIElement("Button");
 	RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));
+	button1->SetSize(SizeF(200, 300));
 	workbench1->SetContent(button1.GetObjectPtr());
 
 	Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();

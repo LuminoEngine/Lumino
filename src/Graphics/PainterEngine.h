@@ -52,7 +52,8 @@ private:
 	int			m_count;
 };
 
-
+/// PainterEngine
+///		このクラスは Brush を参照しないようにすること。
 class PainterEngine
 	: public RefObject
 {
@@ -67,13 +68,14 @@ public:
 	void SetViewPixelSize(const Size& size);
 
 
-	void DrawRectangle(Brush* brush, const RectF& rect);
+	void DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
 
 	// srcTexture は NULL ならダミーテクスチャが使われる
 	/// srcRect はサイズが INT_MAX であれば全体を転送することを示す
 	void DrawFrameRectangle(const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect);
 
 private:
+	void InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect);
 	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture);
 
 private:

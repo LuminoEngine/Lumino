@@ -14,6 +14,8 @@ namespace GUI
 // UIElement
 //=============================================================================
 
+const String UIElement::SizeProperty(_T("Size"));
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -21,6 +23,7 @@ UIElement::UIElement(GUIManager* manager)
 	: m_manager(manager)
 {
 	LN_SAFE_ADDREF(m_manager);
+	RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 }
 
 //-----------------------------------------------------------------------------
@@ -29,6 +32,59 @@ UIElement::UIElement(GUIManager* manager)
 UIElement::~UIElement()
 {
 	LN_SAFE_RELEASE(m_manager);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::RegisterProperty(const String& propertyName, const Variant& defaultValue)
+{
+	m_propertyDataStore.Add(propertyName, defaultValue);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::SetValue(const String& propertyName, const Variant& value)
+{
+	// TODO: キーが無ければ例外
+	m_propertyDataStore.SetValue(propertyName, value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant UIElement::GetValue(const String& propertyName) const
+{
+	Variant value;
+	if (m_propertyDataStore.TryGetValue(propertyName, &value)) {
+		return value;
+	}
+	LN_THROW(0, ArgumentException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::MeasureLayout(const SizeF& availableSize)
+{
+	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
+	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
+	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button
+	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
+	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
+
+	const SizeF& size = GetSize();
+	m_desiredSize.Width = std::min(size.Width, availableSize.Width);
+	m_desiredSize.Height = std::min(size.Height, availableSize.Height);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::ArrangeLayout(const RectF& finalRect)
+{
+	m_finalRect = finalRect;
 }
 
 //-----------------------------------------------------------------------------
@@ -76,7 +132,7 @@ UIElement* Decorator::GetChild() const
 
 
 //=============================================================================
-// 
+// ButtonChrome
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -84,11 +140,16 @@ UIElement* Decorator::GetChild() const
 //-----------------------------------------------------------------------------
 ButtonChrome::ButtonChrome(GUIManager* manager)
 	: Decorator(manager)
+	, m_bgMargin(2)
 {
 	printf("TODO:");
 	m_brush.Attach(LN_NEW Graphics::TextureBrush());
-	m_brush->Create(_T("D:/Proj/Lumino/src/GUI/Resource/001-Blue01.png"), m_manager->GetGraphicsManager());
-	m_brush->SetSrcRect(Rect(128, 0, 64, 64));
+	m_brush->Create(_T("D:/Proj/Lumino/src/GUI/Resource/001-Blue01.png"), m_manager->GetGraphicsManager());	// TODO
+	m_brush->SetSourceRect(Rect(128, 0, 64, 64));
+
+	m_bgBrush.Attach(LN_NEW Graphics::TextureBrush());
+	m_bgBrush->SetTexture(m_brush->GetTexture());
+	m_bgBrush->SetSourceRect(Rect(0, 0, 128, 128));
 }
 
 //-----------------------------------------------------------------------------
@@ -104,8 +165,10 @@ ButtonChrome::~ButtonChrome()
 void ButtonChrome::OnRender()
 {
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
+	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
+	painter.SetBrush(m_bgBrush);
+	painter.DrawRectangle(RectF(10, 20, 400, 80));
 	painter.SetBrush(m_brush);
-	painter.SetProjection(Size(640, 480), 0, 1000);
 	painter.DrawFrameRectangle(RectF(10, 20, 400, 80), 8);
 }
 
@@ -216,6 +279,8 @@ Workbench::~Workbench()
 Button::Button(GUIManager* manager)
 	: ContentControl(manager)
 {
+
+
 	m_chrome.Attach(LN_NEW ButtonChrome(manager));
 	SetContent(Variant(m_chrome));
 }

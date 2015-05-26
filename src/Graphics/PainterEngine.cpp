@@ -96,10 +96,32 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DrawRectangle(Brush* brush, const RectF& rect)
+void PainterEngine::DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
 {
-	if (brush->GetType() == BrushType_Texture) {
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
 
+	SizeF texSizeInv(1.0f / srcTexture->GetSize().Width, 1.0f / srcTexture->GetSize().Height);
+	RectF uvSrcRect(srcRect);
+	uvSrcRect.X			*= texSizeInv.Width;
+	uvSrcRect.Width		*= texSizeInv.Width;
+	uvSrcRect.Y			*= texSizeInv.Height;
+	uvSrcRect.Height	*= texSizeInv.Height;
+
+	// 拡縮モード
+	if (wrapMode == BrushWrapMode_Stretch) 
+	{
+		InternalDrawRectangleStretch(rect, uvSrcRect);
+
+		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+		m_renderer->SetVertexBuffer(m_vertexBuffer);
+		m_shader.varTexture->SetTexture(srcTexture);
+		m_shader.Pass->Apply();
+		m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
+	}
+	// タイリングモード
+	else if (wrapMode == BrushWrapMode_Tile) {
+		LN_THROW(0, NotImplementedException);
 	}
 	else {
 		LN_THROW(0, NotImplementedException);
@@ -220,6 +242,36 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	m_shader.varTexture->SetTexture(srcTexture);
 	m_shader.Pass->Apply();
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect)
+{
+	float lu = srcUVRect.GetLeft();
+	float tv = srcUVRect.GetTop();
+	float uvWidth = srcUVRect.Width;
+	float uvHeight = srcUVRect.Height;
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
+
+	PainterVertex v;
+	v.Color.Set(1, 1, 1, 1);
+	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// 左上
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// 右上
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 2);	// 左下
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 2);	// 右下
+	m_vertexCache.Add(v);
 }
 
 //-----------------------------------------------------------------------------

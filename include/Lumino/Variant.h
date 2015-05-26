@@ -16,6 +16,8 @@ enum VariantType
 	VariantType_String,
 	VariantType_List,
 	VariantType_Object,
+
+	VariantType_SizeF,
 };
 
 /**
@@ -41,8 +43,10 @@ class Variant
 {
 public:
 	Variant();
+	Variant(const Variant& value);
+	Variant(float value);
+	Variant(const SizeF& value);
 	~Variant();
-	Variant(const Variant& obj);
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
 
 	Variant(CoreObject* obj);
@@ -52,8 +56,11 @@ public:
 	bool GetBool() const;
 
 	void Set(CoreObject* obj);
-
 	CoreObject* GetObject();
+
+	void SetSizeF(const SizeF& value);
+	const SizeF& GetSizeF() const;
+
 
 private:
 	void Copy(const Variant& obj);
@@ -70,6 +77,7 @@ private:
 		/*String*			m_string;*/
 		VariantList*	m_valueList;
 		CoreObject*		m_object;
+		float			m_sizeF[2];
 	};
 	String			m_string;
 };

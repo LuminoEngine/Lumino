@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <Lumino/Base/Array.h>
 #include <Lumino/Graphics/Painter.h>
 #include "Common.h"
 
@@ -16,18 +17,54 @@ class UIElement
 	: public CoreObject
 {
 public:
+	static const String	SizeProperty;
+
+public:
 	UIElement(GUIManager* manager);
 	virtual ~UIElement();
+
+	//
+	//void SetWidth(float width) { m_size.Width = width; }
+
+	///// 要素の幅を取得します。
+	//float GetWidth() { return m_size.Width; }
+
+	///// 要素の高さを設定します。規定値は NAN で、自動的にサイズを計算します。
+	//void SetHeight(float width) { m_size.Width = width; }
+
+	//
+
+	/// 要素のサイズを設定します。規定値は NAN で、自動的にサイズを計算します。
+	void SetSize(const SizeF& size) { SetValue(SizeProperty, size); }
+	
+	/// 要素のサイズを取得します。
+	const SizeF& GetSize() const { return GetValue(SizeProperty).GetSizeF(); }
+
+	/// この UIElement にプロパティを登録します。
+	void RegisterProperty(const String& propertyName, const Variant& defaultValue);
+
+	/// プロパティの値を設定します。
+	void SetValue(const String& propertyName, const Variant& value);
+
+	/// プロパティの値を取得します。
+	Variant GetValue(const String& propertyName) const;
 
 	virtual void Render();
 
 protected:
+	virtual void MeasureLayout(const SizeF& availableSize);
+	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual void OnRender() {}
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
 protected:
-	GUIManager*	m_manager;
+	typedef SortedArray<String, Variant>	PropertyDataStore;
+
+	GUIManager*			m_manager;
+	PropertyDataStore	m_propertyDataStore;
+	SizeF				m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
+	RectF				m_finalRect;			///< 描画に使用する最終境界矩形
 };
 
 /**
@@ -63,6 +100,8 @@ protected:
 
 private:
 	RefPtr<Graphics::TextureBrush>	m_brush;
+	RefPtr<Graphics::TextureBrush>	m_bgBrush;
+	int								m_bgMargin;	///< 背景イメージを描画する時に縮小するピクセル数
 };
 
 /**
