@@ -5,10 +5,11 @@ int main()
 	RefPtr<Application> app(Application::Create());
 
 	RefPtr<GUI::Workbench> workbench1(app->GetGUIManager()->CreateWorkbench());
+	workbench1->SetSize(SizeF(640, 480));
 
 	//app->GetGUIManager()->CreateUIElement("Button");
 	RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));
-	button1->SetSize(SizeF(200, 300));
+	//button1->SetSize(SizeF(200, 300));
 	workbench1->SetContent(button1.GetObjectPtr());
 
 	Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
@@ -23,6 +24,7 @@ int main()
 		state.Blend = Graphics::BlendMode_Alpha;
 		r->SetRenderState(state);
 
+		workbench1->UpdateLayout();
 		workbench1->Render();
 		swap1->Present();
 

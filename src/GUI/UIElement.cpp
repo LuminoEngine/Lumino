@@ -90,6 +90,20 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void UIElement::UpdateLayout()
+{
+	SizeF size = GetSize();
+
+	// サイズが定まっていない場合はレイアウトを決定できない
+	if (Math::IsNaNOrInf(size.Width) || Math::IsNaNOrInf(size.Height)) { return; }
+
+	MeasureLayout(size);
+	ArrangeLayout(RectF(0, 0, size.Width, size.Height));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void UIElement::Render()
 {
 	OnRender();
@@ -166,10 +180,15 @@ void ButtonChrome::OnRender()
 {
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
+
+	RectF rect = m_finalRect;
+
+
 	painter.SetBrush(m_bgBrush);
-	painter.DrawRectangle(RectF(10, 20, 400, 80));
+	painter.DrawRectangle(rect);
+
 	painter.SetBrush(m_brush);
-	painter.DrawFrameRectangle(RectF(10, 20, 400, 80), 8);
+	painter.DrawFrameRectangle(rect, 8);
 }
 
 
@@ -237,6 +256,24 @@ void ContentControl::Render()
 	if (m_childElement != NULL) {
 		m_childElement->Render();
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentControl::MeasureLayout(const SizeF& availableSize)
+{
+	m_childElement->MeasureLayout(availableSize);	// 特に枠とかないのでそのままのサイズを渡せる
+	Control::MeasureLayout(availableSize);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentControl::ArrangeLayout(const RectF& finalRect)
+{
+	m_childElement->ArrangeLayout(finalRect);	// 特に枠とかないのでそのままのサイズを渡せる
+	Control::ArrangeLayout(finalRect);
 }
 
 //-----------------------------------------------------------------------------

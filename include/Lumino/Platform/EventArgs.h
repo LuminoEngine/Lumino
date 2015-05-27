@@ -37,6 +37,7 @@ enum EventType
 };
 
 /// マウスボタン
+// TODO: 廃止
 enum MouseButton
 {
 	MouseButton_Left = 0,		///< 左ボタン
@@ -47,6 +48,7 @@ enum MouseButton
 };
 
 /// キーコード (NumPad はサポートしていない)
+// TODO: 廃止
 enum Key
 {
 	Key_Unknown = 0,

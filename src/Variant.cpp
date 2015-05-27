@@ -4,8 +4,6 @@
 
 namespace Lumino
 {
-namespace GUI
-{
 	
 //=============================================================================
 // CoreObject
@@ -139,27 +137,31 @@ void Variant::Copy(const Variant& obj)
 	m_type = obj.m_type;
 	switch (m_type)
 	{
-	case Lumino::GUI::VariantType_Unknown:
+	case Lumino::VariantType_Unknown:
 		break;
-	case Lumino::GUI::VariantType_Bool:
+	case Lumino::VariantType_Bool:
 		m_bool = obj.m_bool;
 		break;
-	case Lumino::GUI::VariantType_Int:
+	case Lumino::VariantType_Int:
 		m_int = obj.m_int;
 		break;
-	case Lumino::GUI::VariantType_Float:
+	case Lumino::VariantType_Float:
 		m_float = obj.m_float;
 		break;
-	case Lumino::GUI::VariantType_String:
+	case Lumino::VariantType_String:
 		m_string = obj.m_string;
 		break;
-	case Lumino::GUI::VariantType_List:
+	case Lumino::VariantType_List:
 		LN_REFOBJ_SET(m_valueList, obj.m_valueList);
 		break;
-	case Lumino::GUI::VariantType_Object:
+	case Lumino::VariantType_Object:
 		LN_REFOBJ_SET(m_object, obj.m_object);
 		break;
+	case Lumino::VariantType_SizeF:
+		memcpy(m_sizeF, obj.m_sizeF, sizeof(m_sizeF));
+		break;
 	default:
+		LN_VERIFY(0);
 		break;
 	}
 }
@@ -178,5 +180,4 @@ void Variant::Release()
 	m_uint = 0;	// union ëSÇƒÇèâä˙âª
 }
 
-} // namespace GUI
 } // namespace Lumino

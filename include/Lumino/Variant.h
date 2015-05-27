@@ -3,8 +3,6 @@
 
 namespace Lumino
 {
-namespace GUI
-{
 class VariantList;
 
 enum VariantType
@@ -225,7 +223,7 @@ public:
 		bool operator>=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 
 	private:
-		friend class RefObjectListBase;
+		friend class GenericVariantList;
 		const_iterator(const internal_list::const_iterator& itr) : m_internalItr(itr) {}
 
 		internal_list::const_iterator m_internalItr;
@@ -266,7 +264,7 @@ public:
 		bool operator>=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
 
 	private:
-		friend class RefObjectListBase;
+		friend class GenericVariantList;
 		iterator(const internal_list::iterator& itr) : m_internalItr(itr) {}
 
 		internal_list::iterator m_internalItr;
@@ -285,6 +283,4 @@ public:
 	const_iterator	end() const		{ return const_iterator(m_list.end()); }
 };
 
-
-} // namespace GUI
 } // namespace Lumino

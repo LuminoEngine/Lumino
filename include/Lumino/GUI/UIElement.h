@@ -35,10 +35,10 @@ public:
 	//
 
 	/// 要素のサイズを設定します。規定値は NAN で、自動的にサイズを計算します。
-	void SetSize(const SizeF& size) { SetValue(SizeProperty, size); }
+	void SetSize(const SizeF& size) { SetValue(SizeProperty, size); }	// TODO: レイアウト更新中は頻繁にアクセスするのでできれば メンバ変数にしたい・・・
 	
 	/// 要素のサイズを取得します。
-	const SizeF& GetSize() const { return GetValue(SizeProperty).GetSizeF(); }
+	const SizeF& GetSize() const { return GetValue(SizeProperty).GetSizeF(); }	// TODO: 危ない。参照で返すとスタックの Variant で消える
 
 	/// この UIElement にプロパティを登録します。
 	void RegisterProperty(const String& propertyName, const Variant& defaultValue);
@@ -49,9 +49,11 @@ public:
 	/// プロパティの値を取得します。
 	Variant GetValue(const String& propertyName) const;
 
+	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
+	void UpdateLayout();
 	virtual void Render();
 
-protected:
+public:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual void OnRender() {}
@@ -132,6 +134,8 @@ public:
 	virtual void Render();
 
 protected:
+	virtual void MeasureLayout(const SizeF& availableSize);
+	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual void OnRender();
 
 private:
