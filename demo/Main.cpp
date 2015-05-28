@@ -4,7 +4,7 @@ int main()
 {
 	RefPtr<Application> app(Application::Create());
 
-	RefPtr<GUI::Workbench> workbench1(app->GetGUIManager()->CreateWorkbench());
+	RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
 	workbench1->SetSize(SizeF(640, 480));
 
 	//app->GetGUIManager()->CreateUIElement("Button");

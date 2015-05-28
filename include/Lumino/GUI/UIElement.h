@@ -4,6 +4,7 @@
 #include <Lumino/Base/Array.h>
 #include <Lumino/Graphics/Painter.h>
 #include "Common.h"
+#include "EventArgs.h"
 
 namespace Lumino
 {
@@ -56,9 +57,11 @@ public:
 public:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
+
 	virtual void OnRender() {}
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+	virtual bool OnEvent(EventType type, EventArgs* args) { return false; }
 
 protected:
 	typedef SortedArray<String, Variant>	PropertyDataStore;
@@ -137,6 +140,7 @@ protected:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual void OnRender();
+	virtual bool OnEvent(EventType type, EventArgs* args);
 
 private:
 	Variant		m_content;		
@@ -146,17 +150,19 @@ private:
 /**
 	@brief		ルート要素。
 */
-class Workbench
+class RootPane
 	: public ContentControl
 {
 public:
-	Workbench(GUIManager* manager);
-	virtual ~Workbench();
+	RootPane(GUIManager* manager);
+	virtual ~RootPane();
 
 	//virtual void Render();
 
 protected:
 	//virtual void OnRender() {}
+
+	friend class GUIManager;
 
 private:
 };

@@ -8,7 +8,7 @@ namespace GUI
 {
 class GUIManager;
 class UIElement;
-class Workbench;
+class RootPane;
 
 } // namespace GUI
 } // namespace Lumino

@@ -1,4 +1,14 @@
 /*
+	[2015/5/28] RoutedEvent の必要性
+		
+		すぐ思いつく一番効果が高いものは ItemsControl の ItemClicked だと思う。
+		例えばクリックしたときのハイライトをカスタマイズしたくてテンプレートを組んだとする。
+		単純な ListBox であれば ListBoxItem がクリックされた時、直接の親コントロールである ListBox に
+		イベントを通知すればよい。しかし、テンプレートを組むと複雑な VisualTree ができることになり、
+		当然その VisualTree の中でもイベントを受け取りたい。さらに、それは Handled=false で
+		親コントロールへ通知されていくべき。
+
+
 	[2015/5/28] 普通のイベントと RoutedEvent
 
 		<Window x:Class="WpfApplication1.MainWindow"
@@ -466,9 +476,72 @@ void GUIManager::Initialize(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Workbench* GUIManager::CreateWorkbench()
+RootPane* GUIManager::CreateRootPane()
 {
-	return LN_NEW Workbench(this);
+	m_rootPane = LN_NEW RootPane(this);
+	return m_rootPane;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectMouseMove(float clientX, float clientY)
+{
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+	return m_rootPane->OnEvent(EventType_MouseMove, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
+{
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+	return m_rootPane->OnEvent(EventType_MouseButtonDown, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
+{
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+	return m_rootPane->OnEvent(EventType_MouseButtonUp, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
+{
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, delta, clientX, clientY));
+	return m_rootPane->OnEvent(EventType_MouseWheel, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
+{
+	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
+	return m_rootPane->OnEvent(EventType_KeyDown, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
+{
+	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
+	return m_rootPane->OnEvent(EventType_KeyUp, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectElapsedTime(float elapsedTime)
+{
+	LN_THROW(0, NotImplementedException);
 }
 
 } // namespace GUI

@@ -8,6 +8,20 @@ namespace Lumino
 namespace GUI
 {
 
+/// 内部イベントの種類
+enum EventType
+{
+	EventType_Unknown = 0,
+	EventType_MouseMove,
+	EventType_MouseButtonDown,
+	EventType_MouseButtonUp,
+	EventType_MouseWheel,
+	EventType_KeyDown,
+	EventType_KeyUp,
+	//EventType_Char,
+	EventType_ElapsedTime,
+};
+
 /**
 	@brief		GUI イベントの引数の基本クラスです。
 */
