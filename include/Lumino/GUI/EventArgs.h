@@ -23,77 +23,83 @@ protected:
 };
 
 /**
-	@brief		
-*/
-class PooledEventArgs
-	: public EventArgs
-{
-public:
-	PooledEventArgs();
-	virtual ~PooledEventArgs();
-
-protected:
-	static const int DataSize = 64;
-	byte_t	m_data[DataSize];
-};
-
-/**
 	@brief	マウスイベントの引数を表します。
 */
 class MouseEventArgs
-	: public PooledEventArgs
+	: public EventArgs
 {
 public:
 	MouseEventArgs();
 	virtual ~MouseEventArgs();
 
-protected:
-	struct Data
-	{
-		MouseButton	Button;		///< ボタン番号
-		short		Delta;		///< マウスホイールの回転回数 (正または負の回数)
-		short		X;			///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
-		short		Y;			///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
-		//short		MoveX;	    ///< X 座標の移動量
-		//short		MoveY;      ///< Y 座標の移動量
-	};
+public:
+	MouseButton	Button;		///< ボタン番号
+	short		Wheel;		///< マウスホイールの回転回数 (正または負の回数)
+	short		X;			///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
+	short		Y;			///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
+	//short		MoveX;	    ///< X 座標の移動量
+	//short		MoveY;      ///< Y 座標の移動量
 };
 
 /**
 	@brief	キーボードイベントの引数を表します。	
 */
 class KeyEventArgs
-	: public PooledEventArgs
+	: public EventArgs
 {
 public:
 	KeyEventArgs();
 	virtual ~KeyEventArgs();
 
-protected:
-	struct Data
-	{
-		Key			KeyCode;	///< キーコード
-		bool		IsAlt;		///< Alt キーが押されている場合 true
-		bool		IsShift;	///< Shift キーが押されている場合 true
-		bool		IsControl;	///< Ctrl キーが押されている場合 true
-	};
+public:
+	Key			KeyCode;	///< キーコード
+	bool		IsAlt;		///< Alt キーが押されている場合 true
+	bool		IsShift;	///< Shift キーが押されている場合 true
+	bool		IsControl;	///< Ctrl キーが押されている場合 true
 };
 
+/**
+	@brief	
+	@note	このクラスはイベント引数の頻繁な new を避けるために使用する。
+			例えば MouseMove イベントは最悪毎フレームのように発生する可能性があり、new は大きなオーバーヘッドになる。
+			それなら union を利用したイベント引数構造体を使うのもひとつの手かもしれない。
+			
+			しかし、本ライブラリは C# や Ruby 等、他の言語へのバインディングを想定している。
+			当然 GUI モジュールも公開され、拡張されることが前提。
+			C# 側で作成したユーザーコントロールが MouseEventArgs を使用することは想定しなければならない。
+
+			union や struct にした場合、これはこれで言語別に余計なオーバーヘッドや合わせこみの実装が増えることになる。
+			例えば C# では値渡しのままでよいのか、ref をつけるのか。Ruby で struct は使えないので結局 new する羽目になるがいいのか。
+
+			Pool しておけば、若干直感的ではなくなるが、バインダ側の new も抑えることができる。
+
+			後々イベントの種類が増えてきたときは拡張性のため、イベント名をキーにして Create するような仕組みが必要になるかもしれない。
+*/
 class EventArgsPool
 {
 public:
+	EventArgsPool();
+	~EventArgsPool();
+
+	MouseEventArgs* CreateMouseEventArgs(MouseButton button, short wheel, short x, short y);
+	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);
 
 private:
+	template<class T>
+	T FindFreeObject(const ArrayList<T>& pool)
+	{
+		LN_FOREACH(T a, pool)
+		{
+			if (a->GetRefCount() == 1) {
+				return a;
+			}
+		}
+		return NULL;
+	}
+
+	ArrayList<MouseEventArgs*>	m_mouseEventArgsPool;
+	ArrayList<KeyEventArgs*>	m_keyEventArgsPool;
 };
-
-	//bool injectMouseMove(float delta_x, float delta_y);
-	//bool injectMouseButtonDown(MouseButton button);
-	//bool injectMouseButtonUp(MouseButton button);
-	//bool injectKeyDown(Key::Scan scan_code);
-	//bool injectKeyUp(Key::Scan scan_code);
-	//bool injectChar(String::value_type code_point);
-	//bool injectMouseWheelChange(float delta);
-
 
 } // namespace GUI
 } // namespace Lumino

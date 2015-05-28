@@ -1,4 +1,47 @@
 /*
+	[2015/5/28] 普通のイベントと RoutedEvent
+
+		<Window x:Class="WpfApplication1.MainWindow"
+				xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				Title="MainWindow" Height="350" Width="525">
+			<StackPanel>
+				<Button x:Name="_button1" Height="32"/>
+				<Button x:Name="_button2" Height="32"/>
+			</StackPanel>
+		</Window>
+
+		public partial class MainWindow : Window
+		{
+			public MainWindow()
+			{
+				InitializeComponent();
+				this._button1.Click += new RoutedEventHandler(Button1_Click_CLR);
+				this.AddHandler(Button.ClickEvent, new RoutedEventHandler(Button1_Click_Routed)); 
+			}
+
+			private void Button1_Click_CLR(object sender, RoutedEventArgs e)
+			{
+				Console.WriteLine("Button1_Click_CLR");
+				//e.Handled = true;
+			} 
+
+			private void Button1_Click_Routed(object sender, RoutedEventArgs e)
+			{
+				Console.WriteLine("Button1_Click_Routed");
+			} 
+		}
+
+
+		Button1_Click_CLR は、_button1 をクリックした瞬間に呼ばれる。
+		その後、RoutedEvent によりさかのぼっていって Button1_Click_Routed が呼ばれる。
+		もし Button1_Click_CLR で e.Handled = true; とか書くと Button1_Click_Routed は呼ばれなくなる。
+
+		また、_button2 をクリックすると Button1_Click_Routed だけ呼ばれる。
+
+
+
+
 	[2015/5/26] Property の必要性
 		無い場合、マークアップパーサから SetValue("Width", 10) したとき等、
 		プロパティ名に対する値の格納先メンバ変数を決める if なり switch なりを、
