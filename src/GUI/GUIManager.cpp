@@ -1,4 +1,65 @@
 /*
+	[2015/5/29] アニメーション
+
+		Animation モジュールの内容は基本的に GUI 側でラップする (AnimationTimeline のサブクラス)
+		これは XML からいろいろ定義できるようにするため。
+
+		WPF のアニメーションはこんな感じ。
+		   System.Windows.Media.Animation.AnimationTimeline
+              System.Windows.Media.Animation.BooleanAnimationBase
+              System.Windows.Media.Animation.ByteAnimationBase
+              System.Windows.Media.Animation.CharAnimationBase
+              System.Windows.Media.Animation.ColorAnimationBase
+              System.Windows.Media.Animation.DecimalAnimationBase
+              System.Windows.Media.Animation.DoubleAnimationBase
+              System.Windows.Media.Animation.Int16AnimationBase
+              System.Windows.Media.Animation.Int32AnimationBase
+              System.Windows.Media.Animation.Int64AnimationBase
+              System.Windows.Media.Animation.MatrixAnimationBase
+              System.Windows.Media.Animation.ObjectAnimationBase
+              System.Windows.Media.Animation.Point3DAnimationBase
+              System.Windows.Media.Animation.PointAnimationBase
+              System.Windows.Media.Animation.QuaternionAnimationBase
+              System.Windows.Media.Animation.RectAnimationBase
+              System.Windows.Media.Animation.Rotation3DAnimationBase
+              System.Windows.Media.Animation.SingleAnimationBase
+              System.Windows.Media.Animation.SizeAnimationBase
+              System.Windows.Media.Animation.StringAnimationBase
+              System.Windows.Media.Animation.ThicknessAnimationBase
+              System.Windows.Media.Animation.Vector3DAnimationBase
+              System.Windows.Media.Animation.VectorAnimationBase
+
+		いまのところキーフレームアニメーションは考えなくて良いと思う。
+		2点間で、傾きだけ指定できれば。
+
+		AnimationTimeline は共有リソース。
+		Storyboard も共有リソース。
+
+		・Storyboard::Begin() で AnimationClock を作る。AnimationClock にはターゲット要素と AnimationTimeline をセット。
+		・AnimationClock は GUIManager に登録。
+		・GUIManager への InjectTime() で全ての AnimationClock を遷移させる。
+		・AnimationClock は現在の値をターゲットにセットする。
+
+		ちなみに WPF は AnimationClock がターゲットを持たないみたい。
+		AnimationClock も共有できてメモリ使用量減るかもしれないけど、
+		そこまで作りこむと複雑になりすぎる気がするのでとりあえず上記方法で進める。
+
+
+
+	[2015/5/29] ネイティブなフローティングウィンドウの必要性
+	
+		・ウィンドウメニュードロップダウン
+		・コンテキストメニュー
+		・コンボボックスのドロップダウン
+		・バルーン
+		・IME
+		・ドッキングウィンドウ
+		
+		例えばコンボボックスのドロップダウンは、Visual 的な親子関係は持っていない。
+		
+		ただ、複数ウィンドウ作ると「ホントのフルスクリーン」ができなくなる。
+		
+
 	[2015/5/28] RoutedEvent の必要性
 		
 		すぐ思いつく一番効果が高いものは ItemsControl の ItemClicked だと思う。
@@ -68,7 +129,27 @@
 
 		・
 
-
+	■UIElementTemplate(ControlTemplate) と、UIElementFactory(FrameworkElementFactory) の違い
+		両方とも SetValue や Style、Trigger を設定することができ
+		なんとなく似ているが、使用目的はぜんぜん違う。
+		・UIElementFactory
+			単純に1つの UIElement を作る。難しい制約とか無し。
+			子要素を追加することで、ツリーそのものを表せる。
+			インスタンス化したものはそのまま VisualツリーにもLogicalツリーにも使える。
+		・UIElementTemplate
+			1つの論理的なコントロールの作成に必要な情報の集合。例えば Button は Chrome や TextBlock から成り立っているが、
+			使うときはそんなの気にしないで、ひとつの Button として Visual または Logical ツリーに繋ぐことができる。
+			UIElementTemplate を階層構造にすることはできない。
+			【対応する Presenter が必ず必要になる。】
+	
+	■UIElementFactoryからのインスタンス化
+		UIElementFactory::createUIElement() で自身を作成。
+		子要素 Factor があれば、それぞれの createUIElement() を呼び、
+		作成された UIElement を階層構造に結合して返す。
+		UIElement を作成するときは、名前によってManager から UIElementTemplate を取得し、
+		UIElementTemplate.createUIElement() を呼び出す。
+		1つの create 処理で UIElementTemplate と UIElementFactory が互い違いに呼び出されてかなり複雑になるので注意。
+		【Manager にコントロールとして直接登録されるのは UIElementTemplate である】
 
 ・virtual 関数
 	・BinderLib の関数をコールバックで呼び出す。(この呼び出される BinderLib の関数を Ploxy 関数と呼ぶ)

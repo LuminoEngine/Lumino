@@ -138,8 +138,9 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Common.h
 	include/Lumino/GUI/EventArgs.h
 	include/Lumino/GUI/GUIManager.h
-	src/GUI/UIElement.cpp
-	src/GUI/GUIManager.cpp)
+	src/GUI/EventArgs.cpp
+	src/GUI/GUIManager.cpp
+	src/GUI/UIElement.cpp)
 	
 set(LN_SOURCES_Game
 	include/Lumino/Game/FpsController.h

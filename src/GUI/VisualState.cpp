@@ -1,16 +1,14 @@
 
 #pragma once
-#include "../Variant.h"
+#include "../Internal.h"
+#include <Lumino/GUI/VisualState.h>
 
 namespace Lumino
 {
 namespace GUI
 {
-class GUIManager;
-class UIElement;
-class RootPane;
 
-class Storyboard;
 
 } // namespace GUI
 } // namespace Lumino
+

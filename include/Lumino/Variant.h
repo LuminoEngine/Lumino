@@ -42,7 +42,8 @@ class Variant
 public:
 	Variant();
 	Variant(const Variant& value);
-	Variant(float value);
+	explicit Variant(bool value);
+	explicit Variant(float value);
 	Variant(const SizeF& value);
 	~Variant();
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }

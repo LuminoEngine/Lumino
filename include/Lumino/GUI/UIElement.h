@@ -19,6 +19,7 @@ class UIElement
 {
 public:
 	static const String	SizeProperty;
+	static const String	IsHitTestProperty;
 
 public:
 	UIElement(GUIManager* manager);
@@ -43,6 +44,12 @@ public:
 
 	/// この UIElement にプロパティを登録します。
 	void RegisterProperty(const String& propertyName, const Variant& defaultValue);
+
+	/// ヒットテストの有無を設定します。
+	void SetHitTest(bool enabled) { SetValue(IsHitTestProperty, Variant(enabled)); }
+
+	/// ヒットテストの有無を取得します。
+	bool IsHitTest() const { return GetValue(IsHitTestProperty).GetBool(); }
 
 	/// プロパティの値を設定します。
 	void SetValue(const String& propertyName, const Variant& value);
@@ -69,7 +76,7 @@ protected:
 	GUIManager*			m_manager;
 	PropertyDataStore	m_propertyDataStore;
 	SizeF				m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
-	RectF				m_finalRect;			///< 描画に使用する最終境界矩形
+	RectF				m_finalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootPane のローカル座標系)
 };
 
 /**
@@ -183,6 +190,8 @@ public:
 	//virtual void Render();
 
 protected:
+	virtual void OnClick();
+	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void OnRender();
 
 private:
