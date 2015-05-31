@@ -1,4 +1,46 @@
-	/*
+/*
+	[2015/5/31]
+		そもそも VisualTree は何で必要なの？
+		→ 一番最初の GUI 設計で失敗した、「ウィンドウのシステムボタン」がこれを使うとすごく自然に作れる。
+
+
+		Template とか、リソースシステムの目的は？
+		無いとダメなの？何ができなくなるの？
+		→ ぶっちゃけ無くても何とかなる。
+			実際に必要になるのはテーマ変更したいってなった時くらいかも。
+			
+			あと、デフォルトの VisualTree のレイアウトを変更したいとき。
+			コモンコントロールを変更したいっていうのはほとんどないと思う。UIデザインの学習コスト的に。
+			変更するとしたら、ゲームには共通であるけどタイトルごとにデザインの違う物。例えば装備スロットとかになるかなぁ…。
+			もしそれをこの GUI モジュールのコモンコントロールとするなら意味を持ってくる。
+			でも、これも最悪 VisualTree を直接いじればいいだけか・・・。
+
+
+
+
+
+
+
+	[2015/5/31]
+		対応するビハインドコードのある、いわゆる普通にUIパーツの配置に使う XML は、「レイアウト」という言い方をしてみる。
+		x:Class 属性を持っていたりする。
+
+		コントロールが生成される流れは、
+
+		
+		・new Window()
+		・レイアウトから LogicalTree のインスタンスを作る。
+			・子要素に <Button> とかあれば GUIManager::CreateUIElement("Button")
+		・UpdateTemplate() を再帰的に実行していく。(VisualTree を作る)
+			関数の引数には ResourceDictionary を渡す。
+
+
+
+
+	[2015/5/31] VisualTree の UIElement であるかの区別
+
+		・ControlTemplate から作ったものは VisualTree。
+
 
 	[2015/5/29] テーマの動的変更
 		
@@ -545,6 +587,7 @@
 
 */
 #include "../Internal.h"
+#include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/GUIManager.h>
 
@@ -561,6 +604,7 @@ namespace GUI
 //
 //-----------------------------------------------------------------------------
 GUIManager::GUIManager()
+	: m_mouseHoverElement(NULL)
 {
 }
 
@@ -569,6 +613,7 @@ GUIManager::GUIManager()
 //-----------------------------------------------------------------------------
 GUIManager::~GUIManager()
 {
+	LN_SAFE_RELEASE(m_defaultTheme);
 }
 
 //-----------------------------------------------------------------------------
@@ -579,6 +624,39 @@ void GUIManager::Initialize(const ConfigData& configData)
 	LN_VERIFY(configData.GraphicsManager != NULL) { return; }
 
 	m_graphicsManager = configData.GraphicsManager;
+
+
+	RegisterFactory(ContentPresenter::TypeName, ContentPresenter::CreateInstance);
+	RegisterFactory(ButtonChrome::TypeName, ButtonChrome::CreateInstance);
+
+	m_defaultTheme = LN_NEW ResourceDictionary();
+
+	// Brush
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		obj->Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(0, 0, 32, 32));
+		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
+	}
+
+	// Button
+	{
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		t->SetTargetType(_T("Button"));
+
+		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		ef1->SetTypeName(_T("ButtonChrome"));
+		t->SetVisualTreeRoot(ef1);
+
+		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+		ef2->SetTypeName(_T("ContentPresenter"));
+		ef1->AddChild(ef2);
+
+		m_defaultTheme->AddControlTemplate(t);
+	}
+
+	m_rootCombinedResource = LN_NEW CombinedLocalResource();
+	m_rootCombinedResource->Combine(NULL, m_defaultTheme);
 }
 
 //-----------------------------------------------------------------------------
@@ -587,7 +665,25 @@ void GUIManager::Initialize(const ConfigData& configData)
 RootPane* GUIManager::CreateRootPane()
 {
 	m_rootPane = LN_NEW RootPane(this);
+	m_rootPane->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
 	return m_rootPane;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::RegisterFactory(const String& typeFullName, ObjectFactory factory)
+{
+	m_objectFactoryMap[typeFullName] = factory;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+CoreObject* GUIManager::CreateObject(const String& typeFullName)
+{
+	ObjectFactory f = m_objectFactoryMap[typeFullName];
+	return f(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -596,7 +692,9 @@ RootPane* GUIManager::CreateRootPane()
 bool GUIManager::InjectMouseMove(float clientX, float clientY)
 {
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
-	return m_rootPane->OnEvent(EventType_MouseMove, args);
+	bool r = m_rootPane->OnEvent(EventType_MouseMove, args);
+	UpdateMouseHover(PointF(clientX, clientY));
+	return r;
 }
 
 //-----------------------------------------------------------------------------
@@ -650,6 +748,47 @@ bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isContr
 bool GUIManager::InjectElapsedTime(float elapsedTime)
 {
 	LN_THROW(0, NotImplementedException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::UpdateMouseHover(const PointF& mousePos)
+{
+	UIElement* old = m_mouseHoverElement;
+
+	// TODO:IME側のイベントを処理する
+	//if ( m_pIme != NULL )
+	//{
+	//	if ( m_pIme->OnMouseHoverCheck( m_MousePosition, &mMouseHoverControl ) )
+	//	{
+	//		goto EXIT;
+	//	}
+	//}
+
+	// 通常のウィンドウのイベントを処理する
+	if (m_rootPane != NULL)
+	{
+		m_mouseHoverElement = m_rootPane->CheckMouseHoverElement(mousePos);
+		if (m_mouseHoverElement != NULL) {
+			goto EXIT;
+		}
+	}
+
+	m_mouseHoverElement = NULL;
+
+EXIT:
+	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
+	if (m_mouseHoverElement != old)
+	{
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, mousePos.X, mousePos.Y));
+		if (old != NULL) {
+			old->OnEvent(EventType_MouseLeave, args);
+		}
+		if (m_mouseHoverElement != NULL) {
+			old->OnEvent(EventType_MouseEnter, args);
+		}
+	}
 }
 
 } // namespace GUI

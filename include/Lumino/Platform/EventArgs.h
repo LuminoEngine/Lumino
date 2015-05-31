@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Common.h"
 
 namespace Lumino
 {
@@ -36,6 +37,7 @@ enum EventType
 	//EventType_ANDROID_RESUMED = 102,	///< Android APP_CMD_PAUSE
 };
 
+#if 0
 /// マウスボタン
 // TODO: 廃止
 enum MouseButton
@@ -142,6 +144,7 @@ enum Key
 
 	key_Max = 256,
 };
+#endif
 
 
 /**
@@ -159,27 +162,30 @@ struct EventArgs
 	EventType		Type;			///< イベントの種類
 	Window*			Sender;			///< イベントの送信元ウィンドウ
 
-	/// マウスイベントの引数
-	union 
-	{
-		MouseButton	Button;		///< ボタン番号
-		short		Delta;		///< マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位)
-		short		X;			///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
-		short		Y;			///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
-		short		MoveX;	    ///< X 座標の移動量
-		short		MoveY;      ///< Y 座標の移動量
-
-	} Mouse;
-
-	/// キーボードイベントの引数
 	union
 	{
-		Key			KeyCode;	///< キーコード
-		bool		IsAlt;		///< Alt キーが押されている場合 true
-		bool		IsShift;	///< Shift キーが押されている場合 true
-		bool		IsControl;	///< Ctrl キーが押されている場合 true
+		/// マウスイベントの引数
+		struct
+		{
+			MouseButton	Button;		///< ボタン番号
+			short		Delta;		///< マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位)
+			short		X;			///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
+			short		Y;			///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
+			short		MoveX;	    ///< X 座標の移動量
+			short		MoveY;      ///< Y 座標の移動量
 
-	} Key;
+		} Mouse;
+
+		/// キーボードイベントの引数
+		struct
+		{
+			Key			KeyCode;	///< キーコード
+			bool		IsAlt;		///< Alt キーが押されている場合 true
+			bool		IsShift;	///< Shift キーが押されている場合 true
+			bool		IsControl;	///< Ctrl キーが押されている場合 true
+
+		} Key;
+	};
 
 public:
 

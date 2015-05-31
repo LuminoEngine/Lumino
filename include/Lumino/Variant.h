@@ -3,6 +3,7 @@
 
 namespace Lumino
 {
+class Variant;
 class VariantList;
 
 enum VariantType
@@ -29,9 +30,21 @@ public:
 	virtual ~CoreObject();
 
 public:
+
+	/// この CoreObject にプロパティを登録します。
+	void RegisterProperty(const String& propertyName, const Variant& defaultValue);
+
+	/// プロパティの値を設定します。
+	void SetValue(const String& propertyName, const Variant& value);
+
+	/// プロパティの値を取得します。
+	Variant GetValue(const String& propertyName) const;
+
 	String ToString();
 
 private:
+	typedef SortedArray<String, Variant>	PropertyDataStore;
+	PropertyDataStore	m_propertyDataStore;
 };
 
 /**
@@ -55,7 +68,7 @@ public:
 	bool GetBool() const;
 
 	void Set(CoreObject* obj);
-	CoreObject* GetObject();
+	CoreObject* GetObject() const;
 
 	void SetSizeF(const SizeF& value);
 	const SizeF& GetSizeF() const;

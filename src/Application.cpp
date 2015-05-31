@@ -7,6 +7,17 @@
 namespace Lumino
 {
 
+////=============================================================================
+//// NativeWindowEventListener
+////=============================================================================
+//class Application::NativeWindowEventListener
+//{
+//public:
+//	NativeWindowEventListener(Application)
+//	{
+//	}
+//};
+
 //=============================================================================
 // Application
 //=============================================================================
@@ -66,6 +77,9 @@ void Application::InitialzePlatformManager()
 
 		m_platformManager.Attach(LN_NEW Platform::PlatformManager());
 		m_platformManager->Initialize(data);
+
+		// イベントリスナー登録
+		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
 	}
 }
 
@@ -125,6 +139,54 @@ bool Application::UpdateFrame()
 	m_fpsController.Process();
 
 	return !m_endRequested;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool Application::OnEvent(const Platform::EventArgs& e)
+{
+	switch (e.Type)
+	{
+	case Platform::EventType_Quit:	///< アプリ終了要求
+	case Platform::EventType_Close:			///< ウィンドウが閉じられようとしている
+		break;
+
+	case Platform::EventType_MouseDown:		// ウスボタンが押された
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
+		break;
+	case Platform::EventType_MouseUp:			// マウスボタンが離された
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
+		break;
+	case Platform::EventType_MouseMove:		// マウスが移動した
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
+		break;
+	case Platform::EventType_MouseWheel:		// マウスホイールが操作された
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectMouseWheel(e.Mouse.Delta, e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
+		break;
+	case Platform::EventType_KeyDown:	// キー押下
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
+		}
+		break;
+	case Platform::EventType_KeyUp:		//  キー押し上げ
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
+		}
+		break;
+
+	default:
+		break;
+	}
+	return false;
 }
 
 } // namespace Lumino

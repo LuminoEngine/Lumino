@@ -22,7 +22,7 @@ enum BrushWrapMode
 };
 
 class Brush
-	: public RefObject
+	: public CoreObject
 {
 public:
 	Brush();

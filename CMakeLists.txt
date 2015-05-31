@@ -133,14 +133,16 @@ set(LN_SOURCES_Scene
 	src/Scene/MME/MMETypes.h)
 	
 set(LN_SOURCES_GUI
-	include/Lumino/GUI/Property.h
-	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/Common.h
 	include/Lumino/GUI/EventArgs.h
 	include/Lumino/GUI/GUIManager.h
+	include/Lumino/GUI/Property.h
+	include/Lumino/GUI/UIElement.h
+	include/Lumino/GUI/VisualState.h
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIManager.cpp
-	src/GUI/UIElement.cpp)
+	src/GUI/UIElement.cpp
+	src/GUI/VisualState.cpp)
 	
 set(LN_SOURCES_Game
 	include/Lumino/Game/FpsController.h

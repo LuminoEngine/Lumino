@@ -239,6 +239,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 			/////////////////////////////////////////////// クライアント領域外でマウスが移動した
 			case WM_NCMOUSEMOVE:
 			{
+#if 0	// TODO: 今はいらない。やるならちゃんとクライアント領域外であるか区別したい。でないと GUI モジュールに影響が出る。
 				// 念のためホントにクライアント領域外かチェック
 				if (wparam != HTCLIENT)
 				{
@@ -259,6 +260,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					*handled = true;
 					return 0;
 				}
+#endif
 			}
 			///////////////////////////////////////////// マウスホイールが操作された
 			case WM_MOUSEWHEEL:

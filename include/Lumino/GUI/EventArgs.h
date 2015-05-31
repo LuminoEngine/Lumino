@@ -16,10 +16,15 @@ enum EventType
 	EventType_MouseButtonDown,
 	EventType_MouseButtonUp,
 	EventType_MouseWheel,
+
 	EventType_KeyDown,
 	EventType_KeyUp,
 	//EventType_Char,
 	EventType_ElapsedTime,
+
+
+	EventType_MouseLeave,
+	EventType_MouseEnter,
 };
 
 /**
@@ -49,8 +54,8 @@ public:
 public:
 	MouseButton	Button;		///< ボタン番号
 	short		Wheel;		///< マウスホイールの回転回数 (正または負の回数)
-	short		X;			///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
-	short		Y;			///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
+	short		X;			///< マウスイベント生成時のマウスの X 座標 (グローバル座標。クライアント領域外は -1)
+	short		Y;			///< マウスイベント生成時のマウスの Y 座標 (グローバル座標。クライアント領域外は -1)
 	//short		MoveX;	    ///< X 座標の移動量
 	//short		MoveY;      ///< Y 座標の移動量
 };

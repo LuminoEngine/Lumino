@@ -26,6 +26,35 @@ CoreObject::~CoreObject()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void CoreObject::RegisterProperty(const String& propertyName, const Variant& defaultValue)
+{
+	m_propertyDataStore.Add(propertyName, defaultValue);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::SetValue(const String& propertyName, const Variant& value)
+{
+	// TODO: ÉLÅ[Ç™ñ≥ÇØÇÍÇŒó·äO
+	m_propertyDataStore.SetValue(propertyName, value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant CoreObject::GetValue(const String& propertyName) const
+{
+	Variant value;
+	if (m_propertyDataStore.TryGetValue(propertyName, &value)) {
+		return value;
+	}
+	LN_THROW(0, ArgumentException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 String CoreObject::ToString()
 {
 	return String::GetEmpty();
@@ -112,7 +141,7 @@ void Variant::Set(CoreObject* obj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-CoreObject* Variant::GetObject()
+CoreObject* Variant::GetObject() const
 {
 	LN_VERIFY(m_type == VariantType_Object) { return NULL; }
 	return m_object;

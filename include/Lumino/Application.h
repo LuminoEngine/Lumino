@@ -20,6 +20,7 @@ namespace Lumino
 */
 class Application
 	: public RefObject
+	, public Platform::IEventListener
 {
 public:
 
@@ -53,13 +54,17 @@ private:
 	void InitialzePhysicsManager();
 	void InitialzeGraphicsManager();
 	void InitialzeGUIManager();
+	virtual bool OnEvent(const Platform::EventArgs& e);
 
 private:
+	//class NativeWindowEventListener;
+
 	FpsController						m_fpsController;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<GUI::GUIManager>				m_guiManager;
+	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_endRequested;
 };
 

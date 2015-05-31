@@ -39,10 +39,10 @@ public:
 	bool InjectMouseMove(int x, int y);
 
 	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonDown(Platform::MouseButton button);
+	bool InjectMouseButtonDown(MouseButton button);
 
 	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonUp(Platform::MouseButton button);
+	bool InjectMouseButtonUp(MouseButton button);
 
 private:
 
