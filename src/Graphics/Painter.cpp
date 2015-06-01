@@ -178,7 +178,7 @@ static void perspective2DLH(Matrix* out_, float width_, float height_, float nea
 void Painter::SetProjection(const Size& viewSize, float nearZ, float farZ)
 {
 	Matrix mat;
-	perspective2DLH(&mat, viewSize.Width, viewSize.Height, nearZ, farZ);
+	perspective2DLH(&mat, (float)viewSize.Width, (float)viewSize.Height, nearZ, farZ);
 	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetProjectionCommand>(m_manager->GetPainterEngine(), mat/*, viewSize*/);
 }
 

@@ -42,9 +42,14 @@ public:
 
 	String ToString();
 
+	virtual void SetUserData(void* data) { m_userData = data; }
+
+	virtual void* GetUserData() const { return m_userData; }
+
 private:
 	typedef SortedArray<String, Variant>	PropertyDataStore;
 	PropertyDataStore	m_propertyDataStore;
+	void*				m_userData;
 };
 
 /**

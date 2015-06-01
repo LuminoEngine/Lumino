@@ -13,6 +13,7 @@ namespace Lumino
 //
 //-----------------------------------------------------------------------------
 CoreObject::CoreObject()
+	: m_userData(NULL)
 {
 }
 
