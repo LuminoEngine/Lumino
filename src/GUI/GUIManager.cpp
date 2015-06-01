@@ -248,6 +248,11 @@
 	  例えば、ArrayList::Sort(Delegate02<T, T> pred) や XmlParser::SetFoundElementCallback(Delegate01<XmlElement> callback) として定義し、
 	  Ploxy クラスの関数をセットする。
 	
+
+	↑こんな実装にするのは、CoreLib 自体の使い勝手を落としたくないから。Delegate を使いたい。
+	  Delegate が使えなくても、static 関数とユーザーポインタを登録することで実現はかのう。
+	  ただし、Delegate が使えないとすると、event の管理がものすごく面倒なことになる。
+
 	
 	・テンプレート型のコールバックは？
 	  型は RefObject を継承している制限にする。
