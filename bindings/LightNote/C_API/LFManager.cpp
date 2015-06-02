@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../Internal.h"
+#include "LFInternal.h"
 #include "LFManager.h"
 
 namespace Lumino
@@ -12,6 +12,9 @@ namespace Lumino
 
 Lumino::Application*	LFManager::Application = NULL;
 bool					LFManager::IsSystemInitialized = false;
+
+LFManager::ObjectEntryList	LFManager::m_objectEntryList;
+Stack<int>					LFManager::m_objectIndexStack;
 
 //-----------------------------------------------------------------------------
 //

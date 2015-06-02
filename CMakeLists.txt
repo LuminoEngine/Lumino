@@ -154,10 +154,6 @@ set(LN_SOURCES_Application
 	include/Lumino/Application.h
 	src/Application.cpp
 	src/Variant.cpp)
-	
-set(LN_SOURCES_C_API
-	src/C_API/LFApplication.h
-	src/C_API/LFApplication.cpp)
 
 #--------------------------------------
 # Platform source files.
@@ -221,7 +217,6 @@ source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
 source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
-source_group("C_API"		FILES ${LN_SOURCES_C_API})
 
 set(LN_SOURCES
 	${LN_SOURCES_Platform}
@@ -383,3 +378,7 @@ add_subdirectory(demo)
 #------------------------------
 # samples.
 #add_subdirectory(sample)
+
+#------------------------------
+# 
+add_subdirectory(bindings/LightNote)

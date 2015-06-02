@@ -11,6 +11,14 @@
 	#define LN_MBS
 #endif
 
+// DLL
+#if defined(LN_BUILD_DLL)
+	#define LN_API			__declspec(dllexport)
+#else
+	#define LN_API
+#endif
+
+
 //------------------------------------------------------------------------------
 // typedef
 
@@ -66,9 +74,11 @@ typedef intptr_t		LNHandle;
 #define LN_STRUCT_CLASS(x)
 #define LN_EXTENSION_CLASS(x)
 #define LN_CLASS_END
-#define LN_INSTANCE_API
-#define LN_INTERNAL_API
-#define LN_STATIC_API
+
+#define LN_INSTANCE_API		LN_API
+#define LN_INTERNAL_API		LN_API
+#define LN_STATIC_API		LN_API
+
 #define LN_LIBRARY_INITIALIZER
 #define LN_LIBRARY_TERMINATOR
 #define LN_PROPERTY

@@ -3,9 +3,6 @@
 #include <Lumino/Application.h>
 #include "LFCommon.h"
 
-namespace Lumino
-{
-
 /// Handle ‚ÌŠÇ—ƒŠƒXƒg‚Ì—v‘f
 struct ObjectEntry
 {
@@ -57,4 +54,3 @@ private:
 
 };
 
-} // namespace Lumino

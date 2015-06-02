@@ -32,36 +32,6 @@ LN_STATIC_CLASS(LNCore)
 	Option*/
 
 	/**
-		@brief		ファイル入出力機能を初期化します。
-	*/
-	LN_STATIC_API
-	LN_LIBRARY_INITIALIZER
-	LNResult LNCore_InitializeFileIO();
-
-	/**
-		@brief		音声機能を初期化します。
-		@details	ファイル入出力機能も同時に初期化されます。
-	*/
-	LN_STATIC_API
-	LN_LIBRARY_INITIALIZER
-	LNResult LNCore_InitializeAudio();
-	/*Option
-		@override[hsp]
-		@override_end
-	Option*/
-
-	/**
-		@brief		入力機能を初期化します。
-	*/
-	LN_STATIC_API
-	LN_LIBRARY_INITIALIZER
-	LNResult LNCore_InitializeInput();
-	/*Option
-		@override[hsp]
-		@override_end
-	Option*/
-
-	/**
 		@brief		フレームを更新します。
 		@details	LightNote の状態を更新し、時間を1フレーム分進めます。
 					この関数は必ず1フレームに1度だけ呼び出す必要があります。
