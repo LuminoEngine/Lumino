@@ -43,9 +43,13 @@ public:
 	/// obj の Handle を返す。obj がこのクラスに登録済みかを確認し、登録されていなければ新しく登録する。
 	static LNHandle CheckRegisterObject(CoreObject* obj);
 
+	/// 例外発生時の処理 (Exeption 以外の例外は NULL を指定して呼び出すことで Unknown が返る)
+	static LNResult ProcException(Exception* e);
+
 public:
-	static Lumino::Application*	Application;
-	static bool					IsSystemInitialized;
+	static Lumino::ApplicationConfigData	ConfigData;
+	static Lumino::Application*				Application;
+	static bool								IsSystemInitialized;
 
 private:
 	typedef ArrayList<ObjectEntry>	ObjectEntryList;

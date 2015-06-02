@@ -19,22 +19,22 @@ enum LNBool
 /** 結果・エラーコード */
 enum LNResult
 {
-    LN_OK                       = 0,	/** 成功 */
-	LN_ERR_UNKNOWN				= -1,	/** 不明なエラー */
-	LN_ERR_INVALID_OPERATION	= -2,	/** オブジェクトの現在の状態に対して無効な呼び出しが行われた */
-	LN_ERR_ARGUMENT				= -3,	/** 渡された引数のいずれかが無効 */
-	LN_ERR_OUT_OF_MEMORY		= -2,	/** メモリ不足 */
-	LN_ERR_FILE_NOT_FOUND       = -3,	/** ファイルが存在しない、またはアクセスできない */
-	LN_ERR_SYSTEM_CALL			= -6,	/** システム API 呼び出しエラー */
-	LN_ERR_NOT_IMPLEMENTED		= -7,	/** 未実装の機能を呼び出そうとした */
-	LN_ERR_INVALID_FORMAT		= -8,	/** ファイル形式などの入力データのフォーマットが無効、またはサポートされていない */
-	LN_ERR_COMPILATION			= -9,	/** シェーダプログラム等のコンパイルエラーが発生した */
-	LN_ERR_THREAD				= -10,	/** スレッド実行中に例外が発生した */
-	LN_ERR_FATAL				= -11,	/** 継続不能なエラー */
-	LN_ERR_COM_CALL				= -12,	/** COM 呼び出しエラー */
-	LN_ERR_OPENGL				= -13,	/** OpenGL 関係のエラー */
-	LN_ERR_DIRECTX				= -14,
-	LN_ERR_WIN32API				= -15,
+    LN_OK							= 0,	/** 成功 */
+	LN_ERROR_UNKNOWN				= -1,	/** 不明なエラー */
+	LN_ERROR_OUT_OF_MEMORY			= -2,	/** メモリ確保に失敗 */
+	LN_ERROR_IO						= -3,	/** その他のIOエラー */
+	LN_ERROR_END_OF_STREAM			= -4,	/** ストリームの末尾を越えてアクセスしようとした */
+	LN_ERROR_ARGUMENT				= -5,	/** 引数が無効 */
+	LN_ERROR_INVALID_OPERATION		= -6,	/** オブジェクトの現在の状態に対して無効な呼び出しが行われた */
+	LN_ERROR_NOT_SUPPORTED			= -7,	/** サポートされない機能を呼び出そうとした */
+	LN_ERROR_FILE_NOT_FOUND			= -8,	/** ファイルにアクセスしようとして失敗した */
+	LN_ERROR_DIRECTORY_NOT_FOUND	= -9,	/** 無効なディレクトリにアクセスしようとした */
+	LN_ERROR_INVALID_FORMAT			= -10,	/** ファイルや文字列等の形式が不正 */
+	LN_ERROR_NOT_IMPLEMENTED		= -11,	/** 未実装の機能を呼び出した */
+	LN_ERROR_RUNTIME				= -12,	/** C/C++ランタイム API でエラーが発生した */
+	LN_ERROR_ENCODING_FALLBACK		= -13,	/** 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった */
+	LN_ERROR_WIN32					= -14,	/** WindowsAPI のエラー */
+	LN_ERROR_COM					= -15,	/** COM のエラー */
 
 };
 //typedef LNResult LNErrorCode;

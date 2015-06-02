@@ -142,9 +142,8 @@ using namespace Lumino;
 
 /// try 空間の終了
 #define LN_FUNC_TRY_END_RETURN		} \
-    catch (LNote::Core::Base::Exception& e) { \
-		LFManager::ProcException( &e ); \
-		return (LNResult)e.getErrorCode(); \
+    catch (Lumino::Exception& e) { \
+		return LFManager::ProcException(&e); \
 	} \
 	return ::LN_OK;
 

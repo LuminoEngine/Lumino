@@ -25,9 +25,9 @@ namespace Lumino
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application* Application::Create()
+Application* Application::Create(const ApplicationConfigData& configData)
 {
-	RefPtr<Application> app(LN_NEW Application());
+	RefPtr<Application> app(LN_NEW Application(configData));
 	app->Initialize();
 	app.SafeAddRef();
 	return app;
@@ -36,8 +36,9 @@ Application* Application::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application::Application()
-	: m_endRequested(false)
+Application::Application(const ApplicationConfigData& configData)
+	: m_configData(configData)
+	, m_endRequested(false)
 {
 }
 
@@ -139,6 +140,14 @@ bool Application::UpdateFrame()
 	m_fpsController.Process();
 
 	return !m_endRequested;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Application::ResetFrameDelay()
+{
+	m_fpsController.RefreshSystemDelay();
 }
 
 //-----------------------------------------------------------------------------

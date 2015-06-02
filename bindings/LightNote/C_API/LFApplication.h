@@ -15,7 +15,7 @@ LN_MODULE(Application)
 /**
 	@brief		LightNote の初期化や更新等、包括的な処理を行うクラスです。
 */
-LN_STATIC_CLASS(LNCore)
+LN_STATIC_CLASS(LNApplication)
 	
 	/**
 		@brief		LightNote を初期化します。
@@ -23,7 +23,7 @@ LN_STATIC_CLASS(LNCore)
 	*/
 	LN_STATIC_API
 	LN_LIBRARY_INITIALIZER
-	LNResult LNCore_Initialize();
+	LNResult LNApplication_Initialize();
 	/*Option
 		@override[cpp]
 		@override_end
@@ -37,7 +37,7 @@ LN_STATIC_CLASS(LNCore)
 					この関数は必ず1フレームに1度だけ呼び出す必要があります。
 	*/
 	LN_STATIC_API
-	LNResult LNCore_Update();
+	LNResult LNApplication_Update();
 	/*Option
 		@override[hsp]
 		@override_end
@@ -49,7 +49,7 @@ LN_STATIC_CLASS(LNCore)
 					極端なフレームスキップが発生しないようにすることができます。
 	*/
 	LN_STATIC_API
-	LNResult LNCore_ResetFrameDelay();
+	LNResult LNApplication_ResetFrameDelay();
 
 	/**
 		@brief		アプリケーションを終了するべきかを確認します。
@@ -58,17 +58,17 @@ LN_STATIC_CLASS(LNCore)
 					アプリケーションを終了するべき時には LN_FALSE を返します。
 	*/
 	LN_STATIC_API
-	LNResult LNCore_IsEndRequested(LNBool* requested);
+	LNResult LNApplication_IsEndRequested(LNBool* requested);
 
 	/**
 		@brief		LightNote の終了処理を行います。
 	*/
 	LN_STATIC_API
 	LN_LIBRARY_TERMINATOR
-	void LNCore_Terminate();
+	void LNApplication_Terminate();
 
 
-	LN_INTERNAL_API void* LNCore_GetInternalObject();
+	LN_INTERNAL_API void* LNApplication_GetInternalObject();
 
 LN_CLASS_END
 

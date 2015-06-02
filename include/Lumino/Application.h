@@ -11,6 +11,7 @@
 #include "Graphics/GraphicsManager.h"
 #include "GUI/GUIManager.h"
 #include "Game/FpsController.h"
+#include "ApplicationConfigData.h"
 
 namespace Lumino
 {
@@ -27,7 +28,7 @@ public:
 	/**
 		@brief		Application のインスタンスを作成し、アプリケーションを初期化します。
 	*/
-	static Application* Create();
+	static Application* Create(const ApplicationConfigData& configData);
 
 public:
 
@@ -36,6 +37,15 @@ public:
 		@return		アプリケーションの終了が要求されている場合は false を返します。
 	*/
 	bool UpdateFrame();
+
+	/**
+		@brief		遅延をリセットします。
+		@details	リソースのロード等で時間がかかり長い時間更新処理が行われなかった場合、
+					UpdateFrame() は本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
+					その間はアプリケーションが非常に高速に動作しているように見えてしまします。
+					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
+	*/
+	void ResetFrameDelay();
 
 	/**
 		@brief		アプリケーションの終了が要求されているかを確認します。
@@ -47,7 +57,7 @@ public:
 	GUI::GUIManager* GetGUIManager() const { return m_guiManager; }
 
 private:
-	Application();
+	Application(const ApplicationConfigData& configData);
 	virtual ~Application();
 	void Initialize();
 	void InitialzePlatformManager();
@@ -58,7 +68,7 @@ private:
 
 private:
 	//class NativeWindowEventListener;
-
+	ApplicationConfigData				m_configData;
 	FpsController						m_fpsController;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;

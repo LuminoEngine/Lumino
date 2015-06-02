@@ -2,7 +2,8 @@
 
 int main()
 {
-	RefPtr<Application> app(Application::Create());
+	ApplicationConfigData appData;
+	RefPtr<Application> app(Application::Create(appData));
 
 	RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
 	workbench1->SetSize(SizeF(640, 480));

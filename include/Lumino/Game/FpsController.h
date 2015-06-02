@@ -18,32 +18,32 @@ public:
 
 public:
 	
-	/*
+	/**
 		@brief		現在の FPS 値を取得します。
 	*/
 	float GetFps() const { return (m_averageTime > 0) ? (1.0f / m_averageTime) : 0; }
 
-	/*
+	/**
 		@brief		前回のフレームから経過したゲーム時間 (秒) を取得します。
 	*/
 	float GetElapsedGameTime() const { return m_elapsedGameTime; }
 
-	/*
+	/**
 		@brief		前回のフレームから経過した実時間 (秒) を取得します。
 	*/
 	float GetElapsedRealTime() const { return m_elapsedRealTime; }
 
-	/*
+	/**
 		@brief		開始からの総ゲーム時間 (秒) を取得します。
 	*/
 	float GetTotalGameTime() const { return 0.001f * m_totalGameTime; }
 
-	/*
+	/**
 		@brief		開始からの総実時間 (秒) を取得します。
 	*/
 	float GetTotalRealTime() const { return 0.001f * m_totalRealTime; }
 
-	/*
+	/**
 		@brief		最大 FPS 値を取得します。
 		@details	処理にどれだけ余裕があるかを示す値を取得します。
 					この値がフレームレートの値よりも大きいほど、処理に余裕があります。<br>
@@ -51,36 +51,36 @@ public:
 	*/
 	float GetCapacityFps() const { return m_capacityFps; }
 
-	/*
+	/**
 		@brief		フレームレートを設定します。初期値は 60 です。
 		@param[in]	frameRate	: フレームレート
 	*/
 	void SetFrameRate(int frameRate);
 
-	/*
+	/**
 		@brief		フレームレートを取得します。
 	*/
     int GetFrameRate() const { return m_frameRate; }
 
-	/*
+	/**
 		@brief		Fps 余裕度を測定するかを設定します。初期値は false です。
 	*/
 	void SetEnableFpsTest(bool enabled) { m_enableFpsTest = enabled; }
 
-	/*
+	/**
 		@brief		フレームレート分のフレームが経過した瞬間を判定します。
 		@details	フレームレートが 60 であれば、60 フレームに 1 度の間 true を返します。
 	*/
 	bool IsRoundFrame() const { return (m_frameCount == 0); }
 
-	/*
+	/**
 		@brief		遅延が発生しているかを確認します。
 		@details	この関数が true を返した場合、前回のフレームは フレームレート以内の時間で
 					完了しなかったことを表します。
 	*/
 	bool IsFrameDelay() const { return (m_term <= 0); }
 
-	/*
+	/**
 		@brief		遅延をリセットします。
 		@details	リソースのロード等で時間がかかり長い時間更新処理が行われなかった場合、
 					本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
