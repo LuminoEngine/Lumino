@@ -6,11 +6,19 @@ project (LNote)
 #------------------------------------------------------------------------------
 
 set(LN_SOURCES_C_API
-	C_API/LFApplication.cpp
-	C_API/LFApplication.h
-	C_API/LFCommon.h
-	C_API/LFManager.cpp
-	C_API/LFManager.h)
+	C_API/LNCommon.h
+	C_API/LNGUI.cpp
+	C_API/LNGUI.h
+	C_API/LNInternal.cpp
+	C_API/LNInternal.h
+	C_API/LNManager.cpp
+	C_API/LNManager.h
+	C_API/LNTypedef.cpp
+	C_API/LNTypedef.h
+	C_API/LNApplication.cpp
+	C_API/LNApplication.h
+	C_API/LNBase.cpp
+	C_API/LNBase.h)
 
 source_group("C_API"	FILES ${LN_SOURCES_C_API})
 

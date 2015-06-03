@@ -1,7 +1,7 @@
 
 #pragma once
 #include <Lumino/Application.h>
-#include "LFCommon.h"
+#include "LNCommon.h"
 
 /// Handle ‚ÌŠÇ—ƒŠƒXƒg‚Ì—v‘f
 struct ObjectEntry

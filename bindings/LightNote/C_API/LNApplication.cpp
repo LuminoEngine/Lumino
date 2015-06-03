@@ -1,6 +1,6 @@
 
-#include "LFInternal.h"
-#include "LFApplication.h"
+#include "LNInternal.h"
+#include "LNApplication.h"
 
 extern "C" {
 

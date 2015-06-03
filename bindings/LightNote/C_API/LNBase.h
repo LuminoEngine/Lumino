@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 
-#include "LFCommon.h"
-#include "LFTypedef.h"
+#include "LNCommon.h"
+#include "LNTypedef.h"
 
 extern "C" {
 

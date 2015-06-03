@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "LFInternal.h"
+#include "LNInternal.h"
 #include "LNGUI.h"
 
 //=============================================================================
@@ -10,22 +10,37 @@
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int width, int height)
+LN_API LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int width, int height)
 {
 	LN_CHECK_ARG_HANDLE(rootPane);
 	TO_REFOBJ(GUI::RootPane, rootPane)->SetSize(SizeF(width, height));
 	return ::LN_OK;
 }
 
-
 //=============================================================================
-// LNGUIElement
+// LNGUIContentControl
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane)
+LN_API LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) contentControl, LN_HANDLE(LNGUIElement) element)
+{
+	LN_CHECK_ARG_HANDLE(contentControl);
+	LN_CHECK_ARG_HANDLE(element);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(GUI::ContentControl, contentControl)->SetContent(TO_REFOBJ(GUI::UIElement, element));
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//=============================================================================
+// LNGUIRootPane
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LN_API LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<GUI::RootPane> obj(LFManager::Application->GetGUIManager()->CreateRootPane());
@@ -40,10 +55,17 @@ LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane)
 // LNGUIButton
 //=============================================================================
 
+class LNGUIButtonIF : public GUI::Button
+{
+public:
+
+
+};
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGUIButton_Create(LN_HANDLE(LNGUIButton)* button)
+LN_API LNResult LNGUIButton_Create(LN_HANDLE(LNGUIButton)* button)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<GUI::Button> obj(LN_NEW GUI::Button(LFManager::Application->GetGUIManager()));

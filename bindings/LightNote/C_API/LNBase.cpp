@@ -35,8 +35,8 @@
 
 #pragma once
 
-#include "LFInternal.h"
-#include "LFBase.h"
+#include "LNInternal.h"
+#include "LNBase.h"
 
 //=============================================================================
 // LFObject

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 
-#include "LFCommon.h"
+#include "LNCommon.h"
 
 extern "C" {
 
