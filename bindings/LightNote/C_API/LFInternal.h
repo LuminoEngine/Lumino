@@ -64,8 +64,8 @@ using namespace Lumino;
 //#define FuncLibManager ::LNote::Core::Function::Manager
 
 // 引数チェック
-#define LN_CHECK_ARG_HANDLE(h)	if (h == NULL) { return ::LN_ERR_ARGUMENT; }	// TODO 中身もチェック
-#define LN_CHECK_ARG(exp)	if (!(exp)) { return ::LN_ERR_ARGUMENT; }
+#define LN_CHECK_ARG_HANDLE(h)	if (h == NULL) { return ::LN_ERROR_ARGUMENT; }	// TODO 中身もチェック
+#define LN_CHECK_ARG(exp)	if (!(exp)) { return ::LN_ERROR_ARGUMENT; }
 
 //------------------------------------------------------------------------------
 // 関数ライブラリ内で共通のもの
@@ -86,29 +86,29 @@ using namespace Lumino;
 //---------------------------------------------------------------------
 #define TO_HANDLE( v )		static_cast<LNHandle>( v )
 
-#define TO_INDEX( h )		static_cast<LNHandle>( h )
+#define TO_INDEX( h )		static_cast<int>( h )
 
 //#define TO_OBJECT( h )		FuncLibManager::getObject( static_cast<int>( h ) )
 //#define TO_INTERFACE( h )	FuncLibManager::getInterface( static_cast<int>( h ) )
 
-#define TO_IN_FILE( h )		static_cast<FileIO::InFile*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_OUT_FILE( h )	static_cast<FileIO::OutFile*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-
-//#define TO_TEXTURE( h )		static_cast<Core::Graphics::ITexture*>( FuncLibManager::getInterface( static_cast<int>( h ) ) )
-//#define TO_FONT( h )		static_cast<Core::Graphics::IFont*>( FuncLibManager::getInterface( static_cast<int>( h ) ) )
-
-#define TO_SOUND( h )		static_cast<Core::Audio::Sound*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-
-#define TO_SCENENODE( h )	static_cast<Core::Scene::SceneNode*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_VISUAL_NODE( h )	static_cast<Core::Scene::VisualNode*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_SPRITE( h )		static_cast<Core::Scene::Sprite*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_SPRITE_PATH( h )	static_cast<Core::Scene::SpritePath*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_EFFECT( h )		static_cast<Core::Scene::Effect*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_SHADER( h )		static_cast<Core::Scene::SceneShader*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_VIEW_PANE( h )	static_cast<Core::Scene::Pane*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-#define TO_CAMERA( h )		static_cast<Core::Scene::Camera*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_IN_FILE( h )		static_cast<FileIO::InFile*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_OUT_FILE( h )	static_cast<FileIO::OutFile*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//
+////#define TO_TEXTURE( h )		static_cast<Core::Graphics::ITexture*>( FuncLibManager::getInterface( static_cast<int>( h ) ) )
+////#define TO_FONT( h )		static_cast<Core::Graphics::IFont*>( FuncLibManager::getInterface( static_cast<int>( h ) ) )
+//
+//#define TO_SOUND( h )		static_cast<Core::Audio::Sound*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//
+//#define TO_SCENENODE( h )	static_cast<Core::Scene::SceneNode*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_VISUAL_NODE( h )	static_cast<Core::Scene::VisualNode*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_SPRITE( h )		static_cast<Core::Scene::Sprite*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_SPRITE_PATH( h )	static_cast<Core::Scene::SpritePath*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_EFFECT( h )		static_cast<Core::Scene::Effect*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_SHADER( h )		static_cast<Core::Scene::SceneShader*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_VIEW_PANE( h )	static_cast<Core::Scene::Pane*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+//#define TO_CAMERA( h )		static_cast<Core::Scene::Camera*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
 //↓今後コレに変更
-#define TO_REFOBJ( type, h )	static_cast<type*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+#define TO_REFOBJ( type, h )	static_cast<type*>( LFManager::GetObjectEntry(h)->Object )
 //#define TO_INTERFACE( type, h )	static_cast<type*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
 
 #define TO_CORE_VEC2_PTR( v )	reinterpret_cast<LNote::LVector2*>( v )

@@ -152,3 +152,42 @@ LNResult LFManager::ProcException(Exception* e)
 
 	return LN_ERROR_UNKNOWN;
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LFManager::ReleaseObject(LNHandle handle)
+{
+	if (!IsSystemInitialized)
+		return;		// ‚·‚×‚Ä‰ğ•úÏ‚İ
+
+	int index = TO_INDEX(handle);
+	ObjectEntry& e = m_objectEntryList[index];
+
+	if (e.Object != NULL) {
+		e.RefCount--;
+		if (e.RefCount <= 0) {
+			LN_SAFE_RELEASE(e.Object);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LFManager::AddRefObject(LNHandle handle)
+{
+	int index = TO_INDEX(handle);
+	ObjectEntry& e = m_objectEntryList[index];
+	if (e.Object != NULL) {
+		e.RefCount++;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ObjectEntry* LFManager::GetObjectEntry(LNHandle handle)
+{
+	return &m_objectEntryList[TO_INDEX(handle)];
+}

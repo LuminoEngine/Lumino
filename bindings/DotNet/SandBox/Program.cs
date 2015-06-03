@@ -28,6 +28,32 @@ namespace LNote
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
 
         /// <summary>
+        /// オブジェクトを解放します。
+        /// </summary>
+        /// <param name="hadnleObject">オブジェクトハンドル</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObject_Release(IntPtr hadnleObject);
+
+        /// <summary>
+        /// オブジェクトの参照カウントをインクリメントします。
+        /// </summary>
+        /// <param name="hadnleObject">オブジェクトハンドル</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObject_AddRef(IntPtr hadnleObject);
+
+        /// <summary>
+        /// オブジェクトの参照カウント取得します。
+        /// </summary>
+        /// <param name="hadnleObject">オブジェクトハンドル</param>
+        /// <param name="count">参照カウントを格納する変数</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObject_GetRefCount(IntPtr hadnleObject, out int count);
+
+
+
+
+
+        /// <summary>
         /// LightNote を初期化します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]

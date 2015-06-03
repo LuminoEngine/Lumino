@@ -46,6 +46,9 @@ public:
 
 	virtual void* GetUserData() const { return m_userData; }
 
+	/// 各種言語バインダから設定される型情報 ID を取得します。
+	virtual void* GetBindingTypeID() { return NULL; }
+
 private:
 	typedef SortedArray<String, Variant>	PropertyDataStore;
 	PropertyDataStore	m_propertyDataStore;

@@ -69,7 +69,7 @@ typedef intptr_t		LNHandle;
 
 #define LN_MODULE(x)
 #define LN_MODULE_END
-#define LN_CLASS(x)
+#define LN_CLASS(...)
 #define LN_STATIC_CLASS(x)
 #define LN_STRUCT_CLASS(x)
 #define LN_EXTENSION_CLASS(x)
@@ -81,6 +81,7 @@ typedef intptr_t		LNHandle;
 
 #define LN_LIBRARY_INITIALIZER
 #define LN_LIBRARY_TERMINATOR
+#define LN_CONSTRUCTOR
 #define LN_PROPERTY
 #define LN_STRUCT_CONSTRUCTOR
 

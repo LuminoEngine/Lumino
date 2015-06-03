@@ -9,7 +9,7 @@ struct ObjectEntry
 	CoreObject*		Object;		///< オブジェクト本体
 	void*			UserData;	///< バインダ側からセットするユーザーデータ。基本的に管理配列のインデックスとなる。
 	int				Index;		///< このオブジェクトがある管理配列上のインデックス
-	int				RefCount;	///< 外部に公開する参照カウント (CoreObject の参照カウントとは別管理である点に注意)
+	int				RefCount;	///< 外部に公開する参照カウント (この値を直接操作しないこと。必ず Manager 経由で操作する。CoreObject の参照カウントとは別管理である点に注意)
 
 	ObjectEntry()
 	{
@@ -45,6 +45,15 @@ public:
 
 	/// 例外発生時の処理 (Exeption 以外の例外は NULL を指定して呼び出すことで Unknown が返る)
 	static LNResult ProcException(Exception* e);
+
+	/// オブジェクトの参照カウントをデクリメント (CoreObject ではなく ObjectEntry のカウントを操作する)
+	static void ReleaseObject(LNHandle handle);
+
+	/// オブジェクトの参照カウントをインクリメント (CoreObject ではなく ObjectEntry のカウントを操作する)
+	static void AddRefObject(LNHandle handle);
+
+	/// handle に対する ObjectEntry を取得する
+	static ObjectEntry* GetObjectEntry(LNHandle handle);
 
 public:
 	static Lumino::ApplicationConfigData	ConfigData;
