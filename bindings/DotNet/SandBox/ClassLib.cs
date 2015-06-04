@@ -12,21 +12,64 @@ namespace LNote
     public class GUIElement : CoreObject
     {
 
+
+        internal GUIElement(_LNInternal i)
+            : base(i)
+        {
+
+        }
+
+        void SetSize(int x, int y)
+        {
+            API.LNGUIElement_SetSizeWH(_handle, x, y);
+        }
     }
 
     public class GUIControl : GUIElement
     {
 
+        internal GUIControl(_LNInternal i)
+            : base(i)
+        {
+
+        }
     }
 
     public class GUIContentControl : GUIControl
     {
+        internal GUIContentControl(_LNInternal i)
+            : base(i)
+        {
 
+        }
     }
 
     public class GUIRootPane : GUIContentControl
     {
+        #region DefaultRootPane
+        public static GUIRootPane DefaultRootPane
+        {
+            get
+            {
+                IntPtr handle;
+                API.LNGUIRootPane_GetDefaultRootPane(out handle);
+                // ラップオブジェクトが生成されていないか、違うハンドルを取得していたら再作成する
+                if (_DefaultRootPane == null || _DefaultRootPane._handle != handle)
+                {
+                    _DefaultRootPane = new GUIRootPane(_LNInternal.InternalBlock);
+                    _DefaultRootPane.SetHandle(handle);
+                }
+                return _DefaultRootPane;
+            }
+        }
+        static GUIRootPane _DefaultRootPane = null;
+        #endregion
 
+        internal GUIRootPane(_LNInternal i)
+            : base(i)
+        {
+
+        }
     }
 
     public class GUIButton : GUIContentControl
@@ -34,7 +77,15 @@ namespace LNote
         public GUIButton()
             : base(_LNInternal.InternalBlock)
         {
+            IntPtr handle;
+            API.LNGUIButton_Create(out handle);
+            SetHandle(handle);
+        }
 
+
+        internal GUIButton(_LNInternal i)
+            : base(_LNInternal.InternalBlock)
+        {
         }
     }
 
@@ -58,7 +109,14 @@ namespace LNote
         internal IntPtr _handle;
 
         internal CoreObject() { }
-        //internal CoreObject(_LNInternal i) { }
+
+        /// <summary>
+        /// 内部用のインスタンス生成で使用するコンストラクタ。
+        /// デフォルトコンストラクタは、引数無しの public コンストラクタとしてサブクラスから使用するため、
+        /// 引数で区別できるようにダミーの引数を持たせている。
+        /// </summary>
+        /// <param name="i"></param>
+        internal CoreObject(_LNInternal i) { }
 
         /// <summary>
         /// ハンドルの取得

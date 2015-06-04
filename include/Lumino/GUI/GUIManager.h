@@ -33,7 +33,7 @@ public:
 public:
 	void Initialize(const ConfigData& configData);
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	RootPane* CreateRootPane();
+	RootPane* GetDefaultRootPane() const { return m_defaultRootPane; }
 
 	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// とりあえず内部用。言語バインダのことは後で。
 	CoreObject* CreateObject(const String& typeFullName);
@@ -60,7 +60,7 @@ private:
 
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	EventArgsPool						m_eventArgsPool;
-	RootPane*							m_rootPane;
+	RootPane*							m_defaultRootPane;
 	ResourceDictionary*					m_defaultTheme;
 	CombinedLocalResource*				m_rootCombinedResource;
 	UIElement*							m_mouseHoverElement;		///< 現在マウス位置にある UIElement

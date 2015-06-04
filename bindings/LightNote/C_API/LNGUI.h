@@ -22,7 +22,7 @@ LN_CLASS(LNGUIElement)
 		@param[out]	button		: TODO
 	*/
 	LN_INSTANCE_API
-	LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane)* rootPane, int width, int height);
+	LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int width, int height);
 	
 LN_CLASS_END
 
@@ -60,9 +60,9 @@ LN_CLASS(LNGUIRootPane, LNGUIContentControl)
 		@brief		TODO
 		@param[out]	button		: TODO
 	*/
-	LN_INSTANCE_API
-	LN_CONSTRUCTOR
-	LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane);
+	LN_STATIC_API
+	LN_PROPERTY
+	LNResult LNGUIRootPane_GetDefaultRootPane(LN_OUT LN_HANDLE(LNGUIRootPane)* rootPane);
 
 
 LN_CLASS_END
@@ -79,7 +79,7 @@ LN_CLASS(LNGUIButton, LNGUIContentControl)
 	*/
 	LN_INSTANCE_API
 	LN_CONSTRUCTOR
-	LNResult LNGUIButton_Create(LN_HANDLE(LNGUIButton)* button);
+	LNResult LNGUIButton_Create(LN_OUT LN_HANDLE(LNGUIButton)* button);
 
 
 LN_CLASS_END

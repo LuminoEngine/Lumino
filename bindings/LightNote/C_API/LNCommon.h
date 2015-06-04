@@ -86,3 +86,4 @@ typedef intptr_t		LNHandle;
 #define LN_STRUCT_CONSTRUCTOR
 
 #define LN_HANDLE(x) LNHandle
+#define LN_OUT

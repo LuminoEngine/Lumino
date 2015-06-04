@@ -610,7 +610,7 @@ namespace GUI
 //-----------------------------------------------------------------------------
 GUIManager::GUIManager()
 	: m_mouseHoverElement(NULL)
-	, m_rootPane(NULL)
+	, m_defaultRootPane(NULL)
 {
 }
 
@@ -663,17 +663,23 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 	m_rootCombinedResource = LN_NEW CombinedLocalResource();
 	m_rootCombinedResource->Combine(NULL, m_defaultTheme);
+
+
+
+
+	m_defaultRootPane = LN_NEW RootPane(this);
+	m_defaultRootPane->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RootPane* GUIManager::CreateRootPane()
-{
-	m_rootPane = LN_NEW RootPane(this);
-	m_rootPane->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
-	return m_rootPane;
-}
+//RootPane* GUIManager::CreateRootPane()
+//{
+//	m_defaultRootPane = LN_NEW RootPane(this);
+//	m_defaultRootPane->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
+//	return m_rootPane;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -697,9 +703,9 @@ CoreObject* GUIManager::CreateObject(const String& typeFullName)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseMove(float clientX, float clientY)
 {
-	if (m_rootPane == NULL) { return false; }
+	if (m_defaultRootPane == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
-	bool r = m_rootPane->OnEvent(EventType_MouseMove, args);
+	bool r = m_defaultRootPane->OnEvent(EventType_MouseMove, args);
 	UpdateMouseHover(PointF(clientX, clientY));
 	return r;
 }
@@ -709,9 +715,9 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
 {
-	if (m_rootPane == NULL) { return false; }
+	if (m_defaultRootPane == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
-	return m_rootPane->OnEvent(EventType_MouseButtonDown, args);
+	return m_defaultRootPane->OnEvent(EventType_MouseButtonDown, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -719,9 +725,9 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
 {
-	if (m_rootPane == NULL) { return false; }
+	if (m_defaultRootPane == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
-	return m_rootPane->OnEvent(EventType_MouseButtonUp, args);
+	return m_defaultRootPane->OnEvent(EventType_MouseButtonUp, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -729,9 +735,9 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 {
-	if (m_rootPane == NULL) { return false; }
+	if (m_defaultRootPane == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, delta, clientX, clientY));
-	return m_rootPane->OnEvent(EventType_MouseWheel, args);
+	return m_defaultRootPane->OnEvent(EventType_MouseWheel, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -739,9 +745,9 @@ bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
-	if (m_rootPane == NULL) { return false; }
+	if (m_defaultRootPane == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_rootPane->OnEvent(EventType_KeyDown, args);
+	return m_defaultRootPane->OnEvent(EventType_KeyDown, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -749,9 +755,9 @@ bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isCon
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
-	if (m_rootPane == NULL) { return false; }
+	if (m_defaultRootPane == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_rootPane->OnEvent(EventType_KeyUp, args);
+	return m_defaultRootPane->OnEvent(EventType_KeyUp, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -779,9 +785,9 @@ void GUIManager::UpdateMouseHover(const PointF& mousePos)
 	//}
 
 	// 通常のウィンドウのイベントを処理する
-	if (m_rootPane != NULL)
+	if (m_defaultRootPane != NULL)
 	{
-		m_mouseHoverElement = m_rootPane->CheckMouseHoverElement(mousePos);
+		m_mouseHoverElement = m_defaultRootPane->CheckMouseHoverElement(mousePos);
 		if (m_mouseHoverElement != NULL) {
 			goto EXIT;
 		}

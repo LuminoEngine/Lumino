@@ -84,6 +84,17 @@ namespace LNote
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNApplication_Terminate();
 
+
+
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNGUIElement_SetSizeWH(IntPtr rootPane, int width, int height);
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNGUIRootPane_GetDefaultRootPane(out IntPtr rootPane);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNGUIButton_Create(out IntPtr button);
     }
 }
 

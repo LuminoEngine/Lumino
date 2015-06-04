@@ -40,15 +40,32 @@ LN_API LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) co
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_API LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane)
+LN_API LNResult LNGUIRootPane_GetDefaultRootPane(LN_OUT LN_HANDLE(LNGUIRootPane)* rootPane)
 {
-	LN_FUNC_TRY_BEGIN;
-	RefPtr<GUI::RootPane> obj(LFManager::Application->GetGUIManager()->CreateRootPane());
-	obj.SafeAddRef();
-	*rootPane = LFManager::CheckRegisterObject(obj);
-	LN_FUNC_TRY_END_RETURN;
-
+	LN_CHECK_ARG(rootPane != NULL);
+	*rootPane = LFManager::CheckRegisterObject(LFManager::Application->GetGUIManager()->GetDefaultRootPane());
+	return ::LN_OK;
 }
+
+/**
+@brief		TODO
+@param[out]	button		: TODO
+*/
+//LN_INSTANCE_API
+//LN_CONSTRUCTOR
+//LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane);
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//LN_API LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane)
+//{
+//	LN_FUNC_TRY_BEGIN;
+//	RefPtr<GUI::RootPane> obj(LFManager::Application->GetGUIManager()->CreateRootPane());
+//	obj.SafeAddRef();
+//	*rootPane = LFManager::CheckRegisterObject(obj);
+//	LN_FUNC_TRY_END_RETURN;
+//
+//}
 
 
 //=============================================================================
