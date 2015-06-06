@@ -17,6 +17,8 @@ enum VariantType
 	VariantType_Object,
 
 	VariantType_SizeF,
+
+	VariantType_Max,			///< (Terminator)
 };
 
 /**
@@ -47,13 +49,23 @@ public:
 	virtual void* GetUserData() const { return m_userData; }
 
 	/// 各種言語バインダから設定される型情報 ID を取得します。
-	virtual void* GetBindingTypeID() { return NULL; }
+	virtual void* GetBindingTypeData() const { return NULL; }
 
 private:
 	typedef SortedArray<String, Variant>	PropertyDataStore;
 	PropertyDataStore	m_propertyDataStore;
 	void*				m_userData;
 };
+
+#define LN_CORE_OBJECT_TYPE_INFO_DECL() \
+	private: \
+		static void* m_coreObjectBindingTypeData; \
+	public: \
+		virtual void* GetBindingTypeData() const { return m_coreObjectBindingTypeData; } \
+		static void SetBindingTypeData(void* data) { m_coreObjectBindingTypeData = data; }
+
+#define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassType) \
+	void* subClassType::m_coreObjectBindingTypeData = NULL;
 
 /**
 	@brief		

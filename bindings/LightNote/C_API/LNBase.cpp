@@ -76,9 +76,9 @@ LNResult LNObject_GetRefCount(LNHandle hadnleObject, int* count)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_INTERNAL_API void* LNObject_GetBindingTypeID(LNHandle hadnleObject)
+LN_INTERNAL_API void* LNObject_GetBindingTypeData(LNHandle hadnleObject)
 {
-	return LFManager::GetObjectEntry(hadnleObject)->Object->GetBindingTypeID();
+	return LFManager::GetObjectEntry(hadnleObject)->Object->GetBindingTypeData();
 }
 
 //-----------------------------------------------------------------------------
@@ -103,4 +103,39 @@ LN_INTERNAL_API void LNObject_SetUserData(LNHandle hadnleObject, void* data)
 LN_INTERNAL_API void* LNObject_GetUserData(LNHandle hadnleObject)
 {
 	return LFManager::GetObjectEntry(hadnleObject)->UserData;
+}
+
+//=============================================================================
+// LNVariant
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// structSize は binder 側で確保したメモリサイズ。
+// この関数内で LNVariant のサイズと異なっていないかチェックする。
+//-----------------------------------------------------------------------------
+LN_API LNResult LNVariant_Init(LNVariant* value, int structSize)
+{
+	if (sizeof(LNVariant) == structSize) { return ::LN_ERROR_ARGUMENT; }
+	memset(value, 0, sizeof(LNVariant));
+	return ::LN_OK;
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+LN_API LNResult LNVariant_Clear(LNVariant* value)
+{
+	LN_CHECK_ARG(value != NULL);
+	reinterpret_cast<Variant*>(value)->~Variant();
+	return ::LN_OK;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LN_API LNResult LNVariant_SetObject(LNVariant* value, LN_HANDLE(LNObject) obj)
+{
+	LN_CHECK_ARG(value != NULL);
+	reinterpret_cast<Variant*>(value)->Set(TO_REFOBJ(CoreObject, obj));
+	return ::LN_OK;
 }

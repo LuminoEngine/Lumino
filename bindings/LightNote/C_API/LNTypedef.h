@@ -49,6 +49,23 @@ typedef void (*LNExceptionCallback)( LNResult errCode );
 // Base
 //==============================================================================
 
+/** Variant の型識別情報 */
+enum LNVariantType
+{
+	LN_VARIANTTYPE_UNKNOWN = 0,	/** 不明な型 */
+
+	LN_VARIANTTYPE_BOOL,		/** Boolean */
+	LN_VARIANTTYPE_INT,			/** 32bit 整数 */
+	LN_VARIANTTYPE_FLOAT,		/** 単精度浮動小数 */
+	LN_VARIANTTYPE_STRING,		/** 文字列 */
+	LN_VARIANTTYPE_LIST,		/** 配列 */
+	LN_VARIANTTYPE_OBJECT,		/** オブジェクト */
+
+	LN_VARIANTTYPE_SIZE_F,		/** LNSizeF 構造体 */
+
+	LN_VARIANTTYPE_MAX,
+};
+
 /** サイズ (高さ・幅) */
 struct LNSize
 {
@@ -66,6 +83,17 @@ struct LNRect
 	int		Height;		/** 高さ */
 
 };
+
+/** ariant値 */
+typedef struct _tagLNVariant
+{
+	LNVariantType	Type;		/**  */
+	uint32_t		Data1;		/**  */
+	uint32_t		Data2;		/**  */
+	uint32_t		Data3;		/**  */
+	uint32_t		Data4;		/**  */
+
+} LNVariant;
 
 //==============================================================================
 // LFileIO

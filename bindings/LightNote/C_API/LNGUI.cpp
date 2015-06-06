@@ -24,18 +24,28 @@ LN_API LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int wi
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_API LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) contentControl, LN_HANDLE(LNGUIElement) element)
+LN_API LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) contentControl, LNVariant* value)
 {
 	LN_CHECK_ARG_HANDLE(contentControl);
-	LN_CHECK_ARG_HANDLE(element);
 	LN_FUNC_TRY_BEGIN;
-	TO_REFOBJ(GUI::ContentControl, contentControl)->SetContent(TO_REFOBJ(GUI::UIElement, element));
+	TO_REFOBJ(GUI::ContentControl, contentControl)->SetContent(TO_SAFE_VARIANT(value));
 	LN_FUNC_TRY_END_RETURN;
 }
+
+//LN_API LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) contentControl, LN_HANDLE(LNGUIElement) element)
+//{
+//	LN_CHECK_ARG_HANDLE(contentControl);
+//	LN_CHECK_ARG_HANDLE(element);
+//	LN_FUNC_TRY_BEGIN;
+//	TO_REFOBJ(GUI::ContentControl, contentControl)->SetContent(TO_REFOBJ(GUI::UIElement, element));
+//	LN_FUNC_TRY_END_RETURN;
+//}
 
 //=============================================================================
 // LNGUIRootPane
 //=============================================================================
+
+LN_TYPE_INFO_IMPL(LNGUIRootPane, GUI::RootPane);
 
 //-----------------------------------------------------------------------------
 //
@@ -71,6 +81,8 @@ LN_API LNResult LNGUIRootPane_GetDefaultRootPane(LN_OUT LN_HANDLE(LNGUIRootPane)
 //=============================================================================
 // LNGUIButton
 //=============================================================================
+
+LN_TYPE_INFO_IMPL(LNGUIButton, GUI::Button);
 
 class LNGUIButtonIF : public GUI::Button
 {

@@ -46,7 +46,7 @@ LN_CLASS(LNGUIContentControl, LNGUIElement)
 	*/
 	LN_INSTANCE_API
 	LN_PROPERTY
-	LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) contentControl, LN_HANDLE(LNGUIElement) element);
+	LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) contentControl, LNVariant* value);
 
 LN_CLASS_END
 

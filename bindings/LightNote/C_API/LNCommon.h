@@ -58,15 +58,6 @@ typedef intptr_t		LNHandle;
 	#endif
 #endif
 
-#define LN_TYPE_INFO_DECL(className) \
-	LNOTEINTERNALAPI void className##_SetTypeUserData(void* data);
-
-#define LN_TYPE_INFO_IMPL(coreClass, className) \
-	LNOTEINTERNALAPI void className##_SetTypeUserData(void* data) \
-	{ \
-		coreClass::mTypeUserData = data; \
-	}
-
 #define LN_MODULE(x)
 #define LN_MODULE_END
 #define LN_CLASS(...)

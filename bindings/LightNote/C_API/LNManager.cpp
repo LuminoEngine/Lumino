@@ -22,7 +22,7 @@ void LFManager::PreInitialize()
 {
 	if (Application == NULL)
 	{
-		//CheckCommonDefinition();
+		LNTypeDef_CheckCommonDefinition();
 		Application = Lumino::Application::Create(ConfigData);
 		IsSystemInitialized = true;
 	}

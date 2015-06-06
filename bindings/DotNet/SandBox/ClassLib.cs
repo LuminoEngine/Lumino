@@ -7,7 +7,14 @@ using System.Threading.Tasks;
 
 namespace LNote
 {
-
+    public struct Variant
+    {
+        public Int32 Type;
+        public Int32 Data1;
+        public Int32 Data2;
+        public Int32 Data3;
+        public Int32 Data4;
+    }
 
     public class GUIElement : CoreObject
     {
@@ -42,6 +49,16 @@ namespace LNote
         {
 
         }
+
+        public object Content
+        {
+            set
+            {
+                Variant v = new Variant();  // ↓を out 修飾にすると Binder を直さないとならない。面倒なので呼び出し側で new を自動生成する。
+                TypeInfo.ObjectToVariant(value, ref v);
+                API.LNGUIContentControl_SetContent(_handle, ref v);
+            }
+        }
     }
 
     public class GUIRootPane : GUIContentControl
@@ -56,8 +73,9 @@ namespace LNote
                 // ラップオブジェクトが生成されていないか、違うハンドルを取得していたら再作成する
                 if (_DefaultRootPane == null || _DefaultRootPane._handle != handle)
                 {
-                    _DefaultRootPane = new GUIRootPane(_LNInternal.InternalBlock);
-                    _DefaultRootPane.SetHandle(handle);
+                    _DefaultRootPane = CoreObjectManager.CheckRegisterAndGetWrapperObject<GUIRootPane>(handle);
+                    //_DefaultRootPane = new GUIRootPane(_LNInternal.InternalBlock);
+                    //_DefaultRootPane.SetHandle(handle);
                 }
                 return _DefaultRootPane;
             }
@@ -156,7 +174,7 @@ namespace LNote
         /// <summary>
         /// handle をラップするラップオブジェクトを生成するファクトリコールバック
         /// </summary>
-        public delegate CoreObject ReferenceObjectFactory(IntPtr handle);
+        public delegate CoreObject ReferenceObjectFactory();
 
         public ReferenceObjectFactory Factory;
 
@@ -164,13 +182,18 @@ namespace LNote
 
         public static void Register()
         {
-            // 自動生成1件分
+            #region GUIRootPane // 自動生成1件分
             {
-
+                var ti = new TypeInfo()
+                {
+                    Factory = () => new GUIRootPane(_LNInternal.InternalBlock)
+                };
+                _typeInfos.Add(ti);
+                LNGUIRootPane_SetBindingTypeData((IntPtr)(_typeInfos.Count - 1)); // これは↓で自動定義
             }
+            #endregion
 
-
-
+#if false
             var _IntTable = new TypeInfo()
             {
                 Factory = (handle) =>
@@ -194,24 +217,37 @@ namespace LNote
             };
             _typeInfos.Add(_Random);
             LNRandom_SetTypeUserData((IntPtr)(_typeInfos.Count - 1));
+#endif
 
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
         {
-            int index = (int)LNObject_GetTypeUserData(handle);
+            int index = (int)LNObject_GetBindingTypeData(handle);
             return _typeInfos[index];
         }
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-        private static extern IntPtr LNObject_GetTypeUserData(IntPtr handle);
+        private static extern IntPtr LNObject_GetBindingTypeData(IntPtr handle);
+
+        #region SetBindingTypeID API
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-        private static extern void LNIntTable_SetTypeUserData(IntPtr data);
+        private static extern void LNGUIRootPane_SetBindingTypeData(IntPtr id);
+        #endregion
 
-        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-        private static extern void LNRandom_SetTypeUserData(IntPtr data);
+        //[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        //private static extern void LNIntTable_SetTypeUserData(IntPtr data);
+
+        //[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        //private static extern void LNRandom_SetTypeUserData(IntPtr data);
 
 
+        public static void ObjectToVariant(object obj, ref Variant v)
+        {
+            API.LNVariant_Init(ref v, Marshal.SizeOf(v));
+            if (obj.GetType() == typeof(CoreObject)) { API.LNVariant_SetObject(ref v, ((CoreObject)obj).Handle); }
+            throw new ArgumentException();
+        }
     }
 
     internal class UserData

@@ -27,15 +27,15 @@
 */
 //==============================================================================
 
-#if 0
-#include "../Core/Audio/Types.h"
-#include "../Core/Audio/GameAudio.h"
-#include "../Core/Graphics/Common/Types.h"
-#include "LFInternal.h"
-#include "LFTypedef.h"
+#include "LNInternal.h"
+#include "LNTypedef.h"
 
-void checkCommonDefinition()
+void LNTypeDef_CheckCommonDefinition()
 {
+	if (sizeof(LNVariant) >= sizeof(Variant)) goto ERR_EXIT;
+	if (LN_VARIANTTYPE_MAX != VariantType_Max) goto ERR_EXIT;
+
+#if 0
 	if (LN_OK != LNote::ResultCode_OK) goto ERR_EXIT;
 	if (LN_ERR_UNKNOWN != LNote::ResultCode_Unknown) goto ERR_EXIT;
 	if (LN_ERR_INVALID_OPERATION != LNote::ResultCode_InvalidOperation) goto ERR_EXIT;
@@ -71,13 +71,9 @@ void checkCommonDefinition()
 	if ( ::LN_CAMERATYPE_MAX != Graphics::CameraType_Max ) goto ERR_EXIT;
 	
 	if (LN_DEVICEBUTTON_MOUSE_1 != LN_KEY_MAX) goto ERR_EXIT;
+#endif
 	return;
 
 ERR_EXIT:
-	LN_ERR2_ASSERT( "type definition error." );
+	LN_ASSERT( "type definition error." );
 }
-#endif
-
-//==============================================================================
-//
-//==============================================================================

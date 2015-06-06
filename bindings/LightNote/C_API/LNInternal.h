@@ -83,6 +83,17 @@ using namespace Lumino;
 //}
 //}
 
+
+
+//#define LN_TYPE_INFO_DECL(className) \
+//	LN_API void className##_SetBindingTypeData(void* data);
+
+#define LN_TYPE_INFO_IMPL(apiClassName, coreClassName) \
+	LN_API void apiClassName##_SetBindingTypeData(void* data) \
+	{ \
+		coreClassName::SetBindingTypeData(data); \
+	}
+
 //---------------------------------------------------------------------
 #define TO_HANDLE( v )		static_cast<LNHandle>( v )
 
@@ -108,8 +119,10 @@ using namespace Lumino;
 //#define TO_VIEW_PANE( h )	static_cast<Core::Scene::Pane*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
 //#define TO_CAMERA( h )		static_cast<Core::Scene::Camera*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
 //↓今後コレに変更
-#define TO_REFOBJ( type, h )	static_cast<type*>( LFManager::GetObjectEntry(h)->Object )
+#define TO_REFOBJ( type, h )	static_cast<type*>((h != NULL) ? LFManager::GetObjectEntry(h)->Object : NULL)
 //#define TO_INTERFACE( type, h )	static_cast<type*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+
+#define TO_SAFE_VARIANT(p)		(p != NULL) ? (*reinterpret_cast<Variant*>(p)) : Variant()
 
 #define TO_CORE_VEC2_PTR( v )	reinterpret_cast<LNote::LVector2*>( v )
 #define TO_CORE_VEC2_REF( v )	reinterpret_cast<const LNote::LVector2&>( *v )
@@ -147,9 +160,9 @@ using namespace Lumino;
 	} \
 	return ::LN_OK;
 
-extern bool gEnableWrappedException;
+//extern bool gEnableWrappedException;
 
-void checkCommonDefinition();
+void LNTypeDef_CheckCommonDefinition();
 
 //---------------------------------------------------------------------
 // 言語バインダ用にエクスポートするが、BinderMaker で自動宣言しないもの

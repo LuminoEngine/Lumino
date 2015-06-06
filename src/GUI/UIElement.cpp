@@ -15,7 +15,11 @@ namespace GUI
 // UIElement
 //=============================================================================
 
-const String UIElement::SizeProperty(_T("Size"));
+const String	UIElement::SizeProperty(_T("Size"));
+
+const String	UIElement::MouseMoveEvent(_T("MouseMove"));
+const String	UIElement::MouseLeaveEvent(_T("MouseLeave"));
+const String	UIElement::MouseEnterEvent(_T("MouseEnter"));
 
 //-----------------------------------------------------------------------------
 //
@@ -26,7 +30,14 @@ UIElement::UIElement(GUIManager* manager)
 	, m_combinedLocalResource(NULL)
 {
 	LN_SAFE_ADDREF(m_manager);
+
+	// ÉvÉçÉpÉeÉBÇÃìoò^
 	RegisterProperty(SizeProperty, SizeF(NAN, NAN));
+
+	// ÉCÉxÉìÉgÇÃìoò^
+	m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
+	m_eventDataStore.Add(MouseLeaveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
+	m_eventDataStore.Add(MouseEnterEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
 }
 
 //-----------------------------------------------------------------------------
@@ -108,6 +119,18 @@ void UIElement::ApplyTemplate(CombinedLocalResource* parent)
 		LN_REFOBJ_SET(m_combinedLocalResource, parent);
 	}
 	OnApplyTemplate();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool UIElement::OnEvent(EventType type, EventArgs* args)
+{
+	if (type == EventType_MouseMove) {
+		printf("EventType_MouseMove\n");
+		RaiseEvent<MouseEventArgs>(MouseMoveEvent, this, (MouseEventArgs*)args);
+	}
+	return false;
 }
 
 //=============================================================================
@@ -431,12 +454,15 @@ bool ContentControl::OnEvent(EventType type, EventArgs* args)
 	if (m_childElement != NULL) {
 		if (m_childElement->OnEvent(type, args)) { return true; }
 	}
-	return false;
+	return Control::OnEvent(type, args);
 }
 
 //=============================================================================
 // RootPane
 //=============================================================================
+
+LN_CORE_OBJECT_TYPE_INFO_IMPL(RootPane);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -460,6 +486,7 @@ RootPane::~RootPane()
 // Button
 //=============================================================================
 
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Button);
 const String Button::ControlTemplateTypeName(_T("Button"));
 
 //-----------------------------------------------------------------------------
@@ -496,13 +523,12 @@ void Button::OnClick()
 bool Button::OnEvent(EventType type, EventArgs* args)
 {
 
-
-	//ContentControl::OnEvent(type, args)
+	//
 
 	//if (m_childElement != NULL) {
 	//	if (m_childElement->OnEvent(type, args)) { return true; }
 	//}
-	return false;
+	return ContentControl::OnEvent(type, args);
 }
 
 //-----------------------------------------------------------------------------

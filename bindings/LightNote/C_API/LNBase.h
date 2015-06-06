@@ -45,7 +45,7 @@ LN_EXTENSION_CLASS(LNObject)
 	LN_INSTANCE_API
 	LNResult LNObject_GetRefCount(LN_HANDLE(LNObject) hadnleObject, int* count);
 
-	LN_INTERNAL_API void*	LNObject_GetTypeUserData(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API void*	LNObject_GetBindingTypeData(LN_HANDLE(LNObject) hadnleObject);
 	LN_INTERNAL_API void*	LNObject_GetInternalObject(LN_HANDLE(LNObject) hadnleObject);
 	LN_INTERNAL_API void	LNObject_SetUserData(LN_HANDLE(LNObject) hadnleObject, void* data);
 	LN_INTERNAL_API void*	LNObject_GetUserData(LN_HANDLE(LNObject) hadnleObject);
@@ -134,6 +134,36 @@ LN_EXTENSION_CLASS(LNObjectList)
 	LNResult LNObjectList_RemoveAt(LN_HANDLE(LNObjectList) objectList, int index);
 
 LN_CLASS_END
+
+
+//=============================================================================
+/**
+	@brief	TODO
+*/
+LN_STRUCT_CLASS(LNVariant)
+
+	/**
+		@brief		TODO
+		@param[in]	value		: 
+		@param[in]	structSize	: 
+	*/
+	LN_INSTANCE_API
+	LNResult LNVariant_Init(LNVariant* value, int structSize);
+
+	/**
+		@brief		TODO
+		@param[in]	value		: 
+	*/
+	LN_INSTANCE_API
+	LNResult LNVariant_Clear(LNVariant* value);
+
+	/**
+		@brief		TODO
+		@param[in]	value		: 
+		@param[in]	obj			: 
+	*/
+	LN_INSTANCE_API
+	LNResult LNVariant_SetObject(LNVariant* value, LN_HANDLE(LNObject) obj);
 
 LN_MODULE_END
 

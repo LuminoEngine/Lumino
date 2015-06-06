@@ -31,6 +31,10 @@ public:
 	static const String	SizeProperty;
 	static const String	IsHitTestProperty;
 
+	static const String	MouseMoveEvent;
+	static const String	MouseLeaveEvent;
+	static const String	MouseEnterEvent;
+
 public:
 	UIElement(GUIManager* manager);
 	virtual ~UIElement();
@@ -52,7 +56,6 @@ public:
 	/// 要素のサイズを取得します。
 	const SizeF& GetSize() const { return GetValue(SizeProperty).GetSizeF(); }	// TODO: 危ない。参照で返すとスタックの Variant で消える
 
-
 	/// ヒットテストの有無を設定します。
 	void SetHitTest(bool enabled) { SetValue(IsHitTestProperty, Variant(enabled)); }
 
@@ -60,6 +63,11 @@ public:
 	bool IsHitTest() const { return GetValue(IsHitTestProperty).GetBool(); }
 
 	
+
+	void AddMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { AddHandler(MouseMoveEvent, handler); }
+	void RemoveMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { RemoveHandler(MouseMoveEvent, handler); }
+
+
 
 	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
 	void UpdateLayout();
@@ -74,11 +82,48 @@ public:
 
 	virtual void OnApplyTemplate() {}
 	virtual void OnRender() {}
-	virtual bool OnEvent(EventType type, EventArgs* args) { return false; }
+	virtual bool OnEvent(EventType type, EventArgs* args);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+
+protected:
+	template<typename TArgs>
+	void AddHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
+	{
+		RefObject* ev;
+		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->AddHandler(handler);
+		}
+		else {
+			LN_THROW(0, ArgumentException);
+		}
+	}
+	template<typename TArgs>
+	void RemoveHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
+	{
+		RefObject* ev;
+		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->RemoveHandler(handler);
+		}
+		else {
+			LN_THROW(0, ArgumentException);
+		}
+	}
+	template<typename TArgs>
+	void RaiseEvent(const String& eventName, CoreObject* sender, TArgs* args)
+	{
+		RefObject* ev;
+		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->Raise(sender, args);
+		}
+		else {
+			LN_THROW(0, ArgumentException);
+		}
+	}
+
+
 
 protected:
 
@@ -88,6 +133,11 @@ protected:
 
 	ResourceDictionary*		m_localResource;
 	CombinedLocalResource*	m_combinedLocalResource;
+
+
+	typedef SortedArray<String, RefObject*>	EventDataStore;
+	EventDataStore	m_eventDataStore;
+	//Event02<CoreObject*, MouseEventArgs*> m_eventMouseMove;
 };
 
 /**
@@ -218,6 +268,7 @@ private:
 class RootPane
 	: public ContentControl
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	RootPane(GUIManager* manager);
 	virtual ~RootPane();
@@ -238,6 +289,7 @@ private:
 class Button
 	: public ContentControl
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	static const String ControlTemplateTypeName;	///< "Button"
 
