@@ -3,9 +3,92 @@
 #include "LNInternal.h"
 #include "LNGUI.h"
 
+
+//=============================================================================
+// LNEventArgs
+//=============================================================================
+
+LN_TYPE_INFO_IMPL(LNEventArgs, GUI::EventArgs);
+
+//LN_API LNResult LNMouseEventHandler_CreateInternal(LN_HANDLE(LNMouseEventHandler)* handler, GUI::MouseEventArgs* e)
+//{
+//
+//}
+LN_API LNResult LNEventArgs_GetHandlerOwner(LN_HANDLE(LNEventArgs) hEventArgs, LN_OUT LN_HANDLE(LNObject)* hObject)
+{
+	LN_CHECK_ARG_HANDLE(hEventArgs);
+	LN_CHECK_ARG_HANDLE(hObject);
+	*hObject = LFManager::CheckRegisterObject(TO_REFOBJ(GUI::EventArgs, hEventArgs)->HandlerOwner);
+	return ::LN_OK;
+}
+
+
+//=============================================================================
+// LNMouseEventArgs
+//=============================================================================
+
+LN_TYPE_INFO_IMPL(LNMouseEventArgs, GUI::MouseEventArgs);
+
 //=============================================================================
 // LNGUIElement
 //=============================================================================
+
+
+class LNGUIElementIF : public GUI::UIElement
+{
+public:
+	LNGUIElementIF(GUI::GUIManager* manager)
+		: GUI::UIElement(manager)
+	{
+		AddHandler(MouseMoveEvent, LN_CreateDelegate(EventWrap_MouseMove));
+		AddHandler(MouseEnterEvent, LN_CreateDelegate(EventWrap_MouseEnter));
+		AddHandler(MouseLeaveEvent, LN_CreateDelegate(EventWrap_MouseLeave));
+		m_LNMouseMoveHandler = NULL;
+		m_LNMouseEnterHandler = NULL;
+		m_LNMouseLeaveHandler = NULL;
+	}
+	LNMouseEventHandler	m_LNMouseMoveHandler;
+	LNMouseEventHandler	m_LNMouseEnterHandler;
+	LNMouseEventHandler	m_LNMouseLeaveHandler;
+
+#define LN_CALLBACK_IMPL_LNGUIElementIF
+	// コンストラクタでセットされる
+	static void LN_STDCALL EventWrap_MouseMove(CoreObject* sender, GUI::MouseEventArgs* e)
+	{
+		LNHandle h = LFManager::CheckRegisterObject(e);
+		if (static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseMoveHandler != NULL) {
+			static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseMoveHandler(h);
+		}
+	}
+	static void LN_STDCALL EventWrap_MouseEnter(CoreObject* sender, GUI::MouseEventArgs* e)
+	{
+		LNHandle h = LFManager::CheckRegisterObject(e);
+		if (static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseEnterHandler != NULL) {
+			static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseEnterHandler(h);
+		}
+	}
+	static void LN_STDCALL EventWrap_MouseLeave(CoreObject* sender, GUI::MouseEventArgs* e)
+	{
+		LNHandle h = LFManager::CheckRegisterObject(e);
+		if (static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseLeaveHandler != NULL) {
+			static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseLeaveHandler(h);
+		}
+	}
+
+	// Binder 側の関数ポインタをセットするために使用する。各 C_API から呼ばれる。
+	virtual bool AddHandlerInternal(const String& key, void* nativeCFuncPtr)
+	{
+		if (key == MouseMoveEvent) { m_LNMouseMoveHandler = reinterpret_cast<LNMouseEventHandler>(nativeCFuncPtr); return true; }
+		else if (key == MouseEnterEvent) { m_LNMouseEnterHandler = reinterpret_cast<LNMouseEventHandler>(nativeCFuncPtr); return true; }
+		else if (key == MouseLeaveEvent) { m_LNMouseLeaveHandler = reinterpret_cast<LNMouseEventHandler>(nativeCFuncPtr); return true; }
+		return UIElement::AddHandlerInternal(key, nativeCFuncPtr);
+	}
+	virtual bool RemoveHandlerInternal(const String& key, void* nativeCFuncPtr)
+	{
+		// TODO
+		return UIElement::RemoveHandlerInternal(key, nativeCFuncPtr);
+	}
+};
 
 //-----------------------------------------------------------------------------
 //
@@ -14,6 +97,26 @@ LN_API LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int wi
 {
 	LN_CHECK_ARG_HANDLE(rootPane);
 	TO_REFOBJ(GUI::RootPane, rootPane)->SetSize(SizeF(width, height));
+	return ::LN_OK;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LN_API LNResult LNGUIElement_AddMouseMoveEventHandler(LN_HANDLE(LNGUIElement) element, LNMouseEventHandler handler)
+{
+	LN_CHECK_ARG_HANDLE(element);
+	TO_REFOBJ(GUI::UIElement, element)->AddHandlerInternal(GUI::UIElement::MouseMoveEvent, handler);
+	return ::LN_OK;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LN_API LNResult LNGUIElement_RemoveMouseMoveEventHandler(LN_HANDLE(LNGUIElement) element, LNMouseEventHandler handler)
+{
+	LN_CHECK_ARG_HANDLE(element);
+	TO_REFOBJ(GUI::UIElement, element)->RemoveHandlerInternal(GUI::UIElement::MouseMoveEvent, handler);
 	return ::LN_OK;
 }
 
@@ -84,10 +187,79 @@ LN_API LNResult LNGUIRootPane_GetDefaultRootPane(LN_OUT LN_HANDLE(LNGUIRootPane)
 
 LN_TYPE_INFO_IMPL(LNGUIButton, GUI::Button);
 
+
 class LNGUIButtonIF : public GUI::Button
 {
 public:
+	LNGUIButtonIF(GUI::GUIManager* manager)
+		: GUI::Button(manager)
+	{
 
+		AddHandler(MouseMoveEvent, LN_CreateDelegate(EventWrap_MouseMove));
+		AddHandler(MouseEnterEvent, LN_CreateDelegate(EventWrap_MouseEnter));
+		AddHandler(MouseLeaveEvent, LN_CreateDelegate(EventWrap_MouseLeave));
+
+		m_LNMouseMoveHandler = NULL;
+		m_LNMouseEnterHandler = NULL;
+		m_LNMouseLeaveHandler = NULL;
+
+		m_overrideRender = NULL;
+	}
+	LNMouseEventHandler	m_LNMouseMoveHandler;
+	LNMouseEventHandler	m_LNMouseEnterHandler;
+	LNMouseEventHandler	m_LNMouseLeaveHandler;
+
+#define LN_CALLBACK_IMPL_LNGUIElementIF
+	// コンストラクタでセットされる
+	static void LN_STDCALL EventWrap_MouseMove(CoreObject* sender, GUI::MouseEventArgs* e)
+	{
+		LNHandle h = LFManager::CheckRegisterObject(e);
+		if (static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseMoveHandler != NULL) {
+			static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseMoveHandler(h);
+		}
+	}
+	static void LN_STDCALL EventWrap_MouseEnter(CoreObject* sender, GUI::MouseEventArgs* e)
+	{
+		LNHandle h = LFManager::CheckRegisterObject(e);
+		if (static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseEnterHandler != NULL) {
+			static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseEnterHandler(h);
+		}
+	}
+	static void LN_STDCALL EventWrap_MouseLeave(CoreObject* sender, GUI::MouseEventArgs* e)
+	{
+		LNHandle h = LFManager::CheckRegisterObject(e);
+		if (static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseLeaveHandler != NULL) {
+			static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseLeaveHandler(h);
+		}
+	}
+
+
+	// Binder 側の関数ポインタをセットするために使用する。各 C_API から呼ばれる。
+	virtual bool AddHandlerInternal(const String& key, void* nativeCFuncPtr)
+	{
+		if (key == MouseMoveEvent) { m_LNMouseMoveHandler = reinterpret_cast<LNMouseEventHandler>(nativeCFuncPtr); return true; }
+		else if (key == MouseEnterEvent) { m_LNMouseEnterHandler = reinterpret_cast<LNMouseEventHandler>(nativeCFuncPtr); return true; }
+		else if (key == MouseLeaveEvent) { m_LNMouseLeaveHandler = reinterpret_cast<LNMouseEventHandler>(nativeCFuncPtr); return true; }
+		return UIElement::AddHandlerInternal(key, nativeCFuncPtr);
+	}
+	virtual bool RemoveHandlerInternal(const String& key, void* nativeCFuncPtr)
+	{
+		// TODO
+		return UIElement::RemoveHandlerInternal(key, nativeCFuncPtr);
+	}
+
+
+	// override
+	LNCallback_Void_Void m_overrideRender;
+	virtual void Render()
+	{
+		if (m_overrideRender != NULL) 
+		{
+			m_overrideRender(LFManager::CheckRegisterObject(this));
+			return;// ここでは基底の処理を呼び出さない。呼び出すかどうかはBinder側が決める
+		}
+		Button::Render();
+	}
 
 };
 
@@ -97,9 +269,8 @@ public:
 LN_API LNResult LNGUIButton_Create(LN_HANDLE(LNGUIButton)* button)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<GUI::Button> obj(LN_NEW GUI::Button(LFManager::Application->GetGUIManager()));
+	RefPtr<LNGUIButtonIF> obj(LN_NEW LNGUIButtonIF(LFManager::Application->GetGUIManager()));
 	obj.SafeAddRef();
 	*button = LFManager::CheckRegisterObject(obj);
 	LN_FUNC_TRY_END_RETURN;
-
 }

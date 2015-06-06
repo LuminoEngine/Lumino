@@ -144,7 +144,7 @@ void Variant::Set(CoreObject* obj)
 //-----------------------------------------------------------------------------
 CoreObject* Variant::GetObject() const
 {
-	LN_VERIFY(m_type == VariantType_Object) { return NULL; }
+	if (LN_VERIFY_ASSERT(m_type == VariantType_Object)) { return NULL; }
 	return m_object;
 }
 
@@ -163,7 +163,7 @@ void Variant::SetSizeF(const SizeF& value)
 //-----------------------------------------------------------------------------
 const SizeF& Variant::GetSizeF() const
 {
-	LN_VERIFY(m_type == VariantType_SizeF) { return SizeF(); }
+	if (LN_VERIFY_ASSERT(m_type == VariantType_SizeF)) { return SizeF(); }
 	return *((SizeF*)m_sizeF);
 }
 
@@ -200,7 +200,7 @@ void Variant::Copy(const Variant& obj)
 		memcpy(m_sizeF, obj.m_sizeF, sizeof(m_sizeF));
 		break;
 	default:
-		LN_VERIFY(0);
+		LN_ASSERT(0);
 		break;
 	}
 }

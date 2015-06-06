@@ -7,6 +7,7 @@ namespace Lumino
 {
 namespace GUI
 {
+class UIElement;
 
 /// “à•”ƒCƒxƒ“ƒg‚ÌŽí—Þ
 enum EventType
@@ -23,8 +24,8 @@ enum EventType
 	EventType_ElapsedTime,
 
 
-	EventType_MouseLeave,
 	EventType_MouseEnter,
+	EventType_MouseLeave,
 };
 
 /**
@@ -33,9 +34,13 @@ enum EventType
 class EventArgs
 	: public CoreObject
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	EventArgs();
 	virtual ~EventArgs();
+
+public:
+	UIElement* HandlerOwner;
 
 protected:
 
@@ -47,6 +52,7 @@ protected:
 class MouseEventArgs
 	: public EventArgs
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	MouseEventArgs();
 	virtual ~MouseEventArgs();

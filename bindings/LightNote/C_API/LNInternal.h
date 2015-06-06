@@ -8,6 +8,7 @@
 using namespace Lumino;
 
 #include "LNTypedef.h"
+#include "LNCommon.h"
 #include "LNManager.h"
 
 
@@ -89,7 +90,7 @@ using namespace Lumino;
 //	LN_API void className##_SetBindingTypeData(void* data);
 
 #define LN_TYPE_INFO_IMPL(apiClassName, coreClassName) \
-	LN_API void apiClassName##_SetBindingTypeData(void* data) \
+	extern "C" LN_API void apiClassName##_SetBindingTypeData(void* data) \
 	{ \
 		coreClassName::SetBindingTypeData(data); \
 	}

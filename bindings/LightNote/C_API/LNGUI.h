@@ -15,14 +15,55 @@ LN_MODULE(GUI)
 /**
 	@brief	TODO
 */
+LN_CLASS(LNEventArgs)
+
+	/**
+		@brief		TODO
+		@param[in]	button		: TODO
+	*/
+	LN_INSTANCE_API
+	LN_PROPERTY
+	LNResult LNEventArgs_GetHandlerOwner(LN_HANDLE(LNEventArgs) hEventArgs, LN_OUT LN_HANDLE(LNObject)* hObject);
+
+LN_CLASS_END
+
+//=============================================================================
+/**
+	@brief	TODO
+*/
+LN_CLASS(LNMouseEventArgs)
+LN_CLASS_END
+
+//=============================================================================
+/**
+	@brief	TODO
+*/
 LN_CLASS(LNGUIElement)
 
 	/**
 		@brief		TODO
-		@param[out]	button		: TODO
+		@param[in]	button		: TODO
 	*/
 	LN_INSTANCE_API
-	LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int width, int height);
+	LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIElement) element, int width, int height);
+
+	/**
+		@brief		TODO
+		@param[in]	element		: TODO
+		@param[in]	handler		: 
+	*/
+	LN_INSTANCE_API
+	LN_EVENT
+	LNResult LNGUIElement_AddMouseMoveEventHandler(LN_HANDLE(LNGUIElement) element, LNMouseEventHandler handler);
+
+	/**
+		@brief		TODO
+		@param[in]	element		: TODO
+		@param[in]	handler		: 
+	*/
+	LN_INSTANCE_API
+	LN_EVENT
+	LNResult LNGUIElement_RemoveMouseMoveEventHandler(LN_HANDLE(LNGUIElement) element, LNMouseEventHandler handler);
 	
 LN_CLASS_END
 

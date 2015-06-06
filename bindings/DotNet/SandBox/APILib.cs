@@ -82,10 +82,22 @@ namespace LNote
         public extern static void LNApplication_Terminate();
 
 
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNEventArgs_GetHandlerOwner(IntPtr hEventArgs, out IntPtr hObject);
 
+
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void MouseEventHandler(IntPtr hE);
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNGUIElement_SetSizeWH(IntPtr rootPane, int width, int height);
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNGUIElement_AddMouseMoveEventHandler(IntPtr element, MouseEventHandler handler);
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNGUIElement_RemoveMouseMoveEventHandler(IntPtr element, MouseEventHandler handler);
+
 
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNGUIContentControl_SetContent(IntPtr handle, ref Variant variant);

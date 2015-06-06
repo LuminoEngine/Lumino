@@ -83,7 +83,7 @@ ControlTemplate::~ControlTemplate()
 //-----------------------------------------------------------------------------
 void ControlTemplate::Apply(Control* control)
 {
-	LN_VERIFY(control != NULL) { return; }
+	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
 	if (m_visualTreeRoot != NULL) {
 		control->AddChild(m_visualTreeRoot->CreateInstance());
@@ -120,7 +120,7 @@ ResourceDictionary::~ResourceDictionary()
 //-----------------------------------------------------------------------------
 bool ResourceDictionary::TryGetItem(const String& key, CoreObject** outObject)
 {
-	LN_VERIFY(outObject != NULL) { return false; }
+	if (LN_VERIFY_ASSERT(outObject != NULL)) { return false; }
 	ItemMap::iterator itr = m_items.find(key);
 	if (itr != m_items.end()) {
 		*outObject = itr->second;
@@ -134,7 +134,7 @@ bool ResourceDictionary::TryGetItem(const String& key, CoreObject** outObject)
 //-----------------------------------------------------------------------------
 void ResourceDictionary::AddItem(const String& key, CoreObject* obj)
 {
-	LN_VERIFY(obj != NULL) { return; }
+	if (LN_VERIFY_ASSERT(obj != NULL)) { return; }
 	m_items[key] = obj;
 	obj->AddRef();
 }
@@ -144,7 +144,7 @@ void ResourceDictionary::AddItem(const String& key, CoreObject* obj)
 //-----------------------------------------------------------------------------
 bool ResourceDictionary::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
 {
-	LN_VERIFY(outTemplate != NULL) { return false; }
+	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return false; }
 	ControlTemplateMap::iterator itr = m_controlTemplateMap.find(fullTypeName);
 	if (itr != m_controlTemplateMap.end()) {
 		*outTemplate = itr->second;
@@ -158,7 +158,7 @@ bool ResourceDictionary::TryGetControlTemplate(const String& fullTypeName, Contr
 //-----------------------------------------------------------------------------
 void ResourceDictionary::AddControlTemplate(ControlTemplate* outTemplate)
 {
-	LN_VERIFY(outTemplate != NULL) { return; }
+	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return; }
 	m_controlTemplateMap[outTemplate->GetTargetType()] = outTemplate;
 	outTemplate->AddRef();
 }

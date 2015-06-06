@@ -74,6 +74,7 @@ typedef intptr_t		LNHandle;
 #define LN_LIBRARY_TERMINATOR
 #define LN_CONSTRUCTOR
 #define LN_PROPERTY
+#define LN_EVENT
 #define LN_STRUCT_CONSTRUCTOR
 
 #define LN_HANDLE(x) LNHandle

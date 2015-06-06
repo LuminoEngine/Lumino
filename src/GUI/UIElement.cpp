@@ -538,5 +538,14 @@ void Button::OnRender()
 {
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::Render()
+{
+	printf("Button::Render()\n");
+	ContentControl::Render();
+}
+
 } // namespace GUI
 } // namespace Lumino

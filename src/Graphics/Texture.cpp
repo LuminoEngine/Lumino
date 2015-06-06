@@ -172,8 +172,8 @@ const Size& Texture::GetRealSize() const
 //-----------------------------------------------------------------------------
 void Texture::SetSubData(const Point& offset, const Imaging::Bitmap* data)
 {
-	LN_VERIFY(data != NULL) { return; }
-	LN_VERIFY(data->GetPixelFormat() == Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) { return; }	// ピクセルフォーマットが一致していること
+	if (LN_VERIFY_ASSERT(data != NULL)) { return; }
+	if (LN_VERIFY_ASSERT(data->GetPixelFormat() == Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()))) { return; }	// ピクセルフォーマットが一致していること
 
 	LN_THROW(0, NotImplementedException);
 }
@@ -183,7 +183,7 @@ void Texture::SetSubData(const Point& offset, const Imaging::Bitmap* data)
 //-----------------------------------------------------------------------------
 void Texture::SetSubData(const Point& offset, const void* data)
 {
-	LN_VERIFY(data != NULL) { return; }
+	if (LN_VERIFY_ASSERT(data != NULL)) { return; }
 	// TODO: m_primarySurface にもセット
 	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<SetSubDataTextureCommand>(
 		m_deviceObj, offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());

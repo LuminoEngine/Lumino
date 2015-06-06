@@ -43,7 +43,8 @@ enum LNResult
 	@brief		例外発生時のコールバック関数
 	@param[in]	errCode		: エラーコード
 */
-typedef void (*LNExceptionCallback)( LNResult errCode );
+typedef void(*LNExceptionCallback)(LNResult errCode);
+
 
 //==============================================================================
 // Base
@@ -683,6 +684,22 @@ enum LNCoord
 	LN_COORD_MAX,
 
 };
+
+//==============================================================================
+// LNGUI
+//==============================================================================
+
+/**
+	@brief		TODO
+	@param[in]	mouseEventArgs		: 
+*/
+typedef void(*LNMouseEventHandler)(LNHandle mouseEventArgs);
+
+/**
+	@brief		TODO
+	@param[in]	handle		: 
+*/
+typedef void(*LNCallback_Void_Void)(LNHandle handle);
 
 //==============================================================================
 // 

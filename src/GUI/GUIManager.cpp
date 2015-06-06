@@ -627,7 +627,7 @@ GUIManager::~GUIManager()
 //-----------------------------------------------------------------------------
 void GUIManager::Initialize(const ConfigData& configData)
 {
-	LN_VERIFY(configData.GraphicsManager != NULL) { return; }
+	if (LN_VERIFY_ASSERT(configData.GraphicsManager != NULL)) { return; }
 
 	m_graphicsManager = configData.GraphicsManager;
 

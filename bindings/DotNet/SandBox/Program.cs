@@ -19,8 +19,9 @@ namespace SandBox
 
             var pane = GUIRootPane.DefaultRootPane;
             var button1 = new GUIButton();
+            button1.MouseMove += (e) => { Console.WriteLine("Main"); };
             pane.Content = button1;
-
+            GC.Collect();
             bool endRequested = false;
             do
             {

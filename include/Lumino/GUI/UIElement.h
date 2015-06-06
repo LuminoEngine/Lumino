@@ -67,6 +67,8 @@ public:
 	void AddMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { AddHandler(MouseMoveEvent, handler); }
 	void RemoveMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { RemoveHandler(MouseMoveEvent, handler); }
 
+	virtual bool AddHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
+	virtual bool RemoveHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 
 
 	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
@@ -88,7 +90,7 @@ public:
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
-protected:
+public:
 	template<typename TArgs>
 	void AddHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
 	{
@@ -116,6 +118,7 @@ protected:
 	{
 		RefObject* ev;
 		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+			args->HandlerOwner = this;
 			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->Raise(sender, args);
 		}
 		else {
@@ -305,6 +308,7 @@ protected:
 	virtual void OnClick();
 	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void OnRender();
+	virtual void Render();
 
 	virtual bool ApplyTemplateInternal()
 	{

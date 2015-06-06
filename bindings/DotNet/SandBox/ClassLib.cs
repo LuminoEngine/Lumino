@@ -16,6 +16,41 @@ namespace LNote
         public Int32 Data4;
     }
 
+    public class GUIEventArgs : CoreObject
+    {
+        internal GUIEventArgs(_LNInternal i)
+            : base(i)
+        {
+        }
+
+        #region HandlerOwner
+        public GUIElement HandlerOwner
+        {
+            get
+            {
+                IntPtr handle;
+                API.LNEventArgs_GetHandlerOwner(_handle, out handle);
+                if (_HandlerOwner == null || _HandlerOwner._handle != handle)
+                {
+                    _HandlerOwner = CoreObjectManager.CheckRegisterAndGetWrapperObject<GUIElement>(handle);
+                }
+                return _HandlerOwner;
+            }
+        }
+        private GUIElement _HandlerOwner;
+        #endregion
+    }
+
+    public class GUIMouseEventArgs : GUIEventArgs
+    {
+        internal GUIMouseEventArgs(_LNInternal i)
+            : base(i)
+        {
+        }
+    }
+
+    public delegate void MouseEventHandler(GUIMouseEventArgs e);
+
     public class GUIElement : CoreObject
     {
 
@@ -23,12 +58,36 @@ namespace LNote
         internal GUIElement(_LNInternal i)
             : base(i)
         {
-
         }
 
         void SetSize(int x, int y)
         {
             API.LNGUIElement_SetSizeWH(_handle, x, y);
+        }
+
+
+
+        protected void CallbackInit()
+        {
+            API.LNGUIElement_AddMouseMoveEventHandler(_handle, _Delegate_MouseMove);
+        }
+        private static void EventWrap_MouseMoveEvent(IntPtr hMouseMoveEventArgs) // LNTypedef.h で定義されている関数ポインタと同じ型
+        {
+            var args = CoreObjectManager.CheckRegisterAndGetWrapperObject<GUIMouseEventArgs>(hMouseMoveEventArgs);
+            args.HandlerOwner.MouseMove(args);
+        }
+        static API.MouseEventHandler _Delegate_MouseMove = new API.MouseEventHandler(EventWrap_MouseMoveEvent);
+
+        public event MouseEventHandler MouseMove;
+
+
+
+
+
+
+        protected virtual void Render()
+        {
+            Console.WriteLine("protected virtual void Render()");
         }
     }
 
@@ -93,11 +152,12 @@ namespace LNote
     public class GUIButton : GUIContentControl
     {
         public GUIButton()
-            : base(_LNInternal.InternalBlock)
+            : base(_LNInternal.InternalBlock)   // Base は必ず _LNInternal のを呼ぶ
         {
             IntPtr handle;
             API.LNGUIButton_Create(out handle);
-            SetHandle(handle);
+            CoreObjectManager.RegisterWrapperObject(this, handle);
+            base.CallbackInit();
         }
 
 
@@ -105,6 +165,11 @@ namespace LNote
             : base(_LNInternal.InternalBlock)
         {
         }
+
+        //internal virtual void SetHandle(IntPtr handle)
+        //{
+        //    base.SetHandle(handle);
+        //}
     }
 
 
@@ -148,6 +213,9 @@ namespace LNote
 
         internal virtual void SetHandle(IntPtr handle)
         {
+            //
+            //var obj = CoreObjectManager.CheckRegisterAndGetWrapperObject<CoreObject>(handle);
+            //if (obj != this) throw new InvalidOperationException();
             _handle = handle;
         }
 
@@ -182,6 +250,18 @@ namespace LNote
 
         public static void Register()
         {
+            _typeInfos.Add(null);   // [0] は無効値を示す
+
+            #region GUIMouseEventArgs // 自動生成1件分
+            {
+                var ti = new TypeInfo()
+                {
+                    Factory = () => new GUIMouseEventArgs(_LNInternal.InternalBlock)
+                };
+                _typeInfos.Add(ti);
+                LNMouseEventArgs_SetBindingTypeData((IntPtr)(_typeInfos.Count - 1)); // これは↓で自動定義
+            }
+            #endregion
             #region GUIRootPane // 自動生成1件分
             {
                 var ti = new TypeInfo()
@@ -232,6 +312,9 @@ namespace LNote
 
         #region SetBindingTypeID API
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+        private static extern void LNMouseEventArgs_SetBindingTypeData(IntPtr id);
+
+        [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern void LNGUIRootPane_SetBindingTypeData(IntPtr id);
         #endregion
 
@@ -245,7 +328,8 @@ namespace LNote
         public static void ObjectToVariant(object obj, ref Variant v)
         {
             API.LNVariant_Init(ref v, Marshal.SizeOf(v));
-            if (obj.GetType() == typeof(CoreObject)) { API.LNVariant_SetObject(ref v, ((CoreObject)obj).Handle); }
+            //if (obj.GetType() == typeof(CoreObject)) { API.LNVariant_SetObject(ref v, ((CoreObject)obj).Handle); return; }
+            if (obj is CoreObject) { API.LNVariant_SetObject(ref v, ((CoreObject)obj).Handle); return; }
             throw new ArgumentException();
         }
     }
@@ -281,7 +365,10 @@ namespace LNote
 
                 // 管理リストの空き番号を詰める
                 for (int i = 0; i < InitialListSize; i++)
+                {
                     _userDataListIndexStack.Push(i);
+                    _userDataList.Add(new UserData());
+                }
 
                 // 型情報の登録
                 TypeInfo.Register();
@@ -299,12 +386,13 @@ namespace LNote
 
         // ハンドルからラップオブジェクトを返す
         //public static T GetWrapperObject<T>(IntPtr handle) where T : CoreObject
-        public static T CheckRegisterAndGetWrapperObject<T>(IntPtr handle) where T : CoreObject
+        public static T CheckRegisterAndGetWrapperObject<T>(IntPtr handle) where T : CoreObject // TODO: T はキャストにしか使ってない。型情報を使っているのか混乱するのでやめておく。
         {
             int index = (int)LNObject_GetUserData(handle);
             if (index == 0) // 新しく登録する
             {
-                var obj = TypeInfo.GetTypeInfoByHandle(handle).Factory(handle);
+                var obj = TypeInfo.GetTypeInfoByHandle(handle).Factory();
+                obj.SetHandle(handle);
                 RegisterWrapperObject(obj, handle);
                 return (T)obj;
                 //return CreateWrapperObject<T>(handle);
