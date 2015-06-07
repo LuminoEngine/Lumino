@@ -5,6 +5,7 @@
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include <Lumino/GUI/VisualState.h>	// for button
 
 namespace Lumino
 {
@@ -26,6 +27,7 @@ const String	UIElement::MouseEnterEvent(_T("MouseEnter"));
 //-----------------------------------------------------------------------------
 UIElement::UIElement(GUIManager* manager)
 	: m_manager(manager)
+	, m_parent(NULL)
 	, m_localResource(NULL)
 	, m_combinedLocalResource(NULL)
 {
@@ -48,6 +50,21 @@ UIElement::~UIElement()
 	LN_SAFE_RELEASE(m_localResource);
 	LN_SAFE_RELEASE(m_combinedLocalResource);
 	LN_SAFE_RELEASE(m_manager);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::ApplyTemplate()
+{
+	CombinedLocalResource* parentResource = NULL;
+	if (m_parent != NULL) {
+		parentResource = m_parent->m_combinedLocalResource;
+	}
+	else {
+		parentResource = m_manager->GetRootCombinedResource();	// 親要素が無ければ Manager のリソースを使う
+	}
+	ApplyTemplateHierarchy(parentResource);
 }
 
 //-----------------------------------------------------------------------------
@@ -110,7 +127,18 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::ApplyTemplate(CombinedLocalResource* parent)
+bool UIElement::OnEvent(EventType type, EventArgs* args)
+{
+	if (type == EventType_MouseMove) {
+		RaiseEvent<MouseEventArgs>(MouseMoveEvent, this, (MouseEventArgs*)args);
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
 	if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
 		m_combinedLocalResource->Combine(parent, m_localResource);
@@ -118,24 +146,15 @@ void UIElement::ApplyTemplate(CombinedLocalResource* parent)
 	else {
 		LN_REFOBJ_SET(m_combinedLocalResource, parent);
 	}
-	OnApplyTemplate();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool UIElement::OnEvent(EventType type, EventArgs* args)
-{
-	if (type == EventType_MouseMove) {
-		printf("EventType_MouseMove\n");
-		RaiseEvent<MouseEventArgs>(MouseMoveEvent, this, (MouseEventArgs*)args);
-	}
-	return false;
+	OnApplyTemplate(m_combinedLocalResource);
 }
 
 //=============================================================================
 // Decorator
 //=============================================================================
+
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Decorator);
+LN_UI_ELEMENT_SUBCLASS_IMPL(Decorator);
 
 //-----------------------------------------------------------------------------
 //
@@ -157,11 +176,17 @@ Decorator::~Decorator()
 //-----------------------------------------------------------------------------
 void Decorator::SetChild(UIElement* element)
 {
+	// 既に別の子要素となっている場合はエラー
+	if (element != NULL && element->GetParent() != NULL) {
+		LN_THROW(0, InvalidOperationException, _T("Specified element is already a child element of another element."));
+	}
+
 	m_child = element;
 
-	// 子要素のテーマを直ちに更新
-	if (m_child != NULL) {
-		m_child->ApplyTemplate(m_combinedLocalResource);
+	if (m_child != NULL)
+	{
+		m_child->SetParent(this);
+		m_child->ApplyTemplate();	// 子要素のテーマを直ちに更新
 	}
 }
 
@@ -188,45 +213,48 @@ UIElement* Decorator::CheckMouseHoverElement(const PointF& globalPt)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Decorator::ApplyTemplate(CombinedLocalResource* parent)
+void Decorator::AddChild(const Variant& value)
 {
-	UIElement::ApplyTemplate(parent);
-	if (m_child != NULL) {
-		m_child->ApplyTemplate(m_combinedLocalResource);	// 再帰的に更新する
-	}
+	UIElement* e = dynamic_cast<UIElement*>(value.GetObject());
+	SetChild(e);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Decorator::AddChild(const Variant& value)
+void Decorator::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
-	UIElement* e = dynamic_cast<UIElement*>(value.GetObject());
-	SetChild(e);
-
+	UIElement::ApplyTemplateHierarchy(parent);
+	if (m_child != NULL) {
+		m_child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	}
 }
 
 //=============================================================================
 // ButtonChrome
 //=============================================================================
 
-const String ButtonChrome::TypeName(_T("ButtonChrome"));
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonChrome);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ButtonChrome);
+const String	ButtonChrome::FrameWidthProperty(_T("FrameWidth"));
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 ButtonChrome::ButtonChrome(GUIManager* manager)
 	: Decorator(manager)
-	, m_bgMargin(2)
+	, m_frameWidth(8.0f)
 {
-	//printf("TODO:");
-	//m_brush.Attach(LN_NEW Graphics::TextureBrush());
-	//m_brush->Create(_T("D:/Proj/Lumino/src/GUI/Resource/001-Blue01.png"), m_manager->GetGraphicsManager());	// TODO
-	//m_brush->SetSourceRect(Rect(128, 0, 64, 64));
+	// TODO
+	// ボタンのスタイルとテンプレート
+	// https://msdn.microsoft.com/ja-jp/library/ms753328%28v=vs.110%29.aspx
+	RefPtr<VisualStateManager> vsm(LN_NEW VisualStateManager());
 
-	//m_bgBrush.Attach(LN_NEW Graphics::TextureBrush());
-	//m_bgBrush->SetTexture(m_brush->GetTexture());
-	//m_bgBrush->SetSourceRect(Rect(0, 0, 128, 128));
+	RefPtr<VisualStateGroup> group1(LN_NEW VisualStateGroup(_T("CommonStates")));
+
+
+	RefPtr<VisualState> state1(LN_NEW VisualState(_T("Normal")));
+
 }
 
 //-----------------------------------------------------------------------------
@@ -235,13 +263,31 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 ButtonChrome::~ButtonChrome()
 {
 }
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ButtonChrome::SetValue(const String& propertyName, const Variant& value)
+{
+	if (propertyName == FrameWidthProperty) { m_frameWidth = value.GetFloat(); return; }
+	Decorator::SetValue(propertyName, value);
+}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ButtonChrome::OnApplyTemplate()
+Variant ButtonChrome::GetValue(const String& propertyName) const
 {
-	m_brush = static_cast<Graphics::TextureBrush*>(m_combinedLocalResource->GetItem(_T("ButtonNormalFrameBrush")));
+	if (propertyName == FrameWidthProperty) { return Variant(m_frameWidth); }
+	return Decorator::GetValue(propertyName);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ButtonChrome::OnApplyTemplate(CombinedLocalResource* localResource)
+{
+	m_brush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ButtonNormalFrameBrush")));
+	m_bgBrush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ButtonNormalBackgroundBrush")));
 }
 
 //-----------------------------------------------------------------------------
@@ -252,21 +298,22 @@ void ButtonChrome::OnRender()
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
 
+	RectF bgRect = m_finalRect;
 	RectF rect = m_finalRect;
 
-
-	//painter.SetBrush(m_bgBrush);
-	//painter.DrawRectangle(rect);
+	bgRect.Inflate(-m_frameWidth, -m_frameWidth);
+	painter.SetBrush(m_bgBrush);
+	painter.DrawRectangle(bgRect);
 
 	painter.SetBrush(m_brush);
-	painter.DrawFrameRectangle(rect, 8);
+	painter.DrawFrameRectangle(rect, m_frameWidth);
 }
 
 //=============================================================================
 // ContentPresenter
 //=============================================================================
-
-const String ContentPresenter::TypeName(_T("ContentPresenter"));
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentPresenter);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ContentPresenter);
 
 //-----------------------------------------------------------------------------
 //
@@ -288,8 +335,8 @@ ContentPresenter::~ContentPresenter()
 //=============================================================================
 // Control
 //=============================================================================
-
-const String Control::ControlTemplateTypeName(_T("Control"));
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Control);
+LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
 //-----------------------------------------------------------------------------
 //
@@ -308,41 +355,48 @@ Control::~Control()
 
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//bool Control::ApplyTemplateInternal()
+//{
+//	return ApplyTemplateInternalMain(ControlTemplateTypeName);
+//}
 //
-//-----------------------------------------------------------------------------
-void Control::ApplyTemplate(CombinedLocalResource* parent)
-{
-	UIElement::ApplyTemplate(parent);
-	ApplyTemplateInternal();
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//bool Control::ApplyTemplateInternalMain(const String& typeName)
+//{
+//	ControlTemplate* t;
+//	if (m_combinedLocalResource->TryGetControlTemplate(typeName, &t))
+//	{
+//		t->Apply(this);
+//		return true;
+//	}
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Control::ApplyTemplateInternal()
+void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
-	return ApplyTemplateInternalMain(ControlTemplateTypeName);
-}
+	UIElement::ApplyTemplateHierarchy(parent);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool Control::ApplyTemplateInternalMain(const String& typeName)
-{
+	// ControlTemplate の適用処理
 	ControlTemplate* t;
-	if (m_combinedLocalResource->TryGetControlTemplate(typeName, &t))
-	{
+	if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
 		t->Apply(this);
-		return true;
 	}
-	return false;
 }
 
 
 //=============================================================================
 // ContentControl
 //=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentControl);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ContentControl);
 
 //-----------------------------------------------------------------------------
 //
@@ -369,14 +423,20 @@ void ContentControl::SetContent(Variant value)
 {
 	m_content = value;
 
-	if (m_content.GetType() == VariantType_Object)
-	{
+	// Object 型であれば UIElement ととして取り出してみる
+	if (m_content.GetType() == VariantType_Object) {
 		m_childElement = dynamic_cast<UIElement*>(m_content.GetObject());
 	}
 
-	// 子要素のテーマを直ちに更新
-	if (m_childElement != NULL && m_combinedLocalResource != NULL) {
-		m_childElement->ApplyTemplate(m_combinedLocalResource);
+	if (m_childElement != NULL)
+	{
+		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
+		m_childElement->SetParent(this);
+
+		// 子要素のテーマを直ちに更新
+		if (m_combinedLocalResource != NULL) {
+			m_childElement->ApplyTemplate();
+		}
 	}
 }
 
@@ -401,17 +461,6 @@ UIElement* ContentControl::CheckMouseHoverElement(const PointF& globalPt)
 		if (e != NULL) { return e; }
 	}
 	return UIElement::CheckMouseHoverElement(globalPt);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void ContentControl::ApplyTemplate(CombinedLocalResource* parent)
-{
-	Control::ApplyTemplate(parent);
-	if (m_childElement != NULL) {
-		m_childElement->ApplyTemplate(m_combinedLocalResource);	// 再帰的に更新する
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -457,11 +506,23 @@ bool ContentControl::OnEvent(EventType type, EventArgs* args)
 	return Control::OnEvent(type, args);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentControl::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+{
+	Control::ApplyTemplateHierarchy(parent);
+	if (m_childElement != NULL) {
+		m_childElement->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	}
+}
+
 //=============================================================================
 // RootPane
 //=============================================================================
 
 LN_CORE_OBJECT_TYPE_INFO_IMPL(RootPane);
+LN_UI_ELEMENT_SUBCLASS_IMPL(RootPane);
 
 //-----------------------------------------------------------------------------
 //
@@ -487,7 +548,7 @@ RootPane::~RootPane()
 //=============================================================================
 
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Button);
-const String Button::ControlTemplateTypeName(_T("Button"));
+LN_UI_ELEMENT_SUBCLASS_IMPL(Button);
 
 //-----------------------------------------------------------------------------
 //
@@ -541,11 +602,11 @@ void Button::OnRender()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::Render()
-{
-	printf("Button::Render()\n");
-	ContentControl::Render();
-}
+//void Button::Render()
+//{
+//	printf("Button::Render()\n");
+//	ContentControl::Render();
+//}
 
 } // namespace GUI
 } // namespace Lumino

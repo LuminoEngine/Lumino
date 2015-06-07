@@ -1,4 +1,17 @@
 /*
+	[2015/6/7] Chrome の考え方
+		ButtonChrome や WindowChrome は、「ある程度一般的なビジュアルを備えたビジュアルツリー構築ユーティリティ」である。
+		
+		ホントにゼロからカスタマイズしたいときは Chrome は使わず、Rectangle 等の Shape を駆使して自作する。
+		
+		しかし、ほとんどの場合はカスタマイズしたいと言ってもやりたいことはウィンドウ枠の画像を変えたいとか、
+		そういう「デフォルトコントロールから少し変えたい」程度であるはず。
+		それを支援するのがこの Chrome。
+
+		例えば、自作せずにデフォルトの Chrome を使っている場合はウィンドウスキンの png を差し替えるだけで
+		テーマ変更を達成することができる。
+
+
 	[2015/5/31]
 		そもそも VisualTree は何で必要なの？
 		→ 一番最初の GUI 設計で失敗した、「ウィンドウのシステムボタン」がこれを使うとすごく自然に作れる。
@@ -632,34 +645,11 @@ void GUIManager::Initialize(const ConfigData& configData)
 	m_graphicsManager = configData.GraphicsManager;
 
 
-	RegisterFactory(ContentPresenter::TypeName, ContentPresenter::CreateInstance);
-	RegisterFactory(ButtonChrome::TypeName, ButtonChrome::CreateInstance);
+	RegisterFactory(ContentPresenter::TypeID, ContentPresenter::CreateInstance);
+	RegisterFactory(ButtonChrome::TypeID, ButtonChrome::CreateInstance);
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
-
-	// Brush
-	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
-		obj->SetSourceRect(Rect(0, 0, 32, 32));
-		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
-	}
-
-	// Button
-	{
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
-		t->SetTargetType(_T("Button"));
-
-		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
-		ef1->SetTypeName(_T("ButtonChrome"));
-		t->SetVisualTreeRoot(ef1);
-
-		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
-		ef2->SetTypeName(_T("ContentPresenter"));
-		ef1->AddChild(ef2);
-
-		m_defaultTheme->AddControlTemplate(t);
-	}
+	BuildDefaultTheme();
 
 	m_rootCombinedResource = LN_NEW CombinedLocalResource();
 	m_rootCombinedResource->Combine(NULL, m_defaultTheme);
@@ -668,7 +658,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 
 	m_defaultRootPane = LN_NEW RootPane(this);
-	m_defaultRootPane->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
+	m_defaultRootPane->ApplyTemplate();	// テーマを直ちに更新
 }
 
 //-----------------------------------------------------------------------------
@@ -806,6 +796,43 @@ EXIT:
 		if (m_mouseHoverElement != NULL) {
 			m_mouseHoverElement->OnEvent(EventType_MouseEnter, args);
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::BuildDefaultTheme()
+{
+	// Brush (ボタン枠)
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		obj->Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(0, 0, 32, 32));
+		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
+	}
+	// Brush (ボタン背景)
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		obj->Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(8, 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
+	}
+
+	// Button
+	{
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		t->SetTargetType(_T("Button"));
+
+		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		ef1->SetTypeName(_T("ButtonChrome"));
+		t->SetVisualTreeRoot(ef1);
+
+		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+		ef2->SetTypeName(_T("ContentPresenter"));
+		ef1->AddChild(ef2);
+
+		m_defaultTheme->AddControlTemplate(t);
 	}
 }
 

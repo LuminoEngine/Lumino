@@ -17,6 +17,7 @@ class Storyboard;
 
 // internal
 class CombinedLocalResource;
+class VisualStateInstance;
 
 typedef CoreObject* (*ObjectFactory)(GUIManager* manager);
 

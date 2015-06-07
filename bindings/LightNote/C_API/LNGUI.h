@@ -65,6 +65,7 @@ LN_CLASS(LNGUIElement)
 	LN_EVENT
 	LNResult LNGUIElement_RemoveMouseMoveEventHandler(LN_HANDLE(LNGUIElement) element, LNMouseEventHandler handler);
 	
+
 LN_CLASS_END
 
 //=============================================================================

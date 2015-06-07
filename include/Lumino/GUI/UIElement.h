@@ -8,6 +8,15 @@
 #include "DependencyObject.h"
 #include "BitmapBrush.h"	// for button
 
+#define LN_UI_ELEMENT_SUBCLASS_DECL(subClassName) \
+public: \
+	static const String TypeID; \
+	static CoreObject* CreateInstance(GUIManager* manager) { return LN_NEW subClassName(manager); } \
+	virtual const String& GetTypeID() const { return TypeID; }
+
+#define LN_UI_ELEMENT_SUBCLASS_IMPL(subClassName) \
+	const String subClassName::TypeID(_T(#subClassName))
+
 namespace Lumino
 {
 namespace GUI
@@ -38,6 +47,12 @@ public:
 public:
 	UIElement(GUIManager* manager);
 	virtual ~UIElement();
+
+	/// 論理ツリー上の親要素を取得します。
+	UIElement* GetParent() const { return m_parent; }
+
+public:
+	// Property
 
 	//
 	//void SetWidth(float width) { m_size.Width = width; }
@@ -75,20 +90,35 @@ public:
 	void UpdateLayout();
 	virtual void Render();
 
-	virtual void ApplyTemplate(CombinedLocalResource* parent);
+
+	/// 現在のテンプレートからビジュアルツリーを再構築します。
+	/// この関数は必要なタイミングでレイアウトシステムから呼び出されます。通常、明示的に呼び出す必要はありません。
+	void ApplyTemplate();
 
 public:
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
 
-	virtual void OnApplyTemplate() {}
+	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
+	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
+	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}
 	virtual void OnRender() {}
 	virtual bool OnEvent(EventType type, EventArgs* args);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+
+public:	// internal
+	void SetParent(UIElement* parent) { m_parent = parent; }
+
+protected:
+	virtual const String& GetTypeID() const = 0;
+
+	friend class Decorator;
+	friend class ContentControl;
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 public:
 	template<typename TArgs>
@@ -130,9 +160,13 @@ public:
 
 protected:
 
-	GUIManager*			m_manager;
-	SizeF				m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
-	RectF				m_finalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootPane のローカル座標系)
+	GUIManager*				m_manager;
+	UIElement*				m_parent;				///< 論理ツリー上の親要素
+
+	VisualStateInstance*	m_visualStateInstance;
+
+	SizeF					m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
+	RectF					m_finalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootPane のローカル座標系)
 
 	ResourceDictionary*		m_localResource;
 	CombinedLocalResource*	m_combinedLocalResource;
@@ -149,6 +183,8 @@ protected:
 class Decorator
 	: public UIElement
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(Decorator);
 public:
 	Decorator(GUIManager* manager);
 	virtual ~Decorator();
@@ -159,11 +195,14 @@ public:
 
 public:
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	virtual void ApplyTemplate(CombinedLocalResource* parent);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value);
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+
+protected:
+	// override UIElement
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 private:
 	RefPtr<UIElement>	m_child;
@@ -175,23 +214,37 @@ private:
 class ButtonChrome
 	: public Decorator
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(ButtonChrome);
 public:
-	static const String TypeName;	///< "ButtonChrome"
+	static const String	FrameWidthProperty;		///< FrameWidth プロパティの識別子
 
 public:
-	static CoreObject* CreateInstance(GUIManager* manager) { return LN_NEW ButtonChrome(manager); }
-
 	ButtonChrome(GUIManager* manager);
 	virtual ~ButtonChrome();
 
+public:
+	// Property
+
+	/// ボタンイメージの外枠の幅を設定します。
+	void SetFrameWidth(float width) { m_frameWidth = width; }
+
+	/// ボタンイメージの外枠の幅を取得します。
+	float GetFrameWidth() const { return m_frameWidth; }
+
+public:
+	// override CoreObject
+	virtual void SetValue(const String& propertyName, const Variant& value);
+	virtual Variant GetValue(const String& propertyName) const;
+
 protected:
-	virtual void OnApplyTemplate();
+	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
 	virtual void OnRender();
 
 private:
 	RefPtr<Graphics::TextureBrush>	m_brush;
 	RefPtr<Graphics::TextureBrush>	m_bgBrush;
-	int								m_bgMargin;	///< 背景イメージを描画する時に縮小するピクセル数
+	float							m_frameWidth;	///< 枠の幅 (描画で使用するためパフォーマンスを考慮し、GetValue() ではなくメンバに持っておく)
 };
 
 
@@ -201,10 +254,9 @@ private:
 class ContentPresenter
 	: public UIElement
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(ContentPresenter);
 public:
-	static const String TypeName;	///< "ContentPresenter"
-
-	static CoreObject* CreateInstance(GUIManager* manager) { return LN_NEW ContentPresenter(manager); }
 
 public:
 	ContentPresenter(GUIManager* manager);
@@ -217,19 +269,29 @@ public:
 class Control
 	: public UIElement
 {
-public:
-	static const String ControlTemplateTypeName;
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(Control);
+//public:
+//	static const String ControlTemplateTypeName;
 
 
 public:
 	Control(GUIManager* manager);
 	virtual ~Control();
 
+protected:
+	// override UIElement
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
-	virtual void ApplyTemplate(CombinedLocalResource* parent);
+	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 
-	virtual bool ApplyTemplateInternal();
-	bool ApplyTemplateInternalMain(const String& typeName);
+//	virtual bool ApplyTemplateInternal();
+//	bool ApplyTemplateInternalMain(const String& typeName);
+//
+//
+//protected:
+//	// override UIElement
+//	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 };
 
 /**
@@ -238,6 +300,8 @@ public:
 class ContentControl
 	: public Control
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(ContentControl);
 public:
 	ContentControl(GUIManager* manager);
 	virtual ~ContentControl();
@@ -250,7 +314,7 @@ public:
 
 protected:
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	virtual void ApplyTemplate(CombinedLocalResource* parent);
+	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual void OnRender();
@@ -259,6 +323,10 @@ protected:
 	// IAddChild
 	virtual void AddChild(const Variant& value) { SetContent(value); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+
+protected:
+	// override UIElement
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 private:
 	Variant		m_content;		
@@ -272,6 +340,7 @@ class RootPane
 	: public ContentControl
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(RootPane);
 public:
 	RootPane(GUIManager* manager);
 	virtual ~RootPane();
@@ -293,6 +362,7 @@ class Button
 	: public ContentControl
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(Button);
 public:
 	static const String ControlTemplateTypeName;	///< "Button"
 
@@ -308,13 +378,16 @@ protected:
 	virtual void OnClick();
 	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void OnRender();
-	virtual void Render();
+	//virtual void Render();
 
-	virtual bool ApplyTemplateInternal()
-	{
-		if (ApplyTemplateInternalMain(ControlTemplateTypeName)) { return true; }
-		return ContentControl::ApplyTemplateInternal();	// base
-	}
+protected:
+	// override UIElement
+
+	//virtual bool ApplyTemplateInternal()
+	//{
+	//	if (ApplyTemplateInternalMain(ControlTemplateTypeName)) { return true; }
+	//	return ContentControl::ApplyTemplateInternal();	// base
+	//}
 
 private:
 	RefPtr<ButtonChrome>	m_chrome;	// TODO: 仮。ちゃんとテーマから読みだす

@@ -2,7 +2,7 @@
 
 void LN_STDCALL Button1_MouseMove(CoreObject* sender, GUI::MouseEventArgs* e)
 {
-	printf("Button1_MouseMove\n");
+	//printf("Button1_MouseMove\n");
 }
 
 template < typename A1, typename A2 >

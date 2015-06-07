@@ -1,4 +1,5 @@
 
+
 #pragma once
 #include <map>
 #include <Lumino/Graphics/GraphicsManager.h>
@@ -53,6 +54,7 @@ public:	// internal
 
 private:
 	void UpdateMouseHover(const PointF& mousePos);
+	void BuildDefaultTheme();
 
 private:
 	typedef std::map<String, ObjectFactory>	ObjectFactoryMap;

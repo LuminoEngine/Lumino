@@ -18,6 +18,7 @@ class VisualState
 	//[ContentPropertyAttribute("Storyboard")]
 public:
 	VisualState();
+	VisualState(const String& name);
 	virtual ~VisualState();
 
 protected:
@@ -39,13 +40,14 @@ class VisualStateGroup
 {
 public:
 	VisualStateGroup();
+	VisualStateGroup(const String& name);
 	virtual ~VisualStateGroup();
 	
 	/// このグループ内で現在アクティブであり、コントロールに適用されている VisualState を取得します。
 	VisualState* GetCurrentState();
 
-protected:
-
+private:
+	String	m_name;
 };
 	
 /**
@@ -67,20 +69,6 @@ protected:
 
 };
 
-/**
-	@brief		
-*/
-class Storyboard
-	: public CoreObject
-{
-public:
-	Storyboard();
-	virtual ~Storyboard();
-	
-	void Begin(UIElement* target);
-
-protected:
-};
 
 /**
 	@brief		
@@ -107,10 +95,19 @@ class AnimationTimeline
 {
 public:
 	AnimationTimeline();
+	AnimationTimeline(const String& targetName);
 	virtual ~AnimationTimeline();
 
+	/// アニメーション化するオブジェクトの名前 (x;key で指定された名前)
+	void SetTargetName(const String& name) { m_targetName = name; }
+
+	/// アニメーション化するプロパティの名前
+	void SetTargetProperty(const String& name) { m_targetProperty = name; }	// WPF では添付プロパティで型は PropertyPath
+
 protected:
-	double	m_duration;		///< 再生時間 (ミリ秒)
+	double	m_duration;			///< 再生時間 (ミリ秒)
+	String	m_targetName;		///< ターゲットの UI 要素名。ビジュアルツリーから対象要素を検索するときに使用する。
+	String	m_targetProperty;	///< ターゲットプロパティ名
 };
 	
 /**
@@ -129,6 +126,27 @@ public:
 protected:
 	//Animation::FloatAnimationCurve	m_curve;
 };
+
+/**
+	@brief		
+*/
+class Storyboard
+	: public CoreObject
+{
+public:
+	Storyboard();
+	virtual ~Storyboard();
+
+	void AddTimeline(AnimationTimeline* timeline);
+
+	//ArrayList< RefPtr<AnimationTimeline*> > GetChildren();
+	
+	void Begin(UIElement* target);
+
+private:
+	ArrayList< RefPtr<AnimationTimeline> >	m_animationTimelineList;
+};
+
 
 	
 

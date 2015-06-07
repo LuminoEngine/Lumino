@@ -37,10 +37,10 @@ public:
 	void RegisterProperty(const String& propertyName, const Variant& defaultValue);
 
 	/// プロパティの値を設定します。
-	void SetValue(const String& propertyName, const Variant& value);
+	virtual void SetValue(const String& propertyName, const Variant& value);
 
 	/// プロパティの値を取得します。
-	Variant GetValue(const String& propertyName) const;
+	virtual Variant GetValue(const String& propertyName) const;
 
 	String ToString();
 
@@ -86,6 +86,9 @@ public:
 public:
 	VariantType GetType() const { return m_type; }
 	bool GetBool() const;
+
+	void SetFloat(float value);
+	float GetFloat() const;
 
 	void Set(CoreObject* obj);
 	CoreObject* GetObject() const;
