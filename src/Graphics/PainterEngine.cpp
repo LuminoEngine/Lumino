@@ -12,6 +12,11 @@ namespace Graphics
 // PainterEngine
 //=============================================================================
 
+static const byte_t g_Painter_fx_Data[] =
+{
+#include "Resource/Painter.fx.h"
+};
+static const size_t g_Painter_fx_Len = LN_ARRAY_SIZE_OF(g_Painter_fx_Data);
 	
 
 //-----------------------------------------------------------------------------
@@ -41,9 +46,9 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_vertexCache.Reserve(1024);
 	m_indexCache.Reserve(1024);
 
-	RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(_T("D:/Proj/Lumino/src/Graphics/Resource/Painter.fx")));
+	//RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(_T("D:/Proj/Lumino/src/Graphics/Resource/Painter.fx")));
 	ShaderCompileResult r;
-	m_shader.Shader.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateShader(code->GetData(), code->GetSize(), &r));
+	m_shader.Shader.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r));
 	m_shader.Technique = m_shader.Shader->GetTechnique(0);
 	m_shader.Pass = m_shader.Technique->GetPass(0);
 	m_shader.varWorldMatrix = m_shader.Shader->GetVariableByName(_T("g_worldMatrix"));

@@ -618,6 +618,12 @@ namespace GUI
 // GUIManager
 //=============================================================================
 
+static const byte_t g_DefaultSkin_png_Data[] =
+{
+#include "Resource/Painter.fx.h"
+};
+static const size_t g_DefaultSkin_png_Len = LN_ARRAY_SIZE_OF(g_DefaultSkin_png_Data);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
