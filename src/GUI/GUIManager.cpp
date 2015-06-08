@@ -1,4 +1,31 @@
 /*
+	[2015/6/7] Chrome その②
+		WPF の WindowChrome は UIElement ではない。
+		タイトルバーの高さや、ウィンドウ枠の幅を定義する、単なるデータクラス。
+		Window クラスはセットされている WindowChrome からこの各種領域を取得し、タイトルバーのD&D移動や
+		境界D&Dによるリサイズを行っている。
+
+		Button の基本的なテンプレートはこんな感じ。
+		<Button.Template>
+			<ControlTemplate TargetType="{x:Type Button}">
+				<Microsoft_Windows_Themes:ButtonChrome SnapsToDevicePixels="true" 
+					x:Name="Chrome" Background="{TemplateBinding Background}" 
+					BorderBrush="{TemplateBinding BorderBrush}" RenderDefaulted="{TemplateBinding IsDefaulted}" 
+					RenderMouseOver="{TemplateBinding IsMouseOver}" RenderPressed="{TemplateBinding IsPressed}">
+					<ContentPresenter Margin="{TemplateBinding Padding}"
+						VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+						HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+						RecognizesAccessKey="True"
+						SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+				</Microsoft_Windows_Themes:ButtonChrome>
+			</ControlTemplate>
+		</Button.Template>
+
+		Button は IsMouseOver や IsPressed を公開し、ButtonChrome はそれにバインドしている。
+		つまり、VisualState とかここでは関係ない。
+	
+
+
 	[2015/6/7] Chrome の考え方
 		ButtonChrome や WindowChrome は、「ある程度一般的なビジュアルを備えたビジュアルツリー構築ユーティリティ」である。
 		
