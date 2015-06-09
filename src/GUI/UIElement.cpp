@@ -180,8 +180,15 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //-----------------------------------------------------------------------------
 void UIElement::TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e)
 {
-	printf("TemplateBindingSource_PropertyChanged\n");
-	_tprintf(L"%s:%d\n", e->PropertyName.GetCStr(), sender->GetValue(e->PropertyName));
+	LN_FOREACH(TemplateBindingInfo& info, m_templateBindingInfoList)
+	{
+		if (info.SourcePropPath == e->PropertyName) {
+			info.ThisProp->SetValue(this, e->NewValue);
+			//SetValue(info.ThisProp, e);
+		}
+	}
+	//printf("TemplateBindingSource_PropertyChanged\n");
+	//_tprintf(L"%s:%d\n", e->PropertyName.GetCStr(), sender->GetValue(e->PropertyName));
 }
 
 //=============================================================================
@@ -288,9 +295,10 @@ const String	ButtonChrome::FrameWidthProperty(_T("FrameWidth"));
 ButtonChrome::ButtonChrome(GUIManager* manager)
 	: Decorator(manager)
 	, m_frameWidth(8.0f)
+	, m_isMouseOver(false)
 {
 	// プロパティの登録
-	LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
+	LN_DEFINE_PROPERTY(ButtonChrome, bool, IsMouseOverProperty, &ButtonChrome::SetMouseOver, &ButtonChrome::IsMouseOver, false);
 
 	// TODO
 	// ボタンのスタイルとテンプレート
@@ -348,9 +356,12 @@ void ButtonChrome::OnRender()
 	RectF bgRect = m_finalRect;
 	RectF rect = m_finalRect;
 
-	bgRect.Inflate(-m_frameWidth, -m_frameWidth);
-	painter.SetBrush(m_bgBrush);
-	painter.DrawRectangle(bgRect);
+	if (!m_isMouseOver)
+	{
+		bgRect.Inflate(-m_frameWidth, -m_frameWidth);
+		painter.SetBrush(m_bgBrush);
+		painter.DrawRectangle(bgRect);
+	}
 
 	painter.SetBrush(m_brush);
 	painter.DrawFrameRectangle(rect, m_frameWidth);
@@ -635,7 +646,7 @@ bool Button::OnEvent(EventType type, EventArgs* args)
 {
 	if (type == EventType_MouseMove) {
 		m_isMouseOver = true;
-		OnPropertyChanged(IsMouseOverProperty);
+		OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
 	}
 
 	//

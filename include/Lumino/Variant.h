@@ -7,6 +7,7 @@ namespace Lumino
 class Variant;
 class VariantList;
 class Property;
+class PropertyChangedEventArgs;
 
 enum VariantType
 {
@@ -23,11 +24,6 @@ enum VariantType
 	VariantType_Max,			///< (Terminator)
 };
 
-class PropertyChangedEventArgs
-{
-public:
-	String PropertyName;
-};
 
 /**
 	@brief		
@@ -77,12 +73,7 @@ protected:
 	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
 	void RegisterProperty(Property* prop);
 
-	void OnPropertyChanged(const String& name)
-	{
-		PropertyChangedEventArgs e;
-		e.PropertyName = name;
-		PropertyChanged.Raise(this, &e);
-	}
+	void OnPropertyChanged(const String& name, const Variant& newValue);
 
 
 private:
@@ -113,7 +104,7 @@ class Variant
 public:
 	Variant();
 	Variant(const Variant& value);
-	explicit Variant(bool value);
+	Variant(bool value);
 	explicit Variant(float value);
 	Variant(const SizeF& value);
 	~Variant();
@@ -363,6 +354,14 @@ public:
 	const_iterator	begin() const	{ return const_iterator(m_list.begin()); }
 	iterator		end()			{ return iterator(m_list.end()); }
 	const_iterator	end() const		{ return const_iterator(m_list.end()); }
+};
+
+
+class PropertyChangedEventArgs
+{
+public:
+	String	PropertyName;
+	Variant	NewValue;
 };
 
 } // namespace Lumino

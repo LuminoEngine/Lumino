@@ -34,13 +34,13 @@ void CoreObject::SetValue(const String& propertyName, const Variant& value)
 	if (m_propertyList.TryGetValue(propertyName, &prop))
 	{
 		prop->SetValue(this, value);
-		OnPropertyChanged(propertyName);
+		OnPropertyChanged(propertyName, value);
 		return;
 	}
 
 	// TODO: ƒL[‚ª–³‚¯‚ê‚Î—áŠO
 	m_propertyDataStore.SetValue(propertyName, value);
-	OnPropertyChanged(propertyName);
+	OnPropertyChanged(propertyName, value);
 }
 
 //-----------------------------------------------------------------------------
@@ -78,6 +78,17 @@ void CoreObject::RegisterProperty(Property* prop)
 {
 	m_propertyList.Add(prop->GetName(), prop);
 	//m_propertyDataStore.Add(propertyName, defaultValue);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::OnPropertyChanged(const String& name, const Variant& newValue)
+{
+	PropertyChangedEventArgs e;
+	e.PropertyName = name;
+	e.NewValue = newValue;
+	PropertyChanged.Raise(this, &e);
 }
 	
 //=============================================================================

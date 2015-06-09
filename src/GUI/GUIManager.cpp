@@ -2,6 +2,7 @@
 	★キーワード
 	・テンプレート
 	・バインディング
+	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
 	[2015/6/9] AddChild
 		これは論理ツリー構築用に見える。

@@ -49,13 +49,51 @@ public:
 /**
 	@brief		
 */
-template<class TClass, typename T>
+template<class TClass, typename TValue>
 class CoreObjectProperty : public Property
 {
 public:
-	typedef void (TClass::*Setter)(const T&);
+	//typedef void (TClass::*Setter)(T);
 	//typedef const T& (TClass::*Getter)() const;
 
+	struct SetterFunctor
+	{
+		typedef void (TClass::*PlainSetter)(TValue value);
+		typedef void (TClass::*ConstRefSetter)(const TValue& value);
+
+		SetterFunctor(intptr_t null)
+			: m_plainSetter(NULL)
+			, m_constRefSetter(NULL)
+		{}
+
+		SetterFunctor(PlainSetter setter)
+			: m_plainSetter(setter)
+			, m_constRefSetter(NULL)
+		{}
+
+		SetterFunctor(ConstRefSetter setter)
+			: m_plainSetter(NULL)
+			, m_constRefSetter(setter)
+		{}
+
+		bool IsEmpty() const
+		{
+			return m_plainSetter == NULL && m_constRefSetter == NULL;
+		}
+
+		void Call(TClass* instance, const TValue& value)
+		{
+			if (m_plainSetter) {
+				(instance->*m_plainSetter)(value);
+			}
+			if (m_constRefSetter) {
+				(instance->*m_constRefSetter)(value);
+			}
+		}
+
+		PlainSetter		m_plainSetter;
+		ConstRefSetter	m_constRefSetter;
+	};
 
 	struct GetterFunctor
 	{
@@ -71,9 +109,9 @@ public:
 		template<typename DT> struct EnsureRef<DT&> { typedef DT& result; };
 		template<typename DT> struct EnsureRef<const DT&> { typedef DT& result; };
 
-		typedef typename EnsurePlain<typename T>::result(TClass::*PlainGetter)() const;
-		typedef typename EnsureConstRef<typename T>::result(TClass::*ConstRefGetter)() const;
-		typedef typename EnsureRef<typename T>::result(TClass::*RefGetter)() const;
+		typedef typename EnsurePlain<typename TValue>::result(TClass::*PlainGetter)() const;
+		typedef typename EnsureConstRef<typename TValue>::result(TClass::*ConstRefGetter)() const;
+		typedef typename EnsureRef<typename TValue>::result(TClass::*RefGetter)() const;
 
 		GetterFunctor(PlainGetter getter) :
 			d_plainGetter(getter)
@@ -103,20 +141,18 @@ public:
 			return d_plainGetter || d_constRefGetter || d_refGetter;
 		}
 		//typename const T& /*Helper::safe_method_return_type*/ operator()(const TClass* instance) const
-		typename T Call(const TClass* instance) const	// ¦ŽÀ‘Ì
+		typename TValue Call(const TClass* instance) const	// ¦ŽÀ‘Ì
 		{
 			// FIXME: Ideally we want this to be done during compilation, not runtime
 
 			if (d_plainGetter)
-				return (instance->*d_plainGetter)();//CEGUI_CALL_MEMBER_FN(*instance, d_plainGetter)();
+				return (instance->*d_plainGetter)();
 			if (d_constRefGetter)
-				return (instance->*d_constRefGetter)();//CEGUI_CALL_MEMBER_FN(*instance, d_constRefGetter)();
+				return (instance->*d_constRefGetter)();
 			if (d_refGetter)
-				return (instance->*d_refGetter)();//CEGUI_CALL_MEMBER_FN(*instance, d_refGetter)();
+				return (instance->*d_refGetter)();
 
 			assert(false);
-			// just to get rid of the warning
-			//return CEGUI_CALL_MEMBER_FN(*instance, d_plainGetter)();
 			return (instance->*d_plainGetter)();
 		}
 
@@ -128,7 +164,7 @@ public:
 
 
 public:
-	CoreObjectProperty(const String& name, Setter setter, GetterFunctor getter, const T& defaultValue)
+	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, const TValue& defaultValue)
 		: m_name(name)
 		, m_setter(setter)
 		, m_getter(getter)
@@ -140,9 +176,10 @@ public:
 
 	virtual void SetValue(CoreObject* target, Variant value)
 	{
-		LN_THROW((m_setter != NULL), InvalidOperationException);
+		LN_THROW(!m_setter.IsEmpty(), InvalidOperationException);
 		TClass* instance = static_cast<TClass*>(target);
-		(instance->*m_setter)(value.Cast<T>());
+		m_setter.Call(instance, value.Cast<TValue>());
+		//(instance->*m_setter)(value.Cast<T>());
 	}
 	virtual Variant GetValue(const CoreObject* target) const
 	{
@@ -153,11 +190,11 @@ public:
 		//return Variant((instance->*m_getter)());
 	}
 	virtual bool IsReadable() const { return m_getter != NULL; }
-	virtual bool IsWritable() const { return m_setter != NULL; }
+	virtual bool IsWritable() const { return !m_setter.IsEmpty(); }
 
 private:
 	String	m_name;
-	Setter	m_setter;
+	SetterFunctor	m_setter;
 	GetterFunctor	m_getter;
 	//Getter	m_getter;
 };

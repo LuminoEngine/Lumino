@@ -152,7 +152,10 @@ set(LN_SOURCES_Game
 
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
+	include/Lumino/Property.h
+	include/Lumino/Variant.h
 	src/Application.cpp
+	src/Property.cpp
 	src/Variant.cpp)
 
 #--------------------------------------

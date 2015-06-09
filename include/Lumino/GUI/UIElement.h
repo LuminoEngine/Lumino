@@ -255,6 +255,8 @@ public:
 
 public:
 	// Property
+	void SetMouseOver(bool value) { m_isMouseOver = value; }
+	bool IsMouseOver() const { return m_isMouseOver; }
 
 	/// ボタンイメージの外枠の幅を設定します。
 	void SetFrameWidth(float width) { m_frameWidth = width; }
@@ -275,6 +277,7 @@ private:
 	RefPtr<Graphics::TextureBrush>	m_brush;
 	RefPtr<Graphics::TextureBrush>	m_bgBrush;
 	float							m_frameWidth;	///< 枠の幅 (描画で使用するためパフォーマンスを考慮し、GetValue() ではなくメンバに持っておく)
+	bool							m_isMouseOver;
 };
 
 
