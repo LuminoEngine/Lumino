@@ -21,7 +21,8 @@ int main()
 
 		//RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
 		GUI::RootPane* workbench1 = app->GetGUIManager()->GetDefaultRootPane();
-		workbench1->SetSize(SizeF(640, 480));
+		//workbench1->SetSize(SizeF(640, 480));
+		workbench1->SetValue(GUI::RootPane::SizeProperty, SizeF(640, 480));
 
 		//app->GetGUIManager()->CreateUIElement("Button");
 		RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));

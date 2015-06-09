@@ -32,8 +32,10 @@ public:
 	virtual void DetachEventListener(IEventListener* listener) { return m_listenerEntryArray.Remove(listener); }
 
 protected:
-	WindowManagerBase*					m_windowManager;	///< (循環参照防止のため、参照カウントは操作しない)
-	SortedArray<int, IEventListener*>	m_listenerEntryArray;
+	typedef SortedArray<int, IEventListener*>	EventListenerList;
+
+	WindowManagerBase*		m_windowManager;	///< (循環参照防止のため、参照カウントは操作しない)
+	EventListenerList		m_listenerEntryArray;
 };
 
 } // namespace Platform

@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Property.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/GUI/GUIManager.h>
@@ -30,11 +31,13 @@ UIElement::UIElement(GUIManager* manager)
 	, m_parent(NULL)
 	, m_localResource(NULL)
 	, m_combinedLocalResource(NULL)
+	, m_rootLogicalParent(NULL)
 {
 	LN_SAFE_ADDREF(m_manager);
 
 	// プロパティの登録
-	RegisterProperty(SizeProperty, SizeF(NAN, NAN));
+	LN_DEFINE_PROPERTY(UIElement, SizeF, SizeProperty, &UIElement::SetSize, &UIElement::GetSize, SizeF());
+	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// イベントの登録
 	m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
@@ -105,6 +108,29 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void UIElement::SetTemplateBinding(Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent)
+{
+	if (m_rootLogicalParent == NULL)
+	{
+		// TODO: 解除は？
+		rootLogicalParent->PropertyChanged.AddHandler(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
+		m_rootLogicalParent = rootLogicalParent;
+	}
+	else if (m_rootLogicalParent != rootLogicalParent) {
+		// あってはならない。
+		// VisualTree 要素が異なる ルート Logcal 要素にバインドしようとした。
+		LN_THROW(0, InvalidOperationException);
+	}
+
+	TemplateBindingInfo info;
+	info.ThisProp = thisProp;
+	info.SourcePropPath = srcPropPath;
+	m_templateBindingInfoList.Add(info);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void UIElement::UpdateLayout()
 {
 	SizeF size = GetSize();
@@ -147,6 +173,15 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 		LN_REFOBJ_SET(m_combinedLocalResource, parent);
 	}
 	OnApplyTemplate(m_combinedLocalResource);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e)
+{
+	printf("TemplateBindingSource_PropertyChanged\n");
+	_tprintf(L"%s:%d\n", e->PropertyName.GetCStr(), sender->GetValue(e->PropertyName));
 }
 
 //=============================================================================
@@ -230,12 +265,21 @@ void Decorator::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 	}
 }
 
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Decorator::AddChildToVisualTree(UIElement* element)
+//{
+//
+//}
+
 //=============================================================================
 // ButtonChrome
 //=============================================================================
 
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonChrome);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ButtonChrome);
+const String	ButtonChrome::IsMouseOverProperty(_T("IsMouseOver"));
 const String	ButtonChrome::FrameWidthProperty(_T("FrameWidth"));
 
 //-----------------------------------------------------------------------------
@@ -245,6 +289,9 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 	: Decorator(manager)
 	, m_frameWidth(8.0f)
 {
+	// プロパティの登録
+	LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
+
 	// TODO
 	// ボタンのスタイルとテンプレート
 	// https://msdn.microsoft.com/ja-jp/library/ms753328%28v=vs.110%29.aspx
@@ -549,14 +596,17 @@ RootPane::~RootPane()
 
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Button);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Button);
+const String	Button::IsMouseOverProperty(_T("IsMouseOver"));
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 Button::Button(GUIManager* manager)
 	: ContentControl(manager)
+	, m_isMouseOver(false)
 {
-
+	// プロパティの登録
+	LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
 
 	//m_chrome.Attach(LN_NEW ButtonChrome(manager));
 	//SetContent(Variant(m_chrome));
@@ -583,6 +633,10 @@ void Button::OnClick()
 //-----------------------------------------------------------------------------
 bool Button::OnEvent(EventType type, EventArgs* args)
 {
+	if (type == EventType_MouseMove) {
+		m_isMouseOver = true;
+		OnPropertyChanged(IsMouseOverProperty);
+	}
 
 	//
 

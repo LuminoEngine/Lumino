@@ -129,48 +129,5 @@ private:
 
 
 
-
-
-
-
-template<typename A1, typename A2>
-class Event02 : public RefObject
-{
-public:
-	typedef Delegate02<A1, A2> DelegateType;
-
-public:
-	void AddHandler(const DelegateType& handler)
-	{
-		m_handlerList.Add(handler);
-	}
-
-	void RemoveHandler(const DelegateType& handler)
-	{
-		m_handlerList.Remove(handler);
-	}
-
-	void operator += (const DelegateType& handler)
-	{
-		m_handlerList.Add(handler);
-	}
-
-	void operator -= (const DelegateType& handler)
-	{
-		m_handlerList.Remove(handler);
-	}
-
-	void Raise(A1 a1, A2 a2)	// GUI ‚Ì EventArgs ‚Í Handler ‚ğ•Ô‚µ‚½‚¢‚Æ‚«‚ª‚ ‚é‚Ì‚Å const QÆ‚É‚Í‚µ‚È‚¢
-	{
-		LN_FOREACH(DelegateType& d, m_handlerList)
-		{
-			d.Call(a1, a2);
-		}
-	}
-
-private:
-	ArrayList<DelegateType> m_handlerList;
-};
-
 } // namespace GUI
 } // namespace Lumino

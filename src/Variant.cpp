@@ -1,6 +1,7 @@
 
 #include "Internal.h"
 #include <Lumino/Variant.h>
+#include <Lumino/Property.h>
 
 namespace Lumino
 {
@@ -27,18 +28,19 @@ CoreObject::~CoreObject()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CoreObject::RegisterProperty(const String& propertyName, const Variant& defaultValue)
-{
-	m_propertyDataStore.Add(propertyName, defaultValue);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void CoreObject::SetValue(const String& propertyName, const Variant& value)
 {
+	Property* prop;
+	if (m_propertyList.TryGetValue(propertyName, &prop))
+	{
+		prop->SetValue(this, value);
+		OnPropertyChanged(propertyName);
+		return;
+	}
+
 	// TODO: ƒL[‚ª–³‚¯‚ê‚Î—áŠO
 	m_propertyDataStore.SetValue(propertyName, value);
+	OnPropertyChanged(propertyName);
 }
 
 //-----------------------------------------------------------------------------
@@ -46,8 +48,15 @@ void CoreObject::SetValue(const String& propertyName, const Variant& value)
 //-----------------------------------------------------------------------------
 Variant CoreObject::GetValue(const String& propertyName) const
 {
+	Property* prop;
+	if (m_propertyList.TryGetValue(propertyName, &prop))
+	{
+		return prop->GetValue(this);
+	}
+
 	Variant value;
-	if (m_propertyDataStore.TryGetValue(propertyName, &value)) {
+	if (m_propertyDataStore.TryGetValue(propertyName, &value))
+	{
 		return value;
 	}
 	LN_THROW(0, ArgumentException);
@@ -59,6 +68,16 @@ Variant CoreObject::GetValue(const String& propertyName) const
 String CoreObject::ToString()
 {
 	return String::GetEmpty();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//void CoreObject::RegisterProperty(const String& propertyName, const Variant& defaultValue)
+void CoreObject::RegisterProperty(Property* prop)
+{
+	m_propertyList.Add(prop->GetName(), prop);
+	//m_propertyDataStore.Add(propertyName, defaultValue);
 }
 	
 //=============================================================================
@@ -127,6 +146,15 @@ Variant::Variant(const SizeF& value)
 //-----------------------------------------------------------------------------
 Variant::~Variant()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool Variant::GetBool() const
+{
+	if (LN_VERIFY_ASSERT(m_type == VariantType_Bool)) { return false; }
+	return m_bool;
 }
 
 //-----------------------------------------------------------------------------

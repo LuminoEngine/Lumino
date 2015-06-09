@@ -1,10 +1,12 @@
 
 #pragma once
+#include <Lumino/Base/Delegate.h>
 
 namespace Lumino
 {
 class Variant;
 class VariantList;
+class Property;
 
 enum VariantType
 {
@@ -21,6 +23,12 @@ enum VariantType
 	VariantType_Max,			///< (Terminator)
 };
 
+class PropertyChangedEventArgs
+{
+public:
+	String PropertyName;
+};
+
 /**
 	@brief		
 */
@@ -28,13 +36,13 @@ class CoreObject
 	: public RefObject
 {
 public:
+
+public:
 	CoreObject();
 	virtual ~CoreObject();
 
 public:
 
-	/// この CoreObject にプロパティを登録します。
-	void RegisterProperty(const String& propertyName, const Variant& defaultValue);
 
 	/// プロパティの値を設定します。
 	virtual void SetValue(const String& propertyName, const Variant& value);
@@ -51,10 +59,40 @@ public:
 	/// 各種言語バインダから設定される型情報 ID を取得します。
 	virtual void* GetBindingTypeData() const { return NULL; }
 
+	//const PropertyList& GetPropertyList() const { return m_propertyList; }
+
+	Property* FindProperty(const String& name) const
+	{
+		Property* prop;
+		if (m_propertyList.TryGetValue(name, &prop)) {
+			return prop;
+		}
+		return NULL;
+	}
+
+	Event02<CoreObject*, PropertyChangedEventArgs*>	PropertyChanged;
+
+protected:
+	/// この CoreObject にプロパティを登録します。
+	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
+	void RegisterProperty(Property* prop);
+
+	void OnPropertyChanged(const String& name)
+	{
+		PropertyChangedEventArgs e;
+		e.PropertyName = name;
+		PropertyChanged.Raise(this, &e);
+	}
+
+
 private:
+	typedef SortedArray<String, Property*>	PropertyList;
 	typedef SortedArray<String, Variant>	PropertyDataStore;
+
+	PropertyList		m_propertyList;
 	PropertyDataStore	m_propertyDataStore;
 	void*				m_userData;
+
 };
 
 #define LN_CORE_OBJECT_TYPE_INFO_DECL() \
@@ -96,6 +134,13 @@ public:
 	void SetSizeF(const SizeF& value);
 	const SizeF& GetSizeF() const;
 
+
+
+	template<typename T>
+	T Cast() const;	// 不正なキャストをコンパイルエラーとして検出するため、この関数は未定義にしておく。
+
+	template<> SizeF Cast() const { return GetSizeF(); }
+	template<> bool Cast() const { return GetBool(); }
 
 private:
 	void Copy(const Variant& obj);

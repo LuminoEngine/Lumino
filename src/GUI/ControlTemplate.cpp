@@ -46,7 +46,7 @@ void UIElementFactory::AddChild(UIElementFactory* child)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIElement* UIElementFactory::CreateInstance()
+UIElement* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 {
 	UIElement* element = dynamic_cast<UIElement*>(m_manager->CreateObject(m_targetTypeFullName));
 	if (element == NULL) {
@@ -54,9 +54,38 @@ UIElement* UIElementFactory::CreateInstance()
 		LN_THROW(0, InvalidOperationException);
 	}
 
+	//std::map<String, int> tmp;
+	////std::pair<String, int>& y;
+	//typedef std::pair<String, int> tttt;
+	//using namespace std;
+	//LN_FOREACH(pair<String, int> y, tmp)
+	//{
+	//}
+
+	LN_FOREACH(PropertyInfoList::Pair& pair, m_propertyInfoList)
+	{
+		if (pair.second.Kind == PropertyKind_TemplateBinding)
+		{
+			Property* prop = element->FindProperty(pair.first);
+			if (prop == NULL) {
+				LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
+			}
+			element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
+	}
+
+	//for (int i = 0; i < m_propertyInfoList.GetCount(); ++i)
+	//{
+
+	//	
+	//}
+	//
 	// 子の処理
 	LN_FOREACH(UIElementFactory* c, m_children) {
-		element->AddChild(c->CreateInstance());
+		element->AddChild(c->CreateInstance(rootLogicalParent));
 	}
 	return element;
 }
@@ -86,7 +115,7 @@ void ControlTemplate::Apply(Control* control)
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
 	if (m_visualTreeRoot != NULL) {
-		control->AddChild(m_visualTreeRoot->CreateInstance());
+		control->AddChild(m_visualTreeRoot->CreateInstance(control));
 	}
 
 	// TODO: プロパティ適用等も。

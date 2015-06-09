@@ -64,7 +64,7 @@ DX9GraphicsDevice::~DX9GraphicsDevice()
 //-----------------------------------------------------------------------------
 void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 {
-	m_mainWindow.Attach(configData.MainWindow, false);
+	m_mainWindow.Attach(configData.MainWindow, true);
 	m_enableFPUPreserve = configData.EnableFPUPreserve;
 
 	// DLL 読み込み

@@ -9,6 +9,17 @@ namespace Lumino
 namespace GUI
 {
 
+class Binding
+{
+public:
+	Binding() : m_path() {}
+	Binding(const String& srcPropPath) : m_path(srcPropPath) {}
+	~Binding() {}
+
+private:
+	String	m_path;
+};
+
 /**
 	@brief		
 	@note	WPF の FrameworkElementFactory に相当する。
@@ -23,14 +34,46 @@ public:
 	/// この UIElementFactory が生成するインスタンスの型名
 	void SetTypeName(const String& typeFullName) { m_targetTypeFullName = typeFullName; }
 
+
+	//void AddProperty(const String& propName, );
+	//void AddTemplateBinding(const String& propName, );
+	//void AddTemplateBinding(const String& propName, const Binding& binding)
+	//{
+	//}
+	void AddTemplateBinding(const String& propName, const String& srcPropPath)
+	{
+		PropertyInfo info;
+		info.Kind = PropertyKind_TemplateBinding;
+		info.SourcePropPath = srcPropPath;
+		m_propertyInfoList.Add(propName, info);
+	}
+
+
 	void AddChild(UIElementFactory* child);
 
 
-	UIElement* CreateInstance();
+	UIElement* CreateInstance(UIElement* rootLogicalParent);
 
 private:
+	enum PropertyKind
+	{
+		PropertyKind_Variant = 0,		///< 普通の値
+		PropertyKind_Binding,			///< Binding
+		PropertyKind_TemplateBinding,	///< TemplateBinding
+	};
+
+	struct PropertyInfo
+	{
+		PropertyKind	Kind;
+		//Binding			BindingInfo;	///< PropertyKind_Binding のときはこれを使う
+		String			SourcePropPath;		///< PropertyKind_TemplateBinding のときはこれを使う
+	};
+
+	typedef SortedArray<String, PropertyInfo>	PropertyInfoList;
+
 	GUIManager*						m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
 	String							m_targetTypeFullName;
+	PropertyInfoList				m_propertyInfoList;
 	ArrayList<UIElementFactory*>	m_children;
 };
 

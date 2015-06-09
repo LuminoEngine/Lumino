@@ -66,10 +66,10 @@ public:
 	//
 
 	/// 要素のサイズを設定します。規定値は NAN で、自動的にサイズを計算します。
-	void SetSize(const SizeF& size) { SetValue(SizeProperty, size); }	// TODO: レイアウト更新中は頻繁にアクセスするのでできれば メンバ変数にしたい・・・
+	void SetSize(const SizeF& size) { m_size = size; }// { SetValue(SizeProperty, size); }	// TODO: レイアウト更新中は頻繁にアクセスするのでできれば メンバ変数にしたい・・・
 	
 	/// 要素のサイズを取得します。
-	const SizeF& GetSize() const { return GetValue(SizeProperty).GetSizeF(); }	// TODO: 危ない。参照で返すとスタックの Variant で消える
+	const SizeF& GetSize() const { return m_size; }// { return GetValue(SizeProperty).GetSizeF(); }	// TODO: 危ない。参照で返すとスタックの Variant で消える
 
 	/// ヒットテストの有無を設定します。
 	void SetHitTest(bool enabled) { SetValue(IsHitTestProperty, Variant(enabled)); }
@@ -85,6 +85,9 @@ public:
 	virtual bool AddHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 	virtual bool RemoveHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 
+
+	/// rootLogicalParent : テンプレートを適用した要素。TemplateBinding のソースオブジェクト。
+	void SetTemplateBinding(Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent);
 
 	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
 	void UpdateLayout();
@@ -112,6 +115,7 @@ public:
 
 public:	// internal
 	void SetParent(UIElement* parent) { m_parent = parent; }
+	//virtual void AddChildToVisualTree(UIElement* element) { LN_THROW(0, InvalidOperationException); }
 
 protected:
 	virtual const String& GetTypeID() const = 0;
@@ -160,6 +164,7 @@ public:
 
 protected:
 
+
 	GUIManager*				m_manager;
 	UIElement*				m_parent;				///< 論理ツリー上の親要素
 
@@ -175,6 +180,27 @@ protected:
 	typedef SortedArray<String, RefObject*>	EventDataStore;
 	EventDataStore	m_eventDataStore;
 	//Event02<CoreObject*, MouseEventArgs*> m_eventMouseMove;
+
+
+
+	// Property
+	SizeF	m_size;
+
+private:
+
+	void TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e);
+
+
+	struct TemplateBindingInfo
+	{
+		Property*	ThisProp;
+		String		SourcePropPath;
+	};
+
+	typedef ArrayList<TemplateBindingInfo>	TemplateBindingInfoList;
+	TemplateBindingInfoList		m_templateBindingInfoList;
+
+	UIElement*		m_rootLogicalParent;	///< テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
 };
 
 /**
@@ -200,12 +226,15 @@ public:
 	virtual void AddChild(const Variant& value);
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
+
 protected:
 	// override UIElement
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);;
+	//virtual void AddChildToVisualTree(UIElement* element);
 
 private:
 	RefPtr<UIElement>	m_child;
+	//RefPtr<UIElement>	m_visualChild;
 };
 
 /**
@@ -217,6 +246,7 @@ class ButtonChrome
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ButtonChrome);
 public:
+	static const String	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
 	static const String	FrameWidthProperty;		///< FrameWidth プロパティの識別子
 
 public:
@@ -364,13 +394,16 @@ class Button
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Button);
 public:
+	static const String	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
+
+
 	static const String ControlTemplateTypeName;	///< "Button"
 
 	Button(GUIManager* manager);
 	virtual ~Button();
 
 public:
-
+	bool IsMouseOver() const { return m_isMouseOver; }
 
 	//virtual void Render();
 
@@ -391,6 +424,7 @@ protected:
 
 private:
 	RefPtr<ButtonChrome>	m_chrome;	// TODO: 仮。ちゃんとテーマから読みだす
+	bool m_isMouseOver;
 };
 
 } // namespace GUI

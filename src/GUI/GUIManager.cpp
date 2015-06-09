@@ -1,4 +1,102 @@
 /*
+	★キーワード
+	・テンプレート
+	・バインディング
+
+	[2015/6/9] AddChild
+		これは論理ツリー構築用に見える。
+		WPF の ContentControll の AddChild は、引数で受け取ったオブジェクトを Content プロパティに入れてるだけだった。
+		↓
+		それでいい。
+		テンプレートで作ったツリーはこれまで Logical 全然関係ないと思ってたけど、
+		VisualTree の要素に LogcalTreeHelper.GetParent() すると、VisualTree 上の親要素が取れる。
+
+
+	[2015/6/9] デフォルトの Chrome の状態変化に何を使う？(TemplateBinding と VisualState と Trigger)
+		.NET 界隈では見た目の表現にはできるだけ VisualState を使ったほうがいいよね的な感じになっている。
+		※VisualState は Silverlight から WPF に輸入された、
+
+		ただ、基本的に Stopryboard (アニメーション) でしかプロパティ変化させられないので、Trigger の併用も必要。
+
+		TemplateBinding は状態の通知に限らずいろいろなものを Template のどこに置くかを決めるのにも使う。
+		こっちでの対応を優先してみる。
+		
+
+
+
+	[2015/6/9] Binding と TemplateBinding
+		この2つは似ているが、データソースとして扱う対象が違う。
+		Binding は 論理要素の DataContext、
+		TemplateBinding は論理要素自身をソースとする。
+
+		次のようなマークアップは、1つ目のラベルは Button.DataContext が変われば
+		それに追随して変わるが、2つ目のラベルは変わらず、常に Button.IsPressed を参照し続ける。
+
+		<Button x:Name="_button1" Height="32">
+			<Button.Template>
+				<ControlTemplate TargetType="{x:Type Button}">
+					<StackPanel Orientation="Horizontal">
+						<Label Content="{Binding Name}" />
+						<Label Content="{TemplateBinding IsPressed}" />
+					</StackPanel>
+				</ControlTemplate>
+			</Button.Template>
+		</Button>
+
+	
+	[2015/6/9] CEGUI のプロパティ
+		Editbox::addEditboxProperties() から辿るとすごく参考になる。
+
+
+	[2015/6/9] CEGUI の描画
+
+		Button を例に見てみると・・・
+
+		PushButton クラスは押下中状態を管理するだけ。描画を行う人は別にいる。
+		描画を行うのは FalagardButton クラスで、WindowRenderer クラスのサブクラス。
+
+		WindowRenderer は Widget ごとにクラスが定義されていて、他にも TabControlWindowRenderer や EditboxWindowRenderer がある。
+		ちょうどこれが今やろうとしている Chrome に相当しそう。
+		Widget と WindowRenderer は 1対1。
+
+
+		描画はわりと複雑。FalagardButton::render() から以下のように潜っていく。
+		FalagardButton::render()
+			WidgetLookFeel::render()
+				StateImagery::render()
+					LayerSpecification::render()
+						SectionSpecification::render()
+							ImagerySection::render()
+
+		Window の持つ LookFeel が切り替われば、WidgetLookFeel::render() が切り替わる仕組み。
+
+		ImagerySection::render() は次の3つを順に描画している。これが CEGUI の最小描画単位？
+		・FrameComponent	・・・ 枠
+		・ImageryComponent	・・・ 背景
+		・TextComponent		・・・ テキスト
+
+
+		WindowRenderer はオーナーコントロールを直接参照し、その状態を使って StateImagery を検索、StateImagery::render() を呼び出す。
+		例えば PushButton なら、isPushed() なら "pushed" 文字列をキーに検索を行う。
+
+		デフォルトのテーマファイルは↓っぽい。
+		datafiles\looknfeel\AlfiskoSkin.looknfeel
+	
+		<ImagerySection> で、Compnent の配置を決めて名前をつける。
+		<StateImagery> で、ある状態のときにどの <ImagerySection> を表示するかを決める。
+		よく見てみれば、↑の複雑な描画パスも納得できる。
+	
+
+
+	[2015/6/9] Unity GUI
+		GUI コントロールのカスタマイズ
+		http://docs.unity3d.com/ja/current/Manual/gui-Customization.html
+
+		GUI スキン
+		http://docs.unity3d.com/ja/current/Manual/class-GUISkin.html
+	
+		CCS を意識している。すごく単純。
+
 	[2015/6/7] Chrome その②
 		WPF の WindowChrome は UIElement ではない。
 		タイトルバーの高さや、ウィンドウ枠の幅を定義する、単なるデータクラス。
@@ -647,7 +745,7 @@ namespace GUI
 
 static const byte_t g_DefaultSkin_png_Data[] =
 {
-#include "Resource/Painter.fx.h"
+#include "Resource/DefaultSkin.png.h"
 };
 static const size_t g_DefaultSkin_png_Len = LN_ARRAY_SIZE_OF(g_DefaultSkin_png_Data);
 
@@ -840,14 +938,14 @@ void GUIManager::BuildDefaultTheme()
 	// Brush (ボタン枠)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
 		obj->SetSourceRect(Rect(0, 0, 32, 32));
 		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
 	}
 	// Brush (ボタン背景)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
 		obj->SetSourceRect(Rect(8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
 	}
@@ -859,6 +957,7 @@ void GUIManager::BuildDefaultTheme()
 
 		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
 		ef1->SetTypeName(_T("ButtonChrome"));
+		ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
 		t->SetVisualTreeRoot(ef1);
 
 		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
