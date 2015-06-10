@@ -7,6 +7,7 @@
 #include "EventArgs.h"
 #include "DependencyObject.h"
 #include "BitmapBrush.h"	// for button
+#include "RoutedEvent.h"
 
 #define LN_UI_ELEMENT_SUBCLASS_DECL(subClassName) \
 public: \
