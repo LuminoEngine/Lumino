@@ -40,6 +40,9 @@ UIElement::UIElement(GUIManager* manager)
 	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// ÉCÉxÉìÉgÇÃìoò^
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, &UIElement::OnMouseMove, &UIElement::CallMouseMoveEvent);
+
+	// çÌèúó\íË
 	m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
 	m_eventDataStore.Add(MouseLeaveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
 	m_eventDataStore.Add(MouseEnterEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
@@ -155,10 +158,39 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 bool UIElement::OnEvent(EventType type, EventArgs* args)
 {
-	if (type == EventType_MouseMove) {
-		RaiseEvent<MouseEventArgs>(MouseMoveEvent, this, (MouseEventArgs*)args);
+	switch (type)
+	{
+	case Lumino::GUI::EventType_Unknown:
+		break;
+	case Lumino::GUI::EventType_MouseMove:
+		OnMouseMove(static_cast<MouseEventArgs*>(args));
+		break;
+	case Lumino::GUI::EventType_MouseButtonDown:
+		break;
+	case Lumino::GUI::EventType_MouseButtonUp:
+		break;
+	case Lumino::GUI::EventType_MouseWheel:
+		break;
+	case Lumino::GUI::EventType_KeyDown:
+		break;
+	case Lumino::GUI::EventType_KeyUp:
+		break;
+	case Lumino::GUI::EventType_ElapsedTime:
+		break;
+	case Lumino::GUI::EventType_MouseEnter:
+		//RaiseEvent(MouseEnterEvent, this, args);
+		break;
+	case Lumino::GUI::EventType_MouseLeave:
+		//RaiseEvent(MouseLeaveEvent, this, args);
+		break;
+	default:
+		break;
 	}
-	return false;
+
+	//if (type == EventType_MouseMove) {
+	//	//RaiseEvent<MouseEventArgs>(MouseMoveEvent, this, (MouseEventArgs*)args);
+	//}
+	return args->Handled;
 }
 
 //-----------------------------------------------------------------------------
@@ -621,6 +653,8 @@ Button::Button(GUIManager* manager)
 
 	//m_chrome.Attach(LN_NEW ButtonChrome(manager));
 	//SetContent(Variant(m_chrome));
+
+	//MouseMove += LN_CreateDelegate(this, &Button::UIElement_MouseMove);
 }
 
 //-----------------------------------------------------------------------------
@@ -644,10 +678,6 @@ void Button::OnClick()
 //-----------------------------------------------------------------------------
 bool Button::OnEvent(EventType type, EventArgs* args)
 {
-	if (type == EventType_MouseMove) {
-		m_isMouseOver = true;
-		OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
-	}
 
 	//
 
@@ -663,6 +693,29 @@ bool Button::OnEvent(EventType type, EventArgs* args)
 void Button::OnRender()
 {
 }
+
+
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::OnMouseMove(MouseEventArgs* e)
+{
+	m_isMouseOver = true;
+	OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
+	e->Handled = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//void Button::UIElement_MouseMove(CoreObject* sender, MouseEventArgs* e)
+//{
+//	m_isMouseOver = true;
+//	OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
+//
+//}
 
 //-----------------------------------------------------------------------------
 //

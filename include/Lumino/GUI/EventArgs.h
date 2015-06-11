@@ -41,6 +41,7 @@ public:
 
 public:
 	UIElement* HandlerOwner;
+	bool Handled;
 
 protected:
 

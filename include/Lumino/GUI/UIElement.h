@@ -78,6 +78,20 @@ public:
 	/// ヒットテストの有無を取得します。
 	bool IsHitTest() const { return GetValue(IsHitTestProperty).GetBool(); }
 
+
+
+
+	Event02<CoreObject*, MouseEventArgs*>	MouseMove;
+	Event02<CoreObject*, MouseEventArgs*>	MouseEnter;
+	Event02<CoreObject*, MouseEventArgs*>	MouseLeave;
+
+	// イベントの扱い方は WPF とは少し違う。
+	// WPF の ButtonBase.Click は、
+	// public event RoutedEventHandler Click { add { AddHandler(ClickEvent, value); } remove { RemoveHandler(ClickEvent, value); } }
+	// のようになっている。
+	// つまり、event Click は単なるお飾り。Click(...) のように、これが直接呼ばれることはない。
+	// RaiseEvent(ClickEvent) から呼ばれる。
+	// RaiseEvent(ClickEvent) は ButtonBase.OnClick() で呼んでいる。
 	
 
 	void AddMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { AddHandler(MouseMoveEvent, handler); }
@@ -148,22 +162,63 @@ public:
 			LN_THROW(0, ArgumentException);
 		}
 	}
-	template<typename TArgs>
-	void RaiseEvent(const String& eventName, CoreObject* sender, TArgs* args)
-	{
-		RefObject* ev;
-		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
-			args->HandlerOwner = this;
-			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->Raise(sender, args);
-		}
-		else {
-			LN_THROW(0, ArgumentException);
-		}
-	}
+	//template<typename TArgs>
+	//void RaiseEvent(const String& eventName, CoreObject* sender, TArgs* args)
+	//{
+	//	RefObject* ev;
+	//	if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+	//		args->HandlerOwner = this;
+	//		static_cast<Event02<CoreObject*, TArgs*>*>(ev)->Raise(sender, args);
+	//	}
+	//	else {
+	//		LN_THROW(0, ArgumentException);
+	//	}
+	//}
 
-
+private:
+	// TypedRoutedEvent からコールバックされる。On～とは別に、単にイベントを発生させるコールバクとして必要。(TypedRoutedEvent は状態を持てないので)
+	// どんな手を使っても、結局 TypedRoutedEvent から Event02 を呼べる手段が必要なので、これらは必ず必要になる。
+	void CallMouseMoveEvent(CoreObject* sender, MouseEventArgs* e) { MouseMove.Raise(sender, e); }
+	void CallMouseEnterEvent(CoreObject* sender, MouseEventArgs* e) { MouseEnter.Raise(sender, e); }
+	void CallMouseLeaveEvent(CoreObject* sender, MouseEventArgs* e) { MouseLeave.Raise(sender, e); }
 
 protected:
+	void RegisterRoutedEvent(RoutedEvent* ev) {
+		m_routedEventList.Add(ev->GetName(), ev);
+	}
+
+	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
+	void RaiseEvent(const String& eventName, CoreObject* sender, EventArgs* e)
+	{
+		LN_FOREACH(RoutedEventList::Pair& pair, m_routedEventList)
+		{
+			if (pair.first == eventName) {
+				pair.second->CallEvent(this, sender, e);
+				break;	// ev と同じイベントは1つしかリスト内に無いはず
+			}
+		}
+
+		// bubble
+		if (!e->Handled && m_parent != NULL)
+		{
+
+			LN_FOREACH(RoutedEventList::Pair& pair, m_parent->m_routedEventList)
+			{
+				if (pair.first == eventName) {
+					pair.second->Raise(m_parent, sender, e);	// 親のOn～ が呼ばれる
+					break;	// ev と同じイベントは1つしかリスト内に無いはず
+				}
+			}
+
+			//m_parent->RaiseEvent(eventName, sender, e);
+		}
+		
+	}
+
+	// サブクラスはできるだけ Event にハンドラを登録するのではなく、On～をオーバーライドすることでイベントをハンドリングする。
+	// ハンドリングしたら e->Handled を true にする。そして super を呼び出す。こうすることで、RaiseEvent() でのイベント検索や
+	// ルーティングを行わないので負荷軽減ができる。
+	virtual void OnMouseMove(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 
 
 	GUIManager*				m_manager;
@@ -177,11 +232,13 @@ protected:
 	ResourceDictionary*		m_localResource;
 	CombinedLocalResource*	m_combinedLocalResource;
 
-
+	// 削除予定
 	typedef SortedArray<String, RefObject*>	EventDataStore;
 	EventDataStore	m_eventDataStore;
 	//Event02<CoreObject*, MouseEventArgs*> m_eventMouseMove;
 
+	typedef SortedArray<String, RoutedEvent*>	RoutedEventList;
+	RoutedEventList	m_routedEventList;
 
 
 	// Property
@@ -416,6 +473,10 @@ protected:
 	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void OnRender();
 	//virtual void Render();
+
+
+	virtual void OnMouseMove(MouseEventArgs* e);
+	//void UIElement_MouseMove(CoreObject* sender, MouseEventArgs* e);
 
 protected:
 	// override UIElement

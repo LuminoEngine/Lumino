@@ -19,6 +19,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(EventArgs);
 //-----------------------------------------------------------------------------
 EventArgs::EventArgs()
 	: HandlerOwner(NULL)
+	, Handled(false)
 {
 }
 
