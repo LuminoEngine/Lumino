@@ -105,6 +105,7 @@ public:
 	Variant();
 	Variant(const Variant& value);
 	Variant(bool value);
+	Variant(int value);
 	explicit Variant(float value);
 	Variant(const SizeF& value);
 	~Variant();
@@ -112,9 +113,20 @@ public:
 
 	Variant(CoreObject* obj);
 
+	template<class T>
+	Variant(RefPtr<T> obj)
+		: m_type(VariantType_Unknown)
+		, m_uint(0)
+	{
+		Set(obj);
+	}
+
 public:
 	VariantType GetType() const { return m_type; }
 	bool GetBool() const;
+
+	void SetInt(int value);
+	int GetInt() const;
 
 	void SetFloat(float value);
 	float GetFloat() const;
@@ -132,6 +144,7 @@ public:
 
 	template<> SizeF Cast() const { return GetSizeF(); }
 	template<> bool Cast() const { return GetBool(); }
+	template<> int Cast() const { return GetInt(); }
 
 private:
 	void Copy(const Variant& obj);

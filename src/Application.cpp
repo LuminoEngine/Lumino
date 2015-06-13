@@ -48,6 +48,7 @@ Application::Application(const ApplicationConfigData& configData)
 Application::~Application()
 {
 	m_platformManager->Dispose();
+	m_guiManager->Finalize();
 }
 
 //-----------------------------------------------------------------------------

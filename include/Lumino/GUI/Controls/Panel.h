@@ -1,6 +1,7 @@
 
 #pragma once
 #include "../UIElement.h"
+#include "../UIElementCollection.h"
 
 namespace Lumino
 {
@@ -8,64 +9,40 @@ namespace GUI
 {
 
 /**
-	@brief		1 つのコンテンツを持つコントロールを表します。
+	@brief		Panel 要素の基本クラスです。
 */
-class ContentControl
-	: public Control
+class Panel
+	: public UIElement
 {
+	// [ContentProperty("Children")]
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
-	LN_UI_ELEMENT_SUBCLASS_DECL(ContentControl);
+	LN_UI_ELEMENT_SUBCLASS_DECL(Panel);
 public:
-	ContentControl(GUIManager* manager);
-	virtual ~ContentControl();
+	Panel(GUIManager* manager);
+	virtual ~Panel();
+
+	UIElementCollection* GetChildren() { return m_children; }
 
 
-	/// このコントロールのコンテンツを設定します。
-	void SetContent(Variant value);
-
+public:
+	// 子要素を持つ要素の override
+	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	//virtual void MeasureLayout(const SizeF& availableSize);
+	//virtual void ArrangeLayout(const RectF& finalRect);
+	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void Render();
 
-protected:
-	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
-	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
-	virtual void OnRender();
-	virtual bool OnEvent(EventType type, EventArgs* args);
+	//virtual void MeasureLayout(const SizeF& availableSize);
+	//virtual void ArrangeLayout(const RectF& finalRect);
 
 	// IAddChild
-	virtual void AddChild(const Variant& value) { SetContent(value); }
+	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
 protected:
-	// override UIElement
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
-
-private:
-	Variant		m_content;		
-	UIElement*	m_childElement;	///< m_content が UIElement であればそれを指す
-};
-
-/**
-	@brief		ルート要素。
-*/
-class RootPane
-	: public ContentControl
-{
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
-	LN_UI_ELEMENT_SUBCLASS_DECL(RootPane);
-public:
-	RootPane(GUIManager* manager);
-	virtual ~RootPane();
-
-	//virtual void Render();
-
-protected:
-	//virtual void OnRender() {}
-
-	friend class GUIManager;
-
-private:
+	RefPtr<UIElementCollection>		m_children;
 };
 
 

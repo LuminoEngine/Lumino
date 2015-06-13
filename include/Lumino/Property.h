@@ -49,7 +49,7 @@ public:
 /**
 	@brief		
 */
-template<class TClass, typename TValue>
+template<class TClass, typename TValue, typename TInternalValue = TValue>	// TInternalValue ÇÕ Enum ÇÃÇŒÇ†Ç¢àÍó• intÅBÇªÇÍÇ¢Ç™Ç¢ÇÕ TValue Ç∆àÍèè
 class CoreObjectProperty : public Property
 {
 public:
@@ -164,7 +164,7 @@ public:
 
 
 public:
-	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, const TValue& defaultValue)
+	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
 		: m_name(name)
 		, m_setter(setter)
 		, m_getter(getter)
@@ -178,7 +178,7 @@ public:
 	{
 		LN_THROW(!m_setter.IsEmpty(), InvalidOperationException);
 		TClass* instance = static_cast<TClass*>(target);
-		m_setter.Call(instance, value.Cast<TValue>());
+		m_setter.Call(instance, value.Cast<TInternalValue>());
 		//(instance->*m_setter)(value.Cast<T>());
 	}
 	virtual Variant GetValue(const CoreObject* target) const
@@ -202,6 +202,13 @@ private:
 #define LN_DEFINE_PROPERTY(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
 { \
 	static ::Lumino::CoreObjectProperty<classType, nativeType> prop( \
+		name, setterFuncPtr, getterFuncPtr, defaultValue); \
+	RegisterProperty(&prop); \
+}
+
+#define LN_DEFINE_PROPERTY_ENUM(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
+{ \
+	static ::Lumino::CoreObjectProperty<classType, nativeType, int> prop( \
 		name, setterFuncPtr, getterFuncPtr, defaultValue); \
 	RegisterProperty(&prop); \
 }

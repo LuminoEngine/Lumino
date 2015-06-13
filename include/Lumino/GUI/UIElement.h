@@ -23,6 +23,52 @@ namespace Lumino
 namespace GUI
 {
 
+
+	struct Enum
+	{
+		int m_value;
+		Enum() : m_value(0) {}
+		Enum(int value) : m_value(value) {}
+		operator int() const { return m_value; }
+	};
+
+	struct HorizontalAlignment : public Enum
+	{
+		enum
+		{
+			Left = 0,
+			Center,
+			Right,
+			Stretch,
+		};
+
+		// WPF の Button の場合、初期値は Stretch だった
+
+		HorizontalAlignment() : Enum() {}
+		HorizontalAlignment(int value) : Enum(value) {}
+
+	};
+
+	struct Orientation : public Enum
+	{
+		enum
+		{
+			Vertical = 0,
+			Horizontal,
+		};
+
+		Orientation() : Enum() {}
+		Orientation(int value) : Enum(value) {}
+
+	};
+
+	//enum Orientation
+	//{
+	//	Horizontal = 0,
+	//	Orientation_Vertical,
+	//};
+
+
 class IAddChild
 {
 public:
@@ -94,9 +140,10 @@ public:
 	// RaiseEvent(ClickEvent) は ButtonBase.OnClick() で呼んでいる。
 	
 
-	void AddMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { AddHandler(MouseMoveEvent, handler); }
-	void RemoveMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { RemoveHandler(MouseMoveEvent, handler); }
+	//void AddMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { AddHandler(MouseMoveEvent, handler); }
+	//void RemoveMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { RemoveHandler(MouseMoveEvent, handler); }
 
+	// ↓この2つは C_API から使用する
 	virtual bool AddHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 	virtual bool RemoveHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 
@@ -114,6 +161,11 @@ public:
 	void ApplyTemplate();
 
 public:
+	const SizeF& GetDesiredSize() const {
+		return m_desiredSize;
+	}
+
+
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
@@ -137,31 +189,32 @@ protected:
 
 	friend class Decorator;
 	friend class ContentControl;
+	friend class Panel;
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 public:
-	template<typename TArgs>
-	void AddHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
-	{
-		RefObject* ev;
-		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
-			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->AddHandler(handler);
-		}
-		else {
-			LN_THROW(0, ArgumentException);
-		}
-	}
-	template<typename TArgs>
-	void RemoveHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
-	{
-		RefObject* ev;
-		if (m_eventDataStore.TryGetValue(eventName, &ev)) {
-			static_cast<Event02<CoreObject*, TArgs*>*>(ev)->RemoveHandler(handler);
-		}
-		else {
-			LN_THROW(0, ArgumentException);
-		}
-	}
+	//template<typename TArgs>
+	//void AddHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
+	//{
+	//	RefObject* ev;
+	//	if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+	//		static_cast<Event02<CoreObject*, TArgs*>*>(ev)->AddHandler(handler);
+	//	}
+	//	else {
+	//		LN_THROW(0, ArgumentException);
+	//	}
+	//}
+	//template<typename TArgs>
+	//void RemoveHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
+	//{
+	//	RefObject* ev;
+	//	if (m_eventDataStore.TryGetValue(eventName, &ev)) {
+	//		static_cast<Event02<CoreObject*, TArgs*>*>(ev)->RemoveHandler(handler);
+	//	}
+	//	else {
+	//		LN_THROW(0, ArgumentException);
+	//	}
+	//}
 	//template<typename TArgs>
 	//void RaiseEvent(const String& eventName, CoreObject* sender, TArgs* args)
 	//{
@@ -352,6 +405,21 @@ public:
 public:
 	ContentPresenter(GUIManager* manager);
 	virtual ~ContentPresenter();
+};
+
+/**
+	@brief	ItemsControl のコンテンツを表示します。
+*/
+class ItemsPresenter
+	: public UIElement
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(ItemsPresenter);
+public:
+
+public:
+	ItemsPresenter(GUIManager* manager);
+	virtual ~ItemsPresenter();
 };
 
 /**

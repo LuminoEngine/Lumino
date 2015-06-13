@@ -33,6 +33,7 @@ public:
 
 public:
 	void Initialize(const ConfigData& configData);
+	void Finalize();
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	RootPane* GetDefaultRootPane() const { return m_defaultRootPane; }
 

@@ -35,5 +35,8 @@
 
 #include "Lumino/GUI/GUIManager.h"
 #include "Lumino/GUI/UIElement.h"
+#include "Lumino/GUI/Controls/Panel.h"
+#include "Lumino/GUI/Controls/StackPanel.h"
+#include "Lumino/GUI/Controls/ListBox.h"
 
 #include "Lumino/Application.h"

@@ -1,5 +1,4 @@
 
-#pragma once
 #include "../Internal.h"
 #include <Lumino/GUI/VisualState.h>
 

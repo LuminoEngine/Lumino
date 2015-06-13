@@ -101,6 +101,28 @@ private:
 	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< テンプレートの VisualTree のルートノード
 };
 
+
+/**
+	@brief
+*/
+class DataTemplate
+	: public CoreObject
+{
+public:
+	DataTemplate();
+	virtual ~DataTemplate();
+
+	void SetVisualTreeRoot(UIElementFactory* factory) { m_visualTreeRoot = factory; }
+
+	/// 指定された Control にこのテンプレートを適用します。
+	void Apply(Control* control);
+
+private:
+	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< テンプレートの VisualTree のルートノード
+
+	// WPF ではデータの型とかも持つ。とりあえず ControlTemplate とは分けておく。
+};
+
 /**
 	@brief		
 	@note	

@@ -733,6 +733,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/GUIManager.h>
 
 namespace Lumino
@@ -755,6 +756,8 @@ static const size_t g_DefaultSkin_png_Len = LN_ARRAY_SIZE_OF(g_DefaultSkin_png_D
 //-----------------------------------------------------------------------------
 GUIManager::GUIManager()
 	: m_mouseHoverElement(NULL)
+	, m_defaultTheme(NULL)
+	, m_rootCombinedResource(NULL)
 	, m_defaultRootPane(NULL)
 {
 }
@@ -764,6 +767,7 @@ GUIManager::GUIManager()
 //-----------------------------------------------------------------------------
 GUIManager::~GUIManager()
 {
+	LN_SAFE_RELEASE(m_rootCombinedResource);
 	LN_SAFE_RELEASE(m_defaultTheme);
 }
 
@@ -778,7 +782,9 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 
 	RegisterFactory(ContentPresenter::TypeID, ContentPresenter::CreateInstance);
+	RegisterFactory(ItemsPresenter::TypeID, ItemsPresenter::CreateInstance);
 	RegisterFactory(ButtonChrome::TypeID, ButtonChrome::CreateInstance);
+	RegisterFactory(ListBoxChrome::TypeID, ListBoxChrome::CreateInstance);
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
 	BuildDefaultTheme();
@@ -791,6 +797,14 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 	m_defaultRootPane = LN_NEW RootPane(this);
 	m_defaultRootPane->ApplyTemplate();	// ÉeÅ[É}ÇíºÇøÇ…çXêV
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::Finalize()
+{
+	LN_SAFE_RELEASE(m_defaultRootPane);
 }
 
 //-----------------------------------------------------------------------------
@@ -950,6 +964,20 @@ void GUIManager::BuildDefaultTheme()
 		obj->SetSourceRect(Rect(8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
 	}
+	// Brush (ListBox òg)
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(0, 32, 32, 32));
+		m_defaultTheme->AddItem(_T("ListBoxNormalFrameBrush"), obj);
+	}
+	// Brush (ListBox îwåi)
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(8, 32 + 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ListBoxNormalBackgroundBrush"), obj);
+	}
 
 	// Button
 	{
@@ -963,6 +991,23 @@ void GUIManager::BuildDefaultTheme()
 
 		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
 		ef2->SetTypeName(_T("ContentPresenter"));
+		ef1->AddChild(ef2);
+
+		m_defaultTheme->AddControlTemplate(t);
+	}
+
+	// ListBox
+	{
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		t->SetTargetType(_T("ListBox"));
+
+		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		ef1->SetTypeName(_T("ListBoxChrome"));
+		//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+		t->SetVisualTreeRoot(ef1);
+
+		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+		ef2->SetTypeName(_T("ItemsPresenter"));
 		ef1->AddChild(ef2);
 
 		m_defaultTheme->AddControlTemplate(t);

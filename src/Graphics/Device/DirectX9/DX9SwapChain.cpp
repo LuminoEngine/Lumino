@@ -41,6 +41,7 @@ DX9SwapChain::~DX9SwapChain()
 {
 	OnLostDevice();
 	LN_SAFE_RELEASE(m_backBuffer);
+	LN_SAFE_RELEASE(m_targetWindow);
 	LN_SAFE_RELEASE(m_graphicsDevice);
 }
 

@@ -43,9 +43,9 @@ UIElement::UIElement(GUIManager* manager)
 	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, &UIElement::OnMouseMove, &UIElement::CallMouseMoveEvent);
 
 	// 削除予定
-	m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
-	m_eventDataStore.Add(MouseLeaveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
-	m_eventDataStore.Add(MouseEnterEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
+	//m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
+	//m_eventDataStore.Add(MouseLeaveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
+	//m_eventDataStore.Add(MouseEnterEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
 }
 
 //-----------------------------------------------------------------------------
@@ -105,6 +105,11 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 void UIElement::ArrangeLayout(const RectF& finalRect)
 {
+	// finalRect はこの要素を配置できる領域サイズ。
+	// 要素に直接設定されているサイズよりも大きいこともある。
+	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
+	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
+
 	m_finalRect = finalRect;
 }
 
@@ -423,6 +428,29 @@ ContentPresenter::~ContentPresenter()
 }
 
 //=============================================================================
+// ItemsPresenter
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsPresenter);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ItemsPresenter::ItemsPresenter(GUIManager* manager)
+	: UIElement(manager)
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ItemsPresenter::~ItemsPresenter()
+{
+
+}
+
+//=============================================================================
 // Control
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Control);
@@ -581,7 +609,7 @@ void ContentControl::ArrangeLayout(const RectF& finalRect)
 void ContentControl::OnRender()
 {
 	if (m_childElement != NULL) {
-		m_childElement->Render();
+		m_childElement->Render();	//TODO: Render からも呼んでる・・・
 	}
 }
 

@@ -40,9 +40,9 @@ public:
 	LNGUIElementIF(GUI::GUIManager* manager)
 		: GUI::UIElement(manager)
 	{
-		AddHandler(MouseMoveEvent, LN_CreateDelegate(EventWrap_MouseMove));
-		AddHandler(MouseEnterEvent, LN_CreateDelegate(EventWrap_MouseEnter));
-		AddHandler(MouseLeaveEvent, LN_CreateDelegate(EventWrap_MouseLeave));
+		MouseMove.AddHandler(LN_CreateDelegate(EventWrap_MouseMove));
+		MouseEnter.AddHandler(LN_CreateDelegate(EventWrap_MouseEnter));
+		MouseLeave.AddHandler(LN_CreateDelegate(EventWrap_MouseLeave));
 		m_LNMouseMoveHandler = NULL;
 		m_LNMouseEnterHandler = NULL;
 		m_LNMouseLeaveHandler = NULL;
@@ -195,9 +195,12 @@ public:
 		: GUI::Button(manager)
 	{
 
-		AddHandler(MouseMoveEvent, LN_CreateDelegate(EventWrap_MouseMove));
-		AddHandler(MouseEnterEvent, LN_CreateDelegate(EventWrap_MouseEnter));
-		AddHandler(MouseLeaveEvent, LN_CreateDelegate(EventWrap_MouseLeave));
+		//AddHandler(MouseMoveEvent, LN_CreateDelegate(EventWrap_MouseMove));
+		//AddHandler(MouseEnterEvent, LN_CreateDelegate(EventWrap_MouseEnter));
+		//AddHandler(MouseLeaveEvent, LN_CreateDelegate(EventWrap_MouseLeave));
+		MouseMove.AddHandler(LN_CreateDelegate(EventWrap_MouseMove));
+		MouseEnter.AddHandler(LN_CreateDelegate(EventWrap_MouseEnter));
+		MouseLeave.AddHandler(LN_CreateDelegate(EventWrap_MouseLeave));
 
 		m_LNMouseMoveHandler = NULL;
 		m_LNMouseEnterHandler = NULL;
