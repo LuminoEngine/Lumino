@@ -18,6 +18,8 @@ namespace GUI
 //=============================================================================
 
 const String	UIElement::SizeProperty(_T("Size"));
+const String	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
+const String	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
 
 const String	UIElement::MouseMoveEvent(_T("MouseMove"));
 const String	UIElement::MouseLeaveEvent(_T("MouseLeave"));
@@ -31,12 +33,16 @@ UIElement::UIElement(GUIManager* manager)
 	, m_parent(NULL)
 	, m_localResource(NULL)
 	, m_combinedLocalResource(NULL)
+	, m_horizontalAlignment(HorizontalAlignment::Stretch)
+	, m_verticalAlignment(VerticalAlignment::Stretch)
 	, m_rootLogicalParent(NULL)
 {
 	LN_SAFE_ADDREF(m_manager);
 
 	// プロパティの登録
 	LN_DEFINE_PROPERTY(UIElement, SizeF, SizeProperty, &UIElement::SetSize, &UIElement::GetSize, SizeF());
+	LN_DEFINE_PROPERTY_ENUM(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment, HorizontalAlignment::Stretch);
+	LN_DEFINE_PROPERTY_ENUM(UIElement, VerticalAlignment, VerticalAlignmentProperty, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment, VerticalAlignment::Stretch);
 	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// イベントの登録
@@ -78,6 +84,12 @@ void UIElement::ApplyTemplate()
 //-----------------------------------------------------------------------------
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
+	// 子要素を優先
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		UIElement* e = child->CheckMouseHoverElement(globalPt);
+		if (e != NULL) { return e; }
+	}
+
 	if (m_finalRect.Contains(globalPt)) {
 		return this;
 	}
@@ -91,13 +103,18 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 {
 	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
 	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
-	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button
+	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button		※この時点で inf を返すこともあり得る。
 	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
 
 	const SizeF& size = GetSize();
 	m_desiredSize.Width = std::min(size.Width, availableSize.Width);
 	m_desiredSize.Height = std::min(size.Height, availableSize.Height);
+
+	// 子要素
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->MeasureLayout(size);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -111,6 +128,11 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
 	m_finalRect = finalRect;
+
+	// 子要素 (もし複数あれば m_finalRect の領域に重ねられるように配置される)
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->ArrangeLayout(m_finalRect);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -144,6 +166,7 @@ void UIElement::UpdateLayout()
 	SizeF size = GetSize();
 
 	// サイズが定まっていない場合はレイアウトを決定できない
+	// TODO: 例外の方が良いかも？
 	if (Math::IsNaNOrInf(size.Width) || Math::IsNaNOrInf(size.Height)) { return; }
 
 	MeasureLayout(size);
@@ -155,6 +178,11 @@ void UIElement::UpdateLayout()
 //-----------------------------------------------------------------------------
 void UIElement::Render()
 {
+	// 子要素
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->Render();
+	}
+
 	OnRender();
 }
 
@@ -163,6 +191,11 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 bool UIElement::OnEvent(EventType type, EventArgs* args)
 {
+	// 子要素
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		if (child->OnEvent(type, args)) { return true; }
+	}
+
 	switch (type)
 	{
 	case Lumino::GUI::EventType_Unknown:
@@ -210,6 +243,20 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 		LN_REFOBJ_SET(m_combinedLocalResource, parent);
 	}
 	OnApplyTemplate(m_combinedLocalResource);
+
+	// 子要素
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::AddVisualChild(UIElement* child)
+{
+	RefPtr<UIElement> t(child, true);
+	m_visualChildren.Add(t);
 }
 
 //-----------------------------------------------------------------------------
@@ -280,6 +327,19 @@ UIElement* Decorator::GetChild() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Decorator::AddChild(const Variant& value)
+{
+	UIElement* e = dynamic_cast<UIElement*>(value.GetObject());
+	if (e == NULL) {
+		LN_THROW(0, NotImplementedException);
+	}
+	SetChild(e);
+}
+
+#if 0
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 UIElement* Decorator::CheckMouseHoverElement(const PointF& globalPt)
 {
 	if (m_child != NULL) {	// 子要素を優先
@@ -292,11 +352,11 @@ UIElement* Decorator::CheckMouseHoverElement(const PointF& globalPt)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Decorator::AddChild(const Variant& value)
-{
-	UIElement* e = dynamic_cast<UIElement*>(value.GetObject());
-	SetChild(e);
-}
+//void Decorator::AddVisualChild(UIElement* child)
+//{
+//	// Decorator は LogicalTree = VisualTree なはずなのでこれでいいはず・・・
+//	SetChild(child);
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -316,6 +376,7 @@ void Decorator::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //{
 //
 //}
+#endif
 
 //=============================================================================
 // ButtonChrome
@@ -500,13 +561,35 @@ Control::~Control()
 //-----------------------------------------------------------------------------
 void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
-	UIElement::ApplyTemplateHierarchy(parent);
+	// ローカルリソースを更新する
+	if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
+		m_combinedLocalResource->Combine(parent, m_localResource);
+	}
+	else {
+		LN_REFOBJ_SET(m_combinedLocalResource, parent);
+	}
 
 	// ControlTemplate の適用処理
 	ControlTemplate* t;
 	if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
 		t->Apply(this);
 	}
+
+	OnApplyTemplate(m_combinedLocalResource);
+
+	// 子要素
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	}
+
+	//// ローカルリソースを更新し、
+	//UIElement::ApplyTemplateHierarchy(parent);
+
+	//// ControlTemplate の適用処理
+	//ControlTemplate* t;
+	//if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
+	//	t->Apply(this);
+	//}
 }
 
 
@@ -543,13 +626,18 @@ void ContentControl::SetContent(Variant value)
 
 	// Object 型であれば UIElement ととして取り出してみる
 	if (m_content.GetType() == VariantType_Object) {
-		m_childElement = dynamic_cast<UIElement*>(m_content.GetObject());
+		m_childElement.Attach(dynamic_cast<UIElement*>(m_content.GetObject()));
 	}
+
+	m_content.SetFloat(0);
 
 	if (m_childElement != NULL)
 	{
 		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 		m_childElement->SetParent(this);
+
+		// TODO: ContentPresenter に追加するべき
+		AddVisualChild(m_childElement);
 
 		// 子要素のテーマを直ちに更新
 		if (m_combinedLocalResource != NULL) {
@@ -558,6 +646,7 @@ void ContentControl::SetContent(Variant value)
 	}
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -634,6 +723,7 @@ void ContentControl::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 		m_childElement->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
 	}
 }
+#endif
 
 //=============================================================================
 // RootPane

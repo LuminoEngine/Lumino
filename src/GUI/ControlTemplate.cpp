@@ -85,7 +85,8 @@ UIElement* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	//
 	// 子の処理
 	LN_FOREACH(UIElementFactory* c, m_children) {
-		element->AddChild(c->CreateInstance(rootLogicalParent));
+		RefPtr<UIElement> e(c->CreateInstance(rootLogicalParent));
+		element->AddVisualChild(e);
 	}
 	return element;
 }
@@ -115,7 +116,8 @@ void ControlTemplate::Apply(Control* control)
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
 	if (m_visualTreeRoot != NULL) {
-		control->AddChild(m_visualTreeRoot->CreateInstance(control));
+		RefPtr<UIElement> element(m_visualTreeRoot->CreateInstance(control));
+		control->AddVisualChild(element);
 	}
 
 	// TODO: プロパティ適用等も。
@@ -147,7 +149,7 @@ void DataTemplate::Apply(Control* control)
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
 	if (m_visualTreeRoot != NULL) {
-		control->AddChild(m_visualTreeRoot->CreateInstance(control));
+		control->AddVisualChild(m_visualTreeRoot->CreateInstance(control));
 	}
 
 	// TODO: プロパティ適用等も。

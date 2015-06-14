@@ -31,22 +31,27 @@ int main()
 		RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		workbench1->SetContent(panel1);
 
-		//app->GetGUIManager()->CreateUIElement("Button");
-		RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));
-		//button1->SetSize(SizeF(200, 300));
-		button1->SetSize(SizeF(64, 20));
-		button1->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
-		panel1->GetChildren()->Add(button1);
-		//workbench1->SetContent(button1.GetObjectPtr());
+		////app->GetGUIManager()->CreateUIElement("Button");
+		//RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));
+		////button1->SetSize(SizeF(200, 300));
+		//button1->SetSize(SizeF(64, 20));
+		//button1->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
+		//panel1->GetChildren()->Add(button1);
+		////workbench1->SetContent(button1.GetObjectPtr());
 
-		RefPtr<GUI::Button> button2(LN_NEW GUI::Button(app->GetGUIManager()));
-		button2->SetSize(SizeF(80, 32));
-		button2->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
-		panel1->GetChildren()->Add(button2);
+		//RefPtr<GUI::Button> button2(LN_NEW GUI::Button(app->GetGUIManager()));
+		//button2->SetSize(SizeF(80, 32));
+		//button2->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
+		//panel1->GetChildren()->Add(button2);
 
 		RefPtr<GUI::ListBox> listbox1(LN_NEW GUI::ListBox(app->GetGUIManager()));
 		listbox1->SetSize(SizeF(200, 300));
 		panel1->GetChildren()->Add(listbox1);
+
+		RefPtr<GUI::Button> button3(LN_NEW GUI::Button(app->GetGUIManager()));
+		button3->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
+		listbox1->InsertItem(0, button3);
+
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();

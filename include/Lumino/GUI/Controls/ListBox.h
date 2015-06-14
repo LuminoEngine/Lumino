@@ -16,6 +16,11 @@ class ListBox;
 class ListBoxItem
 	: public ContentControl
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(ListBoxItem);
+public:
+	ListBoxItem(GUIManager* manager);
+	virtual ~ListBoxItem();
 };
 
 
@@ -92,8 +97,12 @@ public:
 
 	ListBoxItemList* GetListBoxItems() { return m_listBoxItems; }
 
+	// ユーティリティ
+	void InsertItem(int index, UIElement* element);
+
 	//ItemsPanel
 protected:
+#if 0
 	// 子要素を持つ要素の override
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
@@ -101,6 +110,7 @@ protected:
 	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void Render();
+#endif
 
 	// ListBoxItemList callback
 	friend class ListBoxItemList;

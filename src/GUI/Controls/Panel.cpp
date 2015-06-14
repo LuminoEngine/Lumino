@@ -19,8 +19,9 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Panel);
 //-----------------------------------------------------------------------------
 Panel::Panel(GUIManager* manager)
 	: UIElement(manager)
-	, m_children(LN_NEW UIElementCollection(this))
+	, m_children(LN_NEW UIElementCollection())
 {
+	m_children->ItemAdded += LN_CreateDelegate(this, &Panel::Children_ItemAdded);
 }
 
 //-----------------------------------------------------------------------------
@@ -30,6 +31,20 @@ Panel::~Panel()
 {
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Panel::Children_ItemAdded(UIElement* item)
+{
+	// 子要素の VisualTree を更新しなおす
+	if (item != NULL) {
+		//m_visualChildren.Add(item);
+		AddVisualChild(item);
+		item->ApplyTemplate();
+	}
+}
+
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -76,7 +91,7 @@ void Panel::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
 	}
 }
-
+#endif
 
 } // namespace GUI
 } // namespace Lumino

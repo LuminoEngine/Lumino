@@ -49,6 +49,23 @@ namespace GUI
 
 	};
 
+	struct VerticalAlignment : public Enum
+	{
+		enum
+		{
+			Bottom = 0,		///< 子要素を、親のレイアウト スロットの下端に揃えて配置します。
+			Center,			///< 子要素を、親のレイアウト スロットの中央に揃えて配置します。
+			Stretch,		///< 子要素を、親のレイアウト スロット全体に引き伸ばします。
+			Top,			///< 子要素を、親のレイアウト スロットの上端に揃えて配置します。
+		};
+
+		// WPF の Button の場合、初期値は Stretch だった
+
+		VerticalAlignment() : Enum() {}
+		VerticalAlignment(int value) : Enum(value) {}
+
+	};
+
 	struct Orientation : public Enum
 	{
 		enum
@@ -85,6 +102,8 @@ class UIElement
 {
 public:
 	static const String	SizeProperty;
+	static const String	HorizontalAlignmentProperty;
+	static const String	VerticalAlignmentProperty;
 	static const String	IsHitTestProperty;
 
 	static const String	MouseMoveEvent;
@@ -117,6 +136,12 @@ public:
 	
 	/// 要素のサイズを取得します。
 	const SizeF& GetSize() const { return m_size; }// { return GetValue(SizeProperty).GetSizeF(); }	// TODO: 危ない。参照で返すとスタックの Variant で消える
+
+
+	void SetHorizontalAlignment(HorizontalAlignment value) { m_horizontalAlignment = value; }
+	HorizontalAlignment GetHorizontalAlignment() const { return m_horizontalAlignment; }
+	void SetVerticalAlignment(VerticalAlignment value) { m_verticalAlignment = value; }
+	VerticalAlignment GetVerticalAlignment() const { return m_verticalAlignment; }
 
 	/// ヒットテストの有無を設定します。
 	void SetHitTest(bool enabled) { SetValue(IsHitTestProperty, Variant(enabled)); }
@@ -188,45 +213,15 @@ protected:
 	virtual const String& GetTypeID() const = 0;
 
 	friend class Decorator;
+	friend class Control;
 	friend class ContentControl;
 	friend class Panel;
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
-public:
-	//template<typename TArgs>
-	//void AddHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
-	//{
-	//	RefObject* ev;
-	//	if (m_eventDataStore.TryGetValue(eventName, &ev)) {
-	//		static_cast<Event02<CoreObject*, TArgs*>*>(ev)->AddHandler(handler);
-	//	}
-	//	else {
-	//		LN_THROW(0, ArgumentException);
-	//	}
-	//}
-	//template<typename TArgs>
-	//void RemoveHandler(const String& eventName, const Delegate02<CoreObject*, TArgs*>& handler)
-	//{
-	//	RefObject* ev;
-	//	if (m_eventDataStore.TryGetValue(eventName, &ev)) {
-	//		static_cast<Event02<CoreObject*, TArgs*>*>(ev)->RemoveHandler(handler);
-	//	}
-	//	else {
-	//		LN_THROW(0, ArgumentException);
-	//	}
-	//}
-	//template<typename TArgs>
-	//void RaiseEvent(const String& eventName, CoreObject* sender, TArgs* args)
-	//{
-	//	RefObject* ev;
-	//	if (m_eventDataStore.TryGetValue(eventName, &ev)) {
-	//		args->HandlerOwner = this;
-	//		static_cast<Event02<CoreObject*, TArgs*>*>(ev)->Raise(sender, args);
-	//	}
-	//	else {
-	//		LN_THROW(0, ArgumentException);
-	//	}
-	//}
+	friend class UIElementFactory;
+	friend class ControlTemplate;
+	friend class DataTemplate;
+	virtual void AddVisualChild(UIElement* child);	///< AddChild() は論理ツリーへの追加、AddVisualChild() はビジュアルツリーへの追加。
 
 private:
 	// TypedRoutedEvent からコールバックされる。On～とは別に、単にイベントを発生させるコールバクとして必要。(TypedRoutedEvent は状態を持てないので)
@@ -295,7 +290,9 @@ protected:
 
 
 	// Property
-	SizeF	m_size;
+	SizeF				m_size;
+	HorizontalAlignment	m_horizontalAlignment;
+	VerticalAlignment	m_verticalAlignment;
 
 private:
 
@@ -312,6 +309,13 @@ private:
 	TemplateBindingInfoList		m_templateBindingInfoList;
 
 	UIElement*		m_rootLogicalParent;	///< テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
+
+protected:
+	/// 直接の子 Visual リスト。
+	/// このリストに論理要素は直接含まない。論理要素は これらの Visual の下にある ContentPresenter または ItemsPresenter の子として追加される。
+	/// 例えば Button::SetContent() で セットされた UIElement は m_visualChildren から辿れる ContentPresenter に追加される。
+	ArrayList< RefPtr<UIElement> >	m_visualChildren;	// TOOD: List にしなくてもいいかも？
+	//UIElement*		m_visualChildren;
 };
 
 /**
@@ -331,16 +335,17 @@ public:
 	UIElement* GetChild() const;
 
 public:
-	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
+	//virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value);
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+	//virtual void AddVisualChild(UIElement* child);
 
 
 protected:
 	// override UIElement
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);;
+	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);;
 	//virtual void AddChildToVisualTree(UIElement* element);
 
 private:
@@ -405,6 +410,9 @@ public:
 public:
 	ContentPresenter(GUIManager* manager);
 	virtual ~ContentPresenter();
+
+protected:
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
 };
 
 /**
@@ -420,6 +428,9 @@ public:
 public:
 	ItemsPresenter(GUIManager* manager);
 	virtual ~ItemsPresenter();
+
+protected:
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ItemsPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
 };
 
 /**
@@ -441,6 +452,12 @@ public:
 protected:
 	// override UIElement
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+
+	//friend class UIElementFactory;
+
+	//friend class ControlTemplate;
+	//friend class DataTemplate;
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// Contro 自体は子要素を持たない。サブクラスでさらにオーバーライドされる。
 
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 
@@ -469,15 +486,15 @@ public:
 	/// このコントロールのコンテンツを設定します。
 	void SetContent(Variant value);
 
-	virtual void Render();
+	//virtual void Render();
 
 protected:
-	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	//virtual void ApplyTemplate(CombinedLocalResource* parent);
-	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
-	virtual void OnRender();
-	virtual bool OnEvent(EventType type, EventArgs* args);
+	//virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
+	////virtual void ApplyTemplate(CombinedLocalResource* parent);
+	//virtual void MeasureLayout(const SizeF& availableSize);
+	//virtual void ArrangeLayout(const RectF& finalRect);
+	//virtual void OnRender();
+	//virtual bool OnEvent(EventType type, EventArgs* args);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { SetContent(value); }
@@ -485,11 +502,11 @@ protected:
 
 protected:
 	// override UIElement
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 private:
 	Variant		m_content;		
-	UIElement*	m_childElement;	///< m_content が UIElement であればそれを指す
+	RefPtr<UIElement>	m_childElement;	///< m_content が UIElement であればそれを指す
 };
 
 /**

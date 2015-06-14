@@ -10,6 +10,27 @@ namespace Lumino
 namespace GUI
 {
 //=============================================================================
+// ListBoxItem
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItem);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxItem);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ListBoxItem::ListBoxItem(GUIManager* manager)
+	: ContentControl(manager)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ListBoxItem::~ListBoxItem()
+{
+}
+
+//=============================================================================
 // ListBoxItemList
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList);
@@ -41,6 +62,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxChrome);
 //-----------------------------------------------------------------------------
 ListBoxChrome::ListBoxChrome(GUIManager* manager)
 	: Decorator(manager)
+	, m_frameWidth(8)
 {
 }
 
@@ -97,6 +119,7 @@ ListBox::ListBox(GUIManager* manager)
 	, m_listBoxItems(LN_NEW ListBoxItemList(this))
 {
 	m_itemsPanel.Attach(LN_NEW StackPanel(manager));
+	AddVisualChild(m_itemsPanel);
 }
 
 //-----------------------------------------------------------------------------
@@ -106,6 +129,16 @@ ListBox::~ListBox()
 {
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ListBox::InsertItem(int index, UIElement* element)
+{
+	RefPtr<ListBoxItem> item(LN_NEW ListBoxItem(m_manager));
+	item->SetContent(element);
+	m_listBoxItems->Insert(index, item);
+}
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -172,6 +205,7 @@ void ListBox::Render()
 		m_itemsPanel->Render();
 	}
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //

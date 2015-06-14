@@ -1,5 +1,6 @@
 
 #pragma once
+#include "../CoreObjectList.h"
 #include "UIElement.h"
 
 namespace Lumino
@@ -11,8 +12,22 @@ namespace GUI
 	@brief		
 */
 class UIElementCollection
-	: public CoreObject		// TODO:プロパティはいらないのでもう一段サブクラス分離してもいい
+	: public CoreObjectList<UIElement>
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	UIElementCollection() {}
+	virtual ~UIElementCollection() {}
+
+	Event01<UIElement*>	ItemAdded;
+	Event01<UIElement*>	ItemRemoved;
+
+protected:
+	virtual void OnItemAdded(UIElement* item) { ItemAdded.Raise(item); }
+	virtual void OnItemRemoved(UIElement* item) { ItemRemoved.Raise(item); }
+
+
+#if 0
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	UIElementCollection(UIElement* logicalParent)
@@ -45,7 +60,14 @@ public:
 public:
 	UIElement*						m_logicalParent;
 	ArrayList< RefPtr<UIElement> >	m_visualChildren;	// ArrayList<RefPtr<UIElement> >  はやめた。イテレートするときに冗長になる。
+#endif
 };
+
+//template<class >
+//class ObservedUIElementCollection
+//{
+//
+//};
 
 } // namespace GUI
 } // namespace Lumino

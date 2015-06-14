@@ -25,6 +25,7 @@ public:
 
 
 public:
+#if 0
 	// éqóvëfÇéùÇ¬óvëfÇÃ override
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
@@ -36,10 +37,17 @@ public:
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
 	//virtual void ArrangeLayout(const RectF& finalRect);
+#endif
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
+
+protected:
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, NotImplementedException); }
+
+private:
+	void Children_ItemAdded(UIElement* item);
 
 protected:
 	RefPtr<UIElementCollection>		m_children;
