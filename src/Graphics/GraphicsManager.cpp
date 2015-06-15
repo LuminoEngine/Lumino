@@ -643,9 +643,10 @@
 		・BeginScene ではその時点のプライマリの状態を「初期値」としてコマンド化しておけば良い。
 */
 #include "../Internal.h"
-#include "../../include/Lumino/Graphics/GraphicsDevice.h"
-#include "../../include/Lumino/Graphics/GraphicsManager.h"
-#include "../../include/Lumino/Graphics/Renderer.h"
+#include <Lumino/Imaging/BitmapPainter.h>
+#include <Lumino/Graphics/GraphicsDevice.h>
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/Renderer.h>
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 
@@ -665,6 +666,7 @@ GraphicsManager* Internal::Manager = NULL;
 //-----------------------------------------------------------------------------
 GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 	: m_fileManager(NULL)
+	, m_dummyTexture(NULL)
 	, m_renderer(NULL)
 	, m_renderingThread(NULL)
 	, m_painterEngine(NULL)
@@ -690,6 +692,14 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 		Internal::Manager = this;
 	}
 
+	
+	// ダミーテクスチャ
+	m_dummyTexture = GetGraphicsDevice()->GetDeviceObject()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
+	Device::IGraphicsDevice::ScopedLockContext lock(GetGraphicsDevice()->GetDeviceObject());
+	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
+	painter.Clear(Color::White);
+	m_dummyTexture->Unlock();
+
 	m_painterEngine = LN_NEW PainterEngine();
 	m_painterEngine->Create(this);
 
@@ -710,6 +720,7 @@ GraphicsManager::~GraphicsManager()
 	}
 
 	LN_SAFE_RELEASE(m_painterEngine);
+	LN_SAFE_RELEASE(m_dummyTexture);
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
 

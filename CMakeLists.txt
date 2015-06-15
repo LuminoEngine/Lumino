@@ -140,13 +140,18 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Property.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/VisualState.h
+	include/Lumino/GUI/Controls/ListBox.h
 	include/Lumino/GUI/Controls/Panel.h
+	include/Lumino/GUI/Controls/StackPanel.h
 	src/GUI/ControlTemplate.cpp
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIManager.cpp
 	src/GUI/UIElement.cpp
+	src/GUI/UIElementCollection.cpp
 	src/GUI/VisualState.cpp
-	src/GUI/Controls/Panel.cpp)
+	src/GUI/Controls/ListBox.cpp
+	src/GUI/Controls/Panel.cpp
+	src/GUI/Controls/StackPanel.cpp)
 	
 set(LN_SOURCES_Game
 	include/Lumino/Game/FpsController.h

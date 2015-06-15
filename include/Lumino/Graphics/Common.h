@@ -189,6 +189,30 @@ enum RenderingType
 	RenderingType_Deferred,
 };
 
+
+/// 3D 空間での基準方向を表す値
+enum AxisDirection
+{
+	AxisDirection_X = 0,   ///< X+ 方向 (右向き)
+	AxisDirection_Y,       ///< Y+ 方向 (上向き)
+	AxisDirection_Z,       ///< Z+ 方向 (奥向き)
+	AxisDirection_RX,      ///< X- 方向 (左向き)
+	AxisDirection_RY,      ///< Y- 方向 (下向き)
+	AxisDirection_RZ,      ///< Z- 方向 (手前向き)
+
+	AxisDirection_MAX,
+};
+
+/// スプライトのソート方法
+enum SpriteSortMode
+{
+	SpriteSortMode_None = 0x00,					///< ソートしない
+	SpriteSortMode_DepthBackToFront = 0x01,		///< Z値が大きいものが先に描画されるようにソートする (アルファブレンド使用時の推奨)
+	SpriteSortMode_DepthFrontToBack = 0x02,		///< Z値が小さいものが先に描画されるようにソートする (SpriteSortMode_DepthBackToFront と同時には使えない)
+	SpriteSortMode_Texture = 0x04,				///< テクスチャを優先してソートする (同じテクスチャを持つスプライトが多数あるとき用。ただし、アルファブレンドが有効な場合は描画が不自然になることがある)
+};
+
+
 } // namespace Graphics
 } // namespace Lumino
 

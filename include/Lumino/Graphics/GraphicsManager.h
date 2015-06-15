@@ -46,6 +46,8 @@ public:
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
 	bool IsPlatformTextureLoading() const { return m_platformTextureLoading; }
 
+	Device::ITexture* GetDummyTexture() { return m_dummyTexture; }
+
 	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
 	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
@@ -64,6 +66,7 @@ private:
 	
 	RefPtr<GraphicsDevice>	m_graphicsDevice;
 	RefPtr<SwapChain>		m_mainSwapChain;
+	Device::ITexture*		m_dummyTexture;		///< public にはしないので RefPtr は使えない
 
 	Renderer*				m_renderer;
 	RenderingThread*		m_renderingThread;
