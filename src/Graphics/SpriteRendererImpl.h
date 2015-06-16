@@ -14,7 +14,7 @@ class SpriteRendererImpl
     : public RefObject
 {
 public:
-	SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount, bool is3D);
+	SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount);
 	virtual ~SpriteRendererImpl();
 
 public:
@@ -25,32 +25,31 @@ public:
 	/// ビュー、プロジェクション行列の設定 (view はビルボードの計算で必要になるので、view proj で分ける)
 	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
 
+	/// ビューサイズの設定
 	void SetViewPixelSize(const Size& size);
-	//void setViewProjMatrix( const LMatrix& view, const LMatrix& proj, const LVector2& viewPixelSize );
-	
-	/// ビューサイズの設定( 2D 用のプロジェクション行列を作って、setViewProjMatrix() に設定する)
-	//void setViewSize(const LVector2& viewSize);
 
-	void SetRenderState( const RenderState& state );
+	/// レンダリングスレートの設定
+	void SetRenderState(const RenderState& state);
 
-	/// ソート方法の設定(SpriteSortMode  enable_view_pos_depth_:カメラからの距離をソート用Z値にする場合 true)
-    void SetSortMode( uint32_t flags, bool enable_view_pos_depth_ );
+	/// ソート方法の設定
+	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
 
 	/// 描画リクエスト
     void DrawRequest2D(
         const Vector3& position,
-        const Vector3& center,
-        Texture* texture,
-        const RectF& srcRect,
-        ColorF color );
+		const Vector3& center,
+		const Vector2& size,
+        Device::ITexture* texture,
+		const RectF& srcRect,
+		const ColorF* colorTable);
 
 	/// 描画リクエスト
 	void DrawRequest3D(
         const Vector3& position,
         const Vector3& center,
         const Vector2& size,
-        Texture* texture,
-        const RectF& src_rect,
+		Device::ITexture* texture,
+		const RectF& srcRect,
 		const ColorF* colorTable,    // 4 頂点分。NULL の場合は白
 		AxisDirection front);
 
@@ -61,6 +60,17 @@ public:
 	void Clear();
 
 private:
+
+	/// 描画リクエスト
+	void DrawRequest3DInternal(
+		const Vector3& position,
+		const Vector3& center,
+		const Vector2& size,
+		Device::ITexture* texture,
+		const RectF& srcRect,
+		const ColorF* colorTable,
+		AxisDirection front,
+		bool is3D);
 
 	/// バッチ処理用スプライト頂点
 	struct BatchSpriteVertex
@@ -119,51 +129,20 @@ private:
     int								m_maxSprites;
 	SpriteRequestList				m_spriteRequestList;
 	int								m_spriteRequestListUsedCount;
-	ArrayList<int>					m_spriteIndexList;		///< Flash() 内で使用する。m_spriteRequestList をソートするのは構造体コピーを伴うため速度面で心配。なのでインデックスをソートする。
+	ArrayList<int>					m_spriteIndexList;			///< Flash() 内で使用する。m_spriteRequestList をソートするのは構造体コピーを伴うため速度面で心配。なのでインデックスをソートする。
 	RenderStateList					m_renderStateList;
 	int								m_currentRenderStateIndex;	///< 次の Draw でに適用される RenderState がある m_renderStateList 内のインデックス
-
 	AttributeList					m_attributeList;
 
 	Matrix							m_transformMatrix;
-
-	Vector3							m_viewDirection;		///< ビルボードの計算に使用する
-	Matrix							m_viewInverseMatrix;	///< ビルボードの計算に使用する
-	Vector3							m_viewPosition;			///< カメラ位置を基準としたソートで使用する
+	Vector3							m_viewDirection;			///< ビルボードの計算に使用する
+	Matrix							m_viewInverseMatrix;		///< ビルボードの計算に使用する
+	Vector3							m_viewPosition;				///< カメラ位置を基準としたソートで使用する
 	Matrix							m_viewProjMatrix;
 	Vector2							m_viewPixelSize;
 
-	uint32_t						m_spriteSortMode;		///< ソート方法 (LNSpriteSortMode)
-	bool							m_enableViewPosDepth;	///< TODO:これは enum の方がわかりやすい気がする・・・
-
-	bool							m_3DSystem;				///< true の場合、スプライトの中心は四角形の中心で、Y+ 方向が上になる
-
-
-
-
-    //BatchSpriteData*                    mSpriteRequests;
-    //int                                 mNextIndex;         ///< mSpriteRequests の空いているインデックスを示す
-    //int                                 mLastSpriteNum;
-    //Matrix                             mTransformMatrix;
-    //Matrix                             mViewInverseMatrix;
-    //Matrix                             mViewProjMatrix;
-    //Vector3                            mViewPosition;
-    //Vector3                            mViewDirection;
-
-    uint16_t*                                mSpriteIndexArray;
-	uint16_t*                                mSpriteIndexArraySource;
-	ArrayList<Attribute>		mAttributeList;
-
-	bool(*mComFunc)(const uint16_t& l_, const uint16_t& r_);
-    bool                                mIs3DSystem;        ///< true の場合、スプライトの中心は四角形の中心で、Y+ 方向が上になる
-
-
-	typedef ArrayList<RenderState>	RenderStateArray;
-	RenderStateArray					mRenderStateArray;
-	int									mCurrentRenderStateIndex;
-
-    
-	Vector2 mViewPixelSize;
+	uint32_t						m_spriteSortMode;			///< ソート方法 (SpriteSortMode)
+	SortingDistanceBasis			m_sortingBasis;				///< ソート基準
    
 	/// シェーダ関係の変数をまとめた構造体
     struct 
@@ -176,8 +155,208 @@ private:
 
     } m_shader;
 
+public:
+	class SpriteRendererCommand : public RenderingCommand
+	{
+	protected:
+		SpriteRendererImpl*	m_renderer;
+		
+		virtual ~SpriteRendererCommand()
+		{
+			LN_SAFE_RELEASE(m_renderer);
+		}
+	};
 
-    static BatchSpriteData* sSpriteRequests;
+	class SetTransformCommand : public SpriteRendererCommand
+	{
+		Matrix	m_transform;
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const Matrix& transform)
+		{
+			HandleCast<SetTransformCommand>(cmd)->m_renderer = renderer;
+			HandleCast<SetTransformCommand>(cmd)->m_transform = transform;
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->SetTransform(m_transform);
+		}
+	};
+
+	class SetViewProjMatrixCommand : public SpriteRendererCommand
+	{
+		Matrix	m_view;
+		Matrix	m_proj;
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const Matrix& view, const Matrix& proj)
+		{
+			HandleCast<SetViewProjMatrixCommand>(cmd)->m_renderer = renderer;
+			HandleCast<SetViewProjMatrixCommand>(cmd)->m_view = view;
+			HandleCast<SetViewProjMatrixCommand>(cmd)->m_proj = proj;
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->SetViewProjMatrix(m_view, m_proj);
+		}
+	};
+
+	class SetViewPixelSizeCommand : public SpriteRendererCommand
+	{
+		Size	m_size;
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const Size& size)
+		{
+			HandleCast<SetViewPixelSizeCommand>(cmd)->m_renderer = renderer;
+			HandleCast<SetViewPixelSizeCommand>(cmd)->m_size = size;
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->SetViewPixelSize(m_size);
+		}
+	};
+
+	class SetRenderStateCommand : public SpriteRendererCommand
+	{
+		RenderState	m_state;
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const RenderState& state)
+		{
+			HandleCast<SetRenderStateCommand>(cmd)->m_renderer = renderer;
+			HandleCast<SetRenderStateCommand>(cmd)->m_state = state;
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->SetRenderState(m_state);
+		}
+	};
+
+	class SetSortModeCommand : public SpriteRendererCommand
+	{
+		uint32_t				m_flags;
+		SortingDistanceBasis	m_basis;
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, uint32_t flags, SortingDistanceBasis basis)
+		{
+			HandleCast<SetSortModeCommand>(cmd)->m_renderer = renderer;
+			HandleCast<SetSortModeCommand>(cmd)->m_flags = flags;
+			HandleCast<SetSortModeCommand>(cmd)->m_basis = basis;
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->SetSortMode(m_flags, m_basis);
+		}
+	};
+
+	class DrawRequest2DCommand : public SpriteRendererCommand
+	{
+		Vector3 m_position;
+		Vector3 m_center;
+		Vector2 m_size;
+		Device::ITexture* m_texture;
+		RectF m_srcRect;
+		ColorF m_colorTable[4];
+	public:
+		static void Create(
+			CmdInfo& cmd,
+			SpriteRendererImpl* renderer, 
+			const Vector3& position,
+			const Vector3& center,
+			const Vector2& size,
+			Device::ITexture* texture,
+			const RectF& srcRect,
+			const ColorF* colorTable)
+		{
+			HandleCast<DrawRequest2DCommand>(cmd)->m_renderer = renderer;
+			HandleCast<DrawRequest2DCommand>(cmd)->m_position = position;
+			HandleCast<DrawRequest2DCommand>(cmd)->m_center = center;
+			HandleCast<DrawRequest2DCommand>(cmd)->m_size = size;
+			HandleCast<DrawRequest2DCommand>(cmd)->m_texture = texture;
+			HandleCast<DrawRequest2DCommand>(cmd)->m_srcRect = srcRect;
+			memcpy(HandleCast<DrawRequest2DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF));
+			LN_SAFE_ADDREF(renderer);
+			LN_SAFE_ADDREF(texture);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->DrawRequest2D(m_position, m_center, m_size, m_texture, m_srcRect, m_colorTable);
+		}
+		virtual ~DrawRequest2DCommand()
+		{
+			LN_SAFE_RELEASE(m_texture);
+		}
+	};
+
+	class DrawRequest3DCommand : public SpriteRendererCommand
+	{
+		Vector3 m_position;
+		Vector3 m_center;
+		Vector2 m_size;
+		Device::ITexture* m_texture;
+		RectF m_srcRect;
+		ColorF m_colorTable[4];
+		AxisDirection m_front;
+	public:
+		static void Create(
+			CmdInfo& cmd,
+			SpriteRendererImpl* renderer,
+			const Vector3& position,
+			const Vector3& center,
+			const Vector2& size,
+			Device::ITexture* texture,
+			const RectF& srcRect,
+			const ColorF* colorTable,
+			AxisDirection front)
+		{
+			HandleCast<DrawRequest3DCommand>(cmd)->m_renderer = renderer;
+			HandleCast<DrawRequest3DCommand>(cmd)->m_position = position;
+			HandleCast<DrawRequest3DCommand>(cmd)->m_center = center;
+			HandleCast<DrawRequest3DCommand>(cmd)->m_size = size;
+			HandleCast<DrawRequest3DCommand>(cmd)->m_texture = texture;
+			HandleCast<DrawRequest3DCommand>(cmd)->m_srcRect = srcRect;
+			memcpy(HandleCast<DrawRequest3DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF));
+			HandleCast<DrawRequest3DCommand>(cmd)->m_front = front;
+			LN_SAFE_ADDREF(renderer);
+			LN_SAFE_ADDREF(texture);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->DrawRequest3D(m_position, m_center, m_size, m_texture, m_srcRect, m_colorTable, m_front);
+		}
+		virtual ~DrawRequest3DCommand()
+		{
+			LN_SAFE_RELEASE(m_texture);
+		}
+	};
+
+	class FlashCommand : public SpriteRendererCommand
+	{
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer)
+		{
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->Flash();
+		}
+	};
+
+	class ClearCommand : public SpriteRendererCommand
+	{
+	public:
+		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer)
+		{
+			LN_SAFE_ADDREF(renderer);
+		}
+		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		{
+			m_renderer->Clear();
+		}
+	};
 };
 
 } // namespace Graphics

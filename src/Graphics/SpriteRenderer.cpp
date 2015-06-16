@@ -202,10 +202,128 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…？
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include "SpriteRendererImpl.h"
 
+#define LN_CALL_COMMAND(func, command, ...) \
+	if (m_manager->GetRenderingType() == RenderingType_Deferred) { \
+		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_impl, __VA_ARGS__); \
+	} \
+	else { \
+		m_impl->func(__VA_ARGS__); \
+	}
+
 namespace Lumino
 {
 namespace Graphics
 {
+
+//=============================================================================
+// SpriteRenderer
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SpriteRenderer* SpriteRenderer::Create(int maxSpriteCount, GraphicsManager* manager)
+{
+	return LN_NEW SpriteRenderer(manager, maxSpriteCount);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
+{
+	m_manager = manager;
+	m_impl = LN_NEW SpriteRendererImpl(manager, maxSpriteCount);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SpriteRenderer::~SpriteRenderer()
+{
+	LN_SAFE_RELEASE(m_impl);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::SetTransform(const Matrix& matrix)
+{
+	LN_CALL_COMMAND(SetTransform, SpriteRendererImpl::SetTransformCommand, matrix);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
+{
+	LN_CALL_COMMAND(SetViewProjMatrix, SpriteRendererImpl::SetViewProjMatrixCommand, view, proj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::SetViewPixelSize(const Size& size)
+{
+	LN_CALL_COMMAND(SetViewPixelSize, SpriteRendererImpl::SetViewPixelSizeCommand, size);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::SetRenderState(const RenderState& state)
+{
+	LN_CALL_COMMAND(SetRenderState, SpriteRendererImpl::SetRenderStateCommand, state);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
+{
+	LN_CALL_COMMAND(SetSortMode, SpriteRendererImpl::SetSortModeCommand, flags, basis);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::DrawRequest2D(
+	const Vector3& position,
+	const Vector3& center,
+	const Vector2& size,
+	Texture* texture,
+	const RectF& srcRect,
+	const ColorF* colorTable)
+{
+	LN_CALL_COMMAND(
+		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
+		position, center, size, texture->GetDeviceObject(), srcRect, colorTable);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::DrawRequest3D(
+	const Vector3& position,
+	const Vector3& center,
+	const Vector2& size,
+	Texture* texture,
+	const RectF& srcRect,
+	const ColorF* colorTable,
+	AxisDirection front)
+{
+	LN_CALL_COMMAND(
+		DrawRequest3D, SpriteRendererImpl::DrawRequest3DCommand,
+		position, center, size, texture->GetDeviceObject(), srcRect, colorTable, front);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRenderer::Flash()
+{
+	LN_CALL_COMMAND(Flash, SpriteRendererImpl::FlashCommand);
+}
 
 
 //=============================================================================
@@ -221,13 +339,25 @@ static const size_t g_SpriteRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_SpriteRenderer_
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount, bool is3D)
+SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount)
 	: m_manager(manager, true)
 	, m_vertexBuffer()
 	, m_indexBuffer()
 	, m_maxSprites(maxSpriteCount)
-
-	, m_3DSystem(is3D)
+	, m_spriteRequestList()
+	, m_spriteRequestListUsedCount(0)
+	, m_spriteIndexList()
+	, m_renderStateList()
+	, m_currentRenderStateIndex(-1)
+	, m_attributeList()
+	, m_transformMatrix()
+	, m_viewDirection()
+	, m_viewInverseMatrix()
+	, m_viewPosition()
+	, m_viewProjMatrix()
+	, m_viewPixelSize()
+	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
+	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
 	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice()->GetDeviceObject();
 
@@ -279,14 +409,14 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	// ステートにはデフォルトをひとつ詰めておく
 	m_renderStateList.Add(RenderState());
 
-	if (m_3DSystem) {
-		// 視点からの距離が大きいものを先に描画する
-		SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, true);
-	}
-	else {
-		// スプライトの Z 値が小さいものを先に描画する
-		SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, false);
-	}
+	//if (m_3DSystem) {
+	//	// 視点からの距離が大きいものを先に描画する
+	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_ViewPont);
+	//}
+	//else {
+	//	// スプライトの Z 値が小さいものを先に描画する
+	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_RawZ);
+	//}
 
 	m_spriteRequestListUsedCount = 0;
 }
@@ -349,10 +479,10 @@ void SpriteRendererImpl::SetRenderState(const RenderState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteRendererImpl::SetSortMode(uint32_t flags, bool enable_view_pos_depth_)
+void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
 {
 	m_spriteSortMode = flags;
-	m_enableViewPosDepth = enable_view_pos_depth_;
+	m_sortingBasis = basis;
 }
 
 //-----------------------------------------------------------------------------
@@ -360,52 +490,60 @@ void SpriteRendererImpl::SetSortMode(uint32_t flags, bool enable_view_pos_depth_
 //-----------------------------------------------------------------------------
 void SpriteRendererImpl::DrawRequest2D(
     const Vector3& position,
-    const Vector3& center,
-    Texture* texture,
-    const RectF& srcRect,
-	ColorF color)
+	const Vector3& center,
+	const Vector2& size,
+	Device::ITexture* texture,
+	const RectF& srcRect,
+	const ColorF* colorTable)
 {
-	ColorF colorTable[4] = { color, color, color, color };
-	DrawRequest3D(
+	DrawRequest3DInternal(
 		position,
 		center,
-		Vector2(srcRect.Width, srcRect.Height),
+		size,
 		texture,
 		srcRect,
 		colorTable,
-		AxisDirection_RZ);
+		AxisDirection_RZ,
+		false);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void SpriteRendererImpl::DrawRequest3D(
+	const Vector3& position,
+	const Vector3& center,
+	const Vector2& size,
+	Device::ITexture* texture,
+	const RectF& srcRect,
+	const ColorF* colorTable,
+	AxisDirection front)
+{
+	DrawRequest3DInternal(position, center, size, texture, srcRect, colorTable, front, true);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRendererImpl::DrawRequest3DInternal(
     const Vector3& position,
     const Vector3& center,
     const Vector2& size,
-    Texture* texture,
+	Device::ITexture* texture,
     const RectF& srcRect,
 	const ColorF* colorTable,
-	AxisDirection front)
+	AxisDirection front,
+	bool is3D)
 {
 	LN_THROW(m_spriteRequestListUsedCount < m_maxSprites, InvalidOperationException);
 
 	BatchSpriteData& sprite = m_spriteRequestList[m_spriteRequestListUsedCount];
 
 	// 3D の場合の頂点座標
-	if (m_3DSystem)
+	if (is3D)
 	{
-		/*
-		LVector3 origin(
-		position_.x - center_.x,
-		position_.y - center_.y,
-		position_.z - center_.z );
-		*/
-
 		Vector3 origin(-center);
-
 		Vector2 harf_size(size * 0.5f);
-
 		float l, t, r, b;
 		r = harf_size.X;
 		b = -harf_size.Y;
@@ -483,6 +621,7 @@ void SpriteRendererImpl::DrawRequest3D(
 	// ビルボード (Scene から使う場合は SceneNode が面倒見てるので、Scene 以外で必要になるまで保留…)
 	if (0)
 	{
+		// TODO:
 		//mat.setMul3x3( mViewInverseMatrix );
 	}
 	// ビルボード・Y 軸のみに適用
@@ -553,7 +692,7 @@ void SpriteRendererImpl::DrawRequest3D(
 		sprite.Vertices[3].TexUV.Y = b;
 
 		// テクスチャ
-		sprite.Texture = texture->GetDeviceObject();	// TOOD: AddRef するべきかも？
+		sprite.Texture = texture;	// TOOD: AddRef するべきかも？
 	}
 	else
 	{
@@ -569,7 +708,7 @@ void SpriteRendererImpl::DrawRequest3D(
 	}
 
 	// カメラからの距離をソート用Z値にする場合
-	if (m_enableViewPosDepth) {
+	if (m_sortingBasis == SortingDistanceBasis_ViewPont) {
 		sprite.Depth = (m_viewPosition - position).GetLengthSquared();
 	}
 	else {
@@ -579,12 +718,15 @@ void SpriteRendererImpl::DrawRequest3D(
 	sprite.Visible = true;
 	sprite.Assigned = false;
 	sprite.Priority = 0;
-	sprite.RenderStateIndex = mCurrentRenderStateIndex;
+	sprite.RenderStateIndex = m_currentRenderStateIndex;
 
 	++m_spriteRequestListUsedCount;
 }
 
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 // Z 値の大きい方から小さい方へソートする比較
 class SpriteRendererImpl::SpriteCmpDepthBackToFront
 {
@@ -726,37 +868,34 @@ void SpriteRendererImpl::Flash()
 	//memcpy(m_spriteIndexList, mSpriteIndexArraySource, sizeof(*m_spriteIndexList) * mLastSpriteNum);
 
 	// インデックスを並び替える
-	if (mComFunc)
+	if (m_spriteSortMode & SpriteSortMode_Texture)
 	{
-		if (m_spriteSortMode & SpriteSortMode_Texture)
+		if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
 		{
-			if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
-			{
-				SpriteCmpDepthBackToFront cmp;
-				cmp.spriteList = &m_spriteRequestList;
-				std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
-			}
-			else if (m_spriteSortMode & SpriteSortMode_DepthFrontToBack)
-			{
-				SpriteCmpDepthFrontToBack cmp;
-				cmp.spriteList = &m_spriteRequestList;
-				std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
-			}
+			SpriteCmpDepthBackToFront cmp;
+			cmp.spriteList = &m_spriteRequestList;
+			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else
+		else if (m_spriteSortMode & SpriteSortMode_DepthFrontToBack)
 		{
-			if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
-			{
-				SpriteCmpTexDepthBackToFront cmp;
-				cmp.spriteList = &m_spriteRequestList;
-				std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
-			}
-			else if (m_spriteSortMode & SpriteSortMode_DepthFrontToBack)
-			{
-				SpriteCmpTexDepthFrontToBack cmp;
-				cmp.spriteList = &m_spriteRequestList;
-				std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
-			}
+			SpriteCmpDepthFrontToBack cmp;
+			cmp.spriteList = &m_spriteRequestList;
+			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
+		}
+	}
+	else
+	{
+		if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
+		{
+			SpriteCmpTexDepthBackToFront cmp;
+			cmp.spriteList = &m_spriteRequestList;
+			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
+		}
+		else if (m_spriteSortMode & SpriteSortMode_DepthFrontToBack)
+		{
+			SpriteCmpTexDepthFrontToBack cmp;
+			cmp.spriteList = &m_spriteRequestList;
+			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
 	}
 

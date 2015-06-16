@@ -29,6 +29,8 @@ class IShaderPass;
 
 } // namespace Device
 
+class GraphicsManager;
+class Texture;
 
 /// グラフィックス API
 enum GraphicsAPI
@@ -201,6 +203,13 @@ enum AxisDirection
 	AxisDirection_RZ,      ///< Z- 方向 (手前向き)
 
 	AxisDirection_MAX,
+};
+
+/// オブジェクトのソートの基準
+enum SortingDistanceBasis
+{
+	SortingDistanceBasis_RawZ = 0,		///< オブジェクトの Z 値
+	SortingDistanceBasis_ViewPont,		///< オブジェクトの位置と視点との距離
 };
 
 /// スプライトのソート方法

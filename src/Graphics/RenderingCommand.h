@@ -115,82 +115,108 @@ private:
 	static const size_t DataBufferReserve = 20;
 
 
+private:
+
+	template<typename T>
+	T*  CreateCommand()
+	{
+		size_t dataHandle = Alloc(sizeof(T), NULL);
+		T* t = new (GetBuffer(dataHandle))T();
+		t->m_commandList = this;
+		t->m_dataHandle = dataHandle;
+		return t;
+	}
+
 public:
+
 
 	template<typename T, typename A1>
 	void AddCommand(const A1& a1)
 	{
-		size_t dataHandle = Alloc(sizeof(T), NULL);
-		T* t = new (GetBuffer(dataHandle))T();
-		t->m_commandList = this;
-		t->m_dataHandle = dataHandle;
-
+		T* t = CreateCommand<T>();
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
-		cmd.m_dataHandle = dataHandle;
+		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1);
 		printf("RenderingCommandList::AddCommand 0() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.Add(t->m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2>
 	void AddCommand(const A1& a1, const A2& a2)
 	{
-		size_t dataHandle = Alloc(sizeof(T), NULL);
-		T* t = new (GetBuffer(dataHandle))T();
-		t->m_commandList = this;
-		t->m_dataHandle = dataHandle;
-
+		T* t = CreateCommand<T>();
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
-		cmd.m_dataHandle = dataHandle;
+		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2);
 		printf("RenderingCommandList::AddCommand 1() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.Add(t->m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3>
 	void AddCommand(const A1& a1, const A2& a2, const A3& a3)
 	{
-		size_t dataHandle = Alloc(sizeof(T), NULL);
-		T* t = new (GetBuffer(dataHandle))T();
-		t->m_commandList = this;
-		t->m_dataHandle = dataHandle;
-
+		T* t = CreateCommand<T>();
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
-		cmd.m_dataHandle = dataHandle;
+		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3);
 		printf("RenderingCommandList::AddCommand 2() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.Add(t->m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4>
 	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4)
 	{
-		size_t dataHandle = Alloc(sizeof(T), NULL);
-		T* t = new (GetBuffer(dataHandle))T();
-		t->m_commandList = this;
-		t->m_dataHandle = dataHandle;
-
+		T* t = CreateCommand<T>();
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
-		cmd.m_dataHandle = dataHandle;
+		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4);
 		printf("RenderingCommandList::AddCommand 3() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.Add(t->m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
 	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
 	{
-		size_t dataHandle = Alloc(sizeof(T), NULL);
-		T* t = new (GetBuffer(dataHandle))T();
-		t->m_commandList = this;
-		t->m_dataHandle = dataHandle;
-
+		T* t = CreateCommand<T>();
 		RenderingCommand::CmdInfo cmd;
 		cmd.m_commandList = this;
-		cmd.m_dataHandle = dataHandle;
+		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4, a5);
 		printf("RenderingCommandList::AddCommand 4() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.Add(t->m_dataHandle);
+	}
+	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
+	{
+		T* t = CreateCommand<T>();
+		RenderingCommand::CmdInfo cmd;
+		cmd.m_commandList = this;
+		cmd.m_dataHandle = t->m_dataHandle;
+		T::Create(cmd, a1, a2, a3, a4, a5, a6);
+		printf("RenderingCommandList::AddCommand 5() s %p\n", this);
+		m_commandList.Add(t->m_dataHandle);
+	}
+	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
+	{
+		T* t = CreateCommand<T>();
+		RenderingCommand::CmdInfo cmd;
+		cmd.m_commandList = this;
+		cmd.m_dataHandle = t->m_dataHandle;
+		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7);
+		printf("RenderingCommandList::AddCommand 6() s %p\n", this);
+		m_commandList.Add(t->m_dataHandle);
+	}
+	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
+	{
+		T* t = CreateCommand<T>();
+		RenderingCommand::CmdInfo cmd;
+		cmd.m_commandList = this;
+		cmd.m_dataHandle = t->m_dataHandle;
+		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7, a8);
+		printf("RenderingCommandList::AddCommand 8() s %p\n", this);
+		m_commandList.Add(t->m_dataHandle);
 	}
 
 public:
