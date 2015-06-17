@@ -295,6 +295,10 @@ void SpriteRenderer::DrawRequest2D(
 	const RectF& srcRect,
 	const ColorF* colorTable)
 {
+	const ColorF defaultColor[] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
+	if (colorTable == NULL) {
+		colorTable = defaultColor;
+	}
 	LN_CALL_COMMAND(
 		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
 		position, center, size, texture->GetDeviceObject(), srcRect, colorTable);
@@ -312,6 +316,10 @@ void SpriteRenderer::DrawRequest3D(
 	const ColorF* colorTable,
 	AxisDirection front)
 {
+	const ColorF defaultColor[] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
+	if (colorTable == NULL) {
+		colorTable = defaultColor;
+	}
 	LN_CALL_COMMAND(
 		DrawRequest3D, SpriteRendererImpl::DrawRequest3DCommand,
 		position, center, size, texture->GetDeviceObject(), srcRect, colorTable, front);
@@ -348,7 +356,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_spriteRequestListUsedCount(0)
 	, m_spriteIndexList()
 	, m_renderStateList()
-	, m_currentRenderStateIndex(-1)
+	, m_currentRenderStateIndex(0)
 	, m_attributeList()
 	, m_transformMatrix()
 	, m_viewDirection()
@@ -419,6 +427,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	//}
 
 	m_spriteRequestListUsedCount = 0;
+	m_currentRenderStateIndex = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -917,13 +926,11 @@ void SpriteRendererImpl::Flash()
 		{
 			++si;
 			++prim_num;
-
 #if 1
 			// 次のスプライトのテクスチャが、処理中のテクスチャと異なる場合は次の属性作成に移る
 			if (si >= spriteCount ||
 				m_spriteRequestList[m_spriteIndexList[si]].Texture != current_tex ||
-				m_spriteRequestList[m_spriteIndexList[si]].RenderStateIndex != currnetRenderStateIndex
-				)
+				m_spriteRequestList[m_spriteIndexList[si]].RenderStateIndex != currnetRenderStateIndex)
 			{
 				break;
 			}
@@ -956,6 +963,7 @@ void SpriteRendererImpl::Flash()
 
 	//-----------------------------------------------------
 	// 頂点データをコピー
+
 	BatchSpriteVertex* vb = static_cast< BatchSpriteVertex* >(m_vertexBuffer->Lock());
 	si = 0;
 	vi = 0;

@@ -21,7 +21,7 @@ public:
 		@param[in]	maxSpriteCount	: 一度のバッチ描画で描画できる最大スプライト数
 		@param[in]	manager			: 作成に使用する GraphicsManager
 	*/
-	SpriteRenderer* Create(int maxSpriteCount, GraphicsManager* manager);
+	static SpriteRenderer* Create(int maxSpriteCount, GraphicsManager* manager);
 
 public:
 

@@ -35,8 +35,10 @@ VS_OUTPUT vsBasic(
     VS_OUTPUT o;
 
     o.Pos = mul( float4( inPos, 1.0f ), gViewProjMatrix );
+	o.Pos.x -= gViewportOffset.x;
+	o.Pos.y += gViewportOffset.y;
     o.Color = inColor;
-    o.TexUV = inUV + gViewportOffset;
+    o.TexUV = inUV;// + gViewportOffset;
 
     return o;
 }
@@ -48,7 +50,7 @@ float4 psBasic(
     float4 in_color_    : COLOR0,
     float2 in_uv_       : TEXCOORD0 ) : COLOR0
 {
-    return tex2D( gTexSampler, in_uv_ ) * in_color_;
+	return tex2D( gTexSampler, in_uv_ ) * in_color_;
 }
 
 //-------------------------------------------------------------------------

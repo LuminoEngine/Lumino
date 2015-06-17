@@ -27,6 +27,13 @@ public:
 		Physics::PhysicsManager*	PhysicsManager;
 		Graphics::GraphicsManager*	GraphicsManager;
 		Modeling::ModelManager*		ModelManager;
+
+		ConfigData()
+			: FileManager(NULL)
+			, PhysicsManager(NULL)
+			, GraphicsManager(NULL)
+			, ModelManager(NULL)
+		{}
 	};
 
 public:

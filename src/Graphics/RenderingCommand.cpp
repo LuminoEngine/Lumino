@@ -62,7 +62,7 @@ RenderingCommandList::~RenderingCommandList()
 //-----------------------------------------------------------------------------
 void RenderingCommandList::Execute(Device::IRenderer* renderer)
 {
-	printf("RenderingCommandList::Execute() s %p\n", this);
+	printf("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
 	// この関数は描画スレッドから呼ばれる
 
 	LN_FOREACH(size_t dataIdx, m_commandList)

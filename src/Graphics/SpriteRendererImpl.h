@@ -86,7 +86,7 @@ private:
 			{
 				{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_Position, 0 },
 				{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_Color, 0 },
-				{ 0, Graphics::VertexElementType_Float2, Graphics::VertexElementUsage_TexCoord, 1 },
+				{ 0, Graphics::VertexElementType_Float2, Graphics::VertexElementUsage_TexCoord, 0 },
 			};
 			return elements;
 		}
@@ -276,7 +276,7 @@ public:
 			HandleCast<DrawRequest2DCommand>(cmd)->m_size = size;
 			HandleCast<DrawRequest2DCommand>(cmd)->m_texture = texture;
 			HandleCast<DrawRequest2DCommand>(cmd)->m_srcRect = srcRect;
-			memcpy(HandleCast<DrawRequest2DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF));
+			memcpy(HandleCast<DrawRequest2DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF) * 4);
 			LN_SAFE_ADDREF(renderer);
 			LN_SAFE_ADDREF(texture);
 		}
@@ -317,7 +317,7 @@ public:
 			HandleCast<DrawRequest3DCommand>(cmd)->m_size = size;
 			HandleCast<DrawRequest3DCommand>(cmd)->m_texture = texture;
 			HandleCast<DrawRequest3DCommand>(cmd)->m_srcRect = srcRect;
-			memcpy(HandleCast<DrawRequest3DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF));
+			memcpy(HandleCast<DrawRequest3DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF) * 4);
 			HandleCast<DrawRequest3DCommand>(cmd)->m_front = front;
 			LN_SAFE_ADDREF(renderer);
 			LN_SAFE_ADDREF(texture);
@@ -337,6 +337,7 @@ public:
 	public:
 		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer)
 		{
+			HandleCast<FlashCommand>(cmd)->m_renderer = renderer;
 			LN_SAFE_ADDREF(renderer);
 		}
 		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
@@ -350,6 +351,7 @@ public:
 	public:
 		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer)
 		{
+			HandleCast<ClearCommand>(cmd)->m_renderer = renderer;
 			LN_SAFE_ADDREF(renderer);
 		}
 		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)

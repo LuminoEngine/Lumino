@@ -57,6 +57,24 @@ set(LN_SOURCES_Physics
 	src/Physics/RigidBody.cpp)
 	
 set(LN_SOURCES_Graphics
+	include/Lumino/Graphics/IndexBuffer.h
+	include/Lumino/Graphics/Material.h
+	include/Lumino/Graphics/Painter.h
+	include/Lumino/Graphics/Renderer.h
+	include/Lumino/Graphics/RenderState.h
+	include/Lumino/Graphics/SamplerState.h
+	include/Lumino/Graphics/Shader.h
+	include/Lumino/Graphics/SpriteRenderer.h
+	include/Lumino/Graphics/SwapChain.h
+	include/Lumino/Graphics/Texture.h
+	include/Lumino/Graphics/Utils.h
+	include/Lumino/Graphics/VertexBuffer.h
+	include/Lumino/Graphics/Color.h
+	include/Lumino/Graphics/Common.h
+	include/Lumino/Graphics/GeometryRenderer.h
+	include/Lumino/Graphics/GraphicsDevice.h
+	include/Lumino/Graphics/GraphicsException.h
+	include/Lumino/Graphics/GraphicsManager.h
 	external/GL/glew.c
 	src/Imaging/Bitmap.cpp
 	src/Imaging/BitmapPainter.cpp
@@ -75,6 +93,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/RenderState.cpp
 	src/Graphics/SamplerState.cpp
 	src/Graphics/Shader.cpp
+	src/Graphics/SpriteRenderer.cpp
+	src/Graphics/SpriteRendererImpl.h
 	src/Graphics/SwapChain.cpp
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
