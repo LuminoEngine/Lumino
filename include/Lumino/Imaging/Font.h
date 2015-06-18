@@ -50,17 +50,17 @@ public:
 	/// フォントサイズの取得
 	virtual int GetSize() const = 0;
 
-	/// フォントカラーの設定
-	virtual void SetColor(const Graphics::Color& color) = 0;
+	///// フォントカラーの設定
+	//virtual void SetColor(const Graphics::Color& color) = 0;
 
-	/// フォントカラーの取得
-	virtual const Graphics::Color& GetColor() const = 0;
+	///// フォントカラーの取得
+	//virtual const Graphics::Color& GetColor() const = 0;
 
-	/// エッジカラーの設定
-	virtual void SetEdgeColor(const Graphics::Color& color) = 0;
+	///// エッジカラーの設定
+	//virtual void SetEdgeColor(const Graphics::Color& color) = 0;
 
-	/// エッジカラーの取得
-	virtual const Graphics::Color& GetEdgeColor() const = 0;
+	///// エッジカラーの取得
+	//virtual const Graphics::Color& GetEdgeColor() const = 0;
 
 	/// エッジの幅の設定 (0 でエッジ無効)
 	virtual void SetEdgeSize(int size) = 0;

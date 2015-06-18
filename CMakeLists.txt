@@ -374,7 +374,8 @@ set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/external
 	${PROJECT_SOURCE_DIR}/external/Lumino.Core/include
 	${PROJECT_SOURCE_DIR}/external/Lumino.Math/include
-	${PROJECT_SOURCE_DIR}/external/bullet-2.82)
+	${PROJECT_SOURCE_DIR}/external/bullet-2.82
+	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include)
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------
