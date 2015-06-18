@@ -1,91 +1,110 @@
-
+ï»¿
 #pragma once
-
 #include "../Graphics/Color.h"
+#include "../Imaging/Bitmap.h"
 
 namespace Lumino
 {
 namespace Imaging
 {
-class FileManager;
+
+struct FontGlyphData
+{
+	Imaging::Bitmap*			GlyphBitmap;
+	Imaging::Bitmap*			OutlineBitmap;	///< ç¸ã©ã‚Šç·šç”¨ (NULL ã§ãªã‘ã‚Œã°å…ˆã«ã“ã‚Œã‚’bltã—ã€ãã®ä¸Šã« GlyphBitmap ã‚’ blt ã™ã‚‹)
+	int				GlyphOffsetX;   ///< ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚’è»¢é€ã™ã‚‹ã¹ãåº§æ¨™ã¸ã®Xã‚ªãƒ•ã‚»ãƒƒãƒˆ
+	int				GlyphOffsetY;   ///< ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚’è»¢é€ã™ã‚‹ã¹ãåº§æ¨™ã¸ã®Yã‚ªãƒ•ã‚»ãƒƒãƒˆ
+	int				OutlineOffset;	///< ç¸ã©ã‚Šæ™‚ã¯ã€ç·šã®åˆ†ã ã‘ã‚µã‚¤ã‚ºãŒå¤§ãããªã‚‹ã€‚
+
+	int				MetricsHeight;	///< è¡Œé«˜ã•
+
+	/* æç”»å…ˆåº§æ¨™ã¯ GlyphOffsetX, GlyphOffsetY ã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹ã€‚
+	* ã“ã‚Œã¯ makeGlyphData() ã‚’å‘¼ã¶ãŸã³ã«é€ã‚Šæ–¹å‘ã¸åŠ ç®—ã•ã‚Œã¦ã„ããŸã‚ã€
+	* æç”»å´ã¯åº§æ¨™ã‚’åŠ ç®—ã—ç¶šã‘ã‚‹å¿…è¦ã¯ãªã„ã€‚
+	* å¸¸ã« æç”»é ˜åŸŸã®å·¦ä¸Š + GlyphOffsetX(Y) ã§OKã€‚
+	*
+	* GlyphOffsetX, GlyphOffsetY ã¯ã€ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ã®æœ‰ç„¡ã«ã‹ã‹ã‚ã‚‰ãšå¸¸ã«åŒã˜ä½ç½®ã‚’æŒ‡ã™ã€‚
+	* ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãŒã‚ã‚‹å ´åˆã¯ ã“ã®ä½ç½®ã‚’èµ·ç‚¹ã«æ›¸ã„ãŸå¾Œã€OutlineOffset ã‚’åŠ ç®—ã—ãŸå ´æ‰€ã« é€šå¸¸ã‚°ãƒªãƒ•ã‚’ blt ã™ã‚‹ã€‚
+	*/
+
+	
+};
 
 /**
-	@brief		ƒtƒHƒ“ƒg‚ÌƒNƒ‰ƒX
+	@brief		ãƒ•ã‚©ãƒ³ãƒˆã®ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Font
 	: public RefObject
 {
 public:
-	static Font* CreateBitmapFont(FileManager* fileManager, Bitmap* bitmap);
 
-public:
-#if 0
-	/// ƒtƒHƒ“ƒg–¼‚ÌÝ’è
-	virtual void setName(const TCHAR* fontName) = 0;
+	/// ãƒ•ã‚©ãƒ³ãƒˆåã®è¨­å®š
+	virtual void SetName(const TCHAR* fontName) = 0;
 
-	/// ƒtƒHƒ“ƒg–¼‚ÌŽæ“¾
-	virtual const TCHAR* getName() const = 0;
+	/// ãƒ•ã‚©ãƒ³ãƒˆåã®å–å¾—
+	virtual const TCHAR* GetName() const = 0;
 
-	/// ƒtƒHƒ“ƒgƒTƒCƒY‚ÌÝ’è
-	virtual void setSize(int size) = 0;
+	/// ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã®è¨­å®š
+	virtual void SetSize(int size) = 0;
 
-	/// ƒtƒHƒ“ƒgƒTƒCƒY‚ÌŽæ“¾
-	virtual int getSize() const = 0;
-/*
-	/// ƒtƒHƒ“ƒgƒJƒ‰[‚ÌÝ’è
-	virtual void setColor(const Color& color) = 0;
+	/// ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã®å–å¾—
+	virtual int GetSize() const = 0;
 
-	/// ƒtƒHƒ“ƒgƒJƒ‰[‚ÌŽæ“¾
-	virtual const Color& getColor() const = 0;
+	/// ãƒ•ã‚©ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã®è¨­å®š
+	virtual void SetColor(const Graphics::Color& color) = 0;
 
-	/// ƒGƒbƒWƒJƒ‰[‚ÌÝ’è
-	virtual void setEdgeColor(const Color& color) = 0;
+	/// ãƒ•ã‚©ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã®å–å¾—
+	virtual const Graphics::Color& GetColor() const = 0;
 
-	/// ƒGƒbƒWƒJƒ‰[‚ÌŽæ“¾
-	virtual const Color& getEdgeColor() const = 0;*/
+	/// ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼ã®è¨­å®š
+	virtual void SetEdgeColor(const Graphics::Color& color) = 0;
 
-	///// ƒGƒbƒW‚Ì•‚ÌÝ’è (0 ‚ÅƒGƒbƒW–³Œø)
-	//virtual void setEdgeSize(int size) = 0;
+	/// ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼ã®å–å¾—
+	virtual const Graphics::Color& GetEdgeColor() const = 0;
 
-	///// ƒGƒbƒW‚Ì•‚ÌŽæ“¾
-	//virtual int getEdgeSize() const = 0;
+	/// ã‚¨ãƒƒã‚¸ã®å¹…ã®è¨­å®š (0 ã§ã‚¨ãƒƒã‚¸ç„¡åŠ¹)
+	virtual void SetEdgeSize(int size) = 0;
 
-	/// ‘¾•¶Žš‚ÌÝ’è
-	virtual void setBold(bool flag) = 0;
+	/// ã‚¨ãƒƒã‚¸ã®å¹…ã®å–å¾—
+	virtual int GetEdgeSize() const = 0;
 
-	/// ‘¾•¶Žš‚Ì”»’è
-	virtual bool isBold() const = 0;
+	/// å¤ªæ–‡å­—ã®è¨­å®š
+	virtual void SetBold(bool enabled) = 0;
 
-	/// ƒCƒ^ƒŠƒbƒN‘Ì‚ÌÝ’è
-	virtual void setItalic(bool flag) = 0;
+	/// å¤ªæ–‡å­—ã®åˆ¤å®š
+	virtual bool IsBold() const = 0;
 
-	/// ƒCƒ^ƒŠƒbƒN‘Ì‚Ì”»’è
-	virtual bool isItalic() const = 0;
+	/// ã‚¤ã‚¿ãƒªãƒƒã‚¯ä½“ã®è¨­å®š
+	virtual void SetItalic(bool enabled) = 0;
 
-	/// ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX‚Ì—LŒøÝ’è
-	virtual void setAntiAlias(bool flag) = 0;
+	/// ã‚¤ã‚¿ãƒªãƒƒã‚¯ä½“ã®åˆ¤å®š
+	virtual bool IsItalic() const = 0;
 
-	/// ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX‚Ì—LŒø”»’è
-	virtual bool isAntiAlias() const = 0;
+	/// ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ã®æœ‰åŠ¹è¨­å®š
+	virtual void SetAntiAlias(bool enabled) = 0;
 
-	/// •¶Žš—ñ‚ð•`‰æ‚µ‚½‚Æ‚«‚ÌƒTƒCƒY (ƒsƒNƒZƒ‹’PˆÊ) ‚ÌŽæ“¾ (length = -1 ‚Å \0 ‚Ü‚Å)
-	virtual void getTextSize(const char* text, int length, Geometry::Rect* outRect) = 0;
+	/// ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ã®æœ‰åŠ¹åˆ¤å®š
+	virtual bool IsAntiAlias() const = 0;
 
-	/// •¶Žš—ñ‚ð•`‰æ‚µ‚½‚Æ‚«‚ÌƒTƒCƒY (ƒsƒNƒZƒ‹’PˆÊ) ‚ÌŽæ“¾ (length = -1 ‚Å \0 ‚Ü‚Å)
-	virtual void getTextSize(const wchar_t* text, int length, Geometry::Rect* outRect) = 0;
+	/// æ–‡å­—åˆ—ã‚’æç”»ã—ãŸã¨ãã®ã‚µã‚¤ã‚º (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½) ã®å–å¾— (length = -1 ã§ \0 ã¾ã§)
+	virtual Rect GetTextSize(const char* text, int length) const = 0;
 
-	/// ‚±‚ÌƒtƒHƒ“ƒg‚ÌƒRƒs[‚ðì¬‚·‚é
-	virtual Font* copy() = 0;
+	/// æ–‡å­—åˆ—ã‚’æç”»ã—ãŸã¨ãã®ã‚µã‚¤ã‚º (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½) ã®å–å¾— (length = -1 ã§ \0 ã¾ã§)
+	virtual Rect GetTextSize(const wchar_t* text, int length) const = 0;
 
-	/// ƒOƒŠƒtƒf[ƒ^‚ÌŽæ“¾ (Å‰‚Ì•¶Žš‚Ìê‡AprevData ‚É NULL ‚ð“n‚·BˆÈ~‚Í–ß‚è’l‚ð“n‚µ‘±‚¯‚éB”ñƒXƒŒƒbƒhƒZ[ƒt)
-	virtual FontGlyphData* makeGlyphData(int utf32code, FontGlyphData* prevData) = 0;
+	/// ã“ã®ãƒ•ã‚©ãƒ³ãƒˆã®ã‚³ãƒ”ãƒ¼ã‚’ä½œæˆã™ã‚‹
+	virtual Font* Copy() const = 0;
 
-	/// ƒOƒŠƒtƒf[ƒ^‚ÌŽæ“¾‚ðI—¹‚·‚é (ƒƒ‚ƒŠ‰ð•úBˆê˜A‚Ì makeGlyphData() ‚ðŒÄ‚ÑI‚í‚Á‚½ŒãAÅŒã‚ÉŒÄ‚Ô)
-	virtual void postGlyphData(FontGlyphData* glyphData) = 0;
-#endif
+	/// ã‚°ãƒªãƒ•ãƒ‡ãƒ¼ã‚¿ã®å–å¾— (æœ€åˆã®æ–‡å­—ã®å ´åˆã€prevData ã« NULL ã‚’æ¸¡ã™ã€‚ä»¥é™ã¯æˆ»ã‚Šå€¤ã‚’æ¸¡ã—ç¶šã‘ã‚‹ã€‚éžã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•)
+	virtual FontGlyphData* MakeGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
+
+	/// ã‚°ãƒªãƒ•ãƒ‡ãƒ¼ã‚¿ã®å–å¾—ã‚’çµ‚äº†ã™ã‚‹ (ãƒ¡ãƒ¢ãƒªè§£æ”¾ã€‚ä¸€é€£ã® makeGlyphData() ã‚’å‘¼ã³çµ‚ã‚ã£ãŸå¾Œã€æœ€å¾Œã«å‘¼ã¶)
+	virtual void EndMakeGlyphData(FontGlyphData* glyphData) = 0;
+	// â†‘ãƒ¡ãƒ³ãƒã«æŒã£ã¦ã‚Œã°ã„ã„ã ã‘ã ã—å¿…è¦ãªã„ã‹ã‚‚ã€‚ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•ã«ã™ã‚‹å¿…è¦ã‚‚ãªã„ã—ã€‚
+
 protected:
 	Font();
-	~Font();
+	virtual ~Font();
 };
 
 } // namespace Imaging

@@ -17,7 +17,7 @@ set(LN_LIB_POSTFIX "")
 option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
 
 # MSVC Runtime library.
-option(MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
+option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
 
 # Exceprion Backtrace.
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
@@ -41,7 +41,8 @@ set(LN_SOURCES_Platform
 	src/Platform/PlatformManager.cpp
 	src/Platform/WindowManagerBase.cpp
 	src/Platform/WindowBase.cpp
-	src/Platform/Window.cpp)
+	src/Platform/Window.cpp
+)
 
 set(LN_SOURCES_Physics
 	include/Lumino/Physics/BodyBase.h
@@ -54,8 +55,20 @@ set(LN_SOURCES_Physics
 	src/Physics/BulletUtils.h
 	src/Physics/Joint.cpp
 	src/Physics/PhysicsManager.cpp
-	src/Physics/RigidBody.cpp)
+	src/Physics/RigidBody.cpp
+)
 	
+set(LN_SOURCES_Imaging
+	src/Imaging/Bitmap.cpp
+	src/Imaging/BitmapPainter.cpp
+	src/Imaging/Font.cpp
+	src/Imaging/FontManager.cpp
+	include/Lumino/Imaging/Bitmap.h
+	include/Lumino/Imaging/BitmapPainter.h
+	include/Lumino/Imaging/Font.h
+	include/Lumino/Imaging/FontManager.h
+)
+
 set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
@@ -76,8 +89,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsManager.h
 	external/GL/glew.c
-	src/Imaging/Bitmap.cpp
-	src/Imaging/BitmapPainter.cpp
 	src/Graphics/Color.cpp
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GraphicsException.cpp
@@ -109,7 +120,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLShader.cpp
 	src/Graphics/Device/OpenGL/GLSwapChain.cpp
 	src/Graphics/Device/OpenGL/GLTexture.cpp
-	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp)
+	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
+)
 	
 set(LN_SOURCES_Scene
 	src/Scene/Camera.cpp
@@ -150,8 +162,9 @@ set(LN_SOURCES_Scene
 	src/Scene/MME/MMEShaderErrorInfo.h
 	src/Scene/MME/MMEShaderTechnique.cpp
 	src/Scene/MME/MMEShaderTechnique.h
-	src/Scene/MME/MMETypes.h)
-	
+	src/Scene/MME/MMETypes.h
+)
+
 set(LN_SOURCES_GUI
 	include/Lumino/GUI/Common.h
 	include/Lumino/GUI/ControlTemplate.h
@@ -171,11 +184,13 @@ set(LN_SOURCES_GUI
 	src/GUI/VisualState.cpp
 	src/GUI/Controls/ListBox.cpp
 	src/GUI/Controls/Panel.cpp
-	src/GUI/Controls/StackPanel.cpp)
-	
+	src/GUI/Controls/StackPanel.cpp
+)
+
 set(LN_SOURCES_Game
 	include/Lumino/Game/FpsController.h
-	src/Game/FpsController.cpp)
+	src/Game/FpsController.cpp
+)
 
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
@@ -183,7 +198,8 @@ set(LN_SOURCES_Application
 	include/Lumino/Variant.h
 	src/Application.cpp
 	src/Property.cpp
-	src/Variant.cpp)
+	src/Variant.cpp
+)
 
 #--------------------------------------
 # Platform source files.
@@ -242,6 +258,7 @@ endif()
 # Grouping.
 source_group("Platform"		FILES ${LN_SOURCES_Platform})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
+source_group("Imaging"		FILES ${LN_SOURCES_Imaging})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
@@ -251,6 +268,7 @@ source_group("Application"	FILES ${LN_SOURCES_Application})
 set(LN_SOURCES
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Physics}
+	${LN_SOURCES_Imaging}
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}
@@ -297,7 +315,7 @@ if (WIN32)
 	set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_static")
 	
 	# MSVC Runtime library.
-	if (MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
 		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_MT")
 		# Overwrite options.
 		foreach (flag
