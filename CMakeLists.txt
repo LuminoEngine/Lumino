@@ -59,14 +59,16 @@ set(LN_SOURCES_Physics
 )
 	
 set(LN_SOURCES_Imaging
-	src/Imaging/Bitmap.cpp
-	src/Imaging/BitmapPainter.cpp
-	src/Imaging/Font.cpp
-	src/Imaging/FontManager.cpp
 	include/Lumino/Imaging/Bitmap.h
 	include/Lumino/Imaging/BitmapPainter.h
 	include/Lumino/Imaging/Font.h
 	include/Lumino/Imaging/FontManager.h
+	src/Imaging/Bitmap.cpp
+	src/Imaging/BitmapPainter.cpp
+	src/Imaging/Font.cpp
+	src/Imaging/FontManager.cpp
+	src/Imaging/FreeTypeFont.cpp
+	src/Imaging/FreeTypeFont.h
 )
 
 set(LN_SOURCES_Graphics

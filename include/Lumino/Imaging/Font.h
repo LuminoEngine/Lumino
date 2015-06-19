@@ -39,10 +39,10 @@ class Font
 public:
 
 	/// フォント名の設定
-	virtual void SetName(const TCHAR* fontName) = 0;
+	virtual void SetName(const String& fontName) = 0;
 
 	/// フォント名の取得
-	virtual const TCHAR* GetName() const = 0;
+	virtual const String& GetName() const = 0;
 
 	/// フォントサイズの設定
 	virtual void SetSize(int size) = 0;
@@ -87,10 +87,10 @@ public:
 	virtual bool IsAntiAlias() const = 0;
 
 	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
-	virtual Rect GetTextSize(const char* text, int length) const = 0;
+	virtual Size GetTextSize(const char* text, int length) = 0;
 
 	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
-	virtual Rect GetTextSize(const wchar_t* text, int length) const = 0;
+	virtual Size GetTextSize(const wchar_t* text, int length) = 0;
 
 	/// このフォントのコピーを作成する
 	virtual Font* Copy() const = 0;

@@ -19,6 +19,7 @@ namespace Lumino
 {
 namespace Imaging
 {
+class Font;
 
 /**
 	@brief		フォントの管理クラス
@@ -33,6 +34,14 @@ public:
 
 	/// フォントファイルを追加する (ttf)
 	void RegisterFontFile(const String& fontFilePath);
+
+	/// デフォルトのフォントをセットする
+	void SetDefaultFont(Font* font);
+
+	/// デフォルトのフォントを取得する
+	Font* GetDefaultFont() const { return m_defaultFont; }
+
+	void Dispose();
 
 private:
 	FontManager(FileManager* fileManager);
@@ -88,6 +97,7 @@ private:
 	TTFDataEntryMap		mTTFDataEntryMap;
 
 	RefPtr<FileManager>	m_fileManager;
+	Font*  m_defaultFont;
 
 	FT_Library      m_ftLibrary;
 	FTC_Manager     m_ftCacheManager;
