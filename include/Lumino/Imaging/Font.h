@@ -1,7 +1,8 @@
 ﻿
 #pragma once
 #include "../Graphics/Color.h"
-#include "../Imaging/Bitmap.h"
+#include "Bitmap.h"
+#include "FontManager.h"
 
 namespace Lumino
 {
@@ -36,6 +37,9 @@ struct FontGlyphData
 class Font
 	: public RefObject
 {
+public:
+	static Font* Create(FontManager* manager);
+
 public:
 
 	/// フォント名の設定
@@ -86,21 +90,20 @@ public:
 	/// アンチエイリアスの有効判定
 	virtual bool IsAntiAlias() const = 0;
 
-	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
-	virtual Size GetTextSize(const char* text, int length) = 0;
-
-	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
-	virtual Size GetTextSize(const wchar_t* text, int length) = 0;
-
 	/// このフォントのコピーを作成する
 	virtual Font* Copy() const = 0;
 
-	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)
-	virtual FontGlyphData* MakeGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
+	virtual int GetLineHeight() = 0;
 
-	/// グリフデータの取得を終了する (メモリ解放。一連の makeGlyphData() を呼び終わった後、最後に呼ぶ)
-	virtual void EndMakeGlyphData(FontGlyphData* glyphData) = 0;
-	// ↑メンバに持ってればいいだけだし必要ないかも。スレッドセーフにする必要もないし。
+	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
+	virtual Size GetTextSize(const char* text, int length) = 0;
+	virtual Size GetTextSize(const wchar_t* text, int length) = 0;
+	virtual Size GetTextSize(const UTF32* text, int length) = 0;
+
+
+	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)
+	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
+
 
 protected:
 	Font();

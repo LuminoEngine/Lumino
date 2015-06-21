@@ -94,9 +94,9 @@ void Bitmap::Init()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, bool alphaBlend)
+void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Graphics::Color& mulColor, bool alphaBlend)
 {
-	BitBltInternal(this, destRect, srcBitmap, srcRect, alphaBlend);
+	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.R, mulColor.G, mulColor.B, mulColor.A), alphaBlend);
 }
 
 //-----------------------------------------------------------------------------
@@ -259,8 +259,109 @@ void Bitmap::FillAlpha(byte_t alpha)
 //	}
 //}
 
-void Bitmap::BitBltInternal(Bitmap* dest, const Rect& destRect_, const Bitmap* src, const Rect& srcRect_, bool alphaBlend)
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+template<class TDestConverter, class TSrcConverter>
+void Bitmap::BitBltInternalTemplate(
+	Bitmap* dest, const Rect& destRect,
+	const Bitmap* src, const Rect& srcRect,
+	ClColor mulColorRGBA, bool alphaBlend) throw()
 {
+	DestBuffer<TDestConverter> dstBuf(dest, destRect);
+	SrcBuffer<TSrcConverter> srcBuf(src, srcRect);
+
+	for (int y = 0; y < srcRect.Height; ++y)
+	{
+		dstBuf.SetLine(y);
+		srcBuf.SetLine(y);
+		for (int x = 0; x < srcRect.Width; ++x)
+		{
+			ClColor c = srcBuf.GetPixel(x);
+			dstBuf.SetPixel(x, c);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+template<class TDestConverter>
+void Bitmap::BitBltInternalTemplateHelper(
+	Bitmap* dest, const Rect& destRect,
+	const Bitmap* src, const Rect& srcRect,
+	ClColor mulColorRGBA, bool alphaBlend)
+{
+	switch (src->m_format)
+	{
+	case PixelFormat_A1:
+		BitBltInternalTemplate<TDestConverter, ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_A8:
+		BitBltInternalTemplate<TDestConverter, ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_R8G8B8A8:
+		BitBltInternalTemplate<TDestConverter, ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_R8G8B8X8:
+		BitBltInternalTemplate<TDestConverter, ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_B8G8R8A8:
+		BitBltInternalTemplate<TDestConverter, ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_B8G8R8X8:
+		BitBltInternalTemplate<TDestConverter, ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	//case PixelFormat_R32G32B32A32_Float:
+	//	return;
+	}
+	LN_THROW(0, InvalidFormatException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Bitmap::BitBltInternal(
+	Bitmap* dest, const Rect& destRect_,
+	const Bitmap* src, const Rect& srcRect_,
+	ClColor mulColorRGBA, bool alphaBlend)
+{
+	// 双方の矩形を Bitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
+	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
+	Rect destRect = destRect_;
+	Rect srcRect = srcRect_;
+	destRect.Clip(Rect(0, 0, dest->m_size));
+	srcRect.Clip(Rect(0, 0, src->m_size));
+	srcRect.Width = std::min(srcRect.Width, destRect.Width);
+	srcRect.Height = std::min(srcRect.Height, destRect.Height);
+
+	switch (dest->m_format)
+	{
+	case PixelFormat_A1:
+		BitBltInternalTemplateHelper<ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_A8:
+		BitBltInternalTemplateHelper<ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_R8G8B8A8:
+		BitBltInternalTemplateHelper<ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_R8G8B8X8:
+		BitBltInternalTemplateHelper<ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_B8G8R8A8:
+		BitBltInternalTemplateHelper<ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	case PixelFormat_BYTE_B8G8R8X8:
+		BitBltInternalTemplateHelper<ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		return;
+	//case PixelFormat_R32G32B32A32_Float:
+	//	return;
+	}
+
+	LN_THROW(0, InvalidFormatException);
+
+#if 0
 	// 双方の矩形を Bitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
 	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
 	Rect destRect = destRect_;
@@ -272,7 +373,7 @@ void Bitmap::BitBltInternal(Bitmap* dest, const Rect& destRect_, const Bitmap* s
 
 	// ラッピングインターフェイス
 	DestBitmapWrapper destWrapper(dest, destRect);
-	SecBitmapWrapper srcWrapper(src, srcRect);
+	SrcBitmapWrapper srcWrapper(src, srcRect);
 
 	const byte_t* input = src->m_bitmapData->GetData();
 	byte_t* output = dest->m_bitmapData->GetData();
@@ -326,6 +427,7 @@ void Bitmap::BitBltInternal(Bitmap* dest, const Rect& destRect_, const Bitmap* s
 	}
 
 	LN_THROW(0, InvalidFormatException);
+#endif
 }
 
 } // namespace Imaging

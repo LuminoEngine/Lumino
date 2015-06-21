@@ -405,6 +405,7 @@ add_subdirectory(external/Lumino.Math)
 link_libraries(zlib)
 link_libraries(libpng)
 link_libraries(bullet)
+link_libraries(freetype)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath_Static)
 

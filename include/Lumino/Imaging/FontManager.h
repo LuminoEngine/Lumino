@@ -14,6 +14,7 @@ typedef struct FT_FaceRec_*  FT_Face;
 typedef struct FT_StrokerRec_*  FT_Stroker;
 typedef struct FT_OutlineGlyphRec_*  FT_OutlineGlyph;
 typedef struct FT_StreamRec_*  FT_Stream;
+typedef struct FT_GlyphRec_*  FT_Glyph;
 
 namespace Lumino
 {
@@ -32,7 +33,7 @@ public:
 
 public:
 
-	/// フォントファイルを追加する (ttf)
+	/// フォントファイルを追加する (ttf) (初回登録の場合はデフォルトフォント名として登録する)
 	void RegisterFontFile(const String& fontFilePath);
 
 	/// デフォルトのフォントをセットする
@@ -80,8 +81,8 @@ private:
 
 	struct TTFDataEntry
 	{
-		RefPtr<ByteBuffer>	DataBuffer;
-		int					CollectionIndex;
+		ByteBuffer*		DataBuffer;
+		int				CollectionIndex;
 
 		/* メモリ上のデータからFaceを作る場合、FT_Done_Face() するまでメモリを開放してはならない。
 		* ファイルストリームを使うこともできるが、そうするとフォントが存在している間
@@ -94,7 +95,7 @@ private:
 	};
 	typedef std::map<uint32_t, TTFDataEntry>     TTFDataEntryMap;
 	typedef std::pair<uint32_t, TTFDataEntry>    TTFDataEntryPair;
-	TTFDataEntryMap		mTTFDataEntryMap;
+	TTFDataEntryMap		m_ttfDataEntryMap;
 
 	RefPtr<FileManager>	m_fileManager;
 	Font*  m_defaultFont;
@@ -111,10 +112,7 @@ private:
 	// つまり、faceRequester() にフォント名を伝えることはできない。なので、外部に一度とっておく必要がある。
 	// この変数には、FTC_Manager_LookupFace() の直前でフォント名をセットしておく。
 	// ローカル変数のポインタでよい。FaceRequester() で NULL が格納される。
-	const TCHAR*		mRequesterFaceName;
-
-	friend class FreeTypeFont;
-	bool			mUpdatedDefaultFontName;
+	const TCHAR*		m_requesterFaceName;
 
 };
 

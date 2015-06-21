@@ -674,6 +674,9 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
 	m_platformTextureLoading = configData.PlatformTextureLoading;
 
+	// フォント管理
+	m_fontManager.Attach(Imaging::FontManager::Create(m_fileManager));
+
 	GraphicsDeviceConfigData d;
 	d.API = GraphicsAPI_DirectX9;
 	d.MainWindow = configData.MainWindow;
@@ -723,6 +726,11 @@ GraphicsManager::~GraphicsManager()
 	LN_SAFE_RELEASE(m_dummyTexture);
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
+
+	if (m_fontManager != NULL) {
+		m_fontManager->Dispose();
+		m_fontManager.SafeRelease();
+	}
 
 	if (Internal::Manager == this) {
 		Internal::Manager = NULL;

@@ -7,6 +7,8 @@
 
 namespace Lumino
 {
+namespace Graphics { class Color; }
+
 namespace Imaging
 {
 
@@ -76,7 +78,7 @@ public:
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
 		(Painter へ移動するべき？)
 	*/
-	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, bool alphaBlend);
+	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Graphics::Color& mulColor, bool alphaBlend);
 
 	/**
 		@brief		指定したファイルにビットマップを保存します。
@@ -104,22 +106,233 @@ public:
 	static int GetPixelFormatByteCount(PixelFormat format, const Size& size);
 
 private:
+	typedef uint32_t ClColor;	// ビット演算で表現する
+
 	void Init();
 	static void ConvertPixelFormat(
 		const byte_t* input, size_t inputSize, PixelFormat inputFormat,
 		byte_t* output, size_t outputSize, PixelFormat outputFormat);
 	void FillAlpha(byte_t alpha);
 
-	static void BitBltInternal(Bitmap* dest, const Rect& destRect, const Bitmap* src, const Rect& srcRect, bool alphaBlend);
+	template<class TDestConverter, class TSrcConverter>
+	static void BitBltInternalTemplate(
+		Bitmap* dest, const Rect& destRect,
+		const Bitmap* src, const Rect& srcRect,
+		ClColor mulColorRGBA, bool alphaBlend) throw();
+
+	template<class TDestConverter>
+	static void BitBltInternalTemplateHelper(
+		Bitmap* dest, const Rect& destRect,
+		const Bitmap* src, const Rect& srcRect,
+		ClColor mulColorRGBA, bool alphaBlend);
+
+	static void BitBltInternal(
+		Bitmap* dest, const Rect& destRect,
+		const Bitmap* src, const Rect& srcRect, 
+		ClColor mulColorRGBA, bool alphaBlend);
+
+
 
 private:
-
+	friend class FreeTypeFont;
 	ByteBuffer*		m_bitmapData;	///< ビットマップデータ本体
 	Size			m_size;			///< サイズ (ピクセル数単位)
 	int				m_pitch;		///< フォーマット A1 時の、row バイト数。(FreeTypeからだと、必ず width / 8 + 1 にならないので)
 	PixelFormat		m_format;		///< ピクセルフォーマット
 	bool			m_upFlow;		///< 上下逆のイメージの場合は true になる
 
+
+
+	static inline ClColor RGBA(byte_t r, byte_t g, byte_t b, byte_t a) { return (a << 24) | (r << 16) | (g << 8) | (b); }
+	static inline byte_t GetA(ClColor color)	{ return (color >> 24) & 0xFF; }
+	static inline byte_t GetR(ClColor color)	{ return (color >> 16) & 0xFF; }
+	static inline byte_t GetG(ClColor color)	{ return (color >> 8) & 0xFF; }
+	static inline byte_t GetB(ClColor color)	{ return (color)& 0xFF; }
+
+
+	struct U32
+	{
+		byte_t	D[4];
+	};
+
+	class ConverterR8G8B8A8
+	{
+	public:
+		// 中間フォーマット (RGBA) に変換
+		static inline ClColor Get(const byte_t* line, int x)
+		{
+			U32* c = &((U32*)line)[x];
+			return RGBA(c->D[0], c->D[1], c->D[2], c->D[3]);
+		}
+		// 中間フォーマット (RGBA) からセット
+		static inline void Set(byte_t* line, int x, ClColor color)
+		{
+			U32* w = &((U32*)line)[x];
+			w->D[0] = GetR(color); w->D[1] = GetG(color); w->D[2] = GetB(color); w->D[3] = GetA(color);
+		}
+	};
+
+	class ConverterR8G8B8X8
+	{
+	public:
+		static inline ClColor Get(const byte_t* line, int x)
+		{
+			U32* c = &((U32*)line)[x];
+			return RGBA(c->D[0], c->D[1], c->D[2], 0xFF);
+		}
+		static inline void Set(byte_t* line, int x, ClColor color)
+		{
+			U32* w = &((U32*)line)[x];
+			w->D[0] = GetR(color); w->D[1] = GetG(color); w->D[2] = GetB(color); w->D[3] = 0xFF;
+		}
+	};
+
+	class ConverterB8G8R8A8
+	{
+	public:
+		static inline ClColor Get(const byte_t* line, int x)
+		{
+			U32* c = &((U32*)line)[x];
+			return RGBA(c->D[2], c->D[1], c->D[2], c->D[3]);
+		}
+		static inline void Set(byte_t* line, int x, ClColor color)
+		{
+			U32* w = &((U32*)line)[x];
+			w->D[0] = GetB(color); w->D[1] = GetG(color); w->D[2] = GetR(color); w->D[3] = GetA(color);
+		}
+	};
+
+	class ConverterB8G8R8X8
+	{
+	public:
+		static inline ClColor Get(const byte_t* line, int x)
+		{
+			U32* c = &((U32*)line)[x];
+			return RGBA(c->D[2], c->D[1], c->D[2], 0xFF);
+		}
+		static inline void Set(byte_t* line, int x, ClColor color)
+		{
+			U32* w = &((U32*)line)[x];
+			w->D[0] = GetB(color); w->D[1] = GetG(color); w->D[2] = GetR(color); w->D[3] = 0xFF;
+		}
+	};
+
+	class ConverterA1
+	{
+	public:
+		static inline ClColor Get(const byte_t* line, int x)
+		{
+			int byte = (x) >> 3;// / 8;
+			int bit = (x) & 7;//  % 8;
+			if (line[byte] & (0x80 >> bit)) {
+				return RGBA(0xFF, 0xFF, 0xFF, 0xFF);
+			}
+			else {
+				return RGBA(0xFF, 0xFF, 0xFF, 0x00);
+			}
+		}
+		static inline void Set(byte_t* line, int x, ClColor color)
+		{
+			assert(0);
+		}
+	};
+
+	class ConverterA8
+	{
+	public:
+		static inline ClColor Get(const byte_t* line, int x)
+		{
+			byte_t c = line[x];
+			return RGBA(0xFF, 0xFF, 0xFF, c);
+		}
+		static inline void Set(byte_t* line, int x, ClColor color)
+		{
+			line[x] = GetA(color);
+		}
+	};
+
+	template<class TConverter>
+	class DestBuffer
+	{
+	public:
+		/// bitmap	: 転送先 Bitmap
+		/// rect	: 転送先領域 (Bitmap のサイズに収まるようにクリッピングされていること)
+		DestBuffer(Bitmap* bitmap, const Rect& rect)
+			: m_data(bitmap->m_bitmapData->GetData())
+			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : (bitmap->m_size.Width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat())))
+			, m_rc(rect)
+			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
+			, m_curLine(NULL)
+			, m_upFlow(bitmap->m_upFlow)
+		{}
+
+	public:
+		inline void SetLine(int y)
+		{
+			if (!m_upFlow)
+				m_curLine = &m_data[(m_widthByteCount * (m_rc.Y + y))];
+			else
+				m_curLine = &m_data[(m_widthByteCount * (m_bottomLine - y))];
+		}
+
+		inline ClColor GetPixel(int x)
+		{
+			return TConverter::Get(m_curLine, m_rc.X + x);
+		}
+
+		inline void SetPixel(int x, ClColor color)
+		{
+			TConverter::Set(m_curLine, m_rc.X + x, color);
+		}
+
+	private:
+		byte_t*			m_data;
+		int				m_widthByteCount;
+		const Rect&		m_rc;
+		int				m_bottomLine;
+		byte_t*			m_curLine;
+		bool			m_upFlow;
+	};
+
+	template<class TConverter>
+	class SrcBuffer
+	{
+	public:
+		/// bitmap	: 転送元 Bitmap
+		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
+		SrcBuffer(const Bitmap* bitmap, const Rect& rect)
+			: m_data(bitmap->m_bitmapData->GetData())
+			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : bitmap->m_size.Width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat()))
+			, m_rc(rect)
+			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
+			, m_curLine(NULL)
+			, m_upFlow(bitmap->m_upFlow)
+		{}
+
+	public:
+		inline void SetLine(int y)
+		{
+			if (!m_upFlow)
+				m_curLine = &m_data[(m_widthByteCount * (m_rc.Y + y))];
+			else
+				m_curLine = &m_data[(m_widthByteCount * (m_bottomLine - y))];
+		}
+
+		inline ClColor GetPixel(int x) const
+		{
+			return TConverter::Get(m_curLine, m_rc.X + x);
+		}
+
+	private:
+		byte_t*			m_data;
+		int				m_widthByteCount;
+		const Rect&		m_rc;
+		int				m_bottomLine;
+		byte_t*			m_curLine;
+		bool			m_upFlow;
+	};
+
+#if 0
 	struct U32
 	{
 		byte_t	B[4];
@@ -168,12 +381,12 @@ private:
 	};
 
 	/// Src Util
-	class SecBitmapWrapper
+	class SrcBitmapWrapper
 	{
 	public:
 		/// bitmap	: 転送元 Bitmap
 		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
-		SecBitmapWrapper(const Bitmap* bitmap, const Rect& rect)
+		SrcBitmapWrapper(const Bitmap* bitmap, const Rect& rect)
 			: m_bitmap(bitmap)
 			, m_data(bitmap->m_bitmapData->GetData())
 			, m_width(bitmap->m_size.Width)
@@ -252,8 +465,16 @@ private:
 
 
 
+	static inline void MultiplyColor(const U32& destColor, const U32& srcColor, U32* outColor)
+	{
+		outColor->B[0] = destColor.B[0] * srcColor.B[0];
+		outColor->B[1] = destColor.B[1] * srcColor.B[1];
+		outColor->B[2] = destColor.B[2] * srcColor.B[2];
+		outColor->B[3] = destColor.B[3] * srcColor.B[3];
+	}
 
 
+#endif
 
 
 

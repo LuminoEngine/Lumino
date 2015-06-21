@@ -9,15 +9,17 @@ namespace Imaging
 {
 class FontManager;
 
-struct FreeTypeFontGlyphData
+struct FreeTypeGlyphData
 	: public FontGlyphData
 {
 	//int             BitmapRealDataSize;    ///< 内部データ
 	int				NextBaseX;      ///< 内部データ
 	int				NextBaseY;      ///< 内部データ
-	lnUInt			Previous;       ///< 内部データ
+	uint32_t		Previous;       ///< 内部データ
 	FT_Glyph		CopyGlyph;			///< GlyphBitmap のバッファ本体はこれが持っている
 	FT_Glyph		CopyOutlineGlyph;	///< OutlineBitmap のバッファ本体はこれが持っている
+
+	void ReleaseGlyph();
 };
 
 
@@ -45,37 +47,40 @@ public:
 	virtual void SetAntiAlias(bool enabled) { m_isAntiAlias = enabled; m_modified = true; }
 	virtual bool IsAntiAlias() const { return m_isAntiAlias; }
 
+	virtual Font* Copy() const;
+	virtual int GetLineHeight() { UpdateFont(); return m_lineHeight; }
 	virtual Size GetTextSize(const char* text, int length);
 	virtual Size GetTextSize(const wchar_t* text, int length);
-
-	virtual Font* Copy() const = 0;
-
-	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)
-	virtual FontGlyphData* MakeGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
-
-	/// グリフデータの取得を終了する (メモリ解放。一連の makeGlyphData() を呼び終わった後、最後に呼ぶ)
-	virtual void EndMakeGlyphData(FontGlyphData* glyphData) = 0;
-	// ↑メンバに持ってればいいだけだし必要ないかも。スレッドセーフにする必要もないし。
+	virtual Size GetTextSize(const UTF32* text, int length);
+	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
 private:
+	void Dispose();
 	void UpdateFont();
-	Size GetTextSizeInternal(const UTF32* text, int length);
+	void RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
 
 private:
-	FontManager*	m_manager;
-	String			m_fontName;
-	int				m_fontSize;
-	int				m_edgeSize;
-	bool			m_isBold;
-	bool			m_isItalic;
-	bool			m_isAntiAlias;
-	bool			m_modified;
+	FontManager*		m_manager;
+	String				m_fontName;
+	int					m_fontSize;
+	int					m_edgeSize;
+	bool				m_isBold;
+	bool				m_isItalic;
+	bool				m_isAntiAlias;
+	bool				m_modified;
 
-	FTC_FaceID		m_ftFaceID;			///< キャッシュから FT_Face を検索するためのキー値
-	FT_Face			m_ftFace;			///< フォント本体
-	FT_Int			m_ftCacheMapIndex;	///< m_ftFace 内で現在アクティブな FT_CharMap の番号
+	FTC_FaceID			m_ftFaceID;			///< キャッシュから FT_Face を検索するためのキー値
+	FT_Face				m_ftFace;			///< フォント本体
+	FT_Int				m_ftCacheMapIndex;	///< m_ftFace 内で現在アクティブな FT_CharMap の番号
+	FT_Stroker			m_ftStroker;		///< エッジの生成情報
+	FTC_ImageTypeRec	m_ftImageType;		///< キャッシュからグリフビットマップを取りだすための情報
+	int					m_lineHeight;
 
-	ByteBuffer		m_utf32Buffer;
+	ByteBuffer			m_utf32Buffer;		///< UTF32 文字列への一時変換先 (頻繁にメモリ確保しないように、一度使ったメモリは使いまわしたい)
+
+	FreeTypeGlyphData	m_glyphData;		///< LookupGlyphData() の戻り値として公開されるデータ
+	RefPtr<Bitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ
+	RefPtr<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
 };
 
 } // namespace Imaging

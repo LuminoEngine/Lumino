@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Common.h"
+#include "../Imaging/FontManager.h"
 #include "GraphicsDevice.h"
 #include "SwapChain.h"
 
@@ -41,6 +42,7 @@ public:
 	GraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	Renderer* GetRenderer() { return m_renderer; }
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
+	Imaging::FontManager* GetFontManager() const { return m_fontManager; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
@@ -63,6 +65,7 @@ private:
 	friend class Texture;
 
 	FileManager*			m_fileManager;
+	RefPtr<Imaging::FontManager>	m_fontManager;
 	
 	RefPtr<GraphicsDevice>	m_graphicsDevice;
 	RefPtr<SwapChain>		m_mainSwapChain;

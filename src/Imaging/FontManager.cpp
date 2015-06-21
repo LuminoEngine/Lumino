@@ -6,6 +6,11 @@
 		1つの FT_Face は複数のキャラマップを持つことがある。
 		通常はその中の1つを使用し、それを「アクティブなキャラマップ」と呼んでいる。
 		アクティブなキャラマップは face->charmap で取得できる。
+
+	■ 縦書きフォントについて
+		FT_Load_Glyph() するときのフラグに FT_LOAD_VERTICAL_LAYOUT を指定すると、
+		slot->advance.y に slot->metrics.vertAdvance が格納されるようになる。
+		ftobjs.c の 758 行目あたりが参考になる。
 */
 
 #include "../Internal.h"
@@ -16,8 +21,10 @@
 #include FT_TRUETYPE_TABLES_H	/* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
 #include "FontManagerImpl.h"
+#include <Lumino/Base/Hash.h>
 #include <Lumino/Imaging/Font.h>
 #include <Lumino/Imaging/FontManager.h>
+#include "FreeTypeFont.h"
 
 namespace Lumino
 {
@@ -27,6 +34,16 @@ namespace Imaging
 //=============================================================================
 // FontManager
 //=============================================================================
+
+static const TCHAR* DefaultFontName = _T("MS PGothic");
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FontManager* FontManager::Create(FileManager* fileManager)
+{
+	return LN_NEW FontManager(fileManager);
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -56,11 +73,11 @@ FontManager::FontManager(FileManager* fileManager)
 	err = FTC_ImageCache_New(m_ftCacheManager, &m_ftImageCache);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
 
-	FreeTypeFont* font = LN_NEW FreeTypeFont(this);
-	font->initialize(DefaultFontName, 0, Graphics::Color::Gray, false, false);
-	font->setAntiAlias(true);
-	FontManagerBase::initialize(font);
-	font->release();
+	// デフォルトフォント
+	m_defaultFont = LN_NEW FreeTypeFont(this);
+	m_defaultFont->SetName(DefaultFontName);
+	m_defaultFont->SetSize(20);
+	m_defaultFont->SetAntiAlias(true);
 }
 
 //-----------------------------------------------------------------------------
@@ -78,12 +95,12 @@ void FontManager::Dispose()
 	LN_SAFE_RELEASE(m_defaultFont);
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
-	TTFDataEntryMap::iterator itr = mTTFDataEntryMap.begin();
-	for (; itr != mTTFDataEntryMap.end(); ++itr)
+	TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
+	for (; itr != m_ttfDataEntryMap.end(); ++itr)
 	{
 		LN_SAFE_RELEASE(itr->second.DataBuffer);
 	}
-	mTTFDataEntryMap.clear();
+	m_ttfDataEntryMap.clear();
 
 	// キャッシュマネージャ
 	if (m_ftCacheManager != NULL)
@@ -105,41 +122,39 @@ void FontManager::Dispose()
 //-----------------------------------------------------------------------------
 void FontManager::RegisterFontFile(const String& fontFilePath)
 {
-	LRefPtr<FileIO::InFile> file(mFileManager->createInFile(fontFilePath));
-	LRefPtr<Base::ReferenceBuffer> buffer(LN_NEW Base::ReferenceBuffer());
-	buffer->reserve(file->getSize());
-	file->read(buffer->getPointer(), file->getSize());
+	// ファイルから全てのデータを読み込む
+	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath));
+	RefPtr<ByteBuffer> buffer(LN_NEW ByteBuffer(file->GetLength(), false));
+	file->Read(buffer->GetData(), buffer->GetSize());
 
 	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
 	FT_Face face;
 	FT_Error err = FT_New_Memory_Face(
 		m_ftLibrary,
-		(const FT_Byte*)buffer->getPointer(),
-		buffer->getSize(),
+		(const FT_Byte*)buffer->GetData(),
+		buffer->GetSize(),
 		0,
 		&face);
-	LN_THROW_InvalidOperation(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err);
+	LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
 	// Fase ひとつだけ (.ttf)
 	if (face->num_faces == 1)
 	{
-		lnString familyName(face->family_name);
-		lnU32 key = Base::Hash::calcHash(familyName.c_str());
-		if (!Base::STLUtils::contains(mTTFDataEntryMap, key/*familyName*/))
+		String familyName(face->family_name);
+		uint32_t key = Hash::CalcHash(familyName);
+		if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 		{
 			TTFDataEntry e;
 			e.DataBuffer = buffer;
-			e.DataBuffer->addRef();
+			e.DataBuffer->AddRef();
 			e.CollectionIndex = 0;
-			mTTFDataEntryMap.insert(TTFDataEntryPair(key/*familyName*/, e));
+			m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-			LN_LOG_WRITE("Registered font file. [%s]", face->family_name);
+			Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
 			// 初回登録の場合はデフォルトフォント名として登録する
-			if (!mUpdatedDefaultFontName)
-			{
-				mDefaultFont->setName(familyName.c_str());
-				mUpdatedDefaultFontName = true;
+			if (m_ttfDataEntryMap.size() == 1) {
+				m_defaultFont->SetName(familyName);
 			}
 		}
 		FT_Done_Face(face);
@@ -156,29 +171,27 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		{
 			err = FT_New_Memory_Face(
 				m_ftLibrary,
-				(const FT_Byte*)buffer->getPointer(),
-				buffer->getSize(),
+				(const FT_Byte*)buffer->GetData(),
+				buffer->GetSize(),
 				i,
 				&face);
-			LN_THROW_InvalidOperation(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err);
+			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
-			lnString familyName(face->family_name);
-			lnU32 key = Base::Hash::calcHash(familyName.c_str());
-			if (!Base::STLUtils::contains(mTTFDataEntryMap, key/*familyName*/))
+			String familyName(face->family_name);
+			uint32_t key = Hash::CalcHash(familyName);
+			if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 			{
 				TTFDataEntry e;
 				e.DataBuffer = buffer;
-				e.DataBuffer->addRef();
+				e.DataBuffer->AddRef();
 				e.CollectionIndex = i;
-				mTTFDataEntryMap.insert(TTFDataEntryPair(key/*familyName*/, e));
+				m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-				LN_LOG_WRITE("Registered font file. [%s]", face->family_name);
+				Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
 				// 初回登録の場合はデフォルトフォント名として登録する
-				if (!mUpdatedDefaultFontName)
-				{
-					mDefaultFont->setName(familyName.c_str());
-					mUpdatedDefaultFontName = true;
+				if (m_ttfDataEntryMap.size() == 1) {
+					m_defaultFont->SetName(familyName);
 				}
 			}
 			FT_Done_Face(face);
@@ -186,7 +199,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 	}
 	else {
 		FT_Done_Face(face);
-		LN_THROW_InvalidOperation(0);
+		LN_THROW(0, InvalidOperationException);
 	}
 }
 
@@ -201,7 +214,7 @@ void FontManager::SetDefaultFont(Font* font)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FT_Error FontManager::faceRequester(
+FT_Error FontManager::FaceRequester(
 	FTC_FaceID face_id,
 	FT_Library library,
 	FT_Pointer request_data,
@@ -212,36 +225,36 @@ FT_Error FontManager::faceRequester(
 	// face_id は、FTC_Manager_LookupFace() に渡した ID が入ってくる。
 	// ID は自分で好きなように決められる。とりあえず文字列 (ファミリ名)としている
 
-	//lnString family_name( (lnChar*)face_id );
-	lnU32 key = (lnU32)face_id;
-	TTFDataEntryMap::iterator itr = mTTFDataEntryMap.find(key/*family_name*/);
-	if (itr != mTTFDataEntryMap.end())
+	//String family_name( (lnChar*)face_id );
+	uint32_t key = (uint32_t)face_id;
+	TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.find(key/*family_name*/);
+	if (itr != m_ttfDataEntryMap.end())
 	{
 		FT_Face face;
 		FT_Error err = FT_New_Memory_Face(
 			m_ftLibrary,
-			(const FT_Byte*)itr->second.DataBuffer->getPointer(),
-			itr->second.DataBuffer->getSize(),
+			(const FT_Byte*)itr->second.DataBuffer->GetData(),
+			itr->second.DataBuffer->GetSize(),
 			itr->second.CollectionIndex,
 			&face);
-		LN_THROW_InvalidOperation(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err);
+		LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
 		err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 		if (err != FT_Err_Ok)
 		{
 			FT_Done_Face(face);
-			LN_THROW_InvalidOperation(err == FT_Err_Ok, "failed FT_Select_Charmap : %d\n", err);
+			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_Select_Charmap : %d\n", err);
 		}
 
 		*aface = face;
 		return FT_Err_Ok;
 	}
 #ifdef LN_WIN32
-	else if (mRequesterFaceName != NULL)
+	else if (m_requesterFaceName != NULL)
 	{
 		// 名前からシステムフォント検索
-		TSystemFontData* systemFont = getWindowsSystemFontData(mRequesterFaceName);
-		mRequesterFaceName = NULL;
+		TSystemFontData* systemFont = GetWindowsSystemFontData(m_requesterFaceName);
+		m_requesterFaceName = NULL;
 		if (systemFont == NULL){
 			return FT_Err_Cannot_Open_Resource;
 		}
@@ -249,16 +262,16 @@ FT_Error FontManager::faceRequester(
 		// リソースロック
 		size_t size = 0;
 		int index = 0;
-		lnByte* data = lockWindowsSystemFontData(systemFont, &size, &index);
+		byte_t* data = LockWindowsSystemFontData(systemFont, &size, &index);
 		if (data == NULL){
-			freeWindowsSystemFontData(systemFont);
+			FreeWindowsSystemFontData(systemFont);
 			return FT_Err_Cannot_Open_Resource;
 		}
 
 		// FreeType の読み取りストリーム
 		FT_Stream stream = (FT_Stream)malloc(sizeof(FT_StreamRec));
 		if (stream == NULL){
-			freeWindowsSystemFontData(systemFont);
+			FreeWindowsSystemFontData(systemFont);
 			return FT_Err_Out_Of_Memory;
 		}
 		memset(stream, 0, sizeof(FT_StreamRec));
@@ -297,7 +310,6 @@ FT_Error FontManager::faceRequester(
 	}
 #endif
 	return -1;
-
 }
 
 //-----------------------------------------------------------------------------

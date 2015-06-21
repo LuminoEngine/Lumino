@@ -6,6 +6,7 @@
 #include FT_TRUETYPE_TAGS_H	/* <freetype/tttags.h> */
 #include FT_TRUETYPE_TABLES_H	/* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
+#include FT_STROKER_H
 #include <Lumino/Base/Hash.h>
 #include "FreeTypeFont.h"
 
@@ -13,6 +14,36 @@ namespace Lumino
 {
 namespace Imaging
 {
+
+//=============================================================================
+// Font
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Font* Font::Create(FontManager* manager)
+{
+	return LN_NEW FreeTypeFont(manager);
+}
+
+//=============================================================================
+// FreeTypeGlyphData
+//=============================================================================
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void FreeTypeGlyphData::ReleaseGlyph()
+{
+	if (CopyGlyph) {
+		FT_Done_Glyph(CopyGlyph);
+		CopyGlyph = NULL;
+	}
+	if (CopyOutlineGlyph) {
+		FT_Done_Glyph(CopyOutlineGlyph);
+		CopyOutlineGlyph = NULL;
+	}
+}
 
 //=============================================================================
 // FreeTypeFont
@@ -71,57 +102,26 @@ namespace Imaging
 //-----------------------------------------------------------------------------
 FreeTypeFont::FreeTypeFont(FontManager* manager)
 	: m_manager(manager)
-	//, m_ftFace(NULL)
-	//, m_ftCacheMapIndex(0)
-	//, m_modified(false)
-	//, m_fontName()
-	//, m_fontSize(0)
-	//, mColor(LColor::Gray)
-	//, mEdgeColor(0, 0, 0, 1)
-	//, m_edgeSize(0)
-	//, m_isBold(false)
-	//, m_isItalic(false)
-	//, mIsAntiAlias(false)
-	////, mCopyGlyph    ( NULL )
-	////, mBitmapRealDataBytes   ( 0 )
-	//, mPixelList(NULL)
-	//, m_ftStroker(NULL)
-
-	/*
-	mFontHandle           ( NULL )
-	, m_fontName             ( LN_DEFAULT_FONT_NAME )
-	, m_fontSize             ( 22 )
-	, mGlyphType            ( LN_GT_NOEDGE_NOANTI )
-	, mEdgeColor            ( 0, 0, 0, 1 )
-	, m_edgeSize             ( 0 )
-	, mRealEdgeSize         ( 0 )
-	, mOutlineQuality       ( FONT_ANTI_QUALITY )
-	, mMemDC                ( NULL )
-	, mDIBBitmap            ( NULL )
-	, mDIBBitmapBuffer      ( NULL )
-	, mDIBBitmapWidth       ( 0 )
-	, mDIBBitmapHeight      ( 0 )
-	, mOutlinePen           ( NULL )
-	, mOutlineBrush         ( NULL )
-	, mOutlineBGBrush       ( NULL )
-
-	, mBitmapBufferSize     ( 0 )
-	, mHDC                  ( NULL )
-
-	, mOldFont              ( NULL )
-
-	, mNeedUpdate           ( true )
-	, mBeganGetGlyphOutline ( false )
-	*/
+	, m_fontName()
+	, m_fontSize(0)
+	, m_edgeSize(0)
+	, m_isBold(false)
+	, m_isItalic(false)
+	, m_isAntiAlias(false)
+	, m_modified(false)
+	, m_ftFaceID(0)
+	, m_ftFace(NULL)
+	, m_ftCacheMapIndex(0)
+	, m_ftStroker(NULL)
+	, m_ftImageType()
+	, m_utf32Buffer()
+	, m_glyphData()
+	, m_glyphBitmap()
+	, m_outlineBitmap()
 {
-	//memset( &mGlyphOutlineData, 0, sizeof( mGlyphOutlineData ) );
-	//memset( &mGlyphBitmap, 0, sizeof( mGlyphBitmap ) );
-	//mFontGlyphData.Bitmap = &mGlyphBitmap;
-
-	mFontGlyphData.GlyphBitmap = &mGlyphBitmap;
-	mFontGlyphData.CopyGlyph = NULL;
-
 	LN_SAFE_ADDREF(m_manager);
+	m_glyphData.CopyGlyph = NULL;
+	m_glyphData.CopyOutlineGlyph = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -129,8 +129,24 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 //-----------------------------------------------------------------------------
 FreeTypeFont::~FreeTypeFont()
 {
-	dispose();
+	Dispose();
 	LN_SAFE_RELEASE(m_manager);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Font* FreeTypeFont::Copy() const
+{
+	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager));
+	font->SetName(m_fontName);
+	font->SetSize(m_fontSize);
+	font->SetEdgeSize(m_edgeSize);
+	font->SetBold(m_isBold);
+	font->SetItalic(m_isItalic);
+	font->SetAntiAlias(m_isAntiAlias);
+	font.SafeAddRef();
+	return font;
 }
 
 //-----------------------------------------------------------------------------
@@ -138,16 +154,22 @@ FreeTypeFont::~FreeTypeFont()
 //-----------------------------------------------------------------------------
 Size FreeTypeFont::GetTextSize(const char* text, int length)
 {
-	size_t size = Text::Encoding::GetConversionRequiredByteCount(Text::Encoding::GetSystemMultiByteEncoding(), Text::Encoding::GetUTF32Encoding(), length);
+	LN_VERIFY_RETURNV(text != NULL, Size::Zero);
+	if (length == 0) { return Size::Zero; }
+	length = (length < 0) ? strlen(text) : length;
+
+	// char → UTF32 に変換するのに必要なバイト数で領域確保
+	size_t size = Text::Encoding::GetConversionRequiredByteCount(Text::Encoding::GetSystemMultiByteEncoding(), Text::Encoding::GetUTF32Encoding(), length * sizeof(wchar_t));
 	m_utf32Buffer.Resize(size);
 	
+	// UTF32 に変換
 	Text::EncodingConversionResult result;
 	Text::Encoding::Convert(
-		text, length, Text::Encoding::GetSystemMultiByteEncoding(),
+		text, length * sizeof(wchar_t), Text::Encoding::GetSystemMultiByteEncoding(),
 		m_utf32Buffer.GetData(), m_utf32Buffer.GetSize(), Text::Encoding::GetUTF32Encoding(),
 		&result);
 
-	return GetTextSizeInternal((UTF32*)m_utf32Buffer.GetData(), m_utf32Buffer.GetSize() / sizeof(UTF32));
+	return GetTextSize((UTF32*)m_utf32Buffer.GetData(), result.BytesUsed / sizeof(UTF32));
 }
 
 //-----------------------------------------------------------------------------
@@ -155,333 +177,28 @@ Size FreeTypeFont::GetTextSize(const char* text, int length)
 //-----------------------------------------------------------------------------
 Size FreeTypeFont::GetTextSize(const wchar_t* text, int length)
 {
+	LN_VERIFY_RETURNV(text != NULL, Size::Zero);
+	if (length == 0) { return Size::Zero; }
+	length = (length < 0) ? wcslen(text) : length;
+
+	// wchar_t → UTF32 に変換するのに必要なバイト数で領域確保
 	size_t size = Text::Encoding::GetConversionRequiredByteCount(Text::Encoding::GetWideCharEncoding(), Text::Encoding::GetUTF32Encoding(), length);
 	m_utf32Buffer.Resize(size);
 
+	// UTF32 に変換
 	Text::EncodingConversionResult result;
 	Text::Encoding::Convert(
 		text, length, Text::Encoding::GetWideCharEncoding(),
 		m_utf32Buffer.GetData(), m_utf32Buffer.GetSize(), Text::Encoding::GetUTF32Encoding(),
 		&result);
 
-	return GetTextSizeInternal((UTF32*)m_utf32Buffer.GetData(), m_utf32Buffer.GetSize() / sizeof(UTF32));
+	return GetTextSize((UTF32*)m_utf32Buffer.GetData(), result.BytesUsed / sizeof(UTF32));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Font* FreeTypeFont::copy()
-{
-	LRefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager));
-	font->initialize(m_fontName.c_str(), m_fontSize, mColor, m_isBold, m_isItalic);
-	font->setEdgeColor(mEdgeColor);
-	font->setEdgeSize(m_edgeSize);
-	font->setAntiAlias(mIsAntiAlias);
-	font->addRef();
-	return font;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-FontGlyphData* FreeTypeFont::makeGlyphData(lnU32 utf32code, FontGlyphData* prevData_)
-{
-	FreeTypeFontGlyphData* prevData = static_cast<FreeTypeFontGlyphData*>(prevData_);
-	FreeTypeFontGlyphData* glyphData;
-
-	// ひとつ前のデータがあればそれをベースに
-	if (prevData)
-	{
-		glyphData = prevData;
-
-		if (glyphData->CopyGlyph) {
-			FT_Done_Glyph(glyphData->CopyGlyph);
-			glyphData->CopyGlyph = NULL;
-		}
-		if (glyphData->CopyOutlineGlyph) {
-			FT_Done_Glyph(glyphData->CopyOutlineGlyph);
-			glyphData->CopyOutlineGlyph = NULL;
-		}
-	}
-	// 最初の文字であればデータリセット
-	else
-	{
-		updateFont();
-
-		glyphData = &mFontGlyphData;
-		glyphData->NextBaseX = 0;
-		glyphData->Previous = 0;
-		glyphData->CopyGlyph = NULL;
-		glyphData->CopyOutlineGlyph = NULL;
-	}
-
-	//-----------------------------------------------------
-	// グリフ取得
-
-	/* キャッシュを使うときは…
-	FT_Set_Char_Size のかわりに FTC_Manager_LookupSize
-	FT_Get_Char_Index のかわりに FTC_CMapCache_Lookup
-	FT_Load_Glyph のかわりに FTC_ImageCache_Lookup
-	*/
-
-	FT_UInt glyph_index = FTC_CMapCache_Lookup(
-		m_manager->getFTCacheMapCache(),
-		m_ftFaceID,
-		m_ftCacheMapIndex,
-		utf32code);
-
-	FT_Glyph glyph;
-	FT_Error err = FTC_ImageCache_Lookup(
-		m_manager->getFTCImageCache(),
-		&m_ftImageType,
-		glyph_index,
-		&glyph,
-		NULL);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
-
-	// 太字フォント
-	if (m_isBold)
-	{
-		// アウトラインフォントである必要がある
-		LN_THROW_InvalidOperation((glyph->format == FT_GLYPH_FORMAT_OUTLINE), "glyph->format != FT_GLYPH_FORMAT_OUTLINE");
-
-		FT_Pos strength = (800 - 400) / 8;	// 太さ
-		err = FT_Outline_Embolden(&m_ftFace->glyph->outline, strength);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Outline_Embolden : %d\n", err);
-	}
-
-	FT_Render_Mode renderMode = (mIsAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
-
-	FT_BitmapGlyph glyph_bitmap;
-	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
-		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
-		glyph_bitmap = (FT_BitmapGlyph)glyph;
-	}
-	else
-	{
-		err = FT_Glyph_Copy(glyph, &glyphData->CopyGlyph);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
-
-		/* FT_RENDER_MODE_NORMALで普通の(256階調)アンチエイリアス
-		* FT_RENDER_MODE_LCDで液晶用アンチエイリアス(サブピクセルレンダリング)
-		*/
-		err = FT_Glyph_To_Bitmap(&glyphData->CopyGlyph, renderMode, NULL, 1);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_To_Bitmap : %d\n", err);
-
-		glyph_bitmap = (FT_BitmapGlyph)glyphData->CopyGlyph;
-	}
-
-	FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
-	_refreshBitmap(&mGlyphBitmap, ft_bitmap);
-
-	if (m_ftStroker)
-	{
-		err = FT_Glyph_Copy(glyph, &glyphData->CopyOutlineGlyph);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
-
-		err = FT_Glyph_StrokeBorder(&glyphData->CopyOutlineGlyph, m_ftStroker, 0, 1);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_StrokeBorder : %d\n", err);
-
-		err = FT_Glyph_To_Bitmap(&glyphData->CopyOutlineGlyph, renderMode, NULL, 1);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_To_Bitmap : %d\n", err);
-
-		glyph_bitmap = (FT_BitmapGlyph)glyphData->CopyOutlineGlyph;
-
-
-
-		FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
-		_refreshBitmap(&mOutlineBitmap, ft_bitmap);
-
-		mFontGlyphData.OutlineBitmap = &mOutlineBitmap;
-		mFontGlyphData.OutlineOffset = m_edgeSize;
-	}
-	else
-	{
-		mFontGlyphData.OutlineBitmap = NULL;
-		mFontGlyphData.OutlineOffset = 0;
-	}
-
-	//-----------------------------------------------------
-	// 位置調整
-
-	// 転送座標オフセットを進める
-	glyphData->NextBaseY = (m_ftFace->height + m_ftFace->descender) *
-		m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM;
-	glyphData->GlyphOffsetX = glyphData->NextBaseX + glyph_bitmap->left;
-	glyphData->GlyphOffsetY = glyphData->NextBaseY - glyph_bitmap->top;
-
-	// ひとつ前のデータがある場合、ひとつ前の文字からの位置を求める
-	if (prevData)
-	{
-		// カーニング
-		if ((FT_HAS_KERNING(m_ftFace)) && prevData->Previous && glyph_index)
-		{
-			FT_Vector delta;
-			FT_Get_Kerning(m_ftFace,
-				prevData->Previous, glyph_index,
-				ft_kerning_default, &delta);
-			glyphData->NextBaseX += delta.x >> 6;
-		}
-	}
-	// 初回文字 (リセット)
-	else
-	{
-		// 初回の生成で負の値は許さない (j 等が -1 となってしまい、想定した描画領域からはみ出す)
-		//if ( glyphData->GlyphOffsetX < 0 ) glyphData->GlyphOffsetX = 0;
-		//if ( glyphData->GlyphOffsetY < 0 ) glyphData->GlyphOffsetY = 0;
-	}
-
-	// 直前の glyph_index として記憶
-	glyphData->Previous = glyph_index;
-
-	// 次の文字へ
-	glyphData->NextBaseX += glyph_bitmap->root.advance.x >> 16;
-
-	// 行高さ
-	glyphData->MetricsHeight = m_ftFace->size->metrics.height >> 6;
-
-	return glyphData;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void FreeTypeFont::postGlyphData(FontGlyphData* glyphData_)
-{
-	FreeTypeFontGlyphData* glyphData = static_cast<FreeTypeFontGlyphData*>(glyphData_);
-
-	if (glyphData)
-	{
-		if (glyphData->CopyGlyph) {
-			FT_Done_Glyph(glyphData->CopyGlyph);
-			glyphData->CopyGlyph = NULL;
-		}
-		if (glyphData->CopyOutlineGlyph) {
-			FT_Done_Glyph(glyphData->CopyOutlineGlyph);
-			glyphData->CopyOutlineGlyph = NULL;
-		}
-	}
-	//if ( glyph_data )
-	//{
-	//    //SAFE_DELETE_ARRAY( glyph_data->Bitmap->Buffer );
-	//    //SAFE_DELETE( glyph_data->Bitmap );
-	//    //SAFE_DELETE( glyph_data );
-	//}
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void FreeTypeFont::UpdateFont()
-{
-	m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName);
-	FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
-	m_manager->mRequesterFaceName = m_fontName;
-
-	FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);
-
-	if (m_isItalic)
-	{
-		// イタリック体の場合は Transform で傾ける
-		FT_Vector transform = { 0, 0 };
-		FT_Matrix matrix;
-		matrix.xx = 1 << 16;
-		matrix.xy = 0x5800;
-		matrix.yx = 0;
-		matrix.yy = 1 << 16;
-		FT_Set_Transform(m_ftFace, &matrix, &transform);
-	}
-	else
-	{
-		FT_Set_Transform(m_ftFace, NULL, NULL);
-	}
-
-	// m_ftFace->charmap は m_ftFace の中で現在アクティブな FT_CharMap。
-	// グリフを取りだすときはそのインデックスを指定する必要があるので、ここで覚えておく。
-	m_ftCacheMapIndex = FT_Get_Charmap_Index(m_ftFace->charmap);
-
-
-#define RESOLUTION_X 72
-#define RESOLUTION_Y 72
-
-	// m_fontSize に対する本当の文字サイズを取得する
-	FTC_ScalerRec scaler;
-	scaler.face_id = m_ftFaceID;
-	scaler.width = 0;
-	scaler.height = m_fontSize << 6;
-	scaler.pixel = 0;
-	scaler.x_res = RESOLUTION_X;
-	scaler.y_res = RESOLUTION_Y;
-	FT_Size ft_size;
-	err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupSize : %d\n", err);
-
-
-	if (m_modified)
-	{
-		dispose();
-		if (m_edgeSize > 0)
-		{
-			FT_Stroker_New(m_manager->getFTLibrary(), &m_ftStroker);
-			FT_Stroker_Set(m_ftStroker,
-				(int)(m_edgeSize * 64),
-				FT_STROKER_LINECAP_ROUND,
-				FT_STROKER_LINEJOIN_ROUND,
-				0);
-		}
-
-
-		// font_typeを設定
-		m_ftImageType.face_id = m_ftFaceID;
-		m_ftImageType.width = 0;
-		m_ftImageType.height = m_fontSize;
-		/* ビットマップまでキャッシュする場合はFT_LOAD_RENDER | FT_LOAD_TARGET_*
-		* とする。ただし途中でTARGETを変更した場合等はキャッシュが邪魔する。
-		* そういう時はFT_LOAD_DEFAULTにしてFTC_ImageCache_Lookup後に
-		* FT_Glyph_To_Bitmapしたほうが都合がいいと思う。
-		*/
-		//m_ftImageType.flags = FT_LOAD_NO_BITMAP;
-
-		/* m_ftImageType.flags に　FT_LOAD_FORCE_AUTOHINT を使用すると、
-		* 一部のフォント(VL ゴシック等)で次の文字までのオフセットが正しく取れないことがある。
-		*/
-
-		// アウトライン ON
-		if (m_edgeSize > 0 || m_isBold) {
-			m_ftImageType.flags = FT_LOAD_NO_BITMAP;
-		}
-		// アウトライン OFF
-		else {
-			m_ftImageType.flags = FT_LOAD_RENDER;
-		}
-		// アンチエイリアス ON
-		if (mIsAntiAlias) {
-			//m_ftImageType.flags = ; そのまま
-		}
-		// アンチエイリアス OFF
-		else {
-			m_ftImageType.flags |= FT_LOAD_MONOCHROME;
-		}
-
-
-
-		mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
-
-		// グリフ格納用ビットマップ (ダミー確保)
-		mGlyphBitmap.create(m_fontSize, m_fontSize, LN_BITMAPFORMAT_A8);
-		mOutlineBitmap.create(m_fontSize, m_fontSize, LN_BITMAPFORMAT_A8);
-
-		m_modified = false;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Size FreeTypeFont::GetTextSizeInternal(const UTF32* text, int length)
+Size FreeTypeFont::GetTextSize(const UTF32* text, int length)
 {
 	UpdateFont();
 
@@ -540,59 +257,317 @@ Size FreeTypeFont::GetTextSizeInternal(const UTF32* text, int length)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void FreeTypeFont::dispose()
+FontGlyphData* FreeTypeFont::LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData_)
 {
-	//SAFE_DELETE_ARRAY( mGlyphBitmap.Buffer );
-	SAFE_DELETE_ARRAY(mPixelList);
+	FreeTypeGlyphData* prevData = static_cast<FreeTypeGlyphData*>(prevData_);
+	FreeTypeGlyphData* glyphData;
+
+	m_glyphData.ReleaseGlyph();
+	m_glyphData.GlyphBitmap = m_glyphBitmap;
+
+	// ひとつ前のデータがあればそれをベースに
+	if (prevData)
+	{
+		glyphData = prevData;
+	}
+	// 最初の文字であればデータリセット
+	else
+	{
+		UpdateFont();
+		glyphData = &m_glyphData;
+		glyphData->NextBaseX = 0;
+		glyphData->Previous = 0;
+		glyphData->CopyGlyph = NULL;
+		glyphData->CopyOutlineGlyph = NULL;
+	}
+
+	//-----------------------------------------------------
+	// グリフ取得
+
+	/* キャッシュを使うときは…
+	FT_Set_Char_Size のかわりに FTC_Manager_LookupSize
+	FT_Get_Char_Index のかわりに FTC_CMapCache_Lookup
+	FT_Load_Glyph のかわりに FTC_ImageCache_Lookup
+	*/
+
+	FT_UInt glyph_index = FTC_CMapCache_Lookup(
+		m_manager->GetFTCacheMapCache(),
+		m_ftFaceID,
+		m_ftCacheMapIndex,
+		utf32code);
+
+	FT_Glyph glyph;
+	FT_Error err = FTC_ImageCache_Lookup(
+		m_manager->GetFTCImageCache(),
+		&m_ftImageType,
+		glyph_index,
+		&glyph,
+		NULL);
+	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+
+	// 太字フォント
+	if (m_isBold)
+	{
+		// アウトラインフォントである必要がある
+		LN_THROW((glyph->format == FT_GLYPH_FORMAT_OUTLINE), InvalidOperationException, "glyph->format != FT_GLYPH_FORMAT_OUTLINE");
+
+		FT_Pos strength = (800 - 400) / 8;	// 太さ
+		err = FT_Outline_Embolden(&m_ftFace->glyph->outline, strength);
+		LN_THROW(err == 0, InvalidOperationException, "failed FT_Outline_Embolden : %d\n", err);
+	}
+
+	FT_Render_Mode renderMode = (m_isAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
+
+	FT_BitmapGlyph glyph_bitmap;
+	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
+		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
+		glyph_bitmap = (FT_BitmapGlyph)glyph;
+	}
+	else
+	{
+		err = FT_Glyph_Copy(glyph, &glyphData->CopyGlyph);
+		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
+
+		/* FT_RENDER_MODE_NORMALで普通の(256階調)アンチエイリアス
+		* FT_RENDER_MODE_LCDで液晶用アンチエイリアス(サブピクセルレンダリング)
+		*/
+		err = FT_Glyph_To_Bitmap(&glyphData->CopyGlyph, renderMode, NULL, 1);
+		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_To_Bitmap : %d\n", err);
+
+		glyph_bitmap = (FT_BitmapGlyph)glyphData->CopyGlyph;
+	}
+
+	FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
+	RefreshBitmap(m_glyphBitmap, ft_bitmap);
+
+	if (m_ftStroker)
+	{
+		err = FT_Glyph_Copy(glyph, &glyphData->CopyOutlineGlyph);
+		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
+
+		err = FT_Glyph_StrokeBorder(&glyphData->CopyOutlineGlyph, m_ftStroker, 0, 1);
+		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_StrokeBorder : %d\n", err);
+
+		err = FT_Glyph_To_Bitmap(&glyphData->CopyOutlineGlyph, renderMode, NULL, 1);
+		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_To_Bitmap : %d\n", err);
+
+		glyph_bitmap = (FT_BitmapGlyph)glyphData->CopyOutlineGlyph;
+
+
+
+		FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
+		RefreshBitmap(m_outlineBitmap, ft_bitmap);
+
+		m_glyphData.OutlineBitmap = m_outlineBitmap;
+		m_glyphData.OutlineOffset = m_edgeSize;
+	}
+	else
+	{
+		m_glyphData.OutlineBitmap = NULL;
+		m_glyphData.OutlineOffset = 0;
+	}
+
+	//-----------------------------------------------------
+	// 位置調整
+
+	// 転送座標オフセットを進める
+	glyphData->NextBaseY = (m_ftFace->height + m_ftFace->descender) *
+		m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM;
+	glyphData->GlyphOffsetX = glyphData->NextBaseX + glyph_bitmap->left;
+	glyphData->GlyphOffsetY = glyphData->NextBaseY - glyph_bitmap->top;
+
+	// ひとつ前のデータがある場合、ひとつ前の文字からの位置を求める
+	if (prevData)
+	{
+		// カーニング
+		if ((FT_HAS_KERNING(m_ftFace)) && prevData->Previous && glyph_index)
+		{
+			FT_Vector delta;
+			FT_Get_Kerning(m_ftFace,
+				prevData->Previous, glyph_index,
+				ft_kerning_default, &delta);
+			glyphData->NextBaseX += delta.x >> 6;
+		}
+	}
+	// 初回文字 (リセット)
+	else
+	{
+		// 初回の生成で負の値は許さない (j 等が -1 となってしまい、想定した描画領域からはみ出す)
+		//if ( glyphData->GlyphOffsetX < 0 ) glyphData->GlyphOffsetX = 0;
+		//if ( glyphData->GlyphOffsetY < 0 ) glyphData->GlyphOffsetY = 0;
+	}
+
+	// 直前の glyph_index として記憶
+	glyphData->Previous = glyph_index;
+
+	// 次の文字へ
+	glyphData->NextBaseX += glyph_bitmap->root.advance.x >> 16;
+
+	// 行高さ
+	glyphData->MetricsHeight = m_ftFace->size->metrics.height >> 6;
+
+	return glyphData;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FreeTypeFont::UpdateFont()
+{
+	m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName);
+	FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
+	m_manager->m_requesterFaceName = m_fontName;
+
+	FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
+	LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);
+	
+	if (m_isItalic)
+	{
+		// イタリック体の場合は Transform で傾ける
+		FT_Vector transform = { 0, 0 };
+		FT_Matrix matrix;
+		matrix.xx = 1 << 16;
+		matrix.xy = 0x5800;
+		matrix.yx = 0;
+		matrix.yy = 1 << 16;
+		FT_Set_Transform(m_ftFace, &matrix, &transform);
+	}
+	else
+	{
+		FT_Set_Transform(m_ftFace, NULL, NULL);
+	}
+
+	// m_ftFace->charmap は m_ftFace の中で現在アクティブな FT_CharMap。
+	// グリフを取りだすときはそのインデックスを指定する必要があるので、ここで覚えておく。
+	m_ftCacheMapIndex = FT_Get_Charmap_Index(m_ftFace->charmap);
+
+#define RESOLUTION_X 72
+#define RESOLUTION_Y 72
+
+	// m_fontSize に対する本当の文字サイズを取得する
+	FTC_ScalerRec scaler;
+	scaler.face_id = m_ftFaceID;
+	scaler.width = 0;
+	scaler.height = m_fontSize << 6;
+	scaler.pixel = 0;
+	scaler.x_res = RESOLUTION_X;
+	scaler.y_res = RESOLUTION_Y;
+	FT_Size ft_size;
+	err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);
+	LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupSize : %d\n", err);
+
+	m_lineHeight = ft_size->metrics.height >> 6;
+
+	if (m_modified)
+	{
+		Dispose();
+		if (m_edgeSize > 0)
+		{
+			// エッジの描画情報
+			FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
+			FT_Stroker_Set(m_ftStroker,
+				(int)(m_edgeSize * 64),
+				FT_STROKER_LINECAP_ROUND,	// 線分の両端は半円でレンダリングする
+				FT_STROKER_LINEJOIN_ROUND,	// 線分の接合点は半円でレンダリングする
+				0);
+		}
+
+
+		// font_typeを設定
+		m_ftImageType.face_id = m_ftFaceID;
+		m_ftImageType.width = 0;
+		m_ftImageType.height = m_fontSize;
+		/* ビットマップまでキャッシュする場合はFT_LOAD_RENDER | FT_LOAD_TARGET_*
+		* とする。ただし途中でTARGETを変更した場合等はキャッシュが邪魔する。
+		* そういう時はFT_LOAD_DEFAULTにしてFTC_ImageCache_Lookup後に
+		* FT_Glyph_To_Bitmapしたほうが都合がいいと思う。
+		*/
+		//m_ftImageType.flags = FT_LOAD_NO_BITMAP;
+
+		/* m_ftImageType.flags に　FT_LOAD_FORCE_AUTOHINT を使用すると、
+		* 一部のフォント(VL ゴシック等)で次の文字までのオフセットが正しく取れないことがある。
+		*/
+
+		// アウトライン ON
+		if (m_edgeSize > 0 || m_isBold) {
+			m_ftImageType.flags = FT_LOAD_NO_BITMAP;
+		}
+		// アウトライン OFF
+		else {
+			m_ftImageType.flags = FT_LOAD_RENDER;
+		}
+		// アンチエイリアス ON
+		if (m_isAntiAlias) {
+			//m_ftImageType.flags = ; そのまま
+		}
+		// アンチエイリアス OFF
+		else {
+			m_ftImageType.flags |= FT_LOAD_MONOCHROME;
+		}
+
+		// グリフ格納用ビットマップ (仮確保)
+		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontSize, m_fontSize), PixelFormat_A8));
+		m_outlineBitmap.Attach(LN_NEW Bitmap(Size(m_fontSize, m_fontSize), PixelFormat_A8));
+
+		// ラスタライズで使用する
+		//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
+
+		m_modified = false;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FreeTypeFont::Dispose()
+{
+	m_glyphData.ReleaseGlyph();
+
+	//SAFE_DELETE_ARRAY(mPixelList);
 	if (m_ftStroker)
 	{
 		FT_Stroker_Done(m_ftStroker);
 		m_ftStroker = NULL;
 	}
 
-	// キャッシュを使用している場合、解放の必要はない。
+	// キャッシュを使用している場合、FT_Done_Face( m_ftFace ); などで解放の必要はない。
 	// 解放してしまうと、CacheManager の解放時に NULL アクセスが起こる。
-	//if ( m_ftFace )
-	//{
-	//    FT_Done_Face( m_ftFace );
-	//    m_ftFace = NULL;
-	//}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void FreeTypeFont::_refreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
+void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 {
 	int width = ftBitmap->width;
 	int height = ftBitmap->rows;
 
 	// サイズ
-	bitmap->mWidth = width;
-	bitmap->mHeight = height;
-	bitmap->mPitch = ftBitmap->pitch;
+	bitmap->m_size.Width = width;
+	bitmap->m_size.Height = height;
+	bitmap->m_pitch = abs(ftBitmap->pitch);
 	if (ftBitmap->pitch < 0) {
-		bitmap->mUpFlow = false;
+		bitmap->m_upFlow = false;
 	}
 
 	// フォーマット
 	if (ftBitmap->pixel_mode == FT_PIXEL_MODE_MONO) {
-		bitmap->mFormat = LN_BITMAPFORMAT_A1;
+		bitmap->m_format = PixelFormat_A1;
 	}
 	else if (ftBitmap->pixel_mode == FT_PIXEL_MODE_GRAY) {
-		bitmap->mFormat = LN_BITMAPFORMAT_A8;
+		bitmap->m_format = PixelFormat_A8;
 	}
 	else {
-		LN_THROW_InvalidOperation(0);
+		LN_THROW(0, InvalidOperationException, "Invalid pixel format.");
 	}
 
-	// ビットマップデータ
-	bitmap->mBitmapData->setBytesBuffer(
+	// ビットマップデータを参照モードでセットする
+	bitmap->m_bitmapData->Attach(
 		ftBitmap->buffer,
-		Bitmap::getPixelFormatByteCount(bitmap->mFormat, width, height),
-		true);
+		Bitmap::GetPixelFormatByteCount(bitmap->m_format, bitmap->m_size));
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -602,7 +577,7 @@ void FreeTypeFont::_reserveBitmapBuffer(int newWidth, int newHeight, int newEdge
 	int w = (newWidth + newEdgeSize * 2);
 	int h = (newWidth + newEdgeSize * 2);
 
-	Base::ReferenceBuffer* bitmapData = mGlyphBitmap.getBitmapData();
+	Base::ReferenceBuffer* bitmapData = m_glyphBitmap.getBitmapData();
 	if (w * h > bitmapData->getSize())
 	{
 		bitmapData->reserve(w * h);
@@ -610,7 +585,6 @@ void FreeTypeFont::_reserveBitmapBuffer(int newWidth, int newHeight, int newEdge
 	}
 }
 
-#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -645,7 +619,7 @@ void FreeTypeFont::renderSpans(FT_OutlineGlyph glyph)
 	memset(&params, 0, sizeof(params));
 	params.gray_spans = rasterCallback;
 	params.user = this;
-	if (mIsAntiAlias) params.flags = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
+	if (m_isAntiAlias) params.flags = FT_RASTER_FLAG_AA | FT_RASTER_FLAG_DIRECT;
 	else                params.flags = FT_RASTER_FLAG_DIRECT;
 	// ↑FT_RASTER_FLAG_DIRECT を使用する場合はコールバックを登録する必要があるが、
 	// 2.4現在、アンチエイリアス時のみしかサポートしていない。
@@ -666,18 +640,18 @@ void FreeTypeFont::renderSpans(FT_OutlineGlyph glyph)
 	// ビットマップを格納するバッファサイズが足りなければ再作成
 	_reserveBitmapBuffer(width, height, m_edgeSize);
 
-	mGlyphBitmap.mWidth = width;
-	mGlyphBitmap.mHeight = height;
+	m_glyphBitmap.mWidth = width;
+	m_glyphBitmap.mHeight = height;
 #endif
 	// ビットマップバッファに格納
-	Base::ReferenceBuffer* bitmapData = mGlyphBitmap.getBitmapData();
+	Base::ReferenceBuffer* bitmapData = m_glyphBitmap.getBitmapData();
 	lnByte* buf = bitmapData->getPointer();
 	for (int i = 0; i < mPixelCount; ++i)
 	{
-		//printf("%d ", (mGlyphBitmap.Height - 1 - (mPixelList[i].Y - mPixelMinY) ));
+		//printf("%d ", (m_glyphBitmap.Height - 1 - (mPixelList[i].Y - mPixelMinY) ));
 		//printf( "x:%d y:%d w:%d h:%d minX:%d minY:%d\n",
 		//    (mPixelList[i].X - mPixelMinX), 
-		//    (mGlyphBitmap.Height - 1 - (mPixelList[i].Y - mPixelMinY) ),
+		//    (m_glyphBitmap.Height - 1 - (mPixelList[i].Y - mPixelMinY) ),
 		//    width, height,
 		//    mPixelMinX, mPixelMinY);
 

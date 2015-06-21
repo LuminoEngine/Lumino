@@ -32,8 +32,9 @@ bool TestEnvironment::EqualsScreenShot(const TCHAR* filePath)
 //-----------------------------------------------------------------------------
 bool TestEnvironment::EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath)
 {
-	bmp1->ConvertToDownFlow();
 	Imaging::Bitmap bmp2(filePath);
+	bmp1->ConvertToDownFlow();
+	bmp2.ConvertToDownFlow();
 	return bmp1->Equals(&bmp2);
 }
 
@@ -102,6 +103,7 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_filter=Test_Graphics_SpriteRenderer.*"
+		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
 		//"--gtest_filter=Test_Graphics_Texture.Lock"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
