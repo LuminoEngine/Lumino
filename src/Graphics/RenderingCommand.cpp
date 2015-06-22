@@ -109,7 +109,8 @@ size_t RenderingCommandList::Alloc(size_t byteCount, const void* copyData)
 	if (copyData != NULL)
 	{
 		byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
-		memcpy(ptr, copyData, byteCount);
+		size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
+		memcpy_s(ptr, size, copyData, byteCount);
 	}
 
 	size_t dataIdx = m_commandDataBufferUsed;

@@ -69,6 +69,9 @@ set(LN_SOURCES_Imaging
 	src/Imaging/FontManager.cpp
 	src/Imaging/FreeTypeFont.cpp
 	src/Imaging/FreeTypeFont.h
+	src/Imaging/PngFile.h
+	src/Imaging/TextRenderer.cpp
+	src/Imaging/TextRenderer.h
 )
 
 set(LN_SOURCES_Graphics

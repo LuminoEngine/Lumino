@@ -239,7 +239,7 @@ void Texture::Unlock()
 		//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
 		//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
 		cmdList->AddCommand<SetSubDataTextureCommand>(
-			m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+			m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
 	}
 	else if (m_deviceObj->GetTextureType() == Device::TextureType_RenderTarget)
 	{
