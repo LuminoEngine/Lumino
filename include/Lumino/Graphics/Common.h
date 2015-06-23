@@ -7,6 +7,7 @@
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Rect.h>
 #include <Lumino/Base/String.h>
+#include <Lumino/Base/EnumExtension.h>
 #include <Lumino/Platform/Window.h>
 #include <LuminoMath.h>
 
@@ -220,6 +221,32 @@ enum SpriteSortMode
 	SpriteSortMode_DepthFrontToBack = 0x02,		///< Z値が小さいものが先に描画されるようにソートする (SpriteSortMode_DepthBackToFront と同時には使えない)
 	SpriteSortMode_Texture = 0x04,				///< テクスチャを優先してソートする (同じテクスチャを持つスプライトが多数あるとき用。ただし、アルファブレンドが有効な場合は描画が不自然になることがある)
 };
+
+/// テキストの配置方法
+LN_ENUM(TextAlignment)
+{
+	Left = 0,				///< 左揃え
+	Center,					///< 中央揃え
+	Right,					///< 右揃え
+	Justify,				///< 両端揃え
+};
+LN_ENUM_DECLARE(TextAlignment)
+
+/// 描画領域にテキストが収まりきらない場合に、テキストを切り取る方法
+LN_ENUM(TextTrimming)
+{
+	None = 0,				///< 切り取りを行わない。
+	CharacterEllipsis,		///< 略記号(...) を描画する。
+};
+LN_ENUM_DECLARE(TextTrimming)
+
+/// テキストの描画方向
+LN_ENUM(FlowDirection)
+{
+	LeftToRight = 0,		///< テキストを左から右に描画する。
+	RightToLeft,			///< テキストを左から右に描画する。
+};
+LN_ENUM_DECLARE(FlowDirection)
 
 
 } // namespace Graphics

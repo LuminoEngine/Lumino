@@ -70,7 +70,7 @@ set(LN_SOURCES_Imaging
 	src/Imaging/FreeTypeFont.cpp
 	src/Imaging/FreeTypeFont.h
 	src/Imaging/PngFile.h
-	src/Imaging/TextRenderer.cpp
+	src/Imaging/TextRenderer_imaging.cpp
 	src/Imaging/TextRenderer.h
 )
 
@@ -84,6 +84,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Shader.h
 	include/Lumino/Graphics/SpriteRenderer.h
 	include/Lumino/Graphics/SwapChain.h
+	include/Lumino/Graphics/TextRenderer.h
 	include/Lumino/Graphics/Texture.h
 	include/Lumino/Graphics/Utils.h
 	include/Lumino/Graphics/VertexBuffer.h
@@ -112,6 +113,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/SpriteRenderer.cpp
 	src/Graphics/SpriteRendererImpl.h
 	src/Graphics/SwapChain.cpp
+	src/Graphics/TextRenderer.cpp
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
