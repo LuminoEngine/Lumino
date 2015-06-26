@@ -112,7 +112,7 @@ public:
 
 private:
 	template<class T>
-	T FindFreeObject(const ArrayList<T>& pool)
+	T FindFreeObject(const Array<T>& pool)
 	{
 		LN_FOREACH(T a, pool)
 		{
@@ -123,8 +123,8 @@ private:
 		return NULL;
 	}
 
-	ArrayList<MouseEventArgs*>	m_mouseEventArgsPool;
-	ArrayList<KeyEventArgs*>	m_keyEventArgsPool;
+	Array<MouseEventArgs*>	m_mouseEventArgsPool;
+	Array<KeyEventArgs*>	m_keyEventArgsPool;
 };
 
 

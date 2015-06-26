@@ -13,10 +13,10 @@ class CoreObjectList
 	: public CoreObject
 {
 public:
-	typedef typename ArrayList<TObject*>::iterator			iterator;
-	typedef typename ArrayList<TObject*>::const_iterator	const_iterator;
-	typedef typename ArrayList<TObject*>::reference			reference;
-	typedef typename ArrayList<TObject*>::const_reference	const_reference;
+	typedef typename Array<TObject*>::iterator			iterator;
+	typedef typename Array<TObject*>::const_iterator	const_iterator;
+	typedef typename Array<TObject*>::reference			reference;
+	typedef typename Array<TObject*>::const_reference	const_reference;
 
 public:
 	CoreObjectList() {}
@@ -108,7 +108,7 @@ protected:
 	virtual void OnItemRemoved(TObject* item) {}
 
 protected:
-	ArrayList<TObject*>	m_list;
+	Array<TObject*>	m_list;
 };
 
 } // namespace Lumino

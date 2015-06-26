@@ -77,15 +77,15 @@ private:
 	void ParseScriptCommandString(Graphics::ShaderVariable* scriptAnno, Graphics::ShaderPass* thisPass, ShaderScriptCommandList* commandList);
 
 
-	static void ParseSubsetIndexArray(const String& subsetText, ArrayList<bool>* subsetIndexArray, bool* endToRange);
+	static void ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange);
 
 	/// 描画サブセットを示す文字列から、サブセット番号の配列を作成する
 	///		'-' による範囲指定で「x番以降すべて」を描画する場合、配列の終端には -1 が格納される。
-	static void ParseSubsetIndexArray(const TCHAR* subsetText, ArrayList<int>* subsetIndexArray);
+	static void ParseSubsetIndexArray(const TCHAR* subsetText, Array<int>* subsetIndexArray);
 
 private:
 
-	typedef ArrayList< std::pair<String, ShaderScriptCommandList> >	PassScriptCommandList;
+	typedef Array< std::pair<String, ShaderScriptCommandList> >	PassScriptCommandList;
 
 	MMEShaderErrorInfo*			m_errorInfo;
 	MMEShader*					m_ownerShader;
@@ -97,11 +97,11 @@ private:
 	Nullable<bool>				m_isUseSphereMap;
 	Nullable<bool>				m_isUseToon;
 	Nullable<bool>				m_isUseSelfShadow;
-	ArrayList<bool>				m_subsetIndexArray;
+	Array<bool>					m_subsetIndexArray;
 	bool						m_subsetIndexEndToRange;
 
 	ShaderScriptCommandList		m_scriptCommandList;	///< このテクニックの Script 及び子パスの Script
-	ArrayList<MMEShaderPass*>	m_mmeShaderPasses;
+	Array<MMEShaderPass*>		m_mmeShaderPasses;
 };
 
 

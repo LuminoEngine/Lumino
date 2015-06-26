@@ -50,8 +50,8 @@ public:
 	void Exit() { m_endRequested = true; }
 
 protected:
-	Array<Window*>	m_windowArray;
-	bool			m_endRequested;
+	Array<Window*>		m_windowArray;
+	bool				m_endRequested;
 };
 
 } // namespace Platform

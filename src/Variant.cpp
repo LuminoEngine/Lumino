@@ -193,7 +193,7 @@ void Variant::SetInt(int value)
 int Variant::GetInt() const
 {
 	if (LN_VERIFY_ASSERT(m_type == VariantType_Int)) { return 0; }
-	return m_int;
+	return (int)m_int;
 }
 
 //-----------------------------------------------------------------------------

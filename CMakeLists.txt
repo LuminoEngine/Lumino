@@ -97,6 +97,7 @@ set(LN_SOURCES_Graphics
 	external/GL/glew.c
 	src/Graphics/Color.cpp
 	src/Graphics/GeometryRenderer.cpp
+	src/Graphics/GeometryRendererImpl.h
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsDevice.cpp
 	src/Graphics/GraphicsManager.cpp
@@ -106,7 +107,9 @@ set(LN_SOURCES_Graphics
 	src/Graphics/PainterEngine.h
 	src/Graphics/Renderer.cpp
 	src/Graphics/RenderingCommand.cpp
+	src/Graphics/RenderingCommand.h
 	src/Graphics/RenderingThread.cpp
+	src/Graphics/RenderingThread.h
 	src/Graphics/RenderState.cpp
 	src/Graphics/SamplerState.cpp
 	src/Graphics/Shader.cpp
@@ -118,16 +121,25 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
 	src/Graphics/Device/DeviceInterface.cpp
-	src/Graphics/Device/GraphicsDeviceBase.h
+	src/Graphics/Device/DeviceInterface.h
 	src/Graphics/Device/GraphicsDeviceBase.cpp
+	src/Graphics/Device/GraphicsDeviceBase.h
 	src/Graphics/Device/ShaderVariableBase.cpp
+	src/Graphics/Device/ShaderVariableBase.h
 	src/Graphics/Device/OpenGL/GLGraphicsDevice.cpp
+	src/Graphics/Device/OpenGL/GLGraphicsDevice.h
 	src/Graphics/Device/OpenGL/GLIndexBuffer.cpp
+	src/Graphics/Device/OpenGL/GLIndexBuffer.h
 	src/Graphics/Device/OpenGL/GLRenderer.cpp
+	src/Graphics/Device/OpenGL/GLRenderer.h
 	src/Graphics/Device/OpenGL/GLShader.cpp
+	src/Graphics/Device/OpenGL/GLShader.h
 	src/Graphics/Device/OpenGL/GLSwapChain.cpp
+	src/Graphics/Device/OpenGL/GLSwapChain.h
 	src/Graphics/Device/OpenGL/GLTexture.cpp
+	src/Graphics/Device/OpenGL/GLTexture.h
 	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
+	src/Graphics/Device/OpenGL/GLVertexBuffer.h
 )
 	
 set(LN_SOURCES_Scene
@@ -201,6 +213,8 @@ set(LN_SOURCES_Game
 
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
+	include/Lumino/BindingSupport.h
+	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Property.h
 	include/Lumino/Variant.h
 	src/Application.cpp

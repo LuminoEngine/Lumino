@@ -211,7 +211,7 @@ Imaging::Bitmap* DX9Texture::Lock()
 	// Lock したバッファを参照する Bitmap を作成して返す
 	Imaging::PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
 	size_t size = Imaging::Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
-	m_lockedBuffer.Attach(LN_NEW ByteBuffer(lockedRect.pBits, size, true));
+	m_lockedBuffer =  ByteBuffer(lockedRect.pBits, size, true);
 	m_lockedBitmap.Attach(LN_NEW Imaging::Bitmap(m_lockedBuffer, m_realSize, pixelFormat));
 
 	// TODO: ↑文字列書き込み等でわりと頻繁にロックされる場合がある。できれば new は 1 度にしたいが…
@@ -225,7 +225,7 @@ Imaging::Bitmap* DX9Texture::Lock()
 void DX9Texture::Unlock()
 {
 	m_lockedBitmap.SafeRelease();
-	m_lockedBuffer.SafeRelease();
+	m_lockedBuffer.Release();
 	m_dxTexture->UnlockRect(0);
 }
 
@@ -477,7 +477,7 @@ Imaging::Bitmap* DX9BackBufferTexture::Lock()
 	// Lock したバッファを参照する Bitmap を作成して返す
 	Imaging::PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
 	size_t size = Imaging::Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
-	m_lockedBuffer.Attach(LN_NEW ByteBuffer(lockedRect.pBits, size, true));
+	m_lockedBuffer = ByteBuffer(lockedRect.pBits, size, true);
 	m_lockedBitmap.Attach(LN_NEW Imaging::Bitmap(m_lockedBuffer, m_realSize, pixelFormat));
 
 	return m_lockedBitmap;
@@ -494,7 +494,7 @@ void DX9BackBufferTexture::Unlock()
 		LN_SAFE_RELEASE(m_lockedSystemSurface);
 	}
 	m_lockedBitmap.SafeRelease();
-	m_lockedBuffer.SafeRelease();
+	m_lockedBuffer.Release();
 }
 
 } // namespace Device

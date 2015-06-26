@@ -74,7 +74,7 @@ private:
 	GUIManager*						m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
 	String							m_targetTypeFullName;
 	PropertyInfoList				m_propertyInfoList;
-	ArrayList<UIElementFactory*>	m_children;
+	Array<UIElementFactory*>		m_children;
 };
 
 /**

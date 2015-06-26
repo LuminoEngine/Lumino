@@ -41,10 +41,10 @@ public:
 	GLuint GetGLVertexBuffer() const { return m_glVertexBuffer; }
 
 	/// 頂点宣言の取得
-	const ArrayList<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
+	const Array<LNGLVertexElement>& GetVertexElements() const { return m_vertexElements; }
 
 	/// 頂点宣言から GL 用の頂点宣言を生成する
-	static void CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, ArrayList<LNGLVertexElement>* outList);
+	static void CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList);
 
 	/// 頂点宣言から頂点1つ分のデータサイズ (バイト数) を求める
 	static int GetVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex);
@@ -65,7 +65,7 @@ public:
 	virtual void OnResetDevice();
 
 private:
-	ArrayList<LNGLVertexElement>	m_vertexElements;
+	Array<LNGLVertexElement>	m_vertexElements;
 	GLuint				m_glVertexBuffer;
 	size_t				m_byteCount;
 	byte_t*				m_data;

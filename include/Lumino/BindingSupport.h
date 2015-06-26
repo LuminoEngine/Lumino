@@ -1,180 +1,22 @@
 
 #pragma once
-#include <Lumino/Base/Delegate.h>
+#include <Lumino/Base/Array.h>
 
 namespace Lumino
 {
-class Variant;
-class VariantList;
-class Property;
-class PropertyChangedEventArgs;
-
-enum VariantType
-{
-	VariantType_Unknown = 0,
-	VariantType_Bool,
-	VariantType_Int,
-	VariantType_Float,
-	VariantType_String,
-	VariantType_List,
-	VariantType_Object,
-
-	VariantType_SizeF,
-
-	VariantType_Max,			///< (Terminator)
-};
-
+#if 1	// Scene モジュールを修正したら削除する予定
 
 /**
-	@brief		
+	@brief	
+	@note	ジェネリックの無い言語向けには RefObjectList という型で公開したい。
+			
 */
-class CoreObject
+class RefObjectList
 	: public RefObject
 {
 public:
-
-public:
-	CoreObject();
-	virtual ~CoreObject();
-
-public:
-
-
-	/// プロパティの値を設定します。
-	virtual void SetValue(const String& propertyName, const Variant& value);
-
-	/// プロパティの値を取得します。
-	virtual Variant GetValue(const String& propertyName) const;
-
-	String ToString();
-
-	virtual void SetUserData(void* data) { m_userData = data; }
-
-	virtual void* GetUserData() const { return m_userData; }
-
-	/// 各種言語バインダから設定される型情報 ID を取得します。
-	virtual void* GetBindingTypeData() const { return NULL; }
-
-	//const PropertyList& GetPropertyList() const { return m_propertyList; }
-
-	Property* FindProperty(const String& name) const
-	{
-		Property* prop;
-		if (m_propertyList.TryGetValue(name, &prop)) {
-			return prop;
-		}
-		return NULL;
-	}
-
-	Event02<CoreObject*, PropertyChangedEventArgs*>	PropertyChanged;
-
-protected:
-	/// この CoreObject にプロパティを登録します。
-	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
-	void RegisterProperty(Property* prop);
-
-	void OnPropertyChanged(const String& name, const Variant& newValue);
-
-
-private:
-	typedef SortedArray<String, Property*>	PropertyList;
-	typedef SortedArray<String, Variant>	PropertyDataStore;
-
-	PropertyList		m_propertyList;
-	PropertyDataStore	m_propertyDataStore;
-	void*				m_userData;
-
-};
-
-#define LN_CORE_OBJECT_TYPE_INFO_DECL() \
-	private: \
-		static void* m_coreObjectBindingTypeData; \
-	public: \
-		virtual void* GetBindingTypeData() const { return m_coreObjectBindingTypeData; } \
-		static void SetBindingTypeData(void* data) { m_coreObjectBindingTypeData = data; }
-
-#define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassType) \
-	void* subClassType::m_coreObjectBindingTypeData = NULL;
-
-/**
-	@brief		
-*/
-class Variant
-{
-public:
-	Variant();
-	Variant(const Variant& value);
-	Variant(bool value);
-	Variant(int value);
-	explicit Variant(float value);
-	Variant(const SizeF& value);
-	~Variant();
-	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
-
-	Variant(CoreObject* obj);
-
-	template<class T>
-	Variant(RefPtr<T> obj)
-		: m_type(VariantType_Unknown)
-		, m_uint(0)
-	{
-		Set(obj);
-	}
-
-public:
-	VariantType GetType() const { return m_type; }
-	bool GetBool() const;
-
-	void SetInt(int value);
-	int GetInt() const;
-
-	void SetFloat(float value);
-	float GetFloat() const;
-
-	void Set(CoreObject* obj);
-	CoreObject* GetObject() const;
-
-	void SetSizeF(const SizeF& value);
-	const SizeF& GetSizeF() const;
-
-
-
-	template<typename T>
-	T Cast() const;	// 不正なキャストをコンパイルエラーとして検出するため、この関数は未定義にしておく。
-
-	template<> SizeF Cast() const { return GetSizeF(); }
-	template<> bool Cast() const { return GetBool(); }
-	template<> int Cast() const { return GetInt(); }
-
-private:
-	void Copy(const Variant& obj);
-	void Release();
-
-private:
-	VariantType	m_type;
-	union
-	{
-		uint64_t		m_uint;
-		bool			m_bool;
-		uint64_t		m_int;
-		float			m_float;
-		/*String*			m_string;*/
-		VariantList*	m_valueList;
-		CoreObject*		m_object;
-		float			m_sizeF[2];
-	};
-	String			m_string;
-};
-
-/**
-	@brief
-*/
-class VariantList
-	: public CoreObject
-{
-public:
-	VariantList() {}
-	virtual ~VariantList() { Clear(); }
+	RefObjectList() {}
+	virtual ~RefObjectList() { Clear(); }
 
 public:
 
@@ -182,7 +24,7 @@ public:
 	int GetCount() const { return m_list.GetCount(); }
 
 	/// 指定インデックスに要素を格納する
-	void SetAtBase(int index, CoreObject* item)
+	void SetAtBase(int index, RefObject* item)
 	{
 		if (OnItemAdding(item))
 		{
@@ -193,13 +35,13 @@ public:
 	}
 
 	/// 指定インデックスの要素を取得する
-	CoreObject* GetAtBase(int index) const
+	RefObject* GetAtBase(int index) const
 	{
 		return m_list.GetAt(index);
 	}
 
 	/// 要素を末尾に追加する
-	void Add(CoreObject* item)
+	void Add(RefObject* item)
 	{
 		if (OnItemAdding(item))
 		{
@@ -212,7 +54,7 @@ public:
 	/// 全ての要素を削除する
 	void Clear()
 	{
-		LN_FOREACH(CoreObject* item, m_list) {
+		LN_FOREACH(RefObject* item, m_list) {
 			OnItemRemoved(item);	// TODO: erase しながらひとつずつ呼ぶべきかも
 			LN_SAFE_RELEASE(item);
 		}
@@ -220,7 +62,7 @@ public:
 	}
 
 	/// 指定したインデックスの位置に要素を挿入する
-	void Insert(int index, CoreObject* item)
+	void Insert(int index, RefObject* item)
 	{
 		if (OnItemAdding(item))
 		{
@@ -231,7 +73,7 @@ public:
 	}
 
 	/// item と一致する最初の要素を削除する
-	void Remove(CoreObject* item)
+	void Remove(RefObject* item)
 	{
 		bool b = m_list.Remove(item);
 		if (b) {
@@ -243,41 +85,39 @@ public:
 	/// 指定したインデックスの要素を削除する
 	void RemoveAt(int index)
 	{
-		CoreObject* item = m_list.GetAt(index);
+		RefObject* item = m_list.GetAt(index);
 		m_list.RemoveAt(index);
 		OnItemRemoved(item);
 		LN_SAFE_RELEASE(item);
 	}
 
 protected:
-	virtual bool OnItemAdding(CoreObject* item) { return true; }
-	virtual void OnItemAdded(CoreObject* item) {}
-	virtual void OnItemRemoved(CoreObject* item) {}
+	virtual bool OnItemAdding(RefObject* item) { return true; }
+	virtual void OnItemAdded(RefObject* item) {}
+	virtual void OnItemRemoved(RefObject* item) {}
 
 protected:
-	Array<CoreObject*>	m_list;
+	Array<RefObject*>	m_list;
 };
 
-#define LN_VARIANT_OBJECT_LIST_DECL(itemType) \
+#define LN_REF_OBJECT_LIST_DECL(itemType) \
 	void SetAt(int index, itemType* item); \
 	itemType* GetAt(int index) const;
 
-#define LN__VARIANT_OBJECT_LIST_IMPL(listType, itemType) \
+#define LN_REF_OBJECT_LIST_IMPL(listType, itemType) \
 	void listType::SetAt(int index, itemType* item) { RefObjectList::SetAtBase(index, item); } \
 	itemType* listType::GetAt(int index) const { return static_cast<itemType*>(RefObjectList::GetAtBase(index)); }
 
-/**
-	@brief
-*/
+
 template<class TRefObj>
-class GenericVariantList
-	: public VariantList
+class RefObjectListBase
+	: public RefObjectList
 {
 public:
 	class const_iterator
 	{
 	public:
-		typedef Array<RefObject*>				internal_list;
+		typedef Array<RefObject*>			internal_list;
 		typedef TRefObj*						value_type;
 		typedef internal_list::difference_type	difference_type;
 		typedef const value_type*				pointer;
@@ -309,7 +149,7 @@ public:
 		bool operator>=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 
 	private:
-		friend class GenericVariantList;
+		friend class RefObjectListBase;
 		const_iterator(const internal_list::const_iterator& itr) : m_internalItr(itr) {}
 
 		internal_list::const_iterator m_internalItr;
@@ -318,7 +158,7 @@ public:
 	class iterator
 	{
 	public:
-		typedef Array<RefObject*>				internal_list;
+		typedef Array<RefObject*>			internal_list;
 		typedef TRefObj*						value_type;
 		typedef internal_list::difference_type	difference_type;
 		typedef value_type*						pointer;
@@ -350,15 +190,15 @@ public:
 		bool operator>=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
 
 	private:
-		friend class GenericVariantList;
+		friend class RefObjectListBase;
 		iterator(const internal_list::iterator& itr) : m_internalItr(itr) {}
 
 		internal_list::iterator m_internalItr;
 	};
 
 public:
-	GenericVariantList() {}
-	virtual ~GenericVariantList() {}
+	RefObjectListBase() {}
+	virtual ~RefObjectListBase() {}
 
 	void SetAt(int index, TRefObj* item) { RefObjectList::SetAtBase(index, item); }
 	TRefObj* GetAt(int index) const { return static_cast<TRefObj*>(RefObjectList::GetAtBase(index)); }
@@ -368,13 +208,6 @@ public:
 	iterator		end()			{ return iterator(m_list.end()); }
 	const_iterator	end() const		{ return const_iterator(m_list.end()); }
 };
-
-
-class PropertyChangedEventArgs
-{
-public:
-	String	PropertyName;
-	Variant	NewValue;
-};
+#endif
 
 } // namespace Lumino

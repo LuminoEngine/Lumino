@@ -562,7 +562,7 @@ void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 	}
 
 	// ビットマップデータを参照モードでセットする
-	bitmap->m_bitmapData->Attach(
+	bitmap->m_bitmapData.Attach(
 		ftBitmap->buffer,
 		Bitmap::GetPixelFormatByteCount(bitmap->m_format, bitmap->m_size));
 }

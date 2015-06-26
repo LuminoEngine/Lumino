@@ -81,7 +81,7 @@ private:
 
 	struct TTFDataEntry
 	{
-		ByteBuffer*		DataBuffer;
+		ByteBuffer		DataBuffer;
 		int				CollectionIndex;
 
 		/* メモリ上のデータからFaceを作る場合、FT_Done_Face() するまでメモリを開放してはならない。

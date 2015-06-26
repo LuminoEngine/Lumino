@@ -89,7 +89,7 @@ protected:
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;
 	Threading::Mutex			m_mutex;
-	ArrayList<IDeviceObject*>	m_allDeviceResourceList;	///< 全てのデバイスリソースのリスト;
+	Array<IDeviceObject*>		m_allDeviceResourceList;	///< 全てのデバイスリソースのリスト;
 	Threading::Mutex			m_allDeviceResourceListMutex;
 };
 

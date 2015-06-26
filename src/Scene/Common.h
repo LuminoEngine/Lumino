@@ -21,10 +21,10 @@ class MMEShaderTechnique;
 
 struct VisualNodeSubsetParams;
 
-typedef ArrayList<RenderingPass*>	RenderingPassList;
-typedef ArrayList<Light*>			LightNodeList;
-typedef ArrayList<SceneNode*>		SceneNodeList;
-typedef ArrayList<MMEShader*>		SceneShaderList;
+typedef Array<RenderingPass*>	RenderingPassList;
+typedef Array<Light*>			LightNodeList;
+typedef Array<SceneNode*>		SceneNodeList;
+typedef Array<MMEShader*>		SceneShaderList;
 
 /// ÉmÅ[ÉhéÌï 
 enum SceneNodeType

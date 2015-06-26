@@ -21,7 +21,7 @@ Bitmap::Bitmap(const Size& size, PixelFormat format, bool upFlow)
 	Init();
 	m_size = size;
 	m_format = format;
-	m_bitmapData = LN_NEW ByteBuffer(GetPixelFormatByteCount(format, size));
+	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(format, size));
 	m_upFlow = upFlow;
 }
 
@@ -39,7 +39,7 @@ Bitmap::Bitmap(Stream* stream)
 	}
 	m_size = pngFile.m_size;
 	m_format = pngFile.m_format;
-	LN_REFOBJ_SET(m_bitmapData, pngFile.m_bitmapData);
+	m_bitmapData = pngFile.m_bitmapData;
 }
 
 //-----------------------------------------------------------------------------
@@ -57,18 +57,18 @@ Bitmap::Bitmap(const TCHAR* filePath)
 	}
 	m_size = pngFile.m_size;
 	m_format = pngFile.m_format;
-	LN_REFOBJ_SET(m_bitmapData, pngFile.m_bitmapData);
+	m_bitmapData = pngFile.m_bitmapData;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Bitmap::Bitmap(ByteBuffer* buffer, const Size& size, PixelFormat format)
+Bitmap::Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format)
 {
 	Init();
 	m_size = size;
 	m_format = format;
-	LN_REFOBJ_SET(m_bitmapData, buffer);
+	m_bitmapData = buffer;
 }
 
 //-----------------------------------------------------------------------------
@@ -76,7 +76,6 @@ Bitmap::Bitmap(ByteBuffer* buffer, const Size& size, PixelFormat format)
 //-----------------------------------------------------------------------------
 Bitmap::~Bitmap()
 {
-	LN_SAFE_RELEASE(m_bitmapData);
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +83,7 @@ Bitmap::~Bitmap()
 //-----------------------------------------------------------------------------
 void Bitmap::Init()
 {
-	m_bitmapData = NULL;
+	//m_bitmapData;
 	m_size.Set(0, 0);
 	m_pitch = 0;
 	m_format = PixelFormat_Unknown;
@@ -107,8 +106,8 @@ void Bitmap::Save(const TCHAR* filePath)
 	// png に保存するときは RGBA
 	Bitmap bitmap(m_size, PixelFormat_BYTE_R8G8B8A8);
 	ConvertPixelFormat(
-		m_bitmapData->GetData(), m_bitmapData->GetSize(), m_format,
-		bitmap.m_bitmapData->GetData(), bitmap.m_bitmapData->GetSize(), bitmap.m_format);
+		m_bitmapData.GetData(), m_bitmapData.GetSize(), m_format,
+		bitmap.m_bitmapData.GetData(), bitmap.m_bitmapData.GetSize(), bitmap.m_format);
 
 	// アルファ無しフォーマットであれば、アルファを埋めてから出力する
 	if (m_format == PixelFormat_BYTE_B8G8R8X8) {
@@ -126,11 +125,11 @@ bool Bitmap::Equals(const Bitmap* bitmap) const
 {
 	if (m_size != bitmap->m_size ||
 		m_format != bitmap->m_format ||
-		m_bitmapData->GetSize() != bitmap->m_bitmapData->GetSize()) {
+		m_bitmapData.GetSize() != bitmap->m_bitmapData.GetSize()) {
 		return false;
 	}
 
-	return memcmp(m_bitmapData->GetData(), bitmap->m_bitmapData->GetData(), m_bitmapData->GetSize()) == 0;
+	return memcmp(m_bitmapData.GetData(), bitmap->m_bitmapData.GetData(), m_bitmapData.GetSize()) == 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -143,7 +142,7 @@ void Bitmap::ConvertToDownFlow()
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
 		// とりあえず今は評価目的でしか使わないので愚直に swap。
-		byte_t* pixels = m_bitmapData->GetData();
+		byte_t* pixels = m_bitmapData.GetData();
 		for (int y = 0; y < (m_size.Height / 2); ++y) {
 			for (int x = 0; x < m_size.Width; ++x) {
 				std::swap(pixels[(y * m_size.Width) + x], pixels[((m_size.Height - 1 - y) * m_size.Width) + x]);
@@ -152,7 +151,7 @@ void Bitmap::ConvertToDownFlow()
 	}
 	else if (pixelSize == 4)
 	{
-		uint32_t* pixels = (uint32_t*)m_bitmapData->GetData();
+		uint32_t* pixels = (uint32_t*)m_bitmapData.GetData();
 		for (int y = 0; y < (m_size.Height / 2); ++y) {
 			for (int x = 0; x < m_size.Width; ++x) {
 				std::swap(pixels[(y * m_size.Width) + x], pixels[((m_size.Height - 1 - y) * m_size.Width) + x]);
@@ -237,8 +236,8 @@ void Bitmap::FillAlpha(byte_t alpha)
 		m_format == PixelFormat_BYTE_B8G8R8A8 ||
 		m_format == PixelFormat_BYTE_B8G8R8X8)
 	{
-		byte_t* buf = m_bitmapData->GetData();
-		size_t count = m_bitmapData->GetSize() / sizeof(uint32_t);
+		byte_t* buf = m_bitmapData.GetData();
+		size_t count = m_bitmapData.GetSize() / sizeof(uint32_t);
 		for (size_t i = 0; i < count; ++i) {
 			buf[i * 4 + 3] = alpha;
 		}

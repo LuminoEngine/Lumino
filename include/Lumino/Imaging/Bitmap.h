@@ -57,7 +57,7 @@ public:
 	/**
 		@brief		指定した ByteBuffer を参照する Bitmap を作成します。
 	*/
-	Bitmap(ByteBuffer* buffer, const Size& size, PixelFormat format);
+	Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format);
 
 	Bitmap();
 
@@ -66,7 +66,7 @@ public:
 public:
 
 	/// ビットマップデータ本体の取得
-	ByteBuffer* GetBitmapBuffer() const { return m_bitmapData; }
+	ByteBuffer GetBitmapBuffer() const { return m_bitmapData; }
 	
 	/// ビットマップサイズの取得 (ピクセル数単位)
 	const Size& GetSize() const { return m_size; }
@@ -135,7 +135,7 @@ private:
 
 private:
 	friend class FreeTypeFont;
-	ByteBuffer*		m_bitmapData;	///< ビットマップデータ本体
+	ByteBuffer		m_bitmapData;	///< ビットマップデータ本体
 	Size			m_size;			///< サイズ (ピクセル数単位)
 	int				m_pitch;		///< フォーマット A1 時の、row バイト数。(FreeTypeからだと、必ず width / 8 + 1 にならないので)
 	PixelFormat		m_format;		///< ピクセルフォーマット
@@ -258,7 +258,7 @@ private:
 		/// bitmap	: 転送先 Bitmap
 		/// rect	: 転送先領域 (Bitmap のサイズに収まるようにクリッピングされていること)
 		DestBuffer(Bitmap* bitmap, const Rect& rect)
-			: m_data(bitmap->m_bitmapData->GetData())
+			: m_data(bitmap->m_bitmapData.GetData())
 			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : (bitmap->m_size.Width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat())))
 			, m_rc(rect)
 			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
@@ -301,7 +301,7 @@ private:
 		/// bitmap	: 転送元 Bitmap
 		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
 		SrcBuffer(const Bitmap* bitmap, const Rect& rect)
-			: m_data(bitmap->m_bitmapData->GetData())
+			: m_data(bitmap->m_bitmapData.GetConstData())
 			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : bitmap->m_size.Width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat()))
 			, m_rc(rect)
 			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
@@ -324,11 +324,11 @@ private:
 		}
 
 	private:
-		byte_t*			m_data;
+		const byte_t*	m_data;
 		int				m_widthByteCount;
 		const Rect&		m_rc;
 		int				m_bottomLine;
-		byte_t*			m_curLine;
+		const byte_t*	m_curLine;
 		bool			m_upFlow;
 	};
 

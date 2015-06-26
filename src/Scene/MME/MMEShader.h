@@ -59,8 +59,8 @@ private:
 	MMEShader(SceneGraphManager* manager);
 	virtual ~MMEShader();
 
-	typedef ArrayList<MMEShaderVariable*>	MMEShaderVariableList;
-	typedef ArrayList<MMEShaderTechnique*>	MMEShaderTechniqueList;
+	typedef Array<MMEShaderVariable*>	MMEShaderVariableList;
+	typedef Array<MMEShaderTechnique*>	MMEShaderTechniqueList;
 
 	SceneGraphManager*		m_manager;
 

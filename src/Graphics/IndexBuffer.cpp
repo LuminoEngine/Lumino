@@ -39,7 +39,7 @@ IndexBuffer::IndexBuffer(Device::IIndexBuffer* deviceObj, int indexCount, IndexB
 	LN_SAFE_ADDREF(m_deviceObj);
 
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
-	m_data.Attach(LN_NEW ByteBuffer(stride * indexCount));
+	m_data = ByteBuffer(stride * indexCount);
 }
 
 //-----------------------------------------------------------------------------

@@ -78,7 +78,7 @@ public:
 	virtual double GetLastFrameTime() const;
 
 private:
-	typedef ArrayList<FloatKeyFrame>	KeyFrameList;
+	typedef Array<FloatKeyFrame>	KeyFrameList;
 	KeyFrameList	m_keyFrameList;
 	float			m_defaultValue;
 	float			m_value;
@@ -147,7 +147,7 @@ public:
 	virtual double GetLastFrameTime() const;
 
 private:
-	typedef ArrayList<KeyFrame>	KeyFrameList;
+	typedef Array<KeyFrame>	KeyFrameList;
 	KeyFrameList	m_keyFrameList;
 	SQTTransform	m_transform;
 };

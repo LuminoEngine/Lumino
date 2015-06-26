@@ -512,7 +512,7 @@ void GLRenderer::UpdateVAO()
 void GLRenderer::UpdateVertexAttribPointer()
 {
 	// シェーダの頂点属性の更新
-	const ArrayList<LNGLVertexElement>& elements = m_currentVertexBuffer->GetVertexElements();
+	const Array<LNGLVertexElement>& elements = m_currentVertexBuffer->GetVertexElements();
 	LN_FOREACH(const LNGLVertexElement& elm, elements)
 	{
 		int index = m_currentShaderPass->GetUsageAttributeIndex(elm.Usage, elm.UsageIndex);

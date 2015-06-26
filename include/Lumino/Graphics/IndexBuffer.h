@@ -64,7 +64,7 @@ protected:
 private:
 	friend class SetIndexBufferCommand;
 	Device::IIndexBuffer*	m_deviceObj;
-	RefPtr<ByteBuffer>		m_data;
+	ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
 };

@@ -69,9 +69,9 @@ public:
 
 private:
 	VisualNodeSubsetParams				m_globalParams;			///< 全てのサブセットに影響するパラメータ
-	ArrayList<VisualNodeSubsetParams>	m_subsetParams;			///< 各サブセットのパラメータ
+	Array<VisualNodeSubsetParams>		m_subsetParams;			///< 各サブセットのパラメータ
 	VisualNodeSubsetParams				m_combinedGlobalParams;	///< 結合済みの、全てのサブセットに影響するパラメータ
-	ArrayList<VisualNodeSubsetParams>	m_combinedSubsetParams;	///< 結合済みの、各サブセットのパラメータ (UpdateSubsetRenderParam() で計算される)
+	Array<VisualNodeSubsetParams>		m_combinedSubsetParams;	///< 結合済みの、各サブセットのパラメータ (UpdateSubsetRenderParam() で計算される)
 
 
 };

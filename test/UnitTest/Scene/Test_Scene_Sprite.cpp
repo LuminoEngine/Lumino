@@ -24,8 +24,8 @@ TEST_F(Test_Scene_Sprite, Basic)
 
 	sceneGraph->CreateMMDSceneGraph();
 
-	RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(LOCALFILE("../../../src/Scene/Resource/SSNoLighting.fx")));
-	RefPtr<Shader> shader(Shader::Create((char*)code->GetData(), code->GetSize()));
+	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("../../../src/Scene/Resource/SSNoLighting.fx")));
+	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 	MMEShaderErrorInfo errInfo;
 	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(sceneGraph, shader, &errInfo));
 

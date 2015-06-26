@@ -15,15 +15,15 @@ class ModelMorphCore;
 class ModelRigidBodyCore;
 class ModelJointCore;
 
-typedef ArrayList<Graphics::Material>	MaterialList;
-typedef ArrayList<ModelBoneCore*>		ModelBoneCoreList;
-typedef ArrayList<ModelIKCore*>			ModelIKCoreList;
-typedef ArrayList<ModelMorphCore*>		ModelMorphCoreList;
-typedef ArrayList<ModelRigidBodyCore*>	ModelRigidBodyCoreList;
-typedef ArrayList<ModelJointCore*>		ModelJointCoreList;
+typedef Array<Graphics::Material>	MaterialList;
+typedef Array<ModelBoneCore*>		ModelBoneCoreList;
+typedef Array<ModelIKCore*>			ModelIKCoreList;
+typedef Array<ModelMorphCore*>		ModelMorphCoreList;
+typedef Array<ModelRigidBodyCore*>	ModelRigidBodyCoreList;
+typedef Array<ModelJointCore*>		ModelJointCoreList;
 
 class ModelBone;
-typedef ArrayList<ModelBone*>			ModelBoneList;
+typedef Array<ModelBone*>			ModelBoneList;
 
 
 /// モデルファイルのフォーマット
@@ -41,7 +41,7 @@ struct MeshAttribute
 	int		StartIndex;     ///< 開始インデックス
 	int		PrimitiveNum;   ///< 描画プリミティブ数 (三角形の数)
 };
-typedef ArrayList<MeshAttribute>		MeshAttributeList;
+typedef Array<MeshAttribute>		MeshAttributeList;
 
 /// 材質の描画オプション
 enum MMDDrawingFlags

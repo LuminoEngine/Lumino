@@ -61,7 +61,7 @@ public:
 	/**
 		@brief		このシェーダで定義されている全ての変数を取得します。
 	*/
-	const ArrayList<ShaderVariable*>& GetVariables() const { return m_variables; }
+	const Array<ShaderVariable*>& GetVariables() const { return m_variables; }
 	
 	/**
 		@brief		名前を指定してシェーダ変数を検索します。
@@ -72,7 +72,7 @@ public:
 	/**
 		@brief		このシェーダで定義されている全てのテクニックを取得します。
 	*/
-	const ArrayList<ShaderTechnique*>& GetTechniques() const;
+	const Array<ShaderTechnique*>& GetTechniques() const;
 
 	GraphicsManager* GetManager() { return m_manager; }
 
@@ -84,8 +84,8 @@ private:
 	Shader(GraphicsManager* manager, Device::IShader* shader);
 	GraphicsManager*			m_manager;
 	Device::IShader*			m_deviceObj;
-	ArrayList<ShaderVariable*>	m_variables;
-	ArrayList<ShaderTechnique*>	m_techniques;
+	Array<ShaderVariable*>		m_variables;
+	Array<ShaderTechnique*>		m_techniques;
 };
 
 
@@ -144,7 +144,7 @@ private:
 		//size_t ByteCount;
 	};
 
-	RefPtr<ByteBuffer>	m_buffer;	// 他の ShaderValue と共有される
+	ByteBuffer			m_buffer;	// 他の ShaderValue と共有される
 	ShaderVariableType	m_type;
 	Value m_value;
 
@@ -201,7 +201,7 @@ public:
 	/**
 		@brief		このシェーダ変数で定義されている全てのアノテーションを取得します。
 	*/
-	const ArrayList<ShaderVariable*>& GetAnnotations() const;
+	const Array<ShaderVariable*>& GetAnnotations() const;
 	
 private:
 	friend class Shader;
@@ -213,7 +213,7 @@ private:
 	Device::IShaderVariable*	m_deviceObj;
 	ShaderValue					m_value;
 	Texture*					m_textureValue;
-	ArrayList<ShaderVariable*>	m_annotations;
+	Array<ShaderVariable*>		m_annotations;
 };
 
 /**
@@ -224,13 +224,13 @@ class ShaderTechnique
 {
 public:
 
-	const ArrayList<ShaderPass*>& GetPasses() const;
+	const Array<ShaderPass*>& GetPasses() const;
 	
 
 	/**
 		@brief		このテクニックで定義されている全てのアノテーションを取得します。
 	*/
-	const ArrayList<ShaderVariable*>& GetAnnotations() const;
+	const Array<ShaderVariable*>& GetAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
@@ -246,8 +246,8 @@ private:
 	ShaderTechnique(Shader* owner, Device::IShaderTechnique* deviceObj);
 	Shader*						m_owner;
 	Device::IShaderTechnique*	m_deviceObj;
-	ArrayList<ShaderPass*>		m_passes;
-	ArrayList<ShaderVariable*>	m_annotations;
+	Array<ShaderPass*>			m_passes;
+	Array<ShaderVariable*>		m_annotations;
 };
 
 /**
@@ -271,7 +271,7 @@ public:
 	/**
 		@brief		このパスで定義されている全てのアノテーションを取得します。
 	*/
-	const ArrayList<ShaderVariable*>& GetAnnotations() const;
+	const Array<ShaderVariable*>& GetAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
@@ -290,7 +290,7 @@ private:
 	Shader*						m_owner;
 	Device::IShaderPass*		m_deviceObj;
 	String						m_name;
-	ArrayList<ShaderVariable*>	m_annotations;
+	Array<ShaderVariable*>		m_annotations;
 };
 
 } // namespace Graphics

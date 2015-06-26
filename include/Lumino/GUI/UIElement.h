@@ -305,7 +305,7 @@ private:
 		String		SourcePropPath;
 	};
 
-	typedef ArrayList<TemplateBindingInfo>	TemplateBindingInfoList;
+	typedef Array<TemplateBindingInfo>	TemplateBindingInfoList;
 	TemplateBindingInfoList		m_templateBindingInfoList;
 
 	UIElement*		m_rootLogicalParent;	///< テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
@@ -314,7 +314,7 @@ protected:
 	/// 直接の子 Visual リスト。
 	/// このリストに論理要素は直接含まない。論理要素は これらの Visual の下にある ContentPresenter または ItemsPresenter の子として追加される。
 	/// 例えば Button::SetContent() で セットされた UIElement は m_visualChildren から辿れる ContentPresenter に追加される。
-	ArrayList< RefPtr<UIElement> >	m_visualChildren;	// TOOD: List にしなくてもいいかも？
+	Array< RefPtr<UIElement> >	m_visualChildren;	// TOOD: List にしなくてもいいかも？
 	//UIElement*		m_visualChildren;
 };
 

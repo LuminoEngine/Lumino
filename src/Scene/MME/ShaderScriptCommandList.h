@@ -40,7 +40,7 @@ public:
 		int							SubsetIndex;
 		//IMMESubsetRenerer*			SubsetRenderer;
 		//void*						UserData;
-		//const ArrayList<int>*		SubsetNumbers;	///< 親から渡された描画するべきサブセット番号リスト (内部用。外部からは NULL を渡すこと)
+		//const Array<int>*			SubsetNumbers;	///< 親から渡された描画するべきサブセット番号リスト (内部用。外部からは NULL を渡すこと)
 	};
 
 	enum ValidationError
@@ -72,7 +72,7 @@ public:
 	void AddChildPassCommandList(ShaderScriptCommandList* commandList);
 
 	/// 描画するサブセット番号の配列を設定する (テクニック用)
-	//void SetDrawingSubsetNumbers(const ArrayList<int>& numbers);
+	//void SetDrawingSubsetNumbers(const Array<int>& numbers);
 
 	/// このコマンドリストを実行する
 	void Execute(DrawParams& params);
@@ -221,13 +221,13 @@ private:
 		};
 	};
 
-	typedef ArrayList<Command>					CommandArray;
-	typedef ArrayList<ShaderScriptCommandList*>	CommandListArray;
+	typedef Array<Command>					CommandArray;
+	typedef Array<ShaderScriptCommandList*>	CommandListArray;
 
 private:
 	MMEShader*					m_ownerShader;
 	CommandArray				m_commandArray;
-	//ArrayList<int>				m_drawingSubsetNumbers;
+	//Array<int>				m_drawingSubsetNumbers;
 	CommandListArray			m_childCommandListArray;
 	ShaderScriptCommandList*		m_parentList;					///< Pass の場合、親テクニックのコマンドリストを指す
 	int							m_scriptExternalColorPosition;	///< ScriptExternal=Color のある要素番号

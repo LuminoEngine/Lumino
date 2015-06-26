@@ -11,8 +11,8 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_IndexBuffer, BasicTriangle)
 {
-	RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl")));
-	RefPtr<Shader> shader(Shader::Create((char*)code->GetData(), code->GetSize()));
+	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl")));
+	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 
 	// 頂点バッファ
 	PosColorVertex vertices[] =

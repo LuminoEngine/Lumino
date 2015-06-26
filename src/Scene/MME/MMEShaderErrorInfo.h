@@ -37,7 +37,7 @@ public:
 	void AddError(MMEShaderError errorCode, const String& message);
 
 private:
-	ArrayList<MMEShaderErrorObject>	m_errorList;
+	Array<MMEShaderErrorObject>	m_errorList;
 };
 
 } // namespace Scene

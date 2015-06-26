@@ -225,10 +225,10 @@ public:
 	void MarkGC(RefObject* obj) { obj->AddRef();  m_markGCList.Add(obj); }
 
 private:
-	ArrayList<size_t>		m_commandList;
+	Array<size_t>			m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;
-	ArrayList<RefObject*>	m_markGCList;
+	Array<RefObject*>		m_markGCList;
 
 	friend class RenderingThread;
 	friend class UserRenderingCommand;

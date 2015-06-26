@@ -119,9 +119,9 @@ private:
 	class SpriteCmpTexDepthFrontToBack;		///< Z 値の小さい方から大きい方へソートする比較 (テクスチャ優先)
 
 private:
-	typedef ArrayList<BatchSpriteData>	SpriteRequestList;
-	typedef ArrayList<RenderState>		RenderStateList;
-	typedef ArrayList<Attribute>		AttributeList;
+	typedef Array<BatchSpriteData>	SpriteRequestList;
+	typedef Array<RenderState>		RenderStateList;
+	typedef Array<Attribute>		AttributeList;
 
 	RefPtr<GraphicsManager>			m_manager;
 	RefPtr<Device::IVertexBuffer>	m_vertexBuffer;
@@ -129,7 +129,7 @@ private:
     int								m_maxSprites;
 	SpriteRequestList				m_spriteRequestList;
 	int								m_spriteRequestListUsedCount;
-	ArrayList<int>					m_spriteIndexList;			///< Flash() 内で使用する。m_spriteRequestList をソートするのは構造体コピーを伴うため速度面で心配。なのでインデックスをソートする。
+	Array<int>						m_spriteIndexList;			///< Flash() 内で使用する。m_spriteRequestList をソートするのは構造体コピーを伴うため速度面で心配。なのでインデックスをソートする。
 	RenderStateList					m_renderStateList;
 	int								m_currentRenderStateIndex;	///< 次の Draw でに適用される RenderState がある m_renderStateList 内のインデックス
 	AttributeList					m_attributeList;

@@ -139,12 +139,12 @@ public:
 
 	void AddTimeline(AnimationTimeline* timeline);
 
-	//ArrayList< RefPtr<AnimationTimeline*> > GetChildren();
+	//Array< RefPtr<AnimationTimeline*> > GetChildren();
 	
 	void Begin(UIElement* target);
 
 private:
-	ArrayList< RefPtr<AnimationTimeline> >	m_animationTimelineList;
+	Array< RefPtr<AnimationTimeline> >	m_animationTimelineList;
 };
 
 

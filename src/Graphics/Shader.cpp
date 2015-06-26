@@ -117,7 +117,7 @@ ShaderVariable* Shader::FindVariable(const TCHAR* name, CaseSensitivity cs) cons
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const ArrayList<ShaderTechnique*>& Shader::GetTechniques() const
+const Array<ShaderTechnique*>& Shader::GetTechniques() const
 {
 	return m_techniques;
 }
@@ -258,11 +258,11 @@ int ShaderValue::GetArrayLength()
 {
 	if (m_type == ShaderVariableType_VectorArray) {
 		//return m_value.ByteCount / sizeof(Vector4);
-		return m_buffer->GetSize() / sizeof(Vector4);
+		return m_buffer.GetSize() / sizeof(Vector4);
 	}
 	if (m_type == ShaderVariableType_MatrixArray) {
 		//return m_value.ByteCount / sizeof(Matrix);
-		return m_buffer->GetSize() / sizeof(Matrix);
+		return m_buffer.GetSize() / sizeof(Matrix);
 	}
 	return 0;
 }
@@ -280,7 +280,7 @@ void ShaderValue::ReleaseValueBuffer()
 		LN_SAFE_RELEASE(m_value.Texture);
 	}
 	//m_value.ByteCount = 0;
-	m_buffer.SafeRelease();
+	m_buffer.Release();
 }
 
 //-----------------------------------------------------------------------------
@@ -288,13 +288,14 @@ void ShaderValue::ReleaseValueBuffer()
 //-----------------------------------------------------------------------------
 void ShaderValue::AllocValueBuffer(size_t byteCount)
 {
-	if (m_buffer.IsNull() || byteCount > m_buffer->GetSize()/*m_value.ByteCount*/ || m_buffer->GetRefCount() != 1)
+	if (byteCount > m_buffer.GetSize()/*m_value.ByteCount*//* || m_buffer.GetRefCount() != 1*/)
 	{
 		//LN_SAFE_DELETE_ARRAY(m_value.Buffer);
 		//m_value.Buffer = LN_NEW byte_t[byteCount];
 		//m_value.ByteCount = byteCount;
-		m_buffer.Attach(LN_NEW ByteBuffer(byteCount), false);
-		m_value.Buffer = m_buffer->GetData();
+		//m_buffer.Attach(LN_NEW ByteBuffer(byteCount), false);
+		m_buffer.Resize(byteCount);
+		m_value.Buffer = m_buffer.GetData();
 	}
 }
 
@@ -306,12 +307,13 @@ void ShaderValue::Copy(const ShaderValue& value)
 	m_type = value.m_type;
 	m_buffer = value.m_buffer;	// 共有参照
 
-	if (m_buffer.IsNull()) {
-		memcpy(&m_value, &value.m_value, sizeof(m_value));
-	}
-	else {
-		m_value.Buffer = m_buffer->GetData();
-	}
+	//if (m_buffer.IsNull()) {
+	//	memcpy(&m_value, &value.m_value, sizeof(m_value));
+	//}
+	//else {
+	//	m_value.Buffer = m_buffer->GetData();
+	//}
+	m_value.Buffer = m_buffer.GetData();
 
 	if (m_type == ShaderVariableType_Texture) {
 		m_value.Texture = value.m_value.Texture;
@@ -572,7 +574,7 @@ const TCHAR* ShaderVariable::GetString() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const ArrayList<ShaderVariable*>& ShaderVariable::GetAnnotations() const
+const Array<ShaderVariable*>& ShaderVariable::GetAnnotations() const
 {
 	return m_annotations;
 }
@@ -615,7 +617,7 @@ ShaderTechnique::~ShaderTechnique()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const ArrayList<ShaderPass*>& ShaderTechnique::GetPasses() const
+const Array<ShaderPass*>& ShaderTechnique::GetPasses() const
 {
 	return m_passes;
 }
@@ -623,7 +625,7 @@ const ArrayList<ShaderPass*>& ShaderTechnique::GetPasses() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const ArrayList<ShaderVariable*>& ShaderTechnique::GetAnnotations() const
+const Array<ShaderVariable*>& ShaderTechnique::GetAnnotations() const
 {
 	return m_annotations;
 }
@@ -691,7 +693,7 @@ void ShaderPass::Apply()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const ArrayList<ShaderVariable*>& ShaderPass::GetAnnotations() const
+const Array<ShaderVariable*>& ShaderPass::GetAnnotations() const
 {
 	return m_annotations;
 }

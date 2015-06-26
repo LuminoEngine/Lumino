@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/BindingSupport.h>
+#include <Lumino/BindingSupport.h>
 #include "Common.h"
 #include "RenderingPass.h"
 #include "MME/MMETypes.h"

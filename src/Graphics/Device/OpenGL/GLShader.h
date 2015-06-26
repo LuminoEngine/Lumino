@@ -62,8 +62,8 @@ public:
 private:
 	GLGraphicsDevice*				m_device;
 	GLuint							m_glProgram;
-	ArrayList<GLShaderVariable*>	m_variables;
-	ArrayList<GLShaderTechnique*>	m_techniques;
+	Array<GLShaderVariable*>	m_variables;
+	Array<GLShaderTechnique*>	m_techniques;
 };
 
 /// OpenGL 用の IShaderVariable の実装
@@ -99,7 +99,7 @@ public:
 	virtual ~GLShaderTechnique();
 
 public:
-	GLShaderPass* CreateShaderPass(const String& name, GLuint program, int8_t* attrIndexTable, const ArrayList<GLShaderPassVariableInfo>& passVarList);
+	GLShaderPass* CreateShaderPass(const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList);
 
 public:
 	virtual const TCHAR* GetName() const { return m_name.GetCStr(); }
@@ -111,8 +111,8 @@ public:
 private:
 	GLShader*						m_ownerShader;
 	String							m_name;
-	ArrayList<GLShaderPass*>		m_passes;
-	ArrayList<GLShaderVariable*>	m_annotations;
+	Array<GLShaderPass*>		m_passes;
+	Array<GLShaderVariable*>	m_annotations;
 };
 
 /// OpenGL 用の IShaderPass の実装
@@ -123,7 +123,7 @@ public:
 	static const int MaxUsageIndex = 16;		///< UsageIndex の最大 (DX9 にあわせて最大の 16)
 
 public:
-	GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const ArrayList<GLShaderPassVariableInfo>& passVarList);
+	GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList);
 	virtual ~GLShaderPass();
 
 public:
@@ -141,10 +141,10 @@ private:
 	GLShader*						m_ownerShader;
 	GLuint							m_program;
 	String							m_name;
-	ArrayList<GLShaderVariable*>	m_annotations;
+	Array<GLShaderVariable*>		m_annotations;
 	int8_t							m_usageAttrIndexTable[VertexElementUsage_Max][MaxUsageIndex];
-	ArrayList<GLShaderPassVariableInfo>	m_passVarList;		///< この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
-	int									m_textureVarCount;
+	Array<GLShaderPassVariableInfo>	m_passVarList;		///< この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
+	int								m_textureVarCount;
 };
 
 } // namespace Device

@@ -337,8 +337,8 @@ void GLGraphicsDevice::GCDeviceResource()
 	*/
 	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
 
-	ArrayList<IDeviceObject*>::iterator itr = m_allDeviceResourceList.begin();
-	ArrayList<IDeviceObject*>::iterator end = m_allDeviceResourceList.end();
+	Array<IDeviceObject*>::iterator itr = m_allDeviceResourceList.begin();
+	Array<IDeviceObject*>::iterator end = m_allDeviceResourceList.end();
 	for (; itr != end;)
 	{
 		if ((*itr)->GetRefCount() == 1) {

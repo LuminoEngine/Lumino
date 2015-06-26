@@ -66,7 +66,7 @@ private:
 	Size					m_size;
 	Size					m_realSize;
 	SamplerState			m_samplerState;
-	RefPtr<ByteBuffer>		m_lockedBuffer;
+	ByteBuffer				m_lockedBuffer;
 	RefPtr<Imaging::Bitmap>	m_lockedBitmap;
 };
 
@@ -179,7 +179,7 @@ private:
 	Size				m_realSize;
 
 	IDirect3DSurface9*		m_lockedSystemSurface;
-	RefPtr<ByteBuffer>		m_lockedBuffer;
+	ByteBuffer				m_lockedBuffer;
 	RefPtr<Imaging::Bitmap>	m_lockedBitmap;
 };
 

@@ -1,6 +1,6 @@
 
 #pragma once
-#include <Lumino/Base/BindingSupport.h>
+#include <Lumino/BindingSupport.h>
 #include <Lumino/Platform/EventArgs.h>
 #include <Lumino/Graphics/Texture.h>
 #include "Layer.h"

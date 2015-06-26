@@ -19,7 +19,7 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 	ASSERT_EQ(32, bmp1.GetSize().Width);
 	ASSERT_EQ(32, bmp1.GetSize().Height);
 
-	byte_t* buf = bmp1.GetBitmapBuffer()->GetData();
+	byte_t* buf = bmp1.GetBitmapBuffer().GetData();
 	//printf("%X %X %X %X\n", buf[0], buf[1], buf[2], buf[3]);
 	ASSERT_EQ(0xFF, buf[0]);	// R
 	ASSERT_EQ(0x7F, buf[1]);	// G

@@ -47,8 +47,8 @@ public:
 private:
 	DX9GraphicsDevice*				m_device;
 	ID3DXEffect*					m_dxEffect;
-	ArrayList<DX9ShaderVariable*>	m_variables;
-	ArrayList<DX9ShaderTechnique*>	m_techniques;
+	Array<DX9ShaderVariable*>		m_variables;
+	Array<DX9ShaderTechnique*>		m_techniques;
 
 
 
@@ -92,7 +92,7 @@ public:
 private:
 	ID3DXEffect*					m_dxEffect;
 	D3DXHANDLE						m_handle;
-	ArrayList<DX9ShaderAnnotation*>	m_annotations;
+	Array<DX9ShaderAnnotation*>		m_annotations;
 };
 
 /// アノテーション
@@ -136,8 +136,8 @@ private:
 	ID3DXEffect*					m_dxEffect;
 	D3DXHANDLE						m_handle;
 	String							m_name;
-	ArrayList<DX9ShaderAnnotation*>	m_annotations;
-	ArrayList<DX9ShaderPass*>		m_passes;
+	Array<DX9ShaderAnnotation*>		m_annotations;
+	Array<DX9ShaderPass*>			m_passes;
 };
 
 /// パス
@@ -164,7 +164,7 @@ private:
 	D3DXHANDLE						m_technique;
 	int								m_passIndex;
 	String							m_name;
-	ArrayList<DX9ShaderAnnotation*>	m_annotations;
+	Array<DX9ShaderAnnotation*>		m_annotations;
 };
 
 } // namespace Device

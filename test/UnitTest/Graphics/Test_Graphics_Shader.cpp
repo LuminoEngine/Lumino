@@ -11,10 +11,8 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Shader, Basic)
 {
-
-
-	RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
-	RefPtr<Shader> shader(Shader::Create((char*)code->GetData(), code->GetSize()));
+	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
+	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 
 
 	// 頂点レイアウト・頂点バッファ
@@ -59,7 +57,7 @@ TEST_F(Test_Graphics_Shader, Basic)
 		swap->Present();
 
 		for (int i = 0; i < count; ++i) {
-			shaders[i].Attach(Shader::Create((char*)code->GetData(), code->GetSize()));
+			shaders[i].Attach(Shader::Create((char*)code.GetData(), code.GetSize()));
 		}
 
 		//::Sleep(10);

@@ -33,7 +33,7 @@ ShaderCompileResultLevel PlainGLSLBuilder::Build(GLGraphicsDevice* device, const
 	GLint params;
 	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
 
-	ArrayList<GLShaderPassVariableInfo> passVarList;
+	Array<GLShaderPassVariableInfo> passVarList;
 	for (int i = 0; i < params; ++i)
 	{
 		GLShaderPassVariableInfo passVar;
@@ -623,7 +623,7 @@ GLShaderTechnique::~GLShaderTechnique()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderPass* GLShaderTechnique::CreateShaderPass(const String& name, GLuint program, int8_t* attrIndexTable, const ArrayList<GLShaderPassVariableInfo>& passVarList)
+GLShaderPass* GLShaderTechnique::CreateShaderPass(const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList)
 {
 	GLShaderPass* pass = LN_NEW GLShaderPass(m_ownerShader, name, program, attrIndexTable, passVarList);
 	m_passes.Add(pass);
@@ -645,7 +645,7 @@ IShaderPass* GLShaderTechnique::GetPass(int index)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderPass::GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const ArrayList<GLShaderPassVariableInfo>& passVarList)
+GLShaderPass::GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList)
 	: m_ownerShader(owner)
 	, m_program(program)
 	, m_name(name)

@@ -32,7 +32,7 @@ public:
 	void GCDeviceResource();
 
 protected:
-	typedef ArrayList<IDeviceObject*>	DeviceObjectList;
+	typedef Array<IDeviceObject*>	DeviceObjectList;
 
 	DeviceObjectList	m_deviceObjectList;
 	Threading::Mutex	m_deviceObjectListMutex;

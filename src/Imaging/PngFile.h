@@ -19,8 +19,8 @@ class PngFile
 public:
 
 	PngFile()
-		: m_bitmapData(NULL)
-		, mPngStruct(NULL)
+		:/* m_bitmapData(NULL)
+		, */mPngStruct(NULL)
 		, mPngInfo(NULL)
 	{
 	}
@@ -30,7 +30,7 @@ public:
 		if (mPngStruct) {
 			png_destroy_read_struct(&mPngStruct, &mPngInfo, NULL);
 		}
-		LN_SAFE_RELEASE(m_bitmapData);
+		//LN_SAFE_RELEASE(m_bitmapData);
 	}
 
 
@@ -38,7 +38,7 @@ public:
 	Size		m_size;
 	//int						mWidth;
 	//int						mHeight;
-	ByteBuffer*	m_bitmapData;
+	ByteBuffer	m_bitmapData;
 	PixelFormat	m_format;
 
 
@@ -145,8 +145,8 @@ public:
 		if (mPngInfo->color_type == PNG_COLOR_TYPE_RGB_ALPHA && mPngInfo->pixel_depth == 32)
 		{
 			m_format = PixelFormat_BYTE_R8G8B8A8;
-			m_bitmapData = LN_NEW ByteBuffer(m_size.Width * m_size.Height * 4);
-			byte_t* bitmap = m_bitmapData->GetData();
+			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 4);
+			byte_t* bitmap = m_bitmapData.GetData();
 
 			// 1行ずつコピー
 			for (int h = 0; h < m_size.Height; ++h) {
@@ -158,8 +158,8 @@ public:
 		else if (mPngInfo->color_type == PNG_COLOR_TYPE_RGB && mPngInfo->pixel_depth == 24)
 		{
 			m_format = PixelFormat_BYTE_R8G8B8A8;
-			m_bitmapData = LN_NEW ByteBuffer(m_size.Width * m_size.Height * 4);
-			byte_t* bitmap = m_bitmapData->GetData();
+			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 4);
+			byte_t* bitmap = m_bitmapData.GetData();
 
 			byte_t* row;
 			for (int y = 0; y < m_size.Height; ++y)
@@ -180,8 +180,8 @@ public:
 		else if (mPngInfo->color_type == PNG_COLOR_TYPE_GRAY && mPngInfo->pixel_depth == 8)
 		{
 			m_format = PixelFormat_A8;
-			m_bitmapData = LN_NEW ByteBuffer(m_size.Width * m_size.Height * 1);
-			byte_t* bitmap = m_bitmapData->GetData();
+			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 1);
+			byte_t* bitmap = m_bitmapData.GetData();
 
 			for (int h = 0; h < m_size.Height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
@@ -215,7 +215,7 @@ public:
 	}
 
 	/// 保存 (bitmapData のフォーマットは PixelFormat_BYTE_R8G8B8A8 であること)
-	void Save(const TCHAR* filePath, ByteBuffer* bitmapData, const Size& size, bool upFlow)
+	void Save(const TCHAR* filePath, const ByteBuffer& bitmapData, const Size& size, bool upFlow)
 	{
 		FILE *fp;
 		_tfopen_s(&fp, filePath, _T("wb"));
@@ -231,10 +231,11 @@ public:
 
 
 		//png_bytepp rows = bitmapData->GetData();
-		ArrayList<png_bytep> rows;
+		Array<png_bytep> rows;
+		ByteBuffer tmpData = bitmapData;	// 書き込み可能ポインタでないと png の API に渡せないので一時メモリ化する。
 		rows.Resize(size.Height);
 		int rowBytes = png_get_rowbytes(pp, pngInfo);	// PixelFormat_BYTE_R8G8B8A8
-		byte_t* data = bitmapData->GetData();
+		byte_t* data = tmpData.GetData();//bitmapData.GetData();
 		for (int i = 0; i < size.Height; i++)
 		{
 			if (upFlow) {

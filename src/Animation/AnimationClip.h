@@ -18,7 +18,7 @@ public:
 		AnimationCurve*			Curve;
 	};
 
-	typedef ArrayList<AnimationCurveEntry>	AnimationCurveEntryList;
+	typedef Array<AnimationCurveEntry>	AnimationCurveEntryList;
 
 public:
 	AnimationClip();

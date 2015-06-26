@@ -61,7 +61,7 @@ public:
 	static bool								IsSystemInitialized;
 
 private:
-	typedef ArrayList<ObjectEntry>	ObjectEntryList;
+	typedef Array<ObjectEntry>	ObjectEntryList;
 	static ObjectEntryList		m_objectEntryList;
 	static Stack<int>			m_objectIndexStack;
 

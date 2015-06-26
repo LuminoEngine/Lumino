@@ -21,7 +21,7 @@ class BodyBase
     : public RefObject
 {
 public:
-	typedef ArrayList<ContactInfo>	ContactInfoList;
+	typedef Array<ContactInfo>	ContactInfoList;
 
 public:
     BodyBase();

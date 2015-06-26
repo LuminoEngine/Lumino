@@ -65,7 +65,7 @@ void GLVertexBuffer::Create(const VertexElement* vertexElements, int elementsCou
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLVertexBuffer::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, ArrayList<LNGLVertexElement>* outList)
+void GLVertexBuffer::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList)
 {
 	outList->Reserve(elementsCount);
 

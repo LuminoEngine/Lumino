@@ -95,11 +95,11 @@ void FontManager::Dispose()
 	LN_SAFE_RELEASE(m_defaultFont);
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
-	TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
-	for (; itr != m_ttfDataEntryMap.end(); ++itr)
-	{
-		LN_SAFE_RELEASE(itr->second.DataBuffer);
-	}
+	//TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
+	//for (; itr != m_ttfDataEntryMap.end(); ++itr)
+	//{
+	//	LN_SAFE_RELEASE(itr->second.DataBuffer);
+	//}
 	m_ttfDataEntryMap.clear();
 
 	// キャッシュマネージャ
@@ -124,15 +124,15 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
 	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath));
-	RefPtr<ByteBuffer> buffer(LN_NEW ByteBuffer(file->GetLength(), false));
-	file->Read(buffer->GetData(), buffer->GetSize());
+	ByteBuffer buffer(file->GetLength(), false);
+	file->Read(buffer.GetData(), buffer.GetSize());
 
 	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
 	FT_Face face;
 	FT_Error err = FT_New_Memory_Face(
 		m_ftLibrary,
-		(const FT_Byte*)buffer->GetData(),
-		buffer->GetSize(),
+		(const FT_Byte*)buffer.GetData(),
+		buffer.GetSize(),
 		0,
 		&face);
 	LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
@@ -146,7 +146,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		{
 			TTFDataEntry e;
 			e.DataBuffer = buffer;
-			e.DataBuffer->AddRef();
+//			e.DataBuffer->AddRef();
 			e.CollectionIndex = 0;
 			m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
@@ -171,8 +171,8 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		{
 			err = FT_New_Memory_Face(
 				m_ftLibrary,
-				(const FT_Byte*)buffer->GetData(),
-				buffer->GetSize(),
+				(const FT_Byte*)buffer.GetData(),
+				buffer.GetSize(),
 				i,
 				&face);
 			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
@@ -183,7 +183,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 			{
 				TTFDataEntry e;
 				e.DataBuffer = buffer;
-				e.DataBuffer->AddRef();
+//				e.DataBuffer->AddRef();
 				e.CollectionIndex = i;
 				m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
@@ -233,8 +233,8 @@ FT_Error FontManager::FaceRequester(
 		FT_Face face;
 		FT_Error err = FT_New_Memory_Face(
 			m_ftLibrary,
-			(const FT_Byte*)itr->second.DataBuffer->GetData(),
-			itr->second.DataBuffer->GetSize(),
+			(const FT_Byte*)itr->second.DataBuffer.GetConstData(),
+			itr->second.DataBuffer.GetSize(),
 			itr->second.CollectionIndex,
 			&face);
 		LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);

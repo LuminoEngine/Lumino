@@ -11,8 +11,8 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_VertexBuffer, BasicTriangle)
 {
-	RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
-	RefPtr<Shader> shader(Shader::Create((char*)code->GetData(), code->GetSize()));
+	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
+	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 
 	
 	// 頂点レイアウト・頂点バッファ
