@@ -92,7 +92,7 @@ TEST_F(Test_Graphics_Texture, Lock)
 		// 黄色い点を置く
 		{
 			Bitmap* bmp = tex1->Lock();
-			byte_t* data = bmp->GetBitmapBuffer().GetData();
+			byte_t* data = bmp->GetBitmapBuffer()->GetData();
 			data[4] = 0xFF;		// R
 			data[5] = 0xFF;		// G
 			data[6] = 0x00;		// B
@@ -106,7 +106,7 @@ TEST_F(Test_Graphics_Texture, Lock)
 		// 水色の点を置く
 		{
 			Bitmap* bmp = tex1->Lock();
-			byte_t* data = bmp->GetBitmapBuffer().GetData();
+			byte_t* data = bmp->GetBitmapBuffer()->GetData();
 			data[8] = 0x00;		// R
 			data[9] = 0xFF;		// G
 			data[10] = 0xFF;	// B

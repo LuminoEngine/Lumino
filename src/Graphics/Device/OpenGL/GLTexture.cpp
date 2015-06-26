@@ -196,7 +196,7 @@ Imaging::Bitmap* GLTexture::Lock()
 //-----------------------------------------------------------------------------
 void GLTexture::Unlock()
 {
-	SetSubData(Point(0, 0), m_lockedTexture->GetBitmapBuffer().GetConstData(), m_size);
+	SetSubData(Point(0, 0), m_lockedTexture->GetBitmapBuffer()->GetConstData(), m_size);
 	m_lockedTexture.SafeRelease();
 }
 
@@ -284,7 +284,7 @@ Imaging::Bitmap* GLRenderTargetTexture::Lock()
 	m_lockingBitmap = LN_NEW Imaging::Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer().GetData()); LN_CHECK_GLERROR();
+	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer()->GetData()); LN_CHECK_GLERROR();
 	glBindTexture(GL_TEXTURE_2D, 0); LN_CHECK_GLERROR();
 
 	return m_lockingBitmap;

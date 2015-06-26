@@ -59,6 +59,11 @@ public:
 	*/
 	Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format);
 
+	/**
+		@brief		
+	*/
+	Bitmap(void* buffer, const Size& size, PixelFormat format);
+
 	Bitmap();
 
 	virtual ~Bitmap();
@@ -66,7 +71,7 @@ public:
 public:
 
 	/// ビットマップデータ本体の取得
-	ByteBuffer GetBitmapBuffer() const { return m_bitmapData; }
+	ByteBuffer* GetBitmapBuffer() { return &m_bitmapData; }
 	
 	/// ビットマップサイズの取得 (ピクセル数単位)
 	const Size& GetSize() const { return m_size; }

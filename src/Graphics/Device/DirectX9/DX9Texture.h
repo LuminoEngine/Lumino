@@ -66,7 +66,7 @@ private:
 	Size					m_size;
 	Size					m_realSize;
 	SamplerState			m_samplerState;
-	ByteBuffer				m_lockedBuffer;
+	//ByteBuffer				m_lockedBuffer;
 	RefPtr<Imaging::Bitmap>	m_lockedBitmap;
 };
 

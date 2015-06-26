@@ -52,7 +52,7 @@ void BitmapPainter::FillRectangle(const Rect& rect, const Graphics::Color& color
 		format == PixelFormat_BYTE_B8G8R8A8 ||
 		format == PixelFormat_BYTE_B8G8R8X8)
 	{
-		uint32_t* data = (uint32_t*)m_bitmap->GetBitmapBuffer().GetData();
+		uint32_t* data = (uint32_t*)m_bitmap->GetBitmapBuffer()->GetData();
 
 		uint32_t c = GetColorByteSec(color, format);
 		for (int y = 0; y < destRect.Height; y++)

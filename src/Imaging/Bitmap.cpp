@@ -74,6 +74,17 @@ Bitmap::Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Bitmap::Bitmap(void* buffer, const Size& size, PixelFormat format)
+{
+	Init();
+	m_size = size;
+	m_format = format;
+	m_bitmapData.Attach(buffer, GetPixelFormatByteCount(m_format, m_size));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Bitmap::~Bitmap()
 {
 }
