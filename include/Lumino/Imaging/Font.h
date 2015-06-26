@@ -95,6 +95,8 @@ public:
 
 	virtual int GetLineHeight() = 0;
 
+	virtual Size GetGlyphMaxSize() { return Size(GetLineHeight(), GetLineHeight()); }
+
 	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
 	virtual Size GetTextSize(const char* text, int length) = 0;
 	virtual Size GetTextSize(const wchar_t* text, int length) = 0;

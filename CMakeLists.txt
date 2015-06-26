@@ -70,6 +70,8 @@ set(LN_SOURCES_Imaging
 	src/Imaging/FreeTypeFont.cpp
 	src/Imaging/FreeTypeFont.h
 	src/Imaging/PngFile.h
+	src/Imaging/TextLayoutEngine.cpp
+	src/Imaging/TextLayoutEngine.h
 	src/Imaging/TextRenderer_imaging.cpp
 	src/Imaging/TextRenderer.h
 )
@@ -117,6 +119,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/SpriteRendererImpl.h
 	src/Graphics/SwapChain.cpp
 	src/Graphics/TextRenderer.cpp
+	src/Graphics/TextRendererImplemented.h
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp

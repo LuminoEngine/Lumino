@@ -26,14 +26,18 @@ public:
 	static TextRenderer* Create(GraphicsManager* manager);
 
 public:
+	void SetTransform(const Matrix& matrix);
+	void SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
-	void SetForeColor(Graphics::Color color) { m_foreColor = color; }
-	void SetStrokeColor(Graphics::Color color) { m_strokeColor = color; }
+
+	void SetFont(Imaging::Font* font);
+	void SetForeColor(Color color) { m_foreColor = color; }
+	void SetStrokeColor(Color color) { m_strokeColor = color; }
 	void SetStrokeSize(int size) { m_strokeSize = size; }
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
 	void SetTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
 	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
-	void SetDrawingArea(const Rect& area) { m_drawingArea = area; }
+	void SetDrawingArea(const Rect& area) { m_drawingArea = area; }	// ‚¢‚ç‚È‚¢‚©‚à
 
 	/**
 		@brief		

@@ -59,6 +59,8 @@ public:
 	/// 描画せずにバッチをすべてクリアする
 	void Clear();
 
+	GraphicsManager* GetManager() const { return m_manager; }
+
 private:
 
 	/// 描画リクエスト

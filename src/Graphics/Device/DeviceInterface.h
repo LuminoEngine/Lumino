@@ -303,6 +303,28 @@ public:
 
 protected:
     virtual ~ITexture() {}
+
+public:
+	class ScopedLock
+	{
+	public:
+		ScopedLock(ITexture* obj)
+		{
+			m_obj = obj;
+			m_bitmap = m_obj->Lock();
+		}
+		~ScopedLock()
+		{
+			m_obj->Unlock();
+		}
+		Imaging::Bitmap* GetBitmap()
+		{
+			return m_bitmap;
+		}
+	private:
+		ITexture*			m_obj;
+		Imaging::Bitmap*	m_bitmap;
+	};
 };
 
 /// シェーダプログラムのインターフェイス
