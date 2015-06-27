@@ -12,6 +12,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/Utils.h>
 
 namespace Lumino
 {
@@ -679,6 +680,46 @@ private:
 		LN_SAFE_RELEASE(m_targetTexture);
 	}
 };
+
+//=============================================================================
+class Texture_SetSubDataBitmapCommand : public RenderingCommand
+{
+	RefPtr<Device::ITexture> m_targetTexture;
+	Point m_offset;
+
+	size_t m_bmpDataIndex;
+	Size m_size;
+	int m_pitch;
+	Imaging::PixelFormat m_format;
+	bool m_upFlow;
+
+public:
+	static void Create(CmdInfo& cmd, Device::ITexture* texture, const Point& offset, Imaging::Bitmap* bmp)
+	{
+		size_t tmpData = Alloc(cmd, bmp->GetBitmapBuffer()->GetSize(), bmp->GetBitmapBuffer()->GetConstData());
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_targetTexture = texture;
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_offset = offset;
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_bmpDataIndex = tmpData;
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_size = bmp->GetSize();
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_pitch = bmp->GetPitch();
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_format = bmp->GetPixelFormat();
+		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_upFlow = bmp->IsUpFlow();
+	}
+
+private:
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		if (m_format == Utils::TranslatePixelFormat(m_targetTexture->GetTextureFormat()))
+		{
+			//Imaging::Bitmap bmp(commandList->GetBuffer(m_bmpDataIndex), m_size, m_format, m_pitch, m_upFlow);
+			m_targetTexture->SetSubData(m_offset, commandList->GetBuffer(m_bmpDataIndex), m_size);
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
+	}
+};
+
 
 //=============================================================================
 class ReadLockTextureCommand : public RenderingCommand

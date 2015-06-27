@@ -97,6 +97,8 @@ public:
 	*/
 	void Flash();
 
+	GraphicsManager* GetManager() const { return m_manager; }
+
 private:
 	SpriteRenderer(GraphicsManager* manager, int maxSpriteCount);
 	virtual ~SpriteRenderer();

@@ -62,7 +62,10 @@ public:
 	/**
 		@brief		
 	*/
-	Bitmap(void* buffer, const Size& size, PixelFormat format);
+	Bitmap(void* buffer, const Size& size, PixelFormat format);	// 参照モード
+	Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
+
+
 
 	Bitmap();
 
@@ -101,6 +104,11 @@ public:
 		@brief		上下逆のイメージを反転します。上下逆でなければ何もしません。
 	*/
 	void ConvertToDownFlow();
+
+	int GetPitch() const { return m_pitch; }
+	bool IsUpFlow() const { return m_upFlow; }
+
+	void SetSize(const Size& size) { m_size = size; }
 
 public:
 	

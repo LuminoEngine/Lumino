@@ -419,6 +419,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 
 	FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
 	RefreshBitmap(m_glyphBitmap, ft_bitmap);
+	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
 
 	// 枠線
 	if (m_ftStroker)
@@ -438,12 +439,13 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 
 		FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
 		RefreshBitmap(m_outlineBitmap, ft_bitmap);
-
 		m_fontGlyphBitmap.OutlineBitmap = m_outlineBitmap;
+		m_fontGlyphBitmap.OutlineOffset = m_edgeSize;
 	}
 	else
 	{
 		m_fontGlyphBitmap.OutlineBitmap = NULL;
+		m_fontGlyphBitmap.OutlineOffset = 0;
 	}
 
 	return &m_fontGlyphBitmap;

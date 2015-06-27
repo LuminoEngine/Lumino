@@ -101,10 +101,16 @@ public:
 		@return		テクスチャの実サイズ (ピクセル単位)
 	*/
 	const Size& GetRealSize() const;
+
+	/**
+		@brief		テクスチャのピクセルフォーマットを取得します。
+	*/
+	TextureFormat GetFormat() const;
+	
 	/*
 		@brief		
 	*/
-	void SetSubData(const Point& offset, const Imaging::Bitmap* data);
+	void SetSubData(const Point& offset, Imaging::Bitmap* bitmap);
 	void SetSubData(const Point& offset, const void* data);
 
 	Imaging::Bitmap* Lock();

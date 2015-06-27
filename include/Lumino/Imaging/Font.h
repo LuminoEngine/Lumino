@@ -20,6 +20,7 @@ struct FontGlyphBitmap
 {
 	Imaging::Bitmap*			GlyphBitmap;
 	Imaging::Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+	int							OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
 };
 
 

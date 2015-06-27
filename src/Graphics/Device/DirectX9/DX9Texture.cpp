@@ -172,13 +172,20 @@ DX9Texture::~DX9Texture()
 //-----------------------------------------------------------------------------
 void DX9Texture::SetSubData(const Point& point, const void* data, const Size& dataBitmapSize)
 {
-	LN_THROW(point.IsZero(), NotImplementedException);
-
 	RECT lockRect = { point.X, point.Y, point.X + dataBitmapSize.Width, point.Y + dataBitmapSize.Height };
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, D3DLOCK_DISCARD));
 
-	memcpy(lockedRect.pBits, data, lockedRect.Pitch * m_realSize.Height);
+	const byte_t* d = (const byte_t*)data;
+	byte_t* w = (byte_t*)lockedRect.pBits;
+	for (int row = 0; row < dataBitmapSize.Height; row++)
+	{
+		const byte_t* line = &d[(4 * dataBitmapSize.Width) * row];	// TODO format
+		byte_t* wline = &w[lockedRect.Pitch * row];	// TODO format
+		memcpy(wline, line, (4 * dataBitmapSize.Width));
+	}
+
+	//memcpy(lockedRect.pBits, data, lockedRect.Pitch * dataBitmapSize.Height);
 
 	//try
 	//{

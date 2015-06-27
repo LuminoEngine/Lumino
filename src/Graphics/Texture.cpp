@@ -174,12 +174,20 @@ const Size& Texture::GetRealSize() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::SetSubData(const Point& offset, const Imaging::Bitmap* data)
+TextureFormat Texture::GetFormat() const
 {
-	if (LN_VERIFY_ASSERT(data != NULL)) { return; }
-	if (LN_VERIFY_ASSERT(data->GetPixelFormat() == Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat()))) { return; }	// ピクセルフォーマットが一致していること
+	return m_deviceObj->GetTextureFormat();
+}
 
-	LN_THROW(0, NotImplementedException);
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture::SetSubData(const Point& offset, Imaging::Bitmap* bitmap)
+{
+	if (LN_VERIFY_ASSERT(bitmap != NULL)) { return; }
+
+	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<Texture_SetSubDataBitmapCommand>(
+		m_deviceObj, offset, bitmap);
 }
 
 //-----------------------------------------------------------------------------

@@ -8,6 +8,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Graphics/Test_Graphics_IndexBuffer.cpp
 	UnitTest/Graphics/Test_Graphics_Shader.cpp
 	UnitTest/Graphics/Test_Graphics_SpriteRenderer.cpp
+	UnitTest/Graphics/Test_Graphics_TextRenderer.cpp
 	UnitTest/Graphics/Test_Graphics_Texture.cpp
 	UnitTest/Graphics/Test_Graphics_VertexBuffer.cpp
 	UnitTest/Scene/Test_Scene_Sprite.cpp)
