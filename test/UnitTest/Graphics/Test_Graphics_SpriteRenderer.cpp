@@ -14,7 +14,13 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	RefPtr<Texture> tex1(Texture::Create(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png")));
 	//RefPtr<Texture> tex1(Texture::Create(Size(256, 256)));
 
-	//RefPtr<Font> font1(Font::Create(TestEnvironment::Manager->GetFontManager()));
+	RefPtr<Font> font1(Font::Create(TestEnvironment::Manager->GetFontManager()));
+	font1->SetName(_T("MS PGothic"));
+	font1->SetSize(20);
+//	font1->LookupGlyphData('i', NULL);
+	FontGlyphLocation* loc = font1->AdvanceKerning('i', NULL);
+	loc = font1->AdvanceKerning('j', loc);
+	
 	//Bitmap* tmp = tex1->Lock();
 	//Imaging::TextRenderer tr(tmp, TestEnvironment::Manager->GetFontManager()->GetDefaultFont());
 	//tr.SetAreaBox(Rect(0, 0, tex1->GetSize()));

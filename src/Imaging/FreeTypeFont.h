@@ -9,6 +9,35 @@ namespace Imaging
 {
 class FontManager;
 
+
+struct FreeTypeGlyphLocation
+	: public FontGlyphLocation
+{
+	int				NextBaseX;			///< 内部データ
+	int				NextBaseY;			///< 内部データ
+	uint32_t		PreviousGlyphIndex;	///< ひとつ前の文字の GlyphIndex
+};
+
+struct FreeTypeGlyphBitmap
+	: public FontGlyphBitmap
+{
+	FT_Glyph		CopyGlyph;			///< GlyphBitmap のバッファ本体はこれが持っている
+	FT_Glyph		CopyOutlineGlyph;	///< OutlineBitmap のバッファ本体はこれが持っている
+
+	FreeTypeGlyphBitmap()
+	{
+		CopyGlyph = NULL;
+		CopyOutlineGlyph = NULL;
+	}
+	~FreeTypeGlyphBitmap()
+	{
+		ReleaseGlyph();
+	}
+
+	void ReleaseGlyph();
+};
+
+// [Obsolete]
 struct FreeTypeGlyphData
 	: public FontGlyphData
 {
@@ -52,6 +81,8 @@ public:
 	virtual Size GetTextSize(const char* text, int length);
 	virtual Size GetTextSize(const wchar_t* text, int length);
 	virtual Size GetTextSize(const UTF32* text, int length);
+	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData);
+	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code);
 	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
 private:
@@ -77,6 +108,9 @@ private:
 	int					m_lineHeight;
 
 	ByteBuffer			m_utf32Buffer;		///< UTF32 文字列への一時変換先 (頻繁にメモリ確保しないように、一度使ったメモリは使いまわしたい)
+
+	FreeTypeGlyphLocation	m_fontGlyphLocation;
+	FreeTypeGlyphBitmap		m_fontGlyphBitmap;
 
 	FreeTypeGlyphData	m_glyphData;		///< LookupGlyphData() の戻り値として公開されるデータ
 	RefPtr<Bitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ

@@ -9,6 +9,21 @@ namespace Lumino
 namespace Imaging
 {
 
+struct FontGlyphLocation
+{
+	Point	BitmapTopLeftPosition;			///< ビットマップを転送するべき座標
+	Point	OutlineBitmapTopLeftPosition;	///< アウトライン用ビットマップを転送するべき座標
+	Point	OuterTopLeftPosition;			///< アウトライン有効時は OutlineBitmapTopLeftPosition、無効時は BitmapTopLeftPosition と同じ値になる
+};
+
+struct FontGlyphBitmap
+{
+	Imaging::Bitmap*			GlyphBitmap;
+	Imaging::Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+};
+
+
+// [Obsolete]
 struct FontGlyphData
 {
 	Imaging::Bitmap*			GlyphBitmap;
@@ -103,7 +118,12 @@ public:
 	virtual Size GetTextSize(const UTF32* text, int length) = 0;
 
 
+	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData) = 0;
+	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code) = 0;
+
+
 	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)
+	/// 削除予定
 	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
