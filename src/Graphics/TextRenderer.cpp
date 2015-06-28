@@ -248,6 +248,14 @@ void TextRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, con
 //-----------------------------------------------------------------------------
 void TextRenderer::DrawText(const char* text, int length)
 {
+	length = (length < 0) ? strlen(text) : length;
+	Text::EncodingConversionResult result;
+	const ByteBuffer& utf32Buf = m_font->GetManager()->GetCharToUTF32Converter()->Convert(text, length * sizeof(char), &result);
+	const UTF32* utf32 = (const UTF32*)utf32Buf.GetConstData();
+	for (int i = 0; i < result.CharsUsed; ++i)
+	{
+		DrawChar(utf32[i]);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -255,6 +263,14 @@ void TextRenderer::DrawText(const char* text, int length)
 //-----------------------------------------------------------------------------
 void TextRenderer::DrawText(const wchar_t* text, int length)
 {
+	length = (length < 0) ? wcslen(text) : length;
+	Text::EncodingConversionResult result;
+	const ByteBuffer& utf32Buf = m_font->GetManager()->GetWCharToUTF32Converter()->Convert(text, length * sizeof(wchar_t), &result);
+	const UTF32* utf32 = (const UTF32*)utf32Buf.GetConstData();
+	for (int i = 0; i < result.CharsUsed; ++i)
+	{
+		DrawChar(utf32[i]);
+	}
 }
 
 //-----------------------------------------------------------------------------

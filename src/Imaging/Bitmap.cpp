@@ -288,6 +288,7 @@ void Bitmap::BitBltInternalTemplate(
 		for (int x = 0; x < srcRect.Width; ++x)
 		{
 			ClColor c = srcBuf.GetPixel(x);
+			// TODO: アルファブレンド
 			dstBuf.SetPixel(x, c);
 		}
 	}

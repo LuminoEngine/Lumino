@@ -128,6 +128,8 @@ public:
 	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
+	virtual FontManager* GetManager() const = 0;
+
 protected:
 	Font();
 	virtual ~Font();

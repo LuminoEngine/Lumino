@@ -44,6 +44,10 @@ public:
 
 	void Dispose();
 
+
+	Text::EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
+	Text::EncodingConverter* GetWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
+
 private:
 	FontManager(FileManager* fileManager);
 	virtual ~FontManager();
@@ -99,6 +103,9 @@ private:
 
 	RefPtr<FileManager>	m_fileManager;
 	Font*  m_defaultFont;
+
+	Text::EncodingConverter	m_charToUTF32Converter;
+	Text::EncodingConverter	m_wcharToUTF32Converter;
 
 	FT_Library      m_ftLibrary;
 	FTC_Manager     m_ftCacheManager;

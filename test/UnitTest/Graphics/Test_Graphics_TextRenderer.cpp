@@ -32,7 +32,8 @@ TEST_F(Test_Graphics_TextRenderer, DrawRequest2D)
 		Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000);
 		tr->SetViewProjection(Matrix::Identity, proj, size);
 		
-		tr->DrawChar('A');
+		//tr->DrawChar('A');
+		tr->DrawText(_T("ABCDE"));
 		tr->Flash();
 
 		swap->Present();

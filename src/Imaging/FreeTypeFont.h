@@ -85,6 +85,8 @@ public:
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code);
 	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
+	virtual FontManager* GetManager() const { return m_manager; }
+
 private:
 	void Dispose();
 	void UpdateFont();

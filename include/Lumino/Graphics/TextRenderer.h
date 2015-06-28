@@ -43,8 +43,8 @@ public:
 	/**
 		@brief		
 	*/
-	void DrawText(const char* text, int length);
-	void DrawText(const wchar_t* text, int length);
+	void DrawText(const char* text, int length = -1);
+	void DrawText(const wchar_t* text, int length = -1);
 	void DrawChar(UTF32 ch);
 
 	/**

@@ -51,6 +51,10 @@ FontManager* FontManager::Create(FileManager* fileManager)
 FontManager::FontManager(FileManager* fileManager)
 {
 	m_fileManager = fileManager;
+	m_charToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
+	m_charToUTF32Converter.SetSourceEncoding(Text::Encoding::GetSystemMultiByteEncoding());
+	m_wcharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
+	m_wcharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetWideCharEncoding());
 
 	// FreeType èâä˙âª
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);
