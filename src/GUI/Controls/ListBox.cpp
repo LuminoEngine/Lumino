@@ -1,4 +1,10 @@
-
+/*
+	ÅEWPF
+		ListBox
+			Border	ògãyÇ—îwåi
+				ScrollView
+					VirtualizeStackPanel
+*/
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
