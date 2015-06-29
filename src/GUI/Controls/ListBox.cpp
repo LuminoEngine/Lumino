@@ -2,8 +2,21 @@
 	ÅEWPF
 		ListBox
 			Border	ògãyÇ—îwåi
-				ScrollView
-					VirtualizeStackPanel
+				ScrollViewer
+					Grid
+						Rectangle	ëïè¸
+						ScrollContentPresenter
+							ItemsPresenter
+								VirtualizingStackPanel
+									ListBoxItem
+									ListBoxItem
+									ListBoxItem
+										Border
+											ContentPresenter
+												<Ç¢ÇÎÇ¢ÇÎ>
+						ScrollBar	èc
+						ScrollBar	â°
+
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
