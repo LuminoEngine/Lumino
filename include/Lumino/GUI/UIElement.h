@@ -22,6 +22,8 @@ namespace Lumino
 {
 namespace GUI
 {
+typedef String	PropertyID;
+typedef String	EventID;
 
 
 	struct Enum

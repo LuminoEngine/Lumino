@@ -1,8 +1,36 @@
 /*
+
 	★キーワード
 	・テンプレート
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
+
+	[2015/6/30] そもそも VisualTree なんて作る必要あるの？
+		
+		LogicalTree と分ける仕組みは必要。
+		例えば、ウィンドウのシステムボタン。
+		これはボタンだけではなくPanelと組み合わせてレイアウトを調節したいもの。
+		LogicalTree と同じようなレイアウトの仕組みがあると便利。
+
+
+	[2015/6/30] Qt Quick のようなコントロールのカスタマイズは？
+		
+		Qt Quick は JavaScript ライクなマークアップで、
+		Button {
+			background : <子コントロール>
+			content : <コンテンツ>
+		}
+		みたいなかんじでコントロールのカスタマイズができる。
+		すべて、
+		・background
+		・content
+		・foreground
+		の3レイヤーでカスタマイズできれば少しシンプルになりそうだが・・・？
+		
+		↓
+
+		親コンテナの Padding を考慮できない。
+
 
 	[2015/6/9] AddChild
 		これは論理ツリー構築用に見える。

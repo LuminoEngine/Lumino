@@ -13,6 +13,10 @@
 			RepeatButton	下の余白
 
 	つまみのサイズは Track.ArrangeOverride で決めていた。
+
+	ScrollBar のスタイルとテンプレート
+	https://msdn.microsoft.com/ja-jp/library/ms742173%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+	PART_Track がある。
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>

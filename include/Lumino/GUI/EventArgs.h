@@ -85,6 +85,23 @@ public:
 };
 
 /**
+	@brief	スクロールイベントの引数を表します。
+*/
+class ScrollEventArgs
+	: public EventArgs
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	ScrollEventArgs();
+	virtual ~ScrollEventArgs();
+
+public:
+	double			NewValue;	///< 新しい値
+	//ScrollEventType	EventType;	///< スクロールイベントの種類
+};
+
+
+/**
 	@brief	
 	@note	このクラスはイベント引数の頻繁な new を避けるために使用する。
 			例えば MouseMove イベントは最悪毎フレームのように発生する可能性があり、new は大きなオーバーヘッドになる。
