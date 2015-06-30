@@ -64,8 +64,8 @@ public:
 	bool GetRenderPressed() const { return m_renderPressed; }
 
 protected:
-	virtual Size ArrangeOverride(Size finalSize);		// 必要ないかも
 	virtual Size MeasureOverride(Size availableSize);	// 必要ないかも
+	virtual Size ArrangeOverride(Size finalSize);		// 必要ないかも
 	virtual void OnRender();
 
 private:

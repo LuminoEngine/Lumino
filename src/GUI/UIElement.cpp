@@ -107,9 +107,13 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
 
+
+	m_desiredSize = MeasureOverride(availableSize);
+
 	const SizeF& size = GetSize();
-	m_desiredSize.Width = std::min(size.Width, availableSize.Width);
-	m_desiredSize.Height = std::min(size.Height, availableSize.Height);
+	m_desiredSize.Width = std::min(size.Width, m_desiredSize.Width);
+	m_desiredSize.Height = std::min(size.Height, m_desiredSize.Height);
+
 
 	// 子要素
 	LN_FOREACH(UIElement* child, m_visualChildren) {
@@ -127,7 +131,9 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	m_finalRect = finalRect;
+	SizeF renderSize = ArrangeOverride(finalRect.GetSize());
+	m_finalRect.Width = renderSize.Width;
+	m_finalRect.Height = renderSize.Height;
 
 	// 子要素 (もし複数あれば m_finalRect の領域に重ねられるように配置される)
 	LN_FOREACH(UIElement* child, m_visualChildren) {

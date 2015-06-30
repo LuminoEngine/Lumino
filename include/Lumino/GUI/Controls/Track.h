@@ -65,8 +65,8 @@ public:
 	ButtonBase* GetIncreaseButton() const { return m_increaseButton; }
 
 protected:
-	virtual Size ArrangeOverride(Size finalSize);
 	virtual Size MeasureOverride(Size availableSize);
+	virtual Size ArrangeOverride(Size finalSize);
 
 private:
 	double		m_value;

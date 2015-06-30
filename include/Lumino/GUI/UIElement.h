@@ -197,6 +197,9 @@ public:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
 
+	virtual SizeF MeasureOverride(const SizeF& constraint) { return SizeF::Zero; }
+	virtual SizeF ArrangeOverride(const SizeF& finalSize) { return finalSize; }
+
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
 	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}

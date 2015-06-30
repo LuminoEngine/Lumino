@@ -6,8 +6,16 @@
 	http://smart-pda.net/wp7/tips/scrollviewer_tips/
 
 	ScrollViewer はメソッド呼び出しを (一般的には一度コマンドキューに溜め込んで) 
-	ScrollContentPresenter に通知する。
-	実際に子要素にオフセットをつけて配置するのは ScrollContentPresenter の役目。
+	ScrollViewer.ScrollInfo に通知する。
+	ScrollViewer が子要素のオフセットを計算するのではない点に注意。
+	
+	ScrollContentPresenter は Child(IScrollInfo) を、TemplatedParent(ScrollViewer).ScrollInfo にセットする。
+	(HookupScrollingComponents で検索)
+
+	IScrollInfo は StackPanel や DocumentViewer、TextBoxView 等として実装される。
+	実際に子要素のオフセットを計算するのはこれらのクラス。
+	これを実現するために、各クラス ScrollData という内部クラスを持っている。
+
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
