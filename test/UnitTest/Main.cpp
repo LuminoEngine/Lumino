@@ -1,17 +1,17 @@
 #include "TestConfig.h"
 
-Platform::PlatformManager*	TestEnvironment::Application = NULL;
-Physics::PhysicsManager*	TestEnvironment::PhysicsManager = NULL;
-GraphicsManager*			TestEnvironment::Manager = NULL;
-Graphics::Renderer*			TestEnvironment::Renderer = NULL;
-Graphics::SwapChain*		TestEnvironment::MainSwapChain = NULL;
-SceneGraphManager*			TestEnvironment::MMDSceneGraph = NULL;
+Platform::PlatformManager*	TestEnv::Application = NULL;
+Physics::PhysicsManager*	TestEnv::PhysicsManager = NULL;
+GraphicsManager*			TestEnv::Manager = NULL;
+Graphics::Renderer*			TestEnv::Renderer = NULL;
+Graphics::SwapChain*		TestEnv::MainSwapChain = NULL;
+SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
 
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TestEnvironment::SaveScreenShot(const TCHAR* filePath)
+void TestEnv::SaveScreenShot(const TCHAR* filePath)
 {
 	MainSwapChain->GetBackBuffer()->Lock()->Save(filePath);
 	MainSwapChain->GetBackBuffer()->Unlock();
@@ -20,9 +20,9 @@ void TestEnvironment::SaveScreenShot(const TCHAR* filePath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool TestEnvironment::EqualsScreenShot(const TCHAR* filePath)
+bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
 {
-	bool r = TestEnvironment::EqualsBitmapFile(MainSwapChain->GetBackBuffer()->Lock(), filePath);
+	bool r = TestEnv::EqualsBitmapFile(MainSwapChain->GetBackBuffer()->Lock(), filePath);
 	MainSwapChain->GetBackBuffer()->Unlock();
 	return r;
 }
@@ -30,7 +30,7 @@ bool TestEnvironment::EqualsScreenShot(const TCHAR* filePath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool TestEnvironment::EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath)
+bool TestEnv::EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath)
 {
 	Imaging::Bitmap bmp2(filePath);
 	bmp1->ConvertToDownFlow();
@@ -41,7 +41,7 @@ bool TestEnvironment::EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* fileP
 //-----------------------------------------------------------------------------
 // プログラム開始時の初期化処理
 //-----------------------------------------------------------------------------
-void TestEnvironment::SetUp()
+void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
 
@@ -66,7 +66,7 @@ void TestEnvironment::SetUp()
 	SceneGraphManager::ConfigData c;
 	c.FileManager = &FileManager::GetInstance();
 	c.PhysicsManager = PhysicsManager;
-	c.GraphicsManager = TestEnvironment::Manager;
+	c.GraphicsManager = TestEnv::Manager;
 	MMDSceneGraph = LN_NEW SceneGraphManager(c);
 	MMDSceneGraph->CreateMMDSceneGraph();
 
@@ -75,7 +75,7 @@ void TestEnvironment::SetUp()
 //-----------------------------------------------------------------------------
 // プログラム終了時の終了処理
 //-----------------------------------------------------------------------------
-void TestEnvironment::TearDown()
+void TestEnv::TearDown()
 {
 	if (MMDSceneGraph) {
 		MMDSceneGraph->ReleaseMMDSceneGraph();
@@ -111,6 +111,6 @@ GTEST_API_ int main(int argc, char **argv)
 #else
 	testing::InitGoogleTest(&argc, argv);
 #endif
-	::testing::AddGlobalTestEnvironment(new TestEnvironment());
+	::testing::AddGlobalTestEnvironment(new TestEnv());
 	return RUN_ALL_TESTS();
 }

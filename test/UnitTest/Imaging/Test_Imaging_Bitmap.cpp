@@ -60,6 +60,6 @@ TEST_F(Test_Imaging_Bitmap, BitBlt)
 	Bitmap bmp1(Size(32, 32), PixelFormat_BYTE_R8G8B8A8);
 	Bitmap bmp2(LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png"));
 	bmp1.BitBlt(Rect(0, 0, 32, 32), &bmp2, Rect(0, 0, 32, 32), Color::White, false);
-	ASSERT_TRUE(TestEnvironment::EqualsBitmapFile(&bmp1, LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png")));
+	ASSERT_TRUE(TestEnv::EqualsBitmapFile(&bmp1, LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png")));
 
 }

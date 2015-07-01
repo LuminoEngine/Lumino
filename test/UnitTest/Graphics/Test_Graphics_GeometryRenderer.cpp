@@ -10,10 +10,10 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_GeometryRenderer, DrawRect)
 {
-	RefPtr<GeometryRenderer> gr(GeometryRenderer::Create(TestEnvironment::Manager));
+	RefPtr<GeometryRenderer> gr(GeometryRenderer::Create(TestEnv::Manager));
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
 	r->SetRenderTarget(0, swap->GetBackBuffer());
 	r->SetDepthBuffer(swap->GetBackBufferDepth());
@@ -27,6 +27,6 @@ TEST_F(Test_Graphics_GeometryRenderer, DrawRect)
 
 	swap->Present();
 
-	//TestEnvironment::SaveScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png"));
-	ASSERT_TRUE(TestEnvironment::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png")));
+	//TestEnv::SaveScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png"));
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png")));
 }

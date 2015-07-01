@@ -18,13 +18,13 @@ TEST_F(Test_Scene_Sprite, Basic)
 
 	SceneGraphManager::ConfigData c;
 	c.FileManager = &FileManager::GetInstance();
-	c.PhysicsManager = TestEnvironment::PhysicsManager;
-	c.GraphicsManager = TestEnvironment::Manager;
+	c.PhysicsManager = TestEnv::PhysicsManager;
+	c.GraphicsManager = TestEnv::Manager;
 	RefPtr<SceneGraphManager> sceneGraph(LN_NEW SceneGraphManager(c));
 
 	sceneGraph->CreateMMDSceneGraph();
 
-	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("../../../src/Scene/Resource/SSNoLighting.fx")));
+	ByteBuffer code(FileSystem::ReadAllBytes(LOCALFILE("../../../src/Scene/Resource/SSNoLighting.fx")));
 	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 	MMEShaderErrorInfo errInfo;
 	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(sceneGraph, shader, &errInfo));
@@ -41,13 +41,13 @@ TEST_F(Test_Scene_Sprite, Basic)
 	sceneGraph->Get3DRootNode()->AddChild(sprite);
 
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
-	while (TestEnvironment::Application->DoEvents())
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
+	while (TestEnv::Application->DoEvents())
 	{
-		if (TestEnvironment::Application->GetMainWindow()->GetSize() != swap->GetBackBuffer()->GetSize())
+		if (TestEnv::Application->GetMainWindow()->GetSize() != swap->GetBackBuffer()->GetSize())
 		{
-			swap->Resize(TestEnvironment::Application->GetMainWindow()->GetSize());
+			swap->Resize(TestEnv::Application->GetMainWindow()->GetSize());
 		}
 
 
@@ -64,6 +64,6 @@ TEST_F(Test_Scene_Sprite, Basic)
 
 	sceneGraph->ReleaseMMDSceneGraph();
 
-	//TestEnvironment::SaveScreenShot(LOCALFILE("test.png"));
-	//ASSERT_TRUE(TestEnvironment::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_IndexBuffer.BasicTriangle.png")));
+	//TestEnv::SaveScreenShot(LOCALFILE("test.png"));
+	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_IndexBuffer.BasicTriangle.png")));
 }

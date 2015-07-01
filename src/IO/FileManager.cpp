@@ -1,7 +1,6 @@
 ﻿
 #include "../Internal.h"
 #include "Archive.h"
-#include <Lumino/IO/FileUtils.h>
 #include <Lumino/IO/FileManager.h>
 
 namespace Lumino

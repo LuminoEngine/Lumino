@@ -11,7 +11,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Shader, Basic)
 {
-	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
+	ByteBuffer code(FileSystem::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
 	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 
 
@@ -38,15 +38,15 @@ TEST_F(Test_Graphics_Shader, Basic)
 
 
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
 
 
 	const int count = 500;
 	RefPtr<Shader> shaders[count];
 
-	while (TestEnvironment::Application->DoEvents())
+	while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap->GetBackBuffer());
 		r->SetDepthBuffer(swap->GetBackBufferDepth());

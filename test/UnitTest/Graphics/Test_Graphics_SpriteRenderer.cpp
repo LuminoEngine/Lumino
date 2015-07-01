@@ -14,7 +14,7 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	RefPtr<Texture> tex1(Texture::Create(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png")));
 	//RefPtr<Texture> tex1(Texture::Create(Size(256, 256)));
 
-	RefPtr<Font> font1(Font::Create(TestEnvironment::Manager->GetFontManager()));
+	RefPtr<Font> font1(Font::Create(TestEnv::Manager->GetFontManager()));
 	font1->SetName(_T("MS PGothic"));
 	font1->SetSize(20);
 //	font1->LookupGlyphData('i', NULL);
@@ -22,23 +22,23 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	loc = font1->AdvanceKerning('j', loc);
 	
 	//Bitmap* tmp = tex1->Lock();
-	//Imaging::TextRenderer tr(tmp, TestEnvironment::Manager->GetFontManager()->GetDefaultFont());
+	//Imaging::TextRenderer tr(tmp, TestEnv::Manager->GetFontManager()->GetDefaultFont());
 	//tr.SetAreaBox(Rect(0, 0, tex1->GetSize()));
 	//tr.DrawText(_T("‚â‚Á‚Æ‘‚¯‚½B(EƒÖEM)"), -1);
 	//tmp->Save(LOCALFILE("TestData/tmp2.png"));
 	//tex1->Unlock();
 
 
-	RefPtr<SpriteRenderer> sr(SpriteRenderer::Create(512, TestEnvironment::Manager));
+	RefPtr<SpriteRenderer> sr(SpriteRenderer::Create(512, TestEnv::Manager));
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
 	r->SetRenderTarget(0, swap->GetBackBuffer());
 	r->SetDepthBuffer(swap->GetBackBufferDepth());
 	r->Clear(true, true, ColorF(0, 1, 1, 1), 1.0f);
 
-	Size size = TestEnvironment::Application->GetMainWindow()->GetSize();
+	Size size = TestEnv::Application->GetMainWindow()->GetSize();
 	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000);
 
 	sr->SetViewProjMatrix(Matrix::Identity, proj);
@@ -50,6 +50,6 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	sr->Flash();
 	swap->Present();
 
-	TestEnvironment::SaveScreenShot(LOCALFILE("TestData/Test_Graphics_SpriteRenderer.DrawRequest2D.png"));
-	//ASSERT_TRUE(TestEnvironment::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png")));
+	TestEnv::SaveScreenShot(LOCALFILE("TestData/Test_Graphics_SpriteRenderer.DrawRequest2D.png"));
+	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png")));
 }

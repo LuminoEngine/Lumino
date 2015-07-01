@@ -13,7 +13,7 @@ protected:
 	virtual void SetUp() 
 	{
 		// シェーダ
-		m_code = FileUtils::ReadAllBytes(LOCALFILE("TestData/PosUV.glsl"));
+		m_code = FileSystem::ReadAllBytes(LOCALFILE("TestData/PosUV.glsl"));
 		m_shader.Attach(Shader::Create((char*)m_code.GetData(), m_code.GetSize()));
 
 		// 頂点バッファ
@@ -48,12 +48,12 @@ TEST_F(Test_Graphics_Texture, BasicTriangle)
 	// テクスチャ
 	RefPtr<Texture> tex1(Texture::Create(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png")));
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
 	m_shader->GetVariables()[0]->SetTexture(tex1);
 
-	//while (TestEnvironment::Application->DoEvents())
+	//while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap->GetBackBuffer());
 		r->SetDepthBuffer(swap->GetBackBufferDepth());
@@ -66,7 +66,7 @@ TEST_F(Test_Graphics_Texture, BasicTriangle)
 		//::Sleep(10);
 	}
 
-	//ASSERT_TRUE(TestEnvironment::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_VertexBuffer.BasicTriangle.png")));
+	//ASSERT_TRUE(TestEnv::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_VertexBuffer.BasicTriangle.png")));
 	swap->GetBackBuffer()->Lock()->Save(LOCALFILE("Test.png"));
 	swap->GetBackBuffer()->Unlock();
 }
@@ -78,12 +78,12 @@ TEST_F(Test_Graphics_Texture, Lock)
 	// テクスチャ
 	RefPtr<Texture> tex1(Texture::Create(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png")));
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
 	m_shader->GetVariables()[0]->SetTexture(tex1);
 
-	//while (TestEnvironment::Application->DoEvents())
+	//while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap->GetBackBuffer());
 		r->SetDepthBuffer(swap->GetBackBufferDepth());
@@ -126,7 +126,7 @@ TEST_F(Test_Graphics_Texture, Lock)
 	::Sleep(1000);
 	//swap->GetBackBuffer()->Lock();
 	//swap->GetBackBuffer()->Unlock();
-	ASSERT_TRUE(TestEnvironment::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_Texture.Lock.png")));
+	ASSERT_TRUE(TestEnv::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_Texture.Lock.png")));
 	swap->GetBackBuffer()->Unlock();
 	//swap->GetBackBuffer()->Lock()->Save(LOCALFILE("Test.png"));
 	//swap->GetBackBuffer()->Unlock();

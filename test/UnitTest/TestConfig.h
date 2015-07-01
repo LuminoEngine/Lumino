@@ -23,7 +23,7 @@ using namespace Lumino::Scene;
 #define LOCALFILEA(fileName) TestUtils::GetFilePathA(__FILE__, fileName).GetCStr()
 #define LOCALFILEW(fileName) TestUtils::GetFilePathW(__FILE__, fileName).GetCStr()
 
-class TestEnvironment : public ::testing::Environment
+class TestEnv : public ::testing::Environment
 {
 public:
 	static Platform::PlatformManager*	Application;

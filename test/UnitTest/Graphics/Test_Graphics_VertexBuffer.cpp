@@ -4,14 +4,49 @@ using namespace Lumino::Imaging;
 class Test_Graphics_VertexBuffer : public ::testing::Test
 {
 protected:
-	virtual void SetUp() {}
+	RefPtr<Shader> m_shader;
+
+	virtual void SetUp()
+	{
+		ByteBuffer code = FileSystem::ReadAllBytes(LOCALFILE("TestData/ColorPos.lnsl"));
+		m_shader.Attach(Shader::Create((char*)code.GetData(), code.GetSize()));
+	}
 	virtual void TearDown() {}
+
 };
+
+// 頂点レイアウト・頂点バッファ
+static VertexElement g_elements[] =
+{
+	{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+	{ 0, VertexElementType_Color4, VertexElementUsage_Color, 0 },
+};
+struct Vertex
+{
+	Vector3		Pos;
+	uint32_t	Color;
+};
+
+//-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_VertexBuffer, Create)
+{
+	Vertex vertices[] =
+	{
+		{ Vector3(-1.0f, -1.0f, 0.0f), 0xFFFF0000 },	// 左下 青
+		{ Vector3(1.0f, -1.0f, 0.0f), 0xFF00FF00 },		// 右下 緑
+		{ Vector3(0.0f, 1.0f, 0.0f), 0xFF0000FF },		// 頂点 赤
+	};
+	RefPtr<VertexBuffer> vb(VertexBuffer::Create(g_elements, LN_ARRAY_SIZE_OF(g_elements), LN_ARRAY_SIZE_OF(vertices), vertices, DeviceResourceUsage_Static));
+
+
+
+}
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_VertexBuffer, BasicTriangle)
 {
-	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
+#if 0
+	ByteBuffer code(FileSystem::ReadAllBytes(LOCALFILE("TestData/ColorPos.glsl")));
 	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 
 	
@@ -35,10 +70,10 @@ TEST_F(Test_Graphics_VertexBuffer, BasicTriangle)
 	RefPtr<VertexBuffer> vb(VertexBuffer::Create(
 		elements, LN_ARRAY_SIZE_OF(elements), LN_ARRAY_SIZE_OF(vertices), vertices, DeviceResourceUsage_Static));
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
-	//while (TestEnvironment::Application->DoEvents())
+	//while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap->GetBackBuffer());
 		r->SetDepthBuffer(swap->GetBackBufferDepth());
@@ -51,7 +86,8 @@ TEST_F(Test_Graphics_VertexBuffer, BasicTriangle)
 		//::Sleep(10);
 	}
 
-	ASSERT_TRUE(TestEnvironment::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_VertexBuffer.BasicTriangle.png")));
+	ASSERT_TRUE(TestEnv::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_VertexBuffer.BasicTriangle.png")));
 	//swap->GetBackBuffer()->Lock()->Save(LOCALFILE("Test.png"));
 	//swap->GetBackBuffer()->Unlock();
+#endif
 }

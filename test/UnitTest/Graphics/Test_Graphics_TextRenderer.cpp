@@ -11,24 +11,24 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_TextRenderer, DrawRequest2D)
 {
-	RefPtr<Font> font1(Font::Create(TestEnvironment::Manager->GetFontManager()));
+	RefPtr<Font> font1(Font::Create(TestEnv::Manager->GetFontManager()));
 	font1->SetName(_T("MS PGothic"));
 	font1->SetSize(20);
 	
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
-	RefPtr<Graphics::TextRenderer> tr(Graphics::TextRenderer::Create(TestEnvironment::Manager));
+	RefPtr<Graphics::TextRenderer> tr(Graphics::TextRenderer::Create(TestEnv::Manager));
 	tr->SetFont(font1);
 
-	while (TestEnvironment::Application->DoEvents())
+	while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap->GetBackBuffer());
 		r->SetDepthBuffer(swap->GetBackBufferDepth());
 		r->Clear(true, true, ColorF::Gray, 1.0f);
 
-		Size size = TestEnvironment::Application->GetMainWindow()->GetSize();
+		Size size = TestEnv::Application->GetMainWindow()->GetSize();
 		Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000);
 		tr->SetViewProjection(Matrix::Identity, proj, size);
 		

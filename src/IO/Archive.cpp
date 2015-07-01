@@ -33,7 +33,7 @@
 #include <Lumino/Base/StringUtils.h>
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/Common.h>
-#include <Lumino/IO/FileUtils.h>
+#include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/Stream.h>
 #include <Lumino/IO/FileStream.h>
 #include <Lumino/IO/FileManager.h>
@@ -412,7 +412,7 @@ size_t ArchiveStream::Read(void* buffer, size_t byteCount)
 //-----------------------------------------------------------------------------
 void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
 {
-	m_seekPoint = FileUtils::CalcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
+	m_seekPoint = FileSystem::CalcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
 }
 
 //=============================================================================
@@ -424,7 +424,7 @@ void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
 //-----------------------------------------------------------------------------
 bool DummyArchive::ExistsFile(const PathName& fileFullPath)
 {
-	return FileUtils::Exists(fileFullPath);
+	return FileSystem::Exists(fileFullPath);
 }
 
 //-----------------------------------------------------------------------------

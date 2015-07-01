@@ -2,7 +2,7 @@
 #include <string>
 #include "../../external/camellia/camellia.h"
 #include <Lumino/IO/Common.h>
-#include <Lumino/IO/FileUtils.h>
+#include <Lumino/IO/FileSystem.h>
 #include "Archive.h"
 #include "ArchiveMaker.h"
 
@@ -126,7 +126,7 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
         //-------------------------------------------------
         // ファイル名の長さとファイルのサイズを書き込む
 		uint32_t nameSize = filename.GetLength();
-		uint32_t fileSize = (uint32_t)FileUtils::GetFileSize(stream);
+		uint32_t fileSize = (uint32_t)FileSystem::GetFileSize(stream);
 
 		WriteU32Padding16(nameSize, fileSize);
 

@@ -11,7 +11,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_IndexBuffer, BasicTriangle)
 {
-	ByteBuffer code(FileUtils::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl")));
+	ByteBuffer code(FileSystem::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl")));
 	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 
 	// 頂点バッファ
@@ -34,10 +34,10 @@ TEST_F(Test_Graphics_IndexBuffer, BasicTriangle)
 	RefPtr<IndexBuffer> ib(IndexBuffer::Create(LN_ARRAY_SIZE_OF(indices), indices, IndexBufferFormat_UInt16, DeviceResourceUsage_Static));
 
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
 
-	//while (TestEnvironment::Application->DoEvents())
+	//while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap->GetBackBuffer());
 		r->SetDepthBuffer(swap->GetBackBufferDepth());
@@ -51,6 +51,6 @@ TEST_F(Test_Graphics_IndexBuffer, BasicTriangle)
 		//::Sleep(10);
 	}
 
-	//TestEnvironment::SaveScreenShot(LOCALFILE("test.png"));
-	ASSERT_TRUE(TestEnvironment::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_IndexBuffer.BasicTriangle.png")));
+	//TestEnv::SaveScreenShot(LOCALFILE("test.png"));
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_IndexBuffer.BasicTriangle.png")));
 }

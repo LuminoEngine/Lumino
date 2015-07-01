@@ -14,26 +14,26 @@ protected:
 TEST_F(Test_Temp, Basic)
 {
 	// 床
-	RefPtr<Physics::Plane> plane1(LN_NEW Physics::Plane(TestEnvironment::PhysicsManager));
+	RefPtr<Physics::Plane> plane1(LN_NEW Physics::Plane(TestEnv::PhysicsManager));
 
 	// 箱
 	Matrix m = Matrix::Translation(Vector3(2, 10, 0));
 	Physics::Box::ConfigData initialData;
 	initialData.Mass = 1.0f;
 	initialData.InitialTransform = &m;
-	RefPtr<Physics::Box> box1(LN_NEW Physics::Box(TestEnvironment::PhysicsManager, Vector3(1, 2, 3), initialData));
+	RefPtr<Physics::Box> box1(LN_NEW Physics::Box(TestEnv::PhysicsManager, Vector3(1, 2, 3), initialData));
 
 
-	Renderer* r = TestEnvironment::Renderer;
-	SwapChain* swap = TestEnvironment::MainSwapChain;
-	while (TestEnvironment::Application->DoEvents())
+	Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
+	while (TestEnv::Application->DoEvents())
 	{
-		TestEnvironment::PhysicsManager->StepSimulation(0.016f);
+		TestEnv::PhysicsManager->StepSimulation(0.016f);
 
 
-		if (TestEnvironment::Application->GetMainWindow()->GetSize() != swap->GetBackBuffer()->GetSize())
+		if (TestEnv::Application->GetMainWindow()->GetSize() != swap->GetBackBuffer()->GetSize())
 		{
-			swap->Resize(TestEnvironment::Application->GetMainWindow()->GetSize());
+			swap->Resize(TestEnv::Application->GetMainWindow()->GetSize());
 		}
 
 		r->SetRenderTarget(0, swap->GetBackBuffer());
@@ -41,8 +41,8 @@ TEST_F(Test_Temp, Basic)
 		r->SetViewport(Rect(0, 0, swap->GetBackBuffer()->GetSize()));
 		r->Clear(true, true, ColorF::Gray, 1.0f);
 
-		TestEnvironment::MMDSceneGraph->UpdateFrame(0.01f);
-		TestEnvironment::MMDSceneGraph->GetMMDViewPane()->Render(swap->GetBackBuffer());
+		TestEnv::MMDSceneGraph->UpdateFrame(0.01f);
+		TestEnv::MMDSceneGraph->GetMMDViewPane()->Render(swap->GetBackBuffer());
 
 		swap->Present();
 		::Sleep(10);
@@ -50,7 +50,7 @@ TEST_F(Test_Temp, Basic)
 
 
 #if 0
-	while (TestEnvironment::Application->DoEvents())
+	while (TestEnv::Application->DoEvents())
 	{
 		::Sleep(32);
 	}
@@ -154,12 +154,12 @@ TEST_F(Test_Temp, Basic)
 	//swap2->Present();
 
 
-	Renderer* r = TestEnvironment::Renderer;//gm.GetRenderer();
-	SwapChain* swap1 = TestEnvironment::MainSwapChain;
+	Renderer* r = TestEnv::Renderer;//gm.GetRenderer();
+	SwapChain* swap1 = TestEnv::MainSwapChain;
 	//RefPtr<SwapChain> swap2(LN_NEW SwapChain(window2));
 	
 	int count = 0;
-	while (TestEnvironment::Application->DoEvents())
+	while (TestEnv::Application->DoEvents())
 	{
 		r->SetRenderTarget(0, swap1->GetBackBuffer());
 		r->SetDepthBuffer(swap1->GetBackBufferDepth());
