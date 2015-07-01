@@ -1,6 +1,6 @@
 ﻿
 #pragma once 
-
+#include <Lumino/IO/FileManager.h>
 #include "../DeviceInterface.h"
 #include "../GraphicsDeviceBase.h"
 #include "DX9Renderer.h"

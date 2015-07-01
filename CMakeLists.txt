@@ -32,6 +32,19 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 #------------------------------
 # Source files.
 
+set(LN_SOURCES_IO
+	include/Lumino/IO/FileManager.h
+	include/Lumino/IO/ASyncIOObject.h
+	src/IO/ArchiveMaker.cpp
+	src/IO/ArchiveMaker.h
+	src/IO/ASyncIOObject.cpp
+	src/IO/FileManager.cpp
+	src/IO/Archive.cpp
+	src/IO/Archive.h
+	external/camellia/camellia.cpp
+	external/camellia/camellia.h
+)
+
 set(LN_SOURCES_Platform
 	include/Lumino/Platform/EventArgs.h
 	include/Lumino/Platform/EventListener.h
@@ -292,6 +305,7 @@ endif()
 
 #--------------------------------------
 # Grouping.
+source_group("IO"			FILES ${LN_SOURCES_IO})
 source_group("Platform"		FILES ${LN_SOURCES_Platform})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Imaging"		FILES ${LN_SOURCES_Imaging})
@@ -302,6 +316,7 @@ source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
 
 set(LN_SOURCES
+	${LN_SOURCES_IO}
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Imaging}

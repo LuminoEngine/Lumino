@@ -1,6 +1,7 @@
 
 #pragma once
 #include <map>
+#include <Lumino/IO/FileManager.h>
 
 // TODO: ‚±‚ê‚ç‚ğv‚¢‚Á‚«‚èŒöŠJ‚µ‚Ä‚é‚Ì‚Í‰½‚Æ‚©‚µ‚½‚¢c
 typedef int  FT_Error;
