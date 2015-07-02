@@ -273,7 +273,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 		while (true)
 		{
 			// ; を探して '\0' に置換。無ければ終端ということで終了
-			int nextSemiColonIdx = StringUtils::IndexOf(cmdLine, _T(";"));
+			int nextSemiColonIdx = StringTraits::IndexOf(cmdLine, _T(";"));
 			if (nextSemiColonIdx == -1) { return; }
 
 			cmdLine[nextSemiColonIdx] = _T('\0');
@@ -301,7 +301,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                         }
 
                         // = の後ろがテクスチャ型変数名になっているはず
-						int idx = StringUtils::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx == -1) {									// テクスチャ変数名が省略されている
 							commandList->Add_RenderColorTarget(index, NULL);// デフォルトに戻すコマンド
 						}
@@ -323,7 +323,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 					else if (cmdLine[6] == _T('D'))
                     {
 						// = の後ろがテクスチャ型変数名になっているはず
-						int idx = StringUtils::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx == -1) {									// テクスチャ変数名が省略されている
 							commandList->Add_RenderDepthStencilTarget(NULL);// デフォルトに戻すコマンド
 						}
@@ -359,7 +359,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                     ///////////////////////////// ClearSetColor
 					if (cmdLine[8] == _T('C'))
 					{
-						int idx = StringUtils::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
 							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -382,7 +382,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                     ///////////////////////////// ClearSetDepth
 					else if (cmdLine[8] == _T('D'))
 					{
-						int idx = StringUtils::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
 							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -427,7 +427,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                 // Pass
                 case _T('P'):
 				{
-					int idx = StringUtils::IndexOf(cmdLine, _T("="));
+					int idx = StringTraits::IndexOf(cmdLine, _T("="));
 					if (idx != -1)
 					{
 						MMEShaderPass* mmeShaderPass = FindMMEShaderPass(&cmdLine[idx + 1]);
@@ -457,7 +457,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                     ///////////////////////////// LoopByCount
 					if (cmdLine[4] == _T('B'))
                     {
-						int idx = StringUtils::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
 							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -485,7 +485,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                     ///////////////////////////// LoopGetIndex
 					else if (cmdLine[4] == _T('G'))
                     {
-						int idx = StringUtils::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
 							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -538,7 +538,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange)
 {
 	*endToRange = false;
-	Array<String> tokens = StringUtils::Split(String(subsetText), _T(","), StringSplitOptions_RemoveEmptyEntries);
+	Array<String> tokens = StringTraits::Split(String(subsetText), _T(","), StringSplitOptions_RemoveEmptyEntries);
 
 	LN_FOREACH(String& token, tokens)
 	{
@@ -618,7 +618,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 	{
 		if (*c == _T(',') || *c == _T('\0'))
 		{
-			StringUtils::StrNCpy(temp, 64, lc, c - lc);
+			StringTraits::StrNCpy(temp, 64, lc, c - lc);
 
 			temp[c - lc] = _T('\0');
 			num = _ttoi(temp);
@@ -660,7 +660,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 		// - が見つかった場合はひとつ前の , (または先頭) からを数値にしておく
 		else if (*c == _T('-'))
 		{
-			StringUtils::StrNCpy(temp, 64, lc, c - lc);
+			StringTraits::StrNCpy(temp, 64, lc, c - lc);
 			temp[c - lc] = _T('\0');
 			last_num = _ttoi(temp);
 			is_range = true;

@@ -30,7 +30,6 @@
 #include "../../external/camellia/camellia.h"
 #include "../Internal.h"
 #include <Lumino/Base/ByteBuffer.h>
-#include <Lumino/Base/StringUtils.h>
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/Common.h>
 #include <Lumino/IO/FileSystem.h>

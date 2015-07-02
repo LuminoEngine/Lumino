@@ -135,7 +135,7 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 				}
 			}
 			// ワイルドカード付きの比較
-			else if (StringUtils::Match(e.MatchingNameKey.GetCStr(), node->GetName().GetCStr()))
+			else if (StringTraits::Match(e.MatchingNameKey.GetCStr(), node->GetName().GetCStr()))
 			{
 				data->PriorityShaderIndex = i;
 				break;

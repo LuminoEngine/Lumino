@@ -110,14 +110,13 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 
 	m_desiredSize = MeasureOverride(availableSize);
 
-	const SizeF& size = GetSize();
-	m_desiredSize.Width = std::min(size.Width, m_desiredSize.Width);
-	m_desiredSize.Height = std::min(size.Height, m_desiredSize.Height);
-
+	//const SizeF& size = GetSize();
+	//m_desiredSize.Width = std::min(size.Width, m_desiredSize.Width);
+	//m_desiredSize.Height = std::min(size.Height, m_desiredSize.Height);
 
 	// 子要素
 	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->MeasureLayout(size);
+		child->MeasureLayout(m_desiredSize);
 	}
 }
 
@@ -139,6 +138,23 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 	LN_FOREACH(UIElement* child, m_visualChildren) {
 		child->ArrangeLayout(m_finalRect);
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF UIElement::MeasureOverride(const SizeF& constraint)
+{
+	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
+	// ユーザー指定のサイズがある場合はそれを返す。
+	// ただし、constraint を超えることはできない。
+
+	SizeF size;
+	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : size.Width;
+	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : size.Height;
+	size.Width = std::min(size.Width, constraint.Width);
+	size.Height = std::min(size.Height, constraint.Height);
+	return size;
 }
 
 //-----------------------------------------------------------------------------
