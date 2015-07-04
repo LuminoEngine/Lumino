@@ -37,6 +37,7 @@ UIElement::UIElement(GUIManager* manager)
 	, m_horizontalAlignment(HorizontalAlignment::Stretch)
 	, m_verticalAlignment(VerticalAlignment::Stretch)
 	, m_rootLogicalParent(NULL)
+	, m_templateParent(NULL)
 {
 	LN_SAFE_ADDREF(m_manager);
 
@@ -88,9 +89,16 @@ void UIElement::ApplyTemplate()
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
 	// 子要素を優先
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		UIElement* e = child->CheckMouseHoverElement(globalPt);
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	UIElement* e = child->CheckMouseHoverElement(globalPt);
+	//	if (e != NULL) { return e; }
+	//}
+	if (m_templateChild != NULL)
+	{
+		UIElement* e = m_templateChild->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
+		// 子論理要素は UIElement の担当ではない。
+		// ContetntControl 等でこの関数をオーバーライドし、そちらに実装する。
 	}
 
 	if (m_finalRect.Contains(globalPt)) {
@@ -118,9 +126,12 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	//m_desiredSize.Height = std::min(size.Height, m_desiredSize.Height);
 
 	// 子要素
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->MeasureLayout(m_desiredSize);
+	if (m_templateChild != NULL) {
+		m_templateChild->MeasureLayout(m_desiredSize);
 	}
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	child->MeasureLayout(m_desiredSize);
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -138,9 +149,12 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 	m_finalRect.Height = renderSize.Height;
 
 	// 子要素 (もし複数あれば m_finalRect の領域に重ねられるように配置される)
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->ArrangeLayout(m_finalRect);
+	if (m_templateChild != NULL) {
+		m_templateChild->ArrangeLayout(m_finalRect);
 	}
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	child->ArrangeLayout(m_finalRect);
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -204,9 +218,12 @@ void UIElement::UpdateLayout()
 void UIElement::Render()
 {
 	// 子要素
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->Render();
+	if (m_templateChild != NULL) {
+		m_templateChild->Render();
 	}
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	child->Render();
+	//}
 
 	OnRender();
 }
@@ -217,9 +234,12 @@ void UIElement::Render()
 bool UIElement::OnEvent(EventType type, EventArgs* args)
 {
 	// 子要素
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		if (child->OnEvent(type, args)) { return true; }
+	if (m_templateChild != NULL) {
+		if (m_templateChild->OnEvent(type, args)) { return true; }
 	}
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	if (child->OnEvent(type, args)) { return true; }
+	//}
 
 	switch (type)
 	{
@@ -272,23 +292,39 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 	OnApplyTemplate(m_combinedLocalResource);
 
 	// 子要素
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	if (m_templateChild != NULL) {
+		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
 	}
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	//}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::AddVisualChild(UIElement* child)
+void UIElement::SetTemplateChild(UIElement* child)
 {
 	LN_VERIFY_RETURN(child != NULL);
-	LN_VERIFY_RETURN(child->m_parent == NULL);
-
+	LN_VERIFY_RETURN(child->m_templateParent == NULL);
 	RefPtr<UIElement> t(child, true);
-	m_visualChildren.Add(t);
+	m_templateChild = child;
 	child->m_parent = this;
+	child->m_templateParent = this;
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//void UIElement::AddVisualChild(UIElement* child)
+//{
+//	LN_VERIFY_RETURN(child != NULL);
+//	LN_VERIFY_RETURN(child->m_parent == NULL);
+//
+//	RefPtr<UIElement> t(child, true);
+//	m_visualChildren.Add(t);
+//	child->m_parent = this;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -517,6 +553,65 @@ ContentPresenter::~ContentPresenter()
 
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentPresenter::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+{
+	UIElement::ApplyTemplateHierarchy(parent);
+	if (m_content != NULL) {
+		m_content->ApplyTemplateHierarchy(m_combinedLocalResource);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF ContentPresenter::MeasureOverride(const SizeF& constraint)
+{
+	if (m_content != NULL)
+	{
+		m_content->MeasureLayout(constraint);
+		return m_content->GetDesiredSize();
+	}
+	return UIElement::MeasureOverride(constraint);
+
+#if 0
+	SizeF desiredSize = UIElement::MeasureOverride(constraint);
+	if (m_content != NULL)
+	{
+		m_content->MeasureLayout(constraint);
+		const SizeF& contentDesiredSize = m_content->GetDesiredSize();
+		desiredSize.Width  = std::max(desiredSize.Width, contentDesiredSize.Width);
+		desiredSize.Height = std::max(desiredSize.Height, contentDesiredSize.Height);
+	}
+	return desiredSize;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF ContentPresenter::ArrangeOverride(const SizeF& finalSize)
+{
+	if (m_content != NULL) {
+		m_content->ArrangeLayout(RectF(0, 0, finalSize));
+	}
+	return finalSize;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentPresenter::Render()
+{
+	if (m_content != NULL) {
+		m_content->Render();
+	}
+	UIElement::Render();
+}
+
+
 //=============================================================================
 // ItemsPresenter
 //=============================================================================
@@ -607,18 +702,9 @@ void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 	OnApplyTemplate(m_combinedLocalResource);
 
 	// 子要素
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	if (m_templateChild != NULL) {
+		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
 	}
-
-	//// ローカルリソースを更新し、
-	//UIElement::ApplyTemplateHierarchy(parent);
-
-	//// ControlTemplate の適用処理
-	//ControlTemplate* t;
-	//if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
-	//	t->Apply(this);
-	//}
 }
 
 
@@ -634,6 +720,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ContentControl);
 ContentControl::ContentControl(GUIManager* manager)
 	: Control(manager)
 	, m_childElement(NULL)
+	, m_contentPresenter(NULL)
 {
 
 }
@@ -669,13 +756,23 @@ void ContentControl::SetContent(Variant value)
 		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 		//m_childElement->SetParent(this);
 
-		// TODO: ContentPresenter に追加するべき
-		AddVisualChild(m_childElement);
+		m_contentPresenter->SetContent(m_childElement);
 
 		// 子要素のテーマを直ちに更新
 		if (m_combinedLocalResource != NULL) {
 			m_childElement->ApplyTemplate();
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentControl::PollingTemplateChildCreated(UIElement* element)
+{
+	ContentPresenter* presenter = dynamic_cast<ContentPresenter*>(element);
+	if (presenter != NULL) {
+		m_contentPresenter = presenter;
 	}
 }
 
