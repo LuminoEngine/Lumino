@@ -39,7 +39,7 @@ void Panel::Children_ItemAdded(UIElement* item)
 	// 子要素の VisualTree を更新しなおす
 	if (item != NULL) {
 		//m_visualChildren.Add(item);
-		AddVisualChild(item);
+		AddChild(item);
 		item->ApplyTemplate();
 	}
 }

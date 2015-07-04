@@ -991,6 +991,18 @@ EXIT:
 //-----------------------------------------------------------------------------
 void GUIManager::BuildDefaultTheme()
 {
+	// RootPane
+	{
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		t->SetTargetType(_T("RootPane"));
+
+		RefPtr<UIElementFactory> presenter1(LN_NEW UIElementFactory(this));
+		presenter1->SetTypeName(_T("ContentPresenter"));
+		t->SetVisualTreeRoot(presenter1);
+
+		m_defaultTheme->AddControlTemplate(t);
+	}
+
 	// Brush (ƒ{ƒ^ƒ“˜g)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:

@@ -86,8 +86,10 @@ UIElement* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	// 子の処理
 	LN_FOREACH(UIElementFactory* c, m_children) {
 		RefPtr<UIElement> e(c->CreateInstance(rootLogicalParent));
-		element->AddVisualChild(e);
+		element->AddChild(e);
 	}
+
+	rootLogicalParent->PollingTemplateChildCreated(element);
 	return element;
 }
 
@@ -117,7 +119,7 @@ void ControlTemplate::Apply(Control* control)
 
 	if (m_visualTreeRoot != NULL) {
 		RefPtr<UIElement> element(m_visualTreeRoot->CreateInstance(control));
-		control->AddVisualChild(element);
+		control->SetTemplateChild(element);
 	}
 
 	// プロパティ適用
@@ -167,7 +169,7 @@ void DataTemplate::Apply(Control* control)
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
 	if (m_visualTreeRoot != NULL) {
-		control->AddVisualChild(m_visualTreeRoot->CreateInstance(control));
+		control->SetTemplateChild(m_visualTreeRoot->CreateInstance(control));
 	}
 
 	// TODO: プロパティ適用等も。

@@ -137,8 +137,8 @@ ListBox::ListBox(GUIManager* manager)
 	: Control(manager)
 	, m_listBoxItems(LN_NEW ListBoxItemList(this))
 {
-	m_itemsPanel.Attach(LN_NEW StackPanel(manager));
-	AddVisualChild(m_itemsPanel);
+	//m_itemsPanel.Attach(LN_NEW StackPanel(manager));
+	//AddVisualChild(m_itemsPanel);
 }
 
 //-----------------------------------------------------------------------------

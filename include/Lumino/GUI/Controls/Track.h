@@ -80,10 +80,12 @@ public:
 	float GetViewportSize() const { return m_viewportSize; }
 
 protected:
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalRect);
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+	virtual void Render();
 
 private:
 	void CoerceLength(float& componentLength, float trackLength);

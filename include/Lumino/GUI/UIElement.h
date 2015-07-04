@@ -201,6 +201,8 @@ public:
 	/// この関数は必要なタイミングでレイアウトシステムから呼び出されます。通常、明示的に呼び出す必要はありません。
 	void ApplyTemplate();
 
+
+
 public:
 	const SizeF& GetDesiredSize() const {
 		return m_desiredSize;
@@ -221,7 +223,7 @@ public:
 	virtual bool OnEvent(EventType type, EventArgs* args);
 
 	// IAddChild
-	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
+	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }	// 論理要素の追加。オーバーライドする。
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
 public:	// internal
@@ -231,16 +233,22 @@ public:	// internal
 protected:
 	virtual const String& GetTypeID() const = 0;
 
-	friend class Decorator;
-	friend class Control;
-	friend class ContentControl;
-	friend class Panel;
+	//friend class Decorator;
+	//friend class Control;
+	//friend class ContentControl;
+	//friend class Panel;
+public:	// internal
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
+
+private:
 	friend class UIElementFactory;
 	friend class ControlTemplate;
 	friend class DataTemplate;
-	virtual void AddVisualChild(UIElement* child);	///< AddChild() は論理ツリーへの追加、AddVisualChild() はビジュアルツリーへの追加。
+	void SetTemplateChild(UIElement* child);
+	//virtual void AddVisualChild(UIElement* child);	///< AddChild() は論理ツリーへの追加、AddVisualChild() はビジュアルツリーへの追加。
+protected:
+	virtual void PollingTemplateChildCreated(UIElement* element) {}
 
 private:
 	// TypedRoutedEvent からコールバックされる。On～とは別に、単にイベントを発生させるコールバクとして必要。(TypedRoutedEvent は状態を持てないので)
@@ -337,8 +345,10 @@ protected:
 	/// 直接の子 Visual リスト。
 	/// このリストに論理要素は直接含まない。論理要素は これらの Visual の下にある ContentPresenter または ItemsPresenter の子として追加される。
 	/// 例えば Button::SetContent() で セットされた UIElement は m_visualChildren から辿れる ContentPresenter に追加される。
-	Array< RefPtr<UIElement> >	m_visualChildren;	// TOOD: List にしなくてもいいかも？
+	//Array< RefPtr<UIElement> >	m_visualChildren;	// TOOD: List にしなくてもいいかも？
 	//UIElement*		m_visualChildren;
+	RefPtr<UIElement>	m_templateChild;
+	UIElement*			m_templateParent;
 };
 
 /**
@@ -434,7 +444,16 @@ public:
 	ContentPresenter(GUIManager* manager);
 	virtual ~ContentPresenter();
 
+	void SetContent(UIElement* content) { m_content = content; }
+
 protected:
+	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+	virtual void Render();
+
+private:
+	RefPtr<UIElement>	m_content;
 	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
 };
 
@@ -523,11 +542,14 @@ protected:
 	virtual void AddChild(const Variant& value) { SetContent(value); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
+	virtual void PollingTemplateChildCreated(UIElement* element);
+
 protected:
 	// override UIElement
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 private:
+	ContentPresenter*	m_contentPresenter;
 	Variant		m_content;		
 	RefPtr<UIElement>	m_childElement;	///< m_content が UIElement であればそれを指す
 };

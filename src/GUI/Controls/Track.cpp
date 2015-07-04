@@ -77,7 +77,7 @@ Track::~Track()
 void Track::SetDecreaseButton(ButtonBase* button)
 {
 	m_decreaseButton = button;
-	AddVisualChild(button);		// VisualChild ‚Æ‚µ‚Ä‚¨‚­‚±‚Æ‚Å OnRender() ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é
+	if (m_decreaseButton != NULL) { m_decreaseButton->ApplyTemplate(); }
 }
 
 //-----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ void Track::SetDecreaseButton(ButtonBase* button)
 void Track::SetThumb(Thumb* thumb)
 {
 	m_thumb = thumb;
-	AddVisualChild(thumb);		// VisualChild ‚Æ‚µ‚Ä‚¨‚­‚±‚Æ‚Å OnRender() ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é
+	if (m_thumb != NULL) { m_thumb->ApplyTemplate(); }
 }
 
 //-----------------------------------------------------------------------------
@@ -95,7 +95,18 @@ void Track::SetThumb(Thumb* thumb)
 void Track::SetIncreaseButton(ButtonBase* button)
 {
 	m_increaseButton = button;
-	AddVisualChild(button);		// VisualChild ‚Æ‚µ‚Ä‚¨‚­‚±‚Æ‚Å OnRender() ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é
+	if (m_increaseButton != NULL) { m_increaseButton->ApplyTemplate(); }
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Track::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+{
+	Control::ApplyTemplateHierarchy(parent);
+	if (m_decreaseButton != NULL) { m_decreaseButton->ApplyTemplate(); }
+	if (m_thumb != NULL) { m_thumb->ApplyTemplate(); }
+	if (m_increaseButton != NULL) { m_increaseButton->ApplyTemplate(); }
 }
 
 //-----------------------------------------------------------------------------
@@ -189,6 +200,17 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 	}
 
 	return finalSize;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Track::Render()
+{
+	Control::Render();
+	if (m_decreaseButton != NULL) { m_decreaseButton->Render(); }
+	if (m_thumb != NULL) { m_thumb->Render(); }
+	if (m_increaseButton != NULL) { m_increaseButton->Render(); }
 }
 
 //-----------------------------------------------------------------------------
