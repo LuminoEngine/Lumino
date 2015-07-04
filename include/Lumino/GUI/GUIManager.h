@@ -52,6 +52,7 @@ public:
 public:	// internal
 	ResourceDictionary* GetDefaultTheme() { return m_defaultTheme; }
 	CombinedLocalResource* GetRootCombinedResource() { return m_rootCombinedResource; }
+	EventArgsPool* GetEventArgsPool() { return &m_eventArgsPool; }
 
 private:
 	void UpdateMouseHover(const PointF& mousePos);

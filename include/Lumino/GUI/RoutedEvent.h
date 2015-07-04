@@ -1,5 +1,6 @@
 
 #pragma once
+#include <functional>
 
 namespace Lumino
 {
@@ -29,7 +30,7 @@ template<class TClass, typename TEventArgs>
 class TypedRoutedEvent : public RoutedEvent
 {
 public:
-	typedef void (TClass::*CallEventHandler)(CoreObject* sender, TEventArgs*);
+	//typedef void (TClass::*CallEventHandler)(CoreObject* sender, TEventArgs*);
 	typedef void (TClass::*OnEvent)(TEventArgs*);
 
 	// Event を直接参照してはならない。このクラスは Property と同じく、複数の UIElement で共有される。状態を持ってはならない。
@@ -40,8 +41,9 @@ public:
 	//	: m_name(name)
 	//	, m_raiseEvent(raiseEvent)
 	//{}
-	TypedRoutedEvent(const String& name, OnEvent onEvent, CallEventHandler callEventHandler)
+	TypedRoutedEvent(const String& name, OnEvent onEvent, std::function< void(TClass*, CoreObject*, TEventArgs*) > callEventHandler/*CallEventHandler callEventHandler*/)
 		: m_name(name)
+		//, m_callEventHandler(callEventHandler)
 		, m_callEventHandler(callEventHandler)
 		, m_onEvent(onEvent)
 	{}
@@ -56,7 +58,8 @@ public:
 		TClass* instance = static_cast<TClass*>(target);
 		TEventArgs* et = static_cast<TEventArgs*>(e);
 		//(instance->*m_raiseEvent)(sender, et);
-		(instance->*m_callEventHandler)(sender, et);
+		//(instance->*m_callEventHandler)(sender, et);
+		m_callEventHandler(instance, sender, et);
 	}
 
 	virtual void Raise(CoreObject* target, CoreObject* sender, EventArgs* e)
@@ -69,7 +72,8 @@ public:
 
 private:
 	String		m_name;
-	CallEventHandler	m_callEventHandler;
+	//CallEventHandler	m_callEventHandler;
+	std::function< void(TClass*, CoreObject*, TEventArgs*) >	m_callEventHandler;
 	OnEvent	m_onEvent;
 };
 

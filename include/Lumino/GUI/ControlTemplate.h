@@ -91,13 +91,19 @@ public:
 	void SetTargetType(const String& fullTypeName) { m_targetType = fullTypeName; }
 	const String&  GetTargetType() const { return m_targetType; }
 
+	void SetPropertyValue(const String& propertyName, const Variant& value) { m_propertyValueList.SetValue(propertyName, value); }
+	const Variant& SetPropertyValue(const String& propertyName) const { return m_propertyValueList.GetValue(propertyName); }
+
 	void SetVisualTreeRoot(UIElementFactory* factory) { m_visualTreeRoot = factory; }
 
 	/// 指定された Control にこのテンプレートを適用します。
 	void Apply(Control* control);
 
 private:
+	typedef SortedArray<String, Variant>	PropertyValueList;
+
 	String						m_targetType;		///< 対象コントロール名 ("Button" 等)
+	PropertyValueList			m_propertyValueList;
 	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< テンプレートの VisualTree のルートノード
 };
 

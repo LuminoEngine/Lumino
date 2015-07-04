@@ -15,6 +15,8 @@
 
 		テーマの切り替えは CSS じゃダメなの？
 		→ CSS でウィンドウのシステムボタンをカスタマイズできるの？
+		→ ウィンドウのクライアント領域の背景と枠を消して、Glass だけにしたいときは？
+			→ 背景ON/OFFプロパティが必要になりそう・・・
 
 
 	[2015/6/30] Qt Quick のようなコントロールのカスタマイズは？
@@ -34,6 +36,7 @@
 		↓
 
 		親コンテナの Padding を考慮できない。
+		BackgroundPadding とか専用のプロパティが必要になってしまう。
 
 
 	[2015/6/9] AddChild
@@ -765,6 +768,8 @@
 #include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include <Lumino/GUI/Controls/Thumb.h>
+#include <Lumino/GUI/Controls/Track.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/GUIManager.h>
 
@@ -816,7 +821,10 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(ContentPresenter::TypeID, ContentPresenter::CreateInstance);
 	RegisterFactory(ItemsPresenter::TypeID, ItemsPresenter::CreateInstance);
 	RegisterFactory(ButtonChrome::TypeID, ButtonChrome::CreateInstance);
+	RegisterFactory(Button::TypeID, Button::CreateInstance);
 	RegisterFactory(ListBoxChrome::TypeID, ListBoxChrome::CreateInstance);
+	RegisterFactory(ThumbChrome::TypeID, ThumbChrome::CreateInstance);
+	RegisterFactory(Thumb::TypeID, Thumb::CreateInstance);
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
 	BuildDefaultTheme();
@@ -863,6 +871,7 @@ void GUIManager::RegisterFactory(const String& typeFullName, ObjectFactory facto
 CoreObject* GUIManager::CreateObject(const String& typeFullName)
 {
 	ObjectFactory f = m_objectFactoryMap[typeFullName];
+	LN_THROW(f != NULL, KeyNotFoundException, typeFullName.GetCStr());
 	return f(this);
 }
 
@@ -1044,6 +1053,55 @@ void GUIManager::BuildDefaultTheme()
 
 		m_defaultTheme->AddControlTemplate(t);
 	}
+
+	// Thumb (枠 Brush)
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
+		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(0, 64, 32, 32));
+		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundFrameBrush"), obj);
+	}
+	// Thumb (枠背景 Brush)
+	{
+		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
+		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->SetSourceRect(Rect(8, 64 + 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundInnerBrush"), obj);
+	}
+	// Thumb
+	{
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		t->SetTargetType(_T("Thumb"));
+
+		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		ef1->SetTypeName(_T("ThumbChrome"));
+		//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+		t->SetVisualTreeRoot(ef1);
+
+		m_defaultTheme->AddControlTemplate(t);
+	}
+
+
+	// Track
+	{
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		t->SetTargetType(_T("Track"));
+
+		RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
+		button1->SetTypeName(_T("Button"));
+		t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
+
+		RefPtr<UIElementFactory> thumb1(LN_NEW UIElementFactory(this));
+		thumb1->SetTypeName(_T("Thumb"));
+		t->SetPropertyValue(Track::ThumbProperty, thumb1);
+
+		RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
+		button2->SetTypeName(_T("Button"));
+		t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
+
+		m_defaultTheme->AddControlTemplate(t);
+	}
+
 }
 
 } // namespace GUI

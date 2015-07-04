@@ -28,7 +28,7 @@ CoreObject::~CoreObject()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CoreObject::SetValue(const String& propertyName, const Variant& value)
+void CoreObject::SetPropertyValue(const String& propertyName, const Variant& value)
 {
 	Property* prop;
 	if (m_propertyList.TryGetValue(propertyName, &prop))
@@ -38,15 +38,16 @@ void CoreObject::SetValue(const String& propertyName, const Variant& value)
 		return;
 	}
 
-	// TODO: キーが無ければ例外
-	m_propertyDataStore.SetValue(propertyName, value);
-	OnPropertyChanged(propertyName, value);
+	// キーが無ければ例外
+	LN_THROW(0, KeyNotFoundException);
+	//m_propertyDataStore.SetValue(propertyName, value);
+	//OnPropertyChanged(propertyName, value);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Variant CoreObject::GetValue(const String& propertyName) const
+Variant CoreObject::GetPropertyValue(const String& propertyName) const
 {
 	Property* prop;
 	if (m_propertyList.TryGetValue(propertyName, &prop))
@@ -166,6 +167,7 @@ Variant::Variant(const SizeF& value)
 //-----------------------------------------------------------------------------
 Variant::~Variant()
 {
+	Release();
 }
 
 //-----------------------------------------------------------------------------

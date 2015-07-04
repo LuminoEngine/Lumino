@@ -364,6 +364,8 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 		locData->OutlineBitmapTopLeftPosition = Point::Zero;
 		locData->OuterTopLeftPosition = locData->BitmapTopLeftPosition;
 	}
+	
+	return locData;
 }
 
 //-----------------------------------------------------------------------------

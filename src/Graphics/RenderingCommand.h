@@ -139,7 +139,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1);
-		printf("RenderingCommandList::AddCommand 0() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 0() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2>
@@ -150,7 +150,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2);
-		printf("RenderingCommandList::AddCommand 1() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 1() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3>
@@ -161,7 +161,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3);
-		printf("RenderingCommandList::AddCommand 2() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 2() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4>
@@ -172,7 +172,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4);
-		printf("RenderingCommandList::AddCommand 3() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 3() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
@@ -183,7 +183,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4, a5);
-		printf("RenderingCommandList::AddCommand 4() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 4() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
@@ -194,7 +194,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4, a5, a6);
-		printf("RenderingCommandList::AddCommand 5() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 5() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
@@ -205,7 +205,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7);
-		printf("RenderingCommandList::AddCommand 6() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 6() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
@@ -216,7 +216,7 @@ public:
 		cmd.m_commandList = this;
 		cmd.m_dataHandle = t->m_dataHandle;
 		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7, a8);
-		printf("RenderingCommandList::AddCommand 8() s %p\n", this);
+		//printf("RenderingCommandList::AddCommand 8() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
 

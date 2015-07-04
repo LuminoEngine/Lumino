@@ -8,6 +8,22 @@ namespace GUI
 {
 
 /**
+	@brief		マウスドラッグが関係するイベント引数です。
+*/
+class DragEventArgs
+	: public EventArgs
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	DragEventArgs(float xOffset, float yOffset) { XOffset = xOffset; YOffset = yOffset; }
+	virtual ~DragEventArgs() {}
+
+public:
+	float XOffset;		///< ドラッグ開始点からの水平距離
+	float YOffset;		///< ドラッグ開始点からの垂直距離
+};
+
+/**
 	@brief
 	@note		Thumb はマウスドラッグによる移動量を通知するためのコントロール。
 				Thumb 自体の位置を移動するものではない点に注意。
@@ -22,8 +38,9 @@ public:
 	static PropertyID	IsDraggingProperty;		///< ドラッグ中であるかを示す値
 
 	static EventID		DragStartedEvent;		///< ドラッグ開始イベント
-	static EventID		DragCompletedEvent;		///< ドラッグ終了イベント
 	static EventID		DragDeltaEvent;			///< ドラッグ中の移動イベント
+	static EventID		DragCompletedEvent;		///< ドラッグ終了イベント
+	static EventID		DragCanceledEvent;		///< ドラッグキャンセルイベント
 
 public:
 	Thumb(GUIManager* manager);
@@ -32,12 +49,22 @@ public:
 	/// ドラッグ中であるかを確認する
 	bool IsDragging() const { return m_isDragging; }
 
+	/// ドラッグをキャンセルする
+	void CancelDrag();
+
 protected:
+	virtual void OnDragStarted(DragEventArgs* e)	{ if (!e->Handled) { RaiseEvent(DragStartedEvent, this, e); } }
+	virtual void OnDragDelta(DragEventArgs* e)		{ if (!e->Handled) { RaiseEvent(DragDeltaEvent, this, e); } }
+	virtual void OnDragCompleted(DragEventArgs* e)	{ if (!e->Handled) { RaiseEvent(DragCompletedEvent, this, e); } }
+	virtual void OnDragCanceled(DragEventArgs* e)	{ if (!e->Handled) { RaiseEvent(DragCanceledEvent, this, e); } }
+
+	// override
 	virtual void OnMouseMove(MouseEventArgs* e);
-	virtual void OnMouseLeftButtonDown(MouseEventArgs* e);
-	virtual void OnMouseLeftButtonUp(MouseEventArgs* e);
+	virtual void OnMouseDown(MouseEventArgs* e);
+	virtual void OnMouseUp(MouseEventArgs* e);
 
 private:
+	PointF	m_lastScreenPosition;
 	bool	m_isDragging;
 };
 
@@ -64,11 +91,15 @@ public:
 	bool GetRenderPressed() const { return m_renderPressed; }
 
 protected:
-	virtual Size MeasureOverride(Size availableSize);	// 必要ないかも
-	virtual Size ArrangeOverride(Size finalSize);		// 必要ないかも
+	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
+	//virtual Size MeasureOverride(Size availableSize);	// 必要ないかも
+	//virtual Size ArrangeOverride(Size finalSize);		// 必要ないかも
 	virtual void OnRender();
 
 private:
+	RefPtr<Graphics::TextureBrush>	m_bgFrameBrush;
+	RefPtr<Graphics::TextureBrush>	m_bgInnerBrush;
+
 	bool	m_renderMouseOver;
 	bool	m_renderPressed;
 };

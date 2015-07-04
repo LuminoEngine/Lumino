@@ -24,6 +24,22 @@ enum VariantType
 	VariantType_Max,			///< (Terminator)
 };
 
+class TypeInfo
+{
+public:
+	TypeInfo() {}
+
+	TypeInfo(const TCHAR* fullName)
+		: m_fullName(fullName)
+	{ }
+
+
+	bool operator == (const TypeInfo& info) const { return m_fullName == info.m_fullName; }
+	bool operator < (const TypeInfo& info) const { return m_fullName < info.m_fullName; }
+
+private:
+	String	m_fullName;	///< 完全修飾名
+};
 
 /**
 	@brief		
@@ -41,10 +57,10 @@ public:
 
 
 	/// プロパティの値を設定します。
-	virtual void SetValue(const String& propertyName, const Variant& value);
+	virtual void SetPropertyValue(const String& propertyName, const Variant& value);
 
 	/// プロパティの値を取得します。
-	virtual Variant GetValue(const String& propertyName) const;
+	virtual Variant GetPropertyValue(const String& propertyName) const;
 
 	String ToString();
 
@@ -75,6 +91,9 @@ protected:
 
 	void OnPropertyChanged(const String& name, const Variant& newValue);
 
+private:
+	friend TypeInfo GetTypeInfo(CoreObject* obj);
+	virtual TypeInfo GetThisTypeInfo() const { return TypeInfo(); };	// TODO: 純粋仮想関数にしてマクロ定義を強制する
 
 private:
 	typedef SortedArray<String, Property*>	PropertyList;
@@ -88,13 +107,25 @@ private:
 
 #define LN_CORE_OBJECT_TYPE_INFO_DECL() \
 	private: \
+		static TypeInfo m_typeInfo; \
 		static void* m_coreObjectBindingTypeData; \
+		virtual TypeInfo GetThisTypeInfo() const; \
 	public: \
+		static TypeInfo GetClassTypeInfo(); \
 		virtual void* GetBindingTypeData() const { return m_coreObjectBindingTypeData; } \
 		static void SetBindingTypeData(void* data) { m_coreObjectBindingTypeData = data; }
 
-#define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassType) \
-	void* subClassType::m_coreObjectBindingTypeData = NULL;
+#define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassFullName) \
+	TypeInfo subClassFullName::m_typeInfo(_T(#subClassFullName)); \
+	void* subClassFullName::m_coreObjectBindingTypeData = NULL; \
+	TypeInfo subClassFullName::GetThisTypeInfo() const { return m_typeInfo; } \
+	TypeInfo subClassFullName::GetClassTypeInfo() { return m_typeInfo; }
+
+/// 指定されたオブジェクトの型情報を取得する
+inline TypeInfo GetTypeInfo(CoreObject* obj)
+{
+	return obj->GetThisTypeInfo();
+}
 
 /**
 	@brief		
@@ -114,7 +145,7 @@ public:
 	Variant(CoreObject* obj);
 
 	template<class T>
-	Variant(RefPtr<T> obj)
+	Variant(const RefPtr<T>& obj)
 		: m_type(VariantType_Unknown)
 		, m_uint(0)
 	{
@@ -140,11 +171,13 @@ public:
 
 
 	template<typename T>
-	T Cast() const;	// 不正なキャストをコンパイルエラーとして検出するため、この関数は未定義にしておく。
+	T Cast() const { return static_cast<T>(GetObject()); }
 
 	template<> SizeF Cast() const { return GetSizeF(); }
 	template<> bool Cast() const { return GetBool(); }
 	template<> int Cast() const { return GetInt(); }
+	template<> float Cast() const { return GetFloat(); }
+	template<> CoreObject* Cast() const { return GetObject(); }
 
 private:
 	void Copy(const Variant& obj);

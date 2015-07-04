@@ -26,10 +26,10 @@ int main()
 		//RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
 		GUI::RootPane* workbench1 = app->GetGUIManager()->GetDefaultRootPane();
 		//workbench1->SetSize(SizeF(640, 480));
-		workbench1->SetValue(GUI::RootPane::SizeProperty, SizeF(640, 480));
+		workbench1->SetPropertyValue(GUI::RootPane::SizeProperty, SizeF(640, 480));
 
-		RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
-		workbench1->SetContent(panel1);
+		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
+		//workbench1->SetContent(panel1);
 
 		////app->GetGUIManager()->CreateUIElement("Button");
 		//RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));
@@ -44,6 +44,7 @@ int main()
 		//button2->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
 		//panel1->GetChildren()->Add(button2);
 
+#if 0
 		RefPtr<GUI::ListBox> listbox1(LN_NEW GUI::ListBox(app->GetGUIManager()));
 		listbox1->SetSize(SizeF(200, 300));
 		panel1->GetChildren()->Add(listbox1);
@@ -51,6 +52,17 @@ int main()
 		RefPtr<GUI::Button> button3(LN_NEW GUI::Button(app->GetGUIManager()));
 		button3->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
 		listbox1->InsertItem(0, button3);
+#endif
+#if 0
+		RefPtr<GUI::Thumb> thumb1(LN_NEW GUI::Thumb(app->GetGUIManager()));
+		//thumb1->SetSize(SizeF(16, 32));
+		workbench1->SetContent(thumb1);
+#endif
+		RefPtr<GUI::Track> track1(LN_NEW GUI::Track(app->GetGUIManager()));
+		track1->SetMaximum(70);
+		track1->SetValue(20);
+		track1->SetViewportSize(25);
+		workbench1->SetContent(track1);
 
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();

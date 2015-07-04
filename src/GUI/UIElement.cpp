@@ -1,6 +1,5 @@
 
 #include "../Internal.h"
-#include <Lumino/Property.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/GUI/GUIManager.h>
@@ -24,6 +23,8 @@ const String	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
 const String	UIElement::MouseMoveEvent(_T("MouseMove"));
 const String	UIElement::MouseLeaveEvent(_T("MouseLeave"));
 const String	UIElement::MouseEnterEvent(_T("MouseEnter"));
+const String	UIElement::MouseDownEvent(_T("MouseDown"));
+const String	UIElement::MouseUpEvent(_T("MouseUp"));
 
 //-----------------------------------------------------------------------------
 //
@@ -46,7 +47,9 @@ UIElement::UIElement(GUIManager* manager)
 	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// ÉCÉxÉìÉgÇÃìoò^
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, &UIElement::OnMouseMove, &UIElement::CallMouseMoveEvent);
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent,	&UIElement::OnMouseMove,	[](UIElement* t, CoreObject* s, MouseEventArgs* e){ t->MouseMove.Raise(s, e); });
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	&UIElement::OnMouseDown,	[](UIElement* t, CoreObject* s, MouseEventArgs* e){ t->MouseDown.Raise(s, e); });
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		&UIElement::OnMouseUp,		[](UIElement* t, CoreObject* s, MouseEventArgs* e){ t->MouseUp.Raise(s, e); });
 
 	// çÌèúó\íË
 	//m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
@@ -226,8 +229,10 @@ bool UIElement::OnEvent(EventType type, EventArgs* args)
 		OnMouseMove(static_cast<MouseEventArgs*>(args));
 		break;
 	case Lumino::GUI::EventType_MouseButtonDown:
+		OnMouseDown(static_cast<MouseEventArgs*>(args));
 		break;
 	case Lumino::GUI::EventType_MouseButtonUp:
+		OnMouseUp(static_cast<MouseEventArgs*>(args));
 		break;
 	case Lumino::GUI::EventType_MouseWheel:
 		break;
@@ -277,8 +282,12 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //-----------------------------------------------------------------------------
 void UIElement::AddVisualChild(UIElement* child)
 {
+	LN_VERIFY_RETURN(child != NULL);
+	LN_VERIFY_RETURN(child->m_parent == NULL);
+
 	RefPtr<UIElement> t(child, true);
 	m_visualChildren.Add(t);
+	child->m_parent = this;
 }
 
 //-----------------------------------------------------------------------------
@@ -293,8 +302,6 @@ void UIElement::TemplateBindingSource_PropertyChanged(CoreObject* sender, Proper
 			//SetValue(info.ThisProp, e);
 		}
 	}
-	//printf("TemplateBindingSource_PropertyChanged\n");
-	//_tprintf(L"%s:%d\n", e->PropertyName.GetCStr(), sender->GetValue(e->PropertyName));
 }
 
 //=============================================================================
@@ -441,19 +448,19 @@ ButtonChrome::~ButtonChrome()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ButtonChrome::SetValue(const String& propertyName, const Variant& value)
+void ButtonChrome::SetPropertyValue(const String& propertyName, const Variant& value)
 {
 	if (propertyName == FrameWidthProperty) { m_frameWidth = value.GetFloat(); return; }
-	Decorator::SetValue(propertyName, value);
+	Decorator::SetPropertyValue(propertyName, value);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Variant ButtonChrome::GetValue(const String& propertyName) const
+Variant ButtonChrome::GetPropertyValue(const String& propertyName) const
 {
 	if (propertyName == FrameWidthProperty) { return Variant(m_frameWidth); }
-	return Decorator::GetValue(propertyName);
+	return Decorator::GetPropertyValue(propertyName);
 }
 
 //-----------------------------------------------------------------------------
@@ -647,8 +654,12 @@ void ContentControl::SetContent(Variant value)
 	m_content = value;
 
 	// Object å^Ç≈Ç†ÇÍÇŒ UIElement Ç∆Ç∆ÇµÇƒéÊÇËèoÇµÇƒÇ›ÇÈ
-	if (m_content.GetType() == VariantType_Object) {
-		m_childElement.Attach(dynamic_cast<UIElement*>(m_content.GetObject()));
+	if (m_content.GetType() == VariantType_Object)
+	{
+		UIElement* element = dynamic_cast<UIElement*>(m_content.GetObject());
+		if (element != NULL) {
+			m_childElement = element;
+		}
 	}
 
 	m_content.SetFloat(0);
@@ -656,7 +667,7 @@ void ContentControl::SetContent(Variant value)
 	if (m_childElement != NULL)
 	{
 		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// ä˘Ç…êeóvëfÇ™Ç†Ç¡ÇΩ
-		m_childElement->SetParent(this);
+		//m_childElement->SetParent(this);
 
 		// TODO: ContentPresenter Ç…í«â¡Ç∑ÇÈÇ◊Ç´
 		AddVisualChild(m_childElement);

@@ -120,7 +120,25 @@ void ControlTemplate::Apply(Control* control)
 		control->AddVisualChild(element);
 	}
 
-	// TODO: プロパティ適用等も。
+	// プロパティ適用
+	for (auto prop : m_propertyValueList)
+	{
+		bool isElement = false;
+		if (prop.second.GetType() == VariantType_Object)
+		{
+			UIElementFactory* factory = static_cast<UIElementFactory*>(prop.second.GetObject());
+			if (factory != NULL)
+			{
+				RefPtr<UIElement> element(factory->CreateInstance(control));
+				control->SetPropertyValue(prop.first, element);
+				isElement = true;
+			}
+		}
+
+		if (!isElement) {
+			control->SetPropertyValue(prop.first, prop.second);
+		}
+	}
 }
 
 

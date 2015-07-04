@@ -3,6 +3,7 @@
 
 #include <Lumino/Base/Array.h>
 #include <Lumino/Graphics/Painter.h>
+#include <Lumino/Property.h>
 #include "Common.h"
 #include "EventArgs.h"
 #include "DependencyObject.h"
@@ -111,6 +112,9 @@ public:
 	static const String	MouseMoveEvent;
 	static const String	MouseLeaveEvent;
 	static const String	MouseEnterEvent;
+	static const String	MouseDownEvent;
+	static const String	MouseUpEvent;
+
 
 public:
 	UIElement(GUIManager* manager);
@@ -146,10 +150,18 @@ public:
 	VerticalAlignment GetVerticalAlignment() const { return m_verticalAlignment; }
 
 	/// ヒットテストの有無を設定します。
-	void SetHitTest(bool enabled) { SetValue(IsHitTestProperty, Variant(enabled)); }
+	void SetHitTest(bool enabled) { SetPropertyValue(IsHitTestProperty, Variant(enabled)); }
 
 	/// ヒットテストの有無を取得します。
-	bool IsHitTest() const { return GetValue(IsHitTestProperty).GetBool(); }
+	bool IsHitTest() const { return GetPropertyValue(IsHitTestProperty).GetBool(); }
+
+
+	void CaptureMouse() {}			// TODO
+	void ReleaseMouseCapture() {}	// TODO
+
+
+
+
 
 
 
@@ -157,6 +169,8 @@ public:
 	Event02<CoreObject*, MouseEventArgs*>	MouseMove;
 	Event02<CoreObject*, MouseEventArgs*>	MouseEnter;
 	Event02<CoreObject*, MouseEventArgs*>	MouseLeave;
+	Event02<CoreObject*, MouseEventArgs*>	MouseDown;
+	Event02<CoreObject*, MouseEventArgs*>	MouseUp;
 
 	// イベントの扱い方は WPF とは少し違う。
 	// WPF の ButtonBase.Click は、
@@ -231,9 +245,11 @@ protected:
 private:
 	// TypedRoutedEvent からコールバックされる。On～とは別に、単にイベントを発生させるコールバクとして必要。(TypedRoutedEvent は状態を持てないので)
 	// どんな手を使っても、結局 TypedRoutedEvent から Event02 を呼べる手段が必要なので、これらは必ず必要になる。
-	void CallMouseMoveEvent(CoreObject* sender, MouseEventArgs* e) { MouseMove.Raise(sender, e); }
-	void CallMouseEnterEvent(CoreObject* sender, MouseEventArgs* e) { MouseEnter.Raise(sender, e); }
-	void CallMouseLeaveEvent(CoreObject* sender, MouseEventArgs* e) { MouseLeave.Raise(sender, e); }
+	//void CallMouseMoveEvent(CoreObject* sender, MouseEventArgs* e) { MouseMove.Raise(sender, e); }
+	//void CallMouseEnterEvent(CoreObject* sender, MouseEventArgs* e) { MouseEnter.Raise(sender, e); }
+	//void CallMouseLeaveEvent(CoreObject* sender, MouseEventArgs* e) { MouseLeave.Raise(sender, e); }
+	//void CallMouseDownEvent(CoreObject* sender, MouseEventArgs* e) { MouseDown.Raise(sender, e); }
+	//void CallMouseUpEvent(CoreObject* sender, MouseEventArgs* e) { MouseUp.Raise(sender, e); }
 
 protected:
 	void RegisterRoutedEvent(RoutedEvent* ev) {
@@ -272,10 +288,12 @@ protected:
 	// ハンドリングしたら e->Handled を true にする。そして super を呼び出す。こうすることで、RaiseEvent() でのイベント検索や
 	// ルーティングを行わないので負荷軽減ができる。
 	virtual void OnMouseMove(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
+	virtual void OnMouseDown(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseDownEvent, this, e); } }
+	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
 
 
 	GUIManager*				m_manager;
-	UIElement*				m_parent;				///< 論理ツリー上の親要素
+	UIElement*				m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
 
 	VisualStateInstance*	m_visualStateInstance;
 
@@ -387,8 +405,8 @@ public:
 
 public:
 	// override CoreObject
-	virtual void SetValue(const String& propertyName, const Variant& value);
-	virtual Variant GetValue(const String& propertyName) const;
+	virtual void SetPropertyValue(const String& propertyName, const Variant& value);
+	virtual Variant GetPropertyValue(const String& propertyName) const;
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);

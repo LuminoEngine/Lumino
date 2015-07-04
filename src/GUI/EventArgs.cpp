@@ -87,6 +87,18 @@ EventArgsPool::EventArgsPool()
 //-----------------------------------------------------------------------------
 EventArgsPool::~EventArgsPool()
 {
+	for (auto list : m_pool)
+	{
+		for (auto e : (*list.second))
+		{
+			e->Release();
+		}
+		delete list.second;
+	}
+
+
+
+
 	LN_FOREACH(auto obj, m_mouseEventArgsPool) {
 		obj->Release();
 	}
@@ -105,6 +117,8 @@ MouseEventArgs* EventArgsPool::CreateMouseEventArgs(MouseButton button, short wh
 		args = LN_NEW MouseEventArgs();
 		m_mouseEventArgsPool.Add(args);
 	}
+
+	args->Handled = false;
 
 	args->Button = button;
 	args->Wheel = wheel;
@@ -125,6 +139,8 @@ KeyEventArgs* EventArgsPool::CreateKeyEventArgs(Key keyCode, bool isAlt, bool is
 		args = LN_NEW KeyEventArgs();
 		m_keyEventArgsPool.Add(args);
 	}
+
+	args->Handled = false;
 
 	args->KeyCode = keyCode;
 	args->IsAlt = isAlt;

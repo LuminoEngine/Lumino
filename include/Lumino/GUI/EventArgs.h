@@ -112,7 +112,7 @@ public:
 			C# 側で作成したユーザーコントロールが MouseEventArgs を使用することは想定しなければならない。
 
 			union や struct にした場合、これはこれで言語別に余計なオーバーヘッドや合わせこみの実装が増えることになる。
-			例えば C# では値渡しのままでよいのか、ref をつけるのか。Ruby で struct は使えないので結局 new する羽目になるがいいのか。
+			例えば C# でBは値渡しのままでよいのか、ref をつけるのか。Ruby で struct は使えないので結局 new する羽目になるがいいのか。
 
 			Pool しておけば、若干直感的ではなくなるが、バインダ側の new も抑えることができる。
 
@@ -127,7 +127,57 @@ public:
 	MouseEventArgs* CreateMouseEventArgs(MouseButton button, short wheel, short x, short y);
 	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);
 
+	template<class TEventArgs, typename ...TArgs>
+	TEventArgs* Create(TArgs... args)
+	{
+		TEventArgs* e = static_cast<TEventArgs* >(Find(TEventArgs::GetClassTypeInfo()));
+		if (e == NULL) {
+			e = LN_NEW TEventArgs(args...);
+			Register(e);
+		}
+		e->Handled = false;
+		e->AddRef();
+		return e;
+	}
+
 private:
+	typedef Array<EventArgs*>					EventArgsList;
+	typedef SortedArray<TypeInfo, EventArgsList*>	EventArgsMap;
+	EventArgsMap	m_pool;
+
+	EventArgs* Find(const TypeInfo& typeId)
+	{
+		EventArgsList* list;
+		if (m_pool.TryGetValue(typeId, &list))
+		{
+			for (auto e : (*list))
+			{
+				if (e->GetRefCount() == 1) {	// このリストからしか参照されていなければ返す
+					return e;
+				}
+			}
+		}
+		return NULL;
+	}
+
+	void Register(EventArgs* e)
+	{
+		EventArgsList* list;
+		if (!m_pool.TryGetValue(GetTypeInfo(e), &list))
+		{
+			list = LN_NEW EventArgsList();
+			m_pool.Add(GetTypeInfo(e), list);
+		}
+		list->Add(e);
+	}
+
+
+	//Array<MouseEventArgs*>	m_mouseEventArgsPool;
+
+
+
+
+
 	template<class T>
 	T FindFreeObject(const Array<T>& pool)
 	{
