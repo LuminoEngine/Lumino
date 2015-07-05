@@ -48,9 +48,9 @@ UIElement::UIElement(GUIManager* manager)
 	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// ƒCƒxƒ“ƒg‚Ì“o˜^
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent,	&UIElement::OnMouseMove,	[](UIElement* t, CoreObject* s, MouseEventArgs* e){ t->MouseMove.Raise(s, e); });
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	&UIElement::OnMouseDown,	[](UIElement* t, CoreObject* s, MouseEventArgs* e){ t->MouseDown.Raise(s, e); });
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		&UIElement::OnMouseUp,		[](UIElement* t, CoreObject* s, MouseEventArgs* e){ t->MouseUp.Raise(s, e); });
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseMove(e); });
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseDown(e); });
+	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		[](UIElement* target, MouseEventArgs* e) { target->MouseUp(e); });
 
 	// íœ—\’è
 	//m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());

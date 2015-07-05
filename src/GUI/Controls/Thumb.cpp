@@ -40,6 +40,10 @@ Thumb::Thumb(GUIManager* manager)
 	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragStartedEvent, &Thumb::OnDragStarted, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseMove.Raise(s, e); });
 	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragDeltaEvent, &Thumb::OnDragDelta, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseDown.Raise(s, e); });
 
+	// Register handler
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Thumb, MouseEventArgs, UIElement::MouseMoveEvent, Handler_MouseMove);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Thumb, MouseEventArgs, UIElement::MouseDownEvent, Handler_MouseDown);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Thumb, MouseEventArgs, UIElement::MouseUpEvent, Handler_MouseUp);
 }
 
 //-----------------------------------------------------------------------------
@@ -70,7 +74,7 @@ void Thumb::CancelDrag()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Thumb::OnMouseMove(MouseEventArgs* e)
+void Thumb::Handler_MouseMove(MouseEventArgs* e)
 {
 	if (m_isDragging)
 	{
@@ -85,13 +89,12 @@ void Thumb::OnMouseMove(MouseEventArgs* e)
 		e->Handled = true;
 		return;
 	}
-	Control::OnMouseMove(e);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Thumb::OnMouseDown(MouseEventArgs* e)
+void Thumb::Handler_MouseDown(MouseEventArgs* e)
 {
 	if (!m_isDragging)
 	{
@@ -108,13 +111,12 @@ void Thumb::OnMouseDown(MouseEventArgs* e)
 		e->Handled = true;
 		return;
 	}
-	Control::OnMouseDown(e);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Thumb::OnMouseUp(MouseEventArgs* e)
+void Thumb::Handler_MouseUp(MouseEventArgs* e)
 {
 	if (m_isDragging)
 	{
@@ -130,7 +132,6 @@ void Thumb::OnMouseUp(MouseEventArgs* e)
 		e->Handled = true;
 		return;
 	}
-	Control::OnMouseUp(e);
 }
 
 //=============================================================================

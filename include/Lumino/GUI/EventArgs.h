@@ -40,6 +40,7 @@ public:
 	virtual ~EventArgs();
 
 public:
+	CoreObject*	Sender;
 	UIElement* HandlerOwner;
 	bool Handled;
 
@@ -134,6 +135,10 @@ public:
 		if (e == NULL) {
 			e = LN_NEW TEventArgs(args...);
 			Register(e);
+		}
+		else {
+			e->~TEventArgs();
+			new (e)TEventArgs(args...);
 		}
 		e->Handled = false;
 		e->AddRef();

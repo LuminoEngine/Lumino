@@ -62,6 +62,9 @@ Track::Track(GUIManager* manager)
 	LN_DEFINE_PROPERTY		(Track, ButtonBase*, DecreaseButtonProperty, &Track::SetDecreaseButton, &Track::GetDecreaseButton, NULL);
 	LN_DEFINE_PROPERTY		(Track, Thumb*, ThumbProperty, &Track::SetThumb, &Track::GetThumb, NULL);
 	LN_DEFINE_PROPERTY		(Track, ButtonBase*, IncreaseButtonProperty, &Track::SetIncreaseButton, &Track::GetIncreaseButton, NULL);
+
+	// Register handler
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragDeltaEvent, Handler_Thumb_DragDelta);
 }
 
 //-----------------------------------------------------------------------------
@@ -225,6 +228,7 @@ void Track::UpdateComponent(Control* oldValue, Control* newValue)
 		m_visualChildren.Add(newValue);
 	}
 	if (newValue != NULL) {
+		newValue->SetParent(this);
 		newValue->ApplyTemplate();
 	}
 }
@@ -288,6 +292,16 @@ void Track::CalcScrollBarComponentsSize(
 	*outDecreaseButtonLength = decreaseButtonLength;
 	*outThumbLength = thumbLength;
 	*outIncreaseButtonLength = increaseButtonLength;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Track::Handler_Thumb_DragDelta(DragEventArgs* e)
+{
+	// TODO: ここでブレーク張るとレンダリングコマンドの実行でクラッシュする
+	m_value = e->XOffset;
+	printf("%f\n", m_value);
 }
 
 } // namespace GUI

@@ -58,10 +58,10 @@ protected:
 	virtual void OnDragCompleted(DragEventArgs* e)	{ if (!e->Handled) { RaiseEvent(DragCompletedEvent, this, e); } }
 	virtual void OnDragCanceled(DragEventArgs* e)	{ if (!e->Handled) { RaiseEvent(DragCanceledEvent, this, e); } }
 
-	// override
-	virtual void OnMouseMove(MouseEventArgs* e);
-	virtual void OnMouseDown(MouseEventArgs* e);
-	virtual void OnMouseUp(MouseEventArgs* e);
+private:
+	void Handler_MouseMove(MouseEventArgs* e);
+	void Handler_MouseDown(MouseEventArgs* e);
+	void Handler_MouseUp(MouseEventArgs* e);
 
 private:
 	PointF	m_lastScreenPosition;

@@ -5,6 +5,34 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/5] イベント処理メモ
+		本ライブラリとしては、
+		・On～ は RaiseEvent() を呼び出す方向で統一する。
+			これはパフォーマンスを考慮した対応。
+			RaiseEvent() は要素が持つハンドラを全検索したりするため、処理にやや時間がかかる可能性がある。
+			On～ で処理済みをチェックし、不必要な場合は RaiseEvent() しないようにすることで
+			無駄な処理を行わないようにねらう。
+		
+		また、現在コントロールがルーティングイベントをハンドリングする方法は2つあり、
+		1つは AddHandler すること、もう一つは LN_REGISTER_ROUTED_EVENT_HANDLER すること。
+		(WPF では前者を「動的ハンドラ」後者を「静的ハンドラ」と呼んでいるみたい)
+
+		静的ハンドラは動的ハンドラが呼び出される前に呼び出され、e.Handled がマークされた場合
+		後続の動的ハンドラ呼び出し及びルーティングは行われない。
+		https://msdn.microsoft.com/ja-jp/library/ms597875%28v=vs.110%29.aspx
+
+
+	[2015/7/5] イベント処理メモ
+		・On～ はルーティングイベントのハンドラ。
+			例えば、RaiseEvent(MouseDown) すると、そこから OnMouseDown() が呼ばれる。
+			OnMouseDown() が RaiseEvent(MouseDown) するのではない点に注意。
+			OnMouseDown() から RaiseEvent(Click) のように他のイベントを発行するのはあり。
+
+			ただ、WPF の中では統一されていないみたい。
+			MouseDown は Raise→On のようになっているが、ButtonBase.OnClick は On→Raise。
+
+
+
 
 	[2015/6/30] そもそも VisualTree なんて作る必要あるの？
 		

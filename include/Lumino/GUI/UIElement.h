@@ -166,11 +166,11 @@ public:
 
 
 
-	Event02<CoreObject*, MouseEventArgs*>	MouseMove;
-	Event02<CoreObject*, MouseEventArgs*>	MouseEnter;
-	Event02<CoreObject*, MouseEventArgs*>	MouseLeave;
-	Event02<CoreObject*, MouseEventArgs*>	MouseDown;
-	Event02<CoreObject*, MouseEventArgs*>	MouseUp;
+	Event01<MouseEventArgs*>	MouseMove;
+	Event01<MouseEventArgs*>	MouseEnter;
+	Event01<MouseEventArgs*>	MouseLeave;
+	Event01<MouseEventArgs*>	MouseDown;
+	Event01<MouseEventArgs*>	MouseUp;
 
 	// イベントの扱い方は WPF とは少し違う。
 	// WPF の ButtonBase.Click は、
@@ -263,15 +263,34 @@ protected:
 	void RegisterRoutedEvent(RoutedEvent* ev) {
 		m_routedEventList.Add(ev->GetName(), ev);
 	}
+	void RegisterRoutedEventHandler(EventID id, RoutedEventHandler* handler) {
+		m_routedEventHandlerList.Add(id, handler);
+	}
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const String& eventName, CoreObject* sender, EventArgs* e)
 	{
-		// まず、this に AddHandler されているイベントハンドラを呼び出す。
+		e->Sender = sender;
+		RaiseEventInternal(eventName, sender, e);
+	}
+
+	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
+	void RaiseEventInternal(const String& eventName, CoreObject* sender, EventArgs* e)
+	{
+		RoutedEventHandler* handler;
+		if (m_routedEventHandlerList.TryGetValue(eventName, &handler))
+		{
+			handler->Call(this, e);
+			if (e->Handled) {
+				return;
+			}
+		}
+
+		// this に AddHandler されているイベントハンドラを呼び出す。
 		LN_FOREACH(RoutedEventList::Pair& pair, m_routedEventList)
 		{
 			if (pair.first == eventName) {
-				pair.second->CallEvent(this, sender, e);
+				pair.second->CallEvent(this/*, sender*/, e);
 				break;	// ev と同じイベントは1つしかリスト内に無いはず
 			}
 		}
@@ -279,18 +298,19 @@ protected:
 		// bubble
 		if (!e->Handled && m_parent != NULL)
 		{
+			m_parent->RaiseEventInternal(eventName, sender, e);
 
-			LN_FOREACH(RoutedEventList::Pair& pair, m_parent->m_routedEventList)
-			{
-				if (pair.first == eventName) {
-					pair.second->Raise(m_parent, sender, e);	// 親のOn～ が呼ばれる
-					break;	// ev と同じイベントは1つしかリスト内に無いはず
-				}
-			}
+			//LN_FOREACH(RoutedEventList::Pair& pair, m_parent->m_routedEventList)
+			//{
+			//	if (pair.first == eventName) {
+			//		pair.second->CallEvent(this, sender, e);
+			//		//pair.second->Raise(m_parent, sender, e);	// 親のOn～ が呼ばれる
+			//		break;	// ev と同じイベントは1つしかリスト内に無いはず
+			//	}
+			//}
 
 			//m_parent->RaiseEvent(eventName, sender, e);
 		}
-		
 	}
 
 	// サブクラスはできるだけ Event にハンドラを登録するのではなく、On～をオーバーライドすることでイベントをハンドリングする。
@@ -320,6 +340,8 @@ protected:
 	typedef SortedArray<String, RoutedEvent*>	RoutedEventList;
 	RoutedEventList	m_routedEventList;
 
+	typedef SortedArray<EventID, RoutedEventHandler*>	RoutedEventHandlerList;
+	RoutedEventHandlerList	m_routedEventHandlerList;
 
 	// Property
 	SizeF				m_size;

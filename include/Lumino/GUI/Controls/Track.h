@@ -93,7 +93,7 @@ private:
 	void CalcSliderComponentsSize(float trackLength, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
 	void CalcScrollBarComponentsSize(float trackLength, float viewportSize, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
 
-	void Thumb_DragDelta(DragEventArgs* e);
+	void Handler_Thumb_DragDelta(DragEventArgs* e);
 
 private:
 	float				m_value;
