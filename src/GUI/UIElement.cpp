@@ -89,17 +89,17 @@ void UIElement::ApplyTemplate()
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
 	// 子要素を優先
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	UIElement* e = child->CheckMouseHoverElement(globalPt);
-	//	if (e != NULL) { return e; }
-	//}
-	if (m_templateChild != NULL)
-	{
-		UIElement* e = m_templateChild->CheckMouseHoverElement(globalPt);
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		UIElement* e = child->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
-		// 子論理要素は UIElement の担当ではない。
-		// ContetntControl 等でこの関数をオーバーライドし、そちらに実装する。
 	}
+	//if (m_templateChild != NULL)
+	//{
+	//	UIElement* e = m_templateChild->CheckMouseHoverElement(globalPt);
+	//	if (e != NULL) { return e; }
+	//	// 子論理要素は UIElement の担当ではない。
+	//	// ContetntControl 等でこの関数をオーバーライドし、そちらに実装する。
+	//}
 
 	if (m_finalRect.Contains(globalPt)) {
 		return this;
@@ -145,6 +145,8 @@ void UIElement::ArrangeLayout(const RectF& finalRect)
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
 	SizeF renderSize = ArrangeOverride(finalRect.GetSize());
+	m_finalRect.X = finalRect.X;
+	m_finalRect.Y = finalRect.Y;
 	m_finalRect.Width = renderSize.Width;
 	m_finalRect.Height = renderSize.Height;
 
@@ -218,12 +220,12 @@ void UIElement::UpdateLayout()
 void UIElement::Render()
 {
 	// 子要素
-	if (m_templateChild != NULL) {
-		m_templateChild->Render();
-	}
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	child->Render();
+	//if (m_templateChild != NULL) {
+	//	m_templateChild->Render();
 	//}
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->Render();
+	}
 
 	OnRender();
 }
@@ -234,12 +236,12 @@ void UIElement::Render()
 bool UIElement::OnEvent(EventType type, EventArgs* args)
 {
 	// 子要素
-	if (m_templateChild != NULL) {
-		if (m_templateChild->OnEvent(type, args)) { return true; }
-	}
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	if (child->OnEvent(type, args)) { return true; }
+	//if (m_templateChild != NULL) {
+	//	if (m_templateChild->OnEvent(type, args)) { return true; }
 	//}
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		if (child->OnEvent(type, args)) { return true; }
+	}
 
 	switch (type)
 	{
@@ -292,12 +294,12 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 	OnApplyTemplate(m_combinedLocalResource);
 
 	// 子要素
-	if (m_templateChild != NULL) {
-		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
-	}
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	//if (m_templateChild != NULL) {
+	//	m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
 	//}
+	LN_FOREACH(UIElement* child, m_visualChildren) {
+		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -305,12 +307,25 @@ void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //-----------------------------------------------------------------------------
 void UIElement::SetTemplateChild(UIElement* child)
 {
-	LN_VERIFY_RETURN(child != NULL);
-	LN_VERIFY_RETURN(child->m_templateParent == NULL);
-	RefPtr<UIElement> t(child, true);
-	m_templateChild = child;
-	child->m_parent = this;
-	child->m_templateParent = this;
+	//LN_VERIFY_RETURN(child != NULL);
+
+	// 古い要素があればいろいろ解除する
+	if (m_templateChild != NULL)
+	{
+		m_visualChildren.Remove(m_templateChild);
+		// TODO: templateBinding 用の PropertyChanged がひつようかもしれない。
+		PropertyChanged.Clear();
+		//rootLogicalParent->PropertyChanged(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
+	}
+	if (child != NULL)
+	{
+		LN_VERIFY_RETURN(child->m_templateParent == NULL);
+		RefPtr<UIElement> t(child, true);
+		m_templateChild = child;
+		m_visualChildren.Add(child);
+		child->m_parent = this;
+		child->m_templateParent = this;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -556,6 +571,16 @@ ContentPresenter::~ContentPresenter()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void ContentPresenter::SetContent(UIElement* content)
+{
+	m_content = content;
+	m_visualChildren.Add(m_content);	// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
+}
+
+#if 1
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void ContentPresenter::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
 	UIElement::ApplyTemplateHierarchy(parent);
@@ -611,6 +636,7 @@ void ContentPresenter::Render()
 	UIElement::Render();
 }
 
+#endif
 
 //=============================================================================
 // ItemsPresenter

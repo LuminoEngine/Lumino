@@ -19,6 +19,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::DragEventArgs);
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Thumb);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Thumb);
 
+PropertyID	Thumb::IsDraggingProperty(_T("IsDragging"));
+
 EventID	 	Thumb::DragStartedEvent(_T("DragStarted"));
 EventID		Thumb::DragDeltaEvent(_T("DragDelta"));
 EventID		Thumb::DragCompletedEvent(_T("DragCompleted"));
@@ -31,6 +33,13 @@ Thumb::Thumb(GUIManager* manager)
 	: Control(manager)
 	, m_isDragging(false)
 {
+	// Register property
+	LN_DEFINE_PROPERTY(Thumb, bool, IsDraggingProperty, NULL, &Thumb::IsDragging, false);
+
+	// Register event
+	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragStartedEvent, &Thumb::OnDragStarted, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseMove.Raise(s, e); });
+	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragDeltaEvent, &Thumb::OnDragDelta, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseDown.Raise(s, e); });
+
 }
 
 //-----------------------------------------------------------------------------

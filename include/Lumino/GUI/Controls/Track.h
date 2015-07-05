@@ -88,9 +88,12 @@ protected:
 	virtual void Render();
 
 private:
+	void UpdateComponent(Control* oldValue, Control* newValue);
 	void CoerceLength(float& componentLength, float trackLength);
 	void CalcSliderComponentsSize(float trackLength, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
 	void CalcScrollBarComponentsSize(float trackLength, float viewportSize, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
+
+	void Thumb_DragDelta(DragEventArgs* e);
 
 private:
 	float				m_value;
@@ -101,6 +104,8 @@ private:
 	RefPtr<Thumb>		m_thumb;
 	RefPtr<ButtonBase>	m_increaseButton;
 	float				m_viewportSize;
+
+	//Delegate01
 };
 
 

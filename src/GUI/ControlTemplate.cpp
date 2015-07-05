@@ -117,6 +117,9 @@ void ControlTemplate::Apply(Control* control)
 {
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
+	// いろいろリセット。TemplateBinding も解除。
+	control->SetTemplateChild(NULL);
+
 	if (m_visualTreeRoot != NULL) {
 		RefPtr<UIElement> element(m_visualTreeRoot->CreateInstance(control));
 		control->SetTemplateChild(element);

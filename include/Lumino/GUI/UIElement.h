@@ -267,6 +267,7 @@ protected:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const String& eventName, CoreObject* sender, EventArgs* e)
 	{
+		// まず、this に AddHandler されているイベントハンドラを呼び出す。
 		LN_FOREACH(RoutedEventList::Pair& pair, m_routedEventList)
 		{
 			if (pair.first == eventName) {
@@ -339,16 +340,22 @@ private:
 	typedef Array<TemplateBindingInfo>	TemplateBindingInfoList;
 	TemplateBindingInfoList		m_templateBindingInfoList;
 
-	UIElement*		m_rootLogicalParent;	///< テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
+	/// テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
+	/// 例えば Button にテンプレートを適用すると、Button よりしたのビジュアル要素.m_rootLogicalParent はすべて Button を指す。
+	UIElement*		m_rootLogicalParent;
 
 protected:
-	/// 直接の子 Visual リスト。
-	/// このリストに論理要素は直接含まない。論理要素は これらの Visual の下にある ContentPresenter または ItemsPresenter の子として追加される。
-	/// 例えば Button::SetContent() で セットされた UIElement は m_visualChildren から辿れる ContentPresenter に追加される。
-	//Array< RefPtr<UIElement> >	m_visualChildren;	// TOOD: List にしなくてもいいかも？
-	//UIElement*		m_visualChildren;
+
 	RefPtr<UIElement>	m_templateChild;
 	UIElement*			m_templateParent;
+
+	// このリストに追加された UIElement は、OnEvent、Render、ヒットテスト等がこのクラスより自動的に呼ばれる。
+	// ただし、レイアウト関係はノータッチ。Measure や Arrange は呼ばれない。
+	// 使い方としては、論理要素だろうがビジュアル要素だろうが関係なくまずはこのリストに追加しておく。
+	// レイアウトは (メンドくさいが) 個々のコンテナ要素で面倒を見る。
+	// ただし、m_templateChild は このクラスでも面倒を見てあげる。でも、凝ったレイアウトが必要な時は
+	// オーバーライドする必要がある。
+	Array<UIElement*>	m_visualChildren;
 };
 
 /**
@@ -444,13 +451,15 @@ public:
 	ContentPresenter(GUIManager* manager);
 	virtual ~ContentPresenter();
 
-	void SetContent(UIElement* content) { m_content = content; }
+	void SetContent(UIElement* content);
 
 protected:
+#if 1
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 	virtual void Render();
+#endif
 
 private:
 	RefPtr<UIElement>	m_content;

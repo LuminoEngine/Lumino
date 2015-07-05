@@ -55,7 +55,7 @@ public:	// internal
 	EventArgsPool* GetEventArgsPool() { return &m_eventArgsPool; }
 
 private:
-	void UpdateMouseHover(const PointF& mousePos);
+	bool UpdateMouseHover(const PointF& mousePos);	// ƒnƒ“ƒhƒŠƒ“ƒO‚µ‚½‚ç true ‚ð•Ô‚·
 	void BuildDefaultTheme();
 
 private:

@@ -76,8 +76,8 @@ Track::~Track()
 //-----------------------------------------------------------------------------
 void Track::SetDecreaseButton(ButtonBase* button)
 {
+	UpdateComponent(m_decreaseButton, button);
 	m_decreaseButton = button;
-	if (m_decreaseButton != NULL) { m_decreaseButton->ApplyTemplate(); }
 }
 
 //-----------------------------------------------------------------------------
@@ -85,8 +85,8 @@ void Track::SetDecreaseButton(ButtonBase* button)
 //-----------------------------------------------------------------------------
 void Track::SetThumb(Thumb* thumb)
 {
+	UpdateComponent(m_thumb, thumb);
 	m_thumb = thumb;
-	if (m_thumb != NULL) { m_thumb->ApplyTemplate(); }
 }
 
 //-----------------------------------------------------------------------------
@@ -94,8 +94,8 @@ void Track::SetThumb(Thumb* thumb)
 //-----------------------------------------------------------------------------
 void Track::SetIncreaseButton(ButtonBase* button)
 {
+	UpdateComponent(m_increaseButton, button);
 	m_increaseButton = button;
-	if (m_increaseButton != NULL) { m_increaseButton->ApplyTemplate(); }
 }
 
 //-----------------------------------------------------------------------------
@@ -211,6 +211,22 @@ void Track::Render()
 	if (m_decreaseButton != NULL) { m_decreaseButton->Render(); }
 	if (m_thumb != NULL) { m_thumb->Render(); }
 	if (m_increaseButton != NULL) { m_increaseButton->Render(); }
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Track::UpdateComponent(Control* oldValue, Control* newValue)
+{
+	if (oldValue != NULL) {
+		m_visualChildren.Remove(oldValue);
+	}
+	if (newValue != NULL) {
+		m_visualChildren.Add(newValue);
+	}
+	if (newValue != NULL) {
+		newValue->ApplyTemplate();
+	}
 }
 
 //-----------------------------------------------------------------------------

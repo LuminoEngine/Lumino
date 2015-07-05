@@ -880,11 +880,14 @@ CoreObject* GUIManager::CreateObject(const String& typeFullName)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseMove(float clientX, float clientY)
 {
-	if (m_defaultRootPane == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
-	bool r = m_defaultRootPane->OnEvent(EventType_MouseMove, args);
+	//if (m_defaultRootPane == NULL) { return false; }
 	UpdateMouseHover(PointF(clientX, clientY));
-	return r;
+	if (m_mouseHoverElement == NULL) { return false; }
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+	//if (m_mouseHoverElement != NULL)
+	return m_mouseHoverElement->OnEvent(EventType_MouseMove, args);
+	//bool r = m_defaultRootPane->OnEvent(EventType_MouseMove, args);
+	//return UpdateMouseHover(PointF(clientX, clientY));
 }
 
 //-----------------------------------------------------------------------------
@@ -892,9 +895,12 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
 {
-	if (m_defaultRootPane == NULL) { return false; }
+	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
-	return m_defaultRootPane->OnEvent(EventType_MouseButtonDown, args);
+	//if (m_mouseHoverElement != NULL) {
+	return m_mouseHoverElement->OnEvent(EventType_MouseButtonDown, args);
+	//}
+	//return m_defaultRootPane->OnEvent(EventType_MouseButtonDown, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -902,9 +908,11 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
 {
-	if (m_defaultRootPane == NULL) { return false; }
+	//if (m_defaultRootPane == NULL) { return false; }
+	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
-	return m_defaultRootPane->OnEvent(EventType_MouseButtonUp, args);
+	//return m_defaultRootPane->OnEvent(EventType_MouseButtonUp, args);
+	return m_mouseHoverElement->OnEvent(EventType_MouseButtonUp, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -912,9 +920,11 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 {
-	if (m_defaultRootPane == NULL) { return false; }
+	//if (m_defaultRootPane == NULL) { return false; }
+	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, delta, clientX, clientY));
-	return m_defaultRootPane->OnEvent(EventType_MouseWheel, args);
+	//return m_defaultRootPane->OnEvent(EventType_MouseWheel, args);
+	return m_mouseHoverElement->OnEvent(EventType_MouseWheel, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -948,7 +958,7 @@ bool GUIManager::InjectElapsedTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::UpdateMouseHover(const PointF& mousePos)
+bool GUIManager::UpdateMouseHover(const PointF& mousePos)
 {
 	UIElement* old = m_mouseHoverElement;
 
@@ -981,9 +991,10 @@ EXIT:
 			old->OnEvent(EventType_MouseLeave, args);
 		}
 		if (m_mouseHoverElement != NULL) {
-			m_mouseHoverElement->OnEvent(EventType_MouseEnter, args);
+			return m_mouseHoverElement->OnEvent(EventType_MouseEnter, args);
 		}
 	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------
