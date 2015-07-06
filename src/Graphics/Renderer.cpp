@@ -166,6 +166,13 @@ void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int
 //-----------------------------------------------------------------------------
 void Renderer::PresentCommandList(SwapChain* swapChain)
 {
+	// ごく稀に RenderingCommandList::Execute() でイテレータアクセス assert する問題があった。
+	// この assert が発生する原因は、イテレート中に他のスレッドから Add とかされた時。
+	// でも、パッと見原因になりそうなところが見つからなかったので、もしかしたら
+	// キャッシュにリストのポインタが残っていたことが原因かもしれない。
+	// 念のためここでキャッシュをフラッシュし、様子を見る。
+	Threading::MutexScopedLock lock(m_lockPresentCommandList);
+
 	m_primaryCommandList->AddCommand<PresentCommand>(swapChain);
 	//PresentCommand::AddCommand(m_primaryCommandList, swapChain);
 	//m_primaryCommandList->Present(swapChain);

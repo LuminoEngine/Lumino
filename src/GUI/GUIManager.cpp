@@ -824,6 +824,7 @@ GUIManager::GUIManager()
 	, m_defaultTheme(NULL)
 	, m_rootCombinedResource(NULL)
 	, m_defaultRootPane(NULL)
+	, m_capturedElement(NULL)
 {
 }
 
@@ -844,6 +845,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 	if (LN_VERIFY_ASSERT(configData.GraphicsManager != NULL)) { return; }
 
 	m_graphicsManager = configData.GraphicsManager;
+	m_mainWindow = configData.MainWindow;
 
 
 	RegisterFactory(ContentPresenter::TypeID, ContentPresenter::CreateInstance);
@@ -908,6 +910,12 @@ CoreObject* GUIManager::CreateObject(const String& typeFullName)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseMove(float clientX, float clientY)
 {
+	// キャプチャ中のコントロールがあればそちらに送る
+	if (m_capturedElement != NULL) 
+	{
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+		return m_capturedElement->OnEvent(EventType_MouseMove, args);
+	}
 	//if (m_defaultRootPane == NULL) { return false; }
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == NULL) { return false; }
@@ -923,6 +931,12 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
 {
+	// キャプチャ中のコントロールがあればそちらに送る
+	if (m_capturedElement != NULL)
+	{
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+		return m_capturedElement->OnEvent(EventType_MouseButtonDown, args);
+	}
 	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
 	//if (m_mouseHoverElement != NULL) {
@@ -936,6 +950,12 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
 {
+	// キャプチャ中のコントロールがあればそちらに送る
+	if (m_capturedElement != NULL)
+	{
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+		return m_capturedElement->OnEvent(EventType_MouseButtonUp, args);
+	}
 	//if (m_defaultRootPane == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
@@ -948,6 +968,12 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 {
+	// キャプチャ中のコントロールがあればそちらに送る
+	if (m_capturedElement != NULL)
+	{
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+		return m_capturedElement->OnEvent(EventType_MouseMove, args);
+	}
 	//if (m_defaultRootPane == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, delta, clientX, clientY));
@@ -981,6 +1007,27 @@ bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isContr
 bool GUIManager::InjectElapsedTime(float elapsedTime)
 {
 	LN_THROW(0, NotImplementedException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::CaptureMouse(UIElement* element)
+{
+	m_capturedElement = element;
+	m_mainWindow->CaptureMouse();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::ReleaseMouseCapture(UIElement* element)
+{
+	if (m_capturedElement == element)
+	{
+		m_capturedElement = NULL;
+		m_mainWindow->ReleaseMouseCapture();
+	}
 }
 
 //-----------------------------------------------------------------------------

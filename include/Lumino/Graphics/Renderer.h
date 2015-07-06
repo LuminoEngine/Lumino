@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-
+#include <Lumino/Threading/Mutex.h>
 #include "Common.h"
 #include "RenderState.h"
 #include "Color.h"
@@ -111,6 +111,8 @@ private:
 	Texture*				m_currentRenderTargets[MaxMultiRenderTargets];
 	Texture*				m_currentDepthBuffer;
 	Rect					m_currentViewport;
+
+	Threading::Mutex		m_lockPresentCommandList;
 };
 
 } // namespace Graphics

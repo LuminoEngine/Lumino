@@ -21,9 +21,11 @@ public:
 	struct ConfigData
 	{
 		Graphics::GraphicsManager*	GraphicsManager;
+		Platform::Window*			MainWindow;
 
 		ConfigData()
 			: GraphicsManager(NULL)
+			, MainWindow(NULL)
 		{}
 	};
 
@@ -54,6 +56,10 @@ public:	// internal
 	CombinedLocalResource* GetRootCombinedResource() { return m_rootCombinedResource; }
 	EventArgsPool* GetEventArgsPool() { return &m_eventArgsPool; }
 
+
+	void CaptureMouse(UIElement* element);
+	void ReleaseMouseCapture(UIElement* element);
+
 private:
 	bool UpdateMouseHover(const PointF& mousePos);	// ハンドリングしたら true を返す
 	void BuildDefaultTheme();
@@ -68,6 +74,8 @@ private:
 	ResourceDictionary*					m_defaultTheme;
 	CombinedLocalResource*				m_rootCombinedResource;
 	UIElement*							m_mouseHoverElement;		///< 現在マウス位置にある UIElement
+	UIElement*							m_capturedElement;			///< 現在キャプチャ中の UIElement
+	RefPtr<Platform::Window>			m_mainWindow;
 
 	ObjectFactoryMap					m_objectFactoryMap;
 };

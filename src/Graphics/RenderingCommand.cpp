@@ -62,14 +62,14 @@ RenderingCommandList::~RenderingCommandList()
 //-----------------------------------------------------------------------------
 void RenderingCommandList::Execute(Device::IRenderer* renderer)
 {
-	//printf("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
+	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
 	// この関数は描画スレッドから呼ばれる
 
 	LN_FOREACH(size_t dataIdx, m_commandList)
 	{
 		((RenderingCommand*)GetBuffer(dataIdx))->Execute(this, renderer);
 	}
-	//printf("RenderingCommandList::Execute() e %p\n", this);
+	LN_RC_TRACE("RenderingCommandList::Execute() e %p\n", this);
 }
 
 //-----------------------------------------------------------------------------
@@ -77,13 +77,13 @@ void RenderingCommandList::Execute(Device::IRenderer* renderer)
 //-----------------------------------------------------------------------------
 void RenderingCommandList::PostExecute()
 {
-	//printf("RenderingCommandList::PostExecute() s %p\n", this);
+	LN_RC_TRACE("RenderingCommandList::PostExecute() s %p\n", this);
 	LN_FOREACH(size_t dataIdx, m_commandList)
 	{
 		((RenderingCommand*)GetBuffer(dataIdx))->Release(this);
 		((RenderingCommand*)GetBuffer(dataIdx))->~RenderingCommand();
 	}
-	//printf("RenderingCommandList::PostExecute() e %p\n", this);
+	LN_RC_TRACE("RenderingCommandList::PostExecute() e %p\n", this);
 	m_commandList.Clear();
 	m_commandDataBufferUsed = 0;
 

@@ -156,8 +156,8 @@ public:
 	bool IsHitTest() const { return GetPropertyValue(IsHitTestProperty).GetBool(); }
 
 
-	void CaptureMouse() {}			// TODO
-	void ReleaseMouseCapture() {}	// TODO
+	void CaptureMouse();
+	void ReleaseMouseCapture();
 
 
 

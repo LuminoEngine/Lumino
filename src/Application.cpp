@@ -126,6 +126,7 @@ void Application::InitialzeGUIManager()
 
 		GUI::GUIManager::ConfigData data;
 		data.GraphicsManager = m_graphicsManager;
+		data.MainWindow = m_platformManager->GetMainWindow();
 		m_guiManager.Attach(LN_NEW GUI::GUIManager());
 		m_guiManager->Initialize(data);
 	}

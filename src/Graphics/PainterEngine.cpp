@@ -157,24 +157,46 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	texSize.Width = 1.0f / texSize.Width;
 	texSize.Height = 1.0f / texSize.Height;
 	RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
-	float uvFrameWidthW = frameWidth * texSize.Width;
-	float uvFrameWidthH = frameWidth * texSize.Height;
-	int frameWidthI = (int)frameWidth;	// 型変換回数を減らすため、あらかじめ int 化しておく
+	
+
+	float frameWidthH = frameWidth;
+	float frameWidthV = frameWidth;
+	float uvFrameWidthH = frameWidth * texSize.Width;
+	float uvFrameWidthV = frameWidth * texSize.Height;
+	int frameWidthHI = (int)frameWidth;	// 型変換回数を減らすため、あらかじめ int 化しておく
+	int frameWidthVI = (int)frameWidth;
+
+	// 横幅が小さいため、枠幅も狭めなければならない
+	if (rect.Width < frameWidthH * 2)
+	{
+		float ratio = rect.Width / (frameWidthH * 2);	// 元の幅から何 % になるか
+		frameWidthH *= ratio;
+		uvFrameWidthH *= ratio;
+		frameWidthHI = ceil( ratio * frameWidthHI);
+	}
+	// 縦幅が小さいため、枠幅も狭めなければならない
+	if (rect.Height < frameWidthV * 2)
+	{
+		float ratio = rect.Height / (frameWidthV * 2);	// 元の幅から何 % になるか
+		frameWidthV *= ratio;
+		uvFrameWidthV *= ratio;
+		frameWidthVI = ceil(ratio * frameWidthVI);
+	}
 
 	RectF outerRect = rect;
-	RectF innerRect(outerRect.X + frameWidth, outerRect.Y + frameWidth, outerRect.Width - frameWidth * 2, outerRect.Height - frameWidth * 2);
+	RectF innerRect(outerRect.X + frameWidthH, outerRect.Y + frameWidthV, outerRect.Width - frameWidthH * 2, outerRect.Height - frameWidthV * 2);
 	RectF outerUVRect = uvSrcRect;
-	RectF innerUVRect(outerUVRect.X + uvFrameWidthW, outerUVRect.Y + uvFrameWidthH, outerUVRect.Width - uvFrameWidthW * 2, outerUVRect.Height - uvFrameWidthH * 2);
+	RectF innerUVRect(outerUVRect.X + uvFrameWidthH, outerUVRect.Y + uvFrameWidthV, outerUVRect.Width - uvFrameWidthH * 2, outerUVRect.Height - uvFrameWidthV * 2);
 	Rect  outerSrcRect = srcRect;
-	Rect  innerSrcRect(outerSrcRect.X + frameWidthI, outerSrcRect.Y + frameWidthI, outerSrcRect.Width - frameWidthI * 2, outerSrcRect.Height - frameWidthI * 2);
+	Rect  innerSrcRect(outerSrcRect.X + frameWidthHI, outerSrcRect.Y + frameWidthVI, outerSrcRect.Width - frameWidthHI * 2, outerSrcRect.Height - frameWidthVI * 2);
 
 	// 左上	■□□
 	//		□　□
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(outerRect.GetLeft(),		outerRect.GetTop(),		frameWidth,		frameWidth),
-		Rect(outerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	frameWidthI,	frameWidthI),
-		RectF(outerUVRect.GetLeft(),	outerUVRect.GetTop(),	uvFrameWidthW,	uvFrameWidthH),
+		RectF(outerRect.GetLeft(),		outerRect.GetTop(),		frameWidthH,	frameWidthV),
+		Rect(outerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	frameWidthHI,	frameWidthVI),
+		RectF(outerUVRect.GetLeft(),	outerUVRect.GetTop(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
 	// 上	□■□
@@ -182,62 +204,62 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	//		□□□
 	InternalDrawRectangleTiling(
 		RectF(innerRect.GetLeft(),		outerRect.GetTop(),		innerRect.Width,	frameWidth),
-		Rect(innerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	innerSrcRect.Width,	frameWidthI),
-		RectF(innerUVRect.GetLeft(),	outerUVRect.GetTop(),	innerUVRect.Width,	uvFrameWidthH),
+		Rect(innerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	innerSrcRect.Width,	frameWidthVI),
+		RectF(innerUVRect.GetLeft(),	outerUVRect.GetTop(),	innerUVRect.Width,	uvFrameWidthV),
 		srcTexture);
 
 	// 右上	□□■
 	//		□　□
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetRight(),		outerRect.GetTop(),		frameWidth,		frameWidth),
-		Rect(innerSrcRect.GetRight(),	outerSrcRect.GetTop(),	frameWidthI,	frameWidthI),
-		RectF(innerUVRect.GetRight(),	outerUVRect.GetTop(),	uvFrameWidthW,	uvFrameWidthH),
+		RectF(innerRect.GetRight(),		outerRect.GetTop(),		frameWidthH,	frameWidthV),
+		Rect(innerSrcRect.GetRight(),	outerSrcRect.GetTop(),	frameWidthHI,	frameWidthVI),
+		RectF(innerUVRect.GetRight(),	outerUVRect.GetTop(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
 	// 右	□□□
 	//		□　■
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetRight(),		innerRect.GetTop(),		frameWidth,		innerRect.Height),
-		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetTop(),	frameWidthI,	innerSrcRect.Height),
-		RectF(innerUVRect.GetRight(),	innerUVRect.GetTop(),	uvFrameWidthW,	innerUVRect.Height),
+		RectF(innerRect.GetRight(),		innerRect.GetTop(),		frameWidthH,		innerRect.Height),
+		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.Height),
+		RectF(innerUVRect.GetRight(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.Height),
 		srcTexture);
 
 	// 右下	□□□
 	//		□　□
 	//		□□■
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetRight(),		innerRect.GetBottom(),		frameWidth,		frameWidth),
-		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetBottom(),	frameWidthI,	frameWidthI),
-		RectF(innerUVRect.GetRight(),	innerUVRect.GetBottom(),	uvFrameWidthW,	uvFrameWidthH),
+		RectF(innerRect.GetRight(),		innerRect.GetBottom(),		frameWidthH,	frameWidthV),
+		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetBottom(),	frameWidthHI,	frameWidthVI),
+		RectF(innerUVRect.GetRight(),	innerUVRect.GetBottom(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
 	// 下	□□□
 	//		□　□
 	//		□■□
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetLeft(),		innerRect.GetBottom(),		innerRect.Width,	frameWidth),
-		Rect(innerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	innerSrcRect.Width,	frameWidthI),
-		RectF(innerUVRect.GetLeft(),	innerUVRect.GetBottom(),	innerUVRect.Width,	uvFrameWidthH),
+		RectF(innerRect.GetLeft(),		innerRect.GetBottom(),		innerRect.Width,	frameWidthV),
+		Rect(innerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	innerSrcRect.Width,	frameWidthVI),
+		RectF(innerUVRect.GetLeft(),	innerUVRect.GetBottom(),	innerUVRect.Width,	uvFrameWidthV),
 		srcTexture);
 
 	// 左下	□□□
 	//		□　□
 	//		■□□
 	InternalDrawRectangleTiling(
-		RectF(outerRect.GetLeft(),		innerRect.GetBottom(),		frameWidth,		frameWidth),
-		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	frameWidthI,	frameWidthI),
-		RectF(outerUVRect.GetLeft(),	innerUVRect.GetBottom(),	uvFrameWidthW,	uvFrameWidthH),
+		RectF(outerRect.GetLeft(),		innerRect.GetBottom(),		frameWidthH,	frameWidthV),
+		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	frameWidthHI,	frameWidthVI),
+		RectF(outerUVRect.GetLeft(),	innerUVRect.GetBottom(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
 	// 左	□□□
 	//		■　□
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(outerRect.GetLeft(),		innerRect.GetTop(),		frameWidth,		innerRect.Height),
-		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetTop(),	frameWidthI,	innerSrcRect.Height),
-		RectF(outerUVRect.GetLeft(),	innerUVRect.GetTop(),	uvFrameWidthW,	innerUVRect.Height),
+		RectF(outerRect.GetLeft(),		innerRect.GetTop(),		frameWidthH,	innerRect.Height),
+		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.Height),
+		RectF(outerUVRect.GetLeft(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.Height),
 		srcTexture);
 
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -254,6 +276,8 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 //-----------------------------------------------------------------------------
 void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect)
 {
+	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
+
 	float lu = srcUVRect.GetLeft();
 	float tv = srcUVRect.GetTop();
 	float uvWidth = srcUVRect.Width;
@@ -280,10 +304,12 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 }
 
 //-----------------------------------------------------------------------------
-//
+//　Note: srcRect は、rect の中にいくつのタイルを並べられるかを計算するために使用する
 //-----------------------------------------------------------------------------
 void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture)
 {
+	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
+
 	float uvX = srcUVRect.X;
 	float uvY = srcUVRect.Y;
 	float uvWidth = srcUVRect.Width;

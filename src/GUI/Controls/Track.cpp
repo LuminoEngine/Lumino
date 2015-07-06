@@ -53,6 +53,7 @@ Track::Track(GUIManager* manager)
 	, m_thumb()
 	, m_increaseButton()
 	, m_viewportSize(0.0f)
+	, m_density(1.0f)
 {	
 	// Register property
 	LN_DEFINE_PROPERTY		(Track, float, ValueProperty, &Track::SetValue, &Track::GetValue, 0.0f);
@@ -64,6 +65,7 @@ Track::Track(GUIManager* manager)
 	LN_DEFINE_PROPERTY		(Track, ButtonBase*, IncreaseButtonProperty, &Track::SetIncreaseButton, &Track::GetIncreaseButton, NULL);
 
 	// Register handler
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragStartedEvent, Handler_Thumb_DragStarted);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragDeltaEvent, Handler_Thumb_DragDelta);
 }
 
@@ -292,6 +294,16 @@ void Track::CalcScrollBarComponentsSize(
 	*outDecreaseButtonLength = decreaseButtonLength;
 	*outThumbLength = thumbLength;
 	*outIncreaseButtonLength = increaseButtonLength;
+
+	m_density = range / remainingTrackLength;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Track::Handler_Thumb_DragStarted(DragEventArgs* e)
+{
+	m_dragStartValue = m_value;
 }
 
 //-----------------------------------------------------------------------------
@@ -299,9 +311,11 @@ void Track::CalcScrollBarComponentsSize(
 //-----------------------------------------------------------------------------
 void Track::Handler_Thumb_DragDelta(DragEventArgs* e)
 {
-	// TODO: ここでブレーク張るとレンダリングコマンドの実行でクラッシュする
-	m_value = e->XOffset;
-	printf("%f\n", m_value);
+	// TODO: ここでブレーク張るとレンダリングコマンドの実行でクラッシュすることがある
+	m_value = m_dragStartValue + e->XOffset * m_density;
+
+	if (m_value < m_minimum) { m_value = m_minimum; }
+	if (m_value > m_maximum) { m_value = m_maximum; }
 }
 
 } // namespace GUI

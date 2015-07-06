@@ -78,8 +78,6 @@ void Thumb::Handler_MouseMove(MouseEventArgs* e)
 {
 	if (m_isDragging)
 	{
-		printf("%f, %f\n", e->X - m_lastScreenPosition.X, e->Y - m_lastScreenPosition.Y);
-
 		// ドラッグ中イベント
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
