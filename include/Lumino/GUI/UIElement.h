@@ -26,6 +26,9 @@ namespace GUI
 typedef String	PropertyID;
 typedef String	EventID;
 
+class CanExecuteRoutedCommandEventArgs;
+class ExecuteRoutedCommandEventArgs;
+class RoutedCommandTypeContext;
 
 	struct Enum
 	{
@@ -104,17 +107,19 @@ class UIElement
 	, public IAddChild
 {
 public:
-	static const String	SizeProperty;
-	static const String	HorizontalAlignmentProperty;
-	static const String	VerticalAlignmentProperty;
-	static const String	IsHitTestProperty;
+	static const PropertyID	SizeProperty;
+	static const PropertyID	HorizontalAlignmentProperty;
+	static const PropertyID	VerticalAlignmentProperty;
+	static const PropertyID	IsHitTestProperty;
 
-	static const String	MouseMoveEvent;
-	static const String	MouseLeaveEvent;
-	static const String	MouseEnterEvent;
-	static const String	MouseDownEvent;
-	static const String	MouseUpEvent;
+	static const EventID	MouseMoveEvent;
+	static const EventID	MouseLeaveEvent;
+	static const EventID	MouseEnterEvent;
+	static const EventID	MouseDownEvent;
+	static const EventID	MouseUpEvent;
 
+	static const EventID	CanExecuteRoutedCommandEvent;	///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
+	static const EventID	ExecuteRoutedCommandEvent;		///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
 
 public:
 	UIElement(GUIManager* manager);
@@ -240,6 +245,7 @@ protected:
 public:	// internal
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
+	GUIManager* GetManager() const { return m_manager; }
 
 private:
 	friend class UIElementFactory;
@@ -266,7 +272,13 @@ protected:
 	void RegisterRoutedEventHandler(EventID id, RoutedEventHandler* handler) {
 		m_routedEventHandlerList.Add(id, handler);
 	}
+	void AddRoutedCommandTypeContext(RoutedCommandTypeContext* c) {
+		if (!m_routedCommandTypeContextList.Contains(c)) {	// 同じものは登録しない
+			m_routedCommandTypeContextList.Add(c);
+		}
+	}
 
+public:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const String& eventName, CoreObject* sender, EventArgs* e)
 	{
@@ -274,6 +286,7 @@ protected:
 		RaiseEventInternal(eventName, sender, e);
 	}
 
+private:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const String& eventName, CoreObject* sender, EventArgs* e)
 	{
@@ -313,12 +326,34 @@ protected:
 		}
 	}
 
+	//bool RaiseCommand(RoutedCommand* command, const Variant& parameter, bool execute)
+	//{
+	//	if (execute)
+	//	{
+	//		for (auto context : m_commandOwnerClassContextList) {
+	//			if (context->Execute(this, command, parameter)) { return true; }
+	//		}
+	//	}
+	//	else
+	//	{
+	//		for (auto context : m_commandOwnerClassContextList) {
+	//			bool r;
+	//			if (context->CanExecute(this, command, parameter, &r)) { return r; }
+	//		}
+	//	}
+
+	//}
+
+
+
+protected:
 	// サブクラスはできるだけ Event にハンドラを登録するのではなく、On～をオーバーライドすることでイベントをハンドリングする。
 	// ハンドリングしたら e->Handled を true にする。そして super を呼び出す。こうすることで、RaiseEvent() でのイベント検索や
 	// ルーティングを行わないので負荷軽減ができる。
 	virtual void OnMouseMove(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 	virtual void OnMouseDown(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseDownEvent, this, e); } }
 	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
+
 
 
 	GUIManager*				m_manager;
@@ -343,12 +378,19 @@ protected:
 	typedef SortedArray<EventID, RoutedEventHandler*>	RoutedEventHandlerList;
 	RoutedEventHandlerList	m_routedEventHandlerList;
 
+	/// あるクラスに含まれる RoutedCommand のリストのリスト。このリストには基底クラスから順に詰まっている
+	Array<RoutedCommandTypeContext*>	m_routedCommandTypeContextList;
+
 	// Property
 	SizeF				m_size;
 	HorizontalAlignment	m_horizontalAlignment;
 	VerticalAlignment	m_verticalAlignment;
 
+
+
 private:
+	void Handler_CanExecuteRoutedCommandEvent(CanExecuteRoutedCommandEventArgs* e);
+	void Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs* e);
 
 	void TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e);
 

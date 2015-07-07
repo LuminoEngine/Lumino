@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Painter.h>
+#include <Lumino/GUI/RoutedCommand.h>
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
@@ -16,15 +17,18 @@ namespace GUI
 // UIElement
 //=============================================================================
 
-const String	UIElement::SizeProperty(_T("Size"));
-const String	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
-const String	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
+const PropertyID	UIElement::SizeProperty(_T("Size"));
+const PropertyID	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
+const PropertyID	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
 
-const String	UIElement::MouseMoveEvent(_T("MouseMove"));
-const String	UIElement::MouseLeaveEvent(_T("MouseLeave"));
-const String	UIElement::MouseEnterEvent(_T("MouseEnter"));
-const String	UIElement::MouseDownEvent(_T("MouseDown"));
-const String	UIElement::MouseUpEvent(_T("MouseUp"));
+const EventID	UIElement::MouseMoveEvent(_T("MouseMove"));
+const EventID	UIElement::MouseLeaveEvent(_T("MouseLeave"));
+const EventID	UIElement::MouseEnterEvent(_T("MouseEnter"));
+const EventID	UIElement::MouseDownEvent(_T("MouseDown"));
+const EventID	UIElement::MouseUpEvent(_T("MouseUp"));
+
+const EventID	UIElement::CanExecuteRoutedCommandEvent(_T("CanExecuteRoutedCommandEvent"));
+const EventID	UIElement::ExecuteRoutedCommandEvent(_T("ExecuteRoutedCommandEvent"));
 
 //-----------------------------------------------------------------------------
 //
@@ -51,6 +55,9 @@ UIElement::UIElement(GUIManager* manager)
 	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseMove(e); });
 	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseDown(e); });
 	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		[](UIElement* target, MouseEventArgs* e) { target->MouseUp(e); });
+	
+	LN_DEFINE_ROUTED_EVENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent,	[](UIElement* target, CanExecuteRoutedCommandEventArgs* e) { target->Handler_CanExecuteRoutedCommandEvent(e); });
+	LN_DEFINE_ROUTED_EVENT(UIElement, ExecuteRoutedCommandEventArgs,	ExecuteRoutedCommandEvent,		[](UIElement* target, ExecuteRoutedCommandEventArgs* e) { target->Handler_ExecuteRoutedCommandEvent(e); });
 
 	// 削除予定
 	//m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
@@ -357,6 +364,40 @@ void UIElement::SetTemplateChild(UIElement* child)
 //	m_visualChildren.Add(t);
 //	child->m_parent = this;
 //}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::Handler_CanExecuteRoutedCommandEvent(CanExecuteRoutedCommandEventArgs* e)
+{
+	// TODO: リバースイテレータでないと、コマンドのオーバーライドに対応できない
+	for (auto context : m_routedCommandTypeContextList)
+	{
+		for (auto command : context->RoutedCommandList)
+		{
+			e->CanExecute = command->CanExecute(e->Parameter);
+			e->Handled = true;
+		}
+	}
+	// e->Handled が false なら親 UIElement の Handler_CanExecuteRoutedCommandEvent へ流れる。
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs* e)
+{
+	for (auto context : m_routedCommandTypeContextList)
+	{
+		for (auto command : context->RoutedCommandList)
+		{
+			command->Execute(e->Parameter);
+			e->Handled = true;
+		}
+	}
+	// e->Handled が false なら親 UIElement の Handler_ExecuteRoutedCommandEvent へ流れる。
+}
 
 //-----------------------------------------------------------------------------
 //

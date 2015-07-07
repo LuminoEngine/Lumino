@@ -20,6 +20,9 @@ class ScrollBar
 public:
 	static const EventID	ScrollEvent;
 
+	// TODO: RoutedCommand は ID ではなく Command のポインタを直接公開した方が良いかも。
+	// button->SetCommand(Window.CloseCommand) とかしたい。
+
 public:
 	ScrollBar(GUIManager* manager);
 	virtual ~ScrollBar();

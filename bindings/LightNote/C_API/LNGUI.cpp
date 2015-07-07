@@ -53,21 +53,21 @@ public:
 
 #define LN_CALLBACK_IMPL_LNGUIElementIF
 	// コンストラクタでセットされる
-	static void LN_STDCALL EventWrap_MouseMove(CoreObject* sender, GUI::MouseEventArgs* e)
+	static void LN_STDCALL EventWrap_MouseMove(GUI::MouseEventArgs* e)
 	{
 		LNHandle h = LFManager::CheckRegisterObject(e);
 		if (static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseMoveHandler != NULL) {
 			static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseMoveHandler(h);
 		}
 	}
-	static void LN_STDCALL EventWrap_MouseEnter(CoreObject* sender, GUI::MouseEventArgs* e)
+	static void LN_STDCALL EventWrap_MouseEnter(GUI::MouseEventArgs* e)
 	{
 		LNHandle h = LFManager::CheckRegisterObject(e);
 		if (static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseEnterHandler != NULL) {
 			static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseEnterHandler(h);
 		}
 	}
-	static void LN_STDCALL EventWrap_MouseLeave(CoreObject* sender, GUI::MouseEventArgs* e)
+	static void LN_STDCALL EventWrap_MouseLeave(GUI::MouseEventArgs* e)
 	{
 		LNHandle h = LFManager::CheckRegisterObject(e);
 		if (static_cast<LNGUIElementIF*>(e->HandlerOwner)->m_LNMouseLeaveHandler != NULL) {
@@ -214,21 +214,21 @@ public:
 
 #define LN_CALLBACK_IMPL_LNGUIElementIF
 	// コンストラクタでセットされる
-	static void LN_STDCALL EventWrap_MouseMove(CoreObject* sender, GUI::MouseEventArgs* e)
+	static void LN_STDCALL EventWrap_MouseMove(GUI::MouseEventArgs* e)
 	{
 		LNHandle h = LFManager::CheckRegisterObject(e);
 		if (static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseMoveHandler != NULL) {
 			static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseMoveHandler(h);
 		}
 	}
-	static void LN_STDCALL EventWrap_MouseEnter(CoreObject* sender, GUI::MouseEventArgs* e)
+	static void LN_STDCALL EventWrap_MouseEnter(GUI::MouseEventArgs* e)
 	{
 		LNHandle h = LFManager::CheckRegisterObject(e);
 		if (static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseEnterHandler != NULL) {
 			static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseEnterHandler(h);
 		}
 	}
-	static void LN_STDCALL EventWrap_MouseLeave(CoreObject* sender, GUI::MouseEventArgs* e)
+	static void LN_STDCALL EventWrap_MouseLeave(GUI::MouseEventArgs* e)
 	{
 		LNHandle h = LFManager::CheckRegisterObject(e);
 		if (static_cast<LNGUIButtonIF*>(e->HandlerOwner)->m_LNMouseLeaveHandler != NULL) {

@@ -206,6 +206,8 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/EventArgs.h
 	include/Lumino/GUI/GUIManager.h
 	include/Lumino/GUI/Property.h
+	include/Lumino/GUI/RoutedCommand.h
+	include/Lumino/GUI/RoutedEvent.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/Controls/ButtonBase.h
@@ -220,6 +222,7 @@ set(LN_SOURCES_GUI
 	src/GUI/ControlTemplate.cpp
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIManager.cpp
+	src/GUI/RoutedCommand.cpp
 	src/GUI/UIElement.cpp
 	src/GUI/UIElementCollection.cpp
 	src/GUI/VisualState.cpp
