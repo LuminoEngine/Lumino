@@ -1,5 +1,7 @@
 
 #pragma once
+#include <map>
+#include <memory>
 
 namespace Lumino
 {
@@ -212,5 +214,73 @@ private:
 		name, setterFuncPtr, getterFuncPtr, defaultValue); \
 	RegisterProperty(&prop); \
 }
+
+
+class AttachedProperty
+	: public Property
+{
+public:
+	AttachedProperty(const String& name, const Variant& defaultValue)
+		: m_name(name)
+		, m_defaultValue(defaultValue)
+	{}
+
+	virtual const String& GetName() const { return m_name; }
+	virtual void SetValue(CoreObject* target, Variant value) { LN_THROW(0, InvalidOperationException); }
+	virtual Variant GetValue(const CoreObject* target) const  { LN_THROW(0, InvalidOperationException); }
+
+private:
+	String	m_name;
+	Variant	m_defaultValue;
+};
+
+
+class PropertyManager
+{
+public:
+	static AttachedProperty* RegisterAttachedProperty(const TypeInfo& ownerClass, const String& propertyName, const Variant& defaultValue);
+
+private:
+	class TypedNameKey
+	{
+	public:
+		TypedNameKey(const TypeInfo& type, const String& propertyName)
+			: m_type(type)
+			, m_propertyName(propertyName)
+		{}
+
+		bool operator < (const TypedNameKey& key) const
+		{
+			if (m_type < key.m_type) return true;
+			if (m_propertyName < key.m_propertyName) return true;
+			return false;
+		}
+
+	private:
+		TypeInfo	m_type;
+		String		m_propertyName;
+	};
+
+	typedef std::map<TypedNameKey, std::shared_ptr<AttachedProperty> >	PropertyMap;	//TODO: map だと重くない？
+	static PropertyMap	m_propertyMap;
+};
+
+
+#define LN_DEFINE_ATTACHED_PROPERTY(prop, name, nativeType, ownerClassType, defaultValue) \
+{ \
+	if (prop != NULL) { \
+		prop = PropertyManager::RegisterAttachedProperty(ownerClassType::GetClassTypeInfo(), _T(name), defaultValue); \
+	} \
+}
+
+/// GUI 用 Set ユーティリティ
+#define LN_SET_ATTACHED_PROPERTY(element, prop, value) \
+	LN_VERIFY(element != NULL); \
+	element->SetPropertyValue(prop, value);
+
+/// GUI 用 Get ユーティリティ
+#define LN_GET_ATTACHED_PROPERTY(element, prop, type) \
+	LN_VERIFY(element != NULL); \
+	return element->GetPropertyValue(prop).Cast<type>();
 
 } // namespace Lumino

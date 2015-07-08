@@ -58,9 +58,11 @@ public:
 
 	/// プロパティの値を設定します。
 	virtual void SetPropertyValue(const String& propertyName, const Variant& value);
+	virtual void SetPropertyValue(const Property* prop, const Variant& value);
 
 	/// プロパティの値を取得します。
 	virtual Variant GetPropertyValue(const String& propertyName) const;
+	virtual Variant GetPropertyValue(const Property* prop) const;
 
 	String ToString();
 

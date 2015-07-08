@@ -202,9 +202,11 @@ set(LN_SOURCES_Scene
 
 set(LN_SOURCES_GUI
 	include/Lumino/GUI/Common.h
+	include/Lumino/GUI/ContentElement.h
 	include/Lumino/GUI/ControlTemplate.h
 	include/Lumino/GUI/EventArgs.h
 	include/Lumino/GUI/GUIManager.h
+	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/Property.h
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/RoutedEvent.h
@@ -220,6 +222,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Controls/StackPanel.h
 	include/Lumino/GUI/Controls/Thumb.h
 	include/Lumino/GUI/Controls/Track.h
+	src/GUI/ContentElement.cpp
 	src/GUI/ControlTemplate.cpp
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIManager.cpp

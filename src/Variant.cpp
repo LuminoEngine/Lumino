@@ -47,6 +47,14 @@ void CoreObject::SetPropertyValue(const String& propertyName, const Variant& val
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void CoreObject::SetPropertyValue(const Property* prop, const Variant& value)
+{
+	SetPropertyValue(prop->GetName(), value);	// TODO: GetName じゃなくて、型情報も考慮するように。あるいは生ポインタ
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Variant CoreObject::GetPropertyValue(const String& propertyName) const
 {
 	Property* prop;
@@ -61,6 +69,14 @@ Variant CoreObject::GetPropertyValue(const String& propertyName) const
 		return value;
 	}
 	LN_THROW(0, ArgumentException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant CoreObject::GetPropertyValue(const Property* prop) const
+{
+	return GetPropertyValue(prop->GetName());	//TODO
 }
 
 //-----------------------------------------------------------------------------
