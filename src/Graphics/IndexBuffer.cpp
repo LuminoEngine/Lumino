@@ -25,7 +25,7 @@ IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	RefPtr<Device::IIndexBuffer> deviceObj(
-		manager->GetGraphicsDevice()->GetDeviceObject()->CreateIndexBuffer(indexCount, initialData, format, usage));
+		manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, format, usage));
 	return LN_NEW IndexBuffer(deviceObj, indexCount, format);
 }
 

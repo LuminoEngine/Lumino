@@ -29,7 +29,7 @@ VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	RefPtr<Device::IVertexBuffer> deviceObj(
-		manager->GetGraphicsDevice()->GetDeviceObject()->CreateVertexBuffer(vertexElements, elementsCount, vertexCount, data, usage));
+		manager->GetGraphicsDevice()->CreateVertexBuffer(vertexElements, elementsCount, vertexCount, data, usage));
 	return LN_NEW VertexBuffer(deviceObj);
 }
 

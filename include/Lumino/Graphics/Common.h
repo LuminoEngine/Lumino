@@ -34,14 +34,14 @@ class GraphicsManager;
 class Texture;
 
 /// グラフィックス API
-enum GraphicsAPI
+LN_ENUM(GraphicsAPI)
 {
-	GraphicsAPI_DirectX9 = 0,	///< DirectX9
-	//GraphicsAPI_DIRECTX11,	///< DirectX11
-	GraphicsAPI_OpenGL,			///< OpenGL
-
-	GraphicsAPI_Max,
+	DirectX9 = 0,	///< DirectX9
+	//DIRECTX11,	///< DirectX11
+	OpenGL,			///< OpenGL
 };
+LN_ENUM_REFLECTION(GraphicsAPI, DirectX9, OpenGL);
+LN_ENUM_DECLARE(GraphicsAPI);
 
 /// 頂点宣言の要素の型
 enum VertexElementType

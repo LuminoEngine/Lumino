@@ -23,7 +23,7 @@ namespace Graphics
 //-----------------------------------------------------------------------------
 SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize)
 	: m_manager(manager)
-	, m_deviceObj(manager->GetGraphicsDevice()->GetDeviceObject()->GetDefaultSwapChain())
+	, m_deviceObj(manager->GetGraphicsDevice()->GetDefaultSwapChain())
 {
 	m_deviceObj->AddRef();
 	Initialize(mainWindowSize);
@@ -36,7 +36,7 @@ SwapChain::SwapChain(Platform::Window* targetWindow)
 	: m_manager(Internal::Manager)
 {
 	Initialize(targetWindow->GetSize());
-	m_deviceObj = m_manager->GetGraphicsDevice()->GetDeviceObject()->CreateSwapChain(targetWindow);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(targetWindow);
 }
 
 //-----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ SwapChain::SwapChain(GraphicsManager* manager, Platform::Window* targetWindow)
 	: m_manager(manager)
 {
 	Initialize(targetWindow->GetSize());
-	m_deviceObj = m_manager->GetGraphicsDevice()->GetDeviceObject()->CreateSwapChain(targetWindow);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(targetWindow);
 }
 
 //-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ void SwapChain::Initialize(const Size& backbufferSize)
 {
 	m_commandList = LN_NEW RenderingCommandList();
 
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 	m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
 	m_backColorBuffer = LN_NEW Texture(m_manager, m_deviceObj->GetBackBuffer(), NULL);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
 	m_backDepthBuffer = Texture::CreateDepthBuffer(m_manager, backbufferSize, TextureFormat_D24S8);
@@ -100,7 +100,7 @@ void SwapChain::Present()
 
 
 	// デバイスロストのチェック
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 	if (device->GetDeviceState() == Device::DeviceState_Lost)
 	{
 		// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する

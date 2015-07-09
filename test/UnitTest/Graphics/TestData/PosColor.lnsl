@@ -1,13 +1,18 @@
 //=============================================================================
 #ifdef LN_HLSL_DX9
 
+struct VS_OUTPUT
+{
+	float4	Pos		: POSITION;
+	float4	Color	: COLOR0;
+};
+
 VS_OUTPUT vsBasic(
 	float3 inPos	: POSITION,
 	float4 inColor	: COLOR0)
 {
 	VS_OUTPUT o;
-	o.Pos   = mul(float4(inPos, 1.0f), g_worldMatrix);
-	o.Pos   = mul(o.Pos, g_viewProjMatrix);
+	o.Pos   = float4(inPos, 1.0f);
 	o.Color = inColor;
 	return o;
 }
@@ -15,15 +20,15 @@ VS_OUTPUT vsBasic(
 float4 psBasic(
 	float4 inColor	: COLOR0) : COLOR0
 {
-    return inColor;
+	return inColor;
 }
 
 technique MainDraw
 {
 	pass P0
 	{
-		VertexShader = compile vs_3_0 vsBasic();
-		PixelShader	 = compile ps_3_0 psBasic();
+		VertexShader = compile vs_2_0 vsBasic();
+		PixelShader	 = compile ps_2_0 psBasic();
 	}
 }
 

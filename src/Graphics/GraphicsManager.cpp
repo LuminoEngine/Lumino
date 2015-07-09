@@ -643,6 +643,14 @@
 		・BeginScene ではその時点のプライマリの状態を「初期値」としてコマンド化しておけば良い。
 */
 #include "../Internal.h"
+
+#if defined(LN_WIN32)
+#include "Device/DirectX9/DX9GraphicsDevice.h"
+#include "Device/OpenGL/WGLGraphicsDevice.h"
+#elif defined(LN_X11)
+#include "Device/OpenGL/GLXGraphicsDevice.h"
+#endif
+
 #include <Lumino/Imaging/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsDevice.h>
 #include <Lumino/Graphics/GraphicsManager.h>
@@ -666,6 +674,7 @@ GraphicsManager* Internal::Manager = NULL;
 //-----------------------------------------------------------------------------
 GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 	: m_fileManager(NULL)
+	, m_graphicsDevice(NULL)
 	, m_dummyTexture(NULL)
 	, m_renderer(NULL)
 	, m_renderingThread(NULL)
@@ -676,20 +685,55 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 
 	// フォント管理
 	m_fontManager.Attach(Imaging::FontManager::Create(m_fileManager));
-
-	GraphicsDeviceConfigData d;
-	d.API = GraphicsAPI_DirectX9;
-	d.MainWindow = configData.MainWindow;
-	d.OpenGLMajorVersion = 2;
-	d.OpenGLMinorVersion = 0;
-	m_graphicsDevice.Attach(LN_NEW GraphicsDevice(d));
+#if defined(LN_WIN32)
+	if (configData.GraphicsAPI == GraphicsAPI::DirectX9)
+	{
+		Device::DX9GraphicsDevice::ConfigData data;
+		data.MainWindow = configData.MainWindow;
+		data.FileManager = &FileManager::GetInstance();			// TODO
+		data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
+		data.EnableVSyncWait = false;			// TODO
+		data.EnableFPUPreserve = false;			// TODO
+		m_graphicsDevice = LN_NEW Device::DX9GraphicsDevice();
+		static_cast<Device::DX9GraphicsDevice*>(m_graphicsDevice)->Initialize(data);
+		//m_graphicsDevice.Attach(LN_NEW Device::DX9GraphicsDevice());
+		//static_cast<Device::DX9GraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(data);
+	}
+	else if (configData.GraphicsAPI == GraphicsAPI::OpenGL)
+	{
+		Device::WGLGraphicsDevice::ConfigData data;
+		data.MainWindow = configData.MainWindow;
+		data.OpenGLMajorVersion = 2;
+		data.OpenGLMinorVersion = 0;
+		m_graphicsDevice = LN_NEW Device::WGLGraphicsDevice();
+		static_cast<Device::WGLGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
+		//m_graphicsDevice.Attach(LN_NEW Device::WGLGraphicsDevice());
+		//static_cast<Device::WGLGraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(data);
+	}
+	else {
+		LN_THROW(0, ArgumentException);
+	}
+#elif defined(LN_X11)
+	m_graphicsDevice = LN_NEW Device::GLXGraphicsDevice();
+	static_cast<Device::GLXGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
+	//m_graphicsDevice.Attach(LN_NEW Device::GLXGraphicsDevice());
+	//static_cast<Device::GLXGraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(configData);
+#else
+	LN_THROW(0, NotImplementedException);
+#endif
+	//GraphicsDeviceConfigData d;
+	//d.API = GraphicsAPI_DirectX9;
+	//d.MainWindow = configData.MainWindow;
+	//d.OpenGLMajorVersion = 2;
+	//d.OpenGLMinorVersion = 0;
+	//m_graphicsDevice.Attach(LN_NEW GraphicsDevice(d));
 
 	// Renderer
 	m_renderer = LN_NEW Renderer(this);
 
 
-	m_mainSwapChain.Attach(LN_NEW SwapChain(this, d.MainWindow->GetSize()));
-	m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDeviceObject()->GetDefaultSwapChain();
+	m_mainSwapChain.Attach(LN_NEW SwapChain(this, configData.MainWindow->GetSize()));
+	m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDefaultSwapChain();
 
 	if (Internal::Manager == NULL) {
 		Internal::Manager = this;
@@ -697,18 +741,20 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 
 	
 	// ダミーテクスチャ
-	m_dummyTexture = GetGraphicsDevice()->GetDeviceObject()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
-	Device::IGraphicsDevice::ScopedLockContext lock(GetGraphicsDevice()->GetDeviceObject());
-	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
-	painter.Clear(Color::White);
-	m_dummyTexture->Unlock();
+	m_dummyTexture = GetGraphicsDevice()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
+	{
+		Device::IGraphicsDevice::ScopedLockContext lock(GetGraphicsDevice());
+		Imaging::BitmapPainter painter(m_dummyTexture->Lock());
+		painter.Clear(Color::White);
+		m_dummyTexture->Unlock();
+	}
 
 	m_painterEngine = LN_NEW PainterEngine();
 	m_painterEngine->Create(this);
 
 	// 描画スレッドを立ち上げる
 	m_renderingThread = LN_NEW RenderingThread();
-	m_renderingThread->Initialize(m_graphicsDevice->GetDeviceObject());
+	m_renderingThread->Initialize(m_graphicsDevice);
 	m_renderingThread->Start();
 }
 
@@ -732,9 +778,22 @@ GraphicsManager::~GraphicsManager()
 		m_fontManager.SafeRelease();
 	}
 
+	if (m_graphicsDevice != NULL) {
+		m_graphicsDevice->Finalize();
+		LN_SAFE_RELEASE(m_graphicsDevice);
+	}
+
 	if (Internal::Manager == this) {
 		Internal::Manager = NULL;
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GraphicsAPI GraphicsManager::GetGraphicsAPI() const
+{
+	return m_graphicsDevice->GetGraphicsAPI();
 }
 
 //-----------------------------------------------------------------------------
@@ -751,7 +810,7 @@ RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
 void GraphicsManager::PauseDevice()
 {
 	// TODO: ユーザーコールバック
-	m_graphicsDevice->GetDeviceObject()->OnLostDevice();
+	m_graphicsDevice->OnLostDevice();
 }
 
 //-----------------------------------------------------------------------------
@@ -759,7 +818,7 @@ void GraphicsManager::PauseDevice()
 //-----------------------------------------------------------------------------
 void GraphicsManager::ResumeDevice()
 {
-	m_graphicsDevice->GetDeviceObject()->OnResetDevice();
+	m_graphicsDevice->OnResetDevice();
 	// TODO: ユーザーコールバック
 }
 

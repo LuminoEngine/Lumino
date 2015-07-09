@@ -8,7 +8,7 @@ protected:
 
 	virtual void SetUp()
 	{
-		ByteBuffer code = FileSystem::ReadAllBytes(LOCALFILE("TestData/ColorPos.lnsl"));
+		ByteBuffer code = FileSystem::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl"));
 		m_shader.Attach(Shader::Create((char*)code.GetData(), code.GetSize()));
 	}
 	virtual void TearDown() {}
@@ -37,9 +37,6 @@ TEST_F(Test_Graphics_VertexBuffer, Create)
 		{ Vector3(0.0f, 1.0f, 0.0f), 0xFF0000FF },		// í∏ì_ ê‘
 	};
 	RefPtr<VertexBuffer> vb(VertexBuffer::Create(g_elements, LN_ARRAY_SIZE_OF(g_elements), LN_ARRAY_SIZE_OF(vertices), vertices, DeviceResourceUsage_Static));
-
-
-
 }
 
 //-----------------------------------------------------------------------------

@@ -20,12 +20,26 @@ class GLGraphicsDevice
 	: public IGraphicsDevice
 {
 public:
+	struct ConfigData
+	{
+		Platform::Window*	MainWindow;
+		int					OpenGLMajorVersion;
+		int					OpenGLMinorVersion;
+
+		ConfigData()
+			: MainWindow(NULL)
+			, OpenGLMajorVersion(2)
+			, OpenGLMinorVersion(0)
+		{}
+	};
+
+public:
 	GLGraphicsDevice();
 	virtual ~GLGraphicsDevice();
 
 public:
 	/// 描画を行うスレッドで初期化する必要がある
-	void Initialize(const GraphicsDeviceConfigData& configData);
+	void Initialize(const ConfigData& configData);
 
 	int GetOpenGLMajorVersio() const { return m_openGLMajorVersion; }
 	int GetOpenGLMinorVersio() const { return m_openGLMinorVersion; }
@@ -42,6 +56,7 @@ public:
 
 public:
 	virtual void Finalize();
+	virtual GraphicsAPI GetGraphicsAPI() const { return GraphicsAPI::OpenGL; }
 	virtual IRenderer* GetRenderer() { return m_renderer; }
 	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
 	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);

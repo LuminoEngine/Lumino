@@ -42,7 +42,7 @@ GLGraphicsDevice::~GLGraphicsDevice()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLGraphicsDevice::Initialize(const GraphicsDeviceConfigData& configData)
+void GLGraphicsDevice::Initialize(const ConfigData& configData)
 {
 	m_mainWindow = configData.MainWindow;
 	m_deviceState = DeviceState_Enabled;

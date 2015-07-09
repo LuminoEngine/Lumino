@@ -39,7 +39,7 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	r->Clear(true, true, ColorF(0, 1, 1, 1), 1.0f);
 
 	Size size = TestEnv::Application->GetMainWindow()->GetSize();
-	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000);
+	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0.f, 1000.f);
 
 	sr->SetViewProjMatrix(Matrix::Identity, proj);
 	sr->SetViewPixelSize(size);

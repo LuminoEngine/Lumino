@@ -47,8 +47,13 @@ Application::Application(const ApplicationConfigData& configData)
 //-----------------------------------------------------------------------------
 Application::~Application()
 {
-	m_platformManager->Dispose();
-	m_guiManager->Finalize();
+	if (m_platformManager != NULL) {
+		m_platformManager->Dispose();
+	}
+
+	if (m_guiManager != NULL) {
+		m_guiManager->Finalize();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -107,6 +112,7 @@ void Application::InitialzeGraphicsManager()
 		InitialzePhysicsManager();
 
 		Graphics::GraphicsManagerConfigData data;
+		data.GraphicsAPI = m_configData.GraphicsAPI;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.FileManager = &FileManager::GetInstance();
 		data.PlatformTextureLoading = true;

@@ -32,7 +32,7 @@ GeometryRenderer::GeometryRenderer(GraphicsManager* manager)
 	, m_core(NULL)
 {
 	LN_REFOBJ_SET(m_manager, manager);
-	m_core = LN_NEW GeometryRendererCore(m_manager->GetGraphicsDevice()->GetDeviceObject());
+	m_core = LN_NEW GeometryRendererCore(m_manager->GetGraphicsDevice());
 }
 
 //-----------------------------------------------------------------------------

@@ -173,7 +173,7 @@ void TextRendererImplemented::Reset()
 	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice();
 	m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
 
 	// 空きキャッシュインデックス作成

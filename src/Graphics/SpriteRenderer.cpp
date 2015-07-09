@@ -367,7 +367,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
@@ -978,7 +978,7 @@ void SpriteRendererImpl::Flash()
 	//-----------------------------------------------------
 	// 描画
 
-	Device::IRenderer* r = m_manager->GetGraphicsDevice()->GetDeviceObject()->GetRenderer();
+	Device::IRenderer* r = m_manager->GetGraphicsDevice()->GetRenderer();
 	r->SetVertexBuffer(m_vertexBuffer);
 	r->SetIndexBuffer(m_indexBuffer);
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);

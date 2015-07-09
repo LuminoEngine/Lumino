@@ -24,7 +24,7 @@ namespace Graphics
 Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	Device::IGraphicsDevice* device = manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = manager->GetGraphicsDevice();
 
 	// テクスチャを作る
 	RefPtr<Device::ITexture> obj(device->CreateTexture(size, mipLevels, format));
@@ -43,7 +43,7 @@ Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, 
 Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	Device::IGraphicsDevice* device = manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = manager->GetGraphicsDevice();
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath));
 	return Create(stream, format, mipLevels, manager);
 }
@@ -54,7 +54,7 @@ Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLev
 Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	Device::IGraphicsDevice* device = manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = manager->GetGraphicsDevice();
 
 	if (manager->IsPlatformTextureLoading())
 	{
@@ -88,7 +88,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	Device::IGraphicsDevice* device = manager->GetGraphicsDevice()->GetDeviceObject();
+	Device::IGraphicsDevice* device = manager->GetGraphicsDevice();
 	MemoryStream stream;
 	stream.Create(data, size);
 	return Create(&stream, format, mipLevels, manager);
@@ -100,7 +100,7 @@ Texture* Texture::Create(const void* data, size_t size, TextureFormat format, in
 Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFormat format)
 {
 	LN_THROW(Internal::Manager != NULL, InvalidOperationException);
-	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->GetDeviceObject()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
 	return LN_NEW Texture(Internal::Manager, obj, NULL);
 }
 
@@ -110,7 +110,7 @@ Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFor
 Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
 {
 	LN_THROW(Internal::Manager != NULL, InvalidOperationException);
-	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->GetDeviceObject()->CreateDepthBuffer(size.Width, size.Height, format);
+	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
 	return LN_NEW Texture(Internal::Manager, obj, NULL);
 }
 
@@ -120,7 +120,7 @@ Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
 Texture* Texture::CreateRenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	Device::ITexture* obj = manager->GetGraphicsDevice()->GetDeviceObject()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+	Device::ITexture* obj = manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
 	return LN_NEW Texture(manager, obj, NULL);
 }
 
@@ -130,7 +130,7 @@ Texture* Texture::CreateRenderTarget(GraphicsManager* manager, const Size& size,
 Texture* Texture::CreateDepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	Device::ITexture* obj = manager->GetGraphicsDevice()->GetDeviceObject()->CreateDepthBuffer(size.Width, size.Height, format);
+	Device::ITexture* obj = manager->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
 	return LN_NEW Texture(manager, obj, NULL);
 }
 

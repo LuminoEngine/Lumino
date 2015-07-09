@@ -5,6 +5,7 @@ namespace Lumino
 {
 namespace Graphics
 {
+#if 0
 
 struct GraphicsDeviceConfigData
 {
@@ -33,6 +34,7 @@ private:
 	Device::IGraphicsDevice*	m_deviceObj;
 	
 };
+#endif
 
 } // namespace Graphics
 } // namespace Lumino

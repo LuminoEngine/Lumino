@@ -1,7 +1,8 @@
+//=============================================================================
+#ifdef LN_HLSL_DX9
 
 float4x4	g_worldMatrix;
 float4x4	g_viewProjMatrix;
-
 
 float2 g_viewportSize;
 static float2 g_pixelStep = (float2(2.0, 2.0) / g_viewportSize);
@@ -76,3 +77,42 @@ technique MainDraw
 		PixelShader	 = compile ps_2_0 psBasic();
 	}
 }
+#endif
+//=============================================================================
+#ifdef LN_GLSL_VERTEX
+uniform mat4	g_worldMatrix;
+uniform mat4	g_viewProjMatrix;
+attribute vec3	ln_Vertex;			// Pos
+attribute vec4	ln_Color0;			// Color
+attribute vec4	ln_MultiTexCoord0;	// UVOffset
+attribute vec2	ln_MultiTexCoord1;	// UVTileUnit
+varying vec4	v_Color;
+varying vec4	v_UVOffset;
+varying vec2	v_UVTileUnit;
+void main()
+{
+	ln_Vertex.xy -= 0.5;
+	gl_Position		= float4(ln_Vertex, 1.0f) * g_worldMatrix;
+	gl_Position		= gl_Position * g_viewProjMatrix;
+	v_Color			= ln_Color0;
+	v_UVOffset		= ln_MultiTexCoord0;
+	v_UVTileUnit	= ln_MultiTexCoord1;
+}
+
+#endif
+//=============================================================================
+#ifdef LN_GLSL_FRAGMENT
+uniform sampler2D	g_texture;
+varying vec3		v_Pos;
+varying vec4		v_Color;
+varying vec4		v_UVOffset;
+varying vec2		v_UVTileUnit;
+void main()
+{
+	vec2 uvUpperLeft = v_UVOffset.xy;	// ì]ëóå≥ç∂è„ UV
+	vec2 uvWidth = v_UVOffset.zw;		// ì]ëóå≥ãÈå`ÇÃïù UV
+	vec2 uvRatio = fmod(v_UVTileUnit, 1.0);	// 1Ç¬ÇÃéläpå`ÇÃíÜÇÃÇ«Ç±Ç…Ç¢ÇÈÇÃÇ© (0.0Å`1.0)
+	vec2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
+    gl_FragColor = texture2D(g_texture, uv);
+}
+#endif

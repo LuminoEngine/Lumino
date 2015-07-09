@@ -52,7 +52,7 @@ WGLGraphicsDevice::~WGLGraphicsDevice()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void WGLGraphicsDevice::Initialize(const GraphicsDeviceConfigData& configData)
+void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 {
 	GLGraphicsDevice::Initialize(configData);
 

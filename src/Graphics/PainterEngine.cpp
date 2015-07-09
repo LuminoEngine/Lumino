@@ -38,9 +38,9 @@ PainterEngine::~PainterEngine()
 //-----------------------------------------------------------------------------
 void PainterEngine::Create(GraphicsManager* manager)
 {
-	m_vertexBuffer.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateVertexBuffer(
+	m_vertexBuffer.Attach(manager->GetGraphicsDevice()->CreateVertexBuffer(
 		PainterVertex::Elements(), PainterVertex::ElementCount, 1024, NULL, DeviceResourceUsage_Dynamic));
-	m_indexBuffer.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateIndexBuffer(
+	m_indexBuffer.Attach(manager->GetGraphicsDevice()->CreateIndexBuffer(
 		1024, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
 	m_vertexCache.Reserve(1024);
@@ -48,7 +48,9 @@ void PainterEngine::Create(GraphicsManager* manager)
 
 	//RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(_T("D:/Proj/Lumino/src/Graphics/Resource/Painter.fx")));
 	ShaderCompileResult r;
-	m_shader.Shader.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r));
+	m_shader.Shader.Attach(manager->GetGraphicsDevice()->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r));
+	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+	
 	m_shader.Technique = m_shader.Shader->GetTechnique(0);
 	m_shader.Pass = m_shader.Technique->GetPass(0);
 	m_shader.varWorldMatrix = m_shader.Shader->GetVariableByName(_T("g_worldMatrix"));
@@ -56,7 +58,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("g_texture"));
 	m_shader.varViewportSize = m_shader.Shader->GetVariableByName(_T("g_viewportSize"));
 
-	m_renderer = manager->GetGraphicsDevice()->GetDeviceObject()->GetRenderer();
+	m_renderer = manager->GetGraphicsDevice()->GetRenderer();
 
 	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
@@ -65,8 +67,8 @@ void PainterEngine::Create(GraphicsManager* manager)
 	//-----------------------------------------------------
 	// ダミーテクスチャ
 
-	m_dummyTexture.Attach(manager->GetGraphicsDevice()->GetDeviceObject()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
-	Device::IGraphicsDevice::ScopedLockContext lock(manager->GetGraphicsDevice()->GetDeviceObject());
+	m_dummyTexture.Attach(manager->GetGraphicsDevice()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
+	Device::IGraphicsDevice::ScopedLockContext lock(manager->GetGraphicsDevice());
 	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
@@ -153,7 +155,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	SizeF texSize(srcTexture->GetSize().Width, srcTexture->GetSize().Height);
+	SizeF texSize((float)srcTexture->GetSize().Width, (float)srcTexture->GetSize().Height);
 	texSize.Width = 1.0f / texSize.Width;
 	texSize.Height = 1.0f / texSize.Height;
 	RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);

@@ -23,6 +23,12 @@ using namespace Lumino::Scene;
 #define LOCALFILEA(fileName) TestUtils::GetFilePathA(__FILE__, fileName).GetCStr()
 #define LOCALFILEW(fileName) TestUtils::GetFilePathW(__FILE__, fileName).GetCStr()
 
+/// スクリーンショットの作成マクロ
+#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
+
+/// スクリーンショットの比較マクロ
+#define SS_CHECK(fileName)	ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName))));
+
 class TestEnv : public ::testing::Environment
 {
 public:
@@ -34,6 +40,9 @@ public:
 	static SceneGraphManager*		MMDSceneGraph;
 
 public:
+	static Graphics::Renderer* BeginRendering();
+	static void EndRendering();
+	static PathName MakeScreenShotPath(const char* fileName);
 	static void SaveScreenShot(const TCHAR* filePath);
 	static bool EqualsScreenShot(const TCHAR* filePath);
 	static bool EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath);
@@ -59,6 +68,7 @@ public:
 		};
 		return elements;
 	}
+	static const int LayoutCount = 2;
 };
 
 /// 頂点データ (位置+テクスチャUV)

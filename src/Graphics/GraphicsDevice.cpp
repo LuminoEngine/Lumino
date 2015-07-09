@@ -1,4 +1,7 @@
 ﻿
+
+#if 0
+
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/GraphicsDevice.h"
 #if defined(LN_WIN32)
@@ -65,5 +68,8 @@ GraphicsDevice::~GraphicsDevice()
 	}
 }
 
+
 } // namespace Graphics
 } // namespace Lumino
+
+#endif

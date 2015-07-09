@@ -26,9 +26,7 @@ WGLSwapChain::WGLSwapChain()
 	: m_device(NULL)
 	, m_window(NULL)
 	, m_context(NULL)
-	//, m_hWnd(NULL)
-	//, m_hDC(NULL)
-	//, m_hGLRC(NULL)
+	, m_renderTarget(NULL)
 {
 }
 
@@ -37,14 +35,7 @@ WGLSwapChain::WGLSwapChain()
 //-----------------------------------------------------------------------------
 WGLSwapChain::~WGLSwapChain()
 {
-	//LN_SAFE_RELEASE(m_backBuffer);
-
-	//if (m_hGLRC != NULL) {
-	//	wglDeleteContext(m_hGLRC);
-	//}
-	//if (m_hDC != NULL) {
-	//	::ReleaseDC(m_hWnd, m_hDC);
-	//}
+	LN_SAFE_RELEASE(m_renderTarget);
 	LN_SAFE_RELEASE(m_context);
 	LN_SAFE_RELEASE(m_window);
 }
@@ -58,6 +49,9 @@ void WGLSwapChain::Create(WGLGraphicsDevice* device, Platform::Window* window, W
 	LN_REFOBJ_SET(m_window, window);
 
 	m_context = LN_NEW WGLContext(m_device, m_window, parentContext);
+
+	// TODO: バックバッファサイズ
+	m_renderTarget = LN_NEW GLRenderTargetTexture(m_window->GetSize(), TextureFormat_R8G8B8A8, 1);
 
 	GLSwapChain::Create();
 }

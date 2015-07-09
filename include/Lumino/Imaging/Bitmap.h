@@ -162,7 +162,7 @@ private:
 	static inline byte_t GetG(ClColor color)	{ return (color >> 8) & 0xFF; }
 	static inline byte_t GetB(ClColor color)	{ return (color)& 0xFF; }
 
-
+	// int のバイトオーダーに関係なくメモリにアクセスするための構造体
 	struct U32
 	{
 		byte_t	D[4];

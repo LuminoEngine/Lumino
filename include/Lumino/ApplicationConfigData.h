@@ -1,5 +1,6 @@
 
 #pragma once
+#include "Graphics/Common.h"
 
 namespace Lumino
 {
@@ -10,8 +11,12 @@ namespace Lumino
 class ApplicationConfigData
 {
 public:
+	Graphics::GraphicsAPI	GraphicsAPI;
+
+public:
 
 	ApplicationConfigData()
+		: GraphicsAPI(Graphics::GraphicsAPI::DirectX9)
 	{
 	}
 };

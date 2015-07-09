@@ -16,12 +16,14 @@ class PainterEngine;
 
 struct GraphicsManagerConfigData
 {
+	GraphicsAPI				GraphicsAPI;
 	Platform::Window*		MainWindow;
 	Lumino::FileManager*	FileManager;
 	bool					PlatformTextureLoading;
 
 	GraphicsManagerConfigData()
-		: MainWindow(NULL)
+		: GraphicsAPI(GraphicsAPI::DirectX9)
+		, MainWindow(NULL)
 		, FileManager(NULL)
 		, PlatformTextureLoading(false)
 	{}
@@ -38,8 +40,15 @@ public:
 	~GraphicsManager();
 
 public:
+
+	/**
+		@brief		現在のグラフィックスシステムが使用している API の種類を確認します。
+	*/
+	GraphicsAPI GetGraphicsAPI() const;
+
+
 	RenderingType GetRenderingType() const { return RenderingType_Deferred; }
-	GraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
+	Device::IGraphicsDevice* GetGraphicsDevice() const { return m_graphicsDevice; }
 	Renderer* GetRenderer() { return m_renderer; }
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
 	Imaging::FontManager* GetFontManager() const { return m_fontManager; }
@@ -67,7 +76,8 @@ private:
 	FileManager*			m_fileManager;
 	RefPtr<Imaging::FontManager>	m_fontManager;
 	
-	RefPtr<GraphicsDevice>	m_graphicsDevice;
+	//RefPtr<Device::IGraphicsDevice>	m_graphicsDevice;
+	Device::IGraphicsDevice*	m_graphicsDevice;
 	RefPtr<SwapChain>		m_mainSwapChain;
 	Device::ITexture*		m_dummyTexture;		///< public にはしないので RefPtr は使えない
 

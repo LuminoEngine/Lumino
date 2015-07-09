@@ -2,6 +2,7 @@
 #pragma once 
 
 #include "../DeviceInterface.h"
+#include "GLTexture.h"
 
 namespace Lumino
 {

@@ -22,7 +22,7 @@ public:
 
 public:
 	/// 描画を行うスレッドで初期化する必要がある
-	void Initialize(const GraphicsDeviceConfigData& configData);
+	void Initialize(const ConfigData& configData);
 
 	/// 指定コンテキストをアクティブにする
 	virtual void MakeCurrentContext(GLContext* context);

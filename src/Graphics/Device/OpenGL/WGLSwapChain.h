@@ -30,6 +30,7 @@ public:
 
 public:
 	// override ISwapChain
+	virtual ITexture* GetBackBuffer() { return m_renderTarget; }
 	virtual void Resize(const Size& size);
 	//virtual ITexture* GetBackBuffer();
 	//virtual void Begin();
@@ -40,9 +41,11 @@ public:
 	//virtual void MakeCurrentContext();	// これは削除予定
 
 private:
-	WGLGraphicsDevice*	m_device;
-	Platform::Window*	m_window;
-	WGLContext*			m_context;
+	WGLGraphicsDevice*		m_device;
+	Platform::Window*		m_window;
+	WGLContext*				m_context;
+	GLRenderTargetTexture*	m_renderTarget;	///< 外部へ公開する見かけ上のレンダリングターゲット
+
 	//HWND	m_hWnd;
 	//HDC		m_hDC;
 	//HGLRC	m_hGLRC;

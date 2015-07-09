@@ -55,6 +55,7 @@ public:
 
 public:
 	virtual void Finalize();
+	virtual GraphicsAPI GetGraphicsAPI() const { return GraphicsAPI::DirectX9; }
 	virtual ISwapChain* GetDefaultSwapChain();
 	virtual IRenderer* GetRenderer() { return m_renderer; }
 	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);

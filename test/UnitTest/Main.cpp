@@ -7,6 +7,37 @@ Graphics::Renderer*			TestEnv::Renderer = NULL;
 Graphics::SwapChain*		TestEnv::MainSwapChain = NULL;
 SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Renderer* TestEnv::BeginRendering()
+{
+	Graphics::Renderer* r = TestEnv::Renderer;
+	SwapChain* swap = TestEnv::MainSwapChain;
+	r->SetRenderTarget(0, swap->GetBackBuffer());
+	r->SetDepthBuffer(swap->GetBackBufferDepth());
+	r->Clear(true, true, ColorF::White, 1.0f);
+	return r;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TestEnv::EndRendering()
+{
+	TestEnv::MainSwapChain->Present();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+PathName TestEnv::MakeScreenShotPath(const char* fileName)
+{
+	PathName path(_T("TestData"));
+	path.Append(Manager->GetGraphicsAPI().ToString());
+	path.Append(fileName);
+	return path;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -53,6 +84,7 @@ void TestEnv::SetUp()
 
 
 	Graphics::GraphicsManagerConfigData gmcd;
+	gmcd.GraphicsAPI = GraphicsAPI::OpenGL;
 	gmcd.MainWindow = Application->GetMainWindow();
 	gmcd.FileManager = &FileManager::GetInstance();
 	Manager = LN_NEW Graphics::GraphicsManager(gmcd);
@@ -102,7 +134,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_TextRenderer.*"
+		"--gtest_filter=Test_Graphics_BasicRendering.*"
 		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
 		//"--gtest_filter=Test_Graphics_Texture.Lock"
 	};

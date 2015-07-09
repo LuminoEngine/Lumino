@@ -69,6 +69,9 @@ public:
 	/// 終了処理
 	virtual void Finalize() = 0;
 
+	/// API 種類の取得
+	virtual GraphicsAPI GetGraphicsAPI() const = 0;
+
 	/// デフォルトのスワップチェインの取得
 	virtual ISwapChain* GetDefaultSwapChain() = 0;
 	
