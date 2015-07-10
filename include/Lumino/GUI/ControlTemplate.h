@@ -92,7 +92,7 @@ public:
 	const String&  GetTargetType() const { return m_targetType; }
 
 	void SetPropertyValue(const String& propertyName, const Variant& value) { m_propertyValueList.SetValue(propertyName, value); }
-	const Variant& SetPropertyValue(const String& propertyName) const { return m_propertyValueList.GetValue(propertyName); }
+	Variant GetPropertyValue(const String& propertyName) const { return m_propertyValueList.GetValue(propertyName); }
 
 	void SetVisualTreeRoot(UIElementFactory* factory) { m_visualTreeRoot = factory; }
 

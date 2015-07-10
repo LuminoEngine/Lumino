@@ -21,7 +21,7 @@ int main()
 	{
 
 		ApplicationConfigData appData;
-		appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
+		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		RefPtr<Application> app(Application::Create(appData));
 		
 		//RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
@@ -59,11 +59,43 @@ int main()
 		//thumb1->SetSize(SizeF(16, 32));
 		workbench1->SetContent(thumb1);
 #endif
+#if 0
 		RefPtr<GUI::Track> track1(LN_NEW GUI::Track(app->GetGUIManager()));
 		track1->SetMaximum(70);
 		track1->SetValue(20);
 		track1->SetViewportSize(25);
 		workbench1->SetContent(track1);
+#endif
+
+		RefPtr<GUI::Grid> grid1(LN_NEW GUI::Grid(app->GetGUIManager()));
+		RefPtr<GUI::ColumnDefinition> col1(LN_NEW GUI::ColumnDefinition(app->GetGUIManager()));
+		col1->SetWidth(200);
+		RefPtr<GUI::ColumnDefinition> col2(LN_NEW GUI::ColumnDefinition(app->GetGUIManager()));
+		RefPtr<GUI::RowDefinition> row1(LN_NEW GUI::RowDefinition(app->GetGUIManager()));
+		RefPtr<GUI::RowDefinition> row2(LN_NEW GUI::RowDefinition(app->GetGUIManager()));
+		row2->SetHeight(100);
+		grid1->GetColumnDefinitions()->Add(col1);
+		grid1->GetColumnDefinitions()->Add(col2);
+		grid1->GetRowDefinitions()->Add(row1);
+		grid1->GetRowDefinitions()->Add(row2);
+		workbench1->SetContent(grid1);
+
+		RefPtr<GUI::Track> track1(LN_NEW GUI::Track(app->GetGUIManager()));
+		track1->SetMaximum(70);
+		track1->SetValue(20);
+		track1->SetViewportSize(25);
+		grid1->GetChildren()->Add(track1);
+
+		RefPtr<GUI::Track> track2(LN_NEW GUI::Track(app->GetGUIManager()));
+		track2->SetMaximum(70);
+		track2->SetValue(20);
+		track2->SetViewportSize(25);
+		GUI::Grid::SetRow(track2, 1);
+		GUI::Grid::SetColumnSpan(track2, 2);
+		grid1->GetChildren()->Add(track2);
+
+
+
 
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();

@@ -110,7 +110,7 @@ EventArgsPool::~EventArgsPool()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MouseEventArgs* EventArgsPool::CreateMouseEventArgs(MouseButton button, short wheel, short x, short y)
+MouseEventArgs* EventArgsPool::CreateMouseEventArgs(MouseButton button, int wheel, float x, float y)
 {
 	MouseEventArgs* args = FindFreeObject(m_mouseEventArgsPool);
 	if (args == NULL) {

@@ -3,6 +3,16 @@
 #include <map>
 #include <memory>
 
+/*
+	プロパティの種類は
+	- 実体が C++ ネイティブのメンバ変数
+	- 実体が外部(C#とか) のメンバ変数	→ 高速化を狙うときに使う。必須ではない
+	- 実体が map に登録される Variant
+	と、それぞれ
+	- 普通のプロパティ
+	- 添付プロパティ
+*/
+
 namespace Lumino
 {
 
@@ -12,21 +22,27 @@ namespace Lumino
 class Property
 {
 public:
-	Property() {}
+	Property(bool stored)
+		: m_stored(stored)
+	{}
 	~Property() {}
 
 public:
 	virtual const String& GetName() const = 0;
 
-	virtual void SetValue(CoreObject* target, Variant value) = 0;
+	virtual void SetValue(CoreObject* target, Variant value) const = 0;
 	virtual Variant GetValue(const CoreObject* target) const = 0;
 
 	virtual bool IsReadable() const { return false; }
 	virtual bool IsWritable() const { return false; }
-	
-	// Property は C++ 側でだけ使用する。
-	// getter setter の登録と GetValue SetValue 実装のユーティリティと考える。
-	// DependencyProperty のように static で公開したりはしない。
+
+	/// 値を CoreObject の map に Variant として持つかどうか。
+	/// (よい名前が思いつかないのでとりあえずこれで)
+	/// (virtual にしてもいいが、割とクリティカルなところで呼び出されると思われるのでそうしないでおく)
+	bool IsStored() const { return m_stored; }
+
+private:
+	bool	m_stored;
 
 	// このクラスのインスタンスは基本的に static にする。
 	// あくまで「名前をキーにしてどのgetter/setterを呼び出すか？」が目的なので、状態は持たない。
@@ -83,7 +99,7 @@ public:
 			return m_plainSetter == NULL && m_constRefSetter == NULL;
 		}
 
-		void Call(TClass* instance, const TValue& value)
+		void Call(TClass* instance, const TValue& value) const
 		{
 			if (m_plainSetter) {
 				(instance->*m_plainSetter)(value);
@@ -167,7 +183,8 @@ public:
 
 public:
 	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
-		: m_name(name)
+		: Property(false)
+		, m_name(name)
 		, m_setter(setter)
 		, m_getter(getter)
 	{}
@@ -176,7 +193,7 @@ public:
 
 	virtual const String& GetName() const { return m_name; }
 
-	virtual void SetValue(CoreObject* target, Variant value)
+	virtual void SetValue(CoreObject* target, Variant value) const
 	{
 		LN_THROW(!m_setter.IsEmpty(), InvalidOperationException);
 		TClass* instance = static_cast<TClass*>(target);
@@ -221,12 +238,13 @@ class AttachedProperty
 {
 public:
 	AttachedProperty(const String& name, const Variant& defaultValue)
-		: m_name(name)
+		: Property(true)
+		, m_name(name)
 		, m_defaultValue(defaultValue)
 	{}
 
 	virtual const String& GetName() const { return m_name; }
-	virtual void SetValue(CoreObject* target, Variant value) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetValue(CoreObject* target, Variant value) const { LN_THROW(0, InvalidOperationException); }
 	virtual Variant GetValue(const CoreObject* target) const  { LN_THROW(0, InvalidOperationException); }
 
 private:
@@ -268,7 +286,7 @@ private:
 
 #define LN_DEFINE_ATTACHED_PROPERTY(prop, name, nativeType, ownerClassType, defaultValue) \
 { \
-	if (prop != NULL) { \
+	if (prop == NULL) { \
 		prop = PropertyManager::RegisterAttachedProperty(ownerClassType::GetClassTypeInfo(), _T(name), defaultValue); \
 	} \
 }

@@ -61,9 +61,9 @@ public:
 
 public:
 	MouseButton	Button;		///< ボタン番号
-	short		Wheel;		///< マウスホイールの回転回数 (正または負の回数)
-	short		X;			///< マウスイベント生成時のマウスの X 座標 (グローバル座標。クライアント領域外は -1)
-	short		Y;			///< マウスイベント生成時のマウスの Y 座標 (グローバル座標。クライアント領域外は -1)
+	int			Wheel;		///< マウスホイールの回転回数 (正または負の回数)
+	float		X;			///< マウスイベント生成時のマウスの X 座標 (グローバル座標。クライアント領域外は -1)
+	float		Y;			///< マウスイベント生成時のマウスの Y 座標 (グローバル座標。クライアント領域外は -1)
 	//short		MoveX;	    ///< X 座標の移動量
 	//short		MoveY;      ///< Y 座標の移動量
 };
@@ -125,7 +125,7 @@ public:
 	EventArgsPool();
 	~EventArgsPool();
 
-	MouseEventArgs* CreateMouseEventArgs(MouseButton button, short wheel, short x, short y);
+	MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y);
 	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);
 
 	template<class TEventArgs, typename ...TArgs>

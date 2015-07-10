@@ -5,6 +5,18 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/10]
+		・SetPropertyValue() のキーは Property のポインタにする？名前にする？
+		・依存関係プロパティはポインタとして公開する？名前にする？
+
+		ビハインドコードからアクセスする場合はポインタの方が当然高速。
+		XML からアクセスするときは "要素名.プロパティ名" という文字列で検索する必要がある。
+		キーをポインタにしておくと、まず文字列、次にポインタ、といった2回の検索が必要になる。
+		
+		とは言っても、2回の検索が必要になるのは初期化時だけ。
+		むしろアニメーションとかはリアルタイムにアクセスする必要があるので、
+		ポインタあるいはハッシュ値のような数値で検索できたほうが高速。
+
 
 	[2015/7/8] 座標の直値指定は必要？
 		WinForms の Location プロパティは必要かということ。
@@ -821,6 +833,7 @@
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/Controls/Thumb.h>
 #include <Lumino/GUI/Controls/Track.h>
+#include <Lumino/GUI/Controls/Grid.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/GUIManager.h>
 
@@ -878,6 +891,9 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(ListBoxChrome::TypeID, ListBoxChrome::CreateInstance);
 	RegisterFactory(ThumbChrome::TypeID, ThumbChrome::CreateInstance);
 	RegisterFactory(Thumb::TypeID, Thumb::CreateInstance);
+	RegisterFactory(Grid::TypeID, Grid::CreateInstance);
+	RegisterFactory(ColumnDefinition::TypeID, ColumnDefinition::CreateInstance);
+	RegisterFactory(RowDefinition::TypeID, RowDefinition::CreateInstance);
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
 	BuildDefaultTheme();

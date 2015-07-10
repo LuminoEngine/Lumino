@@ -19,7 +19,7 @@ AttachedProperty* PropertyManager::RegisterAttachedProperty(const TypeInfo& owne
 {
 	TypedNameKey key(ownerClass, propertyName);
 	PropertyMap::iterator itr = m_propertyMap.find(key);
-	if (itr != m_propertyMap.end())
+	if (itr == m_propertyMap.end())
 	{
 		std::shared_ptr<AttachedProperty> prop(LN_NEW AttachedProperty(propertyName, defaultValue));
 		m_propertyMap[key] = prop;

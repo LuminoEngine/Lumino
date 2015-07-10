@@ -15,6 +15,7 @@ namespace Lumino
 //-----------------------------------------------------------------------------
 CoreObject::CoreObject()
 	: m_userData(NULL)
+	, m_propertyDataStore(NULL)
 {
 }
 
@@ -23,6 +24,7 @@ CoreObject::CoreObject()
 //-----------------------------------------------------------------------------
 CoreObject::~CoreObject()
 {
+	LN_SAFE_DELETE(m_propertyDataStore);
 }
 
 //-----------------------------------------------------------------------------
@@ -33,13 +35,22 @@ void CoreObject::SetPropertyValue(const String& propertyName, const Variant& val
 	Property* prop;
 	if (m_propertyList.TryGetValue(propertyName, &prop))
 	{
-		prop->SetValue(this, value);
-		OnPropertyChanged(propertyName, value);
-		return;
+		//prop->SetValue(this, value);
+		SetPropertyValue(prop, value);
 	}
-
 	// キーが無ければ例外
 	LN_THROW(0, KeyNotFoundException);
+
+	//else
+	//{
+	//	// キーが無くても、添付プロパティに備えてセット可能にする。
+	//	// (TODO: 添付プロパティかを識別できるようにするべきかも？)
+	//	//m_propertyList.SetValue(propertyName, value);
+	//}
+	//OnPropertyChanged(propertyName, value);
+
+	// キーが無ければ例外
+//	LN_THROW(0, KeyNotFoundException);
 	//m_propertyDataStore.SetValue(propertyName, value);
 	//OnPropertyChanged(propertyName, value);
 }
@@ -49,7 +60,17 @@ void CoreObject::SetPropertyValue(const String& propertyName, const Variant& val
 //-----------------------------------------------------------------------------
 void CoreObject::SetPropertyValue(const Property* prop, const Variant& value)
 {
-	SetPropertyValue(prop->GetName(), value);	// TODO: GetName じゃなくて、型情報も考慮するように。あるいは生ポインタ
+	if (prop->IsStored())
+	{
+		// 必要になったので作る
+		if (m_propertyDataStore == NULL) { m_propertyDataStore = LN_NEW PropertyDataStore(); }
+		m_propertyDataStore->SetValue(prop, value);
+	}
+	else {
+		prop->SetValue(this, value);
+	}
+
+	//SetPropertyValue(prop->GetName(), value);	// TODO: GetName じゃなくて、型情報も考慮するように。あるいは生ポインタ
 }
 
 //-----------------------------------------------------------------------------
@@ -60,14 +81,15 @@ Variant CoreObject::GetPropertyValue(const String& propertyName) const
 	Property* prop;
 	if (m_propertyList.TryGetValue(propertyName, &prop))
 	{
-		return prop->GetValue(this);
+		//return prop->GetValue(this);
+		return GetPropertyValue(prop);
 	}
 
-	Variant value;
-	if (m_propertyDataStore.TryGetValue(propertyName, &value))
-	{
-		return value;
-	}
+	//Variant value;
+	//if (m_propertyDataStore.TryGetValue(propertyName, &value))
+	//{
+	//	return value;
+	//}
 	LN_THROW(0, ArgumentException);
 }
 
@@ -76,7 +98,16 @@ Variant CoreObject::GetPropertyValue(const String& propertyName) const
 //-----------------------------------------------------------------------------
 Variant CoreObject::GetPropertyValue(const Property* prop) const
 {
-	return GetPropertyValue(prop->GetName());	//TODO
+	if (prop->IsStored())
+	{
+		LN_THROW(m_propertyDataStore != NULL, KeyNotFoundException);
+		return m_propertyDataStore->GetValue(prop);
+	}
+	else {
+		return prop->GetValue(this);
+	}
+
+	//return GetPropertyValue(prop->GetName());	//TODO
 }
 
 //-----------------------------------------------------------------------------

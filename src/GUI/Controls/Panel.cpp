@@ -37,9 +37,12 @@ Panel::~Panel()
 void Panel::Children_ItemAdded(UIElement* item)
 {
 	// 子要素の VisualTree を更新しなおす
-	if (item != NULL) {
+	if (item != NULL)
+	{
+		LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
+
 		//m_visualChildren.Add(item);
-		AddChild(item);
+		//AddChild(item);
 		item->ApplyTemplate();
 	}
 }

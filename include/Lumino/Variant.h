@@ -99,11 +99,11 @@ private:
 
 private:
 	typedef SortedArray<String, Property*>	PropertyList;
-	typedef SortedArray<String, Variant>	PropertyDataStore;
+	typedef SortedArray<const Property*, Variant>	PropertyDataStore;
 
-	PropertyList		m_propertyList;
-	PropertyDataStore	m_propertyDataStore;
 	void*				m_userData;
+	PropertyList		m_propertyList;
+	PropertyDataStore*	m_propertyDataStore;
 
 };
 

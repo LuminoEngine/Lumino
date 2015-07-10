@@ -833,7 +833,7 @@ void ContentControl::SetContent(Variant value)
 		}
 	}
 
-	m_content.SetFloat(0);
+	//m_content.SetFloat(0);
 
 	if (m_childElement != NULL)
 	{

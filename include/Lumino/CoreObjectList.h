@@ -95,6 +95,9 @@ public:
 		LN_SAFE_RELEASE(item);
 	}
 
+	/// 配列のインデックスとして有効な整数値であるかを確認する
+	bool CheckValidIndex(int index) const { return m_list.CheckValidIndex(index); }
+
 public:
 	// STL interface
 	iterator		begin()			{ return m_list.begin(); }

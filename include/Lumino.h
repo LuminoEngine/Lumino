@@ -42,6 +42,7 @@
 #include "Lumino/GUI/UIElement.h"
 #include "Lumino/GUI/Controls/Panel.h"
 #include "Lumino/GUI/Controls/StackPanel.h"
+#include "Lumino/GUI/Controls/Grid.h"
 #include "Lumino/GUI/Controls/Thumb.h"
 #include "Lumino/GUI/Controls/Track.h"
 #include "Lumino/GUI/Controls/ListBox.h"
