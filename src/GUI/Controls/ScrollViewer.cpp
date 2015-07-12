@@ -30,7 +30,7 @@ namespace GUI
 //=============================================================================
 // ScrollContentPresenter
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollContentPresenter);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollContentPresenter, ContentPresenter);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollContentPresenter);
 
 //-----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ ScrollContentPresenter::~ScrollContentPresenter()
 //=============================================================================
 // ScrollViewer
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollViewer);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollViewer, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollViewer);
 
 //-----------------------------------------------------------------------------

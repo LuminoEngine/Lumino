@@ -45,8 +45,8 @@ public:
 	typedef std::function<void(CoreObject, const Variant&) >	Handler;
 
 public:
-	RoutedCommand(const TypeInfo& type, const String& commandName, Handler canExecute, Handler execute)
-		: m_typeInfo(type)
+	RoutedCommand(TypeInfo* ownerClass, const String& commandName, Handler canExecute, Handler execute)
+		: m_typeInfo(ownerClass)
 		, m_commandName(commandName)
 		, m_canEcecute(canExecute)
 		, m_ececute(execute)
@@ -55,7 +55,7 @@ public:
 
 	virtual ~RoutedCommand() {}
 
-	const TypeInfo& GetOwnerClass() const
+	TypeInfo* GetOwnerClass() const
 	{
 		return m_typeInfo;
 	}
@@ -65,7 +65,7 @@ public:
 	virtual void Execute(const Variant& parameter) {}
 
 private:
-	const TypeInfo&	m_typeInfo;
+	TypeInfo*		m_typeInfo;
 	String			m_commandName;
 	Handler			m_canEcecute;	///< static 関数
 	Handler			m_ececute;		///< static 関数
@@ -96,14 +96,14 @@ public:
 public:
 
 	/// 各クラスのコンストラクタから呼ばれる。command は static オブジェクトにすること。
-	static RoutedCommandTypeContext* RegisterCommand(const TypeInfo& type, RoutedCommand* command);
+	static RoutedCommandTypeContext* RegisterCommand(TypeInfo* type, RoutedCommand* command);
 
 	static bool CanExecute(UIElement* caller, Command* command, const Variant& parameter);
 
 	static void Execute(UIElement* caller, Command* command, const Variant& parameter);
 
 private:
-	typedef SortedArray<const TypeInfo*, std::shared_ptr<RoutedCommandTypeContext> >	TypeContextList;
+	typedef SortedArray<TypeInfo*, std::shared_ptr<RoutedCommandTypeContext> >	TypeContextList;
 	static TypeContextList	m_typeContextList;
 };
 

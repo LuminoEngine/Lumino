@@ -29,16 +29,25 @@ namespace GUI
 //=============================================================================
 // Track
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Track);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Track, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Track);
 
-PropertyID	Track::ValueProperty(_T("Value"));
-PropertyID	Track::MinimumProperty(_T("Minimum"));
-PropertyID	Track::MaximumProperty(_T("Maximum"));
-PropertyID	Track::OrientationProperty(_T("Orientation"));
-PropertyID	Track::DecreaseButtonProperty(_T("DecreaseButton"));
-PropertyID	Track::ThumbProperty(_T("Thumb"));
-PropertyID	Track::IncreaseButtonProperty(_T("IncreaseButton"));
+
+LN_DEFINE_PROPERTY_2		(Track, float, ValueProperty, "Value", 0.0f, &Track::SetValue, &Track::GetValue);
+LN_DEFINE_PROPERTY_2		(Track, float, MinimumProperty, "Minimum", 0.0f, &Track::SetMinimum, &Track::GetMinimum);
+LN_DEFINE_PROPERTY_2		(Track, float, MaximumProperty, "Maximum", 1.0f, &Track::SetMaximum, &Track::GetMaximum);
+LN_DEFINE_PROPERTY_ENUM_2	(Track, Orientation, OrientationProperty,"Orientation", Orientation::Horizontal, &Track::SetOrientation, &Track::GetOrientation);
+LN_DEFINE_PROPERTY_2		(Track, ButtonBase*, DecreaseButtonProperty, "DecreaseButton", NULL, &Track::SetDecreaseButton, &Track::GetDecreaseButton);
+LN_DEFINE_PROPERTY_2		(Track, Thumb*, ThumbProperty, "Thumb", NULL, &Track::SetThumb, &Track::GetThumb);
+LN_DEFINE_PROPERTY_2		(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButton", NULL, &Track::SetIncreaseButton, &Track::GetIncreaseButton);
+
+//PropertyID	Track::ValueProperty(_T("Value"));
+//PropertyID	Track::MinimumProperty(_T("Minimum"));
+//PropertyID	Track::MaximumProperty(_T("Maximum"));
+//PropertyID	Track::OrientationProperty(_T("Orientation"));
+//PropertyID	Track::DecreaseButtonProperty(_T("DecreaseButton"));
+//PropertyID	Track::ThumbProperty(_T("Thumb"));
+//PropertyID	Track::IncreaseButtonProperty(_T("IncreaseButton"));
 
 //-----------------------------------------------------------------------------
 //
@@ -56,13 +65,13 @@ Track::Track(GUIManager* manager)
 	, m_density(1.0f)
 {	
 	// Register property
-	LN_DEFINE_PROPERTY		(Track, float, ValueProperty, &Track::SetValue, &Track::GetValue, 0.0f);
-	LN_DEFINE_PROPERTY		(Track, float, MinimumProperty, &Track::SetMinimum, &Track::GetMinimum, 0.0f);
-	LN_DEFINE_PROPERTY		(Track, float, MaximumProperty, &Track::SetMaximum, &Track::GetMaximum, 1.0f);
-	LN_DEFINE_PROPERTY_ENUM	(Track, Orientation, OrientationProperty, &Track::SetOrientation, &Track::GetOrientation, Orientation::Horizontal);
-	LN_DEFINE_PROPERTY		(Track, ButtonBase*, DecreaseButtonProperty, &Track::SetDecreaseButton, &Track::GetDecreaseButton, NULL);
-	LN_DEFINE_PROPERTY		(Track, Thumb*, ThumbProperty, &Track::SetThumb, &Track::GetThumb, NULL);
-	LN_DEFINE_PROPERTY		(Track, ButtonBase*, IncreaseButtonProperty, &Track::SetIncreaseButton, &Track::GetIncreaseButton, NULL);
+	//LN_DEFINE_PROPERTY		(Track, float, ValueProperty, &Track::SetValue, &Track::GetValue, 0.0f);
+	//LN_DEFINE_PROPERTY		(Track, float, MinimumProperty, &Track::SetMinimum, &Track::GetMinimum, 0.0f);
+	//LN_DEFINE_PROPERTY		(Track, float, MaximumProperty, &Track::SetMaximum, &Track::GetMaximum, 1.0f);
+	//LN_DEFINE_PROPERTY_ENUM	(Track, Orientation, OrientationProperty, &Track::SetOrientation, &Track::GetOrientation, Orientation::Horizontal);
+	//LN_DEFINE_PROPERTY		(Track, ButtonBase*, DecreaseButtonProperty, &Track::SetDecreaseButton, &Track::GetDecreaseButton, NULL);
+	//LN_DEFINE_PROPERTY		(Track, Thumb*, ThumbProperty, &Track::SetThumb, &Track::GetThumb, NULL);
+	//LN_DEFINE_PROPERTY		(Track, ButtonBase*, IncreaseButtonProperty, &Track::SetIncreaseButton, &Track::GetIncreaseButton, NULL);
 
 	// Register handler
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragStartedEvent, Handler_Thumb_DragStarted);

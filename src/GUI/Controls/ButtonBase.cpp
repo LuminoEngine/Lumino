@@ -12,7 +12,7 @@ namespace GUI
 //=============================================================================
 // ButtonBase
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonBase);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonBase, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ButtonBase);
 
 //-----------------------------------------------------------------------------

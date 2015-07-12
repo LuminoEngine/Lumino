@@ -11,15 +11,17 @@ namespace GUI
 //=============================================================================
 // DragEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::DragEventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::DragEventArgs, EventArgs);
 
 //=============================================================================
 // Thumb
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Thumb);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Thumb, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Thumb);
 
-PropertyID	Thumb::IsDraggingProperty(_T("IsDragging"));
+// Register property
+LN_DEFINE_PROPERTY_2(Thumb, bool, IsDraggingProperty, "IsDragging", false, NULL, &Thumb::IsDragging);
+//PropertyID	Thumb::IsDraggingProperty(_T("IsDragging"));
 
 EventID	 	Thumb::DragStartedEvent(_T("DragStarted"));
 EventID		Thumb::DragDeltaEvent(_T("DragDelta"));
@@ -34,7 +36,7 @@ Thumb::Thumb(GUIManager* manager)
 	, m_isDragging(false)
 {
 	// Register property
-	LN_DEFINE_PROPERTY(Thumb, bool, IsDraggingProperty, NULL, &Thumb::IsDragging, false);
+	//LN_DEFINE_PROPERTY(Thumb, bool, IsDraggingProperty, NULL, &Thumb::IsDragging, false);
 
 	// Register event
 	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragStartedEvent, &Thumb::OnDragStarted, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseMove.Raise(s, e); });
@@ -135,7 +137,7 @@ void Thumb::Handler_MouseUp(MouseEventArgs* e)
 //=============================================================================
 // ThumbChrome
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ThumbChrome);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ThumbChrome, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ThumbChrome);
 
 //-----------------------------------------------------------------------------

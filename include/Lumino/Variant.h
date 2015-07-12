@@ -29,16 +29,21 @@ class TypeInfo
 public:
 	TypeInfo() {}
 
-	TypeInfo(const TCHAR* fullName)
+	TypeInfo(const TCHAR* fullName, TypeInfo* baseClass)
 		: m_fullName(fullName)
+		, m_baseClass(baseClass)
 	{ }
 
+	void RegisterProperty(Property* prop);
+	Property* FindProperty(const String& name) const;
 
 	bool operator == (const TypeInfo& info) const { return m_fullName == info.m_fullName; }
 	bool operator < (const TypeInfo& info) const { return m_fullName < info.m_fullName; }
 
 private:
-	String	m_fullName;	///< 完全修飾名
+	String				m_fullName;		///< 完全修飾名
+	TypeInfo*			m_baseClass;
+	Array<Property*>	m_propertyList;
 };
 
 /**
@@ -57,11 +62,11 @@ public:
 
 
 	/// プロパティの値を設定します。
-	virtual void SetPropertyValue(const String& propertyName, const Variant& value);
+	//virtual void SetPropertyValue(const String& propertyName, const Variant& value);
 	virtual void SetPropertyValue(const Property* prop, const Variant& value);
 
 	/// プロパティの値を取得します。
-	virtual Variant GetPropertyValue(const String& propertyName) const;
+	//virtual Variant GetPropertyValue(const String& propertyName) const;
 	virtual Variant GetPropertyValue(const Property* prop) const;
 
 	String ToString();
@@ -75,56 +80,62 @@ public:
 
 	//const PropertyList& GetPropertyList() const { return m_propertyList; }
 
-	Property* FindProperty(const String& name) const
-	{
-		Property* prop;
-		if (m_propertyList.TryGetValue(name, &prop)) {
-			return prop;
-		}
-		return NULL;
-	}
+	//Property* FindProperty(const String& name) const
+	//{
+	//	Property* prop;
+	//	if (m_propertyList.TryGetValue(name, &prop)) {
+	//		return prop;
+	//	}
+	//	return NULL;
+	//}
 
 	Event02<CoreObject*, PropertyChangedEventArgs*>	PropertyChanged;
 
 protected:
 	/// この CoreObject にプロパティを登録します。
 	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
-	void RegisterProperty(Property* prop);
+	//void RegisterProperty(Property* prop);
 
 	void OnPropertyChanged(const String& name, const Variant& newValue);
 
 private:
-	friend TypeInfo GetTypeInfo(CoreObject* obj);
-	virtual TypeInfo GetThisTypeInfo() const { return TypeInfo(); };	// TODO: 純粋仮想関数にしてマクロ定義を強制する
+	friend TypeInfo* GetTypeInfo(CoreObject* obj);
+	//virtual TypeInfo* GetThisTypeInfo() const { return NULL; };	// TODO: 純粋仮想関数にしてマクロ定義を強制する
 
 private:
 	typedef SortedArray<String, Property*>	PropertyList;
 	typedef SortedArray<const Property*, Variant>	PropertyDataStore;
 
 	void*				m_userData;
-	PropertyList		m_propertyList;
+	//PropertyList		m_propertyList;
 	PropertyDataStore*	m_propertyDataStore;
 
+
+private:
+	static TypeInfo m_typeInfo;
+	virtual TypeInfo* GetThisTypeInfo() const;
+public:
+	static TypeInfo* GetClassTypeInfo();
 };
 
 #define LN_CORE_OBJECT_TYPE_INFO_DECL() \
 	private: \
 		static TypeInfo m_typeInfo; \
 		static void* m_coreObjectBindingTypeData; \
-		virtual TypeInfo GetThisTypeInfo() const; \
+		virtual TypeInfo* GetThisTypeInfo() const; \
 	public: \
-		static TypeInfo GetClassTypeInfo(); \
+		static TypeInfo* GetClassTypeInfo(); \
 		virtual void* GetBindingTypeData() const { return m_coreObjectBindingTypeData; } \
 		static void SetBindingTypeData(void* data) { m_coreObjectBindingTypeData = data; }
 
-#define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassFullName) \
-	TypeInfo subClassFullName::m_typeInfo(_T(#subClassFullName)); \
+#define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassFullName, baseClass) \
+	TypeInfo subClassFullName::m_typeInfo(_T(#subClassFullName), baseClass::GetClassTypeInfo()); \
 	void* subClassFullName::m_coreObjectBindingTypeData = NULL; \
-	TypeInfo subClassFullName::GetThisTypeInfo() const { return m_typeInfo; } \
-	TypeInfo subClassFullName::GetClassTypeInfo() { return m_typeInfo; }
+	TypeInfo* subClassFullName::GetThisTypeInfo() const { return &m_typeInfo; } \
+	TypeInfo* subClassFullName::GetClassTypeInfo() { return &m_typeInfo; }
 
 /// 指定されたオブジェクトの型情報を取得する
-inline TypeInfo GetTypeInfo(CoreObject* obj)
+inline TypeInfo* GetTypeInfo(CoreObject* obj)
 {
 	return obj->GetThisTypeInfo();
 }

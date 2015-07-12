@@ -11,12 +11,16 @@ namespace GUI
 //=============================================================================
 // ColumnDefinition
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ColumnDefinition);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ColumnDefinition, ContentElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ColumnDefinition);
 
-const PropertyID	ColumnDefinition::WidthProperty(_T("Width"));
-const PropertyID	ColumnDefinition::MinWidthProperty(_T("MinWidth"));
-const PropertyID	ColumnDefinition::MaxWidthProperty(_T("MaxWidth"));
+// Register property
+LN_DEFINE_PROPERTY_2(ColumnDefinition, float, WidthProperty, "Width", std::numeric_limits<float>::infinity(), &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth);
+LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MinWidthProperty, "MinWidth", 0.0f, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth);
+LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", FLT_MAX, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth);
+//const PropertyID	ColumnDefinition::WidthProperty(_T("Width"));
+//const PropertyID	ColumnDefinition::MinWidthProperty(_T("MinWidth"));
+//const PropertyID	ColumnDefinition::MaxWidthProperty(_T("MaxWidth"));
 
 //-----------------------------------------------------------------------------
 //
@@ -32,9 +36,9 @@ ColumnDefinition::ColumnDefinition(GUIManager* manager)
 	, m_desiredWidth(0)
 {
 	// Register property
-	LN_DEFINE_PROPERTY(ColumnDefinition, float, WidthProperty, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth, std::numeric_limits<float>::infinity());
-	LN_DEFINE_PROPERTY(ColumnDefinition, float, MinWidthProperty, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth, 0.0f);
-	LN_DEFINE_PROPERTY(ColumnDefinition, float, MaxWidthProperty, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth, FLT_MAX);
+	//LN_DEFINE_PROPERTY(ColumnDefinition, float, WidthProperty, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth, std::numeric_limits<float>::infinity());
+	//LN_DEFINE_PROPERTY(ColumnDefinition, float, MinWidthProperty, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth, 0.0f);
+	//LN_DEFINE_PROPERTY(ColumnDefinition, float, MaxWidthProperty, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth, FLT_MAX);
 }
 
 //-----------------------------------------------------------------------------
@@ -63,12 +67,16 @@ float ColumnDefinition::GetAvailableDesiredWidth() const
 //=============================================================================
 // RowDefinition
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(RowDefinition);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(RowDefinition, ContentElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(RowDefinition);
 
-const PropertyID	RowDefinition::HeightProperty(_T("Height"));
-const PropertyID	RowDefinition::MinHeightProperty(_T("MinHeight"));
-const PropertyID	RowDefinition::MaxHeightProperty(_T("MaxHeight"));
+// Register property
+LN_DEFINE_PROPERTY_2(RowDefinition, float, HeightProperty, "Height", std::numeric_limits<float>::infinity(), &RowDefinition::SetHeight, &RowDefinition::GetHeight);
+LN_DEFINE_PROPERTY_2(RowDefinition, float, MinHeightProperty, "MinHeight", 0.0f, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight);
+LN_DEFINE_PROPERTY_2(RowDefinition, float, MaxHeightProperty, "MaxHeight", FLT_MAX, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight);
+//const PropertyID	RowDefinition::HeightProperty(_T("Height"));
+//const PropertyID	RowDefinition::MinHeightProperty(_T("MinHeight"));
+//const PropertyID	RowDefinition::MaxHeightProperty(_T("MaxHeight"));
 
 //-----------------------------------------------------------------------------
 //
@@ -84,9 +92,9 @@ RowDefinition::RowDefinition(GUIManager* manager)
 	, m_desiredHeight(0)
 {
 	// Register property
-	LN_DEFINE_PROPERTY(RowDefinition, float, HeightProperty, &RowDefinition::SetHeight, &RowDefinition::GetHeight, std::numeric_limits<float>::infinity());
-	LN_DEFINE_PROPERTY(RowDefinition, float, MinHeightProperty, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight, 0.0f);
-	LN_DEFINE_PROPERTY(RowDefinition, float, MaxHeightProperty, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight, FLT_MAX);
+	//LN_DEFINE_PROPERTY(RowDefinition, float, HeightProperty, &RowDefinition::SetHeight, &RowDefinition::GetHeight, std::numeric_limits<float>::infinity());
+	//LN_DEFINE_PROPERTY(RowDefinition, float, MinHeightProperty, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight, 0.0f);
+	//LN_DEFINE_PROPERTY(RowDefinition, float, MaxHeightProperty, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight, FLT_MAX);
 }
 
 //-----------------------------------------------------------------------------
@@ -115,11 +123,24 @@ float RowDefinition::GetAvailableDesiredHeight() const
 //=============================================================================
 // Grid
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Grid);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Grid, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Grid);
 
-const PropertyID	Grid::ColumnDefinitionsProperty(_T("ColumnDefinitions"));
-const PropertyID	Grid::RowDefinitionsProperty(_T("RowDefinitions"));
+//class CppCoreObjectPropertyInitializer
+
+//static ::Lumino::CoreObjectProperty<Grid, int>	_ColumnProperty(
+//	);
+
+
+//static ::Lumino::CoreObjectProperty<classType, nativeType> prop(\
+//	name, setterFuncPtr, getterFuncPtr, defaultValue); \
+//	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
+//const PropertyID	Grid::ColumnDefinitionsProperty(_T("ColumnDefinitions"));
+//const PropertyID	Grid::RowDefinitionsProperty(_T("RowDefinitions"));
+
+//StaticProperty<Grid, int>	Grid::_ColumnProperty();
+
+//LN_DEFINE_PROPERTY_2(ColumnDefinitionsProperty, "ColumnDefinitions", );
 
 const AttachedProperty*	Grid::ColumnProperty = NULL;
 AttachedProperty*	Grid::ColumnSpanProperty = NULL;

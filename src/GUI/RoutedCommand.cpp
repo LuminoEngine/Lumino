@@ -19,17 +19,17 @@ CommandManager::TypeContextList	CommandManager::m_typeContextList;
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RoutedCommandTypeContext* CommandManager::RegisterCommand(const TypeInfo& type, RoutedCommand* command)
+RoutedCommandTypeContext* CommandManager::RegisterCommand(TypeInfo* ownerClass, RoutedCommand* command)
 {
 	LN_VERIFY_RETURNV(command != NULL, NULL);
 
 	std::shared_ptr<RoutedCommandTypeContext> ptr;
-	if (!m_typeContextList.TryGetValue(&type, &ptr))
+	if (!m_typeContextList.TryGetValue(ownerClass, &ptr))
 	{
 		// å©Ç¬Ç©ÇÁÇ»Ç©Ç¡ÇΩÇÃÇ≈êVÇµÇ≠çÏÇÈ
 		ptr.reset(LN_NEW RoutedCommandTypeContext());
-		ptr->Type = &type;
-		m_typeContextList.Add(&type, ptr);
+		ptr->Type = ownerClass;
+		m_typeContextList.Add(ownerClass, ptr);
 	}
 
 	// command Ç™ìoò^çœÇ›Ç≈Ç»ÇØÇÍÇŒìoò^Ç∑ÇÈ

@@ -5,6 +5,45 @@
 
 namespace Lumino
 {
+
+//=============================================================================
+// TypeInfo
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TypeInfo::RegisterProperty(Property* prop)
+{
+	if (!prop->m_registerd)
+	{
+		m_propertyList.Add(prop);
+		prop->m_registerd = true;
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Property* TypeInfo::FindProperty(const String& name) const
+{
+	// とりあえず線形探索。現在の使用用途としてそれほど大量に追加しないため。
+	for (auto prop : m_propertyList)
+	{
+		if (prop->GetName() == name) {
+			return prop;
+		}
+	}
+
+	// ベースクラスも探してみる
+	if (m_baseClass != NULL) {
+		return m_baseClass->FindProperty(name);
+	}
+	//Property* prop;
+	//if (m_propertyList.TryGetValue(name, &prop)) {
+	//	return prop;
+	//}
+	return NULL;
+}
 	
 //=============================================================================
 // CoreObject
@@ -30,31 +69,17 @@ CoreObject::~CoreObject()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CoreObject::SetPropertyValue(const String& propertyName, const Variant& value)
-{
-	Property* prop;
-	if (m_propertyList.TryGetValue(propertyName, &prop))
-	{
-		//prop->SetValue(this, value);
-		SetPropertyValue(prop, value);
-		return;
-	}
-	// キーが無ければ例外
-	LN_THROW(0, KeyNotFoundException);
-
-	//else
-	//{
-	//	// キーが無くても、添付プロパティに備えてセット可能にする。
-	//	// (TODO: 添付プロパティかを識別できるようにするべきかも？)
-	//	//m_propertyList.SetValue(propertyName, value);
-	//}
-	//OnPropertyChanged(propertyName, value);
-
-	// キーが無ければ例外
+//void CoreObject::SetPropertyValue(const String& propertyName, const Variant& value)
+//{
+//	Property* prop = GetThisTypeInfo()->FindProperty(propertyName);
+//	if (prop != NULL)
+//	{
+//		SetPropertyValue(prop, value);
+//		return;
+//	}
+//	// キーが無ければ例外
 //	LN_THROW(0, KeyNotFoundException);
-	//m_propertyDataStore.SetValue(propertyName, value);
-	//OnPropertyChanged(propertyName, value);
-}
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -77,22 +102,22 @@ void CoreObject::SetPropertyValue(const Property* prop, const Variant& value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Variant CoreObject::GetPropertyValue(const String& propertyName) const
-{
-	Property* prop;
-	if (m_propertyList.TryGetValue(propertyName, &prop))
-	{
-		//return prop->GetValue(this);
-		return GetPropertyValue(prop);
-	}
-
-	//Variant value;
-	//if (m_propertyDataStore.TryGetValue(propertyName, &value))
-	//{
-	//	return value;
-	//}
-	LN_THROW(0, ArgumentException);
-}
+//Variant CoreObject::GetPropertyValue(const String& propertyName) const
+//{
+//	Property* prop = GetThisTypeInfo()->FindProperty(propertyName);
+//	if (prop != NULL)
+//	{
+//		//return prop->GetValue(this);
+//		return GetPropertyValue(prop);
+//	}
+//
+//	//Variant value;
+//	//if (m_propertyDataStore.TryGetValue(propertyName, &value))
+//	//{
+//	//	return value;
+//	//}
+//	LN_THROW(0, ArgumentException);
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -130,12 +155,12 @@ String CoreObject::ToString()
 //
 //-----------------------------------------------------------------------------
 //void CoreObject::RegisterProperty(const String& propertyName, const Variant& defaultValue)
-void CoreObject::RegisterProperty(Property* prop)
-{
-	m_propertyList.Add(prop->GetName(), prop);
-	//m_propertyDataStore.Add(propertyName, defaultValue);
-}
-
+//void CoreObject::RegisterProperty(Property* prop)
+//{
+//	m_propertyList.Add(prop->GetName(), prop);
+//	//m_propertyDataStore.Add(propertyName, defaultValue);
+//}
+//
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -146,6 +171,14 @@ void CoreObject::OnPropertyChanged(const String& name, const Variant& newValue)
 	e.NewValue = newValue;
 	PropertyChanged.Raise(this, &e);
 }
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+TypeInfo CoreObject::m_typeInfo(_T("CoreObject"), NULL);
+TypeInfo* CoreObject::GetThisTypeInfo() const { return &m_typeInfo; }
+TypeInfo* CoreObject::GetClassTypeInfo() { return &m_typeInfo; }
 	
 //=============================================================================
 // Variant

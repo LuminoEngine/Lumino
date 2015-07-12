@@ -68,7 +68,7 @@ int main()
 		track1->SetViewportSize(25);
 		workbench1->SetContent(track1);
 #endif
-
+#if 0	// Grid ‚ÌƒeƒXƒg
 		RefPtr<GUI::Grid> grid1(LN_NEW GUI::Grid(app->GetGUIManager()));
 		RefPtr<GUI::ColumnDefinition> col1(LN_NEW GUI::ColumnDefinition(app->GetGUIManager()));
 		col1->SetWidth(200);
@@ -96,7 +96,9 @@ int main()
 		GUI::Grid::SetRow(track2, 1);
 		GUI::Grid::SetColumnSpan(track2, 2);
 		grid1->GetChildren()->Add(track2);
-
+#endif
+		RefPtr<GUI::ScrollBar> scrollBar1(LN_NEW GUI::ScrollBar(app->GetGUIManager()));
+		workbench1->SetContent(scrollBar1);
 
 
 

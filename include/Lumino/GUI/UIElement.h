@@ -23,7 +23,7 @@ namespace Lumino
 {
 namespace GUI
 {
-typedef String	PropertyID;
+//typedef String	PropertyID;
 typedef String	EventID;
 
 class CanExecuteRoutedCommandEventArgs;
@@ -71,11 +71,12 @@ class UIElement
 	: public CoreObject
 	, public IAddChild
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	static const PropertyID	SizeProperty;
-	static const PropertyID	HorizontalAlignmentProperty;
-	static const PropertyID	VerticalAlignmentProperty;
-	static const PropertyID	IsHitTestProperty;
+	static const Property*	SizeProperty;
+	static const Property*	HorizontalAlignmentProperty;
+	static const Property*	VerticalAlignmentProperty;
+	static const Property*	IsHitTestProperty;
 
 	static const EventID	MouseMoveEvent;
 	static const EventID	MouseLeaveEvent;
@@ -160,7 +161,7 @@ public:
 
 
 	/// rootLogicalParent : テンプレートを適用した要素。TemplateBinding のソースオブジェクト。
-	void SetTemplateBinding(Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent);
+	void SetTemplateBinding(const Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent);
 
 	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
 	void UpdateLayout();
@@ -365,8 +366,8 @@ private:
 
 	struct TemplateBindingInfo
 	{
-		Property*	ThisProp;
-		String		SourcePropPath;
+		const Property*	ThisProp;
+		String			SourcePropPath;
 	};
 
 	typedef Array<TemplateBindingInfo>	TemplateBindingInfoList;
@@ -434,8 +435,8 @@ class ButtonChrome
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ButtonChrome);
 public:
-	static const String	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
-	static const String	FrameWidthProperty;		///< FrameWidth プロパティの識別子
+	static const Property*	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
+	static const Property*	FrameWidthProperty;		///< FrameWidth プロパティの識別子
 
 public:
 	ButtonChrome(GUIManager* manager);
@@ -454,8 +455,8 @@ public:
 
 public:
 	// override CoreObject
-	virtual void SetPropertyValue(const String& propertyName, const Variant& value);
-	virtual Variant GetPropertyValue(const String& propertyName) const;
+	//virtual void SetPropertyValue(const Property* prop, const Variant& value);
+	//virtual Variant GetPropertyValue(const Property* prop) const;
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);

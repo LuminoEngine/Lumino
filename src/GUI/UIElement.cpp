@@ -13,13 +13,21 @@ namespace Lumino
 namespace GUI
 {
 
+
+
+
 //=============================================================================
 // UIElement
 //=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElement, CoreObject);
 
-const PropertyID	UIElement::SizeProperty(_T("Size"));
-const PropertyID	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
-const PropertyID	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
+//const PropertyID	UIElement::SizeProperty(_T("Size"));
+LN_DEFINE_PROPERTY_2(UIElement, SizeF, SizeProperty, "Size", SizeF::Zero, &UIElement::SetSize, &UIElement::GetSize);
+LN_DEFINE_PROPERTY_ENUM_2(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", HorizontalAlignment::Stretch, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment);
+LN_DEFINE_PROPERTY_ENUM_2(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", VerticalAlignment::Stretch, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment);
+
+//const PropertyID	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
+//const PropertyID	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
 
 const EventID	UIElement::MouseMoveEvent(_T("MouseMove"));
 const EventID	UIElement::MouseLeaveEvent(_T("MouseLeave"));
@@ -46,9 +54,9 @@ UIElement::UIElement(GUIManager* manager)
 	LN_SAFE_ADDREF(m_manager);
 
 	// プロパティの登録
-	LN_DEFINE_PROPERTY(UIElement, SizeF, SizeProperty, &UIElement::SetSize, &UIElement::GetSize, SizeF());
-	LN_DEFINE_PROPERTY_ENUM(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment, HorizontalAlignment::Stretch);
-	LN_DEFINE_PROPERTY_ENUM(UIElement, VerticalAlignment, VerticalAlignmentProperty, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment, VerticalAlignment::Stretch);
+	//LN_DEFINE_PROPERTY(UIElement, SizeF, SizeProperty, &UIElement::SetSize, &UIElement::GetSize, SizeF());
+	//LN_DEFINE_PROPERTY_ENUM(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment, HorizontalAlignment::Stretch);
+	//LN_DEFINE_PROPERTY_ENUM(UIElement, VerticalAlignment, VerticalAlignmentProperty, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment, VerticalAlignment::Stretch);
 	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// イベントの登録
@@ -206,7 +214,7 @@ SizeF UIElement::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::SetTemplateBinding(Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent)
+void UIElement::SetTemplateBinding(const Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent)
 {
 	if (m_rootLogicalParent == NULL)
 	{
@@ -442,8 +450,7 @@ void UIElement::TemplateBindingSource_PropertyChanged(CoreObject* sender, Proper
 //=============================================================================
 // Decorator
 //=============================================================================
-
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Decorator);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Decorator, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Decorator);
 
 //-----------------------------------------------------------------------------
@@ -545,11 +552,15 @@ void Decorator::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //=============================================================================
 // ButtonChrome
 //=============================================================================
-
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonChrome);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonChrome, Decorator);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ButtonChrome);
-const String	ButtonChrome::IsMouseOverProperty(_T("IsMouseOver"));
-const String	ButtonChrome::FrameWidthProperty(_T("FrameWidth"));
+
+// Register property
+LN_DEFINE_PROPERTY_2(ButtonChrome, bool, IsMouseOverProperty, "IsMouseOver", 0.0f, &ButtonChrome::SetMouseOver, &ButtonChrome::IsMouseOver);
+LN_DEFINE_PROPERTY_2(ButtonChrome, float, FrameWidthProperty, "FrameWidth", 8.0f, &ButtonChrome::SetFrameWidth, &ButtonChrome::GetFrameWidth);
+
+//const String	ButtonChrome::IsMouseOverProperty(_T("IsMouseOver"));
+//const String	ButtonChrome::FrameWidthProperty(_T("FrameWidth"));
 
 //-----------------------------------------------------------------------------
 //
@@ -560,7 +571,7 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 	, m_isMouseOver(false)
 {
 	// プロパティの登録
-	LN_DEFINE_PROPERTY(ButtonChrome, bool, IsMouseOverProperty, &ButtonChrome::SetMouseOver, &ButtonChrome::IsMouseOver, false);
+	//LN_DEFINE_PROPERTY(ButtonChrome, bool, IsMouseOverProperty, &ButtonChrome::SetMouseOver, &ButtonChrome::IsMouseOver, false);
 
 	// TODO
 	// ボタンのスタイルとテンプレート
@@ -580,23 +591,23 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 ButtonChrome::~ButtonChrome()
 {
 }
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void ButtonChrome::SetPropertyValue(const Property* prop, const Variant& value)
+//{
+//	if (prop == FrameWidthProperty) { m_frameWidth = value.GetFloat(); return; }
+//	Decorator::SetPropertyValue(prop, value);
+//}
 //
-//-----------------------------------------------------------------------------
-void ButtonChrome::SetPropertyValue(const String& propertyName, const Variant& value)
-{
-	if (propertyName == FrameWidthProperty) { m_frameWidth = value.GetFloat(); return; }
-	Decorator::SetPropertyValue(propertyName, value);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Variant ButtonChrome::GetPropertyValue(const String& propertyName) const
-{
-	if (propertyName == FrameWidthProperty) { return Variant(m_frameWidth); }
-	return Decorator::GetPropertyValue(propertyName);
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//Variant ButtonChrome::GetPropertyValue(const Property* prop) const
+//{
+//	if (prop == FrameWidthProperty) { return Variant(m_frameWidth); }
+//	return Decorator::GetPropertyValue(prop);
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -632,7 +643,7 @@ void ButtonChrome::OnRender()
 //=============================================================================
 // ContentPresenter
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentPresenter);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentPresenter, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ContentPresenter);
 
 //-----------------------------------------------------------------------------
@@ -725,7 +736,7 @@ void ContentPresenter::Render()
 //=============================================================================
 // ItemsPresenter
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsPresenter);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsPresenter, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
 
 //-----------------------------------------------------------------------------
@@ -748,7 +759,7 @@ ItemsPresenter::~ItemsPresenter()
 //=============================================================================
 // Control
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Control);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
 //-----------------------------------------------------------------------------
@@ -821,7 +832,7 @@ void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //=============================================================================
 // ContentControl
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentControl);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentControl, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ContentControl);
 
 //-----------------------------------------------------------------------------
@@ -969,7 +980,7 @@ void ContentControl::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 // RootPane
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(RootPane);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(RootPane, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(RootPane);
 
 //-----------------------------------------------------------------------------
@@ -995,7 +1006,7 @@ RootPane::~RootPane()
 // Button
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Button);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Button, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Button);
 const String	Button::IsMouseOverProperty(_T("IsMouseOver"));
 

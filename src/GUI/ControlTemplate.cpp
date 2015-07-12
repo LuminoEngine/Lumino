@@ -66,10 +66,10 @@ UIElement* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	{
 		if (pair.second.Kind == PropertyKind_TemplateBinding)
 		{
-			Property* prop = element->FindProperty(pair.first);
-			if (prop == NULL) {
-				LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
-			}
+			const Property* prop = pair.first;//GetTypeInfo(element)->FindProperty(pair.first);
+			//if (prop == NULL) {
+			//	LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
+			//}
 			element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
 		}
 		else {

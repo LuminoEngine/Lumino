@@ -19,13 +19,13 @@ class Track
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Track);
 public:
-	static PropertyID	ValueProperty;			///< スクロール位置に対する値
-	static PropertyID	MinimumProperty;		///< 指定可能な最小値
-	static PropertyID	MaximumProperty;		///< 指定可能な最大値
-	static PropertyID	OrientationProperty;	///< Track の方向
-	static PropertyID	DecreaseButtonProperty;	///< 値を減少させる Button コントロール
-	static PropertyID	ThumbProperty;			///< 値を操作する Thumb コントロール
-	static PropertyID	IncreaseButtonProperty;	///< 値を増加させる Button コントロール
+	static const Property*	ValueProperty;			///< スクロール位置に対する値
+	static const Property*	MinimumProperty;		///< 指定可能な最小値
+	static const Property*	MaximumProperty;		///< 指定可能な最大値
+	static const Property*	OrientationProperty;	///< Track の方向
+	static const Property*	DecreaseButtonProperty;	///< 値を減少させる Button コントロール
+	static const Property*	ThumbProperty;			///< 値を操作する Thumb コントロール
+	static const Property*	IncreaseButtonProperty;	///< 値を増加させる Button コントロール
 
 public:
 	Track(GUIManager* manager);

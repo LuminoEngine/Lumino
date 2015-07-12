@@ -12,7 +12,7 @@ namespace GUI
 // StackPanel
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(StackPanel);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(StackPanel, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(StackPanel);
 const String	StackPanel::OrientationProperty(_T("Orientation"));
 

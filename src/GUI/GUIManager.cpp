@@ -834,6 +834,8 @@
 #include <Lumino/GUI/Controls/Thumb.h>
 #include <Lumino/GUI/Controls/Track.h>
 #include <Lumino/GUI/Controls/Grid.h>
+#include <Lumino/GUI/Controls/Image.h>
+#include <Lumino/GUI/Controls/ScrollBar.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/GUIManager.h>
 
@@ -891,9 +893,14 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(ListBoxChrome::TypeID, ListBoxChrome::CreateInstance);
 	RegisterFactory(ThumbChrome::TypeID, ThumbChrome::CreateInstance);
 	RegisterFactory(Thumb::TypeID, Thumb::CreateInstance);
+	RegisterFactory(Track::TypeID, Track::CreateInstance);
 	RegisterFactory(Grid::TypeID, Grid::CreateInstance);
 	RegisterFactory(ColumnDefinition::TypeID, ColumnDefinition::CreateInstance);
 	RegisterFactory(RowDefinition::TypeID, RowDefinition::CreateInstance);
+	RegisterFactory(Image::TypeID, Image::CreateInstance);
+	RegisterFactory(ScrollBar::TypeID, ScrollBar::CreateInstance);
+
+	
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
 	BuildDefaultTheme();
@@ -1218,7 +1225,6 @@ void GUIManager::BuildDefaultTheme()
 		m_defaultTheme->AddControlTemplate(t);
 	}
 
-
 	// Track
 	{
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
@@ -1237,6 +1243,27 @@ void GUIManager::BuildDefaultTheme()
 		t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
 
 		m_defaultTheme->AddControlTemplate(t);
+	}
+
+	// ScrollBar
+	{
+
+		RefPtr<ControlTemplate> scrollBar(LN_NEW ControlTemplate());
+		scrollBar->SetTargetType(_T("ScrollBar"));
+
+		//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
+		//button1->SetTypeName(_T("Button"));
+		//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
+
+		RefPtr<UIElementFactory> thumb1(LN_NEW UIElementFactory(this));
+		thumb1->SetTypeName(_T("Track"));
+		scrollBar->SetVisualTreeRoot(thumb1);
+
+		//RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
+		//button2->SetTypeName(_T("Button"));
+		//t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
+
+		m_defaultTheme->AddControlTemplate(scrollBar);
 	}
 
 }

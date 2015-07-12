@@ -147,10 +147,10 @@ public:
 
 private:
 	typedef Array<EventArgs*>					EventArgsList;
-	typedef SortedArray<TypeInfo, EventArgsList*>	EventArgsMap;
+	typedef SortedArray<TypeInfo*, EventArgsList*>	EventArgsMap;
 	EventArgsMap	m_pool;
 
-	EventArgs* Find(const TypeInfo& typeId)
+	EventArgs* Find(TypeInfo* typeId)
 	{
 		EventArgsList* list;
 		if (m_pool.TryGetValue(typeId, &list))

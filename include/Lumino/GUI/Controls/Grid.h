@@ -19,9 +19,9 @@ class ColumnDefinition
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ColumnDefinition);	// TODO マクロ名変えた方が良い気がする
 public:
-	static const PropertyID	WidthProperty;
-	static const PropertyID	MinWidthProperty;
-	static const PropertyID	MaxWidthProperty;
+	static const Property*	WidthProperty;
+	static const Property*	MinWidthProperty;
+	static const Property*	MaxWidthProperty;
 
 public:
 	ColumnDefinition(GUIManager* manager);
@@ -68,9 +68,9 @@ class RowDefinition
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(RowDefinition);	// TODO マクロ名変えた方が良い気がする
 public:
-	static const PropertyID	HeightProperty;
-	static const PropertyID	MaxHeightProperty;
-	static const PropertyID	MinHeightProperty;
+	static const Property*	HeightProperty;
+	static const Property*	MaxHeightProperty;
+	static const Property*	MinHeightProperty;
 
 public:
 	RowDefinition(GUIManager* manager);
@@ -120,8 +120,8 @@ class Grid
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Grid);
 public:
-	static const PropertyID		ColumnDefinitionsProperty;
-	static const PropertyID		RowDefinitionsProperty;
+	static const Property*		ColumnDefinitionsProperty;
+	static const Property*		RowDefinitionsProperty;
 
 	static const AttachedProperty*	ColumnProperty;
 	static AttachedProperty*	ColumnSpanProperty;

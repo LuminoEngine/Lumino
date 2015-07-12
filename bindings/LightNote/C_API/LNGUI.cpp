@@ -96,7 +96,7 @@ public:
 LN_API LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int width, int height)
 {
 	LN_CHECK_ARG_HANDLE(rootPane);
-	TO_REFOBJ(GUI::RootPane, rootPane)->SetSize(SizeF(width, height));
+	TO_REFOBJ(GUI::RootPane, rootPane)->SetSize(SizeF((float)width, (float)height));
 	return ::LN_OK;
 }
 

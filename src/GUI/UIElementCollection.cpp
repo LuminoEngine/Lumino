@@ -11,7 +11,7 @@ namespace GUI
 // UIElementCollection
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElementCollection);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElementCollection, CoreObjectList<UIElement>);	// TODO: テンプレートはやめるかも
 
 
 } // namespace GUI

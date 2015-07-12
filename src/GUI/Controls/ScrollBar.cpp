@@ -33,7 +33,7 @@ namespace GUI
 //=============================================================================
 // ScrollBar
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollBar);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollBar, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollBar);
 
 //-----------------------------------------------------------------------------

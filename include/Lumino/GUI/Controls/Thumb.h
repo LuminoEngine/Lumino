@@ -35,7 +35,7 @@ class Thumb
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Thumb);
 public:
-	static PropertyID	IsDraggingProperty;		///< ドラッグ中であるかを示す値
+	static const Property*	IsDraggingProperty;		///< ドラッグ中であるかを示す値
 
 	static EventID		DragStartedEvent;		///< ドラッグ開始イベント
 	static EventID		DragDeltaEvent;			///< ドラッグ中の移動イベント
@@ -78,8 +78,8 @@ class ThumbChrome
 	LN_UI_ELEMENT_SUBCLASS_DECL(ThumbChrome);
 
 public:
-	static PropertyID	RenderMouseOverProperty;
-	static PropertyID	RenderPressedProperty;
+	static const Property*	RenderMouseOverProperty;
+	static const Property*	RenderPressedProperty;
 
 public:
 	ThumbChrome(GUIManager* manager);

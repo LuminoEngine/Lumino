@@ -15,7 +15,7 @@ PropertyManager::PropertyMap	PropertyManager::m_propertyMap;
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AttachedProperty* PropertyManager::RegisterAttachedProperty(const TypeInfo& ownerClass, const String& propertyName, const Variant& defaultValue)
+AttachedProperty* PropertyManager::RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue)
 {
 	TypedNameKey key(ownerClass, propertyName);
 	PropertyMap::iterator itr = m_propertyMap.find(key);

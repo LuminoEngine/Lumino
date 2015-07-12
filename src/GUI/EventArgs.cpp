@@ -12,7 +12,7 @@ namespace GUI
 // EventArgs
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(EventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(EventArgs, CoreObject);
 
 //-----------------------------------------------------------------------------
 //
@@ -34,8 +34,7 @@ EventArgs::~EventArgs()
 //=============================================================================
 // MouseEventArgs
 //=============================================================================
-
-LN_CORE_OBJECT_TYPE_INFO_IMPL(MouseEventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(MouseEventArgs, EventArgs);
 
 //-----------------------------------------------------------------------------
 //

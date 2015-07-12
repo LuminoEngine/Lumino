@@ -25,6 +25,7 @@ public:
 	Property(const Variant& defaultValue, bool stored)
 		: m_defaultValue(defaultValue)
 		, m_stored(stored)
+		, m_registerd(false)
 	{}
 	~Property() {}
 
@@ -47,6 +48,9 @@ public:
 private:
 	Variant	m_defaultValue;
 	bool	m_stored;
+
+	friend class TypeInfo;
+	bool	m_registerd;
 
 	// このクラスのインスタンスは基本的に static にする。
 	// あくまで「名前をキーにしてどのgetter/setterを呼び出すか？」が目的なので、状態は持たない。
@@ -222,19 +226,43 @@ private:
 	//Getter	m_getter;
 };
 
+// 削除予定
 #define LN_DEFINE_PROPERTY(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
 { \
 	static ::Lumino::CoreObjectProperty<classType, nativeType> prop( \
 		name, setterFuncPtr, getterFuncPtr, defaultValue); \
-	RegisterProperty(&prop); \
+	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
 }
 
+// 削除予定
 #define LN_DEFINE_PROPERTY_ENUM(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
 { \
 	static ::Lumino::CoreObjectProperty<classType, nativeType, int, nativeType::enum_type> prop( \
 		name, setterFuncPtr, getterFuncPtr, defaultValue); \
-	RegisterProperty(&prop); \
+	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
 }
+
+// static としてグローバルスコープに定義したプロパティを登録する機能を持ったプロパティ定義ユーティリティ
+template<class TOwnerClass, typename TValue, typename TInternalValue = TValue, typename TCast = TValue>
+struct StaticProperty
+	: public CoreObjectProperty<TOwnerClass, TValue, TInternalValue, TCast>
+{
+	StaticProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
+		: CoreObjectProperty<TOwnerClass, TValue, TInternalValue, TCast>(name, setter, getter, defaultValue)
+	{
+		TOwnerClass::GetClassTypeInfo()->RegisterProperty(this);
+	}
+};
+
+#define LN_DEFINE_PROPERTY_2(ownerClass, valueType, var, name, defaultValue, setter, getter) \
+	static StaticProperty<ownerClass, valueType> _##var(_T(name), setter, getter, defaultValue); \
+	const Property* ownerClass::var = &_##var;
+
+#define LN_DEFINE_PROPERTY_ENUM_2(ownerClass, valueType, var, name, defaultValue, setter, getter) \
+	static StaticProperty<ownerClass, valueType, int, valueType::enum_type> _##var(_T(name), setter, getter, defaultValue); \
+	const Property* ownerClass::var = &_##var;
+
+
 
 
 class AttachedProperty
@@ -260,26 +288,26 @@ private:
 class PropertyManager
 {
 public:
-	static AttachedProperty* RegisterAttachedProperty(const TypeInfo& ownerClass, const String& propertyName, const Variant& defaultValue);
+	static AttachedProperty* RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue);
 
 private:
 	class TypedNameKey
 	{
 	public:
-		TypedNameKey(const TypeInfo& type, const String& propertyName)
+		TypedNameKey(TypeInfo* type, const String& propertyName)
 			: m_type(type)
 			, m_propertyName(propertyName)
 		{}
 
 		bool operator < (const TypedNameKey& key) const
 		{
-			if (m_type < key.m_type) return true;
+			if ((*m_type) < (*key.m_type)) return true;
 			if (m_propertyName < key.m_propertyName) return true;
 			return false;
 		}
 
 	private:
-		TypeInfo	m_type;
+		TypeInfo*	m_type;
 		String		m_propertyName;
 	};
 

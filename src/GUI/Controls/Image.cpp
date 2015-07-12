@@ -2,31 +2,30 @@
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
-#include <Lumino/GUI/Controls/RepeatButton.h>
+#include <Lumino/GUI/Controls/Image.h>
 
 namespace Lumino
 {
 namespace GUI
 {
-
 //=============================================================================
-// RepeatButton
+// Image
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(RepeatButton, ButtonBase);
-LN_UI_ELEMENT_SUBCLASS_IMPL(RepeatButton);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Image, Control);
+LN_UI_ELEMENT_SUBCLASS_IMPL(Image);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RepeatButton::RepeatButton(GUIManager* manager)
-	: ButtonBase(manager)
+Image::Image(GUIManager* manager)
+	: UIElement(manager)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RepeatButton::~RepeatButton()
+Image::~Image()
 {
 }
 

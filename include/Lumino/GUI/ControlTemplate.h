@@ -40,12 +40,12 @@ public:
 	//void AddTemplateBinding(const String& propName, const Binding& binding)
 	//{
 	//}
-	void AddTemplateBinding(const String& propName, const String& srcPropPath)
+	void AddTemplateBinding(const Property* prop, const String& srcPropPath)
 	{
 		PropertyInfo info;
 		info.Kind = PropertyKind_TemplateBinding;
 		info.SourcePropPath = srcPropPath;
-		m_propertyInfoList.Add(propName, info);
+		m_propertyInfoList.Add(prop, info);
 	}
 
 
@@ -69,7 +69,7 @@ private:
 		String			SourcePropPath;		///< PropertyKind_TemplateBinding のときはこれを使う
 	};
 
-	typedef SortedArray<String, PropertyInfo>	PropertyInfoList;
+	typedef SortedArray<const Property*, PropertyInfo>	PropertyInfoList;
 
 	GUIManager*						m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
 	String							m_targetTypeFullName;
@@ -91,8 +91,10 @@ public:
 	void SetTargetType(const String& fullTypeName) { m_targetType = fullTypeName; }
 	const String&  GetTargetType() const { return m_targetType; }
 
-	void SetPropertyValue(const String& propertyName, const Variant& value) { m_propertyValueList.SetValue(propertyName, value); }
-	Variant GetPropertyValue(const String& propertyName) const { return m_propertyValueList.GetValue(propertyName); }
+	void SetPropertyValue(const Property* prop, const Variant& value) { m_propertyValueList.SetValue(prop, value); }
+	Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
+	//void SetPropertyValue(const String& propertyName, const Variant& value) { m_propertyValueList.SetValue(propertyName, value); }
+	//Variant GetPropertyValue(const String& propertyName) const { return m_propertyValueList.GetValue(propertyName); }
 
 	void SetVisualTreeRoot(UIElementFactory* factory) { m_visualTreeRoot = factory; }
 
@@ -100,7 +102,7 @@ public:
 	void Apply(Control* control);
 
 private:
-	typedef SortedArray<String, Variant>	PropertyValueList;
+	typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
 	String						m_targetType;		///< 対象コントロール名 ("Button" 等)
 	PropertyValueList			m_propertyValueList;

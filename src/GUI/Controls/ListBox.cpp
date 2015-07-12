@@ -31,7 +31,7 @@ namespace GUI
 //=============================================================================
 // ListBoxItem
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItem);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItem, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxItem);
 
 //-----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ ListBoxItem::~ListBoxItem()
 //=============================================================================
 // ListBoxItemList
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList, CoreObjectList<ListBoxItem>);
 
 //-----------------------------------------------------------------------------
 //
@@ -73,7 +73,7 @@ void ListBoxItemList::OnItemRemoved(ListBoxItem* item)
 //=============================================================================
 // ListBoxChrome
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxChrome);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxChrome, Decorator);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxChrome);
 
 //-----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ void ListBoxChrome::OnRender()
 //=============================================================================
 // ListBox
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBox);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBox, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ListBox);
 
 //-----------------------------------------------------------------------------
