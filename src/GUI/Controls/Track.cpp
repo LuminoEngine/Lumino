@@ -125,11 +125,13 @@ void Track::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 // Note: ここでは子要素を Arrange しない
 //-----------------------------------------------------------------------------
-void Track::ArrangeLayout(const RectF& finalRect)
+void Track::ArrangeLayout(const RectF& finalLocalRect)
 {
-	SizeF renderSize = ArrangeOverride(finalRect.GetSize());
-	m_finalRect.Width = renderSize.Width;
-	m_finalRect.Height = renderSize.Height;
+	SizeF renderSize = ArrangeOverride(finalLocalRect.GetSize());
+	m_finalLocalRect.X = finalLocalRect.X;
+	m_finalLocalRect.Y = finalLocalRect.Y;
+	m_finalLocalRect.Width = renderSize.Width;
+	m_finalLocalRect.Height = renderSize.Height;
 }
 
 //-----------------------------------------------------------------------------
@@ -200,6 +202,32 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 		{
 			rect.X = decreaseButtonLength + thumbLength;
 			rect.Width = increaseButtonLength;
+			m_increaseButton->ArrangeLayout(rect);
+		}
+	}
+	else
+	{
+		RectF rect(0.0f, 0.0f, finalSize.Width, 0.0f);
+
+		// デクリメントボタン
+		if (m_decreaseButton != NULL)
+		{
+			rect.Y = 0.0f;
+			rect.Height = decreaseButtonLength;
+			m_decreaseButton->ArrangeLayout(rect);
+		}
+		// つまみ
+		if (m_thumb != NULL)
+		{
+			rect.Y = decreaseButtonLength;
+			rect.Height = thumbLength;
+			m_thumb->ArrangeLayout(rect);
+		}
+		// インクリメントボタン
+		if (m_increaseButton != NULL)
+		{
+			rect.Y = decreaseButtonLength + thumbLength;
+			rect.Height = increaseButtonLength;
 			m_increaseButton->ArrangeLayout(rect);
 		}
 	}
@@ -311,8 +339,12 @@ void Track::Handler_Thumb_DragStarted(DragEventArgs* e)
 //-----------------------------------------------------------------------------
 void Track::Handler_Thumb_DragDelta(DragEventArgs* e)
 {
-	// TODO: ここでブレーク張るとレンダリングコマンドの実行でクラッシュすることがある
-	m_value = m_dragStartValue + e->XOffset * m_density;
+	if (m_orientation == Orientation::Horizontal) {
+		m_value = m_dragStartValue + e->XOffset * m_density;
+	}
+	else {
+		m_value = m_dragStartValue + e->YOffset * m_density;
+	}
 
 	if (m_value < m_minimum) { m_value = m_minimum; }
 	if (m_value > m_maximum) { m_value = m_maximum; }

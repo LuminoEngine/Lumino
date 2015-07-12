@@ -170,7 +170,7 @@ void ThumbChrome::OnRender()
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
 
-	RectF rect = m_finalRect;
+	RectF rect = m_finalGlobalRect;
 
 	// ˜g
 	painter.SetBrush(m_bgFrameBrush);

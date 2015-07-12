@@ -125,7 +125,7 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	//	// ContetntControl 等でこの関数をオーバーライドし、そちらに実装する。
 	//}
 
-	if (m_finalRect.Contains(globalPt)) {
+	if (m_finalGlobalRect.Contains(globalPt)) {
 		return this;
 	}
 	return NULL;
@@ -161,27 +161,30 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::ArrangeLayout(const RectF& finalRect)
+void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 {
-	// finalRect はこの要素を配置できる領域サイズ。
+	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	SizeF renderSize = ArrangeOverride(finalRect.GetSize());
-	m_finalRect.X = finalRect.X;
-	m_finalRect.Y = finalRect.Y;
-	m_finalRect.Width = renderSize.Width;
-	m_finalRect.Height = renderSize.Height;
+	SizeF renderSize = ArrangeOverride(finalLocalRect.GetSize());
+	m_finalLocalRect.X = finalLocalRect.X;
+	m_finalLocalRect.Y = finalLocalRect.Y;
+	m_finalLocalRect.Width = renderSize.Width;
+	m_finalLocalRect.Height = renderSize.Height;
 
-	// 子要素 (もし複数あれば m_finalRect の領域に重ねられるように配置される)
+	// 子要素 (もし複数あれば m_finalLocalRect の領域に重ねられるように配置される)
 	if (m_templateChild != NULL) {
-		m_templateChild->ArrangeLayout(m_finalRect);
+		RectF rect(0, 0, m_finalLocalRect.Width, m_finalLocalRect.Height);
+		m_templateChild->ArrangeLayout(rect);
 	}
 	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	child->ArrangeLayout(m_finalRect);
+	//	child->ArrangeLayout(m_finalLocalRect;
 	//}
 }
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -236,6 +239,29 @@ void UIElement::UpdateLayout()
 
 	MeasureLayout(size);
 	ArrangeLayout(RectF(0, 0, size.Width, size.Height));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::UpdateTransformHierarchy()
+{
+	if (m_parent != NULL)
+	{
+		m_finalGlobalRect.X = m_parent->m_finalGlobalRect.X + m_finalLocalRect.X;
+		m_finalGlobalRect.Y = m_parent->m_finalGlobalRect.Y + m_finalLocalRect.Y;
+	}
+	else
+	{
+		m_finalGlobalRect.X = m_finalLocalRect.X;
+		m_finalGlobalRect.Y = m_finalLocalRect.Y;
+	}
+	m_finalGlobalRect.Width = m_finalLocalRect.Width;
+	m_finalGlobalRect.Height = m_finalLocalRect.Height;
+
+	for(UIElement* child : m_visualChildren) {
+		child->UpdateTransformHierarchy();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -589,8 +615,8 @@ void ButtonChrome::OnRender()
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
 
-	RectF bgRect = m_finalRect;
-	RectF rect = m_finalRect;
+	RectF bgRect = m_finalGlobalRect;
+	RectF rect = m_finalGlobalRect;
 
 	if (!m_isMouseOver)
 	{
@@ -898,12 +924,12 @@ void ContentControl::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ContentControl::ArrangeLayout(const RectF& finalRect)
+void ContentControl::ArrangeLayout(const RectF& finalLocalRect)
 {
 	if (m_childElement != NULL) {
-		m_childElement->ArrangeLayout(finalRect);	// 特に枠とかないのでそのままのサイズを渡せる
+		m_childElement->ArrangeLayout(finalLocalRect);	// 特に枠とかないのでそのままのサイズを渡せる
 	}
-	Control::ArrangeLayout(finalRect);
+	Control::ArrangeLayout(finalLocalRect);
 }
 
 //-----------------------------------------------------------------------------

@@ -44,7 +44,7 @@ public:
 public:
 	bool IsAuto() const { return Math::IsNaN(m_width); }	// 個要素にあわせるか
 	bool IsStar() const { return Math::IsInf(m_width); }	// レイアウト後、残りの領域を使うか
-	bool IsPixel() const { return !IsAuto() && IsStar(); }
+	bool IsPixel() const { return !IsAuto() && !IsStar(); }
 
 private:
 	float	m_width;
@@ -78,7 +78,7 @@ public:
 
 	bool IsAuto() const { return Math::IsNaN(m_height); }
 	bool IsStar() const { return Math::IsInf(m_height); }
-	bool IsPixel() const { return !IsAuto() && IsStar(); }
+	bool IsPixel() const { return !IsAuto() && !IsStar(); }
 
 public:
 	//-------------------------------------------------------------------------
@@ -176,7 +176,7 @@ public:
 
 protected:
 	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 private:
 	RefPtr<ColumnDefinitionList>	m_columnDefinitionList;

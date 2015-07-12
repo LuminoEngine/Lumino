@@ -9,6 +9,110 @@ namespace GUI
 {
 
 //=============================================================================
+// ColumnDefinition
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ColumnDefinition);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ColumnDefinition);
+
+const PropertyID	ColumnDefinition::WidthProperty(_T("Width"));
+const PropertyID	ColumnDefinition::MinWidthProperty(_T("MinWidth"));
+const PropertyID	ColumnDefinition::MaxWidthProperty(_T("MaxWidth"));
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColumnDefinition::ColumnDefinition(GUIManager* manager)
+	: ContentElement(manager)
+	, m_width(std::numeric_limits<float>::infinity())
+	, m_minWidth(0)
+	, m_maxWidth(FLT_MAX)
+	, m_actualWidth(0)
+	, m_actualOffsetX(0)
+	, m_elementGroup()
+	, m_desiredWidth(0)
+{
+	// Register property
+	LN_DEFINE_PROPERTY(ColumnDefinition, float, WidthProperty, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth, std::numeric_limits<float>::infinity());
+	LN_DEFINE_PROPERTY(ColumnDefinition, float, MinWidthProperty, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth, 0.0f);
+	LN_DEFINE_PROPERTY(ColumnDefinition, float, MaxWidthProperty, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth, FLT_MAX);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColumnDefinition::~ColumnDefinition()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+float ColumnDefinition::GetAvailableDesiredWidth() const
+{
+	if (IsAuto()) {
+		return m_desiredWidth;
+	}
+	else if (IsPixel()) {
+		return Math::Clamp(m_width, m_minWidth, m_maxWidth);
+	}
+	else { //if (IsStar()) {
+		return 0;
+	}
+}
+
+//=============================================================================
+// RowDefinition
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(RowDefinition);
+LN_UI_ELEMENT_SUBCLASS_IMPL(RowDefinition);
+
+const PropertyID	RowDefinition::HeightProperty(_T("Height"));
+const PropertyID	RowDefinition::MinHeightProperty(_T("MinHeight"));
+const PropertyID	RowDefinition::MaxHeightProperty(_T("MaxHeight"));
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RowDefinition::RowDefinition(GUIManager* manager)
+	: ContentElement(manager)
+	, m_height(std::numeric_limits<float>::infinity())
+	, m_minHeight(0)
+	, m_maxHeight(FLT_MAX)
+	, m_actualHeight(0)
+	, m_actualOffsetY(0)
+	, m_elementGroup()
+	, m_desiredHeight(0)
+{
+	// Register property
+	LN_DEFINE_PROPERTY(RowDefinition, float, HeightProperty, &RowDefinition::SetHeight, &RowDefinition::GetHeight, std::numeric_limits<float>::infinity());
+	LN_DEFINE_PROPERTY(RowDefinition, float, MinHeightProperty, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight, 0.0f);
+	LN_DEFINE_PROPERTY(RowDefinition, float, MaxHeightProperty, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight, FLT_MAX);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RowDefinition::~RowDefinition()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+float RowDefinition::GetAvailableDesiredHeight() const
+{
+	if (IsAuto()) {
+		return m_desiredHeight;
+	}
+	else if (IsPixel()) {
+		return Math::Clamp(m_height, m_minHeight, m_maxHeight);
+	}
+	else { //if (IsStar()) {
+		return 0;
+	}
+}
+
+//=============================================================================
 // Grid
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Grid);
@@ -98,7 +202,7 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Grid::ArrangeLayout(const RectF& finalRect)
+void Grid::ArrangeLayout(const RectF& finalLocalRect)
 {
 	// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる
 	SizeF totalActual = SizeF::Zero;
@@ -129,8 +233,8 @@ void Grid::ArrangeLayout(const RectF& finalRect)
 
 	// "*" ひとつ分のセルの領域
 	SizeF starUnit(
-		(finalRect.Width - totalActual.Width) / starColCount,
-		(finalRect.Height - totalActual.Height) / starRowCount);
+		(finalLocalRect.Width - totalActual.Width) / starColCount,
+		(finalLocalRect.Height - totalActual.Height) / starRowCount);
 	starUnit.Width = std::max(0.0f, starUnit.Width);	// 負値はダメ
 	starUnit.Height = std::max(0.0f, starUnit.Height);	// 負値はダメ
 
@@ -145,7 +249,7 @@ void Grid::ArrangeLayout(const RectF& finalRect)
 
 		// セルX座標確定
 		col->m_actualOffsetX = totalOffset.X;
-		totalOffset.X += col->m_actualOffsetX;
+		totalOffset.X += col->m_actualWidth;
 	}
 	for (auto row : *m_rowDefinitionList)
 	{
@@ -155,7 +259,7 @@ void Grid::ArrangeLayout(const RectF& finalRect)
 
 		// セルY座標確定
 		row->m_actualOffsetY = totalOffset.Y;
-		totalOffset.Y += row->m_actualOffsetY;
+		totalOffset.Y += row->m_actualHeight;
 	}
 
 	// 子要素の最終位置・サイズを確定させる
@@ -188,7 +292,7 @@ void Grid::ArrangeLayout(const RectF& finalRect)
 		child->ArrangeLayout(rect);
 	}
 
-	Panel::ArrangeLayout(finalRect);
+	Panel::ArrangeLayout(finalLocalRect);
 }
 
 //-----------------------------------------------------------------------------
@@ -203,95 +307,6 @@ int		Grid::GetRow(UIElement* element)					{ LN_GET_ATTACHED_PROPERTY(element, Ro
 void	Grid::SetRowSpan(UIElement* element, int value)		{ LN_SET_ATTACHED_PROPERTY(element, RowSpanProperty, value); }
 int		Grid::GetRowSpan(UIElement* element)				{ LN_GET_ATTACHED_PROPERTY(element, RowSpanProperty, int); }
 
-//=============================================================================
-// ColumnDefinition
-//=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ColumnDefinition);
-LN_UI_ELEMENT_SUBCLASS_IMPL(ColumnDefinition);
-
-const PropertyID	ColumnDefinition::WidthProperty(_T("Width"));
-const PropertyID	ColumnDefinition::MinWidthProperty(_T("MinWidth"));
-const PropertyID	ColumnDefinition::MaxWidthProperty(_T("MaxWidth"));
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ColumnDefinition::ColumnDefinition(GUIManager* manager)
-	: ContentElement(manager)
-{
-	// Register property
-	LN_DEFINE_PROPERTY(ColumnDefinition, float, WidthProperty, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth, NAN);
-	LN_DEFINE_PROPERTY(ColumnDefinition, float, MinWidthProperty, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth, NAN);
-	LN_DEFINE_PROPERTY(ColumnDefinition, float, MaxWidthProperty, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth, NAN);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ColumnDefinition::~ColumnDefinition()
-{
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-float ColumnDefinition::GetAvailableDesiredWidth() const
-{
-	if (IsAuto()) {
-		return m_desiredWidth;
-	}
-	if (IsPixel()) {
-		return Math::Clamp(m_width, m_minWidth, m_maxWidth);
-	}
-	else { //if (IsStar()) {
-		return 0;
-	}
-}
-
-//=============================================================================
-// RowDefinition
-//=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(RowDefinition);
-LN_UI_ELEMENT_SUBCLASS_IMPL(RowDefinition);
-
-const PropertyID	RowDefinition::HeightProperty(_T("Height"));
-const PropertyID	RowDefinition::MinHeightProperty(_T("MinHeight"));
-const PropertyID	RowDefinition::MaxHeightProperty(_T("MaxHeight"));
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-RowDefinition::RowDefinition(GUIManager* manager)
-	: ContentElement(manager)
-{	
-	// Register property
-	LN_DEFINE_PROPERTY(RowDefinition, float, HeightProperty, &RowDefinition::SetHeight, &RowDefinition::GetHeight, NAN);
-	LN_DEFINE_PROPERTY(RowDefinition, float, MinHeightProperty, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight, NAN);
-	LN_DEFINE_PROPERTY(RowDefinition, float, MaxHeightProperty, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight, NAN);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-RowDefinition::~RowDefinition()
-{
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-float RowDefinition::GetAvailableDesiredHeight() const
-{
-	if (IsAuto()) {
-		return m_desiredHeight;
-	}
-	if (IsPixel()) {
-		return Math::Clamp(m_height, m_minHeight, m_maxHeight);
-	}
-	else { //if (IsStar()) {
-		return 0;
-	}
-}
 
 } // namespace GUI
 } // namespace Lumino

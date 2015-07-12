@@ -77,7 +77,7 @@ void StackPanel::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void StackPanel::ArrangeLayout(const RectF& finalRect)
+void StackPanel::ArrangeLayout(const RectF& finalLocalRect)
 {
 	float prevChildSize = 0;
 	RectF childRect;
@@ -89,20 +89,20 @@ void StackPanel::ArrangeLayout(const RectF& finalRect)
 			childRect.X += prevChildSize;
 			prevChildSize = childDesiredSize.Width;
 			childRect.Width = prevChildSize;
-			childRect.Height = std::max(finalRect.Height, childDesiredSize.Height);
+			childRect.Height = std::max(finalLocalRect.Height, childDesiredSize.Height);
 		}
 		else
 		{
 			childRect.Y += prevChildSize;
 			prevChildSize = childDesiredSize.Height;
 			childRect.Height = prevChildSize;
-			childRect.Width = std::max(finalRect.Width, childDesiredSize.Width);
+			childRect.Width = std::max(finalLocalRect.Width, childDesiredSize.Width);
 		}
 
 		child->ArrangeLayout(childRect);
 	}
 
-	Panel::ArrangeLayout(finalRect);
+	Panel::ArrangeLayout(finalLocalRect);
 }
 
 } // namespace GUI

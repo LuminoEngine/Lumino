@@ -128,7 +128,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
 	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath));
-	ByteBuffer buffer(file->GetLength(), false);
+	ByteBuffer buffer((size_t)file->GetLength(), false);
 	file->Read(buffer.GetData(), buffer.GetSize());
 
 	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)

@@ -30,13 +30,13 @@ public:
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
-	//virtual void ArrangeLayout(const RectF& finalRect);
+	//virtual void ArrangeLayout(const RectF& finalLocalRect);
 	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void Render();
 
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
-	//virtual void ArrangeLayout(const RectF& finalRect);
+	//virtual void ArrangeLayout(const RectF& finalLocalRect);
 #endif
 
 	// IAddChild
@@ -48,6 +48,7 @@ protected:
 
 private:
 	void Children_ItemAdded(UIElement* item);
+	void Children_ItemRemoved(UIElement* item);
 
 protected:
 	RefPtr<UIElementCollection>		m_children;

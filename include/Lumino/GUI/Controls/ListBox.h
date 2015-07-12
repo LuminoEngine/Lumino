@@ -107,7 +107,7 @@ protected:
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 	virtual bool OnEvent(EventType type, EventArgs* args);
 	virtual void Render();
 #endif
@@ -123,7 +123,7 @@ protected:
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
-	//virtual void ArrangeLayout(const RectF& finalRect);
+	//virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 protected:
 	RefPtr<ListBoxItemList>	m_listBoxItems;		///< logical children

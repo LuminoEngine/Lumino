@@ -37,6 +37,7 @@ void CoreObject::SetPropertyValue(const String& propertyName, const Variant& val
 	{
 		//prop->SetValue(this, value);
 		SetPropertyValue(prop, value);
+		return;
 	}
 	// キーが無ければ例外
 	LN_THROW(0, KeyNotFoundException);
@@ -100,8 +101,15 @@ Variant CoreObject::GetPropertyValue(const Property* prop) const
 {
 	if (prop->IsStored())
 	{
-		LN_THROW(m_propertyDataStore != NULL, KeyNotFoundException);
-		return m_propertyDataStore->GetValue(prop);
+		if (m_propertyDataStore == NULL) {
+			return prop->GetDefaultValue();
+		}
+		//LN_THROW(m_propertyDataStore != NULL, KeyNotFoundException);
+		Variant v;
+		if (m_propertyDataStore->TryGetValue(prop, &v)) {
+			return v;
+		}
+		return prop->GetDefaultValue();
 	}
 	else {
 		return prop->GetValue(this);
@@ -197,6 +205,16 @@ Variant::Variant(CoreObject* obj)
 	, m_uint(0)	// union 全てを初期化
 {
 	Set(obj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant::Variant(const Enum& value)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)	// union 全てを初期化
+{
+	SetInt(value);
 }
 
 //-----------------------------------------------------------------------------

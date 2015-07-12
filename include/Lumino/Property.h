@@ -22,8 +22,9 @@ namespace Lumino
 class Property
 {
 public:
-	Property(bool stored)
-		: m_stored(stored)
+	Property(const Variant& defaultValue, bool stored)
+		: m_defaultValue(defaultValue)
+		, m_stored(stored)
 	{}
 	~Property() {}
 
@@ -41,7 +42,10 @@ public:
 	/// (virtual にしてもいいが、割とクリティカルなところで呼び出されると思われるのでそうしないでおく)
 	bool IsStored() const { return m_stored; }
 
+	const Variant& GetDefaultValue() const { return m_defaultValue; }
+
 private:
+	Variant	m_defaultValue;
 	bool	m_stored;
 
 	// このクラスのインスタンスは基本的に static にする。
@@ -67,7 +71,7 @@ private:
 /**
 	@brief		
 */
-template<class TClass, typename TValue, typename TInternalValue = TValue>	// TInternalValue は Enum のばあい一律 int。それいがいは TValue と一緒
+template<class TClass, typename TValue, typename TInternalValue = TValue, typename TCast = TValue>
 class CoreObjectProperty : public Property
 {
 public:
@@ -183,7 +187,7 @@ public:
 
 public:
 	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
-		: Property(false)
+		: Property( defaultValue, false)
 		, m_name(name)
 		, m_setter(setter)
 		, m_getter(getter)
@@ -197,7 +201,7 @@ public:
 	{
 		LN_THROW(!m_setter.IsEmpty(), InvalidOperationException);
 		TClass* instance = static_cast<TClass*>(target);
-		m_setter.Call(instance, value.Cast<TInternalValue>());
+		m_setter.Call(instance, static_cast<TCast>(value.Cast<TInternalValue>()));
 		//(instance->*m_setter)(value.Cast<T>());
 	}
 	virtual Variant GetValue(const CoreObject* target) const
@@ -227,7 +231,7 @@ private:
 
 #define LN_DEFINE_PROPERTY_ENUM(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
 { \
-	static ::Lumino::CoreObjectProperty<classType, nativeType, int> prop( \
+	static ::Lumino::CoreObjectProperty<classType, nativeType, int, nativeType::enum_type> prop( \
 		name, setterFuncPtr, getterFuncPtr, defaultValue); \
 	RegisterProperty(&prop); \
 }
@@ -238,7 +242,7 @@ class AttachedProperty
 {
 public:
 	AttachedProperty(const String& name, const Variant& defaultValue)
-		: Property(true)
+		: Property(defaultValue, true)
 		, m_name(name)
 		, m_defaultValue(defaultValue)
 	{}

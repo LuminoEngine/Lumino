@@ -30,66 +30,31 @@ class CanExecuteRoutedCommandEventArgs;
 class ExecuteRoutedCommandEventArgs;
 class RoutedCommandTypeContext;
 
-	struct Enum
-	{
-		int m_value;
-		Enum() : m_value(0) {}
-		Enum(int value) : m_value(value) {}
-		operator int() const { return m_value; }
-	};
+LN_ENUM(HorizontalAlignment)
+{
+	Left = 0,
+	Center,
+	Right,
+	Stretch,
+};
+LN_ENUM_DECLARE(HorizontalAlignment);
 
-	struct HorizontalAlignment : public Enum
-	{
-		enum
-		{
-			Left = 0,
-			Center,
-			Right,
-			Stretch,
-		};
+LN_ENUM(VerticalAlignment)
+{
+	Bottom = 0,		///< 子要素を、親のレイアウト スロットの下端に揃えて配置します。
+	Center,			///< 子要素を、親のレイアウト スロットの中央に揃えて配置します。
+	Stretch,		///< 子要素を、親のレイアウト スロット全体に引き伸ばします。
+	Top,			///< 子要素を、親のレイアウト スロットの上端に揃えて配置します。
+};
+LN_ENUM_DECLARE(VerticalAlignment);
+	
+LN_ENUM(Orientation)
+{
+	Vertical = 0,
+	Horizontal,
+};
+LN_ENUM_DECLARE(Orientation);
 
-		// WPF の Button の場合、初期値は Stretch だった
-
-		HorizontalAlignment() : Enum() {}
-		HorizontalAlignment(int value) : Enum(value) {}
-
-	};
-
-	struct VerticalAlignment : public Enum
-	{
-		enum
-		{
-			Bottom = 0,		///< 子要素を、親のレイアウト スロットの下端に揃えて配置します。
-			Center,			///< 子要素を、親のレイアウト スロットの中央に揃えて配置します。
-			Stretch,		///< 子要素を、親のレイアウト スロット全体に引き伸ばします。
-			Top,			///< 子要素を、親のレイアウト スロットの上端に揃えて配置します。
-		};
-
-		// WPF の Button の場合、初期値は Stretch だった
-
-		VerticalAlignment() : Enum() {}
-		VerticalAlignment(int value) : Enum(value) {}
-
-	};
-
-	struct Orientation : public Enum
-	{
-		enum
-		{
-			Vertical = 0,
-			Horizontal,
-		};
-
-		Orientation() : Enum() {}
-		Orientation(int value) : Enum(value) {}
-
-	};
-
-	//enum Orientation
-	//{
-	//	Horizontal = 0,
-	//	Orientation_Vertical,
-	//};
 
 
 class IAddChild
@@ -199,6 +164,7 @@ public:
 
 	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
 	void UpdateLayout();
+	void UpdateTransformHierarchy();
 	virtual void Render();
 
 
@@ -216,7 +182,7 @@ public:
 
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) { return finalSize; }
@@ -362,7 +328,9 @@ protected:
 	VisualStateInstance*	m_visualStateInstance;
 
 	SizeF					m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
-	RectF					m_finalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootPane のローカル座標系)
+	RectF					m_finalLocalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootPane のローカル座標系)
+	RectF					m_finalGlobalRect;
+
 
 	ResourceDictionary*		m_localResource;
 	CombinedLocalResource*	m_combinedLocalResource;
@@ -607,7 +575,7 @@ protected:
 	//virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	////virtual void ApplyTemplate(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
-	//virtual void ArrangeLayout(const RectF& finalRect);
+	//virtual void ArrangeLayout(const RectF& finalLocalRect);
 	//virtual void OnRender();
 	//virtual bool OnEvent(EventType type, EventArgs* args);
 

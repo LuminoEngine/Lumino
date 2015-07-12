@@ -30,7 +30,7 @@ public:
 
 protected:
 	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 private:
 	Orientation	m_orientation;

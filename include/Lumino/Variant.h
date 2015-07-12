@@ -139,7 +139,8 @@ public:
 	Variant(const Variant& value);
 	Variant(bool value);
 	Variant(int value);
-	explicit Variant(float value);
+	Variant(float value);
+	Variant(const Enum& value);
 	Variant(const SizeF& value);
 	~Variant();
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
@@ -172,6 +173,11 @@ public:
 
 
 
+	//template <class T>
+	//struct TypeTrait { typedef void other; };
+
+	
+
 	template<typename T>
 	T Cast() const { return static_cast<T>(GetObject()); }
 
@@ -180,6 +186,7 @@ public:
 	template<> int Cast() const { return GetInt(); }
 	template<> float Cast() const { return GetFloat(); }
 	template<> CoreObject* Cast() const { return GetObject(); }
+	//template<> Enum Cast() const { return GetInt(); }
 
 private:
 	void Copy(const Variant& obj);
@@ -191,7 +198,7 @@ private:
 	{
 		uint64_t		m_uint;
 		bool			m_bool;
-		uint64_t		m_int;
+		int				m_int;
 		float			m_float;
 		/*String*			m_string;*/
 		VariantList*	m_valueList;

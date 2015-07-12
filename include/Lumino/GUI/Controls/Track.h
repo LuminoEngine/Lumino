@@ -82,7 +82,7 @@ public:
 protected:
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalRect);
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 	virtual void Render();

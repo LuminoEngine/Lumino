@@ -19,6 +19,8 @@ int main()
 #endif
 	try
 	{
+		std::vector<int> aa = { 1, 2 };
+		std::vector<int>* aa2 = new std::vector<int>{ aa[1], 2 };
 
 		ApplicationConfigData appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
@@ -81,6 +83,7 @@ int main()
 		workbench1->SetContent(grid1);
 
 		RefPtr<GUI::Track> track1(LN_NEW GUI::Track(app->GetGUIManager()));
+		track1->SetOrientation(GUI::Orientation::Vertical);
 		track1->SetMaximum(70);
 		track1->SetValue(20);
 		track1->SetViewportSize(25);
@@ -111,6 +114,7 @@ int main()
 			r->SetRenderState(state);
 
 			workbench1->UpdateLayout();
+			workbench1->UpdateTransformHierarchy();
 			workbench1->Render();
 			swap1->Present();
 

@@ -22,6 +22,7 @@ Panel::Panel(GUIManager* manager)
 	, m_children(LN_NEW UIElementCollection())
 {
 	m_children->ItemAdded += LN_CreateDelegate(this, &Panel::Children_ItemAdded);
+	m_children->ItemRemoved += LN_CreateDelegate(this, &Panel::Children_ItemRemoved);
 }
 
 //-----------------------------------------------------------------------------
@@ -41,10 +42,24 @@ void Panel::Children_ItemAdded(UIElement* item)
 	{
 		LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 
+		// TODO:親要素に追加するときの共通処理だから、UIElementList にまとめていいかも
+		m_visualChildren.Add(item);
+		item->SetParent(this);
+		item->ApplyTemplate();
+
+
 		//m_visualChildren.Add(item);
 		//AddChild(item);
-		item->ApplyTemplate();
+		//item->ApplyTemplate();
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Panel::Children_ItemRemoved(UIElement* item)
+{
+	item->SetParent(NULL);
 }
 
 #if 0

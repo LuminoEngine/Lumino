@@ -109,8 +109,8 @@ void ListBoxChrome::OnRender()
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
 
-	RectF bgRect = m_finalRect;
-	RectF rect = m_finalRect;
+	RectF bgRect = m_finalGlobalRect;
+	RectF rect = m_finalGlobalRect;
 
 	if (!m_isMouseOver)
 	{
@@ -195,12 +195,12 @@ void ListBox::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ListBox::ArrangeLayout(const RectF& finalRect)
+void ListBox::ArrangeLayout(const RectF& finalLocalRect)
 {
 	if (m_itemsPanel != NULL) {
-		m_itemsPanel->ArrangeLayout(finalRect);	// “Á‚É˜g‚Æ‚©‚È‚¢‚Ì‚Å‚»‚Ì‚Ü‚Ü‚ÌƒTƒCƒY‚ð“n‚¹‚é
+		m_itemsPanel->ArrangeLayout(finalLocalRect);	// “Á‚É˜g‚Æ‚©‚È‚¢‚Ì‚Å‚»‚Ì‚Ü‚Ü‚ÌƒTƒCƒY‚ð“n‚¹‚é
 	}
-	Control::ArrangeLayout(finalRect);
+	Control::ArrangeLayout(finalLocalRect);
 }
 
 //-----------------------------------------------------------------------------
