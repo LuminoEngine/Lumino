@@ -19,6 +19,10 @@ class ColumnDefinition
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ColumnDefinition);	// TODO マクロ名変えた方が良い気がする
 public:
+	static const float Auto;
+	static const float Star;
+
+public:
 	static const Property*	WidthProperty;
 	static const Property*	MinWidthProperty;
 	static const Property*	MaxWidthProperty;
@@ -67,6 +71,10 @@ class RowDefinition
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(RowDefinition);	// TODO マクロ名変えた方が良い気がする
+public:
+	static const float Auto;
+	static const float Star;
+
 public:
 	static const Property*	HeightProperty;
 	static const Property*	MaxHeightProperty;
@@ -173,6 +181,12 @@ public:
 	static int GetRowSpan(UIElement* element);
 
 	/** @} */
+
+public:
+	/// ColumnDefinition を追加するユーティリティ
+	void AddColumnDefinition(float width, float minWidth = 0.0f, float maxWidth = FLT_MAX);
+	/// RowDefinition を追加するユーティリティ
+	void AddRowDefinition(float height, float minHeight = 0.0f, float maxHeight = FLT_MAX);
 
 protected:
 	virtual void MeasureLayout(const SizeF& availableSize);

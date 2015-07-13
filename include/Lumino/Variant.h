@@ -20,6 +20,7 @@ enum VariantType
 	VariantType_Object,
 
 	VariantType_SizeF,
+	VariantType_Rect,
 
 	VariantType_Max,			///< (Terminator)
 };
@@ -146,6 +147,9 @@ inline TypeInfo* GetTypeInfo(CoreObject* obj)
 class Variant
 {
 public:
+	static const Variant Null;
+
+public:
 	Variant();
 	Variant(const Variant& value);
 	Variant(bool value);
@@ -153,6 +157,7 @@ public:
 	Variant(float value);
 	Variant(const Enum& value);
 	Variant(const SizeF& value);
+	Variant(const Rect& value);
 	~Variant();
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
 
@@ -182,6 +187,8 @@ public:
 	void SetSizeF(const SizeF& value);
 	const SizeF& GetSizeF() const;
 
+	void SetRect(const Rect& value);
+	const Rect& GetRect() const;
 
 
 	//template <class T>
@@ -197,6 +204,7 @@ public:
 	template<> int Cast() const { return GetInt(); }
 	template<> float Cast() const { return GetFloat(); }
 	template<> CoreObject* Cast() const { return GetObject(); }
+	template<> Rect Cast() const { return GetRect(); }
 	//template<> Enum Cast() const { return GetInt(); }
 
 private:
@@ -215,6 +223,7 @@ private:
 		VariantList*	m_valueList;
 		CoreObject*		m_object;
 		float			m_sizeF[2];
+		int				m_rect[4];
 	};
 	String			m_string;
 };

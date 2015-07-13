@@ -184,6 +184,8 @@ TypeInfo* CoreObject::GetClassTypeInfo() { return &m_typeInfo; }
 // Variant
 //=============================================================================
 
+const Variant Variant::Null;
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -258,6 +260,16 @@ Variant::Variant(const SizeF& value)
 	, m_uint(0)
 {
 	SetSizeF(value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant::Variant(const Rect& value)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)
+{
+	SetRect(value);
 }
 
 //-----------------------------------------------------------------------------
@@ -352,6 +364,24 @@ const SizeF& Variant::GetSizeF() const
 	if (LN_VERIFY_ASSERT(m_type == VariantType_SizeF)) { return SizeF(); }
 	return *((SizeF*)m_sizeF);
 }
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Variant::SetRect(const Rect& value)
+{
+	Release();
+	m_type = VariantType_Rect;
+	*((Rect*)m_rect) = value;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const Rect& Variant::GetRect() const
+{
+	if (LN_VERIFY_ASSERT(m_type == VariantType_Rect)) { return Rect(); }
+	return *((Rect*)m_rect);
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -384,6 +414,9 @@ void Variant::Copy(const Variant& obj)
 		break;
 	case Lumino::VariantType_SizeF:
 		memcpy(m_sizeF, obj.m_sizeF, sizeof(m_sizeF));
+		break;
+	case Lumino::VariantType_Rect:
+		memcpy(m_rect, obj.m_rect, sizeof(m_rect));
 		break;
 	default:
 		LN_ASSERT(0);

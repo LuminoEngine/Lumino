@@ -97,6 +97,13 @@ int main()
 		GUI::Grid::SetColumnSpan(track2, 2);
 		grid1->GetChildren()->Add(track2);
 #endif
+#if 0	// Image ‚ÌƒeƒXƒg
+		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png")));
+		RefPtr<GUI::Image> image1(LN_NEW GUI::Image(app->GetGUIManager()));
+		image1->SetSourceTexture(tex1);
+		image1->SetSourceRect(Rect(64, 64, 16, 16));
+		workbench1->SetContent(image1);
+#endif
 		RefPtr<GUI::ScrollBar> scrollBar1(LN_NEW GUI::ScrollBar(app->GetGUIManager()));
 		workbench1->SetContent(scrollBar1);
 

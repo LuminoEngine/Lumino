@@ -1251,13 +1251,34 @@ void GUIManager::BuildDefaultTheme()
 		RefPtr<ControlTemplate> scrollBar(LN_NEW ControlTemplate());
 		scrollBar->SetTargetType(_T("ScrollBar"));
 
+
+		RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
+		grid1->SetTypeName(_T("Grid"));
+		scrollBar->SetVisualTreeRoot(grid1);
+
+		RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this));
+		col1->SetTypeName(_T("ColumnDefinition"));
+		col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
+		grid1->AddChild(col1);
+
+		RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this));
+		col2->SetTypeName(_T("ColumnDefinition"));
+		col1->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
+		grid1->AddChild(col2);
+
+		RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this));
+		col3->SetTypeName(_T("ColumnDefinition"));
+		col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
+		grid1->AddChild(col3);
+
+
 		//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
 		//button1->SetTypeName(_T("Button"));
 		//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
 
-		RefPtr<UIElementFactory> thumb1(LN_NEW UIElementFactory(this));
-		thumb1->SetTypeName(_T("Track"));
-		scrollBar->SetVisualTreeRoot(thumb1);
+		RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
+		track->SetTypeName(_T("Track"));
+		grid1->AddChild(track);
 
 		//RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
 		//button2->SetTypeName(_T("Button"));

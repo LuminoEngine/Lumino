@@ -227,5 +227,14 @@ void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 		m_manager->GetPainterEngine(), rect, frameWidth, srcTexture, srcRect);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect)
+{
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawFillRectangleCommand>(
+		m_manager->GetPainterEngine(), dstRect, texture->GetDeviceObject(), srcRect, BrushWrapMode_Stretch);
+}
+
 } // namespace Graphics
 } // namespace Lumino

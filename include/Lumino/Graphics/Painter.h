@@ -80,6 +80,9 @@ public:
 	void DrawRectangle(const RectF& rect);
 	void DrawFrameRectangle(const RectF& rect, float frameWidth);
 
+	/// ƒZƒbƒg‚³‚ê‚Ä‚¢‚é Brush ‚Í‰e‹¿‚µ‚Ü‚¹‚ñ
+	void DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect);
+
 private:
 	GraphicsManager*	m_manager;
 	RefPtr<Brush>		m_currentBrush;

@@ -45,6 +45,7 @@
 #include "Lumino/GUI/Controls/Grid.h"
 #include "Lumino/GUI/Controls/Thumb.h"
 #include "Lumino/GUI/Controls/Track.h"
+#include "Lumino/GUI/Controls/Image.h"
 #include "Lumino/GUI/Controls/ScrollBar.h"
 #include "Lumino/GUI/Controls/ListBox.h"
 

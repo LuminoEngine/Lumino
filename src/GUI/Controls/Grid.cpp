@@ -14,8 +14,11 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ColumnDefinition, ContentElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ColumnDefinition);
 
+const float ColumnDefinition::Auto = NAN;
+const float ColumnDefinition::Star = std::numeric_limits<float>::infinity();
+
 // Register property
-LN_DEFINE_PROPERTY_2(ColumnDefinition, float, WidthProperty, "Width", std::numeric_limits<float>::infinity(), &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth);
+LN_DEFINE_PROPERTY_2(ColumnDefinition, float, WidthProperty, "Width", ColumnDefinition::Star, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth);
 LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MinWidthProperty, "MinWidth", 0.0f, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth);
 LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", FLT_MAX, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth);
 //const PropertyID	ColumnDefinition::WidthProperty(_T("Width"));
@@ -70,8 +73,11 @@ float ColumnDefinition::GetAvailableDesiredWidth() const
 LN_CORE_OBJECT_TYPE_INFO_IMPL(RowDefinition, ContentElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(RowDefinition);
 
+const float RowDefinition::Auto = NAN;
+const float RowDefinition::Star = std::numeric_limits<float>::infinity();
+
 // Register property
-LN_DEFINE_PROPERTY_2(RowDefinition, float, HeightProperty, "Height", std::numeric_limits<float>::infinity(), &RowDefinition::SetHeight, &RowDefinition::GetHeight);
+LN_DEFINE_PROPERTY_2(RowDefinition, float, HeightProperty, "Height", RowDefinition::Auto, &RowDefinition::SetHeight, &RowDefinition::GetHeight);
 LN_DEFINE_PROPERTY_2(RowDefinition, float, MinHeightProperty, "MinHeight", 0.0f, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight);
 LN_DEFINE_PROPERTY_2(RowDefinition, float, MaxHeightProperty, "MaxHeight", FLT_MAX, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight);
 //const PropertyID	RowDefinition::HeightProperty(_T("Height"));
@@ -328,6 +334,19 @@ int		Grid::GetRow(UIElement* element)					{ LN_GET_ATTACHED_PROPERTY(element, Ro
 void	Grid::SetRowSpan(UIElement* element, int value)		{ LN_SET_ATTACHED_PROPERTY(element, RowSpanProperty, value); }
 int		Grid::GetRowSpan(UIElement* element)				{ LN_GET_ATTACHED_PROPERTY(element, RowSpanProperty, int); }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Grid::AddColumnDefinition(float width, float minWidth, float maxWidth)
+{
+	RefPtr<GUI::ColumnDefinition> col(LN_NEW GUI::ColumnDefinition(m_manager));
+	m_columnDefinitionList->Add(col);
+}
+void Grid::AddRowDefinition(float height, float minHeight, float maxHeight)
+{
+	RefPtr<GUI::RowDefinition> row(LN_NEW GUI::RowDefinition(m_manager));
+	m_rowDefinitionList->Add(row);
+}
 
 } // namespace GUI
 } // namespace Lumino
