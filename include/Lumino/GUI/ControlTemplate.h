@@ -34,6 +34,10 @@ public:
 	/// この UIElementFactory が生成するインスタンスの型名
 	void SetTypeName(const String& typeFullName) { m_targetTypeFullName = typeFullName; }
 
+	void SetPropertyValue(const Property* prop, const Variant& value) { m_propertyValueList.SetValue(prop, value); }
+	Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
+
+
 
 	//void AddProperty(const String& propName, );
 	//void AddTemplateBinding(const String& propName, );
@@ -52,7 +56,7 @@ public:
 	void AddChild(UIElementFactory* child);
 
 
-	UIElement* CreateInstance(UIElement* rootLogicalParent);
+	CoreObject* CreateInstance(UIElement* rootLogicalParent);
 
 private:
 	enum PropertyKind
@@ -70,10 +74,12 @@ private:
 	};
 
 	typedef SortedArray<const Property*, PropertyInfo>	PropertyInfoList;
+	typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
 	GUIManager*						m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
 	String							m_targetTypeFullName;
 	PropertyInfoList				m_propertyInfoList;
+	PropertyValueList			m_propertyValueList;
 	Array<UIElementFactory*>		m_children;
 };
 

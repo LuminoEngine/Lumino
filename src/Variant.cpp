@@ -235,6 +235,16 @@ Variant::Variant(float value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Variant::Variant(VariantList* value)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)
+{
+	SetList(value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Variant::Variant(CoreObject* obj)
 	: m_type(VariantType_Unknown)
 	, m_uint(0)	// union ëSÇƒÇèâä˙âª
@@ -325,6 +335,25 @@ float Variant::GetFloat() const
 {
 	if (LN_VERIFY_ASSERT(m_type == VariantType_Float)) { return 0; }
 	return m_float;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Variant::SetList(VariantList* value)
+{
+	Release();
+	m_type = VariantType_List;
+	LN_REFOBJ_SET(m_valueList, value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+VariantList* Variant::GetList() const
+{
+	if (LN_VERIFY_ASSERT(m_type == VariantType_List)) { return NULL; }
+	return m_valueList;
 }
 
 //-----------------------------------------------------------------------------

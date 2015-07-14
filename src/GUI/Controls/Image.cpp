@@ -42,12 +42,12 @@ void Image::SetSource(const Variant& value)
 		auto tex = dynamic_cast<Graphics::Texture*>(value.GetObject());
 		if (tex != NULL)
 		{
-			SetSource(tex);
+			SetSourceTexture(tex);
 			return;
 		}
 	}
 
-	LN_VERIFY(0, ArgumentException);
+	LN_VERIFY(0);
 }
 
 //-----------------------------------------------------------------------------

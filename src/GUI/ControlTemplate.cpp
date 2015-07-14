@@ -46,10 +46,10 @@ void UIElementFactory::AddChild(UIElementFactory* child)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIElement* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
+CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 {
-	UIElement* element = dynamic_cast<UIElement*>(m_manager->CreateObject(m_targetTypeFullName));
-	if (element == NULL) {
+	CoreObject* obj = m_manager->CreateObject(m_targetTypeFullName);
+	if (obj == NULL) {
 		// TODO: 
 		LN_THROW(0, InvalidOperationException);
 	}
@@ -62,35 +62,50 @@ UIElement* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	//{
 	//}
 
-	LN_FOREACH(PropertyInfoList::Pair& pair, m_propertyInfoList)
+	// プロパティを設定する
+	for (PropertyValueList::Pair& pair : m_propertyValueList)
 	{
-		if (pair.second.Kind == PropertyKind_TemplateBinding)
+		obj->SetPropertyValue(pair.first, pair.second);
+	}
+
+	UIElement* element = dynamic_cast<UIElement*>(obj);
+	if (element != NULL)
+	{
+		LN_FOREACH(PropertyInfoList::Pair& pair, m_propertyInfoList)
 		{
-			const Property* prop = pair.first;//GetTypeInfo(element)->FindProperty(pair.first);
-			//if (prop == NULL) {
-			//	LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
-			//}
-			element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
+			if (pair.second.Kind == PropertyKind_TemplateBinding)
+			{
+				const Property* prop = pair.first;//GetTypeInfo(element)->FindProperty(pair.first);
+				//if (prop == NULL) {
+				//	LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
+				//}
+				element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
+			}
+			else {
+				LN_THROW(0, NotImplementedException);
+			}
 		}
-		else {
-			LN_THROW(0, NotImplementedException);
+
+		//for (int i = 0; i < m_propertyInfoList.GetCount(); ++i)
+		//{
+
+		//	
+		//}
+		//
+		// 子の処理
+		LN_FOREACH(UIElementFactory* c, m_children) {
+			RefPtr<CoreObject> e(c->CreateInstance(rootLogicalParent));
+			element->AddChild(e);
 		}
+		
+		rootLogicalParent->PollingTemplateChildCreated(element);
+	}
+	else
+	{
+		// ContentElement はここに来る
 	}
 
-	//for (int i = 0; i < m_propertyInfoList.GetCount(); ++i)
-	//{
-
-	//	
-	//}
-	//
-	// 子の処理
-	LN_FOREACH(UIElementFactory* c, m_children) {
-		RefPtr<UIElement> e(c->CreateInstance(rootLogicalParent));
-		element->AddChild(e);
-	}
-
-	rootLogicalParent->PollingTemplateChildCreated(element);
-	return element;
+	return obj;
 }
 
 //=============================================================================
@@ -121,8 +136,12 @@ void ControlTemplate::Apply(Control* control)
 	control->SetTemplateChild(NULL);
 
 	if (m_visualTreeRoot != NULL) {
-		RefPtr<UIElement> element(m_visualTreeRoot->CreateInstance(control));
-		control->SetTemplateChild(element);
+		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance(control));
+		UIElement* element = dynamic_cast<UIElement*>(obj.GetObjectPtr());
+		if (element != NULL)
+		{
+			control->SetTemplateChild(element);
+		}
 	}
 
 	// プロパティ適用
@@ -134,7 +153,7 @@ void ControlTemplate::Apply(Control* control)
 			UIElementFactory* factory = static_cast<UIElementFactory*>(prop.second.GetObject());
 			if (factory != NULL)
 			{
-				RefPtr<UIElement> element(factory->CreateInstance(control));
+				RefPtr<CoreObject> element(factory->CreateInstance(control));
 				control->SetPropertyValue(prop.first, element);
 				isElement = true;
 			}
@@ -172,7 +191,15 @@ void DataTemplate::Apply(Control* control)
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
 	if (m_visualTreeRoot != NULL) {
-		control->SetTemplateChild(m_visualTreeRoot->CreateInstance(control));
+		CoreObject* obj = m_visualTreeRoot->CreateInstance(control);
+		UIElement* element = dynamic_cast<UIElement*>(obj);
+		if (element != NULL)
+		{
+			control->SetTemplateChild(element);
+		}
+		else {
+			// TODO: ここに来たときにメモリリークする
+		}
 	}
 
 	// TODO: プロパティ適用等も。

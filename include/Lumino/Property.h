@@ -2,6 +2,7 @@
 #pragma once
 #include <map>
 #include <memory>
+#include <functional>
 
 /*
 	プロパティの種類は
@@ -32,8 +33,9 @@ public:
 public:
 	virtual const String& GetName() const = 0;
 
-	virtual void SetValue(CoreObject* target, Variant value) const = 0;
-	virtual Variant GetValue(const CoreObject* target) const = 0;
+	virtual void SetValue(CoreObject* target, Variant value) const { LN_THROW(0, InvalidOperationException); }
+	virtual Variant GetValue(const CoreObject* target) const { LN_THROW(0, InvalidOperationException); }
+	virtual void AddItem(CoreObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
 
 	virtual bool IsReadable() const { return false; }
 	virtual bool IsWritable() const { return false; }
@@ -226,6 +228,40 @@ private:
 	//Getter	m_getter;
 };
 
+/// リスト型のプロパティ。
+/// 非 const な リストポインタを返す getter のみあれば良い。
+template<class TOwnerClass, typename TList, typename TItem>
+class ListProperty : public Property
+{
+public:
+	typedef std::function< TList*(TOwnerClass*) >	GetterFunctor;
+
+public:
+	ListProperty(const String& name, GetterFunctor getter)
+		: Property(Variant::Null, false)
+		, m_name(name)
+		, m_getter(getter)
+	{
+		TOwnerClass::GetClassTypeInfo()->RegisterProperty(this);
+	}
+
+	virtual ~ListProperty()
+	{}
+
+	virtual const String& GetName() const { return m_name; }
+
+	virtual void AddItem(CoreObject* target, const Variant& value) const
+	{
+		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
+		TList* list = m_getter(instance);
+		list->Add(value.Cast<TItem*>());
+	}
+
+private:
+	String			m_name;
+	GetterFunctor	m_getter;
+};
+
 // 削除予定
 #define LN_DEFINE_PROPERTY(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
 { \
@@ -262,6 +298,9 @@ struct StaticProperty
 	static StaticProperty<ownerClass, valueType, int, valueType::enum_type> _##var(_T(name), setter, getter, defaultValue); \
 	const Property* ownerClass::var = &_##var;
 
+#define LN_DEFINE_PROPERTY_LIST(ownerClass, listType, itemType, var, name, getter) \
+	static ListProperty<ownerClass, listType, itemType> _##var(_T(name), getter); \
+	const Property* ownerClass::var = &_##var;
 
 
 

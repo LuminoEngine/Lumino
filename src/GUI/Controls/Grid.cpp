@@ -132,6 +132,9 @@ float RowDefinition::GetAvailableDesiredHeight() const
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Grid, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Grid);
 
+LN_DEFINE_PROPERTY_LIST(Grid, ColumnDefinitionList, ColumnDefinition, ColumnDefinitionsProperty, "ColumnDefinitions", [](Grid* grid) { return grid->GetColumnDefinitions(); });
+LN_DEFINE_PROPERTY_LIST(Grid, RowDefinitionList, RowDefinition, RowDefinitionsProperty, "RowDefinitions", [](Grid* grid) { return grid->GetRowDefinitions(); });
+
 //class CppCoreObjectPropertyInitializer
 
 //static ::Lumino::CoreObjectProperty<Grid, int>	_ColumnProperty(

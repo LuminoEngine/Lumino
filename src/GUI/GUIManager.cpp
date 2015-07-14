@@ -5,6 +5,14 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/15] リストのプロパティについて
+		WPF ではコレクションは依存関係プロパティにされていない (できない？)
+		各コレクションは IAddChild を継承していない。
+		つまり、XAML から何かをセットするときはリフレクションでコレクション型であるかを確認している。
+
+		C++ ではそんなことはできないので、本ライブラリとしてはコレクションも依存関係プロパティとして登録している。
+
+
 	[2015/7/10]
 		・SetPropertyValue() のキーは Property のポインタにする？名前にする？
 		・依存関係プロパティはポインタとして公開する？名前にする？
@@ -1278,6 +1286,7 @@ void GUIManager::BuildDefaultTheme()
 
 		RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
 		track->SetTypeName(_T("Track"));
+		track->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
 		grid1->AddChild(track);
 
 		//RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));

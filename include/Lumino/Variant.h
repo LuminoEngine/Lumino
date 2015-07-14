@@ -156,6 +156,7 @@ public:
 	Variant(int value);
 	Variant(float value);
 	Variant(const Enum& value);
+	Variant(VariantList* value);
 	Variant(const SizeF& value);
 	Variant(const Rect& value);
 	~Variant();
@@ -180,6 +181,9 @@ public:
 
 	void SetFloat(float value);
 	float GetFloat() const;
+
+	void SetList(VariantList* value);
+	VariantList* GetList() const;
 
 	void Set(CoreObject* obj);
 	CoreObject* GetObject() const;
