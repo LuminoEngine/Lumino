@@ -5,6 +5,7 @@
 namespace Lumino
 {
 
+#if 0
 /**
 	@brief		
 */
@@ -112,6 +113,7 @@ protected:
 
 protected:
 	Array<TObject*>	m_list;
-};
+}; 
+#endif
 
 } // namespace Lumino

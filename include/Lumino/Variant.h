@@ -1,5 +1,7 @@
 
 #pragma once
+#include <iterator>
+#include <type_traits>
 #include <Lumino/Base/Delegate.h>
 
 namespace Lumino
@@ -53,6 +55,8 @@ private:
 class CoreObject
 	: public RefObject
 {
+public:
+	static const int IsArrayObject = 0;
 public:
 
 public:
@@ -165,12 +169,25 @@ public:
 	Variant(CoreObject* obj);
 
 	template<class T>
-	Variant(const RefPtr<T>& obj)
+	Variant(RefPtr<T>& obj)
 		: m_type(VariantType_Unknown)
 		, m_uint(0)
 	{
-		Set(obj);
+		if (T::IsArrayObject == 0) 
+			Set(obj);
+		else
+		{
+			CoreObject* t = obj.GetObjectPtr();
+			SetList(static_cast<VariantList*>(t));
+		}
 	}
+	//template<>
+	//Variant(const RefPtr<VariantList>& obj)
+	//	: m_type(VariantType_Unknown)
+	//	, m_uint(0)
+	//{
+	//	SetList(obj);
+	//}
 
 public:
 	VariantType GetType() const { return m_type; }
@@ -211,6 +228,13 @@ public:
 	template<> Rect Cast() const { return GetRect(); }
 	//template<> Enum Cast() const { return GetInt(); }
 
+
+	template<typename T>
+	T& RefCast() const { return static_cast<T&>(GetObject()); }
+
+public:
+	bool operator == (const Variant& right) const;
+
 private:
 	void Copy(const Variant& obj);
 	void Release();
@@ -239,38 +263,42 @@ class VariantList
 	: public CoreObject
 {
 public:
+	static const int IsArrayObject = 1;
+
+public:
 	VariantList() {}
 	virtual ~VariantList() { Clear(); }
 
 public:
 
+	bool CheckValidIndex(int index) const { return m_list.CheckValidIndex(index); }
+	bool IsEmpty() const { return m_list.IsEmpty(); }
+
 	/// 要素数を取得する
 	int GetCount() const { return m_list.GetCount(); }
 
 	/// 指定インデックスに要素を格納する
-	void SetAtBase(int index, CoreObject* item)
+	void SetAtVariant(int index, const Variant& item)
 	{
 		if (OnItemAdding(item))
 		{
 			m_list.SetAt(index, item);
-			LN_SAFE_ADDREF(item);
 			OnItemAdded(item);
 		}
 	}
 
 	/// 指定インデックスの要素を取得する
-	CoreObject* GetAtBase(int index) const
+	const Variant& GetAtVariant(int index) const
 	{
 		return m_list.GetAt(index);
 	}
 
 	/// 要素を末尾に追加する
-	void Add(CoreObject* item)
+	void AddVariant(const Variant& item)
 	{
 		if (OnItemAdding(item))
 		{
 			m_list.Add(item);
-			LN_SAFE_ADDREF(item);
 			OnItemAdded(item);
 		}
 	}
@@ -278,50 +306,114 @@ public:
 	/// 全ての要素を削除する
 	void Clear()
 	{
-		LN_FOREACH(CoreObject* item, m_list) {
+		for (Variant& item : m_list) {
 			OnItemRemoved(item);	// TODO: erase しながらひとつずつ呼ぶべきかも
-			LN_SAFE_RELEASE(item);
 		}
 		m_list.Clear();
 	}
 
 	/// 指定したインデックスの位置に要素を挿入する
-	void Insert(int index, CoreObject* item)
+	void InsertVariant(int index, const Variant& item)
 	{
 		if (OnItemAdding(item))
 		{
 			m_list.Insert(index, item);
-			LN_SAFE_ADDREF(item);
 			OnItemAdded(item);
 		}
 	}
 
 	/// item と一致する最初の要素を削除する
-	void Remove(CoreObject* item)
+	void RemoveVariant(const Variant& item)
 	{
 		bool b = m_list.Remove(item);
 		if (b) {
 			OnItemRemoved(item);
-			LN_SAFE_RELEASE(item);
 		}
 	}
 
 	/// 指定したインデックスの要素を削除する
 	void RemoveAt(int index)
 	{
-		CoreObject* item = m_list.GetAt(index);
+		Variant item = m_list.GetAt(index);
 		m_list.RemoveAt(index);
 		OnItemRemoved(item);
-		LN_SAFE_RELEASE(item);
 	}
 
-protected:
-	virtual bool OnItemAdding(CoreObject* item) { return true; }
-	virtual void OnItemAdded(CoreObject* item) {}
-	virtual void OnItemRemoved(CoreObject* item) {}
+public:
+	class const_iterator : public std::iterator<std::forward_iterator_tag, const Variant>
+	{
+	public:
+		const_iterator() : m_internalItr() {}
+		const_iterator(const const_iterator& obj) : m_internalItr(obj.m_internalItr) {}
+		const_iterator& operator = (const const_iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
+		reference operator*() const		{ return *m_internalItr; }
+		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+		const_iterator& operator++()	{ ++m_internalItr; return (*this); }
+		const_iterator operator++(int)	{ const_iterator tmp = *this; ++(*this); return tmp; }
+		const_iterator& operator--()	{ --m_internalItr; return (*this); }
+		const_iterator operator--(int)	{ const_iterator tmp = *this; --(*this); return tmp; }
+		//const_iterator& operator+=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator+(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//const_iterator& operator-=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
+		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
+		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
+		bool operator!=(const const_iterator& right) const	{ return m_internalItr.operator!=(right.m_internalItr); }
+		bool operator<(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator>=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+
+	private:
+		friend class VariantList;
+		const_iterator(const Array<Variant>::const_iterator& itr) : m_internalItr(itr) {}
+		Array<Variant>::const_iterator m_internalItr;
+	};
+
+	class iterator : public std::iterator<std::forward_iterator_tag, Variant>
+	{
+	public:
+		iterator() : m_internalItr() {}
+		iterator(const iterator& obj) : m_internalItr(obj.m_internalItr) {}
+		iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
+		reference operator*() const		{ return static_cast<reference>(*m_internalItr); }
+		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+		iterator& operator++()			{ ++m_internalItr; return (*this); }
+		iterator operator++(int)		{ iterator tmp = *this; ++(*this); return tmp; }
+		iterator& operator--()			{ --m_internalItr; return (*this); }
+		iterator operator--(int)		{ iterator tmp = *this; --(*this); return tmp; }
+		//const_iterator& operator+=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator+(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//const_iterator& operator-=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
+		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
+		bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
+		bool operator!=(const iterator& right) const		{ return m_internalItr.operator!=(right.m_internalItr); }
+		bool operator<(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator>(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator<=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator>=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
+
+	private:
+		friend class VariantList;
+		iterator(const Array<Variant>::iterator& itr) : m_internalItr(itr) {}	// begin() と end() で使用する
+		Array<Variant>::iterator m_internalItr;
+	};
+
+	iterator		begin()			{ return iterator(m_list.begin()); }
+	const_iterator	begin() const	{ return const_iterator(m_list.begin()); }
+	iterator		end()			{ return iterator(m_list.end()); }
+	const_iterator	end() const		{ return const_iterator(m_list.end()); }
 
 protected:
-	Array<CoreObject*>	m_list;
+	virtual bool OnItemAdding(const Variant& item) { return true; }
+	virtual void OnItemAdded(const Variant& item) {}
+	virtual void OnItemRemoved(const Variant& item) {}
+
+protected:
+	Array<Variant>	m_list;
 };
 
 #define LN_VARIANT_OBJECT_LIST_DECL(itemType) \
@@ -332,39 +424,67 @@ protected:
 	void listType::SetAt(int index, itemType* item) { RefObjectList::SetAtBase(index, item); } \
 	itemType* listType::GetAt(int index) const { return static_cast<itemType*>(RefObjectList::GetAtBase(index)); }
 
+
+template<typename T>
+struct TestTraits
+{
+	typedef typename T& DirectReference;
+};
+
+template<typename T>
+struct TestTraits<T*>
+{
+	typedef typename T* DirectReference;
+};
+
 /**
 	@brief
 */
-template<class TRefObj>
+template<typename TValue>
 class GenericVariantList
 	: public VariantList
 {
 public:
-	class const_iterator
-	{
-	public:
-		typedef Array<RefObject*>				internal_list;
-		typedef TRefObj*						value_type;
-		typedef internal_list::difference_type	difference_type;
-		typedef const value_type*				pointer;
-		typedef const value_type				reference;
+	typedef TValue value_type;
+	typedef ptrdiff_t difference_type;
+	typedef ptrdiff_t distance_type;	// retained
+	//typedef typename std::vector<TValue>::pointer pointer;
+	//typedef typename std::vector<TValue>::reference reference;
+	typedef TValue* pointer;
+	typedef TValue& reference;
 
+
+public:
+	/// 指定インデックスに要素を格納する
+	void SetAt(int index, const TValue& item) { SetAtVariant(index, item); }
+
+	/// 指定インデックスの要素を取得する
+	TValue GetAt(int index) const { return GetAtVariant(index).Cast<TValue>(); }	// TODO: できれば参照で返したいが…
+
+	/// 要素を末尾に追加する
+	void Add(const TValue& item) { AddVariant(item); }
+
+	/// 指定したインデックスの位置に要素を挿入する
+	void Insert(int index, const TValue& item) { InsertVariant(index, item); }
+
+public:
+	class const_iterator //: public std::iterator<std::forward_iterator_tag, const TValue>
+	{
 	public:
 		const_iterator() : m_internalItr() {}
 		const_iterator(const const_iterator& obj) : m_internalItr(obj.m_internalItr) {}
 		const_iterator& operator = (const const_iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
-
 		reference operator*() const		{ return *m_internalItr; }
 		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
 		const_iterator& operator++()	{ ++m_internalItr; return (*this); }
 		const_iterator operator++(int)	{ const_iterator tmp = *this; ++(*this); return tmp; }
 		const_iterator& operator--()	{ --m_internalItr; return (*this); }
 		const_iterator operator--(int)	{ const_iterator tmp = *this; --(*this); return tmp; }
-		const_iterator& operator+=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator+(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		const_iterator& operator-=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
+		//const_iterator& operator+=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator+(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//const_iterator& operator-=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
 
 		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
 		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
@@ -376,36 +496,27 @@ public:
 
 	private:
 		friend class GenericVariantList;
-		const_iterator(const internal_list::const_iterator& itr) : m_internalItr(itr) {}
-
-		internal_list::const_iterator m_internalItr;
+		const_iterator(const Array<Variant>::const_iterator& itr) : m_internalItr(itr) {}
+		Array<Variant>::const_iterator m_internalItr;
 	};
 
-	class iterator
+	class iterator// : public std::iterator<std::forward_iterator_tag, TValue>
 	{
-	public:
-		typedef Array<RefObject*>				internal_list;
-		typedef TRefObj*						value_type;
-		typedef internal_list::difference_type	difference_type;
-		typedef value_type*						pointer;
-		typedef value_type						reference;
-
 	public:
 		iterator() : m_internalItr() {}
 		iterator(const iterator& obj) : m_internalItr(obj.m_internalItr) {}
 		iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
-
-		reference operator*() const		{ return static_cast<reference>(*m_internalItr); }
+		typename TestTraits<TValue>::DirectReference operator*() const		{ return m_internalItr->Cast<TValue>(); }//{ return *static_cast<TValue**>(&(m_internalItr->Cast<TValue>())); }
 		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
 		iterator& operator++()			{ ++m_internalItr; return (*this); }
 		iterator operator++(int)		{ iterator tmp = *this; ++(*this); return tmp; }
 		iterator& operator--()			{ --m_internalItr; return (*this); }
 		iterator operator--(int)		{ iterator tmp = *this; --(*this); return tmp; }
-		const_iterator& operator+=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator+(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		const_iterator& operator-=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator-(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		difference_type operator-(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return 0; }
+		//const_iterator& operator+=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator+(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//const_iterator& operator-=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator-(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//difference_type operator-(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return 0; }
 
 		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
 		bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
@@ -417,17 +528,13 @@ public:
 
 	private:
 		friend class GenericVariantList;
-		iterator(const internal_list::iterator& itr) : m_internalItr(itr) {}
-
-		internal_list::iterator m_internalItr;
+		iterator(const Array<Variant>::iterator& itr) : m_internalItr(itr) {}
+		Array<Variant>::iterator m_internalItr;
 	};
 
 public:
 	GenericVariantList() {}
 	virtual ~GenericVariantList() {}
-
-	void SetAt(int index, TRefObj* item) { RefObjectList::SetAtBase(index, item); }
-	TRefObj* GetAt(int index) const { return static_cast<TRefObj*>(RefObjectList::GetAtBase(index)); }
 
 	iterator		begin()			{ return iterator(m_list.begin()); }
 	const_iterator	begin() const	{ return const_iterator(m_list.begin()); }

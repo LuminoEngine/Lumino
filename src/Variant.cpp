@@ -415,6 +415,27 @@ const Rect& Variant::GetRect() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+bool Variant::operator == (const Variant& right) const
+{
+	if (m_type != right.m_type) { return false; }
+	switch (m_type)
+	{
+	case Lumino::VariantType_Unknown:	return true;
+	case Lumino::VariantType_Bool:		return m_bool == right.m_bool;
+	case Lumino::VariantType_Int:		return m_int == right.m_int;
+	case Lumino::VariantType_Float:		return m_float == right.m_float;
+	case Lumino::VariantType_String:	return m_string == right.m_string;
+	case Lumino::VariantType_List:		return m_valueList == right.m_valueList;
+	case Lumino::VariantType_Object:	return m_object == right.m_object;
+	case Lumino::VariantType_SizeF:		return *((SizeF*)m_sizeF) == *((SizeF*)right.m_sizeF);
+	case Lumino::VariantType_Rect:		return *((Rect*)m_rect) == *((Rect*)right.m_rect);
+	default: LN_ASSERT(0); return false;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Variant::Copy(const Variant& obj)
 {
 	Release();

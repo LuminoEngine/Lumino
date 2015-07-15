@@ -5,6 +5,9 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+
+
+
 	[2015/7/15] リストのプロパティについて
 		WPF ではコレクションは依存関係プロパティにされていない (できない？)
 		各コレクションは IAddChild を継承していない。
@@ -1264,20 +1267,28 @@ void GUIManager::BuildDefaultTheme()
 		grid1->SetTypeName(_T("Grid"));
 		scrollBar->SetVisualTreeRoot(grid1);
 
+
+		auto columns = RefPtr<UIElementFactorylist>::Create();
+
 		RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this));
 		col1->SetTypeName(_T("ColumnDefinition"));
 		col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
-		grid1->AddChild(col1);
+		columns->Add(col1);
+		//grid1->AddChild(col1);
 
 		RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this));
 		col2->SetTypeName(_T("ColumnDefinition"));
-		col1->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
-		grid1->AddChild(col2);
+		col2->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
+		columns->Add(col2);
+		//grid1->AddChild(col2);
 
 		RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this));
 		col3->SetTypeName(_T("ColumnDefinition"));
-		col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
-		grid1->AddChild(col3);
+		col3->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
+		columns->Add(col3);
+		//grid1->AddChild(col3);
+
+		grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
 
 
 		//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));

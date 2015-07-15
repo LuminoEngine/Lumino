@@ -40,7 +40,7 @@ public:
 #endif
 
 	// IAddChild
-	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }
+	virtual void AddChild(const Variant& value) { m_children->Add(value.Cast<UIElement*>()); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
 protected:

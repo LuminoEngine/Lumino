@@ -116,8 +116,8 @@ private:
 	float GetAvailableDesiredHeight() const;	///< Å¬/Å‘å‚ðl—¶‚µ‚½•‚ð•Ô‚·
 };
 
-typedef GUIObjectList<ColumnDefinition>	ColumnDefinitionList;
-typedef GUIObjectList<RowDefinition>	RowDefinitionList;
+typedef GenericVariantList<ColumnDefinition*>	ColumnDefinitionList;
+typedef GenericVariantList<RowDefinition*>		RowDefinitionList;
 
 /**
 	@brief		
@@ -132,9 +132,9 @@ public:
 	static const Property*		RowDefinitionsProperty;
 
 	static const AttachedProperty*	ColumnProperty;
-	static AttachedProperty*	ColumnSpanProperty;
-	static AttachedProperty*	RowProperty;
-	static AttachedProperty*	RowSpanProperty;
+	static const AttachedProperty*	ColumnSpanProperty;
+	static const AttachedProperty*	RowProperty;
+	static const AttachedProperty*	RowSpanProperty;
 
 public:
 	Grid(GUIManager* manager);

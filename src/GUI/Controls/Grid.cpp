@@ -135,6 +135,13 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Grid);
 LN_DEFINE_PROPERTY_LIST(Grid, ColumnDefinitionList, ColumnDefinition, ColumnDefinitionsProperty, "ColumnDefinitions", [](Grid* grid) { return grid->GetColumnDefinitions(); });
 LN_DEFINE_PROPERTY_LIST(Grid, RowDefinitionList, RowDefinition, RowDefinitionsProperty, "RowDefinitions", [](Grid* grid) { return grid->GetRowDefinitions(); });
 
+// Register attached property
+LN_DEFINE_ATTACHED_PROPERTY(Grid, ColumnProperty, "Column", 0);
+LN_DEFINE_ATTACHED_PROPERTY(Grid, ColumnSpanProperty, "ColumnSpan", 0);
+LN_DEFINE_ATTACHED_PROPERTY(Grid, RowProperty, "Row", 0);
+LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
+
+
 //class CppCoreObjectPropertyInitializer
 
 //static ::Lumino::CoreObjectProperty<Grid, int>	_ColumnProperty(
@@ -151,10 +158,10 @@ LN_DEFINE_PROPERTY_LIST(Grid, RowDefinitionList, RowDefinition, RowDefinitionsPr
 
 //LN_DEFINE_PROPERTY_2(ColumnDefinitionsProperty, "ColumnDefinitions", );
 
-const AttachedProperty*	Grid::ColumnProperty = NULL;
-AttachedProperty*	Grid::ColumnSpanProperty = NULL;
-AttachedProperty*	Grid::RowProperty = NULL;
-AttachedProperty*	Grid::RowSpanProperty = NULL;
+//const AttachedProperty*	Grid::ColumnProperty = NULL;
+//AttachedProperty*	Grid::ColumnSpanProperty = NULL;
+//AttachedProperty*	Grid::RowProperty = NULL;
+//AttachedProperty*	Grid::RowSpanProperty = NULL;
 
 //-----------------------------------------------------------------------------
 //
@@ -162,11 +169,6 @@ AttachedProperty*	Grid::RowSpanProperty = NULL;
 Grid::Grid(GUIManager* manager)
 	: Panel(manager)
 {
-	// Register attached property
-	LN_DEFINE_ATTACHED_PROPERTY(ColumnProperty,		"Column",		int, Grid, 0);
-	LN_DEFINE_ATTACHED_PROPERTY(ColumnSpanProperty,	"ColumnSpan",	int, Grid, 0);
-	LN_DEFINE_ATTACHED_PROPERTY(RowProperty,		"Row",			int, Grid, 0);
-	LN_DEFINE_ATTACHED_PROPERTY(RowSpanProperty,	"RowSpan",		int, Grid, 0);
 
 	m_columnDefinitionList.Attach(LN_NEW ColumnDefinitionList());
 	m_rowDefinitionList.Attach(LN_NEW RowDefinitionList());
@@ -184,8 +186,8 @@ Grid::~Grid()
 //-----------------------------------------------------------------------------
 void Grid::MeasureLayout(const SizeF& availableSize)
 {
-	for (auto col : *m_columnDefinitionList) { col->m_elementGroup.Clear(); col->m_desiredWidth = 0; }
-	for (auto row : *m_rowDefinitionList)	 { row->m_elementGroup.Clear(); row->m_desiredHeight = 0; }
+	//for (ColumnDefinition* col : *m_columnDefinitionList) { col->m_elementGroup.Clear(); col->m_desiredWidth = 0; }
+	//for (RowDefinition* row : *m_rowDefinitionList)	 { row->m_elementGroup.Clear(); row->m_desiredHeight = 0; }
 
 	for (auto child : *m_children)
 	{
@@ -196,21 +198,21 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 		colIdx = m_columnDefinitionList->CheckValidIndex(colIdx) ? colIdx : 0;
 		rowIdx = m_rowDefinitionList->CheckValidIndex(rowIdx)    ? rowIdx : 0;
 
-		auto col = m_columnDefinitionList->GetAt(colIdx);
-		auto row = m_rowDefinitionList->GetAt(colIdx);
+		ColumnDefinition* col = m_columnDefinitionList->IsEmpty() ? NULL : m_columnDefinitionList->GetAt(colIdx);
+		RowDefinition*    row = m_rowDefinitionList->IsEmpty() ? NULL : m_rowDefinitionList->GetAt(rowIdx);
 
-		col->m_elementGroup.Add(child);
-		row->m_elementGroup.Add(child);
+		//col->m_elementGroup.Add(child);
+		//row->m_elementGroup.Add(child);
 
 		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
-		if (col->IsAuto() || row->IsAuto())
+		if ((col == NULL || col->IsAuto()) || (row == NULL || row->IsAuto()))
 		{
 			child->MeasureLayout(availableSize);	// TODO: Measuer は常にやったほうが良いのか確認しておいたほうが良いかも
 
-			if (col->IsAuto() && Grid::GetColumnSpan(child) <= 1) {	// span が 2 以上の要素はサイズ集計に考慮しない
+			if (col != NULL && col->IsAuto() && Grid::GetColumnSpan(child) <= 1) {	// span が 2 以上の要素はサイズ集計に考慮しない
 				col->m_desiredWidth = std::max(col->m_desiredWidth, child->GetDesiredSize().Width);
 			}
-			if (row->IsAuto() && Grid::GetRowSpan(child) <= 1) {	// span が 2 以上の要素はサイズ集計に考慮しない
+			if (row != NULL && row->IsAuto() && Grid::GetRowSpan(child) <= 1) {		// span が 2 以上の要素はサイズ集計に考慮しない
 				row->m_desiredHeight = std::max(row->m_desiredHeight, child->GetDesiredSize().Height);
 			}
 		}
@@ -305,17 +307,34 @@ void Grid::ArrangeLayout(const RectF& finalLocalRect)
 		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitionList->GetCount());		// 最大値制限
 
 		// 配置先のセルで座標を確定
-		RectF rect(
-			m_columnDefinitionList->GetAt(colIdx)->m_actualOffsetX,
-			m_rowDefinitionList->GetAt(rowIdx)->m_actualOffsetY,
-			0, 0);
+		//RectF rect(
+		//	m_columnDefinitionList->GetAt(colIdx)->m_actualOffsetX,
+		//	m_rowDefinitionList->GetAt(rowIdx)->m_actualOffsetY,
+		//	0, 0);
+		RectF rect = RectF::Zero;
 
 		// Span を考慮してサイズを確定
-		for (int iCol = 0; iCol < colSpan; ++iCol) {
-			rect.Width += m_columnDefinitionList->GetAt(colIdx + iCol)->m_actualWidth;
+		if (m_columnDefinitionList->IsEmpty())
+		{
+			rect.Width = finalLocalRect.Width;
 		}
-		for (int iRow = 0; iRow < rowSpan; ++iRow) {
-			rect.Height += m_rowDefinitionList->GetAt(rowIdx + iRow)->m_actualHeight;
+		else
+		{
+			rect.X = m_columnDefinitionList->GetAt(colIdx)->m_actualOffsetX;
+			for (int iCol = 0; iCol < colSpan; ++iCol) {
+				rect.Width += m_columnDefinitionList->GetAt(colIdx + iCol)->m_actualWidth;
+			}
+		}
+		if (m_rowDefinitionList->IsEmpty())
+		{
+			rect.Height = finalLocalRect.Height;
+		}
+		else
+		{
+			rect.Y = m_rowDefinitionList->GetAt(rowIdx)->m_actualOffsetY;
+			for (int iRow = 0; iRow < rowSpan; ++iRow) {
+				rect.Height += m_rowDefinitionList->GetAt(rowIdx + iRow)->m_actualHeight;
+			}
 		}
 
 		// Arrange

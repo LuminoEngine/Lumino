@@ -8,12 +8,13 @@ namespace Lumino
 namespace GUI
 {
 
+#if 0
 /**
 	@brief		
 */
 template<class TObject>
 class GUIObjectList
-	: public CoreObjectList<TObject>
+	: public GenericVariantList<TObject>
 	, public IAddChild
 {
 public:
@@ -21,11 +22,11 @@ public:
 	virtual ~GUIObjectList() {}
 
 public:
-	/// 指定インデックスに要素を格納する
-	void SetAt(int index, TObject* item) { SetAtBase(index, item); }
+	///// 指定インデックスに要素を格納する
+	//void SetAt(int index, TObject* item) { SetAtBase(index, item); }
 
-	/// 指定インデックスの要素を取得する
-	TObject* GetAt(int index) const { return static_cast<TObject*>(m_list.GetAt(index)); }
+	///// 指定インデックスの要素を取得する
+	//TObject* GetAt(int index) const { return static_cast<TObject*>(m_list.GetAt(index)); }
 
 public:
 	// IAddChild Interface
@@ -47,7 +48,7 @@ public:
 		LN_THROW(0, InvalidOperationException);
 	}
 };
-
+#endif
 
 } // namespace GUI
 } // namespace Lumino

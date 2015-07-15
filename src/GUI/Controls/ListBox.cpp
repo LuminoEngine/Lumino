@@ -52,7 +52,7 @@ ListBoxItem::~ListBoxItem()
 //=============================================================================
 // ListBoxItemList
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList, CoreObjectList<ListBoxItem>);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList, GenericVariantList<ListBoxItem*>);
 
 //-----------------------------------------------------------------------------
 //

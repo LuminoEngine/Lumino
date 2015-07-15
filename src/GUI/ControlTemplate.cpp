@@ -65,7 +65,29 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	// プロパティを設定する
 	for (PropertyValueList::Pair& pair : m_propertyValueList)
 	{
-		obj->SetPropertyValue(pair.first, pair.second);
+		if (pair.first->IsList())/*.second.GetType() == VariantType_List)*/
+		{
+			// リストの場合は少し特殊。オブジェクトのメンバのリストは既につくられている前提で、
+			// それに対して要素を1つずつ Add していく。
+#if 1
+			VariantList* list = pair.second.GetList();
+			for (Variant& item : *list) {
+				pair.first->AddItem(obj, item);
+			}
+#else
+			Variant v = obj->GetPropertyValue(pair.first);
+			LN_THROW(v.GetType() == VariantType_List, InvalidOperationException);	// ターゲットの型は必ず List でなければならない
+			VariantList* targetList = v.GetList();
+			VariantList* list = pair.second.GetList();
+			for (Variant& item : *list) {
+				targetList->AddVariant(item);
+			}
+#endif
+		}
+		else
+		{
+			obj->SetPropertyValue(pair.first, pair.second);
+		}
 	}
 
 	UIElement* element = dynamic_cast<UIElement*>(obj);

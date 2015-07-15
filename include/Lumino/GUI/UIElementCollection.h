@@ -12,7 +12,7 @@ namespace GUI
 	@brief		
 */
 class UIElementCollection
-	: public CoreObjectList<UIElement>
+	: public GenericVariantList<UIElement*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:

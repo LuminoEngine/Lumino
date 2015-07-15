@@ -28,7 +28,7 @@ public:
 	@brief
 */
 class ListBoxItemList
-	: public CoreObjectList<ListBoxItem>
+	: public GenericVariantList<ListBoxItem*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:

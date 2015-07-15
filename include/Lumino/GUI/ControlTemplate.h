@@ -83,6 +83,8 @@ private:
 	Array<UIElementFactory*>		m_children;
 };
 
+typedef GenericVariantList<UIElementFactory*>	UIElementFactorylist;
+
 /**
 	@brief		
 	@note	ContentPresenter ‚ª•K—vB

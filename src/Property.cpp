@@ -15,8 +15,9 @@ PropertyManager::PropertyMap	PropertyManager::m_propertyMap;
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AttachedProperty* PropertyManager::RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue)
+/*AttachedProperty* */ void PropertyManager::RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue)
 {
+#if 0
 	TypedNameKey key(ownerClass, propertyName);
 	PropertyMap::iterator itr = m_propertyMap.find(key);
 	if (itr == m_propertyMap.end())
@@ -26,6 +27,7 @@ AttachedProperty* PropertyManager::RegisterAttachedProperty(TypeInfo* ownerClass
 		return prop.get();
 	}
 	return itr->second.get();
+#endif;
 }
 
 } // namespace Lumino

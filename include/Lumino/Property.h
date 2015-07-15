@@ -39,6 +39,7 @@ public:
 
 	virtual bool IsReadable() const { return false; }
 	virtual bool IsWritable() const { return false; }
+	virtual bool IsList() const { return false; }
 
 	/// 値を CoreObject の map に Variant として持つかどうか。
 	/// (よい名前が思いつかないのでとりあえずこれで)
@@ -257,6 +258,8 @@ public:
 		list->Add(value.Cast<TItem*>());
 	}
 
+	virtual bool IsList() const { return true; }
+
 private:
 	String			m_name;
 	GetterFunctor	m_getter;
@@ -327,7 +330,7 @@ private:
 class PropertyManager
 {
 public:
-	static AttachedProperty* RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue);
+	static /*AttachedProperty**/void  RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue);
 
 private:
 	class TypedNameKey
@@ -355,12 +358,25 @@ private:
 };
 
 
-#define LN_DEFINE_ATTACHED_PROPERTY(prop, name, nativeType, ownerClassType, defaultValue) \
-{ \
-	if (prop == NULL) { \
-		prop = PropertyManager::RegisterAttachedProperty(ownerClassType::GetClassTypeInfo(), _T(name), defaultValue); \
-	} \
-}
+class StaticAttachedProperty
+	: public AttachedProperty
+{
+public:
+	StaticAttachedProperty(TypeInfo* ownerClassInfo, const String& name, const Variant& defaultValue)
+		: AttachedProperty(name, defaultValue)
+	{
+		//PropertyManager::RegisterAttachedProperty(ownerClassInfo, name, defaultValue);
+	}
+};
+
+#define LN_DEFINE_ATTACHED_PROPERTY(ownerClassType, propVar, name, defaultValue) \
+	static StaticAttachedProperty _##propVar(ownerClassType::GetClassTypeInfo(), _T(name), defaultValue); \
+	const AttachedProperty* ownerClassType::propVar = &_##propVar;
+//{ \
+//	if (prop == NULL) { \
+//		prop = PropertyManager::RegisterAttachedProperty(ownerClassType::GetClassTypeInfo(), _T(name), defaultValue); \
+//	} \
+//}
 
 /// GUI 用 Set ユーティリティ
 #define LN_SET_ATTACHED_PROPERTY(element, prop, value) \
