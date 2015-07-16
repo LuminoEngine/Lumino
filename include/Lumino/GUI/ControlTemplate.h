@@ -166,6 +166,80 @@ private:
 /**
 	@brief		
 */
+class Setter
+	: public CoreObject
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	Setter();
+	Setter(const Property* prop, const Variant& value);
+	virtual ~Setter();
+
+public:
+	void SetProperty(const Property* prop) { m_property = prop; }
+	const Property* GetProperty() const { return m_property; }
+	void SetValue(const Variant& value) { m_value = value; }
+	const Variant& GetValue() const { return m_value; }
+
+private:
+	const Property*		m_property;
+	Variant				m_value;
+};
+
+typedef GenericVariantList<Setter*>		SetterList;
+
+
+/**
+	@brief		
+*/
+class TriggerBase
+	: public CoreObject
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	TriggerBase();
+	virtual ~TriggerBase();
+
+public:
+	void SetProperty(const Property* prop) { m_property = prop; }
+	const Property* GetProperty() const { return m_property; }
+	void SetValue(const Variant& value) { m_value = value; }
+	const Variant& GetValue() const { return m_value; }
+
+private:
+	const Property*		m_property;
+	Variant				m_value;
+};
+
+/**
+	@brief		
+*/
+class Style
+	: public CoreObject
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	Style();
+	virtual ~Style();
+
+public:
+	void SetTargetType();
+	TypeInfo* GetTargetType();
+	void SetBasedOn(Style* style) { m_baseStyle = style; }
+	Style* GetBasedOn() const { return m_baseStyle; }
+
+	SetterList* GetSetters() const { return m_setterList; }
+
+	//Triggers
+
+private:
+	RefPtr<Style>		m_baseStyle;
+	RefPtr<SetterList>	m_setterList;
+};
+
+/**
+	@brief		
+*/
 class ResourceDictionary
 	: public CoreObject
 {
