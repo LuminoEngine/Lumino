@@ -255,6 +255,7 @@ public:
 	{
 		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
 		TList* list = m_getter(instance);
+		// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
 		list->Add(value.Cast<TItem*>());
 	}
 

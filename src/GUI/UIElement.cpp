@@ -343,22 +343,44 @@ bool UIElement::OnEvent(EventType type, EventArgs* args)
 //-----------------------------------------------------------------------------
 void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
-	if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
-		m_combinedLocalResource->Combine(parent, m_localResource);
-	}
-	else {
-		LN_REFOBJ_SET(m_combinedLocalResource, parent);
-	}
-	OnApplyTemplate(m_combinedLocalResource);
+	// 自分のテンプレートを更新する必要がある場合
+	if (m_templateModified)
+	{
+		if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
+			m_combinedLocalResource->Combine(parent, m_localResource);
+		}
+		else {
+			LN_REFOBJ_SET(m_combinedLocalResource, parent);
+		}
+		// ControlTemplate や DataTemplate はこのオーバーライドで Apply される
+		OnApplyTemplate(m_combinedLocalResource);
 
-	// 子要素
-	//if (m_templateChild != NULL) {
-	//	m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
-	//}
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+		m_templateModified = false;			// 自分のテンプレートを更新した
+		m_childTemplateModified = true;		// 自分を更新したら、子も更新する必要がある
+	}
+
+	// 子要素のテンプレートを更新する必要がある場合 (パフォーマンスのため)
+	if (m_childTemplateModified)
+	{
+		LN_FOREACH(UIElement* child, m_visualChildren) {
+			child->ApplyTemplate();
+			//child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+		}
+		m_childTemplateModified = false;	// 子要素のテンプレートも更新した
 	}
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//void UIElement::UpdateTemplateHierarchy()
+//{
+//	//// 自分のテンプレート更新が必要
+//	//if (m_templateModified)
+//	//{
+//	//	ApplyTemplate();
+//	//}
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -483,7 +505,7 @@ void Decorator::SetChild(UIElement* element)
 	if (m_child != NULL)
 	{
 		m_child->SetParent(this);
-		m_child->ApplyTemplate();	// 子要素のテーマを直ちに更新
+		m_child->SetTemplateModified(true);
 	}
 }
 
@@ -670,19 +692,20 @@ void ContentPresenter::SetContent(UIElement* content)
 {
 	m_content = content;
 	m_visualChildren.Add(m_content);	// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
+	m_content->SetParent(this);
 }
 
 #if 1
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ContentPresenter::ApplyTemplateHierarchy(CombinedLocalResource* parent)
-{
-	UIElement::ApplyTemplateHierarchy(parent);
-	if (m_content != NULL) {
-		m_content->ApplyTemplateHierarchy(m_combinedLocalResource);
-	}
-}
+//void ContentPresenter::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+//{
+//	UIElement::ApplyTemplateHierarchy(parent);
+//	if (m_content != NULL) {
+//		m_content->ApplyTemplateHierarchy(m_combinedLocalResource);
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -804,30 +827,39 @@ Control::~Control()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+void Control::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	// ローカルリソースを更新する
-	if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
-		m_combinedLocalResource->Combine(parent, m_localResource);
-	}
-	else {
-		LN_REFOBJ_SET(m_combinedLocalResource, parent);
-	}
-
 	// ControlTemplate の適用処理
 	ControlTemplate* t;
-	if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
+	if (localResource->TryGetControlTemplate(GetTypeID(), &t)) {
 		t->Apply(this);
-	}
-
-	OnApplyTemplate(m_combinedLocalResource);
-
-	// 子要素
-	if (m_templateChild != NULL) {
-		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
 	}
 }
 
+//void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+//{
+//	// ローカルリソースを更新する
+//	if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
+//		m_combinedLocalResource->Combine(parent, m_localResource);
+//	}
+//	else {
+//		LN_REFOBJ_SET(m_combinedLocalResource, parent);
+//	}
+//
+//	// ControlTemplate の適用処理
+//	ControlTemplate* t;
+//	if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
+//		t->Apply(this);
+//	}
+//
+//	OnApplyTemplate(m_combinedLocalResource);
+//
+//	// 子要素
+//	if (m_templateChild != NULL) {
+//		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
+//	}
+//}
+//
 
 //=============================================================================
 // ContentControl
@@ -868,21 +900,17 @@ void ContentControl::SetContent(Variant value)
 		if (element != NULL) {
 			m_childElement = element;
 		}
+		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 	}
 
 	//m_content.SetFloat(0);
 
-	if (m_childElement != NULL)
+	// m_contentPresenter があればこの時点でセットしてしまう
+	if (m_childElement != NULL &&
+		m_contentPresenter != NULL)
 	{
-		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
-		//m_childElement->SetParent(this);
-
 		m_contentPresenter->SetContent(m_childElement);
-
-		// 子要素のテーマを直ちに更新
-		if (m_combinedLocalResource != NULL) {
-			m_childElement->ApplyTemplate();
-		}
+		m_childElement->SetTemplateModified(true);
 	}
 }
 
@@ -894,6 +922,13 @@ void ContentControl::PollingTemplateChildCreated(UIElement* element)
 	ContentPresenter* presenter = dynamic_cast<ContentPresenter*>(element);
 	if (presenter != NULL) {
 		m_contentPresenter = presenter;
+	}
+
+	// m_childElement があればこの時点でセットしてしまう
+	if (m_childElement != NULL &&
+		m_contentPresenter != NULL)
+	{
+		m_contentPresenter->SetContent(m_childElement);
 	}
 }
 

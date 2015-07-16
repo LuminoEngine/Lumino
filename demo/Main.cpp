@@ -19,13 +19,10 @@ int main()
 #endif
 	try
 	{
-		std::vector<int> aa = { 1, 2 };
-		std::vector<int>* aa2 = new std::vector<int>{ aa[1], 2 };
-
 		ApplicationConfigData appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		RefPtr<Application> app(Application::Create(appData));
-		
+
 		//RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
 		GUI::RootPane* workbench1 = app->GetGUIManager()->GetDefaultRootPane();
 		//workbench1->SetSize(SizeF(640, 480));
@@ -122,6 +119,7 @@ int main()
 			state.Blend = Graphics::BlendMode_Alpha;
 			r->SetRenderState(state);
 
+			workbench1->ApplyTemplate();
 			workbench1->UpdateLayout();
 			workbench1->UpdateTransformHierarchy();
 			workbench1->Render();

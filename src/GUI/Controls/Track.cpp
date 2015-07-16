@@ -268,7 +268,7 @@ void Track::UpdateComponent(Control* oldValue, Control* newValue)
 	}
 	if (newValue != NULL) {
 		newValue->SetParent(this);
-		newValue->ApplyTemplate();
+		newValue->SetTemplateModified(true);
 	}
 }
 

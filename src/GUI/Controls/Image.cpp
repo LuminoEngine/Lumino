@@ -111,8 +111,8 @@ SizeF Image::ArrangeOverride(const SizeF& finalSize)
 	SizeF size = UIElement::ArrangeOverride(finalSize);
 	if (m_stretch == Stretch::None)
 	{
-		size.Width = m_internalSrcRect.Width;
-		size.Height = m_internalSrcRect.Height;
+		size.Width = (float)m_internalSrcRect.Width;
+		size.Height = (float)m_internalSrcRect.Height;
 	}
 	return size;
 }

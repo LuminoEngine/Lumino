@@ -43,6 +43,118 @@ void UIElementFactory::AddChild(UIElementFactory* child)
 	}
 }
 
+#if 0
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+CoreObject* UIElementFactory::CreateInstance()
+{
+	CoreObject* obj = m_manager->CreateObject(m_targetTypeFullName);
+	if (obj == NULL) {
+		// TODO: 
+		LN_THROW(0, InvalidOperationException);
+	}
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElementFactory::BuildInstance(CoreObject* obj, UIElement* rootLogicalParent)
+{
+	// プロパティを設定する
+	for (PropertyValueList::Pair& pair : m_propertyValueList)
+	{
+		if (pair.first->IsList())/*.second.GetType() == VariantType_List)*/
+		{
+			// リストの場合は少し特殊。オブジェクトのメンバのリストは既につくられている前提で、
+			// それに対して要素を1つずつ Add していく。
+#if 1
+			VariantList* list = pair.second.GetList();
+			for (Variant& item : *list)
+			{
+				UIElementFactory* factory = NULL;
+				// 設定したい値がもし Factory だった場合はインスタンスを作って設定する
+				if (item.GetType() == VariantType_Object &&
+					(factory = dynamic_cast<UIElementFactory*>(item.GetObject())) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
+				{
+					RefPtr<CoreObject> v(factory->CreateInstance());	// 作って
+					pair.first->AddItem(obj, v);						// 追加して (ローカルリソース更新)
+					factory->BuildInstance(v, rootLogicalParent);		// プロパティ設定
+				}
+				else {
+					pair.first->AddItem(obj, item);
+				}
+			}
+#else
+			Variant v = obj->GetPropertyValue(pair.first);
+			LN_THROW(v.GetType() == VariantType_List, InvalidOperationException);	// ターゲットの型は必ず List でなければならない
+			VariantList* targetList = v.GetList();
+			VariantList* list = pair.second.GetList();
+			for (Variant& item : *list) {
+				targetList->AddVariant(item);
+			}
+#endif
+		}
+		else
+		{
+			Variant& item = pair.second;
+			UIElementFactory* factory = NULL;
+				
+			// 設定したい値がもし Factory だった場合はインスタンスを作って設定する
+			if (item.GetType() == VariantType_Object &&
+				(factory = dynamic_cast<UIElementFactory*>(item.GetObject())) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
+			{
+				RefPtr<CoreObject> v(factory->CreateInstance());	// 作って
+				pair.first->AddItem(obj, v);						// 追加して (ローカルリソース更新)
+				factory->BuildInstance(v, rootLogicalParent);		// プロパティ設定
+			}
+			else {
+				obj->SetPropertyValue(pair.first, item);
+			}
+		}
+	}
+
+	UIElement* element = dynamic_cast<UIElement*>(obj);
+	if (element != NULL)
+	{
+		LN_FOREACH(PropertyInfoList::Pair& pair, m_propertyInfoList)
+		{
+			if (pair.second.Kind == PropertyKind_TemplateBinding)
+			{
+				const Property* prop = pair.first;//GetTypeInfo(element)->FindProperty(pair.first);
+				//if (prop == NULL) {
+				//	LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
+				//}
+				element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
+			}
+			else {
+				LN_THROW(0, NotImplementedException);
+			}
+		}
+
+		//for (int i = 0; i < m_propertyInfoList.GetCount(); ++i)
+		//{
+
+		//	
+		//}
+		//
+		// 子の処理
+		LN_FOREACH(UIElementFactory* factory, m_children) {
+			RefPtr<CoreObject> e(factory->CreateInstance());	// 作って
+			element->AddChild(e);								// 追加して (ローカルリソース更新)
+			factory->BuildInstance(e, rootLogicalParent);		// プロパティ設定
+		}
+
+		rootLogicalParent->PollingTemplateChildCreated(element);
+	}
+	else
+	{
+		// ContentElement はここに来る
+	}
+}
+#endif
+#if 1
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -72,7 +184,15 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 #if 1
 			VariantList* list = pair.second.GetList();
 			for (Variant& item : *list) {
-				pair.first->AddItem(obj, item);
+				if (item.GetType() == VariantType_Object &&
+					dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
+				{
+					RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent));
+					pair.first->AddItem(obj, v);
+				}
+				else {
+					pair.first->AddItem(obj, item);
+				}
 			}
 #else
 			Variant v = obj->GetPropertyValue(pair.first);
@@ -86,7 +206,16 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		}
 		else
 		{
-			obj->SetPropertyValue(pair.first, pair.second);
+			Variant& item = pair.second;
+			if (item.GetType() == VariantType_Object &&
+				dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
+			{
+				RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent));
+				pair.first->AddItem(obj, v);
+			}
+			else {
+				obj->SetPropertyValue(pair.first, item);
+			}
 		}
 	}
 
@@ -129,6 +258,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 
 	return obj;
 }
+#endif
 
 //=============================================================================
 // ControlTemplate
@@ -158,12 +288,24 @@ void ControlTemplate::Apply(Control* control)
 	control->SetTemplateChild(NULL);
 
 	if (m_visualTreeRoot != NULL) {
+#if 0
+		// まずインスタンスを作成する
+		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance());
+
+		// 次に親要素に追加する (ローカルリソースを更新する)
+		UIElement* element = dynamic_cast<UIElement*>(obj.GetObjectPtr());
+		if (element != NULL) { control->SetTemplateChild(element); }
+
+		// 最後にプロパティの設定や孫要素の作成を行う
+		m_visualTreeRoot->BuildInstance(m_visualTreeRoot, control);
+#else
 		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance(control));
 		UIElement* element = dynamic_cast<UIElement*>(obj.GetObjectPtr());
 		if (element != NULL)
 		{
 			control->SetTemplateChild(element);
 		}
+#endif
 	}
 
 	// プロパティ適用
@@ -172,11 +314,23 @@ void ControlTemplate::Apply(Control* control)
 		bool isElement = false;
 		if (prop.second.GetType() == VariantType_Object)
 		{
-			UIElementFactory* factory = static_cast<UIElementFactory*>(prop.second.GetObject());
+			UIElementFactory* factory = dynamic_cast<UIElementFactory*>(prop.second.GetObject());
 			if (factory != NULL)
 			{
+#if 0
+				// まずインスタンスを作成する
+				RefPtr<CoreObject> element(factory->CreateInstance());
+
+				// 次に親要素に追加する (ローカルリソースを更新する)
+				control->SetPropertyValue(prop.first, element);
+
+				// 最後にプロパティの設定や孫要素の作成を行う
+				factory->BuildInstance(element, control);
+#else
 				RefPtr<CoreObject> element(factory->CreateInstance(control));
 				control->SetPropertyValue(prop.first, element);
+#endif
+
 				isElement = true;
 			}
 		}
@@ -212,7 +366,25 @@ void DataTemplate::Apply(Control* control)
 {
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
-	if (m_visualTreeRoot != NULL) {
+	if (m_visualTreeRoot != NULL)
+	{
+#if 0
+		// まずインスタンスを作成する
+		CoreObject* obj = m_visualTreeRoot->CreateInstance();
+
+		// 次に親要素に追加する (ローカルリソースを更新する)
+		UIElement* element = dynamic_cast<UIElement*>(obj);
+		if (element != NULL)
+		{
+			control->SetTemplateChild(element);
+		}
+		else {
+			// TODO: ここに来たときにメモリリークする
+		}
+
+		// 最後にプロパティの設定や孫要素の作成を行う
+		m_visualTreeRoot->BuildInstance(element, control);
+#else
 		CoreObject* obj = m_visualTreeRoot->CreateInstance(control);
 		UIElement* element = dynamic_cast<UIElement*>(obj);
 		if (element != NULL)
@@ -222,6 +394,7 @@ void DataTemplate::Apply(Control* control)
 		else {
 			// TODO: ここに来たときにメモリリークする
 		}
+#endif
 	}
 
 	// TODO: プロパティ適用等も。

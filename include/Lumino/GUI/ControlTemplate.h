@@ -56,7 +56,14 @@ public:
 	void AddChild(UIElementFactory* child);
 
 
+	// 以下2つはもともと1つだったが、子要素をビルドする前に親要素に追加し、ローカルリソースを更新する必要があったため分けた。
+	// それだけなら分ける必要も無い気がするが、親要素によって追加先が異なる。
+	// ルートなら SetTemplateChild()、プロパティなら SetValue()、リストなら AddItem() 等、色々ある。
+	//CoreObject* CreateInstance();
+	//void BuildInstance(CoreObject* element, UIElement* rootLogicalParent);
+
 	CoreObject* CreateInstance(UIElement* rootLogicalParent);
+
 
 private:
 	enum PropertyKind

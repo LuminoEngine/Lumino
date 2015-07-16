@@ -171,9 +171,17 @@ public:
 
 	/// 現在のテンプレートからビジュアルツリーを再構築します。
 	/// この関数は必要なタイミングでレイアウトシステムから呼び出されます。通常、明示的に呼び出す必要はありません。
+	///		というか、呼び出しちゃダメ。必ずルートから再帰的に更新しないと、もし親がまだ ApplyTemplate() してない状態でこれを呼ぶと
+	///		ローカルリソースが正しく更新されない。
+	///		TODO: もしかしたら、SetParent した瞬間にローカルリソースを更新したほうが良いかも？
+	///		そうすればいつ ApplyTemplate() を呼び出しても良いが… 需要は無いか。
 	void ApplyTemplate();
 
-
+	/// internal  別コントロールの子に追加されたとき等に true がセットされる。
+	/// パフォーマンス的な理由もあるが、本来 ApplyTemplate するべきタイミングでは親要素のローカルリソースが確定していないことがあるため。
+	/// true がセットされたら、親へ伝播していく。
+	void SetChildTemplateModified(bool modified) { m_childTemplateModified = modified; if (modified && m_parent != NULL) { m_parent->SetChildTemplateModified(true); } }
+	void SetTemplateModified(bool modified) { m_templateModified = modified; if (modified && m_parent != NULL) { m_parent->SetChildTemplateModified(true); } }
 
 public:
 	const SizeF& GetDesiredSize() const {
@@ -211,6 +219,7 @@ protected:
 	//friend class Panel;
 public:	// internal
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	void UpdateTemplateHierarchy();	// こちらは modified マークされている要素のテンプレートを更新する
 
 	GUIManager* GetManager() const { return m_manager; }
 
@@ -377,6 +386,9 @@ private:
 	/// 例えば Button にテンプレートを適用すると、Button よりしたのビジュアル要素.m_rootLogicalParent はすべて Button を指す。
 	UIElement*		m_rootLogicalParent;
 
+	bool			m_childTemplateModified;	///< 子要素のテンプレートを更新するべきか
+	bool			m_templateModified;
+
 protected:
 
 	RefPtr<UIElement>	m_templateChild;
@@ -488,7 +500,7 @@ public:
 
 protected:
 #if 1
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 	virtual void Render();
@@ -535,7 +547,8 @@ public:
 
 protected:
 	// override UIElement
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
+	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 	//friend class UIElementFactory;
 

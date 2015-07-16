@@ -34,6 +34,19 @@ Panel::~Panel()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Panel::AddChild(const Variant& value)
+{
+	UIElement* item = value.Cast<UIElement*>();	// TODO: Cast() 無いで型チェックしたほうが良いかも
+	LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
+	m_children->Add(item);
+	m_visualChildren.Add(item);
+	item->SetParent(this);
+	item->SetTemplateModified(true);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Panel::Children_ItemAdded(UIElement* item)
 {
 	// 子要素の VisualTree を更新しなおす
@@ -44,7 +57,8 @@ void Panel::Children_ItemAdded(UIElement* item)
 		// TODO:親要素に追加するときの共通処理だから、UIElementList にまとめていいかも
 		m_visualChildren.Add(item);
 		item->SetParent(this);
-		item->ApplyTemplate();
+		item->SetTemplateModified(true);
+		//item->ApplyTemplate();
 
 
 		//m_visualChildren.Add(item);
