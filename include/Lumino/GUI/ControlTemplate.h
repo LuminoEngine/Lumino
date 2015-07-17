@@ -200,11 +200,31 @@ public:
 	TriggerBase();
 	virtual ~TriggerBase();
 
+public:	// internal
+	/// routedEvent : 例えばサブクラス Trigger は PropertyChangedEvent を受け取ったら target にプロパティをセットする
+	/// tareget : 
+	virtual void Invoke(RoutedEvent* routedEvent, CoreObject* tareget) = 0;
+};
+
+/**
+	@brief		
+*/
+class Trigger
+	: public TriggerBase
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	Trigger();
+	virtual ~Trigger();
+
 public:
 	void SetProperty(const Property* prop) { m_property = prop; }
 	const Property* GetProperty() const { return m_property; }
 	void SetValue(const Variant& value) { m_value = value; }
 	const Variant& GetValue() const { return m_value; }
+
+protected:
+	virtual void Invoke(RoutedEvent* routedEvent, CoreObject* tareget);
 
 private:
 	const Property*		m_property;
