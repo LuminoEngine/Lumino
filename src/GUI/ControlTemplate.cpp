@@ -249,7 +249,9 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 			element->AddChild(e);
 		}
 		
-		rootLogicalParent->PollingTemplateChildCreated(element);
+		if (rootLogicalParent != NULL) {
+			rootLogicalParent->PollingTemplateChildCreated(element);
+		}
 	}
 	else
 	{
@@ -309,6 +311,7 @@ void ControlTemplate::Apply(Control* control)
 	}
 
 	// プロパティ適用
+#if 0
 	for (auto prop : m_propertyValueList)
 	{
 		bool isElement = false;
@@ -339,9 +342,11 @@ void ControlTemplate::Apply(Control* control)
 			control->SetPropertyValue(prop.first, prop.second);
 		}
 	}
+#endif
 }
 
 
+#if 0
 //=============================================================================
 // DataTemplate
 //=============================================================================
@@ -399,6 +404,7 @@ void DataTemplate::Apply(Control* control)
 
 	// TODO: プロパティ適用等も。
 }
+#endif
 
 
 //=============================================================================
@@ -485,8 +491,13 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Style, CoreObject);
 //
 //-----------------------------------------------------------------------------
 Style::Style()
+	: m_targetType(NULL)
+	, m_baseStyle()
+	, m_setterList()
+	, m_triggerList()
 {
-
+	m_setterList.Attach(LN_NEW SetterList());
+	m_triggerList.Attach(LN_NEW TriggerList());
 }
 
 //-----------------------------------------------------------------------------
@@ -494,7 +505,29 @@ Style::Style()
 //-----------------------------------------------------------------------------
 Style::~Style()
 {
+}
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Style::Apply(UIElement* element)
+{
+	for (Setter* setter : *m_setterList)
+	{
+		const Property* prop = setter->GetProperty();
+		const Variant& value = setter->GetValue();
+
+		if (value.GetType() == VariantType_Object &&
+			dynamic_cast<UIElementFactory*>(value.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
+		{
+			// InitializeComponent() も呼ばれる
+			RefPtr<CoreObject> v(static_cast<UIElementFactory*>(value.GetObject())->CreateInstance(NULL));
+			element->SetPropertyValue(prop, v);
+		}
+		else {
+			element->SetPropertyValue(prop, value);
+		}
+	}
 }
 
 //=============================================================================
@@ -515,9 +548,13 @@ ResourceDictionary::~ResourceDictionary()
 	LN_FOREACH(ItemPair p, m_items) {
 		p.second->Release();
 	}
-	LN_FOREACH(ControlTemplatePair p, m_controlTemplateMap) {
-		p.second->Release();
+	//LN_FOREACH(ControlTemplatePair p, m_controlTemplateMap) {
+	//	p.second->Release();
+	//}
+	LN_FOREACH(Style* p, m_styleList) {
+		p->Release();
 	}
+	//printf("");
 }
 
 //-----------------------------------------------------------------------------
@@ -547,25 +584,40 @@ void ResourceDictionary::AddItem(const String& key, CoreObject* obj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool ResourceDictionary::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
+Style* ResourceDictionary::FindStyle(TypeInfo* type)
 {
-	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return false; }
-	ControlTemplateMap::iterator itr = m_controlTemplateMap.find(fullTypeName);
-	if (itr != m_controlTemplateMap.end()) {
-		*outTemplate = itr->second;
-		return true;
+	Array<Style*>::iterator itr =
+		std::find_if(m_styleList.begin(), m_styleList.end(), [type](Style* style){ return style->GetTargetType() == type; });
+	if (itr != m_styleList.end()) {
+		return *itr;
 	}
-	return false;
+	return NULL;
 }
+//bool ResourceDictionary::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
+//{
+//	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return false; }
+//	ControlTemplateMap::iterator itr = m_controlTemplateMap.find(fullTypeName);
+//	if (itr != m_controlTemplateMap.end()) {
+//		*outTemplate = itr->second;
+//		return true;
+//	}
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ResourceDictionary::AddControlTemplate(ControlTemplate* outTemplate)
+//void ResourceDictionary::AddControlTemplate(ControlTemplate* outTemplate)
+//{
+//	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return; }
+//	m_controlTemplateMap[outTemplate->GetTargetType()] = outTemplate;
+//	outTemplate->AddRef();
+//}
+void ResourceDictionary::AddStyle(Style* style)
 {
-	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return; }
-	m_controlTemplateMap[outTemplate->GetTargetType()] = outTemplate;
-	outTemplate->AddRef();
+	LN_VERIFY_RETURN(style != NULL);
+	m_styleList.Add(style);
+	style->AddRef();
 }
 
 //=============================================================================
@@ -614,17 +666,34 @@ CoreObject* CombinedLocalResource::GetItem(const String& key)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool CombinedLocalResource::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
+Style* CombinedLocalResource::FindStyle(TypeInfo* type)
 {
 	// local 優先
-	if (m_local != NULL && m_local->TryGetControlTemplate(fullTypeName, outTemplate)) {
-		return true;
+	if (m_local != NULL)
+	{
+		Style* style = m_local->FindStyle(type);
+		if (style != NULL) { return style; }
 	}
-	if (m_parent != NULL && m_parent->TryGetControlTemplate(fullTypeName, outTemplate)) {
-		return true;
+	// parent
+	if (m_parent != NULL)
+	{
+		Style* style = m_parent->FindStyle(type);
+		if (style != NULL) { return style; }
 	}
-	return false;
+	return NULL;
 }
+
+//bool CombinedLocalResource::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
+//{
+//	// local 優先
+//	if (m_local != NULL && m_local->TryGetControlTemplate(fullTypeName, outTemplate)) {
+//		return true;
+//	}
+//	if (m_parent != NULL && m_parent->TryGetControlTemplate(fullTypeName, outTemplate)) {
+//		return true;
+//	}
+//	return false;
+//}
 
 } // namespace GUI
 } // namespace Lumino

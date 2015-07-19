@@ -39,6 +39,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollBar);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ScrollBar* ScrollBar::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ScrollBar>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ScrollBar::ScrollBar(GUIManager* manager)
 	: Control(manager)
 {

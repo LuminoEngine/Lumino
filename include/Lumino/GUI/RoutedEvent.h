@@ -1,6 +1,7 @@
 
 #pragma once
 #include <functional>
+#include "EventArgs.h"
 
 namespace Lumino
 {

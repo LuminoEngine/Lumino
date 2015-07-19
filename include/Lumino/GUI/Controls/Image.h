@@ -28,6 +28,8 @@ public:
 	static const Property*	SourceRectProperty;
 
 public:
+	static Image* Create(GUIManager* manager);
+
 	Image(GUIManager* manager);
 	virtual ~Image();
 

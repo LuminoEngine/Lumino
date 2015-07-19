@@ -24,6 +24,8 @@ public:
 	// button->SetCommand(Window.CloseCommand) Ç∆Ç©ÇµÇΩÇ¢ÅB
 
 public:
+	static ScrollBar* Create(GUIManager* manager);
+
 	ScrollBar(GUIManager* manager);
 	virtual ~ScrollBar();
 

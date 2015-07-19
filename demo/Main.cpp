@@ -101,7 +101,7 @@ int main()
 		image1->SetSourceRect(Rect(64, 64, 16, 16));
 		workbench1->SetContent(image1);
 #endif
-		RefPtr<GUI::ScrollBar> scrollBar1(LN_NEW GUI::ScrollBar(app->GetGUIManager()));
+		RefPtr<GUI::ScrollBar> scrollBar1 = GUI::ScrollBar::Create(app->GetGUIManager());//(LN_NEW GUI::ScrollBar(app->GetGUIManager()));
 		workbench1->SetContent(scrollBar1);
 
 

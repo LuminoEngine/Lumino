@@ -2,6 +2,7 @@
 #pragma once
 #include <map>
 #include "Common.h"
+#include "RoutedEvent.h"
 #include "../Variant.h"
 
 namespace Lumino
@@ -61,7 +62,7 @@ public:
 	// ルートなら SetTemplateChild()、プロパティなら SetValue()、リストなら AddItem() 等、色々ある。
 	//CoreObject* CreateInstance();
 	//void BuildInstance(CoreObject* element, UIElement* rootLogicalParent);
-
+	// Setter 経由の場合は NULL が渡される。
 	CoreObject* CreateInstance(UIElement* rootLogicalParent);
 
 
@@ -106,8 +107,11 @@ public:
 	void SetTargetType(const String& fullTypeName) { m_targetType = fullTypeName; }
 	const String&  GetTargetType() const { return m_targetType; }
 
-	void SetPropertyValue(const Property* prop, const Variant& value) { m_propertyValueList.SetValue(prop, value); }
-	Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
+	//void SetPropertyValue(const Property* prop, const Variant& value)
+	//{
+	//	m_propertyValueList.SetValue(prop, value);
+	//}
+	//Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
 	//void SetPropertyValue(const String& propertyName, const Variant& value) { m_propertyValueList.SetValue(propertyName, value); }
 	//Variant GetPropertyValue(const String& propertyName) const { return m_propertyValueList.GetValue(propertyName); }
 
@@ -117,14 +121,14 @@ public:
 	void Apply(Control* control);
 
 private:
-	typedef SortedArray<const Property*, Variant>	PropertyValueList;
+	//typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
 	String						m_targetType;		///< 対象コントロール名 ("Button" 等)
-	PropertyValueList			m_propertyValueList;
+	//PropertyValueList			m_propertyValueList;
 	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< テンプレートの VisualTree のルートノード
 };
 
-
+#if 0
 /**
 	@brief
 */
@@ -145,6 +149,7 @@ private:
 
 	// WPF ではデータの型とかも持つ。とりあえず ControlTemplate とは分けておく。
 };
+#endif
 
 /**
 	@brief		
@@ -206,6 +211,8 @@ public:	// internal
 	virtual void Invoke(RoutedEvent* routedEvent, CoreObject* tareget) = 0;
 };
 
+typedef GenericVariantList<TriggerBase*>		TriggerList;
+
 /**
 	@brief		
 */
@@ -243,18 +250,29 @@ public:
 	virtual ~Style();
 
 public:
-	void SetTargetType();
-	TypeInfo* GetTargetType();
+	void SetTargetType(TypeInfo* type) { m_targetType = type; }
+	TypeInfo* GetTargetType() const { return m_targetType; }
 	void SetBasedOn(Style* style) { m_baseStyle = style; }
 	Style* GetBasedOn() const { return m_baseStyle; }
 
 	SetterList* GetSetters() const { return m_setterList; }
+	TriggerList* GetTriggers() const { return m_triggerList; }
 
-	//Triggers
+	// ユーティリティ
+	void AddSetter(const Property* prop, const Variant& value) 
+	{
+		auto setter = RefPtr<Setter>::Create(prop, value);
+		m_setterList->Add(setter);
+	}
+
+	/// 指定した要素にこのスタイルを適用する
+	void Apply(UIElement* element);
 
 private:
+	TypeInfo*			m_targetType;
 	RefPtr<Style>		m_baseStyle;
 	RefPtr<SetterList>	m_setterList;
+	RefPtr<TriggerList>	m_triggerList;
 };
 
 /**
@@ -273,18 +291,24 @@ public:
 
 
 	/// x:key が無く、TargetType でターゲットが指定されている ControlTemplate はこれで検索する (みつからなければ NULL)
-	bool TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate);
+	//bool TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate);
+	Style* FindStyle(TypeInfo* type);
 
-	void AddControlTemplate(ControlTemplate* outTemplate);
+	//void AddControlTemplate(ControlTemplate* outTemplate);
+	void AddStyle(Style* style);
 
 private:
 	typedef std::map<String, CoreObject*>	ItemMap;
 	typedef std::pair<String, CoreObject*> ItemPair;
 	ItemMap	m_items;
 
-	typedef std::map<String, ControlTemplate*>	ControlTemplateMap;
-	typedef std::pair<String, ControlTemplate*>	ControlTemplatePair;
-	ControlTemplateMap	m_controlTemplateMap;
+	//typedef std::map<String, ControlTemplate*>	ControlTemplateMap;
+	//typedef std::pair<String, ControlTemplate*>	ControlTemplatePair;
+	//ControlTemplateMap	m_controlTemplateMap;
+
+	//typedef std::map<TypeInfo*, Style*>	StyleMap;
+	//StyleMap	m_styleMap;
+	Array<Style*>	m_styleList;	///< この ResourceDictionary に登録されている Style (map にはしない。TargetType が変わる可能性があるので)
 };
 	
 /// UIElement は親 UIElement に追加れた時、親の CombinedLocalResource と
@@ -301,7 +325,8 @@ public:
 	void Combine(CombinedLocalResource* parent, ResourceDictionary* local);
 
 	CoreObject* GetItem(const String& key);
-	bool TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate);
+	Style* FindStyle(TypeInfo* type);
+	//bool TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate);
 
 public:
 	CombinedLocalResource*	m_parent;

@@ -31,6 +31,17 @@ EventID		Thumb::DragCanceledEvent(_T("DragCanceled"));
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Thumb* Thumb::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<Thumb>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Thumb::Thumb(GUIManager* manager)
 	: Control(manager)
 	, m_isDragging(false)
@@ -139,6 +150,17 @@ void Thumb::Handler_MouseUp(MouseEventArgs* e)
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ThumbChrome, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ThumbChrome);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ThumbChrome* ThumbChrome::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ThumbChrome>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
 
 //-----------------------------------------------------------------------------
 //

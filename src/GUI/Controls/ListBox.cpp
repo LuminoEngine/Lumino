@@ -79,6 +79,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxChrome);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ListBoxChrome* ListBoxChrome::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ListBoxChrome>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ListBoxChrome::ListBoxChrome(GUIManager* manager)
 	: Decorator(manager)
 	, m_frameWidth(8)

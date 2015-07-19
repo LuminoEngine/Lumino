@@ -28,6 +28,8 @@ public:
 	static const Property*	IncreaseButtonProperty;	///< 値を増加させる Button コントロール
 
 public:
+	static Track* Create(GUIManager* manager);
+
 	Track(GUIManager* manager);
 	virtual ~Track();
 
@@ -80,7 +82,7 @@ public:
 	float GetViewportSize() const { return m_viewportSize; }
 
 protected:
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 	virtual SizeF MeasureOverride(const SizeF& availableSize);

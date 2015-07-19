@@ -56,6 +56,8 @@ public:
 	//static const String	FrameWidthProperty;		///< FrameWidth プロパティの識別子
 
 public:
+	static ListBoxChrome* Create(GUIManager* manager);
+
 	ListBoxChrome(GUIManager* manager);
 	virtual ~ListBoxChrome();
 

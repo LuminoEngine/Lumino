@@ -9,6 +9,7 @@
 #include "DependencyObject.h"
 #include "BitmapBrush.h"	// for button
 #include "RoutedEvent.h"
+#include "ControlTemplate.h"
 
 #define LN_UI_ELEMENT_SUBCLASS_DECL(subClassName) \
 public: \
@@ -210,15 +211,19 @@ public:	// internal
 	void SetParent(UIElement* parent) { m_parent = parent; }
 	//virtual void AddChildToVisualTree(UIElement* element) { LN_THROW(0, InvalidOperationException); }
 
+	// コンストラクタの後呼び出す。
+	void InitializeComponent();
+
 protected:
 	virtual const String& GetTypeID() const = 0;
+
 
 	//friend class Decorator;
 	//friend class Control;
 	//friend class ContentControl;
 	//friend class Panel;
 public:	// internal
-	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+	virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
 	void UpdateTemplateHierarchy();	// こちらは modified マークされている要素のテンプレートを更新する
 
 	GUIManager* GetManager() const { return m_manager; }
@@ -229,6 +234,8 @@ private:
 	friend class DataTemplate;
 	void SetTemplateChild(UIElement* child);
 	//virtual void AddVisualChild(UIElement* child);	///< AddChild() は論理ツリーへの追加、AddVisualChild() はビジュアルツリーへの追加。
+
+	void UpdateLocalResource();
 protected:
 	virtual void PollingTemplateChildCreated(UIElement* element) {}
 
@@ -451,6 +458,8 @@ public:
 	static const Property*	FrameWidthProperty;		///< FrameWidth プロパティの識別子
 
 public:
+	static ButtonChrome* Create(GUIManager* manager);
+
 	ButtonChrome(GUIManager* manager);
 	virtual ~ButtonChrome();
 
@@ -493,6 +502,8 @@ class ContentPresenter
 public:
 
 public:
+	static ContentPresenter* Create(GUIManager* manager);
+
 	ContentPresenter(GUIManager* manager);
 	virtual ~ContentPresenter();
 
@@ -522,6 +533,8 @@ class ItemsPresenter
 public:
 
 public:
+	static ItemsPresenter* Create(GUIManager* manager);
+
 	ItemsPresenter(GUIManager* manager);
 	virtual ~ItemsPresenter();
 
@@ -539,11 +552,20 @@ class Control
 	LN_UI_ELEMENT_SUBCLASS_DECL(Control);
 //public:
 //	static const String ControlTemplateTypeName;
-
+	static const Property* TemplateProperty;
 
 public:
 	Control(GUIManager* manager);
 	virtual ~Control();
+
+	//-------------------------------------------------------------------------
+	/** @name Properties */
+	/** @{ */
+
+	void SetTemplate(ControlTemplate* controlTemplate);
+	ControlTemplate* GetTemplate() const { return m_controlTemplate; }
+
+	/** @} */
 
 protected:
 	// override UIElement
@@ -565,6 +587,8 @@ protected:
 //protected:
 //	// override UIElement
 //	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+private:
+	RefPtr<ControlTemplate>	m_controlTemplate;
 };
 
 /**
@@ -618,6 +642,8 @@ class RootPane
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(RootPane);
 public:
+	static RootPane* Create(GUIManager* manager);
+
 	RootPane(GUIManager* manager);
 	virtual ~RootPane();
 
@@ -644,6 +670,9 @@ public:
 
 
 	static const String ControlTemplateTypeName;	///< "Button"
+
+
+	static Button* Create(GUIManager* manager);
 
 	Button(GUIManager* manager);
 	virtual ~Button();

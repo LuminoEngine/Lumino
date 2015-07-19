@@ -83,6 +83,22 @@ UIElement::~UIElement()
 	LN_SAFE_RELEASE(m_manager);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::InitializeComponent()
+{
+	// この時点では何かの子要素にはなっていないはずなので、
+	// m_combinedLocalResource はグローバルリソースとなる。
+	UpdateLocalResource();
+
+	// インスタンス化したクラス型情報で Style を検索する。
+	// 無かった場合はベースクラスの Style を検索する…ということはしない。(WPF の仕様)
+	Style* style = m_combinedLocalResource->FindStyle(GetThisTypeInfo());
+	if (style != NULL) {
+		style->Apply(this);
+	}
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -105,6 +121,22 @@ void UIElement::ReleaseMouseCapture()
 //-----------------------------------------------------------------------------
 void UIElement::ApplyTemplate()
 {
+	//CombinedLocalResource* parentResource = NULL;
+	//if (m_parent != NULL) {
+	//	parentResource = m_parent->m_combinedLocalResource;
+	//}
+	//else {
+	//	parentResource = m_manager->GetRootCombinedResource();	// 親要素が無ければ Manager のリソースを使う
+	//}
+	ApplyTemplateHierarchy(/*parentResource*/);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::UpdateLocalResource()
+{
+	// 親は？
 	CombinedLocalResource* parentResource = NULL;
 	if (m_parent != NULL) {
 		parentResource = m_parent->m_combinedLocalResource;
@@ -112,7 +144,39 @@ void UIElement::ApplyTemplate()
 	else {
 		parentResource = m_manager->GetRootCombinedResource();	// 親要素が無ければ Manager のリソースを使う
 	}
-	ApplyTemplateHierarchy(parentResource);
+
+	if (m_combinedLocalResource != NULL && parentResource != m_combinedLocalResource) {
+		m_combinedLocalResource->Combine(parentResource, m_localResource);
+	}
+	else {
+		LN_REFOBJ_SET(m_combinedLocalResource, parentResource);
+	}
+
+	// 自分のテンプレートを更新する必要がある場合
+	//if (m_templateModified)
+	//{
+	//	// 親は？
+	//	CombinedLocalResource* parentResource = NULL;
+	//	if (m_parent != NULL) {
+	//		parentResource = m_parent->m_combinedLocalResource;
+	//	}
+	//	else {
+	//		parentResource = m_manager->GetRootCombinedResource();	// 親要素が無ければ Manager のリソースを使う
+	//	}
+
+	//	// 結合
+	//	if (m_combinedLocalResource != NULL && parentResource != m_combinedLocalResource) {
+	//		m_combinedLocalResource->Combine(parentResource, m_localResource);
+	//	}
+	//	else {
+	//		LN_REFOBJ_SET(m_combinedLocalResource, parentResource);
+	//	}
+	//	// ControlTemplate や DataTemplate はこのオーバーライドで Apply される
+	//	OnApplyTemplate(m_combinedLocalResource);
+
+	//	m_templateModified = false;			// 自分のテンプレートを更新した
+	//	m_childTemplateModified = true;		// 自分を更新したら、子も更新する必要がある
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -341,17 +405,19 @@ bool UIElement::OnEvent(EventType type, EventArgs* args)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 {
+	UpdateLocalResource();
+
 	// 自分のテンプレートを更新する必要がある場合
 	if (m_templateModified)
 	{
-		if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
-			m_combinedLocalResource->Combine(parent, m_localResource);
-		}
-		else {
-			LN_REFOBJ_SET(m_combinedLocalResource, parent);
-		}
+		//if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
+		//	m_combinedLocalResource->Combine(parent, m_localResource);
+		//}
+		//else {
+		//	LN_REFOBJ_SET(m_combinedLocalResource, parent);
+		//}
 		// ControlTemplate や DataTemplate はこのオーバーライドで Apply される
 		OnApplyTemplate(m_combinedLocalResource);
 
@@ -587,6 +653,17 @@ LN_DEFINE_PROPERTY_2(ButtonChrome, float, FrameWidthProperty, "FrameWidth", 8.0f
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ButtonChrome* ButtonChrome::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ButtonChrome>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ButtonChrome::ButtonChrome(GUIManager* manager)
 	: Decorator(manager)
 	, m_frameWidth(8.0f)
@@ -667,6 +744,18 @@ void ButtonChrome::OnRender()
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentPresenter, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ContentPresenter);
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ContentPresenter* ContentPresenter::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ContentPresenter>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -765,6 +854,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ItemsPresenter* ItemsPresenter::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ItemsPresenter>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ItemsPresenter::ItemsPresenter(GUIManager* manager)
 	: UIElement(manager)
 {
@@ -785,6 +885,8 @@ ItemsPresenter::~ItemsPresenter()
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
+LN_DEFINE_PROPERTY_2(Control, ControlTemplate*, TemplateProperty, "Template", NULL, &Control::SetTemplate, &Control::GetTemplate);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -800,6 +902,15 @@ Control::Control(GUIManager* manager)
 Control::~Control()
 {
 
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Control::SetTemplate(ControlTemplate* controlTemplate)
+{
+	m_controlTemplate = controlTemplate;
+	SetTemplateModified(true);
 }
 
 ////-----------------------------------------------------------------------------
@@ -829,11 +940,15 @@ Control::~Control()
 //-----------------------------------------------------------------------------
 void Control::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	// ControlTemplate の適用処理
-	ControlTemplate* t;
-	if (localResource->TryGetControlTemplate(GetTypeID(), &t)) {
-		t->Apply(this);
+	// ControlTemplate の適用処理 (WPF では ApplyTemplate で行っていた)
+	if (m_controlTemplate != NULL) {
+		m_controlTemplate->Apply(this);
 	}
+
+	//ControlTemplate* t;
+	//if (localResource->TryGetControlTemplate(GetTypeID(), &t)) {
+	//	t->Apply(this);
+	//}
 }
 
 //void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
@@ -1021,6 +1136,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(RootPane);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+RootPane* RootPane::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<RootPane>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 RootPane::RootPane(GUIManager* manager)
 	: ContentControl(manager)
 {
@@ -1044,6 +1170,17 @@ RootPane::~RootPane()
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Button, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Button);
 const String	Button::IsMouseOverProperty(_T("IsMouseOver"));
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Button* Button::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<Button>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
 
 //-----------------------------------------------------------------------------
 //

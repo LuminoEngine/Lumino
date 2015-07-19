@@ -20,6 +20,17 @@ LN_DEFINE_PROPERTY_2(Image, Rect, SourceRectProperty, "SourceRect", Rect(), &Ima
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Image* Image::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<Image>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Image::Image(GUIManager* manager)
 	: UIElement(manager)
 {

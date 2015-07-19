@@ -43,6 +43,8 @@ public:
 	static EventID		DragCanceledEvent;		///< ドラッグキャンセルイベント
 
 public:
+	static Thumb* Create(GUIManager* manager);
+
 	Thumb(GUIManager* manager);
 	virtual ~Thumb();
 
@@ -82,6 +84,8 @@ public:
 	static const Property*	RenderPressedProperty;
 
 public:
+	static ThumbChrome* Create(GUIManager* manager);
+
 	ThumbChrome(GUIManager* manager);
 	virtual ~ThumbChrome();
 

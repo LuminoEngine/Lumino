@@ -28,6 +28,8 @@ public:
 	static const Property*	MaxWidthProperty;
 
 public:
+	static ColumnDefinition* Create(GUIManager* manager);
+
 	ColumnDefinition(GUIManager* manager);
 	virtual ~ColumnDefinition();
 
@@ -81,6 +83,8 @@ public:
 	static const Property*	MinHeightProperty;
 
 public:
+	static RowDefinition* Create(GUIManager* manager);
+
 	RowDefinition(GUIManager* manager);
 	virtual ~RowDefinition();
 
@@ -137,10 +141,13 @@ public:
 	static const AttachedProperty*	RowSpanProperty;
 
 public:
+	static Grid* Create(GUIManager* manager);
+
 	Grid(GUIManager* manager);
 	virtual ~Grid();
 
 public:
+
 	//-------------------------------------------------------------------------
 	/** @name Properties *//** @{ */
 

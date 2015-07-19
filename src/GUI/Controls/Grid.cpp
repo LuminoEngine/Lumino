@@ -28,6 +28,16 @@ LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", FLT_
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ColumnDefinition* ColumnDefinition::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ColumnDefinition>::Create(manager);
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ColumnDefinition::ColumnDefinition(GUIManager* manager)
 	: ContentElement(manager)
 	, m_width(std::numeric_limits<float>::infinity())
@@ -83,6 +93,16 @@ LN_DEFINE_PROPERTY_2(RowDefinition, float, MaxHeightProperty, "MaxHeight", FLT_M
 //const PropertyID	RowDefinition::HeightProperty(_T("Height"));
 //const PropertyID	RowDefinition::MinHeightProperty(_T("MinHeight"));
 //const PropertyID	RowDefinition::MaxHeightProperty(_T("MaxHeight"));
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RowDefinition* RowDefinition::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<RowDefinition>::Create(manager);
+	obj.SafeAddRef();
+	return obj;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -162,6 +182,17 @@ LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
 //AttachedProperty*	Grid::ColumnSpanProperty = NULL;
 //AttachedProperty*	Grid::RowProperty = NULL;
 //AttachedProperty*	Grid::RowSpanProperty = NULL;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Grid* Grid::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<Grid>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
 
 //-----------------------------------------------------------------------------
 //

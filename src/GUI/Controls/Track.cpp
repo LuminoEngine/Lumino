@@ -52,6 +52,17 @@ LN_DEFINE_PROPERTY_2		(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButt
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Track* Track::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<Track>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Track::Track(GUIManager* manager)
 	: Control(manager)
 	, m_value(0.0f)
@@ -115,9 +126,9 @@ void Track::SetIncreaseButton(ButtonBase* button)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Track::ApplyTemplateHierarchy(CombinedLocalResource* parent)
+void Track::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 {
-	Control::ApplyTemplateHierarchy(parent);
+	Control::ApplyTemplateHierarchy(/*parent*/);
 	if (m_decreaseButton != NULL) { m_decreaseButton->ApplyTemplate(); }
 	if (m_thumb != NULL) { m_thumb->ApplyTemplate(); }
 	if (m_increaseButton != NULL) { m_increaseButton->ApplyTemplate(); }

@@ -5,6 +5,59 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/18] 実際に Style と Template を適用するタイミング
+		WPFでは…
+			Style は、Stype.set。
+			Template は、MeasureCore。もしくは、派生によっては Loaded だったり GotFocus だったり。
+
+		本ライブラリとしては、↑に加えてコンストラクタでもグローバルリソースから Style を取得し、適用する。
+		「プロパティにユーザー設定済みか、デフォルトのままか」を示すフラグでも持っていれば
+		遅延で設定することはできるが、果たしてそこまでやる意味があるのか…。
+
+
+
+		・・・
+		・各 CoreObject サブクラスには、プロパティの更新有無を示すbool配列を持たせる
+		・TypeInfo に登録されたプロパティにはインデックスを振る。
+		・Set独自(SizeProperty, true);
+		・Getにも細工しないと、親プロパティを変更したときに正しい値が取れなくなる。
+			※今回の機能の親はStyle。
+			これ対応しようとすると、private でも直接メンバ変数にアクセスできずに GetValue を介したり、
+			全ての getter に継承を考慮する細工が必要になる。
+			Style が static resource なら、割り当てた後に変わることはないと考えて、
+			そういった面倒なことはしなくて済む。
+
+			↓
+			×とりあえず、Style を何かに割り当てたあと、Style に Setter 追加したりしても意味ないよ、で。
+
+			↓
+			オブジェクト生成を Create に統一して、その中で Style 検索・適用してみる。
+			他のモジュールとインターフェイスを統一してみたい。
+			・アニメーションからセットされた値は、「ユーザー設定された値」ではない。
+				やはりプロパティの getter/setter はメンバ変数を直接操作するのではなく、
+				GetValue/SetValueを呼び出すだけにするようにしなければならないか・・・。
+
+			↓
+			逆に、動的テーマ/スタイル変更を禁止したらシンプルに実装できる？
+			InitialzeComponet()/SetStyle() でプロパティの値を強制的に上書きするだけで良い。
+
+
+	[2015/7/17] WPF のデフォルトスタイル
+		プログラマがStyle を定義していない時は、FrameworkElement.Style は null を返す。
+		
+		例えば、
+		<Window.Resource>
+			<Style TargetType="Button">
+		</Window.Resource>
+		<Button />
+		は、Button はデフォルトで Style を持っている。
+		<Style TargetType="Button"> を消すと、Button.Style は null を返す。
+
+		本ライブラリとしては、デフォルトの時も Style を返す、でいいかも。
+
+		ちなみに、Style は指定した TargetType にのみ有効である。
+		<Style TargetType="Control"> と書いても、Button には反映されない。
+
 
 	[2015/7/17] VisualTree を作るのは良いけど、Style や Template を用意する必要はあるの？
 		無くても作ることは出来るが、それは Button などのクラスに直接、視覚的な部分の実装を行わなければならないということ。
@@ -920,19 +973,19 @@ void GUIManager::Initialize(const ConfigData& configData)
 	m_mainWindow = configData.MainWindow;
 
 
-	RegisterFactory(ContentPresenter::TypeID, ContentPresenter::CreateInstance);
-	RegisterFactory(ItemsPresenter::TypeID, ItemsPresenter::CreateInstance);
-	RegisterFactory(ButtonChrome::TypeID, ButtonChrome::CreateInstance);
-	RegisterFactory(Button::TypeID, Button::CreateInstance);
-	RegisterFactory(ListBoxChrome::TypeID, ListBoxChrome::CreateInstance);
-	RegisterFactory(ThumbChrome::TypeID, ThumbChrome::CreateInstance);
-	RegisterFactory(Thumb::TypeID, Thumb::CreateInstance);
-	RegisterFactory(Track::TypeID, Track::CreateInstance);
-	RegisterFactory(Grid::TypeID, Grid::CreateInstance);
-	RegisterFactory(ColumnDefinition::TypeID, ColumnDefinition::CreateInstance);
-	RegisterFactory(RowDefinition::TypeID, RowDefinition::CreateInstance);
-	RegisterFactory(Image::TypeID, Image::CreateInstance);
-	RegisterFactory(ScrollBar::TypeID, ScrollBar::CreateInstance);
+	RegisterFactory(ContentPresenter::TypeID,	[](GUIManager* m) -> CoreObject* { return ContentPresenter::Create(m); });
+	RegisterFactory(ItemsPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ItemsPresenter::Create(m); });
+	RegisterFactory(ButtonChrome::TypeID,		[](GUIManager* m) -> CoreObject* { return ButtonChrome::Create(m); });
+	RegisterFactory(Button::TypeID,				[](GUIManager* m) -> CoreObject* { return Button::Create(m); });
+	RegisterFactory(ListBoxChrome::TypeID,		[](GUIManager* m) -> CoreObject* { return ListBoxChrome::Create(m); });
+	RegisterFactory(ThumbChrome::TypeID,		[](GUIManager* m) -> CoreObject* { return ThumbChrome::Create(m); });
+	RegisterFactory(Thumb::TypeID,				[](GUIManager* m) -> CoreObject* { return Thumb::Create(m); });
+	RegisterFactory(Track::TypeID,				[](GUIManager* m) -> CoreObject* { return Track::Create(m); });
+	RegisterFactory(Grid::TypeID,				[](GUIManager* m) -> CoreObject* { return Grid::Create(m); });
+	RegisterFactory(ColumnDefinition::TypeID,	[](GUIManager* m) -> CoreObject* { return ColumnDefinition::Create(m); });
+	RegisterFactory(RowDefinition::TypeID,		[](GUIManager* m) -> CoreObject* { return RowDefinition::Create(m); });
+	RegisterFactory(Image::TypeID,				[](GUIManager* m) -> CoreObject* { return Image::Create(m); });
+	RegisterFactory(ScrollBar::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollBar::Create(m); });
 
 	
 
@@ -945,7 +998,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 
 
-	m_defaultRootPane = LN_NEW RootPane(this);
+	m_defaultRootPane = RootPane::Create(this);
 	m_defaultRootPane->ApplyTemplate();	// テーマを直ちに更新
 }
 
@@ -1159,14 +1212,18 @@ void GUIManager::BuildDefaultTheme()
 {
 	// RootPane
 	{
+		RefPtr<Style> style = RefPtr<Style>::Create();
+		style->SetTargetType(RootPane::GetClassTypeInfo());
+
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
 		t->SetTargetType(_T("RootPane"));
+		style->AddSetter(Control::TemplateProperty, t);
 
 		RefPtr<UIElementFactory> presenter1(LN_NEW UIElementFactory(this));
 		presenter1->SetTypeName(_T("ContentPresenter"));
 		t->SetVisualTreeRoot(presenter1);
 
-		m_defaultTheme->AddControlTemplate(t);
+		m_defaultTheme->AddStyle(style);
 	}
 
 	// Brush (ボタン枠)
@@ -1200,8 +1257,12 @@ void GUIManager::BuildDefaultTheme()
 
 	// Button
 	{
+		RefPtr<Style> style = RefPtr<Style>::Create();
+		style->SetTargetType(Button::GetClassTypeInfo());
+
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
 		t->SetTargetType(_T("Button"));
+		style->AddSetter(Control::TemplateProperty, t);
 
 		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
 		ef1->SetTypeName(_T("ButtonChrome"));
@@ -1212,25 +1273,25 @@ void GUIManager::BuildDefaultTheme()
 		ef2->SetTypeName(_T("ContentPresenter"));
 		ef1->AddChild(ef2);
 
-		m_defaultTheme->AddControlTemplate(t);
+		m_defaultTheme->AddStyle(style);
 	}
 
 	// ListBox
-	{
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
-		t->SetTargetType(_T("ListBox"));
+	//{
+	//	RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+	//	t->SetTargetType(_T("ListBox"));
 
-		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
-		ef1->SetTypeName(_T("ListBoxChrome"));
-		//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
-		t->SetVisualTreeRoot(ef1);
+	//	RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+	//	ef1->SetTypeName(_T("ListBoxChrome"));
+	//	//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+	//	t->SetVisualTreeRoot(ef1);
 
-		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
-		ef2->SetTypeName(_T("ItemsPresenter"));
-		ef1->AddChild(ef2);
+	//	RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+	//	ef2->SetTypeName(_T("ItemsPresenter"));
+	//	ef1->AddChild(ef2);
 
-		m_defaultTheme->AddControlTemplate(t);
-	}
+	//	m_defaultTheme->AddControlTemplate(t);
+	//}
 
 	// Thumb (枠 Brush)
 	{
@@ -1248,43 +1309,54 @@ void GUIManager::BuildDefaultTheme()
 	}
 	// Thumb
 	{
+		RefPtr<Style> style = RefPtr<Style>::Create();
+		style->SetTargetType(Thumb::GetClassTypeInfo());
+
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
 		t->SetTargetType(_T("Thumb"));
+		style->AddSetter(Control::TemplateProperty, t);
 
 		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
 		ef1->SetTypeName(_T("ThumbChrome"));
 		//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
 		t->SetVisualTreeRoot(ef1);
 
-		m_defaultTheme->AddControlTemplate(t);
+		m_defaultTheme->AddStyle(style);
 	}
 
 	// Track
 	{
+		RefPtr<Style> style = RefPtr<Style>::Create();
+		style->SetTargetType(Track::GetClassTypeInfo());
+
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
 		t->SetTargetType(_T("Track"));
+		style->AddSetter(Control::TemplateProperty, t);
 
 		RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
 		button1->SetTypeName(_T("Button"));
-		t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
+		style->AddSetter(Track::DecreaseButtonProperty, button1);
 
 		RefPtr<UIElementFactory> thumb1(LN_NEW UIElementFactory(this));
 		thumb1->SetTypeName(_T("Thumb"));
-		t->SetPropertyValue(Track::ThumbProperty, thumb1);
+		style->AddSetter(Track::ThumbProperty, thumb1);
 
 		RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
 		button2->SetTypeName(_T("Button"));
-		t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
+		style->AddSetter(Track::IncreaseButtonProperty, button2);
 
-		m_defaultTheme->AddControlTemplate(t);
+		m_defaultTheme->AddStyle(style);
 	}
 
 	// ScrollBar
 	{
+		RefPtr<Style> style = RefPtr<Style>::Create();
+		style->SetTargetType(ScrollBar::GetClassTypeInfo());
 
 		RefPtr<ControlTemplate> scrollBar(LN_NEW ControlTemplate());
 		scrollBar->SetTargetType(_T("ScrollBar"));
-
+		style->AddSetter(Control::TemplateProperty, scrollBar);
+		
 
 		RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
 		grid1->SetTypeName(_T("Grid"));
@@ -1292,26 +1364,24 @@ void GUIManager::BuildDefaultTheme()
 
 
 		auto columns = RefPtr<UIElementFactorylist>::Create();
+		//style->AddSetter(Grid::ColumnDefinitionsProperty, columns);
+		grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
 
 		RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this));
 		col1->SetTypeName(_T("ColumnDefinition"));
 		col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
 		columns->Add(col1);
-		//grid1->AddChild(col1);
 
 		RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this));
 		col2->SetTypeName(_T("ColumnDefinition"));
 		col2->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
 		columns->Add(col2);
-		//grid1->AddChild(col2);
 
 		RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this));
 		col3->SetTypeName(_T("ColumnDefinition"));
 		col3->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
 		columns->Add(col3);
-		//grid1->AddChild(col3);
 
-		grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
 
 
 		//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
@@ -1327,7 +1397,7 @@ void GUIManager::BuildDefaultTheme()
 		//button2->SetTypeName(_T("Button"));
 		//t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
 
-		m_defaultTheme->AddControlTemplate(scrollBar);
+		m_defaultTheme->AddStyle(style);
 	}
 
 }

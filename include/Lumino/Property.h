@@ -251,6 +251,22 @@ public:
 
 	virtual const String& GetName() const { return m_name; }
 
+
+	virtual void SetValue(CoreObject* target, Variant value) const
+	{
+		LN_VERIFY_RETURN(value.GetType() == VariantType_List);
+		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
+		TList* list = m_getter(instance);
+
+		list->Clear();
+
+		VariantList* srcList = value.GetList();
+		for (Variant& v : *srcList) {
+			// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
+			list->Add(value.Cast<TItem*>());
+		}
+	}
+
 	virtual void AddItem(CoreObject* target, const Variant& value) const
 	{
 		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
