@@ -18,6 +18,8 @@ class ScrollBar
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ScrollBar);
 public:
+	static const Property*	OrientationProperty;
+
 	static const RoutedEvent*	ScrollEvent;
 
 	// TODO: RoutedCommand は ID ではなく Command のポインタを直接公開した方が良いかも。
@@ -34,7 +36,7 @@ public:
 	/** @{ */
 
 	/// ScrollBar の方向を指定します。
-	void SetOrientation(Orientation orientation) { m_orientation = orientation; }
+	void SetOrientation(Orientation orientation) { m_orientation = orientation; OnPropertyChanged(OrientationProperty->GetName(), m_orientation); }
 
 	/// ScrollBar の方向を取得します。規定値は Orientation::Horizontal です。
 	Orientation GetOrientation() const { return m_orientation; }

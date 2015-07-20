@@ -208,7 +208,7 @@ public:
 public:	// internal
 	/// routedEvent : 例えばサブクラス Trigger は PropertyChangedEvent を受け取ったら target にプロパティをセットする
 	/// tareget : 
-	virtual void Invoke(RoutedEvent* routedEvent, CoreObject* tareget) = 0;
+	virtual void Invoke(const RoutedEvent* prop, const EventArgs* e, CoreObject* target) = 0;
 };
 
 typedef GenericVariantList<TriggerBase*>		TriggerList;
@@ -216,12 +216,13 @@ typedef GenericVariantList<TriggerBase*>		TriggerList;
 /**
 	@brief		
 */
-class Trigger
+class Trigger	// TODO: 名前 PropertyTrigger のほうがわかりやすい気がする
 	: public TriggerBase
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	Trigger();
+	Trigger(const Property* prop, const Variant& value);
 	virtual ~Trigger();
 
 public:
@@ -230,12 +231,20 @@ public:
 	void SetValue(const Variant& value) { m_value = value; }
 	const Variant& GetValue() const { return m_value; }
 
+	// ユーティリティ
+	void AddSetter(const Property* prop, const Variant& value)
+	{
+		auto setter = RefPtr<Setter>::Create(prop, value);
+		m_setterList->Add(setter);
+	}
+
 protected:
-	virtual void Invoke(RoutedEvent* routedEvent, CoreObject* tareget);
+	virtual void Invoke(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target);
 
 private:
 	const Property*		m_property;
 	Variant				m_value;
+	RefPtr<SetterList>	m_setterList;
 };
 
 /**
@@ -265,8 +274,18 @@ public:
 		m_setterList->Add(setter);
 	}
 
+	Trigger* AddPropertyTrigger(const Property* prop, const Variant& value)
+	{
+		auto trigger = RefPtr<Trigger>::Create(prop, value);
+		m_triggerList->Add(trigger);
+		return trigger;
+	}
+
+
 	/// 指定した要素にこのスタイルを適用する
 	void Apply(UIElement* element);
+
+	void InvoleTriggers(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target);
 
 private:
 	TypeInfo*			m_targetType;

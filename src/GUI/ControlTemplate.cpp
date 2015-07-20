@@ -230,7 +230,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 				//if (prop == NULL) {
 				//	LN_THROW(0, InvalidOperationException);	// TODO: XML エラーとかいろいろ考える必要がある
 				//}
-				element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
+				element->SetTemplateBinding(prop, pair.second.SourcePropPath);
 			}
 			else {
 				LN_THROW(0, NotImplementedException);
@@ -465,6 +465,19 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Trigger, TriggerBase);
 //
 //-----------------------------------------------------------------------------
 Trigger::Trigger()
+	: m_property(NULL)
+	, m_value()
+	, m_setterList(RefPtr<SetterList>::Create())
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Trigger::Trigger(const Property* prop, const Variant& value)
+	: m_property(prop)
+	, m_value(value)
+	, m_setterList(RefPtr<SetterList>::Create())
 {
 }
 
@@ -478,8 +491,20 @@ Trigger::~Trigger()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Trigger::Invoke(RoutedEvent* routedEvent, CoreObject* tareget)
+void Trigger::Invoke(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target)
 {
+	LN_THROW(0, NotImplementedException);
+	//if (routedEvent == CoreObject::PropertyChangedEvent)
+	//{
+	//	auto e2 = static_cast<const PropertyChangedEventArgs*>(e);
+	//	if (m_property == e2->Property &&
+	//		m_value == e2->NewValue)
+	//	{
+	//		for (Setter* setter : *m_setterList) {
+	//			target->SetPropertyValue(setter->GetProperty(), setter->GetValue());
+	//		}
+	//	}
+	//}
 }
 
 //=============================================================================
@@ -527,6 +552,18 @@ void Style::Apply(UIElement* element)
 		else {
 			element->SetPropertyValue(prop, value);
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Style::InvoleTriggers(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target)
+{
+	LN_VERIFY_RETURN(routedEvent != NULL);
+	for (TriggerBase* trigger : *m_triggerList)
+	{
+		trigger->Invoke(routedEvent, e, target);
 	}
 }
 

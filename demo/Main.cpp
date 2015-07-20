@@ -102,8 +102,9 @@ int main()
 		workbench1->SetContent(image1);
 #endif
 		RefPtr<GUI::ScrollBar> scrollBar1 = GUI::ScrollBar::Create(app->GetGUIManager());//(LN_NEW GUI::ScrollBar(app->GetGUIManager()));
+		
 		workbench1->SetContent(scrollBar1);
-
+		scrollBar1->SetOrientation(GUI::Orientation::Vertical);
 
 
 

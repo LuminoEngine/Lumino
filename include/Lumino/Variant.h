@@ -115,7 +115,7 @@ public:
 	//	return NULL;
 	//}
 
-	Event02<CoreObject*, PropertyChangedEventArgs*>	PropertyChanged;
+	Event01<PropertyChangedEventArgs*>	PropertyChanged;
 
 protected:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
@@ -125,7 +125,7 @@ protected:
 	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
 	//void RegisterProperty(Property* prop);
 
-	void OnPropertyChanged(const String& name, const Variant& newValue);
+	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
 
 private:
 	friend TypeInfo* GetTypeInfo(CoreObject* obj);

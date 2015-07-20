@@ -1350,52 +1350,94 @@ void GUIManager::BuildDefaultTheme()
 
 	// ScrollBar
 	{
+		// H ScrollBar
+		RefPtr<ControlTemplate> scrollBarTemplateH(LN_NEW ControlTemplate());
+		scrollBarTemplateH->SetTargetType(_T("ScrollBar"));
+		{
+			RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
+			grid1->SetTypeName(_T("Grid"));
+			scrollBarTemplateH->SetVisualTreeRoot(grid1);
+
+			auto columns = RefPtr<UIElementFactorylist>::Create();
+			grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
+
+			RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this));
+			col1->SetTypeName(_T("ColumnDefinition"));
+			col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
+			columns->Add(col1);
+
+			RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this));
+			col2->SetTypeName(_T("ColumnDefinition"));
+			col2->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
+			columns->Add(col2);
+
+			RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this));
+			col3->SetTypeName(_T("ColumnDefinition"));
+			col3->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
+			columns->Add(col3);
+
+			//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
+			//button1->SetTypeName(_T("Button"));
+			//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
+
+			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
+			track->SetTypeName(_T("Track"));
+			track->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
+			grid1->AddChild(track);
+
+			//RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
+			//button2->SetTypeName(_T("Button"));
+			//t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
+		}
+
+		// V ScrollBar
+		RefPtr<ControlTemplate> scrollBarTemplateV(LN_NEW ControlTemplate());
+		scrollBarTemplateV->SetTargetType(_T("ScrollBar"));
+		{
+			RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
+			grid1->SetTypeName(_T("Grid"));
+			scrollBarTemplateV->SetVisualTreeRoot(grid1);
+
+			auto columns = RefPtr<UIElementFactorylist>::Create();
+			grid1->SetPropertyValue(Grid::RowDefinitionsProperty, columns);
+
+			RefPtr<UIElementFactory> row1(LN_NEW UIElementFactory(this));
+			row1->SetTypeName(_T("RowDefinition"));
+			row1->SetPropertyValue(RowDefinition::HeightProperty, 16.0f);
+			columns->Add(row1);
+
+			RefPtr<UIElementFactory> row2(LN_NEW UIElementFactory(this));
+			row2->SetTypeName(_T("RowDefinition"));
+			row2->SetPropertyValue(RowDefinition::HeightProperty, RowDefinition::Star);
+			columns->Add(row2);
+
+			RefPtr<UIElementFactory> row3(LN_NEW UIElementFactory(this));
+			row3->SetTypeName(_T("RowDefinition"));
+			row3->SetPropertyValue(RowDefinition::HeightProperty, 16.0f);
+			columns->Add(row3);
+
+			//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
+			//button1->SetTypeName(_T("Button"));
+			//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
+
+			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
+			track->SetTypeName(_T("Track"));
+			track->SetPropertyValue(Grid::RowProperty, 1);	// 添付プロパティ
+			grid1->AddChild(track);
+
+			//RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
+			//button2->SetTypeName(_T("Button"));
+			//t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
+		}
+
 		RefPtr<Style> style = RefPtr<Style>::Create();
 		style->SetTargetType(ScrollBar::GetClassTypeInfo());
 
-		RefPtr<ControlTemplate> scrollBar(LN_NEW ControlTemplate());
-		scrollBar->SetTargetType(_T("ScrollBar"));
-		style->AddSetter(Control::TemplateProperty, scrollBar);
-		
+		Trigger* trigger1 = style->AddPropertyTrigger(ScrollBar::OrientationProperty, Orientation::Horizontal);
+		trigger1->AddSetter(Control::TemplateProperty, scrollBarTemplateH);
 
-		RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
-		grid1->SetTypeName(_T("Grid"));
-		scrollBar->SetVisualTreeRoot(grid1);
-
-
-		auto columns = RefPtr<UIElementFactorylist>::Create();
-		//style->AddSetter(Grid::ColumnDefinitionsProperty, columns);
-		grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
-
-		RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this));
-		col1->SetTypeName(_T("ColumnDefinition"));
-		col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
-		columns->Add(col1);
-
-		RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this));
-		col2->SetTypeName(_T("ColumnDefinition"));
-		col2->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
-		columns->Add(col2);
-
-		RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this));
-		col3->SetTypeName(_T("ColumnDefinition"));
-		col3->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
-		columns->Add(col3);
-
-
-
-		//RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
-		//button1->SetTypeName(_T("Button"));
-		//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
-
-		RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
-		track->SetTypeName(_T("Track"));
-		track->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
-		grid1->AddChild(track);
-
-		//RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
-		//button2->SetTypeName(_T("Button"));
-		//t->SetPropertyValue(Track::IncreaseButtonProperty, button2);
+		Trigger* trigger2 = style->AddPropertyTrigger(ScrollBar::OrientationProperty, Orientation::Vertical);
+		trigger2->AddSetter(Control::TemplateProperty, scrollBarTemplateV);
 
 		m_defaultTheme->AddStyle(style);
 	}

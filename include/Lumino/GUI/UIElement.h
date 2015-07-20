@@ -162,7 +162,7 @@ public:
 
 
 	/// rootLogicalParent : テンプレートを適用した要素。TemplateBinding のソースオブジェクト。
-	void SetTemplateBinding(const Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent);
+	void SetTemplateBinding(const Property* thisProp, const String& srcPropPath/*, UIElement* rootLogicalParent*/);
 
 	/// (サイズの自動計算が有効になっている要素に対しては呼び出しても効果はありません)
 	void UpdateLayout();
@@ -214,9 +214,14 @@ public:	// internal
 	// コンストラクタの後呼び出す。
 	void InitializeComponent();
 
+	/// 
+	void UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent);
+
 protected:
 	virtual const String& GetTypeID() const = 0;
 
+	// override
+	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
 
 	//friend class Decorator;
 	//friend class Control;
@@ -225,6 +230,7 @@ protected:
 public:	// internal
 	virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
 	void UpdateTemplateHierarchy();	// こちらは modified マークされている要素のテンプレートを更新する
+
 
 	GUIManager* GetManager() const { return m_manager; }
 
@@ -350,7 +356,7 @@ public:	// TODO: private にしたい
 	void Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs* e);
 
 private:
-	void TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e);
+	void TemplateBindingSource_PropertyChanged(/*CoreObject* sender, */PropertyChangedEventArgs* e);
 
 
 	struct TemplateBindingInfo
@@ -365,12 +371,13 @@ private:
 	/// テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
 	/// 例えば Button にテンプレートを適用すると、Button よりしたのビジュアル要素.m_rootLogicalParent はすべて Button を指す。
 	UIElement*		m_rootLogicalParent;
+	Delegate01<PropertyChangedEventArgs*>	m_templateBindingHandler;
 
 	bool			m_childTemplateModified;	///< 子要素のテンプレートを更新するべきか
 	bool			m_templateModified;
 
 protected:
-
+	RefPtr<Style>		m_style;
 	RefPtr<UIElement>	m_templateChild;
 	UIElement*			m_templateParent;
 

@@ -36,6 +36,8 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ScrollBar, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollBar);
 
+LN_DEFINE_PROPERTY_ENUM_2(ScrollBar, Orientation, OrientationProperty, "Orientation", Orientation::Horizontal, &ScrollBar::SetOrientation, &ScrollBar::GetOrientation);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

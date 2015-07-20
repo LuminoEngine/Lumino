@@ -296,7 +296,7 @@ void CoreObject::OnPropertyChanged(const String& name, const Variant& newValue)
 	PropertyChangedEventArgs e;
 	e.PropertyName = name;
 	e.NewValue = newValue;
-	PropertyChanged.Raise(this, &e);
+	PropertyChanged.Raise(&e);
 }
 
 

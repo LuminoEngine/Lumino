@@ -101,9 +101,9 @@ void UIElement::InitializeComponent()
 
 	// インスタンス化したクラス型情報で Style を検索する。
 	// 無かった場合はベースクラスの Style を検索する…ということはしない。(WPF の仕様)
-	Style* style = m_combinedLocalResource->FindStyle(GetThisTypeInfo());
-	if (style != NULL) {
-		style->Apply(this);
+	m_style = m_combinedLocalResource->FindStyle(GetThisTypeInfo());
+	if (m_style != NULL) {
+		m_style->Apply(this);
 	}
 }
 
@@ -285,24 +285,67 @@ SizeF UIElement::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::SetTemplateBinding(const Property* thisProp, const String& srcPropPath, UIElement* rootLogicalParent)
+void UIElement::SetTemplateBinding(const Property* thisProp, const String& srcPropPath/*, UIElement* rootLogicalParent*/)
 {
-	if (m_rootLogicalParent == NULL)
-	{
-		// TODO: 解除は？
-		rootLogicalParent->PropertyChanged.AddHandler(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
-		m_rootLogicalParent = rootLogicalParent;
-	}
-	else if (m_rootLogicalParent != rootLogicalParent) {
-		// あってはならない。
-		// VisualTree 要素が異なる ルート Logcal 要素にバインドしようとした。
-		LN_THROW(0, InvalidOperationException);
-	}
+	//if (m_rootLogicalParent == NULL)
+	//{
+	//	// TODO: 解除は？
+	//	rootLogicalParent->PropertyChanged.AddHandler(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
+	//	m_rootLogicalParent = rootLogicalParent;
+	//}
+	//else if (m_rootLogicalParent != rootLogicalParent) {
+	//	// あってはならない。
+	//	// VisualTree 要素が異なる ルート Logcal 要素にバインドしようとした。
+	//	LN_THROW(0, InvalidOperationException);
+	//}
 
 	TemplateBindingInfo info;
 	info.ThisProp = thisProp;
 	info.SourcePropPath = srcPropPath;
 	m_templateBindingInfoList.Add(info);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
+{
+	if (m_rootLogicalParent == logicalParent) { return; }
+
+	// 古いほうからイベントハンドラを解除する
+	// (m_rootLogicalParent に何かセットされているのだから、m_templateBindingHandler は NULL ではないはず)
+	if (m_rootLogicalParent != NULL) {
+		m_rootLogicalParent->PropertyChanged -= m_templateBindingHandler;
+	}
+
+	// delegate が未作成であれば作る (初回時)
+	if (m_templateBindingHandler.IsEmpty()) {
+		m_templateBindingHandler = LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged);
+	}
+
+	// 要素を保持する
+	m_rootLogicalParent = logicalParent;
+
+	// 新しい方にイベントハンドラを登録する
+	if (m_rootLogicalParent) {
+		m_rootLogicalParent->PropertyChanged += m_templateBindingHandler;
+	}
+
+	// 子要素へも同じ論理親要素をセットする
+	for (UIElement* child : m_visualChildren) {
+		child->UpdateTemplateLogicalParentHierarchy(logicalParent);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnPropertyChanged(const String& name, const Variant& newValue)
+{
+	CoreObject::OnPropertyChanged(name, newValue);
+	//if (m_style != NULL) {
+	//	m_style->in
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -467,7 +510,7 @@ void UIElement::SetTemplateChild(UIElement* child)
 	{
 		m_visualChildren.Remove(m_templateChild);
 		// TODO: templateBinding 用の PropertyChanged がひつようかもしれない。
-		PropertyChanged.Clear();
+		//PropertyChanged.Clear();
 		//rootLogicalParent->PropertyChanged(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
 	}
 	if (child != NULL)
@@ -478,6 +521,7 @@ void UIElement::SetTemplateChild(UIElement* child)
 		m_visualChildren.Add(child);
 		child->m_parent = this;
 		child->m_templateParent = this;
+		child->UpdateTemplateLogicalParentHierarchy(this);
 	}
 }
 
@@ -531,7 +575,7 @@ void UIElement::Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs*
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e)
+void UIElement::TemplateBindingSource_PropertyChanged(/*CoreObject* sender, */PropertyChangedEventArgs* e)
 {
 	LN_FOREACH(TemplateBindingInfo& info, m_templateBindingInfoList)
 	{
