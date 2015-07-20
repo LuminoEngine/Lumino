@@ -3,13 +3,18 @@
 #include <iterator>
 #include <type_traits>
 #include <Lumino/Base/Delegate.h>
+//#include "RoutedEvent.h"
 
 namespace Lumino
 {
+class CoreObject;
 class Variant;
 class VariantList;
 class Property;
 class PropertyChangedEventArgs;
+class RoutedEvent;
+class RoutedEventHandler;
+class EventArgs;
 
 enum VariantType
 {
@@ -30,7 +35,7 @@ enum VariantType
 class TypeInfo
 {
 public:
-	TypeInfo() {}
+	TypeInfo();
 
 	TypeInfo(const TCHAR* fullName, TypeInfo* baseClass)
 		: m_fullName(fullName)
@@ -40,13 +45,29 @@ public:
 	void RegisterProperty(Property* prop);
 	Property* FindProperty(const String& name) const;
 
+	void RegisterRoutedEvent(RoutedEvent* ev);
+	RoutedEvent* FindRoutedEvent(const String& name) const;	// TODO: いらないかも
+	void InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, EventArgs* e);
+
+	/// RoutedEventHandler は、ユーザーが動的に追加できるハンドラよりも前に呼び出される。
+	/// WPF では「静的ハンドラ」と呼ばれている。動的イベントに登録するのに比べ、メモリを使用しない。
+	void RegisterRoutedEventHandler(const RoutedEvent* ev, RoutedEventHandler* handler);
+	RoutedEventHandler* FindRoutedEventHandler(const RoutedEvent* ev) const;
+
+
 	bool operator == (const TypeInfo& info) const { return m_fullName == info.m_fullName; }
 	bool operator < (const TypeInfo& info) const { return m_fullName < info.m_fullName; }
 
+protected:
+
 private:
-	String				m_fullName;		///< 完全修飾名
-	TypeInfo*			m_baseClass;
-	Array<Property*>	m_propertyList;
+	typedef SortedArray<const RoutedEvent*, RoutedEventHandler*>	RoutedEventHandlerList;
+
+	String					m_fullName;		///< 完全修飾名
+	TypeInfo*				m_baseClass;
+	Array<Property*>		m_propertyList;
+	Array<RoutedEvent*>		m_routedEventList;
+	RoutedEventHandlerList	m_routedEventHandlerList;
 };
 
 /**
@@ -97,6 +118,9 @@ public:
 	Event02<CoreObject*, PropertyChangedEventArgs*>	PropertyChanged;
 
 protected:
+	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
+	virtual void RaiseEventInternal(const RoutedEvent* ev, EventArgs* e);
+
 	/// この CoreObject にプロパティを登録します。
 	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
 	//void RegisterProperty(Property* prop);
@@ -115,6 +139,7 @@ private:
 	//PropertyList		m_propertyList;
 	PropertyDataStore*	m_propertyDataStore;
 
+	//typedef SortedArray<const RoutedEvent*, Property*>	RoutedEventList;
 
 private:
 	static TypeInfo m_typeInfo;

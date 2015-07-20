@@ -35,12 +35,18 @@ class Thumb
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Thumb);
 public:
-	static const Property*	IsDraggingProperty;		///< ドラッグ中であるかを示す値
+	static const Property*		IsDraggingProperty;		///< ドラッグ中であるかを示す値
 
-	static EventID		DragStartedEvent;		///< ドラッグ開始イベント
-	static EventID		DragDeltaEvent;			///< ドラッグ中の移動イベント
-	static EventID		DragCompletedEvent;		///< ドラッグ終了イベント
-	static EventID		DragCanceledEvent;		///< ドラッグキャンセルイベント
+	static const RoutedEvent*	DragStartedEvent;		///< ドラッグ開始イベント
+	static const RoutedEvent*	DragDeltaEvent;			///< ドラッグ中の移動イベント
+	static const RoutedEvent*	DragCompletedEvent;		///< ドラッグ終了イベント
+	static const RoutedEvent*	DragCanceledEvent;		///< ドラッグキャンセルイベント
+
+	// TODO:仮
+	Event01<DragEventArgs*>	DragStarted;
+	Event01<DragEventArgs*>	DragDelta;
+	Event01<DragEventArgs*>	DragCompleted;
+	Event01<DragEventArgs*>	DragCanceled;
 
 public:
 	static Thumb* Create(GUIManager* manager);

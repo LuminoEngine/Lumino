@@ -2,7 +2,7 @@
 #pragma once
 #include <map>
 #include "Common.h"
-#include "RoutedEvent.h"
+#include "../RoutedEvent.h"
 #include "../Variant.h"
 
 namespace Lumino

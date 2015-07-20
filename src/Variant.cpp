@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Variant.h>
 #include <Lumino/Property.h>
+#include <Lumino/RoutedEvent.h>
 
 namespace Lumino
 {
@@ -13,9 +14,23 @@ namespace Lumino
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+TypeInfo::TypeInfo()
+	: m_fullName()
+	, m_baseClass(NULL)
+	, m_propertyList()
+	, m_routedEventList()
+	, m_routedEventHandlerList()
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void TypeInfo::RegisterProperty(Property* prop)
 {
-	if (!prop->m_registerd)
+	LN_VERIFY_RETURN(!prop->m_registerd);
+	//if (!prop->m_registerd)
 	{
 		m_propertyList.Add(prop);
 		prop->m_registerd = true;
@@ -33,7 +48,6 @@ Property* TypeInfo::FindProperty(const String& name) const
 			return prop;
 		}
 	}
-
 	// ベースクラスも探してみる
 	if (m_baseClass != NULL) {
 		return m_baseClass->FindProperty(name);
@@ -42,6 +56,83 @@ Property* TypeInfo::FindProperty(const String& name) const
 	//if (m_propertyList.TryGetValue(name, &prop)) {
 	//	return prop;
 	//}
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TypeInfo::RegisterRoutedEvent(RoutedEvent* ev)
+{
+	LN_VERIFY_RETURN(!ev->m_registerd);
+	//if (!ev->m_registerd)
+	{
+		m_routedEventList.Add(ev);
+		ev->m_registerd = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RoutedEvent* TypeInfo::FindRoutedEvent(const String& name) const
+{
+	// とりあえず線形探索。現在の使用用途としてそれほど大量に追加しないため。
+	for (auto ev : m_routedEventList)
+	{
+		if (ev->GetName() == name) {
+			return ev;
+		}
+	}
+	// ベースクラスも探してみる
+	if (m_baseClass != NULL) {
+		return m_baseClass->FindRoutedEvent(name);
+	}
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TypeInfo::InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, EventArgs* e)
+{
+	for (RoutedEvent* dynamicEvent : m_routedEventList)
+	{
+		if (dynamicEvent == ev) {
+			// owner に AddHandler されているイベントハンドラを呼び出す。
+			dynamicEvent->CallEvent(owner, e);
+			return;	// ev と同じイベントは1つしかリスト内に無いはず
+		}
+	}
+
+	// さらにベースクラスを見に行く
+	if (m_baseClass != NULL) {
+		m_baseClass->InvokeRoutedEvent(owner, ev, e);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TypeInfo::RegisterRoutedEventHandler(const RoutedEvent* ev, RoutedEventHandler* handler)
+{
+	LN_VERIFY_RETURN(ev->m_registerd);
+	LN_VERIFY_RETURN(!handler->m_registerd);
+	m_routedEventHandlerList.Add(ev, handler);
+	handler->m_registerd = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RoutedEventHandler* TypeInfo::FindRoutedEventHandler(const RoutedEvent* ev) const
+{
+	LN_VERIFY_RETURNV(ev != NULL, NULL);
+	RoutedEventHandler* handler;
+	if (m_routedEventHandlerList.TryGetValue(ev, &handler))
+	{
+		return handler;
+	}
 	return NULL;
 }
 	
@@ -161,6 +252,42 @@ String CoreObject::ToString()
 //	//m_propertyDataStore.Add(propertyName, defaultValue);
 //}
 //
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::RaiseEventInternal(const RoutedEvent* ev, EventArgs* e)
+{
+	LN_VERIFY_RETURN(ev != NULL);
+	LN_VERIFY_RETURN(e != NULL);
+
+	TypeInfo* thisType = GetThisTypeInfo();
+
+	// 内部的、および派生クラスで使用する private なハンドラ。
+	// これらは ユーザーが AddHandler() できるイベントよりも優先して実行する。
+	RoutedEventHandler* handler = thisType->FindRoutedEventHandler(ev);	// TOOD: 1つだけ検索じゃなくて、for で回して全部見た方が丁寧かも
+	if (handler != NULL)
+	{
+		handler->Call(this, e);
+		if (e->Handled) {
+			return;
+		}
+	}
+
+	// this に AddHandler されているイベントハンドラを呼び出す。
+	thisType->InvokeRoutedEvent(this, ev, e);
+
+	//if (ev->GetOwnerClassTypeInfo() == )
+	//ev->CallEvent(this, e);
+	//for (RoutedEvent* dynamicEvent : m_routedEventList)
+	//{
+	//	if (pair.first == eventName) {
+	//		pair.second->CallEvent(this/*, sender*/, e);
+	//		break;	// ev と同じイベントは1つしかリスト内に無いはず
+	//	}
+	//}
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

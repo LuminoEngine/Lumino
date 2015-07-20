@@ -6,7 +6,7 @@
 #include <Lumino/Base/Event.h>
 #include "../Variant.h"
 #include "EventArgs.h"
-#include "RoutedEvent.h"
+//#include "RoutedEvent.h"
 
 namespace Lumino
 {
@@ -74,11 +74,11 @@ private:
 	bool	m_registerd;
 };
 
-#define LN_DEFINE_ROUTED_EVENT(classType, eventArgsType, name, callEventFuncPtr) \
-{ \
-	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
-	RegisterRoutedEvent(&ev); \
-}
+//#define LN_DEFINE_ROUTED_EVENT(classType, eventArgsType, name, callEventFuncPtr) \
+//{ \
+//	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
+//	RegisterRoutedEvent(&ev); \
+//}
 
 
 /// TypeInfo が示すクラスに含まれている RoutedCommand のリスト

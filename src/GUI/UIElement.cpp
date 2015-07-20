@@ -29,14 +29,21 @@ LN_DEFINE_PROPERTY_ENUM_2(UIElement, VerticalAlignment, VerticalAlignmentPropert
 //const PropertyID	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
 //const PropertyID	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
 
-const EventID	UIElement::MouseMoveEvent(_T("MouseMove"));
-const EventID	UIElement::MouseLeaveEvent(_T("MouseLeave"));
-const EventID	UIElement::MouseEnterEvent(_T("MouseEnter"));
-const EventID	UIElement::MouseDownEvent(_T("MouseDown"));
-const EventID	UIElement::MouseUpEvent(_T("MouseUp"));
+//const RoutedEvent*	UIElement::MouseMoveEvent(_T("MouseMove"));
+//const RoutedEvent*	UIElement::MouseLeaveEvent(_T("MouseLeave"));
+//const RoutedEvent*	UIElement::MouseEnterEvent(_T("MouseEnter"));
+//const RoutedEvent*	UIElement::MouseDownEvent(_T("MouseDown"));
+//const RoutedEvent*	UIElement::MouseUpEvent(_T("MouseUp"));
+//
+//const RoutedEvent*	UIElement::CanExecuteRoutedCommandEvent(_T("CanExecuteRoutedCommandEvent"));
+//const RoutedEvent*	UIElement::ExecuteRoutedCommandEvent(_T("ExecuteRoutedCommandEvent"));
+LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
+LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
+LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
 
-const EventID	UIElement::CanExecuteRoutedCommandEvent(_T("CanExecuteRoutedCommandEvent"));
-const EventID	UIElement::ExecuteRoutedCommandEvent(_T("ExecuteRoutedCommandEvent"));
+LN_DEFINE_ROUTED_EVENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent, "CanExecuteRoutedCommand", Handler_CanExecuteRoutedCommandEvent);
+LN_DEFINE_ROUTED_EVENT(UIElement, ExecuteRoutedCommandEventArgs, ExecuteRoutedCommandEvent, "ExecuteRoutedCommand", Handler_ExecuteRoutedCommandEvent);
+
 
 //-----------------------------------------------------------------------------
 //
@@ -60,12 +67,12 @@ UIElement::UIElement(GUIManager* manager)
 	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// ƒCƒxƒ“ƒg‚Ì“o˜^
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseMove(e); });
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseDown(e); });
-	LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		[](UIElement* target, MouseEventArgs* e) { target->MouseUp(e); });
-	
-	LN_DEFINE_ROUTED_EVENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent,	[](UIElement* target, CanExecuteRoutedCommandEventArgs* e) { target->Handler_CanExecuteRoutedCommandEvent(e); });
-	LN_DEFINE_ROUTED_EVENT(UIElement, ExecuteRoutedCommandEventArgs,	ExecuteRoutedCommandEvent,		[](UIElement* target, ExecuteRoutedCommandEventArgs* e) { target->Handler_ExecuteRoutedCommandEvent(e); });
+	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, [](UIElement* target, MouseEventArgs* e) { target->MouseMove(e); });
+	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseDown(e); });
+	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		[](UIElement* target, MouseEventArgs* e) { target->MouseUp(e); });
+	//
+	//LN_DEFINE_ROUTED_EVENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent,	[](UIElement* target, CanExecuteRoutedCommandEventArgs* e) { target->Handler_CanExecuteRoutedCommandEvent(e); });
+	//LN_DEFINE_ROUTED_EVENT(UIElement, ExecuteRoutedCommandEventArgs,	ExecuteRoutedCommandEvent,		[](UIElement* target, ExecuteRoutedCommandEventArgs* e) { target->Handler_ExecuteRoutedCommandEvent(e); });
 
 	// íœ—\’è
 	//m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
@@ -1190,7 +1197,7 @@ Button::Button(GUIManager* manager)
 	, m_isMouseOver(false)
 {
 	// ƒvƒƒpƒeƒB‚Ì“o˜^
-	LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
+	//LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
 
 	//m_chrome.Attach(LN_NEW ButtonChrome(manager));
 	//SetContent(Variant(m_chrome));

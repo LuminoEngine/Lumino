@@ -2,6 +2,7 @@
 #pragma once
 #include "../Common.h"
 #include "../Variant.h"
+#include "../RoutedEvent.h"
 
 namespace Lumino
 {
@@ -28,25 +29,7 @@ enum EventType
 	EventType_MouseLeave,
 };
 
-/**
-	@brief		GUI イベントの引数の基本クラスです。
-*/
-class EventArgs
-	: public CoreObject
-{
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
-public:
-	EventArgs();
-	virtual ~EventArgs();
 
-public:
-	CoreObject*	Sender;
-	UIElement* HandlerOwner;
-	bool Handled;
-
-protected:
-
-};
 
 /**
 	@brief	マウスイベントの引数を表します。

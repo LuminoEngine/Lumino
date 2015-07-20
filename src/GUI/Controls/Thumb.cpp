@@ -23,10 +23,14 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Thumb);
 LN_DEFINE_PROPERTY_2(Thumb, bool, IsDraggingProperty, "IsDragging", false, NULL, &Thumb::IsDragging);
 //PropertyID	Thumb::IsDraggingProperty(_T("IsDragging"));
 
-EventID	 	Thumb::DragStartedEvent(_T("DragStarted"));
-EventID		Thumb::DragDeltaEvent(_T("DragDelta"));
-EventID		Thumb::DragCompletedEvent(_T("DragCompleted"));
-EventID		Thumb::DragCanceledEvent(_T("DragCanceled"));
+//EventID	 	Thumb::DragStartedEvent(_T("DragStarted"));
+//EventID		Thumb::DragDeltaEvent(_T("DragDelta"));
+//EventID		Thumb::DragCompletedEvent(_T("DragCompleted"));
+//EventID		Thumb::DragCanceledEvent(_T("DragCanceled"));
+LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragStartedEvent, "DragStarted", DragStarted);
+LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragDeltaEvent, "DragDelta", DragDelta);
+LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragCompletedEvent, "DragCompleted", DragCompleted);
+LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragCanceledEvent, "DragCanceled", DragCanceled);
 
 //-----------------------------------------------------------------------------
 //

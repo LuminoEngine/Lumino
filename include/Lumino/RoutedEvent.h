@@ -1,12 +1,30 @@
 
 #pragma once
 #include <functional>
-#include "EventArgs.h"
+#include "Variant.h"
 
 namespace Lumino
 {
-namespace GUI
+
+/**
+	@brief		
+*/
+class EventArgs	// TOOD: 名前 RoutedEventArgs
+	: public CoreObject
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	EventArgs();
+	virtual ~EventArgs();
+
+public:
+	CoreObject*	Sender;
+	//UIElement* HandlerOwner;
+	bool Handled;
+
+protected:
+
+};
 
 /**
 	@brief		
@@ -14,21 +32,27 @@ namespace GUI
 class RoutedEvent
 {
 public:
-	RoutedEvent() {}
+	RoutedEvent() : m_registerd(false) {}
 	virtual ~RoutedEvent() {}
 
 public:
+	virtual TypeInfo* GetOwnerClassTypeInfo() const = 0;
+
 	virtual const String& GetName() const = 0;
 
 	//virtual void Raise(CoreObject* target, CoreObject* sender, EventArgs* e) = 0;
-	virtual void CallEvent(CoreObject* target/*, CoreObject* sender*/, EventArgs* e) = 0;
+	virtual void CallEvent(CoreObject* target, EventArgs* e) const = 0;
+
+private:
+	friend class TypeInfo;
+	bool	m_registerd;
 };
 
 /**
 	@brief		
 */
-template<class TClass, typename TEventArgs>
-class TypedRoutedEvent : public RoutedEvent
+template<class TOwnerClass, typename TEventArgs>
+class StaticTypedRoutedEvent : public RoutedEvent
 {
 public:
 	//typedef void (TClass::*CallEventHandler)(CoreObject* sender, TEventArgs*);
@@ -42,21 +66,25 @@ public:
 	//	: m_name(name)
 	//	, m_raiseEvent(raiseEvent)
 	//{}
-	TypedRoutedEvent(const String& name/*, OnEvent onEvent*/, std::function< void(TClass*, /*CoreObject*, */TEventArgs*) > callEventHandler/*CallEventHandler callEventHandler*/)
+	StaticTypedRoutedEvent(const String& name/*, OnEvent onEvent*/, std::function< void(TOwnerClass*, /*CoreObject*, */TEventArgs*) > callEventHandler/*CallEventHandler callEventHandler*/)
 		: m_name(name)
 		//, m_callEventHandler(callEventHandler)
 		, m_callEventHandler(callEventHandler)
 		//, m_onEvent(onEvent)
-	{}
+	{
+		TOwnerClass::GetClassTypeInfo()->RegisterRoutedEvent(this);
+	}
 
 
-	virtual ~TypedRoutedEvent() {}
+	virtual ~StaticTypedRoutedEvent() {}
+
+	virtual TypeInfo* GetOwnerClassTypeInfo() const { return TOwnerClass::GetClassTypeInfo(); }
 
 	virtual const String& GetName() const { return m_name; }
 
-	virtual void CallEvent(CoreObject* target, EventArgs* e)
+	virtual void CallEvent(CoreObject* target, EventArgs* e) const
 	{
-		TClass* instance = static_cast<TClass*>(target);
+		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
 		TEventArgs* et = static_cast<TEventArgs*>(e);
 		//(instance->*m_raiseEvent)(sender, et);
 		//(instance->*m_callEventHandler)(sender, et);
@@ -74,15 +102,20 @@ public:
 private:
 	String		m_name;
 	//CallEventHandler	m_callEventHandler;
-	std::function< void(TClass*, /*CoreObject*, */TEventArgs*) >	m_callEventHandler;
+	std::function< void(TOwnerClass*, /*CoreObject*, */TEventArgs*) >	m_callEventHandler;
 	//OnEvent	m_onEvent;
 };
 
-#define LN_DEFINE_ROUTED_EVENT(classType, eventArgsType, name, callEventFuncPtr) \
-{ \
-	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
-	RegisterRoutedEvent(&ev); \
-}
+
+#define LN_DEFINE_ROUTED_EVENT(ownerClass, eventArgs, var, name, ev) \
+	static StaticTypedRoutedEvent<ownerClass, eventArgs> _##var(_T(name), [](ownerClass* t, eventArgs* e) { t->ev(e); }); \
+	const RoutedEvent* ownerClass::var = &_##var;
+
+
+//{ \
+//	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
+//	RegisterRoutedEvent(&ev); \
+//}
 //
 //
 //#define LN_DEFINE_ROUTED_EVENT(classType, eventArgsType, name, onEventFuncPtr, callEventFuncPtr) \
@@ -97,11 +130,15 @@ private:
 class RoutedEventHandler
 {
 protected:
-	RoutedEventHandler() {}
+	RoutedEventHandler() : m_registerd(false) {}
 	virtual ~RoutedEventHandler() {}
 
 public:
 	virtual void Call(CoreObject* target, EventArgs* e) = 0;
+
+private:
+	friend class TypeInfo;
+	bool	m_registerd;
 };
 
 
@@ -111,9 +148,11 @@ class TypedRoutedEventHandler : public RoutedEventHandler
 public:
 	typedef std::function< void(TOwnerClass*, TEventArgs*) > Handler;
 
-	TypedRoutedEventHandler(Handler handler)
+	TypedRoutedEventHandler(const RoutedEvent* ev, Handler handler)
 		: m_handler(handler)
-	{}
+	{
+		TOwnerClass::GetClassTypeInfo()->RegisterRoutedEventHandler(ev, this);
+	}
 
 	virtual void Call(CoreObject* target, EventArgs* e)
 	{
@@ -127,11 +166,10 @@ private:
 };
 
 /// https://msdn.microsoft.com/ja-jp/library/ms597875%28v=vs.110%29.aspx
-#define LN_REGISTER_ROUTED_EVENT_HANDLER(ownerClassType, eventArgsType, eventId, handler) \
+/// LN_DEFINE_ROUTED_EVENT との違いは、イベントを受け取るものであること。
+#define LN_REGISTER_ROUTED_EVENT_HANDLER(ownerClass, eventArgs, routedEvent, handler) \
 { \
-	static ::Lumino::GUI::TypedRoutedEventHandler<ownerClassType, eventArgsType> h([](ownerClassType* t, eventArgsType* e) { t->handler(e); }); \
-	RegisterRoutedEventHandler(eventId, &h); \
+	static ::Lumino::TypedRoutedEventHandler<ownerClass, eventArgs> h(routedEvent, [](ownerClass* t, eventArgs* e) { t->handler(e); }); \
 }
 
-} // namespace GUI
 } // namespace Lumino

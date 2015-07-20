@@ -8,7 +8,7 @@
 // LNEventArgs
 //=============================================================================
 
-LN_TYPE_INFO_IMPL(LNEventArgs, GUI::EventArgs);
+LN_TYPE_INFO_IMPL(LNEventArgs, EventArgs);
 
 //LN_API LNResult LNMouseEventHandler_CreateInternal(LN_HANDLE(LNMouseEventHandler)* handler, GUI::MouseEventArgs* e)
 //{

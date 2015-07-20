@@ -174,7 +174,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 		float ratio = rect.Width / (frameWidthH * 2);	// Œ³‚Ì•‚©‚ç‰½ % ‚É‚È‚é‚©
 		frameWidthH *= ratio;
 		uvFrameWidthH *= ratio;
-		frameWidthHI = ceil( ratio * frameWidthHI);
+		frameWidthHI = (int)ceil( ratio * frameWidthHI);
 	}
 	// c•‚ª¬‚³‚¢‚½‚ßA˜g•‚à‹·‚ß‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
 	if (rect.Height < frameWidthV * 2)
@@ -182,7 +182,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 		float ratio = rect.Height / (frameWidthV * 2);	// Œ³‚Ì•‚©‚ç‰½ % ‚É‚È‚é‚©
 		frameWidthV *= ratio;
 		uvFrameWidthV *= ratio;
-		frameWidthVI = ceil(ratio * frameWidthVI);
+		frameWidthVI = (int)ceil(ratio * frameWidthVI);
 	}
 
 	RectF outerRect = rect;

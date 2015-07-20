@@ -18,7 +18,7 @@ class ScrollBar
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ScrollBar);
 public:
-	static const EventID	ScrollEvent;
+	static const RoutedEvent*	ScrollEvent;
 
 	// TODO: RoutedCommand は ID ではなく Command のポインタを直接公開した方が良いかも。
 	// button->SetCommand(Window.CloseCommand) とかしたい。

@@ -145,15 +145,15 @@ void TextRendererImplemented::Flash()
 void TextRendererImplemented::DrawSprite(const CachedGlyphInfo& info, int x, int y)
 {
 	RectF srcRect(
-		(info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
-		(info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height,
-		info.Size.Width, info.Size.Height);
+		(float)((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
+		(float)((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
+		(float)info.Size.Width, (float)info.Size.Height);
 
 	const ColorF c[4] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
 	m_spriteRenderer->DrawRequest2D(
 		Vector3(x, y, 0),
 		Vector3::Zero,
-		Vector2(info.Size.Width, info.Size.Height),
+		Vector2((float)info.Size.Width, (float)info.Size.Height),
 		m_glyphCacheTexture,
 		srcRect,
 		c);
@@ -252,7 +252,7 @@ void TextRenderer::DrawText(const char* text, int length)
 	Text::EncodingConversionResult result;
 	const ByteBuffer& utf32Buf = m_font->GetManager()->GetCharToUTF32Converter()->Convert(text, length * sizeof(char), &result);
 	const UTF32* utf32 = (const UTF32*)utf32Buf.GetConstData();
-	for (int i = 0; i < result.CharsUsed; ++i)
+	for (size_t i = 0; i < result.CharsUsed; ++i)
 	{
 		DrawChar(utf32[i]);
 	}
@@ -267,7 +267,7 @@ void TextRenderer::DrawText(const wchar_t* text, int length)
 	Text::EncodingConversionResult result;
 	const ByteBuffer& utf32Buf = m_font->GetManager()->GetWCharToUTF32Converter()->Convert(text, length * sizeof(wchar_t), &result);
 	const UTF32* utf32 = (const UTF32*)utf32Buf.GetConstData();
-	for (int i = 0; i < result.CharsUsed; ++i)
+	for (size_t i = 0; i < result.CharsUsed; ++i)
 	{
 		DrawChar(utf32[i]);
 	}
@@ -366,9 +366,9 @@ void TextRenderer::DrawChar(UTF32 ch)
 void TextRenderer::DrawSprite(const CachedGlyphInfo& info, const Point& point)
 {
 	RectF srcRect(
-		(info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
-		(info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height,
-		info.Size.Width, info.Size.Height);
+		(float)((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
+		(float)((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
+		(float)info.Size.Width, (float)info.Size.Height);
 
 	const ColorF c[4] = { ColorF::White, ColorF::White, ColorF::White, ColorF::White };
 	m_spriteRenderer->DrawRequest2D(

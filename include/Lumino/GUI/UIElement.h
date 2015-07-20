@@ -5,10 +5,10 @@
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/Property.h>
 #include "Common.h"
+#include "../RoutedEvent.h"
 #include "EventArgs.h"
 #include "DependencyObject.h"
 #include "BitmapBrush.h"	// for button
-#include "RoutedEvent.h"
 #include "ControlTemplate.h"
 
 #define LN_UI_ELEMENT_SUBCLASS_DECL(subClassName) \
@@ -25,7 +25,7 @@ namespace Lumino
 namespace GUI
 {
 //typedef String	PropertyID;
-typedef String	EventID;
+//typedef String	EventID;
 
 class CanExecuteRoutedCommandEventArgs;
 class ExecuteRoutedCommandEventArgs;
@@ -74,19 +74,19 @@ class UIElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	static const Property*	SizeProperty;
-	static const Property*	HorizontalAlignmentProperty;
-	static const Property*	VerticalAlignmentProperty;
-	static const Property*	IsHitTestProperty;
+	static const Property*		SizeProperty;
+	static const Property*		HorizontalAlignmentProperty;
+	static const Property*		VerticalAlignmentProperty;
+	static const Property*		IsHitTestProperty;
 
-	static const EventID	MouseMoveEvent;
-	static const EventID	MouseLeaveEvent;
-	static const EventID	MouseEnterEvent;
-	static const EventID	MouseDownEvent;
-	static const EventID	MouseUpEvent;
+	static const RoutedEvent*	MouseMoveEvent;
+	static const RoutedEvent*	MouseLeaveEvent;
+	static const RoutedEvent*	MouseEnterEvent;
+	static const RoutedEvent*	MouseDownEvent;
+	static const RoutedEvent*	MouseUpEvent;
 
-	static const EventID	CanExecuteRoutedCommandEvent;	///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
-	static const EventID	ExecuteRoutedCommandEvent;		///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
+	static const RoutedEvent*	CanExecuteRoutedCommandEvent;	///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
+	static const RoutedEvent*	ExecuteRoutedCommandEvent;		///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
 
 public:
 	UIElement(GUIManager* manager);
@@ -249,12 +249,12 @@ private:
 	//void CallMouseUpEvent(CoreObject* sender, MouseEventArgs* e) { MouseUp.Raise(sender, e); }
 
 protected:
-	void RegisterRoutedEvent(RoutedEvent* ev) {
-		m_routedEventList.Add(ev->GetName(), ev);
-	}
-	void RegisterRoutedEventHandler(EventID id, RoutedEventHandler* handler) {
-		m_routedEventHandlerList.Add(id, handler);
-	}
+	//void RegisterRoutedEvent(RoutedEvent* ev) {
+	//	m_routedEventList.Add(ev->GetName(), ev);
+	//}
+	//void RegisterRoutedEventHandler(EventID id, RoutedEventHandler* handler) {
+	//	m_routedEventHandlerList.Add(id, handler);
+	//}
 	void AddRoutedCommandTypeContext(RoutedCommandTypeContext* c) {
 		if (!m_routedCommandTypeContextList.Contains(c)) {	// 同じものは登録しない
 			m_routedCommandTypeContextList.Add(c);
@@ -263,49 +263,22 @@ protected:
 
 public:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void RaiseEvent(const String& eventName, CoreObject* sender, EventArgs* e)
+	void RaiseEvent(const RoutedEvent* ev, CoreObject* sender, EventArgs* e)
 	{
 		e->Sender = sender;
-		RaiseEventInternal(eventName, sender, e);
+		RaiseEventInternal(ev, e);
 	}
 
 private:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void RaiseEventInternal(const String& eventName, CoreObject* sender, EventArgs* e)
+	void RaiseEventInternal(const RoutedEvent* ev, EventArgs* e)
 	{
-		RoutedEventHandler* handler;
-		if (m_routedEventHandlerList.TryGetValue(eventName, &handler))
-		{
-			handler->Call(this, e);
-			if (e->Handled) {
-				return;
-			}
-		}
-
-		// this に AddHandler されているイベントハンドラを呼び出す。
-		LN_FOREACH(RoutedEventList::Pair& pair, m_routedEventList)
-		{
-			if (pair.first == eventName) {
-				pair.second->CallEvent(this/*, sender*/, e);
-				break;	// ev と同じイベントは1つしかリスト内に無いはず
-			}
-		}
+		CoreObject::RaiseEventInternal(ev, e);
 
 		// bubble
 		if (!e->Handled && m_parent != NULL)
 		{
-			m_parent->RaiseEventInternal(eventName, sender, e);
-
-			//LN_FOREACH(RoutedEventList::Pair& pair, m_parent->m_routedEventList)
-			//{
-			//	if (pair.first == eventName) {
-			//		pair.second->CallEvent(this, sender, e);
-			//		//pair.second->Raise(m_parent, sender, e);	// 親のOn～ が呼ばれる
-			//		break;	// ev と同じイベントは1つしかリスト内に無いはず
-			//	}
-			//}
-
-			//m_parent->RaiseEvent(eventName, sender, e);
+			m_parent->RaiseEventInternal(ev, e);
 		}
 	}
 
@@ -357,11 +330,11 @@ protected:
 	EventDataStore	m_eventDataStore;
 	//Event02<CoreObject*, MouseEventArgs*> m_eventMouseMove;
 
-	typedef SortedArray<String, RoutedEvent*>	RoutedEventList;
-	RoutedEventList	m_routedEventList;
+	//typedef SortedArray<String, RoutedEvent*>	RoutedEventList;
+	//RoutedEventList	m_routedEventList;
 
-	typedef SortedArray<EventID, RoutedEventHandler*>	RoutedEventHandlerList;
-	RoutedEventHandlerList	m_routedEventHandlerList;
+	//typedef SortedArray<EventID, RoutedEventHandler*>	RoutedEventHandlerList;
+	//RoutedEventHandlerList	m_routedEventHandlerList;
 
 	/// あるクラスに含まれる RoutedCommand のリストのリスト。このリストには基底クラスから順に詰まっている
 	Array<RoutedCommandTypeContext*>	m_routedCommandTypeContextList;
@@ -372,11 +345,11 @@ protected:
 	VerticalAlignment	m_verticalAlignment;
 
 
-
-private:
+public:	// TODO: private にしたい
 	void Handler_CanExecuteRoutedCommandEvent(CanExecuteRoutedCommandEventArgs* e);
 	void Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs* e);
 
+private:
 	void TemplateBindingSource_PropertyChanged(CoreObject* sender, PropertyChangedEventArgs* e);
 
 
