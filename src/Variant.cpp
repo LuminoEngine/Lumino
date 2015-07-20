@@ -140,6 +140,8 @@ RoutedEventHandler* TypeInfo::FindRoutedEventHandler(const RoutedEvent* ev) cons
 // CoreObject
 //=============================================================================
 
+LN_DEFINE_ROUTED_EVENT(CoreObject, PropertyChangedEventArgs, PropertyChangedEvent, "PropertyChanged", PropertyChanged);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -293,9 +295,8 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, EventArgs* e)
 //-----------------------------------------------------------------------------
 void CoreObject::OnPropertyChanged(const String& name, const Variant& newValue)
 {
-	PropertyChangedEventArgs e;
-	e.PropertyName = name;
-	e.NewValue = newValue;
+	// TODO: スタックに確保するのは危険。言語バインダで使えなくなる。
+	PropertyChangedEventArgs e(name, newValue);
 	PropertyChanged.Raise(&e);
 }
 

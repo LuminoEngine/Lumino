@@ -26,6 +26,25 @@ protected:
 
 };
 
+
+
+class PropertyChangedEventArgs
+	: public EventArgs
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	PropertyChangedEventArgs(const String& propertyName, const Variant& newValue);
+	virtual ~PropertyChangedEventArgs();
+
+public:
+	String	PropertyName;
+	Variant	NewValue;
+};
+
+
+
+
+
 /**
 	@brief		
 */

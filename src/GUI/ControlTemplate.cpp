@@ -493,18 +493,18 @@ Trigger::~Trigger()
 //-----------------------------------------------------------------------------
 void Trigger::Invoke(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target)
 {
-	LN_THROW(0, NotImplementedException);
-	//if (routedEvent == CoreObject::PropertyChangedEvent)
-	//{
-	//	auto e2 = static_cast<const PropertyChangedEventArgs*>(e);
-	//	if (m_property == e2->Property &&
-	//		m_value == e2->NewValue)
-	//	{
-	//		for (Setter* setter : *m_setterList) {
-	//			target->SetPropertyValue(setter->GetProperty(), setter->GetValue());
-	//		}
-	//	}
-	//}
+	//LN_THROW(0, NotImplementedException);
+	if (routedEvent == CoreObject::PropertyChangedEvent)
+	{
+		auto e2 = static_cast<const PropertyChangedEventArgs*>(e);
+		if (m_property->GetName() == e2->PropertyName &&	// できれば文字列ではなくポインタ比較したい…
+			m_value == e2->NewValue)
+		{
+			for (Setter* setter : *m_setterList) {
+				target->SetPropertyValue(setter->GetProperty(), setter->GetValue());
+			}
+		}
+	}
 }
 
 //=============================================================================

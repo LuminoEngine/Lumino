@@ -209,7 +209,6 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/Property.h
 	include/Lumino/GUI/RoutedCommand.h
-	include/Lumino/GUI/RoutedEvent.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/Controls/ButtonBase.h
@@ -254,9 +253,11 @@ set(LN_SOURCES_Application
 	include/Lumino/BindingSupport.h
 	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Property.h
+	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	src/Application.cpp
 	src/Property.cpp
+	src/RoutedEvent.cpp
 	src/Variant.cpp
 )
 

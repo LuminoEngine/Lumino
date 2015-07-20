@@ -79,6 +79,7 @@ class CoreObject
 public:
 	static const int IsArrayObject = 0;
 public:
+	static const RoutedEvent*	PropertyChangedEvent;
 
 public:
 	CoreObject();
@@ -568,11 +569,5 @@ public:
 };
 
 
-class PropertyChangedEventArgs
-{
-public:
-	String	PropertyName;
-	Variant	NewValue;
-};
 
 } // namespace Lumino

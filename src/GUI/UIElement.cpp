@@ -343,9 +343,11 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 void UIElement::OnPropertyChanged(const String& name, const Variant& newValue)
 {
 	CoreObject::OnPropertyChanged(name, newValue);
-	//if (m_style != NULL) {
-	//	m_style->in
-	//}
+	if (m_style != NULL)
+	{
+		RefPtr<PropertyChangedEventArgs> args(m_manager->GetEventArgsPool()->Create<PropertyChangedEventArgs>(name, newValue));
+		m_style->InvoleTriggers(CoreObject::PropertyChangedEvent, args, this);
+	}
 }
 
 //-----------------------------------------------------------------------------

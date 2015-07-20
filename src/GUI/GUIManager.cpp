@@ -5,6 +5,13 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/20]
+		RoutedEvent も、とりあえず Lumino 名前空間においてみる。
+		できれば GUI に持ってきたいけど、CoreObject の PropertyChanged と結びついている。
+		PropertyChanged ごと GUI に持ってくるのはアリだが、
+		TypeInfo でも持っている。こっちは具体的な案が固まってからにする。
+
+
 	[2015/7/18] 実際に Style と Template を適用するタイミング
 		WPFでは…
 			Style は、Stype.set。
@@ -1382,6 +1389,7 @@ void GUIManager::BuildDefaultTheme()
 
 			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
 			track->SetTypeName(_T("Track"));
+			track->SetPropertyValue(Track::OrientationProperty, Orientation::Horizontal);
 			track->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
 			grid1->AddChild(track);
 
@@ -1422,6 +1430,7 @@ void GUIManager::BuildDefaultTheme()
 
 			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
 			track->SetTypeName(_T("Track"));
+			track->SetPropertyValue(Track::OrientationProperty, Orientation::Vertical);
 			track->SetPropertyValue(Grid::RowProperty, 1);	// 添付プロパティ
 			grid1->AddChild(track);
 
