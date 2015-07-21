@@ -47,6 +47,7 @@
 #include "Lumino/GUI/Controls/Track.h"
 #include "Lumino/GUI/Controls/Image.h"
 #include "Lumino/GUI/Controls/ScrollBar.h"
+#include "Lumino/GUI/Controls/ScrollViewer.h"
 #include "Lumino/GUI/Controls/ListBox.h"
 
 #include "Lumino/Application.h"

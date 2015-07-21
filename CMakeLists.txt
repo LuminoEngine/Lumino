@@ -214,6 +214,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Controls/ButtonBase.h
 	include/Lumino/GUI/Controls/Grid.h
 	include/Lumino/GUI/Controls/Image.h
+	include/Lumino/GUI/Controls/IScrollInfo.h
 	include/Lumino/GUI/Controls/ListBox.h
 	include/Lumino/GUI/Controls/Panel.h
 	include/Lumino/GUI/Controls/RepeatButton.h

@@ -57,6 +57,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollViewer);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ScrollViewer* ScrollViewer::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ScrollViewer>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ScrollViewer::ScrollViewer(GUIManager* manager)
 	: ContentControl(manager)
 {
@@ -68,6 +79,23 @@ ScrollViewer::ScrollViewer(GUIManager* manager)
 ScrollViewer::~ScrollViewer()
 {
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF ScrollViewer::MeasureOverride(const SizeF& constraint)
+{
+	return ContentControl::MeasureOverride(constraint);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF ScrollViewer::ArrangeOverride(const SizeF& finalSize)
+{
+	return ContentControl::ArrangeOverride(finalSize);
+}
+
 
 } // namespace GUI
 } // namespace Lumino

@@ -930,6 +930,7 @@
 #include <Lumino/GUI/Controls/Grid.h>
 #include <Lumino/GUI/Controls/Image.h>
 #include <Lumino/GUI/Controls/ScrollBar.h>
+#include <Lumino/GUI/Controls/ScrollViewer.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/GUIManager.h>
 
@@ -1447,6 +1448,65 @@ void GUIManager::BuildDefaultTheme()
 
 		Trigger* trigger2 = style->AddPropertyTrigger(ScrollBar::OrientationProperty, Orientation::Vertical);
 		trigger2->AddSetter(Control::TemplateProperty, scrollBarTemplateV);
+
+		m_defaultTheme->AddStyle(style);
+	}
+
+	// ScrollViewer
+	{
+		auto style = RefPtr<Style>::Create();
+		style->SetTargetType(ScrollViewer::GetClassTypeInfo());
+
+
+		auto controlTemplate = RefPtr<ControlTemplate>::Create();
+		controlTemplate->SetTargetType(_T("ScrollViewer"));
+		style->AddSetter(Control::TemplateProperty, controlTemplate);
+
+		auto grid1 = RefPtr<UIElementFactory>::Create(this);
+		grid1->SetTypeName(_T("Grid"));
+		controlTemplate->SetVisualTreeRoot(grid1);
+
+		// ColumnDefinitions
+		auto columns = RefPtr<UIElementFactorylist>::Create();
+		grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
+
+		auto col1 = RefPtr<UIElementFactory>::Create(this);
+		col1->SetTypeName(_T("ColumnDefinition"));
+		col1->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
+		columns->Add(col1);
+
+		auto col2 = RefPtr<UIElementFactory>::Create(this);
+		col2->SetTypeName(_T("ColumnDefinition"));
+		col2->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f/*ColumnDefinition::Auto*/);
+		columns->Add(col2);
+
+		// RowDefinitions
+		auto rows = RefPtr<UIElementFactorylist>::Create();
+		grid1->SetPropertyValue(Grid::RowDefinitionsProperty, columns);
+
+		auto row1 = RefPtr<UIElementFactory>::Create(this);
+		row1->SetTypeName(_T("RowDefinition"));
+		row1->SetPropertyValue(RowDefinition::HeightProperty, RowDefinition::Star);
+		rows->Add(row1);
+
+		auto row2 = RefPtr<UIElementFactory>::Create(this);
+		row2->SetTypeName(_T("RowDefinition"));
+		row2->SetPropertyValue(RowDefinition::HeightProperty, 16.0f/* RowDefinition::Auto*/);
+		rows->Add(row2);
+
+		// V ScrollBar
+		auto vScrollBar = RefPtr<UIElementFactory>::Create(this);
+		vScrollBar->SetTypeName(_T("ScrollBar"));
+		vScrollBar->SetPropertyValue(ScrollBar::OrientationProperty, Orientation::Vertical);
+		vScrollBar->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
+		grid1->AddChild(vScrollBar);
+
+		// H ScrollBar
+		auto hScrollBar = RefPtr<UIElementFactory>::Create(this);
+		hScrollBar->SetTypeName(_T("ScrollBar"));
+		hScrollBar->SetPropertyValue(ScrollBar::OrientationProperty, Orientation::Horizontal);
+		hScrollBar->SetPropertyValue(Grid::RowProperty, 1);		// 添付プロパティ
+		grid1->AddChild(hScrollBar);
 
 		m_defaultTheme->AddStyle(style);
 	}

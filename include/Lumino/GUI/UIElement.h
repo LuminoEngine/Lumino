@@ -96,6 +96,10 @@ public:
 	UIElement* GetParent() const { return m_parent; }
 
 public:
+
+	void SetName(const String& name) { m_name = name; }
+	const String& GetName() const { return m_name; }
+
 	// Property
 
 	//
@@ -319,6 +323,7 @@ protected:
 
 
 	GUIManager*				m_manager;
+	String					m_name;
 	UIElement*				m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
 
 	VisualStateInstance*	m_visualStateInstance;
