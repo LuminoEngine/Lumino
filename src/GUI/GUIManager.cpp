@@ -981,19 +981,20 @@ void GUIManager::Initialize(const ConfigData& configData)
 	m_mainWindow = configData.MainWindow;
 
 
-	RegisterFactory(ContentPresenter::TypeID,	[](GUIManager* m) -> CoreObject* { return ContentPresenter::Create(m); });
-	RegisterFactory(ItemsPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ItemsPresenter::Create(m); });
-	RegisterFactory(ButtonChrome::TypeID,		[](GUIManager* m) -> CoreObject* { return ButtonChrome::Create(m); });
-	RegisterFactory(Button::TypeID,				[](GUIManager* m) -> CoreObject* { return Button::Create(m); });
-	RegisterFactory(ListBoxChrome::TypeID,		[](GUIManager* m) -> CoreObject* { return ListBoxChrome::Create(m); });
-	RegisterFactory(ThumbChrome::TypeID,		[](GUIManager* m) -> CoreObject* { return ThumbChrome::Create(m); });
-	RegisterFactory(Thumb::TypeID,				[](GUIManager* m) -> CoreObject* { return Thumb::Create(m); });
-	RegisterFactory(Track::TypeID,				[](GUIManager* m) -> CoreObject* { return Track::Create(m); });
-	RegisterFactory(Grid::TypeID,				[](GUIManager* m) -> CoreObject* { return Grid::Create(m); });
-	RegisterFactory(ColumnDefinition::TypeID,	[](GUIManager* m) -> CoreObject* { return ColumnDefinition::Create(m); });
-	RegisterFactory(RowDefinition::TypeID,		[](GUIManager* m) -> CoreObject* { return RowDefinition::Create(m); });
-	RegisterFactory(Image::TypeID,				[](GUIManager* m) -> CoreObject* { return Image::Create(m); });
-	RegisterFactory(ScrollBar::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollBar::Create(m); });
+	RegisterFactory(ContentPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ContentPresenter::Create(m); });
+	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManager* m) -> CoreObject* { return ItemsPresenter::Create(m); });
+	RegisterFactory(ButtonChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ButtonChrome::Create(m); });
+	RegisterFactory(Button::TypeID,					[](GUIManager* m) -> CoreObject* { return Button::Create(m); });
+	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ListBoxChrome::Create(m); });
+	RegisterFactory(ThumbChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ThumbChrome::Create(m); });
+	RegisterFactory(Thumb::TypeID,					[](GUIManager* m) -> CoreObject* { return Thumb::Create(m); });
+	RegisterFactory(Track::TypeID,					[](GUIManager* m) -> CoreObject* { return Track::Create(m); });
+	RegisterFactory(Grid::TypeID,					[](GUIManager* m) -> CoreObject* { return Grid::Create(m); });
+	RegisterFactory(ColumnDefinition::TypeID,		[](GUIManager* m) -> CoreObject* { return ColumnDefinition::Create(m); });
+	RegisterFactory(RowDefinition::TypeID,			[](GUIManager* m) -> CoreObject* { return RowDefinition::Create(m); });
+	RegisterFactory(Image::TypeID,					[](GUIManager* m) -> CoreObject* { return Image::Create(m); });
+	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::Create(m); });
+	RegisterFactory(ScrollContentPresenter::TypeID,	[](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::Create(m); });
 
 	
 
@@ -1218,6 +1219,8 @@ EXIT:
 //-----------------------------------------------------------------------------
 void GUIManager::BuildDefaultTheme()
 {
+	// TODO: このへんは WPF の ScrollViewer.CreateDefaultControlTemplate() みたいにまとめたい
+
 	// RootPane
 	{
 		RefPtr<Style> style = RefPtr<Style>::Create();
@@ -1494,8 +1497,15 @@ void GUIManager::BuildDefaultTheme()
 		row2->SetPropertyValue(RowDefinition::HeightProperty, 16.0f/* RowDefinition::Auto*/);
 		rows->Add(row2);
 
+		// ScrollContentPresenter
+		auto scrollContentPresenter = RefPtr<UIElementFactory>::Create(this);
+		scrollContentPresenter->SetKeyName(ScrollViewer::PART_ScrollContentPresenterTemplateName);
+		scrollContentPresenter->SetTypeName(_T("ScrollContentPresenter"));
+		grid1->AddChild(scrollContentPresenter);
+
 		// V ScrollBar
 		auto vScrollBar = RefPtr<UIElementFactory>::Create(this);
+		vScrollBar->SetKeyName(_T("PART_VerticalScrollBar"));
 		vScrollBar->SetTypeName(_T("ScrollBar"));
 		vScrollBar->SetPropertyValue(ScrollBar::OrientationProperty, Orientation::Vertical);
 		vScrollBar->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
@@ -1503,6 +1513,7 @@ void GUIManager::BuildDefaultTheme()
 
 		// H ScrollBar
 		auto hScrollBar = RefPtr<UIElementFactory>::Create(this);
+		hScrollBar->SetKeyName(_T("PART_HorizontalScrollBar"));
 		hScrollBar->SetTypeName(_T("ScrollBar"));
 		hScrollBar->SetPropertyValue(ScrollBar::OrientationProperty, Orientation::Horizontal);
 		hScrollBar->SetPropertyValue(Grid::RowProperty, 1);		// 添付プロパティ

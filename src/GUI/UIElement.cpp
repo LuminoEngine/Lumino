@@ -229,9 +229,9 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	//m_desiredSize.Height = std::min(size.Height, m_desiredSize.Height);
 
 	// 子要素
-	if (m_templateChild != NULL) {
-		m_templateChild->MeasureLayout(m_desiredSize);
-	}
+	//if (m_templateChild != NULL) {
+	//	m_templateChild->MeasureLayout(m_desiredSize);
+	//}
 	//LN_FOREACH(UIElement* child, m_visualChildren) {
 	//	child->MeasureLayout(m_desiredSize);
 	//}
@@ -254,10 +254,10 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	m_finalLocalRect.Height = renderSize.Height;
 
 	// 子要素 (もし複数あれば m_finalLocalRect の領域に重ねられるように配置される)
-	if (m_templateChild != NULL) {
-		RectF rect(0, 0, m_finalLocalRect.Width, m_finalLocalRect.Height);
-		m_templateChild->ArrangeLayout(rect);
-	}
+	//if (m_templateChild != NULL) {
+	//	RectF rect(0, 0, m_finalLocalRect.Width, m_finalLocalRect.Height);
+	//	m_templateChild->ArrangeLayout(rect);
+	//}
 	//LN_FOREACH(UIElement* child, m_visualChildren) {
 	//	child->ArrangeLayout(m_finalLocalRect;
 	//}
@@ -517,7 +517,6 @@ void UIElement::SetTemplateChild(UIElement* child)
 	}
 	if (child != NULL)
 	{
-		LN_VERIFY_RETURN(child->m_templateParent == NULL);
 		RefPtr<UIElement> t(child, true);
 		m_templateChild = child;
 		m_visualChildren.Add(child);
@@ -860,18 +859,6 @@ SizeF ContentPresenter::MeasureOverride(const SizeF& constraint)
 		return m_content->GetDesiredSize();
 	}
 	return UIElement::MeasureOverride(constraint);
-
-#if 0
-	SizeF desiredSize = UIElement::MeasureOverride(constraint);
-	if (m_content != NULL)
-	{
-		m_content->MeasureLayout(constraint);
-		const SizeF& contentDesiredSize = m_content->GetDesiredSize();
-		desiredSize.Width  = std::max(desiredSize.Width, contentDesiredSize.Width);
-		desiredSize.Height = std::max(desiredSize.Height, contentDesiredSize.Height);
-	}
-	return desiredSize;
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1004,6 +991,29 @@ void Control::OnApplyTemplate(CombinedLocalResource* localResource)
 	//}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF Control::MeasureOverride(const SizeF& constraint)
+{
+	if (m_templateChild != NULL) {
+		m_templateChild->MeasureLayout(constraint);
+		return m_templateChild->GetDesiredSize();
+	}
+	return UIElement::MeasureOverride(constraint);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF Control::ArrangeOverride(const SizeF& finalSize)
+{
+	if (m_templateChild != NULL) {
+		m_templateChild->ArrangeLayout(RectF(PointF::Zero, finalSize));
+	}
+	return UIElement::ArrangeOverride(finalSize);
+}
+
 //void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //{
 //	// ローカルリソースを更新する
@@ -1085,9 +1095,9 @@ void ContentControl::SetContent(Variant value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ContentControl::PollingTemplateChildCreated(UIElement* element)
+void ContentControl::PollingTemplateChildCreated(UIElement* newElement)
 {
-	ContentPresenter* presenter = dynamic_cast<ContentPresenter*>(element);
+	ContentPresenter* presenter = dynamic_cast<ContentPresenter*>(newElement);
 	if (presenter != NULL) {
 		m_contentPresenter = presenter;
 	}

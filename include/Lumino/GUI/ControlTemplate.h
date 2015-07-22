@@ -32,8 +32,11 @@ public:
 	UIElementFactory(GUIManager* manager);
 	virtual ~UIElementFactory();
 
+	void SetKeyName(const String& name) { m_keyName = name; }
+
 	/// この UIElementFactory が生成するインスタンスの型名
 	void SetTypeName(const String& typeFullName) { m_targetTypeFullName = typeFullName; }
+
 
 	void SetPropertyValue(const Property* prop, const Variant& value) { m_propertyValueList.SetValue(prop, value); }
 	Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
@@ -85,9 +88,10 @@ private:
 	typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
 	GUIManager*						m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
+	String							m_keyName;
 	String							m_targetTypeFullName;
 	PropertyInfoList				m_propertyInfoList;
-	PropertyValueList			m_propertyValueList;
+	PropertyValueList				m_propertyValueList;
 	Array<UIElementFactory*>		m_children;
 };
 

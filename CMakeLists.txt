@@ -226,6 +226,7 @@ set(LN_SOURCES_GUI
 	src/GUI/ContentElement.cpp
 	src/GUI/ControlTemplate.cpp
 	src/GUI/EventArgs.cpp
+	src/GUI/GUIHelper.h
 	src/GUI/GUIManager.cpp
 	src/GUI/RoutedCommand.cpp
 	src/GUI/UIElement.cpp

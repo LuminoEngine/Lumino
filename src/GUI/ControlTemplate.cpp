@@ -4,6 +4,7 @@
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
+#include "GUIHelper.h"
 
 namespace Lumino
 {
@@ -166,14 +167,6 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		LN_THROW(0, InvalidOperationException);
 	}
 
-	//std::map<String, int> tmp;
-	////std::pair<String, int>& y;
-	//typedef std::pair<String, int> tttt;
-	//using namespace std;
-	//LN_FOREACH(pair<String, int> y, tmp)
-	//{
-	//}
-
 	// プロパティを設定する
 	for (PropertyValueList::Pair& pair : m_propertyValueList)
 	{
@@ -219,9 +212,13 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		}
 	}
 
+	// 生成したオブジェクトが UIElement であればバインディングなどの特殊な処理を行う
 	UIElement* element = dynamic_cast<UIElement*>(obj);
 	if (element != NULL)
 	{
+		GUIHelper::UIElement_SetKeyName(element, m_keyName);
+		GUIHelper::UIElement_SetTemplateParent(element, rootLogicalParent);
+
 		LN_FOREACH(PropertyInfoList::Pair& pair, m_propertyInfoList)
 		{
 			if (pair.second.Kind == PropertyKind_TemplateBinding)

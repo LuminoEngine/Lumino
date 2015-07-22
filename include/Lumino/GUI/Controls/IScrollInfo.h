@@ -17,6 +17,8 @@ class IScrollInfo
 {
 public:
 	/// 水平軸上にスクロールできるかどうかを示す値を設定します。
+	/// @note	スクロールバーを表示しない設定になっていたり、そもそも存在しない場合に false がセットされる。
+	///			IScrollInfo の実装クラスで不要な計算を行わないなどのために参照する。
 	virtual void SetCanHorizontallyScroll(bool enabled) = 0;
 
 	/// 水平軸上にスクロールできるかどうかを示す値を取得します。
@@ -40,20 +42,20 @@ public:
 	/// コンテンツに対する実際の表示領域の縦幅を取得します。
 	virtual float GetViewportHeight() const = 0;
 
+	/// スクロールしたコンテンツの水平オフセットを設定します。
+	virtual void SetHorizontalOffset(float offset) = 0;
+
 	/// スクロールしたコンテンツの水平オフセットを取得します。
 	virtual float GetHorizontalOffset() const = 0;
 
 	/// スクロールしたコンテンツの水平オフセットを設定します。
-	virtual void SetHorizontalOffset(float offset) const = 0;
+	virtual void SetVerticalOffset(float offset) = 0;
 
 	/// スクロールしたコンテンツの垂直オフセットを取得します。
 	virtual float GetVerticalOffset() const = 0;
 
-	/// スクロールしたコンテンツの水平オフセットを設定します。
-	virtual void SetVerticalOffset(float offset) const = 0;
-
 	/// スクロール動作を制御する ScrollViewer 要素を設定します。
-	virtual void SetScrollOwner(ScrollViewer* owner) const = 0;
+	virtual void SetScrollOwner(ScrollViewer* owner) = 0;
 
 	/// コンテンツ内を 1 論理単位ずつ上にスクロールします。
 	virtual void LineUp() = 0;
@@ -96,6 +98,24 @@ public:
 	//Rect MakeVisible(UIElement visual, Rect rectangle);
 };
 
+struct ScrollData
+{
+	ScrollViewer*	ScrollOwner;
+	bool			CanHorizontallyScroll;
+	bool			CanVerticallyScroll;
+	PointF			Offset;
+	SizeF			Extent;
+	SizeF			Viewport;
+
+	ScrollData()
+		: ScrollOwner(NULL)
+		, CanHorizontallyScroll(false)
+		, CanVerticallyScroll(false)
+		, Offset(PointF::Zero)
+		, Extent(SizeF::Zero)
+		, Viewport(SizeF::Zero)
+	{}
+};
 
 } // namespace GUI
 } // namespace Lumino

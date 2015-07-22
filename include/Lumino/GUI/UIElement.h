@@ -97,8 +97,7 @@ public:
 
 public:
 
-	void SetName(const String& name) { m_name = name; }
-	const String& GetName() const { return m_name; }
+	const String& GetKeyName() const { return m_keyName; }
 
 	// Property
 
@@ -247,7 +246,7 @@ private:
 
 	void UpdateLocalResource();
 protected:
-	virtual void PollingTemplateChildCreated(UIElement* element) {}
+	virtual void PollingTemplateChildCreated(UIElement* newElement) {}
 
 private:
 	// TypedRoutedEvent からコールバックされる。On～とは別に、単にイベントを発生させるコールバクとして必要。(TypedRoutedEvent は状態を持てないので)
@@ -321,9 +320,9 @@ protected:
 	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
 
 
-
+	friend class GUIHelper;
 	GUIManager*				m_manager;
-	String					m_name;
+	String					m_keyName;
 	UIElement*				m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
 
 	VisualStateInstance*	m_visualStateInstance;
@@ -384,7 +383,7 @@ private:
 protected:
 	RefPtr<Style>		m_style;
 	RefPtr<UIElement>	m_templateChild;
-	UIElement*			m_templateParent;
+	UIElement*			m_templateParent;		///< テンプレートのルート要素。例えば ScrollViewer - Grid - ScrollContentPresenter という階層がある場合、ScrollContentPresenter.m_templateParent は ScrollViewer を指す。
 
 	// このリストに追加された UIElement は、OnEvent、Render、ヒットテスト等がこのクラスより自動的に呼ばれる。
 	// ただし、レイアウト関係はノータッチ。Measure や Arrange は呼ばれない。
@@ -555,6 +554,9 @@ public:
 protected:
 	// override UIElement
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
 	//friend class UIElementFactory;
@@ -606,7 +608,7 @@ protected:
 	virtual void AddChild(const Variant& value) { SetContent(value); }
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
-	virtual void PollingTemplateChildCreated(UIElement* element);
+	virtual void PollingTemplateChildCreated(UIElement* newElement);
 
 protected:
 	// override UIElement
