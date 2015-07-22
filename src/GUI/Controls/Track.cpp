@@ -84,9 +84,11 @@ Track::Track(GUIManager* manager)
 	//LN_DEFINE_PROPERTY		(Track, Thumb*, ThumbProperty, &Track::SetThumb, &Track::GetThumb, NULL);
 	//LN_DEFINE_PROPERTY		(Track, ButtonBase*, IncreaseButtonProperty, &Track::SetIncreaseButton, &Track::GetIncreaseButton, NULL);
 
+#if 0
 	// Register handler
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragStartedEvent, Handler_Thumb_DragStarted);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragDeltaEvent, Handler_Thumb_DragDelta);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -121,6 +123,23 @@ void Track::SetIncreaseButton(ButtonBase* button)
 {
 	UpdateComponent(m_increaseButton, button);
 	m_increaseButton = button;
+}
+
+//-----------------------------------------------------------------------------
+// 座標移動量を値の差分に変換する
+//-----------------------------------------------------------------------------
+float Track::ValueFromDistance(float horizontal, float vertical)
+{
+	float scale = 1;//IsDirectionReversed ? -1 : 1;
+
+	if (m_orientation == Orientation::Horizontal)
+	{
+		return scale * horizontal * m_density;
+	}
+	else
+	{
+		return -1 * scale * vertical * m_density;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -195,7 +214,6 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 	}
 	else
 	{
-		// ビューサイズが関係ない場合の計算。つまり、Slider コントロール用
 		CalcScrollBarComponentsSize(trackLength, m_viewportSize, &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 
@@ -346,6 +364,7 @@ void Track::CalcScrollBarComponentsSize(
 	m_density = range / remainingTrackLength;
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -369,6 +388,7 @@ void Track::Handler_Thumb_DragDelta(DragEventArgs* e)
 	if (m_value < m_minimum) { m_value = m_minimum; }
 	if (m_value > m_maximum) { m_value = m_maximum; }
 }
+#endif
 
 } // namespace GUI
 } // namespace Lumino

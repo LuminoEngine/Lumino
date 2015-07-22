@@ -68,21 +68,21 @@ public:
 	bool		IsControl;	///< Ctrl キーが押されている場合 true
 };
 
-/**
-	@brief	スクロールイベントの引数を表します。
-*/
-class ScrollEventArgs
-	: public EventArgs
-{
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
-public:
-	ScrollEventArgs();
-	virtual ~ScrollEventArgs();
-
-public:
-	double			NewValue;	///< 新しい値
-	//ScrollEventType	EventType;	///< スクロールイベントの種類
-};
+///**
+//	@brief	スクロールイベントの引数を表します。
+//*/
+//class ScrollEventArgs
+//	: public EventArgs
+//{
+//	LN_CORE_OBJECT_TYPE_INFO_DECL();
+//public:
+//	ScrollEventArgs(float newValue);
+//	virtual ~ScrollEventArgs();
+//
+//public:
+//	double			NewValue;	///< 新しい値
+//	//ScrollEventType	EventType;	///< スクロールイベントの種類
+//};
 
 
 /**

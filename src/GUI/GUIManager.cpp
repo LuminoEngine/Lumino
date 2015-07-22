@@ -1393,6 +1393,7 @@ void GUIManager::BuildDefaultTheme()
 
 			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
 			track->SetTypeName(_T("Track"));
+			track->SetKeyName(ScrollBar::PART_TrackKeyName);
 			track->SetPropertyValue(Track::OrientationProperty, Orientation::Horizontal);
 			track->SetPropertyValue(Grid::ColumnProperty, 1);	// 添付プロパティ
 			grid1->AddChild(track);
@@ -1434,6 +1435,7 @@ void GUIManager::BuildDefaultTheme()
 
 			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
 			track->SetTypeName(_T("Track"));
+			track->SetKeyName(ScrollBar::PART_TrackKeyName);
 			track->SetPropertyValue(Track::OrientationProperty, Orientation::Vertical);
 			track->SetPropertyValue(Grid::RowProperty, 1);	// 添付プロパティ
 			grid1->AddChild(track);

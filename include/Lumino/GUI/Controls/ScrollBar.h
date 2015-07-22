@@ -2,12 +2,29 @@
 #pragma once
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
+#include "Thumb.h"
+#include "Track.h"
 #include "Panel.h"
 
 namespace Lumino
 {
 namespace GUI
 {
+
+/**
+	@brief		ScrollBar のスクロールイベントの引数です。
+*/
+class ScrollEventArgs
+	: public EventArgs
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	ScrollEventArgs(float newValue) { NewValue = newValue; }
+	virtual ~ScrollEventArgs() {}
+
+public:
+	float NewValue;		///< 新しい値
+};
 
 /**
 	@brief
@@ -18,6 +35,8 @@ class ScrollBar
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ScrollBar);
 public:
+	static const String PART_TrackKeyName;
+
 	static const Property*	OrientationProperty;
 
 	static const RoutedEvent*	ScrollEvent;
@@ -75,8 +94,18 @@ public:
 
 	/** @} */
 
+	// TODO:仮
+	Event01<ScrollEventArgs*>	Scroll;
+
 protected:
+	virtual void PollingTemplateChildCreated(UIElement* newElement);
 	virtual void OnScroll(ScrollEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
+
+private:
+	void UpdateValue(float horizontalDragDelta, float verticalDragDelta);
+	void ChangeValue(float newValue/*, bool defer*/);
+	void Handler_Thumb_DragStarted(DragEventArgs* e);
+	void Handler_Thumb_DragDelta(DragEventArgs* e);
 
 private:
 	float				m_value;
@@ -85,6 +114,9 @@ private:
 	Orientation			m_orientation;
 	Event01<ScrollEventArgs*>	m_scrollEvent;
 
+	Track*				m_track;	///< VisualTree 内の Track
+
+	float				m_dragStartValue;	///< ドラッグ開始時の m_value
 };
 
 

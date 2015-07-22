@@ -81,6 +81,9 @@ public:
 	/// スクロール可能なコンテンツの中で表示される部分のサイズを取得します。
 	float GetViewportSize() const { return m_viewportSize; }
 
+public:
+	float ValueFromDistance(float horizontal, float vertical);
+
 protected:
 	virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
 	virtual void MeasureLayout(const SizeF& availableSize);
@@ -95,8 +98,10 @@ private:
 	void CalcSliderComponentsSize(float trackLength, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
 	void CalcScrollBarComponentsSize(float trackLength, float viewportSize, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
 
+#if 0
 	void Handler_Thumb_DragStarted(DragEventArgs* e);
 	void Handler_Thumb_DragDelta(DragEventArgs* e);
+#endif
 
 private:
 	float				m_value;
@@ -108,7 +113,9 @@ private:
 	RefPtr<ButtonBase>	m_increaseButton;
 	float				m_viewportSize;
 	float				m_density;
+#if 0
 	float				m_dragStartValue;	///< ドラッグ開始時の m_value
+#endif
 
 	//Delegate01
 };
