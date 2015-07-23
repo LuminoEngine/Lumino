@@ -165,6 +165,8 @@ private:
 
 	void Handler_ScrollBar_Scroll(ScrollEventArgs* e);
 
+	void ScrollViewer_LayoutUpdated(EventArgs* e);
+
 private:
 	ScrollContentPresenter*	m_scrollContentPresenter;	///< VisualTree “à‚Ì ScrollContentPresenter
 	ScrollBar*				m_verticalScrollBar;		///< VisualTree “à‚Ì VerticalScrollBar

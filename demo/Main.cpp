@@ -110,7 +110,7 @@ int main()
 		RefPtr<GUI::ScrollViewer> scrollViewer = GUI::ScrollViewer::Create(app->GetGUIManager());
 		workbench1->SetContent(scrollViewer);
 
-		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("Penguins.png")));
+		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("C:/Users/admin/Pictures/éQçl/5011525.png")));
 		RefPtr<GUI::Image> image1(LN_NEW GUI::Image(app->GetGUIManager()));
 		image1->SetSourceTexture(tex1);
 		scrollViewer->SetContent(image1);

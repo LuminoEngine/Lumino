@@ -192,10 +192,10 @@ void UIElement::UpdateLocalResource()
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
 	// 子要素を優先
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		UIElement* e = child->CheckMouseHoverElement(globalPt);
-		if (e != NULL) { return e; }
-	}
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	UIElement* e = child->CheckMouseHoverElement(globalPt);
+	//	if (e != NULL) { return e; }
+	//}
 	//if (m_templateChild != NULL)
 	//{
 	//	UIElement* e = m_templateChild->CheckMouseHoverElement(globalPt);
@@ -203,6 +203,12 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	//	// 子論理要素は UIElement の担当ではない。
 	//	// ContetntControl 等でこの関数をオーバーライドし、そちらに実装する。
 	//}
+	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
+	for (int i = m_visualChildren.GetCount() - 1; i >= 0; i--)
+	{
+		UIElement* e = m_visualChildren[i]->CheckMouseHoverElement(globalPt);
+		if (e != NULL) { return e; }
+	}
 
 	if (m_finalGlobalRect.Contains(globalPt)) {
 		return this;
@@ -261,6 +267,8 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	//LN_FOREACH(UIElement* child, m_visualChildren) {
 	//	child->ArrangeLayout(m_finalLocalRect;
 	//}
+
+	LayoutUpdated(NULL);
 }
 
 
@@ -415,8 +423,13 @@ bool UIElement::OnEvent(EventType type, EventArgs* args)
 	//if (m_templateChild != NULL) {
 	//	if (m_templateChild->OnEvent(type, args)) { return true; }
 	//}
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		if (child->OnEvent(type, args)) { return true; }
+	//LN_FOREACH(UIElement* child, m_visualChildren) {
+	//	if (child->OnEvent(type, args)) { return true; }
+	//}
+	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
+	for (int i = m_visualChildren.GetCount() - 1; i >= 0; i--)
+	{
+		if (m_visualChildren[i]->OnEvent(type, args)) { return true; }
 	}
 
 	switch (type)

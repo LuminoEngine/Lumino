@@ -108,6 +108,11 @@ public:
 
 	/** @} */
 
+
+	void SetTrackExtent(float value) { m_track->SetMaximum(value); }
+	void SetTrackViewportSize(float value) { m_track->SetViewportSize(value); }
+
+
 	// TODO:‰¼
 	Event01<ScrollEventArgs*>	Scroll;
 

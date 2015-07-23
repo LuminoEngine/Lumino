@@ -208,6 +208,8 @@ ScrollViewer::ScrollViewer(GUIManager* manager)
 	: ContentControl(manager)
 {
 	LN_REGISTER_ROUTED_EVENT_HANDLER(ScrollViewer, ScrollEventArgs, ScrollBar::ScrollEvent, Handler_ScrollBar_Scroll);
+
+	LayoutUpdated += LN_CreateDelegate(this, &ScrollViewer::ScrollViewer_LayoutUpdated);
 }
 
 //-----------------------------------------------------------------------------
@@ -304,7 +306,7 @@ void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
 			if (e->Sender == m_verticalScrollBar) {
 				SetVerticalOffset(e->NewValue);
 				//m_scrollInfo->SetVerticalOffset(e->NewValue);
-				printf("%f\n", e->NewValue);
+				//printf("%f\n", e->NewValue);
 			}
 			else if (e->Sender == m_horizontalScrollBar) {
 				SetHorizontalOffset(e->NewValue);
@@ -314,6 +316,21 @@ void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
 		default:
 			break;
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ScrollViewer::ScrollViewer_LayoutUpdated(EventArgs* e)
+{
+	if (m_scrollInfo != NULL)
+	{
+		m_verticalScrollBar->SetTrackExtent(m_scrollInfo->GetExtentHeight() - m_scrollInfo->GetViewportHeight());
+		m_verticalScrollBar->SetTrackViewportSize(m_scrollInfo->GetViewportHeight());
+
+		m_horizontalScrollBar->SetTrackExtent(m_scrollInfo->GetExtentWidth() - m_scrollInfo->GetViewportWidth());
+		m_horizontalScrollBar->SetTrackViewportSize(m_scrollInfo->GetViewportWidth());
 	}
 }
 

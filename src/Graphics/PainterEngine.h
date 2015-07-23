@@ -63,6 +63,10 @@ public:
 
 public:
 	void Create(GraphicsManager* manager);
+
+	void SetBaseTransform(const Matrix& matrix);
+
+
 	//void PushTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
@@ -110,6 +114,7 @@ private:
 	RefPtr<Device::IVertexBuffer>	m_vertexBuffer;
 	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
 	RefPtr<Device::ITexture>		m_dummyTexture;
+	Matrix							m_baseTransform;
 
 	struct
 	{

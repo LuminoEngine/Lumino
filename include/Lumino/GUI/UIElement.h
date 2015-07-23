@@ -147,6 +147,10 @@ public:
 	Event01<MouseEventArgs*>	MouseDown;
 	Event01<MouseEventArgs*>	MouseUp;
 
+	/// この要素のレイアウトの更新が完了した時に発生します。このイベントはルーティングイベントではありません。
+	Event01<EventArgs*>			LayoutUpdated;
+
+
 	// イベントの扱い方は WPF とは少し違う。
 	// WPF の ButtonBase.Click は、
 	// public event RoutedEventHandler Click { add { AddHandler(ClickEvent, value); } remove { RemoveHandler(ClickEvent, value); } }
