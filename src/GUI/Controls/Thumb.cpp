@@ -193,21 +193,18 @@ void ThumbChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ThumbChrome::OnRender()
+void ThumbChrome::OnRender(Graphics::Painter* painter)
 {
-	Graphics::Painter painter(m_manager->GetGraphicsManager());
-	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
-
 	RectF rect = m_finalGlobalRect;
 
 	// ˜g
-	painter.SetBrush(m_bgFrameBrush);
-	painter.DrawFrameRectangle(rect, 16);
+	painter->SetBrush(m_bgFrameBrush);
+	painter->DrawFrameRectangle(rect, 16);
 
 	// “à‘¤
 	rect.Inflate(-16, -16);
-	painter.SetBrush(m_bgInnerBrush);
-	painter.DrawRectangle(rect);
+	painter->SetBrush(m_bgInnerBrush);
+	painter->DrawRectangle(rect);
 }
 
 

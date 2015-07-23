@@ -115,23 +115,20 @@ void ListBoxChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ListBoxChrome::OnRender()
+void ListBoxChrome::OnRender(Graphics::Painter* painter)
 {
-	Graphics::Painter painter(m_manager->GetGraphicsManager());
-	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
-
 	RectF bgRect = m_finalGlobalRect;
 	RectF rect = m_finalGlobalRect;
 
 	if (!m_isMouseOver)
 	{
 		bgRect.Inflate(-m_frameWidth, -m_frameWidth);
-		painter.SetBrush(m_bgBrush);
-		painter.DrawRectangle(bgRect);
+		painter->SetBrush(m_bgBrush);
+		painter->DrawRectangle(bgRect);
 	}
 
-	painter.SetBrush(m_frameBrush);
-	painter.DrawFrameRectangle(rect, m_frameWidth);
+	painter->SetBrush(m_frameBrush);
+	painter->DrawFrameRectangle(rect, m_frameWidth);
 }
 
 

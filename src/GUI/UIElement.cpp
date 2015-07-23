@@ -401,7 +401,9 @@ void UIElement::Render()
 		child->Render();
 	}
 
-	OnRender();
+	Graphics::Painter painter(m_manager->GetGraphicsManager());
+	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
+	OnRender(&painter);
 }
 
 //-----------------------------------------------------------------------------
@@ -772,23 +774,20 @@ void ButtonChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ButtonChrome::OnRender()
+void ButtonChrome::OnRender(Graphics::Painter* painter)
 {
-	Graphics::Painter painter(m_manager->GetGraphicsManager());
-	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
-
 	RectF bgRect = m_finalGlobalRect;
 	RectF rect = m_finalGlobalRect;
 
 	if (!m_isMouseOver)
 	{
 		bgRect.Inflate(-m_frameWidth, -m_frameWidth);
-		painter.SetBrush(m_bgBrush);
-		painter.DrawRectangle(bgRect);
+		painter->SetBrush(m_bgBrush);
+		painter->DrawRectangle(bgRect);
 	}
 
-	painter.SetBrush(m_brush);
-	painter.DrawFrameRectangle(rect, m_frameWidth);
+	painter->SetBrush(m_brush);
+	painter->DrawFrameRectangle(rect, m_frameWidth);
 }
 
 //=============================================================================
@@ -1294,7 +1293,7 @@ bool Button::OnEvent(EventType type, EventArgs* args)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::OnRender()
+void Button::OnRender(Graphics::Painter* painter)
 {
 }
 

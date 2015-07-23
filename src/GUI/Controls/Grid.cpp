@@ -220,6 +220,12 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 	//for (ColumnDefinition* col : *m_columnDefinitionList) { col->m_elementGroup.Clear(); col->m_desiredWidth = 0; }
 	//for (RowDefinition* row : *m_rowDefinitionList)	 { row->m_elementGroup.Clear(); row->m_desiredHeight = 0; }
 
+	// まず Measure は全部まわしておく
+	for (auto child : m_visualChildren)
+	{
+		child->MeasureLayout(availableSize);
+	}
+
 	for (auto child : *m_children)
 	{
 		// 子要素を行と列ごとにグループ化する
@@ -238,7 +244,7 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 		// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
 		if ((col == NULL || col->IsAuto()) || (row == NULL || row->IsAuto()))
 		{
-			child->MeasureLayout(availableSize);	// TODO: Measuer は常にやったほうが良いのか確認しておいたほうが良いかも
+			//child->MeasureLayout(availableSize);	// TODO: Measuer は常にやったほうが良いのか確認しておいたほうが良いかも
 
 			if (col != NULL && col->IsAuto() && Grid::GetColumnSpan(child) <= 1) {	// span が 2 以上の要素はサイズ集計に考慮しない
 				col->m_desiredWidth = std::max(col->m_desiredWidth, child->GetDesiredSize().Width);

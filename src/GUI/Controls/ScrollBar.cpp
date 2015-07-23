@@ -20,6 +20,11 @@
 
 
 	Track.Value は RangeBase.Value と TemplateBinding している。
+	↓
+	でも、そこまでしなくていい気がする。
+	ScrollBar や Slider は "PART_Track" として子要素に Track があることを前提としている。
+	(null は可能だが、実際そんな ScrollBar を作ることがあるのか・・・？)
+	であれば、TemplateBinding しなくても ScrollBar 側から直接値を set してもそんなに問題ない。
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -44,6 +49,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollBar);
 
 const String ScrollBar::PART_TrackKeyName(_T("PART_Track"));
 
+LN_DEFINE_PROPERTY_2(ScrollBar, float, ValueProperty, "Value", 0.0f, &ScrollBar::SetValue, &ScrollBar::GetValue);
 LN_DEFINE_PROPERTY_ENUM_2(ScrollBar, Orientation, OrientationProperty, "Orientation", Orientation::Horizontal, &ScrollBar::SetOrientation, &ScrollBar::GetOrientation);
 
 LN_DEFINE_ROUTED_EVENT(ScrollBar, ScrollEventArgs, ScrollEvent, "DragStarted", Scroll);
@@ -64,6 +70,11 @@ ScrollBar* ScrollBar::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 ScrollBar::ScrollBar(GUIManager* manager)
 	: Control(manager)
+	, m_value(0.0f)
+	, m_minimum(0.0f)
+	, m_maximum(1.0f)
+	, m_orientation(Orientation::Horizontal)
+	, m_scrollEvent()
 	, m_track(NULL)
 	, m_dragStartValue(0.0f)
 {	
@@ -99,9 +110,9 @@ void ScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta)
 {
 	float valueDelta = m_track->ValueFromDistance(horizontalDragDelta, verticalDragDelta);
 
-	float newValue = GetValue() + valueDelta;
+	float newValue = m_dragStartValue/*GetValue()*/ + valueDelta;
 	ChangeValue(newValue);
-	RefPtr<ScrollEventArgs> args(m_manager->GetEventArgsPool()->Create<ScrollEventArgs>(newValue));
+	RefPtr<ScrollEventArgs> args(m_manager->GetEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack));
 	RaiseEvent(ScrollEvent, this, args);
 }
 
@@ -110,9 +121,14 @@ void ScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta)
 //-----------------------------------------------------------------------------
 void ScrollBar::ChangeValue(float newValue/*, bool defer*/)
 {
-	//if (IsStandalone)
+	if (m_isStandalone)
 	{
-		SetValue(newValue);
+		// × Track が TemplateBindingしたいので。
+		// TODO: やっぱり SetValue() の中でやるようにしたほうが良いかも
+		SetPropertyValue(ValueProperty, newValue);
+
+		// TODO: OnValueChannged とか作って、そちらで行うべき。
+		m_track->SetValue(newValue);
 	}
 }
 

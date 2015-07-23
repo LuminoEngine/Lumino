@@ -89,6 +89,12 @@ public:
 	/** @name Properties */
 	/** @{ */
 
+
+	void SetHorizontalOffset(float offset);
+
+	void SetVerticalOffset(float offset);
+
+
 	/** @} */
 
 	/// ビューに表示している範囲の幅を取得します。(通常、ActualSize - ScrollBarSize となる)
@@ -156,6 +162,8 @@ protected:
 private:
 	friend class ScrollContentPresenter;
 	void SetScrollInfo(IScrollInfo* scrollInfo);
+
+	void Handler_ScrollBar_Scroll(ScrollEventArgs* e);
 
 private:
 	ScrollContentPresenter*	m_scrollContentPresenter;	///< VisualTree 内の ScrollContentPresenter

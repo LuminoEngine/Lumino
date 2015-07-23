@@ -11,6 +11,18 @@ namespace Lumino
 namespace GUI
 {
 
+/// Scroll イベントの原因となった動作を表します。
+LN_ENUM(ScrollEventType)
+{
+	ThumbTrack = 0,		///< つまみがドラッグされている
+	EndScroll,			///< つまみのドラッグが終了した
+	SmallDecrement,		///< スクロールバーのデクリメントボタンがクリックされた
+	SmallIncrement,		///< スクロールバーのインクリメントボタンがクリックされた
+	LargeDecrement,		///< スクロールバーの PageUp 領域がクリックされた
+	LargeIncrement,		///< スクロールバーの PageDown 領域がクリックされた
+};
+LN_ENUM_DECLARE(ScrollEventType);
+
 /**
 	@brief		ScrollBar のスクロールイベントの引数です。
 */
@@ -19,11 +31,12 @@ class ScrollEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	ScrollEventArgs(float newValue) { NewValue = newValue; }
+	ScrollEventArgs(float newValue, ScrollEventType type) { NewValue = newValue; Type = type; }
 	virtual ~ScrollEventArgs() {}
 
 public:
-	float NewValue;		///< 新しい値
+	float			NewValue;		///< 新しい値
+	ScrollEventType	Type;			///< スクロールイベントの原因
 };
 
 /**
@@ -37,6 +50,7 @@ class ScrollBar
 public:
 	static const String PART_TrackKeyName;
 
+	static const Property*	ValueProperty;
 	static const Property*	OrientationProperty;
 
 	static const RoutedEvent*	ScrollEvent;
@@ -63,7 +77,7 @@ public:
 	// TODO:↓後で RangeBase に移すかも
 
 	/// スクロール位置に対する値を設定します。
-	void SetValue(float value) { m_value = value; }
+	void SetValue(float value) { m_value = value; m_track->SetValue(value); }	// TODO: TemplateBinding のほうがよいか？
 
 	/// スクロール位置に対する値を取得します。規定値は 0 です。
 	float GetValue() const { return m_value; }
@@ -117,6 +131,9 @@ private:
 	Track*				m_track;	///< VisualTree 内の Track
 
 	float				m_dragStartValue;	///< ドラッグ開始時の m_value
+	bool				m_isStandalone;		///< Value の操作を this で行うか、ScrollViewer 経由で行うか。
+
+	friend class ScrollViewer;
 };
 
 

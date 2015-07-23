@@ -123,19 +123,25 @@ SizeF ScrollContentPresenter::ArrangeOverride(const SizeF& finalSize)
 		m_scrollData.Viewport = finalSize;
 	}
 
-	if (m_templateChild != NULL)
+	if (!m_visualChildren.IsEmpty())
 	{
-		RectF childRect(PointF::Zero, m_templateChild->GetDesiredSize());
-
-		if (IsScrollClient())
+		UIElement* child = m_visualChildren[0];
+		if (child != NULL)
 		{
-			childRect.X = -GetHorizontalOffset();
-			childRect.Y = -GetVerticalOffset();
-		}
-		childRect.Width = std::max(childRect.Width, finalSize.Width);
-		childRect.Height = std::max(childRect.Height, finalSize.Height);
+			RectF childRect(PointF::Zero, child->GetDesiredSize());
 
-		m_templateChild->ArrangeLayout(childRect);
+			if (IsScrollClient())
+			{
+				childRect.X = -GetHorizontalOffset();
+				childRect.Y = -GetVerticalOffset();
+			}
+			childRect.Width = std::max(childRect.Width, finalSize.Width);
+			childRect.Height = std::max(childRect.Height, finalSize.Height);
+
+			//printf("%f\n", childRect.X);
+
+			child->ArrangeLayout(childRect);
+		}
 	}
 
 	return finalSize;
@@ -201,6 +207,7 @@ ScrollViewer* ScrollViewer::Create(GUIManager* manager)
 ScrollViewer::ScrollViewer(GUIManager* manager)
 	: ContentControl(manager)
 {
+	LN_REGISTER_ROUTED_EVENT_HANDLER(ScrollViewer, ScrollEventArgs, ScrollBar::ScrollEvent, Handler_ScrollBar_Scroll);
 }
 
 //-----------------------------------------------------------------------------
@@ -208,6 +215,29 @@ ScrollViewer::ScrollViewer(GUIManager* manager)
 //-----------------------------------------------------------------------------
 ScrollViewer::~ScrollViewer()
 {
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ScrollViewer::SetHorizontalOffset(float offset)
+{
+	if (m_scrollInfo != NULL) {
+		m_scrollInfo->SetHorizontalOffset(offset);
+		m_horizontalScrollBar->SetValue(offset);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ScrollViewer::SetVerticalOffset(float offset)
+{
+	if (m_scrollInfo != NULL) {
+		m_scrollInfo->SetVerticalOffset(offset);
+		m_verticalScrollBar->SetValue(offset);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -221,9 +251,11 @@ void ScrollViewer::PollingTemplateChildCreated(UIElement* newElement)
 	}
 	else if (newElement->GetKeyName() == PART_VerticalScrollBarTemplateName) {
 		m_verticalScrollBar = dynamic_cast<ScrollBar*>(newElement);
+		m_verticalScrollBar->m_isStandalone = false;	// ScrollViewer で面倒を見るフラグ
 	}
 	else if (newElement->GetKeyName() == PART_HorizontalScrollBarTemplateName) {
 		m_horizontalScrollBar = dynamic_cast<ScrollBar*>(newElement);
+		m_horizontalScrollBar->m_isStandalone = false;	// ScrollViewer で面倒を見るフラグ
 	}
 
 	ContentControl::PollingTemplateChildCreated(newElement);
@@ -258,6 +290,32 @@ void ScrollViewer::SetScrollInfo(IScrollInfo* scrollInfo)
 	//m_scrollInfo->SetCanHorizontallyScroll();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
+{
+	if (m_scrollInfo != NULL)
+	{
+		switch (e->Type)
+		{
+		case ScrollEventType::ThumbTrack:
+			// 本来は一度コマンドリスト化して、遅延に備えるべき
+			if (e->Sender == m_verticalScrollBar) {
+				SetVerticalOffset(e->NewValue);
+				//m_scrollInfo->SetVerticalOffset(e->NewValue);
+				printf("%f\n", e->NewValue);
+			}
+			else if (e->Sender == m_horizontalScrollBar) {
+				SetHorizontalOffset(e->NewValue);
+				//m_scrollInfo->SetHorizontalOffset(e->NewValue);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
 
 } // namespace GUI
 } // namespace Lumino

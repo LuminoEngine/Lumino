@@ -74,7 +74,7 @@ public:
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
-	virtual void OnRender();
+	virtual void OnRender(Graphics::Painter* painter);
 
 private:
 	RefPtr<Graphics::TextureBrush>	m_frameBrush;

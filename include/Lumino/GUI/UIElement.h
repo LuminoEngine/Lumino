@@ -203,7 +203,7 @@ public:
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
 	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}
-	virtual void OnRender() {}
+	virtual void OnRender(Graphics::Painter* painter) {}
 	virtual bool OnEvent(EventType type, EventArgs* args);
 
 	// IAddChild
@@ -465,7 +465,7 @@ public:
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
-	virtual void OnRender();
+	virtual void OnRender(Graphics::Painter* painter);
 
 private:
 	RefPtr<Graphics::TextureBrush>	m_brush;
@@ -672,7 +672,7 @@ public:
 protected:
 	virtual void OnClick();
 	virtual bool OnEvent(EventType type, EventArgs* args);
-	virtual void OnRender();
+	virtual void OnRender(Graphics::Painter* painter);
 	//virtual void Render();
 
 

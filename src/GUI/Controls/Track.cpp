@@ -13,6 +13,9 @@
 
 	実装が難しければ
 	PART_DecreaseButton のような名前をつけて検索しても良いかもしれない。
+
+	Track の各プロパティは、親の RangeBase (ScrollBarなど) の
+	プロパティと TemplateBinding する。
 */
 
 #include "../../Internal.h"
@@ -138,7 +141,7 @@ float Track::ValueFromDistance(float horizontal, float vertical)
 	}
 	else
 	{
-		return -1 * scale * vertical * m_density;
+		return scale * vertical * m_density;
 	}
 }
 

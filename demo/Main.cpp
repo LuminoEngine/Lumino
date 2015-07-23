@@ -110,6 +110,11 @@ int main()
 		RefPtr<GUI::ScrollViewer> scrollViewer = GUI::ScrollViewer::Create(app->GetGUIManager());
 		workbench1->SetContent(scrollViewer);
 
+		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("C:/Users/hldc0061/Source/Repos/Lumino/Build/Penguins.png")));
+		RefPtr<GUI::Image> image1(LN_NEW GUI::Image(app->GetGUIManager()));
+		image1->SetSourceTexture(tex1);
+		scrollViewer->SetContent(image1);
+
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();

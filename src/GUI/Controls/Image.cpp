@@ -86,7 +86,7 @@ void Image::UpdateInternalSourceRect()
 {
 	if (m_texture != NULL)
 	{
-		if (m_srcRect.IsEmpty())
+		if (m_srcRect.IsZero())
 		{
 			// 転送元矩形が指定されていなければテクスチャサイズを使用する
 			const Size& size = m_texture->GetSize();
@@ -122,8 +122,8 @@ SizeF Image::ArrangeOverride(const SizeF& finalSize)
 	SizeF size = UIElement::ArrangeOverride(finalSize);
 	if (m_stretch == Stretch::None)
 	{
-		size.Width = (float)m_internalSrcRect.Width;
-		size.Height = (float)m_internalSrcRect.Height;
+		size.Width = std::min(size.Width, (float)m_internalSrcRect.Width);
+		size.Height = std::min(size.Height, (float)m_internalSrcRect.Height);
 	}
 	return size;
 }
@@ -131,16 +131,11 @@ SizeF Image::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Image::OnRender()
+void Image::OnRender(Graphics::Painter* painter)
 {
 	if (m_texture == NULL) { return; }
 
-	Graphics::Painter painter(m_manager->GetGraphicsManager());
-	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
-
-
-
-	painter.DrawTexture(m_finalGlobalRect, m_texture, m_internalSrcRect);
+	painter->DrawTexture(m_finalGlobalRect, m_texture, m_internalSrcRect);
 }
 
 } // namespace GUI

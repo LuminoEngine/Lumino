@@ -5,6 +5,11 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/23] ScrollBar → ScrollViewer にマウスドラッグのスクロールを通知するとき、
+				何故 RoutedEvent ではなく、RoutedCommand でなければならないのか？
+
+
+
 	[2015/7/20]
 		RoutedEvent も、とりあえず Lumino 名前空間においてみる。
 		できれば GUI に持ってきたいけど、CoreObject の PropertyChanged と結びついている。

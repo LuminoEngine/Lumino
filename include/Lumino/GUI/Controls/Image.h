@@ -60,7 +60,7 @@ public:
 protected:
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	virtual void OnRender();
+	virtual void OnRender(Graphics::Painter* painter);
 
 private:
 	void UpdateInternalSourceRect();
