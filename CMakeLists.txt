@@ -209,6 +209,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/Property.h
 	include/Lumino/GUI/RoutedCommand.h
+	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/Controls/ButtonBase.h
@@ -229,6 +230,7 @@ set(LN_SOURCES_GUI
 	src/GUI/GUIHelper.h
 	src/GUI/GUIManager.cpp
 	src/GUI/RoutedCommand.cpp
+	src/GUI/TextBlock.cpp
 	src/GUI/UIElement.cpp
 	src/GUI/UIElementCollection.cpp
 	src/GUI/VisualState.cpp
@@ -243,6 +245,18 @@ set(LN_SOURCES_GUI
 	src/GUI/Controls/StackPanel.cpp
 	src/GUI/Controls/Thumb.cpp
 	src/GUI/Controls/Track.cpp
+)
+
+set(LN_SOURCES_Documents
+	include/Lumino/Documents/Common.h
+	include/Lumino/Documents/Inline.h
+	include/Lumino/Documents/Run.h
+	include/Lumino/Documents/TextElement.h
+	include/Lumino/Documents/TextLine.h
+	src/Documents/Inline.cpp
+	src/Documents/Run.cpp
+	src/Documents/TextElement.cpp
+	src/Documents/TextLine.cpp
 )
 
 set(LN_SOURCES_Game
@@ -325,6 +339,7 @@ source_group("Imaging"		FILES ${LN_SOURCES_Imaging})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
+source_group("Documents"	FILES ${LN_SOURCES_Documents})
 source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
 
@@ -336,6 +351,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}
+	${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application}
 	${LN_SOURCES_C_API})
