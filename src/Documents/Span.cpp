@@ -1,6 +1,6 @@
 
 #include "../Internal.h"
-#include <Lumino/Documents/TextLine.h>
+#include <Lumino/Documents/Span.h>
 
 namespace Lumino
 {
@@ -8,21 +8,22 @@ namespace Documents
 {
 
 //=============================================================================
-// TextLine
+// Span
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(TextLine, CoreObject);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Span, Inline);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextLine::TextLine()
+Span::Span(DocumentsManager* manager)
+	: Inline(manager)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextLine::~TextLine()
+Span::~Span()
 {
 }
 

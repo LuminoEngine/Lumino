@@ -1,5 +1,6 @@
 
 #pragma once
+#include "Span.h"
 
 namespace Lumino
 {
@@ -9,13 +10,13 @@ namespace Documents
 /**
 	@brief
 */
-class TextLine
-	: public CoreObject
+class Bold
+	: public Span
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	TextLine();
-	virtual ~TextLine();
+	Bold(DocumentsManager* manager);
+	virtual ~Bold();
 };
 
 

@@ -1,5 +1,6 @@
 
 #pragma once
+#include "../Documents/Paragraph.h"
 #include "UIElement.h"
 
 namespace Lumino
@@ -23,14 +24,15 @@ public:
 	virtual ~TextBlock();
 
 public:
-	void SetText(const String& text) { m_text = text; }
+	void SetText(const String& text);
 
 protected:
-	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalLocalRect);
+	virtual SizeF MeasureOverride(const SizeF& availableSize);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 private:
-	String	m_text;
+	//String	m_text;
+	RefPtr<Documents::Paragraph>	m_paragraph;
 };
 
 } // namespace GUI

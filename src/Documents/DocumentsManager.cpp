@@ -1,6 +1,6 @@
 
 #include "../Internal.h"
-#include <Lumino/Documents/Inline.h>
+#include <Lumino/Documents/DocumentsManager.h>
 
 namespace Lumino
 {
@@ -8,22 +8,21 @@ namespace Documents
 {
 
 //=============================================================================
-// Inline
+// DocumentsManager
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Inline, TextElement);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Inline::Inline(DocumentsManager* manager)
-	: TextElement(manager)
+DocumentsManager::DocumentsManager(const ConfigData& configData)
+	: m_graphicsManager(configData.GraphicsManager)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Inline::~Inline()
+DocumentsManager::~DocumentsManager()
 {
 }
 

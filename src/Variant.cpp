@@ -30,8 +30,10 @@ TypeInfo::TypeInfo()
 void TypeInfo::RegisterProperty(Property* prop)
 {
 	LN_VERIFY_RETURN(!prop->m_registerd);
+	LN_VERIFY_RETURN(m_propertyList.GetCount() < 32);
 	//if (!prop->m_registerd)
 	{
+		prop->m_localIndex = m_propertyList.GetCount();
 		m_propertyList.Add(prop);
 		prop->m_registerd = true;
 	}
@@ -300,11 +302,25 @@ void CoreObject::OnPropertyChanged(const String& name, const Variant& newValue)
 	PropertyChanged.Raise(&e);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool CoreObject::HasLocalPropertyValue(const Property* prop)
+{
+	LN_VERIFY_RETURNV(prop != NULL, false);
+
+	uint32_t f = 0x1 << prop->GetLocalIndex();
+	uint32_t flags = *prop->GetOwnerClassType()->GetHasLocalValueFlags(this);
+	if ((flags & f) != 0) {
+		return true;
+	}
+	return false;
+}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TypeInfo CoreObject::m_typeInfo(_T("CoreObject"), NULL);
+TypeInfo CoreObject::m_typeInfo(_T("CoreObject"), NULL, &CoreObject::GetHasLocalValueFlags);
 TypeInfo* CoreObject::GetThisTypeInfo() const { return &m_typeInfo; }
 TypeInfo* CoreObject::GetClassTypeInfo() { return &m_typeInfo; }
 	
@@ -358,6 +374,16 @@ Variant::Variant(float value)
 	: m_type(VariantType_Float)
 	, m_float(value)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant::Variant(const String& value)
+	: m_type(VariantType_String)
+	, m_string(value)
+{
+
 }
 
 //-----------------------------------------------------------------------------
@@ -463,6 +489,25 @@ float Variant::GetFloat() const
 {
 	if (LN_VERIFY_ASSERT(m_type == VariantType_Float)) { return 0; }
 	return m_float;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Variant::SetString(const String& value)
+{
+	Release();
+	m_type = VariantType_String;
+	m_string = value;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+String Variant::GetString() const
+{
+	if (LN_VERIFY_ASSERT(m_type == VariantType_String)) { return String::GetEmpty(); }
+	return m_string;
 }
 
 //-----------------------------------------------------------------------------

@@ -123,16 +123,33 @@ void Application::InitialzeGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Application::InitialzeDocumentsManager()
+{
+	if (m_documentsManager.IsNull())
+	{
+		InitialzeGraphicsManager();
+
+		Documents::DocumentsManager::ConfigData data;
+		data.GraphicsManager = m_graphicsManager;
+		m_documentsManager.Attach(LN_NEW Documents::DocumentsManager(data));
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Application::InitialzeGUIManager()
 {
 	if (m_guiManager.IsNull())
 	{
 		InitialzePlatformManager();
 		InitialzeGraphicsManager();
+		InitialzeDocumentsManager();
 
 		GUI::GUIManager::ConfigData data;
 		data.GraphicsManager = m_graphicsManager;
 		data.MainWindow = m_platformManager->GetMainWindow();
+		data.DocumentsManager = m_documentsManager;
 		m_guiManager.Attach(LN_NEW GUI::GUIManager());
 		m_guiManager->Initialize(data);
 	}

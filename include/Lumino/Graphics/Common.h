@@ -245,6 +245,7 @@ LN_ENUM(FlowDirection)
 {
 	LeftToRight = 0,		///< テキストを左から右に描画する。
 	RightToLeft,			///< テキストを左から右に描画する。
+	TopToBottom,			///< テキストを上から下に描画する。 (試験実装)
 };
 LN_ENUM_DECLARE(FlowDirection)
 

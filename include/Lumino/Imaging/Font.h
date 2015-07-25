@@ -130,6 +130,7 @@ public:
 
 	virtual FontManager* GetManager() const = 0;
 
+
 protected:
 	Font();
 	virtual ~Font();

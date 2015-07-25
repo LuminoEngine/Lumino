@@ -643,6 +643,8 @@
 		・BeginScene ではその時点のプライマリの状態を「初期値」としてコマンド化しておけば良い。
 */
 #include "../Internal.h"
+#include <Lumino/Base/Hash.h>
+#include <Lumino/Imaging/Font.h>
 
 #if defined(LN_WIN32)
 #include "Device/DirectX9/DX9GraphicsDevice.h"
@@ -655,6 +657,7 @@
 #include <Lumino/Graphics/GraphicsDevice.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Renderer.h>
+#include <Lumino/Graphics/TextRenderer.h>
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 
@@ -749,8 +752,12 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 		m_dummyTexture->Unlock();
 	}
 
+	// PainterEngine
 	m_painterEngine = LN_NEW PainterEngine();
 	m_painterEngine->Create(this);
+
+	// TextRendererCache
+	m_textRendererCache = RefPtr<CacheManager>::Create(512, 0);
 
 	// 描画スレッドを立ち上げる
 	m_renderingThread = LN_NEW RenderingThread();
@@ -768,6 +775,9 @@ GraphicsManager::~GraphicsManager()
 		LN_SAFE_DELETE(m_renderingThread);
 	}
 
+	if (m_textRendererCache != NULL) {
+		m_textRendererCache->Finalize();
+	}
 	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_dummyTexture);
 	LN_SAFE_RELEASE(m_renderer);
@@ -820,6 +830,39 @@ void GraphicsManager::ResumeDevice()
 {
 	m_graphicsDevice->OnResetDevice();
 	// TODO: ユーザーコールバック
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
+{
+	uint32_t v[2];
+	v[0] = Hash::CalcHash(fontData.Family);
+
+	uint8_t* v2 = (uint8_t*)&v[1];
+	v2[0] = fontData.Size;
+	v2[1] = fontData.EdgeSize;
+	v2[3] =
+		(((fontData.IsBold) ? 1 : 0)) |
+		(((fontData.IsItalic) ? 1 : 0) << 1) |
+		(((fontData.IsAntiAlias) ? 1 : 0) << 2);
+
+	return *((uint64_t*)&v);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+TextRenderer* GraphicsManager::LookupTextRenderer(const FontData& fontData)
+{
+	CacheKey key(CalcFontSettingHash(fontData));
+	TextRenderer* tr = (TextRenderer*)m_textRendererCache->FindObjectAddRef(key);
+	if (tr != NULL) { return tr; }
+
+	tr = TextRenderer::Create(this);
+	m_textRendererCache->RegisterCacheObject(key, tr);
+	return tr;
 }
 
 } // namespace Graphics

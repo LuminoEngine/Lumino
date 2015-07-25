@@ -2,8 +2,10 @@
 	@file	TextRenderer.h
 */
 #pragma once
+#include <Lumino/Base/Cache.h>
 #include "Common.h"
 #include "Color.h"
+#include "Texture.h"
 #include "../Imaging/Font.h"
 #include "SpriteRenderer.h"
 
@@ -18,7 +20,9 @@ class TextRendererImplemented;
 */
 class TextRenderer
 	: public RefObject
+	, public ICacheObject
 {
+	LN_CACHE_OBJECT_DECL;
 public:
 
 	/**

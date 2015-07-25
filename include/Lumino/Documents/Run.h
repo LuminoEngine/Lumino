@@ -1,5 +1,6 @@
 
 #pragma once
+#include "../Graphics/TextRenderer.h"
 #include "Inline.h"
 
 namespace Lumino
@@ -15,8 +16,20 @@ class Run
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	Run();
+	Run(DocumentsManager* manager);
+	Run(const String& text, DocumentsManager* manager);
 	virtual ~Run();
+
+private:
+	void SetText(const String& text) { m_text = text; }
+	const String& GetText() const { return m_text; }
+
+	// override TextElement
+	virtual Size Measure();
+
+private:
+	String	m_text;
+	RefPtr<Graphics::TextRenderer>	m_renderer;
 };
 
 

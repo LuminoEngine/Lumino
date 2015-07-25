@@ -1,6 +1,6 @@
 
 #include "../Internal.h"
-#include <Lumino/Documents/Inline.h>
+#include <Lumino/Documents/Bold.h>
 
 namespace Lumino
 {
@@ -8,22 +8,22 @@ namespace Documents
 {
 
 //=============================================================================
-// Inline
+// Bold
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Inline, TextElement);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Bold, Span);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Inline::Inline(DocumentsManager* manager)
-	: TextElement(manager)
+Bold::Bold(DocumentsManager* manager)
+	: Span(manager)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Inline::~Inline()
+Bold::~Bold()
 {
 }
 

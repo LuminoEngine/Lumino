@@ -3,6 +3,7 @@
 #pragma once
 #include <map>
 #include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Documents/DocumentsManager.h>
 #include "Common.h"
 #include "EventArgs.h"
 
@@ -20,12 +21,14 @@ class GUIManager
 public:
 	struct ConfigData
 	{
-		Graphics::GraphicsManager*	GraphicsManager;
-		Platform::Window*			MainWindow;
+		Graphics::GraphicsManager*		GraphicsManager;
+		Platform::Window*				MainWindow;
+		Documents::DocumentsManager*	DocumentsManager;
 
 		ConfigData()
 			: GraphicsManager(NULL)
 			, MainWindow(NULL)
+			, DocumentsManager(NULL)
 		{}
 	};
 
@@ -37,6 +40,7 @@ public:
 	void Initialize(const ConfigData& configData);
 	void Finalize();
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	RootPane* GetDefaultRootPane() const { return m_defaultRootPane; }
 
 	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// とりあえず内部用。言語バインダのことは後で。
@@ -69,6 +73,7 @@ private:
 	typedef std::pair<String, ObjectFactory>	ObjectFactoryPair;
 
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	EventArgsPool						m_eventArgsPool;
 	RootPane*							m_defaultRootPane;
 	ResourceDictionary*					m_defaultTheme;

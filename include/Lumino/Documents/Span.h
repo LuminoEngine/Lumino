@@ -1,6 +1,6 @@
 
 #pragma once
-#include "TextElement.h"
+#include "Inline.h"
 
 namespace Lumino
 {
@@ -10,15 +10,17 @@ namespace Documents
 /**
 	@brief
 */
-class Inline
-	: public TextElement
+class Span
+	: public Inline
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	Inline(DocumentsManager* manager);
-	virtual ~Inline();
-};
+	Span(DocumentsManager* manager);
+	virtual ~Span();
 
+private:
+	GenericVariantList<Inline*>	m_inlineList;
+};
 
 
 } // namespace Documents

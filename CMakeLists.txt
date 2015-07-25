@@ -249,14 +249,16 @@ set(LN_SOURCES_GUI
 
 set(LN_SOURCES_Documents
 	include/Lumino/Documents/Common.h
+	include/Lumino/Documents/DocumentsManager.h
 	include/Lumino/Documents/Inline.h
+	include/Lumino/Documents/Paragraph.h
 	include/Lumino/Documents/Run.h
 	include/Lumino/Documents/TextElement.h
-	include/Lumino/Documents/TextLine.h
+	src/Documents/DocumentsManager.cpp
 	src/Documents/Inline.cpp
+	src/Documents/Paragraph.cpp
 	src/Documents/Run.cpp
 	src/Documents/TextElement.cpp
-	src/Documents/TextLine.cpp
 )
 
 set(LN_SOURCES_Game

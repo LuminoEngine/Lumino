@@ -5,7 +5,9 @@
 
 */
 #include "../Internal.h"
+#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/TextBlock.h>
+#include <Lumino/Documents/Run.h>
 
 namespace Lumino
 {
@@ -24,6 +26,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(TextBlock);
 TextBlock::TextBlock(GUIManager* manager)
 	: UIElement(manager)
 {
+	m_paragraph = RefPtr<Documents::Paragraph>::Create(m_manager->GetDocumentsManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -31,6 +34,31 @@ TextBlock::TextBlock(GUIManager* manager)
 //-----------------------------------------------------------------------------
 TextBlock::~TextBlock()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBlock::SetText(const String& text)
+{
+	auto run = RefPtr<Documents::Run>::Create(text, m_manager->GetDocumentsManager());
+	m_paragraph->GetInlines()->Add(run);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
+{
+	return UIElement::MeasureOverride(availableSize);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
+{
+	return TextBlock::ArrangeOverride(finalSize);
 }
 
 } // namespace GUI

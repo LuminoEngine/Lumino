@@ -23,8 +23,9 @@ namespace Lumino
 class Property
 {
 public:
-	Property(const Variant& defaultValue, bool stored)
-		: m_defaultValue(defaultValue)
+	Property(TypeInfo* ownerClassType, const Variant& defaultValue, bool stored)
+		: m_ownerClassType(ownerClassType)
+		, m_defaultValue(defaultValue)
 		, m_stored(stored)
 		, m_registerd(false)
 	{}
@@ -46,14 +47,20 @@ public:
 	/// (virtual にしてもいいが、割とクリティカルなところで呼び出されると思われるのでそうしないでおく)
 	bool IsStored() const { return m_stored; }
 
+	TypeInfo* GetOwnerClassType() const { return m_ownerClassType; }
+
 	const Variant& GetDefaultValue() const { return m_defaultValue; }
 
+	int GetLocalIndex() const { return m_localIndex; }
+
 private:
+	TypeInfo*	m_ownerClassType;
 	Variant	m_defaultValue;
 	bool	m_stored;
 
 	friend class TypeInfo;
 	bool	m_registerd;
+	int		m_localIndex;
 
 	// このクラスのインスタンスは基本的に static にする。
 	// あくまで「名前をキーにしてどのgetter/setterを呼び出すか？」が目的なので、状態は持たない。
@@ -194,7 +201,7 @@ public:
 
 public:
 	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
-		: Property( defaultValue, false)
+		: Property(TClass::GetClassTypeInfo(), defaultValue, false)
 		, m_name(name)
 		, m_setter(setter)
 		, m_getter(getter)
@@ -239,7 +246,7 @@ public:
 
 public:
 	ListProperty(const String& name, GetterFunctor getter)
-		: Property(Variant::Null, false)
+		: Property(TOwnerClass::GetClassTypeInfo(), Variant::Null, false)
 		, m_name(name)
 		, m_getter(getter)
 	{
@@ -328,8 +335,8 @@ class AttachedProperty
 	: public Property
 {
 public:
-	AttachedProperty(const String& name, const Variant& defaultValue)
-		: Property(defaultValue, true)
+	AttachedProperty(TypeInfo* ownerClassType, const String& name, const Variant& defaultValue)
+		: Property(ownerClassType, defaultValue, true)
 		, m_name(name)
 		, m_defaultValue(defaultValue)
 	{}
@@ -380,7 +387,7 @@ class StaticAttachedProperty
 {
 public:
 	StaticAttachedProperty(TypeInfo* ownerClassInfo, const String& name, const Variant& defaultValue)
-		: AttachedProperty(name, defaultValue)
+		: AttachedProperty(ownerClassInfo, name, defaultValue)
 	{
 		//PropertyManager::RegisterAttachedProperty(ownerClassInfo, name, defaultValue);
 	}

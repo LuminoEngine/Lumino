@@ -35,11 +35,15 @@ enum VariantType
 class TypeInfo
 {
 public:
+	typedef uint32_t* (*HasLocalValueFlagsGetter)(CoreObject* _this);
+
+public:
 	TypeInfo();
 
-	TypeInfo(const TCHAR* fullName, TypeInfo* baseClass)
+	TypeInfo(const TCHAR* fullName, TypeInfo* baseClass, HasLocalValueFlagsGetter getter)
 		: m_fullName(fullName)
 		, m_baseClass(baseClass)
+		, m_hasLocalValueFlagsGetter(getter)
 	{ }
 
 	void RegisterProperty(Property* prop);
@@ -54,6 +58,8 @@ public:
 	void RegisterRoutedEventHandler(const RoutedEvent* ev, RoutedEventHandler* handler);
 	RoutedEventHandler* FindRoutedEventHandler(const RoutedEvent* ev) const;
 
+	TypeInfo* GetBaseClass() const { return m_baseClass; }
+	uint32_t* GetHasLocalValueFlags(CoreObject* obj) { return m_hasLocalValueFlagsGetter(obj); }
 
 	bool operator == (const TypeInfo& info) const { return m_fullName == info.m_fullName; }
 	bool operator < (const TypeInfo& info) const { return m_fullName < info.m_fullName; }
@@ -68,6 +74,7 @@ private:
 	Array<Property*>		m_propertyList;
 	Array<RoutedEvent*>		m_routedEventList;
 	RoutedEventHandlerList	m_routedEventHandlerList;
+	HasLocalValueFlagsGetter	m_hasLocalValueFlagsGetter;
 };
 
 /**
@@ -105,6 +112,11 @@ public:
 	/// 各種言語バインダから設定される型情報 ID を取得します。
 	virtual void* GetBindingTypeData() const { return NULL; }
 
+	/**
+		@brief	このオブジェクトに指定したプロパティのローカル値が設定されているかを確認します。
+	*/
+	bool HasLocalPropertyValue(const Property* prop);
+
 	//const PropertyList& GetPropertyList() const { return m_propertyList; }
 
 	//Property* FindProperty(const String& name) const
@@ -127,10 +139,12 @@ protected:
 	//void RegisterProperty(Property* prop);
 
 	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
+	//bool HasLocalValueInternal(const Property* prop);
 
 private:
 	friend TypeInfo* GetTypeInfo(CoreObject* obj);
 	//virtual TypeInfo* GetThisTypeInfo() const { return NULL; };	// TODO: 純粋仮想関数にしてマクロ定義を強制する
+	static uint32_t* GetHasLocalValueFlags(CoreObject* _this) { return NULL; }
 
 private:
 	typedef SortedArray<String, Property*>	PropertyList;
@@ -154,16 +168,21 @@ public:
 		static TypeInfo m_typeInfo; \
 		static void* m_coreObjectBindingTypeData; \
 		virtual TypeInfo* GetThisTypeInfo() const; \
+		uint32_t m_hasLocalValueFlags; \
+		static uint32_t* GetHasLocalValueFlags(CoreObject* _this); \
 	public: \
 		static TypeInfo* GetClassTypeInfo(); \
 		virtual void* GetBindingTypeData() const { return m_coreObjectBindingTypeData; } \
 		static void SetBindingTypeData(void* data) { m_coreObjectBindingTypeData = data; }
 
 #define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassFullName, baseClass) \
-	TypeInfo subClassFullName::m_typeInfo(_T(#subClassFullName), baseClass::GetClassTypeInfo()); \
+	TypeInfo subClassFullName::m_typeInfo(_T(#subClassFullName), baseClass::GetClassTypeInfo(), &subClassFullName::GetHasLocalValueFlags); \
 	void* subClassFullName::m_coreObjectBindingTypeData = NULL; \
 	TypeInfo* subClassFullName::GetThisTypeInfo() const { return &m_typeInfo; } \
-	TypeInfo* subClassFullName::GetClassTypeInfo() { return &m_typeInfo; }
+	TypeInfo* subClassFullName::GetClassTypeInfo() { return &m_typeInfo; } \
+	uint32_t* subClassFullName::GetHasLocalValueFlags(CoreObject* _this) { return &static_cast<subClassFullName*>(_this)->m_hasLocalValueFlags; }
+
+
 
 /// 指定されたオブジェクトの型情報を取得する
 inline TypeInfo* GetTypeInfo(CoreObject* obj)
@@ -185,6 +204,7 @@ public:
 	Variant(bool value);
 	Variant(int value);
 	Variant(float value);
+	Variant(const String& value);
 	Variant(const Enum& value);
 	Variant(VariantList* value);
 	Variant(const SizeF& value);
@@ -225,6 +245,9 @@ public:
 	void SetFloat(float value);
 	float GetFloat() const;
 
+	void SetString(const String& value);
+	String GetString() const;
+
 	void SetList(VariantList* value);
 	VariantList* GetList() const;
 
@@ -250,6 +273,7 @@ public:
 	template<> bool Cast() const { return GetBool(); }
 	template<> int Cast() const { return GetInt(); }
 	template<> float Cast() const { return GetFloat(); }
+	template<> String Cast() const { return GetString(); }
 	template<> CoreObject* Cast() const { return GetObject(); }
 	template<> Rect Cast() const { return GetRect(); }
 	//template<> Enum Cast() const { return GetInt(); }

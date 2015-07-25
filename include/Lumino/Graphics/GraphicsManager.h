@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-
+#include <Lumino/Base/Cache.h>
 #include "Common.h"
 #include "../Imaging/FontManager.h"
 #include "GraphicsDevice.h"
@@ -13,6 +13,7 @@ namespace Graphics
 class Renderer;
 class RenderingThread;
 class PainterEngine;
+class TextRenderer;
 
 struct GraphicsManagerConfigData
 {
@@ -64,6 +65,25 @@ public:
 	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void ResumeDevice();
 
+public:	// internal
+	struct FontData
+	{
+		String	Family;
+		int		Size;
+		int		EdgeSize;
+		bool	IsBold;
+		bool	IsItalic;
+		bool	IsAntiAlias;
+	};
+
+	static uint64_t CalcFontSettingHash(const FontData& fontData);
+
+	/// 指定したフォント設定に一致する TextRenderer* を検索する。
+	/// あくまでグリフテクスチャのキャッシュを使いまわすためのものであることに注意。
+	/// 取得した TextRenderer に SetFont してはならないし、
+	/// 色や配置設定は全て再設定しなければならない。(者と同じ設定であるとは限らない)
+	/// また、参照カウントを増やして返す。
+	TextRenderer* LookupTextRenderer(const FontData& fontData);
 
 private:
 	FileManager* GetFileManager() { return m_fileManager; }
@@ -86,6 +106,9 @@ private:
 
 	PainterEngine*			m_painterEngine;
 	bool					m_platformTextureLoading;
+
+	RefPtr<CacheManager>	m_textRendererCache;
+
 };
 
 } // namespace Graphics

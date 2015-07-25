@@ -9,6 +9,7 @@
 #include "Platform/PlatformManager.h"
 #include "Physics/PhysicsManager.h"
 #include "Graphics/GraphicsManager.h"
+#include "Documents/DocumentsManager.h"
 #include "GUI/GUIManager.h"
 #include "Game/FpsController.h"
 #include "ApplicationConfigData.h"
@@ -63,6 +64,7 @@ private:
 	void InitialzePlatformManager();
 	void InitialzePhysicsManager();
 	void InitialzeGraphicsManager();
+	void InitialzeDocumentsManager();
 	void InitialzeGUIManager();
 	virtual bool OnEvent(const Platform::EventArgs& e);
 
@@ -73,7 +75,9 @@ private:
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	RefPtr<GUI::GUIManager>				m_guiManager;
+	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_endRequested;
 };
