@@ -3,7 +3,7 @@
 #include "../Property.h"
 #include "../Imaging/Font.h"
 #include "../Graphics/GraphicsManager.h"
-#include "TextElement.h"
+#include "DocumentsRenderer.h"
 
 namespace Lumino
 {
@@ -21,7 +21,7 @@ class TextElement
 public:
 	static const Property*	FontFamilyProperty;
 	static const Property*	FontSizeProperty;
-	static const Property*	FontEdgeSizeProperty;
+	static const Property*	FontEdgeSizeProperty;	// TODO: Pen ‚ÉˆÚ‚µ‚½‚¢
 	static const Property*	IsFontBoldProperty;
 	static const Property*	IsFontItalicProperty;
 	static const Property*	IsFontAntiAliasProperty;
@@ -43,6 +43,10 @@ public:
 	bool	IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 	virtual Size Measure();
+	virtual void Render(DocumentsRenderer* renderer);
+
+protected:
+	void UpdateFontData();
 
 private:
 	friend class Helper;

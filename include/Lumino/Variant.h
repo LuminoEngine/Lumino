@@ -141,6 +141,15 @@ protected:
 	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
 	//bool HasLocalValueInternal(const Property* prop);
 
+	class LocalValueFlags
+	{
+	public:
+		uint32_t	Flags;
+		LocalValueFlags()
+			: Flags(0)
+		{}
+	};
+
 private:
 	friend TypeInfo* GetTypeInfo(CoreObject* obj);
 	//virtual TypeInfo* GetThisTypeInfo() const { return NULL; };	// TODO: 純粋仮想関数にしてマクロ定義を強制する
@@ -168,7 +177,7 @@ public:
 		static TypeInfo m_typeInfo; \
 		static void* m_coreObjectBindingTypeData; \
 		virtual TypeInfo* GetThisTypeInfo() const; \
-		uint32_t m_hasLocalValueFlags; \
+		LocalValueFlags m_hasLocalValueFlags; \
 		static uint32_t* GetHasLocalValueFlags(CoreObject* _this); \
 	public: \
 		static TypeInfo* GetClassTypeInfo(); \
@@ -180,7 +189,7 @@ public:
 	void* subClassFullName::m_coreObjectBindingTypeData = NULL; \
 	TypeInfo* subClassFullName::GetThisTypeInfo() const { return &m_typeInfo; } \
 	TypeInfo* subClassFullName::GetClassTypeInfo() { return &m_typeInfo; } \
-	uint32_t* subClassFullName::GetHasLocalValueFlags(CoreObject* _this) { return &static_cast<subClassFullName*>(_this)->m_hasLocalValueFlags; }
+	uint32_t* subClassFullName::GetHasLocalValueFlags(CoreObject* _this) { return &static_cast<subClassFullName*>(_this)->m_hasLocalValueFlags.Flags; }
 
 
 

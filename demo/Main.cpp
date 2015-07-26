@@ -107,6 +107,7 @@ int main()
 		workbench1->SetContent(scrollBar1);
 		scrollBar1->SetOrientation(GUI::Orientation::Vertical);
 #endif
+#if 0	
 		RefPtr<GUI::ScrollViewer> scrollViewer = GUI::ScrollViewer::Create(app->GetGUIManager());
 		workbench1->SetContent(scrollViewer);
 
@@ -114,7 +115,10 @@ int main()
 		RefPtr<GUI::Image> image1(LN_NEW GUI::Image(app->GetGUIManager()));
 		image1->SetSourceTexture(tex1);
 		scrollViewer->SetContent(image1);
-
+#endif
+		//auto textBlock1 = RefPtr<GUI::TextBlock>::Create(app->GetGUIManager());
+		//textBlock1->SetText(_T("Lumino"));
+		//workbench1->SetContent(textBlock1);
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();

@@ -49,5 +49,6 @@
 #include "Lumino/GUI/Controls/ScrollBar.h"
 #include "Lumino/GUI/Controls/ScrollViewer.h"
 #include "Lumino/GUI/Controls/ListBox.h"
+#include "Lumino/GUI/TextBlock.h"
 
 #include "Lumino/Application.h"

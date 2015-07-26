@@ -3,6 +3,7 @@
 #include <Lumino/Base/Cache.h>
 #include "Common.h"
 #include "../Imaging/FontManager.h"
+#include "../Imaging/Font.h"
 #include "GraphicsDevice.h"
 #include "SwapChain.h"
 
@@ -74,6 +75,18 @@ public:	// internal
 		bool	IsBold;
 		bool	IsItalic;
 		bool	IsAntiAlias;
+
+		Imaging::Font* CreateFontFromData(Imaging::FontManager* m) const
+		{
+			Imaging::Font* font = Imaging::Font::Create(m);
+			font->SetName(Family);
+			font->SetSize(Size);
+			font->SetEdgeSize(EdgeSize);
+			font->SetBold(IsBold);
+			font->SetItalic(IsItalic);
+			font->SetAntiAlias(IsAntiAlias);
+			return font;
+		}
 	};
 
 	static uint64_t CalcFontSettingHash(const FontData& fontData);

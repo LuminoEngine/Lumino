@@ -8,6 +8,7 @@ namespace Lumino
 namespace Imaging
 {
 
+#if 0
 /// テキストの配置方法
 enum TextAlignment
 {
@@ -70,6 +71,7 @@ private:
 
 
 };
+#endif
 
 } // namespace Imaging
 } // namespace Lumino

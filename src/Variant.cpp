@@ -31,6 +31,7 @@ void TypeInfo::RegisterProperty(Property* prop)
 {
 	LN_VERIFY_RETURN(!prop->m_registerd);
 	LN_VERIFY_RETURN(m_propertyList.GetCount() < 32);
+
 	//if (!prop->m_registerd)
 	{
 		prop->m_localIndex = m_propertyList.GetCount();

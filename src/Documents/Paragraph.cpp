@@ -73,15 +73,15 @@ Size Paragraph::Measure()
 
 		switch (GetFlowDirection())
 		{
-		case Graphics::FlowDirection::LeftToRight:
+		case Imaging::FlowDirection::LeftToRight:
 			size.Width += childSize.Width;
 			size.Height = std::max(childSize.Height, childSize.Height);
 			break;
-		case Graphics::FlowDirection::RightToLeft:
+		case Imaging::FlowDirection::RightToLeft:
 			size.Width = std::max(childSize.Width, childSize.Width);
 			size.Height += childSize.Height;
 			break;
-		case Graphics::FlowDirection::TopToBottom:
+		case Imaging::FlowDirection::TopToBottom:
 			LN_THROW(0, NotImplementedException);
 			break;
 		}

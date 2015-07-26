@@ -41,6 +41,8 @@ TextBlock::~TextBlock()
 //-----------------------------------------------------------------------------
 void TextBlock::SetText(const String& text)
 {
+	m_paragraph->GetInlines()->Clear();
+
 	auto run = RefPtr<Documents::Run>::Create(text, m_manager->GetDocumentsManager());
 	m_paragraph->GetInlines()->Add(run);
 }
@@ -50,6 +52,7 @@ void TextBlock::SetText(const String& text)
 //-----------------------------------------------------------------------------
 SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 {
+	Size s = m_paragraph->Measure();
 	return UIElement::MeasureOverride(availableSize);
 }
 
@@ -58,7 +61,7 @@ SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
 {
-	return TextBlock::ArrangeOverride(finalSize);
+	return UIElement::ArrangeOverride(finalSize);
 }
 
 } // namespace GUI

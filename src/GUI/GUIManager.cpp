@@ -998,6 +998,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 	m_graphicsManager = configData.GraphicsManager;
 	m_mainWindow = configData.MainWindow;
+	m_documentsManager = configData.DocumentsManager;
 
 
 	RegisterFactory(ContentPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ContentPresenter::Create(m); });

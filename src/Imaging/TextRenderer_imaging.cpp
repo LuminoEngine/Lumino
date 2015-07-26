@@ -17,6 +17,7 @@ namespace Lumino
 {
 namespace Imaging
 {
+#if 0
 
 //=============================================================================
 // TextRenderer
@@ -200,6 +201,8 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 		m_prevGlyphData = glyphData;
 	}
 }
+
+#endif
 
 } // namespace Imaging
 } // namespace Lumino

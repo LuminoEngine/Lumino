@@ -345,6 +345,8 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 	locData->BitmapTopLeftPosition.X = locData->NextBaseX + slot->bitmap_left;
 	locData->BitmapTopLeftPosition.Y = locData->NextBaseY - slot->bitmap_top;
 
+	locData->BitmapSize.Set(slot->bitmap.width, slot->bitmap.rows);
+
 	// 直前の glyph_index として記憶
 	locData->PreviousGlyphIndex = glyphIndex;
 

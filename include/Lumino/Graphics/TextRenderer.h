@@ -7,6 +7,7 @@
 #include "Color.h"
 #include "Texture.h"
 #include "../Imaging/Font.h"
+#include "../../src/Imaging/TextLayoutEngine.h"	// TODO
 #include "SpriteRenderer.h"
 
 namespace Lumino
@@ -15,8 +16,12 @@ namespace Graphics
 {
 class TextRendererImplemented;
 
+
+
 /**
 	@file	文字列の描画を行うクラスです。
+
+	TODO: このクラスは internal にしたい。Painter に任せる。
 */
 class TextRenderer
 	: public RefObject
@@ -35,14 +40,19 @@ public:
 	void SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
 
-	void SetFont(Imaging::Font* font) { m_font = font; m_fontFaceModified = true; }
+	void SetFont(Imaging::Font* font) { m_font = font; m_layoutEngine.SetFont(font); m_fontFaceModified = true; }
 	void SetForeColor(Color color) { m_foreColor = color; }
 	void SetStrokeColor(Color color) { m_strokeColor = color; }
 	void SetStrokeSize(int size) { m_strokeSize = size; m_fontFaceModified = true; }
-	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
-	void SetTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
-	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
-	void SetDrawingArea(const Rect& area) { m_drawingArea = area; }	// いらないかも
+	void SetTextAlignment(Imaging::TextAlignment align) { m_layoutEngine.SetTextAlignment(align); }
+	void SetTextTrimming(Imaging::TextTrimming triming) { m_layoutEngine.SetTextTrimming(triming); }
+	void SetFlowDirection(Imaging::FlowDirection dir) { m_layoutEngine.SetFlowDirection(dir); }
+	//void SetDrawingArea(const Rect& area) { m_drawingArea = area; }	// いらないかも
+
+	/**
+		@brief		
+	*/
+	void Measure(const UTF32* text, int length, Imaging::GlyphRun* outResult);
 
 	/**
 		@brief		
@@ -79,10 +89,11 @@ private:
 	Color				m_foreColor;
 	Color				m_strokeColor;
 	int					m_strokeSize;
-	TextAlignment		m_textAlignment;
-	TextTrimming		m_textTrimming;
-	FlowDirection		m_flowDirection;
-	Rect				m_drawingArea;
+	Imaging::TextLayoutEngine	m_layoutEngine;
+	//TextAlignment		m_textAlignment;
+	//TextTrimming		m_textTrimming;
+	//FlowDirection		m_flowDirection;
+	//Rect				m_drawingArea;
 
 	Imaging::FontGlyphLocation*	m_prevGlyphLocationData;
 
@@ -94,6 +105,39 @@ private:
 	Stack<int>			m_indexStack;			///< 空きキャッシュインデックス
 	RefPtr<Imaging::Bitmap>	m_tmpBitmap;
 	bool				m_fontFaceModified;
+};
+
+
+class FontGlyphTextureCache
+	: public RefObject
+	, public ICacheObject
+{
+	LN_CACHE_OBJECT_DECL;
+public:
+	FontGlyphTextureCache(GraphicsManager* manager, Imaging::Font* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
+
+	void LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect);
+
+	uint64_t CalcFontSettingHash() const;
+
+private:
+	struct CachedGlyphInfo
+	{
+		int		Index;
+		Size	Size;
+	};
+
+	typedef std::map<UTF32, CachedGlyphInfo>	CachedGlyphInfoMap;
+
+	GraphicsManager*		m_manager;
+	RefPtr<Imaging::Font>	m_font;
+	RefPtr<Texture>			m_glyphCacheTexture;
+	CachedGlyphInfoMap		m_cachedGlyphInfoMap;
+	int						m_glyphWidthCount;
+	Size					m_glyphMaxBitmapSize;	///< 現在のフォント情報の1文字分のビットマップの最大サイズ
+	Stack<int>				m_indexStack;			///< 空きキャッシュインデックス
+	RefPtr<Imaging::Bitmap>	m_tmpBitmap;
+
 };
 
 } // namespace Graphics

@@ -14,6 +14,7 @@ struct FontGlyphLocation
 	Point	BitmapTopLeftPosition;			///< ビットマップを転送するべき座標
 	Point	OutlineBitmapTopLeftPosition;	///< アウトライン用ビットマップを転送するべき座標
 	Point	OuterTopLeftPosition;			///< アウトライン有効時は OutlineBitmapTopLeftPosition、無効時は BitmapTopLeftPosition と同じ値になる
+	Size	BitmapSize;						///< ビットマップグリフのピクセルサイズ
 };
 
 struct FontGlyphBitmap

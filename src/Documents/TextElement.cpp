@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Documents/TextElement.h>
 
 namespace Lumino
@@ -52,6 +53,33 @@ TextElement::~TextElement()
 Size TextElement::Measure()
 {
 	return Size::Zero;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextElement::Render(DocumentsRenderer* renderer)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextElement::UpdateFontData()
+{
+	if (m_fontDataModified)
+	{
+		if (m_parent != NULL)
+		{
+			if (!HasLocalPropertyValue(FontFamilyProperty)) { m_fontData.Family = m_parent->m_fontData.Family; }
+			if (!HasLocalPropertyValue(FontSizeProperty)) { m_fontData.Size = m_parent->m_fontData.Size; }
+			if (!HasLocalPropertyValue(FontEdgeSizeProperty)) { m_fontData.EdgeSize = m_parent->m_fontData.EdgeSize; }
+			if (!HasLocalPropertyValue(IsFontBoldProperty)) { m_fontData.IsBold = m_parent->m_fontData.IsBold; }
+			if (!HasLocalPropertyValue(IsFontItalicProperty)) { m_fontData.IsItalic = m_parent->m_fontData.IsItalic; }
+			if (!HasLocalPropertyValue(IsFontAntiAliasProperty)) { m_fontData.IsAntiAlias = m_parent->m_fontData.IsAntiAlias; }
+		}
+		m_fontDataModified = true;
+	}
 }
 
 } // namespace Documents

@@ -11,7 +11,7 @@ namespace Graphics
 {
 namespace detail
 {
-
+#if 0
 /*
 	グリフキャッシュ (テクスチャ) は格子状のセルのように領域を分割し、
 	グリフビットマップを保存していく。
@@ -222,6 +222,7 @@ public:
 		}
 	};
 };
+#endif
 
 } // namespace detail
 } // namespace Graphics

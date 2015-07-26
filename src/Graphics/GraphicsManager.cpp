@@ -861,6 +861,9 @@ TextRenderer* GraphicsManager::LookupTextRenderer(const FontData& fontData)
 	if (tr != NULL) { return tr; }
 
 	tr = TextRenderer::Create(this);
+	Imaging::Font* font = fontData.CreateFontFromData(m_fontManager);
+	tr->SetFont(font);
+	font->Release();
 	m_textRendererCache->RegisterCacheObject(key, tr);
 	return tr;
 }

@@ -21,14 +21,14 @@ public:
 	virtual ~Run();
 
 private:
-	void SetText(const String& text) { m_text = text; }
-	const String& GetText() const { return m_text; }
+	void SetText(const String& text);// { m_text = text; }
+	//const String& GetText() const { return m_text; }
 
 	// override TextElement
 	virtual Size Measure();
 
 private:
-	String	m_text;
+	GenericStringBuilderCore<UTF32>	m_text;
 	RefPtr<Graphics::TextRenderer>	m_renderer;
 };
 
