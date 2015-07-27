@@ -39,14 +39,12 @@ TEST_F(Test_Graphics_IndexBuffer, BasicTriangle)
 
 	//while (TestEnv::Application->DoEvents())
 	{
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
-		r->Clear(true, true, ColorF(1, 1, 1, 1), 1.0f);
+		Renderer* r = TestEnv::BeginRendering();
 		r->SetVertexBuffer(vb);
 		r->SetIndexBuffer(ib);
 		shader->GetTechniques()[0]->GetPasses()[0]->Apply();
 		r->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 2);
-		swap->Present();
+		TestEnv::EndRendering();
 
 		//::Sleep(10);
 	}

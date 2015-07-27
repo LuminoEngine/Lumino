@@ -23,11 +23,14 @@ using namespace Lumino::Scene;
 #define LOCALFILEA(fileName) TestUtils::GetFilePathA(__FILE__, fileName).GetCStr()
 #define LOCALFILEW(fileName) TestUtils::GetFilePathW(__FILE__, fileName).GetCStr()
 
+#define SS_SAVE	0
+#define SS_LOAD	1
+
 /// スクリーンショットの作成マクロ
-#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
+//#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
 
 /// スクリーンショットの比較マクロ
-#define SS_CHECK(fileName)	ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName))));
+#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::SaveScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
 
 class TestEnv : public ::testing::Environment
 {
@@ -46,6 +49,7 @@ public:
 	static void SaveScreenShot(const TCHAR* filePath);
 	static bool EqualsScreenShot(const TCHAR* filePath);
 	static bool EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath);
+	static RefPtr<Shader> CreateShader(const TCHAR* filePath);
 
 protected:
 	virtual void SetUp();

@@ -236,5 +236,14 @@ void Painter::DrawTexture(const RectF& dstRect, Texture* texture, const Rect& sr
 		m_manager->GetPainterEngine(), dstRect, texture->GetDeviceObject(), srcRect, BrushWrapMode_Stretch);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawGlyphRun(GlyphRun* glyphRun)
+{
+	if (glyphRun == NULL) { return; }
+	LN_THROW(0, NotImplementedException);
+}
+
 } // namespace Graphics
 } // namespace Lumino

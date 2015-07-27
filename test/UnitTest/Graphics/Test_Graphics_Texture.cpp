@@ -55,13 +55,11 @@ TEST_F(Test_Graphics_Texture, BasicTriangle)
 
 	//while (TestEnv::Application->DoEvents())
 	{
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
-		r->Clear(true, true, ColorF(1, 1, 1, 1), 1.0f);
+		Renderer* r = TestEnv::BeginRendering();
 		r->SetVertexBuffer(m_vb1);
 		m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
 		r->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
-		swap->Present();
+		TestEnv::EndRendering();
 
 		//::Sleep(10);
 	}
@@ -85,9 +83,7 @@ TEST_F(Test_Graphics_Texture, Lock)
 
 	//while (TestEnv::Application->DoEvents())
 	{
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
-		r->Clear(true, true, ColorF(1, 1, 1, 1), 1.0f);
+		Renderer* r = TestEnv::BeginRendering();
 
 		// ‰©F‚¢“_‚ð’u‚­
 		{
@@ -117,8 +113,7 @@ TEST_F(Test_Graphics_Texture, Lock)
 		m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
 		r->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
 
-
-		swap->Present();
+		TestEnv::EndRendering();
 
 		//::Sleep(10);
 	}

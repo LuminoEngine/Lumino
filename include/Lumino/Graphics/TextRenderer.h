@@ -52,7 +52,7 @@ public:
 	/**
 		@brief		
 	*/
-	void Measure(const UTF32* text, int length, Imaging::GlyphRun* outResult);
+	void Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult);
 
 	/**
 		@brief		
@@ -120,6 +120,8 @@ public:
 
 	uint64_t CalcFontSettingHash() const;
 
+	void Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult);
+
 private:
 	struct CachedGlyphInfo
 	{
@@ -138,6 +140,7 @@ private:
 	Stack<int>				m_indexStack;			///< 空きキャッシュインデックス
 	RefPtr<Imaging::Bitmap>	m_tmpBitmap;
 
+	Imaging::TextLayoutEngine	m_layoutEngine;
 };
 
 } // namespace Graphics

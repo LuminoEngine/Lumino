@@ -31,12 +31,7 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 
 	RefPtr<SpriteRenderer> sr(SpriteRenderer::Create(512, TestEnv::Manager));
 
-	Renderer* r = TestEnv::Renderer;
-	SwapChain* swap = TestEnv::MainSwapChain;
-
-	r->SetRenderTarget(0, swap->GetBackBuffer());
-	r->SetDepthBuffer(swap->GetBackBufferDepth());
-	r->Clear(true, true, ColorF(0, 1, 1, 1), 1.0f);
+	Renderer* r = TestEnv::BeginRendering();
 
 	Size size = TestEnv::Application->GetMainWindow()->GetSize();
 	Matrix proj = Matrix::Perspective2DLH((float)size.Width, (float)size.Height, 0.f, 1000.f);
@@ -48,7 +43,7 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	sr->DrawRequest2D(Vector3::Zero, Vector3::Zero, Vector2(256, 256), tex1, RectF(0, 0, 256, 256), NULL);
 
 	sr->Flash();
-	swap->Present();
+	TestEnv::EndRendering();
 
 	TestEnv::SaveScreenShot(LOCALFILE("TestData/Test_Graphics_SpriteRenderer.DrawRequest2D.png"));
 	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_GeometryRenderer.DrawRect.png")));

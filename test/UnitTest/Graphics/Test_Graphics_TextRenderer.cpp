@@ -24,19 +24,17 @@ TEST_F(Test_Graphics_TextRenderer, DrawRequest2D)
 
 	while (TestEnv::Application->DoEvents())
 	{
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
-		r->Clear(true, true, ColorF::Gray, 1.0f);
+		Renderer* r = TestEnv::BeginRendering();
 
 		Size size = TestEnv::Application->GetMainWindow()->GetSize();
-		Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000);
+		Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000.0f);
 		tr->SetViewProjection(Matrix::Identity, proj, size);
 		
 		//tr->DrawChar('A');
 		tr->DrawText(_T("ABCDE"));
 		tr->Flash();
 
-		swap->Present();
+		TestEnv::EndRendering();
 		Threading::Thread::Sleep(10);
 	}
 

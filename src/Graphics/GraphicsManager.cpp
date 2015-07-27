@@ -757,7 +757,7 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 	m_painterEngine->Create(this);
 
 	// TextRendererCache
-	m_textRendererCache = RefPtr<CacheManager>::Create(512, 0);
+	m_glyphTextureCache = RefPtr<CacheManager>::Create(512, 0);
 
 	// 描画スレッドを立ち上げる
 	m_renderingThread = LN_NEW RenderingThread();
@@ -775,8 +775,8 @@ GraphicsManager::~GraphicsManager()
 		LN_SAFE_DELETE(m_renderingThread);
 	}
 
-	if (m_textRendererCache != NULL) {
-		m_textRendererCache->Finalize();
+	if (m_glyphTextureCache != NULL) {
+		m_glyphTextureCache->Finalize();
 	}
 	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_dummyTexture);
@@ -854,19 +854,35 @@ uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextRenderer* GraphicsManager::LookupTextRenderer(const FontData& fontData)
+FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const FontData& fontData)
 {
 	CacheKey key(CalcFontSettingHash(fontData));
-	TextRenderer* tr = (TextRenderer*)m_textRendererCache->FindObjectAddRef(key);
+	FontGlyphTextureCache* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	tr = TextRenderer::Create(this);
 	Imaging::Font* font = fontData.CreateFontFromData(m_fontManager);
-	tr->SetFont(font);
+	tr = LN_NEW FontGlyphTextureCache(this, font);
 	font->Release();
-	m_textRendererCache->RegisterCacheObject(key, tr);
+	m_glyphTextureCache->RegisterCacheObject(key, tr);
 	return tr;
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//TextRenderer* GraphicsManager::LookupTextRenderer(const FontData& fontData)
+//{
+//	CacheKey key(CalcFontSettingHash(fontData));
+//	TextRenderer* tr = (TextRenderer*)m_textRendererCache->FindObjectAddRef(key);
+//	if (tr != NULL) { return tr; }
+//
+//	tr = TextRenderer::Create(this);
+//	Imaging::Font* font = fontData.CreateFontFromData(m_fontManager);
+//	tr->SetFont(font);
+//	font->Release();
+//	m_textRendererCache->RegisterCacheObject(key, tr);
+//	return tr;
+//}
 
 } // namespace Graphics
 } // namespace Lumino

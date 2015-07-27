@@ -66,7 +66,7 @@ struct TextLayoutResultItem
 	Imaging::FontGlyphLocation	Location;
 };
 
-struct GlyphRun
+struct TextLayoutResult
 {
 	Size						AreaSize;
 	Array<TextLayoutResultItem>	Items;
@@ -88,7 +88,7 @@ public:
 	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
 	void SetDrawingArea(const Rect& area) { m_drawingArea = area; }
 
-	void LayoutText(const UTF32* text, int length, GlyphRun* outResult/*, bool takeOverKerning*/);
+	void LayoutText(const UTF32* text, int length, TextLayoutResult* outResult/*, bool takeOverKerning*/);
 
 protected:
 	/// ptLeftTop:DrawingArea の左上を原点とした、グリフの配置先左上座標 (配置方法によってはマイナス値になることもある)
@@ -110,7 +110,7 @@ private:
 	Rect				m_drawingArea;
 	//ByteBuffer			m_utf32Buffer;		///< UTF32 文字列への一時変換先 (頻繁にメモリ確保しないように、一度使ったメモリは使いまわしたい)
 	FontGlyphData*		m_prevGlyphData;
-	GlyphRun*			m_result;
+	TextLayoutResult*			m_result;
 
 };
 

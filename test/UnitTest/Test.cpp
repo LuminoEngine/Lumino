@@ -24,7 +24,7 @@ TEST_F(Test_Temp, Basic)
 	RefPtr<Physics::Box> box1(LN_NEW Physics::Box(TestEnv::PhysicsManager, Vector3(1, 2, 3), initialData));
 
 
-	Renderer* r = TestEnv::Renderer;
+	//Renderer* r = TestEnv::Renderer;
 	SwapChain* swap = TestEnv::MainSwapChain;
 	while (TestEnv::Application->DoEvents())
 	{
@@ -36,15 +36,13 @@ TEST_F(Test_Temp, Basic)
 			swap->Resize(TestEnv::Application->GetMainWindow()->GetSize());
 		}
 
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
+		Renderer* r = TestEnv::BeginRendering();
 		r->SetViewport(Rect(0, 0, swap->GetBackBuffer()->GetSize()));
-		r->Clear(true, true, ColorF::Gray, 1.0f);
 
 		TestEnv::MMDSceneGraph->UpdateFrame(0.01f);
 		TestEnv::MMDSceneGraph->GetMMDViewPane()->Render(swap->GetBackBuffer());
 
-		swap->Present();
+		TestEnv::EndRendering();
 		::Sleep(10);
 	}
 

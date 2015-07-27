@@ -423,12 +423,12 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_ClearColor:
 		{
-			params.Params->Renderer->Clear(true, false, m_clearColor, 0);
+			params.Params->Renderer->Clear(Graphics::ClearFlags::Color, m_clearColor);
 			break;
 		}
 		case COMMAND_ClearDepth:
 		{
-			params.Params->Renderer->Clear(false, true, Graphics::ColorF::Transparency, m_clearDepth);
+			params.Params->Renderer->Clear(Graphics::ClearFlags::Depth, Graphics::ColorF::Transparency, m_clearDepth);
 			break;
 		}
 		case COMMAND_ScriptExternal_Color:

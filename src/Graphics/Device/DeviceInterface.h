@@ -10,6 +10,7 @@ namespace Lumino
 namespace Graphics
 {
 class RenderState;
+class DepthStencilState;
 class SamplerState;
 class ShaderValue;
 
@@ -187,6 +188,12 @@ public:
 	/// レンダリングステートの取得
 	virtual const RenderState& GetRenderState() = 0;
 
+	/// 深度テスト及びステンシルテストステートの設定
+	virtual void SetDepthStencilState(const DepthStencilState& state) = 0;
+
+	/// 深度テスト及びステンシルテストステートの取得
+	virtual const DepthStencilState& GetDepthStencilState() = 0;
+
 	/// レンダリングターゲットの設定
 	virtual void SetRenderTarget(int index, ITexture* texture) = 0;
 
@@ -211,8 +218,8 @@ public:
 	/// インデックスバッファの設定
 	virtual void SetIndexBuffer(IIndexBuffer* indexBuffer) = 0;
 
-	/// 設定されているカラーバッファ、深度バッファをクリアする
-	virtual void Clear(bool target, bool depth, const ColorF& color, float z = 1.0f) = 0;
+	/// 設定されている各種バッファをクリアする
+	virtual void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00) = 0;
 
 	/// プリミティブ描画
 	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;

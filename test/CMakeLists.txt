@@ -9,6 +9,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Graphics/Test_Graphics_BasicRendering.cpp
 	UnitTest/Graphics/Test_Graphics_GeometryRenderer.cpp
 	UnitTest/Graphics/Test_Graphics_IndexBuffer.cpp
+	UnitTest/Graphics/Test_Graphics_Renderer.cpp
 	UnitTest/Graphics/Test_Graphics_Shader.cpp
 	UnitTest/Graphics/Test_Graphics_SpriteRenderer.cpp
 	UnitTest/Graphics/Test_Graphics_TextRenderer.cpp

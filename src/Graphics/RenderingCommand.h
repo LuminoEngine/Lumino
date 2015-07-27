@@ -263,6 +263,24 @@ private:
 };
 
 //=============================================================================
+class SetDepthStencilStateCommand : public RenderingCommand
+{
+	DepthStencilState	m_state;
+
+public:
+	static void Create(CmdInfo& cmd, const DepthStencilState& state)
+	{
+		HandleCast<SetDepthStencilStateCommand>(cmd)->m_state = state;
+	}
+
+private:
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		renderer->SetDepthStencilState(m_state);
+	}
+};
+
+//=============================================================================
 class SetRenderTargetCommand : public RenderingCommand
 {
 	int m_index;
@@ -377,24 +395,24 @@ private:
 //=============================================================================
 class ClearCommand : public RenderingCommand
 {
-	bool m_target;
-	bool m_depth;
+	ClearFlags m_flags;
 	ColorF m_clearColor;
 	float m_z;
+	uint8_t m_stencil;
 
 public:
-	static void Create(CmdInfo& cmd, bool target, bool depth, const ColorF& color, float z)
+	static void Create(CmdInfo& cmd, ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 	{
-		HandleCast<ClearCommand>(cmd)->m_target = target;
-		HandleCast<ClearCommand>(cmd)->m_depth = depth;
+		HandleCast<ClearCommand>(cmd)->m_flags = flags;
 		HandleCast<ClearCommand>(cmd)->m_clearColor = color;
 		HandleCast<ClearCommand>(cmd)->m_z = z;
+		HandleCast<ClearCommand>(cmd)->m_stencil = stencil;
 	}
 
 private:
 	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
 	{
-		renderer->Clear(m_target, m_depth, m_clearColor, m_z);
+		renderer->Clear(m_flags, m_clearColor, m_z, m_stencil);
 	}
 };
 

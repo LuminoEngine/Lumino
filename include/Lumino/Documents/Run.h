@@ -1,6 +1,7 @@
 
 #pragma once
 #include "../Graphics/TextRenderer.h"
+#include "../Graphics/GlyphRun.h"
 #include "Inline.h"
 
 namespace Lumino
@@ -29,7 +30,7 @@ private:
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
-	RefPtr<Graphics::TextRenderer>	m_renderer;
+	RefPtr<Graphics::GlyphRun>		m_glyphRun;
 };
 
 

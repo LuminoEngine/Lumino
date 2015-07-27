@@ -19,7 +19,7 @@ protected:
 	DocumentsRenderer();
 	virtual ~DocumentsRenderer();
 
-	virtual void OnDrawGlyphRun(Imaging::GlyphRun* glyphRun, const Point& point) = 0;
+	virtual void OnDrawGlyphRun(Imaging::TextLayoutResult* glyphRun, const Point& point) = 0;
 };
 
 class RenderTargetDocumentsRenderer
@@ -29,7 +29,7 @@ public:
 	RenderTargetDocumentsRenderer();
 	virtual ~RenderTargetDocumentsRenderer();
 
-	virtual void OnDrawGlyphRun(Imaging::GlyphRun* glyphRun, const Point& point);
+	virtual void OnDrawGlyphRun(Imaging::TextLayoutResult* glyphRun, const Point& point);
 };
 
 } // namespace Documents

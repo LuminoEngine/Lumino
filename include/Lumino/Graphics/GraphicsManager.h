@@ -15,6 +15,7 @@ class Renderer;
 class RenderingThread;
 class PainterEngine;
 class TextRenderer;
+class FontGlyphTextureCache;
 
 struct GraphicsManagerConfigData
 {
@@ -91,12 +92,14 @@ public:	// internal
 
 	static uint64_t CalcFontSettingHash(const FontData& fontData);
 
-	/// 指定したフォント設定に一致する TextRenderer* を検索する。
-	/// あくまでグリフテクスチャのキャッシュを使いまわすためのものであることに注意。
-	/// 取得した TextRenderer に SetFont してはならないし、
-	/// 色や配置設定は全て再設定しなければならない。(者と同じ設定であるとは限らない)
-	/// また、参照カウントを増やして返す。
-	TextRenderer* LookupTextRenderer(const FontData& fontData);
+	///// 指定したフォント設定に一致する TextRenderer* を検索する。
+	///// あくまでグリフテクスチャのキャッシュを使いまわすためのものであることに注意。
+	///// 取得した TextRenderer に SetFont してはならないし、
+	///// 色や配置設定は全て再設定しなければならない。(者と同じ設定であるとは限らない)
+	///// また、参照カウントを増やして返す。
+	//TextRenderer* LookupTextRenderer(const FontData& fontData);
+
+	FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
 
 private:
 	FileManager* GetFileManager() { return m_fileManager; }
@@ -120,7 +123,7 @@ private:
 	PainterEngine*			m_painterEngine;
 	bool					m_platformTextureLoading;
 
-	RefPtr<CacheManager>	m_textRendererCache;
+	RefPtr<CacheManager>	m_glyphTextureCache;
 
 };
 

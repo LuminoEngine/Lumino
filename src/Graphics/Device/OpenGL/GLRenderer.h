@@ -39,6 +39,8 @@ public:
 public:
 	virtual void SetRenderState(const RenderState& state);
 	virtual const RenderState& GetRenderState();
+	virtual void SetDepthStencilState(const DepthStencilState& state);
+	virtual const DepthStencilState& GetDepthStencilState();
 	virtual void SetRenderTarget(int index, ITexture* texture);
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
@@ -47,12 +49,13 @@ public:
 	virtual const Rect& GetViewport();
 	virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer);
 	virtual void SetIndexBuffer(IIndexBuffer* indexBuffer);
-	virtual void Clear(bool target, bool depth, const ColorF& color, float z);
+	virtual void Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil);
 	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
 	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
 private:
 	void UpdateRenderState(const RenderState& newState, bool reset);
+	void UpdateDepthStencilState(const DepthStencilState& newState, bool reset);
 	void UpdateFrameBuffer();
 	void UpdateVAO();
 	void UpdateVertexAttribPointer();
@@ -61,6 +64,8 @@ private:
 private:
 	RenderState				m_requestedRenderState;
 	RenderState				m_currentRenderState;
+	DepthStencilState		m_requestedDepthStencilState;
+	DepthStencilState		m_currentDepthStencilState;
 	Rect					m_currentViewportRect;
 	GLVertexBuffer*			m_currentVertexBuffer;
 	GLIndexBuffer*			m_currentIndexBuffer;

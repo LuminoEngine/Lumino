@@ -28,7 +28,7 @@ TextLayoutEngine::~TextLayoutEngine()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextLayoutEngine::LayoutText(const UTF32* text, int length, GlyphRun* outResult/*, bool takeOverKerning*/)
+void TextLayoutEngine::LayoutText(const UTF32* text, int length, TextLayoutResult* outResult/*, bool takeOverKerning*/)
 {
 	m_result = outResult;
 

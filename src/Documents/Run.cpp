@@ -19,6 +19,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Run, Inline);
 Run::Run(DocumentsManager* manager)
 	: Inline(manager)
 {
+	m_glyphRun.Attach(LN_NEW Graphics::GlyphRun());
 }
 
 //-----------------------------------------------------------------------------
@@ -28,6 +29,7 @@ Run::Run(const String& text, DocumentsManager* manager)
 	: Inline(manager)
 	, m_text()
 {
+	m_glyphRun.Attach(LN_NEW Graphics::GlyphRun());
 	SetText(text);
 }
 
@@ -55,14 +57,12 @@ Size Run::Measure()
 	if (m_fontDataModified)
 	{
 		UpdateFontData();
-		// TODO: 描画先はソフトウェアビットマップもあり得る。もっと抽象的なクラスが良い。
-		m_renderer.Attach(m_manager->GetGraphicsManager()->LookupTextRenderer(m_fontData));
+		m_glyphRun->m_glyphTextureCache.Attach(m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData));
 	}
 
-	Imaging::GlyphRun result;
-	m_renderer->Measure(m_text.GetCStr(), m_text.GetLength(), &result);
+	m_glyphRun->m_glyphTextureCache->Measure(m_text.GetCStr(), m_text.GetLength(), &m_glyphRun->m_glyphData);
 	
-	return result.AreaSize;
+	return m_glyphRun->m_glyphData.AreaSize;
 }
 
 } // namespace Documents

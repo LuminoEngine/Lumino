@@ -116,9 +116,9 @@ int main()
 		image1->SetSourceTexture(tex1);
 		scrollViewer->SetContent(image1);
 #endif
-		//auto textBlock1 = RefPtr<GUI::TextBlock>::Create(app->GetGUIManager());
-		//textBlock1->SetText(_T("Lumino"));
-		//workbench1->SetContent(textBlock1);
+		auto textBlock1 = RefPtr<GUI::TextBlock>::Create(app->GetGUIManager());
+		textBlock1->SetText(_T("Lumino"));
+		workbench1->SetContent(textBlock1);
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();
@@ -126,7 +126,7 @@ int main()
 		{
 			r->SetRenderTarget(0, swap1->GetBackBuffer());
 			r->SetDepthBuffer(swap1->GetBackBufferDepth());
-			r->Clear(true, true, Graphics::ColorF::Gray, 1.0f);
+			r->Clear(Graphics::ClearFlags::All, Graphics::ColorF::Gray);
 
 			Graphics::RenderState state;
 			state.Blend = Graphics::BlendMode_Alpha;

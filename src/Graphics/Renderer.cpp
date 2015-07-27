@@ -58,6 +58,23 @@ const RenderState& Renderer::GetRenderState() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Renderer::SetDepthStencilState(const DepthStencilState& state)
+{
+	m_primaryCommandList->AddCommand<SetDepthStencilStateCommand>(state);
+	m_currentDepthStencilState = state;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const DepthStencilState& Renderer::GetDepthStencilState() const
+{
+	return m_currentDepthStencilState;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Renderer::SetRenderTarget(int index, Texture* texture)
 {
 	m_primaryCommandList->AddCommand<SetRenderTargetCommand>(index, texture);
@@ -134,9 +151,9 @@ void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Renderer::Clear(bool target, bool depth, const ColorF& color, float z)
+void Renderer::Clear(Graphics::ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
-	m_primaryCommandList->AddCommand<ClearCommand>(target, depth, color, z);
+	m_primaryCommandList->AddCommand<ClearCommand>(flags, color, z, stencil);
 	//ClearCommand::AddCommand(m_primaryCommandList, target, depth, color, z);
 	//m_primaryCommandList->Clear(target, depth, color, z);
 }

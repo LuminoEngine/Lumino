@@ -38,7 +38,7 @@ TEST_F(Test_Graphics_Shader, Basic)
 
 
 
-	Renderer* r = TestEnv::Renderer;
+	//Renderer* r = TestEnv::Renderer;
 	SwapChain* swap = TestEnv::MainSwapChain;
 
 
@@ -48,13 +48,11 @@ TEST_F(Test_Graphics_Shader, Basic)
 
 	while (TestEnv::Application->DoEvents())
 	{
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
-		r->Clear(true, true, ColorF(0, 0, 1, 1), 1.0f);
+		Renderer* r = TestEnv::BeginRendering();
 		r->SetVertexBuffer(vb);
 		shader->GetTechniques()[0]->GetPasses()[0]->Apply();
 		r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
-		swap->Present();
+		TestEnv::EndRendering();
 
 		for (int i = 0; i < count; ++i) {
 			shaders[i].Attach(Shader::Create((char*)code.GetData(), code.GetSize()));

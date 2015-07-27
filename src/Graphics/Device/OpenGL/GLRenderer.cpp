@@ -118,6 +118,22 @@ const RenderState& GLRenderer::GetRenderState()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GLRenderer::SetDepthStencilState(const DepthStencilState& state)
+{
+	m_requestedDepthStencilState = state;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const DepthStencilState& GLRenderer::GetDepthStencilState()
+{
+	return m_currentDepthStencilState;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GLRenderer::SetRenderTarget(int index, ITexture* texture)
 {
 	LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
@@ -188,28 +204,21 @@ void GLRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLRenderer::Clear(bool target, bool depth, const ColorF& color, float z)
+void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	// フレームバッファを最新にする
 	UpdateFrameBuffer();
-
-
-	//glUseProgram(0);
 
 	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
 
 	glClearColor(color.R, color.G, color.B, color.A); LN_CHECK_GLERROR();
 	glClearDepth(z); LN_CHECK_GLERROR();
-
-	//mGraphicsDevice->getPlatformContext()->glClearDepth(z);
-
-	//glClearStencil( 0 );
-	//LN_CHECK_GLERROR();
-
+	glClearStencil(0); LN_CHECK_GLERROR();
 
 	glClear(
-		((target) ? GL_COLOR_BUFFER_BIT : 0) |
-		((depth) ? GL_DEPTH_BUFFER_BIT : 0));// | GL_STENCIL_BUFFER_BIT  );
+		((flags.TestFlag(ClearFlags::Color)) ? GL_COLOR_BUFFER_BIT : 0) |
+		((flags.TestFlag(ClearFlags::Depth)) ? GL_DEPTH_BUFFER_BIT : 0) |
+		((flags.TestFlag(ClearFlags::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0));
 	LN_CHECK_GLERROR();
 }
 
@@ -226,6 +235,7 @@ void GLRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pri
 
 	// 描画に必要な情報を最新にする
 	UpdateRenderState(m_requestedRenderState, m_justSawReset);
+	UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
 	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
@@ -269,6 +279,7 @@ void GLRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, i
 
 	// 描画に必要な情報を最新にする
 	UpdateRenderState(m_requestedRenderState, m_justSawReset);
+	UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
 	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
@@ -406,24 +417,78 @@ void GLRenderer::UpdateRenderState(const RenderState& newState, bool reset)
 		}
 	}
 
-	// 深度テスト
-	if (newState.DepthTest != m_currentRenderState.DepthTest || reset)
+	m_currentRenderState = newState;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool reset)
+{
+	GLenum cmpFuncTable[] =
 	{
-		if (newState.DepthTest) {
+		GL_NEVER,		// Never
+		GL_LESS,		// Less
+		GL_LEQUAL,		// LessEqual
+		GL_GREATER,		// Greater
+		GL_GEQUAL,		// GreaterEqual
+		GL_EQUAL,		// Equal
+		GL_NOTEQUAL,	// NotEqual
+		GL_ALWAYS,		// Always
+	};
+
+	// 深度テスト
+	if (newState.DepthEnable != m_currentDepthStencilState.DepthEnable || reset)
+	{
+		if (newState.DepthEnable) {
 			glEnable(GL_DEPTH_TEST); LN_CHECK_GLERROR();
 		}
 		else {
 			glDisable(GL_DEPTH_TEST); LN_CHECK_GLERROR();
 		}
 	}
-
 	// 深度書き込み
-	if (newState.DepthWrite != m_currentRenderState.DepthWrite || reset)
+	if (newState.DepthWriteEnable != m_currentDepthStencilState.DepthWriteEnable || reset)
 	{
-		glDepthMask(newState.DepthWrite ? GL_TRUE : GL_FALSE);	LN_CHECK_GLERROR();
+		glDepthMask(newState.DepthWriteEnable ? GL_TRUE : GL_FALSE); LN_CHECK_GLERROR();
+	}
+	// 深度比較関数
+	if (newState.DepthFunc != m_currentDepthStencilState.DepthFunc || reset)
+	{
+		glDepthFunc(cmpFuncTable[newState.DepthFunc]); LN_CHECK_GLERROR();
 	}
 
-	m_currentRenderState = newState;
+
+	// ステンシルテスト有無
+	if (newState.StencilEnable != m_currentDepthStencilState.StencilEnable || reset)
+	{
+		if (newState.StencilEnable) {
+			glEnable(GL_STENCIL_TEST); LN_CHECK_GLERROR();
+		}
+		else {
+			glDisable(GL_STENCIL_TEST); LN_CHECK_GLERROR();
+		}
+	}
+
+	// ステンシルテスト比較関数・ステンシルテスト参照値
+	if (newState.StencilFunc != m_currentDepthStencilState.StencilFunc ||
+		newState.StencilReferenceValue != m_currentDepthStencilState.StencilReferenceValue ||
+		reset)
+	{
+		glStencilFunc(cmpFuncTable[newState.StencilFunc], newState.StencilReferenceValue, 0xFFFFFFFF); LN_CHECK_GLERROR();
+	}
+
+	// ステンシルテスト処理
+	DWORD stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+	if (newState.StencilFailOp != m_currentDepthStencilState.StencilFailOp || 
+		newState.StencilDepthFailOp != m_currentDepthStencilState.StencilDepthFailOp ||
+		newState.StencilPassOp != m_currentDepthStencilState.StencilPassOp ||
+		reset)
+	{
+		glStencilOp(stencilOpTable[newState.StencilFailOp], stencilOpTable[newState.StencilDepthFailOp], stencilOpTable[newState.StencilPassOp]); LN_CHECK_GLERROR();
+	}
+
+	m_currentDepthStencilState = newState;
 }
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 ﻿
 #pragma once 
 
+#include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/RenderState.h>
 #include "../DeviceInterface.h"
 #include "DX9Texture.h"
@@ -16,7 +17,7 @@ class DX9VertexBuffer;
 class DX9IndexBuffer;
 class DX9ShaderPass;
 
-/// OpenGL 用の IRenderer の実装
+/// DirectX9 用の IRenderer の実装
 class DX9Renderer
 	: public IRenderer
 {
@@ -35,6 +36,8 @@ public:
 public:
 	virtual void SetRenderState(const RenderState& state);
 	virtual const RenderState& GetRenderState();
+	virtual void SetDepthStencilState(const DepthStencilState& state);
+	virtual const DepthStencilState& GetDepthStencilState();
 	virtual void SetRenderTarget(int index, ITexture* texture);
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
@@ -43,12 +46,13 @@ public:
 	virtual const Rect& GetViewport();
 	virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer);
 	virtual void SetIndexBuffer(IIndexBuffer* indexBuffer);
-	virtual void Clear(bool target, bool depth, const ColorF& color, float z);
+	virtual void Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil);
 	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
 	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
 private:
-	void InternalRenderStaet(const RenderState& state, bool reset);
+	void InternalSetRenderState(const RenderState& state, bool reset);
+	void InternalSetDepthStencilState(const DepthStencilState& newState, bool reset);
 	void InternalSetRenderTarget(int index, ITexture* texture, bool reset);
 	void InternalSetDepthBuffer(ITexture* texture, bool reset);
 	void InternalSetViewport(const Rect& rect, bool reset);
@@ -58,6 +62,7 @@ private:
 private:
 	IDirect3DDevice9*		m_dxDevice;
 	RenderState				m_currentRenderState;
+	DepthStencilState		m_currentDepthStencilState;
 	Rect					m_currentViewportRect;
 	DX9VertexBuffer*		m_currentVertexBuffer;
 	DX9IndexBuffer*			m_currentIndexBuffer;

@@ -248,16 +248,23 @@ set(LN_SOURCES_GUI
 )
 
 set(LN_SOURCES_Documents
+	include/Lumino/Documents/Bold.h
 	include/Lumino/Documents/Common.h
 	include/Lumino/Documents/DocumentsManager.h
+	include/Lumino/Documents/DocumentsRenderer.h
 	include/Lumino/Documents/Inline.h
 	include/Lumino/Documents/Paragraph.h
 	include/Lumino/Documents/Run.h
+	include/Lumino/Documents/Span.h
 	include/Lumino/Documents/TextElement.h
+	src/Documents/Bold.cpp
+	src/Documents/DocumentsHelper.h
 	src/Documents/DocumentsManager.cpp
+	src/Documents/DocumentsRenderer.cpp
 	src/Documents/Inline.cpp
 	src/Documents/Paragraph.cpp
 	src/Documents/Run.cpp
+	src/Documents/Span.cpp
 	src/Documents/TextElement.cpp
 )
 

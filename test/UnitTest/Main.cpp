@@ -16,7 +16,7 @@ Renderer* TestEnv::BeginRendering()
 	SwapChain* swap = TestEnv::MainSwapChain;
 	r->SetRenderTarget(0, swap->GetBackBuffer());
 	r->SetDepthBuffer(swap->GetBackBufferDepth());
-	r->Clear(true, true, ColorF::White, 1.0f);
+	r->Clear(ClearFlags::All, ColorF::White, 1.0f);
 	return r;
 }
 
@@ -70,6 +70,16 @@ bool TestEnv::EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath)
 }
 
 //-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RefPtr<Shader> TestEnv::CreateShader(const TCHAR* filePath)
+{
+	ByteBuffer code = FileSystem::ReadAllBytes(filePath);
+	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
+	return shader;
+}
+
+//-----------------------------------------------------------------------------
 // プログラム開始時の初期化処理
 //-----------------------------------------------------------------------------
 void TestEnv::SetUp()
@@ -84,7 +94,7 @@ void TestEnv::SetUp()
 
 
 	Graphics::GraphicsManagerConfigData gmcd;
-	gmcd.GraphicsAPI = GraphicsAPI::OpenGL;
+	gmcd.GraphicsAPI = GraphicsAPI::DirectX9;//GraphicsAPI::OpenGL;
 	gmcd.MainWindow = Application->GetMainWindow();
 	gmcd.FileManager = &FileManager::GetInstance();
 	Manager = LN_NEW Graphics::GraphicsManager(gmcd);
@@ -134,7 +144,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_BasicRendering.*"
+		"--gtest_filter=Test_Graphics_Renderer.*"
 		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
 		//"--gtest_filter=Test_Graphics_Texture.Lock"
 	};

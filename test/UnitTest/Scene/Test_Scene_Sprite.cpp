@@ -51,14 +51,12 @@ TEST_F(Test_Scene_Sprite, Basic)
 		}
 
 
-		r->SetRenderTarget(0, swap->GetBackBuffer());
-		r->SetDepthBuffer(swap->GetBackBufferDepth());
-		r->Clear(true, true, ColorF::Gray, 1.0f);
+		Renderer* r = TestEnv::BeginRendering();
 
 		sceneGraph->UpdateFrame(0.01f);
 		sceneGraph->GetMMDViewPane()->Render(swap->GetBackBuffer());
 
-		swap->Present();
+		TestEnv::EndRendering();
 		::Sleep(10);
 	}
 

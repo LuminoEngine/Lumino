@@ -250,7 +250,7 @@ void TextRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, con
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextRenderer::Measure(const UTF32* text, int length, Imaging::GlyphRun* outResult)
+void TextRenderer::Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult)
 {
 	m_layoutEngine.LayoutText(text, length, outResult);
 }
@@ -444,6 +444,8 @@ void TextRenderer::CheckResetCache()
 FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Imaging::Font* font)
 {
 	m_manager = manager;
+	m_font = font;
+	m_layoutEngine.SetFont(m_font);
 
 	int maxCharacters = 2048;// TODO ’è”‚È‚Ì‚Í‚È‚ñ‚Æ‚©‚µ‚½‚¢
 
@@ -571,6 +573,14 @@ uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 		(((m_font->IsAntiAlias()) ? 1 : 0) << 2);
 
 	return *((uint64_t*)&v);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult)
+{
+	m_layoutEngine.LayoutText(text, length, outResult);
 }
 
 } // namespace Graphics

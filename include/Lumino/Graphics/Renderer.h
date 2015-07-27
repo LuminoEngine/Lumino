@@ -42,6 +42,16 @@ public:
 	const RenderState& GetRenderState() const;
 
 	/**
+		@brief	深度テスト及びステンシルテストステートを設定します。
+	*/
+	void SetDepthStencilState(const DepthStencilState& state);
+	
+	/**
+		@brief	深度テスト及びステンシルテストステートを取得します。
+	*/
+	const DepthStencilState& GetDepthStencilState() const;
+
+	/**
 		@brief	レンダリングターゲットを設定します。
 	*/
 	void SetRenderTarget(int index, Texture* texture);
@@ -84,7 +94,7 @@ public:
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。
 	*/
-	void Clear(bool target, bool depth, const ColorF& color, float z = 1.0f);
+	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/**
 		@brief	現在設定されている頂点バッファを使用してプリミティブをレンダリングします。
@@ -108,6 +118,7 @@ private:
 	RenderingCommandList*	m_primaryCommandList;
 
 	RenderState				m_currentRenderState;
+	DepthStencilState		m_currentDepthStencilState;
 	Texture*				m_currentRenderTargets[MaxMultiRenderTargets];
 	Texture*				m_currentDepthBuffer;
 	Rect					m_currentViewport;

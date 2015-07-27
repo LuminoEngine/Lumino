@@ -43,6 +43,16 @@ LN_ENUM(GraphicsAPI)
 LN_ENUM_REFLECTION(GraphicsAPI, DirectX9, OpenGL);
 LN_ENUM_DECLARE(GraphicsAPI);
 
+LN_ENUM_FLAGS(ClearFlags)
+{
+	Color	= 0x0001,					///< カラーバッファをクリアします。
+	Depth	= 0x0002,					///< 深度バッファをクリアします。
+	Stencil = 0x0004,					///< ステンシルバッファをクリアします。
+	All		= Color | Depth | Stencil,	///< 全てのバッファをクリアします。
+};
+LN_ENUM_FLAGS_DECLARE(ClearFlags);
+
+
 /// 頂点宣言の要素の型
 enum VertexElementType
 {

@@ -33,6 +33,6 @@ TEST_F(Test_Graphics_BasicRendering, PosColorVertex)
 	r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
 	TestEnv::EndRendering();
 
-	SS_SAVE("Test_Graphics_BasicRendering.PosColorVertex.png");
+	SS_CHECK(SS_SAVE, "Test_Graphics_BasicRendering.PosColorVertex.png");
 	//SS_CHECK("Test_Graphics_BasicRendering.PosColorVertex.png");
 }

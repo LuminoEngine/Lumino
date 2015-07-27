@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Texture.h"
+#include "GlyphRun.h"
 
 namespace Lumino
 {
@@ -82,6 +83,8 @@ public:
 
 	/// ƒZƒbƒg‚³‚ê‚Ä‚¢‚é Brush ‚Í‰e‹¿‚µ‚Ü‚¹‚ñ
 	void DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect);
+
+	void DrawGlyphRun(GlyphRun* glyphRun);
 
 private:
 	GraphicsManager*	m_manager;

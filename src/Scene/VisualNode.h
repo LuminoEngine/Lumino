@@ -69,6 +69,7 @@ public:
 	/// 合成方法の取得
 	Graphics::BlendMode GetBlendMode() const { return m_renderState.Blend; }
 
+#if 0	// TODO:
 	/// 深度テストの有効設定
 	void SetEnableDepthTest(bool flag) { m_renderState.DepthTest = flag; }
 
@@ -80,6 +81,7 @@ public:
 
 	/// 深度書き込みの有効判定
 	bool IsEnableDepthWritet() const { return m_renderState.DepthWrite; }
+#endif
 
 	/// カリング方法の設定
 	void SetCullingMode(Graphics::CullingMode mode) { m_renderState.Culling = mode; }
