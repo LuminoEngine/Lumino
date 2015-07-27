@@ -27,6 +27,7 @@ private:
 
 	// override TextElement
 	virtual Size Measure();
+	virtual void Render(DocumentsRenderer* renderer);
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;

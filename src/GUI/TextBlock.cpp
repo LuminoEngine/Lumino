@@ -7,6 +7,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/TextBlock.h>
+#include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
 
 namespace Lumino
@@ -62,6 +63,16 @@ SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
 {
 	return UIElement::ArrangeOverride(finalSize);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBlock::OnRender(Graphics::Painter* painter)
+{
+	UIElement::OnRender(painter);
+	Documents::RenderTargetDocumentsRenderer r(painter);
+	m_paragraph->Render(&r);
 }
 
 } // namespace GUI

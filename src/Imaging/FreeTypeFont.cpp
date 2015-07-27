@@ -302,6 +302,8 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 		m_ftCacheMapIndex,
 		utf32code);
 
+
+
 	// ひとつ前のデータがある場合、ひとつ前の文字からの位置を求める
 	if (prevData != NULL)
 	{
@@ -327,6 +329,14 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 		NULL);
 	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
 
+	// キャッシュが効いている時は FT_Load_Glyph を呼ばないと slot->metrics が更新されない。
+	// つまり、レイアウトが正常に行われない。
+	// ドキュメントにも slot->metrics は FT_Load_Glyph で更新される、とある。
+	// ここではホントに metrics だけわかればいいので、ビットマップとかを作る必要は無い。
+	// 後で必要最小限のフラグを探す。TODO:
+	err = FT_Load_Glyph(m_ftFace, glyphIndex, m_ftImageType.flags);
+	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+
 	// 太字フォント
 	if (m_isBold)
 	{
@@ -343,7 +353,7 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 	// 転送座標オフセットを進める
 	locData->NextBaseY = (m_ftFace->height + m_ftFace->descender) * m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM;
 	locData->BitmapTopLeftPosition.X = locData->NextBaseX + slot->bitmap_left;
-	locData->BitmapTopLeftPosition.Y = locData->NextBaseY - slot->bitmap_top;
+	locData->BitmapTopLeftPosition.Y = locData->NextBaseY - (slot->metrics.horiBearingY >> 6);//slot->bitmap_top;// (slot->metrics.horiBearingY * m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM)/*- slot->bitmap_top*/;
 
 	locData->BitmapSize.Set(slot->bitmap.width, slot->bitmap.rows);
 
@@ -615,52 +625,52 @@ FontGlyphData* FreeTypeFont::LookupGlyphData(UTF32 utf32code, FontGlyphData* pre
 //-----------------------------------------------------------------------------
 void FreeTypeFont::UpdateFont()
 {
-	m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName);
-	FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
-	m_manager->m_requesterFaceName = m_fontName;
-
-	FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);
-	
-	if (m_isItalic)
+	if (m_modified)
 	{
-		// イタリック体の場合は Transform で傾ける
-		FT_Vector transform = { 0, 0 };
-		FT_Matrix matrix;
-		matrix.xx = 1 << 16;
-		matrix.xy = 0x5800;
-		matrix.yx = 0;
-		matrix.yy = 1 << 16;
-		FT_Set_Transform(m_ftFace, &matrix, &transform);
-	}
-	else
-	{
-		FT_Set_Transform(m_ftFace, NULL, NULL);
-	}
+		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName);
+		FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
+		m_manager->m_requesterFaceName = m_fontName;
 
-	// m_ftFace->charmap は m_ftFace の中で現在アクティブな FT_CharMap。
-	// グリフを取りだすときはそのインデックスを指定する必要があるので、ここで覚えておく。
-	m_ftCacheMapIndex = FT_Get_Charmap_Index(m_ftFace->charmap);
+		FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
+		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);
+
+		if (m_isItalic)
+		{
+			// イタリック体の場合は Transform で傾ける
+			FT_Vector transform = { 0, 0 };
+			FT_Matrix matrix;
+			matrix.xx = 1 << 16;
+			matrix.xy = 0x5800;
+			matrix.yx = 0;
+			matrix.yy = 1 << 16;
+			FT_Set_Transform(m_ftFace, &matrix, &transform);
+		}
+		else
+		{
+			FT_Set_Transform(m_ftFace, NULL, NULL);
+		}
+
+		// m_ftFace->charmap は m_ftFace の中で現在アクティブな FT_CharMap。
+		// グリフを取りだすときはそのインデックスを指定する必要があるので、ここで覚えておく。
+		m_ftCacheMapIndex = FT_Get_Charmap_Index(m_ftFace->charmap);
 
 #define RESOLUTION_X 72
 #define RESOLUTION_Y 72
 
-	// m_fontSize に対する本当の文字サイズを取得する
-	FTC_ScalerRec scaler;
-	scaler.face_id = m_ftFaceID;
-	scaler.width = 0;
-	scaler.height = m_fontSize << 6;
-	scaler.pixel = 0;
-	scaler.x_res = RESOLUTION_X;
-	scaler.y_res = RESOLUTION_Y;
-	FT_Size ft_size;
-	err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupSize : %d\n", err);
+		// m_fontSize に対する本当の文字サイズを取得する
+		FTC_ScalerRec scaler;
+		scaler.face_id = m_ftFaceID;
+		scaler.width = 0;
+		scaler.height = m_fontSize << 6;
+		scaler.pixel = 0;
+		scaler.x_res = RESOLUTION_X;
+		scaler.y_res = RESOLUTION_Y;
+		FT_Size ft_size;
+		err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);
+		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupSize : %d\n", err);
 
-	m_lineHeight = ft_size->metrics.height >> 6;
+		m_lineHeight = ft_size->metrics.height >> 6;
 
-	if (m_modified)
-	{
 		Dispose();
 		if (m_edgeSize > 0)
 		{

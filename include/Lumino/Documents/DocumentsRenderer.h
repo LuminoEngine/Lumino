@@ -3,6 +3,7 @@
 #include "../Imaging/Font.h"
 #include "../../src/Imaging/TextLayoutEngine.h"	// TODO
 #include "../Graphics/GraphicsManager.h"
+#include "../Graphics/Painter.h"
 
 namespace Lumino
 {
@@ -16,20 +17,24 @@ class DocumentsRenderer
 	: public RefObject
 {
 protected:
-	DocumentsRenderer();
-	virtual ~DocumentsRenderer();
+	DocumentsRenderer() {}
+	virtual ~DocumentsRenderer() {}
 
-	virtual void OnDrawGlyphRun(Imaging::TextLayoutResult* glyphRun, const Point& point) = 0;
+public:
+	virtual void OnDrawGlyphRun(Graphics::GlyphRun* glyphRun, const Point& point) = 0;
 };
 
 class RenderTargetDocumentsRenderer
 	: public DocumentsRenderer
 {
 public:
-	RenderTargetDocumentsRenderer();
+	RenderTargetDocumentsRenderer(Graphics::Painter* painter);
 	virtual ~RenderTargetDocumentsRenderer();
 
-	virtual void OnDrawGlyphRun(Imaging::TextLayoutResult* glyphRun, const Point& point);
+	virtual void OnDrawGlyphRun(Graphics::GlyphRun* glyphRun, const Point& point);
+
+private:
+	Graphics::Painter*	m_painter;
 };
 
 } // namespace Documents

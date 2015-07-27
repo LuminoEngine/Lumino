@@ -225,7 +225,11 @@ public:
 public:
 	size_t Alloc(size_t byteCount, const void* copyData);	// 返すのは m_commandDataBuffer の要素番号 (バッファ拡張時の再配置に備える)
 	void* GetBuffer(size_t bufferIndex);
-	void MarkGC(RefObject* obj) { obj->AddRef();  m_markGCList.Add(obj); }
+	void MarkGC(RefObject* obj) 
+	{ 
+		obj->AddRef();
+		m_markGCList.Add(obj);
+	}
 
 private:
 	Array<size_t>			m_commandList;

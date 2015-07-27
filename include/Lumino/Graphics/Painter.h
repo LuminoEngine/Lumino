@@ -89,6 +89,7 @@ public:
 private:
 	GraphicsManager*	m_manager;
 	RefPtr<Brush>		m_currentBrush;
+	ByteBuffer			m_tempBuffer;
 };
 
 } // namespace Graphics

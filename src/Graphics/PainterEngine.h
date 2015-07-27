@@ -58,6 +58,13 @@ class PainterEngine
 	: public RefObject
 {
 public:
+	struct GlyphRunData
+	{
+		PointF		Position;
+		RectF		SrcPixelRect;
+	};
+
+public:
 	PainterEngine();
 	virtual ~PainterEngine();
 
@@ -77,6 +84,9 @@ public:
 	// srcTexture は NULL ならダミーテクスチャが使われる
 	/// srcRect はサイズが INT_MAX であれば全体を転送することを示す
 	void DrawFrameRectangle(const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect);
+
+	/// 塗りつぶし描画
+	void DrawGlyphRun(const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture, const ColorF& foreColor, const ColorF& strokeColor);
 
 private:
 	void InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect);

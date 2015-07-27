@@ -162,7 +162,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	SizeF texSize((float)srcTexture->GetSize().Width, (float)srcTexture->GetSize().Height);
+	SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
 	texSize.Width = 1.0f / texSize.Width;
 	texSize.Height = 1.0f / texSize.Height;
 	RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
@@ -278,6 +278,36 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 	m_shader.varTexture->SetTexture(srcTexture);
 	m_shader.Pass->Apply();
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::DrawGlyphRun(const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture, const ColorF& foreColor, const ColorF& strokeColor)
+{
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
+
+	SizeF texSizeInv(1.0f / glyphsTexture->GetRealSize().Width, 1.0f / glyphsTexture->GetRealSize().Height);
+	for (int i = 0; i < dataCount; ++i)
+	{
+		RectF uvSrcRect = dataList[i].SrcPixelRect;
+		uvSrcRect.X *= texSizeInv.Width;
+		uvSrcRect.Width *= texSizeInv.Width;
+		uvSrcRect.Y *= texSizeInv.Height;
+		uvSrcRect.Height *= texSizeInv.Height;
+
+		RectF dstRect(dataList[i].Position, dataList[i].SrcPixelRect.GetSize());
+		InternalDrawRectangleStretch(dstRect, uvSrcRect);
+	}
+
+	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+	m_renderer->SetVertexBuffer(m_vertexBuffer);
+	m_renderer->SetIndexBuffer(m_indexBuffer);
+	m_shader.varTexture->SetTexture(glyphsTexture);
+	m_shader.Pass->Apply();
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 }
 
 //-----------------------------------------------------------------------------

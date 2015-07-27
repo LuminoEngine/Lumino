@@ -136,6 +136,49 @@ public:
 	}
 };
 
+
+//=============================================================================
+class DrawGlyphRunCommand : public RenderingCommand
+{
+	PainterEngine* engine;
+	size_t dataList;
+	int dataCount;
+	Device::ITexture* glyphsTexture;
+	Device::ITexture* strokesTexture;
+	ColorF foreColor;
+	ColorF strokeColor;
+
+public:
+	static void Create(CmdInfo& cmd, 
+		PainterEngine* engine, 
+		PainterEngine::GlyphRunData* dataList,
+		int dataCount,
+		Device::ITexture* glyphsTexture,
+		Device::ITexture* strokesTexture,
+		const ColorF& foreColor, 
+		const ColorF& strokeColor)
+	{
+		// ※以前はこの中でキャッシュからグリフを読み取っていたりしたが、その中で Texture.Lock が呼ばれたため
+		//   Alloc() の再帰が起こってしまった。
+		size_t dataHandle = Alloc(cmd, sizeof(PainterEngine::GlyphRunData) * dataCount, dataList);
+		cmd.m_commandList->MarkGC(glyphsTexture);
+		if (strokesTexture != NULL) { cmd.m_commandList->MarkGC(strokesTexture); }
+		HandleCast<DrawGlyphRunCommand>(cmd)->engine = engine;
+		HandleCast<DrawGlyphRunCommand>(cmd)->dataList = dataHandle;
+		HandleCast<DrawGlyphRunCommand>(cmd)->dataCount = dataCount;
+		HandleCast<DrawGlyphRunCommand>(cmd)->glyphsTexture = glyphsTexture;
+		HandleCast<DrawGlyphRunCommand>(cmd)->strokesTexture = strokesTexture;
+		HandleCast<DrawGlyphRunCommand>(cmd)->foreColor = foreColor;
+		HandleCast<DrawGlyphRunCommand>(cmd)->strokeColor = strokeColor;
+	}
+
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		engine->DrawGlyphRun((PainterEngine::GlyphRunData*)commandList->GetBuffer(dataList), dataCount, glyphsTexture, strokesTexture, foreColor, strokeColor);
+	}
+};
+
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -242,7 +285,29 @@ void Painter::DrawTexture(const RectF& dstRect, Texture* texture, const Rect& sr
 void Painter::DrawGlyphRun(GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
-	LN_THROW(0, NotImplementedException);
+
+	// 一時メモリ確保
+	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * glyphRun->m_glyphData.Items.GetCount());
+	auto data = (PainterEngine::GlyphRunData*)m_tempBuffer.GetData();
+
+	// 確保したメモリにテクスチャ描画情報を作っていく
+	Texture* tex1 = NULL;
+	Texture* tex2 = NULL;	// TODO: ストローク
+	int count = glyphRun->m_glyphData.Items.GetCount();
+	for (int i = 0; i < count; ++i)
+	{
+		Rect srcRect;
+		Imaging::TextLayoutResultItem& item = glyphRun->m_glyphData.Items[i];
+		glyphRun->m_glyphTextureCache->LookupGlyph(item.Char, &tex1, &srcRect);
+
+		data[i].Position.Set(item.Location.OuterTopLeftPosition.X, item.Location.OuterTopLeftPosition.Y);
+		data[i].SrcPixelRect.Set(srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height);
+	}
+
+	// コマンド化
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawGlyphRunCommand>(
+		m_manager->GetPainterEngine(), data, count, tex1->GetDeviceObject(), (tex2) ? tex2->GetDeviceObject() : NULL, ColorF::Black, ColorF::Blue);	// TODO: 色
+
 }
 
 } // namespace Graphics

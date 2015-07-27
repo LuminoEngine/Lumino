@@ -65,6 +65,14 @@ Size Run::Measure()
 	return m_glyphRun->m_glyphData.AreaSize;
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Run::Render(DocumentsRenderer* renderer)
+{
+	renderer->OnDrawGlyphRun(m_glyphRun, Point::Zero);	// TODO: ˆÊ’u
+}
+
 } // namespace Documents
 } // namespace Lumino
 
