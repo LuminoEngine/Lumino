@@ -510,25 +510,6 @@ private:
 	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
 };
 
-/**
-	@brief	ItemsControl のコンテンツを表示します。
-*/
-class ItemsPresenter
-	: public UIElement
-{
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
-	LN_UI_ELEMENT_SUBCLASS_DECL(ItemsPresenter);
-public:
-
-public:
-	static ItemsPresenter* Create(GUIManager* manager);
-
-	ItemsPresenter(GUIManager* manager);
-	virtual ~ItemsPresenter();
-
-protected:
-	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ItemsPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
-};
 
 /**
 	@brief		ユーザー操作によって特定の動作を行う UI 要素の基本クラスです。

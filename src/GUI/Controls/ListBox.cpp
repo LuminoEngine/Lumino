@@ -92,6 +92,7 @@ namespace Lumino
 {
 namespace GUI
 {
+
 //=============================================================================
 // ListBoxItem
 //=============================================================================
@@ -199,7 +200,7 @@ void ListBoxChrome::OnRender(Graphics::Painter* painter)
 //=============================================================================
 // ListBox
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBox, Control);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBox, ItemsControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ListBox);
 
 //-----------------------------------------------------------------------------
@@ -217,9 +218,8 @@ ListBox* ListBox::Create(GUIManager* manager)
 //
 //-----------------------------------------------------------------------------
 ListBox::ListBox(GUIManager* manager)
-	: Control(manager)
+	: ItemsControl(manager)
 	, m_listBoxItems(LN_NEW ListBoxItemList(this))
-	, m_visualItemsPresenter(NULL)
 {
 	//m_itemsPanel.Attach(LN_NEW StackPanel(manager));
 	//AddVisualChild(m_itemsPanel);
@@ -240,18 +240,6 @@ void ListBox::InsertListBoxItem(int index, UIElement* element)
 	RefPtr<ListBoxItem> item(LN_NEW ListBoxItem(m_manager));
 	item->SetContent(element);
 	m_listBoxItems->Insert(index, item);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void ListBox::PollingTemplateChildCreated(UIElement* newElement)
-{
-	auto ip = dynamic_cast<ItemsPresenter*>(newElement);
-	if (ip != NULL) {
-		m_visualItemsPresenter = ip;
-	}
-	Control::PollingTemplateChildCreated(newElement);
 }
 
 #if 0

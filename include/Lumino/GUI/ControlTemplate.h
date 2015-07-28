@@ -111,6 +111,8 @@ public:
 	void SetTargetType(const String& fullTypeName) { m_targetType = fullTypeName; }
 	const String&  GetTargetType() const { return m_targetType; }
 
+
+
 	//void SetPropertyValue(const Property* prop, const Variant& value)
 	//{
 	//	m_propertyValueList.SetValue(prop, value);

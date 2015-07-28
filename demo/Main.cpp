@@ -11,6 +11,14 @@ Delegate02< A1, A2 > LN_CreateDelegate2(void (LN_STDCALL *method)(A1 a, A2 s))
 	return Delegate02< A1, A2 >(method);
 }
 
+int TestA()
+{
+	printf("aaa\n");
+	return 10;
+}
+
+int g_test2 = TestA();
+
 int main()
 {
 
@@ -121,7 +129,7 @@ int main()
 		textBlock1->SetText(_T("Lumino"));
 		workbench1->SetContent(textBlock1);
 #endif
-		auto listBox1 = GUI::ListBox::Create(app->GetGUIManager());
+		RefPtr<GUI::ListBox> listBox1 = GUI::ListBox::Create(app->GetGUIManager());
 		workbench1->SetContent(listBox1);
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();

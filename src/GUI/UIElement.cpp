@@ -908,39 +908,6 @@ void ContentPresenter::Render()
 
 #endif
 
-//=============================================================================
-// ItemsPresenter
-//=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsPresenter, UIElement);
-LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ItemsPresenter* ItemsPresenter::Create(GUIManager* manager)
-{
-	auto obj = RefPtr<ItemsPresenter>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ItemsPresenter::ItemsPresenter(GUIManager* manager)
-	: UIElement(manager)
-{
-
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ItemsPresenter::~ItemsPresenter()
-{
-
-}
 
 //=============================================================================
 // Control

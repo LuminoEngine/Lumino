@@ -954,6 +954,7 @@
 #include <Lumino/GUI/Controls/Image.h>
 #include <Lumino/GUI/Controls/ScrollBar.h>
 #include <Lumino/GUI/Controls/ScrollViewer.h>
+#include <Lumino/GUI/Controls/StackPanel.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/GUIManager.h>
 
@@ -1020,6 +1021,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::Create(m); });
 	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::Create(m); });
 	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::Create(m); });
+	RegisterFactory(StackPanel::TypeID,				[](GUIManager* m) -> CoreObject* { return StackPanel::Create(m); });
 
 	
 
@@ -1550,6 +1552,11 @@ void GUIManager::BuildDefaultTheme()
 		itemsPresenter->SetTypeName(_T("ItemsPresenter"));
 		scrollViewer->AddChild(itemsPresenter);
 
+
+
+		auto stackPanel = RefPtr<ControlTemplate>::Create();
+		stackPanel->SetTargetType(_T("StackPanel"));
+		style->AddSetter(ItemsControl::ItemsPanelTemplateProperty, stackPanel);
 		
 
 		//RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());

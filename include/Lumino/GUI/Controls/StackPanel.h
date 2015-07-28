@@ -21,6 +21,8 @@ public:
 	static const String	OrientationProperty;
 
 public:
+	static StackPanel* Create(GUIManager* manager);
+
 	StackPanel(GUIManager* manager);
 	virtual ~StackPanel();
 

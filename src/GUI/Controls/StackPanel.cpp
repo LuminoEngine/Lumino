@@ -19,6 +19,17 @@ const String	StackPanel::OrientationProperty(_T("Orientation"));
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+StackPanel* StackPanel::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<StackPanel>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 StackPanel::StackPanel(GUIManager* manager)
 	: Panel(manager)
 {

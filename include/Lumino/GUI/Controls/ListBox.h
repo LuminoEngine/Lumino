@@ -3,6 +3,7 @@
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
 #include "Panel.h"
+#include "../ItemsControl.h"
 
 namespace Lumino
 {
@@ -89,7 +90,7 @@ private:
 	@brief		
 */
 class ListBox
-	: public Control
+	: public ItemsControl
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBox);
@@ -107,7 +108,6 @@ public:
 
 	//ItemsPanel
 protected:
-	virtual void PollingTemplateChildCreated(UIElement* newElement);
 #if 0
 	// 子要素を持つ要素の override
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
@@ -135,7 +135,6 @@ protected:
 	RefPtr<ListBoxItemList>	m_listBoxItems;		///< logical children
 	RefPtr<Panel>			m_itemsPanel;		///< ListBoxItem が配置される Panel
 
-	ItemsPresenter*			m_visualItemsPresenter;	///< VisualTree 内の ItemsPresenter
 
 	// ListBox のスタイルとテンプレート
 	// https://msdn.microsoft.com/ja-jp/library/ms754242%28v=vs.110%29.aspx
