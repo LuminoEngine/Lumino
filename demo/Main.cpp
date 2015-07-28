@@ -116,9 +116,13 @@ int main()
 		image1->SetSourceTexture(tex1);
 		scrollViewer->SetContent(image1);
 #endif
+#if 0	
 		auto textBlock1 = RefPtr<GUI::TextBlock>::Create(app->GetGUIManager());
 		textBlock1->SetText(_T("Lumino"));
 		workbench1->SetContent(textBlock1);
+#endif
+		auto listBox1 = GUI::ListBox::Create(app->GetGUIManager());
+		workbench1->SetContent(listBox1);
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();

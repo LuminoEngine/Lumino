@@ -165,6 +165,7 @@ void ScrollContentPresenter::HookupScrollingComponents()
 	LN_VERIFY_RETURN(owner != NULL);	// ありえないんだけれども。
 
 	// TODO: ... いろいろ子要素を探って IScrollInfo を探す
+	// TODO: バグ。なんか ItemsPresenter がたくさん追加されていた・・・
 	IScrollInfo* scrollInfo = NULL;
 
 	// 子、孫に IScrollInfo が見つからなかった場合は、this をスクロール操作の対象とする

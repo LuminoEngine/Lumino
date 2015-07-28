@@ -843,6 +843,17 @@ ContentPresenter::~ContentPresenter()
 //-----------------------------------------------------------------------------
 void ContentPresenter::SetContent(UIElement* content)
 {
+	if (m_content.GetObjectPtr() == content) {
+		return;
+	}
+
+	// 先に古いのは取り除く
+	if (m_content != NULL)
+	{
+		m_visualChildren.Remove(m_content);
+		m_content->SetParent(NULL);
+	}
+
 	m_content = content;
 	m_visualChildren.Add(m_content);	// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
 	m_content->SetParent(this);
@@ -1102,6 +1113,9 @@ void ContentControl::SetContent(Variant value)
 		m_contentPresenter->SetContent(m_childElement);
 		m_childElement->SetTemplateModified(true);
 	}
+	else {
+		// m_contentPresenter が NULL であるということは、まだ VisualTree の構築が終わっていないということ。
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1110,16 +1124,18 @@ void ContentControl::SetContent(Variant value)
 void ContentControl::PollingTemplateChildCreated(UIElement* newElement)
 {
 	ContentPresenter* presenter = dynamic_cast<ContentPresenter*>(newElement);
-	if (presenter != NULL) {
+	if (presenter != NULL)
+	{
 		m_contentPresenter = presenter;
+
+		// m_childElement があればこの時点でセットしてしまう
+		if (m_childElement != NULL &&
+			m_contentPresenter != NULL)
+		{
+			m_contentPresenter->SetContent(m_childElement);
+		}
 	}
 
-	// m_childElement があればこの時点でセットしてしまう
-	if (m_childElement != NULL &&
-		m_contentPresenter != NULL)
-	{
-		m_contentPresenter->SetContent(m_childElement);
-	}
 }
 
 #if 0

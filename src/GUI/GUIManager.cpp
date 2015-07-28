@@ -5,6 +5,10 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/7/28] TemplateBinding って必要？
+		VisualTree の要素から TemplateParent にアクセスするために必要。
+		Qt でも似たような感じでスタイルを組む。
+		http://relog.xii.jp/mt5r/2013/09/qmlqt-quick-controls.html
 
 	[2015/7/25] Documents って必要？
 		どちらかというと内部データである。
@@ -1014,7 +1018,8 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(RowDefinition::TypeID,			[](GUIManager* m) -> CoreObject* { return RowDefinition::Create(m); });
 	RegisterFactory(Image::TypeID,					[](GUIManager* m) -> CoreObject* { return Image::Create(m); });
 	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::Create(m); });
-	RegisterFactory(ScrollContentPresenter::TypeID,	[](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::Create(m); });
+	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::Create(m); });
+	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::Create(m); });
 
 	
 
@@ -1307,23 +1312,6 @@ void GUIManager::BuildDefaultTheme()
 		m_defaultTheme->AddStyle(style);
 	}
 
-	// ListBox
-	//{
-	//	RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
-	//	t->SetTargetType(_T("ListBox"));
-
-	//	RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
-	//	ef1->SetTypeName(_T("ListBoxChrome"));
-	//	//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
-	//	t->SetVisualTreeRoot(ef1);
-
-	//	RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
-	//	ef2->SetTypeName(_T("ItemsPresenter"));
-	//	ef1->AddChild(ef2);
-
-	//	m_defaultTheme->AddControlTemplate(t);
-	//}
-
 	// Thumb (枠 Brush)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
@@ -1543,6 +1531,42 @@ void GUIManager::BuildDefaultTheme()
 
 		m_defaultTheme->AddStyle(style);
 	}
+
+	// ListBox
+	{
+		// <Style TargetType="ListBox">  or <Style TargetType="{x:Type:ListBox}">
+		auto style = RefPtr<Style>::Create();
+		style->SetTargetType(ListBox::GetClassTypeInfo());
+
+		auto controlTemplate = RefPtr<ControlTemplate>::Create();
+		controlTemplate->SetTargetType(_T("ListBox"));	// TODO: TypeInfoにしたい
+		style->AddSetter(Control::TemplateProperty, controlTemplate);
+
+		auto scrollViewer = RefPtr<UIElementFactory>::Create(this);
+		scrollViewer->SetTypeName(_T("ScrollViewer"));
+		controlTemplate->SetVisualTreeRoot(scrollViewer);
+
+		auto itemsPresenter = RefPtr<UIElementFactory>::Create(this);
+		itemsPresenter->SetTypeName(_T("ItemsPresenter"));
+		scrollViewer->AddChild(itemsPresenter);
+
+		
+
+		//RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		//t->SetTargetType(_T("ListBox"));
+
+		//RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		//ef1->SetTypeName(_T("ListBoxChrome"));
+		////ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+		//t->SetVisualTreeRoot(ef1);
+
+		//RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+		//ef2->SetTypeName(_T("ItemsPresenter"));
+		//ef1->AddChild(ef2);
+
+		m_defaultTheme->AddStyle(style);
+	}
+
 
 }
 

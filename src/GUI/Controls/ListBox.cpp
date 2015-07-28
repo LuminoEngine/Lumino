@@ -17,6 +17,70 @@
 						ScrollBar	縦
 						ScrollBar	横
 
+
+	ListBoxItem の論理的な役目は、親の ListBox にマウス操作を伝えること。
+	ListBox は ListBoxItem からの通知を受け取ったら、自分の設定 (複数選択可能か等) を考慮し、
+	それぞれの Item の状態を更新する。
+
+
+	ItemsControl	・・・ Items, ItemsPanel
+		MenuBase
+		Selector
+		StatusBar
+		TreeView
+
+	Selector		・・・ SelectedIndex
+		ComboBox
+		ListBox
+		TabControl
+
+
+	また、http://pro.art55.jp/?eid=1139229 みたいにグループ化される場合は、
+
+	ScrollViewer
+		Grid
+			ScrollContentPresenter
+				ItemsPresenter
+					StackPanel
+						GroupItem
+							..expanderとか...
+							ContentPresenter
+								ItemsPresenter
+									ListBoxItem
+									ListBoxItem
+						GroupItem
+						GroupItem
+	となっていた。
+
+
+
+	ItemsSource が NULL の場合は、
+	Items への直接コントロールAdd を許可する。
+	ソートも・・・
+
+	というか、ItemsSource が NULL かどうかで
+	内部的なモードがざっくり変わるようなかんじ。
+
+
+	WPF のアイテム生成までの流れ
+
+	・ItemContainerGenerator.PrepareGrouping() で、owner の ListBox.View (ItemsSourceっぽい) を取得。
+	・ItemContainerGenerator は ↑で取得した View に OnCollectionChanged を登録。
+	・コレクションの変更通知を受け取ると、Generator は ListBox.GetContainerForItem() を呼び出す。
+	・ListBox.GetContainerForItem() は ListBoxItem を作って返す。
+	・itemContainerGenerator.ItemsChanged イベントを発生させる。(普通の CLR イベント)
+	・このイベントは Panel.OnItemsChanged でキャッチする。その先で 論理ツリー（Panel の _uiElementCollection）に追加される。
+
+	・・・が、最初のうちからこんな複雑にはしたくない・・・・・。
+
+
+	ちなみに、TreeView の場合は TreeViewItem が ItemsControl。
+	↑の仕組みがノードの数だけネスとされることになる。
+
+
+	Panel が Owner を持ち、Owner に Item を作ってもらうのはいいと思う。
+	問題は Styleを誰が適用するのか。
+
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -141,9 +205,21 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBox);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ListBox* ListBox::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ListBox>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ListBox::ListBox(GUIManager* manager)
 	: Control(manager)
 	, m_listBoxItems(LN_NEW ListBoxItemList(this))
+	, m_visualItemsPresenter(NULL)
 {
 	//m_itemsPanel.Attach(LN_NEW StackPanel(manager));
 	//AddVisualChild(m_itemsPanel);
@@ -159,12 +235,25 @@ ListBox::~ListBox()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ListBox::InsertItem(int index, UIElement* element)
+void ListBox::InsertListBoxItem(int index, UIElement* element)
 {
 	RefPtr<ListBoxItem> item(LN_NEW ListBoxItem(m_manager));
 	item->SetContent(element);
 	m_listBoxItems->Insert(index, item);
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ListBox::PollingTemplateChildCreated(UIElement* newElement)
+{
+	auto ip = dynamic_cast<ItemsPresenter*>(newElement);
+	if (ip != NULL) {
+		m_visualItemsPresenter = ip;
+	}
+	Control::PollingTemplateChildCreated(newElement);
+}
+
 #if 0
 //-----------------------------------------------------------------------------
 //
