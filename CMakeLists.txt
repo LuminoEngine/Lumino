@@ -201,15 +201,21 @@ set(LN_SOURCES_Scene
 )
 
 set(LN_SOURCES_GUI
+	include/Lumino/GUI/Button.h
+	include/Lumino/GUI/ButtonChrome.h
 	include/Lumino/GUI/Common.h
+	include/Lumino/GUI/ContentControl.h
 	include/Lumino/GUI/ContentElement.h
+	include/Lumino/GUI/ContentPresenter.h
+	include/Lumino/GUI/Control.h
 	include/Lumino/GUI/ControlTemplate.h
-	include/Lumino/GUI/EventArgs.h
+	include/Lumino/GUI/Decorator.h
 	include/Lumino/GUI/GUIManager.h
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/ItemsControl.h
 	include/Lumino/GUI/ItemsPresenter.h
 	include/Lumino/GUI/Property.h
+	include/Lumino/GUI/RootPane.h
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/UIElement.h
@@ -226,13 +232,20 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Controls/StackPanel.h
 	include/Lumino/GUI/Controls/Thumb.h
 	include/Lumino/GUI/Controls/Track.h
+	src/GUI/Button.cpp
+	src/GUI/ButtonChrome.cpp
+	src/GUI/ContentControl.cpp
 	src/GUI/ContentElement.cpp
+	src/GUI/ContentPresenter.cpp
+	src/GUI/Control.cpp
 	src/GUI/ControlTemplate.cpp
+	src/GUI/Decorator.cpp
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIHelper.h
 	src/GUI/GUIManager.cpp
 	src/GUI/ItemsControl.cpp
 	src/GUI/ItemsPresenter.cpp
+	src/GUI/RootPane.cpp
 	src/GUI/RoutedCommand.cpp
 	src/GUI/TextBlock.cpp
 	src/GUI/UIElement.cpp

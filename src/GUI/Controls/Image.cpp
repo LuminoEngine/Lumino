@@ -11,7 +11,7 @@ namespace GUI
 //=============================================================================
 // Image
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Image, Control);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Image, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Image);
 
 //LN_DEFINE_PROPERTY_2(Image, const Variant&, SourceProperty, "Source", Variant::Null, &Image::SetSource, NULL);

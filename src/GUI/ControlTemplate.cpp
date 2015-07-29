@@ -1,8 +1,8 @@
 
 #pragma once
 #include "../Internal.h"
-#include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/GUIManager.h>
+#include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include "GUIHelper.h"
 

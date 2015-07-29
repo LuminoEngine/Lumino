@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../UIElement.h"
+#include "../Control.h"
 
 namespace Lumino
 {

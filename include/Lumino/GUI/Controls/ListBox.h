@@ -3,7 +3,9 @@
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
 #include "Panel.h"
+#include "../ContentControl.h"
 #include "../ItemsControl.h"
+#include "../Decorator.h"
 
 namespace Lumino
 {

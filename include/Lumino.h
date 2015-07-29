@@ -40,6 +40,9 @@
 
 #include "Lumino/GUI/GUIManager.h"
 #include "Lumino/GUI/UIElement.h"
+#include "Lumino/GUI/Button.h"
+#include "Lumino/GUI/ButtonChrome.h"
+#include "Lumino/GUI/RootPane.h"
 #include "Lumino/GUI/Controls/Panel.h"
 #include "Lumino/GUI/Controls/StackPanel.h"
 #include "Lumino/GUI/Controls/Grid.h"

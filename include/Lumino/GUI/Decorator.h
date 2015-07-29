@@ -39,5 +39,6 @@ private:
 	//RefPtr<UIElement>	m_visualChild;
 };
 
+
 } // namespace GUI
 } // namespace Lumino

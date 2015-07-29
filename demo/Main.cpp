@@ -13,7 +13,6 @@ Delegate02< A1, A2 > LN_CreateDelegate2(void (LN_STDCALL *method)(A1 a, A2 s))
 
 int TestA()
 {
-	printf("aaa\n");
 	return 10;
 }
 

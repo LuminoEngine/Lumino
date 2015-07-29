@@ -1,6 +1,7 @@
 
 #pragma once
 #include "../UIElement.h"
+#include "../ContentPresenter.h"
 #include "ScrollBar.h"
 #include "IScrollInfo.h"
 

@@ -948,6 +948,9 @@
 #include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include <Lumino/GUI/RootPane.h>
+#include <Lumino/GUI/Button.h>
+#include <Lumino/GUI/ButtonChrome.h>
 #include <Lumino/GUI/Controls/Thumb.h>
 #include <Lumino/GUI/Controls/Track.h>
 #include <Lumino/GUI/Controls/Grid.h>
