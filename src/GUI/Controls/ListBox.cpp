@@ -102,6 +102,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxItem);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+ListBoxItem* ListBoxItem::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<ListBoxItem>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ListBoxItem::ListBoxItem(GUIManager* manager)
 	: ContentControl(manager)
 {
@@ -219,7 +230,7 @@ ListBox* ListBox::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 ListBox::ListBox(GUIManager* manager)
 	: ItemsControl(manager)
-	, m_listBoxItems(LN_NEW ListBoxItemList(this))
+	//, m_listBoxItems(LN_NEW ListBoxItemList(this))
 {
 	//m_itemsPanel.Attach(LN_NEW StackPanel(manager));
 	//AddVisualChild(m_itemsPanel);
@@ -237,9 +248,10 @@ ListBox::~ListBox()
 //-----------------------------------------------------------------------------
 void ListBox::InsertListBoxItem(int index, UIElement* element)
 {
-	RefPtr<ListBoxItem> item(LN_NEW ListBoxItem(m_manager));
+	RefPtr<ListBoxItem> item(ListBoxItem::Create(m_manager));
 	item->SetContent(element);
-	m_listBoxItems->Insert(index, item);
+	GetItems()->AddVariant(item);	// TODO: インデックス
+	//m_listBoxItems->Insert(index, item);
 }
 
 #if 0

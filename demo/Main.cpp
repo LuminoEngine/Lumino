@@ -129,8 +129,18 @@ int main()
 		textBlock1->SetText(_T("Lumino"));
 		workbench1->SetContent(textBlock1);
 #endif
+
+		RefPtr<GUI::TextBlock> textBlock1 = GUI::TextBlock::Create(app->GetGUIManager());
+		textBlock1->SetText(_T("Lumino"));
+		RefPtr<GUI::TextBlock> textBlock2 = GUI::TextBlock::Create(app->GetGUIManager());
+		textBlock2->SetText(_T("Test2"));
+
 		RefPtr<GUI::ListBox> listBox1 = GUI::ListBox::Create(app->GetGUIManager());
 		workbench1->SetContent(listBox1);
+		workbench1->ApplyTemplate();
+
+		listBox1->InsertListBoxItem(0, textBlock1);
+		listBox1->InsertListBoxItem(1, textBlock2);
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();

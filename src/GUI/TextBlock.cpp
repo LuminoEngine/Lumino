@@ -24,6 +24,17 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(TextBlock);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+TextBlock* TextBlock::Create(GUIManager* manager)
+{
+	auto obj = RefPtr<TextBlock>::Create(manager);
+	obj->InitializeComponent();
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 TextBlock::TextBlock(GUIManager* manager)
 	: UIElement(manager)
 {

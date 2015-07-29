@@ -20,6 +20,8 @@ class ListBoxItem
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBoxItem);
 public:
+	static ListBoxItem* Create(GUIManager* manager);
+
 	ListBoxItem(GUIManager* manager);
 	virtual ~ListBoxItem();
 };
@@ -28,11 +30,12 @@ public:
 /**
 	@brief
 */
-class ListBoxItemList
+class ListBoxItemList	// TODO: いらない
 	: public GenericVariantList<ListBoxItem*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
+
 	ListBoxItemList(ListBox* owner) : m_owner(owner) {}
 	virtual ~ListBoxItemList() {}
 
@@ -101,7 +104,7 @@ public:
 	ListBox(GUIManager* manager);
 	virtual ~ListBox();
 
-	ListBoxItemList* GetListBoxItems() { return m_listBoxItems; }
+	//ListBoxItemList* GetListBoxItems() { return m_listBoxItems; }
 
 	// ユーティリティ
 	void InsertListBoxItem(int index, UIElement* element);
@@ -132,7 +135,7 @@ protected:
 	//virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 protected:
-	RefPtr<ListBoxItemList>	m_listBoxItems;		///< logical children
+	//RefPtr<ListBoxItemList>	m_listBoxItems;		///< logical children
 	RefPtr<Panel>			m_itemsPanel;		///< ListBoxItem が配置される Panel
 
 

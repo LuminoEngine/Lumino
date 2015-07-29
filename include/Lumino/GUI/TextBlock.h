@@ -20,6 +20,8 @@ public:
 	static const Property*	TextProperty;
 
 public:
+	static TextBlock* Create(GUIManager* manager);
+
 	TextBlock(GUIManager* manager);
 	virtual ~TextBlock();
 

@@ -33,7 +33,10 @@ ItemsControl* ItemsControl::Create(GUIManager* manager)
 ItemsControl::ItemsControl(GUIManager* manager)
 	: Control(manager)
 	, m_visualItemsPresenter(NULL)
+	, m_itemList()
 {
+	m_itemList.Attach(LN_NEW ItemList());
+	m_itemList->ItemsChanged += LN_CreateDelegate(this, &ItemsControl::Items_ListChanged);
 }
 
 //-----------------------------------------------------------------------------
@@ -98,6 +101,21 @@ SizeF ItemsControl::ArrangeOverride(const SizeF& finalSize)
 		m_visualChildren[0]->ArrangeOverride(finalSize);
 	}
 	return Control::ArrangeOverride(finalSize);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ItemsControl::Items_ListChanged(ListChangedEventArgs* e)
+{
+	if (e->Action == ListChangedAction::Add)
+	{
+		m_hostPanel->AddChild(e->NewItems.GetAtVariant(0));
+	}
+	else
+	{
+		LN_THROW(0, NotImplementedException);
+	}
 }
 
 } // namespace GUI

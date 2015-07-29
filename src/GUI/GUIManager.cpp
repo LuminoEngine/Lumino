@@ -1574,6 +1574,21 @@ void GUIManager::BuildDefaultTheme()
 		m_defaultTheme->AddStyle(style);
 	}
 
+	// ListBoxItem
+	{
+		auto style = RefPtr<Style>::Create();
+		style->SetTargetType(ListBoxItem::GetClassTypeInfo());
+
+		auto controlTemplate = RefPtr<ControlTemplate>::Create();
+		controlTemplate->SetTargetType(_T("ListBoxItem"));	// TODO: TypeInfo‚É‚µ‚½‚¢
+		style->AddSetter(Control::TemplateProperty, controlTemplate);
+
+		auto contentPresenter = RefPtr<UIElementFactory>::Create(this);
+		contentPresenter->SetTypeName(_T("ContentPresenter"));
+		controlTemplate->SetVisualTreeRoot(contentPresenter);
+
+		m_defaultTheme->AddStyle(style);
+	}
 
 }
 
