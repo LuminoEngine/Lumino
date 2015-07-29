@@ -11,7 +11,7 @@ namespace GUI
 //=============================================================================
 // MouseEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(MouseEventArgs, EventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(MouseEventArgs, RoutedEventArgs);
 
 //-----------------------------------------------------------------------------
 //

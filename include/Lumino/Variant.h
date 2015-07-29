@@ -14,7 +14,7 @@ class Property;
 class PropertyChangedEventArgs;
 class RoutedEvent;
 class RoutedEventHandler;
-class EventArgs;
+class RoutedEventArgs;
 
 enum VariantType
 {
@@ -51,7 +51,7 @@ public:
 
 	void RegisterRoutedEvent(RoutedEvent* ev);
 	RoutedEvent* FindRoutedEvent(const String& name) const;	// TODO: いらないかも
-	void InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, EventArgs* e);
+	void InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, RoutedEventArgs* e);
 
 	/// RoutedEventHandler は、ユーザーが動的に追加できるハンドラよりも前に呼び出される。
 	/// WPF では「静的ハンドラ」と呼ばれている。動的イベントに登録するのに比べ、メモリを使用しない。
@@ -94,14 +94,28 @@ public:
 
 public:
 
+	/**
+		@brief		プロパティの値を設定します。
+	*/
+	void SetPropertyValue(const Property* prop, const Variant& value);
+	
+	/**
+		@brief		プロパティの値を取得します。
+	*/
+	Variant GetPropertyValue(const Property* prop) const;
 
-	/// プロパティの値を設定します。
-	//virtual void SetPropertyValue(const String& propertyName, const Variant& value);
-	virtual void SetPropertyValue(const Property* prop, const Variant& value);
+	/**
+		@brief		プロパティの値を設定します。あらかじめ型が分かっている場合、SetPropertyValue() よりも少ないオーバーヘッドで設定できます。
+	*/
+	template<typename TValue>
+	void SetTypedPropertyValue(const Property* prop, const TValue& value);
 
-	/// プロパティの値を取得します。
-	//virtual Variant GetPropertyValue(const String& propertyName) const;
-	virtual Variant GetPropertyValue(const Property* prop) const;
+	/**
+		@brief		プロパティの値を取得します。あらかじめ型が分かっている場合、GetPropertyValue() よりも少ないオーバーヘッドで設定できます。
+	*/
+	template<typename TValue>
+	const TValue& GetTypedPropertyValue(const Property* prop) const;
+
 
 	String ToString();
 
@@ -117,26 +131,12 @@ public:
 	*/
 	bool HasLocalPropertyValue(const Property* prop);
 
-	//const PropertyList& GetPropertyList() const { return m_propertyList; }
-
-	//Property* FindProperty(const String& name) const
-	//{
-	//	Property* prop;
-	//	if (m_propertyList.TryGetValue(name, &prop)) {
-	//		return prop;
-	//	}
-	//	return NULL;
-	//}
 
 	Event01<PropertyChangedEventArgs*>	PropertyChanged;
 
 protected:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	virtual void RaiseEventInternal(const RoutedEvent* ev, EventArgs* e);
-
-	/// この CoreObject にプロパティを登録します。
-	//void RegisterProperty(const String& propertyName, const Variant& defaultValue);
-	//void RegisterProperty(Property* prop);
+	virtual void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e);
 
 	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
 	//bool HasLocalValueInternal(const Property* prop);
@@ -171,6 +171,30 @@ private:
 public:
 	static TypeInfo* GetClassTypeInfo();
 };
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+template<typename TValue>
+void CoreObject::SetTypedPropertyValue(const Property* prop, const TValue& value)
+{
+	LN_THROW(prop != NULL, ArgumentException);
+	auto t = static_cast<TypedProperty<TValue>*>(prop);
+	t->SetValueDirect(this, value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+template<typename TValue>
+const TValue& CoreObject::GetTypedPropertyValue(const Property* prop) const
+{
+	LN_THROW(prop != NULL, ArgumentException);
+	auto t = static_cast<const TypedProperty<TValue>*>(prop);
+	return t->GetValueDirect(this);
+}
+
 
 #define LN_CORE_OBJECT_TYPE_INFO_DECL() \
 	private: \
@@ -236,13 +260,6 @@ public:
 			SetList(static_cast<VariantList*>(t));
 		}
 	}
-	//template<>
-	//Variant(const RefPtr<VariantList>& obj)
-	//	: m_type(VariantType_Unknown)
-	//	, m_uint(0)
-	//{
-	//	SetList(obj);
-	//}
 
 public:
 	VariantType GetType() const { return m_type; }
@@ -270,26 +287,30 @@ public:
 	const Rect& GetRect() const;
 
 
-	//template <class T>
-	//struct TypeTrait { typedef void other; };
-
-	
-
-	template<typename T>
-	T Cast() const { return static_cast<T>(GetObject()); }
-
-	template<> SizeF Cast() const { return GetSizeF(); }
-	template<> bool Cast() const { return GetBool(); }
-	template<> int Cast() const { return GetInt(); }
-	template<> float Cast() const { return GetFloat(); }
-	template<> String Cast() const { return GetString(); }
-	template<> CoreObject* Cast() const { return GetObject(); }
-	template<> Rect Cast() const { return GetRect(); }
-	//template<> Enum Cast() const { return GetInt(); }
-
-
 	template<typename T>
 	T& RefCast() const { return static_cast<T&>(GetObject()); }
+
+
+public:
+	
+	/**
+		@brief		指定した Variant の値を指定した型にキャストする。
+		@code
+					UIElement* item = Variant::Cast<UIElement*>(value);
+		@endcode
+	*/
+	template<typename T>
+	static T Cast(const Variant& value) { return CastSelector<T, std::is_base_of<Enum, T>::type >::GetValue(value); }
+
+private:
+	template<typename T, typename TIsEnum> struct CastSelector { static T GetValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
+	template<> struct CastSelector < bool, std::false_type > { static bool GetValue(const Variant& v) { return v.GetBool(); } };
+	template<> struct CastSelector < int, std::false_type > { static int GetValue(const Variant& v) { return v.GetInt(); } };
+	template<> struct CastSelector < float, std::false_type > { static float GetValue(const Variant& v) { return v.GetFloat(); } };
+	template<> struct CastSelector < String, std::false_type > { static String GetValue(const Variant& v) { return v.GetString(); } };
+	template<> struct CastSelector < Rect, std::false_type > { static Rect GetValue(const Variant& v) { return v.GetRect(); } };
+	template<> struct CastSelector < SizeF, std::false_type > { static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
+	template<typename T> struct CastSelector < T, std::true_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
 
 public:
 	bool operator == (const Variant& right) const;
@@ -311,6 +332,7 @@ private:
 		CoreObject*		m_object;
 		float			m_sizeF[2];
 		int				m_rect[4];
+		Enum			m_enum;
 	};
 	String			m_string;
 };
@@ -518,7 +540,7 @@ public:
 	void SetAt(int index, const TValue& item) { SetAtVariant(index, item); }
 
 	/// 指定インデックスの要素を取得する
-	TValue GetAt(int index) const { return GetAtVariant(index).Cast<TValue>(); }	// TODO: できれば参照で返したいが…
+	TValue GetAt(int index) const { return Variant::Cast<TValue>(GetAtVariant(index)); }	// TODO: できれば参照で返したいが…
 
 	/// 要素を末尾に追加する
 	void Add(const TValue& item) { AddVariant(item); }
@@ -565,7 +587,7 @@ public:
 		iterator() : m_internalItr() {}
 		iterator(const iterator& obj) : m_internalItr(obj.m_internalItr) {}
 		iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
-		typename TestTraits<TValue>::DirectReference operator*() const		{ return m_internalItr->Cast<TValue>(); }//{ return *static_cast<TValue**>(&(m_internalItr->Cast<TValue>())); }
+		typename TestTraits<TValue>::DirectReference operator*() const		{ return Variant::Cast<TValue>(*m_internalItr); }//{ return *static_cast<TValue**>(&(m_internalItr->Cast<TValue>())); }
 		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
 		iterator& operator++()			{ ++m_internalItr; return (*this); }
 		iterator operator++(int)		{ iterator tmp = *this; ++(*this); return tmp; }

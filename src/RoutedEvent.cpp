@@ -7,15 +7,15 @@ namespace Lumino
 {
 
 //=============================================================================
-// EventArgs
+// RoutedEventArgs
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(EventArgs, CoreObject);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(RoutedEventArgs, CoreObject);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-EventArgs::EventArgs()
+RoutedEventArgs::RoutedEventArgs()
 	: /*HandlerOwner(NULL)
 	,*/ Handled(false)
 {
@@ -24,7 +24,7 @@ EventArgs::EventArgs()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-EventArgs::~EventArgs()
+RoutedEventArgs::~RoutedEventArgs()
 {
 }
 

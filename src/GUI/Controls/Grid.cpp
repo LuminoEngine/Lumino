@@ -48,10 +48,6 @@ ColumnDefinition::ColumnDefinition(GUIManager* manager)
 	, m_elementGroup()
 	, m_desiredWidth(0)
 {
-	// Register property
-	//LN_DEFINE_PROPERTY(ColumnDefinition, float, WidthProperty, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth, std::numeric_limits<float>::infinity());
-	//LN_DEFINE_PROPERTY(ColumnDefinition, float, MinWidthProperty, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth, 0.0f);
-	//LN_DEFINE_PROPERTY(ColumnDefinition, float, MaxWidthProperty, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth, FLT_MAX);
 }
 
 //-----------------------------------------------------------------------------

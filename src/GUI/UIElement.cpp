@@ -21,10 +21,16 @@ namespace GUI
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElement, CoreObject);
 
-//const PropertyID	UIElement::SizeProperty(_T("Size"));
-LN_DEFINE_PROPERTY_2(UIElement, SizeF, SizeProperty, "Size", SizeF::Zero, &UIElement::SetSize, &UIElement::GetSize);
-LN_DEFINE_PROPERTY_ENUM_2(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", HorizontalAlignment::Stretch, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment);
-LN_DEFINE_PROPERTY_ENUM_2(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", VerticalAlignment::Stretch, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment);
+
+LN_PROPERTY_IMPLEMENT(UIElement, SizeF, Size, m_size, SizeF::Zero);
+LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignment, m_horizontalAlignment, HorizontalAlignment::Stretch);
+LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignment, m_verticalAlignment, VerticalAlignment::Stretch);
+LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTest, m_isHitTest, true);
+
+////const PropertyID	UIElement::SizeProperty(_T("Size"));
+//LN_DEFINE_PROPERTY_2(UIElement, SizeF, SizeProperty, "Size", SizeF::Zero, &UIElement::SetSize, &UIElement::GetSize);
+//LN_DEFINE_PROPERTY_ENUM_2(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", HorizontalAlignment::Stretch, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment);
+//LN_DEFINE_PROPERTY_ENUM_2(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", VerticalAlignment::Stretch, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment);
 
 //const PropertyID	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
 //const PropertyID	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
@@ -59,12 +65,6 @@ UIElement::UIElement(GUIManager* manager)
 	, m_templateParent(NULL)
 {
 	LN_SAFE_ADDREF(m_manager);
-
-	// ƒvƒƒpƒeƒB‚Ì“o˜^
-	//LN_DEFINE_PROPERTY(UIElement, SizeF, SizeProperty, &UIElement::SetSize, &UIElement::GetSize, SizeF());
-	//LN_DEFINE_PROPERTY_ENUM(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment, HorizontalAlignment::Stretch);
-	//LN_DEFINE_PROPERTY_ENUM(UIElement, VerticalAlignment, VerticalAlignmentProperty, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment, VerticalAlignment::Stretch);
-	//RegisterProperty(SizeProperty, SizeF(NAN, NAN));
 
 	// ƒCƒxƒ“ƒg‚Ì“o˜^
 	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, [](UIElement* target, MouseEventArgs* e) { target->MouseMove(e); });
@@ -417,7 +417,7 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool UIElement::OnEvent(EventType type, EventArgs* args)
+bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 {
 	// Žq—v‘f
 	//if (m_templateChild != NULL) {
@@ -1164,7 +1164,7 @@ void ContentControl::OnRender()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool ContentControl::OnEvent(EventType type, EventArgs* args)
+bool ContentControl::OnEvent(EventType type, RoutedEventArgs* args)
 {
 	if (m_childElement != NULL) {
 		if (m_childElement->OnEvent(type, args)) { return true; }
@@ -1275,7 +1275,7 @@ void Button::OnClick()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Button::OnEvent(EventType type, EventArgs* args)
+bool Button::OnEvent(EventType type, RoutedEventArgs* args)
 {
 
 	//

@@ -303,7 +303,7 @@ void ListBox::ArrangeLayout(const RectF& finalLocalRect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool ListBox::OnEvent(EventType type, EventArgs* args)
+bool ListBox::OnEvent(EventType type, RoutedEventArgs* args)
 {
 	if (m_itemsPanel != NULL) {
 		if (m_itemsPanel->OnEvent(type, args)) { return true; }

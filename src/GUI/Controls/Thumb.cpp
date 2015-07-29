@@ -11,7 +11,7 @@ namespace GUI
 //=============================================================================
 // DragEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::DragEventArgs, EventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::DragEventArgs, RoutedEventArgs);
 
 //=============================================================================
 // Thumb
@@ -50,13 +50,6 @@ Thumb::Thumb(GUIManager* manager)
 	: Control(manager)
 	, m_isDragging(false)
 {
-	// Register property
-	//LN_DEFINE_PROPERTY(Thumb, bool, IsDraggingProperty, NULL, &Thumb::IsDragging, false);
-
-	// Register event
-	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragStartedEvent, &Thumb::OnDragStarted, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseMove.Raise(s, e); });
-	//LN_DEFINE_ROUTED_EVENT(Thumb, DragEventArgs, DragDeltaEvent, &Thumb::OnDragDelta, [](UIElement* t, CoreObject* s, DragEventArgs* e){ t->MouseDown.Raise(s, e); });
-
 	// Register handler
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Thumb, MouseEventArgs, UIElement::MouseMoveEvent, Handler_MouseMove);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Thumb, MouseEventArgs, UIElement::MouseDownEvent, Handler_MouseDown);

@@ -11,7 +11,7 @@ namespace GUI
 	@brief		マウスドラッグが関係するイベント引数です。
 */
 class DragEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:

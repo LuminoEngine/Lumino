@@ -24,46 +24,10 @@ namespace Lumino
 {
 namespace GUI
 {
-//typedef String	PropertyID;
-//typedef String	EventID;
-
 class CanExecuteRoutedCommandEventArgs;
 class ExecuteRoutedCommandEventArgs;
 class RoutedCommandTypeContext;
 
-LN_ENUM(HorizontalAlignment)
-{
-	Left = 0,
-	Center,
-	Right,
-	Stretch,
-};
-LN_ENUM_DECLARE(HorizontalAlignment);
-
-LN_ENUM(VerticalAlignment)
-{
-	Bottom = 0,		///< 子要素を、親のレイアウト スロットの下端に揃えて配置します。
-	Center,			///< 子要素を、親のレイアウト スロットの中央に揃えて配置します。
-	Stretch,		///< 子要素を、親のレイアウト スロット全体に引き伸ばします。
-	Top,			///< 子要素を、親のレイアウト スロットの上端に揃えて配置します。
-};
-LN_ENUM_DECLARE(VerticalAlignment);
-	
-LN_ENUM(Orientation)
-{
-	Vertical = 0,
-	Horizontal,
-};
-LN_ENUM_DECLARE(Orientation);
-
-
-
-class IAddChild
-{
-public:
-	virtual void AddChild(const Variant& value) = 0;
-	virtual void AddText(const String& text) = 0;
-};
 
 /**
 	@brief		
@@ -74,10 +38,12 @@ class UIElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	static const Property*		SizeProperty;
-	static const Property*		HorizontalAlignmentProperty;
-	static const Property*		VerticalAlignmentProperty;
-	static const Property*		IsHitTestProperty;
+	LN_PROPERTY_BEGIN;
+	LN_PROPERTY(SizeF, Size);
+	LN_PROPERTY(GUI::HorizontalAlignment, HorizontalAlignment);
+	LN_PROPERTY(GUI::VerticalAlignment, VerticalAlignment);
+	LN_PROPERTY(bool, IsHitTest);
+	LN_PROPERTY_END;
 
 	static const RoutedEvent*	MouseMoveEvent;
 	static const RoutedEvent*	MouseLeaveEvent;
@@ -124,11 +90,11 @@ public:
 	void SetVerticalAlignment(VerticalAlignment value) { m_verticalAlignment = value; }
 	VerticalAlignment GetVerticalAlignment() const { return m_verticalAlignment; }
 
-	/// ヒットテストの有無を設定します。
-	void SetHitTest(bool enabled) { SetPropertyValue(IsHitTestProperty, Variant(enabled)); }
+	///// ヒットテストの有無を設定します。
+	//void SetHitTest(bool enabled) { SetPropertyValue(IsHitTestProperty, Variant(enabled)); }
 
-	/// ヒットテストの有無を取得します。
-	bool IsHitTest() const { return GetPropertyValue(IsHitTestProperty).GetBool(); }
+	///// ヒットテストの有無を取得します。
+	//bool IsHitTest() const { return GetPropertyValue(IsHitTestProperty).GetBool(); }
 
 
 	void CaptureMouse();
@@ -148,7 +114,7 @@ public:
 	Event01<MouseEventArgs*>	MouseUp;
 
 	/// この要素のレイアウトの更新が完了した時に発生します。このイベントはルーティングイベントではありません。
-	Event01<EventArgs*>			LayoutUpdated;
+	Event01<RoutedEventArgs*>	LayoutUpdated;
 
 
 	// イベントの扱い方は WPF とは少し違う。
@@ -201,14 +167,27 @@ public:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
+
+	/**
+		@brief
+		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
+		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。
+		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
+	*/
 	virtual SizeF MeasureOverride(const SizeF& constraint);
+
+	/**
+		@brief
+		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
+		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
+	*/
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) { return finalSize; }
 
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
 	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}
 	virtual void OnRender(Graphics::Painter* painter) {}
-	virtual bool OnEvent(EventType type, EventArgs* args);
+	virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }	// 論理要素の追加。オーバーライドする。
@@ -276,7 +255,7 @@ protected:
 
 public:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void RaiseEvent(const RoutedEvent* ev, CoreObject* sender, EventArgs* e)
+	void RaiseEvent(const RoutedEvent* ev, CoreObject* sender, RoutedEventArgs* e)
 	{
 		e->Sender = sender;
 		RaiseEventInternal(ev, e);
@@ -284,7 +263,7 @@ public:
 
 private:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void RaiseEventInternal(const RoutedEvent* ev, EventArgs* e)
+	void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 	{
 		CoreObject::RaiseEventInternal(ev, e);
 
@@ -357,6 +336,7 @@ protected:
 	SizeF				m_size;
 	HorizontalAlignment	m_horizontalAlignment;
 	VerticalAlignment	m_verticalAlignment;
+	bool				m_isHitTest;
 
 
 public:	// TODO: private にしたい
@@ -505,6 +485,8 @@ protected:
 	virtual void Render();
 #endif
 
+	// TODO: InvalidateArrange/Measure
+
 private:
 	RefPtr<UIElement>	m_content;
 	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
@@ -587,7 +569,7 @@ protected:
 	//virtual void MeasureLayout(const SizeF& availableSize);
 	//virtual void ArrangeLayout(const RectF& finalLocalRect);
 	//virtual void OnRender();
-	//virtual bool OnEvent(EventType type, EventArgs* args);
+	//virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { SetContent(value); }
@@ -656,7 +638,7 @@ public:
 
 protected:
 	virtual void OnClick();
-	virtual bool OnEvent(EventType type, EventArgs* args);
+	virtual bool OnEvent(EventType type, RoutedEventArgs* args);	// TODO: 意味的には RoutedEvent ではない
 	virtual void OnRender(Graphics::Painter* painter);
 	//virtual void Render();
 

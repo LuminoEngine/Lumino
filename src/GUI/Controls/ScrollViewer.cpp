@@ -323,7 +323,7 @@ void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ScrollViewer::ScrollViewer_LayoutUpdated(EventArgs* e)
+void ScrollViewer::ScrollViewer_LayoutUpdated(RoutedEventArgs* e)
 {
 	if (m_scrollInfo != NULL)
 	{

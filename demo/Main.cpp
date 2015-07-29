@@ -34,7 +34,7 @@ int main()
 		//RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
 		GUI::RootPane* workbench1 = app->GetGUIManager()->GetDefaultRootPane();
 		//workbench1->SetSize(SizeF(640, 480));
-		workbench1->SetPropertyValue(GUI::RootPane::SizeProperty, SizeF(640, 480));
+		workbench1->SetPropertyValue(GUI::RootPane::Properties::Size , SizeF(640, 480));
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);
@@ -130,6 +130,11 @@ int main()
 		workbench1->SetContent(textBlock1);
 #endif
 
+
+		RefPtr<Documents::TextElement> te1 = RefPtr<Documents::TextElement>::Create(app->GetDocumentsManager());
+		te1->SetPropertyValue(Documents::TextElement::Properties::FontSize, 100);
+		//int a = te1->GetPropertyValue(Documents::TextElement::FontSizeProperty).Cast<int>();
+
 		RefPtr<GUI::TextBlock> textBlock1 = GUI::TextBlock::Create(app->GetGUIManager());
 		textBlock1->SetText(_T("Lumino"));
 		RefPtr<GUI::TextBlock> textBlock2 = GUI::TextBlock::Create(app->GetGUIManager());
@@ -141,6 +146,7 @@ int main()
 
 		listBox1->InsertListBoxItem(0, textBlock1);
 		listBox1->InsertListBoxItem(1, textBlock2);
+
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();

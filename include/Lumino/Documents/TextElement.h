@@ -19,12 +19,15 @@ class TextElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	static const Property*	FontFamilyProperty;
-	static const Property*	FontSizeProperty;
-	static const Property*	FontEdgeSizeProperty;	// TODO: Pen ‚ÉˆÚ‚µ‚½‚¢
-	static const Property*	IsFontBoldProperty;
-	static const Property*	IsFontItalicProperty;
-	static const Property*	IsFontAntiAliasProperty;
+	LN_PROPERTY_BEGIN;
+	LN_PROPERTY(String, FontFamily);
+	LN_PROPERTY(int,	FontSize);
+	LN_PROPERTY(int,	FontEdgeSize);	// TODO: Pen ‚ÉˆÚ‚µ‚½‚¢
+	LN_PROPERTY(bool,	IsFontBold);
+	LN_PROPERTY(bool,	IsFontItalic);
+	LN_PROPERTY(bool,	IsFontAntiAlias);
+	LN_PROPERTY_END;
+
 
 public:
 	TextElement(DocumentsManager* manager);
@@ -35,7 +38,7 @@ public:
 
 	//const String& GetFontFamily() const { return m_fontData.Family; }
 
-	const String& GetFontFamily() const { return m_fontData.Family; }
+	const String& GetFontFamily() const { return GetTypedPropertyValue<String>(Properties::FontFamily); }
 	int		GetFontSize() const { return m_fontData.Size; }
 	int		GetFontEdgeSize() const { return m_fontData.EdgeSize; }
 	bool	IsFontBold() const { return m_fontData.IsBold; }

@@ -35,7 +35,7 @@ enum EventType
 	@brief	マウスイベントの引数を表します。
 */
 class MouseEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
@@ -55,7 +55,7 @@ public:
 	@brief	キーボードイベントの引数を表します。	
 */
 class KeyEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 public:
 	KeyEventArgs();
@@ -72,7 +72,7 @@ public:
 //	@brief	スクロールイベントの引数を表します。
 //*/
 //class ScrollEventArgs
-//	: public EventArgs
+//	: public RoutedEventArgs
 //{
 //	LN_CORE_OBJECT_TYPE_INFO_DECL();
 //public:
@@ -129,11 +129,11 @@ public:
 	}
 
 private:
-	typedef Array<EventArgs*>					EventArgsList;
+	typedef Array<RoutedEventArgs*>					EventArgsList;
 	typedef SortedArray<TypeInfo*, EventArgsList*>	EventArgsMap;
 	EventArgsMap	m_pool;
 
-	EventArgs* Find(TypeInfo* typeId)
+	RoutedEventArgs* Find(TypeInfo* typeId)
 	{
 		EventArgsList* list;
 		if (m_pool.TryGetValue(typeId, &list))
@@ -148,7 +148,7 @@ private:
 		return NULL;
 	}
 
-	void Register(EventArgs* e)
+	void Register(RoutedEventArgs* e)
 	{
 		EventArgsList* list;
 		if (!m_pool.TryGetValue(GetTypeInfo(e), &list))

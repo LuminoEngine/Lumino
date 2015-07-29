@@ -9,13 +9,13 @@ namespace Lumino
 /**
 	@brief		
 */
-class EventArgs	// TOOD: –¼‘O RoutedEventArgs
+class RoutedEventArgs	// TOOD: –¼‘O RoutedEventArgs
 	: public CoreObject
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	EventArgs();
-	virtual ~EventArgs();
+	RoutedEventArgs();
+	virtual ~RoutedEventArgs();
 
 public:
 	CoreObject*	Sender;
@@ -29,7 +29,7 @@ protected:
 
 
 class PropertyChangedEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
@@ -59,8 +59,8 @@ public:
 
 	virtual const String& GetName() const = 0;
 
-	//virtual void Raise(CoreObject* target, CoreObject* sender, EventArgs* e) = 0;
-	virtual void CallEvent(CoreObject* target, EventArgs* e) const = 0;
+	//virtual void Raise(CoreObject* target, CoreObject* sender, RoutedEventArgs* e) = 0;
+	virtual void CallEvent(CoreObject* target, RoutedEventArgs* e) const = 0;
 
 private:
 	friend class TypeInfo;
@@ -101,7 +101,7 @@ public:
 
 	virtual const String& GetName() const { return m_name; }
 
-	virtual void CallEvent(CoreObject* target, EventArgs* e) const
+	virtual void CallEvent(CoreObject* target, RoutedEventArgs* e) const
 	{
 		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
 		TEventArgs* et = static_cast<TEventArgs*>(e);
@@ -110,7 +110,7 @@ public:
 		m_callEventHandler(instance, et);
 	}
 
-	//virtual void Raise(CoreObject* target, CoreObject* sender, EventArgs* e)
+	//virtual void Raise(CoreObject* target, CoreObject* sender, RoutedEventArgs* e)
 	//{
 	//	TClass* instance = static_cast<TClass*>(target);
 	//	TEventArgs* et = static_cast<TEventArgs*>(e);
@@ -153,7 +153,7 @@ protected:
 	virtual ~RoutedEventHandler() {}
 
 public:
-	virtual void Call(CoreObject* target, EventArgs* e) = 0;
+	virtual void Call(CoreObject* target, RoutedEventArgs* e) = 0;
 
 private:
 	friend class TypeInfo;
@@ -173,7 +173,7 @@ public:
 		TOwnerClass::GetClassTypeInfo()->RegisterRoutedEventHandler(ev, this);
 	}
 
-	virtual void Call(CoreObject* target, EventArgs* e)
+	virtual void Call(CoreObject* target, RoutedEventArgs* e)
 	{
 		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
 		TEventArgs* et = static_cast<TEventArgs*>(e);

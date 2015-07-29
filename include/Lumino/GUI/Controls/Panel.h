@@ -31,7 +31,7 @@ public:
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
 	//virtual void ArrangeLayout(const RectF& finalLocalRect);
-	virtual bool OnEvent(EventType type, EventArgs* args);
+	virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 	virtual void Render();
 
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);

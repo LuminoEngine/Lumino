@@ -36,7 +36,7 @@ Panel::~Panel()
 //-----------------------------------------------------------------------------
 void Panel::AddChild(const Variant& value)
 {
-	UIElement* item = value.Cast<UIElement*>();	// TODO: Cast() 無いで型チェックしたほうが良いかも
+	UIElement* item = Variant::Cast<UIElement*>(value);	// TODO: Cast() 無いで型チェックしたほうが良いかも
 	LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 	m_children->Add(item);
 	m_visualChildren.Add(item);
@@ -104,7 +104,7 @@ void Panel::Render()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Panel::OnEvent(EventType type, EventArgs* args)
+bool Panel::OnEvent(EventType type, RoutedEventArgs* args)
 {
 	LN_FOREACH(UIElement* child, *m_children) {
 		if (child->OnEvent(type, args)) { return true; }

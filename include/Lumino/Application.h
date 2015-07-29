@@ -55,6 +55,7 @@ public:
 
 
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	GUI::GUIManager* GetGUIManager() const { return m_guiManager; }
 
 private:

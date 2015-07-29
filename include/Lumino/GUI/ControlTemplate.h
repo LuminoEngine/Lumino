@@ -214,7 +214,7 @@ public:
 public:	// internal
 	/// routedEvent : 例えばサブクラス Trigger は PropertyChangedEvent を受け取ったら target にプロパティをセットする
 	/// tareget : 
-	virtual void Invoke(const RoutedEvent* prop, const EventArgs* e, CoreObject* target) = 0;
+	virtual void Invoke(const RoutedEvent* prop, const RoutedEventArgs* e, CoreObject* target) = 0;
 };
 
 typedef GenericVariantList<TriggerBase*>		TriggerList;
@@ -245,7 +245,7 @@ public:
 	}
 
 protected:
-	virtual void Invoke(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target);
+	virtual void Invoke(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target);
 
 private:
 	const Property*		m_property;
@@ -291,7 +291,7 @@ public:
 	/// 指定した要素にこのスタイルを適用する
 	void Apply(UIElement* element);
 
-	void InvoleTriggers(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target);
+	void InvoleTriggers(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target);
 
 private:
 	TypeInfo*			m_targetType;

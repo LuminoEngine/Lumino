@@ -1,4 +1,24 @@
+/*
+	■ Cast について
+		LN_ENUM で定義した拡張列挙型は、Enum クラスの派生。
+		これらは全て m_enum を派生にキャストして返したいのだが、
+		普通の特殊化では派生クラスの面倒を見てくれない。
 
+		例えば、以下の定義があるとする。
+
+			template<typename T>
+			T Cast() const { return static_cast<T>(GetObject()); }
+			template<> Enum Cast() const { return m_enum; }
+
+		このとき、Enum の派生である Orientation にキャストしようと思って
+
+			auto v = Variant::Cast<Orientation>(e);
+
+		とか書いても、正しくコンパイルできない。GetObject() が呼ばれてしまう。
+		派生クラスでも m_enum が返されるようにするには、部分特殊化を駆使する必要がある。
+
+		
+*/
 #include "Internal.h"
 #include <Lumino/Variant.h>
 #include <Lumino/Property.h>
@@ -97,7 +117,7 @@ RoutedEvent* TypeInfo::FindRoutedEvent(const String& name) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TypeInfo::InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, EventArgs* e)
+void TypeInfo::InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, RoutedEventArgs* e)
 {
 	for (RoutedEvent* dynamicEvent : m_routedEventList)
 	{
@@ -261,7 +281,7 @@ String CoreObject::ToString()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CoreObject::RaiseEventInternal(const RoutedEvent* ev, EventArgs* e)
+void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 {
 	LN_VERIFY_RETURN(ev != NULL);
 	LN_VERIFY_RETURN(e != NULL);

@@ -39,7 +39,7 @@ namespace GUI
 //=============================================================================
 // ScrollEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::ScrollEventArgs, EventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::ScrollEventArgs, RoutedEventArgs);
 
 //=============================================================================
 // ScrollBar

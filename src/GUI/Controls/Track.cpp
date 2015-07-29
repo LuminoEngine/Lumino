@@ -78,20 +78,6 @@ Track::Track(GUIManager* manager)
 	, m_viewportSize(0.0f)
 	, m_density(1.0f)
 {	
-	// Register property
-	//LN_DEFINE_PROPERTY		(Track, float, ValueProperty, &Track::SetValue, &Track::GetValue, 0.0f);
-	//LN_DEFINE_PROPERTY		(Track, float, MinimumProperty, &Track::SetMinimum, &Track::GetMinimum, 0.0f);
-	//LN_DEFINE_PROPERTY		(Track, float, MaximumProperty, &Track::SetMaximum, &Track::GetMaximum, 1.0f);
-	//LN_DEFINE_PROPERTY_ENUM	(Track, Orientation, OrientationProperty, &Track::SetOrientation, &Track::GetOrientation, Orientation::Horizontal);
-	//LN_DEFINE_PROPERTY		(Track, ButtonBase*, DecreaseButtonProperty, &Track::SetDecreaseButton, &Track::GetDecreaseButton, NULL);
-	//LN_DEFINE_PROPERTY		(Track, Thumb*, ThumbProperty, &Track::SetThumb, &Track::GetThumb, NULL);
-	//LN_DEFINE_PROPERTY		(Track, ButtonBase*, IncreaseButtonProperty, &Track::SetIncreaseButton, &Track::GetIncreaseButton, NULL);
-
-#if 0
-	// Register handler
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragStartedEvent, Handler_Thumb_DragStarted);
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Track, DragEventArgs, Thumb::DragDeltaEvent, Handler_Thumb_DragDelta);
-#endif
 }
 
 //-----------------------------------------------------------------------------

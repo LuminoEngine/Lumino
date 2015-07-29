@@ -27,7 +27,7 @@ LN_ENUM_DECLARE(ScrollEventType);
 	@brief		ScrollBar のスクロールイベントの引数です。
 */
 class ScrollEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:

@@ -488,7 +488,7 @@ Trigger::~Trigger()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Trigger::Invoke(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target)
+void Trigger::Invoke(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target)
 {
 	//LN_THROW(0, NotImplementedException);
 	if (routedEvent == CoreObject::PropertyChangedEvent)
@@ -555,7 +555,7 @@ void Style::Apply(UIElement* element)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Style::InvoleTriggers(const RoutedEvent* routedEvent, const EventArgs* e, CoreObject* target)
+void Style::InvoleTriggers(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target)
 {
 	LN_VERIFY_RETURN(routedEvent != NULL);
 	for (TriggerBase* trigger : *m_triggerList)

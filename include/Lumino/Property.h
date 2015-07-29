@@ -67,6 +67,12 @@ private:
 	// 余計な new はせずに共有する。
 };
 
+/* Note:
+		
+		メンバ変数へのアクセスは関数ポインタ経由で行う。
+		メンバ変数のポインタを返すことでもアクセスは可能だが、言語バインダを作り辛くなる。
+*/
+
 
 ///**
 //	@brief		
@@ -215,7 +221,7 @@ public:
 	{
 		LN_THROW(!m_setter.IsEmpty(), InvalidOperationException);
 		TClass* instance = static_cast<TClass*>(target);
-		m_setter.Call(instance, static_cast<TCast>(value.Cast<TInternalValue>()));
+		m_setter.Call(instance, static_cast<TCast>(Variant::Cast<TInternalValue>(value)));
 		//(instance->*m_setter)(value.Cast<T>());
 	}
 	virtual Variant GetValue(const CoreObject* target) const
@@ -270,7 +276,7 @@ public:
 		VariantList* srcList = value.GetList();
 		for (Variant& v : *srcList) {
 			// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
-			list->Add(value.Cast<TItem*>());
+			list->Add(Variant::Cast<TItem*>(value));
 		}
 	}
 
@@ -279,7 +285,7 @@ public:
 		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
 		TList* list = m_getter(instance);
 		// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
-		list->Add(value.Cast<TItem*>());
+		list->Add(Variant::Cast<TItem*>(value));
 	}
 
 	virtual bool IsList() const { return true; }
@@ -289,21 +295,21 @@ private:
 	GetterFunctor	m_getter;
 };
 
-// 削除予定
-#define LN_DEFINE_PROPERTY(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
-{ \
-	static ::Lumino::CoreObjectProperty<classType, nativeType> prop( \
-		name, setterFuncPtr, getterFuncPtr, defaultValue); \
-	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
-}
-
-// 削除予定
-#define LN_DEFINE_PROPERTY_ENUM(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
-{ \
-	static ::Lumino::CoreObjectProperty<classType, nativeType, int, nativeType::enum_type> prop( \
-		name, setterFuncPtr, getterFuncPtr, defaultValue); \
-	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
-}
+//// 削除予定
+//#define LN_DEFINE_PROPERTY(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
+//{ \
+//	static ::Lumino::CoreObjectProperty<classType, nativeType> prop( \
+//		name, setterFuncPtr, getterFuncPtr, defaultValue); \
+//	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
+//}
+//
+//// 削除予定
+//#define LN_DEFINE_PROPERTY_ENUM(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
+//{ \
+//	static ::Lumino::CoreObjectProperty<classType, nativeType, int, nativeType::enum_type> prop( \
+//		name, setterFuncPtr, getterFuncPtr, defaultValue); \
+//	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
+//}
 
 // static としてグローバルスコープに定義したプロパティを登録する機能を持ったプロパティ定義ユーティリティ
 template<class TOwnerClass, typename TValue, typename TInternalValue = TValue, typename TCast = TValue>
@@ -331,6 +337,106 @@ struct StaticProperty
 
 
 
+
+
+
+
+
+
+
+template<typename TValue>
+class TypedProperty
+	: public Property
+{
+public:
+	typedef void(*SetterFunc)(CoreObject* obj, const TValue& value);
+	typedef const TValue&(*GetterFunc)(const CoreObject* obj);
+
+public:
+	TypedProperty(TypeInfo* ownerTypeInfo, const TCHAR* name, TValue defaultValue)
+		: Property(ownerTypeInfo, defaultValue, false)
+		, m_name(name)
+		, m_setter(NULL)
+		, m_getter(NULL)
+	{}
+
+	virtual ~TypedProperty() {}
+
+public:
+	virtual const String& GetName() const { return m_name; }
+
+	virtual void SetValue(CoreObject* target, Variant value) const
+	{
+		LN_THROW(m_setter != NULL, InvalidOperationException);
+		m_setter(target, Variant::Cast<TValue>(value));
+	}
+	virtual Variant GetValue(const CoreObject* target) const
+	{
+		LN_THROW(m_getter != NULL, InvalidOperationException);
+		return Variant(m_getter(target));
+	}
+	virtual bool IsReadable() const { return m_getter != NULL; }
+	virtual bool IsWritable() const { return m_getter != NULL; }
+
+	void SetValueDirect(CoreObject* target, TValue value) const
+	{
+		LN_THROW(m_setter != NULL, InvalidOperationException);
+		m_setter(target, value);
+	}
+	const TValue& GetValueDirect(const CoreObject* target) const
+	{
+		LN_THROW(m_getter != NULL, InvalidOperationException);
+		return m_getter(target);
+	}
+
+private:
+	template<typename TValue> friend class TypedPropertyInitializer;
+	String		m_name;
+	SetterFunc	m_setter;
+	GetterFunc	m_getter;
+};
+
+template<typename TValue>
+class TypedPropertyInitializer
+{
+public:
+	typedef void(*SetterFunc)(CoreObject* obj, const TValue& value);
+	typedef const TValue&(*GetterFunc)(const CoreObject* obj);
+
+	SetterFunc	m_setter;
+	GetterFunc	m_getter;
+
+	TypedPropertyInitializer(TypedProperty<TValue>* prop, SetterFunc setter, GetterFunc getter)
+	{
+		prop->m_setter = setter;
+		prop->m_getter = getter;
+	}
+
+
+};
+
+
+#define LN_PROPERTY_BEGIN	struct Properties {
+#define LN_PROPERTY_END		};
+
+#define LN_PROPERTY(valueType, propVar) \
+	public:  static const Lumino::Property*	propVar##; \
+	private: static void  set_##propVar(CoreObject* obj, const valueType& value); \
+	private: static const valueType& get_##propVar(const CoreObject* obj); \
+	private: static TypedPropertyInitializer<valueType> init_##propVar;
+
+#define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, memberVar, defaultValue) \
+	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(#propVar), defaultValue); \
+	const Lumino::Property*				ownerClass::Properties::propVar## = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	void								ownerClass::Properties::set_##propVar(CoreObject* obj, const valueType& value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
+	const valueType&					ownerClass::Properties::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
+	TypedPropertyInitializer<valueType>	ownerClass::Properties::init_##propVar(&_##propVar, &ownerClass::Properties::set_##propVar, &ownerClass::Properties::get_##propVar);
+
+
+
+
+
+
 class AttachedProperty
 	: public Property
 {
@@ -355,6 +461,14 @@ class PropertyManager
 {
 public:
 	static /*AttachedProperty**/void  RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue);
+
+	/// グローバル空間に定義された static 変数を初期化するのが目的
+	static Property* RegisterProperty(TypeInfo* ownerClass, Property* prop)
+	{
+		ownerClass->RegisterProperty(prop);
+		return prop;
+	}
+
 
 private:
 	class TypedNameKey
@@ -410,6 +524,6 @@ public:
 /// GUI 用 Get ユーティリティ
 #define LN_GET_ATTACHED_PROPERTY(element, prop, type) \
 	LN_VERIFY(element != NULL); \
-	return element->GetPropertyValue(prop).Cast<type>();
+	return Variant::Cast<type>(element->GetPropertyValue(prop));
 
 } // namespace Lumino

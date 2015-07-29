@@ -117,7 +117,7 @@ protected:
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
-	virtual bool OnEvent(EventType type, EventArgs* args);
+	virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 	virtual void Render();
 #endif
 
@@ -128,7 +128,7 @@ protected:
 
 	//virtual void Render();
 	//virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	//virtual bool OnEvent(EventType type, EventArgs* args);
+	//virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);

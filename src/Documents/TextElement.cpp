@@ -13,12 +13,12 @@ namespace Documents
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(TextElement, CoreObject);
 
-LN_DEFINE_PROPERTY_2(TextElement, String, FontFamilyProperty, "FontFamily", String::GetEmpty(), NULL, NULL);
-LN_DEFINE_PROPERTY_2(TextElement, int, FontSizeProperty, " FontSize", 0, NULL, NULL);
-LN_DEFINE_PROPERTY_2(TextElement, int, FontEdgeSizeProperty, "FontEdgeSize", 0, NULL, NULL);
-LN_DEFINE_PROPERTY_2(TextElement, bool, IsFontBoldProperty, "IsFontBold", false, NULL, NULL);
-LN_DEFINE_PROPERTY_2(TextElement, bool, IsFontItalicProperty, "IsFontItalic", false, NULL, NULL);
-LN_DEFINE_PROPERTY_2(TextElement, bool, IsFontAntiAliasProperty, "IsFontAntiAlias", false, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(TextElement, String, FontFamily, m_fontData.Family, String::GetEmpty());
+LN_PROPERTY_IMPLEMENT(TextElement, int, FontSize, m_fontData.Size, 20);
+LN_PROPERTY_IMPLEMENT(TextElement, int, FontEdgeSize, m_fontData.EdgeSize, 20);
+LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontBold, m_fontData.IsBold, false);
+LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontItalic, m_fontData.IsItalic, false);
+LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontAntiAlias, m_fontData.IsAntiAlias, true);
 
 //-----------------------------------------------------------------------------
 //
@@ -71,12 +71,12 @@ void TextElement::UpdateFontData()
 	{
 		if (m_parent != NULL)
 		{
-			if (!HasLocalPropertyValue(FontFamilyProperty)) { m_fontData.Family = m_parent->m_fontData.Family; }
-			if (!HasLocalPropertyValue(FontSizeProperty)) { m_fontData.Size = m_parent->m_fontData.Size; }
-			if (!HasLocalPropertyValue(FontEdgeSizeProperty)) { m_fontData.EdgeSize = m_parent->m_fontData.EdgeSize; }
-			if (!HasLocalPropertyValue(IsFontBoldProperty)) { m_fontData.IsBold = m_parent->m_fontData.IsBold; }
-			if (!HasLocalPropertyValue(IsFontItalicProperty)) { m_fontData.IsItalic = m_parent->m_fontData.IsItalic; }
-			if (!HasLocalPropertyValue(IsFontAntiAliasProperty)) { m_fontData.IsAntiAlias = m_parent->m_fontData.IsAntiAlias; }
+			if (!HasLocalPropertyValue(Properties::FontFamily)) { m_fontData.Family = m_parent->m_fontData.Family; }
+			if (!HasLocalPropertyValue(Properties::FontSize)) { m_fontData.Size = m_parent->m_fontData.Size; }
+			if (!HasLocalPropertyValue(Properties::FontEdgeSize)) { m_fontData.EdgeSize = m_parent->m_fontData.EdgeSize; }
+			if (!HasLocalPropertyValue(Properties::IsFontBold)) { m_fontData.IsBold = m_parent->m_fontData.IsBold; }
+			if (!HasLocalPropertyValue(Properties::IsFontItalic)) { m_fontData.IsItalic = m_parent->m_fontData.IsItalic; }
+			if (!HasLocalPropertyValue(Properties::IsFontAntiAlias)) { m_fontData.IsAntiAlias = m_parent->m_fontData.IsAntiAlias; }
 		}
 		m_fontDataModified = true;
 	}

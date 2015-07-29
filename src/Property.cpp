@@ -1,4 +1,9 @@
-
+/*
+	[2015/7/29] LN_PROPERTY_BEGIN と LN_PROPERTY_END について
+		これらはプロパティ定義を内部構造体に閉じ込めるもの。
+		C# と違い、obj-> と書いてアクセスできたり、インテリセンスを汚したりと
+		C++ では WPF のような定義はちょっと向かないと思ったのでこうしている。
+*/
 #include "Internal.h"
 #include <Lumino/Variant.h>
 #include <Lumino/Property.h>

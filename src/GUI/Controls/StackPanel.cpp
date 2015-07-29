@@ -14,7 +14,8 @@ namespace GUI
 
 LN_CORE_OBJECT_TYPE_INFO_IMPL(StackPanel, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(StackPanel);
-const String	StackPanel::OrientationProperty(_T("Orientation"));
+
+LN_PROPERTY_IMPLEMENT(StackPanel, GUI::Orientation, Orientation, m_orientation, GUI::Orientation::Horizontal);
 
 //-----------------------------------------------------------------------------
 //
@@ -33,8 +34,9 @@ StackPanel* StackPanel::Create(GUIManager* manager)
 StackPanel::StackPanel(GUIManager* manager)
 	: Panel(manager)
 {
+	std::is_class<int>();
 	// プロパティの登録
-	LN_DEFINE_PROPERTY_ENUM(StackPanel, Orientation, OrientationProperty, &StackPanel::SetOrientation, &StackPanel::GetOrientation, Orientation::Horizontal);
+//	LN_DEFINE_PROPERTY_ENUM(StackPanel, Orientation, OrientationProperty, &StackPanel::SetOrientation, &StackPanel::GetOrientation, Orientation::Horizontal);
 }
 
 //-----------------------------------------------------------------------------

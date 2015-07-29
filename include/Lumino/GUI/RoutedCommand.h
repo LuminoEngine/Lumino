@@ -3,7 +3,7 @@
 #include <memory>
 #include <functional>
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/Event.h>
+#include <Lumino/DataModel/Event.h>
 #include "../Variant.h"
 #include "EventArgs.h"
 //#include "RoutedEvent.h"
@@ -108,7 +108,7 @@ private:
 };
 
 class CanExecuteRoutedCommandEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
@@ -121,7 +121,7 @@ public:
 };
 
 class ExecuteRoutedCommandEventArgs
-	: public EventArgs
+	: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
