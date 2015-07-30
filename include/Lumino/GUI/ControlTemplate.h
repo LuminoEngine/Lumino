@@ -214,7 +214,9 @@ public:
 public:	// internal
 	/// routedEvent : 例えばサブクラス Trigger は PropertyChangedEvent を受け取ったら target にプロパティをセットする
 	/// tareget : 
-	virtual void Invoke(const RoutedEvent* prop, const RoutedEventArgs* e, CoreObject* target) = 0;
+	//virtual void Invoke(const RoutedEvent* prop, const RoutedEventArgs* e, CoreObject* target) = 0;
+
+	virtual bool IsPropertyTrigger() const { return false; }
 };
 
 typedef GenericVariantList<TriggerBase*>		TriggerList;
@@ -244,8 +246,11 @@ public:
 		m_setterList->Add(setter);
 	}
 
+	// internal
+	/// オーナーオブジェクトのプロパティ変更通知が発生した
+	void TryInvoke(CoreObject* target, PropertyChangedEventArgs* e);
 protected:
-	virtual void Invoke(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target);
+	virtual bool IsPropertyTrigger() const { return true; }
 
 private:
 	const Property*		m_property;
@@ -259,6 +264,7 @@ private:
 class Style
 	: public CoreObject
 {
+	typedef GenericVariantList<Trigger*>	PropertyTriggerList;
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	Style();
@@ -271,7 +277,7 @@ public:
 	Style* GetBasedOn() const { return m_baseStyle; }
 
 	SetterList* GetSetters() const { return m_setterList; }
-	TriggerList* GetTriggers() const { return m_triggerList; }
+	//TriggerList* GetTriggers() const { return m_triggerList; }
 
 	// ユーティリティ
 	void AddSetter(const Property* prop, const Variant& value) 
@@ -283,7 +289,7 @@ public:
 	Trigger* AddPropertyTrigger(const Property* prop, const Variant& value)
 	{
 		auto trigger = RefPtr<Trigger>::Create(prop, value);
-		m_triggerList->Add(trigger);
+		m_propertyTriggerList->Add(trigger);
 		return trigger;
 	}
 
@@ -291,13 +297,17 @@ public:
 	/// 指定した要素にこのスタイルを適用する
 	void Apply(UIElement* element);
 
-	void InvoleTriggers(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target);
+	void NortifyTargetObjectPropertyChanged(CoreObject* target, PropertyChangedEventArgs* e);
+
+	//void InvoleTriggers(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target);
 
 private:
+
 	TypeInfo*			m_targetType;
 	RefPtr<Style>		m_baseStyle;
 	RefPtr<SetterList>	m_setterList;
-	RefPtr<TriggerList>	m_triggerList;
+	RefPtr<PropertyTriggerList>	m_propertyTriggerList;
+	//RefPtr<TriggerList>	m_triggerList;
 };
 
 /**

@@ -18,9 +18,7 @@ class StackPanel
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(StackPanel);
 public:
-	LN_PROPERTY_BEGIN;
-	LN_PROPERTY(GUI::Orientation, Orientation);
-	LN_PROPERTY_END;
+	LN_PROPERTY(Orientation, OrientationProperty);
 
 public:
 	static StackPanel* Create(GUIManager* manager);

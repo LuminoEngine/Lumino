@@ -31,23 +31,23 @@ RoutedEventArgs::~RoutedEventArgs()
 //=============================================================================
 // PropertyChangedEventArgs
 //=============================================================================
-
-LN_CORE_OBJECT_TYPE_INFO_IMPL(PropertyChangedEventArgs, CoreObject);
-
-//-----------------------------------------------------------------------------
 //
-//-----------------------------------------------------------------------------
-PropertyChangedEventArgs::PropertyChangedEventArgs(const String& propertyName, const Variant& newValue)
-	: PropertyName(propertyName)
-	, NewValue(newValue)
-{
-}
-
-//-----------------------------------------------------------------------------
+LN_CORE_OBJECT_TYPE_INFO_IMPL(PropertyChangedEventArgs, CoreObject);	// キャッシュできるようにするため、実装しておく
 //
-//-----------------------------------------------------------------------------
-PropertyChangedEventArgs::~PropertyChangedEventArgs()
-{
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//PropertyChangedEventArgs::PropertyChangedEventArgs(const String& propertyName, const Variant& newValue)
+//	: PropertyName(propertyName)
+//	, NewValue(newValue)
+//{
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//PropertyChangedEventArgs::~PropertyChangedEventArgs()
+//{
+//}
 
 } // namespace Lumino

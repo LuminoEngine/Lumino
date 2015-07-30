@@ -114,7 +114,7 @@ public:
 		@brief		プロパティの値を取得します。あらかじめ型が分かっている場合、GetPropertyValue() よりも少ないオーバーヘッドで設定できます。
 	*/
 	template<typename TValue>
-	const TValue& GetTypedPropertyValue(const Property* prop) const;
+	TValue GetTypedPropertyValue(const Property* prop) const;
 
 
 	String ToString();
@@ -134,11 +134,14 @@ public:
 
 	Event01<PropertyChangedEventArgs*>	PropertyChanged;
 
+	// internal
+	void NotifyPropertyChange(const Property* prop, const Variant& newValue, const Variant& oldValue/*PropertyChangedEventArgs* e*/);
+
 protected:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	virtual void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e);
 
-	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
+	virtual void OnPropertyChanged(PropertyChangedEventArgs* e);
 	//bool HasLocalValueInternal(const Property* prop);
 
 	class LocalValueFlags
@@ -180,7 +183,7 @@ template<typename TValue>
 void CoreObject::SetTypedPropertyValue(const Property* prop, const TValue& value)
 {
 	LN_THROW(prop != NULL, ArgumentException);
-	auto t = static_cast<TypedProperty<TValue>*>(prop);
+	auto t = static_cast<const TypedProperty<TValue>*>(prop);
 	t->SetValueDirect(this, value);
 }
 
@@ -188,7 +191,7 @@ void CoreObject::SetTypedPropertyValue(const Property* prop, const TValue& value
 //
 //-----------------------------------------------------------------------------
 template<typename TValue>
-const TValue& CoreObject::GetTypedPropertyValue(const Property* prop) const
+TValue CoreObject::GetTypedPropertyValue(const Property* prop) const
 {
 	LN_THROW(prop != NULL, ArgumentException);
 	auto t = static_cast<const TypedProperty<TValue>*>(prop);

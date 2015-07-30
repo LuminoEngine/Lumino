@@ -35,22 +35,14 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Track, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Track);
 
-
-LN_DEFINE_PROPERTY_2		(Track, float, ValueProperty, "Value", 0.0f, &Track::SetValue, &Track::GetValue);
-LN_DEFINE_PROPERTY_2		(Track, float, MinimumProperty, "Minimum", 0.0f, &Track::SetMinimum, &Track::GetMinimum);
-LN_DEFINE_PROPERTY_2		(Track, float, MaximumProperty, "Maximum", 1.0f, &Track::SetMaximum, &Track::GetMaximum);
-LN_DEFINE_PROPERTY_ENUM_2	(Track, Orientation, OrientationProperty,"Orientation", Orientation::Horizontal, &Track::SetOrientation, &Track::GetOrientation);
-LN_DEFINE_PROPERTY_2		(Track, ButtonBase*, DecreaseButtonProperty, "DecreaseButton", NULL, &Track::SetDecreaseButton, &Track::GetDecreaseButton);
-LN_DEFINE_PROPERTY_2		(Track, Thumb*, ThumbProperty, "Thumb", NULL, &Track::SetThumb, &Track::GetThumb);
-LN_DEFINE_PROPERTY_2		(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButton", NULL, &Track::SetIncreaseButton, &Track::GetIncreaseButton);
-
-//PropertyID	Track::ValueProperty(_T("Value"));
-//PropertyID	Track::MinimumProperty(_T("Minimum"));
-//PropertyID	Track::MaximumProperty(_T("Maximum"));
-//PropertyID	Track::OrientationProperty(_T("Orientation"));
-//PropertyID	Track::DecreaseButtonProperty(_T("DecreaseButton"));
-//PropertyID	Track::ThumbProperty(_T("Thumb"));
-//PropertyID	Track::IncreaseButtonProperty(_T("IncreaseButton"));
+// Register property
+LN_PROPERTY_IMPLEMENT(Track, float, ValueProperty, "Value", m_value, false, NULL);
+LN_PROPERTY_IMPLEMENT(Track, float, MinimumProperty, "Minimum", m_minimum, false, NULL);
+LN_PROPERTY_IMPLEMENT(Track, float, MaximumProperty, "Maximum", m_maximum, false, NULL);
+LN_PROPERTY_IMPLEMENT(Track, Orientation, OrientationProperty, "Orientation", m_orientation, Orientation::Vertical, NULL);
+LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, DecreaseButtonProperty, "DecreaseButton", m_decreaseButton, NULL, &Track::OnDecreaseButtonPropertyChanged);
+LN_PROPERTY_IMPLEMENT(Track, Thumb*, ThumbProperty, "Thumb", m_thumb, NULL, &Track::OnThumbPropertyChanged);
+LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButton", m_increaseButton, NULL, &Track::OnIncreaseButtonPropertyChanged);
 
 //-----------------------------------------------------------------------------
 //
@@ -351,6 +343,20 @@ void Track::CalcScrollBarComponentsSize(
 	*outIncreaseButtonLength = increaseButtonLength;
 
 	m_density = range / remainingTrackLength;
+}
+
+
+void Track::OnDecreaseButtonPropertyChanged(PropertyChangedEventArgs* e)
+{
+	UpdateComponent(m_decreaseButton, m_decreaseButton);
+}
+void Track::OnThumbPropertyChanged(PropertyChangedEventArgs* e)
+{
+	UpdateComponent(m_thumb, m_thumb);
+}
+void Track::OnIncreaseButtonPropertyChanged(PropertyChangedEventArgs* e)
+{
+	UpdateComponent(m_increaseButton, m_increaseButton);
 }
 
 #if 0

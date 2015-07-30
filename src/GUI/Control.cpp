@@ -13,7 +13,8 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
-LN_DEFINE_PROPERTY_2(Control, ControlTemplate*, TemplateProperty, "Template", NULL, &Control::SetTemplate, &Control::GetTemplate);
+// Register property
+LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, NULL, NULL);
 
 //-----------------------------------------------------------------------------
 //

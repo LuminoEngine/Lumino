@@ -19,13 +19,13 @@ class Track
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Track);
 public:
-	static const Property*	ValueProperty;			///< スクロール位置に対する値
-	static const Property*	MinimumProperty;		///< 指定可能な最小値
-	static const Property*	MaximumProperty;		///< 指定可能な最大値
-	static const Property*	OrientationProperty;	///< Track の方向
-	static const Property*	DecreaseButtonProperty;	///< 値を減少させる Button コントロール
-	static const Property*	ThumbProperty;			///< 値を操作する Thumb コントロール
-	static const Property*	IncreaseButtonProperty;	///< 値を増加させる Button コントロール
+	LN_PROPERTY(float,			ValueProperty);				///< Value プロパティの識別子
+	LN_PROPERTY(float,			MinimumProperty);			///< Minimum プロパティの識別子
+	LN_PROPERTY(float,			MaximumProperty);			///< Maximum プロパティの識別子
+	LN_PROPERTY(Orientation,	OrientationProperty);		///< Orientation プロパティの識別子
+	LN_PROPERTY(ButtonBase*,	DecreaseButtonProperty);	///< DecreaseButton プロパティの識別子
+	LN_PROPERTY(Thumb*,			ThumbProperty);				///< Thumb プロパティの識別子
+	LN_PROPERTY(ButtonBase*,	IncreaseButtonProperty);	///< IncreaseButton プロパティの識別子
 
 public:
 	static Track* Create(GUIManager* manager);
@@ -97,6 +97,10 @@ private:
 	void CoerceLength(float& componentLength, float trackLength);
 	void CalcSliderComponentsSize(float trackLength, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
 	void CalcScrollBarComponentsSize(float trackLength, float viewportSize, float* outDecreaseButtonLength, float* outThumbLength, float* outIncreaseButtonLength);
+
+	void OnDecreaseButtonPropertyChanged(PropertyChangedEventArgs* e);
+	void OnThumbPropertyChanged(PropertyChangedEventArgs* e);
+	void OnIncreaseButtonPropertyChanged(PropertyChangedEventArgs* e);
 
 #if 0
 	void Handler_Thumb_DragStarted(DragEventArgs* e);

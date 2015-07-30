@@ -23,9 +23,9 @@ public:
 	static const float Star;
 
 public:
-	static const Property*	WidthProperty;
-	static const Property*	MinWidthProperty;
-	static const Property*	MaxWidthProperty;
+	LN_PROPERTY(float, WidthProperty);
+	LN_PROPERTY(float, MinWidthProperty);
+	LN_PROPERTY(float, MaxWidthProperty);
 
 public:
 	static ColumnDefinition* Create(GUIManager* manager);
@@ -78,9 +78,9 @@ public:
 	static const float Star;
 
 public:
-	static const Property*	HeightProperty;
-	static const Property*	MaxHeightProperty;
-	static const Property*	MinHeightProperty;
+	LN_PROPERTY(float, HeightProperty);
+	LN_PROPERTY(float, MinHeightProperty);
+	LN_PROPERTY(float, MaxHeightProperty);
 
 public:
 	static RowDefinition* Create(GUIManager* manager);
@@ -132,9 +132,10 @@ class Grid
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Grid);
 public:
-	static const Property*		ColumnDefinitionsProperty;
-	static const Property*		RowDefinitionsProperty;
+	LN_PROPERTY(ColumnDefinitionList*,	ColumnDefinitionsProperty);
+	LN_PROPERTY(RowDefinitionList*,		RowDefinitionsProperty);
 
+public:
 	static const AttachedProperty*	ColumnProperty;
 	static const AttachedProperty*	ColumnSpanProperty;
 	static const AttachedProperty*	RowProperty;

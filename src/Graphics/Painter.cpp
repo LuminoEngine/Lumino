@@ -300,7 +300,7 @@ void Painter::DrawGlyphRun(GlyphRun* glyphRun)
 		Imaging::TextLayoutResultItem& item = glyphRun->m_glyphData.Items[i];
 		glyphRun->m_glyphTextureCache->LookupGlyph(item.Char, &tex1, &srcRect);
 
-		data[i].Position.Set(item.Location.OuterTopLeftPosition.X, item.Location.OuterTopLeftPosition.Y);
+		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);
 		data[i].SrcPixelRect.Set(srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height);
 	}
 

@@ -163,7 +163,7 @@ RoutedEventHandler* TypeInfo::FindRoutedEventHandler(const RoutedEvent* ev) cons
 // CoreObject
 //=============================================================================
 
-LN_DEFINE_ROUTED_EVENT(CoreObject, PropertyChangedEventArgs, PropertyChangedEvent, "PropertyChanged", PropertyChanged);
+//LN_DEFINE_ROUTED_EVENT(CoreObject, PropertyChangedEventArgs, PropertyChangedEvent, "PropertyChanged", PropertyChanged);
 
 //-----------------------------------------------------------------------------
 //
@@ -281,6 +281,16 @@ String CoreObject::ToString()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void CoreObject::NotifyPropertyChange(const Property* prop, const Variant& newValue, const Variant& oldValue/*PropertyChangedEventArgs* e*/)
+{
+	// TODO: スタックに確保するのは危険。言語バインダで使えなくなる。
+	PropertyChangedEventArgs e(prop, newValue, oldValue);
+	OnPropertyChanged(&e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 {
 	LN_VERIFY_RETURN(ev != NULL);
@@ -316,11 +326,12 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CoreObject::OnPropertyChanged(const String& name, const Variant& newValue)
+void CoreObject::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
-	// TODO: スタックに確保するのは危険。言語バインダで使えなくなる。
-	PropertyChangedEventArgs e(name, newValue);
-	PropertyChanged.Raise(&e);
+	PropertyChanged.Raise(e);
+	
+	// e->Property を持つクラスのコールバックを呼び出す
+	e->ChangedProperty->NotifyPropertyChange(this, e);
 }
 
 //-----------------------------------------------------------------------------
@@ -584,7 +595,7 @@ void Variant::SetSizeF(const SizeF& value)
 //-----------------------------------------------------------------------------
 const SizeF& Variant::GetSizeF() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_SizeF)) { return SizeF(); }
+	if (LN_VERIFY_ASSERT(m_type == VariantType_SizeF)) { return SizeF::Zero; }
 	return *((SizeF*)m_sizeF);
 }
 //-----------------------------------------------------------------------------
@@ -602,7 +613,7 @@ void Variant::SetRect(const Rect& value)
 //-----------------------------------------------------------------------------
 const Rect& Variant::GetRect() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_Rect)) { return Rect(); }
+	if (LN_VERIFY_ASSERT(m_type == VariantType_Rect)) { return Rect::Zero; }
 	return *((Rect*)m_rect);
 }
 

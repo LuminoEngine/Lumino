@@ -73,7 +73,7 @@ class ItemsControl
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ItemsControl);
 public:
-	static const Property*	ItemsPanelTemplateProperty;
+	LN_PROPERTY(ControlTemplate*, ItemsPanelTemplateProperty);
 
 public:
 	static ItemsControl* Create(GUIManager* manager);

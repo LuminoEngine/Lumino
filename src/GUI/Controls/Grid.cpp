@@ -18,12 +18,9 @@ const float ColumnDefinition::Auto = NAN;
 const float ColumnDefinition::Star = std::numeric_limits<float>::infinity();
 
 // Register property
-LN_DEFINE_PROPERTY_2(ColumnDefinition, float, WidthProperty, "Width", ColumnDefinition::Star, &ColumnDefinition::SetWidth, &ColumnDefinition::GetWidth);
-LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MinWidthProperty, "MinWidth", 0.0f, &ColumnDefinition::SetMinWidth, &ColumnDefinition::GetMinWidth);
-LN_DEFINE_PROPERTY_2(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", FLT_MAX, &ColumnDefinition::SetMaxWidth, &ColumnDefinition::GetMaxWidth);
-//const PropertyID	ColumnDefinition::WidthProperty(_T("Width"));
-//const PropertyID	ColumnDefinition::MinWidthProperty(_T("MinWidth"));
-//const PropertyID	ColumnDefinition::MaxWidthProperty(_T("MaxWidth"));
+LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, WidthProperty, "Width", m_width, ColumnDefinition::Star, NULL);
+LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MinWidthProperty, "MinWidth", m_minWidth, 0.0f, NULL);
+LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", m_maxWidth, FLT_MAX, NULL);
 
 //-----------------------------------------------------------------------------
 //
@@ -83,12 +80,9 @@ const float RowDefinition::Auto = NAN;
 const float RowDefinition::Star = std::numeric_limits<float>::infinity();
 
 // Register property
-LN_DEFINE_PROPERTY_2(RowDefinition, float, HeightProperty, "Height", RowDefinition::Auto, &RowDefinition::SetHeight, &RowDefinition::GetHeight);
-LN_DEFINE_PROPERTY_2(RowDefinition, float, MinHeightProperty, "MinHeight", 0.0f, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight);
-LN_DEFINE_PROPERTY_2(RowDefinition, float, MaxHeightProperty, "MaxHeight", FLT_MAX, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight);
-//const PropertyID	RowDefinition::HeightProperty(_T("Height"));
-//const PropertyID	RowDefinition::MinHeightProperty(_T("MinHeight"));
-//const PropertyID	RowDefinition::MaxHeightProperty(_T("MaxHeight"));
+LN_PROPERTY_IMPLEMENT(RowDefinition, float, HeightProperty, "Height", m_height, ColumnDefinition::Star, NULL);
+LN_PROPERTY_IMPLEMENT(RowDefinition, float, MinHeightProperty, "MinHeight", m_minHeight, 0.0f, NULL);
+LN_PROPERTY_IMPLEMENT(RowDefinition, float, MaxHeightProperty, "MaxHeight", m_maxHeight, FLT_MAX, NULL);
 
 //-----------------------------------------------------------------------------
 //
@@ -113,10 +107,6 @@ RowDefinition::RowDefinition(GUIManager* manager)
 	, m_elementGroup()
 	, m_desiredHeight(0)
 {
-	// Register property
-	//LN_DEFINE_PROPERTY(RowDefinition, float, HeightProperty, &RowDefinition::SetHeight, &RowDefinition::GetHeight, std::numeric_limits<float>::infinity());
-	//LN_DEFINE_PROPERTY(RowDefinition, float, MinHeightProperty, &RowDefinition::SetMinHeight, &RowDefinition::GetMinHeight, 0.0f);
-	//LN_DEFINE_PROPERTY(RowDefinition, float, MaxHeightProperty, &RowDefinition::SetMaxHeight, &RowDefinition::GetMaxHeight, FLT_MAX);
 }
 
 //-----------------------------------------------------------------------------
@@ -148,36 +138,15 @@ float RowDefinition::GetAvailableDesiredHeight() const
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Grid, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Grid);
 
-LN_DEFINE_PROPERTY_LIST(Grid, ColumnDefinitionList, ColumnDefinition, ColumnDefinitionsProperty, "ColumnDefinitions", [](Grid* grid) { return grid->GetColumnDefinitions(); });
-LN_DEFINE_PROPERTY_LIST(Grid, RowDefinitionList, RowDefinition, RowDefinitionsProperty, "RowDefinitions", [](Grid* grid) { return grid->GetRowDefinitions(); });
+// Register property
+LN_PROPERTY_IMPLEMENT(Grid, ColumnDefinitionList*, ColumnDefinitionsProperty, "ColumnDefinitions", m_columnDefinitionList, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(Grid, RowDefinitionList*, RowDefinitionsProperty, "RowDefinitions", m_rowDefinitionList, NULL, NULL);
 
 // Register attached property
 LN_DEFINE_ATTACHED_PROPERTY(Grid, ColumnProperty, "Column", 0);
 LN_DEFINE_ATTACHED_PROPERTY(Grid, ColumnSpanProperty, "ColumnSpan", 0);
 LN_DEFINE_ATTACHED_PROPERTY(Grid, RowProperty, "Row", 0);
 LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
-
-
-//class CppCoreObjectPropertyInitializer
-
-//static ::Lumino::CoreObjectProperty<Grid, int>	_ColumnProperty(
-//	);
-
-
-//static ::Lumino::CoreObjectProperty<classType, nativeType> prop(\
-//	name, setterFuncPtr, getterFuncPtr, defaultValue); \
-//	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
-//const PropertyID	Grid::ColumnDefinitionsProperty(_T("ColumnDefinitions"));
-//const PropertyID	Grid::RowDefinitionsProperty(_T("RowDefinitions"));
-
-//StaticProperty<Grid, int>	Grid::_ColumnProperty();
-
-//LN_DEFINE_PROPERTY_2(ColumnDefinitionsProperty, "ColumnDefinitions", );
-
-//const AttachedProperty*	Grid::ColumnProperty = NULL;
-//AttachedProperty*	Grid::ColumnSpanProperty = NULL;
-//AttachedProperty*	Grid::RowProperty = NULL;
-//AttachedProperty*	Grid::RowSpanProperty = NULL;
 
 //-----------------------------------------------------------------------------
 //

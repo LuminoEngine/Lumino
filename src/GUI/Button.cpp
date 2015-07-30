@@ -88,7 +88,8 @@ void Button::OnRender(Graphics::Painter* painter)
 void Button::OnMouseMove(MouseEventArgs* e)
 {
 	m_isMouseOver = true;
-	OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
+	// TODO
+	//OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
 	e->Handled = true;
 }
 

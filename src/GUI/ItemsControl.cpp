@@ -14,7 +14,8 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsControl, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsControl); 
 
-LN_DEFINE_PROPERTY_2(ItemsControl, ControlTemplate*, ItemsPanelTemplateProperty, "ItemsPanelTemplate", NULL, &ItemsControl::SetItemsPanelTemplate, &ItemsControl::GetItemsPanelTemplate);
+// Register property
+LN_PROPERTY_IMPLEMENT(ItemsControl, ControlTemplate*, ItemsPanelTemplateProperty, "ItemsPanelTemplate", m_itemsPanelTemplate, NULL, NULL);
 
 //-----------------------------------------------------------------------------
 //

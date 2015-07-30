@@ -16,8 +16,8 @@ class ButtonChrome
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ButtonChrome);
 public:
-	static const Property*	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
-	static const Property*	FrameWidthProperty;		///< FrameWidth プロパティの識別子
+	LN_PROPERTY(bool,	IsMouseOverProperty);
+	LN_PROPERTY(float,	FrameWidthProperty);
 
 public:
 	static ButtonChrome* Create(GUIManager* manager);
@@ -27,14 +27,14 @@ public:
 
 public:
 	// Property
-	void SetMouseOver(bool value) { m_isMouseOver = value; }
-	bool IsMouseOver() const { return m_isMouseOver; }
+	void SetMouseOver(bool value) { SetTypedPropertyValue<bool>(IsMouseOverProperty, value); }
+	bool IsMouseOver() const { return GetTypedPropertyValue<bool>(IsMouseOverProperty); }
 
 	/// ボタンイメージの外枠の幅を設定します。
-	void SetFrameWidth(float width) { m_frameWidth = width; }
+	void SetFrameWidth(float value) { SetTypedPropertyValue<float>(FrameWidthProperty, value); }
 
 	/// ボタンイメージの外枠の幅を取得します。
-	float GetFrameWidth() const { return m_frameWidth; }
+	float GetFrameWidth() const { return GetTypedPropertyValue<float>(FrameWidthProperty); }
 
 public:
 	// override CoreObject

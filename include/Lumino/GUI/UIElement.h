@@ -31,27 +31,105 @@ class RoutedCommandTypeContext;
 /**
 	@brief		
 */
+class RoutedEventSlotBase
+{
+protected:
+	RoutedEventSlotBase() {}
+	virtual ~RoutedEventSlotBase() {}
+
+private:
+	friend class UIElement;
+	virtual void Raise(RoutedEventArgs* e) = 0;
+};
+
+
+/**
+	@brief		
+	@details	RoutedEvent は UIElement 及びそのサブクラス内部からのみ発生させることが出来ます。
+*/
+template<class TArgs>
+class RoutedEventSlot
+	: public RoutedEventSlotBase
+{
+public:
+	RoutedEventSlot() {}
+	virtual ~RoutedEventSlot() {}
+
+public:
+
+	/**
+		@brief	ルーティングイベントのハンドラを追加します。
+	*/
+	void AddHandler(const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Add(handler);
+	}
+	
+	/**
+		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
+	*/
+	void RemoveHandler(const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Remove(handler);
+	}
+	
+	/**
+		@brief	ルーティングイベントのハンドラを追加します。
+	*/
+	void operator += (const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Add(handler);
+	}
+	
+	/**
+		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
+	*/
+	void operator -= (const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Remove(handler);
+	}
+
+private:
+	Array< Delegate01<TArgs*> > m_handlerList;
+
+	virtual void Raise(RoutedEventArgs* e)
+	{
+		for (Delegate01<TArgs*>& d : m_handlerList)
+		{
+			d.Call(static_cast<TArgs*>(e));
+		}
+	}
+
+	// Lumino::EventXX のような使い方と同時に、
+	// Property にたいする メンバ変数のような意味も持つ。
+	// 即ち、ハンドラのリスト。
+	// RoutedEventSlot は、いわゆる「動的なハンドラ」
+};
+
+
+
+
+/**
+	@brief		
+*/
 class UIElement
 	: public CoreObject
 	, public IAddChild
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	LN_PROPERTY_BEGIN;
-	LN_PROPERTY(SizeF, Size);
-	LN_PROPERTY(GUI::HorizontalAlignment, HorizontalAlignment);
-	LN_PROPERTY(GUI::VerticalAlignment, VerticalAlignment);
-	LN_PROPERTY(bool, IsHitTest);
-	LN_PROPERTY_END;
+	LN_PROPERTY(SizeF,					SizeProperty);					///< Size プロパティの識別子
+	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	///< HorizontalAlignment プロパティの識別子
+	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		///< VerticalAlignment プロパティの識別子
+	LN_PROPERTY(bool,					IsHitTestProperty);				///< IsHitTest プロパティの識別子
 
-	static const RoutedEvent*	MouseMoveEvent;
-	static const RoutedEvent*	MouseLeaveEvent;
-	static const RoutedEvent*	MouseEnterEvent;
-	static const RoutedEvent*	MouseDownEvent;
-	static const RoutedEvent*	MouseUpEvent;
-
-	static const RoutedEvent*	CanExecuteRoutedCommandEvent;	///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
-	static const RoutedEvent*	ExecuteRoutedCommandEvent;		///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				///< MouseEnter ルーティングイベントの識別子
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				///< MouseLeave ルーティングイベントの識別子
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				///< MouseMove ルーティングイベントの識別子
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				///< MouseDown ルーティングイベントの識別子
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					///< MouseUp ルーティングイベントの識別子
+	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
+	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
 
 public:
 	UIElement(GUIManager* manager);
@@ -104,17 +182,21 @@ public:
 
 
 
-
-
-	Event01<MouseEventArgs*>	MouseMove;
-	Event01<MouseEventArgs*>	MouseEnter;
-	Event01<MouseEventArgs*>	MouseLeave;
-	Event01<MouseEventArgs*>	MouseDown;
-	Event01<MouseEventArgs*>	MouseUp;
+public:
+	RoutedEventSlot<MouseEventArgs>		MouseEnter;
+	RoutedEventSlot<MouseEventArgs>		MouseLeave;
+	RoutedEventSlot<MouseEventArgs>		MouseMove;
+	RoutedEventSlot<MouseEventArgs>		MouseDown;
+	RoutedEventSlot<MouseEventArgs>		MouseUp;
 
 	/// この要素のレイアウトの更新が完了した時に発生します。このイベントはルーティングイベントではありません。
-	Event01<RoutedEventArgs*>	LayoutUpdated;
+	Event01<RoutedEventArgs*>			LayoutUpdated;
 
+private:
+	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
+	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
+
+public:
 
 	// イベントの扱い方は WPF とは少し違う。
 	// WPF の ButtonBase.Click は、
@@ -206,7 +288,7 @@ protected:
 	virtual const String& GetTypeID() const = 0;
 
 	// override
-	virtual void OnPropertyChanged(const String& name, const Variant& newValue);
+	virtual void OnPropertyChanged(PropertyChangedEventArgs* e);
 
 	//friend class Decorator;
 	//friend class Control;
@@ -230,15 +312,6 @@ private:
 protected:
 	virtual void PollingTemplateChildCreated(UIElement* newElement) {}
 
-private:
-	// TypedRoutedEvent からコールバックされる。On～とは別に、単にイベントを発生させるコールバクとして必要。(TypedRoutedEvent は状態を持てないので)
-	// どんな手を使っても、結局 TypedRoutedEvent から Event02 を呼べる手段が必要なので、これらは必ず必要になる。
-	//void CallMouseMoveEvent(CoreObject* sender, MouseEventArgs* e) { MouseMove.Raise(sender, e); }
-	//void CallMouseEnterEvent(CoreObject* sender, MouseEventArgs* e) { MouseEnter.Raise(sender, e); }
-	//void CallMouseLeaveEvent(CoreObject* sender, MouseEventArgs* e) { MouseLeave.Raise(sender, e); }
-	//void CallMouseDownEvent(CoreObject* sender, MouseEventArgs* e) { MouseDown.Raise(sender, e); }
-	//void CallMouseUpEvent(CoreObject* sender, MouseEventArgs* e) { MouseUp.Raise(sender, e); }
-
 protected:
 	//void RegisterRoutedEvent(RoutedEvent* ev) {
 	//	m_routedEventList.Add(ev->GetName(), ev);
@@ -260,6 +333,14 @@ public:
 		RaiseEventInternal(ev, e);
 	}
 
+protected:
+	// 指定したイベントスロットへイベントを直接発行する。ルーティングは行わない
+	void EmitEventSlot(RoutedEventSlotBase& slot, RoutedEventArgs* e)
+	{
+		LN_VERIFY_RETURN(e != NULL);
+		slot.Raise(e);
+	}
+
 private:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
@@ -272,25 +353,6 @@ private:
 			m_parent->RaiseEventInternal(ev, e);
 		}
 	}
-
-	//bool RaiseCommand(RoutedCommand* command, const Variant& parameter, bool execute)
-	//{
-	//	if (execute)
-	//	{
-	//		for (auto context : m_commandOwnerClassContextList) {
-	//			if (context->Execute(this, command, parameter)) { return true; }
-	//		}
-	//	}
-	//	else
-	//	{
-	//		for (auto context : m_commandOwnerClassContextList) {
-	//			bool r;
-	//			if (context->CanExecute(this, command, parameter, &r)) { return r; }
-	//		}
-	//	}
-
-	//}
-
 
 
 protected:
@@ -320,13 +382,6 @@ protected:
 	// 削除予定
 	typedef SortedArray<String, RefObject*>	EventDataStore;
 	EventDataStore	m_eventDataStore;
-	//Event02<CoreObject*, MouseEventArgs*> m_eventMouseMove;
-
-	//typedef SortedArray<String, RoutedEvent*>	RoutedEventList;
-	//RoutedEventList	m_routedEventList;
-
-	//typedef SortedArray<EventID, RoutedEventHandler*>	RoutedEventHandlerList;
-	//RoutedEventHandlerList	m_routedEventHandlerList;
 
 	/// あるクラスに含まれる RoutedCommand のリストのリスト。このリストには基底クラスから順に詰まっている
 	Array<RoutedCommandTypeContext*>	m_routedCommandTypeContextList;

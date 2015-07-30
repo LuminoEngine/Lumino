@@ -4,21 +4,14 @@
 #include <memory>
 #include <functional>
 
-/*
-	プロパティの種類は
-	- 実体が C++ ネイティブのメンバ変数
-	- 実体が外部(C#とか) のメンバ変数	→ 高速化を狙うときに使う。必須ではない
-	- 実体が map に登録される Variant
-	と、それぞれ
-	- 普通のプロパティ
-	- 添付プロパティ
-*/
 
 namespace Lumino
 {
 
 /**
-	@brief		
+	@brief		CoreObject のサブクラスが実装できるプロパティを表します。
+	@details	プロパティは、メンバ変数に対する簡易的なリフレクションを提供します。
+				
 */
 class Property
 {
@@ -53,6 +46,9 @@ public:
 
 	int GetLocalIndex() const { return m_localIndex; }
 
+	/// TODO: Meadata の機能
+	virtual void NotifyPropertyChange(CoreObject* target, PropertyChangedEventArgs* e) const {}
+
 private:
 	TypeInfo*	m_ownerClassType;
 	Variant	m_defaultValue;
@@ -74,269 +70,6 @@ private:
 */
 
 
-///**
-//	@brief		
-//*/
-//template<typename T>
-//class TypedProperty
-//{
-//public:
-//	TypedProperty();
-//	~TypedProperty();
-//
-//public:
-//	
-//};
-
-/**
-	@brief		
-*/
-template<class TClass, typename TValue, typename TInternalValue = TValue, typename TCast = TValue>
-class CoreObjectProperty : public Property
-{
-public:
-	//typedef void (TClass::*Setter)(T);
-	//typedef const T& (TClass::*Getter)() const;
-
-	struct SetterFunctor
-	{
-		typedef void (TClass::*PlainSetter)(TValue value);
-		typedef void (TClass::*ConstRefSetter)(const TValue& value);
-
-		SetterFunctor(intptr_t null)
-			: m_plainSetter(NULL)
-			, m_constRefSetter(NULL)
-		{}
-
-		SetterFunctor(PlainSetter setter)
-			: m_plainSetter(setter)
-			, m_constRefSetter(NULL)
-		{}
-
-		SetterFunctor(ConstRefSetter setter)
-			: m_plainSetter(NULL)
-			, m_constRefSetter(setter)
-		{}
-
-		bool IsEmpty() const
-		{
-			return m_plainSetter == NULL && m_constRefSetter == NULL;
-		}
-
-		void Call(TClass* instance, const TValue& value) const
-		{
-			if (m_plainSetter) {
-				(instance->*m_plainSetter)(value);
-			}
-			if (m_constRefSetter) {
-				(instance->*m_constRefSetter)(value);
-			}
-		}
-
-		PlainSetter		m_plainSetter;
-		ConstRefSetter	m_constRefSetter;
-	};
-
-	struct GetterFunctor
-	{
-		template<typename DT> struct EnsurePlain { typedef DT result; };
-		template<typename DT> struct EnsurePlain<DT&> { typedef DT result; };
-		template<typename DT> struct EnsurePlain<const DT&> { typedef DT result; };
-
-		template<typename DT> struct EnsureConstRef { typedef const DT& result; };
-		template<typename DT> struct EnsureConstRef<DT&> { typedef const DT& result; };
-		template<typename DT> struct EnsureConstRef<const DT&> { typedef const DT& result; };
-
-		template<typename DT> struct EnsureRef { typedef DT& result; };
-		template<typename DT> struct EnsureRef<DT&> { typedef DT& result; };
-		template<typename DT> struct EnsureRef<const DT&> { typedef DT& result; };
-
-		typedef typename EnsurePlain<typename TValue>::result(TClass::*PlainGetter)() const;
-		typedef typename EnsureConstRef<typename TValue>::result(TClass::*ConstRefGetter)() const;
-		typedef typename EnsureRef<typename TValue>::result(TClass::*RefGetter)() const;
-
-		GetterFunctor(PlainGetter getter) :
-			d_plainGetter(getter)
-			//d_constRefGetter(0), no need to initialise these, we will never use them
-			//d_refGetter(0)
-		{}
-
-		GetterFunctor(ConstRefGetter getter) :
-			d_plainGetter(0),
-			d_constRefGetter(getter)
-			//d_refGetter(0) // no need to initialise this, we will never use it
-		{}
-
-		GetterFunctor(RefGetter getter) :
-			d_plainGetter(0),
-			d_constRefGetter(0),
-			d_refGetter(getter)
-		{}
-		// to set 0 as func
-		GetterFunctor(int /*val*/) :
-			d_plainGetter(0),
-			d_constRefGetter(0),
-			d_refGetter(0)
-		{}
-		operator bool(void) const
-		{
-			return d_plainGetter || d_constRefGetter || d_refGetter;
-		}
-		//typename const T& /*Helper::safe_method_return_type*/ operator()(const TClass* instance) const
-		typename TValue Call(const TClass* instance) const	// ※実体
-		{
-			// FIXME: Ideally we want this to be done during compilation, not runtime
-
-			if (d_plainGetter)
-				return (instance->*d_plainGetter)();
-			if (d_constRefGetter)
-				return (instance->*d_constRefGetter)();
-			if (d_refGetter)
-				return (instance->*d_refGetter)();
-
-			assert(false);
-			return (instance->*d_plainGetter)();
-		}
-
-		PlainGetter d_plainGetter;
-		ConstRefGetter d_constRefGetter;
-		RefGetter d_refGetter;
-	};
-
-
-
-public:
-	CoreObjectProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
-		: Property(TClass::GetClassTypeInfo(), defaultValue, false)
-		, m_name(name)
-		, m_setter(setter)
-		, m_getter(getter)
-	{}
-
-	virtual ~CoreObjectProperty() {}
-
-	virtual const String& GetName() const { return m_name; }
-
-	virtual void SetValue(CoreObject* target, Variant value) const
-	{
-		LN_THROW(!m_setter.IsEmpty(), InvalidOperationException);
-		TClass* instance = static_cast<TClass*>(target);
-		m_setter.Call(instance, static_cast<TCast>(Variant::Cast<TInternalValue>(value)));
-		//(instance->*m_setter)(value.Cast<T>());
-	}
-	virtual Variant GetValue(const CoreObject* target) const
-	{
-		LN_THROW((m_getter != NULL), InvalidOperationException);
-		const TClass* instance = static_cast<const TClass*>(target);
-		return Variant(m_getter.Call(instance));
-		//const TClass* instance = static_cast<const TClass*>(target);
-		//return Variant((instance->*m_getter)());
-	}
-	virtual bool IsReadable() const { return m_getter != NULL; }
-	virtual bool IsWritable() const { return !m_setter.IsEmpty(); }
-
-private:
-	String	m_name;
-	SetterFunctor	m_setter;
-	GetterFunctor	m_getter;
-	//Getter	m_getter;
-};
-
-/// リスト型のプロパティ。
-/// 非 const な リストポインタを返す getter のみあれば良い。
-template<class TOwnerClass, typename TList, typename TItem>
-class ListProperty : public Property
-{
-public:
-	typedef std::function< TList*(TOwnerClass*) >	GetterFunctor;
-
-public:
-	ListProperty(const String& name, GetterFunctor getter)
-		: Property(TOwnerClass::GetClassTypeInfo(), Variant::Null, false)
-		, m_name(name)
-		, m_getter(getter)
-	{
-		TOwnerClass::GetClassTypeInfo()->RegisterProperty(this);
-	}
-
-	virtual ~ListProperty()
-	{}
-
-	virtual const String& GetName() const { return m_name; }
-
-
-	virtual void SetValue(CoreObject* target, Variant value) const
-	{
-		LN_VERIFY_RETURN(value.GetType() == VariantType_List);
-		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
-		TList* list = m_getter(instance);
-
-		list->Clear();
-
-		VariantList* srcList = value.GetList();
-		for (Variant& v : *srcList) {
-			// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
-			list->Add(Variant::Cast<TItem*>(value));
-		}
-	}
-
-	virtual void AddItem(CoreObject* target, const Variant& value) const
-	{
-		TOwnerClass* instance = static_cast<TOwnerClass*>(target);
-		TList* list = m_getter(instance);
-		// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
-		list->Add(Variant::Cast<TItem*>(value));
-	}
-
-	virtual bool IsList() const { return true; }
-
-private:
-	String			m_name;
-	GetterFunctor	m_getter;
-};
-
-//// 削除予定
-//#define LN_DEFINE_PROPERTY(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
-//{ \
-//	static ::Lumino::CoreObjectProperty<classType, nativeType> prop( \
-//		name, setterFuncPtr, getterFuncPtr, defaultValue); \
-//	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
-//}
-//
-//// 削除予定
-//#define LN_DEFINE_PROPERTY_ENUM(classType, nativeType, name, setterFuncPtr, getterFuncPtr, defaultValue) \
-//{ \
-//	static ::Lumino::CoreObjectProperty<classType, nativeType, int, nativeType::enum_type> prop( \
-//		name, setterFuncPtr, getterFuncPtr, defaultValue); \
-//	classType::GetClassTypeInfo()->RegisterProperty(&prop); \
-//}
-
-// static としてグローバルスコープに定義したプロパティを登録する機能を持ったプロパティ定義ユーティリティ
-template<class TOwnerClass, typename TValue, typename TInternalValue = TValue, typename TCast = TValue>
-struct StaticProperty
-	: public CoreObjectProperty<TOwnerClass, TValue, TInternalValue, TCast>
-{
-	StaticProperty(const String& name, SetterFunctor setter, GetterFunctor getter, TValue defaultValue)
-		: CoreObjectProperty<TOwnerClass, TValue, TInternalValue, TCast>(name, setter, getter, defaultValue)
-	{
-		TOwnerClass::GetClassTypeInfo()->RegisterProperty(this);
-	}
-};
-
-#define LN_DEFINE_PROPERTY_2(ownerClass, valueType, var, name, defaultValue, setter, getter) \
-	static StaticProperty<ownerClass, valueType> _##var(_T(name), setter, getter, defaultValue); \
-	const Property* ownerClass::var = &_##var;
-
-#define LN_DEFINE_PROPERTY_ENUM_2(ownerClass, valueType, var, name, defaultValue, setter, getter) \
-	static StaticProperty<ownerClass, valueType, int, valueType::enum_type> _##var(_T(name), setter, getter, defaultValue); \
-	const Property* ownerClass::var = &_##var;
-
-#define LN_DEFINE_PROPERTY_LIST(ownerClass, listType, itemType, var, name, getter) \
-	static ListProperty<ownerClass, listType, itemType> _##var(_T(name), getter); \
-	const Property* ownerClass::var = &_##var;
-
-
-
 
 
 
@@ -349,8 +82,10 @@ class TypedProperty
 	: public Property
 {
 public:
-	typedef void(*SetterFunc)(CoreObject* obj, const TValue& value);
-	typedef const TValue&(*GetterFunc)(const CoreObject* obj);
+	typedef void(*SetterFunc)(CoreObject* obj, TValue value);
+	typedef TValue(*GetterFunc)(const CoreObject* obj);
+	typedef void(*OnPropertyChangedFunc)(CoreObject* obj, PropertyChangedEventArgs* e);
+	// ↑※static 関数のポインタでないと、言語バインダを作りにくくなる。
 
 public:
 	TypedProperty(TypeInfo* ownerTypeInfo, const TCHAR* name, TValue defaultValue)
@@ -358,6 +93,7 @@ public:
 		, m_name(name)
 		, m_setter(NULL)
 		, m_getter(NULL)
+		, m_propChanged(NULL)
 	{}
 
 	virtual ~TypedProperty() {}
@@ -367,70 +103,136 @@ public:
 
 	virtual void SetValue(CoreObject* target, Variant value) const
 	{
-		LN_THROW(m_setter != NULL, InvalidOperationException);
-		m_setter(target, Variant::Cast<TValue>(value));
+		SetValueDirect(target, Variant::Cast<TValue>(value));
 	}
 	virtual Variant GetValue(const CoreObject* target) const
 	{
 		LN_THROW(m_getter != NULL, InvalidOperationException);
 		return Variant(m_getter(target));
 	}
-	virtual bool IsReadable() const { return m_getter != NULL; }
+	virtual void AddItem(CoreObject* target, const Variant& value) const
+	{
+		LN_THROW(m_getter != NULL, InvalidOperationException);
+		//VariantList* list = m_getter(target);
+		// TODO: 間違えて UIElementFractory のまま追加してしまうことがあった。型チェックできると良い。
+		//list->AddVariant(value);
+		auto list = m_getter(target);
+		AddItemInternal(list, value);
+	}
+	virtual bool IsReadable() const { return m_getter != NULL; }	// TODO: virtual やめたほうが高速化できる。
 	virtual bool IsWritable() const { return m_getter != NULL; }
+	virtual bool IsList() const { return ListOperationSelector2<TValue>::IsList(); }
 
 	void SetValueDirect(CoreObject* target, TValue value) const
 	{
 		LN_THROW(m_setter != NULL, InvalidOperationException);
-		m_setter(target, value);
+
+		if (m_getter != NULL)
+		{
+			Variant oldValue = m_getter(target);
+			m_setter(target, value);
+			target->NotifyPropertyChange(this, value, oldValue);
+		}
+		else {
+			m_setter(target, value);
+			target->NotifyPropertyChange(this, value, Variant::Null);
+		}
+
 	}
-	const TValue& GetValueDirect(const CoreObject* target) const
+	TValue GetValueDirect(const CoreObject* target) const
 	{
 		LN_THROW(m_getter != NULL, InvalidOperationException);
 		return m_getter(target);
 	}
 
+	template<typename T>
+	void AddItemInternal(T& list, const Variant& item) const	// 値型
+	{
+		LN_THROW(0, InvalidOperationException);
+	}
+	template<typename T>
+	void AddItemInternal(T* list, const Variant& item) const	// ポインタ型
+	{
+		ListOperationSelector<T, std::is_base_of<VariantList, T>::type >::AddItem(*list, item);
+	}
+
+
+	template<typename T, typename TIsList> struct ListOperationSelector
+	{ 
+		static bool IsList() { return false; }
+		static void AddItem(T& list, const Variant& item) { LN_THROW(0, InvalidOperationException); }
+	};
+	template<typename T> struct ListOperationSelector<T, std::true_type>
+	{
+		static bool IsList() { return true; }
+		static void AddItem(T& list, const Variant& item) { list.AddVariant(item); }
+	};
+
+
+	template<typename T> struct ListOperationSelector2
+	{
+		static bool IsList() { return false; }
+	};
+	template<typename T> struct ListOperationSelector2<T*>
+	{
+		static bool IsList() { return ListOperationSelector<T, std::is_base_of<VariantList, T>::type>::IsList(); }
+	};
+	
+
+	//template<typename T, typename TIsList>
+	//void ListAddFunc(T* list) {}
+
+	//template<typename T>
+	//void ListAddFunc<T, std::true_type>(T* list, const Variant& item) { list->AddVariant(item); }
+
+	virtual void NotifyPropertyChange(CoreObject* target, PropertyChangedEventArgs* e) const
+	{
+		if (m_propChanged != NULL) {
+			m_propChanged(target, e);
+		}
+	}
+
 private:
 	template<typename TValue> friend class TypedPropertyInitializer;
-	String		m_name;
-	SetterFunc	m_setter;
-	GetterFunc	m_getter;
+	String					m_name;
+	SetterFunc				m_setter;
+	GetterFunc				m_getter;
+	OnPropertyChangedFunc	m_propChanged;
 };
 
 template<typename TValue>
 class TypedPropertyInitializer
 {
+	// Initializer は .h 側に不必要な型を書きたくないから用意したもの。
 public:
-	typedef void(*SetterFunc)(CoreObject* obj, const TValue& value);
-	typedef const TValue&(*GetterFunc)(const CoreObject* obj);
+	typedef void(*SetterFunc)(CoreObject* obj, TValue value);
+	typedef TValue(*GetterFunc)(const CoreObject* obj);
+	typedef void(*OnPropertyChangedFunc)(CoreObject* obj, PropertyChangedEventArgs* e);
 
-	SetterFunc	m_setter;
-	GetterFunc	m_getter;
-
-	TypedPropertyInitializer(TypedProperty<TValue>* prop, SetterFunc setter, GetterFunc getter)
+	TypedPropertyInitializer(TypedProperty<TValue>* prop, SetterFunc setter, GetterFunc getter, OnPropertyChangedFunc propChanged)
 	{
 		prop->m_setter = setter;
 		prop->m_getter = getter;
+		prop->m_propChanged = propChanged;
 	}
 
 
 };
 
-
-#define LN_PROPERTY_BEGIN	struct Properties {
-#define LN_PROPERTY_END		};
-
 #define LN_PROPERTY(valueType, propVar) \
 	public:  static const Lumino::Property*	propVar##; \
-	private: static void  set_##propVar(CoreObject* obj, const valueType& value); \
-	private: static const valueType& get_##propVar(const CoreObject* obj); \
+	private: static void  set_##propVar(CoreObject* obj, valueType value); \
+	private: static valueType get_##propVar(const CoreObject* obj); \
+	private: static void  changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e); \
 	private: static TypedPropertyInitializer<valueType> init_##propVar;
 
-#define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, memberVar, defaultValue) \
-	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(#propVar), defaultValue); \
-	const Lumino::Property*				ownerClass::Properties::propVar## = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
-	void								ownerClass::Properties::set_##propVar(CoreObject* obj, const valueType& value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
-	const valueType&					ownerClass::Properties::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
-	TypedPropertyInitializer<valueType>	ownerClass::Properties::init_##propVar(&_##propVar, &ownerClass::Properties::set_##propVar, &ownerClass::Properties::get_##propVar);
+#define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, propName, memberVar, defaultValue, onPropChanged) \
+	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), defaultValue); \
+	const Lumino::Property*				ownerClass::propVar## = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
+	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
+	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { void(ownerClass::*func)(PropertyChangedEventArgs*) = onPropChanged; if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
+	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar);
 
 
 

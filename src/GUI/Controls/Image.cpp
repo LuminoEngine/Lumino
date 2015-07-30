@@ -14,8 +14,9 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(Image, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Image);
 
-//LN_DEFINE_PROPERTY_2(Image, const Variant&, SourceProperty, "Source", Variant::Null, &Image::SetSource, NULL);
-LN_DEFINE_PROPERTY_2(Image, Rect, SourceRectProperty, "SourceRect", Rect(), &Image::SetSourceRect, &Image::GetSourceRect);
+// Register property
+LN_PROPERTY_IMPLEMENT(Image, Variant, SourceProperty, "Source", m_source, Variant::Null, NULL);
+LN_PROPERTY_IMPLEMENT(Image, Rect, SourceRectProperty, "SourceRect", m_srcRect, Rect::Zero, NULL);
 
 //-----------------------------------------------------------------------------
 //

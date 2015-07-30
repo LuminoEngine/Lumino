@@ -16,9 +16,8 @@ class Control
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Control);
-	//public:
-	//	static const String ControlTemplateTypeName;
-	static const Property* TemplateProperty;
+public:
+	LN_PROPERTY(ControlTemplate*, TemplateProperty);
 
 public:
 	Control(GUIManager* manager);
@@ -28,7 +27,7 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void SetTemplate(ControlTemplate* controlTemplate);
+	void SetTemplate(ControlTemplate* controlTemplate);	// TODO: OnTemplatePropertyChanged
 	ControlTemplate* GetTemplate() const { return m_controlTemplate; }
 
 	/** @} */

@@ -50,10 +50,11 @@ class ScrollBar
 public:
 	static const String PART_TrackKeyName;
 
-	static const Property*	ValueProperty;
-	static const Property*	OrientationProperty;
+	LN_PROPERTY(float,					ValueProperty);
+	LN_PROPERTY(Orientation,			OrientationProperty);
 
-	static const RoutedEvent*	ScrollEvent;
+	LN_ROUTED_EVENT(ScrollEventArgs,	ScrollEvent);
+
 
 	// TODO: RoutedCommand は ID ではなく Command のポインタを直接公開した方が良いかも。
 	// button->SetCommand(Window.CloseCommand) とかしたい。
@@ -69,7 +70,7 @@ public:
 	/** @{ */
 
 	/// ScrollBar の方向を指定します。
-	void SetOrientation(Orientation orientation) { m_orientation = orientation; OnPropertyChanged(OrientationProperty->GetName(), m_orientation); }
+// TODO:	void SetOrientation(Orientation orientation) { m_orientation = orientation; OnPropertyChanged(OrientationProperty->GetName(), m_orientation); }
 
 	/// ScrollBar の方向を取得します。規定値は Orientation::Horizontal です。
 	Orientation GetOrientation() const { return m_orientation; }
@@ -99,12 +100,14 @@ public:
 	//-------------------------------------------------------------------------
 	/** @name Events */
 	/** @{ */
-	
-	/// ScrollEvent にハンドラを登録します。
-	void AddScrollEventHandler(Delegate01<ScrollEventArgs*> handler) { m_scrollEvent += handler; }
 
-	/// ScrollEvent に登録されたハンドラを解除します。
-	void RemoveScrollEventHandler(Delegate01<ScrollEventArgs*> handler) { m_scrollEvent -= handler; }
+	RoutedEventSlot<ScrollEventArgs>	Scroll;
+	
+	///// ScrollEvent にハンドラを登録します。
+	//void AddScrollEventHandler(Delegate01<ScrollEventArgs*> handler) { m_scrollEvent += handler; }
+
+	///// ScrollEvent に登録されたハンドラを解除します。
+	//void RemoveScrollEventHandler(Delegate01<ScrollEventArgs*> handler) { m_scrollEvent -= handler; }
 
 	/** @} */
 
@@ -113,8 +116,7 @@ public:
 	void SetTrackViewportSize(float value) { m_track->SetViewportSize(value); }
 
 
-	// TODO:仮
-	Event01<ScrollEventArgs*>	Scroll;
+
 
 protected:
 	virtual void PollingTemplateChildCreated(UIElement* newElement);
@@ -131,7 +133,7 @@ private:
 	float				m_minimum;
 	float				m_maximum;
 	Orientation			m_orientation;
-	Event01<ScrollEventArgs*>	m_scrollEvent;
+	//Event01<ScrollEventArgs*>	m_scrollEvent;
 
 	Track*				m_track;	///< VisualTree 内の Track
 

@@ -24,8 +24,8 @@ class Image
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Image);
 public:
-	static const Property*	SourceProperty;
-	static const Property*	SourceRectProperty;
+	LN_PROPERTY(Variant,	SourceProperty);		// TODO: OnSourcePropertyChagendÅBÇ†Ç∆Ç‡ÇµÇ©ÇµÇΩÇÁ Converter Ç™ÇŸÇµÇ¢Ç©Ç‡
+	LN_PROPERTY(Rect,		SourceRectProperty);
 
 public:
 	static Image* Create(GUIManager* manager);
@@ -66,6 +66,8 @@ private:
 	void UpdateInternalSourceRect();
 
 private:
+	Variant	m_source;
+
 	RefPtr<Graphics::Texture>	m_texture;
 	Rect						m_srcRect;
 	Stretch						m_stretch;

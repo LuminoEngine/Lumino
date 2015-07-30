@@ -15,11 +15,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(ButtonChrome, Decorator);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ButtonChrome);
 
 // Register property
-LN_DEFINE_PROPERTY_2(ButtonChrome, bool, IsMouseOverProperty, "IsMouseOver", 0.0f, &ButtonChrome::SetMouseOver, &ButtonChrome::IsMouseOver);
-LN_DEFINE_PROPERTY_2(ButtonChrome, float, FrameWidthProperty, "FrameWidth", 8.0f, &ButtonChrome::SetFrameWidth, &ButtonChrome::GetFrameWidth);
-
-//const String	ButtonChrome::IsMouseOverProperty(_T("IsMouseOver"));
-//const String	ButtonChrome::FrameWidthProperty(_T("FrameWidth"));
+LN_PROPERTY_IMPLEMENT(ButtonChrome, bool, IsMouseOverProperty, "IsMouseOver", m_isMouseOver, false, NULL);
+LN_PROPERTY_IMPLEMENT(ButtonChrome, float, FrameWidthProperty, "FrameWidth", m_frameWidth, 8.0f, NULL);
 
 //-----------------------------------------------------------------------------
 //

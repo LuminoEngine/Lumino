@@ -35,18 +35,13 @@ class Thumb
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Thumb);
 public:
-	static const Property*		IsDraggingProperty;		///< ドラッグ中であるかを示す値
+	LN_PROPERTY(bool, IsDraggingProperty);				///< IsDragging プロパティの識別子
 
-	static const RoutedEvent*	DragStartedEvent;		///< ドラッグ開始イベント
-	static const RoutedEvent*	DragDeltaEvent;			///< ドラッグ中の移動イベント
-	static const RoutedEvent*	DragCompletedEvent;		///< ドラッグ終了イベント
-	static const RoutedEvent*	DragCanceledEvent;		///< ドラッグキャンセルイベント
+	LN_ROUTED_EVENT(DragEventArgs, DragStartedEvent);	///< DragStarted ルーティングイベントの識別子
+	LN_ROUTED_EVENT(DragEventArgs, DragDeltaEvent);		///< DragDelta ルーティングイベントの識別子
+	LN_ROUTED_EVENT(DragEventArgs, DragCompletedEvent);	///< DragCompleted ルーティングイベントの識別子
+	LN_ROUTED_EVENT(DragEventArgs, DragCanceledEvent);	///< DragCanceled ルーティングイベントの識別子
 
-	// TODO:仮
-	Event01<DragEventArgs*>	DragStarted;
-	Event01<DragEventArgs*>	DragDelta;
-	Event01<DragEventArgs*>	DragCompleted;
-	Event01<DragEventArgs*>	DragCanceled;
 
 public:
 	static Thumb* Create(GUIManager* manager);
@@ -59,6 +54,17 @@ public:
 
 	/// ドラッグをキャンセルする
 	void CancelDrag();
+
+	//-------------------------------------------------------------------------
+	/** @name Events */
+	/** @{ */
+
+	RoutedEventSlot<DragEventArgs>	DragStarted;		///< マウスドラッグを開始したときに発生するルーティングイベント
+	RoutedEventSlot<DragEventArgs>	DragDelta;			///< マウスドラッグ中に発生するルーティングイベント
+	RoutedEventSlot<DragEventArgs>	DragCompleted;		///< マウスドラッグが完了したときに発生するルーティングイベント
+	RoutedEventSlot<DragEventArgs>	DragCanceled;		///< マウスドラッグを中断したときに発生するルーティングイベント
+
+	/** @} */
 
 protected:
 	virtual void OnDragStarted(DragEventArgs* e)	{ if (!e->Handled) { RaiseEvent(DragStartedEvent, this, e); } }

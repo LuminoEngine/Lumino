@@ -488,18 +488,28 @@ Trigger::~Trigger()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Trigger::Invoke(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target)
+//void Trigger::Invoke(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target)
+//{
+//	//LN_THROW(0, NotImplementedException);
+//	if (routedEvent == CoreObject::PropertyChangedEvent)
+//	{
+//		auto e2 = static_cast<const PropertyChangedEventArgs*>(e);
+//		if (m_property->GetName() == e2->PropertyName &&	// できれば文字列ではなくポインタ比較したい…
+//			m_value == e2->NewValue)
+//		{
+//			for (Setter* setter : *m_setterList) {
+//				target->SetPropertyValue(setter->GetProperty(), setter->GetValue());
+//			}
+//		}
+//	}
+//}
+void Trigger::TryInvoke(CoreObject* target, PropertyChangedEventArgs* e)
 {
-	//LN_THROW(0, NotImplementedException);
-	if (routedEvent == CoreObject::PropertyChangedEvent)
+	if (m_property == e->ChangedProperty &&
+		m_value == e->NewValue)
 	{
-		auto e2 = static_cast<const PropertyChangedEventArgs*>(e);
-		if (m_property->GetName() == e2->PropertyName &&	// できれば文字列ではなくポインタ比較したい…
-			m_value == e2->NewValue)
-		{
-			for (Setter* setter : *m_setterList) {
-				target->SetPropertyValue(setter->GetProperty(), setter->GetValue());
-			}
+		for (Setter* setter : *m_setterList) {
+			target->SetPropertyValue(setter->GetProperty(), setter->GetValue());
 		}
 	}
 }
@@ -516,10 +526,10 @@ Style::Style()
 	: m_targetType(NULL)
 	, m_baseStyle()
 	, m_setterList()
-	, m_triggerList()
+	, m_propertyTriggerList()
 {
 	m_setterList.Attach(LN_NEW SetterList());
-	m_triggerList.Attach(LN_NEW TriggerList());
+	m_propertyTriggerList.Attach(LN_NEW PropertyTriggerList());
 }
 
 //-----------------------------------------------------------------------------
@@ -555,14 +565,21 @@ void Style::Apply(UIElement* element)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Style::InvoleTriggers(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target)
+void Style::NortifyTargetObjectPropertyChanged(CoreObject* target, PropertyChangedEventArgs* e)
 {
-	LN_VERIFY_RETURN(routedEvent != NULL);
-	for (TriggerBase* trigger : *m_triggerList)
+	for (Trigger* trigger : *m_propertyTriggerList)
 	{
-		trigger->Invoke(routedEvent, e, target);
+		trigger->TryInvoke(target, e);
 	}
 }
+//void Style::InvoleTriggers(const RoutedEvent* routedEvent, const RoutedEventArgs* e, CoreObject* target)
+//{
+//	LN_VERIFY_RETURN(routedEvent != NULL);
+//	for (TriggerBase* trigger : *m_triggerList)
+//	{
+//		trigger->Invoke(routedEvent, e, target);
+//	}
+//}
 
 //=============================================================================
 // ResourceDictionary

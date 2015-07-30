@@ -12,42 +12,25 @@ namespace Lumino
 namespace GUI
 {
 
-
-
-
 //=============================================================================
 // UIElement
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElement, CoreObject);
 
+// Register property
+LN_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, SizeF::Zero, NULL);
+LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, HorizontalAlignment::Stretch, NULL);
+LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, VerticalAlignment::Stretch, NULL);
+LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, true, NULL);
 
-LN_PROPERTY_IMPLEMENT(UIElement, SizeF, Size, m_size, SizeF::Zero);
-LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignment, m_horizontalAlignment, HorizontalAlignment::Stretch);
-LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignment, m_verticalAlignment, VerticalAlignment::Stretch);
-LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTest, m_isHitTest, true);
-
-////const PropertyID	UIElement::SizeProperty(_T("Size"));
-//LN_DEFINE_PROPERTY_2(UIElement, SizeF, SizeProperty, "Size", SizeF::Zero, &UIElement::SetSize, &UIElement::GetSize);
-//LN_DEFINE_PROPERTY_ENUM_2(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", HorizontalAlignment::Stretch, &UIElement::SetHorizontalAlignment, &UIElement::GetHorizontalAlignment);
-//LN_DEFINE_PROPERTY_ENUM_2(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", VerticalAlignment::Stretch, &UIElement::SetVerticalAlignment, &UIElement::GetVerticalAlignment);
-
-//const PropertyID	UIElement::HorizontalAlignmentProperty(_T("HorizontalAlignment"));
-//const PropertyID	UIElement::VerticalAlignmentProperty(_T("VerticalAlignment"));
-
-//const RoutedEvent*	UIElement::MouseMoveEvent(_T("MouseMove"));
-//const RoutedEvent*	UIElement::MouseLeaveEvent(_T("MouseLeave"));
-//const RoutedEvent*	UIElement::MouseEnterEvent(_T("MouseEnter"));
-//const RoutedEvent*	UIElement::MouseDownEvent(_T("MouseDown"));
-//const RoutedEvent*	UIElement::MouseUpEvent(_T("MouseUp"));
-//
-//const RoutedEvent*	UIElement::CanExecuteRoutedCommandEvent(_T("CanExecuteRoutedCommandEvent"));
-//const RoutedEvent*	UIElement::ExecuteRoutedCommandEvent(_T("ExecuteRoutedCommandEvent"));
-LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
-LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
-LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
-
-LN_DEFINE_ROUTED_EVENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent, "CanExecuteRoutedCommand", Handler_CanExecuteRoutedCommandEvent);
-LN_DEFINE_ROUTED_EVENT(UIElement, ExecuteRoutedCommandEventArgs, ExecuteRoutedCommandEvent, "ExecuteRoutedCommand", Handler_ExecuteRoutedCommandEvent);
+// Register routed event
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseLeaveEvent, "MouseLeave", MouseLeave);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent, "CanExecuteRoutedCommand", CanExecuteRoutedCommand);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, ExecuteRoutedCommandEventArgs, ExecuteRoutedCommandEvent, "ExecuteRoutedCommand", ExecuteRoutedCommand);
 
 
 //-----------------------------------------------------------------------------
@@ -64,19 +47,6 @@ UIElement::UIElement(GUIManager* manager)
 	, m_templateParent(NULL)
 {
 	LN_SAFE_ADDREF(m_manager);
-
-	// ÉCÉxÉìÉgÇÃìoò^
-	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseMoveEvent, [](UIElement* target, MouseEventArgs* e) { target->MouseMove(e); });
-	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseDownEvent,	[](UIElement* target, MouseEventArgs* e) { target->MouseDown(e); });
-	//LN_DEFINE_ROUTED_EVENT(UIElement, MouseEventArgs, MouseUpEvent,		[](UIElement* target, MouseEventArgs* e) { target->MouseUp(e); });
-	//
-	//LN_DEFINE_ROUTED_EVENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent,	[](UIElement* target, CanExecuteRoutedCommandEventArgs* e) { target->Handler_CanExecuteRoutedCommandEvent(e); });
-	//LN_DEFINE_ROUTED_EVENT(UIElement, ExecuteRoutedCommandEventArgs,	ExecuteRoutedCommandEvent,		[](UIElement* target, ExecuteRoutedCommandEventArgs* e) { target->Handler_ExecuteRoutedCommandEvent(e); });
-
-	// çÌèúó\íË
-	//m_eventDataStore.Add(MouseMoveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
-	//m_eventDataStore.Add(MouseLeaveEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
-	//m_eventDataStore.Add(MouseEnterEvent, LN_NEW Event02<CoreObject*, MouseEventArgs*>());
 }
 
 //-----------------------------------------------------------------------------
@@ -347,13 +317,12 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::OnPropertyChanged(const String& name, const Variant& newValue)
+void UIElement::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
-	CoreObject::OnPropertyChanged(name, newValue);
+	CoreObject::OnPropertyChanged(e);
 	if (m_style != NULL)
 	{
-		RefPtr<PropertyChangedEventArgs> args(m_manager->GetEventArgsPool()->Create<PropertyChangedEventArgs>(name, newValue));
-		m_style->InvoleTriggers(CoreObject::PropertyChangedEvent, args, this);
+		m_style->NortifyTargetObjectPropertyChanged(this, e);
 	}
 }
 
@@ -594,7 +563,7 @@ void UIElement::TemplateBindingSource_PropertyChanged(/*CoreObject* sender, */Pr
 {
 	LN_FOREACH(TemplateBindingInfo& info, m_templateBindingInfoList)
 	{
-		if (info.SourcePropPath == e->PropertyName) {
+		if (info.SourcePropPath == e->ChangedProperty->GetName()) {
 			info.ThisProp->SetValue(this, e->NewValue);
 			//SetValue(info.ThisProp, e);
 		}

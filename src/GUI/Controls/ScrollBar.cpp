@@ -49,10 +49,12 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollBar);
 
 const String ScrollBar::PART_TrackKeyName(_T("PART_Track"));
 
-LN_DEFINE_PROPERTY_2(ScrollBar, float, ValueProperty, "Value", 0.0f, &ScrollBar::SetValue, &ScrollBar::GetValue);
-LN_DEFINE_PROPERTY_ENUM_2(ScrollBar, Orientation, OrientationProperty, "Orientation", Orientation::Horizontal, &ScrollBar::SetOrientation, &ScrollBar::GetOrientation);
+// Register property
+LN_PROPERTY_IMPLEMENT(ScrollBar, float, ValueProperty, "Value", m_value, 0.0f, NULL);
+LN_PROPERTY_IMPLEMENT(ScrollBar, Orientation, OrientationProperty, "Orientation", m_orientation, Orientation::Vertical, NULL);
 
-LN_DEFINE_ROUTED_EVENT(ScrollBar, ScrollEventArgs, ScrollEvent, "DragStarted", Scroll);
+// Register routed event
+LN_ROUTED_EVENT_IMPLEMENT(ScrollBar, ScrollEventArgs, ScrollEvent, "Scroll", Scroll);
 
 //-----------------------------------------------------------------------------
 //
@@ -74,7 +76,6 @@ ScrollBar::ScrollBar(GUIManager* manager)
 	, m_minimum(0.0f)
 	, m_maximum(1.0f)
 	, m_orientation(Orientation::Horizontal)
-	, m_scrollEvent()
 	, m_track(NULL)
 	, m_dragStartValue(0.0f)
 {	
