@@ -55,3 +55,4 @@
 #include "Lumino/GUI/TextBlock.h"
 
 #include "Lumino/Application.h"
+#include "Lumino/Profiler.h"

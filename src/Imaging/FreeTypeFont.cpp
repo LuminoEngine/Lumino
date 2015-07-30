@@ -468,6 +468,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+#if 0
 FontGlyphData* FreeTypeFont::LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData_)
 {
 	FreeTypeGlyphData* prevData = static_cast<FreeTypeGlyphData*>(prevData_);
@@ -619,6 +620,7 @@ FontGlyphData* FreeTypeFont::LookupGlyphData(UTF32 utf32code, FontGlyphData* pre
 
 	return glyphData;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //

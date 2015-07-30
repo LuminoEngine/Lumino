@@ -78,12 +78,12 @@ public:
 
 	virtual Font* Copy() const;
 	virtual int GetLineHeight() { UpdateFont(); return m_lineHeight; }
-	virtual Size GetTextSize(const char* text, int length);
+	virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
 	virtual Size GetTextSize(const wchar_t* text, int length);
 	virtual Size GetTextSize(const UTF32* text, int length);
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData);
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code);
-	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
+	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
 	virtual FontManager* GetManager() const { return m_manager; }
 
@@ -114,6 +114,7 @@ private:
 	FreeTypeGlyphLocation	m_fontGlyphLocation;
 	FreeTypeGlyphBitmap		m_fontGlyphBitmap;
 
+	// TODO: いらないかも
 	FreeTypeGlyphData	m_glyphData;		///< LookupGlyphData() の戻り値として公開されるデータ
 	RefPtr<Bitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ
 	RefPtr<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ

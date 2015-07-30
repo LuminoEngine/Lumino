@@ -115,9 +115,9 @@ public:
 	virtual Size GetGlyphMaxSize() { return Size(GetLineHeight(), GetLineHeight()); }
 
 	/// 文字列を描画したときのサイズ (ピクセル単位) の取得 (length = -1 で \0 まで)
-	virtual Size GetTextSize(const char* text, int length) = 0;
-	virtual Size GetTextSize(const wchar_t* text, int length) = 0;
-	virtual Size GetTextSize(const UTF32* text, int length) = 0;
+	//virtual Size GetTextSize(const char* text, int length) = 0;
+	//virtual Size GetTextSize(const wchar_t* text, int length) = 0;
+	//virtual Size GetTextSize(const UTF32* text, int length) = 0;
 
 
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData) = 0;
@@ -126,7 +126,7 @@ public:
 
 	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)
 	/// 削除予定
-	virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
+	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData) = 0;
 
 
 	virtual FontManager* GetManager() const = 0;

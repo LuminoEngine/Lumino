@@ -77,6 +77,8 @@ set(LN_SOURCES_Imaging
 	include/Lumino/Imaging/Font.h
 	include/Lumino/Imaging/FontManager.h
 	src/Imaging/Bitmap.cpp
+	src/Imaging/BitmapFont.cpp
+	src/Imaging/BitmapFont.h
 	src/Imaging/BitmapPainter.cpp
 	src/Imaging/Font.cpp
 	src/Imaging/FontManager.cpp
@@ -294,10 +296,12 @@ set(LN_SOURCES_Application
 	include/Lumino/Application.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/MultiThreadingObjectList.h
+	include/Lumino/Profiler.h
 	include/Lumino/Property.h
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	src/Application.cpp
+	src/Profiler.cpp
 	src/Property.cpp
 	src/RoutedEvent.cpp
 	src/Variant.cpp

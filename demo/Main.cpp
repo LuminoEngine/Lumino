@@ -146,7 +146,7 @@ int main()
 		listBox1->InsertListBoxItem(0, textBlock1);
 		listBox1->InsertListBoxItem(1, textBlock2);
 
-
+		Profiler::Instance.SetEnabled(true);
 
 		Graphics::Renderer* r = app->GetGraphicsManager()->GetRenderer();
 		Graphics::SwapChain* swap1 = app->GetGraphicsManager()->GetMainSwapChain();
@@ -160,11 +160,22 @@ int main()
 			state.Blend = Graphics::BlendMode_Alpha;
 			r->SetRenderState(state);
 
-			workbench1->ApplyTemplate();
-			workbench1->UpdateLayout();
-			workbench1->UpdateTransformHierarchy();
-			workbench1->Render();
-			swap1->Present();
+			{
+
+				ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
+
+				workbench1->ApplyTemplate();
+				workbench1->UpdateLayout();
+				workbench1->UpdateTransformHierarchy();
+				workbench1->Render();
+			}
+				swap1->Present();
+
+			Profiler::Instance.Commit();
+			uint64_t time = Profiler::Instance.GetCommitedGroups()[Profiler::Group_MainThread].Sections[Profiler::Section_MainThread_GUILayput].ElapsedTime;
+			
+			uint32_t us = time / 1000;
+			printf("t:%u\n", us);
 
 		} while (app->UpdateFrame());
 
