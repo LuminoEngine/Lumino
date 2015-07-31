@@ -101,137 +101,105 @@ void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 
 
 //=============================================================================
-class SetProjectionCommand : public RenderingCommand
+struct SetProjectionCommand : public RenderingCommand
 {
-	PainterEngine* engine;
-	Matrix matrix;
-	//Size viewSize;
+	PainterEngine* m_engine;
+	Matrix m_matrix;
 
-public:
-	static void Create(CmdInfo& cmd, PainterEngine* engine, const Matrix& matrix/*, const Size& size*/)
+	void Create(PainterEngine* engine, const Matrix& matrix)
 	{
-		HandleCast<SetProjectionCommand>(cmd)->engine = engine;
-		HandleCast<SetProjectionCommand>(cmd)->matrix = matrix;
-		//HandleCast<SetProjectionCommand>(cmd)->viewSize = size;
+		m_engine = engine;
+		m_matrix = matrix;
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		engine->SetViewProjMatrix(matrix);
-		//engine->SetViewPixelSize(viewSize);
-	}
+	void Execute() { m_engine->SetViewProjMatrix(m_matrix); }
 };
 
 //=============================================================================
-class SetBrushCommand : public RenderingCommand
+struct SetBrushCommand : public RenderingCommand
 {
-	PainterEngine* engine;
-	BrushData brushData;
+	PainterEngine* m_engine;
+	BrushData m_brushData;
 
-public:
-	static void Create(CmdInfo& cmd, PainterEngine* engine, const BrushData& data)
+	void Create(PainterEngine* engine, const BrushData& data)
 	{
 		if (data.Type == BrushType_Texture) {
-			cmd.m_commandList->MarkGC(data.TextureBrush.Texture);
+			MarkGC(data.TextureBrush.Texture);
 		}
-		HandleCast<SetBrushCommand>(cmd)->engine = engine;
-		HandleCast<SetBrushCommand>(cmd)->brushData = data;
+		m_engine = engine;
+		m_brushData = data;
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		engine->SetBrush(&brushData);
-	}
+	void Execute() { m_engine->SetBrush(&m_brushData); }
 };
 
 
 //=============================================================================
-class DrawRectangleCommand : public RenderingCommand
+struct DrawRectangleCommand : public RenderingCommand
 {
-	PainterEngine* engine;
-	RectF rect;
+	PainterEngine* m_engine;
+	RectF m_rect;
 
-public:
-	static void Create(CmdInfo& cmd, PainterEngine* engine, const RectF& rect)
+	void Create(PainterEngine* engine, const RectF& rect)
 	{
-		HandleCast<DrawRectangleCommand>(cmd)->engine = engine;
-		HandleCast<DrawRectangleCommand>(cmd)->rect = rect;
+		m_engine = engine;
+		m_rect = rect;
 	}
-
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		engine->DrawRectangle(rect);
-	}
+	void Execute() { m_engine->DrawRectangle(m_rect); }
 };
 
 //=============================================================================
-class DrawFillRectangleCommand : public RenderingCommand
+struct DrawFillRectangleCommand : public RenderingCommand
 {
-	PainterEngine* engine;
-	RectF rect;
-	Device::ITexture* srcTexture;
-	Rect srcRect;
-	BrushWrapMode wrapMode;
+	PainterEngine* m_engine;
+	RectF m_rect;
+	Device::ITexture* m_srcTexture;
+	Rect m_srcRect;
+	BrushWrapMode m_wrapMode;
 
-public:
-	static void Create(CmdInfo& cmd, PainterEngine* engine, const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
+	void Create(PainterEngine* engine, const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
 	{
-		cmd.m_commandList->MarkGC(srcTexture);
-		HandleCast<DrawFillRectangleCommand>(cmd)->engine = engine;
-		HandleCast<DrawFillRectangleCommand>(cmd)->rect = rect;
-		HandleCast<DrawFillRectangleCommand>(cmd)->srcTexture = srcTexture;
-		HandleCast<DrawFillRectangleCommand>(cmd)->srcRect = srcRect;
-		HandleCast<DrawFillRectangleCommand>(cmd)->wrapMode = wrapMode;
+		MarkGC(srcTexture);
+		m_engine = engine;
+		m_rect = rect;
+		m_srcTexture = srcTexture;
+		m_srcRect = srcRect;
+		m_wrapMode = wrapMode;
 	}
-
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		engine->DrawFillRectangle(rect, srcTexture, srcRect, wrapMode);
-	}
+	void Execute() { m_engine->DrawFillRectangle(m_rect, m_srcTexture, m_srcRect, m_wrapMode); }
 };
 
 //=============================================================================
-class DrawFrameRectangleCommand : public RenderingCommand
+struct DrawFrameRectangleCommand : public RenderingCommand
 {
-	PainterEngine* engine;
-	RectF rect;
-	float frameWidth;
-	Device::ITexture* srcTexture;
-	Rect srcRect;
+	PainterEngine* m_engine;
+	RectF m_rect;
+	float m_frameWidth;
+	Device::ITexture* m_srcTexture;
+	Rect m_srcRect;
 
-public:
-	static void Create(CmdInfo& cmd, PainterEngine* engine, const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect)
+	void Create(PainterEngine* engine, const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect)
 	{
-		cmd.m_commandList->MarkGC(srcTexture);
-		HandleCast<DrawFrameRectangleCommand>(cmd)->engine = engine;
-		HandleCast<DrawFrameRectangleCommand>(cmd)->rect = rect;
-		HandleCast<DrawFrameRectangleCommand>(cmd)->frameWidth = frameWidth;
-		HandleCast<DrawFrameRectangleCommand>(cmd)->srcTexture = srcTexture;
-		HandleCast<DrawFrameRectangleCommand>(cmd)->srcRect = srcRect;
+		MarkGC(srcTexture);
+		m_engine = engine;
+		m_rect = rect;
+		m_frameWidth = frameWidth;
+		m_srcTexture = srcTexture;
+		m_srcRect = srcRect;
 	}
-
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		engine->DrawFrameRectangle(rect, frameWidth, srcTexture, srcRect);
-	}
+	void Execute() { m_engine->DrawFrameRectangle(m_rect, m_frameWidth, m_srcTexture, m_srcRect); }
 };
 
-
 //=============================================================================
-class DrawGlyphRunCommand : public RenderingCommand
+struct DrawGlyphRunCommand : public RenderingCommand
 {
-	PainterEngine* engine;
-	size_t dataList;
-	int dataCount;
-	Device::ITexture* glyphsTexture;
-	Device::ITexture* strokesTexture;
-	ColorF foreColor;
-	ColorF strokeColor;
+	PainterEngine* m_engine;
+	DataHandle m_dataList;
+	int m_dataCount;
+	Device::ITexture* m_glyphsTexture;
+	Device::ITexture* m_strokesTexture;
+	ColorF m_foreColor;
+	ColorF m_strokeColor;
 
-public:
-	static void Create(CmdInfo& cmd, 
+	void Create(
 		PainterEngine* engine, 
 		PainterEngine::GlyphRunData* dataList,
 		int dataCount,
@@ -242,21 +210,21 @@ public:
 	{
 		// ※以前はこの中でキャッシュからグリフを読み取っていたりしたが、その中で Texture.Lock が呼ばれたため
 		//   Alloc() の再帰が起こってしまった。
-		size_t dataHandle = Alloc(cmd, sizeof(PainterEngine::GlyphRunData) * dataCount, dataList);
-		cmd.m_commandList->MarkGC(glyphsTexture);
-		if (strokesTexture != NULL) { cmd.m_commandList->MarkGC(strokesTexture); }
-		HandleCast<DrawGlyphRunCommand>(cmd)->engine = engine;
-		HandleCast<DrawGlyphRunCommand>(cmd)->dataList = dataHandle;
-		HandleCast<DrawGlyphRunCommand>(cmd)->dataCount = dataCount;
-		HandleCast<DrawGlyphRunCommand>(cmd)->glyphsTexture = glyphsTexture;
-		HandleCast<DrawGlyphRunCommand>(cmd)->strokesTexture = strokesTexture;
-		HandleCast<DrawGlyphRunCommand>(cmd)->foreColor = foreColor;
-		HandleCast<DrawGlyphRunCommand>(cmd)->strokeColor = strokeColor;
+		DataHandle dataHandle = AllocExtData(sizeof(PainterEngine::GlyphRunData) * dataCount, dataList);
+		MarkGC(glyphsTexture);
+		if (strokesTexture != NULL) { MarkGC(strokesTexture); }
+		m_engine = engine;
+		m_dataList = dataHandle;
+		m_dataCount = dataCount;
+		m_glyphsTexture = glyphsTexture;
+		m_strokesTexture = strokesTexture;
+		m_foreColor = foreColor;
+		m_strokeColor = strokeColor;
 	}
 
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		engine->DrawGlyphRun((PainterEngine::GlyphRunData*)commandList->GetBuffer(dataList), dataCount, glyphsTexture, strokesTexture, foreColor, strokeColor);
+		m_engine->DrawGlyphRun((PainterEngine::GlyphRunData*)GetExtData(m_dataList), m_dataCount, m_glyphsTexture, m_strokesTexture, m_foreColor, m_strokeColor);
 	}
 };
 

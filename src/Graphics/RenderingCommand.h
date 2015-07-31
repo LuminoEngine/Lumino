@@ -51,42 +51,57 @@ class RenderingCommandList;
 
 	Alloc() で再配置の可能性があるので、格納先である m_data が不正なメモリ位置になってしまう。
 */
-class RenderingCommand
+struct RenderingCommand
 {
+public:
+	typedef size_t	DataHandle;
+
+	virtual void Execute() = 0;
+
 protected:
-
-	struct CmdInfo
-	{
-		RenderingCommandList*	m_commandList;
-		size_t					m_dataHandle;
-	};
-
-
-	RenderingCommandList*	m_commandList;
-	size_t					m_dataHandle;
-
-	RenderingCommand() {}
-	virtual ~RenderingCommand() {}
-
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer) = 0;
-	virtual void Release(RenderingCommandList* commandList) {}	// 削除予定。デストラクタに任せる
-
-	template<class CommandT>
-	static CommandT* HandleCast(CmdInfo& cmd)
-	{
-		return reinterpret_cast<CommandT*>(cmd.m_commandList->GetBuffer(cmd.m_dataHandle));
-	}
-
-	inline static size_t Alloc(CmdInfo& cmd, size_t byteCount, const void* copyData);
-
-	//inline void MarkGC(RefObject* obj);
+	inline Device::IRenderer* GetRenderer() const;
+	inline DataHandle AllocExtData(size_t byteCount, const void* copyData);
+	inline void* GetExtData(DataHandle handle);
+	inline void MarkGC(RefObject* obj);
 
 private:
 	friend class RenderingCommandList;
+	RenderingCommandList*	m_commandList;
+	//size_t					m_dataHandle;
+
+	//struct CmdInfo
+	//{
+	//	RenderingCommandList*	m_commandList;
+	//	size_t					m_dataHandle;
+	//};
+
+
+
+	//RenderingCommand() {}
+	//virtual ~RenderingCommand() {}
+
+	//virtual void Execute() = 0;
+	//virtual void Release(RenderingCommandList* commandList) {}	// 削除予定。デストラクタに任せる
+
+	//template<class CommandT>
+	//static CommandT* HandleCast(CmdInfo& cmd)
+	//{
+	//	return reinterpret_cast<CommandT*>(cmd.m_commandList->GetExtData(cmd.m_dataHandle));
+	//}
+
+	//inline static size_t AllocExtData(size_t byteCount, const void* copyData);
+
+	//inline void MarkGC(RefObject* obj);
+
+//private:
+	//friend class RenderingCommandList;
 	//static void* operator new(size_t size, RenderingCommandList* cmmandList);
 	//static void operator delete(void* ptr, RenderingCommandList* cmmandList);	// 一応書いているが、直接 delete しようとするとコンパイルエラー「非置換 delete が定義されていません」になるはず
 };
 
+//#define LN_RENDERING_COMMAND_IMPLEMENT(cmdClass) \
+	
+//	static void ExecuteInternal(RenderingCommand* cmd) { Execute(static_cast<cmdClass*>(cmd)); }
 
 
 
@@ -94,6 +109,8 @@ class RenderingCommandList
 	: public RefObject
 {
 public:
+	typedef size_t	DataHandle;
+
 	RenderingCommandList();
 	virtual ~RenderingCommandList();
 
@@ -119,20 +136,38 @@ private:
 
 
 private:
+	DataHandle AllocCommand(size_t byteCount, const void* copyData);
+
+	RenderingCommand* GetCommand(DataHandle bufferIndex) { return (RenderingCommand*)&(m_commandDataBuffer.GetData()[bufferIndex]); }
 
 	template<typename T>
-	T*  CreateCommand()
+	DataHandle CreateCommand()
 	{
-		size_t dataHandle = Alloc(sizeof(T), NULL);
-		T* t = new (GetBuffer(dataHandle))T();
+		size_t dataHandle = AllocCommand(sizeof(T), NULL);
+		T* t = new (GetCommand(dataHandle))T();
 		t->m_commandList = this;
-		t->m_dataHandle = dataHandle;
-		return t;
+		//t->m_dataHandle = dataHandle;
+		return dataHandle;
 	}
+
+
 
 public:
 
+	template<typename T, typename... TArgs>
+	void AddCommand(TArgs... args)
+	{
+		DataHandle h = CreateCommand<T>();
+		T* cmd = static_cast<T*>(GetCommand(h));
+		//RenderingCommand::CmdInfo cmd;
+		//cmd->m_commandList = this;
+		//cmd.m_dataHandle = t->m_dataHandle;
+		cmd->Create(args...);
+		LN_RC_TRACE("RenderingCommandList::AddCommand 0() s %p\n", this);
+		m_commandList.Add(h);
+	}
 
+#if 0
 	template<typename T, typename A1>
 	void AddCommand(const A1& a1)
 	{
@@ -221,10 +256,11 @@ public:
 		LN_RC_TRACE("RenderingCommandList::AddCommand 8() s %p\n", this);
 		m_commandList.Add(cmd.m_dataHandle);
 	}
+#endif
 
 public:
-	size_t Alloc(size_t byteCount, const void* copyData);	// 返すのは m_commandDataBuffer の要素番号 (バッファ拡張時の再配置に備える)
-	void* GetBuffer(size_t bufferIndex);
+	DataHandle AllocExtData(size_t byteCount, const void* copyData);
+	void* GetExtData(DataHandle bufferIndex);
 	void MarkGC(RefObject* obj) 
 	{ 
 		obj->AddRef();
@@ -235,250 +271,191 @@ private:
 	Array<size_t>			m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;
+	ByteBuffer				m_extDataBuffer;
+	size_t					m_extDataBufferUsed;
 	Array<RefObject*>		m_markGCList;
+	Device::IRenderer*		m_currentRenderer;	///< 描画実行中の IRenderer
 
 	friend class RenderingThread;
 	friend class UserRenderingCommand;
-	friend class RenderingCommand;
+	friend struct RenderingCommand;
 	Threading::EventFlag	m_running;	///< 描画キューに入っているか
 	Threading::EventFlag	m_idling;
 };
 
-inline size_t RenderingCommand::Alloc(CmdInfo& cmd, size_t byteCount, const void* copyData) { return HandleCast<RenderingCommand>(cmd)->m_commandList->Alloc(byteCount, copyData); }
+inline Device::IRenderer* RenderingCommand::GetRenderer() const
+{
+	return m_commandList->m_currentRenderer;
+}
+inline RenderingCommand::DataHandle RenderingCommand::AllocExtData(size_t byteCount, const void* copyData)
+{ 
+	return m_commandList->AllocExtData(byteCount, copyData);
+}
+inline void* RenderingCommand::GetExtData(DataHandle handle)
+{
+	return m_commandList->GetExtData(handle);
+}
+inline void RenderingCommand::MarkGC(RefObject* obj)
+{
+	m_commandList->MarkGC(obj);
+}
 
 
 
 //=============================================================================
-class SetRenderStateCommand : public RenderingCommand
+struct SetRenderStateCommand : public RenderingCommand
 {
 	RenderState	m_state;
-
-public:
-	static void Create(CmdInfo& cmd, const RenderState& state)
-	{
-		HandleCast<SetRenderStateCommand>(cmd)->m_state = state;
-	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		renderer->SetRenderState(m_state);
-	}
+	void Create(const RenderState& state) { m_state = state; }
+	void Execute() { GetRenderer()->SetRenderState(m_state); }
 };
 
 //=============================================================================
-class SetDepthStencilStateCommand : public RenderingCommand
+struct SetDepthStencilStateCommand : public RenderingCommand
 {
 	DepthStencilState	m_state;
-
-public:
-	static void Create(CmdInfo& cmd, const DepthStencilState& state)
-	{
-		HandleCast<SetDepthStencilStateCommand>(cmd)->m_state = state;
-	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		renderer->SetDepthStencilState(m_state);
-	}
+	void Create(const DepthStencilState& state) { m_state = state; }
+	void Execute() { GetRenderer()->SetDepthStencilState(m_state); }
 };
 
 //=============================================================================
-class SetRenderTargetCommand : public RenderingCommand
+struct SetRenderTargetCommand : public RenderingCommand
 {
 	int m_index;
 	Texture* m_sourceTexture;
-
-public:
-	static void Create(CmdInfo& cmd, int index, Texture* texture)
+	void Create(int index, Texture* texture)	// TODO: Device::Itexture の方が良い気がする
 	{
-		HandleCast<SetRenderTargetCommand>(cmd)->m_index = index;
-		HandleCast<SetRenderTargetCommand>(cmd)->m_sourceTexture = texture;
-		LN_SAFE_ADDREF(texture);
+		m_index = index;
+		m_sourceTexture = texture;
+		MarkGC(texture);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->SetRenderTarget(m_index, (m_sourceTexture != NULL) ? m_sourceTexture->m_deviceObj : NULL);
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_sourceTexture);
+		GetRenderer()->SetRenderTarget(m_index, (m_sourceTexture != NULL) ? m_sourceTexture->m_deviceObj : NULL);
 	}
 };
 
 //=============================================================================
-class SetDepthBufferCommand : public RenderingCommand
+struct SetDepthBufferCommand : public RenderingCommand
 {
 	Texture* m_sourceTexture;
-
-public:
-	static void Create(CmdInfo& cmd, Texture* texture)
+	void Create(Texture* texture)	// TODO: Device::Itexture の方が良い気がする
 	{
-		HandleCast<SetDepthBufferCommand>(cmd)->m_sourceTexture = texture;
-		LN_SAFE_ADDREF(texture);
+		m_sourceTexture = texture;
+		MarkGC(texture);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->SetDepthBuffer((m_sourceTexture != NULL) ? m_sourceTexture->m_deviceObj : NULL);
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_sourceTexture);
+		GetRenderer()->SetDepthBuffer((m_sourceTexture != NULL) ? m_sourceTexture->m_deviceObj : NULL);
 	}
 };
 
 //=============================================================================
-class SetViewportCommand : public RenderingCommand
+struct SetViewportCommand : public RenderingCommand
 {
 	Rect m_viewportRect;
-
-public:
-	static void Create(CmdInfo& cmd, const Rect& rect)
-	{
-		HandleCast<SetViewportCommand>(cmd)->m_viewportRect = rect;
-	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		renderer->SetViewport(m_viewportRect);
-	}
+	void Create(const Rect& rect) { m_viewportRect = rect; }
+	void Execute() { GetRenderer()->SetViewport(m_viewportRect); }
 };
 
 //=============================================================================
-class SetVertexBufferCommand : public RenderingCommand
+struct SetVertexBufferCommand : public RenderingCommand
 {
 	VertexBuffer* m_sourceVertexBuffer;
-
-public:
-	static void Create(CmdInfo& cmd, VertexBuffer* vertexBuffer)
+	void Create(VertexBuffer* vertexBuffer)// TODO: Device::IVertexBuffer の方が良い気がする
 	{
-		HandleCast<SetVertexBufferCommand>(cmd)->m_sourceVertexBuffer = vertexBuffer;
-		LN_SAFE_ADDREF(vertexBuffer);
+		m_sourceVertexBuffer = vertexBuffer;
+		MarkGC(vertexBuffer);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->SetVertexBuffer((m_sourceVertexBuffer != NULL) ? m_sourceVertexBuffer->m_deviceObj : NULL);
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_sourceVertexBuffer);
+		GetRenderer()->SetVertexBuffer((m_sourceVertexBuffer != NULL) ? m_sourceVertexBuffer->m_deviceObj : NULL);
 	}
 };
 
 //=============================================================================
-class SetIndexBufferCommand : public RenderingCommand
+struct SetIndexBufferCommand : public RenderingCommand
 {
 	IndexBuffer* m_sourceIndexBuffer;
-
-public:
-	static void Create(CmdInfo& cmd, IndexBuffer* indexBuffer)
+	void Create(IndexBuffer* indexBuffer)// TODO: Device::IIndexBuffer の方が良い気がする
 	{
-		HandleCast<SetIndexBufferCommand>(cmd)->m_sourceIndexBuffer = indexBuffer;
-		LN_SAFE_ADDREF(indexBuffer);
+		m_sourceIndexBuffer = indexBuffer;
+		MarkGC(indexBuffer);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->SetIndexBuffer((m_sourceIndexBuffer != NULL) ? m_sourceIndexBuffer->m_deviceObj : NULL);
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_sourceIndexBuffer);
+		GetRenderer()->SetIndexBuffer((m_sourceIndexBuffer != NULL) ? m_sourceIndexBuffer->m_deviceObj : NULL);
 	}
 };
 
 //=============================================================================
-class ClearCommand : public RenderingCommand
+struct ClearCommand : public RenderingCommand
 {
 	ClearFlags m_flags;
 	ColorF m_clearColor;
 	float m_z;
 	uint8_t m_stencil;
-
-public:
-	static void Create(CmdInfo& cmd, ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+	void Create(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 	{
-		HandleCast<ClearCommand>(cmd)->m_flags = flags;
-		HandleCast<ClearCommand>(cmd)->m_clearColor = color;
-		HandleCast<ClearCommand>(cmd)->m_z = z;
-		HandleCast<ClearCommand>(cmd)->m_stencil = stencil;
+		m_flags = flags;
+		m_clearColor = color;
+		m_z = z;
+		m_stencil = stencil;
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->Clear(m_flags, m_clearColor, m_z, m_stencil);
+		GetRenderer()->Clear(m_flags, m_clearColor, m_z, m_stencil);
 	}
 };
 
 //=============================================================================
-class DrawPrimitiveCommand : public RenderingCommand
+struct DrawPrimitiveCommand : public RenderingCommand
 {
 	PrimitiveType m_primitive;
 	int m_startVertex;
 	int m_primitiveCount;
-
-public:
-	static void Create(CmdInfo& cmd, PrimitiveType primitive, int startVertex, int primitiveCount)
+	void Create(PrimitiveType primitive, int startVertex, int primitiveCount)
 	{
-		HandleCast<DrawPrimitiveCommand>(cmd)->m_primitive = primitive;
-		HandleCast<DrawPrimitiveCommand>(cmd)->m_startVertex = startVertex;
-		HandleCast<DrawPrimitiveCommand>(cmd)->m_primitiveCount = primitiveCount;
+		m_primitive = primitive;
+		m_startVertex = startVertex;
+		m_primitiveCount = primitiveCount;
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->DrawPrimitive(m_primitive, m_startVertex, m_primitiveCount);
+		GetRenderer()->DrawPrimitive(m_primitive, m_startVertex, m_primitiveCount);
 	}
 };
 
 //=============================================================================
-class DrawPrimitiveIndexedCommand : public RenderingCommand
+struct DrawPrimitiveIndexedCommand : public RenderingCommand
 {
 	PrimitiveType m_primitive;
 	int m_startIndex;
 	int m_primitiveCount;
-
-public:
-	static void Create(CmdInfo& cmd, PrimitiveType primitive, int startIndex, int primitiveCount)
+	void Create(PrimitiveType primitive, int startIndex, int primitiveCount)
 	{
-		HandleCast<DrawPrimitiveIndexedCommand>(cmd)->m_primitive = primitive;
-		HandleCast<DrawPrimitiveIndexedCommand>(cmd)->m_startIndex = startIndex;
-		HandleCast<DrawPrimitiveIndexedCommand>(cmd)->m_primitiveCount = primitiveCount;
+		m_primitive = primitive;
+		m_startIndex = startIndex;
+		m_primitiveCount = primitiveCount;
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		renderer->DrawPrimitiveIndexed(m_primitive, m_startIndex, m_primitiveCount);
+		GetRenderer()->DrawPrimitiveIndexed(m_primitive, m_startIndex, m_primitiveCount);
 	}
 };
 
 //=============================================================================
-class SetSamplerStateCommand : public RenderingCommand
+struct SetSamplerStateCommand : public RenderingCommand
 {
 	Device::ITexture* m_targetTexture;
 	SamplerState m_state;
-
-public:
-	static void Create(CmdInfo& cmd, Device::ITexture* texture, const SamplerState& state)
+	void Create(Device::ITexture* texture, const SamplerState& state)
 	{
-		HandleCast<SetSamplerStateCommand>(cmd)->m_targetTexture = texture;
-		HandleCast<SetSamplerStateCommand>(cmd)->m_state = state;
+		m_targetTexture = texture;
+		m_state = state;
+		MarkGC(m_targetTexture);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
 		m_targetTexture->SetSamplerState(m_state);
 	}
@@ -493,7 +470,7 @@ private:
 //	Imaging::PixelFormat	m_format;
 //
 //public:
-//	static void Create(CmdInfo& cmd, Device::ITexture* texture, Imaging::Bitmap* bitmap)
+//	static void Create(Device::ITexture* texture, Imaging::Bitmap* bitmap)
 //	{
 //		// メモリ確保は一度ハンドルをローカル変数に置く。1つの式の中で複数回 HandleCast を使用してはならないため。
 //		size_t tmpData = Alloc(cmd, bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetBitmapBuffer()->GetData());
@@ -505,7 +482,7 @@ private:
 //	}
 //
 //private:
-//	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+//	virtual void Execute()
 //	{
 //		// 参照モードで一時メモリを Bitmap 化する (メモリコピーを行わない)
 //		ByteBuffer refData(commandList->GetBuffer(m_sourceBitmapDataHandle), Imaging::Bitmap::GetPixelFormatByteCount(m_format, m_size), true);
@@ -516,7 +493,7 @@ private:
 //};
 
 //=============================================================================
-class SetShaderVariableCommand : public RenderingCommand
+struct SetShaderVariableCommand : public RenderingCommand
 {
 	union
 	{
@@ -528,62 +505,59 @@ class SetShaderVariableCommand : public RenderingCommand
 		//Lumino::Matrix*		Matrix;		///< 単一 Matrix または MatrixArray
 		Device::ITexture*	Texture;
 	};
-	size_t						m_arrayLength;
+	DataHandle					m_arrayLength;
 	ShaderVariableType			m_variableType;
 	Device::IShaderVariable*	m_target;
 
-public:
-	static void Create(CmdInfo& cmd, Device::IShaderVariable* target, bool value)
+	void Create(Device::IShaderVariable* target, bool value)
 	{
-		HandleCast<SetShaderVariableCommand>(cmd)->m_target = target;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_variableType = ShaderVariableType_Bool;
-		HandleCast<SetShaderVariableCommand>(cmd)->BoolVal = value;
-		LN_SAFE_ADDREF(target);
+		m_target = target;
+		m_variableType = ShaderVariableType_Bool;
+		BoolVal = value;
+		MarkGC(target);
 	}
-	static void Create(CmdInfo& cmd, Device::IShaderVariable* target, int value)
+	void Create(Device::IShaderVariable* target, int value)
 	{
-		HandleCast<SetShaderVariableCommand>(cmd)->m_target = target;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_variableType = ShaderVariableType_Int;
-		HandleCast<SetShaderVariableCommand>(cmd)->Int = value;
-		LN_SAFE_ADDREF(target);
+		m_target = target;
+		m_variableType = ShaderVariableType_Int;
+		Int = value;
+		MarkGC(target);
 	}
-	static void Create(CmdInfo& cmd, Device::IShaderVariable* target, float value)
+	void Create(Device::IShaderVariable* target, float value)
 	{
-		HandleCast<SetShaderVariableCommand>(cmd)->m_target = target;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_variableType = ShaderVariableType_Float;
-		HandleCast<SetShaderVariableCommand>(cmd)->Float = value;
-		LN_SAFE_ADDREF(target);
+		m_target = target;
+		m_variableType = ShaderVariableType_Float;
+		Float = value;
+		MarkGC(target);
 	}
-	static void Create(CmdInfo& cmd, Device::IShaderVariable* target, const Lumino::Vector4* vectors, size_t count)
+	void Create(Device::IShaderVariable* target, const Lumino::Vector4* vectors, size_t count)
 	{
-		size_t tmpData = Alloc(cmd, sizeof(Vector4) * count, vectors);
-		HandleCast<SetShaderVariableCommand>(cmd)->m_target = target;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_arrayLength = count;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_variableType = (count == 1) ? ShaderVariableType_Vector : ShaderVariableType_VectorArray;
-		HandleCast<SetShaderVariableCommand>(cmd)->VectorsBufferIndex = tmpData;
-		LN_SAFE_ADDREF(target);
+		size_t tmpData = AllocExtData(sizeof(Vector4) * count, vectors);
+		m_target = target;
+		m_arrayLength = count;
+		m_variableType = (count == 1) ? ShaderVariableType_Vector : ShaderVariableType_VectorArray;
+		VectorsBufferIndex = tmpData;
+		MarkGC(target);
 	}
-	static void Create(CmdInfo& cmd, Device::IShaderVariable* target, const Lumino::Matrix* matrices, size_t count)
+	void Create(Device::IShaderVariable* target, const Lumino::Matrix* matrices, size_t count)
 	{
-		size_t tmpData = Alloc(cmd, sizeof(Matrix) * count, matrices);
-		HandleCast<SetShaderVariableCommand>(cmd)->m_target = target;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_arrayLength = count;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_variableType = (count == 1) ? ShaderVariableType_Matrix : ShaderVariableType_MatrixArray;
-		HandleCast<SetShaderVariableCommand>(cmd)->VectorsBufferIndex = tmpData;
-		LN_SAFE_ADDREF(target);
+		size_t tmpData = AllocExtData(sizeof(Matrix) * count, matrices);
+		m_target = target;
+		m_arrayLength = count;
+		m_variableType = (count == 1) ? ShaderVariableType_Matrix : ShaderVariableType_MatrixArray;
+		VectorsBufferIndex = tmpData;
+		MarkGC(target);
 	}
-	static void Create(CmdInfo& cmd, Device::IShaderVariable* target, Device::ITexture* value)
+	void Create(Device::IShaderVariable* target, Device::ITexture* value)
 	{
-		HandleCast<SetShaderVariableCommand>(cmd)->m_target = target;
-		HandleCast<SetShaderVariableCommand>(cmd)->m_variableType = ShaderVariableType_Texture;
-		HandleCast<SetShaderVariableCommand>(cmd)->Texture = value;
-		LN_SAFE_ADDREF(target);
-		LN_SAFE_ADDREF(value);
+		m_target = target;
+		m_variableType = ShaderVariableType_Texture;
+		Texture = value;
+		MarkGC(target);
+		MarkGC(value);
 	}
 
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
 		switch (m_variableType)
 		{
@@ -597,16 +571,16 @@ private:
 			m_target->SetFloat(Float);
 			break;
 		case ShaderVariableType_Vector:
-			m_target->SetVector(*((Vector4*)commandList->GetBuffer(VectorsBufferIndex)));
+			m_target->SetVector(*((Vector4*)GetExtData(VectorsBufferIndex)));
 			break;
 		case ShaderVariableType_VectorArray:
-			m_target->SetVectorArray((Vector4*)commandList->GetBuffer(VectorsBufferIndex), m_arrayLength);
+			m_target->SetVectorArray((Vector4*)GetExtData(VectorsBufferIndex), m_arrayLength);
 			break;
 		case ShaderVariableType_Matrix:
-			m_target->SetMatrix(*((Matrix*)commandList->GetBuffer(VectorsBufferIndex)));
+			m_target->SetMatrix(*((Matrix*)GetExtData(VectorsBufferIndex)));
 			break;
 		case ShaderVariableType_MatrixArray:
-			m_target->SetMatrixArray((Matrix*)commandList->GetBuffer(VectorsBufferIndex), m_arrayLength);
+			m_target->SetMatrixArray((Matrix*)GetExtData(VectorsBufferIndex), m_arrayLength);
 			break;
 		case ShaderVariableType_Texture:
 			m_target->SetTexture(Texture);
@@ -616,68 +590,48 @@ private:
 			break;
 		}
 	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		if (m_variableType == ShaderVariableType_Texture) {
-			LN_SAFE_RELEASE(Texture);
-		}
-		LN_SAFE_RELEASE(m_target);
-	}
 };
 
 //=============================================================================
-class ApplyShaderPassCommand : public RenderingCommand
+struct ApplyShaderPassCommand : public RenderingCommand
 {
 	Device::IShaderPass* m_pass;
-
-public:
-	static void Create(CmdInfo& cmd, Device::IShaderPass* pass)
+	void Create(Device::IShaderPass* pass)
 	{
-		HandleCast<ApplyShaderPassCommand>(cmd)->m_pass = pass;
-		LN_SAFE_ADDREF(pass);
+		m_pass = pass;
+		MarkGC(pass);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-	{
-		m_pass->Apply();
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_pass);
-	}
+	void Execute() { m_pass->Apply(); }
 };
 
 //=============================================================================
-class PresentCommand : public RenderingCommand
+struct PresentCommand : public RenderingCommand
 {
 	SwapChain* m_targetSwapChain;
 
-public:
-	static void Create(CmdInfo& cmd, SwapChain* swapChain)
+	void Create(SwapChain* swapChain)
 	{
-		HandleCast<PresentCommand>(cmd)->m_targetSwapChain = swapChain;
-		LN_SAFE_ADDREF(swapChain);
+		m_targetSwapChain = swapChain;
+		MarkGC(swapChain);
 	}
 
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
 		m_targetSwapChain->m_deviceObj->Present(m_targetSwapChain->m_backColorBuffer->m_deviceObj);
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
+
+
 		// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
 		// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。
 
 		// TODO: ポインタが fefefefe とかなってたことがあった。メモリバリア張っておくこと。
 		m_targetSwapChain->m_waiting.SetTrue();
-		LN_SAFE_RELEASE(m_targetSwapChain);
+		//LN_SAFE_RELEASE(m_targetSwapChain);
+		// TODO: ↑これは CommandList::Execute 側でやるべきなきがする
 	}
 };
 	
 //=============================================================================
-class SetSubDataTextureCommand : public RenderingCommand	// TODO: ↑似たようなコマンドが残っている
+struct SetSubDataTextureCommand : public RenderingCommand	// TODO: ↑似たようなコマンドが残っている
 {
 	Device::ITexture*		m_targetTexture;
 	Point					m_offset;
@@ -685,32 +639,26 @@ class SetSubDataTextureCommand : public RenderingCommand	// TODO: ↑似たよ�
 	Size					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
-public:
-	static void Create(CmdInfo& cmd, Device::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const Size& bmpSize)
+	void Create(Device::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const Size& bmpSize)
 	{
-		size_t tmpData = Alloc(cmd, dataSize, data);
-		HandleCast<SetSubDataTextureCommand>(cmd)->m_targetTexture = texture;
-		HandleCast<SetSubDataTextureCommand>(cmd)->m_offset = offset;
-		HandleCast<SetSubDataTextureCommand>(cmd)->m_bmpDataIndex = tmpData;
-		HandleCast<SetSubDataTextureCommand>(cmd)->m_bmpSize = bmpSize;
-		LN_SAFE_ADDREF(texture);
+		m_targetTexture = texture;
+		m_offset = offset;
+		m_bmpDataIndex = AllocExtData(dataSize, data);
+		m_bmpSize = bmpSize;
+		MarkGC(texture);
 	}
 
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
-		m_targetTexture->SetSubData(m_offset, commandList->GetBuffer(m_bmpDataIndex), m_bmpSize);
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_targetTexture);
+		m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_bmpSize);
 	}
 };
 
 //=============================================================================
-class Texture_SetSubDataBitmapCommand : public RenderingCommand
+struct Texture_SetSubDataBitmapCommand : public RenderingCommand
 {
-	RefPtr<Device::ITexture> m_targetTexture;
+	//RefPtr<Device::ITexture> m_targetTexture;
+	Device::ITexture* m_targetTexture;
 	Point m_offset;
 
 	size_t m_bmpDataIndex;
@@ -719,26 +667,23 @@ class Texture_SetSubDataBitmapCommand : public RenderingCommand
 	Imaging::PixelFormat m_format;
 	bool m_upFlow;
 
-public:
-	static void Create(CmdInfo& cmd, Device::ITexture* texture, const Point& offset, Imaging::Bitmap* bmp)
+	void Create(Device::ITexture* texture, const Point& offset, Imaging::Bitmap* bmp)
 	{
-		size_t tmpData = Alloc(cmd, bmp->GetBitmapBuffer()->GetSize(), bmp->GetBitmapBuffer()->GetConstData());
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_targetTexture = texture;
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_offset = offset;
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_bmpDataIndex = tmpData;
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_size = bmp->GetSize();
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_pitch = bmp->GetPitch();
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_format = bmp->GetPixelFormat();
-		HandleCast<Texture_SetSubDataBitmapCommand>(cmd)->m_upFlow = bmp->IsUpFlow();
+		m_targetTexture = texture;
+		m_offset = offset;
+		m_bmpDataIndex = AllocExtData(bmp->GetBitmapBuffer()->GetSize(), bmp->GetBitmapBuffer()->GetConstData());
+		m_size = bmp->GetSize();
+		m_pitch = bmp->GetPitch();
+		m_format = bmp->GetPixelFormat();
+		m_upFlow = bmp->IsUpFlow();
+		MarkGC(m_targetTexture);
 	}
 
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
 		if (m_format == Utils::TranslatePixelFormat(m_targetTexture->GetTextureFormat()))
 		{
-			//Imaging::Bitmap bmp(commandList->GetBuffer(m_bmpDataIndex), m_size, m_format, m_pitch, m_upFlow);
-			m_targetTexture->SetSubData(m_offset, commandList->GetBuffer(m_bmpDataIndex), m_size);
+			m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_size);
 		}
 		else {
 			LN_THROW(0, NotImplementedException);
@@ -746,55 +691,38 @@ private:
 	}
 };
 
-
 //=============================================================================
-class ReadLockTextureCommand : public RenderingCommand
+struct ReadLockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;
-
-public:
-	static void Create(CmdInfo& cmd, Texture* texture)
+	void Create(Texture* texture)
 	{
-		HandleCast<ReadLockTextureCommand>(cmd)->m_targetTexture = texture;
-		LN_SAFE_ADDREF(texture);
+		m_targetTexture = texture;
+		MarkGC(texture);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
 		m_targetTexture->m_primarySurface = m_targetTexture->m_deviceObj->Lock();
 		// Texture::Lock() はこの後コマンドリストが空になるまで待機する
 		// (実際のところ、このコマンドが最後のコマンドのはず)
 	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_targetTexture);
-	}
 };
 
 //=============================================================================
-class ReadUnlockTextureCommand : public RenderingCommand
+struct ReadUnlockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;
-
-public:
-	static void Create(CmdInfo& cmd, Texture* texture)
+	void Create(Texture* texture)
 	{
-		HandleCast<ReadUnlockTextureCommand>(cmd)->m_targetTexture = texture;
-		LN_SAFE_ADDREF(texture);
+		m_targetTexture = texture;
+		MarkGC(texture);
 	}
-
-private:
-	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	void Execute()
 	{
 		m_targetTexture->m_deviceObj->Unlock();
 		m_targetTexture->m_primarySurface = NULL;
 		// ReadLockTextureCommand と同じように、Texture::Unlock() で待機している。
 		// (でも、ここまで待機することも無いかも？)
-	}
-	virtual void Release(RenderingCommandList* commandList)
-	{
-		LN_SAFE_RELEASE(m_targetTexture);
 	}
 };
 

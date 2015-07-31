@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Graphics/Painter.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include "ProfilerRenderer.h"
 
@@ -36,6 +37,16 @@ ProfilerRenderer::~ProfilerRenderer()
 //-----------------------------------------------------------------------------
 void ProfilerRenderer::Render(const Vector2& viewSize)
 {
+	Painter painter(m_manager);
+	painter.SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
+
+	painter.SetBrush(ColorBrush::Blue);
+	painter.DrawRectangle2(RectF(10, 10, 30, 50));
+
+	return;
+
+
+
 	Matrix proj = Matrix::Perspective2DLH(viewSize.X, viewSize.Y, 0.f, 1000.f);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_spriteRenderer->SetViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 ‚Ì set ‚ª‚ ‚Á‚Ä‚à‚¢‚¢‚©‚à

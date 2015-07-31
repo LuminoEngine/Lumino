@@ -57,7 +57,7 @@ protected:
 	virtual ~VertexBuffer();
 
 public:	// TODO
-	friend class SetVertexBufferCommand;
+	friend struct SetVertexBufferCommand;
 	Device::IVertexBuffer*	m_deviceObj;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;

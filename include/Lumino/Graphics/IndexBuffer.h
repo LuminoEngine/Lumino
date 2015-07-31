@@ -62,7 +62,7 @@ protected:
 	virtual ~IndexBuffer();
 
 private:
-	friend class SetIndexBufferCommand;
+	friend struct SetIndexBufferCommand;		// TODO
 	Device::IIndexBuffer*	m_deviceObj;
 	ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;

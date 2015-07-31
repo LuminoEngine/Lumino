@@ -47,7 +47,7 @@ public:
 private:
 	friend class GraphicsManager;
 	friend class Renderer;
-	friend class PresentCommand;
+	friend struct PresentCommand;	// TODO
 	SwapChain(GraphicsManager* manager, const Size& mainWindowSize);
 	void Initialize(const Size& backbufferSize);
 

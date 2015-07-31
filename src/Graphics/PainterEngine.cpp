@@ -154,7 +154,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	m_renderer->SetIndexBuffer(m_indexBuffer);
 	m_shader.varTexture->SetTexture(m_dummyTexture);
 	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 2);
 }
 
 //-----------------------------------------------------------------------------

@@ -158,112 +158,95 @@ private:
     } m_shader;
 
 public:
-	class SpriteRendererCommand : public RenderingCommand
+
+	struct SetTransformCommand : public RenderingCommand
 	{
-	protected:
 		SpriteRendererImpl*	m_renderer;
-		
-		virtual ~SpriteRendererCommand()
-		{
-			LN_SAFE_RELEASE(m_renderer);
-		}
-	};
-
-	class SetTransformCommand : public SpriteRendererCommand
-	{
 		Matrix	m_transform;
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const Matrix& transform)
+
+		void Create(SpriteRendererImpl* renderer, const Matrix& transform)
 		{
-			HandleCast<SetTransformCommand>(cmd)->m_renderer = renderer;
-			HandleCast<SetTransformCommand>(cmd)->m_transform = transform;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			m_transform = transform;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-		{
-			m_renderer->SetTransform(m_transform);
-		}
+		void Execute() { m_renderer->SetTransform(m_transform); }
 	};
 
-	class SetViewProjMatrixCommand : public SpriteRendererCommand
+	struct SetViewProjMatrixCommand : public RenderingCommand
 	{
+		SpriteRendererImpl*	m_renderer;
 		Matrix	m_view;
 		Matrix	m_proj;
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const Matrix& view, const Matrix& proj)
+
+		void Create(SpriteRendererImpl* renderer, const Matrix& view, const Matrix& proj)
 		{
-			HandleCast<SetViewProjMatrixCommand>(cmd)->m_renderer = renderer;
-			HandleCast<SetViewProjMatrixCommand>(cmd)->m_view = view;
-			HandleCast<SetViewProjMatrixCommand>(cmd)->m_proj = proj;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			m_view = view;
+			m_proj = proj;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-		{
-			m_renderer->SetViewProjMatrix(m_view, m_proj);
-		}
+		void Execute() { m_renderer->SetViewProjMatrix(m_view, m_proj); }
 	};
 
-	class SetViewPixelSizeCommand : public SpriteRendererCommand
+	struct SetViewPixelSizeCommand : public RenderingCommand
 	{
+		SpriteRendererImpl*	m_renderer;
 		Size	m_size;
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const Size& size)
+
+		void Create(SpriteRendererImpl* renderer, const Size& size)
 		{
-			HandleCast<SetViewPixelSizeCommand>(cmd)->m_renderer = renderer;
-			HandleCast<SetViewPixelSizeCommand>(cmd)->m_size = size;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			m_size = size;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-		{
-			m_renderer->SetViewPixelSize(m_size);
-		}
+		void Execute() { m_renderer->SetViewPixelSize(m_size); }
 	};
 
-	class SetRenderStateCommand : public SpriteRendererCommand
+	struct SetRenderStateCommand : public RenderingCommand
 	{
+		SpriteRendererImpl*	m_renderer;
 		RenderState	m_state;
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, const RenderState& state)
+
+		void Create(SpriteRendererImpl* renderer, const RenderState& state)
 		{
-			HandleCast<SetRenderStateCommand>(cmd)->m_renderer = renderer;
-			HandleCast<SetRenderStateCommand>(cmd)->m_state = state;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			m_state = state;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-		{
-			m_renderer->SetRenderState(m_state);
-		}
+		void Execute() { m_renderer->SetRenderState(m_state); }
 	};
 
-	class SetSortModeCommand : public SpriteRendererCommand
+	struct SetSortModeCommand : public RenderingCommand
 	{
+		SpriteRendererImpl*	m_renderer;
 		uint32_t				m_flags;
 		SortingDistanceBasis	m_basis;
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer, uint32_t flags, SortingDistanceBasis basis)
+
+		void Create(SpriteRendererImpl* renderer, uint32_t flags, SortingDistanceBasis basis)
 		{
-			HandleCast<SetSortModeCommand>(cmd)->m_renderer = renderer;
-			HandleCast<SetSortModeCommand>(cmd)->m_flags = flags;
-			HandleCast<SetSortModeCommand>(cmd)->m_basis = basis;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			m_flags = flags;
+			m_basis = basis;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		void Execute()
 		{
 			m_renderer->SetSortMode(m_flags, m_basis);
 		}
 	};
 
-	class DrawRequest2DCommand : public SpriteRendererCommand
+	struct DrawRequest2DCommand : public RenderingCommand
 	{
+		SpriteRendererImpl*	m_renderer;
 		Vector3 m_position;
 		Vector3 m_center;
 		Vector2 m_size;
 		Device::ITexture* m_texture;
 		RectF m_srcRect;
 		ColorF m_colorTable[4];
-	public:
-		static void Create(
-			CmdInfo& cmd,
+
+		void Create(
 			SpriteRendererImpl* renderer, 
 			const Vector3& position,
 			const Vector3& center,
@@ -272,28 +255,25 @@ public:
 			const RectF& srcRect,
 			const ColorF* colorTable)
 		{
-			HandleCast<DrawRequest2DCommand>(cmd)->m_renderer = renderer;
-			HandleCast<DrawRequest2DCommand>(cmd)->m_position = position;
-			HandleCast<DrawRequest2DCommand>(cmd)->m_center = center;
-			HandleCast<DrawRequest2DCommand>(cmd)->m_size = size;
-			HandleCast<DrawRequest2DCommand>(cmd)->m_texture = texture;
-			HandleCast<DrawRequest2DCommand>(cmd)->m_srcRect = srcRect;
-			memcpy(HandleCast<DrawRequest2DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF) * 4);
-			LN_SAFE_ADDREF(renderer);
-			LN_SAFE_ADDREF(texture);
+			m_renderer = renderer;
+			m_position = position;
+			m_center = center;
+			m_size = size;
+			m_texture = texture;
+			m_srcRect = srcRect;
+			memcpy(m_colorTable, colorTable, sizeof(ColorF) * 4);
+			MarkGC(m_renderer);
+			MarkGC(m_texture);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		void Execute()
 		{
 			m_renderer->DrawRequest2D(m_position, m_center, m_size, m_texture, m_srcRect, m_colorTable);
 		}
-		virtual ~DrawRequest2DCommand()
-		{
-			LN_SAFE_RELEASE(m_texture);
-		}
 	};
 
-	class DrawRequest3DCommand : public SpriteRendererCommand
+	struct DrawRequest3DCommand : public RenderingCommand
 	{
+		SpriteRendererImpl*	m_renderer;
 		Vector3 m_position;
 		Vector3 m_center;
 		Vector2 m_size;
@@ -301,9 +281,8 @@ public:
 		RectF m_srcRect;
 		ColorF m_colorTable[4];
 		AxisDirection m_front;
-	public:
-		static void Create(
-			CmdInfo& cmd,
+
+		void Create(
 			SpriteRendererImpl* renderer,
 			const Vector3& position,
 			const Vector3& center,
@@ -313,53 +292,45 @@ public:
 			const ColorF* colorTable,
 			AxisDirection front)
 		{
-			HandleCast<DrawRequest3DCommand>(cmd)->m_renderer = renderer;
-			HandleCast<DrawRequest3DCommand>(cmd)->m_position = position;
-			HandleCast<DrawRequest3DCommand>(cmd)->m_center = center;
-			HandleCast<DrawRequest3DCommand>(cmd)->m_size = size;
-			HandleCast<DrawRequest3DCommand>(cmd)->m_texture = texture;
-			HandleCast<DrawRequest3DCommand>(cmd)->m_srcRect = srcRect;
-			memcpy(HandleCast<DrawRequest3DCommand>(cmd)->m_colorTable, colorTable, sizeof(ColorF) * 4);
-			HandleCast<DrawRequest3DCommand>(cmd)->m_front = front;
-			LN_SAFE_ADDREF(renderer);
-			LN_SAFE_ADDREF(texture);
+			m_renderer = renderer;
+			m_position = position;
+			m_center = center;
+			m_size = size;
+			m_texture = texture;
+			m_srcRect = srcRect;
+			memcpy(m_colorTable, colorTable, sizeof(ColorF) * 4);
+			m_front = front;
+			MarkGC(m_renderer);
+			MarkGC(m_texture);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+		void Execute()
 		{
 			m_renderer->DrawRequest3D(m_position, m_center, m_size, m_texture, m_srcRect, m_colorTable, m_front);
 		}
-		virtual ~DrawRequest3DCommand()
-		{
-			LN_SAFE_RELEASE(m_texture);
-		}
 	};
 
-	class FlashCommand : public SpriteRendererCommand
+	struct FlashCommand : public RenderingCommand
 	{
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer)
+		SpriteRendererImpl*	m_renderer;
+
+		void Create(SpriteRendererImpl* renderer)
 		{
-			HandleCast<FlashCommand>(cmd)->m_renderer = renderer;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-		{
-			m_renderer->Flash();
-		}
+		void Execute() { m_renderer->Flash(); }
 	};
 
-	class ClearCommand : public SpriteRendererCommand
+	struct ClearCommand : public RenderingCommand
 	{
-	public:
-		static void Create(CmdInfo& cmd, SpriteRendererImpl* renderer)
+		SpriteRendererImpl*	m_renderer;
+
+		void Create(SpriteRendererImpl* renderer)
 		{
-			HandleCast<ClearCommand>(cmd)->m_renderer = renderer;
-			LN_SAFE_ADDREF(renderer);
+			m_renderer = renderer;
+			MarkGC(m_renderer);
 		}
-		virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
-		{
-			m_renderer->Clear();
-		}
+		void Execute() { m_renderer->Clear(); }
 	};
 };
 

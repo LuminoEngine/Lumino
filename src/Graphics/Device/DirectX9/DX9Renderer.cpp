@@ -329,6 +329,7 @@ void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, 
 			ib_fmt,
 			m_currentVertexBuffer->Lock(),
 			m_currentVertexBuffer->GetVertexStride()));
+		// ※ DrawIndexedPrimitiveUP の中で強制停止する場合、インデックスバッファの配列外参照しているかもしれない。
 	}
 	// 両方が static
 	else if (!vd && !id)

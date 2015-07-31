@@ -1,4 +1,10 @@
-﻿
+﻿/*
+	[2015/7/31] コマンドの実行は仮想関数？関数ポインタ？
+		Release ビルド 100000000 回の単純呼び出しで、
+		仮想関数 : 450ms
+		関数ポインタ : 400ms
+		微々たる差だが、関数ポインタが少しだけ有利。
+*/
 #pragma once
 
 #include "../Internal.h"
@@ -48,6 +54,8 @@ RenderingCommandList::RenderingCommandList()
 	m_commandList.Reserve(DataBufferReserve);	// 適当に
 	m_commandDataBuffer.Resize(DataBufferReserve, false);
 	m_commandDataBufferUsed = 0;
+	m_extDataBuffer.Resize(DataBufferReserve, false);
+	m_extDataBufferUsed = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -65,9 +73,10 @@ void RenderingCommandList::Execute(Device::IRenderer* renderer)
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
 	// この関数は描画スレッドから呼ばれる
 
+	m_currentRenderer = renderer;
 	LN_FOREACH(size_t dataIdx, m_commandList)
 	{
-		((RenderingCommand*)GetBuffer(dataIdx))->Execute(this, renderer);
+		((RenderingCommand*)GetCommand(dataIdx))->Execute();
 	}
 	LN_RC_TRACE("RenderingCommandList::Execute() e %p\n", this);
 }
@@ -77,13 +86,13 @@ void RenderingCommandList::Execute(Device::IRenderer* renderer)
 //-----------------------------------------------------------------------------
 void RenderingCommandList::PostExecute()
 {
-	LN_RC_TRACE("RenderingCommandList::PostExecute() s %p\n", this);
-	LN_FOREACH(size_t dataIdx, m_commandList)
-	{
-		((RenderingCommand*)GetBuffer(dataIdx))->Release(this);
-		((RenderingCommand*)GetBuffer(dataIdx))->~RenderingCommand();
-	}
-	LN_RC_TRACE("RenderingCommandList::PostExecute() e %p\n", this);
+	//LN_RC_TRACE("RenderingCommandList::PostExecute() s %p\n", this);
+	//LN_FOREACH(size_t dataIdx, m_commandList)
+	//{
+	//	((RenderingCommand*)GetCommand(dataIdx))->Release(this);
+	//	((RenderingCommand*)GetCommand(dataIdx))->~RenderingCommand();
+	//}
+	//LN_RC_TRACE("RenderingCommandList::PostExecute() e %p\n", this);
 	m_commandList.Clear();
 	m_commandDataBufferUsed = 0;
 
@@ -95,10 +104,11 @@ void RenderingCommandList::PostExecute()
 	m_markGCList.Clear();
 }
 
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-size_t RenderingCommandList::Alloc(size_t byteCount, const void* copyData)
+RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
 	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize()) {
@@ -122,9 +132,33 @@ size_t RenderingCommandList::Alloc(size_t byteCount, const void* copyData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void* RenderingCommandList::GetBuffer(size_t bufferIndex)
+RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteCount, const void* copyData)
 {
-	return &(m_commandDataBuffer.GetData()[bufferIndex]);
+	// バッファが足りなければ拡張する
+	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.GetSize()) {
+		size_t newSize = m_extDataBuffer.GetSize() + std::max(m_extDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_extDataBuffer.Resize(newSize, false);
+	}
+
+	if (copyData != NULL)
+	{
+		byte_t* ptr = &(m_extDataBuffer.GetData()[m_extDataBufferUsed]);
+		size_t size = m_extDataBuffer.GetSize() - m_extDataBufferUsed;
+		memcpy_s(ptr, size, copyData, byteCount);
+	}
+
+	size_t dataIdx = m_extDataBufferUsed;
+	m_extDataBufferUsed += byteCount;
+
+	return dataIdx;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void* RenderingCommandList::GetExtData(DataHandle bufferIndex)
+{
+	return &(m_extDataBuffer.GetData()[bufferIndex]);
 }
 
 } // namespace Graphics

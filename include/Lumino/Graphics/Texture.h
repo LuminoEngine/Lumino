@@ -123,11 +123,11 @@ protected:
 	void FlushPrimarySurface();
 
 private:
-	friend class SetRenderTargetCommand;
-	friend class SetDepthBufferCommand;
-	friend class ReadLockTextureCommand;
-	friend class ReadUnlockTextureCommand;
-	friend class PresentCommand;
+	friend struct SetRenderTargetCommand;	// TODO: ダサイ
+	friend struct SetDepthBufferCommand;
+	friend struct ReadLockTextureCommand;
+	friend struct ReadUnlockTextureCommand;
+	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;
 	friend class SwapChain;
 	GraphicsManager*	m_manager;
