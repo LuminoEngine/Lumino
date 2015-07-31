@@ -1,8 +1,9 @@
 
 #pragma once
-
 #include "Internal.h"
+#include <Lumino/Profiler.h>
 #include <Lumino/Application.h>
+#include "Graphics/ProfilerRenderer.h"
 
 namespace Lumino
 {
@@ -39,6 +40,7 @@ Application* Application::Create(const ApplicationConfigData& configData)
 Application::Application(const ApplicationConfigData& configData)
 	: m_configData(configData)
 	, m_endRequested(false)
+	, m_profilerRenderer(NULL)
 {
 }
 
@@ -47,6 +49,8 @@ Application::Application(const ApplicationConfigData& configData)
 //-----------------------------------------------------------------------------
 Application::~Application()
 {
+	LN_SAFE_RELEASE(m_profilerRenderer);
+
 	if (m_platformManager != NULL) {
 		m_platformManager->Dispose();
 	}
@@ -117,6 +121,8 @@ void Application::InitialzeGraphicsManager()
 		data.FileManager = &FileManager::GetInstance();
 		data.PlatformTextureLoading = true;
 		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(data));
+
+		m_profilerRenderer = LN_NEW Graphics::ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
 	}
 }
 
@@ -165,6 +171,16 @@ bool Application::UpdateFrame()
 	m_fpsController.Process();
 
 	return !m_endRequested;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Application::Render()
+{
+	if (m_profilerRenderer != NULL) {
+		m_profilerRenderer->Render(Vector2(640, 480));	//TODO
+	}
 }
 
 //-----------------------------------------------------------------------------

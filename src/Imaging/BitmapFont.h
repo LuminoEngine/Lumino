@@ -9,7 +9,7 @@ namespace Imaging
 {
 	
 /**
-	@brief		フォントのクラスです。
+	@brief		ビットマップフォントのクラスです。
 */
 class BitmapFont
     : public Font
@@ -32,16 +32,9 @@ public:
 	virtual void SetAntiAlias(bool enabled) { LN_THROW(0, InvalidOperationException); }
 	virtual bool IsAntiAlias() const { LN_THROW(0, InvalidOperationException); return false; }
 	virtual Font* Copy() const;
-	virtual int GetLineHeight();
-	virtual Size GetTextSize(const char* text, int length);
-	virtual Size GetTextSize(const wchar_t* text, int length);
-	virtual Size GetTextSize(const UTF32* text, int length);
-
-
+	virtual int GetLineHeight() { return m_charHeight; }
 	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData);
 	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code);
-
-
 	virtual FontManager* GetManager() const { return m_manager; }
 
 private:
@@ -49,11 +42,12 @@ private:
 
 private:
 	FontManager*			m_manager;
-	Bitmap*					m_fontBitmap;
+	RefPtr<Bitmap>			m_fontBitmap;
 	int						m_charWidth;			///< 1文字分の幅
 	int						m_charHeight;		///< 1文字分の高さ
-	FontGlyphData			m_fontGlyphData;
-	Bitmap					m_glyphBitmap;
+	FontGlyphLocation		m_fontGlyphLocation;	///< AdvanceKerning() で返すデータ
+	RefPtr<Bitmap>			m_glyphBitmap;
+	FontGlyphBitmap			m_fontGlyphBitmap;		///< LookupGlyphBitmap() で返すデータ
 };
 
 } // namespace Imaging

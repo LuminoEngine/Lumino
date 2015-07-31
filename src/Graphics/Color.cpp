@@ -43,5 +43,35 @@ const ColorF ColorF::Green = ColorF(0.0, 1.0, 0.0, 1.0);
 const ColorF ColorF::Blue = ColorF(0.0, 0.0, 1.0, 1.0);
 
 
+//=============================================================================
+// HSVColor
+//=============================================================================
+Color HSVColor::ToColor() const
+{
+	unsigned char c1, c2, c3;
+	if (S == 0)
+	{
+		return Color(V, V, V, A);
+	}
+	else
+	{
+		int t = (H * 6) % 360;
+		c1 = (V*(255 - S)) / 255;
+		c2 = (V*(255 - (S*t) / 360)) / 255;
+		c3 = (V*(255 - (S*(360 - t)) / 360)) / 255;
+		switch (H / 60)
+		{
+		case 0: return Color(V, c3, c1, A);
+		case 1: return Color(c2, V, c1, A);
+		case 2: return Color(c1, V, c3, A);
+		case 3: return Color(c1, c2, V, A);
+		case 4: return Color(c3, c1, V, A);
+		case 5: return Color(V, c1, c2, A);
+		}
+	}
+	return Color(0, 0, 0, A);
+}
+
+
 } // namespace Graphics
 } // namespace Lumino

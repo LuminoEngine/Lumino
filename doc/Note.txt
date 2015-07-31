@@ -1,3 +1,25 @@
+
+[2015/7/31] トップレベルインターフェイス
+- 継承による拡張
+- 言語バインダを実装する上での使いやすさ
+- Variant への保持しやすさ
+
+・Font font = Font::CreateBitmapFont();
+	
+
+・FontPtr font = Font::CreateBitmapFont();
+
+- スタックへの生成を許可するか？
+	完全に禁止することは出来ない。派生させればなんとでも出来てしまう。
+	
+
+・Siv3D、セガGameLib
+	公開するのはスマートポインタクラス。実体は可能な限り見せない。
+	→ 派生させて拡張できない。GUI のユーザーコントロールとか作れないことになる。
+	ただ、Siv3D の GUI は static Create() が shared_ptr 返していた。
+
+
+
 ■ サブモジュールの削除
 $ git submodule deinit path/to/submodule
 $ git rm path/to/submodule
@@ -181,7 +203,6 @@ Canvas が描画コマンドリストを実行するようなイメージになる気がするが…
 ■Effekseer 等の外部グラフィックスライブラリとの連携
 ・マルチスレッドモードではメインスレッドから 描画系APIを呼ぶことはできない。
   描画スレッドからのコールバックが必要。
-
 
 
 

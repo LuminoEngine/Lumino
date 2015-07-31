@@ -122,6 +122,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Painter.cpp
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
+	src/Graphics/ProfilerRenderer.cpp
+	src/Graphics/ProfilerRenderer.h
 	src/Graphics/Renderer.cpp
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingCommand.h

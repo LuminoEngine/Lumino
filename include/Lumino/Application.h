@@ -16,6 +16,7 @@
 
 namespace Lumino
 {
+namespace Graphics { class ProfilerRenderer; }
 	
 /**
 	@brief		Lumino アプリケーションを表します。
@@ -38,6 +39,11 @@ public:
 		@return		アプリケーションの終了が要求されている場合は false を返します。
 	*/
 	bool UpdateFrame();
+
+	/**
+		@brief		
+	*/
+	void Render();
 
 	/**
 		@brief		遅延をリセットします。
@@ -78,6 +84,8 @@ private:
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	RefPtr<GUI::GUIManager>				m_guiManager;
+
+	Graphics::ProfilerRenderer*			m_profilerRenderer;
 	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_endRequested;

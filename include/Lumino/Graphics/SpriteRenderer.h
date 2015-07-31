@@ -80,6 +80,23 @@ public:
 		@param[in]	size		: 
 		@param[in]	texture		: 
 		@param[in]	srcRect		: 
+		@param[in]	color		: 
+	*/
+	void DrawRequest2D(
+		const Vector3& position,
+		const Vector3& center,
+		const Vector2& size,
+		Texture* texture,
+		const RectF& srcRect,
+		const ColorF& color);
+
+	/**
+		@brief		スプライトの描画を要求します。
+		@param[in]	position	: 
+		@param[in]	center		: 
+		@param[in]	size		: 
+		@param[in]	texture		: 
+		@param[in]	srcRect		: 
 		@param[in]	colorTable	: 
 		@param[in]	front		:
 	*/

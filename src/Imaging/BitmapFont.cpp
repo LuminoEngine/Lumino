@@ -7,63 +7,67 @@ namespace Lumino
 {
 namespace Imaging
 {
-#if 0
 
-//==============================================================================
+//=============================================================================
+// Font
+//=============================================================================
+
+static const byte_t g_BuiltInBitmapFont_size7_Data[] =
+{
+#include "../Graphics/Resource/BitmapFont1_h7_6x15.png.h"
+};
+static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Font* Font::CreateBuiltInBitmapFont(FontManager* manager, int size)
+{
+	MemoryStream stream;
+	stream.Create(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream));
+	return LN_NEW BitmapFont(manager, bitmap);
+}
+
+//=============================================================================
 // BitmapFont
-//==============================================================================
+//=============================================================================
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // 
-//----------------------------------------------------------------------
-BitmapFont::BitmapFont()
-	: mManager			(NULL)
-	, mFontTexture		(NULL)
-	, mCharWidth		(0)
-	, mCharHeight		(0)
+//-----------------------------------------------------------------------------
+BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
+	: m_manager(NULL)
+	, m_fontBitmap(NULL)
+	, m_charWidth(0)
+	, m_charHeight(0)
 {
-	mFontGlyphData.GlyphBitmap = &mGlyphBitmap;
-}
+	LN_REFOBJ_SET(m_manager, manager);
+	m_fontBitmap = bitmap;
 
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
-BitmapFont::~BitmapFont()
-{
-    dispose();
-}
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
-void BitmapFont::create(FreeTypeFontManager* manager, Texture* fontTexture)
-{
-	LN_REFOBJ_SET(mManager, manager);
-	LN_REFOBJ_SET(mFontTexture, fontTexture);
-
-	mCharWidth = (int)mFontTexture->getSize().X / 16;
-	mCharHeight = (int)mFontTexture->getSize().Y / 16;
-
-	// テクスチャの内容をフォントビットマップとしてコピーして持っておく
-	TextureScopedLock lock(mFontTexture);
-	mFontBitmap.create(
-		lock.getData(), 
-		lock.getDataSize(),
-		mFontTexture->getRealSize().X,
-		mFontTexture->getRealSize().Y,
-		Util::convertSurfaceFormatToBitmapFormat(mFontTexture->getSurfaceFormat()),
-		true);
+	m_charWidth = m_fontBitmap->GetSize().Width / 16;
+	m_charHeight = m_fontBitmap->GetSize().Height / 16;
 
 	// グリフ用の一時ビットマップ
-	mGlyphBitmap.create(mCharWidth, mCharHeight, LN_BITMAPFORMAT_A8R8G8B8);
+	m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_charWidth, m_charHeight), PixelFormat_BYTE_R8G8B8A8));
 
-	// 初期色
-	mColor = LColor::Gray;
+	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
+	m_fontGlyphBitmap.OutlineBitmap = NULL;
+	m_fontGlyphBitmap.OutlineOffset = 0;
 }
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+BitmapFont::~BitmapFont()
+{
+	LN_SAFE_RELEASE(m_manager);
+}
+
+#if 0
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void BitmapFont::getTextSize(const char* text, int len, Geometry::Rect* rect)
 {
 	len = (len <= -1) ? len = strlen(text) : len;
@@ -89,12 +93,12 @@ void BitmapFont::getTextSize(const char* text, int len, Geometry::Rect* rect)
 	}
 
 	// 一番長い行 * 行数が描画領域
-	rect->set(0, 0, mCharWidth * maxLineLength, mCharHeight * lineCount);
+	rect->set(0, 0, m_charWidth * maxLineLength, m_charHeight * lineCount);
 }
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 {
 	len = (len <= -1) ? len = wcslen(text) : len;
@@ -120,67 +124,66 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 	}
 
 	// 一番長い行 * 行数が描画領域
-	rect->set(0, 0, mCharWidth * maxLineLength, mCharHeight * lineCount);
+	rect->set(0, 0, m_charWidth * maxLineLength, m_charHeight * lineCount);
 }
+#endif
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
-//----------------------------------------------------------------------
-Font* BitmapFont::copy()
+//-----------------------------------------------------------------------------
+Font* BitmapFont::Copy() const
 {
-	LRefPtr<BitmapFont> font(LN_NEW BitmapFont());
-	font->create(mManager, mFontTexture);
-	font->setColor( mColor );
-	font->addRef();
+	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap));
+	font.SafeAddRef();
 	return font;
 }
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
-//----------------------------------------------------------------------
-FontGlyphData* BitmapFont::makeGlyphData(lnU32 utf32code, FontGlyphData* prevData)
+//-----------------------------------------------------------------------------
+FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData)
 {
-	FontGlyphData* glyphData;
+	FontGlyphLocation* locData;
 
 	// ひとつ前のデータがあればそれをベースに
 	if (prevData)
 	{
-		glyphData = prevData;
+		locData = prevData;
 
 		// 横方向に送る
-		glyphData->GlyphOffsetX += mCharWidth;
+		locData->BitmapTopLeftPosition.X += m_charWidth;
+		locData->OuterTopLeftPosition = locData->BitmapTopLeftPosition;
 	}
 	// 最初の文字であればデータリセット
 	else
 	{
-		glyphData = &mFontGlyphData;
-		glyphData->OutlineBitmap = NULL;
-		glyphData->GlyphOffsetX = 0;
-		glyphData->GlyphOffsetY = 0;
-		glyphData->OutlineOffset = 0;
-		glyphData->MetricsHeight = mCharHeight;	// Renderer で改行時、行高さとして使う
+		m_fontGlyphLocation.BitmapTopLeftPosition = Point::Zero;
+		m_fontGlyphLocation.OutlineBitmapTopLeftPosition = Point::Zero;
+		m_fontGlyphLocation.OuterTopLeftPosition = Point::Zero;
+		locData = &m_fontGlyphLocation;
 	}
 
-	// ASCII 部分だけ
-	lnU32 code = utf32code & 0xFF;
-
-	// 一時ビットマップへ転送
-	LRect destRect(0, 0, mCharWidth, mCharHeight);
-	LRect srcRect((code % 16) * mCharWidth, (code / 16) * mCharHeight, mCharWidth, mCharHeight);
-	Bitmap::bitblt(mFontGlyphData.GlyphBitmap, destRect, &mFontBitmap, srcRect, 0xFFFFFFFF, false);
-			
-	return glyphData;
+	return prevData;
 }
 
-//----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //
-//----------------------------------------------------------------------
-void BitmapFont::dispose()
+//-----------------------------------------------------------------------------
+FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code)
 {
-	LN_SAFE_RELEASE(mFontTexture);
-	LN_SAFE_RELEASE(mManager);
+	// ASCII 部分だけグリフに出来る。それ以外は '?'
+	if (utf32code > 0xFF) {
+		utf32code = '?';
+	}
+
+	// 一時ビットマップへ転送してそれを返す
+	Rect dstRect(0, 0, m_charWidth, m_charHeight);
+	Rect srcRect((utf32code % 16) * m_charWidth, (utf32code / 16) * m_charHeight, m_charWidth, m_charHeight);
+	m_glyphBitmap->BitBlt(dstRect, m_fontBitmap, srcRect, Graphics::Color::White, false);
+
+	return &m_fontGlyphBitmap;
 }
-#endif
+
 
 } // namespace Imaging
 } // namespace Lumino

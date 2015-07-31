@@ -30,7 +30,9 @@ enum PixelFormat
 
 	PixelFormat_Max,				///< (terminator)
 };
-	
+
+// TODO: スタックに生成しないようにしたい
+// TODO: やっぱり Graphics に混ぜて良いような気がする・・
 /**
 	@brief	ビットマップ画像のクラスです。
 */

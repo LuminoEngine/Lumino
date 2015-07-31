@@ -9,6 +9,7 @@
 #include FT_STROKER_H
 #include <Lumino/Base/Hash.h>
 #include "FreeTypeFont.h"
+#include "BitmapFont.h"
 
 namespace Lumino
 {

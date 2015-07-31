@@ -225,5 +225,52 @@ public:
 	operator const Vector4() const { return *reinterpret_cast< const Vector4* >(this); }
 };
 
+
+/**
+	@brief	各要素を整数値で表す HSV カラーを定義します。
+*/
+class HSVColor
+{
+public:
+	uint32_t	H;	///< 色相 0～360
+	uint32_t	S;	///< 彩度 0～255
+	uint32_t	V;	///< 明度 0～255
+	uint32_t	A;	///< 不透明度 0～255
+
+public:
+
+	/**
+		@brief	すべての要素を 0 で初期化します。
+	*/
+	HSVColor() { H = 0; S = 0; V = 0; A = 255; }
+
+	/**
+		@brief	各要素を指定して初期化します。
+	*/
+	HSVColor(uint32_t h, uint32_t s, uint32_t v, uint32_t a) { H = h; S = s; V = v; A = a; }
+	
+	/**
+		@brief	ColorF を変換して設定します。
+	*/
+	//Color(const ColorF& colorF);
+
+public:
+
+	/**
+		@brief	各要素を設定します。
+	*/
+	void Set(uint32_t h, uint32_t s, uint32_t v, uint32_t a) { H = h; S = s; V = v; A = a; }
+
+	/**
+		@brief	Color に変換します。
+	*/
+	Color ToColor() const;
+
+public:
+	bool operator == (const Color& color) const { return (memcmp(this, &color, sizeof(Color)) == 0); }
+	bool operator != (const Color& obj) const { return !operator==(obj); }
+};
+
+
 } // namespace Graphics
 } // namespace Lumino

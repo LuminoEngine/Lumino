@@ -128,8 +128,7 @@ int main()
 		textBlock1->SetText(_T("Lumino"));
 		workbench1->SetContent(textBlock1);
 #endif
-
-
+#if 0	
 		RefPtr<Documents::TextElement> te1 = RefPtr<Documents::TextElement>::Create(app->GetDocumentsManager());
 		te1->SetPropertyValue(Documents::TextElement::FontSizeProperty, 100);
 		//int a = te1->GetPropertyValue(Documents::TextElement::FontSizeProperty).Cast<int>();
@@ -145,6 +144,11 @@ int main()
 
 		listBox1->InsertListBoxItem(0, textBlock1);
 		listBox1->InsertListBoxItem(1, textBlock2);
+#endif
+
+		//Imaging::Bitmap bmp(_T());
+		//RefPtr<Imaging::Font> font = Imaging::Font::CreateBitmapFont(app->GetGraphicsManager()->GetFontManager());
+
 
 		Profiler::Instance.SetEnabled(true);
 
@@ -168,6 +172,7 @@ int main()
 				workbench1->UpdateLayout();
 				workbench1->UpdateTransformHierarchy();
 				workbench1->Render();
+				app->Render();
 			}
 				swap1->Present();
 
