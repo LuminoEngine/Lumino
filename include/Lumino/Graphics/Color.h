@@ -104,7 +104,12 @@ public:
 		@brief	指定した ColorF をコピーして初期化します。
 	*/
 	ColorF(const ColorF& color) { R = color.R; G = color.G; B = color.B; A = color.A; }
-	
+
+	/**
+		@brief	Color を変換して設定します。
+	*/
+	ColorF(const Color& color);
+
 	/**
 		@brief	指定した Vector3 とアルファ値をコピーして初期化します。
 	*/

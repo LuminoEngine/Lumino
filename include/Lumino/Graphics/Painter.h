@@ -9,11 +9,6 @@ namespace Lumino
 namespace Graphics
 {
 
-enum BrushType
-{
-	BrushType_Unknown = 0,
-	BrushType_Texture,
-};
 
 enum BrushWrapMode
 {
@@ -30,7 +25,36 @@ public:
 	virtual ~Brush();
 
 public:
-	virtual BrushType GetType() const = 0;
+	virtual BrushType GetType() const = 0;	// TODO: 非virtual にしたい
+};
+
+
+/**
+	@brief		
+*/
+class ColorBrush
+	: public Brush
+{
+public:
+	static ColorBrush*	White;
+	static ColorBrush*	Black;
+	static ColorBrush*	Gray;
+	static ColorBrush*	Red;
+	static ColorBrush*	Green;
+	static ColorBrush*	Blue;
+
+public:
+	ColorBrush(const Color& color);
+	ColorBrush(const ColorF& color);
+	virtual ~ColorBrush();
+
+public:
+	const ColorF& GetColor() const { return m_color; }
+
+	virtual BrushType GetType() const { return BrushType_SolidColor; }
+
+private:
+	ColorF	m_color;
 };
 
 /// Bitmap はソフト的な描画処理を行うため、BitmapBrush という名前はつかわない
@@ -78,7 +102,11 @@ public:
 	void SetProjection(const Size& viewSize, float nearZ, float farZ);
 
 	void SetBrush(Brush* brush);
-	void DrawRectangle(const RectF& rect);
+	void DrawRectangle2(const RectF& rect);
+
+
+
+	void DrawRectangle(const RectF& rect);	// TODO: 変える
 	void DrawFrameRectangle(const RectF& rect, float frameWidth);
 
 	/// セットされている Brush は影響しません

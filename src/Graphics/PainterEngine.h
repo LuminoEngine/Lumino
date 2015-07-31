@@ -52,6 +52,41 @@ private:
 	int			m_count;
 };
 
+
+
+
+//enum BrushDataType
+//{
+//	BrushDataType_NoSet = 0,
+//	BrushDataType_SolidColor,
+//	BrushDataType_Texture,
+//};
+
+struct BrushData
+{
+	BrushType	Type;
+
+	union
+	{
+		struct
+		{
+			float				Color[4];	///< RGBA
+
+		} SolidColorBrush;
+
+		struct
+		{
+			Device::ITexture*	Texture;
+			int					SourceRect[4];	///< XYWH
+			BrushWrapMode		WrapMode;
+
+		} TextureBrush;
+	};
+};
+
+
+
+
 /// PainterEngine
 ///		このクラスは Brush を参照しないようにすること。
 class PainterEngine
@@ -78,6 +113,11 @@ public:
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
 
+	void SetBrush(const BrushData* data);
+	void DrawRectangle(const RectF& rect);
+
+
+
 
 	void DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
 
@@ -91,6 +131,9 @@ public:
 private:
 	void InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect);
 	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture);
+
+	void AttachBrushData();
+	void DetachBrushData();
 
 private:
 	struct PainterVertex
@@ -125,6 +168,7 @@ private:
 	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
 	RefPtr<Device::ITexture>		m_dummyTexture;
 	Matrix							m_baseTransform;
+	BrushData						m_currentBrushData;
 
 	struct
 	{

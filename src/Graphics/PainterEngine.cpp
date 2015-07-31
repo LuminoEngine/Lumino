@@ -31,6 +31,7 @@ PainterEngine::PainterEngine()
 //-----------------------------------------------------------------------------
 PainterEngine::~PainterEngine()
 {
+	DetachBrushData();
 }
 
 //-----------------------------------------------------------------------------
@@ -72,6 +73,8 @@ void PainterEngine::Create(GraphicsManager* manager)
 	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
+
+	memset(&m_currentBrushData, 0, sizeof(m_currentBrushData));
 }
 
 //-----------------------------------------------------------------------------
@@ -106,6 +109,53 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //		m_shader.varViewportSize->SetVector(Vector4((float)size.Width, (float)size.Height, 0, 0));
 //	}
 //}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::SetBrush(const BrushData* data)
+{
+	DetachBrushData();
+	memcpy(&m_currentBrushData, data, sizeof(m_currentBrushData));
+	AttachBrushData();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::DrawRectangle(const RectF& rect)
+{
+	// TODO: Batch
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
+
+	PainterVertex v;
+	v.Color.Set(1, 1, 1, 1);
+	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ¶ã
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ‰Eã
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ¶‰º
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ‰E‰º
+	m_vertexCache.Add(v);
+
+	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+	m_renderer->SetVertexBuffer(m_vertexBuffer);
+	m_renderer->SetIndexBuffer(m_indexBuffer);
+	m_shader.varTexture->SetTexture(m_dummyTexture);
+	m_shader.Pass->Apply();
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -379,6 +429,28 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// ‰E‰º
 	m_vertexCache.Add(v);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::AttachBrushData()
+{
+	// AttachBrushData
+	if (m_currentBrushData.Type == BrushType_Texture) {
+		LN_SAFE_ADDREF(m_currentBrushData.TextureBrush.Texture);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::DetachBrushData()
+{
+	// ReleaseBrushData
+	if (m_currentBrushData.Type == BrushType_Texture) {
+		LN_SAFE_RELEASE(m_currentBrushData.TextureBrush.Texture);
+	}
 }
 
 } // namespace Graphics

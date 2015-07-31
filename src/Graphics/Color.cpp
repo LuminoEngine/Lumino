@@ -42,6 +42,16 @@ const ColorF ColorF::Red = ColorF(1.0, 0.0, 0.0, 1.0);
 const ColorF ColorF::Green = ColorF(0.0, 1.0, 0.0, 1.0);
 const ColorF ColorF::Blue = ColorF(0.0, 0.0, 1.0, 1.0);
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorF::ColorF(const Color& color)
+{
+	R = static_cast<float>(color.R) / 255;
+	G = static_cast<float>(color.G) / 255;
+	B = static_cast<float>(color.B) / 255;
+	A = static_cast<float>(color.A) / 255;
+}
 
 //=============================================================================
 // HSVColor

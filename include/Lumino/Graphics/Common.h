@@ -233,6 +233,12 @@ enum SpriteSortMode
 };
 
 
+enum BrushType
+{
+	BrushType_Unknown = 0,
+	BrushType_SolidColor,
+	BrushType_Texture,
+};
 
 } // namespace Graphics
 } // namespace Lumino

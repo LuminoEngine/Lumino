@@ -27,6 +27,45 @@ Brush::~Brush()
 {
 }
 
+//=============================================================================
+// ColorBrush
+//=============================================================================
+
+static ColorBrush g_ColorBrush_White(ColorF::White);
+static ColorBrush g_ColorBrush_Black(ColorF::Black);
+static ColorBrush g_ColorBrush_Gray(ColorF::Gray);
+static ColorBrush g_ColorBrush_Red(ColorF::Red);
+static ColorBrush g_ColorBrush_Green(ColorF::Green);
+static ColorBrush g_ColorBrush_Blue(ColorF::Blue);
+ColorBrush*	ColorBrush::White = &g_ColorBrush_White;
+ColorBrush*	ColorBrush::Black = &g_ColorBrush_Black;
+ColorBrush*	ColorBrush::Gray = &g_ColorBrush_Gray;
+ColorBrush*	ColorBrush::Red = &g_ColorBrush_Red;
+ColorBrush*	ColorBrush::Green = &g_ColorBrush_Green;
+ColorBrush*	ColorBrush::Blue = &g_ColorBrush_Blue;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorBrush::ColorBrush(const Color& color)
+	: m_color(color)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorBrush::ColorBrush(const ColorF& color)
+	: m_color(color)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorBrush::~ColorBrush()
+{
+}
 
 //=============================================================================
 // TextureBrush
@@ -81,6 +120,49 @@ private:
 	{
 		engine->SetViewProjMatrix(matrix);
 		//engine->SetViewPixelSize(viewSize);
+	}
+};
+
+//=============================================================================
+class SetBrushCommand : public RenderingCommand
+{
+	PainterEngine* engine;
+	BrushData brushData;
+
+public:
+	static void Create(CmdInfo& cmd, PainterEngine* engine, const BrushData& data)
+	{
+		if (data.Type == BrushType_Texture) {
+			cmd.m_commandList->MarkGC(data.TextureBrush.Texture);
+		}
+		HandleCast<SetBrushCommand>(cmd)->engine = engine;
+		HandleCast<SetBrushCommand>(cmd)->brushData = data;
+	}
+
+private:
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		engine->SetBrush(&brushData);
+	}
+};
+
+
+//=============================================================================
+class DrawRectangleCommand : public RenderingCommand
+{
+	PainterEngine* engine;
+	RectF rect;
+
+public:
+	static void Create(CmdInfo& cmd, PainterEngine* engine, const RectF& rect)
+	{
+		HandleCast<DrawRectangleCommand>(cmd)->engine = engine;
+		HandleCast<DrawRectangleCommand>(cmd)->rect = rect;
+	}
+
+	virtual void Execute(RenderingCommandList* commandList, Device::IRenderer* renderer)
+	{
+		engine->DrawRectangle(rect);
 	}
 };
 
@@ -231,6 +313,53 @@ void Painter::SetProjection(const Size& viewSize, float nearZ, float farZ)
 void Painter::SetBrush(Brush* brush)
 {
 	m_currentBrush = brush;
+
+	BrushData data;
+	if (brush == NULL)
+	{
+		data.Type = BrushType_Unknown;	// no set
+	}
+	else
+	{
+		data.Type = brush->GetType();
+		if (data.Type == BrushType_SolidColor)
+		{
+			auto t = static_cast<ColorBrush*>(brush);
+			const ColorF& c = t->GetColor();
+			data.SolidColorBrush.Color[0] = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
+			data.SolidColorBrush.Color[1] = c.G;
+			data.SolidColorBrush.Color[2] = c.B;
+			data.SolidColorBrush.Color[3] = c.A;
+		}
+		else if (data.Type == BrushType_Texture)
+		{
+			auto t = static_cast<TextureBrush*>(brush);
+			data.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
+			const Rect& r = t->GetSourceRect();
+			data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+			data.TextureBrush.SourceRect[1] = r.Y;
+			data.TextureBrush.SourceRect[2] = r.Width;
+			data.TextureBrush.SourceRect[3] = r.Height;
+			data.TextureBrush.WrapMode = t->GetWrapMode();
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
+	}
+
+	// TODO: マクロに
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetBrushCommand>(
+		m_manager->GetPainterEngine(), data);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawRectangle2(const RectF& rect)
+{
+	// TODO: マクロに
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
+		m_manager->GetPainterEngine(), rect);
 }
 
 //-----------------------------------------------------------------------------
