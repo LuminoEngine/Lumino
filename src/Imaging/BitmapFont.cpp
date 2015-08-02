@@ -43,6 +43,7 @@ BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	, m_charHeight(0)
 {
 	LN_REFOBJ_SET(m_manager, manager);
+	m_name = String::Format(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
 	m_charWidth = m_fontBitmap->GetSize().Width / 16;
@@ -162,8 +163,9 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocation
 		m_fontGlyphLocation.OuterTopLeftPosition = Point::Zero;
 		locData = &m_fontGlyphLocation;
 	}
+	locData->BitmapSize.Set(m_charWidth, m_charHeight);
 
-	return prevData;
+	return locData;
 }
 
 //-----------------------------------------------------------------------------

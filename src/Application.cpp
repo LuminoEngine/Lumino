@@ -42,6 +42,9 @@ Application::Application(const ApplicationConfigData& configData)
 	, m_endRequested(false)
 	, m_profilerRenderer(NULL)
 {
+	m_fpsController.SetEnableFpsTest(true);
+	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO 
+	Profiler::Instance.SetBaseFrameRate(Profiler::Group_RenderThread, 60.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -169,6 +172,9 @@ bool Application::UpdateFrame()
 	m_endRequested = !m_platformManager->DoEvents();
 
 	m_fpsController.Process();
+
+	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
+	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
 
 	return !m_endRequested;
 }

@@ -267,9 +267,14 @@ public:
 	void Set(uint32_t h, uint32_t s, uint32_t v, uint32_t a) { H = h; S = s; V = v; A = a; }
 
 	/**
-		@brief	Color に変換します。
+		@brief	Color 型に変換します。
 	*/
 	Color ToColor() const;
+	
+	/**
+		@brief	ColorF 型に変換します。
+	*/
+	ColorF ToColorF() const;
 
 public:
 	bool operator == (const Color& color) const { return (memcmp(this, &color, sizeof(Color)) == 0); }

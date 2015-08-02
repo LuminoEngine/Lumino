@@ -106,6 +106,11 @@ public:
 public:
 	void Create(GraphicsManager* manager);
 
+
+	void Begin();	// 今のところネスト禁止
+	void End();
+
+
 	void SetBaseTransform(const Matrix& matrix);
 
 
@@ -114,19 +119,24 @@ public:
 	void SetViewPixelSize(const Size& size);
 
 	void SetBrush(const BrushData* data);
+	void SetOpacity(float opacity);
+	
+
 	void DrawRectangle(const RectF& rect);
 
+	void Flush();
 
 
 
-	void DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
+
+	//void DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
 
 	// srcTexture は NULL ならダミーテクスチャが使われる
 	/// srcRect はサイズが INT_MAX であれば全体を転送することを示す
-	void DrawFrameRectangle(const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect);
+	void DrawFrameRectangle(const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect*/);
 
 	/// 塗りつぶし描画
-	void DrawGlyphRun(const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture, const ColorF& foreColor, const ColorF& strokeColor);
+	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
 
 private:
 	void InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect);
@@ -134,6 +144,9 @@ private:
 
 	void AttachBrushData();
 	void DetachBrushData();
+
+	void SetInternalGlyphMaskTexture(Device::ITexture* mask);
+	void UpdateCurrentForeColor();
 
 private:
 	struct PainterVertex
@@ -160,6 +173,14 @@ private:
 		static const int ElementCount = 4;
 	};
 
+	struct State
+	{
+		BrushData	Brush;
+		float		Opacity;
+		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+		RefPtr<Device::ITexture>	InternalGlyphMask;
+	};
+
 	
 	Device::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
@@ -168,7 +189,10 @@ private:
 	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
 	RefPtr<Device::ITexture>		m_dummyTexture;
 	Matrix							m_baseTransform;
-	BrushData						m_currentBrushData;
+
+	State	m_currentState;
+
+	//BrushData						m_currentBrushData;
 
 	struct
 	{
@@ -178,6 +202,7 @@ private:
 		Device::IShaderVariable*	varWorldMatrix;
 		Device::IShaderVariable*	varViewProjMatrix;
 		Device::IShaderVariable*	varTexture;
+		Device::IShaderVariable*	varGlyphMaskSampler;
 		Device::IShaderVariable*	varViewportSize;	///< DX9 HLSL 用のピクセルオフセット計算用。GLSL では最適化により消えることもある
 
 	} m_shader;

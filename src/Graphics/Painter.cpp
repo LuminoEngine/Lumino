@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Base/StringTraits.h>
 #include <Lumino/Graphics/Painter.h>
 #include "PainterEngine.h"
 #include "RenderingCommand.h"
@@ -96,9 +97,40 @@ void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 }
 
 //=============================================================================
+// StringLayout
+//=============================================================================
+//static StringLayout	CenterAlignment;
+//
+//StringLayout::StringLayout()
+//	: Alignment()
+//{
+//
+//}
+//
+//StringLayout::StringLayout(Imaging::TextAlignment alignment)
+//{
+//
+//}
+
+//=============================================================================
 // Painter
 //=============================================================================
 
+//=============================================================================
+struct BeginCommand : public RenderingCommand
+{
+	PainterEngine* m_engine;
+	void Create(PainterEngine* engine) { m_engine = engine; }
+	void Execute() { m_engine->Begin(); }
+};
+
+//=============================================================================
+struct EndCommand : public RenderingCommand
+{
+	PainterEngine* m_engine;
+	void Create(PainterEngine* engine) { m_engine = engine; }
+	void Execute() { m_engine->End(); }
+};
 
 //=============================================================================
 struct SetProjectionCommand : public RenderingCommand
@@ -131,6 +163,20 @@ struct SetBrushCommand : public RenderingCommand
 	void Execute() { m_engine->SetBrush(&m_brushData); }
 };
 
+//=============================================================================
+struct SetOpacityCommand : public RenderingCommand
+{
+	PainterEngine* m_engine;
+	float m_opacity;
+
+	void Create(PainterEngine* engine, float opacity)
+	{
+		m_engine = engine;
+		m_opacity = opacity;
+	}
+	void Execute() { m_engine->SetOpacity(m_opacity); }
+};
+
 
 //=============================================================================
 struct DrawRectangleCommand : public RenderingCommand
@@ -147,25 +193,25 @@ struct DrawRectangleCommand : public RenderingCommand
 };
 
 //=============================================================================
-struct DrawFillRectangleCommand : public RenderingCommand
-{
-	PainterEngine* m_engine;
-	RectF m_rect;
-	Device::ITexture* m_srcTexture;
-	Rect m_srcRect;
-	BrushWrapMode m_wrapMode;
-
-	void Create(PainterEngine* engine, const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
-	{
-		MarkGC(srcTexture);
-		m_engine = engine;
-		m_rect = rect;
-		m_srcTexture = srcTexture;
-		m_srcRect = srcRect;
-		m_wrapMode = wrapMode;
-	}
-	void Execute() { m_engine->DrawFillRectangle(m_rect, m_srcTexture, m_srcRect, m_wrapMode); }
-};
+//struct DrawFillRectangleCommand : public RenderingCommand
+//{
+//	PainterEngine* m_engine;
+//	RectF m_rect;
+//	//Device::ITexture* m_srcTexture;
+//	//Rect m_srcRect;
+//	//BrushWrapMode m_wrapMode;
+//
+//	void Create(PainterEngine* engine, const RectF& rect/*, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode*/)
+//	{
+//		//MarkGC(srcTexture);
+//		m_engine = engine;
+//		m_rect = rect;
+//		//m_srcTexture = srcTexture;
+//		//m_srcRect = srcRect;
+//		//m_wrapMode = wrapMode;
+//	}
+//	void Execute() { m_engine->DrawFillRectangle(m_rect, m_srcTexture, m_srcRect, m_wrapMode); }
+//};
 
 //=============================================================================
 struct DrawFrameRectangleCommand : public RenderingCommand
@@ -173,58 +219,59 @@ struct DrawFrameRectangleCommand : public RenderingCommand
 	PainterEngine* m_engine;
 	RectF m_rect;
 	float m_frameWidth;
-	Device::ITexture* m_srcTexture;
-	Rect m_srcRect;
+	//Device::ITexture* m_srcTexture;
+	//Rect m_srcRect;
 
-	void Create(PainterEngine* engine, const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect)
+	void Create(PainterEngine* engine, const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect*/)
 	{
-		MarkGC(srcTexture);
+		//MarkGC(srcTexture);
 		m_engine = engine;
 		m_rect = rect;
 		m_frameWidth = frameWidth;
-		m_srcTexture = srcTexture;
-		m_srcRect = srcRect;
+		//m_srcTexture = srcTexture;
+		//m_srcRect = srcRect;
 	}
-	void Execute() { m_engine->DrawFrameRectangle(m_rect, m_frameWidth, m_srcTexture, m_srcRect); }
+	void Execute() { m_engine->DrawFrameRectangle(m_rect, m_frameWidth/*, m_srcTexture, m_srcRect*/); }
 };
 
 //=============================================================================
 struct DrawGlyphRunCommand : public RenderingCommand
 {
 	PainterEngine* m_engine;
+	PointF m_position;
 	DataHandle m_dataList;
 	int m_dataCount;
 	Device::ITexture* m_glyphsTexture;
 	Device::ITexture* m_strokesTexture;
-	ColorF m_foreColor;
-	ColorF m_strokeColor;
+	//ColorF m_foreColor;
+	//ColorF m_strokeColor;
 
 	void Create(
 		PainterEngine* engine, 
+		const PointF& position,
 		PainterEngine::GlyphRunData* dataList,
 		int dataCount,
 		Device::ITexture* glyphsTexture,
-		Device::ITexture* strokesTexture,
+		Device::ITexture* strokesTexture/*,
 		const ColorF& foreColor, 
-		const ColorF& strokeColor)
+		const ColorF& strokeColor*/)
 	{
-		// ※以前はこの中でキャッシュからグリフを読み取っていたりしたが、その中で Texture.Lock が呼ばれたため
-		//   Alloc() の再帰が起こってしまった。
 		DataHandle dataHandle = AllocExtData(sizeof(PainterEngine::GlyphRunData) * dataCount, dataList);
 		MarkGC(glyphsTexture);
 		if (strokesTexture != NULL) { MarkGC(strokesTexture); }
 		m_engine = engine;
+		m_position = position;
 		m_dataList = dataHandle;
 		m_dataCount = dataCount;
 		m_glyphsTexture = glyphsTexture;
 		m_strokesTexture = strokesTexture;
-		m_foreColor = foreColor;
-		m_strokeColor = strokeColor;
+		//m_foreColor = foreColor;
+		//m_strokeColor = strokeColor;
 	}
 
 	void Execute()
 	{
-		m_engine->DrawGlyphRun((PainterEngine::GlyphRunData*)GetExtData(m_dataList), m_dataCount, m_glyphsTexture, m_strokesTexture, m_foreColor, m_strokeColor);
+		m_engine->DrawGlyphRun(m_position, (PainterEngine::GlyphRunData*)GetExtData(m_dataList), m_dataCount, m_glyphsTexture, m_strokesTexture/*, m_foreColor, m_strokeColor*/);
 	}
 };
 
@@ -235,6 +282,7 @@ struct DrawGlyphRunCommand : public RenderingCommand
 Painter::Painter(GraphicsManager* manager)
 	: m_manager(manager)
 {
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<BeginCommand>(m_manager->GetPainterEngine());
 }
 
 //-----------------------------------------------------------------------------
@@ -242,6 +290,7 @@ Painter::Painter(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 Painter::~Painter()
 {
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<EndCommand>(m_manager->GetPainterEngine());
 }
 
 /// ピクセル単位の2D描画に使う射影行列の作成
@@ -323,7 +372,55 @@ void Painter::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawRectangle2(const RectF& rect)
+void Painter::SetSolidColor(const ColorF& color)
+{
+	m_currentBrush = NULL;
+
+	BrushData data;
+	data.Type = BrushType_SolidColor;
+	data.SolidColorBrush.Color[0] = color.R;
+	data.SolidColorBrush.Color[1] = color.G;
+	data.SolidColorBrush.Color[2] = color.B;
+	data.SolidColorBrush.Color[3] = color.A;
+
+	// TODO: マクロに
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetBrushCommand>(
+		m_manager->GetPainterEngine(), data);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::SetTexture(Texture* texture, const Rect& r)
+{
+	m_currentBrush = NULL;
+
+	BrushData data;
+	data.Type = BrushType_Texture;
+	data.TextureBrush.Texture = (texture != NULL) ? texture->GetDeviceObject() : NULL;
+	data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+	data.TextureBrush.SourceRect[1] = r.Y;
+	data.TextureBrush.SourceRect[2] = r.Width;
+	data.TextureBrush.SourceRect[3] = r.Height;
+	data.TextureBrush.WrapMode = BrushWrapMode_Stretch;
+
+	// TODO: マクロに
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetBrushCommand>(
+		m_manager->GetPainterEngine(), data);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::SetOpacity(float opacity)
+{
+	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetOpacityCommand>(m_manager->GetPainterEngine(), opacity);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawRectangle(const RectF& rect)
 {
 	// TODO: マクロに
 	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
@@ -333,69 +430,147 @@ void Painter::DrawRectangle2(const RectF& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawRectangle(const RectF& rect)
-{
-	if (m_currentBrush->GetType() == BrushType_Texture)
-	{
-		TextureBrush* b = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawFillRectangleCommand>(
-			m_manager->GetPainterEngine(), rect, b->GetTexture()->GetDeviceObject(), b->GetSourceRect(), b->GetWrapMode());
-	}
-	else {
-		LN_THROW(0, NotImplementedException);
-	}
-}
+//void Painter::DrawRectangle(const RectF& rect)
+//{
+//	if (m_currentBrush->GetType() == BrushType_Texture)
+//	{
+//		//TextureBrush* b = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
+//		m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
+//			m_manager->GetPainterEngine(), rect/*, b->GetTexture()->GetDeviceObject(), b->GetSourceRect(), b->GetWrapMode()*/);
+//	}
+//	else {
+//		LN_THROW(0, NotImplementedException);
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 {
-	Device::ITexture* srcTexture;
-	Rect srcRect(0, 0, INT_MAX, INT_MAX);
-	if (m_currentBrush != NULL && m_currentBrush->GetType() == BrushType_Texture)
-	{
-		TextureBrush* tb = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
-		if (tb->GetTexture() != NULL)
-		{
-			srcTexture = tb->GetTexture()->GetDeviceObject();
-			srcRect = tb->GetSourceRect();
-		}
-	}
+	//Device::ITexture* srcTexture;
+	//Rect srcRect(0, 0, INT_MAX, INT_MAX);
+	//if (m_currentBrush != NULL && m_currentBrush->GetType() == BrushType_Texture)
+	//{
+	//	TextureBrush* tb = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
+	//	if (tb->GetTexture() != NULL)
+	//	{
+	//		srcTexture = tb->GetTexture()->GetDeviceObject();
+	//		srcRect = tb->GetSourceRect();
+	//	}
+	//}
 
 	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawFrameRectangleCommand>(
-		m_manager->GetPainterEngine(), rect, frameWidth, srcTexture, srcRect);
+		m_manager->GetPainterEngine(), rect, frameWidth/*, srcTexture, srcRect*/);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect)
+//void Painter::DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect)
+//{
+//	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
+//		m_manager->GetPainterEngine(), dstRect, texture->GetDeviceObject(), srcRect, BrushWrapMode_Stretch);
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
 {
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawFillRectangleCommand>(
-		m_manager->GetPainterEngine(), dstRect, texture->GetDeviceObject(), srcRect, BrushWrapMode_Stretch);
+	DrawGlyphRun(PointF((float)position.X, (float)position.Y), glyphRun);
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Painter::DrawGlyphRun(GlyphRun* glyphRun)
+void Painter::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
+	Painter::DrawGlyphs(position, glyphRun->m_glyphData, glyphRun->m_glyphTextureCache);
+}
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawString(const String& str, const PointF& position)
+{
+	DrawString(str.GetCStr(), str.GetLength(), position);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawString(const TCHAR* str, int length, const PointF& position)
+{
+	length = (length < 0) ? StringTraits::StrLen(str) : length;
+
+	// UTF32 へ変換
+	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
+
+	// 現在のフォント設定に一致するテクスチャキャッシュを探す
+	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
+
+	// 
+	Imaging::TextLayoutResult result;
+	cache->GetTextLayoutEngine()->ResetSettings();
+	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
+
+	Painter::DrawGlyphs(position, result, cache);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
+{
+	length = (length < 0) ? StringTraits::StrLen(str) : length;
+
+	// UTF32 へ変換
+	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
+
+	// 現在のフォント設定に一致するテクスチャキャッシュを探す
+	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
+
+	// 
+	Imaging::TextLayoutEngine* layout = cache->GetTextLayoutEngine();
+	cache->GetTextLayoutEngine()->ResetSettings();
+
+	if (flags.TestFlag(StringFormatFlags::LeftAlignment)) {
+		layout->SetTextAlignment(Imaging::TextAlignment::Left);
+	}
+	else if (flags.TestFlag(StringFormatFlags::RightAlignment)) {
+		layout->SetTextAlignment(Imaging::TextAlignment::Right);
+	}
+	else if (flags.TestFlag(StringFormatFlags::CenterAlignment)) {
+		layout->SetTextAlignment(Imaging::TextAlignment::Center);
+	}
+	else {
+	}
+
+	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, rect.Width, rect.Height));
+
+
+	Imaging::TextLayoutResult result;
+	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
+
+	Painter::DrawGlyphs(rect.GetTopLeft(), result, cache);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::DrawGlyphs(const PointF& position, const Imaging::TextLayoutResult& result, FontGlyphTextureCache* cache)
+{
 	// 一時メモリ確保
-	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * glyphRun->m_glyphData.Items.GetCount());
+	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * result.Items.GetCount());
 	auto data = (PainterEngine::GlyphRunData*)m_tempBuffer.GetData();
 
 	// 確保したメモリにテクスチャ描画情報を作っていく
 	Texture* tex1 = NULL;
 	Texture* tex2 = NULL;	// TODO: ストローク
-	int count = glyphRun->m_glyphData.Items.GetCount();
+	int count = result.Items.GetCount();
 	for (int i = 0; i < count; ++i)
 	{
 		Rect srcRect;
-		Imaging::TextLayoutResultItem& item = glyphRun->m_glyphData.Items[i];
-		glyphRun->m_glyphTextureCache->LookupGlyph(item.Char, &tex1, &srcRect);
+		const Imaging::TextLayoutResultItem& item = result.Items[i];
+		cache->LookupGlyph(item.Char, &tex1, &srcRect);
 
 		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);
 		data[i].SrcPixelRect.Set(srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height);
@@ -403,7 +578,7 @@ void Painter::DrawGlyphRun(GlyphRun* glyphRun)
 
 	// コマンド化
 	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawGlyphRunCommand>(
-		m_manager->GetPainterEngine(), data, count, tex1->GetDeviceObject(), (tex2) ? tex2->GetDeviceObject() : NULL, ColorF::Black, ColorF::Blue);	// TODO: 色
+		m_manager->GetPainterEngine(), position, data, count, tex1->GetDeviceObject(), (tex2) ? tex2->GetDeviceObject() : NULL/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
 
 }
 

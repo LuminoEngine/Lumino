@@ -244,11 +244,13 @@ void FpsController::Process()
 			}
 		}
 
-		m_capaFpsLastTime = m_currentTime;//0.001f * (Environment::getSystemTime() - m_startTime);
+		m_capaFpsLastTime = 0.001f * (Environment::GetTickCount() - m_startTime);
 	}
 
 	// m_frameCount ‚ð frame ‚ÅˆêŽü‚·‚é‚æ‚¤‚É‚·‚é
 	m_frameCount = (++m_frameCount) % m_frameRate;
+
+	m_fps = (m_averageTime > 0) ? (1.0f / m_averageTime) : 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -359,6 +361,8 @@ void FpsController::ProcessForMeasure()
 
 	// m_frameCount ‚ð frame ‚ÅˆêŽü‚·‚é‚æ‚¤‚É‚·‚é
 	m_frameCount = (++m_frameCount) % m_frameRate;
+
+	m_fps = (m_averageTime > 0) ? (1.0f / m_averageTime) : 0;
 }
 
 } // namespace Lumino

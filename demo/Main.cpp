@@ -177,10 +177,10 @@ int main()
 				swap1->Present();
 
 			Profiler::Instance.Commit();
-			uint64_t time = Profiler::Instance.GetCommitedGroups()[Profiler::Group_MainThread].Sections[Profiler::Section_MainThread_GUILayput].ElapsedTime;
-			
-			uint32_t us = time / 1000;
-			printf("t:%u\n", us);
+			//uint64_t time = Profiler::Instance.GetCommitedGroups()[Profiler::Group_MainThread].Sections[Profiler::Section_MainThread_GUILayput].ElapsedTime;
+			//
+			//uint32_t us = time / 1000;
+			//printf("t:%u\n", us);
 
 		} while (app->UpdateFrame());
 

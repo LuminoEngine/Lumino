@@ -57,6 +57,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_shader.varWorldMatrix = m_shader.Shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shader.varViewProjMatrix = m_shader.Shader->GetVariableByName(_T("g_viewProjMatrix"));
 	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("g_texture"));
+	m_shader.varGlyphMaskSampler = m_shader.Shader->GetVariableByName(_T("g_glyphMaskTexture"));
 	m_shader.varViewportSize = m_shader.Shader->GetVariableByName(_T("g_viewportSize"));
 
 	m_renderer = manager->GetGraphicsDevice()->GetRenderer();
@@ -74,7 +75,9 @@ void PainterEngine::Create(GraphicsManager* manager)
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
 
-	memset(&m_currentBrushData, 0, sizeof(m_currentBrushData));
+	memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
+	m_currentState.Opacity = 1.0f;
+	m_currentState.InternalGlyphMask = m_dummyTexture;
 }
 
 //-----------------------------------------------------------------------------
@@ -84,6 +87,25 @@ void PainterEngine::Create(GraphicsManager* manager)
 //{
 //
 //}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::Begin()
+{
+	//m_currentState.Brush.Type = BrushType_Unknown;
+	//m_currentState.Opacity = 1.0f;
+	//m_currentState.ForeColor = ColorF::Black;
+	//m_currentState.InternalGlyphMask = m_dummyTexture;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::End()
+{
+	Flush();
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -115,9 +137,21 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 void PainterEngine::SetBrush(const BrushData* data)
 {
+	Flush();	// 描画設定が変わるのでここでフラッシュ
 	DetachBrushData();
-	memcpy(&m_currentBrushData, data, sizeof(m_currentBrushData));
+	memcpy(&m_currentState.Brush, data, sizeof(m_currentState.Brush));
 	AttachBrushData();
+	UpdateCurrentForeColor();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::SetOpacity(float opacity)
+{
+	Flush();	// 描画設定が変わるのでここでフラッシュ
+	m_currentState.Opacity = opacity;
+	UpdateCurrentForeColor();
 }
 
 //-----------------------------------------------------------------------------
@@ -125,9 +159,8 @@ void PainterEngine::SetBrush(const BrushData* data)
 //-----------------------------------------------------------------------------
 void PainterEngine::DrawRectangle(const RectF& rect)
 {
-	// TODO: Batch
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
+	// DrawGlyphRun() 以外は NULL で呼び出しておく
+	SetInternalGlyphMaskTexture(NULL);
 
 	uint16_t i = m_vertexCache.GetCount();
 	m_indexCache.Add(i + 0);
@@ -138,7 +171,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	m_indexCache.Add(i + 3);
 
 	PainterVertex v;
-	v.Color.Set(1, 1, 1, 1);
+	v.Color = m_currentState.ForeColor;
 	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 左上
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右上
@@ -147,16 +180,40 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右下
 	m_vertexCache.Add(v);
+}
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::Flush()
+{
+	if (m_indexCache.GetCount() == 0) { return; }
+
+	Device::ITexture* srcTexture = NULL;
+	if (m_currentState.Brush.Type == BrushType_Texture) {
+		srcTexture = m_currentState.Brush.TextureBrush.Texture;
+	}
+
+	if (srcTexture == NULL) {
+		srcTexture = m_dummyTexture;
+	}
+
+	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 	m_renderer->SetVertexBuffer(m_vertexBuffer);
 	m_renderer->SetIndexBuffer(m_indexBuffer);
-	m_shader.varTexture->SetTexture(m_dummyTexture);
+	m_shader.varTexture->SetTexture(srcTexture);
+	m_shader.varGlyphMaskSampler->SetTexture(m_currentState.InternalGlyphMask);
 	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 2);
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+
+	// キャッシュクリア
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -191,17 +248,33 @@ void PainterEngine::DrawFillRectangle(const RectF& rect, Device::ITexture* srcTe
 		LN_THROW(0, NotImplementedException);
 	}
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Device::ITexture* srcTexture, const Rect& srcRect_)
+void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect_*/)
 {
+	Device::ITexture* srcTexture = NULL;
+	Rect srcRect;
+	if (m_currentState.Brush.Type == BrushType_Texture)
+	{
+		srcTexture = m_currentState.Brush.TextureBrush.Texture;
+		srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
+	}
+	else {
+		// テクスチャブラシ以外で書くことはできない
+		// TODO: 黒で矩形を書いた方が、間違っているとわかりやすいかも
+		return;
+	}
+
+	// DrawGlyphRun() 以外は NULL で呼び出しておく
+	SetInternalGlyphMaskTexture(NULL);
+
 	if (srcTexture == NULL) {
 		srcTexture = m_dummyTexture;
 	}
 
-	Rect srcRect = srcRect_;
 	if (srcRect.Width == INT_MAX) {
 		srcRect.Width = srcTexture->GetSize().Width;
 	}
@@ -321,22 +394,21 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth, Devi
 		RectF(outerUVRect.GetLeft(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.Height),
 		srcTexture);
 
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	m_renderer->SetVertexBuffer(m_vertexBuffer);
-	m_renderer->SetIndexBuffer(m_indexBuffer);
-	m_shader.varTexture->SetTexture(srcTexture);
-	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
+	//m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	//m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+	//m_renderer->SetVertexBuffer(m_vertexBuffer);
+	//m_renderer->SetIndexBuffer(m_indexBuffer);
+	//m_shader.varTexture->SetTexture(srcTexture);
+	//m_shader.Pass->Apply();
+	//m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DrawGlyphRun(const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture, const ColorF& foreColor, const ColorF& strokeColor)
+void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/)
 {
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
+	SetInternalGlyphMaskTexture(glyphsTexture);
 
 	SizeF texSizeInv(1.0f / glyphsTexture->GetRealSize().Width, 1.0f / glyphsTexture->GetRealSize().Height);
 	for (int i = 0; i < dataCount; ++i)
@@ -348,16 +420,18 @@ void PainterEngine::DrawGlyphRun(const GlyphRunData* dataList, int dataCount, De
 		uvSrcRect.Height *= texSizeInv.Height;
 
 		RectF dstRect(dataList[i].Position, dataList[i].SrcPixelRect.GetSize());
+		dstRect.X += position.X;
+		dstRect.Y += position.Y;
 		InternalDrawRectangleStretch(dstRect, uvSrcRect);
 	}
 
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	m_renderer->SetVertexBuffer(m_vertexBuffer);
-	m_renderer->SetIndexBuffer(m_indexBuffer);
-	m_shader.varTexture->SetTexture(glyphsTexture);
-	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+	//m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	//m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+	//m_renderer->SetVertexBuffer(m_vertexBuffer);
+	//m_renderer->SetIndexBuffer(m_indexBuffer);
+	//m_shader.varTexture->SetTexture(glyphsTexture);
+	//m_shader.Pass->Apply();
+	//m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 }
 
 //-----------------------------------------------------------------------------
@@ -381,7 +455,7 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 	m_indexCache.Add(i + 3);
 
 	PainterVertex v;
-	v.Color.Set(1, 1, 1, 1);
+	v.Color = m_currentState.ForeColor;
 	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// 左上
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// 右上
@@ -420,7 +494,7 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 	m_indexCache.Add(i + 3);
 
 	PainterVertex v;
-	v.Color.Set(1, 1, 1, 1);
+	v.Color = m_currentState.ForeColor;
 	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// 左上
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1);	// 右上
@@ -436,9 +510,15 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 //-----------------------------------------------------------------------------
 void PainterEngine::AttachBrushData()
 {
-	// AttachBrushData
-	if (m_currentBrushData.Type == BrushType_Texture) {
-		LN_SAFE_ADDREF(m_currentBrushData.TextureBrush.Texture);
+	m_currentState.ForeColor = ColorF::White;
+	if (m_currentState.Brush.Type == BrushType_SolidColor) {
+		m_currentState.ForeColor.R = m_currentState.Brush.SolidColorBrush.Color[0];
+		m_currentState.ForeColor.G = m_currentState.Brush.SolidColorBrush.Color[1];
+		m_currentState.ForeColor.B = m_currentState.Brush.SolidColorBrush.Color[2];
+		m_currentState.ForeColor.A = m_currentState.Brush.SolidColorBrush.Color[3];
+	}
+	else if (m_currentState.Brush.Type == BrushType_Texture) {
+		LN_SAFE_ADDREF(m_currentState.Brush.TextureBrush.Texture);
 	}
 }
 
@@ -447,9 +527,39 @@ void PainterEngine::AttachBrushData()
 //-----------------------------------------------------------------------------
 void PainterEngine::DetachBrushData()
 {
-	// ReleaseBrushData
-	if (m_currentBrushData.Type == BrushType_Texture) {
-		LN_SAFE_RELEASE(m_currentBrushData.TextureBrush.Texture);
+	if (m_currentState.Brush.Type == BrushType_Texture) {
+		LN_SAFE_RELEASE(m_currentState.Brush.TextureBrush.Texture);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::SetInternalGlyphMaskTexture(Device::ITexture* mask)
+{
+	if (m_currentState.InternalGlyphMask.GetObjectPtr() != mask) 
+	{
+		Flush();
+		if (mask != NULL) {
+			m_currentState.InternalGlyphMask = mask;
+		}
+		else {
+			m_currentState.InternalGlyphMask = m_dummyTexture;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::UpdateCurrentForeColor()
+{
+	if (m_currentState.Brush.Type == BrushType_SolidColor)
+	{
+		m_currentState.ForeColor.A = m_currentState.Opacity * m_currentState.Brush.SolidColorBrush.Color[3];
+	}
+	else {
+		m_currentState.ForeColor.A = m_currentState.Opacity;
 	}
 }
 

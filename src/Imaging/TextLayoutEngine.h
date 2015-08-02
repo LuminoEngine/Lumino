@@ -88,6 +88,8 @@ public:
 	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
 	void SetDrawingArea(const Rect& area) { m_drawingArea = area; }
 
+	void ResetSettings();
+
 	void LayoutText(const UTF32* text, int length, TextLayoutResult* outResult/*, bool takeOverKerning*/);
 
 protected:

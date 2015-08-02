@@ -10,6 +10,7 @@ namespace Graphics
 {
 
 
+
 enum BrushWrapMode
 {
 	BrushWrapMode_Stretch = 0,	///< イメージ全体を引き延ばす
@@ -85,6 +86,27 @@ private:
 	BrushWrapMode		m_wrapMode;
 };
 
+//struct StringLayout
+//{
+//	Imaging::TextAlignment	Alignment;	///< 文字列の水平方向の配置
+//
+//	static StringLayout	CenterAlignment;
+//
+//	StringLayout();
+//
+//	StringLayout(Imaging::TextAlignment alignment);
+//};
+
+LN_ENUM_FLAGS(StringFormatFlags)
+{
+	LeftAlignment	= 0x0001,
+	CenterAlignment	= 0x0002,
+	RightAlignment	= 0x0004,
+
+	Default = LeftAlignment,
+};
+LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
+
 /**
 	@brief		
 */
@@ -102,22 +124,37 @@ public:
 	void SetProjection(const Size& viewSize, float nearZ, float farZ);
 
 	void SetBrush(Brush* brush);
-	void DrawRectangle2(const RectF& rect);
+	void SetSolidColor(const ColorF& color);
+	void SetTexture(Texture* texture, const Rect& srcRect);	///< ユーティリティ。TextureBrush をセットする
+	void SetOpacity(float opacity);	// 0~1
+	void SetFont(Imaging::Font* font) { m_currentFont = font; }
+
+	void DrawRectangle(const RectF& rect);
+	void DrawRectangle(float x, float y, float width, float height) { DrawRectangle(RectF(x, y, width, height)); }
 
 
 
-	void DrawRectangle(const RectF& rect);	// TODO: 変える
+	//void DrawRectangle(const RectF& rect);	// TODO: 変える
 	void DrawFrameRectangle(const RectF& rect, float frameWidth);
 
 	/// セットされている Brush は影響しません
-	void DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect);
+	//void DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect);
 
-	void DrawGlyphRun(GlyphRun* glyphRun);
+	void DrawGlyphRun(const Point& position, GlyphRun* glyphRun);
+	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
+
+	void DrawString(const String& str, const PointF& position);
+	void DrawString(const TCHAR* str, int length, const PointF& position);
+	void DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
 
 private:
-	GraphicsManager*	m_manager;
-	RefPtr<Brush>		m_currentBrush;
-	ByteBuffer			m_tempBuffer;
+	void DrawGlyphs(const PointF& position, const Imaging::TextLayoutResult& result, FontGlyphTextureCache* cache);
+
+private:
+	GraphicsManager*		m_manager;
+	RefPtr<Brush>			m_currentBrush;
+	ByteBuffer				m_tempBuffer;
+	RefPtr<Imaging::Font>	m_currentFont;
 };
 
 } // namespace Graphics

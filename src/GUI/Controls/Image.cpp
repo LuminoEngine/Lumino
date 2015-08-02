@@ -136,7 +136,8 @@ void Image::OnRender(Graphics::Painter* painter)
 {
 	if (m_texture == NULL) { return; }
 
-	painter->DrawTexture(m_finalGlobalRect, m_texture, m_internalSrcRect);
+	painter->SetTexture(m_texture, m_internalSrcRect);
+	painter->DrawRectangle(m_finalGlobalRect);
 }
 
 } // namespace GUI

@@ -56,6 +56,11 @@ FontManager::FontManager(FileManager* fileManager)
 	m_wcharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
 	m_wcharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetWideCharEncoding());
 
+	m_TCharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
+	m_TCharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetTCharEncoding());
+	m_UTF32ToTCharConverter.SetDestinationEncoding(Text::Encoding::GetTCharEncoding());
+	m_UTF32ToTCharConverter.SetSourceEncoding(Text::Encoding::GetUTF32Encoding());
+
 	// FreeType èâä˙âª
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font library : %d\n", err);

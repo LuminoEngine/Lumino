@@ -100,6 +100,7 @@ public:	// internal
 	//TextRenderer* LookupTextRenderer(const FontData& fontData);
 
 	FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
+	FontGlyphTextureCache* LookupGlyphTextureCache(Imaging::Font* font);
 
 private:
 	FileManager* GetFileManager() { return m_fileManager; }

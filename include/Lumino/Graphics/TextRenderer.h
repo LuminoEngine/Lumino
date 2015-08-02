@@ -120,7 +120,9 @@ public:
 
 	uint64_t CalcFontSettingHash() const;
 
-	void Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult);
+	Imaging::TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
+
+	void Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult);	// ユーティリティ
 
 private:
 	struct CachedGlyphInfo

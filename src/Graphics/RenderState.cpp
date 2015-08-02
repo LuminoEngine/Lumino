@@ -58,7 +58,7 @@ bool RenderState::operator == (const RenderState& obj) const
 DepthStencilState::DepthStencilState()
 	: DepthEnable(true)
 	, DepthWriteEnable(true)
-	, DepthFunc(CompareFunc::Less)
+	, DepthFunc(CompareFunc::LessEqual)
 	, StencilEnable(false)
 	, StencilFunc(CompareFunc::Always)
 	, StencilReferenceValue(0)

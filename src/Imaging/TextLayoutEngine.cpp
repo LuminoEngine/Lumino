@@ -28,6 +28,17 @@ TextLayoutEngine::~TextLayoutEngine()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void TextLayoutEngine::ResetSettings()
+{
+	m_textAlignment = TextAlignment::Left;
+	m_textTrimming = TextTrimming::None;
+	m_flowDirection = FlowDirection::LeftToRight;
+	m_drawingArea = Rect::Zero;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void TextLayoutEngine::LayoutText(const UTF32* text, int length, TextLayoutResult* outResult/*, bool takeOverKerning*/)
 {
 	m_result = outResult;

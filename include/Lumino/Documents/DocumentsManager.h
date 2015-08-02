@@ -42,7 +42,7 @@ public:
 
 public:
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	Text::EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
+	Text::EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager ‚ÌŽg‚¦‚Î‚¢‚¢‚©‚à
 	Text::EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 	
 private:

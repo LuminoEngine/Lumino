@@ -22,7 +22,14 @@ int		Profiler::Section_MainThread_GUILayput = 2;
 //
 //-----------------------------------------------------------------------------
 Profiler::Profiler()
-	: m_enabled(false)
+	: m_groups()
+	, m_mainFPS(0.0f)
+	, m_mainFPSCapacity(0.0f)
+	, m_commitedGroups()
+	, m_commitedMainFPS(0.0f)
+	, m_commitedMainFPSCapacity(0.0f)
+	, m_commitMutex()
+	, m_enabled(false)
 {
 	Group_MainThread = RegisterGroup(_T("Main thread"));
 	Group_RenderThread = RegisterGroup(_T("Rendering thread"));
@@ -66,6 +73,14 @@ int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Profiler::SetBaseFrameRate(int group, float baseFrameRate)
+{
+	m_groups[group]->LimitElapsedTime = (1.0 / baseFrameRate) * 1000 * 1000 * 1000;	// ns ’PˆÊ
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Profiler::StartSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
@@ -90,15 +105,24 @@ void Profiler::Commit()
 {
 	Threading::MutexScopedLock lock(m_commitMutex);
 
+	m_commitedMainFPS = m_mainFPS;
+	m_commitedMainFPSCapacity = m_mainFPSCapacity;
+	m_commitedMainWindowSize = m_mainWindowSize;
+	m_commitedMainBackbufferSize = m_mainBackbufferSize;
+
 	for (int iGroup = 0; iGroup < m_groups.GetCount(); ++iGroup)
 	{
+		uint64_t totalTime = 0;
 		for (int iSection = 0; iSection < m_groups[iGroup]->Sections.GetCount(); ++iSection)
 		{
 			Section*			s1 = m_groups[iGroup]->Sections[iSection].get();
 			CommitedSection*	s2 = &m_commitedGroups[iGroup].Sections[iSection];
 			s2->ElapsedTime = s1->ElapsedTime;
 			s1->ElapsedTime = 0;
+			totalTime += s2->ElapsedTime;
 		}
+		m_commitedGroups[iGroup].TotalTime = totalTime;
+		m_commitedGroups[iGroup].LimitElapsedTime = m_groups[iGroup]->LimitElapsedTime;
 	}
 }
 

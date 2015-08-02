@@ -870,6 +870,28 @@ FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const FontData& 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Imaging::Font* font)
+{
+	FontData fontData;
+	fontData.Family = font->GetName();
+	fontData.Size = font->GetSize();
+	fontData.EdgeSize = font->GetEdgeSize();
+	fontData.IsBold = font->IsBold();
+	fontData.IsItalic = font->IsItalic();
+	fontData.IsAntiAlias = font->IsAntiAlias();
+
+	CacheKey key(CalcFontSettingHash(fontData));
+	FontGlyphTextureCache* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
+	if (tr != NULL) { return tr; }
+
+	tr = LN_NEW FontGlyphTextureCache(this, font);
+	m_glyphTextureCache->RegisterCacheObject(key, tr);
+	return tr;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 //TextRenderer* GraphicsManager::LookupTextRenderer(const FontData& fontData)
 //{
 //	CacheKey key(CalcFontSettingHash(fontData));

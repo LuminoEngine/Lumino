@@ -102,7 +102,7 @@ class DepthStencilState
 public:
 	bool		DepthEnable;			///< 深度テストの有無 (default:true)
 	bool		DepthWriteEnable;		///< 深度書き込みの有無 (default:true)
-	CompareFunc	DepthFunc;				///< 深度テストの比較関数 (default:Less)
+	CompareFunc	DepthFunc;				///< 深度テストの比較関数 (default:LessEqual)
 
 	bool		StencilEnable;			///< ステンシルテストの有無 (default:false)
 	CompareFunc	StencilFunc;			///< ステンシルテストの比較関数 (default:Always)

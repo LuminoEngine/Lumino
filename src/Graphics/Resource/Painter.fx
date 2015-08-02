@@ -8,9 +8,18 @@ float2 g_viewportSize;
 static float2 g_pixelStep = (float2(2.0, 2.0) / g_viewportSize);
 
 texture		g_texture;
+texture		g_glyphMaskTexture;
+
 sampler2D	g_texSampler = sampler_state
 {
 	texture = <g_texture>;
+	MINFILTER = NONE;
+	MAGFILTER = NONE;
+};
+
+sampler2D	g_glyphMaskSampler = sampler_state
+{
+	texture = <g_glyphMaskTexture>;
 	MINFILTER = NONE;
 	MAGFILTER = NONE;
 };
@@ -63,7 +72,7 @@ float4 psBasic(
 	float2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
 	//uv -= g_pixelStep;
 	
-    return tex2D(g_texSampler, uv);// * inColor;
+    return tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
 }
 
 //-------------------------------------------------------------------------
