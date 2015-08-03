@@ -4,6 +4,7 @@
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/VertexBuffer.h"
 #include "../../include/Lumino/Graphics/GraphicsManager.h"
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -29,7 +30,7 @@ VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	RefPtr<Device::IVertexBuffer> deviceObj(
-		manager->GetGraphicsDevice()->CreateVertexBuffer(vertexElements, elementsCount, vertexCount, data, usage));
+		Helper::GetGraphicsDevice(manager)->CreateVertexBuffer(vertexElements, elementsCount, vertexCount, data, usage));
 	return LN_NEW VertexBuffer(deviceObj);
 }
 

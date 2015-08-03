@@ -7,6 +7,7 @@
 #include "../../include/Lumino/Graphics/SwapChain.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -191,19 +192,14 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 	Threading::MutexScopedLock lock(m_lockPresentCommandList);
 
 	m_primaryCommandList->AddCommand<PresentCommand>(swapChain);
-	//PresentCommand::AddCommand(m_primaryCommandList, swapChain);
-	//m_primaryCommandList->Present(swapChain);
-	m_manager->m_renderingThread->PushRenderingCommand(m_primaryCommandList);
+	
+	auto* renderingThread = Helper::GetRenderingThread(m_manager);
+	renderingThread->PushRenderingCommand(m_primaryCommandList);
 
 	// swapChain の持っているコマンドリストとスワップ。それをプライマリにする。
 	RenderingCommandList* t = swapChain->m_commandList;
 	swapChain->m_commandList = m_primaryCommandList;
 	m_primaryCommandList = t;
-
-	if (m_manager->m_renderingThread != NULL)
-	{
-
-	}
 }
 
 } // namespace Graphics

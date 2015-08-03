@@ -33,7 +33,7 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 
 	Renderer* r = TestEnv::BeginRendering();
 
-	Size size = TestEnv::Application->GetMainWindow()->GetSize();
+	Size size = TestEnv::Platform->GetMainWindow()->GetSize();
 	Matrix proj = Matrix::Perspective2DLH((float)size.Width, (float)size.Height, 0.f, 1000.f);
 
 	sr->SetViewProjMatrix(Matrix::Identity, proj);

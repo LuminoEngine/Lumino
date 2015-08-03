@@ -152,6 +152,7 @@ private:
 
 private:
 	GraphicsManager*		m_manager;
+	PainterEngine*			m_internal;
 	RefPtr<Brush>			m_currentBrush;
 	ByteBuffer				m_tempBuffer;
 	RefPtr<Imaging::Font>	m_currentFont;

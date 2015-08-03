@@ -1,9 +1,10 @@
 
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/Base/StringTraits.h>
 #include <Lumino/Graphics/Painter.h>
 #include "PainterEngine.h"
 #include "RenderingCommand.h"
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -160,7 +161,7 @@ struct SetBrushCommand : public RenderingCommand
 		m_engine = engine;
 		m_brushData = data;
 	}
-	void Execute() { m_engine->SetBrush(&m_brushData); }
+	void Execute() { m_engine->SetBrush(m_brushData); }
 };
 
 //=============================================================================
@@ -281,8 +282,9 @@ struct DrawGlyphRunCommand : public RenderingCommand
 //-----------------------------------------------------------------------------
 Painter::Painter(GraphicsManager* manager)
 	: m_manager(manager)
+	, m_internal(Helper::GetPainterEngine(manager))
 {
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<BeginCommand>(m_manager->GetPainterEngine());
+	LN_CALL_COMMAND(Begin, BeginCommand);
 }
 
 //-----------------------------------------------------------------------------
@@ -290,7 +292,7 @@ Painter::Painter(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 Painter::~Painter()
 {
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<EndCommand>(m_manager->GetPainterEngine());
+	LN_CALL_COMMAND(End, EndCommand);
 }
 
 /// ピクセル単位の2D描画に使う射影行列の作成
@@ -321,7 +323,7 @@ void Painter::SetProjection(const Size& viewSize, float nearZ, float farZ)
 {
 	Matrix mat;
 	perspective2DLH(&mat, (float)viewSize.Width, (float)viewSize.Height, nearZ, farZ);
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetProjectionCommand>(m_manager->GetPainterEngine(), mat/*, viewSize*/);
+	LN_CALL_COMMAND(SetViewProjMatrix, SetProjectionCommand, mat);
 }
 
 //-----------------------------------------------------------------------------
@@ -364,9 +366,7 @@ void Painter::SetBrush(Brush* brush)
 		}
 	}
 
-	// TODO: マクロに
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetBrushCommand>(
-		m_manager->GetPainterEngine(), data);
+	LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
 }
 
 //-----------------------------------------------------------------------------
@@ -383,9 +383,7 @@ void Painter::SetSolidColor(const ColorF& color)
 	data.SolidColorBrush.Color[2] = color.B;
 	data.SolidColorBrush.Color[3] = color.A;
 
-	// TODO: マクロに
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetBrushCommand>(
-		m_manager->GetPainterEngine(), data);
+	LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
 }
 
 //-----------------------------------------------------------------------------
@@ -404,9 +402,7 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 	data.TextureBrush.SourceRect[3] = r.Height;
 	data.TextureBrush.WrapMode = BrushWrapMode_Stretch;
 
-	// TODO: マクロに
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetBrushCommand>(
-		m_manager->GetPainterEngine(), data);
+	LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
 }
 
 //-----------------------------------------------------------------------------
@@ -414,7 +410,7 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 //-----------------------------------------------------------------------------
 void Painter::SetOpacity(float opacity)
 {
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetOpacityCommand>(m_manager->GetPainterEngine(), opacity);
+	LN_CALL_COMMAND(SetOpacity, SetOpacityCommand, opacity);
 }
 
 //-----------------------------------------------------------------------------
@@ -422,56 +418,17 @@ void Painter::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 void Painter::DrawRectangle(const RectF& rect)
 {
-	// TODO: マクロに
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
-		m_manager->GetPainterEngine(), rect);
+	LN_CALL_COMMAND(DrawRectangle, DrawRectangleCommand, rect);
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-//void Painter::DrawRectangle(const RectF& rect)
-//{
-//	if (m_currentBrush->GetType() == BrushType_Texture)
-//	{
-//		//TextureBrush* b = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
-//		m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
-//			m_manager->GetPainterEngine(), rect/*, b->GetTexture()->GetDeviceObject(), b->GetSourceRect(), b->GetWrapMode()*/);
-//	}
-//	else {
-//		LN_THROW(0, NotImplementedException);
-//	}
-//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 {
-	//Device::ITexture* srcTexture;
-	//Rect srcRect(0, 0, INT_MAX, INT_MAX);
-	//if (m_currentBrush != NULL && m_currentBrush->GetType() == BrushType_Texture)
-	//{
-	//	TextureBrush* tb = static_cast<TextureBrush*>(m_currentBrush.GetObjectPtr());
-	//	if (tb->GetTexture() != NULL)
-	//	{
-	//		srcTexture = tb->GetTexture()->GetDeviceObject();
-	//		srcRect = tb->GetSourceRect();
-	//	}
-	//}
-
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawFrameRectangleCommand>(
-		m_manager->GetPainterEngine(), rect, frameWidth/*, srcTexture, srcRect*/);
+	LN_CALL_COMMAND(DrawFrameRectangle, DrawFrameRectangleCommand, rect, frameWidth);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-//void Painter::DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect)
-//{
-//	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawRectangleCommand>(
-//		m_manager->GetPainterEngine(), dstRect, texture->GetDeviceObject(), srcRect, BrushWrapMode_Stretch);
-//}
 
 //-----------------------------------------------------------------------------
 //
@@ -576,10 +533,10 @@ void Painter::DrawGlyphs(const PointF& position, const Imaging::TextLayoutResult
 		data[i].SrcPixelRect.Set(srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height);
 	}
 
-	// コマンド化
-	m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawGlyphRunCommand>(
-		m_manager->GetPainterEngine(), position, data, count, tex1->GetDeviceObject(), (tex2) ? tex2->GetDeviceObject() : NULL/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
-
+	Device::ITexture* dtex2 = (tex2 != NULL) ? tex2->GetDeviceObject() : NULL;
+	
+	
+	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
 }
 
 } // namespace Graphics

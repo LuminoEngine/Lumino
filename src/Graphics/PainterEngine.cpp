@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Imaging/BitmapPainter.h>
 #include "PainterEngine.h"
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -39,9 +40,11 @@ PainterEngine::~PainterEngine()
 //-----------------------------------------------------------------------------
 void PainterEngine::Create(GraphicsManager* manager)
 {
-	m_vertexBuffer.Attach(manager->GetGraphicsDevice()->CreateVertexBuffer(
+	auto* device = Helper::GetGraphicsDevice(manager);
+
+	m_vertexBuffer.Attach(device->CreateVertexBuffer(
 		PainterVertex::Elements(), PainterVertex::ElementCount, 1024, NULL, DeviceResourceUsage_Dynamic));
-	m_indexBuffer.Attach(manager->GetGraphicsDevice()->CreateIndexBuffer(
+	m_indexBuffer.Attach(device->CreateIndexBuffer(
 		1024, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
 	m_vertexCache.Reserve(1024);
@@ -49,7 +52,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 
 	//RefPtr<ByteBuffer> code(FileUtils::ReadAllBytes(_T("D:/Proj/Lumino/src/Graphics/Resource/Painter.fx")));
 	ShaderCompileResult r;
-	m_shader.Shader.Attach(manager->GetGraphicsDevice()->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r));
+	m_shader.Shader.Attach(device->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 	
 	m_shader.Technique = m_shader.Shader->GetTechnique(0);
@@ -60,7 +63,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_shader.varGlyphMaskSampler = m_shader.Shader->GetVariableByName(_T("g_glyphMaskTexture"));
 	m_shader.varViewportSize = m_shader.Shader->GetVariableByName(_T("g_viewportSize"));
 
-	m_renderer = manager->GetGraphicsDevice()->GetRenderer();
+	m_renderer = device->GetRenderer();
 
 	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
@@ -69,8 +72,8 @@ void PainterEngine::Create(GraphicsManager* manager)
 	//-----------------------------------------------------
 	// ダミーテクスチャ
 
-	m_dummyTexture.Attach(manager->GetGraphicsDevice()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
-	Device::IGraphicsDevice::ScopedLockContext lock(manager->GetGraphicsDevice());
+	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
+	Device::IGraphicsDevice::ScopedLockContext lock(device);
 	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
@@ -135,11 +138,11 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::SetBrush(const BrushData* data)
+void PainterEngine::SetBrush(const BrushData& data)
 {
 	Flush();	// 描画設定が変わるのでここでフラッシュ
 	DetachBrushData();
-	memcpy(&m_currentState.Brush, data, sizeof(m_currentState.Brush));
+	memcpy(&m_currentState.Brush, &data, sizeof(m_currentState.Brush));
 	AttachBrushData();
 	UpdateCurrentForeColor();
 }

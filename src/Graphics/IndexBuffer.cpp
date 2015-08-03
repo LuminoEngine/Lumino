@@ -1,9 +1,9 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -25,7 +25,7 @@ IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	RefPtr<Device::IIndexBuffer> deviceObj(
-		manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, format, usage));
+		Helper::GetGraphicsDevice(manager)->CreateIndexBuffer(indexCount, initialData, format, usage));
 	return LN_NEW IndexBuffer(deviceObj, indexCount, format);
 }
 

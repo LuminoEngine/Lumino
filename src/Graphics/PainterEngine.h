@@ -118,7 +118,7 @@ public:
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
 
-	void SetBrush(const BrushData* data);
+	void SetBrush(const BrushData& data);
 	void SetOpacity(float opacity);
 	
 

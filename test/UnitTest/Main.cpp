@@ -1,8 +1,9 @@
 #include "TestConfig.h"
 
-Platform::PlatformManager*	TestEnv::Application = NULL;
+RefPtr<Lumino::Application>	TestEnv::Application;
+Platform::PlatformManager*	TestEnv::Platform = NULL;
 Physics::PhysicsManager*	TestEnv::PhysicsManager = NULL;
-GraphicsManager*			TestEnv::Manager = NULL;
+GraphicsManagerPtr			TestEnv::Manager;
 Graphics::Renderer*			TestEnv::Renderer = NULL;
 Graphics::SwapChain*		TestEnv::MainSwapChain = NULL;
 SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
@@ -86,18 +87,23 @@ void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
 
-	Platform::ApplicationSettings s;
-	s.MainWindowSettings.ClientSize.Set(160, 120);
-	Application = LN_NEW Platform::PlatformManager(s);
+	//Platform::ApplicationSettings s;
+	//s.MainWindowSettings.ClientSize.Set(160, 120);
+	//Application = LN_NEW Platform::PlatformManager(s);
 
-	PhysicsManager = LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync);
+	//PhysicsManager = LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync);
 
+	ApplicationConfigData data;
+	Application.Attach(Lumino::Application::Create(data));
 
-	Graphics::GraphicsManagerConfigData gmcd;
-	gmcd.GraphicsAPI = GraphicsAPI::DirectX9;//GraphicsAPI::OpenGL;
-	gmcd.MainWindow = Application->GetMainWindow();
-	gmcd.FileManager = &FileManager::GetInstance();
-	Manager = LN_NEW Graphics::GraphicsManager(gmcd);
+	Platform = Application->GetPlatformManager();
+	PhysicsManager = Application->GetPhysicsManager();
+
+	//Graphics::GraphicsManager::ConfigData gmcd;
+	//gmcd.GraphicsAPI = GraphicsAPI::DirectX9;//GraphicsAPI::OpenGL;
+	//gmcd.MainWindow = Application->GetMainWindow();
+	//gmcd.FileManager = &FileManager::GetInstance();
+	Manager = Application->GetGraphicsManager();//Graphics::GraphicsManager::Create(gmcd);
 
 	Renderer = Manager->GetRenderer();
 	MainSwapChain = Manager->GetMainSwapChain();
@@ -107,7 +113,7 @@ void TestEnv::SetUp()
 	// SceneGraph
 	SceneGraphManager::ConfigData c;
 	c.FileManager = &FileManager::GetInstance();
-	c.PhysicsManager = PhysicsManager;
+	c.PhysicsManager = Application->GetPhysicsManager();
 	c.GraphicsManager = TestEnv::Manager;
 	MMDSceneGraph = LN_NEW SceneGraphManager(c);
 	MMDSceneGraph->CreateMMDSceneGraph();
@@ -124,9 +130,10 @@ void TestEnv::TearDown()
 		LN_SAFE_RELEASE(MMDSceneGraph);
 	}
 	
-	LN_SAFE_RELEASE(Manager);
-	LN_SAFE_RELEASE(PhysicsManager);
-	LN_SAFE_RELEASE(Application);
+	Manager.SafeRelease();
+	//LN_SAFE_RELEASE(PhysicsManager);
+	//LN_SAFE_RELEASE(Application);
+	Application.SafeRelease();
 }
 
 //-----------------------------------------------------------------------------

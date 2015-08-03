@@ -10,28 +10,16 @@
 #include <Lumino/Base/EnumExtension.h>
 #include <Lumino/Platform/Window.h>
 #include <LuminoMath.h>
+#include "../Common.h"
 
 namespace Lumino
 {
 namespace Graphics
 {
-namespace Device
-{
-class IGraphicsDevice;
-class ISwapChain;
-class IRenderer;
-class IVertexBuffer;
-class IIndexBuffer;
-class ITexture;
-class IShader;
-class IShaderVariable;
-class IShaderTechnique;
-class IShaderPass;
-
-} // namespace Device
-
 class GraphicsManager;
 class Texture;
+class PainterEngine;
+class Helper;
 
 /// グラフィックス API
 LN_ENUM(GraphicsAPI)
@@ -240,6 +228,20 @@ enum BrushType
 	BrushType_Texture,
 };
 
+namespace Device
+{
+	class IGraphicsDevice;
+	class ISwapChain;
+	class IRenderer;
+	class IVertexBuffer;
+	class IIndexBuffer;
+	class ITexture;
+	class IShader;
+	class IShaderVariable;
+	class IShaderTechnique;
+	class IShaderPass;
+
+} // namespace Device
 } // namespace Graphics
 } // namespace Lumino
 

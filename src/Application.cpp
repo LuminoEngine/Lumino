@@ -4,6 +4,7 @@
 #include <Lumino/Profiler.h>
 #include <Lumino/Application.h>
 #include "Graphics/ProfilerRenderer.h"
+#include "ApplicationContext.h"
 
 namespace Lumino
 {
@@ -45,6 +46,10 @@ Application::Application(const ApplicationConfigData& configData)
 	m_fpsController.SetEnableFpsTest(true);
 	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO 
 	Profiler::Instance.SetBaseFrameRate(Profiler::Group_RenderThread, 60.0f);
+
+	if (ApplicationContext::GetCurrent() == NULL) {
+		ApplicationContext::SetCurrent(this);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -60,6 +65,10 @@ Application::~Application()
 
 	if (m_guiManager != NULL) {
 		m_guiManager->Finalize();
+	}
+
+	if (ApplicationContext::GetCurrent() == this) {
+		ApplicationContext::SetCurrent(NULL);
 	}
 }
 
@@ -118,7 +127,7 @@ void Application::InitialzeGraphicsManager()
 		InitialzePlatformManager();
 		InitialzePhysicsManager();
 
-		Graphics::GraphicsManagerConfigData data;
+		Graphics::GraphicsManager::ConfigData data;
 		data.GraphicsAPI = m_configData.GraphicsAPI;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.FileManager = &FileManager::GetInstance();

@@ -60,6 +60,8 @@ public:
 	bool IsEndRequested() const { return m_endRequested; }
 
 
+	Platform::PlatformManager* GetPlatformManager() const { return m_platformManager; }
+	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	GUI::GUIManager* GetGUIManager() const { return m_guiManager; }

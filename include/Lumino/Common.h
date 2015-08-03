@@ -1,8 +1,11 @@
-
+/**
+	@file	Common.h
+*/
 #pragma once
 
 namespace Lumino
 {
+class Application;
 
 /// マウスボタン
 enum MouseButton

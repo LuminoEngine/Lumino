@@ -2,10 +2,11 @@
 	動的頂点バッファのNoOverwriteとDiscard
 	http://blogs.msdn.com/b/ito/archive/2011/05/22/no-overwrite-or-discard.aspx
 */
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/Imaging/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include "GeometryRendererImpl.h"
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -29,10 +30,10 @@ GeometryRenderer* GeometryRenderer::Create(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 GeometryRenderer::GeometryRenderer(GraphicsManager* manager)
 	: m_manager(NULL)
-	, m_core(NULL)
+	, m_internal(NULL)
 {
 	LN_REFOBJ_SET(m_manager, manager);
-	m_core = LN_NEW GeometryRendererCore(m_manager->GetGraphicsDevice());
+	m_internal = LN_NEW GeometryRendererCore(Helper::GetGraphicsDevice(m_manager));
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +41,7 @@ GeometryRenderer::GeometryRenderer(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 GeometryRenderer::~GeometryRenderer()
 {
-	LN_SAFE_RELEASE(m_core);
+	LN_SAFE_RELEASE(m_internal);
 	LN_SAFE_RELEASE(m_manager);
 }
 
@@ -49,13 +50,7 @@ GeometryRenderer::~GeometryRenderer()
 //-----------------------------------------------------------------------------
 void GeometryRenderer::BeginPass()
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::BeginPassCommand>(m_core);
-		//GeometryRendererCore::BeginPassCommand::AddCommand(m_manager->GetPrimaryRenderingCommandList(), m_core);
-	}
-	else {
-		m_core->BeginPass();
-	}
+	LN_CALL_COMMAND(BeginPass, GeometryRendererCore::BeginPassCommand);
 }
 
 //-----------------------------------------------------------------------------
@@ -63,13 +58,7 @@ void GeometryRenderer::BeginPass()
 //-----------------------------------------------------------------------------
 void GeometryRenderer::EndPass()
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::EndPassCommand>(m_core);
-		//GeometryRendererCore::EndPassCommand::AddCommand(m_manager->GetPrimaryRenderingCommandList(), m_core);
-	}
-	else {
-		m_core->EndPass();
-	}
+	LN_CALL_COMMAND(EndPass, GeometryRendererCore::EndPassCommand);
 }
 
 //-----------------------------------------------------------------------------
@@ -77,13 +66,7 @@ void GeometryRenderer::EndPass()
 //-----------------------------------------------------------------------------
 void GeometryRenderer::SetTransform(const Matrix& matrix)
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::SetTransformCommand>(m_core, matrix);
-		//GeometryRendererCore::SetTransformCommand::AddCommand(m_manager->GetPrimaryRenderingCommandList(), m_core, matrix);
-	}
-	else {
-		m_core->SetTransform(matrix);
-	}
+	LN_CALL_COMMAND(SetTransform, GeometryRendererCore::SetTransformCommand, matrix);
 }
 
 //-----------------------------------------------------------------------------
@@ -91,13 +74,7 @@ void GeometryRenderer::SetTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 void GeometryRenderer::SetViewProjTransform(const Matrix& matrix)
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::SetViewProjTransformCommand>(m_core, matrix);
-		//GeometryRendererCore::SetViewProjTransformCommand::AddCommand(m_manager->GetPrimaryRenderingCommandList(), m_core, matrix);
-	}
-	else {
-		m_core->SetViewProjTransform(matrix);
-	}
+	LN_CALL_COMMAND(SetViewProjTransform, GeometryRendererCore::SetViewProjTransformCommand, matrix);
 }
 
 //-----------------------------------------------------------------------------
@@ -105,13 +82,7 @@ void GeometryRenderer::SetViewProjTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 void GeometryRenderer::SetTexture(Device::ITexture* texture)
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::SetTextureCommand>(m_core, texture);
-		//GeometryRendererCore::SetTextureCommand::AddCommand(m_manager->GetPrimaryRenderingCommandList(), m_core, texture);
-	}
-	else {
-		m_core->SetTexture(texture);
-	}
+	LN_CALL_COMMAND(SetTexture, GeometryRendererCore::SetTextureCommand, texture);
 }
 
 //-----------------------------------------------------------------------------
@@ -119,12 +90,7 @@ void GeometryRenderer::SetTexture(Device::ITexture* texture)
 //-----------------------------------------------------------------------------
 void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::DrawLineCommand>(m_core, from, to, fromColor, toColor);
-	}
-	else {
-		m_core->DrawLine(from, to, fromColor, toColor);
-	}
+	LN_CALL_COMMAND(DrawLine, GeometryRendererCore::DrawLineCommand, from, to, fromColor, toColor);
 }
 
 //-----------------------------------------------------------------------------
@@ -143,7 +109,7 @@ void GeometryRenderer::DrawSquare(
 		_v3.Position.Set(x3, y3, z3); _v3.TexUV.Set(u3, v3); _v3.Color = c3;
 		_v4.Position.Set(x4, y4, z4); _v4.TexUV.Set(u4, v4); _v4.Color = c4;
 
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::DrawSquareCommand>(m_core, _v1, _v2, _v3, _v4);
+		Helper::GetPrimaryRenderingCommandList(m_manager)->AddCommand<GeometryRendererCore::DrawSquareCommand>(m_internal, _v1, _v2, _v3, _v4);
 			//Vector3, Vector2(), c1,
 			//Vector3(x2, y2, z2), Vector2(u2, v2), c2,
 			//Vector3(x3, y3, z3), Vector2(u3, v3), c3,
@@ -156,7 +122,7 @@ void GeometryRenderer::DrawSquare(
 		//	Vector3(x4, y4, z4), Vector2(u4, v4), c4);
 	}
 	else {
-		m_core->DrawSquare(
+		m_internal->DrawSquare(
 			x1, y1, z1, u1, v1, c1,
 			x2, y2, z2, u2, v2, c2,
 			x3, y3, z3, u3, v3, c3,
@@ -169,34 +135,8 @@ void GeometryRenderer::DrawSquare(
 //-----------------------------------------------------------------------------
 void GeometryRenderer::DrawRect(const RectF& destRect, const RectF& texUVRect, const ColorF& color)
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::DrawRectCommand>(m_core, destRect, texUVRect, color);
-		//GeometryRendererCore::DrawRectCommand::AddCommand(m_manager->GetPrimaryRenderingCommandList(), m_core, destRect, texUVRect, color);
-	}
-	else {
-		m_core->DrawRect(destRect, texUVRect, color);
-	}
+	LN_CALL_COMMAND(DrawRect, GeometryRendererCore::DrawRectCommand, destRect, texUVRect, color);
 }
-
-
-//=============================================================================
-// GeometryRendererImpl
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-//GeometryRendererImpl::GeometryRendererImpl(FileManager* fileManager)
-//	: m_fileManager(fileManager)
-//{
-//}
-//
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//GeometryRendererImpl::~GeometryRendererImpl()
-//{
-//}
 
 
 //=============================================================================

@@ -107,6 +107,7 @@ public:
 	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
 private:
+	friend class Helper;
 	friend class SwapChain;
 	friend class ShaderPass;
 	friend class Texture;

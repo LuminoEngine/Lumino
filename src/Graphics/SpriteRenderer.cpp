@@ -198,17 +198,10 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…？
 
 */
 
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include "SpriteRendererImpl.h"
-
-#define LN_CALL_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) { \
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_impl, __VA_ARGS__); \
-	} \
-	else { \
-		m_impl->func(__VA_ARGS__); \
-	}
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -233,7 +226,7 @@ SpriteRenderer* SpriteRenderer::Create(int maxSpriteCount, GraphicsManager* mana
 SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
 {
 	m_manager = manager;
-	m_impl = LN_NEW SpriteRendererImpl(manager, maxSpriteCount);
+	m_internal = LN_NEW SpriteRendererImpl(manager, maxSpriteCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -241,7 +234,7 @@ SpriteRenderer::SpriteRenderer(GraphicsManager* manager, int maxSpriteCount)
 //-----------------------------------------------------------------------------
 SpriteRenderer::~SpriteRenderer()
 {
-	LN_SAFE_RELEASE(m_impl);
+	LN_SAFE_RELEASE(m_internal);
 }
 
 //-----------------------------------------------------------------------------
@@ -384,7 +377,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+	auto* device = Helper::GetGraphicsDevice(m_manager);
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
@@ -730,7 +723,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Vertices[2].TexUV.Y = 1;
 		sprite.Vertices[3].TexUV.X = 1;
 		sprite.Vertices[3].TexUV.Y = 1;
-		sprite.Texture = m_manager->GetDummyTexture();
+		sprite.Texture = Helper::GetDummyTexture(m_manager);
 	}
 
 	// カメラからの距離をソート用Z値にする場合
@@ -995,7 +988,7 @@ void SpriteRendererImpl::Flash()
 	//-----------------------------------------------------
 	// 描画
 
-	Device::IRenderer* r = m_manager->GetGraphicsDevice()->GetRenderer();
+	auto* r = Helper::GetGraphicsDevice(m_manager)->GetRenderer();
 	r->SetVertexBuffer(m_vertexBuffer);
 	r->SetIndexBuffer(m_indexBuffer);
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);

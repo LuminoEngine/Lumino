@@ -654,7 +654,6 @@
 #endif
 
 #include <Lumino/Imaging/BitmapPainter.h>
-#include <Lumino/Graphics/GraphicsDevice.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/TextRenderer.h>
@@ -672,10 +671,27 @@ namespace Graphics
 
 GraphicsManager* Internal::Manager = NULL;
 
+//public:
+//
+//	/**
+//	@brief		GraphicsManager を作成します。
+//	@details	通常、このクラスのインスタンスは Application::GetGraphicsManager() で取得します。
+//	この関数は、Application クラスとは独立した GraphicsManager が必要な場合に使用します。
+//	*/
+//	static GraphicsManagerPtr Create(const ConfigData& configData);
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//GraphicsManagerPtr GraphicsManager::Create(const ConfigData& configData)
+//{
+//	return GraphicsManagerPtr(LN_NEW GraphicsManager(configData));
+//}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
+GraphicsManager::GraphicsManager(const ConfigData& configData)
 	: m_fileManager(NULL)
 	, m_graphicsDevice(NULL)
 	, m_dummyTexture(NULL)
@@ -744,9 +760,9 @@ GraphicsManager::GraphicsManager(const GraphicsManagerConfigData& configData)
 
 	
 	// ダミーテクスチャ
-	m_dummyTexture = GetGraphicsDevice()->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
+	m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
 	{
-		Device::IGraphicsDevice::ScopedLockContext lock(GetGraphicsDevice());
+		Device::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 		Imaging::BitmapPainter painter(m_dummyTexture->Lock());
 		painter.Clear(Color::White);
 		m_dummyTexture->Unlock();
@@ -809,10 +825,10 @@ GraphicsAPI GraphicsManager::GetGraphicsAPI() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
-{
-	return m_renderer->m_primaryCommandList;
-}
+//RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
+//{
+//	return m_renderer->m_primaryCommandList;
+//}
 
 //-----------------------------------------------------------------------------
 //

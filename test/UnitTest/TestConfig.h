@@ -35,9 +35,10 @@ using namespace Lumino::Scene;
 class TestEnv : public ::testing::Environment
 {
 public:
-	static Platform::PlatformManager*	Application;
+	static RefPtr<Lumino::Application>	Application;
+	static Platform::PlatformManager*	Platform;
 	static Physics::PhysicsManager*	PhysicsManager;
-	static GraphicsManager*			Manager;
+	static GraphicsManagerPtr			Manager;
 	static Graphics::Renderer*		Renderer;
 	static Graphics::SwapChain*		MainSwapChain;
 	static SceneGraphManager*		MMDSceneGraph;

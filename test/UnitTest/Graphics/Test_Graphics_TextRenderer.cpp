@@ -22,11 +22,11 @@ TEST_F(Test_Graphics_TextRenderer, DrawRequest2D)
 	RefPtr<Graphics::TextRenderer> tr(Graphics::TextRenderer::Create(TestEnv::Manager));
 	tr->SetFont(font1);
 
-	while (TestEnv::Application->DoEvents())
+	while (TestEnv::Platform->DoEvents())
 	{
 		Renderer* r = TestEnv::BeginRendering();
 
-		Size size = TestEnv::Application->GetMainWindow()->GetSize();
+		Size size = TestEnv::Platform->GetMainWindow()->GetSize();
 		Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, 0, 1000.0f);
 		tr->SetViewProjection(Matrix::Identity, proj, size);
 		

@@ -2,7 +2,6 @@
 #pragma once 
 
 #include "../DeviceInterface.h"
-#include "../../../../include/Lumino/Graphics/GraphicsDevice.h"
 #include "../ShaderVariableBase.h"
 
 namespace Lumino

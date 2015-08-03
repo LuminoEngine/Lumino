@@ -8,6 +8,7 @@
 #include "../../include/Lumino/Graphics/Texture.h"
 #include "RenderingThread.h"
 #include "RenderingCommand.h"
+#include "GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -23,7 +24,7 @@ namespace Graphics
 //-----------------------------------------------------------------------------
 SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize)
 	: m_manager(manager)
-	, m_deviceObj(manager->GetGraphicsDevice()->GetDefaultSwapChain())
+	, m_deviceObj(Helper::GetGraphicsDevice(manager)->GetDefaultSwapChain())
 {
 	m_deviceObj->AddRef();
 	Initialize(mainWindowSize);
@@ -36,7 +37,7 @@ SwapChain::SwapChain(Platform::Window* targetWindow)
 	: m_manager(Internal::Manager)
 {
 	Initialize(targetWindow->GetSize());
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(targetWindow);
+	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
 }
 
 //-----------------------------------------------------------------------------
@@ -46,7 +47,7 @@ SwapChain::SwapChain(GraphicsManager* manager, Platform::Window* targetWindow)
 	: m_manager(manager)
 {
 	Initialize(targetWindow->GetSize());
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(targetWindow);
+	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
 }
 
 //-----------------------------------------------------------------------------
@@ -70,7 +71,7 @@ void SwapChain::Initialize(const Size& backbufferSize)
 {
 	m_commandList = LN_NEW RenderingCommandList();
 
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+	Device::IGraphicsDevice* device = Helper::GetGraphicsDevice(m_manager);
 	m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
 	m_backColorBuffer = LN_NEW Texture(m_manager, m_deviceObj->GetBackBuffer(), NULL);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
 	m_backDepthBuffer = Texture::CreateDepthBuffer(m_manager, backbufferSize, TextureFormat_D24S8);
@@ -98,13 +99,14 @@ void SwapChain::Present()
 	// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
 	m_waiting.Wait();
 
-
 	// デバイスロストのチェック
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+	auto* device = Helper::GetGraphicsDevice(m_manager);
 	if (device->GetDeviceState() == Device::DeviceState_Lost)
 	{
+		auto* thread = Helper::GetRenderingThread(m_manager);
+
 		// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
-		m_manager->m_renderingThread->RequestPauseAndWait();
+		thread->RequestPauseAndWait();
 		try
 		{
 			m_manager->PauseDevice();
@@ -112,10 +114,10 @@ void SwapChain::Present()
 			m_manager->ResumeDevice();
 		}
 		catch (...) {
-			m_manager->m_renderingThread->RequestResume();
+			thread->RequestResume();
 			throw;
 		}
-		m_manager->m_renderingThread->RequestResume();
+		thread->RequestResume();
 	}
 	
 
@@ -128,7 +130,7 @@ void SwapChain::Present()
 	m_waiting.SetFalse();
 
 	// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
-	m_manager->m_renderer->PresentCommandList(this);
+	m_manager->GetRenderer()->PresentCommandList(this);
 }
 
 } // namespace Graphics

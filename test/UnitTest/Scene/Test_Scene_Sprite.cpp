@@ -43,11 +43,11 @@ TEST_F(Test_Scene_Sprite, Basic)
 
 	Renderer* r = TestEnv::Renderer;
 	SwapChain* swap = TestEnv::MainSwapChain;
-	while (TestEnv::Application->DoEvents())
+	while (TestEnv::Platform->DoEvents())
 	{
-		if (TestEnv::Application->GetMainWindow()->GetSize() != swap->GetBackBuffer()->GetSize())
+		if (TestEnv::Platform->GetMainWindow()->GetSize() != swap->GetBackBuffer()->GetSize())
 		{
-			swap->Resize(TestEnv::Application->GetMainWindow()->GetSize());
+			swap->Resize(TestEnv::Platform->GetMainWindow()->GetSize());
 		}
 
 

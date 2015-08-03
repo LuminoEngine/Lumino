@@ -54,7 +54,7 @@ protected:
 	GeometryRenderer(GraphicsManager* manager);
 	virtual ~GeometryRenderer();
 	GraphicsManager*		m_manager;
-	GeometryRendererCore*	m_core;
+	GeometryRendererCore*	m_internal;
 };
 
 } // namespace Graphics

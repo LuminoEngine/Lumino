@@ -1,13 +1,11 @@
 ﻿
 #pragma once
-
 #include "Common.h"
 
 namespace Lumino
 {
 namespace Graphics
 {
-class GraphicsManager;
 
 /**
 	@brief		インデックスバッファのクラスです。

@@ -4,7 +4,6 @@
 #include "Common.h"
 #include "../Imaging/FontManager.h"
 #include "../Imaging/Font.h"
-#include "GraphicsDevice.h"
 #include "SwapChain.h"
 
 namespace Lumino
@@ -17,57 +16,41 @@ class PainterEngine;
 class TextRenderer;
 class FontGlyphTextureCache;
 
-struct GraphicsManagerConfigData
-{
-	GraphicsAPI				GraphicsAPI;
-	Platform::Window*		MainWindow;
-	Lumino::FileManager*	FileManager;
-	bool					PlatformTextureLoading;
 
-	GraphicsManagerConfigData()
-		: GraphicsAPI(GraphicsAPI::DirectX9)
-		, MainWindow(NULL)
-		, FileManager(NULL)
-		, PlatformTextureLoading(false)
-	{}
-};
+typedef RefPtr<GraphicsManager>	GraphicsManagerPtr;
 
 /**
-	@brief		グラフィックス機能の管理クラス
+	@brief		グラフィックス機能の管理クラスです。
 */
 class GraphicsManager
 	: public RefObject
 {
 public:
-	GraphicsManager(const GraphicsManagerConfigData& configData);
-	~GraphicsManager();
 
-public:
-
-	/**
-		@brief		現在のグラフィックスシステムが使用している API の種類を確認します。
-	*/
+	/** 現在のグラフィックスシステムが使用している API の種類を確認します。*/
 	GraphicsAPI GetGraphicsAPI() const;
 
-
+	/** 現在のグラフィックスシステムのレンダリング方法を確認します。*/
 	RenderingType GetRenderingType() const { return RenderingType_Deferred; }
-	Device::IGraphicsDevice* GetGraphicsDevice() const { return m_graphicsDevice; }
-	Renderer* GetRenderer() { return m_renderer; }
+
+	/** グラフィックスシステムのメイン Renderer を取得します。*/
+	Renderer* GetRenderer() const { return m_renderer; }
+
+	/** メインの SwapChain を取得します。これは Create() で指定されたメインウィンドウへのスワップチェインです。*/
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
+
+	/** 関連付けられている FileManager を取得します。*/
+	FileManager* GetFileManager() const { return m_fileManager; }
+
+	/** 関連付けられている FontManager を取得します。*/
 	Imaging::FontManager* GetFontManager() const { return m_fontManager; }
-	RenderingCommandList* GetPrimaryRenderingCommandList();
 
-	PainterEngine* GetPainterEngine() { return m_painterEngine; }
-	bool IsPlatformTextureLoading() const { return m_platformTextureLoading; }
-
-	Device::ITexture* GetDummyTexture() { return m_dummyTexture; }
-
-	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
+	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
-	/// (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
+	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void ResumeDevice();
 
-public:	// internal
+public:	// TODO: internal
 	struct FontData
 	{
 		String	Family;
@@ -103,29 +86,40 @@ public:	// internal
 	FontGlyphTextureCache* LookupGlyphTextureCache(Imaging::Font* font);
 
 private:
-	FileManager* GetFileManager() { return m_fileManager; }
+	friend class Helper;
+	friend class Application;
+
+	struct ConfigData
+	{
+		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
+		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
+		Lumino::FileManager*	FileManager;			/**< FileManager */
+		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
+
+		ConfigData()
+			: GraphicsAPI(GraphicsAPI::DirectX9)
+			, MainWindow(NULL)
+			, FileManager(NULL)
+			, PlatformTextureLoading(false)
+		{}
+	};
+
+	GraphicsManager(const ConfigData& configData);
+	~GraphicsManager();
 
 private:
-	friend class SwapChain;
-	friend class Renderer;
-	friend class Texture;
-
-	FileManager*			m_fileManager;
+	FileManager*					m_fileManager;
 	RefPtr<Imaging::FontManager>	m_fontManager;
+	RefPtr<CacheManager>			m_glyphTextureCache;
 	
-	//RefPtr<Device::IGraphicsDevice>	m_graphicsDevice;
-	Device::IGraphicsDevice*	m_graphicsDevice;
-	RefPtr<SwapChain>		m_mainSwapChain;
-	Device::ITexture*		m_dummyTexture;		///< public にはしないので RefPtr は使えない
+	Device::IGraphicsDevice*		m_graphicsDevice;
+	RefPtr<SwapChain>				m_mainSwapChain;
+	Renderer*						m_renderer;
+	RenderingThread*				m_renderingThread;
 
-	Renderer*				m_renderer;
-	RenderingThread*		m_renderingThread;
-
-	PainterEngine*			m_painterEngine;
-	bool					m_platformTextureLoading;
-
-	RefPtr<CacheManager>	m_glyphTextureCache;
-
+	PainterEngine*					m_painterEngine;
+	Device::ITexture*				m_dummyTexture;
+	bool							m_platformTextureLoading;
 };
 
 } // namespace Graphics

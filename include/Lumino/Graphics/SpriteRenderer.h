@@ -120,7 +120,7 @@ private:
 	SpriteRenderer(GraphicsManager* manager, int maxSpriteCount);
 	virtual ~SpriteRenderer();
 	GraphicsManager*	m_manager;
-	SpriteRendererImpl*	m_impl;
+	SpriteRendererImpl*	m_internal;
 };
 
 } // namespace Graphics

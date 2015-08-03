@@ -13,6 +13,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Temp, Basic)
 {
+#if 0
 	// 床
 	RefPtr<Physics::Plane> plane1(LN_NEW Physics::Plane(TestEnv::PhysicsManager));
 
@@ -45,7 +46,7 @@ TEST_F(Test_Temp, Basic)
 		TestEnv::EndRendering();
 		::Sleep(10);
 	}
-
+#endif
 
 #if 0
 	while (TestEnv::Application->DoEvents())

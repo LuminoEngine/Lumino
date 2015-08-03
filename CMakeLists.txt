@@ -108,7 +108,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/GeometryRenderer.h
-	include/Lumino/Graphics/GraphicsDevice.h
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsManager.h
 	external/GL/glew.c
@@ -116,9 +115,10 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRendererImpl.h
 	src/Graphics/GraphicsException.cpp
-	src/Graphics/GraphicsDevice.cpp
+	src/Graphics/GraphicsHelper.h
 	src/Graphics/GraphicsManager.cpp
 	src/Graphics/IndexBuffer.cpp
+	src/Graphics/Internal.h
 	src/Graphics/Painter.cpp
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
@@ -297,12 +297,15 @@ set(LN_SOURCES_Game
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
 	include/Lumino/BindingSupport.h
+	include/Lumino/Common.h
 	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Profiler.h
 	include/Lumino/Property.h
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	src/Application.cpp
+	src/ApplicationContext.cpp
+	src/ApplicationContext.h
 	src/Profiler.cpp
 	src/Property.cpp
 	src/RoutedEvent.cpp

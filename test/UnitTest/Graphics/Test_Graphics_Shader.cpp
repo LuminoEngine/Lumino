@@ -46,7 +46,7 @@ TEST_F(Test_Graphics_Shader, Basic)
 	const int count = 500;
 	RefPtr<Shader> shaders[count];
 
-	while (TestEnv::Application->DoEvents())
+	while (TestEnv::Platform->DoEvents())
 	{
 		Renderer* r = TestEnv::BeginRendering();
 		r->SetVertexBuffer(vb);
