@@ -158,7 +158,7 @@ int main()
 		{
 			r->SetRenderTarget(0, swap1->GetBackBuffer());
 			r->SetDepthBuffer(swap1->GetBackBufferDepth());
-			r->Clear(Graphics::ClearFlags::All, Graphics::ColorF::Gray);
+			r->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
 
 			Graphics::RenderState state;
 			state.Blend = Graphics::BlendMode_Alpha;

@@ -100,9 +100,9 @@ varying vec4	v_UVOffset;
 varying vec2	v_UVTileUnit;
 void main()
 {
-	ln_Vertex.xy -= 0.5;
-	gl_Position		= float4(ln_Vertex, 1.0f) * g_worldMatrix;
-	gl_Position		= gl_Position * g_viewProjMatrix;
+	//ln_Vertex.xy -= 0.5;
+	gl_Position		= g_worldMatrix * float4(ln_Vertex, 1.0f);
+	gl_Position		= g_viewProjMatrix * gl_Position;
 	v_Color			= ln_Color0;
 	v_UVOffset		= ln_MultiTexCoord0;
 	v_UVTileUnit	= ln_MultiTexCoord1;
@@ -112,7 +112,7 @@ void main()
 //=============================================================================
 #ifdef LN_GLSL_FRAGMENT
 uniform sampler2D	g_texture;
-varying vec3		v_Pos;
+uniform sampler2D	g_glyphMaskTexture;
 varying vec4		v_Color;
 varying vec4		v_UVOffset;
 varying vec2		v_UVTileUnit;
@@ -122,6 +122,6 @@ void main()
 	vec2 uvWidth = v_UVOffset.zw;		// ì]ëóå≥ãÈå`ÇÃïù UV
 	vec2 uvRatio = fmod(v_UVTileUnit, 1.0);	// 1Ç¬ÇÃéläpå`ÇÃíÜÇÃÇ«Ç±Ç…Ç¢ÇÈÇÃÇ© (0.0Å`1.0)
 	vec2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
-    gl_FragColor = texture2D(g_texture, uv);
+    gl_FragColor = texture2D(g_texture, uv) * tex2D(g_glyphMaskTexture, uv) * v_Color;
 }
 #endif

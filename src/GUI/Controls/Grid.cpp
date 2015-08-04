@@ -197,8 +197,8 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 		//		- 範囲外のインデックスが指定されていたら 0 にする。
 		int colIdx = Grid::GetColumn(child);	// TODO: このプロパティ検索がボトルネックになるかも
 		int rowIdx = Grid::GetRow(child);
-		colIdx = m_columnDefinitionList->CheckValidIndex(colIdx) ? colIdx : 0;
-		rowIdx = m_rowDefinitionList->CheckValidIndex(rowIdx)    ? rowIdx : 0;
+		colIdx = m_columnDefinitionList->IsOutOfRange(colIdx) ? 0 : colIdx;
+		rowIdx = m_rowDefinitionList->IsOutOfRange(rowIdx) ? 0 : rowIdx;
 
 		ColumnDefinition* col = m_columnDefinitionList->IsEmpty() ? NULL : m_columnDefinitionList->GetAt(colIdx);
 		RowDefinition*    row = m_rowDefinitionList->IsEmpty() ? NULL : m_rowDefinitionList->GetAt(rowIdx);

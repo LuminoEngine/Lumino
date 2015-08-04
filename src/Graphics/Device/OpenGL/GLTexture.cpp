@@ -147,7 +147,9 @@ void GLTexture::SetSamplerState(const SamplerState& state)
 //-----------------------------------------------------------------------------
 void GLTexture::SetSubData(const Point& point, const void* data, const Size& dataBitmapSize)
 {
-	LN_THROW(point.IsZero(), NotImplementedException);
+	//LN_THROW(point.IsZero(), NotImplementedException);
+
+	// ※同一フォーマットであることが前提
 
 	// フォーマットが同一ならそのまま転送すればよい
 	//if (bitmap->GetPixelFormat() == Utils::TranslatePixelFormat(m_format))
@@ -162,8 +164,8 @@ void GLTexture::SetSubData(const Point& point, const void* data, const Size& dat
 		glTexSubImage2D(
 			GL_TEXTURE_2D,
 			0,//mMipLevel,
-			0,
-			0,//m_realSize.Height - bitmap->GetSize().Height,
+			point.X,
+			/*m_realSize.Height - */point.Y,
 			dataBitmapSize.Width,//bitmap->GetSize().Width,
 			dataBitmapSize.Height,///bitmap->GetSize().Height,
 			pixelFormat,

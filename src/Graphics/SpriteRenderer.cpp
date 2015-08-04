@@ -385,6 +385,25 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	m_vertexBuffer.Attach(device->CreateVertexBuffer(
 		BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount, m_maxSprites * 4, NULL, DeviceResourceUsage_Dynamic));
 
+#if 1
+	ByteBuffer indexBuf(sizeof(uint16_t) * m_maxSprites * 6, false);
+	uint16_t* ib = (uint16_t*)indexBuf.GetData();
+	int idx = 0;
+	int i2 = 0;
+	for (int i = 0; i < m_maxSprites; ++i)
+	{
+		i2 = i * 6;
+		idx = i * 4;
+		ib[i2 + 0] = idx;
+		ib[i2 + 1] = idx + 1;
+		ib[i2 + 2] = idx + 2;
+		ib[i2 + 3] = idx + 2;
+		ib[i2 + 4] = idx + 1;
+		ib[i2 + 5] = idx + 3;
+	}
+	m_indexBuffer.Attach(device->CreateIndexBuffer(
+		m_maxSprites * 6, ib, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
+#else
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
 		m_maxSprites * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
@@ -406,12 +425,15 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 		ib[i2 + 5] = idx + 3;
 	}
 	m_indexBuffer->Unlock();
+#endif
 
 	//-----------------------------------------------------
 	// シェーダ
 
 	ShaderCompileResult r;
 	m_shader.Shader.Attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
+	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+
 	m_shader.varTexture			= m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
 	m_shader.varViewProjMatrix	= m_shader.Shader->GetVariableByName(_T("gViewProjMatrix"));
 	m_shader.varViewPixelSize	= m_shader.Shader->GetVariableByName(_T("gViewportSize"));

@@ -67,6 +67,11 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	location.X += 16;
 
 	TCHAR text[256] = { 0 };
+
+	StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().GetCStr());
+	painter.DrawString(text, -1, location);
+	location.Y += 16;
+
 	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_profiler->GetCommitedMainFPS());
 	painter.DrawString(text, -1, location);
 
@@ -126,7 +131,7 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 	// 名前カラム背景色
 	painter.SetBrush(ColorBrush::Blue);
 	painter.SetOpacity(0.2f);
-	painter.DrawRectangle(RectF(listRect.GetLocation(), ThreadNameColumnWidth, listRect.Height));
+	painter.DrawRectangle(RectF(listRect.GetLocation(), ThreadNameColumnWidth, groupCount * rowHeight));
 
 	// バーのNG領域背景色
 	RectF ngArea(
@@ -140,7 +145,7 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 	// リスト縦罫線
 	painter.SetBrush(ColorBrush::Black);
 	painter.SetOpacity(0.7f);
-	painter.DrawRectangle(RectF(listRect.X + ThreadNameColumnWidth - 1, listRect.Y, 1, listRect.Height));
+	painter.DrawRectangle(RectF(listRect.X + ThreadNameColumnWidth - 1, listRect.Y, 1, groupCount * rowHeight));
 
 	int iGrout;
 	const auto& groups = m_profiler->GetCommitedGroups();
@@ -157,15 +162,20 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 		PointF pt(listRect.X + 4, listRect.Y + (iGrout * rowHeight) + 1);
 		painter.DrawString(groups[iGrout].Name, pt);
 
-		// FPS
+		// ms
 		TCHAR fps[256] = { 0 };
-		StringTraits::SPrintf(fps, 256, _T("%.1f FPS"), 1.0 / (groups[iGrout].TotalTime / 1000000.0));	// us → s の後、逆数
+		StringTraits::SPrintf(fps, 256, _T("%.1f ms"), (groups[iGrout].TotalTime / 1000000.0));	// us → ms の後
 		pt.Y += 16;
 		painter.DrawString(fps, -1, pt);
 
 		// セクションを積み上げ棒グラフで表示
 		DrawSectionGraphBar(painter, groups[iGrout], listRect.X + ThreadNameColumnWidth, listRect.Y + (iGrout * rowHeight), listRect);
 	}
+
+	// row 下部罫線
+	painter.SetBrush(ColorBrush::Black);
+	painter.SetOpacity(0.7f);
+	painter.DrawRectangle(listRect.X, listRect.Y + (groupCount * rowHeight), listRect.Width, 1.0f);
 }
 
 //-----------------------------------------------------------------------------

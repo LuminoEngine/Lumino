@@ -9,6 +9,7 @@
 #include "../external/GL/glext.h"
 
 #if defined(LN_WIN32)
+	//#include <GL/wglew.h>
 	#include "../external/GL/wglext.h"
 	#include <d3d9.h>
 	#include <d3dx9.h>

@@ -17,6 +17,8 @@ int		Profiler::Group_RenderThread = 1;
 int		Profiler::Section_MainThread_Update = 0;
 int		Profiler::Section_MainThread_PrepareRendering = 1;
 int		Profiler::Section_MainThread_GUILayput = 2;
+int		Profiler::Section_RenderThread_CommandExecute = 3;
+
 
 //-----------------------------------------------------------------------------
 //
@@ -31,11 +33,12 @@ Profiler::Profiler()
 	, m_commitMutex()
 	, m_enabled(false)
 {
-	Group_MainThread = RegisterGroup(_T("Main thread"));
-	Group_RenderThread = RegisterGroup(_T("Rendering thread"));
+	Group_MainThread = RegisterGroup(_T("Main"));
+	Group_RenderThread = RegisterGroup(_T("Rendering"));
 	Section_MainThread_Update = RegisterSection(Group_MainThread, _T("Update"));
 	Section_MainThread_PrepareRendering = RegisterSection(Group_MainThread, _T("Prepare rendering"));
 	Section_MainThread_GUILayput = RegisterSection(Group_MainThread, _T("GUI layput"));
+	Section_RenderThread_CommandExecute = RegisterSection(Group_RenderThread, _T("Execute commands"));
 }
 
 //-----------------------------------------------------------------------------

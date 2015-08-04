@@ -187,6 +187,11 @@ void Texture::SetSubData(const Point& offset, Imaging::Bitmap* bitmap)
 {
 	if (LN_VERIFY_ASSERT(bitmap != NULL)) { return; }
 
+	// 現状、ピクセルフォーマットが一致していることが前提
+	if (bitmap->GetPixelFormat() != Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) {
+		LN_THROW(0, NotImplementedException);
+	}
+
 	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<Texture_SetSubDataBitmapCommand>(
 		m_deviceObj, offset, bitmap);
 }

@@ -187,6 +187,7 @@ ISwapChain* WGLGraphicsDevice::CreateSwapChain(Platform::Window* window)
 void WGLGraphicsDevice::AttachRenderingThread()
 {
 	MakeCurrentContext(m_mainRenderingContext);
+	//wglSwapIntervalEXT(0);
 }
 
 //-----------------------------------------------------------------------------

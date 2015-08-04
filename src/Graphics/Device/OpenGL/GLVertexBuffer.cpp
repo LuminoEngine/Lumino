@@ -162,7 +162,9 @@ void GLVertexBuffer::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_ty
 //-----------------------------------------------------------------------------
 void GLVertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	LN_THROW(0, NotImplementedException);
+	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
+	glBufferSubData(GL_ARRAY_BUFFER, offsetBytes, dataBytes, data); LN_CHECK_GLERROR();
+	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
 }
 
 //-----------------------------------------------------------------------------

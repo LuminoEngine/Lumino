@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../Internal.h"
+#include <Lumino/Profiler.h>
 #include "Device/DeviceInterface.h"
 #include "RenderingThread.h"
 
@@ -127,6 +128,7 @@ void RenderingThread::Execute()
 			{
 				try
 				{
+					ScopedProfilerSection sec(Profiler::Group_RenderThread, Profiler::Section_RenderThread_CommandExecute);
 					// コマンドリスト実行
 					commandList->Execute(m_renderer);
 				}

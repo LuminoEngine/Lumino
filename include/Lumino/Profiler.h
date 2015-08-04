@@ -24,6 +24,7 @@ public:
 	static int		Section_MainThread_Update;
 	static int		Section_MainThread_PrepareRendering;
 	static int		Section_MainThread_GUILayput;
+	static int		Section_RenderThread_CommandExecute;
 
 	struct Section
 	{

@@ -355,7 +355,7 @@ public:
 
 public:
 
-	bool CheckValidIndex(int index) const { return m_list.CheckValidIndex(index); }
+	bool IsOutOfRange(int index) const { return m_list.IsOutOfRange(index); }
 	bool IsEmpty() const { return m_list.IsEmpty(); }
 
 	/// —v‘f”‚ğæ“¾‚·‚é

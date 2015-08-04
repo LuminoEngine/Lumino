@@ -4,6 +4,9 @@
 //  SpriteRenderer 用シェーダ
 //=============================================================================
 
+//=============================================================================
+#ifdef LN_HLSL_DX9
+
 float4x4        gViewProjMatrix;
 
 float2          gViewportSize;
@@ -65,6 +68,41 @@ technique MainDraw
     }
 }
 
+#endif
 //=============================================================================
-//
+#ifdef LN_GLSL_VERTEX
+uniform mat4	gViewProjMatrix;
+attribute vec3	ln_Vertex;			// POSITION
+attribute vec4	ln_Color0;			// COLOR0
+attribute vec2	ln_MultiTexCoord0;	// TEXCOORD0
+varying vec4	v_Color;
+varying vec2	v_TexUV;
+
+void main()
+{
+	gl_Position		= float4(ln_Vertex, 1.0f) * gViewProjMatrix;
+	v_Color			= ln_Color0;
+	v_TexUV			= ln_MultiTexCoord0;
+}
+#endif
 //=============================================================================
+#ifdef LN_GLSL_FRAGMENT
+uniform sampler2D gMaterialTexture;
+varying vec4	v_Color;
+varying vec2	v_TexUV;
+
+void main()
+{
+    gl_FragColor = texture2D(gMaterialTexture, v_TexUV) * v_Color;
+}
+#endif
+
+
+
+
+
+
+
+
+
+
