@@ -29,7 +29,7 @@ public:
 public:
 	// override Window
 	virtual void AttachEventListener(IEventListener* listener, int priority) { m_listenerEntryArray.Add(priority, listener); }
-	virtual void DetachEventListener(IEventListener* listener) { return m_listenerEntryArray.Remove(listener); }
+	virtual void DetachEventListener(IEventListener* listener) { return m_listenerEntryArray.RemoveAllValue(listener); }
 
 protected:
 	typedef SortedArray<int, IEventListener*>	EventListenerList;

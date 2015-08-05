@@ -17,7 +17,7 @@ namespace Graphics
 class TextRendererImplemented;
 
 
-
+#if 0
 /**
 	@file	文字列の描画を行うクラスです。
 
@@ -106,7 +106,7 @@ private:
 	RefPtr<Imaging::Bitmap>	m_tmpBitmap;
 	bool				m_fontFaceModified;
 };
-
+#endif
 
 class FontGlyphTextureCache
 	: public RefObject

@@ -427,6 +427,11 @@ if (WIN32)
 		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}x86")
 	endif()
 	
+	# Unicode.
+	if (${LN_USE_UNICODE_CHAR_SET})
+		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}u")
+	endif()
+	
 	set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_static")
 	
 	# MSVC Runtime library.

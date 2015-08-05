@@ -40,7 +40,7 @@ WindowBase::~WindowBase()
 //-----------------------------------------------------------------------------
 bool WindowBase::SendEventToAllListener(const EventArgs& e)
 {
-	LN_FOREACH(EventListenerList::Pair& listener, m_listenerEntryArray)
+	for (const EventListenerList::Pair& listener: m_listenerEntryArray)
 	{
 		if (listener.second->OnEvent(e)) {
 			return true;

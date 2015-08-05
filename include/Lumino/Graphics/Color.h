@@ -1,4 +1,6 @@
-﻿
+﻿/**
+	@file	Color.h
+*/
 #pragma once
 
 namespace Lumino

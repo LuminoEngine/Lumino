@@ -10,7 +10,7 @@ namespace Platform
 {
 
 /**
-	@brief	プラットフォーム固有のウィンドウシステムのウィンドウを抽象化します。
+	@brief	
 */
 class IEventListener
 {

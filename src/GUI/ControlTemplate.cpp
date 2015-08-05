@@ -168,7 +168,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	}
 
 	// プロパティを設定する
-	for (PropertyValueList::Pair& pair : m_propertyValueList)
+	for (const PropertyValueList::Pair& pair : m_propertyValueList)
 	{
 		if (pair.first->IsList())/*.second.GetType() == VariantType_List)*/
 		{
@@ -199,7 +199,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		}
 		else
 		{
-			Variant& item = pair.second;
+			const Variant& item = pair.second;
 			if (item.GetType() == VariantType_Object &&
 				dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
 			{
@@ -219,7 +219,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		GUIHelper::UIElement_SetKeyName(element, m_keyName);
 		GUIHelper::UIElement_SetTemplateParent(element, rootLogicalParent);
 
-		LN_FOREACH(PropertyInfoList::Pair& pair, m_propertyInfoList)
+		for(const PropertyInfoList::Pair& pair : m_propertyInfoList)
 		{
 			if (pair.second.Kind == PropertyKind_TemplateBinding)
 			{
