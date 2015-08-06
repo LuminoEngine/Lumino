@@ -93,10 +93,10 @@ public:
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_API LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootPane) rootPane, int width, int height)
+LN_API LNResult LNGUIElement_SetSizeWH(LN_HANDLE(LNGUIRootFrame) rootPane, int width, int height)
 {
 	LN_CHECK_ARG_HANDLE(rootPane);
-	TO_REFOBJ(GUI::RootPane, rootPane)->SetSize(SizeF((float)width, (float)height));
+	TO_REFOBJ(GUI::RootFrame, rootPane)->SetSize(SizeF((float)width, (float)height));
 	return ::LN_OK;
 }
 
@@ -145,18 +145,18 @@ LN_API LNResult LNGUIContentControl_SetContent(LN_HANDLE(LNGUIContentControl) co
 //}
 
 //=============================================================================
-// LNGUIRootPane
+// LNGUIRootFrame
 //=============================================================================
 
-LN_TYPE_INFO_IMPL(LNGUIRootPane, GUI::RootPane);
+LN_TYPE_INFO_IMPL(LNGUIRootFrame, GUI::RootFrame);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_API LNResult LNGUIRootPane_GetDefaultRootPane(LN_OUT LN_HANDLE(LNGUIRootPane)* rootPane)
+LN_API LNResult LNGUIRootFrame_GetDefaultRootFrame(LN_OUT LN_HANDLE(LNGUIRootFrame)* rootPane)
 {
 	LN_CHECK_ARG(rootPane != NULL);
-	*rootPane = LFManager::CheckRegisterObject(LFManager::Application->GetGUIManager()->GetDefaultRootPane());
+	*rootPane = LFManager::CheckRegisterObject(LFManager::Application->GetGUIManager()->GetDefaultRootFrame());
 	return ::LN_OK;
 }
 
@@ -166,14 +166,14 @@ LN_API LNResult LNGUIRootPane_GetDefaultRootPane(LN_OUT LN_HANDLE(LNGUIRootPane)
 */
 //LN_INSTANCE_API
 //LN_CONSTRUCTOR
-//LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane);
+//LNResult LNGUIRootFrame_Create(LN_HANDLE(LNGUIRootFrame)* rootPane);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//LN_API LNResult LNGUIRootPane_Create(LN_HANDLE(LNGUIRootPane)* rootPane)
+//LN_API LNResult LNGUIRootFrame_Create(LN_HANDLE(LNGUIRootFrame)* rootPane)
 //{
 //	LN_FUNC_TRY_BEGIN;
-//	RefPtr<GUI::RootPane> obj(LFManager::Application->GetGUIManager()->CreateRootPane());
+//	RefPtr<GUI::RootFrame> obj(LFManager::Application->GetGUIManager()->CreateRootFrame());
 //	obj.SafeAddRef();
 //	*rootPane = LFManager::CheckRegisterObject(obj);
 //	LN_FUNC_TRY_END_RETURN;

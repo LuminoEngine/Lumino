@@ -92,6 +92,54 @@ void UIElement::ReleaseMouseCapture()
 	m_manager->ReleaseMouseCapture(this);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::UpdateLayout()
+{
+	// サイズが定まっていない場合はレイアウトを決定できない
+	// TODO: 例外の方が良いかも？
+	if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
+
+	MeasureLayout(m_size);
+	ArrangeLayout(RectF(0, 0, m_size.Width, m_size.Height));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnLayoutUpdated()
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -127,33 +175,8 @@ void UIElement::UpdateLocalResource()
 	else {
 		LN_REFOBJ_SET(m_combinedLocalResource, parentResource);
 	}
-
-	// 自分のテンプレートを更新する必要がある場合
-	//if (m_templateModified)
-	//{
-	//	// 親は？
-	//	CombinedLocalResource* parentResource = NULL;
-	//	if (m_parent != NULL) {
-	//		parentResource = m_parent->m_combinedLocalResource;
-	//	}
-	//	else {
-	//		parentResource = m_manager->GetRootCombinedResource();	// 親要素が無ければ Manager のリソースを使う
-	//	}
-
-	//	// 結合
-	//	if (m_combinedLocalResource != NULL && parentResource != m_combinedLocalResource) {
-	//		m_combinedLocalResource->Combine(parentResource, m_localResource);
-	//	}
-	//	else {
-	//		LN_REFOBJ_SET(m_combinedLocalResource, parentResource);
-	//	}
-	//	// ControlTemplate や DataTemplate はこのオーバーライドで Apply される
-	//	OnApplyTemplate(m_combinedLocalResource);
-
-	//	m_templateModified = false;			// 自分のテンプレートを更新した
-	//	m_childTemplateModified = true;		// 自分を更新したら、子も更新する必要がある
-	//}
 }
+
 
 //-----------------------------------------------------------------------------
 //
@@ -237,7 +260,7 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	//	child->ArrangeLayout(m_finalLocalRect;
 	//}
 
-	LayoutUpdated(NULL);
+	OnLayoutUpdated();
 }
 
 
@@ -292,7 +315,7 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 	// 古いほうからイベントハンドラを解除する
 	// (m_rootLogicalParent に何かセットされているのだから、m_templateBindingHandler は NULL ではないはず)
 	if (m_rootLogicalParent != NULL) {
-		m_rootLogicalParent->PropertyChanged -= m_templateBindingHandler;
+		m_rootLogicalParent->PropertyChangedForTemplateBindings -= m_templateBindingHandler;
 	}
 
 	// delegate が未作成であれば作る (初回時)
@@ -305,7 +328,7 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 
 	// 新しい方にイベントハンドラを登録する
 	if (m_rootLogicalParent) {
-		m_rootLogicalParent->PropertyChanged += m_templateBindingHandler;
+		m_rootLogicalParent->PropertyChangedForTemplateBindings += m_templateBindingHandler;
 	}
 
 	// 子要素へも同じ論理親要素をセットする
@@ -320,25 +343,14 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 void UIElement::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
 	CoreObject::OnPropertyChanged(e);
-	if (m_style != NULL)
-	{
+	
+	// TemplateBinding に伝える
+	PropertyChangedForTemplateBindings(e);
+	
+	// スタイルの持つトリガーに伝える
+	if (m_style != NULL) {
 		m_style->NortifyTargetObjectPropertyChanged(this, e);
 	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void UIElement::UpdateLayout()
-{
-	SizeF size = GetSize();
-
-	// サイズが定まっていない場合はレイアウトを決定できない
-	// TODO: 例外の方が良いかも？
-	if (Math::IsNaNOrInf(size.Width) || Math::IsNaNOrInf(size.Height)) { return; }
-
-	MeasureLayout(size);
-	ArrangeLayout(RectF(0, 0, size.Width, size.Height));
 }
 
 //-----------------------------------------------------------------------------

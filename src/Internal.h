@@ -42,3 +42,4 @@ extern GraphicsManager* Manager;	// TODO: 削除予定
 } // namespace Graphics
 } // namespace Lumino
 
+#include "ApplicationContext.h"

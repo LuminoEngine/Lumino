@@ -41,7 +41,7 @@ public:
 	void Finalize();
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
-	RootPane* GetDefaultRootPane() const { return m_defaultRootPane; }
+	RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
 
 	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// とりあえず内部用。言語バインダのことは後で。
 	CoreObject* CreateObject(const String& typeFullName);
@@ -75,7 +75,7 @@ private:
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	EventArgsPool						m_eventArgsPool;
-	RootPane*							m_defaultRootPane;
+	RootFrame*							m_defaultRootFrame;
 	ResourceDictionary*					m_defaultTheme;
 	CombinedLocalResource*				m_rootCombinedResource;
 	UIElement*							m_mouseHoverElement;		///< 現在マウス位置にある UIElement

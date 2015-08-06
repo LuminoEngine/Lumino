@@ -155,6 +155,7 @@ public:
 	void ScrollToVerticalOffset(double offset);
 
 protected:
+	void OnLayoutUpdated();
 	virtual void PollingTemplateChildCreated(UIElement* newElement);
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
@@ -166,7 +167,6 @@ private:
 
 	void Handler_ScrollBar_Scroll(ScrollEventArgs* e);
 
-	void ScrollViewer_LayoutUpdated(RoutedEventArgs* e);
 
 private:
 	ScrollContentPresenter*	m_scrollContentPresenter;	///< VisualTree “à‚Ì ScrollContentPresenter

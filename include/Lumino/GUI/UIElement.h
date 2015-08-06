@@ -110,7 +110,7 @@ private:
 
 
 /**
-	@brief		
+	@brief	GUI 要素のベースクラスです。
 */
 class UIElement
 	: public CoreObject
@@ -118,29 +118,97 @@ class UIElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	LN_PROPERTY(SizeF,					SizeProperty);					///< Size プロパティの識別子
-	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	///< HorizontalAlignment プロパティの識別子
-	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		///< VerticalAlignment プロパティの識別子
-	LN_PROPERTY(bool,					IsHitTestProperty);				///< IsHitTest プロパティの識別子
+	LN_PROPERTY(SizeF,					SizeProperty);					/**< Size プロパティの識別子 */
+	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
+	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
+	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
 
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				///< MouseEnter ルーティングイベントの識別子
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				///< MouseLeave ルーティングイベントの識別子
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				///< MouseMove ルーティングイベントの識別子
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				///< MouseDown ルーティングイベントの識別子
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					///< MouseUp ルーティングイベントの識別子
-	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
-	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		///< このイベントは内部用であるため、ユーザーはハンドルすることはできない
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< このイベントは内部用であるため、ユーザーはハンドルすることはできない */
+	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< このイベントは内部用であるため、ユーザーはハンドルすることはできない */
 
 public:
+	//-------------------------------------------------------------------------
+	/** @name RoutedEvent */
+	/** @{ */
+
+	RoutedEventSlot<MouseEventArgs>		MouseEnter;		/**< マウスポインタがこの要素の境界内に入ったときに発生します。*/
+	RoutedEventSlot<MouseEventArgs>		MouseLeave;		/**< マウスポインタがこの要素の境界から出たときに発生します。*/
+	RoutedEventSlot<MouseEventArgs>		MouseMove;		/**< マウスポインタがこの要素上で移動すると発生します。 */
+	RoutedEventSlot<MouseEventArgs>		MouseDown;		/**< マウスポインタがこの要素上にあるときに任意のマウスボタンが押されると発生します。*/
+	RoutedEventSlot<MouseEventArgs>		MouseUp;		/**< マウスポインタがこの要素上にあるときに任意のマウスボタンが離されると発生します。*/
+
+	/** @} */
+	//-------------------------------------------------------------------------
+	/** @name Property */
+	/** @{ */
+
+	/** 要素のサイズを設定します。規定値は NaN で、この値は自動サイズ変更が有効であることを示します。*/
+	//void SetSize(const SizeF& size) { SetTypedPropertyValue(SizeProperty, size); }
+
+	/** 要素のサイズを取得します。*/
+	//const SizeF& GetSize() const { return GetTypedPropertyValue<const SizeF&>(SizeProperty); }
+
+	/** @} */
+
+public:
+	/** 論理上の親要素を取得します。*/
+	UIElement* GetParent() const { return m_parent; }
+
+	/** 要素の識別名を取得します。*/
+	const String& GetKeyName() const { return m_keyName; }
+
+	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
+	const SizeF& GetDesiredSize() const { return m_desiredSize; }
+
+	/** マウスキャプチャを設定します。*/
+	void CaptureMouse();
+
+	/** マウスキャプチャを解除します。*/
+	void ReleaseMouseCapture();
+
+protected:
+	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
+	virtual void OnLayoutUpdated();
+
+protected:
 	UIElement(GUIManager* manager);
 	virtual ~UIElement();
 
-	/// 論理ツリー上の親要素を取得します。
-	UIElement* GetParent() const { return m_parent; }
+private:
+	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
+	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public:
 
-	const String& GetKeyName() const { return m_keyName; }
 
 	// Property
 
@@ -155,12 +223,6 @@ public:
 
 	//
 
-	/// 要素のサイズを設定します。規定値は NAN で、自動的にサイズを計算します。
-	void SetSize(const SizeF& size) { m_size = size; }// { SetValue(SizeProperty, size); }	// TODO: レイアウト更新中は頻繁にアクセスするのでできれば メンバ変数にしたい・・・
-	
-	/// 要素のサイズを取得します。
-	const SizeF& GetSize() const { return m_size; }// { return GetValue(SizeProperty).GetSizeF(); }	// TODO: 危ない。参照で返すとスタックの Variant で消える
-
 
 	void SetHorizontalAlignment(HorizontalAlignment value) { m_horizontalAlignment = value; }
 	HorizontalAlignment GetHorizontalAlignment() const { return m_horizontalAlignment; }
@@ -174,27 +236,16 @@ public:
 	//bool IsHitTest() const { return GetPropertyValue(IsHitTestProperty).GetBool(); }
 
 
-	void CaptureMouse();
-	void ReleaseMouseCapture();
-
-
 
 
 
 
 public:
-	RoutedEventSlot<MouseEventArgs>		MouseEnter;
-	RoutedEventSlot<MouseEventArgs>		MouseLeave;
-	RoutedEventSlot<MouseEventArgs>		MouseMove;
-	RoutedEventSlot<MouseEventArgs>		MouseDown;
-	RoutedEventSlot<MouseEventArgs>		MouseUp;
 
 	/// この要素のレイアウトの更新が完了した時に発生します。このイベントはルーティングイベントではありません。
-	Event01<RoutedEventArgs*>			LayoutUpdated;
+	//Event01<RoutedEventArgs*>			LayoutUpdated;
 
 private:
-	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
-	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
 
 public:
 
@@ -239,9 +290,6 @@ public:
 	void SetTemplateModified(bool modified) { m_templateModified = modified; if (modified && m_parent != NULL) { m_parent->SetChildTemplateModified(true); } }
 
 public:
-	const SizeF& GetDesiredSize() const {
-		return m_desiredSize;
-	}
 
 
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
@@ -372,7 +420,7 @@ protected:
 	VisualStateInstance*	m_visualStateInstance;
 
 	SizeF					m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
-	RectF					m_finalLocalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootPane のローカル座標系)
+	RectF					m_finalLocalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
 
 
@@ -414,6 +462,7 @@ private:
 	/// 例えば Button にテンプレートを適用すると、Button よりしたのビジュアル要素.m_rootLogicalParent はすべて Button を指す。
 	UIElement*		m_rootLogicalParent;
 	Delegate01<PropertyChangedEventArgs*>	m_templateBindingHandler;
+	Event01<PropertyChangedEventArgs*>		PropertyChangedForTemplateBindings;
 
 	bool			m_childTemplateModified;	///< 子要素のテンプレートを更新するべきか
 	bool			m_templateModified;

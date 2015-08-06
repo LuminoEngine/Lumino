@@ -221,8 +221,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/ItemsControl.h
 	include/Lumino/GUI/ItemsPresenter.h
-	include/Lumino/GUI/Property.h
-	include/Lumino/GUI/RootPane.h
+	include/Lumino/GUI/RootFrame.h
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/UIElement.h
@@ -252,7 +251,7 @@ set(LN_SOURCES_GUI
 	src/GUI/GUIManager.cpp
 	src/GUI/ItemsControl.cpp
 	src/GUI/ItemsPresenter.cpp
-	src/GUI/RootPane.cpp
+	src/GUI/RootFrame.cpp
 	src/GUI/RoutedCommand.cpp
 	src/GUI/TextBlock.cpp
 	src/GUI/UIElement.cpp

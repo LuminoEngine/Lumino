@@ -37,4 +37,13 @@ Graphics::GraphicsManager* ApplicationContext::GetGraphicsManager()
 	return g_app->GetGraphicsManager();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GUI::GUIManager* ApplicationContext::GetGUIManager()
+{
+	LN_CHECK_STATE_RETURNV(g_app != NULL, NULL);
+	return g_app->GetGUIManager();
+}
+
 } // namespace Lumino

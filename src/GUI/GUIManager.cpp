@@ -948,7 +948,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
-#include <Lumino/GUI/RootPane.h>
+#include <Lumino/GUI/RootFrame.h>
 #include <Lumino/GUI/Button.h>
 #include <Lumino/GUI/ButtonChrome.h>
 #include <Lumino/GUI/Controls/Thumb.h>
@@ -983,7 +983,7 @@ GUIManager::GUIManager()
 	: m_mouseHoverElement(NULL)
 	, m_defaultTheme(NULL)
 	, m_rootCombinedResource(NULL)
-	, m_defaultRootPane(NULL)
+	, m_defaultRootFrame(NULL)
 	, m_capturedElement(NULL)
 {
 }
@@ -1037,8 +1037,8 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 
 
-	m_defaultRootPane = RootPane::Create(this);
-	m_defaultRootPane->ApplyTemplate();	// テーマを直ちに更新
+	m_defaultRootFrame = ApplicationContext::CreateObject<RootFrame>(this);
+	m_defaultRootFrame->ApplyTemplate();	// テーマを直ちに更新
 }
 
 //-----------------------------------------------------------------------------
@@ -1046,16 +1046,16 @@ void GUIManager::Initialize(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 void GUIManager::Finalize()
 {
-	LN_SAFE_RELEASE(m_defaultRootPane);
+	LN_SAFE_RELEASE(m_defaultRootFrame);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//RootPane* GUIManager::CreateRootPane()
+//RootFrame* GUIManager::CreateRootFrame()
 //{
-//	m_defaultRootPane = LN_NEW RootPane(this);
-//	m_defaultRootPane->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
+//	m_defaultRootFrame = LN_NEW RootFrame(this);
+//	m_defaultRootFrame->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
 //	return m_rootPane;
 //}
 
@@ -1088,13 +1088,13 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
 		return m_capturedElement->OnEvent(EventType_MouseMove, args);
 	}
-	//if (m_defaultRootPane == NULL) { return false; }
+	//if (m_defaultRootFrame == NULL) { return false; }
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
 	//if (m_mouseHoverElement != NULL)
 	return m_mouseHoverElement->OnEvent(EventType_MouseMove, args);
-	//bool r = m_defaultRootPane->OnEvent(EventType_MouseMove, args);
+	//bool r = m_defaultRootFrame->OnEvent(EventType_MouseMove, args);
 	//return UpdateMouseHover(PointF(clientX, clientY));
 }
 
@@ -1114,7 +1114,7 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 	//if (m_mouseHoverElement != NULL) {
 	return m_mouseHoverElement->OnEvent(EventType_MouseButtonDown, args);
 	//}
-	//return m_defaultRootPane->OnEvent(EventType_MouseButtonDown, args);
+	//return m_defaultRootFrame->OnEvent(EventType_MouseButtonDown, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -1128,10 +1128,10 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
 		return m_capturedElement->OnEvent(EventType_MouseButtonUp, args);
 	}
-	//if (m_defaultRootPane == NULL) { return false; }
+	//if (m_defaultRootFrame == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
-	//return m_defaultRootPane->OnEvent(EventType_MouseButtonUp, args);
+	//return m_defaultRootFrame->OnEvent(EventType_MouseButtonUp, args);
 	return m_mouseHoverElement->OnEvent(EventType_MouseButtonUp, args);
 }
 
@@ -1146,10 +1146,10 @@ bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
 		return m_capturedElement->OnEvent(EventType_MouseMove, args);
 	}
-	//if (m_defaultRootPane == NULL) { return false; }
+	//if (m_defaultRootFrame == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
 	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, delta, clientX, clientY));
-	//return m_defaultRootPane->OnEvent(EventType_MouseWheel, args);
+	//return m_defaultRootFrame->OnEvent(EventType_MouseWheel, args);
 	return m_mouseHoverElement->OnEvent(EventType_MouseWheel, args);
 }
 
@@ -1158,9 +1158,9 @@ bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
-	if (m_defaultRootPane == NULL) { return false; }
+	if (m_defaultRootFrame == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_defaultRootPane->OnEvent(EventType_KeyDown, args);
+	return m_defaultRootFrame->OnEvent(EventType_KeyDown, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -1168,9 +1168,9 @@ bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isCon
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
-	if (m_defaultRootPane == NULL) { return false; }
+	if (m_defaultRootFrame == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_defaultRootPane->OnEvent(EventType_KeyUp, args);
+	return m_defaultRootFrame->OnEvent(EventType_KeyUp, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -1219,9 +1219,9 @@ bool GUIManager::UpdateMouseHover(const PointF& mousePos)
 	//}
 
 	// 通常のウィンドウのイベントを処理する
-	if (m_defaultRootPane != NULL)
+	if (m_defaultRootFrame != NULL)
 	{
-		m_mouseHoverElement = m_defaultRootPane->CheckMouseHoverElement(mousePos);
+		m_mouseHoverElement = m_defaultRootFrame->CheckMouseHoverElement(mousePos);
 		if (m_mouseHoverElement != NULL) {
 			goto EXIT;
 		}
@@ -1251,13 +1251,13 @@ void GUIManager::BuildDefaultTheme()
 {
 	// TODO: このへんは WPF の ScrollViewer.CreateDefaultControlTemplate() みたいにまとめたい
 
-	// RootPane
+	// RootFrame
 	{
 		RefPtr<Style> style = RefPtr<Style>::Create();
-		style->SetTargetType(RootPane::GetClassTypeInfo());
+		style->SetTargetType(RootFrame::GetClassTypeInfo());
 
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
-		t->SetTargetType(_T("RootPane"));
+		t->SetTargetType(_T("RootFrame"));
 		style->AddSetter(Control::TemplateProperty, t);
 
 		RefPtr<UIElementFactory> presenter1(LN_NEW UIElementFactory(this));

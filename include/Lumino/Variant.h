@@ -15,6 +15,7 @@ class PropertyChangedEventArgs;
 class RoutedEvent;
 class RoutedEventHandler;
 class RoutedEventArgs;
+class ApplicationContext;
 
 enum VariantType
 {
@@ -85,8 +86,6 @@ class CoreObject
 {
 public:
 	static const int IsArrayObject = 0;
-public:
-	static const RoutedEvent*	PropertyChangedEvent;
 
 public:
 	CoreObject();
@@ -132,7 +131,6 @@ public:
 	bool HasLocalPropertyValue(const Property* prop);
 
 
-	Event01<PropertyChangedEventArgs*>	PropertyChanged;
 
 	// internal
 	void NotifyPropertyChange(const Property* prop, const Variant& newValue, const Variant& oldValue/*PropertyChangedEventArgs* e*/);
@@ -201,6 +199,7 @@ TValue CoreObject::GetTypedPropertyValue(const Property* prop) const
 
 #define LN_CORE_OBJECT_TYPE_INFO_DECL() \
 	private: \
+		friend class ApplicationContext; \
 		static TypeInfo m_typeInfo; \
 		static void* m_coreObjectBindingTypeData; \
 		virtual TypeInfo* GetThisTypeInfo() const; \

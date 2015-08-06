@@ -328,8 +328,6 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 //-----------------------------------------------------------------------------
 void CoreObject::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
-	PropertyChanged.Raise(e);
-	
 	// e->Property を持つクラスのコールバックを呼び出す
 	e->ChangedProperty->NotifyPropertyChange(this, e);
 }

@@ -30,10 +30,10 @@ int main()
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		RefPtr<Application> app(Application::Create(appData));
 
-		//RefPtr<GUI::RootPane> workbench1(app->GetGUIManager()->CreateRootPane());
-		GUI::RootPane* workbench1 = app->GetGUIManager()->GetDefaultRootPane();
+		//RefPtr<GUI::RootFrame> workbench1(app->GetGUIManager()->CreateRootFrame());
+		GUI::RootFrame* workbench1 = app->GetGUIManager()->GetDefaultRootFrame();
 		//workbench1->SetSize(SizeF(640, 480));
-		workbench1->SetPropertyValue(GUI::RootPane::SizeProperty , SizeF(640, 480));
+		workbench1->SetPropertyValue(GUI::RootFrame::SizeProperty , SizeF(640, 480));
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);

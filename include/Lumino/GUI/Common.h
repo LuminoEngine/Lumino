@@ -11,7 +11,7 @@ class GUIManager;
 class ResourceDictionary;
 class UIElement;
 class Control;
-class RootPane;
+class RootFrame;
 
 class Storyboard;
 

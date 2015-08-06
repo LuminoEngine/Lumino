@@ -210,7 +210,7 @@ ScrollViewer::ScrollViewer(GUIManager* manager)
 {
 	LN_REGISTER_ROUTED_EVENT_HANDLER(ScrollViewer, ScrollEventArgs, ScrollBar::ScrollEvent, Handler_ScrollBar_Scroll);
 
-	LayoutUpdated += LN_CreateDelegate(this, &ScrollViewer::ScrollViewer_LayoutUpdated);
+	//LayoutUpdated += LN_CreateDelegate(this, &ScrollViewer::ScrollViewer_LayoutUpdated);
 }
 
 //-----------------------------------------------------------------------------
@@ -240,6 +240,21 @@ void ScrollViewer::SetVerticalOffset(float offset)
 	if (m_scrollInfo != NULL) {
 		m_scrollInfo->SetVerticalOffset(offset);
 		m_verticalScrollBar->SetValue(offset);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ScrollViewer::OnLayoutUpdated()
+{
+	if (m_scrollInfo != NULL)
+	{
+		m_verticalScrollBar->SetTrackExtent(m_scrollInfo->GetExtentHeight() - m_scrollInfo->GetViewportHeight());
+		m_verticalScrollBar->SetTrackViewportSize(m_scrollInfo->GetViewportHeight());
+
+		m_horizontalScrollBar->SetTrackExtent(m_scrollInfo->GetExtentWidth() - m_scrollInfo->GetViewportWidth());
+		m_horizontalScrollBar->SetTrackViewportSize(m_scrollInfo->GetViewportWidth());
 	}
 }
 
@@ -317,21 +332,6 @@ void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
 		default:
 			break;
 		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void ScrollViewer::ScrollViewer_LayoutUpdated(RoutedEventArgs* e)
-{
-	if (m_scrollInfo != NULL)
-	{
-		m_verticalScrollBar->SetTrackExtent(m_scrollInfo->GetExtentHeight() - m_scrollInfo->GetViewportHeight());
-		m_verticalScrollBar->SetTrackViewportSize(m_scrollInfo->GetViewportHeight());
-
-		m_horizontalScrollBar->SetTrackExtent(m_scrollInfo->GetExtentWidth() - m_scrollInfo->GetViewportWidth());
-		m_horizontalScrollBar->SetTrackViewportSize(m_scrollInfo->GetViewportWidth());
 	}
 }
 

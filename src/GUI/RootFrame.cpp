@@ -1,6 +1,6 @@
 
 #include "../Internal.h"
-#include <Lumino/GUI/RootPane.h>
+#include <Lumino/GUI/RootFrame.h>
 
 namespace Lumino
 {
@@ -8,18 +8,18 @@ namespace GUI
 {
 
 //=============================================================================
-// RootPane
+// RootFrame
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(RootPane, ContentControl);
-LN_UI_ELEMENT_SUBCLASS_IMPL(RootPane);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(RootFrame, ContentControl);
+LN_UI_ELEMENT_SUBCLASS_IMPL(RootFrame);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RootPane* RootPane::Create(GUIManager* manager)
+RootFrame* RootFrame::Create()
 {
-	auto obj = RefPtr<RootPane>::Create(manager);
+	RefPtr<RootFrame> obj(ApplicationContext::CreateRefObject<RootFrame>(ApplicationContext::GetGUIManager()));
 	obj->InitializeComponent();
 	obj.SafeAddRef();
 	return obj;
@@ -28,20 +28,16 @@ RootPane* RootPane::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RootPane::RootPane(GUIManager* manager)
+RootFrame::RootFrame(GUIManager* manager)
 	: ContentControl(manager)
 {
-	//// デフォルトテーマ
-	//m_combinedLocalResource = LN_NEW CombinedLocalResource();
-	//m_combinedLocalResource->Combine(NULL, m_manager->GetDefaultTheme());
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RootPane::~RootPane()
+RootFrame::~RootFrame()
 {
-
 }
 
 } // namespace GUI
