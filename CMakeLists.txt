@@ -301,6 +301,7 @@ set(LN_SOURCES_Application
 	include/Lumino/Application.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
+	include/Lumino/CoreObject.h
 	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Profiler.h
 	include/Lumino/Property.h
@@ -309,6 +310,7 @@ set(LN_SOURCES_Application
 	src/Application.cpp
 	src/ApplicationContext.cpp
 	src/ApplicationContext.h
+	src/CoreObject.cpp
 	src/Profiler.cpp
 	src/Property.cpp
 	src/RoutedEvent.cpp
@@ -366,6 +368,7 @@ elseif (UNIX)
 	#add_definitions(-DGLEW_MX)
 	add_definitions(-DGLEW_BUILD)
 	#add_definitions(-DGLEW_STATIC)
+	add_definitions("-std=c++11")
 endif()
 
 #--------------------------------------

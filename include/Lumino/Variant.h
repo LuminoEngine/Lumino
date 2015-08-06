@@ -303,7 +303,7 @@ public:
 		@endcode
 	*/
 	template<typename T>
-	static T Cast(const Variant& value) { return CastSelector<T, std::is_base_of<Enum, T>::type >::GetValue(value); }
+	static T Cast(const Variant& value) { return CastSelector<T, typename std::is_base_of<Enum, T>::type >::GetValue(value); }
 
 private:
 	template<typename T, typename TIsEnum> struct CastSelector { static T GetValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
@@ -442,8 +442,8 @@ public:
 		//const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
 		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
 		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
-		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
-		bool operator!=(const const_iterator& right) const	{ return m_internalItr.operator!=(right.m_internalItr); }
+		bool operator==(const const_iterator& right) const	{ return m_internalItr == right.m_internalItr; }
+		bool operator!=(const const_iterator& right) const	{ return m_internalItr != right.m_internalItr; }
 		bool operator<(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
@@ -473,8 +473,8 @@ public:
 		//const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
 		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
 		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
-		bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
-		bool operator!=(const iterator& right) const		{ return m_internalItr.operator!=(right.m_internalItr); }
+		bool operator==(const iterator& right) const		{ return m_internalItr == right.m_internalItr; }
+		bool operator!=(const iterator& right) const		{ return m_internalItr != right.m_internalItr; }
 		bool operator<(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
@@ -512,13 +512,13 @@ protected:
 template<typename T>
 struct TestTraits
 {
-	typedef typename T& DirectReference;
+	typedef T& DirectReference;
 };
 
 template<typename T>
 struct TestTraits<T*>
 {
-	typedef typename T* DirectReference;
+	typedef T* DirectReference;
 };
 
 /**
@@ -571,8 +571,8 @@ public:
 		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
 
 		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
-		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
-		bool operator!=(const const_iterator& right) const	{ return m_internalItr.operator!=(right.m_internalItr); }
+		bool operator==(const const_iterator& right) const	{ return m_internalItr == right.m_internalItr; }
+		bool operator!=(const const_iterator& right) const	{ return m_internalItr != right.m_internalItr; }
 		bool operator<(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }

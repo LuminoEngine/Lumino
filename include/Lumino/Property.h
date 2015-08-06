@@ -7,6 +7,7 @@
 
 namespace Lumino
 {
+class CoreObject;
 
 /**
 	@brief		CoreObject のサブクラスが実装できるプロパティを表します。
@@ -193,7 +194,7 @@ public:
 	}
 
 private:
-	template<typename TValue> friend class TypedPropertyInitializer;
+	template<typename T> friend class TypedPropertyInitializer;
 	String					m_name;
 	SetterFunc				m_setter;
 	GetterFunc				m_getter;
