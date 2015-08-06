@@ -5,6 +5,9 @@
 
 namespace Lumino
 {
+class Vector3;
+class Vector4;
+
 namespace Graphics
 {
 class ColorF;
@@ -115,12 +118,12 @@ public:
 	/**
 		@brief	指定した Vector3 とアルファ値をコピーして初期化します。
 	*/
-	ColorF(const Vector3& vec, float a) { R = vec.X; G = vec.Y; B = vec.Z; A = a; }
+	ColorF(const Vector3& vec, float a);
 
 	/**
 		@brief	指定した Vector4 をコピーして初期化します。
 	*/
-	ColorF(const Vector4& vec) { R = vec.X; G = vec.Y; B = vec.Z; A = vec.W; }
+	ColorF(const Vector4& vec);
 
 public:
 	
@@ -132,24 +135,12 @@ public:
 	/**
 		@brief	この色に指定した色を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void AddClamp(const ColorF& color)
-	{
-		R = Math::Clamp(R + color.R, 0.0f, 1.0f);
-		G = Math::Clamp(G + color.G, 0.0f, 1.0f);
-		B = Math::Clamp(B + color.B, 0.0f, 1.0f);
-		A = Math::Clamp(A + color.A, 0.0f, 1.0f);
-	}
+	void AddClamp(const ColorF& color);
 
 	/**
 		@brief	この色に指定した色を乗算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void MultiplyClamp(const ColorF& color)
-	{
-		R = Math::Clamp(R * color.R, 0.0f, 1.0f);
-		G = Math::Clamp(G * color.G, 0.0f, 1.0f);
-		B = Math::Clamp(B * color.B, 0.0f, 1.0f);
-		A = Math::Clamp(A * color.A, 0.0f, 1.0f);
-	}
+	void MultiplyClamp(const ColorF& color);
 
 	//----------------------------------------------------------------------
 	///**
@@ -219,17 +210,11 @@ public:
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void AddClamp(const Tone& tone)
-	{
-		R = Math::Clamp(R + tone.R, 0.0f, 1.0f);
-		G = Math::Clamp(G + tone.G, 0.0f, 1.0f);
-		B = Math::Clamp(B + tone.B, 0.0f, 1.0f);
-		GS = Math::Clamp(GS + tone.GS, 0.0f, 1.0f);
-	}
+	void AddClamp(const Tone& tone);
 
 public:
-	operator Vector4() { return *reinterpret_cast< Vector4* >(this); }
-	operator const Vector4() const { return *reinterpret_cast< const Vector4* >(this); }
+	//operator Vector4() { return *reinterpret_cast< Vector4* >(this); }
+	operator const Vector4&() const { return *reinterpret_cast< const Vector4* >(this); }
 };
 
 

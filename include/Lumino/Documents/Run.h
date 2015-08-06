@@ -1,6 +1,5 @@
 
 #pragma once
-#include "../Graphics/TextRenderer.h"
 #include "../Graphics/GlyphRun.h"
 #include "Inline.h"
 

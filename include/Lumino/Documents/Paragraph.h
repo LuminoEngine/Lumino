@@ -1,6 +1,5 @@
 
 #pragma once
-#include "../../src/Imaging/TextLayoutEngine.h"	// TODO
 #include "../Graphics/Common.h"
 #include "TextElement.h"
 #include "Inline.h"
@@ -35,7 +34,7 @@ public:
 	Paragraph(DocumentsManager* manager);
 	virtual ~Paragraph();
 
-	Imaging::FlowDirection GetFlowDirection() { return Imaging::FlowDirection::LeftToRight; }
+	Graphics::FlowDirection GetFlowDirection() { return Graphics::FlowDirection::LeftToRight; }
 
 	InlineList* GetInlines() const { return m_inlines; }
 

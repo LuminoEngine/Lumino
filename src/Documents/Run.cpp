@@ -2,6 +2,8 @@
 #include "../Internal.h"
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Documents/Run.h>
+#include "../Graphics/FontGlyphTextureCache.h"
+#include "../Graphics/GraphicsHelper.h"
 
 namespace Lumino
 {
@@ -57,12 +59,14 @@ Size Run::Measure()
 	if (m_fontDataModified)
 	{
 		UpdateFontData();
-		m_glyphRun->m_glyphTextureCache.Attach(m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData));
+		Graphics::Helper::AttachGlyphTextureCache(m_glyphRun, m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData));
 	}
 
-	m_glyphRun->m_glyphTextureCache->Measure(m_text.GetCStr(), m_text.GetLength(), &m_glyphRun->m_glyphData);
-	
-	return m_glyphRun->m_glyphData.AreaSize;
+	auto* glyphData = Graphics::Helper::GetGlyphData(m_glyphRun);
+	auto* cache = Graphics::Helper::GetGlyphTextureCache(m_glyphRun);
+
+	cache->Measure(m_text.GetCStr(), m_text.GetLength(), glyphData);
+	return glyphData->AreaSize;
 }
 
 //-----------------------------------------------------------------------------

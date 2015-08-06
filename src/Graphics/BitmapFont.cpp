@@ -5,7 +5,7 @@
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 //=============================================================================
@@ -187,5 +187,5 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code)
 }
 
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

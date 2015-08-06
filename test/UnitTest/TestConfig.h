@@ -16,7 +16,6 @@
 
 using namespace Lumino;
 using namespace Lumino::Graphics;
-using namespace Lumino::Imaging;
 using namespace Lumino::Scene;
 
 #define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).GetCStr()
@@ -49,7 +48,7 @@ public:
 	static PathName MakeScreenShotPath(const char* fileName);
 	static void SaveScreenShot(const TCHAR* filePath);
 	static bool EqualsScreenShot(const TCHAR* filePath);
-	static bool EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath);
+	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath);
 	static RefPtr<Shader> CreateShader(const TCHAR* filePath);
 
 protected:

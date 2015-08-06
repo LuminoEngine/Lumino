@@ -1,11 +1,11 @@
 ﻿
 #pragma once
-#include <Lumino/Imaging/Font.h>
-#include <Lumino/Imaging/FontManager.h>
+#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/FontManager.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 	
 /**
@@ -51,5 +51,5 @@ private:
 	FontGlyphBitmap			m_fontGlyphBitmap;		///< LookupGlyphBitmap() で返すデータ
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

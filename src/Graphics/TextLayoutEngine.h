@@ -1,11 +1,11 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
-#include <Lumino/Imaging/Font.h>
+#include <Lumino/Graphics/Font.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 ///// テキストの配置方法
@@ -33,37 +33,11 @@ namespace Imaging
 //};
 
 
-/// テキストの配置方法
-LN_ENUM(TextAlignment)
-{
-	Left = 0,				///< 左揃え
-	Center,					///< 中央揃え
-	Right,					///< 右揃え
-	Justify,				///< 両端揃え
-};
-LN_ENUM_DECLARE(TextAlignment)
-
-/// 描画領域にテキストが収まりきらない場合に、テキストを切り取る方法
-LN_ENUM(TextTrimming)
-{
-	None = 0,				///< 切り取りを行わない。
-	CharacterEllipsis,		///< 略記号(...) を描画する。
-};
-LN_ENUM_DECLARE(TextTrimming)
-
-/// テキストの描画方向
-LN_ENUM(FlowDirection)
-{
-	LeftToRight = 0,		///< テキストを左から右に描画する。
-	RightToLeft,			///< テキストを左から右に描画する。
-	TopToBottom,			///< テキストを上から下に描画する。 (試験実装)
-};
-LN_ENUM_DECLARE(FlowDirection)
 
 struct TextLayoutResultItem
 {
 	UTF32	Char;
-	Imaging::FontGlyphLocation	Location;
+	FontGlyphLocation	Location;
 };
 
 struct TextLayoutResult
@@ -116,5 +90,5 @@ private:
 
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

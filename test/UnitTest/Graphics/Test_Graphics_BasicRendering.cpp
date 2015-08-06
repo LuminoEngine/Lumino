@@ -1,5 +1,4 @@
 #include <TestConfig.h>
-using namespace Lumino::Imaging;
 
 class Test_Graphics_BasicRendering : public ::testing::Test
 {

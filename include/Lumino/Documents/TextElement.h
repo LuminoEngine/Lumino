@@ -1,7 +1,6 @@
 
 #pragma once
 #include "../Property.h"
-#include "../Imaging/Font.h"
 #include "../Graphics/GraphicsManager.h"
 #include "DocumentsRenderer.h"
 
@@ -32,7 +31,6 @@ public:
 	virtual ~TextElement();
 
 public:
-	//Imaging::Font* GetFont() const;
 
 	//const String& GetFontFamily() const { return m_fontData.Family; }
 
@@ -56,7 +54,6 @@ private:
 protected:
 	DocumentsManager* m_manager;
 	Graphics::GraphicsManager::FontData	m_fontData;
-	//RefPtr<Imaging::Font>	m_font;
 	bool	m_fontDataModified;
 };
 

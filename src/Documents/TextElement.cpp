@@ -39,17 +39,6 @@ TextElement::~TextElement()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//Imaging::Font* TextElement::GetFont() const
-//{
-//	if (m_font != NULL) { return m_font; }
-//	if (m_parent != NULL) { return m_parent->GetFont(); }
-//	LN_THROW(0, InvalidOperationException);
-//	return NULL;
-//}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 Size TextElement::Measure()
 {
 	return Size::Zero;

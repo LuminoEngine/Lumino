@@ -4,7 +4,7 @@
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 //=============================================================================
@@ -188,5 +188,5 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	}
 }
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

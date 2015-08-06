@@ -19,9 +19,7 @@ ProfilerRenderer::ProfilerRenderer(GraphicsManager* manager, Profiler* profiler)
 	: m_manager(manager)
 	, m_profiler(profiler)
 {
-	m_font.Attach(Imaging::Font::CreateBuiltInBitmapFont(m_manager->GetFontManager(), 7));
-	m_spriteRenderer.Attach(SpriteRenderer::Create(256, m_manager));
-
+	m_font.Attach(Font::CreateBuiltInBitmapFont(m_manager->GetFontManager(), 7));
 	m_windowRect.Set(8, 8, 300, 256);
 }
 
@@ -41,7 +39,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	PointF location(m_windowRect.X, m_windowRect.Y);
 
 	Painter painter(m_manager);
-	painter.SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
+	painter.SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
 	painter.SetOpacity(0.5f);
 	painter.SetFont(m_font);
 

@@ -6,7 +6,7 @@
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 /**
@@ -44,5 +44,5 @@ public:
 
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

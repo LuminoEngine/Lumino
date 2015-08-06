@@ -1,5 +1,4 @@
 #include <TestConfig.h>
-using namespace Lumino::Imaging;
 
 class Test_Imaging_Bitmap : public ::testing::Test
 {

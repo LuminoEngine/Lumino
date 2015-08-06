@@ -6,11 +6,11 @@
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/Rect.h>
 #include <Lumino/IO/Stream.h>
-#include "../../include/Lumino/Imaging/Bitmap.h"
+#include "../../include/Lumino/Graphics/Bitmap.h"
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 /// png ファイル
@@ -285,5 +285,5 @@ private:
 	}
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

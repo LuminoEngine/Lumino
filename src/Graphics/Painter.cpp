@@ -5,6 +5,8 @@
 #include "PainterEngine.h"
 #include "RenderingCommand.h"
 #include "GraphicsHelper.h"
+#include "TextLayoutEngine.h"
+#include "FontGlyphTextureCache.h"
 
 namespace Lumino
 {
@@ -108,7 +110,7 @@ void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 //
 //}
 //
-//StringLayout::StringLayout(Imaging::TextAlignment alignment)
+//StringLayout::StringLayout(TextAlignment alignment)
 //{
 //
 //}
@@ -321,10 +323,15 @@ static void perspective2DLH(Matrix* out_, float width_, float height_, float nea
 //-----------------------------------------------------------------------------
 void Painter::SetProjection(const Size& viewSize, float nearZ, float farZ)
 {
+	SetProjection(SizeF((float)viewSize.Width, (float)viewSize.Height), nearZ, farZ);
+}
+void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
+{
 	Matrix mat;
-	perspective2DLH(&mat, (float)viewSize.Width, (float)viewSize.Height, nearZ, farZ);
+	perspective2DLH(&mat, viewSize.Width,  viewSize.Height, nearZ, farZ);
 	LN_CALL_COMMAND(SetViewProjMatrix, SetProjectionCommand, mat);
 }
+
 
 //-----------------------------------------------------------------------------
 //
@@ -440,7 +447,7 @@ void Painter::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
 void Painter::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
-	Painter::DrawGlyphs(position, glyphRun->m_glyphData, glyphRun->m_glyphTextureCache);
+	Painter::DrawGlyphs(position, Helper::GetGlyphData(glyphRun), Helper::GetGlyphTextureCache(glyphRun));
 }
 
 //-----------------------------------------------------------------------------
@@ -462,14 +469,14 @@ void Painter::DrawString(const TCHAR* str, int length, const PointF& position)
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
+	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
 
 	// 
-	Imaging::TextLayoutResult result;
+	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->ResetSettings();
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
 
-	Painter::DrawGlyphs(position, result, cache);
+	Painter::DrawGlyphs(position, &result, cache);
 }
 
 //-----------------------------------------------------------------------------
@@ -483,20 +490,20 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
+	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
 
 	// 
-	Imaging::TextLayoutEngine* layout = cache->GetTextLayoutEngine();
+	TextLayoutEngine* layout = cache->GetTextLayoutEngine();
 	cache->GetTextLayoutEngine()->ResetSettings();
 
 	if (flags.TestFlag(StringFormatFlags::LeftAlignment)) {
-		layout->SetTextAlignment(Imaging::TextAlignment::Left);
+		layout->SetTextAlignment(TextAlignment::Left);
 	}
 	else if (flags.TestFlag(StringFormatFlags::RightAlignment)) {
-		layout->SetTextAlignment(Imaging::TextAlignment::Right);
+		layout->SetTextAlignment(TextAlignment::Right);
 	}
 	else if (flags.TestFlag(StringFormatFlags::CenterAlignment)) {
-		layout->SetTextAlignment(Imaging::TextAlignment::Center);
+		layout->SetTextAlignment(TextAlignment::Center);
 	}
 	else {
 	}
@@ -504,29 +511,29 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, rect.Width, rect.Height));
 
 
-	Imaging::TextLayoutResult result;
+	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
 
-	Painter::DrawGlyphs(rect.GetTopLeft(), result, cache);
+	Painter::DrawGlyphs(rect.GetTopLeft(), &result, cache);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawGlyphs(const PointF& position, const Imaging::TextLayoutResult& result, FontGlyphTextureCache* cache)
+void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
 {
 	// 一時メモリ確保
-	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * result.Items.GetCount());
+	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * result->Items.GetCount());
 	auto data = (PainterEngine::GlyphRunData*)m_tempBuffer.GetData();
 
 	// 確保したメモリにテクスチャ描画情報を作っていく
 	Texture* tex1 = NULL;
 	Texture* tex2 = NULL;	// TODO: ストローク
-	int count = result.Items.GetCount();
+	int count = result->Items.GetCount();
 	for (int i = 0; i < count; ++i)
 	{
 		Rect srcRect;
-		const Imaging::TextLayoutResultItem& item = result.Items[i];
+		const TextLayoutResultItem& item = result->Items[i];
 		cache->LookupGlyph(item.Char, &tex1, &srcRect);
 
 		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);

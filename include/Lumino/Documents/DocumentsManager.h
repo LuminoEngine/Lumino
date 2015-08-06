@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../Imaging/Font.h"
+#include "../Graphics/Font.h"
 #include "../Graphics/GraphicsManager.h"
 
 namespace Lumino

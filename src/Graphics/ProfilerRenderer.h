@@ -1,7 +1,7 @@
 
 #pragma once
 #include <Lumino/Profiler.h>
-#include <Lumino/Imaging/Font.h>
+#include <Lumino/Graphics/Font.h>
 #include <Lumino/Graphics/GlyphRun.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/Painter.h>
@@ -35,9 +35,7 @@ private:
 private:
 	GraphicsManager*		m_manager;
 	Profiler*				m_profiler;
-	RefPtr<Imaging::Font>	m_font;
-	RefPtr<SpriteRenderer>	m_spriteRenderer;	// TODO: ‚¢‚ç‚È‚¢
-
+	RefPtr<Font>			m_font;
 	RectF					m_windowRect;
 };
 

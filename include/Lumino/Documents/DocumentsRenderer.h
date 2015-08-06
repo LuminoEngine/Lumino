@@ -1,7 +1,6 @@
 
 #pragma once
-#include "../Imaging/Font.h"
-#include "../../src/Imaging/TextLayoutEngine.h"	// TODO
+#include "../Graphics/Font.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Painter.h"
 

@@ -2,11 +2,11 @@
 #include "../Internal.h"
 #include <algorithm>
 #include "PngFile.h"
-#include "../../include/Lumino/Imaging/Bitmap.h"
+#include <Lumino/Graphics/Bitmap.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 //=============================================================================
@@ -441,5 +441,5 @@ void Bitmap::BitBltInternal(
 #endif
 }
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

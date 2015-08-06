@@ -13,7 +13,7 @@
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 //=============================================================================
@@ -905,5 +905,5 @@ void FreeTypeFont::rasterCallback(
 }
 #endif
 	
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

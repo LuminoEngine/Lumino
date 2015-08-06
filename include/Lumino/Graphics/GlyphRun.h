@@ -1,6 +1,8 @@
-
+/**
+	@file	GlyphRun.h
+*/
 #pragma once
-#include "TextRenderer.h"
+#include "Common.h"
 
 namespace Lumino
 {
@@ -8,18 +10,22 @@ namespace Graphics
 {
 
 /**
-	@brief		
+	@brief	同じ描画スタイルを適用できる一連のグリフを表します。
 */
 class GlyphRun
 	: public RefObject
 {
 public:
-	GlyphRun() {}
-	virtual ~GlyphRun() {}
+	GlyphRun();
+	virtual ~GlyphRun();
 
-public:
-	RefPtr<FontGlyphTextureCache>	m_glyphTextureCache;
-	Imaging::TextLayoutResult		m_glyphData;
+private:
+	void AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache);
+
+private:
+	friend class Helper;
+	Internal::FontGlyphTextureCache*	m_glyphTextureCache;
+	TextLayoutResult*					m_glyphData;
 };
 
 } // namespace Graphics

@@ -34,7 +34,7 @@ class GLTexture
 {
 public:
 	GLTexture(const Size& size, TextureFormat format, uint32_t mipLevels);
-	//GLTexture(const Imaging::Bitmap* bitmap, TextureFormat format, uint32_t mipLevels);
+	//GLTexture(const Bitmap* bitmap, TextureFormat format, uint32_t mipLevels);
 	virtual ~GLTexture();
 
 public:
@@ -49,7 +49,7 @@ public:
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state);
 	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize);
-	virtual Imaging::Bitmap* Lock();
+	virtual Bitmap* Lock();
 	virtual void Unlock();
 
 	// override GLTextureBase
@@ -64,7 +64,7 @@ private:
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
 	SamplerState		m_samplerState;
-	RefPtr<Imaging::Bitmap>	m_lockedTexture;		///< Lock ～ Unlock で作られる
+	RefPtr<Bitmap>	m_lockedTexture;		///< Lock ～ Unlock で作られる
 };
 
 /// レンダーターゲットテクスチャ
@@ -87,7 +87,7 @@ public:
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
-	virtual Imaging::Bitmap* Lock();
+	virtual Bitmap* Lock();
 	virtual void Unlock();
 
 	// override GLTextureBase
@@ -101,7 +101,7 @@ private:
 	int					m_mipLevels;
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
-	Imaging::Bitmap*	m_lockingBitmap;
+	Bitmap*	m_lockingBitmap;
 };
 
 /// 深度バッファ
@@ -124,7 +124,7 @@ public:
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
-	virtual Imaging::Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
+	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
 
 	// override GLTextureBase
@@ -160,7 +160,7 @@ public:
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual Imaging::Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
+	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); return NULL; }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
 
 	// override GLTextureBase

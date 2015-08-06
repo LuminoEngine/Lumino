@@ -1,5 +1,4 @@
 #include <TestConfig.h>
-using namespace Lumino::Imaging;
 
 class Test_Graphics_VertexBuffer : public ::testing::Test
 {

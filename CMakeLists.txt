@@ -32,6 +32,11 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 #------------------------------
 # Source files.
 
+set(LN_SOURCES
+	include/Lumino.h
+	include/LuminoGraphics.h
+)
+
 set(LN_SOURCES_IO
 	include/Lumino/IO/FileManager.h
 	include/Lumino/IO/ASyncIOObject.h
@@ -70,28 +75,18 @@ set(LN_SOURCES_Physics
 	src/Physics/PhysicsManager.cpp
 	src/Physics/RigidBody.cpp
 )
-	
-set(LN_SOURCES_Imaging
-	include/Lumino/Imaging/Bitmap.h
-	include/Lumino/Imaging/BitmapPainter.h
-	include/Lumino/Imaging/Font.h
-	include/Lumino/Imaging/FontManager.h
-	src/Imaging/Bitmap.cpp
-	src/Imaging/BitmapFont.cpp
-	src/Imaging/BitmapFont.h
-	src/Imaging/BitmapPainter.cpp
-	src/Imaging/Font.cpp
-	src/Imaging/FontManager.cpp
-	src/Imaging/FreeTypeFont.cpp
-	src/Imaging/FreeTypeFont.h
-	src/Imaging/PngFile.h
-	src/Imaging/TextLayoutEngine.cpp
-	src/Imaging/TextLayoutEngine.h
-	src/Imaging/TextRenderer_imaging.cpp
-	src/Imaging/TextRenderer.h
-)
 
 set(LN_SOURCES_Graphics
+	include/Lumino/Graphics/Bitmap.h
+	include/Lumino/Graphics/BitmapPainter.h
+	include/Lumino/Graphics/Color.h
+	include/Lumino/Graphics/Common.h
+	include/Lumino/Graphics/Font.h
+	include/Lumino/Graphics/FontManager.h
+	include/Lumino/Graphics/GeometryRenderer.h
+	include/Lumino/Graphics/GlyphRun.h
+	include/Lumino/Graphics/GraphicsException.h
+	include/Lumino/Graphics/GraphicsManager.h
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
 	include/Lumino/Graphics/Painter.h
@@ -101,19 +96,24 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Shader.h
 	include/Lumino/Graphics/SpriteRenderer.h
 	include/Lumino/Graphics/SwapChain.h
-	include/Lumino/Graphics/TextRenderer.h
 	include/Lumino/Graphics/Texture.h
 	include/Lumino/Graphics/Utils.h
 	include/Lumino/Graphics/VertexBuffer.h
-	include/Lumino/Graphics/Color.h
-	include/Lumino/Graphics/Common.h
-	include/Lumino/Graphics/GeometryRenderer.h
-	include/Lumino/Graphics/GraphicsException.h
-	include/Lumino/Graphics/GraphicsManager.h
 	external/GL/glew.c
+	src/Graphics/Bitmap.cpp
+	src/Graphics/BitmapFont.cpp
+	src/Graphics/BitmapFont.h
+	src/Graphics/BitmapPainter.cpp
 	src/Graphics/Color.cpp
+	src/Graphics/Font.cpp
+	src/Graphics/FontGlyphTextureCache.cpp
+	src/Graphics/FontGlyphTextureCache.h
+	src/Graphics/FontManager.cpp
+	src/Graphics/FreeTypeFont.cpp
+	src/Graphics/FreeTypeFont.h
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRendererImpl.h
+	src/Graphics/GlyphRun.cpp
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsHelper.h
 	src/Graphics/GraphicsManager.cpp
@@ -122,6 +122,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Painter.cpp
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
+	src/Graphics/PngFile.h
 	src/Graphics/ProfilerRenderer.cpp
 	src/Graphics/ProfilerRenderer.h
 	src/Graphics/Renderer.cpp
@@ -134,9 +135,11 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Shader.cpp
 	src/Graphics/SpriteRenderer.cpp
 	src/Graphics/SpriteRendererImpl.h
+	src/Graphics/TextLayoutEngine.cpp
+	src/Graphics/TextLayoutEngine.h
+	src/Graphics/TextRenderer_imaging.cpp
+	src/Graphics/TextRenderer.h
 	src/Graphics/SwapChain.cpp
-	src/Graphics/TextRenderer.cpp
-	src/Graphics/TextRendererImplemented.h
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
@@ -370,7 +373,6 @@ endif()
 source_group("IO"			FILES ${LN_SOURCES_IO})
 source_group("Platform"		FILES ${LN_SOURCES_Platform})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
-source_group("Imaging"		FILES ${LN_SOURCES_Imaging})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
@@ -379,10 +381,10 @@ source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
 
 set(LN_SOURCES
+	${LN_SOURCES}
 	${LN_SOURCES_IO}
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Physics}
-	${LN_SOURCES_Imaging}
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}

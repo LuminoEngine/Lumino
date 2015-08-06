@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 
-#include "../Imaging/Bitmap.h"
+#include "../Graphics/Bitmap.h"
 #include "Common.h"
 
 namespace Lumino
@@ -110,15 +110,15 @@ public:
 	/*
 		@brief		
 	*/
-	void SetSubData(const Point& offset, Imaging::Bitmap* bitmap);
+	void SetSubData(const Point& offset, Bitmap* bitmap);
 	void SetSubData(const Point& offset, const void* data);
 
-	Imaging::Bitmap* Lock();
+	Bitmap* Lock();
 	void Unlock();
 	Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
-	Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Imaging::Bitmap* primarySurface = NULL);
+	Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Bitmap* primarySurface = NULL);
 	virtual ~Texture();
 	void FlushPrimarySurface();
 
@@ -132,7 +132,7 @@ private:
 	friend class SwapChain;
 	GraphicsManager*	m_manager;
 	Device::ITexture*	m_deviceObj;
-	Imaging::Bitmap*	m_primarySurface;
+	Bitmap*				m_primarySurface;
 	//bool				m_primarySurfaceModified;
 };
 

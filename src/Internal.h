@@ -34,10 +34,9 @@ namespace Graphics
 {
 class GraphicsManager;
 
-class Internal
+namespace Internal
 {
-public:
-	static GraphicsManager* Manager;
+extern GraphicsManager* Manager;	// TODO: 削除予定
 };
 
 } // namespace Graphics

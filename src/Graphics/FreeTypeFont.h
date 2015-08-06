@@ -1,11 +1,11 @@
 ﻿
 #pragma once
-#include <Lumino/Imaging/Font.h>
-#include <Lumino/Imaging/FontManager.h>
+#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/FontManager.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 class FontManager;
 
@@ -120,5 +120,5 @@ private:
 	RefPtr<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

@@ -62,9 +62,9 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool TestEnv::EqualsBitmapFile(Imaging::Bitmap* bmp1, const TCHAR* filePath)
+bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 {
-	Imaging::Bitmap bmp2(filePath);
+	Bitmap bmp2(filePath);
 	bmp1->ConvertToDownFlow();
 	bmp2.ConvertToDownFlow();
 	return bmp1->Equals(&bmp2);

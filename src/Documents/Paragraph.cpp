@@ -43,7 +43,7 @@ Paragraph::Paragraph(DocumentsManager* manager)
 	m_inlines.Attach(LN_NEW InlineList(this));
 
 	// Paragraph は GUI::TextBlock のルート要素にもなるので、フォントデータはここで初期化している
-	Imaging::Font* font = m_manager->GetGraphicsManager()->GetFontManager()->GetDefaultFont();
+	Graphics::Font* font = m_manager->GetGraphicsManager()->GetFontManager()->GetDefaultFont();
 	m_fontData.Family = font->GetName();
 	m_fontData.Size = font->GetSize();
 	m_fontData.EdgeSize = font->GetEdgeSize();
@@ -73,15 +73,15 @@ Size Paragraph::Measure()
 
 		switch (GetFlowDirection())
 		{
-		case Imaging::FlowDirection::LeftToRight:
+		case Graphics::FlowDirection::LeftToRight:
 			size.Width += childSize.Width;
 			size.Height = std::max(childSize.Height, childSize.Height);
 			break;
-		case Imaging::FlowDirection::RightToLeft:
+		case Graphics::FlowDirection::RightToLeft:
 			size.Width = std::max(childSize.Width, childSize.Width);
 			size.Height += childSize.Height;
 			break;
-		case Imaging::FlowDirection::TopToBottom:
+		case Graphics::FlowDirection::TopToBottom:
 			LN_THROW(0, NotImplementedException);
 			break;
 		}

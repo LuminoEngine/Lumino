@@ -3,6 +3,7 @@ set(LN_TEST_SOURCES
 	gtest/src/gtest-all.cc
 	UnitTest/Main.cpp
 	UnitTest/Test.cpp
+	UnitTest/TestConfig.h
 	UnitTest/IO/Test_IO_ArchiveMaker.cpp
 	UnitTest/IO/Test_IO_ASync.cpp
 	UnitTest/Imaging/Test_Imaging_Bitmap.cpp

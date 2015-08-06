@@ -146,8 +146,8 @@ int main()
 		listBox1->InsertListBoxItem(1, textBlock2);
 #endif
 
-		//Imaging::Bitmap bmp(_T());
-		//RefPtr<Imaging::Font> font = Imaging::Font::CreateBitmapFont(app->GetGraphicsManager()->GetFontManager());
+		//Graphics::Bitmap bmp(_T());
+		//RefPtr<Graphics::Font> font = Imaging::Font::CreateBitmapFont(app->GetGraphicsManager()->GetFontManager());
 
 
 		Profiler::Instance.SetEnabled(true);

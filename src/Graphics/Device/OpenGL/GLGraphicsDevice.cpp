@@ -107,7 +107,7 @@ ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//ITexture* GLGraphicsDevice::CreateTexture(const Imaging::Bitmap* bitmap, uint32_t mipLevels, TextureFormat format)
+//ITexture* GLGraphicsDevice::CreateTexture(const Graphics::Bitmap* bitmap, uint32_t mipLevels, TextureFormat format)
 //{
 //	LN_THROW(0, NotImplementedException);
 //	return 0;

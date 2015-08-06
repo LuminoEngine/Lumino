@@ -1,11 +1,11 @@
 ﻿
 #pragma once
-#include <Lumino/Imaging/Bitmap.h>
-#include <Lumino/Imaging/Font.h>
+#include <Lumino/Graphics/Bitmap.h>
+#include <Lumino/Graphics/Font.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 #if 0
@@ -73,5 +73,5 @@ private:
 };
 #endif
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

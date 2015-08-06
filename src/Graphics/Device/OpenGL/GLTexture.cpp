@@ -81,7 +81,7 @@ GLTexture::GLTexture(const Size& size, TextureFormat format, uint32_t mipLevels)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//GLTexture::GLTexture(const Imaging::Bitmap* bitmap, TextureFormat format, uint32_t mipLevels)
+//GLTexture::GLTexture(const Graphics::Bitmap* bitmap, TextureFormat format, uint32_t mipLevels)
 //{
 //	LN_THROW(0, InvalidOperationException);
 //}
@@ -187,9 +187,9 @@ void GLTexture::SetSubData(const Point& point, const void* data, const Size& dat
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Imaging::Bitmap* GLTexture::Lock()
+Bitmap* GLTexture::Lock()
 {
-	m_lockedTexture.Attach(LN_NEW Imaging::Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
+	m_lockedTexture.Attach(LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
 	return m_lockedTexture;
 }
 
@@ -281,9 +281,9 @@ void GLRenderTargetTexture::OnResetDevice()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Imaging::Bitmap* GLRenderTargetTexture::Lock()
+Bitmap* GLRenderTargetTexture::Lock()
 {
-	m_lockingBitmap = LN_NEW Imaging::Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
+	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
 	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer()->GetData()); LN_CHECK_GLERROR();

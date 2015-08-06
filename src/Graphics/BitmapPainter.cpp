@@ -1,10 +1,10 @@
 
 #include "../Internal.h"
-#include <Lumino/Imaging/BitmapPainter.h>
+#include <Lumino/Graphics/BitmapPainter.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 
@@ -75,17 +75,17 @@ uint32_t BitmapPainter::GetColorByteSec(const Graphics::Color& color, PixelForma
 {
 	switch (format)
 	{
-	case Lumino::Imaging::PixelFormat_BYTE_R8G8B8A8:
+	case Lumino::Graphics::PixelFormat_BYTE_R8G8B8A8:
 	{
 		byte_t b[4] = { color.R, color.G, color.B, color.A };
 		return *((uint32_t*)b);
 	}
-	case Lumino::Imaging::PixelFormat_BYTE_B8G8R8A8:
+	case Lumino::Graphics::PixelFormat_BYTE_B8G8R8A8:
 	{
 		byte_t b[4] = { color.B, color.G, color.R, color.A };
 		return *((uint32_t*)b);
 	}
-	case Lumino::Imaging::PixelFormat_BYTE_B8G8R8X8:
+	case Lumino::Graphics::PixelFormat_BYTE_B8G8R8X8:
 	{
 		byte_t b[4] = { color.B, color.G, color.R, 0xFF };
 		return *((uint32_t*)b);
@@ -96,5 +96,5 @@ uint32_t BitmapPainter::GetColorByteSec(const Graphics::Color& color, PixelForma
 	LN_THROW(0, InvalidFormatException);
 }
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

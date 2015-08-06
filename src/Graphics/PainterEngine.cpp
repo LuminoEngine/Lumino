@@ -1,6 +1,6 @@
 
 #include "../Internal.h"
-#include <Lumino/Imaging/BitmapPainter.h>
+#include <Lumino/Graphics/BitmapPainter.h>
 #include "PainterEngine.h"
 #include "GraphicsHelper.h"
 
@@ -74,7 +74,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 
 	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
 	Device::IGraphicsDevice::ScopedLockContext lock(device);
-	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
+	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
 

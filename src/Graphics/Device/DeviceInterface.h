@@ -3,7 +3,7 @@
 
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Color.h>
-#include <Lumino/Imaging/Bitmap.h>
+#include <Lumino/Graphics/Bitmap.h>
 
 namespace Lumino
 {
@@ -306,7 +306,7 @@ public:
 	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) = 0;
 
 	/// ロック
-	virtual Imaging::Bitmap* Lock() = 0;
+	virtual Bitmap* Lock() = 0;
 
 	/// アンロック
 	virtual void Unlock() = 0;
@@ -327,13 +327,13 @@ public:
 		{
 			m_obj->Unlock();
 		}
-		Imaging::Bitmap* GetBitmap()
+		Bitmap* GetBitmap()
 		{
 			return m_bitmap;
 		}
 	private:
 		ITexture*			m_obj;
-		Imaging::Bitmap*	m_bitmap;
+		Bitmap*	m_bitmap;
 	};
 };
 

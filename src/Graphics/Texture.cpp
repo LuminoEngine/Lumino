@@ -31,7 +31,7 @@ Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, 
 	RefPtr<Device::ITexture> obj(device->CreateTexture(size, mipLevels, format));
 
 	// ロック用のビットマップを作る
-	RefPtr<Imaging::Bitmap> bitmap(LN_NEW Imaging::Bitmap(size, Utils::TranslatePixelFormat(format)));
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)));
 
 	// TODO: この addref はコンストラクタ内でやるほうが自然かも
 	obj.SafeAddRef();
@@ -62,14 +62,14 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 		RefPtr<Device::ITexture> obj(device->CreateTexturePlatformLoading(stream, mipLevels, format));
 		if (!obj.IsNull())
 		{
-			RefPtr<Imaging::Bitmap> bitmap(LN_NEW Imaging::Bitmap(obj->GetSize(), Utils::TranslatePixelFormat(format)));
+			RefPtr<Bitmap> bitmap(LN_NEW Bitmap(obj->GetSize(), Utils::TranslatePixelFormat(format)));
 			obj.SafeAddRef();
 			return LN_NEW Texture(manager, obj, bitmap);
 		}
 	}
 
 	// ビットマップを作る
-	RefPtr<Imaging::Bitmap> bitmap(LN_NEW Imaging::Bitmap(stream));
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream));
 
 	// テクスチャを作る
 	RefPtr<Device::ITexture> obj(device->CreateTexture(bitmap->GetSize(), mipLevels, format));
@@ -138,7 +138,7 @@ Texture* Texture::CreateDepthBuffer(GraphicsManager* manager, const Size& size, 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture::Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Imaging::Bitmap* primarySurface)
+Texture::Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Bitmap* primarySurface)
 	: m_manager(manager)
 	, m_deviceObj(deviceObj)
 	, m_primarySurface(primarySurface)
@@ -183,7 +183,7 @@ TextureFormat Texture::GetFormat() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::SetSubData(const Point& offset, Imaging::Bitmap* bitmap)
+void Texture::SetSubData(const Point& offset, Bitmap* bitmap)
 {
 	if (LN_VERIFY_ASSERT(bitmap != NULL)) { return; }
 
@@ -210,7 +210,7 @@ void Texture::SetSubData(const Point& offset, const void* data)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Imaging::Bitmap* Texture::Lock()
+Bitmap* Texture::Lock()
 {
 	if (m_deviceObj->GetTextureType() == Device::TextureType_Normal)
 	{

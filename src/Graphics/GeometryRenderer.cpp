@@ -3,7 +3,7 @@
 	http://blogs.msdn.com/b/ito/archive/2011/05/22/no-overwrite-or-discard.aspx
 */
 #include "Internal.h"
-#include <Lumino/Imaging/BitmapPainter.h>
+#include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include "GeometryRendererImpl.h"
 #include "GraphicsHelper.h"
@@ -183,7 +183,7 @@ GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
 
 	m_dummyTexture.Attach(m_device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
 	Device::IGraphicsDevice::ScopedLockContext lock(m_device);
-	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
+	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
 

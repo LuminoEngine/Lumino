@@ -1,5 +1,7 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Math/Vector3.h>
+#include <Lumino/Math/Vector4.h>
 #include <Lumino/Graphics/Color.h>
 
 namespace Lumino
@@ -51,6 +53,58 @@ ColorF::ColorF(const Color& color)
 	G = static_cast<float>(color.G) / 255;
 	B = static_cast<float>(color.B) / 255;
 	A = static_cast<float>(color.A) / 255;
+}
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorF::ColorF(const Vector3& vec, float a)
+{
+	R = vec.X; G = vec.Y; B = vec.Z; A = a;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorF::ColorF(const Vector4& vec)
+{
+	R = vec.X; G = vec.Y; B = vec.Z; A = vec.W;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ColorF::AddClamp(const ColorF& color)
+{
+	R = Math::Clamp(R + color.R, 0.0f, 1.0f);
+	G = Math::Clamp(G + color.G, 0.0f, 1.0f);
+	B = Math::Clamp(B + color.B, 0.0f, 1.0f);
+	A = Math::Clamp(A + color.A, 0.0f, 1.0f);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ColorF::MultiplyClamp(const ColorF& color)
+{
+	R = Math::Clamp(R * color.R, 0.0f, 1.0f);
+	G = Math::Clamp(G * color.G, 0.0f, 1.0f);
+	B = Math::Clamp(B * color.B, 0.0f, 1.0f);
+	A = Math::Clamp(A * color.A, 0.0f, 1.0f);
+}
+
+//=============================================================================
+// Tone
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Tone::AddClamp(const Tone& tone)
+{
+	R = Math::Clamp(R + tone.R, 0.0f, 1.0f);
+	G = Math::Clamp(G + tone.G, 0.0f, 1.0f);
+	B = Math::Clamp(B + tone.B, 0.0f, 1.0f);
+	GS = Math::Clamp(GS + tone.GS, 0.0f, 1.0f);
 }
 
 //=============================================================================

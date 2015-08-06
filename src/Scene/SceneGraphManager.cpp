@@ -83,7 +83,7 @@
 */
 
 #include "../Internal.h"
-#include <Lumino/Imaging/BitmapPainter.h>
+#include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Color.h>
 #include "ViewPane.h"
 #include "SceneNode.h"
@@ -129,7 +129,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 
 	// ダミーテクスチャ
 	m_dummyTexture.Attach(Graphics::Texture::Create(Size(32, 32)));
-	Imaging::BitmapPainter painter(m_dummyTexture->Lock());
+	Graphics::BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Graphics::Color::White);
 	m_dummyTexture->Unlock();
 

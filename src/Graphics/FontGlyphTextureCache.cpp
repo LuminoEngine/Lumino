@@ -5,14 +5,162 @@
 */
 #include "../Internal.h"
 #include <Lumino/Base/Hash.h>
-#include <Lumino/Imaging/BitmapPainter.h>
-#include <Lumino/Graphics/TextRenderer.h>
-#include "TextRendererImplemented.h"
+#include <Lumino/Graphics/BitmapPainter.h>
+#include <Lumino/Graphics/Utils.h>
+#include "FontGlyphTextureCache.h"
 
-namespace Lumino
+LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
+
+//=============================================================================
+// FontGlyphTextureCache
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* font)
 {
-namespace Graphics
+	m_manager = manager;
+	m_font = font;
+	m_layoutEngine.SetFont(m_font);
+
+	int maxCharacters = 2048;// TODO 定数なのはなんとかしたい
+
+	// 横方向に並べる数
+	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
+	// (小さくなければOK)
+	m_glyphWidthCount = (int)(sqrt((double)maxCharacters) + 1.0);
+	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
+
+	// キャッシュ用テクスチャ作成
+	m_glyphCacheTexture.Attach(Texture::Create(Size(w, w), TextureFormat_R8G8B8A8, 1, m_manager));
+	//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
+	//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
+
+
+	//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());
+	//BitmapPainter painter(m_glyphCacheTexture->GetDeviceObject()->Lock());
+	//painter.Clear(Color::Blue);
+	//m_glyphCacheTexture->GetDeviceObject()->Unlock();
+
+	// 空きキャッシュインデックス作成
+	for (int i = 0; i < maxCharacters; i++) {
+		m_indexStack.Push(i);
+	}
+
+	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
+	m_tmpBitmap.Attach(LN_NEW Bitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect)
 {
+	// とりあえず今は1つしか無いので
+	*texture = m_glyphCacheTexture;
+
+	CachedGlyphInfoMap::iterator itr = m_cachedGlyphInfoMap.find(ch);
+	if (itr != m_cachedGlyphInfoMap.end())
+	{
+		CachedGlyphInfo& info = itr->second;
+		srcRect->Set(
+			((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
+			((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
+			info.Size.Width, info.Size.Height);
+	}
+	else
+	{
+		if (m_indexStack.GetCount() == 0) {
+			// TODO: 古いキャッシュ破棄
+			LN_THROW(0, NotImplementedException);
+		}
+
+		// 新しく作ってキャッシュに登録
+		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
+
+		int cacheIndex = m_indexStack.GetTop();
+		m_indexStack.Pop();
+
+		//m_tmpBitmap
+
+		//{
+		//	Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
+
+		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
+
+		if (glyphBitmap->OutlineBitmap != NULL)
+		{
+			m_tmpBitmap->SetSize(glyphBitmap->OutlineBitmap->GetSize());
+			Rect rc(0, 0, glyphBitmap->OutlineBitmap->GetSize());
+			m_tmpBitmap->BitBlt(rc, glyphBitmap->OutlineBitmap, rc, Color::Green, false);
+		}
+		else {
+			m_tmpBitmap->SetSize(glyphBitmap->GlyphBitmap->GetSize());
+		}
+		Rect dst(glyphBitmap->OutlineOffset, glyphBitmap->OutlineOffset, glyphBitmap->GlyphBitmap->GetSize());
+		Rect src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
+		m_tmpBitmap->BitBlt(dst, glyphBitmap->GlyphBitmap, src, Color::Red, false);
+
+
+
+		Point pt(
+			(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
+			(cacheIndex / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height);
+		m_glyphCacheTexture->SetSubData(pt, m_tmpBitmap);
+
+		//Rect destRect(
+		//	(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
+		//	(cacheIndex / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height,
+		//	m_glyphMaxBitmapSize);
+		//Rect srcRect(
+		//	0, 0,
+		//	glyhp->GlyphBitmap->GetSize());
+		//lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
+		//}
+
+		// キャッシュマップに登録
+		CachedGlyphInfo info;
+		info.Index = cacheIndex;
+		info.Size = glyphBitmap->GlyphBitmap->GetSize();
+		m_cachedGlyphInfoMap[ch] = info;
+
+		srcRect->Set(
+			((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
+			((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
+			info.Size.Width, info.Size.Height);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
+{
+	uint32_t v[2];
+	v[0] = Hash::CalcHash(m_font->GetName());
+
+	uint8_t* v2 = (uint8_t*)&v[1];
+	v2[0] = m_font->GetSize();
+	v2[1] = m_font->GetEdgeSize();
+	v2[3] =
+		(((m_font->IsBold()) ? 1 : 0)) |
+		(((m_font->IsItalic()) ? 1 : 0) << 1) |
+		(((m_font->IsAntiAlias()) ? 1 : 0) << 2);
+
+	return *((uint64_t*)&v);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::Measure(const UTF32* text, int length, TextLayoutResult* outResult)
+{
+	m_layoutEngine.LayoutText(text, length, outResult);
+}
+
+LN_END_INTERNAL_NAMESPACE
+
 #if 0
 namespace detail
 {
@@ -31,7 +179,7 @@ namespace detail
 
 	//	CachedGlyphInfoMap			m_cachedGlyphInfoMap;
 	//	RefPtr<Device::ITexture>	m_glyphCacheTexture;
-	//	RefPtr<Imaging::Font>		m_font;
+	//	RefPtr<Font>		m_font;
 
 
 	//public:
@@ -43,7 +191,7 @@ namespace detail
 	//	{
 	//	}
 
-	//	void SetFont(Imaging::Font* font)
+	//	void SetFont(Font* font)
 	//	{
 	//		m_font = font;
 	//	}
@@ -104,7 +252,7 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 		}
 
 		// 新しく作ってキャッシュに登録
-		Imaging::FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
+		FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
 
 		int cacheIndex = m_indexStack.GetTop();
 		m_indexStack.Pop();
@@ -251,7 +399,7 @@ void TextRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, con
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextRenderer::Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult)
+void TextRenderer::Measure(const UTF32* text, int length, TextLayoutResult* outResult)
 {
 	m_layoutEngine.LayoutText(text, length, outResult);
 }
@@ -316,8 +464,8 @@ void TextRenderer::DrawChar(UTF32 ch)
 		}
 
 		// 新しく作ってキャッシュに登録
-		//Imaging::FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
-		Imaging::FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
+		//FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
+		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
 
 		int cacheIndex = m_indexStack.GetTop();
 		m_indexStack.Pop();
@@ -341,7 +489,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 		Rect dst(glyphBitmap->OutlineOffset, glyphBitmap->OutlineOffset, glyphBitmap->GlyphBitmap->GetSize());
 		Rect src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
 		m_tmpBitmap->BitBlt(dst, glyphBitmap->GlyphBitmap, src, Color::Red, false);
-		//Imaging::BitmapPainter painter(m_tmpBitmap);
+		//BitmapPainter painter(m_tmpBitmap);
 		//painter.Clear(Color::Blue);
 
 
@@ -415,7 +563,7 @@ void TextRenderer::CheckResetCache()
 
 
 		//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());
-		//Imaging::BitmapPainter painter(m_glyphCacheTexture->GetDeviceObject()->Lock());
+		//BitmapPainter painter(m_glyphCacheTexture->GetDeviceObject()->Lock());
 		//painter.Clear(Color::Blue);
 		//m_glyphCacheTexture->GetDeviceObject()->Unlock();
 
@@ -425,7 +573,7 @@ void TextRenderer::CheckResetCache()
 		}
 
 		m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
-		m_tmpBitmap.Attach(LN_NEW Imaging::Bitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
+		m_tmpBitmap.Attach(LN_NEW Bitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
 
 
 		m_prevGlyphLocationData = NULL;
@@ -433,156 +581,3 @@ void TextRenderer::CheckResetCache()
 	}
 }
 #endif
-
-
-//=============================================================================
-// FontGlyphTextureCache
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Imaging::Font* font)
-{
-	m_manager = manager;
-	m_font = font;
-	m_layoutEngine.SetFont(m_font);
-
-	int maxCharacters = 2048;// TODO 定数なのはなんとかしたい
-
-	// 横方向に並べる数
-	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
-	// (小さくなければOK)
-	m_glyphWidthCount = (int)(sqrt((double)maxCharacters) + 1.0);
-	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
-
-	// キャッシュ用テクスチャ作成
-	m_glyphCacheTexture.Attach(Texture::Create(Size(w, w), TextureFormat_R8G8B8A8, 1, m_manager));
-	//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
-	//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
-
-
-	//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());
-	//Imaging::BitmapPainter painter(m_glyphCacheTexture->GetDeviceObject()->Lock());
-	//painter.Clear(Color::Blue);
-	//m_glyphCacheTexture->GetDeviceObject()->Unlock();
-
-	// 空きキャッシュインデックス作成
-	for (int i = 0; i < maxCharacters; i++) {
-		m_indexStack.Push(i);
-	}
-
-	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
-	m_tmpBitmap.Attach(LN_NEW Imaging::Bitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect)
-{
-	// とりあえず今は1つしか無いので
-	*texture = m_glyphCacheTexture;
-
-	CachedGlyphInfoMap::iterator itr = m_cachedGlyphInfoMap.find(ch);
-	if (itr != m_cachedGlyphInfoMap.end())
-	{
-		CachedGlyphInfo& info = itr->second;
-		srcRect->Set(
-			((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
-			((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-			info.Size.Width, info.Size.Height);
-	}
-	else
-	{
-		if (m_indexStack.GetCount() == 0) {
-			// TODO: 古いキャッシュ破棄
-			LN_THROW(0, NotImplementedException);
-		}
-
-		// 新しく作ってキャッシュに登録
-		//Imaging::FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
-		Imaging::FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
-
-		int cacheIndex = m_indexStack.GetTop();
-		m_indexStack.Pop();
-
-		//m_tmpBitmap
-
-		//{
-		//	Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
-
-		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
-
-		if (glyphBitmap->OutlineBitmap != NULL)
-		{
-			m_tmpBitmap->SetSize(glyphBitmap->OutlineBitmap->GetSize());
-			Rect rc(0, 0, glyphBitmap->OutlineBitmap->GetSize());
-			m_tmpBitmap->BitBlt(rc, glyphBitmap->OutlineBitmap, rc, Color::Green, false);
-		}
-		else {
-			m_tmpBitmap->SetSize(glyphBitmap->GlyphBitmap->GetSize());
-		}
-		Rect dst(glyphBitmap->OutlineOffset, glyphBitmap->OutlineOffset, glyphBitmap->GlyphBitmap->GetSize());
-		Rect src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
-		m_tmpBitmap->BitBlt(dst, glyphBitmap->GlyphBitmap, src, Color::Red, false);
-
-
-
-		Point pt(
-			(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
-			(cacheIndex / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height);
-		m_glyphCacheTexture->SetSubData(pt, m_tmpBitmap);
-
-		//Rect destRect(
-		//	(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,
-		//	(cacheIndex / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height,
-		//	m_glyphMaxBitmapSize);
-		//Rect srcRect(
-		//	0, 0,
-		//	glyhp->GlyphBitmap->GetSize());
-		//lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
-		//}
-
-		// キャッシュマップに登録
-		CachedGlyphInfo info;
-		info.Index = cacheIndex;
-		info.Size = glyphBitmap->GlyphBitmap->GetSize();
-		m_cachedGlyphInfoMap[ch] = info;
-
-		srcRect->Set(
-			((info.Index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
-			((info.Index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-			info.Size.Width, info.Size.Height);
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
-{
-	uint32_t v[2];
-	v[0] = Hash::CalcHash(m_font->GetName());
-
-	uint8_t* v2 = (uint8_t*)&v[1];
-	v2[0] = m_font->GetSize();
-	v2[1] = m_font->GetEdgeSize();
-	v2[3] =
-		(((m_font->IsBold()) ? 1 : 0)) |
-		(((m_font->IsItalic()) ? 1 : 0) << 1) |
-		(((m_font->IsAntiAlias()) ? 1 : 0) << 2);
-
-	return *((uint64_t*)&v);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void FontGlyphTextureCache::Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult)
-{
-	m_layoutEngine.LayoutText(text, length, outResult);
-}
-
-} // namespace Graphics
-} // namespace Lumino

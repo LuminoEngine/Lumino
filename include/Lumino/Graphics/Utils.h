@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 
-#include "../Imaging/Bitmap.h"
+#include "../Graphics/Bitmap.h"
 #include "Common.h"
 
 namespace Lumino
@@ -16,7 +16,7 @@ class Utils
 {
 public:
 
-	static Imaging::PixelFormat TranslatePixelFormat(TextureFormat textureFormat);
+	static PixelFormat TranslatePixelFormat(TextureFormat textureFormat);
 	
 	static void SaveScreenShot(const TCHAR* filePath);
 	static void WaitSaveScreenShot();

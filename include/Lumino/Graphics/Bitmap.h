@@ -1,15 +1,13 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/Rect.h>
 #include <Lumino/IO/Stream.h>
+#include "Color.h"
 
 namespace Lumino
 {
-namespace Graphics { class Color; }
-
-namespace Imaging
+namespace Graphics
 {
 
 /// ビットマップのピクセルフォーマット
@@ -88,7 +86,7 @@ public:
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
 		(Painter へ移動するべき？)
 	*/
-	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Graphics::Color& mulColor, bool alphaBlend);
+	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend);
 
 	/**
 		@brief		指定したファイルにビットマップを保存します。
@@ -778,5 +776,5 @@ private:
 #endif
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

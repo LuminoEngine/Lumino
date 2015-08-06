@@ -2,8 +2,8 @@
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include "Common.h"
-#include "../Imaging/FontManager.h"
-#include "../Imaging/Font.h"
+#include "../Graphics/FontManager.h"
+#include "../Graphics/Font.h"
 #include "SwapChain.h"
 
 namespace Lumino
@@ -14,7 +14,6 @@ class Renderer;
 class RenderingThread;
 class PainterEngine;
 class TextRenderer;
-class FontGlyphTextureCache;
 
 
 typedef RefPtr<GraphicsManager>	GraphicsManagerPtr;
@@ -43,7 +42,7 @@ public:
 	FileManager* GetFileManager() const { return m_fileManager; }
 
 	/** 関連付けられている FontManager を取得します。*/
-	Imaging::FontManager* GetFontManager() const { return m_fontManager; }
+	FontManager* GetFontManager() const { return m_fontManager; }
 
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
@@ -60,9 +59,9 @@ public:	// TODO: internal
 		bool	IsItalic;
 		bool	IsAntiAlias;
 
-		Imaging::Font* CreateFontFromData(Imaging::FontManager* m) const
+		Font* CreateFontFromData(FontManager* m) const
 		{
-			Imaging::Font* font = Imaging::Font::Create(m);
+			Font* font = Font::Create(m);
 			font->SetName(Family);
 			font->SetSize(Size);
 			font->SetEdgeSize(EdgeSize);
@@ -82,8 +81,8 @@ public:	// TODO: internal
 	///// また、参照カウントを増やして返す。
 	//TextRenderer* LookupTextRenderer(const FontData& fontData);
 
-	FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
-	FontGlyphTextureCache* LookupGlyphTextureCache(Imaging::Font* font);
+	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
+	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(Font* font);
 
 private:
 	friend class Helper;
@@ -109,7 +108,7 @@ private:
 
 private:
 	FileManager*					m_fileManager;
-	RefPtr<Imaging::FontManager>	m_fontManager;
+	RefPtr<FontManager>				m_fontManager;
 	RefPtr<CacheManager>			m_glyphTextureCache;
 	
 	Device::IGraphicsDevice*		m_graphicsDevice;

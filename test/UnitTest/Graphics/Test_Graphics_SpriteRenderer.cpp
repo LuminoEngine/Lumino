@@ -1,5 +1,4 @@
 #include <TestConfig.h>
-#include "../../Lumino/src/Imaging/TextRenderer.h"
 
 class Test_Graphics_SpriteRenderer : public ::testing::Test
 {
@@ -22,7 +21,7 @@ TEST_F(Test_Graphics_SpriteRenderer, DrawRequest2D)
 	loc = font1->AdvanceKerning('j', loc);
 	
 	//Bitmap* tmp = tex1->Lock();
-	//Imaging::TextRenderer tr(tmp, TestEnv::Manager->GetFontManager()->GetDefaultFont());
+	//TextRenderer tr(tmp, TestEnv::Manager->GetFontManager()->GetDefaultFont());
 	//tr.SetAreaBox(Rect(0, 0, tex1->GetSize()));
 	//tr.DrawText(_T("‚â‚Á‚Æ‘‚¯‚½B(EƒÖEM)"), -1);
 	//tmp->Save(LOCALFILE("TestData/tmp2.png"));

@@ -644,7 +644,7 @@
 */
 #include "../Internal.h"
 #include <Lumino/Base/Hash.h>
-#include <Lumino/Imaging/Font.h>
+#include <Lumino/Graphics/Font.h>
 
 #if defined(LN_WIN32)
 #include "Device/DirectX9/DX9GraphicsDevice.h"
@@ -653,10 +653,10 @@
 #include "Device/OpenGL/GLXGraphicsDevice.h"
 #endif
 
-#include <Lumino/Imaging/BitmapPainter.h>
+#include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Renderer.h>
-#include <Lumino/Graphics/TextRenderer.h>
+#include "FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 
@@ -703,7 +703,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	m_platformTextureLoading = configData.PlatformTextureLoading;
 
 	// フォント管理
-	m_fontManager.Attach(Imaging::FontManager::Create(m_fileManager));
+	m_fontManager.Attach(FontManager::Create(m_fileManager));
 #if defined(LN_WIN32)
 	if (configData.GraphicsAPI == GraphicsAPI::DirectX9)
 	{
@@ -763,7 +763,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
 	{
 		Device::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
-		Imaging::BitmapPainter painter(m_dummyTexture->Lock());
+		BitmapPainter painter(m_dummyTexture->Lock());
 		painter.Clear(Color::White);
 		m_dummyTexture->Unlock();
 	}
@@ -870,14 +870,14 @@ uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const FontData& fontData)
+Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const FontData& fontData)
 {
 	CacheKey key(CalcFontSettingHash(fontData));
-	FontGlyphTextureCache* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
+	auto* tr = (Internal::FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	Imaging::Font* font = fontData.CreateFontFromData(m_fontManager);
-	tr = LN_NEW FontGlyphTextureCache(this, font);
+	Font* font = fontData.CreateFontFromData(m_fontManager);
+	tr = LN_NEW Internal::FontGlyphTextureCache(this, font);
 	font->Release();
 	m_glyphTextureCache->RegisterCacheObject(key, tr);
 	return tr;
@@ -886,7 +886,7 @@ FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const FontData& 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Imaging::Font* font)
+Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* font)
 {
 	FontData fontData;
 	fontData.Family = font->GetName();
@@ -897,10 +897,10 @@ FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Imaging::Font* f
 	fontData.IsAntiAlias = font->IsAntiAlias();
 
 	CacheKey key(CalcFontSettingHash(fontData));
-	FontGlyphTextureCache* tr = (FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
+	auto* tr = (Internal::FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	tr = LN_NEW FontGlyphTextureCache(this, font);
+	tr = LN_NEW Internal::FontGlyphTextureCache(this, font);
 	m_glyphTextureCache->RegisterCacheObject(key, tr);
 	return tr;
 }
@@ -915,7 +915,7 @@ FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Imaging::Font* f
 //	if (tr != NULL) { return tr; }
 //
 //	tr = TextRenderer::Create(this);
-//	Imaging::Font* font = fontData.CreateFontFromData(m_fontManager);
+//	Font* font = fontData.CreateFontFromData(m_fontManager);
 //	tr->SetFont(font);
 //	font->Release();
 //	m_textRendererCache->RegisterCacheObject(key, tr);

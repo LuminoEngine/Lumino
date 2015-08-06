@@ -1,10 +1,10 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Imaging/Font.h>
+#include <Lumino/Graphics/Font.h>
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 //=============================================================================
@@ -25,5 +25,5 @@ Font::~Font()
 {
 }
 	
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

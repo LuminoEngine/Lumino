@@ -19,7 +19,7 @@ typedef struct FT_GlyphRec_*  FT_Glyph;
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 class Font;
 
@@ -130,5 +130,5 @@ private:
 
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino

@@ -191,7 +191,7 @@ void DX9Texture::SetSubData(const Point& point, const void* data, const Size& da
 	//{
 	//	// 参照モードでロック領域を Bitmap 化する (メモリコピーを行わない)
 	//	ByteBuffer refData(lockedRect.pBits, lockedRect.Pitch * m_realSize.Height, true);
-	//	Imaging::Bitmap lockedBmp(&refData, m_realSize, Imaging::PixelFormat_BYTE_B8G8R8A8);	// GDI 互換フォーマット
+	//	Bitmap lockedBmp(&refData, m_realSize, Graphics::PixelFormat_BYTE_B8G8R8A8);	// GDI 互換フォーマット
 
 	//	// 全体を転送する
 	//	Rect rc(0, 0, m_realSize);
@@ -209,17 +209,17 @@ void DX9Texture::SetSubData(const Point& point, const void* data, const Size& da
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Imaging::Bitmap* DX9Texture::Lock()
+Bitmap* DX9Texture::Lock()
 {
 	// Lock
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, 0));
 
 	// Lock したバッファを参照する Bitmap を作成して返す
-	Imaging::PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
-	size_t size = Imaging::Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
+	PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
+	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
 	//m_lockedBuffer =  ByteBuffer(lockedRect.pBits, size, true);
-	m_lockedBitmap.Attach(LN_NEW Imaging::Bitmap(lockedRect.pBits, m_realSize, pixelFormat));
+	m_lockedBitmap.Attach(LN_NEW Bitmap(lockedRect.pBits, m_realSize, pixelFormat));
 
 	// TODO: ↑文字列書き込み等でわりと頻繁にロックされる場合がある。できれば new は 1 度にしたいが…
 
@@ -345,7 +345,7 @@ void DX9RenderTargetTexture::OnResetDevice()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Imaging::Bitmap* DX9RenderTargetTexture::Lock()
+Bitmap* DX9RenderTargetTexture::Lock()
 {
 	LN_THROW(0, NotImplementedException);
 }
@@ -462,7 +462,7 @@ void DX9BackBufferTexture::Reset(IDirect3DSurface9* backBufferSurface)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Imaging::Bitmap* DX9BackBufferTexture::Lock()
+Bitmap* DX9BackBufferTexture::Lock()
 {
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
 
@@ -482,10 +482,10 @@ Imaging::Bitmap* DX9BackBufferTexture::Lock()
 	LN_COMCALL(m_lockedSystemSurface->LockRect(&lockedRect, NULL, D3DLOCK_READONLY));
 
 	// Lock したバッファを参照する Bitmap を作成して返す
-	Imaging::PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
-	size_t size = Imaging::Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
+	PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
+	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
 	m_lockedBuffer = ByteBuffer(lockedRect.pBits, size, true);
-	m_lockedBitmap.Attach(LN_NEW Imaging::Bitmap(m_lockedBuffer, m_realSize, pixelFormat));
+	m_lockedBitmap.Attach(LN_NEW Bitmap(m_lockedBuffer, m_realSize, pixelFormat));
 
 	return m_lockedBitmap;
 }

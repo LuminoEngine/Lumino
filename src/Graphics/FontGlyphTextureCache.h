@@ -1,21 +1,59 @@
 /**
-	@file	TextRenderer.h
+	@file	FontGlyphTextureCache.h
 */
 #pragma once
 #include <Lumino/Base/Cache.h>
-#include "Common.h"
-#include "Color.h"
-#include "Texture.h"
-#include "../Imaging/Font.h"
-#include "../../src/Imaging/TextLayoutEngine.h"	// TODO
-#include "SpriteRenderer.h"
+#include <Lumino/Graphics/Color.h>
+#include <Lumino/Graphics/Color.h>
+#include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/Font.h>
+#include "TextLayoutEngine.h"	// TODO
+
+LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
+
+class FontGlyphTextureCache
+	: public RefObject
+	, public ICacheObject
+{
+	LN_CACHE_OBJECT_DECL;
+public:
+	FontGlyphTextureCache(GraphicsManager* manager, Font* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
+
+	void LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect);
+
+	uint64_t CalcFontSettingHash() const;
+
+	TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
+
+	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ユーティリティ
+
+private:
+	struct CachedGlyphInfo
+	{
+		int		Index;
+		Size	Size;
+	};
+
+	typedef std::map<UTF32, CachedGlyphInfo>	CachedGlyphInfoMap;
+
+	GraphicsManager*		m_manager;
+	RefPtr<Font>			m_font;
+	RefPtr<Texture>			m_glyphCacheTexture;
+	CachedGlyphInfoMap		m_cachedGlyphInfoMap;
+	int						m_glyphWidthCount;
+	Size					m_glyphMaxBitmapSize;	///< 現在のフォント情報の1文字分のビットマップの最大サイズ
+	Stack<int>				m_indexStack;			///< 空きキャッシュインデックス
+	RefPtr<Bitmap>			m_tmpBitmap;
+
+	TextLayoutEngine	m_layoutEngine;
+};
+
+LN_END_INTERNAL_NAMESPACE
 
 namespace Lumino
 {
 namespace Graphics
 {
-class TextRendererImplemented;
-
 
 #if 0
 /**
@@ -40,19 +78,19 @@ public:
 	void SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
 
-	void SetFont(Imaging::Font* font) { m_font = font; m_layoutEngine.SetFont(font); m_fontFaceModified = true; }
+	void SetFont(Font* font) { m_font = font; m_layoutEngine.SetFont(font); m_fontFaceModified = true; }
 	void SetForeColor(Color color) { m_foreColor = color; }
 	void SetStrokeColor(Color color) { m_strokeColor = color; }
 	void SetStrokeSize(int size) { m_strokeSize = size; m_fontFaceModified = true; }
-	void SetTextAlignment(Imaging::TextAlignment align) { m_layoutEngine.SetTextAlignment(align); }
-	void SetTextTrimming(Imaging::TextTrimming triming) { m_layoutEngine.SetTextTrimming(triming); }
-	void SetFlowDirection(Imaging::FlowDirection dir) { m_layoutEngine.SetFlowDirection(dir); }
+	void SetTextAlignment(TextAlignment align) { m_layoutEngine.SetTextAlignment(align); }
+	void SetTextTrimming(TextTrimming triming) { m_layoutEngine.SetTextTrimming(triming); }
+	void SetFlowDirection(FlowDirection dir) { m_layoutEngine.SetFlowDirection(dir); }
 	//void SetDrawingArea(const Rect& area) { m_drawingArea = area; }	// いらないかも
 
 	/**
 		@brief		
 	*/
-	void Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult);
+	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);
 
 	/**
 		@brief		
@@ -85,17 +123,17 @@ private:
 
 	RefPtr<SpriteRenderer>	m_spriteRenderer;
 
-	RefPtr<Imaging::Font>	m_font;
+	RefPtr<Font>	m_font;
 	Color				m_foreColor;
 	Color				m_strokeColor;
 	int					m_strokeSize;
-	Imaging::TextLayoutEngine	m_layoutEngine;
+	TextLayoutEngine	m_layoutEngine;
 	//TextAlignment		m_textAlignment;
 	//TextTrimming		m_textTrimming;
 	//FlowDirection		m_flowDirection;
 	//Rect				m_drawingArea;
 
-	Imaging::FontGlyphLocation*	m_prevGlyphLocationData;
+	FontGlyphLocation*	m_prevGlyphLocationData;
 
 	// キャッシュ系情報
 	RefPtr<Texture>		m_glyphCacheTexture;
@@ -103,47 +141,11 @@ private:
 	int					m_glyphWidthCount;
 	Size				m_glyphMaxBitmapSize;	///< 現在のフォント情報の1文字分のビットマップの最大サイズ
 	Stack<int>			m_indexStack;			///< 空きキャッシュインデックス
-	RefPtr<Imaging::Bitmap>	m_tmpBitmap;
+	RefPtr<Bitmap>	m_tmpBitmap;
 	bool				m_fontFaceModified;
 };
 #endif
 
-class FontGlyphTextureCache
-	: public RefObject
-	, public ICacheObject
-{
-	LN_CACHE_OBJECT_DECL;
-public:
-	FontGlyphTextureCache(GraphicsManager* manager, Imaging::Font* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
-
-	void LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect);
-
-	uint64_t CalcFontSettingHash() const;
-
-	Imaging::TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
-
-	void Measure(const UTF32* text, int length, Imaging::TextLayoutResult* outResult);	// ユーティリティ
-
-private:
-	struct CachedGlyphInfo
-	{
-		int		Index;
-		Size	Size;
-	};
-
-	typedef std::map<UTF32, CachedGlyphInfo>	CachedGlyphInfoMap;
-
-	GraphicsManager*		m_manager;
-	RefPtr<Imaging::Font>	m_font;
-	RefPtr<Texture>			m_glyphCacheTexture;
-	CachedGlyphInfoMap		m_cachedGlyphInfoMap;
-	int						m_glyphWidthCount;
-	Size					m_glyphMaxBitmapSize;	///< 現在のフォント情報の1文字分のビットマップの最大サイズ
-	Stack<int>				m_indexStack;			///< 空きキャッシュインデックス
-	RefPtr<Imaging::Bitmap>	m_tmpBitmap;
-
-	Imaging::TextLayoutEngine	m_layoutEngine;
-};
 
 } // namespace Graphics
 } // namespace Lumino

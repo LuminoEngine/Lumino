@@ -467,10 +467,10 @@ struct SetSamplerStateCommand : public RenderingCommand
 //	Device::ITexture*		m_targetTexture;
 //	size_t					m_sourceBitmapDataHandle;
 //	Size					m_size;
-//	Imaging::PixelFormat	m_format;
+//	PixelFormat	m_format;
 //
 //public:
-//	static void Create(Device::ITexture* texture, Imaging::Bitmap* bitmap)
+//	static void Create(Device::ITexture* texture, Bitmap* bitmap)
 //	{
 //		// メモリ確保は一度ハンドルをローカル変数に置く。1つの式の中で複数回 HandleCast を使用してはならないため。
 //		size_t tmpData = Alloc(cmd, bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetBitmapBuffer()->GetData());
@@ -485,8 +485,8 @@ struct SetSamplerStateCommand : public RenderingCommand
 //	virtual void Execute()
 //	{
 //		// 参照モードで一時メモリを Bitmap 化する (メモリコピーを行わない)
-//		ByteBuffer refData(commandList->GetBuffer(m_sourceBitmapDataHandle), Imaging::Bitmap::GetPixelFormatByteCount(m_format, m_size), true);
-//		Imaging::Bitmap lockedBmp(&refData, m_size, m_format);
+//		ByteBuffer refData(commandList->GetBuffer(m_sourceBitmapDataHandle), Bitmap::GetPixelFormatByteCount(m_format, m_size), true);
+//		Bitmap lockedBmp(&refData, m_size, m_format);
 //
 //		m_targetTexture->SetSubData(&lockedBmp);
 //	}
@@ -664,10 +664,10 @@ struct Texture_SetSubDataBitmapCommand : public RenderingCommand
 	size_t m_bmpDataIndex;
 	Size m_size;
 	int m_pitch;
-	Imaging::PixelFormat m_format;
+	PixelFormat m_format;
 	bool m_upFlow;
 
-	void Create(Device::ITexture* texture, const Point& offset, Imaging::Bitmap* bmp)
+	void Create(Device::ITexture* texture, const Point& offset, Bitmap* bmp)
 	{
 		m_targetTexture = texture;
 		m_offset = offset;

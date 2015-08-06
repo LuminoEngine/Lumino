@@ -6,7 +6,7 @@
 
 namespace Lumino
 {
-namespace Imaging
+namespace Graphics
 {
 
 struct FontGlyphLocation
@@ -19,17 +19,17 @@ struct FontGlyphLocation
 
 struct FontGlyphBitmap
 {
-	Imaging::Bitmap*			GlyphBitmap;
-	Imaging::Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
-	int							OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
+	Bitmap*			GlyphBitmap;
+	Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+	int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
 };
 
 
 // [Obsolete]
 struct FontGlyphData
 {
-	Imaging::Bitmap*			GlyphBitmap;
-	Imaging::Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+	Bitmap*			GlyphBitmap;
+	Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
 	int				GlyphOffsetX;   ///< ビットマップを転送するべき座標へのXオフセット
 	int				GlyphOffsetY;   ///< ビットマップを転送するべき座標へのYオフセット
 	int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
@@ -139,5 +139,5 @@ protected:
 	virtual ~Font();
 };
 
-} // namespace Imaging
+} // namespace Graphics
 } // namespace Lumino
