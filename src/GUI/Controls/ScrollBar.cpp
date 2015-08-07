@@ -59,12 +59,9 @@ LN_ROUTED_EVENT_IMPLEMENT(ScrollBar, ScrollEventArgs, ScrollEvent, "Scroll", Scr
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ScrollBar* ScrollBar::Create(GUIManager* manager)
+ScrollBarPtr ScrollBar::Create()
 {
-	auto obj = RefPtr<ScrollBar>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

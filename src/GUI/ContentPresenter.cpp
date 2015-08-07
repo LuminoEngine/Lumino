@@ -13,16 +13,12 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ContentPresenter, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ContentPresenter);
 
-
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ContentPresenter* ContentPresenter::Create(GUIManager* manager)
+ContentPresenterPtr ContentPresenter::Create()
 {
-	auto obj = RefPtr<ContentPresenter>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

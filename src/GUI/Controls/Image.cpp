@@ -21,12 +21,9 @@ LN_PROPERTY_IMPLEMENT(Image, Rect, SourceRectProperty, "SourceRect", m_srcRect, 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Image* Image::Create(GUIManager* manager)
+ImagePtr Image::Create()
 {
-	auto obj = RefPtr<Image>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

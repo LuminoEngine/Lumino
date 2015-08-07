@@ -155,12 +155,9 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxChrome);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ListBoxChrome* ListBoxChrome::Create(GUIManager* manager)
+ListBoxChromePtr ListBoxChrome::Create()
 {
-	auto obj = RefPtr<ListBoxChrome>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -217,12 +214,9 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBox);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ListBox* ListBox::Create(GUIManager* manager)
+ListBoxPtr ListBox::Create()
 {
-	auto obj = RefPtr<ListBox>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

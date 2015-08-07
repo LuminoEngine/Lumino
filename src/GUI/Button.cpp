@@ -18,12 +18,9 @@ const String	Button::IsMouseOverProperty(_T("IsMouseOver"));
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Button* Button::Create(GUIManager* manager)
+ButtonPtr Button::Create()
 {
-	auto obj = RefPtr<Button>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

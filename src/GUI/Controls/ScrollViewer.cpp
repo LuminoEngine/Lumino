@@ -49,12 +49,9 @@ const float ScrollContentPresenter::m_scrollLineDelta = 16.0f;
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ScrollContentPresenter* ScrollContentPresenter::Create(GUIManager* manager)
+ScrollContentPresenterPtr ScrollContentPresenter::Create()
 {
-	auto obj = RefPtr<ScrollContentPresenter>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -194,12 +191,9 @@ const String ScrollViewer::PART_HorizontalScrollBarTemplateName(_T("PART_Horizon
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ScrollViewer* ScrollViewer::Create(GUIManager* manager)
+ScrollViewerPtr ScrollViewer::Create()
 {
-	auto obj = RefPtr<ScrollViewer>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

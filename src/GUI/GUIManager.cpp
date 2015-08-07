@@ -1027,23 +1027,23 @@ void GUIManager::Initialize(const ConfigData& configData)
 	m_mainWindow = configData.MainWindow;
 	m_documentsManager = configData.DocumentsManager;
 
-
-	RegisterFactory(ContentPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ContentPresenter::Create(m); });
-	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManager* m) -> CoreObject* { return ItemsPresenter::Create(m); });
-	RegisterFactory(ButtonChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ButtonChrome::Create(m); });
-	RegisterFactory(Button::TypeID,					[](GUIManager* m) -> CoreObject* { return Button::Create(m); });
-	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ListBoxChrome::Create(m); });
-	RegisterFactory(ThumbChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ThumbChrome::Create(m); });
-	RegisterFactory(Thumb::TypeID,					[](GUIManager* m) -> CoreObject* { return Thumb::Create(m); });
-	RegisterFactory(Track::TypeID,					[](GUIManager* m) -> CoreObject* { return Track::Create(m); });
-	RegisterFactory(Grid::TypeID,					[](GUIManager* m) -> CoreObject* { return Grid::Create(m); });
-	RegisterFactory(ColumnDefinition::TypeID,		[](GUIManager* m) -> CoreObject* { return ColumnDefinition::Create(m); });
-	RegisterFactory(RowDefinition::TypeID,			[](GUIManager* m) -> CoreObject* { return RowDefinition::Create(m); });
-	RegisterFactory(Image::TypeID,					[](GUIManager* m) -> CoreObject* { return Image::Create(m); });
-	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::Create(m); });
-	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::Create(m); });
-	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::Create(m); });
-	RegisterFactory(StackPanel::TypeID,				[](GUIManager* m) -> CoreObject* { return StackPanel::Create(m); });
+	// TODO: static で登録したい
+	RegisterFactory(ContentPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ContentPresenter::internalCreateInstance(m); });
+	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManager* m) -> CoreObject* { return ItemsPresenter::internalCreateInstance(m); });
+	RegisterFactory(ButtonChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ButtonChrome::internalCreateInstance(m); });
+	RegisterFactory(Button::TypeID,					[](GUIManager* m) -> CoreObject* { return Button::internalCreateInstance(m); });
+	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ListBoxChrome::internalCreateInstance(m); });
+	RegisterFactory(ThumbChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ThumbChrome::internalCreateInstance(m); });
+	RegisterFactory(Thumb::TypeID,					[](GUIManager* m) -> CoreObject* { return Thumb::internalCreateInstance(m); });
+	RegisterFactory(Track::TypeID,					[](GUIManager* m) -> CoreObject* { return Track::internalCreateInstance(m); });
+	RegisterFactory(Grid::TypeID,					[](GUIManager* m) -> CoreObject* { return Grid::internalCreateInstance(m); });
+	RegisterFactory(ColumnDefinition::TypeID,		[](GUIManager* m) -> CoreObject* { return ColumnDefinition::internalCreateInstance(m); });
+	RegisterFactory(RowDefinition::TypeID,			[](GUIManager* m) -> CoreObject* { return RowDefinition::internalCreateInstance(m); });
+	RegisterFactory(Image::TypeID,					[](GUIManager* m) -> CoreObject* { return Image::internalCreateInstance(m); });
+	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::internalCreateInstance(m); });
+	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::internalCreateInstance(m); });
+	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::internalCreateInstance(m); });
+	RegisterFactory(StackPanel::TypeID,				[](GUIManager* m) -> CoreObject* { return StackPanel::internalCreateInstance(m); });
 
 	
 
@@ -1056,7 +1056,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 
 
 
-	m_defaultRootFrame = ApplicationContext::CreateObject<RootFrame>(this);
+	m_defaultRootFrame = RootFrame::internalCreateInstance(this);
 	m_defaultRootFrame->ApplyTemplate();	// テーマを直ちに更新
 }
 

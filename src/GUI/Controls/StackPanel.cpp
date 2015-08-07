@@ -20,12 +20,9 @@ LN_PROPERTY_IMPLEMENT(StackPanel, Orientation, OrientationProperty, "Orientation
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-StackPanel* StackPanel::Create(GUIManager* manager)
+StackPanelPtr StackPanel::Create()
 {
-	auto obj = RefPtr<StackPanel>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

@@ -35,6 +35,15 @@ int main()
 		//workbench1->SetSize(SizeF(640, 480));
 		workbench1->SetPropertyValue(GUI::RootFrame::SizeProperty , SizeF(640, 480));
 
+		auto grid1 = GUI::Grid::Create();
+		grid1->AddColumnDefinition(200);
+		grid1->AddColumnDefinition(GUI::ColumnDefinition::Star);
+		workbench1->SetContent(grid1);
+
+		auto demoList = GUI::ListBox::Create();
+		GUI::Grid::SetColumn(demoList, 0);
+		grid1->GetChildren()->Add(demoList);
+
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);
 
@@ -197,13 +206,13 @@ int main()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* group, const char* name, DemoMainFunc func)
+DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* name, DemoMainFunc func)
 {
 	DemoInfo info;
-	info.Group = group;
 	info.Name = name;
 	info.Main = func;
 	m_demos.Add(info);
+	return func;
 }
 
 Array<DemoManager::DemoInfo>	DemoManager::m_demos;

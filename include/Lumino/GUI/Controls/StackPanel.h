@@ -7,8 +7,6 @@ namespace Lumino
 namespace GUI
 {
 
-
-
 /**
 	@brief		
 */
@@ -21,7 +19,7 @@ public:
 	LN_PROPERTY(Orientation, OrientationProperty);
 
 public:
-	static StackPanel* Create(GUIManager* manager);
+	static StackPanelPtr Create();
 
 	StackPanel(GUIManager* manager);
 	virtual ~StackPanel();

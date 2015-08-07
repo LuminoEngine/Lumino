@@ -47,12 +47,9 @@ LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButto
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Track* Track::Create(GUIManager* manager)
+TrackPtr Track::Create()
 {
-	auto obj = RefPtr<Track>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

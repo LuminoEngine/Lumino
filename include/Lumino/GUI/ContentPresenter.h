@@ -16,9 +16,11 @@ class ContentPresenter
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ContentPresenter);
 public:
-
-public:
-	static ContentPresenter* Create(GUIManager* manager);
+	
+	/**
+		@brief	ContentPresenter ‚ğì¬‚µ‚Ü‚·B
+	*/
+	static ContentPresenterPtr Create();
 
 	ContentPresenter(GUIManager* manager);
 	virtual ~ContentPresenter();

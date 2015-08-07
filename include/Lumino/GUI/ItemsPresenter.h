@@ -19,7 +19,7 @@ class ItemsPresenter
 public:
 
 public:
-	static ItemsPresenter* Create(GUIManager* manager);
+	static ItemsPresenterPtr Create();
 
 	ItemsPresenter(GUIManager* manager);
 	virtual ~ItemsPresenter();

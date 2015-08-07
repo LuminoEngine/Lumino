@@ -23,8 +23,8 @@ public:
 	Event01<UIElement*>	ItemRemoved;
 
 protected:
-	virtual void OnItemAdded(UIElement* item) { ItemAdded.Raise(item); }
-	virtual void OnItemRemoved(UIElement* item) { ItemRemoved.Raise(item); }
+	virtual void OnItemAdded(const Variant& item/*UIElement* item*/) { ItemAdded.Raise(Variant::Cast<UIElement*>(item)); }
+	virtual void OnItemRemoved(const Variant& item/*UIElement* item*/) { ItemRemoved.Raise(Variant::Cast<UIElement*>(item)); }
 
 
 #if 0

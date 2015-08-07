@@ -8,7 +8,6 @@ namespace Lumino
 {
 namespace GUI
 {
-class Grid;
 
 /**
 	@brief		
@@ -17,7 +16,7 @@ class ColumnDefinition
 	: public ContentElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
-	LN_UI_ELEMENT_SUBCLASS_DECL(ColumnDefinition);	// TODO マクロ名変えた方が良い気がする
+	LN_GUI_CONTENT_ELEMENT_DECLARE(ColumnDefinition);
 public:
 	static const float Auto;
 	static const float Star;
@@ -28,7 +27,7 @@ public:
 	LN_PROPERTY(float, MaxWidthProperty);
 
 public:
-	static ColumnDefinition* Create(GUIManager* manager);
+	static ColumnDefinitionPtr Create();
 
 	ColumnDefinition(GUIManager* manager);
 	virtual ~ColumnDefinition();
@@ -72,7 +71,7 @@ class RowDefinition
 	: public ContentElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
-	LN_UI_ELEMENT_SUBCLASS_DECL(RowDefinition);	// TODO マクロ名変えた方が良い気がする
+	LN_GUI_CONTENT_ELEMENT_DECLARE(RowDefinition);
 public:
 	static const float Auto;
 	static const float Star;
@@ -83,7 +82,7 @@ public:
 	LN_PROPERTY(float, MaxHeightProperty);
 
 public:
-	static RowDefinition* Create(GUIManager* manager);
+	static RowDefinitionPtr Create();
 
 	RowDefinition(GUIManager* manager);
 	virtual ~RowDefinition();
@@ -142,7 +141,7 @@ public:
 	static const AttachedProperty*	RowSpanProperty;
 
 public:
-	static Grid* Create(GUIManager* manager);
+	static GridPtr Create();
 
 	Grid(GUIManager* manager);
 	virtual ~Grid();

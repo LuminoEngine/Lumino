@@ -15,6 +15,43 @@ class RootFrame;
 
 class Storyboard;
 
+
+class ContentPresenter;
+class Button;
+class ButtonChrome;
+class Image;
+class StackPanel;
+class Grid;
+class ColumnDefinition;
+class RowDefinition;
+class Thumb;
+class ThumbChrome;
+class Track;
+class ScrollBar;
+class ScrollContentPresenter;
+class ScrollViewer;
+class ItemsPresenter;
+class ListBox;
+class ListBoxChrome;
+
+typedef RefPtr<ContentPresenter>		ContentPresenterPtr;
+typedef RefPtr<Button>					ButtonPtr;
+typedef RefPtr<ButtonChrome>			ButtonChromePtr;
+typedef RefPtr<Image>					ImagePtr;
+typedef RefPtr<StackPanel>				StackPanelPtr;
+typedef RefPtr<Grid>					GridPtr;
+typedef RefPtr<ColumnDefinition>		ColumnDefinitionPtr;
+typedef RefPtr<RowDefinition>			RowDefinitionPtr;
+typedef RefPtr<Thumb>					ThumbPtr;
+typedef RefPtr<ThumbChrome>				ThumbChromePtr;
+typedef RefPtr<Track>					TrackPtr;
+typedef RefPtr<ScrollBar>				ScrollBarPtr;
+typedef RefPtr<ScrollContentPresenter>	ScrollContentPresenterPtr;
+typedef RefPtr<ScrollViewer>			ScrollViewerPtr;
+typedef RefPtr<ItemsPresenter>			ItemsPresenterPtr;
+typedef RefPtr<ListBox>					ListBoxPtr;
+typedef RefPtr<ListBoxChrome>			ListBoxChromePtr;
+
 // internal
 class CombinedLocalResource;
 class VisualStateInstance;

@@ -17,12 +17,9 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ItemsPresenter* ItemsPresenter::Create(GUIManager* manager)
+ItemsPresenterPtr ItemsPresenter::Create()
 {
-	auto obj = RefPtr<ItemsPresenter>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

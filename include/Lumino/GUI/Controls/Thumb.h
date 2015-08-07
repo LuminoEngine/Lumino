@@ -44,7 +44,7 @@ public:
 
 
 public:
-	static Thumb* Create(GUIManager* manager);
+	static ThumbPtr Create();
 
 	Thumb(GUIManager* manager);
 	virtual ~Thumb();
@@ -96,7 +96,7 @@ public:
 	static const Property*	RenderPressedProperty;
 
 public:
-	static ThumbChrome* Create(GUIManager* manager);
+	static ThumbChromePtr Create();
 
 	ThumbChrome(GUIManager* manager);
 	virtual ~ThumbChrome();

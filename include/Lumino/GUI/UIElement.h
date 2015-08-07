@@ -10,14 +10,23 @@
 #include "DependencyObject.h"
 #include "ControlTemplate.h"
 
-#define LN_UI_ELEMENT_SUBCLASS_DECL(subClassName) \
+#define LN_UI_ELEMENT_SUBCLASS_DECL(className) \
 public: \
 	static const String TypeID; \
-	static CoreObject* CreateInstance(GUIManager* manager) { return LN_NEW subClassName(manager); } \
-	virtual const String& GetTypeID() const { return TypeID; }
+	virtual const String& GetTypeID() const { return TypeID; } \
+private: \
+	friend class GUIManager;\
+	static className* internalCreateInstance(GUIManager* manager) \
+	{ \
+		auto obj = RefPtr<className>(LN_NEW className(manager)); \
+		obj->InitializeComponent(); \
+		obj.SafeAddRef(); \
+		return obj; \
+	}
 
-#define LN_UI_ELEMENT_SUBCLASS_IMPL(subClassName) \
-	const String subClassName::TypeID(_T(#subClassName))
+
+#define LN_UI_ELEMENT_SUBCLASS_IMPL(className) \
+	const String className::TypeID(_T(#className))
 
 namespace Lumino
 {

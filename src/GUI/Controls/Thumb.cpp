@@ -31,12 +31,9 @@ LN_ROUTED_EVENT_IMPLEMENT(Thumb, DragEventArgs, DragCanceledEvent, "DragCanceled
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Thumb* Thumb::Create(GUIManager* manager)
+ThumbPtr Thumb::Create()
 {
-	auto obj = RefPtr<Thumb>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -147,12 +144,9 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ThumbChrome);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ThumbChrome* ThumbChrome::Create(GUIManager* manager)
+ThumbChromePtr ThumbChrome::Create()
 {
-	auto obj = RefPtr<ThumbChrome>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

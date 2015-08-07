@@ -9,9 +9,7 @@ namespace Lumino
 {
 namespace GUI
 {
-class ScrollViewer;
 
-	
 /**
 	@brief
 */
@@ -22,7 +20,7 @@ class ScrollContentPresenter
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ScrollContentPresenter);
 public:
-	static ScrollContentPresenter* Create(GUIManager* manager);
+	static ScrollContentPresenterPtr Create();
 
 	ScrollContentPresenter(GUIManager* manager);
 	virtual ~ScrollContentPresenter();
@@ -81,7 +79,7 @@ public:
 	static const String PART_HorizontalScrollBarTemplateName;
 
 public:
-	static ScrollViewer* Create(GUIManager* manager);
+	static ScrollViewerPtr Create();
 
 	ScrollViewer(GUIManager* manager);
 	virtual ~ScrollViewer();

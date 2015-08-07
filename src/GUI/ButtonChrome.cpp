@@ -21,12 +21,9 @@ LN_PROPERTY_IMPLEMENT(ButtonChrome, float, FrameWidthProperty, "FrameWidth", m_f
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ButtonChrome* ButtonChrome::Create(GUIManager* manager)
+ButtonChromePtr ButtonChrome::Create()
 {
-	auto obj = RefPtr<ButtonChrome>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

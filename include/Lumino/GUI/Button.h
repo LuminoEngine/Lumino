@@ -23,7 +23,7 @@ public:
 	static const String ControlTemplateTypeName;	///< "Button"
 
 
-	static Button* Create(GUIManager* manager);
+	static ButtonPtr Create();
 
 	Button(GUIManager* manager);
 	virtual ~Button();

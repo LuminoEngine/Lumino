@@ -28,7 +28,7 @@ public:
 	LN_PROPERTY(ButtonBase*,	IncreaseButtonProperty);	///< IncreaseButton プロパティの識別子
 
 public:
-	static Track* Create(GUIManager* manager);
+	static TrackPtr Create();
 
 	Track(GUIManager* manager);
 	virtual ~Track();

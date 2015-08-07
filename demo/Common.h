@@ -17,12 +17,12 @@ public:
 	};
 
 public:
-	static DemoMainFunc RegisterDemo(const char* group, const char* name, DemoMainFunc func);
+	static DemoMainFunc RegisterDemo(const char* name, DemoMainFunc func);
 	static Array<DemoInfo>	m_demos;
 };
 
-#define DemoMain(group, name, title) \
-void DemoMain_##group_##name(); \
-static DemoManager::DemoMainFunc _localDemoMain_##group_##name = DemoManager::RegisterDemo(#group, #name, DemoMain_##group_##name); \
-void DemoMain_##group_##name()
+#define DemoMain(name) \
+void DemoMain_##name(); \
+static DemoManager::DemoMainFunc _localDemoMain_##name = DemoManager::RegisterDemo(#name, DemoMain_##name); \
+void DemoMain_##name()
 

@@ -28,7 +28,7 @@ public:
 	LN_PROPERTY(Rect,		SourceRectProperty);
 
 public:
-	static Image* Create(GUIManager* manager);
+	static ImagePtr Create();
 
 	Image(GUIManager* manager);
 	virtual ~Image();

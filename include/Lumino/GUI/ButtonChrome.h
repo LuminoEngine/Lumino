@@ -1,5 +1,6 @@
 
 #pragma once
+#include "Common.h"
 #include "Decorator.h"
 
 namespace Lumino
@@ -20,7 +21,7 @@ public:
 	LN_PROPERTY(float,	FrameWidthProperty);
 
 public:
-	static ButtonChrome* Create(GUIManager* manager);
+	static ButtonChromePtr Create();
 
 	ButtonChrome(GUIManager* manager);
 	virtual ~ButtonChrome();

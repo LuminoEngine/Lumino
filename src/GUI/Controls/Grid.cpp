@@ -12,7 +12,7 @@ namespace GUI
 // ColumnDefinition
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ColumnDefinition, ContentElement);
-LN_UI_ELEMENT_SUBCLASS_IMPL(ColumnDefinition);
+LN_GUI_CONTENT_ELEMENT_IMPLEMENT(ColumnDefinition);
 
 const float ColumnDefinition::Auto = NAN;
 const float ColumnDefinition::Star = std::numeric_limits<float>::infinity();
@@ -25,11 +25,9 @@ LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", m_m
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ColumnDefinition* ColumnDefinition::Create(GUIManager* manager)
+ColumnDefinitionPtr ColumnDefinition::Create()
 {
-	auto obj = RefPtr<ColumnDefinition>::Create(manager);
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -74,7 +72,7 @@ float ColumnDefinition::GetAvailableDesiredWidth() const
 // RowDefinition
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(RowDefinition, ContentElement);
-LN_UI_ELEMENT_SUBCLASS_IMPL(RowDefinition);
+LN_GUI_CONTENT_ELEMENT_IMPLEMENT(RowDefinition);
 
 const float RowDefinition::Auto = NAN;
 const float RowDefinition::Star = std::numeric_limits<float>::infinity();
@@ -87,11 +85,9 @@ LN_PROPERTY_IMPLEMENT(RowDefinition, float, MaxHeightProperty, "MaxHeight", m_ma
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RowDefinition* RowDefinition::Create(GUIManager* manager)
+RowDefinitionPtr RowDefinition::Create()
 {
-	auto obj = RefPtr<RowDefinition>::Create(manager);
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -151,12 +147,9 @@ LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Grid* Grid::Create(GUIManager* manager)
+GridPtr Grid::Create()
 {
-	auto obj = RefPtr<Grid>::Create(manager);
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
 
 //-----------------------------------------------------------------------------

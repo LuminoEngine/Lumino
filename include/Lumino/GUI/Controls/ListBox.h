@@ -62,7 +62,7 @@ public:
 	//static const String	FrameWidthProperty;		///< FrameWidth プロパティの識別子
 
 public:
-	static ListBoxChrome* Create(GUIManager* manager);
+	static ListBoxChromePtr Create();
 
 	ListBoxChrome(GUIManager* manager);
 	virtual ~ListBoxChrome();
@@ -100,7 +100,11 @@ class ListBox
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBox);
 public:
-	static ListBox* Create(GUIManager* manager);
+
+	/**
+		@brief	ListBox を作成します。	
+	*/
+	static ListBoxPtr Create();
 
 	// TODO: こやつらは protected にするべき
 	ListBox(GUIManager* manager);
