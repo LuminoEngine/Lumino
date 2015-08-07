@@ -192,3 +192,18 @@ int main()
 
 	return 0;
 }
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* group, const char* name, DemoMainFunc func)
+{
+	DemoInfo info;
+	info.Group = group;
+	info.Name = name;
+	info.Main = func;
+	m_demos.Add(info);
+}
+
+Array<DemoManager::DemoInfo>	DemoManager::m_demos;
