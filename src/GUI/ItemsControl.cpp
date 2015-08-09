@@ -16,6 +16,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsControl);
 
 // Register property
 LN_PROPERTY_IMPLEMENT(ItemsControl, ControlTemplate*, ItemsPanelTemplateProperty, "ItemsPanelTemplate", m_itemsPanelTemplate, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(ItemsControl, Style*, GroupStyleProperty, "GroupStyle", m_groupStyle, NULL, NULL);
 
 //-----------------------------------------------------------------------------
 //
@@ -117,6 +118,13 @@ void ItemsControl::Items_ListChanged(ListChangedEventArgs* e)
 	{
 		LN_THROW(0, NotImplementedException);
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ItemsControl::OnItemGroupKeyChanged(ItemsControlItem* item)
+{
 }
 
 } // namespace GUI

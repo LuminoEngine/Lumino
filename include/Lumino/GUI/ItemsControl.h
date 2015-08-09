@@ -38,11 +38,47 @@ public:
 	VariantList			NewItems;
 };
 	
+
+
+
+
+
+///**
+//	@brief
+//*/
+//class ListModel
+//	: public CoreObject
+//{
+//public:
+//	/// 処理の基になるリストを設定します。
+//	void SetSourceList(VariantList* list) { m_list = list; }
+//
+//	bool CanFilter() const { return false; }	// TODO
+//
+//	bool CanGroup() const;
+//
+//	bool CanSort() const { return false; }		// TODO
+//
+//
+//	// ユーティリティ
+//	void AddGroup(const String& name);
+//
+//private:
+//	RefPtr<VariantList>	m_list;
+//};
+//
+//// ItemSource が NULL の時、内部的に使われる。
+//class InternalItemViewModel
+//{
+//
+//};
+
+
 /**
 	@brief
 */
 class ItemList
-	: public VariantList
+	: public GenericVariantList<UIElementPtr>
 {
 public:
 	Event01<ListChangedEventArgs*>	ItemsChanged;
@@ -63,6 +99,38 @@ protected:
 private:
 };
 
+/**
+	@brief
+*/
+class ItemsControlItem
+	: public ContentControl
+{
+public:
+	void SetGroup(const Variant& group);
+	const Variant& GetGroup() const;
+
+protected:
+	ItemsControlItem(GUIManager* manager);
+	virtual ~ItemsControlItem();
+
+private:
+	
+};
+
+/**
+	@brief
+*/
+class GroupItem
+	: public ContentControl
+{
+protected:
+	GroupItem(GUIManager* manager);
+	virtual ~GroupItem();
+
+private:
+	
+};
+
 
 /**
 	@brief
@@ -73,7 +141,8 @@ class ItemsControl
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ItemsControl);
 public:
-	LN_PROPERTY(ControlTemplate*, ItemsPanelTemplateProperty);
+	LN_PROPERTY(ControlTemplate*,	ItemsPanelTemplateProperty);
+	LN_PROPERTY(Style*,				GroupStyleProperty);			// TODO: StylePtr にできない？
 
 public:
 	static ItemsControl* Create(GUIManager* manager);
@@ -83,6 +152,8 @@ public:
 
 	void SetItemsPanelTemplate(ControlTemplate* controlTemplate) { m_itemsPanelTemplate = controlTemplate; }
 	ControlTemplate* GetItemsPanelTemplate() const { return m_itemsPanelTemplate; }
+
+	//void SetGroupStyle(Style* style) { SetTypedPropertyValue(GroupStyleProperty, style); }
 
 	ItemList* GetItems() const { return m_itemList; }
 
@@ -95,11 +166,20 @@ private:
 
 	void Items_ListChanged(ListChangedEventArgs* e);
 
+	void OnItemGroupKeyChanged(ItemsControlItem* item);
+
 private:
 	RefPtr<ControlTemplate>	m_itemsPanelTemplate;
 	ItemsPresenter*			m_visualItemsPresenter;	///< VisualTree 内の ItemsPresenter
 	RefPtr<Panel>			m_hostPanel;			///< アイテムコントロールの追加先
 	RefPtr<ItemList>		m_itemList;
+
+	StylePtr				m_groupStyle;
+
+	class ItemInfo
+	{
+
+	};
 };
 
 

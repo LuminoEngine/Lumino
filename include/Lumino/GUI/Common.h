@@ -15,6 +15,7 @@ class RootFrame;
 
 class Storyboard;
 
+class Style;
 
 class ContentPresenter;
 class Button;
@@ -31,9 +32,14 @@ class ScrollBar;
 class ScrollContentPresenter;
 class ScrollViewer;
 class ItemsPresenter;
+class GroupItem;
 class ListBox;
 class ListBoxChrome;
+class ListBoxItem;
 
+typedef RefPtr<Style>					StylePtr;
+
+typedef RefPtr<UIElement>				UIElementPtr;
 typedef RefPtr<ContentPresenter>		ContentPresenterPtr;
 typedef RefPtr<Button>					ButtonPtr;
 typedef RefPtr<ButtonChrome>			ButtonChromePtr;
@@ -49,8 +55,11 @@ typedef RefPtr<ScrollBar>				ScrollBarPtr;
 typedef RefPtr<ScrollContentPresenter>	ScrollContentPresenterPtr;
 typedef RefPtr<ScrollViewer>			ScrollViewerPtr;
 typedef RefPtr<ItemsPresenter>			ItemsPresenterPtr;
+typedef RefPtr<GroupItem>				GroupItemPtr;
 typedef RefPtr<ListBox>					ListBoxPtr;
 typedef RefPtr<ListBoxChrome>			ListBoxChromePtr;
+typedef RefPtr<ListBoxItem>				ListBoxItemPtr;
+
 
 // internal
 class CombinedLocalResource;

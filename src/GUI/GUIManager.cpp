@@ -5,6 +5,10 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/8/9] ListModel
+		WPF の CollectionView 相当。
+		ItemsControl.ItemsSource が NULL の時でも内部的に作られる。
+
 	[2015/8/7] GUI Context の役目
 		・モーダルダイアログ
 

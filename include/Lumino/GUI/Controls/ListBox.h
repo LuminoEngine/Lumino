@@ -106,6 +106,28 @@ public:
 	*/
 	static ListBoxPtr Create();
 
+
+public:
+
+	/**
+		@brief	指定した文字列をリストボックスの項目として追加します。	
+	*/
+	ListBoxItemPtr InsertTextItem(int index, const String& text);
+	ListBoxItemPtr InsertItem(int index, const UIElement& item);
+
+	/**
+		@brief	
+	*/
+	GroupItemPtr InsertGroup(int index, const String& text);
+	//void InsertGroup(int index, const GroupItem& group);
+
+	/**
+		@brief	指定した文字列をリストボックスの項目として追加します。	
+	*/
+	//void SetItemGroup(int index, const Variant& groupKey);
+
+
+
 	// TODO: こやつらは protected にするべき
 	ListBox(GUIManager* manager);
 	virtual ~ListBox();

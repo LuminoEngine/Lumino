@@ -81,6 +81,26 @@
 	Panel が Owner を持ち、Owner に Item を作ってもらうのはいいと思う。
 	問題は Styleを誰が適用するのか。
 
+
+	■Group
+
+		ListBox
+			…
+				ItemsPresenter
+					StackPanel
+						GroupItem
+						GroupItem
+						GroupItem
+							StackPanel
+								ContentPresenter (PART_Header)
+									TextBlock
+								ItemsPresenter (ItemsPresenter)
+									VirtualizingStackPanel
+										ListBoxItem
+										ListBoxItem
+										ListBoxItem
+									
+
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -234,6 +254,13 @@ ListBox::ListBox(GUIManager* manager)
 //
 //-----------------------------------------------------------------------------
 ListBox::~ListBox()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ListBox::InsertTextItem(int index, const String& text)
 {
 }
 
