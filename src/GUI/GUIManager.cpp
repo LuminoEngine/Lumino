@@ -982,6 +982,7 @@
 #include <Lumino/GUI/Controls/ScrollViewer.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
 #include <Lumino/GUI/Controls/ListBox.h>
+#include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/GUIManager.h>
 
 namespace Lumino
@@ -1048,6 +1049,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::internalCreateInstance(m); });
 	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::internalCreateInstance(m); });
 	RegisterFactory(StackPanel::TypeID,				[](GUIManager* m) -> CoreObject* { return StackPanel::internalCreateInstance(m); });
+	RegisterFactory(TextBlock::TypeID,				[](GUIManager* m) -> CoreObject* { return TextBlock::internalCreateInstance(m); });
 
 	
 
@@ -1612,6 +1614,36 @@ void GUIManager::BuildDefaultTheme()
 		auto contentPresenter = RefPtr<UIElementFactory>::Create(this);
 		contentPresenter->SetTypeName(_T("ContentPresenter"));
 		controlTemplate->SetVisualTreeRoot(contentPresenter);
+
+		m_defaultTheme->AddStyle(style);
+	}
+
+	// GroupItem
+	{
+		auto style = RefPtr<Style>::Create();
+		style->SetTargetType(GroupItem::GetClassTypeInfo());
+
+		auto controlTemplate = RefPtr<ControlTemplate>::Create();
+		controlTemplate->SetTargetType(_T("GroupItem"));	// TODO: TypeInfo‚É‚µ‚½‚¢
+		style->AddSetter(Control::TemplateProperty, controlTemplate);
+
+		RefPtr<UIElementFactory> staclPanel(LN_NEW UIElementFactory(this));
+		staclPanel->SetTypeName(_T("StackPanel"));
+		controlTemplate->SetVisualTreeRoot(staclPanel);
+
+		auto textBlock = RefPtr<UIElementFactory>::Create(this);
+		textBlock->SetTypeName(_T("TextBlock"));
+		textBlock->AddTemplateBinding(TextBlock::TextProperty, GroupItem::HeaderProperty->GetName());
+		staclPanel->AddChild(textBlock);
+
+		auto itemsPresenter = RefPtr<UIElementFactory>::Create(this);
+		itemsPresenter->SetTypeName(_T("ItemsPresenter"));
+		staclPanel->AddChild(itemsPresenter);
+
+
+		auto stackPanel = RefPtr<ControlTemplate>::Create();
+		stackPanel->SetTargetType(_T("StackPanel"));
+		style->AddSetter(ItemsControl::ItemsPanelTemplateProperty, stackPanel);
 
 		m_defaultTheme->AddStyle(style);
 	}

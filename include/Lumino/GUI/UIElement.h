@@ -16,6 +16,7 @@ public: \
 	virtual const String& GetTypeID() const { return TypeID; } \
 private: \
 	friend class GUIManager;\
+	friend class GUIHelper;\
 	static className* internalCreateInstance(GUIManager* manager) \
 	{ \
 		auto obj = RefPtr<className>(LN_NEW className(manager)); \

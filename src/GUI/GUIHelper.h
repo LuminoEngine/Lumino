@@ -15,6 +15,9 @@ namespace GUI
 class GUIHelper
 {
 public:
+	template<class T, typename... TArgs>
+	static RefPtr<T> CreateUIElemenInstance(TArgs... args) { return RefPtr<T>(T::internalCreateInstance(args...)); }
+
 	static void UIElement_SetKeyName(UIElement* element, const String& name) { element->m_keyName = name; }
 	static void UIElement_SetTemplateParent(UIElement* element, UIElement* templateParent) { element->m_templateParent = templateParent; }
 };

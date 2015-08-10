@@ -326,9 +326,21 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 	// 要素を保持する
 	m_rootLogicalParent = logicalParent;
 
-	// 新しい方にイベントハンドラを登録する
-	if (m_rootLogicalParent) {
+	if (m_rootLogicalParent != NULL)
+	{
+		// 新しい方にイベントハンドラを登録する
 		m_rootLogicalParent->PropertyChangedForTemplateBindings += m_templateBindingHandler;
+
+		// TemplateBinding を更新する
+		for (TemplateBindingInfo& info : m_templateBindingInfoList)
+		{
+			// TODO: TypeInfo::FindProperty(m_rootLogicalParent, name) のほうが自然？
+			auto* prop = m_rootLogicalParent->GetThisTypeInfo()->FindProperty(info.SourcePropPath);
+			if (prop != NULL)
+			{
+				info.ThisProp->SetValue(this, prop->GetValue(m_rootLogicalParent));
+			}
+		}
 	}
 
 	// 子要素へも同じ論理親要素をセットする

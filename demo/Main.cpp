@@ -42,6 +42,9 @@ int main()
 
 		auto demoList = GUI::ListBox::Create();
 		GUI::Grid::SetColumn(demoList, 0);
+		auto group1 = demoList->AddGroup(_T("Core"));
+		auto item1 = demoList->AddTextItem(_T("String"));
+		group1->AddItem(item1);
 		grid1->GetChildren()->Add(demoList);
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));

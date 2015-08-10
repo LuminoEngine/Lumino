@@ -217,6 +217,8 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	if (element != NULL)
 	{
 		GUIHelper::UIElement_SetKeyName(element, m_keyName);
+
+		// TODO: Ç±ÇÍÇ¢ÇÁÇ»Ç©Ç‡ÅH
 		GUIHelper::UIElement_SetTemplateParent(element, rootLogicalParent);
 
 		for(const PropertyInfoList::Pair& pair : m_propertyInfoList)

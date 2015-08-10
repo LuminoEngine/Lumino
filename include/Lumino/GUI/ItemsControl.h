@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Control.h"
+#include "ContentControl.h"
 #include "ItemsPresenter.h"
 #include "Controls/Panel.h"
 
@@ -78,7 +79,7 @@ public:
 	@brief
 */
 class ItemList
-	: public GenericVariantList<UIElementPtr>
+	: public GenericVariantList<UIElement*>
 {
 public:
 	Event01<ListChangedEventArgs*>	ItemsChanged;
@@ -99,15 +100,18 @@ protected:
 private:
 };
 
+
 /**
 	@brief
 */
 class ItemsControlItem
 	: public ContentControl
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(ItemsControlItem);
 public:
-	void SetGroup(const Variant& group);
-	const Variant& GetGroup() const;
+	//void SetGroup(const Variant& group);
+	//const Variant& GetGroup() const;
 
 protected:
 	ItemsControlItem(GUIManager* manager);
@@ -117,18 +121,23 @@ private:
 	
 };
 
+
 /**
 	@brief
 */
-class GroupItem
-	: public ContentControl
+class GroupItemList
+	: public GenericVariantList<GroupItem*>
 {
 protected:
-	GroupItem(GUIManager* manager);
-	virtual ~GroupItem();
+	GroupItemList(ItemsControl* owner);
+
+	virtual void OnItemAdded(const Variant& item);
+	virtual void OnItemRemoved(const Variant& item);
 
 private:
-	
+	ItemsControl* m_owner;
+
+	friend class ItemsControl;
 };
 
 
@@ -147,6 +156,16 @@ public:
 public:
 	static ItemsControl* Create(GUIManager* manager);
 
+	/**
+		@brief
+	*/
+	GroupItemPtr AddGroup(const String& caption);
+	//void InsertGroup(int index, const GroupItem& group);
+
+
+
+
+
 	ItemsControl(GUIManager* manager);
 	virtual ~ItemsControl();
 
@@ -155,7 +174,7 @@ public:
 
 	//void SetGroupStyle(Style* style) { SetTypedPropertyValue(GroupStyleProperty, style); }
 
-	ItemList* GetItems() const { return m_itemList; }
+	ItemListPtr GetItems() const { return m_itemList; }
 
 private:
 
@@ -168,11 +187,18 @@ private:
 
 	void OnItemGroupKeyChanged(ItemsControlItem* item);
 
+
+	void OnGroupItemAdded(GroupItem* groupItem);
+	void OnGroupItemRemoved(GroupItem* groupItem);
+	void RefreshHostPanelItems();
+
 private:
+	friend class GroupItemList;
 	RefPtr<ControlTemplate>	m_itemsPanelTemplate;
 	ItemsPresenter*			m_visualItemsPresenter;	///< VisualTree 内の ItemsPresenter
 	RefPtr<Panel>			m_hostPanel;			///< アイテムコントロールの追加先
-	RefPtr<ItemList>		m_itemList;
+	ItemListPtr				m_itemList;
+	RefPtr<GroupItemList>	m_groupItemList;
 
 	StylePtr				m_groupStyle;
 
@@ -182,6 +208,35 @@ private:
 	};
 };
 
+/**
+	@brief
+*/
+class GroupItem
+	: public ItemsControl	// TODO: HeaderedItemsControl へ
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(GroupItem);
+public:
+	LN_PROPERTY(Variant,	HeaderProperty);	// TODO: HeaderedItemsControl へ
+
+public:
+	static GroupItemPtr Create();
+
+public:
+	void SetHeader(const Variant& text) { SetTypedPropertyValue<Variant>(HeaderProperty, text); }
+	Variant GetHeader() const { return GetTypedPropertyValue<Variant>(HeaderProperty); }
+
+
+	void AddItem(ItemsControlItem* item) { GetItems()->AddVariant(item); }
+	
+
+protected:
+	GroupItem(GUIManager* manager);
+	virtual ~GroupItem();
+
+private:
+	Variant		m_header;
+};
 
 } // namespace GUI
 } // namespace Lumino

@@ -107,6 +107,8 @@
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
+#include <Lumino/GUI/TextBlock.h>
+#include "../GUIHelper.h"
 
 namespace Lumino
 {
@@ -116,7 +118,7 @@ namespace GUI
 //=============================================================================
 // ListBoxItem
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItem, ContentControl);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItem, ItemsControlItem);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxItem);
 
 //-----------------------------------------------------------------------------
@@ -134,7 +136,7 @@ ListBoxItem* ListBoxItem::Create(GUIManager* manager)
 //
 //-----------------------------------------------------------------------------
 ListBoxItem::ListBoxItem(GUIManager* manager)
-	: ContentControl(manager)
+	: ItemsControlItem(manager)
 {
 }
 
@@ -260,9 +262,30 @@ ListBox::~ListBox()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ListBox::InsertTextItem(int index, const String& text)
+//void ListBox::InsertTextItem(int index, const String& text)
+//{
+//}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ListBoxItemPtr ListBox::AddTextItem(const String& text)
 {
+	auto textBlock = GUIHelper::CreateUIElemenInstance<TextBlock>(m_manager);
+	auto item = GUIHelper::CreateUIElemenInstance<ListBoxItem>(m_manager);
+	item->SetContent(textBlock);
+	GetItems()->AddVariant(item);
+	return item;
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//ListBoxItemPtr ListBox::AddItem(const UIElement& item)
+//{
+//
+//}
 
 //-----------------------------------------------------------------------------
 //

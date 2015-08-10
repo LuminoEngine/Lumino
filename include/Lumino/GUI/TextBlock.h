@@ -17,7 +17,7 @@ class TextBlock
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(TextBlock);
 public:
-	static const Property*	TextProperty;
+	LN_PROPERTY(String,		TextProperty);
 
 public:
 	static TextBlock* Create(GUIManager* manager);
@@ -26,7 +26,8 @@ public:
 	virtual ~TextBlock();
 
 public:
-	void SetText(const String& text);
+	void SetText(const String& text) { SetTypedPropertyValue<String>(TextProperty, text); }
+	String GetText() const { return GetTypedPropertyValue<String>(TextProperty); }
 
 protected:
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
@@ -34,7 +35,10 @@ protected:
 	virtual void OnRender(Graphics::Painter* painter);
 
 private:
-	//String	m_text;
+	void OnTextPropertyChanged(PropertyChangedEventArgs* e);
+
+private:
+	String	m_text;
 	RefPtr<Documents::Paragraph>	m_paragraph;
 };
 

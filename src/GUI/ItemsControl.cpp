@@ -2,11 +2,62 @@
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ItemsControl.h>
+#include "GUIHelper.h"
 
 namespace Lumino
 {
 namespace GUI
 {
+	
+
+//=============================================================================
+// ItemsControlItem
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsControlItem, ContentControl);
+LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsControlItem);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ItemsControlItem::ItemsControlItem(GUIManager* manager)
+	: ContentControl(manager)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ItemsControlItem::~ItemsControlItem()
+{
+
+}
+
+//=============================================================================
+// GroupItemList
+//=============================================================================
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GroupItemList::GroupItemList(ItemsControl* owner)
+	: m_owner(owner)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GroupItemList::OnItemAdded(const Variant& item)
+{
+	m_owner->OnGroupItemAdded(Variant::Cast<GroupItem*>(item));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GroupItemList::OnItemRemoved(const Variant& item)
+{
+	m_owner->OnGroupItemRemoved(Variant::Cast<GroupItem*>(item));
+}
 
 //=============================================================================
 // ItemsControl
@@ -39,6 +90,8 @@ ItemsControl::ItemsControl(GUIManager* manager)
 {
 	m_itemList.Attach(LN_NEW ItemList());
 	m_itemList->ItemsChanged += LN_CreateDelegate(this, &ItemsControl::Items_ListChanged);
+
+	m_groupItemList.Attach(LN_NEW GroupItemList(this));
 }
 
 //-----------------------------------------------------------------------------
@@ -46,6 +99,17 @@ ItemsControl::ItemsControl(GUIManager* manager)
 //-----------------------------------------------------------------------------
 ItemsControl::~ItemsControl()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GroupItemPtr ItemsControl::AddGroup(const String& caption)
+{
+	auto group = GUIHelper::CreateUIElemenInstance<GroupItem>(m_manager);
+	group->SetHeader(caption);
+	m_groupItemList->Add(group);
+	return group;
 }
 
 //-----------------------------------------------------------------------------
@@ -67,6 +131,8 @@ void ItemsControl::OnApplyTemplate(CombinedLocalResource* localResource)
 	m_hostPanel = panel;
 
 	m_visualItemsPresenter->AttachHostPanel(m_hostPanel);
+
+	RefreshHostPanelItems();
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +178,8 @@ void ItemsControl::Items_ListChanged(ListChangedEventArgs* e)
 {
 	if (e->Action == ListChangedAction::Add)
 	{
-		m_hostPanel->AddChild(e->NewItems.GetAtVariant(0));
+		RefreshHostPanelItems();	// TODO: ’x‰„•]‰¿‚É‚µ‚½‚¢
+		//m_hostPanel->AddChild(e->NewItems.GetAtVariant(0));
 	}
 	else
 	{
@@ -126,6 +193,76 @@ void ItemsControl::Items_ListChanged(ListChangedEventArgs* e)
 void ItemsControl::OnItemGroupKeyChanged(ItemsControlItem* item)
 {
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ItemsControl::OnGroupItemAdded(GroupItem* groupItem)
+{
+	RefreshHostPanelItems();	// TODO: ’x‰„•]‰¿‚É‚µ‚½‚¢
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ItemsControl::OnGroupItemRemoved(GroupItem* groupItem)
+{
+	RefreshHostPanelItems();	// TODO: ’x‰„•]‰¿‚É‚µ‚½‚¢
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ItemsControl::RefreshHostPanelItems()
+{
+	if (m_hostPanel != NULL)
+	{
+		auto childlen = m_hostPanel->GetChildren();
+		childlen->Clear();
+
+		// TODO: m_hostPanel ‚àƒNƒŠƒA
+		
+		if (m_groupItemList->IsEmpty())
+		{
+			for (UIElement* element : *m_itemList)
+			{
+				m_hostPanel->AddChild(element);
+			}
+		}
+		else
+		{
+			for (GroupItem* group : *m_groupItemList)
+			{
+				childlen->Add(group);
+			}
+		}
+	}
+}
+
+//=============================================================================
+// GroupItem
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(GroupItem, ItemsControl);
+LN_UI_ELEMENT_SUBCLASS_IMPL(GroupItem);
+
+// Register property
+LN_PROPERTY_IMPLEMENT(GroupItem, Variant, HeaderProperty, "Header", m_header, NULL, NULL);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GroupItem::GroupItem(GUIManager* manager)
+	: ItemsControl(manager)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GroupItem::~GroupItem()
+{
+}
+
 
 } // namespace GUI
 } // namespace Lumino

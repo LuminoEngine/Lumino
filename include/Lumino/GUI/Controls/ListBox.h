@@ -17,7 +17,7 @@ class ListBox;
 	@brief
 */
 class ListBoxItem
-	: public ContentControl
+	: public ItemsControlItem
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBoxItem);
@@ -112,14 +112,10 @@ public:
 	/**
 		@brief	指定した文字列をリストボックスの項目として追加します。	
 	*/
-	ListBoxItemPtr InsertTextItem(int index, const String& text);
-	ListBoxItemPtr InsertItem(int index, const UIElement& item);
+	ListBoxItemPtr AddTextItem(const String& text);
+	ListBoxItemPtr AddItem(const UIElement& item);
 
-	/**
-		@brief	
-	*/
-	GroupItemPtr InsertGroup(int index, const String& text);
-	//void InsertGroup(int index, const GroupItem& group);
+	
 
 	/**
 		@brief	指定した文字列をリストボックスの項目として追加します。	
