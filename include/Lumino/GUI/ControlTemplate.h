@@ -37,7 +37,7 @@ public:
 	/// この UIElementFactory が生成するインスタンスの型名
 	void SetTypeName(const String& typeFullName) { m_targetTypeFullName = typeFullName; }
 
-
+	// TODO 名前が紛らわしい。ElementValue とかに。
 	void SetPropertyValue(const Property* prop, const Variant& value) { m_propertyValueList.SetValue(prop, value); }
 	Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
 

@@ -129,6 +129,7 @@ class UIElement
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	LN_PROPERTY(SizeF,					SizeProperty);					/**< Size プロパティの識別子 */
+	LN_PROPERTY(ThicknessF,				MarginProperty);				/**< Margin プロパティの識別子 */
 	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
@@ -163,6 +164,12 @@ public:
 	/** 要素のサイズを取得します。*/
 	//const SizeF& GetSize() const { return GetTypedPropertyValue<const SizeF&>(SizeProperty); }
 
+	/** 要素の外側の余白を設定します。*/
+	//void SetMargin(const ThicknessF& margin) { SetTypedPropertyValue(MarginProperty, margin); }
+
+	/** 要素の外側の余白を取得します。*/
+	//const ThicknessF& GetMargin() const { return GetTypedPropertyValue<const ThicknessF&>(MarginProperty); }
+
 	/** @} */
 
 public:
@@ -186,6 +193,9 @@ public:
 
 	/** この要素内の指定したインデックスにある子ビジュアル要素を取得します。*/
 	virtual UIElement* GetVisualChild(int index) const;
+
+	virtual void MeasureLayout(const SizeF& availableSize);
+	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 protected:
 	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
@@ -221,7 +231,7 @@ private:
 	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
 	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
 
-
+	ThicknessF		m_margin;
 
 
 
@@ -331,8 +341,7 @@ public:
 
 
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
-	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalLocalRect);
+	
 
 
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。

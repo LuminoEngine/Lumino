@@ -29,6 +29,7 @@ enum VariantType
 
 	VariantType_SizeF,
 	VariantType_Rect,
+	VariantType_ThicknessF,
 
 	VariantType_Max,			///< (Terminator)
 };
@@ -244,6 +245,7 @@ public:
 	Variant(VariantList* value);
 	Variant(const SizeF& value);
 	Variant(const Rect& value);
+	Variant(const ThicknessF& value);
 	~Variant();
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
 
@@ -288,6 +290,8 @@ public:
 	void SetRect(const Rect& value);
 	const Rect& GetRect() const;
 
+	void SetThicknessF(const ThicknessF& value);
+	const ThicknessF& GetThicknessF() const;
 
 	template<typename T>
 	T& RefCast() const { return static_cast<T&>(GetObject()); }
@@ -312,6 +316,7 @@ private:
 	template<> struct CastSelector < String, std::false_type > { static String GetValue(const Variant& v) { return v.GetString(); } };
 	template<> struct CastSelector < Rect, std::false_type > { static Rect GetValue(const Variant& v) { return v.GetRect(); } };
 	template<> struct CastSelector < SizeF, std::false_type > { static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
+	template<> struct CastSelector < ThicknessF, std::false_type > { static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
 	template<typename T> struct CastSelector < T, std::true_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
 
 public:
@@ -334,6 +339,7 @@ private:
 		CoreObject*		m_object;
 		float			m_sizeF[2];
 		int				m_rect[4];
+		float			m_thicknessF[4];
 		Enum			m_enum;
 	};
 	String			m_string;

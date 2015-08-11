@@ -114,16 +114,6 @@ SizeF ContentPresenter::ArrangeOverride(const SizeF& finalSize)
 	return finalSize;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void ContentPresenter::Render()
-{
-	if (m_content != NULL) {
-		m_content->Render();
-	}
-	UIElement::Render();
-}
 
 #endif
 

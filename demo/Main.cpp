@@ -51,10 +51,23 @@ int main()
 
 		auto demoList = GUI::ListBox::Create();
 		GUI::Grid::SetColumn(demoList, 0);
-		auto group1 = demoList->AddGroup(_T("Core"));
-		auto item1 = demoList->AddTextItem(_T("String"));
-		group1->AddItem(item1);
 		grid1->GetChildren()->Add(demoList);
+
+		for (auto& pair1 : DemoManager::m_demosTable)
+		{
+			auto group1 = demoList->AddGroup(pair1.first);
+
+			for (auto& pair2 : pair1.second)
+			{
+				auto group2 = group1->AddGroup(pair2.first);
+				for (auto& info : pair2.second)
+				{
+					auto item = demoList->AddTextItem(info.Caption);
+					group2->AddItem(item);
+				}
+			}
+		}
+
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);
@@ -220,11 +233,18 @@ int main()
 //-----------------------------------------------------------------------------
 DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* name, DemoMainFunc func)
 {
+	String t = name;
+	Array<String> tokens = t.Split(_T("."));
 	DemoInfo info;
-	info.Name = name;
+	info.Group1 = tokens[0];
+	info.Group2 = tokens[1];
+	info.Caption = tokens[2];
 	info.Main = func;
 	m_demos.Add(info);
+
+	m_demosTable[info.Group1][info.Group2].Add(info);
 	return func;
 }
 
-Array<DemoManager::DemoInfo>	DemoManager::m_demos;
+Array<DemoManager::DemoInfo>			DemoManager::m_demos;
+std::map<String, std::map<String, Array<DemoManager::DemoInfo> > >	DemoManager::m_demosTable;

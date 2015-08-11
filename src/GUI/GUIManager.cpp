@@ -1638,6 +1638,7 @@ void GUIManager::BuildDefaultTheme()
 
 		auto itemsPresenter = RefPtr<UIElementFactory>::Create(this);
 		itemsPresenter->SetTypeName(_T("ItemsPresenter"));
+		itemsPresenter->SetPropertyValue(UIElement::MarginProperty, ThicknessF(20, 2, 0, 2));
 		staclPanel->AddChild(itemsPresenter);
 
 

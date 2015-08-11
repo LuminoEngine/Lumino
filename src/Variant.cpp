@@ -469,6 +469,16 @@ Variant::Variant(const Rect& value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Variant::Variant(const ThicknessF& value)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)
+{
+	SetThicknessF(value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Variant::~Variant()
 {
 	Release();
@@ -615,6 +625,26 @@ const Rect& Variant::GetRect() const
 	return *((Rect*)m_rect);
 }
 
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Variant::SetThicknessF(const ThicknessF& value)
+{
+	Release();
+	m_type = VariantType_ThicknessF;
+	*((ThicknessF*)m_thicknessF) = value;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const ThicknessF& Variant::GetThicknessF() const
+{
+	if (LN_VERIFY_ASSERT(m_type == VariantType_ThicknessF)) { return ThicknessF::Zero; }
+	return *((ThicknessF*)m_thicknessF);
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -632,6 +662,7 @@ bool Variant::operator == (const Variant& right) const
 	case Lumino::VariantType_Object:	return m_object == right.m_object;
 	case Lumino::VariantType_SizeF:		return *((SizeF*)m_sizeF) == *((SizeF*)right.m_sizeF);
 	case Lumino::VariantType_Rect:		return *((Rect*)m_rect) == *((Rect*)right.m_rect);
+	case Lumino::VariantType_ThicknessF:return *((ThicknessF*)m_thicknessF) == *((ThicknessF*)right.m_thicknessF);
 	default: LN_ASSERT(0); return false;
 	}
 }
@@ -670,6 +701,9 @@ void Variant::Copy(const Variant& obj)
 		break;
 	case Lumino::VariantType_Rect:
 		memcpy(m_rect, obj.m_rect, sizeof(m_rect));
+		break;
+	case Lumino::VariantType_ThicknessF:
+		memcpy(m_thicknessF, obj.m_thicknessF, sizeof(m_thicknessF));
 		break;
 	default:
 		LN_ASSERT(0);

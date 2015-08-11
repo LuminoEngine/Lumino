@@ -20,6 +20,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElement, CoreObject);
 
 // Register property
 LN_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, SizeF::Zero, NULL);
+LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin, ThicknessF::Zero, NULL);
 LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, HorizontalAlignment::Stretch, NULL);
 LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, VerticalAlignment::Stretch, NULL);
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, true, NULL);
@@ -118,6 +119,57 @@ UIElement* UIElement::GetVisualChild(int index) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void UIElement::MeasureLayout(const SizeF& availableSize)
+{
+	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
+	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
+	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button		※この時点で inf を返すこともあり得る。
+	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
+	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
+
+	// Margin を考慮する
+	float marginWidth = m_margin.Left + m_margin.Right;
+	float marginHeight = m_margin.Top + m_margin.Bottom;
+	SizeF localAvailableSize(
+		std::max(availableSize.Width - marginWidth, 0.0f),
+		std::max(availableSize.Height - marginHeight, 0.0f));
+
+	m_desiredSize = MeasureOverride(localAvailableSize);
+
+	// Margin を考慮する
+	m_desiredSize.Width += marginWidth;
+	m_desiredSize.Width += marginHeight;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::ArrangeLayout(const RectF& finalLocalRect)
+{
+	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
+	// 要素に直接設定されているサイズよりも大きいこともある。
+	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
+	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
+
+	// Margin を考慮する
+	float marginWidth = m_margin.Left + m_margin.Right;
+	float marginHeight = m_margin.Top + m_margin.Bottom;
+	SizeF arrangeSize = finalLocalRect.GetSize();
+	arrangeSize.Width += std::max(arrangeSize.Width - marginWidth, 0.0f);
+	arrangeSize.Height += std::max(arrangeSize.Height - marginHeight, 0.0f);
+
+	SizeF renderSize = ArrangeOverride(finalLocalRect.GetSize());
+	m_finalLocalRect.X = finalLocalRect.X + m_margin.Left;
+	m_finalLocalRect.Y = finalLocalRect.Y + m_margin.Top;
+	m_finalLocalRect.Width = renderSize.Width;
+	m_finalLocalRect.Height = renderSize.Height;
+
+	OnLayoutUpdated();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void UIElement::UpdateLayout()
 {
 	// サイズが定まっていない場合はレイアウトを決定できない
@@ -174,6 +226,7 @@ SizeF UIElement::MeasureOverride(const SizeF& constraint)
 	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : size.Height;
 	size.Width = std::min(size.Width, constraint.Width);
 	size.Height = std::min(size.Height, constraint.Height);
+
 	return size;
 }
 
@@ -262,39 +315,6 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 		return this;
 	}
 	return NULL;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void UIElement::MeasureLayout(const SizeF& availableSize)
-{
-	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
-	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
-	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button		※この時点で inf を返すこともあり得る。
-	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
-	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
-
-	m_desiredSize = MeasureOverride(availableSize);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void UIElement::ArrangeLayout(const RectF& finalLocalRect)
-{
-	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
-	// 要素に直接設定されているサイズよりも大きいこともある。
-	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
-	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
-
-	SizeF renderSize = ArrangeOverride(finalLocalRect.GetSize());
-	m_finalLocalRect.X = finalLocalRect.X;
-	m_finalLocalRect.Y = finalLocalRect.Y;
-	m_finalLocalRect.Width = renderSize.Width;
-	m_finalLocalRect.Height = renderSize.Height;
-
-	OnLayoutUpdated();
 }
 
 
@@ -397,7 +417,9 @@ void UIElement::UpdateTransformHierarchy()
 void UIElement::Render()
 {
 	// 子要素
-	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->Render(); });
+	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) {
+		child->Render();
+	});
 
 	// TODO: Panel とか、描く必要の無いものは特殊あつかいにして、Painter 作らないようにしたい
 	Graphics::Painter painter(m_manager->GetGraphicsManager());

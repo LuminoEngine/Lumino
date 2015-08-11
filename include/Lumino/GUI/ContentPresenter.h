@@ -34,7 +34,6 @@ protected:
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	virtual void Render();
 #endif
 
 	// TODO: InvalidateArrange/Measure
