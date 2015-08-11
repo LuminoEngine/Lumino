@@ -2,6 +2,7 @@
 #include "../../Internal.h"
 #include <Lumino/Property.h>
 #include <Lumino/GUI/Controls/Grid.h>
+#include "../GUIHelper.h"
 
 namespace Lumino
 {
@@ -179,10 +180,7 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 	//for (RowDefinition* row : *m_rowDefinitionList)	 { row->m_elementGroup.Clear(); row->m_desiredHeight = 0; }
 
 	// ‚Ü‚¸ Measure ‚Í‘S•”‚Ü‚í‚µ‚Ä‚¨‚­
-	for (auto child : m_visualChildren)
-	{
-		child->MeasureLayout(availableSize);
-	}
+	GUIHelper::ForEachVisualChildren(this, [availableSize](UIElement* child) { child->MeasureLayout(availableSize); });
 
 	for (auto child : *m_children)
 	{

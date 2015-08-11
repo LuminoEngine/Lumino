@@ -178,7 +178,7 @@ void ThumbChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 void ThumbChrome::OnRender(Graphics::Painter* painter)
 {
-	RectF rect = m_finalGlobalRect;
+	RectF rect = m_finalLocalRect;
 
 	// ˜g
 	painter->SetBrush(m_bgFrameBrush);

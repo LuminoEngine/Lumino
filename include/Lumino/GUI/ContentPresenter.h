@@ -28,6 +28,8 @@ public:
 	void SetContent(UIElement* content);
 
 protected:
+	virtual int GetVisualChildrenCount() const;
+	virtual UIElement* GetVisualChild(int index) const;
 #if 1
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual SizeF MeasureOverride(const SizeF& constraint);

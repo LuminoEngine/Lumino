@@ -48,15 +48,34 @@ void ContentPresenter::SetContent(UIElement* content)
 	}
 
 	// æ‚ÉŒÃ‚¢‚Ì‚ÍŽæ‚èœ‚­
-	if (m_content != NULL)
-	{
-		m_visualChildren.Remove(m_content);
+	if (m_content != NULL) {
 		m_content->SetParent(NULL);
 	}
 
 	m_content = content;
-	m_visualChildren.Add(m_content);	// m_visualChildren ‚É’Ç‰Á‚µ‚½‚à‚Ì‚Í OnEvent ‚â Render ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é
 	m_content->SetParent(this);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int ContentPresenter::GetVisualChildrenCount() const
+{
+	if (m_content != NULL) {
+		return UIElement::GetVisualChildrenCount() + 1;
+	}
+	return UIElement::GetVisualChildrenCount();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIElement* ContentPresenter::GetVisualChild(int index) const
+{
+	if (index < UIElement::GetVisualChildrenCount()) {
+		return UIElement::GetVisualChild(index);
+	}
+	return m_content;
 }
 
 #if 1

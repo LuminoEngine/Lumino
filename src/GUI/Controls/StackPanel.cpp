@@ -46,10 +46,9 @@ StackPanel::~StackPanel()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void StackPanel::MeasureLayout(const SizeF& availableSize)
+SizeF StackPanel::MeasureOverride(const SizeF& constraint)
 {
-	// TODO: マージンとかあれば考慮する
-	SizeF size = availableSize;
+	SizeF size = constraint;
 
 	if (m_orientation == Orientation::Horizontal)
 	{
@@ -63,7 +62,7 @@ void StackPanel::MeasureLayout(const SizeF& availableSize)
 	}
 
 	SizeF desiredSize;
-	LN_FOREACH(UIElement* child, *m_children) 
+	for (UIElement* child : *m_children)
 	{
 		child->MeasureLayout(size);
 
@@ -80,18 +79,17 @@ void StackPanel::MeasureLayout(const SizeF& availableSize)
 		}
 	}
 
-	// this の m_desiredSize を設定する
-	Panel::MeasureLayout(desiredSize);
+	return desiredSize;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void StackPanel::ArrangeLayout(const RectF& finalLocalRect)
+SizeF StackPanel::ArrangeOverride(const SizeF& finalSize)
 {
 	float prevChildSize = 0;
 	RectF childRect;
-	LN_FOREACH(UIElement* child, *m_children)
+	for (UIElement* child : *m_children)
 	{
 		const SizeF& childDesiredSize = child->GetDesiredSize();
 		if (m_orientation == Orientation::Horizontal)
@@ -99,20 +97,20 @@ void StackPanel::ArrangeLayout(const RectF& finalLocalRect)
 			childRect.X += prevChildSize;
 			prevChildSize = childDesiredSize.Width;
 			childRect.Width = prevChildSize;
-			childRect.Height = std::max(finalLocalRect.Height, childDesiredSize.Height);
+			childRect.Height = std::max(finalSize.Height, childDesiredSize.Height);
 		}
 		else
 		{
 			childRect.Y += prevChildSize;
 			prevChildSize = childDesiredSize.Height;
 			childRect.Height = prevChildSize;
-			childRect.Width = std::max(finalLocalRect.Width, childDesiredSize.Width);
+			childRect.Width = std::max(finalSize.Width, childDesiredSize.Width);
 		}
 
 		child->ArrangeLayout(childRect);
 	}
 
-	Panel::ArrangeLayout(finalLocalRect);
+	return finalSize;
 }
 
 } // namespace GUI

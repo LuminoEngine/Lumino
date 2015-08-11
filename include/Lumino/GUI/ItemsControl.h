@@ -180,8 +180,8 @@ private:
 
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
 	virtual void PollingTemplateChildCreated(UIElement* newElement);
-	virtual SizeF MeasureOverride(const SizeF& constraint);
-	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+	//virtual SizeF MeasureOverride(const SizeF& constraint);
+	//virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 	void Items_ListChanged(ListChangedEventArgs* e);
 
@@ -190,7 +190,10 @@ private:
 
 	void OnGroupItemAdded(GroupItem* groupItem);
 	void OnGroupItemRemoved(GroupItem* groupItem);
+	void RefreshHostPanel();
 	void RefreshHostPanelItems();
+
+	bool IsGrouping() const { return !m_groupItemList->IsEmpty(); }
 
 private:
 	friend class GroupItemList;

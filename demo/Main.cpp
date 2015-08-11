@@ -30,6 +30,15 @@ int main()
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		RefPtr<Application> app(Application::Create(appData));
 
+
+		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-Gothic-Regular.ttf"));
+		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-PGothic-Regular.ttf"));
+
+		RefPtr<Graphics::Font> font1(Graphics::Font::Create(app->GetGraphicsManager()->GetFontManager()));	// TODO: ダサすぎる。デフォルトの設定方法も考える。
+		font1->SetName(_T("VL Gothic"));
+		font1->SetAntiAlias(true);
+		app->GetGraphicsManager()->GetFontManager()->SetDefaultFont(font1);
+
 		//RefPtr<GUI::RootFrame> workbench1(app->GetGUIManager()->CreateRootFrame());
 		GUI::RootFrame* workbench1 = app->GetGUIManager()->GetDefaultRootFrame();
 		//workbench1->SetSize(SizeF(640, 480));

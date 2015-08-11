@@ -59,7 +59,9 @@ Size Run::Measure()
 	if (m_fontDataModified)
 	{
 		UpdateFontData();
-		Graphics::Helper::AttachGlyphTextureCache(m_glyphRun, m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData));
+
+		RefPtr<Graphics::Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData);
+		Graphics::Helper::AttachGlyphTextureCache(m_glyphRun, cache);
 	}
 
 	auto* glyphData = Graphics::Helper::GetGlyphData(m_glyphRun);

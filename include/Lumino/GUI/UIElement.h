@@ -181,9 +181,37 @@ public:
 	/** マウスキャプチャを解除します。*/
 	void ReleaseMouseCapture();
 
+	/** この要素内の子ビジュアル要素の数を取得します。*/
+	virtual int GetVisualChildrenCount() const;
+
+	/** この要素内の指定したインデックスにある子ビジュアル要素を取得します。*/
+	virtual UIElement* GetVisualChild(int index) const;
+
 protected:
 	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
 	virtual void OnLayoutUpdated();
+
+	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
+	void AddVisualChild(UIElement* element);
+
+	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
+	void RemoveVisualChild(UIElement* element);
+	
+	/**
+		@brief		この要素を表示するために必要なサイズを計測します。
+		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
+		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。
+		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
+	*/
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+
+	/**
+		@brief		子要素の配置を確定し、この要素の最終サイズを返します。
+		@param[in]	finalSize	: 親要素がこの要素に対して割り当てた領域のサイズ。
+		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
+		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
+	*/
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 protected:
 	UIElement(GUIManager* manager);
@@ -306,21 +334,6 @@ public:
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
-
-	/**
-		@brief
-		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
-		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。
-		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
-	*/
-	virtual SizeF MeasureOverride(const SizeF& constraint);
-
-	/**
-		@brief
-		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
-		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
-	*/
-	virtual SizeF ArrangeOverride(const SizeF& finalSize) { return finalSize; }
 
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
 	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
@@ -479,9 +492,10 @@ private:
 
 protected:
 	RefPtr<Style>		m_style;
-	RefPtr<UIElement>	m_templateChild;
+	RefPtr<UIElement>	m_templateChild;		///< TODO: Control に移動するべきかも。テンプレート子要素のルート要素。論理要素だけが持つ。
 	UIElement*			m_templateParent;		///< テンプレートのルート要素。例えば ScrollViewer - Grid - ScrollContentPresenter という階層がある場合、ScrollContentPresenter.m_templateParent は ScrollViewer を指す。
 
+private:
 	// このリストに追加された UIElement は、OnEvent、Render、ヒットテスト等がこのクラスより自動的に呼ばれる。
 	// ただし、レイアウト関係はノータッチ。Measure や Arrange は呼ばれない。
 	// 使い方としては、論理要素だろうがビジュアル要素だろうが関係なくまずはこのリストに追加しておく。

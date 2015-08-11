@@ -1,8 +1,10 @@
 
 #pragma once
-
 #include <Lumino.h>
+#include <Lumino/Testing/TestUtils.h>
 using namespace Lumino;
+
+#define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).GetCStr()
 
 class DemoManager
 {

@@ -1,6 +1,7 @@
 
 #include "../Internal.h"
 #include <Lumino/GUI/Control.h>
+#include "GUIHelper.h"
 
 namespace Lumino
 {
@@ -85,9 +86,9 @@ void Control::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 SizeF Control::MeasureOverride(const SizeF& constraint)
 {
-	if (m_templateChild != NULL) {
-		m_templateChild->MeasureLayout(constraint);
-		return m_templateChild->GetDesiredSize();
+	SizeF desiredSize;
+	if (GUIHelper::SimpleMeasureOverrideSingleVisual(this, constraint, &desiredSize)) {
+		return desiredSize;
 	}
 	return UIElement::MeasureOverride(constraint);
 }
@@ -97,8 +98,8 @@ SizeF Control::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 SizeF Control::ArrangeOverride(const SizeF& finalSize)
 {
-	if (m_templateChild != NULL) {
-		m_templateChild->ArrangeLayout(RectF(PointF::Zero, finalSize));
+	if (GUIHelper::SimpleArrangeOverrideSingleVisual(this, finalSize)) {
+		return finalSize;
 	}
 	return UIElement::ArrangeOverride(finalSize);
 }

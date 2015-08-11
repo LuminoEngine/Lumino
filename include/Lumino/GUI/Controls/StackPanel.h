@@ -29,8 +29,8 @@ public:
 	Orientation GetOrientation() const { return m_orientation; }
 
 protected:
-	virtual void MeasureLayout(const SizeF& availableSize);
-	virtual void ArrangeLayout(const RectF& finalLocalRect);
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 private:
 	Orientation	m_orientation;

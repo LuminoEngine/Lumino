@@ -40,15 +40,25 @@ ItemsPresenter::~ItemsPresenter()
 }
 
 //-----------------------------------------------------------------------------
-//
+// この関数はオーナーの ItemsControl が「この Panel でレイアウトしろ」と通知するためのもの。
+// この ItemsPresenter が オーナーの ItemsControl に割り当てられたときや、
+// オーナーの ItemsControl の HostPanelTemplate が変わったときに呼ばれる。
 //-----------------------------------------------------------------------------
 void ItemsPresenter::AttachHostPanel(Panel* panel)
 {
-	m_hostPanel = panel;
+	// 古いのは取り除く
+	if (m_hostPanel != NULL)
+	{
+		RemoveVisualChild(m_hostPanel);
+	}
 
-	m_visualChildren.Add(m_hostPanel);
-	m_hostPanel->SetParent(this);
-	m_hostPanel->ApplyTemplate();
+	// 新しいのを追加する
+	m_hostPanel = panel;
+	if (m_hostPanel != NULL)
+	{
+		AddVisualChild(m_hostPanel);
+		m_hostPanel->ApplyTemplate();
+	}
 }
 
 //-----------------------------------------------------------------------------

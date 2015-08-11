@@ -87,8 +87,8 @@ void ButtonChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 void ButtonChrome::OnRender(Graphics::Painter* painter)
 {
-	RectF bgRect = m_finalGlobalRect;
-	RectF rect = m_finalGlobalRect;
+	RectF bgRect = m_finalLocalRect;
+	RectF rect = m_finalLocalRect;
 
 	if (!m_isMouseOver)
 	{

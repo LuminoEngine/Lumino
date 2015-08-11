@@ -111,7 +111,7 @@ public:
 	void End();
 
 
-	void SetBaseTransform(const Matrix& matrix);
+	void SetTransform(const Matrix& matrix);
 
 
 	//void PushTransform(const Matrix& matrix);

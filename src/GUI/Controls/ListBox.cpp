@@ -212,8 +212,8 @@ void ListBoxChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 void ListBoxChrome::OnRender(Graphics::Painter* painter)
 {
-	RectF bgRect = m_finalGlobalRect;
-	RectF rect = m_finalGlobalRect;
+	RectF bgRect = m_finalLocalRect;
+	RectF rect = m_finalLocalRect;
 
 	if (!m_isMouseOver)
 	{
@@ -273,6 +273,7 @@ ListBox::~ListBox()
 ListBoxItemPtr ListBox::AddTextItem(const String& text)
 {
 	auto textBlock = GUIHelper::CreateUIElemenInstance<TextBlock>(m_manager);
+	textBlock->SetText(text);
 	auto item = GUIHelper::CreateUIElemenInstance<ListBoxItem>(m_manager);
 	item->SetContent(textBlock);
 	GetItems()->AddVariant(item);

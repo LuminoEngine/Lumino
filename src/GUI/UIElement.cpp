@@ -6,6 +6,7 @@
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include "GUIHelper.h"
 
 namespace Lumino
 {
@@ -92,21 +93,27 @@ void UIElement::ReleaseMouseCapture()
 	m_manager->ReleaseMouseCapture(this);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int UIElement::GetVisualChildrenCount() const
+{
+	return m_visualChildren.GetCount();
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIElement* UIElement::GetVisualChild(int index) const
+{
+	/*	GetVisualChildrenCount() と GetVisualChild() を組み合わせてビジュアルにアクセスするのは WPF と同じ動作。
+		本ライブラリでは以前は m_visualChildren を protected で公開して、
+		サブクラスも直接 m_visualChildren に追加操作を行っていた。
+		しかしこの方法だと、ItemsControl や Panel 等でかなり頻繁に m_visualChildren への Add Remove が行われることになった。
+		また、ItemsControl や Panel が握っている論理要素とビジュアル要素を常に同期する必要があり、漏れが心配。
+	*/
+	return m_visualChildren.GetAt(index);
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -127,6 +134,65 @@ void UIElement::UpdateLayout()
 void UIElement::OnLayoutUpdated()
 {
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::AddVisualChild(UIElement* element)
+{
+	LN_CHECK_ARGS_RETURN(element != NULL);
+	LN_THROW(element->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
+
+	m_visualChildren.Add(element);		// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
+	element->SetParent(this);			// Visualツリーでも、論理的な親の扱いは共通。
+	element->SetTemplateModified(true);	// テンプレートを再構築する必要がありそう
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::RemoveVisualChild(UIElement* element)
+{
+	LN_CHECK_ARGS_RETURN(element != NULL);
+	LN_THROW(element->GetParent() == this, InvalidOperationException);	// this が親要素であるはず
+
+	m_visualChildren.Remove(element);
+	element->SetParent(NULL);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF UIElement::MeasureOverride(const SizeF& constraint)
+{
+	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
+	// ユーザー指定のサイズがある場合はそれを返す。
+	// ただし、constraint を超えることはできない。
+
+	SizeF size;
+	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : size.Width;
+	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : size.Height;
+	size.Width = std::min(size.Width, constraint.Width);
+	size.Height = std::min(size.Height, constraint.Height);
+	return size;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
+{
+	return finalSize;
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -183,22 +249,12 @@ void UIElement::UpdateLocalResource()
 //-----------------------------------------------------------------------------
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
-	// 子要素を優先
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	UIElement* e = child->CheckMouseHoverElement(globalPt);
-	//	if (e != NULL) { return e; }
-	//}
-	//if (m_templateChild != NULL)
-	//{
-	//	UIElement* e = m_templateChild->CheckMouseHoverElement(globalPt);
-	//	if (e != NULL) { return e; }
-	//	// 子論理要素は UIElement の担当ではない。
-	//	// ContetntControl 等でこの関数をオーバーライドし、そちらに実装する。
-	//}
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
-	for (int i = m_visualChildren.GetCount() - 1; i >= 0; i--)
+	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
+	int count = GetVisualChildrenCount();
+	for (int i = count - 1; i >= 0; i--)
 	{
-		UIElement* e = m_visualChildren[i]->CheckMouseHoverElement(globalPt);
+		UIElement* e = GetVisualChild(i)->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
 	}
 
@@ -219,20 +275,7 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
 
-
 	m_desiredSize = MeasureOverride(availableSize);
-
-	//const SizeF& size = GetSize();
-	//m_desiredSize.Width = std::min(size.Width, m_desiredSize.Width);
-	//m_desiredSize.Height = std::min(size.Height, m_desiredSize.Height);
-
-	// 子要素
-	//if (m_templateChild != NULL) {
-	//	m_templateChild->MeasureLayout(m_desiredSize);
-	//}
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	child->MeasureLayout(m_desiredSize);
-	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -251,54 +294,17 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	m_finalLocalRect.Width = renderSize.Width;
 	m_finalLocalRect.Height = renderSize.Height;
 
-	// 子要素 (もし複数あれば m_finalLocalRect の領域に重ねられるように配置される)
-	//if (m_templateChild != NULL) {
-	//	RectF rect(0, 0, m_finalLocalRect.Width, m_finalLocalRect.Height);
-	//	m_templateChild->ArrangeLayout(rect);
-	//}
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	child->ArrangeLayout(m_finalLocalRect;
-	//}
-
 	OnLayoutUpdated();
 }
 
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-SizeF UIElement::MeasureOverride(const SizeF& constraint)
-{
-	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
-	// ユーザー指定のサイズがある場合はそれを返す。
-	// ただし、constraint を超えることはできない。
-
-	SizeF size;
-	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : size.Width;
-	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : size.Height;
-	size.Width = std::min(size.Width, constraint.Width);
-	size.Height = std::min(size.Height, constraint.Height);
-	return size;
-}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void UIElement::SetTemplateBinding(const Property* thisProp, const String& srcPropPath/*, UIElement* rootLogicalParent*/)
 {
-	//if (m_rootLogicalParent == NULL)
-	//{
-	//	// TODO: 解除は？
-	//	rootLogicalParent->PropertyChanged.AddHandler(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
-	//	m_rootLogicalParent = rootLogicalParent;
-	//}
-	//else if (m_rootLogicalParent != rootLogicalParent) {
-	//	// あってはならない。
-	//	// VisualTree 要素が異なる ルート Logcal 要素にバインドしようとした。
-	//	LN_THROW(0, InvalidOperationException);
-	//}
-
 	TemplateBindingInfo info;
 	info.ThisProp = thisProp;
 	info.SourcePropPath = srcPropPath;
@@ -344,9 +350,7 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 	}
 
 	// 子要素へも同じ論理親要素をセットする
-	for (UIElement* child : m_visualChildren) {
-		child->UpdateTemplateLogicalParentHierarchy(logicalParent);
-	}
+	GUIHelper::ForEachVisualChildren(this, [logicalParent](UIElement* child) { child->UpdateTemplateLogicalParentHierarchy(logicalParent); });
 }
 
 //-----------------------------------------------------------------------------
@@ -383,9 +387,8 @@ void UIElement::UpdateTransformHierarchy()
 	m_finalGlobalRect.Width = m_finalLocalRect.Width;
 	m_finalGlobalRect.Height = m_finalLocalRect.Height;
 
-	for(UIElement* child : m_visualChildren) {
-		child->UpdateTransformHierarchy();
-	}
+	// 子要素
+	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
 }
 
 //-----------------------------------------------------------------------------
@@ -394,14 +397,11 @@ void UIElement::UpdateTransformHierarchy()
 void UIElement::Render()
 {
 	// 子要素
-	//if (m_templateChild != NULL) {
-	//	m_templateChild->Render();
-	//}
-	LN_FOREACH(UIElement* child, m_visualChildren) {
-		child->Render();
-	}
+	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->Render(); });
 
+	// TODO: Panel とか、描く必要の無いものは特殊あつかいにして、Painter 作らないようにしたい
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
+	painter.PushTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: 初期 Transform は DrawingContext とかベースクラスに作って隠したい。
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
 	OnRender(&painter);
 }
@@ -411,18 +411,14 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 {
-	// 子要素
-	//if (m_templateChild != NULL) {
-	//	if (m_templateChild->OnEvent(type, args)) { return true; }
-	//}
-	//LN_FOREACH(UIElement* child, m_visualChildren) {
-	//	if (child->OnEvent(type, args)) { return true; }
-	//}
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
-	for (int i = m_visualChildren.GetCount() - 1; i >= 0; i--)
+	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
+	int count = GetVisualChildrenCount();
+	for (int i = count - 1; i >= 0; i--)
 	{
-		if (m_visualChildren[i]->OnEvent(type, args)) { return true; }
+		if (GetVisualChild(i)->OnEvent(type, args)) { return true; }
 	}
+
 
 	switch (type)
 	{
@@ -487,10 +483,7 @@ void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 	// 子要素のテンプレートを更新する必要がある場合 (パフォーマンスのため)
 	if (m_childTemplateModified)
 	{
-		LN_FOREACH(UIElement* child, m_visualChildren) {
-			child->ApplyTemplate();
-			//child->ApplyTemplateHierarchy(m_combinedLocalResource);	// 再帰的に更新する
-		}
+		GUIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->ApplyTemplate(); });
 		m_childTemplateModified = false;	// 子要素のテンプレートも更新した
 	}
 }
@@ -512,40 +505,22 @@ void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 //-----------------------------------------------------------------------------
 void UIElement::SetTemplateChild(UIElement* child)
 {
-	//LN_VERIFY_RETURN(child != NULL);
-
 	// 古い要素があればいろいろ解除する
 	if (m_templateChild != NULL)
 	{
-		m_visualChildren.Remove(m_templateChild);
-		// TODO: templateBinding 用の PropertyChanged がひつようかもしれない。
-		//PropertyChanged.Clear();
-		//rootLogicalParent->PropertyChanged(LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged));
+		RemoveVisualChild(m_templateChild);
 	}
+
 	if (child != NULL)
 	{
-		RefPtr<UIElement> t(child, true);
+		AddVisualChild(child);
 		m_templateChild = child;
-		m_visualChildren.Add(child);
-		child->m_parent = this;
-		child->m_templateParent = this;
-		child->UpdateTemplateLogicalParentHierarchy(this);
+
+		// テンプレートのルート論理要素が変わったことを、m_templateChild の子要素に通知する。
+		// この中で TemplateBinding などのリンクが行われる。
+		m_templateChild->UpdateTemplateLogicalParentHierarchy(this);
 	}
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-//void UIElement::AddVisualChild(UIElement* child)
-//{
-//	LN_VERIFY_RETURN(child != NULL);
-//	LN_VERIFY_RETURN(child->m_parent == NULL);
-//
-//	RefPtr<UIElement> t(child, true);
-//	m_visualChildren.Add(t);
-//	child->m_parent = this;
-//}
-
 
 //-----------------------------------------------------------------------------
 //

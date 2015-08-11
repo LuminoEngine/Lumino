@@ -136,6 +136,20 @@ struct EndCommand : public RenderingCommand
 };
 
 //=============================================================================
+struct SetTransformCommand : public RenderingCommand
+{
+	PainterEngine* m_engine;
+	Matrix m_matrix;
+
+	void Create(PainterEngine* engine, const Matrix& matrix)
+	{
+		m_engine = engine;
+		m_matrix = matrix;
+	}
+	void Execute() { m_engine->SetTransform(m_matrix); }
+};
+
+//=============================================================================
 struct SetProjectionCommand : public RenderingCommand
 {
 	PainterEngine* m_engine;
@@ -330,6 +344,26 @@ void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
 	Matrix mat;
 	perspective2DLH(&mat, viewSize.Width,  viewSize.Height, nearZ, farZ);
 	LN_CALL_COMMAND(SetViewProjMatrix, SetProjectionCommand, mat);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::PushTransform(const Matrix& matrix)
+{
+	m_transformStack.Push(matrix);
+	LN_CALL_COMMAND(SetTransform, SetTransformCommand, matrix);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::PopTransform()
+{
+	LN_CALL_COMMAND(SetTransform, SetTransformCommand, m_transformStack.GetTop());
+	m_transformStack.Pop();
 }
 
 

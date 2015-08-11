@@ -37,11 +37,12 @@ Panel::~Panel()
 void Panel::AddChild(const Variant& value)
 {
 	UIElement* item = Variant::Cast<UIElement*>(value);	// TODO: Cast() 無いで型チェックしたほうが良いかも
-	LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 	m_children->Add(item);
-	m_visualChildren.Add(item);
-	item->SetParent(this);
-	item->SetTemplateModified(true);
+	//LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
+	//m_children->Add(item);
+	//m_visualChildren.Add(item);
+	//item->SetParent(this);
+	//item->SetTemplateModified(true);
 }
 
 //-----------------------------------------------------------------------------
@@ -49,22 +50,8 @@ void Panel::AddChild(const Variant& value)
 //-----------------------------------------------------------------------------
 void Panel::Children_ItemAdded(UIElement* item)
 {
-	// 子要素の VisualTree を更新しなおす
-	if (item != NULL)
-	{
-		LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
-
-		// TODO:親要素に追加するときの共通処理だから、UIElementList にまとめていいかも
-		m_visualChildren.Add(item);
-		item->SetParent(this);
-		item->SetTemplateModified(true);
-		//item->ApplyTemplate();
-
-
-		//m_visualChildren.Add(item);
-		//AddChild(item);
-		//item->ApplyTemplate();
-	}
+	// TODO: ここは AddVisualChild ではなくて、GeVisualChild() をオーバーライドする。WPF はそうなっている。
+	AddVisualChild(item);
 }
 
 //-----------------------------------------------------------------------------
@@ -72,7 +59,7 @@ void Panel::Children_ItemAdded(UIElement* item)
 //-----------------------------------------------------------------------------
 void Panel::Children_ItemRemoved(UIElement* item)
 {
-	item->SetParent(NULL);
+	RemoveVisualChild(item);
 }
 
 #if 0

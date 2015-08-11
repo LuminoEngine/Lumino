@@ -113,8 +113,9 @@ void PainterEngine::End()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::SetBaseTransform(const Matrix& matrix)
+void PainterEngine::SetTransform(const Matrix& matrix)
 {
+	m_shader.varWorldMatrix->SetMatrix(matrix);
 }
 
 //-----------------------------------------------------------------------------

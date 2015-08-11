@@ -85,12 +85,12 @@ public:
 	float ValueFromDistance(float horizontal, float vertical);
 
 protected:
-	virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
+	//virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	virtual void Render();
+	//virtual void Render();
 
 private:
 	void UpdateComponent(Control* oldValue, Control* newValue);

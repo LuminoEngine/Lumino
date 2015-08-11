@@ -120,9 +120,9 @@ SizeF ScrollContentPresenter::ArrangeOverride(const SizeF& finalSize)
 		m_scrollData.Viewport = finalSize;
 	}
 
-	if (!m_visualChildren.IsEmpty())
+	if (GetVisualChildrenCount() > 0)
 	{
-		UIElement* child = m_visualChildren[0];
+		UIElement* child = GetVisualChild(0);
 		if (child != NULL)
 		{
 			RectF childRect(PointF::Zero, child->GetDesiredSize());

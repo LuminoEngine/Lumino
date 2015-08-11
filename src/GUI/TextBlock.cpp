@@ -62,8 +62,12 @@ TextBlock::~TextBlock()
 //-----------------------------------------------------------------------------
 SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 {
-	Size s = m_paragraph->Measure();
-	return UIElement::MeasureOverride(availableSize);
+	SizeF size = UIElement::MeasureOverride(availableSize);
+	Size parSize = m_paragraph->Measure();
+
+	size.Width = std::max(parSize.Width, parSize.Width);
+	size.Height = std::max(parSize.Height, parSize.Height);
+	return size;
 }
 
 //-----------------------------------------------------------------------------
@@ -90,8 +94,7 @@ void TextBlock::OnRender(Graphics::Painter* painter)
 void TextBlock::OnTextPropertyChanged(PropertyChangedEventArgs* e)
 {
 	m_paragraph->GetInlines()->Clear();
-
-	auto run = RefPtr<Documents::Run>::Create(m_text, m_manager->GetDocumentsManager());
+	RefPtr<Documents::Run> run(LN_NEW Documents::Run(m_text, m_manager->GetDocumentsManager()));
 	m_paragraph->GetInlines()->Add(run);
 }
 

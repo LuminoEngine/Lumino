@@ -121,8 +121,14 @@ public:
 	void Begin();
 	void End();
 
+
 	void SetProjection(const Size& viewSize, float nearZ, float farZ);
 	void SetProjection(const SizeF& viewSize, float nearZ, float farZ);
+
+
+	void PushTransform(const Matrix& matrix);
+	void PopTransform();
+
 
 	void SetBrush(Brush* brush);
 	void SetSolidColor(const ColorF& color);
@@ -154,6 +160,7 @@ private:
 private:
 	GraphicsManager*		m_manager;
 	PainterEngine*			m_internal;
+	Stack<Matrix>			m_transformStack;
 	RefPtr<Brush>			m_currentBrush;
 	ByteBuffer				m_tempBuffer;
 	RefPtr<Font>			m_currentFont;

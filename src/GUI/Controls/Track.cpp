@@ -123,13 +123,13 @@ float Track::ValueFromDistance(float horizontal, float vertical)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Track::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
-{
-	Control::ApplyTemplateHierarchy(/*parent*/);
-	if (m_decreaseButton != NULL) { m_decreaseButton->ApplyTemplate(); }
-	if (m_thumb != NULL) { m_thumb->ApplyTemplate(); }
-	if (m_increaseButton != NULL) { m_increaseButton->ApplyTemplate(); }
-}
+//void Track::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
+//{
+//	Control::ApplyTemplateHierarchy(/*parent*/);
+//	if (m_decreaseButton != NULL) { m_decreaseButton->ApplyTemplate(); }
+//	if (m_thumb != NULL) { m_thumb->ApplyTemplate(); }
+//	if (m_increaseButton != NULL) { m_increaseButton->ApplyTemplate(); }
+//}
 
 //-----------------------------------------------------------------------------
 // Note: ‚±‚±‚Å‚ÍŽq—v‘f‚ð Measure ‚µ‚È‚¢
@@ -254,13 +254,13 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Track::Render()
-{
-	Control::Render();
-	if (m_decreaseButton != NULL) { m_decreaseButton->Render(); }
-	if (m_thumb != NULL) { m_thumb->Render(); }
-	if (m_increaseButton != NULL) { m_increaseButton->Render(); }
-}
+//void Track::Render()
+//{
+//	Control::Render();
+//	if (m_decreaseButton != NULL) { m_decreaseButton->Render(); }
+//	if (m_thumb != NULL) { m_thumb->Render(); }
+//	if (m_increaseButton != NULL) { m_increaseButton->Render(); }
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -268,14 +268,10 @@ void Track::Render()
 void Track::UpdateComponent(Control* oldValue, Control* newValue)
 {
 	if (oldValue != NULL) {
-		m_visualChildren.Remove(oldValue);
+		RemoveVisualChild(oldValue);
 	}
 	if (newValue != NULL) {
-		m_visualChildren.Add(newValue);
-	}
-	if (newValue != NULL) {
-		newValue->SetParent(this);
-		newValue->SetTemplateModified(true);
+		AddVisualChild(newValue);
 	}
 }
 
@@ -345,15 +341,15 @@ void Track::CalcScrollBarComponentsSize(
 
 void Track::OnDecreaseButtonPropertyChanged(PropertyChangedEventArgs* e)
 {
-	UpdateComponent(m_decreaseButton, m_decreaseButton);
+	UpdateComponent(Variant::Cast<Control*>(e->OldValue), m_decreaseButton);
 }
 void Track::OnThumbPropertyChanged(PropertyChangedEventArgs* e)
 {
-	UpdateComponent(m_thumb, m_thumb);
+	UpdateComponent(Variant::Cast<Control*>(e->OldValue), m_thumb);
 }
 void Track::OnIncreaseButtonPropertyChanged(PropertyChangedEventArgs* e)
 {
-	UpdateComponent(m_increaseButton, m_increaseButton);
+	UpdateComponent(Variant::Cast<Control*>(e->OldValue), m_increaseButton);
 }
 
 #if 0
