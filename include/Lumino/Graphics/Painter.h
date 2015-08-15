@@ -33,7 +33,7 @@ public:
 /**
 	@brief		
 */
-class ColorBrush
+class ColorBrush	// TODO: SolidColorBrush
 	: public Brush
 {
 public:
@@ -84,6 +84,32 @@ private:
 	RefPtr<Texture>		m_texture;
 	Rect				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
 	BrushWrapMode		m_wrapMode;
+};
+
+
+class FrameTextureBrush
+	: public Brush
+{
+public:
+	static FrameTextureBrushPtr Create(const TCHAR* filePath);
+	static FrameTextureBrushPtr Create(Texture* texture);
+
+public:
+	void SetTexture(Texture* texture) { m_texture = texture; }
+	Texture* GetTexture() { return m_texture; }
+
+	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
+	const Rect& GetSourceRect() const { return m_srcRect; }
+
+	virtual BrushType GetType() const { return BrushType_FrameTexture; }
+
+private:
+	FrameTextureBrush();
+	virtual ~FrameTextureBrush();
+
+private:
+	RefPtr<Texture>		m_texture;
+	Rect				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
 };
 
 //struct StringLayout

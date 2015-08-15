@@ -1,7 +1,6 @@
 
 #pragma once
-
-#include "Common.h"
+#include <Lumino/Animation/Common.h>
 
 namespace Lumino
 {

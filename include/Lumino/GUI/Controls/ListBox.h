@@ -21,18 +21,23 @@ class ListBoxItem
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBoxItem);
+
 public:
 	static ListBoxItem* Create(GUIManager* manager);
 
 	ListBoxItem(GUIManager* manager);
 	virtual ~ListBoxItem();
+
+private:
+	void Handler_MouseEnter(MouseEventArgs* e);
+	void Handler_MouseLeave(MouseEventArgs* e);
 };
 
 
 /**
 	@brief
 */
-class ListBoxItemList	// TODO: ‚¢‚ç‚È‚¢
+class ListBoxItemList	// TODO: ‚¢‚ç‚È‚¢‚©‚à
 	: public GenericVariantList<ListBoxItem*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();

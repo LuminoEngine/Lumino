@@ -5,6 +5,12 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/8/15] Shape の必要性
+		VisualState を作るときは Storyboard からプロパティの値をいじるため、
+		描画をプロパティでオントロールできるものがあると良い。というか、無いと VisualState のありがたみ半減。
+		ただし、現状ですでに UIElement が結構な大きさになっている。
+		今後、本当に必要なものだけ分離して、とことん軽量な描画要素にできるかがカギとなる。
+
 	[2015/8/9] ListModel
 		WPF の CollectionView 相当。
 		ItemsControl.ItemsSource が NULL の時でも内部的に作られる。
@@ -983,6 +989,7 @@
 #include <Lumino/GUI/Controls/StackPanel.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/TextBlock.h>
+#include <Lumino/GUI/Rectangle.h>
 #include <Lumino/GUI/GUIManager.h>
 
 namespace Lumino
@@ -1048,8 +1055,10 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::internalCreateInstance(m); });
 	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::internalCreateInstance(m); });
 	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::internalCreateInstance(m); });
+	RegisterFactory(PilePanel::TypeID,				[](GUIManager* m) -> CoreObject* { return PilePanel::internalCreateInstance(m); });
 	RegisterFactory(StackPanel::TypeID,				[](GUIManager* m) -> CoreObject* { return StackPanel::internalCreateInstance(m); });
 	RegisterFactory(TextBlock::TypeID,				[](GUIManager* m) -> CoreObject* { return TextBlock::internalCreateInstance(m); });
+	RegisterFactory(Rectangle::TypeID,				[](GUIManager* m) -> CoreObject* { return Rectangle::internalCreateInstance(m); });
 
 	
 
@@ -1262,6 +1271,10 @@ EXIT:
 		if (old != NULL) {
 			old->OnEvent(EventType_MouseLeave, args);
 		}
+
+		// EventType_MouseLeave とで使いまわしているのでリセットを忘れずに
+		args->Handled = false;
+
 		if (m_mouseHoverElement != NULL) {
 			return m_mouseHoverElement->OnEvent(EventType_MouseEnter, args);
 		}
@@ -1611,9 +1624,20 @@ void GUIManager::BuildDefaultTheme()
 		controlTemplate->SetTargetType(_T("ListBoxItem"));	// TODO: TypeInfoにしたい
 		style->AddSetter(Control::TemplateProperty, controlTemplate);
 
+
+		auto pilePanel = RefPtr<UIElementFactory>::Create(this);
+		pilePanel->SetTypeName(_T("PilePanel"));
+		controlTemplate->SetVisualTreeRoot(pilePanel);
+
+		auto mouseOnBackground = RefPtr<UIElementFactory>::Create(this);
+		mouseOnBackground->SetKeyName(_T("MouseOnBackground"));
+		mouseOnBackground->SetTypeName(_T("Rectangle"));
+		mouseOnBackground->SetPropertyValue(Shape::FillBrushProperty, Graphics::ColorBrush::Green);
+		pilePanel->AddChild(mouseOnBackground);
+
 		auto contentPresenter = RefPtr<UIElementFactory>::Create(this);
 		contentPresenter->SetTypeName(_T("ContentPresenter"));
-		controlTemplate->SetVisualTreeRoot(contentPresenter);
+		pilePanel->AddChild(contentPresenter);
 
 		m_defaultTheme->AddStyle(style);
 	}
@@ -1638,7 +1662,7 @@ void GUIManager::BuildDefaultTheme()
 
 		auto itemsPresenter = RefPtr<UIElementFactory>::Create(this);
 		itemsPresenter->SetTypeName(_T("ItemsPresenter"));
-		itemsPresenter->SetPropertyValue(UIElement::MarginProperty, ThicknessF(20, 2, 0, 2));
+		itemsPresenter->SetPropertyValue(UIElement::MarginProperty, ThicknessF(20, 0, 0, 0));
 		staclPanel->AddChild(itemsPresenter);
 
 

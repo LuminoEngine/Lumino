@@ -9,6 +9,7 @@
 #include "EventArgs.h"
 #include "DependencyObject.h"
 #include "ControlTemplate.h"
+#include "AnimationClock.h"
 
 #define LN_UI_ELEMENT_SUBCLASS_DECL(className) \
 public: \
@@ -132,6 +133,7 @@ public:
 	LN_PROPERTY(ThicknessF,				MarginProperty);				/**< Margin プロパティの識別子 */
 	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
+	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity プロパティの識別子 */
 	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
 
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
@@ -139,12 +141,12 @@ public:
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< このイベントは内部用であるため、ユーザーはハンドルすることはできない */
-	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< このイベントは内部用であるため、ユーザーはハンドルすることはできない */
+	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< このイベントは内部用 */
+	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< このイベントは内部用 */
 
 public:
 	//-------------------------------------------------------------------------
-	/** @name RoutedEvent */
+	/** @name RoutedEvents */
 	/** @{ */
 
 	RoutedEventSlot<MouseEventArgs>		MouseEnter;		/**< マウスポインタがこの要素の境界内に入ったときに発生します。*/
@@ -155,7 +157,7 @@ public:
 
 	/** @} */
 	//-------------------------------------------------------------------------
-	/** @name Property */
+	/** @name Properties */
 	/** @{ */
 
 	/** 要素のサイズを設定します。規定値は NaN で、この値は自動サイズ変更が有効であることを示します。*/
@@ -170,6 +172,12 @@ public:
 	/** 要素の外側の余白を取得します。*/
 	//const ThicknessF& GetMargin() const { return GetTypedPropertyValue<const ThicknessF&>(MarginProperty); }
 
+	/** 要素の不透明度を設定します。0.0～1.0 で指定します。規定値は 1.0 です。*/
+	void SetOpacity(float value) { SetTypedPropertyValue<float>(OpacityProperty, value); }
+
+	/** 要素の不透明度を取得します。*/
+	float GetOpacity() const { return GetTypedPropertyValue<float>(OpacityProperty); }
+
 	/** @} */
 
 public:
@@ -181,6 +189,9 @@ public:
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
 	const SizeF& GetDesiredSize() const { return m_desiredSize; }
+
+	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
+	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
 	/** マウスキャプチャを設定します。*/
 	void CaptureMouse();
@@ -223,6 +234,11 @@ protected:
 	*/
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
+	/**
+		@brief	この要素の描画を行います。
+	*/
+	virtual void OnRender(Graphics::Painter* painter);
+
 protected:
 	UIElement(GUIManager* manager);
 	virtual ~UIElement();
@@ -231,8 +247,10 @@ private:
 	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
 	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
 
-	ThicknessF		m_margin;
-
+	ThicknessF			m_margin;
+	float				m_opacity;
+	float				m_combinedOpacity;
+	Array< RefPtr<AnimationClock> >	m_animationClockList;
 
 
 
@@ -347,7 +365,6 @@ public:
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
 	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}
-	virtual void OnRender(Graphics::Painter* painter) {}
 	virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 
 	// IAddChild
@@ -442,6 +459,8 @@ protected:
 	virtual void OnMouseMove(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 	virtual void OnMouseDown(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseDownEvent, this, e); } }
 	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
+	virtual void OnMouseEnter(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseEnterEvent, this, e); } }
+	virtual void OnMouseLeave(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseLeaveEvent, this, e); } }
 
 
 	friend class GUIHelper;
@@ -449,7 +468,7 @@ protected:
 	String					m_keyName;
 	UIElement*				m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
 
-	VisualStateInstance*	m_visualStateInstance;
+	//VisualStateInstance*	m_visualStateInstance;
 
 	SizeF					m_desiredSize;			///< MeasureLayout() で決定されるこのコントロールの最終要求サイズ
 	RectF					m_finalLocalRect;			///< 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)

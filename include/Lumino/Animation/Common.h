@@ -58,5 +58,33 @@ enum PlayState
 	PlayState_Pausing,		///< 一時停止中
 };
 
+/** イージング関数の種類を表します。*/
+LN_ENUM(EasingMode)
+{
+	Linear = 0,
+	EaseInQuad,
+	EaseOutQuad,
+	EaseInOutQuad,
+	EaseInCubic,
+	EaseOutCubic,
+	EaseInOutCubic,
+	EaseInQuart,
+	EaseOutQuart,
+	EaseInOutQuart,
+	EaseInQuint,
+	EaseOutQuint,
+	EaseInOutQuint,
+	EaseInSine,
+	EaseOutSine,
+	EaseInOutSine,
+	EaseInExpo,
+	EaseOutExpo,
+	EaseInOutExpo,
+	EaseInCirc,
+	EaseOutCirc,
+	EaseInOutCirc,
+};
+LN_ENUM_DECLARE(EasingMode);
+
 } // namespace Animation
 } // namespace Lumino

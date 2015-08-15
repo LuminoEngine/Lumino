@@ -15,6 +15,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
 // Register property
+LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, BackgroundProperty, "Background", m_background, NULL, NULL);
 LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, NULL, NULL);
 
 //-----------------------------------------------------------------------------
@@ -23,7 +24,7 @@ LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m
 Control::Control(GUIManager* manager)
 	: UIElement(manager)
 {
-
+	m_visualStateGroupList.Attach(LN_NEW VisualStateGroupList());
 }
 
 //-----------------------------------------------------------------------------
@@ -102,6 +103,19 @@ SizeF Control::ArrangeOverride(const SizeF& finalSize)
 		return finalSize;
 	}
 	return UIElement::ArrangeOverride(finalSize);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Control::OnRender(Graphics::Painter* painter)
+{
+	UIElement::OnRender(painter);
+
+	if (m_background != NULL) {
+		painter->SetBrush(m_background);
+		painter->DrawRectangle(RectF(0, 0, GetRenderSize()));
+	}
 }
 
 //void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)

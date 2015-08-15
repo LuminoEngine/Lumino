@@ -108,6 +108,7 @@
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
 #include <Lumino/GUI/TextBlock.h>
+#include <Lumino/GUI/VisualState.h>
 #include "../GUIHelper.h"
 
 namespace Lumino
@@ -129,6 +130,7 @@ ListBoxItem* ListBoxItem::Create(GUIManager* manager)
 	auto obj = RefPtr<ListBoxItem>::Create(manager);
 	obj->InitializeComponent();
 	obj.SafeAddRef();
+
 	return obj;
 }
 
@@ -138,6 +140,9 @@ ListBoxItem* ListBoxItem::Create(GUIManager* manager)
 ListBoxItem::ListBoxItem(GUIManager* manager)
 	: ItemsControlItem(manager)
 {
+	// Register handler
+	LN_REGISTER_ROUTED_EVENT_HANDLER(ListBoxItem, MouseEventArgs, UIElement::MouseEnterEvent, Handler_MouseEnter);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(ListBoxItem, MouseEventArgs, UIElement::MouseLeaveEvent, Handler_MouseLeave);
 }
 
 //-----------------------------------------------------------------------------
@@ -145,6 +150,26 @@ ListBoxItem::ListBoxItem(GUIManager* manager)
 //-----------------------------------------------------------------------------
 ListBoxItem::~ListBoxItem()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ListBoxItem::Handler_MouseEnter(MouseEventArgs* e)
+{
+	VisualStateManager::GoToState(this, VisualStatus::MouseOver);
+	printf("Handler_MouseEnter (%p)\n", this);
+	e->Handled = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ListBoxItem::Handler_MouseLeave(MouseEventArgs* e)
+{
+	VisualStateManager::GoToState(this, VisualStatus::Normal);
+	printf("Handler_MouseLeave (%p)\n", this);
+	e->Handled = true;
 }
 
 //=============================================================================

@@ -37,6 +37,12 @@ set(LN_SOURCES
 	include/LuminoGraphics.h
 )
 
+set(LN_SOURCES_Animation
+	include/Lumino/Animation/AnimationUtilities.h
+	include/Lumino/Animation/Common.h
+	include/Lumino/Animation/EasingFunctions.h
+)
+
 set(LN_SOURCES_IO
 	include/Lumino/IO/FileManager.h
 	include/Lumino/IO/ASyncIOObject.h
@@ -208,6 +214,7 @@ set(LN_SOURCES_Scene
 )
 
 set(LN_SOURCES_GUI
+	include/Lumino/GUI/AnimationClock.h
 	include/Lumino/GUI/Button.h
 	include/Lumino/GUI/ButtonChrome.h
 	include/Lumino/GUI/Common.h
@@ -221,11 +228,13 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/ItemsControl.h
 	include/Lumino/GUI/ItemsPresenter.h
+	include/Lumino/GUI/Rectangle.h
 	include/Lumino/GUI/RootFrame.h
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/VisualState.h
+	include/Lumino/GUI/VisualTreeHelper.h
 	include/Lumino/GUI/Controls/ButtonBase.h
 	include/Lumino/GUI/Controls/Grid.h
 	include/Lumino/GUI/Controls/Image.h
@@ -238,6 +247,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Controls/StackPanel.h
 	include/Lumino/GUI/Controls/Thumb.h
 	include/Lumino/GUI/Controls/Track.h
+	src/GUI/AnimationClock.cpp
 	src/GUI/Button.cpp
 	src/GUI/ButtonChrome.cpp
 	src/GUI/ContentControl.cpp
@@ -251,12 +261,14 @@ set(LN_SOURCES_GUI
 	src/GUI/GUIManager.cpp
 	src/GUI/ItemsControl.cpp
 	src/GUI/ItemsPresenter.cpp
+	src/GUI/Rectangle.cpp
 	src/GUI/RootFrame.cpp
 	src/GUI/RoutedCommand.cpp
 	src/GUI/TextBlock.cpp
 	src/GUI/UIElement.cpp
 	src/GUI/UIElementCollection.cpp
 	src/GUI/VisualState.cpp
+	src/GUI/VisualTreeHelper.cpp
 	src/GUI/Controls/ButtonBase.cpp
 	src/GUI/Controls/Grid.cpp
 	src/GUI/Controls/Image.cpp
@@ -372,6 +384,7 @@ endif()
 
 #--------------------------------------
 # Grouping.
+source_group("Animation"	FILES ${LN_SOURCES_Animation})
 source_group("IO"			FILES ${LN_SOURCES_IO})
 source_group("Platform"		FILES ${LN_SOURCES_Platform})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
@@ -384,6 +397,7 @@ source_group("Application"	FILES ${LN_SOURCES_Application})
 
 set(LN_SOURCES
 	${LN_SOURCES}
+	${LN_SOURCES_Animation}
 	${LN_SOURCES_IO}
 	${LN_SOURCES_Platform}
 	${LN_SOURCES_Physics}

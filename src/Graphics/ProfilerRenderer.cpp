@@ -129,7 +129,7 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 	// –¼‘OƒJƒ‰ƒ€”wŒiF
 	painter.SetBrush(ColorBrush::Blue);
 	painter.SetOpacity(0.2f);
-	painter.DrawRectangle(RectF(listRect.GetLocation(), ThreadNameColumnWidth, groupCount * rowHeight));
+	painter.DrawRectangle(RectF(listRect.GetPosition(), ThreadNameColumnWidth, groupCount * rowHeight));
 
 	// ƒo[‚ÌNG—Ìˆæ”wŒiF
 	RectF ngArea(

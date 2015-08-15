@@ -43,8 +43,6 @@ public:
 	virtual void AddChild(const Variant& value);
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
-protected:
-	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, NotImplementedException); }
 
 private:
 	void Children_ItemAdded(UIElement* item);
@@ -54,6 +52,24 @@ protected:
 	RefPtr<UIElementCollection>		m_children;
 };
 
+class PilePanel
+	: public Panel
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_UI_ELEMENT_SUBCLASS_DECL(PilePanel);
+public:
+	/**
+		@brief	PilePanel を作成します。
+		@return	作成されたインスタンスのポインタ。使い終えたら Release() を呼び出して、参照を解放してください。	
+	*/
+	PilePanel* Create();
+
+protected:
+	PilePanel(GUIManager* manager);
+	virtual ~PilePanel();
+	virtual SizeF MeasureOverride(const SizeF& constraint);
+	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+};
 
 } // namespace GUI
 } // namespace Lumino

@@ -97,6 +97,7 @@ public:
 	/**
 		@brief		プロパティの値を設定します。
 	*/
+	// TODO: TypeInfo に移動したい。インテリセンスの汚れが結構気になる。
 	void SetPropertyValue(const Property* prop, const Variant& value);
 	
 	/**
@@ -306,18 +307,37 @@ public:
 		@endcode
 	*/
 	template<typename T>
-	static T Cast(const Variant& value) { return CastSelector<T, typename std::is_base_of<Enum, T>::type >::GetValue(value); }
+	static T Cast(const Variant& value) { return CastSelector<T, typename std::is_base_of<Enum, T>::type, typename std::is_base_of<RefPtrCore, T>::type >::GetValue(value); }
 
 private:
+
+	template<typename T, typename TIsEnum, typename TIsRefPtr> struct CastSelector { static T GetValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
+	//
+	template<> struct CastSelector < bool, std::false_type, std::false_type >		{ static bool GetValue(const Variant& v) { return v.GetBool(); } };
+	template<> struct CastSelector < int, std::false_type, std::false_type >		{ static int GetValue(const Variant& v) { return v.GetInt(); } };
+	template<> struct CastSelector < float, std::false_type, std::false_type >		{ static float GetValue(const Variant& v) { return v.GetFloat(); } };
+	template<> struct CastSelector < String, std::false_type, std::false_type >		{ static String GetValue(const Variant& v) { return v.GetString(); } };
+	template<> struct CastSelector < Rect, std::false_type, std::false_type >		{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
+	template<> struct CastSelector < SizeF, std::false_type, std::false_type >		{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
+	template<> struct CastSelector < ThicknessF, std::false_type, std::false_type > { static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
+	template<typename T> struct CastSelector < T, std::true_type, std::false_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
+	template<typename T> struct CastSelector  < T, std::false_type, std::true_type >{ static T GetValue(const Variant& v) { return T(static_cast<T::PtrType>(v.GetObject())); } };
+
+
+#if 0
 	template<typename T, typename TIsEnum> struct CastSelector { static T GetValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
-	template<> struct CastSelector < bool, std::false_type > { static bool GetValue(const Variant& v) { return v.GetBool(); } };
-	template<> struct CastSelector < int, std::false_type > { static int GetValue(const Variant& v) { return v.GetInt(); } };
-	template<> struct CastSelector < float, std::false_type > { static float GetValue(const Variant& v) { return v.GetFloat(); } };
-	template<> struct CastSelector < String, std::false_type > { static String GetValue(const Variant& v) { return v.GetString(); } };
-	template<> struct CastSelector < Rect, std::false_type > { static Rect GetValue(const Variant& v) { return v.GetRect(); } };
-	template<> struct CastSelector < SizeF, std::false_type > { static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
+	//template<typename TRefPtr, typename TIsEnum> struct CastSelector { static TRefPtr GetValue(const Variant& v) { return TRefPtr(static_cast<TRefPtr::PtrType>(v.GetObject())); } };
+
+	template<> struct CastSelector < bool, std::false_type >		{ static bool GetValue(const Variant& v) { return v.GetBool(); } };
+	template<> struct CastSelector < int, std::false_type >		{ static int GetValue(const Variant& v) { return v.GetInt(); } };
+	template<> struct CastSelector < float, std::false_type >		{ static float GetValue(const Variant& v) { return v.GetFloat(); } };
+	template<> struct CastSelector < String, std::false_type >		{ static String GetValue(const Variant& v) { return v.GetString(); } };
+	template<> struct CastSelector < Rect, std::false_type >		{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
+	template<> struct CastSelector < SizeF, std::false_type >		{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
 	template<> struct CastSelector < ThicknessF, std::false_type > { static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
 	template<typename T> struct CastSelector < T, std::true_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
+//	template<typename TRefPtr, typename U> struct CastSelector < TRefPtr<U>, std::true_type > { static TRefPtr<U> GetValue(const Variant& v) { return TRefPtr<U>(static_cast<U>(v.GetObject())); } };	// TODO: 型チェック
+#endif
 
 public:
 	bool operator == (const Variant& right) const;
@@ -560,6 +580,13 @@ public:
 	class const_iterator //: public std::iterator<std::forward_iterator_tag, const TValue>
 	{
 	public:
+		typedef TValue value_type;
+		typedef ptrdiff_t difference_type;
+		typedef ptrdiff_t distance_type;
+		typedef TValue* pointer;
+		typedef TValue& reference;
+		typedef std::random_access_iterator_tag iterator_category;
+
 		const_iterator() : m_internalItr() {}
 		const_iterator(const const_iterator& obj) : m_internalItr(obj.m_internalItr) {}
 		const_iterator& operator = (const const_iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
@@ -578,7 +605,7 @@ public:
 		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
 		bool operator==(const const_iterator& right) const	{ return m_internalItr == right.m_internalItr; }
 		bool operator!=(const const_iterator& right) const	{ return m_internalItr != right.m_internalItr; }
-		bool operator<(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator<(const const_iterator& right) const	{ return m_internalItr < right.m_internalItr; }
 		bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
@@ -592,6 +619,13 @@ public:
 	class iterator// : public std::iterator<std::forward_iterator_tag, TValue>
 	{
 	public:
+		typedef TValue value_type;
+		typedef ptrdiff_t difference_type;
+		typedef ptrdiff_t distance_type;
+		typedef TValue* pointer;
+		typedef TValue& reference;
+		typedef std::random_access_iterator_tag iterator_category;
+
 		iterator() : m_internalItr() {}
 		iterator(const iterator& obj) : m_internalItr(obj.m_internalItr) {}
 		iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
@@ -608,9 +642,9 @@ public:
 		//difference_type operator-(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return 0; }
 
 		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
-		bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
-		bool operator!=(const iterator& right) const		{ return m_internalItr.operator!=(right.m_internalItr); }
-		bool operator<(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator==(const iterator& right) const		{ return m_internalItr == right.m_internalItr; }
+		bool operator!=(const iterator& right) const		{ return m_internalItr != right.m_internalItr; }
+		bool operator<(const iterator& right) const			{ return m_internalItr < right.m_internalItr; }
 		bool operator>(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }

@@ -111,6 +111,66 @@ void Panel::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 }
 #endif
 
+
+//=============================================================================
+// PilePanel
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(PilePanel, Panel);
+LN_UI_ELEMENT_SUBCLASS_IMPL(PilePanel);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+PilePanel* PilePanel::Create()
+{
+	return internalCreateInstance(ApplicationContext::GetGUIManager());
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+PilePanel::PilePanel(GUIManager* manager)
+	: Panel(manager)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+PilePanel::~PilePanel()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF PilePanel::MeasureOverride(const SizeF& constraint)
+{
+	SizeF desiredSize = Panel::MeasureOverride(constraint);
+	for (UIElement* child : *m_children)
+	{
+		child->MeasureLayout(desiredSize);
+		const SizeF& childDesiredSize = child->GetDesiredSize();
+
+		desiredSize.Width = std::max(desiredSize.Width, childDesiredSize.Width);
+		desiredSize.Height = std::max(desiredSize.Height, childDesiredSize.Height);
+	}
+	return desiredSize;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF PilePanel::ArrangeOverride(const SizeF& finalSize)
+{
+	RectF childFinal(0, 0, finalSize);
+	for (UIElement* child : *m_children)
+	{
+		child->ArrangeLayout(childFinal);
+	}
+	return finalSize;
+}
+
 } // namespace GUI
 } // namespace Lumino
 

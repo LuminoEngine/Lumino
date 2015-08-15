@@ -1,4 +1,9 @@
 
+[2015/8/13] メモリリソース管理
+	原則、ユーザーが作ったものはユーザーが後始末する。
+	「作る」というのは、new または Create で始まる関数のこと。
+	→なので、Create が RefPtr を返すのは無し。
+
 []Ubuntu
 	sudo apt-get install libgl-dev
 

@@ -39,6 +39,10 @@ class ListBox;
 class ListBoxChrome;
 class ListBoxItem;
 
+class VisualState;
+class VisualStateGroup;
+
+
 typedef RefPtr<Style>					StylePtr;
 
 typedef RefPtr<UIElement>				UIElementPtr;
@@ -63,6 +67,9 @@ typedef RefPtr<GroupItem>				GroupItemPtr;
 typedef RefPtr<ListBox>					ListBoxPtr;
 typedef RefPtr<ListBoxChrome>			ListBoxChromePtr;
 typedef RefPtr<ListBoxItem>				ListBoxItemPtr;
+
+typedef RefPtr<VisualState>				VisualStatePtr;
+typedef RefPtr<VisualStateGroup>		VisualStateGroupPtr;
 
 
 // internal

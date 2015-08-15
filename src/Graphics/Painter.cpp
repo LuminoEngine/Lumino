@@ -99,6 +99,49 @@ void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 	m_texture.Attach(Texture::Create(filePath, TextureFormat_R8G8B8A8, 1, manager));
 }
 
+
+//=============================================================================
+// FrameTextureBrush
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FrameTextureBrushPtr FrameTextureBrush::Create(const TCHAR* filePath)
+{
+	RefPtr<Texture> tex(Texture::Create(filePath));
+	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush());
+	ptr->SetTexture(tex);
+	return ptr;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FrameTextureBrushPtr FrameTextureBrush::Create(Texture* texture)
+{
+	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush());
+	ptr->SetTexture(texture);
+	return ptr;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FrameTextureBrush::FrameTextureBrush()
+	: m_texture()
+	, m_srcRect(0, 0, INT_MAX, INT_MAX)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FrameTextureBrush::~FrameTextureBrush()
+{
+}
+
+
 //=============================================================================
 // StringLayout
 //=============================================================================

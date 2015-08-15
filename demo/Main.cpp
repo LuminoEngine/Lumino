@@ -53,6 +53,32 @@ int main()
 		GUI::Grid::SetColumn(demoList, 0);
 		grid1->GetChildren()->Add(demoList);
 
+
+		//RefPtr<Graphics::Brush> b(Graphics::ColorBrush::Blue, true);
+
+		// Normal
+		RefPtr<GUI::FloatEasing> easing1(LN_NEW GUI::FloatEasing());
+		easing1->SetTargetName(_T("MouseOnBackground"));
+		easing1->SetTargetProperty(GUI::UIElement::OpacityProperty->GetName());
+		easing1->SetTargetValue(0.0f);
+		easing1->SetEasingMode(Animation::EasingMode::EaseOutExpo);
+
+		// MouseOver
+		RefPtr<GUI::FloatEasing> easing2(LN_NEW GUI::FloatEasing());
+		easing2->SetTargetName(_T("MouseOnBackground"));
+		easing2->SetTargetProperty(GUI::UIElement::OpacityProperty->GetName());
+		easing2->SetTargetValue(1.0f);
+		easing2->SetEasingMode(Animation::EasingMode::EaseOutExpo);
+
+		GUI::VisualStateGroupPtr vgroup1(LN_NEW GUI::VisualStateGroup(_T("CommonStates")));
+		GUI::VisualStatePtr vstate1(LN_NEW GUI::VisualState(_T("Normal")));
+		vstate1->GetStoryboard()->AddTimeline(easing1);
+		GUI::VisualStatePtr vstate2(LN_NEW GUI::VisualState(_T("MouseOver")));
+		vstate2->GetStoryboard()->AddTimeline(easing2);
+		vgroup1->AddState(vstate1);
+		vgroup1->AddState(vstate2);
+
+
 		for (auto& pair1 : DemoManager::m_demosTable)
 		{
 			auto group1 = demoList->AddGroup(pair1.first);
@@ -60,10 +86,16 @@ int main()
 			for (auto& pair2 : pair1.second)
 			{
 				auto group2 = group1->AddGroup(pair2.first);
+				//group2->SetBackground(b);
 				for (auto& info : pair2.second)
 				{
 					auto item = demoList->AddTextItem(info.Caption);
+					//item->SetBackground(b);
 					group2->AddItem(item);
+
+
+					
+					item->GetVisualStateGroups()->Add(vgroup1);
 				}
 			}
 		}

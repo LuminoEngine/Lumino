@@ -113,6 +113,10 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 		m_result->AreaSize.Width = std::max(m_result->AreaSize.Width, lineSize.Width);
 		m_result->AreaSize.Height += lineSize.Height;
 	}
+
+	// TODO: アンチエイリアス有効だと、↑の方法では1px 足りないことがあった。
+	// とりあえずここで強制設定している。
+	m_result->AreaSize.Height = m_font->GetLineHeight();
 }
 
 //-----------------------------------------------------------------------------

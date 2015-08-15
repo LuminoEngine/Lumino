@@ -23,6 +23,7 @@ LN_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, SizeF::Zer
 LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin, ThicknessF::Zero, NULL);
 LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, HorizontalAlignment::Stretch, NULL);
 LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, VerticalAlignment::Stretch, NULL);
+LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, 1.0f, NULL);
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, true, NULL);
 
 // Register routed event
@@ -47,6 +48,8 @@ UIElement::UIElement(GUIManager* manager)
 	, m_verticalAlignment(VerticalAlignment::Stretch)
 	, m_rootLogicalParent(NULL)
 	, m_templateParent(NULL)
+	, m_opacity(1.0f)
+	, m_combinedOpacity(1.0f)
 {
 	LN_SAFE_ADDREF(m_manager);
 }
@@ -138,7 +141,7 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 
 	// Margin を考慮する
 	m_desiredSize.Width += marginWidth;
-	m_desiredSize.Width += marginHeight;
+	m_desiredSize.Height += marginHeight;
 }
 
 //-----------------------------------------------------------------------------
@@ -155,10 +158,10 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
 	SizeF arrangeSize = finalLocalRect.GetSize();
-	arrangeSize.Width += std::max(arrangeSize.Width - marginWidth, 0.0f);
-	arrangeSize.Height += std::max(arrangeSize.Height - marginHeight, 0.0f);
+	arrangeSize.Width = std::max(arrangeSize.Width - marginWidth, 0.0f);
+	arrangeSize.Height = std::max(arrangeSize.Height - marginHeight, 0.0f);
 
-	SizeF renderSize = ArrangeOverride(finalLocalRect.GetSize());
+	SizeF renderSize = ArrangeOverride(arrangeSize);
 	m_finalLocalRect.X = finalLocalRect.X + m_margin.Left;
 	m_finalLocalRect.Y = finalLocalRect.Y + m_margin.Top;
 	m_finalLocalRect.Width = renderSize.Width;
@@ -238,6 +241,12 @@ SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
 	return finalSize;
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnRender(Graphics::Painter* painter)
+{
+}
 
 
 
@@ -398,11 +407,13 @@ void UIElement::UpdateTransformHierarchy()
 	{
 		m_finalGlobalRect.X = m_parent->m_finalGlobalRect.X + m_finalLocalRect.X;
 		m_finalGlobalRect.Y = m_parent->m_finalGlobalRect.Y + m_finalLocalRect.Y;
+		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 	}
 	else
 	{
 		m_finalGlobalRect.X = m_finalLocalRect.X;
 		m_finalGlobalRect.Y = m_finalLocalRect.Y;
+		m_combinedOpacity = m_opacity;
 	}
 	m_finalGlobalRect.Width = m_finalLocalRect.Width;
 	m_finalGlobalRect.Height = m_finalLocalRect.Height;
@@ -425,6 +436,7 @@ void UIElement::Render()
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
 	painter.PushTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: 初期 Transform は DrawingContext とかベースクラスに作って隠したい。
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
+	painter.SetOpacity(m_combinedOpacity);
 	OnRender(&painter);
 }
 
@@ -433,13 +445,20 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 {
+	/* 今のところ、イベントを再帰で通知していく必要はない。
+		マウスイベントは Hover しているものへ Manager が直接送り込む。
+		キーイベントはフォーカスを持っているものへ Manager が直接送り込む。
+
+		…というか、再帰で通知してはならない。マウスイベントとかは再帰してしまうと、
+		マウスカーソルが乗っていない要素がイベントを受け取ってしまうことになる。
+	*/
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
 	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
-	int count = GetVisualChildrenCount();
-	for (int i = count - 1; i >= 0; i--)
-	{
-		if (GetVisualChild(i)->OnEvent(type, args)) { return true; }
-	}
+	//int count = GetVisualChildrenCount();
+	//for (int i = count - 1; i >= 0; i--)
+	//{
+	//	if (GetVisualChild(i)->OnEvent(type, args)) { return true; }
+	//}
 
 
 	switch (type)
@@ -464,10 +483,10 @@ bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 	case Lumino::GUI::EventType_ElapsedTime:
 		break;
 	case Lumino::GUI::EventType_MouseEnter:
-		//RaiseEvent(MouseEnterEvent, this, args);
+		OnMouseEnter(static_cast<MouseEventArgs*>(args));
 		break;
 	case Lumino::GUI::EventType_MouseLeave:
-		//RaiseEvent(MouseLeaveEvent, this, args);
+		OnMouseLeave(static_cast<MouseEventArgs*>(args));
 		break;
 	default:
 		break;

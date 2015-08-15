@@ -24,6 +24,11 @@ class Texture;
 class PainterEngine;
 class Helper;
 
+class Brush;
+class FrameTextureBrush;
+typedef RefPtr<Brush>				BrushPtr;
+typedef RefPtr<FrameTextureBrush>	FrameTextureBrushPtr;
+
 struct TextLayoutResult;
 
 namespace Internal
@@ -236,6 +241,7 @@ enum BrushType
 	BrushType_Unknown = 0,
 	BrushType_SolidColor,
 	BrushType_Texture,
+	BrushType_FrameTexture,
 };
 
 
