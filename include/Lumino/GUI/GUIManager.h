@@ -6,6 +6,7 @@
 #include <Lumino/Documents/DocumentsManager.h>
 #include "Common.h"
 #include "EventArgs.h"
+#include "CursorImage.h"
 
 namespace Lumino
 {
@@ -53,7 +54,9 @@ public:
 	bool InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl);
 	bool InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl);
 	//bool InjectChar(int ch);
-	bool InjectElapsedTime(float elapsedTime);
+	void InjectElapsedTime(float elapsedTime);
+
+	void Render();	// TODO: GUIContext
 
 public:	// internal
 	ResourceDictionary* GetDefaultTheme() { return m_defaultTheme; }
@@ -68,6 +71,10 @@ private:
 	bool UpdateMouseHover(const PointF& mousePos);	// ハンドリングしたら true を返す
 	void BuildDefaultTheme();
 
+private:	// internal
+	void AddAnimationClock(AnimationClock* clock);
+	void RemoveAnimationClock(AnimationClock* clock);
+
 private:
 	typedef std::map<String, ObjectFactory>	ObjectFactoryMap;
 	typedef std::pair<String, ObjectFactory>	ObjectFactoryPair;
@@ -81,8 +88,20 @@ private:
 	UIElement*							m_mouseHoverElement;		///< 現在マウス位置にある UIElement
 	UIElement*							m_capturedElement;			///< 現在キャプチャ中の UIElement
 	RefPtr<Platform::Window>			m_mainWindow;
+	Array<AnimationClock*>				m_activeAnimationClockList;	///< TODO: インデックススタックを使ったリストにしたい
 
 	ObjectFactoryMap					m_objectFactoryMap;
+
+
+	// GUIContext
+	RefPtr<Graphics::Texture>	m_defaultSkinTexture;
+	RefPtr<CursorImage>			m_cursorImageTable[1];
+	RefPtr<CursorImage>			m_currentCursorImage;
+	PointF						m_mousePosition;
+	float						m_cursorAnimationTime;
+
+
+	friend class GUIHelper;
 };
 
 } // namespace GUI

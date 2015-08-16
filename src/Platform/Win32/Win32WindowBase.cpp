@@ -37,7 +37,8 @@ Win32WindowBase::Win32WindowBase(Win32WindowManager* app)
 	: WindowBase(app)
 	, mLastMouseX(-1)
 	, mLastMouseY(-1)
-	, mIsActive(false)
+	, mIsActive(true)	// 初期値 true。WM_ACTIVATE は初回表示で最前面になった時は呼ばれない
+	, m_systemMouseShown(true)
 {
 }
 
@@ -47,6 +48,30 @@ Win32WindowBase::Win32WindowBase(Win32WindowManager* app)
 Win32WindowBase::~Win32WindowBase()
 {
 }
+
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Win32WindowBase::HideCursor()
+//{
+//	if (m_cursorShown)
+//	{
+//		::ShowCursor(FALSE);
+//		m_cursorShown = false;
+//	}
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Win32WindowBase::ShowCursor()
+//{
+//	if (!m_cursorShown)
+//	{
+//		::ShowCursor(TRUE);
+//		m_cursorShown = true;
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -228,6 +253,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				e.Mouse.Y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
 				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
 				e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
+				e.Mouse.InClientArea = true;
 				NortifyEvent(e);
 
 				mLastMouseX = e.Mouse.X;
@@ -239,19 +265,24 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 			/////////////////////////////////////////////// クライアント領域外でマウスが移動した
 			case WM_NCMOUSEMOVE:
 			{
-#if 0	// TODO: 今はいらない。やるならちゃんとクライアント領域外であるか区別したい。でないと GUI モジュールに影響が出る。
-				// 念のためホントにクライアント領域外かチェック
+				// ホントにクライアント領域外かチェック
 				if (wparam != HTCLIENT)
 				{
+					POINT pt;
+					pt.x = static_cast<short>(LOWORD(lparam));
+					pt.y = static_cast<short>(HIWORD(lparam));
+					::ScreenToClient(hwnd, &pt);
+
 					EventArgs e;
 					e.Type = EventType_MouseMove;
 					e.Sender = this;
 					e.Mouse.Button = MouseButton_None;
 					e.Mouse.Delta = 0;
-					e.Mouse.X = -1;
-					e.Mouse.Y = -1;
+					e.Mouse.X = pt.x;
+					e.Mouse.Y = pt.y;
 					e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
 					e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
+					e.Mouse.InClientArea = false;
 					NortifyEvent(e);
 
 					mLastMouseX = e.Mouse.X;
@@ -260,7 +291,6 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					*handled = true;
 					return 0;
 				}
-#endif
 			}
 			///////////////////////////////////////////// マウスホイールが操作された
 			case WM_MOUSEWHEEL:
@@ -369,6 +399,42 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 //-----------------------------------------------------------------------------
 bool Win32WindowBase::NortifyEvent(const EventArgs& e)
 {
+	/*	マウス非表示はもっと上のレベルで共通処理できるかと思ったけど、
+		割とOSにより変わりそうなので (ウィンドウ上にあるときだけカーソルが変わるのかとか)
+		このあたりでやってしまう。
+	*/
+
+	// 非アクティブの場合はクライアント領域外で移動したことにして、カーソルを表示する
+	if (!mIsActive)
+	{
+		m_mouseCursorVisibility.OnMoveCursor(false);
+	}
+	// クライアント上移動によるマウスカーソル非表示処理
+	else if (e.Type == EventType_MouseMove)
+	{
+		if (e.Mouse.InClientArea) {
+			m_mouseCursorVisibility.OnMoveCursor(true);
+		}
+		else {
+			m_mouseCursorVisibility.OnMoveCursor(false);
+		}
+	}
+
+	// 時間経過によるマウスカーソルの非表示処理
+	bool mc_visible = m_mouseCursorVisibility.CheckVisible();
+	if (mc_visible != m_systemMouseShown)
+	{
+		if (mc_visible)
+		{
+			::ShowCursor(TRUE);
+		}
+		else
+		{
+			::ShowCursor(FALSE);
+		}
+		m_systemMouseShown = mc_visible;
+	}
+
 	return SendEventToAllListener(e);
 }
 

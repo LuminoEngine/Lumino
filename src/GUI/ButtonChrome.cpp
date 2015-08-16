@@ -45,7 +45,7 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 	RefPtr<VisualStateGroup> group1(LN_NEW VisualStateGroup(_T("CommonStates")));
 
 
-	RefPtr<VisualState> state1(LN_NEW VisualState(_T("Normal")));
+	RefPtr<VisualState> state1(LN_NEW VisualState(m_manager, _T("Normal")));
 
 }
 

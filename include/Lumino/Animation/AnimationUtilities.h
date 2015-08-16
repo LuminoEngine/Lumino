@@ -10,10 +10,14 @@ namespace Lumino
 class AnimationUtilities
 {
 public:
+
+	typedef std::function< float(float, float, float, float) >	FloatEasingFunction;
+
 	template<typename T>
-	std::function< T(T, T, T, T) > SelectEasingFunction(Animation::EasingMode mode)
+	static std::function< T(T, T, T, T) > SelectEasingFunction(Animation::EasingMode mode)
 	{
-		const std::function< T(T, T, T, T) > table[] =
+		typedef T(*EasingFunctionPtr)(T, T, T, T);
+		EasingFunctionPtr table[] =
 		{
 			EasingFunctions::LinearTween,
 			EasingFunctions::EaseInQuad,
@@ -38,7 +42,7 @@ public:
 			EasingFunctions::EaseOutCirc,
 			EasingFunctions::EaseInOutCirc,
 		};
-		assert(LN_ARRAY_SIZEOF(table) == Animation::EasingMode::GetMemberCount());
+		assert(LN_ARRAY_SIZE_OF(table) == Animation::EasingMode::GetMemberCount());
 		return table[mode];
 	}
 

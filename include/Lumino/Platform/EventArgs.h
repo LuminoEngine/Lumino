@@ -57,12 +57,13 @@ struct EventArgs
 		/// マウスイベントの引数
 		struct
 		{
-			MouseButton	Button;		///< ボタン番号
-			short		Delta;		///< マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位)
-			short		X;			///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
-			short		Y;			///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
-			short		MoveX;	    ///< X 座標の移動量
-			short		MoveY;      ///< Y 座標の移動量
+			MouseButton	Button;			///< ボタン番号
+			short		Delta;			///< マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位)
+			short		X;				///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
+			short		Y;				///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)
+			short		MoveX;			///< X 座標の移動量
+			short		MoveY;			///< Y 座標の移動量
+			bool		InClientArea;	///< クライアント領域の内部であるか
 
 		} Mouse;
 

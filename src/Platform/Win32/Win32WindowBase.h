@@ -23,6 +23,8 @@ public:
 public:
 	// override Window
 	virtual bool IsActive() const { return mIsActive; }
+	//virtual void HideCursor();
+	//virtual void ShowCursor();
 
 public:
 	/// メッセージ処理のベース
@@ -44,6 +46,7 @@ protected:
 	int		mLastMouseX;
 	int		mLastMouseY;
 	bool	mIsActive;
+	bool	m_systemMouseShown;
 };
 
 } // namespace Platform

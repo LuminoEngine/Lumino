@@ -5,6 +5,26 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/8/16] マウスカーソルイメージ
+		理想：
+		button1->Cursor = Cursors::Wait;	// button1 の上にマウスカーソルが乗った時のアイコンを指定する
+
+		…が、本ライブラリ的なカーソル形状は Context によって異なるもので、
+		グローバルにすることはできない。
+
+		正攻法：
+		button1->SetCursor(m_guiContext->GetWaitCursor());
+		or
+		button1->SetCursor(m_guiContext->GetCommonCursor(CommonCursor::Wait));
+
+		ユーティリティ：
+		button1->SetCursor(CommonCursor::Wait);
+		button1->SetCursor(m_mycursor);				// ユーザーカスタムカーソル
+
+		基本的に Context の存在はあまり意識させたくない。
+		なので、↑ユーティリティ の方法でとりあえず行ってみる。
+
+
 	[2015/8/15] Shape の必要性
 		VisualState を作るときは Storyboard からプロパティの値をいじるため、
 		描画をプロパティでオントロールできるものがあると良い。というか、無いと VisualState のありがたみ半減。
@@ -33,6 +53,7 @@
 	
 		GUIContext
 			- 論理フォーカス
+			- マウスカーソル
 
 	[2015/7/28] TemplateBinding って必要？
 		VisualTree の要素から TemplateParent にアクセスするために必要。
@@ -1016,6 +1037,7 @@ GUIManager::GUIManager()
 	, m_rootCombinedResource(NULL)
 	, m_defaultRootFrame(NULL)
 	, m_capturedElement(NULL)
+	, m_cursorAnimationTime(0)
 {
 }
 
@@ -1060,7 +1082,17 @@ void GUIManager::Initialize(const ConfigData& configData)
 	RegisterFactory(TextBlock::TypeID,				[](GUIManager* m) -> CoreObject* { return TextBlock::internalCreateInstance(m); });
 	RegisterFactory(Rectangle::TypeID,				[](GUIManager* m) -> CoreObject* { return Rectangle::internalCreateInstance(m); });
 
+	// GUI スキン
+	m_defaultSkinTexture.Attach(Graphics::Texture::Create(g_DefaultSkin_png_Data, g_DefaultSkin_png_Len, Graphics::TextureFormat_R8G8B8A8, 1, m_graphicsManager));
 	
+	// マウスカーソル
+	assert(LN_ARRAY_SIZE_OF(m_cursorImageTable) == CommonCursorImage::GetMemberCount());
+	m_cursorImageTable[CommonCursorImage::Arrow].Attach(LN_NEW CursorImage(this));
+	m_cursorImageTable[CommonCursorImage::Arrow]->SetTexture(m_defaultSkinTexture);
+	m_cursorImageTable[CommonCursorImage::Arrow]->SetSourceRect(Rect(0, 480, 32, 32));
+	m_cursorImageTable[CommonCursorImage::Arrow]->SetPatternCount(6);
+	m_cursorImageTable[CommonCursorImage::Arrow]->SetPatternDuration(1.0);
+	m_currentCursorImage = m_cursorImageTable[CommonCursorImage::Arrow];
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
 	BuildDefaultTheme();
@@ -1116,6 +1148,8 @@ CoreObject* GUIManager::CreateObject(const String& typeFullName)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseMove(float clientX, float clientY)
 {
+	m_mousePosition.Set(clientX, clientY);
+
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL) 
 	{
@@ -1137,6 +1171,8 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
 {
+	m_mousePosition.Set(clientX, clientY);
+
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
@@ -1156,6 +1192,8 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
 {
+	m_mousePosition.Set(clientX, clientY);
+
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
@@ -1174,6 +1212,8 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 {
+	m_mousePosition.Set(clientX, clientY);
+
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
@@ -1210,9 +1250,36 @@ bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isContr
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectElapsedTime(float elapsedTime)
+void GUIManager::InjectElapsedTime(float elapsedTime)
 {
-	LN_THROW(0, NotImplementedException);
+	for (AnimationClock* clock : m_activeAnimationClockList)
+	{
+		clock->AdvanceTime(elapsedTime);
+	}
+
+	m_activeAnimationClockList.RemoveAll([](AnimationClock* clock) { return clock->IsFinished(); });
+
+	// マウスカーソルのアニメーション
+	if (m_currentCursorImage != NULL)
+	{
+		m_cursorAnimationTime += elapsedTime;
+		if (m_cursorAnimationTime >= m_currentCursorImage->GetPatternDuration()) {
+			m_cursorAnimationTime = 0;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::Render()
+{
+	if (m_currentCursorImage != NULL)
+	{
+		Graphics::Painter painter(m_graphicsManager);
+		painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
+		m_currentCursorImage->Draw(&painter, m_mousePosition, m_cursorAnimationTime);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1280,6 +1347,22 @@ EXIT:
 		}
 	}
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::AddAnimationClock(AnimationClock* clock)
+{
+	m_activeAnimationClockList.Add(clock);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::RemoveAnimationClock(AnimationClock* clock)
+{
+	m_activeAnimationClockList.Remove(clock);
 }
 
 //-----------------------------------------------------------------------------

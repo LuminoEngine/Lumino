@@ -32,12 +32,14 @@ public:
 	void SetDuration(float duration) { m_duration = duration; }
 
 protected:
-	virtual void Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time) = 0;
+	// time : このタイムラインの再生開始からの経過時間
+	// return : time が m_duration 以上であれば false
+	virtual bool Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time) = 0;
 
 protected:
 	String	m_targetName;		///< ターゲットの UI 要素名。ビジュアルツリーから対象要素を検索するときに使用する。
 	String	m_targetProperty;	///< ターゲットプロパティ名
-	double	m_duration;			///< 再生時間 (ミリ秒)
+	float	m_duration;			///< 再生時間 (ミリ秒)
 
 	friend class AnimationClock;
 };
@@ -51,8 +53,10 @@ class AnimationClock
 	: public CoreObject
 {
 public:
-	AnimationClock(Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines);
+	AnimationClock(GUIManager* manager, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines);
 	virtual ~AnimationClock();
+
+	bool IsFinished() const { return m_isFinished; }
 	
 	// TODO: internal
 	void SetTime(float time);
@@ -70,8 +74,11 @@ private:
 		Variant		StartValue;
 	};
 
-	Storyboard*	m_sourceStoryboard;		// 停止するときのキーにしたいので参照カウントを上げる必要はない
+	GUIManager*				m_manager;
+	Storyboard*				m_sourceStoryboard;		// 停止するときのキーにしたいので参照カウントを上げる必要はない
 	Array<TimeLineInstance>	m_timeLineInstanceList;
+	float					m_currentTime;
+	bool					m_isFinished;
 
 	friend class Storyboard;
 };

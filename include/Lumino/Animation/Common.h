@@ -1,5 +1,6 @@
 
 #pragma once
+#include <Lumino/Base/EnumExtension.h>
 
 namespace Lumino
 {
@@ -84,6 +85,29 @@ LN_ENUM(EasingMode)
 	EaseOutCirc,
 	EaseInOutCirc,
 };
+LN_ENUM_REFLECTION(EasingMode,
+	Linear,
+	EaseInQuad,
+	EaseOutQuad,
+	EaseInOutQuad,
+	EaseInCubic,
+	EaseOutCubic,
+	EaseInOutCubic,
+	EaseInQuart,
+	EaseOutQuart,
+	EaseInOutQuart,
+	EaseInQuint,
+	EaseOutQuint,
+	EaseInOutQuint,
+	EaseInSine,
+	EaseOutSine,
+	EaseInOutSine,
+	EaseInExpo,
+	EaseOutExpo,
+	EaseInOutExpo,
+	EaseInCirc,
+	EaseOutCirc,
+	EaseInOutCirc);
 LN_ENUM_DECLARE(EasingMode);
 
 } // namespace Animation

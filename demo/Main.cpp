@@ -30,6 +30,8 @@ int main()
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		RefPtr<Application> app(Application::Create(appData));
 
+		app->GetPlatformManager()->GetMainWindow()->SetCursorVisible(false);
+
 
 		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-Gothic-Regular.ttf"));
 		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-PGothic-Regular.ttf"));
@@ -45,7 +47,7 @@ int main()
 		workbench1->SetPropertyValue(GUI::RootFrame::SizeProperty , SizeF(640, 480));
 
 		auto grid1 = GUI::Grid::Create();
-		grid1->AddColumnDefinition(200);
+		grid1->AddColumnDefinition(180);
 		grid1->AddColumnDefinition(GUI::ColumnDefinition::Star);
 		workbench1->SetContent(grid1);
 
@@ -62,6 +64,7 @@ int main()
 		easing1->SetTargetProperty(GUI::UIElement::OpacityProperty->GetName());
 		easing1->SetTargetValue(0.0f);
 		easing1->SetEasingMode(Animation::EasingMode::EaseOutExpo);
+		easing1->SetDuration(1.0f);
 
 		// MouseOver
 		RefPtr<GUI::FloatEasing> easing2(LN_NEW GUI::FloatEasing());
@@ -69,11 +72,12 @@ int main()
 		easing2->SetTargetProperty(GUI::UIElement::OpacityProperty->GetName());
 		easing2->SetTargetValue(1.0f);
 		easing2->SetEasingMode(Animation::EasingMode::EaseOutExpo);
+		easing2->SetDuration(1.0f);
 
 		GUI::VisualStateGroupPtr vgroup1(LN_NEW GUI::VisualStateGroup(_T("CommonStates")));
-		GUI::VisualStatePtr vstate1(LN_NEW GUI::VisualState(_T("Normal")));
+		GUI::VisualStatePtr vstate1(LN_NEW GUI::VisualState(app->GetGUIManager(), _T("Normal")));
 		vstate1->GetStoryboard()->AddTimeline(easing1);
-		GUI::VisualStatePtr vstate2(LN_NEW GUI::VisualState(_T("MouseOver")));
+		GUI::VisualStatePtr vstate2(LN_NEW GUI::VisualState(app->GetGUIManager(), _T("MouseOver")));
 		vstate2->GetStoryboard()->AddTimeline(easing2);
 		vgroup1->AddState(vstate1);
 		vgroup1->AddState(vstate2);
@@ -235,9 +239,11 @@ int main()
 				ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 
 				workbench1->ApplyTemplate();
+				app->GetGUIManager()->InjectElapsedTime(0.016f);
 				workbench1->UpdateLayout();
 				workbench1->UpdateTransformHierarchy();
 				workbench1->Render();
+				app->GetGUIManager()->Render();
 				app->Render();
 			}
 				swap1->Present();

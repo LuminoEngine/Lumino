@@ -1,9 +1,11 @@
 
 #include "../Internal.h"
+#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/AnimationClock.h>
 #include <Lumino/GUI/VisualTreeHelper.h>
+#include "GUIHelper.h"
 
 namespace Lumino
 {
@@ -41,9 +43,12 @@ AnimationTimeline::~AnimationTimeline()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AnimationClock::AnimationClock(Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines)
-	: m_sourceStoryboard(sourceStoryboard)
+AnimationClock::AnimationClock(GUIManager* manager, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines)
+	: m_manager(manager)
+	, m_sourceStoryboard(sourceStoryboard)
 	, m_timeLineInstanceList()
+	, m_currentTime(0)
+	, m_isFinished(false)
 {
 	for (AnimationTimeline* timeline : *timelines)
 	{
@@ -67,7 +72,7 @@ AnimationClock::AnimationClock(Storyboard* sourceStoryboard, UIElement* owner, A
 				tli.OwnerTimeLine = timeline;
 				tli.TargetElement = target;
 				tli.TargetProperty = prop;
-				tli.StartValue = target->GetPropertyValue(prop);
+				tli.StartValue = target->GetPropertyValue(prop);	// 現在のプロパティ値を開始値とする
 				m_timeLineInstanceList.Add(tli);
 			}
 		}
@@ -75,6 +80,8 @@ AnimationClock::AnimationClock(Storyboard* sourceStoryboard, UIElement* owner, A
 
 	// 初期値セットの意味も込めて、ここでまずは 0 タイムで値をセットしておく。
 	SetTime(0);
+
+	GUIHelper::GUIManager_AddAnimationClock(m_manager, this);
 }
 
 //-----------------------------------------------------------------------------
@@ -90,10 +97,28 @@ AnimationClock::~AnimationClock()
 //-----------------------------------------------------------------------------
 void AnimationClock::SetTime(float time)
 {
+	// とりあえず true にしておいて、タイムラインが1つでも実行中だったら false にする
+	m_isFinished = true;
+
 	for (TimeLineInstance& tli : m_timeLineInstanceList)
 	{
-		tli.OwnerTimeLine->Apply(tli.TargetElement, tli.TargetProperty, tli.StartValue, time);
+		bool r = tli.OwnerTimeLine->Apply(tli.TargetElement, tli.TargetProperty, tli.StartValue, time);
+		if (r) {
+			m_isFinished = false;
+		}
 	}
+	
+	// 終了したら Manager の時間管理から外す…のだが、
+	// この関数の中ではまだイテレート中である。m_isFinished フラグを Manager で見て、そちらで外してもらう。
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AnimationClock::AdvanceTime(float elapsedTime)
+{
+	m_currentTime += elapsedTime;
+	SetTime(m_currentTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -101,7 +126,8 @@ void AnimationClock::SetTime(float time)
 //-----------------------------------------------------------------------------
 void AnimationClock::StopInternal()
 {
-	// TODO: Manager から外す
+	// Manager から外す
+	GUIHelper::GUIManager_RemoveAnimationClock(m_manager, this);
 }
 
 } // namespace GUI

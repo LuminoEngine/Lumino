@@ -20,7 +20,7 @@ ProfilerRenderer::ProfilerRenderer(GraphicsManager* manager, Profiler* profiler)
 	, m_profiler(profiler)
 {
 	m_font.Attach(Font::CreateBuiltInBitmapFont(m_manager->GetFontManager(), 7));
-	m_windowRect.Set(300, 8, 300, 256);
+	m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
 }
 
 //-----------------------------------------------------------------------------

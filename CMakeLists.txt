@@ -62,6 +62,7 @@ set(LN_SOURCES_Platform
 	include/Lumino/Platform/PlatformManager.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/Window.h
+	src/Platform/MouseCursorVisibility.h
 	src/Platform/PlatformManager.cpp
 	src/Platform/WindowManagerBase.cpp
 	src/Platform/WindowBase.cpp
@@ -223,6 +224,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/ContentPresenter.h
 	include/Lumino/GUI/Control.h
 	include/Lumino/GUI/ControlTemplate.h
+	include/Lumino/GUI/CursorImage.h
 	include/Lumino/GUI/Decorator.h
 	include/Lumino/GUI/GUIManager.h
 	include/Lumino/GUI/GUIObjectCollection.h
@@ -255,6 +257,7 @@ set(LN_SOURCES_GUI
 	src/GUI/ContentPresenter.cpp
 	src/GUI/Control.cpp
 	src/GUI/ControlTemplate.cpp
+	src/GUI/CursorImage.cpp
 	src/GUI/Decorator.cpp
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIHelper.h

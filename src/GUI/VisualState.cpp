@@ -24,7 +24,9 @@ FloatEasing::FloatEasing()
 	, */m_targetValue(0)
 	, m_easingMode(Animation::EasingMode::Linear)
 	//, m_duration(0)
+	, m_easingFunction()
 {
+	SetEasingMode(Animation::EasingMode::Linear);
 }
 
 //-----------------------------------------------------------------------------
@@ -37,17 +39,39 @@ FloatEasing::~FloatEasing()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void FloatEasing::Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time)
+void FloatEasing::SetEasingMode(Animation::EasingMode easingMode)
 {
-	if (m_duration == 0)
+	m_easingMode = easingMode;
+	m_easingFunction = AnimationUtilities::SelectEasingFunction<float>(m_easingMode);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool FloatEasing::Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time)
+{
+	float value = 0;
+
+	// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
+	// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
+	if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
 	{
-		// 時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
-		targetElement->SetTypedPropertyValue<float>(targetProp, m_targetValue);
+		value = m_targetValue;
 	}
+	// 時間が 0 以前の場合は初期値。
+	else if (time <= 0)
+	{
+		value = Variant::Cast<float>(startValue);
+	}
+	// 補間で求める
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		float b = Variant::Cast<float>(startValue);
+		value = m_easingFunction(time, b, m_targetValue - b, m_duration);
 	}
+
+	targetElement->SetTypedPropertyValue<float>(targetProp, value);
+	return (time < m_duration);
 }
 
 //=============================================================================
@@ -56,17 +80,20 @@ void FloatEasing::Apply(UIElement* targetElement, Property* targetProp, const Va
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VisualState::VisualState()
+VisualState::VisualState(GUIManager* manager)
+	: m_manager(manager)
 {
+	m_storyboard.Attach(LN_NEW Storyboard(m_manager));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VisualState::VisualState(const String& name)
-	: m_name(name)
+VisualState::VisualState(GUIManager* manager, const String& name)
+	: m_manager(manager)
+	, m_name(name)
 {
-	m_storyboard.Attach(LN_NEW Storyboard());
+	m_storyboard.Attach(LN_NEW Storyboard(m_manager));
 }
 
 //-----------------------------------------------------------------------------
@@ -156,7 +183,8 @@ void VisualStateManager::GoToState(Control* control, const String& stateName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Storyboard::Storyboard()
+Storyboard::Storyboard(GUIManager* manager)
+	: m_manager(manager)
 {
 }
 
@@ -182,7 +210,7 @@ void Storyboard::AddTimeline(AnimationTimeline* timeline)
 void Storyboard::Begin(UIElement* target)
 {
 	// TODO: AnimationClock は頻繁に作成されるのでキャッシュしたい
-	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(this, target, &m_animationTimelineList));
+	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(m_manager, this, target, &m_animationTimelineList));
 
 	// TODO: Manager にも登録してアニメしてもらう
 	GUIHelper::UIElement_GetAnimationClockList(target)->Add(clock);

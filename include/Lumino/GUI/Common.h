@@ -39,6 +39,8 @@ class ListBox;
 class ListBoxChrome;
 class ListBoxItem;
 
+class AnimationClock;
+
 class VisualState;
 class VisualStateGroup;
 
@@ -106,6 +108,13 @@ LN_ENUM(Orientation)
 };
 LN_ENUM_DECLARE(Orientation);
 
+/** 規定のマウスカーソルイメージの種類を示します。*/
+LN_ENUM(CommonCursorImage)
+{
+	Arrow = 0,			/**< 矢印カーソル */
+};
+LN_ENUM_REFLECTION(CommonCursorImage, Arrow)
+LN_ENUM_DECLARE(CommonCursorImage);
 
 
 class IAddChild

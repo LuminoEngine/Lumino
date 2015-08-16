@@ -1,6 +1,7 @@
 
 #pragma once
 #define _USE_MATH_DEFINES
+#include <math.h>
 #include <cmath>
 
 namespace Lumino
@@ -156,7 +157,7 @@ public:
 	template<typename T>
 	static T EaseOutExpo(T t, T b, T c, T d)
 	{
-		return c * (-Math.pow(2, -10 * t / d) + 1) + b;
+		return c * (-std::pow(2, -10 * t / d) + 1) + b;
 	};
 
 	/// exponential easing in/out - accelerating until halfway, then decelerating 
@@ -164,7 +165,7 @@ public:
 	static T EaseInOutExpo(T t, T b, T c, T d)
 	{
 		t /= d / 2;
-		if (t < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+		if (t < 1) return c / 2 * std::pow(2, 10 * (t - 1)) + b;
 		t--;
 		return c / 2 * (-std::pow(2, -10 * t) + 2) + b;
 	};

@@ -96,10 +96,12 @@ void PainterEngine::Create(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void PainterEngine::Begin()
 {
-	//m_currentState.Brush.Type = BrushType_Unknown;
-	//m_currentState.Opacity = 1.0f;
-	//m_currentState.ForeColor = ColorF::Black;
-	//m_currentState.InternalGlyphMask = m_dummyTexture;
+	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
+	m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
+	m_currentState.Brush.Type = BrushType_Unknown;
+	m_currentState.Opacity = 1.0f;
+	m_currentState.ForeColor = ColorF::Black;
+	m_currentState.InternalGlyphMask = m_dummyTexture;
 }
 
 //-----------------------------------------------------------------------------
@@ -166,24 +168,46 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	// DrawGlyphRun() 以外は NULL で呼び出しておく
 	SetInternalGlyphMaskTexture(NULL);
 
-	uint16_t i = m_vertexCache.GetCount();
-	m_indexCache.Add(i + 0);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 3);
+	if (m_currentState.Brush.Type == BrushType_Texture)
+	{
+		Device::ITexture*srcTexture = m_currentState.Brush.TextureBrush.Texture;
+		Rect& srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
 
-	PainterVertex v;
-	v.Color = m_currentState.ForeColor;
-	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 左上
-	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右上
-	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 左下
-	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右下
-	m_vertexCache.Add(v);
+		SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
+		texSize.Width = 1.0f / texSize.Width;
+		texSize.Height = 1.0f / texSize.Height;
+		RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
+
+
+		if (m_currentState.Brush.TextureBrush.WrapMode == BrushWrapMode_Stretch)
+		{
+			InternalDrawRectangleStretch(rect, uvSrcRect);
+		}
+		else {
+			LN_THROW(0, NotImplementedException);
+		}
+	}
+	else
+	{
+		uint16_t i = m_vertexCache.GetCount();
+		m_indexCache.Add(i + 0);
+		m_indexCache.Add(i + 1);
+		m_indexCache.Add(i + 2);
+		m_indexCache.Add(i + 2);
+		m_indexCache.Add(i + 1);
+		m_indexCache.Add(i + 3);
+
+		PainterVertex v;
+		v.Color = m_currentState.ForeColor;
+		v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 左上
+		m_vertexCache.Add(v);
+		v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右上
+		m_vertexCache.Add(v);
+		v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 左下
+		m_vertexCache.Add(v);
+		v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右下
+		m_vertexCache.Add(v);
+	}
 }
 
 //-----------------------------------------------------------------------------

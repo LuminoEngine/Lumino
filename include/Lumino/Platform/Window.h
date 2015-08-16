@@ -53,6 +53,11 @@ public:
 	virtual bool IsActive() const = 0;
 
 	/**
+		@brief		マウスカーソルがクライアント領域上にある場合に表示するかを設定します。
+	*/
+	virtual void SetCursorVisible(bool visible) = 0;
+
+	/**
 		@brief		このウィンドウにマウスキャプチャを設定します。
 	*/
 	virtual void CaptureMouse() = 0;

@@ -37,11 +37,11 @@ public:
 	//void SetTargetName(const String& name) { m_targetName = name; }
 	//void SetTargetProperty(const Property* prop) { m_targetProperty = prop; }
 	void SetTargetValue(float value) { m_targetValue = value; }
-	void SetEasingMode(Animation::EasingMode easingMode) { m_easingMode = easingMode; }
+	void SetEasingMode(Animation::EasingMode easingMode);
 	void SetDuration(float duration) { m_duration = duration; }
 
 protected:
-	virtual void Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time);
+	virtual bool Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time);
 
 private:
 	//String					m_targetName;
@@ -49,6 +49,8 @@ private:
 	float					m_targetValue;
 	Animation::EasingMode	m_easingMode;
 	//float					m_duration;
+	AnimationUtilities::FloatEasingFunction	m_easingFunction;
+
 };
 
 /**
@@ -58,7 +60,7 @@ class Storyboard
 	: public CoreObject
 {
 public:
-	Storyboard();
+	Storyboard(GUIManager* manager);
 	virtual ~Storyboard();
 
 	void AddTimeline(AnimationTimeline* timeline);
@@ -76,6 +78,7 @@ public:
 	void Stop(UIElement* target);
 
 private:
+	GUIManager*	m_manager;
 	Array< RefPtr<AnimationTimeline> >	m_animationTimelineList;
 };
 
@@ -88,14 +91,15 @@ class VisualState
 	//[RuntimeNamePropertyAttribute("Name")]
 	//[ContentPropertyAttribute("Storyboard")]
 public:
-	VisualState();
-	VisualState(const String& name);
+	VisualState(GUIManager* manager);
+	VisualState(GUIManager* manager, const String& name);
 	virtual ~VisualState();
 
 	const String& GetName() const { return m_name; }
 	Storyboard* GetStoryboard() const { return m_storyboard; }
 
 protected:
+	GUIManager* m_manager;
 	String	m_name;
 	RefPtr<Storyboard>	m_storyboard;
 };

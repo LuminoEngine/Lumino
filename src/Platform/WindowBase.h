@@ -2,6 +2,7 @@
 #pragma once
 
 #include "NativeWindow.h"
+#include "MouseCursorVisibility.h"
 
 namespace Lumino
 {
@@ -12,7 +13,7 @@ class WindowManagerBase;
 /**
 	@brief	
 */
-class WindowBase
+class WindowBase		// TODO: 無理に Base と Window に分けると複雑になる。GUI みたいに Helper を使うようにしたい。
 	: public Window
 {
 public:
@@ -20,6 +21,7 @@ public:
 	virtual ~WindowBase();
 
 public:
+	void SetCursorVisible(bool visible) { m_mouseCursorVisibility.SetMouseCursorVisibleState(visible, 0); }
 	//void SetApplication(Win32WindowManager* app) { m_windowManager = app; }
 
 	/// このウィンドウに割り当てられている全てのイベントリスナーにイベントを送信する
@@ -36,6 +38,8 @@ protected:
 
 	WindowManagerBase*		m_windowManager;	///< (循環参照防止のため、参照カウントは操作しない)
 	EventListenerList		m_listenerEntryArray;
+	MouseCursorVisibility	m_mouseCursorVisibility;
+
 };
 
 } // namespace Platform

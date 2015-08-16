@@ -1,6 +1,7 @@
 
 #pragma once
 #include <functional>
+#include <Lumino/GUI/GUIManager.h>
 
 namespace Lumino
 {
@@ -17,6 +18,9 @@ class GUIHelper
 public:
 	template<class T, typename... TArgs>
 	static RefPtr<T> CreateUIElemenInstance(TArgs... args) { return RefPtr<T>(T::internalCreateInstance(args...)); }
+
+	static void GUIManager_AddAnimationClock(GUIManager* manager, AnimationClock* clock) { manager->AddAnimationClock(clock); }
+	static void GUIManager_RemoveAnimationClock(GUIManager* manager, AnimationClock* clock) { manager->RemoveAnimationClock(clock); }
 
 
 	static void UIElement_SetKeyName(UIElement* element, const String& name) { element->m_keyName = name; }
