@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Array.h>
 
@@ -6,11 +6,11 @@ namespace Lumino
 {
 
 /**
-	@brief		•¡”‚ÌƒXƒŒƒbƒh‚©‚ç‚Ì—v‘f‚Ì’Ç‰ÁEíœ‚ğ•â•‚·‚é RefObject ‚Ì”z—ñ‚Å‚·B
-	@details	—v‘f‚Ì’Ç‰ÁEíœ‚Í AddObject() ‚Æ RemoveObject() ‚Ås‚¢‚Ü‚·B
-				’Ç‰Á‚Ü‚½‚Ííœ‚³‚ê‚Ä‚à’¼‚¿‚É”z—ñ–{‘Ì‚ğXV‚·‚é‚í‚¯‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-				”z—ñ–{‘Ì‚ª•Ê‚ÌƒXƒŒƒbƒh‚ÅƒCƒeƒŒ[ƒg’†‚Å‚ ‚é‚±‚Æ‚É”õ‚¦A’Ç‰Á‚Ü‚½‚Ííœ‘Ò‚¿ƒŠƒXƒg‚É’Ç‰Á‚³‚ê‚Ü‚·B
-				Commit() ‚ªŒÄ‚Î‚ê‚½“_‚Å‘Ò‚¿ƒŠƒXƒg‚ğg—p‚µA”z—ñ–{‘Ì‚ğXV‚µ‚Ü‚·B
+	@brief		è¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰ã®è¦ç´ ã®è¿½åŠ ãƒ»å‰Šé™¤ã‚’è£œåŠ©ã™ã‚‹ RefObject ã®é…åˆ—ã§ã™ã€‚
+	@details	è¦ç´ ã®è¿½åŠ ãƒ»å‰Šé™¤ã¯ AddObject() ã¨ RemoveObject() ã§è¡Œã„ã¾ã™ã€‚
+				è¿½åŠ ã¾ãŸã¯å‰Šé™¤ã•ã‚Œã¦ã‚‚ç›´ã¡ã«é…åˆ—æœ¬ä½“ã‚’æ›´æ–°ã™ã‚‹ã‚ã‘ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
+				é…åˆ—æœ¬ä½“ãŒåˆ¥ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã§ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆä¸­ã§ã‚ã‚‹ã“ã¨ã«å‚™ãˆã€è¿½åŠ ã¾ãŸã¯å‰Šé™¤å¾…ã¡ãƒªã‚¹ãƒˆã«è¿½åŠ ã•ã‚Œã¾ã™ã€‚
+				Commit() ãŒå‘¼ã°ã‚ŒãŸæ™‚ç‚¹ã§å¾…ã¡ãƒªã‚¹ãƒˆã‚’ä½¿ç”¨ã—ã€é…åˆ—æœ¬ä½“ã‚’æ›´æ–°ã—ã¾ã™ã€‚
 */
 template<typename TRefObj>
 class MultiThreadingRefObjectList
@@ -19,9 +19,9 @@ public:
 	typedef Array<TRefObj>	ObjectArray;
 
 private:
-	ObjectArray	m_objectArray;		///< ƒƒCƒ“‚ÌƒŠƒXƒg
-	ObjectArray	m_registerList;		///< ƒƒCƒ“‚ÌƒŠƒXƒg‚Ö‚Ì’Ç‰Á‘Ò‚¿ƒŠƒXƒg
-	ObjectArray	m_unregisterList;	///< ƒƒCƒ“‚ÌƒŠƒXƒg‚©‚ç‚Ìíœ‘Ò‚¿ƒŠƒXƒg
+	ObjectArray	m_objectArray;		///< ãƒ¡ã‚¤ãƒ³ã®ãƒªã‚¹ãƒˆ
+	ObjectArray	m_registerList;		///< ãƒ¡ã‚¤ãƒ³ã®ãƒªã‚¹ãƒˆã¸ã®è¿½åŠ å¾…ã¡ãƒªã‚¹ãƒˆ
+	ObjectArray	m_unregisterList;	///< ãƒ¡ã‚¤ãƒ³ã®ãƒªã‚¹ãƒˆã‹ã‚‰ã®å‰Šé™¤å¾…ã¡ãƒªã‚¹ãƒˆ
 
 public:
 	MultiThreadingRefObjectList() {}
@@ -29,22 +29,22 @@ public:
 
 public:
 
-	/// ’Ç‰Á
+	/// è¿½åŠ 
 	void AddObject(TRefObj obj)
 	{
 		assert(obj);
-		assert(std::find(m_registerList.begin(), m_registerList.end(), obj) == m_registerList.end());	// Šù‚É’Ç‰Á—v‹‚³‚ê‚Ä‚¢‚é
-		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) == m_objectArray.end());		// Œ»İíœ‘Ò‚¿‚Å‚ ‚é
+		assert(std::find(m_registerList.begin(), m_registerList.end(), obj) == m_registerList.end());	// æ—¢ã«è¿½åŠ è¦æ±‚ã•ã‚Œã¦ã„ã‚‹
+		assert(std::find(m_objectArray.begin(), m_objectArray.end(), obj) == m_objectArray.end());		// ç¾åœ¨å‰Šé™¤å¾…ã¡ã§ã‚ã‚‹
 		m_registerList.Add(obj);
 		obj->AddRef();
 	}
 
-	/// íœ
+	/// å‰Šé™¤
 	void RemoveObject(TRefObj obj)
 	{
 		assert(obj);
 
-		// “o˜^ƒŠƒXƒg‚É“ü‚Á‚Ä‚½‚ç‚±‚Ì“_‚Åíœ‚µ‚Ä‚µ‚Ü‚¤
+		// ç™»éŒ²ãƒªã‚¹ãƒˆã«å…¥ã£ã¦ãŸã‚‰ã“ã®æ™‚ç‚¹ã§å‰Šé™¤ã—ã¦ã—ã¾ã†
 		typename ObjectArray::iterator itr = std::find(m_registerList.begin(), m_registerList.end(), obj);
 		if (itr != m_registerList.end())
 		{
@@ -58,12 +58,12 @@ public:
 		obj->AddRef();
 	}
 
-	/// “¯Šú
+	/// åŒæœŸ
 	void Commit()
 	{
 		typename ObjectArray::iterator itr, end;
 
-		// ’Ç‰Á
+		// è¿½åŠ 
 		if (!m_registerList.IsEmpty())
 		{
 			itr = m_registerList.begin();
@@ -71,13 +71,13 @@ public:
 			for (; itr != end; ++itr)
 			{
 				m_objectArray.Add(*itr);
-				// QÆƒJƒEƒ“ƒg‚Í m_registerList ‚©‚çŠO‚·•ª‚Æ m_objectArray ‚É
-				// ’Ç‰Á‚·‚é•ª‚Å }0 ‚È‚Ì‚Å‘€ì‚Í‚µ‚È‚¢
+				// å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã¯ m_registerList ã‹ã‚‰å¤–ã™åˆ†ã¨ m_objectArray ã«
+				// è¿½åŠ ã™ã‚‹åˆ†ã§ Â±0 ãªã®ã§æ“ä½œã¯ã—ãªã„
 			}
 			m_registerList.Clear();
 		}
 
-		// íœ
+		// å‰Šé™¤
 		if (!m_unregisterList.IsEmpty())
 		{
 			itr = m_unregisterList.begin();
@@ -87,8 +87,8 @@ public:
 				typename ObjectArray::iterator pos = std::find(m_objectArray.begin(), m_objectArray.end(), (*itr));
 				if (pos != m_objectArray.end())
 				{
-					(*pos)->Release();	// m_unregisterList ‚©‚çŠO‚·•ª
-					(*pos)->Release();	// m_registerList ‚©‚çŠO‚·•ª
+					(*pos)->Release();	// m_unregisterList ã‹ã‚‰å¤–ã™åˆ†
+					(*pos)->Release();	// m_registerList ã‹ã‚‰å¤–ã™åˆ†
 					m_objectArray.erase(pos);
 				}
 			}
@@ -96,7 +96,7 @@ public:
 		}
 	}
 
-	/// ‚±‚ÌƒŠƒXƒg‚©‚ç‚µ‚©QÆ‚³‚ê‚Ä‚¢‚È‚¢ƒIƒuƒWƒFƒNƒg (QÆƒJƒEƒ“ƒg‚ª 1 ‚Å‚ ‚éƒIƒuƒWƒFƒNƒg) ‚ğæ‚èœ‚«‚Ü‚·B
+	/// ã“ã®ãƒªã‚¹ãƒˆã‹ã‚‰ã—ã‹å‚ç…§ã•ã‚Œã¦ã„ãªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ (å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆãŒ 1 ã§ã‚ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ) ã‚’å–ã‚Šé™¤ãã¾ã™ã€‚
 	void CollectGC()
 	{
 		typename ObjectArray::iterator itr = m_objectArray.begin();
@@ -115,16 +115,16 @@ public:
 		}
 	}
 
-	/// ’Ç‰Á—\–ñ’†”z—ñæ“¾
+	/// è¿½åŠ äºˆç´„ä¸­é…åˆ—å–å¾—
 	ObjectArray& GetRegistOrderObjectArray() { return m_registerList; }
 
-	/// íœ—\–ñ’†”z—ñæ“¾
+	/// å‰Šé™¤äºˆç´„ä¸­é…åˆ—å–å¾—
 	ObjectArray& GetUnegistOrderObjectArray() { return m_unregisterList; }
 
-	/// ”z—ñæ“¾
+	/// é…åˆ—å–å¾—
 	ObjectArray& GetObjectArray() { return m_objectArray; }
 
-	/// ‚·‚×‚ÄƒNƒŠƒA (I—¹ˆ——pBClear() ‚ğŒÄ‚ÔƒXƒŒƒbƒhˆÈŠO‚Í’â~‚µ‚Ä‚¢‚é‚±‚Æ)
+	/// ã™ã¹ã¦ã‚¯ãƒªã‚¢ (çµ‚äº†å‡¦ç†ç”¨ã€‚Clear() ã‚’å‘¼ã¶ã‚¹ãƒ¬ãƒƒãƒ‰ä»¥å¤–ã¯åœæ­¢ã—ã¦ã„ã‚‹ã“ã¨)
 	void Clear()
 	{
 		typename ObjectArray::iterator itr, end;

@@ -1,4 +1,4 @@
-
+Ôªø
 #include "Internal.h"
 #include <Lumino/Profiler.h>
 
@@ -78,7 +78,7 @@ int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 //-----------------------------------------------------------------------------
 void Profiler::SetBaseFrameRate(int group, float baseFrameRate)
 {
-	m_groups[group]->LimitElapsedTime = (1.0 / baseFrameRate) * 1000 * 1000 * 1000;	// ns íPà 
+	m_groups[group]->LimitElapsedTime = (1.0 / baseFrameRate) * 1000 * 1000 * 1000;	// ns Âçò‰Ωç
 }
 
 //-----------------------------------------------------------------------------

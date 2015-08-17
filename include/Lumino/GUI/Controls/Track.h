@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../UIElement.h"
 #include "ButtonBase.h"
@@ -11,7 +11,7 @@ namespace GUI
 
 /**
 	@brief
-	@note	Value ‚Íƒrƒ…[ƒTƒCƒY (ƒsƒNƒZƒ‹’PˆÊ)
+	@note	Value ã¯ãƒ“ãƒ¥ãƒ¼ã‚µã‚¤ã‚º (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½)
 */
 class Track
 	: public Control
@@ -19,13 +19,13 @@ class Track
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Track);
 public:
-	LN_PROPERTY(float,			ValueProperty);				///< Value ƒvƒƒpƒeƒB‚Ì¯•Êq
-	LN_PROPERTY(float,			MinimumProperty);			///< Minimum ƒvƒƒpƒeƒB‚Ì¯•Êq
-	LN_PROPERTY(float,			MaximumProperty);			///< Maximum ƒvƒƒpƒeƒB‚Ì¯•Êq
-	LN_PROPERTY(Orientation,	OrientationProperty);		///< Orientation ƒvƒƒpƒeƒB‚Ì¯•Êq
-	LN_PROPERTY(ButtonBase*,	DecreaseButtonProperty);	///< DecreaseButton ƒvƒƒpƒeƒB‚Ì¯•Êq
-	LN_PROPERTY(Thumb*,			ThumbProperty);				///< Thumb ƒvƒƒpƒeƒB‚Ì¯•Êq
-	LN_PROPERTY(ButtonBase*,	IncreaseButtonProperty);	///< IncreaseButton ƒvƒƒpƒeƒB‚Ì¯•Êq
+	LN_PROPERTY(float,			ValueProperty);				///< Value ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	LN_PROPERTY(float,			MinimumProperty);			///< Minimum ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	LN_PROPERTY(float,			MaximumProperty);			///< Maximum ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	LN_PROPERTY(Orientation,	OrientationProperty);		///< Orientation ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	LN_PROPERTY(ButtonBase*,	DecreaseButtonProperty);	///< DecreaseButton ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	LN_PROPERTY(Thumb*,			ThumbProperty);				///< Thumb ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	LN_PROPERTY(ButtonBase*,	IncreaseButtonProperty);	///< IncreaseButton ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
 
 public:
 	static TrackPtr Create();
@@ -33,52 +33,52 @@ public:
 	Track(GUIManager* manager);
 	virtual ~Track();
 
-	/// ƒXƒNƒ[ƒ‹ˆÊ’u‚É‘Î‚·‚é’l‚ğİ’è‚µ‚Ü‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã«å¯¾ã™ã‚‹å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetValue(float value) { m_value = value; }
 
-	/// ƒXƒNƒ[ƒ‹ˆÊ’u‚É‘Î‚·‚é’l‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í 0 ‚Å‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã«å¯¾ã™ã‚‹å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 0 ã§ã™ã€‚
 	float GetValue() const { return m_value; }
 
-	/// w’è‰Â”\‚ÈÅ¬’l‚ğİ’è‚µ‚Ü‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å°å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetMinimum(float value) { m_minimum = value; }
 
-	/// w’è‰Â”\‚ÈÅ¬’l‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í 0 ‚Å‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å°å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 0 ã§ã™ã€‚
 	float GetMinimum() const { return m_minimum; }
 
-	/// w’è‰Â”\‚ÈÅ‘å’l‚ğİ’è‚µ‚Ü‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å¤§å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetMaximum(float value) { m_maximum = value; }
 
-	/// w’è‰Â”\‚ÈÅ‘å’l‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í 1 ‚Å‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å¤§å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 1 ã§ã™ã€‚
 	float GetMaximum() const { return m_maximum; }
 
-	/// Track ‚Ì•ûŒü‚ğw’è‚µ‚Ü‚·B
+	/// Track ã®æ–¹å‘ã‚’æŒ‡å®šã—ã¾ã™ã€‚
 	void SetOrientation(Orientation orientation) { m_orientation = orientation; }
 
-	/// Track ‚Ì•ûŒü‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í Orientation::Horizontal ‚Å‚·B
+	/// Track ã®æ–¹å‘ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ Orientation::Horizontal ã§ã™ã€‚
 	Orientation GetOrientation() const { return m_orientation; }
 
-	/// ’l‚ğŒ¸­‚³‚¹‚é Button ƒRƒ“ƒgƒ[ƒ‹‚ğİ’è‚µ‚Ü‚·B
+	/// å€¤ã‚’æ¸›å°‘ã•ã›ã‚‹ Button ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetDecreaseButton(ButtonBase* button);
 
-	/// ’l‚ğŒ¸­‚³‚¹‚é Button ƒRƒ“ƒgƒ[ƒ‹‚ğæ“¾‚µ‚Ü‚·B
+	/// å€¤ã‚’æ¸›å°‘ã•ã›ã‚‹ Button ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’å–å¾—ã—ã¾ã™ã€‚
 	ButtonBase* GetDecreaseButton() const{ return m_decreaseButton; }
 
-	/// ’l‚ğ‘€ì‚·‚é Thumb ƒRƒ“ƒgƒ[ƒ‹‚ğæ“¾‚µ‚Ü‚·B
+	/// å€¤ã‚’æ“ä½œã™ã‚‹ Thumb ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’å–å¾—ã—ã¾ã™ã€‚
 	Thumb* GetThumb() const { return m_thumb; }
 
-	/// ’l‚ğ‘€ì‚·‚é Thumb ƒRƒ“ƒgƒ[ƒ‹‚ğİ’è‚µ‚Ü‚·B
+	/// å€¤ã‚’æ“ä½œã™ã‚‹ Thumb ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetThumb(Thumb* thumb);
 
-	/// ’l‚ğ‘‰Á‚³‚¹‚é Button ƒRƒ“ƒgƒ[ƒ‹‚ğİ’è‚µ‚Ü‚·B
+	/// å€¤ã‚’å¢—åŠ ã•ã›ã‚‹ Button ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetIncreaseButton(ButtonBase* button);
 
-	/// ’l‚ğ‘‰Á‚³‚¹‚é Button ƒRƒ“ƒgƒ[ƒ‹‚ğæ“¾‚µ‚Ü‚·B
+	/// å€¤ã‚’å¢—åŠ ã•ã›ã‚‹ Button ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’å–å¾—ã—ã¾ã™ã€‚
 	ButtonBase* GetIncreaseButton() const { return m_increaseButton; }
 
-	/// ƒXƒNƒ[ƒ‹‰Â”\‚ÈƒRƒ“ƒeƒ“ƒc‚Ì’†‚Å•\¦‚³‚ê‚é•”•ª‚ÌƒTƒCƒY‚ğİ’è‚µ‚Ü‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«å¯èƒ½ãªã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­ã§è¡¨ç¤ºã•ã‚Œã‚‹éƒ¨åˆ†ã®ã‚µã‚¤ã‚ºã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetViewportSize(float size) { m_viewportSize = size; }
 
-	/// ƒXƒNƒ[ƒ‹‰Â”\‚ÈƒRƒ“ƒeƒ“ƒc‚Ì’†‚Å•\¦‚³‚ê‚é•”•ª‚ÌƒTƒCƒY‚ğæ“¾‚µ‚Ü‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«å¯èƒ½ãªã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­ã§è¡¨ç¤ºã•ã‚Œã‚‹éƒ¨åˆ†ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚
 	float GetViewportSize() const { return m_viewportSize; }
 
 public:
@@ -118,7 +118,7 @@ private:
 	float				m_viewportSize;
 	float				m_density;
 #if 0
-	float				m_dragStartValue;	///< ƒhƒ‰ƒbƒOŠJn‚Ì m_value
+	float				m_dragStartValue;	///< ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹æ™‚ã® m_value
 #endif
 
 	//Delegate01

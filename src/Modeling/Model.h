@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/IO/PathName.h>
 #include "../Animation/Animator.h"
@@ -21,32 +21,32 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(ModelManager* manager, const PathName& filePath);
 
-	/// ‚±‚Ìƒ‚ƒfƒ‹‚É‘Î‚·‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ğs‚¤ƒNƒ‰ƒX‚Ìæ“¾
+	/// ã“ã®ãƒ¢ãƒ‡ãƒ«ã«å¯¾ã™ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã®å–å¾—
 	Animation::Animator* GetAnimator() { return m_animator; }
 
-	/// ƒ{[ƒ“s—ñ‚ğAƒ‹[ƒgƒ{[ƒ“‚©‚çŠK‘w“I‚ÉXV‚·‚é
-	/// (ƒAƒjƒ[ƒVƒ‡ƒ““K—pŒã‚ÉŒÄ‚Ño‚·)
+	/// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’ã€ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ã‹ã‚‰éšå±¤çš„ã«æ›´æ–°ã™ã‚‹
+	/// (ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é©ç”¨å¾Œã«å‘¼ã³å‡ºã™)
 	void UpdateBoneTransformHierarchy();
 
-	/// ƒXƒLƒjƒ“ƒO‚Ég—p‚·‚éÅIƒ{[ƒ“s—ñ‚Ìì¬
+	/// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«ä½¿ç”¨ã™ã‚‹æœ€çµ‚ãƒœãƒ¼ãƒ³è¡Œåˆ—ã®ä½œæˆ
 	void UpdateSkinningMatrices();
 
-	/// ƒXƒLƒjƒ“ƒOs—ñ”z—ñ‚Ìæ“¾ (—v‘f”‚Í—v‘f”‚Íƒ{[ƒ“”B‚±‚ê‚ğ‚»‚Ì‚Ü‚ÜƒXƒLƒjƒ“ƒOƒeƒNƒXƒ`ƒƒ‚É‘‚«‚ß‚é)
+	/// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—é…åˆ—ã®å–å¾— (è¦ç´ æ•°ã¯è¦ç´ æ•°ã¯ãƒœãƒ¼ãƒ³æ•°ã€‚ã“ã‚Œã‚’ãã®ã¾ã¾ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«æ›¸ãè¾¼ã‚ã‚‹)
 	Matrix* GetSkinningMatrices() { return m_skinningMatrices; }
 
-	/// ƒXƒLƒjƒ“ƒOs—ñ”z—ñ‚ğ‘‚«‚ñ‚¾ƒeƒNƒXƒ`ƒƒ‚Ìæ“¾
+	/// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—é…åˆ—ã‚’æ›¸ãè¾¼ã‚“ã ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å–å¾—
 	Graphics::Texture* GetSkinningMatricesTexture() { return m_skinningMatricesTexture; }
 
-	/// ƒTƒuƒZƒbƒg”‚Ìæ“¾
+	/// ã‚µãƒ–ã‚»ãƒƒãƒˆæ•°ã®å–å¾—
 	int GetSubsetCount() const;
 
-	/// ƒ}ƒeƒŠƒAƒ‹æ“¾
+	/// ãƒãƒ†ãƒªã‚¢ãƒ«å–å¾—
 	const Graphics::Material& GetMaterial(int subsetIndex) const;
 
-	/// ƒTƒuƒZƒbƒg•`‰æ
+	/// ã‚µãƒ–ã‚»ãƒƒãƒˆæç”»
 	void DrawSubset(int subsetIndex);
 
 protected:
@@ -56,11 +56,11 @@ protected:
 private:
 	ModelManager*				m_manager;
 	RefPtr<ModelCore>			m_modelCore;
-	RefPtr<Animation::Animator>	m_animator;		// TODO: ƒ{[ƒ“ƒAƒjƒ‚Æ•\îƒAƒjƒ‚Í•ª‚¯‚é‚×‚«‚©‚àH
-	ModelBoneList				m_boneList;					///< ‘Sƒ{[ƒ“ƒŠƒXƒg
-	ModelBoneList				m_rootBoneList;				///< ƒ‹[ƒgƒ{[ƒ“ƒŠƒXƒg (e‚ğ‚½‚È‚¢ƒ{[ƒ“ƒŠƒXƒg)
-	Matrix*						m_skinningMatrices;			///< ƒLƒjƒ“ƒO‚Ég—p‚·‚éÅIƒ{[ƒ“s—ñ (—v‘f”‚Íƒ{[ƒ“”)
-	RefPtr<Graphics::Texture>	m_skinningMatricesTexture;	///< Texture fetch ‚É‚æ‚é GPU ƒXƒLƒjƒ“ƒO—p‚ÌƒeƒNƒXƒ`ƒƒ
+	RefPtr<Animation::Animator>	m_animator;		// TODO: ãƒœãƒ¼ãƒ³ã‚¢ãƒ‹ãƒ¡ã¨è¡¨æƒ…ã‚¢ãƒ‹ãƒ¡ã¯åˆ†ã‘ã‚‹ã¹ãã‹ã‚‚ï¼Ÿ
+	ModelBoneList				m_boneList;					///< å…¨ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ
+	ModelBoneList				m_rootBoneList;				///< ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ (è¦ªã‚’æŒãŸãªã„ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ)
+	Matrix*						m_skinningMatrices;			///< ã‚­ãƒ‹ãƒ³ã‚°ã«ä½¿ç”¨ã™ã‚‹æœ€çµ‚ãƒœãƒ¼ãƒ³è¡Œåˆ— (è¦ç´ æ•°ã¯ãƒœãƒ¼ãƒ³æ•°)
+	RefPtr<Graphics::Texture>	m_skinningMatricesTexture;	///< Texture fetch ã«ã‚ˆã‚‹ GPU ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
 	
 };
 

@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include <Lumino/Base/RefObject.h>
@@ -19,7 +19,7 @@ namespace Lumino
 namespace Graphics { class ProfilerRenderer; }
 	
 /**
-	@brief		Lumino �A�v���P�[�V������\���܂��B
+	@brief		Lumino アプリケーションを表します。
 */
 class Application
 	: public RefObject
@@ -28,7 +28,7 @@ class Application
 public:
 
 	/**
-		@brief		Application �̃C���X�^���X���쐬���A�A�v���P�[�V���������������܂��B
+		@brief		Application のインスタンスを作成し、アプリケーションを初期化します。
 	*/
 	static Application* Create(const ApplicationConfigData& configData);
 
@@ -36,7 +36,7 @@ public:
 
 	/**
 		@brief		
-		@return		�A�v���P�[�V�����̏I�����v������Ă���ꍇ�� false ��Ԃ��܂��B
+		@return		アプリケーションの終了が要求されている場合は false を返します。
 	*/
 	bool UpdateFrame();
 
@@ -46,16 +46,16 @@ public:
 	void Render();
 
 	/**
-		@brief		�x�������Z�b�g���܂��B
-		@details	���\�[�X�̃��[�h���Ŏ��Ԃ������蒷�����ԍX�V�������s���Ȃ������ꍇ�A
-					UpdateFrame() �͖{������ׂ����Ԃɒǂ������Ƃ��Ă��΂炭�̊ԃm�[�E�F�C�g�Ńt���[���X�V���s���܂��B
-					���̊Ԃ̓A�v���P�[�V���������ɍ����ɓ��삵�Ă���悤�Ɍ����Ă��܂��܂��B
-					�����������邽�߁A���Ԃ̂����鏈���̒���ł��̊֐����ĂԂ��ƂŁAFPS ����ɒx�����������Ă��Ȃ����Ƃ�`���܂��B
+		@brief		遅延をリセットします。
+		@details	リソースのロード等で時間がかかり長い時間更新処理が行われなかった場合、
+					UpdateFrame() は本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
+					その間はアプリケーションが非常に高速に動作しているように見えてしまします。
+					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
 	*/
 	void ResetFrameDelay();
 
 	/**
-		@brief		�A�v���P�[�V�����̏I�����v������Ă��邩���m�F���܂��B
+		@brief		アプリケーションの終了が要求されているかを確認します。
 	*/
 	bool IsEndRequested() const { return m_endRequested; }
 

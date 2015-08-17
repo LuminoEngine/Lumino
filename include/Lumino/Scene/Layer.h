@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Texture.h>
 #include "Common.h"
@@ -10,7 +10,7 @@ namespace Scene
 {
 
 /**
-	@brief		ƒŒƒCƒ„[‚ÌŠî–{ƒNƒ‰ƒX‚Å‚·B
+	@brief		ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Layer
 	: public RefObject
@@ -21,7 +21,7 @@ protected:
 };
 
 /**
-	@brief		ƒV[ƒ“ƒOƒ‰ƒt‚Ìƒm[ƒhƒcƒŠ[‚ğ•`‰æ‚·‚éƒŒƒCƒ„[‚Å‚·B
+	@brief		ã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•ã®ãƒãƒ¼ãƒ‰ãƒ„ãƒªãƒ¼ã‚’æç”»ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ã§ã™ã€‚
 */
 class DrawingLayer
 	: public Layer
@@ -29,23 +29,23 @@ class DrawingLayer
 public:
 
 	/**
-		@brief		‚±‚ÌƒŒƒCƒ„[‚ª•`‰æ‚·‚éƒm[ƒh‚ğw’è‚µ‚Ü‚·B
-		@details	‚±‚ÌƒŒƒCƒ„[‚É‚Íw’è‚µ‚½ƒm[ƒh‚ÆA‘S‚Ä‚Ìqƒm[ƒh‚ª•`‰æ‚³‚ê‚Ü‚·B
+		@brief		ã“ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæç”»ã™ã‚‹ãƒãƒ¼ãƒ‰ã‚’æŒ‡å®šã—ã¾ã™ã€‚
+		@details	ã“ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ã¯æŒ‡å®šã—ãŸãƒãƒ¼ãƒ‰ã¨ã€å…¨ã¦ã®å­ãƒãƒ¼ãƒ‰ãŒæç”»ã•ã‚Œã¾ã™ã€‚
 	*/
 	virtual void SetRenderingRootNode(SceneNode* node) = 0;
 
 	/**
-		@brief		‚±‚ÌƒŒƒCƒ„[‚ª•`‰æ‚·‚éƒm[ƒh‚ğæ“¾‚µ‚Ü‚·B
+		@brief		ã“ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæç”»ã™ã‚‹ãƒãƒ¼ãƒ‰ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	virtual SceneNode* GetRenderingRootNode() const = 0;
 
 	/**
-		@brief		‚±‚ÌƒŒƒCƒ„[‚Ì•`‰æ‚Ég—p‚·‚é‹“_‚ğİ’è‚µ‚Ü‚·B
+		@brief		ã“ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æç”»ã«ä½¿ç”¨ã™ã‚‹è¦–ç‚¹ã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	virtual void SetCamera(Camera* camera) = 0;
 
 	/**
-		@brief		‚±‚ÌƒŒƒCƒ„[‚Ì•`‰æ‚Ég—p‚·‚é‹“_‚ğæ“¾‚µ‚Ü‚·B
+		@brief		ã“ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æç”»ã«ä½¿ç”¨ã™ã‚‹è¦–ç‚¹ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	virtual Camera* GetCamera() const = 0;
 

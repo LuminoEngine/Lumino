@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Common.h"
@@ -8,15 +8,15 @@ namespace Lumino
 namespace Physics
 {
 
-/// ÚG“_î•ñ
+/// æ¥è§¦ç‚¹æƒ…å ±
 struct ContactInfo
 {
-	Vector3		Normal;			///< ÚG“_–@ü
-	Vector3		Position;		///< ÚG“_ˆÊ’u
-	BodyBase*	TargetBody;		///< ÚGƒ{ƒfƒB
+	Vector3		Normal;			///< æ¥è§¦ç‚¹æ³•ç·š
+	Vector3		Position;		///< æ¥è§¦ç‚¹ä½ç½®
+	BodyBase*	TargetBody;		///< æ¥è§¦ãƒœãƒ‡ã‚£
 };
 
-/// Šeí Body ‚Ìƒx[ƒXƒNƒ‰ƒX
+/// å„ç¨® Body ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹
 class BodyBase
     : public RefObject
 {
@@ -29,29 +29,29 @@ public:
 
 public:
 
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	void Create(PhysicsManager* manager, btCollisionObject* obj);
 
-	/// í—Ş
+	/// ç¨®é¡
 	virtual BodyType GetBodyType() const = 0;
 
-	/// ÚG“_î•ñ‚ÌƒŠƒXƒg
+	/// æ¥è§¦ç‚¹æƒ…å ±ã®ãƒªã‚¹ãƒˆ
 	const ContactInfoList& GetContactInfoList() const { return m_contactList; }
 
-	/// ƒ†[ƒU[ƒf[ƒ^‚Ìİ’è
+	/// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
 	void SetUserData(void* data) { m_userData = data; }
 
-	/// ƒ†[ƒU[ƒf[ƒ^‚Ìæ“¾
+	/// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ‡ãƒ¼ã‚¿ã®å–å¾—
 	void* GetUserData() const { return m_userData; }
 
 public:	// internal
-	///// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“XV’¼‘O‚Ìˆ—
+	///// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°ç›´å‰ã®å‡¦ç†
 	//virtual void preUpdate() {}
 
-	///// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“XV’¼Œã‚Ìˆ—
+	///// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°ç›´å¾Œã®å‡¦ç†
 	//virtual void postUpdate() {}
 
-	/// ƒfƒoƒbƒO—p‚ÌŒ`ó•`‰æ
+	/// ãƒ‡ãƒãƒƒã‚°ç”¨ã®å½¢çŠ¶æç”»
 	virtual void DrawDebugShape(IDebugRenderer* renderer) {}
 
 	void ClearContactList() { m_contactList.Clear(); }

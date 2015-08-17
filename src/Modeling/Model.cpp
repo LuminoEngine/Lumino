@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/Renderer.h>
 #include "ModelManager.h"
@@ -43,16 +43,16 @@ void Model::Create(ModelManager* manager, const PathName& filePath)
 	m_modelCore.Attach(manager->CreateModelCore(filePath));
 
 	//---------------------------------------------------------
-	// Bone ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»
+	// Bone ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–
 	int boneCount = m_modelCore->Bones.GetCount();
 	m_boneList.Resize(boneCount);
-	// ‚Ü‚¸‚Í Create ‚·‚éB
+	// ã¾ãšã¯ Create ã™ã‚‹ã€‚
 	for (int i = 0; i < boneCount; i++)
 	{
 		m_boneList[i] = LN_NEW ModelBone();
 		m_boneList[i]->Create(m_modelCore->Bones[i]);
 	}
-	// Ÿ‚Éq‚Æe‚ğŒq‚°‚é
+	// æ¬¡ã«å­ã¨è¦ªã‚’ç¹‹ã’ã‚‹
 	for (int i = 0; i < boneCount; i++)
 	{
 		int parentIndex = m_modelCore->Bones[i]->ParentBoneIndex;
@@ -60,13 +60,13 @@ void Model::Create(ModelManager* manager, const PathName& filePath)
 			m_boneList[parentIndex]->AddChildBone(m_boneList[i]);
 		}
 		else {
-			m_rootBoneList.Add(m_boneList[i]);	// e‚ª‚¢‚È‚¢Bƒ‹[ƒgƒ{[ƒ“‚Æ‚µ‚ÄŠo‚¦‚Ä‚¨‚­
+			m_rootBoneList.Add(m_boneList[i]);	// è¦ªãŒã„ãªã„ã€‚ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ã¨ã—ã¦è¦šãˆã¦ãŠã
 		}
 	}
 	m_skinningMatrices = LN_NEW Matrix[boneCount];
 	m_skinningMatricesTexture.Attach(Graphics::Texture::Create(Size(4, boneCount), Graphics::TextureFormat_R32G32B32A32_Float, 1, m_manager->GetGraphicsManager()));
 
-	// ƒAƒjƒ[ƒVƒ‡ƒ“ŠÇ—
+	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†
 	m_animator.Attach(LN_NEW Animation::Animator());
 	m_animator->Create(this);
 }
@@ -87,39 +87,39 @@ void Model::UpdateBoneTransformHierarchy()
 //-----------------------------------------------------------------------------
 void Model::UpdateSkinningMatrices()
 {
-	// ƒXƒLƒjƒ“ƒOs—ñ‚Ìì¬
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°è¡Œåˆ—ã®ä½œæˆ
 	for (int i = 0; i < m_boneList.GetCount(); i++)
 	{
 		/*
-		‰Šúp¨‚ÍAƒXƒLƒjƒ“ƒO‚µ‚È‚­‚Ä‚à“¯‚¶p¨B
-		‚Â‚Ü‚èA’¸“_ƒXƒLƒjƒ“ƒO‚Å‰Šúp¨‚É‚µ‚½‚¢‚Æ‚«‚Í Matrix::Identity ‚Ìƒ{[ƒ“s—ñ‚ğ“n‚·B
+		åˆæœŸå§¿å‹¢ã¯ã€ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã—ãªãã¦ã‚‚åŒã˜å§¿å‹¢ã€‚
+		ã¤ã¾ã‚Šã€é ‚ç‚¹ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã§åˆæœŸå§¿å‹¢ã«ã—ãŸã„ã¨ãã¯ Matrix::Identity ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’æ¸¡ã™ã€‚
 
-		ƒ{[ƒ“‚ÍÅ‰‚©‚çƒIƒtƒZƒbƒg‚ª“ü‚Á‚Ä‚é‚¯‚ÇA
-		‚»‚ê‚ğƒXƒLƒjƒ“ƒO‚É“K—p‚·‚é‚Æp¨‚ª•ö‚ê‚Ä‚µ‚Ü‚¤B
-		‚»‚Ì‚½‚ßA‰ŠúƒIƒtƒZƒbƒg‚ğ‘Å‚¿Á‚·ˆ—‚ª•K—vB‚»‚ê‚ª GetInitialTranstormInv()B
+		ãƒœãƒ¼ãƒ³ã¯æœ€åˆã‹ã‚‰ã‚ªãƒ•ã‚»ãƒƒãƒˆãŒå…¥ã£ã¦ã‚‹ã‘ã©ã€
+		ãã‚Œã‚’ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«é©ç”¨ã™ã‚‹ã¨å§¿å‹¢ãŒå´©ã‚Œã¦ã—ã¾ã†ã€‚
+		ãã®ãŸã‚ã€åˆæœŸã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’æ‰“ã¡æ¶ˆã™å‡¦ç†ãŒå¿…è¦ã€‚ãã‚ŒãŒ GetInitialTranstormInv()ã€‚
 
-		ID3DXSkinInfo::GetBoneOffsetMatrix() ‚Å
-		æ“¾‚Å‚«‚és—ñ (SkinnedMeshƒTƒ“ƒvƒ‹‚Ì D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) ‚ª
-		‚±‚ê‚É‚ ‚½‚é‚à‚Ì‚Á‚Û‚¢B
-		ƒTƒ“ƒvƒ‹‚Å‚à•`‰æ‚Ì’¼‘O‚É‘ÎÛƒ{[ƒ“s—ñ‚É‚±‚Ìs—ñ‚ğæZ‚µ‚Ä‚¢‚éB
+		ID3DXSkinInfo::GetBoneOffsetMatrix() ã§
+		å–å¾—ã§ãã‚‹è¡Œåˆ— (SkinnedMeshã‚µãƒ³ãƒ—ãƒ«ã® D3DXMESHCONTAINER_DERIVED::pBoneOffsetMatrices) ãŒ
+		ã“ã‚Œã«ã‚ãŸã‚‹ã‚‚ã®ã£ã½ã„ã€‚
+		ã‚µãƒ³ãƒ—ãƒ«ã§ã‚‚æç”»ã®ç›´å‰ã«å¯¾è±¡ãƒœãƒ¼ãƒ³è¡Œåˆ—ã«ã“ã®è¡Œåˆ—ã‚’ä¹—ç®—ã—ã¦ã„ã‚‹ã€‚
 		*/
 		m_skinningMatrices[i] = m_boneList[i]->GetCore()->GetInitialTranstormInv();
 		m_skinningMatrices[i] *= m_boneList[i]->GetCombinedMatrix();
 	}
 
-	// ƒXƒLƒjƒ“ƒOƒeƒNƒXƒ`ƒƒXV
+	// ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ãƒ†ã‚¯ã‚¹ãƒãƒ£æ›´æ–°
 	if (!m_skinningMatricesTexture.IsNull())
 	{
 		m_skinningMatricesTexture->SetSubData(Point(0, 0), m_skinningMatrices);
 	}
 
 
-	// ‘S‚Ä‚Ìƒ[ƒJƒ‹ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚ğƒŠƒZƒbƒg‚·‚é
-	//		ƒŠƒZƒbƒg‚µ‚Ä‚¨‚©‚È‚¢‚ÆAIK‚Å–â‘è‚ªo‚éB
-	//		(IK‚Í‚»‚Ì“_‚ÌLocalTransform‚É‘Î‚µ‚Äˆ—‚ğs‚¤‚½‚ßA‰ñ“]Šp“x‚ª‚Ç‚ñ‚Ç‚ñ‘‚¦‚½‚è‚·‚é)
-	//		‚È‚¨Aˆê˜A‚ÌXV‚ÌÅŒã‚Ås‚Á‚Ä‚¢‚é‚Ì‚ÍAƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç‚ÌXV‚ğ
-	//		ŠO•”‚Ås‚Á‚Ä‚¢‚é‚½‚ßB
-	// TODO: ‚Å‚«‚ê‚Îˆê˜A‚Ìˆ—‚Ì’†‚Å•K‚¸’Ê‚é‚Æ‚±‚ë‚ÉˆÚ“®‚µ‚½‚¢
+	// å…¨ã¦ã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
+	//		ãƒªã‚»ãƒƒãƒˆã—ã¦ãŠã‹ãªã„ã¨ã€IKã§å•é¡ŒãŒå‡ºã‚‹ã€‚
+	//		(IKã¯ãã®æ™‚ç‚¹ã®LocalTransformã«å¯¾ã—ã¦å‡¦ç†ã‚’è¡Œã†ãŸã‚ã€å›è»¢è§’åº¦ãŒã©ã‚“ã©ã‚“å¢—ãˆãŸã‚Šã™ã‚‹)
+	//		ãªãŠã€ä¸€é€£ã®æ›´æ–°ã®æœ€å¾Œã§è¡Œã£ã¦ã„ã‚‹ã®ã¯ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®æ›´æ–°ã‚’
+	//		å¤–éƒ¨ã§è¡Œã£ã¦ã„ã‚‹ãŸã‚ã€‚
+	// TODO: ã§ãã‚Œã°ä¸€é€£ã®å‡¦ç†ã®ä¸­ã§å¿…ãšé€šã‚‹ã¨ã“ã‚ã«ç§»å‹•ã—ãŸã„
 	LN_FOREACH(ModelBone* obj, m_boneList) {
 		obj->ResetLocalTransform();
 	}

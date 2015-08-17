@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Graphics/Font.h"
 #include "Texture.h"
@@ -13,8 +13,8 @@ namespace Graphics
 
 enum BrushWrapMode
 {
-	BrushWrapMode_Stretch = 0,	///< ƒCƒ[ƒW‘S‘Ì‚ðˆø‚«‰„‚Î‚·
-	BrushWrapMode_Tile,			///< ƒCƒ[ƒW‚ð•À‚×‚Ä•\Ž¦‚·‚é
+	BrushWrapMode_Stretch = 0,	///< ã‚¤ãƒ¡ãƒ¼ã‚¸å…¨ä½“ã‚’å¼•ãå»¶ã°ã™
+	BrushWrapMode_Tile,			///< ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä¸¦ã¹ã¦è¡¨ç¤ºã™ã‚‹
 
 };
 
@@ -26,7 +26,7 @@ public:
 	virtual ~Brush();
 
 public:
-	virtual BrushType GetType() const = 0;	// TODO: ”ñvirtual ‚É‚µ‚½‚¢
+	virtual BrushType GetType() const = 0;	// TODO: éžvirtual ã«ã—ãŸã„
 };
 
 
@@ -58,7 +58,7 @@ private:
 	ColorF	m_color;
 };
 
-/// Bitmap ‚Íƒ\ƒtƒg“I‚È•`‰æˆ—‚ðs‚¤‚½‚ßABitmapBrush ‚Æ‚¢‚¤–¼‘O‚Í‚Â‚©‚í‚È‚¢
+/// Bitmap ã¯ã‚½ãƒ•ãƒˆçš„ãªæç”»å‡¦ç†ã‚’è¡Œã†ãŸã‚ã€BitmapBrush ã¨ã„ã†åå‰ã¯ã¤ã‹ã‚ãªã„
 class TextureBrush
 	: public Brush
 {
@@ -82,7 +82,7 @@ public:
 
 private:
 	RefPtr<Texture>		m_texture;
-	Rect				m_srcRect;	///< ‰Šú’l‚Í (0, 0, INT_MAX, INT_MAX) ‚ÅA‘S‘Ì‚ð“]‘—‚·‚é‚±‚Æ‚ð•\‚·
+	Rect				m_srcRect;	///< åˆæœŸå€¤ã¯ (0, 0, INT_MAX, INT_MAX) ã§ã€å…¨ä½“ã‚’è»¢é€ã™ã‚‹ã“ã¨ã‚’è¡¨ã™
 	BrushWrapMode		m_wrapMode;
 };
 
@@ -109,12 +109,12 @@ private:
 
 private:
 	RefPtr<Texture>		m_texture;
-	Rect				m_srcRect;	///< ‰Šú’l‚Í (0, 0, INT_MAX, INT_MAX) ‚ÅA‘S‘Ì‚ð“]‘—‚·‚é‚±‚Æ‚ð•\‚·
+	Rect				m_srcRect;	///< åˆæœŸå€¤ã¯ (0, 0, INT_MAX, INT_MAX) ã§ã€å…¨ä½“ã‚’è»¢é€ã™ã‚‹ã“ã¨ã‚’è¡¨ã™
 };
 
 //struct StringLayout
 //{
-//	TextAlignment	Alignment;	///< •¶Žš—ñ‚Ì…•½•ûŒü‚Ì”z’u
+//	TextAlignment	Alignment;	///< æ–‡å­—åˆ—ã®æ°´å¹³æ–¹å‘ã®é…ç½®
 //
 //	static StringLayout	CenterAlignment;
 //
@@ -158,7 +158,7 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetSolidColor(const ColorF& color);
-	void SetTexture(Texture* texture, const Rect& srcRect);	///< ƒ†[ƒeƒBƒŠƒeƒBBTextureBrush ‚ðƒZƒbƒg‚·‚é
+	void SetTexture(Texture* texture, const Rect& srcRect);	///< ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã€‚TextureBrush ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	void SetOpacity(float opacity);	// 0~1
 	void SetFont(Font* font) { m_currentFont = font; }
 
@@ -167,14 +167,14 @@ public:
 
 
 
-	//void DrawRectangle(const RectF& rect);	// TODO: •Ï‚¦‚é
+	//void DrawRectangle(const RectF& rect);	// TODO: å¤‰ãˆã‚‹
 	void DrawFrameRectangle(const RectF& rect, float frameWidth);
 
-	/// ƒZƒbƒg‚³‚ê‚Ä‚¢‚é Brush ‚Í‰e‹¿‚µ‚Ü‚¹‚ñ
+	/// ã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ã‚‹ Brush ã¯å½±éŸ¿ã—ã¾ã›ã‚“
 	//void DrawTexture(const RectF& dstRect, Texture* texture, const Rect& srcRect);
 
 	void DrawGlyphRun(const Point& position, GlyphRun* glyphRun);
-	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);	// SetFont –³Ž‹
+	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);	// SetFont ç„¡è¦–
 
 	void DrawString(const String& str, const PointF& position);
 	void DrawString(const TCHAR* str, int length, const PointF& position);

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "Decorator.h"
@@ -9,7 +9,7 @@ namespace GUI
 {
 
 /**
-	@brief		Button ƒRƒ“ƒgƒ[ƒ‹‚ÌŠOŠÏ‚Å‚·B
+	@brief		Button ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å¤–è¦³ã§ã™ã€‚
 */
 class ButtonChrome
 	: public Decorator
@@ -31,10 +31,10 @@ public:
 	void SetMouseOver(bool value) { SetTypedPropertyValue<bool>(IsMouseOverProperty, value); }
 	bool IsMouseOver() const { return GetTypedPropertyValue<bool>(IsMouseOverProperty); }
 
-	/// ƒ{ƒ^ƒ“ƒCƒ[ƒW‚ÌŠO˜g‚Ì•‚ğİ’è‚µ‚Ü‚·B
+	/// ãƒœã‚¿ãƒ³ã‚¤ãƒ¡ãƒ¼ã‚¸ã®å¤–æ ã®å¹…ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetFrameWidth(float value) { SetTypedPropertyValue<float>(FrameWidthProperty, value); }
 
-	/// ƒ{ƒ^ƒ“ƒCƒ[ƒW‚ÌŠO˜g‚Ì•‚ğæ“¾‚µ‚Ü‚·B
+	/// ãƒœã‚¿ãƒ³ã‚¤ãƒ¡ãƒ¼ã‚¸ã®å¤–æ ã®å¹…ã‚’å–å¾—ã—ã¾ã™ã€‚
 	float GetFrameWidth() const { return GetTypedPropertyValue<float>(FrameWidthProperty); }
 
 public:
@@ -49,7 +49,7 @@ protected:
 private:
 	RefPtr<Graphics::TextureBrush>	m_brush;
 	RefPtr<Graphics::TextureBrush>	m_bgBrush;
-	float							m_frameWidth;	///< ˜g‚Ì• (•`‰æ‚Åg—p‚·‚é‚½‚ßƒpƒtƒH[ƒ}ƒ“ƒX‚ğl—¶‚µAGetValue() ‚Å‚Í‚È‚­ƒƒ“ƒo‚É‚Á‚Ä‚¨‚­)
+	float							m_frameWidth;	///< æ ã®å¹… (æç”»ã§ä½¿ç”¨ã™ã‚‹ãŸã‚ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ã‚’è€ƒæ…®ã—ã€GetValue() ã§ã¯ãªããƒ¡ãƒ³ãƒã«æŒã£ã¦ãŠã)
 	bool							m_isMouseOver;
 };
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/Property.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
@@ -32,7 +32,7 @@ StackPanel::StackPanel(GUIManager* manager)
 	: Panel(manager)
 {
 	std::is_class<int>();
-	// ƒvƒƒpƒeƒB‚Ì“o˜^
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®ç™»éŒ²
 //	LN_DEFINE_PROPERTY_ENUM(StackPanel, Orientation, OrientationProperty, &StackPanel::SetOrientation, &StackPanel::GetOrientation, Orientation::Horizontal);
 }
 
@@ -52,12 +52,12 @@ SizeF StackPanel::MeasureOverride(const SizeF& constraint)
 
 	if (m_orientation == Orientation::Horizontal)
 	{
-		// ‰¡‚É•À‚×‚éê‡A•‚Ì§ŒÀ‚ğİ‚¯‚È‚¢
+		// æ¨ªã«ä¸¦ã¹ã‚‹å ´åˆã€å¹…ã®åˆ¶é™ã‚’è¨­ã‘ãªã„
 		size.Width = std::numeric_limits<float>::infinity();
 	}
 	else
 	{
-		// c‚É•À‚×‚éê‡A‚‚³‚Ì§ŒÀ‚ğİ‚¯‚È‚¢
+		// ç¸¦ã«ä¸¦ã¹ã‚‹å ´åˆã€é«˜ã•ã®åˆ¶é™ã‚’è¨­ã‘ãªã„
 		size.Height = std::numeric_limits<float>::infinity();
 	}
 

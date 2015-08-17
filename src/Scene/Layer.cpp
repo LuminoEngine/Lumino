@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../Internal.h"
@@ -50,26 +50,26 @@ void DrawingLayer::PreRender(const SizeF& viewSize)
 	m_renderingNodeList.Clear();
 	m_renderingLightList.Clear();
 	
-	// ƒJƒƒ‰s—ñ‚ÌXV (TODO: ‚±‚±‚ÅXV‚·‚é‚ÆA•¡”ƒŒƒCƒ„[‚ª“¯‚¶ƒJƒƒ‰‚ðŽQÆ‚µ‚Ä‚¢‚éŽž‚É–³‘Ê‚ÈŒvŽZ‚É‚È‚é‚©‚à)
+	// ã‚«ãƒ¡ãƒ©è¡Œåˆ—ã®æ›´æ–° (TODO: ã“ã“ã§æ›´æ–°ã™ã‚‹ã¨ã€è¤‡æ•°ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒåŒã˜ã‚«ãƒ¡ãƒ©ã‚’å‚ç…§ã—ã¦ã„ã‚‹æ™‚ã«ç„¡é§„ãªè¨ˆç®—ã«ãªã‚‹ã‹ã‚‚)
 	m_camera->UpdateMatrices(viewSize);
 
-	// ƒVƒF[ƒ_‚ÌƒJƒƒ‰’PˆÊƒf[ƒ^‚ÌXV
-	//		TODO: ‚Æ‚è‚ ‚¦‚¸‘SƒVƒF[ƒ_XV‚µ‚Ä‚¢‚éB‚»‚ñ‚È‚É‚½‚­‚³‚ñ‚ÌƒVƒF[ƒ_‚ÍŽg‚í‚È‚¢‚¾‚ë‚¤‚Æ‚¢‚¤‘z’èB
-	//		‚à‚¿‚ë‚ñ”‚ª‘‚¦‚Ä‚­‚ê‚Î‚±‚Ì•Ó‚ªƒpƒtƒH[ƒ}ƒ“ƒX“I‚ÉƒNƒŠƒeƒBƒJƒ‹‚É‚È‚éB
-	//		‰ü‘PˆÄ‚Í‚ ‚é‚ªA‚Æ‚è‚ ‚¦‚¸B(SceneGraphManaer.cpp ŽQÆ)
+	// ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚«ãƒ¡ãƒ©å˜ä½ãƒ‡ãƒ¼ã‚¿ã®æ›´æ–°
+	//		TODO: ã¨ã‚Šã‚ãˆãšå…¨ã‚·ã‚§ãƒ¼ãƒ€æ›´æ–°ã—ã¦ã„ã‚‹ã€‚ãã‚“ãªã«ãŸãã•ã‚“ã®ã‚·ã‚§ãƒ¼ãƒ€ã¯ä½¿ã‚ãªã„ã ã‚ã†ã¨ã„ã†æƒ³å®šã€‚
+	//		ã‚‚ã¡ã‚ã‚“æ•°ãŒå¢—ãˆã¦ãã‚Œã°ã“ã®è¾ºãŒãƒ‘ãƒ•ã‚©ãƒ¼ãƒžãƒ³ã‚¹çš„ã«ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã«ãªã‚‹ã€‚
+	//		æ”¹å–„æ¡ˆã¯ã‚ã‚‹ãŒã€ã¨ã‚Šã‚ãˆãšã€‚(SceneGraphManaer.cpp å‚ç…§)
 	LN_FOREACH(MMEShader* shader, *m_manager->GetShaderList()) {
 		shader->UpdateCameraParams(m_camera, viewSize);
 	}
 
-	// ‚±‚ÌƒŒƒCƒ„[‚ÌƒJƒƒ‰‚ÉˆË‚éƒf[ƒ^‚ðXV‚·‚é (Ž‹Ž‘äƒJƒŠƒ“ƒO‚âƒJƒƒ‰‚©‚ç‚Ì‹——£‚ÌXV)
+	// ã“ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚«ãƒ¡ãƒ©ã«ä¾ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹ (è¦–éŒ˜å°ã‚«ãƒªãƒ³ã‚°ã‚„ã‚«ãƒ¡ãƒ©ã‹ã‚‰ã®è·é›¢ã®æ›´æ–°)
 	m_renderingRootNode->UpdateViewFlustumHierarchy(m_camera, &m_renderingNodeList, &m_renderingLightList);
 
-	// ƒ‰ƒCƒgs—ñ‚ÌXV
+	// ãƒ©ã‚¤ãƒˆè¡Œåˆ—ã®æ›´æ–°
 	LN_FOREACH(Light* light, m_renderingLightList) {
 		light->UpdateMatrices(viewSize);
 	}
 
-	// Z ƒ\[ƒgE—Dæ“xƒ\[ƒg
+	// Z ã‚½ãƒ¼ãƒˆãƒ»å„ªå…ˆåº¦ã‚½ãƒ¼ãƒˆ
 	std::stable_sort(m_renderingNodeList.begin(), m_renderingNodeList.end(), SceneNode::CmpZAndPrioritySort);
 }
 
@@ -84,7 +84,7 @@ void DrawingLayer::Render()
 	params.CurrentCamera = m_camera;
 	LN_FOREACH(RenderingPass* pass, *m_renderingPassList)
 	{
-		params.Pass = pass;	// TODO: ‚¢‚ç‚È‚¢‚©‚à
+		params.Pass = pass;	// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
 		LN_FOREACH(SceneNode* node, m_renderingNodeList)
 		{
 			pass->RenderNode(params, node);

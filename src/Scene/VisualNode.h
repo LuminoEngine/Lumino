@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Texture.h>
@@ -21,77 +21,77 @@ public:
 
 public:
 
-	/// ‰Â‹ó‘Ô‚Ìİ’è
+	/// å¯è¦–çŠ¶æ…‹ã®è¨­å®š
 	void SetVisible(bool visible) { m_isVisible = visible; }
 
-	/// ‰Â‹ó‘Ô‚Ì”»’è
+	/// å¯è¦–çŠ¶æ…‹ã®åˆ¤å®š
 	bool IsVisible() const { return m_isVisible; }
 
-	/// •s“§–¾“x‚Ìİ’è (0.0 ` 1.0)
+	/// ä¸é€æ˜åº¦ã®è¨­å®š (0.0 ï½ 1.0)
 	void SetOpacity(float opacity, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Opacity = opacity; }
 
-	/// •s“§–¾“x‚Ìæ“¾
+	/// ä¸é€æ˜åº¦ã®å–å¾—
 	float GetOpacity(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Opacity; }
 
-	/// æZF‚Ìİ’è
+	/// ä¹—ç®—è‰²ã®è¨­å®š
 	void SetColorScale(const Graphics::ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = color; }
 
-	/// æZF‚Ìæ“¾
+	/// ä¹—ç®—è‰²ã®å–å¾—
 	const Graphics::ColorF& GetColorScale(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale; }
 
-	/// ƒuƒŒƒ“ƒhƒJƒ‰[‚Ìİ’è
+	/// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚«ãƒ©ãƒ¼ã®è¨­å®š
 	void SetBlendColor(const Graphics::ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor = color; }
 
-	/// ƒuƒŒƒ“ƒhƒJƒ‰[‚Ìæ“¾
+	/// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚«ãƒ©ãƒ¼ã®å–å¾—
 	const Graphics::ColorF& GetBlendColor(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor; }
 
-	/// F’²‚Ìİ’è
+	/// è‰²èª¿ã®è¨­å®š
 	void SetTone(const Graphics::Tone& tone, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Tone = tone; }
 
-	/// F’²‚Ìæ“¾
+	/// è‰²èª¿ã®å–å¾—
 	const Graphics::Tone& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
 
-	/// UV •ÏŠ·s—ñ‚Ìİ’è
+	/// UV å¤‰æ›è¡Œåˆ—ã®è¨­å®š
 	void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
 
-	/// UV •ÏŠ·s—ñ‚Ìİ’è
+	/// UV å¤‰æ›è¡Œåˆ—ã®è¨­å®š
 	const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
 
-	/// ƒVƒF[ƒ_‚Ìİ’è
+	/// ã‚·ã‚§ãƒ¼ãƒ€ã®è¨­å®š
 	void SetShader(MMEShader* shader, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader = shader; }
 
-	/// ƒVƒF[ƒ_‚Ìæ“¾
+	/// ã‚·ã‚§ãƒ¼ãƒ€ã®å–å¾—
 	MMEShader* GetShader(int subsetIndex = -1) { return m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader; }
 
-	/// ‡¬•û–@‚Ìİ’è
+	/// åˆæˆæ–¹æ³•ã®è¨­å®š
 	void SetBlendMode(Graphics::BlendMode mode) { m_renderState.Blend = mode; }
 
-	/// ‡¬•û–@‚Ìæ“¾
+	/// åˆæˆæ–¹æ³•ã®å–å¾—
 	Graphics::BlendMode GetBlendMode() const { return m_renderState.Blend; }
 
 #if 0	// TODO:
-	/// [“xƒeƒXƒg‚Ì—LŒøİ’è
+	/// æ·±åº¦ãƒ†ã‚¹ãƒˆã®æœ‰åŠ¹è¨­å®š
 	void SetEnableDepthTest(bool flag) { m_renderState.DepthTest = flag; }
 
-	/// [“xƒeƒXƒg‚Ì—LŒø”»’è
+	/// æ·±åº¦ãƒ†ã‚¹ãƒˆã®æœ‰åŠ¹åˆ¤å®š
 	bool IsEnableDepthTest() const { return m_renderState.DepthTest; }
 
-	/// [“xWrite‚Ì—LŒøİ’è
+	/// æ·±åº¦Writeã®æœ‰åŠ¹è¨­å®š
 	void SetEnableDepthWrite(bool flag) { m_renderState.DepthWrite = flag; }
 
-	/// [“x‘‚«‚İ‚Ì—LŒø”»’è
+	/// æ·±åº¦æ›¸ãè¾¼ã¿ã®æœ‰åŠ¹åˆ¤å®š
 	bool IsEnableDepthWritet() const { return m_renderState.DepthWrite; }
 #endif
 
-	/// ƒJƒŠƒ“ƒO•û–@‚Ìİ’è
+	/// ã‚«ãƒªãƒ³ã‚°æ–¹æ³•ã®è¨­å®š
 	void SetCullingMode(Graphics::CullingMode mode) { m_renderState.Culling = mode; }
 
-	/// ƒJƒŠƒ“ƒO•û–@‚Ìæ“¾
+	/// ã‚«ãƒªãƒ³ã‚°æ–¹æ³•ã®å–å¾—
 	Graphics::CullingMode GetCullingMode() const { return m_renderState.Culling; }
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(SceneGraphManager* manager, int subsetCount);
 
 	const Graphics::RenderState& GetRenderState() const { return m_renderState; }
@@ -103,7 +103,7 @@ public:
 	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
 	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount);
 
-	/// ƒm[ƒh’PˆÊ‚Ì•`‰æî•ñ‚ÌXVB‚±‚ÌŒã‚·‚®ˆê˜A‚ÌƒTƒuƒZƒbƒg•`‰æ‚ªn‚Ü‚é
+	/// ãƒãƒ¼ãƒ‰å˜ä½ã®æç”»æƒ…å ±ã®æ›´æ–°ã€‚ã“ã®å¾Œã™ãä¸€é€£ã®ã‚µãƒ–ã‚»ãƒƒãƒˆæç”»ãŒå§‹ã¾ã‚‹
 	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
 
@@ -116,7 +116,7 @@ public:
 
 	virtual LightNodeList* GetAffectLightList() { return &m_affectLightList; }
 
-	/// ƒ‰ƒCƒgƒ\[ƒg—p‚Ì”äŠrŠÖ” (‹——£‚Æ—Dæ“x‚Åƒ\[ƒg)
+	/// ãƒ©ã‚¤ãƒˆã‚½ãƒ¼ãƒˆç”¨ã®æ¯”è¼ƒé–¢æ•° (è·é›¢ã¨å„ªå…ˆåº¦ã§ã‚½ãƒ¼ãƒˆ)
 	static bool CmpLightSort(const Light* left, const Light* right);
 
 protected:
@@ -125,11 +125,11 @@ protected:
 	friend class RenderingPass;
 	VisualNodeParams		m_visualNodeParams;
 
-	// ˆÈ‰º‚ÌƒvƒƒpƒeƒB‚ÍƒTƒuƒZƒbƒg’PˆÊ‚ÅŠÇ—‚µ‚È‚¢B
-	// ‚¢‚¸‚ê‚àA‚¢‚í‚ä‚éİ’è‚ÌŒp³‚ğl—¶‚·‚é•K—v‚ª‚ ‚é‚à‚ÌB
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚È‚ñ‚©‚ÍƒTƒuƒZƒbƒg’PˆÊ‚Åİ’è‚Å‚«‚é‚æ‚¤‚É‚·‚é‚±‚Æ‚à‰Â”\‚¾‚¯‚ÇA
-	// ÀÛ‚ÉƒTƒuƒZƒbƒg’PˆÊ‚Åİ’è‚µ‚½‚¢‚±‚Æ‚Á‚Ä‚ ‚é‚ÌH‚Á‚Äl‚¦‚é‚Æƒm[ƒh’PˆÊ‚Å‚¢‚¢‚Æv‚¤B
-	Graphics::RenderState	m_renderState;	///< ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg
+	// ä»¥ä¸‹ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¯ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã§ç®¡ç†ã—ãªã„ã€‚
+	// ã„ãšã‚Œã‚‚ã€ã„ã‚ã‚†ã‚‹è¨­å®šã®ç¶™æ‰¿ã‚’è€ƒæ…®ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã‚‚ã®ã€‚
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆãªã‚“ã‹ã¯ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã§è¨­å®šã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã“ã¨ã‚‚å¯èƒ½ã ã‘ã©ã€
+	// å®Ÿéš›ã«ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã§è¨­å®šã—ãŸã„ã“ã¨ã£ã¦ã‚ã‚‹ã®ï¼Ÿã£ã¦è€ƒãˆã‚‹ã¨ãƒãƒ¼ãƒ‰å˜ä½ã§ã„ã„ã¨æ€ã†ã€‚
+	Graphics::RenderState	m_renderState;	///< ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆ
 	bool					m_isVisible;
 
 	LightNodeList			m_affectLightList;

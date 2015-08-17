@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ItemsControl.h>
@@ -69,7 +69,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsControl);
 LN_PROPERTY_IMPLEMENT(ItemsControl, ControlTemplate*, ItemsPanelTemplateProperty, "ItemsPanelTemplate", m_itemsPanelTemplate, NULL, NULL);
 LN_PROPERTY_IMPLEMENT(ItemsControl, Style*, GroupStyleProperty, "GroupStyle", m_groupStyle, NULL, NULL);
 
-/*	Measure/Arrange ‚Íƒx[ƒX‚Ì Control ƒNƒ‰ƒX‚É”C‚¹‚é‚Ì‚Å•K—v‚È‚¢
+/*	Measure/Arrange ã¯ãƒ™ãƒ¼ã‚¹ã® Control ã‚¯ãƒ©ã‚¹ã«ä»»ã›ã‚‹ã®ã§å¿…è¦ãªã„
 */
 
 //-----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void ItemsControl::OnApplyTemplate(CombinedLocalResource* localResource)
 {
 	Control::OnApplyTemplate(localResource);
 
-	// m_itemsPanelTemplate ‚Æ m_visualItemsPresenter ‚Í•K‚¸‰½‚©‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+	// m_itemsPanelTemplate ã¨ m_visualItemsPresenter ã¯å¿…ãšä½•ã‹ãªã‘ã‚Œã°ãªã‚‰ãªã„
 	LN_THROW(m_itemsPanelTemplate != NULL, InvalidOperationException);
 	LN_THROW(m_visualItemsPresenter != NULL, InvalidOperationException);
 
@@ -149,7 +149,7 @@ void ItemsControl::PollingTemplateChildCreated(UIElement* newElement)
 ////-----------------------------------------------------------------------------
 //SizeF ItemsControl::MeasureOverride(const SizeF& constraint)
 //{
-//	// TODO ‚¿‚å‚Á‚Æ“K“–
+//	// TODO ã¡ã‚‡ã£ã¨é©å½“
 //	if (!m_visualChildren.IsEmpty()) {
 //		m_visualChildren[0]->MeasureLayout(constraint);
 //	}
@@ -161,7 +161,7 @@ void ItemsControl::PollingTemplateChildCreated(UIElement* newElement)
 ////-----------------------------------------------------------------------------
 //SizeF ItemsControl::ArrangeOverride(const SizeF& finalSize)
 //{
-//	// TODO ‚¿‚å‚Á‚Æ“K“–
+//	// TODO ã¡ã‚‡ã£ã¨é©å½“
 //	if (!m_visualChildren.IsEmpty()) {
 //		m_visualChildren[0]->ArrangeOverride(finalSize);
 //	}
@@ -175,7 +175,7 @@ void ItemsControl::Items_ListChanged(ListChangedEventArgs* e)
 {
 	if (e->Action == ListChangedAction::Add)
 	{
-		RefreshHostPanelItems();	// TODO: ’x‰„•]‰¿‚É‚µ‚½‚¢
+		RefreshHostPanelItems();	// TODO: é…å»¶è©•ä¾¡ã«ã—ãŸã„
 		//m_hostPanel->AddChild(e->NewItems.GetAtVariant(0));
 	}
 	else
@@ -196,7 +196,7 @@ void ItemsControl::OnItemGroupKeyChanged(ItemsControlItem* item)
 //-----------------------------------------------------------------------------
 void ItemsControl::OnGroupItemAdded(GroupItem* groupItem)
 {
-	RefreshHostPanelItems();	// TODO: ’x‰„•]‰¿‚É‚µ‚½‚¢
+	RefreshHostPanelItems();	// TODO: é…å»¶è©•ä¾¡ã«ã—ãŸã„
 }
 
 //-----------------------------------------------------------------------------
@@ -204,7 +204,7 @@ void ItemsControl::OnGroupItemAdded(GroupItem* groupItem)
 //-----------------------------------------------------------------------------
 void ItemsControl::OnGroupItemRemoved(GroupItem* groupItem)
 {
-	RefreshHostPanelItems();	// TODO: ’x‰„•]‰¿‚É‚µ‚½‚¢
+	RefreshHostPanelItems();	// TODO: é…å»¶è©•ä¾¡ã«ã—ãŸã„
 }
 
 //-----------------------------------------------------------------------------
@@ -212,16 +212,16 @@ void ItemsControl::OnGroupItemRemoved(GroupItem* groupItem)
 //-----------------------------------------------------------------------------
 void ItemsControl::RefreshHostPanel()
 {
-	// ŒÃ‚¢‚Ì‚ğæ‚èœ‚­
+	// å¤ã„ã®ã‚’å–ã‚Šé™¤ã
 	if (m_hostPanel != NULL) {
 		m_visualItemsPresenter->AttachHostPanel(NULL);
 	}
 
-	// ƒAƒCƒeƒ€‚ğ•Û‚·‚é Panel ‚ğì‚é
-	// TODO: Template ‚ÉŠÖ”ƒ|ƒCƒ“ƒ^‚Â‚æ‚¤‚É‚µ‚Ä‚¨‚¯‚Î­‚µ‘‚­‚Å‚«‚é
+	// ã‚¢ã‚¤ãƒ†ãƒ ã‚’ä¿æŒã™ã‚‹ Panel ã‚’ä½œã‚‹
+	// TODO: Template ã«é–¢æ•°ãƒã‚¤ãƒ³ã‚¿æŒã¤ã‚ˆã†ã«ã—ã¦ãŠã‘ã°å°‘ã—æ—©ãã§ãã‚‹
 	RefPtr<CoreObject> obj(m_manager->CreateObject(m_itemsPanelTemplate->GetTargetType()));
 	auto panel = dynamic_cast<Panel*>(obj.GetObjectPtr());
-	LN_THROW(panel != NULL, InvalidOperationException);		// Panel ‚ÌƒTƒuƒNƒ‰ƒX‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+	LN_THROW(panel != NULL, InvalidOperationException);		// Panel ã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„
 	m_hostPanel = panel;
 
 	if (m_hostPanel != NULL) {

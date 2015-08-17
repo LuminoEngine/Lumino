@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Animation/Common.h>
 
@@ -7,7 +7,7 @@ namespace Lumino
 namespace Animation
 {
 
-/// ’l‚ğ•âŠ®‚·‚éƒNƒ‰ƒX‚Ìƒx[ƒXƒNƒ‰ƒX
+/// å€¤ã‚’è£œå®Œã™ã‚‹ã‚¯ãƒ©ã‚¹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹
 class AnimationCurve
 	: public RefObject
 {
@@ -16,28 +16,28 @@ public:
 	virtual ~AnimationCurve();
 
 public:
-	/// ’l‚Ìí—Ş
+	/// å€¤ã®ç¨®é¡
 	virtual ValueType GetValueType() const = 0;
 
-	/// ŠÔ‚Ìİ’è (mTime ‚ğ‚»‚Ì‚Ü‚ÜAmCurrentFramePos ‚ğƒ‹[ƒvl—¶‚Åİ’è‚·‚é)
+	/// æ™‚é–“ã®è¨­å®š (mTime ã‚’ãã®ã¾ã¾ã€mCurrentFramePos ã‚’ãƒ«ãƒ¼ãƒ—è€ƒæ…®ã§è¨­å®šã™ã‚‹)
 	virtual void SetTime(double time) = 0;
 
-	/// I’[ƒtƒŒ[ƒ€ˆÊ’u‚Ìæ“¾
+	/// çµ‚ç«¯ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®ã®å–å¾—
 	virtual double GetLastFrameTime() const = 0;
 
 };
 
-/// FloatAnimationCurve ‚ÌƒL[ƒtƒŒ[ƒ€
+/// FloatAnimationCurve ã®ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ 
 struct FloatKeyFrame
 {
 public:
-	double				FrameTime;		///< ƒtƒŒ[ƒ€ˆÊ’u
-	float				Value;			///< ’l
-	float				Velocity;		///< ‘¬“x
-	float				Accel;			///< ‰Á‘¬“x
-	float				LeftSlope;		///< ¶•Ó (I—¹) ‘¬“x
-	float				RightSlope;		///< ‰E•Ó (ŠJn) ‘¬“x
-	InterpolationMode	Mode;			///< Ÿ‚ÌƒL[‚Æ‚Ì•âŠÔ•û–@ (‰Šú’l‚ÍüŒ`•âŠÔ)
+	double				FrameTime;		///< ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®
+	float				Value;			///< å€¤
+	float				Velocity;		///< é€Ÿåº¦
+	float				Accel;			///< åŠ é€Ÿåº¦
+	float				LeftSlope;		///< å·¦è¾º (çµ‚äº†) é€Ÿåº¦
+	float				RightSlope;		///< å³è¾º (é–‹å§‹) é€Ÿåº¦
+	InterpolationMode	Mode;			///< æ¬¡ã®ã‚­ãƒ¼ã¨ã®è£œé–“æ–¹æ³• (åˆæœŸå€¤ã¯ç·šå½¢è£œé–“)
 
 public:
 	FloatKeyFrame()
@@ -51,7 +51,7 @@ public:
 	{}
 };
 
-/// float —p
+/// float ç”¨
 class FloatAnimationCurve
 	: public AnimationCurve
 {
@@ -61,13 +61,13 @@ public:
 
 public:
 
-	/// ƒL[ƒtƒŒ[ƒ€’Ç‰Á (I’[‚æ‚è‘O‚É’Ç‰Á‚µ‚½ê‡‚Íƒ\[ƒg‚ğs‚¤)
+	/// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¿½åŠ  (çµ‚ç«¯ã‚ˆã‚Šå‰ã«è¿½åŠ ã—ãŸå ´åˆã¯ã‚½ãƒ¼ãƒˆã‚’è¡Œã†)
 	void AddKeyFrame(const FloatKeyFrame& keyFrame);
 
-	/// ƒL[ƒtƒŒ[ƒ€’Ç‰Á (üŒ`•âŠÔ‚ÌƒL[ƒtƒŒ[ƒ€)
+	/// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¿½åŠ  (ç·šå½¢è£œé–“ã®ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ )
 	void AddKeyFrame(double frame_pos, float value);
 
-	/// •âŠÔŒ‹‰Ê‚Ìæ“¾ (SetTime() ‚ÅXV‚³‚ê‚é)
+	/// è£œé–“çµæœã®å–å¾— (SetTime() ã§æ›´æ–°ã•ã‚Œã‚‹)
 	float GetValue() const { return m_value; }
 
 public:
@@ -83,14 +83,14 @@ private:
 	float			m_value;
 };
 
-/// VMD—pBezier
+/// VMDç”¨Bezier
 class VMDBezierTable
 {
 public:
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	void Initialize(float pt_x1, float pt_y1, float pt_x2, float pt_y2);
 
-	/// t = 0.0`1.0
+	/// t = 0.0ï½1.0
 	float GetInterValue(float t);
 
 private:
@@ -103,21 +103,21 @@ private:
 };
 
 
-/// VMD—p
+/// VMDç”¨
 class VMDBezierSQTTransformAnimation
 	: public AnimationCurve
 {
 public:
 	struct KeyFrame
 	{
-		double			Time;				// ƒtƒŒ[ƒ€ˆÊ’u
-		Vector3			Position;			// ˆÊ’u
-		Quaternion		Rotation;			// ‰ñ“](ƒNƒH[ƒ^ƒjƒIƒ“)
+		double			Time;				// ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®
+		Vector3			Position;			// ä½ç½®
+		Quaternion		Rotation;			// å›è»¢(ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³)
 
-		VMDBezierTable	PosXInterBezier;	// X²ˆÚ“®•âŠÔ
-		VMDBezierTable	PosYInterBezier;	// Y²ˆÚ“®•âŠÔ
-		VMDBezierTable	PosZInterBezier;	// Z²ˆÚ“®•âŠÔ
-		VMDBezierTable	RotInterBezier;	    // ‰ñ“]•âŠÔ
+		VMDBezierTable	PosXInterBezier;	// Xè»¸ç§»å‹•è£œé–“
+		VMDBezierTable	PosYInterBezier;	// Yè»¸ç§»å‹•è£œé–“
+		VMDBezierTable	PosZInterBezier;	// Zè»¸ç§»å‹•è£œé–“
+		VMDBezierTable	RotInterBezier;	    // å›è»¢è£œé–“
 	};
 
 public:
@@ -126,7 +126,7 @@ public:
 
 public:
 
-	/// ƒL[ƒtƒŒ[ƒ€’Ç‰Á
+	/// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ è¿½åŠ 
 	void AddKeyFrame(
 		double framePos, const Vector3& pos, const Quaternion& rot,
 		char* interpolation_x,
@@ -134,10 +134,10 @@ public:
 		char* interpolation_z,
 		char* interpolation_rot);
 
-	/// ƒL[ƒtƒŒ[ƒ€‚Ìƒ\[ƒg
+	/// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚½ãƒ¼ãƒˆ
 	void SortKeyFrame();
 
-	/// •âŠÔŒ‹‰Ê‚Ìæ“¾ (SetTime() ‚ÅXV‚³‚ê‚é)
+	/// è£œé–“çµæœã®å–å¾— (SetTime() ã§æ›´æ–°ã•ã‚Œã‚‹)
 	const SQTTransform& GetValue() const { return m_transform; }
 
 public:

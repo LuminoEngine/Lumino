@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 	@file	GlyphRun.h
 */
 #pragma once
@@ -10,7 +10,7 @@ namespace Graphics
 {
 
 /**
-	@brief	“¯‚¶•`‰æƒXƒ^ƒCƒ‹‚ğ“K—p‚Å‚«‚éˆê˜A‚ÌƒOƒŠƒt‚ğ•\‚µ‚Ü‚·B
+	@brief	åŒã˜æç”»ã‚¹ã‚¿ã‚¤ãƒ«ã‚’é©ç”¨ã§ãã‚‹ä¸€é€£ã®ã‚°ãƒªãƒ•ã‚’è¡¨ã—ã¾ã™ã€‚
 */
 class GlyphRun
 	: public RefObject

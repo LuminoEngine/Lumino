@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <map>
 #include "Common.h"
@@ -23,9 +23,9 @@ private:
 
 /**
 	@brief		
-	@note	WPF ‚Ì FrameworkElementFactory ‚É‘Š“–‚·‚éB
+	@note	WPF ã® FrameworkElementFactory ã«ç›¸å½“ã™ã‚‹ã€‚
 */
-class UIElementFactory	// TODO: UIElement ˆÈŠO‚àì‚ê‚é‚æ‚¤‚ÉB–¼‘O•ÏXB
+class UIElementFactory	// TODO: UIElement ä»¥å¤–ã‚‚ä½œã‚Œã‚‹ã‚ˆã†ã«ã€‚åå‰å¤‰æ›´ã€‚
 	: public CoreObject
 {
 public:
@@ -34,10 +34,10 @@ public:
 
 	void SetKeyName(const String& name) { m_keyName = name; }
 
-	/// ‚±‚Ì UIElementFactory ‚ª¶¬‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX‚ÌŒ^–¼
+	/// ã“ã® UIElementFactory ãŒç”Ÿæˆã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®å‹å
 	void SetTypeName(const String& typeFullName) { m_targetTypeFullName = typeFullName; }
 
-	// TODO –¼‘O‚ª•´‚ç‚í‚µ‚¢BElementValue ‚Æ‚©‚ÉB
+	// TODO åå‰ãŒç´›ã‚‰ã‚ã—ã„ã€‚ElementValue ã¨ã‹ã«ã€‚
 	void SetPropertyValue(const Property* prop, const Variant& value) { m_propertyValueList.SetValue(prop, value); }
 	Variant GetPropertyValue(const Property* prop) const { return m_propertyValueList.GetValue(prop); }
 
@@ -60,19 +60,19 @@ public:
 	void AddChild(UIElementFactory* child);
 
 
-	// ˆÈ‰º2‚Â‚Í‚à‚Æ‚à‚Æ1‚Â‚¾‚Á‚½‚ªAq—v‘f‚ğƒrƒ‹ƒh‚·‚é‘O‚Ée—v‘f‚É’Ç‰Á‚µAƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚·‚é•K—v‚ª‚ ‚Á‚½‚½‚ß•ª‚¯‚½B
-	// ‚»‚ê‚¾‚¯‚È‚ç•ª‚¯‚é•K—v‚à–³‚¢‹C‚ª‚·‚é‚ªAe—v‘f‚É‚æ‚Á‚Ä’Ç‰Áæ‚ªˆÙ‚È‚éB
-	// ƒ‹[ƒg‚È‚ç SetTemplateChild()AƒvƒƒpƒeƒB‚È‚ç SetValue()AƒŠƒXƒg‚È‚ç AddItem() “™AFX‚ ‚éB
+	// ä»¥ä¸‹2ã¤ã¯ã‚‚ã¨ã‚‚ã¨1ã¤ã ã£ãŸãŒã€å­è¦ç´ ã‚’ãƒ“ãƒ«ãƒ‰ã™ã‚‹å‰ã«è¦ªè¦ç´ ã«è¿½åŠ ã—ã€ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã™ã‚‹å¿…è¦ãŒã‚ã£ãŸãŸã‚åˆ†ã‘ãŸã€‚
+	// ãã‚Œã ã‘ãªã‚‰åˆ†ã‘ã‚‹å¿…è¦ã‚‚ç„¡ã„æ°—ãŒã™ã‚‹ãŒã€è¦ªè¦ç´ ã«ã‚ˆã£ã¦è¿½åŠ å…ˆãŒç•°ãªã‚‹ã€‚
+	// ãƒ«ãƒ¼ãƒˆãªã‚‰ SetTemplateChild()ã€ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãªã‚‰ SetValue()ã€ãƒªã‚¹ãƒˆãªã‚‰ AddItem() ç­‰ã€è‰²ã€…ã‚ã‚‹ã€‚
 	//CoreObject* CreateInstance();
 	//void BuildInstance(CoreObject* element, UIElement* rootLogicalParent);
-	// Setter Œo—R‚Ìê‡‚Í NULL ‚ª“n‚³‚ê‚éB
+	// Setter çµŒç”±ã®å ´åˆã¯ NULL ãŒæ¸¡ã•ã‚Œã‚‹ã€‚
 	CoreObject* CreateInstance(UIElement* rootLogicalParent);
 
 
 private:
 	enum PropertyKind
 	{
-		PropertyKind_Variant = 0,		///< •’Ê‚Ì’l
+		PropertyKind_Variant = 0,		///< æ™®é€šã®å€¤
 		PropertyKind_Binding,			///< Binding
 		PropertyKind_TemplateBinding,	///< TemplateBinding
 	};
@@ -80,14 +80,14 @@ private:
 	struct PropertyInfo
 	{
 		PropertyKind	Kind;
-		//Binding			BindingInfo;	///< PropertyKind_Binding ‚Ì‚Æ‚«‚Í‚±‚ê‚ğg‚¤
-		String			SourcePropPath;		///< PropertyKind_TemplateBinding ‚Ì‚Æ‚«‚Í‚±‚ê‚ğg‚¤
+		//Binding			BindingInfo;	///< PropertyKind_Binding ã®ã¨ãã¯ã“ã‚Œã‚’ä½¿ã†
+		String			SourcePropPath;		///< PropertyKind_TemplateBinding ã®ã¨ãã¯ã“ã‚Œã‚’ä½¿ã†
 	};
 
 	typedef SortedArray<const Property*, PropertyInfo>	PropertyInfoList;
 	typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
-	GUIManager*						m_manager;	// CreateInstance() ‚Å•K—vBˆø”‚Å‚à‚ç‚Á‚Ä‚à‚¢‚¢‚©‚àH
+	GUIManager*						m_manager;	// CreateInstance() ã§å¿…è¦ã€‚å¼•æ•°ã§ã‚‚ã‚‰ã£ã¦ã‚‚ã„ã„ã‹ã‚‚ï¼Ÿ
 	String							m_keyName;
 	String							m_targetTypeFullName;
 	PropertyInfoList				m_propertyInfoList;
@@ -99,7 +99,7 @@ typedef GenericVariantList<UIElementFactory*>	UIElementFactorylist;
 
 /**
 	@brief		
-	@note	ContentPresenter ‚ª•K—vB
+	@note	ContentPresenter ãŒå¿…è¦ã€‚
 */
 class ControlTemplate
 	: public CoreObject
@@ -123,15 +123,15 @@ public:
 
 	void SetVisualTreeRoot(UIElementFactory* factory) { m_visualTreeRoot = factory; }
 
-	/// w’è‚³‚ê‚½ Control ‚É‚±‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğ“K—p‚µ‚Ü‚·B
+	/// æŒ‡å®šã•ã‚ŒãŸ Control ã«ã“ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’é©ç”¨ã—ã¾ã™ã€‚
 	void Apply(Control* control);
 
 private:
 	//typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
-	String						m_targetType;		///< ‘ÎÛƒRƒ“ƒgƒ[ƒ‹–¼ ("Button" “™)
+	String						m_targetType;		///< å¯¾è±¡ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«å ("Button" ç­‰)
 	//PropertyValueList			m_propertyValueList;
-	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< ƒeƒ“ƒvƒŒ[ƒg‚Ì VisualTree ‚Ìƒ‹[ƒgƒm[ƒh
+	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã® VisualTree ã®ãƒ«ãƒ¼ãƒˆãƒãƒ¼ãƒ‰
 };
 
 #if 0
@@ -147,13 +147,13 @@ public:
 
 	void SetVisualTreeRoot(UIElementFactory* factory) { m_visualTreeRoot = factory; }
 
-	/// w’è‚³‚ê‚½ Control ‚É‚±‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğ“K—p‚µ‚Ü‚·B
+	/// æŒ‡å®šã•ã‚ŒãŸ Control ã«ã“ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’é©ç”¨ã—ã¾ã™ã€‚
 	void Apply(Control* control);
 
 private:
-	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< ƒeƒ“ƒvƒŒ[ƒg‚Ì VisualTree ‚Ìƒ‹[ƒgƒm[ƒh
+	RefPtr<UIElementFactory>	m_visualTreeRoot;	///< ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã® VisualTree ã®ãƒ«ãƒ¼ãƒˆãƒãƒ¼ãƒ‰
 
-	// WPF ‚Å‚Íƒf[ƒ^‚ÌŒ^‚Æ‚©‚à‚ÂB‚Æ‚è‚ ‚¦‚¸ ControlTemplate ‚Æ‚Í•ª‚¯‚Ä‚¨‚­B
+	// WPF ã§ã¯ãƒ‡ãƒ¼ã‚¿ã®å‹ã¨ã‹ã‚‚æŒã¤ã€‚ã¨ã‚Šã‚ãˆãš ControlTemplate ã¨ã¯åˆ†ã‘ã¦ãŠãã€‚
 };
 #endif
 
@@ -169,8 +169,8 @@ private:
 //	virtual ~ControlTemplate();
 //
 //private:
-//	String				m_targetType;		///< ‘ÎÛƒRƒ“ƒgƒ[ƒ‹–¼ ("Button" “™)
-//	UIElementFactory*	m_visualTreeRoot;	///< ƒeƒ“ƒvƒŒ[ƒg‚Ì VisualTree ‚Ìƒ‹[ƒgƒm[ƒh
+//	String				m_targetType;		///< å¯¾è±¡ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«å ("Button" ç­‰)
+//	UIElementFactory*	m_visualTreeRoot;	///< ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã® VisualTree ã®ãƒ«ãƒ¼ãƒˆãƒãƒ¼ãƒ‰
 //};
 
 
@@ -212,7 +212,7 @@ public:
 	virtual ~TriggerBase();
 
 public:	// internal
-	/// routedEvent : —á‚¦‚ÎƒTƒuƒNƒ‰ƒX Trigger ‚Í PropertyChangedEvent ‚ğó‚¯æ‚Á‚½‚ç target ‚ÉƒvƒƒpƒeƒB‚ğƒZƒbƒg‚·‚é
+	/// routedEvent : ä¾‹ãˆã°ã‚µãƒ–ã‚¯ãƒ©ã‚¹ Trigger ã¯ PropertyChangedEvent ã‚’å—ã‘å–ã£ãŸã‚‰ target ã«ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	/// tareget : 
 	//virtual void Invoke(const RoutedEvent* prop, const RoutedEventArgs* e, CoreObject* target) = 0;
 
@@ -224,7 +224,7 @@ typedef GenericVariantList<TriggerBase*>		TriggerList;
 /**
 	@brief		
 */
-class Trigger	// TODO: –¼‘O PropertyTrigger ‚Ì‚Ù‚¤‚ª‚í‚©‚è‚â‚·‚¢‹C‚ª‚·‚é
+class Trigger	// TODO: åå‰ PropertyTrigger ã®ã»ã†ãŒã‚ã‹ã‚Šã‚„ã™ã„æ°—ãŒã™ã‚‹
 	: public TriggerBase
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
@@ -239,7 +239,7 @@ public:
 	void SetValue(const Variant& value) { m_value = value; }
 	const Variant& GetValue() const { return m_value; }
 
-	// ƒ†[ƒeƒBƒŠƒeƒB
+	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void AddSetter(const Property* prop, const Variant& value)
 	{
 		auto setter = RefPtr<Setter>::Create(prop, value);
@@ -247,7 +247,7 @@ public:
 	}
 
 	// internal
-	/// ƒI[ƒi[ƒIƒuƒWƒFƒNƒg‚ÌƒvƒƒpƒeƒB•ÏX’Ê’m‚ª”­¶‚µ‚½
+	/// ã‚ªãƒ¼ãƒŠãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å¤‰æ›´é€šçŸ¥ãŒç™ºç”Ÿã—ãŸ
 	void TryInvoke(CoreObject* target, PropertyChangedEventArgs* e);
 protected:
 	virtual bool IsPropertyTrigger() const { return true; }
@@ -279,7 +279,7 @@ public:
 	SetterList* GetSetters() const { return m_setterList; }
 	//TriggerList* GetTriggers() const { return m_triggerList; }
 
-	// ƒ†[ƒeƒBƒŠƒeƒB
+	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void AddSetter(const Property* prop, const Variant& value) 
 	{
 		auto setter = RefPtr<Setter>::Create(prop, value);
@@ -294,7 +294,7 @@ public:
 	}
 
 
-	/// w’è‚µ‚½—v‘f‚É‚±‚ÌƒXƒ^ƒCƒ‹‚ğ“K—p‚·‚é
+	/// æŒ‡å®šã—ãŸè¦ç´ ã«ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã‚’é©ç”¨ã™ã‚‹
 	void Apply(UIElement* element);
 
 	void NortifyTargetObjectPropertyChanged(CoreObject* target, PropertyChangedEventArgs* e);
@@ -325,7 +325,7 @@ public:
 	void AddItem(const String& key, CoreObject* obj);
 
 
-	/// x:key ‚ª–³‚­ATargetType ‚Åƒ^[ƒQƒbƒg‚ªw’è‚³‚ê‚Ä‚¢‚é ControlTemplate ‚Í‚±‚ê‚ÅŒŸõ‚·‚é (‚İ‚Â‚©‚ç‚È‚¯‚ê‚Î NULL)
+	/// x:key ãŒç„¡ãã€TargetType ã§ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹ ControlTemplate ã¯ã“ã‚Œã§æ¤œç´¢ã™ã‚‹ (ã¿ã¤ã‹ã‚‰ãªã‘ã‚Œã° NULL)
 	//bool TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate);
 	Style* FindStyle(TypeInfo* type);
 
@@ -343,13 +343,13 @@ private:
 
 	//typedef std::map<TypeInfo*, Style*>	StyleMap;
 	//StyleMap	m_styleMap;
-	Array<Style*>	m_styleList;	///< ‚±‚Ì ResourceDictionary ‚É“o˜^‚³‚ê‚Ä‚¢‚é Style (map ‚É‚Í‚µ‚È‚¢BTargetType ‚ª•Ï‚í‚é‰Â”\«‚ª‚ ‚é‚Ì‚Å)
+	Array<Style*>	m_styleList;	///< ã“ã® ResourceDictionary ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ Style (map ã«ã¯ã—ãªã„ã€‚TargetType ãŒå¤‰ã‚ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã®ã§)
 };
 	
-/// UIElement ‚Íe UIElement ‚É’Ç‰Á‚ê‚½Ae‚Ì CombinedLocalResource ‚Æ
-/// ©•ª‚Ì Resource ƒvƒƒpƒeƒB‚Ì’l‚ğŒ³‚É CombinedLocalResource ‚ğì‚éB
-/// ‚»‚Ì‚ ‚Æ VisualTree ‚Ìì¬‚ğs‚¤‚ªA‚»‚Ì‚Í‚±‚Ì CombinedLocalResource ‚©‚çŠeíƒf[ƒ^‚ğ“Ç‚İæ‚éB
-/// ©•ª‚Ì Resource ‚ª NULL ‚Å‚ ‚ê‚Îe‚Ì CombinedLocalResource ‚ğ‚»‚Ì‚Ü‚ÜQÆ‚·‚éB
+/// UIElement ã¯è¦ª UIElement ã«è¿½åŠ ã‚ŒãŸæ™‚ã€è¦ªã® CombinedLocalResource ã¨
+/// è‡ªåˆ†ã® Resource ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’å…ƒã« CombinedLocalResource ã‚’ä½œã‚‹ã€‚
+/// ãã®ã‚ã¨ VisualTree ã®ä½œæˆã‚’è¡Œã†ãŒã€ãã®æ™‚ã¯ã“ã® CombinedLocalResource ã‹ã‚‰å„ç¨®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿å–ã‚‹ã€‚
+/// è‡ªåˆ†ã® Resource ãŒ NULL ã§ã‚ã‚Œã°è¦ªã® CombinedLocalResource ã‚’ãã®ã¾ã¾å‚ç…§ã™ã‚‹ã€‚
 class CombinedLocalResource
 	: public RefObject
 {

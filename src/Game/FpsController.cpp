@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Game/FpsController.h>
@@ -7,20 +7,20 @@ namespace Lumino
 {
 
 /*
-�ҋ@�������s�������ꍇ�͏�������Aprocess() ���Ăяo��������
-//              �R���X�g���N�^�ɓn���ꂽ�t���[�����[�g�ɂȂ�悤�ɑҋ@���܂��B
+待機だけを行いたい場合は初期化後、process() を呼び出すだけで
+//              コンストラクタに渡されたフレームレートになるように待機します。
 //
 //  @note
-//              �����̃m�[�g PC �ŁA�Ȃ񂩓��������ɂ������Ȃ��Ǝv����
-//              1�t���[���̌o�ߎ��Ԃ𒲂ׂ���A�s�����1�t���[��70ms������
-//              ���̂��������B(�ق�Ƃɕs����B1�b(60���0�񂾂�����4�񂾂�����B)
-//              ���̃t���[���ł͂ق�0.016�L�[�v)
-//              �ڂ������ׂĂ݂�ƁAwinAPI �� Sleep �����܂ɂ��������Ԃ������Ă��B
-//              Sleep( 16 ) �őҋ@���Ă�̂ɁA�������Ɠ����� 70ms �������Ă��Ƃ��B
-//              Sleep() �͊m���Ɏw�肵�����Ԃ����҂��Ă����֐�����Ȃ�
-//              ���Ƃ͂킩���Ă����ǁA���ɂ���Ă����܂ŕς��Ƃ�
-//              (�f�X�N�g�b�v�̕��ł͖��Ȃ�����)�����v��Ȃ������̂ŁA
-//              �������㎗���悤�Ȃ��Ƃ��������ꍇ�͂��̕ӂ��Q�l�ɂ��Ă݂�B
+//              自分のノート PC で、なんか動きが妙にぎこちないと思って
+//              1フレームの経過時間を調べたら、不定期で1フレーム70msかかる
+//              ものがあった。(ほんとに不定期。1秒(60回に0回だったり4回だったり。)
+//              他のフレームではほぼ0.016キープ)
+//              詳しく調べてみると、winAPI の Sleep がたまにすごく時間かかってた。
+//              Sleep( 16 ) で待機してるのに、さっきと同じく 70ms かかってたとか。
+//              Sleep() は確実に指定した時間だけ待ってくれる関数じゃない
+//              ことはわかってたけど、環境によってここまで変わるとは
+//              (デスクトップの方では問題なかった)正直思わなかったので、
+//              もし今後似たようなことがあった場合はこの辺を参考にしてみる。
 */
 //==============================================================================
 // FpsController
@@ -93,7 +93,7 @@ void FpsController::RefreshSystemDelay()
 	m_lastTime = m_baseTime = m_capaFpsLastTime = (0.001f * (currentTime - m_startTime));// + m_frameRateRec;
 	m_baseTime -= 1.0f - m_frameRateRec;
 
-	// ���݂� m_frameCount �܂ł̃t���[�������畽�ώ��Ԃ��v�Z����
+	// 現在の m_frameCount までのフレーム数から平均時間を計算する
 	m_averageTime = 0;
 	for (int i = 0; i < m_frameCount; ++i)
 	{
@@ -123,15 +123,15 @@ void FpsController::Process()
 	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
 	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
 
-	// (frame_rate_)�t���[����1��ڂȂ�
+	// (frame_rate_)フレームの1回目なら
 	if (m_frameCount == 0)
 	{
-		// ���S�ɍŏ�
+		// 完全に最初
 		if (m_lastTime == 0.0)
 		{
 			m_term = m_frameRateRec;
 		}
-		// �O��L�^�������Ԃ����Ɍv�Z
+		// 前回記録した時間を元に計算
 		else
 		{
 			m_term = m_baseTime + 1.0f - m_currentTime;
@@ -141,7 +141,7 @@ void FpsController::Process()
 	}
 	else
 	{
-		// ����҂ׂ����� = ���݂���ׂ����� - ���݂̎���
+		// 今回待つべき時間 = 現在あるべき時刻 - 現在の時刻
 		m_term = (m_baseTime + m_frameRateRec * m_frameCount) - m_currentTime;
 
 		//if ( m_term < 0 )
@@ -156,7 +156,7 @@ void FpsController::Process()
 	//static int ii = 0;
 	//++ii;
 
-	// �҂ׂ����Ԃ����҂�
+	// 待つべき時間だけ待つ
 	if (m_term > 0.0)
 	{
 		//printf( "t:%lf c:%d\n", m_term, m_frameCount );
@@ -184,28 +184,28 @@ void FpsController::Process()
 		Threading::Thread::Sleep(static_cast< uint32_t >(m_term * 1000));
 	}
 
-	// ���݂̎���
+	// 現在の時間
 	float nt = m_currentTime;
 
-	// m_frameRate �t���[����1�x������
+	// m_frameRate フレームに1度基準を作る
 	if (m_frameCount == 0)
 	{
-		// + m_frameRateRec ��1�t���[�����炳�Ȃ��ƁA
-		// 60 �t���[������ 1 �t���[���ڂő҂����Ԃ̌v�Z������Ƃ���
-		// m_currentTime �̎��Ԃ����݂���ׂ������𒴂��Ă��܂��āA
-		// �҂����Ԃ� -0.0003 �Ƃ��ɂȂ��Ă��܂��B
-		// ���ʁA��u��������Ƃ�����������邱�Ƃ��������B
+		// + m_frameRateRec で1フレームずらさないと、
+		// 60 フレーム中の 1 フレーム目で待ち時間の計算をするときに
+		// m_currentTime の時間が現在あるべき時刻を超えてしまって、
+		// 待ち時間が -0.0003 とかになってしまう。
+		// 結果、一瞬だけｶｸｯという動作をすることがあった。
 		m_baseTime = nt + m_frameRateRec;
 	}
 
-	// ����̕���1���������Ԃ��L�^
+	// 今回の分の1周した時間を記録
 	m_frameTimes[m_frameCount] = nt - m_lastTime;
 
-	// ���݂̎��Ԃ��A�ЂƂO�̎��ԂƂ��ċL��
+	// 現在の時間を、ひとつ前の時間として記憶
 	m_lastRealTime = nt;
 	m_lastTime = nt;
 
-	// m_frameRate �̍Ō�̃t���[�� ( 60 �̏ꍇ�� 59 �t���[���� ) �ɕ��ς��v�Z
+	// m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
 	if (m_frameCount == m_frameRate - 1)
 	{
 		m_averageTime = 0;
@@ -216,13 +216,13 @@ void FpsController::Process()
 		m_averageTime /= m_frameRate;
 	}
 
-	// FPS �]�T�x�𑪒肷��
+	// FPS 余裕度を測定する
 	if (m_enableFpsTest)
 	{
-		// ����̕���1���������Ԃ��L�^
+		// 今回の分の1周した時間を記録
 		m_capaFrameTimes[m_frameCount] = m_currentTime - m_capaFpsLastTime;
 
-		// m_frameRate �̍Ō�̃t���[�� ( 60 �̏ꍇ�� 59 �t���[���� ) �ɕ��ς��v�Z
+		// m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
 		if (m_frameCount == m_frameRate - 1)
 		{
 			m_capaAverageTime = 0;
@@ -247,7 +247,7 @@ void FpsController::Process()
 		m_capaFpsLastTime = 0.001f * (Environment::GetTickCount() - m_startTime);
 	}
 
-	// m_frameCount �� frame �ň������悤�ɂ���
+	// m_frameCount を frame で一周するようにする
 	m_frameCount = (++m_frameCount) % m_frameRate;
 
 	m_fps = (m_averageTime > 0) ? (1.0f / m_averageTime) : 0;
@@ -266,15 +266,15 @@ void FpsController::ProcessForMeasure()
 	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
 	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
 
-	// (frame_rate_)�t���[����1��ڂȂ�
+	// (frame_rate_)フレームの1回目なら
 	if (m_frameCount == 0)
 	{
-		// ���S�ɍŏ�
+		// 完全に最初
 		if (m_lastTime == 0.0)
 		{
 			m_term = m_frameRateRec;
 		}
-		// �O��L�^�������Ԃ����Ɍv�Z
+		// 前回記録した時間を元に計算
 		else
 		{
 			m_term = m_baseTime + 1.0f - m_currentTime;
@@ -282,7 +282,7 @@ void FpsController::ProcessForMeasure()
 	}
 	else
 	{
-		// ����҂ׂ����� = ���݂���ׂ����� - ���݂̎���
+		// 今回待つべき時間 = 現在あるべき時刻 - 現在の時刻
 		m_term = (m_baseTime + m_frameRateRec * m_frameCount) - m_currentTime;
 	}
 
@@ -290,35 +290,35 @@ void FpsController::ProcessForMeasure()
 
 	++ii;
 
-	// �҂ׂ����Ԃ����҂�
+	// 待つべき時間だけ待つ
 	if (m_term > 0.0)
 	{
 		//Threading::sleep( static_cast< uint32_t >( m_term * 1000 ) );
 	}
 
-	// ���݂̎���
+	// 現在の時間
 	float nt = m_currentTime;
 
-	// m_frameRate �t���[����1�x������
+	// m_frameRate フレームに1度基準を作る
 	if (m_frameCount == 0)
 	{
-		// + m_frameRateRec ��1�t���[�����炳�Ȃ��ƁA
-		// 60 �t���[������ 1 �t���[���ڂő҂����Ԃ̌v�Z������Ƃ���
-		// m_currentTime �̎��Ԃ����݂���ׂ������𒴂��Ă��܂��āA
-		// �҂����Ԃ� -0.0003 �Ƃ��ɂȂ��Ă��܂��B
-		// ���ʁA��u��������Ƃ�����������邱�Ƃ��������B
+		// + m_frameRateRec で1フレームずらさないと、
+		// 60 フレーム中の 1 フレーム目で待ち時間の計算をするときに
+		// m_currentTime の時間が現在あるべき時刻を超えてしまって、
+		// 待ち時間が -0.0003 とかになってしまう。
+		// 結果、一瞬だけｶｸｯという動作をすることがあった。
 		m_baseTime = nt + m_frameRateRec;
 	}
 
-	// ����̕���1���������Ԃ��L�^
+	// 今回の分の1周した時間を記録
 	m_frameTimes[m_frameCount] = nt - m_lastTime;
 
-	// ���݂̎��Ԃ��A�ЂƂO�̎��ԂƂ��ċL��
+	// 現在の時間を、ひとつ前の時間として記憶
 	m_lastRealTime = nt;
 	m_lastTime = nt;
 
 
-	// m_frameRate �̍Ō�̃t���[�� ( 60 �̏ꍇ�� 59 �t���[���� ) �ɕ��ς��v�Z
+	// m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
 	if (m_frameCount == m_frameRate - 1)
 	{
 		m_averageTime = 0;
@@ -331,10 +331,10 @@ void FpsController::ProcessForMeasure()
 
 	if (m_enableFpsTest)
 	{
-		// ����̕���1���������Ԃ��L�^
+		// 今回の分の1周した時間を記録
 		m_capaFrameTimes[m_frameCount] = m_currentTime - m_capaFpsLastTime;
 
-		// m_frameRate �̍Ō�̃t���[�� ( 60 �̏ꍇ�� 59 �t���[���� ) �ɕ��ς��v�Z
+		// m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
 		if (m_frameCount == m_frameRate - 1)
 		{
 			m_capaAverageTime = 0;
@@ -359,7 +359,7 @@ void FpsController::ProcessForMeasure()
 		m_capaFpsLastTime = m_currentTime;
 	}
 
-	// m_frameCount �� frame �ň������悤�ɂ���
+	// m_frameCount を frame で一周するようにする
 	m_frameCount = (++m_frameCount) % m_frameRate;
 
 	m_fps = (m_averageTime > 0) ? (1.0f / m_averageTime) : 0;

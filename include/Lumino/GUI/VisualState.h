@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "../Animation/AnimationUtilities.h"
@@ -12,11 +12,11 @@ namespace GUI
 
 /**
 	@brief		
-	<FloatTimeline From="0" To="60" Duration="500"	ŠÔ‚Íƒ~ƒŠ•b
+	<FloatTimeline From="0" To="60" Duration="500"	æ™‚é–“ã¯ãƒŸãƒªç§’
 		TargetName="textBlock"
 		TargetProperty="FontSize" />
 */
-class FloatTimeline		// TODO: ‚¢‚ç‚È‚¢‚©‚à
+class FloatTimeline		// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
 	: public CoreObject
 {
 public:
@@ -68,12 +68,12 @@ public:
 	//Array< RefPtr<AnimationTimeline*> > GetChildren();
 	
 	/**
-		@brief	w’è‚µ‚½—v‘f‚ÉƒAƒjƒ[ƒVƒ‡ƒ“‚ğ“K—p‚µ‚ÄŠJn‚µ‚Ü‚·B
+		@brief	æŒ‡å®šã—ãŸè¦ç´ ã«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é©ç”¨ã—ã¦é–‹å§‹ã—ã¾ã™ã€‚
 	*/
 	void Begin(UIElement* target);
 
 	/**
-		@brief	w’è‚µ‚½—v‘f‚ÉŠ„‚è“–‚Ä‚ç‚ê‚Ä‚¢‚éA‚±‚Ì Storyboard —p‚Éì¬‚³‚ê‚½ AnimationClock ‚ğ’â~‚µ‚Ü‚·B
+		@brief	æŒ‡å®šã—ãŸè¦ç´ ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚Œã¦ã„ã‚‹ã€ã“ã® Storyboard ç”¨ã«ä½œæˆã•ã‚ŒãŸ AnimationClock ã‚’åœæ­¢ã—ã¾ã™ã€‚
 	*/
 	void Stop(UIElement* target);
 
@@ -108,11 +108,11 @@ typedef GenericVariantList<VisualState*>	VisualStateList;
 	
 /**
 	@brief		
-	@details	VisualStateGroup ‚É‚ÍA“¯‚Ég—p‚Å‚«‚È‚¢ó‘Ô‚ğŠÜ‚ß‚Ü‚·B ‚½‚Æ‚¦‚ÎACheckBox ‚É‚Í 2 ‚Â‚Ì VisualStateGroup ƒIƒuƒWƒFƒNƒg‚ª‚ ‚è‚Ü‚·B
-				ˆê•û‚ÌƒIƒuƒWƒFƒNƒg‚É‚ÍANormalAMouseOverAPressedA‚¨‚æ‚Ñ Disabled ‚Ìó‘Ô‚ªŠi”[‚³‚ê‚Ü‚·B 
-				‚à‚¤ˆê•û‚ÌƒIƒuƒWƒFƒNƒg‚É‚ÍACheckedAUnCheckedA‚¨‚æ‚Ñ Indeterminate ‚Ìó‘Ô‚ªŠi”[‚³‚ê‚Ü‚·B 
-				CheckBox ‚Í“¯‚É MouseOver ‚Ìó‘Ô‚Æ UnChecked ‚Ìó‘Ô‚É‚È‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·‚ªA
-				“¯‚É MouseOver ‚Ìó‘Ô‚Æ Pressed ‚Ìó‘Ô‚É‚È‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+	@details	VisualStateGroup ã«ã¯ã€åŒæ™‚ã«ä½¿ç”¨ã§ããªã„çŠ¶æ…‹ã‚’å«ã‚ã¾ã™ã€‚ ãŸã¨ãˆã°ã€CheckBox ã«ã¯ 2 ã¤ã® VisualStateGroup ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒã‚ã‚Šã¾ã™ã€‚
+				ä¸€æ–¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã¯ã€Normalã€MouseOverã€Pressedã€ãŠã‚ˆã³ Disabled ã®çŠ¶æ…‹ãŒæ ¼ç´ã•ã‚Œã¾ã™ã€‚ 
+				ã‚‚ã†ä¸€æ–¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã¯ã€Checkedã€UnCheckedã€ãŠã‚ˆã³ Indeterminate ã®çŠ¶æ…‹ãŒæ ¼ç´ã•ã‚Œã¾ã™ã€‚ 
+				CheckBox ã¯åŒæ™‚ã« MouseOver ã®çŠ¶æ…‹ã¨ UnChecked ã®çŠ¶æ…‹ã«ãªã‚‹ã“ã¨ãŒã§ãã¾ã™ãŒã€
+				åŒæ™‚ã« MouseOver ã®çŠ¶æ…‹ã¨ Pressed ã®çŠ¶æ…‹ã«ãªã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
 				https://msdn.microsoft.com/ja-jp/library/system.windows.visualstategroup%28v=vs.110%29.aspx
 */
 class VisualStateGroup
@@ -123,8 +123,8 @@ public:
 	VisualStateGroup(const String& groupName);
 	virtual ~VisualStateGroup();
 
-	/// ‚±‚ÌƒOƒ‹[ƒv“à‚ÅŒ»İƒAƒNƒeƒBƒu‚Å‚ ‚èAƒRƒ“ƒgƒ[ƒ‹‚É“K—p‚³‚ê‚Ä‚¢‚é VisualState ‚ğæ“¾‚µ‚Ü‚·B
-	/// (’â~‚·‚é‚Æ‚«‚Ég—p‚·‚é)
+	/// ã“ã®ã‚°ãƒ«ãƒ¼ãƒ—å†…ã§ç¾åœ¨ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã§ã‚ã‚Šã€ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«é©ç”¨ã•ã‚Œã¦ã„ã‚‹ VisualState ã‚’å–å¾—ã—ã¾ã™ã€‚
+	/// (åœæ­¢ã™ã‚‹ã¨ãã«ä½¿ç”¨ã™ã‚‹)
 	VisualState* GetCurrentState() const { return m_currentState; }
 
 	VisualStateList* GetVisualStateList() { return &m_status; }
@@ -136,7 +136,7 @@ private:
 
 private:
 	String			m_name;
-	VisualStateList	m_status;	// TODO: * ‚ÉB
+	VisualStateList	m_status;	// TODO: * ã«ã€‚
 	VisualState*	m_currentState;
 	friend class VisualStateManager;
 };
@@ -145,8 +145,8 @@ typedef GenericVariantList<VisualStateGroup*>	VisualStateGroupList;
 	
 /**
 	@brief		
-	@note		EVisualStateGroups ‚Í•¡”‚Ì UIElement ‚©‚ç‹¤—L‚³‚ê‚éB¨ ‚Æ‚¢‚¤‚æ‚èAStyle ‚ª‹¤—L‚³‚ê‚éB
-				EWPF ‚Ì VisualStateManager.GotoState() ‚Í static ƒƒ\ƒbƒhB
+	@note		ãƒ»VisualStateGroups ã¯è¤‡æ•°ã® UIElement ã‹ã‚‰å…±æœ‰ã•ã‚Œã‚‹ã€‚â†’ ã¨ã„ã†ã‚ˆã‚Šã€Style ãŒå…±æœ‰ã•ã‚Œã‚‹ã€‚
+				ãƒ»WPF ã® VisualStateManager.GotoState() ã¯ static ãƒ¡ã‚½ãƒƒãƒ‰ã€‚
 */
 class VisualStateManager
 	: public CoreObject
@@ -155,7 +155,7 @@ public:
 	VisualStateManager();
 	virtual ~VisualStateManager();
 	
-	/// UI—v‘f‚Ìó‘Ô‚ğØ‚è‘Ö‚¦‚Ü‚·B
+	/// UIè¦ç´ ã®çŠ¶æ…‹ã‚’åˆ‡ã‚Šæ›¿ãˆã¾ã™ã€‚
 	static void GoToState(Control* control, const String& stateName);
 
 protected:
@@ -167,8 +167,8 @@ protected:
 class VisualStatus
 {
 public:
-	static const String	Normal;		/* "Normal" ó‘Ô‚Ì–¼‘O‚Å‚·B*/
-	static const String	MouseOver;	/* "MouseOver" ó‘Ô‚Ì–¼‘O‚Å‚·B*/
+	static const String	Normal;		/* "Normal" çŠ¶æ…‹ã®åå‰ã§ã™ã€‚*/
+	static const String	MouseOver;	/* "MouseOver" çŠ¶æ…‹ã®åå‰ã§ã™ã€‚*/
 
 };
 	

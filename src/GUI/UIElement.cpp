@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Painter.h>
@@ -69,12 +69,12 @@ UIElement::~UIElement()
 //-----------------------------------------------------------------------------
 void UIElement::InitializeComponent()
 {
-	// ‚±‚Ì“_‚Å‚Í‰½‚©‚Ìq—v‘f‚É‚Í‚È‚Á‚Ä‚¢‚È‚¢‚Í‚¸‚È‚Ì‚ÅA
-	// m_combinedLocalResource ‚ÍƒOƒ[ƒoƒ‹ƒŠƒ\[ƒX‚Æ‚È‚éB
+	// ã“ã®æ™‚ç‚¹ã§ã¯ä½•ã‹ã®å­è¦ç´ ã«ã¯ãªã£ã¦ã„ãªã„ã¯ãšãªã®ã§ã€
+	// m_combinedLocalResource ã¯ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒªã‚½ãƒ¼ã‚¹ã¨ãªã‚‹ã€‚
 	UpdateLocalResource();
 
-	// ƒCƒ“ƒXƒ^ƒ“ƒX‰»‚µ‚½ƒNƒ‰ƒXŒ^î•ñ‚Å Style ‚ğŒŸõ‚·‚éB
-	// –³‚©‚Á‚½ê‡‚Íƒx[ƒXƒNƒ‰ƒX‚Ì Style ‚ğŒŸõ‚·‚éc‚Æ‚¢‚¤‚±‚Æ‚Í‚µ‚È‚¢B(WPF ‚Ìd—l)
+	// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã—ãŸã‚¯ãƒ©ã‚¹å‹æƒ…å ±ã§ Style ã‚’æ¤œç´¢ã™ã‚‹ã€‚
+	// ç„¡ã‹ã£ãŸå ´åˆã¯ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã® Style ã‚’æ¤œç´¢ã™ã‚‹â€¦ã¨ã„ã†ã“ã¨ã¯ã—ãªã„ã€‚(WPF ã®ä»•æ§˜)
 	m_style = m_combinedLocalResource->FindStyle(GetThisTypeInfo());
 	if (m_style != NULL) {
 		m_style->Apply(this);
@@ -110,11 +110,11 @@ int UIElement::GetVisualChildrenCount() const
 //-----------------------------------------------------------------------------
 UIElement* UIElement::GetVisualChild(int index) const
 {
-	/*	GetVisualChildrenCount() ‚Æ GetVisualChild() ‚ğ‘g‚İ‡‚í‚¹‚ÄƒrƒWƒ…ƒAƒ‹‚ÉƒAƒNƒZƒX‚·‚é‚Ì‚Í WPF ‚Æ“¯‚¶“®ìB
-		–{ƒ‰ƒCƒuƒ‰ƒŠ‚Å‚ÍˆÈ‘O‚Í m_visualChildren ‚ğ protected ‚ÅŒöŠJ‚µ‚ÄA
-		ƒTƒuƒNƒ‰ƒX‚à’¼Ú m_visualChildren ‚É’Ç‰Á‘€ì‚ğs‚Á‚Ä‚¢‚½B
-		‚µ‚©‚µ‚±‚Ì•û–@‚¾‚ÆAItemsControl ‚â Panel “™‚Å‚©‚È‚è•p”É‚É m_visualChildren ‚Ö‚Ì Add Remove ‚ªs‚í‚ê‚é‚±‚Æ‚É‚È‚Á‚½B
-		‚Ü‚½AItemsControl ‚â Panel ‚ªˆ¬‚Á‚Ä‚¢‚é˜_——v‘f‚ÆƒrƒWƒ…ƒAƒ‹—v‘f‚ğí‚É“¯Šú‚·‚é•K—v‚ª‚ ‚èA˜R‚ê‚ªS”zB
+	/*	GetVisualChildrenCount() ã¨ GetVisualChild() ã‚’çµ„ã¿åˆã‚ã›ã¦ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã®ã¯ WPF ã¨åŒã˜å‹•ä½œã€‚
+		æœ¬ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ã¯ä»¥å‰ã¯ m_visualChildren ã‚’ protected ã§å…¬é–‹ã—ã¦ã€
+		ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã‚‚ç›´æ¥ m_visualChildren ã«è¿½åŠ æ“ä½œã‚’è¡Œã£ã¦ã„ãŸã€‚
+		ã—ã‹ã—ã“ã®æ–¹æ³•ã ã¨ã€ItemsControl ã‚„ Panel ç­‰ã§ã‹ãªã‚Šé »ç¹ã« m_visualChildren ã¸ã® Add Remove ãŒè¡Œã‚ã‚Œã‚‹ã“ã¨ã«ãªã£ãŸã€‚
+		ã¾ãŸã€ItemsControl ã‚„ Panel ãŒæ¡ã£ã¦ã„ã‚‹è«–ç†è¦ç´ ã¨ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã‚’å¸¸ã«åŒæœŸã™ã‚‹å¿…è¦ãŒã‚ã‚Šã€æ¼ã‚ŒãŒå¿ƒé…ã€‚
 	*/
 	return m_visualChildren.GetAt(index);
 }
@@ -124,13 +124,13 @@ UIElement* UIElement::GetVisualChild(int index) const
 //-----------------------------------------------------------------------------
 void UIElement::MeasureLayout(const SizeF& availableSize)
 {
-	// e—v‘f‚©‚çq—v‘f‚ğ”z’u‚Å‚«‚é”ÍˆÍ(availableSize)‚ğó‚¯æ‚èADesiredSize ‚ğXV‚·‚éB
-	// ‡@ Pane \[measure()   c ‚±‚Ì”ÍˆÍ“à‚È‚ç”z’u‚Å‚«‚é‚æ]¨ Button
-	// ‡A Pane ©[DesiredSize c ‚¶‚á‚ ‚±‚ÌƒTƒCƒY‚Å‚¨Šè‚¢‚µ‚Ü‚·]\ Button		¦‚±‚Ì“_‚Å inf ‚ğ•Ô‚·‚±‚Æ‚à‚ ‚è“¾‚éB
-	// ‡B Pane \[arrange()   c ‘¼‚Ìq—v‘f‚Æ‚ÌŒ“‚Ë‡‚¢‚ÅÅIƒTƒCƒY‚ÍƒRƒŒ‚Å]¨ Button
+	// è¦ªè¦ç´ ã‹ã‚‰å­è¦ç´ ã‚’é…ç½®ã§ãã‚‹ç¯„å›²(availableSize)ã‚’å—ã‘å–ã‚Šã€DesiredSize ã‚’æ›´æ–°ã™ã‚‹ã€‚
+	// â‘  Pane â€•[measure()   â€¦ ã“ã®ç¯„å›²å†…ãªã‚‰é…ç½®ã§ãã‚‹ã‚ˆ]â†’ Button
+	// â‘¡ Pane â†[DesiredSize â€¦ ã˜ã‚ƒã‚ã“ã®ã‚µã‚¤ã‚ºã§ãŠé¡˜ã„ã—ã¾ã™]â€• Button		â€»ã“ã®æ™‚ç‚¹ã§ inf ã‚’è¿”ã™ã“ã¨ã‚‚ã‚ã‚Šå¾—ã‚‹ã€‚
+	// â‘¢ Pane â€•[arrange()   â€¦ ä»–ã®å­è¦ç´ ã¨ã®å…¼ã­åˆã„ã§æœ€çµ‚ã‚µã‚¤ã‚ºã¯ã‚³ãƒ¬ã§]â†’ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
 
-	// Margin ‚ğl—¶‚·‚é
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
 	SizeF localAvailableSize(
@@ -139,7 +139,7 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 
 	m_desiredSize = MeasureOverride(localAvailableSize);
 
-	// Margin ‚ğl—¶‚·‚é
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	m_desiredSize.Width += marginWidth;
 	m_desiredSize.Height += marginHeight;
 }
@@ -149,12 +149,12 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 {
-	// finalLocalRect ‚Í‚±‚Ì—v‘f‚ğ”z’u‚Å‚«‚é—ÌˆæƒTƒCƒYB‚ÆAe—v‘f“à‚Å‚ÌƒIƒtƒZƒbƒgB
-	// —v‘f‚É’¼Úİ’è‚³‚ê‚Ä‚¢‚éƒTƒCƒY‚æ‚è‚à‘å‚«‚¢‚±‚Æ‚à‚ ‚éB
-	// TODO: HorizontalAlignment “™‚ğl—¶‚µ‚ÄAÅI“I‚ÈÀ•W‚ÆƒTƒCƒY‚ğŒˆ’è‚·‚éB
-	//		 ‚±‚Ì—v‘f‚ÌƒTƒCƒY‚ªÈ—ª‚³‚ê‚Ä‚¢‚ê‚ÎAStretch ‚È‚çƒTƒCƒY‚ÍÅ‘å‚ÉA‚»‚êˆÈŠO‚È‚çÅ¬‚É‚È‚éB
+	// finalLocalRect ã¯ã“ã®è¦ç´ ã‚’é…ç½®ã§ãã‚‹é ˜åŸŸã‚µã‚¤ã‚ºã€‚ã¨ã€è¦ªè¦ç´ å†…ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã€‚
+	// è¦ç´ ã«ç›´æ¥è¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚µã‚¤ã‚ºã‚ˆã‚Šã‚‚å¤§ãã„ã“ã¨ã‚‚ã‚ã‚‹ã€‚
+	// TODO: HorizontalAlignment ç­‰ã‚’è€ƒæ…®ã—ã¦ã€æœ€çµ‚çš„ãªåº§æ¨™ã¨ã‚µã‚¤ã‚ºã‚’æ±ºå®šã™ã‚‹ã€‚
+	//		 ã“ã®è¦ç´ ã®ã‚µã‚¤ã‚ºãŒçœç•¥ã•ã‚Œã¦ã„ã‚Œã°ã€Stretch ãªã‚‰ã‚µã‚¤ã‚ºã¯æœ€å¤§ã«ã€ãã‚Œä»¥å¤–ãªã‚‰æœ€å°ã«ãªã‚‹ã€‚
 
-	// Margin ‚ğl—¶‚·‚é
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
 	SizeF arrangeSize = finalLocalRect.GetSize();
@@ -175,8 +175,8 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 //-----------------------------------------------------------------------------
 void UIElement::UpdateLayout()
 {
-	// ƒTƒCƒY‚ª’è‚Ü‚Á‚Ä‚¢‚È‚¢ê‡‚ÍƒŒƒCƒAƒEƒg‚ğŒˆ’è‚Å‚«‚È‚¢
-	// TODO: —áŠO‚Ì•û‚ª—Ç‚¢‚©‚àH
+	// ã‚µã‚¤ã‚ºãŒå®šã¾ã£ã¦ã„ãªã„å ´åˆã¯ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’æ±ºå®šã§ããªã„
+	// TODO: ä¾‹å¤–ã®æ–¹ãŒè‰¯ã„ã‹ã‚‚ï¼Ÿ
 	if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
 	MeasureLayout(m_size);
@@ -196,11 +196,11 @@ void UIElement::OnLayoutUpdated()
 void UIElement::AddVisualChild(UIElement* element)
 {
 	LN_CHECK_ARGS_RETURN(element != NULL);
-	LN_THROW(element->GetParent() == NULL, InvalidOperationException);	// Šù‚Ée—v‘f‚ª‚ ‚Á‚½
+	LN_THROW(element->GetParent() == NULL, InvalidOperationException);	// æ—¢ã«è¦ªè¦ç´ ãŒã‚ã£ãŸ
 
-	m_visualChildren.Add(element);		// m_visualChildren ‚É’Ç‰Á‚µ‚½‚à‚Ì‚Í OnEvent ‚â Render ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é
-	element->SetParent(this);			// VisualƒcƒŠ[‚Å‚àA˜_—“I‚Èe‚Ìˆµ‚¢‚Í‹¤’ÊB
-	element->SetTemplateModified(true);	// ƒeƒ“ƒvƒŒ[ƒg‚ğÄ\’z‚·‚é•K—v‚ª‚ ‚è‚»‚¤
+	m_visualChildren.Add(element);		// m_visualChildren ã«è¿½åŠ ã—ãŸã‚‚ã®ã¯ OnEvent ã‚„ Render ãŒå‘¼ã°ã‚Œã‚‹ã‚ˆã†ã«ãªã‚‹
+	element->SetParent(this);			// Visualãƒ„ãƒªãƒ¼ã§ã‚‚ã€è«–ç†çš„ãªè¦ªã®æ‰±ã„ã¯å…±é€šã€‚
+	element->SetTemplateModified(true);	// ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’å†æ§‹ç¯‰ã™ã‚‹å¿…è¦ãŒã‚ã‚Šãã†
 }
 
 //-----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ void UIElement::AddVisualChild(UIElement* element)
 void UIElement::RemoveVisualChild(UIElement* element)
 {
 	LN_CHECK_ARGS_RETURN(element != NULL);
-	LN_THROW(element->GetParent() == this, InvalidOperationException);	// this ‚ªe—v‘f‚Å‚ ‚é‚Í‚¸
+	LN_THROW(element->GetParent() == this, InvalidOperationException);	// this ãŒè¦ªè¦ç´ ã§ã‚ã‚‹ã¯ãš
 
 	m_visualChildren.Remove(element);
 	element->SetParent(NULL);
@@ -220,9 +220,9 @@ void UIElement::RemoveVisualChild(UIElement* element)
 //-----------------------------------------------------------------------------
 SizeF UIElement::MeasureOverride(const SizeF& constraint)
 {
-	// –ß‚è’l‚ÍAconstraint ‚Ì§ŒÀ‚Ì’†‚ÅAq—v‘f‚ğƒŒƒCƒAƒEƒg‚·‚é‚½‚ß‚É•K—v‚ÈÅ¬ƒTƒCƒYB
-	// ƒ†[ƒU[w’è‚ÌƒTƒCƒY‚ª‚ ‚éê‡‚Í‚»‚ê‚ğ•Ô‚·B
-	// ‚½‚¾‚µAconstraint ‚ğ’´‚¦‚é‚±‚Æ‚Í‚Å‚«‚È‚¢B
+	// æˆ»ã‚Šå€¤ã¯ã€constraint ã®åˆ¶é™ã®ä¸­ã§ã€å­è¦ç´ ã‚’ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã™ã‚‹ãŸã‚ã«å¿…è¦ãªæœ€å°ã‚µã‚¤ã‚ºã€‚
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šã®ã‚µã‚¤ã‚ºãŒã‚ã‚‹å ´åˆã¯ãã‚Œã‚’è¿”ã™ã€‚
+	// ãŸã ã—ã€constraint ã‚’è¶…ãˆã‚‹ã“ã¨ã¯ã§ããªã„ã€‚
 
 	SizeF size;
 	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : size.Width;
@@ -278,7 +278,7 @@ void UIElement::ApplyTemplate()
 	//	parentResource = m_parent->m_combinedLocalResource;
 	//}
 	//else {
-	//	parentResource = m_manager->GetRootCombinedResource();	// e—v‘f‚ª–³‚¯‚ê‚Î Manager ‚ÌƒŠƒ\[ƒX‚ğg‚¤
+	//	parentResource = m_manager->GetRootCombinedResource();	// è¦ªè¦ç´ ãŒç„¡ã‘ã‚Œã° Manager ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½¿ã†
 	//}
 	ApplyTemplateHierarchy(/*parentResource*/);
 }
@@ -288,13 +288,13 @@ void UIElement::ApplyTemplate()
 //-----------------------------------------------------------------------------
 void UIElement::UpdateLocalResource()
 {
-	// e‚ÍH
+	// è¦ªã¯ï¼Ÿ
 	CombinedLocalResource* parentResource = NULL;
 	if (m_parent != NULL) {
 		parentResource = m_parent->m_combinedLocalResource;
 	}
 	else {
-		parentResource = m_manager->GetRootCombinedResource();	// e—v‘f‚ª–³‚¯‚ê‚Î Manager ‚ÌƒŠƒ\[ƒX‚ğg‚¤
+		parentResource = m_manager->GetRootCombinedResource();	// è¦ªè¦ç´ ãŒç„¡ã‘ã‚Œã° Manager ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½¿ã†
 	}
 
 	if (m_combinedLocalResource != NULL && parentResource != m_combinedLocalResource) {
@@ -311,8 +311,8 @@ void UIElement::UpdateLocalResource()
 //-----------------------------------------------------------------------------
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
-	// Œã‚ë‚©‚çƒ‹[ƒv‚·‚éBŒã‚Ìƒ‚ƒm‚ªã‚É•`‰æ‚³‚ê‚é‚Ì‚ÅA‚±‚Ì•û‚ª©‘RB
-	// TODO: ZƒI[ƒ_[‚Í•Ê‚ÌƒŠƒXƒg‚É‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚éEEE
+	// å¾Œã‚ã‹ã‚‰ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã€‚å¾Œã®ãƒ¢ãƒãŒä¸Šã«æç”»ã•ã‚Œã‚‹ã®ã§ã€ã“ã®æ–¹ãŒè‡ªç„¶ã€‚
+	// TODO: Zã‚ªãƒ¼ãƒ€ãƒ¼ã¯åˆ¥ã®ãƒªã‚¹ãƒˆã«ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹ãƒ»ãƒ»ãƒ»
 	int count = GetVisualChildrenCount();
 	for (int i = count - 1; i >= 0; i--)
 	{
@@ -347,29 +347,29 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 {
 	if (m_rootLogicalParent == logicalParent) { return; }
 
-	// ŒÃ‚¢‚Ù‚¤‚©‚çƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰‚ğ‰ğœ‚·‚é
-	// (m_rootLogicalParent ‚É‰½‚©ƒZƒbƒg‚³‚ê‚Ä‚¢‚é‚Ì‚¾‚©‚çAm_templateBindingHandler ‚Í NULL ‚Å‚Í‚È‚¢‚Í‚¸)
+	// å¤ã„ã»ã†ã‹ã‚‰ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ã‚’è§£é™¤ã™ã‚‹
+	// (m_rootLogicalParent ã«ä½•ã‹ã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ã‚‹ã®ã ã‹ã‚‰ã€m_templateBindingHandler ã¯ NULL ã§ã¯ãªã„ã¯ãš)
 	if (m_rootLogicalParent != NULL) {
 		m_rootLogicalParent->PropertyChangedForTemplateBindings -= m_templateBindingHandler;
 	}
 
-	// delegate ‚ª–¢ì¬‚Å‚ ‚ê‚Îì‚é (‰‰ñ)
+	// delegate ãŒæœªä½œæˆã§ã‚ã‚Œã°ä½œã‚‹ (åˆå›æ™‚)
 	if (m_templateBindingHandler.IsEmpty()) {
 		m_templateBindingHandler = LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged);
 	}
 
-	// —v‘f‚ğ•Û‚·‚é
+	// è¦ç´ ã‚’ä¿æŒã™ã‚‹
 	m_rootLogicalParent = logicalParent;
 
 	if (m_rootLogicalParent != NULL)
 	{
-		// V‚µ‚¢•û‚ÉƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰‚ğ“o˜^‚·‚é
+		// æ–°ã—ã„æ–¹ã«ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ã‚’ç™»éŒ²ã™ã‚‹
 		m_rootLogicalParent->PropertyChangedForTemplateBindings += m_templateBindingHandler;
 
-		// TemplateBinding ‚ğXV‚·‚é
+		// TemplateBinding ã‚’æ›´æ–°ã™ã‚‹
 		for (TemplateBindingInfo& info : m_templateBindingInfoList)
 		{
-			// TODO: TypeInfo::FindProperty(m_rootLogicalParent, name) ‚Ì‚Ù‚¤‚ª©‘RH
+			// TODO: TypeInfo::FindProperty(m_rootLogicalParent, name) ã®ã»ã†ãŒè‡ªç„¶ï¼Ÿ
 			auto* prop = m_rootLogicalParent->GetThisTypeInfo()->FindProperty(info.SourcePropPath);
 			if (prop != NULL)
 			{
@@ -378,7 +378,7 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 		}
 	}
 
-	// q—v‘f‚Ö‚à“¯‚¶˜_—e—v‘f‚ğƒZƒbƒg‚·‚é
+	// å­è¦ç´ ã¸ã‚‚åŒã˜è«–ç†è¦ªè¦ç´ ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	GUIHelper::ForEachVisualChildren(this, [logicalParent](UIElement* child) { child->UpdateTemplateLogicalParentHierarchy(logicalParent); });
 }
 
@@ -389,10 +389,10 @@ void UIElement::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
 	CoreObject::OnPropertyChanged(e);
 	
-	// TemplateBinding ‚É“`‚¦‚é
+	// TemplateBinding ã«ä¼ãˆã‚‹
 	PropertyChangedForTemplateBindings(e);
 	
-	// ƒXƒ^ƒCƒ‹‚Ì‚ÂƒgƒŠƒK[‚É“`‚¦‚é
+	// ã‚¹ã‚¿ã‚¤ãƒ«ã®æŒã¤ãƒˆãƒªã‚¬ãƒ¼ã«ä¼ãˆã‚‹
 	if (m_style != NULL) {
 		m_style->NortifyTargetObjectPropertyChanged(this, e);
 	}
@@ -407,7 +407,7 @@ void UIElement::UpdateTransformHierarchy()
 	{
 		m_finalGlobalRect.X = m_parent->m_finalGlobalRect.X + m_finalLocalRect.X;
 		m_finalGlobalRect.Y = m_parent->m_finalGlobalRect.Y + m_finalLocalRect.Y;
-		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// •s“§–¾“x‚àƒRƒR‚Å¬‚º‚Ä‚µ‚Ü‚¤
+		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// ä¸é€æ˜åº¦ã‚‚ã‚³ã‚³ã§æ··ãœã¦ã—ã¾ã†
 	}
 	else
 	{
@@ -418,7 +418,7 @@ void UIElement::UpdateTransformHierarchy()
 	m_finalGlobalRect.Width = m_finalLocalRect.Width;
 	m_finalGlobalRect.Height = m_finalLocalRect.Height;
 
-	// q—v‘f
+	// å­è¦ç´ 
 	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
 }
 
@@ -427,14 +427,14 @@ void UIElement::UpdateTransformHierarchy()
 //-----------------------------------------------------------------------------
 void UIElement::Render()
 {
-	// q—v‘f
+	// å­è¦ç´ 
 	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) {
 		child->Render();
 	});
 
-	// TODO: Panel ‚Æ‚©A•`‚­•K—v‚Ì–³‚¢‚à‚Ì‚Í“Áê‚ ‚Â‚©‚¢‚É‚µ‚ÄAPainter ì‚ç‚È‚¢‚æ‚¤‚É‚µ‚½‚¢
+	// TODO: Panel ã¨ã‹ã€æãå¿…è¦ã®ç„¡ã„ã‚‚ã®ã¯ç‰¹æ®Šã‚ã¤ã‹ã„ã«ã—ã¦ã€Painter ä½œã‚‰ãªã„ã‚ˆã†ã«ã—ãŸã„
 	Graphics::Painter painter(m_manager->GetGraphicsManager());
-	painter.PushTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: ‰Šú Transform ‚Í DrawingContext ‚Æ‚©ƒx[ƒXƒNƒ‰ƒX‚Éì‚Á‚Ä‰B‚µ‚½‚¢B
+	painter.PushTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: åˆæœŸ Transform ã¯ DrawingContext ã¨ã‹ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã«ä½œã£ã¦éš ã—ãŸã„ã€‚
 	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
 	painter.SetOpacity(m_combinedOpacity);
 	OnRender(&painter);
@@ -445,15 +445,15 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 {
-	/* ¡‚Ì‚Æ‚±‚ëAƒCƒxƒ“ƒg‚ğÄ‹A‚Å’Ê’m‚µ‚Ä‚¢‚­•K—v‚Í‚È‚¢B
-		ƒ}ƒEƒXƒCƒxƒ“ƒg‚Í Hover ‚µ‚Ä‚¢‚é‚à‚Ì‚Ö Manager ‚ª’¼Ú‘—‚è‚ŞB
-		ƒL[ƒCƒxƒ“ƒg‚ÍƒtƒH[ƒJƒX‚ğ‚Á‚Ä‚¢‚é‚à‚Ì‚Ö Manager ‚ª’¼Ú‘—‚è‚ŞB
+	/* ä»Šã®ã¨ã“ã‚ã€ã‚¤ãƒ™ãƒ³ãƒˆã‚’å†å¸°ã§é€šçŸ¥ã—ã¦ã„ãå¿…è¦ã¯ãªã„ã€‚
+		ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã¯ Hover ã—ã¦ã„ã‚‹ã‚‚ã®ã¸ Manager ãŒç›´æ¥é€ã‚Šè¾¼ã‚€ã€‚
+		ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã¯ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹ã‚‚ã®ã¸ Manager ãŒç›´æ¥é€ã‚Šè¾¼ã‚€ã€‚
 
-		c‚Æ‚¢‚¤‚©AÄ‹A‚Å’Ê’m‚µ‚Ä‚Í‚È‚ç‚È‚¢Bƒ}ƒEƒXƒCƒxƒ“ƒg‚Æ‚©‚ÍÄ‹A‚µ‚Ä‚µ‚Ü‚¤‚ÆA
-		ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªæ‚Á‚Ä‚¢‚È‚¢—v‘f‚ªƒCƒxƒ“ƒg‚ğó‚¯æ‚Á‚Ä‚µ‚Ü‚¤‚±‚Æ‚É‚È‚éB
+		â€¦ã¨ã„ã†ã‹ã€å†å¸°ã§é€šçŸ¥ã—ã¦ã¯ãªã‚‰ãªã„ã€‚ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã¨ã‹ã¯å†å¸°ã—ã¦ã—ã¾ã†ã¨ã€
+		ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒä¹—ã£ã¦ã„ãªã„è¦ç´ ãŒã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã£ã¦ã—ã¾ã†ã“ã¨ã«ãªã‚‹ã€‚
 	*/
-	// Œã‚ë‚©‚çƒ‹[ƒv‚·‚éBŒã‚Ìƒ‚ƒm‚ªã‚É•`‰æ‚³‚ê‚é‚Ì‚ÅA‚±‚Ì•û‚ª©‘RB
-	// TODO: ZƒI[ƒ_[‚Í•Ê‚ÌƒŠƒXƒg‚É‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚éEEE
+	// å¾Œã‚ã‹ã‚‰ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã€‚å¾Œã®ãƒ¢ãƒãŒä¸Šã«æç”»ã•ã‚Œã‚‹ã®ã§ã€ã“ã®æ–¹ãŒè‡ªç„¶ã€‚
+	// TODO: Zã‚ªãƒ¼ãƒ€ãƒ¼ã¯åˆ¥ã®ãƒªã‚¹ãƒˆã«ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹ãƒ»ãƒ»ãƒ»
 	//int count = GetVisualChildrenCount();
 	//for (int i = count - 1; i >= 0; i--)
 	//{
@@ -505,7 +505,7 @@ void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 {
 	UpdateLocalResource();
 
-	// ©•ª‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğXV‚·‚é•K—v‚ª‚ ‚éê‡
+	// è‡ªåˆ†ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’æ›´æ–°ã™ã‚‹å¿…è¦ãŒã‚ã‚‹å ´åˆ
 	if (m_templateModified)
 	{
 		//if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
@@ -514,18 +514,18 @@ void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 		//else {
 		//	LN_REFOBJ_SET(m_combinedLocalResource, parent);
 		//}
-		// ControlTemplate ‚â DataTemplate ‚Í‚±‚ÌƒI[ƒo[ƒ‰ƒCƒh‚Å Apply ‚³‚ê‚é
+		// ControlTemplate ã‚„ DataTemplate ã¯ã“ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã§ Apply ã•ã‚Œã‚‹
 		OnApplyTemplate(m_combinedLocalResource);
 
-		m_templateModified = false;			// ©•ª‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğXV‚µ‚½
-		m_childTemplateModified = true;		// ©•ª‚ğXV‚µ‚½‚çAq‚àXV‚·‚é•K—v‚ª‚ ‚é
+		m_templateModified = false;			// è‡ªåˆ†ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’æ›´æ–°ã—ãŸ
+		m_childTemplateModified = true;		// è‡ªåˆ†ã‚’æ›´æ–°ã—ãŸã‚‰ã€å­ã‚‚æ›´æ–°ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
 	}
 
-	// q—v‘f‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğXV‚·‚é•K—v‚ª‚ ‚éê‡ (ƒpƒtƒH[ƒ}ƒ“ƒX‚Ì‚½‚ß)
+	// å­è¦ç´ ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’æ›´æ–°ã™ã‚‹å¿…è¦ãŒã‚ã‚‹å ´åˆ (ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ã®ãŸã‚)
 	if (m_childTemplateModified)
 	{
 		GUIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->ApplyTemplate(); });
-		m_childTemplateModified = false;	// q—v‘f‚Ìƒeƒ“ƒvƒŒ[ƒg‚àXV‚µ‚½
+		m_childTemplateModified = false;	// å­è¦ç´ ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚‚æ›´æ–°ã—ãŸ
 	}
 }
 
@@ -534,7 +534,7 @@ void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 //-----------------------------------------------------------------------------
 //void UIElement::UpdateTemplateHierarchy()
 //{
-//	//// ©•ª‚Ìƒeƒ“ƒvƒŒ[ƒgXV‚ª•K—v
+//	//// è‡ªåˆ†ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆæ›´æ–°ãŒå¿…è¦
 //	//if (m_templateModified)
 //	//{
 //	//	ApplyTemplate();
@@ -546,7 +546,7 @@ void UIElement::ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/)
 //-----------------------------------------------------------------------------
 void UIElement::SetTemplateChild(UIElement* child)
 {
-	// ŒÃ‚¢—v‘f‚ª‚ ‚ê‚Î‚¢‚ë‚¢‚ë‰ğœ‚·‚é
+	// å¤ã„è¦ç´ ãŒã‚ã‚Œã°ã„ã‚ã„ã‚è§£é™¤ã™ã‚‹
 	if (m_templateChild != NULL)
 	{
 		RemoveVisualChild(m_templateChild);
@@ -557,8 +557,8 @@ void UIElement::SetTemplateChild(UIElement* child)
 		AddVisualChild(child);
 		m_templateChild = child;
 
-		// ƒeƒ“ƒvƒŒ[ƒg‚Ìƒ‹[ƒg˜_——v‘f‚ª•Ï‚í‚Á‚½‚±‚Æ‚ğAm_templateChild ‚Ìq—v‘f‚É’Ê’m‚·‚éB
-		// ‚±‚Ì’†‚Å TemplateBinding ‚È‚Ç‚ÌƒŠƒ“ƒN‚ªs‚í‚ê‚éB
+		// ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã®ãƒ«ãƒ¼ãƒˆè«–ç†è¦ç´ ãŒå¤‰ã‚ã£ãŸã“ã¨ã‚’ã€m_templateChild ã®å­è¦ç´ ã«é€šçŸ¥ã™ã‚‹ã€‚
+		// ã“ã®ä¸­ã§ TemplateBinding ãªã©ã®ãƒªãƒ³ã‚¯ãŒè¡Œã‚ã‚Œã‚‹ã€‚
 		m_templateChild->UpdateTemplateLogicalParentHierarchy(this);
 	}
 }
@@ -568,7 +568,7 @@ void UIElement::SetTemplateChild(UIElement* child)
 //-----------------------------------------------------------------------------
 void UIElement::Handler_CanExecuteRoutedCommandEvent(CanExecuteRoutedCommandEventArgs* e)
 {
-	// TODO: ƒŠƒo[ƒXƒCƒeƒŒ[ƒ^‚Å‚È‚¢‚ÆAƒRƒ}ƒ“ƒh‚ÌƒI[ƒo[ƒ‰ƒCƒh‚É‘Î‰‚Å‚«‚È‚¢
+	// TODO: ãƒªãƒãƒ¼ã‚¹ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã§ãªã„ã¨ã€ã‚³ãƒãƒ³ãƒ‰ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã«å¯¾å¿œã§ããªã„
 	for (auto context : m_routedCommandTypeContextList)
 	{
 		for (auto command : context->RoutedCommandList)
@@ -577,7 +577,7 @@ void UIElement::Handler_CanExecuteRoutedCommandEvent(CanExecuteRoutedCommandEven
 			e->Handled = true;
 		}
 	}
-	// e->Handled ‚ª false ‚È‚çe UIElement ‚Ì Handler_CanExecuteRoutedCommandEvent ‚Ö—¬‚ê‚éB
+	// e->Handled ãŒ false ãªã‚‰è¦ª UIElement ã® Handler_CanExecuteRoutedCommandEvent ã¸æµã‚Œã‚‹ã€‚
 }
 
 //-----------------------------------------------------------------------------
@@ -593,7 +593,7 @@ void UIElement::Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs*
 			e->Handled = true;
 		}
 	}
-	// e->Handled ‚ª false ‚È‚çe UIElement ‚Ì Handler_ExecuteRoutedCommandEvent ‚Ö—¬‚ê‚éB
+	// e->Handled ãŒ false ãªã‚‰è¦ª UIElement ã® Handler_ExecuteRoutedCommandEvent ã¸æµã‚Œã‚‹ã€‚
 }
 
 //-----------------------------------------------------------------------------

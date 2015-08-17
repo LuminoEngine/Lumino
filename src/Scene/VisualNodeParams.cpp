@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../Internal.h"
@@ -35,8 +35,8 @@ void VisualNodeParams::Create(int subsetCount)
 
 	m_combinedSubsetParams.Resize(subsetCount);
 
-	// ‚à‚µ 1 ‚æ‚è‘½‚¯‚ê‚ÎƒTƒuƒZƒbƒg’PˆÊ‚Ìƒpƒ‰ƒ[ƒ^‚ğŠeŒÂì¬‚·‚éB
-	// (1‚Â‚Ìê‡‚Íƒƒ‚ƒŠg—p—Ê‚ğ—}‚¦‚é‚½‚ßAm_globalParams ‚¾‚¯‚ğg‚¤)
+	// ã‚‚ã— 1 ã‚ˆã‚Šå¤šã‘ã‚Œã°ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å„å€‹ä½œæˆã™ã‚‹ã€‚
+	// (1ã¤ã®å ´åˆã¯ãƒ¡ãƒ¢ãƒªä½¿ç”¨é‡ã‚’æŠ‘ãˆã‚‹ãŸã‚ã€m_globalParams ã ã‘ã‚’ä½¿ã†)
 	if (subsetCount > 1) {
 		m_subsetParams.Resize(subsetCount);
 	}
@@ -47,8 +47,8 @@ void VisualNodeParams::Create(int subsetCount)
 //-----------------------------------------------------------------------------
 VisualNodeSubsetParams& VisualNodeParams::GetSubsetParams(int index)
 {
-	// -1 ‚Ì‚Í m_globalParams ‚ğ•Ô‚·B
-	// ‚Ü‚½AƒTƒuƒZƒbƒg”‚ª 1 ‚Ì‚Íƒƒ‚ƒŠg—p—Ê‚ğ‰Ÿ‚³‚¹‚é‚½‚ß m_subsetParams ‚ğŠm•Û‚µ‚Ä‚¢‚È‚¢Bm_globalParams ‚ğ‹¤—L‚·‚éB
+	// -1 ã®æ™‚ã¯ m_globalParams ã‚’è¿”ã™ã€‚
+	// ã¾ãŸã€ã‚µãƒ–ã‚»ãƒƒãƒˆæ•°ãŒ 1 ã®æ™‚ã¯ãƒ¡ãƒ¢ãƒªä½¿ç”¨é‡ã‚’æŠ¼ã•ã›ã‚‹ãŸã‚ m_subsetParams ã‚’ç¢ºä¿ã—ã¦ã„ãªã„ã€‚m_globalParams ã‚’å…±æœ‰ã™ã‚‹ã€‚
 	if (index == -1 || m_subsetParams.IsEmpty()) {
 		return m_globalParams;
 	}
@@ -60,7 +60,7 @@ VisualNodeSubsetParams& VisualNodeParams::GetSubsetParams(int index)
 //-----------------------------------------------------------------------------
 const VisualNodeSubsetParams& VisualNodeParams::GetSubsetParams(int index) const
 {
-	// ¦ª‚Æ“¯‚¶
+	// â€»â†‘ã¨åŒã˜
 	if (index == -1 || m_subsetParams.IsEmpty()) {
 		return m_globalParams;
 	}
@@ -73,27 +73,27 @@ const VisualNodeSubsetParams& VisualNodeParams::GetSubsetParams(int index) const
 void VisualNodeParams::UpdateSubsetRenderParam(const VisualNodeParams* parentParams)
 {
 	//---------------------------------------------------------
-	// ƒOƒ[ƒoƒ‹İ’è‚ÌXV
+	// ã‚°ãƒ­ãƒ¼ãƒãƒ«è¨­å®šã®æ›´æ–°
 
 	m_combinedGlobalParams = m_globalParams;
 
-	// eİ’è‚ª‚ ‚éê‡‚Íe‚ÌƒOƒ[ƒoƒ‹İ’è‚ğŠ|‚¯‡‚í‚¹‚é
+	// è¦ªè¨­å®šãŒã‚ã‚‹å ´åˆã¯è¦ªã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¨­å®šã‚’æ›ã‘åˆã‚ã›ã‚‹
 	if (parentParams != NULL) {
 		m_combinedGlobalParams.Multiply(parentParams->m_combinedGlobalParams);
 	}
 
 
 	//---------------------------------------------------------
-	// ŠeƒTƒuƒZƒbƒgİ’è‚ÌXV
+	// å„ã‚µãƒ–ã‚»ãƒƒãƒˆè¨­å®šã®æ›´æ–°
 
 	if (m_combinedSubsetParams.GetCount() == 1) {
-		m_combinedSubsetParams[0] = m_combinedGlobalParams;	// ƒTƒuƒZƒbƒg”‚ª 1 ‚Ì‚Íƒƒ‚ƒŠg—p—Ê‚ğ‰Ÿ‚³‚¹‚é‚½‚ß m_globalParams ‚¾‚¯‚ğg—p‚·‚éB
+		m_combinedSubsetParams[0] = m_combinedGlobalParams;	// ã‚µãƒ–ã‚»ãƒƒãƒˆæ•°ãŒ 1 ã®æ™‚ã¯ãƒ¡ãƒ¢ãƒªä½¿ç”¨é‡ã‚’æŠ¼ã•ã›ã‚‹ãŸã‚ m_globalParams ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹ã€‚
 	}
 	else
 	{
 		for (int i = 0; i < m_combinedSubsetParams.GetCount(); i++) {
 			m_combinedSubsetParams[i] = m_subsetParams[i];
-			m_combinedSubsetParams[i].Multiply(m_combinedGlobalParams);	// ƒOƒ[ƒoƒ‹İ’è‚ğŠ|‚¯‡‚í‚¹‚é
+			m_combinedSubsetParams[i].Multiply(m_combinedGlobalParams);	// ã‚°ãƒ­ãƒ¼ãƒãƒ«è¨­å®šã‚’æ›ã‘åˆã‚ã›ã‚‹
 		}
 	}
 }

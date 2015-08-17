@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Common.h"
@@ -17,13 +17,13 @@ public:
 
 public:
 
-	/// ‘O•`‰æ
+	/// å‰æç”»
 	virtual void PreRender(const SizeF& viewSize) {}
 
-	/// –{•`‰æ
+	/// æœ¬æç”»
 	virtual void Render() {}
 
-	/// Œã•`‰æ
+	/// å¾Œæç”»
 	virtual void PostRender() {}
 
 private:
@@ -66,8 +66,8 @@ private:
 	SceneNode*						m_renderingRootNode;
 	RefPtr<RenderingPassRefList>	m_renderingPassList;
 
-	SceneNodeList					m_renderingNodeList;	///< ‹‘äƒJƒŠƒ“ƒO“™‚ğs‚Á‚½Œã‚ÌAÀÛ‚É•`‰æ‚·‚é‚×‚«ƒm[ƒh‚ÌƒŠƒXƒg
-	LightNodeList					m_renderingLightList;	///< •`‰æƒ‹[ƒgˆÈ‰º‚Ìƒ‰ƒCƒg (‘¼‚Ì•`‰æ‹óŠÔ‚Éƒ‰ƒCƒeƒBƒ“ƒO‚Ì‰e‹¿‚ğ—^‚¦‚È‚¢‚æ‚¤‚É‚·‚é‚½‚ß)
+	SceneNodeList					m_renderingNodeList;	///< è¦–éŒ˜å°ã‚«ãƒªãƒ³ã‚°ç­‰ã‚’è¡Œã£ãŸå¾Œã®ã€å®Ÿéš›ã«æç”»ã™ã‚‹ã¹ããƒãƒ¼ãƒ‰ã®ãƒªã‚¹ãƒˆ
+	LightNodeList					m_renderingLightList;	///< æç”»ãƒ«ãƒ¼ãƒˆä»¥ä¸‹ã®ãƒ©ã‚¤ãƒˆ (ä»–ã®æç”»ç©ºé–“ã«ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã®å½±éŸ¿ã‚’ä¸ãˆãªã„ã‚ˆã†ã«ã™ã‚‹ãŸã‚)
 };
 
 } // namespace Scene

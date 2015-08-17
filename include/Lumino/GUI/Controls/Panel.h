@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../UIElement.h"
 #include "../UIElementCollection.h"
@@ -9,7 +9,7 @@ namespace GUI
 {
 
 /**
-	@brief		Panel —v‘f‚ÌŠî–{ƒNƒ‰ƒX‚Å‚·B
+	@brief		Panel è¦ç´ ã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Panel
 	: public UIElement
@@ -26,7 +26,7 @@ public:
 
 public:
 #if 0
-	// q—v‘f‚ğ‚Â—v‘f‚Ì override
+	// å­è¦ç´ ã‚’æŒã¤è¦ç´ ã® override
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	//virtual void MeasureLayout(const SizeF& availableSize);
@@ -59,8 +59,8 @@ class PilePanel
 	LN_UI_ELEMENT_SUBCLASS_DECL(PilePanel);
 public:
 	/**
-		@brief	PilePanel ‚ğì¬‚µ‚Ü‚·B
-		@return	ì¬‚³‚ê‚½ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒ|ƒCƒ“ƒ^Bg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄAQÆ‚ğ‰ğ•ú‚µ‚Ä‚­‚¾‚³‚¢B	
+		@brief	PilePanel ã‚’ä½œæˆã—ã¾ã™ã€‚
+		@return	ä½œæˆã•ã‚ŒãŸã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã€‚ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦ã€å‚ç…§ã‚’è§£æ”¾ã—ã¦ãã ã•ã„ã€‚	
 	*/
 	PilePanel* Create();
 

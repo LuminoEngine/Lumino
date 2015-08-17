@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Documents/Paragraph.h"
 #include "UIElement.h"

@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "UIElement.h"
 
@@ -8,7 +8,7 @@ namespace GUI
 {
 
 /**
-	@brief	�r�W���A���c���[�̗v�f�ɃA�N�Z�X���邽�߂̃��[�e�B���e�B�ł��B
+	@brief	ビジュアルツリーの要素にアクセスするためのユーティリティです。
 */
 class VisualTreeHelper
 {

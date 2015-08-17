@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../Internal.h"
@@ -43,7 +43,7 @@ void VisualNode::Create(SceneGraphManager* manager, int subsetCount)
 //-----------------------------------------------------------------------------
 void VisualNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList)
 {
-	// e‚ª VisualNode ‚Å‚ ‚ê‚Î Visual ŠÖŒW‚ÌƒvƒƒpƒeƒB‚ğŒp³‚µ‚ÄXV‚·‚é
+	// è¦ªãŒ VisualNode ã§ã‚ã‚Œã° Visual é–¢ä¿‚ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’ç¶™æ‰¿ã—ã¦æ›´æ–°ã™ã‚‹
 	if (parent != NULL && parent->GetSceneNodeType() == SceneNodeType_VisualNode) {
 		m_visualNodeParams.UpdateSubsetRenderParam(&static_cast<VisualNode*>(parent)->m_visualNodeParams);
 	}
@@ -51,7 +51,7 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderin
 		m_visualNodeParams.UpdateSubsetRenderParam(NULL);
 	}
 
-	// ‚±‚Ìƒm[ƒh‚Í•`‰æ‚Å‚«‚é
+	// ã“ã®ãƒãƒ¼ãƒ‰ã¯æç”»ã§ãã‚‹
 	renderingNodeList->Add(this);
 
 	SceneNode::UpdateFrameHierarchy(parent, renderingNodeList);
@@ -62,12 +62,12 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderin
 //-----------------------------------------------------------------------------
 void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
-	// TODO: ‹‘äƒJƒŠƒ“ƒO“™
+	// TODO: è¦–éŒ˜å°ã‚«ãƒªãƒ³ã‚°ç­‰
 
-	// TOOD: Zƒ\[ƒg—p‚Ì‹——£‚ğŒvZ
+	// TOOD: Zã‚½ãƒ¼ãƒˆç”¨ã®è·é›¢ã‚’è¨ˆç®—
 
 
-	// ‚±‚Ìƒm[ƒh‚Í•`‰æ‚Å‚«‚é
+	// ã“ã®ãƒãƒ¼ãƒ‰ã¯æç”»ã§ãã‚‹
 	renderingNodeList->Add(this);
 
 	SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
@@ -79,24 +79,24 @@ void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* rende
 void VisualNode::UpdateAffectLights(LightNodeList* renderingLightList, int maxCount)
 {
 	/*
-		‚Ü‚¸‘S‚Ä‚Ìƒ‰ƒCƒg‚ÉA‚±‚Ìƒm[ƒh‚Æ‚Ì‹——£‚ğƒZƒbƒg‚·‚éB
-		‚»‚ÌŒã‹ß‚¢‡‚Éƒ\[ƒg‚µ‚ÄAƒ\[ƒgŒ‹‰Ê‚Ìæ“ª‚©‚ç•K—v‚È”‚¾‚¯æ‚è‚¾‚µ‚Ä‚¢‚éB
-		ƒ‰ƒCƒg‚Ì”‚ª­‚È‚¯‚ê‚Î‚Ç‚ñ‚ÈƒAƒ‹ƒSƒŠƒYƒ€‚É‚µ‚Ä‚à‘å·‚Í‚È‚¢‚Æv‚¤‚ªA
-		ƒm[ƒh’PˆÊ‚Åƒ\[ƒg‚ªÀs‚³‚ê‚é‚Ì‚Å‘¬“x“I‚É­‚µS”zB
-		æ“ª”ŒÂ‚ªŠm’è‚µ‚½‚Æ‚«‚Éƒ\[ƒg‚ğI—¹‚·‚é“™AÅ“K‰»‚Ì—]’n‚Í‚ ‚é‚ªcB
+		ã¾ãšå…¨ã¦ã®ãƒ©ã‚¤ãƒˆã«ã€ã“ã®ãƒãƒ¼ãƒ‰ã¨ã®è·é›¢ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+		ãã®å¾Œè¿‘ã„é †ã«ã‚½ãƒ¼ãƒˆã—ã¦ã€ã‚½ãƒ¼ãƒˆçµæœã®å…ˆé ­ã‹ã‚‰å¿…è¦ãªæ•°ã ã‘å–ã‚Šã ã—ã¦ã„ã‚‹ã€‚
+		ãƒ©ã‚¤ãƒˆã®æ•°ãŒå°‘ãªã‘ã‚Œã°ã©ã‚“ãªã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã«ã—ã¦ã‚‚å¤§å·®ã¯ãªã„ã¨æ€ã†ãŒã€
+		ãƒãƒ¼ãƒ‰å˜ä½ã§ã‚½ãƒ¼ãƒˆãŒå®Ÿè¡Œã•ã‚Œã‚‹ã®ã§é€Ÿåº¦çš„ã«å°‘ã—å¿ƒé…ã€‚
+		å…ˆé ­æ•°å€‹ãŒç¢ºå®šã—ãŸã¨ãã«ã‚½ãƒ¼ãƒˆã‚’çµ‚äº†ã™ã‚‹ç­‰ã€æœ€é©åŒ–ã®ä½™åœ°ã¯ã‚ã‚‹ãŒâ€¦ã€‚
 	*/
 
 	m_affectLightList.Resize(maxCount);
 
-	// ƒ\[ƒgŠî€’l‚ÌŒvZ
+	// ã‚½ãƒ¼ãƒˆåŸºæº–å€¤ã®è¨ˆç®—
 	LN_FOREACH(Light* light, *renderingLightList) {
 		light->m_tmpDistance = (light->m_combinedGlobalMatrix.GetPosition() - m_combinedGlobalMatrix.GetPosition()).GetLengthSquared();
 	}
 
-	// ƒ\[ƒg
+	// ã‚½ãƒ¼ãƒˆ
 	std::stable_sort(renderingLightList->begin(), renderingLightList->end(), CmpLightSort);
 
-	// o—Í (‘«‚è‚È‚¢•ª‚Í NULL ‚Å–„‚ß‚é)
+	// å‡ºåŠ› (è¶³ã‚Šãªã„åˆ†ã¯ NULL ã§åŸ‹ã‚ã‚‹)
 	int mn = renderingLightList->GetCount();
 	int n = maxCount;
 	int i = 0;
@@ -111,10 +111,10 @@ bool VisualNode::CmpLightSort(const Light* left, const Light* right)
 {
 	if (left->m_priority == right->m_priority)
 	{
-		// ‹——£‚Í¸‡B‹ß‚¢‚Ù‚¤‚ğæ‚É•`‰æ‚·‚éB
+		// è·é›¢ã¯æ˜‡é †ã€‚è¿‘ã„ã»ã†ã‚’å…ˆã«æç”»ã™ã‚‹ã€‚
 		return left->m_zDistance < right->m_zDistance;
 	}
-	// —Dæ“x‚Í~‡B‚‚¢‚Ù‚¤‚ğæ‚É•`‰æ‚·‚éB
+	// å„ªå…ˆåº¦ã¯é™é †ã€‚é«˜ã„ã»ã†ã‚’å…ˆã«æç”»ã™ã‚‹ã€‚
 	return left->m_priority < right->m_priority;
 }
 
@@ -124,23 +124,23 @@ bool VisualNode::CmpLightSort(const Light* left, const Light* right)
 //-----------------------------------------------------------------------------
 void VisualNode::Render(RenderingParams& params)
 {
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚Ìİ’è
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
 	params.Renderer->SetRenderState(m_renderState);
 
 	for (int iSubset = 0; iSubset < m_subsetCount; iSubset++)
 	{
-		// ¡‰ñ‚ÌƒpƒX‚Å–{“–‚É•K—v‚Èî•ñ (g—p‚·‚éƒVƒF[ƒ_“™) ‚ğæ“¾‚·‚é
+		// ä»Šå›ã®ãƒ‘ã‚¹ã§æœ¬å½“ã«å¿…è¦ãªæƒ…å ± (ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ç­‰) ã‚’å–å¾—ã™ã‚‹
 		RenderingPriorityParams priorityParams;
 		params.Pass->SelectPriorityParams(this, iSubset, &priorityParams);
-		if (priorityParams.Hide) {	// ‚±‚ÌƒpƒX‚Å‚Í•`‰æ‚µ‚È‚¢
+		if (priorityParams.Hide) {	// ã“ã®ãƒ‘ã‚¹ã§ã¯æç”»ã—ãªã„
 			return;
 		}
 		params.Shader = priorityParams.Shader;
 
-		// ƒVƒF[ƒ_‚Ìƒm[ƒh’PˆÊƒf[ƒ^‚ğXV‚·‚é
+		// ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒãƒ¼ãƒ‰å˜ä½ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹
 		priorityParams.Shader->UpdateNodeParams(this, params.CurrentCamera, m_affectLightList);
 
-		// ƒeƒNƒjƒbƒN‚ÌŒŸõ
+		// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®æ¤œç´¢
 		//m_visualNodeParams.GetCombinedSubsetParams
 		MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(
 			(InternalRenderingPass)params.Pass->GetPassID(),
@@ -150,8 +150,8 @@ void VisualNode::Render(RenderingParams& params)
 			false,	// TODO
 			iSubset);
 
-		// ƒeƒNƒjƒbƒN‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B‚±‚ÌğŒ‚É“–‚Ä‚Í‚Ü‚é‚Ì‚ÍAƒeƒNƒjƒbƒN‚Ìƒ^[ƒQƒbƒgƒTƒuƒZƒbƒg”ÍˆÍ‚ªw’è‚³‚ê‚Ä‚¢‚ÄA
-		// iSubset ‚ª‚¢‚¸‚ê‚É‚àƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ê‡B‚±‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg‚ÌƒVƒF[ƒ_‚ğ’T‚·B
+		// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚ã“ã®æ¡ä»¶ã«å½“ã¦ã¯ã¾ã‚‹ã®ã¯ã€ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚µãƒ–ã‚»ãƒƒãƒˆç¯„å›²ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¦ã€
+		// iSubset ãŒã„ãšã‚Œã«ã‚‚ãƒãƒƒãƒã—ãªã‹ã£ãŸå ´åˆã€‚ã“ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚§ãƒ¼ãƒ€ã‚’æ¢ã™ã€‚
 		if (tech == NULL)
 		{
 			if (params.Pass->GetDefaultShader() != NULL)
@@ -164,14 +164,14 @@ void VisualNode::Render(RenderingParams& params)
 					false,	// TODO
 					iSubset);
 				if (tech == NULL) {
-					// ƒfƒtƒHƒ‹ƒg‚ÌƒVƒF[ƒ_‚É‚àˆê’v‚·‚éƒeƒNƒjƒbƒN‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B
-					// ‚±‚Ì iSubset ‚Í•`‰æ‚µ‚È‚¢B‚Æ‚¢‚¤‚©‚Å‚«‚È‚¢B
+					// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚§ãƒ¼ãƒ€ã«ã‚‚ä¸€è‡´ã™ã‚‹ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚
+					// ã“ã® iSubset ã¯æç”»ã—ãªã„ã€‚ã¨ã„ã†ã‹ã§ããªã„ã€‚
 					continue;
 				}
 			}
 		}
 
-		// ƒRƒ}ƒ“ƒhŒo—R‚Å•`‰æÀs
+		// ã‚³ãƒãƒ³ãƒ‰çµŒç”±ã§æç”»å®Ÿè¡Œ
 		ShaderScriptCommandList::DrawParams dp;
 		dp.Params = &params;
 		dp.RenderingNode = this;
@@ -186,17 +186,17 @@ void VisualNode::Render(RenderingParams& params)
 //-----------------------------------------------------------------------------
 void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, Graphics::ShaderPass* pass)
 {
-	// ƒVƒF[ƒ_‚ÌƒTƒuƒZƒbƒg’PˆÊ‚Ìƒf[ƒ^‚ğXV‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã®ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹
 	if (shader != NULL) {
 		shader->UpdateSubsetParams(m_visualNodeParams.GetCombinedSubsetParams(subsetIndex));
 	}
 
-	// ƒpƒXŠJn
+	// ãƒ‘ã‚¹é–‹å§‹
 	if (pass != NULL) {
 		pass->Apply();
 	}
 
-	// ƒTƒuƒZƒbƒg•`‰æ‚Ì–{‘Ì
+	// ã‚µãƒ–ã‚»ãƒƒãƒˆæç”»ã®æœ¬ä½“
 	DrawSubset(params, subsetIndex);
 }
 

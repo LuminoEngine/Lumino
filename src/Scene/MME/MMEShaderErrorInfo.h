@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "MMETypes.h"
@@ -12,13 +12,13 @@ enum MMEShaderError
 {
 	MMEShaderError_Success = 0,
 
-	MMEShaderError_ScriptCommand_InvalidRenderTargetVariable,				///< "RenderColorTarget" ƒRƒ}ƒ“ƒh‚ÅƒeƒNƒXƒ`ƒƒŒ^•Ï”‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-	MMEShaderError_ScriptCommand_InvalidRenderDepthStencilTargetVariable,	///< "RenderDepthStencilTarget" ƒRƒ}ƒ“ƒh‚ÅƒeƒNƒXƒ`ƒƒŒ^•Ï”‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-	MMEShaderError_ScriptCommand_InvalidClearSetColorVariable,				///< "ClearSetColor" ƒRƒ}ƒ“ƒh‚Å Vector Œ^•Ï”‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-	MMEShaderError_ScriptCommand_InvalidClearSetDepthVariable,				///< "ClearSetDepth" ƒRƒ}ƒ“ƒh‚Å Vector Œ^•Ï”‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-	MMEShaderError_ScriptCommand_InvalidPassName,							///< "Pass" ƒRƒ}ƒ“ƒh‚Å—LŒø‚ÈƒpƒX–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-	MMEShaderError_ScriptCommand_InvalidLoopByCountVariable,				///< "LoopByCount" ƒRƒ}ƒ“ƒh‚Å Int Œ^•Ï”‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-	MMEShaderError_ScriptCommand_InvalidLoopGetIndexVariable,				///< "LoopGetIndex" ƒRƒ}ƒ“ƒh‚Å Int Œ^•Ï”‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+	MMEShaderError_ScriptCommand_InvalidRenderTargetVariable,				///< "RenderColorTarget" ã‚³ãƒžãƒ³ãƒ‰ã§ãƒ†ã‚¯ã‚¹ãƒãƒ£åž‹å¤‰æ•°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+	MMEShaderError_ScriptCommand_InvalidRenderDepthStencilTargetVariable,	///< "RenderDepthStencilTarget" ã‚³ãƒžãƒ³ãƒ‰ã§ãƒ†ã‚¯ã‚¹ãƒãƒ£åž‹å¤‰æ•°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+	MMEShaderError_ScriptCommand_InvalidClearSetColorVariable,				///< "ClearSetColor" ã‚³ãƒžãƒ³ãƒ‰ã§ Vector åž‹å¤‰æ•°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+	MMEShaderError_ScriptCommand_InvalidClearSetDepthVariable,				///< "ClearSetDepth" ã‚³ãƒžãƒ³ãƒ‰ã§ Vector åž‹å¤‰æ•°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+	MMEShaderError_ScriptCommand_InvalidPassName,							///< "Pass" ã‚³ãƒžãƒ³ãƒ‰ã§æœ‰åŠ¹ãªãƒ‘ã‚¹åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+	MMEShaderError_ScriptCommand_InvalidLoopByCountVariable,				///< "LoopByCount" ã‚³ãƒžãƒ³ãƒ‰ã§ Int åž‹å¤‰æ•°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+	MMEShaderError_ScriptCommand_InvalidLoopGetIndexVariable,				///< "LoopGetIndex" ã‚³ãƒžãƒ³ãƒ‰ã§ Int åž‹å¤‰æ•°ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 };
 
 /// MMEShaderErrorObject

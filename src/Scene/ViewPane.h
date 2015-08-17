@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/BindingSupport.h>
 #include <Lumino/Platform/EventArgs.h>
@@ -29,29 +29,29 @@ public:
 
 public:
 
-	/// ƒŒƒCƒ„[ƒŠƒXƒg‚Ìæ“¾
+	/// ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒªã‚¹ãƒˆã®å–å¾—
 	LayerList* GetLayerList() { return &m_layerList; }
 
-	/// •`‰æ
+	/// æç”»
 	void Render(Graphics::Texture* renderTarget);
 
-	/// ƒ}ƒEƒXˆÚ“®ƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚é (ViewPane ‚Ì¶ã‚ğ 0,0 ‚Æ‚µ‚½À•W‚ğw’è‚·‚é)
+	/// ãƒã‚¦ã‚¹ç§»å‹•ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹ (ViewPane ã®å·¦ä¸Šã‚’ 0,0 ã¨ã—ãŸåº§æ¨™ã‚’æŒ‡å®šã™ã‚‹)
 	bool InjectMouseMove(int x, int y);
 
-	/// ƒ}ƒEƒXƒ{ƒ^ƒ“ƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚é
+	/// ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	bool InjectMouseButtonDown(MouseButton button);
 
-	/// ƒ}ƒEƒXƒ{ƒ^ƒ“ƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚é
+	/// ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	bool InjectMouseButtonUp(MouseButton button);
 
 private:
 
-	/// ƒ}ƒEƒXƒ{ƒ^ƒ“‚Ìó‘Ô
+	/// ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ã®çŠ¶æ…‹
 	struct MouseState
 	{
-		Point	Position;	///< ÅŒã‚Éƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Ìƒ}ƒEƒX‚ÌÀ•W (ÅI“I‚ÉƒVƒF[ƒ_‚É“n‚·‚Ì‚Í -1.0`1.0 ‚¾‚ªAƒXƒNƒŠ[ƒ“‚ÌƒŠƒTƒCƒY‚É”õ‚¦‚ÄŒ³‚ÌÀ•W‚Å‚Á‚Ä‚¨‚­)
-		float	Time;		///< ÅŒã‚Éƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚ÌŠÔi•bj
-		bool	IsDown;		///< Œ»İƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©
+		Point	Position;	///< æœ€å¾Œã«ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã®ãƒã‚¦ã‚¹ã®åº§æ¨™ (æœ€çµ‚çš„ã«ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™ã®ã¯ -1.0ï½1.0 ã ãŒã€ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ãƒªã‚µã‚¤ã‚ºã«å‚™ãˆã¦å…ƒã®åº§æ¨™ã§æŒã£ã¦ãŠã)
+		float	Time;		///< æœ€å¾Œã«ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã®æ™‚é–“ï¼ˆç§’ï¼‰
+		bool	IsDown;		///< ç¾åœ¨ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹
 
 		void ToVector4(const SizeF& viewSize, Vector4* v) {
 			v->X = (2.0f * ((float)Position.X) / viewSize.Width) - 1.0f;
@@ -64,10 +64,10 @@ private:
 	SceneGraphManager*	m_manager;
 	LayerList			m_layerList;
 
-	MouseState			m_leftMouseState;		///< ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“‚Ìó‘Ô
-	MouseState			m_rightMouseState;		///< ƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“‚Ìó‘Ô
-	MouseState			m_middleMouseState;		///< ƒ}ƒEƒX‚Ì’†ƒ{ƒ^ƒ“‚Ìó‘Ô
-	Point				m_mousePosition;		///< ƒ}ƒEƒX‚ÌŒ»İˆÊ’u
+	MouseState			m_leftMouseState;		///< ãƒã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³ã®çŠ¶æ…‹
+	MouseState			m_rightMouseState;		///< ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³ã®çŠ¶æ…‹
+	MouseState			m_middleMouseState;		///< ãƒã‚¦ã‚¹ã®ä¸­ãƒœã‚¿ãƒ³ã®çŠ¶æ…‹
+	Point				m_mousePosition;		///< ãƒã‚¦ã‚¹ã®ç¾åœ¨ä½ç½®
 };
 
 } // namespace Scene

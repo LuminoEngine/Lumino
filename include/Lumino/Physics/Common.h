@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 namespace Lumino
@@ -18,7 +18,7 @@ enum SimulationType
 	SimulationType_ASync,
 };
 
-/// Body ‚Ìí—Ş
+/// Body ã®ç¨®é¡
 enum BodyType
 {
 	BodyType_Unknown = 0,
@@ -31,11 +31,11 @@ enum BodyType
 	BodyType_Max,
 };
 
-/// ”ñ“¯ŠúƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ÌÀsó‘Ô
+/// éåŒæœŸã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®å®Ÿè¡ŒçŠ¶æ…‹
 enum ASyncSimulationState
 {
-	ASyncSimulationState_Idling = 0,	///< ‘Ò‹@ó‘Ô
-	ASyncSimulationState_Runnning,		///< Às’†
+	ASyncSimulationState_Idling = 0,	///< å¾…æ©ŸçŠ¶æ…‹
+	ASyncSimulationState_Runnning,		///< å®Ÿè¡Œä¸­
 };
 
 } // namespace Physics

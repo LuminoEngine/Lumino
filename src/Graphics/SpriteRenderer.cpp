@@ -1,115 +1,115 @@
-/*
-    �\�[�g����v�f�́A
-        �E�v���C�I���e�B
-        �EZ���W or �r���[�s��̈ʒu��������̋���
-        �E�e�N�X�`��
+﻿/*
+    ソートする要素は、
+        ・プライオリティ
+        ・Z座標 or ビュー行列の位置成分からの距離
+        ・テクスチャ
 
 
-    �s��v�Z�̃e�X�g�c
+    行列計算のテスト…
 
-        ���_���Ƀ��[���h�s����o���Ă����� (Vector3 �� Right Up Front Position ��4x3)�A
-        �V�F�[�_���Ōv�Z����̂ƁACPU ����4���_�ɑ΂��� transform() ����̂Ƃǂ����������̂��e�X�g�B
+        頂点毎にワールド行列を覚えておいて (Vector3 の Right Up Front Position の4x3)、
+        シェーダ内で計算するのと、CPU 側で4頂点に対して transform() するのとどっちが早いのかテスト。
 
-        ���@�c
-            drawRequest() �� 6400 ����s�B
-            ���̃��[�v�ƁA�V�[���S�̂̕`�揈���̎��Ԃ��v������B
+        方法…
+            drawRequest() を 6400 回実行。
+            そのループと、シーン全体の描画処理の時間を計測する。
 
             Intel(R) Core(TM)2 Duo CPU     E8200  @ 2.66GHz (2 CPUs), ~2.7GHz
             NVIDIA Quadro FX 1700
 
-        ���ʁc
+        結果…
 
-            �P�DCPU ���ō��W�ϊ�
+            １．CPU 側で座標変換
 
-                drawRequest : �� 6500ns
-                Render      : �� 3500ns
+                drawRequest : 約 6500ns
+                Render      : 約 3500ns
 
-            �Q�D�V�F�[�_���Ōv�Z
+            ２．シェーダ内で計算
 
-                drawRequest : �� 11000ns
-                Render      : �� 5000ns
+                drawRequest : 約 11000ns
+                Render      : 約 5000ns
 
-            �R�D�Q�̊��ŁA�s��̑����؂��Ă݂�
+            ３．２の環境で、行列の代入を切ってみる
 
-                drawRequest : �� 5000ns
-                Render      : �� 5000ns
+                drawRequest : 約 5000ns
+                Render      : 約 5000ns
 
-            ���܂�.
-                �V�F�[�_���� mul �񐔂� 1 �񂾂��ɂ��Ă݂��B(���͍̂s��쐬��mul��ViewProj mul ��2��)
+            おまけ.
+                シェーダ内の mul 回数を 1 回だけにしてみた。(↑のは行列作成→mul→ViewProj mul の2回)
 
-                drawRequest : �� 5000ns
-                Render      : �� 5000ns
+                drawRequest : 約 5000ns
+                Render      : 約 5000ns
 
-                ����܂�ς��Ȃ��B
+                あんまり変わらない。
 
-        �l�@�c
+        考察…
 
-            �s��̌v�Z�����A�l�R�s�[�~4 (4���_��) �̂ق����͂邩�ɏd���B
-            �V�F�[�_�̕��͓n�����_�f�[�^�̃T�C�Y����ԉe���傫�������݂����B
+            行列の計算よりも、値コピー×4 (4頂点分) のほうがはるかに重い。
+            シェーダの方は渡す頂点データのサイズが一番影響大きかったみたい。
                 
 */
 
 /*
 
-�� �݌v�Ƃ�
+◆ 設計とか
 
-�ESprite �N���X�� drawSubset() �́A�T�u�Z�b�g�ԍ� 0 �݂̂��n����Ă���B
+・Sprite クラスの drawSubset() は、サブセット番号 0 のみが渡されてくる。
 
-�ESceneObject ���p�����邱�ƂŃ��[�U�[�C�ӂ̕`����ł���悤�ɂ���
-	�ESpriteRenderer ���g������AdrawPrimitive() �g���킯����Ȃ��̂ł���܂Œʂ���Ă����킯�ɂ͂����Ȃ��B
+・SceneObject を継承することでユーザー任意の描画をできるようにする
+	・SpriteRenderer を使う限り、drawPrimitive() 使うわけじゃないのでこれまで通りっていうわけにはいかない。
 
-�ESceneOjbect �ɂ� onRequestBatchDraw() ���������Ă����B
-  ���̊֐��́ASpriteRenderer �� BillboardRenderer �̂悤�ɁA�f�[�^���o�b�t�@�ɗ��߂Ă���
-  ��ň�x�ɕ`�悷����̂̕`�惊�N�G�X�g���M����������B
+・SceneOjbect には onRequestBatchDraw() を持たせておく。
+  この関数は、SpriteRenderer や BillboardRenderer のように、データをバッファに溜めてから
+  後で一度に描画するものの描画リクエスト送信を実装する。
 
-�EISprite �ɂ͂Q�̎�ނ�����B
-  �ЂƂ́A�P��̔ėp���̂���X�v���C�g���Ă����C���[�W�B
-  ����͈ȑO�܂łƓ��l�AonDrawSubset() �� setVertexBuffer()�AdrawPrimitive() �̏��Ɏ��s���ĕ`�悷��B
-  �o�b�`�����̑Ώۂł͂Ȃ��B
-  �����ЂƂ́A�o�b�`�����������́B�ЂƂ߂̂��������ɕ`��ł���
-  (�`�撆�AsetVertexBuffer() �Œ��_�o�b�t�@�̐ݒ��ς��Ȃ���)���A
-  �X�v���C�g�ȊO�̃I�u�W�F�N�g�Ƃ�Z�\�[�g�����܂������Ȃ��B
-  �i2D�ł���X�v���C�g�Ȃ�撣��΂�����Ǝv�����ǁA3D��Ԃɔz�u�����r���{�[�h�͂��Ȃ�L�c�C�j
-  ���̂��߁A�o�b�`�����͈ȉ��̂��̂�ΏۂƂ���B
-    �E�������v�f�̖����I�u�W�F�N�g(�A���t�@�e�X�g�ŃJ�b�g�������̂�OK(�A���t�@�l�����S��0))
-    �E�������v�f������A���A�������v�f�̕`��p�X�ŕ`�悷�����(�ʏ�̃I�u�W�F�N�g�̌�ɕ`�悷��ׂ�����)
-  �ꉞ�A�o�b�`�����̑z�肵�Ă���g�����͎�ɃG�t�F�N�g�֌W�Ȃ̂ŁA���̕����Ŗ��͂Ȃ������B
-  �쐬�Ɋւ��Ă� createSprite() createBatchSprite() �̊֐����g���A
-  �Ԃ�C���^�[�t�F�C�X�͗����Ƃ� ISprite�B
-
-
-
-
-
-Selene �ł̓X�v���C�g�ЂƂ��� drawPrimitive �ǂ�ł����ǁc�H
-
-����
-    ���_ 60000
-    �g���C�A���O�����X�g
-    ���_�̋߂��ŕ`��
-
-    �P�D�l�p�`�ЂƂɂ� ��ADrawPrimitive() ���Ă�
-        ��t���[���ڂ����� 1000ms
-        �����t���[���ڂ����� 500ms
-
-    �Q�D�S�̂�1�x�� DrawPrimitive() �ŕ`��
-        �P�D�ƂقƂ�Ǔ����B
-
-    DrawPrimitive() �̂Ƃ��낾����ׂĂ݂�ƁA
-    �P�D�ł� 0�`2ms�A�Q�D�ł� 0ms�B
-
-
-    ���x�I�ɂ͂قƂ�Ǖς��Ȃ������B���Ȃ݂ɑ��x�������Ă�̂� Present()�B
-    �덷�͊֐��Ăяo���̕��̎��Ԃ��Ċ����ŁA�`��ɂ͂قƂ�Ǌ֌W�Ȃ������B
+・ISprite には２つの種類がある。
+  ひとつは、単一の汎用性のあるスプライトっていうイメージ。
+  これは以前までと同様、onDrawSubset() で setVertexBuffer()、drawPrimitive() の順に実行して描画する。
+  バッチ処理の対象ではない。
+  もうひとつは、バッチ処理されるもの。ひとつめのよりも高速に描画できる
+  (描画中、setVertexBuffer() で頂点バッファの設定を変えない等)が、
+  スプライト以外のオブジェクトとのZソートがうまくいかない。
+  （2Dであるスプライトなら頑張ればいけると思うけど、3D空間に配置されるビルボードはかなりキツイ）
+  そのため、バッチ処理は以下のものを対象とする。
+    ・半透明要素の無いオブジェクト(アルファテストでカットされるものはOK(アルファ値が完全に0))
+    ・半透明要素があり、かつ、半透明要素の描画パスで描画するもの(通常のオブジェクトの後に描画するべきもの)
+  一応、バッチ処理の想定している使い方は主にエフェクト関係なので、この方向で問題はないかも。
+  作成に関しては createSprite() createBatchSprite() の関数を使い、
+  返るインターフェイスは両方とも ISprite。
 
 
 
 
-�� �����̎l�p�`���i�[�������_�o�b�t�@�ɑ΂��āA
-   �l�p�`�ЂƂɂ���x drawPrimitive() ���Ă�ŕ`�悷��
+
+Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…？
+
+検証
+    頂点 60000
+    トライアングルリスト
+    視点の近くで描画
+
+    １．四角形ひとつにつき 回、DrawPrimitive() を呼ぶ
+        奇数フレーム目が平均 1000ms
+        偶数フレーム目が平均 500ms
+
+    ２．全体を1度の DrawPrimitive() で描画
+        １．とほとんど同じ。
+
+    DrawPrimitive() のところだけ比べてみると、
+    １．では 0～2ms、２．では 0ms。
 
 
-���؂���R�[�h
+    速度的にはほとんど変わらなかった。ちなみに速度が落ちてるのは Present()。
+    誤差は関数呼び出しの分の時間って感じで、描画にはほとんど関係ないかも。
+
+
+
+
+◆ 複数の四角形を格納した頂点バッファに対して、
+   四角形ひとつにつき一度 drawPrimitive() を呼んで描画する
+
+
+検証するコード
 
 	lnU32 n = (VERTEX_NUM / 3) / 2;
 	for ( lnU32 i = 0; i < n; ++i )
@@ -119,56 +119,56 @@ Selene �ł̓X�v���C�g�ЂƂ��� drawPrimitive �ǂ�ł����ǁc�H
 	}
 
 
-���_�� 60000
-�g���C�A���O�����X�g
-��x�� drawPrimitive() ��2�̃v���~�e�B�u (�l�p�`)��`�悷��
+頂点数 60000
+トライアングルリスト
+一度の drawPrimitive() で2つのプリミティブ (四角形)を描画する
 
 
-�� ���I�Ȓ��_�o�b�t�@�Ƃ��č쐬�����ꍇ
-	80ms�`90ms
+● 動的な頂点バッファとして作成した場合
+	80ms～90ms
 	
-�� �ÓI�Ȓ��_�o�b�t�@�Ƃ��č쐬�����ꍇ
-	40ms�`50ms
-	�{���炢�����B
+● 静的な頂点バッファとして作成した場合
+	40ms～50ms
+	倍くらい早い。
 
-�� lock() unlock() �̏d��
-	�ÓI�Ȓ��_�o�b�t�@�Ƃ��č쐬��A
-	��L�R�[�h�̒��O��
+● lock() unlock() の重さ
+	静的な頂点バッファとして作成後、
+	上記コードの直前で
 		mVertexBuffer->lock();
 		mVertexBuffer->unlock();
-	�̂Q�s���ĂԁB
-	���ʁA80ms�`90ms�B
-	���I�Ȓ��_�o�b�t�@�Ƃقړ����B
+	の２行を呼ぶ。
+	結果、80ms～90ms。
+	動的な頂点バッファとほぼ同じ。
 	
-�� lock() unlock() �̏d��  100��
-	�ÓI�Ȓ��_�o�b�t�@�Ƃ��č쐬��A
-	��L�R�[�h�̒��O��
+● lock() unlock() の重さ  100回
+	静的な頂点バッファとして作成後、
+	上記コードの直前で
 	for ( lnU32 i = 0; i < 100; ++i )
     {
         mVertexBuffer->lock();
         mVertexBuffer->unlock();
     }
-    �����s����B
-    ���ʁA80ms�`90ms�B
-    �قƂ�Ǖς��Ȃ������B
+    を実行する。
+    結果、80ms～90ms。
+    ほとんど変わらなかった。
     
-�� renderer_->setVertexBuffer( mVertexBuffer, true ); ��
-	���[�v�̊O�ɏo���āA�P�x�������s����悤�ɂ���
+● renderer_->setVertexBuffer( mVertexBuffer, true ); を
+	ループの外に出して、１度だけ実行するようにする
 	
-	�E���I�̏ꍇ
-		80ms�`90ms�B
-		���܂�ς��Ȃ��B
+	・動的の場合
+		80ms～90ms。
+		あまり変わらない。
 		
-	�E�ÓI�̏ꍇ
-		40ms�`50ms
-		���܂�ς��Ȃ��B
+	・静的の場合
+		40ms～50ms
+		あまり変わらない。
 		
-	�E�ÓI�łP�O�O��lock()
-		80ms�`90ms�B
-		���܂�ς��Ȃ��B
+	・静的で１００回lock()
+		80ms～90ms。
+		あまり変わらない。
 		
 		
-�� �����ЂƂ��_�o�b�t�@������āA�ȉ��̃R�[�h�����s
+◆ もうひとつ頂点バッファを作って、以下のコードを実行
 
 	lnU32 n = (VERTEX_NUM / 3) / 2;
 	n /= 2;
@@ -181,18 +181,18 @@ Selene �ł̓X�v���C�g�ЂƂ��� drawPrimitive �ǂ�ł����ǁc�H
         renderer_->drawPrimitive( LN_PRIMITIVE_TRIANGLELIST, i * 3, 2 );
     }
     
-    �E���I�̏ꍇ
-		200ms�`220ms�B
+    ・動的の場合
+		200ms～220ms。
 		
 		
-    �E�ÓI�̏ꍇ
-    	90�`110ms
+    ・静的の場合
+    	90～110ms
     	
-    �E�ÓI�E100 lock() �̏ꍇ
-    	90�`110ms
+    ・静的・100 lock() の場合
+    	90～110ms
     	
-	�E�ÓI�E100 lock() �����̏ꍇ
-    	90�`110ms
+	・静的・100 lock() 両方の場合
+    	90～110ms
 
 
 
@@ -380,7 +380,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	auto* device = Helper::GetGraphicsDevice(m_manager);
 
 	//-----------------------------------------------------
-	// ���_�o�b�t�@�ƃC���f�b�N�X�o�b�t�@
+	// 頂点バッファとインデックスバッファ
 
 	m_vertexBuffer.Attach(device->CreateVertexBuffer(
 		BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount, m_maxSprites * 4, NULL, DeviceResourceUsage_Dynamic));
@@ -407,7 +407,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
 		m_maxSprites * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
-	// �C���f�b�N�X�o�b�t�@�̒l�͍ŏ�����Œ��OK�Ȃ̂ł����ŏ�������ł��܂�
+	// インデックスバッファの値は最初から固定でOKなのでここで書き込んでしまう
 	uint16_t* ib;
 	size_t lockedSize;	// dummy
 	m_indexBuffer->Lock((void**)&ib, &lockedSize);
@@ -428,7 +428,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 #endif
 
 	//-----------------------------------------------------
-	// �V�F�[�_
+	// シェーダ
 
 	ShaderCompileResult r;
 	m_shader.Shader.Attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
@@ -441,20 +441,20 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	m_shader.techMainDraw		= m_shader.Shader->GetTechnique(0);
 
 	//-----------------------------------------------------
-	// �������m�ۂƊe�평���l
+	// メモリ確保と各種初期値
 
 	m_spriteRequestList.Resize(m_maxSprites);
 	m_spriteIndexList.Resize(m_maxSprites);
 
-	// �X�e�[�g�ɂ̓f�t�H���g���ЂƂl�߂Ă���
+	// ステートにはデフォルトをひとつ詰めておく
 	m_renderStateList.Add(RenderState());
 
 	//if (m_3DSystem) {
-	//	// ���_����̋������傫�����̂��ɕ`�悷��
+	//	// 視点からの距離が大きいものを先に描画する
 	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_ViewPont);
 	//}
 	//else {
-	//	// �X�v���C�g�� Z �l�����������̂��ɕ`�悷��
+	//	// スプライトの Z 値が小さいものを先に描画する
 	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_RawZ);
 	//}
 
@@ -502,7 +502,7 @@ void SpriteRendererImpl::SetViewPixelSize(const Size& size)
 //-----------------------------------------------------------------------------
 void SpriteRendererImpl::SetRenderState(const RenderState& state)
 {
-	// �������̂�����΃J�����g��
+	// 同じものがあればカレントに
 	size_t count = m_renderStateList.GetCount();
 	for (size_t i = 0; i < count; ++i)
 	{
@@ -512,7 +512,7 @@ void SpriteRendererImpl::SetRenderState(const RenderState& state)
 		}
 	}
 
-	// ������Ȃ�������o�^
+	// 見つからなかったら登録
 	m_renderStateList.Add(state);
 	m_currentRenderStateIndex = count;
 }
@@ -580,7 +580,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 
 	BatchSpriteData& sprite = m_spriteRequestList[m_spriteRequestListUsedCount];
 
-	// 3D �̏ꍇ�̒��_���W
+	// 3D の場合の頂点座標
 	if (is3D)
 	{
 		Vector3 origin(-center);
@@ -596,10 +596,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		switch (front)
 		{
 		case AxisDirection_X:
-			sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // ����
-			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, t, r));     // �E��
-			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, b, l));     // ����
-			sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // �E��
+			sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // 左上
+			sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
+			sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
+			sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // 右下
 			break;
 		case AxisDirection_Y:
 			sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, 0, t));
@@ -636,7 +636,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 			sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, t, 0));
 			sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, b, 0));
 			sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, b, 0));
-			/* �E��p
+			/* 右手用
 			sprite.Vertices[ 0 ].Position.set( LN_WRITE_V3( l, t, 0 ) );
 			sprite.Vertices[ 1 ].Position.set( LN_WRITE_V3( l, b, 0 ) );
 			sprite.Vertices[ 2 ].Position.set( LN_WRITE_V3( r, t, 0 ) );
@@ -646,7 +646,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		}
 #undef LN_WRITE_V3
 	}
-	// 2D �̏ꍇ�̒��_���W
+	// 2D の場合の頂点座標
 	else
 	{
 		Vector3 origin(-center);
@@ -659,13 +659,13 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	Matrix mat = m_transformMatrix.GetRotationMatrix();
 
 
-	// �r���{�[�h (Scene ����g���ꍇ�� SceneNode ���ʓ|���Ă�̂ŁAScene �ȊO�ŕK�v�ɂȂ�܂ŕۗ��c)
+	// ビルボード (Scene から使う場合は SceneNode が面倒見てるので、Scene 以外で必要になるまで保留…)
 	if (0)
 	{
 		// TODO:
 		//mat.setMul3x3( mViewInverseMatrix );
 	}
-	// �r���{�[�h�EY ���݂̂ɓK�p
+	// ビルボード・Y 軸のみに適用
 	else if (0)
 	{
 		if (m_viewDirection.X > 0.0f)
@@ -674,7 +674,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		}
 		else if (m_viewDirection.X == 0.0f)
 		{
-			//D3DXMatrixIdentity(&matWorld); // 0���Z��h������
+			//D3DXMatrixIdentity(&matWorld); // 0除算を防ぐため
 		}
 		else
 		{
@@ -682,7 +682,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		}
 
 	}
-	// �r���{�[�h�ł͂Ȃ�
+	// ビルボードではない
 	else
 	{
 	}
@@ -690,13 +690,13 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	mat.Translation(position);
 	mat.Translation(m_transformMatrix.GetPosition());
 
-	// ���W�ϊ�
+	// 座標変換
 	sprite.Vertices[0].Position.TransformCoord(mat);
 	sprite.Vertices[1].Position.TransformCoord(mat);
 	sprite.Vertices[2].Position.TransformCoord(mat);
 	sprite.Vertices[3].Position.TransformCoord(mat);
 
-	// �F
+	// 色
 	if (colorTable != NULL)
 	{
 		sprite.Vertices[0].Color = colorTable[0];
@@ -712,10 +712,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Vertices[3].Color = ColorF::White;
 	}
 
-	// �e�N�X�`��
+	// テクスチャ
 	if (texture != NULL)
 	{
-		// �e�N�X�`�����W
+		// テクスチャ座標
 		const Size& texSize = texture->GetRealSize();
 		Vector2 texSizeInv(1.0f / texSize.Width, 1.0f / texSize.Height);
 		RectF sr(srcRect);
@@ -732,8 +732,8 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Vertices[3].TexUV.X = r;
 		sprite.Vertices[3].TexUV.Y = b;
 
-		// �e�N�X�`��
-		sprite.Texture = texture;	// TOOD: AddRef ����ׂ������H
+		// テクスチャ
+		sprite.Texture = texture;	// TOOD: AddRef するべきかも？
 	}
 	else
 	{
@@ -748,7 +748,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Texture = Helper::GetDummyTexture(m_manager);
 	}
 
-	// �J��������̋������\�[�g�pZ�l�ɂ���ꍇ
+	// カメラからの距離をソート用Z値にする場合
 	if (m_sortingBasis == SortingDistanceBasis_ViewPont) {
 		sprite.Depth = (m_viewPosition - position).GetLengthSquared();
 	}
@@ -768,7 +768,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-// Z �l�̑傫�������珬�������փ\�[�g�����r
+// Z 値の大きい方から小さい方へソートする比較
 class SpriteRendererImpl::SpriteCmpDepthBackToFront
 {
 public:
@@ -799,7 +799,7 @@ public:
 	}
 };
 
-// Z �l�̏�����������傫�����փ\�[�g�����r
+// Z 値の小さい方から大きい方へソートする比較
 class SpriteRendererImpl::SpriteCmpDepthFrontToBack
 {
 public:
@@ -830,7 +830,7 @@ public:
 	}
 };
 
-// Z �l�̑傫�������珬�������փ\�[�g�����r (�e�N�X�`���D��)
+// Z 値の大きい方から小さい方へソートする比較 (テクスチャ優先)
 class SpriteRendererImpl::SpriteCmpTexDepthBackToFront
 {
 public:
@@ -851,7 +851,7 @@ public:
 				}
 				if (lsp.Texture == rsp.Texture)
 				{
-					// Depth �~��
+					// Depth 降順
 					return lsp.Depth > rsp.Depth;
 				}
 				return false;
@@ -862,7 +862,7 @@ public:
 	}
 };
 
-// Z �l�̏�����������傫�����փ\�[�g�����r (�e�N�X�`���D��)
+// Z 値の小さい方から大きい方へソートする比較 (テクスチャ優先)
 class SpriteRendererImpl::SpriteCmpTexDepthFrontToBack
 {
 public:
@@ -899,16 +899,16 @@ public:
 //-----------------------------------------------------------------------------
 void SpriteRendererImpl::Flash()
 {
-	int spriteCount = m_spriteRequestListUsedCount;	// �`�悷��X�v���C�g�̐�
-	if (spriteCount == 0) { return; }				// 0 �Ȃ�Ȃɂ����Ȃ�
+	int spriteCount = m_spriteRequestListUsedCount;	// 描画するスプライトの数
+	if (spriteCount == 0) { return; }				// 0 個ならなにもしない
 
-	// �`�悷��X�v���C�g�̃C���f�b�N�X���X�g������������
+	// 描画するスプライトのインデックスリストを初期化する
 	for (int i = 0; i < spriteCount; ++i) {
 		m_spriteIndexList[i] = i;
 	}
 	//memcpy(m_spriteIndexList, mSpriteIndexArraySource, sizeof(*m_spriteIndexList) * mLastSpriteNum);
 
-	// �C���f�b�N�X����ёւ���
+	// インデックスを並び替える
 	if (m_spriteSortMode & SpriteSortMode_Texture)
 	{
 		if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
@@ -949,7 +949,7 @@ void SpriteRendererImpl::Flash()
 	int currnetRenderStateIndex = m_spriteRequestList[m_spriteIndexList[0]].RenderStateIndex;
 
 	//-----------------------------------------------------
-	// �������X�g�����
+	// 属性リストを作る
 
 	m_attributeList.Clear();
 	while (true)
@@ -959,7 +959,7 @@ void SpriteRendererImpl::Flash()
 			++si;
 			++prim_num;
 #if 1
-			// ���̃X�v���C�g�̃e�N�X�`�����A�������̃e�N�X�`���ƈقȂ�ꍇ�͎��̑����쐬�Ɉڂ�
+			// 次のスプライトのテクスチャが、処理中のテクスチャと異なる場合は次の属性作成に移る
 			if (si >= spriteCount ||
 				m_spriteRequestList[m_spriteIndexList[si]].Texture != current_tex ||
 				m_spriteRequestList[m_spriteIndexList[si]].RenderStateIndex != currnetRenderStateIndex)
@@ -967,7 +967,7 @@ void SpriteRendererImpl::Flash()
 				break;
 			}
 #else
-			// ���̃X�v���C�g�̃e�N�X�`�����A�������̃e�N�X�`���ƈقȂ�ꍇ�͎��̑����쐬�Ɉڂ�
+			// 次のスプライトのテクスチャが、処理中のテクスチャと異なる場合は次の属性作成に移る
 			if (si >= spriteCount || m_spriteRequestList[m_spriteIndexList[si]].Texture != current_tex)
 			{
 				break;
@@ -994,7 +994,7 @@ void SpriteRendererImpl::Flash()
 	}
 
 	//-----------------------------------------------------
-	// ���_�f�[�^���R�s�[
+	// 頂点データをコピー
 
 	BatchSpriteVertex* vb = static_cast< BatchSpriteVertex* >(m_vertexBuffer->Lock());
 	si = 0;
@@ -1008,7 +1008,7 @@ void SpriteRendererImpl::Flash()
 	m_vertexBuffer->Unlock();
 
 	//-----------------------------------------------------
-	// �`��
+	// 描画
 
 	auto* r = Helper::GetGraphicsDevice(m_manager)->GetRenderer();
 	r->SetVertexBuffer(m_vertexBuffer);
@@ -1029,7 +1029,7 @@ void SpriteRendererImpl::Flash()
 	}
 
 	//-----------------------------------------------------
-	// �N���[���A�b�v
+	// クリーンアップ
 
 	Clear();
 }

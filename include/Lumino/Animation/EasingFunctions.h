@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -7,7 +7,7 @@
 namespace Lumino
 {
 
-/// ŠeŠÖ”‚Ìˆø”‚ÍAt:ŠÔ(0.0`duration) b:ŠJn’l c:’l‚Ì•Ï‰»—Ê (–Ú•W’l-ŠJn’l) d:•Ï‰»‚É‚©‚¯‚éŠÔ
+/// å„é–¢æ•°ã®å¼•æ•°ã¯ã€t:æ™‚é–“(0.0ï½duration) b:é–‹å§‹å€¤ c:å€¤ã®å¤‰åŒ–é‡ (ç›®æ¨™å€¤-é–‹å§‹å€¤) d:å¤‰åŒ–ã«ã‹ã‘ã‚‹æ™‚é–“
 class EasingFunctions
 {
 public:

@@ -1,4 +1,4 @@
-
+ï»¿
 #include <Lumino/Base/Exception.h>
 #include <Lumino/IO/ASyncIOObject.h>
 #include <Lumino/IO/FileManager.h>
@@ -61,7 +61,7 @@ void ASyncIOObject::InvokeIOProc(bool isASync, FileManager* fileManager)
 		catch (...)
 		{
 			m_ayncIOState = ASyncIOState_Failed;
-			throw;	// ƒƒ“ƒo‚É‚Í•Û‚¹‚¸AŒÄ‚Ño‚µ‘¤‚É“Š‚°‚é
+			throw;	// ãƒ¡ãƒ³ãƒã«ã¯ä¿æŒã›ãšã€å‘¼ã³å‡ºã—å´ã«æŠ•ã’ã‚‹
 		}
 		m_ayncIOState = ASyncIOState_Completed;
 	}

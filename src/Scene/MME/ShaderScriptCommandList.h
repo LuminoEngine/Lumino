@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Renderer.h>
@@ -19,11 +19,11 @@ class MMEShader;
 //};
 
 /**
-	@note	Script ‚ª–¾¦“I‚Éw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍA
-			ETechnique	‚Ìê‡ c ‘S‚Ä‚Ìq Pass ‚ÌƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğÀs‚·‚é
-			EPass ‚Ìê‡ c "Draw=Geometry" ‚ğÀs‚·‚é
+	@note	Script ãŒæ˜ç¤ºçš„ã«æŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ã€
+			ãƒ»Technique	ã®å ´åˆ â€¦ å…¨ã¦ã®å­ Pass ã®ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’å®Ÿè¡Œã™ã‚‹
+			ãƒ»Pass ã®å ´åˆ â€¦ "Draw=Geometry" ã‚’å®Ÿè¡Œã™ã‚‹
 
-			Technique ‚© Pass ‚©‚ÍAqƒRƒ}ƒ“ƒhƒŠƒXƒg‚ª‘¶İ‚·‚é‚©‚Å”»•Ê‚³‚ê‚éB
+			Technique ã‹ Pass ã‹ã¯ã€å­ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆãŒå­˜åœ¨ã™ã‚‹ã‹ã§åˆ¤åˆ¥ã•ã‚Œã‚‹ã€‚
 */
 class ShaderScriptCommandList
 	: public RefObject
@@ -40,23 +40,23 @@ public:
 		int							SubsetIndex;
 		//IMMESubsetRenerer*			SubsetRenderer;
 		//void*						UserData;
-		//const Array<int>*			SubsetNumbers;	///< e‚©‚ç“n‚³‚ê‚½•`‰æ‚·‚é‚×‚«ƒTƒuƒZƒbƒg”Ô†ƒŠƒXƒg (“à•”—pBŠO•”‚©‚ç‚Í NULL ‚ğ“n‚·‚±‚Æ)
+		//const Array<int>*			SubsetNumbers;	///< è¦ªã‹ã‚‰æ¸¡ã•ã‚ŒãŸæç”»ã™ã‚‹ã¹ãã‚µãƒ–ã‚»ãƒƒãƒˆç•ªå·ãƒªã‚¹ãƒˆ (å†…éƒ¨ç”¨ã€‚å¤–éƒ¨ã‹ã‚‰ã¯ NULL ã‚’æ¸¡ã™ã“ã¨)
 	};
 
 	enum ValidationError
 	{
 		ValidationError_Success = 0,
-		ValidationError_InvalidRenderTargetIndex,			///< ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒCƒ“ƒfƒbƒNƒX‚ª•s³
-		ValidationError_ScriptExternal_Color_InvalidCall,	///< "ScriptExternal=Color" ‚ª postscript ‚Å‚Í‚È‚¢ƒVƒF[ƒ_‚©‚çŒÄ‚Ño‚³‚ê‚½
-		ValidationError_ScriptExternal_Color_MultipleCall,	///< "ScriptExternal=Color" ‚ª 2‰ñˆÈãŒÄ‚Ño‚³‚ê‚½B
-		ValidationError_ScriptExternal_Color_CallInLoop,	///< "ScriptExternal=Color" ‚ª Loop “à‚ÅŒÄ‚Ño‚³‚ê‚½B
-		ValidationError_Pass_CallByPass,					///< "Pass" ‚ªƒpƒXã‚ÅŒÄ‚Ño‚³‚ê‚½B
-		ValidationError_Loop_CallByPass,					///< "LoopByCount" "LoopEnd" "LoopGetIndex" ‚ª ƒpƒXã‚ÅŒÄ‚Ño‚³‚ê‚½B
-		ValidationError_LoopBlockUnMath,					///< "LoopByCount" ` "LoopEnd" ‚ÌƒyƒA‚ª‡‚í‚È‚¢
-		ValidationError_DrawGeometry_CallByTechnique,		///< "DrawGeometry" ‚ª ƒeƒNƒjƒbƒNã‚ÅŒÄ‚Ño‚³‚ê‚½B
-		ValidationError_DrawGeometry_InvalidCall,			///< "DrawGeometry" ‚ª "scene" ƒVƒF[ƒ_‚©‚çŒÄ‚Ño‚³‚ê‚½B 
-		ValidationError_DrawBuffer_CallByTechnique,			///< "DrawBuffer" ‚ª ƒeƒNƒjƒbƒNã‚ÅŒÄ‚Ño‚³‚ê‚½B
-		ValidationError_DrawBuffer_InvalidCall,				///< "DrawBuffer" ‚ª "object" ƒVƒF[ƒ_‚©‚çŒÄ‚Ño‚³‚ê‚½B 
+		ValidationError_InvalidRenderTargetIndex,			///< ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒä¸æ­£
+		ValidationError_ScriptExternal_Color_InvalidCall,	///< "ScriptExternal=Color" ãŒ postscript ã§ã¯ãªã„ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰å‘¼ã³å‡ºã•ã‚ŒãŸ
+		ValidationError_ScriptExternal_Color_MultipleCall,	///< "ScriptExternal=Color" ãŒ 2å›ä»¥ä¸Šå‘¼ã³å‡ºã•ã‚ŒãŸã€‚
+		ValidationError_ScriptExternal_Color_CallInLoop,	///< "ScriptExternal=Color" ãŒ Loop å†…ã§å‘¼ã³å‡ºã•ã‚ŒãŸã€‚
+		ValidationError_Pass_CallByPass,					///< "Pass" ãŒãƒ‘ã‚¹ä¸Šã§å‘¼ã³å‡ºã•ã‚ŒãŸã€‚
+		ValidationError_Loop_CallByPass,					///< "LoopByCount" "LoopEnd" "LoopGetIndex" ãŒ ãƒ‘ã‚¹ä¸Šã§å‘¼ã³å‡ºã•ã‚ŒãŸã€‚
+		ValidationError_LoopBlockUnMath,					///< "LoopByCount" ï½ "LoopEnd" ã®ãƒšã‚¢ãŒåˆã‚ãªã„
+		ValidationError_DrawGeometry_CallByTechnique,		///< "DrawGeometry" ãŒ ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ä¸Šã§å‘¼ã³å‡ºã•ã‚ŒãŸã€‚
+		ValidationError_DrawGeometry_InvalidCall,			///< "DrawGeometry" ãŒ "scene" ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰å‘¼ã³å‡ºã•ã‚ŒãŸã€‚ 
+		ValidationError_DrawBuffer_CallByTechnique,			///< "DrawBuffer" ãŒ ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ä¸Šã§å‘¼ã³å‡ºã•ã‚ŒãŸã€‚
+		ValidationError_DrawBuffer_InvalidCall,				///< "DrawBuffer" ãŒ "object" ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰å‘¼ã³å‡ºã•ã‚ŒãŸã€‚ 
 	};
 
 public:
@@ -65,89 +65,89 @@ public:
 
 public:
 
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	void Initialize(MMEShader* ownerShader);
 
-	/// ƒeƒNƒjƒbƒN‚ÌqƒpƒX‚ÌƒRƒ}ƒ“ƒhƒXƒg‚ğ’Ç‰Á‚·‚é
+	/// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®å­ãƒ‘ã‚¹ã®ã‚³ãƒãƒ³ãƒ‰ã‚¹ãƒˆã‚’è¿½åŠ ã™ã‚‹
 	void AddChildPassCommandList(ShaderScriptCommandList* commandList);
 
-	/// •`‰æ‚·‚éƒTƒuƒZƒbƒg”Ô†‚Ì”z—ñ‚ğİ’è‚·‚é (ƒeƒNƒjƒbƒN—p)
+	/// æç”»ã™ã‚‹ã‚µãƒ–ã‚»ãƒƒãƒˆç•ªå·ã®é…åˆ—ã‚’è¨­å®šã™ã‚‹ (ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ç”¨)
 	//void SetDrawingSubsetNumbers(const Array<int>& numbers);
 
-	/// ‚±‚ÌƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğÀs‚·‚é
+	/// ã“ã®ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’å®Ÿè¡Œã™ã‚‹
 	void Execute(DrawParams& params);
 
-	/// ScriptExternal=Color ‚Ü‚ÅÀs‚·‚é
+	/// ScriptExternal=Color ã¾ã§å®Ÿè¡Œã™ã‚‹
 	void ExecutePreScriptExternal_Color(DrawParams& params);
 
-	/// ScriptExternal=Color ‚©‚çÀs‚·‚é
+	/// ScriptExternal=Color ã‹ã‚‰å®Ÿè¡Œã™ã‚‹
 	void ExecutePostScriptExternal_Color(DrawParams& params);
 
-	/// ƒXƒNƒŠƒvƒg‚ª³‚µ‚¢‚©‚ğŠm”F‚·‚é
+	/// ã‚¹ã‚¯ãƒªãƒ—ãƒˆãŒæ­£ã—ã„ã‹ã‚’ç¢ºèªã™ã‚‹
 	ValidationError CheckValid(MMEScriptClass scriptClass, MMEScriptOrder scriptOrder);
 
 
 public:
 
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğİ’è‚·‚é
-	/// (textureVariable ‚ğ NULL ‚É‚·‚é‚ÆAƒfƒtƒHƒ‹ƒg(ƒRƒ}ƒ“ƒhŠJn)‚ÉƒŠƒZƒbƒg)
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®šã™ã‚‹
+	/// (textureVariable ã‚’ NULL ã«ã™ã‚‹ã¨ã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ(ã‚³ãƒãƒ³ãƒ‰é–‹å§‹æ™‚)ã«ãƒªã‚»ãƒƒãƒˆ)
 	void Add_RenderColorTarget(int index, Graphics::ShaderVariable* textureVariable);
 
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğİ’è‚·‚é
-	/// (textureVariable ‚ğ NULL ‚É‚·‚é‚ÆAƒfƒtƒHƒ‹ƒg(ƒRƒ}ƒ“ƒhŠJn)‚ÉƒŠƒZƒbƒg)
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®šã™ã‚‹
+	/// (textureVariable ã‚’ NULL ã«ã™ã‚‹ã¨ã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ(ã‚³ãƒãƒ³ãƒ‰é–‹å§‹æ™‚)ã«ãƒªã‚»ãƒƒãƒˆ)
 	void Add_RenderDepthStencilTarget(Graphics::ShaderVariable* textureVariable);
 
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğƒNƒŠƒA‚·‚éF‚ğİ’è‚·‚é
-	void Add_ClearSetColor(const Vector4& color);		// TODO: ‚±‚Ì‚ ‚½‚èAGraphics::IShaderVariable ‚©‚ç getVector ‚·‚é‚æ‚¤‚É•ÏX
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹è‰²ã‚’è¨­å®šã™ã‚‹
+	void Add_ClearSetColor(const Vector4& color);		// TODO: ã“ã®ã‚ãŸã‚Šã€Graphics::IShaderVariable ã‹ã‚‰ getVector ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
-	/// [“xƒoƒbƒtƒ@‚ğƒNƒŠƒA‚·‚éZ’l‚ğİ’è‚·‚é
+	/// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹Zå€¤ã‚’è¨­å®šã™ã‚‹
 	void Add_ClearSetDepth(float depth);
 
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğƒNƒŠƒA‚·‚é
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	void Add_ClearColor();
 
-	/// [“xƒXƒeƒ“ƒVƒ‹ƒT[ƒtƒFƒCƒX‚ğƒNƒŠƒA‚·‚é
+	/// æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ã‚µãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	void Add_ClearDepth();
 
 	/// ScriptExternal=Color
 	void Add_ScriptExternal_Color();
 
-	/// w’è‚µ‚½ƒpƒX‚ğÀs‚·‚é 
-	/// (‘¼‚Ì•`‰æƒRƒ}ƒ“ƒh‚ğÀs‚·‚éBcommandList ‚ğ NULL ‚É‚·‚é‚ÆADraw=Geometry ‚Ì‚İ‚ğÀs‚·‚é)
+	/// æŒ‡å®šã—ãŸãƒ‘ã‚¹ã‚’å®Ÿè¡Œã™ã‚‹ 
+	/// (ä»–ã®æç”»ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ã€‚commandList ã‚’ NULL ã«ã™ã‚‹ã¨ã€Draw=Geometry ã®ã¿ã‚’å®Ÿè¡Œã™ã‚‹)
 	void Add_Pass(Graphics::ShaderPass* pass, ShaderScriptCommandList* commandList);
 
-	/// w’è‚µ‚½‰ñ”‚¾‚¯AƒXƒNƒŠƒvƒg‚Ìˆê•”‚ğƒ‹[ƒv‚·‚é
+	/// æŒ‡å®šã—ãŸå›æ•°ã ã‘ã€ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ä¸€éƒ¨ã‚’ãƒ«ãƒ¼ãƒ—ã™ã‚‹
 	void Add_LoopByCount(int count);
 
-	/// ƒ‹[ƒvI’[
+	/// ãƒ«ãƒ¼ãƒ—çµ‚ç«¯
 	void Add_LoopEnd();
 
-	/// ƒ‹[ƒv’†‚Ìƒ‹[ƒvƒJƒEƒ“ƒ^‚Ì’l‚ğAw’è‚µ‚½ƒpƒ‰ƒ[ƒ^‚Éİ’è‚·‚é
+	/// ãƒ«ãƒ¼ãƒ—ä¸­ã®ãƒ«ãƒ¼ãƒ—ã‚«ã‚¦ãƒ³ã‚¿ã®å€¤ã‚’ã€æŒ‡å®šã—ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«è¨­å®šã™ã‚‹
 	void Add_LoopGetIndex(Graphics::ShaderVariable* variable);
 
-	/// ƒIƒuƒWƒFƒNƒg‚ğ•`‰æ‚·‚é
+	/// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æç”»ã™ã‚‹
 	void Add_DrawGeometry(Graphics::ShaderPass* pass);
 
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒXƒNƒŠ[ƒ“‚Æˆê’v‚·‚éƒTƒCƒY‚ÌA’·•ûŒ`‚Ìƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã¨ä¸€è‡´ã™ã‚‹ã‚µã‚¤ã‚ºã®ã€é•·æ–¹å½¢ã®ãƒãƒªã‚´ãƒ³ã‚’æç”»ã™ã‚‹
 	void Add_DrawBuffer(Graphics::ShaderPass* pass);
 
 private:
 
-	/// ‚±‚ÌƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğÀs‚·‚é (–ß‚è’l‚ÍÅŒã‚ÉÀs‚µ‚½ƒRƒ}ƒ“ƒh‚ğw‚·ƒvƒƒOƒ‰ƒ€ƒJƒEƒ“ƒ^)
+	/// ã“ã®ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’å®Ÿè¡Œã™ã‚‹ (æˆ»ã‚Šå€¤ã¯æœ€å¾Œã«å®Ÿè¡Œã—ãŸã‚³ãƒãƒ³ãƒ‰ã‚’æŒ‡ã™ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚«ã‚¦ãƒ³ã‚¿)
 	int InternalExecute(DrawParams& param, int programCounter, int currentLoopCount);
 
 	/// Draw=Geometry
 	void DrawGeometry(DrawParams& param, Graphics::ShaderPass* pass);
 
-	/// Œ»İ‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg“™‚Ìó‘Ô‚ğ‹L‰¯
+	/// ç¾åœ¨ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆç­‰ã®çŠ¶æ…‹ã‚’è¨˜æ†¶
 	void PushCurrentState(DrawParams& param);
 
-	/// ‹L‰¯‚µ‚½ó‘Ô‚ğ•œ‹A
+	/// è¨˜æ†¶ã—ãŸçŠ¶æ…‹ã‚’å¾©å¸°
 	void PopCurrentState(DrawParams& param);
 
 private:
 
-	/// •`‰æƒRƒ}ƒ“ƒh‚Ìí—Ş
+	/// æç”»ã‚³ãƒãƒ³ãƒ‰ã®ç¨®é¡
 	enum CommandType
 	{
 		COMMAND_Unknown = 0,
@@ -166,7 +166,7 @@ private:
 		COMMAND_DrawBuffer,
 	};
 
-	/// •`‰æƒRƒ}ƒ“ƒh
+	/// æç”»ã‚³ãƒãƒ³ãƒ‰
 	struct Command
 	{
 		CommandType		Type;
@@ -175,12 +175,12 @@ private:
 			struct
 			{
 				int							Index;
-				Graphics::ShaderVariable*	TextureVariable;	///< ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğ•Û‚µ‚Ä‚¢‚éƒVƒF[ƒ_•Ï”
+				Graphics::ShaderVariable*	TextureVariable;	///< ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ä¿æŒã—ã¦ã„ã‚‹ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°
 			} RenderColorTarget;
 
 			struct
 			{
-				Graphics::ShaderVariable*	TextureVariable;	///< [“xƒoƒbƒtƒ@‚ğ•Û‚µ‚Ä‚¢‚éƒVƒF[ƒ_•Ï”
+				Graphics::ShaderVariable*	TextureVariable;	///< æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ä¿æŒã—ã¦ã„ã‚‹ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°
 			} RenderDepthStencilTarget;
 
 			struct
@@ -206,7 +206,7 @@ private:
 
 			struct
 			{
-				Graphics::ShaderVariable*	Variable;			///< ƒ‹[ƒv‰ñ”‚ğŠi”[‚·‚éƒVƒF[ƒ_•Ï”
+				Graphics::ShaderVariable*	Variable;			///< ãƒ«ãƒ¼ãƒ—å›æ•°ã‚’æ ¼ç´ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°
 			} LoopGetIndex;
 
 			struct
@@ -229,10 +229,10 @@ private:
 	CommandArray				m_commandArray;
 	//Array<int>				m_drawingSubsetNumbers;
 	CommandListArray			m_childCommandListArray;
-	ShaderScriptCommandList*		m_parentList;					///< Pass ‚Ìê‡AeƒeƒNƒjƒbƒN‚ÌƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğw‚·
-	int							m_scriptExternalColorPosition;	///< ScriptExternal=Color ‚Ì‚ ‚é—v‘f”Ô†
-	Graphics::ColorF			m_clearColor;					///< "ClearSetColor=" ‚Åİ’è‚³‚ê‚½’l
-	float						m_clearDepth;					///< "ClearSetDepth=" ‚Åİ’è‚³‚ê‚½’l
+	ShaderScriptCommandList*		m_parentList;					///< Pass ã®å ´åˆã€è¦ªãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’æŒ‡ã™
+	int							m_scriptExternalColorPosition;	///< ScriptExternal=Color ã®ã‚ã‚‹è¦ç´ ç•ªå·
+	Graphics::ColorF			m_clearColor;					///< "ClearSetColor=" ã§è¨­å®šã•ã‚ŒãŸå€¤
+	float						m_clearDepth;					///< "ClearSetDepth=" ã§è¨­å®šã•ã‚ŒãŸå€¤
 
 	Graphics::Texture*			m_oldRenderTarget[Graphics::Renderer::MaxMultiRenderTargets];
 	Graphics::Texture*			m_oldDepthBuffer;

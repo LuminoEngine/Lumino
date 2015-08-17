@@ -1,34 +1,34 @@
-/*
-	FreeType ‚ß‚à
+ï»¿/*
+	FreeType ã‚ã‚‚
 
-	EFT_CharMap	http://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_CharMap
-		•¶š‚ÆƒOƒŠƒt‚ğ‘Î‰•t‚¯‚éƒ}ƒbƒvB
-		1‚Â‚Ì FT_Face ‚Í•¡”‚ÌƒLƒƒƒ‰ƒ}ƒbƒv‚ğ‚Â‚±‚Æ‚ª‚ ‚éB
-		’Êí‚Í‚»‚Ì’†‚Ì1‚Â‚ğg—p‚µA‚»‚ê‚ğuƒAƒNƒeƒBƒu‚ÈƒLƒƒƒ‰ƒ}ƒbƒvv‚ÆŒÄ‚ñ‚Å‚¢‚éB
-		ƒAƒNƒeƒBƒu‚ÈƒLƒƒƒ‰ƒ}ƒbƒv‚Í face->charmap ‚Åæ“¾‚Å‚«‚éB
+	ãƒ»FT_CharMap	http://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_CharMap
+		æ–‡å­—ã¨ã‚°ãƒªãƒ•ã‚’å¯¾å¿œä»˜ã‘ã‚‹ãƒãƒƒãƒ—ã€‚
+		1ã¤ã® FT_Face ã¯è¤‡æ•°ã®ã‚­ãƒ£ãƒ©ãƒãƒƒãƒ—ã‚’æŒã¤ã“ã¨ãŒã‚ã‚‹ã€‚
+		é€šå¸¸ã¯ãã®ä¸­ã®1ã¤ã‚’ä½¿ç”¨ã—ã€ãã‚Œã‚’ã€Œã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªã‚­ãƒ£ãƒ©ãƒãƒƒãƒ—ã€ã¨å‘¼ã‚“ã§ã„ã‚‹ã€‚
+		ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªã‚­ãƒ£ãƒ©ãƒãƒƒãƒ—ã¯ face->charmap ã§å–å¾—ã§ãã‚‹ã€‚
 
-	¡ c‘‚«ƒtƒHƒ“ƒg‚É‚Â‚¢‚Ä
-		FT_Load_Glyph() ‚·‚é‚Æ‚«‚Ìƒtƒ‰ƒO‚É FT_LOAD_VERTICAL_LAYOUT ‚ğw’è‚·‚é‚ÆA
-		slot->advance.y ‚É slot->metrics.vertAdvance ‚ªŠi”[‚³‚ê‚é‚æ‚¤‚É‚È‚éB
-		ftobjs.c ‚Ì 758 s–Ú‚ ‚½‚è‚ªQl‚É‚È‚éB
+	â–  ç¸¦æ›¸ããƒ•ã‚©ãƒ³ãƒˆã«ã¤ã„ã¦
+		FT_Load_Glyph() ã™ã‚‹ã¨ãã®ãƒ•ãƒ©ã‚°ã« FT_LOAD_VERTICAL_LAYOUT ã‚’æŒ‡å®šã™ã‚‹ã¨ã€
+		slot->advance.y ã« slot->metrics.vertAdvance ãŒæ ¼ç´ã•ã‚Œã‚‹ã‚ˆã†ã«ãªã‚‹ã€‚
+		ftobjs.c ã® 758 è¡Œç›®ã‚ãŸã‚ŠãŒå‚è€ƒã«ãªã‚‹ã€‚
 */
 /*
-Eƒ\ƒtƒgƒEƒFƒA•`‰æ
+ãƒ»ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢æç”»
 BitmapFont
 OutlineFont
-Eƒn[ƒhƒEƒFƒA•`‰æ
-PolygonFont		c OutlineFont ‚Ì’¸“_î•ñ‚ğg‚¤B‚Ü‚Í‚½ BitmapFont+‹éŒ`
-TextureFont		c OutlineFont ‚Ü‚½‚Í BitmapFont ‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOŒ‹‰Ê‚ğg‚¤
+ãƒ»ãƒãƒ¼ãƒ‰ã‚¦ã‚§ã‚¢æç”»
+PolygonFont		â€¦ OutlineFont ã®é ‚ç‚¹æƒ…å ±ã‚’ä½¿ã†ã€‚ã¾ã¯ãŸ BitmapFont+çŸ©å½¢
+TextureFont		â€¦ OutlineFont ã¾ãŸã¯ BitmapFont ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°çµæœã‚’ä½¿ã†
 
-¡ ƒJ[ƒjƒ“ƒO‚É‚Â‚¢‚Ä
-GUI::RichText ‚Å‘‚­‚Æ‚«‚àASpan ‚ğ‚Ü‚½‚¢‚Å‚àƒJ[ƒjƒ“ƒO‚ÍˆÛ‚³‚ê‚éB
-¨ <red>i</red><blue>j</blue> ‚Æ‚©B
+â–  ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°ã«ã¤ã„ã¦
+GUI::RichText ã§æ›¸ãã¨ãã‚‚ã€Span ã‚’ã¾ãŸã„ã§ã‚‚ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°ã¯ç¶­æŒã•ã‚Œã‚‹ã€‚
+â†’ <red>i</red><blue>j</blue> ã¨ã‹ã€‚
 
-ƒJ[ƒjƒ“ƒO‚Ì—Ê‚ÍFontƒNƒ‰ƒX‚©‚ç‚Æ‚é‚¯‚ÇAGUI ƒŒƒxƒ‹‚Å‚ÍƒAƒ‰ƒrƒAŒê‚Æ‚©‚Í
-TextBox.RightToLeft ƒvƒƒpƒeƒB‚É‚æ‚Á‚Ä•`‰æ•ûŒü‚ª•Ï‚í‚éB
+ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°ã®é‡ã¯Fontã‚¯ãƒ©ã‚¹ã‹ã‚‰ã¨ã‚‹ã‘ã©ã€GUI ãƒ¬ãƒ™ãƒ«ã§ã¯ã‚¢ãƒ©ãƒ“ã‚¢èªã¨ã‹ã¯
+TextBox.RightToLeft ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã«ã‚ˆã£ã¦æç”»æ–¹å‘ãŒå¤‰ã‚ã‚‹ã€‚
 
-GUI ‚Ì FlowDocument(Span) ƒŒƒxƒ‹‚ÅƒJ[ƒjƒ“ƒO‚Íg‚¦‚é‚æ‚¤‚É‚µ‚½‚¢B
-•Ê‚ÉƒJ[ƒjƒ“ƒO‚ğŒ©‚¹‚È‚­‚Ä‚à—Ç‚¢‚ªEEEB
+GUI ã® FlowDocument(Span) ãƒ¬ãƒ™ãƒ«ã§ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°ã¯ä½¿ãˆã‚‹ã‚ˆã†ã«ã—ãŸã„ã€‚
+åˆ¥ã«ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°ã‚’è¦‹ã›ãªãã¦ã‚‚è‰¯ã„ãŒãƒ»ãƒ»ãƒ»ã€‚
 
 textRenderer.BeginLine()
 for (span, spans) {
@@ -36,16 +36,16 @@ textRenderer.DrawLine(span.Text, span.Font, span.pen, span.blush);
 }
 textRenderer.EndLine()
 
-ª‚±‚Ì textRenderer ‚Í GUI ‚Å•`‚­ RendererB
+â†‘ã“ã® textRenderer ã¯ GUI ã§æã Rendererã€‚
 
-¡ •¶š’PˆÊ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Æ‚©‚ÌƒGƒtƒFƒNƒg‚ÍH
-AfterEffects ‚ÍA"ƒeƒLƒXƒgƒŒƒCƒ„[" ‚È‚é‚à‚Ì‚É "ƒGƒtƒFƒNƒg" ‚ğƒAƒ^ƒbƒ`‚·‚é‚±‚Æ‚Ås‚¤B
-ƒeƒLƒXƒgƒŒƒCƒ„[‚Í•¶š‚Ì•`‰æ‚É TextRenderer ‚ğg—p‚·‚é‚ªAˆÊ’u‚Í©•ª‚ÅŒˆ‚ß‚éB
-1•¶š‚²‚Æ‚É’¸“_ƒoƒbƒtƒ@‚ğ—pˆÓ‚·‚é‚©AƒƒbƒVƒ…‚İ‚½‚¢‚É 1‚Â‚Ì’¸“_ƒoƒbƒtƒ@‚ğ Subset ‚Å•ªŠ„‚·‚é‚Æ‚©‚â‚è‚´‚Ü‚Íl‚¦‚é•K—v‚ª‚ ‚è‚»‚¤B
+â–  æ–‡å­—å˜ä½ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¨ã‹ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã¯ï¼Ÿ
+AfterEffects ã¯ã€"ãƒ†ã‚­ã‚¹ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼" ãªã‚‹ã‚‚ã®ã« "ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ" ã‚’ã‚¢ã‚¿ãƒƒãƒã™ã‚‹ã“ã¨ã§è¡Œã†ã€‚
+ãƒ†ã‚­ã‚¹ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼ã¯æ–‡å­—ã®æç”»ã« TextRenderer ã‚’ä½¿ç”¨ã™ã‚‹ãŒã€ä½ç½®ã¯è‡ªåˆ†ã§æ±ºã‚ã‚‹ã€‚
+1æ–‡å­—ã”ã¨ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ç”¨æ„ã™ã‚‹ã‹ã€ãƒ¡ãƒƒã‚·ãƒ¥ã¿ãŸã„ã« 1ã¤ã®é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ Subset ã§åˆ†å‰²ã™ã‚‹ã¨ã‹ã‚„ã‚Šã–ã¾ã¯è€ƒãˆã‚‹å¿…è¦ãŒã‚ã‚Šãã†ã€‚
 
-EƒXƒpƒCƒ‰ƒ‹ƒ_ƒEƒ“
-Eƒuƒ‰[
-¨ ‚©‚È‚è‚ƒŒƒxƒ‹‚È•”•ª‚Ì‹@”\‚ÆŠÖŒW‚·‚éBƒƒbƒVƒ…‚Æ“¯‚¶ˆµ‚¢‚É‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚àB
+ãƒ»ã‚¹ãƒ‘ã‚¤ãƒ©ãƒ«ãƒ€ã‚¦ãƒ³
+ãƒ»ãƒ–ãƒ©ãƒ¼
+â†’ ã‹ãªã‚Šé«˜ãƒ¬ãƒ™ãƒ«ãªéƒ¨åˆ†ã®æ©Ÿèƒ½ã¨é–¢ä¿‚ã™ã‚‹ã€‚ãƒ¡ãƒƒã‚·ãƒ¥ã¨åŒã˜æ‰±ã„ã«ã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ã€‚
 */
 #include "../Internal.h"
 #include <ft2build.h>
@@ -94,11 +94,11 @@ FontManager::FontManager(FileManager* fileManager)
 	m_UTF32ToTCharConverter.SetDestinationEncoding(Text::Encoding::GetTCharEncoding());
 	m_UTF32ToTCharConverter.SetSourceEncoding(Text::Encoding::GetUTF32Encoding());
 
-	// FreeType ‰Šú‰»
+	// FreeType åˆæœŸåŒ–
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font library : %d\n", err);
 
-	// ƒLƒƒƒbƒVƒ}ƒl[ƒWƒƒ
+	// ã‚­ãƒ£ãƒƒã‚·ãƒãƒãƒ¼ã‚¸ãƒ£
 	err = FTC_Manager_New(
 		m_ftLibrary,
 		0, 0, 0,
@@ -107,15 +107,15 @@ FontManager::FontManager(FileManager* fileManager)
 		&m_ftCacheManager);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font cache manager : %d\n", err);
 
-	// ƒLƒƒƒbƒVƒ…ƒ}ƒbƒv
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ãƒãƒƒãƒ—
 	err = FTC_CMapCache_New(m_ftCacheManager, &m_ftCMapCache);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font cache map : %d\n", err);
 
-	// ƒCƒ[ƒWƒLƒƒƒbƒVƒ…
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚­ãƒ£ãƒƒã‚·ãƒ¥
 	err = FTC_ImageCache_New(m_ftCacheManager, &m_ftImageCache);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
 
-	// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒg
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ•ã‚©ãƒ³ãƒˆ
 	m_defaultFont = LN_NEW FreeTypeFont(this);
 	m_defaultFont->SetName(DefaultFontName);
 	m_defaultFont->SetSize(20);
@@ -136,7 +136,7 @@ void FontManager::Dispose()
 {
 	LN_SAFE_RELEASE(m_defaultFont);
 
-	// “o˜^‚µ‚½TTFƒtƒ@ƒCƒ‹‚Ìƒƒ‚ƒŠƒoƒbƒtƒ@‚ğ‚·‚×‚Ä‰ğ•ú
+	// ç™»éŒ²ã—ãŸTTFãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã‚’ã™ã¹ã¦è§£æ”¾
 	//TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
 	//for (; itr != m_ttfDataEntryMap.end(); ++itr)
 	//{
@@ -144,7 +144,7 @@ void FontManager::Dispose()
 	//}
 	m_ttfDataEntryMap.clear();
 
-	// ƒLƒƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£
 	if (m_ftCacheManager != NULL)
 	{
 		FTC_Manager_Done(m_ftCacheManager);
@@ -164,12 +164,12 @@ void FontManager::Dispose()
 //-----------------------------------------------------------------------------
 void FontManager::RegisterFontFile(const String& fontFilePath)
 {
-	// ƒtƒ@ƒCƒ‹‚©‚ç‘S‚Ä‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å…¨ã¦ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath));
 	ByteBuffer buffer((size_t)file->GetLength(), false);
 	file->Read(buffer.GetData(), buffer.GetSize());
 
-	// Face ì¬ (ƒtƒ@ƒ~ƒŠ–¼EFace ”‚ğ’²‚×‚é‚½‚ßB‚·‚®íœ‚·‚é)
+	// Face ä½œæˆ (ãƒ•ã‚¡ãƒŸãƒªåãƒ»Face æ•°ã‚’èª¿ã¹ã‚‹ãŸã‚ã€‚ã™ãå‰Šé™¤ã™ã‚‹)
 	FT_Face face;
 	FT_Error err = FT_New_Memory_Face(
 		m_ftLibrary,
@@ -179,7 +179,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		&face);
 	LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
-	// Fase ‚Ğ‚Æ‚Â‚¾‚¯ (.ttf)
+	// Fase ã²ã¨ã¤ã ã‘ (.ttf)
 	if (face->num_faces == 1)
 	{
 		String familyName(face->family_name);
@@ -194,7 +194,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 
 			Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
-			// ‰‰ñ“o˜^‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒg–¼‚Æ‚µ‚Ä“o˜^‚·‚é
+			// åˆå›ç™»éŒ²ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ•ã‚©ãƒ³ãƒˆåã¨ã—ã¦ç™»éŒ²ã™ã‚‹
 			if (m_ttfDataEntryMap.size() == 1) {
 				m_defaultFont->SetName(familyName);
 			}
@@ -202,11 +202,11 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		FT_Done_Face(face);
 
 	}
-	// Fase ‚ª•¡” (.ttc)
+	// Fase ãŒè¤‡æ•° (.ttc)
 	else if (face->num_faces > 1)
 	{
 		int facesCount = face->num_faces;
-		FT_Done_Face(face);	// ”‚ğ’²‚×‚é‚½‚ß‚¾‚¯‚Ég‚Á‚½Bˆê“xíœ
+		FT_Done_Face(face);	// æ•°ã‚’èª¿ã¹ã‚‹ãŸã‚ã ã‘ã«ä½¿ã£ãŸã€‚ä¸€åº¦å‰Šé™¤
 		face = NULL;
 
 		for (int i = 0; i < facesCount; i++)
@@ -231,7 +231,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 
 				Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
-				// ‰‰ñ“o˜^‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒg–¼‚Æ‚µ‚Ä“o˜^‚·‚é
+				// åˆå›ç™»éŒ²ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ•ã‚©ãƒ³ãƒˆåã¨ã—ã¦ç™»éŒ²ã™ã‚‹
 				if (m_ttfDataEntryMap.size() == 1) {
 					m_defaultFont->SetName(familyName);
 				}
@@ -262,10 +262,10 @@ FT_Error FontManager::FaceRequester(
 	FT_Pointer request_data,
 	FT_Face* aface)
 {
-	// ƒLƒƒƒbƒVƒ…ŒŸõ‚ÌƒR[ƒ‹ƒoƒbƒNBmap ‚©‚çæ‚é‚æ‚¤‚É‚µ‚Ä‚¢‚éB
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ¤œç´¢ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã€‚map ã‹ã‚‰å–ã‚‹ã‚ˆã†ã«ã—ã¦ã„ã‚‹ã€‚
 
-	// face_id ‚ÍAFTC_Manager_LookupFace() ‚É“n‚µ‚½ ID ‚ª“ü‚Á‚Ä‚­‚éB
-	// ID ‚Í©•ª‚ÅD‚«‚È‚æ‚¤‚ÉŒˆ‚ß‚ç‚ê‚éB‚Æ‚è‚ ‚¦‚¸•¶š—ñ (ƒtƒ@ƒ~ƒŠ–¼)‚Æ‚µ‚Ä‚¢‚é
+	// face_id ã¯ã€FTC_Manager_LookupFace() ã«æ¸¡ã—ãŸ ID ãŒå…¥ã£ã¦ãã‚‹ã€‚
+	// ID ã¯è‡ªåˆ†ã§å¥½ããªã‚ˆã†ã«æ±ºã‚ã‚‰ã‚Œã‚‹ã€‚ã¨ã‚Šã‚ãˆãšæ–‡å­—åˆ— (ãƒ•ã‚¡ãƒŸãƒªå)ã¨ã—ã¦ã„ã‚‹
 
 	//String family_name( (lnChar*)face_id );
 	uint32_t key = (uint32_t)face_id;
@@ -294,14 +294,14 @@ FT_Error FontManager::FaceRequester(
 #ifdef LN_WIN32
 	else if (m_requesterFaceName != NULL)
 	{
-		// –¼‘O‚©‚çƒVƒXƒeƒ€ƒtƒHƒ“ƒgŒŸõ
+		// åå‰ã‹ã‚‰ã‚·ã‚¹ãƒ†ãƒ ãƒ•ã‚©ãƒ³ãƒˆæ¤œç´¢
 		TSystemFontData* systemFont = GetWindowsSystemFontData(m_requesterFaceName);
 		m_requesterFaceName = NULL;
 		if (systemFont == NULL){
 			return FT_Err_Cannot_Open_Resource;
 		}
 
-		// ƒŠƒ\[ƒXƒƒbƒN
+		// ãƒªã‚½ãƒ¼ã‚¹ãƒ­ãƒƒã‚¯
 		size_t size = 0;
 		int index = 0;
 		byte_t* data = LockWindowsSystemFontData(systemFont, &size, &index);
@@ -310,7 +310,7 @@ FT_Error FontManager::FaceRequester(
 			return FT_Err_Cannot_Open_Resource;
 		}
 
-		// FreeType ‚Ì“Ç‚İæ‚èƒXƒgƒŠ[ƒ€
+		// FreeType ã®èª­ã¿å–ã‚Šã‚¹ãƒˆãƒªãƒ¼ãƒ 
 		FT_Stream stream = (FT_Stream)malloc(sizeof(FT_StreamRec));
 		if (stream == NULL){
 			FreeWindowsSystemFontData(systemFont);
@@ -336,11 +336,11 @@ FT_Error FontManager::FaceRequester(
 		FT_Face face;
 		FT_Error err = FT_Open_Face(m_ftLibrary, &args, index, &face);
 		if (err != FT_Err_Ok) {
-			// ¸”s‚µ‚½ê‡‚àstream‚ÍŸè‚É‰ğ•ú‚³‚ê‚é
+			// å¤±æ•—ã—ãŸå ´åˆã‚‚streamã¯å‹æ‰‹ã«è§£æ”¾ã•ã‚Œã‚‹
 			return err;
 		}
 
-		// Charmap‚ğİ’è‚µ‚Ä‚¨‚­
+		// Charmapã‚’è¨­å®šã—ã¦ãŠã
 		err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 		if (err != FT_Err_Ok) {
 			FT_Done_Face(face);
@@ -368,7 +368,7 @@ FT_Error FontManager::CallbackFaceRequester(
 
 
 #ifdef LN_WIN32
-// http://kikyou.info/diary/?200510#i10 ‚ğQl‚É‚µ‚½
+// http://kikyou.info/diary/?200510#i10 ã‚’å‚è€ƒã«ã—ãŸ
 #define TVP_TT_TABLE_ttcf  (('t' << 0) + ('t' << 8) + ('c' << 16) + ('f' << 24))
 #define TVP_TT_TABLE_name  (('n' << 0) + ('a' << 8) + ('m' << 16) + ('e' << 24))
 
@@ -389,7 +389,7 @@ FontManager::TSystemFontData* FontManager::GetWindowsSystemFontData(LPCTSTR name
 		free(p);
 		return NULL;
 	}
-	// –¼‘OˆÈŠO“K“–
+	// åå‰ä»¥å¤–é©å½“
 	p->hFont = CreateFont(
 		12, 0, 0, 0, FW_NORMAL,
 		FALSE, FALSE, FALSE,
@@ -405,7 +405,7 @@ FontManager::TSystemFontData* FontManager::GetWindowsSystemFontData(LPCTSTR name
 		return NULL;
 	}
 	p->hOldFont = (HFONT)::SelectObject(p->hdc, p->hFont);
-	// ƒtƒHƒ“ƒgƒf[ƒ^‚ª“¾‚ç‚ê‚»‚¤‚©ƒ`ƒFƒbƒN
+	// ãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ãŒå¾—ã‚‰ã‚Œãã†ã‹ãƒã‚§ãƒƒã‚¯
 	result = ::GetFontData(p->hdc, TVP_TT_TABLE_name, 0, NULL, 0);
 	if (result == GDI_ERROR){
 		SelectObject(p->hdc, p->hOldFont);
@@ -422,8 +422,8 @@ FontManager::TSystemFontData* FontManager::GetWindowsSystemFontData(LPCTSTR name
 //-----------------------------------------------------------------------------
 unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size_t *size, int *index)
 {
-	unsigned char *name_content = NULL; // Windows ‚©‚çæ“¾‚µ‚½ name ƒ^ƒO‚Ì“à—e
-	unsigned char *name_content_ft = NULL; // FreeType ‚©‚çæ“¾‚µ‚½ name ƒ^ƒO‚Ì“à—e
+	unsigned char *name_content = NULL; // Windows ã‹ã‚‰å–å¾—ã—ãŸ name ã‚¿ã‚°ã®å†…å®¹
+	unsigned char *name_content_ft = NULL; // FreeType ã‹ã‚‰å–å¾—ã—ãŸ name ã‚¿ã‚°ã®å†…å®¹
 	DWORD result;
 
 	DWORD fontsize;
@@ -443,10 +443,10 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 		*index = fnt->index;
 		return fnt->fontdata;
 	}
-	// ƒtƒHƒ“ƒg–¼Ìæ“¾ˆ—
+	// ãƒ•ã‚©ãƒ³ãƒˆåç§°å–å¾—å‡¦ç†
 	result = GetFontData(fnt->hdc, TVP_TT_TABLE_name, 0, NULL, 0);
 	if (result == GDI_ERROR){
-		// ƒGƒ‰[; GetFontData ‚Å‚Íˆµ‚¦‚È‚©‚Á‚½
+		// ã‚¨ãƒ©ãƒ¼; GetFontData ã§ã¯æ‰±ãˆãªã‹ã£ãŸ
 		return NULL;
 	}
 	name_content_size = result;
@@ -454,10 +454,10 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 	name_content_ft = (unsigned char*)malloc(name_content_size);
 	GetFontData(fnt->hdc, TVP_TT_TABLE_name, 0, name_content, name_content_size);
 
-	// ƒtƒHƒ“ƒgƒTƒCƒYæ“¾ˆ—
+	// ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºå–å¾—å‡¦ç†
 	result = GetFontData(fnt->hdc, TVP_TT_TABLE_ttcf, 0, &buf, 1);
 	if (result == 1){
-		// TTC ƒtƒ@ƒCƒ‹‚¾‚Æv‚í‚ê‚é
+		// TTC ãƒ•ã‚¡ã‚¤ãƒ«ã ã¨æ€ã‚ã‚Œã‚‹
 		result = GetFontData(fnt->hdc, TVP_TT_TABLE_ttcf, 0, NULL, 0);
 		IsTTC = TRUE;
 	}
@@ -466,7 +466,7 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 		fnt->index = 0;
 	}
 	if (result == GDI_ERROR){
-		// ƒGƒ‰[; GetFontData ‚Å‚Íˆµ‚¦‚È‚©‚Á‚½
+		// ã‚¨ãƒ©ãƒ¼; GetFontData ã§ã¯æ‰±ãˆãªã‹ã£ãŸ
 		free(name_content);
 		free(name_content_ft);
 		return NULL;
@@ -506,7 +506,7 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 			free(name_content_ft);
 			return NULL;
 		}
-		// FreeType ‚©‚çAname ƒ^ƒO‚ÌƒTƒCƒY‚ğæ“¾‚·‚é
+		// FreeType ã‹ã‚‰ã€name ã‚¿ã‚°ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 		length = 0;
 		err = FT_Load_Sfnt_Table(face, TTAG_name, 0, NULL, &length);
 		if (err){
@@ -515,9 +515,9 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 			free(name_content_ft);
 			return NULL;
 		}
-		// FreeType ‚©‚ç“¾‚½ name ƒ^ƒO‚Ì’·‚³‚ğ Windows ‚©‚ç“¾‚½’·‚³‚Æ”äŠr
+		// FreeType ã‹ã‚‰å¾—ãŸ name ã‚¿ã‚°ã®é•·ã•ã‚’ Windows ã‹ã‚‰å¾—ãŸé•·ã•ã¨æ¯”è¼ƒ
 		if (length == (DWORD)name_content_size){
-			// FreeType ‚©‚ç name ƒ^ƒO‚ğæ“¾
+			// FreeType ã‹ã‚‰ name ã‚¿ã‚°ã‚’å–å¾—
 			err = FT_Load_Sfnt_Table(face, TTAG_name, 0, name_content_ft, &length);
 			if (err){
 				FT_Done_Face(face);
@@ -525,9 +525,9 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 				free(name_content_ft);
 				return NULL;
 			}
-			// FreeType ‚©‚ç“Ç‚İ‚ñ‚¾ name ƒ^ƒO‚Ì“à—e‚ÆAWindows ‚©‚ç“Ç‚İ‚ñ‚¾
-			// name ƒ^ƒO‚Ì“à—e‚ğ”äŠr‚·‚éB
-			// ˆê’v‚µ‚Ä‚¢‚ê‚Î‚»‚Ì index ‚ÌƒtƒHƒ“ƒg‚ğg‚¤B
+			// FreeType ã‹ã‚‰èª­ã¿è¾¼ã‚“ã  name ã‚¿ã‚°ã®å†…å®¹ã¨ã€Windows ã‹ã‚‰èª­ã¿è¾¼ã‚“ã 
+			// name ã‚¿ã‚°ã®å†…å®¹ã‚’æ¯”è¼ƒã™ã‚‹ã€‚
+			// ä¸€è‡´ã—ã¦ã„ã‚Œã°ãã® index ã®ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½¿ã†ã€‚
 			if (!memcmp(name_content, name_content_ft, name_content_size)){
 				FT_Done_Face(face);
 				fnt->index = i;

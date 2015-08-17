@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 //#include "../../Graphics/Interface.h"
@@ -20,7 +20,7 @@ class MMEShaderErrorInfo;
 
 /**
 	@note	
-		ƒAƒmƒe[ƒVƒ‡ƒ“
+		ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³
 			string Subset		e.g) "0-4,6,8"
 			string MMDPass		"object" or "object_ss" or "shadow" or "edge"
 			bool UseTexture
@@ -29,7 +29,7 @@ class MMEShaderErrorInfo;
 			bool UseSelfShadow	[MMM]
 			string Script
 
-			MMDPass ‚Ì "object_ss" ‚Í MMM ‚Å‚Íg—p”ñ„§B
+			MMDPass ã® "object_ss" ã¯ MMM ã§ã¯ä½¿ç”¨éæ¨å¥¨ã€‚
 */
 class MMEShaderTechnique
 	: public RefObject
@@ -40,47 +40,47 @@ public:
 
 public:
 
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	void Initialize(MMEShader* shader, Graphics::ShaderTechnique* tech, MMEShaderErrorInfo* errorInfo);
 
-	/// ‚±‚ÌƒeƒNƒjƒbƒN‚ğ‚ÂƒVƒF[ƒ_‚ğæ“¾‚·‚é
+	/// ã“ã®ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã‚’æŒã¤ã‚·ã‚§ãƒ¼ãƒ€ã‚’å–å¾—ã™ã‚‹
 	MMEShader* GetOwnerShader() const { return m_ownerShader; }
 
-	/// •`‰æƒpƒX‚ğæ“¾‚·‚é
+	/// æç”»ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
 	MMDPass GetMMDPass() const { return m_mmdPass; }
 
-	/// ƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚Ä‚¢‚éŞ¿‚Ì‚İ‚ğ‘ÎÛ‚Æ‚·‚é‚©‚Ç‚¤‚©
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹æè³ªã®ã¿ã‚’å¯¾è±¡ã¨ã™ã‚‹ã‹ã©ã†ã‹
 	const Nullable<bool>& IsUseTexture() const { return m_isUseTexture; }
 
-	/// ƒXƒtƒBƒAƒ}ƒbƒv‚ğg—p‚µ‚Ä‚¢‚éŞ¿‚Ì‚İ‚ğ‘ÎÛ‚Æ‚·‚é‚©‚Ç‚¤‚©
+	/// ã‚¹ãƒ•ã‚£ã‚¢ãƒãƒƒãƒ—ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹æè³ªã®ã¿ã‚’å¯¾è±¡ã¨ã™ã‚‹ã‹ã©ã†ã‹
 	const Nullable<bool>& IsUseSphereMap() const { return m_isUseSphereMap; }
 
-	/// ƒ‚ƒfƒ‹‚Ì‚İ‚ğ‘ÎÛ‚Æ‚·‚é‚©‚Ç‚¤‚©
+	/// ãƒ¢ãƒ‡ãƒ«ã®ã¿ã‚’å¯¾è±¡ã¨ã™ã‚‹ã‹ã©ã†ã‹
 	const Nullable<bool>& IsUseToon() const { return m_isUseToon; }
 
-	/// [MMM] ƒZƒ‹ƒtƒVƒƒƒhƒE‚ğg—p‚µ‚Ä‚¢‚éŞ¿‚Ì‚İ‚ğ‘ÎÛ‚Æ‚·‚é‚©‚Ç‚¤‚©
+	/// [MMM] ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹æè³ªã®ã¿ã‚’å¯¾è±¡ã¨ã™ã‚‹ã‹ã©ã†ã‹
 	const Nullable<bool>& IsUseSelfShadow() const { return m_isUseSelfShadow; }
 
-	/// ‚±‚ÌƒeƒNƒjƒbƒN‚Íw’è‚µ‚½”Ô†‚ÌƒTƒuƒZƒbƒg‚ğ•`‰æ‚Å‚«‚é‚©
+	/// ã“ã®ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã¯æŒ‡å®šã—ãŸç•ªå·ã®ã‚µãƒ–ã‚»ãƒƒãƒˆã‚’æç”»ã§ãã‚‹ã‹
 	bool ContainsSubsetIndex(int subsetIndex) const;
 	
-	/// •`‰æƒRƒ}ƒ“ƒhƒŠƒXƒg‚Ìæ“¾
+	/// æç”»ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®å–å¾—
 	ShaderScriptCommandList& GetDrawingCommandList() { return m_scriptCommandList; }
 
 private:
 
-	/// MMEShaderPass ‚ğŒŸõ‚·‚é
+	/// MMEShaderPass ã‚’æ¤œç´¢ã™ã‚‹
 	MMEShaderPass* FindMMEShaderPass(const TCHAR* passName);
 
-	/// ƒXƒNƒŠƒvƒg•¶š—ñ‚Ì•Ï”‚ğó‚¯æ‚Á‚Ä commandList ‚ÉƒRƒ}ƒ“ƒh‚ğ’Ç‰Á‚µ‚Ä‚¢‚­
-	//      thisPass : ƒpƒX“à‚ÌƒXƒNƒŠƒvƒg‚ğ‰ğÍ‚·‚éê‡A‚»‚ÌƒpƒX‚ğ“n‚· (Draw="Geometry" ‚ÌÀs‚É“n‚·pass)
+	/// ã‚¹ã‚¯ãƒªãƒ—ãƒˆæ–‡å­—åˆ—ã®å¤‰æ•°ã‚’å—ã‘å–ã£ã¦ commandList ã«ã‚³ãƒãƒ³ãƒ‰ã‚’è¿½åŠ ã—ã¦ã„ã
+	//      thisPass : ãƒ‘ã‚¹å†…ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’è§£æã™ã‚‹å ´åˆã€ãã®ãƒ‘ã‚¹ã‚’æ¸¡ã™ (Draw="Geometry" ã®å®Ÿè¡Œã«æ¸¡ã™pass)
 	void ParseScriptCommandString(Graphics::ShaderVariable* scriptAnno, Graphics::ShaderPass* thisPass, ShaderScriptCommandList* commandList);
 
 
 	static void ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange);
 
-	/// •`‰æƒTƒuƒZƒbƒg‚ğ¦‚·•¶š—ñ‚©‚çAƒTƒuƒZƒbƒg”Ô†‚Ì”z—ñ‚ğì¬‚·‚é
-	///		'-' ‚É‚æ‚é”ÍˆÍw’è‚Åux”ÔˆÈ~‚·‚×‚Äv‚ğ•`‰æ‚·‚éê‡A”z—ñ‚ÌI’[‚É‚Í -1 ‚ªŠi”[‚³‚ê‚éB
+	/// æç”»ã‚µãƒ–ã‚»ãƒƒãƒˆã‚’ç¤ºã™æ–‡å­—åˆ—ã‹ã‚‰ã€ã‚µãƒ–ã‚»ãƒƒãƒˆç•ªå·ã®é…åˆ—ã‚’ä½œæˆã™ã‚‹
+	///		'-' ã«ã‚ˆã‚‹ç¯„å›²æŒ‡å®šã§ã€Œxç•ªä»¥é™ã™ã¹ã¦ã€ã‚’æç”»ã™ã‚‹å ´åˆã€é…åˆ—ã®çµ‚ç«¯ã«ã¯ -1 ãŒæ ¼ç´ã•ã‚Œã‚‹ã€‚
 	static void ParseSubsetIndexArray(const TCHAR* subsetText, Array<int>* subsetIndexArray);
 
 private:
@@ -100,7 +100,7 @@ private:
 	Array<bool>					m_subsetIndexArray;
 	bool						m_subsetIndexEndToRange;
 
-	ShaderScriptCommandList		m_scriptCommandList;	///< ‚±‚ÌƒeƒNƒjƒbƒN‚Ì Script ‹y‚ÑqƒpƒX‚Ì Script
+	ShaderScriptCommandList		m_scriptCommandList;	///< ã“ã®ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã® Script åŠã³å­ãƒ‘ã‚¹ã® Script
 	Array<MMEShaderPass*>		m_mmeShaderPasses;
 };
 

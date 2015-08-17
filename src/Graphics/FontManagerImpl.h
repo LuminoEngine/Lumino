@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Imaging/FontManager.h>
@@ -8,8 +8,8 @@ namespace Lumino
 namespace Imaging
 {
 
-/// ƒtƒHƒ“ƒg‚ÌŠÇ—ƒNƒ‰ƒX‚ÌÀ‘•
-///		À‘•ƒNƒ‰ƒX‚ğ•ª‚¯‚Ä‚¢‚é‚Ì‚ÍAFreeType ‚Ìƒwƒbƒ_—Ş‚ğŒöŠJ‚µ‚È‚¢‚æ‚¤‚É‚·‚é‚½‚ßB
+/// ãƒ•ã‚©ãƒ³ãƒˆã®ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å®Ÿè£…
+///		å®Ÿè£…ã‚¯ãƒ©ã‚¹ã‚’åˆ†ã‘ã¦ã„ã‚‹ã®ã¯ã€FreeType ã®ãƒ˜ãƒƒãƒ€é¡ã‚’å…¬é–‹ã—ãªã„ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã€‚
 class FontManagerImpl
 	: public FontManager
 {

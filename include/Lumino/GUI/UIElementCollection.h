@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../CoreObjectList.h"
 #include "UIElement.h"
@@ -35,14 +35,14 @@ public:
 	{}
 	virtual ~UIElementCollection(){}
 
-	/// ––”ö‚É—v‘f‚ğ’Ç‰Á‚µ‚Ü‚·B
+	/// æœ«å°¾ã«è¦ç´ ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 	void Add(UIElement* item)
 	{
 		if (item != NULL) {
 			item->SetParent(m_logicalParent);
 			m_visualChildren.Add(item);
 
-			// q—v‘f‚Ìƒe[ƒ}‚ğ’¼‚¿‚ÉXV
+			// å­è¦ç´ ã®ãƒ†ãƒ¼ãƒã‚’ç›´ã¡ã«æ›´æ–°
 			item->ApplyTemplate();
 		}
 	}
@@ -59,7 +59,7 @@ public:
 
 public:
 	UIElement*						m_logicalParent;
-	ArrayList< RefPtr<UIElement> >	m_visualChildren;	// ArrayList<RefPtr<UIElement> >  ‚Í‚â‚ß‚½BƒCƒeƒŒ[ƒg‚·‚é‚Æ‚«‚Éç’·‚É‚È‚éB
+	ArrayList< RefPtr<UIElement> >	m_visualChildren;	// ArrayList<RefPtr<UIElement> >  ã¯ã‚„ã‚ãŸã€‚ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆã™ã‚‹ã¨ãã«å†—é•·ã«ãªã‚‹ã€‚
 #endif
 };
 

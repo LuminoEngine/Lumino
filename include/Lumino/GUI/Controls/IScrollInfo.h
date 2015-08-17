@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 namespace Lumino
@@ -8,90 +8,90 @@ namespace GUI
 class ScrollViewer;
 
 /**
-	@brief		ScrollViewer �R���g���[�����̃��C���̃X�N���[���\�̈��\���܂��B
-	@details	Extent�AViewport�AOffset �̒P�ʂ̓X�N���[���Ώۂ̐ݒ�ɂ��قȂ�܂��B
-				�Y�t�v���p�e�B ScrollViewer.CanContentScroll �� true �̏ꍇ�̓A�C�e���P�ʁA
-				false �̏ꍇ�̓s�N�Z���P�ʂł��B
+	@brief		ScrollViewer コントロール内のメインのスクロール可能領域を表します。
+	@details	Extent、Viewport、Offset の単位はスクロール対象の設定により異なります。
+				添付プロパティ ScrollViewer.CanContentScroll が true の場合はアイテム単位、
+				false の場合はピクセル単位です。
 */
 class IScrollInfo
 {
 public:
-	/// ��������ɃX�N���[���ł��邩�ǂ����������l��ݒ肵�܂��B
-	/// @note	�X�N���[���o�[��\�����Ȃ��ݒ�ɂȂ��Ă�����A�����������݂��Ȃ��ꍇ�� false ���Z�b�g�����B
-	///			IScrollInfo �̎����N���X�ŕs�v�Ȍv�Z���s��Ȃ��Ȃǂ̂��߂ɎQ�Ƃ���B
+	/// 水平軸上にスクロールできるかどうかを示す値を設定します。
+	/// @note	スクロールバーを表示しない設定になっていたり、そもそも存在しない場合に false がセットされる。
+	///			IScrollInfo の実装クラスで不要な計算を行わないなどのために参照する。
 	virtual void SetCanHorizontallyScroll(bool enabled) = 0;
 
-	/// ��������ɃX�N���[���ł��邩�ǂ����������l���擾���܂��B
+	/// 水平軸上にスクロールできるかどうかを示す値を取得します。
 	virtual bool CanHorizontallyScroll() const = 0;
 
-	/// ��������ɃX�N���[���ł��邩�ǂ����������l��ݒ肵�܂��B
+	/// 垂直軸上にスクロールできるかどうかを示す値を設定します。
 	virtual void SetCanVerticallyScroll(bool enabled) = 0;
 
-	/// ��������ɃX�N���[���ł��邩�ǂ����������l���擾���܂��B
+	/// 垂直軸上にスクロールできるかどうかを示す値を取得します。
 	virtual bool CanVerticallyScroll() const = 0;
 
-	/// �G�N�X�e���g (�R���e���c�S��) �̉������擾���܂��B
+	/// エクステント (コンテンツ全体) の横幅を取得します。
 	virtual float GetExtentWidth() const = 0;
 
-	/// �G�N�X�e���g (�R���e���c�S��) �̏c�����擾���܂��B
+	/// エクステント (コンテンツ全体) の縦幅を取得します。
 	virtual float GetExtentHeight() const = 0;
 
-	/// �R���e���c�ɑ΂�����ۂ̕\���̈�̉������擾���܂��B
+	/// コンテンツに対する実際の表示領域の横幅を取得します。
 	virtual float GetViewportWidth() const = 0;
 
-	/// �R���e���c�ɑ΂�����ۂ̕\���̈�̏c�����擾���܂��B
+	/// コンテンツに対する実際の表示領域の縦幅を取得します。
 	virtual float GetViewportHeight() const = 0;
 
-	/// �X�N���[�������R���e���c�̐����I�t�Z�b�g��ݒ肵�܂��B
+	/// スクロールしたコンテンツの水平オフセットを設定します。
 	virtual void SetHorizontalOffset(float offset) = 0;
 
-	/// �X�N���[�������R���e���c�̐����I�t�Z�b�g���擾���܂��B
+	/// スクロールしたコンテンツの水平オフセットを取得します。
 	virtual float GetHorizontalOffset() const = 0;
 
-	/// �X�N���[�������R���e���c�̐����I�t�Z�b�g��ݒ肵�܂��B
+	/// スクロールしたコンテンツの水平オフセットを設定します。
 	virtual void SetVerticalOffset(float offset) = 0;
 
-	/// �X�N���[�������R���e���c�̐����I�t�Z�b�g���擾���܂��B
+	/// スクロールしたコンテンツの垂直オフセットを取得します。
 	virtual float GetVerticalOffset() const = 0;
 
-	/// �X�N���[������𐧌䂷�� ScrollViewer �v�f��ݒ肵�܂��B
+	/// スクロール動作を制御する ScrollViewer 要素を設定します。
 	virtual void SetScrollOwner(ScrollViewer* owner) = 0;
 
-	/// �R���e���c���� 1 �_���P�ʂ���ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 論理単位ずつ上にスクロールします。
 	virtual void LineUp() = 0;
 
-	/// �R���e���c���� 1 �_���P�ʂ����ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 論理単位ずつ下にスクロールします。
 	virtual void LineDown() = 0;
 
-	/// �R���e���c���� 1 �_���P�ʂ����ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 論理単位ずつ左にスクロールします。
 	virtual void LineLeft() = 0;
 
-	/// �R���e���c���� 1 �_���P�ʂ��E�ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 論理単位ずつ右にスクロールします。
 	virtual void LineRight() = 0;
 
 #if 0
-	/// �R���e���c���� 1 �y�[�W����ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 ページずつ上にスクロールします。
 	virtual void PageUp() = 0;
 
-	/// �R���e���c���� 1 �y�[�W�����ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 ページずつ下にスクロールします。
 	virtual void PageDown() = 0;
 
-	/// �R���e���c���� 1 �y�[�W�����ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 ページずつ左にスクロールします。
 	virtual void PageLeft() = 0;
 
-	/// �R���e���c���� 1 �y�[�W���E�ɃX�N���[�����܂��B
+	/// コンテンツ内を 1 ページずつ右にスクロールします。
 	virtual void PageRight() = 0;
 
-	/// �R���e���c�����}�E�X�z�C�[������ 1 �񕪁A��ɃX�N���[�����܂��B
+	/// コンテンツ内をマウスホイール操作 1 回分、上にスクロールします。
 	virtual void MouseWheelUp() = 0;
 
-	/// �R���e���c�����}�E�X�z�C�[������ 1 �񕪁A���ɃX�N���[�����܂��B
+	/// コンテンツ内をマウスホイール操作 1 回分、下にスクロールします。
 	virtual void MouseWheelDown() = 0;
 
-	/// �R���e���c�����}�E�X�z�C�[������ 1 �񕪁A���ɃX�N���[�����܂��B
+	/// コンテンツ内をマウスホイール操作 1 回分、左にスクロールします。
 	virtual void MouseWheelLeft() = 0;
 
-	/// �R���e���c�����}�E�X�z�C�[������ 1 �񕪁A�E�ɃX�N���[�����܂��B
+	/// コンテンツ内をマウスホイール操作 1 回分、右にスクロールします。
 	virtual void MouseWheelRight() = 0;
 #endif
 

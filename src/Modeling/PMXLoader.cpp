@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "ModelManager.h"
 #include "PMXLoader.h"
@@ -35,7 +35,7 @@ ModelCore* PMXLoader::Load(ModelManager* manager, Stream* stream, const PathName
 	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
-	// ƒwƒbƒ_
+	// ãƒ˜ãƒƒãƒ€
 	reader.Read( &m_pmxHeader, sizeof(PMX_Header) );
 	if (m_pmxHeader.Magic[0] != 'P' ||
 		m_pmxHeader.Magic[1] != 'M' ||
@@ -48,44 +48,44 @@ ModelCore* PMXLoader::Load(ModelManager* manager, Stream* stream, const PathName
 #if 1
 	//_p( m_pmxHeader.Version );
 	printf( "DataSize              : %d\n", m_pmxHeader.DataSize );
-	printf( "ƒGƒ“ƒR[ƒh•û®        : %d\n", m_pmxHeader.Data[0]);
-	printf( "’Ç‰ÁUV”              : %d\n", m_pmxHeader.Data[1]);
-	printf( "’¸“_IndexƒTƒCƒY       : %d\n", m_pmxHeader.Data[2]);
-	printf( "ƒeƒNƒXƒ`ƒƒIndexƒTƒCƒY : %d\n", m_pmxHeader.Data[3]);
-	printf( "Ş¿IndexƒTƒCƒY       : %d\n", m_pmxHeader.Data[4]);
-	printf( "ƒ{[ƒ“IndexƒTƒCƒY     : %d\n", m_pmxHeader.Data[5]);
-	printf( "ƒ‚[ƒtIndexƒTƒCƒY     : %d\n", m_pmxHeader.Data[6]);
-	printf( "„‘ÌIndexƒTƒCƒY       : %d\n", m_pmxHeader.Data[7]);
+	printf( "ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰æ–¹å¼        : %d\n", m_pmxHeader.Data[0]);
+	printf( "è¿½åŠ UVæ•°              : %d\n", m_pmxHeader.Data[1]);
+	printf( "é ‚ç‚¹Indexã‚µã‚¤ã‚º       : %d\n", m_pmxHeader.Data[2]);
+	printf( "ãƒ†ã‚¯ã‚¹ãƒãƒ£Indexã‚µã‚¤ã‚º : %d\n", m_pmxHeader.Data[3]);
+	printf( "æè³ªIndexã‚µã‚¤ã‚º       : %d\n", m_pmxHeader.Data[4]);
+	printf( "ãƒœãƒ¼ãƒ³Indexã‚µã‚¤ã‚º     : %d\n", m_pmxHeader.Data[5]);
+	printf( "ãƒ¢ãƒ¼ãƒ•Indexã‚µã‚¤ã‚º     : %d\n", m_pmxHeader.Data[6]);
+	printf( "å‰›ä½“Indexã‚µã‚¤ã‚º       : %d\n", m_pmxHeader.Data[7]);
 #endif
 		
-	// ƒ‚ƒfƒ‹î•ñ
+	// ãƒ¢ãƒ‡ãƒ«æƒ…å ±
 	LoadModelInfo( &reader );
 
-	// ’¸“_
+	// é ‚ç‚¹
 	LoadVertices( &reader );
 
-	// ’¸“_ƒCƒ“ƒfƒbƒNƒX
+	// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	LoadIndices( &reader );
 
-	// ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«
 	LoadTextureTable( &reader, baseDir );
 
-	// ƒ}ƒeƒŠƒAƒ‹
+	// ãƒãƒ†ãƒªã‚¢ãƒ«
 	LoadMaterials( &reader );
 
-	// ƒ{[ƒ“
+	// ãƒœãƒ¼ãƒ³
 	LoadBones( &reader );
 
-	// ƒ‚[ƒt
+	// ãƒ¢ãƒ¼ãƒ•
 	LoadMorphs( &reader );
 
-	// •\¦˜g
+	// è¡¨ç¤ºæ 
 	LoadDisplayFrame( &reader );
 
-	// „‘Ì
+	// å‰›ä½“
 	LoadRigidBodys( &reader );
 
-	// ƒWƒ‡ƒCƒ“ƒg
+	// ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆ
 	LoadJoints( &reader );
 
 	m_modelCore.SafeAddRef();
@@ -97,16 +97,16 @@ ModelCore* PMXLoader::Load(ModelManager* manager, Stream* stream, const PathName
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadModelInfo(BinaryReader* reader)
 {
-	// ƒ‚ƒfƒ‹–¼
+	// ãƒ¢ãƒ‡ãƒ«å
 	m_modelCore->Name = ReadString(reader);
 
-	// ƒ‚ƒfƒ‹–¼‰p
+	// ãƒ¢ãƒ‡ãƒ«åè‹±
 	/*m_modelCore->EnglishName = */ReadString(reader);
 
-	// ƒRƒƒ“ƒg
+	// ã‚³ãƒ¡ãƒ³ãƒˆ
 	/*m_modelCore->Comment = */ReadString(reader);
 
-	// ƒRƒƒ“ƒg‰p
+	// ã‚³ãƒ¡ãƒ³ãƒˆè‹±
 	/*m_modelCore->EnglishComment = */ReadString(reader);
 }
 
@@ -115,14 +115,14 @@ void PMXLoader::LoadModelInfo(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadVertices(BinaryReader* reader)
 {
-	// ’¸“_”
+	// é ‚ç‚¹æ•°
 	int vertexCount = reader->ReadInt32();
 
-	// ’¸“_ƒoƒbƒtƒ@ì¬
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 	m_modelCore->VertexBuffer.Attach(Graphics::VertexBuffer::Create(
 		m_manager->GetGraphicsManager(), PMX_Vertex::Elements(), PMX_Vertex::ElementCount, vertexCount, NULL, Graphics::DeviceResourceUsage_Static));
 
-	// ƒf[ƒ^‚ğ—¬‚µ‚Ş
+	// ãƒ‡ãƒ¼ã‚¿ã‚’æµã—è¾¼ã‚€
 	struct BaseVertex
 	{
 		Vector3	Position;
@@ -135,13 +135,13 @@ void PMXLoader::LoadVertices(BinaryReader* reader)
 	{
 		PMX_Vertex* v = &vertices[i];
 
-		// ’¸“_A–@üAƒeƒNƒXƒ`ƒƒUV
+		// é ‚ç‚¹ã€æ³•ç·šã€ãƒ†ã‚¯ã‚¹ãƒãƒ£UV
 		reader->Read(&baseVertex, sizeof(BaseVertex));
 		v->Position = baseVertex.Position;
 		v->Normal = baseVertex.Normal;
 		v->TexUV = baseVertex.TexUV;
 
-		// ’Ç‰ÁUV
+		// è¿½åŠ UV
 		for (int j = 0; j < getAdditionalUVCount(); i++)
 		{
 			v->AdditionalUV[i].Set(
@@ -151,7 +151,7 @@ void PMXLoader::LoadVertices(BinaryReader* reader)
 				reader->ReadFloat());
 		}
 
-		// ƒuƒŒƒ“ƒhƒEƒFƒCƒg
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¦ã‚§ã‚¤ãƒˆ
 		int defType = reader->ReadInt8();
 		switch (defType)
 		{
@@ -196,11 +196,11 @@ void PMXLoader::LoadVertices(BinaryReader* reader)
 			v->BlendWeights[3] = 0.0f;
 			reader->Read(&v->SdefC, sizeof(float) * 3);
 			reader->Read(&v->SdefR0, sizeof(float) * 3);
-			reader->Read(&v->SdefR1, sizeof(float) * 3);	// TODO:¦C³’l‚ğ—vŒvZ
+			reader->Read(&v->SdefR1, sizeof(float) * 3);	// TODO:â€»ä¿®æ­£å€¤ã‚’è¦è¨ˆç®—
 			break;
 		}
 
-		// ƒGƒbƒW”{—¦
+		// ã‚¨ãƒƒã‚¸å€ç‡
 		v->EdgeWeight = reader->ReadFloat();
 	}
 }
@@ -210,7 +210,7 @@ void PMXLoader::LoadVertices(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadIndices(BinaryReader* reader)
 {
-	// ƒCƒ“ƒfƒbƒNƒX”
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°
 	int indexCount = reader->ReadInt32();
 
 	Graphics::IndexBufferFormat format = Graphics::IndexBufferFormat_UInt16;
@@ -218,20 +218,20 @@ void PMXLoader::LoadIndices(BinaryReader* reader)
 		format = Graphics::IndexBufferFormat_UInt32;
 	}
 
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ì¬
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 	m_modelCore->IndexBuffer.Attach(Graphics::IndexBuffer::Create(
 		m_manager->GetGraphicsManager(), indexCount, NULL, format, Graphics::DeviceResourceUsage_Static));
 
-	// 1 ƒoƒCƒgƒCƒ“ƒfƒbƒNƒX
+	// 1 ãƒã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	if (getVertexIndexSize() == 1)
 	{
-		// TODO:–¢‘Î‰
+		// TODO:æœªå¯¾å¿œ
 		LN_THROW(0, NotImplementedException);
 	}
-	// 2 or 4 ƒoƒCƒgƒCƒ“ƒfƒbƒNƒX
+	// 2 or 4 ãƒã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	else
 	{
-		// ‚»‚Ì‚Ü‚ÜƒRƒs[
+		// ãã®ã¾ã¾ã‚³ãƒ”ãƒ¼
 		Graphics::ScopedIndexBufferLock lock(m_modelCore->IndexBuffer);
 		byte_t* indices = (byte_t*)lock.GetData();
 		reader->Read(indices, getVertexIndexSize() * indexCount);
@@ -243,18 +243,18 @@ void PMXLoader::LoadIndices(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir)
 {
-	// ƒeƒNƒXƒ`ƒƒ”
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£æ•°
 	int textureCount = reader->ReadInt32();
 
-	// ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«
 	m_textureTable.Reserve(textureCount);
 
 	for (int i = 0; i < textureCount; ++i)
 	{
-		// ƒeƒNƒXƒ`ƒƒ–¼
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£å
 		String name = ReadString(reader);
 
-		// ì¬
+		// ä½œæˆ
 		PathNameW filePath(baseDir, name);
 		m_textureTable.Add(Graphics::Texture::Create(filePath));
 	}
@@ -265,10 +265,10 @@ void PMXLoader::LoadTextureTable(BinaryReader* reader, const PathNameW& baseDir)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadMaterials(BinaryReader* reader)
 {
-	// ƒ}ƒeƒŠƒAƒ‹”
+	// ãƒãƒ†ãƒªã‚¢ãƒ«æ•°
 	int materialCount = reader->ReadInt32();
 
-	// ƒƒ‚ƒŠŠm•Û
+	// ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	m_modelCore->Material.Materials.Resize(materialCount);
 	m_modelCore->Material.Attributes.Resize(materialCount);
 
@@ -277,10 +277,10 @@ void PMXLoader::LoadMaterials(BinaryReader* reader)
 	{
 		Graphics::Material* m = &m_modelCore->Material.Materials[i];
 
-		// Ş¿–¼
+		// æè³ªå
 		/*m_modelCore->Material.Name = */ReadString(reader);
 
-		// Ş¿‰p–¼
+		// æè³ªè‹±å
 		/*m_modelCore->Material.EnglishName = */ReadString(reader);
 
 		// Diffuse
@@ -290,34 +290,34 @@ void PMXLoader::LoadMaterials(BinaryReader* reader)
 		reader->Read(&m->Specular, sizeof(float) * 3);
 		m->Specular.A = 1.0f;
 
-		// SpecularŒW”
+		// Specularä¿‚æ•°
 		m->Power = reader->ReadFloat();
 
 		// Ambient
 		reader->Read(&m->Ambient, sizeof(float) * 3);
 		m->Ambient.A = 1.0f;
 
-		// •`‰æƒtƒ‰ƒO (MMDDrawingFlags)
+		// æç”»ãƒ•ãƒ©ã‚° (MMDDrawingFlags)
 		uint8_t bitFlag = reader->ReadInt8();
 		m->DrawingFlags = bitFlag;
 
-		// ƒGƒbƒWF
+		// ã‚¨ãƒƒã‚¸è‰²
 		reader->Read(&m->EdgeColor, sizeof(float) * 4);
 
-		// ƒGƒbƒWƒTƒCƒY
+		// ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
 		m->EdgeSize = reader->ReadFloat();
 
-		// ƒeƒNƒXƒ`ƒƒ
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£
 		int normalTexture = (int)reader->ReadInt(getTextureIndexSize());
 		if (normalTexture >= 0) {
 			m->Texture = m_textureTable[normalTexture];
 		}
 
-		// ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ
+		// ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£
 		int sphereTexture = (int)reader->ReadInt(getTextureIndexSize());
 		m->SphereMode = (enum Graphics::Material::SphereMode)reader->ReadInt8();
 
-		// ƒgƒD[ƒ“ƒeƒNƒXƒ`ƒƒ
+		// ãƒˆã‚¥ãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£
 		int shareToon = reader->ReadInt8();
 		if (shareToon == 0)
 		{
@@ -326,21 +326,21 @@ void PMXLoader::LoadMaterials(BinaryReader* reader)
 				m->ToonTexture = m_textureTable[index];
 			}
 		}
-		// ‹¤—LToonƒeƒNƒXƒ`ƒƒ (toon01.bmp`toon10.bmp)
+		// å…±æœ‰Toonãƒ†ã‚¯ã‚¹ãƒãƒ£ (toon01.bmpï½toon10.bmp)
 		else
 		{
 			int index = reader->ReadInt8();
 			m->ToonTexture = m_manager->GetMMDDefaultToonTexture(index);
 		}
 
-		// ©—R—“
+		// è‡ªç”±æ¬„
 		uint32_t byteSize = reader->ReadInt32();
 		reader->Seek(byteSize);
 
-		// ƒ}ƒeƒŠƒAƒ‹‚É‘Î‰‚·‚é’¸“_”
+		// ãƒãƒ†ãƒªã‚¢ãƒ«ã«å¯¾å¿œã™ã‚‹é ‚ç‚¹æ•°
 		int vc = reader->ReadInt32();
 
-		// ‘®«ƒe[ƒuƒ‹‚ğ–„‚ß‚é
+		// å±æ€§ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’åŸ‹ã‚ã‚‹
 		MeshAttribute* attr = &m_modelCore->Material.Attributes[i];
 		attr->MaterialIndex = i;
 		attr->StartIndex = indexAttrOffset;
@@ -354,36 +354,36 @@ void PMXLoader::LoadMaterials(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadBones(BinaryReader* reader)
 {
-	// ƒ{[ƒ“”
+	// ãƒœãƒ¼ãƒ³æ•°
 	int boneCount = reader->ReadInt32();
 
-	// eƒ{[ƒ“‚ğƒCƒ“ƒfƒbƒNƒX‚©‚çE‚¤‚½‚ßA‚Ü‚¸‚Í‚·‚×‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‰»
+	// è¦ªãƒœãƒ¼ãƒ³ã‚’ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰æ‹¾ã†ãŸã‚ã€ã¾ãšã¯ã™ã¹ã¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–
 	m_modelCore->Bones.Resize(boneCount);
 	for (int i = 0; i < boneCount; ++i) {
 		m_modelCore->Bones[i] = LN_NEW ModelBoneCore(m_modelCore, i);
 	}
 
-	// ƒf[ƒ^“Ç‚İ‚İ
+	// ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	for (int i = 0; i < boneCount; ++i)
 	{
 		ModelBoneCore* boneCore = m_modelCore->Bones[i];
 
-		// ƒ{[ƒ“–¼
+		// ãƒœãƒ¼ãƒ³å
 		boneCore->Name = ReadString(reader);
 
-		// ƒ{[ƒ“‰p–¼
+		// ãƒœãƒ¼ãƒ³è‹±å
 		/*boneCore->EnglishName = */ ReadString(reader);
 
-		// ‰ŠúˆÊ’u
+		// åˆæœŸä½ç½®
 		reader->Read(&boneCore->OrgPosition, sizeof(float) * 3);
 
-		// eƒ{[ƒ“‚Ìƒ{[ƒ“Index
+		// è¦ªãƒœãƒ¼ãƒ³ã®ãƒœãƒ¼ãƒ³Index
 		boneCore->ParentBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
 
-		// •ÏŒ`ŠK‘w
+		// å¤‰å½¢éšå±¤
 		boneCore->TransformLevel = reader->ReadInt32();
 
-		// ƒ{[ƒ“ƒtƒ‰ƒO
+		// ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚°
 		uint32_t flag = reader->ReadUInt16();
 		boneCore->BoneConnect = (flag & 0x0001) != 0 ? BoneConnectType_Bone : BoneConnectType_PositionOffset;
 		boneCore->CanRotate = (flag & 0x0002) != 0;
@@ -405,46 +405,46 @@ void PMXLoader::LoadBones(BinaryReader* reader)
 
 		if (boneCore->BoneConnect == BoneConnectType_PositionOffset)
 		{
-			// À•WƒIƒtƒZƒbƒg, ƒ{[ƒ“ˆÊ’u‚©‚ç‚Ì‘Š‘Î•ª
+			// åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆ, ãƒœãƒ¼ãƒ³ä½ç½®ã‹ã‚‰ã®ç›¸å¯¾åˆ†
 			reader->Read(&boneCore->PositionOffset, sizeof(float) * 3);
 		}
 		else
 		{
-			// Ú‘±æƒ{[ƒ“‚Ìƒ{[ƒ“Index
+			// æ¥ç¶šå…ˆãƒœãƒ¼ãƒ³ã®ãƒœãƒ¼ãƒ³Index
 			boneCore->ConnectedBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
 		}
 
-		// ‰ñ“]•t—^:1 ‚Ü‚½‚Í ˆÚ“®•t—^:1 ‚Ìê‡
+		// å›è»¢ä»˜ä¸:1 ã¾ãŸã¯ ç§»å‹•ä»˜ä¸:1 ã®å ´åˆ
 		if (boneCore->IsRotateProvided || boneCore->IsMoveProvided)
 		{
-			// •t—^eƒ{[ƒ“‚Ìƒ{[ƒ“Index
+			// ä»˜ä¸è¦ªãƒœãƒ¼ãƒ³ã®ãƒœãƒ¼ãƒ³Index
 			boneCore->ProvidedParentBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
 			boneCore->ProvidedRatio = reader->ReadFloat();
 		}
 
-		// ²ŒÅ’è:1 ‚Ìê‡
+		// è»¸å›ºå®š:1 ã®å ´åˆ
 		if (boneCore->IsFixAxis) {
 			reader->Read(&boneCore->AxisDirectionVector, sizeof(float) * 3);
 		}
 
-		//  ƒ[ƒJƒ‹²:1 ‚Ìê‡
+		//  ãƒ­ãƒ¼ã‚«ãƒ«è»¸:1 ã®å ´åˆ
 		if (boneCore->IsLocalAxis)
 		{
 			reader->Read(&boneCore->DimentionXDirectionVector, sizeof(float) * 3);
 			reader->Read(&boneCore->DimentionZDirectionVector, sizeof(float) * 3);
 		}
 
-		// ŠO•”e•ÏŒ`:1 ‚Ìê‡
+		// å¤–éƒ¨è¦ªå¤‰å½¢:1 ã®å ´åˆ
 		if (boneCore->ParentTransform) {
 			boneCore->KeyValue = reader->ReadInt32();
 		}
 
-		// IK:1 ‚Ìê‡
+		// IK:1 ã®å ´åˆ
 		if (boneCore->IsIK)
 		{
 			ModelIKCore* ik = LN_NEW ModelIKCore();
 			m_modelCore->IKs.Add(ik);
-			ik->IKBoneIndex = i;							// Œ»İˆ—’†‚Ìƒ{[ƒ“”Ô†
+			ik->IKBoneIndex = i;							// ç¾åœ¨å‡¦ç†ä¸­ã®ãƒœãƒ¼ãƒ³ç•ªå·
 			ik->IKTargetBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
 			ik->LoopCount = reader->ReadInt32();
 			ik->IKRotateLimit = reader->ReadFloat();
@@ -472,29 +472,29 @@ void PMXLoader::LoadBones(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadMorphs(BinaryReader* reader)
 {
-	// ƒ‚[ƒt”
+	// ãƒ¢ãƒ¼ãƒ•æ•°
 	int boneCount = reader->ReadInt32();
 	m_modelCore->Morphs.Resize(boneCount);
 
-	// ƒf[ƒ^“Ç‚İ‚İ
+	// ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	for (int i = 0; i < boneCount; ++i)
 	{
 		ModelMorphCore* morphCore = LN_NEW ModelMorphCore();
 		m_modelCore->Morphs[i] = morphCore;
 
-		// ƒ‚[ƒt–¼
+		// ãƒ¢ãƒ¼ãƒ•å
 		morphCore->Name = ReadString(reader);
 
-		// ƒ‚[ƒt‰p–¼
+		// ãƒ¢ãƒ¼ãƒ•è‹±å
 		/*morphCore->EnglishName = */ ReadString(reader);
 
-		// ‘€ìƒpƒlƒ‹
+		// æ“ä½œãƒ‘ãƒãƒ«
 		morphCore->OperationPanel = reader->ReadInt8();
 
-		// ƒ‚[ƒtí—Ş
+		// ãƒ¢ãƒ¼ãƒ•ç¨®é¡
 		int morphType = reader->ReadInt8();
 
-		// ƒ‚[ƒtƒIƒtƒZƒbƒg
+		// ãƒ¢ãƒ¼ãƒ•ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 		int32_t offsetCount = reader->ReadInt32();
 		morphCore->MorphOffsets.Resize(offsetCount);
 		for (int i = 0; i < offsetCount; i++)
@@ -502,50 +502,50 @@ void PMXLoader::LoadMorphs(BinaryReader* reader)
 			ModelMorphCore::MorphOffset* mo = &morphCore->MorphOffsets[i];
 			switch (morphType)
 			{
-			case 0:		// ƒOƒ‹[ƒvƒ‚[ƒt
+			case 0:		// ã‚°ãƒ«ãƒ¼ãƒ—ãƒ¢ãƒ¼ãƒ•
 				morphCore->MorphType = ModelMorphType_Group;
 				mo->GroupMorphOffset.MorphIndex = (int)reader->ReadInt(getMorphIndexSize());
 				mo->GroupMorphOffset.MorphRatio = reader->ReadFloat();
 				break;
-			case 1:		// ’¸“_ƒ‚[ƒt
-				// VertexIndex ‚Íƒ‚ƒfƒ‹–{‘Ì‚Ì’¸“_ƒCƒ“ƒfƒbƒNƒX
-				// PositionOffset ‚ÍŒ³‚ÌˆÊ’u‚©‚ç‚Ì‘Š‘ÎˆÊ’u
+			case 1:		// é ‚ç‚¹ãƒ¢ãƒ¼ãƒ•
+				// VertexIndex ã¯ãƒ¢ãƒ‡ãƒ«æœ¬ä½“ã®é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+				// PositionOffset ã¯å…ƒã®ä½ç½®ã‹ã‚‰ã®ç›¸å¯¾ä½ç½®
 				morphCore->MorphType = ModelMorphType_Vertex;
 				mo->VertexMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->VertexMorphOffset.PositionOffset, sizeof(float) * 3);
 				break;
-			case 2:		// ƒ{[ƒ“ƒ‚[ƒt
+			case 2:		// ãƒœãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ•
 				morphCore->MorphType = ModelMorphType_Bone;
 				mo->BoneMorphOffset.BoneIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->BoneMorphOffset.Moving, sizeof(float) * 3);
 				reader->Read(&mo->BoneMorphOffset.Rotating, sizeof(float) * 4);
 				break;
-			case 3:		// UVƒ‚[ƒt
+			case 3:		// UVãƒ¢ãƒ¼ãƒ•
 				morphCore->MorphType = ModelMorphType_UV;
 				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
-			case 4:		// ’Ç‰ÁUVƒ‚[ƒt1
+			case 4:		// è¿½åŠ UVãƒ¢ãƒ¼ãƒ•1
 				morphCore->MorphType = ModelMorphType_AdditionalUV1;
 				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
-			case 5:		// ’Ç‰ÁUVƒ‚[ƒt2
+			case 5:		// è¿½åŠ UVãƒ¢ãƒ¼ãƒ•2
 				morphCore->MorphType = ModelMorphType_AdditionalUV2;
 				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
-			case 6:		// ’Ç‰ÁUVƒ‚[ƒt3
+			case 6:		// è¿½åŠ UVãƒ¢ãƒ¼ãƒ•3
 				morphCore->MorphType = ModelMorphType_AdditionalUV3;
 				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
-			case 7:		// ’Ç‰ÁUVƒ‚[ƒt4
+			case 7:		// è¿½åŠ UVãƒ¢ãƒ¼ãƒ•4
 				morphCore->MorphType = ModelMorphType_AdditionalUV4;
 				mo->UVMorphOffset.VertexIndex = (int)reader->ReadInt(getVertexIndexSize());
 				reader->Read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
-			case 8:		// Ş¿ƒ‚[ƒt
+			case 8:		// æè³ªãƒ¢ãƒ¼ãƒ•
 				morphCore->MorphType = ModelMorphType_Matrial;
 				mo->MaterialMorphOffset.MaterialIndex = (int)reader->ReadInt(getMaterialIndexSize());
 				mo->MaterialMorphOffset.OffsetCalcType = reader->ReadUInt8();
@@ -559,12 +559,12 @@ void PMXLoader::LoadMorphs(BinaryReader* reader)
 				reader->Read(&mo->MaterialMorphOffset.SphereTextureCoe, sizeof(float) * 4);
 				reader->Read(&mo->MaterialMorphOffset.ToonTextureCoe, sizeof(float) * 4);
 				break;
-			case 9:		// Flipƒ‚[ƒt
+			case 9:		// Flipãƒ¢ãƒ¼ãƒ•
 				morphCore->MorphType = ModelMorphType_Flip;
 				mo->FlipMorphOffset.MorphIndex = (int)reader->ReadInt(getMorphIndexSize());
 				mo->FlipMorphOffset.MorphValue = reader->ReadFloat();
 				break;
-			case 10:	// Impulseƒ‚[ƒt
+			case 10:	// Impulseãƒ¢ãƒ¼ãƒ•
 				morphCore->MorphType = ModelMorphType_Impulse;
 				mo->ImpulseMorphOffset.RigidIndex = (int)reader->ReadInt(getMorphIndexSize());
 				mo->ImpulseMorphOffset.LocalFlag = reader->ReadUInt8();
@@ -581,33 +581,33 @@ void PMXLoader::LoadMorphs(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadDisplayFrame(BinaryReader* reader)
 {
-	// •\¦˜g‚Í‚·‚×‚Ä“Ç‚İ”ò‚Î‚·
+	// è¡¨ç¤ºæ ã¯ã™ã¹ã¦èª­ã¿é£›ã°ã™
 	int displayFrameCount = reader->ReadInt32();
 	for (int i = 0; i < displayFrameCount; i++)
 	{
-		// ˜g–¼
+		// æ å
 		uint32_t byteSize = reader->ReadInt32();
 		reader->Seek(byteSize);
 
-		// ˜g–¼‰p
+		// æ åè‹±
 		byteSize = reader->ReadInt32();
 		reader->Seek(byteSize);
 
-		// “Áê˜gƒtƒ‰ƒO
+		// ç‰¹æ®Šæ ãƒ•ãƒ©ã‚°
 		reader->Seek(sizeof(uint8_t));
 
-		// ˜g“à—v‘f”
+		// æ å†…è¦ç´ æ•°
 		int frameElementCount = reader->ReadInt32();
 		for (int j = 0; j < frameElementCount; j++)
 		{
-			// —v‘f‘ÎÛ
+			// è¦ç´ å¯¾è±¡
 			uint8_t type = reader->ReadUInt8();
 			switch (type)
 			{
-			case 0:	// ƒ{[ƒ“‚ªƒ^[ƒQƒbƒg‚Ìê‡
+			case 0:	// ãƒœãƒ¼ãƒ³ãŒã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å ´åˆ
 				reader->ReadInt(getBoneIndexSize());
 				break;
-			case 1:	// ƒ‚[ƒt‚ªƒ^[ƒQƒbƒg‚Ìê‡
+			case 1:	// ãƒ¢ãƒ¼ãƒ•ãŒã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å ´åˆ
 				reader->ReadInt(getMorphIndexSize());
 				break;
 			}
@@ -620,35 +620,35 @@ void PMXLoader::LoadDisplayFrame(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadRigidBodys(BinaryReader* reader)
 {
-	// „‘Ì”
+	// å‰›ä½“æ•°
 	int bodyCount = reader->ReadInt32();
 	m_modelCore->RigidBodys.Resize(bodyCount);
 
-	// ƒf[ƒ^“Ç‚İ‚İ
+	// ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	for (int i = 0; i < bodyCount; ++i)
 	{
 		ModelRigidBodyCore* bodyCore = LN_NEW ModelRigidBodyCore();
 		m_modelCore->RigidBodys[i] = bodyCore;
 
-		// „‘Ì–¼
+		// å‰›ä½“å
 		bodyCore->Name = ReadString(reader);
 
-		// „‘Ì‰p–¼
+		// å‰›ä½“è‹±å
 		/*bodyCore->EnglishName =*/ ReadString(reader);
 
-		// ŠÖ˜Aƒ{[ƒ“Index - ŠÖ˜A‚È‚µ‚Ìê‡‚Í-1
+		// é–¢é€£ãƒœãƒ¼ãƒ³Index - é–¢é€£ãªã—ã®å ´åˆã¯-1
 		bodyCore->RelatedBoneIndex = (int)reader->ReadInt(getBoneIndexSize());
 
-		// ƒOƒ‹[ƒv
+		// ã‚°ãƒ«ãƒ¼ãƒ—
 		bodyCore->Group = (1 << reader->ReadUInt8());
 
-		// ”ñÕ“ËƒOƒ‹[ƒvƒtƒ‰ƒO
+		// éè¡çªã‚°ãƒ«ãƒ¼ãƒ—ãƒ•ãƒ©ã‚°
 		bodyCore->GroupMask = reader->ReadUInt16();
 
-		// Œ`ó - 0:‹… 1:”  2:ƒJƒvƒZƒ‹
+		// å½¢çŠ¶ - 0:çƒ 1:ç®± 2:ã‚«ãƒ—ã‚»ãƒ«
 		uint8_t type = reader->ReadUInt8();
 
-		// ƒTƒCƒY(x,y,z)
+		// ã‚µã‚¤ã‚º(x,y,z)
 		Vector3 size;
 		reader->Read(&size, sizeof(float) * 3);
 
@@ -671,18 +671,18 @@ void PMXLoader::LoadRigidBodys(BinaryReader* reader)
 			break;
 		}
 
-		// ˆÊ’u(x,y,z) (ƒOƒ[ƒoƒ‹À•W‹óŠÔ)
+		// ä½ç½®(x,y,z) (ã‚°ãƒ­ãƒ¼ãƒãƒ«åº§æ¨™ç©ºé–“)
 		Vector3 Position;
 		reader->Read(&Position, sizeof(float) * 3);
 
-		// ‰ñ“](x,y,z) (ƒOƒ[ƒoƒ‹À•W‹óŠÔ) -> ƒ‰ƒWƒAƒ“Šp
+		// å›è»¢(x,y,z) (ã‚°ãƒ­ãƒ¼ãƒãƒ«åº§æ¨™ç©ºé–“) -> ãƒ©ã‚¸ã‚¢ãƒ³è§’
 		Vector3 Rotation;
 		reader->Read(&Rotation, sizeof(float) * 3);
-		if (Math::IsNaN(Rotation.X)) Rotation.X = 0;	// ƒ‚ƒfƒ‹‚É‚æ‚Á‚Ä‚Í‰ó‚ê‚Ä‚¢‚é‚±‚Æ‚ª‚ ‚Á‚½‚Ì‚ÅƒŠƒZƒbƒg‚µ‚Ä‚¨‚­
+		if (Math::IsNaN(Rotation.X)) Rotation.X = 0;	// ãƒ¢ãƒ‡ãƒ«ã«ã‚ˆã£ã¦ã¯å£Šã‚Œã¦ã„ã‚‹ã“ã¨ãŒã‚ã£ãŸã®ã§ãƒªã‚»ãƒƒãƒˆã—ã¦ãŠã
 		if (Math::IsNaN(Rotation.Y)) Rotation.Y = 0;
 		if (Math::IsNaN(Rotation.Z)) Rotation.Z = 0;
 
-		// ƒIƒtƒZƒbƒgs—ñ‰»
+		// ã‚ªãƒ•ã‚»ãƒƒãƒˆè¡Œåˆ—åŒ–
 		bodyCore->InitialTransform = Matrix::RotationYawPitchRoll(Rotation.Y, Rotation.X, Rotation.Z) * Matrix::Translation(Position);
 		//Matrix bias;
 		//bias.RotationZ(Rotation.Z);
@@ -692,14 +692,14 @@ void PMXLoader::LoadRigidBodys(BinaryReader* reader)
 		//bodyCore->BoneOffset = bias;
 		//bodyCore->InvBoneOffset = Matrix::Inverse(bodyCore->BoneOffset);
 
-		// „‘ÌŠî–{î•ñ
+		// å‰›ä½“åŸºæœ¬æƒ…å ±
 		bodyCore->Mass = reader->ReadFloat();
 		bodyCore->LinearDamping = reader->ReadFloat();
 		bodyCore->AngularDamping = reader->ReadFloat();
 		bodyCore->Restitution = reader->ReadFloat();
 		bodyCore->Friction = reader->ReadFloat();
 
-		// „‘Ì‚Ì•¨—‰‰Z - 0:ƒ{[ƒ“’Ç](static) 1:•¨—‰‰Z(dynamic) 2:•¨—‰‰Z + BoneˆÊ’u‡‚í‚¹
+		// å‰›ä½“ã®ç‰©ç†æ¼”ç®— - 0:ãƒœãƒ¼ãƒ³è¿½å¾“(static) 1:ç‰©ç†æ¼”ç®—(dynamic) 2:ç‰©ç†æ¼”ç®— + Boneä½ç½®åˆã‚ã›
 		uint8_t physicsType = reader->ReadUInt8();
 		switch (physicsType)
 		{
@@ -721,27 +721,27 @@ void PMXLoader::LoadRigidBodys(BinaryReader* reader)
 //-----------------------------------------------------------------------------
 void PMXLoader::LoadJoints(BinaryReader* reader)
 {
-	// ƒWƒ‡ƒCƒ“ƒg”
+	// ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆæ•°
 	int jointCount = reader->ReadInt32();
 	m_modelCore->Joints.Resize(jointCount);
 
-	// ƒf[ƒ^“Ç‚İ‚İ
+	// ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	for (int i = 0; i < jointCount; ++i)
 	{
 		ModelJointCore* jointCore = LN_NEW ModelJointCore();
 		m_modelCore->Joints[i] = jointCore;
 
-		// Joint–¼
+		// Jointå
 		jointCore->Name = ReadString(reader);
 
-		// Joint–¼‰p
+		// Jointåè‹±
 		/*jointCore->EnglishName =*/ ReadString(reader);
 
-		// Jointí—Ş - 0:ƒXƒvƒŠƒ“ƒO6DOF   | PMX2.0‚Å‚Í 0 ‚Ì‚İ(Šg’£—p)
+		// Jointç¨®é¡ - 0:ã‚¹ãƒ—ãƒªãƒ³ã‚°6DOF   | PMX2.0ã§ã¯ 0 ã®ã¿(æ‹¡å¼µç”¨)
 		int type = reader->ReadUInt8();
 		LN_THROW(type == 0, InvalidFormatException);
 
-		// Œã‚Í PMD ‚Æ“¯‚¶
+		// å¾Œã¯ PMD ã¨åŒã˜
 		jointCore->RigidBodyAIndex = (int)reader->ReadInt(getRigidBodyIndexSize());
 		jointCore->RigidBodyBIndex = (int)reader->ReadInt(getRigidBodyIndexSize());
 		reader->Read(&jointCore->Position, sizeof(Vector3));

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "Animator.h"
 #include "AnimationClip.h"
@@ -52,7 +52,7 @@ void AnimationState::Refresh(Animator* animator)
 
 	ClearTargetList();
 
-	// Curve ‚Ì“K—pæ‚ğ element ‚©‚ç’T‚µAŒ©‚Â‚©‚ê‚Î t ‚É‚Á‚Ä‚¨‚­
+	// Curve ã®é©ç”¨å…ˆã‚’ element ã‹ã‚‰æ¢ã—ã€è¦‹ã¤ã‹ã‚Œã° t ã«æŒã£ã¦ãŠã
 	LN_FOREACH(const AnimationClip::AnimationCurveEntry& e, m_clip->GetAnimationCurveEntryList())
 	{
 		AnimationTargetAttributeEntity* target = animator->FindAnimationTargetAttributeEntity(e.RelativePath);
@@ -72,7 +72,7 @@ void AnimationState::Refresh(Animator* animator)
 //-----------------------------------------------------------------------------
 void AnimationState::SetPlayState(PlayState state)
 {
-	// V‚µ‚­Ä¶‚ğŠJn‚·‚éê‡‚ÍŠÔ‚ğƒŠƒZƒbƒg‚·‚é
+	// æ–°ã—ãå†ç”Ÿã‚’é–‹å§‹ã™ã‚‹å ´åˆã¯æ™‚é–“ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 	if (m_state == PlayState_Stopped && state == PlayState_Playing)
 	{
 		m_state = state;
@@ -114,14 +114,14 @@ void AnimationState::SetLocalTime(double time)
 	{
 
 
-		//if (target.Target->Target->GetAnimationTargetName() == _T("ƒZƒ“ƒ^[")) {
+		//if (target.Target->Target->GetAnimationTargetName() == _T("ã‚»ãƒ³ã‚¿ãƒ¼")) {
 		//	printf("a");
 		//}
 
-		// ŠÔ‚ğƒZƒbƒg‚µ‚Ä’l‚ğ¶¬‚·‚é
+		// æ™‚é–“ã‚’ã‚»ãƒƒãƒˆã—ã¦å€¤ã‚’ç”Ÿæˆã™ã‚‹
 		target.Curve->SetTime(time);
 
-		// ’l‚ÌŒ^‚É‰‚¶‚ÄƒuƒŒƒ“ƒh—¦‚ğ‰Á–¡‚µAo—Í‚·‚é
+		// å€¤ã®å‹ã«å¿œã˜ã¦ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡ã‚’åŠ å‘³ã—ã€å‡ºåŠ›ã™ã‚‹
 		target.Target->Type = target.Curve->GetValueType();
 		switch (target.Target->Type)
 		{
@@ -154,11 +154,11 @@ void AnimationState::SetLocalTime(double time)
 			{
 				*((SQTTransform*)target.Target->Buffer) = static_cast<VMDBezierSQTTransformAnimation*>(target.Curve)->GetValue();
 			}
-			target.Target->Modified = true;	// ’l‚ğƒZƒbƒg‚µ‚½
+			target.Target->Modified = true;	// å€¤ã‚’ã‚»ãƒƒãƒˆã—ãŸ
 			break;
 		}
 		//case ValueType_Event:
-		//	// ’lŒ^‚Å‚Í‚È‚¢‚Ì‚Å‰½‚à‚µ‚È‚¢
+		//	// å€¤å‹ã§ã¯ãªã„ã®ã§ä½•ã‚‚ã—ãªã„
 		//	break;
 		default:
 			break;

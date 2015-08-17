@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Material.h>
@@ -10,18 +10,18 @@ namespace Lumino
 {
 namespace Scene
 {
-/// ƒTƒuƒZƒbƒg’PˆÊ‚Ì•`‰æƒpƒ‰ƒ[ƒ^
+/// ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã®æç”»ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 struct VisualNodeSubsetParams
 {
-    Graphics::Material		Material;       ///< •`‰æƒIƒuƒWƒFƒNƒg‚Ìƒ}ƒeƒŠƒAƒ‹
-    float					Opacity;        ///< •s“§–¾“x (0.0 ` 1.0) (ƒVƒF[ƒ_‚ÉæZF‚ğ‘—‚é‚Æ‚«A‚»‚Ìƒ¿’l‚ÉæZ‚³‚ê‚é)
-	Graphics::ColorF		ColorScale;     ///< æZF
-	Graphics::ColorF		BlendColor;     ///< ƒuƒŒƒ“ƒhF
-	Graphics::Tone			Tone;           ///< F’²
-    Matrix					UVTransform;    ///< ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ
+    Graphics::Material		Material;       ///< æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒãƒ†ãƒªã‚¢ãƒ«
+    float					Opacity;        ///< ä¸é€æ˜åº¦ (0.0 ï½ 1.0) (ã‚·ã‚§ãƒ¼ãƒ€ã«ä¹—ç®—è‰²ã‚’é€ã‚‹ã¨ãã€ãã®Î±å€¤ã«ä¹—ç®—ã•ã‚Œã‚‹)
+	Graphics::ColorF		ColorScale;     ///< ä¹—ç®—è‰²
+	Graphics::ColorF		BlendColor;     ///< ãƒ–ãƒ¬ãƒ³ãƒ‰è‰²
+	Graphics::Tone			Tone;           ///< è‰²èª¿
+    Matrix					UVTransform;    ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—
 	RefPtr<MMEShader>		SceneShader;
 
-	/// ‰Šú’l
+	/// åˆæœŸå€¤
 	VisualNodeSubsetParams()
         : Opacity           (1.0f)
         , ColorScale        (1.0f, 1.0f, 1.0f, 1.0f) 
@@ -44,7 +44,7 @@ struct VisualNodeSubsetParams
 };
 
 /// VisualNodeParams
-///		TODO: ‚±‚ÌƒNƒ‰ƒX‚ÍÌ‚ÌA•`‰æƒXƒŒƒbƒh‚ğ Scene ‚ÅŠÇ—‚µ‚Ä‚¢‚½‚±‚ë‚Ì–¼cBVisualNode ‚É“‡‚µ‚Ä‚à‚æ‚¢B
+///		TODO: ã“ã®ã‚¯ãƒ©ã‚¹ã¯æ˜”ã®ã€æç”»ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ Scene ã§ç®¡ç†ã—ã¦ã„ãŸã“ã‚ã®åæ®‹ã€‚VisualNode ã«çµ±åˆã—ã¦ã‚‚ã‚ˆã„ã€‚
 class VisualNodeParams
 {
 public:
@@ -53,25 +53,25 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(int subsetCount);
 
-	/// ƒTƒuƒZƒbƒg’PˆÊ‚Ì•`‰æƒpƒ‰ƒ[ƒ^‚Ìæ“¾ (-1 ‚ğw’è‚·‚é‚ÆƒOƒ[ƒoƒ‹ƒpƒ‰ƒ[ƒ^‚ğæ“¾‚·‚é)
+	/// ã‚µãƒ–ã‚»ãƒƒãƒˆå˜ä½ã®æç”»ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å–å¾— (-1 ã‚’æŒ‡å®šã™ã‚‹ã¨ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹)
 	VisualNodeSubsetParams& GetSubsetParams(int index);
 	const VisualNodeSubsetParams& GetSubsetParams(int index) const;
 
-	/// ÀÛ‚É•`‰æ‚Ég‚¤î•ñ‚ÌXV
-	///		parentParams ‚ª NULL ‚Ìê‡‚Íe‚©‚çó‚¯Œp‚ª‚È‚¢B
-	///		‚Ü‚½AparentParams ‚Í UpdateSubsetRenderParam() Ï‚İ‚Å‚ ‚é‚±‚ÆB
+	/// å®Ÿéš›ã«æç”»æ™‚ã«ä½¿ã†æƒ…å ±ã®æ›´æ–°
+	///		parentParams ãŒ NULL ã®å ´åˆã¯è¦ªã‹ã‚‰å—ã‘ç¶™ãŒãªã„ã€‚
+	///		ã¾ãŸã€parentParams ã¯ UpdateSubsetRenderParam() æ¸ˆã¿ã§ã‚ã‚‹ã“ã¨ã€‚
 	void UpdateSubsetRenderParam(const VisualNodeParams* parentParams);
 
 	const VisualNodeSubsetParams& GetCombinedSubsetParams(int index) const { return m_combinedSubsetParams[index]; }
 
 private:
-	VisualNodeSubsetParams				m_globalParams;			///< ‘S‚Ä‚ÌƒTƒuƒZƒbƒg‚É‰e‹¿‚·‚éƒpƒ‰ƒ[ƒ^
-	Array<VisualNodeSubsetParams>		m_subsetParams;			///< ŠeƒTƒuƒZƒbƒg‚Ìƒpƒ‰ƒ[ƒ^
-	VisualNodeSubsetParams				m_combinedGlobalParams;	///< Œ‹‡Ï‚İ‚ÌA‘S‚Ä‚ÌƒTƒuƒZƒbƒg‚É‰e‹¿‚·‚éƒpƒ‰ƒ[ƒ^
-	Array<VisualNodeSubsetParams>		m_combinedSubsetParams;	///< Œ‹‡Ï‚İ‚ÌAŠeƒTƒuƒZƒbƒg‚Ìƒpƒ‰ƒ[ƒ^ (UpdateSubsetRenderParam() ‚ÅŒvZ‚³‚ê‚é)
+	VisualNodeSubsetParams				m_globalParams;			///< å…¨ã¦ã®ã‚µãƒ–ã‚»ãƒƒãƒˆã«å½±éŸ¿ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	Array<VisualNodeSubsetParams>		m_subsetParams;			///< å„ã‚µãƒ–ã‚»ãƒƒãƒˆã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	VisualNodeSubsetParams				m_combinedGlobalParams;	///< çµåˆæ¸ˆã¿ã®ã€å…¨ã¦ã®ã‚µãƒ–ã‚»ãƒƒãƒˆã«å½±éŸ¿ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	Array<VisualNodeSubsetParams>		m_combinedSubsetParams;	///< çµåˆæ¸ˆã¿ã®ã€å„ã‚µãƒ–ã‚»ãƒƒãƒˆã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ (UpdateSubsetRenderParam() ã§è¨ˆç®—ã•ã‚Œã‚‹)
 
 
 };

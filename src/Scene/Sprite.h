@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Texture.h>
@@ -19,35 +19,35 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(SpriteCoord spriteCoord = SpriteCoord_RX, SceneGraphManager* manager = NULL);
 
-	/// ƒeƒNƒXƒ`ƒƒ‚Ìİ’è
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¨­å®š
 	void SetTexture(Graphics::Texture* texture);
 
-	/// ƒeƒNƒXƒ`ƒƒ‚Ìæ“¾
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å–å¾—
 	Graphics::Texture* GetTexture() const;
 
-	/// ƒTƒCƒY‚Ìİ’è
+	/// ã‚µã‚¤ã‚ºã®è¨­å®š
 	void SetSize(const SizeF& size) { m_size = size; UpdateVertexData(); }
 
-	/// ƒeƒNƒXƒ`ƒƒ‚Ì“]‘—‹éŒ`‚Ìİ’è (ƒsƒNƒZƒ‹’PˆÊ)
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è»¢é€çŸ©å½¢ã®è¨­å®š (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½)
 	void SetSrcRect(const Rect& rect);
 
-	/// ƒeƒNƒXƒ`ƒƒ‚Ì“]‘—‹éŒ`‚Ìæ“¾ (ƒsƒNƒZƒ‹’PˆÊ)
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è»¢é€çŸ©å½¢ã®å–å¾— (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½)
 	const Rect& GetSrcRect() const { return m_srcRect; }
 
-	/// ”½“]•û–@‚Ìİ’è
+	/// åè»¢æ–¹æ³•ã®è¨­å®š
 	void SetFlipMode(FlipMode mode) { m_flipMode = mode; UpdateTexUV(); }
 
-	/// ”½“]•û–@‚Ìæ“¾
+	/// åè»¢æ–¹æ³•ã®å–å¾—
 	FlipMode GetFlipMode() const { return m_flipMode; }
 
 private:
 	void UpdateTexUV();
 	void UpdateVertexData();
 
-	/// ƒsƒNƒZƒ‹’PˆÊ‚Ì“]‘—‹éŒ`‚ğƒeƒNƒXƒ`ƒƒUV‚Ì‹éŒ` (0.0`1.0) ‚É•ÏŠ·‚·‚é
+	/// ãƒ”ã‚¯ã‚»ãƒ«å˜ä½ã®è»¢é€çŸ©å½¢ã‚’ãƒ†ã‚¯ã‚¹ãƒãƒ£UVã®çŸ©å½¢ (0.0ï½1.0) ã«å¤‰æ›ã™ã‚‹
 	static void NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b);
 
 protected:

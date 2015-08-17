@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -18,28 +18,28 @@ public:
 	AnimationTimeline();
 	virtual ~AnimationTimeline();
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‰»‚·‚éƒIƒuƒWƒFƒNƒg‚Ì–¼‘O (x;key ‚Åw’è‚³‚ê‚½–¼‘O)
-	/// w’è‚µ‚Ä‚¢‚È‚¢ê‡‚Í˜_——v‘f‚ªƒ^[ƒQƒbƒg‚Æ‚È‚éB
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åŒ–ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åå‰ (x;key ã§æŒ‡å®šã•ã‚ŒãŸåå‰)
+	/// æŒ‡å®šã—ã¦ã„ãªã„å ´åˆã¯è«–ç†è¦ç´ ãŒã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ã€‚
 	void SetTargetName(const String& name) { m_targetName = name; }
 
 	const String& GetTargetName() const { return m_targetName; }
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‰»‚·‚éƒvƒƒpƒeƒB‚Ì–¼‘O
-	void SetTargetProperty(const String& name) { m_targetProperty = name; }	// WPF ‚Å‚Í“Y•tƒvƒƒpƒeƒB‚ÅŒ^‚Í PropertyPath
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åŒ–ã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®åå‰
+	void SetTargetProperty(const String& name) { m_targetProperty = name; }	// WPF ã§ã¯æ·»ä»˜ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã§å‹ã¯ PropertyPath
 
 	const String& GetTargetProperty() const { return m_targetProperty; }
 
 	void SetDuration(float duration) { m_duration = duration; }
 
 protected:
-	// time : ‚±‚Ìƒ^ƒCƒ€ƒ‰ƒCƒ“‚ÌÄ¶ŠJn‚©‚ç‚ÌŒo‰ßŠÔ
-	// return : time ‚ª m_duration ˆÈã‚Å‚ ‚ê‚Î false
+	// time : ã“ã®ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ã®å†ç”Ÿé–‹å§‹ã‹ã‚‰ã®çµŒéæ™‚é–“
+	// return : time ãŒ m_duration ä»¥ä¸Šã§ã‚ã‚Œã° false
 	virtual bool Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time) = 0;
 
 protected:
-	String	m_targetName;		///< ƒ^[ƒQƒbƒg‚Ì UI —v‘f–¼BƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚©‚ç‘ÎÛ—v‘f‚ğŒŸõ‚·‚é‚Æ‚«‚Ég—p‚·‚éB
-	String	m_targetProperty;	///< ƒ^[ƒQƒbƒgƒvƒƒpƒeƒB–¼
-	float	m_duration;			///< Ä¶ŠÔ (ƒ~ƒŠ•b)
+	String	m_targetName;		///< ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã® UI è¦ç´ åã€‚ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã‹ã‚‰å¯¾è±¡è¦ç´ ã‚’æ¤œç´¢ã™ã‚‹ã¨ãã«ä½¿ç”¨ã™ã‚‹ã€‚
+	String	m_targetProperty;	///< ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å
+	float	m_duration;			///< å†ç”Ÿæ™‚é–“ (ãƒŸãƒªç§’)
 
 	friend class AnimationClock;
 };
@@ -47,7 +47,7 @@ protected:
 
 /**
 	@brief		
-	@note		‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Í UIElement ‚ª•Û‚·‚éB
+	@note		ã“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯ UIElement ãŒä¿æŒã™ã‚‹ã€‚
 */
 class AnimationClock
 	: public CoreObject
@@ -69,13 +69,13 @@ private:
 	struct TimeLineInstance
 	{
 		RefPtr<AnimationTimeline>	OwnerTimeLine;
-		UIElement*	TargetElement;		// TODO: ƒAƒjƒÀs’†‚É Target ‚ªƒfƒXƒgƒ‰ƒNƒg‚³‚ê‚½‚Ì‘Î‰
+		UIElement*	TargetElement;		// TODO: ã‚¢ãƒ‹ãƒ¡å®Ÿè¡Œä¸­ã« Target ãŒãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ãƒˆã•ã‚ŒãŸæ™‚ã®å¯¾å¿œ
 		Property*	TargetProperty;
 		Variant		StartValue;
 	};
 
 	GUIManager*				m_manager;
-	Storyboard*				m_sourceStoryboard;		// ’â~‚·‚é‚Æ‚«‚ÌƒL[‚É‚µ‚½‚¢‚Ì‚ÅQÆƒJƒEƒ“ƒg‚ğã‚°‚é•K—v‚Í‚È‚¢
+	Storyboard*				m_sourceStoryboard;		// åœæ­¢ã™ã‚‹ã¨ãã®ã‚­ãƒ¼ã«ã—ãŸã„ã®ã§å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ä¸Šã’ã‚‹å¿…è¦ã¯ãªã„
 	Array<TimeLineInstance>	m_timeLineInstanceList;
 	float					m_currentTime;
 	bool					m_isFinished;

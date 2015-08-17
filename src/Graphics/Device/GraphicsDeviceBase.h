@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once 
 
 #include <Lumino/Threading/Mutex.h>
@@ -22,13 +22,13 @@ public:
 
 	virtual void Finalize();
 
-	/// ƒŠƒ\[ƒX“o˜^
+	/// ãƒªã‚½ãƒ¼ã‚¹ç™»éŒ²
 	void AddDeviceResource(IDeviceObject* obj);
 
-	/// ƒŠƒ\[ƒXœŠO
+	/// ãƒªã‚½ãƒ¼ã‚¹é™¤å¤–
 	//void RemoveDeviceResource(IDeviceObject* obj);
 
-	/// GC Às
+	/// GC å®Ÿè¡Œ
 	void GCDeviceResource();
 
 protected:

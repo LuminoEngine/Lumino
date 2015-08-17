@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <memory>
 #include <functional>
@@ -27,7 +27,7 @@ public:
 	virtual void Execute(const Variant& parameter) = 0;
 
 	/*
-		CanExecute() ‚Æ Execute() ‚Í’¼ÚŒÄ‚Ño‚³‚¸ACommandManager Œo—R‚·‚é‚±‚ÆB
+		CanExecute() ã¨ Execute() ã¯ç›´æ¥å‘¼ã³å‡ºã•ãšã€CommandManager çµŒç”±ã™ã‚‹ã“ã¨ã€‚
 	*/
 
 protected:
@@ -36,8 +36,8 @@ protected:
 
 /**
 	@brief		
-	@note		•K‚¸ static ‚ÈƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚ ‚é‚±‚ÆB
-				Œ¾ŒêƒoƒCƒ“ƒ_‚Å‚àA•K‚¸ static ƒƒ“ƒo‚É new ‚·‚é‚±‚ÆB
+	@note		å¿…ãš static ãªã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã‚ã‚‹ã“ã¨ã€‚
+				è¨€èªãƒã‚¤ãƒ³ãƒ€ã§ã‚‚ã€å¿…ãš static ãƒ¡ãƒ³ãƒã« new ã™ã‚‹ã“ã¨ã€‚
 */
 class RoutedCommand : public Command
 {
@@ -67,8 +67,8 @@ public:
 private:
 	TypeInfo*		m_typeInfo;
 	String			m_commandName;
-	Handler			m_canEcecute;	///< static ŠÖ”
-	Handler			m_ececute;		///< static ŠÖ”
+	Handler			m_canEcecute;	///< static é–¢æ•°
+	Handler			m_ececute;		///< static é–¢æ•°
 
 	friend class CommandManager;
 	bool	m_registerd;
@@ -81,7 +81,7 @@ private:
 //}
 
 
-/// TypeInfo ‚ª¦‚·ƒNƒ‰ƒX‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é RoutedCommand ‚ÌƒŠƒXƒg
+/// TypeInfo ãŒç¤ºã™ã‚¯ãƒ©ã‚¹ã«å«ã¾ã‚Œã¦ã„ã‚‹ RoutedCommand ã®ãƒªã‚¹ãƒˆ
 class RoutedCommandTypeContext
 {
 public:
@@ -95,7 +95,7 @@ public:
 
 public:
 
-	/// ŠeƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çŒÄ‚Î‚ê‚éBcommand ‚Í static ƒIƒuƒWƒFƒNƒg‚É‚·‚é‚±‚ÆB
+	/// å„ã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚command ã¯ static ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã™ã‚‹ã“ã¨ã€‚
 	static RoutedCommandTypeContext* RegisterCommand(TypeInfo* type, RoutedCommand* command);
 
 	static bool CanExecute(UIElement* caller, Command* command, const Variant& parameter);
@@ -117,7 +117,7 @@ public:
 
 public:
 	const Variant&	Parameter;
-	bool			CanExecute;		///< ‚±‚±‚ÉŒ‹‰Ê‚ğŠi”[‚·‚é
+	bool			CanExecute;		///< ã“ã“ã«çµæœã‚’æ ¼ç´ã™ã‚‹
 };
 
 class ExecuteRoutedCommandEventArgs

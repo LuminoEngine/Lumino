@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
@@ -37,7 +37,7 @@ private:
 /**
 	@brief
 */
-class ListBoxItemList	// TODO: ‚¢‚ç‚È‚¢‚©‚à
+class ListBoxItemList	// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
 	: public GenericVariantList<ListBoxItem*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
@@ -55,7 +55,7 @@ private:
 };
 
 /**
-	@brief		ListBox ƒRƒ“ƒgƒ[ƒ‹‚ÌŠOŠÏ‚Å‚·B
+	@brief		ListBox ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å¤–è¦³ã§ã™ã€‚
 */
 class ListBoxChrome
 	: public Decorator
@@ -63,8 +63,8 @@ class ListBoxChrome
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBoxChrome);
 public:
-	//static const String	IsMouseOverProperty;	///< IsMouseOver ƒvƒƒpƒeƒB‚Ì¯•Êq
-	//static const String	FrameWidthProperty;		///< FrameWidth ƒvƒƒpƒeƒB‚Ì¯•Êq
+	//static const String	IsMouseOverProperty;	///< IsMouseOver ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
+	//static const String	FrameWidthProperty;		///< FrameWidth ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
 
 public:
 	static ListBoxChromePtr Create();
@@ -77,10 +77,10 @@ public:
 	//void SetMouseOver(bool value) { m_isMouseOver = value; }
 	//bool IsMouseOver() const { return m_isMouseOver; }
 
-	///// ƒ{ƒ^ƒ“ƒCƒ[ƒW‚ÌŠO˜g‚Ì•‚ğİ’è‚µ‚Ü‚·B
+	///// ãƒœã‚¿ãƒ³ã‚¤ãƒ¡ãƒ¼ã‚¸ã®å¤–æ ã®å¹…ã‚’è¨­å®šã—ã¾ã™ã€‚
 	//void SetFrameWidth(float width) { m_frameWidth = width; }
 
-	///// ƒ{ƒ^ƒ“ƒCƒ[ƒW‚ÌŠO˜g‚Ì•‚ğæ“¾‚µ‚Ü‚·B
+	///// ãƒœã‚¿ãƒ³ã‚¤ãƒ¡ãƒ¼ã‚¸ã®å¤–æ ã®å¹…ã‚’å–å¾—ã—ã¾ã™ã€‚
 	//float GetFrameWidth() const { return m_frameWidth; }
 
 protected:
@@ -107,7 +107,7 @@ class ListBox
 public:
 
 	/**
-		@brief	ListBox ‚ğì¬‚µ‚Ü‚·B	
+		@brief	ListBox ã‚’ä½œæˆã—ã¾ã™ã€‚	
 	*/
 	static ListBoxPtr Create();
 
@@ -115,7 +115,7 @@ public:
 public:
 
 	/**
-		@brief	w’è‚µ‚½•¶š—ñ‚ğƒŠƒXƒgƒ{ƒbƒNƒX‚Ì€–Ú‚Æ‚µ‚Ä’Ç‰Á‚µ‚Ü‚·B	
+		@brief	æŒ‡å®šã—ãŸæ–‡å­—åˆ—ã‚’ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã®é …ç›®ã¨ã—ã¦è¿½åŠ ã—ã¾ã™ã€‚	
 	*/
 	ListBoxItemPtr AddTextItem(const String& text);
 	ListBoxItemPtr AddItem(const UIElement& item);
@@ -123,25 +123,25 @@ public:
 	
 
 	/**
-		@brief	w’è‚µ‚½•¶š—ñ‚ğƒŠƒXƒgƒ{ƒbƒNƒX‚Ì€–Ú‚Æ‚µ‚Ä’Ç‰Á‚µ‚Ü‚·B	
+		@brief	æŒ‡å®šã—ãŸæ–‡å­—åˆ—ã‚’ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã®é …ç›®ã¨ã—ã¦è¿½åŠ ã—ã¾ã™ã€‚	
 	*/
 	//void SetItemGroup(int index, const Variant& groupKey);
 
 
 
-	// TODO: ‚±‚â‚Â‚ç‚Í protected ‚É‚·‚é‚×‚«
+	// TODO: ã“ã‚„ã¤ã‚‰ã¯ protected ã«ã™ã‚‹ã¹ã
 	ListBox(GUIManager* manager);
 	virtual ~ListBox();
 
 	//ListBoxItemList* GetListBoxItems() { return m_listBoxItems; }
 
-	// ƒ†[ƒeƒBƒŠƒeƒB
+	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void InsertListBoxItem(int index, UIElement* element);
 
 	//ItemsPanel
 protected:
 #if 0
-	// q—v‘f‚ğ‚Â—v‘f‚Ì override
+	// å­è¦ç´ ã‚’æŒã¤è¦ç´ ã® override
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 	virtual void MeasureLayout(const SizeF& availableSize);
@@ -165,10 +165,10 @@ protected:
 
 protected:
 	//RefPtr<ListBoxItemList>	m_listBoxItems;		///< logical children
-	RefPtr<Panel>			m_itemsPanel;		///< ListBoxItem ‚ª”z’u‚³‚ê‚é Panel
+	RefPtr<Panel>			m_itemsPanel;		///< ListBoxItem ãŒé…ç½®ã•ã‚Œã‚‹ Panel
 
 
-	// ListBox ‚ÌƒXƒ^ƒCƒ‹‚Æƒeƒ“ƒvƒŒ[ƒg
+	// ListBox ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¨ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
 	// https://msdn.microsoft.com/ja-jp/library/ms754242%28v=vs.110%29.aspx
 };
 

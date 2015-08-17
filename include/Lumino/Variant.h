@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <iterator>
 #include <type_traits>
@@ -16,6 +16,7 @@ class RoutedEvent;
 class RoutedEventHandler;
 class RoutedEventArgs;
 class ApplicationContext;
+template<typename T> class TypedProperty;
 
 enum VariantType
 {
@@ -52,11 +53,11 @@ public:
 	Property* FindProperty(const String& name) const;
 
 	void RegisterRoutedEvent(RoutedEvent* ev);
-	RoutedEvent* FindRoutedEvent(const String& name) const;	// TODO: ‚¢‚ç‚È‚¢‚©‚à
+	RoutedEvent* FindRoutedEvent(const String& name) const;	// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
 	void InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, RoutedEventArgs* e);
 
-	/// RoutedEventHandler ‚ÍAƒ†[ƒU[‚ª“®“I‚É’Ç‰Á‚Å‚«‚éƒnƒ“ƒhƒ‰‚æ‚è‚à‘O‚ÉŒÄ‚Ño‚³‚ê‚éB
-	/// WPF ‚Å‚ÍuÃ“Iƒnƒ“ƒhƒ‰v‚ÆŒÄ‚Î‚ê‚Ä‚¢‚éB“®“IƒCƒxƒ“ƒg‚É“o˜^‚·‚é‚Ì‚É”ä‚×Aƒƒ‚ƒŠ‚ğg—p‚µ‚È‚¢B
+	/// RoutedEventHandler ã¯ã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒå‹•çš„ã«è¿½åŠ ã§ãã‚‹ãƒãƒ³ãƒ‰ãƒ©ã‚ˆã‚Šã‚‚å‰ã«å‘¼ã³å‡ºã•ã‚Œã‚‹ã€‚
+	/// WPF ã§ã¯ã€Œé™çš„ãƒãƒ³ãƒ‰ãƒ©ã€ã¨å‘¼ã°ã‚Œã¦ã„ã‚‹ã€‚å‹•çš„ã‚¤ãƒ™ãƒ³ãƒˆã«ç™»éŒ²ã™ã‚‹ã®ã«æ¯”ã¹ã€ãƒ¡ãƒ¢ãƒªã‚’ä½¿ç”¨ã—ãªã„ã€‚
 	void RegisterRoutedEventHandler(const RoutedEvent* ev, RoutedEventHandler* handler);
 	RoutedEventHandler* FindRoutedEventHandler(const RoutedEvent* ev) const;
 
@@ -71,7 +72,7 @@ protected:
 private:
 	typedef SortedArray<const RoutedEvent*, RoutedEventHandler*>	RoutedEventHandlerList;
 
-	String					m_fullName;		///< Š®‘SCü–¼
+	String					m_fullName;		///< å®Œå…¨ä¿®é£¾å
 	TypeInfo*				m_baseClass;
 	Array<Property*>		m_propertyList;
 	Array<RoutedEvent*>		m_routedEventList;
@@ -95,24 +96,24 @@ public:
 public:
 
 	/**
-		@brief		ƒvƒƒpƒeƒB‚Ì’l‚ğİ’è‚µ‚Ü‚·B
+		@brief		ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
-	// TODO: TypeInfo ‚ÉˆÚ“®‚µ‚½‚¢BƒCƒ“ƒeƒŠƒZƒ“ƒX‚Ì‰˜‚ê‚ªŒ‹\‹C‚É‚È‚éB
+	// TODO: TypeInfo ã«ç§»å‹•ã—ãŸã„ã€‚ã‚¤ãƒ³ãƒ†ãƒªã‚»ãƒ³ã‚¹ã®æ±šã‚ŒãŒçµæ§‹æ°—ã«ãªã‚‹ã€‚
 	void SetPropertyValue(const Property* prop, const Variant& value);
 	
 	/**
-		@brief		ƒvƒƒpƒeƒB‚Ì’l‚ğæ“¾‚µ‚Ü‚·B
+		@brief		ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	Variant GetPropertyValue(const Property* prop) const;
 
 	/**
-		@brief		ƒvƒƒpƒeƒB‚Ì’l‚ğİ’è‚µ‚Ü‚·B‚ ‚ç‚©‚¶‚ßŒ^‚ª•ª‚©‚Á‚Ä‚¢‚éê‡ASetPropertyValue() ‚æ‚è‚à­‚È‚¢ƒI[ƒo[ƒwƒbƒh‚Åİ’è‚Å‚«‚Ü‚·B
+		@brief		ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚ã‚ã‚‰ã‹ã˜ã‚å‹ãŒåˆ†ã‹ã£ã¦ã„ã‚‹å ´åˆã€SetPropertyValue() ã‚ˆã‚Šã‚‚å°‘ãªã„ã‚ªãƒ¼ãƒãƒ¼ãƒ˜ãƒƒãƒ‰ã§è¨­å®šã§ãã¾ã™ã€‚
 	*/
 	template<typename TValue>
 	void SetTypedPropertyValue(const Property* prop, const TValue& value);
 
 	/**
-		@brief		ƒvƒƒpƒeƒB‚Ì’l‚ğæ“¾‚µ‚Ü‚·B‚ ‚ç‚©‚¶‚ßŒ^‚ª•ª‚©‚Á‚Ä‚¢‚éê‡AGetPropertyValue() ‚æ‚è‚à­‚È‚¢ƒI[ƒo[ƒwƒbƒh‚Åİ’è‚Å‚«‚Ü‚·B
+		@brief		ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ã‚ã‚‰ã‹ã˜ã‚å‹ãŒåˆ†ã‹ã£ã¦ã„ã‚‹å ´åˆã€GetPropertyValue() ã‚ˆã‚Šã‚‚å°‘ãªã„ã‚ªãƒ¼ãƒãƒ¼ãƒ˜ãƒƒãƒ‰ã§è¨­å®šã§ãã¾ã™ã€‚
 	*/
 	template<typename TValue>
 	TValue GetTypedPropertyValue(const Property* prop) const;
@@ -124,11 +125,11 @@ public:
 
 	virtual void* GetUserData() const { return m_userData; }
 
-	/// ŠeíŒ¾ŒêƒoƒCƒ“ƒ_‚©‚çİ’è‚³‚ê‚éŒ^î•ñ ID ‚ğæ“¾‚µ‚Ü‚·B
+	/// å„ç¨®è¨€èªãƒã‚¤ãƒ³ãƒ€ã‹ã‚‰è¨­å®šã•ã‚Œã‚‹å‹æƒ…å ± ID ã‚’å–å¾—ã—ã¾ã™ã€‚
 	virtual void* GetBindingTypeData() const { return NULL; }
 
 	/**
-		@brief	‚±‚ÌƒIƒuƒWƒFƒNƒg‚Éw’è‚µ‚½ƒvƒƒpƒeƒB‚Ìƒ[ƒJƒ‹’l‚ªİ’è‚³‚ê‚Ä‚¢‚é‚©‚ğŠm”F‚µ‚Ü‚·B
+		@brief	ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«æŒ‡å®šã—ãŸãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®ãƒ­ãƒ¼ã‚«ãƒ«å€¤ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚
 	*/
 	bool HasLocalPropertyValue(const Property* prop);
 
@@ -138,7 +139,7 @@ public:
 	void NotifyPropertyChange(const Property* prop, const Variant& newValue, const Variant& oldValue/*PropertyChangedEventArgs* e*/);
 
 protected:
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒnƒ“ƒhƒ‰‚ÆA(Bubble‚Ìê‡)˜_—ã‚Ìe‚ÖƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚é
+	// ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã¨ã€(Bubbleã®å ´åˆ)è«–ç†ä¸Šã®è¦ªã¸ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	virtual void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e);
 
 	virtual void OnPropertyChanged(PropertyChangedEventArgs* e);
@@ -155,7 +156,7 @@ protected:
 
 private:
 	friend TypeInfo* GetTypeInfo(CoreObject* obj);
-	//virtual TypeInfo* GetThisTypeInfo() const { return NULL; };	// TODO: ƒˆ‰¼‘zŠÖ”‚É‚µ‚Äƒ}ƒNƒ’è‹`‚ğ‹­§‚·‚é
+	//virtual TypeInfo* GetThisTypeInfo() const { return NULL; };	// TODO: ç´”ç²‹ä»®æƒ³é–¢æ•°ã«ã—ã¦ãƒã‚¯ãƒ­å®šç¾©ã‚’å¼·åˆ¶ã™ã‚‹
 	static uint32_t* GetHasLocalValueFlags(CoreObject* _this) { return NULL; }
 
 private:
@@ -221,7 +222,7 @@ TValue CoreObject::GetTypedPropertyValue(const Property* prop) const
 
 
 
-/// w’è‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÌŒ^î•ñ‚ğæ“¾‚·‚é
+/// æŒ‡å®šã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å‹æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 inline TypeInfo* GetTypeInfo(CoreObject* obj)
 {
 	return obj->GetThisTypeInfo();
@@ -253,18 +254,7 @@ public:
 	Variant(CoreObject* obj);
 
 	template<class T>
-	Variant(RefPtr<T>& obj)
-		: m_type(VariantType_Unknown)
-		, m_uint(0)
-	{
-		if (T::IsArrayObject == 0) 
-			Set(obj);
-		else
-		{
-			CoreObject* t = obj.GetObjectPtr();
-			SetList(static_cast<VariantList*>(t));
-		}
-	}
+	Variant(RefPtr<T>& obj);
 
 public:
 	VariantType GetType() const { return m_type; }
@@ -301,7 +291,7 @@ public:
 public:
 	
 	/**
-		@brief		w’è‚µ‚½ Variant ‚Ì’l‚ğw’è‚µ‚½Œ^‚ÉƒLƒƒƒXƒg‚·‚éB
+		@brief		æŒ‡å®šã—ãŸ Variant ã®å€¤ã‚’æŒ‡å®šã—ãŸå‹ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ã€‚
 		@code
 					UIElement* item = Variant::Cast<UIElement*>(value);
 		@endcode
@@ -313,15 +303,6 @@ private:
 
 	template<typename T, typename TIsEnum, typename TIsRefPtr> struct CastSelector { static T GetValue(const Variant& v) { return static_cast<T>(v.GetObject()); } };
 	//
-	template<> struct CastSelector < bool, std::false_type, std::false_type >		{ static bool GetValue(const Variant& v) { return v.GetBool(); } };
-	template<> struct CastSelector < int, std::false_type, std::false_type >		{ static int GetValue(const Variant& v) { return v.GetInt(); } };
-	template<> struct CastSelector < float, std::false_type, std::false_type >		{ static float GetValue(const Variant& v) { return v.GetFloat(); } };
-	template<> struct CastSelector < String, std::false_type, std::false_type >		{ static String GetValue(const Variant& v) { return v.GetString(); } };
-	template<> struct CastSelector < Rect, std::false_type, std::false_type >		{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
-	template<> struct CastSelector < SizeF, std::false_type, std::false_type >		{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
-	template<> struct CastSelector < ThicknessF, std::false_type, std::false_type > { static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
-	template<typename T> struct CastSelector < T, std::true_type, std::false_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: Œ^ƒ`ƒFƒbƒN
-	template<typename T> struct CastSelector  < T, std::false_type, std::true_type >{ static T GetValue(const Variant& v) { return T(static_cast<T::PtrType>(v.GetObject())); } };
 
 
 #if 0
@@ -335,8 +316,8 @@ private:
 	template<> struct CastSelector < Rect, std::false_type >		{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
 	template<> struct CastSelector < SizeF, std::false_type >		{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
 	template<> struct CastSelector < ThicknessF, std::false_type > { static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
-	template<typename T> struct CastSelector < T, std::true_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: Œ^ƒ`ƒFƒbƒN
-//	template<typename TRefPtr, typename U> struct CastSelector < TRefPtr<U>, std::true_type > { static TRefPtr<U> GetValue(const Variant& v) { return TRefPtr<U>(static_cast<U>(v.GetObject())); } };	// TODO: Œ^ƒ`ƒFƒbƒN
+	template<typename T> struct CastSelector < T, std::true_type > { static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: å‹ãƒã‚§ãƒƒã‚¯
+//	template<typename TRefPtr, typename U> struct CastSelector < TRefPtr<U>, std::true_type > { static TRefPtr<U> GetValue(const Variant& v) { return TRefPtr<U>(static_cast<U>(v.GetObject())); } };	// TODO: å‹ãƒã‚§ãƒƒã‚¯
 #endif
 
 public:
@@ -365,6 +346,38 @@ private:
 	String			m_string;
 };
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+template<class T>
+Variant::Variant(RefPtr<T>& obj)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)
+{
+	if (T::IsArrayObject == 0)
+		Set(obj);
+	else
+	{
+		CoreObject* t = obj.GetObjectPtr();
+		SetList(static_cast<VariantList*>(t));
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+template<> struct Variant::CastSelector < bool, std::false_type, std::false_type >			{ static bool GetValue(const Variant& v) { return v.GetBool(); } };
+template<> struct Variant::CastSelector < int, std::false_type, std::false_type >			{ static int GetValue(const Variant& v) { return v.GetInt(); } };
+template<> struct Variant::CastSelector < float, std::false_type, std::false_type >			{ static float GetValue(const Variant& v) { return v.GetFloat(); } };
+template<> struct Variant::CastSelector < String, std::false_type, std::false_type >		{ static String GetValue(const Variant& v) { return v.GetString(); } };
+template<> struct Variant::CastSelector < Rect, std::false_type, std::false_type >			{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
+template<> struct Variant::CastSelector < SizeF, std::false_type, std::false_type >			{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
+template<> struct Variant::CastSelector < ThicknessF, std::false_type, std::false_type >	{ static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
+template<typename T> struct Variant::CastSelector < T, std::true_type, std::false_type >	{ static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: å‹ãƒã‚§ãƒƒã‚¯
+template<typename T> struct Variant::CastSelector  < T, std::false_type, std::true_type >	{ static T GetValue(const Variant& v) { return T(static_cast<typename T::PtrType>(v.GetObject())); } };
+
+
+
 /**
 	@brief
 */
@@ -383,10 +396,10 @@ public:
 	bool IsOutOfRange(int index) const { return m_list.IsOutOfRange(index); }
 	bool IsEmpty() const { return m_list.IsEmpty(); }
 
-	/// —v‘f”‚ğæ“¾‚·‚é
+	/// è¦ç´ æ•°ã‚’å–å¾—ã™ã‚‹
 	int GetCount() const { return m_list.GetCount(); }
 
-	/// w’èƒCƒ“ƒfƒbƒNƒX‚É—v‘f‚ğŠi”[‚·‚é
+	/// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«è¦ç´ ã‚’æ ¼ç´ã™ã‚‹
 	void SetAtVariant(int index, const Variant& item)
 	{
 		if (OnItemAdding(item))
@@ -396,13 +409,13 @@ public:
 		}
 	}
 
-	/// w’èƒCƒ“ƒfƒbƒNƒX‚Ì—v‘f‚ğæ“¾‚·‚é
+	/// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¦ç´ ã‚’å–å¾—ã™ã‚‹
 	const Variant& GetAtVariant(int index) const
 	{
 		return m_list.GetAt(index);
 	}
 
-	/// —v‘f‚ğ––”ö‚É’Ç‰Á‚·‚é
+	/// è¦ç´ ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹
 	void AddVariant(const Variant& item)
 	{
 		if (OnItemAdding(item))
@@ -412,16 +425,16 @@ public:
 		}
 	}
 
-	/// ‘S‚Ä‚Ì—v‘f‚ğíœ‚·‚é
+	/// å…¨ã¦ã®è¦ç´ ã‚’å‰Šé™¤ã™ã‚‹
 	void Clear()
 	{
 		for (Variant& item : m_list) {
-			OnItemRemoved(item);	// TODO: erase ‚µ‚È‚ª‚ç‚Ğ‚Æ‚Â‚¸‚ÂŒÄ‚Ô‚×‚«‚©‚à
+			OnItemRemoved(item);	// TODO: erase ã—ãªãŒã‚‰ã²ã¨ã¤ãšã¤å‘¼ã¶ã¹ãã‹ã‚‚
 		}
 		m_list.Clear();
 	}
 
-	/// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚·‚é
+	/// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã™ã‚‹
 	void InsertVariant(int index, const Variant& item)
 	{
 		if (OnItemAdding(item))
@@ -431,7 +444,7 @@ public:
 		}
 	}
 
-	/// item ‚Æˆê’v‚·‚éÅ‰‚Ì—v‘f‚ğíœ‚·‚é
+	/// item ã¨ä¸€è‡´ã™ã‚‹æœ€åˆã®è¦ç´ ã‚’å‰Šé™¤ã™ã‚‹
 	void RemoveVariant(const Variant& item)
 	{
 		bool b = m_list.Remove(item);
@@ -440,7 +453,7 @@ public:
 		}
 	}
 
-	/// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Ì—v‘f‚ğíœ‚·‚é
+	/// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¦ç´ ã‚’å‰Šé™¤ã™ã‚‹
 	void RemoveAt(int index)
 	{
 		Variant item = m_list.GetAt(index);
@@ -507,7 +520,7 @@ public:
 
 	private:
 		friend class VariantList;
-		iterator(const Array<Variant>::iterator& itr) : m_internalItr(itr) {}	// begin() ‚Æ end() ‚Åg—p‚·‚é
+		iterator(const Array<Variant>::iterator& itr) : m_internalItr(itr) {}	// begin() ã¨ end() ã§ä½¿ç”¨ã™ã‚‹
 		Array<Variant>::iterator m_internalItr;
 	};
 
@@ -564,16 +577,16 @@ public:
 
 
 public:
-	/// w’èƒCƒ“ƒfƒbƒNƒX‚É—v‘f‚ğŠi”[‚·‚é
+	/// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«è¦ç´ ã‚’æ ¼ç´ã™ã‚‹
 	void SetAt(int index, const TValue& item) { SetAtVariant(index, item); }
 
-	/// w’èƒCƒ“ƒfƒbƒNƒX‚Ì—v‘f‚ğæ“¾‚·‚é
-	TValue GetAt(int index) const { return Variant::Cast<TValue>(GetAtVariant(index)); }	// TODO: ‚Å‚«‚ê‚ÎQÆ‚Å•Ô‚µ‚½‚¢‚ªc
+	/// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¦ç´ ã‚’å–å¾—ã™ã‚‹
+	TValue GetAt(int index) const { return Variant::Cast<TValue>(GetAtVariant(index)); }	// TODO: ã§ãã‚Œã°å‚ç…§ã§è¿”ã—ãŸã„ãŒâ€¦
 
-	/// —v‘f‚ğ––”ö‚É’Ç‰Á‚·‚é
+	/// è¦ç´ ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹
 	void Add(const TValue& item) { AddVariant(item); }
 
-	/// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚·‚é
+	/// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã™ã‚‹
 	void Insert(int index, const TValue& item) { InsertVariant(index, item); }
 
 public:

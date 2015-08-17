@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <map>
 #include <memory>
@@ -10,8 +10,8 @@ namespace Lumino
 class CoreObject;
 
 /**
-	@brief		CoreObject ‚ÌƒTƒuƒNƒ‰ƒX‚ªÀ‘•‚Å‚«‚éƒvƒƒpƒeƒB‚ğ•\‚µ‚Ü‚·B
-	@details	ƒvƒƒpƒeƒB‚ÍAƒƒ“ƒo•Ï”‚É‘Î‚·‚éŠÈˆÕ“I‚ÈƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+	@brief		CoreObject ã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹ãŒå®Ÿè£…ã§ãã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¡¨ã—ã¾ã™ã€‚
+	@details	ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¯ã€ãƒ¡ãƒ³ãƒå¤‰æ•°ã«å¯¾ã™ã‚‹ç°¡æ˜“çš„ãªãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’æä¾›ã—ã¾ã™ã€‚
 				
 */
 class Property
@@ -36,9 +36,9 @@ public:
 	virtual bool IsWritable() const { return false; }
 	virtual bool IsList() const { return false; }
 
-	/// ’l‚ğ CoreObject ‚Ì map ‚É Variant ‚Æ‚µ‚Ä‚Â‚©‚Ç‚¤‚©B
-	/// (‚æ‚¢–¼‘O‚ªv‚¢‚Â‚©‚È‚¢‚Ì‚Å‚Æ‚è‚ ‚¦‚¸‚±‚ê‚Å)
-	/// (virtual ‚É‚µ‚Ä‚à‚¢‚¢‚ªAŠ„‚ÆƒNƒŠƒeƒBƒJƒ‹‚È‚Æ‚±‚ë‚ÅŒÄ‚Ño‚³‚ê‚é‚Æv‚í‚ê‚é‚Ì‚Å‚»‚¤‚µ‚È‚¢‚Å‚¨‚­)
+	/// å€¤ã‚’ CoreObject ã® map ã« Variant ã¨ã—ã¦æŒã¤ã‹ã©ã†ã‹ã€‚
+	/// (ã‚ˆã„åå‰ãŒæ€ã„ã¤ã‹ãªã„ã®ã§ã¨ã‚Šã‚ãˆãšã“ã‚Œã§)
+	/// (virtual ã«ã—ã¦ã‚‚ã„ã„ãŒã€å‰²ã¨ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ãªã¨ã“ã‚ã§å‘¼ã³å‡ºã•ã‚Œã‚‹ã¨æ€ã‚ã‚Œã‚‹ã®ã§ãã†ã—ãªã„ã§ãŠã)
 	bool IsStored() const { return m_stored; }
 
 	TypeInfo* GetOwnerClassType() const { return m_ownerClassType; }
@@ -47,7 +47,7 @@ public:
 
 	int GetLocalIndex() const { return m_localIndex; }
 
-	/// TODO: Meadata ‚Ì‹@”\
+	/// TODO: Meadata ã®æ©Ÿèƒ½
 	virtual void NotifyPropertyChange(CoreObject* target, PropertyChangedEventArgs* e) const {}
 
 private:
@@ -59,15 +59,15 @@ private:
 	bool	m_registerd;
 	int		m_localIndex;
 
-	// ‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÍŠî–{“I‚É static ‚É‚·‚éB
-	// ‚ ‚­‚Ü‚Åu–¼‘O‚ğƒL[‚É‚µ‚Ä‚Ç‚Ìgetter/setter‚ğŒÄ‚Ño‚·‚©Hv‚ª–Ú“I‚È‚Ì‚ÅAó‘Ô‚Í‚½‚È‚¢B
-	// —]Œv‚È new ‚Í‚¹‚¸‚É‹¤—L‚·‚éB
+	// ã“ã®ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯åŸºæœ¬çš„ã« static ã«ã™ã‚‹ã€‚
+	// ã‚ãã¾ã§ã€Œåå‰ã‚’ã‚­ãƒ¼ã«ã—ã¦ã©ã®getter/setterã‚’å‘¼ã³å‡ºã™ã‹ï¼Ÿã€ãŒç›®çš„ãªã®ã§ã€çŠ¶æ…‹ã¯æŒãŸãªã„ã€‚
+	// ä½™è¨ˆãª new ã¯ã›ãšã«å…±æœ‰ã™ã‚‹ã€‚
 };
 
 /* Note:
 		
-		ƒƒ“ƒo•Ï”‚Ö‚ÌƒAƒNƒZƒX‚ÍŠÖ”ƒ|ƒCƒ“ƒ^Œo—R‚Ås‚¤B
-		ƒƒ“ƒo•Ï”‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚·‚±‚Æ‚Å‚àƒAƒNƒZƒX‚Í‰Â”\‚¾‚ªAŒ¾ŒêƒoƒCƒ“ƒ_‚ğì‚èh‚­‚È‚éB
+		ãƒ¡ãƒ³ãƒå¤‰æ•°ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã¯é–¢æ•°ãƒã‚¤ãƒ³ã‚¿çµŒç”±ã§è¡Œã†ã€‚
+		ãƒ¡ãƒ³ãƒå¤‰æ•°ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™ã“ã¨ã§ã‚‚ã‚¢ã‚¯ã‚»ã‚¹ã¯å¯èƒ½ã ãŒã€è¨€èªãƒã‚¤ãƒ³ãƒ€ã‚’ä½œã‚Šè¾›ããªã‚‹ã€‚
 */
 
 
@@ -86,7 +86,7 @@ public:
 	typedef void(*SetterFunc)(CoreObject* obj, TValue value);
 	typedef TValue(*GetterFunc)(const CoreObject* obj);
 	typedef void(*OnPropertyChangedFunc)(CoreObject* obj, PropertyChangedEventArgs* e);
-	// ª¦static ŠÖ”‚Ìƒ|ƒCƒ“ƒ^‚Å‚È‚¢‚ÆAŒ¾ŒêƒoƒCƒ“ƒ_‚ğì‚è‚É‚­‚­‚È‚éB
+	// â†‘â€»static é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿ã§ãªã„ã¨ã€è¨€èªãƒã‚¤ãƒ³ãƒ€ã‚’ä½œã‚Šã«ãããªã‚‹ã€‚
 
 public:
 	TypedProperty(TypeInfo* ownerTypeInfo, const TCHAR* name, TValue defaultValue)
@@ -115,12 +115,12 @@ public:
 	{
 		LN_THROW(m_getter != NULL, InvalidOperationException);
 		//VariantList* list = m_getter(target);
-		// TODO: ŠÔˆá‚¦‚Ä UIElementFractory ‚Ì‚Ü‚Ü’Ç‰Á‚µ‚Ä‚µ‚Ü‚¤‚±‚Æ‚ª‚ ‚Á‚½BŒ^ƒ`ƒFƒbƒN‚Å‚«‚é‚Æ—Ç‚¢B
+		// TODO: é–“é•ãˆã¦ UIElementFractory ã®ã¾ã¾è¿½åŠ ã—ã¦ã—ã¾ã†ã“ã¨ãŒã‚ã£ãŸã€‚å‹ãƒã‚§ãƒƒã‚¯ã§ãã‚‹ã¨è‰¯ã„ã€‚
 		//list->AddVariant(value);
 		auto list = m_getter(target);
 		AddItemInternal(list, value);
 	}
-	virtual bool IsReadable() const { return m_getter != NULL; }	// TODO: virtual ‚â‚ß‚½‚Ù‚¤‚ª‚‘¬‰»‚Å‚«‚éB
+	virtual bool IsReadable() const { return m_getter != NULL; }	// TODO: virtual ã‚„ã‚ãŸã»ã†ãŒé«˜é€ŸåŒ–ã§ãã‚‹ã€‚
 	virtual bool IsWritable() const { return m_getter != NULL; }
 	virtual bool IsList() const { return ListOperationSelector2<TValue>::IsList(); }
 
@@ -147,12 +147,12 @@ public:
 	}
 
 	template<typename T>
-	void AddItemInternal(T& list, const Variant& item) const	// ’lŒ^
+	void AddItemInternal(T& list, const Variant& item) const	// å€¤å‹
 	{
 		LN_THROW(0, InvalidOperationException);
 	}
 	template<typename T>
-	void AddItemInternal(T* list, const Variant& item) const	// ƒ|ƒCƒ“ƒ^Œ^
+	void AddItemInternal(T* list, const Variant& item) const	// ãƒã‚¤ãƒ³ã‚¿å‹
 	{
 		ListOperationSelector<T, std::is_base_of<VariantList, T>::type >::AddItem(*list, item);
 	}
@@ -204,7 +204,7 @@ private:
 template<typename TValue>
 class TypedPropertyInitializer
 {
-	// Initializer ‚Í .h ‘¤‚É•s•K—v‚ÈŒ^‚ğ‘‚«‚½‚­‚È‚¢‚©‚ç—pˆÓ‚µ‚½‚à‚ÌB
+	// Initializer ã¯ .h å´ã«ä¸å¿…è¦ãªå‹ã‚’æ›¸ããŸããªã„ã‹ã‚‰ç”¨æ„ã—ãŸã‚‚ã®ã€‚
 public:
 	typedef void(*SetterFunc)(CoreObject* obj, TValue value);
 	typedef TValue(*GetterFunc)(const CoreObject* obj);
@@ -265,7 +265,7 @@ class PropertyManager
 public:
 	static /*AttachedProperty**/void  RegisterAttachedProperty(TypeInfo* ownerClass, const String& propertyName, const Variant& defaultValue);
 
-	/// ƒOƒ[ƒoƒ‹‹óŠÔ‚É’è‹`‚³‚ê‚½ static •Ï”‚ğ‰Šú‰»‚·‚é‚Ì‚ª–Ú“I
+	/// ã‚°ãƒ­ãƒ¼ãƒãƒ«ç©ºé–“ã«å®šç¾©ã•ã‚ŒãŸ static å¤‰æ•°ã‚’åˆæœŸåŒ–ã™ã‚‹ã®ãŒç›®çš„
 	static Property* RegisterProperty(TypeInfo* ownerClass, Property* prop)
 	{
 		ownerClass->RegisterProperty(prop);
@@ -294,7 +294,7 @@ private:
 		String		m_propertyName;
 	};
 
-	typedef std::map<TypedNameKey, std::shared_ptr<AttachedProperty> >	PropertyMap;	//TODO: map ‚¾‚Æd‚­‚È‚¢H
+	typedef std::map<TypedNameKey, std::shared_ptr<AttachedProperty> >	PropertyMap;	//TODO: map ã ã¨é‡ããªã„ï¼Ÿ
 	static PropertyMap	m_propertyMap;
 };
 
@@ -319,12 +319,12 @@ public:
 //	} \
 //}
 
-/// GUI —p Set ƒ†[ƒeƒBƒŠƒeƒB
+/// GUI ç”¨ Set ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 #define LN_SET_ATTACHED_PROPERTY(element, prop, value) \
 	LN_VERIFY(element != NULL); \
 	element->SetPropertyValue(prop, value);
 
-/// GUI —p Get ƒ†[ƒeƒBƒŠƒeƒB
+/// GUI ç”¨ Get ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 #define LN_GET_ATTACHED_PROPERTY(element, prop, type) \
 	LN_VERIFY(element != NULL); \
 	return Variant::Cast<type>(element->GetPropertyValue(prop));

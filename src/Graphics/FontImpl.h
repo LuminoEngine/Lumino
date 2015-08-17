@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Imaging/Font.h>
@@ -9,7 +9,7 @@ namespace Imaging
 {
 class Bitmap;
 
-/// ƒrƒbƒgƒ}ƒbƒvƒtƒHƒ“ƒg
+/// ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ãƒ•ã‚©ãƒ³ãƒˆ
 class BitmapFontImpl
 	: public Font
 {

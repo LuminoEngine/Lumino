@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/Documents/DocumentsRenderer.h>
 
@@ -31,7 +31,7 @@ RenderTargetDocumentsRenderer::~RenderTargetDocumentsRenderer()
 //-----------------------------------------------------------------------------
 void RenderTargetDocumentsRenderer::OnDrawGlyphRun(Graphics::GlyphRun* glyphRun, const Point& point)
 {
-	m_painter->DrawGlyphRun(point, glyphRun);	// TODO: �ʒu
+	m_painter->DrawGlyphRun(point, glyphRun);	// TODO: 位置
 }
 
 } // namespace Documents

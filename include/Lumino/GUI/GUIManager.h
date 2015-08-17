@@ -1,4 +1,4 @@
-
+ï»¿
 
 #pragma once
 #include <map>
@@ -14,7 +14,7 @@ namespace GUI
 {
 	
 /**
-	@brief		GUI ‹@”\‚ÌŠÇ—ƒNƒ‰ƒX‚Å‚·B
+	@brief		GUI æ©Ÿèƒ½ã®ç®¡ç†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class GUIManager
 	: public RefObject
@@ -44,7 +44,7 @@ public:
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
 
-	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// ‚Æ‚è‚ ‚¦‚¸“à•”—pBŒ¾ŒêƒoƒCƒ“ƒ_‚Ì‚±‚Æ‚ÍŒã‚ÅB
+	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// ã¨ã‚Šã‚ãˆãšå†…éƒ¨ç”¨ã€‚è¨€èªãƒã‚¤ãƒ³ãƒ€ã®ã“ã¨ã¯å¾Œã§ã€‚
 	CoreObject* CreateObject(const String& typeFullName);
 
 	bool InjectMouseMove(float clientX, float clientY);
@@ -68,7 +68,7 @@ public:	// internal
 	void ReleaseMouseCapture(UIElement* element);
 
 private:
-	bool UpdateMouseHover(const PointF& mousePos);	// ƒnƒ“ƒhƒŠƒ“ƒO‚µ‚½‚ç true ‚ğ•Ô‚·
+	bool UpdateMouseHover(const PointF& mousePos);	// ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ã—ãŸã‚‰ true ã‚’è¿”ã™
 	void BuildDefaultTheme();
 
 private:	// internal
@@ -85,10 +85,10 @@ private:
 	RootFrame*							m_defaultRootFrame;
 	ResourceDictionary*					m_defaultTheme;
 	CombinedLocalResource*				m_rootCombinedResource;
-	UIElement*							m_mouseHoverElement;		///< Œ»İƒ}ƒEƒXˆÊ’u‚É‚ ‚é UIElement
-	UIElement*							m_capturedElement;			///< Œ»İƒLƒƒƒvƒ`ƒƒ’†‚Ì UIElement
+	UIElement*							m_mouseHoverElement;		///< ç¾åœ¨ãƒã‚¦ã‚¹ä½ç½®ã«ã‚ã‚‹ UIElement
+	UIElement*							m_capturedElement;			///< ç¾åœ¨ã‚­ãƒ£ãƒ—ãƒãƒ£ä¸­ã® UIElement
 	RefPtr<Platform::Window>			m_mainWindow;
-	Array<AnimationClock*>				m_activeAnimationClockList;	///< TODO: ƒCƒ“ƒfƒbƒNƒXƒXƒ^ƒbƒN‚ğg‚Á‚½ƒŠƒXƒg‚É‚µ‚½‚¢
+	Array<AnimationClock*>				m_activeAnimationClockList;	///< TODO: ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚¹ã‚¿ãƒƒã‚¯ã‚’ä½¿ã£ãŸãƒªã‚¹ãƒˆã«ã—ãŸã„
 
 	ObjectFactoryMap					m_objectFactoryMap;
 

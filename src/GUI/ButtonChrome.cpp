@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/ButtonChrome.h>
 #include <Lumino/GUI/VisualState.h>	// for button
@@ -34,11 +34,11 @@ ButtonChrome::ButtonChrome(GUIManager* manager)
 	, m_frameWidth(8.0f)
 	, m_isMouseOver(false)
 {
-	// ƒvƒƒpƒeƒB‚Ì“o˜^
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®ç™»éŒ²
 	//LN_DEFINE_PROPERTY(ButtonChrome, bool, IsMouseOverProperty, &ButtonChrome::SetMouseOver, &ButtonChrome::IsMouseOver, false);
 
 	// TODO
-	// ƒ{ƒ^ƒ“‚ÌƒXƒ^ƒCƒ‹‚Æƒeƒ“ƒvƒŒ[ƒg
+	// ãƒœã‚¿ãƒ³ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¨ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
 	// https://msdn.microsoft.com/ja-jp/library/ms753328%28v=vs.110%29.aspx
 	RefPtr<VisualStateManager> vsm(LN_NEW VisualStateManager());
 

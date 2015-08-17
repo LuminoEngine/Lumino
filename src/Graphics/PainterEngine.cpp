@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/BitmapPainter.h>
 #include "PainterEngine.h"
@@ -70,7 +70,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 
 
 	//-----------------------------------------------------
-	// ƒ_ƒ~[ƒeƒNƒXƒ`ƒƒ
+	// ãƒ€ãƒŸãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
 	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
 	Device::IGraphicsDevice::ScopedLockContext lock(device);
@@ -143,7 +143,7 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 void PainterEngine::SetBrush(const BrushData& data)
 {
-	Flush();	// •`‰æİ’è‚ª•Ï‚í‚é‚Ì‚Å‚±‚±‚Åƒtƒ‰ƒbƒVƒ…
+	Flush();	// æç”»è¨­å®šãŒå¤‰ã‚ã‚‹ã®ã§ã“ã“ã§ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
 	DetachBrushData();
 	memcpy(&m_currentState.Brush, &data, sizeof(m_currentState.Brush));
 	AttachBrushData();
@@ -155,7 +155,7 @@ void PainterEngine::SetBrush(const BrushData& data)
 //-----------------------------------------------------------------------------
 void PainterEngine::SetOpacity(float opacity)
 {
-	Flush();	// •`‰æİ’è‚ª•Ï‚í‚é‚Ì‚Å‚±‚±‚Åƒtƒ‰ƒbƒVƒ…
+	Flush();	// æç”»è¨­å®šãŒå¤‰ã‚ã‚‹ã®ã§ã“ã“ã§ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
 	m_currentState.Opacity = opacity;
 	UpdateCurrentForeColor();
 }
@@ -165,7 +165,7 @@ void PainterEngine::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 void PainterEngine::DrawRectangle(const RectF& rect)
 {
-	// DrawGlyphRun() ˆÈŠO‚Í NULL ‚ÅŒÄ‚Ño‚µ‚Ä‚¨‚­
+	// DrawGlyphRun() ä»¥å¤–ã¯ NULL ã§å‘¼ã³å‡ºã—ã¦ãŠã
 	SetInternalGlyphMaskTexture(NULL);
 
 	if (m_currentState.Brush.Type == BrushType_Texture)
@@ -199,13 +199,13 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 
 		PainterVertex v;
 		v.Color = m_currentState.ForeColor;
-		v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ¶ã
+		v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// å·¦ä¸Š
 		m_vertexCache.Add(v);
-		v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ‰Eã
+		v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// å³ä¸Š
 		m_vertexCache.Add(v);
-		v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ¶‰º
+		v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// å·¦ä¸‹
 		m_vertexCache.Add(v);
-		v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// ‰E‰º
+		v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// å³ä¸‹
 		m_vertexCache.Add(v);
 	}
 }
@@ -226,7 +226,7 @@ void PainterEngine::Flush()
 		srcTexture = m_dummyTexture;
 	}
 
-	// •`‰æ‚·‚é
+	// æç”»ã™ã‚‹
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 	m_renderer->SetVertexBuffer(m_vertexBuffer);
@@ -236,7 +236,7 @@ void PainterEngine::Flush()
 	m_shader.Pass->Apply();
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
-	// ƒLƒƒƒbƒVƒ…ƒNƒŠƒA
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚¯ãƒªã‚¢
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 }
@@ -257,7 +257,7 @@ void PainterEngine::DrawFillRectangle(const RectF& rect, Device::ITexture* srcTe
 	uvSrcRect.Y			*= texSizeInv.Height;
 	uvSrcRect.Height	*= texSizeInv.Height;
 
-	// Šgkƒ‚[ƒh
+	// æ‹¡ç¸®ãƒ¢ãƒ¼ãƒ‰
 	if (wrapMode == BrushWrapMode_Stretch) 
 	{
 		InternalDrawRectangleStretch(rect, uvSrcRect);
@@ -268,7 +268,7 @@ void PainterEngine::DrawFillRectangle(const RectF& rect, Device::ITexture* srcTe
 		m_shader.Pass->Apply();
 		m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
 	}
-	// ƒ^ƒCƒŠƒ“ƒOƒ‚[ƒh
+	// ã‚¿ã‚¤ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰
 	else if (wrapMode == BrushWrapMode_Tile) {
 		LN_THROW(0, NotImplementedException);
 	}
@@ -291,12 +291,12 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, De
 		srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
 	}
 	else {
-		// ƒeƒNƒXƒ`ƒƒƒuƒ‰ƒVˆÈŠO‚Å‘‚­‚±‚Æ‚Í‚Å‚«‚È‚¢
-		// TODO: •‚Å‹éŒ`‚ğ‘‚¢‚½•û‚ªAŠÔˆá‚Á‚Ä‚¢‚é‚Æ‚í‚©‚è‚â‚·‚¢‚©‚à
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ–ãƒ©ã‚·ä»¥å¤–ã§æ›¸ãã“ã¨ã¯ã§ããªã„
+		// TODO: é»’ã§çŸ©å½¢ã‚’æ›¸ã„ãŸæ–¹ãŒã€é–“é•ã£ã¦ã„ã‚‹ã¨ã‚ã‹ã‚Šã‚„ã™ã„ã‹ã‚‚
 		return;
 	}
 
-	// DrawGlyphRun() ˆÈŠO‚Í NULL ‚ÅŒÄ‚Ño‚µ‚Ä‚¨‚­
+	// DrawGlyphRun() ä»¥å¤–ã¯ NULL ã§å‘¼ã³å‡ºã—ã¦ãŠã
 	SetInternalGlyphMaskTexture(NULL);
 
 	if (srcTexture == NULL) {
@@ -323,21 +323,21 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, De
 	float frameWidthV = frameWidth;
 	float uvFrameWidthH = frameWidth * texSize.Width;
 	float uvFrameWidthV = frameWidth * texSize.Height;
-	int frameWidthHI = (int)frameWidth;	// Œ^•ÏŠ·‰ñ”‚ğŒ¸‚ç‚·‚½‚ßA‚ ‚ç‚©‚¶‚ß int ‰»‚µ‚Ä‚¨‚­
+	int frameWidthHI = (int)frameWidth;	// å‹å¤‰æ›å›æ•°ã‚’æ¸›ã‚‰ã™ãŸã‚ã€ã‚ã‚‰ã‹ã˜ã‚ int åŒ–ã—ã¦ãŠã
 	int frameWidthVI = (int)frameWidth;
 
-	// ‰¡•‚ª¬‚³‚¢‚½‚ßA˜g•‚à‹·‚ß‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+	// æ¨ªå¹…ãŒå°ã•ã„ãŸã‚ã€æ å¹…ã‚‚ç‹­ã‚ãªã‘ã‚Œã°ãªã‚‰ãªã„
 	if (rect.Width < frameWidthH * 2)
 	{
-		float ratio = rect.Width / (frameWidthH * 2);	// Œ³‚Ì•‚©‚ç‰½ % ‚É‚È‚é‚©
+		float ratio = rect.Width / (frameWidthH * 2);	// å…ƒã®å¹…ã‹ã‚‰ä½• % ã«ãªã‚‹ã‹
 		frameWidthH *= ratio;
 		uvFrameWidthH *= ratio;
 		frameWidthHI = (int)ceil( ratio * frameWidthHI);
 	}
-	// c•‚ª¬‚³‚¢‚½‚ßA˜g•‚à‹·‚ß‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+	// ç¸¦å¹…ãŒå°ã•ã„ãŸã‚ã€æ å¹…ã‚‚ç‹­ã‚ãªã‘ã‚Œã°ãªã‚‰ãªã„
 	if (rect.Height < frameWidthV * 2)
 	{
-		float ratio = rect.Height / (frameWidthV * 2);	// Œ³‚Ì•‚©‚ç‰½ % ‚É‚È‚é‚©
+		float ratio = rect.Height / (frameWidthV * 2);	// å…ƒã®å¹…ã‹ã‚‰ä½• % ã«ãªã‚‹ã‹
 		frameWidthV *= ratio;
 		uvFrameWidthV *= ratio;
 		frameWidthVI = (int)ceil(ratio * frameWidthVI);
@@ -350,72 +350,72 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, De
 	Rect  outerSrcRect = srcRect;
 	Rect  innerSrcRect(outerSrcRect.X + frameWidthHI, outerSrcRect.Y + frameWidthVI, outerSrcRect.Width - frameWidthHI * 2, outerSrcRect.Height - frameWidthVI * 2);
 
-	// ¶ã	¡  
-	//		 @ 
-	//		   
+	// å·¦ä¸Š	â– â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â–¡
 	InternalDrawRectangleTiling(
 		RectF(outerRect.GetLeft(),		outerRect.GetTop(),		frameWidthH,	frameWidthV),
 		Rect(outerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	frameWidthHI,	frameWidthVI),
 		RectF(outerUVRect.GetLeft(),	outerUVRect.GetTop(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
-	// ã	 ¡ 
-	//		 @ 
-	//		   
+	// ä¸Š	â–¡â– â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â–¡
 	InternalDrawRectangleTiling(
 		RectF(innerRect.GetLeft(),		outerRect.GetTop(),		innerRect.Width,	frameWidth),
 		Rect(innerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	innerSrcRect.Width,	frameWidthVI),
 		RectF(innerUVRect.GetLeft(),	outerUVRect.GetTop(),	innerUVRect.Width,	uvFrameWidthV),
 		srcTexture);
 
-	// ‰Eã	  ¡
-	//		 @ 
-	//		   
+	// å³ä¸Š	â–¡â–¡â– 
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â–¡
 	InternalDrawRectangleTiling(
 		RectF(innerRect.GetRight(),		outerRect.GetTop(),		frameWidthH,	frameWidthV),
 		Rect(innerSrcRect.GetRight(),	outerSrcRect.GetTop(),	frameWidthHI,	frameWidthVI),
 		RectF(innerUVRect.GetRight(),	outerUVRect.GetTop(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
-	// ‰E	   
-	//		 @¡
-	//		   
+	// å³	â–¡â–¡â–¡
+	//		â–¡ã€€â– 
+	//		â–¡â–¡â–¡
 	InternalDrawRectangleTiling(
 		RectF(innerRect.GetRight(),		innerRect.GetTop(),		frameWidthH,		innerRect.Height),
 		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.Height),
 		RectF(innerUVRect.GetRight(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.Height),
 		srcTexture);
 
-	// ‰E‰º	   
-	//		 @ 
-	//		  ¡
+	// å³ä¸‹	â–¡â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â–¡â– 
 	InternalDrawRectangleTiling(
 		RectF(innerRect.GetRight(),		innerRect.GetBottom(),		frameWidthH,	frameWidthV),
 		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetBottom(),	frameWidthHI,	frameWidthVI),
 		RectF(innerUVRect.GetRight(),	innerUVRect.GetBottom(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
-	// ‰º	   
-	//		 @ 
-	//		 ¡ 
+	// ä¸‹	â–¡â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â–¡â– â–¡
 	InternalDrawRectangleTiling(
 		RectF(innerRect.GetLeft(),		innerRect.GetBottom(),		innerRect.Width,	frameWidthV),
 		Rect(innerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	innerSrcRect.Width,	frameWidthVI),
 		RectF(innerUVRect.GetLeft(),	innerUVRect.GetBottom(),	innerUVRect.Width,	uvFrameWidthV),
 		srcTexture);
 
-	// ¶‰º	   
-	//		 @ 
-	//		¡  
+	// å·¦ä¸‹	â–¡â–¡â–¡
+	//		â–¡ã€€â–¡
+	//		â– â–¡â–¡
 	InternalDrawRectangleTiling(
 		RectF(outerRect.GetLeft(),		innerRect.GetBottom(),		frameWidthH,	frameWidthV),
 		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	frameWidthHI,	frameWidthVI),
 		RectF(outerUVRect.GetLeft(),	innerUVRect.GetBottom(),	uvFrameWidthH,	uvFrameWidthV),
 		srcTexture);
 
-	// ¶	   
-	//		¡@ 
-	//		   
+	// å·¦	â–¡â–¡â–¡
+	//		â– ã€€â–¡
+	//		â–¡â–¡â–¡
 	InternalDrawRectangleTiling(
 		RectF(outerRect.GetLeft(),		innerRect.GetTop(),		frameWidthH,	innerRect.Height),
 		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.Height),
@@ -467,7 +467,7 @@ void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dat
 //-----------------------------------------------------------------------------
 void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect)
 {
-	if (rect.IsEmpty()) { return; }		// ‹éŒ`‚ª‚Â‚Ô‚ê‚Ä‚¢‚é‚Ì‚Å‘‚­•K—v‚Í‚È‚¢
+	if (rect.IsEmpty()) { return; }		// çŸ©å½¢ãŒã¤ã¶ã‚Œã¦ã„ã‚‹ã®ã§æ›¸ãå¿…è¦ã¯ãªã„
 
 	float lu = srcUVRect.GetLeft();
 	float tv = srcUVRect.GetTop();
@@ -484,29 +484,29 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 
 	PainterVertex v;
 	v.Color = m_currentState.ForeColor;
-	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// ¶ã
+	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// å·¦ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// ‰Eã
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// å³ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 2);	// ¶‰º
+	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 2);	// å·¦ä¸‹
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 2);	// ‰E‰º
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 2);	// å³ä¸‹
 	m_vertexCache.Add(v);
 }
 
 //-----------------------------------------------------------------------------
-//@Note: srcRect ‚ÍArect ‚Ì’†‚É‚¢‚­‚Â‚Ìƒ^ƒCƒ‹‚ğ•À‚×‚ç‚ê‚é‚©‚ğŒvZ‚·‚é‚½‚ß‚Ég—p‚·‚é
+//ã€€Note: srcRect ã¯ã€rect ã®ä¸­ã«ã„ãã¤ã®ã‚¿ã‚¤ãƒ«ã‚’ä¸¦ã¹ã‚‰ã‚Œã‚‹ã‹ã‚’è¨ˆç®—ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹
 //-----------------------------------------------------------------------------
 void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture)
 {
-	if (rect.IsEmpty()) { return; }		// ‹éŒ`‚ª‚Â‚Ô‚ê‚Ä‚¢‚é‚Ì‚Å‘‚­•K—v‚Í‚È‚¢
+	if (rect.IsEmpty()) { return; }		// çŸ©å½¢ãŒã¤ã¶ã‚Œã¦ã„ã‚‹ã®ã§æ›¸ãå¿…è¦ã¯ãªã„
 
 	float uvX = srcUVRect.X;
 	float uvY = srcUVRect.Y;
 	float uvWidth = srcUVRect.Width;
 	float uvHeight = srcUVRect.Height;
-	float blockCountW = (rect.Width / srcRect.Width);	// ‰¡•ûŒü‚É‚¢‚­‚Â‚Ìƒ^ƒCƒ‹‚ğ•À‚×‚ç‚ê‚é‚© (’[”‚àŠÜ‚Ş)
-	float blockCountH = (rect.Height / srcRect.Height);	// c•ûŒü‚É‚¢‚­‚Â‚Ìƒ^ƒCƒ‹‚ğ•À‚×‚ç‚ê‚é‚© (’[”‚àŠÜ‚Ş)
+	float blockCountW = (rect.Width / srcRect.Width);	// æ¨ªæ–¹å‘ã«ã„ãã¤ã®ã‚¿ã‚¤ãƒ«ã‚’ä¸¦ã¹ã‚‰ã‚Œã‚‹ã‹ (ç«¯æ•°ã‚‚å«ã‚€)
+	float blockCountH = (rect.Height / srcRect.Height);	// ç¸¦æ–¹å‘ã«ã„ãã¤ã®ã‚¿ã‚¤ãƒ«ã‚’ä¸¦ã¹ã‚‰ã‚Œã‚‹ã‹ (ç«¯æ•°ã‚‚å«ã‚€)
 
 	float lu = uvX;
 	float ru = uvX + uvWidth * blockCountW;
@@ -523,13 +523,13 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 
 	PainterVertex v;
 	v.Color = m_currentState.ForeColor;
-	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// ¶ã
+	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// å·¦ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1);	// ‰Eã
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1);	// å³ä¸Š
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1.0f + blockCountH);	// ¶‰º
+	v.Position.Set(rect.GetLeft(),  rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1.0f + blockCountH);	// å·¦ä¸‹
 	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// ‰E‰º
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// å³ä¸‹
 	m_vertexCache.Add(v);
 }
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 
@@ -8,7 +8,7 @@ namespace GUI
 {
 
 /**
-	@brief		1 ‚Â‚Ìq—v‘f‚ÌüˆÍ‚ğ‘•ü‚·‚é UI —v‘f‚ÌŠî–{ƒNƒ‰ƒX‚Å‚·B
+	@brief		1 ã¤ã®å­è¦ç´ ã®å‘¨å›²ã‚’è£…é£¾ã™ã‚‹ UI è¦ç´ ã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Decorator
 	: public UIElement

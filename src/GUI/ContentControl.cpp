@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/ContentControl.h>
 
@@ -39,19 +39,19 @@ void ContentControl::SetContent(Variant value)
 {
 	m_content = value;
 
-	// Object Œ^‚Å‚ ‚ê‚Î UIElement ‚Æ‚Æ‚µ‚Äæ‚èo‚µ‚Ä‚İ‚é
+	// Object å‹ã§ã‚ã‚Œã° UIElement ã¨ã¨ã—ã¦å–ã‚Šå‡ºã—ã¦ã¿ã‚‹
 	if (m_content.GetType() == VariantType_Object)
 	{
 		UIElement* element = dynamic_cast<UIElement*>(m_content.GetObject());
 		if (element != NULL) {
 			m_childElement = element;
 		}
-		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// Šù‚Ée—v‘f‚ª‚ ‚Á‚½
+		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// æ—¢ã«è¦ªè¦ç´ ãŒã‚ã£ãŸ
 	}
 
 	//m_content.SetFloat(0);
 
-	// m_contentPresenter ‚ª‚ ‚ê‚Î‚±‚Ì“_‚ÅƒZƒbƒg‚µ‚Ä‚µ‚Ü‚¤
+	// m_contentPresenter ãŒã‚ã‚Œã°ã“ã®æ™‚ç‚¹ã§ã‚»ãƒƒãƒˆã—ã¦ã—ã¾ã†
 	if (m_childElement != NULL &&
 		m_contentPresenter != NULL)
 	{
@@ -59,7 +59,7 @@ void ContentControl::SetContent(Variant value)
 		m_childElement->SetTemplateModified(true);
 	}
 	else {
-		// m_contentPresenter ‚ª NULL ‚Å‚ ‚é‚Æ‚¢‚¤‚±‚Æ‚ÍA‚Ü‚¾ VisualTree ‚Ì\’z‚ªI‚í‚Á‚Ä‚¢‚È‚¢‚Æ‚¢‚¤‚±‚ÆB
+		// m_contentPresenter ãŒ NULL ã§ã‚ã‚‹ã¨ã„ã†ã“ã¨ã¯ã€ã¾ã  VisualTree ã®æ§‹ç¯‰ãŒçµ‚ã‚ã£ã¦ã„ãªã„ã¨ã„ã†ã“ã¨ã€‚
 	}
 }
 
@@ -73,7 +73,7 @@ void ContentControl::PollingTemplateChildCreated(UIElement* newElement)
 	{
 		m_contentPresenter = presenter;
 
-		// m_childElement ‚ª‚ ‚ê‚Î‚±‚Ì“_‚ÅƒZƒbƒg‚µ‚Ä‚µ‚Ü‚¤
+		// m_childElement ãŒã‚ã‚Œã°ã“ã®æ™‚ç‚¹ã§ã‚»ãƒƒãƒˆã—ã¦ã—ã¾ã†
 		if (m_childElement != NULL &&
 			m_contentPresenter != NULL)
 		{
@@ -100,7 +100,7 @@ void ContentControl::Render()
 //-----------------------------------------------------------------------------
 UIElement* ContentControl::CheckMouseHoverElement(const PointF& globalPt)
 {
-	if (m_childElement != NULL) {	// q—v‘f‚ğ—Dæ
+	if (m_childElement != NULL) {	// å­è¦ç´ ã‚’å„ªå…ˆ
 		UIElement* e = m_childElement->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
 	}
@@ -113,7 +113,7 @@ UIElement* ContentControl::CheckMouseHoverElement(const PointF& globalPt)
 void ContentControl::MeasureLayout(const SizeF& availableSize)
 {
 	if (m_childElement != NULL) {
-		m_childElement->MeasureLayout(availableSize);	// “Á‚É˜g‚Æ‚©‚È‚¢‚Ì‚Å‚»‚Ì‚Ü‚Ü‚ÌƒTƒCƒY‚ğ“n‚¹‚é
+		m_childElement->MeasureLayout(availableSize);	// ç‰¹ã«æ ã¨ã‹ãªã„ã®ã§ãã®ã¾ã¾ã®ã‚µã‚¤ã‚ºã‚’æ¸¡ã›ã‚‹
 	}
 	Control::MeasureLayout(availableSize);
 }
@@ -124,7 +124,7 @@ void ContentControl::MeasureLayout(const SizeF& availableSize)
 void ContentControl::ArrangeLayout(const RectF& finalLocalRect)
 {
 	if (m_childElement != NULL) {
-		m_childElement->ArrangeLayout(finalLocalRect);	// “Á‚É˜g‚Æ‚©‚È‚¢‚Ì‚Å‚»‚Ì‚Ü‚Ü‚ÌƒTƒCƒY‚ğ“n‚¹‚é
+		m_childElement->ArrangeLayout(finalLocalRect);	// ç‰¹ã«æ ã¨ã‹ãªã„ã®ã§ãã®ã¾ã¾ã®ã‚µã‚¤ã‚ºã‚’æ¸¡ã›ã‚‹
 	}
 	Control::ArrangeLayout(finalLocalRect);
 }
@@ -135,7 +135,7 @@ void ContentControl::ArrangeLayout(const RectF& finalLocalRect)
 void ContentControl::OnRender()
 {
 	if (m_childElement != NULL) {
-		m_childElement->Render();	//TODO: Render ‚©‚ç‚àŒÄ‚ñ‚Å‚éEEE
+		m_childElement->Render();	//TODO: Render ã‹ã‚‰ã‚‚å‘¼ã‚“ã§ã‚‹ãƒ»ãƒ»ãƒ»
 	}
 }
 
@@ -157,7 +157,7 @@ void ContentControl::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
 	Control::ApplyTemplateHierarchy(parent);
 	if (m_childElement != NULL) {
-		m_childElement->ApplyTemplateHierarchy(m_combinedLocalResource);	// Ä‹A“I‚ÉXV‚·‚é
+		m_childElement->ApplyTemplateHierarchy(m_combinedLocalResource);	// å†å¸°çš„ã«æ›´æ–°ã™ã‚‹
 	}
 }
 #endif

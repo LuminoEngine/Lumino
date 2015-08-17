@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Base/Rect.h>
@@ -12,7 +12,7 @@ class GraphicsManager;
 class GeometryRendererCore;
 
 /**
-	@brief		Šî–{“I‚ÈŒ`ó‚Ì•`‰æƒNƒ‰ƒX
+	@brief		åŸºæœ¬çš„ãªå½¢çŠ¶ã®æç”»ã‚¯ãƒ©ã‚¹
 */
 class GeometryRenderer
 	: public RefObject
@@ -22,32 +22,32 @@ public:
 
 public:
 
-	/// •`‰æƒpƒX‚ÌŠJn (ŒÄ‚Ño‚µ‚Í”CˆÓBŒÄ‚Ño‚³‚È‚¢ê‡ADraw` Œn‚Í‚½‚¾’¸“_ƒoƒbƒtƒ@‚ğ DrawPrimitive ‚·‚é‚¾‚¯‚É‚È‚é)
+	/// æç”»ãƒ‘ã‚¹ã®é–‹å§‹ (å‘¼ã³å‡ºã—ã¯ä»»æ„ã€‚å‘¼ã³å‡ºã•ãªã„å ´åˆã€Drawï½ ç³»ã¯ãŸã é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ DrawPrimitive ã™ã‚‹ã ã‘ã«ãªã‚‹)
 	void BeginPass();
 
-	/// •`‰æƒpƒX‚ÌI—¹
+	/// æç”»ãƒ‘ã‚¹ã®çµ‚äº†
 	void EndPass();
 
-	/// À•W•ÏŠ·s—ñ‚Ìİ’è
+	/// åº§æ¨™å¤‰æ›è¡Œåˆ—ã®è¨­å®š
 	void SetTransform(const Matrix& matrix);
 
-	/// À•W•ÏŠ·s—ñ‚Ìİ’è
+	/// åº§æ¨™å¤‰æ›è¡Œåˆ—ã®è¨­å®š
 	void SetViewProjTransform(const Matrix& matrix);
 
-	/// ƒeƒNƒXƒ`ƒƒ‚Ìİ’è (NULL ‚Åƒ_ƒ~[ƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é)
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¨­å®š (NULL ã§ãƒ€ãƒŸãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹)
 	void SetTexture(Device::ITexture* texture);
 
-	/// ü•ª‚Ì•`‰æ
+	/// ç·šåˆ†ã®æç”»
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
 
-	/// lŠpŒ`‚Ì•`‰æ
+	/// å››è§’å½¢ã®æç”»
 	void DrawSquare(
 		float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
 		float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
 		float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
 		float x4, float y4, float z4, float u4, float v4, const ColorF& c4);
 
-	/// ‹éŒ`‚Ì•`‰æ     
+	/// çŸ©å½¢ã®æç”»     
 	void DrawRect(const RectF& destRect, const RectF& texUVRect, const ColorF& color);
 
 protected:

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Common.h"
@@ -9,7 +9,7 @@ namespace Lumino
 namespace Physics
 {
 
-/// ƒWƒ‡ƒCƒ“ƒg‚Ìƒx[ƒXƒNƒ‰ƒX
+/// ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹
 class Joint
     : public RefObject
 {
@@ -21,10 +21,10 @@ protected:
 public:
 	btTypedConstraint* GetBtConstraint() { return m_btConstraint; }
 
-	/// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“’¼‘OXVˆ— (ƒƒCƒ“ƒXƒŒƒbƒh‚©‚çŒÄ‚Î‚ê‚é)
+	/// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç›´å‰æ›´æ–°å‡¦ç† (ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹)
 	virtual void SyncBeforeStepSimulation() {}
 
-	/// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“’¼ŒãXVˆ— (ƒƒCƒ“‚Ü‚½‚Í•¨—XVƒXƒŒƒbƒh‚©‚çŒÄ‚Î‚ê‚é)
+	/// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç›´å¾Œæ›´æ–°å‡¦ç† (ãƒ¡ã‚¤ãƒ³ã¾ãŸã¯ç‰©ç†æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹)
 	virtual void SyncAfterStepSimulation() {}
 
 protected:
@@ -33,8 +33,8 @@ protected:
 };
 
 /// DofSpringJoint
-///		Œ»óAset Œn‚Í‰Šú’l set ‚Å‚µ‚©g‚í‚È‚¢‚Ì‚Å’x‰„İ’è‚Ì‘Î‰‚Í¡‚Ì‚Æ‚±‚ë•K—v‚È‚¢B
-///		‘ã‚í‚è‚ÉA1“x‚Å‚à StepSimulation() ‚µ‚½Œã‚É set ‚µ‚æ‚¤‚Æ‚µ‚½‚ç—áŠO‚É‚È‚éB
+///		ç¾çŠ¶ã€set ç³»ã¯åˆæœŸå€¤ set ã§ã—ã‹ä½¿ã‚ãªã„ã®ã§é…å»¶è¨­å®šã®å¯¾å¿œã¯ä»Šã®ã¨ã“ã‚å¿…è¦ãªã„ã€‚
+///		ä»£ã‚ã‚Šã«ã€1åº¦ã§ã‚‚ StepSimulation() ã—ãŸå¾Œã« set ã—ã‚ˆã†ã¨ã—ãŸã‚‰ä¾‹å¤–ã«ãªã‚‹ã€‚
 class DofSpringJoint
 	: public Joint
 {
@@ -45,7 +45,7 @@ public:
 public:
 	void Create(PhysicsManager* manager, RigidBody* body0, RigidBody* body1, const Matrix& localOffset0, const Matrix& localOffset1);
 
-	// Še index ‚Í 0`5
+	// å„ index ã¯ 0ï½5
 	void EnableSpring(int index, bool enabled);
 	void SetStiffness(int index, float stiffness);
 	void SetDamping(int index, float damping);

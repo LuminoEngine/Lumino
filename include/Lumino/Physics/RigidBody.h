@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Common.h"
@@ -11,13 +11,13 @@ namespace Physics
 
 struct RigidBodyInitArgs
 {
-    btCollisionShape*   Shape;      ///< (BodyBase  íœŽž‚É delete ‚³‚ê‚é)
-    btRigidBody*        RigidBody;  ///< (RigidBody íœŽž‚É delete ‚³‚ê‚é	PMD ‘¤‚ðC³‚µ‚½‚çíœ—\’è)
+    btCollisionShape*   Shape;      ///< (BodyBase  å‰Šé™¤æ™‚ã« delete ã•ã‚Œã‚‹)
+    btRigidBody*        RigidBody;  ///< (RigidBody å‰Šé™¤æ™‚ã« delete ã•ã‚Œã‚‹	PMD å´ã‚’ä¿®æ­£ã—ãŸã‚‰å‰Šé™¤äºˆå®š)
 	//uint16_t               Group;
 	//uint16_t               Mask;
 	//float				Mass;
 	//bool				AdditionalDamping;
-	//bool				KinematicObject;	///< KinematicƒIƒuƒWƒFƒNƒg‚Æ‚·‚é (MotionState ‚Ì getWorldTransform() ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é)
+	//bool				KinematicObject;	///< Kinematicã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã™ã‚‹ (MotionState ã® getWorldTransform() ãŒå‘¼ã°ã‚Œã‚‹ã‚ˆã†ã«ãªã‚‹)
 
 	RigidBodyInitArgs()
 	{
@@ -27,27 +27,27 @@ struct RigidBodyInitArgs
 	}
 };
 
-/// „‘Ì‚ÌƒNƒ‰ƒX
+/// å‰›ä½“ã®ã‚¯ãƒ©ã‚¹
 class RigidBody
     : public BodyBase
 {
 public:
 
-	/// ‰Šúó‘Ôƒf[ƒ^ (MMD ŽÀ‘•‚É‚ ‚í‚¹‚Ä—pˆÓ‚µ‚Ä‚¢‚éBŽÀÛ‚ÉŽg‚¤‚Æ‚«‚ÍƒvƒƒpƒeƒB“I‚É Get/Set ‚Å•ÒW‚µA’x‰„‚Å bt ƒIƒuƒWƒFƒNƒg‚ðì‚é‚Ì‚ªƒXƒ}[ƒg‚©‚à)
+	/// åˆæœŸçŠ¶æ…‹ãƒ‡ãƒ¼ã‚¿ (MMD å®Ÿè£…ã«ã‚ã‚ã›ã¦ç”¨æ„ã—ã¦ã„ã‚‹ã€‚å®Ÿéš›ã«ä½¿ã†ã¨ãã¯ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£çš„ã« Get/Set ã§ç·¨é›†ã—ã€é…å»¶ã§ bt ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œã‚‹ã®ãŒã‚¹ãƒžãƒ¼ãƒˆã‹ã‚‚)
 	struct ConfigData
 	{
-		float			Mass;				///< Ž¿—Ê
-		uint16_t		Group;				///< Õ“ËƒOƒ‹[ƒv
-		uint16_t		GroupMask;			///< ”ñÕ“ËƒOƒ‹[ƒv
-	    float			Restitution;	    ///< ”½”­—Í (HitFraction)
-	    float			Friction;		    ///< –€ŽC—Í
-		float			LinearDamping;	    ///< ˆÚ“®Œ¸
-	    float			AngularDamping;		///< ‰ñ“]Œ¸
-		const Matrix*	InitialTransform;	///< ‰ŠúŽp¨ (NULL ‚Å Identity)
-		bool			AdditionalDamping;	///< Œ¸Š‚Ì—LŒø
-		bool			KinematicObject;	///< KinematicƒIƒuƒWƒFƒNƒg‚Æ‚·‚é (Ž¿—Ê‚ª 0.0 ‚Æ‚µ‚Äˆµ‚í‚êAMotionState ‚Ì getWorldTransform() ‚ªŒÄ‚Î‚ê‚é‚æ‚¤‚É‚È‚é)
+		float			Mass;				///< è³ªé‡
+		uint16_t		Group;				///< è¡çªã‚°ãƒ«ãƒ¼ãƒ—
+		uint16_t		GroupMask;			///< éžè¡çªã‚°ãƒ«ãƒ¼ãƒ—
+	    float			Restitution;	    ///< åç™ºåŠ› (HitFraction)
+	    float			Friction;		    ///< æ‘©æ“¦åŠ›
+		float			LinearDamping;	    ///< ç§»å‹•æ¸›
+	    float			AngularDamping;		///< å›žè»¢æ¸›
+		const Matrix*	InitialTransform;	///< åˆæœŸå§¿å‹¢ (NULL ã§ Identity)
+		bool			AdditionalDamping;	///< æ¸›è¡°ã®æœ‰åŠ¹
+		bool			KinematicObject;	///< Kinematicã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã™ã‚‹ (è³ªé‡ãŒ 0.0 ã¨ã—ã¦æ‰±ã‚ã‚Œã€MotionState ã® getWorldTransform() ãŒå‘¼ã°ã‚Œã‚‹ã‚ˆã†ã«ãªã‚‹)
 
-		float			Scale;				///< (Mass ‚ÉæŽZ‚·‚éƒXƒP[ƒ‹’l)
+		float			Scale;				///< (Mass ã«ä¹—ç®—ã™ã‚‹ã‚¹ã‚±ãƒ¼ãƒ«å€¤)
 
 		ConfigData()
 		{
@@ -71,57 +71,57 @@ public:
 
 public:
 
-	/// ‰Šú‰» („‘Ì‚ðŽó‚¯Žæ‚Á‚Äƒ[ƒ‹ƒh‚É’Ç‰Á‚·‚é) (Œ»sPMD—p‚ÉpublicBŒã‚Å protected ‚É‚·‚é)
-	///		shape		: (BodyBase  íœŽž‚É delete ‚³‚ê‚é)
+	/// åˆæœŸåŒ– (å‰›ä½“ã‚’å—ã‘å–ã£ã¦ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«è¿½åŠ ã™ã‚‹) (ç¾è¡ŒPMDç”¨ã«publicã€‚å¾Œã§ protected ã«ã™ã‚‹)
+	///		shape		: (BodyBase  å‰Šé™¤æ™‚ã« delete ã•ã‚Œã‚‹)
 	void Create(PhysicsManager* manager, btCollisionShape* shape, const ConfigData& configData);
 
 #if 0
-	/// ˆÊ’u‚ÌÝ’è
+	/// ä½ç½®ã®è¨­å®š
 	void setPosition( const Vector3& position );
 
-	/// ‰ñ“]‚ÌÝ’è
+	/// å›žè»¢ã®è¨­å®š
 	void setRotation( const Quaternion& rotation );
 
-	/// ‰ñ“]Šp“x‚ÌÝ’è
+	/// å›žè»¢è§’åº¦ã®è¨­å®š
 	void setAngle( const Vector3& euler );
 
-	/// ˆÚ“®E‰ñ“]Œ¸Š’l‚ÌÝ’è
+	/// ç§»å‹•ãƒ»å›žè»¢æ¸›è¡°å€¤ã®è¨­å®š
     void setDamping( float linDamping, float angDamping );
 
-	/// ”½ŽË—¦‚ÌÝ’è
+	/// åå°„çŽ‡ã®è¨­å®š
     void setRestitution( float value_ );
 
-	/// ”½ŽË—¦‚ÌŽæ“¾
+	/// åå°„çŽ‡ã®å–å¾—
     float getRestitution() const;
 
-	/// –€ŽCŒW”‚ÌÝ’è
+	/// æ‘©æ“¦ä¿‚æ•°ã®è¨­å®š
     void setFriction( float value_ );
 
-	/// –€ŽCŒW”‚ÌŽæ“¾
+	/// æ‘©æ“¦ä¿‚æ•°ã®å–å¾—
     float getFriction() const;
 
-	/// ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÌŽæ“¾
+	/// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã®å–å¾—
 	const Matrix& getWorldMatrix() const;
 
-	/// (ƒLƒlƒ}ƒeƒBƒbƒN‚È„‘Ì—p setWorldMatrix())
+	/// (ã‚­ãƒãƒžãƒ†ã‚£ãƒƒã‚¯ãªå‰›ä½“ç”¨ setWorldMatrix())
 	void setKinematicAlignmentMatrix( const Matrix& matrix );
 #endif
-	/// „‘Ì‚Ì sleep ó‘Ô‚ð‰ðœ‚·‚é (ŒöŠJ‚·‚é•K—v‚Í–³‚¢‚©‚àH)
+	/// å‰›ä½“ã® sleep çŠ¶æ…‹ã‚’è§£é™¤ã™ã‚‹ (å…¬é–‹ã™ã‚‹å¿…è¦ã¯ç„¡ã„ã‹ã‚‚ï¼Ÿ)
 	void Activate();
 
-	/// ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÌÝ’è
+	/// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã®è¨­å®š
 	void SetWorldTransform(const Matrix& matrix);
 
-	/// ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÌŽæ“¾
+	/// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã®å–å¾—
 	const Matrix& GetWorldTransform() const;
 
 	void ClearForces();
 
-	/// Žw’è‚ÌŽp¨‚ð‹­§“I‚ÉÝ’è‚·‚é (‘¬“x‚ª 0 ‚ÉƒŠƒZƒbƒg‚³‚ê‚é)
+	/// æŒ‡å®šã®å§¿å‹¢ã‚’å¼·åˆ¶çš„ã«è¨­å®šã™ã‚‹ (é€Ÿåº¦ãŒ 0 ã«ãƒªã‚»ãƒƒãƒˆã•ã‚Œã‚‹)
 	//void SetWorldTransformForced(const Matrix& matrix);
 	//void moveToForced(const Matrix& matrix);
 
-	/// •¨—‰‰ŽZ‚Ì‘ÎÛ‚Å‚ ‚é‚© (false ‚Ìê‡AÕ“Ë”»’è‚Ì‚Ý‘ÎÛ)
+	/// ç‰©ç†æ¼”ç®—ã®å¯¾è±¡ã§ã‚ã‚‹ã‹ (false ã®å ´åˆã€è¡çªåˆ¤å®šã®ã¿å¯¾è±¡)
 	bool IsContactResponse() const { return true; }
 
 public:	// internal
@@ -130,10 +130,10 @@ public:	// internal
 	uint16_t GetGroup() const { return m_group; }
 	uint16_t GetGroupMask() const { return m_groupMask; }
 
-	/// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“’¼‘OXVˆ— (ƒƒCƒ“ƒXƒŒƒbƒh‚©‚çŒÄ‚Î‚ê‚é)
+	/// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç›´å‰æ›´æ–°å‡¦ç† (ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹)
 	void SyncBeforeStepSimulation();
 
-	/// ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“’¼ŒãXVˆ— (ƒƒCƒ“‚Ü‚½‚Í•¨—XVƒXƒŒƒbƒh‚©‚çŒÄ‚Î‚ê‚é)
+	/// ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç›´å¾Œæ›´æ–°å‡¦ç† (ãƒ¡ã‚¤ãƒ³ã¾ãŸã¯ç‰©ç†æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹)
 	void SyncAfterStepSimulation();
 
 protected:
@@ -151,11 +151,11 @@ protected:
 	btRigidBody*			m_btRigidBody;
 	uint16_t				m_group;
 	uint16_t				m_groupMask;
-	Matrix					m_worldTransform;			///< (postUpdate() ‚ÅÝ’è‚³‚ê‚é)
+	Matrix					m_worldTransform;			///< (postUpdate() ã§è¨­å®šã•ã‚Œã‚‹)
 	uint32_t				m_modifiedFlags;
 };
 
-/// •½–Ê‚ÌƒNƒ‰ƒX
+/// å¹³é¢ã®ã‚¯ãƒ©ã‚¹
 class Plane
 	: public RigidBody
 {

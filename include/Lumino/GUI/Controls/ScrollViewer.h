@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../UIElement.h"
 #include "../ContentPresenter.h"
@@ -57,16 +57,16 @@ private:
 private:
 	static const float m_scrollLineDelta;
 	ScrollData		m_scrollData;
-	IScrollInfo*	m_scrollInfo;		///< ƒrƒWƒ…ƒAƒ‹‚ÌŽq—v‘f‚É IScrollInfo ‚ª‚¢‚½ê‡‚Í‚»‚ê‚ðŽw‚·B‚¢‚È‚¯‚ê‚Î this ‚ðŽw‚·B
+	IScrollInfo*	m_scrollInfo;		///< ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ã®å­è¦ç´ ã« IScrollInfo ãŒã„ãŸå ´åˆã¯ãã‚Œã‚’æŒ‡ã™ã€‚ã„ãªã‘ã‚Œã° this ã‚’æŒ‡ã™ã€‚
 };
 
 /**
 	@brief
 
-	@par	ScrollViewer ƒRƒ“ƒgƒ[ƒ‹‚Ì–¼‘O•t‚«ƒp[ƒc
-	PART_ScrollContentPresenter	ScrollContentPresenter	ScrollViewer ‚ÌƒRƒ“ƒeƒ“ƒc‚ÌƒvƒŒ[ƒXƒzƒ‹ƒ_[‚Å‚·B
-	PART_VerticalScrollBar	ScrollBar	ƒRƒ“ƒeƒ“ƒc‚ð‚’¼•ûŒü‚ÉƒXƒNƒ[ƒ‹‚·‚é‚½‚ß‚ÉŽg—p‚·‚é ScrollBar ‚Å‚·B
-	PART_HorizontalScrollBar	ScrollBar	ƒRƒ“ƒeƒ“ƒc‚ð…•½•ûŒü‚ÉƒXƒNƒ[ƒ‹‚·‚é‚½‚ß‚ÉŽg—p‚·‚é ScrollBar ‚Å‚·B
+	@par	ScrollViewer ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®åå‰ä»˜ããƒ‘ãƒ¼ãƒ„
+	PART_ScrollContentPresenter	ScrollContentPresenter	ScrollViewer ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ãƒ—ãƒ¬ãƒ¼ã‚¹ãƒ›ãƒ«ãƒ€ãƒ¼ã§ã™ã€‚
+	PART_VerticalScrollBar	ScrollBar	ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’åž‚ç›´æ–¹å‘ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ ScrollBar ã§ã™ã€‚
+	PART_HorizontalScrollBar	ScrollBar	ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’æ°´å¹³æ–¹å‘ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ ScrollBar ã§ã™ã€‚
 */
 class ScrollViewer
 	: public ContentControl
@@ -96,60 +96,60 @@ public:
 
 	/** @} */
 
-	/// ƒrƒ…[‚É•\Ž¦‚µ‚Ä‚¢‚é”ÍˆÍ‚Ì•‚ðŽæ“¾‚µ‚Ü‚·B(’ÊíAActualSize - ScrollBarSize ‚Æ‚È‚é)
+	/// ãƒ“ãƒ¥ãƒ¼ã«è¡¨ç¤ºã—ã¦ã„ã‚‹ç¯„å›²ã®å¹…ã‚’å–å¾—ã—ã¾ã™ã€‚(é€šå¸¸ã€ActualSize - ScrollBarSize ã¨ãªã‚‹)
 	float GetViewportWidth() const;
 
-	/// ƒrƒ…[‚É•\Ž¦‚µ‚Ä‚¢‚é”ÍˆÍ‚Ì‚‚³‚ðŽæ“¾‚µ‚Ü‚·B(’ÊíAActualSize - ScrollBarSize ‚Æ‚È‚é)
+	/// ãƒ“ãƒ¥ãƒ¼ã«è¡¨ç¤ºã—ã¦ã„ã‚‹ç¯„å›²ã®é«˜ã•ã‚’å–å¾—ã—ã¾ã™ã€‚(é€šå¸¸ã€ActualSize - ScrollBarSize ã¨ãªã‚‹)
 	float GetViewportHeight() const;
 
-	/// ƒXƒNƒ[ƒ‹‚Å‚«‚éƒRƒ“ƒeƒ“ƒc—v‘f‚Ì•‚ðŽæ“¾‚µ‚Ü‚·B(’ÊíAExtentSize - ViewportSize ‚Æ‚È‚é)
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã§ãã‚‹ã‚³ãƒ³ãƒ†ãƒ³ãƒ„è¦ç´ ã®å¹…ã‚’å–å¾—ã—ã¾ã™ã€‚(é€šå¸¸ã€ExtentSize - ViewportSize ã¨ãªã‚‹)
 	float GetScrollableWidth() const;
 
-	/// ƒXƒNƒ[ƒ‹‚Å‚«‚éƒRƒ“ƒeƒ“ƒc—v‘f‚Ì‚‚³‚ðŽæ“¾‚µ‚Ü‚·B(’ÊíAExtentSize - ViewportSize ‚Æ‚È‚é)
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã§ãã‚‹ã‚³ãƒ³ãƒ†ãƒ³ãƒ„è¦ç´ ã®é«˜ã•ã‚’å–å¾—ã—ã¾ã™ã€‚(é€šå¸¸ã€ExtentSize - ViewportSize ã¨ãªã‚‹)
 	float GetScrollableHeight() const;
 
-	/// ƒXƒNƒ[ƒ‹‚µ‚½‰¡•ûŒü‚ÌƒIƒtƒZƒbƒg‚ðŽæ“¾‚µ‚Ü‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ãŸæ¨ªæ–¹å‘ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	float GetHorizontalOffset() const;
 
-	/// ƒXƒNƒ[ƒ‹‚µ‚½c•ûŒü‚ÌƒIƒtƒZƒbƒg‚ðŽæ“¾‚µ‚Ü‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ãŸç¸¦æ–¹å‘ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	float GetVerticalOffset() const;
 
 
 
 
-	/// ƒXƒNƒ[ƒ‹‘ÎÛ‚Æ‚È‚é Panel ‘S‘Ì‚ÌƒTƒCƒYBŽq—v‘f‚ð’Ç‰Á‚µAƒŒƒCƒAƒEƒg‚ðXV‚·‚é‚Æ‚±‚Ì’l‚àXV‚³‚ê‚éB
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«å¯¾è±¡ã¨ãªã‚‹ Panel å…¨ä½“ã®ã‚µã‚¤ã‚ºã€‚å­è¦ç´ ã‚’è¿½åŠ ã—ã€ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’æ›´æ–°ã™ã‚‹ã¨ã“ã®å€¤ã‚‚æ›´æ–°ã•ã‚Œã‚‹ã€‚
 	const Size& GetExtentSize() const;
 
 
 
-	/// ƒRƒ“ƒeƒ“ƒc‚ð 1 s•ª‰º‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ 1 è¡Œåˆ†ä¸‹ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void LineDown();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚ð 1 —ñ•ª¶‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ 1 åˆ—åˆ†å·¦ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void LineLeft();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚ð 1 —ñ•ª‰E‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ 1 åˆ—åˆ†å³ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void LineRight();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚ð 1 s•ªã‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ 1 è¡Œåˆ†ä¸Šã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void LineUp();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚Ì––”ö‚Ü‚Å‚’¼•ûŒü‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®æœ«å°¾ã¾ã§åž‚ç›´æ–¹å‘ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void ScrollToBottom();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚Ìæ“ª‚Ü‚Å…•½•ûŒü‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®å…ˆé ­ã¾ã§æ°´å¹³æ–¹å‘ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void ScrollToLeftEnd();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚Ì––”ö‚Ü‚Å…•½•ûŒü‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®æœ«å°¾ã¾ã§æ°´å¹³æ–¹å‘ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void ScrollToRightEnd();
 
-	/// ƒRƒ“ƒeƒ“ƒc‚Ìæ“ª‚Ü‚Å‚’¼•ûŒü‚ÉƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®å…ˆé ­ã¾ã§åž‚ç›´æ–¹å‘ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void ScrollToTop();
 
-	/// Žw’è‚³‚ê‚½…•½ƒIƒtƒZƒbƒgˆÊ’u‚Ü‚ÅƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// æŒ‡å®šã•ã‚ŒãŸæ°´å¹³ã‚ªãƒ•ã‚»ãƒƒãƒˆä½ç½®ã¾ã§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void ScrollToHorizontalOffset(double offset);
 
-	/// Žw’è‚³‚ê‚½‚’¼ƒIƒtƒZƒbƒgˆÊ’u‚Ü‚ÅƒXƒNƒ[ƒ‹‚µ‚Ü‚·B
+	/// æŒ‡å®šã•ã‚ŒãŸåž‚ç›´ã‚ªãƒ•ã‚»ãƒƒãƒˆä½ç½®ã¾ã§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã—ã¾ã™ã€‚
 	void ScrollToVerticalOffset(double offset);
 
 protected:
@@ -167,10 +167,10 @@ private:
 
 
 private:
-	ScrollContentPresenter*	m_scrollContentPresenter;	///< VisualTree “à‚Ì ScrollContentPresenter
-	ScrollBar*				m_verticalScrollBar;		///< VisualTree “à‚Ì VerticalScrollBar
-	ScrollBar*				m_horizontalScrollBar;		///< VisualTree “à‚Ì HorizontalScrollBar
-	IScrollInfo*			m_scrollInfo;				///< ƒXƒNƒ[ƒ‹‘€ì‘ÎÛ
+	ScrollContentPresenter*	m_scrollContentPresenter;	///< VisualTree å†…ã® ScrollContentPresenter
+	ScrollBar*				m_verticalScrollBar;		///< VisualTree å†…ã® VerticalScrollBar
+	ScrollBar*				m_horizontalScrollBar;		///< VisualTree å†…ã® HorizontalScrollBar
+	IScrollInfo*			m_scrollInfo;				///< ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æ“ä½œå¯¾è±¡
 };
 
 

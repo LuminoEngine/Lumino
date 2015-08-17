@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 #include "VisualState.h"
@@ -10,7 +10,7 @@ namespace GUI
 class ContentPresenter;
 
 /**
-	@brief		ƒ†[ƒU[‘€ì‚É‚æ‚Á‚Ä“Á’è‚Ì“®ì‚ğs‚¤ UI —v‘f‚ÌŠî–{ƒNƒ‰ƒX‚Å‚·B
+	@brief		ãƒ¦ãƒ¼ã‚¶ãƒ¼æ“ä½œã«ã‚ˆã£ã¦ç‰¹å®šã®å‹•ä½œã‚’è¡Œã† UI è¦ç´ ã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Control
 	: public UIElement
@@ -18,7 +18,7 @@ class Control
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Control);
 public:
-	LN_PROPERTY(Graphics::BrushPtr,		BackgroundProperty);			/**< Background ƒvƒƒpƒeƒB‚Ì¯•Êq */
+	LN_PROPERTY(Graphics::BrushPtr,		BackgroundProperty);			/**< Background ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
 	LN_PROPERTY(ControlTemplate*,		TemplateProperty);
 	LN_PROPERTY(VisualStateGroupList*,	VisualStateGroupsProperty);
 
@@ -30,10 +30,10 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	/** ƒRƒ“ƒgƒ[ƒ‹‚Ì”wŒi‚Ì•`‰æ‚Ég—p‚·‚éƒuƒ‰ƒV‚ğİ’è‚µ‚Ü‚·B*/
+	/** ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®èƒŒæ™¯ã®æç”»ã«ä½¿ç”¨ã™ã‚‹ãƒ–ãƒ©ã‚·ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetBackground(Graphics::BrushPtr value) { SetTypedPropertyValue<Graphics::BrushPtr>(BackgroundProperty, value); }
 
-	/** ƒRƒ“ƒgƒ[ƒ‹‚Ì”wŒi‚Ì•`‰æ‚Ég—p‚·‚éƒuƒ‰ƒV‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®èƒŒæ™¯ã®æç”»ã«ä½¿ç”¨ã™ã‚‹ãƒ–ãƒ©ã‚·ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	Graphics::BrushPtr GetBackground() const { return GetTypedPropertyValue<Graphics::BrushPtr>(BackgroundProperty); }
 
 
@@ -44,7 +44,7 @@ public:
 	ControlTemplate* GetTemplate() const { return m_controlTemplate; }
 
 
-	/** ‚±‚Ì Control ‚ÉŠ„‚è“–‚Ä‚ç‚ê‚Ä‚¢‚é VisualStateGroup ‚ÌƒŠƒXƒg‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã® Control ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚Œã¦ã„ã‚‹ VisualStateGroup ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	VisualStateGroupList* GetVisualStateGroups() const { return m_visualStateGroupList; }
 
 	/** @} */
@@ -62,7 +62,7 @@ protected:
 
 	//friend class ControlTemplate;
 	//friend class DataTemplate;
-	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// Contro ©‘Ì‚Íq—v‘f‚ğ‚½‚È‚¢BƒTƒuƒNƒ‰ƒX‚Å‚³‚ç‚ÉƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚éB
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// Contro è‡ªä½“ã¯å­è¦ç´ ã‚’æŒãŸãªã„ã€‚ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã§ã•ã‚‰ã«ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã‚‹ã€‚
 
 	//virtual void ApplyTemplate(CombinedLocalResource* parent);
 

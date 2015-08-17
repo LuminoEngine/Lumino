@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/BitmapPainter.h>
 
@@ -47,7 +47,7 @@ void BitmapPainter::FillRectangle(const Rect& rect, const Graphics::Color& color
 
 	PixelFormat format = m_bitmap->GetPixelFormat();
 
-	// 32bit �n
+	// 32bit 系
 	if (format == PixelFormat_BYTE_R8G8B8A8 ||
 		format == PixelFormat_BYTE_B8G8R8A8 ||
 		format == PixelFormat_BYTE_B8G8R8X8)

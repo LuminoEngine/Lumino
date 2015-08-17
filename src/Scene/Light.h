@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "SceneNode.h"
@@ -18,48 +18,48 @@ public:
 
 public:
 
-	/// ƒ‰ƒCƒg‚Ìí—Ş‚Ìæ“¾
+	/// ãƒ©ã‚¤ãƒˆã®ç¨®é¡ã®å–å¾—
 	LightType GetType() const { return m_type; }
 
-	/// ƒ‰ƒCƒg‚Ì—LŒøA–³Œø‚ğİ’è‚·‚é
+	/// ãƒ©ã‚¤ãƒˆã®æœ‰åŠ¹ã€ç„¡åŠ¹ã‚’è¨­å®šã™ã‚‹
 	void SetEnabled(bool enabled) { m_enabled = enabled; }
 
-	/// ƒ‰ƒCƒg‚Ì—LŒøA–³Œø‚ğŠm”F‚·‚é
+	/// ãƒ©ã‚¤ãƒˆã®æœ‰åŠ¹ã€ç„¡åŠ¹ã‚’ç¢ºèªã™ã‚‹
 	bool IsEnabled() const { return m_enabled; }
 
-	/// ƒfƒBƒtƒ…[ƒYƒJƒ‰[‚Ìİ’è
+	/// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®è¨­å®š
 	void SetDiffuseColor(const Graphics::ColorF& color) { m_diffuse = color; }
 
-	/// ƒfƒBƒtƒ…[ƒYƒJƒ‰[‚Ìæ“¾
+	/// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®å–å¾—
 	const Graphics::ColorF& GetDiffuseColor() const { return m_diffuse; }
 
-	/// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚Ìİ’è
+	/// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã®è¨­å®š
 	void SetAmbientColor(const Graphics::ColorF& color) { m_ambient = color; }
 
-	/// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚Ìæ“¾
+	/// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã®å–å¾—
 	const Graphics::ColorF& GetAmbientColor() const { return m_ambient; }
 
-	/// ƒXƒyƒLƒ…ƒ‰ƒJƒ‰[‚Ìİ’è
+	/// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼ã®è¨­å®š
 	void SetSpecularColor(const Graphics::ColorF& color) { m_specular = color; }
 
-	/// ƒXƒyƒLƒ…ƒ‰ƒJƒ‰[‚Ìæ“¾
+	/// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼ã®å–å¾—
 	const Graphics::ColorF& GetSpecularColor() const { return m_specular; }
 
-	/// ƒXƒ|ƒbƒgƒ‰ƒCƒg‚ÌƒR[ƒ“Šp“x‚Ìİ’è (ƒ‰ƒWƒAƒ“’PˆÊ)
+	/// ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã®ã‚³ãƒ¼ãƒ³è§’åº¦ã®è¨­å®š (ãƒ©ã‚¸ã‚¢ãƒ³å˜ä½)
 	void SetSpotAngle(float angle) { m_spotAngle = angle; }
 
-	/// ƒXƒ|ƒbƒgƒ‰ƒCƒg‚ÌƒR[ƒ“Šp“x‚Ìæ“¾ (ƒ‰ƒWƒAƒ“’PˆÊ)
+	/// ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã®ã‚³ãƒ¼ãƒ³è§’åº¦ã®å–å¾— (ãƒ©ã‚¸ã‚¢ãƒ³å˜ä½)
 	float GetSpotAngle() const { return m_spotAngle; }
 
 public:	// internal
 
-	/// Šes—ñ‚ğXV‚·‚é (SceneNode::UpdateFrameHierarchy() ‚ÌŒã‚ÅŒÄ‚Ño‚·‚±‚Æ)
+	/// å„è¡Œåˆ—ã‚’æ›´æ–°ã™ã‚‹ (SceneNode::UpdateFrameHierarchy() ã®å¾Œã§å‘¼ã³å‡ºã™ã“ã¨)
 	void UpdateMatrices(const SizeF& viewSize);
 
-	// Œü‚«‚Ìæ“¾ (ƒVƒF[ƒ_İ’è—pBUpdateMatrices() ‚ÌŒã‚ÅŒÄ‚Ño‚·‚±‚Æ)
+	// å‘ãã®å–å¾— (ã‚·ã‚§ãƒ¼ãƒ€è¨­å®šç”¨ã€‚UpdateMatrices() ã®å¾Œã§å‘¼ã³å‡ºã™ã“ã¨)
 	const Vector4& GetDirectionInternal() const { return m_direction; }
 
-	// s—ñ‚Ìæ“¾ (ƒVƒF[ƒ_İ’è—pBUpdateMatrices() ‚ÌŒã‚ÅŒÄ‚Ño‚·‚±‚Æ)
+	// è¡Œåˆ—ã®å–å¾— (ã‚·ã‚§ãƒ¼ãƒ€è¨­å®šç”¨ã€‚UpdateMatrices() ã®å¾Œã§å‘¼ã³å‡ºã™ã“ã¨)
 	const Matrix& GetViewMatrix() const { return m_viewMatrix; }
 	const Matrix& GetProjectionMatrix() const { return m_projMatrix; }
 	const Matrix& GetViewProjectionMatrix() const { return m_viewProjMatrix; }
@@ -79,31 +79,31 @@ protected:
 private:
 	friend class VisualNode;
 
-	LightType			m_type;				///< ƒ‰ƒCƒg‚Ìí—Ş
-	Graphics::ColorF	m_diffuse;			///< ƒfƒBƒtƒ…[ƒYƒJƒ‰[
-	Graphics::ColorF	m_ambient;			///< ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[
-	Graphics::ColorF	m_specular;			///< ƒXƒyƒLƒ…ƒ‰ƒJƒ‰[
-	bool				m_enabled;			///< —LŒøó‘Ô
-	float				m_spotAngle;		///< ƒR[ƒ“Šp“x (ƒ‰ƒWƒAƒ“’PˆÊ)
+	LightType			m_type;				///< ãƒ©ã‚¤ãƒˆã®ç¨®é¡
+	Graphics::ColorF	m_diffuse;			///< ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼
+	Graphics::ColorF	m_ambient;			///< ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼
+	Graphics::ColorF	m_specular;			///< ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼
+	bool				m_enabled;			///< æœ‰åŠ¹çŠ¶æ…‹
+	float				m_spotAngle;		///< ã‚³ãƒ¼ãƒ³è§’åº¦ (ãƒ©ã‚¸ã‚¢ãƒ³å˜ä½)
 
-	Matrix				m_viewMatrix;		///< ƒrƒ…[s—ñ
-	Matrix				m_projMatrix;		///< ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	Matrix				m_viewProjMatrix;	///< ƒrƒ…[s—ñ‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌÏ
-	Vector4				m_direction;		///< Œü‚«
+	Matrix				m_viewMatrix;		///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+	Matrix				m_projMatrix;		///< ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	Matrix				m_viewProjMatrix;	///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®ç©
+	Vector4				m_direction;		///< å‘ã
 
-	// ˆÈ‰º‚ÍƒVƒF[ƒ_•Ï”‚Ö‚Ìİ’è—pBƒ‰ƒCƒg‚ÍŒÂX‚Ìƒm[ƒh‚É”ä‚×‚ÄQÆ‚³‚ê‚é‰ñ”‚ª‘½‚¢‚Ì‚Å
-	// •K—v‚É‚È‚é‚½‚Ñ‚ÉŒvZ‚·‚é‚Ì‚Å‚Í‚È‚­A‚ ‚ç‚©‚¶‚ßŒvZ‚µ‚Ä‚¨‚­B
-	Matrix				m_viewMatrixI;		///< ƒrƒ…[s—ñ (Inverse)
-	Matrix				m_projMatrixI;		///< ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ (Inverse)
-	Matrix				m_viewProjMatrixI;	///< ƒrƒ…[s—ñ‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌÏ (Inverse)
-	Matrix				m_viewMatrixT;		///< ƒrƒ…[s—ñ (Transpose)
-	Matrix				m_projMatrixT;		///< ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ (Transpose)
-	Matrix				m_viewProjMatrixT;	///< ƒrƒ…[s—ñ‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌÏ (Transpose)
-	Matrix				m_viewMatrixIT;		///< ƒrƒ…[s—ñ (Inverse * Transpose)
-	Matrix				m_projMatrixIT;		///< ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ (Inverse * Transpose)
-	Matrix				m_viewProjMatrixIT;	///< ƒrƒ…[s—ñ‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌÏ (Inverse * Transpose)
+	// ä»¥ä¸‹ã¯ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°ã¸ã®è¨­å®šç”¨ã€‚ãƒ©ã‚¤ãƒˆã¯å€‹ã€…ã®ãƒãƒ¼ãƒ‰ã«æ¯”ã¹ã¦å‚ç…§ã•ã‚Œã‚‹å›æ•°ãŒå¤šã„ã®ã§
+	// å¿…è¦ã«ãªã‚‹ãŸã³ã«è¨ˆç®—ã™ã‚‹ã®ã§ã¯ãªãã€ã‚ã‚‰ã‹ã˜ã‚è¨ˆç®—ã—ã¦ãŠãã€‚
+	Matrix				m_viewMatrixI;		///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— (Inverse)
+	Matrix				m_projMatrixI;		///< ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ— (Inverse)
+	Matrix				m_viewProjMatrixI;	///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®ç© (Inverse)
+	Matrix				m_viewMatrixT;		///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— (Transpose)
+	Matrix				m_projMatrixT;		///< ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ— (Transpose)
+	Matrix				m_viewProjMatrixT;	///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®ç© (Transpose)
+	Matrix				m_viewMatrixIT;		///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— (Inverse * Transpose)
+	Matrix				m_projMatrixIT;		///< ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ— (Inverse * Transpose)
+	Matrix				m_viewProjMatrixIT;	///< ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®ç© (Inverse * Transpose)
 
-	float				m_tmpDistance;		///< ƒm[ƒh‚É‹ß‚¢ƒ‰ƒCƒg‚ğŒŸõ‚·‚é‚Æ‚«‚Ìì‹Æ—p•Ï”
+	float				m_tmpDistance;		///< ãƒãƒ¼ãƒ‰ã«è¿‘ã„ãƒ©ã‚¤ãƒˆã‚’æ¤œç´¢ã™ã‚‹ã¨ãã®ä½œæ¥­ç”¨å¤‰æ•°
 };
 
 } // namespace Scene

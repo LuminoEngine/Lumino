@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Painter.h>
 
@@ -8,7 +8,7 @@ namespace GUI
 {
 
 /**
-	@brief	ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ÌŒ`ó‚ğ•\‚·ƒNƒ‰ƒX‚Å‚·B
+	@brief	ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®å½¢çŠ¶ã‚’è¡¨ã™ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class CursorImage
 	: public CoreObject
@@ -20,7 +20,7 @@ public:
 	void SetTexture(Graphics::Texture* texture) { m_texture = texture; }
 	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
 	void SetPatternCount(int count) { m_patternCount = count; }
-	void SetPatternDuration(float time) { m_patternDuration = time; }	// ƒAƒjƒ[ƒVƒ‡ƒ“‚ª1ƒ‹[ƒv‚·‚é‚Ì‚É‚©‚©‚éŠÔ
+	void SetPatternDuration(float time) { m_patternDuration = time; }	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒ1ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã®ã«ã‹ã‹ã‚‹æ™‚é–“
 	float GetPatternDuration() const { return m_patternDuration; }
 
 	void Draw(Graphics::Painter* painter, const PointF& point, float time);

@@ -1,21 +1,21 @@
-/*
-	¡ Cast ‚É‚Â‚¢‚Ä
-		LN_ENUM ‚Å’è‹`‚µ‚½Šg’£—ñ‹“Œ^‚ÍAEnum ƒNƒ‰ƒX‚Ì”h¶B
-		‚±‚ê‚ç‚Í‘S‚Ä m_enum ‚ğ”h¶‚ÉƒLƒƒƒXƒg‚µ‚Ä•Ô‚µ‚½‚¢‚Ì‚¾‚ªA
-		•’Ê‚Ì“Áê‰»‚Å‚Í”h¶ƒNƒ‰ƒX‚Ì–Ê“|‚ğŒ©‚Ä‚­‚ê‚È‚¢B
+ï»¿/*
+	â–  Cast ã«ã¤ã„ã¦
+		LN_ENUM ã§å®šç¾©ã—ãŸæ‹¡å¼µåˆ—æŒ™å‹ã¯ã€Enum ã‚¯ãƒ©ã‚¹ã®æ´¾ç”Ÿã€‚
+		ã“ã‚Œã‚‰ã¯å…¨ã¦ m_enum ã‚’æ´¾ç”Ÿã«ã‚­ãƒ£ã‚¹ãƒˆã—ã¦è¿”ã—ãŸã„ã®ã ãŒã€
+		æ™®é€šã®ç‰¹æ®ŠåŒ–ã§ã¯æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã®é¢å€’ã‚’è¦‹ã¦ãã‚Œãªã„ã€‚
 
-		—á‚¦‚ÎAˆÈ‰º‚Ì’è‹`‚ª‚ ‚é‚Æ‚·‚éB
+		ä¾‹ãˆã°ã€ä»¥ä¸‹ã®å®šç¾©ãŒã‚ã‚‹ã¨ã™ã‚‹ã€‚
 
 			template<typename T>
 			T Cast() const { return static_cast<T>(GetObject()); }
 			template<> Enum Cast() const { return m_enum; }
 
-		‚±‚Ì‚Æ‚«AEnum ‚Ì”h¶‚Å‚ ‚é Orientation ‚ÉƒLƒƒƒXƒg‚µ‚æ‚¤‚Æv‚Á‚Ä
+		ã“ã®ã¨ãã€Enum ã®æ´¾ç”Ÿã§ã‚ã‚‹ Orientation ã«ã‚­ãƒ£ã‚¹ãƒˆã—ã‚ˆã†ã¨æ€ã£ã¦
 
 			auto v = Variant::Cast<Orientation>(e);
 
-		‚Æ‚©‘‚¢‚Ä‚àA³‚µ‚­ƒRƒ“ƒpƒCƒ‹‚Å‚«‚È‚¢BGetObject() ‚ªŒÄ‚Î‚ê‚Ä‚µ‚Ü‚¤B
-		”h¶ƒNƒ‰ƒX‚Å‚à m_enum ‚ª•Ô‚³‚ê‚é‚æ‚¤‚É‚·‚é‚É‚ÍA•”•ª“Áê‰»‚ğ‹ìg‚·‚é•K—v‚ª‚ ‚éB
+		ã¨ã‹æ›¸ã„ã¦ã‚‚ã€æ­£ã—ãã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã§ããªã„ã€‚GetObject() ãŒå‘¼ã°ã‚Œã¦ã—ã¾ã†ã€‚
+		æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã§ã‚‚ m_enum ãŒè¿”ã•ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹ã«ã¯ã€éƒ¨åˆ†ç‰¹æ®ŠåŒ–ã‚’é§†ä½¿ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 
 		
 */
@@ -64,14 +64,14 @@ void TypeInfo::RegisterProperty(Property* prop)
 //-----------------------------------------------------------------------------
 Property* TypeInfo::FindProperty(const String& name) const
 {
-	// ‚Æ‚è‚ ‚¦‚¸üŒ`’TõBŒ»İ‚Ìg—p—p“r‚Æ‚µ‚Ä‚»‚ê‚Ù‚Ç‘å—Ê‚É’Ç‰Á‚µ‚È‚¢‚½‚ßB
+	// ã¨ã‚Šã‚ãˆãšç·šå½¢æ¢ç´¢ã€‚ç¾åœ¨ã®ä½¿ç”¨ç”¨é€”ã¨ã—ã¦ãã‚Œã»ã©å¤§é‡ã«è¿½åŠ ã—ãªã„ãŸã‚ã€‚
 	for (auto prop : m_propertyList)
 	{
 		if (prop->GetName() == name) {
 			return prop;
 		}
 	}
-	// ƒx[ƒXƒNƒ‰ƒX‚à’T‚µ‚Ä‚İ‚é
+	// ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚‚æ¢ã—ã¦ã¿ã‚‹
 	if (m_baseClass != NULL) {
 		return m_baseClass->FindProperty(name);
 	}
@@ -100,14 +100,14 @@ void TypeInfo::RegisterRoutedEvent(RoutedEvent* ev)
 //-----------------------------------------------------------------------------
 RoutedEvent* TypeInfo::FindRoutedEvent(const String& name) const
 {
-	// ‚Æ‚è‚ ‚¦‚¸üŒ`’TõBŒ»İ‚Ìg—p—p“r‚Æ‚µ‚Ä‚»‚ê‚Ù‚Ç‘å—Ê‚É’Ç‰Á‚µ‚È‚¢‚½‚ßB
+	// ã¨ã‚Šã‚ãˆãšç·šå½¢æ¢ç´¢ã€‚ç¾åœ¨ã®ä½¿ç”¨ç”¨é€”ã¨ã—ã¦ãã‚Œã»ã©å¤§é‡ã«è¿½åŠ ã—ãªã„ãŸã‚ã€‚
 	for (auto ev : m_routedEventList)
 	{
 		if (ev->GetName() == name) {
 			return ev;
 		}
 	}
-	// ƒx[ƒXƒNƒ‰ƒX‚à’T‚µ‚Ä‚İ‚é
+	// ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚‚æ¢ã—ã¦ã¿ã‚‹
 	if (m_baseClass != NULL) {
 		return m_baseClass->FindRoutedEvent(name);
 	}
@@ -122,13 +122,13 @@ void TypeInfo::InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, Route
 	for (RoutedEvent* dynamicEvent : m_routedEventList)
 	{
 		if (dynamicEvent == ev) {
-			// owner ‚É AddHandler ‚³‚ê‚Ä‚¢‚éƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰‚ğŒÄ‚Ño‚·B
+			// owner ã« AddHandler ã•ã‚Œã¦ã„ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ã‚’å‘¼ã³å‡ºã™ã€‚
 			dynamicEvent->CallEvent(owner, e);
-			return;	// ev ‚Æ“¯‚¶ƒCƒxƒ“ƒg‚Í1‚Â‚µ‚©ƒŠƒXƒg“à‚É–³‚¢‚Í‚¸
+			return;	// ev ã¨åŒã˜ã‚¤ãƒ™ãƒ³ãƒˆã¯1ã¤ã—ã‹ãƒªã‚¹ãƒˆå†…ã«ç„¡ã„ã¯ãš
 		}
 	}
 
-	// ‚³‚ç‚Éƒx[ƒXƒNƒ‰ƒX‚ğŒ©‚És‚­
+	// ã•ã‚‰ã«ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚’è¦‹ã«è¡Œã
 	if (m_baseClass != NULL) {
 		m_baseClass->InvokeRoutedEvent(owner, ev, e);
 	}
@@ -193,7 +193,7 @@ CoreObject::~CoreObject()
 //		SetPropertyValue(prop, value);
 //		return;
 //	}
-//	// ƒL[‚ª–³‚¯‚ê‚Î—áŠO
+//	// ã‚­ãƒ¼ãŒç„¡ã‘ã‚Œã°ä¾‹å¤–
 //	LN_THROW(0, KeyNotFoundException);
 //}
 
@@ -204,7 +204,7 @@ void CoreObject::SetPropertyValue(const Property* prop, const Variant& value)
 {
 	if (prop->IsStored())
 	{
-		// •K—v‚É‚È‚Á‚½‚Ì‚Åì‚é
+		// å¿…è¦ã«ãªã£ãŸã®ã§ä½œã‚‹
 		if (m_propertyDataStore == NULL) { m_propertyDataStore = LN_NEW PropertyDataStore(); }
 		m_propertyDataStore->SetValue(prop, value);
 	}
@@ -212,7 +212,7 @@ void CoreObject::SetPropertyValue(const Property* prop, const Variant& value)
 		prop->SetValue(this, value);
 	}
 
-	//SetPropertyValue(prop->GetName(), value);	// TODO: GetName ‚¶‚á‚È‚­‚ÄAŒ^î•ñ‚àl—¶‚·‚é‚æ‚¤‚ÉB‚ ‚é‚¢‚Í¶ƒ|ƒCƒ“ƒ^
+	//SetPropertyValue(prop->GetName(), value);	// TODO: GetName ã˜ã‚ƒãªãã¦ã€å‹æƒ…å ±ã‚‚è€ƒæ…®ã™ã‚‹ã‚ˆã†ã«ã€‚ã‚ã‚‹ã„ã¯ç”Ÿãƒã‚¤ãƒ³ã‚¿
 }
 
 //-----------------------------------------------------------------------------
@@ -283,7 +283,7 @@ String CoreObject::ToString()
 //-----------------------------------------------------------------------------
 void CoreObject::NotifyPropertyChange(const Property* prop, const Variant& newValue, const Variant& oldValue/*PropertyChangedEventArgs* e*/)
 {
-	// TODO: ƒXƒ^ƒbƒN‚ÉŠm•Û‚·‚é‚Ì‚ÍŠëŒ¯BŒ¾ŒêƒoƒCƒ“ƒ_‚Åg‚¦‚È‚­‚È‚éB
+	// TODO: ã‚¹ã‚¿ãƒƒã‚¯ã«ç¢ºä¿ã™ã‚‹ã®ã¯å±é™ºã€‚è¨€èªãƒã‚¤ãƒ³ãƒ€ã§ä½¿ãˆãªããªã‚‹ã€‚
 	PropertyChangedEventArgs e(prop, newValue, oldValue);
 	OnPropertyChanged(&e);
 }
@@ -298,9 +298,9 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 
 	TypeInfo* thisType = GetThisTypeInfo();
 
-	// “à•”“IA‚¨‚æ‚Ñ”h¶ƒNƒ‰ƒX‚Åg—p‚·‚é private ‚Èƒnƒ“ƒhƒ‰B
-	// ‚±‚ê‚ç‚Í ƒ†[ƒU[‚ª AddHandler() ‚Å‚«‚éƒCƒxƒ“ƒg‚æ‚è‚à—Dæ‚µ‚ÄÀs‚·‚éB
-	RoutedEventHandler* handler = thisType->FindRoutedEventHandler(ev);	// TOOD: 1‚Â‚¾‚¯ŒŸõ‚¶‚á‚È‚­‚ÄAfor ‚Å‰ñ‚µ‚Ä‘S•”Œ©‚½•û‚ª’š”J‚©‚à
+	// å†…éƒ¨çš„ã€ãŠã‚ˆã³æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã§ä½¿ç”¨ã™ã‚‹ private ãªãƒãƒ³ãƒ‰ãƒ©ã€‚
+	// ã“ã‚Œã‚‰ã¯ ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ AddHandler() ã§ãã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã‚ˆã‚Šã‚‚å„ªå…ˆã—ã¦å®Ÿè¡Œã™ã‚‹ã€‚
+	RoutedEventHandler* handler = thisType->FindRoutedEventHandler(ev);	// TOOD: 1ã¤ã ã‘æ¤œç´¢ã˜ã‚ƒãªãã¦ã€for ã§å›ã—ã¦å…¨éƒ¨è¦‹ãŸæ–¹ãŒä¸å¯§ã‹ã‚‚
 	if (handler != NULL)
 	{
 		handler->Call(this, e);
@@ -309,7 +309,7 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 		}
 	}
 
-	// this ‚É AddHandler ‚³‚ê‚Ä‚¢‚éƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰‚ğŒÄ‚Ño‚·B
+	// this ã« AddHandler ã•ã‚Œã¦ã„ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ã‚’å‘¼ã³å‡ºã™ã€‚
 	thisType->InvokeRoutedEvent(this, ev, e);
 
 	//if (ev->GetOwnerClassTypeInfo() == )
@@ -318,7 +318,7 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 	//{
 	//	if (pair.first == eventName) {
 	//		pair.second->CallEvent(this/*, sender*/, e);
-	//		break;	// ev ‚Æ“¯‚¶ƒCƒxƒ“ƒg‚Í1‚Â‚µ‚©ƒŠƒXƒg“à‚É–³‚¢‚Í‚¸
+	//		break;	// ev ã¨åŒã˜ã‚¤ãƒ™ãƒ³ãƒˆã¯1ã¤ã—ã‹ãƒªã‚¹ãƒˆå†…ã«ç„¡ã„ã¯ãš
 	//	}
 	//}
 }
@@ -328,7 +328,7 @@ void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 //-----------------------------------------------------------------------------
 void CoreObject::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
-	// e->Property ‚ğ‚ÂƒNƒ‰ƒX‚ÌƒR[ƒ‹ƒoƒbƒN‚ğŒÄ‚Ño‚·
+	// e->Property ã‚’æŒã¤ã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’å‘¼ã³å‡ºã™
 	e->ChangedProperty->NotifyPropertyChange(this, e);
 }
 
@@ -365,7 +365,7 @@ const Variant Variant::Null;
 //-----------------------------------------------------------------------------
 Variant::Variant()
 	: m_type(VariantType_Unknown)
-	, m_uint(0)	// union ‘S‚Ä‚ğ‰Šú‰»
+	, m_uint(0)	// union å…¨ã¦ã‚’åˆæœŸåŒ–
 {
 }
 
@@ -374,7 +374,7 @@ Variant::Variant()
 //-----------------------------------------------------------------------------
 Variant::Variant(const Variant& obj)
 	: m_type(VariantType_Unknown)
-	, m_uint(0)	// union ‘S‚Ä‚ğ‰Šú‰»
+	, m_uint(0)	// union å…¨ã¦ã‚’åˆæœŸåŒ–
 {
 	Copy(obj);
 }
@@ -431,7 +431,7 @@ Variant::Variant(VariantList* value)
 //-----------------------------------------------------------------------------
 Variant::Variant(CoreObject* obj)
 	: m_type(VariantType_Unknown)
-	, m_uint(0)	// union ‘S‚Ä‚ğ‰Šú‰»
+	, m_uint(0)	// union å…¨ã¦ã‚’åˆæœŸåŒ–
 {
 	Set(obj);
 }
@@ -441,7 +441,7 @@ Variant::Variant(CoreObject* obj)
 //-----------------------------------------------------------------------------
 Variant::Variant(const Enum& value)
 	: m_type(VariantType_Unknown)
-	, m_uint(0)	// union ‘S‚Ä‚ğ‰Šú‰»
+	, m_uint(0)	// union å…¨ã¦ã‚’åˆæœŸåŒ–
 {
 	SetInt(value);
 }
@@ -722,7 +722,7 @@ void Variant::Release()
 	else if (m_type == VariantType_Object) {
 		LN_SAFE_RELEASE(m_object);
 	}
-	m_uint = 0;	// union ‘S‚Ä‚ğ‰Šú‰»
+	m_uint = 0;	// union å…¨ã¦ã‚’åˆæœŸåŒ–
 }
 
 } // namespace Lumino

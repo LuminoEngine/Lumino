@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include "../VisualNode.h"
 #include "MMERenderingPass.h"
@@ -40,27 +40,27 @@ void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚Ìİ’è
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
 	params.Renderer->SetRenderState(visualNode->GetRenderState());
 
 	int subsetCount = visualNode->GetSubsetCount();
 	for (int iSubset = 0; iSubset < subsetCount; iSubset++)
 	{
-		// ¡‰ñ‚ÌƒpƒX‚Å–{“–‚É•K—v‚Èî•ñ (g—p‚·‚éƒVƒF[ƒ_“™) ‚ğæ“¾‚·‚é
+		// ä»Šå›ã®ãƒ‘ã‚¹ã§æœ¬å½“ã«å¿…è¦ãªæƒ…å ± (ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ç­‰) ã‚’å–å¾—ã™ã‚‹
 		RenderingPriorityParams priorityParams;
 		SelectPriorityParams(visualNode, iSubset, &priorityParams);
-		if (priorityParams.Hide) {	// ‚±‚ÌƒpƒX‚Å‚Í•`‰æ‚µ‚È‚¢
+		if (priorityParams.Hide) {	// ã“ã®ãƒ‘ã‚¹ã§ã¯æç”»ã—ãªã„
 			return;
 		}
 		params.Shader = priorityParams.Shader;
 
-		// ƒm[ƒh’PˆÊƒf[ƒ^‚ğXV‚·‚é
+		// ãƒãƒ¼ãƒ‰å˜ä½ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹
 		priorityParams.Shader->UpdateNodeParams(visualNode, params.CurrentCamera, *visualNode->GetAffectLightList());
 		visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
 		const Graphics::Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(iSubset).Material;
 
-		// ƒeƒNƒjƒbƒN‚ÌŒŸõ
+		// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®æ¤œç´¢
 		MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(
 			m_mmdPass,
 			!material.Texture.IsNull(),
@@ -69,8 +69,8 @@ void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 			false,	// TODO
 			iSubset);
 
-		// ƒeƒNƒjƒbƒN‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B‚±‚ÌğŒ‚É“–‚Ä‚Í‚Ü‚é‚Ì‚ÍAƒeƒNƒjƒbƒN‚Ìƒ^[ƒQƒbƒgƒTƒuƒZƒbƒg”ÍˆÍ‚ªw’è‚³‚ê‚Ä‚¢‚ÄA
-		// iSubset ‚ª‚¢‚¸‚ê‚É‚àƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ê‡B‚±‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg‚ÌƒVƒF[ƒ_‚ğ’T‚·B
+		// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚ã“ã®æ¡ä»¶ã«å½“ã¦ã¯ã¾ã‚‹ã®ã¯ã€ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚µãƒ–ã‚»ãƒƒãƒˆç¯„å›²ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¦ã€
+		// iSubset ãŒã„ãšã‚Œã«ã‚‚ãƒãƒƒãƒã—ãªã‹ã£ãŸå ´åˆã€‚ã“ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚§ãƒ¼ãƒ€ã‚’æ¢ã™ã€‚
 		if (tech == NULL)
 		{
 			if (params.Pass->GetDefaultShader() != NULL)
@@ -83,14 +83,14 @@ void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 					false,	// TODO
 					iSubset);
 				if (tech == NULL) {
-					// ƒfƒtƒHƒ‹ƒg‚ÌƒVƒF[ƒ_‚É‚àˆê’v‚·‚éƒeƒNƒjƒbƒN‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B
-					// ‚±‚Ì iSubset ‚Í•`‰æ‚µ‚È‚¢B‚Æ‚¢‚¤‚©‚Å‚«‚È‚¢B
+					// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚§ãƒ¼ãƒ€ã«ã‚‚ä¸€è‡´ã™ã‚‹ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚
+					// ã“ã® iSubset ã¯æç”»ã—ãªã„ã€‚ã¨ã„ã†ã‹ã§ããªã„ã€‚
 					continue;
 				}
 			}
 		}
 
-		// ƒRƒ}ƒ“ƒhŒo—R‚Å•`‰æÀs
+		// ã‚³ãƒãƒ³ãƒ‰çµŒç”±ã§æç”»å®Ÿè¡Œ
 		ShaderScriptCommandList::DrawParams dp;
 		dp.Params = &params;
 		dp.RenderingNode = visualNode;
@@ -106,26 +106,26 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 {
 	RenderingPassClientData* data = &node->m_renderingPassClientDataList[m_internalEntryID];
 
-	// node ‚Ì m_internalID ”Ô–Ú‚ÌƒtƒBƒ‹ƒ^î•ñ‚ğİ’è‚µ‚½‚à‚Ì‚ª this ‚Å‚Í‚È‚¢B
-	// (node ‚ªV‚µ‚­ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Å‚ ‚é‚©A‘O‚Ì RenderingPass ‚ª‰ğ•ú‚³‚ê ID ‚ª•Ô‹p‚³‚ê‚½ŒãAV‚½‚Éì¬‚³‚ê‚½ RenderingPass ‚ª“¯‚¶ ID ‚ğæ“¾‚µ‚½ê‡)
-	// ƒm[ƒh–¼‚ğƒ`ƒFƒbƒN‚µ‚ÄŠ„‚è“–‚Ä‚éƒVƒF[ƒ_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ node ‚É‚½‚¹‚Ä‚¨‚­B
+	// node ã® m_internalID ç•ªç›®ã®ãƒ•ã‚£ãƒ«ã‚¿æƒ…å ±ã‚’è¨­å®šã—ãŸã‚‚ã®ãŒ this ã§ã¯ãªã„ã€‚
+	// (node ãŒæ–°ã—ãä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ã‚ã‚‹ã‹ã€å‰ã® RenderingPass ãŒè§£æ”¾ã•ã‚Œ ID ãŒè¿”å´ã•ã‚ŒãŸå¾Œã€æ–°ãŸã«ä½œæˆã•ã‚ŒãŸ RenderingPass ãŒåŒã˜ ID ã‚’å–å¾—ã—ãŸå ´åˆ)
+	// ãƒãƒ¼ãƒ‰åã‚’ãƒã‚§ãƒƒã‚¯ã—ã¦å‰²ã‚Šå½“ã¦ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ node ã«æŒãŸã›ã¦ãŠãã€‚
 	if (data->OwnerPass != this)
 	{
 		data->OwnerPass = this;
-		data->PriorityShaderIndex = -1;	// ˆê’v‚È‚µ‚ğl—¶‚µ‚ÄA‰Šú’l‚Í”ñ•\¦ƒOƒ‹[ƒv
+		data->PriorityShaderIndex = -1;	// ä¸€è‡´ãªã—ã‚’è€ƒæ…®ã—ã¦ã€åˆæœŸå€¤ã¯éè¡¨ç¤ºã‚°ãƒ«ãƒ¼ãƒ—
 
 		int count = m_priorityEntryList.GetCount();
 		for (int i = 0; i < count; ++i)
 		{
 			PriorityParamsEntry& e = m_priorityEntryList[i];
 
-			// "*" ‚Í‘S‚Ä‚Ìƒm[ƒh‚ğ‘ÎÛ‚Æ‚·‚éƒL[B‚»‚Ì‚Ü‚Ü’Ç‰ÁB
+			// "*" ã¯å…¨ã¦ã®ãƒãƒ¼ãƒ‰ã‚’å¯¾è±¡ã¨ã™ã‚‹ã‚­ãƒ¼ã€‚ãã®ã¾ã¾è¿½åŠ ã€‚
 			if (e.MatchingNameKey == _T("*"))
 			{
 				data->PriorityShaderIndex = i;
 				break;
 			}
-			// ‚±‚ÌƒIƒtƒXƒNƒŠ[ƒ“RT‚ğ‚ÂƒVƒF[ƒ_‚ªİ’è‚³‚ê‚Ä‚¢‚éƒm[ƒh©g
+			// ã“ã®ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã‚’æŒã¤ã‚·ã‚§ãƒ¼ãƒ€ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒãƒ¼ãƒ‰è‡ªèº«
 			else if (e.MatchingNameKey == _T("self") && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 			{
 				if (static_cast<VisualNode*>(node)->GetShader(-1) == m_ownerShader)
@@ -134,7 +134,7 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 					break;
 				}
 			}
-			// ƒƒCƒ‹ƒhƒJ[ƒh•t‚«‚Ì”äŠr
+			// ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰ä»˜ãã®æ¯”è¼ƒ
 			else if (StringTraits::Match(e.MatchingNameKey.GetCStr(), node->GetName().GetCStr()))
 			{
 				data->PriorityShaderIndex = i;
@@ -143,41 +143,41 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 		}
 	}
 
-	// ‚±‚Ì OffscreenScene ‚ğ¶¬‚µ‚½ƒVƒF[ƒ_‚Æ“¯ˆê‚ÌƒVƒF[ƒ_‚ğ‚Á‚Ä‚¢‚é‚à‚Ì‚ğ“K“–‚Éƒ`ƒ‡ƒCƒX‚·‚é
-	// (OffscreenScene ‚ğŠÜ‚ŞƒVƒF[ƒ_‚ÍŠî–{“I‚É‹¤—L‚ğƒTƒ|[ƒg‚µ‚È‚¢B‚»‚Ì‚½‚ßAˆêˆÓ‚É‚È‚é‚Í‚¸)
+	// ã“ã® OffscreenScene ã‚’ç”Ÿæˆã—ãŸã‚·ã‚§ãƒ¼ãƒ€ã¨åŒä¸€ã®ã‚·ã‚§ãƒ¼ãƒ€ã‚’æŒã£ã¦ã„ã‚‹ã‚‚ã®ã‚’é©å½“ã«ãƒãƒ§ã‚¤ã‚¹ã™ã‚‹
+	// (OffscreenScene ã‚’å«ã‚€ã‚·ã‚§ãƒ¼ãƒ€ã¯åŸºæœ¬çš„ã«å…±æœ‰ã‚’ã‚µãƒãƒ¼ãƒˆã—ãªã„ã€‚ãã®ãŸã‚ã€ä¸€æ„ã«ãªã‚‹ã¯ãš)
 	//if (obj->getShader() && obj->getShader() == mSceneShader) {
 	//	mOffscreenOwner = obj;
 	//}
 
-	// ƒOƒ‹[ƒv•ª‚¯‚³‚ê‚È‚©‚Á‚½ƒm[ƒh‚ÍƒfƒtƒHƒ‹ƒg’l‚Å•Ô‚·
+	// ã‚°ãƒ«ãƒ¼ãƒ—åˆ†ã‘ã•ã‚Œãªã‹ã£ãŸãƒãƒ¼ãƒ‰ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã§è¿”ã™
 	if (data->PriorityShaderIndex = -1)
 	{
 		if (m_priorityEntryList.IsEmpty() && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 		{
-			// —Dæƒpƒ‰ƒ[ƒ^–¢İ’èB (OFFSCREENRENDERTARGET ‚Å‚Í‚È‚¢)
-			// ƒm[ƒh‚Ì‚Á‚Ä‚¢‚éƒVƒF[ƒ_‚ğ•Ô‚·B
+			// å„ªå…ˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æœªè¨­å®šã€‚ (OFFSCREENRENDERTARGET ã§ã¯ãªã„)
+			// ãƒãƒ¼ãƒ‰ã®æŒã£ã¦ã„ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ã‚’è¿”ã™ã€‚
 			outParams->Shader = static_cast<VisualNode*>(node)->GetVisualNodeParams().GetCombinedSubsetParams(subsetIndex).SceneShader;//m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader;
 		}
 
 		outParams->Hide = false;
 	}
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒOƒ‹[ƒv
+	// ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‚°ãƒ«ãƒ¼ãƒ—
 	else
 	{
-		// TODO: subsetIndex ‚ğl—¶‚µ‚½ƒVƒF[ƒ_‚ÌŠ„‚è“–‚Ä
+		// TODO: subsetIndex ã‚’è€ƒæ…®ã—ãŸã‚·ã‚§ãƒ¼ãƒ€ã®å‰²ã‚Šå½“ã¦
 
 		outParams->Shader = m_priorityEntryList[data->PriorityShaderIndex].Params.Shader;
 		outParams->Hide = m_priorityEntryList[data->PriorityShaderIndex].Params.Hide;
 	}
 
-	// ‚±‚±‚Ü‚Å‚Å‰½‚à‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg‚ÌƒVƒF[ƒ_‚ğg—p‚·‚é
+	// ã“ã“ã¾ã§ã§ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½¿ç”¨ã™ã‚‹
 	if (outParams->Shader == NULL) {
 		outParams->Shader = m_defaultShader;
 	}
 
-	// ‚±‚±‚Ü‚Å‚Å‰½‚à‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚ÍAƒfƒtƒHƒ‹ƒg‚ÌƒVƒF[ƒ_‚·‚ç‚È‚©‚Á‚½‚Æ‚¢‚¤‚±‚ÆB
-	// •`‰æ‚ğs‚í‚È‚¢ƒ_ƒ~[ƒpƒX‚Æl‚¦‚é‚±‚Æ‚à‚Å‚«‚é‚ªA‚»‚ñ‚È‚Ì‰½‚Ég‚¤‚Ì‚©B
-	// ‚Æ‚è‚ ‚¦‚¸Œ»ó‚Å‚Í‘z’èŠO‚Å‚ ‚éB
+	// ã“ã“ã¾ã§ã§ä½•ã‚‚é¸æŠã•ã‚Œã¦ã„ãªã„ã¨ã„ã†ã“ã¨ã¯ã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚§ãƒ¼ãƒ€ã™ã‚‰ãªã‹ã£ãŸã¨ã„ã†ã“ã¨ã€‚
+	// æç”»ã‚’è¡Œã‚ãªã„ãƒ€ãƒŸãƒ¼ãƒ‘ã‚¹ã¨è€ƒãˆã‚‹ã“ã¨ã‚‚ã§ãã‚‹ãŒã€ãã‚“ãªã®ä½•ã«ä½¿ã†ã®ã‹ã€‚
+	// ã¨ã‚Šã‚ãˆãšç¾çŠ¶ã§ã¯æƒ³å®šå¤–ã§ã‚ã‚‹ã€‚
 	LN_THROW(outParams->Shader != NULL, InvalidOperationException);
 }
 

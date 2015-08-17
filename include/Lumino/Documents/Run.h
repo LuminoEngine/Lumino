@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Graphics/GlyphRun.h"
 #include "Inline.h"

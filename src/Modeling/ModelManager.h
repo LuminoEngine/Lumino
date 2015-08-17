@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include <Lumino/IO/FileManager.h>
@@ -19,7 +19,7 @@ class ModelManager
 {
 public:
 
-	/// ‰Šú‰»ƒf[ƒ^
+	/// åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿
 	struct ConfigData
 	{
 		Lumino::FileManager*		FileManager;

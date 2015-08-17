@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -63,25 +63,25 @@ CoreObject* UIElementFactory::CreateInstance()
 //-----------------------------------------------------------------------------
 void UIElementFactory::BuildInstance(CoreObject* obj, UIElement* rootLogicalParent)
 {
-	// ƒvƒƒpƒeƒB‚ğİ’è‚·‚é
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹
 	for (PropertyValueList::Pair& pair : m_propertyValueList)
 	{
 		if (pair.first->IsList())/*.second.GetType() == VariantType_List)*/
 		{
-			// ƒŠƒXƒg‚Ìê‡‚Í­‚µ“ÁêBƒIƒuƒWƒFƒNƒg‚Ìƒƒ“ƒo‚ÌƒŠƒXƒg‚ÍŠù‚É‚Â‚­‚ç‚ê‚Ä‚¢‚é‘O’ñ‚ÅA
-			// ‚»‚ê‚É‘Î‚µ‚Ä—v‘f‚ğ1‚Â‚¸‚Â Add ‚µ‚Ä‚¢‚­B
+			// ãƒªã‚¹ãƒˆã®å ´åˆã¯å°‘ã—ç‰¹æ®Šã€‚ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¡ãƒ³ãƒã®ãƒªã‚¹ãƒˆã¯æ—¢ã«ã¤ãã‚‰ã‚Œã¦ã„ã‚‹å‰æã§ã€
+			// ãã‚Œã«å¯¾ã—ã¦è¦ç´ ã‚’1ã¤ãšã¤ Add ã—ã¦ã„ãã€‚
 #if 1
 			VariantList* list = pair.second.GetList();
 			for (Variant& item : *list)
 			{
 				UIElementFactory* factory = NULL;
-				// İ’è‚µ‚½‚¢’l‚ª‚à‚µ Factory ‚¾‚Á‚½ê‡‚ÍƒCƒ“ƒXƒ^ƒ“ƒX‚ğì‚Á‚Äİ’è‚·‚é
+				// è¨­å®šã—ãŸã„å€¤ãŒã‚‚ã— Factory ã ã£ãŸå ´åˆã¯ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œã£ã¦è¨­å®šã™ã‚‹
 				if (item.GetType() == VariantType_Object &&
-					(factory = dynamic_cast<UIElementFactory*>(item.GetObject())) != NULL)	// TODO: dynamic_cast ‚¶‚á‚È‚­‚Ä TypeInfo g‚¦‚Î­‚µ‘¬‚­‚È‚é‚©‚àH
+					(factory = dynamic_cast<UIElementFactory*>(item.GetObject())) != NULL)	// TODO: dynamic_cast ã˜ã‚ƒãªãã¦ TypeInfo ä½¿ãˆã°å°‘ã—é€Ÿããªã‚‹ã‹ã‚‚ï¼Ÿ
 				{
-					RefPtr<CoreObject> v(factory->CreateInstance());	// ì‚Á‚Ä
-					pair.first->AddItem(obj, v);						// ’Ç‰Á‚µ‚Ä (ƒ[ƒJƒ‹ƒŠƒ\[ƒXXV)
-					factory->BuildInstance(v, rootLogicalParent);		// ƒvƒƒpƒeƒBİ’è
+					RefPtr<CoreObject> v(factory->CreateInstance());	// ä½œã£ã¦
+					pair.first->AddItem(obj, v);						// è¿½åŠ ã—ã¦ (ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹æ›´æ–°)
+					factory->BuildInstance(v, rootLogicalParent);		// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¨­å®š
 				}
 				else {
 					pair.first->AddItem(obj, item);
@@ -89,7 +89,7 @@ void UIElementFactory::BuildInstance(CoreObject* obj, UIElement* rootLogicalPare
 			}
 #else
 			Variant v = obj->GetPropertyValue(pair.first);
-			LN_THROW(v.GetType() == VariantType_List, InvalidOperationException);	// ƒ^[ƒQƒbƒg‚ÌŒ^‚Í•K‚¸ List ‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+			LN_THROW(v.GetType() == VariantType_List, InvalidOperationException);	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å‹ã¯å¿…ãš List ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„
 			VariantList* targetList = v.GetList();
 			VariantList* list = pair.second.GetList();
 			for (Variant& item : *list) {
@@ -102,13 +102,13 @@ void UIElementFactory::BuildInstance(CoreObject* obj, UIElement* rootLogicalPare
 			Variant& item = pair.second;
 			UIElementFactory* factory = NULL;
 				
-			// İ’è‚µ‚½‚¢’l‚ª‚à‚µ Factory ‚¾‚Á‚½ê‡‚ÍƒCƒ“ƒXƒ^ƒ“ƒX‚ğì‚Á‚Äİ’è‚·‚é
+			// è¨­å®šã—ãŸã„å€¤ãŒã‚‚ã— Factory ã ã£ãŸå ´åˆã¯ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œã£ã¦è¨­å®šã™ã‚‹
 			if (item.GetType() == VariantType_Object &&
-				(factory = dynamic_cast<UIElementFactory*>(item.GetObject())) != NULL)	// TODO: dynamic_cast ‚¶‚á‚È‚­‚Ä TypeInfo g‚¦‚Î­‚µ‘¬‚­‚È‚é‚©‚àH
+				(factory = dynamic_cast<UIElementFactory*>(item.GetObject())) != NULL)	// TODO: dynamic_cast ã˜ã‚ƒãªãã¦ TypeInfo ä½¿ãˆã°å°‘ã—é€Ÿããªã‚‹ã‹ã‚‚ï¼Ÿ
 			{
-				RefPtr<CoreObject> v(factory->CreateInstance());	// ì‚Á‚Ä
-				pair.first->AddItem(obj, v);						// ’Ç‰Á‚µ‚Ä (ƒ[ƒJƒ‹ƒŠƒ\[ƒXXV)
-				factory->BuildInstance(v, rootLogicalParent);		// ƒvƒƒpƒeƒBİ’è
+				RefPtr<CoreObject> v(factory->CreateInstance());	// ä½œã£ã¦
+				pair.first->AddItem(obj, v);						// è¿½åŠ ã—ã¦ (ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹æ›´æ–°)
+				factory->BuildInstance(v, rootLogicalParent);		// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¨­å®š
 			}
 			else {
 				obj->SetPropertyValue(pair.first, item);
@@ -125,7 +125,7 @@ void UIElementFactory::BuildInstance(CoreObject* obj, UIElement* rootLogicalPare
 			{
 				const Property* prop = pair.first;//GetTypeInfo(element)->FindProperty(pair.first);
 				//if (prop == NULL) {
-				//	LN_THROW(0, InvalidOperationException);	// TODO: XML ƒGƒ‰[‚Æ‚©‚¢‚ë‚¢‚ël‚¦‚é•K—v‚ª‚ ‚é
+				//	LN_THROW(0, InvalidOperationException);	// TODO: XML ã‚¨ãƒ©ãƒ¼ã¨ã‹ã„ã‚ã„ã‚è€ƒãˆã‚‹å¿…è¦ãŒã‚ã‚‹
 				//}
 				element->SetTemplateBinding(prop, pair.second.SourcePropPath, rootLogicalParent);
 			}
@@ -140,18 +140,18 @@ void UIElementFactory::BuildInstance(CoreObject* obj, UIElement* rootLogicalPare
 		//	
 		//}
 		//
-		// q‚Ìˆ—
+		// å­ã®å‡¦ç†
 		LN_FOREACH(UIElementFactory* factory, m_children) {
-			RefPtr<CoreObject> e(factory->CreateInstance());	// ì‚Á‚Ä
-			element->AddChild(e);								// ’Ç‰Á‚µ‚Ä (ƒ[ƒJƒ‹ƒŠƒ\[ƒXXV)
-			factory->BuildInstance(e, rootLogicalParent);		// ƒvƒƒpƒeƒBİ’è
+			RefPtr<CoreObject> e(factory->CreateInstance());	// ä½œã£ã¦
+			element->AddChild(e);								// è¿½åŠ ã—ã¦ (ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹æ›´æ–°)
+			factory->BuildInstance(e, rootLogicalParent);		// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£è¨­å®š
 		}
 
 		rootLogicalParent->PollingTemplateChildCreated(element);
 	}
 	else
 	{
-		// ContentElement ‚Í‚±‚±‚É—ˆ‚é
+		// ContentElement ã¯ã“ã“ã«æ¥ã‚‹
 	}
 }
 #endif
@@ -167,18 +167,18 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		LN_THROW(0, InvalidOperationException);
 	}
 
-	// ƒvƒƒpƒeƒB‚ğİ’è‚·‚é
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹
 	for (const PropertyValueList::Pair& pair : m_propertyValueList)
 	{
 		if (pair.first->IsList())/*.second.GetType() == VariantType_List)*/
 		{
-			// ƒŠƒXƒg‚Ìê‡‚Í­‚µ“ÁêBƒIƒuƒWƒFƒNƒg‚Ìƒƒ“ƒo‚ÌƒŠƒXƒg‚ÍŠù‚É‚Â‚­‚ç‚ê‚Ä‚¢‚é‘O’ñ‚ÅA
-			// ‚»‚ê‚É‘Î‚µ‚Ä—v‘f‚ğ1‚Â‚¸‚Â Add ‚µ‚Ä‚¢‚­B
+			// ãƒªã‚¹ãƒˆã®å ´åˆã¯å°‘ã—ç‰¹æ®Šã€‚ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¡ãƒ³ãƒã®ãƒªã‚¹ãƒˆã¯æ—¢ã«ã¤ãã‚‰ã‚Œã¦ã„ã‚‹å‰æã§ã€
+			// ãã‚Œã«å¯¾ã—ã¦è¦ç´ ã‚’1ã¤ãšã¤ Add ã—ã¦ã„ãã€‚
 #if 1
 			VariantList* list = pair.second.GetList();
 			for (Variant& item : *list) {
 				if (item.GetType() == VariantType_Object &&
-					dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast ‚¶‚á‚È‚­‚Ä TypeInfo g‚¦‚Î­‚µ‘¬‚­‚È‚é‚©‚àH
+					dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast ã˜ã‚ƒãªãã¦ TypeInfo ä½¿ãˆã°å°‘ã—é€Ÿããªã‚‹ã‹ã‚‚ï¼Ÿ
 				{
 					RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent));
 					pair.first->AddItem(obj, v);
@@ -189,7 +189,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 			}
 #else
 			Variant v = obj->GetPropertyValue(pair.first);
-			LN_THROW(v.GetType() == VariantType_List, InvalidOperationException);	// ƒ^[ƒQƒbƒg‚ÌŒ^‚Í•K‚¸ List ‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+			LN_THROW(v.GetType() == VariantType_List, InvalidOperationException);	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å‹ã¯å¿…ãš List ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„
 			VariantList* targetList = v.GetList();
 			VariantList* list = pair.second.GetList();
 			for (Variant& item : *list) {
@@ -201,7 +201,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		{
 			const Variant& item = pair.second;
 			if (item.GetType() == VariantType_Object &&
-				dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast ‚¶‚á‚È‚­‚Ä TypeInfo g‚¦‚Î­‚µ‘¬‚­‚È‚é‚©‚àH
+				dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast ã˜ã‚ƒãªãã¦ TypeInfo ä½¿ãˆã°å°‘ã—é€Ÿããªã‚‹ã‹ã‚‚ï¼Ÿ
 			{
 				RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent));
 				pair.first->AddItem(obj, v);
@@ -212,13 +212,13 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		}
 	}
 
-	// ¶¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª UIElement ‚Å‚ ‚ê‚ÎƒoƒCƒ“ƒfƒBƒ“ƒO‚È‚Ç‚Ì“Áê‚Èˆ—‚ğs‚¤
+	// ç”Ÿæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒ UIElement ã§ã‚ã‚Œã°ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãªã©ã®ç‰¹æ®Šãªå‡¦ç†ã‚’è¡Œã†
 	UIElement* element = dynamic_cast<UIElement*>(obj);
 	if (element != NULL)
 	{
 		GUIHelper::UIElement_SetKeyName(element, m_keyName);
 
-		// TODO: ‚±‚ê‚¢‚ç‚È‚©‚àH
+		// TODO: ã“ã‚Œã„ã‚‰ãªã‹ã‚‚ï¼Ÿ
 		GUIHelper::UIElement_SetTemplateParent(element, rootLogicalParent);
 
 		for(const PropertyInfoList::Pair& pair : m_propertyInfoList)
@@ -227,7 +227,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 			{
 				const Property* prop = pair.first;//GetTypeInfo(element)->FindProperty(pair.first);
 				//if (prop == NULL) {
-				//	LN_THROW(0, InvalidOperationException);	// TODO: XML ƒGƒ‰[‚Æ‚©‚¢‚ë‚¢‚ël‚¦‚é•K—v‚ª‚ ‚é
+				//	LN_THROW(0, InvalidOperationException);	// TODO: XML ã‚¨ãƒ©ãƒ¼ã¨ã‹ã„ã‚ã„ã‚è€ƒãˆã‚‹å¿…è¦ãŒã‚ã‚‹
 				//}
 				element->SetTemplateBinding(prop, pair.second.SourcePropPath);
 			}
@@ -242,7 +242,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		//	
 		//}
 		//
-		// q‚Ìˆ—
+		// å­ã®å‡¦ç†
 		LN_FOREACH(UIElementFactory* c, m_children) {
 			RefPtr<CoreObject> e(c->CreateInstance(rootLogicalParent));
 			element->AddChild(e);
@@ -254,7 +254,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 	}
 	else
 	{
-		// ContentElement ‚Í‚±‚±‚É—ˆ‚é
+		// ContentElement ã¯ã“ã“ã«æ¥ã‚‹
 	}
 
 	return obj;
@@ -285,19 +285,19 @@ void ControlTemplate::Apply(Control* control)
 {
 	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
 
-	// ‚¢‚ë‚¢‚ëƒŠƒZƒbƒgBTemplateBinding ‚à‰ğœB
+	// ã„ã‚ã„ã‚ãƒªã‚»ãƒƒãƒˆã€‚TemplateBinding ã‚‚è§£é™¤ã€‚
 	control->SetTemplateChild(NULL);
 
 	if (m_visualTreeRoot != NULL) {
 #if 0
-		// ‚Ü‚¸ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é
+		// ã¾ãšã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹
 		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance());
 
-		// Ÿ‚Ée—v‘f‚É’Ç‰Á‚·‚é (ƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚·‚é)
+		// æ¬¡ã«è¦ªè¦ç´ ã«è¿½åŠ ã™ã‚‹ (ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã™ã‚‹)
 		UIElement* element = dynamic_cast<UIElement*>(obj.GetObjectPtr());
 		if (element != NULL) { control->SetTemplateChild(element); }
 
-		// ÅŒã‚ÉƒvƒƒpƒeƒB‚Ìİ’è‚â‘·—v‘f‚Ìì¬‚ğs‚¤
+		// æœ€å¾Œã«ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è¨­å®šã‚„å­«è¦ç´ ã®ä½œæˆã‚’è¡Œã†
 		m_visualTreeRoot->BuildInstance(m_visualTreeRoot, control);
 #else
 		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance(control));
@@ -309,7 +309,7 @@ void ControlTemplate::Apply(Control* control)
 #endif
 	}
 
-	// ƒvƒƒpƒeƒB“K—p
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£é©ç”¨
 #if 0
 	for (auto prop : m_propertyValueList)
 	{
@@ -320,13 +320,13 @@ void ControlTemplate::Apply(Control* control)
 			if (factory != NULL)
 			{
 #if 0
-				// ‚Ü‚¸ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é
+				// ã¾ãšã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹
 				RefPtr<CoreObject> element(factory->CreateInstance());
 
-				// Ÿ‚Ée—v‘f‚É’Ç‰Á‚·‚é (ƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚·‚é)
+				// æ¬¡ã«è¦ªè¦ç´ ã«è¿½åŠ ã™ã‚‹ (ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã™ã‚‹)
 				control->SetPropertyValue(prop.first, element);
 
-				// ÅŒã‚ÉƒvƒƒpƒeƒB‚Ìİ’è‚â‘·—v‘f‚Ìì¬‚ğs‚¤
+				// æœ€å¾Œã«ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è¨­å®šã‚„å­«è¦ç´ ã®ä½œæˆã‚’è¡Œã†
 				factory->BuildInstance(element, control);
 #else
 				RefPtr<CoreObject> element(factory->CreateInstance(control));
@@ -373,20 +373,20 @@ void DataTemplate::Apply(Control* control)
 	if (m_visualTreeRoot != NULL)
 	{
 #if 0
-		// ‚Ü‚¸ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é
+		// ã¾ãšã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹
 		CoreObject* obj = m_visualTreeRoot->CreateInstance();
 
-		// Ÿ‚Ée—v‘f‚É’Ç‰Á‚·‚é (ƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚·‚é)
+		// æ¬¡ã«è¦ªè¦ç´ ã«è¿½åŠ ã™ã‚‹ (ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã™ã‚‹)
 		UIElement* element = dynamic_cast<UIElement*>(obj);
 		if (element != NULL)
 		{
 			control->SetTemplateChild(element);
 		}
 		else {
-			// TODO: ‚±‚±‚É—ˆ‚½‚Æ‚«‚Éƒƒ‚ƒŠƒŠ[ƒN‚·‚é
+			// TODO: ã“ã“ã«æ¥ãŸã¨ãã«ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯ã™ã‚‹
 		}
 
-		// ÅŒã‚ÉƒvƒƒpƒeƒB‚Ìİ’è‚â‘·—v‘f‚Ìì¬‚ğs‚¤
+		// æœ€å¾Œã«ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è¨­å®šã‚„å­«è¦ç´ ã®ä½œæˆã‚’è¡Œã†
 		m_visualTreeRoot->BuildInstance(element, control);
 #else
 		CoreObject* obj = m_visualTreeRoot->CreateInstance(control);
@@ -396,12 +396,12 @@ void DataTemplate::Apply(Control* control)
 			control->SetTemplateChild(element);
 		}
 		else {
-			// TODO: ‚±‚±‚É—ˆ‚½‚Æ‚«‚Éƒƒ‚ƒŠƒŠ[ƒN‚·‚é
+			// TODO: ã“ã“ã«æ¥ãŸã¨ãã«ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯ã™ã‚‹
 		}
 #endif
 	}
 
-	// TODO: ƒvƒƒpƒeƒB“K—p“™‚àB
+	// TODO: ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£é©ç”¨ç­‰ã‚‚ã€‚
 }
 #endif
 
@@ -496,7 +496,7 @@ Trigger::~Trigger()
 //	if (routedEvent == CoreObject::PropertyChangedEvent)
 //	{
 //		auto e2 = static_cast<const PropertyChangedEventArgs*>(e);
-//		if (m_property->GetName() == e2->PropertyName &&	// ‚Å‚«‚ê‚Î•¶š—ñ‚Å‚Í‚È‚­ƒ|ƒCƒ“ƒ^”äŠr‚µ‚½‚¢c
+//		if (m_property->GetName() == e2->PropertyName &&	// ã§ãã‚Œã°æ–‡å­—åˆ—ã§ã¯ãªããƒã‚¤ãƒ³ã‚¿æ¯”è¼ƒã—ãŸã„â€¦
 //			m_value == e2->NewValue)
 //		{
 //			for (Setter* setter : *m_setterList) {
@@ -552,9 +552,9 @@ void Style::Apply(UIElement* element)
 		const Variant& value = setter->GetValue();
 
 		if (value.GetType() == VariantType_Object &&
-			dynamic_cast<UIElementFactory*>(value.GetObject()) != NULL)	// TODO: dynamic_cast ‚¶‚á‚È‚­‚Ä TypeInfo g‚¦‚Î­‚µ‘¬‚­‚È‚é‚©‚àH
+			dynamic_cast<UIElementFactory*>(value.GetObject()) != NULL)	// TODO: dynamic_cast ã˜ã‚ƒãªãã¦ TypeInfo ä½¿ãˆã°å°‘ã—é€Ÿããªã‚‹ã‹ã‚‚ï¼Ÿ
 		{
-			// InitializeComponent() ‚àŒÄ‚Î‚ê‚é
+			// InitializeComponent() ã‚‚å‘¼ã°ã‚Œã‚‹
 			RefPtr<CoreObject> v(static_cast<UIElementFactory*>(value.GetObject())->CreateInstance(NULL));
 			element->SetPropertyValue(prop, v);
 		}
@@ -712,7 +712,7 @@ CoreObject* CombinedLocalResource::GetItem(const String& key)
 	}
 	return m_parent->GetItem(key);
 
-	// TOOD: ƒGƒ‰[‚±‚ê‚Å‚¢‚¢H
+	// TOOD: ã‚¨ãƒ©ãƒ¼ã“ã‚Œã§ã„ã„ï¼Ÿ
 	//LN_THROW(0, ArgumentException);
 }
 
@@ -721,7 +721,7 @@ CoreObject* CombinedLocalResource::GetItem(const String& key)
 //-----------------------------------------------------------------------------
 Style* CombinedLocalResource::FindStyle(TypeInfo* type)
 {
-	// local —Dæ
+	// local å„ªå…ˆ
 	if (m_local != NULL)
 	{
 		Style* style = m_local->FindStyle(type);
@@ -738,7 +738,7 @@ Style* CombinedLocalResource::FindStyle(TypeInfo* type)
 
 //bool CombinedLocalResource::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
 //{
-//	// local —Dæ
+//	// local å„ªå…ˆ
 //	if (m_local != NULL && m_local->TryGetControlTemplate(fullTypeName, outTemplate)) {
 //		return true;
 //	}

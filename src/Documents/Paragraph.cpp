@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Documents/Paragraph.h>
@@ -42,7 +42,7 @@ Paragraph::Paragraph(DocumentsManager* manager)
 {
 	m_inlines.Attach(LN_NEW InlineList(this));
 
-	// Paragraph ‚Í GUI::TextBlock ‚Ìƒ‹[ƒg—v‘f‚É‚à‚È‚é‚Ì‚ÅAƒtƒHƒ“ƒgƒf[ƒ^‚Í‚±‚±‚Å‰Šú‰»‚µ‚Ä‚¢‚é
+	// Paragraph ã¯ GUI::TextBlock ã®ãƒ«ãƒ¼ãƒˆè¦ç´ ã«ã‚‚ãªã‚‹ã®ã§ã€ãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã¯ã“ã“ã§åˆæœŸåŒ–ã—ã¦ã„ã‚‹
 	Graphics::Font* font = m_manager->GetGraphicsManager()->GetFontManager()->GetDefaultFont();
 	m_fontData.Family = font->GetName();
 	m_fontData.Size = font->GetSize();
@@ -65,7 +65,7 @@ Paragraph::~Paragraph()
 //-----------------------------------------------------------------------------
 Size Paragraph::Measure()
 {
-	// TODO: ƒeƒLƒXƒg‚ª•Ï‚í‚ç‚È‚¯‚ê‚ÎŒvZ‚·‚é•K—v‚È‚¢‚Ì‚Å modified ƒtƒ‰ƒO—pˆÓ‚·‚é‚×‚«
+	// TODO: ãƒ†ã‚­ã‚¹ãƒˆãŒå¤‰ã‚ã‚‰ãªã‘ã‚Œã°è¨ˆç®—ã™ã‚‹å¿…è¦ãªã„ã®ã§ modified ãƒ•ãƒ©ã‚°ç”¨æ„ã™ã‚‹ã¹ã
 	Size size = Size::Zero;
 	for (Inline* inl : *m_inlines)
 	{

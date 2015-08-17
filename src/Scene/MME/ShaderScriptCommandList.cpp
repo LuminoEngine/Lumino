@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include "../SceneNode.h"
@@ -120,7 +120,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (cmd->RenderColorTarget.Index < 0 || cmd->RenderColorTarget.Index >= Graphics::Renderer::MaxMultiRenderTargets)
 			{
-				// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒCƒ“ƒfƒbƒNƒX‚ª•s³
+				// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒä¸æ­£
 				return ValidationError_InvalidRenderTargetIndex;
 			}
 			break;
@@ -129,18 +129,18 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (scriptOrder != MME_SCRORDER_postprocess)
 			{
-				// ƒ|ƒXƒgƒGƒtƒFƒNƒgiSTANDARDSGLOBALƒpƒ‰ƒ[ƒ^‚ÌScriptOrderƒAƒmƒe[ƒVƒ‡ƒ“‚É
-				// "postprocess"‚ªw’è‚³‚ê‚½ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹j‚Å‚Ì‚İÀs‚Å‚«‚éB
+				// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆï¼ˆSTANDARDSGLOBALãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ScriptOrderã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã«
+				// "postprocess"ãŒæŒ‡å®šã•ã‚ŒãŸã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ï¼‰ã§ã®ã¿å®Ÿè¡Œã§ãã‚‹ã€‚
 				return ValidationError_ScriptExternal_Color_InvalidCall;
 			}
 			if (foundScriptExternalColor)
 			{
-				// ScriptExternal=Color ‚Í1‚Â‚¾‚¯
+				// ScriptExternal=Color ã¯1ã¤ã ã‘
 				return ValidationError_ScriptExternal_Color_MultipleCall;
 			}
 			if (loopNest > 0)
 			{
-				// ScriptExternal=Color ‚Íƒ‹[ƒv’†‚É‹Lq‚·‚é‚±‚Æ‚Í‚Å‚«‚È‚¢
+				// ScriptExternal=Color ã¯ãƒ«ãƒ¼ãƒ—ä¸­ã«è¨˜è¿°ã™ã‚‹ã“ã¨ã¯ã§ããªã„
 				return ValidationError_ScriptExternal_Color_CallInLoop;
 			}
 			foundScriptExternalColor = true;
@@ -150,7 +150,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (onTech)
 			{
-				// ƒeƒNƒjƒbƒN‚ÌƒXƒNƒŠƒvƒgã‚Å‚µ‚©g—p‚Å‚«‚È‚¢B
+				// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆä¸Šã§ã—ã‹ä½¿ç”¨ã§ããªã„ã€‚
 				return ValidationError_Pass_CallByPass;
 			}
 			break;
@@ -159,7 +159,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (onTech)
 			{
-				// ƒeƒNƒjƒbƒN‚ÌƒXƒNƒŠƒvƒgã‚Å‚µ‚©g—p‚Å‚«‚È‚¢B
+				// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆä¸Šã§ã—ã‹ä½¿ç”¨ã§ããªã„ã€‚
 				return ValidationError_Loop_CallByPass;
 			}
 			++loopNest;
@@ -169,13 +169,13 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (onTech)
 			{
-				// ValidationError_Loop_CallByTechniqueƒXƒNƒŠƒvƒgã‚Å‚µ‚©g—p‚Å‚«‚È‚¢B
+				// ValidationError_Loop_CallByTechniqueã‚¹ã‚¯ãƒªãƒ—ãƒˆä¸Šã§ã—ã‹ä½¿ç”¨ã§ããªã„ã€‚
 				return ValidationError_Loop_CallByPass;
 			}
 			--loopNest;
 			if (loopNest < 0)
 			{
-				// LoopEnd ‚ª‘½‚¢
+				// LoopEnd ãŒå¤šã„
 				return ValidationError_LoopBlockUnMath;
 			}
 			break;
@@ -184,7 +184,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (onTech)
 			{
-				// ƒeƒNƒjƒbƒN‚ÌƒXƒNƒŠƒvƒgã‚Å‚µ‚©g—p‚Å‚«‚È‚¢B
+				// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆä¸Šã§ã—ã‹ä½¿ç”¨ã§ããªã„ã€‚
 				return ValidationError_Loop_CallByPass;
 			}
 			break;
@@ -193,13 +193,13 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (onTech)
 			{
-				// ƒpƒX‚ÌƒXƒNƒŠƒvƒgã‚Å‚µ‚©g—p‚Å‚«‚È‚¢B
+				// ãƒ‘ã‚¹ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆä¸Šã§ã—ã‹ä½¿ç”¨ã§ããªã„ã€‚
 				return ValidationError_DrawGeometry_CallByTechnique;
 			}
 			if (scriptClass == MME_SCRCLS_scene)
 			{
-				// STANDARDSGLOBAL‚ÌScriptClass‚É"scene"‚ğw’è‚µ‚Ä‚¢‚éê‡A
-				// ‚±‚ÌƒRƒ}ƒ“ƒh‚ğÀs‚µ‚Ä‚Í‚È‚ç‚È‚¢B
+				// STANDARDSGLOBALã®ScriptClassã«"scene"ã‚’æŒ‡å®šã—ã¦ã„ã‚‹å ´åˆã€
+				// ã“ã®ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã—ã¦ã¯ãªã‚‰ãªã„ã€‚
 				return ValidationError_DrawGeometry_InvalidCall;
 			}
 			break;
@@ -208,13 +208,13 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 			if (onTech)
 			{
-				// ƒpƒX‚ÌƒXƒNƒŠƒvƒgã‚Å‚µ‚©g—p‚Å‚«‚È‚¢B
+				// ãƒ‘ã‚¹ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆä¸Šã§ã—ã‹ä½¿ç”¨ã§ããªã„ã€‚
 				return ValidationError_DrawBuffer_CallByTechnique;
 			}
 			if (scriptClass == MME_SCRCLS_object)
 			{
-				// STANDARDSGLOBAL‚ÌScriptClass‚É"object"‚ğw’è‚µ‚Ä‚¢‚éê‡A
-				// ‚±‚ÌƒRƒ}ƒ“ƒh‚ğÀs‚µ‚Ä‚Í‚È‚ç‚È‚¢B
+				// STANDARDSGLOBALã®ScriptClassã«"object"ã‚’æŒ‡å®šã—ã¦ã„ã‚‹å ´åˆã€
+				// ã“ã®ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã—ã¦ã¯ãªã‚‰ãªã„ã€‚
 				return ValidationError_DrawBuffer_InvalidCall;
 			}
 			break;
@@ -302,7 +302,7 @@ void ShaderScriptCommandList::Add_ScriptExternal_Color()
 	c.Type = COMMAND_ScriptExternal_Color;
 	m_commandArray.Add(c);
 
-	// ‚±‚ÌˆÊ’u‚ğŠo‚¦‚Ä‚¨‚­
+	// ã“ã®ä½ç½®ã‚’è¦šãˆã¦ãŠã
 	m_scriptExternalColorPosition = m_commandArray.GetCount() - 1;
 }
 
@@ -433,7 +433,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_ScriptExternal_Color:
 		{
-			// I—¹
+			// çµ‚äº†
 			return pc;
 		}
 		case COMMAND_Pass:
@@ -442,8 +442,8 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 			{
 				cmd->Pass.CommandList->Execute(params);
 			}
-			// ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ªÈ—ª‚³‚ê‚Ä‚¢‚éê‡‚Í’¼Ú Draw=Geometry
-			/* Tech ‘¤‚Åì‚Á‚Ä‚é‚Ì‚Å‚±‚±‚Å‚Ís‚í‚È‚¢
+			// ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆãŒçœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ç›´æ¥ Draw=Geometry
+			/* Tech å´ã§ä½œã£ã¦ã‚‹ã®ã§ã“ã“ã§ã¯è¡Œã‚ãªã„
 			else
 			{
 			_drawGeometry( cmd->Pass.Pass );
@@ -463,7 +463,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_LoopEnd:
 		{
-			// ŒÄ‚Ño‚µ‘¤‚Ö–ß‚é
+			// å‘¼ã³å‡ºã—å´ã¸æˆ»ã‚‹
 			return pc;
 		}
 		case COMMAND_LoopGetIndex:
@@ -488,10 +488,10 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 			}
 
 			params.Params->GeometryRenderer->DrawSquare(
-				-1.0f,	1.0f,	0.0f,	0.0f, 0.0f, Graphics::ColorF::White,	// ¶ã
-				1.0f,	1.0f,	0.0f,	1.0f, 0.0f, Graphics::ColorF::White,	// ‰Eã
-				-1.0f,	-1.0f,	0.0f,	0.0f, 1.0f, Graphics::ColorF::White,	// ¶‰º
-				1.0f,	-1.0f,	0.0f,	1.0f, 1.0f, Graphics::ColorF::White);	// ‰E‰º
+				-1.0f,	1.0f,	0.0f,	0.0f, 0.0f, Graphics::ColorF::White,	// å·¦ä¸Š
+				1.0f,	1.0f,	0.0f,	1.0f, 0.0f, Graphics::ColorF::White,	// å³ä¸Š
+				-1.0f,	-1.0f,	0.0f,	0.0f, 1.0f, Graphics::ColorF::White,	// å·¦ä¸‹
+				1.0f,	-1.0f,	0.0f,	1.0f, 1.0f, Graphics::ColorF::White);	// å³ä¸‹
 			break;
 		}
 		}
@@ -506,14 +506,14 @@ void ShaderScriptCommandList::DrawGeometry(DrawParams& params, Graphics::ShaderP
 {
 	params.RenderingNode->DrawSubsetInternal(*params.Params, params.SubsetIndex, m_ownerShader, pass);
 #if 0
-	// ƒTƒuƒZƒbƒg‚Ìw’è‚ª‚È‚¯‚ê‚Î‚·‚×‚Ä•`‰æ‚·‚é
+	// ã‚µãƒ–ã‚»ãƒƒãƒˆã®æŒ‡å®šãŒãªã‘ã‚Œã°ã™ã¹ã¦æç”»ã™ã‚‹
 	if (params.SubsetNumbers->IsEmpty())
 	{
 		for (int i = 0; i < params.SubsetCount; ++i) {
 			params.RenderingNode->DrawSubsetInternal(*params.Params, i, m_ownerShader, pass);
 		}
 	}
-	// ƒTƒuƒZƒbƒg”ÍˆÍ‚Ìw’è‚ª‚ ‚é
+	// ã‚µãƒ–ã‚»ãƒƒãƒˆç¯„å›²ã®æŒ‡å®šãŒã‚ã‚‹
 	else
 	{
 		int lastIndex = -1;
@@ -529,7 +529,7 @@ void ShaderScriptCommandList::DrawGeometry(DrawParams& params, Graphics::ShaderP
 			}
 		}
 
-		// "0-4,6,8-" ‚Ì‚æ‚¤‚ÉI’[‚ª - ‚Ìê‡‚ÍˆÈ~‘S‚Ä‚ÌƒTƒuƒZƒbƒg‚ğ•`‰æ‚·‚é
+		// "0-4,6,8-" ã®ã‚ˆã†ã«çµ‚ç«¯ãŒ - ã®å ´åˆã¯ä»¥é™å…¨ã¦ã®ã‚µãƒ–ã‚»ãƒƒãƒˆã‚’æç”»ã™ã‚‹
 		if (lastIndex >= 0)
 		{
 			for (int i = lastIndex; i < params.SubsetCount; ++i) {
@@ -545,7 +545,7 @@ void ShaderScriptCommandList::DrawGeometry(DrawParams& params, Graphics::ShaderP
 //-----------------------------------------------------------------------------
 void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 {
-	// Œ»İ‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg&[“xƒoƒbƒtƒ@‚ğ‹L‰¯
+	// ç¾åœ¨ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ&æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’è¨˜æ†¶
 	for (int i = 0; i < Graphics::Renderer::MaxMultiRenderTargets; ++i)
 	{
 		m_oldRenderTarget[i] = params.Params->Renderer->GetRenderTarget(i);
@@ -554,7 +554,7 @@ void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 	m_oldDepthBuffer = params.Params->Renderer->GetDepthBuffer();
 	LN_SAFE_ADDREF(m_oldDepthBuffer);
 
-	// e‚Ìó‘Ô‚ğ‹L‰¯
+	// è¦ªã®çŠ¶æ…‹ã‚’è¨˜æ†¶
 	if (m_parentList != NULL)
 	{
 		m_oldClearColor = m_parentList->m_clearColor;
@@ -567,7 +567,7 @@ void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 //-----------------------------------------------------------------------------
 void ShaderScriptCommandList::PopCurrentState(DrawParams& params)
 {
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg&[“xƒoƒbƒtƒ@‚ğŒ³‚É–ß‚·
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ&æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’å…ƒã«æˆ»ã™
 	for (int i = 0; i < Graphics::Renderer::MaxMultiRenderTargets; ++i)
 	{
 		params.Params->Renderer->SetRenderTarget(i, m_oldRenderTarget[i]);
@@ -576,7 +576,7 @@ void ShaderScriptCommandList::PopCurrentState(DrawParams& params)
 	params.Params->Renderer->SetDepthBuffer(m_oldDepthBuffer);
 	LN_SAFE_RELEASE(m_oldDepthBuffer);
 
-	// e‚Ìó‘Ô‚ğŒ³‚É–ß‚·
+	// è¦ªã®çŠ¶æ…‹ã‚’å…ƒã«æˆ»ã™
 	if (m_parentList != NULL)
 	{
 		m_parentList->m_clearColor = m_oldClearColor;

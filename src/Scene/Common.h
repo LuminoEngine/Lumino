@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Array.h>
 
@@ -26,87 +26,87 @@ typedef Array<Light*>			LightNodeList;
 typedef Array<SceneNode*>		SceneNodeList;
 typedef Array<MMEShader*>		SceneShaderList;
 
-/// ƒm[ƒhí•Ê
+/// ãƒãƒ¼ãƒ‰ç¨®åˆ¥
 enum SceneNodeType
 {
 	SceneNodeType_BaseNode = 0,
 	SceneNodeType_VisualNode,
 };
 
-/// ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“
+/// ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³
 enum CameraProjection
 {
-	CameraProjection_2D = 0,	///< 2D ƒ‚[ƒh
-	CameraProjection_3D,		///< 3D ƒ‚[ƒh
+	CameraProjection_2D = 0,	///< 2D ãƒ¢ãƒ¼ãƒ‰
+	CameraProjection_3D,		///< 3D ãƒ¢ãƒ¼ãƒ‰
 
 	CameraProjection_Max,		///< (Terminator)
 };
 
-/// ƒ‰ƒCƒg‚Ìí—Ş
+/// ãƒ©ã‚¤ãƒˆã®ç¨®é¡
 enum LightType
 {
-	LightType_Directional = 0,	///< ƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg
-	LightType_Point,			///< ƒ|ƒCƒ“ƒgƒ‰ƒCƒg
-	LightType_Spot,				///< ƒXƒ|ƒbƒgƒ‰ƒCƒg
+	LightType_Directional = 0,	///< ãƒ‡ã‚£ãƒ¬ã‚¯ã‚·ãƒ§ãƒŠãƒ«ãƒ©ã‚¤ãƒˆ
+	LightType_Point,			///< ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆ
+	LightType_Spot,				///< ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆ
 
 	LightType_Max,				///< (Terminator)
 };
 
-/// ƒrƒ‹ƒ{[ƒh‚ÌŒvZ•û–@
+/// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—æ–¹æ³•
 enum BillboardType
 {
-	BillboardType_None = 0,		///< ƒrƒ‹ƒ{[ƒh‚ÌŒvZ‚ğs‚í‚È‚¢
-	BillboardType_Front,		///< ƒJƒƒ‰ (ƒrƒ…[s—ñ) ‚É‘Î‚µ‚Ä³–Ê‚ğŒü‚­
-	BillboardType_RotY,			///< Y ²‰ñ“]‚Ì‚İs‚¤
+	BillboardType_None = 0,		///< ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—ã‚’è¡Œã‚ãªã„
+	BillboardType_Front,		///< ã‚«ãƒ¡ãƒ© (ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—) ã«å¯¾ã—ã¦æ­£é¢ã‚’å‘ã
+	BillboardType_RotY,			///< Y è»¸å›è»¢ã®ã¿è¡Œã†
 
 	BillboardType_Max,			///< (Terminator)
 };
 
 enum SpriteCoord
 {
-	SpriteCoord_X = 0,			///< X+ •ûŒü (‰EŒü‚«)
-	SpriteCoord_Y,				///< Y+ •ûŒü (ãŒü‚«)
-	SpriteCoord_Z,				///< Z+ •ûŒü (‰œŒü‚«)
-	SpriteCoord_RX,				///< X- •ûŒü (¶Œü‚«)
-	SpriteCoord_RY,				///< Y- •ûŒü (‰ºŒü‚«)
-	SpriteCoord_RZ,				///< Z- •ûŒü (è‘OŒü‚«)
-	SpriteCoord_2D,				///< 2D ‹óŠÔ—pBŒ´“_‚ğ¶ãAY+ •ûŒü‚ğ‰ºŒü‚«‚Æ‚·‚éB
+	SpriteCoord_X = 0,			///< X+ æ–¹å‘ (å³å‘ã)
+	SpriteCoord_Y,				///< Y+ æ–¹å‘ (ä¸Šå‘ã)
+	SpriteCoord_Z,				///< Z+ æ–¹å‘ (å¥¥å‘ã)
+	SpriteCoord_RX,				///< X- æ–¹å‘ (å·¦å‘ã)
+	SpriteCoord_RY,				///< Y- æ–¹å‘ (ä¸‹å‘ã)
+	SpriteCoord_RZ,				///< Z- æ–¹å‘ (æ‰‹å‰å‘ã)
+	SpriteCoord_2D,				///< 2D ç©ºé–“ç”¨ã€‚åŸç‚¹ã‚’å·¦ä¸Šã€Y+ æ–¹å‘ã‚’ä¸‹å‘ãã¨ã™ã‚‹ã€‚
 
 	SpriteCoord_Max,			///< (Terminator)
 };
 
-/// ”½“]•û–@
+/// åè»¢æ–¹æ³•
 enum FlipMode
 {
-	FlipMode_None = 0,		///< ”½“]–³‚µ
-	FlipMode_H,				///< ¶‰E”½“]
-	FlipMode_V,				///< ã‰º”½“]
-	FlipMode_HV,			///< ¶‰Eã‰º”½“]
+	FlipMode_None = 0,		///< åè»¢ç„¡ã—
+	FlipMode_H,				///< å·¦å³åè»¢
+	FlipMode_V,				///< ä¸Šä¸‹åè»¢
+	FlipMode_HV,			///< å·¦å³ä¸Šä¸‹åè»¢
 };
 
-/// •`‰æƒpƒX
+/// æç”»ãƒ‘ã‚¹
 enum InternalRenderingPass
 {
-	InternalRenderingPass_object = 65536,	///< ƒIƒuƒWƒFƒNƒg–{‘ÌiƒZƒ‹ƒtƒVƒƒƒhƒEOFFj
-	InternalRenderingPass_zplot,			///< ƒZƒ‹ƒtƒVƒƒƒhƒE—pZ’lƒvƒƒbƒg
-	InternalRenderingPass_object_ss,		///< ƒIƒuƒWƒFƒNƒg–{‘ÌiƒZƒ‹ƒtƒVƒƒƒhƒEONj
-	InternalRenderingPass_shadow,			///< ‰eiƒZƒ‹ƒtƒVƒƒƒhƒE‚Å‚Í‚È‚¢’Pƒ‚È‰ej
-	InternalRenderingPass_edge,				///< —ÖŠsiPMDƒ‚ƒfƒ‹‚Ì‚İj
-	InternalRenderingPass_Infomation,		///< ƒfƒoƒbƒOî•ñ“™
+	InternalRenderingPass_object = 65536,	///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæœ¬ä½“ï¼ˆã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦OFFï¼‰
+	InternalRenderingPass_zplot,			///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ç”¨Zå€¤ãƒ—ãƒ­ãƒƒãƒˆ
+	InternalRenderingPass_object_ss,		///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæœ¬ä½“ï¼ˆã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ONï¼‰
+	InternalRenderingPass_shadow,			///< å½±ï¼ˆã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã§ã¯ãªã„å˜ç´”ãªå½±ï¼‰
+	InternalRenderingPass_edge,				///< è¼ªéƒ­ï¼ˆPMDãƒ¢ãƒ‡ãƒ«ã®ã¿ï¼‰
+	InternalRenderingPass_Infomation,		///< ãƒ‡ãƒãƒƒã‚°æƒ…å ±ç­‰
 };
 
-/// ƒJƒƒ‰’PˆÊ‚Ìİ’è€–Ú (1ƒtƒŒ[ƒ€‚É1“x‚¾‚¯İ’è‚·‚ê‚Î‚¢‚¢ƒpƒ‰ƒ[ƒ^)
+/// ã‚«ãƒ¡ãƒ©å˜ä½ã®è¨­å®šé …ç›® (1ãƒ•ãƒ¬ãƒ¼ãƒ ã«1åº¦ã ã‘è¨­å®šã™ã‚Œã°ã„ã„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿)
 //struct CameraSceneParams
 //{
 //	//const Matrix*	Mat_CameraView;
 //	//const Matrix*	Mat_CameraProj;
-//	//const Matrix*	Mat_CameraViewProj;    ///< ƒJƒƒ‰‚Ìƒrƒ…[‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌÏ
+//	//const Matrix*	Mat_CameraViewProj;    ///< ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®ç©
 //
-//	//Vector4			CameraPosition;	    ///< ƒJƒƒ‰‚ÌˆÊ’u
-//	//Vector4			CameraDirection;	    ///< ƒJƒƒ‰‚ÌŒü‚«
-//	//Vector4         ViewPixelSize;         ///< •`‰ææRTƒTƒCƒY
+//	//Vector4			CameraPosition;	    ///< ã‚«ãƒ¡ãƒ©ã®ä½ç½®
+//	//Vector4			CameraDirection;	    ///< ã‚«ãƒ¡ãƒ©ã®å‘ã
+//	//Vector4         ViewPixelSize;         ///< æç”»å…ˆRTã‚µã‚¤ã‚º
 //
-//	//// ˆÈ‰º‚Í calcMatrices() ‚Åİ’è‚·‚é
+//	//// ä»¥ä¸‹ã¯ calcMatrices() ã§è¨­å®šã™ã‚‹
 //	//Matrix  Mat_CameraView_Inverse;
 //	//Matrix  Mat_CameraProj_Inverse;
 //	//Matrix  Mat_CameraViewProj_Inverse;

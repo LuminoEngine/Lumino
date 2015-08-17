@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include "../SceneGraphManager.h"
 #include "../SceneNode.h"
@@ -86,7 +86,7 @@ void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManage
 	Graphics::ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
 	{
-		// •Ï”‚ª”z—ñ‚Ìƒ‰ƒCƒgî•ñ‚Í‚±‚ÌŠÖ”“à‚Å‚Íİ’è‚µ‚È‚¢‚Ì‚ÅŸ‚Ö
+		// å¤‰æ•°ãŒé…åˆ—ã®ãƒ©ã‚¤ãƒˆæƒ…å ±ã¯ã“ã®é–¢æ•°å†…ã§ã¯è¨­å®šã—ãªã„ã®ã§æ¬¡ã¸
 		if (sv->LightNum >= 1 && sv->LightParamIsArray) {
 			continue;
 		}
@@ -96,7 +96,7 @@ void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManage
 		// CONTROLOBJECT
 		if (MME_VARREQ_CONTROLOBJECT_BEGIN <= sv->Request && sv->Request <= MME_VARREQ_CONTROLOBJECT_END) {
 			if (sv->ObjectName == _T("(self)")) {
-				// ƒm[ƒh’PˆÊ‚Ìƒf[ƒ^‚Æ‚µ‚Ä•Ê“rİ’è‚·‚é‚½‚ßA‚±‚±‚Å‚Í“Á‚É‰½‚à‚µ‚È‚¢
+				// ãƒãƒ¼ãƒ‰å˜ä½ã®ãƒ‡ãƒ¼ã‚¿ã¨ã—ã¦åˆ¥é€”è¨­å®šã™ã‚‹ãŸã‚ã€ã“ã“ã§ã¯ç‰¹ã«ä½•ã‚‚ã—ãªã„
 			}
 			else if (sv->ObjectName == _T("(OffscreenOwner)")) {
 				LN_THROW(0, NotImplementedException);
@@ -144,7 +144,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 
 		switch (sv->Request)
 		{
-			// s—ñ
+			// è¡Œåˆ—
 		case MME_VARREQ_MATRIX_CAMERA_View:
 			var->SetMatrix(camera->GetViewMatrix());
 			break;
@@ -155,7 +155,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 			var->SetMatrix(camera->GetViewProjectionMatrix());
 			break;
 
-			// ‹ts—ñ
+			// é€†è¡Œåˆ—
 		case MME_VARREQ_MATRIX_CAMERA_View_I:
 			var->SetMatrix(camera->GetViewMatrixI());
 			break;
@@ -166,7 +166,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 			var->SetMatrix(camera->GetViewProjectionMatrixI());
 			break;
 
-			// “]’us—ñ
+			// è»¢ç½®è¡Œåˆ—
 		case MME_VARREQ_MATRIX_CAMERA_View_T:
 			var->SetMatrix(camera->GetViewMatrixT());
 			break;
@@ -177,7 +177,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 			var->SetMatrix(camera->GetViewProjectionMatrixT());
 			break;
 
-			// ‹ts—ñ~“]’us—ñ
+			// é€†è¡Œåˆ—Ã—è»¢ç½®è¡Œåˆ—
 		case MME_VARREQ_MATRIX_CAMERA_View_IT:
 			var->SetMatrix(camera->GetViewMatrixIT());
 			break;
@@ -189,7 +189,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 		case MME_VARREQ_MATRIX_CAMERA_ViewProj_IT:
 			var->SetMatrix(camera->GetViewProjectionMatrixIT());
 			break;
-			// ƒJƒƒ‰‚ÌˆÊ’uEŒü‚«
+			// ã‚«ãƒ¡ãƒ©ã®ä½ç½®ãƒ»å‘ã
 		case MME_VARREQ_CAMERA_POSITION:
 			var->SetVector(Vector4(camera->GetPosition(), 0.0f));
 			break;
@@ -197,12 +197,12 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 			var->SetVector(camera->GetDirectionInternal());
 			break;
 
-			// ³Ë‰es—ñ
+			// æ­£å°„å½±è¡Œåˆ—
 			//case LN_VARREQ_MATRIX_CAMERA_ORTHOGRAPHIC:
 			//    var->SetMatrix( params.Mat_CameraOrtho );
 			//    break;
 
-			// •`‰ææRTƒTƒCƒY
+			// æç”»å…ˆRTã‚µã‚¤ã‚º
 		case MME_VARREQ_VIEWPORTPIXELSIZE:
 			var->SetVector(Vector4(viewPixelSize.Width, viewPixelSize.Height, 0, 0));
 			break;
@@ -226,28 +226,28 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 				//LN_THROW_NotImpl( 0 );
 			}
 			else {
-				// ƒV[ƒ“’PˆÊ‚Ìƒpƒ‰ƒ[ƒ^İ’è‚Åİ’èÏ‚İ
+				// ã‚·ãƒ¼ãƒ³å˜ä½ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šã§è¨­å®šæ¸ˆã¿
 			}
 			continue;
 		}
 
 		Graphics::ShaderVariable* var = sv->Variable;
 
-		// ³Šm‚È”ÍˆÍ‚¶‚á‚È‚¢‚¯‚ÇA­‚µ‚Å‚àğŒ”»’è‚Ì‰ñ”‚ğŒ¸‚ç‚·‚½‚ß‚É
+		// æ­£ç¢ºãªç¯„å›²ã˜ã‚ƒãªã„ã‘ã©ã€å°‘ã—ã§ã‚‚æ¡ä»¶åˆ¤å®šã®å›æ•°ã‚’æ¸›ã‚‰ã™ãŸã‚ã«
 		if (MME_VARREQ_GEOMETRY_MATRIX_BEGIN <= sv->Request && sv->Request <= MME_VARREQ_GEOMETRY_MATRIX_END)
 		{
-			// ufloat4x4 WorldLightViewMatrix : WORLDVIEWPROJECTION < string Object = "Light"; > ;v “™A
-			// ƒ‰ƒCƒg‚Ìs—ñ‚Æƒm[ƒh‚Ìs—ñ‚ğæZ‚µ‚½‚à‚Ì‚ª•K—v‚Å‚ ‚éê‡
+			// ã€Œfloat4x4 WorldLightViewMatrix : WORLDVIEWPROJECTION < string Object = "Light"; > ;ã€ ç­‰ã€
+			// ãƒ©ã‚¤ãƒˆã®è¡Œåˆ—ã¨ãƒãƒ¼ãƒ‰ã®è¡Œåˆ—ã‚’ä¹—ç®—ã—ãŸã‚‚ã®ãŒå¿…è¦ã§ã‚ã‚‹å ´åˆ
 			if (sv->LightNum > 0 && node->GetAffectLightList() != NULL)
 			{
 				bool isSet = false;
 				if (node->GetAffectLightList()->GetCount() > 0)
 				{
-					// ‰e‹¿ƒ‰ƒCƒg‚Ì 0 ”Ô
+					// å½±éŸ¿ãƒ©ã‚¤ãƒˆã® 0 ç•ª
 					Light* light = node->GetAffectLightList()->GetAt(0);
-					switch (sv->Request)	// ƒ‰ƒCƒg’P‘Ì‚ÌÀ•W•ÏŠ·s—ñ
+					switch (sv->Request)	// ãƒ©ã‚¤ãƒˆå˜ä½“ã®åº§æ¨™å¤‰æ›è¡Œåˆ—
 					{
-						// s—ñ
+						// è¡Œåˆ—
 					case MME_VARREQ_MATRIX_LIGHT_View:
 						var->SetMatrix(light->GetViewMatrix()/* * params.Mat_LightView*/);
 						break;
@@ -258,7 +258,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						var->SetMatrix(light->GetViewProjectionMatrix());
 						break;
 
-						// ‹ts—ñ
+						// é€†è¡Œåˆ—
 					case MME_VARREQ_MATRIX_LIGHT_View_I:
 						var->SetMatrix(light->GetViewMatrixI());
 						break;
@@ -269,7 +269,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						var->SetMatrix(light->GetViewProjectionMatrixI());
 						break;
 
-						// “]’us—ñ
+						// è»¢ç½®è¡Œåˆ—
 					case MME_VARREQ_MATRIX_LIGHT_View_T:
 						var->SetMatrix(light->GetViewMatrixT());
 						break;
@@ -280,7 +280,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						var->SetMatrix(light->GetViewProjectionMatrixT());
 						break;
 
-						// ‹ts—ñ~“]’us—ñ
+						// é€†è¡Œåˆ—Ã—è»¢ç½®è¡Œåˆ—
 					case MME_VARREQ_MATRIX_LIGHT_View_IT:
 						var->SetMatrix(light->GetViewMatrixIT());
 						break;
@@ -291,7 +291,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						var->SetMatrix(light->GetViewProjectionMatrixIT());
 						break;
 
-						//	// ƒ‰ƒCƒg‚ÌF
+						//	// ãƒ©ã‚¤ãƒˆã®è‰²
 						//case MME_VARREQ_LIGHT_DIFFUSE:
 						//	var->SetVector(*params.LightDiffuse);
 						//	break;
@@ -302,7 +302,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						//	var->SetVector(*params.LightSpecular);
 						//	break;
 
-						//	// ƒ‰ƒCƒg‚ÌˆÊ’uEŒü‚«
+						//	// ãƒ©ã‚¤ãƒˆã®ä½ç½®ãƒ»å‘ã
 						//case MME_VARREQ_LIGHT_POSITION:
 						//	var->SetVector(params.LightPosition);
 						//	break;
@@ -314,7 +314,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 
 				if (!isSet)
 				{
-					// SetMatrixArray() ‚Åİ’è‚·‚é•K—v‚ª‚ ‚é€–Ú
+					// SetMatrixArray() ã§è¨­å®šã™ã‚‹å¿…è¦ãŒã‚ã‚‹é …ç›®
 					if (sv->LightParamIsMatrix && sv->LightParamIsArray)
 					{
 						Matrix matrices[MaxAffectLights];
@@ -323,14 +323,14 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						}
 						sv->Variable->SetMatrixArray(matrices, sv->LightNum);
 					}
-					// SetMatrix() ‚Åİ’è‚·‚é•K—v‚ª‚ ‚é€–Ú
+					// SetMatrix() ã§è¨­å®šã™ã‚‹å¿…è¦ãŒã‚ã‚‹é …ç›®
 					else if (sv->LightParamIsMatrix && !sv->LightParamIsArray)
 					{
 						Matrix mat;
 						GetGeometryTransform(node, affectCamera, affectLightList, sv->Request, 0, &mat);
 						sv->Variable->SetMatrix(mat);
 					}
-					// SetVectorArray() ‚Åİ’è‚·‚é•K—v‚ª‚ ‚é€–Ú
+					// SetVectorArray() ã§è¨­å®šã™ã‚‹å¿…è¦ãŒã‚ã‚‹é …ç›®
 					else if (!sv->LightParamIsMatrix && sv->LightParamIsArray)
 					{
 						LightNodeList* lights = node->GetAffectLightList();
@@ -367,10 +367,10 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 
 						sv->Variable->SetVectorArray(vectors, sv->LightNum);
 					}
-					// s—ñŒ^A”z—ñŒ^‚Å‚Í‚È‚¢ (SetVector())
+					// è¡Œåˆ—å‹ã€é…åˆ—å‹ã§ã¯ãªã„ (SetVector())
 					else
 					{
-						// ‰e‹¿ƒ‰ƒCƒg‚Ì 0 ”Ô
+						// å½±éŸ¿ãƒ©ã‚¤ãƒˆã® 0 ç•ª
 						Light* light = node->GetAffectLightList()->GetAt(0);
 						switch (sv->Request)
 						{
@@ -399,7 +399,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 					}
 				}
 			}
-			// ƒ‰ƒCƒgˆÈŠO
+			// ãƒ©ã‚¤ãƒˆä»¥å¤–
 			else
 			{
 				Matrix mat;
@@ -423,88 +423,88 @@ void MMEShader::UpdateSubsetParams(const VisualNodeSubsetParams& params)
 
 		switch (sv->Request)
 		{
-			// ƒfƒBƒtƒ…[ƒYFiŠgUŒõj
+			// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²ï¼ˆæ‹¡æ•£å…‰ï¼‰
 		case MME_VARREQ_OBJECT_DIFFUSE:
 			var->SetVector(params.Material.Diffuse);
 			break;
 
-			// ƒAƒ“ƒrƒGƒ“ƒgFiŠÂ‹«Œõj
+			// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆè‰²ï¼ˆç’°å¢ƒå…‰ï¼‰
 		case MME_VARREQ_OBJECT_AMBIENT:
 			var->SetVector(params.Material.Ambient);
 			break;
 
-			// ƒGƒ~ƒbƒVƒ‡ƒ“Fi•úËŒõj
+			// ã‚¨ãƒŸãƒƒã‚·ãƒ§ãƒ³è‰²ï¼ˆæ”¾å°„å…‰ï¼‰
 		case MME_VARREQ_OBJECT_EMISSIVE:
 			var->SetVector(params.Material.Emissive);
 			break;
 
-			// ƒXƒyƒLƒ…ƒ‰Fi‹¾–ÊŒõj
+			// ã‚¹ãƒšã‚­ãƒ¥ãƒ©è‰²ï¼ˆé¡é¢å…‰ï¼‰
 		case MME_VARREQ_OBJECT_SPECULAR:
 			var->SetVector(params.Material.Specular);
 			break;
 
-			// ƒXƒyƒLƒ…ƒ‰‚Ì‹­“x
+			// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã®å¼·åº¦
 		case MME_VARREQ_OBJECT_SPECULARPOWER:
 			var->SetFloat(params.Material.Power);
 			break;
 
-			// ƒgƒD[ƒ“F
+			// ãƒˆã‚¥ãƒ¼ãƒ³è‰²
 		case MME_VARREQ_OBJECT_TOONCOLOR:
 			var->SetVector(params.Material.ToonColor);
 			break;
 
-			// —ÖŠsF
+			// è¼ªéƒ­è‰²
 		case MME_VARREQ_OBJECT_EDGECOLOR:
 			var->SetVector(params.Material.EdgeColor);
 			break;
 
-			// ƒ}ƒeƒŠƒAƒ‹‚Éİ’è‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£
 		case MME_VARREQ_OBJECT_MATERIALTEXTURE:
 			if (!params.Material.Texture.IsNull()) {
 				var->SetTexture(params.Material.Texture);
 			}
-			// ƒeƒNƒXƒ`ƒƒ‚ª‚È‚¯‚ê‚Îƒ_ƒ~[‚ğİ’è
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒãªã‘ã‚Œã°ãƒ€ãƒŸãƒ¼ã‚’è¨­å®š
 			else {
 				var->SetTexture(m_manager->GetDummyTexture());
 			}
 			break;
 
-			// ƒ}ƒeƒŠƒAƒ‹‚Éİ’è‚³‚ê‚Ä‚¢‚éAƒXƒtƒBƒAƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ã€ã‚¹ãƒ•ã‚£ã‚¢ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚¹ãƒãƒ£
 		case MME_VARREQ_OBJECT_MATERIALSPHEREMAP:
 			if (!params.Material.SphereTexture.IsNull()) {
 				var->SetTexture(params.Material.SphereTexture);
 			}
-			// ƒeƒNƒXƒ`ƒƒ‚ª‚È‚¯‚ê‚Îƒ_ƒ~[‚ğİ’è
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒãªã‘ã‚Œã°ãƒ€ãƒŸãƒ¼ã‚’è¨­å®š
 			else {
 				var->SetTexture(m_manager->GetDummyTexture());
 			}
 			break;
 
-			// •s“§–¾“x
+			// ä¸é€æ˜åº¦
 		case LN_VARREQ_OPACITY:
 		{
 			var->SetFloat(params.Opacity);
 			break;
 		}
-			// æZ‚·‚éF
+			// ä¹—ç®—ã™ã‚‹è‰²
 		case LN_VARREQ_COLOR_SCALE:
 		{
 			var->SetVector(params.ColorScale);
 			break;
 		}
-			// ƒuƒŒƒ“ƒh‚·‚éF
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ã™ã‚‹è‰²
 		case LN_VARREQ_BLEND_COLOR:
 		{
 			var->SetVector(params.BlendColor);
 			break;
 		}
-			// F’²
+			// è‰²èª¿
 		case LN_VARREQ_TONE:
 		{
 			var->SetVector(params.Tone);
 			break;
 		}
-			// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—
 		case LN_VARREQ_UVTRANSFORM:
 		{
 			var->SetMatrix(params.UVTransform);
@@ -644,7 +644,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 		return true;
 	}
 
-		// ‹ts—ñ
+		// é€†è¡Œåˆ—
 	case MME_VARREQ_MATRIX_World_I:
 	{
 		*outMatrix = Matrix::Inverse(node->GetMatrix());
@@ -675,7 +675,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 		return true;
 	}
 
-		// “]’us—ñ
+		// è»¢ç½®è¡Œåˆ—
 	case MME_VARREQ_MATRIX_World_T:
 	{
 		*outMatrix = Matrix::Transpose(node->GetMatrix());
@@ -706,7 +706,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 		return true;
 	}
 
-		// ‹ts—ñ~“]’us—ñ
+		// é€†è¡Œåˆ—Ã—è»¢ç½®è¡Œåˆ—
 	case MME_VARREQ_MATRIX_World_IT:
 	{
 		*outMatrix = Matrix::Inverse(node->GetMatrix());
@@ -751,8 +751,8 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 //-----------------------------------------------------------------------------
 MMEShaderTechnique* MMEShader::FindTechnique(MMDPass mmdPass, bool UseTexture, bool UseSphereMap, bool UseToon, bool UseSelfShadow, int subsetIndex)
 {
-	/* MMM ‚Å‚Í•¡”‚ÌƒeƒNƒjƒbƒN‚ªƒ}ƒbƒ`‚µ‚Ä‚àAÀÛ‚Ég‚í‚ê‚é‚Ì‚Í
-	 * ƒtƒ@ƒCƒ‹ã‚Åæ‚É‹Lq‚³‚ê‚Ä‚¢‚é 1 ‚Â‚¾‚¯B
+	/* MMM ã§ã¯è¤‡æ•°ã®ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ãŒãƒãƒƒãƒã—ã¦ã‚‚ã€å®Ÿéš›ã«ä½¿ã‚ã‚Œã‚‹ã®ã¯
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã§å…ˆã«è¨˜è¿°ã•ã‚Œã¦ã„ã‚‹ 1 ã¤ã ã‘ã€‚
 	 */
 
 	LN_FOREACH(MMEShaderTechnique* tech, m_mmeShaderTechniqueList)
@@ -760,16 +760,16 @@ MMEShaderTechnique* MMEShader::FindTechnique(MMDPass mmdPass, bool UseTexture, b
 		if (tech->GetMMDPass() != mmdPass) {
 			continue;
 		}
-		if (!tech->IsUseTexture().IsNull() && tech->IsUseTexture() != UseTexture) {	// È—ª‚³‚ê‚Ä‚¢‚éê‡‚Íƒ}ƒbƒ`‚µ‚Ä‚¢‚é‚Æ‚·‚é
+		if (!tech->IsUseTexture().IsNull() && tech->IsUseTexture() != UseTexture) {	// çœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãƒãƒƒãƒã—ã¦ã„ã‚‹ã¨ã™ã‚‹
 			continue;
 		}
-		if (!tech->IsUseSphereMap().IsNull() && tech->IsUseSphereMap() != UseSphereMap) {	// È—ª‚³‚ê‚Ä‚¢‚éê‡‚Íƒ}ƒbƒ`‚µ‚Ä‚¢‚é‚Æ‚·‚é
+		if (!tech->IsUseSphereMap().IsNull() && tech->IsUseSphereMap() != UseSphereMap) {	// çœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãƒãƒƒãƒã—ã¦ã„ã‚‹ã¨ã™ã‚‹
 			continue;
 		}
-		if (!tech->IsUseToon().IsNull() && tech->IsUseToon() != UseToon) {	// È—ª‚³‚ê‚Ä‚¢‚éê‡‚Íƒ}ƒbƒ`‚µ‚Ä‚¢‚é‚Æ‚·‚é
+		if (!tech->IsUseToon().IsNull() && tech->IsUseToon() != UseToon) {	// çœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãƒãƒƒãƒã—ã¦ã„ã‚‹ã¨ã™ã‚‹
 			continue;
 		}
-		if (!tech->IsUseSelfShadow().IsNull() && tech->IsUseSelfShadow() != UseSelfShadow) {	// È—ª‚³‚ê‚Ä‚¢‚éê‡‚Íƒ}ƒbƒ`‚µ‚Ä‚¢‚é‚Æ‚·‚é
+		if (!tech->IsUseSelfShadow().IsNull() && tech->IsUseSelfShadow() != UseSelfShadow) {	// çœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãƒãƒƒãƒã—ã¦ã„ã‚‹ã¨ã™ã‚‹
 			continue;
 		}
 		if (!tech->ContainsSubsetIndex(subsetIndex)) {

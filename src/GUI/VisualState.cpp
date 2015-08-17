@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/Control.h>
@@ -52,18 +52,18 @@ bool FloatEasing::Apply(UIElement* targetElement, Property* targetProp, const Va
 {
 	float value = 0;
 
-	// Œo‰ßŠÔ 0 ‚Ìê‡‚Í‚»‚Ì‚Ü‚ÜƒZƒbƒg‚Å—Ç‚¢B0œZ‘Îô‚ÌˆÓ–¡‚à‚ß‚ÄB
-	// ‚Ü‚½AŠÔ‚ªŠù‚ÉI’[‚ğ’´‚¦‚Ä‚¢‚½‚èA”äŠrŠÖ”‚ª–³‚¢ê‡‚à’¼’lƒZƒbƒgB
+	// çµŒéæ™‚é–“ 0 ã®å ´åˆã¯ãã®ã¾ã¾ã‚»ãƒƒãƒˆã§è‰¯ã„ã€‚0é™¤ç®—å¯¾ç­–ã®æ„å‘³ã‚‚è¾¼ã‚ã¦ã€‚
+	// ã¾ãŸã€æ™‚é–“ãŒæ—¢ã«çµ‚ç«¯ã‚’è¶…ãˆã¦ã„ãŸã‚Šã€æ¯”è¼ƒé–¢æ•°ãŒç„¡ã„å ´åˆã‚‚ç›´å€¤ã‚»ãƒƒãƒˆã€‚
 	if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
 	{
 		value = m_targetValue;
 	}
-	// ŠÔ‚ª 0 ˆÈ‘O‚Ìê‡‚Í‰Šú’lB
+	// æ™‚é–“ãŒ 0 ä»¥å‰ã®å ´åˆã¯åˆæœŸå€¤ã€‚
 	else if (time <= 0)
 	{
 		value = Variant::Cast<float>(startValue);
 	}
-	// •âŠÔ‚Å‹‚ß‚é
+	// è£œé–“ã§æ±‚ã‚ã‚‹
 	else
 	{
 		float b = Variant::Cast<float>(startValue);
@@ -163,15 +163,15 @@ void VisualStateManager::GoToState(Control* control, const String& stateName)
 		VisualStateList::iterator itr = std::find_if(stateList->begin(), stateList->end(), [stateName](VisualState* state) { return state->GetName() == stateName; });
 		if (itr != stateList->end())
 		{
-			// Ä¶’†‚ÌƒAƒjƒ‚ğ~‚ß‚é
+			// å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ã‚’æ­¢ã‚ã‚‹
 			VisualState* current = group->GetCurrentState();
 			if (current != NULL) {
 				current->GetStoryboard()->Stop(control);
 			}
 
-			group->SetCurrentState(*itr);				// ƒJƒŒƒ“ƒg•ÏX
-			(*itr)->GetStoryboard()->Begin(control);	// ƒAƒjƒ[ƒVƒ‡ƒ“ŠJn
-			return;	// ˆ—I—¹
+			group->SetCurrentState(*itr);				// ã‚«ãƒ¬ãƒ³ãƒˆå¤‰æ›´
+			(*itr)->GetStoryboard()->Begin(control);	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹
+			return;	// å‡¦ç†çµ‚äº†
 		}
 	}
 }
@@ -209,10 +209,10 @@ void Storyboard::AddTimeline(AnimationTimeline* timeline)
 //-----------------------------------------------------------------------------
 void Storyboard::Begin(UIElement* target)
 {
-	// TODO: AnimationClock ‚Í•p”É‚Éì¬‚³‚ê‚é‚Ì‚ÅƒLƒƒƒbƒVƒ…‚µ‚½‚¢
+	// TODO: AnimationClock ã¯é »ç¹ã«ä½œæˆã•ã‚Œã‚‹ã®ã§ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ãŸã„
 	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(m_manager, this, target, &m_animationTimelineList));
 
-	// TODO: Manager ‚É‚à“o˜^‚µ‚ÄƒAƒjƒ‚µ‚Ä‚à‚ç‚¤
+	// TODO: Manager ã«ã‚‚ç™»éŒ²ã—ã¦ã‚¢ãƒ‹ãƒ¡ã—ã¦ã‚‚ã‚‰ã†
 	GUIHelper::UIElement_GetAnimationClockList(target)->Add(clock);
 }
 

@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <functional>
 #include <Lumino/GUI/GUIManager.h>
@@ -8,11 +8,11 @@ namespace Lumino
 namespace GUI
 {
 	
-// �l�X�ȃI�u�W�F�N�g�� private �����o�ɃA�N�Z�X��������N���X�B
-// ���̃N���X�͐�΂Ƀ��C�u�����̃��[�U�[�Ɍ�����Ƃ���Ɍ��J���Ă͂Ȃ�Ȃ��B
-// �t���[�����[�N�̓s����A�����̃����o�� public �Ō��J���Ȃ���΂Ȃ�Ȃ����A����������͂��܂�ɂ��댯�Ȏ����B
-// ��ނ𓾂� friend class �ɓ������B
-// C# �� internal ���g����Ίy�Ȃ̂����E�E�E�B
+// 様々なオブジェクトの private メンバにアクセスする内部クラス。
+// このクラスは絶対にライブラリのユーザーに見えるところに公開してはならない。
+// フレームワークの都合上、多くのメンバを public で公開しなければならないが、しかしそれはあまりにも危険な実装。
+// やむを得ず friend class に逃がす。
+// C# の internal が使えれば楽なのだが・・・。
 class GUIHelper
 {
 public:

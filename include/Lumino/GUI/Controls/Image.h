@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
@@ -8,7 +8,7 @@ namespace Lumino
 namespace GUI
 {
 
-/// ƒRƒ“ƒeƒ“ƒcƒTƒCƒY‚ÌŒvZ•û–@
+/// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚µã‚¤ã‚ºã®è¨ˆç®—æ–¹æ³•
 LN_ENUM(Stretch)
 {
 	None = 0,
@@ -24,7 +24,7 @@ class Image
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Image);
 public:
-	LN_PROPERTY(Variant,	SourceProperty);		// TODO: OnSourcePropertyChagendB‚ ‚Æ‚à‚µ‚©‚µ‚½‚ç Converter ‚ª‚Ù‚µ‚¢‚©‚à
+	LN_PROPERTY(Variant,	SourceProperty);		// TODO: OnSourcePropertyChagendã€‚ã‚ã¨ã‚‚ã—ã‹ã—ãŸã‚‰ Converter ãŒã»ã—ã„ã‹ã‚‚
 	LN_PROPERTY(Rect,		SourceRectProperty);
 
 public:

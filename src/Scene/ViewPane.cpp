@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
@@ -45,7 +45,7 @@ void ViewPane::Render(Graphics::Texture* renderTarget)
 {
 	SizeF viewSize((float)renderTarget->GetSize().Width, (float)renderTarget->GetSize().Height);
 
-	// ‘S‚Ä‚ÌƒVƒF[ƒ_‚Ì Scene ’PˆÊƒf[ƒ^‚ÌXV
+	// å…¨ã¦ã®ã‚·ã‚§ãƒ¼ãƒ€ã® Scene å˜ä½ãƒ‡ãƒ¼ã‚¿ã®æ›´æ–°
 	MMESceneParams sceneParams;
 	sceneParams.Time = (float)m_manager->GetTime();
 	sceneParams.ElapsedTime = m_manager->GetElapsedTime();
@@ -57,7 +57,7 @@ void ViewPane::Render(Graphics::Texture* renderTarget)
 		shader->UpdateSceneParams(sceneParams, m_manager);
 	}
 	
-	// ŠeƒŒƒCƒ„[‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ğÀs‚·‚é
+	// å„ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚’å®Ÿè¡Œã™ã‚‹
 	int count = m_layerList.GetCount();
 	for (int i = 0; i < count; i++) {
 		m_layerList.GetAt(i)->PreRender(viewSize);
@@ -65,7 +65,7 @@ void ViewPane::Render(Graphics::Texture* renderTarget)
 	for (int i = 0; i < count; i++) {
 		m_layerList.GetAt(i)->Render();
 	}
-	for (int i = count - 1; i >= 0; i--) {	// post ‚Í‹t‡
+	for (int i = count - 1; i >= 0; i--) {	// post ã¯é€†é †
 		m_layerList.GetAt(i)->PostRender();
 	}
 }

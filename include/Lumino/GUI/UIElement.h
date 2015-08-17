@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Base/Array.h>
@@ -56,7 +56,7 @@ private:
 
 /**
 	@brief		
-	@details	RoutedEvent ‚Í UIElement ‹y‚Ñ‚»‚ÌƒTƒuƒNƒ‰ƒX“à•”‚©‚ç‚Ì‚İ”­¶‚³‚¹‚é‚±‚Æ‚ªo—ˆ‚Ü‚·B
+	@details	RoutedEvent ã¯ UIElement åŠã³ãã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹å†…éƒ¨ã‹ã‚‰ã®ã¿ç™ºç”Ÿã•ã›ã‚‹ã“ã¨ãŒå‡ºæ¥ã¾ã™ã€‚
 */
 template<class TArgs>
 class RoutedEventSlot
@@ -69,7 +69,7 @@ public:
 public:
 
 	/**
-		@brief	ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‰‚ğ’Ç‰Á‚µ‚Ü‚·B
+		@brief	ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ©ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 	*/
 	void AddHandler(const Delegate01<TArgs*>& handler)
 	{
@@ -77,7 +77,7 @@ public:
 	}
 	
 	/**
-		@brief	w’è‚µ‚½ƒnƒ“ƒhƒ‰‚Éˆê’v‚·‚éƒnƒ“ƒhƒ‰‚ğA‚±‚ÌƒXƒƒbƒg‚©‚çíœ‚µ‚Ü‚·B
+		@brief	æŒ‡å®šã—ãŸãƒãƒ³ãƒ‰ãƒ©ã«ä¸€è‡´ã™ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã‚’ã€ã“ã®ã‚¹ãƒ­ãƒƒãƒˆã‹ã‚‰å‰Šé™¤ã—ã¾ã™ã€‚
 	*/
 	void RemoveHandler(const Delegate01<TArgs*>& handler)
 	{
@@ -85,7 +85,7 @@ public:
 	}
 	
 	/**
-		@brief	ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‰‚ğ’Ç‰Á‚µ‚Ü‚·B
+		@brief	ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ©ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 	*/
 	void operator += (const Delegate01<TArgs*>& handler)
 	{
@@ -93,7 +93,7 @@ public:
 	}
 	
 	/**
-		@brief	w’è‚µ‚½ƒnƒ“ƒhƒ‰‚Éˆê’v‚·‚éƒnƒ“ƒhƒ‰‚ğA‚±‚ÌƒXƒƒbƒg‚©‚çíœ‚µ‚Ü‚·B
+		@brief	æŒ‡å®šã—ãŸãƒãƒ³ãƒ‰ãƒ©ã«ä¸€è‡´ã™ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã‚’ã€ã“ã®ã‚¹ãƒ­ãƒƒãƒˆã‹ã‚‰å‰Šé™¤ã—ã¾ã™ã€‚
 	*/
 	void operator -= (const Delegate01<TArgs*>& handler)
 	{
@@ -111,17 +111,17 @@ private:
 		}
 	}
 
-	// Lumino::EventXX ‚Ì‚æ‚¤‚Èg‚¢•û‚Æ“¯‚ÉA
-	// Property ‚É‚½‚¢‚·‚é ƒƒ“ƒo•Ï”‚Ì‚æ‚¤‚ÈˆÓ–¡‚à‚ÂB
-	// ‘¦‚¿Aƒnƒ“ƒhƒ‰‚ÌƒŠƒXƒgB
-	// RoutedEventSlot ‚ÍA‚¢‚í‚ä‚éu“®“I‚Èƒnƒ“ƒhƒ‰v
+	// Lumino::EventXX ã®ã‚ˆã†ãªä½¿ã„æ–¹ã¨åŒæ™‚ã«ã€
+	// Property ã«ãŸã„ã™ã‚‹ ãƒ¡ãƒ³ãƒå¤‰æ•°ã®ã‚ˆã†ãªæ„å‘³ã‚‚æŒã¤ã€‚
+	// å³ã¡ã€ãƒãƒ³ãƒ‰ãƒ©ã®ãƒªã‚¹ãƒˆã€‚
+	// RoutedEventSlot ã¯ã€ã„ã‚ã‚†ã‚‹ã€Œå‹•çš„ãªãƒãƒ³ãƒ‰ãƒ©ã€
 };
 
 
 
 
 /**
-	@brief	GUI —v‘f‚Ìƒx[ƒXƒNƒ‰ƒX‚Å‚·B
+	@brief	GUI è¦ç´ ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class UIElement
 	: public CoreObject
@@ -129,113 +129,113 @@ class UIElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
-	LN_PROPERTY(SizeF,					SizeProperty);					/**< Size ƒvƒƒpƒeƒB‚Ì¯•Êq */
-	LN_PROPERTY(ThicknessF,				MarginProperty);				/**< Margin ƒvƒƒpƒeƒB‚Ì¯•Êq */
-	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment ƒvƒƒpƒeƒB‚Ì¯•Êq */
-	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment ƒvƒƒpƒeƒB‚Ì¯•Êq */
-	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity ƒvƒƒpƒeƒB‚Ì¯•Êq */
-	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest ƒvƒƒpƒeƒB‚Ì¯•Êq */
+	LN_PROPERTY(SizeF,					SizeProperty);					/**< Size ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
+	LN_PROPERTY(ThicknessF,				MarginProperty);				/**< Margin ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
+	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
+	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
+	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
+	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
 
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				/**< MouseLeave ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq */
-	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< ‚±‚ÌƒCƒxƒ“ƒg‚Í“à•”—p */
-	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< ‚±‚ÌƒCƒxƒ“ƒg‚Í“à•”—p */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				/**< MouseLeave ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< ã“ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯å†…éƒ¨ç”¨ */
+	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< ã“ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯å†…éƒ¨ç”¨ */
 
 public:
 	//-------------------------------------------------------------------------
 	/** @name RoutedEvents */
 	/** @{ */
 
-	RoutedEventSlot<MouseEventArgs>		MouseEnter;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘f‚Ì‹«ŠE“à‚É“ü‚Á‚½‚Æ‚«‚É”­¶‚µ‚Ü‚·B*/
-	RoutedEventSlot<MouseEventArgs>		MouseLeave;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘f‚Ì‹«ŠE‚©‚ço‚½‚Æ‚«‚É”­¶‚µ‚Ü‚·B*/
-	RoutedEventSlot<MouseEventArgs>		MouseMove;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘fã‚ÅˆÚ“®‚·‚é‚Æ”­¶‚µ‚Ü‚·B */
-	RoutedEventSlot<MouseEventArgs>		MouseDown;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘fã‚É‚ ‚é‚Æ‚«‚É”CˆÓ‚Ìƒ}ƒEƒXƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
-	RoutedEventSlot<MouseEventArgs>		MouseUp;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘fã‚É‚ ‚é‚Æ‚«‚É”CˆÓ‚Ìƒ}ƒEƒXƒ{ƒ^ƒ“‚ª—£‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
+	RoutedEventSlot<MouseEventArgs>		MouseEnter;		/**< ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ã®å¢ƒç•Œå†…ã«å…¥ã£ãŸã¨ãã«ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	RoutedEventSlot<MouseEventArgs>		MouseLeave;		/**< ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ã®å¢ƒç•Œã‹ã‚‰å‡ºãŸã¨ãã«ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	RoutedEventSlot<MouseEventArgs>		MouseMove;		/**< ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ä¸Šã§ç§»å‹•ã™ã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚ */
+	RoutedEventSlot<MouseEventArgs>		MouseDown;		/**< ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ä¸Šã«ã‚ã‚‹ã¨ãã«ä»»æ„ã®ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	RoutedEventSlot<MouseEventArgs>		MouseUp;		/**< ãƒã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ä¸Šã«ã‚ã‚‹ã¨ãã«ä»»æ„ã®ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
 
 	/** @} */
 	//-------------------------------------------------------------------------
 	/** @name Properties */
 	/** @{ */
 
-	/** —v‘f‚ÌƒTƒCƒY‚ğİ’è‚µ‚Ü‚·B‹K’è’l‚Í NaN ‚ÅA‚±‚Ì’l‚Í©“®ƒTƒCƒY•ÏX‚ª—LŒø‚Å‚ ‚é‚±‚Æ‚ğ¦‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®ã‚µã‚¤ã‚ºã‚’è¨­å®šã—ã¾ã™ã€‚è¦å®šå€¤ã¯ NaN ã§ã€ã“ã®å€¤ã¯è‡ªå‹•ã‚µã‚¤ã‚ºå¤‰æ›´ãŒæœ‰åŠ¹ã§ã‚ã‚‹ã“ã¨ã‚’ç¤ºã—ã¾ã™ã€‚*/
 	//void SetSize(const SizeF& size) { SetTypedPropertyValue(SizeProperty, size); }
 
-	/** —v‘f‚ÌƒTƒCƒY‚ğæ“¾‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	//const SizeF& GetSize() const { return GetTypedPropertyValue<const SizeF&>(SizeProperty); }
 
-	/** —v‘f‚ÌŠO‘¤‚Ì—]”’‚ğİ’è‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®å¤–å´ã®ä½™ç™½ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	//void SetMargin(const ThicknessF& margin) { SetTypedPropertyValue(MarginProperty, margin); }
 
-	/** —v‘f‚ÌŠO‘¤‚Ì—]”’‚ğæ“¾‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®å¤–å´ã®ä½™ç™½ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	//const ThicknessF& GetMargin() const { return GetTypedPropertyValue<const ThicknessF&>(MarginProperty); }
 
-	/** —v‘f‚Ì•s“§–¾“x‚ğİ’è‚µ‚Ü‚·B0.0`1.0 ‚Åw’è‚µ‚Ü‚·B‹K’è’l‚Í 1.0 ‚Å‚·B*/
+	/** è¦ç´ ã®ä¸é€æ˜åº¦ã‚’è¨­å®šã—ã¾ã™ã€‚0.0ï½1.0 ã§æŒ‡å®šã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 1.0 ã§ã™ã€‚*/
 	void SetOpacity(float value) { SetTypedPropertyValue<float>(OpacityProperty, value); }
 
-	/** —v‘f‚Ì•s“§–¾“x‚ğæ“¾‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®ä¸é€æ˜åº¦ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	float GetOpacity() const { return GetTypedPropertyValue<float>(OpacityProperty); }
 
 	/** @} */
 
 public:
-	/** ˜_—ã‚Ìe—v‘f‚ğæ“¾‚µ‚Ü‚·B*/
+	/** è«–ç†ä¸Šã®è¦ªè¦ç´ ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	UIElement* GetParent() const { return m_parent; }
 
-	/** —v‘f‚Ì¯•Ê–¼‚ğæ“¾‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®è­˜åˆ¥åã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	const String& GetKeyName() const { return m_keyName; }
 
-	/** ƒŒƒCƒAƒEƒgˆ—‚Ì‘ª’èƒpƒX‚ÌÀs’†‚É‚±‚Ì—v‘f‚ªŒvZ‚µ‚½ƒTƒCƒY‚ğæ“¾‚µ‚Ü‚·B‚±‚Ì’l‚Íq—v‘f‚ªe—v‘f‚Ö—v‹‚·‚éAq—v‘f©g‚ÌÅ’áƒTƒCƒY‚Å‚·B*/
+	/** ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆå‡¦ç†ã®æ¸¬å®šãƒ‘ã‚¹ã®å®Ÿè¡Œä¸­ã«ã“ã®è¦ç´ ãŒè¨ˆç®—ã—ãŸã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚ã“ã®å€¤ã¯å­è¦ç´ ãŒè¦ªè¦ç´ ã¸è¦æ±‚ã™ã‚‹ã€å­è¦ç´ è‡ªèº«ã®æœ€ä½ã‚µã‚¤ã‚ºã§ã™ã€‚*/
 	const SizeF& GetDesiredSize() const { return m_desiredSize; }
 
-	/** ‚±‚Ì—v‘f‚ÌÅI“I‚È•`‰æƒTƒCƒY‚ğæ“¾‚µ‚Ü‚·B‚±‚Ì’l‚Í Arrange() ‚ÅŠm’è‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ã®æœ€çµ‚çš„ãªæç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚ã“ã®å€¤ã¯ Arrange() ã§ç¢ºå®šã—ã¾ã™ã€‚*/
 	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
-	/** ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void CaptureMouse();
 
-	/** ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚ğ‰ğœ‚µ‚Ü‚·B*/
+	/** ãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ã‚’è§£é™¤ã—ã¾ã™ã€‚*/
 	void ReleaseMouseCapture();
 
-	/** ‚±‚Ì—v‘f“à‚ÌqƒrƒWƒ…ƒAƒ‹—v‘f‚Ì”‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ å†…ã®å­ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã®æ•°ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	virtual int GetVisualChildrenCount() const;
 
-	/** ‚±‚Ì—v‘f“à‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚éqƒrƒWƒ…ƒAƒ‹—v‘f‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ å†…ã®æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹å­ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	virtual UIElement* GetVisualChild(int index) const;
 
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 protected:
-	/** ‚±‚Ì—v‘f‚ÌƒŒƒCƒAƒEƒg‚ÌXV‚ªŠ®—¹‚µ‚½‚ÉŒÄ‚Ño‚³‚ê‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®æ›´æ–°ãŒå®Œäº†ã—ãŸæ™‚ã«å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚*/
 	virtual void OnLayoutUpdated();
 
-	/** w’è‚µ‚½—v‘f‚ğ‚±‚Ì—v‘f‚ÉƒrƒWƒ…ƒAƒ‹q—v‘f‚Æ‚µ‚Ä’Ç‰Á‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸè¦ç´ ã‚’ã“ã®è¦ç´ ã«ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«å­è¦ç´ ã¨ã—ã¦è¿½åŠ ã—ã¾ã™ã€‚*/
 	void AddVisualChild(UIElement* element);
 
-	/** w’è‚µ‚½—v‘f‚ğ‚±‚Ì—v‘f‚ÌƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚©‚çíœ‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸè¦ç´ ã‚’ã“ã®è¦ç´ ã®ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã‹ã‚‰å‰Šé™¤ã—ã¾ã™ã€‚*/
 	void RemoveVisualChild(UIElement* element);
 	
 	/**
-		@brief		‚±‚Ì—v‘f‚ğ•\¦‚·‚é‚½‚ß‚É•K—v‚ÈƒTƒCƒY‚ğŒv‘ª‚µ‚Ü‚·B
-		@params[in]	constraint	: ‚±‚Ì—v‘f‚ğ”z’u‚Å‚«‚é—Ìˆæ‚ÌÅ‘åƒTƒCƒYB’Êí‚Íe—v‘f‚ÌƒTƒCƒY‚ª“n‚³‚ê‚Ü‚·B
-		@return		‚±‚Ì—v‘f‚ÌƒŒƒCƒAƒEƒg‚ÌÛ‚É•K—v‚Æ‚È‚éÅ’áŒÀ‚ÌƒTƒCƒYB‚±‚Ì—v‘f‚ÌƒTƒCƒY‚ÆA‘S‚Ä‚Ìq—v‘f‚ÌƒTƒCƒY‚ÉŠî‚Ã‚«Œˆ’è‚µ‚Ü‚·B
-		@details	constraint ‚ÍAScrollViewer “™‚ÌƒRƒ“ƒeƒ“ƒc‚Æ‚È‚Á‚½ê‡‚Í Infinity ‚ª“n‚³‚ê‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+		@brief		ã“ã®è¦ç´ ã‚’è¡¨ç¤ºã™ã‚‹ãŸã‚ã«å¿…è¦ãªã‚µã‚¤ã‚ºã‚’è¨ˆæ¸¬ã—ã¾ã™ã€‚
+		@params[in]	constraint	: ã“ã®è¦ç´ ã‚’é…ç½®ã§ãã‚‹é ˜åŸŸã®æœ€å¤§ã‚µã‚¤ã‚ºã€‚é€šå¸¸ã¯è¦ªè¦ç´ ã®ã‚µã‚¤ã‚ºãŒæ¸¡ã•ã‚Œã¾ã™ã€‚
+		@return		ã“ã®è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®éš›ã«å¿…è¦ã¨ãªã‚‹æœ€ä½é™ã®ã‚µã‚¤ã‚ºã€‚ã“ã®è¦ç´ ã®ã‚µã‚¤ã‚ºã¨ã€å…¨ã¦ã®å­è¦ç´ ã®ã‚µã‚¤ã‚ºã«åŸºã¥ãæ±ºå®šã—ã¾ã™ã€‚
+		@details	constraint ã¯ã€ScrollViewer ç­‰ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã¨ãªã£ãŸå ´åˆã¯ Infinity ãŒæ¸¡ã•ã‚Œã‚‹ã“ã¨ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 
 	/**
-		@brief		q—v‘f‚Ì”z’u‚ğŠm’è‚µA‚±‚Ì—v‘f‚ÌÅIƒTƒCƒY‚ğ•Ô‚µ‚Ü‚·B
-		@param[in]	finalSize	: e—v‘f‚ª‚±‚Ì—v‘f‚É‘Î‚µ‚ÄŠ„‚è“–‚Ä‚½—Ìˆæ‚ÌƒTƒCƒYB
-		@return		—v‘f‚ÌÅIƒTƒCƒYB—v‘f‚Ì•`‰æ‚É‚±‚ÌƒTƒCƒY‚ğg—p‚µ‚Ü‚·B
-		@details	”h¶ƒNƒ‰ƒX‚Í finalSize ‚æ‚è‚à‘å‚«‚¢ƒTƒCƒY‚ğ•Ô‚·‚ÆA•`‰æ‚ÉŒ©Ø‚ê‚ª”­¶‚µ‚Ü‚·B
+		@brief		å­è¦ç´ ã®é…ç½®ã‚’ç¢ºå®šã—ã€ã“ã®è¦ç´ ã®æœ€çµ‚ã‚µã‚¤ã‚ºã‚’è¿”ã—ã¾ã™ã€‚
+		@param[in]	finalSize	: è¦ªè¦ç´ ãŒã“ã®è¦ç´ ã«å¯¾ã—ã¦å‰²ã‚Šå½“ã¦ãŸé ˜åŸŸã®ã‚µã‚¤ã‚ºã€‚
+		@return		è¦ç´ ã®æœ€çµ‚ã‚µã‚¤ã‚ºã€‚è¦ç´ ã®æç”»æ™‚ã«ã“ã®ã‚µã‚¤ã‚ºã‚’ä½¿ç”¨ã—ã¾ã™ã€‚
+		@details	æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã¯ finalSize ã‚ˆã‚Šã‚‚å¤§ãã„ã‚µã‚¤ã‚ºã‚’è¿”ã™ã¨ã€æç”»æ™‚ã«è¦‹åˆ‡ã‚ŒãŒç™ºç”Ÿã—ã¾ã™ã€‚
 	*/
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
 	/**
-		@brief	‚±‚Ì—v‘f‚Ì•`‰æ‚ğs‚¢‚Ü‚·B
+		@brief	ã“ã®è¦ç´ ã®æç”»ã‚’è¡Œã„ã¾ã™ã€‚
 	*/
 	virtual void OnRender(Graphics::Painter* painter);
 
@@ -281,10 +281,10 @@ public:
 	//
 	//void SetWidth(float width) { m_size.Width = width; }
 
-	///// —v‘f‚Ì•‚ğæ“¾‚µ‚Ü‚·B
+	///// è¦ç´ ã®å¹…ã‚’å–å¾—ã—ã¾ã™ã€‚
 	//float GetWidth() { return m_size.Width; }
 
-	///// —v‘f‚Ì‚‚³‚ğİ’è‚µ‚Ü‚·B‹K’è’l‚Í NAN ‚ÅA©“®“I‚ÉƒTƒCƒY‚ğŒvZ‚µ‚Ü‚·B
+	///// è¦ç´ ã®é«˜ã•ã‚’è¨­å®šã—ã¾ã™ã€‚è¦å®šå€¤ã¯ NAN ã§ã€è‡ªå‹•çš„ã«ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ã—ã¾ã™ã€‚
 	//void SetHeight(float width) { m_size.Width = width; }
 
 	//
@@ -295,10 +295,10 @@ public:
 	void SetVerticalAlignment(VerticalAlignment value) { m_verticalAlignment = value; }
 	VerticalAlignment GetVerticalAlignment() const { return m_verticalAlignment; }
 
-	///// ƒqƒbƒgƒeƒXƒg‚Ì—L–³‚ğİ’è‚µ‚Ü‚·B
+	///// ãƒ’ãƒƒãƒˆãƒ†ã‚¹ãƒˆã®æœ‰ç„¡ã‚’è¨­å®šã—ã¾ã™ã€‚
 	//void SetHitTest(bool enabled) { SetPropertyValue(IsHitTestProperty, Variant(enabled)); }
 
-	///// ƒqƒbƒgƒeƒXƒg‚Ì—L–³‚ğæ“¾‚µ‚Ü‚·B
+	///// ãƒ’ãƒƒãƒˆãƒ†ã‚¹ãƒˆã®æœ‰ç„¡ã‚’å–å¾—ã—ã¾ã™ã€‚
 	//bool IsHitTest() const { return GetPropertyValue(IsHitTestProperty).GetBool(); }
 
 
@@ -308,50 +308,50 @@ public:
 
 public:
 
-	/// ‚±‚Ì—v‘f‚ÌƒŒƒCƒAƒEƒg‚ÌXV‚ªŠ®—¹‚µ‚½‚É”­¶‚µ‚Ü‚·B‚±‚ÌƒCƒxƒ“ƒg‚Íƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+	/// ã“ã®è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®æ›´æ–°ãŒå®Œäº†ã—ãŸæ™‚ã«ç™ºç”Ÿã—ã¾ã™ã€‚ã“ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
 	//Event01<RoutedEventArgs*>			LayoutUpdated;
 
 private:
 
 public:
 
-	// ƒCƒxƒ“ƒg‚Ìˆµ‚¢•û‚Í WPF ‚Æ‚Í­‚µˆá‚¤B
-	// WPF ‚Ì ButtonBase.Click ‚ÍA
+	// ã‚¤ãƒ™ãƒ³ãƒˆã®æ‰±ã„æ–¹ã¯ WPF ã¨ã¯å°‘ã—é•ã†ã€‚
+	// WPF ã® ButtonBase.Click ã¯ã€
 	// public event RoutedEventHandler Click { add { AddHandler(ClickEvent, value); } remove { RemoveHandler(ClickEvent, value); } }
-	// ‚Ì‚æ‚¤‚É‚È‚Á‚Ä‚¢‚éB
-	// ‚Â‚Ü‚èAevent Click ‚Í’P‚È‚é‚¨ü‚èBClick(...) ‚Ì‚æ‚¤‚ÉA‚±‚ê‚ª’¼ÚŒÄ‚Î‚ê‚é‚±‚Æ‚Í‚È‚¢B
-	// RaiseEvent(ClickEvent) ‚©‚çŒÄ‚Î‚ê‚éB
-	// RaiseEvent(ClickEvent) ‚Í ButtonBase.OnClick() ‚ÅŒÄ‚ñ‚Å‚¢‚éB
+	// ã®ã‚ˆã†ã«ãªã£ã¦ã„ã‚‹ã€‚
+	// ã¤ã¾ã‚Šã€event Click ã¯å˜ãªã‚‹ãŠé£¾ã‚Šã€‚Click(...) ã®ã‚ˆã†ã«ã€ã“ã‚ŒãŒç›´æ¥å‘¼ã°ã‚Œã‚‹ã“ã¨ã¯ãªã„ã€‚
+	// RaiseEvent(ClickEvent) ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚
+	// RaiseEvent(ClickEvent) ã¯ ButtonBase.OnClick() ã§å‘¼ã‚“ã§ã„ã‚‹ã€‚
 	
 
 	//void AddMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { AddHandler(MouseMoveEvent, handler); }
 	//void RemoveMouseMoveHandler(const Delegate02<CoreObject*, MouseEventArgs*>& handler) { RemoveHandler(MouseMoveEvent, handler); }
 
-	// «‚±‚Ì2‚Â‚Í C_API ‚©‚çg—p‚·‚é
+	// â†“ã“ã®2ã¤ã¯ C_API ã‹ã‚‰ä½¿ç”¨ã™ã‚‹
 	virtual bool AddHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 	virtual bool RemoveHandlerInternal(const String& key, void* nativeCFuncPtr) { LN_THROW(0, ArgumentException); return false; }
 
 
-	/// rootLogicalParent : ƒeƒ“ƒvƒŒ[ƒg‚ğ“K—p‚µ‚½—v‘fBTemplateBinding ‚Ìƒ\[ƒXƒIƒuƒWƒFƒNƒgB
+	/// rootLogicalParent : ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’é©ç”¨ã—ãŸè¦ç´ ã€‚TemplateBinding ã®ã‚½ãƒ¼ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
 	void SetTemplateBinding(const Property* thisProp, const String& srcPropPath/*, UIElement* rootLogicalParent*/);
 
-	/// (ƒTƒCƒY‚Ì©“®ŒvZ‚ª—LŒø‚É‚È‚Á‚Ä‚¢‚é—v‘f‚É‘Î‚µ‚Ä‚ÍŒÄ‚Ño‚µ‚Ä‚àŒø‰Ê‚Í‚ ‚è‚Ü‚¹‚ñ)
+	/// (ã‚µã‚¤ã‚ºã®è‡ªå‹•è¨ˆç®—ãŒæœ‰åŠ¹ã«ãªã£ã¦ã„ã‚‹è¦ç´ ã«å¯¾ã—ã¦ã¯å‘¼ã³å‡ºã—ã¦ã‚‚åŠ¹æœã¯ã‚ã‚Šã¾ã›ã‚“)
 	void UpdateLayout();
 	void UpdateTransformHierarchy();
 	virtual void Render();
 
 
-	/// Œ»İ‚Ìƒeƒ“ƒvƒŒ[ƒg‚©‚çƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚ğÄ\’z‚µ‚Ü‚·B
-	/// ‚±‚ÌŠÖ”‚Í•K—v‚Èƒ^ƒCƒ~ƒ“ƒO‚ÅƒŒƒCƒAƒEƒgƒVƒXƒeƒ€‚©‚çŒÄ‚Ño‚³‚ê‚Ü‚·B’ÊíA–¾¦“I‚ÉŒÄ‚Ño‚·•K—v‚Í‚ ‚è‚Ü‚¹‚ñB
-	///		‚Æ‚¢‚¤‚©AŒÄ‚Ño‚µ‚¿‚áƒ_ƒB•K‚¸ƒ‹[ƒg‚©‚çÄ‹A“I‚ÉXV‚µ‚È‚¢‚ÆA‚à‚µe‚ª‚Ü‚¾ ApplyTemplate() ‚µ‚Ä‚È‚¢ó‘Ô‚Å‚±‚ê‚ğŒÄ‚Ô‚Æ
-	///		ƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ª³‚µ‚­XV‚³‚ê‚È‚¢B
-	///		TODO: ‚à‚µ‚©‚µ‚½‚çASetParent ‚µ‚½uŠÔ‚Éƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚àH
-	///		‚»‚¤‚·‚ê‚Î‚¢‚Â ApplyTemplate() ‚ğŒÄ‚Ño‚µ‚Ä‚à—Ç‚¢‚ªc ù—v‚Í–³‚¢‚©B
+	/// ç¾åœ¨ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‹ã‚‰ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã‚’å†æ§‹ç¯‰ã—ã¾ã™ã€‚
+	/// ã“ã®é–¢æ•°ã¯å¿…è¦ãªã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚·ã‚¹ãƒ†ãƒ ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚é€šå¸¸ã€æ˜ç¤ºçš„ã«å‘¼ã³å‡ºã™å¿…è¦ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
+	///		ã¨ã„ã†ã‹ã€å‘¼ã³å‡ºã—ã¡ã‚ƒãƒ€ãƒ¡ã€‚å¿…ãšãƒ«ãƒ¼ãƒˆã‹ã‚‰å†å¸°çš„ã«æ›´æ–°ã—ãªã„ã¨ã€ã‚‚ã—è¦ªãŒã¾ã  ApplyTemplate() ã—ã¦ãªã„çŠ¶æ…‹ã§ã“ã‚Œã‚’å‘¼ã¶ã¨
+	///		ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ãŒæ­£ã—ãæ›´æ–°ã•ã‚Œãªã„ã€‚
+	///		TODO: ã‚‚ã—ã‹ã—ãŸã‚‰ã€SetParent ã—ãŸç¬é–“ã«ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ï¼Ÿ
+	///		ãã†ã™ã‚Œã°ã„ã¤ ApplyTemplate() ã‚’å‘¼ã³å‡ºã—ã¦ã‚‚è‰¯ã„ãŒâ€¦ éœ€è¦ã¯ç„¡ã„ã‹ã€‚
 	void ApplyTemplate();
 
-	/// internal  •ÊƒRƒ“ƒgƒ[ƒ‹‚Ìq‚É’Ç‰Á‚³‚ê‚½‚Æ‚«“™‚É true ‚ªƒZƒbƒg‚³‚ê‚éB
-	/// ƒpƒtƒH[ƒ}ƒ“ƒX“I‚È——R‚à‚ ‚é‚ªA–{—ˆ ApplyTemplate ‚·‚é‚×‚«ƒ^ƒCƒ~ƒ“ƒO‚Å‚Íe—v‘f‚Ìƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ªŠm’è‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚ª‚ ‚é‚½‚ßB
-	/// true ‚ªƒZƒbƒg‚³‚ê‚½‚çAe‚Ö“`”d‚µ‚Ä‚¢‚­B
+	/// internal  åˆ¥ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å­ã«è¿½åŠ ã•ã‚ŒãŸã¨ãç­‰ã« true ãŒã‚»ãƒƒãƒˆã•ã‚Œã‚‹ã€‚
+	/// ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹çš„ãªç†ç”±ã‚‚ã‚ã‚‹ãŒã€æœ¬æ¥ ApplyTemplate ã™ã‚‹ã¹ãã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ã¯è¦ªè¦ç´ ã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ãŒç¢ºå®šã—ã¦ã„ãªã„ã“ã¨ãŒã‚ã‚‹ãŸã‚ã€‚
+	/// true ãŒã‚»ãƒƒãƒˆã•ã‚ŒãŸã‚‰ã€è¦ªã¸ä¼æ’­ã—ã¦ã„ãã€‚
 	void SetChildTemplateModified(bool modified) { m_childTemplateModified = modified; if (modified && m_parent != NULL) { m_parent->SetChildTemplateModified(true); } }
 	void SetTemplateModified(bool modified) { m_templateModified = modified; if (modified && m_parent != NULL) { m_parent->SetChildTemplateModified(true); } }
 
@@ -362,20 +362,20 @@ public:
 	
 
 
-	/// Œ»İ‚Ìƒeƒ“ƒvƒŒ[ƒg‚©‚çƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚ªÄ\’z‚³‚ê‚½Œã‚ÉŒÄ‚Ño‚³‚ê‚Ü‚·B
-	/// ”h¶ƒNƒ‰ƒX‚Í localResource ‚É‘Î‚µ‚ÄƒL[’l‚©‚çƒŠƒ\[ƒX‚ğæ“¾‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
+	/// ç¾åœ¨ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‹ã‚‰ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ãŒå†æ§‹ç¯‰ã•ã‚ŒãŸå¾Œã«å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚
+	/// æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã¯ localResource ã«å¯¾ã—ã¦ã‚­ãƒ¼å€¤ã‹ã‚‰ãƒªã‚½ãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}
 	virtual bool OnEvent(EventType type, RoutedEventArgs* args);
 
 	// IAddChild
-	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }	// ˜_——v‘f‚Ì’Ç‰ÁBƒI[ƒo[ƒ‰ƒCƒh‚·‚éB
+	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }	// è«–ç†è¦ç´ ã®è¿½åŠ ã€‚ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã™ã‚‹ã€‚
 	virtual void AddText(const String& text) { LN_THROW(0, InvalidOperationException); }
 
 public:	// internal
 	void SetParent(UIElement* parent) { m_parent = parent; }
 	//virtual void AddChildToVisualTree(UIElement* element) { LN_THROW(0, InvalidOperationException); }
 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÌŒãŒÄ‚Ño‚·B
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å¾Œå‘¼ã³å‡ºã™ã€‚
 	void InitializeComponent();
 
 	/// 
@@ -393,7 +393,7 @@ protected:
 	//friend class Panel;
 public:	// internal
 	virtual void ApplyTemplateHierarchy(/*CombinedLocalResource* parent*/);
-	void UpdateTemplateHierarchy();	// ‚±‚¿‚ç‚Í modified ƒ}[ƒN‚³‚ê‚Ä‚¢‚é—v‘f‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğXV‚·‚é
+	void UpdateTemplateHierarchy();	// ã“ã¡ã‚‰ã¯ modified ãƒãƒ¼ã‚¯ã•ã‚Œã¦ã„ã‚‹è¦ç´ ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’æ›´æ–°ã™ã‚‹
 
 
 	GUIManager* GetManager() const { return m_manager; }
@@ -403,7 +403,7 @@ private:
 	friend class ControlTemplate;
 	friend class DataTemplate;
 	void SetTemplateChild(UIElement* child);
-	//virtual void AddVisualChild(UIElement* child);	///< AddChild() ‚Í˜_—ƒcƒŠ[‚Ö‚Ì’Ç‰ÁAAddVisualChild() ‚ÍƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚Ö‚Ì’Ç‰ÁB
+	//virtual void AddVisualChild(UIElement* child);	///< AddChild() ã¯è«–ç†ãƒ„ãƒªãƒ¼ã¸ã®è¿½åŠ ã€AddVisualChild() ã¯ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã¸ã®è¿½åŠ ã€‚
 
 	void UpdateLocalResource();
 protected:
@@ -417,13 +417,13 @@ protected:
 	//	m_routedEventHandlerList.Add(id, handler);
 	//}
 	void AddRoutedCommandTypeContext(RoutedCommandTypeContext* c) {
-		if (!m_routedCommandTypeContextList.Contains(c)) {	// “¯‚¶‚à‚Ì‚Í“o˜^‚µ‚È‚¢
+		if (!m_routedCommandTypeContextList.Contains(c)) {	// åŒã˜ã‚‚ã®ã¯ç™»éŒ²ã—ãªã„
 			m_routedCommandTypeContextList.Add(c);
 		}
 	}
 
 public:
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒnƒ“ƒhƒ‰‚ÆA(Bubble‚Ìê‡)˜_—ã‚Ìe‚ÖƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚é
+	// ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã¨ã€(Bubbleã®å ´åˆ)è«–ç†ä¸Šã®è¦ªã¸ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	void RaiseEvent(const RoutedEvent* ev, CoreObject* sender, RoutedEventArgs* e)
 	{
 		e->Sender = sender;
@@ -431,7 +431,7 @@ public:
 	}
 
 protected:
-	// w’è‚µ‚½ƒCƒxƒ“ƒgƒXƒƒbƒg‚ÖƒCƒxƒ“ƒg‚ğ’¼Ú”­s‚·‚éBƒ‹[ƒeƒBƒ“ƒO‚Ís‚í‚È‚¢
+	// æŒ‡å®šã—ãŸã‚¤ãƒ™ãƒ³ãƒˆã‚¹ãƒ­ãƒƒãƒˆã¸ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç›´æ¥ç™ºè¡Œã™ã‚‹ã€‚ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã¯è¡Œã‚ãªã„
 	void EmitEventSlot(RoutedEventSlotBase& slot, RoutedEventArgs* e)
 	{
 		LN_VERIFY_RETURN(e != NULL);
@@ -439,7 +439,7 @@ protected:
 	}
 
 private:
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒnƒ“ƒhƒ‰‚ÆA(Bubble‚Ìê‡)˜_—ã‚Ìe‚ÖƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚é
+	// ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã¨ã€(Bubbleã®å ´åˆ)è«–ç†ä¸Šã®è¦ªã¸ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 	{
 		CoreObject::RaiseEventInternal(ev, e);
@@ -453,9 +453,9 @@ private:
 
 
 protected:
-	// ƒTƒuƒNƒ‰ƒX‚Í‚Å‚«‚é‚¾‚¯ Event ‚Éƒnƒ“ƒhƒ‰‚ğ“o˜^‚·‚é‚Ì‚Å‚Í‚È‚­AOn`‚ğƒI[ƒo[ƒ‰ƒCƒh‚·‚é‚±‚Æ‚ÅƒCƒxƒ“ƒg‚ğƒnƒ“ƒhƒŠƒ“ƒO‚·‚éB
-	// ƒnƒ“ƒhƒŠƒ“ƒO‚µ‚½‚ç e->Handled ‚ğ true ‚É‚·‚éB‚»‚µ‚Ä super ‚ğŒÄ‚Ño‚·B‚±‚¤‚·‚é‚±‚Æ‚ÅARaiseEvent() ‚Å‚ÌƒCƒxƒ“ƒgŒŸõ‚â
-	// ƒ‹[ƒeƒBƒ“ƒO‚ğs‚í‚È‚¢‚Ì‚Å•‰‰×ŒyŒ¸‚ª‚Å‚«‚éB
+	// ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã¯ã§ãã‚‹ã ã‘ Event ã«ãƒãƒ³ãƒ‰ãƒ©ã‚’ç™»éŒ²ã™ã‚‹ã®ã§ã¯ãªãã€Onï½ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã™ã‚‹ã“ã¨ã§ã‚¤ãƒ™ãƒ³ãƒˆã‚’ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ã™ã‚‹ã€‚
+	// ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ã—ãŸã‚‰ e->Handled ã‚’ true ã«ã™ã‚‹ã€‚ãã—ã¦ super ã‚’å‘¼ã³å‡ºã™ã€‚ã“ã†ã™ã‚‹ã“ã¨ã§ã€RaiseEvent() ã§ã®ã‚¤ãƒ™ãƒ³ãƒˆæ¤œç´¢ã‚„
+	// ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚’è¡Œã‚ãªã„ã®ã§è² è·è»½æ¸›ãŒã§ãã‚‹ã€‚
 	virtual void OnMouseMove(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 	virtual void OnMouseDown(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseDownEvent, this, e); } }
 	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
@@ -466,23 +466,23 @@ protected:
 	friend class GUIHelper;
 	GUIManager*				m_manager;
 	String					m_keyName;
-	UIElement*				m_parent;				///< e—v‘f (˜_—EƒrƒWƒ…ƒAƒ‹‚ÍŠÖŒW‚È‚¢BRoutedEvent(Bubble) ‚Ì’Ê’mæ‚Æ‚È‚é)
+	UIElement*				m_parent;				///< è¦ªè¦ç´  (è«–ç†ãƒ»ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ã¯é–¢ä¿‚ãªã„ã€‚RoutedEvent(Bubble) ã®é€šçŸ¥å…ˆã¨ãªã‚‹)
 
 	//VisualStateInstance*	m_visualStateInstance;
 
-	SizeF					m_desiredSize;			///< MeasureLayout() ‚ÅŒˆ’è‚³‚ê‚é‚±‚ÌƒRƒ“ƒgƒ[ƒ‹‚ÌÅI—v‹ƒTƒCƒY
-	RectF					m_finalLocalRect;			///< •`‰æ‚Ég—p‚·‚éÅI‹«ŠE‹éŒ` (ƒOƒ[ƒoƒ‹À•WŒn=RootFrame ‚Ìƒ[ƒJƒ‹À•WŒn)
+	SizeF					m_desiredSize;			///< MeasureLayout() ã§æ±ºå®šã•ã‚Œã‚‹ã“ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®æœ€çµ‚è¦æ±‚ã‚µã‚¤ã‚º
+	RectF					m_finalLocalRect;			///< æç”»ã«ä½¿ç”¨ã™ã‚‹æœ€çµ‚å¢ƒç•ŒçŸ©å½¢ (ã‚°ãƒ­ãƒ¼ãƒãƒ«åº§æ¨™ç³»=RootFrame ã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»)
 	RectF					m_finalGlobalRect;
 
 
 	ResourceDictionary*		m_localResource;
 	CombinedLocalResource*	m_combinedLocalResource;
 
-	// íœ—\’è
+	// å‰Šé™¤äºˆå®š
 	typedef SortedArray<String, RefObject*>	EventDataStore;
 	EventDataStore	m_eventDataStore;
 
-	/// ‚ ‚éƒNƒ‰ƒX‚ÉŠÜ‚Ü‚ê‚é RoutedCommand ‚ÌƒŠƒXƒg‚ÌƒŠƒXƒgB‚±‚ÌƒŠƒXƒg‚É‚ÍŠî’êƒNƒ‰ƒX‚©‚ç‡‚É‹l‚Ü‚Á‚Ä‚¢‚é
+	/// ã‚ã‚‹ã‚¯ãƒ©ã‚¹ã«å«ã¾ã‚Œã‚‹ RoutedCommand ã®ãƒªã‚¹ãƒˆã®ãƒªã‚¹ãƒˆã€‚ã“ã®ãƒªã‚¹ãƒˆã«ã¯åŸºåº•ã‚¯ãƒ©ã‚¹ã‹ã‚‰é †ã«è©°ã¾ã£ã¦ã„ã‚‹
 	Array<RoutedCommandTypeContext*>	m_routedCommandTypeContextList;
 
 	// Property
@@ -492,7 +492,7 @@ protected:
 	bool				m_isHitTest;
 
 
-public:	// TODO: private ‚É‚µ‚½‚¢
+public:	// TODO: private ã«ã—ãŸã„
 	void Handler_CanExecuteRoutedCommandEvent(CanExecuteRoutedCommandEventArgs* e);
 	void Handler_ExecuteRoutedCommandEvent(ExecuteRoutedCommandEventArgs* e);
 
@@ -509,27 +509,27 @@ private:
 	typedef Array<TemplateBindingInfo>	TemplateBindingInfoList;
 	TemplateBindingInfoList		m_templateBindingInfoList;
 
-	/// ƒeƒ“ƒvƒŒ[ƒg‚ğ“K—p‚µ‚½—v‘fBTemplateBinding ‚Ìƒ\[ƒXƒIƒuƒWƒFƒNƒgB‚±‚ê‚ª NULL ‚Å‚È‚¯‚ê‚ÎAthis ‚Í VisualTree —v‘f‚Å‚ ‚éB
-	/// —á‚¦‚Î Button ‚Éƒeƒ“ƒvƒŒ[ƒg‚ğ“K—p‚·‚é‚ÆAButton ‚æ‚è‚µ‚½‚ÌƒrƒWƒ…ƒAƒ‹—v‘f.m_rootLogicalParent ‚Í‚·‚×‚Ä Button ‚ğw‚·B
+	/// ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’é©ç”¨ã—ãŸè¦ç´ ã€‚TemplateBinding ã®ã‚½ãƒ¼ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚ã“ã‚ŒãŒ NULL ã§ãªã‘ã‚Œã°ã€this ã¯ VisualTree è¦ç´ ã§ã‚ã‚‹ã€‚
+	/// ä¾‹ãˆã° Button ã«ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’é©ç”¨ã™ã‚‹ã¨ã€Button ã‚ˆã‚Šã—ãŸã®ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ .m_rootLogicalParent ã¯ã™ã¹ã¦ Button ã‚’æŒ‡ã™ã€‚
 	UIElement*		m_rootLogicalParent;
 	Delegate01<PropertyChangedEventArgs*>	m_templateBindingHandler;
 	Event01<PropertyChangedEventArgs*>		PropertyChangedForTemplateBindings;
 
-	bool			m_childTemplateModified;	///< q—v‘f‚Ìƒeƒ“ƒvƒŒ[ƒg‚ğXV‚·‚é‚×‚«‚©
+	bool			m_childTemplateModified;	///< å­è¦ç´ ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‚’æ›´æ–°ã™ã‚‹ã¹ãã‹
 	bool			m_templateModified;
 
 protected:
 	RefPtr<Style>		m_style;
-	RefPtr<UIElement>	m_templateChild;		///< TODO: Control ‚ÉˆÚ“®‚·‚é‚×‚«‚©‚àBƒeƒ“ƒvƒŒ[ƒgq—v‘f‚Ìƒ‹[ƒg—v‘fB˜_——v‘f‚¾‚¯‚ª‚ÂB
-	UIElement*			m_templateParent;		///< ƒeƒ“ƒvƒŒ[ƒg‚Ìƒ‹[ƒg—v‘fB—á‚¦‚Î ScrollViewer - Grid - ScrollContentPresenter ‚Æ‚¢‚¤ŠK‘w‚ª‚ ‚éê‡AScrollContentPresenter.m_templateParent ‚Í ScrollViewer ‚ğw‚·B
+	RefPtr<UIElement>	m_templateChild;		///< TODO: Control ã«ç§»å‹•ã™ã‚‹ã¹ãã‹ã‚‚ã€‚ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå­è¦ç´ ã®ãƒ«ãƒ¼ãƒˆè¦ç´ ã€‚è«–ç†è¦ç´ ã ã‘ãŒæŒã¤ã€‚
+	UIElement*			m_templateParent;		///< ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã®ãƒ«ãƒ¼ãƒˆè¦ç´ ã€‚ä¾‹ãˆã° ScrollViewer - Grid - ScrollContentPresenter ã¨ã„ã†éšå±¤ãŒã‚ã‚‹å ´åˆã€ScrollContentPresenter.m_templateParent ã¯ ScrollViewer ã‚’æŒ‡ã™ã€‚
 
 private:
-	// ‚±‚ÌƒŠƒXƒg‚É’Ç‰Á‚³‚ê‚½ UIElement ‚ÍAOnEventARenderAƒqƒbƒgƒeƒXƒg“™‚ª‚±‚ÌƒNƒ‰ƒX‚æ‚è©“®“I‚ÉŒÄ‚Î‚ê‚éB
-	// ‚½‚¾‚µAƒŒƒCƒAƒEƒgŠÖŒW‚Íƒm[ƒ^ƒbƒ`BMeasure ‚â Arrange ‚ÍŒÄ‚Î‚ê‚È‚¢B
-	// g‚¢•û‚Æ‚µ‚Ä‚ÍA˜_——v‘f‚¾‚ë‚¤‚ªƒrƒWƒ…ƒAƒ‹—v‘f‚¾‚ë‚¤‚ªŠÖŒW‚È‚­‚Ü‚¸‚Í‚±‚ÌƒŠƒXƒg‚É’Ç‰Á‚µ‚Ä‚¨‚­B
-	// ƒŒƒCƒAƒEƒg‚Í (ƒƒ“ƒh‚­‚³‚¢‚ª) ŒÂX‚ÌƒRƒ“ƒeƒi—v‘f‚Å–Ê“|‚ğŒ©‚éB
-	// ‚½‚¾‚µAm_templateChild ‚Í ‚±‚ÌƒNƒ‰ƒX‚Å‚à–Ê“|‚ğŒ©‚Ä‚ ‚°‚éB‚Å‚àA‹Ã‚Á‚½ƒŒƒCƒAƒEƒg‚ª•K—v‚È‚Í
-	// ƒI[ƒo[ƒ‰ƒCƒh‚·‚é•K—v‚ª‚ ‚éB
+	// ã“ã®ãƒªã‚¹ãƒˆã«è¿½åŠ ã•ã‚ŒãŸ UIElement ã¯ã€OnEventã€Renderã€ãƒ’ãƒƒãƒˆãƒ†ã‚¹ãƒˆç­‰ãŒã“ã®ã‚¯ãƒ©ã‚¹ã‚ˆã‚Šè‡ªå‹•çš„ã«å‘¼ã°ã‚Œã‚‹ã€‚
+	// ãŸã ã—ã€ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆé–¢ä¿‚ã¯ãƒãƒ¼ã‚¿ãƒƒãƒã€‚Measure ã‚„ Arrange ã¯å‘¼ã°ã‚Œãªã„ã€‚
+	// ä½¿ã„æ–¹ã¨ã—ã¦ã¯ã€è«–ç†è¦ç´ ã ã‚ã†ãŒãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã ã‚ã†ãŒé–¢ä¿‚ãªãã¾ãšã¯ã“ã®ãƒªã‚¹ãƒˆã«è¿½åŠ ã—ã¦ãŠãã€‚
+	// ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã¯ (ãƒ¡ãƒ³ãƒ‰ãã•ã„ãŒ) å€‹ã€…ã®ã‚³ãƒ³ãƒ†ãƒŠè¦ç´ ã§é¢å€’ã‚’è¦‹ã‚‹ã€‚
+	// ãŸã ã—ã€m_templateChild ã¯ ã“ã®ã‚¯ãƒ©ã‚¹ã§ã‚‚é¢å€’ã‚’è¦‹ã¦ã‚ã’ã‚‹ã€‚ã§ã‚‚ã€å‡ã£ãŸãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆãŒå¿…è¦ãªæ™‚ã¯
+	// ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 	Array<UIElement*>	m_visualChildren;
 };
 

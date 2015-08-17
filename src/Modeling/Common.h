@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Material.h>
@@ -26,7 +26,7 @@ class ModelBone;
 typedef Array<ModelBone*>			ModelBoneList;
 
 
-/// ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒtƒH[ƒ}ƒbƒg
+/// ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 enum ModelFormat
 {
 	ModelFormat_Unknown = 0,
@@ -34,40 +34,40 @@ enum ModelFormat
 	ModelFormat_PMX,
 };
 
-/// ƒƒbƒVƒ…‚Ì‘®«
+/// ãƒ¡ãƒƒã‚·ãƒ¥ã®å±æ€§
 struct MeshAttribute
 {
-	int		MaterialIndex;  ///< ‘Î‰‚·‚éƒ}ƒeƒŠƒAƒ‹”Ô†
-	int		StartIndex;     ///< ŠJnƒCƒ“ƒfƒbƒNƒX
-	int		PrimitiveNum;   ///< •`‰æƒvƒŠƒ~ƒeƒBƒu” (OŠpŒ`‚Ì”)
+	int		MaterialIndex;  ///< å¯¾å¿œã™ã‚‹ãƒãƒ†ãƒªã‚¢ãƒ«ç•ªå·
+	int		StartIndex;     ///< é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	int		PrimitiveNum;   ///< æç”»ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•° (ä¸‰è§’å½¢ã®æ•°)
 };
 typedef Array<MeshAttribute>		MeshAttributeList;
 
-/// Ş¿‚Ì•`‰æƒIƒvƒVƒ‡ƒ“
+/// æè³ªã®æç”»ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 enum MMDDrawingFlags
 {
-	MMDDrawingFlag_CullingDouble = 0x01,	///< —¼–Ê•`‰æ
-	MMDDrawingFlag_GroundShadow = 0x02,		///< ’n–Ê‰e
-	MMDDrawingFlag_SelfShadowMap = 0x04,	///< ƒZƒ‹ƒtƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ
-	MMDDrawingFlag_SelfShadow = 0x08,		///< ƒZƒ‹ƒtƒVƒƒƒhƒE‚Ì•`‰æ
-	MMDDrawingFlag_Edge = 0x10,				///< ƒGƒbƒW•`‰æ
+	MMDDrawingFlag_CullingDouble = 0x01,	///< ä¸¡é¢æç”»
+	MMDDrawingFlag_GroundShadow = 0x02,		///< åœ°é¢å½±
+	MMDDrawingFlag_SelfShadowMap = 0x04,	///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»
+	MMDDrawingFlag_SelfShadow = 0x08,		///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã®æç”»
+	MMDDrawingFlag_Edge = 0x10,				///< ã‚¨ãƒƒã‚¸æç”»
 };
 
-/// ƒ{[ƒ“ƒtƒ‰ƒO Ú‘±æ(PMDqƒ{[ƒ“w’è)•\¦•û–@
+/// ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚° æ¥ç¶šå…ˆ(PMDå­ãƒœãƒ¼ãƒ³æŒ‡å®š)è¡¨ç¤ºæ–¹æ³•
 enum BoneConnectType
 {
-	BoneConnectType_PositionOffset = 0,		///< À•WƒIƒtƒZƒbƒg‚Åw’è
-	BoneConnectType_Bone,					///< ƒ{[ƒ“‚Åw’è
+	BoneConnectType_PositionOffset = 0,		///< åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆã§æŒ‡å®š
+	BoneConnectType_Bone,					///< ãƒœãƒ¼ãƒ³ã§æŒ‡å®š
 };
 
-/// ƒ{[ƒ“ƒtƒ‰ƒO ƒ[ƒJƒ‹•t—^ 
+/// ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚° ãƒ­ãƒ¼ã‚«ãƒ«ä»˜ä¸ 
 enum LocalProvideType
 {
-	LocalProvideType_UserTransformValue = 0,	///< ƒ†[ƒU[•ÏŒ`’l^IKƒŠƒ“ƒN^‘½d•t—^
-	LocalProvideType_ParentLocalTransformValue,	///< e‚Ìƒ[ƒJƒ‹•ÏŒ`—Ê
+	LocalProvideType_UserTransformValue = 0,	///< ãƒ¦ãƒ¼ã‚¶ãƒ¼å¤‰å½¢å€¤ï¼IKãƒªãƒ³ã‚¯ï¼å¤šé‡ä»˜ä¸
+	LocalProvideType_ParentLocalTransformValue,	///< è¦ªã®ãƒ­ãƒ¼ã‚«ãƒ«å¤‰å½¢é‡
 };
 
-/// ƒ‚[ƒtí•Ê
+/// ãƒ¢ãƒ¼ãƒ•ç¨®åˆ¥
 enum ModelMorphType
 {
 	ModelMorphType_Vertex = 0,
@@ -83,42 +83,42 @@ enum ModelMorphType
 	ModelMorphType_Impulse,
 };
 
-/// „‘Ì‚ÌŒ`ó
+/// å‰›ä½“ã®å½¢çŠ¶
 enum CollisionShapeType
 {
-	CollisionShapeType_Sphere = 0,		///< ‹…
-	CollisionShapeType_Box,				///< ” 
-	CollisionShapeType_Capsule,			///< ƒJƒvƒZƒ‹    
+	CollisionShapeType_Sphere = 0,		///< çƒ
+	CollisionShapeType_Box,				///< ç®±
+	CollisionShapeType_Capsule,			///< ã‚«ãƒ—ã‚»ãƒ«    
 };
 
-/// „‘Ì‚Ì‰‰Zí•Ê
+/// å‰›ä½“ã®æ¼”ç®—ç¨®åˆ¥
 enum RigidBodyType
 {
-	RigidBodyType_ControlledByBone = 0,	///< Bone’Ç]
-	RigidBodyType_Physics,				///< •¨—‰‰Z
-	RigidBodyType_PhysicsAlignment,		///< •¨—‰‰Z(BoneˆÊ’u‡‚¹)
+	RigidBodyType_ControlledByBone = 0,	///< Boneè¿½å¾“
+	RigidBodyType_Physics,				///< ç‰©ç†æ¼”ç®—
+	RigidBodyType_PhysicsAlignment,		///< ç‰©ç†æ¼”ç®—(Boneä½ç½®åˆã›)
 };
 
-// PMX ƒ‚ƒfƒ‹‚Ì’¸“_î•ñ
+// PMX ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹æƒ…å ±
 struct PMX_Vertex
 {
 public:
 
-	Vector3	Position;			///< ˆÊ’u
-	float	BlendWeights[4];	///< ƒ{[ƒ“ƒuƒŒƒ“ƒh—¦
-	float	BlendIndices[4];	///< ƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-	Vector3	Normal;				///< –@ü
-	Vector2	TexUV;				///< ƒeƒNƒXƒ`ƒƒUV
+	Vector3	Position;			///< ä½ç½®
+	float	BlendWeights[4];	///< ãƒœãƒ¼ãƒ³ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡
+	float	BlendIndices[4];	///< ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	Vector3	Normal;				///< æ³•ç·š
+	Vector2	TexUV;				///< ãƒ†ã‚¯ã‚¹ãƒãƒ£UV
 
-	Vector4	AdditionalUV[4];	///< ’Ç‰ÁUV
-	Vector4	SdefC;				///< Sdef - C’l
-	Vector3	SdefR0;				///< Sdef - R0’l
-	Vector3	SdefR1;				///< Sdef - R1’l
+	Vector4	AdditionalUV[4];	///< è¿½åŠ UV
+	Vector4	SdefC;				///< Sdef - Cå€¤
+	Vector3	SdefR0;				///< Sdef - R0å€¤
+	Vector3	SdefR1;				///< Sdef - R1å€¤
 
-	float	EdgeWeight;			///< ƒGƒbƒWƒEƒFƒCƒg
-	float	Index;				///< ’¸“_ƒCƒ“ƒfƒbƒNƒX’l
+	float	EdgeWeight;			///< ã‚¨ãƒƒã‚¸ã‚¦ã‚§ã‚¤ãƒˆ
+	float	Index;				///< é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å€¤
 
-	/// ’¸“_ƒŒƒCƒAƒEƒg
+	/// é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
 	static Graphics::VertexElement* Elements()
 	{
 		static Graphics::VertexElement elements[] = {

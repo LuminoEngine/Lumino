@@ -1,9 +1,9 @@
-
+﻿
 #pragma once
 #include <map>
 #include <Lumino/IO/FileManager.h>
 
-// TODO: �������v����������J���Ă�͉̂��Ƃ��������c
+// TODO: これらを思いっきり公開してるのは何とかしたい…
 typedef int  FT_Error;
 typedef void*  FT_Pointer;
 typedef FT_Pointer  FTC_FaceID;
@@ -24,7 +24,7 @@ namespace Graphics
 class Font;
 
 /**
-	@brief		�t�H���g�̊Ǘ��N���X
+	@brief		フォントの管理クラス
 */
 class FontManager
 	: public RefObject
@@ -34,13 +34,13 @@ public:
 
 public:
 
-	/// �t�H���g�t�@�C����ǉ����� (ttf) (����o�^�̏ꍇ�̓f�t�H���g�t�H���g���Ƃ��ēo�^����)
+	/// フォントファイルを追加する (ttf) (初回登録の場合はデフォルトフォント名として登録する)
 	void RegisterFontFile(const String& fontFilePath);
 
-	/// �f�t�H���g�̃t�H���g���Z�b�g����
+	/// デフォルトのフォントをセットする
 	void SetDefaultFont(Font* font);
 
-	/// �f�t�H���g�̃t�H���g���擾����
+	/// デフォルトのフォントを取得する
 	Font* GetDefaultFont() const { return m_defaultFont; }
 
 	void Dispose();
@@ -63,10 +63,10 @@ private:
 	FTC_CMapCache GetFTCacheMapCache() const { return m_ftCMapCache; }
 	FTC_ImageCache GetFTCImageCache() const { return m_ftImageCache; }
 
-	// �L���b�V�������R�[���o�b�N
+	// キャッシュ検索コールバック
 	FT_Error FaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
 
-	// FaceRequester() �̌Ăяo����
+	// FaceRequester() の呼び出し元
 	static FT_Error CallbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
 
 #ifdef LN_WIN32
@@ -80,7 +80,7 @@ private:
 		int index;
 	} TSystemFontData;
 
-	/// Windows�ɓo�^����Ă���t�H���g�̃o�C�i���f�[�^�𖼏̂���擾
+	/// Windowsに登録されているフォントのバイナリデータを名称から取得
 	TSystemFontData* GetWindowsSystemFontData(LPCTSTR name);
 	unsigned char* LockWindowsSystemFontData(TSystemFontData *fnt, size_t *size, int *index);
 	static void FreeWindowsSystemFontData(TSystemFontData *fnt);
@@ -93,13 +93,13 @@ private:
 		ByteBuffer		DataBuffer;
 		int				CollectionIndex;
 
-		/* ��������̃f�[�^����Face�����ꍇ�AFT_Done_Face() ����܂Ń��������J�����Ă͂Ȃ�Ȃ��B
-		* �t�@�C���X�g���[�����g�����Ƃ��ł��邪�A��������ƃt�H���g�����݂��Ă����
-		* �X�g���[����1��L���Ă��܂����ƂɂȂ�B
-		* �t�H���g�t�@�C���ЂƂ����� 4M �Ƃ����ʂɂ��邯�ǁA���1000x1000�r�b�g�}�b�v�ЂƂ��B
-		* �m��Ȃ��Ƃ���ŃX�g���[�����J�����ςȂ��ɂȂ�̂͂ǂ����Ǝv�����A
-		* (�����̃X�g���[�~���O�ƈ���āA�t�H���g�̃X�g���[�~���O�Ȃ�Č����Ă����ʂ̓s���Ɨ��Ȃ����낤���c)
-		* ������`��͑��x�I�ɂ��Ȃ�N���e�B�J���Ȃ��́B��������ɒu�����ςȂ��ł����Ǝv���B
+		/* メモリ上のデータからFaceを作る場合、FT_Done_Face() するまでメモリを開放してはならない。
+		* ファイルストリームを使うこともできるが、そうするとフォントが存在している間
+		* ストリームを1つ占有してしまうことになる。
+		* フォントファイルひとつ当たり 4M とか普通にあるけど、大体1000x1000ビットマップひとつ分。
+		* 知らないところでストリームが開きっぱなしになるのはどうかと思うし、
+		* (音声のストリーミングと違って、フォントのストリーミングなんて言っても普通はピンと来ないだろうし…)
+		* 文字列描画は速度的にかなりクリティカルなもの。メモリ上に置きっぱなしでいいと思う。
 		*/
 	};
 	typedef std::map<uint32_t, TTFDataEntry>     TTFDataEntryMap;
@@ -120,12 +120,12 @@ private:
 	FTC_ImageCache  m_ftImageCache;
 
 
-	// FaceRequester() �� Windows �̃V�X�e���t�H���g���E�����߂̍׍H�B
-	// FreeType �� FTC_Manager_LookupFace() �ɓn���ꂽ�A�h���X�𒼐ڎ����̃L�[�Ƃ���B
-	// (�A�h���X�̒��g�܂ł͌��Ȃ��B���̂��߁A��������L�[�ɂ��邱�Ƃ͂ł��Ȃ�)
-	// �܂�AfaceRequester() �Ƀt�H���g����`���邱�Ƃ͂ł��Ȃ��B�Ȃ̂ŁA�O���Ɉ�x�Ƃ��Ă����K�v������B
-	// ���̕ϐ��ɂ́AFTC_Manager_LookupFace() �̒��O�Ńt�H���g�����Z�b�g���Ă����B
-	// ���[�J���ϐ��̃|�C���^�ł悢�BFaceRequester() �� NULL ���i�[�����B
+	// FaceRequester() で Windows のシステムフォントを拾うための細工。
+	// FreeType は FTC_Manager_LookupFace() に渡されたアドレスを直接辞書のキーとする。
+	// (アドレスの中身までは見ない。そのため、文字列をキーにすることはできない)
+	// つまり、faceRequester() にフォント名を伝えることはできない。なので、外部に一度とっておく必要がある。
+	// この変数には、FTC_Manager_LookupFace() の直前でフォント名をセットしておく。
+	// ローカル変数のポインタでよい。FaceRequester() で NULL が格納される。
 	const TCHAR*		m_requesterFaceName;
 
 };

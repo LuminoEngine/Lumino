@@ -1,5 +1,5 @@
-/*
-	EWPF
+ï»¿/*
+	ãƒ»WPF
 		ScrollBar
 			Grid
 				RepeatButton
@@ -7,24 +7,24 @@
 				RepeatButton
 
 		Track
-			RepeatButton	ã‚Ì—]”’
+			RepeatButton	ä¸Šã®ä½™ç™½
 			Thumb
 				ScrollChrome
-			RepeatButton	‰º‚Ì—]”’
+			RepeatButton	ä¸‹ã®ä½™ç™½
 
-	‚Â‚Ü‚İ‚ÌƒTƒCƒY‚Í Track.ArrangeOverride ‚ÅŒˆ‚ß‚Ä‚¢‚½B
+	ã¤ã¾ã¿ã®ã‚µã‚¤ã‚ºã¯ Track.ArrangeOverride ã§æ±ºã‚ã¦ã„ãŸã€‚
 
-	ScrollBar ‚ÌƒXƒ^ƒCƒ‹‚Æƒeƒ“ƒvƒŒ[ƒg
+	ScrollBar ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¨ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
 	https://msdn.microsoft.com/ja-jp/library/ms742173%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
-	PART_Track ‚ª‚ ‚éB
+	PART_Track ãŒã‚ã‚‹ã€‚
 
 
-	Track.Value ‚Í RangeBase.Value ‚Æ TemplateBinding ‚µ‚Ä‚¢‚éB
-	«
-	‚Å‚àA‚»‚±‚Ü‚Å‚µ‚È‚­‚Ä‚¢‚¢‹C‚ª‚·‚éB
-	ScrollBar ‚â Slider ‚Í "PART_Track" ‚Æ‚µ‚Äq—v‘f‚É Track ‚ª‚ ‚é‚±‚Æ‚ğ‘O’ñ‚Æ‚µ‚Ä‚¢‚éB
-	(null ‚Í‰Â”\‚¾‚ªAÀÛ‚»‚ñ‚È ScrollBar ‚ğì‚é‚±‚Æ‚ª‚ ‚é‚Ì‚©EEEH)
-	‚Å‚ ‚ê‚ÎATemplateBinding ‚µ‚È‚­‚Ä‚à ScrollBar ‘¤‚©‚ç’¼Ú’l‚ğ set ‚µ‚Ä‚à‚»‚ñ‚È‚É–â‘è‚È‚¢B
+	Track.Value ã¯ RangeBase.Value ã¨ TemplateBinding ã—ã¦ã„ã‚‹ã€‚
+	â†“
+	ã§ã‚‚ã€ãã“ã¾ã§ã—ãªãã¦ã„ã„æ°—ãŒã™ã‚‹ã€‚
+	ScrollBar ã‚„ Slider ã¯ "PART_Track" ã¨ã—ã¦å­è¦ç´ ã« Track ãŒã‚ã‚‹ã“ã¨ã‚’å‰æã¨ã—ã¦ã„ã‚‹ã€‚
+	(null ã¯å¯èƒ½ã ãŒã€å®Ÿéš›ãã‚“ãª ScrollBar ã‚’ä½œã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã‹ãƒ»ãƒ»ãƒ»ï¼Ÿ)
+	ã§ã‚ã‚Œã°ã€TemplateBinding ã—ãªãã¦ã‚‚ ScrollBar å´ã‹ã‚‰ç›´æ¥å€¤ã‚’ set ã—ã¦ã‚‚ãã‚“ãªã«å•é¡Œãªã„ã€‚
 */
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -93,7 +93,7 @@ ScrollBar::~ScrollBar()
 //-----------------------------------------------------------------------------
 void ScrollBar::PollingTemplateChildCreated(UIElement* newElement)
 {
-	// PART ‚ÌƒL[‚Éˆê’v‚·‚é–¼‘O‚ğ‚Â—v‘f‚ªŒ©‚Â‚©‚Á‚½‚çƒƒ“ƒo‚É•Û‚µ‚Ä‚¨‚­
+	// PART ã®ã‚­ãƒ¼ã«ä¸€è‡´ã™ã‚‹åå‰ã‚’æŒã¤è¦ç´ ãŒè¦‹ã¤ã‹ã£ãŸã‚‰ãƒ¡ãƒ³ãƒã«ä¿æŒã—ã¦ãŠã
 	if (newElement->GetKeyName() == PART_TrackKeyName) {
 		m_track = dynamic_cast<Track*>(newElement);
 	}
@@ -121,11 +121,11 @@ void ScrollBar::ChangeValue(float newValue/*, bool defer*/)
 {
 	if (m_isStandalone)
 	{
-		// ~ Track ‚ª TemplateBinding‚µ‚½‚¢‚Ì‚ÅB
-		// TODO: ‚â‚Á‚Ï‚è SetValue() ‚Ì’†‚Å‚â‚é‚æ‚¤‚É‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à
+		// Ã— Track ãŒ TemplateBindingã—ãŸã„ã®ã§ã€‚
+		// TODO: ã‚„ã£ã±ã‚Š SetValue() ã®ä¸­ã§ã‚„ã‚‹ã‚ˆã†ã«ã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚
 		SetPropertyValue(ValueProperty, newValue);
 
-		// TODO: OnValueChannged ‚Æ‚©ì‚Á‚ÄA‚»‚¿‚ç‚Ås‚¤‚×‚«B
+		// TODO: OnValueChannged ã¨ã‹ä½œã£ã¦ã€ãã¡ã‚‰ã§è¡Œã†ã¹ãã€‚
 		m_track->SetValue(newValue);
 	}
 }

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Material.h>
@@ -8,25 +8,25 @@ namespace Lumino
 namespace Scene
 {
 /**
-	@brief	ƒ}ƒeƒŠƒAƒ‹‚ÌƒNƒ‰ƒX‚Å‚·B
+	@brief	ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 //class Material
 //	: public Graphics::Material
 //{
 //public:
-//	ColorF					EdgeColor;		///< ƒGƒbƒWƒJƒ‰[
-//	lnFloat					EdgeSize;		///< ƒGƒbƒWƒTƒCƒY
+//	ColorF					EdgeColor;		///< ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼
+//	lnFloat					EdgeSize;		///< ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
 //	SphereMode				SphereMode;		///< SphereMode
-//	lnU8					DrawingFlags;	///< •`‰æƒIƒvƒVƒ‡ƒ“
+//	lnU8					DrawingFlags;	///< æç”»ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 //
-//	ColorF					TextureCoe;			///< ƒeƒNƒXƒ`ƒƒŒW”
-//	ColorF					SphereTextureCoe;	///< ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒŒW”
-//	ColorF					ToonTextureCoe;		///< ToonƒeƒNƒXƒ`ƒƒŒW”
+//	ColorF					TextureCoe;			///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+//	ColorF					SphereTextureCoe;	///< ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+//	ColorF					ToonTextureCoe;		///< Toonãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
 //
 //public:
 //
 //	/**
-//		@brief		ƒ}ƒeƒŠƒAƒ‹‚ğ‰Šú‰»‚µ‚Ü‚·B
+//		@brief		ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’åˆæœŸåŒ–ã—ã¾ã™ã€‚
 //	*/
 //	Material()
 //	{

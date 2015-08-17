@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../RenderingPass.h"
@@ -8,7 +8,7 @@ namespace Lumino
 namespace Scene
 {
 
-/// MMDPass ‚ğƒL[‚Æ‚µ‚ÄƒVƒF[ƒ_ƒeƒNƒjƒbƒN‚ğŒŸõ‚·‚é RenderingPass
+/// MMDPass ã‚’ã‚­ãƒ¼ã¨ã—ã¦ã‚·ã‚§ãƒ¼ãƒ€ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã‚’æ¤œç´¢ã™ã‚‹ RenderingPass
 class MMERenderingPass
 	: public RenderingPass
 {
@@ -20,12 +20,12 @@ private:
 	virtual void RenderNode(RenderingParams& params, SceneNode* node);
 
 private:
-	/// ‚±‚ÌƒpƒX‚ÌƒfƒtƒHƒ‹ƒg&—DæƒVƒF[ƒ_‚ÆAw’è‚µ‚½ƒm[ƒh‚ÌƒVƒF[ƒ_‚©‚ç•`‰æ‚Ég—p‚·‚éƒeƒNƒjƒbƒN‚ğ‘I‘ğ‚·‚éB
+	/// ã“ã®ãƒ‘ã‚¹ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ&å„ªå…ˆã‚·ã‚§ãƒ¼ãƒ€ã¨ã€æŒ‡å®šã—ãŸãƒãƒ¼ãƒ‰ã®ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰æç”»ã«ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã‚’é¸æŠã™ã‚‹ã€‚
 	void SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams);
 
 private:
 	MMDPass		m_mmdPass;
-	MMEShader*	m_ownerShader;			///< ‚±‚ÌƒpƒX (OFFSCREENRENDERTARGET) ‚Ì¶¬Œ³‚Æ‚È‚Á‚½ƒVƒF[ƒ_
+	MMEShader*	m_ownerShader;			///< ã“ã®ãƒ‘ã‚¹ (OFFSCREENRENDERTARGET) ã®ç”Ÿæˆå…ƒã¨ãªã£ãŸã‚·ã‚§ãƒ¼ãƒ€
 };
 
 } // namespace Scene

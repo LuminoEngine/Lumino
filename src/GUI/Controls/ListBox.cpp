@@ -1,10 +1,10 @@
-/*
-	EWPF
+ï»¿/*
+	ãƒ»WPF
 		ListBox
-			Border	˜g‹y‚Ñ”wŒi
+			Border	æ åŠã³èƒŒæ™¯
 				ScrollViewer
 					Grid
-						Rectangle	‘•ü
+						Rectangle	è£…é£¾
 						ScrollContentPresenter
 							ItemsPresenter
 								VirtualizingStackPanel
@@ -13,29 +13,29 @@
 									ListBoxItem
 										Border
 											ContentPresenter
-												<‚¢‚ë‚¢‚ë>
-						ScrollBar	c
-						ScrollBar	‰¡
+												<ã„ã‚ã„ã‚>
+						ScrollBar	ç¸¦
+						ScrollBar	æ¨ª
 
 
-	ListBoxItem ‚Ì˜_—“I‚È–ğ–Ú‚ÍAe‚Ì ListBox ‚Éƒ}ƒEƒX‘€ì‚ğ“`‚¦‚é‚±‚ÆB
-	ListBox ‚Í ListBoxItem ‚©‚ç‚Ì’Ê’m‚ğó‚¯æ‚Á‚½‚çA©•ª‚Ìİ’è (•¡”‘I‘ğ‰Â”\‚©“™) ‚ğl—¶‚µA
-	‚»‚ê‚¼‚ê‚Ì Item ‚Ìó‘Ô‚ğXV‚·‚éB
+	ListBoxItem ã®è«–ç†çš„ãªå½¹ç›®ã¯ã€è¦ªã® ListBox ã«ãƒã‚¦ã‚¹æ“ä½œã‚’ä¼ãˆã‚‹ã“ã¨ã€‚
+	ListBox ã¯ ListBoxItem ã‹ã‚‰ã®é€šçŸ¥ã‚’å—ã‘å–ã£ãŸã‚‰ã€è‡ªåˆ†ã®è¨­å®š (è¤‡æ•°é¸æŠå¯èƒ½ã‹ç­‰) ã‚’è€ƒæ…®ã—ã€
+	ãã‚Œãã‚Œã® Item ã®çŠ¶æ…‹ã‚’æ›´æ–°ã™ã‚‹ã€‚
 
 
-	ItemsControl	EEE Items, ItemsPanel
+	ItemsControl	ãƒ»ãƒ»ãƒ» Items, ItemsPanel
 		MenuBase
 		Selector
 		StatusBar
 		TreeView
 
-	Selector		EEE SelectedIndex
+	Selector		ãƒ»ãƒ»ãƒ» SelectedIndex
 		ComboBox
 		ListBox
 		TabControl
 
 
-	‚Ü‚½Ahttp://pro.art55.jp/?eid=1139229 ‚İ‚½‚¢‚ÉƒOƒ‹[ƒv‰»‚³‚ê‚éê‡‚ÍA
+	ã¾ãŸã€http://pro.art55.jp/?eid=1139229 ã¿ãŸã„ã«ã‚°ãƒ«ãƒ¼ãƒ—åŒ–ã•ã‚Œã‚‹å ´åˆã¯ã€
 
 	ScrollViewer
 		Grid
@@ -43,49 +43,49 @@
 				ItemsPresenter
 					StackPanel
 						GroupItem
-							..expander‚Æ‚©...
+							..expanderã¨ã‹...
 							ContentPresenter
 								ItemsPresenter
 									ListBoxItem
 									ListBoxItem
 						GroupItem
 						GroupItem
-	‚Æ‚È‚Á‚Ä‚¢‚½B
+	ã¨ãªã£ã¦ã„ãŸã€‚
 
 
 
-	ItemsSource ‚ª NULL ‚Ìê‡‚ÍA
-	Items ‚Ö‚Ì’¼ÚƒRƒ“ƒgƒ[ƒ‹Add ‚ğ‹–‰Â‚·‚éB
-	ƒ\[ƒg‚àEEE
+	ItemsSource ãŒ NULL ã®å ´åˆã¯ã€
+	Items ã¸ã®ç›´æ¥ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«Add ã‚’è¨±å¯ã™ã‚‹ã€‚
+	ã‚½ãƒ¼ãƒˆã‚‚ãƒ»ãƒ»ãƒ»
 
-	‚Æ‚¢‚¤‚©AItemsSource ‚ª NULL ‚©‚Ç‚¤‚©‚Å
-	“à•”“I‚Èƒ‚[ƒh‚ª‚´‚Á‚­‚è•Ï‚í‚é‚æ‚¤‚È‚©‚ñ‚¶B
-
-
-	WPF ‚ÌƒAƒCƒeƒ€¶¬‚Ü‚Å‚Ì—¬‚ê
-
-	EItemContainerGenerator.PrepareGrouping() ‚ÅAowner ‚Ì ListBox.View (ItemsSource‚Á‚Û‚¢) ‚ğæ“¾B
-	EItemContainerGenerator ‚Í ª‚Åæ“¾‚µ‚½ View ‚É OnCollectionChanged ‚ğ“o˜^B
-	EƒRƒŒƒNƒVƒ‡ƒ“‚Ì•ÏX’Ê’m‚ğó‚¯æ‚é‚ÆAGenerator ‚Í ListBox.GetContainerForItem() ‚ğŒÄ‚Ño‚·B
-	EListBox.GetContainerForItem() ‚Í ListBoxItem ‚ğì‚Á‚Ä•Ô‚·B
-	EitemContainerGenerator.ItemsChanged ƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚éB(•’Ê‚Ì CLR ƒCƒxƒ“ƒg)
-	E‚±‚ÌƒCƒxƒ“ƒg‚Í Panel.OnItemsChanged ‚ÅƒLƒƒƒbƒ`‚·‚éB‚»‚Ìæ‚Å ˜_—ƒcƒŠ[iPanel ‚Ì _uiElementCollectionj‚É’Ç‰Á‚³‚ê‚éB
-
-	EEE‚ªAÅ‰‚Ì‚¤‚¿‚©‚ç‚±‚ñ‚È•¡G‚É‚Í‚µ‚½‚­‚È‚¢EEEEEB
+	ã¨ã„ã†ã‹ã€ItemsSource ãŒ NULL ã‹ã©ã†ã‹ã§
+	å†…éƒ¨çš„ãªãƒ¢ãƒ¼ãƒ‰ãŒã–ã£ãã‚Šå¤‰ã‚ã‚‹ã‚ˆã†ãªã‹ã‚“ã˜ã€‚
 
 
-	‚¿‚È‚İ‚ÉATreeView ‚Ìê‡‚Í TreeViewItem ‚ª ItemsControlB
-	ª‚Ìd‘g‚İ‚ªƒm[ƒh‚Ì”‚¾‚¯ƒlƒX‚Æ‚³‚ê‚é‚±‚Æ‚É‚È‚éB
+	WPF ã®ã‚¢ã‚¤ãƒ†ãƒ ç”Ÿæˆã¾ã§ã®æµã‚Œ
+
+	ãƒ»ItemContainerGenerator.PrepareGrouping() ã§ã€owner ã® ListBox.View (ItemsSourceã£ã½ã„) ã‚’å–å¾—ã€‚
+	ãƒ»ItemContainerGenerator ã¯ â†‘ã§å–å¾—ã—ãŸ View ã« OnCollectionChanged ã‚’ç™»éŒ²ã€‚
+	ãƒ»ã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®å¤‰æ›´é€šçŸ¥ã‚’å—ã‘å–ã‚‹ã¨ã€Generator ã¯ ListBox.GetContainerForItem() ã‚’å‘¼ã³å‡ºã™ã€‚
+	ãƒ»ListBox.GetContainerForItem() ã¯ ListBoxItem ã‚’ä½œã£ã¦è¿”ã™ã€‚
+	ãƒ»itemContainerGenerator.ItemsChanged ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã‚‹ã€‚(æ™®é€šã® CLR ã‚¤ãƒ™ãƒ³ãƒˆ)
+	ãƒ»ã“ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯ Panel.OnItemsChanged ã§ã‚­ãƒ£ãƒƒãƒã™ã‚‹ã€‚ãã®å…ˆã§ è«–ç†ãƒ„ãƒªãƒ¼ï¼ˆPanel ã® _uiElementCollectionï¼‰ã«è¿½åŠ ã•ã‚Œã‚‹ã€‚
+
+	ãƒ»ãƒ»ãƒ»ãŒã€æœ€åˆã®ã†ã¡ã‹ã‚‰ã“ã‚“ãªè¤‡é›‘ã«ã¯ã—ãŸããªã„ãƒ»ãƒ»ãƒ»ãƒ»ãƒ»ã€‚
 
 
-	Panel ‚ª Owner ‚ğ‚¿AOwner ‚É Item ‚ğì‚Á‚Ä‚à‚ç‚¤‚Ì‚Í‚¢‚¢‚Æv‚¤B
-	–â‘è‚Í Style‚ğ’N‚ª“K—p‚·‚é‚Ì‚©B
+	ã¡ãªã¿ã«ã€TreeView ã®å ´åˆã¯ TreeViewItem ãŒ ItemsControlã€‚
+	â†‘ã®ä»•çµ„ã¿ãŒãƒãƒ¼ãƒ‰ã®æ•°ã ã‘ãƒã‚¹ã¨ã•ã‚Œã‚‹ã“ã¨ã«ãªã‚‹ã€‚
 
 
-	¡Group
+	Panel ãŒ Owner ã‚’æŒã¡ã€Owner ã« Item ã‚’ä½œã£ã¦ã‚‚ã‚‰ã†ã®ã¯ã„ã„ã¨æ€ã†ã€‚
+	å•é¡Œã¯ Styleã‚’èª°ãŒé©ç”¨ã™ã‚‹ã®ã‹ã€‚
+
+
+	â– Group
 
 		ListBox
-			c
+			â€¦
 				ItemsPresenter
 					StackPanel
 						GroupItem
@@ -320,7 +320,7 @@ void ListBox::InsertListBoxItem(int index, UIElement* element)
 {
 	RefPtr<ListBoxItem> item(ListBoxItem::Create(m_manager));
 	item->SetContent(element);
-	GetItems()->AddVariant(item);	// TODO: ƒCƒ“ƒfƒbƒNƒX
+	GetItems()->AddVariant(item);	// TODO: ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	//m_listBoxItems->Insert(index, item);
 }
 
@@ -330,7 +330,7 @@ void ListBox::InsertListBoxItem(int index, UIElement* element)
 //-----------------------------------------------------------------------------
 UIElement* ListBox::CheckMouseHoverElement(const PointF& globalPt)
 {
-	if (m_itemsPanel != NULL) {	// q—v‘f‚ğ—Dæ
+	if (m_itemsPanel != NULL) {	// å­è¦ç´ ã‚’å„ªå…ˆ
 		UIElement* e = m_itemsPanel->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
 	}
@@ -344,7 +344,7 @@ void ListBox::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
 	Control::ApplyTemplateHierarchy(parent);
 	if (m_itemsPanel != NULL) {
-		m_itemsPanel->ApplyTemplateHierarchy(m_combinedLocalResource);	// Ä‹A“I‚ÉXV‚·‚é
+		m_itemsPanel->ApplyTemplateHierarchy(m_combinedLocalResource);	// å†å¸°çš„ã«æ›´æ–°ã™ã‚‹
 	}
 }
 
@@ -354,7 +354,7 @@ void ListBox::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 void ListBox::MeasureLayout(const SizeF& availableSize)
 {
 	if (m_itemsPanel != NULL) {
-		m_itemsPanel->MeasureLayout(availableSize);	// “Á‚É˜g‚Æ‚©‚È‚¢‚Ì‚Å‚»‚Ì‚Ü‚Ü‚ÌƒTƒCƒY‚ğ“n‚¹‚é
+		m_itemsPanel->MeasureLayout(availableSize);	// ç‰¹ã«æ ã¨ã‹ãªã„ã®ã§ãã®ã¾ã¾ã®ã‚µã‚¤ã‚ºã‚’æ¸¡ã›ã‚‹
 	}
 	Control::MeasureLayout(availableSize);
 }
@@ -365,7 +365,7 @@ void ListBox::MeasureLayout(const SizeF& availableSize)
 void ListBox::ArrangeLayout(const RectF& finalLocalRect)
 {
 	if (m_itemsPanel != NULL) {
-		m_itemsPanel->ArrangeLayout(finalLocalRect);	// “Á‚É˜g‚Æ‚©‚È‚¢‚Ì‚Å‚»‚Ì‚Ü‚Ü‚ÌƒTƒCƒY‚ğ“n‚¹‚é
+		m_itemsPanel->ArrangeLayout(finalLocalRect);	// ç‰¹ã«æ ã¨ã‹ãªã„ã®ã§ãã®ã¾ã¾ã®ã‚µã‚¤ã‚ºã‚’æ¸¡ã›ã‚‹
 	}
 	Control::ArrangeLayout(finalLocalRect);
 }

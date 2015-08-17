@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <memory>
 #include <Lumino/Base/Array.h>
@@ -15,7 +15,7 @@ namespace Lumino
 class Profiler
 {
 public:
-	static Profiler	Instance;		///< ƒOƒ[ƒoƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX
+	static Profiler	Instance;		///< ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 
 
 	static int		Group_MainThread;
@@ -28,69 +28,69 @@ public:
 
 	struct Section
 	{
-		String		Name;					///< ƒZƒNƒVƒ‡ƒ“–¼
-		uint64_t	ElapsedTime;			///< Œo‰ßŽžŠÔ (ns)
+		String		Name;					///< ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+		uint64_t	ElapsedTime;			///< çµŒéŽæ™‚é–“ (ns)
 	};
 
-	// ƒOƒ‹[ƒv‚ÍƒXƒŒƒbƒh‚²‚Æ
+	// ã‚°ãƒ«ãƒ¼ãƒ—ã¯ã‚¹ãƒ¬ãƒƒãƒ‰ã”ã¨
 	struct Group
 	{
-		String		Name;					///< ƒOƒ‹[ƒv–¼
+		String		Name;					///< ã‚°ãƒ«ãƒ¼ãƒ—å
 		Array< std::shared_ptr<Section> >	Sections;
 		//Section		Sections[MaxSections];
 		ElapsedTimer	Timer;
-		float			LimitElapsedTime;	///< ‹–—eŽžŠÔ (ns ’PˆÊBƒtƒŒ[ƒ€ƒŒ[ƒg‚Ì‹t”)
+		float			LimitElapsedTime;	///< è¨±å®¹æ™‚é–“ (ns å˜ä½ã€‚ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®é€†æ•°)
 	};
 
 	struct CommitedSection
 	{
-		String		Name;					///< ƒZƒNƒVƒ‡ƒ“–¼
-		uint64_t	ElapsedTime;			///< Œo‰ßŽžŠÔ (ns)
+		String		Name;					///< ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+		uint64_t	ElapsedTime;			///< çµŒéŽæ™‚é–“ (ns)
 	};
 
 	struct CommitedGroup
 	{
-		String					Name;		///< ƒOƒ‹[ƒv–¼
+		String					Name;		///< ã‚°ãƒ«ãƒ¼ãƒ—å
 		Array<CommitedSection>	Sections;
-		uint64_t				TotalTime;	///< CommitedSection ‚Ìƒg[ƒ^ƒ‹ ElapsedTime
-		float					LimitElapsedTime;	///< ‹–—eŽžŠÔ (ns ’PˆÊBƒtƒŒ[ƒ€ƒŒ[ƒg‚Ì‹t”)
+		uint64_t				TotalTime;	///< CommitedSection ã®ãƒˆãƒ¼ã‚¿ãƒ« ElapsedTime
+		float					LimitElapsedTime;	///< è¨±å®¹æ™‚é–“ (ns å˜ä½ã€‚ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®é€†æ•°)
 	};
 
 public:
 	Profiler();
 
 public:
-	/// ƒOƒ‹[ƒv‚ðì¬‚·‚é
+	/// ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä½œæˆã™ã‚‹
 	int RegisterGroup(const TCHAR* name);
 
-	/// ƒZƒNƒVƒ‡ƒ“‚ðì¬‚·‚é
+	/// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ä½œæˆã™ã‚‹
 	int RegisterSection(int parentGroupIndex, const TCHAR* name);
 
-	/// ƒOƒ‹[ƒv‚Ì‘ª’èŠî€‚Æ‚È‚éƒtƒŒ[ƒ€ƒŒ[ƒg‚ðÝ’è‚·‚é
+	/// ã‚°ãƒ«ãƒ¼ãƒ—ã®æ¸¬å®šåŸºæº–ã¨ãªã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã‚’è¨­å®šã™ã‚‹
 	void SetBaseFrameRate(int group, float baseFrameRate);
 
-	/// Œv‘ªŠJŽn (‹æŠÔ‚ÌƒlƒXƒg‚Í‚Å‚«‚È‚¢)
+	/// è¨ˆæ¸¬é–‹å§‹ (åŒºé–“ã®ãƒã‚¹ãƒˆã¯ã§ããªã„)
 	void StartSection(int groupIndex, int sectionIndex);
 
-	/// Œv‘ªI—¹
+	/// è¨ˆæ¸¬çµ‚äº†
 	void EndSection(int groupIndex, int sectionIndex);
 
-	/// Œv‘ª‚Ì—LŒøÝ’è
+	/// è¨ˆæ¸¬ã®æœ‰åŠ¹è¨­å®š
 	void SetEnabled(bool enabled) { m_enabled = enabled; }
 
-	/// Œv‘ª‚Ì—LŒøÝ’è
+	/// è¨ˆæ¸¬ã®æœ‰åŠ¹è¨­å®š
 	bool IsEnabled() const { return m_enabled; }
 
-	/// ƒƒCƒ“ƒXƒŒƒbƒh‚Ì FPS
+	/// ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã® FPS
 	void SetMainFPS(float fps) { m_mainFPS = fps; }
 
-	/// ƒƒCƒ“ƒXƒŒƒbƒh‚Ì FPS —]—T“x
+	/// ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã® FPS ä½™è£•åº¦
 	void SetMainFPSCapacity(float fps) { m_mainFPSCapacity = fps; }
 
-	/// ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY
+	/// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚º
 	void SetMainWindowSize(const Size& size) { m_mainWindowSize = size; }
 
-	/// ƒƒCƒ“ƒoƒbƒNƒoƒbƒtƒ@‚ÌƒTƒCƒY
+	/// ãƒ¡ã‚¤ãƒ³ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º
 	void SetMainBackBufferSize(const Size& size) { m_mainBackbufferSize = size; }
 
 

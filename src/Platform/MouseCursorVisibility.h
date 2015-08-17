@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Environment.h>
 
@@ -20,7 +20,7 @@ public:
 
 public:
 
-	/// ‚±‚ÌŠÖ”‚ª false ‚ğ•Ô‚µ‚Ä‚¢‚éŠÔ‚Í”ñ•\¦‚É‚·‚é (ƒ[ƒJ[ƒXƒŒƒbƒh‚Åƒ`ƒFƒbƒN)
+	/// ã“ã®é–¢æ•°ãŒ false ã‚’è¿”ã—ã¦ã„ã‚‹é–“ã¯éè¡¨ç¤ºã«ã™ã‚‹ (ãƒ¯ãƒ¼ã‚«ãƒ¼ã‚¹ãƒ¬ãƒƒãƒ‰ã§ãƒã‚§ãƒƒã‚¯)
 	bool CheckVisible() const
 	{
 		if (m_requestForced) return true;
@@ -29,7 +29,7 @@ public:
 		return ((Environment::GetTickCount() - m_startTime) < m_mouseVisibleTime);
 	}
 
-	/// ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚Ì•\¦İ’è (count ‚Í ƒ}ƒEƒXƒJ[ƒ\ƒ‹•ú’uAÁ‚·‚Ü‚Å‚ÌŠÔ(ms)B0 ‚Åí‚ÉÁ‚·)
+	/// ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®è¡¨ç¤ºè¨­å®š (count ã¯ ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«æ”¾ç½®æ™‚ã€æ¶ˆã™ã¾ã§ã®æ™‚é–“(ms)ã€‚0 ã§å¸¸ã«æ¶ˆã™)
 	void SetMouseCursorVisibleState(bool visible, int time)
 	{
 		m_visibleMouseCursor = visible;
@@ -38,10 +38,10 @@ public:
 		m_requestForced = false;
 	}
 
-	/// ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚Ì‘€ìŒã‚ÉŒÄ‚Ô‚±‚Æ
+	/// ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®æ“ä½œå¾Œã«å‘¼ã¶ã“ã¨
 	void OnMoveCursor(bool on_client_area)
 	{
-		// •\¦‚µ‚È‚¢ê‡
+		// è¡¨ç¤ºã—ãªã„å ´åˆ
 		//if (!m_visibleMouseCursor && m_mouseVisibleTime == 0)
 		//{
 		//	m_requestForced = false;

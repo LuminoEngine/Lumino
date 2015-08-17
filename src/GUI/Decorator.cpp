@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/Decorator.h>
 
@@ -33,7 +33,7 @@ Decorator::~Decorator()
 //-----------------------------------------------------------------------------
 void Decorator::SetChild(UIElement* element)
 {
-	// Šù‚É•Ê‚Ìq—v‘f‚Æ‚È‚Á‚Ä‚¢‚éê‡‚ÍƒGƒ‰[
+	// æ—¢ã«åˆ¥ã®å­è¦ç´ ã¨ãªã£ã¦ã„ã‚‹å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if (element != NULL && element->GetParent() != NULL) {
 		LN_THROW(0, InvalidOperationException, _T("Specified element is already a child element of another element."));
 	}
@@ -73,7 +73,7 @@ void Decorator::AddChild(const Variant& value)
 //-----------------------------------------------------------------------------
 UIElement* Decorator::CheckMouseHoverElement(const PointF& globalPt)
 {
-	if (m_child != NULL) {	// q—v‘f‚ğ—Dæ
+	if (m_child != NULL) {	// å­è¦ç´ ã‚’å„ªå…ˆ
 		UIElement* e = m_child->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
 	}
@@ -85,7 +85,7 @@ UIElement* Decorator::CheckMouseHoverElement(const PointF& globalPt)
 //-----------------------------------------------------------------------------
 //void Decorator::AddVisualChild(UIElement* child)
 //{
-//	// Decorator ‚Í LogicalTree = VisualTree ‚È‚Í‚¸‚È‚Ì‚Å‚±‚ê‚Å‚¢‚¢‚Í‚¸EEE
+//	// Decorator ã¯ LogicalTree = VisualTree ãªã¯ãšãªã®ã§ã“ã‚Œã§ã„ã„ã¯ãšãƒ»ãƒ»ãƒ»
 //	SetChild(child);
 //}
 
@@ -96,7 +96,7 @@ void Decorator::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
 	UIElement::ApplyTemplateHierarchy(parent);
 	if (m_child != NULL) {
-		m_child->ApplyTemplateHierarchy(m_combinedLocalResource);	// Ä‹A“I‚ÉXV‚·‚é
+		m_child->ApplyTemplateHierarchy(m_combinedLocalResource);	// å†å¸°çš„ã«æ›´æ–°ã™ã‚‹
 	}
 }
 

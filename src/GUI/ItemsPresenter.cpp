@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ItemsPresenter.h>
@@ -40,19 +40,19 @@ ItemsPresenter::~ItemsPresenter()
 }
 
 //-----------------------------------------------------------------------------
-// ‚±‚ÌŠÖ”‚ÍƒI[ƒi[‚Ì ItemsControl ‚ªu‚±‚Ì Panel ‚ÅƒŒƒCƒAƒEƒg‚µ‚ëv‚Æ’Ê’m‚·‚é‚½‚ß‚Ì‚à‚ÌB
-// ‚±‚Ì ItemsPresenter ‚ª ƒI[ƒi[‚Ì ItemsControl ‚ÉŠ„‚è“–‚Ä‚ç‚ê‚½‚Æ‚«‚âA
-// ƒI[ƒi[‚Ì ItemsControl ‚Ì HostPanelTemplate ‚ª•Ï‚í‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éB
+// ã“ã®é–¢æ•°ã¯ã‚ªãƒ¼ãƒŠãƒ¼ã® ItemsControl ãŒã€Œã“ã® Panel ã§ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã—ã‚ã€ã¨é€šçŸ¥ã™ã‚‹ãŸã‚ã®ã‚‚ã®ã€‚
+// ã“ã® ItemsPresenter ãŒ ã‚ªãƒ¼ãƒŠãƒ¼ã® ItemsControl ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚ŒãŸã¨ãã‚„ã€
+// ã‚ªãƒ¼ãƒŠãƒ¼ã® ItemsControl ã® HostPanelTemplate ãŒå¤‰ã‚ã£ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã€‚
 //-----------------------------------------------------------------------------
 void ItemsPresenter::AttachHostPanel(Panel* panel)
 {
-	// ŒÃ‚¢‚Ì‚Íæ‚èœ‚­
+	// å¤ã„ã®ã¯å–ã‚Šé™¤ã
 	if (m_hostPanel != NULL)
 	{
 		RemoveVisualChild(m_hostPanel);
 	}
 
-	// V‚µ‚¢‚Ì‚ğ’Ç‰Á‚·‚é
+	// æ–°ã—ã„ã®ã‚’è¿½åŠ ã™ã‚‹
 	m_hostPanel = panel;
 	if (m_hostPanel != NULL)
 	{

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Math/Vector3.h>
 
@@ -8,7 +8,7 @@ namespace Physics
 {
 
 /**
-	@brief		ƒfƒoƒbƒO—p‚ÌŒ`ó•`‰æƒCƒ“ƒ^[ƒtƒFƒCƒX‚Å‚·B
+	@brief		ãƒ‡ãƒãƒƒã‚°ç”¨ã®å½¢çŠ¶æç”»ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã§ã™ã€‚
 */
 class IDebugRenderer
 {

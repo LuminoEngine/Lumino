@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 namespace Lumino
@@ -7,14 +7,14 @@ namespace Scene
 {
 	
 /**
-	@brief	ƒV[ƒ“ƒOƒ‰ƒt‚ÌŠÇ—ƒNƒ‰ƒX‚Å‚·B
+	@brief	ã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•ã®ç®¡ç†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class SceneGraphManager
 	: public RefObject
 {
 public:
 
-	/// ‰Šú‰»ƒf[ƒ^
+	/// åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿
 	struct ConfigData
 	{
 		Lumino::FileManager*		FileManager;
@@ -24,7 +24,7 @@ public:
 public:
 
 	/**
-		@brief	SceneGraphManager ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
+		@brief	SceneGraphManager ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	SceneGraphManager* Create(const ConfigData& configData);
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "RenderingPass.h"
@@ -8,7 +8,7 @@ namespace Lumino
 namespace Scene
 {
 
-/// •¨—‰‰Z‚ÌƒfƒoƒbƒO—p•`‰æ‚È‚Ç
+/// ç‰©ç†æ¼”ç®—ã®ãƒ‡ãƒãƒƒã‚°ç”¨æç”»ãªã©
 class InfomationRenderingPass
 	: public RenderingPass
 {

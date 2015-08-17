@@ -1,4 +1,4 @@
-
+Ôªø
 #pragma once
 #include "../Graphics/Font.h"
 #include "../Graphics/GraphicsManager.h"
@@ -42,7 +42,7 @@ public:
 
 public:
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	Text::EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager ÇÃégÇ¶ÇŒÇ¢Ç¢Ç©Ç‡
+	Text::EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager „ÅÆ‰Ωø„Åà„Å∞„ÅÑ„ÅÑ„Åã„ÇÇ
 	Text::EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 	
 private:

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Texture.h>
 #include "Common.h"
@@ -10,8 +10,8 @@ namespace Scene
 {
 
 /**
-	@brief		ƒV[ƒ“ƒOƒ‰ƒt‚ÌÅI•`‰ææ‚Æ‚È‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÆAƒV[ƒ“ƒOƒ‰ƒt‚ğ•`‰æ‚·‚é‚½‚ß‚ÌƒŒƒCƒ„[‚ğŠÇ—‚µ‚Ü‚·B
-	@details	ViewPane ‚ÍƒV[ƒ“ƒOƒ‰ƒt‚ğ•`‰æ‚·‚é‚½‚ß‚Ìƒ‹[ƒg—v‘f‚Å‚·B
+	@brief		ã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•ã®æœ€çµ‚æç”»å…ˆã¨ãªã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã€ã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•ã‚’æç”»ã™ã‚‹ãŸã‚ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç®¡ç†ã—ã¾ã™ã€‚
+	@details	ViewPane ã¯ã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•ã‚’æç”»ã™ã‚‹ãŸã‚ã®ãƒ«ãƒ¼ãƒˆè¦ç´ ã§ã™ã€‚
 */
 class ViewPane
 	: public RefObject
@@ -19,19 +19,19 @@ class ViewPane
 public:
 
 	/**
-		@brief	ViewPane ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
+		@brief	ViewPane ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	ViewPane* Create(SceneGraphManager* manager);
 
 public:
 
 	/**
-		@brief	ƒŒƒCƒ„[‚ÌƒŠƒXƒg‚ğæ“¾‚µ‚Ü‚·B
+		@brief	ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	virtual LayerList* GetLayerList() const = 0;
 
 	/**
-		@brief	w’è‚µ‚½ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÉA‘S‚Ä‚ÌƒŒƒCƒ„[‚ğ•`‰æ‚µ‚Ü‚·B
+		@brief	æŒ‡å®šã—ãŸãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ã€å…¨ã¦ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’æç”»ã—ã¾ã™ã€‚
 	*/
 	virtual void Render(Graphics::Texture* renderTarget) = 0;
 

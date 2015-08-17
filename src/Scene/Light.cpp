@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "Light.h"
 
@@ -39,18 +39,18 @@ Light::~Light()
 //-----------------------------------------------------------------------------
 void Light::UpdateMatrices(const SizeF& viewSize)
 {
-	// ³–Ê•ûŒü
+	// æ­£é¢æ–¹å‘
 	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
 
-	// ’Ž‹“_
+	// æ³¨è¦–ç‚¹
 	Vector3 lookAt = m_combinedGlobalMatrix.GetPosition() + direction;
 
-	// ƒrƒ…[s—ñ
+	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
 	Vector3 up = Vector3(0, 1, 0);
 	m_viewMatrix = Matrix::LookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, up);
 
-	// ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌXV
-	// TODO: Ž‹–ìŠp‚Ænear,far
+	// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®æ›´æ–°
+	// TODO: è¦–é‡Žè§’ã¨near,far
 	// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
 	m_projMatrix = Matrix::PerspectiveFovLH(Math::PI / 4.0f, viewSize.Width / viewSize.Height, 0.01f, 1000.0f);
 
@@ -74,7 +74,7 @@ void Light::UpdateMatrices(const SizeF& viewSize)
 //-----------------------------------------------------------------------------
 void Light::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
-	// ƒ‰ƒCƒg‚ðƒŠƒXƒgƒAƒbƒv
+	// ãƒ©ã‚¤ãƒˆã‚’ãƒªã‚¹ãƒˆã‚¢ãƒƒãƒ—
 	renderingLightList->Add(this);
 
 	SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);

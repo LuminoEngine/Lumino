@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../Modeling/Model.h"
@@ -19,10 +19,10 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(const TCHAR* filePath, SceneGraphManager* manager = NULL);
 
-	/// ‚±‚Ìƒ‚ƒfƒ‹‚É‘Î‚·‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ðs‚¤ƒNƒ‰ƒX‚ÌŽæ“¾
+	/// ã“ã®ãƒ¢ãƒ‡ãƒ«ã«å¯¾ã™ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã®å–å¾—
 	Animation::Animator* GetAnimator() { return m_model->GetAnimator(); }
 
 protected:

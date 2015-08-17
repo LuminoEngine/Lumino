@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/EnumExtension.h>
 
@@ -14,7 +14,7 @@ class IAnimationTargetAttribute;
 class IAnimationTargetElement;
 struct AnimationTargetAttributeEntity;
 
-/// AnimationCurve ‚Ì’l‚Ìí—Ş
+/// AnimationCurve ã®å€¤ã®ç¨®é¡
 enum ValueType
 {
 	ValueType_Float = 0,
@@ -24,22 +24,22 @@ enum ValueType
 	//ValueType_Event,
 };
 
-/// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì•âŠÔ•û–@
+/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®è£œé–“æ–¹æ³•
 enum InterpolationMode
 {
-	InterpolationMode_None = 0,		///< •âŠÔ‚È‚µ
-	InterpolationMode_Linear,		///< üŒ`•âŠÔ
-	InterpolationMode_QuadAccel,	///< “™‰Á‘¬“x
-	InterpolationMode_Hermite,		///< ƒGƒ‹ƒ~[ƒgƒXƒvƒ‰ƒCƒ“•âŠÔ
-	InterpolationMode_CatmullRom,	///< Catmull-Rom •âŠÔ
+	InterpolationMode_None = 0,		///< è£œé–“ãªã—
+	InterpolationMode_Linear,		///< ç·šå½¢è£œé–“
+	InterpolationMode_QuadAccel,	///< ç­‰åŠ é€Ÿåº¦
+	InterpolationMode_Hermite,		///< ã‚¨ãƒ«ãƒŸãƒ¼ãƒˆã‚¹ãƒ—ãƒ©ã‚¤ãƒ³è£œé–“
+	InterpolationMode_CatmullRom,	///< Catmull-Rom è£œé–“
 };
 
-/// ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‚Ìˆ—•û–@
+/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿã®å‡¦ç†æ–¹æ³•
 enum WrapMode
 {
-	WrapMode_Once = 0,		///< ÅŒã‚Ü‚ÅÄ¶‚³‚ê‚½ŒãA’â~‚·‚é
-	WrapMode_Loop,			///< ÅŒã‚Ü‚ÅÄ¶‚³‚ê‚½ŒãAæ“ª‚É–ß‚Á‚Äƒ‹[ƒv‚·‚é
-	//WrapMode_PingPong,		///< ÅŒã‚Ü‚ÅÄ¶‚³‚ê‚½ŒãA‹t•ûŒü‚É–ß‚Á‚Äƒ‹[ƒv‚·‚é
+	WrapMode_Once = 0,		///< æœ€å¾Œã¾ã§å†ç”Ÿã•ã‚ŒãŸå¾Œã€åœæ­¢ã™ã‚‹
+	WrapMode_Loop,			///< æœ€å¾Œã¾ã§å†ç”Ÿã•ã‚ŒãŸå¾Œã€å…ˆé ­ã«æˆ»ã£ã¦ãƒ«ãƒ¼ãƒ—ã™ã‚‹
+	//WrapMode_PingPong,		///< æœ€å¾Œã¾ã§å†ç”Ÿã•ã‚ŒãŸå¾Œã€é€†æ–¹å‘ã«æˆ»ã£ã¦ãƒ«ãƒ¼ãƒ—ã™ã‚‹
 	//WrapMode_Default,
 	//WrapMode_ClampForever,
 };
@@ -47,19 +47,19 @@ enum WrapMode
 /// 
 enum PlayMode
 {
-	StopSameLayer = 0,	///< “¯ƒŒƒCƒ„[‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‚·‚×‚Ä’â~‚·‚é
-	StopAll,			///< ‘S‚Ä‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~‚·‚é
+	StopSameLayer = 0,	///< åŒãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ã™ã¹ã¦åœæ­¢ã™ã‚‹
+	StopAll,			///< å…¨ã¦ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åœæ­¢ã™ã‚‹
 };
 
 /// 
 enum PlayState
 {
-	PlayState_Stopped = 0,	///< ’â~’†
-	PlayState_Playing,		///< Ä¶’†
-	PlayState_Pausing,		///< ˆê’â~’†
+	PlayState_Stopped = 0,	///< åœæ­¢ä¸­
+	PlayState_Playing,		///< å†ç”Ÿä¸­
+	PlayState_Pausing,		///< ä¸€æ™‚åœæ­¢ä¸­
 };
 
-/** ƒC[ƒWƒ“ƒOŠÖ”‚Ìí—Ş‚ğ•\‚µ‚Ü‚·B*/
+/** ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°é–¢æ•°ã®ç¨®é¡ã‚’è¡¨ã—ã¾ã™ã€‚*/
 LN_ENUM(EasingMode)
 {
 	Linear = 0,

@@ -1,6 +1,6 @@
-
+ï»¿
 /*
-	DecreaseButton ‚Æ IncreaseButton ‚Í WPF ‚Å‚Í
+	DecreaseButton ã¨ IncreaseButton ã¯ WPF ã§ã¯
 	<Track>
 		<Track.DecreaseButton>
 			<RepertButton />
@@ -9,13 +9,13 @@
 			<RepertButton />
 		</Track.IncreaseButton>
 	</Track>
-	‚Ì‚æ‚¤‚ÉƒvƒƒpƒeƒB‚É’¼Ú“ü‚ê‚Ä‚¢‚éB
+	ã®ã‚ˆã†ã«ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã«ç›´æ¥å…¥ã‚Œã¦ã„ã‚‹ã€‚
 
-	À‘•‚ª“ï‚µ‚¯‚ê‚Î
-	PART_DecreaseButton ‚Ì‚æ‚¤‚È–¼‘O‚ğ‚Â‚¯‚ÄŒŸõ‚µ‚Ä‚à—Ç‚¢‚©‚à‚µ‚ê‚È‚¢B
+	å®Ÿè£…ãŒé›£ã—ã‘ã‚Œã°
+	PART_DecreaseButton ã®ã‚ˆã†ãªåå‰ã‚’ã¤ã‘ã¦æ¤œç´¢ã—ã¦ã‚‚è‰¯ã„ã‹ã‚‚ã—ã‚Œãªã„ã€‚
 
-	Track ‚ÌŠeƒvƒƒpƒeƒB‚ÍAe‚Ì RangeBase (ScrollBar‚È‚Ç) ‚Ì
-	ƒvƒƒpƒeƒB‚Æ TemplateBinding ‚·‚éB
+	Track ã®å„ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¯ã€è¦ªã® RangeBase (ScrollBarãªã©) ã®
+	ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¨ TemplateBinding ã™ã‚‹ã€‚
 */
 
 #include "../../Internal.h"
@@ -104,7 +104,7 @@ void Track::SetIncreaseButton(ButtonBase* button)
 }
 
 //-----------------------------------------------------------------------------
-// À•WˆÚ“®—Ê‚ğ’l‚Ì·•ª‚É•ÏŠ·‚·‚é
+// åº§æ¨™ç§»å‹•é‡ã‚’å€¤ã®å·®åˆ†ã«å¤‰æ›ã™ã‚‹
 //-----------------------------------------------------------------------------
 float Track::ValueFromDistance(float horizontal, float vertical)
 {
@@ -132,7 +132,7 @@ float Track::ValueFromDistance(float horizontal, float vertical)
 //}
 
 //-----------------------------------------------------------------------------
-// Note: ‚±‚±‚Å‚Íq—v‘f‚ğ Measure ‚µ‚È‚¢
+// Note: ã“ã“ã§ã¯å­è¦ç´ ã‚’ Measure ã—ãªã„
 //-----------------------------------------------------------------------------
 void Track::MeasureLayout(const SizeF& availableSize)
 {
@@ -140,7 +140,7 @@ void Track::MeasureLayout(const SizeF& availableSize)
 }
 
 //-----------------------------------------------------------------------------
-// Note: ‚±‚±‚Å‚Íq—v‘f‚ğ Arrange ‚µ‚È‚¢
+// Note: ã“ã“ã§ã¯å­è¦ç´ ã‚’ Arrange ã—ãªã„
 //-----------------------------------------------------------------------------
 void Track::ArrangeLayout(const RectF& finalLocalRect)
 {
@@ -161,15 +161,15 @@ SizeF Track::MeasureOverride(const SizeF& availableSize)
 	if (!m_thumb.IsNull())
 	{
 		m_thumb->MeasureLayout(availableSize);
-		desiredSize = m_thumb->GetDesiredSize();	// Thumb ‚Í‚±‚ÌƒTƒCƒY‚ğ—v‹‚µ‚Ä‚¢‚éB(ƒ†[ƒU[‚ª’¼ÚƒTƒCƒY‚ğ‚µ‚½‚¢‚µ‚½ê‡“™)
+		desiredSize = m_thumb->GetDesiredSize();	// Thumb ã¯ã“ã®ã‚µã‚¤ã‚ºã‚’è¦æ±‚ã—ã¦ã„ã‚‹ã€‚(ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒç›´æ¥ã‚µã‚¤ã‚ºã‚’ã—ãŸã„ã—ãŸå ´åˆç­‰)
 	}
 
 	if (!Math::IsNaN(m_viewportSize))
 	{
 		if (m_orientation == Orientation::Vertical)
-			desiredSize.Height = 0.0;	// c•ûŒü‚ÍŒã‚ÌŒvZ‚É”C‚¹‚é
+			desiredSize.Height = 0.0;	// ç¸¦æ–¹å‘ã¯å¾Œã®è¨ˆç®—ã«ä»»ã›ã‚‹
 		else
-			desiredSize.Width = 0.0;	// ‰¡•ûŒü‚ÍŒã‚ÌŒvZ‚É”C‚¹‚é
+			desiredSize.Width = 0.0;	// æ¨ªæ–¹å‘ã¯å¾Œã®è¨ˆç®—ã«ä»»ã›ã‚‹
 	}
 
 	return desiredSize;
@@ -187,7 +187,7 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 
 	if (Math::IsNaN(m_viewportSize))
 	{
-		// ƒrƒ…[ƒTƒCƒY‚ªŠÖŒW‚È‚¢ê‡‚ÌŒvZB‚Â‚Ü‚èASlider ƒRƒ“ƒgƒ[ƒ‹—p
+		// ãƒ“ãƒ¥ãƒ¼ã‚µã‚¤ã‚ºãŒé–¢ä¿‚ãªã„å ´åˆã®è¨ˆç®—ã€‚ã¤ã¾ã‚Šã€Slider ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç”¨
 		//CalcSliderComponentsSize
 	}
 	else
@@ -199,21 +199,21 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 	{
 		RectF rect(0.0f, 0.0f, 0.0f, finalSize.Height);
 
-		// ƒfƒNƒŠƒƒ“ƒgƒ{ƒ^ƒ“
+		// ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆãƒœã‚¿ãƒ³
 		if (m_decreaseButton != NULL)
 		{
 			rect.X = 0.0f;
 			rect.Width = decreaseButtonLength;
 			m_decreaseButton->ArrangeLayout(rect);
 		}
-		// ‚Â‚Ü‚İ
+		// ã¤ã¾ã¿
 		if (m_thumb != NULL)
 		{
 			rect.X = decreaseButtonLength;
 			rect.Width = thumbLength;
 			m_thumb->ArrangeLayout(rect);
 		}
-		// ƒCƒ“ƒNƒŠƒƒ“ƒgƒ{ƒ^ƒ“
+		// ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆãƒœã‚¿ãƒ³
 		if (m_increaseButton != NULL)
 		{
 			rect.X = decreaseButtonLength + thumbLength;
@@ -225,21 +225,21 @@ SizeF Track::ArrangeOverride(const SizeF& finalSize)
 	{
 		RectF rect(0.0f, 0.0f, finalSize.Width, 0.0f);
 
-		// ƒfƒNƒŠƒƒ“ƒgƒ{ƒ^ƒ“
+		// ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆãƒœã‚¿ãƒ³
 		if (m_decreaseButton != NULL)
 		{
 			rect.Y = 0.0f;
 			rect.Height = decreaseButtonLength;
 			m_decreaseButton->ArrangeLayout(rect);
 		}
-		// ‚Â‚Ü‚İ
+		// ã¤ã¾ã¿
 		if (m_thumb != NULL)
 		{
 			rect.Y = decreaseButtonLength;
 			rect.Height = thumbLength;
 			m_thumb->ArrangeLayout(rect);
 		}
-		// ƒCƒ“ƒNƒŠƒƒ“ƒgƒ{ƒ^ƒ“
+		// ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆãƒœã‚¿ãƒ³
 		if (m_increaseButton != NULL)
 		{
 			rect.Y = decreaseButtonLength + thumbLength;
@@ -301,7 +301,7 @@ void Track::CalcScrollBarComponentsSize(
 	float* outIncreaseButtonLength)
 {
 	/*
-	 ViewportSize ‚Ég—p‚³‚ê‚é’PˆÊ‚ÍAƒRƒ“ƒeƒ“ƒc‚Ì’·‚³‚ğ‹Lq‚·‚é‚½‚ß‚Ég—p‚³‚ê‚é’PˆÊ‚Æ“¯‚¶‚Å‚·B
+	 ViewportSize ã«ä½¿ç”¨ã•ã‚Œã‚‹å˜ä½ã¯ã€ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®é•·ã•ã‚’è¨˜è¿°ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã‚‹å˜ä½ã¨åŒã˜ã§ã™ã€‚
 	 https://msdn.microsoft.com/ja-jp/library/system.windows.controls.primitives.scrollbar.viewportsize%28v=vs.110%29.aspx
 	
 	https://msdn.microsoft.com/ja-jp/library/system.windows.controls.primitives.track.maximum%28v=vs.110%29.aspx
@@ -309,18 +309,18 @@ void Track::CalcScrollBarComponentsSize(
 
 	float min = m_minimum;
 	float range = std::max(0.0f, m_maximum - min);
-	float offset = std::min(range, m_value - min);			// m_value ‚ÌˆÊ’u
-	float extent = std::max(0.0f, range) + viewportSize;	// ƒRƒ“ƒeƒ“ƒc‘S‘Ì‚ÌƒTƒCƒY
+	float offset = std::min(range, m_value - min);			// m_value ã®ä½ç½®
+	float extent = std::max(0.0f, range) + viewportSize;	// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„å…¨ä½“ã®ã‚µã‚¤ã‚º
 
 	//float trackLength = finalLength;
 	float thumbMinLength = 16.0f;
 
-	// Thumb ƒTƒCƒY‚ğŒvZ‚·‚é
-	float thumbLength = trackLength * viewportSize / extent;	// ƒRƒ“ƒeƒ“ƒc‘S‘Ì‚Ì“àA‚Ç‚Ì•”•ª‚ğ•\¦‚µ‚Ä‚¢‚é‚Ì‚©A‚»‚ÌŠ„‡‚Å Thumb ‚Ì’·‚³‚ğì‚é
+	// Thumb ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ã™ã‚‹
+	float thumbLength = trackLength * viewportSize / extent;	// ã‚³ãƒ³ãƒ†ãƒ³ãƒ„å…¨ä½“ã®å†…ã€ã©ã®éƒ¨åˆ†ã‚’è¡¨ç¤ºã—ã¦ã„ã‚‹ã®ã‹ã€ãã®å‰²åˆã§ Thumb ã®é•·ã•ã‚’ä½œã‚‹
 	CoerceLength(thumbLength, trackLength);
 	thumbLength = std::max(thumbMinLength, thumbLength);
 
-	// c‚è‚Ì•”•ª‚ÌƒTƒCƒY
+	// æ®‹ã‚Šã®éƒ¨åˆ†ã®ã‚µã‚¤ã‚º
 	float remainingTrackLength = trackLength - thumbLength;
 
 	// DecreaseButton

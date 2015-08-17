@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/Button.h>
 
@@ -30,7 +30,7 @@ Button::Button(GUIManager* manager)
 	: ContentControl(manager)
 	, m_isMouseOver(false)
 {
-	// ƒvƒƒpƒeƒB‚Ì“o˜^
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®ç™»éŒ²
 	//LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
 
 	//m_chrome.Attach(LN_NEW ButtonChrome(manager));

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 namespace Lumino
@@ -7,8 +7,8 @@ namespace Graphics { class GraphicsManager; }
 namespace GUI { class GUIManager; }
 class Application;
 
-// Application ƒNƒ‰ƒX‚Ì‚ÂŠeí Manager ‚ğŠeƒ‚ƒWƒ…[ƒ‹‚ÉŒöŠJ‚·‚é‚à‚ÌB
-// Application ‚ğ’¼ÚŒöŠJ‚·‚é‚Æ include ‚ÌŠÖŒW‚Åƒrƒ‹ƒhŠÔ‚ª‚·‚²‚¢‚±‚Æ‚É‚È‚é‚Ì‚Å—pˆÓ‚µ‚½B
+// Application ã‚¯ãƒ©ã‚¹ã®æŒã¤å„ç¨® Manager ã‚’å„ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«å…¬é–‹ã™ã‚‹ã‚‚ã®ã€‚
+// Application ã‚’ç›´æ¥å…¬é–‹ã™ã‚‹ã¨ include ã®é–¢ä¿‚ã§ãƒ“ãƒ«ãƒ‰æ™‚é–“ãŒã™ã”ã„ã“ã¨ã«ãªã‚‹ã®ã§ç”¨æ„ã—ãŸã€‚
 class ApplicationContext
 {
 public:

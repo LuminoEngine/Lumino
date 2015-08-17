@@ -1,4 +1,4 @@
-
+Ôªø
 #pragma once
 #include "../Property.h"
 #include "../Graphics/GraphicsManager.h"
@@ -20,7 +20,7 @@ class TextElement
 public:
 	LN_PROPERTY(String, FontFamilyProperty);
 	LN_PROPERTY(int,	FontSizeProperty);
-	LN_PROPERTY(int,	FontEdgeSizeProperty);	// TODO: Pen Ç…à⁄ÇµÇΩÇ¢
+	LN_PROPERTY(int,	FontEdgeSizeProperty);	// TODO: Pen „Å´Áßª„Åó„Åü„ÅÑ
 	LN_PROPERTY(bool,	IsFontBoldProperty);
 	LN_PROPERTY(bool,	IsFontItalicProperty);
 	LN_PROPERTY(bool,	IsFontAntiAliasProperty);

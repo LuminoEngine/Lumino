@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Internal.h"
 #include <Lumino/Profiler.h>
@@ -101,7 +101,7 @@ void Application::InitialzePlatformManager()
 		m_platformManager.Attach(LN_NEW Platform::PlatformManager());
 		m_platformManager->Initialize(data);
 
-		// ƒCƒxƒ“ƒgƒŠƒXƒi[“o˜^
+		// ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒŠãƒ¼ç™»éŒ²
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
 	}
 }
@@ -213,36 +213,36 @@ bool Application::OnEvent(const Platform::EventArgs& e)
 {
 	switch (e.Type)
 	{
-	case Platform::EventType_Quit:	///< ƒAƒvƒŠI—¹—v‹
-	case Platform::EventType_Close:			///< ƒEƒBƒ“ƒhƒE‚ª•Â‚¶‚ç‚ê‚æ‚¤‚Æ‚µ‚Ä‚¢‚é
+	case Platform::EventType_Quit:	///< ã‚¢ãƒ—ãƒªçµ‚äº†è¦æ±‚
+	case Platform::EventType_Close:			///< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒé–‰ã˜ã‚‰ã‚Œã‚ˆã†ã¨ã—ã¦ã„ã‚‹
 		break;
 
-	case Platform::EventType_MouseDown:		// ƒEƒXƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½
+	case Platform::EventType_MouseDown:		// ã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseUp:			// ƒ}ƒEƒXƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½
+	case Platform::EventType_MouseUp:			// ãƒžã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚ŒãŸ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseMove:		// ƒ}ƒEƒX‚ªˆÚ“®‚µ‚½
+	case Platform::EventType_MouseMove:		// ãƒžã‚¦ã‚¹ãŒç§»å‹•ã—ãŸ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseWheel:		// ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‘€ì‚³‚ê‚½
+	case Platform::EventType_MouseWheel:		// ãƒžã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ãŒæ“ä½œã•ã‚ŒãŸ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseWheel(e.Mouse.Delta, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyDown:	// ƒL[‰Ÿ‰º
+	case Platform::EventType_KeyDown:	// ã‚­ãƒ¼æŠ¼ä¸‹
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyUp:		//  ƒL[‰Ÿ‚µã‚°
+	case Platform::EventType_KeyUp:		//  ã‚­ãƒ¼æŠ¼ã—ä¸Šã’
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
 		}

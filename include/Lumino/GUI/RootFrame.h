@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "ContentControl.h"
 
@@ -8,7 +8,7 @@ namespace GUI
 {
 
 /**
-	@brief	GUI —v‘f‚Ìƒ‹[ƒg—v‘f‚Å‚·B
+	@brief	GUI è¦ç´ ã®ãƒ«ãƒ¼ãƒˆè¦ç´ ã§ã™ã€‚
 */
 class RootFrame
 	: public ContentControl
@@ -16,7 +16,7 @@ class RootFrame
 public:
 
 	/**
-		@brief	RootFrame ‚ğì¬‚µ‚Ü‚·B
+		@brief	RootFrame ã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static RootFrame* Create();
 

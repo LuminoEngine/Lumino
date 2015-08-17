@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/Control.h>
 #include "GUIHelper.h"
@@ -71,7 +71,7 @@ void Control::SetTemplate(ControlTemplate* controlTemplate)
 //-----------------------------------------------------------------------------
 void Control::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	// ControlTemplate ‚Ì“K—pˆ— (WPF ‚Å‚Í ApplyTemplate ‚Ås‚Á‚Ä‚¢‚½)
+	// ControlTemplate ã®é©ç”¨å‡¦ç† (WPF ã§ã¯ ApplyTemplate ã§è¡Œã£ã¦ã„ãŸ)
 	if (m_controlTemplate != NULL) {
 		m_controlTemplate->Apply(this);
 	}
@@ -120,7 +120,7 @@ void Control::OnRender(Graphics::Painter* painter)
 
 //void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //{
-//	// ƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚·‚é
+//	// ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã™ã‚‹
 //	if (m_combinedLocalResource != NULL && parent != m_combinedLocalResource) {
 //		m_combinedLocalResource->Combine(parent, m_localResource);
 //	}
@@ -128,7 +128,7 @@ void Control::OnRender(Graphics::Painter* painter)
 //		LN_REFOBJ_SET(m_combinedLocalResource, parent);
 //	}
 //
-//	// ControlTemplate ‚Ì“K—pˆ—
+//	// ControlTemplate ã®é©ç”¨å‡¦ç†
 //	ControlTemplate* t;
 //	if (m_combinedLocalResource->TryGetControlTemplate(GetTypeID(), &t)) {
 //		t->Apply(this);
@@ -136,9 +136,9 @@ void Control::OnRender(Graphics::Painter* painter)
 //
 //	OnApplyTemplate(m_combinedLocalResource);
 //
-//	// q—v‘f
+//	// å­è¦ç´ 
 //	if (m_templateChild != NULL) {
-//		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// Ä‹A“I‚ÉXV‚·‚é
+//		m_templateChild->ApplyTemplateHierarchy(m_combinedLocalResource);	// å†å¸°çš„ã«æ›´æ–°ã™ã‚‹
 //	}
 //}
 //

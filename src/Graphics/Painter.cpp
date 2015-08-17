@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/Base/StringTraits.h>
 #include <Lumino/Graphics/Painter.h>
@@ -354,11 +354,11 @@ Painter::~Painter()
 	LN_CALL_COMMAND(End, EndCommand);
 }
 
-/// ƒsƒNƒZƒ‹’PˆÊ‚Ì2D•`‰æ‚Ég‚¤Ë‰es—ñ‚Ìì¬
+/// ãƒ”ã‚¯ã‚»ãƒ«å˜ä½ã®2Dæç”»ã«ä½¿ã†å°„å½±è¡Œåˆ—ã®ä½œæˆ
 static void perspective2DLH(Matrix* out_, float width_, float height_, float near_, float far_)
 {
-	// ¦‚±‚ÌƒIƒtƒZƒbƒg’²®‚ª•K—v‚È‚Ì‚Í DX9 ‚Ì‚İB–{—ˆ‚Å‚ ‚ê‚ÎƒVƒF[ƒ_“à‚Å‚½‚¢‚¨‚¤‚·‚é‚à‚Ì‚È‚Ì‚ÅA
-	// ŒãX‚±‚Ìˆ—‚Ííœ‚·‚éB
+	// â€»ã“ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆèª¿æ•´ãŒå¿…è¦ãªã®ã¯ DX9 ã®ã¿ã€‚æœ¬æ¥ã§ã‚ã‚Œã°ã‚·ã‚§ãƒ¼ãƒ€å†…ã§ãŸã„ãŠã†ã™ã‚‹ã‚‚ã®ãªã®ã§ã€
+	// å¾Œã€…ã“ã®å‡¦ç†ã¯å‰Šé™¤ã™ã‚‹ã€‚
 #if 1
 	out_->Set(
 		2.0f / width_, 0.0f, 0.0f, 0.0f,
@@ -366,7 +366,7 @@ static void perspective2DLH(Matrix* out_, float width_, float height_, float nea
 		0.0f, 0.0f, 1.0f / (far_ - near_), 0.0f,
 		-1.0f, 1.0f, near_ / (near_ - far_), 1.0f);
 #else
-	// •½sˆÚ“®¬•ª‚ÍA‰æ–Ê”¼•ª + 0.5 ƒsƒNƒZƒ‹‚Ì’²®
+	// å¹³è¡Œç§»å‹•æˆåˆ†ã¯ã€ç”»é¢åŠåˆ† + 0.5 ãƒ”ã‚¯ã‚»ãƒ«ã®èª¿æ•´
 	out_->set(
 		2.0f / width_, 0.0f, 0.0f, 0.0f,
 		0.0f, -2.0f / height_, 0.0f, 0.0f,
@@ -429,7 +429,7 @@ void Painter::SetBrush(Brush* brush)
 		{
 			auto t = static_cast<ColorBrush*>(brush);
 			const ColorF& c = t->GetColor();
-			data.SolidColorBrush.Color[0] = c.R;		// TODO: POD Œ^‚ğ‚Ü‚Æ‚ß‚Ä’è‹`‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é
+			data.SolidColorBrush.Color[0] = c.R;		// TODO: POD å‹ã‚’ã¾ã¨ã‚ã¦å®šç¾©ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹
 			data.SolidColorBrush.Color[1] = c.G;
 			data.SolidColorBrush.Color[2] = c.B;
 			data.SolidColorBrush.Color[3] = c.A;
@@ -439,7 +439,7 @@ void Painter::SetBrush(Brush* brush)
 			auto t = static_cast<TextureBrush*>(brush);
 			data.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
 			const Rect& r = t->GetSourceRect();
-			data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD Œ^‚ğ‚Ü‚Æ‚ß‚Ä’è‹`‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é
+			data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD å‹ã‚’ã¾ã¨ã‚ã¦å®šç¾©ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹
 			data.TextureBrush.SourceRect[1] = r.Y;
 			data.TextureBrush.SourceRect[2] = r.Width;
 			data.TextureBrush.SourceRect[3] = r.Height;
@@ -480,7 +480,7 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 	BrushData data;
 	data.Type = BrushType_Texture;
 	data.TextureBrush.Texture = (texture != NULL) ? texture->GetDeviceObject() : NULL;
-	data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD Œ^‚ğ‚Ü‚Æ‚ß‚Ä’è‹`‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é
+	data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD å‹ã‚’ã¾ã¨ã‚ã¦å®šç¾©ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹
 	data.TextureBrush.SourceRect[1] = r.Y;
 	data.TextureBrush.SourceRect[2] = r.Width;
 	data.TextureBrush.SourceRect[3] = r.Height;
@@ -542,10 +542,10 @@ void Painter::DrawString(const TCHAR* str, int length, const PointF& position)
 {
 	length = (length < 0) ? StringTraits::StrLen(str) : length;
 
-	// UTF32 ‚Ö•ÏŠ·
+	// UTF32 ã¸å¤‰æ›
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
-	// Œ»İ‚ÌƒtƒHƒ“ƒgİ’è‚Éˆê’v‚·‚éƒeƒNƒXƒ`ƒƒƒLƒƒƒbƒVƒ…‚ğ’T‚·
+	// ç¾åœ¨ã®ãƒ•ã‚©ãƒ³ãƒˆè¨­å®šã«ä¸€è‡´ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’æ¢ã™
 	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
 
 	// 
@@ -563,10 +563,10 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 {
 	length = (length < 0) ? StringTraits::StrLen(str) : length;
 
-	// UTF32 ‚Ö•ÏŠ·
+	// UTF32 ã¸å¤‰æ›
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
-	// Œ»İ‚ÌƒtƒHƒ“ƒgİ’è‚Éˆê’v‚·‚éƒeƒNƒXƒ`ƒƒƒLƒƒƒbƒVƒ…‚ğ’T‚·
+	// ç¾åœ¨ã®ãƒ•ã‚©ãƒ³ãƒˆè¨­å®šã«ä¸€è‡´ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’æ¢ã™
 	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
 
 	// 
@@ -599,13 +599,13 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 //-----------------------------------------------------------------------------
 void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
 {
-	// ˆêƒƒ‚ƒŠŠm•Û
+	// ä¸€æ™‚ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * result->Items.GetCount());
 	auto data = (PainterEngine::GlyphRunData*)m_tempBuffer.GetData();
 
-	// Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ÉƒeƒNƒXƒ`ƒƒ•`‰æî•ñ‚ğì‚Á‚Ä‚¢‚­
+	// ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã«ãƒ†ã‚¯ã‚¹ãƒãƒ£æç”»æƒ…å ±ã‚’ä½œã£ã¦ã„ã
 	Texture* tex1 = NULL;
-	Texture* tex2 = NULL;	// TODO: ƒXƒgƒ[ƒN
+	Texture* tex2 = NULL;	// TODO: ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯
 	int count = result->Items.GetCount();
 	for (int i = 0; i < count; ++i)
 	{
@@ -620,7 +620,7 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 	Device::ITexture* dtex2 = (tex2 != NULL) ? tex2->GetDeviceObject() : NULL;
 	
 	
-	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: F
+	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: è‰²
 }
 
 } // namespace Graphics

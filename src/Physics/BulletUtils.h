@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <LinearMath/btVector3.h>
@@ -11,7 +11,7 @@ namespace Lumino
 namespace Physics
 {
 
-/// Bullet ‚Æ‚Ìƒf[ƒ^•ÏŠ·‚È‚Ç‚Ìƒ†[ƒeƒBƒŠƒeƒB
+/// Bullet ã¨ã®ãƒ‡ãƒ¼ã‚¿å¤‰æ›ãªã©ã®ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 class BulletUtil
 {
 public:

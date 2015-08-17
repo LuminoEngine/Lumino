@@ -1,7 +1,7 @@
-/*
-	FreeType �̓X���b�h�Z�[�t�ł͂Ȃ��B2.6 �ł� FaceNew �������I�ɔr����������炵�����A
-	�����ł� FT_Library ���X���b�h���Ƃɍ��̂���ԊȒP�ƌ����Ă���B
-	�ł�����ł͑S�������Ǘ��N���X��2�ł��邱�ƂɂȂ�A�g�p��������������B
+﻿/*
+	FreeType はスレッドセーフではない。2.6 では FaceNew 等部分的に排他がかかるらしいが、
+	公式では FT_Library をスレッドごとに作るのが一番簡単と言っている。
+	でもそれでは全く同じ管理クラスが2つできることになり、使用メモリも増える。
 */
 #include "../Internal.h"
 #include <Lumino/Base/Hash.h>
@@ -24,15 +24,15 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 	m_font = font;
 	m_layoutEngine.SetFont(m_font);
 
-	int maxCharacters = 2048;// TODO �萔�Ȃ̂͂Ȃ�Ƃ�������
+	int maxCharacters = 2048;// TODO 定数なのはなんとかしたい
 
-	// �������ɕ��ׂ鐔
-	// +1.0 �͐؂�̂đ΍�B�e�N�X�`���T�C�Y��maxCharacters�����܂�傫���ł���Ηǂ��B
-	// (�������Ȃ����OK)
+	// 横方向に並べる数
+	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
+	// (小さくなければOK)
 	m_glyphWidthCount = (int)(sqrt((double)maxCharacters) + 1.0);
-	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO �r�b�g�}�b�v�����܂�T�C�Y�͗v�`�F�b�N
+	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
-	// �L���b�V���p�e�N�X�`���쐬
+	// キャッシュ用テクスチャ作成
 	m_glyphCacheTexture.Attach(Texture::Create(Size(w, w), TextureFormat_R8G8B8A8, 1, m_manager));
 	//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
 	//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
@@ -43,7 +43,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 	//painter.Clear(Color::Blue);
 	//m_glyphCacheTexture->GetDeviceObject()->Unlock();
 
-	// �󂫃L���b�V���C���f�b�N�X�쐬
+	// 空きキャッシュインデックス作成
 	for (int i = 0; i < maxCharacters; i++) {
 		m_indexStack.Push(i);
 	}
@@ -57,7 +57,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 //-----------------------------------------------------------------------------
 void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect)
 {
-	// �Ƃ肠��������1���������̂�
+	// とりあえず今は1つしか無いので
 	*texture = m_glyphCacheTexture;
 
 	CachedGlyphInfoMap::iterator itr = m_cachedGlyphInfoMap.find(ch);
@@ -72,11 +72,11 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 	else
 	{
 		if (m_indexStack.GetCount() == 0) {
-			// TODO: �Â��L���b�V���j��
+			// TODO: 古いキャッシュ破棄
 			LN_THROW(0, NotImplementedException);
 		}
 
-		// �V��������ăL���b�V���ɓo�^
+		// 新しく作ってキャッシュに登録
 		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
 
 		int cacheIndex = m_indexStack.GetTop();
@@ -87,7 +87,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 		//{
 		//	Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
 
-		// m_tmpBitmap �� BitBlt ���邱�ƂŁA�A�E�g���C���̃r�b�g�}�b�v�ƌ������A�t�H�[�}�b�g�����낦��
+		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
 
 		if (glyphBitmap->OutlineBitmap != NULL)
 		{
@@ -119,7 +119,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 		//lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
 		//}
 
-		// �L���b�V���}�b�v�ɓo�^
+		// キャッシュマップに登録
 		CachedGlyphInfo info;
 		info.Index = cacheIndex;
 		info.Size = glyphBitmap->GlyphBitmap->GetSize();
@@ -222,7 +222,7 @@ namespace detail
 //-----------------------------------------------------------------------------
 TextRendererImplemented::TextRendererImplemented(GraphicsManager* manager)
 {
-	int maxCharacters = 2048;// TODO �萔�Ȃ̂͂Ȃ�Ƃ�������
+	int maxCharacters = 2048;// TODO 定数なのはなんとかしたい
 	m_spriteRenderer.Attach(LN_NEW SpriteRendererImpl(manager, maxCharacters));
 }
 
@@ -241,17 +241,17 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 	CachedGlyphInfoMap::iterator itr = m_cachedGlyphInfoMap.find(ch);
 	if (itr != m_cachedGlyphInfoMap.end())
 	{
-		// �`��
+		// 描画
 		DrawSprite(itr->second, area.X, area.Y);
 	}
 	else
 	{
 		if (m_indexStack.GetCount() == 0) {
-			// TODO: �Â��L���b�V���j��
+			// TODO: 古いキャッシュ破棄
 			LN_THROW(0, NotImplementedException);
 		}
 
-		// �V��������ăL���b�V���ɓo�^
+		// 新しく作ってキャッシュに登録
 		FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
 
 		int cacheIndex = m_indexStack.GetTop();
@@ -270,13 +270,13 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 			lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
 		}
 
-		// �L���b�V���}�b�v�ɓo�^
+		// キャッシュマップに登録
 		CachedGlyphInfo e;
 		e.Index = cacheIndex;
 		e.Size = glyhp->GlyphBitmap->GetSize();
 		m_cachedGlyphInfoMap[ch] = e;
 
-		// �`��
+		// 描画
 		DrawSprite(e, area.X, area.Y);
 	}
 }
@@ -314,19 +314,19 @@ void TextRendererImplemented::DrawSprite(const CachedGlyphInfo& info, int x, int
 //-----------------------------------------------------------------------------
 void TextRendererImplemented::Reset()
 {
-	int maxCharacters = 2048;// TODO �萔�Ȃ̂͂Ȃ�Ƃ�������
+	int maxCharacters = 2048;// TODO 定数なのはなんとかしたい
 
-	// �������ɕ��ׂ鐔
-	// +1.0 �͐؂�̂đ΍�B�e�N�X�`���T�C�Y��maxCharacters�����܂�傫���ł���Ηǂ��B
-	// (�������Ȃ����OK)
+	// 横方向に並べる数
+	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
+	// (小さくなければOK)
 	m_glyphWidthCount = (int)(sqrt((double)maxCharacters) + 1.0);
-	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO �r�b�g�}�b�v�����܂�T�C�Y�͗v�`�F�b�N
+	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
-	// �L���b�V���p�e�N�X�`���쐬
+	// キャッシュ用テクスチャ作成
 	Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice();
 	m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
 
-	// �󂫃L���b�V���C���f�b�N�X�쐬
+	// 空きキャッシュインデックス作成
 	for (int i = 0; i < maxCharacters; i++) {
 		m_indexStack.Push(i);
 	}
@@ -368,7 +368,7 @@ TextRenderer::TextRenderer(GraphicsManager* manager)
 {
 	//m_manager = manager;
 	//m_impl = LN_NEW TextRendererImplemented(manager);
-	m_spriteRenderer.Attach(SpriteRenderer::Create(2048, manager));	// TODO �萔
+	m_spriteRenderer.Attach(SpriteRenderer::Create(2048, manager));	// TODO 定数
 }
 
 //-----------------------------------------------------------------------------
@@ -453,17 +453,17 @@ void TextRenderer::DrawChar(UTF32 ch)
 	CachedGlyphInfoMap::iterator itr = m_cachedGlyphInfoMap.find(ch);
 	if (itr != m_cachedGlyphInfoMap.end())
 	{
-		// �`��
+		// 描画
 		DrawSprite(itr->second, m_prevGlyphLocationData->OutlineBitmapTopLeftPosition);
 	}
 	else
 	{
 		if (m_indexStack.GetCount() == 0) {
-			// TODO: �Â��L���b�V���j��
+			// TODO: 古いキャッシュ破棄
 			LN_THROW(0, NotImplementedException);
 		}
 
-		// �V��������ăL���b�V���ɓo�^
+		// 新しく作ってキャッシュに登録
 		//FontGlyphData* glyhp = m_font->LookupGlyphData(ch, NULL);
 		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
 
@@ -475,7 +475,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 		//{
 		//	Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
 
-		// m_tmpBitmap �� BitBlt ���邱�ƂŁA�A�E�g���C���̃r�b�g�}�b�v�ƌ������A�t�H�[�}�b�g�����낦��
+		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
 
 		if (glyphBitmap->OutlineBitmap != NULL)
 		{
@@ -510,13 +510,13 @@ void TextRenderer::DrawChar(UTF32 ch)
 			//lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
 		//}
 
-		// �L���b�V���}�b�v�ɓo�^
+		// キャッシュマップに登録
 		CachedGlyphInfo e;
 		e.Index = cacheIndex;
 		e.Size = glyphBitmap->GlyphBitmap->GetSize();
 		m_cachedGlyphInfoMap[ch] = e;
 
-		// �`��
+		// 描画
 		DrawSprite(e, m_prevGlyphLocationData->OuterTopLeftPosition);
 	}
 }
@@ -548,15 +548,15 @@ void TextRenderer::CheckResetCache()
 {
 	if (m_fontFaceModified)
 	{
-		int maxCharacters = 2048;// TODO �萔�Ȃ̂͂Ȃ�Ƃ�������
+		int maxCharacters = 2048;// TODO 定数なのはなんとかしたい
 
-		// �������ɕ��ׂ鐔
-		// +1.0 �͐؂�̂đ΍�B�e�N�X�`���T�C�Y��maxCharacters�����܂�傫���ł���Ηǂ��B
-		// (�������Ȃ����OK)
+		// 横方向に並べる数
+		// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
+		// (小さくなければOK)
 		m_glyphWidthCount = (int)(sqrt((double)maxCharacters) + 1.0);
-		int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO �r�b�g�}�b�v�����܂�T�C�Y�͗v�`�F�b�N
+		int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
-		// �L���b�V���p�e�N�X�`���쐬
+		// キャッシュ用テクスチャ作成
 		m_glyphCacheTexture.Attach(Texture::Create(Size(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
 		//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
 		//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
@@ -567,7 +567,7 @@ void TextRenderer::CheckResetCache()
 		//painter.Clear(Color::Blue);
 		//m_glyphCacheTexture->GetDeviceObject()->Unlock();
 
-		// �󂫃L���b�V���C���f�b�N�X�쐬
+		// 空きキャッシュインデックス作成
 		for (int i = 0; i < maxCharacters; i++) {
 			m_indexStack.Push(i);
 		}

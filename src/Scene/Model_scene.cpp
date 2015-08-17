@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../Internal.h"
@@ -37,7 +37,7 @@ void Model::Create(const TCHAR* filePath, SceneGraphManager* manager)
 	m_model->Create(manager->GetModelManager(), filePath);
 	VisualNode::Create(manager, m_model->GetSubsetCount());
 
-	// ƒ}ƒeƒŠƒAƒ‹‚ðƒRƒs[‚·‚é (‹}‚¬‘«‚Åì‚Á‚½‚©‚çA‚à‚Á‚Æ‚¿‚á‚ñ‚Æl‚¦‚½•û‚ª—Ç‚¢‚ÆŽv‚¤)
+	// ãƒžãƒ†ãƒªã‚¢ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ (æ€¥ãŽè¶³ã§ä½œã£ãŸã‹ã‚‰ã€ã‚‚ã£ã¨ã¡ã‚ƒã‚“ã¨è€ƒãˆãŸæ–¹ãŒè‰¯ã„ã¨æ€ã†)
 	for (int i = 0; i < m_model->GetSubsetCount(); i++)
 	{
 		m_visualNodeParams.GetSubsetParams(i).Material = m_model->GetMaterial(i);

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/VisualTreeHelper.h>
 
@@ -19,8 +19,8 @@ UIElement* VisualTreeHelper::FindChildByName(UIElement* parent, const TCHAR* nam
 	LN_CHECK_ARGS_RETURNV(parent != NULL, NULL);
 	LN_CHECK_ARGS_RETURNV(name != NULL, NULL);
 
-	/* TODO: WPF ‚Å‚ÍƒcƒŠ[ŒŸõ‚Å‚Í‚È‚­AƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚ğì‚Á‚½‚Éˆê‚É map ‚ğì‚Á‚Ä‚¢‚éB
-		‚±‚Ì map ‚Í internalB
+	/* TODO: WPF ã§ã¯ãƒ„ãƒªãƒ¼æ¤œç´¢ã§ã¯ãªãã€ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã‚’ä½œã£ãŸæ™‚ã«ä¸€ç·’ã« map ã‚’ä½œã£ã¦ã„ã‚‹ã€‚
+		ã“ã® map ã¯ internalã€‚
 	*/
 
 	int count = parent->GetVisualChildrenCount();
@@ -31,7 +31,7 @@ UIElement* VisualTreeHelper::FindChildByName(UIElement* parent, const TCHAR* nam
 			return child;
 		}
 
-		// Ä‹A
+		// å†å¸°
 		child = FindChildByName(child, name);
 		if (child != NULL) {
 			return child;

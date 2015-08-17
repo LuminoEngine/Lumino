@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Base/Nullable.h>
@@ -21,13 +21,13 @@ public:
 	Graphics::Renderer*			Renderer;
 	Graphics::GeometryRenderer*	GeometryRenderer;
 	Camera*						CurrentCamera;
-	MMEShader*					Shader;				///< –{“–‚É•K—v‚ÈƒVƒF[ƒ_ (VisualNode::Render() ˆÈ‰º‚ÅŽg—p‰Â”\)
+	MMEShader*					Shader;				///< æœ¬å½“ã«å¿…è¦ãªã‚·ã‚§ãƒ¼ãƒ€ (VisualNode::Render() ä»¥ä¸‹ã§ä½¿ç”¨å¯èƒ½)
 };
 
 struct RenderingPassClientData
 {
 	RenderingPass*	OwnerPass;				///< 
-	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList ‚ÌƒCƒ“ƒfƒbƒNƒX (-1 ‚Íˆê’v‚È‚µ)
+	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (-1 ã¯ä¸€è‡´ãªã—)
 };
 
 struct RenderingPriorityParams
@@ -36,14 +36,14 @@ struct RenderingPriorityParams
 	bool			Hide;
 };
 
-/// MMD ‚Å‚¢‚¤‚Æ‚±‚ë‚Ì MMDPass ("object" “™) ‚ÆAƒIƒtƒXƒNƒŠ[ƒ“RT‚É‘Š“–‚·‚éB
-/// RenderingPass ‚Í•¡”‚ÌƒŒƒCƒ„[‚Å‹¤—L‚Å‚«‚éB‹@”\‚ð’Ç‰Á‚·‚é‚Æ‚«A
-/// ƒƒ“ƒo‚ÉˆêŽžƒf[ƒ^‚ª•K—v‚É‚È‚éÛ‚Í1‰ñ‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÅŠ®Œ‹‚·‚é‚æ‚¤‚É’ˆÓ‚·‚é‚±‚ÆB
+/// MMD ã§ã„ã†ã¨ã“ã‚ã® MMDPass ("object" ç­‰) ã¨ã€ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã«ç›¸å½“ã™ã‚‹ã€‚
+/// RenderingPass ã¯è¤‡æ•°ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã§å…±æœ‰ã§ãã‚‹ã€‚æ©Ÿèƒ½ã‚’è¿½åŠ ã™ã‚‹ã¨ãã€
+/// ãƒ¡ãƒ³ãƒã«ä¸€æ™‚ãƒ‡ãƒ¼ã‚¿ãŒå¿…è¦ã«ãªã‚‹éš›ã¯1å›žã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã§å®Œçµã™ã‚‹ã‚ˆã†ã«æ³¨æ„ã™ã‚‹ã“ã¨ã€‚
 class RenderingPass
 	: public RefObject
 {
 public:
-	static const int MaxRenderingPass = 32;		///< 1 ‚Â‚ÌƒV[ƒ“ƒOƒ‰ƒt“à‚Åì¬‚Å‚«‚é RenderingPass ‚ÌÅ‘å”
+	static const int MaxRenderingPass = 32;		///< 1 ã¤ã®ã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•å†…ã§ä½œæˆã§ãã‚‹ RenderingPass ã®æœ€å¤§æ•°
 
 public:
 	struct NodeData
@@ -53,11 +53,11 @@ public:
 	};
 
 public:
-	/// passID ‚ÍA‚±‚ÌƒpƒX‚ª‹ï‘Ì“I‚É‰½‚ð•`‰æ‚·‚é‚Ì‚©‚ðŽw’è‚·‚éB
-	/// 65536 ˆÈ~‚Í—\–ñÏ‚Ý‚ÅAInternalRenderingPass —ñ‹“Œ^‚Å•\‚³‚ê‚éB
-	/// ‚à‚µƒ†[ƒU[‚ªƒJƒXƒ^ƒ€‚ÌƒpƒX‚ð—pˆÓ‚µ‚½‚¢ê‡‚Í‚±‚Ì ID ‚ð“ÆŽ©’è‹`‚µASceneNode::Render() “™‚Å
-	/// ƒJƒXƒ^ƒ€‚Ìˆ—‚ðŽÀ‘•‚·‚é‚±‚Æ‚ð‘z’è‚µ‚Ä‚¢‚éB
-	/// ownerShader ‚Í OFFSCREENRENDERTARGET ‚Æ‚µ‚Ä‚±‚ÌƒpƒX‚ðì‚é‚Æ‚«A¶¬Œ³‚ÌƒVƒF[ƒ_‚ðŽw’è‚·‚é
+	/// passID ã¯ã€ã“ã®ãƒ‘ã‚¹ãŒå…·ä½“çš„ã«ä½•ã‚’æç”»ã™ã‚‹ã®ã‹ã‚’æŒ‡å®šã™ã‚‹ã€‚
+	/// 65536 ä»¥é™ã¯äºˆç´„æ¸ˆã¿ã§ã€InternalRenderingPass åˆ—æŒ™åž‹ã§è¡¨ã•ã‚Œã‚‹ã€‚
+	/// ã‚‚ã—ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒã‚«ã‚¹ã‚¿ãƒ ã®ãƒ‘ã‚¹ã‚’ç”¨æ„ã—ãŸã„å ´åˆã¯ã“ã® ID ã‚’ç‹¬è‡ªå®šç¾©ã—ã€SceneNode::Render() ç­‰ã§
+	/// ã‚«ã‚¹ã‚¿ãƒ ã®å‡¦ç†ã‚’å®Ÿè£…ã™ã‚‹ã“ã¨ã‚’æƒ³å®šã—ã¦ã„ã‚‹ã€‚
+	/// ownerShader ã¯ OFFSCREENRENDERTARGET ã¨ã—ã¦ã“ã®ãƒ‘ã‚¹ã‚’ä½œã‚‹ã¨ãã€ç”Ÿæˆå…ƒã®ã‚·ã‚§ãƒ¼ãƒ€ã‚’æŒ‡å®šã™ã‚‹
 	RenderingPass(SceneGraphManager* manager/*, int passID, MMEShader* ownerShader = NULL*/);
 	virtual ~RenderingPass();
 
@@ -67,16 +67,16 @@ public:
 
 	MMEShader* GetDefaultShader() { return m_defaultShader; }
 
-	/// ‚±‚ÌƒpƒX‚Å—Dæ“I‚ÉŽg—p‚³‚ê‚éƒVƒF[ƒ_‚ð’Ç‰Á‚·‚é
+	/// ã“ã®ãƒ‘ã‚¹ã§å„ªå…ˆçš„ã«ä½¿ç”¨ã•ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ã‚’è¿½åŠ ã™ã‚‹
 	void AddPriorityShader(const String& matchingNameKey, MMEShader* shader, bool isHide);
 
 public:
 
-	/// Žw’è‚µ‚½ƒm[ƒh‚ð‚±‚ÌƒpƒXã‚Å•`‰æ‚·‚é
-	///		ˆÈ‘O‚Í VisualNode ‚É Render() ‚ðŽÀ‘•‚µ‚Ä‚¢‚½‚ªA‚»‚Ìˆ—‚ð‚±‚¿‚ç‚ÉŽ‚Á‚Ä‚«‚½B
-	///		–Ú“I‚Íƒm[ƒh’PˆÊ‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ì—¬‚ê‚ðƒpƒX‘¤‚ÅƒJƒXƒ^ƒ}ƒCƒY‚Å‚«‚é‚æ‚¤‚É‚·‚é‚±‚ÆB
-	///		—á‚¦‚ÎAŠî’ê‚Ìˆ—‚Í”Ä—p“I MME —p‚ÌƒpƒX‚Æ‚È‚Á‚Ä‚¨‚èAƒQ[ƒ€Œü‚¯‚É‚Í‚â‚âƒI[ƒo[ƒXƒyƒbƒN‹C–¡B
-	///		‚à‚Á‚ÆƒQ[ƒ€Œü‚¯‚ÉƒXƒ}[ƒg‰»‚µ‚½ƒJƒXƒ^ƒ€ƒpƒX‚ðŽÀ‘•‚·‚é‚Æ‚«AƒI[ƒo[ƒ‰ƒCƒh‚·‚éB
+	/// æŒ‡å®šã—ãŸãƒŽãƒ¼ãƒ‰ã‚’ã“ã®ãƒ‘ã‚¹ä¸Šã§æç”»ã™ã‚‹
+	///		ä»¥å‰ã¯ VisualNode ã« Render() ã‚’å®Ÿè£…ã—ã¦ã„ãŸãŒã€ãã®å‡¦ç†ã‚’ã“ã¡ã‚‰ã«æŒã£ã¦ããŸã€‚
+	///		ç›®çš„ã¯ãƒŽãƒ¼ãƒ‰å˜ä½ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®æµã‚Œã‚’ãƒ‘ã‚¹å´ã§ã‚«ã‚¹ã‚¿ãƒžã‚¤ã‚ºã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã“ã¨ã€‚
+	///		ä¾‹ãˆã°ã€åŸºåº•ã®å‡¦ç†ã¯æ±Žç”¨çš„ MME ç”¨ã®ãƒ‘ã‚¹ã¨ãªã£ã¦ãŠã‚Šã€ã‚²ãƒ¼ãƒ å‘ã‘ã«ã¯ã‚„ã‚„ã‚ªãƒ¼ãƒãƒ¼ã‚¹ãƒšãƒƒã‚¯æ°—å‘³ã€‚
+	///		ã‚‚ã£ã¨ã‚²ãƒ¼ãƒ å‘ã‘ã«ã‚¹ãƒžãƒ¼ãƒˆåŒ–ã—ãŸã‚«ã‚¹ã‚¿ãƒ ãƒ‘ã‚¹ã‚’å®Ÿè£…ã™ã‚‹ã¨ãã€ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã™ã‚‹ã€‚
 	virtual void RenderNode(RenderingParams& params, SceneNode* node);
 
 	virtual void PostRender(RenderingParams& params) {}
@@ -86,22 +86,22 @@ protected:
 
 	struct PriorityParamsEntry
 	{
-		String					MatchingNameKey;		///< ‚±‚ÌƒVƒF[ƒ_‚ðŠ„‚è“–‚Ä‚éƒm[ƒh–¼ (ƒƒCƒhƒJ[ƒh—L‚è)
+		String					MatchingNameKey;		///< ã“ã®ã‚·ã‚§ãƒ¼ãƒ€ã‚’å‰²ã‚Šå½“ã¦ã‚‹ãƒŽãƒ¼ãƒ‰å (ãƒ¯ã‚¤ãƒ‰ã‚«ãƒ¼ãƒ‰æœ‰ã‚Š)
 		RenderingPriorityParams	Params;
-		//RefPtr<MMEShader>	Shader;					///< Š„‚è“–‚Ä‚éƒVƒF[ƒ_
+		//RefPtr<MMEShader>	Shader;					///< å‰²ã‚Šå½“ã¦ã‚‹ã‚·ã‚§ãƒ¼ãƒ€
 	};
 
 	typedef Array<PriorityParamsEntry>	PriorityParamsEntryList;
 
 	friend class SceneGraphManager;
 	SceneGraphManager*			m_manager;
-	int							m_internalEntryID;		///< ‚±‚ÌƒpƒX‚ÉŠ„‚è“–‚Ä‚ç‚ê‚éID (0 ` MaxRenderingPass-1)
-	RefPtr<Graphics::Texture>	m_renderTarget;			///< ‚±‚ÌƒpƒX‚Ì•`‰ææ‚Æ‚È‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg (NULL‰ÂBMMDPass ‚Ì "zplot" ‚Å‚ ‚ê‚Î Zƒoƒbƒtƒ@‚ªƒ^[ƒQƒbƒg‚É‚È‚é)
-	RefPtr<Graphics::Texture>	m_depthBuffer;			///< ‚±‚ÌƒpƒX‚Ì•`‰ææ‚Æ‚È‚é[“xƒoƒbƒtƒ@ (NULL‰Â)
-	RefPtr<MMEShader>			m_defaultShader;		///< ‚±‚ÌƒpƒX‚Ì•`‰æ‚ÅƒfƒtƒHƒ‹ƒg‚Æ‚µ‚ÄŽg—p‚³‚ê‚éƒVƒF[ƒ_ (ƒVƒF[ƒ_‚ðŽ‚Á‚Ä‚¢‚È‚¢ VisualNode ‚É‘Î‚µ‚ÄŽg‚í‚ê‚é)
-	PriorityParamsEntryList		m_priorityEntryList;	///< ‚±‚ÌƒpƒX‚Å—Dæ“I‚ÉŽg—p‚³‚ê‚éƒVƒF[ƒ_ (ƒVƒF[ƒ_‚ðŽ‚Á‚Ä‚¢‚é VisualNode ‚É‘Î‚µ‚Ä‚à‹­§“I‚É‚±‚¿‚ç‚ðŽg‚¤)
-	Nullable<Graphics::ColorF>	m_clearColor;			///< ƒpƒXŠJŽnŽž‚ÉƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ðƒNƒŠƒA‚·‚éF
-	Nullable<float>				m_clearDepth;			///< ƒpƒXŠJŽnŽž‚É[“xƒoƒbƒtƒ@‚ðƒNƒŠƒA‚·‚éZ’l
+	int							m_internalEntryID;		///< ã“ã®ãƒ‘ã‚¹ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚Œã‚‹ID (0 ï½ž MaxRenderingPass-1)
+	RefPtr<Graphics::Texture>	m_renderTarget;			///< ã“ã®ãƒ‘ã‚¹ã®æç”»å…ˆã¨ãªã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ (NULLå¯ã€‚MMDPass ã® "zplot" ã§ã‚ã‚Œã° Zãƒãƒƒãƒ•ã‚¡ãŒã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«ãªã‚‹)
+	RefPtr<Graphics::Texture>	m_depthBuffer;			///< ã“ã®ãƒ‘ã‚¹ã®æç”»å…ˆã¨ãªã‚‹æ·±åº¦ãƒãƒƒãƒ•ã‚¡ (NULLå¯)
+	RefPtr<MMEShader>			m_defaultShader;		///< ã“ã®ãƒ‘ã‚¹ã®æç”»ã§ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¨ã—ã¦ä½¿ç”¨ã•ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ (ã‚·ã‚§ãƒ¼ãƒ€ã‚’æŒã£ã¦ã„ãªã„ VisualNode ã«å¯¾ã—ã¦ä½¿ã‚ã‚Œã‚‹)
+	PriorityParamsEntryList		m_priorityEntryList;	///< ã“ã®ãƒ‘ã‚¹ã§å„ªå…ˆçš„ã«ä½¿ç”¨ã•ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ (ã‚·ã‚§ãƒ¼ãƒ€ã‚’æŒã£ã¦ã„ã‚‹ VisualNode ã«å¯¾ã—ã¦ã‚‚å¼·åˆ¶çš„ã«ã“ã¡ã‚‰ã‚’ä½¿ã†)
+	Nullable<Graphics::ColorF>	m_clearColor;			///< ãƒ‘ã‚¹é–‹å§‹æ™‚ã«ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ã‚¯ãƒªã‚¢ã™ã‚‹è‰²
+	Nullable<float>				m_clearDepth;			///< ãƒ‘ã‚¹é–‹å§‹æ™‚ã«æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹Zå€¤
 };
 
 } // namespace Scene

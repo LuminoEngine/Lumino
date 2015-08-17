@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -26,16 +26,16 @@ RoutedCommandTypeContext* CommandManager::RegisterCommand(TypeInfo* ownerClass, 
 	std::shared_ptr<RoutedCommandTypeContext> ptr;
 	if (!m_typeContextList.TryGetValue(ownerClass, &ptr))
 	{
-		// Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚Ì‚ÅV‚µ‚­ì‚é
+		// è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã®ã§æ–°ã—ãä½œã‚‹
 		ptr.reset(LN_NEW RoutedCommandTypeContext());
 		ptr->Type = ownerClass;
 		m_typeContextList.Add(ownerClass, ptr);
 	}
 
-	// command ‚ª“o˜^Ï‚İ‚Å‚È‚¯‚ê‚Î“o˜^‚·‚é
+	// command ãŒç™»éŒ²æ¸ˆã¿ã§ãªã‘ã‚Œã°ç™»éŒ²ã™ã‚‹
 	if (!command->m_registerd) {
 		ptr->RoutedCommandList.Add(command);
-		command->m_registerd = true;	// “o˜^Ï‚İ‚É‚·‚é
+		command->m_registerd = true;	// ç™»éŒ²æ¸ˆã¿ã«ã™ã‚‹
 	}
 	return ptr.get();
 }
@@ -48,14 +48,14 @@ bool CommandManager::CanExecute(UIElement* caller, Command* command, const Varia
 	RoutedCommand* routedCommand = dynamic_cast<RoutedCommand*>(command);
 	if (routedCommand != NULL)
 	{
-		// RoutedEvent ‚Æ‚µ‚ÄAÀs‚Å‚«‚éƒRƒ}ƒ“ƒh‚ğ’T‚·B
-		// UIElement::Handler_CanExecuteRoutedCommandEventArgs() ‚ªŒÄ‚Î‚ê‚ÄA‚»‚Ì’†‚Å‚»‚Ì UIElement ‚ª‚Á‚Ä‚¢‚éƒRƒ}ƒ“ƒh‚ğ’T‚·B
+		// RoutedEvent ã¨ã—ã¦ã€å®Ÿè¡Œã§ãã‚‹ã‚³ãƒãƒ³ãƒ‰ã‚’æ¢ã™ã€‚
+		// UIElement::Handler_CanExecuteRoutedCommandEventArgs() ãŒå‘¼ã°ã‚Œã¦ã€ãã®ä¸­ã§ãã® UIElement ãŒæŒã£ã¦ã„ã‚‹ã‚³ãƒãƒ³ãƒ‰ã‚’æ¢ã™ã€‚
 		RefPtr<CanExecuteRoutedCommandEventArgs> args(caller->GetManager()->GetEventArgsPool()->Create<CanExecuteRoutedCommandEventArgs>(parameter));
 		caller->RaiseEvent(UIElement::CanExecuteRoutedCommandEvent, caller, args);
 		return args->CanExecute;
 	}
 	else {
-		// ViewModel ‚Ìƒ†[ƒU[ƒJƒXƒ^ƒ}ƒCƒYƒRƒ}ƒ“ƒhB•’Ê‚ÉŒÄ‚Ño‚·B
+		// ViewModel ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã‚³ãƒãƒ³ãƒ‰ã€‚æ™®é€šã«å‘¼ã³å‡ºã™ã€‚
 		return command->CanExecute(parameter);
 	}
 }
@@ -68,13 +68,13 @@ void CommandManager::Execute(UIElement* caller, Command* command, const Variant&
 	RoutedCommand* routedCommand = dynamic_cast<RoutedCommand*>(command);
 	if (routedCommand != NULL)
 	{
-		// RoutedEvent ‚Æ‚µ‚ÄAÀs‚Å‚«‚éƒRƒ}ƒ“ƒh‚ğ’T‚·B
-		// UIElement::Handler_ExecuteRoutedCommandEventArgs() ‚ªŒÄ‚Î‚ê‚ÄA‚»‚Ì’†‚Å‚»‚Ì UIElement ‚ª‚Á‚Ä‚¢‚éƒRƒ}ƒ“ƒh‚ğ’T‚·B
+		// RoutedEvent ã¨ã—ã¦ã€å®Ÿè¡Œã§ãã‚‹ã‚³ãƒãƒ³ãƒ‰ã‚’æ¢ã™ã€‚
+		// UIElement::Handler_ExecuteRoutedCommandEventArgs() ãŒå‘¼ã°ã‚Œã¦ã€ãã®ä¸­ã§ãã® UIElement ãŒæŒã£ã¦ã„ã‚‹ã‚³ãƒãƒ³ãƒ‰ã‚’æ¢ã™ã€‚
 		RefPtr<ExecuteRoutedCommandEventArgs> args(caller->GetManager()->GetEventArgsPool()->Create<ExecuteRoutedCommandEventArgs>(parameter));
 		caller->RaiseEvent(UIElement::ExecuteRoutedCommandEvent, caller, args);
 	}
 	else {
-		// ViewModel ‚Ìƒ†[ƒU[ƒJƒXƒ^ƒ}ƒCƒYƒRƒ}ƒ“ƒhB•’Ê‚ÉŒÄ‚Ño‚·B
+		// ViewModel ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã‚³ãƒãƒ³ãƒ‰ã€‚æ™®é€šã«å‘¼ã³å‡ºã™ã€‚
 		command->Execute(parameter);
 	}
 }

@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/GUI/ContentPresenter.h>
 
@@ -47,7 +47,7 @@ void ContentPresenter::SetContent(UIElement* content)
 		return;
 	}
 
-	// ��ɌÂ��͎̂�菜��
+	// 先に古いのは取り除く
 	if (m_content != NULL) {
 		m_content->SetParent(NULL);
 	}

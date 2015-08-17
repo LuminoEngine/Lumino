@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btMotionState.h>
@@ -53,7 +53,7 @@ struct	DefaultMotionState : public btMotionState
 			//	int a = 0;
 			//}
 
-			/* ‚±‚±‚Åİ’è‚³‚ê‚é‚à‚Ì‚Æ m_btRigidBody->getWorldTransform() ‚Åæ“¾‚µ‚½‚à‚Ì‚ÍA‚½‚Æ‚¦ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“’¼Œã‚Å‚ ‚Á‚Ä‚à”÷–­‚Éˆá‚¤B
+			/* ã“ã“ã§è¨­å®šã•ã‚Œã‚‹ã‚‚ã®ã¨ m_btRigidBody->getWorldTransform() ã§å–å¾—ã—ãŸã‚‚ã®ã¯ã€ãŸã¨ãˆã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç›´å¾Œã§ã‚ã£ã¦ã‚‚å¾®å¦™ã«é•ã†ã€‚
 			const btMatrix3x3& r = m_graphicsWorldTrans.getBasis();
 		const btVector3&   p = m_graphicsWorldTrans.getOrigin();
 		LMatrix m(
@@ -84,7 +84,7 @@ KinematicMotionState( const btTransform& startTrans )
 
 virtual void getWorldTransform( btTransform& centerOfMassWorldTrans ) const
 {
-	/* stepSimulation() ‚©‚çŒÄ‚Î‚ê‚éB”ñ“¯Šú‚É‚·‚éê‡‚Í’ˆÓ */
+	/* stepSimulation() ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚éåŒæœŸã«ã™ã‚‹å ´åˆã¯æ³¨æ„ */
 	//printf("getWorldTransform()\n");
 	/*
 	btTransform		bttrBoneTransform;
@@ -136,8 +136,8 @@ RigidBody::~RigidBody()
 {
 	if (m_btRigidBody != NULL)
 	{
-		// „‘Ì‚ğ World ‚©‚çæ‚èœ‚­
-		// (Manager ‚Å‚â‚ë‚¤‚Æ‚·‚é‚ÆAMultiThreadingRefObjectList ‚©‚ç‚Ìíœ‚ğƒR[ƒ‹ƒoƒbƒN‚µ‚½‚è‚µ‚È‚¢‚Æƒ_ƒ‚¾‚Á‚½‚èA“¯‚¶ˆ—‚ğ‰½‰ÓŠ‚©‚É‘‚©‚È‚¯‚ê‚Î‚È‚ç‚È‚¢‚Ì‚Å–Ê“|)
+		// å‰›ä½“ã‚’ World ã‹ã‚‰å–ã‚Šé™¤ã
+		// (Manager ã§ã‚„ã‚ã†ã¨ã™ã‚‹ã¨ã€MultiThreadingRefObjectList ã‹ã‚‰ã®å‰Šé™¤ã‚’ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã—ãŸã‚Šã—ãªã„ã¨ãƒ€ãƒ¡ã ã£ãŸã‚Šã€åŒã˜å‡¦ç†ã‚’ä½•ç®‡æ‰€ã‹ã«æ›¸ã‹ãªã‘ã‚Œã°ãªã‚‰ãªã„ã®ã§é¢å€’)
 		m_manager->GetBtWorld()->removeCollisionObject(m_btRigidBody);
 
 		btMotionState* state = m_btRigidBody->getMotionState();
@@ -155,7 +155,7 @@ RigidBody::~RigidBody()
 //-----------------------------------------------------------------------------
 void RigidBody::Create(PhysicsManager* manager, btCollisionShape* collisionShape, const ConfigData& configData)
 {
-	// Še‰ŠúƒvƒƒpƒeƒB
+	// å„åˆæœŸãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
 	float num = configData.Mass * configData.Scale;
 	float friction;
 	float hitFraction;
@@ -179,7 +179,7 @@ void RigidBody::Create(PhysicsManager* manager, btCollisionShape* collisionShape
 		angularDamping = configData.AngularDamping;
 	}
 
-	// ‰Šúp¨‚Æ MotionState
+	// åˆæœŸå§¿å‹¢ã¨ MotionState
 	btTransform initialTransform;
 	if (configData.InitialTransform != NULL)
 	{
@@ -202,18 +202,18 @@ void RigidBody::Create(PhysicsManager* manager, btCollisionShape* collisionShape
 		motionState = new btDefaultMotionState(initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
 	}
 
-	// RigidBody ì¬
+	// RigidBody ä½œæˆ
 	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, collisionShape, localInertia);
-	bodyInfo.m_linearDamping = configData.LinearDamping;	// ˆÚ“®Œ¸
-	bodyInfo.m_angularDamping = configData.AngularDamping;	// ‰ñ“]Œ¸
-	bodyInfo.m_restitution = configData.Restitution;	    // ”½”­—Í
-	bodyInfo.m_friction = configData.Friction;				// –€C—Í
+	bodyInfo.m_linearDamping = configData.LinearDamping;	// ç§»å‹•æ¸›
+	bodyInfo.m_angularDamping = configData.AngularDamping;	// å›è»¢æ¸›
+	bodyInfo.m_restitution = configData.Restitution;	    // åç™ºåŠ›
+	bodyInfo.m_friction = configData.Friction;				// æ‘©æ“¦åŠ›
 	bodyInfo.m_additionalDamping = configData.AdditionalDamping;
 	m_btRigidBody = new btRigidBody(bodyInfo);
 
 	if (configData.KinematicObject)
 	{
-		// CF_KINEMATIC_OBJECT ‚Æ DISABLE_DEACTIVATION ‚ÍƒZƒbƒgBŒˆ‚Ü‚è–B
+		// CF_KINEMATIC_OBJECT ã¨ DISABLE_DEACTIVATION ã¯ã‚»ãƒƒãƒˆã€‚æ±ºã¾ã‚Šäº‹ã€‚
 		// http://bulletjpn.web.fc2.com/07_RigidBodyDynamics.html
 		m_btRigidBody->setCollisionFlags( /*m_btRigidBody->getCollisionFlags() | */btCollisionObject::CF_KINEMATIC_OBJECT);
 		m_btRigidBody->setActivationState( /*m_btRigidBody->getActivationState() | */DISABLE_DEACTIVATION);
@@ -399,35 +399,35 @@ void RigidBody::ClearForces()
 //-----------------------------------------------------------------------------
 void RigidBody::SyncBeforeStepSimulation()
 {
-	// Activate —v‹
+	// Activate è¦æ±‚
 	if ((m_modifiedFlags & Modified_Activate) != 0)
 	{
 		m_btRigidBody->activate();
 	}
 
-	// SetWorldTransform —v‹
+	// SetWorldTransform è¦æ±‚
 	if ((m_modifiedFlags & Modified_WorldTransform) != 0)
 	{
 		/*
-			stepSimulation() ‚Ì’†‚Å‚±‚ê‚ç‚ªŠÖŒW‚·‚éˆ—‚ÍˆÈ‰º‚Ì‚Æ‚¨‚èB
-				Kinematic(¿—Ê‚ª0)‚È•¨‘Ì‚Ìp¨‚ğ MotionState ‚©‚ç btCollisionObject::m_worldTransform ‚Éæ“¾ getWorldTransform()
-					btCollisionObject::m_worldTransform ‚Í setWorldTransform ‚©‚ç‚àİ’è‚Å‚«‚é‚Ì‚ÅAMotionState ‚ğg‚¤ˆÓ–¡‚Í‚ ‚Ü‚è–³‚¢B
-					‚½‚¾Am_updateRevision ‚ª•Ï‚í‚é‚Ì‚Å‚Ç‚¤‰e‹¿‚·‚é‚©Œ©Ø‚ê‚È‚¢‚Æ‚±‚ëB–Ù‚Á‚Ä MotionState Œo—R‚É‚µ‚Ä‚¨‚­‚Ì‚ª–³“ï‚©‚àB
-				«
-				ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“Às
-					btCollisionObject::m_worldTransform ‚ÍXV‚³‚ê‚éB
-					btCollisionObject::m_interpolationWorldTransform ‚àXV‚³‚ê‚éBsetCenterOfMassTransform() Œo—R‚ÅB
-					setCenterOfMassTransform() ‚Í stepSimulation() ‚Ì‰º‚ÅŒÄ‚Î‚ê‚Ä‚¢‚éB
-				«
-				Kinematic‚Å‚Í‚È‚¢•¨‘Ì‚Ìp¨‚ğ MotionState ‚É setB
-					‚±‚Ì‚Æ‚«A‰½‚©‚ÌŠÔ‚ğg‚Á‚Ä m_interpolationWorldTransform ‚ğ•âŠ®‚µA‚»‚ÌŒ‹‰Ê‚ğ MotionState ‚É set ‚µ‚Ä‚¢‚éB
-					‚È‚Ì‚ÅAbtCollisionObject::m_worldTransform ‚Æ‚à btCollisionObject::m_interpolationWorldTransform ‚Æ‚àˆá‚¤p¨‚ª“n‚³‚ê‚Ä‚­‚é‚±‚Æ‚É‚È‚èA
-					‚±‚ê‚ªƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ÌÅIŒ‹‰Ê‚Æ‚È‚éB
+			stepSimulation() ã®ä¸­ã§ã“ã‚Œã‚‰ãŒé–¢ä¿‚ã™ã‚‹å‡¦ç†ã¯ä»¥ä¸‹ã®ã¨ãŠã‚Šã€‚
+				Kinematic(è³ªé‡ãŒ0)ãªç‰©ä½“ã®å§¿å‹¢ã‚’ MotionState ã‹ã‚‰ btCollisionObject::m_worldTransform ã«å–å¾— getWorldTransform()
+					btCollisionObject::m_worldTransform ã¯ setWorldTransform ã‹ã‚‰ã‚‚è¨­å®šã§ãã‚‹ã®ã§ã€MotionState ã‚’ä½¿ã†æ„å‘³ã¯ã‚ã¾ã‚Šç„¡ã„ã€‚
+					ãŸã ã€m_updateRevision ãŒå¤‰ã‚ã‚‹ã®ã§ã©ã†å½±éŸ¿ã™ã‚‹ã‹è¦‹åˆ‡ã‚Œãªã„ã¨ã“ã‚ã€‚é»™ã£ã¦ MotionState çµŒç”±ã«ã—ã¦ãŠãã®ãŒç„¡é›£ã‹ã‚‚ã€‚
+				â†“
+				ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
+					btCollisionObject::m_worldTransform ã¯æ›´æ–°ã•ã‚Œã‚‹ã€‚
+					btCollisionObject::m_interpolationWorldTransform ã‚‚æ›´æ–°ã•ã‚Œã‚‹ã€‚setCenterOfMassTransform() çµŒç”±ã§ã€‚
+					setCenterOfMassTransform() ã¯ stepSimulation() ã®ä¸‹ã§å‘¼ã°ã‚Œã¦ã„ã‚‹ã€‚
+				â†“
+				Kinematicã§ã¯ãªã„ç‰©ä½“ã®å§¿å‹¢ã‚’ MotionState ã« setã€‚
+					ã“ã®ã¨ãã€ä½•ã‹ã®æ™‚é–“ã‚’ä½¿ã£ã¦ m_interpolationWorldTransform ã‚’è£œå®Œã—ã€ãã®çµæœã‚’ MotionState ã« set ã—ã¦ã„ã‚‹ã€‚
+					ãªã®ã§ã€btCollisionObject::m_worldTransform ã¨ã‚‚ btCollisionObject::m_interpolationWorldTransform ã¨ã‚‚é•ã†å§¿å‹¢ãŒæ¸¡ã•ã‚Œã¦ãã‚‹ã“ã¨ã«ãªã‚Šã€
+					ã“ã‚ŒãŒã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®æœ€çµ‚çµæœã¨ãªã‚‹ã€‚
 
-			‚È‚¨Aƒ\[ƒX‚ğŒ©‚½ŒÀ‚è‚¾‚Æ btMotionState::getWorldTransform() ‚Í Kinematic ‚ÈƒIƒuƒWƒFƒNƒg‚Å‚µ‚©ŒÄ‚Î‚ê‚È‚¢B
-			•’Ê‚ÌƒIƒuƒWƒFƒNƒg‚Í btCollisionObject::setWorldTransform() ‚É‚Äp¨‚ğİ’è‚·‚é•K—v‚ª‚ ‚éB
+			ãªãŠã€ã‚½ãƒ¼ã‚¹ã‚’è¦‹ãŸé™ã‚Šã ã¨ btMotionState::getWorldTransform() ã¯ Kinematic ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ã—ã‹å‘¼ã°ã‚Œãªã„ã€‚
+			æ™®é€šã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ btCollisionObject::setWorldTransform() ã«ã¦å§¿å‹¢ã‚’è¨­å®šã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 
-			”O‚Ì‚½‚ßc‚Æ‚¢‚¤‚±‚Æ‚ÅA—¼•û‚Ì setWorldTransform() ‚ğs‚¢A—lq‚ğŒ©‚Ä‚İ‚éB
+			å¿µã®ãŸã‚â€¦ã¨ã„ã†ã“ã¨ã§ã€ä¸¡æ–¹ã® setWorldTransform() ã‚’è¡Œã„ã€æ§˜å­ã‚’è¦‹ã¦ã¿ã‚‹ã€‚
 		*/
 		btTransform transform;
 		transform.setFromOpenGLMatrix((btScalar*)&m_worldTransform);
@@ -435,7 +435,7 @@ void RigidBody::SyncBeforeStepSimulation()
 		m_btRigidBody->setWorldTransform(transform);
 	}
 
-	// ClearForces —v‹
+	// ClearForces è¦æ±‚
 	if ((m_modifiedFlags & Modified_ClearForces) != 0)
 	{
 		m_btRigidBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
@@ -456,7 +456,7 @@ void RigidBody::SyncAfterStepSimulation()
 {
 	if (m_btRigidBody->isKinematicObject())
 	{
-		// static ƒIƒuƒWƒFƒNƒg‚È‚Ì‚Åó‚¯æ‚é•K—v‚Í‚È‚¢
+		// static ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãªã®ã§å—ã‘å–ã‚‹å¿…è¦ã¯ãªã„
 	}
 	else
 	{

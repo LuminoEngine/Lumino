@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 
@@ -8,7 +8,7 @@ namespace GUI
 {
 	
 /**
-	@brief	ContentControl ‚ÌƒRƒ“ƒeƒ“ƒc‚ğ•\¦‚µ‚Ü‚·B
+	@brief	ContentControl ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’è¡¨ç¤ºã—ã¾ã™ã€‚
 */
 class ContentPresenter
 	: public UIElement
@@ -18,7 +18,7 @@ class ContentPresenter
 public:
 	
 	/**
-		@brief	ContentPresenter ‚ğì¬‚µ‚Ü‚·B
+		@brief	ContentPresenter ã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static ContentPresenterPtr Create();
 
@@ -40,7 +40,7 @@ protected:
 
 private:
 	RefPtr<UIElement>	m_content;
-	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter ‚Í˜_—“I‚Èq—v‘f‚Ì”z’uæ‚ğƒ}[ƒN‚·‚éƒƒ^ƒf[ƒ^‚Ì‚æ‚¤‚È‚à‚Ì‚È‚Ì‚ÅAq—v‘f‚Í‚½‚È‚¢B
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter ã¯è«–ç†çš„ãªå­è¦ç´ ã®é…ç½®å…ˆã‚’ãƒãƒ¼ã‚¯ã™ã‚‹ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿ã®ã‚ˆã†ãªã‚‚ã®ãªã®ã§ã€å­è¦ç´ ã¯æŒãŸãªã„ã€‚
 };
 
 } // namespace GUI

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "PMXLoader.h"
 #include "VMDLoader.h"
@@ -150,7 +150,7 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 		LN_THROW(0, InvalidFormatException);
 	}
 
-	// TODO: ƒ{[ƒ“‚Æ•\î‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Í•ª‚¯‚½•û‚ª—Ç‚¢‹C‚ª‚·‚éc
+	// TODO: ãƒœãƒ¼ãƒ³ã¨è¡¨æƒ…ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¯åˆ†ã‘ãŸæ–¹ãŒè‰¯ã„æ°—ãŒã™ã‚‹â€¦
 	RefPtr<Animation::AnimationClip> clip(LN_NEW Animation::AnimationClip());
 	LN_FOREACH(VMDLoader::BoneAnimation& anim, loader.GetBoneAnimationList())
 	{

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Color.h"
@@ -10,56 +10,56 @@ namespace Lumino
 namespace Graphics
 {
 /**
-	@brief	ƒ}ƒeƒŠƒAƒ‹‚ÌƒNƒ‰ƒX‚Å‚·B
+	@brief	ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Material
 {
 public:
 
-	/// •`‰æƒIƒvƒVƒ‡ƒ“
+	/// æç”»ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 	enum DrawingFlags
 	{
-		DrawingFlag_CullingDouble = 0x01,	///< —¼–Ê•`‰æ
-		DrawingFlag_GroundShadow = 0x02,	///< ’n–Ê‰e
-		DrawingFlag_SelfShadowMap = 0x04,	///< ƒZƒ‹ƒtƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ
-		DrawingFlag_SelfShadow = 0x08,		///< ƒZƒ‹ƒtƒVƒƒƒhƒE‚Ì•`‰æ
-		DrawingFlag_Edge = 0x10,			///< ƒGƒbƒW•`‰æ
+		DrawingFlag_CullingDouble = 0x01,	///< ä¸¡é¢æç”»
+		DrawingFlag_GroundShadow = 0x02,	///< åœ°é¢å½±
+		DrawingFlag_SelfShadowMap = 0x04,	///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»
+		DrawingFlag_SelfShadow = 0x08,		///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã®æç”»
+		DrawingFlag_Edge = 0x10,			///< ã‚¨ãƒƒã‚¸æç”»
 	};
 
-	/// ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ‚Ì‡¬ƒ‚[ƒh
+	/// ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®åˆæˆãƒ¢ãƒ¼ãƒ‰
 	enum SphereMode
 	{
-		SphereMode_Disable = 0,				///< –³Œø
-		SphereMode_Mul = 1,					///< æZ(sph)
-		SphereMode_Add = 2,					///< ‰ÁZ(spa)
-		SphereMode_SubTexture = 3,			///< ƒTƒuƒeƒNƒXƒ`ƒƒ(’Ç‰ÁUV1‚Ìx,y‚ğUVQÆ‚µ‚Ä’ÊíƒeƒNƒXƒ`ƒƒ•`‰æ‚ğs‚¤)
+		SphereMode_Disable = 0,				///< ç„¡åŠ¹
+		SphereMode_Mul = 1,					///< ä¹—ç®—(sph)
+		SphereMode_Add = 2,					///< åŠ ç®—(spa)
+		SphereMode_SubTexture = 3,			///< ã‚µãƒ–ãƒ†ã‚¯ã‚¹ãƒãƒ£(è¿½åŠ UV1ã®x,yã‚’UVå‚ç…§ã—ã¦é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£æç”»ã‚’è¡Œã†)
 	};
 
 public:
-	ColorF						Diffuse;			///< •¨‘Ì‚ÌF
-	ColorF						Ambient;			///< ŠÂ‹«Œõ
-	ColorF						Specular;			///< Œõ‘ò
-	ColorF						Emissive;			///< •¨‘Ì‚Ì”­ŒõF ( ŒõŒ¹‚Ì‰e‹¿‚ğó‚¯‚È‚¢F )
-	float						Power;				///< Œõ‘ò‚Ì‹­‚³
+	ColorF						Diffuse;			///< ç‰©ä½“ã®è‰²
+	ColorF						Ambient;			///< ç’°å¢ƒå…‰
+	ColorF						Specular;			///< å…‰æ²¢
+	ColorF						Emissive;			///< ç‰©ä½“ã®ç™ºå…‰è‰² ( å…‰æºã®å½±éŸ¿ã‚’å—ã‘ãªã„è‰² )
+	float						Power;				///< å…‰æ²¢ã®å¼·ã•
 
-	RefPtr<Graphics::Shader>	Shader;				///< ƒVƒF[ƒ_
-	RefPtr<Graphics::Texture>	Texture;			///< ƒeƒNƒXƒ`ƒƒ
-	RefPtr<Graphics::Texture>	ToonTexture;		///< [PMD] ƒgƒD[ƒ“ƒeƒNƒXƒ`ƒƒ (getToonTexture() setToonTexture()‚ÅƒAƒNƒZƒX‚·‚é)
-	RefPtr<Graphics::Texture>	SphereTexture;		///< [PMD] ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ (getSphereTexture() setSphereTexture()‚ÅƒAƒNƒZƒX‚·‚é)
+	RefPtr<Graphics::Shader>	Shader;				///< ã‚·ã‚§ãƒ¼ãƒ€
+	RefPtr<Graphics::Texture>	Texture;			///< ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	RefPtr<Graphics::Texture>	ToonTexture;		///< [PMD] ãƒˆã‚¥ãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ (getToonTexture() setToonTexture()ã§ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹)
+	RefPtr<Graphics::Texture>	SphereTexture;		///< [PMD] ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ (getSphereTexture() setSphereTexture()ã§ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹)
 
-	ColorF						ToonColor;			///< [PMD] ƒgƒD[ƒ“ƒJƒ‰[
-	ColorF						EdgeColor;			///< [PMX] ƒGƒbƒWƒJƒ‰[
-	float						EdgeSize;			///< [PMX] ƒGƒbƒWƒTƒCƒY
-	ColorF						TextureCoe;			///< [PMX] ƒeƒNƒXƒ`ƒƒŒW”
-	ColorF						SphereTextureCoe;	///< [PMX] ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒŒW”
-	ColorF						ToonTextureCoe;		///< [PMX] ToonƒeƒNƒXƒ`ƒƒŒW”
-	uint32_t					DrawingFlags;		///< [PMX] •`‰æƒIƒvƒVƒ‡ƒ“ (MMDDrawingFlags ‚Ì‘g‚İ‡‚í‚¹)
-	SphereMode					SphereMode;			///< [PMX] ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ‚Ì‡¬ƒ‚[ƒh
+	ColorF						ToonColor;			///< [PMD] ãƒˆã‚¥ãƒ¼ãƒ³ã‚«ãƒ©ãƒ¼
+	ColorF						EdgeColor;			///< [PMX] ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼
+	float						EdgeSize;			///< [PMX] ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
+	ColorF						TextureCoe;			///< [PMX] ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+	ColorF						SphereTextureCoe;	///< [PMX] ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+	ColorF						ToonTextureCoe;		///< [PMX] Toonãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+	uint32_t					DrawingFlags;		///< [PMX] æç”»ã‚ªãƒ—ã‚·ãƒ§ãƒ³ (MMDDrawingFlags ã®çµ„ã¿åˆã‚ã›)
+	SphereMode					SphereMode;			///< [PMX] ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®åˆæˆãƒ¢ãƒ¼ãƒ‰
 
 public:
 
 	/**
-		@brief		ƒ}ƒeƒŠƒAƒ‹‚ğ‰Šú‰»‚µ‚Ü‚·B
+		@brief		ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’åˆæœŸåŒ–ã—ã¾ã™ã€‚
 	*/
 	Material()
 	{

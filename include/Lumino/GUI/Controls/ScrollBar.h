@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
@@ -11,20 +11,20 @@ namespace Lumino
 namespace GUI
 {
 
-/// Scroll ƒCƒxƒ“ƒg‚ÌŒ´ˆö‚Æ‚È‚Á‚½“®ì‚ğ•\‚µ‚Ü‚·B
+/// Scroll ã‚¤ãƒ™ãƒ³ãƒˆã®åŸå› ã¨ãªã£ãŸå‹•ä½œã‚’è¡¨ã—ã¾ã™ã€‚
 LN_ENUM(ScrollEventType)
 {
-	ThumbTrack = 0,		///< ‚Â‚Ü‚İ‚ªƒhƒ‰ƒbƒO‚³‚ê‚Ä‚¢‚é
-	EndScroll,			///< ‚Â‚Ü‚İ‚Ìƒhƒ‰ƒbƒO‚ªI—¹‚µ‚½
-	SmallDecrement,		///< ƒXƒNƒ[ƒ‹ƒo[‚ÌƒfƒNƒŠƒƒ“ƒgƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚½
-	SmallIncrement,		///< ƒXƒNƒ[ƒ‹ƒo[‚ÌƒCƒ“ƒNƒŠƒƒ“ƒgƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚½
-	LargeDecrement,		///< ƒXƒNƒ[ƒ‹ƒo[‚Ì PageUp —Ìˆæ‚ªƒNƒŠƒbƒN‚³‚ê‚½
-	LargeIncrement,		///< ƒXƒNƒ[ƒ‹ƒo[‚Ì PageDown —Ìˆæ‚ªƒNƒŠƒbƒN‚³‚ê‚½
+	ThumbTrack = 0,		///< ã¤ã¾ã¿ãŒãƒ‰ãƒ©ãƒƒã‚°ã•ã‚Œã¦ã„ã‚‹
+	EndScroll,			///< ã¤ã¾ã¿ã®ãƒ‰ãƒ©ãƒƒã‚°ãŒçµ‚äº†ã—ãŸ
+	SmallDecrement,		///< ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+	SmallIncrement,		///< ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+	LargeDecrement,		///< ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã® PageUp é ˜åŸŸãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
+	LargeIncrement,		///< ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã® PageDown é ˜åŸŸãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
 };
 LN_ENUM_DECLARE(ScrollEventType);
 
 /**
-	@brief		ScrollBar ‚ÌƒXƒNƒ[ƒ‹ƒCƒxƒ“ƒg‚Ìˆø”‚Å‚·B
+	@brief		ScrollBar ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã‚¤ãƒ™ãƒ³ãƒˆã®å¼•æ•°ã§ã™ã€‚
 */
 class ScrollEventArgs
 	: public RoutedEventArgs
@@ -35,8 +35,8 @@ public:
 	virtual ~ScrollEventArgs() {}
 
 public:
-	float			NewValue;		///< V‚µ‚¢’l
-	ScrollEventType	Type;			///< ƒXƒNƒ[ƒ‹ƒCƒxƒ“ƒg‚ÌŒ´ˆö
+	float			NewValue;		///< æ–°ã—ã„å€¤
+	ScrollEventType	Type;			///< ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã‚¤ãƒ™ãƒ³ãƒˆã®åŸå› 
 };
 
 /**
@@ -56,8 +56,8 @@ public:
 	LN_ROUTED_EVENT(ScrollEventArgs,	ScrollEvent);
 
 
-	// TODO: RoutedCommand ‚Í ID ‚Å‚Í‚È‚­ Command ‚Ìƒ|ƒCƒ“ƒ^‚ğ’¼ÚŒöŠJ‚µ‚½•û‚ª—Ç‚¢‚©‚àB
-	// button->SetCommand(Window.CloseCommand) ‚Æ‚©‚µ‚½‚¢B
+	// TODO: RoutedCommand ã¯ ID ã§ã¯ãªã Command ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ç›´æ¥å…¬é–‹ã—ãŸæ–¹ãŒè‰¯ã„ã‹ã‚‚ã€‚
+	// button->SetCommand(Window.CloseCommand) ã¨ã‹ã—ãŸã„ã€‚
 
 public:
 	static ScrollBarPtr Create();
@@ -69,30 +69,30 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	/// ScrollBar ‚Ì•ûŒü‚ğw’è‚µ‚Ü‚·B
+	/// ScrollBar ã®æ–¹å‘ã‚’æŒ‡å®šã—ã¾ã™ã€‚
 // TODO:	void SetOrientation(Orientation orientation) { m_orientation = orientation; OnPropertyChanged(OrientationProperty->GetName(), m_orientation); }
 
-	/// ScrollBar ‚Ì•ûŒü‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í Orientation::Horizontal ‚Å‚·B
+	/// ScrollBar ã®æ–¹å‘ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ Orientation::Horizontal ã§ã™ã€‚
 	Orientation GetOrientation() const { return m_orientation; }
 
-	// TODO:«Œã‚Å RangeBase ‚ÉˆÚ‚·‚©‚à
+	// TODO:â†“å¾Œã§ RangeBase ã«ç§»ã™ã‹ã‚‚
 
-	/// ƒXƒNƒ[ƒ‹ˆÊ’u‚É‘Î‚·‚é’l‚ğİ’è‚µ‚Ü‚·B
-	void SetValue(float value) { m_value = value; m_track->SetValue(value); }	// TODO: TemplateBinding ‚Ì‚Ù‚¤‚ª‚æ‚¢‚©H
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã«å¯¾ã™ã‚‹å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
+	void SetValue(float value) { m_value = value; m_track->SetValue(value); }	// TODO: TemplateBinding ã®ã»ã†ãŒã‚ˆã„ã‹ï¼Ÿ
 
-	/// ƒXƒNƒ[ƒ‹ˆÊ’u‚É‘Î‚·‚é’l‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í 0 ‚Å‚·B
+	/// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã«å¯¾ã™ã‚‹å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 0 ã§ã™ã€‚
 	float GetValue() const { return m_value; }
 
-	/// w’è‰Â”\‚ÈÅ¬’l‚ğİ’è‚µ‚Ü‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å°å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetMinimum(float value) { m_minimum = value; }
 
-	/// w’è‰Â”\‚ÈÅ¬’l‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í 0 ‚Å‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å°å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 0 ã§ã™ã€‚
 	float GetMinimum() const { return m_minimum; }
 
-	/// w’è‰Â”\‚ÈÅ‘å’l‚ğİ’è‚µ‚Ü‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å¤§å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetMaximum(float value) { m_maximum = value; }
 
-	/// w’è‰Â”\‚ÈÅ‘å’l‚ğæ“¾‚µ‚Ü‚·B‹K’è’l‚Í 1 ‚Å‚·B
+	/// æŒ‡å®šå¯èƒ½ãªæœ€å¤§å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚è¦å®šå€¤ã¯ 1 ã§ã™ã€‚
 	float GetMaximum() const { return m_maximum; }
 
 	/** @} */
@@ -103,10 +103,10 @@ public:
 
 	RoutedEventSlot<ScrollEventArgs>	Scroll;
 	
-	///// ScrollEvent ‚Éƒnƒ“ƒhƒ‰‚ğ“o˜^‚µ‚Ü‚·B
+	///// ScrollEvent ã«ãƒãƒ³ãƒ‰ãƒ©ã‚’ç™»éŒ²ã—ã¾ã™ã€‚
 	//void AddScrollEventHandler(Delegate01<ScrollEventArgs*> handler) { m_scrollEvent += handler; }
 
-	///// ScrollEvent ‚É“o˜^‚³‚ê‚½ƒnƒ“ƒhƒ‰‚ğ‰ğœ‚µ‚Ü‚·B
+	///// ScrollEvent ã«ç™»éŒ²ã•ã‚ŒãŸãƒãƒ³ãƒ‰ãƒ©ã‚’è§£é™¤ã—ã¾ã™ã€‚
 	//void RemoveScrollEventHandler(Delegate01<ScrollEventArgs*> handler) { m_scrollEvent -= handler; }
 
 	/** @} */
@@ -135,10 +135,10 @@ private:
 	Orientation			m_orientation;
 	//Event01<ScrollEventArgs*>	m_scrollEvent;
 
-	Track*				m_track;	///< VisualTree “à‚Ì Track
+	Track*				m_track;	///< VisualTree å†…ã® Track
 
-	float				m_dragStartValue;	///< ƒhƒ‰ƒbƒOŠJn‚Ì m_value
-	bool				m_isStandalone;		///< Value ‚Ì‘€ì‚ğ this ‚Ås‚¤‚©AScrollViewer Œo—R‚Ås‚¤‚©B
+	float				m_dragStartValue;	///< ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹æ™‚ã® m_value
+	bool				m_isStandalone;		///< Value ã®æ“ä½œã‚’ this ã§è¡Œã†ã‹ã€ScrollViewer çµŒç”±ã§è¡Œã†ã‹ã€‚
 
 	friend class ScrollViewer;
 };

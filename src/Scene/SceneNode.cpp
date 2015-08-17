@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "SceneGraphManager.h"
 #include "SceneNode.h"
@@ -59,7 +59,7 @@ SceneNode::~SceneNode()
 //-----------------------------------------------------------------------------
 void SceneNode::Create(SceneGraphManager* manager)
 {
-	LN_THROW(m_manager == NULL, InvalidOperationException);	// ‰Šú‰»Ï‚Ýƒ`ƒFƒbƒN
+	LN_THROW(m_manager == NULL, InvalidOperationException);	// åˆæœŸåŒ–æ¸ˆã¿ãƒã‚§ãƒƒã‚¯
 	LN_THROW(manager != NULL, ArgumentException);
 	LN_REFOBJ_SET(m_manager, manager);
 	m_manager->AddNode(this);
@@ -83,7 +83,7 @@ void SceneNode::SetName(const String& name)
 void SceneNode::AddChild(SceneNode* node)
 {
 	LN_THROW(node != NULL, ArgumentException);
-	LN_THROW(node->m_parentNode == NULL, InvalidOperationException);	// Šù‚É•Ê‚Ìƒm[ƒh‚ÌŽq‚É‚È‚Á‚Ä‚¢‚é
+	LN_THROW(node->m_parentNode == NULL, InvalidOperationException);	// æ—¢ã«åˆ¥ã®ãƒŽãƒ¼ãƒ‰ã®å­ã«ãªã£ã¦ã„ã‚‹
 
 	m_children->Add(node);
 	node->m_parentNode = this;
@@ -94,7 +94,7 @@ void SceneNode::AddChild(SceneNode* node)
 //-----------------------------------------------------------------------------
 void SceneNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList)
 {
-	// ƒ[ƒ‹ƒhs—ñ‚ÌXV‚ª•K—v‚Èê‡‚ÍÄŒvŽZ
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®æ›´æ–°ãŒå¿…è¦ãªå ´åˆã¯å†è¨ˆç®—
 	if (m_transformModified)
 	{
 		m_localMatrix = Matrix::Identity;
@@ -105,7 +105,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* rendering
 		m_transformModified = false;
 	}
 
-	// ƒOƒ[ƒoƒ‹s—ñŒ‹‡
+	// ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—çµåˆ
 	if (parent != NULL) {
 		m_combinedGlobalMatrix = m_localMatrix * parent->m_combinedGlobalMatrix;
 	}
@@ -113,7 +113,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* rendering
 		m_combinedGlobalMatrix = m_localMatrix;
 	}
 
-	// Žqƒm[ƒhXV
+	// å­ãƒŽãƒ¼ãƒ‰æ›´æ–°
 	LN_FOREACH(SceneNode* child, *m_children) {
 		child->UpdateFrameHierarchy(this, renderingNodeList);
 	}
@@ -124,7 +124,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* rendering
 //-----------------------------------------------------------------------------
 void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
-	// SceneNode Ž©‘Ì‚Í•`‰æ‹@”\‚ðŽ‚½‚È‚¢‚Ì‚Å‰½‚à‚¹‚¸AŽq‚Ìˆ—‚ðs‚¤
+	// SceneNode è‡ªä½“ã¯æç”»æ©Ÿèƒ½ã‚’æŒãŸãªã„ã®ã§ä½•ã‚‚ã›ãšã€å­ã®å‡¦ç†ã‚’è¡Œã†
 	LN_FOREACH(SceneNode* child, *m_children) {
 		child->UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
 	}
@@ -137,10 +137,10 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 {
 	if (left->m_priority == right->m_priority)
 	{
-		// ‹——£‚Í¸‡B‹ß‚¢‚Ù‚¤‚ðæ‚É•`‰æ‚·‚éB
+		// è·é›¢ã¯æ˜‡é †ã€‚è¿‘ã„ã»ã†ã‚’å…ˆã«æç”»ã™ã‚‹ã€‚
 		return left->m_zDistance < right->m_zDistance;
 	}
-	// —Dæ“x‚Í~‡B‚‚¢‚Ù‚¤‚ðæ‚É•`‰æ‚·‚éB
+	// å„ªå…ˆåº¦ã¯é™é †ã€‚é«˜ã„ã»ã†ã‚’å…ˆã«æç”»ã™ã‚‹ã€‚
 	return left->m_priority < right->m_priority;
 }
 

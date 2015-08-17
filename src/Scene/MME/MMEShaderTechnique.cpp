@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include "MMEShader.h"
 #include "MMEShaderErrorInfo.h"
@@ -66,7 +66,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 	m_scriptCommandList.Initialize(m_ownerShader);
 
     //-------------------------------------------
-    // MMD ƒpƒX‚ÆƒAƒmƒe[ƒVƒ‡ƒ“‚ğ’²‚×‚é
+    // MMD ãƒ‘ã‚¹ã¨ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã‚’èª¿ã¹ã‚‹
 
     bool use_texture = false;
     bool use_sphere_map = false;
@@ -119,7 +119,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 
 
     //-------------------------------------------
-    // •`‰æ‚·‚éSubset”Ô†‚Ìw’è‚ğ’²‚×‚é
+    // æç”»ã™ã‚‹Subsetç•ªå·ã®æŒ‡å®šã‚’èª¿ã¹ã‚‹
 
     const TCHAR* subsetText = NULL;
 
@@ -136,8 +136,8 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
     //-------------------------------------------
     // Script
 
-	// æ‚É‘S‚Ä‚Ì Pass ‚ÌƒRƒ}ƒ“ƒhƒŠƒXƒg (“ü‚ê•¨) ‚ğì‚Á‚Ä‚¨‚­B
-	// (ƒXƒNƒŠƒvƒg‰ğÍ‚Å "Pass" ‚ğŒ©‚Â‚¯‚½‚Æ‚«‚ÉŒŸõ‚Å‚«‚é‚æ‚¤‚É‚·‚é‚½‚ß)
+	// å…ˆã«å…¨ã¦ã® Pass ã®ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ (å…¥ã‚Œç‰©) ã‚’ä½œã£ã¦ãŠãã€‚
+	// (ã‚¹ã‚¯ãƒªãƒ—ãƒˆè§£æã§ "Pass" ã‚’è¦‹ã¤ã‘ãŸã¨ãã«æ¤œç´¢ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚)
 	LN_FOREACH(Graphics::ShaderPass* pass, m_technique->GetPasses())
 	{
 		MMEShaderPass* mmePass = LN_NEW MMEShaderPass();
@@ -148,14 +148,14 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 		m_scriptCommandList.AddChildPassCommandList(&mmePass->m_scriptCommandList);
 	}
 
-    // ƒeƒNƒjƒbƒN‚É "Script" ƒAƒmƒe[ƒVƒ‡ƒ“‚ª‚ ‚é‚©ƒ`ƒFƒbƒN 
+    // ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã« "Script" ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ 
     Graphics::ShaderVariable* scriptAnno;
 	scriptAnno = m_technique->FindAnnotation(_T("Script"));
 	if (scriptAnno != NULL && scriptAnno->GetType() == Graphics::ShaderVariableType_String)
     {
 		ParseScriptCommandString(scriptAnno, NULL, &m_scriptCommandList);
     }
-    // È—ª‚³‚ê‚Ä‚¢‚éê‡‚Í‘S‚Ä‚ÌƒpƒX‚ğÀs‚·‚éƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğì‚é
+    // çœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å…¨ã¦ã®ãƒ‘ã‚¹ã‚’å®Ÿè¡Œã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’ä½œã‚‹
     else
     {
 		LN_FOREACH(MMEShaderPass* pass, m_mmeShaderPasses) {
@@ -163,10 +163,10 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 		}
     }
 
-	// ÅŒã‚É‘S‚Ä‚ÌƒpƒX‚ÌƒXƒNƒŠƒvƒg‚ğ‰ğÍ‚·‚é
+	// æœ€å¾Œã«å…¨ã¦ã®ãƒ‘ã‚¹ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’è§£æã™ã‚‹
 	LN_FOREACH(MMEShaderPass* pass, m_mmeShaderPasses)
 	{
-		// "Script" ƒAƒmƒe[ƒVƒ‡ƒ“‚ª‚ ‚ê‚Î‰ğÍ‚µAÈ—ª‚³‚ê‚Ä‚¢‚éê‡‚Í "DrawGeometry" ‚¾‚¯’Ç‰Á‚·‚é
+		// "Script" ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚Œã°è§£æã—ã€çœç•¥ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ "DrawGeometry" ã ã‘è¿½åŠ ã™ã‚‹
 		scriptAnno = pass->m_pass->FindAnnotation(_T("Script"));
 		if (scriptAnno != NULL && scriptAnno->GetType() == Graphics::ShaderVariableType_String) {
 			ParseScriptCommandString(scriptAnno, pass->m_pass, &pass->m_scriptCommandList);
@@ -178,9 +178,9 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 
 
     //-------------------------------------------
-    // ’†gƒ`ƒFƒbƒN
+    // ä¸­èº«ãƒã‚§ãƒƒã‚¯
 #if 0
-    printf( "Ÿ Script\n" );
+    printf( "â—† Script\n" );
     MMEScriptCommandList::iterator it = mScriptCommandList.begin();
     for ( ; it != mScriptCommandList.end(); ++it )
     {
@@ -229,11 +229,11 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 //-----------------------------------------------------------------------------
 bool MMEShaderTechnique::ContainsSubsetIndex(int subsetIndex) const
 {	
-	// "Subset" ‚ªÈ—ª‚³‚ê‚Ä‚¢‚éB‘S•”•`‰æ‚Å‚«‚éB
+	// "Subset" ãŒçœç•¥ã•ã‚Œã¦ã„ã‚‹ã€‚å…¨éƒ¨æç”»ã§ãã‚‹ã€‚
 	if (m_subsetIndexArray.IsEmpty()) {
 		return true;
 	}
-	// ”ÍˆÍ‚ÌI’[‚ª '-' ‚É‚È‚Á‚Ä‚¢‚éBƒCƒ“ƒfƒbƒNƒX”ÍˆÍŠO‚Í‘S‚Ä•`‰æ‰Â”\B
+	// ç¯„å›²ã®çµ‚ç«¯ãŒ '-' ã«ãªã£ã¦ã„ã‚‹ã€‚ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç¯„å›²å¤–ã¯å…¨ã¦æç”»å¯èƒ½ã€‚
 	if (subsetIndex >= m_subsetIndexArray.GetCount()) {
 		return m_subsetIndexEndToRange;
 	}
@@ -267,30 +267,30 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 	const TCHAR* script = scriptAnno->GetString();
     if ( script )
 	{
-		// ‹æØ‚è•¶š(;)‚ğI’[•¶š‚É’uŠ·‚µ‚Äˆ—‚ğ‚·‚é‚½‚ßAˆê“x‘‚«Š·‚¦‰Â”\ƒoƒbƒtƒ@‚És‘S•”ƒRƒs[‚·‚é
+		// åŒºåˆ‡ã‚Šæ–‡å­—(;)ã‚’çµ‚ç«¯æ–‡å­—ã«ç½®æ›ã—ã¦å‡¦ç†ã‚’ã™ã‚‹ãŸã‚ã€ä¸€åº¦æ›¸ãæ›ãˆå¯èƒ½ãƒãƒƒãƒ•ã‚¡ã«så…¨éƒ¨ã‚³ãƒ”ãƒ¼ã™ã‚‹
 		ByteBuffer tmpBuf(script);
 		TCHAR* cmdLine = (TCHAR*)tmpBuf.GetData();
 		while (true)
 		{
-			// ; ‚ğ’T‚µ‚Ä '\0' ‚É’uŠ·B–³‚¯‚ê‚ÎI’[‚Æ‚¢‚¤‚±‚Æ‚ÅI—¹
+			// ; ã‚’æ¢ã—ã¦ '\0' ã«ç½®æ›ã€‚ç„¡ã‘ã‚Œã°çµ‚ç«¯ã¨ã„ã†ã“ã¨ã§çµ‚äº†
 			int nextSemiColonIdx = StringTraits::IndexOf(cmdLine, _T(";"));
 			if (nextSemiColonIdx == -1) { return; }
 
 			cmdLine[nextSemiColonIdx] = _T('\0');
 
-			// ’uŠ·‚µ‚½ '\0' ‚Ü‚ÅA(•¶š—ñ‚Ì•”•ªˆê’v‚Å‚¾‚¯‚Ç) ƒL[ƒ[ƒh‚ğ’T‚µ‚Ä‚¢‚­
+			// ç½®æ›ã—ãŸ '\0' ã¾ã§ã€(æ–‡å­—åˆ—ã®éƒ¨åˆ†ä¸€è‡´ã§ã ã‘ã©) ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã‚’æ¢ã—ã¦ã„ã
 			switch (cmdLine[0])
             {
                 /////////////////////////////
-                // RenderColorTarget_0`3
+                // RenderColorTarget_0ï½3
                 // RenderDepthStencilTarget
                 // RenderPort
                 case _T('R'):
                 {
-                    ///////////////////////////// RenderColorTarget_0`3
+                    ///////////////////////////// RenderColorTarget_0ï½3
 					if (cmdLine[6] == _T('C'))
                     {
-                        // İ’èƒCƒ“ƒfƒbƒNƒX‚ğ’²‚×‚é
+                        // è¨­å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’èª¿ã¹ã‚‹
                         uint32_t index;
 						TCHAR lc = cmdLine[17];
                         if ( '0' <= lc && lc <= '3' ) {
@@ -300,20 +300,20 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                             index = 0;
                         }
 
-                        // = ‚ÌŒã‚ë‚ªƒeƒNƒXƒ`ƒƒŒ^•Ï”–¼‚É‚È‚Á‚Ä‚¢‚é‚Í‚¸
+                        // = ã®å¾Œã‚ãŒãƒ†ã‚¯ã‚¹ãƒãƒ£å‹å¤‰æ•°åã«ãªã£ã¦ã„ã‚‹ã¯ãš
 						int idx = StringTraits::IndexOf(cmdLine, _T("="));
-						if (idx == -1) {									// ƒeƒNƒXƒ`ƒƒ•Ï”–¼‚ªÈ—ª‚³‚ê‚Ä‚¢‚é
-							commandList->Add_RenderColorTarget(index, NULL);// ƒfƒtƒHƒ‹ƒg‚É–ß‚·ƒRƒ}ƒ“ƒh
+						if (idx == -1) {									// ãƒ†ã‚¯ã‚¹ãƒãƒ£å¤‰æ•°åãŒçœç•¥ã•ã‚Œã¦ã„ã‚‹
+							commandList->Add_RenderColorTarget(index, NULL);// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«æˆ»ã™ã‚³ãƒãƒ³ãƒ‰
 						}
 						else
 						{
-							// •Ï”‚ğŒŸõ‚µAƒRƒ}ƒ“ƒh‰»
+							// å¤‰æ•°ã‚’æ¤œç´¢ã—ã€ã‚³ãƒãƒ³ãƒ‰åŒ–
 							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
 							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Texture) {
 								commandList->Add_RenderColorTarget(index, v);
 							}
 							else {
-								// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+								// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 								m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidRenderTargetVariable, &cmdLine[idx + 1]);
 								return;
 							}
@@ -322,20 +322,20 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                     ///////////////////////////// RenderDepthStencilTarget
 					else if (cmdLine[6] == _T('D'))
                     {
-						// = ‚ÌŒã‚ë‚ªƒeƒNƒXƒ`ƒƒŒ^•Ï”–¼‚É‚È‚Á‚Ä‚¢‚é‚Í‚¸
+						// = ã®å¾Œã‚ãŒãƒ†ã‚¯ã‚¹ãƒãƒ£å‹å¤‰æ•°åã«ãªã£ã¦ã„ã‚‹ã¯ãš
 						int idx = StringTraits::IndexOf(cmdLine, _T("="));
-						if (idx == -1) {									// ƒeƒNƒXƒ`ƒƒ•Ï”–¼‚ªÈ—ª‚³‚ê‚Ä‚¢‚é
-							commandList->Add_RenderDepthStencilTarget(NULL);// ƒfƒtƒHƒ‹ƒg‚É–ß‚·ƒRƒ}ƒ“ƒh
+						if (idx == -1) {									// ãƒ†ã‚¯ã‚¹ãƒãƒ£å¤‰æ•°åãŒçœç•¥ã•ã‚Œã¦ã„ã‚‹
+							commandList->Add_RenderDepthStencilTarget(NULL);// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«æˆ»ã™ã‚³ãƒãƒ³ãƒ‰
 						}
 						else
 						{
-							// •Ï”‚ğŒŸõ‚µAƒRƒ}ƒ“ƒh‰»
+							// å¤‰æ•°ã‚’æ¤œç´¢ã—ã€ã‚³ãƒãƒ³ãƒ‰åŒ–
 							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
 							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Texture) {
 								commandList->Add_RenderDepthStencilTarget(v);
 							}
 							else {
-								// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+								// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 								m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidRenderDepthStencilTargetVariable, &cmdLine[idx + 1]);
 								return;
 							}
@@ -344,7 +344,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                     ///////////////////////////// RenderPort
 					else if (cmdLine[6] == _T('P'))
                     {
-                        // MME ©‘Ì‚à–¢À‘•‚ÌƒRƒ}ƒ“ƒhB–³‹B
+                        // MME è‡ªä½“ã‚‚æœªå®Ÿè£…ã®ã‚³ãƒãƒ³ãƒ‰ã€‚ç„¡è¦–ã€‚
                     }
                     break;
                 }
@@ -368,13 +368,13 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 								commandList->Add_ClearSetColor(v->GetVector());
 							}
 							else {
-								// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+								// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 								m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidClearSetColorVariable, &cmdLine[idx + 1]);
 								return;
 							}
 						}
 						else {
-							// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+							// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 							m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidClearSetColorVariable);
 							return;
 						}
@@ -391,13 +391,13 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 								commandList->Add_ClearSetDepth(v->GetFloat());
 							}
 							else {
-								// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+								// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 								m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidClearSetDepthVariable, &cmdLine[idx + 1]);
 								return;
 							}
 						}
 						else {
-							// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+							// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 							m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidClearSetDepthVariable);
 							return;
 						}
@@ -435,13 +435,13 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 							commandList->Add_Pass(mmeShaderPass->m_pass, &mmeShaderPass->m_scriptCommandList);
 						}
 						else {
-							// Error: –³Œø‚ÈƒpƒX–¼
+							// Error: ç„¡åŠ¹ãªãƒ‘ã‚¹å
 							m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidPassName, &cmdLine[idx + 1]);
 							return;
 						}
 					}
 					else {
-						// Error: –³Œø‚ÈƒpƒX–¼
+						// Error: ç„¡åŠ¹ãªãƒ‘ã‚¹å
 						m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidPassName);
 						return;
 					}
@@ -466,13 +466,13 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 								commandList->Add_LoopByCount(v->GetInt());
 							}
 							else {
-								// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+								// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 								m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidLoopByCountVariable, &cmdLine[idx + 1]);
 								return;
 							}
 						}
 						else {
-							// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+							// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 							m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidLoopByCountVariable);
 							return;
 						}
@@ -494,13 +494,13 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 								commandList->Add_LoopGetIndex(v);
 							}
 							else {
-								// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+								// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 								m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidLoopGetIndexVariable, &cmdLine[idx + 1]);
 								return;
 							}
 						}
 						else {
-							// Error: •Ï”–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+							// Error: å¤‰æ•°åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 							m_errorInfo->AddError(MMEShaderError_ScriptCommand_InvalidLoopGetIndexVariable);
 							return;
 						}
@@ -527,7 +527,7 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
                 }
             }
 
-			cmdLine += nextSemiColonIdx + 1;	// ; ‚ÌŸ‚ğw‚·
+			cmdLine += nextSemiColonIdx + 1;	// ; ã®æ¬¡ã‚’æŒ‡ã™
 		}
     }
 }
@@ -543,40 +543,40 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<b
 	LN_FOREACH(String& token, tokens)
 	{
 		if (*endToRange) {
-			// TODO: •¶–@ƒGƒ‰[BÅŒã‚ª '-' ‚Å‚ ‚éƒg[ƒNƒ“‚ÍÅŒã‚Ìƒg[ƒNƒ“‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+			// TODO: æ–‡æ³•ã‚¨ãƒ©ãƒ¼ã€‚æœ€å¾ŒãŒ '-' ã§ã‚ã‚‹ãƒˆãƒ¼ã‚¯ãƒ³ã¯æœ€å¾Œã®ãƒˆãƒ¼ã‚¯ãƒ³ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„
 			return;
 		}
 
 		int rangeMarkPos = token.IndexOf(_T("-"));
 
-		// '-' ‚Ì–³‚¢•’Ê‚Ì”’l‚¾‚Á‚½
+		// '-' ã®ç„¡ã„æ™®é€šã®æ•°å€¤ã ã£ãŸ
 		if (rangeMarkPos == -1)
 		{
 			int n = _ttoi(token);
-			while (subsetIndexArray->GetCount() < n - 1) {	// ƒTƒuƒZƒbƒg”Ô† n ‚Ü‚Å‚É‘«‚è‚È‚¢—v‘f‚ğ‹l‚ß‚Ä‚¢‚­
+			while (subsetIndexArray->GetCount() < n - 1) {	// ã‚µãƒ–ã‚»ãƒƒãƒˆç•ªå· n ã¾ã§ã«è¶³ã‚Šãªã„è¦ç´ ã‚’è©°ã‚ã¦ã„ã
 				subsetIndexArray->Add(false);
 			}
-			subsetIndexArray->Add(true);					// n ”Ô‚ÌƒTƒuƒZƒbƒg‚Í•`‰æ‚Å‚«‚é
+			subsetIndexArray->Add(true);					// n ç•ªã®ã‚µãƒ–ã‚»ãƒƒãƒˆã¯æç”»ã§ãã‚‹
 		}
-		// ƒg[ƒNƒ“‚ÌÅŒã‚ª '-' ‚¾‚Á‚½BˆÈ~‘S‚Ä‚ÌƒTƒuƒZƒbƒg‚ğ•`‰æ‚·‚é‚±‚Æ‚ğ¦‚·
+		// ãƒˆãƒ¼ã‚¯ãƒ³ã®æœ€å¾ŒãŒ '-' ã ã£ãŸã€‚ä»¥é™å…¨ã¦ã®ã‚µãƒ–ã‚»ãƒƒãƒˆã‚’æç”»ã™ã‚‹ã“ã¨ã‚’ç¤ºã™
 		else if (rangeMarkPos == token.GetLength() - 1)
 		{
 			int n = _ttoi(token.Left(rangeMarkPos));
-			while (subsetIndexArray->GetCount() < n - 1) {	// ƒTƒuƒZƒbƒg”Ô† n ‚Ü‚Å‚É‘«‚è‚È‚¢—v‘f‚ğ‹l‚ß‚Ä‚¢‚­
+			while (subsetIndexArray->GetCount() < n - 1) {	// ã‚µãƒ–ã‚»ãƒƒãƒˆç•ªå· n ã¾ã§ã«è¶³ã‚Šãªã„è¦ç´ ã‚’è©°ã‚ã¦ã„ã
 				subsetIndexArray->Add(false);
 			}
-			subsetIndexArray->Add(true);					// n ”Ô‚ÌƒTƒuƒZƒbƒg‚Í•`‰æ‚Å‚«‚é
-			*endToRange = true;								// ˆÈ~A‘S‚Ä‚ÌƒTƒuƒZƒbƒg‚ğ•`‰æ‚·‚é‚±‚Æ‚ğ¦‚·
+			subsetIndexArray->Add(true);					// n ç•ªã®ã‚µãƒ–ã‚»ãƒƒãƒˆã¯æç”»ã§ãã‚‹
+			*endToRange = true;								// ä»¥é™ã€å…¨ã¦ã®ã‚µãƒ–ã‚»ãƒƒãƒˆã‚’æç”»ã™ã‚‹ã“ã¨ã‚’ç¤ºã™
 		}
-		// "2-5" ‚Ì‚æ‚¤‚Èƒg[ƒNƒ“
+		// "2-5" ã®ã‚ˆã†ãªãƒˆãƒ¼ã‚¯ãƒ³
 		else
 		{
 			int start = _ttoi(token.Left(rangeMarkPos));
 			int end = _ttoi(token.Right((token.GetLength() - rangeMarkPos) - 1));
-			while (subsetIndexArray->GetCount() < start - 1) {	// ƒTƒuƒZƒbƒg”Ô† start ‚Ü‚Å‚É‘«‚è‚È‚¢—v‘f‚ğ‹l‚ß‚Ä‚¢‚­
+			while (subsetIndexArray->GetCount() < start - 1) {	// ã‚µãƒ–ã‚»ãƒƒãƒˆç•ªå· start ã¾ã§ã«è¶³ã‚Šãªã„è¦ç´ ã‚’è©°ã‚ã¦ã„ã
 				subsetIndexArray->Add(false);
 			}
-			while (subsetIndexArray->GetCount() < end) {		// ƒTƒuƒZƒbƒg end ”Ô‚Ü‚Å•`‰æ‚Å‚«‚é
+			while (subsetIndexArray->GetCount() < end) {		// ã‚µãƒ–ã‚»ãƒƒãƒˆ end ç•ªã¾ã§æç”»ã§ãã‚‹
 				subsetIndexArray->Add(true);
 			}
 		}
@@ -591,18 +591,18 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 	struct SubsetIndexOrder
 	{
 		int	Index;
-		int	RangeState;    ///< ”ÍˆÍ‚Ìw’è (0=‚È‚µ 1=‚Â‚¬‚ÌSubsetIndex‚Ì’l‚Ü‚Å 2=ƒTƒuƒZƒbƒg”‚ÌÅ‘å‚Ü‚Å)
+		int	RangeState;    ///< ç¯„å›²ã®æŒ‡å®š (0=ãªã— 1=ã¤ãã®SubsetIndexã®å€¤ã¾ã§ 2=ã‚µãƒ–ã‚»ãƒƒãƒˆæ•°ã®æœ€å¤§ã¾ã§)
 	};
 	typedef std::list< SubsetIndexOrder > SubsetIndexOrderList;
 
 
 	const TCHAR* c;
-	const TCHAR* lc; // ÅŒã‚ÉŒ©‚Â‚©‚Á‚½ ',' ‚Ü‚Í‚½ '-' ‚ÌŸ‚Ì•¶š
+	const TCHAR* lc; // æœ€å¾Œã«è¦‹ã¤ã‹ã£ãŸ ',' ã¾ã¯ãŸ '-' ã®æ¬¡ã®æ–‡å­—
 	int   num;
 	int   last_num = 0;
-	bool  is_range = false;     // - ‚É‚æ‚Á‚Ä”ÍˆÍw’è‚ª‚ ‚éê‡ true
+	bool  is_range = false;     // - ã«ã‚ˆã£ã¦ç¯„å›²æŒ‡å®šãŒã‚ã‚‹å ´åˆ true
 	TCHAR	temp[64];
-	uint32_t   size = 0;             // ÀÛ‚É“WŠJ‚³‚ê‚é”z—ñ‚Ì—v‘f”
+	uint32_t   size = 0;             // å®Ÿéš›ã«å±•é–‹ã•ã‚Œã‚‹é…åˆ—ã®è¦ç´ æ•°
 	SubsetIndexOrderList    subse_index_order_list;
 
 	SubsetIndexOrder si;
@@ -613,7 +613,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 	c = subsetText;
 	lc = c;
 
-	// ƒRƒ“ƒ}‚©I’[‚Ü‚Å’T‚·ƒ‹[ƒv
+	// ã‚³ãƒ³ãƒã‹çµ‚ç«¯ã¾ã§æ¢ã™ãƒ«ãƒ¼ãƒ—
 	while (true)
 	{
 		if (*c == _T(',') || *c == _T('\0'))
@@ -626,22 +626,22 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 
 			si.Index = num;
 
-			// ‚Ğ‚Æ‚Â‘O‚Ì•¶š‚ª - ‚Ìê‡‚ÍƒTƒuƒZƒbƒgI’[‚Ü‚Å‚Ì”ÍˆÍw’è
+			// ã²ã¨ã¤å‰ã®æ–‡å­—ãŒ - ã®å ´åˆã¯ã‚µãƒ–ã‚»ãƒƒãƒˆçµ‚ç«¯ã¾ã§ã®ç¯„å›²æŒ‡å®š
 			if (*(c - 1) == _T('-'))
 			{
 				si.RangeState = 2;
-				size += 2;          // ”’l‚ÆAI’[‚Ü‚Å‚ğ•\‚·’l 0xffffffff ‚ğŠi”[‚·‚é•ª
+				size += 2;          // æ•°å€¤ã¨ã€çµ‚ç«¯ã¾ã§ã‚’è¡¨ã™å€¤ 0xffffffff ã‚’æ ¼ç´ã™ã‚‹åˆ†
 			}
 			else
 			{
 				si.RangeState = 0;
 
-				// ‚Ğ‚Æ‚Â‘O‚©‚ç‚Ì”ÍˆÍw’è‚Ìê‡
+				// ã²ã¨ã¤å‰ã‹ã‚‰ã®ç¯„å›²æŒ‡å®šã®å ´åˆ
 				if (last_si.RangeState == 1)
 				{
-					size += (si.Index - last_si.Index) + 1;   // Œã‚ë‚Ì”š‚àŠÜ‚Ş‚Ì‚Å + 1  ( i < num ‚Å‚Í‚È‚­ i <= num )
+					size += (si.Index - last_si.Index) + 1;   // å¾Œã‚ã®æ•°å­—ã‚‚å«ã‚€ã®ã§ + 1  ( i < num ã§ã¯ãªã i <= num )
 				}
-				// ‚Ğ‚Æ‚Â‚Ì”’l‚Ìê‡
+				// ã²ã¨ã¤ã®æ•°å€¤ã®å ´åˆ
 				else
 				{
 					++size;
@@ -649,15 +649,15 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 			}
 
 			subse_index_order_list.push_back(si);
-			last_si = si;   // ‚¢‚ç‚È‚¢‚©‚à
+			last_si = si;   // ã„ã‚‰ãªã„ã‹ã‚‚
 
-			// I’[‚©AƒTƒuƒZƒbƒg‚ÌI’[‚Ü‚Å“Ç‚Ş‚à‚Ì‚ªŒ©‚Â‚©‚Á‚½ê‡‚Í‚±‚±‚ÅI—¹
+			// çµ‚ç«¯ã‹ã€ã‚µãƒ–ã‚»ãƒƒãƒˆã®çµ‚ç«¯ã¾ã§èª­ã‚€ã‚‚ã®ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯ã“ã“ã§çµ‚äº†
 			if (*c == _T('\0') || si.RangeState == 2)
 			{
 				break;
 			}
 		}
-		// - ‚ªŒ©‚Â‚©‚Á‚½ê‡‚Í‚Ğ‚Æ‚Â‘O‚Ì , (‚Ü‚½‚Íæ“ª) ‚©‚ç‚ğ”’l‚É‚µ‚Ä‚¨‚­
+		// - ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯ã²ã¨ã¤å‰ã® , (ã¾ãŸã¯å…ˆé ­) ã‹ã‚‰ã‚’æ•°å€¤ã«ã—ã¦ãŠã
 		else if (*c == _T('-'))
 		{
 			StringTraits::StrNCpy(temp, 64, lc, c - lc);
@@ -678,10 +678,10 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 
 
 
-	// ì¬‚É¸”s‚µ‚½ê‡
+	// ä½œæˆã«å¤±æ•—ã—ãŸå ´åˆ
 	if (subse_index_order_list.empty())
 	{
-		// ‹ó‚É‚·‚é
+		// ç©ºã«ã™ã‚‹
 		subsetIndexArray->Clear();
 	}
 	else
@@ -693,20 +693,20 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 		SubsetIndexOrderList::iterator end1 = subse_index_order_list.end();
 		for (; it1 != end1;)
 		{
-			// Ÿ‚Ì’l‚Ü‚Å‚Ì”ÍˆÍw’è
+			// æ¬¡ã®å€¤ã¾ã§ã®ç¯„å›²æŒ‡å®š
 			if (it1->RangeState == 1)
 			{
 				int i = it1->Index;
 				++it1;
 
-				// Ÿ‚ªƒTƒuƒZƒbƒg”‚Ü‚Å‚Ì”ÍˆÍw’è‚Ìê‡
+				// æ¬¡ãŒã‚µãƒ–ã‚»ãƒƒãƒˆæ•°ã¾ã§ã®ç¯„å›²æŒ‡å®šã®å ´åˆ
 				if (it1->RangeState == 2)
 				{
 					(*subsetIndexArray)[idx] = i;
 					++idx;
 
 					(*subsetIndexArray)[idx] = 0xffffffff;
-					// Œëì“®–h~‚Ì‚½‚ßA‚±‚±‚ÅI—¹Bit1->RangeState == 2 ‚Ì‚Æ‚«AI’[‚Í•K‚¸ 0xffffffff ‚É‚È‚éB
+					// èª¤ä½œå‹•é˜²æ­¢ã®ãŸã‚ã€ã“ã“ã§çµ‚äº†ã€‚it1->RangeState == 2 ã®ã¨ãã€çµ‚ç«¯ã¯å¿…ãš 0xffffffff ã«ãªã‚‹ã€‚
 					break;
 				}
 				else
@@ -719,7 +719,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 					++it1;
 				}
 			}
-			// •’Ê‚Ì’l
+			// æ™®é€šã®å€¤
 			else
 			{
 				(*subsetIndexArray)[idx] = it1->Index;

@@ -1,21 +1,21 @@
-/*
-	[2015/7/30] LN_PROPERTY_BEGIN �� LN_PROPERTY_END �͂���ς��߂�
-		�x�[�X�N���X�̃v���p�e�B�ɃA�N�Z�X���Â炭�Ȃ�B
-		�Ⴆ�� StackPanel::Properties::Size �Ə����Ȃ��B
+﻿/*
+	[2015/7/30] LN_PROPERTY_BEGIN と LN_PROPERTY_END はやっぱりやめる
+		ベースクラスのプロパティにアクセスしづらくなる。
+		例えば StackPanel::Properties::Size と書けない。
 
-	[2015/7/29] LN_PROPERTY_BEGIN �� LN_PROPERTY_END �ɂ���
-		�����̓v���p�e�B��`������\���̂ɕ����߂���́B
-		C# �ƈႢ�Aobj-> �Ə����ăA�N�Z�X�ł�����A�C���e���Z���X�����������
-		C++ �ł� WPF �̂悤�Ȓ�`�͂�����ƌ����Ȃ��Ǝv�����̂ł������Ă���B
+	[2015/7/29] LN_PROPERTY_BEGIN と LN_PROPERTY_END について
+		これらはプロパティ定義を内部構造体に閉じ込めるもの。
+		C# と違い、obj-> と書いてアクセスできたり、インテリセンスを汚したりと
+		C++ では WPF のような定義はちょっと向かないと思ったのでこうしている。
 */
 /*
-	�v���p�e�B�̎�ނ�
-	- ���̂� C++ �l�C�e�B�u�̃����o�ϐ�
-	- ���̂��O��(C#�Ƃ�) �̃����o�ϐ�	�� ��������_���Ƃ��Ɏg���B�K�{�ł͂Ȃ�
-	- ���̂� map �ɓo�^����� Variant
-	�ƁA���ꂼ��
-	- ���ʂ̃v���p�e�B
-	- �Y�t�v���p�e�B
+	プロパティの種類は
+	- 実体が C++ ネイティブのメンバ変数
+	- 実体が外部(C#とか) のメンバ変数	→ 高速化を狙うときに使う。必須ではない
+	- 実体が map に登録される Variant
+	と、それぞれ
+	- 普通のプロパティ
+	- 添付プロパティ
 */
 #include "Internal.h"
 #include <Lumino/Variant.h>

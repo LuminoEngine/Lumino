@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "../Variant.h"
@@ -18,10 +18,10 @@ namespace GUI
 //	DependencyObject();
 //	virtual ~DependencyObject();
 //
-//	/// ƒvƒƒpƒeƒB‚Ì’l‚ğİ’è‚µ‚Ü‚·B
+//	/// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’è¨­å®šã—ã¾ã™ã€‚
 //	void SetValue(const String& propertyName, const Variant& value);
 //
-//	/// ƒvƒƒpƒeƒB‚Ì’l‚ğæ“¾‚µ‚Ü‚·B
+//	/// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚
 //	Variant GetValue(const String& propertyName) const;
 //
 //private:

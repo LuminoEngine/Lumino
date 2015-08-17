@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/UIElement.h>
@@ -52,7 +52,7 @@ AnimationClock::AnimationClock(GUIManager* manager, Storyboard* sourceStoryboard
 {
 	for (AnimationTimeline* timeline : *timelines)
 	{
-		// ƒ^ƒCƒ€ƒ‰ƒCƒ“‚Ì“K—pæ‚ğ‘I‘ğ‚·‚é
+		// ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ã®é©ç”¨å…ˆã‚’é¸æŠã™ã‚‹
 		UIElement* target;
 		if (timeline->GetTargetName().IsEmpty()) {
 			target = owner;
@@ -61,10 +61,10 @@ AnimationClock::AnimationClock(GUIManager* manager, Storyboard* sourceStoryboard
 			target = VisualTreeHelper::FindChildByName(owner, timeline->GetTargetName());
 		}
 
-		// ƒ^ƒCƒ€ƒ‰ƒCƒ“‚Ì“K—pæƒvƒƒpƒeƒB‚ğŒŸõ‚·‚é
+		// ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ã®é©ç”¨å…ˆãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’æ¤œç´¢ã™ã‚‹
 		if (target != NULL)
 		{
-			// TODO:TypeInfo‚ÌstaticŠÖ”‚É‚µ‚½‚¢
+			// TODO:TypeInfoã®staticé–¢æ•°ã«ã—ãŸã„
 			Property* prop = GetTypeInfo(target)->FindProperty(timeline->GetTargetProperty());
 			if (prop != NULL)
 			{
@@ -72,13 +72,13 @@ AnimationClock::AnimationClock(GUIManager* manager, Storyboard* sourceStoryboard
 				tli.OwnerTimeLine = timeline;
 				tli.TargetElement = target;
 				tli.TargetProperty = prop;
-				tli.StartValue = target->GetPropertyValue(prop);	// Œ»İ‚ÌƒvƒƒpƒeƒB’l‚ğŠJn’l‚Æ‚·‚é
+				tli.StartValue = target->GetPropertyValue(prop);	// ç¾åœ¨ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å€¤ã‚’é–‹å§‹å€¤ã¨ã™ã‚‹
 				m_timeLineInstanceList.Add(tli);
 			}
 		}
 	}
 
-	// ‰Šú’lƒZƒbƒg‚ÌˆÓ–¡‚à‚ß‚ÄA‚±‚±‚Å‚Ü‚¸‚Í 0 ƒ^ƒCƒ€‚Å’l‚ğƒZƒbƒg‚µ‚Ä‚¨‚­B
+	// åˆæœŸå€¤ã‚»ãƒƒãƒˆã®æ„å‘³ã‚‚è¾¼ã‚ã¦ã€ã“ã“ã§ã¾ãšã¯ 0 ã‚¿ã‚¤ãƒ ã§å€¤ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠãã€‚
 	SetTime(0);
 
 	GUIHelper::GUIManager_AddAnimationClock(m_manager, this);
@@ -97,7 +97,7 @@ AnimationClock::~AnimationClock()
 //-----------------------------------------------------------------------------
 void AnimationClock::SetTime(float time)
 {
-	// ‚Æ‚è‚ ‚¦‚¸ true ‚É‚µ‚Ä‚¨‚¢‚ÄAƒ^ƒCƒ€ƒ‰ƒCƒ“‚ª1‚Â‚Å‚àÀs’†‚¾‚Á‚½‚ç false ‚É‚·‚é
+	// ã¨ã‚Šã‚ãˆãš true ã«ã—ã¦ãŠã„ã¦ã€ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³ãŒ1ã¤ã§ã‚‚å®Ÿè¡Œä¸­ã ã£ãŸã‚‰ false ã«ã™ã‚‹
 	m_isFinished = true;
 
 	for (TimeLineInstance& tli : m_timeLineInstanceList)
@@ -108,8 +108,8 @@ void AnimationClock::SetTime(float time)
 		}
 	}
 	
-	// I—¹‚µ‚½‚ç Manager ‚ÌŠÔŠÇ—‚©‚çŠO‚·c‚Ì‚¾‚ªA
-	// ‚±‚ÌŠÖ”‚Ì’†‚Å‚Í‚Ü‚¾ƒCƒeƒŒ[ƒg’†‚Å‚ ‚éBm_isFinished ƒtƒ‰ƒO‚ğ Manager ‚ÅŒ©‚ÄA‚»‚¿‚ç‚ÅŠO‚µ‚Ä‚à‚ç‚¤B
+	// çµ‚äº†ã—ãŸã‚‰ Manager ã®æ™‚é–“ç®¡ç†ã‹ã‚‰å¤–ã™â€¦ã®ã ãŒã€
+	// ã“ã®é–¢æ•°ã®ä¸­ã§ã¯ã¾ã ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆä¸­ã§ã‚ã‚‹ã€‚m_isFinished ãƒ•ãƒ©ã‚°ã‚’ Manager ã§è¦‹ã¦ã€ãã¡ã‚‰ã§å¤–ã—ã¦ã‚‚ã‚‰ã†ã€‚
 }
 
 //-----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ void AnimationClock::AdvanceTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 void AnimationClock::StopInternal()
 {
-	// Manager ‚©‚çŠO‚·
+	// Manager ã‹ã‚‰å¤–ã™
 	GUIHelper::GUIManager_RemoveAnimationClock(m_manager, this);
 }
 

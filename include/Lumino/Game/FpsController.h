@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/NonCopyable.h>
 
@@ -7,7 +7,7 @@ namespace Lumino
 class Application;
 
 /**
-	@brief		FPS (Frame Par Second) ‚Ì§ŒäƒNƒ‰ƒX
+	@brief		FPS (Frame Par Second) ã®åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 */
 class FpsController
     : public NonCopyable
@@ -19,109 +19,109 @@ public:
 public:
 	
 	/**
-		@brief		Œ»İ‚Ì FPS ’l‚ğæ“¾‚µ‚Ü‚·B
+		@brief		ç¾åœ¨ã® FPS å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	float GetFps() const { return (m_averageTime > 0) ? (1.0f / m_averageTime) : 0; }
 
 	/**
-		@brief		‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚çŒo‰ß‚µ‚½ƒQ[ƒ€ŠÔ (•b) ‚ğæ“¾‚µ‚Ü‚·B
+		@brief		å‰å›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰çµŒéã—ãŸã‚²ãƒ¼ãƒ æ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	float GetElapsedGameTime() const { return m_elapsedGameTime; }
 
 	/**
-		@brief		‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚çŒo‰ß‚µ‚½ÀŠÔ (•b) ‚ğæ“¾‚µ‚Ü‚·B
+		@brief		å‰å›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰çµŒéã—ãŸå®Ÿæ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	float GetElapsedRealTime() const { return m_elapsedRealTime; }
 
 	/**
-		@brief		ŠJn‚©‚ç‚Ì‘ƒQ[ƒ€ŠÔ (•b) ‚ğæ“¾‚µ‚Ü‚·B
+		@brief		é–‹å§‹ã‹ã‚‰ã®ç·ã‚²ãƒ¼ãƒ æ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	float GetTotalGameTime() const { return 0.001f * m_totalGameTime; }
 
 	/**
-		@brief		ŠJn‚©‚ç‚Ì‘ÀŠÔ (•b) ‚ğæ“¾‚µ‚Ü‚·B
+		@brief		é–‹å§‹ã‹ã‚‰ã®ç·å®Ÿæ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	float GetTotalRealTime() const { return 0.001f * m_totalRealTime; }
 
 	/**
-		@brief		Å‘å FPS ’l‚ğæ“¾‚µ‚Ü‚·B
-		@details	ˆ—‚É‚Ç‚ê‚¾‚¯—]—T‚ª‚ ‚é‚©‚ğ¦‚·’l‚ğæ“¾‚µ‚Ü‚·B
-					‚±‚Ì’l‚ªƒtƒŒ[ƒ€ƒŒ[ƒg‚Ì’l‚æ‚è‚à‘å‚«‚¢‚Ù‚ÇAˆ—‚É—]—T‚ª‚ ‚è‚Ü‚·B<br>
-					‚±‚ÌŠÖ”‚Å’l‚ğæ“¾‚Å‚«‚é‚æ‚¤‚É‚·‚é‚É‚ÍASetEnableFpsTest() ‚É true ‚ğİ’è‚µ‚Ä‚­‚¾‚³‚¢B
+		@brief		æœ€å¤§ FPS å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚
+		@details	å‡¦ç†ã«ã©ã‚Œã ã‘ä½™è£•ãŒã‚ã‚‹ã‹ã‚’ç¤ºã™å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚
+					ã“ã®å€¤ãŒãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®å€¤ã‚ˆã‚Šã‚‚å¤§ãã„ã»ã©ã€å‡¦ç†ã«ä½™è£•ãŒã‚ã‚Šã¾ã™ã€‚<br>
+					ã“ã®é–¢æ•°ã§å€¤ã‚’å–å¾—ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ã«ã¯ã€SetEnableFpsTest() ã« true ã‚’è¨­å®šã—ã¦ãã ã•ã„ã€‚
 	*/
 	float GetCapacityFps() const { return m_capacityFps; }
 
 	/**
-		@brief		ƒtƒŒ[ƒ€ƒŒ[ƒg‚ğİ’è‚µ‚Ü‚·B‰Šú’l‚Í 60 ‚Å‚·B
-		@param[in]	frameRate	: ƒtƒŒ[ƒ€ƒŒ[ƒg
+		@brief		ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚åˆæœŸå€¤ã¯ 60 ã§ã™ã€‚
+		@param[in]	frameRate	: ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆ
 	*/
 	void SetFrameRate(int frameRate);
 
 	/**
-		@brief		ƒtƒŒ[ƒ€ƒŒ[ƒg‚ğæ“¾‚µ‚Ü‚·B
+		@brief		ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
     int GetFrameRate() const { return m_frameRate; }
 
 	/**
-		@brief		Fps —]—T“x‚ğ‘ª’è‚·‚é‚©‚ğİ’è‚µ‚Ü‚·B‰Šú’l‚Í false ‚Å‚·B
+		@brief		Fps ä½™è£•åº¦ã‚’æ¸¬å®šã™ã‚‹ã‹ã‚’è¨­å®šã—ã¾ã™ã€‚åˆæœŸå€¤ã¯ false ã§ã™ã€‚
 	*/
 	void SetEnableFpsTest(bool enabled) { m_enableFpsTest = enabled; }
 
 	/**
-		@brief		ƒtƒŒ[ƒ€ƒŒ[ƒg•ª‚ÌƒtƒŒ[ƒ€‚ªŒo‰ß‚µ‚½uŠÔ‚ğ”»’è‚µ‚Ü‚·B
-		@details	ƒtƒŒ[ƒ€ƒŒ[ƒg‚ª 60 ‚Å‚ ‚ê‚ÎA60 ƒtƒŒ[ƒ€‚É 1 “x‚ÌŠÔ true ‚ğ•Ô‚µ‚Ü‚·B
+		@brief		ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆåˆ†ã®ãƒ•ãƒ¬ãƒ¼ãƒ ãŒçµŒéã—ãŸç¬é–“ã‚’åˆ¤å®šã—ã¾ã™ã€‚
+		@details	ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆãŒ 60 ã§ã‚ã‚Œã°ã€60 ãƒ•ãƒ¬ãƒ¼ãƒ ã« 1 åº¦ã®é–“ true ã‚’è¿”ã—ã¾ã™ã€‚
 	*/
 	bool IsRoundFrame() const { return (m_frameCount == 0); }
 
 	/**
-		@brief		’x‰„‚ª”­¶‚µ‚Ä‚¢‚é‚©‚ğŠm”F‚µ‚Ü‚·B
-		@details	‚±‚ÌŠÖ”‚ª true ‚ğ•Ô‚µ‚½ê‡A‘O‰ñ‚ÌƒtƒŒ[ƒ€‚Í ƒtƒŒ[ƒ€ƒŒ[ƒgˆÈ“à‚ÌŠÔ‚Å
-					Š®—¹‚µ‚È‚©‚Á‚½‚±‚Æ‚ğ•\‚µ‚Ü‚·B
+		@brief		é…å»¶ãŒç™ºç”Ÿã—ã¦ã„ã‚‹ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚
+		@details	ã“ã®é–¢æ•°ãŒ true ã‚’è¿”ã—ãŸå ´åˆã€å‰å›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã¯ ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆä»¥å†…ã®æ™‚é–“ã§
+					å®Œäº†ã—ãªã‹ã£ãŸã“ã¨ã‚’è¡¨ã—ã¾ã™ã€‚
 	*/
 	bool IsFrameDelay() const { return (m_term <= 0); }
 
 	/**
-		@brief		’x‰„‚ğƒŠƒZƒbƒg‚µ‚Ü‚·B
-		@details	ƒŠƒ\[ƒX‚Ìƒ[ƒh“™‚ÅŠÔ‚ª‚©‚©‚è’·‚¢ŠÔXVˆ—‚ªs‚í‚ê‚È‚©‚Á‚½ê‡A
-					–{—ˆ‚ ‚é‚×‚«ŠÔ‚É’Ç‚¢‚Â‚±‚¤‚Æ‚µ‚Ä‚µ‚Î‚ç‚­‚ÌŠÔƒm[ƒEƒFƒCƒg‚ÅƒtƒŒ[ƒ€XV‚ªs‚í‚ê‚Ü‚·B
-					‚»‚ÌŠÔ‚ÍƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª”ñí‚É‚‘¬‚É“®ì‚µ‚Ä‚¢‚é‚æ‚¤‚ÉŒ©‚¦‚Ä‚µ‚Ü‚µ‚Ü‚·B
-					‚±‚ê‚ğ‰ñ”ğ‚·‚é‚½‚ßAŠÔ‚Ì‚©‚©‚éˆ—‚Ì’¼Œã‚Å‚±‚ÌŠÖ”‚ğŒÄ‚Ô‚±‚Æ‚ÅAFPS §Œä‚É’x‰„‚ª”­¶‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚ğ“`‚¦‚Ü‚·B
+		@brief		é…å»¶ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¾ã™ã€‚
+		@details	ãƒªã‚½ãƒ¼ã‚¹ã®ãƒ­ãƒ¼ãƒ‰ç­‰ã§æ™‚é–“ãŒã‹ã‹ã‚Šé•·ã„æ™‚é–“æ›´æ–°å‡¦ç†ãŒè¡Œã‚ã‚Œãªã‹ã£ãŸå ´åˆã€
+					æœ¬æ¥ã‚ã‚‹ã¹ãæ™‚é–“ã«è¿½ã„ã¤ã“ã†ã¨ã—ã¦ã—ã°ã‚‰ãã®é–“ãƒãƒ¼ã‚¦ã‚§ã‚¤ãƒˆã§ãƒ•ãƒ¬ãƒ¼ãƒ æ›´æ–°ãŒè¡Œã‚ã‚Œã¾ã™ã€‚
+					ãã®é–“ã¯ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒéå¸¸ã«é«˜é€Ÿã«å‹•ä½œã—ã¦ã„ã‚‹ã‚ˆã†ã«è¦‹ãˆã¦ã—ã¾ã—ã¾ã™ã€‚
+					ã“ã‚Œã‚’å›é¿ã™ã‚‹ãŸã‚ã€æ™‚é–“ã®ã‹ã‹ã‚‹å‡¦ç†ã®ç›´å¾Œã§ã“ã®é–¢æ•°ã‚’å‘¼ã¶ã“ã¨ã§ã€FPS åˆ¶å¾¡ã«é…å»¶ãŒç™ºç”Ÿã—ã¦ã„ãªã„ã“ã¨ã‚’ä¼ãˆã¾ã™ã€‚
 	*/
 	void RefreshSystemDelay();
 
 private:	// internal
 	friend class Application;
 	void Process();
-    void ProcessForMeasure();	// ƒEƒFƒCƒg‚Íæ‚ç‚¸A‘ª’è‚Ì‚İs‚¤ (ƒc[ƒ‹—p)
+    void ProcessForMeasure();	// ã‚¦ã‚§ã‚¤ãƒˆã¯å–ã‚‰ãšã€æ¸¬å®šã®ã¿è¡Œã† (ãƒ„ãƒ¼ãƒ«ç”¨)
 
 private:
-	int			m_frameRate;		///< ƒtƒŒ[ƒ€ƒŒ[ƒg
-	float		m_frameRateRec;		///< ƒtƒŒ[ƒ€ƒŒ[ƒg‚Ì‹t”
-	float		m_fps;				///< Œ»İ‚Ì FPS ’l
+	int			m_frameRate;		///< ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆ
+	float		m_frameRateRec;		///< ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®é€†æ•°
+	float		m_fps;				///< ç¾åœ¨ã® FPS å€¤
     
-	float		m_currentTime;		///< Œ»İ‚ÌŠÔ ( ƒVƒXƒeƒ€‹N“®‚©‚ç‚ÌŠÔ )
-	float		m_averageTime;		///< 1 ƒtƒŒ[ƒ€‚Ì•½‹ÏŠÔ
+	float		m_currentTime;		///< ç¾åœ¨ã®æ™‚é–“ ( ã‚·ã‚¹ãƒ†ãƒ èµ·å‹•ã‹ã‚‰ã®æ™‚é–“ )
+	float		m_averageTime;		///< 1 ãƒ•ãƒ¬ãƒ¼ãƒ ã®å¹³å‡æ™‚é–“
 
-	int		    m_frameCount;		///< fps Œv‘ª—p‚ÌŒo‰ßƒtƒŒ[ƒ€” ( 60fps‚É‚·‚éê‡‚Í0`60‚Åƒ‹[ƒv )
-	float		m_term;				///< wait() “à‚Åg‚¤‘Ò‚¿ŠÔ
-	float		m_lastTime;			///< 1 ü‘O‚ÌŠÔ‚ğ‹L‰¯‚·‚é•Ï”
-	float		m_baseTime;			///< 1 •b‚É‚Éˆê“x‚Â‚­‚ç‚ê‚éŠî€ŠÔ
-	float*		m_frameTimes;		///< ŠeƒtƒŒ[ƒ€‚ÌŠÔ‚ğŠi”[‚·‚é”z—ñ ( •½‹Ï‚ÌŒvZ‚Ég‚¤ )
+	int		    m_frameCount;		///< fps è¨ˆæ¸¬ç”¨ã®çµŒéãƒ•ãƒ¬ãƒ¼ãƒ æ•° ( 60fpsã«ã™ã‚‹å ´åˆã¯0ï½60ã§ãƒ«ãƒ¼ãƒ— )
+	float		m_term;				///< wait() å†…ã§ä½¿ã†å¾…ã¡æ™‚é–“
+	float		m_lastTime;			///< 1 å‘¨å‰ã®æ™‚é–“ã‚’è¨˜æ†¶ã™ã‚‹å¤‰æ•°
+	float		m_baseTime;			///< 1 ç§’ã«ã«ä¸€åº¦ã¤ãã‚‰ã‚Œã‚‹åŸºæº–æ™‚é–“
+	float*		m_frameTimes;		///< å„ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ™‚é–“ã‚’æ ¼ç´ã™ã‚‹é…åˆ— ( å¹³å‡ã®è¨ˆç®—ã«ä½¿ã† )
 
-    float		m_elapsedGameTime;	///< ‚Ğ‚Æ‚Â‘O‚ÌƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßƒQ[ƒ€ŠÔ
-    float		m_lastRealTime;		///< ‚Ğ‚Æ‚Â‘O‚ÌƒtƒŒ[ƒ€‚ÌÀŠÔ
-    float		m_elapsedRealTime;	///< ‚Ğ‚Æ‚Â‘O‚ÌƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßÀŠÔ
+    float		m_elapsedGameTime;	///< ã²ã¨ã¤å‰ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéã‚²ãƒ¼ãƒ æ™‚é–“
+    float		m_lastRealTime;		///< ã²ã¨ã¤å‰ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®å®Ÿæ™‚é–“
+    float		m_elapsedRealTime;	///< ã²ã¨ã¤å‰ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéå®Ÿæ™‚é–“
 
-    uint64_t	m_startTime;		///< ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åİ’è‚µ‚½ƒXƒ^[ƒgŠÔ
-    uint64_t	m_totalGameTime;	///< Œo‰ßƒQ[ƒ€ŠÔ‚Ì‡Œv
-    uint64_t	m_totalRealTime;	///< Œo‰ßÀŠÔ‚Ì‡Œv
+    uint64_t	m_startTime;		///< ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§è¨­å®šã—ãŸã‚¹ã‚¿ãƒ¼ãƒˆæ™‚é–“
+    uint64_t	m_totalGameTime;	///< çµŒéã‚²ãƒ¼ãƒ æ™‚é–“ã®åˆè¨ˆ
+    uint64_t	m_totalRealTime;	///< çµŒéå®Ÿæ™‚é–“ã®åˆè¨ˆ
 
     float		m_capacityFps;
     float		m_capaFpsLastTime;
-    float*		m_capaFrameTimes;	///< ŠeƒtƒŒ[ƒ€‚ÌŠÔ‚ğŠi”[‚·‚é”z—ñ ( •½‹Ï‚ÌŒvZ‚Ég‚¤ )
+    float*		m_capaFrameTimes;	///< å„ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ™‚é–“ã‚’æ ¼ç´ã™ã‚‹é…åˆ— ( å¹³å‡ã®è¨ˆç®—ã«ä½¿ã† )
     float		m_capaAverageTime;
 
-    bool		m_enableFpsTest;		///< true ‚Ìê‡AFPS ƒeƒXƒg‚ğs‚¤
+    bool		m_enableFpsTest;		///< true ã®å ´åˆã€FPS ãƒ†ã‚¹ãƒˆã‚’è¡Œã†
 };
 
 } // namespace Lumino

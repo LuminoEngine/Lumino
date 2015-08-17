@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/GUI/VisualState.h>
 
@@ -7,14 +7,14 @@ namespace Lumino
 namespace GUI
 {
 
-/// ƒf[ƒ^ƒNƒ‰ƒX‚Å‚ ‚é VisualStateManagerAVisualStateGroupAVisualState ‚É‘Î‚·‚éŒÂ•Ê‚Ì UIElement ‚ªŠÇ—‚·‚éî•ñB
+/// ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹ã§ã‚ã‚‹ VisualStateManagerã€VisualStateGroupã€VisualState ã«å¯¾ã™ã‚‹å€‹åˆ¥ã® UIElement ãŒç®¡ç†ã™ã‚‹æƒ…å ±ã€‚
 class VisualStateInstance
 {
 public:
 	VisualStateInstance() {}
 	~VisualStateInstance() {}
 
-	/// VisualStateManager ‚ğ•ÏX‚·‚é
+	/// VisualStateManager ã‚’å¤‰æ›´ã™ã‚‹
 	void SetVisualStateManager(VisualStateManager* manager);
 
 private:

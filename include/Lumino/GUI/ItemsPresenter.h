@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 #include "Controls/Panel.h"
@@ -9,7 +9,7 @@ namespace GUI
 {
 	
 /**
-	@brief	ItemsControl ‚ÌƒRƒ“ƒeƒ“ƒc‚ğ•\¦‚µ‚Ü‚·B
+	@brief	ItemsControl ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’è¡¨ç¤ºã—ã¾ã™ã€‚
 */
 class ItemsPresenter
 	: public UIElement
@@ -30,7 +30,7 @@ public:	// internal
 protected:
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ItemsPresenter ‚Í˜_—“I‚Èq—v‘f‚Ì”z’uæ‚ğƒ}[ƒN‚·‚éƒƒ^ƒf[ƒ^‚Ì‚æ‚¤‚È‚à‚Ì‚È‚Ì‚ÅAq—v‘f‚Í‚½‚È‚¢B
+	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ItemsPresenter ã¯è«–ç†çš„ãªå­è¦ç´ ã®é…ç½®å…ˆã‚’ãƒãƒ¼ã‚¯ã™ã‚‹ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿ã®ã‚ˆã†ãªã‚‚ã®ãªã®ã§ã€å­è¦ç´ ã¯æŒãŸãªã„ã€‚
 	
 private:
 	RefPtr<Panel>	m_hostPanel;

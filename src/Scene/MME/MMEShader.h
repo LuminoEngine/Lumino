@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../Common.h"
@@ -17,41 +17,41 @@ class MMEShader
 	: public RefObject
 {
 public:
-	static const int MaxAffectLights = 4;	///< ‰e‹¿‚ðŽó‚¯‚éƒ‰ƒCƒg‚ÌÅ‘å” (MMM ‚Í 3)
+	static const int MaxAffectLights = 4;	///< å½±éŸ¿ã‚’å—ã‘ã‚‹ãƒ©ã‚¤ãƒˆã®æœ€å¤§æ•° (MMM ã¯ 3)
 
-	/// ì¬
+	/// ä½œæˆ
 	static MMEShader* Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager);
 
 public:
 
-	/// Graphics::Shader ‚ÌŽæ“¾
+	/// Graphics::Shader ã®å–å¾—
 	Graphics::Shader* GetCoreShader() const { return m_coreShader; }
 
-	/// Ý’è‚·‚é•K—v‚ª‚ ‚éƒ‰ƒCƒg‚Ì”‚ÌŽæ“¾
+	/// è¨­å®šã™ã‚‹å¿…è¦ãŒã‚ã‚‹ãƒ©ã‚¤ãƒˆã®æ•°ã®å–å¾—
 	int GetRequiredLightCount() const { return m_requiredLightCount; }
 
-	/// Scene ’PˆÊ‚Å•K—v‚Èƒpƒ‰ƒ[ƒ^‚ðÝ’è‚·‚é
+	/// Scene å˜ä½ã§å¿…è¦ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹
 	void UpdateSceneParams(const MMESceneParams& params, SceneGraphManager* scene);
 
-	/// Camera ’PˆÊ‚Å•K—v‚Èƒpƒ‰ƒ[ƒ^‚ðÝ’è‚·‚é
+	/// Camera å˜ä½ã§å¿…è¦ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹
 	void UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize);
 
-	/// Node ’PˆÊ‚Å•K—v‚Èƒpƒ‰ƒ[ƒ^‚ðÝ’è‚·‚é
+	/// Node å˜ä½ã§å¿…è¦ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹
 	void UpdateNodeParams(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList);
 
-	/// Subset ’PˆÊ‚Å•K—v‚Èƒpƒ‰ƒ[ƒ^‚ðÝ’è‚·‚é
+	/// Subset å˜ä½ã§å¿…è¦ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹
 	void UpdateSubsetParams(const VisualNodeSubsetParams& params);
 
-	/// CONTROLLOBJECT Ý’è (obj ‚Í NULL ‰Â”\B‘¶Ý‚µ‚È‚¯‚ê‚Î bool Œ^•Ï”‚É false ‚ðÝ’è‚·‚é‚½‚ß)
+	/// CONTROLLOBJECT è¨­å®š (obj ã¯ NULL å¯èƒ½ã€‚å­˜åœ¨ã—ãªã‘ã‚Œã° bool åž‹å¤‰æ•°ã« false ã‚’è¨­å®šã™ã‚‹ãŸã‚)
 	static void SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObject* obj);
 
-	/// WORLDAVIEWAPROJECTIONAWORLDVIEWAVIEWPROJECTIONAWORLDVIEWPROJECTION
-	// ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒhs—ñ‚ÆAƒJƒƒ‰‚Ü‚½‚Íƒ‰ƒCƒg‚Ìƒrƒ…[EƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ð‹‚ß‚éB
-	// outMatrix ‚É’l‚ðŠi”[‚µ‚½ê‡‚Í true ‚ð•Ô‚·B
-	// node ‚ÌŒ‹‡Ï‚ÝƒOƒ[ƒoƒ‹s—ñ‚ðì¬‚µ‚½Œã‚ÅŒÄ‚Ño‚·‚±‚ÆB
+	/// WORLDã€VIEWã€PROJECTIONã€WORLDVIEWã€VIEWPROJECTIONã€WORLDVIEWPROJECTION
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã¨ã€ã‚«ãƒ¡ãƒ©ã¾ãŸã¯ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼ãƒ»ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹ã€‚
+	// outMatrix ã«å€¤ã‚’æ ¼ç´ã—ãŸå ´åˆã¯ true ã‚’è¿”ã™ã€‚
+	// node ã®çµåˆæ¸ˆã¿ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—ã‚’ä½œæˆã—ãŸå¾Œã§å‘¼ã³å‡ºã™ã“ã¨ã€‚
 	static bool GetGeometryTransform(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList, MMEVariableRequest req, int lightIndex, Matrix* outMatrix);
 
-	/// Žw’è‚µ‚½ƒpƒX‚Éˆê’v‚·‚éƒeƒNƒjƒbƒN‚ðŒŸõ‚·‚é
+	/// æŒ‡å®šã—ãŸãƒ‘ã‚¹ã«ä¸€è‡´ã™ã‚‹ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã‚’æ¤œç´¢ã™ã‚‹
 	MMEShaderTechnique* FindTechnique(MMDPass mmdPass, bool UseTexture, bool UseSphereMap, bool UseToon, bool UseSelfShadow, int subsetIndex);
 
 
@@ -64,16 +64,16 @@ private:
 
 	SceneGraphManager*		m_manager;
 
-	// ˆÈ‰ºAMMEShaderBuilder@‚©‚ç’¼ÚƒZƒbƒg‚³‚ê‚éƒf[ƒ^
+	// ä»¥ä¸‹ã€MMEShaderBuilderã€€ã‹ã‚‰ç›´æŽ¥ã‚»ãƒƒãƒˆã•ã‚Œã‚‹ãƒ‡ãƒ¼ã‚¿
 	friend class MMEShaderBuilder;
 	RefPtr<Graphics::Shader>	m_coreShader;
 	MMEScriptOutput				m_mmeScriptOutput;
 	MMEScriptClass				m_mmeScriptClass;
 	MMEScriptOrder				m_mmeScriptOrder;
 	MMEShaderVariableList		m_mmeShaderVariableList;
-	MMEShaderVariableList		m_controlObjectVariables;	///< "CONTROLOBJECT" ‚ð—v‹‚µ‚Ä‚¢‚é•Ï”ƒŠƒXƒg
-	uint32_t					m_worldMatrixCalcMask;		///< MMEWorldMatrixCalcFlags ‚Ì‘g‚Ý‡‚í‚¹ (‚à‚µ‚©‚µ‚½‚çŽg‚í‚È‚¢‚©‚à)
-	int							m_requiredLightCount;		///< ‚±‚ÌƒVƒF[ƒ_‚ª•K—v‚Æ‚µ‚Ä‚¢‚éƒ‰ƒCƒg‚Ì” (ƒ‰ƒCƒg‚ð—v‹‚·‚é•Ï”‚Ì‚¤‚¿Aˆê”Ô‘½‚¢—v‘f”)
+	MMEShaderVariableList		m_controlObjectVariables;	///< "CONTROLOBJECT" ã‚’è¦æ±‚ã—ã¦ã„ã‚‹å¤‰æ•°ãƒªã‚¹ãƒˆ
+	uint32_t					m_worldMatrixCalcMask;		///< MMEWorldMatrixCalcFlags ã®çµ„ã¿åˆã‚ã› (ã‚‚ã—ã‹ã—ãŸã‚‰ä½¿ã‚ãªã„ã‹ã‚‚)
+	int							m_requiredLightCount;		///< ã“ã®ã‚·ã‚§ãƒ¼ãƒ€ãŒå¿…è¦ã¨ã—ã¦ã„ã‚‹ãƒ©ã‚¤ãƒˆã®æ•° (ãƒ©ã‚¤ãƒˆã‚’è¦æ±‚ã™ã‚‹å¤‰æ•°ã®ã†ã¡ã€ä¸€ç•ªå¤šã„è¦ç´ æ•°)
 	MMEShaderTechniqueList		m_mmeShaderTechniqueList;
 };
 

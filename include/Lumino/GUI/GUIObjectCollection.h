@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../CoreObjectList.h"
 #include "UIElement.h"
@@ -22,10 +22,10 @@ public:
 	virtual ~GUIObjectList() {}
 
 public:
-	///// w’èƒCƒ“ƒfƒbƒNƒX‚É—v‘f‚ğŠi”[‚·‚é
+	///// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«è¦ç´ ã‚’æ ¼ç´ã™ã‚‹
 	//void SetAt(int index, TObject* item) { SetAtBase(index, item); }
 
-	///// w’èƒCƒ“ƒfƒbƒNƒX‚Ì—v‘f‚ğæ“¾‚·‚é
+	///// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¦ç´ ã‚’å–å¾—ã™ã‚‹
 	//TObject* GetAt(int index) const { return static_cast<TObject*>(m_list.GetAt(index)); }
 
 public:

@@ -1,5 +1,5 @@
-/*
-	“®“I’¸“_ƒoƒbƒtƒ@‚ÌNoOverwrite‚ÆDiscard
+ï»¿/*
+	å‹•çš„é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®NoOverwriteã¨Discard
 	http://blogs.msdn.com/b/ito/archive/2011/05/22/no-overwrite-or-discard.aspx
 */
 #include "Internal.h"
@@ -153,13 +153,13 @@ GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
 	m_renderer = device->GetRenderer();
 
 	//-----------------------------------------------------
-	// Še•`‰æƒIƒuƒWƒFƒNƒg—p‚Ì’¸“_ƒoƒbƒtƒ@
+	// å„æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”¨ã®é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 
 	m_vertexBuffer.Attach(m_device->CreateVertexBuffer(Vertex::GetLayout(), 3, 256, NULL, DeviceResourceUsage_Dynamic), false);
 	m_indexBuffer.Attach(m_device->CreateIndexBuffer(256, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic), false);
 
 	//-----------------------------------------------------
-	// ƒVƒF[ƒ_
+	// ã‚·ã‚§ãƒ¼ãƒ€
 	const unsigned char code[] =
 	{
 		#include "Resource/GeometryRenderer.fx.h"
@@ -169,7 +169,7 @@ GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
 	ShaderCompileResult result;
 	m_shaderParam.Shader.Attach(m_device->CreateShader(code, codeLen, &result), false);
 	if (result.Level != ShaderCompileResultLevel_Success) {
-		printf(result.Message);	// TODO:‰¼
+		printf(result.Message);	// TODO:ä»®
 	}
 
 	m_shaderParam.varWorldMatrix	= m_shaderParam.Shader->GetVariableByName(_T("g_worldMatrix"));
@@ -179,7 +179,7 @@ GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
 	m_shaderParam.passP0			= m_shaderParam.techMainDraw->GetPass(0);
 
 	//-----------------------------------------------------
-	// ƒ_ƒ~[ƒeƒNƒXƒ`ƒƒ
+	// ãƒ€ãƒŸãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
 	m_dummyTexture.Attach(m_device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
 	Device::IGraphicsDevice::ScopedLockContext lock(m_device);
@@ -188,7 +188,7 @@ GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
 	m_dummyTexture->Unlock();
 
 	//-----------------------------------------------------
-	// ƒfƒtƒHƒ‹ƒg’l
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 
 	SetTransform(Matrix::Identity);
 	SetViewProjTransform(Matrix::Identity);

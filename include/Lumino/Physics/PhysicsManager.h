@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../MultiThreadingObjectList.h"
 #include "Common.h"
@@ -10,7 +10,7 @@ namespace Physics
 {
 
 
-/// PhysicsManager ‚ÌÀ‘•ƒNƒ‰ƒX
+/// PhysicsManager ã®å®Ÿè£…ã‚¯ãƒ©ã‚¹
 class PhysicsManager
 	: public RefObject
 {
@@ -22,10 +22,10 @@ public:
 
 	void Finalize();
 
-	/// ”ñ“¯ŠúƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ÌÀsó‘Ô‚Ìæ“¾
+	/// éåŒæœŸã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®å®Ÿè¡ŒçŠ¶æ…‹ã®å–å¾—
 	ASyncSimulationState GetASyncSimulationState() const { return m_asyncSimulationState; }
 
-	/// StepSimulation() ‚Ì‘Oˆ—BƒƒCƒ“ƒXƒŒƒbƒh‚ÅŒÄ‚Ño‚·‚±‚ÆB•¨—XVƒXƒŒƒbƒh‚ªÀs’†‚Å‚ ‚ê‚Î‘Ò‹@‚·‚é‚Ü‚Å‘Ò‚ÂB
+	/// StepSimulation() ã®å‰å‡¦ç†ã€‚ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã§å‘¼ã³å‡ºã™ã“ã¨ã€‚ç‰©ç†æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ãŒå®Ÿè¡Œä¸­ã§ã‚ã‚Œã°å¾…æ©Ÿã™ã‚‹ã¾ã§å¾…ã¤ã€‚
 	void SyncBeforeStepSimulation();
 
 	/// 
@@ -35,7 +35,7 @@ public:
 
 public:	// internal
 
-	/// ƒƒCƒ“ƒXƒŒƒbƒhA‚Ü‚½‚Í•¨—‰‰ZƒXƒŒƒbƒh‚©‚çŒÄ‚Î‚ê‚éB
+	/// ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã€ã¾ãŸã¯ç‰©ç†æ¼”ç®—ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚
 	void StepSimulationInternal();
 
 	btDiscreteDynamicsWorld* GetBtWorld() { return m_btWorld; }
@@ -45,9 +45,9 @@ public:	// internal
 
 private:
 
-	// ‚»‚ê‚¼‚êƒ[ƒ‹ƒh‚Ö‚Ì’Ç‰Áƒƒ\ƒbƒh‚ªˆá‚¤‚Ì‚Å•ª‚¯‚Ä‚¨‚­
+	// ãã‚Œãã‚Œãƒ¯ãƒ¼ãƒ«ãƒ‰ã¸ã®è¿½åŠ ãƒ¡ã‚½ãƒƒãƒ‰ãŒé•ã†ã®ã§åˆ†ã‘ã¦ãŠã
 	//typedef MultiThreadingRefObjectList<CollisionBody*>	CollisionBodyList;
-	typedef MultiThreadingRefObjectList<RigidBody*>		RigidBodyList;		// ƒ\ƒtƒgƒ{ƒfƒB‚Æ‚Íƒ[ƒ‹ƒh‚Ö‚Ì’Ç‰Á•û–@‚àˆá‚¤‚Ì‚Å•ª‚¯‚Ä‚¨‚­
+	typedef MultiThreadingRefObjectList<RigidBody*>		RigidBodyList;		// ã‚½ãƒ•ãƒˆãƒœãƒ‡ã‚£ã¨ã¯ãƒ¯ãƒ¼ãƒ«ãƒ‰ã¸ã®è¿½åŠ æ–¹æ³•ã‚‚é•ã†ã®ã§åˆ†ã‘ã¦ãŠã
 	typedef MultiThreadingRefObjectList<Joint*>			JointList;
 
 	SimulationType	m_simulationType;

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Array.h>
 
@@ -20,30 +20,30 @@ typedef ArrayList<RenderingPass*>	RenderingPassList;
 typedef ArrayList<Light*>			LightNodeList;
 typedef ArrayList<SceneNode*>		SceneNodeList;
 
-/// ƒm[ƒhí•Ê
+/// ãƒãƒ¼ãƒ‰ç¨®åˆ¥
 enum SceneNodeType
 {
 	SceneNodeType_BaseNode = 0,
 	SceneNodeType_VisualNode,
 };
 
-/// ƒrƒ‹ƒ{[ƒh‚ÌŒvZ•û–@
+/// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—æ–¹æ³•
 enum BillboardType
 {
-	BillboardType_None = 0,		///< ƒrƒ‹ƒ{[ƒh‚ÌŒvZ‚ğs‚í‚È‚¢
-	BillboardType_Front,		///< ƒJƒƒ‰ (ƒrƒ…[s—ñ) ‚É‘Î‚µ‚Ä³–Ê‚ğŒü‚­
-	BillboardType_RotY,			///< Y ²‰ñ“]‚Ì‚İs‚¤
+	BillboardType_None = 0,		///< ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—ã‚’è¡Œã‚ãªã„
+	BillboardType_Front,		///< ã‚«ãƒ¡ãƒ© (ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—) ã«å¯¾ã—ã¦æ­£é¢ã‚’å‘ã
+	BillboardType_RotY,			///< Y è»¸å›è»¢ã®ã¿è¡Œã†
 
 	BillboardType_Max,			///< (Terminator)
 };
 
-/// ”½“]•û–@
+/// åè»¢æ–¹æ³•
 enum FlipMode
 {
-	FlipMode_None = 0,		///< ”½“]–³‚µ
-	FlipMode_H,				///< ¶‰E”½“]
-	FlipMode_V,				///< ã‰º”½“]
-	FlipMode_HV,			///< ¶‰Eã‰º”½“]
+	FlipMode_None = 0,		///< åè»¢ç„¡ã—
+	FlipMode_H,				///< å·¦å³åè»¢
+	FlipMode_V,				///< ä¸Šä¸‹åè»¢
+	FlipMode_HV,			///< å·¦å³ä¸Šä¸‹åè»¢
 };
 
 } // namespace Scene

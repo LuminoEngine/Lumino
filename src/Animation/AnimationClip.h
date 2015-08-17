@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "AnimationCurve.h"
@@ -26,33 +26,33 @@ public:
 
 public:
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv–¼‚Ìİ’è
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—åã®è¨­å®š
 	void SetName(const String& name) { m_name = name; }
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv–¼æ“¾
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—åå–å¾—
 	const String& GetName() const { return m_name; }
 
-	/// I’[ƒtƒŒ[ƒ€‚ÌŠÔ
+	/// çµ‚ç«¯ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ™‚é–“
 	double GetLastFrameTime() { return m_lastFrameTime; }
 
-	/// ƒfƒtƒHƒ‹ƒg‚ÌÄ¶•û–@‚Ìİ’è
+	/// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å†ç”Ÿæ–¹æ³•ã®è¨­å®š
 	void SetDefaultWrapMode(WrapMode mode) { m_defaultrapMode = mode; }
 
-	/// ƒfƒtƒHƒ‹ƒg‚ÌÄ¶•û–@‚Ìæ“¾
+	/// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å†ç”Ÿæ–¹æ³•ã®å–å¾—
 	WrapMode GetDefaultWrapMode() { return m_defaultrapMode; }
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì’Ç‰Á (3Dƒ‚ƒfƒ‹ƒ‚[ƒVƒ‡ƒ“‚Å‚ ‚ê‚ÎAƒ{[ƒ“–¼, SQTTransformAnimation)
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®è¿½åŠ  (3Dãƒ¢ãƒ‡ãƒ«ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã§ã‚ã‚Œã°ã€ãƒœãƒ¼ãƒ³å, SQTTransformAnimation)
 	void AddAnimationCurve(const String& relativePath, AnimationCurve* curve);
 
-	/// ŠÔ‚ğİ’è‚µAŠe AnimationCurve ‚Ì•âŠÔ’l‚ğŒvZ‚·‚é
+	/// æ™‚é–“ã‚’è¨­å®šã—ã€å„ AnimationCurve ã®è£œé–“å€¤ã‚’è¨ˆç®—ã™ã‚‹
 	//void SetTime(double oldTime, double newTime);
 
-	/// AnimationCurve ‚Æ‚»‚ÌŠ„‚è“–‚ÄæƒpƒX–¼‚ÌƒŠƒXƒg
+	/// AnimationCurve ã¨ãã®å‰²ã‚Šå½“ã¦å…ˆãƒ‘ã‚¹åã®ãƒªã‚¹ãƒˆ
 	const AnimationCurveEntryList& GetAnimationCurveEntryList() const { return m_animationCurveEntryList; }
 
 private:
 	String						m_name;
-	double						m_lastFrameTime;	///< Get ‚Ì‚½‚Ñ‚ÉŒvZ‚·‚é‚ÆŠÔ‚©‚©‚é‚Ì‚Å—\‚ßŒvZ‚µ‚Ä‚Á‚Ä‚¨‚­
+	double						m_lastFrameTime;	///< Get ã®ãŸã³ã«è¨ˆç®—ã™ã‚‹ã¨æ™‚é–“ã‹ã‹ã‚‹ã®ã§äºˆã‚è¨ˆç®—ã—ã¦æŒã£ã¦ãŠã
 	WrapMode					m_defaultrapMode;
 	AnimationCurveEntryList		m_animationCurveEntryList;
 };

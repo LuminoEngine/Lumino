@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Sprite.h"
@@ -81,7 +81,7 @@ void Sprite::UpdateTexUV()
 	Graphics::Texture* tex = GetTexture();
 	if (tex)
 	{
-		// “]‘—Œ³‹éŒ`‚ª•‰’l‚È‚çƒeƒNƒXƒ`ƒƒ‘S‘Ì‚ğ“]‘—‚·‚é
+		// è»¢é€å…ƒçŸ©å½¢ãŒè² å€¤ãªã‚‰ãƒ†ã‚¯ã‚¹ãƒãƒ£å…¨ä½“ã‚’è»¢é€ã™ã‚‹
 		if (m_srcRect.Width < 0 && m_srcRect.Height < 0)
 		{
 			Rect srcRect(0, 0, tex->GetSize().Width, tex->GetSize().Height);
@@ -94,7 +94,7 @@ void Sprite::UpdateTexUV()
 			float l, t, r, b;
 			NormalizeSrcRect(m_srcRect, tex->GetRealSize(), &l, &t, &r, &b);
 
-			// ‚’¼”½“]
+			// å‚ç›´åè»¢
 			if (m_flipMode == FlipMode_V || m_flipMode == FlipMode_HV)
 			{
 				m_upperLeftUV.Y = b;
@@ -105,7 +105,7 @@ void Sprite::UpdateTexUV()
 				m_upperLeftUV.Y = t;
 				m_lowerRightUV.Y = b;
 			}
-			// …•½”½“]
+			// æ°´å¹³åè»¢
 			if (m_flipMode == FlipMode_H || m_flipMode == FlipMode_HV)
 			{
 				m_upperLeftUV.X = r;
@@ -132,9 +132,9 @@ void Sprite::UpdateTexUV()
 //-----------------------------------------------------------------------------
 void Sprite::UpdateVertexData()
 {
-	// ƒTƒCƒY‚ª•‰’l     ¨ “]‘—‹éŒ`‚ğg‚¤
-	// “]‘—‹éŒ`‚ª•‰’l   ¨ ƒeƒNƒXƒ`ƒƒƒTƒCƒY‚ğg‚¤
-	// ƒeƒNƒXƒ`ƒƒ‚ª–³‚¢ ¨ ƒTƒCƒY 0,0
+	// ã‚µã‚¤ã‚ºãŒè² å€¤     â†’ è»¢é€çŸ©å½¢ã‚’ä½¿ã†
+	// è»¢é€çŸ©å½¢ãŒè² å€¤   â†’ ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºã‚’ä½¿ã†
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒç„¡ã„ â†’ ã‚µã‚¤ã‚º 0,0
 	Vector2 realSize(m_size.Width, m_size.Height);
 	if (m_size.Width < 0.0 && m_size.Height < 0.0)
 	{
@@ -152,7 +152,7 @@ void Sprite::UpdateVertexData()
 		}
 	}
 
-	// 2D ‹óŠÔ—pƒXƒvƒ‰ƒCƒg
+	// 2D ç©ºé–“ç”¨ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	if (m_spriteCoord == SpriteCoord_2D)
 	{
 		float r = realSize.X;
@@ -162,7 +162,7 @@ void Sprite::UpdateVertexData()
 		m_upperLeft.Set(l, t, 0);
 		m_lowerRight.Set(r, b, 0);
 	}
-	// 3D ‹óŠÔ—pƒXƒvƒ‰ƒCƒg
+	// 3D ç©ºé–“ç”¨ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	else
 	{
 		float r = realSize.X * 0.5f;  // +

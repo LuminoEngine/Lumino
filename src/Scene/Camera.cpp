@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "Camera.h"
 
@@ -30,7 +30,7 @@ Camera::~Camera()
 {
 }
 
-/// ƒsƒNƒZƒ‹’PˆÊ‚Ì2D•`‰æ‚Ég‚¤Ë‰es—ñ‚Ìì¬
+/// ãƒ”ã‚¯ã‚»ãƒ«å˜ä½ã®2Dæç”»ã«ä½¿ã†å°„å½±è¡Œåˆ—ã®ä½œæˆ
 static void Perspective2DLH(float width, float height, float nearClip, float farClip, Matrix* outMatrix)
 {
 	outMatrix->Set(
@@ -45,10 +45,10 @@ static void Perspective2DLH(float width, float height, float nearClip, float far
 //-----------------------------------------------------------------------------
 void Camera::UpdateMatrices(const SizeF& viewSize)
 {
-	// 2D ƒ‚[ƒh
+	// 2D ãƒ¢ãƒ¼ãƒ‰
 	if (m_projectionMode == CameraProjection_2D)
 	{
-		// ³–Ê•ûŒü
+		// æ­£é¢æ–¹å‘
 		Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
 		m_direction = Vector4(direction, 0.0f);
 
@@ -56,24 +56,24 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 		Perspective2DLH(viewSize.Width, viewSize.Height, m_nearClip, m_farClip, &m_projMatrix);
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 	}
-	// 3D ƒ‚[ƒh
+	// 3D ãƒ¢ãƒ¼ãƒ‰
 	else
 	{
-		// ’‹“_
+		// æ³¨è¦–ç‚¹
 		Vector3 lookAt = Vector3::TransformCoord(Vector3(0, 0, 1), m_combinedGlobalMatrix);
 
-		// ƒrƒ…[s—ñ
+		// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
 		Vector3 up = Vector3(0, 1, 0);
 		m_viewMatrix = Matrix::LookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, up);
 
-		// ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÌXV
-		// TODO: ‹–ìŠp‚Ænear,far
+		// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®æ›´æ–°
+		// TODO: è¦–é‡è§’ã¨near,far
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
 		m_projMatrix = Matrix::PerspectiveFovLH(Math::PI / 4.0f, viewSize.Width / viewSize.Height, m_nearClip, m_farClip);
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
-		// ³–Ê•ûŒü
+		// æ­£é¢æ–¹å‘
 		m_direction = Vector4(lookAt - m_combinedGlobalMatrix.GetPosition(), 0.0f);
 	}
 

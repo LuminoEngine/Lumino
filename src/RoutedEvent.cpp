@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Internal.h"
 #include <Lumino/RoutedEvent.h>
@@ -32,7 +32,7 @@ RoutedEventArgs::~RoutedEventArgs()
 // PropertyChangedEventArgs
 //=============================================================================
 //
-LN_CORE_OBJECT_TYPE_INFO_IMPL(PropertyChangedEventArgs, CoreObject);	// ƒLƒƒƒbƒVƒ…‚Å‚«‚é‚æ‚¤‚É‚·‚é‚½‚ßAÀ‘•‚µ‚Ä‚¨‚­
+LN_CORE_OBJECT_TYPE_INFO_IMPL(PropertyChangedEventArgs, CoreObject);	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã€å®Ÿè£…ã—ã¦ãŠã
 //
 ////-----------------------------------------------------------------------------
 ////

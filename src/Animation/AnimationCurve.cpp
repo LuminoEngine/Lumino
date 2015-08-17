@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "AnimationCurve.h"
 
@@ -58,15 +58,15 @@ FloatAnimationCurve::~FloatAnimationCurve()
 //-----------------------------------------------------------------------------
 void FloatAnimationCurve::AddKeyFrame(const FloatKeyFrame& keyFrame)
 {
-	// ‚»‚Ì‚Ü‚Ü’Ç‰Á‚Å‚«‚é
+	// ãã®ã¾ã¾è¿½åŠ ã§ãã‚‹
 	if (m_keyFrameList.IsEmpty() || m_keyFrameList.GetLast().FrameTime <= keyFrame.FrameTime)
 	{
 		m_keyFrameList.Add(keyFrame);
 	}
-	// ’Ç‰ÁŒã‚Ìƒ\[ƒg‚ª•K—v
+	// è¿½åŠ å¾Œã®ã‚½ãƒ¼ãƒˆãŒå¿…è¦
 	else
 	{
-		// ”äŠr—pƒtƒ@ƒ“ƒNƒ^
+		// æ¯”è¼ƒç”¨ãƒ•ã‚¡ãƒ³ã‚¯ã‚¿
 		struct compare
 		{
 			bool operator()(const FloatKeyFrame& l, const FloatKeyFrame& r)
@@ -111,22 +111,22 @@ void FloatAnimationCurve::SetTime(double time)
 {
 	if (!m_keyFrameList.IsEmpty())
 	{
-		// time_ ‚ªÅ‰‚ÌƒtƒŒ[ƒ€ˆÊ’u‚æ‚è‘O‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg’l
+		// time_ ãŒæœ€åˆã®ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®ã‚ˆã‚Šå‰ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 		if (time < m_keyFrameList.GetFront().FrameTime)
 		{
 			m_value = m_defaultValue;
 		}
-		// ƒL[‚ª‚Ğ‚Æ‚Â‚¾‚¯‚Ìê‡‚Í‚»‚ÌƒL[‚Ì’l
+		// ã‚­ãƒ¼ãŒã²ã¨ã¤ã ã‘ã®å ´åˆã¯ãã®ã‚­ãƒ¼ã®å€¤
 		else if (m_keyFrameList.GetCount() == 1)
 		{
 			m_value = m_keyFrameList.GetFront().Value;
 		}
-		// time_ ‚ªI’[ˆÈ~‚Ìê‡‚ÍI’[‚Ì’l
+		// time_ ãŒçµ‚ç«¯ä»¥é™ã®å ´åˆã¯çµ‚ç«¯ã®å€¤
 		else if (time >= m_keyFrameList.GetLast().FrameTime)
 		{
 			m_value = m_keyFrameList.GetLast().Value;
 		}
-		// ˆÈãˆÈŠO‚Ìê‡‚Í•âŠÔ‚·‚é
+		// ä»¥ä¸Šä»¥å¤–ã®å ´åˆã¯è£œé–“ã™ã‚‹
 		else
 		{
 			const FloatKeyFrame* key0 = (FloatKeyFrame*)bsearch(&time, &(m_keyFrameList[0]), m_keyFrameList.GetCount(), sizeof(FloatKeyFrame), _cmpKey);
@@ -140,25 +140,25 @@ void FloatAnimationCurve::SetTime(double time)
 
 			switch (key0->Mode)
 			{
-				// •âŠÔ–³‚µ
+				// è£œé–“ç„¡ã—
 			case InterpolationMode_None:
 			{
 				m_value = p0;
 				break;
 			}
-				// üŒ`
+				// ç·šå½¢
 			case InterpolationMode_Linear:
 			{
 				m_value = p0 + (p1 - p0) * t;
 				break;
 			}
-				// “™‰Á‘¬“x
+				// ç­‰åŠ é€Ÿåº¦
 			case InterpolationMode_QuadAccel:
 			{
 				m_value = Math::QuadAccel(p0, key0->Velocity, key0->Accel, static_cast< float >(time - key0->FrameTime));
 				break;
 			}
-				// OŸ•âŠÔ
+				// ä¸‰æ¬¡è£œé–“
 			case InterpolationMode_Hermite:
 			{
 				m_value = Math::Hermite(
@@ -171,14 +171,14 @@ void FloatAnimationCurve::SetTime(double time)
 				// Catmull-Rom
 			case InterpolationMode_CatmullRom:
 			{
-				// ƒ‹[ƒvÄ¶‚Å time ‚ªI’[‚ğ’´‚¦‚Ä‚¢‚éê‡A
-				// ‚±‚Ì“_‚Åkey ‚Ì’l‚Í ƒ‹[ƒvŠJnˆÊ’u‚Ì‚Ğ‚Æ‚Â‘O‚ÌƒL[‚ğw‚µ‚Ä‚¢‚é
+				// ãƒ«ãƒ¼ãƒ—å†ç”Ÿã§ time ãŒçµ‚ç«¯ã‚’è¶…ãˆã¦ã„ã‚‹å ´åˆã€
+				// ã“ã®æ™‚ç‚¹ã§key ã®å€¤ã¯ ãƒ«ãƒ¼ãƒ—é–‹å§‹ä½ç½®ã®ã²ã¨ã¤å‰ã®ã‚­ãƒ¼ã‚’æŒ‡ã—ã¦ã„ã‚‹
 
 				const FloatKeyFrame& begin = m_keyFrameList.GetFront();
 				const FloatKeyFrame& end = m_keyFrameList.GetLast();
 
-				// ‚±‚Ì•âŠÔ‚É‚ÍAbegin ‚Ì‚Ğ‚Æ‚Â‘O‚Æ end ‚Ì‚Ğ‚Æ‚ÂŒã‚Ì’l‚ª•K—vB
-				// ‚»‚ê‚¼‚ê‚ªn“_AI“_‚Ìê‡‚Íƒ‹[ƒv‚·‚é‚æ‚¤‚É•âŠÔ‚·‚é
+				// ã“ã®è£œé–“ã«ã¯ã€begin ã®ã²ã¨ã¤å‰ã¨ end ã®ã²ã¨ã¤å¾Œã®å€¤ãŒå¿…è¦ã€‚
+				// ãã‚Œãã‚ŒãŒå§‹ç‚¹ã€çµ‚ç‚¹ã®å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã‚ˆã†ã«è£œé–“ã™ã‚‹
 				m_value = Math::CatmullRom(
 					((key0->FrameTime == begin.FrameTime) ? end.Value : (key0 - 1)->Value),
 					p0,
@@ -227,7 +227,7 @@ double FloatAnimationCurve::GetLastFrameTime() const
 		fPointX2 = (fPointX2 / 127.0f) * 3.0f;
 		fPointY2 = (fPointY2 / 127.0f) * 3.0f;
 
-		// ‚‘¬‰»‚Ì‚½‚ßƒe[ƒuƒ‹‰»‚µ‚Ä‚¨‚­
+		// é«˜é€ŸåŒ–ã®ãŸã‚ãƒ†ãƒ¼ãƒ–ãƒ«åŒ–ã—ã¦ãŠã
 		m_yValue[0] = 0.0f;
 		m_yValue[YVAL_DIV_NUM] = 1.0f;
 
@@ -247,9 +247,9 @@ double FloatAnimationCurve::GetLastFrameTime() const
 //-----------------------------------------------------------------------------
 	float VMDBezierTable::GetInterValue(float fX)
 {
-	if (m_isLinear)	return fX;	// üŒ`•âŠÔ
+	if (m_isLinear)	return fX;	// ç·šå½¢è£œé–“
 
-	// ƒe[ƒuƒ‹‚ğüŒ`•âŠÔ‚·‚é
+	// ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ç·šå½¢è£œé–“ã™ã‚‹
 	fX *= (float)YVAL_DIV_NUM;
 
 	int		iIdx = (int)fX;
@@ -350,7 +350,7 @@ void VMDBezierSQTTransformAnimation::SortKeyFrame()
 //-----------------------------------------------------------------------------
 void VMDBezierSQTTransformAnimation::SetTime(double time)
 {
-	// ƒtƒŒ[ƒ€” 1 ŒÂ
+	// ãƒ•ãƒ¬ãƒ¼ãƒ æ•° 1 å€‹
 	if (m_keyFrameList.GetCount() == 1)
 	{
 		m_transform.Rotation = m_keyFrameList.GetFront().Rotation;
@@ -358,7 +358,7 @@ void VMDBezierSQTTransformAnimation::SetTime(double time)
 		return;
 	}
 
-	// Å‰‚ÌƒtƒŒ[ƒ€ˆÈ‘O‚Å‚ ‚ê‚ÎÅ‰‚ÌƒtƒŒ[ƒ€‚Ì’l‚ğ•Ô‚·
+	// æœ€åˆã®ãƒ•ãƒ¬ãƒ¼ãƒ ä»¥å‰ã§ã‚ã‚Œã°æœ€åˆã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®å€¤ã‚’è¿”ã™
 	if (time <= m_keyFrameList.GetFront().Time)
 	{
 		m_transform.Rotation = m_keyFrameList.GetFront().Rotation;
@@ -366,7 +366,7 @@ void VMDBezierSQTTransformAnimation::SetTime(double time)
 		return;
 	}
 
-	// ÅŒã‚ÌƒtƒŒ[ƒ€ˆÈ~‚Å‚ ‚ê‚ÎÅŒã‚ÌƒtƒŒ[ƒ€‚Ì’l‚ğ•Ô‚·
+	// æœ€å¾Œã®ãƒ•ãƒ¬ãƒ¼ãƒ ä»¥é™ã§ã‚ã‚Œã°æœ€å¾Œã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®å€¤ã‚’è¿”ã™
 	if (time >= m_keyFrameList.GetLast().Time)
 	{
 		m_transform.Rotation = m_keyFrameList.GetLast().Rotation;
@@ -374,7 +374,7 @@ void VMDBezierSQTTransformAnimation::SetTime(double time)
 		return;
 	}
 
-	// ‚ ‚éƒtƒŒ[ƒ€ˆÊ’u’¼‘O‚ÌƒL[ƒtƒŒ[ƒ€‚ğŒŸõ‚·‚é‚½‚ß‚ÌŠÖ”ƒIƒuƒWƒFƒNƒg
+	// ã‚ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®ç›´å‰ã®ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æ¤œç´¢ã™ã‚‹ãŸã‚ã®é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	struct GreaterEqual
 	{
 		double FramePos;
@@ -385,9 +385,9 @@ void VMDBezierSQTTransformAnimation::SetTime(double time)
 	} compare;
 	compare.FramePos = time;
 
-	// ƒL[ŒŸõ
+	// ã‚­ãƒ¼æ¤œç´¢
 	KeyFrameList::iterator itr = std::find_if(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
-	//if ( itr == m_keyFrameList.end() ) // ‚ ‚è‚¦‚È‚¢‚Í‚¸
+	//if ( itr == m_keyFrameList.end() ) // ã‚ã‚Šãˆãªã„ã¯ãš
 	//{
 	//    m_transform = LSQTTransform::IDENTITY;
 	//}
@@ -405,7 +405,7 @@ void VMDBezierSQTTransformAnimation::SetTime(double time)
 	double t0 = k0.Time;
 	double t1 = k1.Time;
 
-	// float Ì double ‚ÌŒ^•ÏŠ·‚ğ—}‚¦‚é‚½‚ßAˆÈ‰º‚Í float ‚ÅŒvZ‚ğs‚¤
+	// float â‡” double ã®å‹å¤‰æ›ã‚’æŠ‘ãˆã‚‹ãŸã‚ã€ä»¥ä¸‹ã¯ float ã§è¨ˆç®—ã‚’è¡Œã†
 
 	float rate = static_cast< float >((time - t0) / (t1 - t0));
 	float inter;

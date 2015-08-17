@@ -1,4 +1,4 @@
-/**
+﻿/**
 	@file	ASyncIOObject.h
 */
 #pragma once
@@ -24,27 +24,27 @@ public:
 public:
 
 	/**
-		@brief		�񓯊������̏�Ԃ��擾���܂��B
+		@brief		非同期処理の状態を取得します。
 	*/
 	ASyncIOState GetASyncIOState() const;
 	
 	/**
-		@brief		�����I����A��O�����������ꍇ�͂��̗�O��Ԃ��܂��B
-		@return		��O���������Ă��Ȃ���� NULL ��Ԃ��܂��B
+		@brief		処理終了後、例外が発生した場合はその例外を返します。
+		@return		例外が発生していなければ NULL を返します。
 	*/
 	Exception* GetASyncIOException() const;
 
 protected:
 
 	/**
-		@brief		�������e���������܂��B
-		@details	���̊֐��͒��ڌĂяo���Ȃ��ł��������B
-					RequestASyncIOProc() ���Ăяo�����ƂŁA�K�v�ȃ^�C�~���O�Ŏ��s����܂��B
+		@brief		処理内容を実装します。
+		@details	この関数は直接呼び出さないでください。
+					RequestASyncIOProc() を呼び出すことで、必要なタイミングで実行されます。
 	*/
 	virtual void OnASyncIOProc() = 0;
 
 	/**
-		@brief		���������s���܂��B
+		@brief		処理を実行します。
 	*/
 	void InvokeIOProc(bool isASync, FileManager* fileManager = NULL);
 

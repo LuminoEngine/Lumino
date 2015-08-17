@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Graphics/Color.h>
@@ -10,7 +10,7 @@ namespace Graphics
 {
 
 /**
-	@brief	 ƒrƒbƒgƒ}ƒbƒv‚Ö‚Ì•`‰æ‚ğs‚¤ƒNƒ‰ƒX‚Å‚·B
+	@brief	 ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã¸ã®æç”»ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class BitmapPainter
 	: public NonCopyable
@@ -18,7 +18,7 @@ class BitmapPainter
 public:
 
 	/**
-		@brief		w’è‚µ‚½ Bitmap ‚Ö•`‰æ‚ğs‚¤ BitmapPainter ‚ğ‰Šú‰»‚µ‚Ü‚·B
+		@brief		æŒ‡å®šã—ãŸ Bitmap ã¸æç”»ã‚’è¡Œã† BitmapPainter ã‚’åˆæœŸåŒ–ã—ã¾ã™ã€‚
 	*/
 	BitmapPainter(Bitmap* targetBitmap);
 
@@ -27,12 +27,12 @@ public:
 public:
 
 	/**
-		@brief		w’è‚µ‚½F‚Åƒrƒbƒgƒ}ƒbƒv‘S‘Ì‚ğ“h‚è‚Â‚Ô‚µ‚Ü‚·B
+		@brief		æŒ‡å®šã—ãŸè‰²ã§ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—å…¨ä½“ã‚’å¡—ã‚Šã¤ã¶ã—ã¾ã™ã€‚
 	*/
 	void Clear(const Graphics::Color& color);
 
 	/**
-		@brief		‹éŒ`‚ğ“h‚è‚Â‚Ô‚µ‚Ü‚·B
+		@brief		çŸ©å½¢ã‚’å¡—ã‚Šã¤ã¶ã—ã¾ã™ã€‚
 	*/
 	void FillRectangle(const Rect& rect, const Graphics::Color& color);
 

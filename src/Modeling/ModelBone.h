@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Animation/AnimationState.h"
 #include "ModelCore.h"
@@ -8,7 +8,7 @@ namespace Lumino
 namespace Modeling
 {
 
-/// ƒ{[ƒ“‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒNƒ‰ƒX
+/// ãƒœãƒ¼ãƒ³ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚¯ãƒ©ã‚¹
 class ModelBone
 	: public RefObject
 	, public Animation::IAnimationTargetAttribute
@@ -19,22 +19,22 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(ModelBoneCore* core);
 
-	/// ModelBoneCore ‚Ìæ“¾
+	/// ModelBoneCore ã®å–å¾—
 	ModelBoneCore* GetCore() { return m_core; }
 
-	/// qƒ{[ƒ“‚Ì’Ç‰Á
+	/// å­ãƒœãƒ¼ãƒ³ã®è¿½åŠ 
 	void AddChildBone(ModelBone* bone) { m_children.Add(bone); }
 
-	/// ƒ{[ƒ“s—ñ‚ğŠK‘w“I‚ÉXV‚·‚é
+	/// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’éšå±¤çš„ã«æ›´æ–°ã™ã‚‹
 	void UpdateTransformHierarchy(const Matrix& parentMatrix);
 
-	///  Œ‹‡Ï‚İs—ñ (ƒ‚ƒfƒ‹“à‚ÌƒOƒ[ƒoƒ‹s—ñ) ‚Ìæ“¾
+	///  çµåˆæ¸ˆã¿è¡Œåˆ— (ãƒ¢ãƒ‡ãƒ«å†…ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—) ã®å–å¾—
 	const Matrix& GetCombinedMatrix() const { return m_combinedMatrix; }
 
-	/// ƒ[ƒJƒ‹s—ñ‚ğ‰Šú’l‚É–ß‚·
+	/// ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‚’åˆæœŸå€¤ã«æˆ»ã™
 	void ResetLocalTransform() { m_localTransform = SQTTransform::Identity; }
 
 protected:
@@ -43,10 +43,10 @@ protected:
 	virtual void SetAnimationTargetValue(Animation::ValueType type, const void* value);
 
 private:
-	RefPtr<ModelBoneCore>	m_core;				///< ‹¤—Lƒf[ƒ^ƒNƒ‰ƒX
-	ModelBoneList			m_children;			///< qƒ{[ƒ“ƒŠƒXƒg
-	SQTTransform			m_localTransform;	///< ƒ‚[ƒVƒ‡ƒ“‚ğ‘‚«‚Ş‚Ì‚Í‚±‚±
-	Matrix					m_combinedMatrix;	///< Œ‹‡Ï‚İs—ñ (ƒ‚ƒfƒ‹“à‚ÌƒOƒ[ƒoƒ‹s—ñ)
+	RefPtr<ModelBoneCore>	m_core;				///< å…±æœ‰ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
+	ModelBoneList			m_children;			///< å­ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ
+	SQTTransform			m_localTransform;	///< ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ›¸ãè¾¼ã‚€ã®ã¯ã“ã“
+	Matrix					m_combinedMatrix;	///< çµåˆæ¸ˆã¿è¡Œåˆ— (ãƒ¢ãƒ‡ãƒ«å†…ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—)
 };
 
 } // namespace Modeling

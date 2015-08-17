@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Base/String.h>
@@ -33,112 +33,112 @@ public:
 
 public:
 
-	/// ƒm[ƒh–¼‚Ìİ’è
+	/// ãƒãƒ¼ãƒ‰åã®è¨­å®š
 	void SetName(const String& name);
 
-	/// ƒm[ƒh–¼‚Ìæ“¾
+	/// ãƒãƒ¼ãƒ‰åã®å–å¾—
 	const String& GetName() const { return m_name; }
 
-	/// ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚Ìİ’è
+	/// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã®è¨­å®š
 	void SetTransform(const Matrix& matrix) { m_localMatrix = matrix; m_transformModified = false; }
 
-	/// ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚Ìæ“¾
+	/// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã®å–å¾—
 	const Matrix& GgetMatrix() const { return m_localMatrix; }
 
-	/// ˆÊ’u‚Ìİ’è
+	/// ä½ç½®ã®è¨­å®š
 	void SetPosition(const Vector3& pos) { m_transform.Translation = pos; m_transformModified = true; }
 
-	/// ˆÊ’u‚Ìæ“¾
+	/// ä½ç½®ã®å–å¾—
 	const Vector3& GetPosition() const { return m_transform.Translation; }
 
-	/// ‰ñ“]‚Ìİ’è
+	/// å›è»¢ã®è¨­å®š
 	void SetRotation(const Quaternion& rot) { m_transform.Rotation = rot; m_transformModified = true; }
 
-	/// ‰ñ“]‚Ìæ“¾
+	/// å›è»¢ã®å–å¾—
 	const Quaternion& GetRotation() const { return m_transform.Rotation; }
 
-	/// Šg‘å—¦‚Ìİ’è
+	/// æ‹¡å¤§ç‡ã®è¨­å®š
 	void SetScale(const Vector3& scale) { m_transform.Scale = scale; m_transformModified = true; }
 
-	/// Šg‘å—¦‚Ìæ“¾
+	/// æ‹¡å¤§ç‡ã®å–å¾—
 	const Vector3& GetScale() const { return m_transform.Scale; }
 
-	/// Œ´“_‚Ìİ’è
+	/// åŸç‚¹ã®è¨­å®š
 	void SsetCenter(const Vector3& center) { m_transformCenter = center; m_transformModified = true; }
 
-	/// Œ´“_‚Ìæ“¾
+	/// åŸç‚¹ã®å–å¾—
 	const Vector3& GetCenter() const { return m_transformCenter; }
 
-	///// ‰Â‹ó‘Ô‚Ìİ’è
+	///// å¯è¦–çŠ¶æ…‹ã®è¨­å®š
 	//void SetVisible(bool enabled) { m_isVisible = enabled; }
 
-	///// ‰Â‹ó‘Ô‚Ì”»’è
+	///// å¯è¦–çŠ¶æ…‹ã®åˆ¤å®š
 	//bool IsVisible() const { return m_isVisible; }
 
-	/// ‰ñ“]‡˜‚Ìİ’è
+	/// å›è»¢é †åºã®è¨­å®š
 	void SetRotateOrder(RotationOrder order) { m_rotOrder = order; }
 
-	/// ‰ñ“]‡˜‚Ìæ“¾
+	/// å›è»¢é †åºã®å–å¾—
 	RotationOrder GetRotateOrder() const { return m_rotOrder; }
 
-	/// —Dæ“x‚Ìİ’è (‚‚¢•û‚©‚çæ‚É•`‰æ‚³‚ê‚é)
+	/// å„ªå…ˆåº¦ã®è¨­å®š (é«˜ã„æ–¹ã‹ã‚‰å…ˆã«æç”»ã•ã‚Œã‚‹)
 	void SetPriority(int priority) { m_priority = priority; }
 
-	/// —Dæ“x‚Ìæ“¾
+	/// å„ªå…ˆåº¦ã®å–å¾—
 	int GetPriority() const { return m_priority; }
 
-	/// ƒrƒ‹ƒ{[ƒhó‘Ô‚Ìİ’è
+	/// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰çŠ¶æ…‹ã®è¨­å®š
 	void SetBillboardType(BillboardType type) { m_billboardType = type; }
 
-	/// ƒrƒ‹ƒ{[ƒhó‘Ô‚Ìæ“¾
+	/// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰çŠ¶æ…‹ã®å–å¾—
 	BillboardType GetBillboardType() const { return m_billboardType; }
 
-	/// ©“®XV‚Ì—LŒøİ’è
+	/// è‡ªå‹•æ›´æ–°ã®æœ‰åŠ¹è¨­å®š
 	void SetEnableAutoUpdate(bool flag) { m_isAutoUpdate = flag; }
 
-	/// ©“®XV‚Ì—LŒø”»’è
+	/// è‡ªå‹•æ›´æ–°ã®æœ‰åŠ¹åˆ¤å®š
 	bool IsEnableAutoUpdate() const { return m_isAutoUpdate; }
 
-	/// qƒm[ƒh‚Ì’Ç‰Á (WPF ‚Ì StakPanel.Children ‚İ‚½‚¢‚É Collection ‚ğ•Ô‚·‚Ì‚à—Ç‚¢‚¯‚ÇAAddChild() ‚Í‚æ‚­g‚¤‚Ì‚Åƒ†[ƒeƒBƒŠƒeƒB‚Æ‚µ‚Ä’è‹`sè’u‚­‚Ì‚ª—Ç‚¢‚©‚à)
+	/// å­ãƒãƒ¼ãƒ‰ã®è¿½åŠ  (WPF ã® StakPanel.Children ã¿ãŸã„ã« Collection ã‚’è¿”ã™ã®ã‚‚è‰¯ã„ã‘ã©ã€AddChild() ã¯ã‚ˆãä½¿ã†ã®ã§ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã¨ã—ã¦å®šç¾©sæ‰‹ç½®ãã®ãŒè‰¯ã„ã‹ã‚‚)
 	void AddChild(SceneNode* node);
 
 public:
 
 	void Create(SceneGraphManager* manager);
 
-	/// ƒm[ƒhí•Ê‚Ìæ“¾
+	/// ãƒãƒ¼ãƒ‰ç¨®åˆ¥ã®å–å¾—
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_BaseNode; }
 
-	/// 1ƒtƒŒ[ƒ€•ª‚ÌXVˆ—
+	/// 1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®æ›´æ–°å‡¦ç†
 	virtual void UpdateFrame(float elapsedTime) {}
 
-	/// ƒOƒ[ƒoƒ‹À•W•ÏŠ·s—ñ‚ÆŠeƒvƒƒpƒeƒB‚ğŠK‘w“I‚ÉXV‚·‚é
-	///		‚±‚Ìˆ—‚Í1ƒtƒŒ[ƒ€“à‚ÅŠJn‚É1“x‚¾‚¯ŒÄ‚Î‚ê‚éB
-	///		À•W•ÏŠ·s—ñ‚ğXV‚µA•`‰æ‚·‚é‚×‚«ƒm[ƒh‚Å‚ ‚é‚©‚ğƒtƒBƒ‹ƒ^ƒŠƒ“ƒO‚·‚éB
+	/// ã‚°ãƒ­ãƒ¼ãƒãƒ«åº§æ¨™å¤‰æ›è¡Œåˆ—ã¨å„ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’éšå±¤çš„ã«æ›´æ–°ã™ã‚‹
+	///		ã“ã®å‡¦ç†ã¯1ãƒ•ãƒ¬ãƒ¼ãƒ å†…ã§é–‹å§‹æ™‚ã«1åº¦ã ã‘å‘¼ã°ã‚Œã‚‹ã€‚
+	///		åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’æ›´æ–°ã—ã€æç”»ã™ã‚‹ã¹ããƒãƒ¼ãƒ‰ã§ã‚ã‚‹ã‹ã‚’ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ã™ã‚‹ã€‚
 	virtual void UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList);
 
-	/// ‹“_‚ÉˆË‚éƒf[ƒ^‚ğŠK‘w“I‚ÉXV‚·‚é (‚ ‚é‹“_‚©‚ç•`‰æ‚³‚ê‚é‚Æ‚«AÅ‰‚ÉŒÄ‚Ño‚³‚ê‚é)
-	///		renderingNodeList	: ‚±‚Ì‹“_‚Ì’†‚ÅÀÛ‚É•`‰æ‚·‚é‚à‚Ì‚Í‚±‚ÌƒŠƒXƒg‚É’Ç‰Á‚·‚é (‹‘äƒJƒŠƒ“ƒO‚È‚Ç)
-	///		renderingLightList	: this ˆÈ‰º‚Ì Light ‚Í‚±‚ÌƒŠƒXƒg‚É’Ç‰Á‚·‚é
-	///		‚±‚Ìˆ—‚Í1ƒtƒŒ[ƒ€“à‚ÅAƒŒƒCƒ„[’PˆÊ‚Ì•`‰æŠJn‚ÉŒÄ‚Î‚ê‚éB
+	/// è¦–ç‚¹ã«ä¾ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚’éšå±¤çš„ã«æ›´æ–°ã™ã‚‹ (ã‚ã‚‹è¦–ç‚¹ã‹ã‚‰æç”»ã•ã‚Œã‚‹ã¨ãã€æœ€åˆã«å‘¼ã³å‡ºã•ã‚Œã‚‹)
+	///		renderingNodeList	: ã“ã®è¦–ç‚¹ã®ä¸­ã§å®Ÿéš›ã«æç”»ã™ã‚‹ã‚‚ã®ã¯ã“ã®ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹ (è¦–éŒ˜å°ã‚«ãƒªãƒ³ã‚°ãªã©)
+	///		renderingLightList	: this ä»¥ä¸‹ã® Light ã¯ã“ã®ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
+	///		ã“ã®å‡¦ç†ã¯1ãƒ•ãƒ¬ãƒ¼ãƒ å†…ã§ã€ãƒ¬ã‚¤ãƒ¤ãƒ¼å˜ä½ã®æç”»é–‹å§‹æ™‚ã«å‘¼ã°ã‚Œã‚‹ã€‚
 	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
 
-	/// ‚±‚Ìƒm[ƒh‚Ì‹ß‚¢ƒ‰ƒCƒg‚ğ‘I‘ğ‚·‚é
-	///		UpdateViewFlustumHierarchy() ‚ÅA¡‰ñ‚Ì•`‰æ‚Å•K—v‚Èƒ‰ƒCƒg‚ª‹‚Ü‚éB
-	///		‚»‚ÌƒŠƒXƒg‚ğg‚Á‚ÄA‚±‚Ìƒm[ƒh‚Ì•`‰æ‚É‰e‹¿‚·‚éƒ‰ƒCƒg‚ğƒŠƒXƒgƒAƒbƒv‚·‚éB
-	///		maxCount ‚ÍƒVƒF[ƒ_‚ª•K—v‚Æ‚µ‚Ä‚¢‚éƒ‰ƒCƒg‚ÌÅ‘å”BrenderingLightList ‚Ì’†‚©‚ç maxCount ŒÂæ‚è‚¾‚¹‚Î—Ç‚¢B
+	/// ã“ã®ãƒãƒ¼ãƒ‰ã®è¿‘ã„ãƒ©ã‚¤ãƒˆã‚’é¸æŠã™ã‚‹
+	///		UpdateViewFlustumHierarchy() ã§ã€ä»Šå›ã®æç”»ã§å¿…è¦ãªãƒ©ã‚¤ãƒˆãŒæ±‚ã¾ã‚‹ã€‚
+	///		ãã®ãƒªã‚¹ãƒˆã‚’ä½¿ã£ã¦ã€ã“ã®ãƒãƒ¼ãƒ‰ã®æç”»ã«å½±éŸ¿ã™ã‚‹ãƒ©ã‚¤ãƒˆã‚’ãƒªã‚¹ãƒˆã‚¢ãƒƒãƒ—ã™ã‚‹ã€‚
+	///		maxCount ã¯ã‚·ã‚§ãƒ¼ãƒ€ãŒå¿…è¦ã¨ã—ã¦ã„ã‚‹ãƒ©ã‚¤ãƒˆã®æœ€å¤§æ•°ã€‚renderingLightList ã®ä¸­ã‹ã‚‰ maxCount å€‹å–ã‚Šã ã›ã°è‰¯ã„ã€‚
 	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount) {}
 
-	/// ‚±‚Ìƒm[ƒh‚ğ•`‰æ‚·‚é
+	/// ã“ã®ãƒãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹
 	//virtual void Render(RenderingParams& params) {}
 
 	virtual void DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, Graphics::ShaderPass* pass) {};
 
-	/// Z ƒ\[ƒg—p‚Ì”äŠrŠÖ” (‹——£‚Æ—Dæ“x‚Åƒ\[ƒg)
+	/// Z ã‚½ãƒ¼ãƒˆç”¨ã®æ¯”è¼ƒé–¢æ•° (è·é›¢ã¨å„ªå…ˆåº¦ã§ã‚½ãƒ¼ãƒˆ)
 	static bool CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right);
 
 
-	// MME ‚Ì CONTROLOBJECT ƒAƒmƒe[ƒVƒ‡ƒ“ŠÖŒW
+	// MME ã® CONTROLOBJECT ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³é–¢ä¿‚
 	virtual bool IsVisible() const { return false; }
 	virtual const Matrix& GetMatrix() const { return m_combinedGlobalMatrix; }
 	virtual float GetOpacity() const { return 0.0f; }
@@ -157,7 +157,7 @@ protected:
 	int					m_priority;
 	BillboardType		m_billboardType;
 	//bool				m_isVisible;
-	bool				m_transformModified;	///< À•W•ÏŠ·s—ñ‚ÌÄŒvZ‚ª•K—v‚©
+	bool				m_transformModified;	///< åº§æ¨™å¤‰æ›è¡Œåˆ—ã®å†è¨ˆç®—ãŒå¿…è¦ã‹
 	bool				m_isAutoUpdate;
 
 	RefPtr<SceneNodeRefList>	m_children;
@@ -166,9 +166,9 @@ protected:
 	Matrix				m_combinedGlobalMatrix;
 
 	friend class DrawingLayer;
-	float				m_zDistance;			///< Z ƒ\[ƒg—p‚Ì‹——£’l (ƒ\[ƒg©‘Ì‚ª‘¬“x“I‚ÉƒNƒŠƒeƒBƒJƒ‹‚É‚È‚è‚»‚¤‚È‚Ì‚ÅAgetter ‚ğ‰¼‘zŠÖ”‚É‚Í‚µ‚½‚­‚È‚¢)
+	float				m_zDistance;			///< Z ã‚½ãƒ¼ãƒˆç”¨ã®è·é›¢å€¤ (ã‚½ãƒ¼ãƒˆè‡ªä½“ãŒé€Ÿåº¦çš„ã«ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã«ãªã‚Šãã†ãªã®ã§ã€getter ã‚’ä»®æƒ³é–¢æ•°ã«ã¯ã—ãŸããªã„)
 
-	friend class MMERenderingPass;	// TODO: VisualNode ‚É‚Á‚Ä‚­‚×‚«‚©‚àB‚Â‚¢‚Å‚É friend ‚à‰½‚Æ‚©‚µ‚½‚¢
+	friend class MMERenderingPass;	// TODO: VisualNode ã«æŒã£ã¦ãã¹ãã‹ã‚‚ã€‚ã¤ã„ã§ã« friend ã‚‚ä½•ã¨ã‹ã—ãŸã„
 	RenderingPassClientData	m_renderingPassClientDataList[RenderingPass::MaxRenderingPass];
 };
 

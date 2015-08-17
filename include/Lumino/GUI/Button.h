@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "ContentControl.h"
 #include "ButtonChrome.h"
@@ -17,7 +17,7 @@ class Button
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Button);
 public:
-	static const String	IsMouseOverProperty;	///< IsMouseOver ƒvƒƒpƒeƒB‚Ì¯•Êq
+	static const String	IsMouseOverProperty;	///< IsMouseOver ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
 
 
 	static const String ControlTemplateTypeName;	///< "Button"
@@ -35,7 +35,7 @@ public:
 
 protected:
 	virtual void OnClick();
-	virtual bool OnEvent(EventType type, RoutedEventArgs* args);	// TODO: ˆÓ–¡“I‚É‚Í RoutedEvent ‚Å‚Í‚È‚¢
+	virtual bool OnEvent(EventType type, RoutedEventArgs* args);	// TODO: æ„å‘³çš„ã«ã¯ RoutedEvent ã§ã¯ãªã„
 	virtual void OnRender(Graphics::Painter* painter);
 	//virtual void Render();
 
@@ -53,7 +53,7 @@ protected:
 	//}
 
 private:
-	RefPtr<ButtonChrome>	m_chrome;	// TODO: ‰¼B‚¿‚á‚ñ‚Æƒe[ƒ}‚©‚ç“Ç‚İ‚¾‚·
+	RefPtr<ButtonChrome>	m_chrome;	// TODO: ä»®ã€‚ã¡ã‚ƒã‚“ã¨ãƒ†ãƒ¼ãƒã‹ã‚‰èª­ã¿ã ã™
 	bool m_isMouseOver;
 };
 

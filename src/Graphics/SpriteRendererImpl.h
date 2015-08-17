@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
@@ -19,22 +19,22 @@ public:
 
 public:
 
-	/// À•W•ÏŠ·s—ñ‚Ìİ’è
+	/// åº§æ¨™å¤‰æ›è¡Œåˆ—ã®è¨­å®š
     void SetTransform( const Matrix& matrix );
 
-	/// ƒrƒ…[AƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚Ìİ’è (view ‚Íƒrƒ‹ƒ{[ƒh‚ÌŒvZ‚Å•K—v‚É‚È‚é‚Ì‚ÅAview proj ‚Å•ª‚¯‚é)
+	/// ãƒ“ãƒ¥ãƒ¼ã€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®è¨­å®š (view ã¯ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—ã§å¿…è¦ã«ãªã‚‹ã®ã§ã€view proj ã§åˆ†ã‘ã‚‹)
 	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
 
-	/// ƒrƒ…[ƒTƒCƒY‚Ìİ’è
+	/// ãƒ“ãƒ¥ãƒ¼ã‚µã‚¤ã‚ºã®è¨­å®š
 	void SetViewPixelSize(const Size& size);
 
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒŒ[ƒg‚Ìİ’è
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ¬ãƒ¼ãƒˆã®è¨­å®š
 	void SetRenderState(const RenderState& state);
 
-	/// ƒ\[ƒg•û–@‚Ìİ’è
+	/// ã‚½ãƒ¼ãƒˆæ–¹æ³•ã®è¨­å®š
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
 
-	/// •`‰æƒŠƒNƒGƒXƒg
+	/// æç”»ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     void DrawRequest2D(
         const Vector3& position,
 		const Vector3& center,
@@ -43,27 +43,27 @@ public:
 		const RectF& srcRect,
 		const ColorF* colorTable);
 
-	/// •`‰æƒŠƒNƒGƒXƒg
+	/// æç”»ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
 	void DrawRequest3D(
         const Vector3& position,
         const Vector3& center,
         const Vector2& size,
 		Device::ITexture* texture,
 		const RectF& srcRect,
-		const ColorF* colorTable,    // 4 ’¸“_•ªBNULL ‚Ìê‡‚Í”’
+		const ColorF* colorTable,    // 4 é ‚ç‚¹åˆ†ã€‚NULL ã®å ´åˆã¯ç™½
 		AxisDirection front);
 
-	/// ƒoƒbƒ`ˆ—‚³‚ê‚Ä‚¢‚éƒXƒvƒ‰ƒCƒg‚Ì•`‰æ
+	/// ãƒãƒƒãƒå‡¦ç†ã•ã‚Œã¦ã„ã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®æç”»
 	void Flash();
 
-	/// •`‰æ‚¹‚¸‚Éƒoƒbƒ`‚ğ‚·‚×‚ÄƒNƒŠƒA‚·‚é
+	/// æç”»ã›ãšã«ãƒãƒƒãƒã‚’ã™ã¹ã¦ã‚¯ãƒªã‚¢ã™ã‚‹
 	void Clear();
 
 	GraphicsManager* GetManager() const { return m_manager; }
 
 private:
 
-	/// •`‰æƒŠƒNƒGƒXƒg
+	/// æç”»ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
 	void DrawRequest3DInternal(
 		const Vector3& position,
 		const Vector3& center,
@@ -74,14 +74,14 @@ private:
 		AxisDirection front,
 		bool is3D);
 
-	/// ƒoƒbƒ`ˆ——pƒXƒvƒ‰ƒCƒg’¸“_
+	/// ãƒãƒƒãƒå‡¦ç†ç”¨ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆé ‚ç‚¹
 	struct BatchSpriteVertex
 	{
-		Vector3		Position;   ///< À•W
-		ColorF		Color;      ///< ’¸“_ƒJƒ‰[
-		Vector2		TexUV;      ///< ƒeƒNƒXƒ`ƒƒÀ•W
+		Vector3		Position;   ///< åº§æ¨™
+		ColorF		Color;      ///< é ‚ç‚¹ã‚«ãƒ©ãƒ¼
+		Vector2		TexUV;      ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 
-		/// ’¸“_ƒŒƒCƒAƒEƒg
+		/// é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
 		static Graphics::VertexElement* Elements()
 		{
 			static Graphics::VertexElement elements[] =
@@ -97,13 +97,13 @@ private:
 
 	struct BatchSpriteData
 	{
-		BatchSpriteVertex	Vertices[4];  ///< À•W•ÏŠ·Ï‚İ’¸“_ ([0].Position.z ‚ªƒ\[ƒg‚ÌŠî€‚É‚È‚é)
+		BatchSpriteVertex	Vertices[4];  ///< åº§æ¨™å¤‰æ›æ¸ˆã¿é ‚ç‚¹ ([0].Position.z ãŒã‚½ãƒ¼ãƒˆã®åŸºæº–ã«ãªã‚‹)
 		Device::ITexture*	Texture;
 		int					RenderStateIndex;
-		int					Priority;       ///< —Dæ“x (‘å‚«‚¢•û‚ªŒã‚©‚ç•`‰æ‚³‚ê‚é =è‘O)
-		float				Depth;          ///< ƒ\[ƒg‚Ég‚í‚ê‚é Z ’l (‘å‚«‚¢‚Ù‚Ç‰“‚¢)
+		int					Priority;       ///< å„ªå…ˆåº¦ (å¤§ãã„æ–¹ãŒå¾Œã‹ã‚‰æç”»ã•ã‚Œã‚‹ =æ‰‹å‰)
+		float				Depth;          ///< ã‚½ãƒ¼ãƒˆã«ä½¿ã‚ã‚Œã‚‹ Z å€¤ (å¤§ãã„ã»ã©é ã„)
 		bool				Visible;
-		bool				Assigned;       ///< SpriteRenderer::getBatchSpriteData() ‚Åæ“¾‚³‚ê‚½ê‡‚É true ‚É‚È‚é
+		bool				Assigned;       ///< SpriteRenderer::getBatchSpriteData() ã§å–å¾—ã•ã‚ŒãŸå ´åˆã« true ã«ãªã‚‹
 
 	};
 
@@ -115,10 +115,10 @@ private:
 		int RenderStateIndex;
     };
 
-	class SpriteCmpDepthBackToFront;		///< Z ’l‚Ì‘å‚«‚¢•û‚©‚ç¬‚³‚¢•û‚Öƒ\[ƒg‚·‚é”äŠr
-	class SpriteCmpDepthFrontToBack;		///< Z ’l‚Ì¬‚³‚¢•û‚©‚ç‘å‚«‚¢•û‚Öƒ\[ƒg‚·‚é”äŠr
-	class SpriteCmpTexDepthBackToFront;		///< Z ’l‚Ì‘å‚«‚¢•û‚©‚ç¬‚³‚¢•û‚Öƒ\[ƒg‚·‚é”äŠr (ƒeƒNƒXƒ`ƒƒ—Dæ)
-	class SpriteCmpTexDepthFrontToBack;		///< Z ’l‚Ì¬‚³‚¢•û‚©‚ç‘å‚«‚¢•û‚Öƒ\[ƒg‚·‚é”äŠr (ƒeƒNƒXƒ`ƒƒ—Dæ)
+	class SpriteCmpDepthBackToFront;		///< Z å€¤ã®å¤§ãã„æ–¹ã‹ã‚‰å°ã•ã„æ–¹ã¸ã‚½ãƒ¼ãƒˆã™ã‚‹æ¯”è¼ƒ
+	class SpriteCmpDepthFrontToBack;		///< Z å€¤ã®å°ã•ã„æ–¹ã‹ã‚‰å¤§ãã„æ–¹ã¸ã‚½ãƒ¼ãƒˆã™ã‚‹æ¯”è¼ƒ
+	class SpriteCmpTexDepthBackToFront;		///< Z å€¤ã®å¤§ãã„æ–¹ã‹ã‚‰å°ã•ã„æ–¹ã¸ã‚½ãƒ¼ãƒˆã™ã‚‹æ¯”è¼ƒ (ãƒ†ã‚¯ã‚¹ãƒãƒ£å„ªå…ˆ)
+	class SpriteCmpTexDepthFrontToBack;		///< Z å€¤ã®å°ã•ã„æ–¹ã‹ã‚‰å¤§ãã„æ–¹ã¸ã‚½ãƒ¼ãƒˆã™ã‚‹æ¯”è¼ƒ (ãƒ†ã‚¯ã‚¹ãƒãƒ£å„ªå…ˆ)
 
 private:
 	typedef Array<BatchSpriteData>	SpriteRequestList;
@@ -131,22 +131,22 @@ private:
     int								m_maxSprites;
 	SpriteRequestList				m_spriteRequestList;
 	int								m_spriteRequestListUsedCount;
-	Array<int>						m_spriteIndexList;			///< Flash() “à‚Åg—p‚·‚éBm_spriteRequestList ‚ğƒ\[ƒg‚·‚é‚Ì‚Í\‘¢‘ÌƒRƒs[‚ğ”º‚¤‚½‚ß‘¬“x–Ê‚ÅS”zB‚È‚Ì‚ÅƒCƒ“ƒfƒbƒNƒX‚ğƒ\[ƒg‚·‚éB
+	Array<int>						m_spriteIndexList;			///< Flash() å†…ã§ä½¿ç”¨ã™ã‚‹ã€‚m_spriteRequestList ã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹ã®ã¯æ§‹é€ ä½“ã‚³ãƒ”ãƒ¼ã‚’ä¼´ã†ãŸã‚é€Ÿåº¦é¢ã§å¿ƒé…ã€‚ãªã®ã§ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹ã€‚
 	RenderStateList					m_renderStateList;
-	int								m_currentRenderStateIndex;	///< Ÿ‚Ì Draw ‚Å‚É“K—p‚³‚ê‚é RenderState ‚ª‚ ‚é m_renderStateList “à‚ÌƒCƒ“ƒfƒbƒNƒX
+	int								m_currentRenderStateIndex;	///< æ¬¡ã® Draw ã§ã«é©ç”¨ã•ã‚Œã‚‹ RenderState ãŒã‚ã‚‹ m_renderStateList å†…ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	AttributeList					m_attributeList;
 
 	Matrix							m_transformMatrix;
-	Vector3							m_viewDirection;			///< ƒrƒ‹ƒ{[ƒh‚ÌŒvZ‚Ég—p‚·‚é
-	Matrix							m_viewInverseMatrix;		///< ƒrƒ‹ƒ{[ƒh‚ÌŒvZ‚Ég—p‚·‚é
-	Vector3							m_viewPosition;				///< ƒJƒƒ‰ˆÊ’u‚ğŠî€‚Æ‚µ‚½ƒ\[ƒg‚Åg—p‚·‚é
+	Vector3							m_viewDirection;			///< ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—ã«ä½¿ç”¨ã™ã‚‹
+	Matrix							m_viewInverseMatrix;		///< ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®è¨ˆç®—ã«ä½¿ç”¨ã™ã‚‹
+	Vector3							m_viewPosition;				///< ã‚«ãƒ¡ãƒ©ä½ç½®ã‚’åŸºæº–ã¨ã—ãŸã‚½ãƒ¼ãƒˆã§ä½¿ç”¨ã™ã‚‹
 	Matrix							m_viewProjMatrix;
 	Vector2							m_viewPixelSize;
 
-	uint32_t						m_spriteSortMode;			///< ƒ\[ƒg•û–@ (SpriteSortMode)
-	SortingDistanceBasis			m_sortingBasis;				///< ƒ\[ƒgŠî€
+	uint32_t						m_spriteSortMode;			///< ã‚½ãƒ¼ãƒˆæ–¹æ³• (SpriteSortMode)
+	SortingDistanceBasis			m_sortingBasis;				///< ã‚½ãƒ¼ãƒˆåŸºæº–
    
-	/// ƒVƒF[ƒ_ŠÖŒW‚Ì•Ï”‚ğ‚Ü‚Æ‚ß‚½\‘¢‘Ì
+	/// ã‚·ã‚§ãƒ¼ãƒ€é–¢ä¿‚ã®å¤‰æ•°ã‚’ã¾ã¨ã‚ãŸæ§‹é€ ä½“
     struct 
 	{
 		RefPtr<Device::IShader>		Shader;

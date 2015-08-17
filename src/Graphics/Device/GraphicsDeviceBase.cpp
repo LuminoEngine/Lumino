@@ -1,4 +1,4 @@
-
+﻿
 #pragma once 
 
 #include "GraphicsDeviceBase.h"
@@ -64,21 +64,21 @@ void GraphicsDeviceBase::AddDeviceResource(IDeviceObject* obj)
 void GraphicsDeviceBase::GCDeviceResource()
 {
 	/*
-	���̊֐��͕`��X���b�h�́ASwapChain::Present() �̒���Ŏ��s�����B
-	���\�[�X�����̃N���X�ȊO����Q�Ƃ���Ă��Ȃ���ΊJ������B
+	この関数は描画スレッドの、SwapChain::Present() の直後で実行される。
+	リソースがこのクラス以外から参照されていなければ開放する。
 
-	�Ȃ��A���̂悤�Ȏd�g�݂ɂ����̂́A���\�[�X�̊J����e�Ղɂ��邽�߁B
-	Create �n�̓X���b�h�Z�[�t���� GPU �ŗL�̕s��ɔ����邽�߁A
-	�쐬�̑O��ŃR���e�L�X�g���A�N�e�B�u/�f�B�A�N�e�B�u���Ă��邪�A
-	�J���� (glDelete�`) �̑O��ł����R�K�v�ɂȂ�B
+	なお、このような仕組みにしたのは、リソースの開放を容易にするため。
+	Create 系はスレッドセーフかつ GPU 固有の不具合に備えるため、
+	作成の前後でコンテキストをアクティブ/ディアクティブしているが、
+	開放時 (glDelete～) の前後でも当然必要になる。
 
-	�x���`��̓s����A���C���X���b�h�ŕs�v�ɂȂ��Ă��`��X���b�h�ł͂܂��g���Ă��邱�Ƃ͕��ʂɂ���B
-	�`��X���b�h�ł��K�v�Ȃ��Ȃ������_�Ń��\�[�X�� Release ����Ηǂ��̂����A
-	���ꂾ�ƃf�X�g���N�^�Łu���݂̃X���b�h�����C���X���b�h�ł���� MakeCurrent ����v�̂悤�ȏ������K�v�ɂȂ�B
-	���̏ꍇ���ƂȂ�̂́A
-	�ECreate�n�̓����ŃG���[���������ARelease �������Ƃ��Ƀf�b�h���b�N�̊댯��������
-	�E�f�X�g���N�^�ŗ�O�𔭐�������\��������
-	���悤�͂�����ł����邪�A�V���v���Ɏ�������̂͏�������B
+	遅延描画の都合上、メインスレッドで不要になっても描画スレッドではまだ使っていることは普通にある。
+	描画スレッドでも必要なくなった時点でリソースを Release すれば良いのだが、
+	それだとデストラクタで「現在のスレッドがメインスレッドであれば MakeCurrent する」のような処理が必要になる。
+	この場合問題となるのは、
+	・Create系の内部でエラーが発生し、Release したいときにデッドロックの危険性がある
+	・デストラクタで例外を発生させる可能性がある
+	やりようはいくらでもあるが、シンプルに実装するのは少し難しい。
 	*/
 	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
 

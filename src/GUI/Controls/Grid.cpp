@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/Property.h>
 #include <Lumino/GUI/Controls/Grid.h>
@@ -179,14 +179,14 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 	//for (ColumnDefinition* col : *m_columnDefinitionList) { col->m_elementGroup.Clear(); col->m_desiredWidth = 0; }
 	//for (RowDefinition* row : *m_rowDefinitionList)	 { row->m_elementGroup.Clear(); row->m_desiredHeight = 0; }
 
-	// ‚Ü‚¸ Measure ‚Í‘S•”‚Ü‚í‚µ‚Ä‚¨‚­
+	// ã¾ãš Measure ã¯å…¨éƒ¨ã¾ã‚ã—ã¦ãŠã
 	GUIHelper::ForEachVisualChildren(this, [availableSize](UIElement* child) { child->MeasureLayout(availableSize); });
 
 	for (auto child : *m_children)
 	{
-		// Žq—v‘f‚ðs‚Æ—ñ‚²‚Æ‚ÉƒOƒ‹[ƒv‰»‚·‚é
-		//		- ”ÍˆÍŠO‚ÌƒCƒ“ƒfƒbƒNƒX‚ªŽw’è‚³‚ê‚Ä‚¢‚½‚ç 0 ‚É‚·‚éB
-		int colIdx = Grid::GetColumn(child);	// TODO: ‚±‚ÌƒvƒƒpƒeƒBŒŸõ‚ªƒ{ƒgƒ‹ƒlƒbƒN‚É‚È‚é‚©‚à
+		// å­è¦ç´ ã‚’è¡Œã¨åˆ—ã”ã¨ã«ã‚°ãƒ«ãƒ¼ãƒ—åŒ–ã™ã‚‹
+		//		- ç¯„å›²å¤–ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒæŒ‡å®šã•ã‚Œã¦ã„ãŸã‚‰ 0 ã«ã™ã‚‹ã€‚
+		int colIdx = Grid::GetColumn(child);	// TODO: ã“ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£æ¤œç´¢ãŒãƒœãƒˆãƒ«ãƒãƒƒã‚¯ã«ãªã‚‹ã‹ã‚‚
 		int rowIdx = Grid::GetRow(child);
 		colIdx = m_columnDefinitionList->IsOutOfRange(colIdx) ? 0 : colIdx;
 		rowIdx = m_rowDefinitionList->IsOutOfRange(rowIdx) ? 0 : rowIdx;
@@ -197,21 +197,21 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 		//col->m_elementGroup.Add(child);
 		//row->m_elementGroup.Add(child);
 
-		// Žq—v‘f‚Ì DesiredSize (Å’áƒTƒCƒY) ‚ð‘ª‚é‚Ì‚ÍAƒZƒ‹‚ÌƒTƒCƒYŽw’è‚ª "Auto" ‚ÌŽž‚¾‚¯‚Å‚æ‚¢B
+		// å­è¦ç´ ã® DesiredSize (æœ€ä½Žã‚µã‚¤ã‚º) ã‚’æ¸¬ã‚‹ã®ã¯ã€ã‚»ãƒ«ã®ã‚µã‚¤ã‚ºæŒ‡å®šãŒ "Auto" ã®æ™‚ã ã‘ã§ã‚ˆã„ã€‚
 		if ((col == NULL || col->IsAuto()) || (row == NULL || row->IsAuto()))
 		{
-			//child->MeasureLayout(availableSize);	// TODO: Measuer ‚Íí‚É‚â‚Á‚½‚Ù‚¤‚ª—Ç‚¢‚Ì‚©Šm”F‚µ‚Ä‚¨‚¢‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à
+			//child->MeasureLayout(availableSize);	// TODO: Measuer ã¯å¸¸ã«ã‚„ã£ãŸã»ã†ãŒè‰¯ã„ã®ã‹ç¢ºèªã—ã¦ãŠã„ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚
 
-			if (col != NULL && col->IsAuto() && Grid::GetColumnSpan(child) <= 1) {	// span ‚ª 2 ˆÈã‚Ì—v‘f‚ÍƒTƒCƒYWŒv‚Él—¶‚µ‚È‚¢
+			if (col != NULL && col->IsAuto() && Grid::GetColumnSpan(child) <= 1) {	// span ãŒ 2 ä»¥ä¸Šã®è¦ç´ ã¯ã‚µã‚¤ã‚ºé›†è¨ˆã«è€ƒæ…®ã—ãªã„
 				col->m_desiredWidth = std::max(col->m_desiredWidth, child->GetDesiredSize().Width);
 			}
-			if (row != NULL && row->IsAuto() && Grid::GetRowSpan(child) <= 1) {		// span ‚ª 2 ˆÈã‚Ì—v‘f‚ÍƒTƒCƒYWŒv‚Él—¶‚µ‚È‚¢
+			if (row != NULL && row->IsAuto() && Grid::GetRowSpan(child) <= 1) {		// span ãŒ 2 ä»¥ä¸Šã®è¦ç´ ã¯ã‚µã‚¤ã‚ºé›†è¨ˆã«è€ƒæ…®ã—ãªã„
 				row->m_desiredHeight = std::max(row->m_desiredHeight, child->GetDesiredSize().Height);
 			}
 		}
 	}
 
-	// ŠeƒZƒ‹‚Ì DesiredSize ‚ðWŒv‚µ‚ÄAGrid ‘S‘Ì‚Ì DesiredSize ‚ð‹‚ß‚éB
+	// å„ã‚»ãƒ«ã® DesiredSize ã‚’é›†è¨ˆã—ã¦ã€Grid å…¨ä½“ã® DesiredSize ã‚’æ±‚ã‚ã‚‹ã€‚
 	SizeF desiredSize = SizeF::Zero;
 	for (auto col : *m_columnDefinitionList) {
 		desiredSize.Width += col->GetAvailableDesiredWidth();
@@ -220,7 +220,7 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 		desiredSize.Height += row->GetAvailableDesiredHeight();
 	}
 
-	// this ‚Ì m_desiredSize ‚ðÝ’è‚·‚é
+	// this ã® m_desiredSize ã‚’è¨­å®šã™ã‚‹
 	Panel::MeasureLayout(desiredSize);
 }
 
@@ -229,7 +229,7 @@ void Grid::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 void Grid::ArrangeLayout(const RectF& finalLocalRect)
 {
-	// "Auto" ‚Æ "Pixel" Žw’è‚Å‚ ‚é Column/Row ‚ÌÅIƒTƒCƒY‚ðŠm’è‚³‚¹‚é
+	// "Auto" ã¨ "Pixel" æŒ‡å®šã§ã‚ã‚‹ Column/Row ã®æœ€çµ‚ã‚µã‚¤ã‚ºã‚’ç¢ºå®šã•ã›ã‚‹
 	SizeF totalActual = SizeF::Zero;
 	int starColCount = 0;
 	int starRowCount = 0;
@@ -256,15 +256,15 @@ void Grid::ArrangeLayout(const RectF& finalLocalRect)
 		}
 	}
 
-	// "*" ‚Ð‚Æ‚Â•ª‚ÌƒZƒ‹‚Ì—Ìˆæ
+	// "*" ã²ã¨ã¤åˆ†ã®ã‚»ãƒ«ã®é ˜åŸŸ
 	SizeF starUnit(
 		(finalLocalRect.Width - totalActual.Width) / starColCount,
 		(finalLocalRect.Height - totalActual.Height) / starRowCount);
-	starUnit.Width = std::max(0.0f, starUnit.Width);	// •‰’l‚Íƒ_ƒ
-	starUnit.Height = std::max(0.0f, starUnit.Height);	// •‰’l‚Íƒ_ƒ
+	starUnit.Width = std::max(0.0f, starUnit.Width);	// è² å€¤ã¯ãƒ€ãƒ¡
+	starUnit.Height = std::max(0.0f, starUnit.Height);	// è² å€¤ã¯ãƒ€ãƒ¡
 
-	// "*" Žw’è‚Å‚ ‚é Column/Row ‚ÌÅIƒTƒCƒY‚ðŠm’è‚³‚¹A
-	// ‘SƒZƒ‹‚ÌƒIƒtƒZƒbƒg (ˆÊ’u) ‚àŠm’è‚³‚¹‚é
+	// "*" æŒ‡å®šã§ã‚ã‚‹ Column/Row ã®æœ€çµ‚ã‚µã‚¤ã‚ºã‚’ç¢ºå®šã•ã›ã€
+	// å…¨ã‚»ãƒ«ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ (ä½ç½®) ã‚‚ç¢ºå®šã•ã›ã‚‹
 	PointF totalOffset = PointF::Zero;
 	for (auto col : *m_columnDefinitionList)
 	{
@@ -272,7 +272,7 @@ void Grid::ArrangeLayout(const RectF& finalLocalRect)
 			col->m_actualWidth = starUnit.Width;
 		}
 
-		// ƒZƒ‹XÀ•WŠm’è
+		// ã‚»ãƒ«Xåº§æ¨™ç¢ºå®š
 		col->m_actualOffsetX = totalOffset.X;
 		totalOffset.X += col->m_actualWidth;
 	}
@@ -282,31 +282,31 @@ void Grid::ArrangeLayout(const RectF& finalLocalRect)
 			row->m_actualHeight = starUnit.Height;
 		}
 
-		// ƒZƒ‹YÀ•WŠm’è
+		// ã‚»ãƒ«Yåº§æ¨™ç¢ºå®š
 		row->m_actualOffsetY = totalOffset.Y;
 		totalOffset.Y += row->m_actualHeight;
 	}
 
-	// Žq—v‘f‚ÌÅIˆÊ’uEƒTƒCƒY‚ðŠm’è‚³‚¹‚é
+	// å­è¦ç´ ã®æœ€çµ‚ä½ç½®ãƒ»ã‚µã‚¤ã‚ºã‚’ç¢ºå®šã•ã›ã‚‹
 	for (auto child : *m_children)
 	{
 		int colIdx = Grid::GetColumn(child);
 		int rowIdx = Grid::GetRow(child);
 		int colSpan = Grid::GetColumnSpan(child);
 		int rowSpan = Grid::GetRowSpan(child);
-		colSpan = std::max(1, colSpan);	// 0 ‚Í 1 ‚Æ‚·‚é
-		rowSpan = std::max(1, rowSpan);	// 0 ‚Í 1 ‚Æ‚·‚é
-		colSpan = std::min(colSpan, colIdx + m_columnDefinitionList->GetCount());	// Å‘å’l§ŒÀ
-		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitionList->GetCount());		// Å‘å’l§ŒÀ
+		colSpan = std::max(1, colSpan);	// 0 ã¯ 1 ã¨ã™ã‚‹
+		rowSpan = std::max(1, rowSpan);	// 0 ã¯ 1 ã¨ã™ã‚‹
+		colSpan = std::min(colSpan, colIdx + m_columnDefinitionList->GetCount());	// æœ€å¤§å€¤åˆ¶é™
+		rowSpan = std::min(rowSpan, rowIdx + m_rowDefinitionList->GetCount());		// æœ€å¤§å€¤åˆ¶é™
 
-		// ”z’uæ‚ÌƒZƒ‹‚ÅÀ•W‚ðŠm’è
+		// é…ç½®å…ˆã®ã‚»ãƒ«ã§åº§æ¨™ã‚’ç¢ºå®š
 		//RectF rect(
 		//	m_columnDefinitionList->GetAt(colIdx)->m_actualOffsetX,
 		//	m_rowDefinitionList->GetAt(rowIdx)->m_actualOffsetY,
 		//	0, 0);
 		RectF rect = RectF::Zero;
 
-		// Span ‚ðl—¶‚µ‚ÄƒTƒCƒY‚ðŠm’è
+		// Span ã‚’è€ƒæ…®ã—ã¦ã‚µã‚¤ã‚ºã‚’ç¢ºå®š
 		if (m_columnDefinitionList->IsEmpty())
 		{
 			rect.Width = finalLocalRect.Width;

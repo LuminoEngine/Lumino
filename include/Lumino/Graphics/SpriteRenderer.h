@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -9,7 +9,7 @@ namespace Graphics
 class SpriteRendererImpl;
 
 /**
-	@brief		ƒXƒvƒ‰ƒCƒg‚Ì•`‰æ‚ğs‚¤ƒNƒ‰ƒX‚Å‚·B
+	@brief		ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®æç”»ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class SpriteRenderer
 	: public RefObject
@@ -17,47 +17,47 @@ class SpriteRenderer
 public:
 
 	/**
-		@brief		SpriteRenderer ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
-		@param[in]	maxSpriteCount	: ˆê“x‚Ìƒoƒbƒ`•`‰æ‚Å•`‰æ‚Å‚«‚éÅ‘åƒXƒvƒ‰ƒCƒg”
-		@param[in]	manager			: ì¬‚Ég—p‚·‚é GraphicsManager
+		@brief		SpriteRenderer ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	maxSpriteCount	: ä¸€åº¦ã®ãƒãƒƒãƒæç”»ã§æç”»ã§ãã‚‹æœ€å¤§ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæ•°
+		@param[in]	manager			: ä½œæˆã«ä½¿ç”¨ã™ã‚‹ GraphicsManager
 	*/
 	static SpriteRenderer* Create(int maxSpriteCount, GraphicsManager* manager);
 
 public:
 
 	/**
-		@brief		À•W•ÏŠ·s—ñ‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	matrix		: À•W•ÏŠ·s—ñ
-		@details	Ÿ‚Ì DrawRequest2D ‚Ü‚½‚Í DrawRequest3D ‚Å•`‰æ—v‹‚³‚ê‚éƒXƒvƒ‰ƒCƒg‚É‘Î‚µ‚Ä“K—p‚·‚éÀ•W•ÏŠ·s—ñ‚Å‚·B
+		@brief		åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	matrix		: åº§æ¨™å¤‰æ›è¡Œåˆ—
+		@details	æ¬¡ã® DrawRequest2D ã¾ãŸã¯ DrawRequest3D ã§æç”»è¦æ±‚ã•ã‚Œã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã«å¯¾ã—ã¦é©ç”¨ã™ã‚‹åº§æ¨™å¤‰æ›è¡Œåˆ—ã§ã™ã€‚
 	*/
 	void SetTransform(const Matrix& matrix);
 
 	/**
-		@brief		ƒrƒ…[‹y‚ÑƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğİ’è‚µ‚Ü‚·B
+		@brief		ãƒ“ãƒ¥ãƒ¼åŠã³ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
 
 	/**
-		@brief		•`‰ææ‚Ìƒrƒ…[ƒTƒCƒY‚ğİ’è‚µ‚Ü‚·B
+		@brief		æç”»å…ˆã®ãƒ“ãƒ¥ãƒ¼ã‚µã‚¤ã‚ºã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetViewPixelSize(const Size& size);
 
 	/**
-		@brief		ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚ğİ’è‚µ‚Ü‚·B
-		@details	Ÿ‚Ì DrawRequest2D ‚Ü‚½‚Í DrawRequest3D ‚Å•`‰æ—v‹‚³‚ê‚éƒXƒvƒ‰ƒCƒg‚É‘Î‚µ‚Ä“K—p‚·‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚Å‚·B
+		@brief		ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
+		@details	æ¬¡ã® DrawRequest2D ã¾ãŸã¯ DrawRequest3D ã§æç”»è¦æ±‚ã•ã‚Œã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã«å¯¾ã—ã¦é©ç”¨ã™ã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã§ã™ã€‚
 	*/
 	void SetRenderState(const RenderState& state);
 
 	/**
-		@brief		ƒXƒvƒ‰ƒCƒg‚Ìƒ\[ƒg‚ÉŠÖ‚·‚éî•ñ‚ğİ’è‚µ‚Ü‚·B
+		@brief		ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®ã‚½ãƒ¼ãƒˆã«é–¢ã™ã‚‹æƒ…å ±ã‚’è¨­å®šã—ã¾ã™ã€‚
 		@param[in]	flags		: 
-		@param[in]	basis		: ƒ\[ƒg‚ÌŠî€
-		@details	‚±‚Ìİ’è‚ÍŸ‚Ì Flash ‚Åg—p‚µ‚Ü‚·B
+		@param[in]	basis		: ã‚½ãƒ¼ãƒˆã®åŸºæº–
+		@details	ã“ã®è¨­å®šã¯æ¬¡ã® Flash ã§ä½¿ç”¨ã—ã¾ã™ã€‚
 	*/
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);	// TODO: enum flags
 	
 	/**
-		@brief		ƒXƒvƒ‰ƒCƒg‚Ì•`‰æ‚ğ—v‹‚µ‚Ü‚·B
+		@brief		ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®æç”»ã‚’è¦æ±‚ã—ã¾ã™ã€‚
 		@param[in]	position	: 
 		@param[in]	center		: 
 		@param[in]	size		: 
@@ -74,7 +74,7 @@ public:
 		const ColorF* colorTable);
 
 	/**
-		@brief		ƒXƒvƒ‰ƒCƒg‚Ì•`‰æ‚ğ—v‹‚µ‚Ü‚·B
+		@brief		ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®æç”»ã‚’è¦æ±‚ã—ã¾ã™ã€‚
 		@param[in]	position	: 
 		@param[in]	center		: 
 		@param[in]	size		: 
@@ -91,7 +91,7 @@ public:
 		const ColorF& color);
 
 	/**
-		@brief		ƒXƒvƒ‰ƒCƒg‚Ì•`‰æ‚ğ—v‹‚µ‚Ü‚·B
+		@brief		ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®æç”»ã‚’è¦æ±‚ã—ã¾ã™ã€‚
 		@param[in]	position	: 
 		@param[in]	center		: 
 		@param[in]	size		: 
@@ -110,7 +110,7 @@ public:
 		AxisDirection front);
 
 	/**
-		@brief		—v‹‚³‚ê‚Ä‚¢‚éƒXƒvƒ‰ƒCƒg‚ğ‘S‚Ä•`‰æ‚µ‚Ü‚·B
+		@brief		è¦æ±‚ã•ã‚Œã¦ã„ã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’å…¨ã¦æç”»ã—ã¾ã™ã€‚
 	*/
 	void Flash();
 

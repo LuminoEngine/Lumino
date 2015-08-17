@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 	@file	Common.h
 */
 #pragma once
@@ -7,17 +7,17 @@ namespace Lumino
 {
 class Application;
 
-/// ƒ}ƒEƒXƒ{ƒ^ƒ“
+/// ãƒžã‚¦ã‚¹ãƒœã‚¿ãƒ³
 enum MouseButton
 {
-	MouseButton_Left = 0,		///< ¶ƒ{ƒ^ƒ“
-	MouseButton_Right,			///< ‰Eƒ{ƒ^ƒ“
-	MouseButton_Middle,			///< ’†‰›ƒ{ƒ^ƒ“
+	MouseButton_Left = 0,		///< å·¦ãƒœã‚¿ãƒ³
+	MouseButton_Right,			///< å³ãƒœã‚¿ãƒ³
+	MouseButton_Middle,			///< ä¸­å¤®ãƒœã‚¿ãƒ³
 
-	MouseButton_None = 0xff		///< –³Œø‚Ü‚½‚Í‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ðŽ¦‚·
+	MouseButton_None = 0xff		///< ç„¡åŠ¹ã¾ãŸã¯æŠ¼ã•ã‚Œã¦ã„ãªã„ã“ã¨ã‚’ç¤ºã™
 };
 
-/// ƒL[ƒR[ƒh (NumPad ‚ÍƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢)
+/// ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ (NumPad ã¯ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„)
 enum Key
 {
 	Key_Unknown = 0,
@@ -73,7 +73,7 @@ enum Key
 	Key_F11,
 	Key_F12,
 
-	Key_Space,	// 0x20 = ' ' (ƒXƒy[ƒX)
+	Key_Space,	// 0x20 = ' ' (ã‚¹ãƒšãƒ¼ã‚¹)
 	Key_Escape,
 	Key_Up,
 	Key_Down,
@@ -95,15 +95,15 @@ enum Key
 	Key_Home,
 	Key_End,
 
-	Key_Colon,		///< :	[”ñ„§ GLFW‚Å‚Í;]
-	Key_SemiColon,	///< ;	[”ñ„§ GLFW‚Å‚Í=]
+	Key_Colon,		///< :	[éžæŽ¨å¥¨ GLFWã§ã¯;]
+	Key_SemiColon,	///< ;	[éžæŽ¨å¥¨ GLFWã§ã¯=]
 	Key_Comma,		///< ,
 	Key_Period,		///< .
 	Key_Slash,		///< /
 	Key_Minus,		///< -
-	Key_BackSlash,	///< \(ƒoƒbƒNƒXƒ‰ƒbƒVƒ…) [”ñ„§ GLFW‚Å‚ÍNOWORD2]
-	Key_Yen,		///< \(BaskSpaceƒL[‚Ì¶‚Ì\ƒL[) [”ñ„§ GLFW‚Å‚ÍI]
-	Key_Caret,		///< ^ [”ñ„§ GLFW‚Å‚ÍGLFW_KEY_APOSTROPHE(')]
+	Key_BackSlash,	///< \(ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥) [éžæŽ¨å¥¨ GLFWã§ã¯NOWORD2]
+	Key_Yen,		///< \(BaskSpaceã‚­ãƒ¼ã®å·¦ã®\ã‚­ãƒ¼) [éžæŽ¨å¥¨ GLFWã§ã¯I]
+	Key_Caret,		///< ^ [éžæŽ¨å¥¨ GLFWã§ã¯GLFW_KEY_APOSTROPHE(')]
 	Key_LBracket,	///< [
 	Key_RBracket,	///< ]
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Control.h"
 #include "ContentPresenter.h"
@@ -9,7 +9,7 @@ namespace GUI
 {
 
 /**
-	@brief		1 ‚Â‚ÌƒRƒ“ƒeƒ“ƒc‚ğ‚ÂƒRƒ“ƒgƒ[ƒ‹‚ğ•\‚µ‚Ü‚·B
+	@brief		1 ã¤ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’æŒã¤ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’è¡¨ã—ã¾ã™ã€‚
 */
 class ContentControl
 	: public Control
@@ -21,7 +21,7 @@ public:
 	virtual ~ContentControl();
 
 
-	/// ‚±‚ÌƒRƒ“ƒgƒ[ƒ‹‚ÌƒRƒ“ƒeƒ“ƒc‚ğİ’è‚µ‚Ü‚·B
+	/// ã“ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’è¨­å®šã—ã¾ã™ã€‚
 	void SetContent(Variant value);
 
 	//virtual void Render();
@@ -47,7 +47,7 @@ protected:
 private:
 	ContentPresenter*	m_contentPresenter;
 	Variant		m_content;
-	RefPtr<UIElement>	m_childElement;	///< m_content ‚ª UIElement ‚Å‚ ‚ê‚Î‚»‚ê‚ğw‚·
+	RefPtr<UIElement>	m_childElement;	///< m_content ãŒ UIElement ã§ã‚ã‚Œã°ãã‚Œã‚’æŒ‡ã™
 };
 
 } // namespace GUI

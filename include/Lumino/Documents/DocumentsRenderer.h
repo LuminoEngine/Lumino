@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Graphics/Font.h"
 #include "../Graphics/GraphicsManager.h"

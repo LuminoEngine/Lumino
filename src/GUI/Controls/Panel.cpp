@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/GUI/Controls/Panel.h>
 
@@ -36,9 +36,9 @@ Panel::~Panel()
 //-----------------------------------------------------------------------------
 void Panel::AddChild(const Variant& value)
 {
-	UIElement* item = Variant::Cast<UIElement*>(value);	// TODO: Cast() –³‚¢‚ÅŒ^ƒ`ƒFƒbƒN‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à
+	UIElement* item = Variant::Cast<UIElement*>(value);	// TODO: Cast() ç„¡ã„ã§å‹ãƒã‚§ãƒƒã‚¯ã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚
 	m_children->Add(item);
-	//LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// Šù‚Ée—v‘f‚ª‚ ‚Á‚½
+	//LN_THROW(item->GetParent() == NULL, InvalidOperationException);	// æ—¢ã«è¦ªè¦ç´ ãŒã‚ã£ãŸ
 	//m_children->Add(item);
 	//m_visualChildren.Add(item);
 	//item->SetParent(this);
@@ -50,7 +50,7 @@ void Panel::AddChild(const Variant& value)
 //-----------------------------------------------------------------------------
 void Panel::Children_ItemAdded(UIElement* item)
 {
-	// TODO: ‚±‚±‚Í AddVisualChild ‚Å‚Í‚È‚­‚ÄAGeVisualChild() ‚ğƒI[ƒo[ƒ‰ƒCƒh‚·‚éBWPF ‚Í‚»‚¤‚È‚Á‚Ä‚¢‚éB
+	// TODO: ã“ã“ã¯ AddVisualChild ã§ã¯ãªãã¦ã€GeVisualChild() ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã™ã‚‹ã€‚WPF ã¯ãã†ãªã£ã¦ã„ã‚‹ã€‚
 	AddVisualChild(item);
 }
 
@@ -68,7 +68,7 @@ void Panel::Children_ItemRemoved(UIElement* item)
 //-----------------------------------------------------------------------------
 UIElement* Panel::CheckMouseHoverElement(const PointF& globalPt)
 {
-	// q—v‘f‚ğ—Dæ
+	// å­è¦ç´ ã‚’å„ªå…ˆ
 	LN_FOREACH(UIElement* child, *m_children) {
 		UIElement* e = child->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
@@ -106,7 +106,7 @@ void Panel::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 {
 	UIElement::ApplyTemplateHierarchy(parent);
 	LN_FOREACH(UIElement* child, *m_children) {
-		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// Ä‹A“I‚ÉXV‚·‚é
+		child->ApplyTemplateHierarchy(m_combinedLocalResource);	// å†å¸°çš„ã«æ›´æ–°ã™ã‚‹
 	}
 }
 #endif

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 
@@ -8,15 +8,15 @@ namespace GUI
 {
 
 /**
-	@brief		Shape —v‘f‚ÌŠî–{ƒNƒ‰ƒX‚Å‚·B
+	@brief		Shape è¦ç´ ã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Shape
 	: public UIElement
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();	// TODO: LN_UI_ELEMENT_SUBCLASS_DECL ‚É‚Ü‚Æ‚ß‚½‚¢
+	LN_CORE_OBJECT_TYPE_INFO_DECL();	// TODO: LN_UI_ELEMENT_SUBCLASS_DECL ã«ã¾ã¨ã‚ãŸã„
 	LN_UI_ELEMENT_SUBCLASS_DECL(Shape);
 public:
-	LN_PROPERTY(Graphics::Brush*, FillBrushProperty);	/**< FillBrush ƒvƒƒpƒeƒB‚Ì¯•Êq */
+	LN_PROPERTY(Graphics::Brush*, FillBrushProperty);	/**< FillBrush ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­ */
 
 public:
 
@@ -24,10 +24,10 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	/** }Œ`“à•”‚Ì“h‚è‚Â‚Ô‚µ‚Ég—p‚·‚éƒuƒ‰ƒV‚ğİ’è‚µ‚Ü‚·B*/
+	/** å›³å½¢å†…éƒ¨ã®å¡—ã‚Šã¤ã¶ã—ã«ä½¿ç”¨ã™ã‚‹ãƒ–ãƒ©ã‚·ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetFillBrush(Graphics::Brush* size) { SetTypedPropertyValue<Graphics::Brush*>(SizeProperty, size); }
 
-	/** }Œ`“à•”‚Ì“h‚è‚Â‚Ô‚µ‚Ég—p‚·‚éƒuƒ‰ƒV‚ğæ“¾‚µ‚Ü‚·B*/
+	/** å›³å½¢å†…éƒ¨ã®å¡—ã‚Šã¤ã¶ã—ã«ä½¿ç”¨ã™ã‚‹ãƒ–ãƒ©ã‚·ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	Graphics::Brush* GetFillBrush() const { return GetTypedPropertyValue<Graphics::Brush*>(SizeProperty); }
 
 	/** @} */
@@ -41,7 +41,7 @@ protected:
 };
 
 /**
-	@brief		lŠpŒ`‚ğ•`‰æ‚·‚é GUI —v‘f‚Å‚·B
+	@brief		å››è§’å½¢ã‚’æç”»ã™ã‚‹ GUI è¦ç´ ã§ã™ã€‚
 */
 class Rectangle
 	: public Shape
@@ -51,8 +51,8 @@ class Rectangle
 
 public:
 	/**
-		@brief	Rectangle ‚ğì¬‚µ‚Ü‚·B
-		@return	ì¬‚³‚ê‚½ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒ|ƒCƒ“ƒ^Bg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄAQÆ‚ğ‰ğ•ú‚µ‚Ä‚­‚¾‚³‚¢B	
+		@brief	Rectangle ã‚’ä½œæˆã—ã¾ã™ã€‚
+		@return	ä½œæˆã•ã‚ŒãŸã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã€‚ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦ã€å‚ç…§ã‚’è§£æ”¾ã—ã¦ãã ã•ã„ã€‚	
 	*/
 	Rectangle* Create();
 

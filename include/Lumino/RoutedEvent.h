@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <functional>
 #include "Variant.h"
@@ -9,7 +9,7 @@ namespace Lumino
 /**
 	@brief		
 */
-class RoutedEventArgs	// TOOD: –¼‘O RoutedEventArgs
+class RoutedEventArgs	// TOOD: åå‰ RoutedEventArgs
 	: public CoreObject
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
@@ -43,7 +43,7 @@ public:
 
 public:
 	const Property*	ChangedProperty;
-	//String	PropertyName;	// TODO: íœ‚·‚é
+	//String	PropertyName;	// TODO: å‰Šé™¤ã™ã‚‹
 	Variant	NewValue;
 	Variant	OldValue;
 };
@@ -85,8 +85,8 @@ public:
 	//typedef void (TClass::*CallEventHandler)(CoreObject* sender, TEventArgs*);
 	//typedef void (TClass::*OnEvent)(TEventArgs*);
 
-	// Event ‚ğ’¼ÚQÆ‚µ‚Ä‚Í‚È‚ç‚È‚¢B‚±‚ÌƒNƒ‰ƒX‚Í Property ‚Æ“¯‚¶‚­A•¡”‚Ì UIElement ‚Å‹¤—L‚³‚ê‚éBó‘Ô‚ğ‚Á‚Ä‚Í‚È‚ç‚È‚¢B
-	// ‚È‚Ì‚ÅAƒCƒxƒ“ƒg‚ğ Raise ‚·‚éŠÖ”ƒ|ƒCƒ“ƒ^‚ğQÆ‚·‚éB
+	// Event ã‚’ç›´æ¥å‚ç…§ã—ã¦ã¯ãªã‚‰ãªã„ã€‚ã“ã®ã‚¯ãƒ©ã‚¹ã¯ Property ã¨åŒã˜ãã€è¤‡æ•°ã® UIElement ã§å…±æœ‰ã•ã‚Œã‚‹ã€‚çŠ¶æ…‹ã‚’æŒã£ã¦ã¯ãªã‚‰ãªã„ã€‚
+	// ãªã®ã§ã€ã‚¤ãƒ™ãƒ³ãƒˆã‚’ Raise ã™ã‚‹é–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã‚’å‚ç…§ã™ã‚‹ã€‚
 
 	typedef void(*RaiseEventFunc)(CoreObject* obj, RoutedEventArgs* e);
 
@@ -111,7 +111,7 @@ public:
 
 	//virtual TypeInfo* GetOwnerClassTypeInfo() const { return TOwnerClass::GetClassTypeInfo(); }
 
-	virtual const String& GetName() const { return m_name; }	// TODO: virtual ‚É‚·‚é•K—v‚È‚¢‚©‚à
+	virtual const String& GetName() const { return m_name; }	// TODO: virtual ã«ã™ã‚‹å¿…è¦ãªã„ã‹ã‚‚
 
 	virtual void CallEvent(CoreObject* target, RoutedEventArgs* e) const
 	{
@@ -131,7 +131,7 @@ public:
 	//	(instance->*m_onEvent)(et);
 	//}
 
-	/// ƒOƒ[ƒoƒ‹‹óŠÔ‚É’è‹`‚³‚ê‚½ static •Ï”‚ğ‰Šú‰»‚·‚é‚Ì‚ª–Ú“I
+	/// ã‚°ãƒ­ãƒ¼ãƒãƒ«ç©ºé–“ã«å®šç¾©ã•ã‚ŒãŸ static å¤‰æ•°ã‚’åˆæœŸåŒ–ã™ã‚‹ã®ãŒç›®çš„
 	static RoutedEvent* RegisterRoutedEvent(TypeInfo* ownerClass, RoutedEvent* ev)
 	{
 		ownerClass->RegisterRoutedEvent(ev);
@@ -228,7 +228,7 @@ private:
 };
 
 /// https://msdn.microsoft.com/ja-jp/library/ms597875%28v=vs.110%29.aspx
-/// LN_DEFINE_ROUTED_EVENT ‚Æ‚Ìˆá‚¢‚ÍAƒCƒxƒ“ƒg‚ğó‚¯æ‚é‚à‚Ì‚Å‚ ‚é‚±‚ÆB
+/// LN_DEFINE_ROUTED_EVENT ã¨ã®é•ã„ã¯ã€ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚‹ã‚‚ã®ã§ã‚ã‚‹ã“ã¨ã€‚
 #define LN_REGISTER_ROUTED_EVENT_HANDLER(ownerClass, eventArgs, routedEvent, handler) \
 { \
 	static ::Lumino::TypedRoutedEventHandler<ownerClass, eventArgs> h(routedEvent, [](ownerClass* t, eventArgs* e) { t->handler(e); }); \

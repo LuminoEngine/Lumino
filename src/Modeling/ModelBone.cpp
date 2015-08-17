@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include "ModelBone.h"
 
@@ -38,17 +38,17 @@ void ModelBone::Create(ModelBoneCore* core)
 //-----------------------------------------------------------------------------
 void ModelBone::UpdateTransformHierarchy(const Matrix& parentMatrix)
 {
-	// m_localTransform ‚ÍAƒ{[ƒ“‚Ìƒ[ƒJƒ‹Žp¨‚ÅƒAƒjƒ[ƒVƒ‡ƒ“‚ª“K—p‚³‚ê‚Ä‚¢‚éB
-	// “K—p‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î IdentityB
+	// m_localTransform ã¯ã€ãƒœãƒ¼ãƒ³ã®ãƒ­ãƒ¼ã‚«ãƒ«å§¿å‹¢ã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒé©ç”¨ã•ã‚Œã¦ã„ã‚‹ã€‚
+	// é©ç”¨ã•ã‚Œã¦ã„ãªã‘ã‚Œã° Identityã€‚
 	m_combinedMatrix = m_localTransform;
 
-	// e‚©‚ç‚Ì•½sˆÚ“®—Ê
+	// è¦ªã‹ã‚‰ã®å¹³è¡Œç§»å‹•é‡
 	m_combinedMatrix.Translate(m_core->GetOffsetFromParent());
 
-	// es—ñ‚ÆŒ‹‡
+	// è¦ªè¡Œåˆ—ã¨çµåˆ
 	m_combinedMatrix *= parentMatrix;
 
-	// Žqƒ{[ƒ“XV
+	// å­ãƒœãƒ¼ãƒ³æ›´æ–°
 	LN_FOREACH(ModelBone* bone, m_children)
 	{
 		bone->UpdateTransformHierarchy(m_combinedMatrix);

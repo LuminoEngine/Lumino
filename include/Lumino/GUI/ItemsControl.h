@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Control.h"
 #include "ContentControl.h"
@@ -12,10 +12,10 @@ namespace GUI
 
 LN_ENUM(ListChangedAction)
 {
-	Add	= 0,	///< 1‚ÂˆÈã‚Ì—v‘f‚ªƒŠƒXƒg‚É’Ç‰Á‚³‚ê‚½
-	Remove,		///< 1‚ÂˆÈã‚Ì—v‘f‚ªƒŠƒXƒg‚©‚çæ‚èœ‚©‚ê‚½
-	Replace,	///< 1‚ÂˆÈã‚Ì—v‘f‚ª•ÏX‚³‚ê‚½
-	Move,		///< 1‚ÂˆÈã‚Ì—v‘f‚ªƒŠƒXƒg“à‚ğˆÚ“®‚µ‚½
+	Add	= 0,	///< 1ã¤ä»¥ä¸Šã®è¦ç´ ãŒãƒªã‚¹ãƒˆã«è¿½åŠ ã•ã‚ŒãŸ
+	Remove,		///< 1ã¤ä»¥ä¸Šã®è¦ç´ ãŒãƒªã‚¹ãƒˆã‹ã‚‰å–ã‚Šé™¤ã‹ã‚ŒãŸ
+	Replace,	///< 1ã¤ä»¥ä¸Šã®è¦ç´ ãŒå¤‰æ›´ã•ã‚ŒãŸ
+	Move,		///< 1ã¤ä»¥ä¸Šã®è¦ç´ ãŒãƒªã‚¹ãƒˆå†…ã‚’ç§»å‹•ã—ãŸ
 };
 LN_ENUM_DECLARE(ListChangedAction);
 
@@ -51,7 +51,7 @@ public:
 //	: public CoreObject
 //{
 //public:
-//	/// ˆ—‚ÌŠî‚É‚È‚éƒŠƒXƒg‚ğİ’è‚µ‚Ü‚·B
+//	/// å‡¦ç†ã®åŸºã«ãªã‚‹ãƒªã‚¹ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
 //	void SetSourceList(VariantList* list) { m_list = list; }
 //
 //	bool CanFilter() const { return false; }	// TODO
@@ -61,14 +61,14 @@ public:
 //	bool CanSort() const { return false; }		// TODO
 //
 //
-//	// ƒ†[ƒeƒBƒŠƒeƒB
+//	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 //	void AddGroup(const String& name);
 //
 //private:
 //	RefPtr<VariantList>	m_list;
 //};
 //
-//// ItemSource ‚ª NULL ‚ÌA“à•”“I‚Ég‚í‚ê‚éB
+//// ItemSource ãŒ NULL ã®æ™‚ã€å†…éƒ¨çš„ã«ä½¿ã‚ã‚Œã‚‹ã€‚
 //class InternalItemViewModel
 //{
 //
@@ -85,9 +85,9 @@ public:
 	Event01<ListChangedEventArgs*>	ItemsChanged;
 
 protected:
-	virtual void OnItemAdded(const Variant& item)	// TODO ƒCƒ“ƒfƒbƒNƒX‚àæ‚è‚½‚¢‚©‚à
+	virtual void OnItemAdded(const Variant& item)	// TODO ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚‚å–ã‚ŠãŸã„ã‹ã‚‚
 	{
-		auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Add);	// TODO ƒLƒƒƒbƒVƒ…‚µ‚½‚¢
+		auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Add);	// TODO ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ãŸã„
 		args->NewItems.AddVariant(item);
 		ItemsChanged(args);
 	}
@@ -151,7 +151,7 @@ class ItemsControl
 	LN_UI_ELEMENT_SUBCLASS_DECL(ItemsControl);
 public:
 	LN_PROPERTY(ControlTemplate*,	ItemsPanelTemplateProperty);
-	LN_PROPERTY(Style*,				GroupStyleProperty);			// TODO: StylePtr ‚É‚Å‚«‚È‚¢H
+	LN_PROPERTY(Style*,				GroupStyleProperty);			// TODO: StylePtr ã«ã§ããªã„ï¼Ÿ
 
 public:
 	static ItemsControl* Create(GUIManager* manager);
@@ -198,8 +198,8 @@ private:
 private:
 	friend class GroupItemList;
 	RefPtr<ControlTemplate>	m_itemsPanelTemplate;
-	ItemsPresenter*			m_visualItemsPresenter;	///< VisualTree “à‚Ì ItemsPresenter
-	RefPtr<Panel>			m_hostPanel;			///< ƒAƒCƒeƒ€ƒRƒ“ƒgƒ[ƒ‹‚Ì’Ç‰Áæ
+	ItemsPresenter*			m_visualItemsPresenter;	///< VisualTree å†…ã® ItemsPresenter
+	RefPtr<Panel>			m_hostPanel;			///< ã‚¢ã‚¤ãƒ†ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¿½åŠ å…ˆ
 	ItemListPtr				m_itemList;
 	RefPtr<GroupItemList>	m_groupItemList;
 
@@ -215,12 +215,12 @@ private:
 	@brief
 */
 class GroupItem
-	: public ItemsControl	// TODO: HeaderedItemsControl ‚Ö
+	: public ItemsControl	// TODO: HeaderedItemsControl ã¸
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(GroupItem);
 public:
-	LN_PROPERTY(Variant,	HeaderProperty);	// TODO: HeaderedItemsControl ‚Ö
+	LN_PROPERTY(Variant,	HeaderProperty);	// TODO: HeaderedItemsControl ã¸
 
 public:
 	static GroupItemPtr Create();

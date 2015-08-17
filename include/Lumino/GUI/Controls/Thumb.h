@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Control.h"
 
@@ -8,7 +8,7 @@ namespace GUI
 {
 
 /**
-	@brief		ƒ}ƒEƒXƒhƒ‰ƒbƒO‚ªŠÖŒW‚·‚éƒCƒxƒ“ƒgˆø”‚Å‚·B
+	@brief		ãƒã‚¦ã‚¹ãƒ‰ãƒ©ãƒƒã‚°ãŒé–¢ä¿‚ã™ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆå¼•æ•°ã§ã™ã€‚
 */
 class DragEventArgs
 	: public RoutedEventArgs
@@ -19,15 +19,15 @@ public:
 	virtual ~DragEventArgs() {}
 
 public:
-	float XOffset;		///< ƒhƒ‰ƒbƒOŠJn“_‚©‚ç‚Ì…•½‹——£
-	float YOffset;		///< ƒhƒ‰ƒbƒOŠJn“_‚©‚ç‚Ì‚’¼‹——£
+	float XOffset;		///< ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ç‚¹ã‹ã‚‰ã®æ°´å¹³è·é›¢
+	float YOffset;		///< ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ç‚¹ã‹ã‚‰ã®å‚ç›´è·é›¢
 };
 
 /**
 	@brief
-	@note		Thumb ‚Íƒ}ƒEƒXƒhƒ‰ƒbƒO‚É‚æ‚éˆÚ“®—Ê‚ğ’Ê’m‚·‚é‚½‚ß‚ÌƒRƒ“ƒgƒ[ƒ‹B
-				Thumb ©‘Ì‚ÌˆÊ’u‚ğˆÚ“®‚·‚é‚à‚Ì‚Å‚Í‚È‚¢“_‚É’ˆÓB
-				ScrollBar ‚Í‚à‚¿‚ë‚ñAGridSpritter ‚à Thumb ‚ÌƒTƒuƒNƒ‰ƒXB
+	@note		Thumb ã¯ãƒã‚¦ã‚¹ãƒ‰ãƒ©ãƒƒã‚°ã«ã‚ˆã‚‹ç§»å‹•é‡ã‚’é€šçŸ¥ã™ã‚‹ãŸã‚ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã€‚
+				Thumb è‡ªä½“ã®ä½ç½®ã‚’ç§»å‹•ã™ã‚‹ã‚‚ã®ã§ã¯ãªã„ç‚¹ã«æ³¨æ„ã€‚
+				ScrollBar ã¯ã‚‚ã¡ã‚ã‚“ã€GridSpritter ã‚‚ Thumb ã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã€‚
 */
 class Thumb
 	: public Control
@@ -35,12 +35,12 @@ class Thumb
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Thumb);
 public:
-	LN_PROPERTY(bool, IsDraggingProperty);				///< IsDragging ƒvƒƒpƒeƒB‚Ì¯•Êq
+	LN_PROPERTY(bool, IsDraggingProperty);				///< IsDragging ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è­˜åˆ¥å­
 
-	LN_ROUTED_EVENT(DragEventArgs, DragStartedEvent);	///< DragStarted ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq
-	LN_ROUTED_EVENT(DragEventArgs, DragDeltaEvent);		///< DragDelta ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq
-	LN_ROUTED_EVENT(DragEventArgs, DragCompletedEvent);	///< DragCompleted ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq
-	LN_ROUTED_EVENT(DragEventArgs, DragCanceledEvent);	///< DragCanceled ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ì¯•Êq
+	LN_ROUTED_EVENT(DragEventArgs, DragStartedEvent);	///< DragStarted ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­
+	LN_ROUTED_EVENT(DragEventArgs, DragDeltaEvent);		///< DragDelta ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­
+	LN_ROUTED_EVENT(DragEventArgs, DragCompletedEvent);	///< DragCompleted ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­
+	LN_ROUTED_EVENT(DragEventArgs, DragCanceledEvent);	///< DragCanceled ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­
 
 
 public:
@@ -49,20 +49,20 @@ public:
 	Thumb(GUIManager* manager);
 	virtual ~Thumb();
 
-	/// ƒhƒ‰ƒbƒO’†‚Å‚ ‚é‚©‚ğŠm”F‚·‚é
+	/// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã§ã‚ã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹
 	bool IsDragging() const { return m_isDragging; }
 
-	/// ƒhƒ‰ƒbƒO‚ğƒLƒƒƒ“ƒZƒ‹‚·‚é
+	/// ãƒ‰ãƒ©ãƒƒã‚°ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã™ã‚‹
 	void CancelDrag();
 
 	//-------------------------------------------------------------------------
 	/** @name Events */
 	/** @{ */
 
-	RoutedEventSlot<DragEventArgs>	DragStarted;		///< ƒ}ƒEƒXƒhƒ‰ƒbƒO‚ğŠJn‚µ‚½‚Æ‚«‚É”­¶‚·‚éƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg
-	RoutedEventSlot<DragEventArgs>	DragDelta;			///< ƒ}ƒEƒXƒhƒ‰ƒbƒO’†‚É”­¶‚·‚éƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg
-	RoutedEventSlot<DragEventArgs>	DragCompleted;		///< ƒ}ƒEƒXƒhƒ‰ƒbƒO‚ªŠ®—¹‚µ‚½‚Æ‚«‚É”­¶‚·‚éƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg
-	RoutedEventSlot<DragEventArgs>	DragCanceled;		///< ƒ}ƒEƒXƒhƒ‰ƒbƒO‚ğ’†’f‚µ‚½‚Æ‚«‚É”­¶‚·‚éƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg
+	RoutedEventSlot<DragEventArgs>	DragStarted;		///< ãƒã‚¦ã‚¹ãƒ‰ãƒ©ãƒƒã‚°ã‚’é–‹å§‹ã—ãŸã¨ãã«ç™ºç”Ÿã™ã‚‹ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆ
+	RoutedEventSlot<DragEventArgs>	DragDelta;			///< ãƒã‚¦ã‚¹ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã«ç™ºç”Ÿã™ã‚‹ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆ
+	RoutedEventSlot<DragEventArgs>	DragCompleted;		///< ãƒã‚¦ã‚¹ãƒ‰ãƒ©ãƒƒã‚°ãŒå®Œäº†ã—ãŸã¨ãã«ç™ºç”Ÿã™ã‚‹ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆ
+	RoutedEventSlot<DragEventArgs>	DragCanceled;		///< ãƒã‚¦ã‚¹ãƒ‰ãƒ©ãƒƒã‚°ã‚’ä¸­æ–­ã—ãŸã¨ãã«ç™ºç”Ÿã™ã‚‹ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆ
 
 	/** @} */
 
@@ -83,7 +83,7 @@ private:
 };
 
 /**
-	@brief		Thumb ‚ÌŠOŠÏ
+	@brief		Thumb ã®å¤–è¦³
 */
 class ThumbChrome
 	: public UIElement
@@ -108,8 +108,8 @@ public:
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
-	//virtual Size MeasureOverride(Size availableSize);	// •K—v‚È‚¢‚©‚à
-	//virtual Size ArrangeOverride(Size finalSize);		// •K—v‚È‚¢‚©‚à
+	//virtual Size MeasureOverride(Size availableSize);	// å¿…è¦ãªã„ã‹ã‚‚
+	//virtual Size ArrangeOverride(Size finalSize);		// å¿…è¦ãªã„ã‹ã‚‚
 	virtual void OnRender(Graphics::Painter* painter);
 
 private:

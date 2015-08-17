@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "Device/DeviceInterface.h"
@@ -88,7 +88,7 @@ struct BrushData
 
 
 /// PainterEngine
-///		‚±‚ÌƒNƒ‰ƒX‚Í Brush ‚ğQÆ‚µ‚È‚¢‚æ‚¤‚É‚·‚é‚±‚ÆB
+///		ã“ã®ã‚¯ãƒ©ã‚¹ã¯ Brush ã‚’å‚ç…§ã—ãªã„ã‚ˆã†ã«ã™ã‚‹ã“ã¨ã€‚
 class PainterEngine
 	: public RefObject
 {
@@ -107,7 +107,7 @@ public:
 	void Create(GraphicsManager* manager);
 
 
-	void Begin();	// ¡‚Ì‚Æ‚±‚ëƒlƒXƒg‹Ö~
+	void Begin();	// ä»Šã®ã¨ã“ã‚ãƒã‚¹ãƒˆç¦æ­¢
 	void End();
 
 
@@ -131,11 +131,11 @@ public:
 
 	//void DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
 
-	// srcTexture ‚Í NULL ‚È‚çƒ_ƒ~[ƒeƒNƒXƒ`ƒƒ‚ªg‚í‚ê‚é
-	/// srcRect ‚ÍƒTƒCƒY‚ª INT_MAX ‚Å‚ ‚ê‚Î‘S‘Ì‚ğ“]‘—‚·‚é‚±‚Æ‚ğ¦‚·
+	// srcTexture ã¯ NULL ãªã‚‰ãƒ€ãƒŸãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒä½¿ã‚ã‚Œã‚‹
+	/// srcRect ã¯ã‚µã‚¤ã‚ºãŒ INT_MAX ã§ã‚ã‚Œã°å…¨ä½“ã‚’è»¢é€ã™ã‚‹ã“ã¨ã‚’ç¤ºã™
 	void DrawFrameRectangle(const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect*/);
 
-	/// “h‚è‚Â‚Ô‚µ•`‰æ
+	/// å¡—ã‚Šã¤ã¶ã—æç”»
 	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
 
 private:
@@ -153,12 +153,12 @@ private:
 	{
 	public:
 
-		Vector3	Position;			///< ˆÊ’u
-		Vector4	Color;				///< ’¸“_ƒJƒ‰[
-		Vector4	UVOffset;		///< ƒeƒNƒXƒ`ƒƒUV (“]‘—Œ³‚ÌUVî•ñ)
-		Vector2	UVTileUnit;		///< ƒeƒNƒXƒ`ƒƒUV (ƒ^ƒCƒŠƒ“ƒO‹óŠÔ‚Ì‚Ç‚±‚É‚¢‚é‚©)
+		Vector3	Position;			///< ä½ç½®
+		Vector4	Color;				///< é ‚ç‚¹ã‚«ãƒ©ãƒ¼
+		Vector4	UVOffset;		///< ãƒ†ã‚¯ã‚¹ãƒãƒ£UV (è»¢é€å…ƒã®UVæƒ…å ±)
+		Vector2	UVTileUnit;		///< ãƒ†ã‚¯ã‚¹ãƒãƒ£UV (ã‚¿ã‚¤ãƒªãƒ³ã‚°ç©ºé–“ã®ã©ã“ã«ã„ã‚‹ã‹)
 
-		/// ’¸“_ƒŒƒCƒAƒEƒg
+		/// é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
 		static Graphics::VertexElement* Elements()
 		{
 			static Graphics::VertexElement elements[] =
@@ -177,7 +177,7 @@ private:
 	{
 		BrushData	Brush;
 		float		Opacity;
-		ColorF		ForeColor;		///< æZ‚·‚éFBSolidColorBrush ‚Ì‚Í‚»‚ÌF‚É‚È‚éB‚»‚ê‚Æ Opacity ‚ÌæZŒ‹‰ÊB
+		ColorF		ForeColor;		///< ä¹—ç®—ã™ã‚‹è‰²ã€‚SolidColorBrush ã®æ™‚ã¯ãã®è‰²ã«ãªã‚‹ã€‚ãã‚Œã¨ Opacity ã®ä¹—ç®—çµæœã€‚
 		RefPtr<Device::ITexture>	InternalGlyphMask;
 	};
 
@@ -203,7 +203,7 @@ private:
 		Device::IShaderVariable*	varViewProjMatrix;
 		Device::IShaderVariable*	varTexture;
 		Device::IShaderVariable*	varGlyphMaskSampler;
-		Device::IShaderVariable*	varViewportSize;	///< DX9 HLSL —p‚ÌƒsƒNƒZƒ‹ƒIƒtƒZƒbƒgŒvZ—pBGLSL ‚Å‚ÍÅ“K‰»‚É‚æ‚èÁ‚¦‚é‚±‚Æ‚à‚ ‚é
+		Device::IShaderVariable*	varViewportSize;	///< DX9 HLSL ç”¨ã®ãƒ”ã‚¯ã‚»ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆè¨ˆç®—ç”¨ã€‚GLSL ã§ã¯æœ€é©åŒ–ã«ã‚ˆã‚Šæ¶ˆãˆã‚‹ã“ã¨ã‚‚ã‚ã‚‹
 
 	} m_shader;
 };

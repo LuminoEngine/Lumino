@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "AnimationCurve.h"
@@ -8,7 +8,7 @@ namespace Lumino
 namespace Animation
 {
 
-/// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì’l‚ğİ’è‚·‚éƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX
+/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å€¤ã‚’è¨­å®šã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 class IAnimationTargetAttribute
 {
 public:
@@ -19,16 +19,16 @@ public:
 
 };
 
-/// IAnimationTargetAttribute ‚Éˆêƒoƒbƒtƒ@‚ğ‚½‚¹‚½‚­‚È‚©‚Á‚½‚Ì‚ÅAƒ‰ƒbƒv‚·‚é\‘¢‘Ì‚ğ—pˆÓ‚·‚é
+/// IAnimationTargetAttribute ã«ä¸€æ™‚ãƒãƒƒãƒ•ã‚¡ã‚’æŒãŸã›ãŸããªã‹ã£ãŸã®ã§ã€ãƒ©ãƒƒãƒ—ã™ã‚‹æ§‹é€ ä½“ã‚’ç”¨æ„ã™ã‚‹
 struct AnimationTargetAttributeEntity
 {
 	IAnimationTargetAttribute*	Target;
-	ValueType					Type;			///< Buffer ‚Ì’l‚ÌŒ^
-	byte_t						Buffer[64];		///< IAnimationTargetAttribute ‚Éİ’è‚·‚é‘O‚ÌŒvZ‚Ìˆêƒoƒbƒtƒ@
-	bool						Modified;		///< 1 ‚ÂˆÈã’l‚ªİ’è‚³‚ê‚½‚©
+	ValueType					Type;			///< Buffer ã®å€¤ã®å‹
+	byte_t						Buffer[64];		///< IAnimationTargetAttribute ã«è¨­å®šã™ã‚‹å‰ã®è¨ˆç®—ã®ä¸€æ™‚ãƒãƒƒãƒ•ã‚¡
+	bool						Modified;		///< 1 ã¤ä»¥ä¸Šå€¤ãŒè¨­å®šã•ã‚ŒãŸã‹
 };
 
-/// ƒf[ƒ^ƒ‚ƒfƒ‹‚Å‚ ‚é AnimationClip ‚É‘Î‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX
+/// ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ã§ã‚ã‚‹ AnimationClip ã«å¯¾ã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 class AnimationState
 	: public RefObject
 {
@@ -37,22 +37,22 @@ public:
 	~AnimationState();
 
 public:
-	/// –¼‘O‚Ìæ“¾
+	/// åå‰ã®å–å¾—
 	const String& GetName() const;
 
-	/// AnimationTarget ‚ÌÄŠ„‚è“–‚Ä‚ğs‚¤
+	/// AnimationTarget ã®å†å‰²ã‚Šå½“ã¦ã‚’è¡Œã†
 	void Refresh(Animator* animator);
 
-	/// Ä¶ó‘Ô‚Ìİ’è
+	/// å†ç”ŸçŠ¶æ…‹ã®è¨­å®š
 	void SetPlayState(PlayState state);
 
-	/// Ä¶ó‘Ô‚Ìæ“¾
+	/// å†ç”ŸçŠ¶æ…‹ã®å–å¾—
 	PlayState GetPlayState() const { return m_state; }
 
-	/// ‚±‚Ì AnimationState ‚Ì“¯ƒŒƒCƒ„[“à‚ÌƒuƒŒƒ“ƒh—¦
+	/// ã“ã® AnimationState ã®åŒãƒ¬ã‚¤ãƒ¤ãƒ¼å†…ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡
 	void SetAddingBlendWeight(float weight) { m_addingBlendWeight = weight; }
 
-	/// ŠÔ‚ği‚ß‚é
+	/// æ™‚é–“ã‚’é€²ã‚ã‚‹
 	void AdvanceTime(double elapsedTime);
 
 private:
@@ -62,8 +62,8 @@ private:
 private:
 	struct AnimationTarget
 	{
-		AnimationCurve*					Curve;		// ‚±‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Í
-		AnimationTargetAttributeEntity*	Target;		// TargetState.Value ‚É’l‚ğƒZƒbƒg‚·‚é
+		AnimationCurve*					Curve;		// ã“ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¯
+		AnimationTargetAttributeEntity*	Target;		// TargetState.Value ã«å€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	};
 
 	typedef ArrayList<AnimationTarget>	AnimationTargetList;

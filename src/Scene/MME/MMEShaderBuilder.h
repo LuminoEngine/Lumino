@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "MMETypes.h"
@@ -11,14 +11,14 @@ class MMEShader;
 class MMEShaderErrorInfo;
 
 /// MMEShaderBuilder
-///		‚±‚ÌƒNƒ‰ƒX‚Í MMEShader ‚ÌÃ“I‚Èƒf[ƒ^‚Ì\’z‚ğs‚¤B
-///		E•Ï”‚Ì—v‹ƒf[ƒ^A‘®«‚ÌŒˆ’è
-///		EƒeƒNƒjƒbƒN‚Ì‰ğÍ
-///		EƒeƒNƒjƒbƒNAƒpƒX‚ÌƒXƒNƒŠƒvƒg‚ÌƒRƒ}ƒ“ƒh‰»
-///		ƒeƒNƒXƒ`ƒƒ“™ƒŠƒ\[ƒX‚ÌŠm•Û‚Í‚±‚ÌƒNƒ‰ƒX‚Å‚Ís‚í‚È‚¢B
-///		“Á‚ÉƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÍƒTƒCƒY‚ğ”{—¦w’è‚Åì¬‚µ‚Ä‚¢‚éê‡‚ÍƒoƒbƒNƒoƒbƒtƒ@ƒTƒCƒY‚ª•Ï‚í‚Á‚½‚çÄŠm•Û‚·‚é‚×‚«‚È‚Ì‚ÅA
-///		Às’†‚ÉÀ‘Ô‚ª (•p”É‚É‚Å‚Í‚È‚¢‚ª) •Ï‚í‚é‚±‚Æ‚à‚ ‚è“¾‚éB‚±‚¤‚¢‚Á‚½ƒŠƒ\[ƒX‚Íu“®“Iv‚ÆˆÊ’u•t‚¯‚Ä‚¢‚éB
-///		‚Ü‚½Aƒƒ^ƒf[ƒ^‚Ì‰ğÍˆ—‚ÆƒŠƒ\[ƒXŠm•Û‚Ìˆ—‚ğ‡‚í‚¹‚é‚Æ‘Š“–‚ÈƒR[ƒh—Ê‚É‚È‚é‚Ì‚ÅA’S“–‚ğ•ª‚¯‚é‚±‚Æ‚ÅŠÈ—ª‰»‚ğ}‚Á‚Ä‚¢‚éB
+///		ã“ã®ã‚¯ãƒ©ã‚¹ã¯ MMEShader ã®é™çš„ãªãƒ‡ãƒ¼ã‚¿ã®æ§‹ç¯‰ã‚’è¡Œã†ã€‚
+///		ãƒ»å¤‰æ•°ã®è¦æ±‚ãƒ‡ãƒ¼ã‚¿ã€å±æ€§ã®æ±ºå®š
+///		ãƒ»ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®è§£æ
+///		ãƒ»ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã€ãƒ‘ã‚¹ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ã‚³ãƒãƒ³ãƒ‰åŒ–
+///		ãƒ†ã‚¯ã‚¹ãƒãƒ£ç­‰ãƒªã‚½ãƒ¼ã‚¹ã®ç¢ºä¿ã¯ã“ã®ã‚¯ãƒ©ã‚¹ã§ã¯è¡Œã‚ãªã„ã€‚
+///		ç‰¹ã«ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ã‚µã‚¤ã‚ºã‚’å€ç‡æŒ‡å®šã§ä½œæˆã—ã¦ã„ã‚‹å ´åˆã¯ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒå¤‰ã‚ã£ãŸã‚‰å†ç¢ºä¿ã™ã‚‹ã¹ããªã®ã§ã€
+///		å®Ÿè¡Œä¸­ã«å®Ÿæ…‹ãŒ (é »ç¹ã«ã§ã¯ãªã„ãŒ) å¤‰ã‚ã‚‹ã“ã¨ã‚‚ã‚ã‚Šå¾—ã‚‹ã€‚ã“ã†ã„ã£ãŸãƒªã‚½ãƒ¼ã‚¹ã¯ã€Œå‹•çš„ã€ã¨ä½ç½®ä»˜ã‘ã¦ã„ã‚‹ã€‚
+///		ã¾ãŸã€ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿ã®è§£æå‡¦ç†ã¨ãƒªã‚½ãƒ¼ã‚¹ç¢ºä¿ã®å‡¦ç†ã‚’åˆã‚ã›ã‚‹ã¨ç›¸å½“ãªã‚³ãƒ¼ãƒ‰é‡ã«ãªã‚‹ã®ã§ã€æ‹…å½“ã‚’åˆ†ã‘ã‚‹ã“ã¨ã§ç°¡ç•¥åŒ–ã‚’å›³ã£ã¦ã„ã‚‹ã€‚
 class MMEShaderBuilder
 {
 public:
@@ -30,36 +30,36 @@ private:
 
 	void Build();
 
-	///	ƒVƒF[ƒ_•Ï”‚ÌƒZƒ}ƒ“ƒeƒBƒNƒX‚ğ’²‚×‚Ä‘Î‰‚·‚é—v‹€–Ú‚ğ•Ô‚·
-	///		@param[out] script_output		: STANDARDSGLOBAL ‚Ì ScriptOutput ‚Ì’l‚ğŠi”[‚·‚é•Ï”‚ÌƒAƒhƒŒƒX (í‚É "color")
-	///		@param[out] script_class		: ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚Ìg—p–Ú“I (ƒfƒtƒHƒ‹ƒg‚Å "object")
-	///		@param[out] script_order		: ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚ÌÀsƒ^ƒCƒ~ƒ“ƒO (ƒfƒtƒHƒ‹ƒg‚Í "standard")            
-	///		@param[out] is_controllobject	: —LŒø‚È CONTROLOBJECT ƒZƒ}ƒ“ƒeƒBƒNƒX‚Ìê‡Atrue ‚ªŠi”[‚³‚ê‚é
-	///		script_output_Ascript_class_Ascript_order_ ‚Í STANDARDSGLOBAL ‚ª
-	///		‚ ‚éê‡‚Ì‚İİ’è‚³‚ê‚éB‚±‚ÌŠÖ”‚ÌŒÄ‚Ño‚µ‘¤‚Å sv_->Request == MME_VARREQ_STANDARDSGLOBAL ‚Æ
-	///		ƒ`ƒFƒbƒNŒãA•Ï”‚Ì’†g‚ğŠm”F‚·‚é‚±‚ÆB
+	///	ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°ã®ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ã‚’èª¿ã¹ã¦å¯¾å¿œã™ã‚‹è¦æ±‚é …ç›®ã‚’è¿”ã™
+	///		@param[out] script_output		: STANDARDSGLOBAL ã® ScriptOutput ã®å€¤ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ (å¸¸ã« "color")
+	///		@param[out] script_class		: ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ä½¿ç”¨ç›®çš„ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ "object")
+	///		@param[out] script_order		: ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿè¡Œã‚¿ã‚¤ãƒŸãƒ³ã‚° (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯ "standard")            
+	///		@param[out] is_controllobject	: æœ‰åŠ¹ãª CONTROLOBJECT ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ã®å ´åˆã€true ãŒæ ¼ç´ã•ã‚Œã‚‹
+	///		script_output_ã€script_class_ã€script_order_ ã¯ STANDARDSGLOBAL ãŒ
+	///		ã‚ã‚‹å ´åˆã®ã¿è¨­å®šã•ã‚Œã‚‹ã€‚ã“ã®é–¢æ•°ã®å‘¼ã³å‡ºã—å´ã§ sv_->Request == MME_VARREQ_STANDARDSGLOBAL ã¨
+	///		ãƒã‚§ãƒƒã‚¯å¾Œã€å¤‰æ•°ã®ä¸­èº«ã‚’ç¢ºèªã™ã‚‹ã“ã¨ã€‚
 	static void CheckVariableRequest(
-		Graphics::ShaderVariable* var,    // TODO: const‰»‚µ‚½‚¢
+		Graphics::ShaderVariable* var,    // TODO: conståŒ–ã—ãŸã„
 		MMEShaderVariable* sv,
 		MMEScriptOutput* script_output,
 		MMEScriptClass* script_class,
 		MMEScriptOrder* script_order,
 		bool* is_controllobject);
 
-	/// ƒZƒ}ƒ“ƒeƒBƒNƒX–¼‚É‘Î‰‚·‚é MMEƒZƒ}ƒ“ƒeƒBƒNƒX ‚ğæ“¾‚·‚é
+	/// ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹åã«å¯¾å¿œã™ã‚‹ MMEã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ ã‚’å–å¾—ã™ã‚‹
 	static MMESemantic GetMMESemanticBySemanticName(const String& name);
 
-	/// •Ï”‚Ì "Object" ƒAƒmƒe[ƒVƒ‡ƒ“‚ğ’²‚×‚ÄA"Light" ‚Ìê‡‚Í falesA‚»‚êˆÈŠO("Camera") ‚Í true ‚ğ•Ô‚·
-	///		TODO: ƒrƒ…[‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚Ì‹“_‚ğŒˆ‚ß‚é‚½‚ß‚Ég‚¤B•K‚¸‚Ç‚¿‚ç‚©•K—v‚È‚Ì‚ÅAÈ—ª‚³‚ê‚Ä‚¢‚½‚ÍŒx‚·‚é‚×‚«‚©‚àH
+	/// å¤‰æ•°ã® "Object" ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã‚’èª¿ã¹ã¦ã€"Light" ã®å ´åˆã¯ falesã€ãã‚Œä»¥å¤–("Camera") ã¯ true ã‚’è¿”ã™
+	///		TODO: ãƒ“ãƒ¥ãƒ¼ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã®è¦–ç‚¹ã‚’æ±ºã‚ã‚‹ãŸã‚ã«ä½¿ã†ã€‚å¿…ãšã©ã¡ã‚‰ã‹å¿…è¦ãªã®ã§ã€çœç•¥ã•ã‚Œã¦ã„ãŸæ™‚ã¯è­¦å‘Šã™ã‚‹ã¹ãã‹ã‚‚ï¼Ÿ
 	static bool CheckAnnotationCameraOrLight(Graphics::ShaderVariable* var);
 
-	/// •Ï”‚Ì "Object" ƒAƒmƒe[ƒVƒ‡ƒ“‚ğ’²‚×‚ÄA"Geometry" ‚Ìê‡‚Í 1A"Light" ‚Ìê‡‚Í 2A‚»‚êˆÈŠO‚Í 0 ‚ğ•Ô‚·
+	/// å¤‰æ•°ã® "Object" ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã‚’èª¿ã¹ã¦ã€"Geometry" ã®å ´åˆã¯ 1ã€"Light" ã®å ´åˆã¯ 2ã€ãã‚Œä»¥å¤–ã¯ 0 ã‚’è¿”ã™
 	static int CheckAnnotationGeometryOrLight(Graphics::ShaderVariable* var);
 
-	/// –¼‘O‚ğw’è‚µ‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚ğŒŸõ‚·‚éBŒ©‚Â‚©‚ç‚È‚¯‚ê‚Î NULL ‚ğ•Ô‚·B (‘å•¶š¬•¶š‚Ì‹æ•Ê–³‚µBIShaderVariable ‚©‚ç‚Í‘å¬¬•¶š‹æ•Ê‚ ‚è‚Å‚µ‚©æ‚ê‚È‚¢‚Ì‚Å—pˆÓ)
+	/// åå‰ã‚’æŒ‡å®šã—ã¦ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ¤œç´¢ã™ã‚‹ã€‚è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° NULL ã‚’è¿”ã™ã€‚ (å¤§æ–‡å­—å°æ–‡å­—ã®åŒºåˆ¥ç„¡ã—ã€‚IShaderVariable ã‹ã‚‰ã¯å¤§å°å°æ–‡å­—åŒºåˆ¥ã‚ã‚Šã§ã—ã‹å–ã‚Œãªã„ã®ã§ç”¨æ„)
 	static Graphics::ShaderVariable* GetAnnotationByName(Graphics::ShaderVariable* var, const TCHAR* name);
 
-	/// —v‹€–Ú‚©‚çAŒvZ‚·‚é•K—v‚Ì‚ ‚és—ñƒ}ƒXƒN‚Ìƒrƒbƒg—ñ‚ğì¬‚µ‚Ä•Ô‚·
+	/// è¦æ±‚é …ç›®ã‹ã‚‰ã€è¨ˆç®—ã™ã‚‹å¿…è¦ã®ã‚ã‚‹è¡Œåˆ—ãƒã‚¹ã‚¯ã®ãƒ“ãƒƒãƒˆåˆ—ã‚’ä½œæˆã—ã¦è¿”ã™
 	static uint32_t CheckMatrixMask(MMEVariableRequest req);
 
 private:

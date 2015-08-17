@@ -1,31 +1,31 @@
-/*
-	ScrollViewer ‚ÌŠT—v
+ï»¿/*
+	ScrollViewer ã®æ¦‚è¦
 	https://msdn.microsoft.com/ja-jp/library/ms750665(v=vs.110).aspx
 
-	ScrollViewer ‚ÌŠeíƒvƒƒpƒeƒB
+	ScrollViewer ã®å„ç¨®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
 	http://smart-pda.net/wp7/tips/scrollviewer_tips/
 
-	ScrollViewer ‚Íƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ğ (ˆê”Ê“I‚É‚Íˆê“xƒRƒ}ƒ“ƒhƒLƒ…[‚É—­‚ß‚ñ‚Å) 
-	ScrollViewer.ScrollInfo ‚É’Ê’m‚·‚éB
-	ScrollViewer ‚ªq—v‘f‚ÌƒIƒtƒZƒbƒg‚ğŒvZ‚·‚é‚Ì‚Å‚Í‚È‚¢“_‚É’ˆÓB
+	ScrollViewer ã¯ãƒ¡ã‚½ãƒƒãƒ‰å‘¼ã³å‡ºã—ã‚’ (ä¸€èˆ¬çš„ã«ã¯ä¸€åº¦ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ã«æºœã‚è¾¼ã‚“ã§) 
+	ScrollViewer.ScrollInfo ã«é€šçŸ¥ã™ã‚‹ã€‚
+	ScrollViewer ãŒå­è¦ç´ ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è¨ˆç®—ã™ã‚‹ã®ã§ã¯ãªã„ç‚¹ã«æ³¨æ„ã€‚
 	
-	ScrollContentPresenter ‚Í Child(IScrollInfo) ‚ğATemplatedParent(ScrollViewer).ScrollInfo ‚ÉƒZƒbƒg‚·‚éB
-	(HookupScrollingComponents ‚ÅŒŸõ)
+	ScrollContentPresenter ã¯ Child(IScrollInfo) ã‚’ã€TemplatedParent(ScrollViewer).ScrollInfo ã«ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+	(HookupScrollingComponents ã§æ¤œç´¢)
 
-	IScrollInfo ‚Í StackPanel ‚â DocumentViewerATextBoxView “™‚Æ‚µ‚ÄÀ‘•‚³‚ê‚éB
-	ÀÛ‚Éq—v‘f‚ÌƒIƒtƒZƒbƒg‚ğŒvZ‚·‚é‚Ì‚Í‚±‚ê‚ç‚ÌƒNƒ‰ƒXB
-	‚±‚ê‚ğÀŒ»‚·‚é‚½‚ß‚ÉAŠeƒNƒ‰ƒX ScrollData ‚Æ‚¢‚¤“à•”ƒNƒ‰ƒX‚ğ‚Á‚Ä‚¢‚éB
+	IScrollInfo ã¯ StackPanel ã‚„ DocumentViewerã€TextBoxView ç­‰ã¨ã—ã¦å®Ÿè£…ã•ã‚Œã‚‹ã€‚
+	å®Ÿéš›ã«å­è¦ç´ ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è¨ˆç®—ã™ã‚‹ã®ã¯ã“ã‚Œã‚‰ã®ã‚¯ãƒ©ã‚¹ã€‚
+	ã“ã‚Œã‚’å®Ÿç¾ã™ã‚‹ãŸã‚ã«ã€å„ã‚¯ãƒ©ã‚¹ ScrollData ã¨ã„ã†å†…éƒ¨ã‚¯ãƒ©ã‚¹ã‚’æŒã£ã¦ã„ã‚‹ã€‚
 
 
-	ListBox ‚Ì Temlate ‚Í2ƒpƒ^[ƒ“B
-	ItemsPresenter ‚ğg‚¤•û–@‚ÆAg‚í‚È‚¢•û–@B
+	ListBox ã® Temlate ã¯2ãƒ‘ã‚¿ãƒ¼ãƒ³ã€‚
+	ItemsPresenter ã‚’ä½¿ã†æ–¹æ³•ã¨ã€ä½¿ã‚ãªã„æ–¹æ³•ã€‚
 
-	g‚í‚È‚¢ê‡‚Í Panel ‚Ì IsItemsHost ‚ğ true ‚É‚·‚éB‚±‚Ìê‡AVisualTree ‚É ItemsPresenter ‚ÍŒ»‚ê‚È‚¢B©“®¶¬‚³‚ê‚½‚è‚µ‚È‚¢B
+	ä½¿ã‚ãªã„å ´åˆã¯ Panel ã® IsItemsHost ã‚’ true ã«ã™ã‚‹ã€‚ã“ã®å ´åˆã€VisualTree ã« ItemsPresenter ã¯ç¾ã‚Œãªã„ã€‚è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸã‚Šã—ãªã„ã€‚
 	
-	g‚¤ê‡AScrollContentPresenter ‚Ìq‚Í ItemsPresenter ‚É‚È‚éB
-	‚»‚Ì ItemsPresenter ‚Ìq‚ÍAPanel ‚É‚È‚éB
-	‚±‚Ì‚Æ‚«A‚»‚Ì Panel ‚ª IScrollInfo ‚ğÀ‘•‚µ‚Ä‚¢‚ê‚ÎAƒXƒNƒ[ƒ‹‘€ì‚Ì‘ÎÛ‚É‚È‚éB
-	‚¿‚È‚İ‚ÉAItemsPresenter ‚Í IScrollInfo ‚Å‚Í‚È‚¢B
+	ä½¿ã†å ´åˆã€ScrollContentPresenter ã®å­ã¯ ItemsPresenter ã«ãªã‚‹ã€‚
+	ãã® ItemsPresenter ã®å­ã¯ã€Panel ã«ãªã‚‹ã€‚
+	ã“ã®ã¨ãã€ãã® Panel ãŒ IScrollInfo ã‚’å®Ÿè£…ã—ã¦ã„ã‚Œã°ã€ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æ“ä½œã®å¯¾è±¡ã«ãªã‚‹ã€‚
+	ã¡ãªã¿ã«ã€ItemsPresenter ã¯ IScrollInfo ã§ã¯ãªã„ã€‚
 
 */
 #include "../../Internal.h"
@@ -90,19 +90,19 @@ SizeF ScrollContentPresenter::MeasureOverride(const SizeF& constraint)
 	{
 		SizeF childConstraint = constraint;
 
-		// c‰¡‚»‚ê‚¼‚êAƒXƒNƒ[ƒ‹‚Å‚«‚é‚Ì‚Å‚ ‚ê‚ÎƒTƒCƒY§ŒÀ‚ğİ‚¯‚È‚¢
+		// ç¸¦æ¨ªãã‚Œãã‚Œã€ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã§ãã‚‹ã®ã§ã‚ã‚Œã°ã‚µã‚¤ã‚ºåˆ¶é™ã‚’è¨­ã‘ãªã„
 		if (m_scrollData.CanHorizontallyScroll) { childConstraint.Width = std::numeric_limits<float>::infinity(); }
 		if (m_scrollData.CanVerticallyScroll) { childConstraint.Height = std::numeric_limits<float>::infinity(); }
 
-		desiredSize = ContentPresenter::MeasureOverride(childConstraint);	// q—v‘f‚Ì Measure ‚Í‚±‚Ì’†‚ÅB
+		desiredSize = ContentPresenter::MeasureOverride(childConstraint);	// å­è¦ç´ ã® Measure ã¯ã“ã®ä¸­ã§ã€‚
 
 		//m_scrollData.Viewport = constraint;
 		m_scrollData.Extent = desiredSize;
 	}
 	else
 	{
-		// q—v‘f‚É‘Î‚µ‚ÄƒXƒNƒ[ƒ‹‘€ì‚·‚éê‡‚ÍAMeasure ‚àq—v‘f‚É”C‚¹‚é
-		desiredSize = ContentPresenter::MeasureOverride(constraint);		// q—v‘f‚Ì Measure ‚Í‚±‚Ì’†‚ÅB
+		// å­è¦ç´ ã«å¯¾ã—ã¦ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æ“ä½œã™ã‚‹å ´åˆã¯ã€Measure ã‚‚å­è¦ç´ ã«ä»»ã›ã‚‹
+		desiredSize = ContentPresenter::MeasureOverride(constraint);		// å­è¦ç´ ã® Measure ã¯ã“ã®ä¸­ã§ã€‚
 	}
 
 	desiredSize.Width = std::min(constraint.Width, desiredSize.Width);
@@ -145,8 +145,8 @@ SizeF ScrollContentPresenter::ArrangeOverride(const SizeF& finalSize)
 }
 
 //-----------------------------------------------------------------------------
-// ‚±‚Ì ScrollContentPresenter ‚ªAq—v‘f‚ÌƒIƒtƒZƒbƒg‚ğ’¼Ú‘€ì‚·‚é‚©‚Ç‚¤‚©B
-// ‚Â‚Ü‚èAq—v‘f‚Í IScrollInfo ‚Å‚Í‚È‚¢‚©B
+// ã“ã® ScrollContentPresenter ãŒã€å­è¦ç´ ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’ç›´æ¥æ“ä½œã™ã‚‹ã‹ã©ã†ã‹ã€‚
+// ã¤ã¾ã‚Šã€å­è¦ç´ ã¯ IScrollInfo ã§ã¯ãªã„ã‹ã€‚
 //-----------------------------------------------------------------------------
 bool ScrollContentPresenter::IsScrollClient() const
 {
@@ -159,19 +159,19 @@ bool ScrollContentPresenter::IsScrollClient() const
 void ScrollContentPresenter::HookupScrollingComponents()
 {
 	ScrollViewer* owner = dynamic_cast<ScrollViewer*>(m_templateParent);
-	LN_VERIFY_RETURN(owner != NULL);	// ‚ ‚è‚¦‚È‚¢‚ñ‚¾‚¯‚ê‚Ç‚àB
+	LN_VERIFY_RETURN(owner != NULL);	// ã‚ã‚Šãˆãªã„ã‚“ã ã‘ã‚Œã©ã‚‚ã€‚
 
-	// TODO: ... ‚¢‚ë‚¢‚ëq—v‘f‚ğ’T‚Á‚Ä IScrollInfo ‚ğ’T‚·
-	// TODO: ƒoƒOB‚È‚ñ‚© ItemsPresenter ‚ª‚½‚­‚³‚ñ’Ç‰Á‚³‚ê‚Ä‚¢‚½EEE
+	// TODO: ... ã„ã‚ã„ã‚å­è¦ç´ ã‚’æ¢ã£ã¦ IScrollInfo ã‚’æ¢ã™
+	// TODO: ãƒã‚°ã€‚ãªã‚“ã‹ ItemsPresenter ãŒãŸãã•ã‚“è¿½åŠ ã•ã‚Œã¦ã„ãŸãƒ»ãƒ»ãƒ»
 	IScrollInfo* scrollInfo = NULL;
 
-	// qA‘·‚É IScrollInfo ‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½ê‡‚ÍAthis ‚ğƒXƒNƒ[ƒ‹‘€ì‚Ì‘ÎÛ‚Æ‚·‚é
+	// å­ã€å­«ã« IScrollInfo ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯ã€this ã‚’ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«æ“ä½œã®å¯¾è±¡ã¨ã™ã‚‹
 	if (scrollInfo == NULL)
 	{
 		scrollInfo = this;
 	}
 
-	// Œ©‚Â‚©‚Á‚½ IScrollInfo ‚ÆAƒI[ƒi[‚Ì ScrollViewer ‚ğŒ‹‚Ñ‚Â‚¯‚é
+	// è¦‹ã¤ã‹ã£ãŸ IScrollInfo ã¨ã€ã‚ªãƒ¼ãƒŠãƒ¼ã® ScrollViewer ã‚’çµã³ã¤ã‘ã‚‹
 	scrollInfo->SetScrollOwner(owner);
 	owner->SetScrollInfo(scrollInfo);
 
@@ -257,17 +257,17 @@ void ScrollViewer::OnLayoutUpdated()
 //-----------------------------------------------------------------------------
 void ScrollViewer::PollingTemplateChildCreated(UIElement* newElement)
 {
-	// PART ‚ÌƒL[‚Éˆê’v‚·‚é–¼‘O‚ğ‚Â—v‘f‚ªŒ©‚Â‚©‚Á‚½‚çƒƒ“ƒo‚É•Û‚µ‚Ä‚¨‚­
+	// PART ã®ã‚­ãƒ¼ã«ä¸€è‡´ã™ã‚‹åå‰ã‚’æŒã¤è¦ç´ ãŒè¦‹ã¤ã‹ã£ãŸã‚‰ãƒ¡ãƒ³ãƒã«ä¿æŒã—ã¦ãŠã
 	if (newElement->GetKeyName() == PART_ScrollContentPresenterTemplateName) {
 		m_scrollContentPresenter = dynamic_cast<ScrollContentPresenter*>(newElement);
 	}
 	else if (newElement->GetKeyName() == PART_VerticalScrollBarTemplateName) {
 		m_verticalScrollBar = dynamic_cast<ScrollBar*>(newElement);
-		m_verticalScrollBar->m_isStandalone = false;	// ScrollViewer ‚Å–Ê“|‚ğŒ©‚éƒtƒ‰ƒO
+		m_verticalScrollBar->m_isStandalone = false;	// ScrollViewer ã§é¢å€’ã‚’è¦‹ã‚‹ãƒ•ãƒ©ã‚°
 	}
 	else if (newElement->GetKeyName() == PART_HorizontalScrollBarTemplateName) {
 		m_horizontalScrollBar = dynamic_cast<ScrollBar*>(newElement);
-		m_horizontalScrollBar->m_isStandalone = false;	// ScrollViewer ‚Å–Ê“|‚ğŒ©‚éƒtƒ‰ƒO
+		m_horizontalScrollBar->m_isStandalone = false;	// ScrollViewer ã§é¢å€’ã‚’è¦‹ã‚‹ãƒ•ãƒ©ã‚°
 	}
 
 	ContentControl::PollingTemplateChildCreated(newElement);
@@ -278,7 +278,7 @@ void ScrollViewer::PollingTemplateChildCreated(UIElement* newElement)
 //-----------------------------------------------------------------------------
 SizeF ScrollViewer::MeasureOverride(const SizeF& constraint)
 {
-	// ƒXƒNƒ[ƒ‹ƒo[©“®•\¦‚Ìˆ—‚Í‚±‚±‚Å‚·‚é
+	// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼è‡ªå‹•è¡¨ç¤ºã®å‡¦ç†ã¯ã“ã“ã§ã™ã‚‹
 
 	return ContentControl::MeasureOverride(constraint);
 }
@@ -312,7 +312,7 @@ void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
 		switch (e->Type)
 		{
 		case ScrollEventType::ThumbTrack:
-			// –{—ˆ‚Íˆê“xƒRƒ}ƒ“ƒhƒŠƒXƒg‰»‚µ‚ÄA’x‰„‚É”õ‚¦‚é‚×‚«
+			// æœ¬æ¥ã¯ä¸€åº¦ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆåŒ–ã—ã¦ã€é…å»¶ã«å‚™ãˆã‚‹ã¹ã
 			if (e->Sender == m_verticalScrollBar) {
 				SetVerticalOffset(e->NewValue);
 				//m_scrollInfo->SetVerticalOffset(e->NewValue);

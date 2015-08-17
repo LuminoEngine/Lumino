@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/IO/BinaryReader.h>
 #include "Common.h"
@@ -23,17 +23,17 @@ public:
 
 	struct PMX_Header
 	{
-		char	Magic[4];		// "PMX " (PMX1.0‚Í"Pmx ")
-		float	Version;		// PMDƒo[ƒWƒ‡ƒ“”Ô†
-		byte_t	DataSize;		// Œã‘±‚·‚éƒf[ƒ^—ñ‚ÌƒoƒCƒgƒTƒCƒY  PMX2.0‚Í 8 ‚ÅŒÅ’è
-		byte_t	Data[8];		// [0] - ƒGƒ“ƒR[ƒh•û®  | 0:UTF16 1:UTF8
-								// [1] - ’Ç‰ÁUV” 	| 0`4 Ú×‚Í’¸“_QÆ
-								// [2] - ’¸“_IndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-								// [3] - ƒeƒNƒXƒ`ƒƒIndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-								// [4] - Ş¿IndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-								// [5] - ƒ{[ƒ“IndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-								// [6] - ƒ‚[ƒtIndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-								// [7] - „‘ÌIndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
+		char	Magic[4];		// "PMX " (PMX1.0ã¯"Pmx ")
+		float	Version;		// PMDãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·
+		byte_t	DataSize;		// å¾Œç¶šã™ã‚‹ãƒ‡ãƒ¼ã‚¿åˆ—ã®ãƒã‚¤ãƒˆã‚µã‚¤ã‚º  PMX2.0ã¯ 8 ã§å›ºå®š
+		byte_t	Data[8];		// [0] - ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰æ–¹å¼  | 0:UTF16 1:UTF8
+								// [1] - è¿½åŠ UVæ•° 	| 0ï½4 è©³ç´°ã¯é ‚ç‚¹å‚ç…§
+								// [2] - é ‚ç‚¹Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+								// [3] - ãƒ†ã‚¯ã‚¹ãƒãƒ£Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+								// [4] - æè³ªIndexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+								// [5] - ãƒœãƒ¼ãƒ³Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+								// [6] - ãƒ¢ãƒ¼ãƒ•Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+								// [7] - å‰›ä½“Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
 	};
 
 #pragma pack( pop )
@@ -43,8 +43,8 @@ public:
 
 public:
 
-	/// “Ç‚İ‚İ
-	///		baseDir	: .pmx ƒtƒ@ƒCƒ‹‚Ì‘¶İ‚·‚éƒtƒHƒ‹ƒ_ƒpƒX
+	/// èª­ã¿è¾¼ã¿
+	///		baseDir	: .pmx ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ã™ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹
 	ModelCore* Load(ModelManager* manager, Stream* stream, const PathNameW& baseDir, bool isDynamic);
 
 private:
@@ -75,7 +75,7 @@ private:
 	ModelManager*					m_manager;
 	bool							m_isDynamic;
 	//uint32_t						mFlags;
-	RefPtr<ModelCore>				m_modelCore;		///< ÅIo—Í
+	RefPtr<ModelCore>				m_modelCore;		///< æœ€çµ‚å‡ºåŠ›
 	PMX_Header						m_pmxHeader;
 	ArrayList<Graphics::Texture*>	m_textureTable;
 	ByteBuffer						m_tmpBuffer;

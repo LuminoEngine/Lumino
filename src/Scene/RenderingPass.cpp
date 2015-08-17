@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Internal.h"
 #include "SceneGraphManager.h"

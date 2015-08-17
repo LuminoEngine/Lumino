@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Documents/Run.h>
@@ -76,7 +76,7 @@ Size Run::Measure()
 //-----------------------------------------------------------------------------
 void Run::Render(DocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(m_glyphRun, Point::Zero);	// TODO: �ʒu
+	renderer->OnDrawGlyphRun(m_glyphRun, Point::Zero);	// TODO: 位置
 }
 
 } // namespace Documents

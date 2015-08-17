@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../Graphics/Common.h"
 #include "TextElement.h"

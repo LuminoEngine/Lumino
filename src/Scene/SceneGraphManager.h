@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <map>
 #include <Lumino/Physics/PhysicsManager.h>
@@ -7,7 +7,7 @@
 #include "../Modeling/ModelManager.h"
 #include "Common.h"
 
-#include "MME/MMETypes.h"	// TODO: ‚±‚ê‚Í•Ê‚ÌêŠ‚ÉˆÚ“®‚µ‚½‚¢EEE
+#include "MME/MMETypes.h"	// TODO: ã“ã‚Œã¯åˆ¥ã®å ´æ‰€ã«ç§»å‹•ã—ãŸã„ãƒ»ãƒ»ãƒ»
 
 namespace Lumino
 {
@@ -20,7 +20,7 @@ class SceneGraphManager
 {
 public:
 
-	/// ‰Šú‰»ƒf[ƒ^
+	/// åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿
 	struct ConfigData
 	{
 		Lumino::FileManager*		FileManager;
@@ -42,7 +42,7 @@ public:
 
 public:
 
-	// TODO: SceneGraphManager ‚Íƒzƒ“ƒg‚É’Pƒ‚ÈƒV[ƒ“ƒOƒ‰ƒtŠÇ—‚¾‚¯‚É‚Æ‚Ç‚ß‚Ä‚¨‚¢‚ÄAMMD —p‚ÌƒV[ƒ“\’z‚Í•ÊƒNƒ‰ƒX‚É‚µ‚Ä‚à‚¢‚¢‚©‚à
+	// TODO: SceneGraphManager ã¯ãƒ›ãƒ³ãƒˆã«å˜ç´”ãªã‚·ãƒ¼ãƒ³ã‚°ãƒ©ãƒ•ç®¡ç†ã ã‘ã«ã¨ã©ã‚ã¦ãŠã„ã¦ã€MMD ç”¨ã®ã‚·ãƒ¼ãƒ³æ§‹ç¯‰ã¯åˆ¥ã‚¯ãƒ©ã‚¹ã«ã—ã¦ã‚‚ã„ã„ã‹ã‚‚
 	void CreateMMDSceneGraph();
 	void ReleaseMMDSceneGraph();
 	ViewPane* GetMMDViewPane() { return m_mmdViewPane; }
@@ -54,16 +54,16 @@ public:
 	
 
 
-	/// –¼‘O‚ğw’è‚µ‚Äƒm[ƒh‚ğŒŸõ‚·‚é (“¯–¼ƒm[ƒh‚Ìê‡‚ÍÅ‰‚Ìƒm[ƒh)
+	/// åå‰ã‚’æŒ‡å®šã—ã¦ãƒãƒ¼ãƒ‰ã‚’æ¤œç´¢ã™ã‚‹ (åŒåãƒãƒ¼ãƒ‰ã®å ´åˆã¯æœ€åˆã®ãƒãƒ¼ãƒ‰)
 	SceneNode* FindNodeFirst(const String& name);
 
-	/// ‘S‚Ä‚Ìƒm[ƒh‚ğŠK‘w“I‚ÉXV‚·‚é
+	/// å…¨ã¦ã®ãƒãƒ¼ãƒ‰ã‚’éšå±¤çš„ã«æ›´æ–°ã™ã‚‹
 	void UpdateFrame(float elapsedTime);
 
-	/// Œ»İ‚ÌŠÔ‚ğæ“¾‚·‚é (•b)
+	/// ç¾åœ¨ã®æ™‚é–“ã‚’å–å¾—ã™ã‚‹ (ç§’)
 	double GetTime() const { return m_time; }
 
-	/// ‘O‰ñƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔ‚ğæ“¾‚·‚é (•b)
+	/// å‰å›ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéæ™‚é–“ã‚’å–å¾—ã™ã‚‹ (ç§’)
 	float GetElapsedTime() const { return m_elapsedTime; }
 
 public:	// internal
@@ -85,7 +85,7 @@ public:	// internal
 	void RemoveShader(MMEShader* shader);
 	SceneShaderList* GetShaderList() { return &m_sceneShaderList; }
 
-	/// w’è‚µ‚½À•W‚É‹ß‚¢ƒ‰ƒCƒg‚ğæ“¾‚·‚é (æ“¾‚·‚é”‚Í outList ‚Ì—v‘f”B‚ ‚ç‚©‚¶‚ß Resize() ‚µ‚Ä‚¨‚­‚±‚Æ)
+	/// æŒ‡å®šã—ãŸåº§æ¨™ã«è¿‘ã„ãƒ©ã‚¤ãƒˆã‚’å–å¾—ã™ã‚‹ (å–å¾—ã™ã‚‹æ•°ã¯ outList ã®è¦ç´ æ•°ã€‚ã‚ã‚‰ã‹ã˜ã‚ Resize() ã—ã¦ãŠãã“ã¨)
 	void SelectLight(Vector3* pos, LightNodeList* outList);
 
 private:
@@ -99,16 +99,16 @@ private:
 	RefPtr<Graphics::GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Graphics::Texture>			m_dummyTexture;
 
-	double								m_time;					///< ŠÔˆ—‚ÌŠJn’Ê’m‚©‚ç‚ÌŒo‰ßŠÔ (•b)
-	float								m_elapsedTime;			///< ‘O‰ñƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔ (•b)
+	double								m_time;					///< æ™‚é–“å‡¦ç†ã®é–‹å§‹é€šçŸ¥ã‹ã‚‰ã®çµŒéæ™‚é–“ (ç§’)
+	float								m_elapsedTime;			///< å‰å›ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéæ™‚é–“ (ç§’)
 
 	SceneNodeList						m_allNodes;
 
-	Stack<int>							m_renderingPassIDStack;	///< (0`MaxRenderingPass-1)
-	NodeNameMap							m_nodeNameMap;			///< ƒm[ƒh‚ğ–¼‘O‚ÅŒŸõ‚·‚é‚½‚ß‚Ìƒ}ƒbƒv
+	Stack<int>							m_renderingPassIDStack;	///< (0ï½MaxRenderingPass-1)
+	NodeNameMap							m_nodeNameMap;			///< ãƒãƒ¼ãƒ‰ã‚’åå‰ã§æ¤œç´¢ã™ã‚‹ãŸã‚ã®ãƒãƒƒãƒ—
 	//SceneNode*							m_rootNode;
-	LightNodeList						m_lightNodeList;		///< ‘S‚Ä‚Ì Light ‚ÌƒŠƒXƒg
-	SceneNodeList						m_renderingNodeList;	///< (‚¢‚ç‚È‚¢‚©‚àH)ÅŒã‚Ì UpdateFrame() ‚Å’Šo‚³‚ê‚½•`‰æ‰Â”\‚Èƒm[ƒh‚ÌƒŠƒXƒg
+	LightNodeList						m_lightNodeList;		///< å…¨ã¦ã® Light ã®ãƒªã‚¹ãƒˆ
+	SceneNodeList						m_renderingNodeList;	///< (ã„ã‚‰ãªã„ã‹ã‚‚ï¼Ÿ)æœ€å¾Œã® UpdateFrame() ã§æŠ½å‡ºã•ã‚ŒãŸæç”»å¯èƒ½ãªãƒãƒ¼ãƒ‰ã®ãƒªã‚¹ãƒˆ
 	SceneShaderList						m_sceneShaderList;
 
 	SceneNode*		m_defaultRoot;

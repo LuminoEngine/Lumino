@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include "../../Internal.h"
@@ -20,12 +20,12 @@ namespace Scene
 struct LNVerNameDesc
 {
     const TCHAR*	SemanticsName;
-	const TCHAR*	AlternateName;   ///< ƒVƒF[ƒ_ŒÅ’è‚Ég‚¤•Ï”–¼
+	const TCHAR*	AlternateName;   ///< ã‚·ã‚§ãƒ¼ãƒ€å›ºå®šæ™‚ã«ä½¿ã†å¤‰æ•°å
 };
 
 static LNVerNameDesc g_MMESemanticTable[ MME_MAX_SEMANTICS ] =
 {
-    { _T( "NONE" ), NULL },  // ƒ_ƒ~[
+    { _T( "NONE" ), NULL },  // ãƒ€ãƒŸãƒ¼
     { _T( "WORLD" ),                                _T( "g_Matrix_w" ) },
     { _T( "VIEW" ),                                 _T( "g_Matrix_v" ) },
     { _T( "PROJECTION" ),                           _T( "g_Matrix_p" ) },
@@ -87,7 +87,7 @@ static LNVerNameDesc g_MMESemanticTable[ MME_MAX_SEMANTICS ] =
 	//{ _T("LIGHTENABLES"),		NULL },
 	//{ _T("LIGHTZFARS"),			NULL },
 
-    // ˆÈ‰º‚Í“Æ©d—l
+    // ä»¥ä¸‹ã¯ç‹¬è‡ªä»•æ§˜
     //{ _T( "ORTHOGRAPHIC" ),    _T( "gMatrix_wt" ) },
     //{ _T( "PROJECTION2D" ),     _T( "gMatrix_p2D" ) },
     { _T( "OPACITY" ),          _T( "g_Opacity" ) },
@@ -167,10 +167,10 @@ MMEShaderBuilder::~MMEShaderBuilder()
 void MMEShaderBuilder::Build()
 {
 	//-----------------------------------------------------
-	// ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€“à‚Ì‚·‚×‚Ä‚Ì•Ï”‚ğƒ`ƒFƒbƒN‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ å†…ã®ã™ã¹ã¦ã®å¤‰æ•°ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	LN_FOREACH(Graphics::ShaderVariable* var, m_mmeShader->m_coreShader->GetVariables())
 	{
-		// ƒVƒF[ƒ_•Ï”B‚Æ‚è‚ ‚¦‚¸‚ÅƒtƒHƒ‹ƒg’l‚ğ“ü‚ê‚Ä‚¨‚­
+		// ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°ã€‚ã¨ã‚Šã‚ãˆãšã§ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’å…¥ã‚Œã¦ãŠã
 		MMEShaderVariable* sv = LN_NEW MMEShaderVariable();
 		sv->Variable = var;
 		sv->Request = MME_VARREQ_NONE;
@@ -180,7 +180,7 @@ void MMEShaderBuilder::Build()
 		sv->LightParamIsMatrix = false;
 		m_mmeShader->m_mmeShaderVariableList.Add(sv);
 
-		// ƒZƒ}ƒ“ƒeƒBƒNƒXŠm”FBCONTROLOBJECT ‚Ì“Áê‚È’l‚¾‚Á‚½ê‡‚Í sv ‚Ì ObjectName “™‚É’l‚ª“ü‚é
+		// ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ç¢ºèªã€‚CONTROLOBJECT ã®ç‰¹æ®Šãªå€¤ã ã£ãŸå ´åˆã¯ sv ã® ObjectName ç­‰ã«å€¤ãŒå…¥ã‚‹
 		MMEScriptOutput op1;
 		MMEScriptClass  op2;
 		MMEScriptOrder  op3;
@@ -203,17 +203,17 @@ void MMEShaderBuilder::Build()
 			m_mmeShader->m_controlObjectVariables.Add(sv);
 		}
 
-		// •‰‰×ŒyŒ¸‚Ì‚½‚ßA•K—v‚Ès—ñ‰‰Z‚ğƒ`ƒFƒbƒN‚·‚é
+		// è² è·è»½æ¸›ã®ãŸã‚ã€å¿…è¦ãªè¡Œåˆ—æ¼”ç®—ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 		m_mmeShader->m_worldMatrixCalcMask |= CheckMatrixMask(sv->Request);
 
-		// •K—v‚Èƒ‰ƒCƒgÅ‘å”ƒ`ƒFƒbƒN
+		// å¿…è¦ãªãƒ©ã‚¤ãƒˆæœ€å¤§æ•°ãƒã‚§ãƒƒã‚¯
 		if (sv->LightNum > m_mmeShader->m_requiredLightCount) {
 			m_mmeShader->m_requiredLightCount = sv->LightNum;
 		}
 	}
 
 	//-----------------------------------------------------
-	// ƒeƒNƒjƒbƒNî•ñì¬
+	// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯æƒ…å ±ä½œæˆ
 	LN_FOREACH(Graphics::ShaderTechnique* tech, m_mmeShader->m_coreShader->GetTechniques())
 	{
 		MMEShaderTechnique* sstech = LN_NEW MMEShaderTechnique();
@@ -235,13 +235,13 @@ void MMEShaderBuilder::CheckVariableRequest(
 {
 	*is_controllobject = false;
 
-	//const TCHAR*		name;                           // ƒVƒF[ƒ_‚©‚ç•¶š—ñ‚ğó‚¯æ‚é•Ï”
-	//TCHAR				temp[MAX_SEMANTICS_NAME_LEN]; // •¶š—ñ‚ÌƒRƒs[‚Ég‚¤ˆêƒoƒbƒtƒ@
-	MMEVariableRequest  req = MME_VARREQ_NONE;          // –ß‚è’l
+	//const TCHAR*		name;                           // ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰æ–‡å­—åˆ—ã‚’å—ã‘å–ã‚‹å¤‰æ•°
+	//TCHAR				temp[MAX_SEMANTICS_NAME_LEN]; // æ–‡å­—åˆ—ã®ã‚³ãƒ”ãƒ¼ã«ä½¿ã†ä¸€æ™‚ãƒãƒƒãƒ•ã‚¡
+	MMEVariableRequest  req = MME_VARREQ_NONE;          // æˆ»ã‚Šå€¤
 
 	//MMESemanticsMap::const_iterator it;
 	//MMESemanticsMap::const_iterator end = semantics_map_.end();
-	//const LNShaderVariableTypeDesc& var_desc = var->getTypeDesc();  // •Ï”‚ÌŒ^î•ñ
+	//const LNShaderVariableTypeDesc& var_desc = var->getTypeDesc();  // å¤‰æ•°ã®å‹æƒ…å ±
 
 
 	//name = var->getSemanticName();
@@ -250,7 +250,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 
 	switch (GetMMESemanticBySemanticName(var->GetSemanticName()))
 	{
-		/////////////////////////////////////// •ÏŠ·s—ñ
+		/////////////////////////////////////// å¤‰æ›è¡Œåˆ—
 	case MME_SEMANTIC_WORLD:
 		req = MME_VARREQ_MATRIX_World;
 		break;
@@ -270,7 +270,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj : MME_VARREQ_MATRIX_LIGHT_WorldViewProj;
 		break;
 
-		///////////////////////////////////////  ‹ts—ñ
+		///////////////////////////////////////  é€†è¡Œåˆ—
 	case MME_SEMANTIC_WORLD_I:
 		req = MME_VARREQ_MATRIX_World_I;
 		break;
@@ -290,7 +290,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_I : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_I;
 		break;
 
-		///////////////////////////////////////  “]’us—ñ
+		///////////////////////////////////////  è»¢ç½®è¡Œåˆ—
 	case MME_SEMANTIC_WORLD_T:
 		req = MME_VARREQ_MATRIX_World_T;
 		break;
@@ -310,7 +310,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_T : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_T;
 		break;
 
-		///////////////////////////////////////  ‹ts—ñ~“]’us—ñ
+		///////////////////////////////////////  é€†è¡Œåˆ—Ã—è»¢ç½®è¡Œåˆ—
 	case MME_SEMANTIC_WORLD_IT:
 		req = MME_VARREQ_MATRIX_World_IT;
 		break;
@@ -330,7 +330,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_MATRIX_CAMERA_WorldViewProj_IT : MME_VARREQ_MATRIX_LIGHT_WorldViewProj_IT;
 		break;
 
-		/////////////////////////////////////// F
+		/////////////////////////////////////// è‰²
 	case MME_SEMANTIC_DIFFUSE:
 		r = CheckAnnotationGeometryOrLight(var);
 		if (r != 0) {
@@ -368,7 +368,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = MME_VARREQ_OBJECT_EDGECOLOR;
 		break;
 
-		/////////////////////////////////////// ˆÊ’uEŒü‚«
+		/////////////////////////////////////// ä½ç½®ãƒ»å‘ã
 	case MME_SEMANTIC_POSITION:
 		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_CAMERA_POSITION : MME_VARREQ_LIGHT_POSITION;
 		break;
@@ -377,7 +377,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = (CheckAnnotationCameraOrLight(var)) ? MME_VARREQ_CAMERA_DIRECTION : MME_VARREQ_LIGHT_DIRECTION;
 		break;
 
-		/////////////////////////////////////// ƒ}ƒeƒŠƒAƒ‹‚ÌƒeƒNƒXƒ`ƒƒ
+		/////////////////////////////////////// ãƒãƒ†ãƒªã‚¢ãƒ«ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
 	case MME_SEMANTIC_MATERIALTEXTURE:
 		req = MME_VARREQ_OBJECT_MATERIALTEXTURE;
 		break;
@@ -399,7 +399,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = MME_VARREQ_ELAPSEDTIME;
 		break;
 
-		/////////////////////////////////////// ƒ}ƒEƒX
+		/////////////////////////////////////// ãƒã‚¦ã‚¹
 	case MME_SEMANTIC_MOUSEPOSITION:
 		req = MME_VARREQ_MOUSEPOSITION;
 		break;
@@ -417,13 +417,13 @@ void MMEShaderBuilder::CheckVariableRequest(
 	case MME_SEMANTIC_CONTROLOBJECT:
 	{
 		Graphics::ShaderVariable* name_anno = GetAnnotationByName(var, _T("name"));
-		if (!name_anno) { // TODO: error name ‚Í•K{
+		if (!name_anno) { // TODO: error name ã¯å¿…é ˆ
 			break;
 		}
-		// ‘€ì‘ÎÛ‚Ì–¼‘O‚Æ‚µ‚ÄŠo‚¦‚Ä‚¨‚­
+		// æ“ä½œå¯¾è±¡ã®åå‰ã¨ã—ã¦è¦šãˆã¦ãŠã
 		sv->ObjectName = name_anno->GetString();
 
-		// "item" ‚ğƒ`ƒFƒbƒN
+		// "item" ã‚’ãƒã‚§ãƒƒã‚¯
 		Graphics::ShaderVariable* anno = GetAnnotationByName(var, _T("item"));
 		if (anno)
 		{
@@ -472,44 +472,44 @@ void MMEShaderBuilder::CheckVariableRequest(
 				}
 				else if (var->GetType() == Graphics::ShaderVariableType_Float)
 				{
-					// Œ^‚ª float ‚Ìê‡‚Í•\î
+					// å‹ãŒ float ã®å ´åˆã¯è¡¨æƒ…
 					req = MME_VARREQ_CONTROLOBJECT_MorphBlend;
-					sv->ItemName = item;	// ‘€ì‘ÎÛ‚Ì–¼‘O‚Æ‚µ‚ÄŠo‚¦‚Ä‚¨‚­
+					sv->ItemName = item;	// æ“ä½œå¯¾è±¡ã®åå‰ã¨ã—ã¦è¦šãˆã¦ãŠã
 				}
 				else if (var->GetType() == Graphics::ShaderVariableType_Vector && var->GetColumns() >= 3)
 				{
-					// float3 4 ‚Ìê‡‚Íƒ{[ƒ“ˆÊ’u
+					// float3 4 ã®å ´åˆã¯ãƒœãƒ¼ãƒ³ä½ç½®
 					req = MME_VARREQ_CONTROLOBJECT_BoneOffset;
 					sv->ItemName = item;
 				}
 				else if (var->GetType() == Graphics::ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
 				{
-					// matrix4x4 ‚Ìê‡‚Íƒ{[ƒ“s—ñ
+					// matrix4x4 ã®å ´åˆã¯ãƒœãƒ¼ãƒ³è¡Œåˆ—
 					req = MME_VARREQ_CONTROLOBJECT_BoneMatrix;
 					sv->ItemName = item;
 				}
 			} // if ( item )
 		} // if ( anno ) 
 
-		// ‚±‚±‚Ü‚Å‚Å‚Ü‚¾ req ‚ªŒˆ‚Ü‚Á‚Ä‚È‚¢ê‡
+		// ã“ã“ã¾ã§ã§ã¾ã  req ãŒæ±ºã¾ã£ã¦ãªã„å ´åˆ
 		if (req == MME_VARREQ_NONE)
 		{
-			// Œ^‚ª bool ‚Ìê‡
+			// å‹ãŒ bool ã®å ´åˆ
 			if (var->GetType() == Graphics::ShaderVariableType_Bool)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_Visible;
 			}
-			// float ‚Ìê‡‚ÍŠg‘å—¦
+			// float ã®å ´åˆã¯æ‹¡å¤§ç‡
 			else if (var->GetType() == Graphics::ShaderVariableType_Float)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_Scale;
 			}
-			// float3 or 4 ‚Ìê‡‚ÍˆÊ’u
+			// float3 or 4 ã®å ´åˆã¯ä½ç½®
 			else if (var->GetType() == Graphics::ShaderVariableType_Vector && var->GetColumns() >= 3)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_Position;
 			}
-			// matrix4x4 ‚Ìê‡‚Íƒ[ƒ‹ƒhs—ñ
+			// matrix4x4 ã®å ´åˆã¯ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
 			else if (var->GetType() == Graphics::ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_World;
@@ -517,19 +517,19 @@ void MMEShaderBuilder::CheckVariableRequest(
 			
 		}
 
-		// ‚±‚±‚Ü‚Å‚Å—v‹€–Ú‚ªŒ©‚Â‚©‚Á‚Ä‚¢‚½‚çA—LŒø‚È CONTROLOBJECT
+		// ã“ã“ã¾ã§ã§è¦æ±‚é …ç›®ãŒè¦‹ã¤ã‹ã£ã¦ã„ãŸã‚‰ã€æœ‰åŠ¹ãª CONTROLOBJECT
 		if (req != MME_VARREQ_NONE) {
 			*is_controllobject = true;
 		}
 		else {
-			//TODO: ”F¯‚Å‚«‚È‚¢ CONTROLOBJECT
+			//TODO: èªè­˜ã§ããªã„ CONTROLOBJECT
 		}
 
 		break;
 	}
 
 
-		/////////////////////////////////////// ƒeƒNƒXƒ`ƒƒŠÖ˜A
+		/////////////////////////////////////// ãƒ†ã‚¯ã‚¹ãƒãƒ£é–¢é€£
 	case MME_SEMANTIC_RENDERCOLORTARGET:
 		req = MME_VARREQ_RENDERCOLORTARGET;
 		break;
@@ -537,14 +537,14 @@ void MMEShaderBuilder::CheckVariableRequest(
 		req = MME_VARREQ_RENDERDEPTHSTENCILTARGET;
 		break;
 	case MME_SEMANTIC_ANIMATEDTEXTURE:
-		printf("ANIMATEDTEXTURE ƒZƒ}ƒ“ƒeƒBƒNƒX‚Í–¢‘Î‰‚Å‚·B\n");	// TODO:
+		printf("ANIMATEDTEXTURE ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ã¯æœªå¯¾å¿œã§ã™ã€‚\n");	// TODO:
 		req = MME_VARREQ_ANIMATEDTEXTURE;
 		break;
 	case MME_SEMANTIC_OFFSCREENRENDERTARGET:
 		req = MME_VARREQ_OFFSCREENRENDERTARGET;
 		break;
 	case MME_SEMANTIC_TEXTUREVALUE:
-		printf("TEXTUREVALUE ƒZƒ}ƒ“ƒeƒBƒNƒX‚Í–¢‘Î‰‚Å‚·B\n");	// TODO:
+		printf("TEXTUREVALUE ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ã¯æœªå¯¾å¿œã§ã™ã€‚\n");	// TODO:
 		req = MME_VARREQ_TEXTUREVALUE;
 		break;
 
@@ -575,7 +575,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		*script_class = MME_SCRCLS_object;
 		*script_order = MME_SCRORDER_standard;
 
-		// ª‚ÅƒfƒtƒHƒ‹ƒg’l‚Æ‚µ‚Ä‘ã“ü‚µ‚Ä‚é‚Ì‚ÅƒRƒƒ“ƒgƒAƒEƒg
+		// â†‘ã§ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã¨ã—ã¦ä»£å…¥ã—ã¦ã‚‹ã®ã§ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆ
 		//if ( stricmp( script_class, "object" ) ) { MME_SCRCLS_object; }
 		if (_tcsicmp(scriptClassName, _T("scene")) == 0)         {
 			*script_class = MME_SCRCLS_scene;
@@ -595,8 +595,8 @@ void MMEShaderBuilder::CheckVariableRequest(
 
 		if (script)
 		{
-			printf("STANDARDSGLOBAL ‚Ì Script ƒAƒmƒe[ƒVƒ‡ƒ“‚Í–¢‘Î‰‚Å‚·B\n");	// TODO:
-			// Script ‚Å‚Íg—p‚·‚éƒeƒNƒjƒbƒN‚ÌŒŸõ‡˜‚ğw’è‚·‚é
+			printf("STANDARDSGLOBAL ã® Script ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã¯æœªå¯¾å¿œã§ã™ã€‚\n");	// TODO:
+			// Script ã§ã¯ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®æ¤œç´¢é †åºã‚’æŒ‡å®šã™ã‚‹
 
 			LN_THROW(0, NotImplementedException);
 		}
@@ -604,7 +604,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		break;
 	}
 
-		/////////////////////////////////////// “Æ©d—l•”•ª
+		/////////////////////////////////////// ç‹¬è‡ªä»•æ§˜éƒ¨åˆ†
 		/*
 		case LN_SEMANTIC_ORTHOGRAPHIC:
 		{
@@ -645,7 +645,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 	} // switch
 
 
-	// ‚Ü‚¾Œˆ‚Ü‚Á‚Ä‚¢‚È‚¢ê‡‚ÍƒZƒ}ƒ“ƒeƒBƒNƒX–³‚µƒeƒNƒXƒ`ƒƒ‚Ì‰Â”\«‚ğ’²‚×‚é
+	// ã¾ã æ±ºã¾ã£ã¦ã„ãªã„å ´åˆã¯ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ç„¡ã—ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¯èƒ½æ€§ã‚’èª¿ã¹ã‚‹
 	if (req == MME_VARREQ_NONE)
 	{
 		//if ( var_desc.Class == LN_SVC_OBJECT && var_desc.Type == LN_SVT_TEXTURE )
@@ -655,7 +655,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		}
 	}
 
-	// ƒ‰ƒCƒgŠÖŒW‚Ìê‡‚Í”z—ñ‚Ì—v‘f” = •K—v‚Èƒ‰ƒCƒg‚Ì”‚ğŠm”F‚·‚é
+	// ãƒ©ã‚¤ãƒˆé–¢ä¿‚ã®å ´åˆã¯é…åˆ—ã®è¦ç´ æ•° = å¿…è¦ãªãƒ©ã‚¤ãƒˆã®æ•°ã‚’ç¢ºèªã™ã‚‹
 	sv->LightParamIsMatrix = false;
 	switch (req)
 	{
@@ -685,12 +685,12 @@ void MMEShaderBuilder::CheckVariableRequest(
 	case MME_VARREQ_LIGHT_SPECULAR:
 	case MME_VARREQ_LIGHT_POSITION:
 	case MME_VARREQ_LIGHT_DIRECTION:
-		// ”z—ñ‚Å‚È‚¢
+		// é…åˆ—ã§ãªã„
 		if (var->GetArrayElements() == 0) {
 			sv->LightParamIsArray = false;
 			sv->LightNum = 1;
 		}
-		// ”z—ñ‚Å‚ ‚é
+		// é…åˆ—ã§ã‚ã‚‹
 		else {
 			sv->LightParamIsArray = true;
 			sv->LightNum = var->GetArrayElements();
@@ -698,7 +698,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		break;
 	}
 
-	// —v‹€–Ú‚ğ•Ô‚·
+	// è¦æ±‚é …ç›®ã‚’è¿”ã™
 	sv->Request = req;
 }
 
@@ -713,10 +713,10 @@ MMESemantic MMEShaderBuilder::GetMMESemanticBySemanticName(const String& name)
 		return MME_SEMANTIC_NONE;
 	}
 
-	// ’Pƒ‚ÈüŒ`’TõB—v‘f”‚ª”•S‚Æ‚©‚Å‚È‚¯‚ê‚Î map g‚¤‚æ‚è‚à‘¬‚¢B
+	// å˜ç´”ãªç·šå½¢æ¢ç´¢ã€‚è¦ç´ æ•°ãŒæ•°ç™¾ã¨ã‹ã§ãªã‘ã‚Œã° map ä½¿ã†ã‚ˆã‚Šã‚‚é€Ÿã„ã€‚
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(g_MMESemanticTable); ++i)
 	{
-		// ‘å•¶š¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢
+		// å¤§æ–‡å­—å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„
 		if (name.Compare(g_MMESemanticTable[i].SemanticsName, -1, CaseSensitivity_CaseInsensitive) == 0)
 		{
 			return (MMESemantic)i;
@@ -732,13 +732,13 @@ bool MMEShaderBuilder::CheckAnnotationCameraOrLight(Graphics::ShaderVariable* va
 {
 	Graphics::ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
 	if (!anno) {
-		return true;	// "Object" ƒAƒmƒe[ƒVƒ‡ƒ“‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+		return true;	// "Object" ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 	}
 
 	if (_tcsicmp(anno->GetString(), _T("Light")) == 0) {
 		return false;
 	}
-	return true;	// TODO: ‚Æ‚ ‚¦‚¸A‚ ‚Ä‚Í‚Ü‚ç‚È‚¯‚ê‚Î "Camera" ˆµ‚¢‚É‚·‚é
+	return true;	// TODO: ã¨ã‚ãˆãšã€ã‚ã¦ã¯ã¾ã‚‰ãªã‘ã‚Œã° "Camera" æ‰±ã„ã«ã™ã‚‹
 }
 
 //-----------------------------------------------------------------------------
@@ -748,7 +748,7 @@ int MMEShaderBuilder::CheckAnnotationGeometryOrLight(Graphics::ShaderVariable* v
 {
 	Graphics::ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
 	if (!anno) {
-		return 0;	// "Object" ƒAƒmƒe[ƒVƒ‡ƒ“‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
+		return 0;	// "Object" ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
 	}
 	if (_tcsicmp(anno->GetString(), _T("Geometry")) == 0) {
 		return 1;

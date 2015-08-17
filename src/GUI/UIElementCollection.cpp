@@ -1,4 +1,4 @@
-
+Ôªø
 #include "../Internal.h"
 #include <Lumino/GUI/UIElementCollection.h>
 
@@ -11,7 +11,7 @@ namespace GUI
 // UIElementCollection
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElementCollection, GenericVariantList<UIElement*>);	// TODO: ÉeÉìÉvÉåÅ[ÉgÇÕÇ‚ÇﬂÇÈÇ©Ç‡
+LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElementCollection, GenericVariantList<UIElement*>);	// TODO: „ÉÜ„É≥„Éó„É¨„Éº„Éà„ÅØ„ÇÑ„ÇÅ„Çã„Åã„ÇÇ
 
 
 } // namespace GUI

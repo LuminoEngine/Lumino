@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Renderer.h>
@@ -9,7 +9,7 @@ namespace Lumino
 namespace Graphics
 {
 
-// internal ƒNƒ‰ƒXBŒöŠJ‹Ö~B
+// internal ã‚¯ãƒ©ã‚¹ã€‚å…¬é–‹ç¦æ­¢ã€‚
 class Helper
 {
 public:

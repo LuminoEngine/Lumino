@@ -1,43 +1,43 @@
-/*
-	[2015/5/13] Bullet ‚Ì btCollisionObject::get/setWorldTransform ‚Æ btMotionState::get/setWorldTransform ‚É‚Â‚¢‚Ä
+ï»¿/*
+	[2015/5/13] Bullet ã® btCollisionObject::get/setWorldTransform ã¨ btMotionState::get/setWorldTransform ã«ã¤ã„ã¦
 
-		btCollisionObject ‚Ì m_worldTransform ‚ÍA‰ŠúŽp¨‚Ü‚½‚Í setCenterOfMassTransform() ‚Å set ‚³‚ê‚é‚¾‚¯B
-		Bullet ‚Ì‰‰ŽZŒ‹‰Ê‚ªŠi”[‚³‚ê‚é‚à‚Ì‚Å‚Í‚È‚¢B
-		‚³‚ç‚ÉA‰ŠúŽp¨‚Í btMotionState ‚Ìƒ|ƒCƒ“ƒ^‚ªŽw’è‚³‚ê‚Ä‚¢‚ê‚Î btMotionState ‚ÌŽp¨‚ªŽg‚í‚ê‚éB
+		btCollisionObject ã® m_worldTransform ã¯ã€åˆæœŸå§¿å‹¢ã¾ãŸã¯ setCenterOfMassTransform() ã§ set ã•ã‚Œã‚‹ã ã‘ã€‚
+		Bullet ã®æ¼”ç®—çµæžœãŒæ ¼ç´ã•ã‚Œã‚‹ã‚‚ã®ã§ã¯ãªã„ã€‚
+		ã•ã‚‰ã«ã€åˆæœŸå§¿å‹¢ã¯ btMotionState ã®ãƒã‚¤ãƒ³ã‚¿ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚Œã° btMotionState ã®å§¿å‹¢ãŒä½¿ã‚ã‚Œã‚‹ã€‚
 
-		‚Æ‚è‚ ‚¦‚¸ŠÈ’P‚É‚Ü‚Æ‚ß‚é‚ÆAbtMotionState ‚Ì‚Ù‚¤‚ªˆÌ‚¢B
+		ã¨ã‚Šã‚ãˆãšç°¡å˜ã«ã¾ã¨ã‚ã‚‹ã¨ã€btMotionState ã®ã»ã†ãŒå‰ã„ã€‚
 
 
 
 	[2015/5/1]
 		
-		Bullet Ž©g‚É‚àƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‹@”\‚â GPGPU ‹@”\‚ª‚ ‚éB
+		Bullet è‡ªèº«ã«ã‚‚ãƒžãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰æ©Ÿèƒ½ã‚„ GPGPU æ©Ÿèƒ½ãŒã‚ã‚‹ã€‚
 		http://nullorempry.jimdo.com/2012/03/10/bullet-physics%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7/
-		‚½‚¾A2.72 ‚Å‚ÍŽÀ‘•‚³‚ê‚Ä‚È‚³‚»‚¤B‚à‚µ MMD ‚É‹ß‚Ã‚¯‚é‚È‚çŽ©‘O‚Å‰½‚©ì‚é•K—v‚ª‚ ‚é‚©‚à‚µ‚ê‚È‚¢B
+		ãŸã ã€2.72 ã§ã¯å®Ÿè£…ã•ã‚Œã¦ãªã•ãã†ã€‚ã‚‚ã— MMD ã«è¿‘ã¥ã‘ã‚‹ãªã‚‰è‡ªå‰ã§ä½•ã‹ä½œã‚‹å¿…è¦ãŒã‚ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚
 
-		Ebullet ‚Ìƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‹@”\‚É—Š‚é
-		EƒVƒ“ƒOƒ‹ƒXƒŒƒbƒh—p‚Ì•¨—‰‰ŽZ‚ðAŽ©‘O‚Åƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Å•ï‚Þ
+		ãƒ»bullet ã®ãƒžãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰æ©Ÿèƒ½ã«é ¼ã‚‹
+		ãƒ»ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ç”¨ã®ç‰©ç†æ¼”ç®—ã‚’ã€è‡ªå‰ã§ãƒžãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã§åŒ…ã‚€
 		
 
 
-		MMD ƒ‚ƒfƒ‹‚É‚Â‚¢‚ÄEEE
+		MMD ãƒ¢ãƒ‡ãƒ«ã«ã¤ã„ã¦ãƒ»ãƒ»ãƒ»
 
-			‡@„‘Ì‚ðƒ{[ƒ“ˆÊ’u‚ÉˆÚ“®
-			‡A•¨—‰‰ŽZ
-			‡Bƒ{[ƒ“‚ð„‘ÌˆÊ’u‚ÉˆÚ“®
-			‡C•`‰æ
+			â‘ å‰›ä½“ã‚’ãƒœãƒ¼ãƒ³ä½ç½®ã«ç§»å‹•
+			â‘¡ç‰©ç†æ¼”ç®—
+			â‘¢ãƒœãƒ¼ãƒ³ã‚’å‰›ä½“ä½ç½®ã«ç§»å‹•
+			â‘£æç”»
 
-			•`‰æ‚ð³‚µ‚­s‚¤‚½‚ß‚É‚ÍA•¨—‰‰ŽZ‚Æ•`‰æ‚ª1ƒtƒŒ[ƒ€“à‚Å’¼—ñ‚ÉŽÀs‚³‚ê‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
-			•À—ñ‚É‚µ‚Ä‚µ‚Ü‚¤‚Æ1ƒtƒŒ[ƒ€‘O‚Ì•¨—‰‰ŽZŒ‹‚Åƒ{[ƒ“XV‚ðs‚¤‚±‚Æ‚É‚È‚é‚Ì‚ÅAƒ‚ƒfƒ‹‚ª‚‘¬ˆÚ“®‚µ‚½‚Æ‚«‚ÉL‚Ñ‚Ä‚µ‚Ü‚¤B
-			LightNote ‚Å‚Í‚â‚Þ‚È‚­A•¨—‰‰ŽZ‚ÆScene&GUI ‚ÌXV‚ð•À—ñ‚É‚µ‚ÄA•`‰æ‚Æ‚Í’¼—ñ‚É‚µ‚Ä‚¢‚½B
+			æç”»ã‚’æ­£ã—ãè¡Œã†ãŸã‚ã«ã¯ã€ç‰©ç†æ¼”ç®—ã¨æç”»ãŒ1ãƒ•ãƒ¬ãƒ¼ãƒ å†…ã§ç›´åˆ—ã«å®Ÿè¡Œã•ã‚Œãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
+			ä¸¦åˆ—ã«ã—ã¦ã—ã¾ã†ã¨1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®ç‰©ç†æ¼”ç®—çµã§ãƒœãƒ¼ãƒ³æ›´æ–°ã‚’è¡Œã†ã“ã¨ã«ãªã‚‹ã®ã§ã€ãƒ¢ãƒ‡ãƒ«ãŒé«˜é€Ÿç§»å‹•ã—ãŸã¨ãã«ä¼¸ã³ã¦ã—ã¾ã†ã€‚
+			LightNote ã§ã¯ã‚„ã‚€ãªãã€ç‰©ç†æ¼”ç®—ã¨Scene&GUI ã®æ›´æ–°ã‚’ä¸¦åˆ—ã«ã—ã¦ã€æç”»ã¨ã¯ç›´åˆ—ã«ã—ã¦ã„ãŸã€‚
 
-			‚Ç‚¤‚µ‚Ä‚à•¨—‰‰ŽZ‚ð•À—ñ‰»‚·‚é‚È‚çA‡B ‚É‚Ä•¨—‰‰ŽZ‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¯‚ê‚ÎA
-			eƒ{[ƒ“‚Ì‘O‰ñƒtƒŒ[ƒ€‚©‚ç‚ÌƒIƒtƒZƒbƒg‚ðl—¶‚µ‚ÄŽ©•ª‚ÅˆÚ“®‚·‚é•K—v‚ª‚ ‚éB
-			¨ ‘O‰ñƒtƒŒ[ƒ€‚Æ‚¢‚¤‚æ‚èAÅŒã‚Ì‡@‚©‚çB‡@‚Å‚àAŠ®—¹‚µ‚Ä‚¢‚È‚¯‚ê‚Î„‘ÌˆÊ’u‚ðˆÚ“®‚µ‚È‚¢‚æ‚¤‚É‚·‚é•K—v‚ª‚ ‚éB
+			ã©ã†ã—ã¦ã‚‚ç‰©ç†æ¼”ç®—ã‚’ä¸¦åˆ—åŒ–ã™ã‚‹ãªã‚‰ã€â‘¢ ã«ã¦ç‰©ç†æ¼”ç®—ãŒå®Œäº†ã—ã¦ã„ãªã‘ã‚Œã°ã€
+			è¦ªãƒœãƒ¼ãƒ³ã®å‰å›žãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è€ƒæ…®ã—ã¦è‡ªåˆ†ã§ç§»å‹•ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
+			â†’ å‰å›žãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã„ã†ã‚ˆã‚Šã€æœ€å¾Œã®â‘ ã‹ã‚‰ã€‚â‘ ã§ã‚‚ã€å®Œäº†ã—ã¦ã„ãªã‘ã‚Œã°å‰›ä½“ä½ç½®ã‚’ç§»å‹•ã—ãªã„ã‚ˆã†ã«ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 
 
 
-		Model ƒNƒ‰ƒX‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX‚ÍH
+		Model ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¯ï¼Ÿ
 
 			Model::GetBones();
 			Model::GetMaterials();
@@ -56,26 +56,26 @@
 			Model::DrawSubset();
 
 
-		‚Ü‚¸‚Í“¯Šúƒ‚[ƒhƒIƒ“ƒŠ[‚Å‚¢‚¢‚ÆŽv‚¤B‘O‚Æ“¯‚¶B
-		bullet ‚Ìƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‹@”\‚Å‰ü‘P‚Å‚«‚é‚È‚ç‚»‚ê‚Å‚¢‚¢‚µB
-		‚Ü‚¸ˆê”­ì‚Á‚Ä‚Ý‚Äƒxƒ“ƒ`ƒ}[ƒN‚µ‚ÄA‚»‚ê‚Å‰ü‘P‚Ì—]’n‚ª‚ ‚ê‚ÎŒŸ“¢‚·‚éA‚ÅB
+		ã¾ãšã¯åŒæœŸãƒ¢ãƒ¼ãƒ‰ã‚ªãƒ³ãƒªãƒ¼ã§ã„ã„ã¨æ€ã†ã€‚å‰ã¨åŒã˜ã€‚
+		bullet ã®ãƒžãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰æ©Ÿèƒ½ã§æ”¹å–„ã§ãã‚‹ãªã‚‰ãã‚Œã§ã„ã„ã—ã€‚
+		ã¾ãšä¸€ç™ºä½œã£ã¦ã¿ã¦ãƒ™ãƒ³ãƒãƒžãƒ¼ã‚¯ã—ã¦ã€ãã‚Œã§æ”¹å–„ã®ä½™åœ°ãŒã‚ã‚Œã°æ¤œè¨Žã™ã‚‹ã€ã§ã€‚
 
-		‚¿‚È‚Ý‚Éƒ‰ƒCƒuƒ‰ƒŠ‘¤‚Åƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‘Î‰ž‚·‚é‚Æ‚È‚Á‚½‚çA
-		ƒvƒƒpƒeƒB‚Í‚·‚×‚Ä•ÛŽƒ‚[ƒhBStepSimu ’¼‘O‚ÅƒRƒ~ƒbƒg&bulletƒIƒuƒWƒFƒNƒgì¬‚Æ‚©‚ª‚Ð‚Â‚æ‚¤B
-		ƒ\ƒtƒgƒ{ƒfƒB‚Íƒm[ƒh’PˆÊ‚Å‚à•ÛŽ‚·‚é•K—v‚ª‚ ‚éB
+		ã¡ãªã¿ã«ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã§ãƒžãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰å¯¾å¿œã™ã‚‹ã¨ãªã£ãŸã‚‰ã€
+		ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¯ã™ã¹ã¦ä¿æŒãƒ¢ãƒ¼ãƒ‰ã€‚StepSimu ç›´å‰ã§ã‚³ãƒŸãƒƒãƒˆ&bulletã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä½œæˆã¨ã‹ãŒã²ã¤ã‚ˆã†ã€‚
+		ã‚½ãƒ•ãƒˆãƒœãƒ‡ã‚£ã¯ãƒŽãƒ¼ãƒ‰å˜ä½ã§ã‚‚ä¿æŒã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 
 
-		MMD ƒ‚ƒfƒ‹‚Ìƒ}ƒ‹ƒ`ƒXƒŒƒbƒh•¨—XV‚É‚Â‚¢‚ÄEEE
+		MMD ãƒ¢ãƒ‡ãƒ«ã®ãƒžãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç‰©ç†æ›´æ–°ã«ã¤ã„ã¦ãƒ»ãƒ»ãƒ»
 			
-			—v‹‚µ‚½ StepSim ‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¯‚ê‚Îeƒ{[ƒ“‚ÌŽp¨‚ðŒp³‚·‚éA‚¢‚Â‚à‚ÌŠK‘wXV‚ðs‚¤B
-			ƒ|ƒCƒ“ƒg‚ÍA‚Ç‚¤‚â‚Á‚ÄŠ®—¹‚µ‚Ä‚¢‚é‚Ì‚ðƒ`ƒFƒbƒN‚·‚é‚©B
+			è¦æ±‚ã—ãŸ StepSim ãŒå®Œäº†ã—ã¦ã„ãªã‘ã‚Œã°è¦ªãƒœãƒ¼ãƒ³ã®å§¿å‹¢ã‚’ç¶™æ‰¿ã™ã‚‹ã€ã„ã¤ã‚‚ã®éšŽå±¤æ›´æ–°ã‚’è¡Œã†ã€‚
+			ãƒã‚¤ãƒ³ãƒˆã¯ã€ã©ã†ã‚„ã£ã¦å®Œäº†ã—ã¦ã„ã‚‹ã®ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‹ã€‚
 
-			E’Pƒ‚ÉAƒ{[ƒ“XVŽž‚É•¨—ƒXƒŒƒbƒh‚ª‘Ò‹@’†‚©’²‚×A‘Ò‹@’†‚ÌŽž‚¾‚¯XV‚·‚é
-				¨	NGBAPI ‚ðƒVƒ“ƒOƒ‹ƒXƒŒƒbƒhƒ‚[ƒh‚Æ“¯‚¶‚É‚µ‚½‚¢ê‡Aƒ{[ƒ“XVƒ^ƒCƒ~ƒ“ƒO‚Í StepSim ‚ðƒŠƒNƒGƒXƒg‚µ‚½’¼Œã‚Å‚ ‚éB
-				StepSim ‚à“¯—l‚Éu‘Ò‹@’†‚Å‚ ‚ê‚ÎŽÀsv‚Ìˆ—‚ªs‚í‚ê‚é–ó‚ÅA‚»‚Ì’¼Œã‚É‚ ‚éƒ{[ƒ“XV‚Í‚Šm—¦‚Åˆ—‚ªs‚í‚ê‚È‚¢ˆÙ‚È‚éB
+			ãƒ»å˜ç´”ã«ã€ãƒœãƒ¼ãƒ³æ›´æ–°æ™‚ã«ç‰©ç†ã‚¹ãƒ¬ãƒƒãƒ‰ãŒå¾…æ©Ÿä¸­ã‹èª¿ã¹ã€å¾…æ©Ÿä¸­ã®æ™‚ã ã‘æ›´æ–°ã™ã‚‹
+				â†’	NGã€‚API ã‚’ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ã¨åŒã˜ã«ã—ãŸã„å ´åˆã€ãƒœãƒ¼ãƒ³æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã¯ StepSim ã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆã—ãŸç›´å¾Œã§ã‚ã‚‹ã€‚
+				StepSim ã‚‚åŒæ§˜ã«ã€Œå¾…æ©Ÿä¸­ã§ã‚ã‚Œã°å®Ÿè¡Œã€ã®å‡¦ç†ãŒè¡Œã‚ã‚Œã‚‹è¨³ã§ã€ãã®ç›´å¾Œã«ã‚ã‚‹ãƒœãƒ¼ãƒ³æ›´æ–°ã¯é«˜ç¢ºçŽ‡ã§å‡¦ç†ãŒè¡Œã‚ã‚Œãªã„ç•°ãªã‚‹ã€‚
 
-			E—v‹‚µ‚½ StepSim ‚ªŠ®—¹‚µ‚Ä‚¢‚é‚©’²‚×‚é (ƒ{[ƒ“XVŽžAŒã‚É—v‹‚³‚ê‚½ StepSim ‚Í“®‚¢‚Ä‚¢‚é‚©‚à‚µ‚ê‚È‚¢)
-				¨ ‚Å‚«‚½‚Æ‚µ‚Ä‚àAƒ{[ƒ“XV‚ÉŽg‚í‚ê‚é„‘ÌŽp¨‚Í‚PƒtƒŒ[ƒ€‘O‚Ì‚à‚Ì‚Å‚ ‚éB
+			ãƒ»è¦æ±‚ã—ãŸ StepSim ãŒå®Œäº†ã—ã¦ã„ã‚‹ã‹èª¿ã¹ã‚‹ (ãƒœãƒ¼ãƒ³æ›´æ–°æ™‚ã€å¾Œã«è¦æ±‚ã•ã‚ŒãŸ StepSim ã¯å‹•ã„ã¦ã„ã‚‹ã‹ã‚‚ã—ã‚Œãªã„)
+				â†’ ã§ããŸã¨ã—ã¦ã‚‚ã€ãƒœãƒ¼ãƒ³æ›´æ–°ã«ä½¿ã‚ã‚Œã‚‹å‰›ä½“å§¿å‹¢ã¯ï¼‘ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®ã‚‚ã®ã§ã‚ã‚‹ã€‚
 
 */
 
@@ -190,7 +190,7 @@ PhysicsManager::PhysicsManager(SimulationType type)
 	, m_elapsedTime(0.0f)
 	, m_debugDrawer(NULL)
 {
-	// «ˆÈ‰º‚Åo‚Ä‚­‚é’PŒê‚Æ‚©
+	// â†“ä»¥ä¸‹ã§å‡ºã¦ãã‚‹å˜èªžã¨ã‹
 	//		http://nullorempry.jimdo.com/2012/03/10/bullet-physics%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7/
 
 	int maxNumOutstandingTasks = 4;
@@ -203,17 +203,17 @@ PhysicsManager::PhysicsManager(SimulationType type)
 		maxNumOutstandingTasks));
 #endif
 
-	// ƒJƒXƒ^ƒ€ƒRƒŠƒWƒ‡ƒ“ƒR[ƒ‹ƒoƒbƒN
+	// ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	//gContactAddedCallback = CustomMaterialCombinerCallback;
 
-	// ƒRƒŠƒWƒ‡ƒ“ƒRƒ“ƒtƒBƒO
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ³ãƒ•ã‚£ã‚°
 	btDefaultCollisionConstructionInfo defaultCollisionConstructionInfo;
 	//defaultCollisionConstructionInfo.m_defaultMaxPersistentManifoldPoolSize = 32768;
 	m_btCollisionConfig = new btDefaultCollisionConfiguration(defaultCollisionConstructionInfo);
-	// ƒ\ƒtƒgƒ{ƒfƒBŽg‚¤‚Æ‚«
+	// ã‚½ãƒ•ãƒˆãƒœãƒ‡ã‚£ä½¿ã†ã¨ã
 	//m_btCollisionConfig = LN_NEW btSoftBodyRigidBodyCollisionConfiguration();// 
 
-	// ƒRƒŠƒWƒ‡ƒ“ƒfƒBƒXƒpƒbƒ`ƒƒ
+	// ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒãƒ£
 #ifdef LN_USE_PARALLEL
 	m_btCollisionDispatcher = new SpuGatheringCollisionDispatcher(m_threadSupportCollision, maxNumOutstandingTasks, m_btCollisionConfig);
 #else
@@ -221,14 +221,14 @@ PhysicsManager::PhysicsManager(SimulationType type)
 
 #endif
 
-	// ƒuƒ[ƒhƒtƒF[ƒYƒAƒ‹ƒSƒŠƒYƒ€ (Õ“ËŒŸo‚Ì‚½‚ß‚ÌƒOƒ‹[ƒv•ª‚¯ƒAƒ‹ƒSƒŠƒYƒ€)
+	// ãƒ–ãƒ­ãƒ¼ãƒ‰ãƒ•ã‚§ãƒ¼ã‚ºã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  (è¡çªæ¤œå‡ºã®ãŸã‚ã®ã‚°ãƒ«ãƒ¼ãƒ—åˆ†ã‘ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ )
 	/*
 		btDbvtBroadphase
-			AABB–Ø‚É‚æ‚é‚‘¬‚Å“®“I‚ÈŠK‘w‹óŠÔ‚ðŽg‚¢‚Ü‚·B
+			AABBæœ¨ã«ã‚ˆã‚‹é«˜é€Ÿã§å‹•çš„ãªéšŽå±¤ç©ºé–“ã‚’ä½¿ã„ã¾ã™ã€‚
 		btAxisSweep3 bt32BitAxisSweep3
-			’€ŽŸ3DƒXƒC[ƒv&ƒvƒ‹[ƒ“(incremental 3D sweep and prune)‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
+			é€æ¬¡3Dã‚¹ã‚¤ãƒ¼ãƒ—&ãƒ—ãƒ«ãƒ¼ãƒ³(incremental 3D sweep and prune)ã‚’å®Ÿè£…ã—ã¦ã„ã¾ã™ã€‚
 		btCudaBroadphase
-			GPU‚ðŽg—p‚µ‚½‚‘¬‚Èˆê—lƒOƒŠƒbƒh‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·B
+			GPUã‚’ä½¿ç”¨ã—ãŸé«˜é€Ÿãªä¸€æ§˜ã‚°ãƒªãƒƒãƒ‰ã‚’å®Ÿè£…ã—ã¦ã„ã¾ã™ã€‚
 			http://bulletjpn.web.fc2.com/05_BulletCollisionDetection.html
 	*/
 	//   btVector3	btv3WorldAabbMin( -3000.0f, -3000.0f, -3000.0f );
@@ -237,7 +237,7 @@ PhysicsManager::PhysicsManager(SimulationType type)
 	//m_btBroadphase = new btAxisSweep3( btv3WorldAabbMin, btv3WorldAabbMax, iMaxProxies );
 	m_btBroadphase = LN_NEW btDbvtBroadphase();
 
-	// ƒ\ƒ‹ƒo
+	// ã‚½ãƒ«ãƒ
 #ifdef LN_USE_PARALLEL
 	m_threadSupportSolver = createSolverThreadSupport(maxNumOutstandingTasks);
 	m_btSolver = new btParallelConstraintSolver(m_threadSupportSolver);
@@ -247,7 +247,7 @@ PhysicsManager::PhysicsManager(SimulationType type)
 	m_btSolver = new btSequentialImpulseConstraintSolver();
 #endif
 
-	// ƒ[ƒ‹ƒh‚Ìì¬
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã®ä½œæˆ
 	//m_btWorld = LN_NEW btSoftRigidDynamicsWorld( m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig, NULL );
 	m_btWorld = new btDiscreteDynamicsWorld(m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig);
 
@@ -259,7 +259,7 @@ PhysicsManager::PhysicsManager(SimulationType type)
 	//btOverlapFilterCallback * filterCallback = new FilterCallback();
 	//m_btWorld->getPairCache()->setOverlapFilterCallback( &gFilterCallback );
 
-#if 0	// MMM setting (ƒfƒtƒHƒ‹ƒg‚Í 10)
+#if 0	// MMM setting (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯ 10)
 	m_btWorld->getSolverInfo().m_numIterations = 4;
 #endif
 #ifdef LN_USE_PARALLEL
@@ -271,7 +271,7 @@ PhysicsManager::PhysicsManager(SimulationType type)
 #endif
 	//m_btWorld->setDebugDrawer(&gDebugDrawer);
 
-	// d—Í		TODO: ‰Šú’l
+	// é‡åŠ›		TODO: åˆæœŸå€¤
 	m_btWorld->setGravity(btVector3(0.0f, -9.8f * 2.5f, 0.0f));
 	//SetGravity(Vector3(0.0f, -9.8f * 2.5f, 0.0f));
 	//SetGravity( LVector3( 0.0f, /*-9.8f*/-9.81f * 10.0f/* * 2.0f*/, 0.0f ) );
@@ -342,7 +342,7 @@ PhysicsManager::~PhysicsManager()
 //-----------------------------------------------------------------------------
 void PhysicsManager::Finalize()
 {
-	// TODO: •¨—XVƒXƒŒƒbƒh‚ªI—¹‚·‚é‚Ü‚Å‘Ò‚Â
+	// TODO: ç‰©ç†æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚äº†ã™ã‚‹ã¾ã§å¾…ã¤
 
 	m_rigidBodyList.Clear();
 	m_jointList.Clear();
@@ -355,11 +355,11 @@ void PhysicsManager::SyncBeforeStepSimulation()
 {
 	if (m_simulationType == SimulationType_ASync)
 	{
-		// I‚í‚é‚Ü‚Å‘Ò‚Â
+		// çµ‚ã‚ã‚‹ã¾ã§å¾…ã¤
 	}
 
 	//---------------------------------------------------------
-	// Add` ‚Å’Ç‰Á‚³‚ê‚½V‹KƒIƒuƒWƒFƒNƒg‚ðƒ[ƒ‹ƒh‚É“o˜^
+	// Addï½ž ã§è¿½åŠ ã•ã‚ŒãŸæ–°è¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«ç™»éŒ²
 
 	//// CollisionBody
 	//CollisionBodyArray::ObjectArray& collisionArray = mCollisionBodyArray.getRegistOrderObjectArray();
@@ -384,7 +384,7 @@ void PhysicsManager::SyncBeforeStepSimulation()
 	m_jointList.Commit();
 
 	//---------------------------------------------------------
-	// „‘Ì‚ÌŽp¨‚ð“¯Šú
+	// å‰›ä½“ã®å§¿å‹¢ã‚’åŒæœŸ
 
 	LN_FOREACH(RigidBody* b, m_rigidBodyList.GetObjectArray())
 	{
@@ -407,7 +407,7 @@ void PhysicsManager::StepSimulation(float elapsedTime)
 	}
 	else
 	{
-		LN_THROW(m_asyncSimulationState == ASyncSimulationState_Idling, InvalidOperationException);	// ‘Ò‹@ó‘Ô‚É‚È‚Á‚Ä‚¢‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+		LN_THROW(m_asyncSimulationState == ASyncSimulationState_Idling, InvalidOperationException);	// å¾…æ©ŸçŠ¶æ…‹ã«ãªã£ã¦ã„ãªã‘ã‚Œã°ãªã‚‰ãªã„
 
 		m_elapsedTime = elapsedTime;
 	}
@@ -434,17 +434,17 @@ void PhysicsManager::StepSimulationInternal()
 	const float internalUnit = 1.0f / 60.0f;
 
 	// http://d.hatena.ne.jp/ousttrue/20100425/1272165711
-	// m_elapsedTime ‚ª 1.0(1•b) ‚æ‚è¬‚³‚¢ŠÔ‚Í 16ms ‚ðÅ‘å 60 ‰ñŒJ‚è•Ô‚µ‚Ä’Ç‚¢‚Â‚±‚¤‚Æ‚·‚éÝ’èB
-	// m_elapsedTime ‚ª 1.0 ‚ð’´‚¦‚Ä‚¢‚éê‡‚Í’Ç‚¢‚Â‚¯‚¸‚ÉA•¨‘Ì‚ÌˆÚ“®‚ª’x‚­‚È‚éB
+	// m_elapsedTime ãŒ 1.0(1ç§’) ã‚ˆã‚Šå°ã•ã„é–“ã¯ 16ms ã‚’æœ€å¤§ 60 å›žç¹°ã‚Šè¿”ã—ã¦è¿½ã„ã¤ã“ã†ã¨ã™ã‚‹è¨­å®šã€‚
+	// m_elapsedTime ãŒ 1.0 ã‚’è¶…ãˆã¦ã„ã‚‹å ´åˆã¯è¿½ã„ã¤ã‘ãšã«ã€ç‰©ä½“ã®ç§»å‹•ãŒé…ããªã‚‹ã€‚
 	m_btWorld->stepSimulation(m_elapsedTime, 60, internalUnit);
 
-	// m_elapsedTime ‚ª 16ms ‚æ‚è‘å‚«‚¢ê‡‚ÍA1‰ñ 16ms •ª‚ÌƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ð‰Â”\‚ÈŒÀ‚èŒJ‚è•Ô‚µ‚Ä m_elapsedTime ‚É’Ç‚¢‚Â‚¢‚Ä‚¢‚­Ý’èB
-	// ’x‚ê‚é‚Ù‚ÇŒvŽZ‰ñ”‚ª‘‚¦‚é‚Ì‚ÅAÅI“I‚É”j’]‚·‚é‚©‚à‚µ‚ê‚È‚¢B
+	// m_elapsedTime ãŒ 16ms ã‚ˆã‚Šå¤§ãã„å ´åˆã¯ã€1å›ž 16ms åˆ†ã®ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å¯èƒ½ãªé™ã‚Šç¹°ã‚Šè¿”ã—ã¦ m_elapsedTime ã«è¿½ã„ã¤ã„ã¦ã„ãè¨­å®šã€‚
+	// é…ã‚Œã‚‹ã»ã©è¨ˆç®—å›žæ•°ãŒå¢—ãˆã‚‹ã®ã§ã€æœ€çµ‚çš„ã«ç ´ç¶»ã™ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚
 	//m_btWorld->stepSimulation(m_elapsedTime, 1 + (int)(m_elapsedTime / internalUnit), internalUnit);
 
 
 	//---------------------------------------------------------
-	// „‘Ì‚ÌŽp¨‚ð“¯Šú (‰‰ŽZŒ‹‰Ê ¨ ƒ†[ƒU[)
+	// å‰›ä½“ã®å§¿å‹¢ã‚’åŒæœŸ (æ¼”ç®—çµæžœ â†’ ãƒ¦ãƒ¼ã‚¶ãƒ¼)
 	LN_FOREACH(RigidBody* b, m_rigidBodyList.GetObjectArray())
 	{
 		b->SyncAfterStepSimulation();

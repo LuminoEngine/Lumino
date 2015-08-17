@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Variant.h"
 
@@ -25,10 +25,10 @@ public:
 
 public:
 
-	/// —v‘f”‚ğæ“¾‚·‚é
+	/// è¦ç´ æ•°ã‚’å–å¾—ã™ã‚‹
 	int GetCount() const { return m_list.GetCount(); }
 
-	/// w’èƒCƒ“ƒfƒbƒNƒX‚É—v‘f‚ğŠi”[‚·‚é
+	/// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«è¦ç´ ã‚’æ ¼ç´ã™ã‚‹
 	void SetAtBase(int index, TObject* item)
 	{
 		if (OnItemAdding(item))
@@ -39,13 +39,13 @@ public:
 		}
 	}
 
-	/// w’èƒCƒ“ƒfƒbƒNƒX‚Ì—v‘f‚ğæ“¾‚·‚é
+	/// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¦ç´ ã‚’å–å¾—ã™ã‚‹
 	TObject* GetAtBase(int index) const
 	{
 		return m_list.GetAt(index);
 	}
 
-	/// —v‘f‚ğ––”ö‚É’Ç‰Á‚·‚é
+	/// è¦ç´ ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹
 	void Add(TObject* item)
 	{
 		if (OnItemAdding(item))
@@ -56,17 +56,17 @@ public:
 		}
 	}
 
-	/// ‘S‚Ä‚Ì—v‘f‚ğíœ‚·‚é
+	/// å…¨ã¦ã®è¦ç´ ã‚’å‰Šé™¤ã™ã‚‹
 	void Clear()
 	{
 		LN_FOREACH(TObject* item, m_list) {
-			OnItemRemoved(item);	// TODO: erase ‚µ‚È‚ª‚ç‚Ğ‚Æ‚Â‚¸‚ÂŒÄ‚Ô‚×‚«‚©‚à
+			OnItemRemoved(item);	// TODO: erase ã—ãªãŒã‚‰ã²ã¨ã¤ãšã¤å‘¼ã¶ã¹ãã‹ã‚‚
 			LN_SAFE_RELEASE(item);
 		}
 		m_list.Clear();
 	}
 
-	/// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚É—v‘f‚ğ‘}“ü‚·‚é
+	/// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ä½ç½®ã«è¦ç´ ã‚’æŒ¿å…¥ã™ã‚‹
 	void Insert(int index, TObject* item)
 	{
 		if (OnItemAdding(item))
@@ -77,7 +77,7 @@ public:
 		}
 	}
 
-	/// item ‚Æˆê’v‚·‚éÅ‰‚Ì—v‘f‚ğíœ‚·‚é
+	/// item ã¨ä¸€è‡´ã™ã‚‹æœ€åˆã®è¦ç´ ã‚’å‰Šé™¤ã™ã‚‹
 	void Remove(TObject* item)
 	{
 		bool b = m_list.Remove(item);
@@ -87,7 +87,7 @@ public:
 		}
 	}
 
-	/// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚Ì—v‘f‚ğíœ‚·‚é
+	/// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¦ç´ ã‚’å‰Šé™¤ã™ã‚‹
 	void RemoveAt(int index)
 	{
 		TObject* item = m_list.GetAt(index);
@@ -96,7 +96,7 @@ public:
 		LN_SAFE_RELEASE(item);
 	}
 
-	/// ”z—ñ‚ÌƒCƒ“ƒfƒbƒNƒX‚Æ‚µ‚Ä—LŒø‚È®”’l‚Å‚ ‚é‚©‚ğŠm”F‚·‚é
+	/// é…åˆ—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ã—ã¦æœ‰åŠ¹ãªæ•´æ•°å€¤ã§ã‚ã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹
 	bool CheckValidIndex(int index) const { return m_list.CheckValidIndex(index); }
 
 public:

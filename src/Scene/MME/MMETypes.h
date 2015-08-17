@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <vector>
@@ -16,7 +16,7 @@ namespace Scene
 //class SceneShaderManager;
 class MMETextureObject;
 
-/// MME ƒZƒ}ƒ“ƒeƒBƒNƒXˆê——
+/// MME ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ä¸€è¦§
 enum MMESemantic
 {
     MME_SEMANTIC_NONE = 0,
@@ -57,23 +57,23 @@ enum MMESemantic
     MME_SEMANTIC_TOONCOLOR,
     MME_SEMANTIC_EDGECOLOR,
 
-    MME_SEMANTIC_POSITION,          ///< ƒ‰ƒCƒg‚Ü‚½‚ÍƒJƒƒ‰‚ÌAƒ[ƒ‹ƒh‹óŠÔ“à‚É‚¨‚¯‚éˆÊ’u
-    MME_SEMANTIC_DIRECTION,         ///< ƒ‰ƒCƒg‚Ü‚½‚ÍƒJƒƒ‰‚ÌAƒ[ƒ‹ƒh‹óŠÔ“à‚É‚¨‚¯‚éŒü‚«
+    MME_SEMANTIC_POSITION,          ///< ãƒ©ã‚¤ãƒˆã¾ãŸã¯ã‚«ãƒ¡ãƒ©ã®ã€ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“å†…ã«ãŠã‘ã‚‹ä½ç½®
+    MME_SEMANTIC_DIRECTION,         ///< ãƒ©ã‚¤ãƒˆã¾ãŸã¯ã‚«ãƒ¡ãƒ©ã®ã€ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“å†…ã«ãŠã‘ã‚‹å‘ã
 
-    MME_SEMANTIC_MATERIALTEXTURE,       ///< ƒ}ƒeƒŠƒAƒ‹‚Éİ’è‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ
-    MME_SEMANTIC_MATERIALSPHEREMAP,     ///< ƒ}ƒeƒŠƒAƒ‹‚Éİ’è‚³‚ê‚Ä‚¢‚éƒXƒtƒBƒAƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
+    MME_SEMANTIC_MATERIALTEXTURE,       ///< ãƒãƒ†ãƒªã‚¢ãƒ«ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£
+    MME_SEMANTIC_MATERIALSPHEREMAP,     ///< ãƒãƒ†ãƒªã‚¢ãƒ«ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚¹ãƒ•ã‚£ã‚¢ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
-    MME_SEMANTIC_VIEWPORTPIXELSIZE,     ///< ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒXƒNƒŠ[ƒ“‚ÌƒTƒCƒY (Scene ‚Ì•`‰ææRT‚à‚µ‚­‚ÍƒIƒtƒXƒNƒŠ[ƒ“RT‚ÌƒTƒCƒYBScripts‚Ì"RenderColorTarget"ƒRƒ}ƒ“ƒh‚ÅART‚ğ•ÏX‚µ‚Ä‚àA‚±‚Ì’l‚Í•Ï‰»‚µ‚È‚¢)
+    MME_SEMANTIC_VIEWPORTPIXELSIZE,     ///< ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ã‚µã‚¤ã‚º (Scene ã®æç”»å…ˆRTã‚‚ã—ãã¯ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã®ã‚µã‚¤ã‚ºã€‚Scriptsã®"RenderColorTarget"ã‚³ãƒãƒ³ãƒ‰ã§ã€RTã‚’å¤‰æ›´ã—ã¦ã‚‚ã€ã“ã®å€¤ã¯å¤‰åŒ–ã—ãªã„)
 
-    MME_SEMANTIC_TIME,                  ///< 0ƒtƒŒ[ƒ€–Ú‚©‚ç‚ÌÄ¶ŠÔ (•bBƒ‚ƒfƒ‹’PˆÊBƒAƒjƒÄ¶A‚Ü‚½‚ÍŠÔİ’è‚ÉŒ»İŠÔ‚ª‘ã“ü‚³‚ê‚é)
-    MME_SEMANTIC_ELAPSEDTIME,           ///< ‘O‰ñ‚Ì•`‰æ‚©‚ç‚ÌŒo‰ßŠÔ (•b)
+    MME_SEMANTIC_TIME,                  ///< 0ãƒ•ãƒ¬ãƒ¼ãƒ ç›®ã‹ã‚‰ã®å†ç”Ÿæ™‚é–“ (ç§’ã€‚ãƒ¢ãƒ‡ãƒ«å˜ä½ã€‚ã‚¢ãƒ‹ãƒ¡å†ç”Ÿæ™‚ã€ã¾ãŸã¯æ™‚é–“è¨­å®šæ™‚ã«ç¾åœ¨æ™‚é–“ãŒä»£å…¥ã•ã‚Œã‚‹)
+    MME_SEMANTIC_ELAPSEDTIME,           ///< å‰å›ã®æç”»ã‹ã‚‰ã®çµŒéæ™‚é–“ (ç§’)
 
-    MME_SEMANTIC_MOUSEPOSITION,         ///< [float2] ƒ}ƒEƒX‚ÌŒ»İˆÊ’u (ƒXƒNƒŠ[ƒ“’†S‚ª(0,0)A¶‰º‹÷‚ª(-1,-1)A‰Eã‹÷‚ª(1,1)‚É‚È‚é)
-    MME_SEMANTIC_LEFTMOUSEDOWN,         ///< [float4] ÅŒã‚Éƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Ìƒ}ƒEƒX‚ÌÀ•W(x, y)AŒ»İƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©i0 or 1jAÅŒã‚Éƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½“_‚ÌTIME’l(•b)
+    MME_SEMANTIC_MOUSEPOSITION,         ///< [float2] ãƒã‚¦ã‚¹ã®ç¾åœ¨ä½ç½® (ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ä¸­å¿ƒãŒ(0,0)ã€å·¦ä¸‹éš…ãŒ(-1,-1)ã€å³ä¸Šéš…ãŒ(1,1)ã«ãªã‚‹)
+    MME_SEMANTIC_LEFTMOUSEDOWN,         ///< [float4] æœ€å¾Œã«ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã¨ãã®ãƒã‚¦ã‚¹ã®åº§æ¨™(x, y)ã€ç¾åœ¨ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹ï¼ˆ0 or 1ï¼‰ã€æœ€å¾Œã«ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸæ™‚ç‚¹ã®TIMEå€¤(ç§’)
     MME_SEMANTIC_MIDDLEMOUSEDOWN,   
     MME_SEMANTIC_RIGHTMOUSEDOWN,
 
-    MME_SEMANTIC_CONTROLOBJECT,         ///< w’è‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌAÀ•W‚âƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ğæ“¾‚·‚é(Œ^‚É‚æ‚Á‚Äî•ñ‚Ìí—Ş‚ªˆÙ‚È‚é)
+    MME_SEMANTIC_CONTROLOBJECT,         ///< æŒ‡å®šã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã€åº§æ¨™ã‚„ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã‚’å–å¾—ã™ã‚‹(å‹ã«ã‚ˆã£ã¦æƒ…å ±ã®ç¨®é¡ãŒç•°ãªã‚‹)
 
     MME_SEMANTIC_RENDERCOLORTARGET,
     MME_SEMANTIC_RENDERDEPTHSTENCILTARGET,
@@ -84,83 +84,83 @@ enum MMESemantic
     MME_SEMANTIC_STANDARDSGLOBAL,
 
 
-	// ˆÈ‰º‚Í“Æ©d—l
-	//LN_SEMANTIC_ORTHOGRAPHIC,       ///< ƒJƒƒ‰ƒrƒ…[ƒTƒCƒY‚©‚çì¬‚µ‚½³Ë‰es—ñ (“®ì–¢Šm”F)
-    //LN_SEMANTIC_PROJECTION2D,       ///< ¦‚à‚¤g‚í‚È‚¢BÁ‚µ‚Ä‚¨‚­
+	// ä»¥ä¸‹ã¯ç‹¬è‡ªä»•æ§˜
+	//LN_SEMANTIC_ORTHOGRAPHIC,       ///< ã‚«ãƒ¡ãƒ©ãƒ“ãƒ¥ãƒ¼ã‚µã‚¤ã‚ºã‹ã‚‰ä½œæˆã—ãŸæ­£å°„å½±è¡Œåˆ— (å‹•ä½œæœªç¢ºèª)
+    //LN_SEMANTIC_PROJECTION2D,       ///< â€»ã‚‚ã†ä½¿ã‚ãªã„ã€‚æ¶ˆã—ã¦ãŠã
 
-    LN_SEMANTIC_OPACITY,            ///< •s“§–¾“x
-    LN_SEMANTIC_COLOR_SCALE,        ///< æZ‚·‚éF
-    LN_SEMANTIC_BLEND_COLOR,        ///< ƒuƒŒƒ“ƒh‚·‚éF
-    LN_SEMANTIC_TONE,               ///< F’²
-    LN_SEMANTIC_UVTRANSFORM,        ///< ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ
+    LN_SEMANTIC_OPACITY,            ///< ä¸é€æ˜åº¦
+    LN_SEMANTIC_COLOR_SCALE,        ///< ä¹—ç®—ã™ã‚‹è‰²
+    LN_SEMANTIC_BLEND_COLOR,        ///< ãƒ–ãƒ¬ãƒ³ãƒ‰ã™ã‚‹è‰²
+    LN_SEMANTIC_TONE,               ///< è‰²èª¿
+    LN_SEMANTIC_UVTRANSFORM,        ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—
 
 
-    MME_MAX_SEMANTICS       ///< ƒZƒ}ƒ“ƒeƒBƒNƒX‚ÌÅ‘å”
+    MME_MAX_SEMANTICS       ///< ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ã®æœ€å¤§æ•°
 };
 
-/// MME ƒAƒmƒe[ƒVƒ‡ƒ“ˆê——
+/// MME ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ä¸€è¦§
 enum MMEAnnotation
 {
     MME_ANNOTATION_NONE = 0,
 
-    MME_ANNOTATION_Object,          ///< ƒWƒIƒƒgƒŠ•ÏŠ·Aƒ‰ƒCƒgAƒ}ƒeƒŠƒAƒ‹AˆÊ’uAŒü‚«‚Ì‘ÎÛ
-    MME_ANNOTATION_SyncInEditMode,  ///< ŠÔî•ñ‚ÌƒtƒŒ[ƒ€˜A“®ƒtƒ‰ƒO
+    MME_ANNOTATION_Object,          ///< ã‚¸ã‚ªãƒ¡ãƒˆãƒªå¤‰æ›ã€ãƒ©ã‚¤ãƒˆã€ãƒãƒ†ãƒªã‚¢ãƒ«ã€ä½ç½®ã€å‘ãã®å¯¾è±¡
+    MME_ANNOTATION_SyncInEditMode,  ///< æ™‚é–“æƒ…å ±ã®ãƒ•ãƒ¬ãƒ¼ãƒ é€£å‹•ãƒ•ãƒ©ã‚°
 
-    MME_ANNOTATION_Name,            ///< CONTROLOBJECT ‚Ì‘ÎÛƒIƒuƒWƒFƒNƒg–¼
-    MME_ANNOTATION_Item,            ///< CONTROLOBJECT ‚Ì“Áê’l–¼
+    MME_ANNOTATION_Name,            ///< CONTROLOBJECT ã®å¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå
+    MME_ANNOTATION_Item,            ///< CONTROLOBJECT ã®ç‰¹æ®Šå€¤å
 
-    MME_ANNOTATION_ResourceType,    ///< ƒeƒNƒXƒ`ƒƒƒŠƒ\[ƒX‚Ìí—Ş
-    MME_ANNOTATION_ResourceName,    ///< ƒeƒNƒXƒ`ƒƒƒŠƒ\[ƒX‚Ìƒtƒ@ƒCƒ‹–¼
-    MME_ANNOTATION_Width,           ///< ƒeƒNƒXƒ`ƒƒ‚Ì•
-    MME_ANNOTATION_Height,          ///< ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³
-    MME_ANNOTATION_Depth,           ///< ƒeƒNƒXƒ`ƒƒ‚Ì[‚³
-    MME_ANNOTATION_Dimensions,      ///< ƒeƒNƒXƒ`ƒƒ‚ÌƒfƒBƒƒ“ƒWƒ‡ƒ“
-    MME_ANNOTATION_ViewportRatio,   ///< ƒeƒNƒXƒ`ƒƒ‚Ìƒrƒ…[‚É‘Î‚·‚é”ä—¦
-    MME_ANNOTATION_Format,          ///< ƒeƒNƒXƒ`ƒƒ‚ÌƒT[ƒtƒFƒCƒXƒtƒH[ƒ}ƒbƒg
-    MME_ANNOTATION_Miplevels,       ///< ƒeƒNƒXƒ`ƒƒ‚Ìƒ~ƒbƒvƒŒƒxƒ‹
-    MME_ANNOTATION_Levels,          ///< ƒeƒNƒXƒ`ƒƒ‚Ìƒ~ƒbƒvƒŒƒxƒ‹
+    MME_ANNOTATION_ResourceType,    ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒªã‚½ãƒ¼ã‚¹ã®ç¨®é¡
+    MME_ANNOTATION_ResourceName,    ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒªã‚½ãƒ¼ã‚¹ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+    MME_ANNOTATION_Width,           ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…
+    MME_ANNOTATION_Height,          ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•
+    MME_ANNOTATION_Depth,           ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ·±ã•
+    MME_ANNOTATION_Dimensions,      ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ‡ã‚£ãƒ¡ãƒ³ã‚¸ãƒ§ãƒ³
+    MME_ANNOTATION_ViewportRatio,   ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ“ãƒ¥ãƒ¼ã«å¯¾ã™ã‚‹æ¯”ç‡
+    MME_ANNOTATION_Format,          ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚µãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+    MME_ANNOTATION_Miplevels,       ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒŸãƒƒãƒ—ãƒ¬ãƒ™ãƒ«
+    MME_ANNOTATION_Levels,          ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒŸãƒƒãƒ—ãƒ¬ãƒ™ãƒ«
 
-    MME_ANNOTATION_Offset,          ///< ƒAƒjƒ[ƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ‚ÌŠJnŠÔ‚Ì‚¸‚ç‚µ—Ê
-    MME_ANNOTATION_Speed,           ///< ƒAƒjƒ[ƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ‚ÌÄ¶ƒXƒs[ƒh
-    MME_ANNOTATION_SeekVariable,    ///< ƒAƒjƒ[ƒVƒ‡ƒ“ƒeƒNƒXƒ`ƒƒ‚ÌƒV[ƒN§Œä•û–@
+    MME_ANNOTATION_Offset,          ///< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é–‹å§‹æ™‚é–“ã®ãšã‚‰ã—é‡
+    MME_ANNOTATION_Speed,           ///< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰
+    MME_ANNOTATION_SeekVariable,    ///< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚·ãƒ¼ã‚¯åˆ¶å¾¡æ–¹æ³•
 
-    MME_ANNOTATION_ClearColor,      ///< ƒIƒtƒXƒNƒŠ[ƒ“RT‚ÌƒNƒŠƒAF
-    MME_ANNOTATION_ClearDepth,      ///< ƒIƒtƒXƒNƒŠ[ƒ“RT‚Ì[“xƒNƒŠƒA’l
-    MME_ANNOTATION_AntiAlias,       ///< ƒIƒtƒXƒNƒŠ[ƒ“RT‚ÌƒAƒ“ƒ`ƒGƒCƒŠƒAƒX—LŒøƒtƒ‰ƒO@
-    MME_ANNOTATION_Description,     ///< ƒIƒtƒXƒNƒŠ[ƒ“RT‚Ìà–¾•¶
-    MME_ANNOTATION_DefaultEffect,   ///< ƒIƒtƒXƒNƒŠ[ƒ“RT‚ÌƒfƒtƒHƒ‹ƒgƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹–¼
+    MME_ANNOTATION_ClearColor,      ///< ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã®ã‚¯ãƒªã‚¢è‰²
+    MME_ANNOTATION_ClearDepth,      ///< ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã®æ·±åº¦ã‚¯ãƒªã‚¢å€¤
+    MME_ANNOTATION_AntiAlias,       ///< ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã®ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹æœ‰åŠ¹ãƒ•ãƒ©ã‚°ã€€
+    MME_ANNOTATION_Description,     ///< ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã®èª¬æ˜æ–‡
+    MME_ANNOTATION_DefaultEffect,   ///< ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³RTã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«å
 
-    MME_ANNOTATION_TextureName,     ///< TEXTUREVALUE ‚Ì‘ÎÛƒeƒNƒXƒ`ƒƒ•Ï”–¼
+    MME_ANNOTATION_TextureName,     ///< TEXTUREVALUE ã®å¯¾è±¡ãƒ†ã‚¯ã‚¹ãƒãƒ£å¤‰æ•°å
 
-    MME_ANNOTATION_ScriptOutput,    ///< "color" ‚ÅŒÅ’è
-    MME_ANNOTATION_ScriptClass,     ///< STANDARDSGLOBAL ‚Åw’è‚³‚ê‚éƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚Ì–Ú“I
-    MME_ANNOTATION_ScriptOrder,     ///< STANDARDSGLOBAL ‚Åw’è‚³‚ê‚éƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚ÌÀsƒ^ƒCƒ~ƒ“ƒO
+    MME_ANNOTATION_ScriptOutput,    ///< "color" ã§å›ºå®š
+    MME_ANNOTATION_ScriptClass,     ///< STANDARDSGLOBAL ã§æŒ‡å®šã•ã‚Œã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ç›®çš„
+    MME_ANNOTATION_ScriptOrder,     ///< STANDARDSGLOBAL ã§æŒ‡å®šã•ã‚Œã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿè¡Œã‚¿ã‚¤ãƒŸãƒ³ã‚°
     
-    MME_ANNOTATION_Script,          ///< ŠeƒXƒNƒŠƒvƒgî•ñ
+    MME_ANNOTATION_Script,          ///< å„ã‚¹ã‚¯ãƒªãƒ—ãƒˆæƒ…å ±
 
     MME_MAX_ANNOTATIONS
 };
 
-/// ƒVƒF[ƒ_•Ï”‚ªƒZƒ}ƒ“ƒeƒBƒNƒXEƒAƒmƒe[ƒVƒ‡ƒ“‚É‚æ‚Á‚Ä—v‹‚µ‚Ä‚¢‚é‚à‚Ì‚Ìí—Ş
+/// ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°ãŒã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ãƒ»ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã«ã‚ˆã£ã¦è¦æ±‚ã—ã¦ã„ã‚‹ã‚‚ã®ã®ç¨®é¡
 enum MMEVariableRequest
 {
     MME_VARREQ_NONE = 0,
 
-    MME_VARREQ_MATRIX_World,                ///< [ object ] ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_CAMERA_WorldView,     ///< [ object ] ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÆƒJƒƒ‰‚Ìƒrƒ…[•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_CAMERA_WorldViewProj, ///< [ object ] ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÆƒJƒƒ‰‚Ìƒrƒ…[AƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_LIGHT_WorldView,      ///< [ object ] ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÆƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒrƒ…[•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_LIGHT_WorldViewProj,  ///< [ object ] ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ÆƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒrƒ…[AƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
+    MME_VARREQ_MATRIX_World,                ///< [ object ] ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_CAMERA_WorldView,     ///< [ object ] ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã¨ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_CAMERA_WorldViewProj, ///< [ object ] ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã¨ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼ã€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_LIGHT_WorldView,      ///< [ object ] ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã¨ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_LIGHT_WorldViewProj,  ///< [ object ] ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã¨ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼ã€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
 
-    MME_VARREQ_MATRIX_CAMERA_View,          ///< [ camera scene ] ƒJƒƒ‰‚Ìƒrƒ…[•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_CAMERA_Proj,          ///< [ camera scene ] ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_CAMERA_ViewProj,      ///< [ camera scene ] ƒJƒƒ‰‚Ìƒrƒ…[~ƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
+    MME_VARREQ_MATRIX_CAMERA_View,          ///< [ camera scene ] ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_CAMERA_Proj,          ///< [ camera scene ] ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_CAMERA_ViewProj,      ///< [ camera scene ] ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼Ã—ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
 
-    MME_VARREQ_MATRIX_LIGHT_View,           ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒrƒ…[•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_LIGHT_Proj,           ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
-    MME_VARREQ_MATRIX_LIGHT_ViewProj,       ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒrƒ…[~ƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·s—ñ
+    MME_VARREQ_MATRIX_LIGHT_View,           ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_LIGHT_Proj,           ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
+    MME_VARREQ_MATRIX_LIGHT_ViewProj,       ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼Ã—ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³å¤‰æ›è¡Œåˆ—
 
-	// ‹ts—ñ
+	// é€†è¡Œåˆ—
     MME_VARREQ_MATRIX_World_I,
     MME_VARREQ_MATRIX_CAMERA_WorldView_I,
     MME_VARREQ_MATRIX_CAMERA_WorldViewProj_I,
@@ -173,7 +173,7 @@ enum MMEVariableRequest
     MME_VARREQ_MATRIX_LIGHT_Proj_I,
     MME_VARREQ_MATRIX_LIGHT_ViewProj_I,
 
-	// “]’us—ñ
+	// è»¢ç½®è¡Œåˆ—
     MME_VARREQ_MATRIX_World_T,
     MME_VARREQ_MATRIX_CAMERA_WorldView_T,
     MME_VARREQ_MATRIX_CAMERA_WorldViewProj_T,
@@ -186,7 +186,7 @@ enum MMEVariableRequest
     MME_VARREQ_MATRIX_LIGHT_Proj_T,
     MME_VARREQ_MATRIX_LIGHT_ViewProj_T,
 
-	// ‹ts—ñ~“]’us—ñ
+	// é€†è¡Œåˆ—Ã—è»¢ç½®è¡Œåˆ—
     MME_VARREQ_MATRIX_World_IT,
     MME_VARREQ_MATRIX_CAMERA_WorldView_IT,
     MME_VARREQ_MATRIX_CAMERA_WorldViewProj_IT,
@@ -200,63 +200,63 @@ enum MMEVariableRequest
     MME_VARREQ_MATRIX_LIGHT_ViewProj_IT,
 
 
-    MME_VARREQ_OBJECT_DIFFUSE,              ///< [ object ] ƒfƒBƒtƒ…[ƒYFiŠgUŒõj
-    MME_VARREQ_OBJECT_AMBIENT,              ///< [ object ] ƒAƒ“ƒrƒGƒ“ƒgFiŠÂ‹«Œõj
-    MME_VARREQ_OBJECT_EMISSIVE,             ///< [ object ] ƒGƒ~ƒbƒVƒ‡ƒ“Fi•úËŒõj
-    MME_VARREQ_OBJECT_SPECULAR,             ///< [ object ] ƒXƒyƒLƒ…ƒ‰Fi‹¾–ÊŒõj
-    MME_VARREQ_OBJECT_SPECULARPOWER,        ///< [ object ] ƒXƒyƒLƒ…ƒ‰‚Ì‹­“x
-    MME_VARREQ_OBJECT_TOONCOLOR,            ///< [ object ] ƒgƒD[ƒ“F
-    MME_VARREQ_OBJECT_EDGECOLOR,            ///< [ object ] —ÖŠsF
+    MME_VARREQ_OBJECT_DIFFUSE,              ///< [ object ] ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²ï¼ˆæ‹¡æ•£å…‰ï¼‰
+    MME_VARREQ_OBJECT_AMBIENT,              ///< [ object ] ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆè‰²ï¼ˆç’°å¢ƒå…‰ï¼‰
+    MME_VARREQ_OBJECT_EMISSIVE,             ///< [ object ] ã‚¨ãƒŸãƒƒã‚·ãƒ§ãƒ³è‰²ï¼ˆæ”¾å°„å…‰ï¼‰
+    MME_VARREQ_OBJECT_SPECULAR,             ///< [ object ] ã‚¹ãƒšã‚­ãƒ¥ãƒ©è‰²ï¼ˆé¡é¢å…‰ï¼‰
+    MME_VARREQ_OBJECT_SPECULARPOWER,        ///< [ object ] ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã®å¼·åº¦
+    MME_VARREQ_OBJECT_TOONCOLOR,            ///< [ object ] ãƒˆã‚¥ãƒ¼ãƒ³è‰²
+    MME_VARREQ_OBJECT_EDGECOLOR,            ///< [ object ] è¼ªéƒ­è‰²
 
-    MME_VARREQ_LIGHT_DIFFUSE,               ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒfƒBƒtƒ…[ƒYFiŠgUŒõj
-    MME_VARREQ_LIGHT_AMBIENT,               ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒAƒ“ƒrƒGƒ“ƒgFiŠÂ‹«Œõj
-    MME_VARREQ_LIGHT_SPECULAR,              ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒXƒyƒLƒ…ƒ‰Fi‹¾–ÊŒõj
+    MME_VARREQ_LIGHT_DIFFUSE,               ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²ï¼ˆæ‹¡æ•£å…‰ï¼‰
+    MME_VARREQ_LIGHT_AMBIENT,               ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆè‰²ï¼ˆç’°å¢ƒå…‰ï¼‰
+    MME_VARREQ_LIGHT_SPECULAR,              ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ã‚¹ãƒšã‚­ãƒ¥ãƒ©è‰²ï¼ˆé¡é¢å…‰ï¼‰
 
-    MME_VARREQ_CAMERA_POSITION,             ///< [ camera scene ] ƒJƒƒ‰‚ÌˆÊ’u
-    MME_VARREQ_CAMERA_DIRECTION,            ///< [ camera scene ] ƒJƒƒ‰‚ÌŒü‚«
+    MME_VARREQ_CAMERA_POSITION,             ///< [ camera scene ] ã‚«ãƒ¡ãƒ©ã®ä½ç½®
+    MME_VARREQ_CAMERA_DIRECTION,            ///< [ camera scene ] ã‚«ãƒ¡ãƒ©ã®å‘ã
 
-    MME_VARREQ_LIGHT_POSITION,              ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌˆÊ’u
-    MME_VARREQ_LIGHT_DIRECTION,             ///< [ scene ] ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌŒü‚«
+    MME_VARREQ_LIGHT_POSITION,              ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ä½ç½®
+    MME_VARREQ_LIGHT_DIRECTION,             ///< [ scene ] ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®å‘ã
 
-    MME_VARREQ_OBJECT_MATERIALTEXTURE,      ///< [ object ] ƒ}ƒeƒŠƒAƒ‹‚Éİ’è‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ
-    MME_VARREQ_OBJECT_MATERIALSPHEREMAP,    ///< [ object ] ƒ}ƒeƒŠƒAƒ‹‚Éİ’è‚³‚ê‚Ä‚¢‚éAƒXƒtƒBƒAƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
+    MME_VARREQ_OBJECT_MATERIALTEXTURE,      ///< [ object ] ãƒãƒ†ãƒªã‚¢ãƒ«ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£
+    MME_VARREQ_OBJECT_MATERIALSPHEREMAP,    ///< [ object ] ãƒãƒ†ãƒªã‚¢ãƒ«ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ã€ã‚¹ãƒ•ã‚£ã‚¢ãƒãƒƒãƒ—ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
-    MME_VARREQ_VIEWPORTPIXELSIZE,           ///< [ camera scene / offscr scene ] ƒXƒNƒŠ[ƒ“‚à‚µ‚­‚ÍƒIƒtƒXƒNƒŠ[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒTƒCƒY (Scripts‚Ì"RenderColorTarget"ƒRƒ}ƒ“ƒh‚ÅAƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ª•ÏX‚µ‚Ä‚àA‚±‚Ì’l‚Í•Ï‰»‚µ‚È‚¢)
+    MME_VARREQ_VIEWPORTPIXELSIZE,           ///< [ camera scene / offscr scene ] ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚‚ã—ãã¯ã‚ªãƒ•ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚µã‚¤ã‚º (Scriptsã®"RenderColorTarget"ã‚³ãƒãƒ³ãƒ‰ã§ã€ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒå¤‰æ›´ã—ã¦ã‚‚ã€ã“ã®å€¤ã¯å¤‰åŒ–ã—ãªã„)
 
-    MME_VARREQ_TIME,                        ///< [ scene ] Œo‰ßŠÔ (•b)
-    MME_VARREQ_ELAPSEDTIME,                 ///< [ scene ] ‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔ (•b)
+    MME_VARREQ_TIME,                        ///< [ scene ] çµŒéæ™‚é–“ (ç§’)
+    MME_VARREQ_ELAPSEDTIME,                 ///< [ scene ] å‰å›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéæ™‚é–“ (ç§’)
 
-    MME_VARREQ_MOUSEPOSITION,               ///< ƒ}ƒEƒXÀ•W (x, y)
-    MME_VARREQ_LEFTMOUSEDOWN,               ///< ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“î•ñ
-    MME_VARREQ_MIDDLEMOUSEDOWN,             ///< ƒ}ƒEƒX‚Ì’†ƒ{ƒ^ƒ“î•ñ
-    MME_VARREQ_RIGHTMOUSEDOWN,              ///< ƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“î•ñ
+    MME_VARREQ_MOUSEPOSITION,               ///< ãƒã‚¦ã‚¹åº§æ¨™ (x, y)
+    MME_VARREQ_LEFTMOUSEDOWN,               ///< ãƒã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³æƒ…å ±
+    MME_VARREQ_MIDDLEMOUSEDOWN,             ///< ãƒã‚¦ã‚¹ã®ä¸­ãƒœã‚¿ãƒ³æƒ…å ±
+    MME_VARREQ_RIGHTMOUSEDOWN,              ///< ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³æƒ…å ±
 
 
-    MME_VARREQ_CONTROLOBJECT_Visible,          ///< w’è‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª•\¦‚³‚ê‚Ä‚¢‚é‚©”Û‚© (bool)
-    MME_VARREQ_CONTROLOBJECT_Scale,         ///< w’è‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌƒXƒP[ƒŠƒ“ƒO’l (float)
-    MME_VARREQ_CONTROLOBJECT_Position,      ///< w’è‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌÀ•WiƒIƒtƒZƒbƒgj(float3 float4)
-    MME_VARREQ_CONTROLOBJECT_World,         ///< w’è‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ (float4x4)
+    MME_VARREQ_CONTROLOBJECT_Visible,          ///< æŒ‡å®šã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒè¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹ã‹å¦ã‹ (bool)
+    MME_VARREQ_CONTROLOBJECT_Scale,         ///< æŒ‡å®šã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°å€¤ (float)
+    MME_VARREQ_CONTROLOBJECT_Position,      ///< æŒ‡å®šã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åº§æ¨™ï¼ˆã‚ªãƒ•ã‚»ãƒƒãƒˆï¼‰(float3 float4)
+    MME_VARREQ_CONTROLOBJECT_World,         ///< æŒ‡å®šã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ— (float4x4)
 
-    MME_VARREQ_CONTROLOBJECT_BoneOffset,    ///< w’èƒ{[ƒ“‚ÌÀ•W (float3,float4)           [ƒ{[ƒ“–¼]
-    MME_VARREQ_CONTROLOBJECT_BoneMatrix,    ///< w’èƒ{[ƒ“‚Ìƒ[ƒ‹ƒh•ÏŠ·s—ñ (float4x4)    [ƒ{[ƒ“–¼]
-    MME_VARREQ_CONTROLOBJECT_MorphBlend,    ///< w’è‚µ‚½•\î‚Ì’l (float)                   [•\î–¼]
+    MME_VARREQ_CONTROLOBJECT_BoneOffset,    ///< æŒ‡å®šãƒœãƒ¼ãƒ³ã®åº§æ¨™ (float3,float4)           [ãƒœãƒ¼ãƒ³å]
+    MME_VARREQ_CONTROLOBJECT_BoneMatrix,    ///< æŒ‡å®šãƒœãƒ¼ãƒ³ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ— (float4x4)    [ãƒœãƒ¼ãƒ³å]
+    MME_VARREQ_CONTROLOBJECT_MorphBlend,    ///< æŒ‡å®šã—ãŸè¡¨æƒ…ã®å€¤ (float)                   [è¡¨æƒ…å]
 
-    MME_VARREQ_CONTROLOBJECT_X,             ///< ƒAƒNƒZƒTƒŠ‚ÌˆÊ’uX(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌX)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_Y,             ///< ƒAƒNƒZƒTƒŠ‚ÌˆÊ’uY(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌY)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_Z,             ///< ƒAƒNƒZƒTƒŠ‚ÌˆÊ’uZ(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌZ)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_XYZ,           ///< ƒAƒNƒZƒTƒŠ‚ÌˆÊ’u(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌX,Y,Z)BŒ^‚Ífloat3B
-    MME_VARREQ_CONTROLOBJECT_Rx,            ///< ƒAƒNƒZƒTƒŠ‚Ì‰ñ“]X(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌRx)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_Ry,            ///< ƒAƒNƒZƒTƒŠ‚Ì‰ñ“]Y(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌRy)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_Rz,            ///< ƒAƒNƒZƒTƒŠ‚Ì‰ñ“]Z(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌRz)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_Rxyz,          ///< ƒAƒNƒZƒTƒŠ‚Ì‰ñ“](ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌRx,Ry,Rz)BŒ^‚Ífloat3B
-    MME_VARREQ_CONTROLOBJECT_Si,            ///< ƒAƒNƒZƒTƒŠ‚ÌƒTƒCƒY(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌSi)BŒ^‚ÍfloatB
-    MME_VARREQ_CONTROLOBJECT_Tr,            ///< ƒAƒNƒZƒTƒŠ‚Ì“§–¾“x(ƒAƒNƒZƒTƒŠƒpƒlƒ‹‚ÌTr)BŒ^‚ÍfloatB
+    MME_VARREQ_CONTROLOBJECT_X,             ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®ä½ç½®X(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®X)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_Y,             ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®ä½ç½®Y(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Y)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_Z,             ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®ä½ç½®Z(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Z)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_XYZ,           ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®ä½ç½®(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®X,Y,Z)ã€‚å‹ã¯float3ã€‚
+    MME_VARREQ_CONTROLOBJECT_Rx,            ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®å›è»¢X(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Rx)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_Ry,            ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®å›è»¢Y(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Ry)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_Rz,            ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®å›è»¢Z(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Rz)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_Rxyz,          ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®å›è»¢(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Rx,Ry,Rz)ã€‚å‹ã¯float3ã€‚
+    MME_VARREQ_CONTROLOBJECT_Si,            ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®ã‚µã‚¤ã‚º(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Si)ã€‚å‹ã¯floatã€‚
+    MME_VARREQ_CONTROLOBJECT_Tr,            ///< ã‚¢ã‚¯ã‚»ã‚µãƒªã®é€æ˜åº¦(ã‚¢ã‚¯ã‚»ã‚µãƒªãƒ‘ãƒãƒ«ã®Tr)ã€‚å‹ã¯floatã€‚
 
 
 
     
-	// ƒŠƒ\[ƒX‚ğì¬‚·‚é‚à‚Ì
-    MME_VARREQ_TEXTURE,                     ///< MME ‚Ìd—l‚Å‚Í‚È‚¢‚¯‚ÇAƒeƒNƒXƒ`ƒƒŒ^¯•Ê—p‚É—pˆÓ (texture, texture2D, texture3D, textureCUBE‚Ì‚¤‚¿‚¢‚¸‚ê‚©)
+	// ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½œæˆã™ã‚‹ã‚‚ã®
+    MME_VARREQ_TEXTURE,                     ///< MME ã®ä»•æ§˜ã§ã¯ãªã„ã‘ã©ã€ãƒ†ã‚¯ã‚¹ãƒãƒ£å‹è­˜åˆ¥ç”¨ã«ç”¨æ„ (texture, texture2D, texture3D, textureCUBEã®ã†ã¡ã„ãšã‚Œã‹)
     MME_VARREQ_RENDERCOLORTARGET,
     MME_VARREQ_RENDERDEPTHSTENCILTARGET,
     MME_VARREQ_ANIMATEDTEXTURE,
@@ -267,19 +267,19 @@ enum MMEVariableRequest
     MME_VARREQ_STANDARDSGLOBAL,
 
 
-	// ˆÈ‰º‚Í“Æ©d—l
+	// ä»¥ä¸‹ã¯ç‹¬è‡ªä»•æ§˜
 	//LN_VARREQ_MATRIX_CAMERA_ORTHOGRAPHIC,
 	//LN_VARREQ_MATRIX_LIGHT_ORTHOGRAPHIC,
     //LN_VARREQ_MATRIX_PROJECTION2D,
 
-    LN_VARREQ_OPACITY,            ///< •s“§–¾“x
-    LN_VARREQ_COLOR_SCALE,        ///< æZ‚·‚éF
-    LN_VARREQ_BLEND_COLOR,        ///< ƒuƒŒƒ“ƒh‚·‚éF
-    LN_VARREQ_TONE,               ///< F’²
-    LN_VARREQ_UVTRANSFORM,        ///< ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ
+    LN_VARREQ_OPACITY,            ///< ä¸é€æ˜åº¦
+    LN_VARREQ_COLOR_SCALE,        ///< ä¹—ç®—ã™ã‚‹è‰²
+    LN_VARREQ_BLEND_COLOR,        ///< ãƒ–ãƒ¬ãƒ³ãƒ‰ã™ã‚‹è‰²
+    LN_VARREQ_TONE,               ///< è‰²èª¿
+    LN_VARREQ_UVTRANSFORM,        ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—
 
 
-	// ­‚µ‚Å‚àğŒ”»’è‚Ì‰ñ”‚ğŒ¸‚ç‚·‚½‚ß‚Ìô
+	// å°‘ã—ã§ã‚‚æ¡ä»¶åˆ¤å®šã®å›æ•°ã‚’æ¸›ã‚‰ã™ãŸã‚ã®ç­–
     MME_VARREQ_GEOMETRY_MATRIX_BEGIN    = MME_VARREQ_MATRIX_World,
     MME_VARREQ_GEOMETRY_MATRIX_END      = MME_VARREQ_MATRIX_LIGHT_WorldViewProj_IT,
 	
@@ -287,109 +287,109 @@ enum MMEVariableRequest
 	MME_VARREQ_CONTROLOBJECT_END		= MME_VARREQ_CONTROLOBJECT_Tr,
 };
 
-/// •K—v‚Ì‚È‚¢s—ñŒvZ‚ğƒ}ƒXƒN‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
+/// å¿…è¦ã®ãªã„è¡Œåˆ—è¨ˆç®—ã‚’ãƒã‚¹ã‚¯ã™ã‚‹ãŸã‚ã®ãƒ•ãƒ©ã‚°
 enum MMEWorldMatrixCalcFlags
 {
     MME_WMCF_NONE = 0,
 
 	//MME_WMCF_WORLD                      = 0x00000000,
-    MME_WMCF_WORLD_VIEW_CAMERA          = 0x00000001,   ///< ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_CAMERA     = 0x00000004,   ///< ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    MME_WMCF_WORLD_VIEW_LIGHT           = 0x00000008,   ///< ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_LIGHT      = 0x00000020,   ///< ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+    MME_WMCF_WORLD_VIEW_CAMERA          = 0x00000001,   ///< ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_CAMERA     = 0x00000004,   ///< ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_LIGHT           = 0x00000008,   ///< ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_LIGHT      = 0x00000020,   ///< ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-    MME_WMCF_WORLD_I                    = 0x00000002,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ
-    MME_WMCF_WORLD_VIEW_CAMERA_I        = 0x00000040,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_CAMERA_I   = 0x00000100,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    MME_WMCF_WORLD_VIEW_LIGHT_I         = 0x00000200,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ    
-    MME_WMCF_WORLD_VIEW_PROJ_LIGHT_I    = 0x00000800,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+    MME_WMCF_WORLD_I                    = 0x00000002,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_CAMERA_I        = 0x00000040,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_CAMERA_I   = 0x00000100,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_LIGHT_I         = 0x00000200,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—    
+    MME_WMCF_WORLD_VIEW_PROJ_LIGHT_I    = 0x00000800,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-    MME_WMCF_WORLD_T                    = 0x00002000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ
-    MME_WMCF_WORLD_VIEW_CAMERA_T        = 0x00001000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_CAMERA_T   = 0x00004000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    MME_WMCF_WORLD_VIEW_LIGHT_T         = 0x00008000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_LIGHT_T    = 0x00020000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+    MME_WMCF_WORLD_T                    = 0x00002000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_CAMERA_T        = 0x00001000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_CAMERA_T   = 0x00004000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_LIGHT_T         = 0x00008000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_LIGHT_T    = 0x00020000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-    MME_WMCF_WORLD_IT                   = 0x00400000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ
-    MME_WMCF_WORLD_VIEW_CAMERA_IT       = 0x00040000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_CAMERA_IT  = 0x00100000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚Ìƒrƒ…[s—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    MME_WMCF_WORLD_VIEW_LIGHT_IT        = 0x00200000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ
-    MME_WMCF_WORLD_VIEW_PROJ_LIGHT_IT   = 0x00800000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+    MME_WMCF_WORLD_IT                   = 0x00400000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_CAMERA_IT       = 0x00040000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_CAMERA_IT  = 0x00100000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_LIGHT_IT        = 0x00200000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    MME_WMCF_WORLD_VIEW_PROJ_LIGHT_IT   = 0x00800000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-	// ‚±‚±‚Åw’è‚·‚é‚Ì‚Íƒ[ƒ‹ƒhs—ñ‚É‚©‚©‚í‚é‚à‚Ì‚¾‚¯B
-	// ƒ‰ƒCƒg‚âƒJƒƒ‰‚Í‚·‚×‚Ä‚ÌƒVƒF[ƒ_‚Å‹¤—L‚·‚é‚Ì‚ÅA‚ ‚ç‚©‚¶‚ß‘S•”ŒvZ‚µ‚Ä‚¨‚­B
+	// ã“ã“ã§æŒ‡å®šã™ã‚‹ã®ã¯ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã«ã‹ã‹ã‚ã‚‹ã‚‚ã®ã ã‘ã€‚
+	// ãƒ©ã‚¤ãƒˆã‚„ã‚«ãƒ¡ãƒ©ã¯ã™ã¹ã¦ã®ã‚·ã‚§ãƒ¼ãƒ€ã§å…±æœ‰ã™ã‚‹ã®ã§ã€ã‚ã‚‰ã‹ã˜ã‚å…¨éƒ¨è¨ˆç®—ã—ã¦ãŠãã€‚
 
-	// ˆÈ‰º‚Í‚æ‚­Œ©‚½‚ç•K—v‚È‚©‚Á‚½‚à‚Ì
+	// ä»¥ä¸‹ã¯ã‚ˆãè¦‹ãŸã‚‰å¿…è¦ãªã‹ã£ãŸã‚‚ã®
 
-	//MME_WMCF_WORLD_PROJ_CAMERA          = 0x00000002,   ///< ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	//MME_WMCF_WORLD_PROJ_LIGHT           = 0x00000010,   ///< ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+	//MME_WMCF_WORLD_PROJ_CAMERA          = 0x00000002,   ///< ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	//MME_WMCF_WORLD_PROJ_LIGHT           = 0x00000010,   ///< ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-	//MME_WMCF_WORLD_PROJ_CAMERA_I        = 0x00000080,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	//MME_WMCF_WORLD_PROJ_LIGHT_I         = 0x00000400,   ///< (‹ts—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+	//MME_WMCF_WORLD_PROJ_CAMERA_I        = 0x00000080,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	//MME_WMCF_WORLD_PROJ_LIGHT_I         = 0x00000400,   ///< (é€†è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-	//MME_WMCF_WORLD_PROJ_CAMERA_T        = 0x00002000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	//MME_WMCF_WORLD_PROJ_LIGHT_T         = 0x00010000,   ///< (“]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+	//MME_WMCF_WORLD_PROJ_CAMERA_T        = 0x00002000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	//MME_WMCF_WORLD_PROJ_LIGHT_T         = 0x00010000,   ///< (è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
-	//MME_WMCF_WORLD_PROJ_CAMERA_IT       = 0x00080000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒJƒƒ‰‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	//MME_WMCF_WORLD_PROJ_LIGHT_IT        = 0x00400000,   ///< (‹ts—ñ * “]’us—ñ) ƒ[ƒ‹ƒhs—ñ * ƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+	//MME_WMCF_WORLD_PROJ_CAMERA_IT       = 0x00080000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	//MME_WMCF_WORLD_PROJ_LIGHT_IT        = 0x00400000,   ///< (é€†è¡Œåˆ— * è»¢ç½®è¡Œåˆ—) ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— * ãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 
 };
 
-/// (ŒÅ’è’l)
+/// (å›ºå®šå€¤)
 enum MMEScriptOutput
 {
-    MME_SCROUT_color = 0,          ///< ƒfƒtƒHƒ‹ƒg’l
+    MME_SCROUT_color = 0,          ///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
 };
 
-/// ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚Ì–Ú“I (‰½‚ğ•`‰æ‚·‚éƒGƒtƒFƒNƒg‚©)
+/// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ç›®çš„ (ä½•ã‚’æç”»ã™ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‹)
 enum MMEScriptClass
 {
-    MME_SCRCLS_object = 0,         ///< ƒIƒuƒWƒFƒNƒg‚ğ•`‰æ‚·‚éBiƒfƒtƒHƒ‹ƒgj
-    MME_SCRCLS_scene,              ///< ƒXƒNƒŠ[ƒ“ƒoƒbƒtƒ@‚ğ•`‰æ‚·‚éB
-    MME_SCRCLS_sceneorobject,      ///< ã‹L‚Ì—¼•ûB
+    MME_SCRCLS_object = 0,         ///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æç”»ã™ã‚‹ã€‚ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼‰
+    MME_SCRCLS_scene,              ///< ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒãƒƒãƒ•ã‚¡ã‚’æç”»ã™ã‚‹ã€‚
+    MME_SCRCLS_sceneorobject,      ///< ä¸Šè¨˜ã®ä¸¡æ–¹ã€‚
 };
 
-/// ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚ÌÀsƒ^ƒCƒ~ƒ“ƒO
+/// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿè¡Œã‚¿ã‚¤ãƒŸãƒ³ã‚°
 enum MMEScriptOrder
 {
-    MME_SCRORDER_standard = 0,      ///< ƒIƒuƒWƒFƒNƒg‚ğ•`‰æ‚·‚éBiƒfƒtƒHƒ‹ƒgj
-    MME_SCRORDER_preprocess,        ///< ƒIƒuƒWƒFƒNƒg‚Ì•`‰æ‚æ‚è‚àæ‚É•`‰æ‚·‚éBƒvƒŠƒGƒtƒFƒNƒg—pB
-    MME_SCRORDER_postprocess,       ///< ƒIƒuƒWƒFƒNƒg‚Ì•`‰æ‚ÌŒã‚Å•`‰æ‚·‚éBƒ|ƒXƒgƒGƒtƒFƒNƒg—pB
+    MME_SCRORDER_standard = 0,      ///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æç”»ã™ã‚‹ã€‚ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼‰
+    MME_SCRORDER_preprocess,        ///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»ã‚ˆã‚Šã‚‚å…ˆã«æç”»ã™ã‚‹ã€‚ãƒ—ãƒªã‚¨ãƒ•ã‚§ã‚¯ãƒˆç”¨ã€‚
+    MME_SCRORDER_postprocess,       ///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»ã®å¾Œã§æç”»ã™ã‚‹ã€‚ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆç”¨ã€‚
 };
 
-/// MMD ‚Ì•`‰æƒpƒX
+/// MMD ã®æç”»ãƒ‘ã‚¹
 enum MMDPass
 {
-    MMD_PASS_object = 0,			///< ƒIƒuƒWƒFƒNƒg–{‘ÌiƒZƒ‹ƒtƒVƒƒƒhƒEOFFj
-    MMD_PASS_zplot,					///< ƒZƒ‹ƒtƒVƒƒƒhƒE—pZ’lƒvƒƒbƒg
-    MMD_PASS_object_ss,				///< ƒIƒuƒWƒFƒNƒg–{‘ÌiƒZƒ‹ƒtƒVƒƒƒhƒEONj
-    MMD_PASS_shadow,				///< ‰eiƒZƒ‹ƒtƒVƒƒƒhƒE‚Å‚Í‚È‚¢’Pƒ‚È‰ej¦ g—p‚µ‚È‚¢
-    MMD_PASS_edge,					///< —ÖŠsiPMDƒ‚ƒfƒ‹‚Ì‚İj¦g—p‚µ‚È‚¢
-	MMD_PASS_Infomation,			///< •¨—‰‰Z‚ÌƒfƒoƒbƒO—pŒ`ó•`‰æ‚È‚Ç
+    MMD_PASS_object = 0,			///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæœ¬ä½“ï¼ˆã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦OFFï¼‰
+    MMD_PASS_zplot,					///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ç”¨Zå€¤ãƒ—ãƒ­ãƒƒãƒˆ
+    MMD_PASS_object_ss,				///< ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæœ¬ä½“ï¼ˆã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ONï¼‰
+    MMD_PASS_shadow,				///< å½±ï¼ˆã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã§ã¯ãªã„å˜ç´”ãªå½±ï¼‰â€» ä½¿ç”¨ã—ãªã„
+    MMD_PASS_edge,					///< è¼ªéƒ­ï¼ˆPMDãƒ¢ãƒ‡ãƒ«ã®ã¿ï¼‰â€»ä½¿ç”¨ã—ãªã„
+	MMD_PASS_Infomation,			///< ç‰©ç†æ¼”ç®—ã®ãƒ‡ãƒãƒƒã‚°ç”¨å½¢çŠ¶æç”»ãªã©
 
 	MMD_PASS_Max,					///< (Terminator)
 };
 
-/// ƒeƒNƒjƒbƒN‚ÌƒAƒmƒe[ƒVƒ‡ƒ“‚Åw’è‚³‚ê‚Ä‚¢‚é bool ’l
+/// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã§æŒ‡å®šã•ã‚Œã¦ã„ã‚‹ bool å€¤
 //enum MMETechEnableFlag
 //{
 //    MME_TECHSTATE_Disable       = 0x00,
 //
-//    MME_TECHSTATE_UseTexture    = 0x01,     ///< ƒeƒNƒXƒ`ƒƒg—p‚Ì—L–³
-//    MME_TECHSTATE_UseSphereMap  = 0x02,     ///< ƒXƒtƒBƒAƒ}ƒbƒvg—p‚Ì—L–³
-//    MME_TECHSTATE_UseToon       = 0x04,     ///< ƒgƒD[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOg—p‚Ì—L–³
+//    MME_TECHSTATE_UseTexture    = 0x01,     ///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½¿ç”¨ã®æœ‰ç„¡
+//    MME_TECHSTATE_UseSphereMap  = 0x02,     ///< ã‚¹ãƒ•ã‚£ã‚¢ãƒãƒƒãƒ—ä½¿ç”¨ã®æœ‰ç„¡
+//    MME_TECHSTATE_UseToon       = 0x04,     ///< ãƒˆã‚¥ãƒ¼ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ä½¿ç”¨ã®æœ‰ç„¡
 //
-//    MME_TECHSTATE_OMITTED_Texture    = 0x10, ///< UseTexture ƒtƒ‰ƒO‚Ì—L–³ (È—ª‚³‚ê‚Ä‚¢‚é)
-//    MME_TECHSTATE_OMITTED_SphereMap  = 0x20, ///< UseSphereMap ƒtƒ‰ƒO‚Ì—L–³ (È—ª‚³‚ê‚Ä‚¢‚é)
-//    MME_TECHSTATE_OMITTED_Toon       = 0x40, ///< EnableToon ƒtƒ‰ƒO‚Ì—L–³ (È—ª‚³‚ê‚Ä‚¢‚é)
+//    MME_TECHSTATE_OMITTED_Texture    = 0x10, ///< UseTexture ãƒ•ãƒ©ã‚°ã®æœ‰ç„¡ (çœç•¥ã•ã‚Œã¦ã„ã‚‹)
+//    MME_TECHSTATE_OMITTED_SphereMap  = 0x20, ///< UseSphereMap ãƒ•ãƒ©ã‚°ã®æœ‰ç„¡ (çœç•¥ã•ã‚Œã¦ã„ã‚‹)
+//    MME_TECHSTATE_OMITTED_Toon       = 0x40, ///< EnableToon ãƒ•ãƒ©ã‚°ã®æœ‰ç„¡ (çœç•¥ã•ã‚Œã¦ã„ã‚‹)
 //
-//	//MME_TECHSTATE_ALL =                     ///< ‚·‚×‚Ä‚Ìƒtƒ‰ƒO‚Ì‘g‚İ‡‚í‚¹
+//	//MME_TECHSTATE_ALL =                     ///< ã™ã¹ã¦ã®ãƒ•ãƒ©ã‚°ã®çµ„ã¿åˆã‚ã›
 //	//    MME_TECHSTATE_UseTexture ||
 //	//    MME_TECHSTATE_UseSphereMap ||
 //	//    MME_TECHSTATE_UseToon
 //};
 
-/// ‚ ‚éƒRƒ}ƒ“ƒh‚ªƒeƒNƒjƒbƒN‚ÌƒXƒNƒŠƒvƒg“à‚É‘¶İ‚µ‚Ä‚¢‚é‚©‚ğ¦‚·ƒtƒ‰ƒO
+/// ã‚ã‚‹ã‚³ãƒãƒ³ãƒ‰ãŒãƒ†ã‚¯ãƒ‹ãƒƒã‚¯ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆå†…ã«å­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
 enum MMEScriptCommandExistFlag
 {
     MME_SCEXIST_ScriptExternal_Color = 0x01,    ///< ScriptExternal=Color
@@ -397,19 +397,19 @@ enum MMEScriptCommandExistFlag
     MME_SCEXIST_Draw_Buffer          = 0x04,    ///< Draw=Buffer
 };
 
-/// ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€“à‚Ì•Ï”‚Ğ‚Æ‚Â•ª‚ğ•\‚·\‘¢‘Ì
+/// ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ å†…ã®å¤‰æ•°ã²ã¨ã¤åˆ†ã‚’è¡¨ã™æ§‹é€ ä½“
 class MMEShaderVariable
 {
 public:
-    Graphics::ShaderVariable*	Variable;			///< ƒVƒF[ƒ_•Ï”
-    MMEVariableRequest			Request;			///< •Ï”‚ª—v‹‚µ‚Ä‚¢‚é‚à‚Ì‚Ìí—Ş
-	//SceneNode*				ControlObject;      ///< CONTROLOBJECT ‚ÌQÆ‘ÎÛ (V‚µ‚¢ƒIƒuƒWƒFƒNƒg‚ª Scene ‚É’Ç‰Á‚³‚ê‚½‚Æ‚«‚ÉÄæ“¾‚·‚é)
-    String						ObjectName;			///< CONTROLOBJECT ‚Ì name ƒAƒmƒe[ƒVƒ‡ƒ“‚Ì’l
-    String						ItemName;			///< CONTROLOBJECT ‚Ì item ƒAƒmƒe[ƒVƒ‡ƒ“‚Ì’l
-    MMETextureObject*			TextureObject;		///< OFFSCREENRENDERTARGET “™‚Åì¬‚³‚ê‚½ƒeƒNƒXƒ`ƒƒ (ƒZƒ}ƒ“ƒeƒBƒNƒX‚ª‚È‚­‚Ä‚à ResourceName ƒAƒmƒe[ƒVƒ‡ƒ“‚ª‚ ‚ê‚Îì‚é)
-    int							LightNum;			///< •K—v‚Èƒ‰ƒCƒg”
-	bool						LightParamIsArray;	///< ƒ‰ƒCƒg—v‘f‚ğŠi”[‚·‚é•Ï”‚ª”z—ñ‚Ìê‡
-    bool						LightParamIsMatrix;	///< ƒ‰ƒCƒgî•ñ‚ªs—ñ‚Ìê‡‚Í trueBfalse ‚Ìê‡‚Í Vector4 (setMatrix() ‚ğ‚Â‚©‚¤‚©AsetVector() ‚ğg‚¤‚©‚Ìw’è)
+    Graphics::ShaderVariable*	Variable;			///< ã‚·ã‚§ãƒ¼ãƒ€å¤‰æ•°
+    MMEVariableRequest			Request;			///< å¤‰æ•°ãŒè¦æ±‚ã—ã¦ã„ã‚‹ã‚‚ã®ã®ç¨®é¡
+	//SceneNode*				ControlObject;      ///< CONTROLOBJECT ã®å‚ç…§å¯¾è±¡ (æ–°ã—ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒ Scene ã«è¿½åŠ ã•ã‚ŒãŸã¨ãã«å†å–å¾—ã™ã‚‹)
+    String						ObjectName;			///< CONTROLOBJECT ã® name ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã®å€¤
+    String						ItemName;			///< CONTROLOBJECT ã® item ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ã®å€¤
+    MMETextureObject*			TextureObject;		///< OFFSCREENRENDERTARGET ç­‰ã§ä½œæˆã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ (ã‚»ãƒãƒ³ãƒ†ã‚£ã‚¯ã‚¹ãŒãªãã¦ã‚‚ ResourceName ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚Œã°ä½œã‚‹)
+    int							LightNum;			///< å¿…è¦ãªãƒ©ã‚¤ãƒˆæ•°
+	bool						LightParamIsArray;	///< ãƒ©ã‚¤ãƒˆè¦ç´ ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°ãŒé…åˆ—ã®å ´åˆ
+    bool						LightParamIsMatrix;	///< ãƒ©ã‚¤ãƒˆæƒ…å ±ãŒè¡Œåˆ—ã®å ´åˆã¯ trueã€‚false ã®å ´åˆã¯ Vector4 (setMatrix() ã‚’ã¤ã‹ã†ã‹ã€setVector() ã‚’ä½¿ã†ã‹ã®æŒ‡å®š)
 };
 //
 //typedef std::map< String, MMESemantics >			MMESemanticsMap;
@@ -425,27 +425,27 @@ public:
 //-------------------------------------------------------------------------
 //
 
-/// Scene ’PˆÊ‚ÌƒVƒF[ƒ_İ’èƒpƒ‰ƒ[ƒ^ (1ƒtƒŒ[ƒ€‚É1“x‚¾‚¯İ’è‚·‚ê‚Î‚¢‚¢ƒpƒ‰ƒ[ƒ^)
-struct MMESceneParams	// TOOD: ¸Ši
+/// Scene å˜ä½ã®ã‚·ã‚§ãƒ¼ãƒ€è¨­å®šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ (1ãƒ•ãƒ¬ãƒ¼ãƒ ã«1åº¦ã ã‘è¨­å®šã™ã‚Œã°ã„ã„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿)
+struct MMESceneParams	// TOOD: æ˜‡æ ¼
 {
- //   const Matrix*	Mat_LightView;         ///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒrƒ…[s—ñ
- //   const Matrix*	Mat_LightProj;         ///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
- //   const Matrix*	Mat_LightViewProj;     ///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒrƒ…[~ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	////const Matrix*   Mat_LightOrtho;        ///< (–¢À‘•)
- //   Vector4			LightPosition;			///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌˆÊ’u
- //   Vector4			LightDirection;			///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌŒü‚«
- //   const Vector4*	LightDiffuse;		    ///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒfƒBƒtƒ…[ƒYFiŠgUŒõj
-	//const Vector4*	LightAmbient;			///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒAƒ“ƒrƒGƒ“ƒgFiŠÂ‹«Œõj
-	//const Vector4*	LightSpecular;          ///< ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚ÌƒXƒyƒLƒ…ƒ‰Fi‹¾–ÊŒõj
+ //   const Matrix*	Mat_LightView;         ///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+ //   const Matrix*	Mat_LightProj;         ///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+ //   const Matrix*	Mat_LightViewProj;     ///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼Ã—ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	////const Matrix*   Mat_LightOrtho;        ///< (æœªå®Ÿè£…)
+ //   Vector4			LightPosition;			///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ä½ç½®
+ //   Vector4			LightDirection;			///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®å‘ã
+ //   const Vector4*	LightDiffuse;		    ///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²ï¼ˆæ‹¡æ•£å…‰ï¼‰
+	//const Vector4*	LightAmbient;			///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆè‰²ï¼ˆç’°å¢ƒå…‰ï¼‰
+	//const Vector4*	LightSpecular;          ///< ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ©ã‚¤ãƒˆã®ã‚¹ãƒšã‚­ãƒ¥ãƒ©è‰²ï¼ˆé¡é¢å…‰ï¼‰
 
-    float			Time;                   ///< Œo‰ßŠÔ (•b) ©ƒQ[ƒ€ŠJn‚©‚ç‚¸‚Á‚Æ‰ÁZ‚Æ‚©‚¾‚Æƒ„ƒo‚¢‚Ì‚Å‰½‚©‘Î‰‚µ‚Ä‚¨‚­
-	float			ElapsedTime;            ///< ‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔ (•b)
-    Vector4			MousePosition;          ///< ƒ}ƒEƒXÀ•W (x, y)
-    Vector4			LeftMouseDown;          ///< ƒ}ƒEƒX‚Ì¶ƒ{ƒ^ƒ“î•ñ
-    Vector4			MiddleMouseDown;        ///< ƒ}ƒEƒX‚Ì’†ƒ{ƒ^ƒ“î•ñ
-    Vector4			RightMouseDown;         ///< ƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“î•ñ
+    float			Time;                   ///< çµŒéæ™‚é–“ (ç§’) â†ã‚²ãƒ¼ãƒ é–‹å§‹ã‹ã‚‰ãšã£ã¨åŠ ç®—ã¨ã‹ã ã¨ãƒ¤ãƒã„ã®ã§ä½•ã‹å¯¾å¿œã—ã¦ãŠã
+	float			ElapsedTime;            ///< å‰å›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®çµŒéæ™‚é–“ (ç§’)
+    Vector4			MousePosition;          ///< ãƒã‚¦ã‚¹åº§æ¨™ (x, y)
+    Vector4			LeftMouseDown;          ///< ãƒã‚¦ã‚¹ã®å·¦ãƒœã‚¿ãƒ³æƒ…å ±
+    Vector4			MiddleMouseDown;        ///< ãƒã‚¦ã‚¹ã®ä¸­ãƒœã‚¿ãƒ³æƒ…å ±
+    Vector4			RightMouseDown;         ///< ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³æƒ…å ±
 
-	//// ˆÈ‰º‚Í calcMatrices() ‚Åİ’è‚·‚é
+	//// ä»¥ä¸‹ã¯ calcMatrices() ã§è¨­å®šã™ã‚‹
  //   Matrix  Mat_LightView_Inverse;
  //   Matrix  Mat_LightProj_Inverse;
  //   Matrix  Mat_LightViewProj_Inverse;
@@ -481,7 +481,7 @@ public:
 
 public:
 
-	// CONTROLOBJECT ƒAƒmƒe[ƒVƒ‡ƒ“ŠÖŒW
+	// CONTROLOBJECT ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³é–¢ä¿‚
 	virtual bool IsVisible() const = 0;
 	virtual const Matrix& GetMatrix() const = 0;
 	virtual float GetOpacity() const = 0;
@@ -489,10 +489,10 @@ public:
 	virtual float FindMorphBlend(const String& name) const = 0;
 
 
-	// ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒhs—ñ‚ÆAƒJƒƒ‰‚Ü‚½‚Íƒ‰ƒCƒg‚Ìƒrƒ…[EƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğ‹‚ß‚éB
-	// out ‚É’l‚ğŠi”[‚µ‚½ê‡‚Í true ‚ğ•Ô‚·B
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã¨ã€ã‚«ãƒ¡ãƒ©ã¾ãŸã¯ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼ãƒ»ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹ã€‚
+	// out ã«å€¤ã‚’æ ¼ç´ã—ãŸå ´åˆã¯ true ã‚’è¿”ã™ã€‚
 	//virtual bool GetObjectMatrix(Matrix* out, MMEVariableRequest req, int lightIndex) const = 0;
-	// TODO: «‚Ì‚Í‚Ç‚Ì‚İ‚¿•K—vB‚È‚çAª‚Ì‚Í static ‚É‚Å‚«‚È‚¢H
+	// TODO: â†“ã®ã¯ã©ã®ã¿ã¡å¿…è¦ã€‚ãªã‚‰ã€â†‘ã®ã¯ static ã«ã§ããªã„ï¼Ÿ
 	virtual LightNodeList* GetAffectLightList() = 0;
 };
 

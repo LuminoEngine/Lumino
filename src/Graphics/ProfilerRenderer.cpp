@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsManager.h>
 #include "ProfilerRenderer.h"
@@ -43,11 +43,11 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	painter.SetOpacity(0.5f);
 	painter.SetFont(m_font);
 
-	// ƒEƒBƒ“ƒhƒE”wŒi
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èƒŒæ™¯
 	painter.SetBrush(ColorBrush::Black);
 	painter.DrawRectangle(m_windowRect);
 
-	// ƒLƒƒƒvƒVƒ‡ƒ“ƒo[
+	// ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ãƒãƒ¼
 	painter.SetBrush(ColorBrush::Black);
 	painter.DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20));
 
@@ -91,7 +91,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	painter.DrawString(_T("Threads performance:"), -1, PointF(location.X + 8, location.Y));
 	location.Y += 16;
 
-	// ƒOƒ‹[ƒvƒŠƒXƒg‚Ì•`‰æ
+	// ã‚°ãƒ«ãƒ¼ãƒ—ãƒªã‚¹ãƒˆã®æç”»
 	RectF listRect(location.X + 16, location.Y, m_windowRect.Width - 32, m_windowRect.Height - location.Y);
 	DrawGroupList(painter, listRect);
 
@@ -101,13 +101,13 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 	//Matrix proj = Matrix::Perspective2DLH(viewSize.X, viewSize.Y, 0.f, 1000.f);
 	//m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
-	//m_spriteRenderer->SetViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 ‚Ì set ‚ª‚ ‚Á‚Ä‚à‚¢‚¢‚©‚à
+	//m_spriteRenderer->SetViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 ã® set ãŒã‚ã£ã¦ã‚‚ã„ã„ã‹ã‚‚
 
 	//float WindowWidth = 256;
 	//float WindowHeight = 256;
 	//Vector3 location(viewSize.X - 8 - WindowWidth, 8, 0);
 
-	//// ƒEƒBƒ“ƒhƒE”wŒi
+	//// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èƒŒæ™¯
 	//m_spriteRenderer->DrawRequest2D(
 	//	Vector3(location.X, location.Y, 0),
 	//	Vector3::Zero,
@@ -126,12 +126,12 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 {
 	int groupCount = m_profiler->GetCommitedGroups().GetCount();
 
-	// –¼‘OƒJƒ‰ƒ€”wŒiF
+	// åå‰ã‚«ãƒ©ãƒ èƒŒæ™¯è‰²
 	painter.SetBrush(ColorBrush::Blue);
 	painter.SetOpacity(0.2f);
 	painter.DrawRectangle(RectF(listRect.GetPosition(), ThreadNameColumnWidth, groupCount * rowHeight));
 
-	// ƒo[‚ÌNG—Ìˆæ”wŒiF
+	// ãƒãƒ¼ã®NGé ˜åŸŸèƒŒæ™¯è‰²
 	RectF ngArea(
 		listRect.X + (ThreadNameColumnWidth + SafeAreaWidth),
 		listRect.Y,
@@ -140,7 +140,7 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 	painter.SetBrush(ColorBrush::Red);
 	painter.DrawRectangle(ngArea);
 
-	// ƒŠƒXƒgcŒrü
+	// ãƒªã‚¹ãƒˆç¸¦ç½«ç·š
 	painter.SetBrush(ColorBrush::Black);
 	painter.SetOpacity(0.7f);
 	painter.DrawRectangle(RectF(listRect.X + ThreadNameColumnWidth - 1, listRect.Y, 1, groupCount * rowHeight));
@@ -149,12 +149,12 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 	const auto& groups = m_profiler->GetCommitedGroups();
 	for (iGrout = 0; iGrout < groupCount; iGrout++)
 	{
-		// row ã•”Œrü
+		// row ä¸Šéƒ¨ç½«ç·š
 		painter.SetBrush(ColorBrush::Black);
 		painter.SetOpacity(0.7f);
 		painter.DrawRectangle(listRect.X, listRect.Y + (iGrout * rowHeight), listRect.Width, 1.0f);
 
-		// ƒOƒ‹[ƒv–¼
+		// ã‚°ãƒ«ãƒ¼ãƒ—å
 		painter.SetBrush(ColorBrush::White);
 		painter.SetOpacity(1.0f);
 		PointF pt(listRect.X + 4, listRect.Y + (iGrout * rowHeight) + 1);
@@ -162,15 +162,15 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 
 		// ms
 		TCHAR fps[256] = { 0 };
-		StringTraits::SPrintf(fps, 256, _T("%.1f ms"), (groups[iGrout].TotalTime / 1000000.0));	// us ¨ ms ‚ÌŒã
+		StringTraits::SPrintf(fps, 256, _T("%.1f ms"), (groups[iGrout].TotalTime / 1000000.0));	// us â†’ ms ã®å¾Œ
 		pt.Y += 16;
 		painter.DrawString(fps, -1, pt);
 
-		// ƒZƒNƒVƒ‡ƒ“‚ðÏ‚Ýã‚°–_ƒOƒ‰ƒt‚Å•\Ž¦
+		// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ç©ã¿ä¸Šã’æ£’ã‚°ãƒ©ãƒ•ã§è¡¨ç¤º
 		DrawSectionGraphBar(painter, groups[iGrout], listRect.X + ThreadNameColumnWidth, listRect.Y + (iGrout * rowHeight), listRect);
 	}
 
-	// row ‰º•”Œrü
+	// row ä¸‹éƒ¨ç½«ç·š
 	painter.SetBrush(ColorBrush::Black);
 	painter.SetOpacity(0.7f);
 	painter.DrawRectangle(listRect.X, listRect.Y + (groupCount * rowHeight), listRect.Width, 1.0f);

@@ -1,7 +1,7 @@
-/*
-	ERichTextBox
-	EƒAƒjƒ[ƒVƒ‡ƒ“ (ƒXƒvƒ‰ƒCƒgƒeƒLƒXƒg)
-	‚±‚Ì2‚Â‚ÍA•\Ž¦‚·‚éƒOƒŠƒt‚Í“¯‚¶B‘‚«•û‚ªˆá‚¤‚¾‚¯B
+ï»¿/*
+	ãƒ»RichTextBox
+	ãƒ»ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ (ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆãƒ†ã‚­ã‚¹ãƒˆ)
+	ã“ã®2ã¤ã¯ã€è¡¨ç¤ºã™ã‚‹ã‚°ãƒªãƒ•ã¯åŒã˜ã€‚æ›¸ãæ–¹ãŒé•ã†ã ã‘ã€‚
 
 */
 #include "../Internal.h"

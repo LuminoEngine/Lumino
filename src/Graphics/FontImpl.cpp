@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include "FontImpl.h"
 #include <Lumino/Imaging/Font.h>

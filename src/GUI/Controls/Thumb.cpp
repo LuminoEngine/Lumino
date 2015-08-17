@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
@@ -66,7 +66,7 @@ void Thumb::CancelDrag()
 		m_isDragging = false;
 		ReleaseMouseCapture();
 
-		// ƒhƒ‰ƒbƒOƒLƒƒƒ“ƒZƒ‹ƒCƒxƒ“ƒg
+		// ãƒ‰ãƒ©ãƒƒã‚°ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã‚¤ãƒ™ãƒ³ãƒˆ
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			m_lastScreenPosition.X,
 			m_lastScreenPosition.Y));
@@ -81,7 +81,7 @@ void Thumb::Handler_MouseMove(MouseEventArgs* e)
 {
 	if (m_isDragging)
 	{
-		// ƒhƒ‰ƒbƒO’†ƒCƒxƒ“ƒg
+		// ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã‚¤ãƒ™ãƒ³ãƒˆ
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
 			e->Y - m_lastScreenPosition.Y));
@@ -103,7 +103,7 @@ void Thumb::Handler_MouseDown(MouseEventArgs* e)
 		m_isDragging = true;
 		CaptureMouse();
 
-		// ƒhƒ‰ƒbƒOŠJnƒCƒxƒ“ƒg
+		// ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ã‚¤ãƒ™ãƒ³ãƒˆ
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
 			e->Y - m_lastScreenPosition.Y));
@@ -124,7 +124,7 @@ void Thumb::Handler_MouseUp(MouseEventArgs* e)
 		m_isDragging = false;
 		ReleaseMouseCapture();
 
-		// ƒhƒ‰ƒbƒOI—¹ƒCƒxƒ“ƒg
+		// ãƒ‰ãƒ©ãƒƒã‚°çµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆ
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
 			e->Y - m_lastScreenPosition.Y));
@@ -180,11 +180,11 @@ void ThumbChrome::OnRender(Graphics::Painter* painter)
 {
 	RectF rect = m_finalLocalRect;
 
-	// ˜g
+	// æ 
 	painter->SetBrush(m_bgFrameBrush);
 	painter->DrawFrameRectangle(rect, 16);
 
-	// “à‘¤
+	// å†…å´
 	rect.Inflate(-16, -16);
 	painter->SetBrush(m_bgInnerBrush);
 	painter->DrawRectangle(rect);

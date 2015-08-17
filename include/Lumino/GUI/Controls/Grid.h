@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../GUIObjectCollection.h"
 #include "../ContentElement.h"
@@ -47,8 +47,8 @@ public:
 	/** @} */
 
 public:
-	bool IsAuto() const { return Math::IsNaN(m_width); }	// ŒÂ—v‘f‚É‚ ‚í‚¹‚é‚©
-	bool IsStar() const { return Math::IsInf(m_width); }	// ƒŒƒCƒAƒEƒgŒãAc‚è‚Ì—Ìˆæ‚ğg‚¤‚©
+	bool IsAuto() const { return Math::IsNaN(m_width); }	// å€‹è¦ç´ ã«ã‚ã‚ã›ã‚‹ã‹
+	bool IsStar() const { return Math::IsInf(m_width); }	// ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆå¾Œã€æ®‹ã‚Šã®é ˜åŸŸã‚’ä½¿ã†ã‹
 	bool IsPixel() const { return !IsAuto() && !IsStar(); }
 
 private:
@@ -59,9 +59,9 @@ private:
 	friend class Grid;
 	float				m_actualWidth;
 	float				m_actualOffsetX;
-	Array<UIElement*>	m_elementGroup;		///< Measure/Arrange ‚Ìì‹Æ—p•Ï”
-	float				m_desiredWidth;		///< Measure/Arrange ‚Ìì‹Æ—p•Ï”
-	float GetAvailableDesiredWidth() const;	///< Å¬/Å‘å‚ğl—¶‚µ‚½•‚ğ•Ô‚·
+	Array<UIElement*>	m_elementGroup;		///< Measure/Arrange ã®ä½œæ¥­ç”¨å¤‰æ•°
+	float				m_desiredWidth;		///< Measure/Arrange ã®ä½œæ¥­ç”¨å¤‰æ•°
+	float GetAvailableDesiredWidth() const;	///< æœ€å°/æœ€å¤§ã‚’è€ƒæ…®ã—ãŸå¹…ã‚’è¿”ã™
 };
 
 /**
@@ -114,9 +114,9 @@ private:
 	friend class Grid;
 	float				m_actualHeight;
 	float				m_actualOffsetY;
-	Array<UIElement*>	m_elementGroup;			///< Measure/Arrange ‚Ìì‹Æ—p•Ï”
-	float				m_desiredHeight;		///< Measure/Arrange ‚Ìì‹Æ—p•Ï”
-	float GetAvailableDesiredHeight() const;	///< Å¬/Å‘å‚ğl—¶‚µ‚½•‚ğ•Ô‚·
+	Array<UIElement*>	m_elementGroup;			///< Measure/Arrange ã®ä½œæ¥­ç”¨å¤‰æ•°
+	float				m_desiredHeight;		///< Measure/Arrange ã®ä½œæ¥­ç”¨å¤‰æ•°
+	float GetAvailableDesiredHeight() const;	///< æœ€å°/æœ€å¤§ã‚’è€ƒæ…®ã—ãŸå¹…ã‚’è¿”ã™
 };
 
 typedef GenericVariantList<ColumnDefinition*>	ColumnDefinitionList;
@@ -151,10 +151,10 @@ public:
 	//-------------------------------------------------------------------------
 	/** @name Properties *//** @{ */
 
-	/// ‚±‚Ì Grid ‚Å’è‹`‚³‚ê‚Ä‚¢‚é ColumnDefinition ‚ÌƒŠƒXƒg‚ğæ“¾‚µ‚Ü‚·B
+	/// ã“ã® Grid ã§å®šç¾©ã•ã‚Œã¦ã„ã‚‹ ColumnDefinition ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	ColumnDefinitionList* GetColumnDefinitions() const { return m_columnDefinitionList; }
 
-	/// ‚±‚Ì Grid ‚Å’è‹`‚³‚ê‚Ä‚¢‚é RowDefinition ‚ÌƒŠƒXƒg‚ğæ“¾‚µ‚Ü‚·B
+	/// ã“ã® Grid ã§å®šç¾©ã•ã‚Œã¦ã„ã‚‹ RowDefinition ã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	RowDefinitionList* GetRowDefinitions() const { return m_rowDefinitionList; }
 
 	/** @} */
@@ -163,36 +163,36 @@ public:
 	//-------------------------------------------------------------------------
 	/** @name Attached properties *//** @{ */
 
-	/// ColumnProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚Éİ’è‚µ‚Ü‚·B
+	/// ColumnProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã«è¨­å®šã—ã¾ã™ã€‚
 	static void SetColumn(UIElement* element, int value);
 
-	/// ColumnProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚©‚çæ“¾‚µ‚Ü‚·B
+	/// ColumnProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã‹ã‚‰å–å¾—ã—ã¾ã™ã€‚
 	static int GetColumn(UIElement* element);
 
-	/// ColumnSpanProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚Éİ’è‚µ‚Ü‚·B
+	/// ColumnSpanProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã«è¨­å®šã—ã¾ã™ã€‚
 	static void SetColumnSpan(UIElement* element, int value);
 
-	/// ColumnSpanProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚©‚çæ“¾‚µ‚Ü‚·B
+	/// ColumnSpanProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã‹ã‚‰å–å¾—ã—ã¾ã™ã€‚
 	static int GetColumnSpan(UIElement* element);
 
-	/// RowProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚Éİ’è‚µ‚Ü‚·B
+	/// RowProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã«è¨­å®šã—ã¾ã™ã€‚
 	static void SetRow(UIElement* element, int value);
 
-	/// RowProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚©‚çæ“¾‚µ‚Ü‚·B
+	/// RowProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã‹ã‚‰å–å¾—ã—ã¾ã™ã€‚
 	static int GetRow(UIElement* element);
 
-	/// RowSpanProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚Éİ’è‚µ‚Ü‚·B
+	/// RowSpanProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã«è¨­å®šã—ã¾ã™ã€‚
 	static void SetRowSpan(UIElement* element, int value);
 
-	/// RowSpanProperty ‚Ì’l‚ğw’è‚µ‚½ UIElement ‚©‚çæ“¾‚µ‚Ü‚·B
+	/// RowSpanProperty ã®å€¤ã‚’æŒ‡å®šã—ãŸ UIElement ã‹ã‚‰å–å¾—ã—ã¾ã™ã€‚
 	static int GetRowSpan(UIElement* element);
 
 	/** @} */
 
 public:
-	/// ColumnDefinition ‚ğ’Ç‰Á‚·‚éƒ†[ƒeƒBƒŠƒeƒB
+	/// ColumnDefinition ã‚’è¿½åŠ ã™ã‚‹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void AddColumnDefinition(float width, float minWidth = 0.0f, float maxWidth = FLT_MAX);
-	/// RowDefinition ‚ğ’Ç‰Á‚·‚éƒ†[ƒeƒBƒŠƒeƒB
+	/// RowDefinition ã‚’è¿½åŠ ã™ã‚‹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void AddRowDefinition(float height, float minHeight = 0.0f, float maxHeight = FLT_MAX);
 
 protected:

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
@@ -86,7 +86,7 @@ void Image::UpdateInternalSourceRect()
 	{
 		if (m_srcRect.IsZero())
 		{
-			// “]‘—Œ³‹éŒ`‚ªw’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚ÎƒeƒNƒXƒ`ƒƒƒTƒCƒY‚ğg—p‚·‚é
+			// è»¢é€å…ƒçŸ©å½¢ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã‘ã‚Œã°ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºã‚’ä½¿ç”¨ã™ã‚‹
 			const Size& size = m_texture->GetSize();
 			m_internalSrcRect.Set(0, 0, size.Width, size.Height);
 		}
@@ -105,7 +105,7 @@ SizeF Image::MeasureOverride(const SizeF& availableSize)
 
 	if (m_stretch == Stretch::None)
 	{
-		// ƒeƒNƒXƒ`ƒƒ“]‘—ƒTƒCƒY‚ğƒRƒ“ƒgƒ[ƒ‹‚ÌÅ¬ƒTƒCƒY‚É‚·‚é
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£è»¢é€ã‚µã‚¤ã‚ºã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®æœ€å°ã‚µã‚¤ã‚ºã«ã™ã‚‹
 		desiredSize.Width = std::max(desiredSize.Width, (float)m_internalSrcRect.Width);
 		desiredSize.Height = std::max(desiredSize.Height, (float)m_internalSrcRect.Height);
 	}

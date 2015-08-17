@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 	@file	FontGlyphTextureCache.h
 */
 #pragma once
@@ -17,7 +17,7 @@ class FontGlyphTextureCache
 {
 	LN_CACHE_OBJECT_DECL;
 public:
-	FontGlyphTextureCache(GraphicsManager* manager, Font* font);	// TODO: ƒXƒgƒ[ƒN•‚ğpen‚Å•\‚·‚È‚ç‘¾‚³•ª‚Ìˆø”‚ª‘‚¦‚é‚±‚Æ‚É‚È‚éB
+	FontGlyphTextureCache(GraphicsManager* manager, Font* font);	// TODO: ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯å¹…ã‚’penã§è¡¨ã™ãªã‚‰å¤ªã•åˆ†ã®å¼•æ•°ãŒå¢—ãˆã‚‹ã“ã¨ã«ãªã‚‹ã€‚
 
 	void LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect);
 
@@ -25,7 +25,7 @@ public:
 
 	TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
 
-	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ƒ†[ƒeƒBƒŠƒeƒB
+	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 
 private:
 	struct CachedGlyphInfo
@@ -41,8 +41,8 @@ private:
 	RefPtr<Texture>			m_glyphCacheTexture;
 	CachedGlyphInfoMap		m_cachedGlyphInfoMap;
 	int						m_glyphWidthCount;
-	Size					m_glyphMaxBitmapSize;	///< Œ»İ‚ÌƒtƒHƒ“ƒgî•ñ‚Ì1•¶š•ª‚Ìƒrƒbƒgƒ}ƒbƒv‚ÌÅ‘åƒTƒCƒY
-	Stack<int>				m_indexStack;			///< ‹ó‚«ƒLƒƒƒbƒVƒ…ƒCƒ“ƒfƒbƒNƒX
+	Size					m_glyphMaxBitmapSize;	///< ç¾åœ¨ã®ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã®1æ–‡å­—åˆ†ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®æœ€å¤§ã‚µã‚¤ã‚º
+	Stack<int>				m_indexStack;			///< ç©ºãã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	RefPtr<Bitmap>			m_tmpBitmap;
 
 	TextLayoutEngine	m_layoutEngine;
@@ -57,9 +57,9 @@ namespace Graphics
 
 #if 0
 /**
-	@file	•¶š—ñ‚Ì•`‰æ‚ğs‚¤ƒNƒ‰ƒX‚Å‚·B
+	@file	æ–‡å­—åˆ—ã®æç”»ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 
-	TODO: ‚±‚ÌƒNƒ‰ƒX‚Í internal ‚É‚µ‚½‚¢BPainter ‚É”C‚¹‚éB
+	TODO: ã“ã®ã‚¯ãƒ©ã‚¹ã¯ internal ã«ã—ãŸã„ã€‚Painter ã«ä»»ã›ã‚‹ã€‚
 */
 class TextRenderer
 	: public RefObject
@@ -69,7 +69,7 @@ class TextRenderer
 public:
 
 	/**
-		@brief		TextRenderer ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
+		@brief		TextRenderer ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static TextRenderer* Create(GraphicsManager* manager);
 
@@ -85,7 +85,7 @@ public:
 	void SetTextAlignment(TextAlignment align) { m_layoutEngine.SetTextAlignment(align); }
 	void SetTextTrimming(TextTrimming triming) { m_layoutEngine.SetTextTrimming(triming); }
 	void SetFlowDirection(FlowDirection dir) { m_layoutEngine.SetFlowDirection(dir); }
-	//void SetDrawingArea(const Rect& area) { m_drawingArea = area; }	// ‚¢‚ç‚È‚¢‚©‚à
+	//void SetDrawingArea(const Rect& area) { m_drawingArea = area; }	// ã„ã‚‰ãªã„ã‹ã‚‚
 
 	/**
 		@brief		
@@ -100,7 +100,7 @@ public:
 	void DrawChar(UTF32 ch);
 
 	/**
-		@brief		—v‹‚³‚ê‚Ä‚¢‚éƒXƒvƒ‰ƒCƒg‚ğ‘S‚Ä•`‰æ‚µ‚Ü‚·B
+		@brief		è¦æ±‚ã•ã‚Œã¦ã„ã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’å…¨ã¦æç”»ã—ã¾ã™ã€‚
 	*/
 	void Flash();
 
@@ -135,12 +135,12 @@ private:
 
 	FontGlyphLocation*	m_prevGlyphLocationData;
 
-	// ƒLƒƒƒbƒVƒ…Œnî•ñ
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç³»æƒ…å ±
 	RefPtr<Texture>		m_glyphCacheTexture;
 	CachedGlyphInfoMap	m_cachedGlyphInfoMap;
 	int					m_glyphWidthCount;
-	Size				m_glyphMaxBitmapSize;	///< Œ»İ‚ÌƒtƒHƒ“ƒgî•ñ‚Ì1•¶š•ª‚Ìƒrƒbƒgƒ}ƒbƒv‚ÌÅ‘åƒTƒCƒY
-	Stack<int>			m_indexStack;			///< ‹ó‚«ƒLƒƒƒbƒVƒ…ƒCƒ“ƒfƒbƒNƒX
+	Size				m_glyphMaxBitmapSize;	///< ç¾åœ¨ã®ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã®1æ–‡å­—åˆ†ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®æœ€å¤§ã‚µã‚¤ã‚º
+	Stack<int>			m_indexStack;			///< ç©ºãã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	RefPtr<Bitmap>	m_tmpBitmap;
 	bool				m_fontFaceModified;
 };

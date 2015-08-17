@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "AnimationCurve.h"
@@ -8,7 +8,7 @@ namespace Lumino
 namespace Animation
 {
 
-/// ƒAƒjƒ[ƒVƒ‡ƒ“‚µ‚½‚¢ƒIƒuƒWƒFƒNƒg‚ğ•Û‚·‚éƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX
+/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã—ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä¿æŒã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 class IAnimationTargetElement
 {
 public:
@@ -17,7 +17,7 @@ public:
 	virtual int GetAnimationTargetAttributeCount() const = 0;
 	virtual IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) = 0;
 
-	/// (Œ©‚Â‚©‚ç‚È‚¯‚ê‚Î NULL ‚ğ•Ô‚·)
+	/// (è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° NULL ã‚’è¿”ã™)
 	//virtual IAnimationTargetAttribute* FindAnimationTargetAttributes(const String& relativePath) const = 0;
 };
 
@@ -33,48 +33,48 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
 	void Create(IAnimationTargetElement* element);
 
-	/// Ä¶’†‚Å‚ ‚é‚©‚ğŠm”F‚·‚é
+	/// å†ç”Ÿä¸­ã§ã‚ã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹
 	bool IsPlaying() const;
 
-	/// Ä¶
+	/// å†ç”Ÿ
 	void Play(const TCHAR* name/*, PlayMode mode = PlayMode_StopSameLayer*/);
 
-	///// ƒuƒŒƒ“ƒh (ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÄ¶‚É‚Í‰e‹¿‚µ‚È‚¢B’â~’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ª‚±‚ÌŠÖ”‚É‚æ‚Á‚ÄÄ¶ŠJn‚³‚ê‚é‚±‚Æ‚Í‚È‚¢)
+	///// ãƒ–ãƒ¬ãƒ³ãƒ‰ (ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿã«ã¯å½±éŸ¿ã—ãªã„ã€‚åœæ­¢ä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®é–¢æ•°ã«ã‚ˆã£ã¦å†ç”Ÿé–‹å§‹ã•ã‚Œã‚‹ã“ã¨ã¯ãªã„)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);
 
-	///// ƒNƒƒXƒtƒF[ƒh
+	///// ã‚¯ãƒ­ã‚¹ãƒ•ã‚§ãƒ¼ãƒ‰
 	//void CrossFade(const lnKeyChar* animName, lnFloat fadeLength, PlayMode mode = StopSameLayer);
 
-	///// ‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚µ‚½ŒãAÄ¶‚ğŠJn‚·‚é
+	///// å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã—ãŸå¾Œã€å†ç”Ÿã‚’é–‹å§‹ã™ã‚‹
 	//void PlayQueued(const lnKeyChar* animName, QueueMode queueMode = CompleteOthers, PlayMode playMode = StopSameLayer);
 
-	///// ‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚·‚é‚Æ‚«AƒNƒƒXƒtƒF[ƒh‚ÅÄ¶‚ğŠJn‚·‚é
+	///// å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã™ã‚‹ã¨ãã€ã‚¯ãƒ­ã‚¹ãƒ•ã‚§ãƒ¼ãƒ‰ã§å†ç”Ÿã‚’é–‹å§‹ã™ã‚‹
 	//void CrossFadeQueued(const lnKeyChar* animName, lnFloat fadeLength, QueueMode queueMode = CompleteOthers, PlayMode playMode = StopSameLayer);
 
-	///// “¯ƒŒƒCƒ„[“à‚ÌƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‘¬“x‚Ì“¯Šú
+	///// åŒãƒ¬ã‚¤ãƒ¤ãƒ¼å†…ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿé€Ÿåº¦ã®åŒæœŸ
 	//void SyncLayer(int layer);
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚é
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹
 	void AdvanceTime(double elapsedTime);
 
 public:
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì’Ç‰Á
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®è¿½åŠ 
 	void AddAnimationClip(AnimationClip* animationClip, int layer = 0);
 
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ìíœ
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®å‰Šé™¤
 	void RemoveAnimationClip(AnimationClip* animationClip);
 
-	/// AnimationTargetEntity ‚ÌŒŸõ (Œ©‚Â‚©‚ç‚È‚¯‚ê‚Î NULL)
+	/// AnimationTargetEntity ã®æ¤œç´¢ (è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° NULL)
 	AnimationTargetAttributeEntity* FindAnimationTargetAttributeEntity(const String& name) const;
 
-	/// AnimationState ‚ÌŒŸõ
+	/// AnimationState ã®æ¤œç´¢
 	AnimationState* FindAnimationState(const TCHAR* clipName);
 
-	/// AnimationApplyTarget ‚Ì’Ç‰Á (‚Å‚«‚é‚¾‚¯ AnimationController ì¬’¼Œã‚Éİ’è‚·‚é‚±‚ÆBd•¡‹Ö~)
+	/// AnimationApplyTarget ã®è¿½åŠ  (ã§ãã‚‹ã ã‘ AnimationController ä½œæˆç›´å¾Œã«è¨­å®šã™ã‚‹ã“ã¨ã€‚é‡è¤‡ç¦æ­¢)
 	//void addAnimationApplyTarget(IAnimationApplyTarget* target);
 
 private:
@@ -85,7 +85,7 @@ private:
 	AnimationTargetAttributeEntityList	m_animationTargetAttributeEntityList;
 	AnimationStateList					m_animationStateList;
 
-	///// ’Ç‰ÁÏ‚İ AnimationApplyTarget ‚ÌŒŸõ
+	///// è¿½åŠ æ¸ˆã¿ AnimationApplyTarget ã®æ¤œç´¢
 	//AnimationApplyTargetState* findAnimationApplyTargetState(const lnKeyChar* naem);
 
 	//typedef std::vector<AnimationState*>			AnimationStateArray;
