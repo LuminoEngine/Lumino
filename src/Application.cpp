@@ -1,4 +1,39 @@
-﻿
+﻿/*
+
+
+
+[2015/7/31] トップレベルインターフェイス
+	- 継承による拡張
+	- 言語バインダを実装する上での使いやすさ
+	- Variant への保持しやすさ
+	- アプリを実装する上での使いやすさ
+
+	以下のような方針で。
+	- トップレベルオブジェクト (Application) はグローバル。
+	  (完全にグローバルではなく、インスタンスのポインタをグローバル変数に入れておくイメージ。必要に応じて継承し、拡張できる)
+	- 
+
+
+
+	・Font font = Font::CreateBitmapFont();
+	
+
+	・FontPtr font = Font::CreateBitmapFont();
+
+	- スタックへの生成を許可するか？
+		完全に禁止することは出来ない。派生させればなんとでも出来てしまう。
+	
+
+	・Siv3D、セガGameLib
+		公開するのはスマートポインタクラス。実体は可能な限り見せない。
+		→ 派生させて拡張できない。GUI のユーザーコントロールとか作れないことになる。
+		ただ、Siv3D の GUI は static Create() が shared_ptr 返していた。
+
+	・SDL2、GLFW、GDI+、Nux なんかはトップレベルオブジェクトはグローバルインスタンス。
+	  OpenSceneGraph もたぶんそう。
+*/
+
+
 #pragma once
 #include "Internal.h"
 #include <Lumino/Profiler.h>

@@ -7,6 +7,11 @@
 []Ubuntu
 	sudo apt-get install libgl-dev
 
+git clone https://github.com/lriki/Lumino.git
+cd Lumino
+git submodule init
+git submodule update --init
+
 
 [2015/7/31] トップレベルインターフェイス
 - 継承による拡張
