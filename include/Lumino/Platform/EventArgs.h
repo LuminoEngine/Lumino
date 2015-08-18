@@ -57,7 +57,7 @@ struct EventArgs
 		/// マウスイベントの引数
 		struct
 		{
-			MouseButton	Button;			///< ボタン番号
+			MouseButton::enum_type	Button;			///< ボタン番号
 			short		Delta;			///< マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位)
 			short		X;				///< マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1)
 			short		Y;				///< マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1)

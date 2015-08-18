@@ -156,6 +156,11 @@ RoutedEventHandler* TypeInfo::FindRoutedEventHandler(const RoutedEvent* ev) cons
 	{
 		return handler;
 	}
+
+	// さらにベースクラスを見に行く
+	if (m_baseClass != NULL) {
+		return m_baseClass->FindRoutedEventHandler(ev);
+	}
 	return NULL;
 }
 	

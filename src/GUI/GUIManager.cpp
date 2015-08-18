@@ -1022,6 +1022,8 @@ namespace GUI
 // GUIManager
 //=============================================================================
 
+const float GUIManager::DefaultouseButtonClickTimeout = 0.3f;
+
 static const byte_t g_DefaultSkin_png_Data[] =
 {
 #include "Resource/DefaultSkin.png.h"
@@ -1037,8 +1039,10 @@ GUIManager::GUIManager()
 	, m_rootCombinedResource(NULL)
 	, m_defaultRootFrame(NULL)
 	, m_capturedElement(NULL)
+	, m_mouseButtonClickTimeout(DefaultouseButtonClickTimeout)
 	, m_cursorAnimationTime(0)
 {
+	memset(m_mouseClickTrackers, 0, sizeof(m_mouseClickTrackers));
 }
 
 //-----------------------------------------------------------------------------
@@ -1153,13 +1157,13 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL) 
 	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
 		return m_capturedElement->OnEvent(EventType_MouseMove, args);
 	}
 	//if (m_defaultRootFrame == NULL) { return false; }
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
 	//if (m_mouseHoverElement != NULL)
 	return m_mouseHoverElement->OnEvent(EventType_MouseMove, args);
 	//bool r = m_defaultRootFrame->OnEvent(EventType_MouseMove, args);
@@ -1173,14 +1177,31 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 {
 	m_mousePosition.Set(clientX, clientY);
 
+	// マウスクリック回数の処理
+	MouseClickTracker& tracker = m_mouseClickTrackers[button];
+	tracker.ClickCount++;
+
+	double curTime = 0.001 * Environment::GetTickCount();
+	float elapsed = curTime - tracker.LastTime;
+	if (elapsed > m_mouseButtonClickTimeout ||
+		m_mouseHoverElement != tracker.HoverElement ||
+		tracker.ClickCount > 3)
+	{
+		tracker.ClickCount = 1;
+		tracker.HoverElement = m_mouseHoverElement;
+	}
+	tracker.LastTime = curTime;
+
+
+
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount));
 		return m_capturedElement->OnEvent(EventType_MouseButtonDown, args);
 	}
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount));
 	//if (m_mouseHoverElement != NULL) {
 	return m_mouseHoverElement->OnEvent(EventType_MouseButtonDown, args);
 	//}
@@ -1197,12 +1218,12 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, 0));
 		return m_capturedElement->OnEvent(EventType_MouseButtonUp, args);
 	}
 	//if (m_defaultRootFrame == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY));
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, 0));
 	//return m_defaultRootFrame->OnEvent(EventType_MouseButtonUp, args);
 	return m_mouseHoverElement->OnEvent(EventType_MouseButtonUp, args);
 }
@@ -1217,12 +1238,12 @@ bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, clientX, clientY));
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
 		return m_capturedElement->OnEvent(EventType_MouseMove, args);
 	}
 	//if (m_defaultRootFrame == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, delta, clientX, clientY));
+	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, delta, clientX, clientY, 0));
 	//return m_defaultRootFrame->OnEvent(EventType_MouseWheel, args);
 	return m_mouseHoverElement->OnEvent(EventType_MouseWheel, args);
 }
@@ -1334,7 +1355,7 @@ EXIT:
 	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
 	if (m_mouseHoverElement != old)
 	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton_None, 0, mousePos.X, mousePos.Y));
+		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, mousePos.X, mousePos.Y, 0));
 		if (old != NULL) {
 			old->OnEvent(EventType_MouseLeave, args);
 		}

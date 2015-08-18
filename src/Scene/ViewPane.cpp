@@ -86,17 +86,17 @@ bool ViewPane::InjectMouseButtonDown(MouseButton button)
 {
 	switch (button)
 	{
-	case Lumino::MouseButton_Left:
+	case Lumino::MouseButton::Left:
 		m_leftMouseState.Position = m_mousePosition;
 		m_leftMouseState.Time = static_cast<float>(m_manager->GetTime());
 		m_leftMouseState.IsDown = true;
 		return true;
-	case Lumino::MouseButton_Right:
+	case Lumino::MouseButton::Right:
 		m_rightMouseState.Position = m_mousePosition;
 		m_rightMouseState.Time = static_cast<float>(m_manager->GetTime());
 		m_rightMouseState.IsDown = true;
 		return true;
-	case Lumino::MouseButton_Middle:
+	case Lumino::MouseButton::Middle:
 		m_middleMouseState.Position = m_mousePosition;
 		m_middleMouseState.Time = static_cast<float>(m_manager->GetTime());
 		m_middleMouseState.IsDown = true;
@@ -114,13 +114,13 @@ bool ViewPane::InjectMouseButtonUp(MouseButton button)
 {
 	switch (button)
 	{
-	case Lumino::MouseButton_Left:
+	case Lumino::MouseButton::Left:
 		m_leftMouseState.IsDown = false;
 		return true;
-	case Lumino::MouseButton_Right:
+	case Lumino::MouseButton::Right:
 		m_leftMouseState.IsDown = false;
 		return true;
-	case Lumino::MouseButton_Middle:
+	case Lumino::MouseButton::Middle:
 		m_leftMouseState.IsDown = false;
 		return true;
 	default:

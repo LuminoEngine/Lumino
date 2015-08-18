@@ -36,6 +36,7 @@ int main()
 		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-Gothic-Regular.ttf"));
 		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
+		// TODO: RefObject のデストラクタで、参照カウント1以上ならエラー。
 		RefPtr<Graphics::Font> font1(Graphics::Font::Create(app->GetGraphicsManager()->GetFontManager()));	// TODO: ダサすぎる。デフォルトの設定方法も考える。
 		font1->SetName(_T("VL Gothic"));
 		font1->SetAntiAlias(true);

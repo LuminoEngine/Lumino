@@ -22,9 +22,18 @@ public:
 	LN_PROPERTY(ControlTemplate*,		TemplateProperty);
 	LN_PROPERTY(VisualStateGroupList*,	VisualStateGroupsProperty);
 
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseDoubleClickEvent);			/**< MouseDoubleClick ルーティングイベントの識別子 */
+
 public:
-	Control(GUIManager* manager);
-	virtual ~Control();
+
+	//-------------------------------------------------------------------------
+	/** @name RoutedEvents */
+	/** @{ */
+
+	RoutedEventSlot<MouseEventArgs>		MouseDoubleClick;		/**< マウス ボタンが 2 回クリックされると発生します。*/
+
+	/** @} */
+
 
 	//-------------------------------------------------------------------------
 	/** @name Properties */
@@ -50,6 +59,12 @@ public:
 	/** @} */
 
 protected:
+	Control(GUIManager* manager);
+	virtual ~Control();
+
+protected:
+
+
 	// override UIElement
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
 	virtual SizeF MeasureOverride(const SizeF& constraint);
@@ -73,6 +88,12 @@ protected:
 	//protected:
 	//	// override UIElement
 	//	virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
+
+	virtual void OnMouseDoubleClick(MouseEventArgs* e);
+
+private:
+	void Handler_MouseDown(MouseEventArgs* e);
+
 private:
 	Graphics::BrushPtr	m_background;
 	RefPtr<ControlTemplate>	m_controlTemplate;

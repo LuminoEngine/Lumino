@@ -86,7 +86,7 @@ EventArgsPool::~EventArgsPool()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MouseEventArgs* EventArgsPool::CreateMouseEventArgs(MouseButton button, int wheel, float x, float y)
+MouseEventArgs* EventArgsPool::CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount)
 {
 	MouseEventArgs* args = FindFreeObject(m_mouseEventArgsPool);
 	if (args == NULL) {
@@ -100,6 +100,7 @@ MouseEventArgs* EventArgsPool::CreateMouseEventArgs(MouseButton button, int whee
 	args->Wheel = wheel;
 	args->X = x;
 	args->Y = y;
+	args->ClickCount = clickCount;
 
 	args->AddRef();
 	return args;

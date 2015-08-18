@@ -204,27 +204,27 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				{
 				case WM_LBUTTONDOWN:
 					e.Type = EventType_MouseDown;
-					e.Mouse.Button = MouseButton_Left;
+					e.Mouse.Button = MouseButton::Left;
 					break;
 				case WM_LBUTTONUP:
 					e.Type = EventType_MouseUp;
-					e.Mouse.Button = MouseButton_Left;
+					e.Mouse.Button = MouseButton::Left;
 					break;
 				case WM_RBUTTONDOWN:
 					e.Type = EventType_MouseDown;
-					e.Mouse.Button = MouseButton_Right;
+					e.Mouse.Button = MouseButton::Right;
 					break;
 				case WM_RBUTTONUP:
 					e.Type = EventType_MouseUp;
-					e.Mouse.Button = MouseButton_Right;
+					e.Mouse.Button = MouseButton::Right;
 					break;
 				case WM_MBUTTONDOWN:
 					e.Type = EventType_MouseDown;
-					e.Mouse.Button = MouseButton_Middle;
+					e.Mouse.Button = MouseButton::Middle;
 					break;
 				case WM_MBUTTONUP:
 					e.Type = EventType_MouseUp;
-					e.Mouse.Button = MouseButton_Middle;
+					e.Mouse.Button = MouseButton::Middle;
 					break;
 				}
 
@@ -247,7 +247,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				EventArgs e;
 				e.Type = EventType_MouseMove;
 				e.Sender = this;
-				e.Mouse.Button = MouseButton_None;
+				e.Mouse.Button = MouseButton::None;
 				e.Mouse.Delta = 0;
 				e.Mouse.X = static_cast< short >(LOWORD(lparam));     // 一度 short にキャストしないと、
 				e.Mouse.Y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
@@ -276,7 +276,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					EventArgs e;
 					e.Type = EventType_MouseMove;
 					e.Sender = this;
-					e.Mouse.Button = MouseButton_None;
+					e.Mouse.Button = MouseButton::None;
 					e.Mouse.Delta = 0;
 					e.Mouse.X = pt.x;
 					e.Mouse.Y = pt.y;
@@ -298,7 +298,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				EventArgs e;
 				e.Type = EventType_MouseWheel;
 				e.Sender = this;
-				e.Mouse.Button = MouseButton_None;
+				e.Mouse.Button = MouseButton::None;
 				e.Mouse.Delta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
 				e.Mouse.X = static_cast< short >(LOWORD(lparam));
 				e.Mouse.Y = static_cast< short >(HIWORD(lparam));

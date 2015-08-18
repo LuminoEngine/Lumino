@@ -18,6 +18,9 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, BackgroundProperty, "Background", m_background, NULL, NULL);
 LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, NULL, NULL);
 
+// Register routed event
+LN_ROUTED_EVENT_IMPLEMENT(Control, MouseEventArgs, MouseDoubleClickEvent, "MouseDoubleClick", MouseDoubleClick);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -25,6 +28,8 @@ Control::Control(GUIManager* manager)
 	: UIElement(manager)
 {
 	m_visualStateGroupList.Attach(LN_NEW VisualStateGroupList());
+
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Control, MouseEventArgs, UIElement::MouseDownEvent, Handler_MouseDown);
 }
 
 //-----------------------------------------------------------------------------
@@ -142,6 +147,29 @@ void Control::OnRender(Graphics::Painter* painter)
 //	}
 //}
 //
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Control::OnMouseDoubleClick(MouseEventArgs* e)
+{
+	LN_CHECK_ARGS_RETURN(e != NULL);
+	if (!e->Handled) {
+		RaiseEvent(MouseDoubleClickEvent, this, e);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Control::Handler_MouseDown(MouseEventArgs* e)
+{
+	if (e->ClickCount == 2) {
+		OnMouseDoubleClick(e);
+	}
+	e->Handled = true;
+}
 
 
 } // namespace GUI

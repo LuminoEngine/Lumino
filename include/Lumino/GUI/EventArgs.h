@@ -49,6 +49,7 @@ public:
 	float		Y;			///< マウスイベント生成時のマウスの Y 座標 (グローバル座標。クライアント領域外は -1)
 	//short		MoveX;	    ///< X 座標の移動量
 	//short		MoveY;      ///< Y 座標の移動量
+	int			ClickCount;	///< ボタンがクリックされた回数。ダブルクリックやトリプルクリックを区別するために使用する。最大3まで。
 };
 
 /**
@@ -108,8 +109,8 @@ public:
 	EventArgsPool();
 	~EventArgsPool();
 
-	MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y);
-	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);
+	MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);	// TODO: やめる
+	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);	// TODO: やめる
 
 	template<class TEventArgs, typename ...TArgs>
 	TEventArgs* Create(TArgs... args)

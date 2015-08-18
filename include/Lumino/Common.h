@@ -7,15 +7,17 @@ namespace Lumino
 {
 class Application;
 
-/// マウスボタン
-enum MouseButton
+/** マウスボタン */
+LN_ENUM(MouseButton)
 {
-	MouseButton_Left = 0,		///< 左ボタン
-	MouseButton_Right,			///< 右ボタン
-	MouseButton_Middle,			///< 中央ボタン
+	None = 0,		/**< 無効または押されていないことを示す */
+	Left,			/**< 左ボタン */
+	Right,			/**< 右ボタン */
+	Middle,			/**< 中央ボタン */
 
-	MouseButton_None = 0xff		///< 無効または押されていないことを示す
+	TERMINATOR,
 };
+LN_ENUM_DECLARE(MouseButton);
 
 /// キーコード (NumPad はサポートしていない)
 enum Key
@@ -109,7 +111,7 @@ enum Key
 
 	Key_Android_Plus,		///< Android '+'
 
-	key_Max = 256,
+	Key_Max = 256,
 };
 
 } // namespace Lumino

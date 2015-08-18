@@ -20,6 +20,9 @@ class GUIManager
 	: public RefObject
 {
 public:
+	static const float DefaultouseButtonClickTimeout;
+
+public:
 	struct ConfigData
 	{
 		Graphics::GraphicsManager*		GraphicsManager;
@@ -92,12 +95,21 @@ private:
 
 	ObjectFactoryMap					m_objectFactoryMap;
 
-
 	// GUIContext
+	struct MouseClickTracker
+	{
+		double		LastTime;
+		int			ClickCount;
+		UIElement*	HoverElement;
+	};
+
+	MouseClickTracker m_mouseClickTrackers[MouseButton::TERMINATOR];
+
 	RefPtr<Graphics::Texture>	m_defaultSkinTexture;
 	RefPtr<CursorImage>			m_cursorImageTable[1];
 	RefPtr<CursorImage>			m_currentCursorImage;
 	PointF						m_mousePosition;
+	float						m_mouseButtonClickTimeout;
 	float						m_cursorAnimationTime;
 
 
