@@ -391,31 +391,39 @@ void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
 
 
 
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Painter::PushTransform(const Matrix& matrix)
+//{
+//	m_transformStack.Push(matrix);
+//	LN_CALL_COMMAND(SetTransform, SetTransformCommand, matrix);
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Painter::PopTransform()
+//{
+//	LN_CALL_COMMAND(SetTransform, SetTransformCommand, m_transformStack.GetTop());
+//	m_transformStack.Pop();
+//}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::PushTransform(const Matrix& matrix)
+void Painter::SetTransform(const Matrix& matrix)
 {
-	m_transformStack.Push(matrix);
+	m_currentState.Transform = matrix;
 	LN_CALL_COMMAND(SetTransform, SetTransformCommand, matrix);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::PopTransform()
-{
-	LN_CALL_COMMAND(SetTransform, SetTransformCommand, m_transformStack.GetTop());
-	m_transformStack.Pop();
-}
-
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void Painter::SetBrush(Brush* brush)
 {
-	m_currentBrush = brush;
+	m_currentState.Brush = brush;
 
 	BrushData data;
 	if (brush == NULL)
@@ -458,7 +466,7 @@ void Painter::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 void Painter::SetSolidColor(const ColorF& color)
 {
-	m_currentBrush = NULL;
+	m_currentState.Brush = NULL;
 
 	BrushData data;
 	data.Type = BrushType_SolidColor;
@@ -475,7 +483,7 @@ void Painter::SetSolidColor(const ColorF& color)
 //-----------------------------------------------------------------------------
 void Painter::SetTexture(Texture* texture, const Rect& r)
 {
-	m_currentBrush = NULL;
+	m_currentState.Brush = NULL;
 
 	BrushData data;
 	data.Type = BrushType_Texture;
@@ -495,6 +503,14 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 void Painter::SetOpacity(float opacity)
 {
 	LN_CALL_COMMAND(SetOpacity, SetOpacityCommand, opacity);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::SetFont(Font* font)
+{
+	m_currentState.Font = font;
 }
 
 //-----------------------------------------------------------------------------
@@ -546,7 +562,7 @@ void Painter::DrawString(const TCHAR* str, int length, const PointF& position)
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
+	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentState.Font));
 
 	// 
 	TextLayoutResult result;
@@ -567,7 +583,7 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentFont));
+	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentState.Font));
 
 	// 
 	TextLayoutEngine* layout = cache->GetTextLayoutEngine();
@@ -599,6 +615,10 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 //-----------------------------------------------------------------------------
 void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
 {
+	/*	Font 系は非スレッドセーフ。
+		グリフとその配置はメインスレッドで作ってから PainterEngine に送る。
+	*/
+
 	// 一時メモリ確保
 	m_tempBuffer.Resize(sizeof(PainterEngine::GlyphRunData) * result->Items.GetCount());
 	auto data = (PainterEngine::GlyphRunData*)m_tempBuffer.GetData();
@@ -621,6 +641,41 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 	
 	
 	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
+}
+
+//=============================================================================
+// RenderTargetPainter
+//=============================================================================
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//RenderTargetPainter::RenderTargetPainter(Texture* renderTarget)
+//	: RenderTargetPainter(renderTarget, )
+//{
+//
+//}
+
+RenderTargetPainter::RenderTargetPainter(Texture* renderTarget, GraphicsManager* manager)
+	: Painter((manager != NULL) ? manager : Internal::Manager)
+{
+	if (renderTarget == NULL) {
+		renderTarget = m_manager->GetRenderer()->GetRenderTarget(0);
+	}
+	if (renderTarget != NULL) {
+		SetProjection(renderTarget->GetSize());
+	}
+}
+
+RenderTargetPainter::~RenderTargetPainter()
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderTargetPainter::SetRenderTarget(Texture* renderTarget)
+{
 }
 
 } // namespace Graphics

@@ -36,7 +36,7 @@ class GraphicsManager;
 
 namespace Internal
 {
-extern GraphicsManager* Manager;	// TODO: 削除予定
+extern GraphicsManager* Manager;
 };
 
 } // namespace Graphics

@@ -133,6 +133,21 @@ LN_ENUM_FLAGS(StringFormatFlags)
 };
 LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 
+
+
+namespace Internal
+{
+
+struct PainterState
+{
+	Matrix			Transform;
+	RefPtr<Brush>	Brush;
+	RefPtr<Font>	Font;
+};
+
+} // namespace Internal
+
+
 /**
 	@brief		
 */
@@ -148,19 +163,22 @@ public:
 	void End();
 
 
-	void SetProjection(const Size& viewSize, float nearZ, float farZ);
-	void SetProjection(const SizeF& viewSize, float nearZ, float farZ);
+	void SetProjection(const Size& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
+	void SetProjection(const SizeF& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
 
 
-	void PushTransform(const Matrix& matrix);
-	void PopTransform();
+	//void PushTransform(const Matrix& matrix);
+	//void PopTransform();
 
-
+	void SetTransform(const Matrix& matrix);
 	void SetBrush(Brush* brush);
 	void SetSolidColor(const ColorF& color);
 	void SetTexture(Texture* texture, const Rect& srcRect);	///< ユーティリティ。TextureBrush をセットする
 	void SetOpacity(float opacity);	// 0~1
-	void SetFont(Font* font) { m_currentFont = font; }
+	void SetFont(Font* font);
+
+	//void PushState();
+	//void PopState();
 
 	void DrawRectangle(const RectF& rect);
 	void DrawRectangle(float x, float y, float width, float height) { DrawRectangle(RectF(x, y, width, height)); }
@@ -183,14 +201,33 @@ public:
 private:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
 
-private:
-	GraphicsManager*		m_manager;
-	PainterEngine*			m_internal;
-	Stack<Matrix>			m_transformStack;
-	RefPtr<Brush>			m_currentBrush;
+protected:
+	GraphicsManager*				m_manager;
+	PainterEngine*					m_internal;
+	Internal::PainterState			m_currentState;
+	//Stack<Internal::PainterState>	m_stateStack;
+	//Stack<Matrix>			m_transformStack;
+	//RefPtr<Brush>			m_currentBrush;
 	ByteBuffer				m_tempBuffer;
-	RefPtr<Font>			m_currentFont;
+	//RefPtr<Font>			m_currentFont;
 };
+
+
+
+class RenderTargetPainter
+	: public Painter
+{
+public:
+	RenderTargetPainter(Texture* renderTarget = NULL, GraphicsManager* manager = NULL);
+	virtual ~RenderTargetPainter();
+
+public:
+	void SetRenderTarget(Texture* renderTarget);
+
+private:
+
+};
+
 
 } // namespace Graphics
 } // namespace Lumino
