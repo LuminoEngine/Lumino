@@ -6,6 +6,7 @@
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include "GUIPainter.h"
 #include "GUIHelper.h"
 
 namespace Lumino
@@ -433,11 +434,11 @@ void UIElement::Render()
 	});
 
 	// TODO: Panel とか、描く必要の無いものは特殊あつかいにして、Painter 作らないようにしたい
-	Graphics::Painter painter(m_manager->GetGraphicsManager());
-	painter.SetTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: 初期 Transform は DrawingContext とかベースクラスに作って隠したい。
-	painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
-	painter.SetOpacity(m_combinedOpacity);
-	OnRender(&painter);
+	Internal::GUIPainter* painter = GUIHelper::GUIManager_GetGUIPainter(m_manager);
+	painter->ResetState();
+	painter->SetTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: 初期 Transform は DrawingContext とかベースクラスに作って隠したい。
+	painter->SetOpacity(m_combinedOpacity);
+	OnRender(painter);
 }
 
 //-----------------------------------------------------------------------------

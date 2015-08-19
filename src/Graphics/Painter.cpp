@@ -354,6 +354,28 @@ Painter::~Painter()
 	LN_CALL_COMMAND(End, EndCommand);
 }
 
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::ResetState()
+{
+	m_currentState.Transform = Matrix::Identity;
+	m_currentState.Brush = NULL;
+	m_currentState.Font = NULL;
+	LN_CALL_COMMAND(Begin, BeginCommand);	// TODO: Reset
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::Flush()
+{
+	LN_CALL_COMMAND(End, EndCommand);
+}
+
 /// ピクセル単位の2D描画に使う射影行列の作成
 static void perspective2DLH(Matrix* out_, float width_, float height_, float near_, float far_)
 {

@@ -996,6 +996,7 @@
 
 */
 #include "../Internal.h"
+#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/RootFrame.h>
@@ -1012,6 +1013,7 @@
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/Rectangle.h>
 #include <Lumino/GUI/GUIManager.h>
+#include "GUIPainter.h"
 
 namespace Lumino
 {
@@ -1052,6 +1054,7 @@ GUIManager::~GUIManager()
 {
 	LN_SAFE_RELEASE(m_rootCombinedResource);
 	LN_SAFE_RELEASE(m_defaultTheme);
+	LN_SAFE_RELEASE(m_painter);
 }
 
 //-----------------------------------------------------------------------------
@@ -1064,6 +1067,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 	m_graphicsManager = configData.GraphicsManager;
 	m_mainWindow = configData.MainWindow;
 	m_documentsManager = configData.DocumentsManager;
+	m_painter = LN_NEW Internal::GUIPainter(m_graphicsManager);
 
 	// TODO: static で登録したい
 	RegisterFactory(ContentPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ContentPresenter::internalCreateInstance(m); });
@@ -1295,12 +1299,20 @@ void GUIManager::InjectElapsedTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 void GUIManager::Render()
 {
+	Graphics::Texture* tex = m_graphicsManager->GetRenderer()->GetRenderTarget(0);
+	m_painter->SetRenderTarget(tex);
+
+	m_painter->ResetState();
+	m_defaultRootFrame->Render();
+
+	// マウスカーソル
 	if (m_currentCursorImage != NULL)
 	{
-		Graphics::Painter painter(m_graphicsManager);
-		painter.SetProjection(Size(640, 480), 0, 1000);	// TODO
-		m_currentCursorImage->Draw(&painter, m_mousePosition, m_cursorAnimationTime);
+		m_painter->ResetState();
+		m_currentCursorImage->Draw(m_painter, m_mousePosition, m_cursorAnimationTime);
 	}
+
+	m_painter->Flush();
 }
 
 //-----------------------------------------------------------------------------

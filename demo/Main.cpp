@@ -243,7 +243,6 @@ int main()
 				app->GetGUIManager()->InjectElapsedTime(0.016f);
 				workbench1->UpdateLayout();
 				workbench1->UpdateTransformHierarchy();
-				workbench1->Render();
 				app->GetGUIManager()->Render();
 				app->Render();
 			}

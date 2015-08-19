@@ -12,6 +12,7 @@ namespace Lumino
 {
 namespace GUI
 {
+namespace Internal { class GUIPainter; }
 	
 /**
 	@brief		GUI 機能の管理クラスです。
@@ -84,6 +85,8 @@ private:
 
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
+	Internal::GUIPainter*				m_painter;
+
 	EventArgsPool						m_eventArgsPool;
 	RootFrame*							m_defaultRootFrame;
 	ResourceDictionary*					m_defaultTheme;

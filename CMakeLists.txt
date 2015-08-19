@@ -262,6 +262,8 @@ set(LN_SOURCES_GUI
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIHelper.h
 	src/GUI/GUIManager.cpp
+	src/GUI/GUIPainter.cpp
+	src/GUI/GUIPainter.h
 	src/GUI/ItemsControl.cpp
 	src/GUI/ItemsPresenter.cpp
 	src/GUI/Rectangle.cpp

@@ -162,6 +162,7 @@ public:
 	void Begin();
 	void End();
 
+	void ResetState();
 
 	void SetProjection(const Size& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
 	void SetProjection(const SizeF& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
@@ -197,6 +198,8 @@ public:
 	void DrawString(const String& str, const PointF& position);
 	void DrawString(const TCHAR* str, int length, const PointF& position);
 	void DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
+
+	void Flush();
 
 private:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);

@@ -92,12 +92,13 @@ void PainterEngine::Create(GraphicsManager* manager)
 //}
 
 //-----------------------------------------------------------------------------
-//
+// TODO: いらないかも？
 //-----------------------------------------------------------------------------
 void PainterEngine::Begin()
 {
+	Flush();
 	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
-	m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
+	//m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
 	m_currentState.Brush.Type = BrushType_Unknown;
 	m_currentState.Opacity = 1.0f;
 	m_currentState.ForeColor = ColorF::Black;
