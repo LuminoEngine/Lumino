@@ -322,8 +322,8 @@ struct SetDepthStencilStateCommand : public RenderingCommand
 struct SetRenderTargetCommand : public RenderingCommand
 {
 	int m_index;
-	Texture* m_sourceTexture;
-	void Create(int index, Texture* texture)	// TODO: Device::Itexture の方が良い気がする
+	Device::ITexture* m_sourceTexture;
+	void Create(int index, Device::ITexture* texture)
 	{
 		m_index = index;
 		m_sourceTexture = texture;
@@ -331,22 +331,22 @@ struct SetRenderTargetCommand : public RenderingCommand
 	}
 	void Execute()
 	{
-		GetRenderer()->SetRenderTarget(m_index, (m_sourceTexture != NULL) ? m_sourceTexture->m_deviceObj : NULL);
+		GetRenderer()->SetRenderTarget(m_index, m_sourceTexture);
 	}
 };
 
 //=============================================================================
 struct SetDepthBufferCommand : public RenderingCommand
 {
-	Texture* m_sourceTexture;
-	void Create(Texture* texture)	// TODO: Device::Itexture の方が良い気がする
+	Device::ITexture* m_sourceTexture;
+	void Create(Device::ITexture* texture)
 	{
 		m_sourceTexture = texture;
 		MarkGC(texture);
 	}
 	void Execute()
 	{
-		GetRenderer()->SetDepthBuffer((m_sourceTexture != NULL) ? m_sourceTexture->m_deviceObj : NULL);
+		GetRenderer()->SetDepthBuffer(m_sourceTexture);
 	}
 };
 
@@ -361,30 +361,30 @@ struct SetViewportCommand : public RenderingCommand
 //=============================================================================
 struct SetVertexBufferCommand : public RenderingCommand
 {
-	VertexBuffer* m_sourceVertexBuffer;
-	void Create(VertexBuffer* vertexBuffer)// TODO: Device::IVertexBuffer の方が良い気がする
+	Device::IVertexBuffer* m_sourceVertexBuffer;
+	void Create(Device::IVertexBuffer* vertexBuffer)
 	{
 		m_sourceVertexBuffer = vertexBuffer;
 		MarkGC(vertexBuffer);
 	}
 	void Execute()
 	{
-		GetRenderer()->SetVertexBuffer((m_sourceVertexBuffer != NULL) ? m_sourceVertexBuffer->m_deviceObj : NULL);
+		GetRenderer()->SetVertexBuffer(m_sourceVertexBuffer);
 	}
 };
 
 //=============================================================================
 struct SetIndexBufferCommand : public RenderingCommand
 {
-	IndexBuffer* m_sourceIndexBuffer;
-	void Create(IndexBuffer* indexBuffer)// TODO: Device::IIndexBuffer の方が良い気がする
+	Device::IIndexBuffer* m_sourceIndexBuffer;
+	void Create(Device::IIndexBuffer* indexBuffer)
 	{
 		m_sourceIndexBuffer = indexBuffer;
 		MarkGC(indexBuffer);
 	}
 	void Execute()
 	{
-		GetRenderer()->SetIndexBuffer((m_sourceIndexBuffer != NULL) ? m_sourceIndexBuffer->m_deviceObj : NULL);
+		GetRenderer()->SetIndexBuffer(m_sourceIndexBuffer);
 	}
 };
 

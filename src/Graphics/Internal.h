@@ -3,7 +3,7 @@
 #include "../Internal.h"
 
 #define LN_CALL_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) { \
+	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
 		Helper::GetPrimaryRenderingCommandList(m_manager)->AddCommand<command>(m_internal, __VA_ARGS__); \
 	} \
 	else { \

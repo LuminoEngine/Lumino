@@ -30,10 +30,10 @@ GUIPainter::~GUIPainter()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIPainter::SetRenderTarget(Graphics::Texture* renderTarget)
-{
-	SetProjection(renderTarget->GetSize());
-}
+//void GUIPainter::SetRenderTarget(Graphics::Texture* renderTarget)
+//{
+//	SetProjection(renderTarget->GetSize());
+//}
 
 } // namespace Internal
 } // namespace GUI

@@ -18,7 +18,7 @@ public:
 	virtual ~GUIPainter();
 
 public:
-	void SetRenderTarget(Graphics::Texture* renderTarget);
+	//void SetRenderTarget(Graphics::Texture* renderTarget);
 
 private:
 

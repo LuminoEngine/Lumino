@@ -467,7 +467,7 @@ void Painter::SetBrush(Brush* brush)
 		else if (data.Type == BrushType_Texture)
 		{
 			auto t = static_cast<TextureBrush*>(brush);
-			data.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
+			data.TextureBrush.Texture = (t->GetTexture() != NULL) ? Helper::GetDeviceObject(t->GetTexture()) : NULL;
 			const Rect& r = t->GetSourceRect();
 			data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
 			data.TextureBrush.SourceRect[1] = r.Y;
@@ -509,7 +509,7 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 
 	BrushData data;
 	data.Type = BrushType_Texture;
-	data.TextureBrush.Texture = (texture != NULL) ? texture->GetDeviceObject() : NULL;
+	data.TextureBrush.Texture = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
 	data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
 	data.TextureBrush.SourceRect[1] = r.Y;
 	data.TextureBrush.SourceRect[2] = r.Width;
@@ -659,10 +659,10 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 		data[i].SrcPixelRect.Set(srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height);
 	}
 
-	Device::ITexture* dtex2 = (tex2 != NULL) ? tex2->GetDeviceObject() : NULL;
+	Device::ITexture* dtex2 = (tex2 != NULL) ? Helper::GetDeviceObject(tex2) : NULL;
 	
 	
-	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
+	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, Helper::GetDeviceObject(tex1), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
 }
 
 //=============================================================================

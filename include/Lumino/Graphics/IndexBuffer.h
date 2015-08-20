@@ -60,11 +60,11 @@ protected:
 	virtual ~IndexBuffer();
 
 private:
-	friend struct SetIndexBufferCommand;		// TODO
 	Device::IIndexBuffer*	m_deviceObj;
 	ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
+	friend class Helper;
 };
 
 /**

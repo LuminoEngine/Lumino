@@ -60,7 +60,7 @@ public:
 	//bool InjectChar(int ch);
 	void InjectElapsedTime(float elapsedTime);
 
-	void Render();	// TODO: GUIContext
+	void Render(const Size& viewPixelSize);	// TODO: GUIContext
 
 public:	// internal
 	ResourceDictionary* GetDefaultTheme() { return m_defaultTheme; }

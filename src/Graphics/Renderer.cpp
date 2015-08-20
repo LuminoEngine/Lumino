@@ -5,9 +5,18 @@
 #include "../../include/Lumino/Graphics/GraphicsManager.h"
 #include "../../include/Lumino/Graphics/Renderer.h"
 #include "../../include/Lumino/Graphics/SwapChain.h"
+#include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
 #include "GraphicsHelper.h"
+
+#define LN_CALL_RENDERER_COMMAND(func, command, ...) \
+	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
+		m_primaryCommandList->AddCommand<command>(__VA_ARGS__); \
+	} \
+	else { \
+		m_internal->func(__VA_ARGS__); \
+	}
 
 namespace Lumino
 {
@@ -19,10 +28,14 @@ namespace Graphics
 //-----------------------------------------------------------------------------
 Renderer::Renderer(GraphicsManager* manager)
 	: m_manager(manager)
-	, m_primaryCommandList(LN_NEW RenderingCommandList())
+	, m_primaryCommandList(NULL)
 	, m_currentDepthBuffer(NULL)
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
+
+	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+		m_primaryCommandList = LN_NEW RenderingCommandList();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -30,8 +43,11 @@ Renderer::Renderer(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 Renderer::~Renderer()
 {
-	m_primaryCommandList->PostExecute();	// Present される前に解放されることの対策
-	LN_SAFE_RELEASE(m_primaryCommandList);
+	if (m_primaryCommandList != NULL)
+	{
+		m_primaryCommandList->PostExecute();	// Present される前に解放されることの対策
+		LN_SAFE_RELEASE(m_primaryCommandList);
+	}
 
 	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
@@ -44,7 +60,7 @@ Renderer::~Renderer()
 //-----------------------------------------------------------------------------
 void Renderer::SetRenderState(const RenderState& state)
 {
-	m_primaryCommandList->AddCommand<SetRenderStateCommand>(state);
+	LN_CALL_RENDERER_COMMAND(SetRenderState, SetRenderStateCommand, state);
 	m_currentRenderState = state;
 }
 
@@ -61,7 +77,7 @@ const RenderState& Renderer::GetRenderState() const
 //-----------------------------------------------------------------------------
 void Renderer::SetDepthStencilState(const DepthStencilState& state)
 {
-	m_primaryCommandList->AddCommand<SetDepthStencilStateCommand>(state);
+	LN_CALL_RENDERER_COMMAND(SetDepthStencilState, SetDepthStencilStateCommand, state);
 	m_currentDepthStencilState = state;
 }
 
@@ -78,9 +94,8 @@ const DepthStencilState& Renderer::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void Renderer::SetRenderTarget(int index, Texture* texture)
 {
-	m_primaryCommandList->AddCommand<SetRenderTargetCommand>(index, texture);
-	//SetRenderTargetCommand::AddCommand(m_primaryCommandList, index, texture);
-	//m_primaryCommandList->SetRenderTarget(index, texture);
+	Device::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
+	LN_CALL_RENDERER_COMMAND(SetRenderTarget, SetRenderTargetCommand, index, t);
 	LN_REFOBJ_SET(m_currentRenderTargets[index], texture);
 }
 
@@ -98,9 +113,8 @@ Texture* Renderer::GetRenderTarget(int index) const
 //-----------------------------------------------------------------------------
 void Renderer::SetDepthBuffer(Texture* depthBuffer)
 {
-	m_primaryCommandList->AddCommand<SetDepthBufferCommand>(depthBuffer);
-	//SetDepthBufferCommand::AddCommand(m_primaryCommandList, depthBuffer);
-	//m_primaryCommandList->SetDepthBuffer(depthBuffer);
+	Device::ITexture* t = (depthBuffer != NULL) ? Helper::GetDeviceObject(depthBuffer) : NULL;
+	LN_CALL_RENDERER_COMMAND(SetDepthBuffer, SetDepthBufferCommand, t);
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
 }
 
@@ -117,7 +131,7 @@ Texture* Renderer::GetDepthBuffer() const
 //-----------------------------------------------------------------------------
 void Renderer::SetViewport(const Rect& rect)
 {
-	m_primaryCommandList->AddCommand<SetViewportCommand>(rect);
+	LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
 	m_currentViewport = rect;
 }
 
@@ -134,9 +148,8 @@ const Rect& Renderer::GetViewport()
 //-----------------------------------------------------------------------------
 void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
-	m_primaryCommandList->AddCommand<SetVertexBufferCommand>(vertexBuffer);
-	//SetVertexBufferCommand::AddCommand(m_primaryCommandList, vertexBuffer);
-	//m_primaryCommandList->SetVertexBuffer(vertexBuffer);
+	Device::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
+	LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
 }
 
 //-----------------------------------------------------------------------------
@@ -144,9 +157,8 @@ void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 //-----------------------------------------------------------------------------
 void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
-	m_primaryCommandList->AddCommand<SetIndexBufferCommand>(indexBuffer);
-	//SetIndexBufferCommand::AddCommand(m_primaryCommandList, indexBuffer);
-	//m_primaryCommandList->SetIndexBuffer(indexBuffer);
+	Device::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
+	LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
 }
 
 //-----------------------------------------------------------------------------
@@ -154,9 +166,7 @@ void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 void Renderer::Clear(Graphics::ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
-	m_primaryCommandList->AddCommand<ClearCommand>(flags, color, z, stencil);
-	//ClearCommand::AddCommand(m_primaryCommandList, target, depth, color, z);
-	//m_primaryCommandList->Clear(target, depth, color, z);
+	LN_CALL_RENDERER_COMMAND(Clear, ClearCommand, flags, color, z, stencil);
 }
 
 //-----------------------------------------------------------------------------
@@ -164,9 +174,7 @@ void Renderer::Clear(Graphics::ClearFlags flags, const ColorF& color, float z, u
 //-----------------------------------------------------------------------------
 void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	m_primaryCommandList->AddCommand<DrawPrimitiveCommand>(primitive, startVertex, primitiveCount);
-	//DrawPrimitiveCommand::AddCommand(m_primaryCommandList, primitive, startVertex, primitiveCount);
-	//m_primaryCommandList->DrawPrimitive(primitive, startVertex, primitiveCount);
+	LN_CALL_RENDERER_COMMAND(DrawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -174,9 +182,7 @@ void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primi
 //-----------------------------------------------------------------------------
 void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	m_primaryCommandList->AddCommand<DrawPrimitiveIndexedCommand>(primitive, startIndex, primitiveCount);
-	//DrawPrimitiveIndexedCommand::AddCommand(m_primaryCommandList, primitive, startIndex, primitiveCount);
-	//m_primaryCommandList->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+	LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------

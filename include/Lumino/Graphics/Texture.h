@@ -115,7 +115,7 @@ public:
 
 	Bitmap* Lock();
 	void Unlock();
-	Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
+	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
 	Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Bitmap* primarySurface = NULL);
@@ -134,6 +134,8 @@ private:
 	Device::ITexture*	m_deviceObj;
 	Bitmap*				m_primarySurface;
 	//bool				m_primarySurfaceModified;
+
+	friend class Helper;
 };
 
 } // namespace Graphics

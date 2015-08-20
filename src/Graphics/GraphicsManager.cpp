@@ -694,6 +694,7 @@ GraphicsManager* Internal::Manager = NULL;
 GraphicsManager::GraphicsManager(const ConfigData& configData)
 	: m_fileManager(NULL)
 	, m_graphicsDevice(NULL)
+	, m_renderingType(configData.RenderingType)
 	, m_dummyTexture(NULL)
 	, m_renderer(NULL)
 	, m_renderingThread(NULL)
@@ -775,10 +776,13 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	// TextRendererCache
 	m_glyphTextureCache = RefPtr<CacheManager>::Create(512, 0);
 
-	// 描画スレッドを立ち上げる
-	m_renderingThread = LN_NEW RenderingThread();
-	m_renderingThread->Initialize(m_graphicsDevice);
-	m_renderingThread->Start();
+	if (m_renderingType == RenderingType::Deferred)
+	{
+		// 描画スレッドを立ち上げる
+		m_renderingThread = LN_NEW RenderingThread();
+		m_renderingThread->Initialize(m_graphicsDevice);
+		m_renderingThread->Start();
+	}
 }
 
 //-----------------------------------------------------------------------------

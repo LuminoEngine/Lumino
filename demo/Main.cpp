@@ -243,7 +243,7 @@ int main()
 				app->GetGUIManager()->InjectElapsedTime(0.016f);
 				workbench1->UpdateLayout();
 				workbench1->UpdateTransformHierarchy();
-				app->GetGUIManager()->Render();
+				app->GetGUIManager()->Render(swap1->GetBackBuffer()->GetSize());
 				app->Render();
 			}
 				swap1->Present();

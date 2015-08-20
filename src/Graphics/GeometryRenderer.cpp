@@ -102,7 +102,7 @@ void GeometryRenderer::DrawSquare(
 	float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
 	float x4, float y4, float z4, float u4, float v4, const ColorF& c4)
 {
-	if (m_manager->GetRenderingType() == RenderingType_Deferred) {
+	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
 		GeometryRendererCore::Vertex _v1, _v2, _v3, _v4;
 		_v1.Position.Set(x1, y1, z1); _v1.TexUV.Set(u1, v1); _v1.Color = c1;
 		_v2.Position.Set(x2, y2, z2); _v2.TexUV.Set(u2, v2); _v2.Color = c2;

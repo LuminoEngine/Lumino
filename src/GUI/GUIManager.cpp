@@ -1297,10 +1297,12 @@ void GUIManager::InjectElapsedTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::Render()
+void GUIManager::Render(const Size& viewPixelSize)
 {
-	Graphics::Texture* tex = m_graphicsManager->GetRenderer()->GetRenderTarget(0);
-	m_painter->SetRenderTarget(tex);
+	/*	以前はここでカレントのレンダーターゲットを取得し、そこからサイズを取得していた。
+		しかしそれだと他アプリに組み込む仕組みを作るのに少し面倒なことになる。
+	*/
+	m_painter->SetProjection(viewPixelSize);
 
 	m_painter->ResetState();
 	m_defaultRootFrame->Render();

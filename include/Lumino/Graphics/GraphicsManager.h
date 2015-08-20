@@ -30,7 +30,7 @@ public:
 	GraphicsAPI GetGraphicsAPI() const;
 
 	/** 現在のグラフィックスシステムのレンダリング方法を確認します。*/
-	RenderingType GetRenderingType() const { return RenderingType_Deferred; }
+	RenderingType GetRenderingType() const { return RenderingType::Deferred; }
 
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
 	Renderer* GetRenderer() const { return m_renderer; }
@@ -91,12 +91,14 @@ private:
 	struct ConfigData
 	{
 		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
+		RenderingType			RenderingType;
 		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
 		Lumino::FileManager*	FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
 
 		ConfigData()
 			: GraphicsAPI(GraphicsAPI::DirectX9)
+			, RenderingType(RenderingType::Deferred)
 			, MainWindow(NULL)
 			, FileManager(NULL)
 			, PlatformTextureLoading(false)
@@ -109,6 +111,7 @@ private:
 private:
 	FileManager*					m_fileManager;
 	RefPtr<FontManager>				m_fontManager;
+	RenderingType					m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
 	
 	Device::IGraphicsDevice*		m_graphicsDevice;

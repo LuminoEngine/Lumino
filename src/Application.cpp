@@ -164,6 +164,7 @@ void Application::InitialzeGraphicsManager()
 
 		Graphics::GraphicsManager::ConfigData data;
 		data.GraphicsAPI = m_configData.GraphicsAPI;
+		data.RenderingType = m_configData.RenderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.FileManager = &FileManager::GetInstance();
 		data.PlatformTextureLoading = true;

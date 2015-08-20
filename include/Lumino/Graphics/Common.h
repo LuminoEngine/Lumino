@@ -198,12 +198,13 @@ enum LockMode
 	LockMode_Read,			///< 読み込み
 };
 
-/// 描画方式
-enum RenderingType
+/** 描画方式 */
+LN_ENUM(RenderingType)
 {
-	RenderingType_Immediate	= 0,	///< 
-	RenderingType_Deferred,
+	Immediate = 0,		/**< 即時描画 */
+	Deferred,			/**< 遅延描画 */
 };
+LN_ENUM_DECLARE(RenderingType)
 
 
 /// 3D 空間での基準方向を表す値
