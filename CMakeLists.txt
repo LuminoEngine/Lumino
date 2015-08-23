@@ -25,6 +25,7 @@ option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility t
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
 
+option(LN_DxLib_Demo "DX Library demo." OFF)
 
 #------------------------------------------------------------------------------
 # Files
@@ -568,6 +569,9 @@ add_subdirectory(test)
 #------------------------------
 # Demo.
 add_subdirectory(demo)
+if (LN_DxLib_Demo)
+	add_subdirectory(demo/DxLib)
+#endif
 
 #------------------------------
 # samples.

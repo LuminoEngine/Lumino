@@ -30,7 +30,7 @@ public:
 	GraphicsAPI GetGraphicsAPI() const;
 
 	/** 現在のグラフィックスシステムのレンダリング方法を確認します。*/
-	RenderingType GetRenderingType() const { return RenderingType::Deferred; }
+	RenderingType GetRenderingType() const { return m_renderingType; }
 
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
 	Renderer* GetRenderer() const { return m_renderer; }

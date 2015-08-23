@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/GraphicsManager.h"
 #include "../../include/Lumino/Graphics/Renderer.h"
@@ -9,14 +8,6 @@
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
 #include "GraphicsHelper.h"
-
-#define LN_CALL_RENDERER_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
-		m_primaryCommandList->AddCommand<command>(__VA_ARGS__); \
-	} \
-	else { \
-		m_internal->func(__VA_ARGS__); \
-	}
 
 namespace Lumino
 {
@@ -28,8 +19,13 @@ namespace Graphics
 //-----------------------------------------------------------------------------
 Renderer::Renderer(GraphicsManager* manager)
 	: m_manager(manager)
+	, m_internal(Helper::GetGraphicsDevice(manager)->GetRenderer())
 	, m_primaryCommandList(NULL)
+	, m_currentRenderState()
+	, m_currentDepthStencilState()
 	, m_currentDepthBuffer(NULL)
+	, m_currentViewport()
+	, m_lockPresentCommandList()
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
 

@@ -170,7 +170,7 @@ DX9Texture::~DX9Texture()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DX9Texture::SetSubData(const Point& point, const void* data, const Size& dataBitmapSize)
+void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
 {
 	RECT lockRect = { point.X, point.Y, point.X + dataBitmapSize.Width, point.Y + dataBitmapSize.Height };
 	D3DLOCKED_RECT lockedRect;

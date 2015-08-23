@@ -70,6 +70,10 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	painter.DrawString(text, -1, location);
 	location.Y += 16;
 
+	StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->GetRenderingType().ToString().GetCStr());
+	painter.DrawString(text, -1, location);
+	location.Y += 16;
+
 	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_profiler->GetCommitedMainFPS());
 	painter.DrawString(text, -1, location);
 

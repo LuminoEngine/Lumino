@@ -51,7 +51,7 @@ public:
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
-	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize);
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize);
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -89,7 +89,7 @@ public:
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 
@@ -125,7 +125,7 @@ public:
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); }
 	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
 
@@ -165,7 +165,7 @@ public:
 	virtual const Size& GetSize() const { return m_realSize; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual Bitmap* Lock();
 	virtual void Unlock();
 

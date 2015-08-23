@@ -9,6 +9,16 @@
 #include "RenderingCommand.h"
 #include "GraphicsHelper.h"
 
+
+#define LN_CALL_SHADER_COMMAND(func, command, ...) \
+	if (m_owner->GetManager()->GetRenderingType() == RenderingType::Deferred) { \
+		m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<command>(m_deviceObj, __VA_ARGS__); \
+	} \
+	else { \
+		m_deviceObj->func(__VA_ARGS__); \
+	}
+
+
 namespace Lumino
 {
 namespace Graphics
@@ -409,9 +419,7 @@ int ShaderVariable::GetArrayElements() const
 void ShaderVariable::SetBool(bool value)
 {
 	m_value.SetBool(value);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, value);
-	//SetShaderVariableCommand::AddCommand_SetBool(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, value);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableBool(m_deviceObj, value);
+	LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, value);
 }
 
 //-----------------------------------------------------------------------------
@@ -428,9 +436,7 @@ bool ShaderVariable::GetBool() const
 void ShaderVariable::SetInt(int value)
 {
 	m_value.SetInt(value);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, value);
-	//SetShaderVariableCommand::AddCommand_SetInt(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, value);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableInt(m_deviceObj, value);
+	LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, value);
 }
 
 //-----------------------------------------------------------------------------
@@ -447,9 +453,7 @@ int ShaderVariable::GetInt() const
 void ShaderVariable::SetFloat(float value)
 {
 	m_value.SetFloat(value);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, value);
-	//SetShaderVariableCommand::AddCommand_SetFloat(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, value);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableFloat(m_deviceObj, value);
+	LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, value);
 }
 
 //-----------------------------------------------------------------------------
@@ -466,9 +470,7 @@ float ShaderVariable::GetFloat() const
 void ShaderVariable::SetVector(const Vector4& value)
 {
 	m_value.SetVector(value);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, &value, 1);
-	//SetShaderVariableCommand::AddCommand_SetVectors(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, &value, 1);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableVectors(m_deviceObj, &value, 1);
+	LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, &value, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -485,9 +487,7 @@ const Vector4& ShaderVariable::GetVector() const
 void ShaderVariable::SetVectorArray(const Vector4* values, int count)
 {
 	m_value.SetVectorArray(values, count);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, values, count);
-	//SetShaderVariableCommand::AddCommand_SetVectors(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, values, count);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableVectors(m_deviceObj, values, count);
+	LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, values, count);
 }
 
 //-----------------------------------------------------------------------------
@@ -504,9 +504,7 @@ const Vector4* ShaderVariable::GetVectorArray() const
 void ShaderVariable::SetMatrix(const Matrix& value)
 {
 	m_value.SetMatrix(value);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, &value, 1);
-	//SetShaderVariableCommand::AddCommand_SetMatrices(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, &value, 1);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableMatrices(m_deviceObj, &value, 1);
+	LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, &value, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -523,9 +521,7 @@ const Matrix& ShaderVariable::GetMatrix() const
 void ShaderVariable::SetMatrixArray(const Matrix* values, int count)
 {
 	m_value.SetMatrixArray(values, count);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, values, count);
-	//SetShaderVariableCommand::AddCommand_SetMatrices(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, values, count);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableMatrices(m_deviceObj, values, count);
+	LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, values, count);
 }
 
 //-----------------------------------------------------------------------------
@@ -541,11 +537,9 @@ const Matrix* ShaderVariable::GetMatrixArray() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetTexture(Texture* texture)
 {
-	//m_value.SetTexture(texture);
+	Device::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
 	LN_REFOBJ_SET(m_textureValue, texture);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<SetShaderVariableCommand>(m_deviceObj, m_textureValue->m_deviceObj);
-	//SetShaderVariableCommand::AddCommand_SetTexture(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj, m_textureValue->m_deviceObj);
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->SetShaderVariableTexture(m_deviceObj, m_textureValue->m_deviceObj);
+	LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, t);
 }
 
 //-----------------------------------------------------------------------------
@@ -685,10 +679,7 @@ const String& ShaderPass::GetName() const
 //-----------------------------------------------------------------------------
 void ShaderPass::Apply()
 {
-	//m_owner->GetManager()->GetRenderer()->m_primaryCommandList->ApplyShaderPass(this);
-	m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<ApplyShaderPassCommand>(m_deviceObj);
-	//ApplyShaderPassCommand::AddCommand(m_owner->GetManager()->GetRenderer()->m_primaryCommandList, m_deviceObj);
-	//m_deviceObj->Apply();
+	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
 }
 
 //-----------------------------------------------------------------------------

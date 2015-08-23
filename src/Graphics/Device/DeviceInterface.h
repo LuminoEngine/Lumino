@@ -303,7 +303,7 @@ public:
 	virtual void SetSamplerState(const SamplerState& state) = 0;
 
 	/// データ転送 (TODO:部分更新は未実装…)
-	virtual void SetSubData(const Point& point, const void* data, const Size& dataBitmapSize) = 0;
+	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) = 0;
 
 	/// ロック
 	virtual Bitmap* Lock() = 0;

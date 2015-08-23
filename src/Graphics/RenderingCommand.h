@@ -462,37 +462,6 @@ struct SetSamplerStateCommand : public RenderingCommand
 };
 
 //=============================================================================
-//class SetTextureSubDataCommand : public RenderingCommand
-//{
-//	Device::ITexture*		m_targetTexture;
-//	size_t					m_sourceBitmapDataHandle;
-//	Size					m_size;
-//	PixelFormat	m_format;
-//
-//public:
-//	static void Create(Device::ITexture* texture, Bitmap* bitmap)
-//	{
-//		// メモリ確保は一度ハンドルをローカル変数に置く。1つの式の中で複数回 HandleCast を使用してはならないため。
-//		size_t tmpData = Alloc(cmd, bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetBitmapBuffer()->GetData());
-//
-//		HandleCast<SetTextureSubDataCommand>(cmd)->m_targetTexture = texture;
-//		HandleCast<SetTextureSubDataCommand>(cmd)->m_sourceBitmapDataHandle = tmpData;
-//		HandleCast<SetTextureSubDataCommand>(cmd)->m_size = bitmap->GetSize();
-//		HandleCast<SetTextureSubDataCommand>(cmd)->m_format = bitmap->GetPixelFormat();
-//	}
-//
-//private:
-//	virtual void Execute()
-//	{
-//		// 参照モードで一時メモリを Bitmap 化する (メモリコピーを行わない)
-//		ByteBuffer refData(commandList->GetBuffer(m_sourceBitmapDataHandle), Bitmap::GetPixelFormatByteCount(m_format, m_size), true);
-//		Bitmap lockedBmp(&refData, m_size, m_format);
-//
-//		m_targetTexture->SetSubData(&lockedBmp);
-//	}
-//};
-
-//=============================================================================
 struct SetShaderVariableCommand : public RenderingCommand
 {
 	union
@@ -631,11 +600,12 @@ struct PresentCommand : public RenderingCommand
 };
 	
 //=============================================================================
-struct SetSubDataTextureCommand : public RenderingCommand	// TODO: ↑似たようなコマンドが残っている
+struct SetSubDataTextureCommand : public RenderingCommand
 {
 	Device::ITexture*		m_targetTexture;
 	Point					m_offset;
-	size_t					m_bmpDataIndex;
+	DataHandle				m_bmpDataIndex;
+	size_t					m_dataSize;
 	Size					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
@@ -644,53 +614,54 @@ struct SetSubDataTextureCommand : public RenderingCommand	// TODO: ↑似たよ�
 		m_targetTexture = texture;
 		m_offset = offset;
 		m_bmpDataIndex = AllocExtData(dataSize, data);
+		m_dataSize = dataSize;
 		m_bmpSize = bmpSize;
 		MarkGC(texture);
 	}
 
 	void Execute()
 	{
-		m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_bmpSize);
+		m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_dataSize, m_bmpSize);
 	}
 };
 
 //=============================================================================
-struct Texture_SetSubDataBitmapCommand : public RenderingCommand
-{
-	//RefPtr<Device::ITexture> m_targetTexture;
-	Device::ITexture* m_targetTexture;
-	Point m_offset;
-
-	size_t m_bmpDataIndex;
-	Size m_size;
-	int m_pitch;
-	PixelFormat m_format;
-	bool m_upFlow;
-
-	void Create(Device::ITexture* texture, const Point& offset, Bitmap* bmp)
-	{
-		m_targetTexture = texture;
-		m_offset = offset;
-		m_bmpDataIndex = AllocExtData(bmp->GetBitmapBuffer()->GetSize(), bmp->GetBitmapBuffer()->GetConstData());
-		m_size = bmp->GetSize();
-		m_pitch = bmp->GetPitch();
-		m_format = bmp->GetPixelFormat();
-		m_upFlow = bmp->IsUpFlow();
-		MarkGC(m_targetTexture);
-	}
-
-	void Execute()
-	{
-		if (m_format == Utils::TranslatePixelFormat(m_targetTexture->GetTextureFormat()))
-		{
-			m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_size);
-		}
-		else {
-			LN_THROW(0, NotImplementedException);
-		}
-	}
-};
-
+//struct Texture_SetSubDataBitmapCommand : public RenderingCommand	// TODO: Bitmap を中で再構築する必要はない。
+//{
+//	//RefPtr<Device::ITexture> m_targetTexture;
+//	Device::ITexture* m_targetTexture;
+//	Point m_offset;
+//
+//	size_t m_bmpDataIndex;
+//	Size m_size;
+//	int m_pitch;
+//	PixelFormat m_format;
+//	bool m_upFlow;
+//
+//	void Create(Device::ITexture* texture, const Point& offset, Bitmap* bmp)
+//	{
+//		m_targetTexture = texture;
+//		m_offset = offset;
+//		m_bmpDataIndex = AllocExtData(bmp->GetBitmapBuffer()->GetSize(), bmp->GetBitmapBuffer()->GetConstData());
+//		m_size = bmp->GetSize();
+//		m_pitch = bmp->GetPitch();
+//		m_format = bmp->GetPixelFormat();
+//		m_upFlow = bmp->IsUpFlow();
+//		MarkGC(m_targetTexture);
+//	}
+//
+//	void Execute()
+//	{
+//		if (m_format == Utils::TranslatePixelFormat(m_targetTexture->GetTextureFormat()))
+//		{
+//			m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_size);
+//		}
+//		else {
+//			LN_THROW(0, NotImplementedException);
+//		}
+//	}
+//};
+//
 //=============================================================================
 struct ReadLockTextureCommand : public RenderingCommand
 {

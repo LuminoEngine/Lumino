@@ -74,6 +74,7 @@ public:
 public:
 
 	/// ビットマップデータ本体の取得
+	// TODO: 参照の方が良いと思う
 	ByteBuffer* GetBitmapBuffer() { return &m_bitmapData; }
 	
 	/// ビットマップサイズの取得 (ピクセル数単位)

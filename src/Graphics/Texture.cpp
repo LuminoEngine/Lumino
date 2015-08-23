@@ -6,6 +6,7 @@
 #include "../../include/Lumino/Graphics/GraphicsManager.h"
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/Utils.h>
+#include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
 #include "GraphicsHelper.h"
@@ -76,7 +77,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 
 	// ビットマップを転送する
 	Device::IGraphicsDevice::ScopedLockContext lock(device);
-	obj->SetSubData(Point(0, 0), bitmap->GetBitmapBuffer()->GetConstData(), obj->GetSize());
+	obj->SetSubData(Point(0, 0), bitmap->GetBitmapBuffer()->GetConstData(), bitmap->GetBitmapBuffer()->GetSize(), obj->GetSize());
 
 	// TODO: primarySurface のフォーマットは、format に合わせて変換するべきかも
 	obj.SafeAddRef();
@@ -185,53 +186,60 @@ TextureFormat Texture::GetFormat() const
 //-----------------------------------------------------------------------------
 void Texture::SetSubData(const Point& offset, Bitmap* bitmap)
 {
-	if (LN_VERIFY_ASSERT(bitmap != NULL)) { return; }
+	LN_CHECK_ARGS_RETURN(bitmap != NULL);
 
-	// 現状、ピクセルフォーマットが一致していることが前提
+	// TODO: 現状、ピクセルフォーマットが一致していることが前提
 	if (bitmap->GetPixelFormat() != Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) {
 		LN_THROW(0, NotImplementedException);
 	}
 
-	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<Texture_SetSubDataBitmapCommand>(
-		m_deviceObj, offset, bitmap);
+	LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
+		offset, bitmap->GetBitmapBuffer()->GetConstData(), bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetSize());
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::SetSubData(const Point& offset, const void* data)
-{
-	if (LN_VERIFY_ASSERT(data != NULL)) { return; }
-	// TODO: m_primarySurface にもセット
-	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<SetSubDataTextureCommand>(
-		m_deviceObj, offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
-}
+//void Texture::SetSubData(const Point& offset, const void* data)
+//{
+//	if (LN_VERIFY_ASSERT(data != NULL)) { return; }
+//	// TODO: m_primarySurface にもセット
+//	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<SetSubDataTextureCommand>(
+//		m_deviceObj, offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 Bitmap* Texture::Lock()
 {
-	if (m_deviceObj->GetTextureType() == Device::TextureType_Normal)
+	// Deferred
+	if (m_manager->GetRenderingType() == RenderingType::Deferred)
 	{
-		return m_primarySurface;
+		if (m_deviceObj->GetTextureType() == Device::TextureType_Normal)
+		{
+			return m_primarySurface;
+		}
+		else if (m_deviceObj->GetTextureType() == Device::TextureType_RenderTarget)
+		{
+			RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
+			cmdList->AddCommand<ReadLockTextureCommand>(this);
+
+			// ここでたまっているコマンドをすべて実行する。
+			// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
+			// ロックしたビットマップがセットされる。
+			Helper::GetRenderingThread(m_manager)->PushRenderingCommand(cmdList);
+			cmdList->WaitForIdle();
+
+			return m_primarySurface;
+		}
+		return NULL;
 	}
-	else if (m_deviceObj->GetTextureType() == Device::TextureType_RenderTarget)
+	// Immediate
+	else
 	{
-		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
-		cmdList->AddCommand<ReadLockTextureCommand>(this);
-
-		// ここでたまっているコマンドをすべて実行する。
-		// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
-		// ロックしたビットマップがセットされる。
-		Helper::GetRenderingThread(m_manager)->PushRenderingCommand(cmdList);
-		cmdList->WaitForIdle();
-
-		return m_primarySurface;
+		return m_deviceObj->Lock();
 	}
-
-	LN_THROW(0, InvalidOperationException);
-	return NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -239,27 +247,36 @@ Bitmap* Texture::Lock()
 //-----------------------------------------------------------------------------
 void Texture::Unlock()
 {
-	RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
-	if (m_deviceObj->GetTextureType() == Device::TextureType_Normal)
+	// Deferred
+	if (m_manager->GetRenderingType() == RenderingType::Deferred)
 	{
-		// 変更済みフラグを ON にしておく。
-		// あとで本当に使うタイミング (=シェーダパスのApply時) になったら FlushPrimarySurface() が呼ばれる
-		//m_primarySurfaceModified = true;
+		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
+		if (m_deviceObj->GetTextureType() == Device::TextureType_Normal)
+		{
+			// 変更済みフラグを ON にしておく。
+			// あとで本当に使うタイミング (=シェーダパスのApply時) になったら FlushPrimarySurface() が呼ばれる
+			//m_primarySurfaceModified = true;
 
-		// TODO: 遅延転送
-		//cmdList->SetTextureSubData(m_deviceObj, m_primarySurface);
-		//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
-		//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
-		cmdList->AddCommand<SetSubDataTextureCommand>(
-			m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+			// TODO: 遅延転送
+			//cmdList->SetTextureSubData(m_deviceObj, m_primarySurface);
+			//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
+			//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
+			cmdList->AddCommand<SetSubDataTextureCommand>(
+				m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+		}
+		else if (m_deviceObj->GetTextureType() == Device::TextureType_RenderTarget)
+		{
+			cmdList->AddCommand<ReadUnlockTextureCommand>(this);
+			//ReadUnlockTextureCommand::AddCommand(cmdList, this);
+			//cmdList->ReadUnlockTexture(this);
+			Helper::GetRenderingThread(m_manager)->PushRenderingCommand(cmdList);
+			cmdList->WaitForIdle();
+		}
 	}
-	else if (m_deviceObj->GetTextureType() == Device::TextureType_RenderTarget)
+	// Immediate
+	else
 	{
-		cmdList->AddCommand<ReadUnlockTextureCommand>(this);
-		//ReadUnlockTextureCommand::AddCommand(cmdList, this);
-		//cmdList->ReadUnlockTexture(this);
-		Helper::GetRenderingThread(m_manager)->PushRenderingCommand(cmdList);
-		cmdList->WaitForIdle();
+		m_deviceObj->Unlock();
 	}
 }
 

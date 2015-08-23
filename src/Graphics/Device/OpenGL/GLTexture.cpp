@@ -145,7 +145,7 @@ void GLTexture::SetSamplerState(const SamplerState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLTexture::SetSubData(const Point& point, const void* data, const Size& dataBitmapSize)
+void GLTexture::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
 {
 	//LN_THROW(point.IsZero(), NotImplementedException);
 
@@ -198,7 +198,7 @@ Bitmap* GLTexture::Lock()
 //-----------------------------------------------------------------------------
 void GLTexture::Unlock()
 {
-	SetSubData(Point(0, 0), m_lockedTexture->GetBitmapBuffer()->GetConstData(), m_size);
+	SetSubData(Point(0, 0), m_lockedTexture->GetBitmapBuffer()->GetConstData(), m_lockedTexture->GetBitmapBuffer()->GetSize(), m_size);
 	m_lockedTexture.SafeRelease();
 }
 

@@ -28,6 +28,7 @@ int main()
 	{
 		ApplicationConfigData appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
+		appData.RenderingType = Graphics::RenderingType::Immediate;
 		RefPtr<Application> app(Application::Create(appData));
 
 		app->GetPlatformManager()->GetMainWindow()->SetCursorVisible(false);

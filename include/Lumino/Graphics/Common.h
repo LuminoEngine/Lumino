@@ -204,6 +204,7 @@ LN_ENUM(RenderingType)
 	Immediate = 0,		/**< 即時描画 */
 	Deferred,			/**< 遅延描画 */
 };
+LN_ENUM_REFLECTION(RenderingType, Immediate, Deferred);
 LN_ENUM_DECLARE(RenderingType)
 
 

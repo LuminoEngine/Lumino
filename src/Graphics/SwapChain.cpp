@@ -96,41 +96,48 @@ void SwapChain::Resize(const Size& newSize)
 //-----------------------------------------------------------------------------
 void SwapChain::Present()
 {
-	// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-	m_waiting.Wait();
-
-	// デバイスロストのチェック
-	auto* device = Helper::GetGraphicsDevice(m_manager);
-	if (device->GetDeviceState() == Device::DeviceState_Lost)
+	if (m_manager->GetRenderingType() == RenderingType::Immediate)
 	{
-		auto* thread = Helper::GetRenderingThread(m_manager);
-
-		// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
-		thread->RequestPauseAndWait();
-		try
-		{
-			m_manager->PauseDevice();
-			device->ResetDevice();
-			m_manager->ResumeDevice();
-		}
-		catch (...) {
-			thread->RequestResume();
-			throw;
-		}
-		thread->RequestResume();
+		m_deviceObj->Present(m_backColorBuffer->m_deviceObj);
 	}
-	
+	else
+	{
+		// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
+		m_waiting.Wait();
+
+		// デバイスロストのチェック
+		auto* device = Helper::GetGraphicsDevice(m_manager);
+		if (device->GetDeviceState() == Device::DeviceState_Lost)
+		{
+			auto* thread = Helper::GetRenderingThread(m_manager);
+
+			// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
+			thread->RequestPauseAndWait();
+			try
+			{
+				m_manager->PauseDevice();
+				device->ResetDevice();
+				m_manager->ResumeDevice();
+			}
+			catch (...) {
+				thread->RequestResume();
+				throw;
+			}
+			thread->RequestResume();
+		}
 
 
 
-	// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
-	// ※ PresentCommandList() の前に false にしておかないとダメ。
-	//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
-	//    true がセットされるのに、その後 false をセットしてしまうことがある。
-	m_waiting.SetFalse();
 
-	// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
-	m_manager->GetRenderer()->PresentCommandList(this);
+		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
+		// ※ PresentCommandList() の前に false にしておかないとダメ。
+		//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
+		//    true がセットされるのに、その後 false をセットしてしまうことがある。
+		m_waiting.SetFalse();
+
+		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
+		m_manager->GetRenderer()->PresentCommandList(this);
+	}
 }
 
 } // namespace Graphics
