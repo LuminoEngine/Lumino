@@ -1,4 +1,12 @@
 ﻿/*
+	[2015/8/23] EnterRenderState / LeaveRenderState
+		
+		他アプリに組み込む場合に使用する、レンダリングステートの保存・復元処理。
+		レンダリング自体の Begin/End を示すものではない。
+		他アプリに組み込まれる場合、IDirect3DDevice9::Begin() とかはアプリ側で呼ばれることがほとんど。
+		ライブラリの中で制御するべきではない。
+	
+
 	[2015/5/12] デバイスロストについて
 
 		Reset() は IDirect3DDevice9 を初期化したスレッドと同じスレッドで呼び出す必要がある。
@@ -711,6 +719,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		Device::DX9GraphicsDevice::ConfigData data;
 		data.MainWindow = configData.MainWindow;
 		data.FileManager = &FileManager::GetInstance();			// TODO
+		data.D3D9Device = (IDirect3DDevice9*)configData.D3D9Device;
 		data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
 		data.EnableVSyncWait = false;			// TODO
 		data.EnableFPUPreserve = false;			// TODO
@@ -751,9 +760,11 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	// Renderer
 	m_renderer = LN_NEW Renderer(this);
 
-
-	m_mainSwapChain.Attach(LN_NEW SwapChain(this, configData.MainWindow->GetSize()));
-	m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDefaultSwapChain();
+	Device::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
+	if (deviceSwapChain != NULL) {
+		m_mainSwapChain.Attach(LN_NEW SwapChain(this, configData.MainWindow->GetSize(), deviceSwapChain));
+		//m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDefaultSwapChain();
+	}
 
 	if (Internal::Manager == NULL) {
 		Internal::Manager = this;

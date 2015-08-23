@@ -339,10 +339,13 @@ set(LN_SOURCES_Application
 if (WIN32)
 	set(LN_SOURCES_Platform
 		${LN_SOURCES_Platform}
-		src/Platform/Win32/Win32WindowManager.cpp
-		src/Platform/Win32/Win32WindowBase.cpp
+		src/Platform/Win32/PlatformSupport_Win32.cpp
 		src/Platform/Win32/Win32Window.cpp
-		src/Platform/Win32/PlatformSupport_Win32.cpp)
+		src/Platform/Win32/Win32Window.h
+		src/Platform/Win32/Win32WindowBase.cpp
+		src/Platform/Win32/Win32WindowBase.h
+		src/Platform/Win32/Win32WindowManager.cpp
+		src/Platform/Win32/Win32WindowManager.h)
 
  	set(LN_SOURCES_Graphics
  		${LN_SOURCES_Graphics}
@@ -571,7 +574,7 @@ add_subdirectory(test)
 add_subdirectory(demo)
 if (LN_DxLib_Demo)
 	add_subdirectory(demo/DxLib)
-#endif
+endif()
 
 #------------------------------
 # samples.

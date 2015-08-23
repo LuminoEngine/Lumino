@@ -37,6 +37,8 @@ public:
 	void ResetRenderState() { m_justSawReset = true; }	// Present の内部描画の後に呼ばれる
 
 public:
+	virtual void Begin();
+	virtual void End();
 	virtual void SetRenderState(const RenderState& state);
 	virtual const RenderState& GetRenderState();
 	virtual void SetDepthStencilState(const DepthStencilState& state);

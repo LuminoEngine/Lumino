@@ -93,7 +93,7 @@ void TestEnv::SetUp()
 
 	//PhysicsManager = LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync);
 
-	ApplicationConfigData data;
+	Application::ConfigData data;
 	Application.Attach(Lumino::Application::Create(data));
 
 	Platform = Application->GetPlatformManager();

@@ -32,6 +32,16 @@ public:
 public:
 
 	/**
+		@brief	この Renderer による描画を開始します。
+	*/
+	void Begin();
+
+	/**
+		@brief	この Renderer による描画を終了します。
+	*/
+	void End();
+
+	/**
 		@brief	レンダリングステートを設定します。
 	*/
 	void SetRenderState(const RenderState& state);

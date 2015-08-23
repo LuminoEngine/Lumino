@@ -43,6 +43,7 @@ public:
 	static ColorBrush*	Red;
 	static ColorBrush*	Green;
 	static ColorBrush*	Blue;
+	static ColorBrush*	DimGray;
 
 public:
 	ColorBrush(const Color& color);
@@ -68,6 +69,7 @@ public:
 
 public:
 	void Create(const TCHAR* filePath, GraphicsManager* manager);
+	void Create(Texture* texture);
 	void SetTexture(Texture* texture) { m_texture = texture; }
 	Texture* GetTexture() { return m_texture; }
 
@@ -155,10 +157,6 @@ class Painter
 	: public RefObject
 {
 public:
-	Painter(GraphicsManager* manager);
-	virtual ~Painter();
-
-public:
 	void Begin();
 	void End();
 
@@ -201,10 +199,14 @@ public:
 
 	void Flush();
 
+protected:
+	Painter(GraphicsManager* manager);
+	virtual ~Painter();
+
 private:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
 
-protected:
+protected:	// TODO
 	GraphicsManager*				m_manager;
 	PainterEngine*					m_internal;
 	Internal::PainterState			m_currentState;
@@ -216,7 +218,25 @@ protected:
 };
 
 
+/**
+	@brief		ローカル変数として使用することを想定した Painter です。
+	@details	インスタンスの生成と破棄はレンダリング中に行わなければなりません。
+*/
+class LocalPainter
+	: public Painter
+{
+public:
+	static const float DefaultDepthMin;		// 0.0f
+	static const float DefaultDepthMax;		// 1.0f
 
+public:
+	LocalPainter(const Size& renderTargetSize, GraphicsManager* manager = NULL);
+	LocalPainter(const SizeF& renderTargetSize, GraphicsManager* manager = NULL);
+	LocalPainter(Texture* renderTarget, GraphicsManager* manager = NULL);
+	virtual ~LocalPainter();
+};
+
+// TODO
 class RenderTargetPainter
 	: public Painter
 {

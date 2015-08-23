@@ -8,7 +8,7 @@
 // LFManager
 //=============================================================================
 
-ApplicationConfigData	LFManager::ConfigData;
+Application::ConfigData	LFManager::ConfigData;
 Lumino::Application*	LFManager::Application = NULL;
 bool					LFManager::IsSystemInitialized = false;
 

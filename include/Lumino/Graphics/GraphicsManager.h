@@ -95,13 +95,18 @@ private:
 		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
 		Lumino::FileManager*	FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
-
+#ifdef LN_WIN32
+		void*					D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
+#endif
 		ConfigData()
 			: GraphicsAPI(GraphicsAPI::DirectX9)
 			, RenderingType(RenderingType::Deferred)
 			, MainWindow(NULL)
 			, FileManager(NULL)
 			, PlatformTextureLoading(false)
+#ifdef LN_WIN32
+			, D3D9Device(NULL)
+#endif
 		{}
 	};
 

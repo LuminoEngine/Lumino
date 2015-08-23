@@ -669,7 +669,7 @@ DX9ShaderPass::~DX9ShaderPass()
 //-----------------------------------------------------------------------------
 void DX9ShaderPass::Apply()
 {
-	m_renderer->TryBeginScene();
+//	m_renderer->TryBeginScene();
 
 	if (m_renderer->GetCurrentShaderPass() == this) {
 		m_dxEffect->CommitChanges();

@@ -118,7 +118,7 @@ Stream* FileManager::CreateFileStream(const PathName& filePath)
 {
 	PathName absPath = filePath.CanonicalizePath();
 
-	Stream* stream;
+	Stream* stream = NULL;
 	LN_FOREACH(IArchive* archive, m_archiveList)
 	{
 		if (archive->TryCreateStream(absPath, &stream)) {

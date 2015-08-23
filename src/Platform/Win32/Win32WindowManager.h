@@ -22,6 +22,16 @@ public:
 		int				        Height;			///< クライアント領域の高さ
 		bool			        Fullscreen;		///< フルスクリーンモードで初期化する場合 true
 		bool					Resizable;
+		HWND					UserWindow;
+
+		NativeWindowCreationData()
+			: TitleText(NULL)
+			, Width(0)
+			, Height(0)
+			, Fullscreen(false)
+			, Resizable(false)
+			, UserWindow(NULL)
+		{}
 	};
 
 	static const TCHAR*		PROP_WINPROC;		///< SetProp() で使用するキー文字列
@@ -35,7 +45,7 @@ public:
 	HINSTANCE GetInstanceHandle() const { return m_hInst; }
 	const String& GetWindowClassName() const { return m_windowClassName; }
 
-	Win32Window* CreateNativeWindow(const NativeWindowCreationData& data);
+	Win32WindowBase* CreateNativeWindow(const NativeWindowCreationData& data);
 
 	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 

@@ -38,13 +38,13 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 {
 	PointF location(m_windowRect.X, m_windowRect.Y);
 
-	Painter painter(m_manager);
-	painter.SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
+	LocalPainter painter(SizeF(viewSize.X, viewSize.Y), m_manager);
+	//painter.SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
 	painter.SetOpacity(0.5f);
 	painter.SetFont(m_font);
 
 	// ウィンドウ背景
-	painter.SetBrush(ColorBrush::Black);
+	painter.SetBrush(ColorBrush::DimGray);
 	painter.DrawRectangle(m_windowRect);
 
 	// キャプションバー
@@ -57,6 +57,9 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	painter.DrawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
 
 	location.Y += 24;
+
+
+
 
 	//-----------------------------------------------------
 	// Main info

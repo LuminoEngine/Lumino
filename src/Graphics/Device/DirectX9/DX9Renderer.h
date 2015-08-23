@@ -30,10 +30,12 @@ public:
 	void SetCurrentShaderPass(DX9ShaderPass* pass);
 	void OnLostDevice();
 	void OnResetDevice();
-	void TryBeginScene();
-	void TryEndScene();
+	//void TryBeginScene();
+	//void TryEndScene();
 
 public:
+	virtual void Begin();
+	virtual void End();
 	virtual void SetRenderState(const RenderState& state);
 	virtual const RenderState& GetRenderState();
 	virtual void SetDepthStencilState(const DepthStencilState& state);
@@ -51,6 +53,7 @@ public:
 	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
 private:
+	void RestoreStatus();
 	void InternalSetRenderState(const RenderState& state, bool reset);
 	void InternalSetDepthStencilState(const DepthStencilState& newState, bool reset);
 	void InternalSetRenderTarget(int index, ITexture* texture, bool reset);
@@ -60,6 +63,7 @@ private:
 	void InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset);
 
 private:
+	DX9GraphicsDevice*		m_owner;
 	IDirect3DDevice9*		m_dxDevice;
 	RenderState				m_currentRenderState;
 	DepthStencilState		m_currentDepthStencilState;

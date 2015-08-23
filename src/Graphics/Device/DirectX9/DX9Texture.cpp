@@ -59,7 +59,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureForma
 		このため、事前チェックが必要。さらに、本当に使われたフォーマットからもう一度
 		本ライブラリ用のフォーマットを求めなおしている。
 	*/
-	
+	IDirect3DDevice9* d3d9Device = m_graphicsDevice->GetIDirect3DDevice9();
 	m_size = size;
 
 	// 実際に作成されるべきテクスチャの情報を取得する
@@ -67,8 +67,9 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureForma
 	UINT h = m_size.Height;
 	UINT miplevels = levels;
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(format);
+
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
-		m_graphicsDevice->GetIDirect3DDevice9(),
+		d3d9Device,
 		&w, &h,				// GPU が 2 のべき乗サイズしか扱えなければ拡張されたサイズが入る
 		&miplevels,			// 0 の場合は最大数が格納される
 		0,
@@ -79,7 +80,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureForma
 
 	// テクスチャ作成
 	// 3つめの引数 ( ミップマップ ) は、使わない場合は 1 にしておく( 0 にすると可能な限り全部作られる )
-	LN_COMCALL(m_graphicsDevice->GetIDirect3DDevice9()->CreateTexture(
+	LN_COMCALL(d3d9Device->CreateTexture(
 		w, h, miplevels, 0,
 		dx_fmt, D3DPOOL_MANAGED, &m_dxTexture, NULL));
 

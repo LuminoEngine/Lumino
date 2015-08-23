@@ -26,11 +26,40 @@ class Application
 	, public Platform::IEventListener
 {
 public:
+	/**
+		@brief		
+	*/
+	class ConfigData
+	{
+	public:
+		Graphics::GraphicsAPI	GraphicsAPI;
+		Graphics::RenderingType	RenderingType;
+
+		/** ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
+		void*	UserMainWindow;
+
+#ifdef LN_WIN32
+		/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
+		void*	D3D9Device;
+#endif
+
+	public:
+		ConfigData()
+			: GraphicsAPI(Graphics::GraphicsAPI::DirectX9)
+			, RenderingType(Graphics::RenderingType::Deferred)
+			, UserMainWindow(NULL)
+#ifdef LN_WIN32
+			, D3D9Device(NULL)
+#endif
+		{}
+	};
+
+public:
 
 	/**
 		@brief		Application のインスタンスを作成し、アプリケーションを初期化します。
 	*/
-	static Application* Create(const ApplicationConfigData& configData);
+	static Application* Create(const Application::ConfigData& configData);
 
 public:
 
@@ -66,8 +95,8 @@ public:
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	GUI::GUIManager* GetGUIManager() const { return m_guiManager; }
 
-private:
-	Application(const ApplicationConfigData& configData);
+protected:
+	Application(const Application::ConfigData& configData);
 	virtual ~Application();
 	void Initialize();
 	void InitialzePlatformManager();
@@ -79,7 +108,7 @@ private:
 
 private:
 	//class NativeWindowEventListener;
-	ApplicationConfigData				m_configData;
+	Application::ConfigData				m_configData;
 	FpsController						m_fpsController;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;

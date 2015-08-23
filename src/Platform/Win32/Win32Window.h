@@ -40,5 +40,31 @@ private:
 
 };
 
+
+
+class Win32UserHostWindow
+	: public Win32WindowBase
+{
+public:
+	Win32UserHostWindow(Win32WindowManager* windowManager, HWND hWnd);
+	virtual ~Win32UserHostWindow();
+
+public:
+	// override Window
+	virtual const Size& GetSize() const;
+	virtual void SetVisible(bool visible) {}
+	virtual void SetFullScreenEnabled(bool enabled) {}
+	virtual bool IsFullScreenEnabled() const { return false; }
+	virtual void CaptureMouse();
+	virtual void ReleaseMouseCapture();
+
+	// override Win32WindowBase
+	virtual HWND GetWindowHandle() { return m_hWnd; }
+
+private:
+	HWND			m_hWnd;
+	mutable Size	m_clientSize;
+};
+
 } // namespace Platform
 } // namespace Lumino

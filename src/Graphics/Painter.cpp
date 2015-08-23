@@ -41,12 +41,14 @@ static ColorBrush g_ColorBrush_Gray(ColorF::Gray);
 static ColorBrush g_ColorBrush_Red(ColorF::Red);
 static ColorBrush g_ColorBrush_Green(ColorF::Green);
 static ColorBrush g_ColorBrush_Blue(ColorF::Blue);
+static ColorBrush g_ColorBrush_DimGray(ColorF::DimGray);
 ColorBrush*	ColorBrush::White = &g_ColorBrush_White;
 ColorBrush*	ColorBrush::Black = &g_ColorBrush_Black;
 ColorBrush*	ColorBrush::Gray = &g_ColorBrush_Gray;
 ColorBrush*	ColorBrush::Red = &g_ColorBrush_Red;
 ColorBrush*	ColorBrush::Green = &g_ColorBrush_Green;
 ColorBrush*	ColorBrush::Blue = &g_ColorBrush_Blue;
+ColorBrush*	ColorBrush::DimGray = &g_ColorBrush_DimGray;
 
 //-----------------------------------------------------------------------------
 //
@@ -97,6 +99,14 @@ TextureBrush::~TextureBrush()
 void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 {
 	m_texture.Attach(Texture::Create(filePath, TextureFormat_R8G8B8A8, 1, manager));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextureBrush::Create(Texture* texture)
+{
+	m_texture = texture;
 }
 
 
@@ -343,7 +353,7 @@ Painter::Painter(GraphicsManager* manager)
 	: m_manager(manager)
 	, m_internal(Helper::GetPainterEngine(manager))
 {
-	LN_CALL_COMMAND(Begin, BeginCommand);
+	//LN_CALL_COMMAND(Begin, BeginCommand);
 }
 
 //-----------------------------------------------------------------------------
@@ -351,7 +361,7 @@ Painter::Painter(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 Painter::~Painter()
 {
-	LN_CALL_COMMAND(End, EndCommand);
+	//LN_CALL_COMMAND(End, EndCommand);
 }
 
 
@@ -663,6 +673,40 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 	
 	
 	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, Helper::GetDeviceObject(tex1), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
+}
+
+
+//=============================================================================
+// LocalPainter
+//=============================================================================
+
+const float LocalPainter::DefaultDepthMin = 0.0f;
+const float LocalPainter::DefaultDepthMax = 1.0f;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LocalPainter::LocalPainter(const Size& renderTargetSize, GraphicsManager* manager)
+	: LocalPainter(SizeF((float)renderTargetSize.Width, (float)renderTargetSize.Height), manager)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LocalPainter::LocalPainter(const SizeF& renderTargetSize, GraphicsManager* manager)
+	: Painter(Internal::SelectManager(manager))
+{
+	LN_CALL_COMMAND(Begin, BeginCommand);
+	SetProjection(renderTargetSize, DefaultDepthMin, DefaultDepthMax);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LocalPainter::~LocalPainter()
+{
+	LN_CALL_COMMAND(End, EndCommand);
 }
 
 //=============================================================================

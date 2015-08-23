@@ -1,8 +1,11 @@
 ﻿
 #pragma once
-
+// 参考；
+// https://svn.gov.pt/projects/ccidadao/repository/middleware-offline/trunk/_src/eidmw/FreeImagePTEiD/Source/FreeImage/PluginPNG.cpp
+//
+//#include "../../external/libpng/pngstruct.h"
 #include "../../external/libpng/png.h"
-#include "../../external/libpng/pnginfo.h"
+//#include "../../external/libpng/pnginfo.h"
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/Rect.h>
 #include <Lumino/IO/Stream.h>
@@ -103,20 +106,22 @@ public:
 		//png_read_info( mPngStruct, mPngInfo );
 
 		// IHDRチャンク情報を取得する
-		//png_get_IHDR(
-		//          mPngStruct, mPngInfo, &mWidth, &mHeight,
-		//	&mBitDepth, &mColorType, &mInterlaceType, NULL, NULL);
+		png_uint_32 width, height;
+		int bitDepth, colorType, interlaceType;
+		png_get_IHDR(
+			mPngStruct, mPngInfo, &width, &height,
+			&bitDepth, &colorType, &interlaceType, NULL, NULL);
 
-		m_size.Width = mPngInfo->width;
-		m_size.Height = mPngInfo->height;
+		m_size.Width = width;
+		m_size.Height = height;
 
-
+		int pixelDepth = png_get_bit_depth(mPngStruct, mPngInfo) * png_get_channels(mPngStruct, mPngInfo);
 
 		// 必ず1色 8 ビットで
-		if (mPngInfo->bit_depth != 8) return false;
+		if (bitDepth != 8) return false;
 
 		// パレットモードは非対応
-		if (mPngInfo->color_type & PNG_COLOR_MASK_PALETTE) return false;
+		if (colorType & PNG_COLOR_MASK_PALETTE) return false;
 
 		//unsigned int row_bytes = png_get_rowbytes( mPngStruct, mPngInfo );
 		//mImageData = (unsigned char*) malloc( row_bytes * mHeight );
@@ -142,7 +147,7 @@ public:
 		// ABGR
 		// (R155, G128, B0, A78) のとき、U32(Little) で 4e0080ff となる。
 		// byte[4] の並びは AA RR GG BB
-		if (mPngInfo->color_type == PNG_COLOR_TYPE_RGB_ALPHA && mPngInfo->pixel_depth == 32)
+		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
 		{
 			m_format = PixelFormat_BYTE_R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 4);
@@ -155,7 +160,7 @@ public:
 		}
 		// BGR
 		// ABGR に拡張して読み込む
-		else if (mPngInfo->color_type == PNG_COLOR_TYPE_RGB && mPngInfo->pixel_depth == 24)
+		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
 		{
 			m_format = PixelFormat_BYTE_R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 4);
@@ -177,7 +182,7 @@ public:
 			}
 		}
 		// Gray
-		else if (mPngInfo->color_type == PNG_COLOR_TYPE_GRAY && mPngInfo->pixel_depth == 8)
+		else if (colorType == PNG_COLOR_TYPE_GRAY && pixelDepth == 8)
 		{
 			m_format = PixelFormat_A8;
 			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 1);

@@ -67,18 +67,20 @@ namespace Platform
 {
 
 //=============================================================================
-// WindowCreationSettings
+// Settings
 //=============================================================================
 WindowCreationSettings::WindowCreationSettings()
 	: Title()
 	, ClientSize(640, 480)
 	, Fullscreen(false)
 	, Resizable(true)
+	, UserWindow(NULL)
 {}
 
-ApplicationSettings::ApplicationSettings()
+PlatformManager::Settings::Settings()
 	: API(WindowSystemAPI_Win32API)
 	, UseInternalUIThread(false)
+	//, ExternalMainWindow(NULL)
 {}
 
 //=============================================================================
@@ -97,7 +99,7 @@ PlatformManager::PlatformManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-PlatformManager::PlatformManager(const ApplicationSettings& settings)
+PlatformManager::PlatformManager(const Settings& settings)
 	: m_useThread(false)
 	, m_windowManager(NULL)
 {
@@ -115,7 +117,7 @@ PlatformManager::~PlatformManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PlatformManager::Initialize(const ApplicationSettings& settings)
+void PlatformManager::Initialize(const Settings& settings)
 {
 	m_windowCreationSettings = settings.MainWindowSettings;
 	m_useThread = settings.UseInternalUIThread;

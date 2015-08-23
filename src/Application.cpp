@@ -38,6 +38,7 @@
 #include "Internal.h"
 #include <Lumino/Profiler.h>
 #include <Lumino/Application.h>
+#include <Lumino/Graphics/Renderer.h>
 #include "Graphics/ProfilerRenderer.h"
 #include "ApplicationContext.h"
 
@@ -62,7 +63,7 @@ namespace Lumino
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application* Application::Create(const ApplicationConfigData& configData)
+Application* Application::Create(const Application::ConfigData& configData)
 {
 	RefPtr<Application> app(LN_NEW Application(configData));
 	app->Initialize();
@@ -73,7 +74,7 @@ Application* Application::Create(const ApplicationConfigData& configData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application::Application(const ApplicationConfigData& configData)
+Application::Application(const Application::ConfigData& configData)
 	: m_configData(configData)
 	, m_endRequested(false)
 	, m_profilerRenderer(NULL)
@@ -125,12 +126,13 @@ void Application::InitialzePlatformManager()
 {
 	if (m_platformManager.IsNull())
 	{
-		Platform::ApplicationSettings data;
+		Platform::PlatformManager::Settings data;
 		data.API = Platform::WindowSystemAPI_Win32API;
 		data.MainWindowSettings.Title = _T("");
 		data.MainWindowSettings.ClientSize.Set(640, 480);
 		data.MainWindowSettings.Fullscreen = false;
 		data.MainWindowSettings.Resizable = true;
+		data.MainWindowSettings.UserWindow = m_configData.UserMainWindow;
 		data.UseInternalUIThread = false;
 
 		m_platformManager.Attach(LN_NEW Platform::PlatformManager());
@@ -168,6 +170,9 @@ void Application::InitialzeGraphicsManager()
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.FileManager = &FileManager::GetInstance();
 		data.PlatformTextureLoading = true;
+#ifdef LN_WIN32
+		data.D3D9Device = m_configData.D3D9Device;
+#endif
 		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(data));
 
 		m_profilerRenderer = LN_NEW Graphics::ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
@@ -229,8 +234,26 @@ bool Application::UpdateFrame()
 //-----------------------------------------------------------------------------
 void Application::Render()
 {
-	if (m_profilerRenderer != NULL) {
-		m_profilerRenderer->Render(Vector2(640, 480));	//TODO
+	if (m_graphicsManager != NULL)
+	{
+		m_graphicsManager->GetRenderer()->Begin();
+		//m_graphicsManager->GetRenderer()->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
+
+		//Graphics::DepthStencilState state;
+		//state.DepthEnable = false;
+		//state.DepthWriteEnable = false;
+		//state.StencilEnable = false;
+		//m_graphicsManager->GetRenderer()->SetDepthStencilState(state);
+
+		if (m_guiManager != NULL) {
+			m_guiManager->Render();
+		}
+
+		if (m_profilerRenderer != NULL) {
+			m_profilerRenderer->Render(Vector2(640, 480));	//TODO
+		}
+
+		m_graphicsManager->GetRenderer()->End();
 	}
 }
 

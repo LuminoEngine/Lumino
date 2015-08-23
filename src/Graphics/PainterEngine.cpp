@@ -42,10 +42,12 @@ void PainterEngine::Create(GraphicsManager* manager)
 {
 	auto* device = Helper::GetGraphicsDevice(manager);
 
+	const int DefaultFaceCount = 1024;
+
 	m_vertexBuffer.Attach(device->CreateVertexBuffer(
-		PainterVertex::Elements(), PainterVertex::ElementCount, 1024, NULL, DeviceResourceUsage_Dynamic));
+		PainterVertex::Elements(), PainterVertex::ElementCount, DefaultFaceCount * 4, NULL, DeviceResourceUsage_Dynamic));
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
-		1024, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
+		DefaultFaceCount * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic));
 
 	m_vertexCache.Reserve(1024);
 	m_indexCache.Reserve(1024);

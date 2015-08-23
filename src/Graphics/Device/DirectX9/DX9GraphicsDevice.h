@@ -21,12 +21,14 @@ public:
 	{
 		Platform::Window*		MainWindow;
 		Lumino::FileManager*	FileManager;
+		IDirect3DDevice9*		D3D9Device;
 		Size					BackbufferSize;
 		bool					EnableVSyncWait;
 		bool					EnableFPUPreserve;
 
 		ConfigData()
 			: FileManager(NULL)
+			, D3D9Device(NULL)
 			, BackbufferSize(640, 480)
 			, EnableVSyncWait(false)
 			, EnableFPUPreserve(false)
@@ -52,6 +54,8 @@ public:
 
 	/// デバイスロスト状態を通知する
 	void SetDeviceLostFlag() { m_deviceState = DeviceState_Lost; }
+
+	bool IsStandalone() const { return m_direct3D != NULL; }
 
 public:
 	virtual void Finalize();

@@ -21,7 +21,8 @@ namespace Device
 //
 //-----------------------------------------------------------------------------
 DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
-	: m_dxDevice(NULL)
+	: m_owner(device)
+	, m_dxDevice(NULL)
 	, m_currentRenderState()
 	, m_currentViewportRect()
 	, m_currentVertexBuffer(NULL)
@@ -65,7 +66,7 @@ void DX9Renderer::SetCurrentShaderPass(DX9ShaderPass* pass)
 //-----------------------------------------------------------------------------
 void DX9Renderer::OnLostDevice()
 {
-	TryEndScene();
+	//TryEndScene();
 
 	LN_SAFE_RELEASE(m_currentVertexBuffer);
 	LN_SAFE_RELEASE(m_currentIndexBuffer);
@@ -80,31 +81,54 @@ void DX9Renderer::OnLostDevice()
 //-----------------------------------------------------------------------------
 void DX9Renderer::OnResetDevice()
 {
-	// プログラム実行中、特に変化しないステートはここで設定してしまう
+	RestoreStatus();
+}
 
-	// ステンシルテスト
-	m_dxDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);				// ステンシルマスク
-	m_dxDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);			// ステンシルマスク
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void DX9Renderer::TryBeginScene()
+//{
+//	if (!m_sceneBegan) {
+//	}
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void DX9Renderer::TryEndScene()
+//{
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DX9Renderer::Begin()
+{
+	if (m_owner->IsStandalone()) {
+		m_dxDevice->BeginScene();
+	}
 
 	InternalSetRenderState(m_currentRenderState, true);
 	InternalSetDepthStencilState(m_currentDepthStencilState, true);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void DX9Renderer::TryBeginScene()
-{
-	if (!m_sceneBegan) {
-		m_dxDevice->BeginScene();
-		m_sceneBegan = true;
+	for (int i = 0; i < MaxMultiRenderTargets; ++i)
+	{
+		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
+			InternalSetRenderTarget(i, m_currentRenderTargets[i], true);
+		}
 	}
+	InternalSetDepthBuffer(m_currentDepthBuffer, true);
+	InternalSetViewport(m_currentViewportRect, true);
+	InternalSetVertexBuffer(m_currentVertexBuffer, true);
+	InternalSetIndexBuffer(m_currentIndexBuffer, true);
+
+	m_sceneBegan = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DX9Renderer::TryEndScene()
+void DX9Renderer::End()
 {
 	if (m_sceneBegan)
 	{
@@ -114,7 +138,9 @@ void DX9Renderer::TryEndScene()
 		}
 		LN_SAFE_RELEASE(m_currentShaderPass);
 
-		m_dxDevice->EndScene();
+		if (m_owner->IsStandalone()) {
+			m_dxDevice->EndScene();
+		}
 		m_sceneBegan = false;
 	}
 }
@@ -124,7 +150,7 @@ void DX9Renderer::TryEndScene()
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetRenderState(const RenderState& state)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetRenderState(state, false);
 }
 
@@ -141,7 +167,7 @@ const RenderState& DX9Renderer::GetRenderState()
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetDepthStencilState(const DepthStencilState& state)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetDepthStencilState(state, false);
 }
 
@@ -158,7 +184,7 @@ const DepthStencilState& DX9Renderer::GetDepthStencilState()
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetRenderTarget(int index, ITexture* texture)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetRenderTarget(index, texture, false);
 }
 
@@ -175,7 +201,7 @@ ITexture* DX9Renderer::GetRenderTarget(int index)
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetDepthBuffer(ITexture* texture)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetDepthBuffer(texture, false);
 }
 
@@ -192,7 +218,7 @@ ITexture* DX9Renderer::GetDepthBuffer()
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetViewport(const Rect& rect)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetViewport(rect, false);
 }
 
@@ -209,7 +235,7 @@ const Rect& DX9Renderer::GetViewport()
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetVertexBuffer(IVertexBuffer* vertexBuffer)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetVertexBuffer(vertexBuffer, false);
 }
 
@@ -218,7 +244,7 @@ void DX9Renderer::SetVertexBuffer(IVertexBuffer* vertexBuffer)
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 {
-	TryBeginScene();
+	//TryBeginScene();
 	InternalSetIndexBuffer(indexBuffer, false);
 }
 
@@ -227,7 +253,7 @@ void DX9Renderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
-	TryBeginScene();
+	//TryBeginScene();
 
 	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	//   していない場合、エラーとならないがクリアされない。
@@ -248,7 +274,7 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 //-----------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	TryBeginScene();
+	//TryBeginScene();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -284,7 +310,7 @@ void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pr
 //-----------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	TryBeginScene();
+	//TryBeginScene();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
 	switch (primitive)
@@ -346,6 +372,28 @@ void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, 
 	else {
 		LN_THROW(0, InvalidOperationException)
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DX9Renderer::RestoreStatus()
+{
+	// プログラム実行中、特に変化しないステートはここで設定してしまう
+
+	m_dxDevice->SetRenderState(D3DRS_COLORVERTEX, TRUE);			// D3D default
+	m_dxDevice->SetRenderState(D3DRS_LIGHTING, TRUE);				// D3D default
+	m_dxDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);	// D3D default
+
+	// ステンシルテスト
+	m_dxDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);				// ステンシルマスク
+	m_dxDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);			// ステンシルマスク
+
+	m_dxDevice->SetTexture(0, NULL);
+	m_dxDevice->SetFVF(0);
+
+	InternalSetRenderState(m_currentRenderState, true);
+	InternalSetDepthStencilState(m_currentDepthStencilState, true);
 }
 
 //-----------------------------------------------------------------------------

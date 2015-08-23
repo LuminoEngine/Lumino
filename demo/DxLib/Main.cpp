@@ -1,23 +1,48 @@
 #include "DxLib.h"
+#include <d3d9.h>
+#include <LuminoDxLib.h>
+using namespace Lumino;
 
 int PlayerX, PlayerY;
 int PlayerGraph;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, int nCmdShow)
+void DeviceLostFunction(void *Data)
 {
-	int Key;
-	ChangeWindowMode( TRUE ) ;
+	printf("Start LostFunction\n");
 
-	// 画面モードのセット
-	SetGraphMode(640, 480, 16);
-	if (DxLib_Init() == -1)	// ＤＸライブラリ初期化処理
-	{
-		return -1;				// エラーが起きたら直ちに終了
-	}
+	printf("End LostFunction\n");
+}
+void DeviceRestoreFunction(void *Data)
+{
+	printf("Start RestoreFunction\n");
+	printf("End RestoreFunction\n");
+}
 
-	// 描画先画面を裏画面にセット
-	SetDrawScreen(DX_SCREEN_BACK);
+//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+//	LPSTR lpCmdLine, int nCmdShow)
+int main()
+{
+	// 初期化
+	ChangeWindowMode(TRUE);
+	SetUseDirect3D9Ex(FALSE);
+	SetGraphMode(640, 480, 32);
+	if (DxLib_Init() == -1 || SetDrawScreen(DX_SCREEN_BACK)) return -1;
+	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
+
+
+	Application::ConfigData appData;
+	appData.GraphicsAPI = Graphics::GraphicsAPI::DirectX9;
+	appData.RenderingType = Graphics::RenderingType::Immediate;
+	appData.UserMainWindow = GetMainWindowHandle();
+	appData.D3D9Device = (IDirect3DDevice9*)GetUseDirect3DDevice9();
+	Application* app = Application::Create(appData);
+
+
+	// デバイスロスト時のコールバック設定(フルスクリーンウインドウ切り替えのために必要)
+	SetGraphicsDeviceLostCallbackFunction(DeviceLostFunction, NULL);
+	SetGraphicsDeviceRestoreCallbackFunction(DeviceRestoreFunction, NULL);
+
+	// TODO: DxLib アーカイブからのロード
 
 	// グラフィックのロード
 	//PlayerGraph = LoadGraph("Player.bmp");
@@ -26,11 +51,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PlayerX = 0;
 	PlayerY = 0;
 
+
+	int dummyGraph = MakeGraph(32, 32);
+
 	// ループ
+	bool isFullScreen = false;
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
 		// キー入力取得
-		Key = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+		int Key = GetJoypadInputState(DX_INPUT_KEY_PAD1);
 
 		// 上を押していたら上に進む
 		if (Key & PAD_INPUT_UP) PlayerY -= 3;
@@ -47,14 +76,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		// 画面を初期化する
 		ClearDrawScreen();
 
+		// 何でもいいのでTransFragを有効にして画像を描画する。
+		DrawGraph(0, 0, dummyGraph, TRUE);
+
+		// 頂点バッファに溜まった頂点データを吐き出す
+		RenderVertex();
+
+
+
+
+
+
 		// プレイヤーを描画する
 		//DrawGraph(PlayerX, PlayerY, PlayerGraph, TRUE);
 
+		app->Render();
+
+
+		// DXライブラリの設定を戻す。
+		RefreshDxLibDirect3DSetting();
+
 		// 裏画面の内容を表画面に反映させる
 		ScreenFlip();
+
+		// フルスクリーン切り替え
+		if (CheckHitKey(KEY_INPUT_F1) && !isFullScreen)
+		{
+			ChangeWindowMode(FALSE);
+			SetDrawScreen(DX_SCREEN_BACK);
+			isFullScreen = true;
+		}
+		if (CheckHitKey(KEY_INPUT_F2) && isFullScreen)
+		{
+			ChangeWindowMode(TRUE);
+			SetDrawScreen(DX_SCREEN_BACK);
+			isFullScreen = false;
+		}
 	}
 
-	DxLib_End();				// ＤＸライブラリ使用の終了処理
+	app->Release();
 
-	return 0;					// ソフトの終了
+	DxLib_End();
+	return 0;
 }

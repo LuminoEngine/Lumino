@@ -54,6 +54,22 @@ Renderer::~Renderer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Renderer::Begin()
+{
+	LN_CALL_RENDERER_COMMAND(Begin, Renderer_BeginCommand);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Renderer::End()
+{
+	LN_CALL_RENDERER_COMMAND(End, Renderer_EndCommand);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Renderer::SetRenderState(const RenderState& state)
 {
 	LN_CALL_RENDERER_COMMAND(SetRenderState, SetRenderStateCommand, state);

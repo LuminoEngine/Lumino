@@ -72,7 +72,7 @@ float4 psBasic(
 	float2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
 	//uv -= g_pixelStep;
 	
-    return tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
+	return tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
 }
 
 //-------------------------------------------------------------------------

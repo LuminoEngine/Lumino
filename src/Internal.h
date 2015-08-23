@@ -37,6 +37,9 @@ class GraphicsManager;
 namespace Internal
 {
 extern GraphicsManager* Manager;
+
+inline GraphicsManager* SelectManager(GraphicsManager* manager) { return (manager != NULL) ? manager : Manager; }
+
 };
 
 } // namespace Graphics

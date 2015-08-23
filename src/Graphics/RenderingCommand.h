@@ -301,6 +301,19 @@ inline void RenderingCommand::MarkGC(RefObject* obj)
 }
 
 
+//=============================================================================
+struct Renderer_BeginCommand : public RenderingCommand
+{
+	void Create() { }
+	void Execute() { GetRenderer()->Begin(); }
+};
+
+//=============================================================================
+struct Renderer_EndCommand : public RenderingCommand
+{
+	void Create() { }
+	void Execute() { GetRenderer()->End(); }
+};
 
 //=============================================================================
 struct SetRenderStateCommand : public RenderingCommand

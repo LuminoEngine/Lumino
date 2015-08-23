@@ -56,7 +56,7 @@ public:
 	static ObjectEntry* GetObjectEntry(LNHandle handle);
 
 public:
-	static Lumino::ApplicationConfigData	ConfigData;
+	static Lumino::Application::ConfigData	ConfigData;
 	static Lumino::Application*				Application;
 	static bool								IsSystemInitialized;
 

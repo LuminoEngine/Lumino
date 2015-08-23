@@ -18,8 +18,8 @@ class SwapChain
 	: public RefObject
 {
 public:
-	SwapChain(Platform::Window* targetWindow);
-	SwapChain(GraphicsManager* manager, Platform::Window* targetWindow);
+	//SwapChain(Platform::Window* targetWindow);
+	//SwapChain(GraphicsManager* manager, Platform::Window* targetWindow, Device::ISwapChain*);
 	virtual ~SwapChain();
 
 public:
@@ -48,7 +48,7 @@ private:
 	friend class GraphicsManager;
 	friend class Renderer;
 	friend struct PresentCommand;	// TODO
-	SwapChain(GraphicsManager* manager, const Size& mainWindowSize);
+	SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Device::ISwapChain* deviceSwapChain);
 	void Initialize(const Size& backbufferSize);
 
 	GraphicsManager*		m_manager;

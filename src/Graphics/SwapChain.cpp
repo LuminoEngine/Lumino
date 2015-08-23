@@ -22,9 +22,9 @@ namespace Graphics
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize)
+SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Device::ISwapChain* deviceSwapChain)
 	: m_manager(manager)
-	, m_deviceObj(Helper::GetGraphicsDevice(manager)->GetDefaultSwapChain())
+	, m_deviceObj(deviceSwapChain)
 {
 	m_deviceObj->AddRef();
 	Initialize(mainWindowSize);
@@ -33,22 +33,22 @@ SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SwapChain::SwapChain(Platform::Window* targetWindow)
-	: m_manager(Internal::Manager)
-{
-	Initialize(targetWindow->GetSize());
-	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
-}
+//SwapChain::SwapChain(Platform::Window* targetWindow)
+//	: m_manager(Internal::Manager)
+//{
+//	Initialize(targetWindow->GetSize());
+//	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SwapChain::SwapChain(GraphicsManager* manager, Platform::Window* targetWindow)
-	: m_manager(manager)
-{
-	Initialize(targetWindow->GetSize());
-	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
-}
+//SwapChain::SwapChain(GraphicsManager* manager, Platform::Window* targetWindow)
+//	: m_manager(manager)
+//{
+//	Initialize(targetWindow->GetSize());
+//	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
+//}
 
 //-----------------------------------------------------------------------------
 //

@@ -70,31 +70,39 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 	// DLL 読み込み
 	DX9Module::Initialize(); 
 
-	// Direct3D 作成
-	m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
-	LN_THROW(m_direct3D != NULL, InvalidOperationException);
+	if (configData.D3D9Device == NULL)
+	{
+		// Direct3D 作成
+		m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
+		LN_THROW(m_direct3D != NULL, InvalidOperationException);
 
-	// デバイスの性能チェック
-	CheckDeviceInformation();
+		// デバイスの性能チェック
+		CheckDeviceInformation();
 
-	// デフォルトの SwapChain
-	m_defaultSwapChain = LN_NEW DX9SwapChain(this, m_mainWindow, configData.BackbufferSize);
+		// デフォルトの SwapChain
+		m_defaultSwapChain = LN_NEW DX9SwapChain(this, m_mainWindow, configData.BackbufferSize);
 
-	// 基本的に変化のないプレゼンテーションパラメータの設定
-	// ( PresentationInterval は D3DPRESENT_INTERVAL_IMMEDIATE 以外の場合、
-	//   DirectShow を使って動画再生した時に画面が表示されなくなることがある )
-	ZeroMemory(&m_presentParameters, sizeof(D3DPRESENT_PARAMETERS));
-	m_presentParameters.BackBufferCount = 1;
-	m_presentParameters.EnableAutoDepthStencil = FALSE;//TRUE;//					// Canvas で作るのでこれはいらない
-	m_presentParameters.AutoDepthStencilFormat = D3DFMT_D24S8;//D3DFMT_UNKNOWN;//
-	m_presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;	// マルチサンプリングするにはコレ
-	m_presentParameters.PresentationInterval = (configData.EnableVSyncWait) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;//D3DPRESENT_INTERVAL_IMMEDIATE(アダプタの更新間隔無視); // 	//D3DPRESENT_INTERVAL_DEFAULT(アダプタの更新間隔に合わせる);	// 画面の更新間隔
-	m_presentParameters.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-	m_presentParameters.hDeviceWindow = Platform::PlatformSupport::GetWindowHandle(m_mainWindow);
-	//m_presentParameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+		// 基本的に変化のないプレゼンテーションパラメータの設定
+		// ( PresentationInterval は D3DPRESENT_INTERVAL_IMMEDIATE 以外の場合、
+		//   DirectShow を使って動画再生した時に画面が表示されなくなることがある )
+		ZeroMemory(&m_presentParameters, sizeof(D3DPRESENT_PARAMETERS));
+		m_presentParameters.BackBufferCount = 1;
+		m_presentParameters.EnableAutoDepthStencil = FALSE;//TRUE;//					// Canvas で作るのでこれはいらない
+		m_presentParameters.AutoDepthStencilFormat = D3DFMT_D24S8;//D3DFMT_UNKNOWN;//
+		m_presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;	// マルチサンプリングするにはコレ
+		m_presentParameters.PresentationInterval = (configData.EnableVSyncWait) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;//D3DPRESENT_INTERVAL_IMMEDIATE(アダプタの更新間隔無視); // 	//D3DPRESENT_INTERVAL_DEFAULT(アダプタの更新間隔に合わせる);	// 画面の更新間隔
+		m_presentParameters.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+		m_presentParameters.hDeviceWindow = Platform::PlatformSupport::GetWindowHandle(m_mainWindow);
+		//m_presentParameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
-	// デバイス作成
-	ResetDevice(false/*configData.FullScreen*//*, mSystemManager->getMainWindow()->getSize()*/);
+		// デバイス作成
+		ResetDevice(false/*configData.FullScreen*//*, mSystemManager->getMainWindow()->getSize()*/);
+	}
+	else
+	{
+		m_dxDevice = configData.D3D9Device;
+		m_dxDevice->AddRef();
+	}
 
 	// ID3DXEffectPool
 	LN_COMCALL(DX9Module::D3DXCreateEffectPool(&m_d3dxEffectPool));
@@ -102,7 +110,9 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 	// 描画クラスの作成
 	m_renderer = LN_NEW DX9Renderer(this);
 
-	m_defaultSwapChain->PostInitialize();
+	if (m_defaultSwapChain != NULL) {
+		m_defaultSwapChain->PostInitialize();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -337,6 +347,7 @@ void DX9GraphicsDevice::CheckDeviceInformation()
 		m_bestMinFilter = D3DTEXF_LINEAR;
 	}
 
+	// TODO:
 	Logger::WriteLine("グラフィックデバイスの情報を取得します...");
 	Logger::WriteLine("    スクリーンの幅             : %u", m_dxDisplayMode.Width);
 	Logger::WriteLine("    スクリーンの高さ           : %u", m_dxDisplayMode.Height);

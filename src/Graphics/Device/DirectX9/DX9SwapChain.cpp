@@ -131,7 +131,7 @@ void DX9SwapChain::Present(ITexture* colorBuffer)
 	//}
 
 	// シーン終了通知
-	r->TryEndScene();
+//	r->TryEndScene();
 
 	// 転送
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();

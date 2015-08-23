@@ -28,35 +28,36 @@ struct WindowCreationSettings
 	Size	ClientSize;		///< クライアント領域のピクセルサイズ (default:640,480)
 	bool	Fullscreen;		///< フルスクリーンモードで作成するかどうか (default:false)
 	bool	Resizable;		///< 可変ウィンドウとして作成するかどうか (default:true)
+	void*	UserWindow;
 
 	WindowCreationSettings();
 };
 
-/// Application を初期化するための設定
-struct ApplicationSettings
-{
-	WindowSystemAPI			API;
-	WindowCreationSettings	MainWindowSettings;
-	bool					UseInternalUIThread;	///<  (default:false)
-
-	ApplicationSettings();
-};
 
 class PlatformManager
 	: public RefObject
 {
-	//public:
-	//
-	//	static Application* Create();
+public:
+	/// Application を初期化するための設定
+	struct Settings
+	{
+		WindowSystemAPI			API;
+		WindowCreationSettings	MainWindowSettings;		/**< メインウィンドウの作成に使用する設定 */
+		bool					UseInternalUIThread;	/**<  (default:false) */
+
+		//void*					ExternalMainWindow;		/**< ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
+
+		Settings();
+	};
 
 public:
 	PlatformManager();
-	PlatformManager(const ApplicationSettings& settings);
+	PlatformManager(const Settings& settings);
 	virtual ~PlatformManager();
 
 public:
 
-	void Initialize(const ApplicationSettings& settings);
+	void Initialize(const Settings& settings);
 	Window* GetMainWindow();
 	// override Application
 	//virtual void CreateMainWindow(const WindowCreationSettings& settings, bool useThread);

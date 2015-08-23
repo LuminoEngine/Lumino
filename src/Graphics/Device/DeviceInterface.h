@@ -182,6 +182,9 @@ public:
 
 public:
 
+	virtual void Begin() = 0;
+	virtual void End() = 0;
+
 	/// レンダリングステートの設定
 	virtual void SetRenderState(const RenderState& state) = 0;
 

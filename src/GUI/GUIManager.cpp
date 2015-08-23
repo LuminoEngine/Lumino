@@ -1297,12 +1297,12 @@ void GUIManager::InjectElapsedTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::Render(const Size& viewPixelSize)
+void GUIManager::Render()
 {
 	/*	以前はここでカレントのレンダーターゲットを取得し、そこからサイズを取得していた。
 		しかしそれだと他アプリに組み込む仕組みを作るのに少し面倒なことになる。
 	*/
-	m_painter->SetProjection(viewPixelSize);
+	m_painter->SetProjection(m_viewPixelSize);
 
 	m_painter->ResetState();
 	m_defaultRootFrame->Render();
@@ -1407,6 +1407,8 @@ void GUIManager::BuildDefaultTheme()
 {
 	// TODO: このへんは WPF の ScrollViewer.CreateDefaultControlTemplate() みたいにまとめたい
 
+
+
 	// RootFrame
 	{
 		RefPtr<Style> style = RefPtr<Style>::Create();
@@ -1426,28 +1428,28 @@ void GUIManager::BuildDefaultTheme()
 	// Brush (ボタン枠)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 0, 32, 32));
 		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
 	}
 	// Brush (ボタン背景)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
 	}
 	// Brush (ListBox 枠)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 32, 32, 32));
 		m_defaultTheme->AddItem(_T("ListBoxNormalFrameBrush"), obj);
 	}
 	// Brush (ListBox 背景)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
-		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 32 + 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ListBoxNormalBackgroundBrush"), obj);
 	}
@@ -1476,14 +1478,14 @@ void GUIManager::BuildDefaultTheme()
 	// Thumb (枠 Brush)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
-		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 64, 32, 32));
 		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundFrameBrush"), obj);
 	}
 	// Thumb (枠背景 Brush)
 	{
 		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
-		obj->Create(_T("../../src/GUI/Resource/DefaultSkin.png"), m_graphicsManager);
+		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 64 + 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundInnerBrush"), obj);
 	}

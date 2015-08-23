@@ -60,7 +60,8 @@ public:
 	//bool InjectChar(int ch);
 	void InjectElapsedTime(float elapsedTime);
 
-	void Render(const Size& viewPixelSize);	// TODO: GUIContext
+	void SetViewPixelSize(const Size& viewPixelSize) { m_viewPixelSize = viewPixelSize; }	// TODO: GUIContext
+	void Render();	// TODO: GUIContext
 
 public:	// internal
 	ResourceDictionary* GetDefaultTheme() { return m_defaultTheme; }
@@ -114,6 +115,7 @@ private:
 	PointF						m_mousePosition;
 	float						m_mouseButtonClickTimeout;
 	float						m_cursorAnimationTime;
+	Size						m_viewPixelSize;
 
 
 	friend class GUIHelper;

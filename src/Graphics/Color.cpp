@@ -43,6 +43,7 @@ const ColorF ColorF::Gray = ColorF(0.5, 0.5, 0.5, 1.0);
 const ColorF ColorF::Red = ColorF(1.0, 0.0, 0.0, 1.0);
 const ColorF ColorF::Green = ColorF(0.0, 1.0, 0.0, 1.0);
 const ColorF ColorF::Blue = ColorF(0.0, 0.0, 1.0, 1.0);
+const ColorF ColorF::DimGray = ColorF(0.25, 0.25, 0.25, 1.0);
 
 //-----------------------------------------------------------------------------
 //

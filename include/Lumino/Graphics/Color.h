@@ -92,6 +92,7 @@ public:
 	static const ColorF Red;					///< 赤 (1.0, 0.0, 0.0, 1.0)
 	static const ColorF Green;					///< 緑 (0.0, 1.0, 0.0, 1.0)
 	static const ColorF Blue;					///< 青 (0.0, 0.0, 1.0, 1.0)
+	static const ColorF DimGray;				///< 濃い灰色
 
 public:
 
