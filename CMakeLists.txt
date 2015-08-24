@@ -235,6 +235,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/RootFrame.h
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/TextBlock.h
+	include/Lumino/GUI/TextBox.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/VisualTreeHelper.h
@@ -271,6 +272,7 @@ set(LN_SOURCES_GUI
 	src/GUI/RootFrame.cpp
 	src/GUI/RoutedCommand.cpp
 	src/GUI/TextBlock.cpp
+	src/GUI/TextBox.cpp
 	src/GUI/UIElement.cpp
 	src/GUI/UIElementCollection.cpp
 	src/GUI/VisualState.cpp

@@ -107,6 +107,13 @@ int main()
 		}
 
 
+
+
+		RefPtr<GUI::TextBox> textBox1(GUI::TextBox::Create(app->GetGUIManager()));
+		GUI::Grid::SetColumn(textBox1, 1);
+		textBox1->SetText(_T("lumino text."));
+		grid1->GetChildren()->Add(textBox1);
+
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);
 
@@ -220,7 +227,6 @@ int main()
 
 		//Graphics::Bitmap bmp(_T());
 		//RefPtr<Graphics::Font> font = Imaging::Font::CreateBitmapFont(app->GetGraphicsManager()->GetFontManager());
-
 
 		Profiler::Instance.SetEnabled(true);
 

@@ -40,6 +40,7 @@ public:
 
 	virtual Size Measure();
 	virtual void Render(DocumentsRenderer* renderer);
+
 private:
 	void OnInlineAdded(Inline* item);
 	void OnInlineRemoved(Inline* item);

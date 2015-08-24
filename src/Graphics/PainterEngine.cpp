@@ -99,6 +99,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 void PainterEngine::Begin()
 {
 	Flush();
+	DetachBrushData();
 	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
 	//m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
 	m_currentState.Brush.Type = BrushType_Unknown;

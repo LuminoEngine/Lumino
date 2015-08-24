@@ -235,6 +235,13 @@ public:
 	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { void(ownerClass::*func)(PropertyChangedEventArgs*) = onPropChanged; if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
 	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar);
 
+#define LN_PROPERTY_IMPLEMENT_GETTER_SETTER(ownerClass, valueType, propVar, propName, getter, setter, defaultValue, onPropChanged) \
+	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), defaultValue); \
+	const Lumino::Property*				ownerClass::propVar## = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->setter(value); } \
+	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->getter(); } \
+	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { void(ownerClass::*func)(PropertyChangedEventArgs*) = onPropChanged; if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
+	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar);
 
 
 

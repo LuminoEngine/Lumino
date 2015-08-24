@@ -51,6 +51,7 @@
 #include "Lumino/GUI/Controls/ScrollViewer.h"
 #include "Lumino/GUI/Controls/ListBox.h"
 #include "Lumino/GUI/TextBlock.h"
+#include "Lumino/GUI/TextBox.h"
 
 #include "Lumino/Application.h"
 #include "Lumino/Profiler.h"
