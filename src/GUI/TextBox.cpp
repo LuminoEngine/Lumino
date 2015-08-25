@@ -8,6 +8,8 @@
 		Rendering.HeightTree は、この変換というか検索を高速に行う赤黒木。
 
 		・Visual の作成は Measure で。
+
+		・改行は1文字。\r\nも1文字。
 */
 #include "../Internal.h"
 #include <Lumino/GUI/GUIManager.h>
@@ -27,15 +29,45 @@ class TextBox::LineSegment
 	: public RefObject
 {
 public:
+	LineSegment(const TCHAR* str, int len)
+	{
+		m_text.Append(str, len);
+	}
+
+	//int GetLength() const
+	//{
+
+	//}
+
+public:
 	StringBuilder	m_text;
+	//int				m_realCharCount;
+
+	RefPtr<Graphics::GlyphRun>		m_glyphRun;	// 本来なら View と分けるべき。ただ、今回はシンプル重視で。
 };
 
 class TextBox::Document
 {
 public:
+	//int GetLength() const {  }
+
 	void Replace(int start, int length, const String& text)
 	{
-
+		// TODO:とりあえず初回前提
+		const TCHAR* begin = text.GetCStr();
+		const TCHAR* end = begin + text.GetLength();
+		int nlIndex, nlCount;
+		while (StringTraits::IndexOfNewLineSequence(begin, end, &nlIndex, &nlCount))
+		{
+			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(begin, nlIndex));
+			m_lineSegments.Add(line);
+			begin += (nlIndex + nlCount);	// 改行文字の次の文字を指す
+		}
+		if (begin != end)
+		{
+			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(begin, nlIndex));
+			m_lineSegments.Add(line);
+		}
 	}
 
 public:
@@ -69,8 +101,9 @@ TextBox* TextBox::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 TextBox::TextBox(GUIManager* manager)
 	: Control(manager)
+	, m_document(NULL)
 {
-	//m_paragraph = RefPtr<Documents::Paragraph>::Create(m_manager->GetDocumentsManager());
+	m_document = LN_NEW Document();
 }
 
 //-----------------------------------------------------------------------------
@@ -78,6 +111,7 @@ TextBox::TextBox(GUIManager* manager)
 //-----------------------------------------------------------------------------
 TextBox::~TextBox()
 {
+	LN_SAFE_DELETE(m_document);
 }
 
 //-----------------------------------------------------------------------------
@@ -94,7 +128,7 @@ void TextBox::OnRender(Graphics::Painter* painter)
 void TextBox::set_Text(const String& string)
 {
 	// TODO: プロパティ初期値セットされてない
-
+	m_document->Replace(0, 0, string);	// TODO: GetLength()
 }
 
 //-----------------------------------------------------------------------------

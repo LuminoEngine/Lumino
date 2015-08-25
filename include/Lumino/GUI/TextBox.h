@@ -52,6 +52,7 @@ private:
 private:
 	class Document;
 	class LineSegment;
+	Document*	m_document;
 	//RefPtr<Documents::Document>	m_document;
 	//Array<TextBoxLineSegment*>		m_lineSegments;
 

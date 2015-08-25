@@ -56,6 +56,10 @@ void Run::SetText(const String& text)
 //-----------------------------------------------------------------------------
 Size Run::Measure()
 {
+	// TODO: Document はデータクラス。ここが描画オブジェクトである GlyphRun を持っているのは良くない。
+	// 大量テキストでは表示もしない部分のグリフが大量に作られることになる。
+	// 表示するViewクラスが VisualRun とか作るべき。
+
 	if (m_fontDataModified)
 	{
 		UpdateFontData();

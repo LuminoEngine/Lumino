@@ -17,6 +17,13 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 // Register property
 LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, BackgroundProperty, "Background", m_background, NULL, NULL);
 LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, NULL, NULL);
+// TODO: フォント設定は子要素へ継承する
+LN_PROPERTY_IMPLEMENT(Control, String, FontFamilyProperty, "FontFamily", m_fontData.Family, String::GetEmpty(), NULL);
+LN_PROPERTY_IMPLEMENT(Control, int, FontSizeProperty, "FontSize", m_fontData.Size, 20, NULL);
+//LN_PROPERTY_IMPLEMENT(TextElement, int, FontEdgeSizeProperty, "FontEdgeSize", m_fontData.EdgeSize, 20, NULL);
+LN_PROPERTY_IMPLEMENT(Control, bool, IsFontBoldProperty, "IsFontBold", m_fontData.IsBold, false, NULL);
+LN_PROPERTY_IMPLEMENT(Control, bool, IsFontItalicProperty, "IsFontItalic", m_fontData.IsItalic, false, NULL);
+LN_PROPERTY_IMPLEMENT(Control, bool, IsFontAntiAliasProperty, "IsFontAntiAlias", m_fontData.IsAntiAlias, true, NULL);
 
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(Control, MouseEventArgs, MouseDoubleClickEvent, "MouseDoubleClick", MouseDoubleClick);

@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Graphics/GraphicsManager.h"
 #include "UIElement.h"
 #include "VisualState.h"
 
@@ -21,6 +22,12 @@ public:
 	LN_PROPERTY(Graphics::BrushPtr,		BackgroundProperty);			/**< Background プロパティの識別子 */
 	LN_PROPERTY(ControlTemplate*,		TemplateProperty);
 	LN_PROPERTY(VisualStateGroupList*,	VisualStateGroupsProperty);
+	LN_PROPERTY(String,					FontFamilyProperty);			/**< FontFamily プロパティの識別子 */
+	LN_PROPERTY(int,					FontSizeProperty);				/**< FontSize プロパティの識別子 */
+	//LN_PROPERTY(int,					FontEdgeSizeProperty);			// TODO: Pen に移したい
+	LN_PROPERTY(bool,					IsFontBoldProperty);			/**< IsFontBold プロパティの識別子 */
+	LN_PROPERTY(bool,					IsFontItalicProperty);			/**< IsFontItalic プロパティの識別子 */
+	LN_PROPERTY(bool,					IsFontAntiAliasProperty);		/**< IsFontAntiAlias プロパティの識別子 */
 
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseDoubleClickEvent);			/**< MouseDoubleClick ルーティングイベントの識別子 */
 
@@ -45,7 +52,35 @@ public:
 	/** コントロールの背景の描画に使用するブラシを取得します。*/
 	Graphics::BrushPtr GetBackground() const { return GetTypedPropertyValue<Graphics::BrushPtr>(BackgroundProperty); }
 
+	/** コントロールのフォントファミリ名を設定します。*/
+	void SetFontFamily(const String& value) { SetTypedPropertyValue<String>(FontFamilyProperty, value); }
 
+	/** コントロールのフォントファミリ名を取得します。*/
+	String GetFontFamily() const { return GetTypedPropertyValue<String>(FontFamilyProperty); }
+
+	/** コントロールのフォントサイズを設定します。*/
+	void SetFontSize(int value) { SetTypedPropertyValue<int>(FontSizeProperty, value); }
+
+	/** コントロールのフォントサイズを取得します。*/
+	int GetFontSize() const { return GetTypedPropertyValue<int>(FontSizeProperty); }
+
+	/** コントロールのフォントの太字有無を設定します。*/
+	void SetFontBold(bool value) { SetTypedPropertyValue<bool>(IsFontBoldProperty, value); }
+
+	/** コントロールのフォントの太字有無を取得します。*/
+	bool IsFontBold() const { return GetTypedPropertyValue<bool>(IsFontBoldProperty); }
+
+	/** コントロールのフォントのイタリック体有無を設定します。*/
+	void SetFontItalic(bool value) { SetTypedPropertyValue<bool>(IsFontItalicProperty, value); }
+
+	/** コントロールのフォントのイタリック体有無を取得します。*/
+	bool IsFontItalic() const { return GetTypedPropertyValue<bool>(IsFontItalicProperty); }
+
+	/** コントロールのフォントのアンチエイリアス有無を設定します。*/
+	void SetFontAntiAlias(bool value) { SetTypedPropertyValue<bool>(IsFontAntiAliasProperty, value); }
+
+	/** コントロールのフォントのアンチエイリアス有無を取得します。*/
+	bool IsFontAntiAlias() const { return GetTypedPropertyValue<bool>(IsFontAntiAliasProperty); }
 
 	
 
@@ -96,7 +131,8 @@ private:
 
 private:
 	Graphics::BrushPtr	m_background;
-	RefPtr<ControlTemplate>	m_controlTemplate;
+	Graphics::GraphicsManager::FontData	m_fontData;
+	RefPtr<ControlTemplate>			m_controlTemplate;
 	RefPtr<VisualStateGroupList>	m_visualStateGroupList;
 };
 
