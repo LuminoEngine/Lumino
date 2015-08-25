@@ -50,7 +50,37 @@ private:
 	const String& get_Text() const;
 
 private:
+	class Document;
+	class LineSegment;
 	//RefPtr<Documents::Document>	m_document;
+	//Array<TextBoxLineSegment*>		m_lineSegments;
+
+	/*
+	CanRedo
+	CanUndo
+	CaretBrush
+	IsReadOnly
+	SelectionBrush
+	UndoLimit
+
+	IScrollInfo
+
+	BeginChange
+	EndChange
+	Copy
+	Cut
+	Paste
+	Undo
+	Redo
+	SelectAll
+	LineDown
+	LineLeft
+	LineRight
+	LineUp
+	PageDown
+	ScrollTo...
+	Select	// サロゲートペアも考慮した「文字数」
+	*/
 };
 
 } // namespace GUI

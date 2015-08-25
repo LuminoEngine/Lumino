@@ -20,6 +20,31 @@ namespace Lumino
 namespace GUI
 {
 
+
+// 本格的なテキストエディタであれば装飾のため、さらに単語単位に区切ったりする。
+// ここの TextBox は文字ごとに装飾とかは考えないシンプルなものなので、まずは行単位。
+class TextBox::LineSegment
+	: public RefObject
+{
+public:
+	StringBuilder	m_text;
+};
+
+class TextBox::Document
+{
+public:
+	void Replace(int start, int length, const String& text)
+	{
+
+	}
+
+public:
+	Array< RefPtr<TextBox::LineSegment> >	m_lineSegments;
+};
+
+
+
+
 //=============================================================================
 // TextBox
 //=============================================================================
