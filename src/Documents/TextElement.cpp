@@ -67,7 +67,7 @@ void TextElement::UpdateFontData()
 			if (!HasLocalPropertyValue(IsFontItalicProperty)) { m_fontData.IsItalic = m_parent->m_fontData.IsItalic; }
 			if (!HasLocalPropertyValue(IsFontAntiAliasProperty)) { m_fontData.IsAntiAlias = m_parent->m_fontData.IsAntiAlias; }
 		}
-		m_fontDataModified = true;
+		m_fontDataModified = false;
 	}
 }
 

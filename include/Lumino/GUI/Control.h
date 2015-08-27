@@ -126,7 +126,11 @@ protected:
 
 	virtual void OnMouseDoubleClick(MouseEventArgs* e);
 
+	virtual void OnFontUpdated();
+
 private:
+	void InvalidateFont() { m_fontDataModified = true; }
+	void OnFontPropertyChanged(PropertyChangedEventArgs* e);
 	void Handler_MouseDown(MouseEventArgs* e);
 
 private:
@@ -134,6 +138,7 @@ private:
 	Graphics::GraphicsManager::FontData	m_fontData;
 	RefPtr<ControlTemplate>			m_controlTemplate;
 	RefPtr<VisualStateGroupList>	m_visualStateGroupList;
+	bool							m_fontDataModified;
 };
 
 
