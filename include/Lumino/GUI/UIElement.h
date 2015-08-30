@@ -39,6 +39,12 @@ class ExecuteRoutedCommandEventArgs;
 class RoutedCommandTypeContext;
 
 
+class UpdateInheritedPropertiesArgs
+{
+
+};
+
+
 /**
 	@brief		
 */

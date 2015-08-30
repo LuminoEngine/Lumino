@@ -50,8 +50,8 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ScrollBar);
 const String ScrollBar::PART_TrackKeyName(_T("PART_Track"));
 
 // Register property
-LN_PROPERTY_IMPLEMENT(ScrollBar, float, ValueProperty, "Value", m_value, 0.0f, NULL);
-LN_PROPERTY_IMPLEMENT(ScrollBar, Orientation, OrientationProperty, "Orientation", m_orientation, Orientation::Vertical, NULL);
+LN_PROPERTY_IMPLEMENT(ScrollBar, float, ValueProperty, "Value", m_value, PropertyMetadata(0.0f));
+LN_PROPERTY_IMPLEMENT(ScrollBar, Orientation, OrientationProperty, "Orientation", m_orientation, PropertyMetadata(Orientation::Vertical));
 
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(ScrollBar, ScrollEventArgs, ScrollEvent, "Scroll", Scroll);

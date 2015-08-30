@@ -36,13 +36,13 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Track, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Track);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Track, float, ValueProperty, "Value", m_value, false, NULL);
-LN_PROPERTY_IMPLEMENT(Track, float, MinimumProperty, "Minimum", m_minimum, false, NULL);
-LN_PROPERTY_IMPLEMENT(Track, float, MaximumProperty, "Maximum", m_maximum, false, NULL);
-LN_PROPERTY_IMPLEMENT(Track, Orientation, OrientationProperty, "Orientation", m_orientation, Orientation::Vertical, NULL);
-LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, DecreaseButtonProperty, "DecreaseButton", m_decreaseButton, NULL, &Track::OnDecreaseButtonPropertyChanged);
-LN_PROPERTY_IMPLEMENT(Track, Thumb*, ThumbProperty, "Thumb", m_thumb, NULL, &Track::OnThumbPropertyChanged);
-LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButton", m_increaseButton, NULL, &Track::OnIncreaseButtonPropertyChanged);
+LN_PROPERTY_IMPLEMENT(Track, float, ValueProperty, "Value", m_value, PropertyMetadata(false));
+LN_PROPERTY_IMPLEMENT(Track, float, MinimumProperty, "Minimum", m_minimum, PropertyMetadata(false));
+LN_PROPERTY_IMPLEMENT(Track, float, MaximumProperty, "Maximum", m_maximum, PropertyMetadata(false));
+LN_PROPERTY_IMPLEMENT(Track, Orientation, OrientationProperty, "Orientation", m_orientation, PropertyMetadata(Orientation::Vertical));
+LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, DecreaseButtonProperty, "DecreaseButton", m_decreaseButton, PropertyMetadata(NULL, &Track::OnDecreaseButtonPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Track, Thumb*, ThumbProperty, "Thumb", m_thumb, PropertyMetadata(NULL, &Track::OnThumbPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButton", m_increaseButton, PropertyMetadata(NULL, &Track::OnIncreaseButtonPropertyChanged));
 
 //-----------------------------------------------------------------------------
 //

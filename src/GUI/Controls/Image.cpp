@@ -15,8 +15,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Image, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Image);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Image, Variant, SourceProperty, "Source", m_source, Variant::Null, NULL);
-LN_PROPERTY_IMPLEMENT(Image, Rect, SourceRectProperty, "SourceRect", m_srcRect, Rect::Zero, NULL);
+LN_PROPERTY_IMPLEMENT(Image, Variant, SourceProperty, "Source", m_source, PropertyMetadata(Variant::Null));
+LN_PROPERTY_IMPLEMENT(Image, Rect, SourceRectProperty, "SourceRect", m_srcRect, PropertyMetadata(Rect::Zero));
 
 //-----------------------------------------------------------------------------
 //

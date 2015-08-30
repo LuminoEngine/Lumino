@@ -160,6 +160,10 @@ void ListBoxItem::Handler_MouseEnter(MouseEventArgs* e)
 	VisualStateManager::GoToState(this, VisualStatus::MouseOver);
 	printf("Handler_MouseEnter (%p)\n", this);
 	e->Handled = true;
+
+
+	//auto ff = GetTypeInfo(this)->FindProperty(_T("FontFamily"));
+	//printf("%p\n", ff);
 }
 
 //-----------------------------------------------------------------------------

@@ -66,8 +66,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsControl, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsControl); 
 
 // Register property
-LN_PROPERTY_IMPLEMENT(ItemsControl, ControlTemplate*, ItemsPanelTemplateProperty, "ItemsPanelTemplate", m_itemsPanelTemplate, NULL, NULL);
-LN_PROPERTY_IMPLEMENT(ItemsControl, Style*, GroupStyleProperty, "GroupStyle", m_groupStyle, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(ItemsControl, ControlTemplate*, ItemsPanelTemplateProperty, "ItemsPanelTemplate", m_itemsPanelTemplate, PropertyMetadata(NULL));
+LN_PROPERTY_IMPLEMENT(ItemsControl, Style*, GroupStyleProperty, "GroupStyle", m_groupStyle, PropertyMetadata(NULL));
 
 /*	Measure/Arrange はベースの Control クラスに任せるので必要ない
 */
@@ -263,7 +263,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(GroupItem, ItemsControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(GroupItem);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(GroupItem, Variant, HeaderProperty, "Header", m_header, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(GroupItem, Variant, HeaderProperty, "Header", m_header, PropertyMetadata(NULL));
 
 //-----------------------------------------------------------------------------
 //

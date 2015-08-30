@@ -248,14 +248,14 @@ Variant CoreObject::GetPropertyValue(const Property* prop) const
 	if (prop->IsStored())
 	{
 		if (m_propertyDataStore == NULL) {
-			return prop->GetDefaultValue();
+			return prop->GetMetadata()->GetDefaultValue();
 		}
 		//LN_THROW(m_propertyDataStore != NULL, KeyNotFoundException);
 		Variant v;
 		if (m_propertyDataStore->TryGetValue(prop, &v)) {
 			return v;
 		}
-		return prop->GetDefaultValue();
+		return prop->GetMetadata()->GetDefaultValue();
 	}
 	else {
 		return prop->GetValue(this);

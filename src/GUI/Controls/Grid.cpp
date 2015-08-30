@@ -19,9 +19,9 @@ const float ColumnDefinition::Auto = NAN;
 const float ColumnDefinition::Star = std::numeric_limits<float>::infinity();
 
 // Register property
-LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, WidthProperty, "Width", m_width, ColumnDefinition::Star, NULL);
-LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MinWidthProperty, "MinWidth", m_minWidth, 0.0f, NULL);
-LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", m_maxWidth, FLT_MAX, NULL);
+LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, WidthProperty, "Width", m_width, PropertyMetadata(ColumnDefinition::Star));
+LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MinWidthProperty, "MinWidth", m_minWidth, PropertyMetadata(0.0f));
+LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", m_maxWidth, PropertyMetadata(FLT_MAX));
 
 //-----------------------------------------------------------------------------
 //
@@ -79,9 +79,9 @@ const float RowDefinition::Auto = NAN;
 const float RowDefinition::Star = std::numeric_limits<float>::infinity();
 
 // Register property
-LN_PROPERTY_IMPLEMENT(RowDefinition, float, HeightProperty, "Height", m_height, ColumnDefinition::Star, NULL);
-LN_PROPERTY_IMPLEMENT(RowDefinition, float, MinHeightProperty, "MinHeight", m_minHeight, 0.0f, NULL);
-LN_PROPERTY_IMPLEMENT(RowDefinition, float, MaxHeightProperty, "MaxHeight", m_maxHeight, FLT_MAX, NULL);
+LN_PROPERTY_IMPLEMENT(RowDefinition, float, HeightProperty, "Height", m_height, PropertyMetadata(ColumnDefinition::Star));
+LN_PROPERTY_IMPLEMENT(RowDefinition, float, MinHeightProperty, "MinHeight", m_minHeight, PropertyMetadata(0.0f));
+LN_PROPERTY_IMPLEMENT(RowDefinition, float, MaxHeightProperty, "MaxHeight", m_maxHeight, PropertyMetadata(FLT_MAX));
 
 //-----------------------------------------------------------------------------
 //
@@ -136,8 +136,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Grid, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Grid);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Grid, ColumnDefinitionList*, ColumnDefinitionsProperty, "ColumnDefinitions", m_columnDefinitionList, NULL, NULL);
-LN_PROPERTY_IMPLEMENT(Grid, RowDefinitionList*, RowDefinitionsProperty, "RowDefinitions", m_rowDefinitionList, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(Grid, ColumnDefinitionList*, ColumnDefinitionsProperty, "ColumnDefinitions", m_columnDefinitionList, PropertyMetadata(NULL));
+LN_PROPERTY_IMPLEMENT(Grid, RowDefinitionList*, RowDefinitionsProperty, "RowDefinitions", m_rowDefinitionList, PropertyMetadata(NULL));
 
 // Register attached property
 LN_DEFINE_ATTACHED_PROPERTY(Grid, ColumnProperty, "Column", 0);

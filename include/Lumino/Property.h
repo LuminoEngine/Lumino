@@ -8,6 +8,7 @@
 namespace Lumino
 {
 class CoreObject;
+class PropertyMetadata;
 
 /**
 	@brief		CoreObject のサブクラスが実装できるプロパティを表します。
@@ -17,12 +18,14 @@ class CoreObject;
 class Property
 {
 public:
-	Property(TypeInfo* ownerClassType, const Variant& defaultValue, bool stored)
+	Property(TypeInfo* ownerClassType, PropertyMetadata* metadata, bool stored)
 		: m_ownerClassType(ownerClassType)
-		, m_defaultValue(defaultValue)
+		//, m_defaultValue(defaultValue)
+		, m_metadata(metadata)
 		, m_stored(stored)
 		, m_registerd(false)
-	{}
+	{
+	}
 	~Property() {}
 
 public:
@@ -43,16 +46,20 @@ public:
 
 	TypeInfo* GetOwnerClassType() const { return m_ownerClassType; }
 
-	const Variant& GetDefaultValue() const { return m_defaultValue; }
+	//const Variant& GetDefaultValue() const { return m_defaultValue; }
+	PropertyMetadata* GetMetadata() const { return m_metadata; }
 
+	/// TypeInfo 内でこのプロパティを一意に識別するインデックス値
 	int GetLocalIndex() const { return m_localIndex; }
 
 	/// TODO: Meadata の機能
 	virtual void NotifyPropertyChange(CoreObject* target, PropertyChangedEventArgs* e) const {}
 
 private:
+	template<typename T> friend class TypedPropertyInitializer;
 	TypeInfo*	m_ownerClassType;
-	Variant	m_defaultValue;
+	PropertyMetadata*	m_metadata;	// グローバルインスタンスへのポインタ
+	//Variant	m_defaultValue;
 	bool	m_stored;
 
 	friend class TypeInfo;
@@ -89,8 +96,8 @@ public:
 	// ↑※static 関数のポインタでないと、言語バインダを作りにくくなる。
 
 public:
-	TypedProperty(TypeInfo* ownerTypeInfo, const TCHAR* name, TValue defaultValue)
-		: Property(ownerTypeInfo, defaultValue, false)
+	TypedProperty(TypeInfo* ownerTypeInfo, const TCHAR* name, PropertyMetadata* metadata/* TValue defaultValue*/)
+		: Property(ownerTypeInfo, metadata, false)
 		, m_name(name)
 		, m_setter(NULL)
 		, m_getter(NULL)
@@ -201,47 +208,187 @@ private:
 	OnPropertyChangedFunc	m_propChanged;
 };
 
+typedef void(*PropertyChangedCallback)(CoreObject* obj, PropertyChangedEventArgs* e);
+
+
+
+/* プロパティの動作オプションです。*/
+LN_ENUM_FLAGS(PropertyOptions)
+{
+	None = 0x0000,			/**< オプション指定無し。*/
+	Inherits = 0x0001,		/**< 子要素によって継承されます。*/
+};
+LN_ENUM_FLAGS_DECLARE(PropertyOptions);
+
+/**
+	@brief		
+*/
+class PropertyMetadata
+{
+	// メンバ関数ポインタは void* に変換できない。
+	// また、プロパティ定義側に TypedPropertyMetadata<Owner> みたいにテンプレートで書きたくない。
+	// なので、メンバ関数ポインタをラップするクラスを用意した。
+	class CallbackWrapper
+	{
+	public:
+		virtual ~CallbackWrapper() {}
+	};
+
+	template<typename TCallback>
+	class SimpleCallbackWrapper : public CallbackWrapper
+	{
+	public:
+		SimpleCallbackWrapper(TCallback callback) : m_callback(callback) {}
+		TCallback GetCallback() { return m_callback; }
+		TCallback m_callback;
+	};
+
+public:
+	PropertyMetadata(const Variant& defaultValue)
+	{
+		Init();
+		m_defaultValue = defaultValue;
+	}
+	template<typename TOwnerClass>
+	PropertyMetadata(const Variant& defaultValue, void(TOwnerClass::*propertyChanged)(PropertyChangedEventArgs*))
+	{
+		Init();
+		m_defaultValue = defaultValue;
+		m_propertyChangedCallback = LN_NEW SimpleCallbackWrapper< void(TOwnerClass::*)(PropertyChangedEventArgs*) >(propertyChanged);
+	}
+	template<typename TOwnerClass>
+	PropertyMetadata(const Variant& defaultValue, PropertyOptions options, void(TOwnerClass::*propertyChanged)(PropertyChangedEventArgs*))
+	{
+		Init();
+		m_defaultValue = defaultValue;
+		m_propertyChangedCallback = LN_NEW SimpleCallbackWrapper< void(TOwnerClass::*)(PropertyChangedEventArgs*) >(propertyChanged);
+		m_options = options;
+	}
+	template<typename TOwnerClass>
+	PropertyMetadata(const Variant& defaultValue, PropertyOptions options, Property* inheritanceKey, void(TOwnerClass::*propertyChanged)(PropertyChangedEventArgs*))
+	{
+		Init();
+		m_defaultValue = defaultValue;
+		m_propertyChangedCallback = LN_NEW SimpleCallbackWrapper< void(TOwnerClass::*)(PropertyChangedEventArgs*) >(propertyChanged);
+		m_options = options;
+		m_inheritanceKey = inheritanceKey;
+	}
+
+	~PropertyMetadata()
+	{
+		LN_SAFE_DELETE(m_propertyChangedCallback);
+	}
+
+public:
+	const Variant& GetDefaultValue() const { return m_defaultValue; }
+	template<typename TCallback>
+	TCallback GetPropertyChangedCallback()
+	{
+		if (m_propertyChangedCallback == NULL) { return NULL; }
+		return static_cast< SimpleCallbackWrapper<TCallback>* >(m_propertyChangedCallback)->GetCallback();
+	}
+	PropertyOptions GetPropertyOptions() const { return m_options; }
+	Property* GetInheritanceTarget() const { return m_inheritanceTarget; }
+
+private:
+	void Init()
+	{
+		m_defaultValue = Variant::Null;
+		m_propertyChangedCallback = NULL;
+		m_options = PropertyOptions::None;
+		m_inheritanceTarget = NULL;
+	}
+
+private:
+	Variant					m_defaultValue;
+	CallbackWrapper*		m_propertyChangedCallback;
+	//void*					m_propertyChangedCallback;	// 実体は void(ownerClass::*func)(PropertyChangedEventArgs*)
+	PropertyOptions			m_options;
+	Property*				m_inheritanceTarget;
+};
+
+
+
 template<typename TValue>
 class TypedPropertyInitializer
 {
 	// Initializer は .h 側に不必要な型を書きたくないから用意したもの。
+	// 現在 TypedProperty はメンバ static ではなく、グローバル static を前提としている。
+	// となると、private メンバには当然アクセスできないが、このクラス経由で各メンバへの参照経路を設定する。
+
 public:
 	typedef void(*SetterFunc)(CoreObject* obj, TValue value);
 	typedef TValue(*GetterFunc)(const CoreObject* obj);
-	typedef void(*OnPropertyChangedFunc)(CoreObject* obj, PropertyChangedEventArgs* e);
 
-	TypedPropertyInitializer(TypedProperty<TValue>* prop, SetterFunc setter, GetterFunc getter, OnPropertyChangedFunc propChanged)
+	// Obsolete
+	TypedPropertyInitializer(TypedProperty<TValue>* prop, SetterFunc setter, GetterFunc getter, PropertyChangedCallback propChanged)
 	{
 		prop->m_setter = setter;
 		prop->m_getter = getter;
 		prop->m_propChanged = propChanged;
 	}
 
-
+	template<typename TPropertyChangedCallbackCaster>
+	TypedPropertyInitializer(
+		TypedProperty<TValue>* prop,
+		SetterFunc setter,
+		GetterFunc getter,
+		TPropertyChangedCallbackCaster propertyChangedCallbackCaster,
+		PropertyMetadata* metadata)
+	{
+		prop->m_setter = setter;
+		prop->m_getter = getter;
+		prop->m_propChanged = propertyChangedCallbackCaster;
+		prop->m_metadata = metadata;
+		assert(metadata != NULL);
+	}
 };
+
+// TODO; Internal
+class PropertyInstanceData
+{
+public:
+	Property*	InheritanceKey;		// プロパティを親から継承するとき、this またはこの値をキーとして検索する。
+	CoreObject*	InheritanceParent;	// ↑ので見つかった親あるいは祖先オブジェクト
+	Property*	InheritanceTarget;	// ↑のオブジェクトのどのプロパティから受け継ぐか
+	uint32_t	RevisionCount;
+
+	PropertyInstanceData()
+		: InheritanceTarget(NULL)
+		, InheritanceParent(NULL)
+		, RevisionCount(0)
+	{}
+};
+
 
 #define LN_PROPERTY(valueType, propVar) \
 	public:  static const Lumino::Property*	propVar##; \
 	private: static void  set_##propVar(CoreObject* obj, valueType value); \
 	private: static valueType get_##propVar(const CoreObject* obj); \
 	private: static void  changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e); \
-	private: static TypedPropertyInitializer<valueType> init_##propVar;
+	private: static TypedPropertyInitializer<valueType> init_##propVar; \
+	private: static PropertyMetadata metadata_##propVar; \
+	private: PropertyInstanceData* instanceata_##propVar = NULL;
 
-#define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, propName, memberVar, defaultValue, onPropChanged) \
-	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), defaultValue); \
-	const Lumino::Property*				ownerClass::propVar## = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+#define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, propName, memberVar, metadata) \
+	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
+	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
+	const Lumino::Property*				ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
 	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
 	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
-	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { void(ownerClass::*func)(PropertyChangedEventArgs*) = onPropChanged; if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
-	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar);
+	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
+	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar); \
+	PropertyMetadata					ownerClass::metadata_##propVar = metadata;
 
-#define LN_PROPERTY_IMPLEMENT_GETTER_SETTER(ownerClass, valueType, propVar, propName, getter, setter, defaultValue, onPropChanged) \
-	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), defaultValue); \
-	const Lumino::Property*				ownerClass::propVar## = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+#define LN_PROPERTY_IMPLEMENT_GETTER_SETTER(ownerClass, valueType, propVar, propName, getter, setter, metadata) \
+	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
+	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
+	const Lumino::Property*				ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
 	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->setter(value); } \
 	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->getter(); } \
-	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { void(ownerClass::*func)(PropertyChangedEventArgs*) = onPropChanged; if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
-	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar);
+	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
+	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar); \
+	PropertyMetadata					ownerClass::metadata_##propVar = metadata;
 
 
 
@@ -251,11 +398,13 @@ class AttachedProperty
 	: public Property
 {
 public:
-	AttachedProperty(TypeInfo* ownerClassType, const String& name, const Variant& defaultValue)
-		: Property(ownerClassType, defaultValue, true)
+	AttachedProperty(TypeInfo* ownerClassType, const String& name, PropertyMetadata* metadata/*const Variant& defaultValue*/)
+		: Property(ownerClassType, metadata, true)
 		, m_name(name)
-		, m_defaultValue(defaultValue)
-	{}
+		//, m_defaultValue(defaultValue)
+	{
+		assert(metadata != NULL);
+	}
 
 	virtual const String& GetName() const { return m_name; }
 	virtual void SetValue(CoreObject* target, Variant value) const { LN_THROW(0, InvalidOperationException); }
@@ -263,7 +412,7 @@ public:
 
 private:
 	String	m_name;
-	Variant	m_defaultValue;
+	//Variant	m_defaultValue;
 };
 
 
@@ -310,15 +459,16 @@ class StaticAttachedProperty
 	: public AttachedProperty
 {
 public:
-	StaticAttachedProperty(TypeInfo* ownerClassInfo, const String& name, const Variant& defaultValue)
-		: AttachedProperty(ownerClassInfo, name, defaultValue)
+	StaticAttachedProperty(TypeInfo* ownerClassInfo, const String& name, PropertyMetadata* metadata/*, const Variant& defaultValue*/)
+		: AttachedProperty(ownerClassInfo, name, metadata)
 	{
 		//PropertyManager::RegisterAttachedProperty(ownerClassInfo, name, defaultValue);
 	}
 };
 
 #define LN_DEFINE_ATTACHED_PROPERTY(ownerClassType, propVar, name, defaultValue) \
-	static StaticAttachedProperty _##propVar(ownerClassType::GetClassTypeInfo(), _T(name), defaultValue); \
+	PropertyMetadata		metadata_##propVar(defaultValue); \
+	static StaticAttachedProperty _##propVar(ownerClassType::GetClassTypeInfo(), _T(name), &metadata_##propVar); \
 	const AttachedProperty* ownerClassType::propVar = &_##propVar;
 //{ \
 //	if (prop == NULL) { \

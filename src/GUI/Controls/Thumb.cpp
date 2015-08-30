@@ -20,7 +20,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Thumb, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Thumb);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Thumb, bool, IsDraggingProperty, "IsDragging", m_isDragging, false, NULL);
+LN_PROPERTY_IMPLEMENT(Thumb, bool, IsDraggingProperty, "IsDragging", m_isDragging, PropertyMetadata(false));
 
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(Thumb, DragEventArgs, DragStartedEvent, "DragStarted", DragStarted);

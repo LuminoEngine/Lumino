@@ -13,12 +13,12 @@ namespace Documents
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(TextElement, CoreObject);
 
-LN_PROPERTY_IMPLEMENT(TextElement, String, FontFamilyProperty, "FontFamily", m_fontData.Family, String::GetEmpty(), NULL);
-LN_PROPERTY_IMPLEMENT(TextElement, int, FontSizeProperty, "FontSize", m_fontData.Size, 20, NULL);
-LN_PROPERTY_IMPLEMENT(TextElement, int, FontEdgeSizeProperty, "FontEdgeSize", m_fontData.EdgeSize, 20, NULL);
-LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontBoldProperty, "IsFontBold", m_fontData.IsBold, false, NULL);
-LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontItalicProperty, "IsFontItalic", m_fontData.IsItalic, false, NULL);
-LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontAntiAliasProperty, "IsFontAntiAlias", m_fontData.IsAntiAlias, true, NULL);
+LN_PROPERTY_IMPLEMENT(TextElement, String, FontFamilyProperty, "FontFamily", m_fontData.Family, PropertyMetadata(String::GetEmpty()));
+LN_PROPERTY_IMPLEMENT(TextElement, int, FontSizeProperty, "FontSize", m_fontData.Size, PropertyMetadata(20));
+LN_PROPERTY_IMPLEMENT(TextElement, int, FontEdgeSizeProperty, "FontEdgeSize", m_fontData.EdgeSize, PropertyMetadata(20));
+LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontBoldProperty, "IsFontBold", m_fontData.IsBold, PropertyMetadata(false));
+LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontItalicProperty, "IsFontItalic", m_fontData.IsItalic, PropertyMetadata(false));
+LN_PROPERTY_IMPLEMENT(TextElement, bool, IsFontAntiAliasProperty, "IsFontAntiAlias", m_fontData.IsAntiAlias, PropertyMetadata(true));
 
 //-----------------------------------------------------------------------------
 //

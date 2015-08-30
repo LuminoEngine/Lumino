@@ -21,7 +21,7 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(TextBlock, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(TextBlock);
 
-LN_PROPERTY_IMPLEMENT(TextBlock, String, TextProperty, "Text", m_text, String::GetEmpty(), &TextBlock::OnTextPropertyChanged);
+LN_PROPERTY_IMPLEMENT(TextBlock, String, TextProperty, "Text", m_text, PropertyMetadata(String::GetEmpty(), &TextBlock::OnTextPropertyChanged));
 
 //-----------------------------------------------------------------------------
 //

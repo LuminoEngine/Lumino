@@ -15,7 +15,7 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(StackPanel, Panel);
 LN_UI_ELEMENT_SUBCLASS_IMPL(StackPanel);
 
-LN_PROPERTY_IMPLEMENT(StackPanel, Orientation, OrientationProperty, "Orientation", m_orientation, Orientation::Horizontal, NULL);
+LN_PROPERTY_IMPLEMENT(StackPanel, Orientation, OrientationProperty, "Orientation", m_orientation, PropertyMetadata(Orientation::Horizontal));
 
 //-----------------------------------------------------------------------------
 //

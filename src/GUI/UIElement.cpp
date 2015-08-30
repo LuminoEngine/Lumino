@@ -20,12 +20,12 @@ namespace GUI
 LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElement, CoreObject);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, SizeF::Zero, NULL);
-LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin, ThicknessF::Zero, NULL);
-LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, HorizontalAlignment::Stretch, NULL);
-LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, VerticalAlignment::Stretch, NULL);
-LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, 1.0f, NULL);
-LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, true, NULL);
+LN_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, PropertyMetadata(SizeF::Zero));
+LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin, PropertyMetadata(ThicknessF::Zero));
+LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, PropertyMetadata(HorizontalAlignment::Stretch));
+LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
+LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, PropertyMetadata(1.0f));
+LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, PropertyMetadata(true));
 
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);

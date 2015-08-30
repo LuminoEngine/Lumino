@@ -40,6 +40,9 @@ class TypeInfo
 public:
 	typedef uint32_t* (*HasLocalValueFlagsGetter)(CoreObject* _this);
 
+	typedef uint8_t RevisionCount;
+	static const int MaxProperties = 32;
+
 public:
 	TypeInfo();
 
@@ -63,6 +66,8 @@ public:
 
 	TypeInfo* GetBaseClass() const { return m_baseClass; }
 	uint32_t* GetHasLocalValueFlags(CoreObject* obj) { return m_hasLocalValueFlagsGetter(obj); }
+
+
 
 	bool operator == (const TypeInfo& info) const { return m_fullName == info.m_fullName; }
 	bool operator < (const TypeInfo& info) const { return m_fullName < info.m_fullName; }
