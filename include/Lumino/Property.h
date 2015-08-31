@@ -20,13 +20,15 @@ public:
 	Property*		InheritanceKey;		// プロパティを親から継承するとき、this またはこの値をキーとして検索する。
 	CoreObject*		InheritanceParent;	// ↑ので見つかった親あるいは祖先オブジェクト
 	const Property*	InheritanceTarget;	// ↑のオブジェクトのどのプロパティから受け継ぐか (走査の結果継承元が見つからなかった場合、この PropertyInstanceData が表す Propery を指す。このとき InheritanceParent は NULL)
-	uint32_t		RevisionCount;
+	uint16_t		RevisionCount;
+	uint16_t		PathRevisionCount;
 	bool			IsDefault;
 
 	PropertyInstanceData()
 		: InheritanceTarget(NULL)
 		, InheritanceParent(NULL)
 		, RevisionCount(0)
+		, PathRevisionCount(0)
 		, IsDefault(true)
 	{}
 };

@@ -282,7 +282,20 @@ void CoreObject::SetTypedPropertyValue(const Property* prop, const TValue& value
 	auto t = static_cast<const TypedProperty<TValue>*>(prop);
 	t->SetValueDirect(this, value);
 	PropertyInstanceData* data = prop->GetPropertyInstanceData(this);
-	if (data != NULL) { data->IsDefault = false; }
+	if (data != NULL)
+	{
+		if (data->IsDefault == true)
+		{
+			// 新しく設定される瞬間、これまで継承元として参照していたプロパティと this に対して
+			// プロパティ参照更新値を1つ進める。子は Get しようとしたとき、継承元を再検索する。
+			if (data->InheritanceParent != NULL) {
+				data->InheritanceTarget->GetPropertyInstanceData(data->InheritanceParent)->PathRevisionCount++;
+			}
+			data->PathRevisionCount++;
+		}
+		data->IsDefault = false;
+		data->RevisionCount++;
+	}
 }
 
 //-----------------------------------------------------------------------------

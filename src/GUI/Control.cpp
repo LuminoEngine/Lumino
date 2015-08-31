@@ -37,7 +37,6 @@ Control::Control(GUIManager* manager)
 	, m_fontData()
 	, m_controlTemplate()
 	, m_visualStateGroupList()
-	, m_fontDataModified(true)
 {
 	m_visualStateGroupList.Attach(LN_NEW VisualStateGroupList());
 
@@ -106,24 +105,24 @@ SizeF Control::MeasureOverride(const SizeF& constraint)
 {
 	// 必要があればフォントを再構築する。継承も考慮。
 	// TextBlock 等はテキストが要素のサイズとなるため、Measure で行う必要がある。
-	if (m_fontDataModified)
-	{
-		if (m_parent != NULL)
-		{
-			Control* parentControl = dynamic_cast<Control*>(m_parent);
-			if (parentControl != NULL)
-			{
-				if (!HasLocalPropertyValue(FontFamilyProperty)) { m_fontData.Family = parentControl->m_fontData.Family; }
-				if (!HasLocalPropertyValue(FontSizeProperty)) { m_fontData.Size = parentControl->m_fontData.Size; }
-				//if (!HasLocalPropertyValue(FontEdgeSizeProperty)) { m_fontData.EdgeSize = parentControl->m_fontData.EdgeSize; }
-				if (!HasLocalPropertyValue(IsFontBoldProperty)) { m_fontData.IsBold = parentControl->m_fontData.IsBold; }
-				if (!HasLocalPropertyValue(IsFontItalicProperty)) { m_fontData.IsItalic = parentControl->m_fontData.IsItalic; }
-				if (!HasLocalPropertyValue(IsFontAntiAliasProperty)) { m_fontData.IsAntiAlias = parentControl->m_fontData.IsAntiAlias; }
-			}
-			OnFontUpdated();
-		}
-		m_fontDataModified = false;
-	}
+	//if (m_fontDataModified)
+	//{
+	//	if (m_parent != NULL)
+	//	{
+	//		Control* parentControl = dynamic_cast<Control*>(m_parent);
+	//		if (parentControl != NULL)
+	//		{
+	//			if (!HasLocalPropertyValue(FontFamilyProperty)) { m_fontData.Family = parentControl->m_fontData.Family; }
+	//			if (!HasLocalPropertyValue(FontSizeProperty)) { m_fontData.Size = parentControl->m_fontData.Size; }
+	//			//if (!HasLocalPropertyValue(FontEdgeSizeProperty)) { m_fontData.EdgeSize = parentControl->m_fontData.EdgeSize; }
+	//			if (!HasLocalPropertyValue(IsFontBoldProperty)) { m_fontData.IsBold = parentControl->m_fontData.IsBold; }
+	//			if (!HasLocalPropertyValue(IsFontItalicProperty)) { m_fontData.IsItalic = parentControl->m_fontData.IsItalic; }
+	//			if (!HasLocalPropertyValue(IsFontAntiAliasProperty)) { m_fontData.IsAntiAlias = parentControl->m_fontData.IsAntiAlias; }
+	//		}
+	//		OnFontUpdated();
+	//	}
+	//	m_fontDataModified = false;
+	//}
 
 	
 	SizeF desiredSize;
@@ -197,21 +196,21 @@ void Control::OnMouseDoubleClick(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Control::OnFontUpdated()
-{
-	//int count = GetVisualChildrenCount();
-	//if (count > 0)
-	//{
-	//	for (int i = 0; i < count; i++)
-	//	{
-	//		UIElement* child = GetVisualChild(0);
-	//		if (child != NULL)
-	//		{
-	//			child->inva
-	//		}
-	//	}
-	//}
-}
+//void Control::OnFontUpdated()
+//{
+//	//int count = GetVisualChildrenCount();
+//	//if (count > 0)
+//	//{
+//	//	for (int i = 0; i < count; i++)
+//	//	{
+//	//		UIElement* child = GetVisualChild(0);
+//	//		if (child != NULL)
+//	//		{
+//	//			child->inva
+//	//		}
+//	//	}
+//	//}
+//}
 
 //-----------------------------------------------------------------------------
 //

@@ -125,6 +125,12 @@ UIElement* UIElement::GetVisualChild(int index) const
 //-----------------------------------------------------------------------------
 void UIElement::MeasureLayout(const SizeF& availableSize)
 {
+	// 無効情報フラグをこの要素に伝播させる
+	if (m_parent != NULL) {
+		// フォントは MeasureOverride() の中で更新する
+		m_invalidateFlags |= (m_parent->m_invalidateFlags & InvalidateFlags::Font);
+	}
+
 	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
 	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
 	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button		※この時点で inf を返すこともあり得る。
@@ -143,6 +149,9 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	// Margin を考慮する
 	m_desiredSize.Width += marginWidth;
 	m_desiredSize.Height += marginHeight;
+
+	// フォントの無効フラグを落とす
+	m_invalidateFlags &= ~InvalidateFlags::Font;
 }
 
 //-----------------------------------------------------------------------------

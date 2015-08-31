@@ -16,6 +16,7 @@
 #include <Lumino/GUI/TextBox.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
+#include "GUIHelper.h"
 
 namespace Lumino
 {
@@ -50,6 +51,11 @@ class TextBox::Document
 {
 public:
 	//int GetLength() const {  }
+
+	void SetFont(Graphics::Font* font)
+	{
+
+	}
 
 	void Replace(int start, int length, const String& text)
 	{
@@ -112,6 +118,24 @@ TextBox::TextBox(GUIManager* manager)
 TextBox::~TextBox()
 {
 	LN_SAFE_DELETE(m_document);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SizeF TextBox::MeasureOverride(const SizeF& constraint)
+{
+	if (GUIHelper::UIElement_GetInvalidateFlags(this).TestFlag(InvalidateFlags::Font))
+	{
+		Graphics::GraphicsManager::FontData fontData;
+		fontData.Family = GetFontFamily();
+		fontData.Size = GetFontSize();
+		fontData.IsBold = IsFontBold();
+		fontData.IsItalic = IsFontItalic();
+		fontData.IsAntiAlias = IsFontAntiAlias();
+		//RefPtr<Graphics::Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData);
+	}
+	return Control::MeasureOverride(constraint);
 }
 
 //-----------------------------------------------------------------------------

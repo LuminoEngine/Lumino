@@ -44,6 +44,12 @@ class UpdateInheritedPropertiesArgs
 
 };
 
+LN_ENUM_FLAGS(InvalidateFlags)
+{
+	None = 0x0000,
+	Font = 0x0001,
+};
+LN_ENUM_FLAGS_DECLARE(InvalidateFlags);
 
 /**
 	@brief		
@@ -223,6 +229,9 @@ protected:
 
 	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
 	void RemoveVisualChild(UIElement* element);
+
+	/** フォントによるレイアウト情報を無効化します。次のレイアウト更新パスで、フォント情報が再構築されます。*/
+	void InvalidateFont() { m_invalidateFlags |= InvalidateFlags::Font; }
 	
 	/**
 		@brief		この要素を表示するために必要なサイズを計測します。
@@ -253,11 +262,12 @@ private:
 	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
 	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
 
-	ThicknessF			m_margin;
-	float				m_opacity;
-	float				m_combinedOpacity;
+	UIElement*						m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
+	ThicknessF						m_margin;
+	float							m_opacity;
+	float							m_combinedOpacity;
 	Array< RefPtr<AnimationClock> >	m_animationClockList;
-
+	InvalidateFlags					m_invalidateFlags;
 
 
 
@@ -472,7 +482,6 @@ protected:
 	friend class GUIHelper;
 	GUIManager*				m_manager;
 	String					m_keyName;
-	UIElement*				m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
 
 	//VisualStateInstance*	m_visualStateInstance;
 

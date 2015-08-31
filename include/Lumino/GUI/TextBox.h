@@ -43,6 +43,7 @@ public:
 protected:
 	TextBox(GUIManager* manager);
 	virtual ~TextBox();
+	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual void OnRender(Graphics::Painter* painter);
 
 private:

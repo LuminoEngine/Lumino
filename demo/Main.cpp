@@ -116,9 +116,11 @@ int main()
 		grid1->GetChildren()->Remove(textBox1);
 		grid1->GetChildren()->Add(textBox1);
 
-		textBox1->SetFontFamily(_T("MS 明朝"));
+		//textBox1->SetFontFamily(_T("MS 明朝"));
 		app->GetGUIManager()->GetDefaultRootFrame()->SetFontFamily(_T("MS Gpthic"));
-		String f = textBox1->GetFontFamily();
+		_tprintf(textBox1->GetFontFamily());
+		app->GetGUIManager()->GetDefaultRootFrame()->SetFontFamily(_T("MS PGpthic"));
+		_tprintf(textBox1->GetFontFamily());	// TODO: "MS 明朝" が表示できない・・・？
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);

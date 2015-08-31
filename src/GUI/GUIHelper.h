@@ -27,6 +27,7 @@ public:
 	static void UIElement_SetKeyName(UIElement* element, const String& name) { element->m_keyName = name; }
 	static void UIElement_SetTemplateParent(UIElement* element, UIElement* templateParent) { element->m_templateParent = templateParent; }
 	static Array< RefPtr<AnimationClock> >* UIElement_GetAnimationClockList(UIElement* element) { return &element->m_animationClockList; }
+	static InvalidateFlags UIElement_GetInvalidateFlags(UIElement* element) { return element->m_invalidateFlags; }
 
 
 	static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)

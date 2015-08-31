@@ -421,40 +421,74 @@ void CoreObject::UpdateInheritanceProperty(CoreObject* obj, const Property* prop
 	if (prop->GetMetadata()->GetPropertyOptions().TestFlag(PropertyOptions::Inherits))
 	{
 		PropertyInstanceData* data = prop->GetPropertyInstanceData(obj);
-		if (data->IsDefault &&
-			data->InheritanceParent == NULL && 
-			data->InheritanceTarget == NULL)
+		if (data->IsDefault)
 		{
-			bool updated = false;
-			// まず、継承できるプロパティを持つ最も近い親を更新しに行く
-			if (obj->m_inheritanceParent != NULL)
-			{
-				CoreObject* nearParent = obj->m_inheritanceParent;
-				Property* targetProp = NULL;
-				while (true)
-				{
-					targetProp = GetTypeInfo(nearParent)->FindInheritanceProperty(prop, obj);
-					if (targetProp != NULL) {
-						break;	// 見つかった。この targetProp から継承できる。
-					}
-					nearParent = nearParent->m_inheritanceParent;
-					if (nearParent == NULL) {
-						break;	// ルート要素まで上ってしまった。
-					}
-				};
+			bool pathUpdate = false;
+			bool revisionUpdate = false;
 
-				if (nearParent != NULL)
+			PropertyInstanceData* targetPropData = NULL;
+			if (data->InheritanceParent != NULL && data->InheritanceTarget != NULL) {
+				targetPropData = data->InheritanceTarget->GetPropertyInstanceData(data->InheritanceParent);
+			}
+
+			if (data->InheritanceParent == NULL && data->InheritanceTarget == NULL) {
+				pathUpdate = true;		// 親要素が変わった後の最初の Update
+			}
+			else if (targetPropData != NULL && data->PathRevisionCount != targetPropData->PathRevisionCount) {
+				pathUpdate = true;		// 継承元の再設定が必要
+			}
+			if (targetPropData != NULL && data->RevisionCount != targetPropData->RevisionCount) {
+				revisionUpdate = true;	// 自分と継承元の RevisionCount が異なっている。値を再設定する必要あり。
+			}
+
+			bool updated = false;
+			if (pathUpdate)
+			{
+				// まず、継承できるプロパティを持つ最も近い親を更新しに行く
+				if (obj->m_inheritanceParent != NULL)
 				{
-					// 見つかった直近の親を更新する
-					UpdateInheritanceProperty(nearParent, prop);
-					// 更新が無事終われば、targetProp から継承元の値が取れる
-					obj->SetPropertyValueInternal(prop, nearParent->GetPropertyValue(targetProp), true);
-					updated = true;
+					CoreObject* nearParent = obj->m_inheritanceParent;
+					Property* targetProp = NULL;
+					while (true)
+					{
+						targetProp = GetTypeInfo(nearParent)->FindInheritanceProperty(prop, obj);
+						if (targetProp != NULL) {
+							break;	// 見つかった。この targetProp から継承できる。
+						}
+						if (nearParent->m_inheritanceParent == NULL)
+						{
+							// ルート要素まで上ってしまった。ルート要素を継承元とする。
+							nearParent = nearParent->m_inheritanceParent;
+							break;
+						}
+						nearParent = nearParent->m_inheritanceParent;
+					};
+
+					if (nearParent != NULL)
+					{
+						// 見つかった直近の親を更新する
+						UpdateInheritanceProperty(nearParent, prop);
+						// 更新が無事終われば、targetProp から継承元の値が取れる
+						obj->SetPropertyValueInternal(prop, nearParent->GetPropertyValue(targetProp), true);
+						updated = true;
+						// 継承元を覚えておく
+						data->InheritanceParent = nearParent;
+						data->InheritanceTarget = targetProp;
+						PropertyInstanceData* d = targetProp->GetPropertyInstanceData(nearParent);
+						data->RevisionCount = d->RevisionCount;
+						data->PathRevisionCount = d->PathRevisionCount;
+					}
 				}
+			}
+			else if (revisionUpdate)
+			{
+				obj->SetPropertyValueInternal(prop, data->InheritanceParent->GetPropertyValue(data->InheritanceTarget), true);
+				updated = true;
+				data->RevisionCount = targetPropData->RevisionCount;
 			}
 
 			// いろいろやったけど継承元が見つからなかった。普通に規定値を使う
-			if (!updated)
+			if (!updated && data->InheritanceTarget == NULL)
 			{
 				// もう↑の処理をまわす必要は無い。「処理済」をマークするために値を入れておく。
 				data->InheritanceTarget = prop;
@@ -486,8 +520,20 @@ void CoreObject::SetPropertyValueInternal(const Property* prop, const Variant& v
 		if (reset) {
 			data->IsDefault = true;
 		}
-		else {
+		else
+		{
+			if (data->IsDefault == true)
+			{
+				// 新しく設定される瞬間、これまで継承元として参照していたプロパティと this に対して
+				// プロパティ参照更新値を1つ進める。子は Get しようとしたとき、継承元を再検索する。
+				// TODO: SetTypedPropertyValue にも同じようなのがある。共通化したい。あとテスト
+				if (data->InheritanceParent != NULL) {
+					data->InheritanceTarget->GetPropertyInstanceData(data->InheritanceParent)->PathRevisionCount++;
+				}
+				data->PathRevisionCount++;
+			}
 			data->IsDefault = false;
+			data->RevisionCount++;
 		}
 	}
 
