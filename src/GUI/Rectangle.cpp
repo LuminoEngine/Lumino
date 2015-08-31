@@ -14,7 +14,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Shape, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Shape);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Shape, Graphics::Brush*, FillBrushProperty, "FillBrush", m_fillBrush, NULL, NULL);
+LN_PROPERTY_IMPLEMENT(Shape, Graphics::Brush*, FillBrushProperty, "FillBrush", m_fillBrush, PropertyMetadata(NULL));
 
 //-----------------------------------------------------------------------------
 //

@@ -7,8 +7,32 @@
 
 namespace Lumino
 {
+class Property;
 class CoreObject;
 class PropertyMetadata;
+
+
+// TODO; Internal
+class PropertyInstanceData
+	: public RefObject
+{
+public:
+	Property*		InheritanceKey;		// プロパティを親から継承するとき、this またはこの値をキーとして検索する。
+	CoreObject*		InheritanceParent;	// ↑ので見つかった親あるいは祖先オブジェクト
+	const Property*	InheritanceTarget;	// ↑のオブジェクトのどのプロパティから受け継ぐか (走査の結果継承元が見つからなかった場合、この PropertyInstanceData が表す Propery を指す。このとき InheritanceParent は NULL)
+	uint32_t		RevisionCount;
+	bool			IsDefault;
+
+	PropertyInstanceData()
+		: InheritanceTarget(NULL)
+		, InheritanceParent(NULL)
+		, RevisionCount(0)
+		, IsDefault(true)
+	{}
+};
+
+typedef void(*PropertyChangedCallback)(CoreObject* obj, PropertyChangedEventArgs* e);
+typedef RefPtr<PropertyInstanceData>*(*InstanceDataGetterFunc)(CoreObject* obj);
 
 /**
 	@brief		CoreObject のサブクラスが実装できるプロパティを表します。
@@ -48,6 +72,7 @@ public:
 
 	//const Variant& GetDefaultValue() const { return m_defaultValue; }
 	PropertyMetadata* GetMetadata() const { return m_metadata; }
+	PropertyInstanceData* GetPropertyInstanceData(CoreObject* obj) const;
 
 	/// TypeInfo 内でこのプロパティを一意に識別するインデックス値
 	int GetLocalIndex() const { return m_localIndex; }
@@ -59,6 +84,7 @@ private:
 	template<typename T> friend class TypedPropertyInitializer;
 	TypeInfo*	m_ownerClassType;
 	PropertyMetadata*	m_metadata;	// グローバルインスタンスへのポインタ
+	InstanceDataGetterFunc	m_instanceDataGetterFunc;
 	//Variant	m_defaultValue;
 	bool	m_stored;
 
@@ -173,7 +199,7 @@ public:
 	template<typename T> struct ListOperationSelector<T, std::true_type>
 	{
 		static bool IsList() { return true; }
-		static void AddItem(T& list, const Variant& item) { list.AddVariant(item); }
+		static void AddItem(T& list, const Variant& item) { list.VariantList::Add(item); }
 	};
 
 
@@ -208,7 +234,6 @@ private:
 	OnPropertyChangedFunc	m_propChanged;
 };
 
-typedef void(*PropertyChangedCallback)(CoreObject* obj, PropertyChangedEventArgs* e);
 
 
 
@@ -309,6 +334,7 @@ private:
 
 
 
+
 template<typename TValue>
 class TypedPropertyInitializer
 {
@@ -334,30 +360,16 @@ public:
 		SetterFunc setter,
 		GetterFunc getter,
 		TPropertyChangedCallbackCaster propertyChangedCallbackCaster,
-		PropertyMetadata* metadata)
+		PropertyMetadata* metadata,
+		InstanceDataGetterFunc instanceDataGetter)
 	{
 		prop->m_setter = setter;
 		prop->m_getter = getter;
 		prop->m_propChanged = propertyChangedCallbackCaster;
 		prop->m_metadata = metadata;
+		prop->m_instanceDataGetterFunc = instanceDataGetter;
 		assert(metadata != NULL);
 	}
-};
-
-// TODO; Internal
-class PropertyInstanceData
-{
-public:
-	Property*	InheritanceKey;		// プロパティを親から継承するとき、this またはこの値をキーとして検索する。
-	CoreObject*	InheritanceParent;	// ↑ので見つかった親あるいは祖先オブジェクト
-	Property*	InheritanceTarget;	// ↑のオブジェクトのどのプロパティから受け継ぐか
-	uint32_t	RevisionCount;
-
-	PropertyInstanceData()
-		: InheritanceTarget(NULL)
-		, InheritanceParent(NULL)
-		, RevisionCount(0)
-	{}
 };
 
 
@@ -368,7 +380,8 @@ public:
 	private: static void  changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e); \
 	private: static TypedPropertyInitializer<valueType> init_##propVar; \
 	private: static PropertyMetadata metadata_##propVar; \
-	private: PropertyInstanceData* instanceata_##propVar = NULL;
+	private: static RefPtr<PropertyInstanceData>* getInstanceData_##propVar(CoreObject* obj); \
+	private: RefPtr<PropertyInstanceData> instanceData_##propVar = NULL;
 
 #define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, propName, memberVar, metadata) \
 	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
@@ -377,7 +390,8 @@ public:
 	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
 	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
 	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
-	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar); \
+	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar, ownerClass::getInstanceData_##propVar); \
+	RefPtr<PropertyInstanceData>*		ownerClass::getInstanceData_##propVar(CoreObject* obj) { return &(static_cast<ownerClass*>(obj)->instanceData_##propVar); } \
 	PropertyMetadata					ownerClass::metadata_##propVar = metadata;
 
 #define LN_PROPERTY_IMPLEMENT_GETTER_SETTER(ownerClass, valueType, propVar, propName, getter, setter, metadata) \
@@ -387,7 +401,8 @@ public:
 	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->setter(value); } \
 	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->getter(); } \
 	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
-	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar); \
+	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar, ownerClass::getInstanceData_##propVar); \
+	RefPtr<PropertyInstanceData>*		ownerClass::getInstanceData_##propVar(CoreObject* obj) { return &(static_cast<ownerClass*>(obj)->instanceData_##propVar); } \
 	PropertyMetadata					ownerClass::metadata_##propVar = metadata;
 
 

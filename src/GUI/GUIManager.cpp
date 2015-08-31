@@ -1186,7 +1186,7 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 	tracker.ClickCount++;
 
 	double curTime = 0.001 * Environment::GetTickCount();
-	float elapsed = curTime - tracker.LastTime;
+	float elapsed = (float)(curTime - tracker.LastTime);
 	if (elapsed > m_mouseButtonClickTimeout ||
 		m_mouseHoverElement != tracker.HoverElement ||
 		tracker.ClickCount > 3)

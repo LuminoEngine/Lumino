@@ -11,6 +11,38 @@ namespace GUI
 	
 
 //=============================================================================
+// ItemList
+//=============================================================================
+void ItemList::InsertItem(int index, const Variant& item)
+{
+	auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Add);	// TODO キャッシュしたい
+	args->NewItems.Add(item);
+	ItemsChanged(args);
+	GenericVariantList<UIElement*>::InsertItem(index, item);
+}
+void ItemList::ClearItems()
+{
+	LN_THROW(0, NotImplementedException);
+	//for (UIElement* obj : *this) {
+	//	m_owner->OnInlineRemoved(obj);
+	//}
+	GenericVariantList<UIElement*>::ClearItems();
+}
+void ItemList::RemoveItem(int index)
+{
+	LN_THROW(0, NotImplementedException);
+	//const Variant& v = VariantList::GetAt(index);
+	//m_owner->OnInlineRemoved(static_cast<UIElement*>(v.GetObject()));
+	GenericVariantList<UIElement*>::RemoveItem(index);
+}
+void ItemList::SetItem(int index, const Variant& item)
+{
+	LN_THROW(0, NotImplementedException);
+	//m_owner->OnInlineAdded(static_cast<UIElement*>(item.GetObject()));
+	GenericVariantList<UIElement*>::SetItem(index, item);
+}
+
+//=============================================================================
 // ItemsControlItem
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ItemsControlItem, ContentControl);
@@ -43,22 +75,46 @@ GroupItemList::GroupItemList(ItemsControl* owner)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GroupItemList::OnItemAdded(const Variant& item)
+void GroupItemList::InsertItem(int index, const Variant& item)
 {
-	m_owner->OnGroupItemAdded(Variant::Cast<GroupItem*>(item));
+	m_owner->OnGroupItemAdded(static_cast<GroupItem*>(item.GetObject()));
+	GenericVariantList<GroupItem*>::InsertItem(index, item);
+}
+void GroupItemList::ClearItems()
+{
+	for (GroupItem* obj : *this) {
+		m_owner->OnGroupItemRemoved(obj);
+	}
+	GenericVariantList<GroupItem*>::ClearItems();
+}
+void GroupItemList::RemoveItem(int index)
+{
+	const Variant& v = VariantList::GetAt(index);
+	m_owner->OnGroupItemRemoved(static_cast<GroupItem*>(v.GetObject()));
+	GenericVariantList<GroupItem*>::RemoveItem(index);
+}
+void GroupItemList::SetItem(int index, const Variant& item)
+{
+	m_owner->OnGroupItemAdded(static_cast<GroupItem*>(item.GetObject()));
+	GenericVariantList<GroupItem*>::SetItem(index, item);
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GroupItemList::OnItemAdded(const Variant& item)
+//{
+//	m_owner->OnGroupItemAdded(Variant::Cast<GroupItem*>(item));
+//}
 //
-//-----------------------------------------------------------------------------
-void GroupItemList::OnItemRemoved(const Variant& item)
-{
-	m_owner->OnGroupItemRemoved(Variant::Cast<GroupItem*>(item));
-}
-
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GroupItemList::OnItemRemoved(const Variant& item)
+//{
+//	m_owner->OnGroupItemRemoved(Variant::Cast<GroupItem*>(item));
+//}
+//
 //=============================================================================
 // ItemsControl
 //=============================================================================

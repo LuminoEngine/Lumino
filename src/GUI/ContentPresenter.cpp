@@ -49,10 +49,12 @@ void ContentPresenter::SetContent(UIElement* content)
 
 	// 先に古いのは取り除く
 	if (m_content != NULL) {
+		m_content->SetInheritanceParent(NULL);
 		m_content->SetParent(NULL);
 	}
 
 	m_content = content;
+	m_content->SetInheritanceParent(this);
 	m_content->SetParent(this);
 }
 

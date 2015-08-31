@@ -26,7 +26,7 @@ public:
 	/// 指定インデックスに要素を格納する
 	void SetAtBase(int index, RefObject* item)
 	{
-		if (OnItemAdding(item))
+		//if (OnItemAdding(item))
 		{
 			m_list.SetAt(index, item);
 			LN_SAFE_ADDREF(item);
@@ -43,7 +43,7 @@ public:
 	/// 要素を末尾に追加する
 	void Add(RefObject* item)
 	{
-		if (OnItemAdding(item))
+		//if (OnItemAdding(item))
 		{
 			m_list.Add(item);
 			LN_SAFE_ADDREF(item);
@@ -64,7 +64,7 @@ public:
 	/// 指定したインデックスの位置に要素を挿入する
 	void Insert(int index, RefObject* item)
 	{
-		if (OnItemAdding(item))
+		//if (OnItemAdding(item))
 		{
 			m_list.Insert(index, item);
 			LN_SAFE_ADDREF(item);
@@ -92,7 +92,7 @@ public:
 	}
 
 protected:
-	virtual bool OnItemAdding(RefObject* item) { return true; }
+	//virtual bool OnItemAdding(RefObject* item) { return true; }
 	virtual void OnItemAdded(RefObject* item) {}
 	virtual void OnItemRemoved(RefObject* item) {}
 

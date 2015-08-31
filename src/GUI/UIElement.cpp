@@ -200,6 +200,7 @@ void UIElement::AddVisualChild(UIElement* element)
 	LN_THROW(element->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 
 	m_visualChildren.Add(element);		// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
+	element->SetInheritanceParent(this);
 	element->SetParent(this);			// Visualツリーでも、論理的な親の扱いは共通。
 	element->SetTemplateModified(true);	// テンプレートを再構築する必要がありそう
 }
@@ -213,6 +214,7 @@ void UIElement::RemoveVisualChild(UIElement* element)
 	LN_THROW(element->GetParent() == this, InvalidOperationException);	// this が親要素であるはず
 
 	m_visualChildren.Remove(element);
+	element->SetInheritanceParent(NULL);
 	element->SetParent(NULL);
 }
 

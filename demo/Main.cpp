@@ -113,6 +113,12 @@ int main()
 		GUI::Grid::SetColumn(textBox1, 1);
 		textBox1->SetText(_T("lumino text."));
 		grid1->GetChildren()->Add(textBox1);
+		grid1->GetChildren()->Remove(textBox1);
+		grid1->GetChildren()->Add(textBox1);
+
+		textBox1->SetFontFamily(_T("MS –¾’©"));
+		app->GetGUIManager()->GetDefaultRootFrame()->SetFontFamily(_T("MS Gpthic"));
+		String f = textBox1->GetFontFamily();
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);

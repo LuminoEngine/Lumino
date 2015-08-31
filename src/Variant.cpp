@@ -85,6 +85,27 @@ Property* TypeInfo::FindProperty(const String& name) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Property* TypeInfo::FindInheritanceProperty(const Property* childObjProp, CoreObject* childObj) const
+{
+	Property* subKey = childObjProp->GetPropertyInstanceData(childObj)->InheritanceKey;
+	for (auto prop : m_propertyList)
+	{
+		if (prop == childObjProp || prop == subKey) {
+			return prop;
+		}
+	}
+
+	// ベースクラスも探してみる
+	if (m_baseClass != NULL) {
+		return m_baseClass->FindInheritanceProperty(childObjProp, childObj);
+	}
+
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void TypeInfo::RegisterRoutedEvent(RoutedEvent* ev)
 {
 	LN_VERIFY_RETURN(!ev->m_registerd);
@@ -163,7 +184,57 @@ RoutedEventHandler* TypeInfo::FindRoutedEventHandler(const RoutedEvent* ev) cons
 	}
 	return NULL;
 }
-	
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TypeInfo::ForEachAllProperty(const TypeInfo* typeInfo, const std::function<void(Property*)>& callback)
+{
+	for (Property* prop : typeInfo->m_propertyList)
+	{
+		callback(prop);
+	}
+
+	if (typeInfo->m_baseClass != NULL) {
+		ForEachAllProperty(typeInfo->m_baseClass, callback);
+	}
+}
+
+
+//=============================================================================
+// CoreObjectCollection
+//=============================================================================
+
+CoreObjectCollection::CoreObjectCollection(CoreObject* owner)
+	: m_owner(owner)
+{
+
+}
+void CoreObjectCollection::InsertItem(int index, const value_type& item)
+{
+	LN_CHECK_STATE(item->GetInheritanceParent() == NULL);
+	Collection::InsertItem(index, item);
+	item->SetInheritanceParent(m_owner);
+}
+void CoreObjectCollection::ClearItems()
+{
+	for (CoreObject* obj : *this) {
+		obj->SetInheritanceParent(NULL);
+	}
+	Collection::ClearItems();
+}
+void CoreObjectCollection::RemoveItem(int index)
+{
+	GetAt(index)->SetInheritanceParent(NULL);
+	Collection::RemoveItem(index);
+}
+void CoreObjectCollection::SetItem(int index, const value_type& item)
+{
+	LN_CHECK_STATE(item->GetInheritanceParent() == NULL);
+	Collection::SetItem(index, item);
+	item->SetInheritanceParent(m_owner);
+}
+
 //=============================================================================
 // CoreObject
 //=============================================================================
@@ -174,7 +245,9 @@ RoutedEventHandler* TypeInfo::FindRoutedEventHandler(const RoutedEvent* ev) cons
 //
 //-----------------------------------------------------------------------------
 CoreObject::CoreObject()
-	: m_userData(NULL)
+	: m_inheritanceParent(NULL)
+	, m_inheritanceChildren(this)
+	, m_userData(NULL)
 	, m_propertyDataStore(NULL)
 {
 }
@@ -184,6 +257,10 @@ CoreObject::CoreObject()
 //-----------------------------------------------------------------------------
 CoreObject::~CoreObject()
 {
+	if (m_inheritanceParent != NULL) {
+		m_inheritanceParent->GetInheritanceChildren().Remove(this);
+	}
+
 	LN_SAFE_DELETE(m_propertyDataStore);
 }
 
@@ -207,17 +284,7 @@ CoreObject::~CoreObject()
 //-----------------------------------------------------------------------------
 void CoreObject::SetPropertyValue(const Property* prop, const Variant& value)
 {
-	if (prop->IsStored())
-	{
-		// 必要になったので作る
-		if (m_propertyDataStore == NULL) { m_propertyDataStore = LN_NEW PropertyDataStore(); }
-		m_propertyDataStore->SetValue(prop, value);
-	}
-	else {
-		prop->SetValue(this, value);
-	}
-
-	//SetPropertyValue(prop->GetName(), value);	// TODO: GetName じゃなくて、型情報も考慮するように。あるいは生ポインタ
+	SetPropertyValueInternal(prop, value, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -257,7 +324,10 @@ Variant CoreObject::GetPropertyValue(const Property* prop) const
 		}
 		return prop->GetMetadata()->GetDefaultValue();
 	}
-	else {
+	else
+	{
+		// この const_cast は、外に公開する Getter はとにかく const 関数にしたかったためのもの。
+		UpdateInheritanceProperty(const_cast<CoreObject*>(this), prop);
 		return prop->GetValue(this);
 	}
 
@@ -291,6 +361,137 @@ void CoreObject::NotifyPropertyChange(const Property* prop, const Variant& newVa
 	// TODO: スタックに確保するのは危険。言語バインダで使えなくなる。
 	PropertyChangedEventArgs e(prop, newValue, oldValue);
 	OnPropertyChanged(&e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::SetInheritanceParent(CoreObject* obj)
+{
+	// 新しく追加した場合や取り外した場合、this 以下の全ての子オブジェクトは、
+	// Inherits なプロパティの参照パス (どの親のどのプロパティを元に継承するか) を更新しなければならない。
+	// ここでは Inherits なプロパティの参照パスを全て NULL (初期状態) にして、後で必要になったときに更新されるようにしている。
+	if (m_inheritanceParent != obj)
+	{
+		if (m_inheritanceParent != NULL)	// 新しく追加されたとき or 別のオブジェクトの子に移動するとき
+		{
+			const auto onObj = [](CoreObject* obj)
+			{
+				const auto onProp = [obj](Property* prop)
+				{
+					if (prop->GetMetadata()->GetPropertyOptions().TestFlag(PropertyOptions::Inherits))
+					{
+						PropertyInstanceData* data = prop->GetPropertyInstanceData(obj);
+						data->InheritanceParent = NULL;
+						data->InheritanceTarget = NULL;
+					}
+				};
+
+				TypeInfo::ForEachAllProperty(GetTypeInfo(obj), onProp);
+			};
+
+			// 自分自身
+			onObj(this);
+			// と、子オブジェクト
+			ForEachInheritanceChildrenHierarchical(this, onObj);
+		}
+
+		m_inheritanceParent = obj;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::ForEachInheritanceChildrenHierarchical(CoreObject* parent, const std::function<void(CoreObject*)>& callback)
+{
+	for (CoreObject* obj : parent->m_inheritanceChildren)
+	{
+		callback(obj);
+		ForEachInheritanceChildrenHierarchical(obj, callback);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::UpdateInheritanceProperty(CoreObject* obj, const Property* prop)
+{
+	assert(prop != NULL);
+	if (prop->GetMetadata()->GetPropertyOptions().TestFlag(PropertyOptions::Inherits))
+	{
+		PropertyInstanceData* data = prop->GetPropertyInstanceData(obj);
+		if (data->IsDefault &&
+			data->InheritanceParent == NULL && 
+			data->InheritanceTarget == NULL)
+		{
+			bool updated = false;
+			// まず、継承できるプロパティを持つ最も近い親を更新しに行く
+			if (obj->m_inheritanceParent != NULL)
+			{
+				CoreObject* nearParent = obj->m_inheritanceParent;
+				Property* targetProp = NULL;
+				while (true)
+				{
+					targetProp = GetTypeInfo(nearParent)->FindInheritanceProperty(prop, obj);
+					if (targetProp != NULL) {
+						break;	// 見つかった。この targetProp から継承できる。
+					}
+					nearParent = nearParent->m_inheritanceParent;
+					if (nearParent == NULL) {
+						break;	// ルート要素まで上ってしまった。
+					}
+				};
+
+				if (nearParent != NULL)
+				{
+					// 見つかった直近の親を更新する
+					UpdateInheritanceProperty(nearParent, prop);
+					// 更新が無事終われば、targetProp から継承元の値が取れる
+					obj->SetPropertyValueInternal(prop, nearParent->GetPropertyValue(targetProp), true);
+					updated = true;
+				}
+			}
+
+			// いろいろやったけど継承元が見つからなかった。普通に規定値を使う
+			if (!updated)
+			{
+				// もう↑の処理をまわす必要は無い。「処理済」をマークするために値を入れておく。
+				data->InheritanceTarget = prop;
+				// 規定値
+				obj->SetPropertyValueInternal(prop, prop->GetMetadata()->GetDefaultValue(), true);
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CoreObject::SetPropertyValueInternal(const Property* prop, const Variant& value, bool reset)
+{
+	if (prop->IsStored())
+	{
+		// 必要になったので作る
+		if (m_propertyDataStore == NULL) { m_propertyDataStore = LN_NEW PropertyDataStore(); }
+		m_propertyDataStore->SetValue(prop, value);
+	}
+	else {
+		prop->SetValue(this, value);
+	}
+
+	PropertyInstanceData* data = prop->GetPropertyInstanceData(this);
+	if (data != NULL)
+	{
+		if (reset) {
+			data->IsDefault = true;
+		}
+		else {
+			data->IsDefault = false;
+		}
+	}
+
+	//SetPropertyValue(prop->GetName(), value);	// TODO: GetName じゃなくて、型情報も考慮するように。あるいは生ポインタ
 }
 
 //-----------------------------------------------------------------------------

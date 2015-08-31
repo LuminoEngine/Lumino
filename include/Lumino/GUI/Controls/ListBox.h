@@ -47,8 +47,14 @@ public:
 	virtual ~ListBoxItemList() {}
 
 protected:
-	virtual void OnItemAdded(ListBoxItem* item);
-	virtual void OnItemRemoved(ListBoxItem* item);
+
+	virtual void InsertItem(int index, const Variant& item);
+	virtual void ClearItems();
+	virtual void RemoveItem(int index);
+	virtual void SetItem(int index, const Variant& item);
+
+	//virtual void OnItemAdded(ListBoxItem* item);
+	//virtual void OnItemRemoved(ListBoxItem* item);
 
 private:
 	ListBox*	m_owner;

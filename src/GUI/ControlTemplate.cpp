@@ -176,7 +176,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 			// それに対して要素を1つずつ Add していく。
 #if 1
 			VariantList* list = pair.second.GetList();
-			for (Variant& item : *list) {
+			for (const Variant& item : *list) {
 				if (item.GetType() == VariantType_Object &&
 					dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
 				{

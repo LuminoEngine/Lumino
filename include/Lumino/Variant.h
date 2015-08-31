@@ -2,6 +2,7 @@
 #pragma once
 #include <iterator>
 #include <type_traits>
+#include <functional>
 #include <Lumino/Base/Delegate.h>
 //#include "RoutedEvent.h"
 
@@ -55,6 +56,10 @@ public:
 	void RegisterProperty(Property* prop);
 	Property* FindProperty(const String& name) const;
 
+	// childObjProp が継承できるプロパティをこの TypeInfo から探す。見つからなければ NULL を返す。
+	// childObj : childObjProp を持つオブジェクト
+	Property* FindInheritanceProperty(const Property* childObjProp, CoreObject* childObj) const;
+
 	void RegisterRoutedEvent(RoutedEvent* ev);
 	RoutedEvent* FindRoutedEvent(const String& name) const;	// TODO: いらないかも
 	void InvokeRoutedEvent(CoreObject* owner, const RoutedEvent* ev, RoutedEventArgs* e);
@@ -67,6 +72,8 @@ public:
 	TypeInfo* GetBaseClass() const { return m_baseClass; }
 	uint32_t* GetHasLocalValueFlags(CoreObject* obj) { return m_hasLocalValueFlagsGetter(obj); }
 
+	/// ベースクラスも含めた全てのプロパティを列挙する
+	static void ForEachAllProperty(const TypeInfo* typeInfo, const std::function<void(Property*)>& callback);
 
 
 	bool operator == (const TypeInfo& info) const { return m_fullName == info.m_fullName; }
@@ -83,6 +90,74 @@ private:
 	Array<RoutedEvent*>		m_routedEventList;
 	RoutedEventHandlerList	m_routedEventHandlerList;
 	HasLocalValueFlagsGetter	m_hasLocalValueFlagsGetter;
+};
+
+
+
+#if 0
+
+template<class TDerived, class TChildrenIterator, class TValue>
+class hierarchical_iterator_adaptor
+	: public std::iterator<std::input_iterator_tag, TValue>
+{
+public:
+	hierarchical_iterator_adaptor() : m_internalItr() {}
+	hierarchical_iterator_adaptor(const iterator& obj) : m_internalItr(obj.m_internalItr) {}
+	iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
+
+	bool operator==(const const_iterator& right) const	{ return m_internalItr == right.m_internalItr; }
+	bool operator!=(const const_iterator& right) const	{ return m_internalItr != right.m_internalItr; }
+
+	reference operator*() const		{ return *m_internalItr; }
+	pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+
+	const_iterator& operator++()	{ ++m_internalItr; return (*this); }
+	const_iterator operator++(int)	{ const_iterator tmp = *this; ++(*this); return tmp; }
+
+private:
+	void increment()
+	{
+
+	}
+
+private:
+	struct Range
+	{
+		TChildrenIterator	m_itr;
+		TChildrenIterator	m_end;
+	};
+	Stack<Range>	m_stack;
+
+};
+
+class CoreObjectHierarchicalIterator
+	: public hierarchical_iterator_adaptor<CoreObjectHierarchicalIterator, CoreObjectCollection::const_iterator, CoreObject*>
+{
+public:
+	typedef typename CoreObjectCollection::const_iterator TChildrenIterator;
+
+public:
+	CoreObjectHierarchicalIterator(CoreObject* obj, TChildrenIterator itr)
+	{}
+};
+#endif
+
+
+
+class CoreObjectCollection : public Collection < CoreObject* >
+{
+public:
+	CoreObjectCollection(CoreObject* owner);
+	virtual ~CoreObjectCollection() {}
+
+protected:
+	virtual void InsertItem(int index, const value_type& item);
+	virtual void ClearItems();
+	virtual void RemoveItem(int index);
+	virtual void SetItem(int index, const value_type& item);
+
+private:
+	CoreObject*	m_owner;
 };
 
 /**
@@ -142,6 +217,13 @@ public:
 
 	// internal
 	void NotifyPropertyChange(const Property* prop, const Variant& newValue, const Variant& oldValue/*PropertyChangedEventArgs* e*/);
+	void SetInheritanceParent(CoreObject* obj);
+	CoreObject* GetInheritanceParent() const { return m_inheritanceParent; }
+	CoreObjectCollection& GetInheritanceChildren() { return m_inheritanceChildren; }
+	static void ForEachInheritanceChildrenHierarchical(CoreObject* parent, const std::function<void(CoreObject*)>& callback);
+
+	//CoreObjectHierarchicalIterator beginHierarchical() { return CoreObjectHierarchicalIterator(this, m_inheritanceChildren.begin()); }
+	//CoreObjectHierarchicalIterator endHierarchical() { return CoreObjectHierarchicalIterator(this, m_inheritanceChildren.end()); }
 
 protected:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
@@ -164,9 +246,17 @@ private:
 	//virtual TypeInfo* GetThisTypeInfo() const { return NULL; };	// TODO: 純粋仮想関数にしてマクロ定義を強制する
 	static uint32_t* GetHasLocalValueFlags(CoreObject* _this) { return NULL; }
 
+	//Property* FindInheritanceProperty();
+	static void UpdateInheritanceProperty(CoreObject* obj, const Property* prop);
+
+	void SetPropertyValueInternal(const Property* prop, const Variant& value, bool reset);
+
 private:
 	typedef SortedArray<String, Property*>	PropertyList;
 	typedef SortedArray<const Property*, Variant>	PropertyDataStore;
+
+	CoreObject*			m_inheritanceParent;
+	CoreObjectCollection	m_inheritanceChildren;
 
 	void*				m_userData;
 	//PropertyList		m_propertyList;
@@ -191,6 +281,8 @@ void CoreObject::SetTypedPropertyValue(const Property* prop, const TValue& value
 	LN_THROW(prop != NULL, ArgumentException);
 	auto t = static_cast<const TypedProperty<TValue>*>(prop);
 	t->SetValueDirect(this, value);
+	PropertyInstanceData* data = prop->GetPropertyInstanceData(this);
+	if (data != NULL) { data->IsDefault = false; }
 }
 
 //-----------------------------------------------------------------------------
@@ -200,6 +292,9 @@ template<typename TValue>
 TValue CoreObject::GetTypedPropertyValue(const Property* prop) const
 {
 	LN_THROW(prop != NULL, ArgumentException);
+
+	UpdateInheritanceProperty(const_cast<CoreObject*>(this), prop);
+
 	auto t = static_cast<const TypedProperty<TValue>*>(prop);
 	return t->GetValueDirect(this);
 }
@@ -383,6 +478,160 @@ template<typename T> struct Variant::CastSelector  < T, std::false_type, std::tr
 
 
 
+class VariantList
+	: public Collection<Variant>
+	, public CoreObject
+{
+public:
+	static const int IsArrayObject = 1;
+};
+
+
+#define LN_VARIANT_OBJECT_LIST_DECL(itemType) \
+	void SetAt(int index, itemType* item); \
+	itemType* GetAt(int index) const;
+
+#define LN__VARIANT_OBJECT_LIST_IMPL(listType, itemType) \
+	void listType::SetAt(int index, itemType* item) { RefObjectList::SetAtBase(index, item); } \
+	itemType* listType::GetAt(int index) const { return static_cast<itemType*>(RefObjectList::GetAtBase(index)); }
+
+
+template<typename T>
+struct TestTraits
+{
+	typedef T& DirectReference;
+};
+
+template<typename T>
+struct TestTraits<T*>
+{
+	typedef T* DirectReference;
+};
+
+/**
+	@brief
+*/
+template<typename TValue>
+class GenericVariantList
+	: public VariantList
+{
+public:
+	typedef TValue value_type;
+	typedef ptrdiff_t difference_type;
+	typedef ptrdiff_t distance_type;	// retained
+	//typedef typename std::vector<TValue>::pointer pointer;
+	//typedef typename std::vector<TValue>::reference reference;
+	typedef TValue* pointer;
+	typedef TValue& reference;
+
+
+public:
+	/// 指定インデックスに要素を格納する
+	void SetAt(int index, const TValue& item) { VariantList::SetAt(index, item); }
+
+	/// 指定インデックスの要素を取得する
+	TValue GetAt(int index) const { return Variant::Cast<TValue>(VariantList::GetAt(index)); }	// TODO: できれば参照で返したいが…
+
+	/// 要素を末尾に追加する
+	void Add(const TValue& item) { VariantList::Add(item); }
+
+	/// 指定したインデックスの位置に要素を挿入する
+	void Insert(int index, const TValue& item) { VariantList::Insert(index, item); }
+
+public:
+	class const_iterator //: public std::iterator<std::forward_iterator_tag, const TValue>
+	{
+	public:
+		typedef TValue value_type;
+		typedef ptrdiff_t difference_type;
+		typedef ptrdiff_t distance_type;
+		typedef TValue* pointer;
+		typedef TValue& reference;
+		typedef std::random_access_iterator_tag iterator_category;
+
+		const_iterator() : m_internalItr() {}
+		const_iterator(const const_iterator& obj) : m_internalItr(obj.m_internalItr) {}
+		const_iterator& operator = (const const_iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
+		reference operator*() const		{ return *m_internalItr; }
+		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+		const_iterator& operator++()	{ ++m_internalItr; return (*this); }
+		const_iterator operator++(int)	{ const_iterator tmp = *this; ++(*this); return tmp; }
+		const_iterator& operator--()	{ --m_internalItr; return (*this); }
+		const_iterator operator--(int)	{ const_iterator tmp = *this; --(*this); return tmp; }
+		//const_iterator& operator+=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator+(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//const_iterator& operator-=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
+
+		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
+		bool operator==(const const_iterator& right) const	{ return m_internalItr == right.m_internalItr; }
+		bool operator!=(const const_iterator& right) const	{ return m_internalItr != right.m_internalItr; }
+		bool operator<(const const_iterator& right) const	{ return m_internalItr < right.m_internalItr; }
+		//bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		//bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		//bool operator>=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+
+	private:
+		friend class GenericVariantList;
+		const_iterator(const VariantList::const_iterator& itr) : m_internalItr(itr) {}
+		VariantList::const_iterator m_internalItr;
+	};
+
+	class iterator// : public std::iterator<std::forward_iterator_tag, TValue>
+	{
+	public:
+		typedef TValue value_type;
+		typedef ptrdiff_t difference_type;
+		typedef ptrdiff_t distance_type;
+		typedef TValue* pointer;
+		typedef TValue& reference;
+		typedef std::random_access_iterator_tag iterator_category;
+
+		iterator() : m_internalItr() {}
+		iterator(const iterator& obj) : m_internalItr(obj.m_internalItr) {}
+		iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
+		typename TestTraits<TValue>::DirectReference operator*() const		{ return Variant::Cast<TValue>(*m_internalItr); }//{ return *static_cast<TValue**>(&(m_internalItr->Cast<TValue>())); }
+		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+		iterator& operator++()			{ ++m_internalItr; return (*this); }
+		iterator operator++(int)		{ iterator tmp = *this; ++(*this); return tmp; }
+		iterator& operator--()			{ --m_internalItr; return (*this); }
+		iterator operator--(int)		{ iterator tmp = *this; --(*this); return tmp; }
+		//const_iterator& operator+=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator+(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//const_iterator& operator-=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
+		//const_iterator operator-(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
+		//difference_type operator-(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return 0; }
+
+		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
+		bool operator==(const iterator& right) const		{ return m_internalItr == right.m_internalItr; }
+		bool operator!=(const iterator& right) const		{ return m_internalItr != right.m_internalItr; }
+		bool operator<(const iterator& right) const			{ return m_internalItr < right.m_internalItr; }
+		//bool operator>(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
+		//bool operator<=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
+		//bool operator>=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
+
+	private:
+		friend class GenericVariantList;
+		iterator(const VariantList::iterator& itr) : m_internalItr(itr) {}
+		VariantList::iterator m_internalItr;
+	};
+
+protected:
+	// TODO: InsertItem とかオーバーライドして型チェックしたい
+
+public:
+	GenericVariantList() {}
+	virtual ~GenericVariantList() {}
+
+	iterator		begin()			{ return iterator(VariantList::begin()); }
+	const_iterator	begin() const	{ return const_iterator(VariantList::begin()); }
+	iterator		end()			{ return iterator(VariantList::end()); }
+	const_iterator	end() const		{ return const_iterator(VariantList::end()); }
+};
+
+#if 0
+
 /**
 	@brief
 */
@@ -407,7 +656,7 @@ public:
 	/// 指定インデックスに要素を格納する
 	void SetAtVariant(int index, const Variant& item)
 	{
-		if (OnItemAdding(item))
+		//if (OnItemAdding(item))
 		{
 			m_list.SetAt(index, item);
 			OnItemAdded(item);
@@ -423,7 +672,7 @@ public:
 	/// 要素を末尾に追加する
 	void AddVariant(const Variant& item)
 	{
-		if (OnItemAdding(item))
+		//if (OnItemAdding(item))
 		{
 			m_list.Add(item);
 			OnItemAdded(item);
@@ -535,7 +784,7 @@ public:
 	const_iterator	end() const		{ return const_iterator(m_list.end()); }
 
 protected:
-	virtual bool OnItemAdding(const Variant& item) { return true; }
+	//virtual bool OnItemAdding(const Variant& item) { return true; }
 	virtual void OnItemAdded(const Variant& item) {}
 	virtual void OnItemRemoved(const Variant& item) {}
 
@@ -683,6 +932,6 @@ public:
 	const_iterator	end() const		{ return const_iterator(m_list.end()); }
 };
 
-
+#endif
 
 } // namespace Lumino

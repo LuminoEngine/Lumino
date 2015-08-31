@@ -65,8 +65,8 @@ SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 	SizeF size = UIElement::MeasureOverride(availableSize);
 	Size parSize = m_paragraph->Measure();
 
-	size.Width = std::max(parSize.Width, parSize.Width);
-	size.Height = std::max(parSize.Height, parSize.Height);
+	size.Width = (float)std::max(parSize.Width, parSize.Width);
+	size.Height = (float)std::max(parSize.Height, parSize.Height);
 	return size;
 }
 

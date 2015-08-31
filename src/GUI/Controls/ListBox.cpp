@@ -181,21 +181,45 @@ void ListBoxItem::Handler_MouseLeave(MouseEventArgs* e)
 //=============================================================================
 LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList, GenericVariantList<ListBoxItem*>);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void ListBoxItemList::OnItemAdded(ListBoxItem* item)
+void ListBoxItemList::InsertItem(int index, const Variant& item)
 {
-	m_owner->OnListBoxItemAdded(item);
+	m_owner->OnListBoxItemAdded(static_cast<ListBoxItem*>(item.GetObject()));
+	GenericVariantList<ListBoxItem*>::InsertItem(index, item);
+}
+void ListBoxItemList::ClearItems()
+{
+	for (ListBoxItem* obj : *this) {
+		m_owner->OnListBoxItemRemoved(obj);
+	}
+	GenericVariantList<ListBoxItem*>::ClearItems();
+}
+void ListBoxItemList::RemoveItem(int index)
+{
+	const Variant& v = VariantList::GetAt(index);
+	m_owner->OnListBoxItemRemoved(static_cast<ListBoxItem*>(v.GetObject()));
+	GenericVariantList<ListBoxItem*>::RemoveItem(index);
+}
+void ListBoxItemList::SetItem(int index, const Variant& item)
+{
+	m_owner->OnListBoxItemAdded(static_cast<ListBoxItem*>(item.GetObject()));
+	GenericVariantList<ListBoxItem*>::SetItem(index, item);
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void ListBoxItemList::OnItemAdded(ListBoxItem* item)
+//{
+//	m_owner->OnListBoxItemAdded(item);
+//}
 //
-//-----------------------------------------------------------------------------
-void ListBoxItemList::OnItemRemoved(ListBoxItem* item)
-{
-	m_owner->OnListBoxItemRemoved(item);
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void ListBoxItemList::OnItemRemoved(ListBoxItem* item)
+//{
+//	m_owner->OnListBoxItemRemoved(item);
+//}
 
 //=============================================================================
 // ListBoxChrome
@@ -305,7 +329,7 @@ ListBoxItemPtr ListBox::AddTextItem(const String& text)
 	textBlock->SetText(text);
 	auto item = GUIHelper::CreateUIElemenInstance<ListBoxItem>(m_manager);
 	item->SetContent(textBlock);
-	GetItems()->AddVariant(item);
+	GetItems()->Add(item);
 	return item;
 }
 
@@ -324,7 +348,7 @@ void ListBox::InsertListBoxItem(int index, UIElement* element)
 {
 	RefPtr<ListBoxItem> item(ListBoxItem::Create(m_manager));
 	item->SetContent(element);
-	GetItems()->AddVariant(item);	// TODO: インデックス
+	GetItems()->Add(item);	// TODO: インデックス
 	//m_listBoxItems->Insert(index, item);
 }
 

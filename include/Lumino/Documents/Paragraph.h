@@ -16,8 +16,13 @@ class InlineList
 private:
 	InlineList(Paragraph* owner) : m_owner(owner) {}
 
-	virtual void OnItemAdded(const Variant& item);
-	virtual void OnItemRemoved(const Variant& item);
+	virtual void InsertItem(int index, const Variant& item);
+	virtual void ClearItems();
+	virtual void RemoveItem(int index);
+	virtual void SetItem(int index, const Variant& item);
+
+	//virtual void OnItemAdded(const Variant& item);
+	//virtual void OnItemRemoved(const Variant& item);
 
 	friend class Paragraph;
 	Paragraph*	m_owner;

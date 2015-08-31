@@ -13,21 +13,45 @@ namespace Documents
 // InlineList
 //=============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void InlineList::OnItemAdded(const Variant& item)
+void InlineList::InsertItem(int index, const Variant& item)
 {
 	m_owner->OnInlineAdded(static_cast<Inline*>(item.GetObject()));
+	GenericVariantList<Inline*>::InsertItem(index, item);
+}
+void InlineList::ClearItems()
+{
+	for (Inline* obj : *this) {
+		m_owner->OnInlineRemoved(obj);
+	}
+	GenericVariantList<Inline*>::ClearItems();
+}
+void InlineList::RemoveItem(int index)
+{
+	const Variant& v = VariantList::GetAt(index);
+	m_owner->OnInlineRemoved(static_cast<Inline*>(v.GetObject()));
+	GenericVariantList<Inline*>::RemoveItem(index);
+}
+void InlineList::SetItem(int index, const Variant& item)
+{
+	m_owner->OnInlineAdded(static_cast<Inline*>(item.GetObject()));
+	GenericVariantList<Inline*>::SetItem(index, item);
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void InlineList::OnItemAdded(const Variant& item)
+//{
+//	m_owner->OnInlineAdded(static_cast<Inline*>(item.GetObject()));
+//}
 //
-//-----------------------------------------------------------------------------
-void InlineList::OnItemRemoved(const Variant& item)
-{
-	m_owner->OnInlineRemoved(static_cast<Inline*>(item.GetObject()));
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void InlineList::OnItemRemoved(const Variant& item)
+//{
+//	m_owner->OnInlineRemoved(static_cast<Inline*>(item.GetObject()));
+//}
 
 //=============================================================================
 // Paragraph

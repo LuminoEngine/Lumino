@@ -85,17 +85,23 @@ public:
 	Event01<ListChangedEventArgs*>	ItemsChanged;
 
 protected:
-	virtual void OnItemAdded(const Variant& item)	// TODO インデックスも取りたいかも
-	{
-		auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Add);	// TODO キャッシュしたい
-		args->NewItems.AddVariant(item);
-		ItemsChanged(args);
-	}
-	virtual void OnItemRemoved(const Variant& item) 
-	{
-		//auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Remove);
-		//ItemsChanged(args);
-	}
+	virtual void InsertItem(int index, const Variant& item);
+	virtual void ClearItems();
+	virtual void RemoveItem(int index);
+	virtual void SetItem(int index, const Variant& item);
+
+
+	//virtual void OnItemAdded(const Variant& item)	// TODO インデックスも取りたいかも
+	//{
+	//	auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Add);	// TODO キャッシュしたい
+	//	args->NewItems.Add(item);
+	//	ItemsChanged(args);
+	//}
+	//virtual void OnItemRemoved(const Variant& item) 
+	//{
+	//	//auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Remove);
+	//	//ItemsChanged(args);
+	//}
 
 private:
 };
@@ -131,8 +137,14 @@ class GroupItemList
 protected:
 	GroupItemList(ItemsControl* owner);
 
-	virtual void OnItemAdded(const Variant& item);
-	virtual void OnItemRemoved(const Variant& item);
+
+	virtual void InsertItem(int index, const Variant& item);
+	virtual void ClearItems();
+	virtual void RemoveItem(int index);
+	virtual void SetItem(int index, const Variant& item);
+
+	//virtual void OnItemAdded(const Variant& item);
+	//virtual void OnItemRemoved(const Variant& item);
 
 private:
 	ItemsControl* m_owner;
@@ -230,7 +242,7 @@ public:
 	Variant GetHeader() const { return GetTypedPropertyValue<Variant>(HeaderProperty); }
 
 
-	void AddItem(ItemsControlItem* item) { GetItems()->AddVariant(item); }
+	void AddItem(ItemsControlItem* item) { GetItems()->Add(item); }
 	
 
 protected:

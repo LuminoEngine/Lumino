@@ -83,7 +83,7 @@ public:
 LN_CORE_OBJECT_TYPE_INFO_IMPL(TextBox, Control);
 LN_UI_ELEMENT_SUBCLASS_IMPL(TextBox);
 
-LN_PROPERTY_IMPLEMENT_GETTER_SETTER(TextBox, String, TextProperty, "Text", get_Text, set_Text, String::GetEmpty(), NULL);
+LN_PROPERTY_IMPLEMENT_GETTER_SETTER(TextBox, String, TextProperty, "Text", get_Text, set_Text, PropertyMetadata(String::GetEmpty()));
 
 //-----------------------------------------------------------------------------
 //
@@ -119,7 +119,6 @@ TextBox::~TextBox()
 //-----------------------------------------------------------------------------
 void TextBox::OnRender(Graphics::Painter* painter)
 {
-
 }
 
 //-----------------------------------------------------------------------------
