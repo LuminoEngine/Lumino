@@ -31,14 +31,14 @@ PropertyInstanceData* Property::GetPropertyInstanceData(CoreObject* obj) const
 {
 	if (m_instanceDataGetterFunc == NULL) { return NULL; }
 
-	RefPtr<PropertyInstanceData>* pp = m_instanceDataGetterFunc(obj);
-	if (pp->IsNull())
+	std::shared_ptr<PropertyInstanceData>* pp = m_instanceDataGetterFunc(obj);
+	if ((*pp) == nullptr)
 	{
 		if (m_metadata->GetPropertyOptions().TestFlag(PropertyOptions::Inherits)) {
-			pp->Attach(LN_NEW PropertyInstanceData());
+			pp->reset(LN_NEW PropertyInstanceData());
 		}
 	}
-	return (pp->IsNull()) ? NULL : *pp;
+	return ((*pp) == nullptr) ? NULL : pp->get();
 }
 
 

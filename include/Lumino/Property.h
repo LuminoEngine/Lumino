@@ -34,7 +34,7 @@ public:
 };
 
 typedef void(*PropertyChangedCallback)(CoreObject* obj, PropertyChangedEventArgs* e);
-typedef RefPtr<PropertyInstanceData>*(*InstanceDataGetterFunc)(CoreObject* obj);
+typedef std::shared_ptr<PropertyInstanceData>*(*InstanceDataGetterFunc)(CoreObject* obj);
 
 /**
 	@brief		CoreObject のサブクラスが実装できるプロパティを表します。
@@ -382,30 +382,30 @@ public:
 	private: static void  changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e); \
 	private: static TypedPropertyInitializer<valueType> init_##propVar; \
 	private: static PropertyMetadata metadata_##propVar; \
-	private: static RefPtr<PropertyInstanceData>* getInstanceData_##propVar(CoreObject* obj); \
-	private: RefPtr<PropertyInstanceData> instanceData_##propVar = NULL;
+	private: static std::shared_ptr<PropertyInstanceData>* getInstanceData_##propVar(CoreObject* obj); \
+	private: std::shared_ptr<PropertyInstanceData> instanceData_##propVar = NULL;
 
 #define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, propName, memberVar, metadata) \
 	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
-	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
-	const Lumino::Property*				ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
-	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
-	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
-	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
-	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar, ownerClass::getInstanceData_##propVar); \
-	RefPtr<PropertyInstanceData>*		ownerClass::getInstanceData_##propVar(CoreObject* obj) { return &(static_cast<ownerClass*>(obj)->instanceData_##propVar); } \
-	PropertyMetadata					ownerClass::metadata_##propVar = metadata;
+	static TypedProperty<valueType>			_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
+	const Lumino::Property*					ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	void									ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
+	valueType								ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
+	void									ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
+	TypedPropertyInitializer<valueType>		ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar, ownerClass::getInstanceData_##propVar); \
+	std::shared_ptr<PropertyInstanceData>*	ownerClass::getInstanceData_##propVar(CoreObject* obj) { return &(static_cast<ownerClass*>(obj)->instanceData_##propVar); } \
+	PropertyMetadata						ownerClass::metadata_##propVar = metadata;
 
 #define LN_PROPERTY_IMPLEMENT_GETTER_SETTER(ownerClass, valueType, propVar, propName, getter, setter, metadata) \
 	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
-	static TypedProperty<valueType>		_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
-	const Lumino::Property*				ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
-	void								ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->setter(value); } \
-	valueType							ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->getter(); } \
-	void								ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
-	TypedPropertyInitializer<valueType>	ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar, ownerClass::getInstanceData_##propVar); \
-	RefPtr<PropertyInstanceData>*		ownerClass::getInstanceData_##propVar(CoreObject* obj) { return &(static_cast<ownerClass*>(obj)->instanceData_##propVar); } \
-	PropertyMetadata					ownerClass::metadata_##propVar = metadata;
+	static TypedProperty<valueType>			_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
+	const Lumino::Property*					ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	void									ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->setter(value); } \
+	valueType								ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->getter(); } \
+	void									ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
+	TypedPropertyInitializer<valueType>		ownerClass::init_##propVar(&_##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, changed_##propVar, &ownerClass::metadata_##propVar, ownerClass::getInstanceData_##propVar); \
+	std::shared_ptr<PropertyInstanceData>*	ownerClass::getInstanceData_##propVar(CoreObject* obj) { return &(static_cast<ownerClass*>(obj)->instanceData_##propVar); } \
+	PropertyMetadata						ownerClass::metadata_##propVar = metadata;
 
 
 
