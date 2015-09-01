@@ -48,6 +48,7 @@
 #include "Internal.h"
 #include <Lumino/Profiler.h>
 #include <Lumino/Application.h>
+#include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Graphics/Renderer.h>
 #include "Graphics/ProfilerRenderer.h"
 #include "ApplicationContext.h"
@@ -86,8 +87,9 @@ Application* Application::Create(const Application::ConfigData& configData)
 //-----------------------------------------------------------------------------
 Application::Application(const Application::ConfigData& configData)
 	: m_configData(configData)
-	, m_endRequested(false)
+	, m_audioManager(NULL)
 	, m_profilerRenderer(NULL)
+	, m_endRequested(false)
 {
 	m_fpsController.SetEnableFpsTest(true);
 	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO 
@@ -113,6 +115,11 @@ Application::~Application()
 		m_guiManager->Finalize();
 	}
 
+	if (m_audioManager != NULL) {
+		m_audioManager->Finalize();
+		LN_SAFE_RELEASE(m_audioManager);
+	}
+
 	if (ApplicationContext::GetCurrent() == this) {
 		ApplicationContext::SetCurrent(NULL);
 	}
@@ -124,6 +131,7 @@ Application::~Application()
 void Application::Initialize()
 {
 	InitialzePlatformManager();
+	InitialzeAudioManager();
 	InitialzePhysicsManager();
 	InitialzeGraphicsManager();
 	InitialzeGUIManager();
@@ -150,6 +158,31 @@ void Application::InitialzePlatformManager()
 
 		// イベントリスナー登録
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Application::InitialzeAudioManager()
+{
+	if (m_audioManager == NULL)
+	{
+		// ユーザー定義のウィンドウハンドルが指定されている場合、
+		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
+		if (m_configData.UserMainWindow != NULL) {
+			InitialzePlatformManager();
+		}
+
+		Audio::AudioManager::Settings data;
+		data.FileManager = &FileManager::GetInstance();
+		data.StreamCacheObjectCount = 32;
+		data.StreamSourceCacheMemorySize = 0;
+		data.DMInitMode = Audio::DirectMusicInitMode_NotUse;//Audio::DirectMusicInitMode_ThreadRequest;
+#ifdef LN_WIN32
+		data.hWnd = (m_platformManager != NULL) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : NULL;
+#endif
+		m_audioManager = Audio::AudioManager::Create(data);
 	}
 }
 

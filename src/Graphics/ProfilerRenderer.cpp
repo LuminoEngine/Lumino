@@ -136,7 +136,7 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 	// 名前カラム背景色
 	painter.SetBrush(ColorBrush::Blue);
 	painter.SetOpacity(0.2f);
-	painter.DrawRectangle(RectF(listRect.GetPosition(), ThreadNameColumnWidth, groupCount * rowHeight));
+	painter.DrawRectangle(RectF(listRect.GetPosition(), ThreadNameColumnWidth, (float)(groupCount * rowHeight)));
 
 	// バーのNG領域背景色
 	RectF ngArea(

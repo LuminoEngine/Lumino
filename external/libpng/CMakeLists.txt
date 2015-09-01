@@ -19,9 +19,14 @@ set(LN_LIBPNG_SOURCES
 	pngwrite.c)
 
 add_library(${PROJECT_NAME} STATIC ${LN_LIBPNG_SOURCES})
+
+# include dir
 include_directories(${PROJECT_SOURCE_DIR}/../zlib)
+
+# Output name setting.
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
 
+# Copy lib (post build event)
 add_custom_command(
 	TARGET ${PROJECT_NAME}
 	POST_BUILD

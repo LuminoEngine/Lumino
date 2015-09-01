@@ -12,10 +12,13 @@
 		・改行は1文字。\r\nも1文字。
 */
 #include "../Internal.h"
+#include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/TextBox.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
+#include "../Graphics/FontGlyphTextureCache.h"
+#include "../Graphics/GraphicsHelper.h"
 #include "GUIHelper.h"
 
 namespace Lumino
@@ -30,10 +33,9 @@ class TextBox::LineSegment
 	: public RefObject
 {
 public:
-	LineSegment(const TCHAR* str, int len)
-	{
-		m_text.Append(str, len);
-	}
+	LineSegment(Document* document, const TCHAR* str, int len);
+
+	void UpdateGlyphRuns();
 
 	//int GetLength() const
 	//{
@@ -41,7 +43,8 @@ public:
 	//}
 
 public:
-	StringBuilder	m_text;
+	Document*		m_document;
+	GenericStringBuilderCore<UTF32>	m_utf32Text;
 	//int				m_realCharCount;
 
 	RefPtr<Graphics::GlyphRun>		m_glyphRun;	// 本来なら View と分けるべき。ただ、今回はシンプル重視で。
@@ -52,35 +55,84 @@ class TextBox::Document
 public:
 	//int GetLength() const {  }
 
-	void SetFont(Graphics::Font* font)
+	Document()
 	{
+		m_TCharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
+		m_TCharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetTCharEncoding());
+		m_UTF32ToTCharConverter.SetDestinationEncoding(Text::Encoding::GetTCharEncoding());
+		m_UTF32ToTCharConverter.SetSourceEncoding(Text::Encoding::GetUTF32Encoding());
+	}
 
+	void SetFontGlyphTextureCache(Graphics::Internal::FontGlyphTextureCache* cache)
+	{
+		m_glyphTextureCache = cache;
+		for (auto& seg : m_lineSegments) {
+			seg->UpdateGlyphRuns();
+		}
+	}
+
+	Graphics::Internal::FontGlyphTextureCache* GetFontGlyphTextureCache()
+	{
+		return m_glyphTextureCache;
 	}
 
 	void Replace(int start, int length, const String& text)
 	{
 		// TODO:とりあえず初回前提
-		const TCHAR* begin = text.GetCStr();
-		const TCHAR* end = begin + text.GetLength();
-		int nlIndex, nlCount;
-		while (StringTraits::IndexOfNewLineSequence(begin, end, &nlIndex, &nlCount))
+		const TCHAR* pos = text.GetCStr();
+		const TCHAR* end = pos + text.GetLength();
+		int nlIndex = 0, nlCount = 0;
+		while (StringTraits::IndexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
 		{
-			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(begin, nlIndex));
+			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, nlIndex));
 			m_lineSegments.Add(line);
-			begin += (nlIndex + nlCount);	// 改行文字の次の文字を指す
+			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
 		}
-		if (begin != end)
+		if (pos != end)
 		{
-			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(begin, nlIndex));
+			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, end - pos));
 			m_lineSegments.Add(line);
+		}
+	}
+
+	void Render(Graphics::Painter* painter)
+	{
+		Point pt(0, 0);
+		for (auto& seg : m_lineSegments) {
+			painter->DrawGlyphRun(pt, seg->m_glyphRun);
+			pt.Y += seg->m_glyphRun->GetRenderSize().Height;
 		}
 	}
 
 public:
 	Array< RefPtr<TextBox::LineSegment> >	m_lineSegments;
+	RefPtr<Graphics::Internal::FontGlyphTextureCache>	m_glyphTextureCache;
+	Text::EncodingConverter		m_TCharToUTF32Converter;
+	Text::EncodingConverter		m_UTF32ToTCharConverter;
 };
 
 
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+TextBox::LineSegment::LineSegment(Document* document, const TCHAR* str, int len)
+	: m_document(document)
+{
+	m_glyphRun.Attach(LN_NEW Graphics::GlyphRun());
+	m_utf32Text.Clear();
+	m_utf32Text.Append(m_document->m_TCharToUTF32Converter.Convert(str, len * sizeof(TCHAR)));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBox::LineSegment::UpdateGlyphRuns()
+{
+	Graphics::Helper::AttachGlyphTextureCache(m_glyphRun, m_document->GetFontGlyphTextureCache());
+	m_glyphRun->Update(m_utf32Text.GetCStr(), m_utf32Text.GetLength());
+}
 
 
 //=============================================================================
@@ -133,7 +185,8 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 		fontData.IsBold = IsFontBold();
 		fontData.IsItalic = IsFontItalic();
 		fontData.IsAntiAlias = IsFontAntiAlias();
-		//RefPtr<Graphics::Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData);
+		RefPtr<Graphics::Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData);
+		m_document->SetFontGlyphTextureCache(cache);
 	}
 	return Control::MeasureOverride(constraint);
 }
@@ -143,6 +196,10 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 void TextBox::OnRender(Graphics::Painter* painter)
 {
+	Control::OnRender(painter);
+	m_document->Render(painter);
+	//painter->SetBrush(Graphics::ColorBrush::Red);
+	//painter->DrawRectangle(RectF(0, 0, GetRenderSize()));
 }
 
 //-----------------------------------------------------------------------------

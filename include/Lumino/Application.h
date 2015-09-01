@@ -16,6 +16,7 @@
 
 namespace Lumino
 {
+namespace Audio { class AudioManager; }
 namespace Graphics { class ProfilerRenderer; }
 	
 /**
@@ -90,6 +91,7 @@ public:
 
 
 	Platform::PlatformManager* GetPlatformManager() const { return m_platformManager; }
+	Audio::AudioManager* GetAudioManager() const { return m_audioManager; }
 	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
@@ -100,6 +102,7 @@ protected:
 	virtual ~Application();
 	void Initialize();
 	void InitialzePlatformManager();
+	void InitialzeAudioManager();
 	void InitialzePhysicsManager();
 	void InitialzeGraphicsManager();
 	void InitialzeDocumentsManager();
@@ -111,6 +114,7 @@ private:
 	Application::ConfigData				m_configData;
 	FpsController						m_fpsController;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
+	Audio::AudioManager*				m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;

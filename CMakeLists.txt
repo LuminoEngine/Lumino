@@ -70,6 +70,42 @@ set(LN_SOURCES_Platform
 	src/Platform/Window.cpp
 )
 
+set(LN_SOURCES_Audio
+	include/LuminoAudio.h
+	include/Lumino/Audio/AudioManager.h
+	include/Lumino/Audio/Common.h
+	include/Lumino/Audio/Sound.h
+	src/Audio/AudioDevice.cpp
+	src/Audio/AudioDevice.h
+	src/Audio/AudioManager.cpp
+	src/Audio/AudioPlayer.cpp
+	src/Audio/AudioPlayer.h
+	src/Audio/AudioStream.cpp
+	src/Audio/AudioStream.h
+	src/Audio/AudioUtils.cpp
+	src/Audio/AudioUtils.h
+	src/Audio/Internal.h
+	src/Audio/MidiDecoder.cpp
+	src/Audio/MidiDecoder.h
+	src/Audio/Mp3Decoder.cpp
+	src/Audio/Mp3Decoder.h
+	src/Audio/OggDecoder.cpp
+	src/Audio/OggDecoder.h
+	src/Audio/Sound.cpp
+	src/Audio/WaveDecoder.cpp
+	src/Audio/WaveDecoder.h
+	src/Audio/XAudio2/XAudio2AudioDevice.cpp
+	src/Audio/XAudio2/XAudio2AudioDevice.h
+	src/Audio/XAudio2/XAudio2AudioPlayer.cpp
+	src/Audio/XAudio2/XAudio2AudioPlayer.h
+	src/Audio/DirectMusic/DirectMusic.cpp
+	src/Audio/DirectMusic/DirectMusic.h
+	src/Audio/DirectMusic/DirectMusicAudioDevice.cpp
+	src/Audio/DirectMusic/DirectMusicAudioDevice.h
+	src/Audio/DirectMusic/DirectMusicAudioPlayer.cpp
+	src/Audio/DirectMusic/DirectMusicAudioPlayer.h
+)
+
 set(LN_SOURCES_Physics
 	include/Lumino/Physics/BodyBase.h
 	include/Lumino/Physics/Common.h
@@ -379,13 +415,29 @@ elseif (UNIX)
 		${LN_SOURCES_Platform}
 		src/Platform/X11/X11WindowManager.cpp
 		src/Platform/X11/X11Window.cpp
-		src/Platform/X11/PlatformSupport_X11.cpp)
-		
+		src/Platform/X11/PlatformSupport_X11.cp
+	)
+	
 	set(LN_SOURCES_Graphics
 		${LN_SOURCES_Graphics}
 		src/Graphics/Device/OpenGL/GLXGraphicsDevice.cpp
-		src/Graphics/Device/OpenGL/GLXSwapChain.cpp)
-		
+		src/Graphics/Device/OpenGL/GLXSwapChain.cpp
+	)
+	
+	set(LN_SOURCES_Audio
+		${LN_SOURCES_Audio}
+		src/Audio/XAudio2/XAudio2AudioDevice.cpp
+		src/Audio/XAudio2/XAudio2AudioDevice.h
+		src/Audio/XAudio2/XAudio2AudioPlayer.cpp
+		src/Audio/XAudio2/XAudio2AudioPlayer.h
+		src/Audio/DirectMusic/DirectMusic.cpp
+		src/Audio/DirectMusic/DirectMusic.h
+		src/Audio/DirectMusic/DirectMusicAudioDevice.cpp
+		src/Audio/DirectMusic/DirectMusicAudioDevice.h
+		src/Audio/DirectMusic/DirectMusicAudioPlayer.cpp
+		src/Audio/DirectMusic/DirectMusicAudioPlayer.h
+	)
+
 	add_definitions(-DGLEW_NO_GLU)
 	#add_definitions(-DGLEW_MX)
 	add_definitions(-DGLEW_BUILD)
@@ -398,6 +450,7 @@ endif()
 source_group("Animation"	FILES ${LN_SOURCES_Animation})
 source_group("IO"			FILES ${LN_SOURCES_IO})
 source_group("Platform"		FILES ${LN_SOURCES_Platform})
+source_group("Audio"		FILES ${LN_SOURCES_Audio})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
@@ -411,6 +464,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Animation}
 	${LN_SOURCES_IO}
 	${LN_SOURCES_Platform}
+	${LN_SOURCES_Audio}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Scene}
@@ -494,6 +548,7 @@ if (WIN32)
 	# link librarys.
 	list(APPEND LN_LINK_LIBS
 		"imagehlp.lib"
+		"msacm32.lib"
 		"Opengl32.lib")
 
 elseif (APPLE)
@@ -524,7 +579,8 @@ set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/external/Lumino.Core/include
 	${PROJECT_SOURCE_DIR}/external/Lumino.Math/include
 	${PROJECT_SOURCE_DIR}/external/bullet-2.82
-	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include)
+	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include
+	${PROJECT_SOURCE_DIR}/external/libogg/include)
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------
@@ -547,12 +603,16 @@ add_subdirectory(external/zlib)
 add_subdirectory(external/libpng)
 add_subdirectory(external/bullet-2.82)
 add_subdirectory(external/freetype-2.6)
+add_subdirectory(external/libogg)
+add_subdirectory(external/libvorbis)
 add_subdirectory(external/Lumino.Core)
 add_subdirectory(external/Lumino.Math)
 link_libraries(zlib)
 link_libraries(libpng)
 link_libraries(bullet)
 link_libraries(freetype)
+link_libraries(libogg)
+link_libraries(libvorbis)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath_Static)
 

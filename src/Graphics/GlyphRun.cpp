@@ -35,6 +35,23 @@ GlyphRun::~GlyphRun()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GlyphRun::Update(const UTF32* text, int length)
+{
+	m_glyphData->Items.Clear();
+	m_glyphTextureCache->Measure(text, length, m_glyphData);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const Size GlyphRun::GetRenderSize() const
+{
+	return m_glyphData->AreaSize;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GlyphRun::AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache)
 {
 	LN_REFOBJ_SET(m_glyphTextureCache, cache);

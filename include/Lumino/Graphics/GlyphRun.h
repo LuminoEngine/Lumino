@@ -19,6 +19,10 @@ public:
 	GlyphRun();
 	virtual ~GlyphRun();
 
+public:
+	void Update(const UTF32* text, int length);
+	const Size GetRenderSize() const;
+
 private:
 	void AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache);
 
