@@ -103,13 +103,13 @@ namespace BinderMaker
         /// <param name="doc"></param>
         /// <param name="methods"></param>
         /// <param name="option"></param>
-        public CLClass(IEnumerable<char> startTag, string docText, string originalName, string bodyText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
+        public CLClass(IEnumerable<char> startTag, string docText, string originalName, string bodyText, string optionText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
         {
             Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
             OriginalName = originalName.Trim();
             Name = OriginalName.Substring(2);
             Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
-            //Option = option;
+            Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
 
             //Methods.ForEach((m) => m.OwnerClass = this);
 

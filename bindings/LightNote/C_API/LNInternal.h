@@ -102,6 +102,9 @@ using namespace Lumino;
 
 #define TO_INDEX( h )		static_cast<int>( h )
 
+#define TO_CORE_STRUCT_P(t, p)	reinterpret_cast<t*>(p)
+#define TO_CORE_STRUCT_CP(t, p)	reinterpret_cast<const t*>(p)
+
 //#define TO_OBJECT( h )		FuncLibManager::getObject( static_cast<int>( h ) )
 //#define TO_INTERFACE( h )	FuncLibManager::getInterface( static_cast<int>( h ) )
 

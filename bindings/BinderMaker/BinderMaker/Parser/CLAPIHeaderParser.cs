@@ -188,7 +188,7 @@ namespace BinderMaker.Parser
         // 関数宣言 - 属性
         private static readonly Parser<IEnumerable<char>> FuncAttribute =
                 Parse.String(CLManager.APIAttribute_Property)               // LN_PROPERTY
-            .Or(Parse.String(CLManager.APIAttribute_StructConstructor))     // LN_STRUCT_CONSTRUCTOR
+            .Or(Parse.String(CLManager.APIAttribute_Constructor))           // LN_STRUCT_CONSTRUCTOR
             .Or(Parse.String(CLManager.APIAttribute_LibraryInitializer))    // LN_LIBRARY_INITIALIZER
             .Or(Parse.String(CLManager.APIAttribute_LibraryTerminator));    // LN_LIBRARY_TERMINATOR
         
@@ -258,7 +258,8 @@ namespace BinderMaker.Parser
             from name       in ParserUtils.Identifier                           // クラス名
             from rparen     in Parse.Char(')').GenericToken()                   // )
             from body       in Parse.AnyChar.Until(Parse.String("LN_CLASS_END")).Text()    // 終端キーワードが見つかるまで ("LN_CLASS_END" は消費される)
-            select new CLClass(start, doc, name, body);
+            from optionText in (CLAPIOptions.OptionCommentRange.GenericToken()).Or(Parse.Return(""))              // オプションコメント
+            select new CLClass(start, doc, name, body, optionText);
 
         // body
         public static readonly Parser<IEnumerable<CLMethod>> ClassBody =

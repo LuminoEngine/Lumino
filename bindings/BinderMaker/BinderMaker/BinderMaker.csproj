@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builder\Builder.cs" />
+    <Compile Include="Builder\CSBuilderCommon.cs" />
+    <Compile Include="Builder\CSPInvokeBuilder.cs" />
+    <Compile Include="Builder\OutputBuffer.cs" />
     <Compile Include="CLClass.cs" />
     <Compile Include="CLDocument.cs" />
     <Compile Include="CLEntity.cs" />
@@ -51,6 +55,7 @@
     <Compile Include="CLMethod.cs" />
     <Compile Include="CLModule.cs" />
     <Compile Include="CLOption.cs" />
+    <Compile Include="LangContext.cs" />
     <Compile Include="Parser\CLAPIHeaderParser.cs" />
     <Compile Include="Parser\CLTypedefHeaderParser.cs" />
     <Compile Include="Parser\ParserUtils.cs" />

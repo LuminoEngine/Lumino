@@ -17,24 +17,26 @@ namespace BinderMaker
             CLManager.Instance.Initialize();
 
             // 各種型情報が定義されているヘッダを解析する
-            //var typedefParser = new Parser.CLTypedefHeaderParser();
-            //var typedefs = typedefParser.Analyze(SourcesRootDir + "LNTypedef.h");
+            var typedefParser = new Parser.CLTypedefHeaderParser();
+            var typedefs = typedefParser.Analyze(SourcesRootDir + "LNTypedef.h");
 
             // 関数が定義されているヘッダを解析する
             var apiHeaders = new string[]
             {
-                SourcesRootDir + "LNAudio.h",
+                SourcesRootDir + "LNBase.h",
+                SourcesRootDir + "LNMath.h",
+                //SourcesRootDir + "LNAudio.h",
             };
             var parser = new Parser.CLAPIHeaderParser();
             var modules = parser.Analyze(apiHeaders);
 
             // 解析結果を Manager に登録する
-            //CLManager.Instance.RegisterEntities(typedefs, modules);
-            //CLManager.Instance.LinkEntities();
+            CLManager.Instance.RegisterEntities(typedefs, modules);
+            CLManager.Instance.LinkEntities();
 
 
-            //var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
-            //csPInvoleBuilder.Build(CLManager.Instance, "../../../../../DotNet/LNote.DotNet/API.cs");
+            var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
+            csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "API.cs");
         }
     }
 }

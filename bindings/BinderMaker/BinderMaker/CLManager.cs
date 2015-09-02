@@ -21,10 +21,13 @@ namespace BinderMaker
         public const string APIModifier_Instance = "LN_INSTANCE_API";
         public const string APIModifier_Static = "LN_STATIC_API";
         public const string APIModifier_Internal = "LN_INTERNAL_API";
-        public const string APIAttribute_Property = "LN_PROPERTY";
-        public const string APIAttribute_StructConstructor = "LN_STRUCT_CONSTRUCTOR";
+
         public const string APIAttribute_LibraryInitializer = "LN_LIBRARY_INITIALIZER";
         public const string APIAttribute_LibraryTerminator = "LN_LIBRARY_TERMINATOR";
+        public const string APIAttribute_Constructor = "LN_ATTR_CONSTRUCTOR";
+        public const string APIAttribute_Property = "LN_ATTR_PROPERTY";
+        public const string APIAttribute_Event = "LN_ATTR_EVENT";
+
         public const string HandleTypeParamMacro = "LN_HANDLE";
         public const string GenericHandleTypeParamMacro = "LN_HANDLE_GENERIC";
 

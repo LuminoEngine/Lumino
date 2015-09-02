@@ -7,7 +7,7 @@ using Sprache;
 
 namespace BinderMaker.Parser
 {
-#if false
+#if true
     /// <summary>
     /// enum、struct、関数ポインタの定義ファイル (ヘッダファイル) を解析する
     /// </summary>
@@ -69,7 +69,7 @@ namespace BinderMaker.Parser
 
         // 関数ポインタ
         private static readonly Parser<CLEntity> FuncPointerDecl =
-            from doc        in CLAPIHeaderParser.DocumentComment        // コメント
+            from doc        in CLAPIDocument.DocumentComment        // コメント
             from start      in Parse.String("typedef").GenericToken()
             from type       in ParserUtils.TypeName.GenericToken()      // 戻り値型
             from lparen1    in Parse.Char('(').GenericToken()
@@ -77,7 +77,7 @@ namespace BinderMaker.Parser
             from name       in ParserUtils.Identifier.GenericToken()    // 名前
             from rparen1    in Parse.Char(')').GenericToken()
             from lparen     in Parse.Char('(').GenericToken()
-            from params1    in CLAPIHeaderParser.FuncParamDecls.Or(Parse.Return<IEnumerable<CLParam>>(null))    // 引数リストopt
+            from params1    in CLAPIMethod.FuncParamDecls.Or(Parse.Return<IEnumerable<CLParam>>(null))    // 引数リストopt
             from rparen     in Parse.Char(')').GenericToken()
             from end1       in Parse.Char(';').GenericToken()
             select new CLDelegate(doc, type, name, params1);

@@ -60,7 +60,7 @@ typedef intptr_t		LNHandle;
 
 #define LN_MODULE(x)
 #define LN_MODULE_END
-#define LN_CLASS(...)
+#define LN_CLASS(...)			/*LNOTE_TYPE_INFO_DECL(LNSound);*/
 #define LN_STATIC_CLASS(x)
 #define LN_STRUCT_CLASS(x)
 #define LN_EXTENSION_CLASS(x)
@@ -75,7 +75,7 @@ typedef intptr_t		LNHandle;
 #define LN_ATTR_CONSTRUCTOR
 #define LN_ATTR_PROPERTY
 #define LN_ATTR_EVENT
-#define LN_ATTR_STRUCT_CONSTRUCTOR
+//#define LN_ATTR_STRUCT_CONSTRUCTOR
 
 #define LN_HANDLE(x) LNHandle
 #define LN_OUT

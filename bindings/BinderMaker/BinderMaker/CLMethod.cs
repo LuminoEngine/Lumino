@@ -24,7 +24,7 @@ namespace BinderMaker
     {
         None,
         Property,
-        StructConstructor,
+        Constructor,
         LibraryInitializer,
         LibraryTerminator,
     }
@@ -155,7 +155,7 @@ namespace BinderMaker
             //CLFuncDecl funcDecl,
             //CLOption option)
         {
-            Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
+            Document = (string.IsNullOrEmpty(docText)) ? new CLDocument() : Parser.CLAPIDocument.DocumentComment.Parse(docText);
             FuncDecl =  Parser.CLAPIMethod.FuncDecl.Parse(funcText);
             Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
             Overloads = new List<CLMethod>();
@@ -342,8 +342,8 @@ namespace BinderMaker
             Attribute = MethodAttribute.None;
             if (attr.Contains(CLManager.APIAttribute_Property))
                 Attribute = MethodAttribute.Property;
-            if (attr.Contains(CLManager.APIAttribute_StructConstructor))
-                Attribute = MethodAttribute.StructConstructor;
+            if (attr.Contains(CLManager.APIAttribute_Constructor))
+                Attribute = MethodAttribute.Constructor;
             if (attr.Contains(CLManager.APIAttribute_LibraryInitializer))
                 Attribute = MethodAttribute.LibraryInitializer;
             if (attr.Contains(CLManager.APIAttribute_LibraryTerminator))
