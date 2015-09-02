@@ -7,6 +7,7 @@ using Sprache;
 
 namespace BinderMaker.Parser
 {
+#if false
     /// <summary>
     /// enum、struct、関数ポインタの定義ファイル (ヘッダファイル) を解析する
     /// </summary>
@@ -112,4 +113,5 @@ namespace BinderMaker.Parser
 
         #endregion
     }
+#endif
 }

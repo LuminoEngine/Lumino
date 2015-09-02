@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sprache;
 
 namespace BinderMaker
 {
@@ -28,7 +29,7 @@ namespace BinderMaker
         public CLDocument Document { get; private set; }
 
         /// <summary>
-        /// オリジナルのクラス名
+        /// オリジナルのクラス名 (LN プレフィックス付き)
         /// </summary>
         public string OriginalName { get; private set; }
 
@@ -102,15 +103,15 @@ namespace BinderMaker
         /// <param name="doc"></param>
         /// <param name="methods"></param>
         /// <param name="option"></param>
-        public CLClass(IEnumerable<char> startTag, CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option)
+        public CLClass(IEnumerable<char> startTag, string docText, string originalName, string bodyText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
         {
-            Document = doc;
-            OriginalName = name.Trim();
+            Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
+            OriginalName = originalName.Trim();
             Name = OriginalName.Substring(2);
-            Methods = new List<CLMethod>(methods);
-            Option = option;
+            Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
+            //Option = option;
 
-            Methods.ForEach((m) => m.OwnerClass = this);
+            //Methods.ForEach((m) => m.OwnerClass = this);
 
             // クラス種別チェック
             string t = new string(startTag.ToArray());
@@ -197,6 +198,11 @@ namespace BinderMaker
                 }
             }
         }
+
+        #endregion
+
+        #region Fields
+
 
         #endregion
     }

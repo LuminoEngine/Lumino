@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sprache;
 
 namespace BinderMaker
 {
@@ -147,13 +148,16 @@ namespace BinderMaker
         /// コンストラクタ
         /// </summary>
         public CLMethod(
-            CLDocument document,
-            CLFuncDecl funcDecl,
-            CLOption option)
+            string docText,
+            string funcText,
+            string optionText)
+            //CLDocument document,
+            //CLFuncDecl funcDecl,
+            //CLOption option)
         {
-            Document = document;
-            FuncDecl = funcDecl;
-            Option = option;
+            Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
+            FuncDecl =  Parser.CLAPIMethod.FuncDecl.Parse(funcText);
+            Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
             Overloads = new List<CLMethod>();
 
             FuncDecl.OwnerMethod = this;

@@ -3,25 +3,33 @@
 #include "LNInternal.h"
 #include "LNGUI.h"
 
-
+#if 0
 //=============================================================================
 // LNEventArgs
 //=============================================================================
 
-LN_TYPE_INFO_IMPL(LNEventArgs, EventArgs);
+LN_TYPE_INFO_IMPL(LNEventArgs, RoutedEventArgs);
 
 //LN_API LNResult LNMouseEventHandler_CreateInternal(LN_HANDLE(LNMouseEventHandler)* handler, GUI::MouseEventArgs* e)
 //{
 //
 //}
-LN_API LNResult LNEventArgs_GetHandlerOwner(LN_HANDLE(LNEventArgs) hEventArgs, LN_OUT LN_HANDLE(LNObject)* hObject)
-{
-	LN_CHECK_ARG_HANDLE(hEventArgs);
-	LN_CHECK_ARG_HANDLE(hObject);
-	*hObject = LFManager::CheckRegisterObject(TO_REFOBJ(GUI::EventArgs, hEventArgs)->HandlerOwner);
-	return ::LN_OK;
-}
 
+/**
+@brief		TODO
+@param[in]	button		: TODO
+*/
+//LN_INSTANCE_API
+//LN_ATTR_PROPERTY
+//LNResult LNEventArgs_GetHandlerOwner(LN_HANDLE(LNEventArgs) hEventArgs, LN_OUT LN_HANDLE(LNObject)* hObject);
+//LN_API LNResult LNEventArgs_GetHandlerOwner(LN_HANDLE(LNEventArgs) hEventArgs, LN_OUT LN_HANDLE(LNObject)* hObject)
+//{
+//	LN_CHECK_ARG_HANDLE(hEventArgs);
+//	LN_CHECK_ARG_HANDLE(hObject);
+//	*hObject = LFManager::CheckRegisterObject(TO_REFOBJ(GUI::EventArgs, hEventArgs)->HandlerOwner);
+//	return ::LN_OK;
+//}
+//
 
 //=============================================================================
 // LNMouseEventArgs
@@ -277,3 +285,5 @@ LN_API LNResult LNGUIButton_Create(LN_HANDLE(LNGUIButton)* button)
 	*button = LFManager::CheckRegisterObject(obj);
 	LN_FUNC_TRY_END_RETURN;
 }
+
+#endif

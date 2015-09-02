@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sprache;
 
 namespace BinderMaker
 {
     class CLModule : CLEntity
     {
         #region Properties
+
+        /// <summary>
+        /// ドモジュール名
+        /// </summary>
+        public string Name { get; private set; }
 
         /// <summary>
         /// ドキュメント
@@ -28,11 +34,12 @@ namespace BinderMaker
         /// コンストラクタ
         /// </summary>
         /// <param name="doc"></param>
-        /// <param name="classes"></param>
-        public CLModule(CLDocument doc, IEnumerable<CLClass> classes)
+        /// <param name="bodyText"></param>
+        public CLModule(string name, string docText, string bodyText)
         {
-            Document = doc;
-            Classes = new List<CLClass>(classes);
+            Name = name;
+            Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
+            Classes = new List<CLClass>(Parser.CLAPIModule.ModuleBody.Parse(bodyText));
         }
 
         /// <summary>
@@ -44,6 +51,10 @@ namespace BinderMaker
             Document.Register();
             Classes.ForEach((c) => c.Register());   // 子クラスすべて登録
         }
+
+        #endregion
+
+        #region Fields
 
         #endregion
     }

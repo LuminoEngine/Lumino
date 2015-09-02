@@ -72,10 +72,10 @@ typedef intptr_t		LNHandle;
 
 #define LN_LIBRARY_INITIALIZER
 #define LN_LIBRARY_TERMINATOR
-#define LN_CONSTRUCTOR
-#define LN_PROPERTY
-#define LN_EVENT
-#define LN_STRUCT_CONSTRUCTOR
+#define LN_ATTR_CONSTRUCTOR
+#define LN_ATTR_PROPERTY
+#define LN_ATTR_EVENT
+#define LN_ATTR_STRUCT_CONSTRUCTOR
 
 #define LN_HANDLE(x) LNHandle
 #define LN_OUT
