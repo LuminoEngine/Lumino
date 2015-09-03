@@ -31,6 +31,8 @@ namespace BinderMaker
         public const string HandleTypeParamMacro = "LN_HANDLE";
         public const string GenericHandleTypeParamMacro = "LN_HANDLE_GENERIC";
 
+        public const string EnumTerminatorName = "TERMINATOR";
+
         /// <summary>
         /// オーバーロード関数のサフィックス
         /// </summary>
@@ -47,31 +49,7 @@ namespace BinderMaker
         /// <summary>
         /// 基本的なC言語の型と CLType との変換テーブル
         /// </summary>
-        private static Dictionary<string, CLType> _typeInfoTable = new Dictionary<string, CLType>()
-        {
-            { "void",               CLPrimitiveType.Void },
-            { "void*",              CLClass.ByteArray },
-            { "const void*",        CLClass.ByteArray },
-            { "void**",             CLClass.ByteArray },  //TODO: この2つは
-            { "const void**",       CLClass.ByteArray },   //TODO: バッファクラスを用意する必要がありそう
-
-            { "const LNChar*",      CLPrimitiveType.String },
-            { "const LNChar**",     CLPrimitiveType.String },
-
-            { "int",                CLPrimitiveType.Int },
-            { "int*",               CLPrimitiveType.Int },
-            { "float",              CLPrimitiveType.Float },
-            { "float*",             CLPrimitiveType.Float },
-            { "double",             CLPrimitiveType.Double },
-            { "double*",            CLPrimitiveType.Double },
-            { "LNBool",             CLPrimitiveType.Bool },
-            { "LNBool*",　          CLPrimitiveType.Bool },
-            { "uint8_t",            CLPrimitiveType.Byte },
-            { "uint32_t",           CLPrimitiveType.UInt32 },
-            { "intptr_t",           CLPrimitiveType.IntPtr },
-            
-            { "const int*",         CLClass.IntArray },
-        }; 
+        private static Dictionary<string, CLType> _typeInfoTable;
 
         #endregion
 
@@ -99,7 +77,7 @@ namespace BinderMaker
         /// <summary>
         /// 全 struct 型リスト
         /// </summary>
-        public List<CLStructDef> AllStructDefs { get; private set; }
+        public List<CLStruct> AllStructDefs { get; private set; }
 
         /// <summary>
         /// 全 enum 型リスト
@@ -134,13 +112,56 @@ namespace BinderMaker
         /// </summary>
         public CLManager()
         {
+            Instance = this;
+
             AllEntities = new List<CLEntity>();
             AllTypes = new List<CLType>();
             AllClasses = new List<CLClass>();
-            AllStructDefs = new List<CLStructDef>();
+            AllStructDefs = new List<CLStruct>();
             AllEnums = new List<CLEnum>();
             AllMethods = new List<CLMethod>();
             AllDelegates = new List<CLDelegate>();
+
+            CLPrimitiveType.Void = new CLPrimitiveType("Void");
+            CLPrimitiveType.String = new CLPrimitiveType("String");
+            CLPrimitiveType.Bool = new CLPrimitiveType("Bool");
+            CLPrimitiveType.Byte = new CLPrimitiveType("Byte");
+            CLPrimitiveType.Int = new CLPrimitiveType("Int");
+            CLPrimitiveType.UInt32 = new CLPrimitiveType("UInt32");
+            CLPrimitiveType.Float = new CLPrimitiveType("Float");
+            CLPrimitiveType.Double = new CLPrimitiveType("Double");
+            CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
+
+            //CLClass.Array = new CLClass("Array", null);
+            //CLClass.ByteArray = new CLClass("Array", CLPrimitiveType.Byte);
+            //CLClass.IntArray = new CLClass("Array", CLPrimitiveType.Int);
+
+            _typeInfoTable = new Dictionary<string, CLType>()
+            {
+                { "void",               CLPrimitiveType.Void },
+                //{ "void*",              CLClass.ByteArray },
+                //{ "const void*",        CLClass.ByteArray },
+                //{ "void**",             CLClass.ByteArray },  //TODO: この2つは
+                //{ "const void**",       CLClass.ByteArray },   //TODO: バッファクラスを用意する必要がありそう
+
+                { "const LNChar*",      CLPrimitiveType.String },
+                { "const LNChar**",     CLPrimitiveType.String },
+
+                { "int",                CLPrimitiveType.Int },
+                { "int*",               CLPrimitiveType.Int },
+                { "float",              CLPrimitiveType.Float },
+                { "float*",             CLPrimitiveType.Float },
+                { "double",             CLPrimitiveType.Double },
+                { "double*",            CLPrimitiveType.Double },
+                { "LNBool",             CLPrimitiveType.Bool },
+                { "LNBool*",　          CLPrimitiveType.Bool },
+                { "uint8_t",            CLPrimitiveType.Byte },
+                { "uint32_t",           CLPrimitiveType.UInt32 },
+                { "intptr_t",           CLPrimitiveType.IntPtr },
+            
+                //{ "const int*",         CLClass.IntArray },
+            }; 
+
         }
 
         public void Initialize()
@@ -149,23 +170,12 @@ namespace BinderMaker
         }
 
         /// <summary>
-        /// 
+        /// パース済みの AllEntities を解析し、型情報やプロパティの関係を作成する。
         /// </summary>
-        public void RegisterEntities(List<CLEntity> typedefs, List<CLModule> modules)
-        {
-            foreach (var m in typedefs)
-            {
-                m.Register();
-            }
-            foreach (var m in modules)
-            {
-                m.Register();
-            }
-        }
-
-        /// <summary>
-        /// パース済みの AllEntities を解析し、型情報やプロパティの関係を作成する
-        /// </summary>
+        /// <remarks>
+        /// RegisterEntities() が終わった時点では、個々の型情報 (構造体メンバの型等) は、識別子(名前) としてしか認識していない。
+        /// それぞれ CLType を参照するようにする。
+        /// </remarks>
         public void LinkEntities()
         {
             // Result 型を探す
@@ -186,6 +196,17 @@ namespace BinderMaker
             // プロパティを作る
             foreach (var c in AllClasses)
                 c.CreateProperties();
+        }
+
+        /// <summary>
+        /// 構築された中間構造を検証する
+        /// </summary>
+        public void Validation()
+        {
+            foreach (var e in AllEntities)
+            {
+
+            }
         }
 
         /// <summary>

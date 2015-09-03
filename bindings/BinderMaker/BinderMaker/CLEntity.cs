@@ -11,10 +11,17 @@ namespace BinderMaker
     class CLEntity
     {
         #region Properties
+
         /// <summary>
         /// 管理クラス
         /// </summary>
         public CLManager Manager { get { return CLManager.Instance; } }
+
+        /// <summary>
+        /// このエンティティを参照しているオブジェクトのリスト
+        /// </summary>
+        public List<object> ReferenceList { get; private set; }
+
         #endregion
 
         #region Methods
@@ -23,13 +30,7 @@ namespace BinderMaker
         /// </summary>
         public CLEntity()
         {
-        }
-
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public virtual void Register()
-        {
+            ReferenceList = new List<object>();
             Manager.AllEntities.Add(this);
         }
 
@@ -55,14 +56,6 @@ namespace BinderMaker
         /// </summary>
         public CLType()
         {
-        }
-
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
             Manager.AllTypes.Add(this);
         }
 
@@ -100,17 +93,17 @@ namespace BinderMaker
     class CLPrimitiveType : CLType
     {
         #region Constants
-        public static readonly CLPrimitiveType Void = new CLPrimitiveType("Void");
-        public static CLPrimitiveType String = new CLPrimitiveType("String");
 
-        public static CLPrimitiveType Bool = new CLPrimitiveType("Bool");
-        public static CLPrimitiveType Byte = new CLPrimitiveType("Byte");
-        public static CLPrimitiveType Int = new CLPrimitiveType("Int");
-        public static CLPrimitiveType UInt32 = new CLPrimitiveType("UInt32");
-        public static CLPrimitiveType Float = new CLPrimitiveType("Float");
-        public static CLPrimitiveType Double = new CLPrimitiveType("Double");
+        public static CLPrimitiveType Void;
+        public static CLPrimitiveType String;
+        public static CLPrimitiveType Bool;
+        public static CLPrimitiveType Byte;
+        public static CLPrimitiveType Int;
+        public static CLPrimitiveType UInt32;
+        public static CLPrimitiveType Float;
+        public static CLPrimitiveType Double;
+        public static CLPrimitiveType IntPtr;
 
-        public static CLPrimitiveType IntPtr = new CLPrimitiveType("IntPtr");
         #endregion
 
         #region Properties
@@ -202,7 +195,7 @@ namespace BinderMaker
     /// <summary>
     /// struct 定義
     /// </summary>
-    class CLStructDef : CLEntity
+    class CLStruct : CLType
     {
         #region Properties
         /// <summary>
@@ -233,23 +226,15 @@ namespace BinderMaker
         /// <param name="comment"></param>
         /// <param name="name"></param>
         /// <param name="members"></param>
-        public CLStructDef(string comment, string name, IEnumerable<CLStructMember> members)
+        public CLStruct(string comment, string name, IEnumerable<CLStructMember> members)
         {
             OriginalName = name;
             Comment = comment.Trim();
             Name = name.Trim().Substring(2);   // プレフィックスを取り除く
             Members = new List<CLStructMember>(members);
+            Manager.AllStructDefs.Add(this);    // 登録
         }
 
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
-            Manager.AllStructDefs.Add(this);
-            Members.ForEach((c) => c.Register());
-        }
         #endregion
     }
 
@@ -299,6 +284,7 @@ namespace BinderMaker
         public override void LinkTypes()
         {
             Type = Manager.FindType(_originalTypeName);
+            Type.ReferenceList.Add(this);
         }
         #endregion
     }
@@ -377,17 +363,11 @@ namespace BinderMaker
                 }
                 lastValue++;
             }
+
+            // 登録
+            Manager.AllEnums.Add(this);
         }
 
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
-            Manager.AllEnums.Add(this);
-            Members.ForEach((c) => c.Register());
-        }
         #endregion
     }
 
@@ -435,7 +415,7 @@ namespace BinderMaker
         /// </summary>
         public bool IsTerminator
         {
-            get { return OriginalName.LastIndexOf("MAX") == OriginalName.Length - 3; }
+            get { return OriginalName.LastIndexOf(CLManager.EnumTerminatorName) == OriginalName.Length - CLManager.EnumTerminatorName.Length; }
         }
 
         /// <summary>
@@ -534,16 +514,11 @@ namespace BinderMaker
             Document = doc;
             Name = name.Substring(2);   // プレフィックスを取り除く
             Params = new List<CLParam>(params1);
-        }
 
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
+            // 登録
             Manager.AllDelegates.Add(this);
         }
+
         #endregion
     }
 }

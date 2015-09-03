@@ -47,18 +47,18 @@ LN_STRUCT_CLASS(LNVector2)
 
 	/**
 		@brief		2D ベクトルを正規化します。
-		@param[in]	vec			: 処理対象の 2D ベクトル
-	*/
-	LN_INSTANCE_API
-	LNResult LNVector2_Normalize(LNVector2* vec);
-
-	/**
-		@brief		2D ベクトルを正規化します。
 		@param[in]	vec			: 処理の基になる 2D ベクトル
 		@param[out] outVec		: 演算結果を格納する 2D ベクトル
 	*/
 	LN_STATIC_API
-	LNResult LNVector2_NormalizeV(const LNVector2* vec, LNVector2* outVec);
+	LNResult LNVector2_Normalize(const LNVector2* vec, LNVector2* outVec);
+
+	/**
+		@brief		2D ベクトルを正規化します。
+		@param[in]	vec			: 処理対象の 2D ベクトル
+	*/
+	LN_INSTANCE_API
+	LNResult LNVector2_NormalizeV(LNVector2* vec);
 
 	LN_INTERNAL_API LNResult LNVector2_GetLengthD(const LNVector2* vec, double* length);
 	LN_INTERNAL_API LNResult LNVector2_GetSquareLengthD(const LNVector2* vec, double* length);

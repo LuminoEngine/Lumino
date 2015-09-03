@@ -9,7 +9,7 @@ namespace BinderMaker.Builder
 {
     class OutputBuffer
     {
-        public const string NewLineCode = "\n";
+        public const string NewLineCode = "\r\n";
 
         private StringBuilder _buffer = new StringBuilder();
         private int _indentLevel = 0;
@@ -78,6 +78,15 @@ namespace BinderMaker.Builder
         /// <summary>
         /// 文字列を追加する
         /// </summary>
+        public OutputBuffer Append(string format, params string[] args)
+        {
+            _buffer.Append(string.Format(format, args));
+            return this;
+        }
+
+        /// <summary>
+        /// 文字列を追加する
+        /// </summary>
         public OutputBuffer Append(OutputBuffer buffer)
         {
             return Append(buffer.ToString());
@@ -126,8 +135,14 @@ namespace BinderMaker.Builder
 
                 // 最後の一つは改行しない
                 if (i != lines.Count() - 1)
-                    _buffer.Append('\n');
+                    _buffer.Append(NewLineCode);
             }
+            return this;
+        }
+
+        public OutputBuffer Indent()
+        {
+            AppendWithIndent("");
             return this;
         }
 
@@ -137,7 +152,7 @@ namespace BinderMaker.Builder
         public OutputBuffer NewLine(int count = 1)
         {
             for (int i = 0; i < count; i++)
-                _buffer.Append('\n');
+                _buffer.Append(NewLineCode);
             return this;
         }
 

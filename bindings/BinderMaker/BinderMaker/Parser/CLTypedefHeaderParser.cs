@@ -24,15 +24,17 @@ namespace BinderMaker.Parser
             select new CLStructMember(type, name, comment);
         
         // struct 定義
-        private static readonly Parser<CLStructDef> StructDecl =
-            from comment    in ParserUtils.DoxyLineComment1              // コメント
-            from start      in Parse.String("struct").GenericToken()
-            from name       in ParserUtils.Identifier.GenericToken()    // 名前
-            from lbrace     in Parse.Char('{').GenericToken()
-            from members    in StructMember.Many()                        // メンバ
-            from rbrace     in Parse.Char('}').GenericToken()
-            from end        in Parse.Char(';').GenericToken()
-            select new CLStructDef(comment, name, members);
+        private static readonly Parser<CLStruct> StructDecl =
+            from comment    in ParserUtils.DoxyLineComment1             // コメント
+            from key1       in Parse.String("typedef").GenericToken()   // "typedef"
+            from key12      in Parse.String("struct").GenericToken()    // "struct"
+            from name       in ParserUtils.Identifier.GenericToken()    // 名前 ("tagXXXX" となっているはず)
+            from lbrace     in Parse.Char('{').GenericToken()           // {
+            from members    in StructMember.Many()                      //  メンバ
+            from rbrace     in Parse.Char('}').GenericToken()           // }
+            from name2      in ParserUtils.Identifier.GenericToken()    // typedef 名
+            from end        in Parse.Char(';').GenericToken()           // ;
+            select new CLStruct(comment, name2, members);
 
         #endregion
 
@@ -54,14 +56,16 @@ namespace BinderMaker.Parser
 
         // enum 定義
         private static readonly Parser<CLEntity> EnumDecl =
-            from comment    in ParserUtils.DoxyLineComment1                          // コメント
-            from start      in Parse.String("enum").GenericToken()
-            from name       in ParserUtils.Identifier.GenericToken()
-            from lbrace     in Parse.Char('{').GenericToken()
-            from members    in EnumMember.Many()
-            from rbrace     in Parse.Char('}').GenericToken()
-            from end        in Parse.Char(';').GenericToken()
-            select new CLEnum(comment, name, members);
+            from comment    in ParserUtils.DoxyLineComment1             // コメント
+            from key1       in Parse.String("typedef").GenericToken()   // "typedef"
+            from start      in Parse.String("enum").GenericToken()      // "enum"
+            from name       in ParserUtils.Identifier.GenericToken()    // 名前 ("tagXXXX" となっているはず)
+            from lbrace     in Parse.Char('{').GenericToken()           // {
+            from members    in EnumMember.Many()                        // メンバ
+            from rbrace     in Parse.Char('}').GenericToken()           // }
+            from name2      in ParserUtils.Identifier.GenericToken()    // typedef 名
+            from end        in Parse.Char(';').GenericToken()           // ;
+            select new CLEnum(comment, name2, members);
 
         #endregion
 

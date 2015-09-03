@@ -1,4 +1,21 @@
 ﻿
+
+//=============================================================================
+// LNGUI
+//=============================================================================
+
+/**
+	@brief		TODO
+	@param[in]	mouseEventArgs		: 
+*/
+typedef void(*LNMouseEventHandler)(LN_HANDLE(LNMouseEventArgs) mouseEventArgs);
+
+/**
+	@brief		TODO
+	@param[in]	handle		: 
+*/
+typedef void(*LNCallback_Void_Void)(LN_HANDLE(LNObject) handle);
+
 #pragma once
 
 #include "LNCommon.h"

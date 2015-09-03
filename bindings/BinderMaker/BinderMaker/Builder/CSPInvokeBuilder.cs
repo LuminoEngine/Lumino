@@ -36,7 +36,7 @@ public extern static RETURN_TYPE FUNC_NAME(ARGS);
                 return;
 
             // XML コメント
-            CSBuilderCommon.MakeSummaryXMLComment(_enumText, enumType.Comment);
+            CSCommon.MakeSummaryXMLComment(_enumText, enumType.Comment);
 
             // [Flags] 属性
             if (enumType.IsFlags)
@@ -54,7 +54,7 @@ public extern static RETURN_TYPE FUNC_NAME(ARGS);
                 if (member.IsTerminator) continue;
 
                 // XML コメント
-                CSBuilderCommon.MakeSummaryXMLComment(_enumText, member.Comment);
+                CSCommon.MakeSummaryXMLComment(_enumText, member.Comment);
 
                 // メンバ定義
                 _enumText.AppendWithIndent("{0} = {1},", member.CapitalizedName, member.Value).NewLine(2);
@@ -87,18 +87,18 @@ public extern static RETURN_TYPE FUNC_NAME(ARGS);
             //    return;
 
             // XML コメント
-            CSBuilderCommon.MakeSummaryXMLComment(_funcsText, _context.GetBriefText(method));
+            CSCommon.MakeSummaryXMLComment(_funcsText, _context.GetBriefText(method));
             foreach (var param in method.FuncDecl.Params)
             {
-                CSBuilderCommon.MakeParamXMLComment(_funcsText, param.Name, _context.GetParamText(param));
+                CSCommon.MakeParamXMLComment(_funcsText, param.Name, _context.GetParamText(param));
             }
             // TODO:returnコメント
             //CSBuilderCommon.MakeReturnXMLComment(method);
-            CSBuilderCommon.MakeRemarksXMLComment(_context.GetDetailsText(method));
+            CSCommon.MakeRemarksXMLComment(_context.GetDetailsText(method));
 
             // DLLImport・型名・関数名
             string declText = FuncDeclTempalte.Trim();
-            declText = declText.Replace("RETURN_TYPE", CSBuilderCommon.MakeTypeName(method.FuncDecl.ReturnType));
+            declText = declText.Replace("RETURN_TYPE", CSCommon.MakeTypeName(method.FuncDecl.ReturnType));
             declText = declText.Replace("FUNC_NAME", method.FuncDecl.OriginalFullName);
 
             // 仮引数リスト
@@ -112,7 +112,7 @@ public extern static RETURN_TYPE FUNC_NAME(ARGS);
 
                 // デフォルト引数
                 if (!string.IsNullOrEmpty(param.OriginalDefaultValue))
-                    argsText += " = " + CSBuilderCommon.ConvertLiteral(param.OriginalDefaultValue, true);
+                    argsText += " = " + CSCommon.ConvertLiteral(param.OriginalDefaultValue, true);
             }
             declText = declText.Replace("ARGS", argsText);
 
@@ -140,9 +140,9 @@ public extern static RETURN_TYPE FUNC_NAME(ARGS);
         {
             if ((param.Type is CLClass && ((CLClass)param.Type).IsReferenceObject) ||
                 (param.Type == CLPrimitiveType.String && param.IOModifier == IOModifier.Out))
-                return string.Format("{0} IntPtr", CSBuilderCommon.GetAPIParamIOModifier(param));
+                return string.Format("{0} IntPtr", CSCommon.GetAPIParamIOModifier(param));
             else
-                return string.Format("{0} {1}", CSBuilderCommon.GetAPIParamIOModifier(param), CSBuilderCommon.MakeTypeName(param.Type));
+                return string.Format("{0} {1}", CSCommon.GetAPIParamIOModifier(param), CSCommon.MakeTypeName(param.Type));
         }
     }
 }

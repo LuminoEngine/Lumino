@@ -13,7 +13,7 @@ namespace BinderMaker
 
         static void Main(string[] args)
         {
-            CLManager.Instance = new CLManager();
+            new CLManager();
             CLManager.Instance.Initialize();
 
             // 各種型情報が定義されているヘッダを解析する
@@ -31,12 +31,14 @@ namespace BinderMaker
             var modules = parser.Analyze(apiHeaders);
 
             // 解析結果を Manager に登録する
-            CLManager.Instance.RegisterEntities(typedefs, modules);
             CLManager.Instance.LinkEntities();
 
 
             var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
-            csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "API.cs");
+            csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/API.cs");
+
+            var csStructsBuilder = new Builder.CSStructsBuilder();
+            csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Structs.cs");
         }
     }
 }

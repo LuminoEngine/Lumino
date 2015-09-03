@@ -1,4 +1,8 @@
-﻿
+﻿/*
+	[2015/9/3]
+		SlimDX, XNA, Unity あたりは、演算関数は基本的に static。
+		とりあえずそれらにあわせてみる。
+*/
 #pragma once
 #include "LNInternal.h"
 #include "LNMath.h"
@@ -70,6 +74,12 @@ LNResult LNVector2_Normalize(const LNVector2* vec, LNVector2* outVec)
 {
 	LN_CHECK_ARG(vec != NULL);
 	*TO_CORE_STRUCT_P(LVector2, outVec) = LVector2::Normalize(*TO_CORE_STRUCT_CP(LVector2, vec));
+	return ::LN_OK;
+}
+LNResult LNVector2_NormalizeV(LNVector2* vec)
+{
+	LN_CHECK_ARG(vec != NULL);
+	TO_CORE_STRUCT_P(LVector2, vec)->Normalize();
 	return ::LN_OK;
 }
 
@@ -549,7 +559,7 @@ LNResult LNMatrix_PerspectiveFovLH(float fovY, float aspect, float nearZ, float 
 }
 LNResult LNMatrix_PerspectiveFovLHD(double fovY, double aspect, double nearZ, double farZ, LNMatrix* matOut)
 {
-	return LNMatrix_PerspectiveFovLH(fovY, aspect, nearZ, farZ, matOut);
+	return LNMatrix_PerspectiveFovLH((float)fovY, (float)aspect, (float)nearZ, (float)farZ, matOut);
 }
 
 //-----------------------------------------------------------------------------

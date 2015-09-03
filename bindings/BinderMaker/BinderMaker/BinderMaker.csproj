@@ -45,8 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builder\Builder.cs" />
-    <Compile Include="Builder\CSBuilderCommon.cs" />
+    <Compile Include="Builder\CSCommon.cs" />
     <Compile Include="Builder\CSPInvokeBuilder.cs" />
+    <Compile Include="Builder\CSStructsBuilder.cs" />
     <Compile Include="Builder\OutputBuffer.cs" />
     <Compile Include="CLClass.cs" />
     <Compile Include="CLDocument.cs" />

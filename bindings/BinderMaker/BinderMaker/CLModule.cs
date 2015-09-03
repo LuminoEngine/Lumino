@@ -42,16 +42,6 @@ namespace BinderMaker
             Classes = new List<CLClass>(Parser.CLAPIModule.ModuleBody.Parse(bodyText));
         }
 
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
-            Document.Register();
-            Classes.ForEach((c) => c.Register());   // 子クラスすべて登録
-        }
-
         #endregion
 
         #region Fields

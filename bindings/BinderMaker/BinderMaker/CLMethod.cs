@@ -200,18 +200,9 @@ namespace BinderMaker
                         Params.Add(param);
                 }
             }
-        }
 
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
+            // 登録
             Manager.AllMethods.Add(this);
-            Document.Register();
-            FuncDecl.Register();
-            Option.Register();
         }
 
         /// <summary>
@@ -366,15 +357,6 @@ namespace BinderMaker
 
             // 先頭が Create ならコンストラクタ関数
             IsRefObjectConstructor = (string.Compare(Name, 0, "Create", 0, 6) == 0);
-        }
-
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
-            Params.ForEach((p) => p.Register());
         }
 
         /// <summary>

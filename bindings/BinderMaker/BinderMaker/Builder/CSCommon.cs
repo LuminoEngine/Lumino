@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BinderMaker.Builder
 {
-    static class CSBuilderCommon
+    static class CSCommon
     {
         #region Templates
         public const string XMLCommentTemplate_Summary = "/// <summary>\n/// SUMMARY\n/// </summary>\n";
@@ -33,8 +33,8 @@ namespace BinderMaker.Builder
             //{ CLPrimitiveType.ExceptionCallback, "ExceptionCallback" },
             { CLPrimitiveType.IntPtr, "IntPtr" },
             
-            { CLClass.ByteArray, "byte[]" },
-            { CLClass.IntArray, "int[]" },
+            //{ CLClass.ByteArray, "byte[]" },
+            //{ CLClass.IntArray, "int[]" },
 
             //{ CLPrimitiveType.Handle, "IntPtr" },
             //{ CLPrimitiveType.Generic, "double" },
@@ -72,7 +72,7 @@ namespace BinderMaker.Builder
         public static void MakeReturnXMLComment(OutputBuffer buffer, string text)
         {
             if (!string.IsNullOrEmpty(text))
-                CSBuilderCommon.XMLCommentTemplate_Return.Replace("DETAIL", text);
+                CSCommon.XMLCommentTemplate_Return.Replace("DETAIL", text);
         }
 
         /// <summary>

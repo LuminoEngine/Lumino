@@ -15,9 +15,9 @@ namespace BinderMaker
         /// Array 型クラスの定義
         /// ※これらは  LinkTypes() でも参照オブジェクトではないとする条件で使っているので、追加するときはそこも修正する。
         /// </summary>
-        public static CLClass Array = new CLClass("Array", null);
-        public static CLClass ByteArray = new CLClass("Array", CLPrimitiveType.Byte);
-        public static CLClass IntArray = new CLClass("Array", CLPrimitiveType.Int);
+        //public static CLClass Array;
+        //public static CLClass ByteArray;
+        //public static CLClass IntArray;
 
         #endregion
 
@@ -86,10 +86,10 @@ namespace BinderMaker
         /// <summary>
         /// 構造体情報
         /// </summary>
-        public CLStructDef StructData { get; private set; }
+        public CLStruct StructData { get; private set; }
 
         /// <summary>
-        /// 拡張クラス であるか (各言語のコードで独自定義するもの。RefObject や ObjectList)
+        /// 拡張クラス であるか (各言語のコードで独自定義するもの。RefObject など)
         /// </summary>
         public bool IsExtension { get; private set; }
         #endregion
@@ -123,6 +123,9 @@ namespace BinderMaker
                 IsStruct = true;
             if (t.IndexOf("LN_EXTENSION_CLASS") >= 0)
                 IsExtension = true;
+
+            // 登録
+            Manager.AllClasses.Add(this);
         }
 
         /// <summary>
@@ -137,18 +140,9 @@ namespace BinderMaker
             OriginalName = name;
             BindingType = bindingType;
             IsGeneric = true;
-        }
 
-        /// <summary>
-        /// 必要に応じてサブクラスでオーバーライドされ、階層的に Manager の管理リストに登録する
-        /// </summary>
-        public override void Register()
-        {
-            base.Register();
+            // 登録
             Manager.AllClasses.Add(this);
-            Document.Register();
-            Methods.ForEach((c) => c.Register());
-            Option.Register();
         }
 
         /// <summary>
@@ -164,10 +158,10 @@ namespace BinderMaker
 
             // RefObject 型チェック
             IsReferenceObject = false;
-            if (!IsStatic && !IsStruct &&
+            if (!IsStatic && !IsStruct/* &&
                 this != Array &&
                 this != ByteArray &&
-                this != IntArray)
+                this != IntArray*/)
             {
                 IsReferenceObject = true;
             }

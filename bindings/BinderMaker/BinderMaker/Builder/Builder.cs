@@ -86,7 +86,8 @@ namespace BinderMaker.Builder
         /// <summary>
         /// クラスor構造体 通知 (開始)
         /// </summary>
-        /// <param name="enumType"></param>
+        /// <param name="classType"></param>
+        /// <returns>false の場合このクラスの出力を無視する</returns>
         protected virtual bool OnClassLookedStart(CLClass classType) { return true; }
 
         /// <summary>

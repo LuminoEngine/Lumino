@@ -20,9 +20,7 @@ LN_EXTENSION_CLASS(LNObject)
 	/**
 		@brief		オブジェクトを解放します。
 		@param[in]	hadnleObject	: オブジェクトハンドル
-		@details	指定されたオブジェクトの参照を解放します。<br>
-					Create～という名前の付く関数でオブジェクトを生成した場合は
-					基本的にこの関数でオブジェクトを解放する必要があります。
+		@details	指定されたオブジェクトの参照を解放します。
 	*/
 	LN_INSTANCE_API
 	LNResult LNObject_Release(LN_HANDLE(LNObject) hadnleObject);
@@ -31,7 +29,7 @@ LN_EXTENSION_CLASS(LNObject)
 		@brief		オブジェクトの参照カウントをインクリメントします。
 		@param[in]	hadnleObject	: オブジェクトハンドル
 		@details	この関数は「参照カウント」という概念について十分に理解した上で使用してください。
-					参照カウントは Create 時に 1 となり、LNObject_Release でデクリメントされます。
+					参照カウントは LNObject_AddRef でインクリメントされ、LNObject_Release でデクリメントされます。
 					Release 漏れがあるとメモリリークの原因になります。
 	*/
 	LN_INSTANCE_API
@@ -45,10 +43,10 @@ LN_EXTENSION_CLASS(LNObject)
 	LN_INSTANCE_API
 	LNResult LNObject_GetRefCount(LN_HANDLE(LNObject) hadnleObject, int* count);
 
-	LN_INTERNAL_API void*	LNObject_GetBindingTypeData(LN_HANDLE(LNObject) hadnleObject);
-	LN_INTERNAL_API void*	LNObject_GetInternalObject(LN_HANDLE(LNObject) hadnleObject);
-	LN_INTERNAL_API void	LNObject_SetUserData(LN_HANDLE(LNObject) hadnleObject, void* data);
-	LN_INTERNAL_API void*	LNObject_GetUserData(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API intptr_t	LNObject_GetBindingTypeData(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API intptr_t	LNObject_GetInternalObject(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API void		LNObject_SetUserData(LN_HANDLE(LNObject) hadnleObject, intptr_t data);
+	LN_INTERNAL_API intptr_t	LNObject_GetUserData(LN_HANDLE(LNObject) hadnleObject);
 	
 LN_CLASS_END
 
