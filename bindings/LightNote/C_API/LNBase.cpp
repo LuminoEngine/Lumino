@@ -76,7 +76,7 @@ LNResult LNObject_GetRefCount(LNHandle hadnleObject, int* count)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_INTERNAL_API void* LNObject_GetBindingTypeData(LNHandle hadnleObject)
+LN_INTERNAL_API LNUserData LNObject_GetBindingTypeData(LNHandle hadnleObject)
 {
 	return LFManager::GetObjectEntry(hadnleObject)->Object->GetBindingTypeData();
 }
@@ -84,7 +84,7 @@ LN_INTERNAL_API void* LNObject_GetBindingTypeData(LNHandle hadnleObject)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_INTERNAL_API void* LNObject_GetInternalObject(LNHandle hadnleObject)
+LN_INTERNAL_API LNUserData LNObject_GetInternalObject(LNHandle hadnleObject)
 {
 	return LFManager::GetObjectEntry(hadnleObject);
 }
@@ -92,7 +92,7 @@ LN_INTERNAL_API void* LNObject_GetInternalObject(LNHandle hadnleObject)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_INTERNAL_API void LNObject_SetUserData(LNHandle hadnleObject, void* data)
+LN_INTERNAL_API void LNObject_SetUserData(LNHandle hadnleObject, LNUserData data)
 {
 	LFManager::GetObjectEntry(hadnleObject)->UserData = data;
 }
@@ -100,7 +100,7 @@ LN_INTERNAL_API void LNObject_SetUserData(LNHandle hadnleObject, void* data)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LN_INTERNAL_API void* LNObject_GetUserData(LNHandle hadnleObject)
+LN_INTERNAL_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
 {
 	return LFManager::GetObjectEntry(hadnleObject)->UserData;
 }

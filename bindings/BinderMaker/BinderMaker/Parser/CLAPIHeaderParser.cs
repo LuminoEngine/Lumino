@@ -207,10 +207,11 @@ namespace BinderMaker.Parser
 
         // 仮引数定義
         public static readonly Parser<CLParam> FuncParamDecl =
+            from attr       in Parse.String("LN_OUT").GenericToken().Or(Parse.Return(""))  // 引数属性(opt)
             from type       in ParamType.GenericToken()
             from name       in ParserUtils.Identifier//.GenericToken()
-            from defaultVal in FuncParamDefault.Or(Parse.Return(""))   // opt
-            select new CLParam(type, name, defaultVal);
+            from defaultVal in FuncParamDefault.Or(Parse.Return(""))        // opt
+            select new CLParam(new string(attr.ToArray()), type, name, defaultVal);
 
         // 仮引数定義並び
         public static readonly Parser<IEnumerable<CLParam>> FuncParamDecls =

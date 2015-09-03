@@ -45,6 +45,7 @@ namespace BinderMaker.Builder
                 _fieldsText.Append("public {0} {1};", CSCommon.MakeTypeName(member.Type), member.Name).NewLine(2);
             }
 
+#if false   // C_API の Create をコンストラクタとするようにした。
             // 各要素指定のコンストラクタを作る
             {
                 // XML コメント
@@ -65,6 +66,7 @@ namespace BinderMaker.Builder
                     _methodsText.AppendWithIndent(member.Name + " = " + member.Name.ToLower() + ";").NewLine();
                 _methodsText.DecreaseIndent().AppendWithIndent("}").NewLine(2);
             }
+#endif
 
             return true;
         }
@@ -100,8 +102,8 @@ namespace BinderMaker.Builder
         /// <param name="enumType"></param>
         protected override void OnMethodLooked(CLMethod method)
         {
-            // XML コメントと メソッドヘッダを作る
             MakeMethodHeaderText(method);
+            MakeMethodBodyText(method, false);
         }
 
         /// <summary>
@@ -165,6 +167,67 @@ namespace BinderMaker.Builder
             _methodsText.AppendWithIndent(xmlCommentText.ToString());
             _methodsText.AppendWithIndent(methodHeader);
             _methodsText.NewLine();
+        }
+
+        private void MakeMethodBodyText(CLMethod method, bool isPropSetter)
+        {
+            var initStmtText = new OutputBuffer();  // API 呼び出し前の処理
+            var argsText = new OutputBuffer();      // API 実引数
+            var returnStmtText = "";                // return 文
+
+            // インスタンスメソッドの時、this を表す先頭の仮引数がある
+            if (method.ThisParam != null)
+            {
+                argsText.Append(CSCommon.GetAPIParamIOModifier(method.ThisParam) + " this");
+            }
+
+            // 普通の引数
+            foreach (var param in method.Params)
+            {
+                string name = (isPropSetter) ? "value" : param.Name;    // setter の場合は名前を value にする
+                argsText.AppendCommad("{0} {1}", CSCommon.GetAPIParamIOModifier(param), name);
+            }
+
+            // return として選択された引数がある場合、一時変数を作って結果を受け取り、それを返す
+            if (method.ReturnParam != null)
+            {
+                var param = method.ReturnParam;
+
+                // コンストラクタの場合は out this 固定。
+                if (method.IsRefObjectConstructor)
+                {
+                    argsText.AppendCommad("out this");
+                }
+                else
+                {
+                    // 一時変数初期化
+                    initStmtText.AppendWithIndent("var {0} = new {1}();", param.Name, CSCommon.MakeTypeName(param.Type)).NewLine();
+                    // 実引数
+                    argsText.AppendCommad("{0} {1}", CSCommon.GetAPIParamIOModifier(param), param.Name);
+                    // return 文
+                    returnStmtText = "return " + param.Name + ";" + OutputBuffer.NewLineCode;
+                }
+            }
+
+            // エラーコードと throw
+            string preErrorStmt = "";
+            string postErrorStmt = "";
+            if (method.FuncDecl.ReturnType == Manager.ResultEnumType)
+            {
+                preErrorStmt = "var result = ";
+                postErrorStmt = "if (result != Result.OK) throw new LNoteException(result);" + OutputBuffer.NewLineCode;
+            }
+
+            // 定義文を結合
+            _methodsText.AppendWithIndent("{").NewLine();
+            _methodsText.IncreaseIndent();
+            _methodsText.AppendWithIndent(
+                initStmtText.ToString() +
+                string.Format("{0}API.{1}({2});", preErrorStmt, method.FuncDecl.OriginalFullName, argsText.ToString()) + OutputBuffer.NewLineCode +
+                postErrorStmt +
+                returnStmtText);
+            _methodsText.DecreaseIndent();
+            _methodsText.AppendWithIndent("}").NewLine(2);
         }
     }
 }

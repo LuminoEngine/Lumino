@@ -12,7 +12,7 @@ ENUM_LIST
     {
     
 #if DEBUG
-    	internal const string DLLName = "LNote.Debug.dll";
+    	internal const string DLLName = "LNote_d.dll";
 #else
     	internal const string DLLName = "LNote.dll";
 #endif

@@ -43,10 +43,10 @@ LN_EXTENSION_CLASS(LNObject)
 	LN_INSTANCE_API
 	LNResult LNObject_GetRefCount(LN_HANDLE(LNObject) hadnleObject, int* count);
 
-	LN_INTERNAL_API intptr_t	LNObject_GetBindingTypeData(LN_HANDLE(LNObject) hadnleObject);
-	LN_INTERNAL_API intptr_t	LNObject_GetInternalObject(LN_HANDLE(LNObject) hadnleObject);
-	LN_INTERNAL_API void		LNObject_SetUserData(LN_HANDLE(LNObject) hadnleObject, intptr_t data);
-	LN_INTERNAL_API intptr_t	LNObject_GetUserData(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API LNUserData	LNObject_GetBindingTypeData(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API LNUserData	LNObject_GetInternalObject(LN_HANDLE(LNObject) hadnleObject);
+	LN_INTERNAL_API void		LNObject_SetUserData(LN_HANDLE(LNObject) hadnleObject, LNUserData data);
+	LN_INTERNAL_API LNUserData	LNObject_GetUserData(LN_HANDLE(LNObject) hadnleObject);
 	
 LN_CLASS_END
 

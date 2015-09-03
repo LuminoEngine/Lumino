@@ -139,7 +139,6 @@ namespace BinderMaker
             _typeInfoTable = new Dictionary<string, CLType>()
             {
                 { "void",               CLPrimitiveType.Void },
-                //{ "void*",              CLClass.ByteArray },
                 //{ "const void*",        CLClass.ByteArray },
                 //{ "void**",             CLClass.ByteArray },  //TODO: この2つは
                 //{ "const void**",       CLClass.ByteArray },   //TODO: バッファクラスを用意する必要がありそう
@@ -158,6 +157,7 @@ namespace BinderMaker
                 { "uint8_t",            CLPrimitiveType.Byte },
                 { "uint32_t",           CLPrimitiveType.UInt32 },
                 { "intptr_t",           CLPrimitiveType.IntPtr },
+                { "LNUserData",         CLPrimitiveType.IntPtr },
             
                 //{ "const int*",         CLClass.IntArray },
             }; 

@@ -111,7 +111,7 @@ namespace BinderMaker
             Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
             Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
 
-            //Methods.ForEach((m) => m.OwnerClass = this);
+            Methods.ForEach((m) => m.OwnerClass = this);
 
             // クラス種別チェック
             string t = new string(startTag.ToArray());

@@ -19,13 +19,13 @@ LN_STRUCT_CLASS(LNVector2)
 
 	/**
 		@brief		2D ベクトルを初期化します。
-		@param[in]	vec		: 値を格納する 2D ベクトル
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
+		@param[out]	vec		: 値を格納する 2D ベクトル
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector2_Create(LNVector2* vec, float x, float y);
+	LNResult LNVector2_Create(float x, float y, LN_OUT LNVector2* vec);
 
 	/**
 		@brief		2D ベクトルの長さを計算します。
@@ -72,25 +72,25 @@ LN_CLASS_END
 LN_STRUCT_CLASS(LNVector3)
 
 	/**
-		@brief		3Dベクトルに値を設定する
-		@param[out]	vec		: 値を格納するベクトル
+		@brief		3Dベクトルを初期化します。
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
 		@param[in]	z		: Z 値
+		@param[out]	vec		: 値を格納する 3Dベクトル 変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector3_Create(LNVector3* vec, float x, float y, float z);
+	LNResult LNVector3_Create(float x, float y, float z, LN_OUT LNVector3* vec);
 
 	/**
-		@brief		3Dベクトルに値を設定する
-		@param[out]	vec		: 値を格納するベクトル
+		@brief		2D ベクトル と Z値 を指定して、3Dベクトルを初期化します。
 		@param[in]	vec2	: 2D ベクトル
 		@param[in]	z		: Z 値
+		@param[out]	vec		: 値を格納する 3Dベクトル 変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector3_CreateVec2(LNVector3* vec, const LNVector2* vec2, float z);
+	LNResult LNVector3_CreateVZ(const LNVector2* vec2, float z, LN_OUT LNVector3* vec);
 
 	/**
 		@brief		3Dベクトルの長さを計算する
@@ -183,7 +183,7 @@ LN_STRUCT_CLASS(LNVector3)
 		@param[out] outVec	: 演算結果を格納する 3D ベクトル
 		@details	ベクトルを ( x, y, z, 1 ) として座標変換します。
 		            結果の w は出力されません。<br>
-		            結果を w = 1 に射影する ( x y z を w で除算する ) 場合は
+		            結果を w = 1 に射影する (x y z を w で除算) 場合は
 		            Vector3TransformCoord() を使用してください。
 	*/
 	LN_STATIC_API
@@ -195,7 +195,7 @@ LN_STRUCT_CLASS(LNVector3)
 		@param[in]	mat		: 処理の基になる 行列
 		@param[out] outVec	: 演算結果を格納する 3D ベクトル
 		@details	ベクトルを ( x, y, z, 1 ) として座標変換し、
-		            結果を w = 1 に射影 ( x y z を w で除算する ) します。
+		            結果を w = 1 に射影 (x y z を w で除算) します。
 	*/
 	LN_STATIC_API
 	LNResult LNVector3_TransformCoord(const LNVector3* vec, const LNMatrix* mat, LNVector3* outVec);
@@ -215,16 +215,16 @@ LN_CLASS_END
 LN_STRUCT_CLASS(LNVector4)
 
 	/**
-		@brief		3Dベクトルに値を設定する
-		@param[out]	vec		: 値を格納するベクトル
+		@brief		4Dベクトルを初期化します。
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
 		@param[in]	z		: Z 値
 		@param[in]	w		: W 値
+		@param[out]	vec		: 値を格納する4Dベクトル変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector4_Create(LNVector4* vec, float x, float y, float z, float w);
+	LNResult LNVector4_Create(float x, float y, float z, float w, LN_OUT LNVector4* vec);
 
 LN_CLASS_END
 
@@ -525,15 +525,16 @@ LN_CLASS_END
 LN_STRUCT_CLASS(LNQuaternion)
 
 	/**
-		@brief		クォータニオンに値を設定する
-		@param[out]	qua		: 値を格納する Quaternion 変数
+		@brief		クォータニオンを初期化します。
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
 		@param[in]	z		: Z 値
 		@param[in]	w		: W 値
+		@param[out]	qua		: 値を格納する Quaternion 変数のアドレス
 	*/
 	LN_INSTANCE_API
-	LNResult LNQuaternion_Set(LNQuaternion* qua, float x, float y, float z, float w);
+	LN_ATTR_CONSTRUCTOR
+	LNResult LNQuaternion_Create(float x, float y, float z, float w, LN_OUT LNQuaternion* qua);
 
 	/**
 		@brief		単位クォータニオンを作成する

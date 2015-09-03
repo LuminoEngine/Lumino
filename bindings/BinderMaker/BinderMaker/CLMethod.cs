@@ -191,7 +191,7 @@ namespace BinderMaker
             {
                 foreach (var param in FuncDecl.Params)
                 {
-                    if (param == FuncDecl.Params.First() && IsInstanceMethod)
+                    if (param == FuncDecl.Params.First() && IsInstanceMethod && !IsRefObjectConstructor)
                         ThisParam = param;      // 第1引数かつインスタンスメソッドの場合は特殊な実引数になる
                     else if (param == FuncDecl.Params.Last() &&
                         ((param.IOModifier & IOModifier.In) == 0 && (param.IOModifier & IOModifier.Out) != 0))
@@ -239,6 +239,20 @@ namespace BinderMaker
                 // 繋げる
                 if (targetMethod == null) throw new InvalidOperationException("invalid overload.");
                 targetMethod.Overloads.Add(this);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void LinkTypes()
+        {
+            base.LinkTypes();
+
+            if (IsRefObjectConstructor)
+            {
+                if (ReturnParam == null)
+                    throw new InvalidOperationException("コンストラクタAPIが出力引数を持っていません。:" + FuncDecl.OriginalFullName);
             }
         }
 
@@ -377,6 +391,7 @@ namespace BinderMaker
         #region Fields
 
         private string _originalTypeName;
+        private string _originalAttrText;
 
         #endregion
 
@@ -429,16 +444,12 @@ namespace BinderMaker
         /// <param name="typeName"></param>
         /// <param name="varName"></param>
         /// <param name="defaultValue"></param>
-        public CLParam(string typeName, string varName, string defaultValue)
+        public CLParam(string attr, string typeName, string varName, string defaultValue)
         {
+            _originalAttrText = attr;
             _originalTypeName = typeName.Trim();
             Name = varName.Trim();
             OriginalDefaultValue = defaultValue.Trim();
-
-            if (string.IsNullOrEmpty(Name))
-            {
-                Console.WriteLine();
-            }
         }
 
         /// <summary>
@@ -446,6 +457,13 @@ namespace BinderMaker
         /// </summary>
         public override void LinkTypes()
         {
+            // io 属性確認
+            if (_originalAttrText.Contains("LN_OUT"))
+            {
+                if (Document.IOModifier != BinderMaker.IOModifier.Out)
+                    throw new InvalidOperationException("引数コメントと仮引数属性の入出力属性が異なります。");
+            }
+
             Type = Manager.FindType(_originalTypeName);
         }
         #endregion

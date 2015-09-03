@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 typedef intptr_t		LNHandle;
+typedef void*			LNUserData;
 
 #ifdef LN_UNICODE
 	typedef wchar_t		TCHAR;

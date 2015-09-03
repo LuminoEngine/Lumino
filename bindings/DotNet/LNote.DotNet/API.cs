@@ -1253,7 +1253,7 @@ namespace LN
     {
     
 #if DEBUG
-    	internal const string DLLName = "LNote.Debug.dll";
+    	internal const string DLLName = "LNote_d.dll";
 #else
     	internal const string DLLName = "LNote.dll";
 #endif
@@ -1375,11 +1375,11 @@ namespace LN
         /// <summary>
         /// 2D ベクトルを初期化します。
         /// </summary>
-        /// <param name="vec">値を格納する 2D ベクトル</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
+        /// <param name="vec">値を格納する 2D ベクトル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector2_Create(ref Vector2 vec,  float x,  float y);
+        public extern static Result LNVector2_Create( float x,  float y, out Vector2 vec);
 
         /// <summary>
         /// 2D ベクトルを正規化します。
@@ -1413,23 +1413,23 @@ namespace LN
         public extern static Result LNVector3_GetSquareLength(ref Vector3 vec, out float outLength);
 
         /// <summary>
-        /// 3Dベクトルに値を設定する
+        /// 3Dベクトルを初期化します。
         /// </summary>
-        /// <param name="vec">値を格納するベクトル</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
+        /// <param name="vec">値を格納する 3Dベクトル 変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector3_Create(out Vector3 vec,  float x,  float y,  float z);
+        public extern static Result LNVector3_Create( float x,  float y,  float z, out Vector3 vec);
 
         /// <summary>
-        /// 3Dベクトルに値を設定する
+        /// 2D ベクトル と Z値 を指定して、3Dベクトルを初期化します。
         /// </summary>
-        /// <param name="vec">値を格納するベクトル</param>
         /// <param name="vec2">2D ベクトル</param>
         /// <param name="z">Z 値</param>
+        /// <param name="vec">値を格納する 3Dベクトル 変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector3_CreateVec2(out Vector3 vec, ref Vector2 vec2,  float z);
+        public extern static Result LNVector3_CreateVZ(ref Vector2 vec2,  float z, out Vector3 vec);
 
         /// <summary>
         /// 3D ベクトルを正規化する
@@ -1516,15 +1516,15 @@ namespace LN
         public extern static Result LNVector3_TransformCoord(ref Vector3 vec, ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 3Dベクトルに値を設定する
+        /// 4Dベクトルを初期化します。
         /// </summary>
-        /// <param name="vec">値を格納するベクトル</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
         /// <param name="w">W 値</param>
+        /// <param name="vec">値を格納する4Dベクトル変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector4_Create(out Vector4 vec,  float x,  float y,  float z,  float w);
+        public extern static Result LNVector4_Create( float x,  float y,  float z,  float w, out Vector4 vec);
 
         /// <summary>
         /// 右方向を示す 3D ベクトルの取得
@@ -1778,15 +1778,15 @@ namespace LN
         public extern static Result LNMatrix_Decompose(ref Matrix mat, out Vector3 scale, out Quaternion rot, out Vector3 trans);
 
         /// <summary>
-        /// クォータニオンに値を設定する
+        /// クォータニオンを初期化します。
         /// </summary>
-        /// <param name="qua">値を格納する Quaternion 変数</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
         /// <param name="w">W 値</param>
+        /// <param name="qua">値を格納する Quaternion 変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNQuaternion_Set(out Quaternion qua,  float x,  float y,  float z,  float w);
+        public extern static Result LNQuaternion_Create( float x,  float y,  float z,  float w, out Quaternion qua);
 
         /// <summary>
         /// 単位クォータニオンを作成する

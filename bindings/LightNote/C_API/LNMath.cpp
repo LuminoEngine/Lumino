@@ -90,7 +90,7 @@ LNResult LNVector2_NormalizeV(LNVector2* vec)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNVector3_Create(LNVector3* vec, float x, float y, float z)
+LNResult LNVector3_Create(float x, float y, float z, LNVector3* vec)
 {
 	LN_CHECK_ARG(vec != NULL);
 	vec->X = x; vec->Y = y; vec->Z = z;
@@ -100,7 +100,7 @@ LNResult LNVector3_Create(LNVector3* vec, float x, float y, float z)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNVector3_CreateVec2(LNVector3* vec, const LNVector2* vec2, float z)
+LNResult LNVector3_CreateVZ(const LNVector2* vec2, float z, LNVector3* vec)
 {
 	LN_CHECK_ARG(vec != NULL);
 	LN_CHECK_ARG(vec2 != NULL);
@@ -693,7 +693,7 @@ LNResult LNMatrix_TransformBasis(const LNMatrix* mat, LNMatrix* matOut)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNQuaternion_Set(LNQuaternion* qua, float x, float y, float z, float w)
+LNResult LNQuaternion_Create(float x, float y, float z, float w, LNQuaternion* qua)
 {
 	LN_CHECK_ARG(qua != NULL);
 	qua->X = x; qua->Y = y; qua->Z = z; qua->W = w;
