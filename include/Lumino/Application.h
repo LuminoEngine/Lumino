@@ -39,7 +39,7 @@ public:
 		/** ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
 		void*	UserMainWindow;
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 		/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 		void*	D3D9Device;
 #endif
@@ -49,7 +49,7 @@ public:
 			: GraphicsAPI(Graphics::GraphicsAPI::DirectX9)
 			, RenderingType(Graphics::RenderingType::Deferred)
 			, UserMainWindow(NULL)
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 			, D3D9Device(NULL)
 #endif
 		{}

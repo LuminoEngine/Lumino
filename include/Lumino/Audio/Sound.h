@@ -1,10 +1,10 @@
 ﻿/*
-	@file	AudioManager.h
+	@file	Sound.h
 */
 #pragma once
 
-#include <Lumino/Base/RefObject.h>
 #include <Lumino/Math/Vector3.h>
+#include "../CoreObject.h"
 #include "Common.h"
 
 namespace Lumino
@@ -19,14 +19,15 @@ class AudioPlayer;
 	@brief	音声の再生、制御を行います。
 */
 class Sound
-    : public RefObject
+    : public CoreObject
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 
 	/**
-		@brief		
+		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static Sound* Create(const TCHAR* filePath, SoundPlayType playerType = SoundPlayType_Unknown, bool enable3D = false, AudioManager* manager = NULL);
+	static Sound* Create(const TCHAR* filePath, AudioManager* manager = NULL);
 
 public:
 	
@@ -165,7 +166,7 @@ public:
  //   bool update( float elapsedTime );
 
 public:
-	Sound(AudioManager* manager, AudioStream* stream, SoundPlayType playerType, bool is3DSound);
+	Sound(AudioManager* manager, AudioStream* stream);
 	virtual ~Sound();
 	void Polling(float elapsedTime);
 

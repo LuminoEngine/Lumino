@@ -366,6 +366,7 @@ set(LN_SOURCES_Application
 	src/ApplicationContext.cpp
 	src/ApplicationContext.h
 	src/CoreObject.cpp
+	src/Internal.h
 	src/Profiler.cpp
 	src/Property.cpp
 	src/RoutedEvent.cpp

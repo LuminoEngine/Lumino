@@ -15,6 +15,37 @@ namespace LN
         
     
         /// <summary>
+        /// 2D ベクトルの長さを計算します。
+        /// </summary>
+        public float Length
+        {
+            get
+            {
+                var outLength = new float();
+                var result = API.LNVector2_GetLength(ref this, out outLength);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outLength;
+            }
+            
+        }
+        
+        /// <summary>
+        /// 2D ベクトルの長さの2乗を計算します。
+        /// </summary>
+        public float SquareLength
+        {
+            get
+            {
+                var outLength = new float();
+                var result = API.LNVector2_GetSquareLength(ref this, out outLength);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outLength;
+            }
+            
+        }
+        
+    
+        /// <summary>
         /// 2D ベクトルを初期化します。
         /// </summary>
         /// <param name="x">X 値</param>
@@ -40,7 +71,7 @@ namespace LN
         /// <summary>
         /// 2D ベクトルを正規化します。
         /// </summary>
-        public void NormalizeV()
+        public void Normalize()
         {
             var result = API.LNVector2_NormalizeV(ref this);
             if (result != Result.OK) throw new LNoteException(result);
@@ -60,6 +91,37 @@ namespace LN
         public float Y;
         
         public float Z;
+        
+    
+        /// <summary>
+        /// 3Dベクトルの長さを計算する
+        /// </summary>
+        public float Length
+        {
+            get
+            {
+                var outLength = new float();
+                var result = API.LNVector3_GetLength(ref this, out outLength);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outLength;
+            }
+            
+        }
+        
+        /// <summary>
+        /// 3D ベクトルの長さの2乗を計算する
+        /// </summary>
+        public float SquareLength
+        {
+            get
+            {
+                var outLength = new float();
+                var result = API.LNVector3_GetSquareLength(ref this, out outLength);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outLength;
+            }
+            
+        }
         
     
         /// <summary>
@@ -95,6 +157,15 @@ namespace LN
             var result = API.LNVector3_Normalize(ref vec, out outVec);
             if (result != Result.OK) throw new LNoteException(result);
             return outVec;
+        }
+        
+        /// <summary>
+        /// 3D ベクトルを正規化します。
+        /// </summary>
+        public void Normalize()
+        {
+            var result = API.LNVector3_NormalizeV(ref this);
+            if (result != Result.OK) throw new LNoteException(result);
         }
         
         /// <summary>
@@ -187,7 +258,7 @@ namespace LN
         /// <remarks>
         /// ベクトルを ( x, y, z, 1 ) として座標変換します。
         /// 		            結果の w は出力されません。
-        /// 		            結果を w = 1 に射影する ( x y z を w で除算する ) 場合は
+        /// 		            結果を w = 1 に射影する (x y z を w で除算) 場合は
         /// 		            Vector3TransformCoord() を使用してください。
         /// </remarks>
         public static Vector4 Transform( Vector3 vec,  Matrix mat)
@@ -205,7 +276,7 @@ namespace LN
         /// <param name="mat">処理の基になる 行列</param>
         /// <remarks>
         /// ベクトルを ( x, y, z, 1 ) として座標変換し、
-        /// 		            結果を w = 1 に射影 ( x y z を w で除算する ) します。
+        /// 		            結果を w = 1 に射影 (x y z を w で除算) します。
         /// </remarks>
         public static Vector3 TransformCoord( Vector3 vec,  Matrix mat)
         {
@@ -232,6 +303,7 @@ namespace LN
         
         public float W;
         
+    
     
         /// <summary>
         /// 4Dベクトルを初期化します。
@@ -289,6 +361,67 @@ namespace LN
         
     
         /// <summary>
+        /// 右方向を示す 3D ベクトル
+        /// </summary>
+        public Vector3 Right
+        {
+            get
+            {
+                var outVec = new Vector3();
+                var result = API.LNMatrix_GetRight(ref this, out outVec);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outVec;
+            }
+            
+        }
+        
+        /// <summary>
+        /// 上方向を示す 3D ベクトル
+        /// </summary>
+        public Vector3 Up
+        {
+            get
+            {
+                var outVec = new Vector3();
+                var result = API.LNMatrix_GetUp(ref this, out outVec);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outVec;
+            }
+            
+        }
+        
+        /// <summary>
+        /// 正面方向を示す 3D ベクトル
+        /// </summary>
+        public Vector3 Front
+        {
+            get
+            {
+                var outVec = new Vector3();
+                var result = API.LNMatrix_GetFront(ref this, out outVec);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outVec;
+            }
+            
+        }
+        
+        /// <summary>
+        /// 位置を示す 3D ベクトル
+        /// </summary>
+        public Vector3 Position
+        {
+            get
+            {
+                var outVec = new Vector3();
+                var result = API.LNMatrix_GetPosition(ref this, out outVec);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outVec;
+            }
+            
+        }
+        
+    
+        /// <summary>
         /// 単位行列を作成する
         /// </summary>
         public void Identity()
@@ -319,7 +452,7 @@ namespace LN
         /// <remarks>
         /// 与えられた引数から平行移動行列を作り、現在の行列に乗算します。
         /// </remarks>
-        public void Translate( Vector3 vec)
+        public void TranslateVec3( Vector3 vec)
         {
             var result = API.LNMatrix_TranslateVec3(ref this, ref vec);
             if (result != Result.OK) throw new LNoteException(result);
@@ -388,7 +521,7 @@ namespace LN
         /// <remarks>
         /// 与えられた引数から回転行列を作り、現在の行列に乗算します。
         /// </remarks>
-        public void Rotate( Vector3 vec,  RotationOrder rotOrder = RotationOrder.XYZ)
+        public void RotateVec3( Vector3 vec,  RotationOrder rotOrder = RotationOrder.XYZ)
         {
             var result = API.LNMatrix_RotateVec3(ref this, ref vec,  rotOrder);
             if (result != Result.OK) throw new LNoteException(result);
@@ -444,7 +577,7 @@ namespace LN
         /// <remarks>
         /// 与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
         /// </remarks>
-        public void Scale( float x,  float y,  float z)
+        public void ScaleXYZ( float x,  float y,  float z)
         {
             var result = API.LNMatrix_ScaleXYZ(ref this,  x,  y,  z);
             if (result != Result.OK) throw new LNoteException(result);
@@ -457,7 +590,7 @@ namespace LN
         /// <remarks>
         /// 与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
         /// </remarks>
-        public void Scale( Vector3 scale)
+        public void ScaleVec3( Vector3 scale)
         {
             var result = API.LNMatrix_ScaleVec3(ref this, ref scale);
             if (result != Result.OK) throw new LNoteException(result);
@@ -629,6 +762,7 @@ namespace LN
         
         public float W;
         
+    
     
         /// <summary>
         /// クォータニオンを初期化します。

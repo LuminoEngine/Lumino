@@ -35,6 +35,9 @@ namespace BinderMaker.Builder
             // クラス
             foreach (var classType in Manager.AllClasses)
             {
+                // 組み込みクラスは対象としない
+                if (classType.IsPreDefined) continue;  
+
                 if (OnClassLookedStart(classType))
                 {
                     // プロパティ

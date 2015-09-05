@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include "LNCommon.h"
@@ -7,22 +7,22 @@
 extern "C" {
 
 /**
-	@brief	LightNote �̏�������t���[���X�V�A�I���������̃A�v���P�[�V�����S�̂Ɋւ��@�\�ł��B
+	@brief	LightNote の初期化やフレーム更新、終了処理等のアプリケーション全体に関わる機能です。
 */
 LN_MODULE(Application)
 
 //==============================================================================
 /**
-	@brief		LightNote �̏�������X�V���A��I�ȏ������s���N���X�ł��B
+	@brief		LightNote の初期化や更新等、包括的な処理を行うクラスです。
 */
 LN_STATIC_CLASS(LNApplication)
 	
 	/**
-		@brief		LightNote �����������܂��B
-		@details	���C�u�����̂��ׂĂ̋@�\���g�p�ł���悤�ɏ��������s���܂��B
+		@brief		LightNote を初期化します。
+		@details	ライブラリのすべての機能を使用できるように初期化を行います。
 	*/
 	LN_STATIC_API
-	LN_LIBRARY_INITIALIZER
+	LN_ATTR_LIBRARY_INITIALIZER
 	LNResult LNApplication_Initialize();
 	/*Option
 		@override[cpp]
@@ -32,9 +32,9 @@ LN_STATIC_CLASS(LNApplication)
 	Option*/
 
 	/**
-		@brief		�t���[�����X�V���܂��B
-		@details	LightNote �̏�Ԃ��X�V���A���Ԃ�1�t���[�����i�߂܂��B
-					���̊֐��͕K��1�t���[����1�x�����Ăяo���K�v������܂��B
+		@brief		フレームを更新します。
+		@details	LightNote の状態を更新し、時間を1フレーム分進めます。
+					この関数は必ず1フレームに1度だけ呼び出す必要があります。
 	*/
 	LN_STATIC_API
 	LNResult LNApplication_Update();
@@ -44,27 +44,27 @@ LN_STATIC_CLASS(LNApplication)
 	Option*/
 
 	/**
-		@brief		��ʂ̍X�V�^�C�~���O�����Z�b�g���܂��B
-		@details	���Ԃ̂����鏈���̌�ɂ��̃��\�b�h���ĂԂ��ƂŁA
-					�ɒ[�ȃt���[���X�L�b�v���������Ȃ��悤�ɂ��邱�Ƃ��ł��܂��B
+		@brief		画面の更新タイミングをリセットします。
+		@details	時間のかかる処理の後にこのメソッドを呼ぶことで、
+					極端なフレームスキップが発生しないようにすることができます。
 	*/
 	LN_STATIC_API
 	LNResult LNApplication_ResetFrameDelay();
 
 	/**
-		@brief		�A�v���P�[�V�������I������ׂ������m�F���܂��B
-		@param[out]	requested	: �I���v���̗L�����i�[����ϐ�
-		@details	�E�B���h�E�̃N���[�Y�{�^���������ꂽ�ꍇ���A
-					�A�v���P�[�V�������I������ׂ����ɂ� LN_FALSE ��Ԃ��܂��B
+		@brief		アプリケーションを終了するべきかを確認します。
+		@param[out]	requested	: 終了要求の有無を格納する変数
+		@details	ウィンドウのクローズボタンが押された場合等、
+					アプリケーションを終了するべき時には LN_FALSE を返します。
 	*/
 	LN_STATIC_API
 	LNResult LNApplication_IsEndRequested(LNBool* requested);
 
 	/**
-		@brief		LightNote �̏I���������s���܂��B
+		@brief		LightNote の終了処理を行います。
 	*/
 	LN_STATIC_API
-	LN_LIBRARY_TERMINATOR
+	LN_ATTR_LIBRARY_TERMINATOR
 	void LNApplication_Terminate();
 
 

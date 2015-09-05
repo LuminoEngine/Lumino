@@ -112,6 +112,7 @@ int main()
 		RefPtr<GUI::TextBox> textBox1(GUI::TextBox::Create(app->GetGUIManager()));
 		GUI::Grid::SetColumn(textBox1, 1);
 		textBox1->SetText(_T("lumino text."));
+		textBox1->Select(3, 3);
 		grid1->GetChildren()->Add(textBox1);
 		grid1->GetChildren()->Remove(textBox1);
 		grid1->GetChildren()->Add(textBox1);

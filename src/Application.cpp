@@ -179,7 +179,7 @@ void Application::InitialzeAudioManager()
 		data.StreamCacheObjectCount = 32;
 		data.StreamSourceCacheMemorySize = 0;
 		data.DMInitMode = Audio::DirectMusicInitMode_NotUse;//Audio::DirectMusicInitMode_ThreadRequest;
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 		data.hWnd = (m_platformManager != NULL) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : NULL;
 #endif
 		m_audioManager = Audio::AudioManager::Create(data);
@@ -213,7 +213,7 @@ void Application::InitialzeGraphicsManager()
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.FileManager = &FileManager::GetInstance();
 		data.PlatformTextureLoading = true;
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
 		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(data));

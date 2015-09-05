@@ -230,8 +230,8 @@ namespace BinderMaker
             else if (FuncDecl.IsOverload)
             {
                 // 例) LNSoundListener_SetUpDirectionXYZ → LNSoundListener_SetUpDirection
-                string newName;
-                Manager.RemoveOverloadSuffix(FuncDecl.OriginalFullName, out newName);
+                string newName = FuncDecl.Name;
+                //Manager.RemoveOverloadSuffix(FuncDecl.OriginalFullName, out newName);
 
                 // 検索
                 var targetMethod = Manager.AllMethods.Find((m) => m.FuncDecl.OriginalFullName == newName);
@@ -328,7 +328,7 @@ namespace BinderMaker
         /// </summary>
         public CLFuncDecl(
             IEnumerable<char> apiModifier,
-            IEnumerable<char> apiAtribute,
+            string apiAtribute,
             string returnType,
             string name,
             IEnumerable<CLParam> params1)
@@ -365,9 +365,16 @@ namespace BinderMaker
             Params.ForEach((param) => param.OwnerFunc = this);  // 所持クラス割り当て
 
             // オーバーロードチェック (_ や サフィックスの含まない名前を作る)
-            string newName;
-            IsOverload = Manager.RemoveOverloadSuffix(OriginalName, out newName);
-            Name = newName;
+            //string newName;
+            //IsOverload = Manager.RemoveOverloadSuffix(OriginalName, out newName);
+            //Name = newName;
+            Name = OriginalName;
+            if (attr.Contains(CLManager.APIAttribute_Overload))
+            {
+                string ovName = attr.Substring(CLManager.APIAttribute_Overload.Length).Replace("(", "").Replace(")", "").Trim();
+                var tokens2 = ovName.Trim().Split('_');
+                Name = tokens2[1];
+            }
 
             // 先頭が Create ならコンストラクタ関数
             IsRefObjectConstructor = (string.Compare(Name, 0, "Create", 0, 6) == 0);
@@ -592,7 +599,7 @@ namespace BinderMaker
             }
             else if (string.Compare(method.Name, 0, "Is", 0, 2) == 0)
             {
-                return method.Name.Substring(2);
+                return method.Name;//.Substring(2);
             }
             throw new InvalidOperationException();
         }

@@ -29,6 +29,7 @@ namespace GUI
 
 // 本格的なテキストエディタであれば装飾のため、さらに単語単位に区切ったりする。
 // ここの TextBox は文字ごとに装飾とかは考えないシンプルなものなので、まずは行単位。
+// なお、改行文字は含まない。
 class TextBox::LineSegment
 	: public RefObject
 {
@@ -37,10 +38,26 @@ public:
 
 	void UpdateGlyphRuns();
 
-	//int GetLength() const
-	//{
 
-	//}
+	int GetLength() const
+	{
+		return m_utf32Text.GetLength();
+	}
+
+	int GetLinePixelHeight() const
+	{
+		return m_glyphRun->GetRenderSize().Height;
+	}
+
+	int GetPixelPosFromLineHead(int contentPos)
+	{
+		if (contentPos == 0) { return 0; }
+		int c = contentPos - 1;
+		Graphics::TextLayoutResult* r = Graphics::Helper::GetGlyphData(m_glyphRun);
+		Graphics::FontGlyphLocation* loc = &r->Items[c].Location;
+		return loc->OuterTopLeftPosition.X + loc->BitmapSize.Width;
+	}
+
 
 public:
 	Document*		m_document;
@@ -95,6 +112,39 @@ public:
 		}
 	}
 
+	// 指定したコンテンツ位置 (文字位置) が何行目かを返す
+	void GetLineNumber(int contentPos, int* lineNumber, int* lenFromLineHead, int* yLocation)
+	{
+		int len = 0;
+		int y = 0;
+		for (int line = 0; line < m_lineSegments.GetCount(); ++line)
+		{
+			int head = len;
+			len += m_lineSegments[line]->GetLength();
+			if (contentPos <= len) {
+				*lenFromLineHead = contentPos - head;
+				*yLocation = y;
+				*lineNumber = line;
+				return;
+			}
+			y += m_lineSegments[line]->GetLinePixelHeight();
+		}
+		LN_THROW(0, InvalidOperationException);
+	}
+
+	// calet を描画するべき左上の座標
+	Point GetCaretLocation(int contentPos, int* curLineHeight)
+	{
+		int lineNumber, lenFromLineHead, yLocation;
+		GetLineNumber(contentPos, &lineNumber, &lenFromLineHead, &yLocation);
+		*curLineHeight = m_lineSegments[lineNumber]->GetLinePixelHeight();
+		return Point(
+			m_lineSegments[lineNumber]->GetPixelPosFromLineHead(lenFromLineHead),
+			yLocation);
+	}
+
+	const Array< RefPtr<TextBox::LineSegment> >& GetLineSegments() const { return m_lineSegments; }
+
 	void Render(Graphics::Painter* painter)
 	{
 		Point pt(0, 0);
@@ -104,6 +154,7 @@ public:
 		}
 	}
 
+
 public:
 	Array< RefPtr<TextBox::LineSegment> >	m_lineSegments;
 	RefPtr<Graphics::Internal::FontGlyphTextureCache>	m_glyphTextureCache;
@@ -111,6 +162,18 @@ public:
 	Text::EncodingConverter		m_UTF32ToTCharConverter;
 };
 
+class TextBox::Selection
+{
+public:
+	int	Start;		///< text.GetLength() は有効値。Select(text.GetLength(), 0) でコンテンツの末尾にキャレットを移動する
+	int Length;
+
+public:
+	Selection()
+		: Start(0)
+		, Length(0)
+	{}
+};
 
 
 
@@ -160,8 +223,10 @@ TextBox* TextBox::Create(GUIManager* manager)
 TextBox::TextBox(GUIManager* manager)
 	: Control(manager)
 	, m_document(NULL)
+	, m_selection(NULL)
 {
 	m_document = LN_NEW Document();
+	m_selection = LN_NEW Selection();
 }
 
 //-----------------------------------------------------------------------------
@@ -169,7 +234,17 @@ TextBox::TextBox(GUIManager* manager)
 //-----------------------------------------------------------------------------
 TextBox::~TextBox()
 {
+	LN_SAFE_DELETE(m_selection);
 	LN_SAFE_DELETE(m_document);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBox::Select(int start, int length)
+{
+	m_selection->Start = start;
+	m_selection->Length = length;
 }
 
 //-----------------------------------------------------------------------------
@@ -198,6 +273,14 @@ void TextBox::OnRender(Graphics::Painter* painter)
 {
 	Control::OnRender(painter);
 	m_document->Render(painter);
+
+	// キャレット
+	int caretHeight;
+	Point caretPos = m_document->GetCaretLocation(m_selection->Start + m_selection->Length, &caretHeight);
+	RectF caret((float)caretPos.X, (float)caretPos.Y, 1.0f, (float)caretHeight);
+	painter->SetBrush(Graphics::ColorBrush::Red);
+	painter->DrawRectangle(caret);
+
 	//painter->SetBrush(Graphics::ColorBrush::Red);
 	//painter->DrawRectangle(RectF(0, 0, GetRenderSize()));
 }

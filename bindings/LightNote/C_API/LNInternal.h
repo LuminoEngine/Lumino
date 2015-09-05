@@ -87,14 +87,14 @@ using namespace Lumino;
 
 
 //#define LN_TYPE_INFO_DECL(className) \
-//	LN_API void className##_SetBindingTypeData(void* data);
+//	LN_API void className##_SetBindingTypeInfo(void* data);
 
 // CoreObject から Managed 側の型情報を取り出すための機能を実装する。
 // LNXXXX_SetBindingTypeData
-#define LN_TYPE_INFO_IMPL(apiClassName, coreClassName) \
-	extern "C" LN_API void apiClassName##_SetBindingTypeData(void* data) \
+#define LN_TYPE_INFO_IMPL(coreClassName, apiClassName) \
+	extern "C" LN_API void apiClassName##_SetBindingTypeInfo(void* data) \
 	{ \
-		coreClassName::SetBindingTypeData(data); \
+		coreClassName::SetBindingTypeInfo(data); \
 	}
 
 //---------------------------------------------------------------------

@@ -58,6 +58,7 @@ LN_STRUCT_CLASS(LNVector2)
 		@param[in]	vec			: 処理対象の 2D ベクトル
 	*/
 	LN_INSTANCE_API
+	LN_ATTR_OVERLOAD(LNVector2_Normalize)
 	LNResult LNVector2_NormalizeV(LNVector2* vec);
 
 	LN_INTERNAL_API LNResult LNVector2_GetLengthD(const LNVector2* vec, double* length);
@@ -117,6 +118,14 @@ LN_STRUCT_CLASS(LNVector3)
 	*/
 	LN_STATIC_API
 	LNResult LNVector3_Normalize(const LNVector3* vec, LNVector3* outVec);
+	
+	/**
+		@brief		3D ベクトルを正規化します。
+		@param[in]	vec			: 処理対象の 2D ベクトル
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_OVERLOAD(LNVector3_Normalize)
+	LNResult LNVector3_NormalizeV(LNVector3* vec);
 
 	/**
 		@brief		2 つの 3D ベクトルの内積を計算する

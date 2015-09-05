@@ -1,6 +1,6 @@
 
 #include "Internal.h"
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	#include "XAudio2/XAudio2AudioDevice.h"
 	#include "DirectMusic/DirectMusicAudioDevice.h"
 #endif
@@ -61,7 +61,7 @@ AudioManager::AudioManager(const Settings& settings)
 	, mOnMemoryLimitSize(100000)
 	, m_audioStreamCache(NULL)
 {
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	if (m_audioDevice == NULL)
 	{
 		RefPtr<XAudio2AudioDevice> device(LN_NEW XAudio2AudioDevice());
@@ -184,10 +184,10 @@ AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayType 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* AudioManager::CreateSound(Stream* stream, SoundPlayType type, bool enable3D, const CacheKey& key)
+Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key)
 {
 	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key));
-	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream, type, enable3D));
+	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream));
 
 	// ä«óùÉäÉXÉgÇ…í«â¡
 	Threading::MutexScopedLock lock(m_soundListMutex);
@@ -202,7 +202,7 @@ Sound* AudioManager::CreateSound(Stream* stream, SoundPlayType type, bool enable
 //-----------------------------------------------------------------------------
 void AudioManager::Thread_Polling()
 {
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	// COM èâä˙âª
 	HRESULT hr = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif
@@ -244,7 +244,7 @@ void AudioManager::Thread_Polling()
 		}
 	}
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	::CoUninitialize();
 #endif
 }

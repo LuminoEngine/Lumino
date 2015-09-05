@@ -20,7 +20,6 @@ namespace BinderMaker.Builder
         public static Dictionary<CLType, string> PrimitiveTypeNameTable = new Dictionary<CLType, string>()
         {
             { CLPrimitiveType.Void, "void" },
-            //{ CLPrimitiveType.ByteArray , "byte[]" },
             { CLPrimitiveType.String, "string" },
 
             { CLPrimitiveType.Bool, "bool" },
@@ -33,7 +32,7 @@ namespace BinderMaker.Builder
             //{ CLPrimitiveType.ExceptionCallback, "ExceptionCallback" },
             { CLPrimitiveType.IntPtr, "IntPtr" },
             
-            //{ CLClass.ByteArray, "byte[]" },
+            { CLClass.ByteArray, "byte[]" },
             //{ CLClass.IntArray, "int[]" },
 
             //{ CLPrimitiveType.Handle, "IntPtr" },
@@ -224,6 +223,61 @@ namespace BinderMaker.Builder
                     return enumType.Name + "." + member.CapitalizedName;
             }
             throw new InvalidOperationException("Not Found : " + value);
+        }
+
+
+
+        /// <summary>
+        /// メソッドヘッダ定義の作成
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="returnParam"></param>
+        /// <returns></returns>
+        public static void MakeMethodHeaderText(CLMethod method, LangContext context, OutputBuffer output)
+        {
+            // XMLコメント - summary
+            var xmlCommentText = new OutputBuffer();
+            CSCommon.MakeSummaryXMLComment(xmlCommentText, context.GetBriefText(method));
+
+            // 戻り値型
+            string returnTypeText = "";
+            if (!method.IsRefObjectConstructor)  // コンストラクタ以外は戻り値型名を作る
+                returnTypeText = CSCommon.MakeTypeName(method.ReturnType);
+
+            // 仮引数リストを作る
+            var paramsText = new OutputBuffer();
+            foreach (var param in method.Params)
+            {
+                // {ref/out} {型名} {引数名}
+                paramsText.AppendCommad("{0} {1} {2}", CSCommon.GetParamIOModifier(param), CSCommon.MakeTypeName(param.Type), param.Name);
+                if (!string.IsNullOrEmpty(param.OriginalDefaultValue))   // デフォルト引数
+                    paramsText.Append(" = " + CSCommon.ConvertLiteral(param.OriginalDefaultValue, false));
+
+                // XMLコメント - params
+                CSCommon.MakeParamXMLComment(xmlCommentText, param.Name, context.GetParamText(param));
+            }
+
+            // XMLコメント - return
+            CSCommon.MakeReturnXMLComment(xmlCommentText, context.GetReturnParamText(method.ReturnParam));
+            // XMLコメント - Remarks
+            CSCommon.MakeRemarksXMLComment(xmlCommentText, context.GetDetailsText(method));
+
+            // 修飾子を決める
+            var modifier = "public ";
+            if (method.IsStatic)
+                modifier += "static ";
+
+            // {修飾子} {戻り値型名} {メソッド名} ({仮引数リスト})
+            string methodHeader = string.Format("{0}{1} {2}({3})", modifier, returnTypeText, method.Name, paramsText.ToString());
+
+            // コンストラクタの場合は base 追加
+            if (!method.OwnerClass.IsStruct && method.IsRefObjectConstructor)
+                methodHeader += " : base(_LNInternal.InternalBlock)";
+
+            // 出力
+            output.AppendWithIndent(xmlCommentText.ToString());
+            output.AppendWithIndent(methodHeader);
+            output.NewLine();
         }
     }
 }

@@ -24,8 +24,9 @@ namespace BinderMaker
             var apiHeaders = new string[]
             {
                 SourcesRootDir + "LNBase.h",
+                SourcesRootDir + "LNApplication.h",
                 SourcesRootDir + "LNMath.h",
-                //SourcesRootDir + "LNAudio.h",
+                SourcesRootDir + "LNAudio.h",
             };
             var parser = new Parser.CLAPIHeaderParser();
             var modules = parser.Analyze(apiHeaders);
@@ -39,6 +40,9 @@ namespace BinderMaker
 
             var csStructsBuilder = new Builder.CSStructsBuilder();
             csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Structs.cs");
+
+            var csClassesBuilder = new Builder.CSClassesBuilder();
+            csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Classes.cs");
         }
     }
 }

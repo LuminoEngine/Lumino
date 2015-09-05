@@ -15,8 +15,8 @@ namespace BinderMaker
         /// Array 型クラスの定義
         /// ※これらは  LinkTypes() でも参照オブジェクトではないとする条件で使っているので、追加するときはそこも修正する。
         /// </summary>
-        //public static CLClass Array;
-        //public static CLClass ByteArray;
+        public static CLClass Array;
+        public static CLClass ByteArray;
         //public static CLClass IntArray;
 
         #endregion
@@ -92,6 +92,12 @@ namespace BinderMaker
         /// 拡張クラス であるか (各言語のコードで独自定義するもの。RefObject など)
         /// </summary>
         public bool IsExtension { get; private set; }
+
+        /// <summary>
+        /// 組み込みクラス型であるか (Array など)
+        /// </summary>
+        public bool IsPreDefined { get; private set; }
+
         #endregion
 
         #region Methods
@@ -129,19 +135,32 @@ namespace BinderMaker
         }
 
         /// <summary>
+        /// 組み込みクラス型を定義するために使用する。例えば Array。
+        /// </summary>
+        /// <param name="name"></param>
+        public CLClass(string name, bool generic)
+        {
+            OriginalName = name;
+            IsGeneric = generic;
+            IsPreDefined = true;
+            Methods = new List<CLMethod>();
+            Manager.AllClasses.Add(this);
+        }
+
+        /// <summary>
         /// コンストラクタ (型をバインドしたジェネリッククラス(インスタンス化))
         /// ※C# ではインスタンス化しているかにかかわらず Type クラスであらわされる。
         ///   インスタンス化していないものは GenericTypeArgments 配列の要素数が 0 である。
         /// </summary>
         /// <param name="name"></param>
         /// <param name="?"></param>
-        public CLClass(string name, CLType bindingType)
+        public CLClass(CLClass ownerGenericClass, CLType bindingType)
         {
-            OriginalName = name;
+            OriginalName = ownerGenericClass.Name;
             BindingType = bindingType;
             IsGeneric = true;
-
-            // 登録
+            IsPreDefined = true;
+            Methods = new List<CLMethod>();
             Manager.AllClasses.Add(this);
         }
 
@@ -158,20 +177,20 @@ namespace BinderMaker
 
             // RefObject 型チェック
             IsReferenceObject = false;
-            if (!IsStatic && !IsStruct/* &&
-                this != Array &&
-                this != ByteArray &&
-                this != IntArray*/)
+            if (!IsStatic && !IsStruct && !IsPreDefined)
             {
                 IsReferenceObject = true;
             }
 
-            // ベースクラス
-            string baseClassName = Document.GetBaseClassOriginalName();
-            if (IsReferenceObject && string.IsNullOrWhiteSpace(baseClassName))  // ベースクラスを省略している RefObject　型はデフォルト継承
-                BaseClass = Manager.ReferenceObjectClass;
-            else
-                BaseClass = Manager.AllClasses.Find((c) => c.OriginalName == baseClassName);
+            if (!IsPreDefined)
+            {
+                // ベースクラス
+                string baseClassName = Document.GetBaseClassOriginalName();
+                if (IsReferenceObject && string.IsNullOrWhiteSpace(baseClassName))  // ベースクラスを省略している RefObject　型はデフォルト継承
+                    BaseClass = Manager.ReferenceObjectClass;
+                else
+                    BaseClass = Manager.AllClasses.Find((c) => c.OriginalName == baseClassName);
+            }
         }
 
         /// <summary>

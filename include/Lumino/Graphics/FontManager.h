@@ -69,7 +69,7 @@ private:
 	// FaceRequester() の呼び出し元
 	static FT_Error CallbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	typedef struct TSystemFontData
 	{
 		HDC hdc;

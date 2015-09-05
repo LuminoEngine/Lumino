@@ -27,10 +27,10 @@ typedef intptr_t		LNHandle;
 typedef void*			LNUserData;
 
 #ifdef LN_UNICODE
-	typedef wchar_t		TCHAR;
+	typedef wchar_t		LNChar;
 	#define __T(x)      L ## x
 #else
-	typedef char		TCHAR;
+	typedef char		LNChar;
 	#define __T(x)      x
 #endif
 
@@ -61,21 +61,22 @@ typedef void*			LNUserData;
 
 #define LN_MODULE(x)
 #define LN_MODULE_END
-#define LN_CLASS(...)			/*LNOTE_TYPE_INFO_DECL(LNSound);*/
+#define LN_CLASS(className, ...)			LN_API void className##_SetBindingTypeInfo(void* data);
 #define LN_STATIC_CLASS(x)
 #define LN_STRUCT_CLASS(x)
 #define LN_EXTENSION_CLASS(x)
 #define LN_CLASS_END
-
+	
 #define LN_INSTANCE_API		LN_API
 #define LN_INTERNAL_API		LN_API
 #define LN_STATIC_API		LN_API
 
-#define LN_LIBRARY_INITIALIZER
-#define LN_LIBRARY_TERMINATOR
+#define LN_ATTR_LIBRARY_INITIALIZER
+#define LN_ATTR_LIBRARY_TERMINATOR
 #define LN_ATTR_CONSTRUCTOR
 #define LN_ATTR_PROPERTY
 #define LN_ATTR_EVENT
+#define LN_ATTR_OVERLOAD(ownerFunc)
 //#define LN_ATTR_STRUCT_CONSTRUCTOR
 
 #define LN_HANDLE(x) LNHandle

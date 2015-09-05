@@ -135,7 +135,7 @@ Stream* FileManager::CreateFileStream(const PathName& filePath)
 //-----------------------------------------------------------------------------
 CaseSensitivity FileManager::GetFileSystemCaseSensitivity() const
 {
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	return CaseSensitivity_CaseInsensitive;
 #else
 	return CaseSensitivity_CaseSensitive;

@@ -185,12 +185,22 @@ namespace BinderMaker.Parser
             .Or(Parse.String(CLManager.APIModifier_Static)      // LN_STATIC_API
             .Or(Parse.String(CLManager.APIModifier_Internal))); // LN_INTERNAL_API
         
+        // 属性引数
+        public static readonly Parser<string> AttributeArgs =
+            from lparen     in Parse.Char('(')
+            from value      in ParserUtils.IdentifierOrNumeric
+            from rparen     in Parse.Char(')')
+            select "(" + value + ")";
+
         // 関数宣言 - 属性
-        private static readonly Parser<IEnumerable<char>> FuncAttribute =
-                Parse.String(CLManager.APIAttribute_Property)               // LN_PROPERTY
-            .Or(Parse.String(CLManager.APIAttribute_Constructor))           // LN_STRUCT_CONSTRUCTOR
-            .Or(Parse.String(CLManager.APIAttribute_LibraryInitializer))    // LN_LIBRARY_INITIALIZER
-            .Or(Parse.String(CLManager.APIAttribute_LibraryTerminator));    // LN_LIBRARY_TERMINATOR
+        private static readonly Parser<string> FuncAttribute =
+            from name       in  Parse.String(CLManager.APIAttribute_Property)               // LN_PROPERTY
+                                .Or(Parse.String(CLManager.APIAttribute_Constructor))           // LN_STRUCT_CONSTRUCTOR
+                                .Or(Parse.String(CLManager.APIAttribute_LibraryInitializer))    // LN_LIBRARY_INITIALIZER
+                                .Or(Parse.String(CLManager.APIAttribute_LibraryTerminator))    // LN_LIBRARY_TERMINATOR
+                                .Or(Parse.String(CLManager.APIAttribute_Overload))
+            from args       in  AttributeArgs.Or(Parse.Return(""))       // 属性引数(opt)
+            select new string(name.ToArray()) + args;
         
         // Handle 型
         public static readonly Parser<string> HandleType =
@@ -230,7 +240,7 @@ namespace BinderMaker.Parser
         // 関数宣言
         public static readonly Parser<CLFuncDecl> FuncDecl =
             from apiMod     in APIModifier.GenericToken()
-            from attr       in FuncAttribute.Or(Parse.Return(""))       // opt
+            from attr       in FuncAttribute.Or(Parse.Return(""))             // 属性(opt)
             from type1      in ParserUtils.TypeName.GenericToken()                  // 戻り値型
             from name1      in ParserUtils.Identifier.GenericToken()    // 関数名
             from lparen     in Parse.Char('(').GenericToken()
@@ -311,7 +321,7 @@ namespace BinderMaker.Parser
     {
         private CLModule AnalyzeOneFile(string filePath)
         {
-            string text = System.IO.File.ReadAllText(filePath);
+            string text = System.IO.File.ReadAllText(filePath, Encoding.UTF8);
             text = text.Replace("\r\n", "\n");
             return CLAPIModule.CompileUnit.Parse(text);
         }

@@ -654,7 +654,7 @@
 #include <Lumino/Base/Hash.h>
 #include <Lumino/Graphics/Font.h>
 
-#if defined(LN_WIN32)
+#if defined(LN_OS_WIN32)
 #include "Device/DirectX9/DX9GraphicsDevice.h"
 #include "Device/OpenGL/WGLGraphicsDevice.h"
 #elif defined(LN_X11)
@@ -713,7 +713,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 
 	// フォント管理
 	m_fontManager.Attach(FontManager::Create(m_fileManager));
-#if defined(LN_WIN32)
+#if defined(LN_OS_WIN32)
 	if (configData.GraphicsAPI == GraphicsAPI::DirectX9)
 	{
 		Device::DX9GraphicsDevice::ConfigData data;

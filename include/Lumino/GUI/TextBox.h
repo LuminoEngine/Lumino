@@ -40,6 +40,8 @@ public:
 
 	/** @} */
 
+	void Select(int start, int length);
+
 protected:
 	TextBox(GUIManager* manager);
 	virtual ~TextBox();
@@ -53,7 +55,10 @@ private:
 private:
 	class Document;
 	class LineSegment;
+	class Selection;
 	Document*	m_document;
+	Selection*	m_selection;
+
 	//RefPtr<Documents::Document>	m_document;
 	//Array<TextBoxLineSegment*>		m_lineSegments;
 

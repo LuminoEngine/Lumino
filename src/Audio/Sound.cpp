@@ -15,33 +15,33 @@ namespace Audio
 // Sound
 //=============================================================================
 
-//LN_TYPE_INFO_ACCESS_IMPL(Sound);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Sound, CoreObject);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* Sound::Create(const TCHAR* filePath, SoundPlayType playerType, bool enable3D, AudioManager* manager)
+Sound* Sound::Create(const TCHAR* filePath, AudioManager* manager)
 {
 	manager = (manager) ? manager : Internal::Manager;
 
 	RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
-	return manager->CreateSound(stream, playerType, enable3D, CacheKey(PathName(filePath)));
+	return manager->CreateSound(stream, CacheKey(PathName(filePath)));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound::Sound(AudioManager* manager, AudioStream* stream, SoundPlayType playerType, bool is3DSound)
+Sound::Sound(AudioManager* manager, AudioStream* stream/*, SoundPlayType playerType, bool is3DSound*/)
 	: m_manager(manager)
 	, m_audioStream(stream)
 	, m_audioPlayer(NULL)
-	, m_playerType(playerType)
+	, m_playerType(SoundPlayType_Unknown)
 	, m_volume(100)
 	, m_pitch(100)
 	, m_loopEnabled(false)
 	, m_loopBegin(0)
 	, m_loopLength(0)
-	, m_is3DSound(is3DSound)
+	, m_is3DSound(false)
 	, m_position(0, 0, 0)
 	, m_velocity(0, 0, 0)
 	, m_maxDistance(0)

@@ -65,7 +65,7 @@ private:
 	AudioStream* CreateAudioStream(const TCHAR* filePath);
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key);
 	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayType type, bool enable3D);		// ‰Šú‰»Š®—¹Ï‚İ‚Ì AudioStream ‚ğ“n‚·‚±‚Æ
-	Sound* CreateSound(Stream* stream, SoundPlayType type, bool enable3D, const CacheKey& key);
+	Sound* CreateSound(Stream* stream, const CacheKey& key);
 
 
 

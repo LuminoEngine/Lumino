@@ -3,6 +3,11 @@
 #include <iterator>
 #include <type_traits>
 #include <functional>
+#include <Lumino/Base/Collection.h>
+#include <Lumino/Base/SortedArray.h>
+#include <Lumino/Base/Size.h>
+#include <Lumino/Base/Rect.h>
+#include <Lumino/Base/Thickness.h>
 #include <Lumino/Base/Delegate.h>
 //#include "RoutedEvent.h"
 
@@ -317,18 +322,18 @@ TValue CoreObject::GetTypedPropertyValue(const Property* prop) const
 	private: \
 		friend class ApplicationContext; \
 		static TypeInfo m_typeInfo; \
-		static void* m_coreObjectBindingTypeData; \
+		static void* m_coreObjectBindingTypeInfo; \
 		virtual TypeInfo* GetThisTypeInfo() const; \
 		LocalValueFlags m_hasLocalValueFlags; \
 		static uint32_t* GetHasLocalValueFlags(CoreObject* _this); \
 	public: \
 		static TypeInfo* GetClassTypeInfo(); \
-		virtual void* GetBindingTypeData() const { return m_coreObjectBindingTypeData; } \
-		static void SetBindingTypeData(void* data) { m_coreObjectBindingTypeData = data; }
+		virtual void* GetBindingTypeInfo() const { return m_coreObjectBindingTypeInfo; } \
+		static void SetBindingTypeInfo(void* data) { m_coreObjectBindingTypeInfo = data; }
 
 #define LN_CORE_OBJECT_TYPE_INFO_IMPL(subClassFullName, baseClass) \
 	TypeInfo subClassFullName::m_typeInfo(_T(#subClassFullName), baseClass::GetClassTypeInfo(), &subClassFullName::GetHasLocalValueFlags); \
-	void* subClassFullName::m_coreObjectBindingTypeData = NULL; \
+	void* subClassFullName::m_coreObjectBindingTypeInfo = NULL; \
 	TypeInfo* subClassFullName::GetThisTypeInfo() const { return &m_typeInfo; } \
 	TypeInfo* subClassFullName::GetClassTypeInfo() { return &m_typeInfo; } \
 	uint32_t* subClassFullName::GetHasLocalValueFlags(CoreObject* _this) { return &static_cast<subClassFullName*>(_this)->m_hasLocalValueFlags.Flags; }

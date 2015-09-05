@@ -93,6 +93,43 @@ namespace BinderMaker.Builder
         }
 
         /// <summary>
+        /// 文字列を追加する
+        /// </summary>
+        public OutputBuffer AppendLine(string str)
+        {
+            Indent();
+            _buffer.Append(str);
+            NewLine();
+            return this;
+        }
+
+        /// <summary>
+        /// 文字列を追加する
+        /// </summary>
+        public OutputBuffer AppendLine(string format, params string[] args)
+        {
+            Indent();
+            _buffer.Append(string.Format(format, args));
+            NewLine();
+            return this;
+        }
+
+        /// <summary>
+        /// 文字列を追加する
+        /// </summary>
+        public OutputBuffer AppendLine(OutputBuffer buffer)
+        {
+            Indent();
+            Append(buffer.ToString());
+            NewLine();
+            return this;
+        }
+
+
+
+
+
+        /// <summary>
         /// 文字列を追加する (各行の先頭をインデント)
         /// 行が \n だけの場合はインデントしない
         /// </summary>
@@ -121,7 +158,7 @@ namespace BinderMaker.Builder
         /// </summary>
         public OutputBuffer AppendWithIndent(string format, params string[] args)
         {
-            var str = string.Format(format, args);
+            var str = string.Format(format, args).Replace("\r", "");
 
             //str = str.TrimEnd('\n');    // 終端改行は取り除く
             //Regex.Replace(str, "^")

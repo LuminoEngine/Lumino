@@ -22,11 +22,12 @@ namespace BinderMaker
         public const string APIModifier_Static = "LN_STATIC_API";
         public const string APIModifier_Internal = "LN_INTERNAL_API";
 
-        public const string APIAttribute_LibraryInitializer = "LN_LIBRARY_INITIALIZER";
-        public const string APIAttribute_LibraryTerminator = "LN_LIBRARY_TERMINATOR";
+        public const string APIAttribute_LibraryInitializer = "LN_ATTR_LIBRARY_INITIALIZER";
+        public const string APIAttribute_LibraryTerminator = "LN_ATTR_LIBRARY_TERMINATOR";
         public const string APIAttribute_Constructor = "LN_ATTR_CONSTRUCTOR";
         public const string APIAttribute_Property = "LN_ATTR_PROPERTY";
         public const string APIAttribute_Event = "LN_ATTR_EVENT";
+        public const string APIAttribute_Overload = "LN_ATTR_OVERLOAD";
 
         public const string HandleTypeParamMacro = "LN_HANDLE";
         public const string GenericHandleTypeParamMacro = "LN_HANDLE_GENERIC";
@@ -36,11 +37,11 @@ namespace BinderMaker
         /// <summary>
         /// オーバーロード関数のサフィックス
         /// </summary>
-        public static string[] OverloadSuffix = new string[] 
-        {
-            "XYWH","XYZW", "WH", "XYZ", "XY",   // 名前の長い方から見る
-            "Vec2", "Vec3", "Vec4",
-        };
+        //public static string[] OverloadSuffix = new string[] 
+        //{
+        //    "XYWH","XYZW", "WH", "XYZ", "XY",   // 名前の長い方から見る
+        //    "Vec2", "Vec3", "Vec4",
+        //};
 
         #endregion
 
@@ -132,14 +133,14 @@ namespace BinderMaker
             CLPrimitiveType.Double = new CLPrimitiveType("Double");
             CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
 
-            //CLClass.Array = new CLClass("Array", null);
-            //CLClass.ByteArray = new CLClass("Array", CLPrimitiveType.Byte);
+            CLClass.Array = new CLClass("Array", false);
+            CLClass.ByteArray = new CLClass(CLClass.Array, CLPrimitiveType.Byte);
             //CLClass.IntArray = new CLClass("Array", CLPrimitiveType.Int);
 
             _typeInfoTable = new Dictionary<string, CLType>()
             {
                 { "void",               CLPrimitiveType.Void },
-                //{ "const void*",        CLClass.ByteArray },
+                { "const void*",        CLClass.ByteArray },
                 //{ "void**",             CLClass.ByteArray },  //TODO: この2つは
                 //{ "const void**",       CLClass.ByteArray },   //TODO: バッファクラスを用意する必要がありそう
 
@@ -158,6 +159,7 @@ namespace BinderMaker
                 { "uint32_t",           CLPrimitiveType.UInt32 },
                 { "intptr_t",           CLPrimitiveType.IntPtr },
                 { "LNUserData",         CLPrimitiveType.IntPtr },
+                { "void*",              CLPrimitiveType.IntPtr },
             
                 //{ "const int*",         CLClass.IntArray },
             }; 
@@ -293,19 +295,19 @@ namespace BinderMaker
         /// それを取り除いた名前を返す
         /// </summary>
         /// <returns>OverloadSuffix をが含まれていた場合は true</returns>
-        public bool RemoveOverloadSuffix(string name, out string newName)
-        {
-            foreach (var s in OverloadSuffix)
-            {
-                if (name.EndsWith(s, false, System.Globalization.CultureInfo.DefaultThreadCurrentCulture))
-                {
-                    newName = name.Substring(0, name.Length - s.Length);
-                    return true;
-                }
-            }
-            newName = name;
-            return false;
-        }
+        //public bool RemoveOverloadSuffix(string name, out string newName)
+        //{
+        //    foreach (var s in OverloadSuffix)
+        //    {
+        //        if (name.EndsWith(s, false, System.Globalization.CultureInfo.DefaultThreadCurrentCulture))
+        //        {
+        //            newName = name.Substring(0, name.Length - s.Length);
+        //            return true;
+        //        }
+        //    }
+        //    newName = name;
+        //    return false;
+        //}
 
         #endregion
     }

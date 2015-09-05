@@ -232,7 +232,10 @@ TYPE_INFO_PINVOKES
 
 				// 管理リストの空き番号を詰める
 				for (int i = 0; i < InitialListSize; i++)
+                {
 					_userDataListIndexStack.Push(i);
+                    _userDataList.Add(null);
+                }
 					
 				// 型情報の登録
 				TypeInfo.Register();

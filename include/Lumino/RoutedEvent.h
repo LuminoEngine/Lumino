@@ -229,6 +229,8 @@ private:
 
 /// https://msdn.microsoft.com/ja-jp/library/ms597875%28v=vs.110%29.aspx
 /// LN_DEFINE_ROUTED_EVENT との違いは、イベントを受け取るものであること。
+/// On～ をオーバーライドすることと似ているが、On～ は this がイベントの送信元でなければ呼ばれない。
+/// つまり、子Visualで発生したルーティングイベントを元に処理したい場合はこのマクロで登録する必要がある。
 #define LN_REGISTER_ROUTED_EVENT_HANDLER(ownerClass, eventArgs, routedEvent, handler) \
 { \
 	static ::Lumino::TypedRoutedEventHandler<ownerClass, eventArgs> h(routedEvent, [](ownerClass* t, eventArgs* e) { t->handler(e); }); \

@@ -62,7 +62,7 @@ void AudioStream::OnASyncIOProc()
 	case StreamFormat_Wave:
 		m_decoder = LN_NEW WaveDecoder();
 		break;
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 		// MP3
 	case StreamFormat_Mp3:
 		m_decoder = LN_NEW Mp3Decoder();

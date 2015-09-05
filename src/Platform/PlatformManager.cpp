@@ -51,7 +51,7 @@
 */
 
 #include "../Internal.h"
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	#include "Win32/Win32WindowManager.h"
 #endif
 #ifdef LN_X11
@@ -122,7 +122,7 @@ void PlatformManager::Initialize(const Settings& settings)
 	m_windowCreationSettings = settings.MainWindowSettings;
 	m_useThread = settings.UseInternalUIThread;
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	m_windowManager = LN_NEW Win32WindowManager(0);
 #endif
 #ifdef LN_X11

@@ -15,7 +15,7 @@ class Window;
 class PlatformSupport
 {
 public:
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	/**
 		@brief		ウィンドウのウィンドウハンドルを取得します。
 	*/

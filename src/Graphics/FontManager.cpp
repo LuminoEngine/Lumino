@@ -291,7 +291,7 @@ FT_Error FontManager::FaceRequester(
 		*aface = face;
 		return FT_Err_Ok;
 	}
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	else if (m_requesterFaceName != NULL)
 	{
 		// 名前からシステムフォント検索
@@ -367,7 +367,7 @@ FT_Error FontManager::CallbackFaceRequester(
 }
 
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 // http://kikyou.info/diary/?200510#i10 を参考にした
 #define TVP_TT_TABLE_ttcf  (('t' << 0) + ('t' << 8) + ('c' << 16) + ('f' << 24))
 #define TVP_TT_TABLE_name  (('n' << 0) + ('a' << 8) + ('m' << 16) + ('e' << 24))

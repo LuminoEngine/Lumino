@@ -7,7 +7,7 @@
 #include <Lumino/Base/Logger.h>
 #include <Lumino/Base/Exception.h>
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 	#include <mmreg.h>
 	#include <msacm.h>
 	#include <xaudio2.h>
