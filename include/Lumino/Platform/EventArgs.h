@@ -25,7 +25,7 @@ enum EventType
 
 	EventType_KeyDown,			///< [MouseEventArgs] キー押下
 	EventType_KeyUp,			///< [MouseEventArgs] キー押し上げ
-	//EventType_KeyChar,			///< [MouseEventArgs] 文字入力 (CtrlやAltキーが押されず、日本語入力 OFF の状態でキーが押され場合)
+	EventType_KeyChar,			///< [MouseEventArgs] 文字入力 (CtrlやAltキーが押されず、日本語入力 OFF の状態でキーが押され場合)
 
 	//EventType_TOUCH_DOWN = 13,	///< [ LNEvent::Touch ] 画面がタッチされた
 	//EventType_TOUCH_UP = 14,	///< [ LNEvent::Touch ] 画面から離された
@@ -74,6 +74,7 @@ struct EventArgs
 			bool		IsAlt;		///< Alt キーが押されている場合 true
 			bool		IsShift;	///< Shift キーが押されている場合 true
 			bool		IsControl;	///< Ctrl キーが押されている場合 true
+			char		Char;
 
 		} Key;
 	};

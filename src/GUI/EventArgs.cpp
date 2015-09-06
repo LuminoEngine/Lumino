@@ -46,6 +46,43 @@ KeyEventArgs::~KeyEventArgs()
 {
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//char KeyEventArgs::GetChar() const
+//{
+//	if (Key_A <= KeyCode && KeyCode <= Key_Z)
+//	{
+//		if (IsShift) {
+//			return 'A' + KeyCode;
+//		}
+//		else {
+//			return 'a' + KeyCode;
+//		}
+//	}
+//	if (Key_0 <= KeyCode && KeyCode <= Key_9) { return '0' + KeyCode; }
+//
+//	switch (KeyCode)
+//	{
+//	case Key_Space: return ' ';
+//	case Key_Tab: return '\t';
+//
+//	case Key_Colon: return ':';
+//	case Key_SemiColon: return ';';
+//	case Key_Comma: return ',';
+//	case Key_Period: return '.';
+//	case Key_Slash: return '/';
+//	case Key_Minus: return '-';
+//	case Key_BackSlash: return '\\';
+//	case Key_Yen: return '\\';
+//	case Key_Caret: return '\'';
+//	case Key_LBracket: return ',';
+//	case Key_RBracket: return ',';
+//
+//	case Key_Android_Plus,		///< Android '+'
+//	}
+//}
+
 
 //=============================================================================
 // EventArgsPool

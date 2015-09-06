@@ -21,7 +21,7 @@ enum EventType
 
 	EventType_KeyDown,
 	EventType_KeyUp,
-	//EventType_Char,
+	EventType_Char,
 	EventType_ElapsedTime,
 
 
@@ -62,11 +62,14 @@ public:
 	KeyEventArgs();
 	virtual ~KeyEventArgs();
 
+	char GetChar() const;
+
 public:
 	Key			KeyCode;	///< キーコード
 	bool		IsAlt;		///< Alt キーが押されている場合 true
 	bool		IsShift;	///< Shift キーが押されている場合 true
 	bool		IsControl;	///< Ctrl キーが押されている場合 true
+	TCHAR		Char;		///< 
 };
 
 ///**

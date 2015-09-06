@@ -371,23 +371,23 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				break;	// WM_SYSKEYUPを捕まえた場合、必ずDefWindowProcに行くようにする
 			}
 			///////////////////////////////////////////// 文字入力
-			//case WM_CHAR:
-			//{
-			//	// 文字のみ送る
-			//	if (0x20 <= wparam && wparam <= 0x7E)
-			//	{
-			//		KeyEventArgs e;
-			//		e.Type = EventType_KeyChar;
-			//		e.Sender = this;
-			//		e.KeyCode = (Key)wparam;
-			//		e.IsAlt = ::GetKeyState(VK_MENU) < 0;
-			//		e.IsShift = ::GetKeyState(VK_SHIFT) < 0;
-			//		e.IsControl = ::GetKeyState(VK_CONTROL) < 0;
-			//		mWindowManager->getManager()->postEventFromWindowThread((EventArgs*)&e);
-
-			//		return 0;
-			//	}
-			//}
+			case WM_CHAR:
+			{
+				// 文字のみ送る
+				if (0x20 <= wparam && wparam <= 0x7E)
+				{
+					EventArgs e;
+					e.Type = EventType_KeyChar;
+					e.Sender = this;
+					e.Key.KeyCode = Key_Unknown;
+					e.Key.IsAlt = ::GetKeyState(VK_MENU) < 0;
+					e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
+					e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
+					e.Key.Char = wparam;
+					NortifyEvent(e);
+					return 0;
+				}
+			}
 		}
 	}
 

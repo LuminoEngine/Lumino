@@ -33,6 +33,9 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseLeaveEvent, "MouseLeav
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseDownEvent, "MouseDown", MouseDown);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, MouseEventArgs, MouseUpEvent, "MouseUp", MouseUp);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, KeyEventArgs, KeyDownEvent, "KeyDown", KeyDown);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, KeyEventArgs, KeyUpEvent, "KeyUp", KeyUp);
+LN_ROUTED_EVENT_IMPLEMENT(UIElement, KeyEventArgs, CharInputEvent, "CharInput", CharInput);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, CanExecuteRoutedCommandEventArgs, CanExecuteRoutedCommandEvent, "CanExecuteRoutedCommand", CanExecuteRoutedCommand);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, ExecuteRoutedCommandEventArgs, ExecuteRoutedCommandEvent, "ExecuteRoutedCommand", ExecuteRoutedCommand);
 
@@ -79,6 +82,17 @@ void UIElement::InitializeComponent()
 	m_style = m_combinedLocalResource->FindStyle(GetThisTypeInfo());
 	if (m_style != NULL) {
 		m_style->Apply(this);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::Focus()
+{
+	if (IsFocusable())
+	{
+		m_manager->SetFocusElement(this);
 	}
 }
 
@@ -489,8 +503,13 @@ bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 	case Lumino::GUI::EventType_MouseWheel:
 		break;
 	case Lumino::GUI::EventType_KeyDown:
+		OnKeyDown(static_cast<KeyEventArgs*>(args));
 		break;
 	case Lumino::GUI::EventType_KeyUp:
+		OnKeyUp(static_cast<KeyEventArgs*>(args));
+		break;
+	case Lumino::GUI::EventType_Char:	// TODO: CharInput
+		OnCharInput(static_cast<KeyEventArgs*>(args));
 		break;
 	case Lumino::GUI::EventType_ElapsedTime:
 		break;

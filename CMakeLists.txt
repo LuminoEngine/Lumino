@@ -42,6 +42,8 @@ set(LN_SOURCES_Animation
 	include/Lumino/Animation/AnimationUtilities.h
 	include/Lumino/Animation/Common.h
 	include/Lumino/Animation/EasingFunctions.h
+	src/Animation/AnimationCurve.cpp
+	src/Animation/AnimationCurve.h
 )
 
 set(LN_SOURCES_IO

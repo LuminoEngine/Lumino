@@ -20,11 +20,18 @@ public:
 	virtual ValueType GetValueType() const = 0;
 
 	/// 時間の設定 (mTime をそのまま、mCurrentFramePos をループ考慮で設定する)
-	virtual void SetTime(double time) = 0;
+	virtual void UpdateValue(double time) = 0;
 
 	/// 終端フレーム位置の取得
 	virtual double GetLastFrameTime() const = 0;
 
+	void SetWrapMode(WrapMode mode) { m_wrapMode = mode; }
+	WrapMode GetWrapMode() const { return m_wrapMode; }
+
+	void SetTime(double time);
+
+private:
+	WrapMode	m_wrapMode;
 };
 
 /// FloatAnimationCurve のキーフレーム
@@ -73,7 +80,7 @@ public:
 public:
 	// override AnimationCurve
 	virtual ValueType GetValueType() const { return ValueType_Float; }
-	virtual void SetTime(double time);
+	virtual void UpdateValue(double time);
 	virtual double GetLastFrameTime() const;
 
 private:
@@ -142,7 +149,7 @@ public:
 
 public:
 	virtual ValueType GetValueType() const { return ValueType_SQTTransform; }
-	virtual void SetTime(double time);
+	virtual void UpdateValue(double time);
 	virtual double GetLastFrameTime() const;
 
 private:

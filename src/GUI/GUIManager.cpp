@@ -1040,9 +1040,11 @@ GUIManager::GUIManager()
 	, m_defaultTheme(NULL)
 	, m_rootCombinedResource(NULL)
 	, m_defaultRootFrame(NULL)
+	, m_focusElement(NULL)
 	, m_capturedElement(NULL)
 	, m_mouseButtonClickTimeout(DefaultouseButtonClickTimeout)
 	, m_cursorAnimationTime(0)
+	, m_time(0.0)
 {
 	memset(m_mouseClickTrackers, 0, sizeof(m_mouseClickTrackers));
 }
@@ -1257,9 +1259,9 @@ bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
-	if (m_defaultRootFrame == NULL) { return false; }
+	if (m_focusElement == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_defaultRootFrame->OnEvent(EventType_KeyDown, args);
+	return m_focusElement->OnEvent(EventType_KeyDown, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -1267,9 +1269,20 @@ bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isCon
 //-----------------------------------------------------------------------------
 bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
-	if (m_defaultRootFrame == NULL) { return false; }
+	if (m_focusElement == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_defaultRootFrame->OnEvent(EventType_KeyUp, args);
+	return m_focusElement->OnEvent(EventType_KeyUp, args);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIManager::InjectChar(TCHAR ch)
+{
+	if (m_focusElement == NULL) { return false; }
+	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(Key_Unknown, false, false, false));
+	args->Char = ch;
+	return m_focusElement->OnEvent(EventType_Char, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -1277,6 +1290,8 @@ bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isContr
 //-----------------------------------------------------------------------------
 void GUIManager::InjectElapsedTime(float elapsedTime)
 {
+	m_time += elapsedTime;
+
 	for (AnimationClock* clock : m_activeAnimationClockList)
 	{
 		clock->AdvanceTime(elapsedTime);
@@ -1315,6 +1330,14 @@ void GUIManager::Render()
 	}
 
 	m_painter->Flush();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManager::SetFocusElement(UIElement* element)
+{
+	m_focusElement = element;
 }
 
 //-----------------------------------------------------------------------------
@@ -1399,6 +1422,14 @@ void GUIManager::RemoveAnimationClock(AnimationClock* clock)
 {
 	m_activeAnimationClockList.Remove(clock);
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//char GUIManager::KeyToChar(Key keyCode)
+//{
+//
+//}
 
 //-----------------------------------------------------------------------------
 //

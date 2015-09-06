@@ -5,8 +5,18 @@
 
 namespace Lumino
 {
+namespace Animation { class FloatAnimationCurve; }
+
 namespace GUI
 {
+	
+/**
+	@brief
+*/
+class TextArea
+	: public Control
+{
+};
 
 /**
 	@brief
@@ -51,6 +61,7 @@ protected:
 private:
 	void set_Text(const String& string);
 	const String& get_Text() const;
+	void Handler_CharInput(KeyEventArgs* e);
 
 private:
 	class Document;
@@ -58,6 +69,7 @@ private:
 	class Selection;
 	Document*	m_document;
 	Selection*	m_selection;
+	Animation::FloatAnimationCurve*	m_caretAnimation;
 
 	//RefPtr<Documents::Document>	m_document;
 	//Array<TextBoxLineSegment*>		m_lineSegments;

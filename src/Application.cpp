@@ -346,10 +346,14 @@ bool Application::OnEvent(const Platform::EventArgs& e)
 		break;
 	case Platform::EventType_KeyUp:		//  キー押し上げ
 		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
+			if (m_guiManager->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
 		}
 		break;
-
+	case Platform::EventType_KeyChar:		//  文字入力
+		if (m_guiManager != NULL) {
+			if (m_guiManager->InjectChar(e.Key.Char)) { return true; }
+		}
+		break;
 	default:
 		break;
 	}

@@ -15,6 +15,7 @@ namespace Animation
 //
 //-----------------------------------------------------------------------------
 AnimationCurve::AnimationCurve()
+	: m_wrapMode(WrapMode_Once)
 {
 }
 
@@ -28,9 +29,65 @@ AnimationCurve::~AnimationCurve()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void AnimationCurve::SetTime(double time)
-//{
-//}
+void AnimationCurve::SetTime(double time)
+{
+	if (m_wrapMode == WrapMode_Once)
+	{
+		UpdateValue(time);
+	}
+	else if (m_wrapMode == WrapMode_Loop) 
+	{
+		double lastTime = GetLastFrameTime();
+		if (time > lastTime)
+		{
+			time = fmod(time, lastTime);
+			UpdateValue(time);
+		}
+	}
+	else
+	{
+		LN_THROW(0, NotImplementedException);
+	}
+
+	//mTime = time;
+
+	//time *= mTimeTick;	// フレーム位置へ変換
+
+	//double last_frame_pos = getLastFramePos();
+	//if (last_frame_pos == 0)
+	//{
+	//	time = 0;
+	//}
+	//else if (mLoopMode == LN_ANIMATIONLOOPMODE_REPEAT_LOOP)
+	//{
+	//	// ループ位置未設定
+	//	if (mLoopEndPos == 0.0f && mLoopBeginPos == 0.0f)
+	//	{
+	//		// 終端のキーフレームの時間を使ってループ
+	//		if (time > last_frame_pos)
+	//		{
+	//			time = fmod(time, last_frame_pos);
+	//		}
+	//	}
+	//	// ループ位置設定済み
+	//	else
+	//	{
+	//		// time_ がループ領域を超えていた場合は開始時間からループ
+	//		if (time > mLoopEndPos)
+	//		{
+	//			time -= mLoopBeginPos;
+	//			time = fmod(time, (mLoopEndPos - mLoopBeginPos));
+	//			time = mLoopBeginPos + time;
+	//		}
+	//	}
+	//}
+	//else if (mLoopMode == LN_ANIMATIONLOOPMODE_REPEAT_LOOP)
+	//{
+	//	LN_PRINT_NOT_IMPL_FUNCTION;
+	//}
+
+	//mCurrentFramePos = time;
+}
 
 
 //=============================================================================
@@ -107,7 +164,7 @@ static int _cmpKey(const void* a_, const void* b_)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void FloatAnimationCurve::SetTime(double time)
+void FloatAnimationCurve::UpdateValue(double time)
 {
 	if (!m_keyFrameList.IsEmpty())
 	{
@@ -348,7 +405,7 @@ void VMDBezierSQTTransformAnimation::SortKeyFrame()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VMDBezierSQTTransformAnimation::SetTime(double time)
+void VMDBezierSQTTransformAnimation::UpdateValue(double time)
 {
 	// フレーム数 1 個
 	if (m_keyFrameList.GetCount() == 1)

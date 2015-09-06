@@ -57,8 +57,11 @@ public:
 	bool InjectMouseWheel(int delta, float clientX, float clientY);
 	bool InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl);
 	bool InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl);
+	bool InjectChar(TCHAR ch);
 	//bool InjectChar(int ch);
 	void InjectElapsedTime(float elapsedTime);
+
+	double GetTime() const { return m_time; }
 
 	void SetViewPixelSize(const Size& viewPixelSize) { m_viewPixelSize = viewPixelSize; }	// TODO: GUIContext
 	void Render();	// TODO: GUIContext
@@ -68,6 +71,7 @@ public:	// internal
 	CombinedLocalResource* GetRootCombinedResource() { return m_rootCombinedResource; }
 	EventArgsPool* GetEventArgsPool() { return &m_eventArgsPool; }
 
+	void SetFocusElement(UIElement* element);	// TODO: GUIContext
 
 	void CaptureMouse(UIElement* element);
 	void ReleaseMouseCapture(UIElement* element);
@@ -76,9 +80,12 @@ private:
 	bool UpdateMouseHover(const PointF& mousePos);	// ハンドリングしたら true を返す
 	void BuildDefaultTheme();
 
+
 private:	// internal
 	void AddAnimationClock(AnimationClock* clock);
 	void RemoveAnimationClock(AnimationClock* clock);
+
+	//static char KeyToChar(Key keyCode);
 
 private:
 	typedef std::map<String, ObjectFactory>	ObjectFactoryMap;
@@ -92,12 +99,15 @@ private:
 	RootFrame*							m_defaultRootFrame;
 	ResourceDictionary*					m_defaultTheme;
 	CombinedLocalResource*				m_rootCombinedResource;
+	UIElement*							m_focusElement;
 	UIElement*							m_mouseHoverElement;		///< 現在マウス位置にある UIElement
 	UIElement*							m_capturedElement;			///< 現在キャプチャ中の UIElement
 	RefPtr<Platform::Window>			m_mainWindow;
 	Array<AnimationClock*>				m_activeAnimationClockList;	///< TODO: インデックススタックを使ったリストにしたい
 
 	ObjectFactoryMap					m_objectFactoryMap;
+
+	double								m_time;	// TODO: context
 
 	// GUIContext
 	struct MouseClickTracker

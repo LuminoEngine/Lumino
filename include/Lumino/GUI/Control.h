@@ -97,6 +97,9 @@ protected:
 	Control(GUIManager* manager);
 	virtual ~Control();
 
+public:
+	virtual bool IsFocusable() const { return true; }
+
 protected:
 
 

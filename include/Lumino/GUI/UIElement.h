@@ -153,6 +153,10 @@ public:
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(MouseEventArgs,		KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(MouseEventArgs,		KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(KeyEventArgs,		CharInputEvent);				/**< CharInput ルーティングイベントの識別子 */
+
 	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< このイベントは内部用 */
 	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< このイベントは内部用 */
 
@@ -166,6 +170,9 @@ public:
 	RoutedEventSlot<MouseEventArgs>		MouseMove;		/**< マウスポインタがこの要素上で移動すると発生します。 */
 	RoutedEventSlot<MouseEventArgs>		MouseDown;		/**< マウスポインタがこの要素上にあるときに任意のマウスボタンが押されると発生します。*/
 	RoutedEventSlot<MouseEventArgs>		MouseUp;		/**< マウスポインタがこの要素上にあるときに任意のマウスボタンが離されると発生します。*/
+	RoutedEventSlot<KeyEventArgs>		KeyDown;		/**< この要素がフォーカスを持っている時にキーボードのキーが押されると発生します。*/
+	RoutedEventSlot<KeyEventArgs>		KeyUp;			/**< この要素がフォーカスを持っている時にキーボードのキーが離されると発生します。*/
+	RoutedEventSlot<KeyEventArgs>		CharInput;		/**< キー走査により文字が入力されると発生します。*/
 
 	/** @} */
 	//-------------------------------------------------------------------------
@@ -193,17 +200,24 @@ public:
 	/** @} */
 
 public:
-	/** 論理上の親要素を取得します。*/
-	UIElement* GetParent() const { return m_parent; }
 
 	/** 要素の識別名を取得します。*/
 	const String& GetKeyName() const { return m_keyName; }
+
+	/** 論理上の親要素を取得します。*/
+	UIElement* GetParent() const { return m_parent; }
+
+	/** この要素がフォーカスを得ることができるかを確認します。*/
+	virtual bool IsFocusable() const { return false; }
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
 	const SizeF& GetDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
 	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
+
+	/** この要素へのフォーカスの取得を試みます。*/
+	void Focus();
 
 	/** マウスキャプチャを設定します。*/
 	void CaptureMouse();
@@ -221,6 +235,7 @@ public:
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
 protected:
+
 	/** この要素のレイアウトの更新が完了した時に呼び出されます。*/
 	virtual void OnLayoutUpdated();
 
@@ -268,7 +283,6 @@ private:
 	float							m_combinedOpacity;
 	Array< RefPtr<AnimationClock> >	m_animationClockList;
 	InvalidateFlags					m_invalidateFlags;
-
 
 
 
@@ -477,6 +491,9 @@ protected:
 	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
 	virtual void OnMouseEnter(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseEnterEvent, this, e); } }
 	virtual void OnMouseLeave(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseLeaveEvent, this, e); } }
+	virtual void OnKeyDown(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(KeyDownEvent, this, e); } }
+	virtual void OnKeyUp(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(KeyUpEvent, this, e); } }
+	virtual void OnCharInput(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(CharInputEvent, this, e); } }
 
 
 	friend class GUIHelper;

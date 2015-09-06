@@ -17,6 +17,7 @@
 #include <Lumino/GUI/TextBox.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
+#include "../Animation/AnimationCurve.h"
 #include "../Graphics/FontGlyphTextureCache.h"
 #include "../Graphics/GraphicsHelper.h"
 #include "GUIHelper.h"
@@ -25,6 +26,19 @@ namespace Lumino
 {
 namespace GUI
 {
+
+class TextBox::Selection
+{
+public:
+	int	Start;		///< text.GetLength() は有効値。Select(text.GetLength(), 0) でコンテンツの末尾にキャレットを移動する
+	int Length;
+
+public:
+	Selection()
+		: Start(0)
+		, Length(0)
+	{}
+};
 
 
 // 本格的なテキストエディタであれば装飾のため、さらに単語単位に区切ったりする。
@@ -56,6 +70,13 @@ public:
 		Graphics::TextLayoutResult* r = Graphics::Helper::GetGlyphData(m_glyphRun);
 		Graphics::FontGlyphLocation* loc = &r->Items[c].Location;
 		return loc->OuterTopLeftPosition.X + loc->BitmapSize.Width;
+	}
+
+
+	void Replace(int start, int length, const uint32_t* text, int len)
+	{
+		m_utf32Text.Replace(start, length, text, len);
+		UpdateGlyphRuns();
 	}
 
 
@@ -112,8 +133,23 @@ public:
 		}
 	}
 
+	void Replace(const Selection* sel, const UTF32* text, int len)
+	{
+		int beginLineNumber, beginPosFromLineHead;
+		int endLineNumber, endPosFromLineHead;
+		GetLineNumber(sel->Start, &beginLineNumber, &beginPosFromLineHead);
+		GetLineNumber(sel->Start + sel->Length, &endLineNumber, &endPosFromLineHead);
+		if (beginLineNumber == endLineNumber) {
+			m_lineSegments[beginLineNumber]->Replace(beginPosFromLineHead, sel->Length, text, len);
+		}
+		else
+		{
+			LN_THROW(0, NotImplementedException);
+		}
+	}
+
 	// 指定したコンテンツ位置 (文字位置) が何行目かを返す
-	void GetLineNumber(int contentPos, int* lineNumber, int* lenFromLineHead, int* yLocation)
+	void GetLineNumber(int contentPos, int* lineNumber, int* lenFromLineHead, int* yLocation = NULL)
 	{
 		int len = 0;
 		int y = 0;
@@ -123,7 +159,7 @@ public:
 			len += m_lineSegments[line]->GetLength();
 			if (contentPos <= len) {
 				*lenFromLineHead = contentPos - head;
-				*yLocation = y;
+				if (yLocation != NULL) { *yLocation = y; }
 				*lineNumber = line;
 				return;
 			}
@@ -160,19 +196,6 @@ public:
 	RefPtr<Graphics::Internal::FontGlyphTextureCache>	m_glyphTextureCache;
 	Text::EncodingConverter		m_TCharToUTF32Converter;
 	Text::EncodingConverter		m_UTF32ToTCharConverter;
-};
-
-class TextBox::Selection
-{
-public:
-	int	Start;		///< text.GetLength() は有効値。Select(text.GetLength(), 0) でコンテンツの末尾にキャレットを移動する
-	int Length;
-
-public:
-	Selection()
-		: Start(0)
-		, Length(0)
-	{}
 };
 
 
@@ -224,9 +247,27 @@ TextBox::TextBox(GUIManager* manager)
 	: Control(manager)
 	, m_document(NULL)
 	, m_selection(NULL)
+	, m_caretAnimation(NULL)
 {
 	m_document = LN_NEW Document();
 	m_selection = LN_NEW Selection();
+	m_caretAnimation = LN_NEW Animation::FloatAnimationCurve();
+	m_caretAnimation->SetWrapMode(Animation::WrapMode_Loop);
+
+	Animation::FloatKeyFrame key;
+	key.Mode = Animation::InterpolationMode_None;
+	key.FrameTime = 0.0;
+	key.Value = 1.0f;
+	m_caretAnimation->AddKeyFrame(key);
+	key.FrameTime = 0.5;
+	key.Value = 0.0f;
+	m_caretAnimation->AddKeyFrame(key);
+	key.FrameTime = 1.0;
+	key.Value = 1.0f;
+	m_caretAnimation->AddKeyFrame(key);
+
+	// Register handler
+	LN_REGISTER_ROUTED_EVENT_HANDLER(TextBox, KeyEventArgs, UIElement::CharInputEvent, Handler_CharInput);
 }
 
 //-----------------------------------------------------------------------------
@@ -234,6 +275,7 @@ TextBox::TextBox(GUIManager* manager)
 //-----------------------------------------------------------------------------
 TextBox::~TextBox()
 {
+	LN_SAFE_RELEASE(m_caretAnimation);
 	LN_SAFE_DELETE(m_selection);
 	LN_SAFE_DELETE(m_document);
 }
@@ -274,15 +316,15 @@ void TextBox::OnRender(Graphics::Painter* painter)
 	Control::OnRender(painter);
 	m_document->Render(painter);
 
+	m_caretAnimation->SetTime(m_manager->GetTime());
+
 	// キャレット
 	int caretHeight;
 	Point caretPos = m_document->GetCaretLocation(m_selection->Start + m_selection->Length, &caretHeight);
 	RectF caret((float)caretPos.X, (float)caretPos.Y, 1.0f, (float)caretHeight);
 	painter->SetBrush(Graphics::ColorBrush::Red);
+	painter->SetOpacity(m_caretAnimation->GetValue());
 	painter->DrawRectangle(caret);
-
-	//painter->SetBrush(Graphics::ColorBrush::Red);
-	//painter->DrawRectangle(RectF(0, 0, GetRenderSize()));
 }
 
 //-----------------------------------------------------------------------------
@@ -300,6 +342,16 @@ void TextBox::set_Text(const String& string)
 const String& TextBox::get_Text() const
 {
 	return String::GetEmpty();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBox::Handler_CharInput(KeyEventArgs* e)
+{
+	UTF32 buf[1] = { e->Char };
+	m_document->Replace(m_selection, buf, 1);
+	m_selection->Start++;
 }
 
 } // namespace GUI
