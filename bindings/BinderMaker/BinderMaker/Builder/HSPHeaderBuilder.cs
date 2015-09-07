@@ -1,6 +1,7 @@
 ﻿/*
  * ・HSP はクラスという概念は存在しないので、基本的に関数の変換だけとなる。
  * ・戻り値として構造体または float を使用している箇所に工夫が必要。
+ * ・とりあえず直近の Audio リリースに向けては struct/string は必要ないので必要最低限にする。
  */
 
 using System;
@@ -45,6 +46,32 @@ namespace BinderMaker.Builder
         }
 
         /// <summary>
+        /// クラスor構造体 通知 (開始)
+        /// </summary>
+        /// <param name="classType"></param>
+        /// <returns>false の場合このクラスの出力を無視する</returns>
+        protected override bool OnClassLookedStart(CLClass classType)
+        {
+            if (!classType.IsStruct)
+            {
+                _allFuncDeclText.AppendLine("//" + classType.OriginalName);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// クラスor構造体 通知 (終了)
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnClassLookedEnd(CLClass classType)
+        {
+            if (!classType.IsStruct)
+            {
+                _allFuncDeclText.NewLine();
+            }
+        }
+
+        /// <summary>
         /// プロパティ 通知
         /// </summary>
         /// <param name="enumType"></param>
@@ -66,15 +93,16 @@ namespace BinderMaker.Builder
             string funcName = method.FuncDecl.OriginalFullName;
 
             // 文字列または float の出力があるかチェック
-            if (method.FuncDecl.Params.Find((item) => item.IsOutStringType) != null ||
-                method.FuncDecl.Params.Find((item) => CheckFloatOutput(item)) != null)
-            {
-                prefix += "_typeOverride_";
-                _outputOverrideFuncs.Add(method);
-            }
-
+            //if (method.FuncDecl.Params.Find((item) => item.IsOutStringType) != null ||
+            //    method.FuncDecl.Params.Find((item) => CheckFloatOutput(item)) != null)
+            //{
+            //    prefix += "_typeOverride_";
+            //    _outputOverrideFuncs.Add(method);
+            //}
+            
+            //-------------------------------------------------
             // #func
-            string decl = "#func " + prefix + funcName + " \"" + funcName;
+            string decl = "#func native_" + funcName + " \"" + funcName;
             if (method.FuncDecl.Params.Find((item) => item.Type == CLPrimitiveType.Float) != null)
                 decl += "D";    // float 型の場合はサフィックス "D" の付いた関数を呼ぶようにする
             decl += "\"";
@@ -87,6 +115,7 @@ namespace BinderMaker.Builder
             }
             _allFuncDeclText.AppendLine(decl + " " + paramsText.ToString());
 
+            //-------------------------------------------------
             // #define
             decl = "#define " + funcName;
 
@@ -105,7 +134,24 @@ namespace BinderMaker.Builder
                 }
                 decl += "(" + paramsText.ToString() + ")";
             }
-            _allFuncDeclText.AppendLine(decl);
+
+            // #define の置換要素 (呼び出し関数名)
+            decl += " native_" + funcName;
+            //if (prefix == "___")    // 多重オーバーライド
+            //    outputDecl += " __" + func.CPPName;
+            //else
+            //    outputDecl += " _" + func.CPPName;
+
+            // #define の置換要素 (実引数)
+            paramsText.Clear();
+            int i2 = 0;
+            foreach (var param in method.FuncDecl.Params)
+            {
+                paramsText.AppendCommad("%" + (i2 + 1).ToString());
+                i2++;
+            }
+
+            _allFuncDeclText.AppendLine(decl + " " + paramsText.ToString());
         }
 
         /// <summary>
@@ -114,10 +160,9 @@ namespace BinderMaker.Builder
         protected override string OnMakeOutoutFileText()
         {
             string output = GetTemplate("HSP/HSPHeader.txt");
-            return output.Replace("__ENUMS__", _allEnumText.ToString())
+            return output
+                .Replace("__ENUMS__", _allEnumText.ToString())
                 .Replace("__FUNCS__", _allFuncDeclText.ToString());
-
-
         }
 
         /// <summary>
@@ -157,7 +202,8 @@ namespace BinderMaker.Builder
                 return _primitiveTypeInfoTable[type];
 
             // struct 型
-            if (type is CLStruct) return "var";
+            var classType = type as CLClass;
+            if (classType != null && classType.IsStruct) return "var";
 
             return "int";    // 登録された方でなければenumとみなして int にする
         }

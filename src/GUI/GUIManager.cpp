@@ -5,6 +5,27 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/9/8] ショートカットキー (InputBinding)
+		TranslateInput
+
+	[2015/9/8] コマンドとフォーカス
+		WPF では、Button.Command とか MenuItem.Command の Target は、CommandTarget プロパティで決まる。
+		これが null の時はキーボードフォーカスを持っているものが対象。
+		http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_base_command.htm#param
+		これは MS.Internal.Commands.CommandHelpers.CriticalExecuteCommandSource() を追っていけばわかる。
+
+		MenuItem は表示中、キーボードフォーカスを持つ。
+		何もせずに Click で Command の処理を行うと、キーボードフォーカスを持っている=MenuItem 自身が
+		Target となってしまう。
+
+		WPF では、PreviewClick を辿ると MenuBase.RestorePreviousFocus() が呼ばれる。
+		キーボードフォーカスを外すと、メニューを表示する前にキーボードフォーカスを持っていた要素に
+		キーボードフォーカスが移る。
+
+		この後 Command の処理を行うことで、メニューを表示する前の要素を Target にして
+		Command の処理を正しく行うことができる。
+
+
 	[2015/8/16] マウスカーソルイメージ
 		理想：
 		button1->Cursor = Cursors::Wait;	// button1 の上にマウスカーソルが乗った時のアイコンを指定する

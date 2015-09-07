@@ -341,236 +341,246 @@
 //-----------------------------------------------------------------------------
 // funcs
 //-----------------------------------------------------------------------------
-#func _LNObject_Release "LNObject_Release" int
-#define LNObject_Release(%1)
-#func _LNObject_AddRef "LNObject_AddRef" int
-#define LNObject_AddRef(%1)
-#func _LNObject_GetRefCount "LNObject_GetRefCount" int, var
-#define LNObject_GetRefCount(%1, %2)
-#func _LNApplication_Initialize "LNApplication_Initialize" 
-#define LNApplication_Initialize
-#func _LNApplication_Update "LNApplication_Update" 
-#define LNApplication_Update
-#func _LNApplication_ResetFrameDelay "LNApplication_ResetFrameDelay" 
-#define LNApplication_ResetFrameDelay
-#func _LNApplication_IsEndRequested "LNApplication_IsEndRequested" var
-#define LNApplication_IsEndRequested(%1)
-#func _LNApplication_Terminate "LNApplication_Terminate" 
-#define LNApplication_Terminate
-#func __typeOverride_LNVector2_GetLength "LNVector2_GetLengthD" int, var
-#define LNVector2_GetLength(%1, %2)
-#func __typeOverride_LNVector2_GetSquareLength "LNVector2_GetSquareLengthD" int, var
-#define LNVector2_GetSquareLength(%1, %2)
-#func _LNVector2_Create "LNVector2_CreateD" double, double, var
-#define LNVector2_Create(%1, %2, %3)
-#func _LNVector2_Normalize "LNVector2_Normalize" int, var
-#define LNVector2_Normalize(%1, %2)
-#func _LNVector2_NormalizeV "LNVector2_NormalizeV" int
-#define LNVector2_NormalizeV(%1)
-#func __typeOverride_LNVector3_GetLength "LNVector3_GetLengthD" int, var
-#define LNVector3_GetLength(%1, %2)
-#func __typeOverride_LNVector3_GetSquareLength "LNVector3_GetSquareLengthD" int, var
-#define LNVector3_GetSquareLength(%1, %2)
-#func _LNVector3_Create "LNVector3_CreateD" double, double, double, var
-#define LNVector3_Create(%1, %2, %3, %4)
-#func _LNVector3_CreateVZ "LNVector3_CreateVZD" int, double, var
-#define LNVector3_CreateVZ(%1, %2, %3)
-#func _LNVector3_Normalize "LNVector3_Normalize" int, var
-#define LNVector3_Normalize(%1, %2)
-#func _LNVector3_NormalizeV "LNVector3_NormalizeV" int
-#define LNVector3_NormalizeV(%1)
-#func __typeOverride_LNVector3_Dot "LNVector3_DotD" int, int, var
-#define LNVector3_Dot(%1, %2, %3)
-#func _LNVector3_Cross "LNVector3_Cross" int, int, var
-#define LNVector3_Cross(%1, %2, %3)
-#func _LNVector3_Reflect "LNVector3_Reflect" int, int, var
-#define LNVector3_Reflect(%1, %2, %3)
-#func _LNVector3_Slide "LNVector3_Slide" int, int, var
-#define LNVector3_Slide(%1, %2, %3)
-#func _LNVector3_Lerp "LNVector3_LerpD" int, int, double, var
-#define LNVector3_Lerp(%1, %2, %3, %4)
-#func _LNVector3_CatmullRom "LNVector3_CatmullRomD" int, int, int, int, double, var
-#define LNVector3_CatmullRom(%1, %2, %3, %4, %5, %6)
-#func _LNVector3_Transform "LNVector3_Transform" int, int, var
-#define LNVector3_Transform(%1, %2, %3)
-#func _LNVector3_TransformCoord "LNVector3_TransformCoord" int, int, var
-#define LNVector3_TransformCoord(%1, %2, %3)
-#func _LNVector4_Create "LNVector4_CreateD" double, double, double, double, var
-#define LNVector4_Create(%1, %2, %3, %4, %5)
-#func _LNMatrix_GetRight "LNMatrix_GetRight" int, var
-#define LNMatrix_GetRight(%1, %2)
-#func _LNMatrix_GetUp "LNMatrix_GetUp" int, var
-#define LNMatrix_GetUp(%1, %2)
-#func _LNMatrix_GetFront "LNMatrix_GetFront" int, var
-#define LNMatrix_GetFront(%1, %2)
-#func _LNMatrix_GetPosition "LNMatrix_GetPosition" int, var
-#define LNMatrix_GetPosition(%1, %2)
-#func _LNMatrix_Identity "LNMatrix_Identity" var
-#define LNMatrix_Identity(%1)
-#func _LNMatrix_Translate "LNMatrix_TranslateD" int, double, double, double
-#define LNMatrix_Translate(%1, %2, %3, %4)
-#func _LNMatrix_TranslateVec3 "LNMatrix_TranslateVec3" int, int
-#define LNMatrix_TranslateVec3(%1, %2)
-#func _LNMatrix_RotateX "LNMatrix_RotateXD" int, double
-#define LNMatrix_RotateX(%1, %2)
-#func _LNMatrix_RotateY "LNMatrix_RotateYD" int, double
-#define LNMatrix_RotateY(%1, %2)
-#func _LNMatrix_RotateZ "LNMatrix_RotateZD" int, double
-#define LNMatrix_RotateZ(%1, %2)
-#func _LNMatrix_Rotate "LNMatrix_RotateD" int, double, double, double, int
-#define LNMatrix_Rotate(%1, %2, %3, %4, %5=LN_ROTATIONORDER_XYZ)
-#func _LNMatrix_RotateVec3 "LNMatrix_RotateVec3" int, int, int
-#define LNMatrix_RotateVec3(%1, %2, %3=LN_ROTATIONORDER_XYZ)
-#func _LNMatrix_RotateAxis "LNMatrix_RotateAxisD" int, int, double
-#define LNMatrix_RotateAxis(%1, %2, %3)
-#func _LNMatrix_RotateQuaternion "LNMatrix_RotateQuaternion" int, int
-#define LNMatrix_RotateQuaternion(%1, %2)
-#func _LNMatrix_Scale "LNMatrix_ScaleD" int, double
-#define LNMatrix_Scale(%1, %2)
-#func _LNMatrix_ScaleXYZ "LNMatrix_ScaleXYZD" int, double, double, double
-#define LNMatrix_ScaleXYZ(%1, %2, %3, %4)
-#func _LNMatrix_ScaleVec3 "LNMatrix_ScaleVec3" int, int
-#define LNMatrix_ScaleVec3(%1, %2)
-#func _LNMatrix_Multiply "LNMatrix_Multiply" int, int, var
-#define LNMatrix_Multiply(%1, %2, %3)
-#func _LNMatrix_Inverse "LNMatrix_Inverse" int, var
-#define LNMatrix_Inverse(%1, %2)
-#func _LNMatrix_Transpose "LNMatrix_Transpose" int, var
-#define LNMatrix_Transpose(%1, %2)
-#func _LNMatrix_ViewTransformLH "LNMatrix_ViewTransformLH" int, int, int, var
-#define LNMatrix_ViewTransformLH(%1, %2, %3, %4)
-#func _LNMatrix_ViewTransformRH "LNMatrix_ViewTransformRH" int, int, int, var
-#define LNMatrix_ViewTransformRH(%1, %2, %3, %4)
-#func _LNMatrix_PerspectiveFovLH "LNMatrix_PerspectiveFovLHD" double, double, double, double, var
-#define LNMatrix_PerspectiveFovLH(%1, %2, %3, %4, %5)
-#func _LNMatrix_PerspectiveFovRH "LNMatrix_PerspectiveFovRHD" double, double, double, double, var
-#define LNMatrix_PerspectiveFovRH(%1, %2, %3, %4, %5)
-#func _LNMatrix_OrthoLH "LNMatrix_OrthoLHD" double, double, double, double, var
-#define LNMatrix_OrthoLH(%1, %2, %3, %4, %5)
-#func _LNMatrix_OrthoRH "LNMatrix_OrthoRHD" double, double, double, double, var
-#define LNMatrix_OrthoRH(%1, %2, %3, %4, %5)
-#func _LNMatrix_GetEulerAngles "LNMatrix_GetEulerAngles" int, var
-#define LNMatrix_GetEulerAngles(%1, %2)
-#func _LNMatrix_Decompose "LNMatrix_Decompose" int, var, var, var
-#define LNMatrix_Decompose(%1, %2, %3, %4)
-#func _LNQuaternion_Create "LNQuaternion_CreateD" double, double, double, double, var
-#define LNQuaternion_Create(%1, %2, %3, %4, %5)
-#func _LNQuaternion_Identity "LNQuaternion_Identity" var
-#define LNQuaternion_Identity(%1)
-#func _LNQuaternion_RotationAxis "LNQuaternion_RotationAxisD" int, double, var
-#define LNQuaternion_RotationAxis(%1, %2, %3)
-#func _LNQuaternion_RotationMatrix "LNQuaternion_RotationMatrix" int, var
-#define LNQuaternion_RotationMatrix(%1, %2)
-#func _LNQuaternion_RotationYawPitchRoll "LNQuaternion_RotationYawPitchRollD" double, double, double, var
-#define LNQuaternion_RotationYawPitchRoll(%1, %2, %3, %4)
-#func _LNQuaternion_Normalize "LNQuaternion_Normalize" int, var
-#define LNQuaternion_Normalize(%1, %2)
-#func _LNQuaternion_Conjugate "LNQuaternion_Conjugate" int, var
-#define LNQuaternion_Conjugate(%1, %2)
-#func _LNQuaternion_Multiply "LNQuaternion_Multiply" int, int, var
-#define LNQuaternion_Multiply(%1, %2, %3)
-#func _LNQuaternion_Slerp "LNQuaternion_SlerpD" int, int, double, var
-#define LNQuaternion_Slerp(%1, %2, %3, %4)
-#func _LNAudio_PlayBGM "LNAudio_PlayBGM" str, int, int, int
-#define LNAudio_PlayBGM(%1, %2=100, %3=100, %4=0)
-#func _LNAudio_PlayBGMMem "LNAudio_PlayBGMMem" int, int, int, int, int
-#define LNAudio_PlayBGMMem(%1, %2, %3=100, %4=100, %5=0)
-#func _LNAudio_StopBGM "LNAudio_StopBGM" int
-#define LNAudio_StopBGM(%1=0)
-#func _LNAudio_PlayBGS "LNAudio_PlayBGS" str, int, int, int
-#define LNAudio_PlayBGS(%1, %2=100, %3=100, %4=0)
-#func _LNAudio_PlayBGSMem "LNAudio_PlayBGSMem" int, int, int, int, int
-#define LNAudio_PlayBGSMem(%1, %2, %3=100, %4=100, %5=0)
-#func _LNAudio_StopBGS "LNAudio_StopBGS" int
-#define LNAudio_StopBGS(%1=0)
-#func _LNAudio_PlayME "LNAudio_PlayME" str, int, int
-#define LNAudio_PlayME(%1, %2=100, %3=100)
-#func _LNAudio_PlayMEMem "LNAudio_PlayMEMem" int, int, int, int
-#define LNAudio_PlayMEMem(%1, %2, %3=100, %4=100)
-#func _LNAudio_StopME "LNAudio_StopME" 
-#define LNAudio_StopME
-#func _LNAudio_PlaySE "LNAudio_PlaySE" str, int, int
-#define LNAudio_PlaySE(%1, %2=100, %3=100)
-#func _LNAudio_PlaySE3D "LNAudio_PlaySE3DD" str, int, double, int, int
-#define LNAudio_PlaySE3D(%1, %2, %3, %4=100, %5=100)
-#func _LNAudio_PlaySE3DXYZ "LNAudio_PlaySE3DXYZD" str, double, double, double, double, int, int
-#define LNAudio_PlaySE3DXYZ(%1, %2, %3, %4, %5, %6=100, %7=100)
-#func _LNAudio_PlaySEMem "LNAudio_PlaySEMem" int, int, int, int
-#define LNAudio_PlaySEMem(%1, %2, %3=100, %4=100)
-#func _LNAudio_PlaySE3DMem "LNAudio_PlaySE3DMemD" int, int, int, double, int, int
-#define LNAudio_PlaySE3DMem(%1, %2, %3, %4, %5=100, %6=100)
-#func _LNAudio_PlaySE3DMemXYZ "LNAudio_PlaySE3DMemXYZD" int, int, double, double, double, double, int, int
-#define LNAudio_PlaySE3DMemXYZ(%1, %2, %3, %4, %5, %6, %7=100, %8=100)
-#func _LNAudio_StopSE "LNAudio_StopSE" 
-#define LNAudio_StopSE
-#func _LNAudio_SetMetreUnitDistance "LNAudio_SetMetreUnitDistanceD" double
-#define LNAudio_SetMetreUnitDistance(%1)
-#func _LNAudio_SetBGMVolume "LNAudio_SetBGMVolume" int, int
-#define LNAudio_SetBGMVolume(%1, %2=0)
-#func _LNAudio_SetBGSVolume "LNAudio_SetBGSVolume" int, int
-#define LNAudio_SetBGSVolume(%1, %2=0)
-#func _LNSoundListener_SetPosition "LNSoundListener_SetPosition" int
-#define LNSoundListener_SetPosition(%1)
-#func _LNSoundListener_SetPositionXYZ "LNSoundListener_SetPositionXYZD" double, double, double
-#define LNSoundListener_SetPositionXYZ(%1, %2, %3)
-#func _LNSoundListener_SetDirection "LNSoundListener_SetDirection" int
-#define LNSoundListener_SetDirection(%1)
-#func _LNSoundListener_SetDirectionXYZ "LNSoundListener_SetDirectionXYZD" double, double, double
-#define LNSoundListener_SetDirectionXYZ(%1, %2, %3)
-#func _LNSoundListener_SetUpDirection "LNSoundListener_SetUpDirection" int
-#define LNSoundListener_SetUpDirection(%1)
-#func _LNSoundListener_SetUpDirectionXYZ "LNSoundListener_SetUpDirectionXYZD" double, double, double
-#define LNSoundListener_SetUpDirectionXYZ(%1, %2, %3)
-#func _LNSoundListener_Velocity "LNSoundListener_Velocity" int
-#define LNSoundListener_Velocity(%1)
-#func _LNSoundListener_VelocityXYZ "LNSoundListener_VelocityXYZD" double, double, double
-#define LNSoundListener_VelocityXYZ(%1, %2, %3)
-#func _LNSound_GetVolume "LNSound_GetVolume" int, var
-#define LNSound_GetVolume(%1, %2)
-#func _LNSound_SetVolume "LNSound_SetVolume" int, int
-#define LNSound_SetVolume(%1, %2)
-#func _LNSound_GetPitch "LNSound_GetPitch" int, var
-#define LNSound_GetPitch(%1, %2)
-#func _LNSound_SetPitch "LNSound_SetPitch" int, int
-#define LNSound_SetPitch(%1, %2)
-#func _LNSound_SetLoop "LNSound_SetLoop" int, int
-#define LNSound_SetLoop(%1, %2)
-#func _LNSound_IsLoop "LNSound_IsLoop" int, var
-#define LNSound_IsLoop(%1, %2)
-#func _LNSound_SetLoopRange "LNSound_SetLoopRange" int, int, int
-#define LNSound_SetLoopRange(%1, %2, %3)
-#func _LNSound_GetPlayState "LNSound_GetPlayState" int, var
-#define LNSound_GetPlayState(%1, %2)
-#func _LNSound_GetUnitsPlayed "LNSound_GetUnitsPlayed" int, var
-#define LNSound_GetUnitsPlayed(%1, %2)
-#func _LNSound_GetTotalUnits "LNSound_GetTotalUnits" int, var
-#define LNSound_GetTotalUnits(%1, %2)
-#func _LNSound_GetUnitsParSecond "LNSound_GetUnitsParSecond" int, var
-#define LNSound_GetUnitsParSecond(%1, %2)
-#func _LNSound_Is3DSound "LNSound_Is3DSound" int, var
-#define LNSound_Is3DSound(%1, %2)
-#func _LNSound_SetEmitterPosition "LNSound_SetEmitterPosition" int, int
-#define LNSound_SetEmitterPosition(%1, %2)
-#func _LNSound_SetEmitterPositionXYZ "LNSound_SetEmitterPositionXYZD" int, double, double, double
-#define LNSound_SetEmitterPositionXYZ(%1, %2, %3, %4)
-#func _LNSound_SetEmitterVelocity "LNSound_SetEmitterVelocity" int, int
-#define LNSound_SetEmitterVelocity(%1, %2)
-#func _LNSound_SetEmitterVelocityXYZ "LNSound_SetEmitterVelocityXYZD" int, double, double, double
-#define LNSound_SetEmitterVelocityXYZ(%1, %2, %3, %4)
-#func _LNSound_SetEmitterDistance "LNSound_SetEmitterDistanceD" int, double
-#define LNSound_SetEmitterDistance(%1, %2)
-#func _LNSound_Create "LNSound_Create" str, var
-#define LNSound_Create(%1, %2)
-#func _LNSound_CreateMem "LNSound_CreateMem" int, int, var
-#define LNSound_CreateMem(%1, %2, %3)
-#func _LNSound_Play "LNSound_Play" int
-#define LNSound_Play(%1)
-#func _LNSound_Stop "LNSound_Stop" int
-#define LNSound_Stop(%1)
-#func _LNSound_Pause "LNSound_Pause" int, int
-#define LNSound_Pause(%1, %2)
-#func _LNSound_FadeVolume "LNSound_FadeVolume" int, int, int, int
-#define LNSound_FadeVolume(%1, %2, %3, %4)
+//LNObject
+#func native_LNObject_Release "LNObject_Release" int
+#define LNObject_Release(%1) native_LNObject_Release %1
+#func native_LNObject_AddRef "LNObject_AddRef" int
+#define LNObject_AddRef(%1) native_LNObject_AddRef %1
+#func native_LNObject_GetRefCount "LNObject_GetRefCount" int, var
+#define LNObject_GetRefCount(%1, %2) native_LNObject_GetRefCount %1, %2
+
+//LNApplication
+#func native_LNApplication_Initialize "LNApplication_Initialize" 
+#define LNApplication_Initialize native_LNApplication_Initialize 
+#func native_LNApplication_Update "LNApplication_Update" 
+#define LNApplication_Update native_LNApplication_Update 
+#func native_LNApplication_ResetFrameDelay "LNApplication_ResetFrameDelay" 
+#define LNApplication_ResetFrameDelay native_LNApplication_ResetFrameDelay 
+#func native_LNApplication_IsEndRequested "LNApplication_IsEndRequested" var
+#define LNApplication_IsEndRequested(%1) native_LNApplication_IsEndRequested %1
+#func native_LNApplication_Terminate "LNApplication_Terminate" 
+#define LNApplication_Terminate native_LNApplication_Terminate 
+
+#func native_LNVector2_GetLength "LNVector2_GetLengthD" var, var
+#define LNVector2_GetLength(%1, %2) native_LNVector2_GetLength %1, %2
+#func native_LNVector2_GetSquareLength "LNVector2_GetSquareLengthD" var, var
+#define LNVector2_GetSquareLength(%1, %2) native_LNVector2_GetSquareLength %1, %2
+#func native_LNVector2_Create "LNVector2_CreateD" double, double, var
+#define LNVector2_Create(%1, %2, %3) native_LNVector2_Create %1, %2, %3
+#func native_LNVector2_Normalize "LNVector2_Normalize" var, var
+#define LNVector2_Normalize(%1, %2) native_LNVector2_Normalize %1, %2
+#func native_LNVector2_NormalizeV "LNVector2_NormalizeV" var
+#define LNVector2_NormalizeV(%1) native_LNVector2_NormalizeV %1
+#func native_LNVector3_GetLength "LNVector3_GetLengthD" var, var
+#define LNVector3_GetLength(%1, %2) native_LNVector3_GetLength %1, %2
+#func native_LNVector3_GetSquareLength "LNVector3_GetSquareLengthD" var, var
+#define LNVector3_GetSquareLength(%1, %2) native_LNVector3_GetSquareLength %1, %2
+#func native_LNVector3_Create "LNVector3_CreateD" double, double, double, var
+#define LNVector3_Create(%1, %2, %3, %4) native_LNVector3_Create %1, %2, %3, %4
+#func native_LNVector3_CreateVZ "LNVector3_CreateVZD" var, double, var
+#define LNVector3_CreateVZ(%1, %2, %3) native_LNVector3_CreateVZ %1, %2, %3
+#func native_LNVector3_Normalize "LNVector3_Normalize" var, var
+#define LNVector3_Normalize(%1, %2) native_LNVector3_Normalize %1, %2
+#func native_LNVector3_NormalizeV "LNVector3_NormalizeV" var
+#define LNVector3_NormalizeV(%1) native_LNVector3_NormalizeV %1
+#func native_LNVector3_Dot "LNVector3_DotD" var, var, var
+#define LNVector3_Dot(%1, %2, %3) native_LNVector3_Dot %1, %2, %3
+#func native_LNVector3_Cross "LNVector3_Cross" var, var, var
+#define LNVector3_Cross(%1, %2, %3) native_LNVector3_Cross %1, %2, %3
+#func native_LNVector3_Reflect "LNVector3_Reflect" var, var, var
+#define LNVector3_Reflect(%1, %2, %3) native_LNVector3_Reflect %1, %2, %3
+#func native_LNVector3_Slide "LNVector3_Slide" var, var, var
+#define LNVector3_Slide(%1, %2, %3) native_LNVector3_Slide %1, %2, %3
+#func native_LNVector3_Lerp "LNVector3_LerpD" var, var, double, var
+#define LNVector3_Lerp(%1, %2, %3, %4) native_LNVector3_Lerp %1, %2, %3, %4
+#func native_LNVector3_CatmullRom "LNVector3_CatmullRomD" var, var, var, var, double, var
+#define LNVector3_CatmullRom(%1, %2, %3, %4, %5, %6) native_LNVector3_CatmullRom %1, %2, %3, %4, %5, %6
+#func native_LNVector3_Transform "LNVector3_Transform" var, var, var
+#define LNVector3_Transform(%1, %2, %3) native_LNVector3_Transform %1, %2, %3
+#func native_LNVector3_TransformCoord "LNVector3_TransformCoord" var, var, var
+#define LNVector3_TransformCoord(%1, %2, %3) native_LNVector3_TransformCoord %1, %2, %3
+#func native_LNVector4_Create "LNVector4_CreateD" double, double, double, double, var
+#define LNVector4_Create(%1, %2, %3, %4, %5) native_LNVector4_Create %1, %2, %3, %4, %5
+#func native_LNMatrix_GetRight "LNMatrix_GetRight" var, var
+#define LNMatrix_GetRight(%1, %2) native_LNMatrix_GetRight %1, %2
+#func native_LNMatrix_GetUp "LNMatrix_GetUp" var, var
+#define LNMatrix_GetUp(%1, %2) native_LNMatrix_GetUp %1, %2
+#func native_LNMatrix_GetFront "LNMatrix_GetFront" var, var
+#define LNMatrix_GetFront(%1, %2) native_LNMatrix_GetFront %1, %2
+#func native_LNMatrix_GetPosition "LNMatrix_GetPosition" var, var
+#define LNMatrix_GetPosition(%1, %2) native_LNMatrix_GetPosition %1, %2
+#func native_LNMatrix_Identity "LNMatrix_Identity" var
+#define LNMatrix_Identity(%1) native_LNMatrix_Identity %1
+#func native_LNMatrix_Translate "LNMatrix_TranslateD" var, double, double, double
+#define LNMatrix_Translate(%1, %2, %3, %4) native_LNMatrix_Translate %1, %2, %3, %4
+#func native_LNMatrix_TranslateVec3 "LNMatrix_TranslateVec3" var, var
+#define LNMatrix_TranslateVec3(%1, %2) native_LNMatrix_TranslateVec3 %1, %2
+#func native_LNMatrix_RotateX "LNMatrix_RotateXD" var, double
+#define LNMatrix_RotateX(%1, %2) native_LNMatrix_RotateX %1, %2
+#func native_LNMatrix_RotateY "LNMatrix_RotateYD" var, double
+#define LNMatrix_RotateY(%1, %2) native_LNMatrix_RotateY %1, %2
+#func native_LNMatrix_RotateZ "LNMatrix_RotateZD" var, double
+#define LNMatrix_RotateZ(%1, %2) native_LNMatrix_RotateZ %1, %2
+#func native_LNMatrix_Rotate "LNMatrix_RotateD" var, double, double, double, int
+#define LNMatrix_Rotate(%1, %2, %3, %4, %5=LN_ROTATIONORDER_XYZ) native_LNMatrix_Rotate %1, %2, %3, %4, %5
+#func native_LNMatrix_RotateVec3 "LNMatrix_RotateVec3" var, var, int
+#define LNMatrix_RotateVec3(%1, %2, %3=LN_ROTATIONORDER_XYZ) native_LNMatrix_RotateVec3 %1, %2, %3
+#func native_LNMatrix_RotateAxis "LNMatrix_RotateAxisD" var, var, double
+#define LNMatrix_RotateAxis(%1, %2, %3) native_LNMatrix_RotateAxis %1, %2, %3
+#func native_LNMatrix_RotateQuaternion "LNMatrix_RotateQuaternion" var, var
+#define LNMatrix_RotateQuaternion(%1, %2) native_LNMatrix_RotateQuaternion %1, %2
+#func native_LNMatrix_Scale "LNMatrix_ScaleD" var, double
+#define LNMatrix_Scale(%1, %2) native_LNMatrix_Scale %1, %2
+#func native_LNMatrix_ScaleXYZ "LNMatrix_ScaleXYZD" var, double, double, double
+#define LNMatrix_ScaleXYZ(%1, %2, %3, %4) native_LNMatrix_ScaleXYZ %1, %2, %3, %4
+#func native_LNMatrix_ScaleVec3 "LNMatrix_ScaleVec3" var, var
+#define LNMatrix_ScaleVec3(%1, %2) native_LNMatrix_ScaleVec3 %1, %2
+#func native_LNMatrix_Multiply "LNMatrix_Multiply" var, var, var
+#define LNMatrix_Multiply(%1, %2, %3) native_LNMatrix_Multiply %1, %2, %3
+#func native_LNMatrix_Inverse "LNMatrix_Inverse" var, var
+#define LNMatrix_Inverse(%1, %2) native_LNMatrix_Inverse %1, %2
+#func native_LNMatrix_Transpose "LNMatrix_Transpose" var, var
+#define LNMatrix_Transpose(%1, %2) native_LNMatrix_Transpose %1, %2
+#func native_LNMatrix_ViewTransformLH "LNMatrix_ViewTransformLH" var, var, var, var
+#define LNMatrix_ViewTransformLH(%1, %2, %3, %4) native_LNMatrix_ViewTransformLH %1, %2, %3, %4
+#func native_LNMatrix_ViewTransformRH "LNMatrix_ViewTransformRH" var, var, var, var
+#define LNMatrix_ViewTransformRH(%1, %2, %3, %4) native_LNMatrix_ViewTransformRH %1, %2, %3, %4
+#func native_LNMatrix_PerspectiveFovLH "LNMatrix_PerspectiveFovLHD" double, double, double, double, var
+#define LNMatrix_PerspectiveFovLH(%1, %2, %3, %4, %5) native_LNMatrix_PerspectiveFovLH %1, %2, %3, %4, %5
+#func native_LNMatrix_PerspectiveFovRH "LNMatrix_PerspectiveFovRHD" double, double, double, double, var
+#define LNMatrix_PerspectiveFovRH(%1, %2, %3, %4, %5) native_LNMatrix_PerspectiveFovRH %1, %2, %3, %4, %5
+#func native_LNMatrix_OrthoLH "LNMatrix_OrthoLHD" double, double, double, double, var
+#define LNMatrix_OrthoLH(%1, %2, %3, %4, %5) native_LNMatrix_OrthoLH %1, %2, %3, %4, %5
+#func native_LNMatrix_OrthoRH "LNMatrix_OrthoRHD" double, double, double, double, var
+#define LNMatrix_OrthoRH(%1, %2, %3, %4, %5) native_LNMatrix_OrthoRH %1, %2, %3, %4, %5
+#func native_LNMatrix_GetEulerAngles "LNMatrix_GetEulerAngles" var, var
+#define LNMatrix_GetEulerAngles(%1, %2) native_LNMatrix_GetEulerAngles %1, %2
+#func native_LNMatrix_Decompose "LNMatrix_Decompose" var, var, var, var
+#define LNMatrix_Decompose(%1, %2, %3, %4) native_LNMatrix_Decompose %1, %2, %3, %4
+#func native_LNQuaternion_Create "LNQuaternion_CreateD" double, double, double, double, var
+#define LNQuaternion_Create(%1, %2, %3, %4, %5) native_LNQuaternion_Create %1, %2, %3, %4, %5
+#func native_LNQuaternion_Identity "LNQuaternion_Identity" var
+#define LNQuaternion_Identity(%1) native_LNQuaternion_Identity %1
+#func native_LNQuaternion_RotationAxis "LNQuaternion_RotationAxisD" var, double, var
+#define LNQuaternion_RotationAxis(%1, %2, %3) native_LNQuaternion_RotationAxis %1, %2, %3
+#func native_LNQuaternion_RotationMatrix "LNQuaternion_RotationMatrix" var, var
+#define LNQuaternion_RotationMatrix(%1, %2) native_LNQuaternion_RotationMatrix %1, %2
+#func native_LNQuaternion_RotationYawPitchRoll "LNQuaternion_RotationYawPitchRollD" double, double, double, var
+#define LNQuaternion_RotationYawPitchRoll(%1, %2, %3, %4) native_LNQuaternion_RotationYawPitchRoll %1, %2, %3, %4
+#func native_LNQuaternion_Normalize "LNQuaternion_Normalize" var, var
+#define LNQuaternion_Normalize(%1, %2) native_LNQuaternion_Normalize %1, %2
+#func native_LNQuaternion_Conjugate "LNQuaternion_Conjugate" var, var
+#define LNQuaternion_Conjugate(%1, %2) native_LNQuaternion_Conjugate %1, %2
+#func native_LNQuaternion_Multiply "LNQuaternion_Multiply" var, var, var
+#define LNQuaternion_Multiply(%1, %2, %3) native_LNQuaternion_Multiply %1, %2, %3
+#func native_LNQuaternion_Slerp "LNQuaternion_SlerpD" var, var, double, var
+#define LNQuaternion_Slerp(%1, %2, %3, %4) native_LNQuaternion_Slerp %1, %2, %3, %4
+//LNAudio
+#func native_LNAudio_PlayBGM "LNAudio_PlayBGM" str, int, int, int
+#define LNAudio_PlayBGM(%1, %2=100, %3=100, %4=0) native_LNAudio_PlayBGM %1, %2, %3, %4
+#func native_LNAudio_PlayBGMMem "LNAudio_PlayBGMMem" int, int, int, int, int
+#define LNAudio_PlayBGMMem(%1, %2, %3=100, %4=100, %5=0) native_LNAudio_PlayBGMMem %1, %2, %3, %4, %5
+#func native_LNAudio_StopBGM "LNAudio_StopBGM" int
+#define LNAudio_StopBGM(%1=0) native_LNAudio_StopBGM %1
+#func native_LNAudio_PlayBGS "LNAudio_PlayBGS" str, int, int, int
+#define LNAudio_PlayBGS(%1, %2=100, %3=100, %4=0) native_LNAudio_PlayBGS %1, %2, %3, %4
+#func native_LNAudio_PlayBGSMem "LNAudio_PlayBGSMem" int, int, int, int, int
+#define LNAudio_PlayBGSMem(%1, %2, %3=100, %4=100, %5=0) native_LNAudio_PlayBGSMem %1, %2, %3, %4, %5
+#func native_LNAudio_StopBGS "LNAudio_StopBGS" int
+#define LNAudio_StopBGS(%1=0) native_LNAudio_StopBGS %1
+#func native_LNAudio_PlayME "LNAudio_PlayME" str, int, int
+#define LNAudio_PlayME(%1, %2=100, %3=100) native_LNAudio_PlayME %1, %2, %3
+#func native_LNAudio_PlayMEMem "LNAudio_PlayMEMem" int, int, int, int
+#define LNAudio_PlayMEMem(%1, %2, %3=100, %4=100) native_LNAudio_PlayMEMem %1, %2, %3, %4
+#func native_LNAudio_StopME "LNAudio_StopME" 
+#define LNAudio_StopME native_LNAudio_StopME 
+#func native_LNAudio_PlaySE "LNAudio_PlaySE" str, int, int
+#define LNAudio_PlaySE(%1, %2=100, %3=100) native_LNAudio_PlaySE %1, %2, %3
+#func native_LNAudio_PlaySE3D "LNAudio_PlaySE3DD" str, var, double, int, int
+#define LNAudio_PlaySE3D(%1, %2, %3, %4=100, %5=100) native_LNAudio_PlaySE3D %1, %2, %3, %4, %5
+#func native_LNAudio_PlaySE3DXYZ "LNAudio_PlaySE3DXYZD" str, double, double, double, double, int, int
+#define LNAudio_PlaySE3DXYZ(%1, %2, %3, %4, %5, %6=100, %7=100) native_LNAudio_PlaySE3DXYZ %1, %2, %3, %4, %5, %6, %7
+#func native_LNAudio_PlaySEMem "LNAudio_PlaySEMem" int, int, int, int
+#define LNAudio_PlaySEMem(%1, %2, %3=100, %4=100) native_LNAudio_PlaySEMem %1, %2, %3, %4
+#func native_LNAudio_PlaySE3DMem "LNAudio_PlaySE3DMemD" int, int, var, double, int, int
+#define LNAudio_PlaySE3DMem(%1, %2, %3, %4, %5=100, %6=100) native_LNAudio_PlaySE3DMem %1, %2, %3, %4, %5, %6
+#func native_LNAudio_PlaySE3DMemXYZ "LNAudio_PlaySE3DMemXYZD" int, int, double, double, double, double, int, int
+#define LNAudio_PlaySE3DMemXYZ(%1, %2, %3, %4, %5, %6, %7=100, %8=100) native_LNAudio_PlaySE3DMemXYZ %1, %2, %3, %4, %5, %6, %7, %8
+#func native_LNAudio_StopSE "LNAudio_StopSE" 
+#define LNAudio_StopSE native_LNAudio_StopSE 
+#func native_LNAudio_SetMetreUnitDistance "LNAudio_SetMetreUnitDistanceD" double
+#define LNAudio_SetMetreUnitDistance(%1) native_LNAudio_SetMetreUnitDistance %1
+#func native_LNAudio_SetBGMVolume "LNAudio_SetBGMVolume" int, int
+#define LNAudio_SetBGMVolume(%1, %2=0) native_LNAudio_SetBGMVolume %1, %2
+#func native_LNAudio_SetBGSVolume "LNAudio_SetBGSVolume" int, int
+#define LNAudio_SetBGSVolume(%1, %2=0) native_LNAudio_SetBGSVolume %1, %2
+
+//LNSoundListener
+#func native_LNSoundListener_SetPosition "LNSoundListener_SetPosition" var
+#define LNSoundListener_SetPosition(%1) native_LNSoundListener_SetPosition %1
+#func native_LNSoundListener_SetPositionXYZ "LNSoundListener_SetPositionXYZD" double, double, double
+#define LNSoundListener_SetPositionXYZ(%1, %2, %3) native_LNSoundListener_SetPositionXYZ %1, %2, %3
+#func native_LNSoundListener_SetDirection "LNSoundListener_SetDirection" var
+#define LNSoundListener_SetDirection(%1) native_LNSoundListener_SetDirection %1
+#func native_LNSoundListener_SetDirectionXYZ "LNSoundListener_SetDirectionXYZD" double, double, double
+#define LNSoundListener_SetDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetDirectionXYZ %1, %2, %3
+#func native_LNSoundListener_SetUpDirection "LNSoundListener_SetUpDirection" var
+#define LNSoundListener_SetUpDirection(%1) native_LNSoundListener_SetUpDirection %1
+#func native_LNSoundListener_SetUpDirectionXYZ "LNSoundListener_SetUpDirectionXYZD" double, double, double
+#define LNSoundListener_SetUpDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetUpDirectionXYZ %1, %2, %3
+#func native_LNSoundListener_Velocity "LNSoundListener_Velocity" var
+#define LNSoundListener_Velocity(%1) native_LNSoundListener_Velocity %1
+#func native_LNSoundListener_VelocityXYZ "LNSoundListener_VelocityXYZD" double, double, double
+#define LNSoundListener_VelocityXYZ(%1, %2, %3) native_LNSoundListener_VelocityXYZ %1, %2, %3
+
+//LNSound
+#func native_LNSound_GetVolume "LNSound_GetVolume" int, var
+#define LNSound_GetVolume(%1, %2) native_LNSound_GetVolume %1, %2
+#func native_LNSound_SetVolume "LNSound_SetVolume" int, int
+#define LNSound_SetVolume(%1, %2) native_LNSound_SetVolume %1, %2
+#func native_LNSound_GetPitch "LNSound_GetPitch" int, var
+#define LNSound_GetPitch(%1, %2) native_LNSound_GetPitch %1, %2
+#func native_LNSound_SetPitch "LNSound_SetPitch" int, int
+#define LNSound_SetPitch(%1, %2) native_LNSound_SetPitch %1, %2
+#func native_LNSound_SetLoop "LNSound_SetLoop" int, int
+#define LNSound_SetLoop(%1, %2) native_LNSound_SetLoop %1, %2
+#func native_LNSound_IsLoop "LNSound_IsLoop" int, var
+#define LNSound_IsLoop(%1, %2) native_LNSound_IsLoop %1, %2
+#func native_LNSound_SetLoopRange "LNSound_SetLoopRange" int, int, int
+#define LNSound_SetLoopRange(%1, %2, %3) native_LNSound_SetLoopRange %1, %2, %3
+#func native_LNSound_GetPlayState "LNSound_GetPlayState" int, var
+#define LNSound_GetPlayState(%1, %2) native_LNSound_GetPlayState %1, %2
+#func native_LNSound_GetUnitsPlayed "LNSound_GetUnitsPlayed" int, var
+#define LNSound_GetUnitsPlayed(%1, %2) native_LNSound_GetUnitsPlayed %1, %2
+#func native_LNSound_GetTotalUnits "LNSound_GetTotalUnits" int, var
+#define LNSound_GetTotalUnits(%1, %2) native_LNSound_GetTotalUnits %1, %2
+#func native_LNSound_GetUnitsParSecond "LNSound_GetUnitsParSecond" int, var
+#define LNSound_GetUnitsParSecond(%1, %2) native_LNSound_GetUnitsParSecond %1, %2
+#func native_LNSound_Is3DSound "LNSound_Is3DSound" int, var
+#define LNSound_Is3DSound(%1, %2) native_LNSound_Is3DSound %1, %2
+#func native_LNSound_SetEmitterPosition "LNSound_SetEmitterPosition" int, var
+#define LNSound_SetEmitterPosition(%1, %2) native_LNSound_SetEmitterPosition %1, %2
+#func native_LNSound_SetEmitterPositionXYZ "LNSound_SetEmitterPositionXYZD" int, double, double, double
+#define LNSound_SetEmitterPositionXYZ(%1, %2, %3, %4) native_LNSound_SetEmitterPositionXYZ %1, %2, %3, %4
+#func native_LNSound_SetEmitterVelocity "LNSound_SetEmitterVelocity" int, var
+#define LNSound_SetEmitterVelocity(%1, %2) native_LNSound_SetEmitterVelocity %1, %2
+#func native_LNSound_SetEmitterVelocityXYZ "LNSound_SetEmitterVelocityXYZD" int, double, double, double
+#define LNSound_SetEmitterVelocityXYZ(%1, %2, %3, %4) native_LNSound_SetEmitterVelocityXYZ %1, %2, %3, %4
+#func native_LNSound_SetEmitterDistance "LNSound_SetEmitterDistanceD" int, double
+#define LNSound_SetEmitterDistance(%1, %2) native_LNSound_SetEmitterDistance %1, %2
+#func native_LNSound_Create "LNSound_Create" str, var
+#define LNSound_Create(%1, %2) native_LNSound_Create %1, %2
+#func native_LNSound_CreateMem "LNSound_CreateMem" int, int, var
+#define LNSound_CreateMem(%1, %2, %3) native_LNSound_CreateMem %1, %2, %3
+#func native_LNSound_Play "LNSound_Play" int
+#define LNSound_Play(%1) native_LNSound_Play %1
+#func native_LNSound_Stop "LNSound_Stop" int
+#define LNSound_Stop(%1) native_LNSound_Stop %1
+#func native_LNSound_Pause "LNSound_Pause" int, int
+#define LNSound_Pause(%1, %2) native_LNSound_Pause %1, %2
+#func native_LNSound_FadeVolume "LNSound_FadeVolume" int, int, int, int
+#define LNSound_FadeVolume(%1, %2, %3, %4) native_LNSound_FadeVolume %1, %2, %3, %4
+
 
 
         const string ASFileFooter = @"
