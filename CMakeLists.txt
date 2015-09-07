@@ -60,6 +60,7 @@ set(LN_SOURCES_IO
 )
 
 set(LN_SOURCES_Platform
+	include/Lumino/Platform/Clipboard.h
 	include/Lumino/Platform/EventArgs.h
 	include/Lumino/Platform/EventListener.h
 	include/Lumino/Platform/PlatformManager.h
@@ -380,6 +381,7 @@ set(LN_SOURCES_Application
 if (WIN32)
 	set(LN_SOURCES_Platform
 		${LN_SOURCES_Platform}
+		src/Platform/Win32/Clipboard_Win32.cpp
 		src/Platform/Win32/PlatformSupport_Win32.cpp
 		src/Platform/Win32/Win32Window.cpp
 		src/Platform/Win32/Win32Window.h

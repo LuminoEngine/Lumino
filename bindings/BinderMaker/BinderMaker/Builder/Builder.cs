@@ -62,7 +62,7 @@ namespace BinderMaker.Builder
             }
 
             // ファイルに出力
-            System.IO.File.WriteAllText(outputFilePath, OnMakeOutoutFileText(), Encoding.UTF8);
+            System.IO.File.WriteAllText(outputFilePath, OnMakeOutoutFileText(), GetOutputEncoding());
         }
 
         /// <summary>
@@ -115,5 +115,10 @@ namespace BinderMaker.Builder
         /// ファイルに出力するための最終文字列を生成する
         /// </summary>
         protected abstract string OnMakeOutoutFileText();
+
+        /// <summary>
+        /// 出力ファイルのエンコーディング
+        /// </summary>
+        protected virtual Encoding GetOutputEncoding() { return Encoding.UTF8; }
     }
 }

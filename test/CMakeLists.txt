@@ -6,6 +6,7 @@ set(LN_TEST_SOURCES
 	UnitTest/TestConfig.h
 	UnitTest/IO/Test_IO_ArchiveMaker.cpp
 	UnitTest/IO/Test_IO_ASync.cpp
+	UnitTest/Platform/Test_Platform_Clipboard.cpp
 	UnitTest/Imaging/Test_Imaging_Bitmap.cpp
 	UnitTest/Graphics/Test_Graphics_BasicRendering.cpp
 	UnitTest/Graphics/Test_Graphics_GeometryRenderer.cpp

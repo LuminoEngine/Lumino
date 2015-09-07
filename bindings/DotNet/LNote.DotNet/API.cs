@@ -1257,7 +1257,7 @@ namespace LN
 #else
     	internal const string DLLName = "LNote.dll";
 #endif
-        internal const CharSet DLLCharSet = CharSet.Unicode;
+        internal const CharSet DLLCharSet = CharSet.Ansi;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
         /// <summary>
@@ -1281,80 +1281,6 @@ namespace LN
         /// <param name="count">参照カウントを格納する変数</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNObject_GetRefCount( IntPtr hadnleObject, out int count);
-
-        /// <summary>
-        /// オブジェクトリストに格納されているオブジェクトの数を取得します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="count">要素の数を格納する変数</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_GetCount( IntPtr objectList, out int count);
-
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスにオブジェクトを設定します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="index">インデックス(要素番号)</param>
-        /// <param name="item">設定するオブジェクト</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_SetAt( IntPtr objectList,  int index,  IntPtr item);
-
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスのオブジェクトを取得します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="index">インデックス(要素番号)</param>
-        /// <param name="outItem">オブジェクトを格納する変数</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_GetAt( IntPtr objectList,  int index, out IntPtr outItem);
-
-        /// <summary>
-        /// オブジェクトリストの末尾にオブジェクトを追加します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="item">追加するオブジェクト</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Add( IntPtr objectList,  IntPtr item);
-
-        /// <summary>
-        /// オブジェクトリストから全てのオブジェクトを削除します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Clear( IntPtr objectList);
-
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="index">item を挿入するインデックス</param>
-        /// <param name="item">挿入するオブジェクト</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Insert( IntPtr objectList,  int index,  IntPtr item);
-
-        /// <summary>
-        /// オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="item">リストから削除するオブジェクト</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_Remove( IntPtr objectList,  IntPtr item);
-
-        /// <summary>
-        /// オブジェクトリスト内で指定したハンドルと一致する全てのオブジェクトを削除します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="item">リストから削除するオブジェクト</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_RemoveAll( IntPtr objectList,  IntPtr item);
-
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
-        /// </summary>
-        /// <param name="objectList">オブジェクトリストハンドル</param>
-        /// <param name="index">削除するオブジェクトのインデックス番号</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNObjectList_RemoveAt( IntPtr objectList,  int index);
 
         /// <summary>
         /// LightNote を初期化します。
@@ -1896,9 +1822,9 @@ namespace LN
         public extern static Result LNQuaternion_Slerp(ref Quaternion qua1, ref Quaternion qua2,  float t, out Quaternion outQua);
 
         /// <summary>
-        /// BGM を演奏する
+        /// BGM を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
@@ -1906,7 +1832,7 @@ namespace LN
         public extern static Result LNAudio_PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
 
         /// <summary>
-        /// メモリ上の音声データから BGM を演奏する
+        /// メモリ上の音声ファイルデータを使用して BGM を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -1917,16 +1843,16 @@ namespace LN
         public extern static Result LNAudio_PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
 
         /// <summary>
-        /// BGM の演奏を停止する
+        /// BGM の演奏を停止します。
         /// </summary>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNAudio_StopBGM( int fadeTime = 0);
 
         /// <summary>
-        /// BGS を演奏する
+        /// BGS を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
@@ -1934,7 +1860,7 @@ namespace LN
         public extern static Result LNAudio_PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
 
         /// <summary>
-        /// メモリ上の音声データから BGS を演奏する
+        /// メモリ上の音声ファイルデータから BGS を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -1945,23 +1871,23 @@ namespace LN
         public extern static Result LNAudio_PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
 
         /// <summary>
-        /// BGS の演奏を停止する
+        /// BGS の演奏を停止します。、
         /// </summary>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNAudio_StopBGS( int fadeTime = 0);
 
         /// <summary>
-        /// ME を演奏する
+        /// ME を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNAudio_PlayME( string filePath,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// メモリ上の音声データから ME を演奏する
+        /// メモリ上の音声ファイルデータから ME を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -1971,24 +1897,24 @@ namespace LN
         public extern static Result LNAudio_PlayMEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// ME の演奏を停止する
+        /// ME の演奏を停止します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNAudio_StopME();
 
         /// <summary>
-        /// SE を演奏する
+        /// SE を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNAudio_PlaySE( string filePath,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// SE を演奏する (3D サウンド)
+        /// SE を演奏します。(3D サウンド)
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="position">3D 空間上の座標</param>
         /// <param name="distance">減衰距離</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
@@ -1997,9 +1923,9 @@ namespace LN
         public extern static Result LNAudio_PlaySE3D( string filePath, ref Vector3 position,  float distance,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// SE を演奏する (3D サウンド)
+        /// SE を演奏します。(3D サウンド)
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="x">3D 空間上の X 座標</param>
         /// <param name="y">3D 空間上の Y 座標</param>
         /// <param name="z">3D 空間上の Z 座標</param>
@@ -2010,7 +1936,7 @@ namespace LN
         public extern static Result LNAudio_PlaySE3DXYZ( string filePath,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// メモリ上の音声データから SE を演奏する
+        /// メモリ上の音声データから SE を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -2020,7 +1946,7 @@ namespace LN
         public extern static Result LNAudio_PlaySEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// メモリ上の音声データから SE を演奏する (3D サウンド)
+        /// メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -2032,7 +1958,7 @@ namespace LN
         public extern static Result LNAudio_PlaySE3DMem( byte[] data,  int dataSize, ref Vector3 position,  float distance,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// メモリ上の音声データから SE を演奏する (3D サウンド)
+        /// メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -2046,20 +1972,20 @@ namespace LN
         public extern static Result LNAudio_PlaySE3DMemXYZ( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100);
 
         /// <summary>
-        /// すべての SE の演奏を停止する
+        /// すべての SE の演奏を停止します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNAudio_StopSE();
 
         /// <summary>
-        /// 3D 空間の1メートル相当の距離の設定
+        /// 3D 空間の1メートル相当の距離を設定します。
         /// </summary>
         /// <param name="distance">距離</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNAudio_SetMetreUnitDistance( float distance);
 
         /// <summary>
-        /// 再生中のBGMの音量を設定する (フェードアウト中は無効)
+        /// 再生中のBGMの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
@@ -2067,7 +1993,7 @@ namespace LN
         public extern static Result LNAudio_SetBGMVolume( int volume,  int fadeTime = 0);
 
         /// <summary>
-        /// 再生中のBGSの音量を設定する (フェードアウト中は無効)
+        /// 再生中のBGSの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
@@ -2075,14 +2001,14 @@ namespace LN
         public extern static Result LNAudio_SetBGSVolume( int volume,  int fadeTime = 0);
 
         /// <summary>
-        /// リスナーの位置の設定
+        /// 3D音声のリスナーの位置を設定します。
         /// </summary>
         /// <param name="position">3D 空間上の座標</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSoundListener_SetPosition(ref Vector3 position);
 
         /// <summary>
-        /// リスナーの位置の設定
+        /// 3D音声のリスナーの位置を設定します。
         /// </summary>
         /// <param name="x">3D 空間上の X 座標</param>
         /// <param name="y">3D 空間上の Y 座標</param>
@@ -2091,14 +2017,14 @@ namespace LN
         public extern static void LNSoundListener_SetPositionXYZ( float x,  float y,  float z);
 
         /// <summary>
-        /// リスナーの正面方向の設定
+        /// 3D音声のリスナーの正面方向を設定します。
         /// </summary>
         /// <param name="direction">向き</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSoundListener_SetDirection(ref Vector3 direction);
 
         /// <summary>
-        /// リスナーの正面方向の設定
+        /// 3D音声のリスナーの正面方向を設定します。
         /// </summary>
         /// <param name="x">向きの X 成分</param>
         /// <param name="y">向きの Y 成分</param>
@@ -2107,14 +2033,14 @@ namespace LN
         public extern static void LNSoundListener_SetDirectionXYZ( float x,  float y,  float z);
 
         /// <summary>
-        /// リスナーの上方向の設定 (正面方向とは直交であること)
+        /// 3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
         /// </summary>
         /// <param name="direction">上方向</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSoundListener_SetUpDirection(ref Vector3 direction);
 
         /// <summary>
-        /// リスナーの上方向の設定 (正面方向とは直交であること)
+        /// 3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
         /// </summary>
         /// <param name="x">向きの X 成分</param>
         /// <param name="y">向きの Y 成分</param>
@@ -2123,14 +2049,14 @@ namespace LN
         public extern static void LNSoundListener_SetUpDirectionXYZ( float x,  float y,  float z);
 
         /// <summary>
-        /// リスナーの速度の設定
+        /// 3D音声のリスナーの速度を設定します。
         /// </summary>
         /// <param name="velocity">速度</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSoundListener_Velocity(ref Vector3 velocity);
 
         /// <summary>
-        /// リスナーの速度の設定
+        /// 3D音声のリスナーの速度を設定します。
         /// </summary>
         /// <param name="x">速度の X 成分</param>
         /// <param name="y">速度の Y 成分</param>
@@ -2139,7 +2065,7 @@ namespace LN
         public extern static void LNSoundListener_VelocityXYZ( float x,  float y,  float z);
 
         /// <summary>
-        /// ボリュームの取得
+        /// サウンドのボリュームを取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="volume">ボリュームを格納する変数</param>
@@ -2147,7 +2073,7 @@ namespace LN
         public extern static Result LNSound_GetVolume( IntPtr sound, out int volume);
 
         /// <summary>
-        /// ボリュームの設定
+        /// サウンドのボリュームを設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="volume">ボリューム (0～100)</param>
@@ -2155,7 +2081,7 @@ namespace LN
         public extern static Result LNSound_SetVolume( IntPtr sound,  int volume);
 
         /// <summary>
-        /// ピッチの取得
+        /// サウンドのピッチを取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="pitch">ピッチを格納する変数</param>
@@ -2163,7 +2089,7 @@ namespace LN
         public extern static Result LNSound_GetPitch( IntPtr sound, out int pitch);
 
         /// <summary>
-        /// ピッチの設定
+        /// サウンドのピッチを設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="pitch">ピッチ (50～200)</param>
@@ -2171,7 +2097,7 @@ namespace LN
         public extern static Result LNSound_SetPitch( IntPtr sound,  int pitch);
 
         /// <summary>
-        /// ループ再生の有無を設定します。
+        /// サウンドのループ再生の有無を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="loopEnable">LN_TRUE = ループ再生する / LN_FALSE = しない</param>
@@ -2179,7 +2105,7 @@ namespace LN
         public extern static Result LNSound_SetLoop( IntPtr sound,  bool loopEnable);
 
         /// <summary>
-        /// ループ再生が有効かを調べる
+        /// サウンドのループ再生が有効であるかを確認します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="enabled">ループ再生の有無状態を格納する変数</param>
@@ -2187,7 +2113,7 @@ namespace LN
         public extern static Result LNSound_IsLoop( IntPtr sound, out bool enabled);
 
         /// <summary>
-        /// ループ再生の範囲を設定します。
+        /// サウンドのループ再生の範囲を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="begin">ループ領域の先頭位置 (サンプル数単位)</param>
@@ -2196,7 +2122,7 @@ namespace LN
         public extern static Result LNSound_SetLoopRange( IntPtr sound,  int begin,  int length);
 
         /// <summary>
-        /// サウンドの再生状態を取得する
+        /// サウンドの再生状態を取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="state">状態を格納する変数</param>
@@ -2204,7 +2130,7 @@ namespace LN
         public extern static Result LNSound_GetPlayState( IntPtr sound, out SoundPlayingState state);
 
         /// <summary>
-        /// 再生したサンプル数の取得
+        /// サウンドの再生したサンプル数を取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="samples">再生したサンプル数を格納する変数</param>
@@ -2212,7 +2138,7 @@ namespace LN
         public extern static Result LNSound_GetUnitsPlayed( IntPtr sound, out int samples);
 
         /// <summary>
-        /// 音声データ全体のサンプル数の取得
+        /// サウンドの音声データ全体のサンプル数を取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="samples">音声データ全体のサンプル数を格納する変数</param>
@@ -2220,7 +2146,7 @@ namespace LN
         public extern static Result LNSound_GetTotalUnits( IntPtr sound, out int samples);
 
         /// <summary>
-        /// サンプリング周波数の取得
+        /// サウンドのサンプリング周波数を取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="frequency">サンプリング周波数を格納する変数</param>
@@ -2228,7 +2154,7 @@ namespace LN
         public extern static Result LNSound_GetUnitsParSecond( IntPtr sound, out int frequency);
 
         /// <summary>
-        /// 3D 音源かを調べる
+        /// サウンドが 3D 音源かを確認します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="enabled">3D 音源かを示す値を格納する変数</param>
@@ -2236,7 +2162,7 @@ namespace LN
         public extern static Result LNSound_Is3DSound( IntPtr sound, out bool enabled);
 
         /// <summary>
-        /// 3D 音源としての位置を設定する
+        /// サウンドの 3D 音源としての位置を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="position">3D 空間上の座標</param>
@@ -2244,7 +2170,7 @@ namespace LN
         public extern static Result LNSound_SetEmitterPosition( IntPtr sound, ref Vector3 position);
 
         /// <summary>
-        /// 3D 音源としての位置を設定する
+        /// サウンドの 3D 音源としての位置を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="x">3D 空間上の X 座標</param>
@@ -2254,7 +2180,7 @@ namespace LN
         public extern static Result LNSound_SetEmitterPositionXYZ( IntPtr sound,  float x,  float y,  float z);
 
         /// <summary>
-        /// 3D 音源としての速度を設定する
+        /// サウンドの 3D 音源としての速度を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="velocity">速度</param>
@@ -2262,7 +2188,7 @@ namespace LN
         public extern static Result LNSound_SetEmitterVelocity( IntPtr sound, ref Vector3 velocity);
 
         /// <summary>
-        /// 3D 音源としての速度を設定する
+        /// サウンドの 3D 音源としての速度を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="x">速度の X 成分</param>
@@ -2272,7 +2198,7 @@ namespace LN
         public extern static Result LNSound_SetEmitterVelocityXYZ( IntPtr sound,  float x,  float y,  float z);
 
         /// <summary>
-        /// 3D 音源の減衰距離 (聴こえなくなる距離) を設定する
+        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="distance">距離</param>
@@ -2297,21 +2223,21 @@ namespace LN
         public extern static Result LNSound_CreateMem( byte[] data,  int dataSize, out IntPtr sound);
 
         /// <summary>
-        /// 音声を再生する
+        /// サウンドを再生します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_Play( IntPtr sound);
 
         /// <summary>
-        /// 再生を停止する
+        /// サウンドの再生を停止します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_Stop( IntPtr sound);
 
         /// <summary>
-        /// 一時停止
+        /// サウンドの一時停止状態を操作します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="pause">LN_TRUE = 一時停止 / LN_FALSE = 一時停止解除</param>
@@ -2319,7 +2245,7 @@ namespace LN
         public extern static Result LNSound_Pause( IntPtr sound,  bool pause);
 
         /// <summary>
-        /// 音量のフェード
+        /// サウンド音量のフェード操作を行います。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="targetVolume">変更先の音量</param>

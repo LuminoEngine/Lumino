@@ -43,6 +43,10 @@ namespace BinderMaker
 
             var csClassesBuilder = new Builder.CSClassesBuilder();
             csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Classes.cs");
+
+
+            var hspHeaderBuilder = new Builder.HSPHeaderBuilder();
+            hspHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lnote.as");
         }
     }
 }

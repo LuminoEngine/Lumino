@@ -91,9 +91,9 @@ namespace LN
     
     
         /// <summary>
-        /// BGM を演奏する
+        /// BGM を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
@@ -105,7 +105,7 @@ namespace LN
         }
         
         /// <summary>
-        /// メモリ上の音声データから BGM を演奏する
+        /// メモリ上の音声ファイルデータを使用して BGM を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -120,7 +120,7 @@ namespace LN
         }
         
         /// <summary>
-        /// BGM の演奏を停止する
+        /// BGM の演奏を停止します。
         /// </summary>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
         public static void StopBGM( int fadeTime = 0)
@@ -131,9 +131,9 @@ namespace LN
         }
         
         /// <summary>
-        /// BGS を演奏する
+        /// BGS を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
@@ -145,7 +145,7 @@ namespace LN
         }
         
         /// <summary>
-        /// メモリ上の音声データから BGS を演奏する
+        /// メモリ上の音声ファイルデータから BGS を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -160,7 +160,7 @@ namespace LN
         }
         
         /// <summary>
-        /// BGS の演奏を停止する
+        /// BGS の演奏を停止します。、
         /// </summary>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
         public static void StopBGS( int fadeTime = 0)
@@ -171,9 +171,9 @@ namespace LN
         }
         
         /// <summary>
-        /// ME を演奏する
+        /// ME を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlayME( string filePath,  int volume = 100,  int pitch = 100)
@@ -184,7 +184,7 @@ namespace LN
         }
         
         /// <summary>
-        /// メモリ上の音声データから ME を演奏する
+        /// メモリ上の音声ファイルデータから ME を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -198,7 +198,7 @@ namespace LN
         }
         
         /// <summary>
-        /// ME の演奏を停止する
+        /// ME の演奏を停止します。
         /// </summary>
         public static void StopME()
         {
@@ -207,9 +207,9 @@ namespace LN
         }
         
         /// <summary>
-        /// SE を演奏する
+        /// SE を演奏します。
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySE( string filePath,  int volume = 100,  int pitch = 100)
@@ -220,9 +220,9 @@ namespace LN
         }
         
         /// <summary>
-        /// SE を演奏する (3D サウンド)
+        /// SE を演奏します。(3D サウンド)
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="position">3D 空間上の座標</param>
         /// <param name="distance">減衰距離</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
@@ -235,9 +235,9 @@ namespace LN
         }
         
         /// <summary>
-        /// SE を演奏する (3D サウンド)
+        /// SE を演奏します。(3D サウンド)
         /// </summary>
-        /// <param name="filePath">ファイル名</param>
+        /// <param name="filePath">ファイルパス</param>
         /// <param name="x">3D 空間上の X 座標</param>
         /// <param name="y">3D 空間上の Y 座標</param>
         /// <param name="z">3D 空間上の Z 座標</param>
@@ -252,7 +252,7 @@ namespace LN
         }
         
         /// <summary>
-        /// メモリ上の音声データから SE を演奏する
+        /// メモリ上の音声データから SE を演奏します。
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -266,7 +266,7 @@ namespace LN
         }
         
         /// <summary>
-        /// メモリ上の音声データから SE を演奏する (3D サウンド)
+        /// メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -282,7 +282,7 @@ namespace LN
         }
         
         /// <summary>
-        /// メモリ上の音声データから SE を演奏する (3D サウンド)
+        /// メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
         /// </summary>
         /// <param name="data">メモリ上の音声ファイルデータ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
@@ -300,7 +300,7 @@ namespace LN
         }
         
         /// <summary>
-        /// すべての SE の演奏を停止する
+        /// すべての SE の演奏を停止します。
         /// </summary>
         public static void StopSE()
         {
@@ -309,7 +309,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 3D 空間の1メートル相当の距離の設定
+        /// 3D 空間の1メートル相当の距離を設定します。
         /// </summary>
         /// <param name="distance">距離</param>
         public static void SetMetreUnitDistance( float distance)
@@ -320,7 +320,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 再生中のBGMの音量を設定する (フェードアウト中は無効)
+        /// 再生中のBGMの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
@@ -332,7 +332,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 再生中のBGSの音量を設定する (フェードアウト中は無効)
+        /// 再生中のBGSの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
@@ -353,7 +353,7 @@ namespace LN
     {
     
         /// <summary>
-        /// リスナーの位置
+        /// 3D音声のリスナーの位置
         /// </summary>
         public static Vector3 Position
         {
@@ -366,7 +366,7 @@ namespace LN
             
         }
         /// <summary>
-        /// リスナーの位置
+        /// 3D音声のリスナーの位置
         /// </summary>
         public static float PositionXYZ
         {
@@ -378,7 +378,7 @@ namespace LN
             
         }
         /// <summary>
-        /// リスナーの正面方向
+        /// 3D音声のリスナーの正面方向
         /// </summary>
         public static Vector3 Direction
         {
@@ -391,7 +391,7 @@ namespace LN
             
         }
         /// <summary>
-        /// リスナーの正面方向
+        /// 3D音声のリスナーの正面方向
         /// </summary>
         public static float DirectionXYZ
         {
@@ -403,7 +403,7 @@ namespace LN
             
         }
         /// <summary>
-        /// リスナーの上方向 (正面方向とは直交であること)
+        /// 3D音声のリスナーの上方向(正面方向とは直交であること)
         /// </summary>
         public static Vector3 UpDirection
         {
@@ -416,7 +416,7 @@ namespace LN
             
         }
         /// <summary>
-        /// リスナーの上方向 (正面方向とは直交であること)
+        /// 3D音声のリスナーの上方向(正面方向とは直交であること)
         /// </summary>
         public static float UpDirectionXYZ
         {
@@ -429,7 +429,7 @@ namespace LN
         }
     
         /// <summary>
-        /// リスナーの速度の設定
+        /// 3D音声のリスナーの速度を設定します。
         /// </summary>
         /// <param name="velocity">速度</param>
         public static void Velocity( Vector3 velocity)
@@ -440,7 +440,7 @@ namespace LN
         }
         
         /// <summary>
-        /// リスナーの速度の設定
+        /// 3D音声のリスナーの速度を設定します。
         /// </summary>
         /// <param name="x">速度の X 成分</param>
         /// <param name="y">速度の Y 成分</param>
@@ -461,7 +461,7 @@ namespace LN
     {
     
         /// <summary>
-        /// ボリューム
+        /// サウンドのボリューム
         /// </summary>
         public int Volume
         {
@@ -483,7 +483,7 @@ namespace LN
             
         }
         /// <summary>
-        /// ピッチ
+        /// サウンドのピッチ
         /// </summary>
         public int Pitch
         {
@@ -505,7 +505,7 @@ namespace LN
             
         }
         /// <summary>
-        /// ループ再生の有無
+        /// サウンドのループ再生の有無
         /// </summary>
         public bool Loop
         {
@@ -518,7 +518,7 @@ namespace LN
             
         }
         /// <summary>
-        /// ループ再生が有効かを調べる
+        /// サウンドのループ再生が有効であるかを確認します。
         /// </summary>
         public bool IsLoop
         {
@@ -533,7 +533,7 @@ namespace LN
             
         }
         /// <summary>
-        /// ループ再生の範囲
+        /// サウンドのループ再生の範囲
         /// </summary>
         /// <remarks>
         /// begin と length に 0 を指定すると、全体をループ領域として設定します。
@@ -549,7 +549,7 @@ namespace LN
             
         }
         /// <summary>
-        /// サウンドの再生状態を取得する
+        /// サウンドの再生状態
         /// </summary>
         public SoundPlayingState PlayState
         {
@@ -564,7 +564,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 再生したサンプル数
+        /// サウンドの再生したサンプル数
         /// </summary>
         public int UnitsPlayed
         {
@@ -579,7 +579,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 音声データ全体のサンプル数
+        /// サウンドの音声データ全体のサンプル数
         /// </summary>
         public int TotalUnits
         {
@@ -594,7 +594,7 @@ namespace LN
             
         }
         /// <summary>
-        /// サンプリング周波数
+        /// サウンドのサンプリング周波数
         /// </summary>
         public int UnitsParSecond
         {
@@ -609,7 +609,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 3D 音源かを調べる
+        /// サウンドが 3D 音源かを確認します。
         /// </summary>
         public bool Is3DSound
         {
@@ -624,7 +624,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 3D 音源としての位置を設定する
+        /// サウンドの 3D 音源としての位置
         /// </summary>
         public Vector3 EmitterPosition
         {
@@ -637,7 +637,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 3D 音源としての位置を設定する
+        /// サウンドの 3D 音源としての位置
         /// </summary>
         public float EmitterPositionXYZ
         {
@@ -650,7 +650,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 3D 音源としての速度を設定する
+        /// サウンドの 3D 音源としての速度
         /// </summary>
         public Vector3 EmitterVelocity
         {
@@ -663,7 +663,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 3D 音源としての速度を設定する
+        /// サウンドの 3D 音源としての速度
         /// </summary>
         public float EmitterVelocityXYZ
         {
@@ -676,7 +676,7 @@ namespace LN
             
         }
         /// <summary>
-        /// 3D 音源の減衰距離 (聴こえなくなる距離) を設定する
+        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) 
         /// </summary>
         public float EmitterDistance
         {
@@ -719,7 +719,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 音声を再生する
+        /// サウンドを再生します。
         /// </summary>
         public void Play()
         {
@@ -729,7 +729,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 再生を停止する
+        /// サウンドの再生を停止します。
         /// </summary>
         public void Stop()
         {
@@ -739,7 +739,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 一時停止
+        /// サウンドの一時停止状態を操作します。
         /// </summary>
         /// <param name="pause">true = 一時停止 / false = 一時停止解除</param>
         public void Pause( bool pause)
@@ -750,7 +750,7 @@ namespace LN
         }
         
         /// <summary>
-        /// 音量のフェード
+        /// サウンド音量のフェード操作を行います。
         /// </summary>
         /// <param name="targetVolume">変更先の音量</param>
         /// <param name="time">フェードにかける時間 (ミリ秒)</param>
@@ -1007,7 +1007,7 @@ private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
 				for (int i = 0; i < InitialListSize; i++)
                 {
 					_userDataListIndexStack.Push(i);
-                    _userDataList.Add(new UserData());
+                    _userDataList.Add(null);
                 }
 					
 				// 型情報の登録
@@ -1053,7 +1053,7 @@ private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
                 _userDataList.Capacity = growCount + growCount;
                 for (int i = 0; i < growCount; i++)
                 {
-                    _userDataList.Add(new UserData());
+                    _userDataList.Add(null);
                     _userDataListIndexStack.Push(growCount + i);
                 }
             }

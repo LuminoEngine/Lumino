@@ -1,0 +1,109 @@
+//=============================================================================
+// ■ Audio_SoundPlayer
+//-----------------------------------------------------------------------------
+//	簡単なサウンドプレイヤーのサンプルです。
+//=============================================================================
+
+#include "lnote.as"
+
+	sound = 0
+
+	screen 0, 320, 160
+	
+	// midi を使用する場合はコメントを外してください
+	//LConfig_SetDirectMusicInitMode LN_DMINITMODE_NORMAL
+	
+	LNote_InitAudio
+	if FAILED(stat) : end
+
+	dialog "wav;*.ogg;*.mp3;*.mid", 16
+	if stat == 0 : end
+
+	LSound_Create sound, refstr
+	
+	objsize 96, 24
+	button "再生", *sound_play
+	button "停止", *sound_stop
+	button "一時停止", *sound_pause_on
+	button "一時停止解除", *sound_pause_off
+
+	pos 100, 0
+	button "フェードイン", *sound_fadein
+	button "フェードアウト", *sound_fadeout
+
+*main
+	
+	redraw 0
+
+	color 255, 255, 255
+	boxf
+	color 128, 128, 128
+
+	pos 100, 64
+	
+	// 再生状態
+	LSound_GetPlayState sound
+	switch stat
+		case LN_SOUNDPLAYSTATE_STOP
+			mes "停止中"
+			swbreak
+		case LN_SOUNDPLAYSTATE_PLAYING
+			mes "再生中"
+			swbreak
+		case LN_SOUNDPLAYSTATE_PAUSING
+			mes "一時停止中"
+			swbreak
+	swend
+	
+	// 再生サンプル数
+	LSound_GetUnitsPlayed sound
+	mes "Played : " + stat
+	
+	// トータルサンプル数
+	LSound_GetTotalUnits sound
+	mes "Total  : " + stat
+
+	redraw 1
+	await 32
+	goto *main
+
+*sound_play
+
+	LSound_Play sound
+	
+	goto *main
+	
+*sound_stop
+
+	LSound_Stop sound
+	
+	goto *main
+	
+*sound_pause_on
+
+	LSound_Pause sound, true
+
+	goto *main
+	
+*sound_pause_off
+
+	LSound_Pause sound, false
+
+	goto *main
+	
+*sound_fadein
+
+	LSound_SetVolume sound, 0
+	LSound_Play sound
+	
+	// 10 秒かけてフェードイン
+	LSound_FadeVolume sound, 100, 10000, LN_SOUNDFADE_CONTINUE	
+
+	goto *main
+	
+*sound_fadeout
+
+	// 10 秒かけてフェードアウト → 停止
+	LSound_FadeVolume sound, 0, 10000, LN_SOUNDFADE_STOP_RESET	
+	
+	goto *main

@@ -212,5 +212,10 @@ namespace BinderMaker.Builder
             _buffer.Append(string.Format(str, args));
             return this;
         }
+
+        public void Clear()
+        {
+            _buffer.Clear();
+        }
     }
 }

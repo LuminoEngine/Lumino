@@ -1,0 +1,24 @@
+//=============================================================================
+// ■ Audio_PlaySound
+//-----------------------------------------------------------------------------
+//	選択したファイルを切れ目なくループ再生します。
+//=============================================================================
+
+#include "lnote.as"
+
+	// midi を使用する場合はコメントを外してください
+	//LConfig_SetDirectMusicUsingMode LN_DMUSINGMODE_USE
+	
+	LNote_InitAudio
+	if FAILED(stat) : end
+
+	dialog "wav;*.ogg;*.mp3;*.mid", 16
+	if stat == 0 : end
+
+	LSound_Create sound, refstr, false, LN_SOUNDPLAYTYPE_ONMEMORY
+
+	LSound_SetLoopState sound, true
+	
+	LSound_Play sound
+
+	stop

@@ -306,6 +306,11 @@ namespace BinderMaker
         public string Name { get; private set; }
 
         /// <summary>
+        /// オリジナルの名前
+        /// </summary>
+        public string OriginalName { get; private set; }
+
+        /// <summary>
         /// メンバリスト
         /// </summary>
         public List<CLEnumMember> Members { get; private set; }
@@ -326,6 +331,7 @@ namespace BinderMaker
         public CLEnum(string comment, string name, IEnumerable<CLEnumMember> members)
         {
             Comment = comment.Trim();
+            OriginalName = name.Trim();
             Name = name.Trim().Substring(2);   // プレフィックスを取り除く
             Members = new List<CLEnumMember>(members);
 

@@ -1,0 +1,56 @@
+//=============================================================================
+// ■ Audio_PlaySound
+//-----------------------------------------------------------------------------
+//	音量とピッチの変更サンプルです。
+//	ウィンドウ内をクリックすると音量とピッチを変更します。
+//=============================================================================
+
+#include "lnote.as"
+
+	sound = 0
+	
+	screen 0, 300, 300, 1
+
+	// midi を使用する
+	LConfig_SetDirectMusicInitMode LN_DMINITMODE_NORMAL
+
+	LNote_InitAudio
+
+	color 128, 128, 128
+	line -1, 150, 300, 150
+	line 150, -1, 150, 300
+	font "", 12
+	pos 2, 138	 : mes "volume 0%"
+	pos 232, 138 : mes "volume 100%"
+	pos 100, 2	 : mes "pitch 50%"
+	pos 152, 286 : mes "pitch 150%"
+
+	gosub *load
+
+*main
+
+	stick key, 256
+	if key & 256 {
+		pos mousex - 2, mousey - 6
+		mes "*"
+		LSound_SetVolume sound, 100 * mousex / 300
+		LSound_SetPitch  sound, 100 * mousey / 300 + 50
+	}
+
+	if key & 512 {
+		gosub *load
+	}
+	
+	await 32
+	goto *main
+
+*load
+
+	dialog "wav;*.ogg;*.mp3;*.mid", 16
+	if stat == 0 : end
+
+	LSound_Create sound, refstr
+	LSound_SetLoopState sound, true
+	LSound_Play sound
+
+	return

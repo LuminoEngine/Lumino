@@ -18,17 +18,17 @@ LN_MODULE(Audio)
 LN_STATIC_CLASS(LNAudio)
 	
 	/**
-		@brief		BGM を演奏する
-		@param[in]	filePath	: ファイル名
+		@brief		BGM を演奏します。
+		@param[in]	filePath	: ファイルパス
 		@param[in]	volume		: ボリューム (0 ～ 100)
 		@param[in]	pitch		: ピッチ (50 ～ 200)
 		@param[in]	fadeTime	: フェードインにかける時間 (ミリ秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0) );
+	LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
 	
 	/**
-		@brief	  メモリ上の音声データから BGM を演奏する
+		@brief		メモリ上の音声ファイルデータを使用して BGM を演奏します。
 		@param[in]  data		: メモリ上の音声ファイルデータ
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  volume		: ボリューム (0 ～ 100)
@@ -36,27 +36,27 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードインにかける時間 (ミリ秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGMMem( const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0) );
+	LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
 
 	/**
-		@brief	  BGM の演奏を停止する
+		@brief		BGM の演奏を停止します。
 		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_StopBGM(int fadeTime LN_DEFAULT_ARG(0));
 
 	/**
-		@brief	  BGS を演奏する
-		@param[in]  filePath	: ファイル名
+		@brief		BGS を演奏します。
+		@param[in]  filePath	: ファイルパス
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 		@param[in]  fadeTime	: フェードインにかける時間 (ミリ秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGS( const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0) );
+	LNResult LNAudio_PlayBGS(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
 
 	/**
-		@brief	  メモリ上の音声データから BGS を演奏する
+		@brief		メモリ上の音声ファイルデータから BGS を演奏します。
 		@param[in]  data		: メモリ上の音声ファイルデータ
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  volume		: ボリューム (0 ～ 100)
@@ -67,23 +67,23 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
 
 	/**
-		@brief	  BGS の演奏を停止する
+		@brief		BGS の演奏を停止します。、
 		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_StopBGS(int fadeTime LN_DEFAULT_ARG(0));
 
 	/**
-		@brief	  ME を演奏する
-		@param[in]  filePath	: ファイル名
+		@brief		ME を演奏します。
+		@param[in]  filePath	: ファイルパス
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayME( const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100) );
+	LNResult LNAudio_PlayME(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  メモリ上の音声データから ME を演奏する
+		@brief		メモリ上の音声ファイルデータから ME を演奏します。
 		@param[in]  data		: メモリ上の音声ファイルデータ
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  volume		: ボリューム (0 ～ 100)
@@ -93,23 +93,23 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  ME の演奏を停止する
+		@brief	  ME の演奏を停止します。
 	*/
 	LN_STATIC_API
 	void LNAudio_StopME();
 
 	/**
-		@brief	  SE を演奏する
-		@param[in]  filePath	: ファイル名
+		@brief		SE を演奏します。
+		@param[in]  filePath	: ファイルパス
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlaySE( const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100) );
+	LNResult LNAudio_PlaySE(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  SE を演奏する (3D サウンド)
-		@param[in]  filePath	: ファイル名
+		@brief		SE を演奏します。(3D サウンド)
+		@param[in]  filePath	: ファイルパス
 		@param[in]  position	: 3D 空間上の座標
 		@param[in]  distance	: 減衰距離
 		@param[in]  volume		: ボリューム (0 ～ 100)
@@ -119,8 +119,8 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  SE を演奏する (3D サウンド)
-		@param[in]  filePath	: ファイル名
+		@brief		SE を演奏します。(3D サウンド)
+		@param[in]  filePath	: ファイルパス
 		@param[in]  x			: 3D 空間上の X 座標
 		@param[in]  y			: 3D 空間上の Y 座標
 		@param[in]  z			: 3D 空間上の Z 座標
@@ -129,10 +129,10 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlaySE3DXYZ( const LNChar* filePath, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100) );
+	LNResult LNAudio_PlaySE3DXYZ(const LNChar* filePath, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  メモリ上の音声データから SE を演奏する
+		@brief		メモリ上の音声データから SE を演奏します。
 		@param[in]  data		: メモリ上の音声ファイルデータ
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  volume		: ボリューム (0 ～ 100)
@@ -142,7 +142,7 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  メモリ上の音声データから SE を演奏する (3D サウンド)
+		@brief		メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
 		@param[in]  data		: メモリ上の音声ファイルデータ
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  position	: 3D 空間上の座標
@@ -154,7 +154,7 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  メモリ上の音声データから SE を演奏する (3D サウンド)
+		@brief		メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
 		@param[in]  data		: メモリ上の音声ファイルデータ
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  x			: 3D 空間上の X 座標
@@ -168,20 +168,20 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
-		@brief	  すべての SE の演奏を停止する
+		@brief		すべての SE の演奏を停止します。
 	*/
 	LN_STATIC_API
 	void LNAudio_StopSE();
 
 	/**
-		@brief	  3D 空間の1メートル相当の距離の設定
+		@brief		3D 空間の1メートル相当の距離を設定します。
 		@param[in]  distance	: 距離
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_SetMetreUnitDistance(float distance);
 
 	/**
-		@brief	 再生中のBGMの音量を設定する (フェードアウト中は無効)
+		@brief		再生中のBGMの音量を設定します。(フェードアウト中は無効)
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	*/
@@ -189,7 +189,7 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_SetBGMVolume(int volume, int fadeTime LN_DEFAULT_ARG(0));
 
 	/**
-		@brief	  再生中のBGSの音量を設定する (フェードアウト中は無効)
+		@brief		再生中のBGSの音量を設定します。(フェードアウト中は無効)
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	*/
@@ -206,7 +206,7 @@ LN_CLASS_END
 LN_STATIC_CLASS(LNSoundListener)
 
 	/**
-		@brief		リスナーの位置の設定
+		@brief		3D音声のリスナーの位置を設定します。
 		@param[in]	position	: 3D 空間上の座標
 	*/
 	LN_STATIC_API
@@ -214,17 +214,17 @@ LN_STATIC_CLASS(LNSoundListener)
 	LNResult LNSoundListener_SetPosition(const LNVector3* position);
 
 	/**
-		@brief		リスナーの位置の設定
+		@brief		3D音声のリスナーの位置を設定します。
 		@param[in]	x			: 3D 空間上の X 座標
 		@param[in]	y			: 3D 空間上の Y 座標
 		@param[in]	z			: 3D 空間上の Z 座標
 	*/
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
-	void LNSoundListener_SetPositionXYZ( float x, float y, float z );
+	void LNSoundListener_SetPositionXYZ(float x, float y, float z);
 
 	/**
-		@brief		リスナーの正面方向の設定
+		@brief		3D音声のリスナーの正面方向を設定します。
 		@param[in]	direction		: 向き
 	*/
 	LN_STATIC_API
@@ -232,7 +232,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	LNResult LNSoundListener_SetDirection(const LNVector3* direction);
 
 	/**
-		@brief		リスナーの正面方向の設定
+		@brief		3D音声のリスナーの正面方向を設定します。
 		@param[in]	x			: 向きの X 成分
 		@param[in]	y			: 向きの Y 成分
 		@param[in]	z			: 向きの Z 成分
@@ -242,7 +242,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	void LNSoundListener_SetDirectionXYZ(float x, float y, float z);
 
 	/**
-		@brief		リスナーの上方向の設定 (正面方向とは直交であること)
+		@brief		3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
 		@param[in]	direction	: 上方向
 	*/
 	LN_STATIC_API
@@ -250,17 +250,17 @@ LN_STATIC_CLASS(LNSoundListener)
 	LNResult LNSoundListener_SetUpDirection(const LNVector3* direction);
 
 	/**
-		@brief		リスナーの上方向の設定 (正面方向とは直交であること)
+		@brief		3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
 		@param[in]	x			: 向きの X 成分
 		@param[in]	y			: 向きの Y 成分
 		@param[in]	z			: 向きの Z 成分
 	*/
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
-	void LNSoundListener_SetUpDirectionXYZ( float x, float y, float z );
+	void LNSoundListener_SetUpDirectionXYZ(float x, float y, float z);
 
 	/**
-		@brief		リスナーの速度の設定
+		@brief		3D音声のリスナーの速度を設定します。
 		@param[in]	velocity	: 速度
 	*/
 	LN_STATIC_API
@@ -268,14 +268,14 @@ LN_STATIC_CLASS(LNSoundListener)
 	LNResult LNSoundListener_Velocity(const LNVector3* velocity);
 
 	/**
-		@brief	  リスナーの速度の設定
+		@brief		3D音声のリスナーの速度を設定します。
 		@param[in]	x			: 速度の X 成分
 		@param[in]	y			: 速度の Y 成分
 		@param[in]	z			: 速度の Z 成分
 	*/
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
-	void LNSoundListener_VelocityXYZ( float x, float y, float z );
+	void LNSoundListener_VelocityXYZ(float x, float y, float z);
 
 
 LN_CLASS_END
@@ -306,7 +306,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSound)* sound);
 
 	/**
-		@brief		ボリュームの設定
+		@brief		サウンドのボリュームを設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	volume		: ボリューム (0～100)
 	*/
@@ -315,7 +315,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetVolume(LN_HANDLE(LNSound) sound, int volume);
 
 	/**
-		@brief		ボリュームの取得
+		@brief		サウンドのボリュームを取得します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	volume		: ボリュームを格納する変数
 	*/
@@ -324,7 +324,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, int* volume);
 
 	/**
-		@brief		ピッチの設定
+		@brief		サウンドのピッチを設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	pitch		: ピッチ (50～200)
 	*/
@@ -333,7 +333,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetPitch(LN_HANDLE(LNSound) sound, int pitch);
 
 	/**
-		@brief		ピッチの取得
+		@brief		サウンドのピッチを取得します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	pitch		: ピッチを格納する変数
 	*/
@@ -342,7 +342,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_GetPitch(LN_HANDLE(LNSound) sound, int* pitch);
 
 	/**
-		@brief		ループ再生の有無を設定します。
+		@brief		サウンドのループ再生の有無を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	loopEnable	: LN_TRUE = ループ再生する / LN_FALSE = しない
 	*/
@@ -351,7 +351,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetLoop(LN_HANDLE(LNSound) sound, LNBool loopEnable);
 
 	/**
-		@brief		ループ再生が有効かを調べる
+		@brief		サウンドのループ再生が有効であるかを確認します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	enabled		: ループ再生の有無状態を格納する変数
 	*/
@@ -360,7 +360,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_IsLoop(LN_HANDLE(LNSound) sound, LNBool* enabled);
 	
 	/**
-		@brief		ループ再生の範囲を設定します。
+		@brief		サウンドのループ再生の範囲を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	begin		: ループ領域の先頭位置 (サンプル数単位)
 		@param[in]	length		: ループ領域長さ (サンプル数単位)
@@ -371,7 +371,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetLoopRange(LN_HANDLE(LNSound) sound, int begin, int length);
 
 	/**
-		@brief		サウンドの再生状態を取得する
+		@brief		サウンドの再生状態を取得します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	state		: 状態を格納する変数
 	*/
@@ -380,21 +380,21 @@ LN_CLASS(LNSound)
 	LNResult LNSound_GetPlayState(LN_HANDLE(LNSound) sound, LNSoundPlayingState* state);
 
 	/**
-		@brief		音声を再生する
+		@brief		サウンドを再生します。
 		@param[in]	sound		: サウンドハンドル
 	*/
 	LN_INSTANCE_API
 	LNResult LNSound_Play(LN_HANDLE(LNSound) sound);
 
 	/**
-		@brief		再生を停止する
+		@brief		サウンドの再生を停止します。
 		@param[in]	sound		: サウンドハンドル
 	*/
 	LN_INSTANCE_API
 	LNResult LNSound_Stop(LN_HANDLE(LNSound) sound);
 
 	/**
-		@brief		一時停止
+		@brief		サウンドの一時停止状態を操作します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	pause		: LN_TRUE = 一時停止 / LN_FALSE = 一時停止解除
 	*/
@@ -402,7 +402,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_Pause(LN_HANDLE(LNSound) sound, LNBool pause);
 
 	/**
-		@brief		音量のフェード
+		@brief		サウンド音量のフェード操作を行います。
 		@param[in]	sound			: サウンドハンドル
 		@param[in]	targetVolume	: 変更先の音量
 		@param[in]	time			: フェードにかける時間 (ミリ秒)
@@ -412,7 +412,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, int time, LNSoundFadeState fadeState);
 
 	/**
-		@brief		再生したサンプル数の取得
+		@brief		サウンドの再生したサンプル数を取得します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	samples		: 再生したサンプル数を格納する変数
 	*/
@@ -421,7 +421,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_GetUnitsPlayed(LN_HANDLE(LNSound) sound, int* samples);
 
 	/**
-		@brief		音声データ全体のサンプル数の取得
+		@brief		サウンドの音声データ全体のサンプル数を取得します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	samples		: 音声データ全体のサンプル数を格納する変数
 	*/
@@ -430,7 +430,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_GetTotalUnits(LN_HANDLE(LNSound) sound, int* samples);
 
 	/**
-		@brief		サンプリング周波数の取得
+		@brief		サウンドのサンプリング周波数を取得します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	frequency	: サンプリング周波数を格納する変数
 	*/
@@ -439,7 +439,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_GetUnitsParSecond(LN_HANDLE(LNSound) sound, int* frequency);
 
 	/**
-		@brief		3D 音源かを調べる
+		@brief		サウンドが 3D 音源かを確認します。
 		@param[in]	sound		: サウンドハンドル
 		@param[out]	enabled		: 3D 音源かを示す値を格納する変数
 	*/
@@ -448,7 +448,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_Is3DSound(LN_HANDLE(LNSound) sound, LNBool* enabled);
 
 	/**
-		@brief		3D 音源としての位置を設定する
+		@brief		サウンドの 3D 音源としての位置を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	position	: 3D 空間上の座標
 	*/
@@ -457,7 +457,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetEmitterPosition(LN_HANDLE(LNSound) sound, const LNVector3* position);
 
 	/**
-		@brief		3D 音源としての位置を設定する
+		@brief		サウンドの 3D 音源としての位置を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	x			: 3D 空間上の X 座標
 		@param[in]	y			: 3D 空間上の Y 座標
@@ -468,7 +468,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetEmitterPositionXYZ(LN_HANDLE(LNSound) sound, float x, float y, float z);
 
 	/**
-		@brief		3D 音源としての速度を設定する
+		@brief		サウンドの 3D 音源としての速度を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	velocity	: 速度
 	*/
@@ -477,7 +477,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetEmitterVelocity(LN_HANDLE(LNSound) sound, const LNVector3* velocity);
 
 	/**
-		@brief		3D 音源としての速度を設定する
+		@brief		サウンドの 3D 音源としての速度を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	x			: 速度の X 成分
 		@param[in]	y			: 速度の Y 成分
@@ -488,7 +488,7 @@ LN_CLASS(LNSound)
 	LNResult LNSound_SetEmitterVelocityXYZ(LN_HANDLE(LNSound) sound, float x, float y, float z);
 
 	/**
-		@brief		3D 音源の減衰距離 (聴こえなくなる距離) を設定する
+		@brief		サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	distance	: 距離
 	*/

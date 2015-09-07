@@ -34,6 +34,7 @@
 #include "Lumino/Platform/PlatformManager.h"
 #include "Lumino/Platform/EventArgs.h"
 #include "Lumino/Platform/EventListener.h"
+#include "Lumino/Platform/Clipboard.h"
 
 #include "Lumino/GUI/GUIManager.h"
 #include "Lumino/GUI/UIElement.h"
