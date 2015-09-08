@@ -2,6 +2,29 @@
  * ・HSP はクラスという概念は存在しないので、基本的に関数の変換だけとなる。
  * ・戻り値として構造体または float を使用している箇所に工夫が必要。
  * ・とりあえず直近の Audio リリースに向けては struct/string は必要ないので必要最低限にする。
+ * 
+ * 
+ * ▼ C
+ *  typedef (*LNStream_Read_OverrideCallback) (LNHandle stream, void* buffer, int size);
+ *  
+ * LNStream_Read(LNHandle stream, void* buffer, int size)
+ * {
+ *      
+ * }
+ * 
+ * LNStream_SetReadOverride(LNStream_Read_OverrideCallback callback)
+ * {
+ *      
+ * }
+ * 
+ * ▼ lnote_hsp
+ * 
+ * LNHspStream_Override_Read(LNHandle stream, void* buffer, int size)
+ * {
+ *      HspFunc_fread();
+ *      LNStream_Read();    // もし既定の処理を呼び出すならこう。
+ * }
+ * 
  */
 
 using System;
