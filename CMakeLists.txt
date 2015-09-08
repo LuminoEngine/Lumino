@@ -266,6 +266,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/ControlTemplate.h
 	include/Lumino/GUI/CursorImage.h
 	include/Lumino/GUI/Decorator.h
+	include/Lumino/GUI/GUIInputGesture.h
 	include/Lumino/GUI/GUIManager.h
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/ItemsControl.h
@@ -302,6 +303,7 @@ set(LN_SOURCES_GUI
 	src/GUI/Decorator.cpp
 	src/GUI/EventArgs.cpp
 	src/GUI/GUIHelper.h
+	src/GUI/GUIInputGesture.cpp
 	src/GUI/GUIManager.cpp
 	src/GUI/GUIPainter.cpp
 	src/GUI/GUIPainter.h

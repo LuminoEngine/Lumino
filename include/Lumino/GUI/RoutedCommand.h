@@ -18,6 +18,7 @@ class UIElement;
 	@brief
 */
 class Command
+	: public RefObject
 {
 public:
 	Event01<bool>	CanExecuteChanged;

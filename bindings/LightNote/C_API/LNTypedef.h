@@ -467,31 +467,31 @@ typedef enum tagLNDeviceButton
 //=============================================================================
 
 /** DirectMusic の初期化方法 */
-typedef enum tagLNDirectMusicInitMode
+typedef enum tagLNDirectMusicMode
 {
-    LN_DMINITMODE_NOT_USE = 0,		/** DirectMusic を使用しない */
-	LN_DMINITMODE_NORMAL,		    /** 通常 */
-	LN_DMINITMODE_THREAD_WAIT,		/** 別スレッドで初期化して、再生時に未完了の場合は待つ */
-	LN_DMINITMODE_THREAD_REQUEST,	/** 別スレッドで初期化して、再生時に未完了の場合は再生を予約する */
+    LN_DIRECTMUSICMODE_NOT_USE = 0,		/** DirectMusic を使用しない */
+	LN_DIRECTMUSICMODE_NORMAL,		    /** 通常 */
+	LN_DIRECTMUSICMODE_THREAD_WAIT,		/** 別スレッドで初期化して、再生時に未完了の場合は待つ */
+	LN_DIRECTMUSICMODE_THREAD_REQUEST,	/** 別スレッドで初期化して、再生時に未完了の場合は再生を予約する */
 
 	LN_DMINITMODE__TERMINATOR,
 
-} LNDirectMusicInitMode;
+} LNDirectMusicMode;
 
-/** 再生方法 ( オーディオプレイヤーの種類 ) */
-typedef enum tagLNSoundPlayingType
+/** サウンド再生時の音声データの読み込み方法 */
+typedef enum tagLNSoundLoadingType
 {
-	LN_SOUNDPLAYINGTYPE_UNKNOWN = 0,	/** 不明な再生方法 */
-	LN_SOUNDPLAYINGTYPE_AUTO,			/** 自動選択 ( デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります ) */
-	LN_SOUNDPLAYINGTYPE_ONMEMORY,		/** オンメモリ */
-	LN_SOUNDPLAYINGTYPE_STREAMING,		/** ストリーミング */
-	LN_SOUNDPLAYINGTYPE_MIDI,			/** SMF */
+	LN_SOUNDLOADINGTYPE_UNKNOWN = 0,	/** 不明な再生方法 */
+	LN_SOUNDLOADINGTYPE_AUTO,			/** 自動選択 (デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります) */
+	LN_SOUNDLOADINGTYPE_ONMEMORY,		/** オンメモリ */
+	LN_SOUNDLOADINGTYPE_STREAMING,		/** ストリーミング */
+	LN_SOUNDLOADINGTYPE_MIDI,			/** SMF */
 
 	LN_SOUNDPLAYINGTYPE__TERMINATOR,
 
-} LNSoundPlayingType;
+} LNSoundLoadingType;
 
-/** 音声の再生状態 */
+/** サウンドの再生状態 */
 typedef enum tagLNSoundPlayingState
 {
     LN_SOUNDPLAYINGSTATE_STOPPED = 0,	/** 停止中 */

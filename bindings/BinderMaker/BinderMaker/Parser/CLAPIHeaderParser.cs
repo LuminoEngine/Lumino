@@ -240,7 +240,7 @@ namespace BinderMaker.Parser
         // 関数宣言
         public static readonly Parser<CLFuncDecl> FuncDecl =
             from apiMod     in APIModifier.GenericToken()
-            from attr       in FuncAttribute.Or(Parse.Return(""))             // 属性(opt)
+            from attr       in FuncAttribute.GenericToken().Many()//FuncAttribute.Or(Parse.Return(""))             // 属性(opt)
             from type1      in ParserUtils.TypeName.GenericToken()                  // 戻り値型
             from name1      in ParserUtils.Identifier.GenericToken()    // 関数名
             from lparen     in Parse.Char('(').GenericToken()

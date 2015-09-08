@@ -48,6 +48,9 @@ public:
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
 
+	// TODO: context
+	Platform::Window* GetNativeWindow() const { return m_mainWindow; }
+
 	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// とりあえず内部用。言語バインダのことは後で。
 	CoreObject* CreateObject(const String& typeFullName);
 
@@ -102,7 +105,7 @@ private:
 	UIElement*							m_focusElement;
 	UIElement*							m_mouseHoverElement;		///< 現在マウス位置にある UIElement
 	UIElement*							m_capturedElement;			///< 現在キャプチャ中の UIElement
-	RefPtr<Platform::Window>			m_mainWindow;
+	RefPtr<Platform::Window>			m_mainWindow;		// TODO: Context
 	Array<AnimationClock*>				m_activeAnimationClockList;	///< TODO: インデックススタックを使ったリストにしたい
 
 	ObjectFactoryMap					m_objectFactoryMap;

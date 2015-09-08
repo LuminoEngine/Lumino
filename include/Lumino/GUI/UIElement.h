@@ -155,7 +155,7 @@ public:
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(MouseEventArgs,		KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(MouseEventArgs,		KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(KeyEventArgs,		CharInputEvent);				/**< CharInput ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(KeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
 
 	LN_ROUTED_EVENT(RoutedEventArgs,	CanExecuteRoutedCommandEvent);	/**< このイベントは内部用 */
 	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< このイベントは内部用 */
@@ -172,7 +172,7 @@ public:
 	RoutedEventSlot<MouseEventArgs>		MouseUp;		/**< マウスポインタがこの要素上にあるときに任意のマウスボタンが離されると発生します。*/
 	RoutedEventSlot<KeyEventArgs>		KeyDown;		/**< この要素がフォーカスを持っている時にキーボードのキーが押されると発生します。*/
 	RoutedEventSlot<KeyEventArgs>		KeyUp;			/**< この要素がフォーカスを持っている時にキーボードのキーが離されると発生します。*/
-	RoutedEventSlot<KeyEventArgs>		CharInput;		/**< キー走査により文字が入力されると発生します。*/
+	RoutedEventSlot<KeyEventArgs>		TextInput;		/**< キー操作により文字が入力されると発生します。*/
 
 	/** @} */
 	//-------------------------------------------------------------------------
@@ -493,7 +493,7 @@ protected:
 	virtual void OnMouseLeave(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseLeaveEvent, this, e); } }
 	virtual void OnKeyDown(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(KeyDownEvent, this, e); } }
 	virtual void OnKeyUp(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(KeyUpEvent, this, e); } }
-	virtual void OnCharInput(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(CharInputEvent, this, e); } }
+	virtual void OnTextInput(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(TextInputEvent, this, e); } }
 
 
 	friend class GUIHelper;

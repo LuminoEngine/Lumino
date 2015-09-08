@@ -44,6 +44,7 @@ class AnimationClock;
 class VisualState;
 class VisualStateGroup;
 
+class Command;
 
 typedef RefPtr<Style>					StylePtr;
 
@@ -115,6 +116,16 @@ LN_ENUM(CommonCursorImage)
 };
 LN_ENUM_REFLECTION(CommonCursorImage, Arrow)
 LN_ENUM_DECLARE(CommonCursorImage);
+
+/** 修飾キーを表します。*/
+LN_ENUM_FLAGS(ModifierKeys)
+{
+	None	= 0x00,		/**< 修飾キー無し */
+	Alt		= 0x01,		/**< Alt キー */
+	Control = 0x02,		/**< Control キー */
+	Shift	= 0x04,		/**< Shift キー */
+};
+LN_ENUM_FLAGS_DECLARE(ModifierKeys);
 
 
 class IAddChild

@@ -328,7 +328,7 @@ namespace BinderMaker
         /// </summary>
         public CLFuncDecl(
             IEnumerable<char> apiModifier,
-            string apiAtribute,
+            IEnumerable<string> apiAtribute,
             string returnType,
             string name,
             IEnumerable<CLParam> params1)
@@ -342,19 +342,6 @@ namespace BinderMaker
             else
                 Modifier = MethodModifier.Internal;
 
-            // 属性の決定
-            string attr = new string(apiAtribute.ToArray());
-            Attribute = MethodAttribute.None;
-            if (attr.Contains(CLManager.APIAttribute_Property))
-                Attribute = MethodAttribute.Property;
-            if (attr.Contains(CLManager.APIAttribute_Constructor))
-                Attribute = MethodAttribute.Constructor;
-            if (attr.Contains(CLManager.APIAttribute_LibraryInitializer))
-                Attribute = MethodAttribute.LibraryInitializer;
-            if (attr.Contains(CLManager.APIAttribute_LibraryTerminator))
-                Attribute = MethodAttribute.LibraryTerminator;
-            
-
             _originalReturnTypeName = returnType;
 
             OriginalFullName = name;
@@ -364,16 +351,32 @@ namespace BinderMaker
             Params = new List<CLParam>(params1);
             Params.ForEach((param) => param.OwnerFunc = this);  // 所持クラス割り当て
 
-            // オーバーロードチェック (_ や サフィックスの含まない名前を作る)
-            //string newName;
-            //IsOverload = Manager.RemoveOverloadSuffix(OriginalName, out newName);
-            //Name = newName;
             Name = OriginalName;
-            if (attr.Contains(CLManager.APIAttribute_Overload))
+
+            // 属性の決定
+            foreach (string attr in apiAtribute)
             {
-                string ovName = attr.Substring(CLManager.APIAttribute_Overload.Length).Replace("(", "").Replace(")", "").Trim();
-                var tokens2 = ovName.Trim().Split('_');
-                Name = tokens2[1];
+                //string attr = new string(apiAtribute.ToArray());
+                Attribute = MethodAttribute.None;
+                if (attr.Contains(CLManager.APIAttribute_Property))
+                    Attribute = MethodAttribute.Property;
+                if (attr.Contains(CLManager.APIAttribute_Constructor))
+                    Attribute = MethodAttribute.Constructor;
+                if (attr.Contains(CLManager.APIAttribute_LibraryInitializer))
+                    Attribute = MethodAttribute.LibraryInitializer;
+                if (attr.Contains(CLManager.APIAttribute_LibraryTerminator))
+                    Attribute = MethodAttribute.LibraryTerminator;
+
+                // オーバーロードチェック (_ や サフィックスの含まない名前を作る)
+                //string newName;
+                //IsOverload = Manager.RemoveOverloadSuffix(OriginalName, out newName);
+                //Name = newName;
+                if (attr.Contains(CLManager.APIAttribute_Overload))
+                {
+                    string ovName = attr.Substring(CLManager.APIAttribute_Overload.Length).Replace("(", "").Replace(")", "").Trim();
+                    var tokens2 = ovName.Trim().Split('_');
+                    Name = tokens2[1];
+                }
             }
 
             // 先頭が Create ならコンストラクタ関数

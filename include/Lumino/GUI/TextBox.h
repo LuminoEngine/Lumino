@@ -52,6 +52,9 @@ public:
 
 	void Select(int start, int length);
 
+	/** 現在の選択箇所にクリップボードの内容を貼り付けます。*/
+	void Paste();
+
 protected:
 	TextBox(GUIManager* manager);
 	virtual ~TextBox();
@@ -61,7 +64,8 @@ protected:
 private:
 	void set_Text(const String& string);
 	const String& get_Text() const;
-	void Handler_CharInput(KeyEventArgs* e);
+	void Handler_KeyDown(KeyEventArgs* e);
+	void Handler_TextInput(KeyEventArgs* e);
 
 private:
 	class Document;

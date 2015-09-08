@@ -248,12 +248,12 @@
 #const LN_DMINITMODE_THREAD_WAIT 2
 #const LN_DMINITMODE_THREAD_REQUEST 3
 
-// LNSoundPlayingType
-#const LN_SOUNDPLAYINGTYPE_UNKNOWN 0
-#const LN_SOUNDPLAYINGTYPE_AUTO 1
-#const LN_SOUNDPLAYINGTYPE_ONMEMORY 2
-#const LN_SOUNDPLAYINGTYPE_STREAMING 3
-#const LN_SOUNDPLAYINGTYPE_MIDI 4
+// LNSoundLoadingType
+#const LN_SOUNDLOADINGTYPE_UNKNOWN 0
+#const LN_SOUNDLOADINGTYPE_AUTO 1
+#const LN_SOUNDLOADINGTYPE_ONMEMORY 2
+#const LN_SOUNDLOADINGTYPE_STREAMING 3
+#const LN_SOUNDLOADINGTYPE_MIDI 4
 
 // LNSoundPlayingState
 #const LN_SOUNDPLAYINGSTATE_STOPPED 0
@@ -348,6 +348,12 @@
 #define LNObject_AddRef(%1) native_LNObject_AddRef %1
 #func native_LNObject_GetRefCount "LNObject_GetRefCount" int, var
 #define LNObject_GetRefCount(%1, %2) native_LNObject_GetRefCount %1, %2
+
+//LNote
+#func native_LNote_InitAudio "LNote_InitAudio" 
+#define LNote_InitAudio native_LNote_InitAudio 
+#func native_LNote_End "LNote_End" 
+#define LNote_End native_LNote_End 
 
 //LNApplication
 #func native_LNApplication_Initialize "LNApplication_Initialize" 
@@ -518,68 +524,20 @@
 //LNSoundListener
 #func native_LNSoundListener_SetPosition "LNSoundListener_SetPosition" var
 #define LNSoundListener_SetPosition(%1) native_LNSoundListener_SetPosition %1
-#func native_LNSoundListener_SetPositionXYZ "LNSoundListener_SetPositionXYZD" double, double, double
-#define LNSoundListener_SetPositionXYZ(%1, %2, %3) native_LNSoundListener_SetPositionXYZ %1, %2, %3
 #func native_LNSoundListener_SetDirection "LNSoundListener_SetDirection" var
 #define LNSoundListener_SetDirection(%1) native_LNSoundListener_SetDirection %1
-#func native_LNSoundListener_SetDirectionXYZ "LNSoundListener_SetDirectionXYZD" double, double, double
-#define LNSoundListener_SetDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetDirectionXYZ %1, %2, %3
 #func native_LNSoundListener_SetUpDirection "LNSoundListener_SetUpDirection" var
 #define LNSoundListener_SetUpDirection(%1) native_LNSoundListener_SetUpDirection %1
+#func native_LNSoundListener_SetPositionXYZ "LNSoundListener_SetPositionXYZD" double, double, double
+#define LNSoundListener_SetPositionXYZ(%1, %2, %3) native_LNSoundListener_SetPositionXYZ %1, %2, %3
+#func native_LNSoundListener_SetDirectionXYZ "LNSoundListener_SetDirectionXYZD" double, double, double
+#define LNSoundListener_SetDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetDirectionXYZ %1, %2, %3
 #func native_LNSoundListener_SetUpDirectionXYZ "LNSoundListener_SetUpDirectionXYZD" double, double, double
 #define LNSoundListener_SetUpDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetUpDirectionXYZ %1, %2, %3
 #func native_LNSoundListener_Velocity "LNSoundListener_Velocity" var
 #define LNSoundListener_Velocity(%1) native_LNSoundListener_Velocity %1
 #func native_LNSoundListener_VelocityXYZ "LNSoundListener_VelocityXYZD" double, double, double
 #define LNSoundListener_VelocityXYZ(%1, %2, %3) native_LNSoundListener_VelocityXYZ %1, %2, %3
-
-//LNSound
-#func native_LNSound_GetVolume "LNSound_GetVolume" int, var
-#define LNSound_GetVolume(%1, %2) native_LNSound_GetVolume %1, %2
-#func native_LNSound_SetVolume "LNSound_SetVolume" int, int
-#define LNSound_SetVolume(%1, %2) native_LNSound_SetVolume %1, %2
-#func native_LNSound_GetPitch "LNSound_GetPitch" int, var
-#define LNSound_GetPitch(%1, %2) native_LNSound_GetPitch %1, %2
-#func native_LNSound_SetPitch "LNSound_SetPitch" int, int
-#define LNSound_SetPitch(%1, %2) native_LNSound_SetPitch %1, %2
-#func native_LNSound_SetLoop "LNSound_SetLoop" int, int
-#define LNSound_SetLoop(%1, %2) native_LNSound_SetLoop %1, %2
-#func native_LNSound_IsLoop "LNSound_IsLoop" int, var
-#define LNSound_IsLoop(%1, %2) native_LNSound_IsLoop %1, %2
-#func native_LNSound_SetLoopRange "LNSound_SetLoopRange" int, int, int
-#define LNSound_SetLoopRange(%1, %2, %3) native_LNSound_SetLoopRange %1, %2, %3
-#func native_LNSound_GetPlayState "LNSound_GetPlayState" int, var
-#define LNSound_GetPlayState(%1, %2) native_LNSound_GetPlayState %1, %2
-#func native_LNSound_GetUnitsPlayed "LNSound_GetUnitsPlayed" int, var
-#define LNSound_GetUnitsPlayed(%1, %2) native_LNSound_GetUnitsPlayed %1, %2
-#func native_LNSound_GetTotalUnits "LNSound_GetTotalUnits" int, var
-#define LNSound_GetTotalUnits(%1, %2) native_LNSound_GetTotalUnits %1, %2
-#func native_LNSound_GetUnitsParSecond "LNSound_GetUnitsParSecond" int, var
-#define LNSound_GetUnitsParSecond(%1, %2) native_LNSound_GetUnitsParSecond %1, %2
-#func native_LNSound_Is3DSound "LNSound_Is3DSound" int, var
-#define LNSound_Is3DSound(%1, %2) native_LNSound_Is3DSound %1, %2
-#func native_LNSound_SetEmitterPosition "LNSound_SetEmitterPosition" int, var
-#define LNSound_SetEmitterPosition(%1, %2) native_LNSound_SetEmitterPosition %1, %2
-#func native_LNSound_SetEmitterPositionXYZ "LNSound_SetEmitterPositionXYZD" int, double, double, double
-#define LNSound_SetEmitterPositionXYZ(%1, %2, %3, %4) native_LNSound_SetEmitterPositionXYZ %1, %2, %3, %4
-#func native_LNSound_SetEmitterVelocity "LNSound_SetEmitterVelocity" int, var
-#define LNSound_SetEmitterVelocity(%1, %2) native_LNSound_SetEmitterVelocity %1, %2
-#func native_LNSound_SetEmitterVelocityXYZ "LNSound_SetEmitterVelocityXYZD" int, double, double, double
-#define LNSound_SetEmitterVelocityXYZ(%1, %2, %3, %4) native_LNSound_SetEmitterVelocityXYZ %1, %2, %3, %4
-#func native_LNSound_SetEmitterDistance "LNSound_SetEmitterDistanceD" int, double
-#define LNSound_SetEmitterDistance(%1, %2) native_LNSound_SetEmitterDistance %1, %2
-#func native_LNSound_Create "LNSound_Create" str, var
-#define LNSound_Create(%1, %2) native_LNSound_Create %1, %2
-#func native_LNSound_CreateMem "LNSound_CreateMem" int, int, var
-#define LNSound_CreateMem(%1, %2, %3) native_LNSound_CreateMem %1, %2, %3
-#func native_LNSound_Play "LNSound_Play" int
-#define LNSound_Play(%1) native_LNSound_Play %1
-#func native_LNSound_Stop "LNSound_Stop" int
-#define LNSound_Stop(%1) native_LNSound_Stop %1
-#func native_LNSound_Pause "LNSound_Pause" int, int
-#define LNSound_Pause(%1, %2) native_LNSound_Pause %1, %2
-#func native_LNSound_FadeVolume "LNSound_FadeVolume" int, int, int, int
-#define LNSound_FadeVolume(%1, %2, %3, %4) native_LNSound_FadeVolume %1, %2, %3, %4
 
 
 

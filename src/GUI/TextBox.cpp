@@ -12,6 +12,7 @@
 		・改行は1文字。\r\nも1文字。
 */
 #include "../Internal.h"
+#include <Lumino/Platform/Clipboard.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/TextBox.h>
@@ -131,6 +132,15 @@ public:
 			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, end - pos));
 			m_lineSegments.Add(line);
 		}
+	}
+
+	// UTF32文字数を返す
+	int Replace(const Selection* sel, const String& text)
+	{
+		const ByteBuffer& utf32 = m_TCharToUTF32Converter.Convert(text.GetCStr(), text.GetByteCount());
+		int len = utf32.GetSize() / sizeof(UTF32);
+		Replace(sel, (const UTF32*)utf32.GetConstData(), len);
+		return len;
 	}
 
 	void Replace(const Selection* sel, const UTF32* text, int len)
@@ -267,7 +277,8 @@ TextBox::TextBox(GUIManager* manager)
 	m_caretAnimation->AddKeyFrame(key);
 
 	// Register handler
-	LN_REGISTER_ROUTED_EVENT_HANDLER(TextBox, KeyEventArgs, UIElement::CharInputEvent, Handler_CharInput);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(TextBox, KeyEventArgs, UIElement::KeyDownEvent, Handler_KeyDown);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(TextBox, KeyEventArgs, UIElement::TextInputEvent, Handler_TextInput);
 }
 
 //-----------------------------------------------------------------------------
@@ -287,6 +298,16 @@ void TextBox::Select(int start, int length)
 {
 	m_selection->Start = start;
 	m_selection->Length = length;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBox::Paste()
+{
+	String text = Platform::Clipboard::GetText(m_manager->GetNativeWindow());
+	int len = m_document->Replace(m_selection, text);
+	Select(m_selection->Start += len, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -347,7 +368,25 @@ const String& TextBox::get_Text() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextBox::Handler_CharInput(KeyEventArgs* e)
+void TextBox::Handler_KeyDown(KeyEventArgs* e)
+{
+	/* TODO:
+		本来であれば、ショートカットは InputBinding を使って実現するべき。
+		ただ、現時点でショートカットが必要なコントロールは TextBox だけ。
+		Menu とかは直近では考えていない。
+		それなので、ショートカットの検出もとりあえずここでやってしまう。
+	*/
+	if (e->KeyCode == Key_V && e->IsControl)
+	{
+		Paste();
+		e->Handled = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBox::Handler_TextInput(KeyEventArgs* e)
 {
 	UTF32 buf[1] = { e->Char };
 	m_document->Replace(m_selection, buf, 1);
