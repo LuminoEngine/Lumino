@@ -128,24 +128,24 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SoundPlayType AudioUtils::CheckAudioPlayType(SoundPlayType type, AudioStream* audioStream, uint32_t limitSize)
+SoundLoadingType AudioUtils::CheckAudioPlayType(SoundLoadingType type, AudioStream* audioStream, uint32_t limitSize)
 {
 	// 作成するオーディオプレイヤーの種類を決めていく
 	if (audioStream->GetDecoder()->GetSourceFormat() == StreamFormat_Midi)
 	{
-		type = SoundPlayType_Midi;
+		type = SoundLoadingType::Midi;
 	}
 	else
 	{
-		if (type == SoundPlayType_Unknown)
+		if (type == SoundLoadingType::Unknown)
 		{
 			if (audioStream->GetDecoder()->GetOnmemoryPCMBufferSize() > limitSize)
 			{
-				type = SoundPlayType_Streaming;
+				type = SoundLoadingType::Streaming;
 			}
 			else
 			{
-				type = SoundPlayType_OnMemory;
+				type = SoundLoadingType::OnMemory;
 			}
 		}
 	}

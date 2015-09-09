@@ -35,7 +35,7 @@ Sound::Sound(AudioManager* manager, AudioStream* stream/*, SoundPlayType playerT
 	: m_manager(manager)
 	, m_audioStream(stream)
 	, m_audioPlayer(NULL)
-	, m_playerType(SoundPlayType_Unknown)
+	, m_loadingType(SoundLoadingType::Unknown)
 	, m_volume(100)
 	, m_pitch(100)
 	, m_loopEnabled(false)
@@ -46,6 +46,10 @@ Sound::Sound(AudioManager* manager, AudioStream* stream/*, SoundPlayType playerT
 	, m_velocity(0, 0, 0)
 	, m_maxDistance(0)
 	, m_playState(SoundPlayState_Stopped)
+	, m_gameAudioFlags(0)
+	, m_fadeValue()
+	, m_fadeBehavior(SoundFadeBehavior::Continue)
+	, m_fading(false)
 	/*
 	, mOrginalVolume(100)
 	, mFadeState(SoundFadeState_NotFading)
@@ -72,6 +76,7 @@ Sound::~Sound()
 //-----------------------------------------------------------------------------
 void Sound::SetVolume(int volume)
 {
+	Threading::MutexScopedLock lock(m_mutex);
 	m_volume = volume;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->SetVolume(m_volume);
@@ -142,6 +147,7 @@ bool Sound::IsLoop() const
 //-----------------------------------------------------------------------------
 void Sound::Play()
 {
+	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayState_Playing;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->play();
@@ -153,6 +159,7 @@ void Sound::Play()
 //-----------------------------------------------------------------------------
 void Sound::Stop()
 {
+	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayState_Stopped;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->play();
@@ -164,6 +171,7 @@ void Sound::Stop()
 //-----------------------------------------------------------------------------
 void Sound::Pause()
 {
+	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayState_Pausing;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->pause(true);
@@ -175,6 +183,7 @@ void Sound::Pause()
 //-----------------------------------------------------------------------------
 void Sound::Resume()
 {
+	Threading::MutexScopedLock lock(m_mutex);
 	if (m_playState == SoundPlayState_Pausing)
 	{
 		m_playState = SoundPlayState_Playing;
@@ -202,10 +211,20 @@ void Sound::Resume()
 //	mIsFading = true;
 //}
 //
+
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Sound::Is3DSound() const
+void Sound::Set3DEnabled(bool enabled)
+{
+	m_is3DSound = enabled;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool Sound::Is3DEnabled() const
 {
 	return m_is3DSound;
 }
@@ -259,6 +278,40 @@ void Sound::SetMaxDistance(float distance)
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Sound::SetLoadingType(SoundLoadingType type)
+{
+	m_loadingType = type;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SoundLoadingType Sound::GetLoadingType() const
+{
+	return m_loadingType;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Sound::FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior)
+{
+	// 即時更新
+	if (time <= 0) {
+		SetVolume(targetVolume);
+	}
+
+	Threading::MutexScopedLock lock(m_mutex);
+
+	// 現在の音量から volume_ へのフェード
+	m_fadeValue.Start(static_cast<float>(GetVolume()), targetVolume, time);
+	m_fadeBehavior = behavior;
+	m_fading = true;
+}
+
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
@@ -285,7 +338,7 @@ void Sound::Polling(float elapsedTime)
 	// stream が準備できていれば Player を作成する
 	if (m_audioPlayer == NULL && m_audioStream->CheckCreated())
 	{
-		m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_playerType, m_is3DSound);
+		m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_loadingType, m_is3DSound);
 		m_audioPlayer->SetVolume(m_volume);
 		m_audioPlayer->SetPitch(m_pitch);
 		m_audioPlayer->loop(m_loopEnabled);
@@ -313,52 +366,57 @@ void Sound::Polling(float elapsedTime)
 		m_audioPlayer->polling();
 	}
 
+	Threading::MutexScopedLock lock(m_mutex);
 
-	//Threading::ScopedLock lock( mLock );
- //   bool r = m_audioPlayer->polling();
+    // フェード中の場合
+	if (m_fading)
+	{
+		m_fadeValue.AdvanceTime(elapsedTime);
 
- //   // フェード中の場合
-	//if ( mIsFading )
-	//{
-	//	mFadeValue.advanceTime( elapsedTime );
-	//		
-	//	m_audioPlayer->setVolume( mFadeValue.getValue() );
+		if (m_audioPlayer != NULL) {
+			m_audioPlayer->SetVolume(m_fadeValue.GetValue());
+		}
 
-	//	// フェード完了
-	//	if ( mFadeValue.isFinished() )
-	//	{
-	//		mIsFading = false; 
+		// フェード完了
+		if (m_fadeValue.IsFinished())
+		{
+			m_fading = false;
 
-	//		// フェード終了時の動作によって分岐
-	//		switch ( mFadeState )
-	//		{
-	//			// 継続する場合
-	//			case SOUNDFADE_CONTINUE:
-	//				break;
-	//			// 停止する場合
-	//			case SOUNDFADE_STOP:
-	//				m_audioPlayer->stop();
-	//				break;
-	//			// 一時停止する場合
-	//			case SOUNDFADE_PAUSE:
-	//				m_audioPlayer->pause( true );
-	//				break;
-	//			// 停止して音量を戻す場合
-	//			case SOUNDFADE_STOP_RESET:
-	//				m_audioPlayer->stop();
-	//				m_audioPlayer->setVolume( mFadeValue.getStartValue() );
-	//				break;
-	//			// 一時停止して音量を戻す場合
-	//			case SOUNDFADE_PAUSE_RESET:
-	//				m_audioPlayer->pause( true );
-	//				m_audioPlayer->setVolume( mFadeValue.getStartValue() );
-	//				break;
-	//		}
-	//		mFadeState = SoundFadeState_NotFading;
-	//	}
-	//}
+			// フェード終了時の動作によって分岐
+			switch (m_fadeBehavior)
+			{
+			// 継続する場合
+			case SoundFadeBehavior::Continue:
+				break;
+			// 停止する場合
+			case SoundFadeBehavior::Stop:
+			case SoundFadeBehavior::StopReset:
+				if (m_audioPlayer != NULL) {
+					m_audioPlayer->stop();
+				}
+				m_playState = SoundPlayState_Stopped;
+				break;
+			// 一時停止する場合
+			case SoundFadeBehavior::Pause:
+			case SoundFadeBehavior::PauseReset:
+				if (m_audioPlayer != NULL) {
+					m_audioPlayer->pause(true);
+				}
+				m_playState = SoundPlayState_Pausing;
+				break;
+			}
 
-    //return r;
+			// 音量を元に戻す
+			if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
+			{
+				if (m_audioPlayer != NULL) {
+					m_audioPlayer->SetVolume(m_fadeValue.GetStartValue());
+				}
+				m_volume = m_fadeValue.GetStartValue();	// SetVolume() を呼ぶとデッドロックするのでここでセット
+
+			}
+		}
+	}
 }
 
 } // namespace Audio

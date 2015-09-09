@@ -127,6 +127,8 @@ int main()
 		//RefPtr<Audio::Sound> sound1(Audio::Sound::Create(_T("D:/Proj/Lumino.Audio/test/UnitTest/Audio/TestData/ln21.mid")));
 		//sound1->SetLoopEnabled(true);
 		//sound1->SetPitch(110);
+		//sound1->SetVolume(0);
+		//sound1->FadeVolume(100, 10, Audio::SoundFadeBehavior::Continue);
 		//sound1->Play();
 
 		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));

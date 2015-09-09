@@ -64,7 +64,7 @@ private:
 	friend class Sound;
 	AudioStream* CreateAudioStream(const TCHAR* filePath);
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key);
-	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayType type, bool enable3D);		// ‰Šú‰»Š®—¹Ï‚İ‚Ì AudioStream ‚ğ“n‚·‚±‚Æ
+	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundLoadingType type, bool enable3D);		// ‰Šú‰»Š®—¹Ï‚İ‚Ì AudioStream ‚ğ“n‚·‚±‚Æ
 	Sound* CreateSound(Stream* stream, const CacheKey& key);
 
 

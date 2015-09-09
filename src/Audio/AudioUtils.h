@@ -35,7 +35,7 @@ public:
 	static StreamFormat CheckFormat(Stream* stream);
 	
 	/// óvãÅÇµÇƒÇ¢ÇÈ type Ç∆ AudioStream Ç©ÇÁê≥ÇµÇ¢ type Çï‘Ç∑
-	static SoundPlayType CheckAudioPlayType(SoundPlayType type, AudioStream* audioStream, uint32_t limitSize);
+	static SoundLoadingType CheckAudioPlayType(SoundLoadingType type, AudioStream* audioStream, uint32_t limitSize);
 };
 
 } // namespace Audio

@@ -78,7 +78,7 @@ public:
 	void CalcEmitterState(EmitterState* emitter);
 
 public:
-	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayType type);
+	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundLoadingType type);
     virtual void Update();
     virtual void SetListenerState( const Vector3& position, const Vector3& front );
     virtual void SetMetreUnitDistance( float d ) { mMetreUnitDistanceInv = 1.0f / d; }

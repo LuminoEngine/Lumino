@@ -4,6 +4,7 @@
 #pragma once
 
 #include <Lumino/Math/Vector3.h>
+#include "../Animation/EasingValue.h"
 #include "../CoreObject.h"
 #include "Common.h"
 
@@ -93,9 +94,15 @@ public:
 	void Resume();
 
 	/**
+		@brief		サウンドを 3D 音源として再生するかを設定します。(規定値:false)
+		@details	設定は Play() の前に行う必要があります。
+	*/
+	void Set3DEnabled(bool enabled);
+
+	/**
 		@brief		この音声が 3D 音声であるかを確認します。
 	*/
-	bool Is3DSound() const;
+	bool Is3DEnabled() const;
 
 	/**
 		@brief		3D 音声としての位置を設定します。
@@ -143,27 +150,26 @@ public:
 	/**
 		@brief		この音声の現在の再生状態を取得します。
 	*/
-	SoundPlayState GetSoundPlayState() const;
+	SoundPlayState GetSoundPlayState() const;	// TODO: Playing
 
+	/**
+		@brief		音声データの読み込み方法を設定します。(規定値:Unknown)
+		@details	設定は Play() の前に行う必要があります。
+	*/
+	void SetLoadingType(SoundLoadingType type);
+	
+	/**
+		@brief		音声データの読み込み方法を取得します。
+	*/
+	SoundLoadingType GetLoadingType() const;
 
-	///// 音量のフェード
-	//void fadeVolume( int targetVolume, int time, SoundFadeState state );
-
-	///// 音量フェード状態の取得
-	//SoundFadeState getFadeState() const { return mFadeState; }
-
-
-	///// グループの設定 (ビットフラグ)
-	//void setGroupFlag( lnU32 flag );
-
-	///// グループの取得
- //   lnU32 getGroupFlag();
-
-	///// 内部に持っている音声再生クラスの取得
- //   AudioPlayerBase* getAudioPlayer() { return mAudioPlayer; }
-
-	///// フェード状態の更新
- //   bool update( float elapsedTime );
+	/**
+		@brief		音量の音量のフェードを開始します。
+		@param[in]	targetVolume	: フェード先音量
+		@param[in]	time			: 変化にかける時間 (秒)
+		@param[in]	state			: 音量フェード完了時の動作
+	*/
+	void FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior);
 
 public:
 	Sound(AudioManager* manager, AudioStream* stream);
@@ -172,9 +178,10 @@ public:
 
 private:
 	AudioManager*				m_manager;
+	Threading::Mutex			m_mutex;
 	AudioStream*				m_audioStream;
     AudioPlayer*				m_audioPlayer;
-	SoundPlayType				m_playerType;
+	SoundLoadingType			m_loadingType;
 
 	int							m_volume;
 	int							m_pitch;
@@ -187,6 +194,14 @@ private:
 	float						m_maxDistance;
 	SoundPlayState				m_playState;
 
+	uint32_t					m_gameAudioFlags;
+
+	EasingValue<float, double>	m_fadeValue;
+	SoundFadeBehavior			m_fadeBehavior;
+	bool						m_fading;
+
+	
+
     //int 						mOrginalVolume;	        ///< setVolume() で設定される、元の音量
     //SoundFadeState				mFadeState;
     //Animation::FadeValue<int>	mFadeValue;
@@ -195,6 +210,7 @@ private:
     //lnU32						mGroupFlags;
     //bool						mIsFading;		        ///< フェードイン、またはフェードアウト中フラグ (TODO: 削除予定)
     //bool						mOnlyRefFromManager;    ///< Manager::deleteAudioPlayer() から操作される
+	friend class AudioHelper;
 };
 
 } // namespace Audio

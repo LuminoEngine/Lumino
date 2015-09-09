@@ -50,11 +50,11 @@ void DirectMusicAudioDevice::Initialize( const ConfigData& configData )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioPlayer* DirectMusicAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayType type)
+AudioPlayer* DirectMusicAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable3d, SoundLoadingType type)
 {
 	RefPtr<DirectMusicAudioPlayer> audioPlayer;
 
-	if (type == SoundPlayType_Midi)
+	if (type == SoundLoadingType::Midi)
     {
 		LN_THROW(DirectMusicManager::GetInstance(), InvalidOperationException);
 		audioPlayer.Attach(LN_NEW DirectMusicAudioPlayer(this), false);

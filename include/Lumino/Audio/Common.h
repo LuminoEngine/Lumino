@@ -49,15 +49,15 @@ enum DirectMusicInitMode
 };
 
 /// 再生方法 (Player の種類)
-enum SoundPlayType
+enum class SoundLoadingType
 {
-	SoundPlayType_Unknown = 0,		///< 不明な再生方法 (自動選択)
+	Unknown = 0,		///< 不明な再生方法 (自動選択)	TODO: 名前を Auto にする
 	//SoundPlayType_Auto,				///< 自動選択 ( デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります )
-	SoundPlayType_OnMemory,			///< オンメモリ
-	SoundPlayType_Streaming,	    ///< ストリーミング
-	SoundPlayType_Midi,  			///< SMF
+	OnMemory,			///< オンメモリ
+	Streaming,	    ///< ストリーミング
+	Midi,  			///< SMF
 
-	SoundPlayType_Max,
+	TERMINATOR,
 };
 
 /// 音声の再生状態
@@ -68,6 +68,18 @@ enum SoundPlayState
 	SoundPlayState_Pausing,			///< 一時停止中
 
 	SoundPlayState_Max,
+};
+
+/** 音量フェード完了時の動作を表します。*/
+enum class SoundFadeBehavior
+{
+	Continue = 0,		/** 再生を継続する */
+	Stop,				/** 停止する */
+	StopReset,			/** 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+	Pause,				/** 一時停止する */
+	PauseReset,			/** 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+
+	TERMINATOR,
 };
 
 /// 3D サウンドリスナー

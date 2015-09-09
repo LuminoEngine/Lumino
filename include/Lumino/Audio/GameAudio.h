@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <list>
 
 namespace Lumino
 {
@@ -47,7 +48,7 @@ public:
 	void PlaySE(const TCHAR* filePath, int volume = 100, int pitch = 100);
 
 	/// SE を 3D 空間上で演奏する
-	void PlaySE(const TCHAR* filePath, const Vector3& position, float distance, int volume = 100, int pitch = 100);
+	void PlaySE3D(const TCHAR* filePath, const Vector3& position, float distance, int volume = 100, int pitch = 100);
 
 	/// 指定された Sound を SE として演奏する
 	void PlaySEFromSound(Sound* sound, int volume = 100, int pitch = 100);
@@ -80,7 +81,8 @@ private:
 	void PushReleaseAtPlayEndList(Sound* sound);
 
 private:
-	typedef Array<Sound*>	ReleaseAtPlayEndList;
+	typedef std::list<Sound*>	ReleaseAtPlayEndList;
+	typedef std::list<Sound*>	SoundList;
 
 	AudioManager*				mManager;
 	Threading::Mutex			mLock;

@@ -3,11 +3,17 @@
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Audio/Sound.h>
 #include <Lumino/Audio/GameAudio.h>
+#include "AudioHelper.h"
 
 namespace Lumino
 {
 namespace Audio
 {
+
+enum GameAudioFlags
+{
+	GameAudioFlags_SE = 0x01,
+};
 
 //=============================================================================
 // GameAudio
@@ -50,7 +56,7 @@ GameAudio::~GameAudio()
 	{
 		(*itr)->Release();
 	}
-	mReleaseAtPlayEndList.Clear();
+	mReleaseAtPlayEndList.clear();
 
 	LN_SAFE_RELEASE(mBGM);
 	LN_SAFE_RELEASE(mBGS);
@@ -107,7 +113,6 @@ void GameAudio::PlayBGMFromSound( Sound* sound, int volume, int pitch, int fadeT
 
 		mBGM->SetPitch( pitch );
 		mBGM->SetLoopEnabled( true );
-		mBGM->setGroupFlag( AUDIOPLAYER_GROUP_BGM );
 
 		mBGMVolume = volume;
 		mBGMPitch  = pitch;
@@ -142,7 +147,7 @@ void GameAudio::PlayBGMFromSound( Sound* sound, int volume, int pitch, int fadeT
 		else
 		{
 			mBGM->Play();
-			mBGM->Pause( true );
+			mBGM->Pause();
 		}
 	}
 
@@ -204,8 +209,7 @@ void GameAudio::PlayBGS( const TCHAR* filePath, int volume, int pitch, int fadeT
 	//	}
 	//}
 
-	RefPtr<Sound> sound(
-		mManager->createSound( filePath, SOUNDPLAYTYPE_STREAMING, false ) );
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
 
 	PlayBGSFromSound( sound, volume, pitch, fadeTime );
 		
@@ -230,14 +234,13 @@ void GameAudio::PlayBGSFromSound( Sound* sound, int volume, int pitch, int fadeT
 	RefPtr<Sound> prev_bgs( mBGS, false );
 
 	{
-		Threading::MutexScopedLock lock( *mLock );
+		Threading::MutexScopedLock lock(mLock);
 
 		mBGS = sound;
 		LN_SAFE_ADDREF( mBGS );
 
 		mBGS->SetPitch( pitch );
 		mBGS->SetLoopEnabled( true );
-		mBGS->setGroupFlag( AUDIOPLAYER_GROUP_BGS );
 
 		mBGSVolume = volume;
 		mBGSPitch  = pitch;
@@ -302,9 +305,7 @@ void GameAudio::StopBGS( int fadeTime )
 //-----------------------------------------------------------------------------
 void GameAudio::PlayME( const TCHAR* filePath, int volume, int pitch )
 {	   
-	RefPtr<Sound> sound(
-		mManager->createSound( filePath, SOUNDPLAYTYPE_AUTO, false ) );
-
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
 	PlayMEFromSound( sound, volume, pitch );
 }
 
@@ -321,7 +322,6 @@ void GameAudio::PlayMEFromSound( Sound* sound, int volume, int pitch )
 	mME->SetVolume( volume );
 	mME->SetPitch( pitch );
 	mME->SetLoopEnabled( false );
-	mME->setGroupFlag( 0 );
 
 	bool flag = false;  // BGM があり、再生されているかを示すフラグ
 
@@ -379,7 +379,7 @@ void GameAudio::StopME()
 			if (state == SoundPlayState_Playing)
 			{
 				mBGM->FadeVolume( mBGMVolume, mBGMFadeInTime, SOUNDFADE_CONTINUE );
-				mBGM->Pause( false );
+				mBGM->Resume;
 			}
 		}
 
@@ -392,18 +392,16 @@ void GameAudio::StopME()
 //-----------------------------------------------------------------------------
 void GameAudio::PlaySE( const TCHAR* filePath, int volume, int pitch )
 {
-	RefPtr<Sound> sound(
-		mManager->createSound( filePath, SOUNDPLAYTYPE_ONMEMORY, false ) );
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	sound->SetLoadingType(SoundLoadingType::OnMemory);
 
 	// ボリューム・ピッチ設定
 	sound->SetVolume( volume );
 	sound->SetPitch( pitch );
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	sound->setGroupFlag( AUDIOPLAYER_GROUP_SE );
+	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
 	PushReleaseAtPlayEndList( sound );
-
-	sound->setGroupFlag( AUDIOPLAYER_GROUP_SE );
 
 	// 再生
 	sound->SetLoopEnabled( false );
@@ -413,11 +411,12 @@ void GameAudio::PlaySE( const TCHAR* filePath, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlaySE( const TCHAR* filePath, const LVector3& position, float distance, int volume, int pitch )
+void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float distance, int volume, int pitch )
 {
 	// サウンド作成
-	RefPtr<Sound> sound(
-		mManager->createSound( filePath, SOUNDPLAYTYPE_ONMEMORY, true ) );
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	sound->SetLoadingType(SoundLoadingType::OnMemory);
+	sound->Set3DEnabled(true);
 
 	// 位置・ボリューム・ピッチ設定
 	sound->SetPosition( position );
@@ -426,7 +425,7 @@ void GameAudio::PlaySE( const TCHAR* filePath, const LVector3& position, float d
 	sound->SetPitch( pitch );
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	sound->setGroupFlag( AUDIOPLAYER_GROUP_SE );
+	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
 	PushReleaseAtPlayEndList( sound );
 		
 	// 再生
@@ -440,22 +439,20 @@ void GameAudio::PlaySE( const TCHAR* filePath, const LVector3& position, float d
 void GameAudio::PlaySEFromSound( Sound* srcSound, int volume, int pitch )
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
-	RefPtr<Sound> sound(
-		mManager->createSound(
-			srcSound->getAudioPlayer()->getAudioSource(),
-			SOUNDPLAYTYPE_ONMEMORY,
-			srcSound->is3DSound() ) );
+	RefPtr<Sound> sound(AudioHelper::CreateSound(mManager, AudioHelper::GetAudioStream(srcSound)));
+	sound->SetLoadingType(SoundLoadingType::OnMemory);
+	sound->Set3DEnabled(srcSound->Is3DEnabled());
 
 	// 位置・ボリューム・ピッチ設定
 	sound->SetVolume( volume );
 	sound->SetPitch( pitch );
-	if ( srcSound->is3DSound() )
+	if (srcSound->Is3DEnabled())
 	{
-		sound->setPosition( srcSound->getPosition() );
+		sound->SetPosition( srcSound->GetPosition() );
 	}
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	sound->setGroupFlag( AUDIOPLAYER_GROUP_SE );
+	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
 	PushReleaseAtPlayEndList( sound );
 		
 	// 再生
@@ -468,7 +465,15 @@ void GameAudio::PlaySEFromSound( Sound* srcSound, int volume, int pitch )
 //-----------------------------------------------------------------------------
 void GameAudio::StopSE()
 {
-	mManager->stopGroup( AUDIOPLAYER_GROUP_SE );
+	ReleaseAtPlayEndList::iterator itr = mReleaseAtPlayEndList.begin();
+	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
+	for (; itr != end;)
+	{
+		if (AudioHelper::GetGameAudioFlags(*itr) & GameAudioFlags_SE)
+		{
+			(*itr)->Stop();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -567,7 +572,7 @@ void GameAudio::Polling()
 					if ( mBGM )
 					{
 						mBGM->FadeVolume( mBGMVolume, mBGMFadeInTime, SOUNDFADE_CONTINUE );
-						mBGM->Pause( false );
+						mBGM->Resume();
 					}
 					LN_SAFE_RELEASE( mME );
 					mMEPlaying = false;
@@ -614,7 +619,7 @@ void GameAudio::PushReleaseAtPlayEndList( Sound* sound )
 	if ( sound )
 	{
 		Threading::MutexScopedLock lock( mLock );
-		mReleaseAtPlayEndList.Add( sound );
+		mReleaseAtPlayEndList.push_back( sound );
 		LN_SAFE_ADDREF( sound );
 	}
 }

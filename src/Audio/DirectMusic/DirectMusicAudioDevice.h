@@ -26,7 +26,7 @@ public:
 
 public:
     void Initialize( const ConfigData& configData );
-	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayType type);
+	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundLoadingType type);
 	virtual void Update();
 	virtual void SetMetreUnitDistance(float d);
 };

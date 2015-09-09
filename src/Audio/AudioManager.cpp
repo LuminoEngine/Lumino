@@ -167,13 +167,13 @@ AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayType type, bool enable3D)
+AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundLoadingType type, bool enable3D)
 {
 	// 再生方法の選択
-	SoundPlayType playerType = AudioUtils::CheckAudioPlayType(type, stream, mOnMemoryLimitSize);
+	SoundLoadingType playerType = AudioUtils::CheckAudioPlayType(type, stream, mOnMemoryLimitSize);
 
 	// 作成
-	if (playerType == SoundPlayType_Midi) {
+	if (playerType == SoundLoadingType::Midi) {
 		return m_midiAudioDevice->CreateAudioPlayer(stream, enable3D, playerType);
 	}
 	else {
@@ -213,11 +213,13 @@ void AudioManager::Thread_Polling()
 		Threading::Thread::Sleep(10);	// CPU 負荷 100% を避けるため、とりあえず 10ms 待つ
 
 		// 経過時間を求めて全 Sound 更新
-		float elapsedTime = static_cast<float>(Environment::GetTickCount() - lastTime) / 1000.0f;
+		uint64_t curTime = Environment::GetTickCount();
+		float elapsedTime = static_cast<float>(curTime - lastTime) / 1000.0f;
 		LN_FOREACH(Sound* sound, m_soundList)
 		{
 			sound->Polling(elapsedTime);
 		}
+		lastTime = curTime;
 
 		// ここからロック
 		Threading::MutexScopedLock lock(m_soundListMutex);
