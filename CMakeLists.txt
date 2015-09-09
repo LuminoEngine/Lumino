@@ -493,62 +493,8 @@ endif()
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
-	#------------------------------------------------------
-	# Make static lib name.
-	#	{ProjectName}_{msvcVer}{Arch}_static_{Runtime}
-	#	e.g)	LuminoMath_msvc120x86_static_MTd.lib
-	if (MSVC_VERSION EQUAL 1400)
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_msvc80")
-	elseif (MSVC_VERSION EQUAL 1500)
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_msvc90")
-	elseif (MSVC_VERSION EQUAL 1600)
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_msvc100")
-	elseif (MSVC_VERSION EQUAL 1700)
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_msvc110")
-	elseif (MSVC_VERSION EQUAL 1800)
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_msvc120")
-	endif()
-	
-	# Architecture.
-	# http://stackoverflow.com/questions/5334095/cmake-multiarchitecture-compilation
-	if (${CMAKE_EXE_LINKER_FLAGS} MATCHES "/machine:x64")	# /machine:x64 
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}x64")
-	else()
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}x86")
-	endif()
-	
-	# Unicode.
-	if (${LN_USE_UNICODE_CHAR_SET})
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}u")
-	endif()
-	
-	set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_static")
-	
-	# MSVC Runtime library.
-	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_MT")
-		# Overwrite options.
-		foreach (flag
-			CMAKE_C_FLAGS
-			CMAKE_C_FLAGS_DEBUG
-			CMAKE_C_FLAGS_RELEASE
-			CMAKE_CXX_FLAGS
-			CMAKE_CXX_FLAGS_DEBUG
-			CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	else()
-		set(LN_LIB_POSTFIX "${LN_LIB_POSTFIX}_MD")
-	endif()
 	set(CMAKE_DEBUG_POSTFIX "d")
-	# end   Make static lib name.
-	#------------------------------------------------------
-
+	
 	# platform include dirs.
 	set(LN_PLATFORM_INCLUDE_DIRS "$ENV{DXSDK_DIR}Include")
 	
@@ -606,22 +552,26 @@ endif()
 
 #------------------------------
 # external deps.
+add_subdirectory(external/Lumino.Core)
+add_subdirectory(external/Lumino.Math)
+
+# Make postfix.
+ln_make_postfix(LN_LIB_POSTFIX)
+
 add_subdirectory(external/zlib)
 add_subdirectory(external/libpng)
 add_subdirectory(external/bullet-2.82)
 add_subdirectory(external/freetype-2.6)
 add_subdirectory(external/libogg)
 add_subdirectory(external/libvorbis)
-add_subdirectory(external/Lumino.Core)
-add_subdirectory(external/Lumino.Math)
+link_libraries(LuminoCore_Static)
+link_libraries(LuminoMath_Static)
 link_libraries(zlib)
 link_libraries(libpng)
 link_libraries(bullet)
 link_libraries(freetype)
 link_libraries(libogg)
 link_libraries(libvorbis)
-link_libraries(LuminoCore_Static)
-link_libraries(LuminoMath_Static)
 
 #------------------------------
 # Static library.
