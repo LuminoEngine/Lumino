@@ -63,6 +63,7 @@ set(LN_SOURCES_Platform
 	include/Lumino/Platform/Clipboard.h
 	include/Lumino/Platform/EventArgs.h
 	include/Lumino/Platform/EventListener.h
+	include/Lumino/Platform/Ime.h
 	include/Lumino/Platform/PlatformManager.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/Window.h
@@ -77,6 +78,7 @@ set(LN_SOURCES_Audio
 	include/LuminoAudio.h
 	include/Lumino/Audio/AudioManager.h
 	include/Lumino/Audio/Common.h
+	include/Lumino/Audio/GameAudio.h
 	include/Lumino/Audio/Sound.h
 	src/Audio/AudioDevice.cpp
 	src/Audio/AudioDevice.h
@@ -87,6 +89,7 @@ set(LN_SOURCES_Audio
 	src/Audio/AudioStream.h
 	src/Audio/AudioUtils.cpp
 	src/Audio/AudioUtils.h
+	src/Audio/GameAudio.cpp
 	src/Audio/Internal.h
 	src/Audio/MidiDecoder.cpp
 	src/Audio/MidiDecoder.h
@@ -384,6 +387,7 @@ if (WIN32)
 	set(LN_SOURCES_Platform
 		${LN_SOURCES_Platform}
 		src/Platform/Win32/Clipboard_Win32.cpp
+		src/Platform/Win32/Ime_Win32.cpp
 		src/Platform/Win32/PlatformSupport_Win32.cpp
 		src/Platform/Win32/Win32Window.cpp
 		src/Platform/Win32/Win32Window.h
