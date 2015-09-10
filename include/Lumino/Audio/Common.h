@@ -60,24 +60,24 @@ enum class SoundLoadingType
 	TERMINATOR,
 };
 
-/// 音声の再生状態
-enum SoundPlayState
+/** 音声の再生状態を表します。*/
+enum class SoundPlayingState
 {
-	SoundPlayState_Stopped = 0,		///< 停止中
-	SoundPlayState_Playing,			///< 再生中
-	SoundPlayState_Pausing,			///< 一時停止中
+	Stopped = 0,		/**< 停止中 */
+	Playing,			/**< 再生中 */
+	Pausing,			/**< 一時停止中 */
 
-	SoundPlayState_Max,
+	TERMINATOR,
 };
 
 /** 音量フェード完了時の動作を表します。*/
 enum class SoundFadeBehavior
 {
-	Continue = 0,		/** 再生を継続する */
-	Stop,				/** 停止する */
-	StopReset,			/** 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
-	Pause,				/** 一時停止する */
-	PauseReset,			/** 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+	Continue = 0,		/**< 再生を継続する */
+	Stop,				/**< 停止する */
+	StopReset,			/**< 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
+	Pause,				/**< 一時停止する */
+	PauseReset,			/**< 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
 
 	TERMINATOR,
 };

@@ -18,7 +18,7 @@ namespace Platform
 //-----------------------------------------------------------------------------
 void Clipboard::SetText(Window* window, const String& text)
 {
-	ByteBuffer wideStr = text.ConvertTo(Text::Encoding::GetWideCharEncoding());
+	ByteBuffer wideStr = text.ConvertTo(Encoding::GetWideCharEncoding());
 	int wideCount = (wideStr.GetSize() + 1) * sizeof(WCHAR);
 
 	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
@@ -71,7 +71,7 @@ String Clipboard::GetText(Window* window)
 	String str;
 	try
 	{
-		str.ConvertFrom(buf, len * sizeof(WCHAR), Text::Encoding::GetWideCharEncoding());
+		str.ConvertFrom(buf, len * sizeof(WCHAR), Encoding::GetWideCharEncoding());
 	}
 	catch (...)
 	{

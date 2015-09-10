@@ -39,7 +39,7 @@ public:
 	virtual void				setLoopState(uint32_t loop_begin, uint32_t loop_length);
     virtual bool				isPlaying() const { return mIsPlaying; }
     virtual bool				isPausing() const { return mIsPausing; }
-	virtual SoundPlayState		getPlayState() const { return (mIsPausing) ? SoundPlayState_Pausing : ((mIsPlaying) ? SoundPlayState_Playing : SoundPlayState_Stopped); }
+	virtual SoundPlayingState	getPlayState() const { return (mIsPausing) ? SoundPlayingState::Pausing : ((mIsPlaying) ? SoundPlayingState::Playing : SoundPlayingState::Stopped); }
     virtual void				loop( bool enableLoop ) { mIsLoop = enableLoop; }
     virtual bool				isLoop() const { return mIsLoop; }
 

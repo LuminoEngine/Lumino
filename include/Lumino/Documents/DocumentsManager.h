@@ -42,13 +42,13 @@ public:
 
 public:
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	Text::EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager の使えばいいかも
-	Text::EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
+	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager の使えばいいかも
+	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 	
 private:
 	Graphics::GraphicsManager*	m_graphicsManager;
-	Text::EncodingConverter		m_TCharToUTF32Converter;
-	Text::EncodingConverter		m_UTF32ToTCharConverter;
+	EncodingConverter		m_TCharToUTF32Converter;
+	EncodingConverter		m_UTF32ToTCharConverter;
 };
 
 

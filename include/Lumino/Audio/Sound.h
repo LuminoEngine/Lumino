@@ -150,7 +150,7 @@ public:
 	/**
 		@brief		この音声の現在の再生状態を取得します。
 	*/
-	SoundPlayState GetSoundPlayState() const;	// TODO: Playing
+	SoundPlayingState GetPlayingState() const;
 
 	/**
 		@brief		音声データの読み込み方法を設定します。(規定値:Unknown)
@@ -164,12 +164,17 @@ public:
 	SoundLoadingType GetLoadingType() const;
 
 	/**
-		@brief		音量の音量のフェードを開始します。
+		@brief		音量のフェードを開始します。
 		@param[in]	targetVolume	: フェード先音量
 		@param[in]	time			: 変化にかける時間 (秒)
 		@param[in]	state			: 音量フェード完了時の動作
 	*/
 	void FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior);
+
+	/**
+		@brief		音量のフェード中であるかを確認します。
+	*/
+	bool IsVolumeFading() const;
 
 public:
 	Sound(AudioManager* manager, AudioStream* stream);
@@ -192,7 +197,7 @@ private:
 	Vector3						m_position;
 	Vector3						m_velocity;
 	float						m_maxDistance;
-	SoundPlayState				m_playState;
+	SoundPlayingState			m_playState;
 
 	uint32_t					m_gameAudioFlags;
 
@@ -200,16 +205,6 @@ private:
 	SoundFadeBehavior			m_fadeBehavior;
 	bool						m_fading;
 
-	
-
-    //int 						mOrginalVolume;	        ///< setVolume() で設定される、元の音量
-    //SoundFadeState				mFadeState;
-    //Animation::FadeValue<int>	mFadeValue;
-    //
-    //lnU32						mFlags;                 ///< LNAudioPlayerFlag の値
-    //lnU32						mGroupFlags;
-    //bool						mIsFading;		        ///< フェードイン、またはフェードアウト中フラグ (TODO: 削除予定)
-    //bool						mOnlyRefFromManager;    ///< Manager::deleteAudioPlayer() から操作される
 	friend class AudioHelper;
 };
 

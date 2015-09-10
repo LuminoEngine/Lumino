@@ -96,10 +96,10 @@ public:
 
 	Document()
 	{
-		m_TCharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
-		m_TCharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetTCharEncoding());
-		m_UTF32ToTCharConverter.SetDestinationEncoding(Text::Encoding::GetTCharEncoding());
-		m_UTF32ToTCharConverter.SetSourceEncoding(Text::Encoding::GetUTF32Encoding());
+		m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
+		m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
+		m_UTF32ToTCharConverter.SetDestinationEncoding(Encoding::GetTCharEncoding());
+		m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
 	}
 
 	void SetFontGlyphTextureCache(Graphics::Internal::FontGlyphTextureCache* cache)
@@ -204,8 +204,8 @@ public:
 public:
 	Array< RefPtr<TextBox::LineSegment> >	m_lineSegments;
 	RefPtr<Graphics::Internal::FontGlyphTextureCache>	m_glyphTextureCache;
-	Text::EncodingConverter		m_TCharToUTF32Converter;
-	Text::EncodingConverter		m_UTF32ToTCharConverter;
+	EncodingConverter		m_TCharToUTF32Converter;
+	EncodingConverter		m_UTF32ToTCharConverter;
 };
 
 

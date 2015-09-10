@@ -57,14 +57,14 @@ void TextRenderer::DrawText(const char* text, int length)
 	length = (length < 0) ? strlen(text) : length;
 
 	// char → UTF32 に変換するのに必要なバイト数で領域確保
-	size_t size = Text::Encoding::GetConversionRequiredByteCount(Text::Encoding::GetSystemMultiByteEncoding(), Text::Encoding::GetUTF32Encoding(), length);
+	size_t size = Encoding::GetConversionRequiredByteCount(Encoding::GetSystemMultiByteEncoding(), Encoding::GetUTF32Encoding(), length);
 	m_utf32Buffer.Resize(size);
 
 	// UTF32 に変換
-	Text::EncodingConversionResult result;
-	Text::Encoding::Convert(
-		text, length, Text::Encoding::GetSystemMultiByteEncoding(),
-		m_utf32Buffer.GetData(), m_utf32Buffer.GetSize(), Text::Encoding::GetUTF32Encoding(),
+	EncodingConversionResult result;
+	Encoding::Convert(
+		text, length, Encoding::GetSystemMultiByteEncoding(),
+		m_utf32Buffer.GetData(), m_utf32Buffer.GetSize(), Encoding::GetUTF32Encoding(),
 		&result);
 
 	DrawTextHorizontal((UTF32*)m_utf32Buffer.GetData(), result.BytesUsed / sizeof(UTF32));
@@ -80,14 +80,14 @@ void TextRenderer::DrawText(const wchar_t* text, int length)
 	length = (length < 0) ? wcslen(text) : length;
 
 	// char → UTF32 に変換するのに必要なバイト数で領域確保
-	size_t size = Text::Encoding::GetConversionRequiredByteCount(Text::Encoding::GetWideCharEncoding(), Text::Encoding::GetUTF32Encoding(), length * sizeof(wchar_t));
+	size_t size = Encoding::GetConversionRequiredByteCount(Encoding::GetWideCharEncoding(), Encoding::GetUTF32Encoding(), length * sizeof(wchar_t));
 	m_utf32Buffer.Resize(size);
 
 	// UTF32 に変換
-	Text::EncodingConversionResult result;
-	Text::Encoding::Convert(
-		text, length * sizeof(wchar_t), Text::Encoding::GetWideCharEncoding(),
-		m_utf32Buffer.GetData(), m_utf32Buffer.GetSize(), Text::Encoding::GetUTF32Encoding(),
+	EncodingConversionResult result;
+	Encoding::Convert(
+		text, length * sizeof(wchar_t), Encoding::GetWideCharEncoding(),
+		m_utf32Buffer.GetData(), m_utf32Buffer.GetSize(), Encoding::GetUTF32Encoding(),
 		&result);
 
 	DrawTextHorizontal((UTF32*)m_utf32Buffer.GetData(), result.BytesUsed / sizeof(UTF32));

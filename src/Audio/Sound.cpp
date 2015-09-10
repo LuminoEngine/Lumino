@@ -45,7 +45,7 @@ Sound::Sound(AudioManager* manager, AudioStream* stream/*, SoundPlayType playerT
 	, m_position(0, 0, 0)
 	, m_velocity(0, 0, 0)
 	, m_maxDistance(0)
-	, m_playState(SoundPlayState_Stopped)
+	, m_playState(SoundPlayingState::Stopped)
 	, m_gameAudioFlags(0)
 	, m_fadeValue()
 	, m_fadeBehavior(SoundFadeBehavior::Continue)
@@ -148,7 +148,7 @@ bool Sound::IsLoop() const
 void Sound::Play()
 {
 	Threading::MutexScopedLock lock(m_mutex);
-	m_playState = SoundPlayState_Playing;
+	m_playState = SoundPlayingState::Playing;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->play();
 	}
@@ -160,7 +160,7 @@ void Sound::Play()
 void Sound::Stop()
 {
 	Threading::MutexScopedLock lock(m_mutex);
-	m_playState = SoundPlayState_Stopped;
+	m_playState = SoundPlayingState::Stopped;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->play();
 	}
@@ -172,7 +172,7 @@ void Sound::Stop()
 void Sound::Pause()
 {
 	Threading::MutexScopedLock lock(m_mutex);
-	m_playState = SoundPlayState_Pausing;
+	m_playState = SoundPlayingState::Pausing;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->pause(true);
 	}
@@ -184,9 +184,9 @@ void Sound::Pause()
 void Sound::Resume()
 {
 	Threading::MutexScopedLock lock(m_mutex);
-	if (m_playState == SoundPlayState_Pausing)
+	if (m_playState == SoundPlayingState::Pausing)
 	{
-		m_playState = SoundPlayState_Playing;
+		m_playState = SoundPlayingState::Playing;
 		if (m_audioPlayer != NULL) {
 			m_audioPlayer->pause(false);
 		}
@@ -281,6 +281,14 @@ void Sound::SetMaxDistance(float distance)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+SoundPlayingState Sound::GetPlayingState() const
+{
+	return m_playState;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Sound::SetLoadingType(SoundLoadingType type)
 {
 	m_loadingType = type;
@@ -307,9 +315,17 @@ void Sound::FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior
 	Threading::MutexScopedLock lock(m_mutex);
 
 	// 現在の音量から volume_ へのフェード
-	m_fadeValue.Start(static_cast<float>(GetVolume()), targetVolume, time);
+	m_fadeValue.Start((float)GetVolume(), (float)targetVolume, time);
 	m_fadeBehavior = behavior;
 	m_fading = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool Sound::IsVolumeFading() const
+{
+	return m_fading;
 }
 
 ////-----------------------------------------------------------------------------
@@ -349,12 +365,12 @@ void Sound::Polling(float elapsedTime)
 		switch (m_playState)
 		{
 		default:
-		case Lumino::Audio::SoundPlayState_Stopped:
+		case Lumino::Audio::SoundPlayingState::Stopped:
 			break;
-		case Lumino::Audio::SoundPlayState_Playing:
+		case Lumino::Audio::SoundPlayingState::Playing:
 			m_audioPlayer->play();
 			break;
-		case Lumino::Audio::SoundPlayState_Pausing:
+		case Lumino::Audio::SoundPlayingState::Pausing:
 			m_audioPlayer->play();
 			m_audioPlayer->pause(true);
 			break;
@@ -374,7 +390,7 @@ void Sound::Polling(float elapsedTime)
 		m_fadeValue.AdvanceTime(elapsedTime);
 
 		if (m_audioPlayer != NULL) {
-			m_audioPlayer->SetVolume(m_fadeValue.GetValue());
+			m_audioPlayer->SetVolume((int)m_fadeValue.GetValue());
 		}
 
 		// フェード完了
@@ -394,7 +410,7 @@ void Sound::Polling(float elapsedTime)
 				if (m_audioPlayer != NULL) {
 					m_audioPlayer->stop();
 				}
-				m_playState = SoundPlayState_Stopped;
+				m_playState = SoundPlayingState::Stopped;
 				break;
 			// 一時停止する場合
 			case SoundFadeBehavior::Pause:
@@ -402,17 +418,17 @@ void Sound::Polling(float elapsedTime)
 				if (m_audioPlayer != NULL) {
 					m_audioPlayer->pause(true);
 				}
-				m_playState = SoundPlayState_Pausing;
+				m_playState = SoundPlayingState::Pausing;
 				break;
 			}
 
 			// 音量を元に戻す
 			if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
 			{
+				m_volume = (int)m_fadeValue.GetStartValue();	// SetVolume() を呼ぶとデッドロックするのでここでセット
 				if (m_audioPlayer != NULL) {
-					m_audioPlayer->SetVolume(m_fadeValue.GetStartValue());
+					m_audioPlayer->SetVolume(m_volume);
 				}
-				m_volume = m_fadeValue.GetStartValue();	// SetVolume() を呼ぶとデッドロックするのでここでセット
 
 			}
 		}

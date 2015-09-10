@@ -84,15 +84,15 @@ FontManager* FontManager::Create(FileManager* fileManager)
 FontManager::FontManager(FileManager* fileManager)
 {
 	m_fileManager = fileManager;
-	m_charToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
-	m_charToUTF32Converter.SetSourceEncoding(Text::Encoding::GetSystemMultiByteEncoding());
-	m_wcharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
-	m_wcharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetWideCharEncoding());
+	m_charToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
+	m_charToUTF32Converter.SetSourceEncoding(Encoding::GetSystemMultiByteEncoding());
+	m_wcharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
+	m_wcharToUTF32Converter.SetSourceEncoding(Encoding::GetWideCharEncoding());
 
-	m_TCharToUTF32Converter.SetDestinationEncoding(Text::Encoding::GetUTF32Encoding());
-	m_TCharToUTF32Converter.SetSourceEncoding(Text::Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetDestinationEncoding(Text::Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetSourceEncoding(Text::Encoding::GetUTF32Encoding());
+	m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
+	m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
+	m_UTF32ToTCharConverter.SetDestinationEncoding(Encoding::GetTCharEncoding());
+	m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
 
 	// FreeType 初期化
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);

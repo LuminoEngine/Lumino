@@ -138,7 +138,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
 		ReadPadding16(nameBuf.GetData(), name_len * sizeof(UTF16));
 		String tmpName;
-		tmpName.ConvertFrom(nameBuf.GetData(), nameBuf.GetSize(), Text::Encoding::GetUTF16Encoding());
+		tmpName.ConvertFrom(nameBuf.GetData(), nameBuf.GetSize(), Encoding::GetUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
 		name = name.CanonicalizePath();
 			

@@ -18,7 +18,7 @@ enum GameAudioFlags
 //=============================================================================
 // GameAudio
 //=============================================================================
-#if 0
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -121,8 +121,8 @@ void GameAudio::PlayBGMFromSound( Sound* sound, int volume, int pitch, int fadeT
 		bool me_not_play = true;	
 		if ( mME )
 		{
-			SoundPlayState state = mME->GetSoundPlayState();
-			if (state == SoundPlayState_Playing)
+			SoundPlayingState state = mME->GetPlayingState();
+			if (state == SoundPlayingState::Playing)
 			{
 				me_not_play = false;
 			}
@@ -135,7 +135,7 @@ void GameAudio::PlayBGMFromSound( Sound* sound, int volume, int pitch, int fadeT
 			{
 				mBGM->SetVolume( 0 );
 				mBGM->Play();
-				mBGM->FadeVolume( volume, fadeTime, SOUNDFADE_CONTINUE );
+				mBGM->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 			}
 			else
 			{
@@ -159,7 +159,7 @@ void GameAudio::PlayBGMFromSound( Sound* sound, int volume, int pitch, int fadeT
 		{
 			// ひとつ前のBGMは、fade_time_ 後に停止、解放するようにする
 			prev_bgm->SetLoopEnabled( false );
-			prev_bgm->FadeVolume( 0, fadeTime, SOUNDFADE_STOP_RESET );
+			prev_bgm->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 			PushReleaseAtPlayEndList( prev_bgm );
 		}
 	}
@@ -183,7 +183,7 @@ void GameAudio::StopBGM( int fadeTime )
 		if ( fadeTime > 0 )
 		{
 			// フェード終了後に停止して、音量等を元に戻す
-			mBGM->FadeVolume( 0, fadeTime, SOUNDFADE_STOP_RESET );
+			mBGM->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 		}
 		else
 		{
@@ -249,7 +249,7 @@ void GameAudio::PlayBGSFromSound( Sound* sound, int volume, int pitch, int fadeT
 		{
 			mBGS->SetVolume( 0 );
 			mBGS->Play();
-			mBGS->FadeVolume( volume, fadeTime, SOUNDFADE_CONTINUE );
+			mBGS->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 		}
 		else
 		{
@@ -265,7 +265,7 @@ void GameAudio::PlayBGSFromSound( Sound* sound, int volume, int pitch, int fadeT
 		{
 			// ひとつ前のBGSは、fade_time_ 後に停止、解放するようにする
 			prev_bgs->SetLoopEnabled( false );
-			prev_bgs->FadeVolume( 0, fadeTime, SOUNDFADE_STOP_RESET );
+			prev_bgs->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 			PushReleaseAtPlayEndList( prev_bgs );
 		}
 	}
@@ -289,7 +289,7 @@ void GameAudio::StopBGS( int fadeTime )
 		if ( fadeTime > 0 )
 		{
 			// フェード終了後に停止して、音量等を元に戻す
-			mBGS->FadeVolume( 0, fadeTime, SOUNDFADE_STOP_RESET );
+			mBGS->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 		}
 		else
 		{
@@ -328,10 +328,10 @@ void GameAudio::PlayMEFromSound( Sound* sound, int volume, int pitch )
 	// BGM がある場合
 	if ( mBGM )
 	{
-		SoundPlayState state = mBGM->GetSoundPlayState();
+		SoundPlayingState state = mBGM->GetPlayingState();
 
 		// 再生されている場合
-		if (state == SoundPlayState_Playing)
+		if (state == SoundPlayingState::Playing)
 		{
 			flag = true;
 		}
@@ -344,7 +344,7 @@ void GameAudio::PlayMEFromSound( Sound* sound, int volume, int pitch )
 		if ( mBGMFadeOutTime > 0 )
 		{
 			// フェードアウト後、一時停止する
-			mBGM->FadeVolume( 0, mBGMFadeOutTime, SOUNDFADE_PAUSE );
+			mBGM->FadeVolume(0, mBGMFadeOutTime, SoundFadeBehavior::Pause);
 		}
 		// フェードアウト時間がない場合
 		else
@@ -374,12 +374,12 @@ void GameAudio::StopME()
 		// BGM があって、一時停止中の場合は再開
 		if ( mBGM )
 		{
-			SoundPlayState state = mBGM->GetSoundPlayState();
+			SoundPlayingState state = mBGM->GetPlayingState();
 
-			if (state == SoundPlayState_Playing)
+			if (state == SoundPlayingState::Playing)
 			{
-				mBGM->FadeVolume( mBGMVolume, mBGMFadeInTime, SOUNDFADE_CONTINUE );
-				mBGM->Resume;
+				mBGM->FadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
+				mBGM->Resume();
 			}
 		}
 
@@ -498,11 +498,10 @@ void GameAudio::SetBGMVolume( int volume, int fadeTime )
 {
 	Threading::MutexScopedLock lock(mLock );
 
-	// GameAudio 内では SOUNDFADE_STOP_RESET == フェードアウト中
-	if ( mBGM && mBGM->getFadeState() != SOUNDFADE_STOP_RESET )
+	if (mBGM != NULL)// && !mBGM->IsVolumeFading())
 	{
 		mBGMVolume = volume;
-		mBGM->FadeVolume( volume, fadeTime, SOUNDFADE_CONTINUE );
+		mBGM->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 	}
 }
 
@@ -514,10 +513,10 @@ void GameAudio::SetBGSVolume( int volume, int fadeTime )
 	Threading::MutexScopedLock lock(mLock);
 
 	// GameAudio 内では SOUNDFADE_STOP_RESET == フェードアウト中
-	if ( mBGS && mBGS->getFadeState() != SOUNDFADE_STOP_RESET )
+	if (mBGS != NULL)// && !mBGM->IsVolumeFading())
 	{
 		mBGSVolume = volume;
-		mBGS->FadeVolume( volume, fadeTime, SOUNDFADE_CONTINUE );
+		mBGS->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 	}
 }
 
@@ -548,15 +547,15 @@ void GameAudio::Polling()
 	// 演奏する ME がある場合
 	if ( mME )
 	{
-		SoundPlayState mestate = mME->GetSoundPlayState();
+		SoundPlayingState mestate = mME->GetPlayingState();
 
 		// BGM がある場合
 		if ( mBGM )
 		{
-			SoundPlayState bgmstate = mBGM->GetSoundPlayState();
+			SoundPlayingState bgmstate = mBGM->GetPlayingState();
 
 			// BGMのフェードアウトが終わって一時停止状態になっている場合
-			if (bgmstate == SoundPlayState_Pausing)
+			if (bgmstate == SoundPlayingState::Pausing)
 			{
 				// ME 再生開始
 				if ( !mMEPlaying )
@@ -566,12 +565,12 @@ void GameAudio::Polling()
 					mMEPlaying = true;
 				}
 				// ME の再生が終了した場合
-				else if (mestate != SoundPlayState_Playing)
+				else if (mestate != SoundPlayingState::Playing)
 				{
 					// ME 再生中に BGM がストップしたとかで解放されている場合はなにもしない
 					if ( mBGM )
 					{
-						mBGM->FadeVolume( mBGMVolume, mBGMFadeInTime, SOUNDFADE_CONTINUE );
+						mBGM->FadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
 						mBGM->Resume();
 					}
 					LN_SAFE_RELEASE( mME );
@@ -583,7 +582,7 @@ void GameAudio::Polling()
 		else
 		{
 			// ME が終了した場合
-			if (mestate != SoundPlayState_Playing)
+			if (mestate != SoundPlayingState::Playing)
 			{
 				LN_SAFE_RELEASE( mME );
 				mMEPlaying = false;
@@ -597,8 +596,8 @@ void GameAudio::Polling()
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
 	for ( ; itr != end;  )
 	{
-		SoundPlayState state = (*itr)->GetSoundPlayState;
-		if (state != SoundPlayState_Playing)
+		SoundPlayingState state = (*itr)->GetPlayingState();
+		if (state != SoundPlayingState::Playing)
 		{
 			(*itr)->Release();
 			itr = mReleaseAtPlayEndList.erase( itr );
@@ -623,6 +622,6 @@ void GameAudio::PushReleaseAtPlayEndList( Sound* sound )
 		LN_SAFE_ADDREF( sound );
 	}
 }
-#endif
+
 } // namespace Audio
 } // namespace Lumino

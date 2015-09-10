@@ -46,12 +46,12 @@ public:
 	void Dispose();
 
 
-	Text::EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
-	Text::EncodingConverter* GetWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
+	EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
+	EncodingConverter* GetWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
 
 
-	Text::EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
-	Text::EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
+	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
+	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
 private:
 	FontManager(FileManager* fileManager);
@@ -109,10 +109,10 @@ private:
 	RefPtr<FileManager>	m_fileManager;
 	Font*  m_defaultFont;
 
-	Text::EncodingConverter		m_charToUTF32Converter;
-	Text::EncodingConverter		m_wcharToUTF32Converter;
-	Text::EncodingConverter		m_TCharToUTF32Converter;
-	Text::EncodingConverter		m_UTF32ToTCharConverter;
+	EncodingConverter		m_charToUTF32Converter;
+	EncodingConverter		m_wcharToUTF32Converter;
+	EncodingConverter		m_TCharToUTF32Converter;
+	EncodingConverter		m_UTF32ToTCharConverter;
 
 	FT_Library      m_ftLibrary;
 	FTC_Manager     m_ftCacheManager;
