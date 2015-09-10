@@ -51,6 +51,7 @@
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Graphics/Renderer.h>
 #include "Graphics/ProfilerRenderer.h"
+#include "Scene/SceneGraphManager.h"
 #include "ApplicationContext.h"
 
 namespace Lumino
@@ -88,6 +89,7 @@ Application* Application::Create(const Application::ConfigData& configData)
 Application::Application(const Application::ConfigData& configData)
 	: m_configData(configData)
 	, m_audioManager(NULL)
+	, m_sceneGraphManager(NULL)
 	, m_profilerRenderer(NULL)
 	, m_endRequested(false)
 {
@@ -110,6 +112,8 @@ Application::~Application()
 	if (m_platformManager != NULL) {
 		m_platformManager->Dispose();
 	}
+
+	LN_SAFE_RELEASE(m_sceneGraphManager);
 
 	if (m_guiManager != NULL) {
 		m_guiManager->Finalize();
@@ -135,6 +139,7 @@ void Application::Initialize()
 	InitialzePhysicsManager();
 	InitialzeGraphicsManager();
 	InitialzeGUIManager();
+	InitialzeSceneGraphManager();
 }
 
 //-----------------------------------------------------------------------------
@@ -254,6 +259,21 @@ void Application::InitialzeGUIManager()
 		data.DocumentsManager = m_documentsManager;
 		m_guiManager.Attach(LN_NEW GUI::GUIManager());
 		m_guiManager->Initialize(data);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Application::InitialzeSceneGraphManager()
+{
+	if (m_sceneGraphManager == NULL)
+	{
+		InitialzeGraphicsManager();
+		SceneGraphManager::ConfigData data;
+		data.FileManager = &FileManager::GetInstance();
+		data.GraphicsManager = m_graphicsManager;
+		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 	}
 }
 

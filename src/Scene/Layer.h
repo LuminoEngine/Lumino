@@ -1,13 +1,12 @@
 ﻿
 #pragma once
-
-#include "Common.h"
-#include "Camera.h"
+#include "Internal.h"
+#include <Lumino/Scene/Camera.h>
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
+
 class Layer
 	: public RefObject
 {
@@ -70,5 +69,5 @@ private:
 	LightNodeList					m_renderingLightList;	///< 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

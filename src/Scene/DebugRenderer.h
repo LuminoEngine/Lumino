@@ -1,13 +1,12 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/GeometryRenderer.h>
 #include <Lumino/Physics/IDebugRenderer.h>
+#include <Lumino/Scene/Common.h>
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 class DebugRenderer
 	: public Physics::IDebugRenderer
@@ -29,5 +28,5 @@ private:
 	Graphics::GeometryRenderer*	m_renderer;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 #define LN_SET_SHADER_ERR_MSG( fmt_, ... ) \
 { \
@@ -730,5 +729,5 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 	}
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

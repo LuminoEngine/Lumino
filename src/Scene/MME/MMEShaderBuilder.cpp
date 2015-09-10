@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // MMEShaderBuilder
@@ -827,5 +826,5 @@ uint32_t MMEShaderBuilder::CheckMatrixMask(MMEVariableRequest req)
 	return flags;
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

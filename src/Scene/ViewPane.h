@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 class LayerList
 	: public RefObjectList
@@ -70,5 +69,5 @@ private:
 	Point				m_mousePosition;		///< マウスの現在位置
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

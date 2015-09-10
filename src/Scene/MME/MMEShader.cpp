@@ -1,18 +1,17 @@
 ﻿
 #include "../../Internal.h"
 #include "../SceneGraphManager.h"
-#include "../SceneNode.h"
-#include "../Camera.h"
-#include "../Light.h"
-#include "../VisualNodeParams.h"
+#include <Lumino/Scene/SceneNode.h>
+#include <Lumino/Scene/Camera.h>
+#include <Lumino/Scene/Light.h>
+#include <Lumino/Scene/VisualNodeParams.h>
 #include "MMEShaderBuilder.h"
 #include "MMEShaderTechnique.h"
 #include "MMEShader.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // MMEShader
@@ -414,7 +413,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MMEShader::UpdateSubsetParams(const VisualNodeSubsetParams& params)
+void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& params)
 {
     Graphics::ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
@@ -780,5 +779,5 @@ MMEShaderTechnique* MMEShader::FindTechnique(MMDPass mmdPass, bool UseTexture, b
 	return NULL;
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

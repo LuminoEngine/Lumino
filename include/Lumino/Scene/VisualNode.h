@@ -1,15 +1,13 @@
 ﻿
 #pragma once
-
+#include "Common.h"
 #include <Lumino/Graphics/Texture.h>
-#include "MME/MMEShaderTechnique.h"
 #include "SceneNode.h"
 #include "VisualNodeParams.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /// VisualNode
 class VisualNode
@@ -96,7 +94,7 @@ public:
 
 	const Graphics::RenderState& GetRenderState() const { return m_renderState; }
 	int GetSubsetCount() const { return m_subsetCount; }
-	const VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
+	const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
 	virtual void UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList);
@@ -123,7 +121,7 @@ protected:
 	int						m_subsetCount;
 
 	friend class RenderingPass;
-	VisualNodeParams		m_visualNodeParams;
+	Internal::VisualNodeParams		m_visualNodeParams;
 
 	// 以下のプロパティはサブセット単位で管理しない。
 	// いずれも、いわゆる設定の継承を考慮する必要があるもの。
@@ -135,5 +133,5 @@ protected:
 	LightNodeList			m_affectLightList;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

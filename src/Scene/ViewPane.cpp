@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // LayerList
@@ -129,5 +128,5 @@ bool ViewPane::InjectMouseButtonUp(MouseButton button)
 	return false;
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

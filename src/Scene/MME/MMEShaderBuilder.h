@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 class MMEShader;
 class MMEShaderErrorInfo;
 
@@ -69,5 +68,5 @@ private:
 
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 enum MMEShaderError
 {
@@ -40,5 +39,5 @@ private:
 	Array<MMEShaderErrorObject>	m_errorList;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

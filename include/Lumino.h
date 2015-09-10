@@ -58,4 +58,5 @@
 #include "Lumino/Profiler.h"
 
 #include "LuminoAudio.h"
+#include "LuminoScene.h"
 

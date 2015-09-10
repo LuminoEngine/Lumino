@@ -1,11 +1,10 @@
 ﻿
 #include "../Internal.h"
-#include "Camera.h"
+#include <Lumino/Scene/Camera.h>
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // Camera
@@ -88,5 +87,5 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 	m_viewProjMatrixIT = Matrix::Transpose(m_viewProjMatrixI);
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

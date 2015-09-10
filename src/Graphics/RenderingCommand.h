@@ -263,8 +263,11 @@ public:
 	void* GetExtData(DataHandle bufferIndex);
 	void MarkGC(RefObject* obj) 
 	{ 
-		obj->AddRef();
-		m_markGCList.Add(obj);
+		if (obj != NULL)	// テクスチャを解除したりするときは NULL が渡されてくる
+		{
+			obj->AddRef();
+			m_markGCList.Add(obj);
+		}
 	}
 
 private:

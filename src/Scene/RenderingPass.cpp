@@ -2,14 +2,13 @@
 #pragma once
 #include "../Internal.h"
 #include "SceneGraphManager.h"
-#include "SceneNode.h"
-#include "VisualNode.h"
+#include <Lumino/Scene/SceneNode.h>
+#include <Lumino/Scene/VisualNode.h>
 #include "RenderingPass.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // RenderingPass
@@ -44,7 +43,5 @@ void RenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 {
 }
 
-
-
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

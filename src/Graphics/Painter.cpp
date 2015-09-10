@@ -633,7 +633,7 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 	else {
 	}
 
-	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, rect.Width, rect.Height));
+	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, (int)rect.Width, (int)rect.Height));
 
 
 	TextLayoutResult result;

@@ -278,8 +278,8 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					e.Sender = this;
 					e.Mouse.Button = MouseButton::None;
 					e.Mouse.Delta = 0;
-					e.Mouse.X = pt.x;
-					e.Mouse.Y = pt.y;
+					e.Mouse.X = (short)pt.x;
+					e.Mouse.Y = (short)pt.y;
 					e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
 					e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
 					e.Mouse.InClientArea = false;

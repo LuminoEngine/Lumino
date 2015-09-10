@@ -1,13 +1,13 @@
 ﻿
 #include "../../Internal.h"
 #include <Lumino/Graphics/Texture.h>
-#include "../SceneNode.h"
+#include <Lumino/Scene/SceneNode.h>
 #include "ShaderScriptCommandList.h"
+#include "../RenderingPass.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // ShaderScriptCommandList
@@ -584,7 +584,5 @@ void ShaderScriptCommandList::PopCurrentState(DrawParams& params)
 	}
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino
-
-

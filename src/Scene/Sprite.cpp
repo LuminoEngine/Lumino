@@ -1,12 +1,11 @@
 ﻿
 #pragma once
-
-#include "Sprite.h"
+#include <Lumino/Scene/Sprite.h>
+#include "RenderingPass.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // Sprite
@@ -228,5 +227,5 @@ void Sprite::DrawSubset(RenderingParams& params, int subsetIndex)
 	}
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

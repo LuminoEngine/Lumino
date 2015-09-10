@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /// 物理演算のデバッグ用描画など
 class InfomationRenderingPass
@@ -20,5 +19,5 @@ public:
 	virtual void PostRender(RenderingParams& params);
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

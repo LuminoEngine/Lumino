@@ -259,7 +259,7 @@ int OggDecoder::closeOggCallback(void* stream)
 long OggDecoder::tellOggCallback(void* stream)
 {
 	Stream* file = (Stream*)stream;
-	return file->GetPosition();
+	return (int)file->GetPosition();
 }
 
 } // namespace Audio

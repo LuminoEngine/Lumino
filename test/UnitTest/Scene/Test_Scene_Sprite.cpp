@@ -1,6 +1,5 @@
 #include <TestConfig.h>
 
-using namespace Lumino::Scene;
 
 class Test_Scene_Sprite : public ::testing::Test
 {
@@ -16,12 +15,13 @@ TEST_F(Test_Scene_Sprite, Basic)
 
 
 
-	SceneGraphManager::ConfigData c;
-	c.FileManager = &FileManager::GetInstance();
-	c.PhysicsManager = TestEnv::PhysicsManager;
-	c.GraphicsManager = TestEnv::Manager;
-	RefPtr<SceneGraphManager> sceneGraph(LN_NEW SceneGraphManager(c));
+	//SceneGraphManager::ConfigData c;
+	//c.FileManager = &FileManager::GetInstance();
+	//c.PhysicsManager = TestEnv::PhysicsManager;
+	//c.GraphicsManager = TestEnv::Manager;
+	//RefPtr<SceneGraphManager> sceneGraph(LN_NEW SceneGraphManager(c));
 
+	SceneGraphManager* sceneGraph = TestEnv::Application->GetSceneGraphManager();
 	sceneGraph->CreateMMDSceneGraph();
 
 	ByteBuffer code(FileSystem::ReadAllBytes(LOCALFILE("../../../src/Scene/Resource/SSNoLighting.fx")));

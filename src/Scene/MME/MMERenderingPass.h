@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /// MMDPass をキーとしてシェーダテクニックを検索する RenderingPass
 class MMERenderingPass
@@ -28,5 +27,5 @@ private:
 	MMEShader*	m_ownerShader;			///< このパス (OFFSCREENRENDERTARGET) の生成元となったシェーダ
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -35,7 +35,10 @@ option(LN_DxLib_Demo "DX Library demo." OFF)
 
 set(LN_SOURCES
 	include/Lumino.h
+	include/LuminoAudio.h
+	include/LuminoDxLib.h
 	include/LuminoGraphics.h
+	include/LuminoScene.h
 )
 
 set(LN_SOURCES_Animation
@@ -217,29 +220,36 @@ set(LN_SOURCES_Graphics
 )
 	
 set(LN_SOURCES_Scene
+	include/Lumino/Scene/Camera.h
+	include/Lumino/Scene/Collection.h
+	include/Lumino/Scene/Common.h
+	include/Lumino/Scene/Layer.h
+	include/Lumino/Scene/Light.h
+	include/Lumino/Scene/Material.h
+	include/Lumino/Scene/SceneGraphManager.h
+	include/Lumino/Scene/SceneNode.h
+	include/Lumino/Scene/Sprite.h
+	include/Lumino/Scene/ViewPane.h
+	include/Lumino/Scene/VisualNode.h
+	include/Lumino/Scene/VisualNodeParams.h
+	include/Lumino/Scene/MME/MMESceneObject.h
 	src/Scene/Camera.cpp
-	src/Scene/Camera.h
-	src/Scene/Common.h
+	src/Scene/Internal.h
 	src/Scene/DebugRenderer.h
 	src/Scene/InfomationRenderingPass.cpp
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp
 	src/Scene/Layer.h
 	src/Scene/Light.cpp
-	src/Scene/Light.h
 	src/Scene/RenderingPass.cpp
 	src/Scene/RenderingPass.h
 	src/Scene/SceneGraphManager.cpp
 	src/Scene/SceneGraphManager.h
 	src/Scene/SceneNode.cpp
-	src/Scene/SceneNode.h
 	src/Scene/Sprite.cpp
-	src/Scene/Sprite.h
 	src/Scene/ViewPane.cpp
 	src/Scene/ViewPane.h
 	src/Scene/VisualNode.cpp
-	src/Scene/VisualNode.h
-	src/Scene/VisualNodeParams.h
 	src/Scene/VisualNodeParams.cpp
 	src/Scene/MME/MMERenderingPass.cpp
 	src/Scene/MME/MMERenderingPass.h

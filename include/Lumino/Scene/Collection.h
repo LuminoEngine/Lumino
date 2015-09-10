@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 		
 class LayerList
 	: public RefObjectList
@@ -36,5 +35,5 @@ private:
 	ViewPane*	m_owner;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

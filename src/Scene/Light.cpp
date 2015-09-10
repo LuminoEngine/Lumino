@@ -1,11 +1,10 @@
 ﻿
 #include "../Internal.h"
-#include "Light.h"
+#include <Lumino/Scene/Light.h>
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // Light
@@ -80,6 +79,5 @@ void Light::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingN
 	SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
 }
 
-
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

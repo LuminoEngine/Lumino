@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 	
 //=============================================================================
 // MMEShaderErrorInfo
@@ -31,5 +30,5 @@ void MMEShaderErrorInfo::AddError(MMEShaderError errorCode, const String& messag
 	m_errorList.Add(e);
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -1,13 +1,40 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
-#include "VisualNodeParams.h"
+#include <Lumino/Scene/VisualNodeParams.h>
+#include "MME/MMEShader.h"
 
 namespace Lumino
 {
-namespace Scene
+LN_NAMESPACE_SCENE_BEGIN
+namespace Internal
 {
+
+//=============================================================================
+// VisualNodeSubsetParams
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+VisualNodeSubsetParams::~VisualNodeSubsetParams()
+{
+	LN_SAFE_RELEASE(SceneShader);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void VisualNodeSubsetParams::Multiply(const VisualNodeSubsetParams& parent)
+{
+	Opacity *= parent.Opacity;
+	ColorScale.MultiplyClamp(parent.ColorScale);
+	BlendColor.AddClamp(parent.BlendColor);
+	Tone.AddClamp(parent.Tone);
+	if (SceneShader != NULL) {
+		LN_REFOBJ_SET(SceneShader, parent.SceneShader);
+	}
+}
 
 //=============================================================================
 // VisualNodeParams
@@ -98,5 +125,6 @@ void VisualNodeParams::UpdateSubsetRenderParam(const VisualNodeParams* parentPar
 	}
 }
 
-} // namespace Scene
+} // namespace Internal
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

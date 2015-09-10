@@ -1,16 +1,14 @@
 ﻿
 #pragma once
-
+#include "Common.h"
 #include <Lumino/Base/String.h>
 #include <Lumino/BindingSupport.h>
-#include "Common.h"
-#include "RenderingPass.h"
-#include "MME/MMETypes.h"
+#include <Lumino/Graphics/Shader.h>
+#include "MME/MMESceneObject.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 class SceneNodeRefList
 	: public RefObjectListBase<SceneNode>
@@ -169,8 +167,8 @@ protected:
 	float				m_zDistance;			///< Z ソート用の距離値 (ソート自体が速度的にクリティカルになりそうなので、getter を仮想関数にはしたくない)
 
 	friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
-	RenderingPassClientData	m_renderingPassClientDataList[RenderingPass::MaxRenderingPass];
+	Internal::RenderingPassClientData	m_renderingPassClientDataList[Internal::MaxRenderingPass];
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

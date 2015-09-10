@@ -3,13 +3,13 @@
 
 #include "../Internal.h"
 #include "MME/MMEShaderTechnique.h"
-#include "Light.h"
-#include "VisualNode.h"
+#include "MME/MMEShader.h"
+#include <Lumino/Scene/Light.h>
+#include <Lumino/Scene/VisualNode.h>
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // VisualNode
@@ -201,5 +201,5 @@ void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MM
 }
 
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief	マテリアルのクラスです。
 */
@@ -38,5 +37,5 @@ namespace Scene
 //	}
 //};
 //
-} // namespace Graphics
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

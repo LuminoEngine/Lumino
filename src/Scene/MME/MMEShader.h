@@ -1,13 +1,12 @@
 ﻿
 #pragma once
-
-#include "../Common.h"
+#include "../Internal.h"
 #include "MMETypes.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
+class IMMESceneObject;
 class MMEShaderErrorInfo;
 class MMEShaderVariable;
 class MMEShaderTechnique;
@@ -40,7 +39,7 @@ public:
 	void UpdateNodeParams(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList);
 
 	/// Subset 単位で必要なパラメータを設定する
-	void UpdateSubsetParams(const VisualNodeSubsetParams& params);
+	void UpdateSubsetParams(const Internal::VisualNodeSubsetParams& params);
 
 	/// CONTROLLOBJECT 設定 (obj は NULL 可能。存在しなければ bool 型変数に false を設定するため)
 	static void SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObject* obj);
@@ -77,5 +76,5 @@ private:
 	MMEShaderTechniqueList		m_mmeShaderTechniqueList;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

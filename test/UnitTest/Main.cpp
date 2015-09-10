@@ -152,7 +152,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Platform_Clipboard.*"
+		"--gtest_filter=Test_Scene_Sprite.*"
 		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
 		//"--gtest_filter=Test_Graphics_Texture.Lock"
 	};

@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /**
 	@brief		レイヤーの基本クラスです。
@@ -57,5 +56,5 @@ protected:
 };
 
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

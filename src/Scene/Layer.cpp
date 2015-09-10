@@ -4,15 +4,13 @@
 #include "../Internal.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
-#include "SceneNode.h"
-#include "Camera.h"
-#include "Light.h"
+#include <Lumino/Scene/Camera.h>
+#include <Lumino/Scene/Light.h>
 #include "Layer.h"
 
 namespace Lumino
 {
-namespace Scene
-{ 
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // DrawingLayer
@@ -93,5 +91,5 @@ void DrawingLayer::Render()
 	}
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

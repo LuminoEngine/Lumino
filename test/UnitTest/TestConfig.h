@@ -7,7 +7,7 @@
 
 #include "../../../src/Scene/SceneGraphManager.h"
 #include "../../../src/Scene/ViewPane.h"
-#include "../../../src/Scene/Sprite.h"
+#include <Lumino/Scene/Sprite.h>
 #include "../../../src/Scene/MME/MMEShader.h"
 #include "../../../src/Scene/MME/MMEShaderBuilder.h"
 #include "../../../src/Scene/MME/MMEShaderErrorInfo.h"
@@ -16,7 +16,6 @@
 
 using namespace Lumino;
 using namespace Lumino::Graphics;
-using namespace Lumino::Scene;
 
 #define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).GetCStr()
 #define LOCALFILEA(fileName) TestUtils::GetFilePathA(__FILE__, fileName).GetCStr()

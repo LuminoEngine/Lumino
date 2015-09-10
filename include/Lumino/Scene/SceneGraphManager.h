@@ -1,37 +1,18 @@
 ﻿
 #pragma once
+#include "Common.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 	
 /**
-	@brief	シーングラフの管理クラスです。
+	@brief	Scene モジュール全体の管理を行います。
 */
-class SceneGraphManager
-	: public RefObject
+class SceneManager
 {
 public:
-
-	/// 初期化データ
-	struct ConfigData
-	{
-		Lumino::FileManager*		FileManager;
-		Graphics::GraphicsManager*  GraphicsManager;
-	};
-
-public:
-
-	/**
-		@brief	SceneGraphManager のインスタンスを作成します。
-	*/
-	SceneGraphManager* Create(const ConfigData& configData);
-
-protected:
-	SceneGraphManager();
-	virtual ~SceneGraphManager();
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

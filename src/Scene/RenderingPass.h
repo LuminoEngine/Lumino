@@ -6,13 +6,12 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
-#include "Common.h"
+#include "Internal.h"
 #include "MME/MMEShader.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 class RenderingParams
 {
@@ -24,11 +23,6 @@ public:
 	MMEShader*					Shader;				///< 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 };
 
-struct RenderingPassClientData
-{
-	RenderingPass*	OwnerPass;				///< 
-	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList のインデックス (-1 は一致なし)
-};
 
 struct RenderingPriorityParams
 {
@@ -43,7 +37,7 @@ class RenderingPass
 	: public RefObject
 {
 public:
-	static const int MaxRenderingPass = 32;		///< 1 つのシーングラフ内で作成できる RenderingPass の最大数
+	static const int MaxRenderingPass = Internal::MaxRenderingPass;		///< 1 つのシーングラフ内で作成できる RenderingPass の最大数
 
 public:
 	struct NodeData
@@ -104,5 +98,5 @@ protected:
 	Nullable<float>				m_clearDepth;			///< パス開始時に深度バッファをクリアするZ値
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

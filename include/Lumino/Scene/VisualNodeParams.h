@@ -1,15 +1,15 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Material.h>
 #include <Lumino/Graphics/RenderState.h>
-#include "MME/MMEShader.h"
 #include "SceneNode.h"
 
 namespace Lumino
 {
-namespace Scene
+LN_NAMESPACE_SCENE_BEGIN
+namespace Internal
 {
+
 /// サブセット単位の描画パラメータ
 struct VisualNodeSubsetParams
 {
@@ -19,28 +19,21 @@ struct VisualNodeSubsetParams
 	Graphics::ColorF		BlendColor;     ///< ブレンド色
 	Graphics::Tone			Tone;           ///< 色調
     Matrix					UVTransform;    ///< テクスチャ座標変換行列
-	RefPtr<MMEShader>		SceneShader;
+	MMEShader*				SceneShader;
 
 	/// 初期値
 	VisualNodeSubsetParams()
-        : Opacity           (1.0f)
-        , ColorScale        (1.0f, 1.0f, 1.0f, 1.0f) 
-        , BlendColor        (0.0f, 0.0f, 0.0f, 0.0f)
-        , Tone              (0.0f, 0.0f, 0.0f, 0.0f)
-		, UVTransform		(Matrix::Identity)
-		, SceneShader		()
+		: Opacity(1.0f)
+		, ColorScale(1.0f, 1.0f, 1.0f, 1.0f)
+		, BlendColor(0.0f, 0.0f, 0.0f, 0.0f)
+		, Tone(0.0f, 0.0f, 0.0f, 0.0f)
+		, UVTransform(Matrix::Identity)
+		, SceneShader(NULL)
     {}
 
-	void Multiply(const VisualNodeSubsetParams& parent)
-	{
-		Opacity *= parent.Opacity;
-		ColorScale.MultiplyClamp(parent.ColorScale);
-		BlendColor.AddClamp(parent.BlendColor);
-		Tone.AddClamp(parent.Tone);
-		if (SceneShader.IsNull()) {
-			SceneShader = parent.SceneShader;
-		}
-	}
+	~VisualNodeSubsetParams();
+
+	void Multiply(const VisualNodeSubsetParams& parent);
 };
 
 /// VisualNodeParams
@@ -76,5 +69,6 @@ private:
 
 };
 
-} // namespace Scene
+} // namespace Internal
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

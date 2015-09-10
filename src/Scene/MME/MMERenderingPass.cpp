@@ -1,12 +1,13 @@
 ﻿
 #include "../../Internal.h"
-#include "../VisualNode.h"
+#include <Lumino/Scene/VisualNode.h>
+#include "ShaderScriptCommandList.h"
+#include "MMEShaderTechnique.h"
 #include "MMERenderingPass.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // RenderingPass
@@ -104,7 +105,7 @@ void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 //-----------------------------------------------------------------------------
 void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams)
 {
-	RenderingPassClientData* data = &node->m_renderingPassClientDataList[m_internalEntryID];
+	Internal::RenderingPassClientData* data = &node->m_renderingPassClientDataList[m_internalEntryID];
 
 	// node の m_internalID 番目のフィルタ情報を設定したものが this ではない。
 	// (node が新しく作成されたオブジェクトであるか、前の RenderingPass が解放され ID が返却された後、新たに作成された RenderingPass が同じ ID を取得した場合)
@@ -181,5 +182,5 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	LN_THROW(outParams->Shader != NULL, InvalidOperationException);
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

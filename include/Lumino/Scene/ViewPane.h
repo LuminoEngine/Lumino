@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /**
 	@brief		シーングラフの最終描画先となるレンダリングターゲットと、シーングラフを描画するためのレイヤーを管理します。
@@ -40,5 +39,5 @@ public:
 	virtual ~ViewPane();
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

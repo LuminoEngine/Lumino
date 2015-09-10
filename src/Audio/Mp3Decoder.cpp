@@ -320,7 +320,7 @@ void Mp3Decoder::GetPCMFormat()
 	{
 		// æ“ª‚É‚È‚¯‚ê‚ÎƒKƒ“ƒKƒ“i‚ß‚È‚ª‚ç’T‚·
 		int rs;
-		int ends = m_stream->GetLength();
+		int64_t ends = m_stream->GetLength();
 		while (true)
 		{
 			rs = m_stream->Read(data, 4);

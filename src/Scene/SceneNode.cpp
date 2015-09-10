@@ -1,12 +1,11 @@
 ﻿
 #include "../Internal.h"
 #include "SceneGraphManager.h"
-#include "SceneNode.h"
+#include <Lumino/Scene/SceneNode.h>
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // SceneNodeRefList
@@ -144,5 +143,5 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 	return left->m_priority < right->m_priority;
 }
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -12,8 +12,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 class MMEShader;
 class MMEShaderPass;
 class MMEShaderErrorInfo;
@@ -113,5 +112,5 @@ public:
 	ShaderScriptCommandList	m_scriptCommandList;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

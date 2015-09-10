@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /// Sprite
 class Sprite
@@ -65,5 +64,5 @@ private:
 	Vector2		m_lowerRightUV;
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

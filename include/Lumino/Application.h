@@ -18,6 +18,7 @@ namespace Lumino
 {
 namespace Audio { class AudioManager; }
 namespace Graphics { class ProfilerRenderer; }
+class SceneGraphManager;
 	
 /**
 	@brief		Lumino アプリケーションを表します。
@@ -96,6 +97,7 @@ public:
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	GUI::GUIManager* GetGUIManager() const { return m_guiManager; }
+	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
 
 protected:
 	Application(const Application::ConfigData& configData);
@@ -107,6 +109,7 @@ protected:
 	void InitialzeGraphicsManager();
 	void InitialzeDocumentsManager();
 	void InitialzeGUIManager();
+	void InitialzeSceneGraphManager();
 	virtual bool OnEvent(const Platform::EventArgs& e);
 
 private:
@@ -119,6 +122,7 @@ private:
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	RefPtr<GUI::GUIManager>				m_guiManager;
+	SceneGraphManager*					m_sceneGraphManager;
 
 	Graphics::ProfilerRenderer*			m_profilerRenderer;
 	

@@ -78,7 +78,7 @@ int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 //-----------------------------------------------------------------------------
 void Profiler::SetBaseFrameRate(int group, float baseFrameRate)
 {
-	m_groups[group]->LimitElapsedTime = (1.0 / baseFrameRate) * 1000 * 1000 * 1000;	// ns 単位
+	m_groups[group]->LimitElapsedTime = (1.0f / baseFrameRate) * 1000 * 1000 * 1000;	// ns 単位
 }
 
 //-----------------------------------------------------------------------------

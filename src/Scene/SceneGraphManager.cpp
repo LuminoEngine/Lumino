@@ -86,19 +86,18 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Color.h>
 #include "ViewPane.h"
-#include "SceneNode.h"
+#include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
 
 // TODO: 移動
-#include "Camera.h"
+#include <Lumino/Scene/Camera.h>
 #include "Layer.h"
 #include "MME/MMERenderingPass.h"
 #include "InfomationRenderingPass.h"
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 	
 //=============================================================================
 // SceneGraphManager
@@ -294,5 +293,5 @@ void SceneGraphManager::RemoveShader(MMEShader* shader)
 }
 
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

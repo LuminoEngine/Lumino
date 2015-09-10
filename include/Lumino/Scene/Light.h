@@ -5,36 +5,50 @@
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
-/// Camera
-class Camera
+/// Light
+class Light
 	: public SceneNode
 {
 public:
-	Camera(SceneGraphManager* manager, CameraProjection proj);
-	virtual ~Camera();
+	Light(SceneGraphManager* manager, LightType type);
+	virtual ~Light();
 
 public:
 
-	/// Y 方向視野角の設定
-	void SetFovY(float fov_y) { m_fovY = fov_y; }
+	/// ライトの種類の取得
+	LightType GetType() const { return m_type; }
 
-	/// Y 方向視野角の取得
-	float GetFovY() const { return m_fovY; }
+	/// ライトの有効、無効を設定する
+	void SetEnabled(bool enabled) { m_enabled = enabled; }
 
-	/// 最も近いビュープレーン位置の設定
-	void SetNearClip(float nearClip) { m_nearClip = nearClip; }
+	/// ライトの有効、無効を確認する
+	bool IsEnabled() const { return m_enabled; }
 
-	/// 最も近いビュープレーン位置の取得
-	float GetNearClip() const { return m_nearClip; }
+	/// ディフューズカラーの設定
+	void SetDiffuseColor(const Graphics::ColorF& color) { m_diffuse = color; }
 
-	/// 最も遠いビュープレーン位置の設定
-	void SetFarClip(float farClip) { m_farClip = farClip; }
+	/// ディフューズカラーの取得
+	const Graphics::ColorF& GetDiffuseColor() const { return m_diffuse; }
 
-	/// 最も遠いビュープレーン位置の取得
-	float GetFarClip() const { return m_farClip; }
+	/// アンビエントカラーの設定
+	void SetAmbientColor(const Graphics::ColorF& color) { m_ambient = color; }
+
+	/// アンビエントカラーの取得
+	const Graphics::ColorF& GetAmbientColor() const { return m_ambient; }
+
+	/// スペキュラカラーの設定
+	void SetSpecularColor(const Graphics::ColorF& color) { m_specular = color; }
+
+	/// スペキュラカラーの取得
+	const Graphics::ColorF& GetSpecularColor() const { return m_specular; }
+
+	/// スポットライトのコーン角度の設定 (ラジアン単位)
+	void SetSpotAngle(float angle) { m_spotAngle = angle; }
+
+	/// スポットライトのコーン角度の取得 (ラジアン単位)
+	float GetSpotAngle() const { return m_spotAngle; }
 
 public:	// internal
 
@@ -58,12 +72,18 @@ public:	// internal
 	const Matrix& GetProjectionMatrixIT() const { return m_projMatrixIT; }
 	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
-private:
+protected:
+	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
 
-	CameraProjection	m_projectionMode;
-	float				m_fovY;
-	float				m_nearClip;
-	float				m_farClip;
+private:
+	friend class VisualNode;
+
+	LightType			m_type;				///< ライトの種類
+	Graphics::ColorF	m_diffuse;			///< ディフューズカラー
+	Graphics::ColorF	m_ambient;			///< アンビエントカラー
+	Graphics::ColorF	m_specular;			///< スペキュラカラー
+	bool				m_enabled;			///< 有効状態
+	float				m_spotAngle;		///< コーン角度 (ラジアン単位)
 
 	Matrix				m_viewMatrix;		///< ビュー行列
 	Matrix				m_projMatrix;		///< プロジェクション行列
@@ -81,7 +101,9 @@ private:
 	Matrix				m_viewMatrixIT;		///< ビュー行列 (Inverse * Transpose)
 	Matrix				m_projMatrixIT;		///< プロジェクション行列 (Inverse * Transpose)
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
+
+	float				m_tmpDistance;		///< ノードに近いライトを検索するときの作業用変数
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino

@@ -5,14 +5,13 @@
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
 #include "../Modeling/ModelManager.h"
-#include "Common.h"
+#include "Internal.h"
 
 #include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
 
 namespace Lumino
 {
-namespace Scene
-{
+LN_NAMESPACE_SCENE_BEGIN
 
 /// SceneGraphManager
 class SceneGraphManager
@@ -124,5 +123,5 @@ private:
 	
 };
 
-} // namespace Scene
+LN_NAMESPACE_SCENE_END
 } // namespace Lumino
