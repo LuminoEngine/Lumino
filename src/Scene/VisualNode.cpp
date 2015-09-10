@@ -17,7 +17,8 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VisualNode::VisualNode()
+VisualNode::VisualNode(SceneGraphManager* manager)
+	: SceneNode(manager)
 {
 }
 
@@ -31,9 +32,8 @@ VisualNode::~VisualNode()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VisualNode::Create(SceneGraphManager* manager, int subsetCount)
+void VisualNode::Initialize(int subsetCount)
 {
-	SceneNode::Create(manager);
 	m_visualNodeParams.Create(subsetCount);
 	m_subsetCount = subsetCount;
 }

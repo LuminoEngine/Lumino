@@ -1,7 +1,8 @@
 ﻿
 #pragma once
-#include <Lumino/Scene/Sprite.h>
+#include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Scene/Sprite.h>
 
 namespace Lumino
 {
@@ -14,8 +15,17 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sprite::Sprite()
-	: m_spriteCoord(SpriteCoord_X)
+Sprite* Sprite::Create()
+{
+	return LN_NEW Sprite(SceneGraphManager::Instance);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Sprite::Sprite(SceneGraphManager* manager)
+	: VisualNode(manager)
+	, m_spriteCoord(SpriteCoord_RZ)
 	, m_size()
 	, m_srcRect()
 	, m_flipMode(FlipMode_None)
@@ -36,9 +46,9 @@ Sprite::~Sprite()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::Create(SpriteCoord spriteCoord, SceneGraphManager* manager)
+void Sprite::Initialize(SpriteCoord spriteCoord)
 {
-	VisualNode::Create(manager, 1);
+	VisualNode::Initialize(1);
 	m_spriteCoord = spriteCoord;
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(SizeF(-1, -1));

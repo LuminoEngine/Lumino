@@ -88,6 +88,7 @@
 #include "ViewPane.h"
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
+#include "SceneHelper.h"
 
 // TODO: 移動
 #include <Lumino/Scene/Camera.h>
@@ -102,6 +103,8 @@ LN_NAMESPACE_SCENE_BEGIN
 //=============================================================================
 // SceneGraphManager
 //=============================================================================
+
+SceneGraphManager* SceneGraphManager::Instance = NULL;
 
 //-----------------------------------------------------------------------------
 //
@@ -150,21 +153,18 @@ SceneGraphManager::~SceneGraphManager()
 //-----------------------------------------------------------------------------
 void SceneGraphManager::CreateMMDSceneGraph()
 {
-	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Create(this);
+	m_defaultRoot = Internal::SceneHelper::CreateObject<SceneNode>(this);
 
-	m_default3DRoot = LN_NEW SceneNode();
-	m_default3DRoot->Create(this);
+	m_default3DRoot = Internal::SceneHelper::CreateObject<SceneNode>(this);
 	m_defaultRoot->AddChild(m_default3DRoot);
 
-	m_default2DRoot = LN_NEW SceneNode();
-	m_default2DRoot->Create(this);
+	m_default2DRoot = Internal::SceneHelper::CreateObject<SceneNode>(this);
 	m_defaultRoot->AddChild(m_default2DRoot);
 
-	m_default3DCamera = LN_NEW Camera(this, CameraProjection_3D);
+	m_default3DCamera = Internal::SceneHelper::CreateObject<Camera>(this, CameraProjection_3D);
 	m_default3DRoot->AddChild(m_default3DCamera);
 
-	m_default2DCamera = LN_NEW Camera(this, CameraProjection_2D);
+	m_default2DCamera = Internal::SceneHelper::CreateObject<Camera>(this, CameraProjection_2D);
 	m_default2DRoot->AddChild(m_default2DCamera);
 	
 	m_default3DLayer = LN_NEW DrawingLayer(this);

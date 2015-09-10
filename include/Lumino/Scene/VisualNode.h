@@ -13,9 +13,6 @@ LN_NAMESPACE_SCENE_BEGIN
 class VisualNode
 	: public SceneNode
 {
-public:
-	VisualNode();
-	virtual ~VisualNode();
 
 public:
 
@@ -89,8 +86,6 @@ public:
 
 public:
 
-	/// 作成
-	void Create(SceneGraphManager* manager, int subsetCount);
 
 	const Graphics::RenderState& GetRenderState() const { return m_renderState; }
 	int GetSubsetCount() const { return m_subsetCount; }
@@ -116,6 +111,11 @@ public:
 
 	/// ライトソート用の比較関数 (距離と優先度でソート)
 	static bool CmpLightSort(const Light* left, const Light* right);
+
+protected:
+	VisualNode(SceneGraphManager* manager);
+	virtual ~VisualNode();
+	void Initialize(int subsetCount);
 
 protected:
 	int						m_subsetCount;

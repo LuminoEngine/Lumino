@@ -124,6 +124,14 @@ int main()
 		app->GetGUIManager()->GetDefaultRootFrame()->SetFontFamily(_T("MS PGpthic"));
 		_tprintf(textBox1->GetFontFamily());	// TODO: "MS 明朝" が表示できない・・・？
 
+
+		RefPtr<Sprite> sprite(Sprite::Create());
+		//sprite->SetSize(SizeF(1, 1));
+		//sprite->SetTexture(tex);
+		//sprite->SetShader(mmeShader);
+
+		//app->GetSceneGraphManager()->Get3DRootNode()->AddChild(sprite);
+
 		//RefPtr<Audio::Sound> sound1(Audio::Sound::Create(_T("D:/Proj/Lumino.Audio/test/UnitTest/Audio/TestData/ln21.mid")));
 		//sound1->SetLoopEnabled(true);
 		//sound1->SetPitch(110);

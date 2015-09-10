@@ -274,6 +274,7 @@ void Application::InitialzeSceneGraphManager()
 		data.FileManager = &FileManager::GetInstance();
 		data.GraphicsManager = m_graphicsManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
+		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
 }
 

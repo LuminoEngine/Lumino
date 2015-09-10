@@ -14,7 +14,8 @@ LN_NAMESPACE_SCENE_BEGIN
 //
 //-----------------------------------------------------------------------------
 Camera::Camera(SceneGraphManager* manager, CameraProjection proj)
-	: m_projectionMode(proj)
+	: SceneNode(manager)
+	, m_projectionMode(proj)
 	, m_fovY(Math::PI * 0.125f)
 	, m_nearClip(1.0f)
 	, m_farClip(1000.0f)

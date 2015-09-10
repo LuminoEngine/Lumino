@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <map>
+#include <Lumino/Base/Stack.h>
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
@@ -34,6 +35,9 @@ public:
 			, ModelManager(NULL)
 		{}
 	};
+
+public:
+	static SceneGraphManager* Instance;
 
 public:
 	SceneGraphManager(const ConfigData& configData);

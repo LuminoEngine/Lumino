@@ -12,7 +12,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Basic)
 {
-
+#if 0
 
 
 	//SceneGraphManager::ConfigData c;
@@ -61,7 +61,7 @@ TEST_F(Test_Scene_Sprite, Basic)
 	}
 
 	sceneGraph->ReleaseMMDSceneGraph();
-
+#endif
 	//TestEnv::SaveScreenShot(LOCALFILE("test.png"));
 	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_IndexBuffer.BasicTriangle.png")));
 }

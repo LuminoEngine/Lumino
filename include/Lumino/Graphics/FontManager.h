@@ -2,6 +2,7 @@
 #pragma once
 #include <map>
 #include <Lumino/IO/FileManager.h>
+#include <Lumino/Text/EncodingConverter.h>
 
 // TODO: これらを思いっきり公開してるのは何とかしたい…
 typedef int  FT_Error;

@@ -26,10 +26,6 @@ class SceneNode
 	, public IMMESceneObject
 {
 public:
-	SceneNode();
-	virtual ~SceneNode();
-
-public:
 
 	/// ノード名の設定
 	void SetName(const String& name);
@@ -102,8 +98,6 @@ public:
 
 public:
 
-	void Create(SceneGraphManager* manager);
-
 	/// ノード種別の取得
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_BaseNode; }
 
@@ -143,7 +137,10 @@ public:
 	virtual const Matrix& FindFrameMarix(const String& name) const  { return Matrix::Identity; }	// TODO
 	virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
 	virtual LightNodeList* GetAffectLightList() { return NULL; }
-	
+
+protected:
+	SceneNode(SceneGraphManager* manager);
+	virtual ~SceneNode();
 
 protected:
 	SceneGraphManager*	m_manager;
@@ -168,6 +165,8 @@ protected:
 
 	friend class MMERenderingPass;	// TODO: VisualNode に持ってくべきかも。ついでに friend も何とかしたい
 	Internal::RenderingPassClientData	m_renderingPassClientDataList[Internal::MaxRenderingPass];
+
+	friend class Internal::SceneHelper;
 };
 
 LN_NAMESPACE_SCENE_END

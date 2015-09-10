@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/RefObject.h>
 #include "../MultiThreadingObjectList.h"
 #include "Common.h"
 #include "IDebugRenderer.h"

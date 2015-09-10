@@ -12,10 +12,6 @@ class Camera
 	: public SceneNode
 {
 public:
-	Camera(SceneGraphManager* manager, CameraProjection proj);
-	virtual ~Camera();
-
-public:
 
 	/// Y 方向視野角の設定
 	void SetFovY(float fov_y) { m_fovY = fov_y; }
@@ -57,6 +53,10 @@ public:	// internal
 	const Matrix& GetProjectionMatrixIT() const { return m_projMatrixIT; }
 	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
+protected:
+	Camera(SceneGraphManager* manager, CameraProjection proj);
+	virtual ~Camera();
+
 private:
 
 	CameraProjection	m_projectionMode;
@@ -80,6 +80,8 @@ private:
 	Matrix				m_viewMatrixIT;		///< ビュー行列 (Inverse * Transpose)
 	Matrix				m_projMatrixIT;		///< プロジェクション行列 (Inverse * Transpose)
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
+
+	friend class Internal::SceneHelper;
 };
 
 LN_NAMESPACE_SCENE_END

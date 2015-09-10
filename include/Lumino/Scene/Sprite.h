@@ -13,13 +13,16 @@ class Sprite
 	: public VisualNode
 {
 public:
-	Sprite();
-	virtual ~Sprite();
+	
+	/**
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+	*/
+	static Sprite* Create();
 
 public:
 
 	/// 作成
-	void Create(SpriteCoord spriteCoord = SpriteCoord_RX, SceneGraphManager* manager = NULL);
+	//void Create(/*SpriteCoord spriteCoord = SpriteCoord_RX, SceneGraphManager* manager = NULL*/);
 
 	/// テクスチャの設定
 	void SetTexture(Graphics::Texture* texture);
@@ -50,6 +53,10 @@ private:
 	static void NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b);
 
 protected:
+	Sprite(SceneGraphManager* manager);
+	virtual ~Sprite();
+	void Initialize(SpriteCoord spriteCoord);
+
 	virtual void DrawSubset(RenderingParams& params, int subsetIndex);
 
 private:
@@ -62,6 +69,8 @@ private:
 	Vector3		m_lowerRight;
 	Vector2		m_upperLeftUV;
 	Vector2		m_lowerRightUV;
+
+	friend class Internal::SceneHelper;
 };
 
 LN_NAMESPACE_SCENE_END

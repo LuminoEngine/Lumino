@@ -666,7 +666,7 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 		cache->LookupGlyph(item.Char, &tex1, &srcRect);
 
 		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);
-		data[i].SrcPixelRect.Set(srcRect.X, srcRect.Y, srcRect.Width, srcRect.Height);
+		data[i].SrcPixelRect.Set((float)srcRect.X, (float)srcRect.Y, (float)srcRect.Width, (float)srcRect.Height);
 	}
 
 	Device::ITexture* dtex2 = (tex2 != NULL) ? Helper::GetDeviceObject(tex2) : NULL;

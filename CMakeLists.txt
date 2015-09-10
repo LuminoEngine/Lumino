@@ -245,6 +245,7 @@ set(LN_SOURCES_Scene
 	src/Scene/RenderingPass.h
 	src/Scene/SceneGraphManager.cpp
 	src/Scene/SceneGraphManager.h
+	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
 	src/Scene/Sprite.cpp
 	src/Scene/ViewPane.cpp

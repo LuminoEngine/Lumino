@@ -23,7 +23,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SceneNode::SceneNode()
+SceneNode::SceneNode(SceneGraphManager* manager)
 	: m_manager(NULL)
 	, m_name()
 	, m_localMatrix()
@@ -39,6 +39,9 @@ SceneNode::SceneNode()
 	, m_zDistance(FLT_MAX)
 {
 	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
+
+	LN_REFOBJ_SET(m_manager, manager);
+	m_manager->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -51,17 +54,6 @@ SceneNode::~SceneNode()
 		m_manager->RemoveNode(this);
 		LN_SAFE_RELEASE(m_manager);
 	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void SceneNode::Create(SceneGraphManager* manager)
-{
-	LN_THROW(m_manager == NULL, InvalidOperationException);	// 初期化済みチェック
-	LN_THROW(manager != NULL, ArgumentException);
-	LN_REFOBJ_SET(m_manager, manager);
-	m_manager->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------
