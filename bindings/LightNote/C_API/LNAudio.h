@@ -176,13 +176,6 @@ LN_STATIC_CLASS(LNAudio)
 	LNResult LNAudio_StopSE();
 
 	/**
-		@brief		3D 空間の1メートル相当の距離を設定します。
-		@param[in]  distance	: 距離
-	*/
-	LN_STATIC_API
-	LNResult LNAudio_SetMetreUnitDistance(float distance);
-
-	/**
 		@brief		再生中のBGMの音量を設定します。(フェードアウト中は無効)
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
@@ -270,7 +263,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	*/
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
-	LNResult LNSoundListener_Velocity(const LNVector3* velocity);
+	LNResult LNSoundListener_SetVelocity(const LNVector3* velocity);
 
 	/**
 		@brief		3D音声のリスナーの速度を設定します。
@@ -281,7 +274,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
 	LN_ATTR_OVERLOAD(LNSoundListener_Velocity)
-	void LNSoundListener_VelocityXYZ(float x, float y, float z);
+	void LNSoundListener_SetVelocityXYZ(float x, float y, float z);
 
 LN_CLASS_END
 	

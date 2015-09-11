@@ -7,11 +7,6 @@
 #include "LNInternal.h"
 #include "LNMath.h"
 
-template<typename T, typename U>
-T* p_cast(U* p) { return reinterpret_cast<T*>(p); }
-
-template<typename T, typename U>
-const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 
 //=============================================================================
 // LNVector2
@@ -447,7 +442,7 @@ LNResult LNMatrix_RotateAxis(LNMatrix* mat, const LNVector3* axis, float radian)
 }
 LNResult LNMatrix_RotateAxisD(LNMatrix* mat, const LNVector3* axis, double radian)
 {
-	return LNMatrix_RotateAxis(mat, axis, radian);
+	return LNMatrix_RotateAxis(mat, axis, (float)radian);
 }
 
 //-----------------------------------------------------------------------------

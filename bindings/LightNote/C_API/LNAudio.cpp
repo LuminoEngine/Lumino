@@ -5,7 +5,7 @@
 //=============================================================================
 // LNAudio
 //=============================================================================
-#if 0
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -19,71 +19,54 @@ LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume, int pitch, int fad
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, int fade_time)
+LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, int fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
 	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
-	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
-
-	*sound = LFManager::CheckRegisterObject(obj);
-
-
-	//LNHandle h;
-	//LNSound_CreateMem(data, dataSize, &h);
-	//Core::Audio::Sound* sound = TO_SOUND(h);
- //   FuncLibManager::AudioManager->getGameAudio()->playBGMFromSound( sound, volume, pitch, fade_time );
- //   LNObject_Release( LN_TO_INT( sound ) );
- //   return ::LN_OK;
-	//LN_FUNC_TRY_END;
-	//return LNException_GetLastErrorCode();
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGMFromSound(obj, volume, pitch, fadeTime);
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopBGM(int fade_time)
+LNResult LNAudio_StopBGM(int fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->stopBGM( fade_time );
+	LFManager::Application->GetAudioManager()->GetGameAudio()->StopBGM( fadeTime );
     LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, int fade_time )
+LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, int fadeTime )
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->playBGS( filename, volume, pitch, fade_time );
-    return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGS( filename, volume, pitch, fadeTime );
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, int fade_time)
+LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, int fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
-	LNHandle h;
-	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
-	Core::Audio::Sound* sound = TO_SOUND(h);
-    FuncLibManager::AudioManager->getGameAudio()->playBGSFromSound( sound, volume, pitch, fade_time );
-    LNObject_Release( LN_TO_INT( sound ) );
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
+	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGSFromSound(obj, volume, pitch, fadeTime);
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopBGS(int fade_time)
+LNResult LNAudio_StopBGS(int fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->stopBGS( fade_time );
+	LFManager::Application->GetAudioManager()->GetGameAudio()->StopBGS( fadeTime );
 	LN_FUNC_TRY_END_RETURN;
 }
 
@@ -93,10 +76,8 @@ LNResult LNAudio_StopBGS(int fade_time)
 LNResult LNAudio_PlayME( const LNChar* filename, int volume, int pitch )
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->playME( filename, volume, pitch );
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayME( filename, volume, pitch );
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -105,24 +86,20 @@ LNResult LNAudio_PlayME( const LNChar* filename, int volume, int pitch )
 LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	LNHandle h;
-	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
-	Core::Audio::Sound* sound = TO_SOUND(h);
-    FuncLibManager::AudioManager->getGameAudio()->playMEFromSound( sound, volume, pitch );
-    LNObject_Release( LN_TO_INT( sound ) );
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
+	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayMEFromSound(obj, volume, pitch);
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNAudio_StopME()
+LNResult LNAudio_StopME()
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->stopME();
-    LN_FUNC_TRY_END;
+	LFManager::Application->GetAudioManager()->GetGameAudio()->StopME();
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -131,10 +108,8 @@ void LNAudio_StopME()
 LNResult LNAudio_PlaySE( const LNChar* filename, int volume, int pitch )
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->playSE( filename, volume, pitch );
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySE( filename, volume, pitch );
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -143,10 +118,8 @@ LNResult LNAudio_PlaySE( const LNChar* filename, int volume, int pitch )
 LNResult LNAudio_PlaySE3D(const LNChar* filename, const LNVector3* position, float distance, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->playSE(filename, TO_CORE_VEC3_REF(position), distance, volume, pitch);
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySE3D(filename, *cp_cast<Vector3>(position), distance, volume, pitch);
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -164,14 +137,10 @@ LNResult LNAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, float z,
 LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	LNHandle h;
-	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
-	Core::Audio::Sound* sound = TO_SOUND(h);
-    FuncLibManager::AudioManager->getGameAudio()->playSEFromSound( sound, volume, pitch );
-    LNObject_Release( LN_TO_INT( sound ) );
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
+	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySEFromSound(obj, volume, pitch);
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -180,16 +149,12 @@ LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch
 LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	LNHandle h;
-	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
-	Core::Audio::Sound* sound = TO_SOUND(h);
-	sound->setPosition(TO_CORE_VEC3_REF(position));
-	sound->setMaxDistance(distance);
-	FuncLibManager::AudioManager->getGameAudio()->playMEFromSound(sound, volume, pitch);
-	LNObject_Release(LN_TO_INT(sound));
-	return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
+	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	obj->SetPosition(*cp_cast<Vector3>(position));
+	obj->SetMaxDistance(distance);
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySEFromSound(obj, volume, pitch);
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -204,30 +169,37 @@ LNResult LNAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNAudio_StopSE()
+LNResult LNAudio_StopSE()
 {
     LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->stopSE();
-    LN_FUNC_TRY_END;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-LNResult LNAudio_SetMetreUnitDistance(float distance)
-{
-	LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getAudioDevice()->setMetreUnitDistance( distance );
+	LFManager::Application->GetAudioManager()->GetGameAudio()->StopSE();
 	LN_FUNC_TRY_END_RETURN;
 }
 
+
+///**
+//@brief		3D 空間の1メートル相当の距離を設定します。
+//@param[in]  distance	: 距離
+//*/
+//LN_STATIC_API
+//LNResult LNAudio_Set3DMetreUnitDistance(float distance);
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//LNResult LNAudio_Set3DMetreUnitDistance(float distance)
+//{
+//	LN_FUNC_TRY_BEGIN;
+//	LFManager::Application->GetAudioManager()->SetMetreUnitDistance(distance);
+//	LN_FUNC_TRY_END_RETURN;
+//}
+//
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 LNResult LNAudio_SetBGMVolume(int volume, int fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->setBGMVolume( volume, fadeTime );
+	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGMVolume( volume, fadeTime );
 	LN_FUNC_TRY_END_RETURN;
 }
 
@@ -237,7 +209,7 @@ LNResult LNAudio_SetBGMVolume(int volume, int fadeTime)
 LNResult LNAudio_SetBGSVolume(int volume, int fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
-	FuncLibManager::AudioManager->getGameAudio()->setBGSVolume( volume, fadeTime );
+	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGSVolume( volume, fadeTime );
 	LN_FUNC_TRY_END_RETURN;
 }
 
@@ -250,16 +222,18 @@ LNResult LNAudio_SetBGSVolume(int volume, int fadeTime)
 //-----------------------------------------------------------------------------
 LNResult LNSoundListener_SetPosition(const LNVector3* position)
 {
-	FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Position.Set(position->X, position->Y, position->Z);
+	LN_CHECK_ARG(position != NULL);
+	SoundListener::SetPosition(*cp_cast<Vector3>(position));
 	return ::LN_OK;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetPositionXYZ( float x, float y, float z )
+void LNSoundListener_SetPositionXYZ(float x, float y, float z)
 {
-    FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Position.Set( x, y, z );
+	LNVector3 v = { x, y, z };
+	LNSoundListener_SetPosition(&v);
 }
 
 //-----------------------------------------------------------------------------
@@ -267,16 +241,18 @@ void LNSoundListener_SetPositionXYZ( float x, float y, float z )
 //-----------------------------------------------------------------------------
 LNResult LNSoundListener_SetDirection(const LNVector3* direction)
 {
-	FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Direction.Set(direction->X, direction->Y, direction->Z);
+	LN_CHECK_ARG(direction != NULL);
+	SoundListener::SetDirection(*cp_cast<Vector3>(direction));
 	return ::LN_OK;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetDirectionXYZ( float x, float y, float z )
+void LNSoundListener_SetDirectionXYZ(float x, float y, float z)
 {
-    FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Direction.Set( x, y, z );
+	LNVector3 v = { x, y, z };
+	LNSoundListener_SetDirection(&v);
 }
 
 //-----------------------------------------------------------------------------
@@ -284,35 +260,39 @@ void LNSoundListener_SetDirectionXYZ( float x, float y, float z )
 //-----------------------------------------------------------------------------
 LNResult LNSoundListener_SetUpDirection(const LNVector3* direction)
 {
-	FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->UpDirection.Set(direction->X, direction->Y, direction->Z);
+	LN_CHECK_ARG(direction != NULL);
+	SoundListener::SetUpDirection(*cp_cast<Vector3>(direction));
 	return ::LN_OK;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetUpDirectionXYZ( float x, float y, float z )
+void LNSoundListener_SetUpDirectionXYZ(float x, float y, float z)
 {
-    FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->UpDirection.Set( x, y, z );
+	LNVector3 v = { x, y, z };
+	LNSoundListener_SetUpDirection(&v);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSoundListener_Velocity(const LNVector3* direction)
+LNResult LNSoundListener_SetVelocity(const LNVector3* velocity)
 {
-	FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Velocity.Set(direction->X, direction->Y, direction->Z);
+	LN_CHECK_ARG(velocity != NULL);
+	SoundListener::SetVelocity(*cp_cast<Vector3>(velocity));
 	return ::LN_OK;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_VelocityXYZ( float x, float y, float z )
+void LNSoundListener_SetVelocityXYZ(float x, float y, float z)
 {
-    FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Velocity.Set( x, y, z );
+	LNVector3 v = { x, y, z };
+	LNSoundListener_SetVelocity(&v);
 }
-#endif
+
 //=============================================================================
 // LNSound
 //=============================================================================

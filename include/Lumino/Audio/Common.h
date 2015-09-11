@@ -6,7 +6,10 @@
 #include <Lumino/Math/Vector3.h>
 #include <Lumino/Base/Common.h>
 
-#define LN_MUSIC_TIME_BASE	768
+#define LN_NAMESPACE_AUDIO_BEGIN	//namespace Audio {
+#define LN_NAMESPACE_AUDIO_END		//}
+
+#define LN_MUSIC_TIME_BASE	768	// TODO
 
 namespace Lumino
 {

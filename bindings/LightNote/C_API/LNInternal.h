@@ -21,6 +21,16 @@ using namespace Lumino;
 #define LN_TO_INT( ptr )			reinterpret_cast<intptr_t>( ptr )
 #define LN_INT_TO( type, value )	reinterpret_cast<type>( value )
 
+template<typename T, typename U>
+T* p_cast(U* p) { return reinterpret_cast<T*>(p); }
+
+template<typename T, typename U>
+const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
+
+
+
+
+
 // x_ y_ に Geometry::Size に代入
 #define LNFUNC_LSize_TO( v_, w_, h_ ) \
         const Geometry::Size& v = ( v_ ); \

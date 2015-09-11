@@ -84,6 +84,7 @@ set(LN_SOURCES_Audio
 	include/Lumino/Audio/Common.h
 	include/Lumino/Audio/GameAudio.h
 	include/Lumino/Audio/Sound.h
+	include/Lumino/Audio/SoundListener.h
 	src/Audio/AudioDevice.cpp
 	src/Audio/AudioDevice.h
 	src/Audio/AudioManager.cpp
@@ -102,6 +103,7 @@ set(LN_SOURCES_Audio
 	src/Audio/OggDecoder.cpp
 	src/Audio/OggDecoder.h
 	src/Audio/Sound.cpp
+	src/Audio/SoundListener.cpp
 	src/Audio/WaveDecoder.cpp
 	src/Audio/WaveDecoder.h
 	src/Audio/XAudio2/XAudio2AudioDevice.cpp
