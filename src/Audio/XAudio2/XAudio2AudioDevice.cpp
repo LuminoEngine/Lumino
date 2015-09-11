@@ -203,15 +203,15 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, bool enable3d, SoundLoadingType type)
+AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<AudioPlayer> audioPlayer;
 
     // 種類に応じてプレイヤーを作成する
-	switch ( type )
+	switch ( mode )
 	{
 		// オンメモリ再生
-		case SoundLoadingType::OnMemory:
+		case SoundPlayingMode::OnMemory:
         {
 			XAudio2OnMemoryAudioPlayer* player = LN_NEW XAudio2OnMemoryAudioPlayer(this);
 			audioPlayer.Attach(player, false);
@@ -219,7 +219,7 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 			break;
         }
 		// ストリーミング再生
-		case SoundLoadingType::Streaming:
+		case SoundPlayingMode::Streaming:
         {
 			XAudio2StreamingAudioPlayer* player = LN_NEW XAudio2StreamingAudioPlayer(this);
 			audioPlayer.Attach(player, false);

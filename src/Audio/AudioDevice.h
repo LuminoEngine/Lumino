@@ -29,7 +29,7 @@ public:
 public:
 
 	/// AudioPlayer を作成する (type に LN_SOUNDPLAYTYPE_AUTO は指定できないので注意)
-	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundLoadingType type) = 0;
+	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) = 0;
 	/// 更新 (更新スレッドから呼ばれる)
 	virtual void Update() = 0;
 	//virtual void SetListenerState(const Vector3& position, const Vector3& front) = 0;

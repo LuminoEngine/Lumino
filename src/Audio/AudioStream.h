@@ -25,7 +25,7 @@ public:
 	AudioStream(Stream* stream);
 	virtual ~AudioStream();
 
-	void Create() { InvokeIOProc(true, &FileManager::GetInstance()); }
+	void Create(bool async) { InvokeIOProc(async, &FileManager::GetInstance()); }
 
 	/// ‰Šú‰»‚ªŠ®—¹‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é (—áŠO‚ª”­¶‚µ‚Ä‚¢‚ê‚Î‚±‚±‚©‚çÄ throw ‚³‚ê‚é)
 	bool CheckCreated();

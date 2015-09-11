@@ -96,7 +96,7 @@ LN_STATIC_CLASS(LNAudio)
 		@brief	  ME の演奏を停止します。
 	*/
 	LN_STATIC_API
-	void LNAudio_StopME();
+	LNResult LNAudio_StopME();
 
 	/**
 		@brief		SE を演奏します。
@@ -173,7 +173,7 @@ LN_STATIC_CLASS(LNAudio)
 		@brief		すべての SE の演奏を停止します。
 	*/
 	LN_STATIC_API
-	void LNAudio_StopSE();
+	LNResult LNAudio_StopSE();
 
 	/**
 		@brief		3D 空間の1メートル相当の距離を設定します。

@@ -393,7 +393,7 @@ void GameAudio::StopME()
 void GameAudio::PlaySE( const TCHAR* filePath, int volume, int pitch )
 {
 	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
-	sound->SetLoadingType(SoundLoadingType::OnMemory);
+	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 
 	// ボリューム・ピッチ設定
 	sound->SetVolume( volume );
@@ -415,7 +415,7 @@ void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float 
 {
 	// サウンド作成
 	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
-	sound->SetLoadingType(SoundLoadingType::OnMemory);
+	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(true);
 
 	// 位置・ボリューム・ピッチ設定
@@ -440,7 +440,7 @@ void GameAudio::PlaySEFromSound( Sound* srcSound, int volume, int pitch )
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
 	RefPtr<Sound> sound(AudioHelper::CreateSound(mManager, AudioHelper::GetAudioStream(srcSound)));
-	sound->SetLoadingType(SoundLoadingType::OnMemory);
+	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(srcSound->Is3DEnabled());
 
 	// 位置・ボリューム・ピッチ設定

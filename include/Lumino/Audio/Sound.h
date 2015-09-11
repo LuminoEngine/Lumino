@@ -30,6 +30,11 @@ public:
 	*/
 	static Sound* Create(const TCHAR* filePath, AudioManager* manager = NULL);
 
+	/**
+		@brief	Sound クラスのインスタンスを作成します。
+	*/
+	static Sound* Create(Stream* stream, SoundLoadingMode loadingMode);
+
 public:
 	
 	/**
@@ -156,12 +161,12 @@ public:
 		@brief		音声データの読み込み方法を設定します。(規定値:Unknown)
 		@details	設定は Play() の前に行う必要があります。
 	*/
-	void SetLoadingType(SoundLoadingType type);
+	void SetPlayingMode(SoundPlayingMode mode);
 	
 	/**
 		@brief		音声データの読み込み方法を取得します。
 	*/
-	SoundLoadingType GetLoadingType() const;
+	SoundPlayingMode GetPlayingMode() const;
 
 	/**
 		@brief		音量のフェードを開始します。
@@ -179,6 +184,7 @@ public:
 public:
 	Sound(AudioManager* manager, AudioStream* stream);
 	virtual ~Sound();
+	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 
 private:
@@ -186,7 +192,7 @@ private:
 	Threading::Mutex			m_mutex;
 	AudioStream*				m_audioStream;
     AudioPlayer*				m_audioPlayer;
-	SoundLoadingType			m_loadingType;
+	SoundPlayingMode			m_playingMode;
 
 	int							m_volume;
 	int							m_pitch;

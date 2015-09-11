@@ -25,7 +25,15 @@ Sound* Sound::Create(const TCHAR* filePath, AudioManager* manager)
 	manager = (manager) ? manager : Internal::Manager;
 
 	RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
-	return manager->CreateSound(stream, CacheKey(PathName(filePath)));
+	return manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Sound* Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
+{
+	return Internal::Manager->CreateSound(stream, CacheKey::Null, loadingMode);
 }
 
 //-----------------------------------------------------------------------------
@@ -35,7 +43,7 @@ Sound::Sound(AudioManager* manager, AudioStream* stream/*, SoundPlayType playerT
 	: m_manager(manager)
 	, m_audioStream(stream)
 	, m_audioPlayer(NULL)
-	, m_loadingType(SoundLoadingType::Unknown)
+	, m_playingMode(SoundPlayingMode::Unknown)
 	, m_volume(100)
 	, m_pitch(100)
 	, m_loopEnabled(false)
@@ -289,17 +297,17 @@ SoundPlayingState Sound::GetPlayingState() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::SetLoadingType(SoundLoadingType type)
+void Sound::SetPlayingMode(SoundPlayingMode mode)
 {
-	m_loadingType = type;
+	m_playingMode = mode;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SoundLoadingType Sound::GetLoadingType() const
+SoundPlayingMode Sound::GetPlayingMode() const
 {
-	return m_loadingType;
+	return m_playingMode;
 }
 
 //-----------------------------------------------------------------------------
@@ -347,6 +355,15 @@ bool Sound::IsVolumeFading() const
 //}
 
 //-----------------------------------------------------------------------------
+// 同期的な生成モード時、MAnager から呼ばれる。
+//-----------------------------------------------------------------------------
+void Sound::CreateAudioPlayerSync()
+{
+	LN_CHECK_STATE(m_audioPlayer == NULL && m_audioStream->CheckCreated());
+	m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
+}
+
+//-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Sound::Polling(float elapsedTime)
@@ -354,7 +371,7 @@ void Sound::Polling(float elapsedTime)
 	// stream が準備できていれば Player を作成する
 	if (m_audioPlayer == NULL && m_audioStream->CheckCreated())
 	{
-		m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_loadingType, m_is3DSound);
+		m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
 		m_audioPlayer->SetVolume(m_volume);
 		m_audioPlayer->SetPitch(m_pitch);
 		m_audioPlayer->loop(m_loopEnabled);

@@ -48,8 +48,17 @@ enum DirectMusicInitMode
 	DirectMusicInitMode_MAX,
 };
 
-/// 再生方法 (Player の種類)
-enum class SoundLoadingType
+/** 音声データの読み込み方法を表します。*/
+enum class SoundLoadingMode
+{
+	Sync = 0,		/**< 同期的に読み込む */
+	ASync,			/**< 非同期的に読み込む */
+
+	TERMINATOR,
+};
+
+/// 再生方法
+enum class SoundPlayingMode
 {
 	Unknown = 0,		///< 不明な再生方法 (自動選択)	TODO: 名前を Auto にする
 	//SoundPlayType_Auto,				///< 自動選択 ( デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります )

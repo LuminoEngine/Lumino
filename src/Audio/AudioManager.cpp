@@ -129,16 +129,16 @@ void AudioManager::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioStream* AudioManager::CreateAudioStream(const TCHAR* filePath)
-{
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath));
-	return CreateAudioStream(stream, CacheKey(PathName(filePath)));
-}
+//AudioStream* AudioManager::CreateAudioStream(const TCHAR* filePath)
+//{
+//	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath));
+//	return CreateAudioStream(stream, CacheKey(PathName(filePath)));
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key)
+AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
 	// キャッシュを検索する。
 	// 見つかった AudioStream は、まだ非同期初期化中であることもある。
@@ -148,7 +148,8 @@ AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key
 	if (audioStream.IsNull())
 	{
 		audioStream.Attach(LN_NEW AudioStream(stream), false);
-		audioStream->Create();	// 非同期読み込み開始
+		audioStream->Create(loadingMode == SoundLoadingMode::ASync);	// 非同期読み込み開始
+								// TODO: 同期読み込みだけにして、Polling スレッドで読み込んでも良いかも？
 		/*
 			非同期読み込みの開始で FileManager のタスクリストに入れられる。
 			そこで参照カウントが +1 され、処理が完了するまで参照され続ける。
@@ -167,13 +168,13 @@ AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundLoadingType type, bool enable3D)
+AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D)
 {
 	// 再生方法の選択
-	SoundLoadingType playerType = AudioUtils::CheckAudioPlayType(type, stream, mOnMemoryLimitSize);
+	SoundPlayingMode playerType = AudioUtils::CheckAudioPlayType(mode, stream, mOnMemoryLimitSize);
 
 	// 作成
-	if (playerType == SoundLoadingType::Midi) {
+	if (playerType == SoundPlayingMode::Midi) {
 		return m_midiAudioDevice->CreateAudioPlayer(stream, enable3D, playerType);
 	}
 	else {
@@ -184,10 +185,14 @@ AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundLoadingTy
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key)
+Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
-	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key));
+	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key, loadingMode));
 	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream));
+
+	if (loadingMode == SoundLoadingMode::Sync) {
+		sound->CreateAudioPlayerSync();
+	}
 
 	// 管理リストに追加
 	Threading::MutexScopedLock lock(m_soundListMutex);

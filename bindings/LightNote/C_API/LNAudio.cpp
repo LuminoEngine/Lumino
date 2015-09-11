@@ -12,25 +12,31 @@
 LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume, int pitch, int fadeTime )
 {
 	LN_FUNC_TRY_BEGIN;
-	LFManager::Application->GetAudioManager()->GetGameAudio()->
-	FuncLibManager::AudioManager->getGameAudio()->playBGM( filePath, volume, pitch, fadeTime );
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
 	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGMMem(const void* data, int data_size, int volume, int pitch, int fade_time)
+LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, int fade_time)
 {
     LN_FUNC_TRY_BEGIN;
-	LNHandle h;
-	LNSound_CreateMem(&h, data, data_size, LN_FALSE);
-	Core::Audio::Sound* sound = TO_SOUND(h);
-    FuncLibManager::AudioManager->getGameAudio()->playBGMFromSound( sound, volume, pitch, fade_time );
-    LNObject_Release( LN_TO_INT( sound ) );
-    return ::LN_OK;
-	LN_FUNC_TRY_END;
-	return LNException_GetLastErrorCode();
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
+	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
+
+	*sound = LFManager::CheckRegisterObject(obj);
+
+
+	//LNHandle h;
+	//LNSound_CreateMem(data, dataSize, &h);
+	//Core::Audio::Sound* sound = TO_SOUND(h);
+ //   FuncLibManager::AudioManager->getGameAudio()->playBGMFromSound( sound, volume, pitch, fade_time );
+ //   LNObject_Release( LN_TO_INT( sound ) );
+ //   return ::LN_OK;
+	//LN_FUNC_TRY_END;
+	//return LNException_GetLastErrorCode();
 }
 
 //-----------------------------------------------------------------------------
@@ -58,11 +64,11 @@ LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, int fad
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGSMem(const void* data, int data_size, int volume, int pitch, int fade_time)
+LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, int fade_time)
 {
 	LN_FUNC_TRY_BEGIN;
 	LNHandle h;
-	LNSound_CreateMem(&h, data, data_size, LN_FALSE);
+	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
 	Core::Audio::Sound* sound = TO_SOUND(h);
     FuncLibManager::AudioManager->getGameAudio()->playBGSFromSound( sound, volume, pitch, fade_time );
     LNObject_Release( LN_TO_INT( sound ) );
@@ -96,11 +102,11 @@ LNResult LNAudio_PlayME( const LNChar* filename, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayMEMem(const void* data, int data_size, int volume, int pitch)
+LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	LNHandle h;
-	LNSound_CreateMem(&h, data, data_size, LN_FALSE);
+	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
 	Core::Audio::Sound* sound = TO_SOUND(h);
     FuncLibManager::AudioManager->getGameAudio()->playMEFromSound( sound, volume, pitch );
     LNObject_Release( LN_TO_INT( sound ) );
@@ -155,11 +161,11 @@ LNResult LNAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, float z,
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySEMem(const void* data, int data_size, int volume, int pitch)
+LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	LNHandle h;
-	LNSound_CreateMem(&h, data, data_size, LN_FALSE);
+	LNSound_CreateMem(&h, data, dataSize, LN_FALSE);
 	Core::Audio::Sound* sound = TO_SOUND(h);
     FuncLibManager::AudioManager->getGameAudio()->playSEFromSound( sound, volume, pitch );
     LNObject_Release( LN_TO_INT( sound ) );
@@ -235,15 +241,6 @@ LNResult LNAudio_SetBGSVolume(int volume, int fadeTime)
 	LN_FUNC_TRY_END_RETURN;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-LNHandle LNAudio_GetInternalGameSound( LNInternalGameSound type )
-{
-	return LN_TO_INT( FuncLibManager::AudioManager->getGameAudio()->getInternalGameSound( 
-		(LNote::Core::Audio::GameAudio::InternalGameSound)type ) );
-}
-
 //=============================================================================
 // LNSoundListener
 //=============================================================================
@@ -316,7 +313,6 @@ void LNSoundListener_VelocityXYZ( float x, float y, float z )
     FuncLibManager::AudioManager->getAudioDevice()->getSoundListener()->Velocity.Set( x, y, z );
 }
 #endif
-
 //=============================================================================
 // LNSound
 //=============================================================================
@@ -390,12 +386,12 @@ LNOTEAPI LNHandle LNSound_Create( const LNChar* filename, LNBool enable3d, LNSou
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_CreateMem(LNHandle* sound, const void* data, int data_size, LNBool enable_3d)
+LNResult LNSound_CreateMem(LNHandle* sound, const void* data, int dataSize, LNBool enable_3d)
 {
 	LN_FUNC_TRY_BEGIN;
 
 	LRefPtr<Core::FileIO::Stream> stream(
-		FileIO::FileUtils::createInStreamFromMemoryManaged(data, data_size));
+		FileIO::FileUtils::createInStreamFromMemoryManaged(data, dataSize));
 
 	LRefPtr<Core::Audio::Sound> obj(
 		FuncLibManager::AudioManager->createSound(
@@ -420,12 +416,12 @@ LNOTEAPI LNHandle LNSound_CreateMem(const LNByte* data, int dataSize, LNBool ena
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNHandle LNSound_CreateMem( const LNByte* data, int data_size, LNBool enable_3d )
+LNHandle LNSound_CreateMem( const LNByte* data, int dataSize, LNBool enable_3d )
 {
     LN_FUNC_TRY_BEGIN;
 
 	LRefPtr<Core::FileIO::IInStream> stream(
-		FileIO::File::createInStreamFromMemoryManaged( data, data_size ) );
+		FileIO::File::createInStreamFromMemoryManaged( data, dataSize ) );
             
 	LRefPtr<Core::Audio::Sound> obj(
 		FuncLibManager::AudioManager->createSound(
