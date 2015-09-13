@@ -1,4 +1,9 @@
+/*
+	■参考
+	Cri API
+	http://www.criware.jp/adx2le/docs/windows/index_man.html
 
+*/
 #include "Internal.h"
 #ifdef LN_OS_WIN32
 	#include "XAudio2/XAudio2AudioDevice.h"
@@ -15,8 +20,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //class ASyncAudioStreamLoadTask
 //	: public AsyncIOTask
@@ -39,23 +43,23 @@ namespace Audio
 //};
 //
 //=============================================================================
-// AudioManager
+// AudioManagerImplImpl
 //=============================================================================
 
-AudioManager* Internal::Manager = NULL;
+AudioManagerImpl* Internal::Manager = NULL;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioManager* AudioManager::Create(const Settings& settings)
+AudioManagerImpl* AudioManagerImpl::Create(const Settings& settings)
 {
-	return LN_NEW AudioManager(settings);
+	return LN_NEW AudioManagerImpl(settings);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioManager::AudioManager(const Settings& settings)
+AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	: m_fileManager(NULL)
 	, m_audioDevice(NULL)
 	, m_midiAudioDevice(NULL)
@@ -98,7 +102,7 @@ AudioManager::AudioManager(const Settings& settings)
 	m_gameAudio = LN_NEW GameAudio(this);
 
 	// ポーリングスレッド開始
-	m_pollingThread.Start(LN_CreateDelegate(this, &AudioManager::Thread_Polling));
+	m_pollingThread.Start(LN_CreateDelegate(this, &AudioManagerImpl::Thread_Polling));
 
 	Internal::Manager = this;
 }
@@ -106,14 +110,14 @@ AudioManager::AudioManager(const Settings& settings)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioManager::~AudioManager()
+AudioManagerImpl::~AudioManagerImpl()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void AudioManager::Finalize()
+void AudioManagerImpl::Finalize()
 {
 	// ポーリングスレッドの終了を待つ
 	m_endRequested.SetTrue();
@@ -151,7 +155,7 @@ void AudioManager::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//AudioStream* AudioManager::CreateAudioStream(const TCHAR* filePath)
+//AudioStream* AudioManagerImpl::CreateAudioStream(const TCHAR* filePath)
 //{
 //	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath));
 //	return CreateAudioStream(stream, CacheKey(PathName(filePath)));
@@ -160,7 +164,7 @@ void AudioManager::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
+AudioStream* AudioManagerImpl::CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
 	// キャッシュを検索する。
 	// 見つかった AudioStream は、まだ非同期初期化中であることもある。
@@ -190,7 +194,7 @@ AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D)
+AudioPlayer* AudioManagerImpl::CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D)
 {
 	// 再生方法の選択
 	SoundPlayingMode playerType = AudioUtils::CheckAudioPlayType(mode, stream, mOnMemoryLimitSize);
@@ -207,7 +211,7 @@ AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayingMo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
+Sound* AudioManagerImpl::CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
 	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key, loadingMode));
 	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream));
@@ -227,7 +231,7 @@ Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key, SoundLoadi
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void AudioManager::Thread_Polling()
+void AudioManagerImpl::Thread_Polling()
 {
 #ifdef LN_OS_WIN32
 	// COM 初期化
@@ -286,5 +290,5 @@ void AudioManager::Thread_Polling()
 #endif
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

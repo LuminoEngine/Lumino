@@ -10,9 +10,8 @@
 
 namespace Lumino
 {
-namespace Audio
-{
-class AudioManager;
+LN_NAMESPACE_AUDIO_BEGIN
+class AudioManagerImpl;
 class AudioStream;
 class AudioPlayer;
 
@@ -28,7 +27,7 @@ public:
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static Sound* Create(const TCHAR* filePath, AudioManager* manager = NULL);
+	static Sound* Create(const TCHAR* filePath, AudioManagerImpl* manager = NULL);
 
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
@@ -66,17 +65,17 @@ public:
 	void SetLoopEnabled(bool enabled);
 
 	/**
+		@brief		ループ再生が有効かを確認します。
+	*/
+	bool IsLoopEnabled() const;
+
+	/**
 		@brief		ループ範囲を設定します。
 		@param[in]	begin		: ループ範囲の開始サンプル
 		@param[in]	length		: ループ範囲のサンプル数
 		@details	MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。 
 	*/
 	void SetLoopRange(uint32_t begin, uint32_t length);
-
-	/**
-		@brief		ループ再生が有効かを確認します。
-	*/
-    bool IsLoop() const;
 
 	/**
 		@brief		この音声の再生を開始します。
@@ -112,45 +111,45 @@ public:
 	/**
 		@brief		3D 音声としての位置を設定します。
 	*/
-	void SetPosition(const Vector3& position);
+	void SetEmitterPosition(const Vector3& position);
 
 	/**
 		@brief		3D 音声としての位置を取得します。
 	*/
-	const Vector3& GetPosition() const;
+	const Vector3& GetEmitterPosition() const;
 	
 	/**
 		@brief		3D 音声としての速度を設定します。
 	*/
-	void SetVelocity(const Vector3& velocity);
+	void SetEmitterVelocity(const Vector3& velocity);
 
 	/**
 		@brief		3D 音声としての位置を取得します。
 	*/
-	const Vector3& GetVelocity() const;
+	const Vector3& GetEmitterVelocity() const;
 
 	/**
 		@brief		3D 音声としての減衰距離を設定します。
 	*/
-    void SetMaxDistance(float distance);
+	void SetEmitterMaxDistance(float distance);
 
 	/**
 		@brief		音声データの全サンプル数を取得します。
 		@details	MIDI の場合はミュージックタイム単位 (四分音符ひとつ分が 768) で、
 					1度でも Play() で再生を開始していないと取得できません。
 	*/
-	void GetTotalSamples() const;
+	int64_t GetTotalSamples() const;
 
 	/**
 		@brief		現在の再生サンプル数を取得します。
 	*/
-	void GetCurrentSamples() const;
+	int64_t GetPlayedSamples() const;
 
 	/**
-		@brief		サンプリング周波数を取得します。
+		@brief		サンプリングレートを取得します。
 		@details	MIDI の場合は 768 を返します。
 	*/
-	void GetSamplesPerSec() const;
+	int GetSamplingRate() const;
 
 	/**
 		@brief		この音声の現在の再生状態を取得します。
@@ -158,13 +157,13 @@ public:
 	SoundPlayingState GetPlayingState() const;
 
 	/**
-		@brief		音声データの読み込み方法を設定します。(規定値:Unknown)
+		@brief		音声データの再生方法を設定します。(規定値:Unknown)
 		@details	設定は Play() の前に行う必要があります。
 	*/
 	void SetPlayingMode(SoundPlayingMode mode);
 	
 	/**
-		@brief		音声データの読み込み方法を取得します。
+		@brief		音声データの再生方法を取得します。
 	*/
 	SoundPlayingMode GetPlayingMode() const;
 
@@ -182,13 +181,13 @@ public:
 	bool IsVolumeFading() const;
 
 public:
-	Sound(AudioManager* manager, AudioStream* stream);
+	Sound(AudioManagerImpl* manager, AudioStream* stream);
 	virtual ~Sound();
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 
 private:
-	AudioManager*				m_manager;
+	AudioManagerImpl*			m_manager;
 	Threading::Mutex			m_mutex;
 	AudioStream*				m_audioStream;
     AudioPlayer*				m_audioPlayer;
@@ -214,5 +213,5 @@ private:
 	friend class AudioHelper;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

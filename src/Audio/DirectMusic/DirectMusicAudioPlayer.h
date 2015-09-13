@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class AudioDevice;
 
 /*
@@ -64,5 +63,5 @@ private:
     uint32_t			m_pauseTime;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

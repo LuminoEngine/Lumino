@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 enum GameAudioFlags
 {
@@ -22,7 +21,7 @@ enum GameAudioFlags
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GameAudio::GameAudio(AudioManager* mamager)
+GameAudio::GameAudio(AudioManagerImpl* mamager)
 	: mManager(mamager)
 	, mBGM(NULL)
 	, mBGS(NULL)
@@ -418,9 +417,9 @@ void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float 
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(true);
 
-	// 位置・ボリューム・ピッチ設定
-	sound->SetPosition( position );
-	sound->SetMaxDistance( distance );
+	// 位置・ピッチ設定
+	sound->SetEmitterPosition( position );
+	sound->SetEmitterMaxDistance(distance);
 	sound->SetVolume( volume );
 	sound->SetPitch( pitch );
 
@@ -448,7 +447,7 @@ void GameAudio::PlaySEFromSound( Sound* srcSound, int volume, int pitch )
 	sound->SetPitch( pitch );
 	if (srcSound->Is3DEnabled())
 	{
-		sound->SetPosition( srcSound->GetPosition() );
+		sound->SetEmitterPosition(srcSound->GetEmitterPosition());
 	}
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
@@ -623,5 +622,5 @@ void GameAudio::PushReleaseAtPlayEndList( Sound* sound )
 	}
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

@@ -12,8 +12,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class XAudio2AudioPlayerBase;
 
 /// 3D オーディオの計算に必要なパラメータ
@@ -103,5 +102,5 @@ private:
     bool                        mCoInited;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

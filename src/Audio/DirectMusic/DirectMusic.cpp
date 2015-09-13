@@ -18,8 +18,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // DirectMusicSegment 
@@ -540,5 +539,5 @@ void DirectMusicManager::Thread_InitPerformance()
 	CoUninitialize();
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

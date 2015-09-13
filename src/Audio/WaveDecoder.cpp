@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /// wave ファイルのヘッダ
 struct WaveFileHeader
@@ -194,5 +193,5 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 }
 
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

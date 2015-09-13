@@ -13,8 +13,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /// 音声ファイルフォーマット
 enum StreamFormat
@@ -94,21 +93,5 @@ enum class SoundFadeBehavior
 	TERMINATOR,
 };
 
-/// 3D サウンドリスナー
-struct SoundListener
-{
-	Vector3		Position;
-	Vector3		Direction;
-	Vector3		UpDirection;
-	Vector3		Velocity;
-
-	SoundListener()
-		: Position(0, 0, 0)
-		, Direction(0, 0, 1.0f)
-		, UpDirection(0, 1.0f, 0)
-		, Velocity(0, 0, 0)
-	{}
-};
-
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

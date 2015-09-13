@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // Mp3Decoder
@@ -389,5 +388,5 @@ void Mp3Decoder::GetPCMFormat()
 	format->nCodecDelay = 0x571;
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

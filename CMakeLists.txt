@@ -87,6 +87,7 @@ set(LN_SOURCES_Audio
 	include/Lumino/Audio/SoundListener.h
 	src/Audio/AudioDevice.cpp
 	src/Audio/AudioDevice.h
+	src/Audio/AudioHelper.h
 	src/Audio/AudioManager.cpp
 	src/Audio/AudioPlayer.cpp
 	src/Audio/AudioPlayer.h

@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // DirectMusicAudioPlayer
@@ -271,5 +270,5 @@ void DirectMusicAudioPlayer::_play()
 	mIsPausing = false;
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

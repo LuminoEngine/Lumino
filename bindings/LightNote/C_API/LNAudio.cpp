@@ -23,7 +23,7 @@ LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitc
 {
     LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGMFromSound(obj, volume, pitch, fadeTime);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -55,7 +55,7 @@ LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitc
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGSFromSound(obj, volume, pitch, fadeTime);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -87,7 +87,7 @@ LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayMEFromSound(obj, volume, pitch);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -138,7 +138,7 @@ LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySEFromSound(obj, volume, pitch);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -150,9 +150,9 @@ LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* po
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Audio::Sound> obj(Audio::Sound::Create(stream, Audio::SoundLoadingMode::Sync));
-	obj->SetPosition(*cp_cast<Vector3>(position));
-	obj->SetMaxDistance(distance);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	obj->SetEmitterPosition(*cp_cast<Vector3>(position));
+	obj->SetEmitterMaxDistance(distance);
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySEFromSound(obj, volume, pitch);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -297,7 +297,7 @@ LNResult LNSoundListener_SetVelocityXYZ(float x, float y, float z)
 // LNSound
 //=============================================================================
 
-LN_TYPE_INFO_IMPL(Audio::Sound, LNSound);
+LN_TYPE_INFO_IMPL(Lumino::Sound, LNSound);
 
 //-----------------------------------------------------------------------------
 //
@@ -305,30 +305,290 @@ LN_TYPE_INFO_IMPL(Audio::Sound, LNSound);
 LNResult LNSound_Create(const LNChar* filename, LNHandle* sound)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<Audio::Sound> obj(Audio::Sound::Create(filename, LFManager::Application->GetAudioManager()));
+	RefPtr<Sound> obj(Sound::Create(filename, LFManager::Application->GetAudioManager()));
 	*sound = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN
-
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_Play(LNHandle sound)
+LNResult LNSound_SetVolume(LN_HANDLE(LNSound) sound, int volume)
 {
+	LN_CHECK_ARG_HANDLE(sound);
 	LN_FUNC_TRY_BEGIN;
-	TO_REFOBJ(Audio::Sound, sound)->Play();
+	TO_REFOBJ(Sound, sound)->SetVolume(volume);
 	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_Stop(LNHandle sound)
+LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, int* outVolume)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outVolume != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outVolume = TO_REFOBJ(Sound, sound)->GetVolume();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetPitch(LN_HANDLE(LNSound) sound, int pitch)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetPitch(pitch);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_GetPitch(LN_HANDLE(LNSound) sound, int* outPitch)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outPitch != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outPitch = TO_REFOBJ(Sound, sound)->GetPitch();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetLoopEnabled(LN_HANDLE(LNSound) sound, LNBool loopEnable)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetLoopEnabled(LNC_TO_BOOL(loopEnable));
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_IsLoopEnabled(LN_HANDLE(LNSound) sound, LNBool* outEnabled)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outEnabled != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outEnabled = LNC_TO_LNBOOL(TO_REFOBJ(Sound, sound)->IsLoopEnabled());
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetLoopRange(LN_HANDLE(LNSound) sound, int begin, int length)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetLoopRange(begin, length);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_Set3DEnabled(LN_HANDLE(LNSound) sound, LNBool enabled)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetLoopEnabled(LNC_TO_BOOL(enabled));
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_Is3DEnabled(LN_HANDLE(LNSound) sound, LNBool* outEnabled)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outEnabled != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outEnabled = LNC_TO_LNBOOL(TO_REFOBJ(Sound, sound)->Is3DEnabled());
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetPlayingMode(LN_HANDLE(LNSound) sound, LNSoundPlayingMode mode)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetPlayingMode((SoundPlayingMode)mode);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_GetPlayingMode(LN_HANDLE(LNSound) sound, LNSoundPlayingMode* outType)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outType != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outType = (LNSoundPlayingMode)TO_REFOBJ(Sound, sound)->GetPlayingMode();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_GetPlayingState(LN_HANDLE(LNSound) sound, LNSoundPlayingState* outState)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outState != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outState = (LNSoundPlayingState)TO_REFOBJ(Sound, sound)->GetPlayingState();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_Play(LN_HANDLE(LNSound) sound)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->Play();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_Stop(LN_HANDLE(LNSound) sound)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->Stop();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_Pause(LN_HANDLE(LNSound) sound)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->Pause();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_Resume(LN_HANDLE(LNSound) sound)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->Resume();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, double time, LNSoundFadeBehavior behavior)
 {
 	LN_FUNC_TRY_BEGIN;
-	TO_REFOBJ(Audio::Sound, sound)->Stop();
+	TO_REFOBJ(Sound, sound)->FadeVolume(targetVolume, time, (SoundFadeBehavior)behavior);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_GetPlayedSamples(LN_HANDLE(LNSound) sound, int64_t* outSamples)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outSamples != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outSamples = TO_REFOBJ(Sound, sound)->GetPlayedSamples();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_GetTotalSamples(LN_HANDLE(LNSound) sound, int64_t* outSamples)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outSamples != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outSamples = TO_REFOBJ(Sound, sound)->GetTotalSamples();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_GetSamplingRate(LN_HANDLE(LNSound) sound, int32_t* outRate)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(outRate != NULL);
+	LN_FUNC_TRY_BEGIN;
+	*outRate = TO_REFOBJ(Sound, sound)->GetSamplingRate();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetEmitterPosition(LN_HANDLE(LNSound) sound, const LNVector3* position)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(position != NULL);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetEmitterPosition(*cp_cast<Vector3>(position));
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetEmitterPositionXYZ(LN_HANDLE(LNSound) sound, float x, float y, float z)
+{
+	LNVector3 pos = { x, y, z };
+	return LNSound_SetEmitterPosition(sound, &pos);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetEmitterVelocity(LN_HANDLE(LNSound) sound, const LNVector3* velocity)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_CHECK_ARG(velocity != NULL);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetEmitterVelocity(*cp_cast<Vector3>(velocity));
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetEmitterVelocityXYZ(LN_HANDLE(LNSound) sound, float x, float y, float z)
+{
+	LNVector3 pos = { x, y, z };
+	return LNSound_SetEmitterVelocity(sound, &pos);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNSound_SetEmitterMaxDistance(LN_HANDLE(LNSound) sound, float distance)
+{
+	LN_CHECK_ARG_HANDLE(sound);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(Sound, sound)->SetEmitterMaxDistance(distance);
 	LN_FUNC_TRY_END_RETURN;
 }
 

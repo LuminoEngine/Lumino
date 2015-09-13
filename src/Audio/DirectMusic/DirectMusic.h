@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /**
 	@brief      DirectMusic 上での再生シーケンスひとつ分を扱うクラス
@@ -78,6 +77,9 @@ private:
 class DirectMusicManager
     : private NonCopyable
 {
+public:
+	static const int MusicTimeBase = 768;
+
 public:
 
 	/// 渡す初期化データ
@@ -189,5 +191,5 @@ private:
 	static DirectMusicManager* m_instance;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

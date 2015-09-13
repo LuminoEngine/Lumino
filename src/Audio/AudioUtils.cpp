@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // AudioUtils
@@ -153,5 +152,5 @@ SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStre
     return type;
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

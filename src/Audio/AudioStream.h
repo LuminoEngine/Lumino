@@ -12,8 +12,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class AudioDecoder;
 
 class AudioStream
@@ -26,6 +25,8 @@ public:
 	virtual ~AudioStream();
 
 	void Create(bool async) { InvokeIOProc(async, &FileManager::GetInstance()); }
+
+	StreamFormat GetFormat() const { return m_format; }
 
 	/// ‰Šú‰»‚ªŠ®—¹‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é (—áŠO‚ª”­¶‚µ‚Ä‚¢‚ê‚Î‚±‚±‚©‚çÄ throw ‚³‚ê‚é)
 	bool CheckCreated();
@@ -40,6 +41,7 @@ protected:
 
 private:
 	Stream*			m_stream;
+	StreamFormat	m_format;
 	AudioDecoder*	m_decoder;
 };
 
@@ -141,5 +143,5 @@ private:
 	bool		m_finishedCreate;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

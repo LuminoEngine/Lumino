@@ -5,11 +5,14 @@
 #include "Internal.h"
 #include "AudioStream.h"
 #include "AudioPlayer.h"
+#ifdef LN_OS_WIN32
+#include "DirectMusic/DirectMusic.h"
+#include "DirectMusic/DirectMusicAudioPlayer.h"
+#endif
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // Sound
@@ -20,7 +23,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Sound, CoreObject);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* Sound::Create(const TCHAR* filePath, AudioManager* manager)
+Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
 {
 	manager = (manager) ? manager : Internal::Manager;
 
@@ -39,7 +42,7 @@ Sound* Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound::Sound(AudioManager* manager, AudioStream* stream/*, SoundPlayType playerType, bool is3DSound*/)
+Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType playerType, bool is3DSound*/)
 	: m_manager(manager)
 	, m_audioStream(stream)
 	, m_audioPlayer(NULL)
@@ -132,6 +135,14 @@ void Sound::SetLoopEnabled(bool enabled)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+bool Sound::IsLoopEnabled() const
+{
+	return m_loopEnabled;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 {
 	m_loopBegin = begin;
@@ -140,14 +151,6 @@ void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->setLoopState(begin, length);
 	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool Sound::IsLoop() const
-{
-	return m_loopEnabled;
 }
 
 //-----------------------------------------------------------------------------
@@ -240,7 +243,7 @@ bool Sound::Is3DEnabled() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::SetPosition(const Vector3& pos)
+void Sound::SetEmitterPosition(const Vector3& pos)
 {
 	m_position = pos;
 	if (m_audioPlayer != NULL) {
@@ -251,7 +254,7 @@ void Sound::SetPosition(const Vector3& pos)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Vector3& Sound::GetPosition() const
+const Vector3& Sound::GetEmitterPosition() const
 {
     return m_audioPlayer->getPosition();
 }
@@ -259,7 +262,7 @@ const Vector3& Sound::GetPosition() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::SetVelocity(const Vector3& v)
+void Sound::SetEmitterVelocity(const Vector3& v)
 {
 	m_velocity = v;
 	if (m_audioPlayer != NULL) {
@@ -270,7 +273,7 @@ void Sound::SetVelocity(const Vector3& v)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Vector3& Sound::GetVelocity() const
+const Vector3& Sound::GetEmitterVelocity() const
 {
 	return m_velocity;
 }
@@ -278,12 +281,63 @@ const Vector3& Sound::GetVelocity() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::SetMaxDistance(float distance)
+void Sound::SetEmitterMaxDistance(float distance)
 {
 	m_maxDistance = distance;
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->setEmitterDistance(m_maxDistance);
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int64_t Sound::GetTotalSamples() const
+{
+	// TODO: 生成完了まで待つべき？
+	if (m_audioStream->CheckCreated() && m_audioStream->GetFormat() == StreamFormat_Midi) {
+#ifdef LN_OS_WIN32
+		if (m_audioPlayer != NULL) {
+			return static_cast<DirectMusicAudioPlayer*>(m_audioPlayer)->getTotalTime();
+		}
+		return 0;
+#else
+		LN_THROW(0, NotImplementedException);
+#endif
+	}
+	if (m_audioStream->CheckCreated()) {
+		return m_audioStream->GetDecoder()->GetTotalUnits();
+	}
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int64_t Sound::GetPlayedSamples() const
+{
+	if (m_audioPlayer != NULL) {
+		return m_audioPlayer->getPlayedSamples();
+	}
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int Sound::GetSamplingRate() const
+{
+	if (m_audioStream->CheckCreated() && m_audioStream->GetFormat() == StreamFormat_Midi) {
+#ifdef LN_OS_WIN32
+		return DirectMusicManager::MusicTimeBase;
+#else
+		LN_THROW(0, NotImplementedException);
+#endif
+	}
+	if (m_audioStream->CheckCreated()) {
+		return m_audioStream->GetDecoder()->GetWaveFormat()->SamplesPerSec;
+	}
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -382,12 +436,12 @@ void Sound::Polling(float elapsedTime)
 		switch (m_playState)
 		{
 		default:
-		case Lumino::Audio::SoundPlayingState::Stopped:
+		case SoundPlayingState::Stopped:
 			break;
-		case Lumino::Audio::SoundPlayingState::Playing:
+		case SoundPlayingState::Playing:
 			m_audioPlayer->play();
 			break;
-		case Lumino::Audio::SoundPlayingState::Pausing:
+		case SoundPlayingState::Pausing:
 			m_audioPlayer->play();
 			m_audioPlayer->pause(true);
 			break;
@@ -452,5 +506,5 @@ void Sound::Polling(float elapsedTime)
 	}
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

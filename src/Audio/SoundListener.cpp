@@ -13,7 +13,7 @@ LN_NAMESPACE_AUDIO_BEGIN
 //-----------------------------------------------------------------------------
 void SoundListener::SetPosition(const Vector3& position)
 {
-	Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->Position = position;
+	Internal::Manager->GetAudioDevice()->getSoundListenerData()->Position = position;
 }
 
 //-----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ void SoundListener::SetPosition(float x, float y, float z)
 //-----------------------------------------------------------------------------
 const Vector3& SoundListener::GetPosition()
 {
-	return Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->Position;
+	return Internal::Manager->GetAudioDevice()->getSoundListenerData()->Position;
 }
 
 //-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ const Vector3& SoundListener::GetPosition()
 //-----------------------------------------------------------------------------
 void SoundListener::SetDirection(const Vector3& direction)
 {
-	Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->Direction = direction;
+	Internal::Manager->GetAudioDevice()->getSoundListenerData()->Direction = direction;
 }
 
 //-----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ void SoundListener::SetDirection(float x, float y, float z)
 //-----------------------------------------------------------------------------
 const Vector3& SoundListener::GetDirection()
 {
-	return Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->Direction;
+	return Internal::Manager->GetAudioDevice()->getSoundListenerData()->Direction;
 }
 
 //-----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ const Vector3& SoundListener::GetDirection()
 //-----------------------------------------------------------------------------
 void SoundListener::SetUpDirection(const Vector3& direction)
 {
-	Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->UpDirection = direction;
+	Internal::Manager->GetAudioDevice()->getSoundListenerData()->UpDirection = direction;
 }
 
 //-----------------------------------------------------------------------------
@@ -77,7 +77,7 @@ void SoundListener::SetUpDirection(float x, float y, float z)
 //-----------------------------------------------------------------------------
 const Vector3& SoundListener::GetUpDirection(const Vector3& direction)
 {
-	return Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->UpDirection;
+	return Internal::Manager->GetAudioDevice()->getSoundListenerData()->UpDirection;
 }
 
 //-----------------------------------------------------------------------------
@@ -85,7 +85,7 @@ const Vector3& SoundListener::GetUpDirection(const Vector3& direction)
 //-----------------------------------------------------------------------------
 void SoundListener::SetVelocity(const Vector3& velocity)
 {
-	Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->Velocity = velocity;
+	Internal::Manager->GetAudioDevice()->getSoundListenerData()->Velocity = velocity;
 }
 
 //-----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ void SoundListener::SetVelocity(float x, float y, float z)
 //-----------------------------------------------------------------------------
 const Vector3& SoundListener::GetVelocity()
 {
-	return Audio::Internal::Manager->GetAudioDevice()->getSoundListener()->Velocity;
+	return Internal::Manager->GetAudioDevice()->getSoundListenerData()->Velocity;
 }
 
 LN_NAMESPACE_AUDIO_END

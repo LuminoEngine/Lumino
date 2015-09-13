@@ -1,6 +1,4 @@
-/*
-	@file	AudioManager.h
-*/
+
 #pragma once
 
 #include "Common.h"
@@ -10,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class GameAudio;
 class AudioDevice;
 class AudioStream;
@@ -21,7 +18,7 @@ class Sound;
 /*
 	@brief	音声機能の管理クラスです。
 */
-class AudioManager
+class AudioManagerImpl
 	: public RefObject
 {
 public:
@@ -44,7 +41,7 @@ public:
 	};
 
 public:
-	static AudioManager* Create(const Settings& settings);
+	static AudioManagerImpl* Create(const Settings& settings);
 
 public:
 
@@ -93,8 +90,8 @@ private:
 	//void stopGroup(lnU32 group);
 
 private:
-	AudioManager(const Settings& configData);
-	virtual ~AudioManager();
+	AudioManagerImpl(const Settings& configData);
+	virtual ~AudioManagerImpl();
 	void Thread_Polling();
 
 private:
@@ -115,5 +112,5 @@ private:
 	Threading::DelegateThread	m_pollingThread;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

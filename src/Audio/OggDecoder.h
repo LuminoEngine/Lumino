@@ -9,8 +9,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /// Ogg âπê∫óp Decoder
 class OggDecoder
@@ -70,5 +69,5 @@ private:
 
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

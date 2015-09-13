@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // DirectMusicAudioDevice
@@ -83,5 +82,5 @@ void DirectMusicAudioDevice::SetMetreUnitDistance(float d)
 {
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

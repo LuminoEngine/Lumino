@@ -16,6 +16,8 @@ using namespace Lumino;
 
 // bool → LNBool
 #define LNOTE_BOOL_TO_LNBOOL( x )	( x ) ? LN_TRUE : LN_FALSE
+#define LNC_TO_LNBOOL( x )	( x ) ? LN_TRUE : LN_FALSE
+#define LNC_TO_BOOL( x )	(x != LN_FALSE)
 
 // ポインタの int キャスト
 #define LN_TO_INT( ptr )			reinterpret_cast<intptr_t>( ptr )
@@ -76,7 +78,7 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 
 // 引数チェック
 #define LN_CHECK_ARG_HANDLE(h)	if (h == NULL) { return ::LN_ERROR_ARGUMENT; }	// TODO 中身もチェック
-#define LN_CHECK_ARG(exp)	if (!(exp)) { return ::LN_ERROR_ARGUMENT; }
+#define LN_CHECK_ARG(exp)	if (!(exp)) { return ::LN_ERROR_ARGUMENT; }	// TODO Core のと間違えそうなので名前変えておく
 
 //------------------------------------------------------------------------------
 // 関数ライブラリ内で共通のもの

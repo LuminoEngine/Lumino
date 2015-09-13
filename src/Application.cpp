@@ -182,15 +182,15 @@ void ApplicationImpl::InitialzeAudioManager()
 			InitialzePlatformManager();
 		}
 
-		Audio::AudioManager::Settings data;
+		AudioManagerImpl::Settings data;
 		data.FileManager = &FileManager::GetInstance();
 		data.StreamCacheObjectCount = 32;
 		data.StreamSourceCacheMemorySize = 0;
-		data.DMInitMode = Audio::DirectMusicInitMode_NotUse;//Audio::DirectMusicInitMode_ThreadRequest;
+		data.DMInitMode = DirectMusicInitMode_NotUse;//Audio::DirectMusicInitMode_ThreadRequest;
 #ifdef LN_OS_WIN32
 		data.hWnd = (m_platformManager != NULL) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : NULL;
 #endif
-		m_audioManager = Audio::AudioManager::Create(data);
+		m_audioManager = AudioManagerImpl::Create(data);
 	}
 }
 

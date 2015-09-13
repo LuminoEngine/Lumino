@@ -20,15 +20,14 @@
 
 namespace Lumino
 {
-namespace Audio
-{
-class AudioManager;
+class AudioManagerImpl;
 
 class Internal
 {
 public:
-	static AudioManager* Manager;
+	static AudioManagerImpl* Manager;
 };
 
-}
-}
+
+
+} // namespace Lumino

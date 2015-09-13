@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // XAudio2AudioPlayerBase 
@@ -634,5 +633,5 @@ void XAudio2StreamingAudioPlayer::_addNextBuffer()
 	mSecondaryAudioData = temp;
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

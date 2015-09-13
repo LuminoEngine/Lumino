@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class XAudio2AudioDevice;
 
 /// XAudio2 Player ベースクラス
@@ -120,5 +119,5 @@ private:
     bool                    mPassedLoopBeginSample;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

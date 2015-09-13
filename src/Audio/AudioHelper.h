@@ -3,8 +3,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class Sound;
 
 class AudioHelper
@@ -13,8 +12,8 @@ public:
 	static inline void SetGameAudioFlags(Sound* sound, uint32_t flags) { sound->m_gameAudioFlags = flags; }
 	static inline uint32_t GetGameAudioFlags(Sound* sound) { return sound->m_gameAudioFlags; }
 	static inline AudioStream* GetAudioStream(Sound* sound) { return sound->m_audioStream; }
-	static inline Sound* CreateSound(AudioManager* manager, AudioStream* stream) { return LN_NEW Sound(manager, stream); }
+	static inline Sound* CreateSound(AudioManagerImpl* manager, AudioStream* stream) { return LN_NEW Sound(manager, stream); }
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

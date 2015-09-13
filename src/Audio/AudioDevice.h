@@ -9,10 +9,26 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
+
 class AudioStream;
 class AudioPlayer;
+
+/// 3D サウンドリスナー
+struct SoundListenerData
+{
+	Vector3		Position;
+	Vector3		Direction;
+	Vector3		UpDirection;
+	Vector3		Velocity;
+
+	SoundListenerData()
+		: Position(0, 0, 0)
+		, Direction(0, 0, 1.0f)
+		, UpDirection(0, 1.0f, 0)
+		, Velocity(0, 0, 0)
+	{}
+};
 
 /// デバイス管理と、Player の生成・管理を行うクラスのベースクラス
 class AudioDevice
@@ -24,7 +40,7 @@ public:
 public:
 
 	/// 3Dサウンドリスナーの取得
-	SoundListener* getSoundListener() { return &m_soundListener; }
+	SoundListenerData* getSoundListenerData() { return &m_soundListenerData; }
 
 public:
 
@@ -37,8 +53,8 @@ public:
 	virtual void SetMetreUnitDistance(float d) = 0;
 
 protected:
-	SoundListener		m_soundListener;
+	SoundListenerData		m_soundListenerData;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

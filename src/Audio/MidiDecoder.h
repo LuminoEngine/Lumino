@@ -9,8 +9,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /// MIDI ÉfÅ[É^ AudioStream
 class MidiDecoder
@@ -82,5 +81,5 @@ private:
 
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

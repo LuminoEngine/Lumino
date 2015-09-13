@@ -12,8 +12,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class AudioDevice;
 class AudioStream;
 class AudioDecoder;
@@ -91,5 +90,5 @@ protected:
 	bool			    mIsLoop;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

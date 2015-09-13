@@ -34,6 +34,8 @@ void LNTypeDef_CheckCommonDefinition()
 {
 	if (sizeof(LNVariant) >= sizeof(Variant)) goto ERR_EXIT;
 	if (LN_VARIANTTYPE__TERMINATOR != VariantType_Max) goto ERR_EXIT;
+	if (LN_SOUNDPLAYINGTYPE__TERMINATOR != (int)SoundPlayingMode::TERMINATOR) goto ERR_EXIT;
+	if (LN_SOUNDFADEBEHAVIOR__TERMINATOR != (int)SoundFadeBehavior::TERMINATOR) goto ERR_EXIT;
 
 #if 0
 	if (LN_OK != LNote::ResultCode_OK) goto ERR_EXIT;

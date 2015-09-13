@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 class AudioStream;
 
 /// Wave ÉfÅ[É^ AudioStream
@@ -38,5 +37,5 @@ public:
 	static SoundPlayingMode CheckAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize);
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

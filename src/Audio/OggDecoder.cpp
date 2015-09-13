@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // OggDecoder
@@ -262,5 +261,5 @@ long OggDecoder::tellOggCallback(void* stream)
 	return (int)file->GetPosition();
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

@@ -315,11 +315,11 @@ LN_CLASS(LNSound, LNObject)
 	/**
 		@brief		サウンドのボリュームを取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	volume		: ボリュームを格納する変数
+		@param[out]	outVolume	: ボリュームを格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, int* volume);
+	LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, int* outVolume);
 
 	/**
 		@brief		サウンドのピッチを設定します。
@@ -333,11 +333,11 @@ LN_CLASS(LNSound, LNObject)
 	/**
 		@brief		サウンドのピッチを取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	pitch		: ピッチを格納する変数
+		@param[out]	outPitch	: ピッチを格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetPitch(LN_HANDLE(LNSound) sound, int* pitch);
+	LNResult LNSound_GetPitch(LN_HANDLE(LNSound) sound, int* outPitch);
 
 	/**
 		@brief		サウンドのループ再生の有無を設定します。
@@ -346,16 +346,16 @@ LN_CLASS(LNSound, LNObject)
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_SetLoop(LN_HANDLE(LNSound) sound, LNBool loopEnable);
+	LNResult LNSound_SetLoopEnabled(LN_HANDLE(LNSound) sound, LNBool loopEnable);
 
 	/**
 		@brief		サウンドのループ再生が有効であるかを確認します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	enabled		: ループ再生の有無状態を格納する変数
+		@param[out]	outEnabled	: ループ再生の有無状態を格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_IsLoop(LN_HANDLE(LNSound) sound, LNBool* enabled);
+	LNResult LNSound_IsLoopEnabled(LN_HANDLE(LNSound) sound, LNBool* outEnabled);
 	
 	/**
 		@brief		サウンドのループ再生の範囲を設定します。
@@ -387,32 +387,31 @@ LN_CLASS(LNSound, LNObject)
 	LNResult LNSound_Is3DEnabled(LN_HANDLE(LNSound) sound, LNBool* outEnabled);
 
 	/**
-		@brief		サウンド再生時の音声データの読み込み方法を設定します。
+		@brief		サウンド再生時の音声データの再生方法を設定します。
 		@param[in]	sound		: サウンドハンドル
-		@param[in]	type		: 読み込み方法
+		@param[in]	mode		: 読み込み方法
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_SetLoadingType(LN_HANDLE(LNSound) sound, LNSoundLoadingType type);
+	LNResult LNSound_SetPlayingMode(LN_HANDLE(LNSound) sound, LNSoundPlayingMode mode);
 
 	/**
-		@brief		サウンド再生時の音声データの読み込み方法を取得します。
+		@brief		サウンド再生時の音声データの再生方法を取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[in]	outType		: 読み込み方法を格納する変数のアドレス
-		@return		LN_TRUE = 3D音声 / LN_FALSE = 非 3D
+		@param[in]	outMode		: 再生方法を格納する変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetLoadingType(LN_HANDLE(LNSound) sound, LNSoundLoadingType* outType);
+	LNResult LNSound_GetPlayingMode(LN_HANDLE(LNSound) sound, LNSoundPlayingMode* outMode);
 
 	/**
 		@brief		サウンドの再生状態を取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	state		: 状態を格納する変数
+		@param[out]	outState	: 状態を格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetPlayState(LN_HANDLE(LNSound) sound, LNSoundPlayingState* state);
+	LNResult LNSound_GetPlayingState(LN_HANDLE(LNSound) sound, LNSoundPlayingState* outState);
 
 	/**
 		@brief		サウンドを再生します。
@@ -429,22 +428,28 @@ LN_CLASS(LNSound, LNObject)
 	LNResult LNSound_Stop(LN_HANDLE(LNSound) sound);
 
 	/**
-		@brief		サウンドの一時停止状態を操作します。
+		@brief		サウンドの再生を一時停止します。
 		@param[in]	sound		: サウンドハンドル
-		@param[in]	pause		: LN_TRUE = 一時停止 / LN_FALSE = 一時停止解除
 	*/
 	LN_INSTANCE_API
-	LNResult LNSound_Pause(LN_HANDLE(LNSound) sound, LNBool pause);
+	LNResult LNSound_Pause(LN_HANDLE(LNSound) sound);
+
+	/**
+		@brief		サウンドの再生を一時停止します。
+		@param[in]	sound		: サウンドハンドル
+	*/
+	LN_INSTANCE_API
+	LNResult LNSound_Resume(LN_HANDLE(LNSound) sound);
 
 	/**
 		@brief		サウンド音量のフェード操作を行います。
 		@param[in]	sound			: サウンドハンドル
 		@param[in]	targetVolume	: 変更先の音量
 		@param[in]	time			: フェードにかける時間 (秒)
-		@param[in]	fadeState		: フェード完了後の動作の指定
+		@param[in]	behavior		: フェード完了後の動作の指定
 	*/
 	LN_INSTANCE_API
-	LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, double time, LNSoundFadeState fadeState);
+	LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, double time, LNSoundFadeBehavior behavior);
 
 	/**
 		@brief		サウンドの再生したサンプル数を取得します。
@@ -453,7 +458,7 @@ LN_CLASS(LNSound, LNObject)
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetUnitsPlayed(LN_HANDLE(LNSound) sound, int* samples);
+	LNResult LNSound_GetPlayedSamples(LN_HANDLE(LNSound) sound, int64_t* outSamples);
 
 	/**
 		@brief		サウンドの音声データ全体のサンプル数を取得します。
@@ -462,16 +467,16 @@ LN_CLASS(LNSound, LNObject)
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetTotalUnits(LN_HANDLE(LNSound) sound, int* samples);
+	LNResult LNSound_GetTotalSamples(LN_HANDLE(LNSound) sound, int64_t* outSamples);
 
 	/**
-		@brief		サウンドのサンプリング周波数を取得します。
+		@brief		サウンドのサンプリングレートを取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	frequency	: サンプリング周波数を格納する変数
+		@param[out]	outRate		: サンプリングレートを格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_GetUnitsParSecond(LN_HANDLE(LNSound) sound, int* frequency);
+	LNResult LNSound_GetSamplingRate(LN_HANDLE(LNSound) sound, int32_t* outRate);
 
 	/**
 		@brief		サウンドの 3D 音源としての位置を設定します。

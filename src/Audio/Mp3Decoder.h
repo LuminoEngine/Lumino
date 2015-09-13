@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /// MP3 ÉfÅ[É^ AudioStream
 ///
@@ -79,5 +78,5 @@ private:
 
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

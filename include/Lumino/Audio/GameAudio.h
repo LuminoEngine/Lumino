@@ -6,9 +6,8 @@ namespace Lumino
 {
 class Vector3;
 
-namespace Audio
-{
-class AudioManager;
+LN_NAMESPACE_AUDIO_BEGIN
+class AudioManagerImpl;
 
 /*
 	@brief	
@@ -72,8 +71,8 @@ public:
 	void SetEnableBGSRestart(bool flag) { mBGSRestart = flag; }
 
 private:
-	friend class AudioManager;
-	GameAudio(AudioManager* mamager);
+	friend class AudioManagerImpl;
+	GameAudio(AudioManagerImpl* mamager);
 	~GameAudio();
 
 private:
@@ -84,7 +83,7 @@ private:
 	typedef std::list<Sound*>	ReleaseAtPlayEndList;
 	typedef std::list<Sound*>	SoundList;
 
-	AudioManager*				mManager;
+	AudioManagerImpl*			mManager;
 	Threading::Mutex			mLock;
 	ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< 再生終了時に解放する音声リスト
 	Sound*		                mBGM;
@@ -103,5 +102,5 @@ private:
 	bool                        mBGSRestart;
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

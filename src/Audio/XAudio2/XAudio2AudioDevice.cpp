@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // XAudio2AudioPlayerBase 
@@ -250,18 +249,18 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 //-----------------------------------------------------------------------------
 void XAudio2AudioDevice::Update()
 {
-    mListenerState.OrientFront.x = m_soundListener.Direction.X;
-    mListenerState.OrientFront.y = m_soundListener.Direction.Y;
-    mListenerState.OrientFront.z = m_soundListener.Direction.Z;
-    mListenerState.OrientTop.x = m_soundListener.UpDirection.X;
-    mListenerState.OrientTop.y = m_soundListener.UpDirection.Y;
-    mListenerState.OrientTop.z = m_soundListener.UpDirection.Z;
-    mListenerState.Position.x = m_soundListener.Position.X * mMetreUnitDistanceInv;
-    mListenerState.Position.y = m_soundListener.Position.Y * mMetreUnitDistanceInv;
-    mListenerState.Position.z = m_soundListener.Position.Z * mMetreUnitDistanceInv;
-    mListenerState.Velocity.x = m_soundListener.Velocity.X * mMetreUnitDistanceInv;
-    mListenerState.Velocity.y = m_soundListener.Velocity.Y * mMetreUnitDistanceInv;
-    mListenerState.Velocity.z = m_soundListener.Velocity.Z * mMetreUnitDistanceInv;
+    mListenerState.OrientFront.x = m_soundListenerData.Direction.X;
+    mListenerState.OrientFront.y = m_soundListenerData.Direction.Y;
+    mListenerState.OrientFront.z = m_soundListenerData.Direction.Z;
+    mListenerState.OrientTop.x = m_soundListenerData.UpDirection.X;
+    mListenerState.OrientTop.y = m_soundListenerData.UpDirection.Y;
+    mListenerState.OrientTop.z = m_soundListenerData.UpDirection.Z;
+    mListenerState.Position.x = m_soundListenerData.Position.X * mMetreUnitDistanceInv;
+    mListenerState.Position.y = m_soundListenerData.Position.Y * mMetreUnitDistanceInv;
+    mListenerState.Position.z = m_soundListenerData.Position.Z * mMetreUnitDistanceInv;
+    mListenerState.Velocity.x = m_soundListenerData.Velocity.X * mMetreUnitDistanceInv;
+    mListenerState.Velocity.y = m_soundListenerData.Velocity.Y * mMetreUnitDistanceInv;
+    mListenerState.Velocity.z = m_soundListenerData.Velocity.Z * mMetreUnitDistanceInv;
 
     //if ( mDirectMusicAudioDevice ) mDirectMusicAudioDevice->update();
 }
@@ -366,5 +365,5 @@ void EmitterState::UpdateXAudioEmitter( float scale )
     Emitter.CurveDistanceScaler = Distance * scale;
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

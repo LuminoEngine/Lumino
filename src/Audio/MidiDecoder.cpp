@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // MidiDecoder
@@ -334,5 +333,5 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 	return true;
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

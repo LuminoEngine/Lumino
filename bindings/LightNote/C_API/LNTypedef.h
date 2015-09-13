@@ -479,18 +479,18 @@ typedef enum tagLNDirectMusicMode
 
 } LNDirectMusicMode;
 
-/** サウンド再生時の音声データの読み込み方法 */
-typedef enum tagLNSoundLoadingType
+/** サウンド再生方法 */
+typedef enum tagLNSoundPlayingMode
 {
-	LN_SOUNDLOADINGTYPE_UNKNOWN = 0,	/** 不明な再生方法 */
-	LN_SOUNDLOADINGTYPE_AUTO,			/** 自動選択 (デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります) */
-	LN_SOUNDLOADINGTYPE_ONMEMORY,		/** オンメモリ */
-	LN_SOUNDLOADINGTYPE_STREAMING,		/** ストリーミング */
-	LN_SOUNDLOADINGTYPE_MIDI,			/** SMF */
+	LN_SOUNDPLAYINGMODE_UNKNOWN = 0,	/** 不明な再生方法 */
+	LN_SOUNDPLAYINGMODE_AUTO,			/** 自動選択 (デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります) */
+	LN_SOUNDPLAYINGMODE_ONMEMORY,		/** オンメモリ */
+	LN_SOUNDPLAYINGMODE_STREAMING,		/** ストリーミング */
+	LN_SOUNDPLAYINGMODE_MIDI,			/** SMF */
 
 	LN_SOUNDPLAYINGTYPE__TERMINATOR,
 
-} LNSoundLoadingType;
+} LNSoundPlayingMode;
 
 /** サウンドの再生状態 */
 typedef enum tagLNSoundPlayingState
@@ -503,18 +503,18 @@ typedef enum tagLNSoundPlayingState
 
 } LNSoundPlayingState;
 
-/** 音量フェード完了時の動作の記述 */
-typedef enum tagLNSoundFadeState
+/** 音量フェード完了時の動作 */
+typedef enum tagLNSoundFadeBehavior
 {
-    LN_SOUNDFADE_CONTINUE = 0,	    /** 継続(なにもしない) */
-	LN_SOUNDFADE_STOP,		        /** 停止する (stop()) */
-	LN_SOUNDFADE_STOP_RESET,	    /** 停止して、音量を元の値に戻す */
-	LN_SOUNDFADE_PAUSE,			    /** 一時停止する (pause( true )) */
-	LN_SOUNDFADE_PAUSE_RESET,	    /** 一時停止して、音量を元の値に戻す */
+    LN_SOUNDFADEBEHAVIORBEHAVIOR_CONTINUE = 0,	/** 継続(なにもしない) */
+	LN_SOUNDFADEBEHAVIOR_STOP,					/** 停止する (stop()) */
+	LN_SOUNDFADEBEHAVIOR_STOP_RESET,			/** 停止して、音量を元の値に戻す */
+	LN_SOUNDFADEBEHAVIOR_PAUSE,					/** 一時停止する (pause( true )) */
+	LN_SOUNDFADEBEHAVIOR_PAUSE_RESET,			/** 一時停止して、音量を元の値に戻す */
 
-	LN_SOUNDFADE__TERMINATOR,
+	LN_SOUNDFADEBEHAVIOR__TERMINATOR,
 
-} LNSoundFadeState;
+} LNSoundFadeBehavior;
 
 /** GameAudio 内部 Sound */
 typedef enum tagLNInternalGameSound

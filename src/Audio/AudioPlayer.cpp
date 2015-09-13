@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
 // AudioPlayer 
@@ -95,5 +94,5 @@ void AudioPlayer::setLoopState(uint32_t loop_begin, uint32_t loop_length)
     }
 }
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

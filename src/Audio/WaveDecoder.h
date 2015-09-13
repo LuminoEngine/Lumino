@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 
 /// Wave ÉfÅ[É^ AudioStream
 class WaveDecoder
@@ -46,5 +45,5 @@ private:
 
 };
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino

@@ -9,8 +9,7 @@
 
 namespace Lumino
 {
-namespace Audio
-{
+LN_NAMESPACE_AUDIO_BEGIN
 	
 //=============================================================================
 // AudioStream
@@ -21,6 +20,7 @@ namespace Audio
 //-----------------------------------------------------------------------------
 AudioStream::AudioStream(Stream* stream)
 	: m_stream(NULL)
+	, m_format(StreamFormat_Unknown)
 	, m_decoder(NULL)
 {
 	LN_REFOBJ_SET(m_stream, stream);
@@ -127,5 +127,5 @@ AudioDecoder::~AudioDecoder()
 //}
 //
 
-} // namespace Audio
+LN_NAMESPACE_AUDIO_END
 } // namespace Lumino
