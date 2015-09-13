@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief
@@ -45,5 +44,5 @@ public:
 	InputGesture*	m_gesture;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

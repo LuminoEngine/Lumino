@@ -113,8 +113,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ListBoxItem
@@ -438,6 +437,6 @@ void ListBox::OnListBoxItemRemoved(ListBoxItem* item)
 	//m_itemsPanel->GetChildren()->Remove(item);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

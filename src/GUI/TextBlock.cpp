@@ -12,8 +12,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // TextBlock
@@ -98,6 +97,6 @@ void TextBlock::OnTextPropertyChanged(PropertyChangedEventArgs* e)
 	m_paragraph->GetInlines()->Add(run);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

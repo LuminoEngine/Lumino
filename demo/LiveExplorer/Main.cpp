@@ -1,6 +1,7 @@
 #include "Common.h"
+#include "../../src/ApplicationImpl.h"
 
-void LN_STDCALL Button1_MouseMove(CoreObject* sender, GUI::MouseEventArgs* e)
+void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 {
 	printf("Button1_MouseMove\n");
 }
@@ -26,10 +27,10 @@ int main()
 #endif
 	try
 	{
-		Application::ConfigData appData;
+		ApplicationSettings appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		//appData.RenderingType = Graphics::RenderingType::Immediate;
-		RefPtr<Application> app(Application::Create(appData));
+		RefPtr<ApplicationImpl> app(ApplicationImpl::Create(appData));
 		app->Initialize();
 
 		app->GetPlatformManager()->GetMainWindow()->SetCursorVisible(false);
@@ -44,43 +45,43 @@ int main()
 		font1->SetAntiAlias(true);
 		app->GetGraphicsManager()->GetFontManager()->SetDefaultFont(font1);
 
-		//RefPtr<GUI::RootFrame> workbench1(app->GetGUIManager()->CreateRootFrame());
-		GUI::RootFrame* workbench1 = app->GetGUIManager()->GetDefaultRootFrame();
+		//RefPtr<RootFrame> workbench1(app->GetGUIManager()->CreateRootFrame());
+		RootFrame* workbench1 = app->GetGUIManager()->GetDefaultRootFrame();
 		//workbench1->SetSize(SizeF(640, 480));
-		workbench1->SetPropertyValue(GUI::RootFrame::SizeProperty , SizeF(640, 480));
+		workbench1->SetPropertyValue(RootFrame::SizeProperty , SizeF(640, 480));
 
-		auto grid1 = GUI::Grid::Create();
+		auto grid1 = Grid::Create();
 		grid1->AddColumnDefinition(180);
-		grid1->AddColumnDefinition(GUI::ColumnDefinition::Star);
+		grid1->AddColumnDefinition(ColumnDefinition::Star);
 		workbench1->SetContent(grid1);
 
-		auto demoList = GUI::ListBox::Create();
-		GUI::Grid::SetColumn(demoList, 1);
+		auto demoList = ListBox::Create();
+		Grid::SetColumn(demoList, 1);
 		grid1->GetChildren()->Add(demoList);
 
 
 		//RefPtr<Graphics::Brush> b(Graphics::ColorBrush::Blue, true);
 
 		// Normal
-		RefPtr<GUI::FloatEasing> easing1(LN_NEW GUI::FloatEasing());
+		RefPtr<FloatEasing> easing1(LN_NEW FloatEasing());
 		easing1->SetTargetName(_T("MouseOnBackground"));
-		easing1->SetTargetProperty(GUI::UIElement::OpacityProperty->GetName());
+		easing1->SetTargetProperty(UIElement::OpacityProperty->GetName());
 		easing1->SetTargetValue(0.0f);
 		easing1->SetEasingMode(Animation::EasingMode::EaseOutExpo);
 		easing1->SetDuration(1.0f);
 
 		// MouseOver
-		RefPtr<GUI::FloatEasing> easing2(LN_NEW GUI::FloatEasing());
+		RefPtr<FloatEasing> easing2(LN_NEW FloatEasing());
 		easing2->SetTargetName(_T("MouseOnBackground"));
-		easing2->SetTargetProperty(GUI::UIElement::OpacityProperty->GetName());
+		easing2->SetTargetProperty(UIElement::OpacityProperty->GetName());
 		easing2->SetTargetValue(1.0f);
 		easing2->SetEasingMode(Animation::EasingMode::EaseOutExpo);
 		easing2->SetDuration(1.0f);
 
-		GUI::VisualStateGroupPtr vgroup1(LN_NEW GUI::VisualStateGroup(_T("CommonStates")));
-		GUI::VisualStatePtr vstate1(LN_NEW GUI::VisualState(app->GetGUIManager(), _T("Normal")));
+		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
+		VisualStatePtr vstate1(LN_NEW VisualState(app->GetGUIManager(), _T("Normal")));
 		vstate1->GetStoryboard()->AddTimeline(easing1);
-		GUI::VisualStatePtr vstate2(LN_NEW GUI::VisualState(app->GetGUIManager(), _T("MouseOver")));
+		VisualStatePtr vstate2(LN_NEW VisualState(app->GetGUIManager(), _T("MouseOver")));
 		vstate2->GetStoryboard()->AddTimeline(easing2);
 		vgroup1->AddState(vstate1);
 		vgroup1->AddState(vstate2);
@@ -110,8 +111,8 @@ int main()
 
 
 
-		RefPtr<GUI::TextBox> textBox1(GUI::TextBox::Create(app->GetGUIManager()));
-		GUI::Grid::SetColumn(textBox1, 0);
+		RefPtr<TextBox> textBox1(TextBox::Create(app->GetGUIManager()));
+		Grid::SetColumn(textBox1, 0);
 		textBox1->Focus();
 		textBox1->SetText(_T("lumino text."));
 		textBox1->Select(3, 2);
@@ -140,50 +141,50 @@ int main()
 		//sound1->FadeVolume(100, 10, Audio::SoundFadeBehavior::Continue);
 		//sound1->Play();
 
-		//RefPtr<GUI::StackPanel> panel1(LN_NEW GUI::StackPanel(app->GetGUIManager()));
+		//RefPtr<StackPanel> panel1(LN_NEW StackPanel(app->GetGUIManager()));
 		//workbench1->SetContent(panel1);
 
 		////app->GetGUIManager()->CreateUIElement("Button");
-		//RefPtr<GUI::Button> button1(LN_NEW GUI::Button(app->GetGUIManager()));
+		//RefPtr<Button> button1(LN_NEW Button(app->GetGUIManager()));
 		////button1->SetSize(SizeF(200, 300));
 		//button1->SetSize(SizeF(64, 20));
-		//button1->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
+		//button1->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, MouseEventArgs* >(Button1_MouseMove));
 		//panel1->GetChildren()->Add(button1);
 		////workbench1->SetContent(button1.GetObjectPtr());
 
-		//RefPtr<GUI::Button> button2(LN_NEW GUI::Button(app->GetGUIManager()));
+		//RefPtr<Button> button2(LN_NEW Button(app->GetGUIManager()));
 		//button2->SetSize(SizeF(80, 32));
-		//button2->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
+		//button2->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, MouseEventArgs* >(Button1_MouseMove));
 		//panel1->GetChildren()->Add(button2);
 
 #if 0
-		RefPtr<GUI::ListBox> listbox1(LN_NEW GUI::ListBox(app->GetGUIManager()));
+		RefPtr<ListBox> listbox1(LN_NEW ListBox(app->GetGUIManager()));
 		listbox1->SetSize(SizeF(200, 300));
 		panel1->GetChildren()->Add(listbox1);
 
-		RefPtr<GUI::Button> button3(LN_NEW GUI::Button(app->GetGUIManager()));
-		button3->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, GUI::MouseEventArgs* >(Button1_MouseMove));
+		RefPtr<Button> button3(LN_NEW Button(app->GetGUIManager()));
+		button3->MouseMove.AddHandler(LN_CreateDelegate< CoreObject*, MouseEventArgs* >(Button1_MouseMove));
 		listbox1->InsertItem(0, button3);
 #endif
 #if 0
-		RefPtr<GUI::Thumb> thumb1(LN_NEW GUI::Thumb(app->GetGUIManager()));
+		RefPtr<Thumb> thumb1(LN_NEW Thumb(app->GetGUIManager()));
 		//thumb1->SetSize(SizeF(16, 32));
 		workbench1->SetContent(thumb1);
 #endif
 #if 0
-		RefPtr<GUI::Track> track1(LN_NEW GUI::Track(app->GetGUIManager()));
+		RefPtr<Track> track1(LN_NEW Track(app->GetGUIManager()));
 		track1->SetMaximum(70);
 		track1->SetValue(20);
 		track1->SetViewportSize(25);
 		workbench1->SetContent(track1);
 #endif
 #if 0	// Grid のテスト
-		RefPtr<GUI::Grid> grid1(LN_NEW GUI::Grid(app->GetGUIManager()));
-		RefPtr<GUI::ColumnDefinition> col1(LN_NEW GUI::ColumnDefinition(app->GetGUIManager()));
+		RefPtr<Grid> grid1(LN_NEW Grid(app->GetGUIManager()));
+		RefPtr<ColumnDefinition> col1(LN_NEW ColumnDefinition(app->GetGUIManager()));
 		col1->SetWidth(200);
-		RefPtr<GUI::ColumnDefinition> col2(LN_NEW GUI::ColumnDefinition(app->GetGUIManager()));
-		RefPtr<GUI::RowDefinition> row1(LN_NEW GUI::RowDefinition(app->GetGUIManager()));
-		RefPtr<GUI::RowDefinition> row2(LN_NEW GUI::RowDefinition(app->GetGUIManager()));
+		RefPtr<ColumnDefinition> col2(LN_NEW ColumnDefinition(app->GetGUIManager()));
+		RefPtr<RowDefinition> row1(LN_NEW RowDefinition(app->GetGUIManager()));
+		RefPtr<RowDefinition> row2(LN_NEW RowDefinition(app->GetGUIManager()));
 		row2->SetHeight(100);
 		grid1->GetColumnDefinitions()->Add(col1);
 		grid1->GetColumnDefinitions()->Add(col2);
@@ -191,45 +192,45 @@ int main()
 		grid1->GetRowDefinitions()->Add(row2);
 		workbench1->SetContent(grid1);
 
-		RefPtr<GUI::Track> track1(LN_NEW GUI::Track(app->GetGUIManager()));
-		track1->SetOrientation(GUI::Orientation::Vertical);
+		RefPtr<Track> track1(LN_NEW Track(app->GetGUIManager()));
+		track1->SetOrientation(Orientation::Vertical);
 		track1->SetMaximum(70);
 		track1->SetValue(20);
 		track1->SetViewportSize(25);
 		grid1->GetChildren()->Add(track1);
 
-		RefPtr<GUI::Track> track2(LN_NEW GUI::Track(app->GetGUIManager()));
+		RefPtr<Track> track2(LN_NEW Track(app->GetGUIManager()));
 		track2->SetMaximum(70);
 		track2->SetValue(20);
 		track2->SetViewportSize(25);
-		GUI::Grid::SetRow(track2, 1);
-		GUI::Grid::SetColumnSpan(track2, 2);
+		Grid::SetRow(track2, 1);
+		Grid::SetColumnSpan(track2, 2);
 		grid1->GetChildren()->Add(track2);
 #endif
 #if 0	// Image のテスト
 		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png")));
-		RefPtr<GUI::Image> image1(LN_NEW GUI::Image(app->GetGUIManager()));
+		RefPtr<Image> image1(LN_NEW Image(app->GetGUIManager()));
 		image1->SetSourceTexture(tex1);
 		image1->SetSourceRect(Rect(64, 64, 16, 16));
 		workbench1->SetContent(image1);
 #endif
 #if 0	
-		RefPtr<GUI::ScrollBar> scrollBar1 = GUI::ScrollBar::Create(app->GetGUIManager());//(LN_NEW GUI::ScrollBar(app->GetGUIManager()));
+		RefPtr<ScrollBar> scrollBar1 = ScrollBar::Create(app->GetGUIManager());//(LN_NEW ScrollBar(app->GetGUIManager()));
 		
 		workbench1->SetContent(scrollBar1);
-		scrollBar1->SetOrientation(GUI::Orientation::Vertical);
+		scrollBar1->SetOrientation(Orientation::Vertical);
 #endif
 #if 0	
-		RefPtr<GUI::ScrollViewer> scrollViewer = GUI::ScrollViewer::Create(app->GetGUIManager());
+		RefPtr<ScrollViewer> scrollViewer = ScrollViewer::Create(app->GetGUIManager());
 		workbench1->SetContent(scrollViewer);
 
 		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("C:/Users/admin/Pictures/参考/5011525.png")));
-		RefPtr<GUI::Image> image1(LN_NEW GUI::Image(app->GetGUIManager()));
+		RefPtr<Image> image1(LN_NEW Image(app->GetGUIManager()));
 		image1->SetSourceTexture(tex1);
 		scrollViewer->SetContent(image1);
 #endif
 #if 0	
-		auto textBlock1 = RefPtr<GUI::TextBlock>::Create(app->GetGUIManager());
+		auto textBlock1 = RefPtr<TextBlock>::Create(app->GetGUIManager());
 		textBlock1->SetText(_T("Lumino"));
 		workbench1->SetContent(textBlock1);
 #endif
@@ -238,12 +239,12 @@ int main()
 		te1->SetPropertyValue(Documents::TextElement::FontSizeProperty, 100);
 		//int a = te1->GetPropertyValue(Documents::TextElement::FontSizeProperty).Cast<int>();
 
-		RefPtr<GUI::TextBlock> textBlock1 = GUI::TextBlock::Create(app->GetGUIManager());
+		RefPtr<TextBlock> textBlock1 = TextBlock::Create(app->GetGUIManager());
 		textBlock1->SetText(_T("Lumino"));
-		RefPtr<GUI::TextBlock> textBlock2 = GUI::TextBlock::Create(app->GetGUIManager());
+		RefPtr<TextBlock> textBlock2 = TextBlock::Create(app->GetGUIManager());
 		textBlock2->SetText(_T("Test2"));
 
-		RefPtr<GUI::ListBox> listBox1 = GUI::ListBox::Create(app->GetGUIManager());
+		RefPtr<ListBox> listBox1 = ListBox::Create(app->GetGUIManager());
 		workbench1->SetContent(listBox1);
 		workbench1->ApplyTemplate();
 

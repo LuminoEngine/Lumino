@@ -6,8 +6,8 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
+
 //=============================================================================
 // Image
 //=============================================================================
@@ -137,6 +137,6 @@ void Image::OnRender(Graphics::Painter* painter)
 	painter->DrawRectangle(m_finalLocalRect);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

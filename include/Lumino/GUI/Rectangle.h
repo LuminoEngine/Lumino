@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief		Shape 要素の基本クラスです。
@@ -64,5 +63,5 @@ protected:
 public:
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

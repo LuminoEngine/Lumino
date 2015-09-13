@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // Button
@@ -109,5 +108,5 @@ void Button::OnMouseMove(MouseEventArgs* e)
 //	ContentControl::Render();
 //}
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

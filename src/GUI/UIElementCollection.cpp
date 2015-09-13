@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // UIElementCollection
@@ -42,6 +41,6 @@ void UIElementCollection::SetItem(int index, const Variant& item)
 	GenericVariantList<UIElement*>::SetItem(index, item);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

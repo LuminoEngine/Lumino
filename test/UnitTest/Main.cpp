@@ -1,6 +1,5 @@
 #include "TestConfig.h"
 
-RefPtr<Lumino::Application>	TestEnv::Application;
 Platform::PlatformManager*	TestEnv::Platform = NULL;
 Physics::PhysicsManager*	TestEnv::PhysicsManager = NULL;
 GraphicsManagerPtr			TestEnv::Manager;
@@ -93,8 +92,7 @@ void TestEnv::SetUp()
 
 	//PhysicsManager = LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync);
 
-	Application::ConfigData data;
-	Application.Attach(Lumino::Application::Create(data));
+	ApplicationSettings data;
 
 	Platform = Application->GetPlatformManager();
 	PhysicsManager = Application->GetPhysicsManager();

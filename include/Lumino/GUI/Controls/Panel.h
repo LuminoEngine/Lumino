@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief		Panel 要素の基本クラスです。
@@ -71,5 +70,5 @@ protected:
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

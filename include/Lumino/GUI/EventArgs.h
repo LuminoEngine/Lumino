@@ -3,11 +3,11 @@
 #include "../Common.h"
 #include "../Variant.h"
 #include "../RoutedEvent.h"
+#include "Common.h"
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 class UIElement;
 
 /// 内部イベントの種類
@@ -189,5 +189,5 @@ private:
 
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

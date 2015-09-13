@@ -9,8 +9,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // AnimationTimeline
@@ -130,6 +129,6 @@ void AnimationClock::StopInternal()
 	GUIHelper::GUIManager_RemoveAnimationClock(m_manager, this);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

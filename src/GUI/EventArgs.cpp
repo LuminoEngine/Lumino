@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // MouseEventArgs
@@ -166,6 +165,6 @@ KeyEventArgs* EventArgsPool::CreateKeyEventArgs(Key keyCode, bool isAlt, bool is
 }
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

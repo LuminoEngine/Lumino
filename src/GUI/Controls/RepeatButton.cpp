@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // RepeatButton
@@ -30,6 +29,6 @@ RepeatButton::~RepeatButton()
 {
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // CursorImage
@@ -44,6 +43,6 @@ void CursorImage::Draw(Graphics::Painter* painter, const PointF& point, float ti
 	painter->DrawRectangle(RectF(point, (float)m_srcRect.Width, (float)m_srcRect.Height));
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

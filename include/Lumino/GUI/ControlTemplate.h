@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 class Binding
 {
@@ -368,5 +367,5 @@ public:
 	ResourceDictionary*		m_local;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

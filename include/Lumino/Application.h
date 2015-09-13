@@ -12,10 +12,39 @@
 #include "Documents/DocumentsManager.h"
 #include "GUI/GUIManager.h"
 #include "Game/FpsController.h"
-#include "ApplicationConfigData.h"
+#include "ApplicationSettings.h"
 
 namespace Lumino
 {
+
+/**
+	@brief		アプリケーション全体にかかわる処理を行います。
+*/
+class Application
+{
+public:
+
+	/**
+		@brief		アプリケーションの初期化処理を行います。
+		@params[in]	settings	: 初期化設定
+	*/
+	static void Initialize(const ApplicationSettings& settings);
+	
+	/**
+		@brief		アプリケーションの終了処理を行います。
+	*/
+	static void Finalize();
+
+	/**
+		@brief		1フレーム分の更新処理を行います。
+		@return		アプリケーションの終了が要求されている場合は false を返します。
+		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+	*/
+	static bool UpdateFrame();
+
+};
+
+#if 0
 namespace Audio { class AudioManager; }
 namespace Graphics { class ProfilerRenderer; }
 class SceneGraphManager;
@@ -131,5 +160,5 @@ private:
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_endRequested;
 };
-
+#endif
 } // namespace Lumino

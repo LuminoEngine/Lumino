@@ -4,18 +4,18 @@
 namespace Lumino
 {
 namespace Graphics { class GraphicsManager; }
-namespace GUI { class GUIManager; }
-class Application;
+class GUIManager;
+class ApplicationImpl;
 
 // Application クラスの持つ各種 Manager を各モジュールに公開するもの。
 // Application を直接公開すると include の関係でビルド時間がすごいことになるので用意した。
 class ApplicationContext
 {
 public:
-	static void							SetCurrent(Application* app);
-	static Application*					GetCurrent();
+	static void							SetCurrent(ApplicationImpl* app);
+	static ApplicationImpl*				GetCurrent();
 	static Graphics::GraphicsManager*	GetGraphicsManager();
-	static GUI::GUIManager*				GetGUIManager();
+	static GUIManager*					GetGUIManager();
 
 	template<class T, typename... TArgs>
 	static T* CreateObject(TArgs... args)

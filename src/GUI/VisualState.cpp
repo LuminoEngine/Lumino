@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // FloatEasing
@@ -246,6 +245,6 @@ void Storyboard::Stop(UIElement* target)
 const String VisualStatus::Normal = _T("Normal");
 const String VisualStatus::MouseOver = _T("MouseOver");
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 	
 /**
 	@brief	ContentControl のコンテンツを表示します。
@@ -43,5 +42,5 @@ private:
 	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

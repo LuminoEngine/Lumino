@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /// Scroll イベントの原因となった動作を表します。
 LN_ENUM(ScrollEventType)
@@ -143,6 +142,6 @@ private:
 	friend class ScrollViewer;
 };
 
-
-} // namespace GUI
+	
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

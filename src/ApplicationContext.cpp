@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.h"
-#include <Lumino/Application.h>
+#include "ApplicationImpl.h"
 #include "ApplicationContext.h"
 
 namespace Lumino
@@ -10,12 +10,12 @@ namespace Lumino
 // ApplicationContext
 //=============================================================================
 
-static Application* g_app = NULL;
+static ApplicationImpl* g_app = NULL;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationContext::SetCurrent(Application* app)
+void ApplicationContext::SetCurrent(ApplicationImpl* app)
 {
 	g_app = app;
 }
@@ -23,7 +23,7 @@ void ApplicationContext::SetCurrent(Application* app)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application* ApplicationContext::GetCurrent()
+ApplicationImpl* ApplicationContext::GetCurrent()
 {
 	return g_app;
 }
@@ -40,7 +40,7 @@ Graphics::GraphicsManager* ApplicationContext::GetGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GUI::GUIManager* ApplicationContext::GetGUIManager()
+GUIManager* ApplicationContext::GetGUIManager()
 {
 	LN_CHECK_STATE_RETURNV(g_app != NULL, NULL);
 	return g_app->GetGUIManager();

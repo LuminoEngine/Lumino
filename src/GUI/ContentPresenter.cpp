@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 	
 //=============================================================================
 // ContentPresenter
@@ -120,5 +119,5 @@ SizeF ContentPresenter::ArrangeOverride(const SizeF& finalSize)
 #endif
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

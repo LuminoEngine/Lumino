@@ -9,8 +9,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 class ListBox;
 
 /**
@@ -179,5 +178,5 @@ protected:
 };
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

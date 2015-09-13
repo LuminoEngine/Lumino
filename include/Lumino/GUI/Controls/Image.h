@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /// コンテンツサイズの計算方法
 LN_ENUM(Stretch)
@@ -75,5 +74,5 @@ private:
 };
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

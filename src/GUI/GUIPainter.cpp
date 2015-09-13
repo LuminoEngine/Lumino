@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 namespace Internal
 {
 	
@@ -36,5 +35,5 @@ GUIPainter::~GUIPainter()
 //}
 
 } // namespace Internal
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

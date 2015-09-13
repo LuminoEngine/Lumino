@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 	
 // 様々なオブジェクトの private メンバにアクセスする内部クラス。
 // このクラスは絶対にライブラリのユーザーに見えるところに公開してはならない。
@@ -71,5 +70,5 @@ public:
 	}
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

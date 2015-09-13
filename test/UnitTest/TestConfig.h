@@ -33,7 +33,6 @@ using namespace Lumino::Graphics;
 class TestEnv : public ::testing::Environment
 {
 public:
-	static RefPtr<Lumino::Application>	Application;
 	static Platform::PlatformManager*	Platform;
 	static Physics::PhysicsManager*	PhysicsManager;
 	static GraphicsManagerPtr			Manager;

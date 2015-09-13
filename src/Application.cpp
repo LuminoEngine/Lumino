@@ -19,7 +19,7 @@
 	- アプリを実装する上での使いやすさ
 
 	以下のような方針で。
-	- トップレベルオブジェクト (Application) はグローバル。
+	- トップレベルオブジェクト (ApplicationImpl) はグローバル。
 	  (完全にグローバルではなく、インスタンスのポインタをグローバル変数に入れておくイメージ。必要に応じて継承し、拡張できる)
 	- 
 
@@ -47,11 +47,12 @@
 #pragma once
 #include "Internal.h"
 #include <Lumino/Profiler.h>
-#include <Lumino/Application.h>
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Graphics/Renderer.h>
+#include <Lumino/Application.h>
 #include "Graphics/ProfilerRenderer.h"
 #include "Scene/SceneGraphManager.h"
+#include "ApplicationImpl.h"
 #include "ApplicationContext.h"
 
 namespace Lumino
@@ -60,24 +61,26 @@ namespace Lumino
 ////=============================================================================
 //// NativeWindowEventListener
 ////=============================================================================
-//class Application::NativeWindowEventListener
+//class ApplicationImpl::NativeWindowEventListener
 //{
 //public:
-//	NativeWindowEventListener(Application)
+//	NativeWindowEventListener(ApplicationImpl)
 //	{
 //	}
 //};
 
 //=============================================================================
-// Application
+// ApplicationImpl
 //=============================================================================
+
+ApplicationImpl* ApplicationImpl::Instance = NULL;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application* Application::Create(const Application::ConfigData& configData)
+ApplicationImpl* ApplicationImpl::Create(const ApplicationSettings& configData)
 {
-	RefPtr<Application> app(LN_NEW Application(configData));
+	RefPtr<ApplicationImpl> app(LN_NEW ApplicationImpl(configData));
 	//app->Initialize();
 	app.SafeAddRef();
 	return app;
@@ -86,7 +89,7 @@ Application* Application::Create(const Application::ConfigData& configData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application::Application(const Application::ConfigData& configData)
+ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	: m_configData(configData)
 	, m_audioManager(NULL)
 	, m_sceneGraphManager(NULL)
@@ -105,7 +108,7 @@ Application::Application(const Application::ConfigData& configData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application::~Application()
+ApplicationImpl::~ApplicationImpl()
 {
 	LN_SAFE_RELEASE(m_profilerRenderer);
 
@@ -132,7 +135,7 @@ Application::~Application()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::Initialize()
+void ApplicationImpl::Initialize()
 {
 	InitialzePlatformManager();
 	InitialzeAudioManager();
@@ -145,7 +148,7 @@ void Application::Initialize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzePlatformManager()
+void ApplicationImpl::InitialzePlatformManager()
 {
 	if (m_platformManager.IsNull())
 	{
@@ -169,7 +172,7 @@ void Application::InitialzePlatformManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzeAudioManager()
+void ApplicationImpl::InitialzeAudioManager()
 {
 	if (m_audioManager == NULL)
 	{
@@ -194,7 +197,7 @@ void Application::InitialzeAudioManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzePhysicsManager()
+void ApplicationImpl::InitialzePhysicsManager()
 {
 	if (m_physicsManager.IsNull())
 	{
@@ -205,7 +208,7 @@ void Application::InitialzePhysicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzeGraphicsManager()
+void ApplicationImpl::InitialzeGraphicsManager()
 {
 	if (m_graphicsManager.IsNull())
 	{
@@ -230,7 +233,7 @@ void Application::InitialzeGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzeDocumentsManager()
+void ApplicationImpl::InitialzeDocumentsManager()
 {
 	if (m_documentsManager.IsNull())
 	{
@@ -245,7 +248,7 @@ void Application::InitialzeDocumentsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzeGUIManager()
+void ApplicationImpl::InitialzeGUIManager()
 {
 	if (m_guiManager.IsNull())
 	{
@@ -253,11 +256,11 @@ void Application::InitialzeGUIManager()
 		InitialzeGraphicsManager();
 		InitialzeDocumentsManager();
 
-		GUI::GUIManager::ConfigData data;
+		GUIManager::ConfigData data;
 		data.GraphicsManager = m_graphicsManager;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.DocumentsManager = m_documentsManager;
-		m_guiManager.Attach(LN_NEW GUI::GUIManager());
+		m_guiManager.Attach(LN_NEW GUIManager());
 		m_guiManager->Initialize(data);
 	}
 }
@@ -265,7 +268,7 @@ void Application::InitialzeGUIManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::InitialzeSceneGraphManager()
+void ApplicationImpl::InitialzeSceneGraphManager()
 {
 	if (m_sceneGraphManager == NULL)
 	{
@@ -281,7 +284,7 @@ void Application::InitialzeSceneGraphManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Application::UpdateFrame()
+bool ApplicationImpl::UpdateFrame()
 {
 	m_endRequested = !m_platformManager->DoEvents();
 
@@ -296,7 +299,7 @@ bool Application::UpdateFrame()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::Render()
+void ApplicationImpl::Render()
 {
 	if (m_graphicsManager != NULL)
 	{
@@ -324,7 +327,7 @@ void Application::Render()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::ResetFrameDelay()
+void ApplicationImpl::ResetFrameDelay()
 {
 	m_fpsController.RefreshSystemDelay();
 }
@@ -332,7 +335,7 @@ void Application::ResetFrameDelay()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Application::OnEvent(const Platform::EventArgs& e)
+bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 {
 	switch (e.Type)
 	{
@@ -379,6 +382,36 @@ bool Application::OnEvent(const Platform::EventArgs& e)
 		break;
 	}
 	return false;
+}
+
+//=============================================================================
+// Application
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Application::Initialize(const ApplicationSettings& settings)
+{
+	ApplicationImpl::Instance = ApplicationImpl::Create(settings);
+	ApplicationImpl::Instance->Initialize();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Application::Finalize()
+{
+	LN_SAFE_RELEASE(ApplicationImpl::Instance);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool Application::UpdateFrame()
+{
+	LN_CHECK_STATE(ApplicationImpl::Instance != NULL);
+	return ApplicationImpl::Instance->UpdateFrame();
 }
 
 } // namespace Lumino

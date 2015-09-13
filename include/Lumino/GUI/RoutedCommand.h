@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 class UIElement;
 
 /**
@@ -134,5 +133,5 @@ public:
 };
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

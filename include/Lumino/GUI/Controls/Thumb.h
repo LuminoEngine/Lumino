@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief		マウスドラッグが関係するイベント引数です。
@@ -120,5 +119,5 @@ private:
 	bool	m_renderPressed;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

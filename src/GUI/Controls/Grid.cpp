@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ColumnDefinition
@@ -354,15 +353,15 @@ int		Grid::GetRowSpan(UIElement* element)				{ LN_GET_ATTACHED_PROPERTY(element,
 //-----------------------------------------------------------------------------
 void Grid::AddColumnDefinition(float width, float minWidth, float maxWidth)
 {
-	RefPtr<GUI::ColumnDefinition> col(LN_NEW GUI::ColumnDefinition(m_manager));
+	RefPtr<ColumnDefinition> col(LN_NEW ColumnDefinition(m_manager));
 	m_columnDefinitionList->Add(col);
 }
 void Grid::AddRowDefinition(float height, float minHeight, float maxHeight)
 {
-	RefPtr<GUI::RowDefinition> row(LN_NEW GUI::RowDefinition(m_manager));
+	RefPtr<RowDefinition> row(LN_NEW RowDefinition(m_manager));
 	m_rowDefinitionList->Add(row);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

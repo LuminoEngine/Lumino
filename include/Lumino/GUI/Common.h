@@ -2,10 +2,13 @@
 #pragma once
 #include "../Variant.h"
 
+#define LN_NAMESPACE_GUI_BEGIN	//namespace Scene {
+#define LN_NAMESPACE_GUI_END		//}
+
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
+
 class GUIManager;
 
 class ResourceDictionary;
@@ -135,5 +138,5 @@ public:
 	virtual void AddText(const String& text) = 0;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

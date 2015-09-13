@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 namespace Internal { class GUIPainter; }
 	
 /**
@@ -134,5 +133,5 @@ private:
 	friend class GUIHelper;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

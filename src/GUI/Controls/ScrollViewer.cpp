@@ -35,8 +35,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ScrollContentPresenter
@@ -329,6 +328,6 @@ void ScrollViewer::Handler_ScrollBar_Scroll(ScrollEventArgs* e)
 	}
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

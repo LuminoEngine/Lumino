@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief	ビジュアルツリーの要素にアクセスするためのユーティリティです。
@@ -16,5 +15,5 @@ public:
 	static UIElement* FindChildByName(UIElement* parent, const TCHAR* name);
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

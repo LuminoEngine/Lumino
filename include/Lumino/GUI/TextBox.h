@@ -7,8 +7,7 @@ namespace Lumino
 {
 namespace Animation { class FloatAnimationCurve; }
 
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 	
 /**
 	@brief
@@ -112,5 +111,5 @@ private:
 	*/
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

@@ -1,5 +1,6 @@
 
 #pragma once
+#include "../../../src/ApplicationImpl.h"	// TODO
 #include <Lumino/Application.h>
 #include "LNCommon.h"
 
@@ -56,9 +57,9 @@ public:
 	static ObjectEntry* GetObjectEntry(LNHandle handle);
 
 public:
-	static Lumino::Application::ConfigData	ConfigData;
-	static Lumino::Application*				Application;
-	static bool								IsSystemInitialized;
+	static Lumino::ApplicationSettings	ConfigData;
+	static Lumino::ApplicationImpl*		Application;
+	static bool							IsSystemInitialized;
 
 private:
 	typedef Array<ObjectEntry>	ObjectEntryList;

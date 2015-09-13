@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // CommandManager
@@ -80,5 +79,5 @@ void CommandManager::Execute(UIElement* caller, Command* command, const Variant&
 }
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

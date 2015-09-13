@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief		1 つのコンテンツを持つコントロールを表します。
@@ -50,5 +49,5 @@ private:
 	RefPtr<UIElement>	m_childElement;	///< m_content が UIElement であればそれを指す
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

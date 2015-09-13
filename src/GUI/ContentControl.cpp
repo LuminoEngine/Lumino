@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ContentControl
@@ -162,5 +161,5 @@ void ContentControl::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 }
 #endif
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

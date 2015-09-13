@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // VisualTreeHelper
@@ -41,5 +40,5 @@ UIElement* VisualTreeHelper::FindChildByName(UIElement* parent, const TCHAR* nam
 	return NULL;
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

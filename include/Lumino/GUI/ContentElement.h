@@ -22,8 +22,7 @@ private: \
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 class ContentElement
 	: public CoreObject
@@ -37,5 +36,5 @@ private:
 };
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

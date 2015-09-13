@@ -33,13 +33,12 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ScrollEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::ScrollEventArgs, RoutedEventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::ScrollEventArgs, RoutedEventArgs);
 
 //=============================================================================
 // ScrollBar
@@ -146,6 +145,6 @@ void ScrollBar::Handler_Thumb_DragDelta(DragEventArgs* e)
 	UpdateValue(e->XOffset, e->YOffset);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

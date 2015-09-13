@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // InputGesture
@@ -78,5 +77,5 @@ InputBinding::~InputBinding()
 }
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

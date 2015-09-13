@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ButtonChrome
@@ -101,5 +100,5 @@ void ButtonChrome::OnRender(Graphics::Painter* painter)
 	painter->DrawFrameRectangle(rect, m_frameWidth);
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

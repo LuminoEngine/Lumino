@@ -84,9 +84,9 @@ public:	// TODO: internal
 	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(const FontData& fontData);
 	Internal::FontGlyphTextureCache* LookupGlyphTextureCache(Font* font);
 
-private:
+public:	// TODO
 	friend class Helper;
-	friend class Application;
+	//friend class Application;
 
 	struct ConfigData
 	{

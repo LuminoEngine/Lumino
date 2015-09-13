@@ -32,8 +32,7 @@ private: \
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 class CanExecuteRoutedCommandEventArgs;
 class ExecuteRoutedCommandEventArgs;
 class RoutedCommandTypeContext;
@@ -565,5 +564,5 @@ private:
 	Array<UIElement*>	m_visualChildren;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

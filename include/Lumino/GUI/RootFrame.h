@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief	GUI 要素のルート要素です。
@@ -29,5 +28,5 @@ private:
 };
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

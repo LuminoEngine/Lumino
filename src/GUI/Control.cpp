@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // Control
@@ -236,5 +235,5 @@ void Control::Handler_MouseDown(MouseEventArgs* e)
 }
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

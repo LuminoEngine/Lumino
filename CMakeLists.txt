@@ -283,6 +283,8 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/ControlTemplate.h
 	include/Lumino/GUI/CursorImage.h
 	include/Lumino/GUI/Decorator.h
+	include/Lumino/GUI/EventArgs.h
+	include/Lumino/GUI/GUIContext.h
 	include/Lumino/GUI/GUIInputGesture.h
 	include/Lumino/GUI/GUIManager.h
 	include/Lumino/GUI/GUIObjectCollection.h
@@ -294,6 +296,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/TextBox.h
 	include/Lumino/GUI/UIElement.h
+	include/Lumino/GUI/UIElementCollection.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/VisualTreeHelper.h
 	include/Lumino/GUI/Controls/ButtonBase.h
@@ -319,6 +322,7 @@ set(LN_SOURCES_GUI
 	src/GUI/CursorImage.cpp
 	src/GUI/Decorator.cpp
 	src/GUI/EventArgs.cpp
+	src/GUI/GUIContext.cpp
 	src/GUI/GUIHelper.h
 	src/GUI/GUIInputGesture.cpp
 	src/GUI/GUIManager.cpp
@@ -376,6 +380,7 @@ set(LN_SOURCES_Game
 
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
+	include/Lumino/ApplicationSettings.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
 	include/Lumino/CoreObject.h
@@ -387,6 +392,7 @@ set(LN_SOURCES_Application
 	src/Application.cpp
 	src/ApplicationContext.cpp
 	src/ApplicationContext.h
+	src/ApplicationImpl.h
 	src/CoreObject.cpp
 	src/Internal.h
 	src/Profiler.cpp
@@ -511,6 +517,17 @@ endif()
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
+	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+			if (${flag} MATCHES "/MD")
+				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+			endif()
+			if (${flag} MATCHES "/MDd")
+				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
+			endif()
+		endforeach()
+	endif()
+		
 	set(CMAKE_DEBUG_POSTFIX "d")
 	
 	# platform include dirs.
@@ -608,7 +625,7 @@ add_subdirectory(test)
 
 #------------------------------
 # Demo.
-add_subdirectory(demo)
+add_subdirectory(demo/LiveExplorer)
 if (LN_DxLib_Demo)
 	add_subdirectory(demo/DxLib)
 endif()

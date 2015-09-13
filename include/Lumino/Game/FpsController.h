@@ -4,7 +4,6 @@
 
 namespace Lumino
 {
-class Application;
 
 /**
 	@brief		FPS (Frame Par Second) の制御クラス
@@ -90,7 +89,7 @@ public:
 	void RefreshSystemDelay();
 
 private:	// internal
-	friend class Application;
+	friend class ApplicationImpl;
 	void Process();
     void ProcessForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)
 

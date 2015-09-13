@@ -5,7 +5,6 @@
 
 namespace Lumino
 {
-class Application;
 
 /** マウスボタン */
 LN_ENUM(MouseButton)

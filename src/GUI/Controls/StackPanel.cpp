@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // StackPanel
@@ -113,6 +112,6 @@ SizeF StackPanel::ArrangeOverride(const SizeF& finalSize)
 	return finalSize;
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

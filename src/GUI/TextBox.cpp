@@ -25,8 +25,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 class TextBox::Selection
 {
@@ -619,6 +618,6 @@ void TextBox::Handler_MouseMove(MouseEventArgs* e)
 	}
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

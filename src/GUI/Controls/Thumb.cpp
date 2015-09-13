@@ -6,12 +6,12 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
+
 //=============================================================================
 // DragEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::GUI::DragEventArgs, RoutedEventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::DragEventArgs, RoutedEventArgs);
 
 //=============================================================================
 // Thumb
@@ -191,6 +191,6 @@ void ThumbChrome::OnRender(Graphics::Painter* painter)
 }
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 

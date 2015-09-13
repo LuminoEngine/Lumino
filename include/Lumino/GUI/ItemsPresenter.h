@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 	
 /**
 	@brief	ItemsControl のコンテンツを表示します。
@@ -36,5 +35,5 @@ private:
 	RefPtr<Panel>	m_hostPanel;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

@@ -11,8 +11,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // UIElement
@@ -22,8 +21,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElement, CoreObject);
 // Register property
 LN_PROPERTY_IMPLEMENT(UIElement, SizeF, SizeProperty, "Size", m_size, PropertyMetadata(SizeF::Zero));
 LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin, PropertyMetadata(ThicknessF::Zero));
-LN_PROPERTY_IMPLEMENT(UIElement, GUI::HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, PropertyMetadata(HorizontalAlignment::Stretch));
-LN_PROPERTY_IMPLEMENT(UIElement, GUI::VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
+LN_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, PropertyMetadata(HorizontalAlignment::Stretch));
+LN_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, PropertyMetadata(1.0f));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, PropertyMetadata(true));
 
@@ -489,34 +488,34 @@ bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 
 	switch (type)
 	{
-	case Lumino::GUI::EventType_Unknown:
+	case Lumino::EventType_Unknown:
 		break;
-	case Lumino::GUI::EventType_MouseMove:
+	case Lumino::EventType_MouseMove:
 		OnMouseMove(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_MouseButtonDown:
+	case Lumino::EventType_MouseButtonDown:
 		OnMouseDown(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_MouseButtonUp:
+	case Lumino::EventType_MouseButtonUp:
 		OnMouseUp(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_MouseWheel:
+	case Lumino::EventType_MouseWheel:
 		break;
-	case Lumino::GUI::EventType_KeyDown:
+	case Lumino::EventType_KeyDown:
 		OnKeyDown(static_cast<KeyEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_KeyUp:
+	case Lumino::EventType_KeyUp:
 		OnKeyUp(static_cast<KeyEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_Char:	// TODO: TextInput
+	case Lumino::EventType_Char:	// TODO: TextInput
 		OnTextInput(static_cast<KeyEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_ElapsedTime:
+	case Lumino::EventType_ElapsedTime:
 		break;
-	case Lumino::GUI::EventType_MouseEnter:
+	case Lumino::EventType_MouseEnter:
 		OnMouseEnter(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::GUI::EventType_MouseLeave:
+	case Lumino::EventType_MouseLeave:
 		OnMouseLeave(static_cast<MouseEventArgs*>(args));
 		break;
 	default:
@@ -642,5 +641,5 @@ void UIElement::TemplateBindingSource_PropertyChanged(/*CoreObject* sender, */Pr
 }
 
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

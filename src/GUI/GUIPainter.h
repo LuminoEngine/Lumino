@@ -2,11 +2,11 @@
 #pragma once
 #include <functional>
 #include <Lumino/Graphics/Painter.h>
+#include <Lumino/GUI/Common.h>
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 namespace Internal
 {
 
@@ -25,5 +25,5 @@ private:
 };
 
 } // namespace Internal
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

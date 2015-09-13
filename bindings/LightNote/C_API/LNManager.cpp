@@ -8,9 +8,9 @@
 // LFManager
 //=============================================================================
 
-Application::ConfigData	LFManager::ConfigData;
-Lumino::Application*	LFManager::Application = NULL;
-bool					LFManager::IsSystemInitialized = false;
+ApplicationSettings			LFManager::ConfigData;
+Lumino::ApplicationImpl*	LFManager::Application = NULL;
+bool						LFManager::IsSystemInitialized = false;
 
 LFManager::ObjectEntryList	LFManager::m_objectEntryList;
 Stack<int>					LFManager::m_objectIndexStack;
@@ -23,7 +23,7 @@ void LFManager::PreInitialize()
 	if (Application == NULL)
 	{
 		LNTypeDef_CheckCommonDefinition();
-		Application = Lumino::Application::Create(ConfigData);
+		Application = Lumino::ApplicationImpl::Create(ConfigData);
 		IsSystemInitialized = true;
 	}
 }

@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 LN_ENUM(ListChangedAction)
 {
@@ -253,5 +252,5 @@ private:
 	Variant		m_header;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

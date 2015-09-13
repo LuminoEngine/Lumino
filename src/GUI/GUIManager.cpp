@@ -1038,8 +1038,7 @@
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 	
 //=============================================================================
 // GUIManager
@@ -1847,5 +1846,5 @@ void GUIManager::BuildDefaultTheme()
 
 }
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

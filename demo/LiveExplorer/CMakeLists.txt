@@ -20,7 +20,7 @@ set(LN_DEMO_SOURCES
 
 include_directories(
 	"${PROJECT_SOURCE_DIR}/include"
-	"${PROJECT_SOURCE_DIR}/demo"
+	"${PROJECT_SOURCE_DIR}/demo/LiveExplorer"
 	"${PROJECT_SOURCE_DIR}/external/Lumino.Core/include"
 	"${PROJECT_SOURCE_DIR}/external/Lumino.Math/include")
 link_libraries(Lumino_Static)

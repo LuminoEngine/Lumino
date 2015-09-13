@@ -1,11 +1,11 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Painter.h>
+#include "Common.h"
 
 namespace Lumino
 {
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief	マウスカーソルの形状を表すクラスです。
@@ -33,5 +33,5 @@ private:
 	float						m_patternDuration;
 };
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino

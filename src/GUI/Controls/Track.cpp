@@ -25,9 +25,7 @@
 
 namespace Lumino
 {
-
-namespace GUI
-{
+LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // Track
@@ -378,6 +376,6 @@ void Track::Handler_Thumb_DragDelta(DragEventArgs* e)
 }
 #endif
 
-} // namespace GUI
+LN_NAMESPACE_GUI_END
 } // namespace Lumino
 
