@@ -20,6 +20,7 @@ class Control
 	LN_UI_ELEMENT_SUBCLASS_DECL(Control);
 public:
 	LN_PROPERTY(Graphics::BrushPtr,		BackgroundProperty);			/**< Background プロパティの識別子 */
+	LN_PROPERTY(Graphics::BrushPtr,		ForegroundProperty);			/**< Foreground プロパティの識別子 */
 	LN_PROPERTY(ControlTemplate*,		TemplateProperty);
 	LN_PROPERTY(VisualStateGroupList*,	VisualStateGroupsProperty);
 	LN_PROPERTY(String,					FontFamilyProperty);			/**< FontFamily プロパティの識別子 */
@@ -51,6 +52,12 @@ public:
 
 	/** コントロールの背景の描画に使用するブラシを取得します。*/
 	Graphics::BrushPtr GetBackground() const { return GetTypedPropertyValue<Graphics::BrushPtr>(BackgroundProperty); }
+
+	/** コントロールの前景の描画に使用するブラシを設定します。*/
+	void SetForeground(Graphics::BrushPtr value) { SetTypedPropertyValue<Graphics::BrushPtr>(ForegroundProperty, value); }
+
+	/** コントロールの背景の描画に使用するブラシを取得します。*/
+	Graphics::BrushPtr GetForeground() const { return GetTypedPropertyValue<Graphics::BrushPtr>(ForegroundProperty); }
 
 	/** コントロールのフォントファミリ名を設定します。*/
 	void SetFontFamily(const String& value) { SetTypedPropertyValue<String>(FontFamilyProperty, value); }
@@ -137,6 +144,7 @@ private:
 
 private:
 	Graphics::BrushPtr	m_background;
+	Graphics::BrushPtr	m_foreground;
 	Graphics::GraphicsManager::FontData	m_fontData;
 	RefPtr<ControlTemplate>			m_controlTemplate;
 	RefPtr<VisualStateGroupList>	m_visualStateGroupList;

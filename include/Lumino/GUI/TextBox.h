@@ -66,6 +66,9 @@ private:
 	const String& get_Text() const;
 	void Handler_KeyDown(KeyEventArgs* e);
 	void Handler_TextInput(KeyEventArgs* e);
+	void Handler_MouseDown(MouseEventArgs* e);
+	void Handler_MouseUp(MouseEventArgs* e);
+	void Handler_MouseMove(MouseEventArgs* e);
 
 private:
 	class Document;
@@ -74,6 +77,9 @@ private:
 	Document*	m_document;
 	Selection*	m_selection;
 	Animation::FloatAnimationCurve*	m_caretAnimation;
+
+	int		m_dragStartContentIndex;
+	bool	m_isDragging;
 
 	//RefPtr<Documents::Document>	m_document;
 	//Array<TextBoxLineSegment*>		m_lineSegments;

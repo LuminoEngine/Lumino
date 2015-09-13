@@ -78,7 +78,7 @@ namespace Lumino
 Application* Application::Create(const Application::ConfigData& configData)
 {
 	RefPtr<Application> app(LN_NEW Application(configData));
-	app->Initialize();
+	//app->Initialize();
 	app.SafeAddRef();
 	return app;
 }

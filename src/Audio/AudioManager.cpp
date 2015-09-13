@@ -8,6 +8,7 @@
 #include <Lumino/IO/ASyncIOObject.h>
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Audio/Sound.h>
+#include <Lumino/Audio/GameAudio.h>
 #include "AudioUtils.h"
 #include "WaveDecoder.h"
 #include "MidiDecoder.h"
@@ -55,11 +56,18 @@ AudioManager* AudioManager::Create(const Settings& settings)
 //
 //-----------------------------------------------------------------------------
 AudioManager::AudioManager(const Settings& settings)
-	: m_fileManager(settings.FileManager)
+	: m_fileManager(NULL)
 	, m_audioDevice(NULL)
 	, m_midiAudioDevice(NULL)
+	, m_gameAudio(NULL)
 	, mOnMemoryLimitSize(100000)
+	, m_resourceMutex()
 	, m_audioStreamCache(NULL)
+	, m_addingSoundList()
+	, m_soundList()
+	, m_soundListMutex()
+	, m_endRequested()
+	, m_pollingThread()
 {
 #ifdef LN_OS_WIN32
 	if (m_audioDevice == NULL)
@@ -86,6 +94,9 @@ AudioManager::AudioManager(const Settings& settings)
 	// キャッシュ初期化
 	m_audioStreamCache = LN_NEW CacheManager(32, 65535);
 
+	// GameAudio
+	m_gameAudio = LN_NEW GameAudio(this);
+
 	// ポーリングスレッド開始
 	m_pollingThread.Start(LN_CreateDelegate(this, &AudioManager::Thread_Polling));
 
@@ -108,11 +119,22 @@ void AudioManager::Finalize()
 	m_endRequested.SetTrue();
 	m_pollingThread.Wait();
 
+	// GameAudio のデストラクタでは Sound::Stop が呼ばれるので、
+	// これより下の Sound 削除処理の前に delete する。
+	LN_SAFE_DELETE(m_gameAudio);
+
 	// 何か残っていれば削除する
-	LN_FOREACH(Sound* sound, m_soundList) {
+	for (Sound* sound : m_addingSoundList) {
+		sound->Release();
+	}
+	m_addingSoundList.Clear();
+
+	// 何か残っていれば削除する
+	for (Sound* sound : m_soundList) {
 		sound->Release();
 	}
 	m_soundList.Clear();
+
 
 	if (m_audioStreamCache != NULL) {
 		m_audioStreamCache->Finalize();
@@ -196,7 +218,7 @@ Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key, SoundLoadi
 
 	// 管理リストに追加
 	Threading::MutexScopedLock lock(m_soundListMutex);
-	m_soundList.Add(sound);
+	m_addingSoundList.Add(sound);
 	sound.SafeAddRef();	// 管理リストの参照
 	sound.SafeAddRef();	// 外に出すための参照
 	return sound;
@@ -217,11 +239,19 @@ void AudioManager::Thread_Polling()
 	{
 		Threading::Thread::Sleep(10);	// CPU 負荷 100% を避けるため、とりあえず 10ms 待つ
 
+		// 追加待ちリストの内容を本リストに移す
+		{
+			Threading::MutexScopedLock lock(m_soundListMutex);
+			for (Sound* sound : m_addingSoundList) {
+				m_soundList.Add(sound);
+			}
+			m_addingSoundList.Clear();
+		}
+
 		// 経過時間を求めて全 Sound 更新
 		uint64_t curTime = Environment::GetTickCount();
 		float elapsedTime = static_cast<float>(curTime - lastTime) / 1000.0f;
-		LN_FOREACH(Sound* sound, m_soundList)
-		{
+		for (Sound* sound : m_soundList) {
 			sound->Polling(elapsedTime);
 		}
 		lastTime = curTime;

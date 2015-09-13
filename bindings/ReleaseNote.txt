@@ -9,10 +9,11 @@
 変更点:
 - 識別子のプレフィックスを "LN" に統一しました。
 - エラーを戻り値で表現するように変更しました。
-- HSP の true/false マクロを LN_TRUE/LN_FALSE に変更しました。
+- 音声のフェード時間の単位をミリ秒から浮動小数点形式の秒単位に変更しました。
 - LAudio_GetInternalGameSound を廃止しました。
 - LSound_Release を廃止し、LNObject_Release に変更しました。
 - LSound_Create の引数で指定していた一部の設定を別の機能として分けました。(LNSound_Set3DEnabled, LNSound_SetLoadingType)
+- HSP の true/false マクロを LN_TRUE/LN_FALSE に変更しました。
 
 修正点:
 

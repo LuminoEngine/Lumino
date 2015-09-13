@@ -30,6 +30,7 @@ int main()
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		//appData.RenderingType = Graphics::RenderingType::Immediate;
 		RefPtr<Application> app(Application::Create(appData));
+		app->Initialize();
 
 		app->GetPlatformManager()->GetMainWindow()->SetCursorVisible(false);
 
@@ -54,7 +55,7 @@ int main()
 		workbench1->SetContent(grid1);
 
 		auto demoList = GUI::ListBox::Create();
-		GUI::Grid::SetColumn(demoList, 0);
+		GUI::Grid::SetColumn(demoList, 1);
 		grid1->GetChildren()->Add(demoList);
 
 
@@ -110,10 +111,10 @@ int main()
 
 
 		RefPtr<GUI::TextBox> textBox1(GUI::TextBox::Create(app->GetGUIManager()));
-		GUI::Grid::SetColumn(textBox1, 1);
+		GUI::Grid::SetColumn(textBox1, 0);
 		textBox1->Focus();
 		textBox1->SetText(_T("lumino text."));
-		textBox1->Select(3, 0);
+		textBox1->Select(3, 2);
 		grid1->GetChildren()->Add(textBox1);
 		grid1->GetChildren()->Remove(textBox1);
 		grid1->GetChildren()->Add(textBox1);

@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume, int pitch, int fadeTime )
+LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume, int pitch, double fadeTime )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
@@ -19,7 +19,7 @@ LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume, int pitch, int fad
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, int fadeTime)
+LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -31,7 +31,7 @@ LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitc
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopBGM(int fadeTime)
+LNResult LNAudio_StopBGM(double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->StopBGM( fadeTime );
@@ -41,7 +41,7 @@ LNResult LNAudio_StopBGM(int fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, int fadeTime )
+LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, double fadeTime )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGS( filename, volume, pitch, fadeTime );
@@ -51,7 +51,7 @@ LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, int fad
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, int fadeTime)
+LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -63,7 +63,7 @@ LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitc
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopBGS(int fadeTime)
+LNResult LNAudio_StopBGS(double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->StopBGS( fadeTime );
@@ -196,7 +196,7 @@ LNResult LNAudio_StopSE()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_SetBGMVolume(int volume, int fadeTime)
+LNResult LNAudio_SetBGMVolume(int volume, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGMVolume( volume, fadeTime );
@@ -206,7 +206,7 @@ LNResult LNAudio_SetBGMVolume(int volume, int fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_SetBGSVolume(int volume, int fadeTime)
+LNResult LNAudio_SetBGSVolume(int volume, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGSVolume( volume, fadeTime );
@@ -230,10 +230,10 @@ LNResult LNSoundListener_SetPosition(const LNVector3* position)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetPositionXYZ(float x, float y, float z)
+LNResult LNSoundListener_SetPositionXYZ(float x, float y, float z)
 {
 	LNVector3 v = { x, y, z };
-	LNSoundListener_SetPosition(&v);
+	return LNSoundListener_SetPosition(&v);
 }
 
 //-----------------------------------------------------------------------------
@@ -249,10 +249,10 @@ LNResult LNSoundListener_SetDirection(const LNVector3* direction)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetDirectionXYZ(float x, float y, float z)
+LNResult LNSoundListener_SetDirectionXYZ(float x, float y, float z)
 {
 	LNVector3 v = { x, y, z };
-	LNSoundListener_SetDirection(&v);
+	return LNSoundListener_SetDirection(&v);
 }
 
 //-----------------------------------------------------------------------------
@@ -268,10 +268,10 @@ LNResult LNSoundListener_SetUpDirection(const LNVector3* direction)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetUpDirectionXYZ(float x, float y, float z)
+LNResult LNSoundListener_SetUpDirectionXYZ(float x, float y, float z)
 {
 	LNVector3 v = { x, y, z };
-	LNSoundListener_SetUpDirection(&v);
+	return LNSoundListener_SetUpDirection(&v);
 }
 
 //-----------------------------------------------------------------------------
@@ -287,10 +287,10 @@ LNResult LNSoundListener_SetVelocity(const LNVector3* velocity)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNSoundListener_SetVelocityXYZ(float x, float y, float z)
+LNResult LNSoundListener_SetVelocityXYZ(float x, float y, float z)
 {
 	LNVector3 v = { x, y, z };
-	LNSoundListener_SetVelocity(&v);
+	return LNSoundListener_SetVelocity(&v);
 }
 
 //=============================================================================
@@ -683,7 +683,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), int fadeTime LNOTE_DEFAULT_ARG(0) );
+    LNOTEAPI LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -699,7 +699,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayBGMMem( const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), int fadeTime LNOTE_DEFAULT_ARG(0) );
+    LNOTEAPI LNResult LNAudio_PlayBGMMem( const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -708,7 +708,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_StopBGM(int fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNAudio_StopBGM(double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -720,7 +720,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayBGS( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), int fadeTime LNOTE_DEFAULT_ARG(0) );
+    LNOTEAPI LNResult LNAudio_PlayBGS( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -736,7 +736,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), int fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -745,7 +745,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_StopBGS(int fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNAudio_StopBGS(double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -892,7 +892,7 @@ extern "C" {
 	//  @param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_SetBGMVolume(int volume, int fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNAudio_SetBGMVolume(int volume, double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -901,7 +901,7 @@ extern "C" {
 	//  @param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_SetBGSVolume(int volume, int fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNAudio_SetBGSVolume(int volume, double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**

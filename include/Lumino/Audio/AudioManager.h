@@ -55,7 +55,7 @@ public:
 	void SetAutoPlayTypeSelectThreshold(uint32_t threshold) { mOnMemoryLimitSize = threshold; }
 
 	/// GameAudio クラスの取得
-	GameAudio* GetGameAudio() { return mGameAudio; }
+	GameAudio* GetGameAudio() { return m_gameAudio; }
 
 	/// デバイスクラスの取得
 	AudioDevice* GetAudioDevice() { return m_audioDevice; }
@@ -102,12 +102,13 @@ private:
 	Lumino::FileManager*	m_fileManager;
 	AudioDevice*			m_audioDevice;		///< PCM 再生用デバイスクラス
 	AudioDevice*			m_midiAudioDevice;	///< MIDI 再生用デバイスクラス (内部処理が PCM とは全然違うので、1つの AudioDevice にまとめない方が管理が楽)
-	GameAudio*				mGameAudio;
+	GameAudio*				m_gameAudio;
 	uint32_t				mOnMemoryLimitSize;
 	Threading::Mutex			m_resourceMutex;
 
 	CacheManager*				m_audioStreamCache;
 
+	Array<Sound*>				m_addingSoundList;
 	Array<Sound*>				m_soundList;
 	Threading::Mutex			m_soundListMutex;
 	Threading::EventFlag		m_endRequested;

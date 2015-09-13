@@ -18,22 +18,22 @@ class GameAudio
 public:
 
 	/// BGM を演奏する
-	void PlayBGM(const TCHAR* filePath, int volume = 100, int pitch = 100, int fade_time = 0);
+	void PlayBGM(const TCHAR* filePath, int volume = 100, int pitch = 100, double fadeTime = 0.0);
 
 	/// 指定された Sound を BGM として演奏する
-	void PlayBGMFromSound(Sound* sound, int volume = 100, int pitch = 100, int fade_time = 0);
+	void PlayBGMFromSound(Sound* sound, int volume = 100, int pitch = 100, double fadeTime = 0.0);
 
 	/// BGM の演奏を停止する
-	void StopBGM(int fade_time = 0);
+	void StopBGM(double fadeTime = 0.0);
 
 	/// BGS ( 環境音 ) を演奏する
-	void PlayBGS(const TCHAR* filePath, int volume = 100, int pitch = 100, int fade_time = 0);
+	void PlayBGS(const TCHAR* filePath, int volume = 100, int pitch = 100, double fadeTime = 0.0);
 
 	/// 指定された Sound を BGS として演奏する
-	void PlayBGSFromSound(Sound* sound, int volume = 100, int pitch = 100, int fade_time = 0);
+	void PlayBGSFromSound(Sound* sound, int volume = 100, int pitch = 100, double fadeTime = 0.0);
 
 	/// BGS の演奏を停止する
-	void StopBGS(int fade_time = 0);
+	void StopBGS(double fadeTime = 0.0);
 
 	// ME ( 効果音楽 ) を演奏する
 	void PlayME(const TCHAR* filePath, int volume = 100, int pitch = 100);
@@ -60,10 +60,10 @@ public:
 	void SetMEFadeState(int begin, int end);
 
 	/// 再生中のBGMの音量を設定する (フェードアウト中は無効)
-	void SetBGMVolume(int volume, int fadeTime = 0);
+	void SetBGMVolume(int volume, double fadeTime = 0.0);
 
 	/// 再生中のBGSの音量を設定する (フェードアウト中は無効)
-	void SetBGSVolume(int volume, int fadeTime = 0);
+	void SetBGSVolume(int volume, double fadeTime = 0.0);
 
 	/// 同名 BGM の演奏再開フラグの設定
 	void SetEnableBGMRestart(bool flag) { mBGMRestart = flag; }

@@ -102,6 +102,8 @@ public:
 protected:
 	Application(const Application::ConfigData& configData);
 	virtual ~Application();
+
+public:
 	void Initialize();
 	void InitialzePlatformManager();
 	void InitialzeAudioManager();

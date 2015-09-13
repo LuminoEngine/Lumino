@@ -16,6 +16,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
 // Register property
 LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, BackgroundProperty, "Background", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, ForegroundProperty, "Foreground", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
 LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
 // TODO: フォント設定は子要素へ継承する
 LN_PROPERTY_IMPLEMENT(Control, String, FontFamilyProperty, "FontFamily", m_fontData.Family, PropertyMetadata(String::GetEmpty(), PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
@@ -34,10 +35,12 @@ LN_ROUTED_EVENT_IMPLEMENT(Control, MouseEventArgs, MouseDoubleClickEvent, "Mouse
 Control::Control(GUIManager* manager)
 	: UIElement(manager)
 	, m_background()
+	, m_foreground()
 	, m_fontData()
 	, m_controlTemplate()
 	, m_visualStateGroupList()
 {
+	
 	m_visualStateGroupList.Attach(LN_NEW VisualStateGroupList());
 
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Control, MouseEventArgs, UIElement::MouseDownEvent, Handler_MouseDown);

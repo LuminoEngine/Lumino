@@ -204,7 +204,7 @@ void XAudio2OnMemoryAudioPlayer::stop()
     if ( mSourceVoice )
 	{
 		LN_COMCALL(mSourceVoice->Stop());
-		LN_COMCALL(mSourceVoice->FlushSourceBuffers());\
+		LN_COMCALL(mSourceVoice->FlushSourceBuffers());
 
 		mSourceVoice->DestroyVoice();
 		mSourceVoice = NULL;

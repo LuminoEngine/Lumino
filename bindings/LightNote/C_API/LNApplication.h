@@ -17,28 +17,6 @@ LN_MODULE(Application)
 LN_STATIC_CLASS(LNote)
 
 	/**
-		@brief		音声機能を初期化します。
-	*/
-	LN_STATIC_API
-	LN_ATTR_LIBRARY_INITIALIZER
-	LNResult LNote_InitAudio();
-
-	/**
-		@brief		終了処理を行います。
-	*/
-	LN_STATIC_API
-	LN_ATTR_LIBRARY_TERMINATOR
-	void LNote_End();
-
-LN_CLASS_END
-
-//==============================================================================
-/**
-	@brief		
-*/
-LN_STATIC_CLASS(LNote)
-
-	/**
 		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
 		@param[in]	enabled	: LN_TRUE:出力する / LN_FALSE:出力しない
 	*/
@@ -94,12 +72,19 @@ LN_CLASS_END
 LN_STATIC_CLASS(LNApplication)
 	
 	/**
-		@brief		LightNote を初期化します。
+		@brief		アプリケーションを初期化します。
 		@details	ライブラリのすべての機能を使用できるように初期化を行います。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
 	LNResult LNApplication_Initialize();
+
+	/**
+		@brief		アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+	*/
+	LN_STATIC_API
+	LN_ATTR_LIBRARY_INITIALIZER
+	LNResult LNApplication_InitializeAudio();
 
 	/**
 		@brief		フレームを更新します。

@@ -22,10 +22,10 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]	filePath	: ファイルパス
 		@param[in]	volume		: ボリューム (0 ～ 100)
 		@param[in]	pitch		: ピッチ (50 ～ 200)
-		@param[in]	fadeTime	: フェードインにかける時間 (ミリ秒)
+		@param[in]	fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 	
 	/**
 		@brief		メモリ上の音声ファイルデータを使用して BGM を演奏します。
@@ -33,27 +33,27 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
-		@param[in]  fadeTime	: フェードインにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		BGM の演奏を停止します。
-		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_StopBGM(int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_StopBGM(double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		BGS を演奏します。
 		@param[in]  filePath	: ファイルパス
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
-		@param[in]  fadeTime	: フェードインにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGS(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_PlayBGS(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		メモリ上の音声ファイルデータから BGS を演奏します。
@@ -61,17 +61,17 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  dataSize	: データサイズ (バイト単位)
 		@param[in]  volume		: ボリューム (0 ～ 100)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
-		@param[in]  fadeTime	: フェードインにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		BGS の演奏を停止します。、
-		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_StopBGS(int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_StopBGS(double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		ME を演奏します。
@@ -178,18 +178,18 @@ LN_STATIC_CLASS(LNAudio)
 	/**
 		@brief		再生中のBGMの音量を設定します。(フェードアウト中は無効)
 		@param[in]  volume		: ボリューム (0 ～ 100)
-		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_SetBGMVolume(int volume, int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_SetBGMVolume(int volume, double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		再生中のBGSの音量を設定します。(フェードアウト中は無効)
 		@param[in]  volume		: ボリューム (0 ～ 100)
-		@param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
+		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_SetBGSVolume(int volume, int fadeTime LN_DEFAULT_ARG(0));
+	LNResult LNAudio_SetBGSVolume(int volume, double fadeTime LN_DEFAULT_ARG(0.0));
 
 
 LN_CLASS_END
@@ -217,7 +217,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
 	LN_ATTR_OVERLOAD(LNSoundListener_SetPositionXYZ)
-	void LNSoundListener_SetPositionXYZ(float x, float y, float z);
+	LNResult LNSoundListener_SetPositionXYZ(float x, float y, float z);
 
 	/**
 		@brief		3D音声のリスナーの正面方向を設定します。
@@ -236,7 +236,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
 	LN_ATTR_OVERLOAD(LNSoundListener_SetDirection)
-	void LNSoundListener_SetDirectionXYZ(float x, float y, float z);
+	LNResult LNSoundListener_SetDirectionXYZ(float x, float y, float z);
 
 	/**
 		@brief		3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
@@ -255,7 +255,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
 	LN_ATTR_OVERLOAD(LNSoundListener_SetUpDirection)
-	void LNSoundListener_SetUpDirectionXYZ(float x, float y, float z);
+	LNResult LNSoundListener_SetUpDirectionXYZ(float x, float y, float z);
 
 	/**
 		@brief		3D音声のリスナーの速度を設定します。
@@ -274,7 +274,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
 	LN_ATTR_OVERLOAD(LNSoundListener_Velocity)
-	void LNSoundListener_SetVelocityXYZ(float x, float y, float z);
+	LNResult LNSoundListener_SetVelocityXYZ(float x, float y, float z);
 
 LN_CLASS_END
 	
@@ -440,11 +440,11 @@ LN_CLASS(LNSound, LNObject)
 		@brief		サウンド音量のフェード操作を行います。
 		@param[in]	sound			: サウンドハンドル
 		@param[in]	targetVolume	: 変更先の音量
-		@param[in]	time			: フェードにかける時間 (ミリ秒)
+		@param[in]	time			: フェードにかける時間 (秒)
 		@param[in]	fadeState		: フェード完了後の動作の指定
 	*/
 	LN_INSTANCE_API
-	LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, int time, LNSoundFadeState fadeState);
+	LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, double time, LNSoundFadeState fadeState);
 
 	/**
 		@brief		サウンドの再生したサンプル数を取得します。
