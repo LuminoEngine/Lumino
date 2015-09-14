@@ -29,6 +29,9 @@ UIElementFactory::~UIElementFactory()
 	LN_FOREACH(UIElementFactory* f, m_children) {
 		f->Release();
 	}
+
+	//if (m_targetTypeFullName == _T("ColumnDefinition"))
+	//	_tprintf(_T("%s\n"), m_targetTypeFullName.GetCStr());
 }
 
 //-----------------------------------------------------------------------------
@@ -165,6 +168,8 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		// TODO: 
 		LN_THROW(0, InvalidOperationException);
 	}
+	//if (m_targetTypeFullName == _T("Grid"))
+	//	_tprintf(_T("%s\n"), m_targetTypeFullName.GetCStr());
 
 	// プロパティを設定する
 	for (const PropertyValueList::Pair& pair : m_propertyValueList)
@@ -174,7 +179,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 			// リストの場合は少し特殊。オブジェクトのメンバのリストは既につくられている前提で、
 			// それに対して要素を1つずつ Add していく。
 #if 1
-			VariantList* list = pair.second.GetList();
+			GenericCoreList<Variant>* list = dynamic_cast<GenericCoreList<Variant>*>(pair.second.GetList());
 			for (const Variant& item : *list) {
 				if (item.GetType() == VariantType_Object &&
 					dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？

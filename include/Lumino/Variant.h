@@ -14,8 +14,8 @@
 namespace Lumino
 {
 class CoreObject;
+class CoreList;
 class Variant;
-class VariantList;
 class Property;
 class PropertyChangedEventArgs;
 class RoutedEvent;
@@ -151,6 +151,9 @@ public:
 
 class CoreObjectCollection : public Collection < CoreObject* >
 {
+public:
+	typedef Collection<CoreObject*>::value_type value_type;
+
 public:
 	CoreObjectCollection(CoreObject* owner);
 	virtual ~CoreObjectCollection() {}
@@ -362,7 +365,7 @@ public:
 	Variant(float value);
 	Variant(const String& value);
 	Variant(const Enum& value);
-	Variant(VariantList* value);
+	Variant(CoreList* value);
 	Variant(const SizeF& value);
 	Variant(const Rect& value);
 	Variant(const ThicknessF& value);
@@ -387,8 +390,8 @@ public:
 	void SetString(const String& value);
 	String GetString() const;
 
-	void SetList(VariantList* value);
-	VariantList* GetList() const;
+	void SetList(CoreList* value);
+	CoreList* GetList() const;
 
 	void Set(CoreObject* obj);
 	CoreObject* GetObject() const;
@@ -454,7 +457,7 @@ private:
 		int				m_int;
 		float			m_float;
 		/*String*			m_string;*/
-		VariantList*	m_valueList;
+		CoreList*		m_valueList;
 		CoreObject*		m_object;
 		float			m_sizeF[2];
 		int				m_rect[4];
@@ -477,7 +480,7 @@ Variant::Variant(RefPtr<T>& obj)
 	else
 	{
 		CoreObject* t = obj.GetObjectPtr();
-		SetList(static_cast<VariantList*>(t));
+		SetList(static_cast<CoreList*>(t));
 	}
 }
 
@@ -494,7 +497,7 @@ template<> struct Variant::CastSelector < ThicknessF, std::false_type, std::fals
 template<typename T> struct Variant::CastSelector < T, std::true_type, std::false_type >	{ static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
 template<typename T> struct Variant::CastSelector  < T, std::false_type, std::true_type >	{ static T GetValue(const Variant& v) { return T(static_cast<typename T::PtrType>(v.GetObject())); } };
 
-
+#if 0
 
 class VariantList
 	: public Collection<Variant>
@@ -545,16 +548,16 @@ public:
 
 public:
 	/// 指定インデックスに要素を格納する
-	void SetAt(int index, const TValue& item) { VariantList::SetAt(index, item); }
+	void SetAt(int index, TValue& item) { VariantList::SetAt(index, item); }
 
 	/// 指定インデックスの要素を取得する
 	TValue GetAt(int index) const { return Variant::Cast<TValue>(VariantList::GetAt(index)); }	// TODO: できれば参照で返したいが…
 
 	/// 要素を末尾に追加する
-	void Add(const TValue& item) { VariantList::Add(item); }
+	void Add(TValue& item) { VariantList::Add(item); }
 
 	/// 指定したインデックスの位置に要素を挿入する
-	void Insert(int index, const TValue& item) { VariantList::Insert(index, item); }
+	void Insert(int index, TValue& item) { VariantList::Insert(index, item); }
 
 public:
 	class const_iterator //: public std::iterator<std::forward_iterator_tag, const TValue>
@@ -647,6 +650,7 @@ public:
 	iterator		end()			{ return iterator(VariantList::end()); }
 	const_iterator	end() const		{ return const_iterator(VariantList::end()); }
 };
+#endif
 
 #if 0
 

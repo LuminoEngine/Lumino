@@ -19,6 +19,11 @@ int TestA()
 
 int g_test2 = TestA();
 
+class TestRef1 : public RefObject
+{
+
+};
+
 int main()
 {
 
@@ -28,19 +33,54 @@ int main()
 	try
 	{
 		ApplicationSettings appData;
+		Application::Initialize(appData);
+
+		while (Application::UpdateFrame())
+		{
+		}
+
+		Application::Finalize();
+
+#if 0
+		//RefPtr<TestRef1> ttt(LN_NEW TestRef1());
+		//GenericCoreList<TestRef1*> testlist22;
+		//testlist22.Add(ttt);
+
+		//return 0;
+
+		ApplicationSettings appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		//appData.RenderingType = Graphics::RenderingType::Immediate;
 		RefPtr<ApplicationImpl> app(ApplicationImpl::Create(appData));
 		app->Initialize();
 
+
 		app->GetPlatformManager()->GetMainWindow()->SetCursorVisible(false);
 
 
-		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-Gothic-Regular.ttf"));
-		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../tools/VLGothic/VL-PGothic-Regular.ttf"));
+		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
 		// TODO: RefObject のデストラクタで、参照カウント1以上ならエラー。
 		RefPtr<Graphics::Font> font1(Graphics::Font::Create(app->GetGraphicsManager()->GetFontManager()));	// TODO: ダサすぎる。デフォルトの設定方法も考える。
+		
+
+
+		//GenericCoreList<int> testlist1;
+		//testlist1.Add(10);
+		//printf("%d\n", testlist1.GetAt(0));
+
+		////const Graphics::Font* f;
+		////Graphics::Font* f2;
+		////f2 = f;
+
+		//GenericCoreList<Graphics::Font*> testlist2;
+		//testlist2.Add(font1.GetObjectPtr());
+		//printf("%p\n", testlist2.GetAt(0));
+		//printf("%p\n", font1.GetObjectPtr());
+
+		//return 0;
+		
 		font1->SetName(_T("VL Gothic"));
 		font1->SetAntiAlias(true);
 		app->GetGraphicsManager()->GetFontManager()->SetDefaultFont(font1);
@@ -58,6 +98,7 @@ int main()
 		auto demoList = ListBox::Create();
 		Grid::SetColumn(demoList, 1);
 		grid1->GetChildren()->Add(demoList);
+
 
 
 		//RefPtr<Graphics::Brush> b(Graphics::ColorBrush::Blue, true);
@@ -128,6 +169,10 @@ int main()
 
 
 		RefPtr<Sprite> sprite(Sprite::Create());
+
+		//GenericCoreList<Sprite*> splist;
+		//splist.Add(sprite);
+
 		//sprite->SetSize(SizeF(1, 1));
 		//sprite->SetTexture(tex);
 		//sprite->SetShader(mmeShader);
@@ -290,7 +335,7 @@ int main()
 			//printf("t:%u\n", us);
 
 		} while (app->UpdateFrame());
-
+#endif
 	}
 	catch (Exception& e)
 	{

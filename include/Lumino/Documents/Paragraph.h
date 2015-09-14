@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Graphics/Common.h"
+#include "../CoreObject.h"
 #include "TextElement.h"
 #include "Inline.h"
 
@@ -11,18 +12,18 @@ namespace Documents
 class Paragraph;
 
 class InlineList
-	: public GenericVariantList<Inline*>
+	: public GenericCoreList<Inline*>
 {
+public:
+	typedef GenericCoreList<Inline*>::value_type value_type;
+
 private:
 	InlineList(Paragraph* owner) : m_owner(owner) {}
 
-	virtual void InsertItem(int index, const Variant& item);
+	virtual void InsertItem(int index, const value_type& item);
 	virtual void ClearItems();
 	virtual void RemoveItem(int index);
-	virtual void SetItem(int index, const Variant& item);
-
-	//virtual void OnItemAdded(const Variant& item);
-	//virtual void OnItemRemoved(const Variant& item);
+	virtual void SetItem(int index, const value_type& item);
 
 	friend class Paragraph;
 	Paragraph*	m_owner;

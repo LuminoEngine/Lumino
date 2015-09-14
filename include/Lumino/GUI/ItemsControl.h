@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../CoreObject.h"
 #include "Control.h"
 #include "ContentControl.h"
 #include "ItemsPresenter.h"
@@ -35,7 +36,7 @@ public:
 
 public:
 	ListChangedAction	Action;
-	VariantList			NewItems;
+	GenericCoreList<Variant>			NewItems;
 };
 	
 
@@ -78,16 +79,19 @@ public:
 	@brief
 */
 class ItemList
-	: public GenericVariantList<UIElement*>
+	: public GenericCoreList<UIElement*>
 {
+public:
+	typedef GenericCoreList<UIElement*>::value_type value_type;
+
 public:
 	Event01<ListChangedEventArgs*>	ItemsChanged;
 
 protected:
-	virtual void InsertItem(int index, const Variant& item);
+	virtual void InsertItem(int index, const value_type& item);
 	virtual void ClearItems();
 	virtual void RemoveItem(int index);
-	virtual void SetItem(int index, const Variant& item);
+	virtual void SetItem(int index, const value_type& item);
 
 
 	//virtual void OnItemAdded(const Variant& item)	// TODO インデックスも取りたいかも
@@ -131,16 +135,19 @@ private:
 	@brief
 */
 class GroupItemList
-	: public GenericVariantList<GroupItem*>
+	: public GenericCoreList<GroupItem*>
 {
+public:
+	typedef GenericCoreList<GroupItem*>::value_type value_type;
+
 protected:
 	GroupItemList(ItemsControl* owner);
 
 
-	virtual void InsertItem(int index, const Variant& item);
+	virtual void InsertItem(int index, const value_type& item);
 	virtual void ClearItems();
 	virtual void RemoveItem(int index);
-	virtual void SetItem(int index, const Variant& item);
+	virtual void SetItem(int index, const value_type& item);
 
 	//virtual void OnItemAdded(const Variant& item);
 	//virtual void OnItemRemoved(const Variant& item);

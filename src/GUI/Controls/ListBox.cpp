@@ -178,30 +178,29 @@ void ListBoxItem::Handler_MouseLeave(MouseEventArgs* e)
 //=============================================================================
 // ListBoxItemList
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList, GenericVariantList<ListBoxItem*>);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ListBoxItemList, GenericCoreList<ListBoxItem*>);
 
-void ListBoxItemList::InsertItem(int index, const Variant& item)
+void ListBoxItemList::InsertItem(int index, const value_type& item)
 {
-	m_owner->OnListBoxItemAdded(static_cast<ListBoxItem*>(item.GetObject()));
-	GenericVariantList<ListBoxItem*>::InsertItem(index, item);
+	m_owner->OnListBoxItemAdded(item);
+	GenericCoreList<ListBoxItem*>::InsertItem(index, item);
 }
 void ListBoxItemList::ClearItems()
 {
 	for (ListBoxItem* obj : *this) {
 		m_owner->OnListBoxItemRemoved(obj);
 	}
-	GenericVariantList<ListBoxItem*>::ClearItems();
+	GenericCoreList<ListBoxItem*>::ClearItems();
 }
 void ListBoxItemList::RemoveItem(int index)
 {
-	const Variant& v = VariantList::GetAt(index);
-	m_owner->OnListBoxItemRemoved(static_cast<ListBoxItem*>(v.GetObject()));
-	GenericVariantList<ListBoxItem*>::RemoveItem(index);
+	m_owner->OnListBoxItemRemoved(GetAt(index));
+	GenericCoreList<ListBoxItem*>::RemoveItem(index);
 }
-void ListBoxItemList::SetItem(int index, const Variant& item)
+void ListBoxItemList::SetItem(int index, const value_type& item)
 {
-	m_owner->OnListBoxItemAdded(static_cast<ListBoxItem*>(item.GetObject()));
-	GenericVariantList<ListBoxItem*>::SetItem(index, item);
+	m_owner->OnListBoxItemAdded(item);
+	GenericCoreList<ListBoxItem*>::SetItem(index, item);
 }
 
 ////-----------------------------------------------------------------------------

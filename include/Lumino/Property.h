@@ -189,7 +189,7 @@ public:
 	template<typename T>
 	void AddItemInternal(T* list, const Variant& item) const	// ポインタ型
 	{
-		ListOperationSelector<T, std::is_base_of<VariantList, T>::type >::AddItem(*list, item);
+		ListOperationSelector<T, std::is_base_of<CoreList, T>::type >::AddItem(*list, item);
 	}
 
 
@@ -201,7 +201,7 @@ public:
 	template<typename T> struct ListOperationSelector<T, std::true_type>
 	{
 		static bool IsList() { return true; }
-		static void AddItem(T& list, const Variant& item) { list.VariantList::Add(item); }
+		static void AddItem(T& list, const Variant& item) { list.AddVariant(item); }
 	};
 
 
@@ -211,7 +211,7 @@ public:
 	};
 	template<typename T> struct ListOperationSelector2<T*>
 	{
-		static bool IsList() { return ListOperationSelector<T, std::is_base_of<VariantList, T>::type>::IsList(); }
+		static bool IsList() { return ListOperationSelector<T, std::is_base_of<CoreList, T>::type>::IsList(); }
 	};
 	
 

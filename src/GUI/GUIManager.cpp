@@ -1709,7 +1709,7 @@ void GUIManager::BuildDefaultTheme()
 
 		// RowDefinitions
 		auto rows = RefPtr<UIElementFactorylist>::Create();
-		grid1->SetPropertyValue(Grid::RowDefinitionsProperty, columns);
+		grid1->SetPropertyValue(Grid::RowDefinitionsProperty, rows);
 
 		auto row1 = RefPtr<UIElementFactory>::Create(this);
 		row1->SetTypeName(_T("RowDefinition"));

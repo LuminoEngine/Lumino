@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <map>
+#include "../CoreObject.h"
 #include "Common.h"
 #include "../RoutedEvent.h"
 #include "../Variant.h"
@@ -94,7 +95,8 @@ private:
 	Array<UIElementFactory*>		m_children;
 };
 
-typedef GenericVariantList<UIElementFactory*>	UIElementFactorylist;
+// TODO: 削除予定。UIElementFactory のプロパティとして登録するものは全て GenericCoreList<Variant> でなければならない。
+typedef GenericCoreList<Variant>	UIElementFactorylist;
 
 /**
 	@brief		
@@ -196,7 +198,7 @@ private:
 	Variant				m_value;
 };
 
-typedef GenericVariantList<Setter*>		SetterList;
+typedef GenericCoreList<Setter*>		SetterList;
 
 
 /**
@@ -218,7 +220,7 @@ public:	// internal
 	virtual bool IsPropertyTrigger() const { return false; }
 };
 
-typedef GenericVariantList<TriggerBase*>		TriggerList;
+typedef GenericCoreList<TriggerBase*>		TriggerList;
 
 /**
 	@brief		
@@ -241,8 +243,9 @@ public:
 	// ユーティリティ
 	void AddSetter(const Property* prop, const Variant& value)
 	{
-		auto setter = RefPtr<Setter>::Create(prop, value);
-		m_setterList->Add(setter);
+		RefPtr<Setter> setter = RefPtr<Setter>::Create(prop, value);
+		Setter* p = setter.GetObjectPtr();
+		m_setterList->Add(p);
 	}
 
 	// internal
@@ -263,7 +266,7 @@ private:
 class Style
 	: public CoreObject
 {
-	typedef GenericVariantList<Trigger*>	PropertyTriggerList;
+	typedef GenericCoreList<Trigger*>	PropertyTriggerList;
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	Style();

@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../CoreObject.h"
 #include "../CoreObjectList.h"
 #include "UIElement.h"
 
@@ -11,9 +12,12 @@ LN_NAMESPACE_GUI_BEGIN
 	@brief		
 */
 class UIElementCollection
-	: public GenericVariantList<UIElement*>
+	: public GenericCoreList<UIElement*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+	typedef GenericCoreList<UIElement*>::value_type value_type;
+
 public:
 	UIElementCollection() {}
 	virtual ~UIElementCollection() {}
@@ -22,13 +26,10 @@ public:
 	Event01<UIElement*>	ItemRemoved;
 
 protected:
-	virtual void InsertItem(int index, const Variant& item);
+	virtual void InsertItem(int index, const value_type& item);
 	virtual void ClearItems();
 	virtual void RemoveItem(int index);
-	virtual void SetItem(int index, const Variant& item);
-	//virtual void OnItemAdded(const Variant& item/*UIElement* item*/) { ItemAdded.Raise(Variant::Cast<UIElement*>(item)); }
-	//virtual void OnItemRemoved(const Variant& item/*UIElement* item*/) { ItemRemoved.Raise(Variant::Cast<UIElement*>(item)); }
-
+	virtual void SetItem(int index, const value_type& item);
 
 #if 0
 	LN_CORE_OBJECT_TYPE_INFO_DECL();

@@ -21,6 +21,7 @@
 */
 #include "Internal.h"
 #include <Lumino/Variant.h>
+#include <Lumino/CoreObject.h>
 #include <Lumino/Property.h>
 #include <Lumino/RoutedEvent.h>
 
@@ -671,7 +672,7 @@ Variant::Variant(const String& value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Variant::Variant(VariantList* value)
+Variant::Variant(CoreList* value)
 	: m_type(VariantType_Unknown)
 	, m_uint(0)
 {
@@ -805,7 +806,7 @@ String Variant::GetString() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Variant::SetList(VariantList* value)
+void Variant::SetList(CoreList* value)
 {
 	Release();
 	m_type = VariantType_List;
@@ -815,7 +816,7 @@ void Variant::SetList(VariantList* value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VariantList* Variant::GetList() const
+CoreList* Variant::GetList() const
 {
 	if (LN_VERIFY_ASSERT(m_type == VariantType_List)) { return NULL; }
 	return m_valueList;
@@ -836,7 +837,8 @@ void Variant::Set(CoreObject* obj)
 //-----------------------------------------------------------------------------
 CoreObject* Variant::GetObject() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_Object)) { return NULL; }
+	LN_CHECK_STATE(m_type == VariantType_Object || m_type == VariantType_List);	// List も Object の一部。
+	//if (LN_VERIFY_ASSERT(m_type == VariantType_Object)) { return NULL; }
 	return m_object;
 }
 

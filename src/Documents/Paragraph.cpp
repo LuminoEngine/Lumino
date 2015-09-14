@@ -13,28 +13,27 @@ namespace Documents
 // InlineList
 //=============================================================================
 
-void InlineList::InsertItem(int index, const Variant& item)
+void InlineList::InsertItem(int index, const value_type& item)
 {
-	m_owner->OnInlineAdded(static_cast<Inline*>(item.GetObject()));
-	GenericVariantList<Inline*>::InsertItem(index, item);
+	m_owner->OnInlineAdded(item);
+	GenericCoreList<Inline*>::InsertItem(index, item);
 }
 void InlineList::ClearItems()
 {
 	for (Inline* obj : *this) {
 		m_owner->OnInlineRemoved(obj);
 	}
-	GenericVariantList<Inline*>::ClearItems();
+	GenericCoreList<Inline*>::ClearItems();
 }
 void InlineList::RemoveItem(int index)
 {
-	const Variant& v = VariantList::GetAt(index);
-	m_owner->OnInlineRemoved(static_cast<Inline*>(v.GetObject()));
-	GenericVariantList<Inline*>::RemoveItem(index);
+	m_owner->OnInlineRemoved(GetAt(index));
+	GenericCoreList<Inline*>::RemoveItem(index);
 }
-void InlineList::SetItem(int index, const Variant& item)
+void InlineList::SetItem(int index, const value_type& item)
 {
-	m_owner->OnInlineAdded(static_cast<Inline*>(item.GetObject()));
-	GenericVariantList<Inline*>::SetItem(index, item);
+	m_owner->OnInlineAdded(item);
+	GenericCoreList<Inline*>::SetItem(index, item);
 }
 
 ////-----------------------------------------------------------------------------

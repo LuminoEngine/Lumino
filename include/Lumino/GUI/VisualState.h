@@ -103,7 +103,7 @@ protected:
 	RefPtr<Storyboard>	m_storyboard;
 };
 
-typedef GenericVariantList<VisualState*>	VisualStateList;
+typedef GenericCoreList<VisualState*>	VisualStateList;
 	
 /**
 	@brief		
@@ -140,7 +140,7 @@ private:
 	friend class VisualStateManager;
 };
 
-typedef GenericVariantList<VisualStateGroup*>	VisualStateGroupList;
+typedef GenericCoreList<VisualStateGroup*>	VisualStateGroupList;
 	
 /**
 	@brief		

@@ -118,8 +118,8 @@ private:
 	float GetAvailableDesiredHeight() const;	///< 最小/最大を考慮した幅を返す
 };
 
-typedef GenericVariantList<ColumnDefinition*>	ColumnDefinitionList;
-typedef GenericVariantList<RowDefinition*>		RowDefinitionList;
+typedef GenericCoreList<ColumnDefinition*>	ColumnDefinitionList;
+typedef GenericCoreList<RowDefinition*>		RowDefinitionList;
 
 /**
 	@brief		

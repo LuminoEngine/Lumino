@@ -12,12 +12,12 @@ LN_NAMESPACE_GUI_BEGIN
 //=============================================================================
 // ItemList
 //=============================================================================
-void ItemList::InsertItem(int index, const Variant& item)
+void ItemList::InsertItem(int index, const value_type& item)
 {
 	auto args = RefPtr<ListChangedEventArgs>::Create(ListChangedAction::Add);	// TODO キャッシュしたい
-	args->NewItems.Add(item);
+	args->NewItems.Add(Variant(item));
 	ItemsChanged(args);
-	GenericVariantList<UIElement*>::InsertItem(index, item);
+	GenericCoreList<UIElement*>::InsertItem(index, item);
 }
 void ItemList::ClearItems()
 {
@@ -25,20 +25,20 @@ void ItemList::ClearItems()
 	//for (UIElement* obj : *this) {
 	//	m_owner->OnInlineRemoved(obj);
 	//}
-	GenericVariantList<UIElement*>::ClearItems();
+	GenericCoreList<UIElement*>::ClearItems();
 }
 void ItemList::RemoveItem(int index)
 {
 	LN_THROW(0, NotImplementedException);
 	//const Variant& v = VariantList::GetAt(index);
 	//m_owner->OnInlineRemoved(static_cast<UIElement*>(v.GetObject()));
-	GenericVariantList<UIElement*>::RemoveItem(index);
+	GenericCoreList<UIElement*>::RemoveItem(index);
 }
-void ItemList::SetItem(int index, const Variant& item)
+void ItemList::SetItem(int index, const value_type& item)
 {
 	LN_THROW(0, NotImplementedException);
 	//m_owner->OnInlineAdded(static_cast<UIElement*>(item.GetObject()));
-	GenericVariantList<UIElement*>::SetItem(index, item);
+	GenericCoreList<UIElement*>::SetItem(index, item);
 }
 
 //=============================================================================
@@ -74,28 +74,27 @@ GroupItemList::GroupItemList(ItemsControl* owner)
 {
 }
 
-void GroupItemList::InsertItem(int index, const Variant& item)
+void GroupItemList::InsertItem(int index, const value_type& item)
 {
-	m_owner->OnGroupItemAdded(static_cast<GroupItem*>(item.GetObject()));
-	GenericVariantList<GroupItem*>::InsertItem(index, item);
+	m_owner->OnGroupItemAdded(item);
+	GenericCoreList<GroupItem*>::InsertItem(index, item);
 }
 void GroupItemList::ClearItems()
 {
 	for (GroupItem* obj : *this) {
 		m_owner->OnGroupItemRemoved(obj);
 	}
-	GenericVariantList<GroupItem*>::ClearItems();
+	GenericCoreList<GroupItem*>::ClearItems();
 }
 void GroupItemList::RemoveItem(int index)
 {
-	const Variant& v = VariantList::GetAt(index);
-	m_owner->OnGroupItemRemoved(static_cast<GroupItem*>(v.GetObject()));
-	GenericVariantList<GroupItem*>::RemoveItem(index);
+	m_owner->OnGroupItemRemoved(GetAt(index));
+	GenericCoreList<GroupItem*>::RemoveItem(index);
 }
-void GroupItemList::SetItem(int index, const Variant& item)
+void GroupItemList::SetItem(int index, const value_type& item)
 {
-	m_owner->OnGroupItemAdded(static_cast<GroupItem*>(item.GetObject()));
-	GenericVariantList<GroupItem*>::SetItem(index, item);
+	m_owner->OnGroupItemAdded(item);
+	GenericCoreList<GroupItem*>::SetItem(index, item);
 }
 
 ////-----------------------------------------------------------------------------

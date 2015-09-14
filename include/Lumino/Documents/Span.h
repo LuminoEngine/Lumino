@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../CoreObject.h"
 #include "Inline.h"
 
 namespace Lumino
@@ -19,7 +20,7 @@ public:
 	virtual ~Span();
 
 private:
-	GenericVariantList<Inline*>	m_inlineList;
+	GenericCoreList<Inline*>	m_inlineList;
 };
 
 

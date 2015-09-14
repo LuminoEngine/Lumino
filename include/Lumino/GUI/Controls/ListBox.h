@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../../CoreObject.h"
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
 #include "Panel.h"
@@ -37,23 +38,21 @@ private:
 	@brief
 */
 class ListBoxItemList	// TODO: いらないかも
-	: public GenericVariantList<ListBoxItem*>
+	: public GenericCoreList<ListBoxItem*>
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
+	typedef GenericCoreList<ListBoxItem*>::value_type value_type;
 
+public:
 	ListBoxItemList(ListBox* owner) : m_owner(owner) {}
 	virtual ~ListBoxItemList() {}
 
 protected:
-
-	virtual void InsertItem(int index, const Variant& item);
+	virtual void InsertItem(int index, const value_type& item);
 	virtual void ClearItems();
 	virtual void RemoveItem(int index);
-	virtual void SetItem(int index, const Variant& item);
-
-	//virtual void OnItemAdded(ListBoxItem* item);
-	//virtual void OnItemRemoved(ListBoxItem* item);
+	virtual void SetItem(int index, const value_type& item);
 
 private:
 	ListBox*	m_owner;

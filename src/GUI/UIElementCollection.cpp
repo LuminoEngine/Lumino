@@ -10,12 +10,12 @@ LN_NAMESPACE_GUI_BEGIN
 // UIElementCollection
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElementCollection, GenericVariantList<UIElement*>);	// TODO: テンプレートはやめるかも
+LN_CORE_OBJECT_TYPE_INFO_IMPL(UIElementCollection, GenericCoreList<UIElement*>);	// TODO: テンプレートはやめるかも
 
-void UIElementCollection::InsertItem(int index, const Variant& item)
+void UIElementCollection::InsertItem(int index, const value_type& item)
 {
-	ItemAdded.Raise(Variant::Cast<UIElement*>(item));
-	GenericVariantList<UIElement*>::InsertItem(index, item);
+	ItemAdded.Raise(item);
+	GenericCoreList<UIElement*>::InsertItem(index, item);
 }
 void UIElementCollection::ClearItems()
 {
@@ -26,19 +26,18 @@ void UIElementCollection::ClearItems()
 	//for (UIElement* obj : *this) {
 	//	m_owner->OnInlineRemoved(obj);
 	//}
-	GenericVariantList<UIElement*>::ClearItems();
+	GenericCoreList<UIElement*>::ClearItems();
 }
 void UIElementCollection::RemoveItem(int index)
 {
-	const Variant& v = VariantList::GetAt(index);
-	ItemRemoved.Raise(Variant::Cast<UIElement*>(v));
-	GenericVariantList<UIElement*>::RemoveItem(index);
+	ItemRemoved.Raise(GetAt(index));
+	GenericCoreList<UIElement*>::RemoveItem(index);
 }
-void UIElementCollection::SetItem(int index, const Variant& item)
+void UIElementCollection::SetItem(int index, const value_type& item)
 {
 	LN_THROW(0, NotImplementedException);
 	//m_owner->OnInlineAdded(static_cast<UIElement*>(item.GetObject()));
-	GenericVariantList<UIElement*>::SetItem(index, item);
+	GenericCoreList<UIElement*>::SetItem(index, item);
 }
 
 LN_NAMESPACE_GUI_END
