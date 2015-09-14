@@ -214,6 +214,14 @@ namespace BinderMaker.Parser
         // 仮引数用の型名 (LN_HANDLE() または型名。LN_HANDLE は Identifer なので TypeName とのorの左側で先にパースする)
         private static readonly Parser<string> ParamType =
             HandleType.Or(ParserUtils.TypeName);
+        
+        // デフォルト引数
+        public static readonly Parser<string> FuncParamDefault =
+            from mark       in Parse.String("LN_DEFAULT_ARG").GenericToken()
+            from lparen     in Parse.Char('(').GenericToken()
+            from value      in ParserUtils.IdentifierOrNumeric.GenericToken()
+            from rparen     in Parse.Char(')').GenericToken()
+            select value;
 
         // 仮引数定義
         public static readonly Parser<CLParam> FuncParamDecl =
@@ -228,14 +236,6 @@ namespace BinderMaker.Parser
             from first1     in FuncParamDecl                                    // 先頭の1つ
             from rest1      in Parse.Char(',').Then(_ => FuncParamDecl).Many()  // 以降の , 区切りの定義が 0 個以上
             select ParserUtils.Cons(first1, rest1);
-
-        // デフォルト引数
-        public static readonly Parser<string> FuncParamDefault =
-            from mark       in Parse.String("LN_DEFAULT_ARG").GenericToken()
-            from lparen     in Parse.Char('(').GenericToken()
-            from value      in ParserUtils.IdentifierOrNumeric.GenericToken()
-            from rparen     in Parse.Char(')').GenericToken()
-            select value;
 
         // 関数宣言
         public static readonly Parser<CLFuncDecl> FuncDecl =

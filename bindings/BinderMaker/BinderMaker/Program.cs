@@ -8,7 +8,7 @@ namespace BinderMaker
 {
     class Program
     {
-        const string SourcesRootDir = "../../../../LightNote/C_API/";
+        const string SourcesRootDir = "../../../../src/C_API/";
         const string DotNetOutputDir = "../../../../";
 
         static void Main(string[] args)
@@ -43,6 +43,13 @@ namespace BinderMaker
 
             var csClassesBuilder = new Builder.CSClassesBuilder();
             csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Classes.cs");
+
+
+            var rubyEnumBuilder = new Builder.RubyEnumBuilder();
+            rubyEnumBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyEnums.cpp");
+
+            var rubyStructsBuilder = new Builder.RubyStructsBuilder();
+            rubyStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.cpp");
 
 
             var hspHeaderBuilder = new Builder.HSPHeaderBuilder();

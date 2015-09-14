@@ -831,7 +831,7 @@ namespace LN
     /// <summary>
     /// DirectMusic の初期化方法
     /// </summary>
-    public enum DirectMusicInitMode
+    public enum DirectMusicMode
     {
         /// <summary>
         /// DirectMusic を使用しない
@@ -856,9 +856,9 @@ namespace LN
     }
 
     /// <summary>
-    /// サウンド再生時の音声データの読み込み方法
+    /// サウンド再生方法
     /// </summary>
-    public enum SoundLoadingType
+    public enum SoundPlayingMode
     {
         /// <summary>
         /// 不明な再生方法
@@ -910,9 +910,9 @@ namespace LN
     }
 
     /// <summary>
-    /// 音量フェード完了時の動作の記述
+    /// 音量フェード完了時の動作
     /// </summary>
-    public enum SoundFadeState
+    public enum SoundFadeBehavior
     {
         /// <summary>
         /// 継続(なにもしない)
@@ -1283,22 +1283,59 @@ namespace LN
         public extern static Result LNObject_GetRefCount( IntPtr hadnleObject, out int count);
 
         /// <summary>
-        /// 音声機能を初期化します。
+        /// デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
         /// </summary>
+        /// <param name="enabled">LN_TRUE:出力する / LN_FALSE:出力しない</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNote_InitAudio();
+        public extern static void LNConfig_SetApplicationLogEnabled( bool enabled);
 
         /// <summary>
-        /// 終了処理を行います。
+        /// 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:LN_FALSE)
         /// </summary>
+        /// <param name="enabled">LN_TRUE:割り当てる / LN_FALSE:割り当てない</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNote_End();
+        public extern static void LNConfig_SetConsoleEnabled( bool enabled);
 
         /// <summary>
-        /// LightNote を初期化します。
+        /// ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
+        /// </summary>
+        /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_SetUserWindowHandle( IntPtr windowHandle);
+
+        /// <summary>
+        /// サウンドオブジェクトのキャッシュサイズの設定
+        /// </summary>
+        /// <param name="count">キャッシュできるサウンドオブジェクトの最大数 (初期値:32)</param>
+        /// <param name="memorySize">サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (初期値:0)</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_SetSoundCacheSize( int count,  int memorySize);
+
+        /// <summary>
+        /// DirectMusic の初期化方法を設定します。(初期値:LN_DIRECTMUSICMODE_NOT_USE)
+        /// </summary>
+        /// <param name="mode">DirectMusic の初期化方法</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_SetDirectMusicInitializeMode( DirectMusicMode mode);
+
+        /// <summary>
+        /// DirectMusic のリバーブエフェクトの強さを設定します。(初期値:70)
+        /// </summary>
+        /// <param name="level">リバーブの強さ (0 ～ 100)</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_SetDirectMusicReverbLevel( int level);
+
+        /// <summary>
+        /// アプリケーションを初期化します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNApplication_Initialize();
+
+        /// <summary>
+        /// アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+        /// </summary>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNApplication_InitializeAudio();
 
         /// <summary>
         /// フレームを更新します。
@@ -1839,9 +1876,9 @@ namespace LN
         /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
+        public extern static Result LNAudio_PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
 
         /// <summary>
         /// メモリ上の音声ファイルデータを使用して BGM を演奏します。
@@ -1850,16 +1887,16 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
+        public extern static Result LNAudio_PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
 
         /// <summary>
         /// BGM の演奏を停止します。
         /// </summary>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_StopBGM( int fadeTime = 0);
+        public extern static Result LNAudio_StopBGM( double fadeTime = 0.0);
 
         /// <summary>
         /// BGS を演奏します。
@@ -1867,9 +1904,9 @@ namespace LN
         /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
+        public extern static Result LNAudio_PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
 
         /// <summary>
         /// メモリ上の音声ファイルデータから BGS を演奏します。
@@ -1878,16 +1915,16 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  int fadeTime = 0);
+        public extern static Result LNAudio_PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
 
         /// <summary>
         /// BGS の演奏を停止します。、
         /// </summary>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_StopBGS( int fadeTime = 0);
+        public extern static Result LNAudio_StopBGS( double fadeTime = 0.0);
 
         /// <summary>
         /// ME を演奏します。
@@ -1912,7 +1949,7 @@ namespace LN
         /// ME の演奏を停止します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNAudio_StopME();
+        public extern static Result LNAudio_StopME();
 
         /// <summary>
         /// SE を演奏します。
@@ -1987,30 +2024,23 @@ namespace LN
         /// すべての SE の演奏を停止します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNAudio_StopSE();
-
-        /// <summary>
-        /// 3D 空間の1メートル相当の距離を設定します。
-        /// </summary>
-        /// <param name="distance">距離</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_SetMetreUnitDistance( float distance);
+        public extern static Result LNAudio_StopSE();
 
         /// <summary>
         /// 再生中のBGMの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_SetBGMVolume( int volume,  int fadeTime = 0);
+        public extern static Result LNAudio_SetBGMVolume( int volume,  double fadeTime = 0.0);
 
         /// <summary>
         /// 再生中のBGSの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_SetBGSVolume( int volume,  int fadeTime = 0);
+        public extern static Result LNAudio_SetBGSVolume( int volume,  double fadeTime = 0.0);
 
         /// <summary>
         /// 3D音声のリスナーの位置を設定します。
@@ -2034,13 +2064,20 @@ namespace LN
         public extern static Result LNSoundListener_SetUpDirection(ref Vector3 direction);
 
         /// <summary>
+        /// 3D音声のリスナーの速度を設定します。
+        /// </summary>
+        /// <param name="velocity">速度</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSoundListener_SetVelocity(ref Vector3 velocity);
+
+        /// <summary>
         /// 3D音声のリスナーの位置を設定します。
         /// </summary>
         /// <param name="x">3D 空間上の X 座標</param>
         /// <param name="y">3D 空間上の Y 座標</param>
         /// <param name="z">3D 空間上の Z 座標</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNSoundListener_SetPositionXYZ( float x,  float y,  float z);
+        public extern static Result LNSoundListener_SetPositionXYZ( float x,  float y,  float z);
 
         /// <summary>
         /// 3D音声のリスナーの正面方向を設定します。
@@ -2049,7 +2086,7 @@ namespace LN
         /// <param name="y">向きの Y 成分</param>
         /// <param name="z">向きの Z 成分</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNSoundListener_SetDirectionXYZ( float x,  float y,  float z);
+        public extern static Result LNSoundListener_SetDirectionXYZ( float x,  float y,  float z);
 
         /// <summary>
         /// 3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
@@ -2058,14 +2095,7 @@ namespace LN
         /// <param name="y">向きの Y 成分</param>
         /// <param name="z">向きの Z 成分</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNSoundListener_SetUpDirectionXYZ( float x,  float y,  float z);
-
-        /// <summary>
-        /// 3D音声のリスナーの速度を設定します。
-        /// </summary>
-        /// <param name="velocity">速度</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSoundListener_Velocity(ref Vector3 velocity);
+        public extern static Result LNSoundListener_SetUpDirectionXYZ( float x,  float y,  float z);
 
         /// <summary>
         /// 3D音声のリスナーの速度を設定します。
@@ -2074,7 +2104,7 @@ namespace LN
         /// <param name="y">速度の Y 成分</param>
         /// <param name="z">速度の Z 成分</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNSoundListener_VelocityXYZ( float x,  float y,  float z);
+        public extern static Result LNSoundListener_SetVelocityXYZ( float x,  float y,  float z);
 
 
 

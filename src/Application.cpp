@@ -75,6 +75,7 @@ namespace Lumino
 //=============================================================================
 
 ApplicationImpl* ApplicationImpl::Instance = NULL;
+const TCHAR* ApplicationImpl::LogFileName = _T("lnlog.txt");
 
 //-----------------------------------------------------------------------------
 //
@@ -93,8 +94,10 @@ ApplicationImpl* ApplicationImpl::Create(const ApplicationSettings& configData)
 ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	: m_configData(configData)
 	, m_audioManager(NULL)
+	, m_guiManager(NULL)
 	, m_sceneGraphManager(NULL)
 	, m_profilerRenderer(NULL)
+	, m_commonInitied(false)
 	, m_endRequested(false)
 {
 	m_fpsController.SetEnableFpsTest(true);
@@ -150,10 +153,26 @@ void ApplicationImpl::Initialize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void ApplicationImpl::InitializeCommon()
+{
+	if (!m_commonInitied)
+	{
+		if (m_configData.ApplicationLogEnabled) {
+			Logger::Initialize(LogFileName);
+		}
+		m_commonInitied = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void ApplicationImpl::InitialzePlatformManager()
 {
 	if (m_platformManager.IsNull())
 	{
+		InitializeCommon();
+
 		Platform::PlatformManager::Settings data;
 		data.API = Platform::WindowSystemAPI_Win32API;
 		data.MainWindowSettings.Title = _T("");
@@ -178,6 +197,8 @@ void ApplicationImpl::InitialzeAudioManager()
 {
 	if (m_audioManager == NULL)
 	{
+		InitializeCommon();
+
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
 		if (m_configData.UserMainWindow != NULL) {
@@ -203,6 +224,7 @@ void ApplicationImpl::InitialzePhysicsManager()
 {
 	if (m_physicsManager.IsNull())
 	{
+		InitializeCommon();
 		m_physicsManager.Attach(LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync));
 	}
 }
@@ -214,6 +236,7 @@ void ApplicationImpl::InitialzeGraphicsManager()
 {
 	if (m_graphicsManager.IsNull())
 	{
+		InitializeCommon();
 		InitialzePlatformManager();
 		InitialzePhysicsManager();
 
@@ -239,6 +262,7 @@ void ApplicationImpl::InitialzeDocumentsManager()
 {
 	if (m_documentsManager.IsNull())
 	{
+		InitializeCommon();
 		InitialzeGraphicsManager();
 
 		Documents::DocumentsManager::ConfigData data;
@@ -254,6 +278,7 @@ void ApplicationImpl::InitialzeGUIManager()
 {
 	if (m_guiManager == NULL)
 	{
+		InitializeCommon();
 		InitialzePlatformManager();
 		InitialzeGraphicsManager();
 		InitialzeDocumentsManager();
@@ -276,6 +301,7 @@ void ApplicationImpl::InitialzeSceneGraphManager()
 {
 	if (m_sceneGraphManager == NULL)
 	{
+		InitializeCommon();
 		InitialzeGraphicsManager();
 		SceneGraphManager::ConfigData data;
 		data.FileManager = &FileManager::GetInstance();

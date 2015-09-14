@@ -461,6 +461,32 @@ namespace BinderMaker
                 return name;
             }
         }
+
+        /// <summary>
+        /// プレフィックスを除いた名前
+        /// 例: LN_BACKBUFFERRESIZEMODE_SCALING_WITH_LETTER_BOX → SCALING_WITH_LETTER_BOX
+        /// </summary>
+        public string CommonName
+        { 
+            get
+            {
+                if (OriginalName == "LN_OK") return "OK";   // これだけ特殊扱い
+
+                // 先頭大文字化の準備
+                CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+                TextInfo textInfo = cultureInfo.TextInfo;
+
+                string[] idents = OriginalName.Split('_');
+                string name = "";
+                for (int i = 2; i < idents.Count(); i++)
+                {
+                    if (!string.IsNullOrEmpty(name))
+                        name += "_";
+                    name += idents[i];
+                }
+                return name;
+            }
+        }
         #endregion
 
         #region Methods

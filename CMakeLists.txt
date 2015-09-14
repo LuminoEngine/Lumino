@@ -512,8 +512,8 @@ set(LN_SOURCES
 #------------------------------------------------------------------------------
 # Unicode char set.
 if (LN_USE_UNICODE_CHAR_SET)
-	add_definitions(-DUNICODE)
-	add_definitions(-D_UNICODE)
+	#add_definitions(-DUNICODE)
+	#add_definitions(-D_UNICODE)
 endif()
 
 find_package(OpenGL REQUIRED)
@@ -611,8 +611,15 @@ link_libraries(libogg)
 link_libraries(libvorbis)
 
 #------------------------------
-# Static library.
+# library. (Unicode)
+
+if (LN_USE_UNICODE_CHAR_SET)
+	list(APPEND my_definitions "UNICODE")
+	list(APPEND my_definitions "_UNICODE")
+endif()
+
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
 #set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
@@ -638,4 +645,4 @@ endif()
 
 #------------------------------
 # 
-add_subdirectory(bindings/LightNote)
+#add_subdirectory(bindings/LightNote)

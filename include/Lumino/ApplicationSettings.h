@@ -13,6 +13,11 @@ class ApplicationSettings
 public:
 
 	/**
+		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:Debugモードの場合true、それ以外は false)
+	*/
+	bool ApplicationLogEnabled;
+
+	/**
 		@brief		グラフィックス機能で使用する描画 API を指定します。
 		@details	初期値は Windows の場合 DirectX9 で、それ以外は OpenGL です。
 	*/
@@ -33,13 +38,18 @@ public:
 
 public:
 	ApplicationSettings()
-		: GraphicsAPI(Graphics::GraphicsAPI::DirectX9)
+		: ApplicationLogEnabled(false)
+		, GraphicsAPI(Graphics::GraphicsAPI::DirectX9)
 		, RenderingType(Graphics::RenderingType::Deferred)
 		, UserMainWindow(NULL)
 #ifdef LN_OS_WIN32
 		, D3D9Device(NULL)
 #endif
-	{}
+	{
+#ifdef LN_DEBUG
+		ApplicationLogEnabled = true;
+#endif
+	}
 };
 
 } // namespace Lumino

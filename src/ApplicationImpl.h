@@ -29,7 +29,7 @@ public:
 	static ApplicationImpl*	Instance;
 
 public:
-	
+	static const TCHAR*	LogFileName;
 
 public:
 
@@ -80,6 +80,7 @@ protected:
 
 public:
 	void Initialize();
+	void InitializeCommon();
 	void InitialzePlatformManager();
 	void InitialzeAudioManager();
 	void InitialzePhysicsManager();
@@ -104,6 +105,7 @@ private:
 	Graphics::ProfilerRenderer*			m_profilerRenderer;
 	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
+	bool								m_commonInitied;
 	bool								m_endRequested;
 };
 

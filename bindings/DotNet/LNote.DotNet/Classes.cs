@@ -10,23 +10,71 @@ namespace LN
     
     
         /// <summary>
-        /// 音声機能を初期化します。
+        /// デバッグ用のログファイルの出力有無を設定します。(初期値:false)
         /// </summary>
-        public static void InitAudio()
+        /// <param name="enabled">true:出力する / false:出力しない</param>
+        public static void SetApplicationLogEnabled( bool enabled)
         {
-            InternalManager.Initialize();
-            var result = API.LNote_InitAudio();
-            if (result != Result.OK) throw new LNoteException(result);
+            API.LNConfig_SetApplicationLogEnabled( enabled);
         
         }
         
         /// <summary>
-        /// 終了処理を行います。
+        /// 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:false)
         /// </summary>
-        public static void End()
+        /// <param name="enabled">true:割り当てる / false:割り当てない</param>
+        public static void SetConsoleEnabled( bool enabled)
         {
-            API.LNote_End();
-            InternalManager.Terminate();
+            API.LNConfig_SetConsoleEnabled( enabled);
+        
+        }
+        
+        /// <summary>
+        /// ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
+        /// </summary>
+        /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
+        public static void SetUserWindowHandle( IntPtr windowHandle)
+        {
+            API.LNConfig_SetUserWindowHandle( windowHandle);
+        
+        }
+        
+        /// <summary>
+        /// サウンドオブジェクトのキャッシュサイズの設定
+        /// </summary>
+        /// <param name="count">キャッシュできるサウンドオブジェクトの最大数 (初期値:32)</param>
+        /// <param name="memorySize">サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (初期値:0)</param>
+        /// <remarks>
+        /// count が 0 の場合、キャッシュを使用しません。
+        /// 					memorySize が 0 の場合、メモリ使用量に制限を設けません。
+        /// </remarks>
+        public static void SetSoundCacheSize( int count,  int memorySize)
+        {
+            API.LNConfig_SetSoundCacheSize( count,  memorySize);
+        
+        }
+        
+        /// <summary>
+        /// DirectMusic の初期化方法を設定します。(初期値:DirectMusicMode.NotUse)
+        /// </summary>
+        /// <param name="mode">DirectMusic の初期化方法</param>
+        /// <remarks>
+        /// DirectMusic の初期化には比較的時間がかかります。
+        /// 					これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
+        /// </remarks>
+        public static void SetDirectMusicInitializeMode( DirectMusicMode mode)
+        {
+            API.LNConfig_SetDirectMusicInitializeMode( mode);
+        
+        }
+        
+        /// <summary>
+        /// DirectMusic のリバーブエフェクトの強さを設定します。(初期値:70)
+        /// </summary>
+        /// <param name="level">リバーブの強さ (0 ～ 100)</param>
+        public static void SetDirectMusicReverbLevel( int level)
+        {
+            API.LNConfig_SetDirectMusicReverbLevel( level);
         
         }
         
@@ -41,7 +89,7 @@ namespace LN
     
     
         /// <summary>
-        /// LightNote を初期化します。
+        /// アプリケーションを初期化します。
         /// </summary>
         /// <remarks>
         /// ライブラリのすべての機能を使用できるように初期化を行います。
@@ -50,6 +98,17 @@ namespace LN
         {
             InternalManager.Initialize();
             var result = API.LNApplication_Initialize();
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+        /// </summary>
+        public static void InitializeAudio()
+        {
+            InternalManager.Initialize();
+            var result = API.LNApplication_InitializeAudio();
             if (result != Result.OK) throw new LNoteException(result);
         
         }
@@ -124,8 +183,8 @@ namespace LN
         /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
-        public static void PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  int fadeTime = 0)
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        public static void PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGM( filePath,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -139,8 +198,8 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
-        public static void PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  int fadeTime = 0)
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        public static void PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -150,8 +209,8 @@ namespace LN
         /// <summary>
         /// BGM の演奏を停止します。
         /// </summary>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
-        public static void StopBGM( int fadeTime = 0)
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        public static void StopBGM( double fadeTime = 0.0)
         {
             var result = API.LNAudio_StopBGM( fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -164,8 +223,8 @@ namespace LN
         /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
-        public static void PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  int fadeTime = 0)
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        public static void PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGS( filePath,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -179,8 +238,8 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        /// <param name="fadeTime">フェードインにかける時間 (ミリ秒)</param>
-        public static void PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  int fadeTime = 0)
+        /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        public static void PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -190,8 +249,8 @@ namespace LN
         /// <summary>
         /// BGS の演奏を停止します。、
         /// </summary>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
-        public static void StopBGS( int fadeTime = 0)
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        public static void StopBGS( double fadeTime = 0.0)
         {
             var result = API.LNAudio_StopBGS( fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -230,7 +289,8 @@ namespace LN
         /// </summary>
         public static void StopME()
         {
-            API.LNAudio_StopME();
+            var result = API.LNAudio_StopME();
+            if (result != Result.OK) throw new LNoteException(result);
         
         }
         
@@ -332,17 +392,7 @@ namespace LN
         /// </summary>
         public static void StopSE()
         {
-            API.LNAudio_StopSE();
-        
-        }
-        
-        /// <summary>
-        /// 3D 空間の1メートル相当の距離を設定します。
-        /// </summary>
-        /// <param name="distance">距離</param>
-        public static void SetMetreUnitDistance( float distance)
-        {
-            var result = API.LNAudio_SetMetreUnitDistance( distance);
+            var result = API.LNAudio_StopSE();
             if (result != Result.OK) throw new LNoteException(result);
         
         }
@@ -351,8 +401,8 @@ namespace LN
         /// 再生中のBGMの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
-        public static void SetBGMVolume( int volume,  int fadeTime = 0)
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        public static void SetBGMVolume( int volume,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_SetBGMVolume( volume,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -363,8 +413,8 @@ namespace LN
         /// 再生中のBGSの音量を設定します。(フェードアウト中は無効)
         /// </summary>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
-        /// <param name="fadeTime">フェードアウトにかける時間 (ミリ秒)</param>
-        public static void SetBGSVolume( int volume,  int fadeTime = 0)
+        /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        public static void SetBGSVolume( int volume,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_SetBGSVolume( volume,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -419,6 +469,19 @@ namespace LN
             }
             
         }
+        /// <summary>
+        /// 3D音声のリスナーの速度
+        /// </summary>
+        public static Vector3 Velocity
+        {
+            set
+            {
+                var result = API.LNSoundListener_SetVelocity(ref value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
     
         /// <summary>
         /// 3D音声のリスナーの位置を設定します。
@@ -428,7 +491,8 @@ namespace LN
         /// <param name="z">3D 空間上の Z 座標</param>
         public static void SetPositionXYZ( float x,  float y,  float z)
         {
-            API.LNSoundListener_SetPositionXYZ( x,  y,  z);
+            var result = API.LNSoundListener_SetPositionXYZ( x,  y,  z);
+            if (result != Result.OK) throw new LNoteException(result);
         
         }
         
@@ -440,7 +504,8 @@ namespace LN
         /// <param name="z">向きの Z 成分</param>
         public static void SetDirection( float x,  float y,  float z)
         {
-            API.LNSoundListener_SetDirectionXYZ( x,  y,  z);
+            var result = API.LNSoundListener_SetDirectionXYZ( x,  y,  z);
+            if (result != Result.OK) throw new LNoteException(result);
         
         }
         
@@ -452,17 +517,7 @@ namespace LN
         /// <param name="z">向きの Z 成分</param>
         public static void SetUpDirection( float x,  float y,  float z)
         {
-            API.LNSoundListener_SetUpDirectionXYZ( x,  y,  z);
-        
-        }
-        
-        /// <summary>
-        /// 3D音声のリスナーの速度を設定します。
-        /// </summary>
-        /// <param name="velocity">速度</param>
-        public static void Velocity( Vector3 velocity)
-        {
-            var result = API.LNSoundListener_Velocity(ref velocity);
+            var result = API.LNSoundListener_SetUpDirectionXYZ( x,  y,  z);
             if (result != Result.OK) throw new LNoteException(result);
         
         }
@@ -475,7 +530,8 @@ namespace LN
         /// <param name="z">速度の Z 成分</param>
         public static void Velocity( float x,  float y,  float z)
         {
-            API.LNSoundListener_VelocityXYZ( x,  y,  z);
+            var result = API.LNSoundListener_SetVelocityXYZ( x,  y,  z);
+            if (result != Result.OK) throw new LNoteException(result);
         
         }
         

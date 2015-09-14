@@ -50,6 +50,11 @@
     <Compile Include="Builder\CSPInvokeBuilder.cs" />
     <Compile Include="Builder\CSStructsBuilder.cs" />
     <Compile Include="Builder\OutputBuffer.cs" />
+    <Compile Include="Builder\RubyBuilder.cs" />
+    <Compile Include="Builder\RubyCommon.cs" />
+    <Compile Include="Builder\RubyDocBuilder.cs" />
+    <Compile Include="Builder\RubyEnumBuilder.cs" />
+    <Compile Include="Builder\RubyStructsBuilder.cs" />
     <Compile Include="CLClass.cs" />
     <Compile Include="CLDocument.cs" />
     <Compile Include="CLEntity.cs" />

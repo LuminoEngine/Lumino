@@ -33,6 +33,7 @@ int main()
 	try
 	{
 		ApplicationSettings appData;
+		appData.ApplicationLogEnabled = false;
 		Application::Initialize(appData);
 
 		while (Application::UpdateFrame())

@@ -1,0 +1,10 @@
+﻿
+#include "ruby.h"
+
+__GLOBALS_
+
+void InitStructs()
+{
+__DEFINES__
+}
+

@@ -242,30 +242,30 @@
 #const LN_DEVICEBUTTON_JOYPAD_AXIS_8_MINUIS 298
 #const LN_DEVICEBUTTON_JOYPAD_AXIS_8_PLUS 299
 
-// LNDirectMusicInitMode
-#const LN_DMINITMODE_NOT_USE 0
-#const LN_DMINITMODE_NORMAL 1
-#const LN_DMINITMODE_THREAD_WAIT 2
-#const LN_DMINITMODE_THREAD_REQUEST 3
+// LNDirectMusicMode
+#const LN_DIRECTMUSICMODE_NOT_USE 0
+#const LN_DIRECTMUSICMODE_NORMAL 1
+#const LN_DIRECTMUSICMODE_THREAD_WAIT 2
+#const LN_DIRECTMUSICMODE_THREAD_REQUEST 3
 
-// LNSoundLoadingType
-#const LN_SOUNDLOADINGTYPE_UNKNOWN 0
-#const LN_SOUNDLOADINGTYPE_AUTO 1
-#const LN_SOUNDLOADINGTYPE_ONMEMORY 2
-#const LN_SOUNDLOADINGTYPE_STREAMING 3
-#const LN_SOUNDLOADINGTYPE_MIDI 4
+// LNSoundPlayingMode
+#const LN_SOUNDPLAYINGMODE_UNKNOWN 0
+#const LN_SOUNDPLAYINGMODE_AUTO 1
+#const LN_SOUNDPLAYINGMODE_ONMEMORY 2
+#const LN_SOUNDPLAYINGMODE_STREAMING 3
+#const LN_SOUNDPLAYINGMODE_MIDI 4
 
 // LNSoundPlayingState
 #const LN_SOUNDPLAYINGSTATE_STOPPED 0
 #const LN_SOUNDPLAYINGSTATE_PLAYING 1
 #const LN_SOUNDPLAYINGSTATE_PAUSING 2
 
-// LNSoundFadeState
-#const LN_SOUNDFADE_CONTINUE 0
-#const LN_SOUNDFADE_STOP 1
-#const LN_SOUNDFADE_STOP_RESET 2
-#const LN_SOUNDFADE_PAUSE 3
-#const LN_SOUNDFADE_PAUSE_RESET 4
+// LNSoundFadeBehavior
+#const LN_SOUNDFADEBEHAVIORBEHAVIOR_CONTINUE 0
+#const LN_SOUNDFADEBEHAVIOR_STOP 1
+#const LN_SOUNDFADEBEHAVIOR_STOP_RESET 2
+#const LN_SOUNDFADEBEHAVIOR_PAUSE 3
+#const LN_SOUNDFADEBEHAVIOR_PAUSE_RESET 4
 
 // LNInternalGameSound
 #const LN_INTERNALGAMESOUND_BGM 0
@@ -350,14 +350,24 @@
 #define LNObject_GetRefCount(%1, %2) native_LNObject_GetRefCount %1, %2
 
 //LNote
-#func native_LNote_InitAudio "LNote_InitAudio" 
-#define LNote_InitAudio native_LNote_InitAudio 
-#func native_LNote_End "LNote_End" 
-#define LNote_End native_LNote_End 
+#func native_LNConfig_SetApplicationLogEnabled "LNConfig_SetApplicationLogEnabled" int
+#define LNConfig_SetApplicationLogEnabled(%1) native_LNConfig_SetApplicationLogEnabled %1
+#func native_LNConfig_SetConsoleEnabled "LNConfig_SetConsoleEnabled" int
+#define LNConfig_SetConsoleEnabled(%1) native_LNConfig_SetConsoleEnabled %1
+#func native_LNConfig_SetUserWindowHandle "LNConfig_SetUserWindowHandle" int
+#define LNConfig_SetUserWindowHandle(%1) native_LNConfig_SetUserWindowHandle %1
+#func native_LNConfig_SetSoundCacheSize "LNConfig_SetSoundCacheSize" int, int
+#define LNConfig_SetSoundCacheSize(%1, %2) native_LNConfig_SetSoundCacheSize %1, %2
+#func native_LNConfig_SetDirectMusicInitializeMode "LNConfig_SetDirectMusicInitializeMode" int
+#define LNConfig_SetDirectMusicInitializeMode(%1) native_LNConfig_SetDirectMusicInitializeMode %1
+#func native_LNConfig_SetDirectMusicReverbLevel "LNConfig_SetDirectMusicReverbLevel" int
+#define LNConfig_SetDirectMusicReverbLevel(%1) native_LNConfig_SetDirectMusicReverbLevel %1
 
 //LNApplication
 #func native_LNApplication_Initialize "LNApplication_Initialize" 
 #define LNApplication_Initialize native_LNApplication_Initialize 
+#func native_LNApplication_InitializeAudio "LNApplication_InitializeAudio" 
+#define LNApplication_InitializeAudio native_LNApplication_InitializeAudio 
 #func native_LNApplication_Update "LNApplication_Update" 
 #define LNApplication_Update native_LNApplication_Update 
 #func native_LNApplication_ResetFrameDelay "LNApplication_ResetFrameDelay" 
@@ -482,18 +492,18 @@
 #func native_LNQuaternion_Slerp "LNQuaternion_SlerpD" var, var, double, var
 #define LNQuaternion_Slerp(%1, %2, %3, %4) native_LNQuaternion_Slerp %1, %2, %3, %4
 //LNAudio
-#func native_LNAudio_PlayBGM "LNAudio_PlayBGM" str, int, int, int
-#define LNAudio_PlayBGM(%1, %2=100, %3=100, %4=0) native_LNAudio_PlayBGM %1, %2, %3, %4
-#func native_LNAudio_PlayBGMMem "LNAudio_PlayBGMMem" int, int, int, int, int
-#define LNAudio_PlayBGMMem(%1, %2, %3=100, %4=100, %5=0) native_LNAudio_PlayBGMMem %1, %2, %3, %4, %5
-#func native_LNAudio_StopBGM "LNAudio_StopBGM" int
-#define LNAudio_StopBGM(%1=0) native_LNAudio_StopBGM %1
-#func native_LNAudio_PlayBGS "LNAudio_PlayBGS" str, int, int, int
-#define LNAudio_PlayBGS(%1, %2=100, %3=100, %4=0) native_LNAudio_PlayBGS %1, %2, %3, %4
-#func native_LNAudio_PlayBGSMem "LNAudio_PlayBGSMem" int, int, int, int, int
-#define LNAudio_PlayBGSMem(%1, %2, %3=100, %4=100, %5=0) native_LNAudio_PlayBGSMem %1, %2, %3, %4, %5
-#func native_LNAudio_StopBGS "LNAudio_StopBGS" int
-#define LNAudio_StopBGS(%1=0) native_LNAudio_StopBGS %1
+#func native_LNAudio_PlayBGM "LNAudio_PlayBGM" str, int, int, double
+#define LNAudio_PlayBGM(%1, %2=100, %3=100, %4=0.0) native_LNAudio_PlayBGM %1, %2, %3, %4
+#func native_LNAudio_PlayBGMMem "LNAudio_PlayBGMMem" int, int, int, int, double
+#define LNAudio_PlayBGMMem(%1, %2, %3=100, %4=100, %5=0.0) native_LNAudio_PlayBGMMem %1, %2, %3, %4, %5
+#func native_LNAudio_StopBGM "LNAudio_StopBGM" double
+#define LNAudio_StopBGM(%1=0.0) native_LNAudio_StopBGM %1
+#func native_LNAudio_PlayBGS "LNAudio_PlayBGS" str, int, int, double
+#define LNAudio_PlayBGS(%1, %2=100, %3=100, %4=0.0) native_LNAudio_PlayBGS %1, %2, %3, %4
+#func native_LNAudio_PlayBGSMem "LNAudio_PlayBGSMem" int, int, int, int, double
+#define LNAudio_PlayBGSMem(%1, %2, %3=100, %4=100, %5=0.0) native_LNAudio_PlayBGSMem %1, %2, %3, %4, %5
+#func native_LNAudio_StopBGS "LNAudio_StopBGS" double
+#define LNAudio_StopBGS(%1=0.0) native_LNAudio_StopBGS %1
 #func native_LNAudio_PlayME "LNAudio_PlayME" str, int, int
 #define LNAudio_PlayME(%1, %2=100, %3=100) native_LNAudio_PlayME %1, %2, %3
 #func native_LNAudio_PlayMEMem "LNAudio_PlayMEMem" int, int, int, int
@@ -514,12 +524,10 @@
 #define LNAudio_PlaySE3DMemXYZ(%1, %2, %3, %4, %5, %6, %7=100, %8=100) native_LNAudio_PlaySE3DMemXYZ %1, %2, %3, %4, %5, %6, %7, %8
 #func native_LNAudio_StopSE "LNAudio_StopSE" 
 #define LNAudio_StopSE native_LNAudio_StopSE 
-#func native_LNAudio_SetMetreUnitDistance "LNAudio_SetMetreUnitDistanceD" double
-#define LNAudio_SetMetreUnitDistance(%1) native_LNAudio_SetMetreUnitDistance %1
-#func native_LNAudio_SetBGMVolume "LNAudio_SetBGMVolume" int, int
-#define LNAudio_SetBGMVolume(%1, %2=0) native_LNAudio_SetBGMVolume %1, %2
-#func native_LNAudio_SetBGSVolume "LNAudio_SetBGSVolume" int, int
-#define LNAudio_SetBGSVolume(%1, %2=0) native_LNAudio_SetBGSVolume %1, %2
+#func native_LNAudio_SetBGMVolume "LNAudio_SetBGMVolume" int, double
+#define LNAudio_SetBGMVolume(%1, %2=0.0) native_LNAudio_SetBGMVolume %1, %2
+#func native_LNAudio_SetBGSVolume "LNAudio_SetBGSVolume" int, double
+#define LNAudio_SetBGSVolume(%1, %2=0.0) native_LNAudio_SetBGSVolume %1, %2
 
 //LNSoundListener
 #func native_LNSoundListener_SetPosition "LNSoundListener_SetPosition" var
@@ -528,16 +536,16 @@
 #define LNSoundListener_SetDirection(%1) native_LNSoundListener_SetDirection %1
 #func native_LNSoundListener_SetUpDirection "LNSoundListener_SetUpDirection" var
 #define LNSoundListener_SetUpDirection(%1) native_LNSoundListener_SetUpDirection %1
+#func native_LNSoundListener_SetVelocity "LNSoundListener_SetVelocity" var
+#define LNSoundListener_SetVelocity(%1) native_LNSoundListener_SetVelocity %1
 #func native_LNSoundListener_SetPositionXYZ "LNSoundListener_SetPositionXYZD" double, double, double
 #define LNSoundListener_SetPositionXYZ(%1, %2, %3) native_LNSoundListener_SetPositionXYZ %1, %2, %3
 #func native_LNSoundListener_SetDirectionXYZ "LNSoundListener_SetDirectionXYZD" double, double, double
 #define LNSoundListener_SetDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetDirectionXYZ %1, %2, %3
 #func native_LNSoundListener_SetUpDirectionXYZ "LNSoundListener_SetUpDirectionXYZD" double, double, double
 #define LNSoundListener_SetUpDirectionXYZ(%1, %2, %3) native_LNSoundListener_SetUpDirectionXYZ %1, %2, %3
-#func native_LNSoundListener_Velocity "LNSoundListener_Velocity" var
-#define LNSoundListener_Velocity(%1) native_LNSoundListener_Velocity %1
-#func native_LNSoundListener_VelocityXYZ "LNSoundListener_VelocityXYZD" double, double, double
-#define LNSoundListener_VelocityXYZ(%1, %2, %3) native_LNSoundListener_VelocityXYZ %1, %2, %3
+#func native_LNSoundListener_SetVelocityXYZ "LNSoundListener_SetVelocityXYZD" double, double, double
+#define LNSoundListener_SetVelocityXYZ(%1, %2, %3) native_LNSoundListener_SetVelocityXYZ %1, %2, %3
 
 
 

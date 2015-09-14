@@ -179,7 +179,8 @@ namespace BinderMaker.Builder
 
         public OutputBuffer Indent()
         {
-            AppendWithIndent("");
+            //AppendWithIndent("");
+            _buffer.Append(_indent);
             return this;
         }
 

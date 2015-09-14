@@ -21,8 +21,8 @@ namespace BinderMaker.Parser
         /// 識別子or数値 (_ や - を含む)
         /// </summary>
         public static readonly Parser<string> IdentifierOrNumeric =
-            from ident1 in Parse.LetterOrDigit.XOr(Parse.Char('-')).XOr(Parse.Char('_'))
-            from ident2 in Parse.LetterOrDigit.XOr(Parse.Char('-')).XOr(Parse.Char('_')).Many()
+            from ident1 in Parse.LetterOrDigit.XOr(Parse.Char('-')).XOr(Parse.Char('_')).XOr(Parse.Char('.'))
+            from ident2 in Parse.LetterOrDigit.XOr(Parse.Char('-')).XOr(Parse.Char('_')).XOr(Parse.Char('.')).Many()
             select ident1 + new string(ident2.ToArray());
 
         /// <summary>
