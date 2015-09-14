@@ -14,10 +14,10 @@
 #include "../Internal.h"
 #include <Lumino/Platform/Clipboard.h>
 #include <Lumino/Graphics/GraphicsManager.h>
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/TextBox.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
+#include "GUIManagerImpl.h"
 #include "../Animation/AnimationCurve.h"
 #include "../Graphics/FontGlyphTextureCache.h"
 #include "../Graphics/GraphicsHelper.h"
@@ -398,7 +398,7 @@ LN_PROPERTY_IMPLEMENT_GETTER_SETTER(TextBox, String, TextProperty, "Text", get_T
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextBox* TextBox::Create(GUIManager* manager)
+TextBox* TextBox::Create(GUIManagerImpl* manager)
 {
 	RefPtr<TextBox> obj(LN_NEW TextBox(manager));
 	obj->InitializeComponent();
@@ -409,7 +409,7 @@ TextBox* TextBox::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextBox::TextBox(GUIManager* manager)
+TextBox::TextBox(GUIManagerImpl* manager)
 	: Control(manager)
 	, m_document(NULL)
 	, m_selection(NULL)

@@ -3,9 +3,9 @@
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/GUI/RoutedCommand.h>
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
+#include "GUIManagerImpl.h"
 #include "GUIPainter.h"
 #include "GUIHelper.h"
 
@@ -42,7 +42,7 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, ExecuteRoutedCommandEventArgs, ExecuteRoute
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIElement::UIElement(GUIManager* manager)
+UIElement::UIElement(GUIManagerImpl* manager)
 	: m_manager(manager)
 	, m_parent(NULL)
 	, m_localResource(NULL)

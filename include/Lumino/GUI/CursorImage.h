@@ -14,7 +14,7 @@ class CursorImage
 	: public CoreObject
 {
 public:
-	CursorImage(GUIManager* manager);
+	CursorImage(GUIManagerImpl* manager);
 	virtual ~CursorImage();
 
 	void SetTexture(Graphics::Texture* texture) { m_texture = texture; }
@@ -26,7 +26,7 @@ public:
 	void Draw(Graphics::Painter* painter, const PointF& point, float time);
 
 private:
-	GUIManager*					m_manager;
+	GUIManagerImpl*				m_manager;
 	RefPtr<Graphics::Texture>	m_texture;
 	Rect						m_srcRect;
 	int							m_patternCount;

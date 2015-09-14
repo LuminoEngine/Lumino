@@ -21,7 +21,7 @@ public:
 	*/
 	static ContentPresenterPtr Create();
 
-	ContentPresenter(GUIManager* manager);
+	ContentPresenter(GUIManagerImpl* manager);
 	virtual ~ContentPresenter();
 
 	void SetContent(UIElement* content);

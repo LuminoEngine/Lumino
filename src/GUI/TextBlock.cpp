@@ -5,7 +5,7 @@
 
 */
 #include "../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
+#include "GUIManagerImpl.h"
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
@@ -25,7 +25,7 @@ LN_PROPERTY_IMPLEMENT(TextBlock, String, TextProperty, "Text", m_text, PropertyM
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextBlock* TextBlock::Create(GUIManager* manager)
+TextBlock* TextBlock::Create(GUIManagerImpl* manager)
 {
 	auto obj = RefPtr<TextBlock>::Create(manager);
 	obj->InitializeComponent();
@@ -36,7 +36,7 @@ TextBlock* TextBlock::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextBlock::TextBlock(GUIManager* manager)
+TextBlock::TextBlock(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 	m_paragraph = RefPtr<Documents::Paragraph>::Create(m_manager->GetDocumentsManager());

@@ -9,7 +9,7 @@ namespace Lumino
 {
 LN_NAMESPACE_GUI_BEGIN
 
-class GUIManager;
+class GUIManagerImpl;
 
 class ResourceDictionary;
 class UIElement;
@@ -82,7 +82,7 @@ typedef RefPtr<VisualStateGroup>		VisualStateGroupPtr;
 class CombinedLocalResource;
 class VisualStateInstance;
 
-typedef CoreObject* (*ObjectFactory)(GUIManager* manager);
+typedef CoreObject* (*ObjectFactory)(GUIManagerImpl* manager);
 
 /// 縦方向の表示位置を示します。
 LN_ENUM(VerticalAlignment)

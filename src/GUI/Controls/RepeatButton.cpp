@@ -1,8 +1,8 @@
 ﻿
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/RepeatButton.h>
+#include "../GUIManagerImpl.h"
 
 namespace Lumino
 {
@@ -17,7 +17,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(RepeatButton);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RepeatButton::RepeatButton(GUIManager* manager)
+RepeatButton::RepeatButton(GUIManagerImpl* manager)
 	: ButtonBase(manager)
 {
 }

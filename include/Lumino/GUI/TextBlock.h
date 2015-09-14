@@ -19,9 +19,9 @@ public:
 	LN_PROPERTY(String,		TextProperty);
 
 public:
-	static TextBlock* Create(GUIManager* manager);
+	static TextBlock* Create(GUIManagerImpl* manager);
 
-	TextBlock(GUIManager* manager);
+	TextBlock(GUIManagerImpl* manager);
 	virtual ~TextBlock();
 
 public:

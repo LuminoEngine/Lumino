@@ -13,7 +13,7 @@ LN_NAMESPACE_GUI_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-CursorImage::CursorImage(GUIManager* manager)
+CursorImage::CursorImage(GUIManagerImpl* manager)
 	: m_manager(manager)
 {
 }

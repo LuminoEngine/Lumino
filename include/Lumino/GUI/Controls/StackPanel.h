@@ -20,7 +20,7 @@ public:
 public:
 	static StackPanelPtr Create();
 
-	StackPanel(GUIManager* manager);
+	StackPanel(GUIManagerImpl* manager);
 	virtual ~StackPanel();
 
 public:

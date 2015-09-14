@@ -123,7 +123,7 @@ public:
 	//const Variant& GetGroup() const;
 
 protected:
-	ItemsControlItem(GUIManager* manager);
+	ItemsControlItem(GUIManagerImpl* manager);
 	virtual ~ItemsControlItem();
 
 private:
@@ -172,7 +172,7 @@ public:
 	LN_PROPERTY(Style*,				GroupStyleProperty);			// TODO: StylePtr にできない？
 
 public:
-	static ItemsControl* Create(GUIManager* manager);
+	static ItemsControl* Create(GUIManagerImpl* manager);
 
 	/**
 		@brief
@@ -184,7 +184,7 @@ public:
 
 
 
-	ItemsControl(GUIManager* manager);
+	ItemsControl(GUIManagerImpl* manager);
 	virtual ~ItemsControl();
 
 	void SetItemsPanelTemplate(ControlTemplate* controlTemplate) { m_itemsPanelTemplate = controlTemplate; }
@@ -252,7 +252,7 @@ public:
 	
 
 protected:
-	GroupItem(GUIManager* manager);
+	GroupItem(GUIManagerImpl* manager);
 	virtual ~GroupItem();
 
 private:

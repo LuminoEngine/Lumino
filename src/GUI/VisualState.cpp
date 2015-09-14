@@ -79,7 +79,7 @@ bool FloatEasing::Apply(UIElement* targetElement, Property* targetProp, const Va
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VisualState::VisualState(GUIManager* manager)
+VisualState::VisualState(GUIManagerImpl* manager)
 	: m_manager(manager)
 {
 	m_storyboard.Attach(LN_NEW Storyboard(m_manager));
@@ -88,7 +88,7 @@ VisualState::VisualState(GUIManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VisualState::VisualState(GUIManager* manager, const String& name)
+VisualState::VisualState(GUIManagerImpl* manager, const String& name)
 	: m_manager(manager)
 	, m_name(name)
 {
@@ -182,7 +182,7 @@ void VisualStateManager::GoToState(Control* control, const String& stateName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Storyboard::Storyboard(GUIManager* manager)
+Storyboard::Storyboard(GUIManagerImpl* manager)
 	: m_manager(manager)
 {
 }

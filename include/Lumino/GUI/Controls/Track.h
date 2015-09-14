@@ -29,7 +29,7 @@ public:
 public:
 	static TrackPtr Create();
 
-	Track(GUIManager* manager);
+	Track(GUIManagerImpl* manager);
 	virtual ~Track();
 
 	/// スクロール位置に対する値を設定します。

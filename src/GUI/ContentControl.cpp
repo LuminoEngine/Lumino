@@ -15,7 +15,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ContentControl);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ContentControl::ContentControl(GUIManager* manager)
+ContentControl::ContentControl(GUIManagerImpl* manager)
 	: Control(manager)
 	, m_childElement(NULL)
 	, m_contentPresenter(NULL)

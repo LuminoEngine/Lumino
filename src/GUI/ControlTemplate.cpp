@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/ControlTemplate.h>
+#include "GUIManagerImpl.h"
 #include "GUIHelper.h"
 
 namespace Lumino
@@ -16,7 +16,7 @@ LN_NAMESPACE_GUI_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIElementFactory::UIElementFactory(GUIManager* manager)
+UIElementFactory::UIElementFactory(GUIManagerImpl* manager)
 	: m_manager(manager)
 {
 }

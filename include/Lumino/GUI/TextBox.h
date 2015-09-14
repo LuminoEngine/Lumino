@@ -33,7 +33,7 @@ public:
 	/**
 		@brief	TextBox ‚ğì¬‚µ‚Ü‚·B
 	*/
-	static TextBox* Create(GUIManager* manager = NULL);
+	static TextBox* Create(GUIManagerImpl* manager = NULL);
 
 public:
 
@@ -55,7 +55,7 @@ public:
 	void Paste();
 
 protected:
-	TextBox(GUIManager* manager);
+	TextBox(GUIManagerImpl* manager);
 	virtual ~TextBox();
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual void OnRender(Graphics::Painter* painter);

@@ -9,8 +9,8 @@ public: \
 	static const String TypeID; \
 	virtual const String& GetTypeID() const { return TypeID; } \
 private: \
-	friend class GUIManager;\
-	static className* internalCreateInstance(GUIManager* manager) \
+	friend class GUIManagerImpl;\
+	static className* internalCreateInstance(GUIManagerImpl* manager) \
 	{ \
 		auto obj = RefPtr<className>(LN_NEW className(manager)); \
 		obj.SafeAddRef(); \
@@ -28,11 +28,11 @@ class ContentElement
 	: public CoreObject
 {
 public:
-	ContentElement(GUIManager* manager);
+	ContentElement(GUIManagerImpl* manager);
 	virtual ~ContentElement();
 
 private:
-	GUIManager*	m_manager;
+	GUIManagerImpl*	m_manager;
 };
 
 

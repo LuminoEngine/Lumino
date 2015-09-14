@@ -23,9 +23,9 @@ class ListBoxItem
 	LN_UI_ELEMENT_SUBCLASS_DECL(ListBoxItem);
 
 public:
-	static ListBoxItem* Create(GUIManager* manager);
+	static ListBoxItem* Create(GUIManagerImpl* manager);
 
-	ListBoxItem(GUIManager* manager);
+	ListBoxItem(GUIManagerImpl* manager);
 	virtual ~ListBoxItem();
 
 private:
@@ -73,7 +73,7 @@ public:
 public:
 	static ListBoxChromePtr Create();
 
-	ListBoxChrome(GUIManager* manager);
+	ListBoxChrome(GUIManagerImpl* manager);
 	virtual ~ListBoxChrome();
 
 public:
@@ -134,7 +134,7 @@ public:
 
 
 	// TODO: こやつらは protected にするべき
-	ListBox(GUIManager* manager);
+	ListBox(GUIManagerImpl* manager);
 	virtual ~ListBox();
 
 	//ListBoxItemList* GetListBoxItems() { return m_listBoxItems; }

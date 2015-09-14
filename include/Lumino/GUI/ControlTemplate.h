@@ -29,7 +29,7 @@ class UIElementFactory	// TODO: UIElement 以外も作れるように。名前�
 	: public CoreObject
 {
 public:
-	UIElementFactory(GUIManager* manager);
+	UIElementFactory(GUIManagerImpl* manager);
 	virtual ~UIElementFactory();
 
 	void SetKeyName(const String& name) { m_keyName = name; }
@@ -87,7 +87,7 @@ private:
 	typedef SortedArray<const Property*, PropertyInfo>	PropertyInfoList;
 	typedef SortedArray<const Property*, Variant>	PropertyValueList;
 
-	GUIManager*						m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
+	GUIManagerImpl*					m_manager;	// CreateInstance() で必要。引数でもらってもいいかも？
 	String							m_keyName;
 	String							m_targetTypeFullName;
 	PropertyInfoList				m_propertyInfoList;

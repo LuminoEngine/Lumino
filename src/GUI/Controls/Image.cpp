@@ -1,8 +1,8 @@
 ﻿
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Image.h>
+#include "../GUIManagerImpl.h"
 
 namespace Lumino
 {
@@ -29,7 +29,7 @@ ImagePtr Image::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Image::Image(GUIManager* manager)
+Image::Image(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 }

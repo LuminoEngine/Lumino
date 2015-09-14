@@ -29,7 +29,7 @@ public:
 public:
 	static ImagePtr Create();
 
-	Image(GUIManager* manager);
+	Image(GUIManagerImpl* manager);
 	virtual ~Image();
 
 	//-------------------------------------------------------------------------

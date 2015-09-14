@@ -18,7 +18,7 @@ LN_PROPERTY_IMPLEMENT(Shape, Graphics::Brush*, FillBrushProperty, "FillBrush", m
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Shape::Shape(GUIManager* manager)
+Shape::Shape(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 }
@@ -48,7 +48,7 @@ Rectangle* Rectangle::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Rectangle::Rectangle(GUIManager* manager)
+Rectangle::Rectangle(GUIManagerImpl* manager)
 	: Shape(manager)
 {
 }

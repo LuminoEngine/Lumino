@@ -1,10 +1,10 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/AnimationClock.h>
 #include <Lumino/GUI/VisualTreeHelper.h>
+#include "GUIManagerImpl.h"
 #include "GUIHelper.h"
 
 namespace Lumino
@@ -42,7 +42,7 @@ AnimationTimeline::~AnimationTimeline()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AnimationClock::AnimationClock(GUIManager* manager, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines)
+AnimationClock::AnimationClock(GUIManagerImpl* manager, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines)
 	: m_manager(manager)
 	, m_sourceStoryboard(sourceStoryboard)
 	, m_timeLineInstanceList()

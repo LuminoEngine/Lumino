@@ -17,7 +17,7 @@ class Panel
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Panel);
 public:
-	Panel(GUIManager* manager);
+	Panel(GUIManagerImpl* manager);
 	virtual ~Panel();
 
 	UIElementCollection* GetChildren() { return m_children; }
@@ -64,7 +64,7 @@ public:
 	PilePanel* Create();
 
 protected:
-	PilePanel(GUIManager* manager);
+	PilePanel(GUIManagerImpl* manager);
 	virtual ~PilePanel();
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);

@@ -1,6 +1,6 @@
 ﻿
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
+#include "../GUIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Thumb.h>
 
@@ -39,7 +39,7 @@ ThumbPtr Thumb::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Thumb::Thumb(GUIManager* manager)
+Thumb::Thumb(GUIManagerImpl* manager)
 	: Control(manager)
 	, m_isDragging(false)
 {
@@ -152,7 +152,7 @@ ThumbChromePtr ThumbChrome::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ThumbChrome::ThumbChrome(GUIManager* manager)
+ThumbChrome::ThumbChrome(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 }

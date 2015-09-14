@@ -23,7 +23,7 @@ ContentPresenterPtr ContentPresenter::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ContentPresenter::ContentPresenter(GUIManager* manager)
+ContentPresenter::ContentPresenter(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 

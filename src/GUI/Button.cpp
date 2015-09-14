@@ -25,7 +25,7 @@ ButtonPtr Button::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Button::Button(GUIManager* manager)
+Button::Button(GUIManagerImpl* manager)
 	: ContentControl(manager)
 	, m_isMouseOver(false)
 {

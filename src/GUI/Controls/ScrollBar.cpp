@@ -27,9 +27,9 @@
 	であれば、TemplateBinding しなくても ScrollBar 側から直接値を set してもそんなに問題ない。
 */
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ScrollBar.h>
+#include "../GUIManagerImpl.h"
 
 namespace Lumino
 {
@@ -66,7 +66,7 @@ ScrollBarPtr ScrollBar::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ScrollBar::ScrollBar(GUIManager* manager)
+ScrollBar::ScrollBar(GUIManagerImpl* manager)
 	: Control(manager)
 	, m_value(0.0f)
 	, m_minimum(0.0f)

@@ -27,7 +27,7 @@ StackPanelPtr StackPanel::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-StackPanel::StackPanel(GUIManager* manager)
+StackPanel::StackPanel(GUIManagerImpl* manager)
 	: Panel(manager)
 {
 	std::is_class<int>();

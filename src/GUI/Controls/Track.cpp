@@ -19,7 +19,7 @@
 */
 
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
+#include "../GUIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Track.h>
 
@@ -53,7 +53,7 @@ TrackPtr Track::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Track::Track(GUIManager* manager)
+Track::Track(GUIManagerImpl* manager)
 	: Control(manager)
 	, m_value(0.0f)
 	, m_minimum(0.0f)

@@ -15,8 +15,18 @@ class GUIContext
 	: public RefObject
 {
 public:
-	GUIContext();
+	
+	/**
+		@brief	GUIContext のインスタンスを作成します。
+	*/
+	static GUIContext* Create();
+
+private:
+	GUIContext(GUIManagerImpl* manager);
 	virtual ~GUIContext();
+
+private:
+	GUIManagerImpl*	m_manager;
 };
 
 LN_NAMESPACE_GUI_END

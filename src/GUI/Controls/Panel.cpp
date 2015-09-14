@@ -15,7 +15,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Panel);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Panel::Panel(GUIManager* manager)
+Panel::Panel(GUIManagerImpl* manager)
 	: UIElement(manager)
 	, m_children(LN_NEW UIElementCollection())
 {
@@ -128,7 +128,7 @@ PilePanel* PilePanel::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-PilePanel::PilePanel(GUIManager* manager)
+PilePanel::PilePanel(GUIManagerImpl* manager)
 	: Panel(manager)
 {
 }

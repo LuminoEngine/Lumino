@@ -327,6 +327,7 @@ set(LN_SOURCES_GUI
 	src/GUI/GUIHelper.h
 	src/GUI/GUIInputGesture.cpp
 	src/GUI/GUIManager.cpp
+	src/GUI/GUIManagerImpl.h
 	src/GUI/GUIPainter.cpp
 	src/GUI/GUIPainter.h
 	src/GUI/ItemsControl.cpp

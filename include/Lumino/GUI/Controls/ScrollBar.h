@@ -61,7 +61,7 @@ public:
 public:
 	static ScrollBarPtr Create();
 
-	ScrollBar(GUIManager* manager);
+	ScrollBar(GUIManagerImpl* manager);
 	virtual ~ScrollBar();
 
 	//-------------------------------------------------------------------------

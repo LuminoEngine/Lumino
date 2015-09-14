@@ -32,7 +32,7 @@ public:
 	/** @} */
 
 protected:
-	Shape(GUIManager* manager);
+	Shape(GUIManagerImpl* manager);
 	virtual ~Shape();
 
 protected:
@@ -56,7 +56,7 @@ public:
 	Rectangle* Create();
 
 protected:
-	Rectangle(GUIManager* manager);
+	Rectangle(GUIManagerImpl* manager);
 	virtual ~Rectangle();
 	virtual void OnRender(Graphics::Painter* painter);
 

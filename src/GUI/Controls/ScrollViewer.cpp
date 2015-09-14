@@ -29,7 +29,7 @@
 
 */
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
+#include "../GUIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ScrollViewer.h>
 
@@ -56,7 +56,7 @@ ScrollContentPresenterPtr ScrollContentPresenter::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ScrollContentPresenter::ScrollContentPresenter(GUIManager* manager)
+ScrollContentPresenter::ScrollContentPresenter(GUIManagerImpl* manager)
 	: ContentPresenter(manager)
 	, m_scrollData()
 	, m_scrollInfo(NULL)
@@ -198,7 +198,7 @@ ScrollViewerPtr ScrollViewer::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ScrollViewer::ScrollViewer(GUIManager* manager)
+ScrollViewer::ScrollViewer(GUIManagerImpl* manager)
 	: ContentControl(manager)
 {
 	LN_REGISTER_ROUTED_EVENT_HANDLER(ScrollViewer, ScrollEventArgs, ScrollBar::ScrollEvent, Handler_ScrollBar_Scroll);

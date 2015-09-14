@@ -15,7 +15,7 @@ class Decorator
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Decorator);
 public:
-	Decorator(GUIManager* manager);
+	Decorator(GUIManagerImpl* manager);
 	virtual ~Decorator();
 
 public:

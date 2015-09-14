@@ -20,7 +20,7 @@ public:
 public:
 	static ItemsPresenterPtr Create();
 
-	ItemsPresenter(GUIManager* manager);
+	ItemsPresenter(GUIManagerImpl* manager);
 	virtual ~ItemsPresenter();
 
 public:	// internal

@@ -28,7 +28,7 @@ public:
 public:
 	static ColumnDefinitionPtr Create();
 
-	ColumnDefinition(GUIManager* manager);
+	ColumnDefinition(GUIManagerImpl* manager);
 	virtual ~ColumnDefinition();
 
 	//-------------------------------------------------------------------------
@@ -83,7 +83,7 @@ public:
 public:
 	static RowDefinitionPtr Create();
 
-	RowDefinition(GUIManager* manager);
+	RowDefinition(GUIManagerImpl* manager);
 	virtual ~RowDefinition();
 
 	bool IsAuto() const { return Math::IsNaN(m_height); }
@@ -142,7 +142,7 @@ public:
 public:
 	static GridPtr Create();
 
-	Grid(GUIManager* manager);
+	Grid(GUIManagerImpl* manager);
 	virtual ~Grid();
 
 public:

@@ -31,7 +31,7 @@ LN_ROUTED_EVENT_IMPLEMENT(Control, MouseEventArgs, MouseDoubleClickEvent, "Mouse
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Control::Control(GUIManager* manager)
+Control::Control(GUIManagerImpl* manager)
 	: UIElement(manager)
 	, m_background()
 	, m_foreground()

@@ -37,6 +37,7 @@
 #include "Lumino/Platform/Clipboard.h"
 
 #include "Lumino/GUI/GUIManager.h"
+#include "Lumino/GUI/GUIContext.h"
 #include "Lumino/GUI/UIElement.h"
 #include "Lumino/GUI/Control.h"
 #include "Lumino/GUI/Button.h"

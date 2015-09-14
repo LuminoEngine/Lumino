@@ -1,17 +1,17 @@
 ﻿
 #pragma once
 
-#include <Lumino/Base/RefObject.h>
-#include <Lumino/Base/Size.h>
-#include <Lumino/Base/String.h>
-#include <Lumino/Base/Array.h>
-#include <Lumino/Threading/Thread.h>
-#include "Platform/PlatformManager.h"
-#include "Physics/PhysicsManager.h"
-#include "Graphics/GraphicsManager.h"
-#include "Documents/DocumentsManager.h"
-#include "GUI/GUIManager.h"
-#include "Game/FpsController.h"
+//#include <Lumino/Base/RefObject.h>
+//#include <Lumino/Base/Size.h>
+//#include <Lumino/Base/String.h>
+//#include <Lumino/Base/Array.h>
+//#include <Lumino/Threading/Thread.h>
+//#include "Platform/PlatformManager.h"
+//#include "Physics/PhysicsManager.h"
+//#include "Graphics/GraphicsManager.h"
+//#include "Documents/DocumentsManager.h"
+//#include "GUI/GUIManager.h"
+//#include "Game/FpsController.h"
 #include "ApplicationSettings.h"
 
 namespace Lumino

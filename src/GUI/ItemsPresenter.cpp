@@ -24,7 +24,7 @@ ItemsPresenterPtr ItemsPresenter::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ItemsPresenter::ItemsPresenter(GUIManager* manager)
+ItemsPresenter::ItemsPresenter(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 

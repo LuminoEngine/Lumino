@@ -22,7 +22,7 @@ public:
 public:
 	static ButtonChromePtr Create();
 
-	ButtonChrome(GUIManager* manager);
+	ButtonChrome(GUIManagerImpl* manager);
 	virtual ~ButtonChrome();
 
 public:

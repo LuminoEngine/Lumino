@@ -19,6 +19,7 @@ namespace Lumino
 class AudioManagerImpl;
 namespace Graphics { class ProfilerRenderer; }
 class SceneGraphManager;
+class GUIManagerImpl;
 
 class ApplicationImpl
 	: public RefObject
@@ -70,7 +71,7 @@ public:
 	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
-	GUIManager* GetGUIManager() const { return m_guiManager; }
+	GUIManagerImpl* GetGUIManager() const { return m_guiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
 
 protected:
@@ -97,7 +98,7 @@ private:
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
-	RefPtr<GUIManager>				m_guiManager;
+	GUIManagerImpl*						m_guiManager;
 	SceneGraphManager*					m_sceneGraphManager;
 
 	Graphics::ProfilerRenderer*			m_profilerRenderer;

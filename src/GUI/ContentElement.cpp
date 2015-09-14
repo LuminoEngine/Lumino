@@ -13,7 +13,7 @@ LN_NAMESPACE_GUI_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ContentElement::ContentElement(GUIManager* manager)
+ContentElement::ContentElement(GUIManagerImpl* manager)
 	: m_manager(manager)
 {
 

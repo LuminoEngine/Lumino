@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ItemsControl.h>
+#include "GUIManagerImpl.h"
 #include "GUIHelper.h"
 
 namespace Lumino
@@ -50,7 +50,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsControlItem);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ItemsControlItem::ItemsControlItem(GUIManager* manager)
+ItemsControlItem::ItemsControlItem(GUIManagerImpl* manager)
 	: ContentControl(manager)
 {
 }
@@ -129,7 +129,7 @@ LN_PROPERTY_IMPLEMENT(ItemsControl, Style*, GroupStyleProperty, "GroupStyle", m_
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ItemsControl* ItemsControl::Create(GUIManager* manager)
+ItemsControl* ItemsControl::Create(GUIManagerImpl* manager)
 {
 	auto obj = RefPtr<ItemsControl>::Create(manager);
 	obj->InitializeComponent();
@@ -140,7 +140,7 @@ ItemsControl* ItemsControl::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ItemsControl::ItemsControl(GUIManager* manager)
+ItemsControl::ItemsControl(GUIManagerImpl* manager)
 	: Control(manager)
 	, m_visualItemsPresenter(NULL)
 	, m_itemList()
@@ -322,7 +322,7 @@ LN_PROPERTY_IMPLEMENT(GroupItem, Variant, HeaderProperty, "Header", m_header, Pr
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GroupItem::GroupItem(GUIManager* manager)
+GroupItem::GroupItem(GUIManagerImpl* manager)
 	: ItemsControl(manager)
 {
 }

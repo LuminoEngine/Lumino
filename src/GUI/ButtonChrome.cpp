@@ -28,7 +28,7 @@ ButtonChromePtr ButtonChrome::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ButtonChrome::ButtonChrome(GUIManager* manager)
+ButtonChrome::ButtonChrome(GUIManagerImpl* manager)
 	: Decorator(manager)
 	, m_frameWidth(8.0f)
 	, m_isMouseOver(false)

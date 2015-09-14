@@ -24,7 +24,7 @@ public:
 
 	static ButtonPtr Create();
 
-	Button(GUIManager* manager);
+	Button(GUIManagerImpl* manager);
 	virtual ~Button();
 
 public:

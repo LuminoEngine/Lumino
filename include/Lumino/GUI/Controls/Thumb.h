@@ -45,7 +45,7 @@ public:
 public:
 	static ThumbPtr Create();
 
-	Thumb(GUIManager* manager);
+	Thumb(GUIManagerImpl* manager);
 	virtual ~Thumb();
 
 	/// ドラッグ中であるかを確認する
@@ -97,7 +97,7 @@ public:
 public:
 	static ThumbChromePtr Create();
 
-	ThumbChrome(GUIManager* manager);
+	ThumbChrome(GUIManagerImpl* manager);
 	virtual ~ThumbChrome();
 
 	void SetRenderMouseOver(bool enabled) { m_renderMouseOver = enabled; }

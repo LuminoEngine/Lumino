@@ -15,7 +15,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Decorator);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Decorator::Decorator(GUIManager* manager)
+Decorator::Decorator(GUIManagerImpl* manager)
 	: UIElement(manager)
 {
 }

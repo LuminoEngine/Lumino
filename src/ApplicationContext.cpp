@@ -40,7 +40,7 @@ Graphics::GraphicsManager* ApplicationContext::GetGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GUIManager* ApplicationContext::GetGUIManager()
+GUIManagerImpl* ApplicationContext::GetGUIManager()
 {
 	LN_CHECK_STATE_RETURNV(g_app != NULL, NULL);
 	return g_app->GetGUIManager();

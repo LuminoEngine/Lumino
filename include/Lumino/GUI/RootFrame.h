@@ -20,7 +20,7 @@ public:
 	static RootFrame* Create();
 
 private:
-	RootFrame(GUIManager* manager);
+	RootFrame(GUIManagerImpl* manager);
 	virtual ~RootFrame();
 
 	LN_CORE_OBJECT_TYPE_INFO_DECL();

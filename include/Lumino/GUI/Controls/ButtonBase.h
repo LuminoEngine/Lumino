@@ -15,7 +15,7 @@ class ButtonBase
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(ButtonBase);
 public:
-	ButtonBase(GUIManager* manager);
+	ButtonBase(GUIManagerImpl* manager);
 	virtual ~ButtonBase();
 };
 

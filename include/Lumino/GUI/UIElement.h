@@ -16,9 +16,9 @@ public: \
 	static const String TypeID; \
 	virtual const String& GetTypeID() const { return TypeID; } \
 private: \
-	friend class GUIManager;\
+	friend class GUIManagerImpl;\
 	friend class GUIHelper;\
-	static className* internalCreateInstance(GUIManager* manager) \
+	static className* internalCreateInstance(GUIManagerImpl* manager) \
 	{ \
 		auto obj = RefPtr<className>(LN_NEW className(manager)); \
 		obj->InitializeComponent(); \
@@ -269,7 +269,7 @@ protected:
 	virtual void OnRender(Graphics::Painter* painter);
 
 protected:
-	UIElement(GUIManager* manager);
+	UIElement(GUIManagerImpl* manager);
 	virtual ~UIElement();
 
 private:
@@ -425,7 +425,7 @@ public:	// internal
 	void UpdateTemplateHierarchy();	// こちらは modified マークされている要素のテンプレートを更新する
 
 
-	GUIManager* GetManager() const { return m_manager; }
+	GUIManagerImpl* GetManager() const { return m_manager; }
 
 private:
 	friend class UIElementFactory;
@@ -496,7 +496,7 @@ protected:
 
 
 	friend class GUIHelper;
-	GUIManager*				m_manager;
+	GUIManagerImpl*			m_manager;
 	String					m_keyName;
 
 	//VisualStateInstance*	m_visualStateInstance;

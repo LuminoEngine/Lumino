@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/RoutedCommand.h>
+#include "GUIManagerImpl.h"
 
 namespace Lumino
 {

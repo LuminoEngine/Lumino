@@ -52,6 +52,7 @@
 #include <Lumino/Application.h>
 #include "Graphics/ProfilerRenderer.h"
 #include "Scene/SceneGraphManager.h"
+#include "GUI/GUIManagerImpl.h"
 #include "ApplicationImpl.h"
 #include "ApplicationContext.h"
 
@@ -120,6 +121,7 @@ ApplicationImpl::~ApplicationImpl()
 
 	if (m_guiManager != NULL) {
 		m_guiManager->Finalize();
+		LN_SAFE_RELEASE(m_guiManager);
 	}
 
 	if (m_audioManager != NULL) {
@@ -250,18 +252,20 @@ void ApplicationImpl::InitialzeDocumentsManager()
 //-----------------------------------------------------------------------------
 void ApplicationImpl::InitialzeGUIManager()
 {
-	if (m_guiManager.IsNull())
+	if (m_guiManager == NULL)
 	{
 		InitialzePlatformManager();
 		InitialzeGraphicsManager();
 		InitialzeDocumentsManager();
 
-		GUIManager::ConfigData data;
+		GUIManagerImpl::ConfigData data;
 		data.GraphicsManager = m_graphicsManager;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.DocumentsManager = m_documentsManager;
-		m_guiManager.Attach(LN_NEW GUIManager());
+		m_guiManager = LN_NEW GUIManagerImpl();
 		m_guiManager->Initialize(data);
+
+		GUIManagerImpl::Instance = m_guiManager;
 	}
 }
 

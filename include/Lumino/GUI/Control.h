@@ -100,7 +100,7 @@ public:
 	/** @} */
 
 protected:
-	Control(GUIManager* manager);
+	Control(GUIManagerImpl* manager);
 	virtual ~Control();
 
 public:

@@ -5,6 +5,22 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/9/14] Variant は必要？
+		・ContentControl::SetContent() 等のコントロール自動生成は？
+			→	自分で TextBlock 作ればいいだけ。
+				作って追加するユーティリティ関数があってもよい。
+			→	XML から生成するときには使いたい。AddChild は Valiant であってほしい。
+
+		・List の要素が CoreObject だったら参照カウントを操作したい
+			→	traits で代用。
+
+		・DataGrid の要素としてはほしい。
+
+		・VariantList は？
+			→	XML から生成するときに使いたい。
+			→	コードから生成するときは必要なし。
+				UIElementFactory で AddItem した先で方チェックとかすればいいだけ。
+
 	[2015/9/8] ショートカットキー (InputBinding)
 		TranslateInput
 
@@ -66,9 +82,9 @@
 			イベント経路やツリーは独立してるけど、リソース系は独立させたくない (共有して節約したい)
 			アニメーションのための時間管理も独立している。
 
-		OSのウィンドウシステムっぽく考えると、GUIManager は完全にグローバルなものを管理し、
+		OSのウィンドウシステムっぽく考えると、GUIManagerImpl は完全にグローバルなものを管理し、
 		GUIContext はアプリごとにローカルなものを管理するイメージになる。
-		GUIManager
+		GUIManagerImpl
 			- リソース
 			- キーボードフォーカス
 	
@@ -455,7 +471,7 @@
 		
 		・new Window()
 		・レイアウトから LogicalTree のインスタンスを作る。
-			・子要素に <Button> とかあれば GUIManager::CreateUIElement("Button")
+			・子要素に <Button> とかあれば GUIManagerImpl::CreateUIElement("Button")
 		・UpdateTemplate() を再帰的に実行していく。(VisualTree を作る)
 			関数の引数には ResourceDictionary を渡す。
 
@@ -530,8 +546,8 @@
 		Storyboard も共有リソース。
 
 		・Storyboard::Begin() で AnimationClock を作る。AnimationClock にはターゲット要素と AnimationTimeline をセット。
-		・AnimationClock は GUIManager に登録。
-		・GUIManager への InjectTime() で全ての AnimationClock を遷移させる。
+		・AnimationClock は GUIManagerImpl に登録。
+		・GUIManagerImpl への InjectTime() で全ての AnimationClock を遷移させる。
 		・AnimationClock は現在の値をターゲットにセットする。
 
 		ちなみに WPF は AnimationClock がターゲットを持たないみたい。
@@ -1033,7 +1049,7 @@
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/Rectangle.h>
-#include <Lumino/GUI/GUIManager.h>
+#include "GUIManagerImpl.h"
 #include "GUIPainter.h"
 
 namespace Lumino
@@ -1041,10 +1057,11 @@ namespace Lumino
 LN_NAMESPACE_GUI_BEGIN
 	
 //=============================================================================
-// GUIManager
+// GUIManagerImpl
 //=============================================================================
 
-const float GUIManager::DefaultouseButtonClickTimeout = 0.3f;
+const float GUIManagerImpl::DefaultouseButtonClickTimeout = 0.3f;
+GUIManagerImpl* GUIManagerImpl::Instance = NULL;
 
 static const byte_t g_DefaultSkin_png_Data[] =
 {
@@ -1052,10 +1069,11 @@ static const byte_t g_DefaultSkin_png_Data[] =
 };
 static const size_t g_DefaultSkin_png_Len = LN_ARRAY_SIZE_OF(g_DefaultSkin_png_Data);
 
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GUIManager::GUIManager()
+GUIManagerImpl::GUIManagerImpl()
 	: m_mouseHoverElement(NULL)
 	, m_defaultTheme(NULL)
 	, m_rootCombinedResource(NULL)
@@ -1072,7 +1090,7 @@ GUIManager::GUIManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GUIManager::~GUIManager()
+GUIManagerImpl::~GUIManagerImpl()
 {
 	LN_SAFE_RELEASE(m_rootCombinedResource);
 	LN_SAFE_RELEASE(m_defaultTheme);
@@ -1082,7 +1100,7 @@ GUIManager::~GUIManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::Initialize(const ConfigData& configData)
+void GUIManagerImpl::Initialize(const ConfigData& configData)
 {
 	if (LN_VERIFY_ASSERT(configData.GraphicsManager != NULL)) { return; }
 
@@ -1092,25 +1110,25 @@ void GUIManager::Initialize(const ConfigData& configData)
 	m_painter = LN_NEW Internal::GUIPainter(m_graphicsManager);
 
 	// TODO: static で登録したい
-	RegisterFactory(ContentPresenter::TypeID,		[](GUIManager* m) -> CoreObject* { return ContentPresenter::internalCreateInstance(m); });
-	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManager* m) -> CoreObject* { return ItemsPresenter::internalCreateInstance(m); });
-	RegisterFactory(ButtonChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ButtonChrome::internalCreateInstance(m); });
-	RegisterFactory(Button::TypeID,					[](GUIManager* m) -> CoreObject* { return Button::internalCreateInstance(m); });
-	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ListBoxChrome::internalCreateInstance(m); });
-	RegisterFactory(ThumbChrome::TypeID,			[](GUIManager* m) -> CoreObject* { return ThumbChrome::internalCreateInstance(m); });
-	RegisterFactory(Thumb::TypeID,					[](GUIManager* m) -> CoreObject* { return Thumb::internalCreateInstance(m); });
-	RegisterFactory(Track::TypeID,					[](GUIManager* m) -> CoreObject* { return Track::internalCreateInstance(m); });
-	RegisterFactory(Grid::TypeID,					[](GUIManager* m) -> CoreObject* { return Grid::internalCreateInstance(m); });
-	RegisterFactory(ColumnDefinition::TypeID,		[](GUIManager* m) -> CoreObject* { return ColumnDefinition::internalCreateInstance(m); });
-	RegisterFactory(RowDefinition::TypeID,			[](GUIManager* m) -> CoreObject* { return RowDefinition::internalCreateInstance(m); });
-	RegisterFactory(Image::TypeID,					[](GUIManager* m) -> CoreObject* { return Image::internalCreateInstance(m); });
-	RegisterFactory(ScrollBar::TypeID,				[](GUIManager* m) -> CoreObject* { return ScrollBar::internalCreateInstance(m); });
-	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManager* m) -> CoreObject* { return ScrollContentPresenter::internalCreateInstance(m); });
-	RegisterFactory(ScrollViewer::TypeID,			[](GUIManager* m) -> CoreObject* { return ScrollViewer::internalCreateInstance(m); });
-	RegisterFactory(PilePanel::TypeID,				[](GUIManager* m) -> CoreObject* { return PilePanel::internalCreateInstance(m); });
-	RegisterFactory(StackPanel::TypeID,				[](GUIManager* m) -> CoreObject* { return StackPanel::internalCreateInstance(m); });
-	RegisterFactory(TextBlock::TypeID,				[](GUIManager* m) -> CoreObject* { return TextBlock::internalCreateInstance(m); });
-	RegisterFactory(Rectangle::TypeID,				[](GUIManager* m) -> CoreObject* { return Rectangle::internalCreateInstance(m); });
+	RegisterFactory(ContentPresenter::TypeID,		[](GUIManagerImpl* m) -> CoreObject* { return ContentPresenter::internalCreateInstance(m); });
+	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ItemsPresenter::internalCreateInstance(m); });
+	RegisterFactory(ButtonChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ButtonChrome::internalCreateInstance(m); });
+	RegisterFactory(Button::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Button::internalCreateInstance(m); });
+	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ListBoxChrome::internalCreateInstance(m); });
+	RegisterFactory(ThumbChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ThumbChrome::internalCreateInstance(m); });
+	RegisterFactory(Thumb::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Thumb::internalCreateInstance(m); });
+	RegisterFactory(Track::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Track::internalCreateInstance(m); });
+	RegisterFactory(Grid::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Grid::internalCreateInstance(m); });
+	RegisterFactory(ColumnDefinition::TypeID,		[](GUIManagerImpl* m) -> CoreObject* { return ColumnDefinition::internalCreateInstance(m); });
+	RegisterFactory(RowDefinition::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return RowDefinition::internalCreateInstance(m); });
+	RegisterFactory(Image::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Image::internalCreateInstance(m); });
+	RegisterFactory(ScrollBar::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return ScrollBar::internalCreateInstance(m); });
+	RegisterFactory(ScrollContentPresenter::TypeID, [](GUIManagerImpl* m) -> CoreObject* { return ScrollContentPresenter::internalCreateInstance(m); });
+	RegisterFactory(ScrollViewer::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ScrollViewer::internalCreateInstance(m); });
+	RegisterFactory(PilePanel::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return PilePanel::internalCreateInstance(m); });
+	RegisterFactory(StackPanel::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return StackPanel::internalCreateInstance(m); });
+	RegisterFactory(TextBlock::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return TextBlock::internalCreateInstance(m); });
+	RegisterFactory(Rectangle::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return Rectangle::internalCreateInstance(m); });
 
 	// GUI スキン
 	m_defaultSkinTexture.Attach(Graphics::Texture::Create(g_DefaultSkin_png_Data, g_DefaultSkin_png_Len, Graphics::TextureFormat_R8G8B8A8, 1, m_graphicsManager));
@@ -1140,7 +1158,7 @@ void GUIManager::Initialize(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::Finalize()
+void GUIManagerImpl::Finalize()
 {
 	LN_SAFE_RELEASE(m_defaultRootFrame);
 }
@@ -1148,7 +1166,7 @@ void GUIManager::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//RootFrame* GUIManager::CreateRootFrame()
+//RootFrame* GUIManagerImpl::CreateRootFrame()
 //{
 //	m_defaultRootFrame = LN_NEW RootFrame(this);
 //	m_defaultRootFrame->ApplyTemplate(m_rootCombinedResource);	// テーマを直ちに更新
@@ -1158,7 +1176,7 @@ void GUIManager::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::RegisterFactory(const String& typeFullName, ObjectFactory factory)
+void GUIManagerImpl::RegisterFactory(const String& typeFullName, ObjectFactory factory)
 {
 	m_objectFactoryMap[typeFullName] = factory;
 }
@@ -1166,7 +1184,7 @@ void GUIManager::RegisterFactory(const String& typeFullName, ObjectFactory facto
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-CoreObject* GUIManager::CreateObject(const String& typeFullName)
+CoreObject* GUIManagerImpl::CreateObject(const String& typeFullName)
 {
 	ObjectFactory f = m_objectFactoryMap[typeFullName];
 	LN_THROW(f != NULL, KeyNotFoundException, typeFullName.GetCStr());
@@ -1176,7 +1194,7 @@ CoreObject* GUIManager::CreateObject(const String& typeFullName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectMouseMove(float clientX, float clientY)
+bool GUIManagerImpl::InjectMouseMove(float clientX, float clientY)
 {
 	m_mousePosition.Set(clientX, clientY);
 
@@ -1199,7 +1217,7 @@ bool GUIManager::InjectMouseMove(float clientX, float clientY)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
+bool GUIManagerImpl::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
 {
 	m_mousePosition.Set(clientX, clientY);
 
@@ -1237,7 +1255,7 @@ bool GUIManager::InjectMouseButtonDown(MouseButton button, float clientX, float 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
+bool GUIManagerImpl::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
 {
 	m_mousePosition.Set(clientX, clientY);
 
@@ -1257,7 +1275,7 @@ bool GUIManager::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
+bool GUIManagerImpl::InjectMouseWheel(int delta, float clientX, float clientY)
 {
 	m_mousePosition.Set(clientX, clientY);
 
@@ -1277,7 +1295,7 @@ bool GUIManager::InjectMouseWheel(int delta, float clientX, float clientY)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
+bool GUIManagerImpl::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
 	if (m_focusElement == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
@@ -1287,7 +1305,7 @@ bool GUIManager::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isCon
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
+bool GUIManagerImpl::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
 {
 	if (m_focusElement == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
@@ -1297,7 +1315,7 @@ bool GUIManager::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isContr
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::InjectChar(TCHAR ch)
+bool GUIManagerImpl::InjectChar(TCHAR ch)
 {
 	if (m_focusElement == NULL) { return false; }
 	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(Key_Unknown, false, false, false));
@@ -1308,7 +1326,7 @@ bool GUIManager::InjectChar(TCHAR ch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::InjectElapsedTime(float elapsedTime)
+void GUIManagerImpl::InjectElapsedTime(float elapsedTime)
 {
 	m_time += elapsedTime;
 
@@ -1332,7 +1350,7 @@ void GUIManager::InjectElapsedTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::Render()
+void GUIManagerImpl::Render()
 {
 	/*	以前はここでカレントのレンダーターゲットを取得し、そこからサイズを取得していた。
 		しかしそれだと他アプリに組み込む仕組みを作るのに少し面倒なことになる。
@@ -1355,7 +1373,7 @@ void GUIManager::Render()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::SetFocusElement(UIElement* element)
+void GUIManagerImpl::SetFocusElement(UIElement* element)
 {
 	m_focusElement = element;
 }
@@ -1363,7 +1381,7 @@ void GUIManager::SetFocusElement(UIElement* element)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::CaptureMouse(UIElement* element)
+void GUIManagerImpl::CaptureMouse(UIElement* element)
 {
 	m_capturedElement = element;
 	m_mainWindow->CaptureMouse();
@@ -1372,7 +1390,7 @@ void GUIManager::CaptureMouse(UIElement* element)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::ReleaseMouseCapture(UIElement* element)
+void GUIManagerImpl::ReleaseMouseCapture(UIElement* element)
 {
 	if (m_capturedElement == element)
 	{
@@ -1384,7 +1402,7 @@ void GUIManager::ReleaseMouseCapture(UIElement* element)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GUIManager::UpdateMouseHover(const PointF& mousePos)
+bool GUIManagerImpl::UpdateMouseHover(const PointF& mousePos)
 {
 	UIElement* old = m_mouseHoverElement;
 
@@ -1430,7 +1448,7 @@ EXIT:
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::AddAnimationClock(AnimationClock* clock)
+void GUIManagerImpl::AddAnimationClock(AnimationClock* clock)
 {
 	m_activeAnimationClockList.Add(clock);
 }
@@ -1438,7 +1456,7 @@ void GUIManager::AddAnimationClock(AnimationClock* clock)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::RemoveAnimationClock(AnimationClock* clock)
+void GUIManagerImpl::RemoveAnimationClock(AnimationClock* clock)
 {
 	m_activeAnimationClockList.Remove(clock);
 }
@@ -1446,7 +1464,7 @@ void GUIManager::RemoveAnimationClock(AnimationClock* clock)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//char GUIManager::KeyToChar(Key keyCode)
+//char GUIManagerImpl::KeyToChar(Key keyCode)
 //{
 //
 //}
@@ -1454,7 +1472,7 @@ void GUIManager::RemoveAnimationClock(AnimationClock* clock)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManager::BuildDefaultTheme()
+void GUIManagerImpl::BuildDefaultTheme()
 {
 	// TODO: このへんは WPF の ScrollViewer.CreateDefaultControlTemplate() みたいにまとめたい
 

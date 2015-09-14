@@ -27,7 +27,7 @@ RootFrame* RootFrame::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RootFrame::RootFrame(GUIManager* manager)
+RootFrame::RootFrame(GUIManagerImpl* manager)
 	: ContentControl(manager)
 {
 }

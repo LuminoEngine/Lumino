@@ -21,7 +21,7 @@ class ScrollContentPresenter
 public:
 	static ScrollContentPresenterPtr Create();
 
-	ScrollContentPresenter(GUIManager* manager);
+	ScrollContentPresenter(GUIManagerImpl* manager);
 	virtual ~ScrollContentPresenter();
 
 protected:
@@ -80,7 +80,7 @@ public:
 public:
 	static ScrollViewerPtr Create();
 
-	ScrollViewer(GUIManager* manager);
+	ScrollViewer(GUIManagerImpl* manager);
 	virtual ~ScrollViewer();
 
 	//-------------------------------------------------------------------

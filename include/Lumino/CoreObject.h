@@ -21,7 +21,8 @@ public:
 
 /**
 	@brief		
-	@note	RefObject のポインタ
+	@details	RefObject またはその派生クラスのポインタでインスタンス化した場合、
+				このコンテナへの追加/削除にあわせて参照カウントを操作します。
 */
 template<typename TValue>
 class GenericCoreList

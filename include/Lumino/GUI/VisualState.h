@@ -59,7 +59,7 @@ class Storyboard
 	: public CoreObject
 {
 public:
-	Storyboard(GUIManager* manager);
+	Storyboard(GUIManagerImpl* manager);
 	virtual ~Storyboard();
 
 	void AddTimeline(AnimationTimeline* timeline);
@@ -77,7 +77,7 @@ public:
 	void Stop(UIElement* target);
 
 private:
-	GUIManager*	m_manager;
+	GUIManagerImpl*	m_manager;
 	Array< RefPtr<AnimationTimeline> >	m_animationTimelineList;
 };
 
@@ -90,15 +90,15 @@ class VisualState
 	//[RuntimeNamePropertyAttribute("Name")]
 	//[ContentPropertyAttribute("Storyboard")]
 public:
-	VisualState(GUIManager* manager);
-	VisualState(GUIManager* manager, const String& name);
+	VisualState(GUIManagerImpl* manager);
+	VisualState(GUIManagerImpl* manager, const String& name);
 	virtual ~VisualState();
 
 	const String& GetName() const { return m_name; }
 	Storyboard* GetStoryboard() const { return m_storyboard; }
 
 protected:
-	GUIManager* m_manager;
+	GUIManagerImpl* m_manager;
 	String	m_name;
 	RefPtr<Storyboard>	m_storyboard;
 };

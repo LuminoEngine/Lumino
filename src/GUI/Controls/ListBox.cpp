@@ -103,12 +103,12 @@
 
 */
 #include "../../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/VisualState.h>
+#include "../GUIManagerImpl.h"
 #include "../GUIHelper.h"
 
 namespace Lumino
@@ -124,7 +124,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxItem);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ListBoxItem* ListBoxItem::Create(GUIManager* manager)
+ListBoxItem* ListBoxItem::Create(GUIManagerImpl* manager)
 {
 	auto obj = RefPtr<ListBoxItem>::Create(manager);
 	obj->InitializeComponent();
@@ -136,7 +136,7 @@ ListBoxItem* ListBoxItem::Create(GUIManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ListBoxItem::ListBoxItem(GUIManager* manager)
+ListBoxItem::ListBoxItem(GUIManagerImpl* manager)
 	: ItemsControlItem(manager)
 {
 	// Register handler
@@ -236,7 +236,7 @@ ListBoxChromePtr ListBoxChrome::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ListBoxChrome::ListBoxChrome(GUIManager* manager)
+ListBoxChrome::ListBoxChrome(GUIManagerImpl* manager)
 	: Decorator(manager)
 	, m_frameWidth(8)
 {
@@ -295,7 +295,7 @@ ListBoxPtr ListBox::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ListBox::ListBox(GUIManager* manager)
+ListBox::ListBox(GUIManagerImpl* manager)
 	: ItemsControl(manager)
 	//, m_listBoxItems(LN_NEW ListBoxItemList(this))
 {

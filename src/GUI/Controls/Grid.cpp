@@ -33,7 +33,7 @@ ColumnDefinitionPtr ColumnDefinition::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ColumnDefinition::ColumnDefinition(GUIManager* manager)
+ColumnDefinition::ColumnDefinition(GUIManagerImpl* manager)
 	: ContentElement(manager)
 	, m_width(std::numeric_limits<float>::infinity())
 	, m_minWidth(0)
@@ -93,7 +93,7 @@ RowDefinitionPtr RowDefinition::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RowDefinition::RowDefinition(GUIManager* manager)
+RowDefinition::RowDefinition(GUIManagerImpl* manager)
 	: ContentElement(manager)
 	, m_height(std::numeric_limits<float>::infinity())
 	, m_minHeight(0)
@@ -155,10 +155,9 @@ GridPtr Grid::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Grid::Grid(GUIManager* manager)
+Grid::Grid(GUIManagerImpl* manager)
 	: Panel(manager)
 {
-
 	m_columnDefinitionList.Attach(LN_NEW ColumnDefinitionList());
 	m_rowDefinitionList.Attach(LN_NEW RowDefinitionList());
 }
