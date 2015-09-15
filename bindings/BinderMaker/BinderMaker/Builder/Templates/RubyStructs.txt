@@ -1,7 +1,8 @@
-﻿
-#include "ruby.h"
+﻿#include "LuminoRuby.h"
 
-__GLOBALS_
+__GLOBALS__
+
+__FUNCTIONS__
 
 void InitStructs()
 {

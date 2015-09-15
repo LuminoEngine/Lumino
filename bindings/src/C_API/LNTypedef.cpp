@@ -79,3 +79,115 @@ void LNTypeDef_CheckCommonDefinition()
 ERR_EXIT:
 	LN_ASSERT( "type definition error." );
 }
+
+//=============================================================================
+// Input
+//=============================================================================
+
+/** 仮想ボタン */
+typedef enum tagLNButton
+{
+	LN_BUTTON_0 = 0,				/** ボタン0 (キーボード='Z' ジョイパッド=1番ボタン) */
+	LN_BUTTON_1,					/** ボタン1 (キーボード='X' ジョイパッド=2) */
+	LN_BUTTON_2,					/** ボタン2 (キーボード='C' ジョイパッド=3) */
+	LN_BUTTON_3,					/** ボタン3 (キーボード='A' ジョイパッド=4) */
+	LN_BUTTON_4,					/** ボタン4 (キーボード='S' ジョイパッド=5) */
+	LN_BUTTON_5,					/** ボタン5 (キーボード='D' ジョイパッド=6) */
+	LN_BUTTON_6,					/** ボタン6 (キーボード='Q' ジョイパッド=7) */
+	LN_BUTTON_7,					/** ボタン7 (キーボード='W' ジョイパッド=8) */
+	LN_BUTTON_8,					/** ボタン8 (キーボード=None ジョイパッド=9) */
+	LN_BUTTON_9,					/** ボタン9 (キーボード=None ジョイパッド=10) */
+	LN_BUTTON_10,					/** ボタン10 (キーボード=None ジョイパッド=11) */
+	LN_BUTTON_11,					/** ボタン11 (キーボード=None ジョイパッド=12) */
+	LN_BUTTON_12,					/** ボタン12 (キーボード=None ジョイパッド=13) */
+	LN_BUTTON_13,					/** ボタン13 (キーボード=None ジョイパッド=14) */
+	LN_BUTTON_14,					/** ボタン14 (キーボード=None ジョイパッド=15) */
+	LN_BUTTON_15,					/** ボタン15 (キーボード=None ジョイパッド=16) */
+	LN_BUTTON_LEFT,					/** 左ボタン (キーボード=LN_KEY_LEFT  ジョイパッド=POV左&第1X軸-) */
+	LN_BUTTON_RIGHT,				/** 右ボタン (キーボード=LN_KEY_RIGHT ジョイパッド=POV右&第1X軸+) */
+	LN_BUTTON_UP,					/** 上ボタン (キーボード=LN_KEY_UP    ジョイパッド=POV上&第1Y軸-) */
+	LN_BUTTON_DOWN,					/** 下ボタン (キーボード=LN_KEY_DOWN  ジョイパッド=POV下&第1Y軸+) */
+
+	LN_BUTTON_AXIS_1X_MINUIS,		/** 第1レバー X- 方向 */
+	LN_BUTTON_AXIS_1X_PLUS,			/** 第1レバー X+ 方向 */
+	LN_BUTTON_AXIS_1Y_MINUIS,		/** 第1レバー Y- 方向 */
+	LN_BUTTON_AXIS_1Y_PLUS,			/** 第1レバー Y+ 方向 */
+	LN_BUTTON_AXIS_2X_MINUIS,		/** 第2レバー X- 方向 */
+	LN_BUTTON_AXIS_2X_PLUS,			/** 第2レバー X+ 方向 */
+	LN_BUTTON_AXIS_2Y_MINUIS,		/** 第2レバー Y- 方向 */
+	LN_BUTTON_AXIS_2Y_PLUS,			/** 第2レバー Y+ 方向 */
+
+	LN_BUTTON__TERMINATOR,
+
+} LNButton;
+
+/** デバイスボタン番号の分類 */
+typedef enum tagLNDeviceButtonType
+{
+	LN_DEVICEBUTTONTYPE_UNKNOWN = 0,			/** 不明なデバイス種類 */
+	LN_DEVICEBUTTONTYPE_KEYBOARD,				/** キーボード */
+	LN_DEVICEBUTTONTYPE_MOUSE,					/** マウスボタン */
+	LN_DEVICEBUTTONTYPE_JOYPAD_BUTTON,			/** ジョイパッドのボタン */
+	LN_DEVICEBUTTONTYPE_JOYPAD_POV,				/** ジョイパッドのPOV */
+	LN_DEVICEBUTTONTYPE_JOYPAD_AXIS,			/** ジョイパッドの軸 */
+
+	LN_DEVICEBUTTONTYPE__TERMINATOR,
+
+} LNDeviceButtonType;
+
+/** 全てのデバイス用の仮想ボタン番号 (デバイスボタン番号) (1 ～ 255 は LN_KEY_～と兼用) */
+typedef enum tagLNDeviceButton
+{
+	LN_DEVICEBUTTON_UNKNOWN = 0,
+
+	LN_DEVICEBUTTON_MOUSE_1 = 256,
+	LN_DEVICEBUTTON_MOUSE_2,
+	LN_DEVICEBUTTON_MOUSE_3,
+	LN_DEVICEBUTTON_MOUSE_4,
+	LN_DEVICEBUTTON_MOUSE_5,
+	LN_DEVICEBUTTON_MOUSE_6,
+	LN_DEVICEBUTTON_MOUSE_7,
+	LN_DEVICEBUTTON_MOUSE_8,
+
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_1,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_2,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_3,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_4,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_5,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_6,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_7,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_8,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_9,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_10,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_11,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_12,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_13,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_14,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_15,
+	LN_DEVICEBUTTON_JOYPAD_BUTTON_16,
+
+	LN_DEVICEBUTTON_JOYPAD_POV_UP,
+	LN_DEVICEBUTTON_JOYPAD_POV_RIGHT,
+	LN_DEVICEBUTTON_JOYPAD_POV_DOWN,
+	LN_DEVICEBUTTON_JOYPAD_POV_LEFT,
+
+	LN_DEVICEBUTTON_JOYPAD_AXIS_1_MINUIS,      /** X1 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_1_PLUS,        /** X1  1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_2_MINUIS,      /** Y1 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_2_PLUS,        /** Y1  1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_3_MINUIS,      /** X2 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_3_PLUS,        /** X2  1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_4_MINUIS,      /** Y2 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_4_PLUS,        /** Y2  1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_5_MINUIS,      /** X3 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_5_PLUS,        /** X3  1.0     XInput LT */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_6_MINUIS,      /** Y3 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_6_PLUS,        /** Y3  1.0     XInput RT */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_7_MINUIS,      /** X4 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_7_PLUS,        /** X4  1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_8_MINUIS,      /** Y4 -1.0 */
+	LN_DEVICEBUTTON_JOYPAD_AXIS_8_PLUS,        /** Y4  1.0 */
+
+	LN_DEVICEBUTTON__TERMINATOR,
+
+} LNDeviceButton;

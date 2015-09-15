@@ -1,5 +1,4 @@
-﻿
-#include "ruby.h"
+﻿#include "LuminoRuby.h"
 
 __GLOBALS_
 
