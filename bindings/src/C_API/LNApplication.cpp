@@ -115,7 +115,7 @@ LNResult LNApplication_IsEndRequested(LNBool* requested)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNApplication_Terminate()
+void LNApplication_Finalize()
 {
 	LFManager::Finalize();
 }

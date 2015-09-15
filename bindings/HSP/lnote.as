@@ -289,8 +289,8 @@
 #define LNApplication_ResetFrameDelay native_LNApplication_ResetFrameDelay 
 #func native_LNApplication_IsEndRequested "LNApplication_IsEndRequested" var
 #define LNApplication_IsEndRequested(%1) native_LNApplication_IsEndRequested %1
-#func native_LNApplication_Terminate "LNApplication_Terminate" 
-#define LNApplication_Terminate native_LNApplication_Terminate 
+#func native_LNApplication_Finalize "LNApplication_Finalize" 
+#define LNApplication_Finalize native_LNApplication_Finalize 
 
 #func native_LNVector2_GetLength "LNVector2_GetLengthD" var, var
 #define LNVector2_GetLength(%1, %2) native_LNVector2_GetLength %1, %2

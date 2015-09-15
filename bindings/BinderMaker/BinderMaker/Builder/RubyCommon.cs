@@ -55,6 +55,36 @@ namespace BinderMaker.Builder
         };
 
         /// <summary>
+        /// メソッドが Ruby に出力できるかをチェックする
+        /// </summary>
+        /// <param name="methdo"></param>
+        /// <returns></returns>
+        public static bool CheckInvalidMethod(CLMethod method)
+        {
+            int count = method.Params.FindAll((param) => param.IOModifier == IOModifier.Out).Count;
+            if (count >= 2)
+            {
+                Console.WriteLine("{0} Ruby では out タイプの引数を複数処理できないためスキップ。", method.FuncDecl.OriginalFullName);
+                return false;
+            }
+            //var byteArrayParam = method.Params.Find((param) => param.Type == CLPrimitiveType.ByteArray);
+            //if (byteArrayParam != null)
+            //{
+            //    Console.WriteLine("{0} Ruby では ByteArray 型の引数を処理できないためスキップ。", method.CName);
+            //    return false;
+            //}
+            //var intArrayParam = method.Params.Find((param) => param.Type == CLPrimitiveType.IntNativeArray);
+            //if (intArrayParam != null)
+            //{
+            //    Console.WriteLine("{0} Ruby では IntArray 型の引数を処理できないためスキップ。", method.CName);
+            //    return false;
+            //}
+
+            return true;
+        }
+
+
+        /// <summary>
         /// VALUE → C型へのキャスト式
         /// </summary>
         /// <param name="type"></param>
@@ -77,6 +107,171 @@ namespace BinderMaker.Builder
             }
 
             throw new InvalidOperationException();
+        }
+
+        /// <summary>
+        /// C言語変数 → VALUE 変換式の作成 (return 用)
+        /// </summary>
+        /// <returns></returns>
+        public static void MakeReturnCastExpCToVALUE(CLType cType, string varName, OutputBuffer output)
+        {
+            // プリミティブ型
+            if (cType is CLPrimitiveType)
+            {
+                output.AppendLine("return toVALUE({0});", varName);
+                return;
+            }
+
+            // enum 型
+            if (cType is CLEnum)
+            {
+                output.AppendLine("return INT2FIX({0});", varName);
+                return;
+            }
+
+            var classType = cType as CLClass;
+            if (classType != null)
+            {
+
+                // struct 型
+                if (classType.IsStruct)
+                {
+                    // 新しいインスタンスを作って返す
+                    output.AppendLine("VALUE retObj = {0}_allocate({1});", classType.OriginalName, GetModuleVariableName(classType));
+                    output.AppendLine("*(({0}*)DATA_PTR(retObj)) = {1};", classType.OriginalName, varName);
+                    output.AppendLine("return retObj;");
+                    return;
+                }
+                // RefObj 型
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+            throw new InvalidOperationException();
+        }
+
+        // <summary>
+        /// VALUE → C宣言式
+        /// </summary>
+        public static string GetDeclCastExpVALUEtoC(CLType type, string cVarName, string rubyVarName, string defaultValueSource)
+        {
+            string decl = null;
+            string exp = null;
+
+            // プリミティブ型
+            RubyTypeInfo info;
+            if (_rubyTypeTable.TryGetValue(type, out info))
+            {
+                decl = string.Format("{0} {1}", info.CVarType, cVarName);
+                exp = string.Format(info.ConvRToCExp, rubyVarName);
+            }
+
+            // enum
+            var enumType = type as CLEnum;
+            if (enumType != null)
+            {
+                decl = string.Format("{0} {1}", enumType.OriginalName, cVarName);
+                exp = string.Format("({0})FIX2INT({1})", enumType.OriginalName, rubyVarName);
+            }
+
+            var classType = type as CLClass;
+            if (type is CLClass)
+            {
+                // struct 型
+                if (classType.IsStruct)
+                {
+                    if (!string.IsNullOrEmpty(defaultValueSource))
+                        throw new InvalidOperationException();  // struct 型のデフォルト引数は未実装
+                    string t = string.Format("{0}* tmp_{1}; Data_Get_Struct({2}, {0}, tmp_{1});", classType.OriginalName, cVarName, rubyVarName);
+                    t = t + string.Format("{0}& {1} = *tmp_{1};", classType.OriginalName, cVarName);
+                    return t;
+                }
+                // RefObj 型
+                else
+                {
+                    decl = string.Format("lnHandle {0}", cVarName);
+                    exp = string.Format("RbRefObjToHandle({0})", rubyVarName);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(decl) && !string.IsNullOrEmpty(exp))
+            {
+                // デフォルト引数があれば、省略されている場合に格納する
+                if (!string.IsNullOrEmpty(defaultValueSource))
+                    return string.Format("{0} = ({1} != Qnil) ? {2} : {3};", decl, rubyVarName, exp, defaultValueSource);
+                else
+                    return string.Format("{0} = {1};", decl, exp);
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetModuleVariableName(CLClass type)
+        {
+            if (type.IsStruct)
+                return string.Format(@"g_struct_{0}", type.Name);
+            else
+                return string.Format(@"g_class_{0}", type.Name);
+        }
+
+        /// <summary>
+        /// Ruby の VALUE が type であるかを識別するための式を返す
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetTypeCheckExp(CLType type, string rubyValueName)
+        {
+            // プリミティブ型
+            RubyTypeInfo info;
+            if (_rubyTypeTable.TryGetValue(type, out info))
+                return string.Format(info.CheckExp, rubyValueName);
+
+            // 定数は T_FIXNUM
+            if (type is CLEnum)
+                return string.Format("isRbNumber({0})", rubyValueName);
+
+            // struct / class
+            if (type is CLClass)
+                return string.Format("isRbObject({0})", rubyValueName);
+
+            throw new InvalidOperationException();
+        }
+
+        /// <summary>
+        /// C関数名を Ruby メソッド名に変換する
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string ConvertCommonNameToRubyMethodName(CLMethod method)
+        {
+            // まずはスネークスタイルに変換
+            var name = GetSnakeStyleName(method.Name);
+
+            // 先頭が is の場合は 末尾 ? に変換
+            if (name.IndexOf("is_") == 0)
+            {
+                if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
+                    name += "?";                // ? はつけてあげる
+                else
+                    name = name.Substring(3) + "?";
+            }
+
+            // プロパティの場合は = 等に変更
+            if (method.PropertyNameType != PropertyNameType.NotProperty)
+            {
+                if (method.PropertyNameType == PropertyNameType.Get)
+                    name = name.Substring(4);   // 先頭の get_ を取り除く
+                else if (method.PropertyNameType == PropertyNameType.Set)
+                    name = name.Substring(4) + "=";   // 先頭の set_ を取り除き、後ろに =
+            }
+
+            return name;
         }
 
         /// <summary>

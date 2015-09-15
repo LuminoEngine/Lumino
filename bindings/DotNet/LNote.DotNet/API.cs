@@ -1031,7 +1031,7 @@ namespace LN
         /// LightNote の終了処理を行います。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNApplication_Terminate();
+        public extern static void LNApplication_Finalize();
 
         /// <summary>
         /// 2D ベクトルの長さを計算します。

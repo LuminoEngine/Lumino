@@ -50,6 +50,20 @@ namespace BinderMaker
     /// </summary>
     class CLType : CLEntity
     {
+        #region Properties
+        /// <summary>
+        /// エラーコードであるか
+        /// </summary>
+        public bool IsResultCodeType
+        {
+            get
+            {
+                CLEnum enumType = this as CLEnum;
+                return enumType != null && enumType.OriginalName == "LNResult";
+            }
+        }
+        #endregion
+
         #region Methods
         /// <summary>
         /// コンストラクタ

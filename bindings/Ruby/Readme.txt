@@ -19,10 +19,13 @@ http://rubyinstaller.org/downloads/
 
 
 > set PATH=C:\ProgramFiles\DevKit-mingw64-32-4.7.2-20130224-1151-sfx\mingw\bin;C:\ProgramFiles\DevKit-mingw64-32-4.7.2-20130224-1151-sfx\bin;%PATH%
+
+> set PATH=..\..\..\DevKit-mingw64-32-4.7.2-20130224-1151-sfx\mingw\bin;..\..\..\DevKit-mingw64-32-4.7.2-20130224-1151-sfx\bin;%PATH%
+
 > ruby extconf.rb
 ※ PATH は前に追加しておく。そうしないと、mingw のものではない実行ファイルを参照してしまうことがある。
 
-
+インストールしてある Rubyが x64 だと、出来上がる so も x64 になる。
 
 
 拡張ライブラリとリファレンスの生成は cygwin 上で行う。

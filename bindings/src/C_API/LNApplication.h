@@ -120,7 +120,7 @@ LN_STATIC_CLASS(LNApplication)
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_TERMINATOR
-	void LNApplication_Terminate();
+	void LNApplication_Finalize();
 
 
 	LN_INTERNAL_API void* LNApplication_GetInternalObject();

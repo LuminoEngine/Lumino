@@ -160,9 +160,9 @@ namespace LN
         /// <summary>
         /// LightNote の終了処理を行います。
         /// </summary>
-        public static void Terminate()
+        public static void Finalize()
         {
-            API.LNApplication_Terminate();
+            API.LNApplication_Finalize();
             InternalManager.Terminate();
         
         }

@@ -12,6 +12,23 @@ using System.Threading.Tasks;
  *  ・allocate 関数内で delete 関数を登録
  *  ・rb_define_private_method で initialize 関数を登録
  *  ・rb_define_method で各メンバメソッドを登録
+ *  
+ * 
+ *  メソッド呼び出しは以下のような部分で一塊。オーバーロードする場合はこの塊が複数ある。
+    if (1 <= argc && argc <= 3) {
+        VALUE xSize;
+        VALUE ySize;
+        VALUE zSize;
+        rb_scan_args(argc, argv, "12", &xSize, &ySize, &zSize);
+        if (isRbNumber(xSize) && isRbNumber(ySize) && isRbNumber(zSize)) {
+            int _xSize = FIX2INT(xSize);
+            int _ySize = (ySize != Qnil) ? FIX2INT(ySize) : 1;
+            int _zSize = (zSize != Qnil) ? FIX2INT(zSize) : 1;
+            lnErrorCode errorCode = LNIntTable_Create(&selfObj->Handle, _xSize, _ySize, _zSize);
+            if (errorCode != LN_OK) rb_raise(gLNoteError, "internal error. code:%d", errorCode);
+            return Qnil;
+        }
+    }
  */
 
 namespace BinderMaker.Builder
@@ -68,7 +85,23 @@ static VALUE __MODULE_NAME_____MEMBER___get(VALUE self)
     return toVALUE(selfObj->__MEMBER__);
 }
 ";
+        private static string FuncDeclTemplate = @"
+static VALUE __FUNC_NAME__(int argc, VALUE *argv, VALUE self)
+{
+__CONTENTS__
+}
+";
+        class CurrentClassInfo
+        {
+            /// <summary>
+            /// オーバーロードメソッドの集計。
+            /// static メソッドとインスタンスメソッドは分ける。
+            /// static メソッドはキー名の頭に "static" を付ける。
+            /// </summary>
+            public Dictionary<string, List<CLMethod>> OverloadTable = new Dictionary<string, List<CLMethod>>();
+        }
 
+        CurrentClassInfo _currentClassInfo;
         OutputBuffer _allTypeDefineGlobalVariables = new OutputBuffer();
         OutputBuffer _allFuncDefines = new OutputBuffer();
         OutputBuffer _allModuleDefines = new OutputBuffer(1);
@@ -82,8 +115,10 @@ static VALUE __MODULE_NAME_____MEMBER___get(VALUE self)
         {
             if (!classType.IsStruct) return false;
 
+            _currentClassInfo = new CurrentClassInfo();
+
             // Class 用グローバル変数
-            string varName = "g_struct_" + classType.Name;
+            string varName = RubyCommon.GetModuleVariableName(classType);
             _allTypeDefineGlobalVariables.AppendLine("VALUE {0};", varName);
 
             // Class 定義 (基底は rb_cObject)
@@ -167,7 +202,43 @@ static VALUE __MODULE_NAME_____MEMBER___get(VALUE self)
         /// <param name="enumType"></param>
         protected override void OnClassLookedEnd(CLClass classType)
         {
-            _allModuleDefines.NewLine();
+            // メソッド出力
+            foreach (var overloads in _currentClassInfo.OverloadTable)
+            {
+                MakeFuncDecl(overloads.Value);
+            }
+        }
+
+        /// <summary>
+        /// プロパティ 通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnPropertyLooked(CLProperty prop)
+        {
+            if (prop.Setter != null) OnMethodLooked(prop.Setter);
+            if (prop.Getter != null) OnMethodLooked(prop.Getter);
+        }
+
+        /// <summary>
+        /// メソッド 通知 (プロパティや internal は通知されない)
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnMethodLooked(CLMethod method)
+        {
+            // Ruby として出力できるメソッドであるか
+            if (!RubyCommon.CheckInvalidMethod(method))
+                return;
+
+            // オーバーロードの集計
+            string key = (method.IsStatic) ? "static" + method.Name : method.Name;
+            if (_currentClassInfo.OverloadTable.ContainsKey(key))
+            {
+                _currentClassInfo.OverloadTable[key].Add(method);
+            }
+            else // 新しく登録
+            {
+                _currentClassInfo.OverloadTable[key] = new List<CLMethod>() { method };
+            }
         }
 
         /// <summary>
@@ -181,5 +252,165 @@ static VALUE __MODULE_NAME_____MEMBER___get(VALUE self)
                 .Replace("__FUNCTIONS__", _allFuncDefines.ToString())
                 .Replace("__DEFINES__", _allModuleDefines.ToString());
         }
+
+        /// <summary>
+        /// オーバーロードを考慮しつつ、関数定義を作成する
+        /// </summary>
+        private void MakeFuncDecl(List<CLMethod> overloadMethods)
+        {
+            CLMethod baseMethod = overloadMethods[0];
+
+            // メソッドを持つクラスを表現するグローバル変数
+            string typeValName = RubyCommon.GetModuleVariableName(baseMethod.OwnerClass);
+
+            // 関数名
+            string funcName = "lnrb" + baseMethod.FuncDecl.OriginalFullName;
+            if (baseMethod.IsStatic)
+                funcName = "static_" + funcName;    // static メソッドの場合は先頭に static_ を付ける
+            var funcBody = new OutputBuffer();
+            funcBody.IncreaseIndent();
+
+            // インスタンスメソッドの場合は this を表すオブジェクトを Data_Get_Struct で取りだす
+            if (baseMethod.IsInstanceMethod)
+            {
+                funcBody.AppendLine("{0}* selfObj;", baseMethod.OwnerClass.OriginalName);
+                funcBody.AppendLine("Data_Get_Struct(self, {0}, selfObj);", baseMethod.OwnerClass.OriginalName);
+            }
+
+
+            foreach (var method in overloadMethods)
+            {
+                var callBody = new OutputBuffer();
+
+                int normalArgsCount = 0;
+                int defaultArgsCount = 0;
+                var scan_args_Inits = new OutputBuffer();
+                var scan_args_Args = new OutputBuffer();
+                string typeCheckExp = "";
+                var initStmt = new OutputBuffer();
+                var argsText = new OutputBuffer();
+                var postStmt = new OutputBuffer();
+                var returnStmt = new OutputBuffer();
+
+                // オリジナルの全仮引数を見ていく
+                foreach (var param in method.FuncDecl.Params)
+                {
+                    // 第1引数かつインスタンスメソッドの場合は特殊な実引数になる
+                    if (param == method.FuncDecl.Params.First() && method.IsInstanceMethod)
+                    {
+                        argsText.Append("selfObj"); 
+                    }
+                    // return として選択されている引数である場合
+                    else if (param == method.ReturnParam)
+                    {
+                        var varName = "_" + param.Name;
+                        // 宣言
+                        initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
+                        // API実引数
+                        argsText.AppendCommad("&" + varName);
+                        // return
+                        RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
+                    }
+                    // return として選択されていない引数である場合
+                    else
+                    {
+                        // 通常引数とデフォルト引数のカウント
+                        if (string.IsNullOrEmpty(param.OriginalDefaultValue))
+                            normalArgsCount++;
+                        else
+                            defaultArgsCount++;
+
+                        // out の場合は C++ 型で受け取るための変数を定義
+                        if (param.IOModifier == IOModifier.Out)
+                        {
+                            // ruby は複数 out を扱えないためここに来ることはないはず
+                            throw new InvalidOperationException();
+                        }
+                        // 入力引数 (in とinout)
+                        else
+                        {
+                            // rb_scan_args の格納先 VALUE 宣言
+                            scan_args_Inits.AppendLine("VALUE {0};", param.Name);
+                            // rb_scan_args の引数
+                            scan_args_Args.AppendCommad("&{0}", param.Name);
+                            // 型チェック条件式
+                            if (!string.IsNullOrEmpty(typeCheckExp))
+                                typeCheckExp += " && ";
+                            typeCheckExp += RubyCommon.GetTypeCheckExp(param.Type, param.Name);
+                            // C変数宣言 & 初期化代入
+                            initStmt.AppendLine(RubyCommon.GetDeclCastExpVALUEtoC(param.Type, "_" + param.Name, param.Name, param.OriginalDefaultValue));
+                            // API実引数
+                            argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
+                        }
+                    }
+                }
+
+                // rb_scan_args の呼び出し
+                string rb_scan_args_Text = "";
+                if (!scan_args_Args.IsEmpty)
+                    rb_scan_args_Text = string.Format(@"rb_scan_args(argc, argv, ""{0}{1}"", {2});", normalArgsCount, (defaultArgsCount > 0) ? defaultArgsCount.ToString() : "", scan_args_Args);
+
+                // 型チェック式が空なら true にしておく
+                if (string.IsNullOrEmpty(typeCheckExp))
+                    typeCheckExp = "true";
+
+                // エラーコードと throw
+                string preErrorStmt = "";
+                string postErrorStmt = "";
+                if (method.ReturnType.IsResultCodeType)
+                {
+                    preErrorStmt = "LNResult errorCode = ";
+                    postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""internal error. code:%d"", errorCode);" + OutputBuffer.NewLineCode;
+                }
+
+                // API 呼び出し
+                var apiCall = string.Format("{0}({1});", method.FuncDecl.OriginalFullName, argsText.ToString());
+
+                // オーバーロードひとつ分の塊を作成する
+                callBody.AppendWithIndent("if ({0} <= argc && argc <= {1}) {{", normalArgsCount.ToString(), (normalArgsCount + defaultArgsCount).ToString()).NewLine();
+                callBody.IncreaseIndent();
+                callBody.AppendWithIndent(scan_args_Inits.ToString());
+                callBody.AppendWithIndent(rb_scan_args_Text).NewLine();
+                callBody.AppendWithIndent("if ({0}) {{", typeCheckExp).NewLine();
+                callBody.IncreaseIndent();
+                callBody.AppendWithIndent(initStmt.ToString());
+                callBody.AppendWithIndent(preErrorStmt + apiCall + OutputBuffer.NewLineCode);
+                callBody.AppendWithIndent(postErrorStmt);
+                callBody.AppendWithIndent(postStmt.ToString());
+                callBody.AppendWithIndent((returnStmt.IsEmpty) ? "return Qnil;" : returnStmt.ToString());
+                callBody.DecreaseIndent();
+                callBody.AppendWithIndent("}").NewLine();
+                callBody.DecreaseIndent();
+                callBody.AppendWithIndent("}").NewLine();
+
+                funcBody.AppendWithIndent(callBody.ToString());
+            }
+
+            // メソッド名
+            string rubyMethodName = RubyCommon.ConvertCommonNameToRubyMethodName(baseMethod);
+
+            // 関数終端まで到達することはない。仮の return
+            funcBody.AppendWithIndent(@"rb_raise(rb_eArgError, ""Lumino::{0}.{1} - wrong argument type."");", baseMethod.OwnerClass.Name, rubyMethodName).NewLine();
+            funcBody.AppendWithIndent("return Qnil;");
+
+            // Init_lnote 登録処理
+            string def;
+            if (baseMethod.IsRefObjectConstructor)
+                def = string.Format(@"rb_define_private_method({0}, ""initialize"", LN_TO_RUBY_FUNC({1}), -1);", typeValName, funcName);
+            else if (baseMethod.IsInstanceMethod)
+                def = string.Format(@"rb_define_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
+            else
+                def = string.Format(@"rb_define_singleton_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
+            _allModuleDefines.IncreaseIndent();
+            _allModuleDefines.AppendWithIndent(def).NewLine();
+            _allModuleDefines.DecreaseIndent();
+
+            // 関数作成
+            string t = FuncDeclTemplate.Trim()
+                .Replace("__FUNC_NAME__", funcName)
+                .Replace("__CONTENTS__", funcBody.ToString());
+            _allFuncDefines.AppendWithIndent(t).NewLine(2);
+        }
+
     }
 }
