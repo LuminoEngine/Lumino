@@ -1,5 +1,4 @@
-﻿
-#include "ruby.h"
+﻿#include "LuminoRuby.h"
 
 VALUE g_enum_Result;
 VALUE g_enum_VariantType;
@@ -169,7 +168,7 @@ void InitEnums()
     g_enum_AcceleratorKey = rb_define_module_under(g_luminoModule, "AcceleratorKey");
     rb_define_const(g_enum_AcceleratorKey, "TOGGLE_FULLSCREEN", INT2FIX(0));
     rb_define_const(g_enum_AcceleratorKey, "SHOW_DEBUG_STATISTICS", INT2FIX(1));
-
+/*
     g_enum_Button = rb_define_module_under(g_luminoModule, "Button");
     rb_define_const(g_enum_Button, "0", INT2FIX(0));
     rb_define_const(g_enum_Button, "1", INT2FIX(1));
@@ -199,7 +198,7 @@ void InitEnums()
     rb_define_const(g_enum_Button, "AXIS_2X_PLUS", INT2FIX(25));
     rb_define_const(g_enum_Button, "AXIS_2Y_MINUIS", INT2FIX(26));
     rb_define_const(g_enum_Button, "AXIS_2Y_PLUS", INT2FIX(27));
-
+*/
     g_enum_DeviceButtonType = rb_define_module_under(g_luminoModule, "DeviceButtonType");
     rb_define_const(g_enum_DeviceButtonType, "UNKNOWN", INT2FIX(0));
     rb_define_const(g_enum_DeviceButtonType, "KEYBOARD", INT2FIX(1));

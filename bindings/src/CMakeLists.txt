@@ -1,5 +1,5 @@
-cmake_minimum_required (VERSION 2.8.7)
-project (LNote)
+﻿cmake_minimum_required (VERSION 3.0.0)
+project (LuminoC)
 
 #------------------------------------------------------------------------------
 # Files
@@ -36,6 +36,33 @@ set(LN_INCLUDE_DIRECTORIES
 	${CMAKE_SOURCE_DIR}/external/Lumino.Math/include)
 
 #------------------------------------------------------------------------------
+# Options
+#------------------------------------------------------------------------------
+if (WIN32)
+	# ランタイムライブラリ
+	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+			if (${flag} MATCHES "/MD")
+				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+			endif()
+			if (${flag} MATCHES "/MDd")
+				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
+			endif()
+		endforeach()
+	endif()
+	# 出力ファイルのサフィックス
+	set(LN_OUTPUT_POSTFIX "_")
+	if (${LN_USE_UNICODE_CHAR_SET})
+		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}u")
+	endif()
+	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}MT")
+	else()
+		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}MD")
+	endif()
+endif()
+
+#------------------------------------------------------------------------------
 # Output
 #------------------------------------------------------------------------------
 
@@ -45,18 +72,18 @@ link_libraries(Lumino_Static)
 
 #------------------------------
 # Shared library.
-add_library(LNote SHARED ${LN_SOURCES})
-set_target_properties(LNote PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-set_target_properties(LNote PROPERTIES DEBUG_POSTFIX "_d")
-set_target_properties(LNote PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
-set_target_properties(LNote PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-target_link_libraries(LNote ${LN_LINK_LIBS})
+add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_OUTPUT_POSTFIX})
+set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
+set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
+target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 add_custom_command(
-	TARGET LNote
+	TARGET ${PROJECT_NAME}
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LNote> "${PROJECT_SOURCE_DIR}")
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
 add_custom_command(
-	TARGET LNote
+	TARGET ${PROJECT_NAME}
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_LINKER_FILE:LNote> "${PROJECT_SOURCE_DIR}")
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_LINKER_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
 

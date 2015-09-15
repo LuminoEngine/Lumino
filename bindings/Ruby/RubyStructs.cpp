@@ -1,5 +1,4 @@
-﻿
-#include "ruby.h"
+﻿#include "LuminoRuby.h"
 
 VALUE g_struct_Vector2;
 VALUE g_struct_Vector3;
@@ -10,6 +9,7 @@ VALUE g_struct_Quaternion;
 
 void InitStructs()
 {
+	/*
     g_struct_Vector2 = rb_define_class_under(g_luminoModule, "Vector2", rb_cObject);
     rb_define_alloc_func(g_struct_Vector2, LNVector2_allocate);
     rb_define_private_method(g_struct_Vector2, "initialize", LN_TO_RUBY_FUNC(LNVector2_struct_initialize), -1);
@@ -29,7 +29,7 @@ void InitStructs()
     g_struct_Quaternion = rb_define_class_under(g_luminoModule, "Quaternion", rb_cObject);
     rb_define_alloc_func(g_struct_Quaternion, LNQuaternion_allocate);
     rb_define_private_method(g_struct_Quaternion, "initialize", LN_TO_RUBY_FUNC(LNQuaternion_struct_initialize), -1);
-
+*/
 
 }
 

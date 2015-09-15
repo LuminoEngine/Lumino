@@ -645,4 +645,4 @@ endif()
 
 #------------------------------
 # 
-#add_subdirectory(bindings/LightNote)
+add_subdirectory(bindings/src)
