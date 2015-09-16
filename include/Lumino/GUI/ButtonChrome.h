@@ -43,11 +43,11 @@ public:
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 private:
-	RefPtr<Graphics::TextureBrush>	m_brush;
-	RefPtr<Graphics::TextureBrush>	m_bgBrush;
+	RefPtr<TextureBrush>	m_brush;
+	RefPtr<TextureBrush>	m_bgBrush;
 	float							m_frameWidth;	///< 枠の幅 (描画で使用するためパフォーマンスを考慮し、GetValue() ではなくメンバに持っておく)
 	bool							m_isMouseOver;
 };

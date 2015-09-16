@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Color
@@ -151,5 +150,5 @@ ColorF HSVColor::ToColorF() const
 }
 
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -266,7 +266,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 protected:
 	UIElement(GUIManagerImpl* manager);

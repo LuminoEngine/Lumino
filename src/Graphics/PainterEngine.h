@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 template<typename T>
 class CacheBuffer
@@ -159,14 +158,14 @@ private:
 		Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
 
 		/// 頂点レイアウト
-		static Graphics::VertexElement* Elements()
+		static VertexElement* Elements()
 		{
-			static Graphics::VertexElement elements[] =
+			static VertexElement elements[] =
 			{
-				{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_Position, 0 },
-				{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_Color, 0 },
-				{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_TexCoord, 0 },
-				{ 0, Graphics::VertexElementType_Float2, Graphics::VertexElementUsage_TexCoord, 1 },
+				{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+				{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+				{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
+				{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
 			};
 			return elements;
 		}
@@ -208,5 +207,5 @@ private:
 	} m_shader;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

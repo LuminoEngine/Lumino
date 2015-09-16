@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Device
 {
 
@@ -39,5 +38,5 @@ protected:
 };
 
 } // namespace Device
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

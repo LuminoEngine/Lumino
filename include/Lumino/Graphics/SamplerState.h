@@ -3,8 +3,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// テクスチャフィルタ
 enum TextureFilterMode
@@ -43,5 +42,5 @@ public:
 	SamplerState();
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

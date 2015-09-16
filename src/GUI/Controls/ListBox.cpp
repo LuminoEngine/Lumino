@@ -254,14 +254,14 @@ ListBoxChrome::~ListBoxChrome()
 //-----------------------------------------------------------------------------
 void ListBoxChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	m_frameBrush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ListBoxNormalFrameBrush")));
-	m_bgBrush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ListBoxNormalBackgroundBrush")));
+	m_frameBrush = static_cast<TextureBrush*>(localResource->GetItem(_T("ListBoxNormalFrameBrush")));
+	m_bgBrush = static_cast<TextureBrush*>(localResource->GetItem(_T("ListBoxNormalBackgroundBrush")));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ListBoxChrome::OnRender(Graphics::Painter* painter)
+void ListBoxChrome::OnRender(Painter* painter)
 {
 	RectF bgRect = m_finalLocalRect;
 	RectF rect = m_finalLocalRect;

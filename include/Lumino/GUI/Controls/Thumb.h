@@ -109,11 +109,11 @@ protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
 	//virtual Size MeasureOverride(Size availableSize);	// 必要ないかも
 	//virtual Size ArrangeOverride(Size finalSize);		// 必要ないかも
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 private:
-	RefPtr<Graphics::TextureBrush>	m_bgFrameBrush;
-	RefPtr<Graphics::TextureBrush>	m_bgInnerBrush;
+	RefPtr<TextureBrush>	m_bgFrameBrush;
+	RefPtr<TextureBrush>	m_bgInnerBrush;
 
 	bool	m_renderMouseOver;
 	bool	m_renderPressed;

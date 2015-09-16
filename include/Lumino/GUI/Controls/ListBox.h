@@ -89,11 +89,11 @@ public:
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 private:
-	RefPtr<Graphics::TextureBrush>	m_frameBrush;
-	RefPtr<Graphics::TextureBrush>	m_bgBrush;
+	RefPtr<TextureBrush>	m_frameBrush;
+	RefPtr<TextureBrush>	m_bgBrush;
 	float							m_frameWidth;
 	bool							m_isMouseOver;
 };

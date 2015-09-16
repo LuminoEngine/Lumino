@@ -55,7 +55,7 @@ MMEShaderTechnique::~MMEShaderTechnique()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique* tech, MMEShaderErrorInfo* errorInfo)
+void MMEShaderTechnique::Initialize(MMEShader* shader, ShaderTechnique* tech, MMEShaderErrorInfo* errorInfo)
 {
 	m_errorInfo = errorInfo;
 	m_ownerShader = shader;
@@ -70,7 +70,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
     bool use_texture = false;
     bool use_sphere_map = false;
     bool use_toon = false;
-    Graphics::ShaderVariable* anno = NULL;
+    ShaderVariable* anno = NULL;
 
 	anno = m_technique->FindAnnotation(_T("MMDPass"));
     if (anno != NULL)
@@ -137,7 +137,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 
 	// 先に全ての Pass のコマンドリスト (入れ物) を作っておく。
 	// (スクリプト解析で "Pass" を見つけたときに検索できるようにするため)
-	LN_FOREACH(Graphics::ShaderPass* pass, m_technique->GetPasses())
+	LN_FOREACH(ShaderPass* pass, m_technique->GetPasses())
 	{
 		MMEShaderPass* mmePass = LN_NEW MMEShaderPass();
 		mmePass->m_pass = pass;
@@ -148,9 +148,9 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 	}
 
     // テクニックに "Script" アノテーションがあるかチェック 
-    Graphics::ShaderVariable* scriptAnno;
+    ShaderVariable* scriptAnno;
 	scriptAnno = m_technique->FindAnnotation(_T("Script"));
-	if (scriptAnno != NULL && scriptAnno->GetType() == Graphics::ShaderVariableType_String)
+	if (scriptAnno != NULL && scriptAnno->GetType() == ShaderVariableType_String)
     {
 		ParseScriptCommandString(scriptAnno, NULL, &m_scriptCommandList);
     }
@@ -167,7 +167,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, Graphics::ShaderTechnique
 	{
 		// "Script" アノテーションがあれば解析し、省略されている場合は "DrawGeometry" だけ追加する
 		scriptAnno = pass->m_pass->FindAnnotation(_T("Script"));
-		if (scriptAnno != NULL && scriptAnno->GetType() == Graphics::ShaderVariableType_String) {
+		if (scriptAnno != NULL && scriptAnno->GetType() == ShaderVariableType_String) {
 			ParseScriptCommandString(scriptAnno, pass->m_pass, &pass->m_scriptCommandList);
 		}
 		else {
@@ -256,7 +256,7 @@ MMEShaderPass* MMEShaderTechnique::FindMMEShaderPass(const TCHAR* passName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scriptAnno, Graphics::ShaderPass* thisPass, ShaderScriptCommandList* commandList)
+void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, ShaderPass* thisPass, ShaderScriptCommandList* commandList)
 {
     TCHAR* str = NULL;
     //char* s;
@@ -307,8 +307,8 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 						else
 						{
 							// 変数を検索し、コマンド化
-							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Texture) {
+							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
+							if (v != NULL && v->GetType() == ShaderVariableType_Texture) {
 								commandList->Add_RenderColorTarget(index, v);
 							}
 							else {
@@ -329,8 +329,8 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 						else
 						{
 							// 変数を検索し、コマンド化
-							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Texture) {
+							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
+							if (v != NULL && v->GetType() == ShaderVariableType_Texture) {
 								commandList->Add_RenderDepthStencilTarget(v);
 							}
 							else {
@@ -361,8 +361,8 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
-							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Vector)
+							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
+							if (v != NULL && v->GetType() == ShaderVariableType_Vector)
 							{
 								commandList->Add_ClearSetColor(v->GetVector());
 							}
@@ -384,8 +384,8 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
-							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Float)
+							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
+							if (v != NULL && v->GetType() == ShaderVariableType_Float)
 							{
 								commandList->Add_ClearSetDepth(v->GetFloat());
 							}
@@ -459,8 +459,8 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
-							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Int)
+							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
+							if (v != NULL && v->GetType() == ShaderVariableType_Int)
 							{
 								commandList->Add_LoopByCount(v->GetInt());
 							}
@@ -487,8 +487,8 @@ void MMEShaderTechnique::ParseScriptCommandString(Graphics::ShaderVariable* scri
 						int idx = StringTraits::IndexOf(cmdLine, _T("="));
 						if (idx != -1)
 						{
-							Graphics::ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == Graphics::ShaderVariableType_Int)
+							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
+							if (v != NULL && v->GetType() == ShaderVariableType_Int)
 							{
 								commandList->Add_LoopGetIndex(v);
 							}

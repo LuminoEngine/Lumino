@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Device
 {
 
@@ -405,5 +404,5 @@ void GLBackbufferRenderTarget::OnResetDevice()
 #endif
 
 } // namespace Device
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

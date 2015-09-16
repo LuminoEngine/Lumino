@@ -31,7 +31,7 @@ ApplicationImpl* ApplicationContext::GetCurrent()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Graphics::GraphicsManager* ApplicationContext::GetGraphicsManager()
+GraphicsManager* ApplicationContext::GetGraphicsManager()
 {
 	LN_CHECK_STATE_RETURNV(g_app != NULL, NULL);
 	return g_app->GetGraphicsManager();

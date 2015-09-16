@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 class SpriteRendererImpl
     : public RefObject
@@ -82,13 +81,13 @@ private:
 		Vector2		TexUV;      ///< テクスチャ座標
 
 		/// 頂点レイアウト
-		static Graphics::VertexElement* Elements()
+		static VertexElement* Elements()
 		{
-			static Graphics::VertexElement elements[] =
+			static VertexElement elements[] =
 			{
-				{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_Position, 0 },
-				{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_Color, 0 },
-				{ 0, Graphics::VertexElementType_Float2, Graphics::VertexElementUsage_TexCoord, 0 },
+				{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+				{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+				{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
 			};
 			return elements;
 		}
@@ -334,5 +333,5 @@ public:
 	};
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

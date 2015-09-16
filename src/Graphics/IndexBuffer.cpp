@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //-----------------------------------------------------------------------------
 //
@@ -90,5 +89,5 @@ void IndexBuffer::Unlock()
 //}
 
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

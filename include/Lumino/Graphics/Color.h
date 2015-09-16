@@ -8,8 +8,7 @@ namespace Lumino
 class Vector3;
 class Vector4;
 
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class ColorF;
 	
 /**
@@ -270,5 +269,5 @@ public:
 };
 
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

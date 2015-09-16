@@ -48,7 +48,7 @@ void Image::SetSource(const Variant& value)
 {
 	if (value.GetType() == VariantType_Object) 
 	{
-		auto tex = dynamic_cast<Graphics::Texture*>(value.GetObject());
+		auto tex = dynamic_cast<Texture*>(value.GetObject());
 		if (tex != NULL)
 		{
 			SetSourceTexture(tex);
@@ -62,7 +62,7 @@ void Image::SetSource(const Variant& value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Image::SetSourceTexture(Graphics::Texture* texture)
+void Image::SetSourceTexture(Texture* texture)
 {
 	m_texture = texture;
 	UpdateInternalSourceRect();
@@ -129,7 +129,7 @@ SizeF Image::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Image::OnRender(Graphics::Painter* painter)
+void Image::OnRender(Painter* painter)
 {
 	if (m_texture == NULL) { return; }
 

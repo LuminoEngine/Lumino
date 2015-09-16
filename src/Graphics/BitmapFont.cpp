@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Font
@@ -181,11 +180,11 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code)
 	// 一時ビットマップへ転送してそれを返す
 	Rect dstRect(0, 0, m_charWidth, m_charHeight);
 	Rect srcRect((utf32code % 16) * m_charWidth, (utf32code / 16) * m_charHeight, m_charWidth, m_charHeight);
-	m_glyphBitmap->BitBlt(dstRect, m_fontBitmap, srcRect, Graphics::Color::White, false);
+	m_glyphBitmap->BitBlt(dstRect, m_fontBitmap, srcRect, Color::White, false);
 
 	return &m_fontGlyphBitmap;
 }
 
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

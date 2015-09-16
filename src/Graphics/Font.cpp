@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Font
@@ -24,6 +23,6 @@ Font::Font()
 Font::~Font()
 {
 }
-	
-} // namespace Graphics
+
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

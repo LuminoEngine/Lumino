@@ -11,8 +11,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //-----------------------------------------------------------------------------
 //
@@ -176,7 +175,7 @@ void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Renderer::Clear(Graphics::ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	LN_CALL_RENDERER_COMMAND(Clear, ClearCommand, flags, color, z, stencil);
 }
@@ -220,5 +219,5 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 	m_primaryCommandList = t;
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

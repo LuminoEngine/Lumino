@@ -7,8 +7,8 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
+
 /**
 	@brief	マテリアルのクラスです。
 */
@@ -42,10 +42,10 @@ public:
 	ColorF						Emissive;			///< 物体の発光色 ( 光源の影響を受けない色 )
 	float						Power;				///< 光沢の強さ
 
-	RefPtr<Graphics::Shader>	Shader;				///< シェーダ
-	RefPtr<Graphics::Texture>	Texture;			///< テクスチャ
-	RefPtr<Graphics::Texture>	ToonTexture;		///< [PMD] トゥーンテクスチャ (getToonTexture() setToonTexture()でアクセスする)
-	RefPtr<Graphics::Texture>	SphereTexture;		///< [PMD] スフィアテクスチャ (getSphereTexture() setSphereTexture()でアクセスする)
+	RefPtr<Shader>				Shader;				///< シェーダ
+	RefPtr<Lumino::Texture>				Texture;			///< テクスチャ
+	RefPtr<Lumino::Texture>				ToonTexture;		///< [PMD] トゥーンテクスチャ (getToonTexture() setToonTexture()でアクセスする)
+	RefPtr<Lumino::Texture>				SphereTexture;		///< [PMD] スフィアテクスチャ (getSphereTexture() setSphereTexture()でアクセスする)
 
 	ColorF						ToonColor;			///< [PMD] トゥーンカラー
 	ColorF						EdgeColor;			///< [PMX] エッジカラー
@@ -76,5 +76,5 @@ public:
 	}
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

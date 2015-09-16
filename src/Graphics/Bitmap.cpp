@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Bitmap
@@ -104,7 +103,7 @@ void Bitmap::Init()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Graphics::Color& mulColor, bool alphaBlend)
+void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
 {
 	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.R, mulColor.G, mulColor.B, mulColor.A), alphaBlend);
 }
@@ -441,5 +440,5 @@ void Bitmap::BitBltInternal(
 #endif
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 class CompilationException
 	: public Exception
@@ -34,5 +33,5 @@ public:
 	virtual ~OpenGLException() throw();
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

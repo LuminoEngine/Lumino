@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class SpriteRendererImpl;
 
 /**
@@ -123,5 +122,5 @@ private:
 	SpriteRendererImpl*	m_internal;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -30,8 +30,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 
 namespace Internal
@@ -42,7 +41,7 @@ inline GraphicsManager* SelectManager(GraphicsManager* manager) { return (manage
 
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino
 
 #include "ApplicationContext.h"

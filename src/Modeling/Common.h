@@ -15,7 +15,7 @@ class ModelMorphCore;
 class ModelRigidBodyCore;
 class ModelJointCore;
 
-typedef Array<Graphics::Material>	MaterialList;
+typedef Array<Material>				MaterialList;
 typedef Array<ModelBoneCore*>		ModelBoneCoreList;
 typedef Array<ModelIKCore*>			ModelIKCoreList;
 typedef Array<ModelMorphCore*>		ModelMorphCoreList;
@@ -119,25 +119,25 @@ public:
 	float	Index;				///< 頂点インデックス値
 
 	/// 頂点レイアウト
-	static Graphics::VertexElement* Elements()
+	static VertexElement* Elements()
 	{
-		static Graphics::VertexElement elements[] = {
-			{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_Position, 0 },
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_BlendWeight, 0 },
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_BlendIndices, 0 },
-			{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_Normal, 0 },
-			{ 0, Graphics::VertexElementType_Float2, Graphics::VertexElementUsage_TexCoord, 0 },
+		static VertexElement elements[] = {
+			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_BlendWeight, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_BlendIndices, 0 },
+			{ 0, VertexElementType_Float3, VertexElementUsage_Normal, 0 },
+			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
 
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_TexCoord, 1 },
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_TexCoord, 2 },
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_TexCoord, 3 },
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_TexCoord, 4 },
-			{ 0, Graphics::VertexElementType_Float4, Graphics::VertexElementUsage_TexCoord, 5 },
-			{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_TexCoord, 6 },
-			{ 0, Graphics::VertexElementType_Float3, Graphics::VertexElementUsage_TexCoord, 7 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 1 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 2 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 3 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 4 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 5 },
+			{ 0, VertexElementType_Float3, VertexElementUsage_TexCoord, 6 },
+			{ 0, VertexElementType_Float3, VertexElementUsage_TexCoord, 7 },
 
-			{ 0, Graphics::VertexElementType_Float1, Graphics::VertexElementUsage_TexCoord, 8 },
-			{ 0, Graphics::VertexElementType_Float1, Graphics::VertexElementUsage_PointSize, 15 },
+			{ 0, VertexElementType_Float1, VertexElementUsage_TexCoord, 8 },
+			{ 0, VertexElementType_Float1, VertexElementUsage_PointSize, 15 },
 		};
 		return elements;
 	}

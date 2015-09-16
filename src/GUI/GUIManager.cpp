@@ -1131,7 +1131,7 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 	RegisterFactory(Rectangle::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return Rectangle::internalCreateInstance(m); });
 
 	// GUI スキン
-	m_defaultSkinTexture.Attach(Graphics::Texture::Create(g_DefaultSkin_png_Data, g_DefaultSkin_png_Len, Graphics::TextureFormat_R8G8B8A8, 1, m_graphicsManager));
+	m_defaultSkinTexture.Attach(Texture::Create(g_DefaultSkin_png_Data, g_DefaultSkin_png_Len, TextureFormat_R8G8B8A8, 1, m_graphicsManager));
 	
 	// マウスカーソル
 	assert(LN_ARRAY_SIZE_OF(m_cursorImageTable) == CommonCursorImage::GetMemberCount());
@@ -1496,28 +1496,28 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 	// Brush (ボタン枠)
 	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 0, 32, 32));
 		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
 	}
 	// Brush (ボタン背景)
 	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
 	}
 	// Brush (ListBox 枠)
 	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 32, 32, 32));
 		m_defaultTheme->AddItem(_T("ListBoxNormalFrameBrush"), obj);
 	}
 	// Brush (ListBox 背景)
 	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());	//TODO:
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 32 + 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ListBoxNormalBackgroundBrush"), obj);
@@ -1546,14 +1546,14 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 	// Thumb (枠 Brush)
 	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 64, 32, 32));
 		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundFrameBrush"), obj);
 	}
 	// Thumb (枠背景 Brush)
 	{
-		RefPtr<Graphics::TextureBrush> obj(LN_NEW Graphics::TextureBrush());
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 64 + 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundInnerBrush"), obj);
@@ -1821,7 +1821,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 		auto mouseOnBackground = RefPtr<UIElementFactory>::Create(this);
 		mouseOnBackground->SetKeyName(_T("MouseOnBackground"));
 		mouseOnBackground->SetTypeName(_T("Rectangle"));
-		mouseOnBackground->SetPropertyValue(Shape::FillBrushProperty, Graphics::ColorBrush::Green);
+		mouseOnBackground->SetPropertyValue(Shape::FillBrushProperty, ColorBrush::Green);
 		pilePanel->AddChild(mouseOnBackground);
 
 		auto contentPresenter = RefPtr<UIElementFactory>::Create(this);

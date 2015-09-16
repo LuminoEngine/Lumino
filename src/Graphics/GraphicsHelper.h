@@ -9,11 +9,10 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 // internal クラス。公開禁止。
-class Helper
+class Helper	// TODO: GraphicsHelper
 {
 public:
 	inline static Device::IGraphicsDevice*	GetGraphicsDevice(GraphicsManager* manager) { return manager->m_graphicsDevice; }
@@ -32,5 +31,5 @@ public:
 	inline static TextLayoutResult*			GetGlyphData(GlyphRun* gr) { return gr->m_glyphData; }
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -3,8 +3,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// 合成方法を表します
 enum BlendMode
@@ -123,5 +122,5 @@ public:
 	// ・・・らしい。要確認。
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

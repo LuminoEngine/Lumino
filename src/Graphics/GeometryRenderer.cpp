@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // GeometryRenderer
@@ -312,5 +311,5 @@ void GeometryRendererCore::DrawRect(const RectF& destRect, const RectF& texUVRec
 		(float)destRect.X + destRect.Width, (float)destRect.Y + destRect.Height,	0.0f,	(float)texUVRect.X + texUVRect.Width,	(float)texUVRect.Y + texUVRect.Height,	color);
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // TextLayoutEngine
@@ -192,5 +191,5 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	}
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -10,8 +10,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Brush
@@ -744,5 +743,5 @@ void RenderTargetPainter::SetRenderTarget(Texture* renderTarget)
 {
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

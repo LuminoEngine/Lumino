@@ -31,8 +31,8 @@ public:
 
 	struct DrawParams
 	{
-		//Graphics::Renderer*			Renderer;
-		//Graphics::GeometryRenderer*	GeometryRenderer;
+		//Renderer*			Renderer;
+		//GeometryRenderer*	GeometryRenderer;
 		RenderingParams*			Params;
 		//int							SubsetCount;
 		SceneNode*					RenderingNode;
@@ -90,14 +90,14 @@ public:
 
 	/// レンダリングターゲットを設定する
 	/// (textureVariable を NULL にすると、デフォルト(コマンド開始時)にリセット)
-	void Add_RenderColorTarget(int index, Graphics::ShaderVariable* textureVariable);
+	void Add_RenderColorTarget(int index, ShaderVariable* textureVariable);
 
 	/// レンダリングターゲットを設定する
 	/// (textureVariable を NULL にすると、デフォルト(コマンド開始時)にリセット)
-	void Add_RenderDepthStencilTarget(Graphics::ShaderVariable* textureVariable);
+	void Add_RenderDepthStencilTarget(ShaderVariable* textureVariable);
 
 	/// レンダリングターゲットをクリアする色を設定する
-	void Add_ClearSetColor(const Vector4& color);		// TODO: このあたり、Graphics::IShaderVariable から getVector するように変更
+	void Add_ClearSetColor(const Vector4& color);		// TODO: このあたり、IShaderVariable から getVector するように変更
 
 	/// 深度バッファをクリアするZ値を設定する
 	void Add_ClearSetDepth(float depth);
@@ -113,7 +113,7 @@ public:
 
 	/// 指定したパスを実行する 
 	/// (他の描画コマンドを実行する。commandList を NULL にすると、Draw=Geometry のみを実行する)
-	void Add_Pass(Graphics::ShaderPass* pass, ShaderScriptCommandList* commandList);
+	void Add_Pass(ShaderPass* pass, ShaderScriptCommandList* commandList);
 
 	/// 指定した回数だけ、スクリプトの一部をループする
 	void Add_LoopByCount(int count);
@@ -122,13 +122,13 @@ public:
 	void Add_LoopEnd();
 
 	/// ループ中のループカウンタの値を、指定したパラメータに設定する
-	void Add_LoopGetIndex(Graphics::ShaderVariable* variable);
+	void Add_LoopGetIndex(ShaderVariable* variable);
 
 	/// オブジェクトを描画する
-	void Add_DrawGeometry(Graphics::ShaderPass* pass);
+	void Add_DrawGeometry(ShaderPass* pass);
 
 	/// レンダリングターゲットのスクリーンと一致するサイズの、長方形のポリゴンを描画する
-	void Add_DrawBuffer(Graphics::ShaderPass* pass);
+	void Add_DrawBuffer(ShaderPass* pass);
 
 private:
 
@@ -136,7 +136,7 @@ private:
 	int InternalExecute(DrawParams& param, int programCounter, int currentLoopCount);
 
 	/// Draw=Geometry
-	void DrawGeometry(DrawParams& param, Graphics::ShaderPass* pass);
+	void DrawGeometry(DrawParams& param, ShaderPass* pass);
 
 	/// 現在のレンダリングターゲット等の状態を記憶
 	void PushCurrentState(DrawParams& param);
@@ -174,12 +174,12 @@ private:
 			struct
 			{
 				int							Index;
-				Graphics::ShaderVariable*	TextureVariable;	///< レンダリングターゲットを保持しているシェーダ変数
+				ShaderVariable*	TextureVariable;	///< レンダリングターゲットを保持しているシェーダ変数
 			} RenderColorTarget;
 
 			struct
 			{
-				Graphics::ShaderVariable*	TextureVariable;	///< 深度バッファを保持しているシェーダ変数
+				ShaderVariable*	TextureVariable;	///< 深度バッファを保持しているシェーダ変数
 			} RenderDepthStencilTarget;
 
 			struct
@@ -194,7 +194,7 @@ private:
 
 			struct
 			{
-				Graphics::ShaderPass*		Pass;
+				ShaderPass*		Pass;
 				ShaderScriptCommandList*		CommandList;
 			} Pass;
 
@@ -205,17 +205,17 @@ private:
 
 			struct
 			{
-				Graphics::ShaderVariable*	Variable;			///< ループ回数を格納するシェーダ変数
+				ShaderVariable*	Variable;			///< ループ回数を格納するシェーダ変数
 			} LoopGetIndex;
 
 			struct
 			{
-				Graphics::ShaderPass*		Pass;
+				ShaderPass*		Pass;
 			} DrawGeometry;
 
 			struct
 			{
-				Graphics::ShaderPass*		Pass;
+				ShaderPass*		Pass;
 			} DrawBuffer;
 		};
 	};
@@ -230,12 +230,12 @@ private:
 	CommandListArray			m_childCommandListArray;
 	ShaderScriptCommandList*		m_parentList;					///< Pass の場合、親テクニックのコマンドリストを指す
 	int							m_scriptExternalColorPosition;	///< ScriptExternal=Color のある要素番号
-	Graphics::ColorF			m_clearColor;					///< "ClearSetColor=" で設定された値
+	ColorF			m_clearColor;					///< "ClearSetColor=" で設定された値
 	float						m_clearDepth;					///< "ClearSetDepth=" で設定された値
 
-	Graphics::Texture*			m_oldRenderTarget[Graphics::Renderer::MaxMultiRenderTargets];
-	Graphics::Texture*			m_oldDepthBuffer;
-	Graphics::ColorF			m_oldClearColor;
+	Texture*			m_oldRenderTarget[Renderer::MaxMultiRenderTargets];
+	Texture*			m_oldDepthBuffer;
+	ColorF			m_oldClearColor;
 	float						m_oldClearDepth;
 
 };

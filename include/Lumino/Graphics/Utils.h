@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief		
@@ -22,5 +21,5 @@ public:
 	static void WaitSaveScreenShot();
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

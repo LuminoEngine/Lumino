@@ -21,8 +21,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Shader
@@ -703,5 +702,5 @@ ShaderVariable* ShaderPass::FindAnnotation(const TCHAR* name, CaseSensitivity cs
 	return NULL;
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -29,22 +29,22 @@ public:
 	float GetOpacity(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Opacity; }
 
 	/// 乗算色の設定
-	void SetColorScale(const Graphics::ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = color; }
+	void SetColorScale(const ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = color; }
 
 	/// 乗算色の取得
-	const Graphics::ColorF& GetColorScale(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale; }
+	const ColorF& GetColorScale(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale; }
 
 	/// ブレンドカラーの設定
-	void SetBlendColor(const Graphics::ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor = color; }
+	void SetBlendColor(const ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor = color; }
 
 	/// ブレンドカラーの取得
-	const Graphics::ColorF& GetBlendColor(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor; }
+	const ColorF& GetBlendColor(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor; }
 
 	/// 色調の設定
-	void SetTone(const Graphics::Tone& tone, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Tone = tone; }
+	void SetTone(const Tone& tone, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Tone = tone; }
 
 	/// 色調の取得
-	const Graphics::Tone& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
+	const Tone& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
 
 	/// UV 変換行列の設定
 	void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
@@ -59,10 +59,10 @@ public:
 	MMEShader* GetShader(int subsetIndex = -1) { return m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader; }
 
 	/// 合成方法の設定
-	void SetBlendMode(Graphics::BlendMode mode) { m_renderState.Blend = mode; }
+	void SetBlendMode(BlendMode mode) { m_renderState.Blend = mode; }
 
 	/// 合成方法の取得
-	Graphics::BlendMode GetBlendMode() const { return m_renderState.Blend; }
+	BlendMode GetBlendMode() const { return m_renderState.Blend; }
 
 #if 0	// TODO:
 	/// 深度テストの有効設定
@@ -79,15 +79,15 @@ public:
 #endif
 
 	/// カリング方法の設定
-	void SetCullingMode(Graphics::CullingMode mode) { m_renderState.Culling = mode; }
+	void SetCullingMode(CullingMode mode) { m_renderState.Culling = mode; }
 
 	/// カリング方法の取得
-	Graphics::CullingMode GetCullingMode() const { return m_renderState.Culling; }
+	CullingMode GetCullingMode() const { return m_renderState.Culling; }
 
 public:
 
 
-	const Graphics::RenderState& GetRenderState() const { return m_renderState; }
+	const RenderState& GetRenderState() const { return m_renderState; }
 	int GetSubsetCount() const { return m_subsetCount; }
 	const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
@@ -103,7 +103,7 @@ public:
 	// IMMESubsetRenerer
 //	virtual void OnDrawSubset(int subsetIndex, void* userData, MMEShader* shader, pass) { DrawSubset(*((RenderingParams*)userData), subsetIndex); }
 
-	void DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, Graphics::ShaderPass* pass);
+	void DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 
 	virtual void DrawSubset(RenderingParams& params, int subsetIndex) = 0;
 
@@ -127,7 +127,7 @@ protected:
 	// いずれも、いわゆる設定の継承を考慮する必要があるもの。
 	// レンダリングステートなんかはサブセット単位で設定できるようにすることも可能だけど、
 	// 実際にサブセット単位で設定したいことってあるの？って考えるとノード単位でいいと思う。
-	Graphics::RenderState	m_renderState;	///< レンダリングステート
+	RenderState	m_renderState;	///< レンダリングステート
 	bool					m_isVisible;
 
 	LightNodeList			m_affectLightList;

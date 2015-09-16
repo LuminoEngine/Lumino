@@ -54,12 +54,12 @@ public:
 	/** @} */
 
 public:
-	void SetSourceTexture(Graphics::Texture* texture);
+	void SetSourceTexture(Texture* texture);
 
 protected:
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 private:
 	void UpdateInternalSourceRect();
@@ -67,7 +67,7 @@ private:
 private:
 	Variant	m_source;
 
-	RefPtr<Graphics::Texture>	m_texture;
+	RefPtr<Texture>	m_texture;
 	Rect						m_srcRect;
 	Stretch						m_stretch;
 	Rect						m_internalSrcRect;

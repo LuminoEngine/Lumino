@@ -15,7 +15,7 @@ class Shape
 	LN_CORE_OBJECT_TYPE_INFO_DECL();	// TODO: LN_UI_ELEMENT_SUBCLASS_DECL にまとめたい
 	LN_UI_ELEMENT_SUBCLASS_DECL(Shape);
 public:
-	LN_PROPERTY(Graphics::Brush*, FillBrushProperty);	/**< FillBrush プロパティの識別子 */
+	LN_PROPERTY(Brush*, FillBrushProperty);	/**< FillBrush プロパティの識別子 */
 
 public:
 
@@ -24,10 +24,10 @@ public:
 	/** @{ */
 
 	/** 図形内部の塗りつぶしに使用するブラシを設定します。*/
-	void SetFillBrush(Graphics::Brush* size) { SetTypedPropertyValue<Graphics::Brush*>(SizeProperty, size); }
+	void SetFillBrush(Brush* size) { SetTypedPropertyValue<Brush*>(SizeProperty, size); }
 
 	/** 図形内部の塗りつぶしに使用するブラシを取得します。*/
-	Graphics::Brush* GetFillBrush() const { return GetTypedPropertyValue<Graphics::Brush*>(SizeProperty); }
+	Brush* GetFillBrush() const { return GetTypedPropertyValue<Brush*>(SizeProperty); }
 
 	/** @} */
 
@@ -36,7 +36,7 @@ protected:
 	virtual ~Shape();
 
 protected:
-	RefPtr<Graphics::Brush>	m_fillBrush;
+	RefPtr<Brush>	m_fillBrush;
 };
 
 /**
@@ -58,7 +58,7 @@ public:
 protected:
 	Rectangle(GUIManagerImpl* manager);
 	virtual ~Rectangle();
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 public:
 };

@@ -57,7 +57,7 @@ void Sprite::Initialize(SpriteCoord spriteCoord)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::SetTexture(Graphics::Texture* texture)
+void Sprite::SetTexture(Texture* texture)
 {
 	m_visualNodeParams.GetSubsetParams(0).Material.Texture = texture;
 	UpdateTexUV();
@@ -67,7 +67,7 @@ void Sprite::SetTexture(Graphics::Texture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Graphics::Texture* Sprite::GetTexture() const
+Texture* Sprite::GetTexture() const
 {
 	return m_visualNodeParams.GetSubsetParams(0).Material.Texture;
 }
@@ -87,7 +87,7 @@ void Sprite::SetSrcRect(const Rect& rect)
 //-----------------------------------------------------------------------------
 void Sprite::UpdateTexUV()
 {
-	Graphics::Texture* tex = GetTexture();
+	Texture* tex = GetTexture();
 	if (tex)
 	{
 		// 転送元矩形が負値ならテクスチャ全体を転送する
@@ -149,7 +149,7 @@ void Sprite::UpdateVertexData()
 	{
 		if (m_srcRect.Width < 0.0 && m_srcRect.Height < 0.0)
 		{
-			Graphics::Texture* tex = GetTexture();
+			Texture* tex = GetTexture();
 			if (tex)
 				realSize.Set((float)tex->GetSize().Width, (float)tex->GetSize().Height);
 			else
@@ -230,10 +230,10 @@ void Sprite::DrawSubset(RenderingParams& params, int subsetIndex)
 	if (subsetIndex == 0)
 	{
 		params.GeometryRenderer->DrawSquare(
-			m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, Graphics::ColorF::White,
-			m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, Graphics::ColorF::White,
-			m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, Graphics::ColorF::White,
-			m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, Graphics::ColorF::White);
+			m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
+			m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
+			m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White,
+			m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, ColorF::White);
 	}
 }
 

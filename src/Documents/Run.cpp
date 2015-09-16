@@ -21,7 +21,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Run, Inline);
 Run::Run(DocumentsManager* manager)
 	: Inline(manager)
 {
-	m_glyphRun.Attach(LN_NEW Graphics::GlyphRun());
+	m_glyphRun.Attach(LN_NEW GlyphRun());
 }
 
 //-----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ Run::Run(const String& text, DocumentsManager* manager)
 	: Inline(manager)
 	, m_text()
 {
-	m_glyphRun.Attach(LN_NEW Graphics::GlyphRun());
+	m_glyphRun.Attach(LN_NEW GlyphRun());
 	SetText(text);
 }
 
@@ -64,12 +64,12 @@ Size Run::Measure()
 	{
 		UpdateFontData();
 
-		RefPtr<Graphics::Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData);
-		Graphics::Helper::AttachGlyphTextureCache(m_glyphRun, cache);
+		RefPtr<Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData);
+		Helper::AttachGlyphTextureCache(m_glyphRun, cache);
 	}
 
-	auto* glyphData = Graphics::Helper::GetGlyphData(m_glyphRun);
-	auto* cache = Graphics::Helper::GetGlyphTextureCache(m_glyphRun);
+	auto* glyphData = Helper::GetGlyphData(m_glyphRun);
+	auto* cache = Helper::GetGlyphTextureCache(m_glyphRun);
 
 	cache->Measure(m_text.GetCStr(), m_text.GetLength(), glyphData);
 	return glyphData->AreaSize;

@@ -32,7 +32,7 @@ public:
 	LayerList* GetLayerList() { return &m_layerList; }
 
 	/// 描画
-	void Render(Graphics::Texture* renderTarget);
+	void Render(Texture* renderTarget);
 
 	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
 	bool InjectMouseMove(int x, int y);

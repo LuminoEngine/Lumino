@@ -9,6 +9,7 @@
 #include <Lumino/Graphics/Font.h>
 #include "TextLayoutEngine.h"	// TODO
 
+
 LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
 
 class FontGlyphTextureCache
@@ -50,11 +51,10 @@ private:
 
 LN_END_INTERNAL_NAMESPACE
 
-namespace Lumino
-{
-namespace Graphics
-{
-
+//namespace Lumino
+//{
+//LN_NAMESPACE_GRAPHICS_BEGIN
+//
 #if 0
 /**
 	@file	文字列の描画を行うクラスです。
@@ -147,5 +147,5 @@ private:
 #endif
 
 
-} // namespace Graphics
-} // namespace Lumino
+//LN_NAMESPACE_GRAPHICS_END
+

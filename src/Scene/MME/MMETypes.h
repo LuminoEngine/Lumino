@@ -400,7 +400,7 @@ enum MMEScriptCommandExistFlag
 class MMEShaderVariable
 {
 public:
-    Graphics::ShaderVariable*	Variable;			///< シェーダ変数
+    ShaderVariable*				Variable;			///< シェーダ変数
     MMEVariableRequest			Request;			///< 変数が要求しているものの種類
 	//SceneNode*				ControlObject;      ///< CONTROLOBJECT の参照対象 (新しいオブジェクトが Scene に追加されたときに再取得する)
     String						ObjectName;			///< CONTROLOBJECT の name アノテーションの値

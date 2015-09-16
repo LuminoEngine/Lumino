@@ -73,8 +73,8 @@ public:
 		if (contentPos == 0) { return 0; }
 		int c = contentPos - 1;
 		UpdateGlyphRuns();
-		Graphics::TextLayoutResult* r = Graphics::Helper::GetGlyphData(m_glyphRun);
-		Graphics::FontGlyphLocation* loc = &r->Items[c].Location;
+		TextLayoutResult* r = Helper::GetGlyphData(m_glyphRun);
+		FontGlyphLocation* loc = &r->Items[c].Location;
 		return loc->OuterTopLeftPosition.X + loc->BitmapSize.Width;
 	}
 
@@ -83,7 +83,7 @@ public:
 	int GetContentIndexFromPixel(const Point& localPt)
 	{
 		//const Array<Graphics::TextLayoutResultItem>& items = m_glyphRun->GetImtes();
-		const Array<Graphics::TextLayoutResultItem>& items = Graphics::Helper::GetGlyphData(m_glyphRun)->Items;
+		const Array<TextLayoutResultItem>& items = Helper::GetGlyphData(m_glyphRun)->Items;
 
 		for (int i = 0; i < items.GetCount(); ++i)
 		{
@@ -119,7 +119,7 @@ public:
 	GenericStringBuilderCore<UTF32>	m_utf32Text;
 	//int				m_realCharCount;
 
-	RefPtr<Graphics::GlyphRun>		m_glyphRun;	// 本来なら View と分けるべき。ただ、今回はシンプル重視で。
+	RefPtr<GlyphRun>		m_glyphRun;	// 本来なら View と分けるべき。ただ、今回はシンプル重視で。
 	bool			m_textModified;
 };
 
@@ -147,7 +147,7 @@ public:
 		m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
 	}
 
-	void SetFontGlyphTextureCache(Graphics::Internal::FontGlyphTextureCache* cache)
+	void SetFontGlyphTextureCache(Internal::FontGlyphTextureCache* cache)
 	{
 		m_glyphTextureCache = cache;
 		for (auto& seg : m_lineSegments) {
@@ -155,7 +155,7 @@ public:
 		}
 	}
 
-	Graphics::Internal::FontGlyphTextureCache* GetFontGlyphTextureCache()
+	Internal::FontGlyphTextureCache* GetFontGlyphTextureCache()
 	{
 		return m_glyphTextureCache;
 	}
@@ -311,7 +311,7 @@ public:
 	}
 
 	// 選択範囲を描画する。ブラシはあらかじめセットしておくこと。
-	void RenderSelection(Graphics::Painter* painter, const Selection* sel)
+	void RenderSelection(Painter* painter, const Selection* sel)
 	{
 		if (m_selectionRenderingInfoModified)
 		{
@@ -329,7 +329,7 @@ public:
 					m_selectionRenderingInfo.StartLineRect.Y,
 					m_selectionRenderingInfo.EndLineRect.X - m_selectionRenderingInfo.StartLineRect.X,
 					m_selectionRenderingInfo.StartLineRect.Height);
-				painter->SetBrush(Graphics::ColorBrush::Blue);
+				painter->SetBrush(ColorBrush::Blue);
 				painter->DrawRectangle(rc);
 			}
 			else {
@@ -338,7 +338,7 @@ public:
 		}
 	}
 
-	void Render(Graphics::Painter* painter)
+	void Render(Painter* painter)
 	{
 		Point pt(0, 0);
 		for (auto& seg : m_lineSegments)
@@ -352,7 +352,7 @@ public:
 
 public:
 	Array< RefPtr<TextBox::LineSegment> >	m_lineSegments;
-	RefPtr<Graphics::Internal::FontGlyphTextureCache>	m_glyphTextureCache;
+	RefPtr<Internal::FontGlyphTextureCache>	m_glyphTextureCache;
 	EncodingConverter		m_TCharToUTF32Converter;
 	EncodingConverter		m_UTF32ToTCharConverter;
 	SelectionRenderingInfo	m_selectionRenderingInfo;
@@ -368,7 +368,7 @@ TextBox::LineSegment::LineSegment(Document* document, const TCHAR* str, int len)
 	: m_document(document)
 	, m_textModified(true)
 {
-	m_glyphRun.Attach(LN_NEW Graphics::GlyphRun());
+	m_glyphRun.Attach(LN_NEW GlyphRun());
 	m_utf32Text.Clear();
 	m_utf32Text.Append(m_document->m_TCharToUTF32Converter.Convert(str, len * sizeof(TCHAR)));
 }
@@ -380,7 +380,7 @@ void TextBox::LineSegment::UpdateGlyphRuns()
 {
 	if (m_textModified)
 	{
-		Graphics::Helper::AttachGlyphTextureCache(m_glyphRun, m_document->GetFontGlyphTextureCache());
+		Helper::AttachGlyphTextureCache(m_glyphRun, m_document->GetFontGlyphTextureCache());
 		m_glyphRun->Update(m_utf32Text.GetCStr(), m_utf32Text.GetLength());
 		m_textModified = false;
 	}
@@ -479,13 +479,13 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 {
 	if (GUIHelper::UIElement_GetInvalidateFlags(this).TestFlag(InvalidateFlags::Font))
 	{
-		Graphics::GraphicsManager::FontData fontData;
+		GraphicsManager::FontData fontData;
 		fontData.Family = GetFontFamily();
 		fontData.Size = GetFontSize();
 		fontData.IsBold = IsFontBold();
 		fontData.IsItalic = IsFontItalic();
 		fontData.IsAntiAlias = IsFontAntiAlias();
-		RefPtr<Graphics::Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData);
+		RefPtr<Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData);
 		m_document->SetFontGlyphTextureCache(cache);
 	}
 	return Control::MeasureOverride(constraint);
@@ -494,14 +494,14 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextBox::OnRender(Graphics::Painter* painter)
+void TextBox::OnRender(Painter* painter)
 {
 	Control::OnRender(painter);
 	m_document->RenderSelection(painter, m_selection);
 
 	
-	Graphics::Brush* brush = GetForeground();
-	if (brush == NULL) { brush = Graphics::ColorBrush::Black; }
+	Brush* brush = GetForeground();
+	if (brush == NULL) { brush = ColorBrush::Black; }
 	painter->SetBrush(brush);
 	m_document->Render(painter);
 
@@ -514,7 +514,7 @@ void TextBox::OnRender(Graphics::Painter* painter)
 	int caretHeight;
 	Point caretPos = m_document->GetCaretLocation(m_selection->Start + m_selection->Length, &caretHeight);
 	RectF caret((float)caretPos.X, (float)caretPos.Y, 1.0f, (float)caretHeight);
-	painter->SetBrush(Graphics::ColorBrush::Red);
+	painter->SetBrush(ColorBrush::Red);
 	painter->SetOpacity(m_caretAnimation->GetValue());
 	painter->DrawRectangle(caret);
 }

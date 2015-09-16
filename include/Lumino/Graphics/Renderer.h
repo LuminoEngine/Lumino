@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 class RenderingCommandList;
 class RenderingThread;
@@ -138,5 +137,5 @@ private:
 	Threading::Mutex		m_lockPresentCommandList;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

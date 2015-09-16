@@ -25,7 +25,7 @@ public:
 	{
 		Lumino::FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
-		Graphics::GraphicsManager*	GraphicsManager;
+		GraphicsManager*	GraphicsManager;
 		Modeling::ModelManager*		ModelManager;
 
 		ConfigData()
@@ -72,10 +72,10 @@ public:
 public:	// internal
 
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
-	Graphics::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	Modeling::ModelManager* GetModelManager() { return m_modelManager; }
-	Graphics::GeometryRenderer* GetGeometryRenderer() { return m_geometryRenderer; }
-	Graphics::Texture* GetDummyTexture() { return m_dummyTexture; }
+	GeometryRenderer* GetGeometryRenderer() { return m_geometryRenderer; }
+	Texture* GetDummyTexture() { return m_dummyTexture; }
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
@@ -97,10 +97,10 @@ private:
 
 	RefPtr<FileManager>					m_fileManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
-	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<GraphicsManager>	m_graphicsManager;
 	RefPtr<Modeling::ModelManager>		m_modelManager;
-	RefPtr<Graphics::GeometryRenderer>	m_geometryRenderer;
-	RefPtr<Graphics::Texture>			m_dummyTexture;
+	RefPtr<GeometryRenderer>	m_geometryRenderer;
+	RefPtr<Texture>			m_dummyTexture;
 
 	double								m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float								m_elapsedTime;			///< 前回フレームからの経過時間 (秒)

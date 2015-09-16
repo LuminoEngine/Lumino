@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief	 ビットマップへの描画を行うクラスです。
@@ -29,20 +28,20 @@ public:
 	/**
 		@brief		指定した色でビットマップ全体を塗りつぶします。
 	*/
-	void Clear(const Graphics::Color& color);
+	void Clear(const Color& color);
 
 	/**
 		@brief		矩形を塗りつぶします。
 	*/
-	void FillRectangle(const Rect& rect, const Graphics::Color& color);
+	void FillRectangle(const Rect& rect, const Color& color);
 
 private:
-	uint32_t GetColorByteSec(const Graphics::Color& color, PixelFormat format);
+	uint32_t GetColorByteSec(const Color& color, PixelFormat format);
 
 public:
 	Bitmap*	m_bitmap;
 
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

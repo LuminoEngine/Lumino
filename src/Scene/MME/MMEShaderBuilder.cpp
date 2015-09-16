@@ -138,7 +138,7 @@ static const char* gMMEAnnotationNames[ MME_MAX_ANNOTATIONS ] =
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, Graphics::Shader* coreShader, MMEShaderErrorInfo* errorInfo)
+MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo)
 {
 	MMEShaderBuilder builder(manager, coreShader, errorInfo);
 	builder.Build();
@@ -148,7 +148,7 @@ MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, Graphics::Shader
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MMEShaderBuilder::MMEShaderBuilder(SceneGraphManager* manager, Graphics::Shader* coreShader, MMEShaderErrorInfo* errorInfo)
+MMEShaderBuilder::MMEShaderBuilder(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo)
 	: m_mmeShader(NULL)
 	, m_errorInfo(NULL)
 {
@@ -167,7 +167,7 @@ void MMEShaderBuilder::Build()
 {
 	//-----------------------------------------------------
 	// シェーダプログラム内のすべての変数をチェックする
-	LN_FOREACH(Graphics::ShaderVariable* var, m_mmeShader->m_coreShader->GetVariables())
+	LN_FOREACH(ShaderVariable* var, m_mmeShader->m_coreShader->GetVariables())
 	{
 		// シェーダ変数。とりあえずでフォルト値を入れておく
 		MMEShaderVariable* sv = LN_NEW MMEShaderVariable();
@@ -213,7 +213,7 @@ void MMEShaderBuilder::Build()
 
 	//-----------------------------------------------------
 	// テクニック情報作成
-	LN_FOREACH(Graphics::ShaderTechnique* tech, m_mmeShader->m_coreShader->GetTechniques())
+	LN_FOREACH(ShaderTechnique* tech, m_mmeShader->m_coreShader->GetTechniques())
 	{
 		MMEShaderTechnique* sstech = LN_NEW MMEShaderTechnique();
 		sstech->Initialize(m_mmeShader, tech, m_errorInfo);
@@ -225,7 +225,7 @@ void MMEShaderBuilder::Build()
 //
 //-----------------------------------------------------------------------------
 void MMEShaderBuilder::CheckVariableRequest(
-	Graphics::ShaderVariable* var,
+	ShaderVariable* var,
 	MMEShaderVariable* sv,
 	MMEScriptOutput* script_output,
 	MMEScriptClass* script_class,
@@ -415,7 +415,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		/////////////////////////////////////// CONTROLOBJECT
 	case MME_SEMANTIC_CONTROLOBJECT:
 	{
-		Graphics::ShaderVariable* name_anno = GetAnnotationByName(var, _T("name"));
+		ShaderVariable* name_anno = GetAnnotationByName(var, _T("name"));
 		if (!name_anno) { // TODO: error name は必須
 			break;
 		}
@@ -423,7 +423,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		sv->ObjectName = name_anno->GetString();
 
 		// "item" をチェック
-		Graphics::ShaderVariable* anno = GetAnnotationByName(var, _T("item"));
+		ShaderVariable* anno = GetAnnotationByName(var, _T("item"));
 		if (anno)
 		{
 			const TCHAR* item = anno->GetString();
@@ -469,19 +469,19 @@ void MMEShaderBuilder::CheckVariableRequest(
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Tr;
 				}
-				else if (var->GetType() == Graphics::ShaderVariableType_Float)
+				else if (var->GetType() == ShaderVariableType_Float)
 				{
 					// 型が float の場合は表情
 					req = MME_VARREQ_CONTROLOBJECT_MorphBlend;
 					sv->ItemName = item;	// 操作対象の名前として覚えておく
 				}
-				else if (var->GetType() == Graphics::ShaderVariableType_Vector && var->GetColumns() >= 3)
+				else if (var->GetType() == ShaderVariableType_Vector && var->GetColumns() >= 3)
 				{
 					// float3 4 の場合はボーン位置
 					req = MME_VARREQ_CONTROLOBJECT_BoneOffset;
 					sv->ItemName = item;
 				}
-				else if (var->GetType() == Graphics::ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
+				else if (var->GetType() == ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
 				{
 					// matrix4x4 の場合はボーン行列
 					req = MME_VARREQ_CONTROLOBJECT_BoneMatrix;
@@ -494,22 +494,22 @@ void MMEShaderBuilder::CheckVariableRequest(
 		if (req == MME_VARREQ_NONE)
 		{
 			// 型が bool の場合
-			if (var->GetType() == Graphics::ShaderVariableType_Bool)
+			if (var->GetType() == ShaderVariableType_Bool)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_Visible;
 			}
 			// float の場合は拡大率
-			else if (var->GetType() == Graphics::ShaderVariableType_Float)
+			else if (var->GetType() == ShaderVariableType_Float)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_Scale;
 			}
 			// float3 or 4 の場合は位置
-			else if (var->GetType() == Graphics::ShaderVariableType_Vector && var->GetColumns() >= 3)
+			else if (var->GetType() == ShaderVariableType_Vector && var->GetColumns() >= 3)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_Position;
 			}
 			// matrix4x4 の場合はワールド行列
-			else if (var->GetType() == Graphics::ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
+			else if (var->GetType() == ShaderVariableType_Matrix && var->GetRows() == 4 && var->GetColumns() == 4)
 			{
 				req = MME_VARREQ_CONTROLOBJECT_World;
 			}
@@ -556,7 +556,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 		const TCHAR* scriptOrderName = NULL;
 		const TCHAR* script = NULL;
 
-		Graphics::ShaderVariable* anno = NULL;
+		ShaderVariable* anno = NULL;
 		anno = GetAnnotationByName(var, _T("ScriptClass"));
 		if (anno) {
 			scriptClassName = anno->GetString();
@@ -648,7 +648,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 	if (req == MME_VARREQ_NONE)
 	{
 		//if ( var_desc.Class == LN_SVC_OBJECT && var_desc.Type == LN_SVT_TEXTURE )
-		if (var->GetType() == Graphics::ShaderVariableType_Texture)
+		if (var->GetType() == ShaderVariableType_Texture)
 		{
 			req = MME_VARREQ_TEXTURE;
 		}
@@ -727,9 +727,9 @@ MMESemantic MMEShaderBuilder::GetMMESemanticBySemanticName(const String& name)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool MMEShaderBuilder::CheckAnnotationCameraOrLight(Graphics::ShaderVariable* var)
+bool MMEShaderBuilder::CheckAnnotationCameraOrLight(ShaderVariable* var)
 {
-	Graphics::ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
+	ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
 	if (!anno) {
 		return true;	// "Object" アノテーションが見つからなかった
 	}
@@ -743,9 +743,9 @@ bool MMEShaderBuilder::CheckAnnotationCameraOrLight(Graphics::ShaderVariable* va
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-int MMEShaderBuilder::CheckAnnotationGeometryOrLight(Graphics::ShaderVariable* var)
+int MMEShaderBuilder::CheckAnnotationGeometryOrLight(ShaderVariable* var)
 {
-	Graphics::ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
+	ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
 	if (!anno) {
 		return 0;	// "Object" アノテーションが見つからなかった
 	}
@@ -761,9 +761,9 @@ int MMEShaderBuilder::CheckAnnotationGeometryOrLight(Graphics::ShaderVariable* v
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Graphics::ShaderVariable* MMEShaderBuilder::GetAnnotationByName(Graphics::ShaderVariable* var, const TCHAR* name)
+ShaderVariable* MMEShaderBuilder::GetAnnotationByName(ShaderVariable* var, const TCHAR* name)
 {
-	LN_FOREACH(Graphics::ShaderVariable* anno, var->GetAnnotations())
+	LN_FOREACH(ShaderVariable* anno, var->GetAnnotations())
 	{
 		if (anno->GetName().Compare(name, -1, CaseSensitivity_CaseInsensitive)) {
 			return anno;

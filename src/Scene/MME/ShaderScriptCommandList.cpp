@@ -118,7 +118,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 		{
 		case COMMAND_RenderColorTarget:
 		{
-			if (cmd->RenderColorTarget.Index < 0 || cmd->RenderColorTarget.Index >= Graphics::Renderer::MaxMultiRenderTargets)
+			if (cmd->RenderColorTarget.Index < 0 || cmd->RenderColorTarget.Index >= Renderer::MaxMultiRenderTargets)
 			{
 				// レンダリングターゲットのインデックスが不正
 				return ValidationError_InvalidRenderTargetIndex;
@@ -228,7 +228,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::Add_RenderColorTarget(int index, Graphics::ShaderVariable* textureVariable)
+void ShaderScriptCommandList::Add_RenderColorTarget(int index, ShaderVariable* textureVariable)
 {
 	Command c;
 	c.Type = COMMAND_RenderColorTarget;
@@ -240,7 +240,7 @@ void ShaderScriptCommandList::Add_RenderColorTarget(int index, Graphics::ShaderV
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::Add_RenderDepthStencilTarget(Graphics::ShaderVariable* textureVariable)
+void ShaderScriptCommandList::Add_RenderDepthStencilTarget(ShaderVariable* textureVariable)
 {
 	Command c;
 	c.Type = COMMAND_RenderDepthStencilTarget;
@@ -309,7 +309,7 @@ void ShaderScriptCommandList::Add_ScriptExternal_Color()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::Add_Pass(Graphics::ShaderPass* pass, ShaderScriptCommandList* commandList)
+void ShaderScriptCommandList::Add_Pass(ShaderPass* pass, ShaderScriptCommandList* commandList)
 {
 	Command c;
 	c.Type = COMMAND_Pass;
@@ -342,7 +342,7 @@ void ShaderScriptCommandList::Add_LoopEnd()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::Add_LoopGetIndex(Graphics::ShaderVariable* variable)
+void ShaderScriptCommandList::Add_LoopGetIndex(ShaderVariable* variable)
 {
 	Command c;
 	c.Type = COMMAND_LoopGetIndex;
@@ -353,7 +353,7 @@ void ShaderScriptCommandList::Add_LoopGetIndex(Graphics::ShaderVariable* variabl
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::Add_DrawGeometry(Graphics::ShaderPass* pass)
+void ShaderScriptCommandList::Add_DrawGeometry(ShaderPass* pass)
 {
 	Command c;
 	c.Type = COMMAND_DrawGeometry;
@@ -364,7 +364,7 @@ void ShaderScriptCommandList::Add_DrawGeometry(Graphics::ShaderPass* pass)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::Add_DrawBuffer(Graphics::ShaderPass* pass)
+void ShaderScriptCommandList::Add_DrawBuffer(ShaderPass* pass)
 {
 	Command c;
 	c.Type = COMMAND_DrawBuffer;
@@ -423,12 +423,12 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_ClearColor:
 		{
-			params.Params->Renderer->Clear(Graphics::ClearFlags::Color, m_clearColor);
+			params.Params->Renderer->Clear(ClearFlags::Color, m_clearColor);
 			break;
 		}
 		case COMMAND_ClearDepth:
 		{
-			params.Params->Renderer->Clear(Graphics::ClearFlags::Depth, Graphics::ColorF::Transparency, m_clearDepth);
+			params.Params->Renderer->Clear(ClearFlags::Depth, ColorF::Transparency, m_clearDepth);
 			break;
 		}
 		case COMMAND_ScriptExternal_Color:
@@ -478,7 +478,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		}
 		case COMMAND_DrawBuffer:
 		{
-			//Graphics::RenderState state = params.Renderer->GetRenderState();
+			//RenderState state = params.Renderer->GetRenderState();
 			//state.DepthTest = false;
 			//state.DepthWrite = false;
 			//params.Renderer->setRenderState(state);
@@ -488,10 +488,10 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 			}
 
 			params.Params->GeometryRenderer->DrawSquare(
-				-1.0f,	1.0f,	0.0f,	0.0f, 0.0f, Graphics::ColorF::White,	// 左上
-				1.0f,	1.0f,	0.0f,	1.0f, 0.0f, Graphics::ColorF::White,	// 右上
-				-1.0f,	-1.0f,	0.0f,	0.0f, 1.0f, Graphics::ColorF::White,	// 左下
-				1.0f,	-1.0f,	0.0f,	1.0f, 1.0f, Graphics::ColorF::White);	// 右下
+				-1.0f,	1.0f,	0.0f,	0.0f, 0.0f, ColorF::White,	// 左上
+				1.0f,	1.0f,	0.0f,	1.0f, 0.0f, ColorF::White,	// 右上
+				-1.0f,	-1.0f,	0.0f,	0.0f, 1.0f, ColorF::White,	// 左下
+				1.0f,	-1.0f,	0.0f,	1.0f, 1.0f, ColorF::White);	// 右下
 			break;
 		}
 		}
@@ -502,7 +502,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderScriptCommandList::DrawGeometry(DrawParams& params, Graphics::ShaderPass* pass)
+void ShaderScriptCommandList::DrawGeometry(DrawParams& params, ShaderPass* pass)
 {
 	params.RenderingNode->DrawSubsetInternal(*params.Params, params.SubsetIndex, m_ownerShader, pass);
 #if 0
@@ -546,7 +546,7 @@ void ShaderScriptCommandList::DrawGeometry(DrawParams& params, Graphics::ShaderP
 void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 {
 	// 現在のレンダリングターゲット&深度バッファを記憶
-	for (int i = 0; i < Graphics::Renderer::MaxMultiRenderTargets; ++i)
+	for (int i = 0; i < Renderer::MaxMultiRenderTargets; ++i)
 	{
 		m_oldRenderTarget[i] = params.Params->Renderer->GetRenderTarget(i);
 		LN_SAFE_ADDREF(m_oldRenderTarget[i]);
@@ -568,7 +568,7 @@ void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 void ShaderScriptCommandList::PopCurrentState(DrawParams& params)
 {
 	// レンダリングターゲット&深度バッファを元に戻す
-	for (int i = 0; i < Graphics::Renderer::MaxMultiRenderTargets; ++i)
+	for (int i = 0; i < Renderer::MaxMultiRenderTargets; ++i)
 	{
 		params.Params->Renderer->SetRenderTarget(i, m_oldRenderTarget[i]);
 		LN_SAFE_RELEASE(m_oldRenderTarget[i]);

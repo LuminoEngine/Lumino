@@ -13,11 +13,11 @@ namespace Internal
 /// サブセット単位の描画パラメータ
 struct VisualNodeSubsetParams
 {
-    Graphics::Material		Material;       ///< 描画オブジェクトのマテリアル
+    Material		Material;       ///< 描画オブジェクトのマテリアル
     float					Opacity;        ///< 不透明度 (0.0 ～ 1.0) (シェーダに乗算色を送るとき、そのα値に乗算される)
-	Graphics::ColorF		ColorScale;     ///< 乗算色
-	Graphics::ColorF		BlendColor;     ///< ブレンド色
-	Graphics::Tone			Tone;           ///< 色調
+	ColorF		ColorScale;     ///< 乗算色
+	ColorF		BlendColor;     ///< ブレンド色
+	Tone			Tone;           ///< 色調
     Matrix					UVTransform;    ///< テクスチャ座標変換行列
 	MMEShader*				SceneShader;
 

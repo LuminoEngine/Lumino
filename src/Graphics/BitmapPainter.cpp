@@ -4,9 +4,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
-
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Bitmap
@@ -32,7 +30,7 @@ BitmapPainter::~BitmapPainter()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void BitmapPainter::Clear(const Graphics::Color& color)
+void BitmapPainter::Clear(const Color& color)
 {
 	FillRectangle(Rect(Point(0, 0), m_bitmap->GetSize()), color);
 }
@@ -40,7 +38,7 @@ void BitmapPainter::Clear(const Graphics::Color& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void BitmapPainter::FillRectangle(const Rect& rect, const Graphics::Color& color)
+void BitmapPainter::FillRectangle(const Rect& rect, const Color& color)
 {
 	Rect destRect = rect;
 	destRect.Clip(Rect(Point(0, 0), m_bitmap->GetSize()));
@@ -71,21 +69,21 @@ void BitmapPainter::FillRectangle(const Rect& rect, const Graphics::Color& color
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-uint32_t BitmapPainter::GetColorByteSec(const Graphics::Color& color, PixelFormat format)
+uint32_t BitmapPainter::GetColorByteSec(const Color& color, PixelFormat format)
 {
 	switch (format)
 	{
-	case Lumino::Graphics::PixelFormat_BYTE_R8G8B8A8:
+	case PixelFormat_BYTE_R8G8B8A8:
 	{
 		byte_t b[4] = { color.R, color.G, color.B, color.A };
 		return *((uint32_t*)b);
 	}
-	case Lumino::Graphics::PixelFormat_BYTE_B8G8R8A8:
+	case PixelFormat_BYTE_B8G8R8A8:
 	{
 		byte_t b[4] = { color.B, color.G, color.R, color.A };
 		return *((uint32_t*)b);
 	}
-	case Lumino::Graphics::PixelFormat_BYTE_B8G8R8X8:
+	case PixelFormat_BYTE_B8G8R8X8:
 	{
 		byte_t b[4] = { color.B, color.G, color.R, 0xFF };
 		return *((uint32_t*)b);
@@ -96,5 +94,5 @@ uint32_t BitmapPainter::GetColorByteSec(const Graphics::Color& color, PixelForma
 	LN_THROW(0, InvalidFormatException);
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

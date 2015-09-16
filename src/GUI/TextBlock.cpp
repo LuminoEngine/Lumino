@@ -80,7 +80,7 @@ SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextBlock::OnRender(Graphics::Painter* painter)
+void TextBlock::OnRender(Painter* painter)
 {
 	UIElement::OnRender(painter);
 	Documents::RenderTargetDocumentsRenderer r(painter);

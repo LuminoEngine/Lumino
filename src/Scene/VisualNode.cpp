@@ -184,7 +184,7 @@ void VisualNode::Render(RenderingParams& params)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, Graphics::ShaderPass* pass)
+void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, ShaderPass* pass)
 {
 	// シェーダのサブセット単位のデータを更新する
 	if (shader != NULL) {

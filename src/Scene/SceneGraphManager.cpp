@@ -127,12 +127,12 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 {
 	memset(m_mmdRenderingPasses, 0, sizeof(m_mmdRenderingPasses));
 
-	m_geometryRenderer.Attach(Graphics::GeometryRenderer::Create(m_graphicsManager), false);
+	m_geometryRenderer.Attach(GeometryRenderer::Create(m_graphicsManager), false);
 
 	// ダミーテクスチャ
-	m_dummyTexture.Attach(Graphics::Texture::Create(Size(32, 32)));
-	Graphics::BitmapPainter painter(m_dummyTexture->Lock());
-	painter.Clear(Graphics::Color::White);
+	m_dummyTexture.Attach(Texture::Create(Size(32, 32)));
+	BitmapPainter painter(m_dummyTexture->Lock());
+	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
 
 	// RenderingPass に割り当てる ID

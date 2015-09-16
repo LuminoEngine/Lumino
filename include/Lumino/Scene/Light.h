@@ -27,22 +27,22 @@ public:
 	bool IsEnabled() const { return m_enabled; }
 
 	/// ディフューズカラーの設定
-	void SetDiffuseColor(const Graphics::ColorF& color) { m_diffuse = color; }
+	void SetDiffuseColor(const ColorF& color) { m_diffuse = color; }
 
 	/// ディフューズカラーの取得
-	const Graphics::ColorF& GetDiffuseColor() const { return m_diffuse; }
+	const ColorF& GetDiffuseColor() const { return m_diffuse; }
 
 	/// アンビエントカラーの設定
-	void SetAmbientColor(const Graphics::ColorF& color) { m_ambient = color; }
+	void SetAmbientColor(const ColorF& color) { m_ambient = color; }
 
 	/// アンビエントカラーの取得
-	const Graphics::ColorF& GetAmbientColor() const { return m_ambient; }
+	const ColorF& GetAmbientColor() const { return m_ambient; }
 
 	/// スペキュラカラーの設定
-	void SetSpecularColor(const Graphics::ColorF& color) { m_specular = color; }
+	void SetSpecularColor(const ColorF& color) { m_specular = color; }
 
 	/// スペキュラカラーの取得
-	const Graphics::ColorF& GetSpecularColor() const { return m_specular; }
+	const ColorF& GetSpecularColor() const { return m_specular; }
 
 	/// スポットライトのコーン角度の設定 (ラジアン単位)
 	void SetSpotAngle(float angle) { m_spotAngle = angle; }
@@ -79,9 +79,9 @@ private:
 	friend class VisualNode;
 
 	LightType			m_type;				///< ライトの種類
-	Graphics::ColorF	m_diffuse;			///< ディフューズカラー
-	Graphics::ColorF	m_ambient;			///< アンビエントカラー
-	Graphics::ColorF	m_specular;			///< スペキュラカラー
+	ColorF	m_diffuse;			///< ディフューズカラー
+	ColorF	m_ambient;			///< アンビエントカラー
+	ColorF	m_specular;			///< スペキュラカラー
 	bool				m_enabled;			///< 有効状態
 	float				m_spotAngle;		///< コーン角度 (ラジアン単位)
 

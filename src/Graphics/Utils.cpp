@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 	
 //=============================================================================
 // Utils
@@ -38,5 +37,5 @@ PixelFormat Utils::TranslatePixelFormat(TextureFormat textureFormat)
 	return table[textureFormat];
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

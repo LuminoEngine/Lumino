@@ -11,10 +11,10 @@ namespace Internal
 {
 
 class GUIPainter
-	: public Graphics::Painter
+	: public Painter
 {
 public:
-	GUIPainter(Graphics::GraphicsManager* manager);
+	GUIPainter(GraphicsManager* manager);
 	virtual ~GUIPainter();
 
 public:

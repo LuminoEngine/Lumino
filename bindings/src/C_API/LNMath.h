@@ -18,14 +18,14 @@ LN_MODULE(Math)
 LN_STRUCT_CLASS(LNVector2)
 
 	/**
-		@brief		2D ベクトルを初期化します。
+		@brief		2D ベクトルに値を設定します。
+		@param[in]	vec		: 値を格納する 2D ベクトル変数のアドレス
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
-		@param[out]	vec		: 値を格納する 2D ベクトル
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector2_Create(float x, float y, LN_OUT LNVector2* vec);
+	LNResult LNVector2_Set(LNVector2* vec, float x, float y);
 
 	/**
 		@brief		2D ベクトルの長さを計算します。
@@ -73,25 +73,25 @@ LN_CLASS_END
 LN_STRUCT_CLASS(LNVector3)
 
 	/**
-		@brief		3Dベクトルを初期化します。
+		@brief		3Dベクトルに値を設定します。
+		@param[in]	vec		: 値を格納する 3D ベクトル変数のアドレス
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
 		@param[in]	z		: Z 値
-		@param[out]	vec		: 値を格納する 3Dベクトル 変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector3_Create(float x, float y, float z, LN_OUT LNVector3* vec);
+	LNResult LNVector3_Set(LNVector3* vec, float x, float y, float z);
 
 	/**
-		@brief		2D ベクトル と Z値 を指定して、3Dベクトルを初期化します。
+		@brief		2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
+		@param[out]	vec		: 値を格納する 3Dベクトル 変数のアドレス
 		@param[in]	vec2	: 2D ベクトル
 		@param[in]	z		: Z 値
-		@param[out]	vec		: 値を格納する 3Dベクトル 変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector3_CreateVZ(const LNVector2* vec2, float z, LN_OUT LNVector3* vec);
+	LNResult LNVector3_SetVZ(LNVector3* vec, const LNVector2* vec2, float z);
 
 	/**
 		@brief		3Dベクトルの長さを計算する
@@ -224,16 +224,16 @@ LN_CLASS_END
 LN_STRUCT_CLASS(LNVector4)
 
 	/**
-		@brief		4Dベクトルを初期化します。
+		@brief		4Dベクトルに値を設定します。
+		@param[in]	vec		: 値を格納する4Dベクトル変数のアドレス
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
 		@param[in]	z		: Z 値
 		@param[in]	w		: W 値
-		@param[out]	vec		: 値を格納する4Dベクトル変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNVector4_Create(float x, float y, float z, float w, LN_OUT LNVector4* vec);
+	LNResult LNVector4_Set(LNVector4* vec, float x, float y, float z, float w);
 
 LN_CLASS_END
 
@@ -534,16 +534,16 @@ LN_CLASS_END
 LN_STRUCT_CLASS(LNQuaternion)
 
 	/**
-		@brief		クォータニオンを初期化します。
+		@brief		クォータニオンに値を設定します。
+		@param[in]	qua		: 値を格納する Quaternion 変数のアドレス
 		@param[in]	x		: X 値
 		@param[in]	y		: Y 値
 		@param[in]	z		: Z 値
 		@param[in]	w		: W 値
-		@param[out]	qua		: 値を格納する Quaternion 変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNQuaternion_Create(float x, float y, float z, float w, LN_OUT LNQuaternion* qua);
+	LNResult LNQuaternion_Set(LNQuaternion* qua, float x, float y, float z, float w);
 
 	/**
 		@brief		単位クォータニオンを作成する

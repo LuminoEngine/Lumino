@@ -269,7 +269,7 @@ SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::OnRender(Graphics::Painter* painter)
+void UIElement::OnRender(Painter* painter)
 {
 }
 

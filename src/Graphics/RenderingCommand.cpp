@@ -14,8 +14,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 
 //=============================================================================
@@ -161,5 +160,5 @@ void* RenderingCommandList::GetExtData(DataHandle bufferIndex)
 	return &(m_extDataBuffer.GetData()[bufferIndex]);
 }
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

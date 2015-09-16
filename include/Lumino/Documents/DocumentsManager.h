@@ -29,7 +29,7 @@ class DocumentsManager
 public:
 	struct ConfigData
 	{
-		Graphics::GraphicsManager*	GraphicsManager;
+		GraphicsManager*	GraphicsManager;
 
 		ConfigData()
 			: GraphicsManager(NULL)
@@ -41,12 +41,12 @@ public:
 	virtual ~DocumentsManager();
 
 public:
-	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager の使えばいいかも
 	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 	
 private:
-	Graphics::GraphicsManager*	m_graphicsManager;
+	GraphicsManager*	m_graphicsManager;
 	EncodingConverter		m_TCharToUTF32Converter;
 	EncodingConverter		m_UTF32ToTCharConverter;
 };

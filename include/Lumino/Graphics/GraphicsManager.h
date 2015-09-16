@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class Renderer;
 class RenderingThread;
 class PainterEngine;
@@ -129,5 +128,5 @@ private:
 	bool							m_platformTextureLoading;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

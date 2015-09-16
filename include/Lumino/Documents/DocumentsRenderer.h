@@ -20,20 +20,20 @@ protected:
 	virtual ~DocumentsRenderer() {}
 
 public:
-	virtual void OnDrawGlyphRun(Graphics::GlyphRun* glyphRun, const Point& point) = 0;
+	virtual void OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point) = 0;
 };
 
 class RenderTargetDocumentsRenderer
 	: public DocumentsRenderer
 {
 public:
-	RenderTargetDocumentsRenderer(Graphics::Painter* painter);
+	RenderTargetDocumentsRenderer(Painter* painter);
 	virtual ~RenderTargetDocumentsRenderer();
 
-	virtual void OnDrawGlyphRun(Graphics::GlyphRun* glyphRun, const Point& point);
+	virtual void OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point);
 
 private:
-	Graphics::Painter*	m_painter;
+	Painter*	m_painter;
 };
 
 } // namespace Documents

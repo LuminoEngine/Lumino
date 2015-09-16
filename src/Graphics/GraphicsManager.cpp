@@ -670,8 +670,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // GraphicsManager
@@ -937,5 +936,5 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* 
 //	return tr;
 //}
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

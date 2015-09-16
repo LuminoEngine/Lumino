@@ -13,8 +13,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// png ファイル
 class PngFile
@@ -290,5 +289,5 @@ private:
 	}
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

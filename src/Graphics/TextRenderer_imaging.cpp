@@ -15,8 +15,7 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 #if 0
 
 //=============================================================================
@@ -204,5 +203,5 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 
 #endif
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

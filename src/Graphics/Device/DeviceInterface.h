@@ -7,8 +7,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderState;
 class DepthStencilState;
 class SamplerState;
@@ -507,5 +506,5 @@ protected:
 };
 
 } // namespace Device
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

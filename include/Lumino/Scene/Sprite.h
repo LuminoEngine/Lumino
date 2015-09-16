@@ -25,10 +25,10 @@ public:
 	//void Create(/*SpriteCoord spriteCoord = SpriteCoord_RX, SceneGraphManager* manager = NULL*/);
 
 	/// テクスチャの設定
-	void SetTexture(Graphics::Texture* texture);
+	void SetTexture(Texture* texture);
 
 	/// テクスチャの取得
-	Graphics::Texture* GetTexture() const;
+	Texture* GetTexture() const;
 
 	/// サイズの設定
 	void SetSize(const SizeF& size) { m_size = size; UpdateVertexData(); }

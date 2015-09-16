@@ -24,7 +24,7 @@ public:
 	{
 		Lumino::FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
-		Graphics::GraphicsManager*	GraphicsManager;
+		GraphicsManager*			GraphicsManager;
 		int							ModelCoreCacheSize;
 		int							ModelCoreCacheMemorySize;
 
@@ -45,8 +45,8 @@ public:
 	void Initialize(const ConfigData& configData);
 	void Finalize();
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
-	Graphics::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	Graphics::Texture* GetMMDDefaultToonTexture(int index);
+	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	Texture* GetMMDDefaultToonTexture(int index);
 	
 	ModelCore* CreateModelCore(const PathName& filePath);
 	Animation::AnimationClip* CreateMotion(const PathName& filePath);
@@ -54,9 +54,9 @@ public:
 private:
 	RefPtr<Lumino::FileManager>			m_fileManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
-	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<GraphicsManager>	m_graphicsManager;
 	RefPtr<CacheManager>				m_cacheManager;
-	RefPtr<Graphics::Texture>			m_mmdDefaultToonTexture[10];
+	RefPtr<Texture>			m_mmdDefaultToonTexture[10];
 };
 
 } // namespace Modeling

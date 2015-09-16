@@ -13,8 +13,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // Font
@@ -904,6 +903,6 @@ void FreeTypeFont::rasterCallback(
 	}
 }
 #endif
-	
-} // namespace Graphics
+
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -3,7 +3,7 @@
 
 namespace Lumino
 {
-namespace Graphics { class GraphicsManager; }
+class GraphicsManager;
 class GUIManagerImpl;
 class ApplicationImpl;
 
@@ -12,10 +12,10 @@ class ApplicationImpl;
 class ApplicationContext
 {
 public:
-	static void							SetCurrent(ApplicationImpl* app);
-	static ApplicationImpl*				GetCurrent();
-	static Graphics::GraphicsManager*	GetGraphicsManager();
-	static GUIManagerImpl*					GetGUIManager();
+	static void					SetCurrent(ApplicationImpl* app);
+	static ApplicationImpl*		GetCurrent();
+	static GraphicsManager*		GetGraphicsManager();
+	static GUIManagerImpl*		GetGUIManager();
 
 	template<class T, typename... TArgs>
 	static T* CreateObject(TArgs... args)

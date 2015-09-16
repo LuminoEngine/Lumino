@@ -13,7 +13,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Shape, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Shape);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Shape, Graphics::Brush*, FillBrushProperty, "FillBrush", m_fillBrush, PropertyMetadata(NULL));
+LN_PROPERTY_IMPLEMENT(Shape, Brush*, FillBrushProperty, "FillBrush", m_fillBrush, PropertyMetadata(NULL));
 
 //-----------------------------------------------------------------------------
 //
@@ -63,7 +63,7 @@ Rectangle::~Rectangle()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Rectangle::OnRender(Graphics::Painter* painter)
+void Rectangle::OnRender(Painter* painter)
 {
 	if (m_fillBrush != NULL)
 	{

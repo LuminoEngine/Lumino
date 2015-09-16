@@ -21,10 +21,10 @@ class MMEShaderErrorInfo;
 class MMEShaderBuilder
 {
 public:
-	static MMEShader* Create(SceneGraphManager* manager, Graphics::Shader* coreShader, MMEShaderErrorInfo* errorInfo);
+	static MMEShader* Create(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo);
 
 private:
-	MMEShaderBuilder(SceneGraphManager* manager, Graphics::Shader* coreShader, MMEShaderErrorInfo* errorInfo);
+	MMEShaderBuilder(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo);
 	~MMEShaderBuilder();
 
 	void Build();
@@ -38,7 +38,7 @@ private:
 	///		ある場合のみ設定される。この関数の呼び出し側で sv_->Request == MME_VARREQ_STANDARDSGLOBAL と
 	///		チェック後、変数の中身を確認すること。
 	static void CheckVariableRequest(
-		Graphics::ShaderVariable* var,    // TODO: const化したい
+		ShaderVariable* var,    // TODO: const化したい
 		MMEShaderVariable* sv,
 		MMEScriptOutput* script_output,
 		MMEScriptClass* script_class,
@@ -50,13 +50,13 @@ private:
 
 	/// 変数の "Object" アノテーションを調べて、"Light" の場合は fales、それ以外("Camera") は true を返す
 	///		TODO: ビューとプロジェクション行列の視点を決めるために使う。必ずどちらか必要なので、省略されていた時は警告するべきかも？
-	static bool CheckAnnotationCameraOrLight(Graphics::ShaderVariable* var);
+	static bool CheckAnnotationCameraOrLight(ShaderVariable* var);
 
 	/// 変数の "Object" アノテーションを調べて、"Geometry" の場合は 1、"Light" の場合は 2、それ以外は 0 を返す
-	static int CheckAnnotationGeometryOrLight(Graphics::ShaderVariable* var);
+	static int CheckAnnotationGeometryOrLight(ShaderVariable* var);
 
 	/// 名前を指定してアノテーションを検索する。見つからなければ NULL を返す。 (大文字小文字の区別無し。IShaderVariable からは大小小文字区別ありでしか取れないので用意)
-	static Graphics::ShaderVariable* GetAnnotationByName(Graphics::ShaderVariable* var, const TCHAR* name);
+	static ShaderVariable* GetAnnotationByName(ShaderVariable* var, const TCHAR* name);
 
 	/// 要求項目から、計算する必要のある行列マスクのビット列を作成して返す
 	static uint32_t CheckMatrixMask(MMEVariableRequest req);

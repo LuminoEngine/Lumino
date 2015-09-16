@@ -14,8 +14,8 @@ namespace Internal
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GUIPainter::GUIPainter(Graphics::GraphicsManager* manager)
-	: Graphics::Painter(manager)
+GUIPainter::GUIPainter(GraphicsManager* manager)
+	: Painter(manager)
 {
 }
 

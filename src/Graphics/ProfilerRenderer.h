@@ -8,8 +8,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief		
@@ -39,5 +38,5 @@ private:
 	RectF					m_windowRect;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

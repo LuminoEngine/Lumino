@@ -7,8 +7,8 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
+
 /// GeometryRenderer の実装クラス
 class GeometryRendererImpl
 	: public GeometryRenderer
@@ -227,5 +227,5 @@ public:
 	};
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

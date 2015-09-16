@@ -3,8 +3,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Device
 {
 
@@ -425,5 +424,5 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 }
 
 } // namespace Device
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

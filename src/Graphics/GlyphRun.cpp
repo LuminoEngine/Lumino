@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // GraphicsManager
@@ -58,5 +57,5 @@ void GlyphRun::AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache)
 }
 
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

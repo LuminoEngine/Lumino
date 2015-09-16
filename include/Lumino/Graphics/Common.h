@@ -12,13 +12,15 @@
 #include <LuminoMath.h>
 #include "../Common.h"
 
-#define LN_BEGIN_INTERNAL_NAMESPACE(module)	namespace Lumino { namespace module { namespace Internal {
-#define LN_END_INTERNAL_NAMESPACE	} } }
+#define LN_NAMESPACE_GRAPHICS_BEGIN		//namespace Graphics {
+#define LN_NAMESPACE_GRAPHICS_END		//}
+
+#define LN_BEGIN_INTERNAL_NAMESPACE(module)	namespace Lumino { /*namespace module {*/ namespace Internal {
+#define LN_END_INTERNAL_NAMESPACE	} /*}*/ }
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 class Texture;
 class PainterEngine;
@@ -288,6 +290,6 @@ namespace Device
 	class IShaderPass;
 
 } // namespace Device
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino
 

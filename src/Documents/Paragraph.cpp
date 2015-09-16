@@ -66,7 +66,7 @@ Paragraph::Paragraph(DocumentsManager* manager)
 	m_inlines.Attach(LN_NEW InlineList(this));
 
 	// Paragraph は GUI::TextBlock のルート要素にもなるので、フォントデータはここで初期化している
-	Graphics::Font* font = m_manager->GetGraphicsManager()->GetFontManager()->GetDefaultFont();
+	Font* font = m_manager->GetGraphicsManager()->GetFontManager()->GetDefaultFont();
 	m_fontData.Family = font->GetName();
 	m_fontData.Size = font->GetSize();
 	m_fontData.EdgeSize = font->GetEdgeSize();
@@ -96,15 +96,15 @@ Size Paragraph::Measure()
 
 		switch (GetFlowDirection())
 		{
-		case Graphics::FlowDirection::LeftToRight:
+		case FlowDirection::LeftToRight:
 			size.Width += childSize.Width;
 			size.Height = std::max(childSize.Height, childSize.Height);
 			break;
-		case Graphics::FlowDirection::RightToLeft:
+		case FlowDirection::RightToLeft:
 			size.Width = std::max(childSize.Width, childSize.Width);
 			size.Height += childSize.Height;
 			break;
-		case Graphics::FlowDirection::TopToBottom:
+		case FlowDirection::TopToBottom:
 			LN_THROW(0, NotImplementedException);
 			break;
 		}
@@ -129,7 +129,7 @@ void Paragraph::Render(DocumentsRenderer* renderer)
 void Paragraph::OnInlineAdded(Inline* item)
 {
 	LN_ASSERT(item != NULL);
-	Helper::TextElement_SetParent(item, this);
+	DocumentsHelper::TextElement_SetParent(item, this);
 }
 
 //-----------------------------------------------------------------------------
@@ -138,7 +138,7 @@ void Paragraph::OnInlineAdded(Inline* item)
 void Paragraph::OnInlineRemoved(Inline* item)
 {
 	LN_ASSERT(item != NULL);
-	Helper::TextElement_SetParent(item, NULL);
+	DocumentsHelper::TextElement_SetParent(item, NULL);
 }
 
 } // namespace Documents

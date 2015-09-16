@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 class RenderingCommandList;
 class Texture;
@@ -66,5 +65,5 @@ private:
 //	void New(GraphicsManager* manager, Platform::Window* targetWindow) { LN_NEW SwapChain(manager, targetWindow); }
 //};
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

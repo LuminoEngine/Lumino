@@ -59,7 +59,7 @@ void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 		priorityParams.Shader->UpdateNodeParams(visualNode, params.CurrentCamera, *visualNode->GetAffectLightList());
 		visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
-		const Graphics::Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(iSubset).Material;
+		const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(iSubset).Material;
 
 		// テクニックの検索
 		MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(

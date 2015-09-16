@@ -40,7 +40,7 @@ public:
 	Paragraph(DocumentsManager* manager);
 	virtual ~Paragraph();
 
-	Graphics::FlowDirection GetFlowDirection() { return Graphics::FlowDirection::LeftToRight; }
+	FlowDirection GetFlowDirection() { return FlowDirection::LeftToRight; }
 
 	InlineList* GetInlines() const { return m_inlines; }
 

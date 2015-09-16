@@ -169,14 +169,14 @@ ThumbChrome::~ThumbChrome()
 //-----------------------------------------------------------------------------
 void ThumbChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	m_bgFrameBrush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ThumbChromeBackgroundFrameBrush")));
-	m_bgInnerBrush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ThumbChromeBackgroundInnerBrush")));
+	m_bgFrameBrush = static_cast<TextureBrush*>(localResource->GetItem(_T("ThumbChromeBackgroundFrameBrush")));
+	m_bgInnerBrush = static_cast<TextureBrush*>(localResource->GetItem(_T("ThumbChromeBackgroundInnerBrush")));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ThumbChrome::OnRender(Graphics::Painter* painter)
+void ThumbChrome::OnRender(Painter* painter)
 {
 	RectF rect = m_finalLocalRect;
 

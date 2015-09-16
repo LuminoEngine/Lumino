@@ -6,9 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
-
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 
 enum BrushWrapMode
@@ -251,6 +249,5 @@ private:
 
 };
 
-
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

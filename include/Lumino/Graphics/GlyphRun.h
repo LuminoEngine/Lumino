@@ -6,8 +6,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief	同じ描画スタイルを適用できる一連のグリフを表します。
@@ -32,5 +31,5 @@ private:
 	TextLayoutResult*					m_glyphData;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

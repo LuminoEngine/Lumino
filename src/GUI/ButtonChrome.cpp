@@ -77,14 +77,14 @@ ButtonChrome::~ButtonChrome()
 //-----------------------------------------------------------------------------
 void ButtonChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	m_brush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ButtonNormalFrameBrush")));
-	m_bgBrush = static_cast<Graphics::TextureBrush*>(localResource->GetItem(_T("ButtonNormalBackgroundBrush")));
+	m_brush = static_cast<TextureBrush*>(localResource->GetItem(_T("ButtonNormalFrameBrush")));
+	m_bgBrush = static_cast<TextureBrush*>(localResource->GetItem(_T("ButtonNormalBackgroundBrush")));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ButtonChrome::OnRender(Graphics::Painter* painter)
+void ButtonChrome::OnRender(Painter* painter)
 {
 	RectF bgRect = m_finalLocalRect;
 	RectF rect = m_finalLocalRect;

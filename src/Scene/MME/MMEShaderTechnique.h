@@ -40,7 +40,7 @@ public:
 public:
 
 	/// 初期化
-	void Initialize(MMEShader* shader, Graphics::ShaderTechnique* tech, MMEShaderErrorInfo* errorInfo);
+	void Initialize(MMEShader* shader, ShaderTechnique* tech, MMEShaderErrorInfo* errorInfo);
 
 	/// このテクニックを持つシェーダを取得する
 	MMEShader* GetOwnerShader() const { return m_ownerShader; }
@@ -73,7 +73,7 @@ private:
 
 	/// スクリプト文字列の変数を受け取って commandList にコマンドを追加していく
 	//      thisPass : パス内のスクリプトを解析する場合、そのパスを渡す (Draw="Geometry" の実行に渡すpass)
-	void ParseScriptCommandString(Graphics::ShaderVariable* scriptAnno, Graphics::ShaderPass* thisPass, ShaderScriptCommandList* commandList);
+	void ParseScriptCommandString(ShaderVariable* scriptAnno, ShaderPass* thisPass, ShaderScriptCommandList* commandList);
 
 
 	static void ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange);
@@ -88,8 +88,8 @@ private:
 
 	MMEShaderErrorInfo*			m_errorInfo;
 	MMEShader*					m_ownerShader;
-	Graphics::Shader*			m_coreShader;
-	Graphics::ShaderTechnique*	m_technique;
+	Shader*			m_coreShader;
+	ShaderTechnique*	m_technique;
 
 	MMDPass						m_mmdPass;
 	Nullable<bool>				m_isUseTexture;
@@ -108,7 +108,7 @@ class MMEShaderPass
 	: public RefObject
 {
 public:
-	Graphics::ShaderPass*	m_pass;
+	ShaderPass*	m_pass;
 	ShaderScriptCommandList	m_scriptCommandList;
 };
 

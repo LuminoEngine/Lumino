@@ -71,7 +71,7 @@ bool Button::OnEvent(EventType type, RoutedEventArgs* args)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::OnRender(Graphics::Painter* painter)
+void Button::OnRender(Painter* painter)
 {
 }
 

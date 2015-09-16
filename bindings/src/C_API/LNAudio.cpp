@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume, int pitch, double fadeTime )
+LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume, int pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);

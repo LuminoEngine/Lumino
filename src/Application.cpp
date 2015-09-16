@@ -240,7 +240,7 @@ void ApplicationImpl::InitialzeGraphicsManager()
 		InitialzePlatformManager();
 		InitialzePhysicsManager();
 
-		Graphics::GraphicsManager::ConfigData data;
+		GraphicsManager::ConfigData data;
 		data.GraphicsAPI = m_configData.GraphicsAPI;
 		data.RenderingType = m_configData.RenderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
@@ -249,9 +249,9 @@ void ApplicationImpl::InitialzeGraphicsManager()
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
-		m_graphicsManager.Attach(LN_NEW Graphics::GraphicsManager(data));
+		m_graphicsManager.Attach(LN_NEW GraphicsManager(data));
 
-		m_profilerRenderer = LN_NEW Graphics::ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
+		m_profilerRenderer = LN_NEW ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
 	}
 }
 

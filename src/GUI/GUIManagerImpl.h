@@ -27,7 +27,7 @@ public:
 public:
 	struct ConfigData
 	{
-		Graphics::GraphicsManager*		GraphicsManager;
+		GraphicsManager*		GraphicsManager;
 		Platform::Window*				MainWindow;
 		Documents::DocumentsManager*	DocumentsManager;
 
@@ -45,7 +45,7 @@ public:
 public:
 	void Initialize(const ConfigData& configData);
 	void Finalize();
-	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
 
@@ -95,7 +95,7 @@ private:
 	typedef std::map<String, ObjectFactory>	ObjectFactoryMap;
 	typedef std::pair<String, ObjectFactory>	ObjectFactoryPair;
 
-	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	Internal::GUIPainter*				m_painter;
 
@@ -123,7 +123,7 @@ private:
 
 	MouseClickTracker m_mouseClickTrackers[MouseButton::TERMINATOR];
 
-	RefPtr<Graphics::Texture>	m_defaultSkinTexture;
+	RefPtr<Texture>	m_defaultSkinTexture;
 	RefPtr<CursorImage>			m_cursorImageTable[1];
 	RefPtr<CursorImage>			m_currentCursorImage;
 	PointF						m_mousePosition;

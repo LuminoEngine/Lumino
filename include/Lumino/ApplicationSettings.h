@@ -21,12 +21,12 @@ public:
 		@brief		グラフィックス機能で使用する描画 API を指定します。
 		@details	初期値は Windows の場合 DirectX9 で、それ以外は OpenGL です。
 	*/
-	Graphics::GraphicsAPI	GraphicsAPI;
+	GraphicsAPI	GraphicsAPI;
 
 	/**
 		@brief		グラフィックス機能で使用するレンダリング方法です。(初期値:Deferred)
 	*/
-	Graphics::RenderingType	RenderingType;
+	RenderingType	RenderingType;
 
 	/** ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
 	void*	UserMainWindow;
@@ -39,8 +39,8 @@ public:
 public:
 	ApplicationSettings()
 		: ApplicationLogEnabled(false)
-		, GraphicsAPI(Graphics::GraphicsAPI::DirectX9)
-		, RenderingType(Graphics::RenderingType::Deferred)
+		, GraphicsAPI(Lumino::GraphicsAPI::DirectX9)
+		, RenderingType(Lumino::RenderingType::Deferred)
 		, UserMainWindow(NULL)
 #ifdef LN_OS_WIN32
 		, D3D9Device(NULL)

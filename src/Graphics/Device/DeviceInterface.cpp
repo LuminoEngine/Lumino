@@ -4,8 +4,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Device
 {
 
@@ -30,5 +29,5 @@ IShaderVariable* IShader::GetVariableByName(const TCHAR* name) const
 }
 
 } // namespace Device
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

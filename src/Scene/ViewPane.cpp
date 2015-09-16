@@ -40,7 +40,7 @@ ViewPane::~ViewPane()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ViewPane::Render(Graphics::Texture* renderTarget)
+void ViewPane::Render(Texture* renderTarget)
 {
 	SizeF viewSize((float)renderTarget->GetSize().Width, (float)renderTarget->GetSize().Height);
 

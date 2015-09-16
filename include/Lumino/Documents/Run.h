@@ -30,7 +30,7 @@ private:
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
-	RefPtr<Graphics::GlyphRun>		m_glyphRun;
+	RefPtr<GlyphRun>		m_glyphRun;
 };
 
 

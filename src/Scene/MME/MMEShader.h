@@ -24,7 +24,7 @@ public:
 public:
 
 	/// Graphics::Shader の取得
-	Graphics::Shader* GetCoreShader() const { return m_coreShader; }
+	Shader* GetCoreShader() const { return m_coreShader; }
 
 	/// 設定する必要があるライトの数の取得
 	int GetRequiredLightCount() const { return m_requiredLightCount; }
@@ -65,7 +65,7 @@ private:
 
 	// 以下、MMEShaderBuilder　から直接セットされるデータ
 	friend class MMEShaderBuilder;
-	RefPtr<Graphics::Shader>	m_coreShader;
+	RefPtr<Shader>				m_coreShader;
 	MMEScriptOutput				m_mmeScriptOutput;
 	MMEScriptClass				m_mmeScriptClass;
 	MMEScriptOrder				m_mmeScriptOrder;

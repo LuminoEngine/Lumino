@@ -14,8 +14,8 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UIElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, BackgroundProperty, "Background", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
-LN_PROPERTY_IMPLEMENT(Control, Graphics::BrushPtr, ForegroundProperty, "Foreground", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Control, BrushPtr, BackgroundProperty, "Background", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Control, BrushPtr, ForegroundProperty, "Foreground", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
 LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
 // TODO: フォント設定は子要素へ継承する
 LN_PROPERTY_IMPLEMENT(Control, String, FontFamilyProperty, "FontFamily", m_fontData.Family, PropertyMetadata(String::GetEmpty(), PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
@@ -148,7 +148,7 @@ SizeF Control::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Control::OnRender(Graphics::Painter* painter)
+void Control::OnRender(Painter* painter)
 {
 	UIElement::OnRender(painter);
 

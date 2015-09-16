@@ -17,7 +17,7 @@
 namespace Lumino
 {
 class AudioManagerImpl;
-namespace Graphics { class ProfilerRenderer; }
+class ProfilerRenderer;
 class SceneGraphManager;
 class GUIManagerImpl;
 
@@ -69,7 +69,7 @@ public:
 	Platform::PlatformManager* GetPlatformManager() const { return m_platformManager; }
 	AudioManagerImpl* GetAudioManager() const { return m_audioManager; }
 	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
-	Graphics::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	GUIManagerImpl* GetGUIManager() const { return m_guiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
@@ -97,12 +97,12 @@ private:
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	AudioManagerImpl*					m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
-	RefPtr<Graphics::GraphicsManager>	m_graphicsManager;
+	RefPtr<GraphicsManager>	m_graphicsManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	GUIManagerImpl*						m_guiManager;
 	SceneGraphManager*					m_sceneGraphManager;
 
-	Graphics::ProfilerRenderer*			m_profilerRenderer;
+	ProfilerRenderer*			m_profilerRenderer;
 	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_commonInitied;

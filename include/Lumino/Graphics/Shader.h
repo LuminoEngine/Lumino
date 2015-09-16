@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 class ShaderVariable;
 class ShaderTechnique;
@@ -293,5 +292,5 @@ private:
 	Array<ShaderVariable*>		m_annotations;
 };
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

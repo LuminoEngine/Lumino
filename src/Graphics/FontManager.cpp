@@ -61,8 +61,7 @@ AfterEffects は、"テキストレイヤー" なるものに "エフェクト" 
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 	
 //=============================================================================
 // FontManager
@@ -601,5 +600,5 @@ void FontManager::StreamCloseFunc(FT_Stream stream)
 }
 #endif
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -31,7 +31,7 @@ public:
 protected:
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	virtual void OnRender(Graphics::Painter* painter);
+	virtual void OnRender(Painter* painter);
 
 private:
 	void OnTextPropertyChanged(PropertyChangedEventArgs* e);

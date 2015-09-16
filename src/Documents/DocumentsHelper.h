@@ -7,7 +7,7 @@ namespace Lumino
 namespace Documents
 {
 
-class Helper
+class DocumentsHelper
 {
 public:
 	static void TextElement_SetParent(TextElement* obj, TextElement* value) { obj->m_parent = value; }

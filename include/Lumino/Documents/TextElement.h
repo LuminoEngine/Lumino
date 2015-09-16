@@ -48,12 +48,12 @@ protected:
 	void UpdateFontData();
 
 private:
-	friend class Helper;
+	friend class DocumentsHelper;
 	TextElement*			m_parent;
 
 protected:
 	DocumentsManager* m_manager;
-	Graphics::GraphicsManager::FontData	m_fontData;
+	GraphicsManager::FontData	m_fontData;
 	bool	m_fontDataModified;
 };
 

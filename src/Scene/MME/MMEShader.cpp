@@ -34,7 +34,7 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 	newCode += StringA::GetNewLine();
 	newCode += StringA(code, codeLength);
 
-	RefPtr<Graphics::Shader> shader(Graphics::Shader::Create(newCode.GetCStr(), newCode.GetLength()));
+	RefPtr<Shader> shader(Shader::Create(newCode.GetCStr(), newCode.GetLength()));
 	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo));
 	mmeShader.SafeAddRef();
 	return mmeShader;
@@ -82,7 +82,7 @@ MMEShader::~MMEShader()
 //-----------------------------------------------------------------------------
 void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManager* scene)
 {
-	Graphics::ShaderVariable* var;
+	ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
 	{
 		// 変数が配列のライト情報はこの関数内では設定しないので次へ
@@ -136,7 +136,7 @@ void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManage
 //-----------------------------------------------------------------------------
 void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 {
-	Graphics::ShaderVariable* var;
+	ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
 	{
 		var = sv->Variable;
@@ -230,7 +230,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 			continue;
 		}
 
-		Graphics::ShaderVariable* var = sv->Variable;
+		ShaderVariable* var = sv->Variable;
 
 		// 正確な範囲じゃないけど、少しでも条件判定の回数を減らすために
 		if (MME_VARREQ_GEOMETRY_MATRIX_BEGIN <= sv->Request && sv->Request <= MME_VARREQ_GEOMETRY_MATRIX_END)
@@ -415,7 +415,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 //-----------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& params)
 {
-    Graphics::ShaderVariable* var;
+    ShaderVariable* var;
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
 	{
         var = sv->Variable;
@@ -518,7 +518,7 @@ void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& param
 //-----------------------------------------------------------------------------
 void MMEShader::SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObject* obj)
 {
-	Graphics::ShaderVariable* var = sv->Variable;
+	ShaderVariable* var = sv->Variable;
 
 	if (sv->Request == MME_VARREQ_CONTROLOBJECT_Visible)
 	{

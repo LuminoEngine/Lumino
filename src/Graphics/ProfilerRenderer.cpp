@@ -5,8 +5,7 @@
 
 namespace Lumino
 {
-namespace Graphics
-{
+LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
 // ProfilerRenderer
@@ -214,5 +213,5 @@ void ProfilerRenderer::DrawSectionGraphBar(Painter& painter, const Profiler::Com
 }
 
 
-} // namespace Graphics
+LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino
