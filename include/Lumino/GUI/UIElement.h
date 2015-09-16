@@ -273,10 +273,16 @@ protected:
 	virtual ~UIElement();
 
 private:
+	void AttachContext(GUIContext* ownerContext);
+	void DetachContext();
+
+private:
 	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
 	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
 
+	GUIContext*						m_ownerContext;
 	UIElement*						m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
+	SizeF							m_size; 
 	ThicknessF						m_margin;
 	float							m_opacity;
 	float							m_combinedOpacity;
@@ -517,7 +523,6 @@ protected:
 	Array<RoutedCommandTypeContext*>	m_routedCommandTypeContextList;
 
 	// Property
-	SizeF				m_size;
 	HorizontalAlignment	m_horizontalAlignment;
 	VerticalAlignment	m_verticalAlignment;
 	bool				m_isHitTest;

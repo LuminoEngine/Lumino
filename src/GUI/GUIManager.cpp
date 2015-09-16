@@ -1049,6 +1049,7 @@
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/Rectangle.h>
+#include <Lumino/GUI/GUIContext.h>
 #include "GUIManagerImpl.h"
 #include "GUIPainter.h"
 
@@ -1161,6 +1162,26 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 void GUIManagerImpl::Finalize()
 {
 	LN_SAFE_RELEASE(m_defaultRootFrame);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManagerImpl::UpdateLayoutOnMainWindow(const Size& viewPixelSize)
+{
+	for (GUIContext* context : m_mainWindowContextList) {
+		context->UpdateLayout(viewPixelSize);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GUIManagerImpl::RenderOnMainWindow()
+{
+	for (GUIContext* context : m_mainWindowContextList) {
+		context->Render();
+	}
 }
 
 //-----------------------------------------------------------------------------

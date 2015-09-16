@@ -22,7 +22,7 @@ $ extconf.rb
 
 require 'mkmf'
 
-#have_library("LNote")
+have_library("LuminoC_MTd")
 
 #have_library("stdc++")
 create_makefile("Lumino")

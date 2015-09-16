@@ -1050,13 +1050,13 @@ namespace LN
         public extern static Result LNVector2_GetSquareLength(ref Vector2 vec, out float outLength);
 
         /// <summary>
-        /// 2D ベクトルを初期化します。
+        /// 2D ベクトルに値を設定します。
         /// </summary>
+        /// <param name="vec">値を格納する 2D ベクトル変数のアドレス</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
-        /// <param name="vec">値を格納する 2D ベクトル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector2_Create( float x,  float y, out Vector2 vec);
+        public extern static Result LNVector2_Set(ref Vector2 vec,  float x,  float y);
 
         /// <summary>
         /// 2D ベクトルを正規化します。
@@ -1090,23 +1090,23 @@ namespace LN
         public extern static Result LNVector3_GetSquareLength(ref Vector3 vec, out float outLength);
 
         /// <summary>
-        /// 3Dベクトルを初期化します。
+        /// 3Dベクトルに値を設定します。
         /// </summary>
+        /// <param name="vec">値を格納する 3D ベクトル変数のアドレス</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
-        /// <param name="vec">値を格納する 3Dベクトル 変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector3_Create( float x,  float y,  float z, out Vector3 vec);
+        public extern static Result LNVector3_Set(ref Vector3 vec,  float x,  float y,  float z);
 
         /// <summary>
-        /// 2D ベクトル と Z値 を指定して、3Dベクトルを初期化します。
+        /// 2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
         /// </summary>
+        /// <param name="vec">値を格納する 3Dベクトル 変数のアドレス</param>
         /// <param name="vec2">2D ベクトル</param>
         /// <param name="z">Z 値</param>
-        /// <param name="vec">値を格納する 3Dベクトル 変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector3_CreateVZ(ref Vector2 vec2,  float z, out Vector3 vec);
+        public extern static Result LNVector3_SetVZ(out Vector3 vec, ref Vector2 vec2,  float z);
 
         /// <summary>
         /// 3D ベクトルを正規化する
@@ -1200,15 +1200,15 @@ namespace LN
         public extern static Result LNVector3_TransformCoord(ref Vector3 vec, ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 4Dベクトルを初期化します。
+        /// 4Dベクトルに値を設定します。
         /// </summary>
+        /// <param name="vec">値を格納する4Dベクトル変数のアドレス</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
         /// <param name="w">W 値</param>
-        /// <param name="vec">値を格納する4Dベクトル変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNVector4_Create( float x,  float y,  float z,  float w, out Vector4 vec);
+        public extern static Result LNVector4_Set(ref Vector4 vec,  float x,  float y,  float z,  float w);
 
         /// <summary>
         /// 右方向を示す 3D ベクトルの取得
@@ -1462,15 +1462,15 @@ namespace LN
         public extern static Result LNMatrix_Decompose(ref Matrix mat, out Vector3 scale, out Quaternion rot, out Vector3 trans);
 
         /// <summary>
-        /// クォータニオンを初期化します。
+        /// クォータニオンに値を設定します。
         /// </summary>
+        /// <param name="qua">値を格納する Quaternion 変数のアドレス</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
         /// <param name="w">W 値</param>
-        /// <param name="qua">値を格納する Quaternion 変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNQuaternion_Create( float x,  float y,  float z,  float w, out Quaternion qua);
+        public extern static Result LNQuaternion_Set(ref Quaternion qua,  float x,  float y,  float z,  float w);
 
         /// <summary>
         /// 単位クォータニオンを作成する

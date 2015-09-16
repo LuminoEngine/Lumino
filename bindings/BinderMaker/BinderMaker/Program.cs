@@ -51,6 +51,9 @@ namespace BinderMaker
             var rubyStructsBuilder = new Builder.RubyStructsBuilder();
             rubyStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.cpp");
 
+            var rubyStructsHeaderBuilder = new Builder.RubyStructsHeaderBuilder();
+            rubyStructsHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.h");
+
 
             var hspHeaderBuilder = new Builder.HSPHeaderBuilder();
             hspHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lnote.as");

@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/GUI/RoutedCommand.h>
 #include <Lumino/GUI/ControlTemplate.h>
+#include <Lumino/GUI/GUIContext.h>
 #include <Lumino/GUI/UIElement.h>
 #include "GUIManagerImpl.h"
 #include "GUIPainter.h"
@@ -43,16 +44,23 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, ExecuteRoutedCommandEventArgs, ExecuteRoute
 //
 //-----------------------------------------------------------------------------
 UIElement::UIElement(GUIManagerImpl* manager)
-	: m_manager(manager)
+	: m_ownerContext(NULL)
 	, m_parent(NULL)
+	, m_size(NAN, NAN)
+	, m_margin()
+	, m_opacity(1.0f)
+	, m_combinedOpacity(1.0f)
+	, m_animationClockList()
+	, m_invalidateFlags(InvalidateFlags::None)
+
+
+	, m_manager(manager)
 	, m_localResource(NULL)
 	, m_combinedLocalResource(NULL)
 	, m_horizontalAlignment(HorizontalAlignment::Stretch)
 	, m_verticalAlignment(VerticalAlignment::Stretch)
 	, m_rootLogicalParent(NULL)
 	, m_templateParent(NULL)
-	, m_opacity(1.0f)
-	, m_combinedOpacity(1.0f)
 {
 	LN_SAFE_ADDREF(m_manager);
 }
@@ -198,12 +206,16 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 //-----------------------------------------------------------------------------
 void UIElement::UpdateLayout()
 {
+	SizeF size(
+		Math::IsNaNOrInf(m_size.Width) ? GUIHelper::GetViewPixelSize(m_ownerContext).Width : m_size.Width,
+		Math::IsNaNOrInf(m_size.Height) ? GUIHelper::GetViewPixelSize(m_ownerContext).Height : m_size.Height);
+
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？
-	if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
+	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
-	MeasureLayout(m_size);
-	ArrangeLayout(RectF(0, 0, m_size.Width, m_size.Height));
+	MeasureLayout(size);
+	ArrangeLayout(RectF(0, 0, size.Width, size.Height));
 }
 
 //-----------------------------------------------------------------------------
@@ -271,6 +283,25 @@ SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 void UIElement::OnRender(Painter* painter)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::AttachContext(GUIContext* ownerContext)
+{
+	if (m_ownerContext != NULL && ownerContext != NULL) {
+		LN_THROW(0, ArgumentException, "GUIContext attached.");
+	}
+	m_ownerContext = ownerContext;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::DetachContext()
+{
+	m_ownerContext = NULL;
 }
 
 

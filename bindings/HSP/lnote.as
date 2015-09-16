@@ -296,8 +296,8 @@
 #define LNVector2_GetLength(%1, %2) native_LNVector2_GetLength %1, %2
 #func native_LNVector2_GetSquareLength "LNVector2_GetSquareLengthD" var, var
 #define LNVector2_GetSquareLength(%1, %2) native_LNVector2_GetSquareLength %1, %2
-#func native_LNVector2_Create "LNVector2_CreateD" double, double, var
-#define LNVector2_Create(%1, %2, %3) native_LNVector2_Create %1, %2, %3
+#func native_LNVector2_Set "LNVector2_SetD" var, double, double
+#define LNVector2_Set(%1, %2, %3) native_LNVector2_Set %1, %2, %3
 #func native_LNVector2_Normalize "LNVector2_Normalize" var, var
 #define LNVector2_Normalize(%1, %2) native_LNVector2_Normalize %1, %2
 #func native_LNVector2_NormalizeV "LNVector2_NormalizeV" var
@@ -306,10 +306,10 @@
 #define LNVector3_GetLength(%1, %2) native_LNVector3_GetLength %1, %2
 #func native_LNVector3_GetSquareLength "LNVector3_GetSquareLengthD" var, var
 #define LNVector3_GetSquareLength(%1, %2) native_LNVector3_GetSquareLength %1, %2
-#func native_LNVector3_Create "LNVector3_CreateD" double, double, double, var
-#define LNVector3_Create(%1, %2, %3, %4) native_LNVector3_Create %1, %2, %3, %4
-#func native_LNVector3_CreateVZ "LNVector3_CreateVZD" var, double, var
-#define LNVector3_CreateVZ(%1, %2, %3) native_LNVector3_CreateVZ %1, %2, %3
+#func native_LNVector3_Set "LNVector3_SetD" var, double, double, double
+#define LNVector3_Set(%1, %2, %3, %4) native_LNVector3_Set %1, %2, %3, %4
+#func native_LNVector3_SetVZ "LNVector3_SetVZD" var, var, double
+#define LNVector3_SetVZ(%1, %2, %3) native_LNVector3_SetVZ %1, %2, %3
 #func native_LNVector3_Normalize "LNVector3_Normalize" var, var
 #define LNVector3_Normalize(%1, %2) native_LNVector3_Normalize %1, %2
 #func native_LNVector3_NormalizeV "LNVector3_NormalizeV" var
@@ -330,8 +330,8 @@
 #define LNVector3_Transform(%1, %2, %3) native_LNVector3_Transform %1, %2, %3
 #func native_LNVector3_TransformCoord "LNVector3_TransformCoord" var, var, var
 #define LNVector3_TransformCoord(%1, %2, %3) native_LNVector3_TransformCoord %1, %2, %3
-#func native_LNVector4_Create "LNVector4_CreateD" double, double, double, double, var
-#define LNVector4_Create(%1, %2, %3, %4, %5) native_LNVector4_Create %1, %2, %3, %4, %5
+#func native_LNVector4_Set "LNVector4_SetD" var, double, double, double, double
+#define LNVector4_Set(%1, %2, %3, %4, %5) native_LNVector4_Set %1, %2, %3, %4, %5
 #func native_LNMatrix_GetRight "LNMatrix_GetRight" var, var
 #define LNMatrix_GetRight(%1, %2) native_LNMatrix_GetRight %1, %2
 #func native_LNMatrix_GetUp "LNMatrix_GetUp" var, var
@@ -388,8 +388,8 @@
 #define LNMatrix_GetEulerAngles(%1, %2) native_LNMatrix_GetEulerAngles %1, %2
 #func native_LNMatrix_Decompose "LNMatrix_Decompose" var, var, var, var
 #define LNMatrix_Decompose(%1, %2, %3, %4) native_LNMatrix_Decompose %1, %2, %3, %4
-#func native_LNQuaternion_Create "LNQuaternion_CreateD" double, double, double, double, var
-#define LNQuaternion_Create(%1, %2, %3, %4, %5) native_LNQuaternion_Create %1, %2, %3, %4, %5
+#func native_LNQuaternion_Set "LNQuaternion_SetD" var, double, double, double, double
+#define LNQuaternion_Set(%1, %2, %3, %4, %5) native_LNQuaternion_Set %1, %2, %3, %4, %5
 #func native_LNQuaternion_Identity "LNQuaternion_Identity" var
 #define LNQuaternion_Identity(%1) native_LNQuaternion_Identity %1
 #func native_LNQuaternion_RotationAxis "LNQuaternion_RotationAxisD" var, double, var

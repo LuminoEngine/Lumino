@@ -85,7 +85,7 @@ LNResult LNVector2_NormalizeV(LNVector2* vec)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNVector3_Create(LNVector3* vec, float x, float y, float z)
+LNResult LNVector3_Set(LNVector3* vec, float x, float y, float z)
 {
 	LN_CHECK_ARG(vec != NULL);
 	vec->X = x; vec->Y = y; vec->Z = z;
@@ -95,7 +95,7 @@ LNResult LNVector3_Create(LNVector3* vec, float x, float y, float z)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNVector3_CreateVZ(LNVector3* vec, const LNVector2* vec2, float z)
+LNResult LNVector3_SetVZ(LNVector3* vec, const LNVector2* vec2, float z)
 {
 	LN_CHECK_ARG(vec != NULL);
 	LN_CHECK_ARG(vec2 != NULL);
@@ -147,6 +147,16 @@ LNResult LNVector3_Normalize(const LNVector3* vec, LNVector3* outVec)
 	LN_CHECK_ARG(outVec != NULL);
 	LN_CHECK_ARG(vec != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::Normalize(*cp_cast<LVector3>(vec));
+	return ::LN_OK;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNVector3_NormalizeV(LNVector3* vec)
+{
+	LN_CHECK_ARG(vec != NULL);
+	TO_CORE_STRUCT_P(LVector3, vec)->Normalize();
 	return ::LN_OK;
 }
 
@@ -325,6 +335,21 @@ LNResult LNVector3_RotateMatrix(const LNVector3* vec, const LNMatrix* mat, LNVec
 	return ::LN_OK;
 }
 #endif
+
+
+//=============================================================================
+// LNVector4
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+LNResult LNVector4_Set(LNVector4* vec, float x, float y, float z, float w)
+{
+	LN_CHECK_ARG(vec != NULL);
+	vec->X = x; vec->Y = y; vec->Z = z; vec->W = w;
+	return ::LN_OK;
+}
 
 
 //=============================================================================
@@ -642,7 +667,7 @@ LNResult LNMatrix_GetPosition(const LNMatrix* mat, LNVector3* outVec)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNMatrix_ToEuler(const LNMatrix* mat, LNVector3* outVec)
+LNResult LNMatrix_GetEulerAngles(const LNMatrix* mat, LNVector3* outVec)
 {
 	LN_CHECK_ARG(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = cp_cast<LMatrix>(mat)->ToEulerAngles();

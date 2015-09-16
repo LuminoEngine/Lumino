@@ -1,4 +1,5 @@
 ﻿#include "LuminoRuby.h"
+#include "RubyStructs.h"
 
 VALUE g_struct_Vector2;
 VALUE g_struct_Vector3;
@@ -8,12 +9,12 @@ VALUE g_struct_Quaternion;
 
 
 
-static void LNVector2_delete(LNVector2* obj)
+void LNVector2_delete(LNVector2* obj)
 {
     free(obj);
 }
 
-static VALUE LNVector2_allocate( VALUE klass )
+VALUE LNVector2_allocate( VALUE klass )
 {
     VALUE obj;
     LNVector2* internalObj;
@@ -27,7 +28,7 @@ static VALUE LNVector2_allocate( VALUE klass )
     return obj;
 }
 
-static VALUE LNVector2_struct_initialize( int argc, VALUE *argv, VALUE self )
+VALUE LNVector2_struct_initialize( int argc, VALUE *argv, VALUE self )
 {
     LNVector2* selfObj;
     Data_Get_Struct(self, LNVector2, selfObj);
@@ -103,23 +104,21 @@ static VALUE lnrbLNVector2_GetSquareLength(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
-static VALUE lnrbLNVector2_Create(int argc, VALUE *argv, VALUE self)
+static VALUE lnrbLNVector2_Set(int argc, VALUE *argv, VALUE self)
 {
     LNVector2* selfObj;
     Data_Get_Struct(self, LNVector2, selfObj);
-    if (1 <= argc && argc <= 1) {
+    if (2 <= argc && argc <= 2) {
+        VALUE x;
         VALUE y;
-        rb_scan_args(argc, argv, "1", &y);
-        if (isRbFloat(y)) {
+        rb_scan_args(argc, argv, "2", &x, &y);
+        if (isRbFloat(x) && isRbFloat(y)) {
+            float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
-            LNVector2 _vec;
-            LNVector2_Create(selfObj, &_y, &_vec);
-            VALUE retObj = LNVector2_allocate(g_struct_Vector2);
-            *((LNVector2*)DATA_PTR(retObj)) = _vec;
-            return retObj;
-        }
+            LNVector2_Set(selfObj, _x, _y);
+            return Qnil;    }
     }
-    rb_raise(rb_eArgError, "Lumino::Vector2.vector_2 - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Vector2.set - wrong argument type.");
     return Qnil;
 }
 
@@ -156,12 +155,12 @@ static VALUE lnrbLNVector2_NormalizeV(int argc, VALUE *argv, VALUE self)
 }
 
 
-static void LNVector3_delete(LNVector3* obj)
+void LNVector3_delete(LNVector3* obj)
 {
     free(obj);
 }
 
-static VALUE LNVector3_allocate( VALUE klass )
+VALUE LNVector3_allocate( VALUE klass )
 {
     VALUE obj;
     LNVector3* internalObj;
@@ -175,7 +174,7 @@ static VALUE LNVector3_allocate( VALUE klass )
     return obj;
 }
 
-static VALUE LNVector3_struct_initialize( int argc, VALUE *argv, VALUE self )
+VALUE LNVector3_struct_initialize( int argc, VALUE *argv, VALUE self )
 {
     LNVector3* selfObj;
     Data_Get_Struct(self, LNVector3, selfObj);
@@ -268,37 +267,41 @@ static VALUE lnrbLNVector3_GetSquareLength(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
-static VALUE lnrbLNVector3_Create(int argc, VALUE *argv, VALUE self)
+static VALUE lnrbLNVector3_Set(int argc, VALUE *argv, VALUE self)
+{
+    LNVector3* selfObj;
+    Data_Get_Struct(self, LNVector3, selfObj);
+    if (3 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "3", &x, &y, &z);
+        if (isRbFloat(x) && isRbFloat(y) && isRbFloat(z)) {
+            float _x = ((float)NUM2DBL(x));
+            float _y = ((float)NUM2DBL(y));
+            float _z = ((float)NUM2DBL(z));
+            LNVector3_Set(selfObj, _x, _y, _z);
+            return Qnil;    }
+    }
+    rb_raise(rb_eArgError, "Lumino::Vector3.set - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE lnrbLNVector3_SetVZ(int argc, VALUE *argv, VALUE self)
 {
     LNVector3* selfObj;
     Data_Get_Struct(self, LNVector3, selfObj);
     if (2 <= argc && argc <= 2) {
-        VALUE y;
+        VALUE vec2;
         VALUE z;
-        rb_scan_args(argc, argv, "2", &y, &z);
-        if (isRbFloat(y) && isRbFloat(z)) {
-            float _y = ((float)NUM2DBL(y));
+        rb_scan_args(argc, argv, "2", &vec2, &z);
+        if (isRbObject(vec2) && isRbFloat(z)) {
+            LNVector2* tmp__vec2; Data_Get_Struct(vec2, LNVector2, tmp__vec2);LNVector2& _vec2 = *tmp__vec2;
             float _z = ((float)NUM2DBL(z));
-            LNVector3 _vec;
-            LNVector3_Create(selfObj, &_y, &_z, &_vec);
-            VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _vec;
-            return retObj;
-        }
+            LNVector3_SetVZ(selfObj, &_vec2, _z);
+            return Qnil;    }
     }
-    if (1 <= argc && argc <= 1) {
-        VALUE z;
-        rb_scan_args(argc, argv, "1", &z);
-        if (isRbFloat(z)) {
-            float _z = ((float)NUM2DBL(z));
-            LNVector3 _vec;
-            LNVector3_CreateVZ(selfObj, &_z, &_vec);
-            VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _vec;
-            return retObj;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Vector3.vector_3 - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Vector3.set_vz - wrong argument type.");
     return Qnil;
 }
 
@@ -424,7 +427,7 @@ static VALUE static_lnrbLNVector3_Lerp(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec2; Data_Get_Struct(vec2, LNVector3, tmp__vec2);LNVector3& _vec2 = *tmp__vec2;
             float _t = ((float)NUM2DBL(t));
             LNVector3 _outVec;
-            LNVector3_Lerp(&_vec1, &_vec2, &_t, &_outVec);
+            LNVector3_Lerp(&_vec1, &_vec2, _t, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
             *((LNVector3*)DATA_PTR(retObj)) = _outVec;
             return retObj;
@@ -450,7 +453,7 @@ static VALUE static_lnrbLNVector3_CatmullRom(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec4; Data_Get_Struct(vec4, LNVector3, tmp__vec4);LNVector3& _vec4 = *tmp__vec4;
             float _t = ((float)NUM2DBL(t));
             LNVector3 _outVec;
-            LNVector3_CatmullRom(&_vec1, &_vec2, &_vec3, &_vec4, &_t, &_outVec);
+            LNVector3_CatmullRom(&_vec1, &_vec2, &_vec3, &_vec4, _t, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
             *((LNVector3*)DATA_PTR(retObj)) = _outVec;
             return retObj;
@@ -501,12 +504,12 @@ static VALUE static_lnrbLNVector3_TransformCoord(int argc, VALUE *argv, VALUE se
 }
 
 
-static void LNVector4_delete(LNVector4* obj)
+void LNVector4_delete(LNVector4* obj)
 {
     free(obj);
 }
 
-static VALUE LNVector4_allocate( VALUE klass )
+VALUE LNVector4_allocate( VALUE klass )
 {
     VALUE obj;
     LNVector4* internalObj;
@@ -520,7 +523,7 @@ static VALUE LNVector4_allocate( VALUE klass )
     return obj;
 }
 
-static VALUE LNVector4_struct_initialize( int argc, VALUE *argv, VALUE self )
+VALUE LNVector4_struct_initialize( int argc, VALUE *argv, VALUE self )
 {
     LNVector4* selfObj;
     Data_Get_Struct(self, LNVector4, selfObj);
@@ -598,37 +601,35 @@ static VALUE LNVector4_W_get(VALUE self)
     return toVALUE(selfObj->W);
 }
 
-static VALUE lnrbLNVector4_Create(int argc, VALUE *argv, VALUE self)
+static VALUE lnrbLNVector4_Set(int argc, VALUE *argv, VALUE self)
 {
     LNVector4* selfObj;
     Data_Get_Struct(self, LNVector4, selfObj);
-    if (3 <= argc && argc <= 3) {
+    if (4 <= argc && argc <= 4) {
+        VALUE x;
         VALUE y;
         VALUE z;
         VALUE w;
-        rb_scan_args(argc, argv, "3", &y, &z, &w);
-        if (isRbFloat(y) && isRbFloat(z) && isRbFloat(w)) {
+        rb_scan_args(argc, argv, "4", &x, &y, &z, &w);
+        if (isRbFloat(x) && isRbFloat(y) && isRbFloat(z) && isRbFloat(w)) {
+            float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             float _w = ((float)NUM2DBL(w));
-            LNVector4 _vec;
-            LNVector4_Create(selfObj, &_y, &_z, &_w, &_vec);
-            VALUE retObj = LNVector4_allocate(g_struct_Vector4);
-            *((LNVector4*)DATA_PTR(retObj)) = _vec;
-            return retObj;
-        }
+            LNVector4_Set(selfObj, _x, _y, _z, _w);
+            return Qnil;    }
     }
-    rb_raise(rb_eArgError, "Lumino::Vector4.vector_4 - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Vector4.set - wrong argument type.");
     return Qnil;
 }
 
 
-static void LNMatrix_delete(LNMatrix* obj)
+void LNMatrix_delete(LNMatrix* obj)
 {
     free(obj);
 }
 
-static VALUE LNMatrix_allocate( VALUE klass )
+VALUE LNMatrix_allocate( VALUE klass )
 {
     VALUE obj;
     LNMatrix* internalObj;
@@ -642,7 +643,7 @@ static VALUE LNMatrix_allocate( VALUE klass )
     return obj;
 }
 
-static VALUE LNMatrix_struct_initialize( int argc, VALUE *argv, VALUE self )
+VALUE LNMatrix_struct_initialize( int argc, VALUE *argv, VALUE self )
 {
     LNMatrix* selfObj;
     Data_Get_Struct(self, LNMatrix, selfObj);
@@ -1023,7 +1024,7 @@ static VALUE lnrbLNMatrix_Translate(int argc, VALUE *argv, VALUE self)
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
-            LNMatrix_Translate(selfObj, &_x, &_y, &_z);
+            LNMatrix_Translate(selfObj, _x, _y, _z);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.translate - wrong argument type.");
@@ -1055,7 +1056,7 @@ static VALUE lnrbLNMatrix_RotateX(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &radian);
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateX(selfObj, &_radian);
+            LNMatrix_RotateX(selfObj, _radian);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_x - wrong argument type.");
@@ -1071,7 +1072,7 @@ static VALUE lnrbLNMatrix_RotateY(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &radian);
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateY(selfObj, &_radian);
+            LNMatrix_RotateY(selfObj, _radian);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_y - wrong argument type.");
@@ -1087,7 +1088,7 @@ static VALUE lnrbLNMatrix_RotateZ(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &radian);
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateZ(selfObj, &_radian);
+            LNMatrix_RotateZ(selfObj, _radian);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_z - wrong argument type.");
@@ -1109,7 +1110,7 @@ static VALUE lnrbLNMatrix_Rotate(int argc, VALUE *argv, VALUE self)
             float _yRad = ((float)NUM2DBL(yRad));
             float _zRad = ((float)NUM2DBL(zRad));
             LNRotationOrder _rotOrder = (rotOrder != Qnil) ? (LNRotationOrder)FIX2INT(rotOrder) : LN_ROTATIONORDER_XYZ;
-            LNMatrix_Rotate(selfObj, &_xRad, &_yRad, &_zRad, &_rotOrder);
+            LNMatrix_Rotate(selfObj, _xRad, _yRad, _zRad, _rotOrder);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate - wrong argument type.");
@@ -1127,7 +1128,7 @@ static VALUE lnrbLNMatrix_RotateVec3(int argc, VALUE *argv, VALUE self)
         if (isRbObject(vec) && isRbNumber(rotOrder)) {
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNRotationOrder _rotOrder = (rotOrder != Qnil) ? (LNRotationOrder)FIX2INT(rotOrder) : LN_ROTATIONORDER_XYZ;
-            LNMatrix_RotateVec3(selfObj, &_vec, &_rotOrder);
+            LNMatrix_RotateVec3(selfObj, &_vec, _rotOrder);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_vec_3 - wrong argument type.");
@@ -1145,7 +1146,7 @@ static VALUE lnrbLNMatrix_RotateAxis(int argc, VALUE *argv, VALUE self)
         if (isRbObject(axis) && isRbFloat(radian)) {
             LNVector3* tmp__axis; Data_Get_Struct(axis, LNVector3, tmp__axis);LNVector3& _axis = *tmp__axis;
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateAxis(selfObj, &_axis, &_radian);
+            LNMatrix_RotateAxis(selfObj, &_axis, _radian);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_axis - wrong argument type.");
@@ -1177,7 +1178,7 @@ static VALUE lnrbLNMatrix_Scale(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &xyz);
         if (isRbFloat(xyz)) {
             float _xyz = ((float)NUM2DBL(xyz));
-            LNMatrix_Scale(selfObj, &_xyz);
+            LNMatrix_Scale(selfObj, _xyz);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.scale - wrong argument type.");
@@ -1197,7 +1198,7 @@ static VALUE lnrbLNMatrix_ScaleXYZ(int argc, VALUE *argv, VALUE self)
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
-            LNMatrix_ScaleXYZ(selfObj, &_x, &_y, &_z);
+            LNMatrix_ScaleXYZ(selfObj, _x, _y, _z);
             return Qnil;    }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.scale_xyz - wrong argument type.");
@@ -1334,7 +1335,7 @@ static VALUE static_lnrbLNMatrix_PerspectiveFovLH(int argc, VALUE *argv, VALUE s
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_PerspectiveFovLH(&_fovY, &_aspect, &_nearZ, &_farZ, &_matOut);
+            LNMatrix_PerspectiveFovLH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
             *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
             return retObj;
@@ -1358,7 +1359,7 @@ static VALUE static_lnrbLNMatrix_PerspectiveFovRH(int argc, VALUE *argv, VALUE s
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_PerspectiveFovRH(&_fovY, &_aspect, &_nearZ, &_farZ, &_matOut);
+            LNMatrix_PerspectiveFovRH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
             *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
             return retObj;
@@ -1382,7 +1383,7 @@ static VALUE static_lnrbLNMatrix_OrthoLH(int argc, VALUE *argv, VALUE self)
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_OrthoLH(&_width, &_height, &_nearZ, &_farZ, &_matOut);
+            LNMatrix_OrthoLH(_width, _height, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
             *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
             return retObj;
@@ -1406,7 +1407,7 @@ static VALUE static_lnrbLNMatrix_OrthoRH(int argc, VALUE *argv, VALUE self)
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_OrthoRH(&_width, &_height, &_nearZ, &_farZ, &_matOut);
+            LNMatrix_OrthoRH(_width, _height, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
             *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
             return retObj;
@@ -1435,12 +1436,12 @@ static VALUE lnrbLNMatrix_GetEulerAngles(int argc, VALUE *argv, VALUE self)
 }
 
 
-static void LNQuaternion_delete(LNQuaternion* obj)
+void LNQuaternion_delete(LNQuaternion* obj)
 {
     free(obj);
 }
 
-static VALUE LNQuaternion_allocate( VALUE klass )
+VALUE LNQuaternion_allocate( VALUE klass )
 {
     VALUE obj;
     LNQuaternion* internalObj;
@@ -1454,7 +1455,7 @@ static VALUE LNQuaternion_allocate( VALUE klass )
     return obj;
 }
 
-static VALUE LNQuaternion_struct_initialize( int argc, VALUE *argv, VALUE self )
+VALUE LNQuaternion_struct_initialize( int argc, VALUE *argv, VALUE self )
 {
     LNQuaternion* selfObj;
     Data_Get_Struct(self, LNQuaternion, selfObj);
@@ -1532,27 +1533,25 @@ static VALUE LNQuaternion_W_get(VALUE self)
     return toVALUE(selfObj->W);
 }
 
-static VALUE lnrbLNQuaternion_Create(int argc, VALUE *argv, VALUE self)
+static VALUE lnrbLNQuaternion_Set(int argc, VALUE *argv, VALUE self)
 {
     LNQuaternion* selfObj;
     Data_Get_Struct(self, LNQuaternion, selfObj);
-    if (3 <= argc && argc <= 3) {
+    if (4 <= argc && argc <= 4) {
+        VALUE x;
         VALUE y;
         VALUE z;
         VALUE w;
-        rb_scan_args(argc, argv, "3", &y, &z, &w);
-        if (isRbFloat(y) && isRbFloat(z) && isRbFloat(w)) {
+        rb_scan_args(argc, argv, "4", &x, &y, &z, &w);
+        if (isRbFloat(x) && isRbFloat(y) && isRbFloat(z) && isRbFloat(w)) {
+            float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             float _w = ((float)NUM2DBL(w));
-            LNQuaternion _qua;
-            LNQuaternion_Create(selfObj, &_y, &_z, &_w, &_qua);
-            VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _qua;
-            return retObj;
-        }
+            LNQuaternion_Set(selfObj, _x, _y, _z, _w);
+            return Qnil;    }
     }
-    rb_raise(rb_eArgError, "Lumino::Quaternion.quaternion - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Quaternion.set - wrong argument type.");
     return Qnil;
 }
 
@@ -1582,7 +1581,7 @@ static VALUE static_lnrbLNQuaternion_RotationAxis(int argc, VALUE *argv, VALUE s
             LNVector3* tmp__axis; Data_Get_Struct(axis, LNVector3, tmp__axis);LNVector3& _axis = *tmp__axis;
             float _r = ((float)NUM2DBL(r));
             LNQuaternion _outQua;
-            LNQuaternion_RotationAxis(&_axis, &_r, &_outQua);
+            LNQuaternion_RotationAxis(&_axis, _r, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
             *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
             return retObj;
@@ -1622,7 +1621,7 @@ static VALUE static_lnrbLNQuaternion_RotationYawPitchRoll(int argc, VALUE *argv,
             float _pitch = ((float)NUM2DBL(pitch));
             float _roll = ((float)NUM2DBL(roll));
             LNQuaternion _outQua;
-            LNQuaternion_RotationYawPitchRoll(&_yaw, &_pitch, &_roll, &_outQua);
+            LNQuaternion_RotationYawPitchRoll(_yaw, _pitch, _roll, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
             *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
             return retObj;
@@ -1700,7 +1699,7 @@ static VALUE static_lnrbLNQuaternion_Slerp(int argc, VALUE *argv, VALUE self)
             LNQuaternion* tmp__qua2; Data_Get_Struct(qua2, LNQuaternion, tmp__qua2);LNQuaternion& _qua2 = *tmp__qua2;
             float _t = ((float)NUM2DBL(t));
             LNQuaternion _outQua;
-            LNQuaternion_Slerp(&_qua1, &_qua2, &_t, &_outQua);
+            LNQuaternion_Slerp(&_qua1, &_qua2, _t, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
             *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
             return retObj;
@@ -1723,7 +1722,7 @@ void InitStructs()
     rb_define_method(g_struct_Vector2, "y", LN_TO_RUBY_FUNC(LNVector2_Y_get), 0);
         rb_define_method(g_struct_Vector2, "length", LN_TO_RUBY_FUNC(lnrbLNVector2_GetLength), -1);
         rb_define_method(g_struct_Vector2, "square_length", LN_TO_RUBY_FUNC(lnrbLNVector2_GetSquareLength), -1);
-        rb_define_private_method(g_struct_Vector2, "initialize", LN_TO_RUBY_FUNC(lnrbLNVector2_Create), -1);
+        rb_define_method(g_struct_Vector2, "set", LN_TO_RUBY_FUNC(lnrbLNVector2_Set), -1);
         rb_define_singleton_method(g_struct_Vector2, "normalize", LN_TO_RUBY_FUNC(static_lnrbLNVector2_Normalize), -1);
         rb_define_method(g_struct_Vector2, "normalize", LN_TO_RUBY_FUNC(lnrbLNVector2_NormalizeV), -1);
     g_struct_Vector3 = rb_define_class_under(g_luminoModule, "Vector3", rb_cObject);
@@ -1737,7 +1736,8 @@ void InitStructs()
     rb_define_method(g_struct_Vector3, "z", LN_TO_RUBY_FUNC(LNVector3_Z_get), 0);
         rb_define_method(g_struct_Vector3, "length", LN_TO_RUBY_FUNC(lnrbLNVector3_GetLength), -1);
         rb_define_method(g_struct_Vector3, "square_length", LN_TO_RUBY_FUNC(lnrbLNVector3_GetSquareLength), -1);
-        rb_define_private_method(g_struct_Vector3, "initialize", LN_TO_RUBY_FUNC(lnrbLNVector3_Create), -1);
+        rb_define_method(g_struct_Vector3, "set", LN_TO_RUBY_FUNC(lnrbLNVector3_Set), -1);
+        rb_define_method(g_struct_Vector3, "set_vz", LN_TO_RUBY_FUNC(lnrbLNVector3_SetVZ), -1);
         rb_define_singleton_method(g_struct_Vector3, "normalize", LN_TO_RUBY_FUNC(static_lnrbLNVector3_Normalize), -1);
         rb_define_method(g_struct_Vector3, "normalize", LN_TO_RUBY_FUNC(lnrbLNVector3_NormalizeV), -1);
         rb_define_singleton_method(g_struct_Vector3, "dot", LN_TO_RUBY_FUNC(static_lnrbLNVector3_Dot), -1);
@@ -1759,7 +1759,7 @@ void InitStructs()
     rb_define_method(g_struct_Vector4, "z", LN_TO_RUBY_FUNC(LNVector4_Z_get), 0);
     rb_define_method(g_struct_Vector4, "w=", LN_TO_RUBY_FUNC(LNVector4_W_set), 1);
     rb_define_method(g_struct_Vector4, "w", LN_TO_RUBY_FUNC(LNVector4_W_get), 0);
-        rb_define_private_method(g_struct_Vector4, "initialize", LN_TO_RUBY_FUNC(lnrbLNVector4_Create), -1);
+        rb_define_method(g_struct_Vector4, "set", LN_TO_RUBY_FUNC(lnrbLNVector4_Set), -1);
     g_struct_Matrix = rb_define_class_under(g_luminoModule, "Matrix", rb_cObject);
     rb_define_alloc_func(g_struct_Matrix, LNMatrix_allocate);
     rb_define_private_method(g_struct_Matrix, "initialize", LN_TO_RUBY_FUNC(LNMatrix_struct_initialize), -1);
@@ -1833,7 +1833,7 @@ void InitStructs()
     rb_define_method(g_struct_Quaternion, "z", LN_TO_RUBY_FUNC(LNQuaternion_Z_get), 0);
     rb_define_method(g_struct_Quaternion, "w=", LN_TO_RUBY_FUNC(LNQuaternion_W_set), 1);
     rb_define_method(g_struct_Quaternion, "w", LN_TO_RUBY_FUNC(LNQuaternion_W_get), 0);
-        rb_define_private_method(g_struct_Quaternion, "initialize", LN_TO_RUBY_FUNC(lnrbLNQuaternion_Create), -1);
+        rb_define_method(g_struct_Quaternion, "set", LN_TO_RUBY_FUNC(lnrbLNQuaternion_Set), -1);
         rb_define_singleton_method(g_struct_Quaternion, "identity", LN_TO_RUBY_FUNC(static_lnrbLNQuaternion_Identity), -1);
         rb_define_singleton_method(g_struct_Quaternion, "rotation_axis", LN_TO_RUBY_FUNC(static_lnrbLNQuaternion_RotationAxis), -1);
         rb_define_singleton_method(g_struct_Quaternion, "rotation_matrix", LN_TO_RUBY_FUNC(static_lnrbLNQuaternion_RotationMatrix), -1);

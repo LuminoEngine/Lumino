@@ -47,6 +47,28 @@ public:
 	void Finalize();
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
+
+	void AddContextOnMainWindow(GUIContext* context) { m_mainWindowContextList.Add(context); }
+	void RemoveContextOnMainWindow(GUIContext* context) { m_mainWindowContextList.Remove(context); }
+	void UpdateLayoutOnMainWindow(const Size& viewPixelSize);
+	void RenderOnMainWindow();
+
+private:
+	Array<GUIContext*>	m_mainWindowContextList;
+
+
+
+
+
+
+
+
+
+
+
+
+public:
+
 	RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
 
 	// TODO: context
@@ -67,7 +89,7 @@ public:
 
 	double GetTime() const { return m_time; }
 
-	void SetViewPixelSize(const Size& viewPixelSize) { m_viewPixelSize = viewPixelSize; }	// TODO: GUIContext
+	//void SetViewPixelSize(const Size& viewPixelSize) { m_viewPixelSize = viewPixelSize; }	// TODO: GUIContext
 	void Render();	// TODO: GUIContext
 
 public:	// internal

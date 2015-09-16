@@ -318,6 +318,17 @@ bool ApplicationImpl::UpdateFrame()
 {
 	m_endRequested = !m_platformManager->DoEvents();
 
+	if (m_guiManager != NULL) {
+		m_guiManager->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
+
+		{	// プロファイリング範囲
+			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
+			m_guiManager->UpdateLayoutOnMainWindow(m_platformManager->GetMainWindow()->GetSize());
+		}
+	}
+
+	Render();
+
 	m_fpsController.Process();
 
 	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
@@ -333,7 +344,17 @@ void ApplicationImpl::Render()
 {
 	if (m_graphicsManager != NULL)
 	{
-		m_graphicsManager->GetRenderer()->Begin();
+
+		Renderer* renderer = m_graphicsManager->GetRenderer();
+		SwapChain* swap = m_graphicsManager->GetMainSwapChain();
+
+
+
+		renderer->Begin();
+		renderer->SetRenderTarget(0, swap->GetBackBuffer());
+		renderer->SetDepthBuffer(swap->GetBackBufferDepth());
+		renderer->Clear(ClearFlags::All, ColorF::White);
+
 		//m_graphicsManager->GetRenderer()->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
 
 		//Graphics::DepthStencilState state;
@@ -343,14 +364,15 @@ void ApplicationImpl::Render()
 		//m_graphicsManager->GetRenderer()->SetDepthStencilState(state);
 
 		if (m_guiManager != NULL) {
-			m_guiManager->Render();
+			m_guiManager->RenderOnMainWindow();
 		}
 
 		if (m_profilerRenderer != NULL) {
 			m_profilerRenderer->Render(Vector2(640, 480));	//TODO
 		}
 
-		m_graphicsManager->GetRenderer()->End();
+		renderer->End();
+		swap->Present();
 	}
 }
 

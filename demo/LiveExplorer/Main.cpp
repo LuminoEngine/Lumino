@@ -33,8 +33,12 @@ int main()
 	try
 	{
 		ApplicationSettings appData;
-		appData.ApplicationLogEnabled = false;
 		Application::Initialize(appData);
+
+		GCPtr<GUIContext> context1 = GUIContext::Create();
+
+		GCPtr<Button> button1 = Button::Create();
+		context1->SetRootElement(button1);
 
 		while (Application::UpdateFrame())
 		{

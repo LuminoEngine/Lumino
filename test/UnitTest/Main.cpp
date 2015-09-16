@@ -3,8 +3,8 @@
 Platform::PlatformManager*	TestEnv::Platform = NULL;
 Physics::PhysicsManager*	TestEnv::PhysicsManager = NULL;
 GraphicsManagerPtr			TestEnv::Manager;
-Graphics::Renderer*			TestEnv::Renderer = NULL;
-Graphics::SwapChain*		TestEnv::MainSwapChain = NULL;
+Renderer*			TestEnv::Renderer = NULL;
+SwapChain*		TestEnv::MainSwapChain = NULL;
 SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
 
 //-----------------------------------------------------------------------------
@@ -12,7 +12,7 @@ SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
 //-----------------------------------------------------------------------------
 Renderer* TestEnv::BeginRendering()
 {
-	Graphics::Renderer* r = TestEnv::Renderer;
+	Renderer* r = TestEnv::Renderer;
 	SwapChain* swap = TestEnv::MainSwapChain;
 	r->SetRenderTarget(0, swap->GetBackBuffer());
 	r->SetDepthBuffer(swap->GetBackBufferDepth());

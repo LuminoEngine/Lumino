@@ -46,13 +46,13 @@ namespace LN
         
     
         /// <summary>
-        /// 2D ベクトルを初期化します。
+        /// 2D ベクトルに値を設定します。
         /// </summary>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
-        public  Vector2( float x,  float y)
+        public void Set( float x,  float y)
         {
-            var result = API.LNVector2_Create( x,  y, out this);
+            var result = API.LNVector2_Set(ref this,  x,  y);
             if (result != Result.OK) throw new LNoteException(result);
         }
         
@@ -125,25 +125,25 @@ namespace LN
         
     
         /// <summary>
-        /// 3Dベクトルを初期化します。
+        /// 3Dベクトルに値を設定します。
         /// </summary>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
-        public  Vector3( float x,  float y,  float z)
+        public void Set( float x,  float y,  float z)
         {
-            var result = API.LNVector3_Create( x,  y,  z, out this);
+            var result = API.LNVector3_Set(ref this,  x,  y,  z);
             if (result != Result.OK) throw new LNoteException(result);
         }
         
         /// <summary>
-        /// 2D ベクトル と Z値 を指定して、3Dベクトルを初期化します。
+        /// 2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
         /// </summary>
         /// <param name="vec2">2D ベクトル</param>
         /// <param name="z">Z 値</param>
-        public  Vector3( Vector2 vec2,  float z)
+        public void SetVZ( Vector2 vec2,  float z)
         {
-            var result = API.LNVector3_CreateVZ(ref vec2,  z, out this);
+            var result = API.LNVector3_SetVZ(out this, ref vec2,  z);
             if (result != Result.OK) throw new LNoteException(result);
         }
         
@@ -306,15 +306,15 @@ namespace LN
     
     
         /// <summary>
-        /// 4Dベクトルを初期化します。
+        /// 4Dベクトルに値を設定します。
         /// </summary>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
         /// <param name="w">W 値</param>
-        public  Vector4( float x,  float y,  float z,  float w)
+        public void Set( float x,  float y,  float z,  float w)
         {
-            var result = API.LNVector4_Create( x,  y,  z,  w, out this);
+            var result = API.LNVector4_Set(ref this,  x,  y,  z,  w);
             if (result != Result.OK) throw new LNoteException(result);
         }
         
@@ -765,15 +765,15 @@ namespace LN
     
     
         /// <summary>
-        /// クォータニオンを初期化します。
+        /// クォータニオンに値を設定します。
         /// </summary>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
         /// <param name="w">W 値</param>
-        public  Quaternion( float x,  float y,  float z,  float w)
+        public void Set( float x,  float y,  float z,  float w)
         {
-            var result = API.LNQuaternion_Create( x,  y,  z,  w, out this);
+            var result = API.LNQuaternion_Set(ref this,  x,  y,  z,  w);
             if (result != Result.OK) throw new LNoteException(result);
         }
         

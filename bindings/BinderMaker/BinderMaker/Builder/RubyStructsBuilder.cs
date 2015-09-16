@@ -36,7 +36,7 @@ namespace BinderMaker.Builder
     class RubyStructsBuilder : Builder
     {
         private static string StructAllocFuncTemplate = @"
-static VALUE __MODULE_NAME___allocate( VALUE klass )
+VALUE __MODULE_NAME___allocate( VALUE klass )
 {
     VALUE obj;
     __STRUCT_NAME__* internalObj;
@@ -51,7 +51,7 @@ static VALUE __MODULE_NAME___allocate( VALUE klass )
 }
 ";
         private static string StructInitializeFuncTemplate = @"
-static VALUE __MODULE_NAME___struct_initialize( int argc, VALUE *argv, VALUE self )
+VALUE __MODULE_NAME___struct_initialize( int argc, VALUE *argv, VALUE self )
 {
     __STRUCT_NAME__* selfObj;
     Data_Get_Struct(self, __STRUCT_NAME__, selfObj);
@@ -62,7 +62,7 @@ __CONTENTS__
 }
 ";
         private static string StructDeleteFuncTemplate = @"
-static void __MODULE_NAME___delete(__STRUCT_NAME__* obj)
+void __MODULE_NAME___delete(__STRUCT_NAME__* obj)
 {
     free(obj);
 }
@@ -340,7 +340,11 @@ __CONTENTS__
                             // C変数宣言 & 初期化代入
                             initStmt.AppendLine(RubyCommon.GetDeclCastExpVALUEtoC(param.Type, "_" + param.Name, param.Name, param.OriginalDefaultValue));
                             // API実引数
-                            argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
+                            if (param.Type is CLClass &&
+                                ((CLClass)param.Type).IsStruct)
+                                argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
+                            else
+                                argsText.AppendCommad("_" + param.Name);
                         }
                     }
                 }
@@ -412,5 +416,41 @@ __CONTENTS__
             _allFuncDefines.AppendWithIndent(t).NewLine(2);
         }
 
+    }
+
+    class RubyStructsHeaderBuilder : Builder
+    {
+        OutputBuffer _externs = new OutputBuffer();
+
+        /// <summary>
+        /// ビルド開始前(初期化)通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnInitialize()
+        {
+            _externs.AppendLine("#pragma once");
+        }
+
+        /// <summary>
+        /// クラスor構造体 通知 (開始)
+        /// </summary>
+        /// <param name="classType"></param>
+        /// <returns>false の場合このクラスの出力を無視する</returns>
+        protected override bool OnClassLookedStart(CLClass classType)
+        {
+            if (!classType.IsStruct) return false;
+
+            _externs.AppendLine("extern VALUE {0}_allocate(VALUE klass);", classType.OriginalName);
+
+            return true;
+        }
+
+        /// <summary>
+        /// ファイルに出力するための最終文字列を生成する
+        /// </summary>
+        protected override string OnMakeOutoutFileText()
+        {
+            return _externs.ToString();
+        }
     }
 }

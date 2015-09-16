@@ -15,7 +15,6 @@
 
 
 using namespace Lumino;
-using namespace Lumino::Graphics;
 
 #define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).GetCStr()
 #define LOCALFILEA(fileName) TestUtils::GetFilePathA(__FILE__, fileName).GetCStr()
@@ -36,12 +35,12 @@ public:
 	static Platform::PlatformManager*	Platform;
 	static Physics::PhysicsManager*	PhysicsManager;
 	static GraphicsManagerPtr			Manager;
-	static Graphics::Renderer*		Renderer;
-	static Graphics::SwapChain*		MainSwapChain;
+	static Renderer*		Renderer;
+	static SwapChain*		MainSwapChain;
 	static SceneGraphManager*		MMDSceneGraph;
 
 public:
-	static Graphics::Renderer* BeginRendering();
+	static Renderer* BeginRendering();
 	static void EndRendering();
 	static PathName MakeScreenShotPath(const char* fileName);
 	static void SaveScreenShot(const TCHAR* filePath);

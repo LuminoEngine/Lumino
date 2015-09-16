@@ -12,7 +12,7 @@ LN_NAMESPACE_GUI_BEGIN
 // フレームワークの都合上、多くのメンバを public で公開しなければならないが、しかしそれはあまりにも危険な実装。
 // やむを得ず friend class に逃がす。
 // C# の internal が使えれば楽なのだが・・・。
-class GUIHelper
+class GUIHelper	// TODO: Internal
 {
 public:
 	template<class T, typename... TArgs>
@@ -27,6 +27,13 @@ public:
 	static void UIElement_SetTemplateParent(UIElement* element, UIElement* templateParent) { element->m_templateParent = templateParent; }
 	static Array< RefPtr<AnimationClock> >* UIElement_GetAnimationClockList(UIElement* element) { return &element->m_animationClockList; }
 	static InvalidateFlags UIElement_GetInvalidateFlags(UIElement* element) { return element->m_invalidateFlags; }
+
+	static void AttachContext(UIElement* element, GUIContext* ownerContext) { element->AttachContext(ownerContext); }
+	static void DetachContext(UIElement* element){ element->DetachContext(); }
+
+#ifdef LUMINO_GUI_GUICONTEXT_H
+	static const Size& GetViewPixelSize(GUIContext* context) { return context->GetViewPixelSize(); }
+#endif
 
 
 	static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
