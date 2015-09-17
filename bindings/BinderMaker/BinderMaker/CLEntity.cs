@@ -112,8 +112,9 @@ namespace BinderMaker
         public static CLPrimitiveType String;
         public static CLPrimitiveType Bool;
         public static CLPrimitiveType Byte;
-        public static CLPrimitiveType Int;
+        public static CLPrimitiveType Int32;
         public static CLPrimitiveType UInt32;
+        public static CLPrimitiveType Int64;
         public static CLPrimitiveType Float;
         public static CLPrimitiveType Double;
         public static CLPrimitiveType IntPtr;

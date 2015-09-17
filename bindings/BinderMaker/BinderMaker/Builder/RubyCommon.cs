@@ -39,7 +39,7 @@ namespace BinderMaker.Builder
 
             { CLPrimitiveType.Bool,         new RubyTypeInfo("Bool",    "isRbBool({0})",   "lnBool",       "RbBooltoBool({0})",         "lnBool {0} = RbBooltoBool({1});") },
             { CLPrimitiveType.Byte,         new RubyTypeInfo("Integer", "isRbNumber({0})", "lnU8",         "FIX2INT({0})",              "lnU8 {0} = FIX2INT({1});") },
-            { CLPrimitiveType.Int,          new RubyTypeInfo("Integer", "isRbNumber({0})", "int",          "FIX2INT({0})",              "int {0} = FIX2INT({1});") },
+            { CLPrimitiveType.Int32,          new RubyTypeInfo("Integer", "isRbNumber({0})", "int",          "FIX2INT({0})",              "int {0} = FIX2INT({1});") },
             { CLPrimitiveType.UInt32,       new RubyTypeInfo("Integer", "isRbNumber({0})", "lnU32",        "FIX2INT({0})",              "lnU32 {0} = FIX2INT({1});") },
             { CLPrimitiveType.Float,        new RubyTypeInfo("Float",   "isRbFloat({0})",  "float",        "((float)NUM2DBL({0}))",    "float {0} = static_cast<float>(NUM2DBL({1}));") },
             { CLPrimitiveType.Double,       new RubyTypeInfo("Float",   "isRbFloat({0})",  "double",       "NUM2DBL({0})",              "double {0} = NUM2DBL({1});") },
@@ -342,6 +342,22 @@ namespace BinderMaker.Builder
             }
 
             return output;
+        }
+
+
+        /// <summary>
+        /// rb_define_method 等のメソッド登録を作成する
+        /// </summary>
+        public static void MakeRubyMethodRegister(OutputBuffer output, CLMethod baseMethod, string typeValName, string rubyMethodName, string funcName)
+        {
+            string def;
+            if (baseMethod.IsRefObjectConstructor)
+                def = string.Format(@"rb_define_private_method({0}, ""initialize"", LN_TO_RUBY_FUNC({1}), -1);", typeValName, funcName);
+            else if (baseMethod.IsInstanceMethod)
+                def = string.Format(@"rb_define_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
+            else
+                def = string.Format(@"rb_define_singleton_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
+            output.AppendLine(def);
         }
     }
 }

@@ -462,6 +462,62 @@
 #func native_LNSoundListener_SetVelocityXYZ "LNSoundListener_SetVelocityXYZD" double, double, double
 #define LNSoundListener_SetVelocityXYZ(%1, %2, %3) native_LNSoundListener_SetVelocityXYZ %1, %2, %3
 
+//LNSound
+#func native_LNSound_GetVolume "LNSound_GetVolume" int, var
+#define LNSound_GetVolume(%1, %2) native_LNSound_GetVolume %1, %2
+#func native_LNSound_SetVolume "LNSound_SetVolume" int, int
+#define LNSound_SetVolume(%1, %2) native_LNSound_SetVolume %1, %2
+#func native_LNSound_GetPitch "LNSound_GetPitch" int, var
+#define LNSound_GetPitch(%1, %2) native_LNSound_GetPitch %1, %2
+#func native_LNSound_SetPitch "LNSound_SetPitch" int, int
+#define LNSound_SetPitch(%1, %2) native_LNSound_SetPitch %1, %2
+#func native_LNSound_SetLoopEnabled "LNSound_SetLoopEnabled" int, int
+#define LNSound_SetLoopEnabled(%1, %2) native_LNSound_SetLoopEnabled %1, %2
+#func native_LNSound_IsLoopEnabled "LNSound_IsLoopEnabled" int, var
+#define LNSound_IsLoopEnabled(%1, %2) native_LNSound_IsLoopEnabled %1, %2
+#func native_LNSound_SetLoopRange "LNSound_SetLoopRange" int, int, int
+#define LNSound_SetLoopRange(%1, %2, %3) native_LNSound_SetLoopRange %1, %2, %3
+#func native_LNSound_Set3DEnabled "LNSound_Set3DEnabled" int, int
+#define LNSound_Set3DEnabled(%1, %2) native_LNSound_Set3DEnabled %1, %2
+#func native_LNSound_Is3DEnabled "LNSound_Is3DEnabled" int, var
+#define LNSound_Is3DEnabled(%1, %2) native_LNSound_Is3DEnabled %1, %2
+#func native_LNSound_GetPlayingMode "LNSound_GetPlayingMode" int, int
+#define LNSound_GetPlayingMode(%1, %2) native_LNSound_GetPlayingMode %1, %2
+#func native_LNSound_SetPlayingMode "LNSound_SetPlayingMode" int, int
+#define LNSound_SetPlayingMode(%1, %2) native_LNSound_SetPlayingMode %1, %2
+#func native_LNSound_GetPlayingState "LNSound_GetPlayingState" int, var
+#define LNSound_GetPlayingState(%1, %2) native_LNSound_GetPlayingState %1, %2
+#func native_LNSound_GetPlayedSamples "LNSound_GetPlayedSamples" int, var
+#define LNSound_GetPlayedSamples(%1, %2) native_LNSound_GetPlayedSamples %1, %2
+#func native_LNSound_GetTotalSamples "LNSound_GetTotalSamples" int, var
+#define LNSound_GetTotalSamples(%1, %2) native_LNSound_GetTotalSamples %1, %2
+#func native_LNSound_GetSamplingRate "LNSound_GetSamplingRate" int, var
+#define LNSound_GetSamplingRate(%1, %2) native_LNSound_GetSamplingRate %1, %2
+#func native_LNSound_SetEmitterPosition "LNSound_SetEmitterPosition" int, var
+#define LNSound_SetEmitterPosition(%1, %2) native_LNSound_SetEmitterPosition %1, %2
+#func native_LNSound_SetEmitterVelocity "LNSound_SetEmitterVelocity" int, var
+#define LNSound_SetEmitterVelocity(%1, %2) native_LNSound_SetEmitterVelocity %1, %2
+#func native_LNSound_SetEmitterDistance "LNSound_SetEmitterDistanceD" int, double
+#define LNSound_SetEmitterDistance(%1, %2) native_LNSound_SetEmitterDistance %1, %2
+#func native_LNSound_Create "LNSound_Create" str, var
+#define LNSound_Create(%1, %2) native_LNSound_Create %1, %2
+#func native_LNSound_CreateMem "LNSound_CreateMem" int, int, var
+#define LNSound_CreateMem(%1, %2, %3) native_LNSound_CreateMem %1, %2, %3
+#func native_LNSound_Play "LNSound_Play" int
+#define LNSound_Play(%1) native_LNSound_Play %1
+#func native_LNSound_Stop "LNSound_Stop" int
+#define LNSound_Stop(%1) native_LNSound_Stop %1
+#func native_LNSound_Pause "LNSound_Pause" int
+#define LNSound_Pause(%1) native_LNSound_Pause %1
+#func native_LNSound_Resume "LNSound_Resume" int
+#define LNSound_Resume(%1) native_LNSound_Resume %1
+#func native_LNSound_FadeVolume "LNSound_FadeVolume" int, int, double, int
+#define LNSound_FadeVolume(%1, %2, %3, %4) native_LNSound_FadeVolume %1, %2, %3, %4
+#func native_LNSound_SetEmitterPositionXYZ "LNSound_SetEmitterPositionXYZD" int, double, double, double
+#define LNSound_SetEmitterPositionXYZ(%1, %2, %3, %4) native_LNSound_SetEmitterPositionXYZ %1, %2, %3, %4
+#func native_LNSound_SetEmitterVelocityXYZ "LNSound_SetEmitterVelocityXYZD" int, double, double, double
+#define LNSound_SetEmitterVelocityXYZ(%1, %2, %3, %4) native_LNSound_SetEmitterVelocityXYZ %1, %2, %3, %4
+
 
 
         const string ASFileFooter = @"

@@ -24,8 +24,9 @@ namespace BinderMaker.Builder
 
             { CLPrimitiveType.Bool, "bool" },
             { CLPrimitiveType.Byte, "byte" },
-            { CLPrimitiveType.Int, "int" },
+            { CLPrimitiveType.Int32, "int" },
             { CLPrimitiveType.UInt32, "uint" },
+            { CLPrimitiveType.Int64, "long" },
             { CLPrimitiveType.Float, "float" },
             { CLPrimitiveType.Double, "double" },
 

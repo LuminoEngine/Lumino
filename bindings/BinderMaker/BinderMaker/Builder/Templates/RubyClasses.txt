@@ -1,6 +1,13 @@
 ﻿#include "LuminoRuby.h"
 #include "RubyStructs.h"
 
+struct wrapReferenceObject
+{
+	LNHandle	Handle;
+};
+
+__WRAP_STRUCTS__
+
 __GLOBALS__
 
 __FUNCTIONS__

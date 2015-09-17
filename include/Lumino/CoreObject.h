@@ -5,7 +5,19 @@
 
 namespace Lumino
 {
-
+	
+enum class GenericInstanceType
+{
+	Unknown = 0,
+	Bool,
+	Int,
+	Float,
+	String,
+	Enum,
+	Object,
+	List,
+	Struct,
+};
 	
 /**
 	@brief		
@@ -17,6 +29,8 @@ public:
 	static const int IsArrayObject = 1;	// TODO
 
 	virtual void AddVariant(const Variant& value) = 0;
+
+	//virtual GenericInstanceType GetGenericInstanceType() const = 0;
 };
 
 /**
@@ -37,6 +51,45 @@ public:
 	typedef typename Collection<TValue>::const_pointer const_pointer;
 	typedef typename Collection<TValue>::reference reference;
 	typedef typename Collection<TValue>::const_reference const_reference;
+
+	//template<typename T, typename TIsEnum, typename TIsObject, typename TIsList, typename TIsClass> struct TypeTraits
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::Unknown; }
+	//};
+	//template<> struct TypeTraits<bool, std::false_type, std::false_type, std::false_type, std::false_type>
+	//{ 
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::Bool; }
+	//};
+	//template<> struct TypeTraits<int, std::false_type, std::false_type, std::false_type, std::false_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::Int; }
+	//};
+	//template<> struct TypeTraits<float, std::false_type, std::false_type, std::false_type, std::false_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::Float; }
+	//};
+	//template<> struct TypeTraits<String, std::false_type, std::false_type, std::false_type, std::false_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::String; }
+	//};
+	//template<> struct TypeTraits<T, std::true_type, std::false_type, std::false_type, std::true_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::Enum; }
+	//}
+	//template<> struct TypeTraits<T, std::false_type, std::true_type, std::false_type, std::true_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::Object; }
+	//};
+	//template<> struct TypeTraits<T, std::false_type, std::true_type, std::true_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::List; }
+	//};
+	//template<> struct TypeTraits<T, std::false_type, std::false_type, std::false_type>
+	//{
+	//	static GenericInstanceType GetGenericInstanceType() { return GenericInstanceType::List; }
+	//};
+
+
 
 	virtual ~GenericCoreList()
 	{

@@ -127,8 +127,9 @@ namespace BinderMaker
             CLPrimitiveType.String = new CLPrimitiveType("String");
             CLPrimitiveType.Bool = new CLPrimitiveType("Bool");
             CLPrimitiveType.Byte = new CLPrimitiveType("Byte");
-            CLPrimitiveType.Int = new CLPrimitiveType("Int");
+            CLPrimitiveType.Int32 = new CLPrimitiveType("Int");
             CLPrimitiveType.UInt32 = new CLPrimitiveType("UInt32");
+            CLPrimitiveType.Int64 = new CLPrimitiveType("Int64");
             CLPrimitiveType.Float = new CLPrimitiveType("Float");
             CLPrimitiveType.Double = new CLPrimitiveType("Double");
             CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
@@ -147,8 +148,8 @@ namespace BinderMaker
                 { "const LNChar*",      CLPrimitiveType.String },
                 { "const LNChar**",     CLPrimitiveType.String },
 
-                { "int",                CLPrimitiveType.Int },
-                { "int*",               CLPrimitiveType.Int },
+                { "int",                CLPrimitiveType.Int32 },
+                { "int*",               CLPrimitiveType.Int32 },
                 { "float",              CLPrimitiveType.Float },
                 { "float*",             CLPrimitiveType.Float },
                 { "double",             CLPrimitiveType.Double },
@@ -157,6 +158,10 @@ namespace BinderMaker
                 { "LNBool*",　          CLPrimitiveType.Bool },
                 { "uint8_t",            CLPrimitiveType.Byte },
                 { "uint32_t",           CLPrimitiveType.UInt32 },
+                { "int32_t",            CLPrimitiveType.Int32 },
+                { "int32_t*",           CLPrimitiveType.Int32 },
+                { "int64_t",            CLPrimitiveType.Int64 },
+                { "int64_t*",           CLPrimitiveType.Int64 },
                 { "intptr_t",           CLPrimitiveType.IntPtr },
                 { "LNUserData",         CLPrimitiveType.IntPtr },
                 { "void*",              CLPrimitiveType.IntPtr },

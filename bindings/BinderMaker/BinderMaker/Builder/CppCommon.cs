@@ -34,7 +34,7 @@ namespace BinderMaker.Builder
 
             { CLPrimitiveType.Bool,         new CTypeInfo("lnBool", "lnBool*", "bool", "bool*", null) },
             { CLPrimitiveType.Byte,         new CTypeInfo("lnU8", "lnU8*", "lnU8", "lnU8*", null) },
-            { CLPrimitiveType.Int,          new CTypeInfo("int", "int*", "int", "int*", null) },
+            { CLPrimitiveType.Int32,          new CTypeInfo("int", "int*", "int", "int*", null) },
             { CLPrimitiveType.UInt32,       new CTypeInfo("lnU32", "lnU32*", "lnU32", "lnU32*", null) },
             { CLPrimitiveType.Float,        new CTypeInfo("float", "float*", "float", "float*", null) },
             { CLPrimitiveType.Double,       new CTypeInfo("double", "double*", "double", "double*", null) },

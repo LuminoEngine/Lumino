@@ -538,6 +538,359 @@ namespace LN
     
     };
     
+    /// <summary>
+    /// 音声データひとつ分を表し、再生などの操作を行うクラスです。
+    /// </summary>
+    public partial class Sound : ReferenceObject
+    {
+    
+        /// <summary>
+        /// サウンドのボリューム
+        /// </summary>
+        public int Volume
+        {
+            get
+            {
+                var outVolume = new int();
+                var result = API.LNSound_GetVolume( _handle, out outVolume);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outVolume;
+            
+            }
+            
+            set
+            {
+                var result = API.LNSound_SetVolume( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドのピッチ
+        /// </summary>
+        public int Pitch
+        {
+            get
+            {
+                var outPitch = new int();
+                var result = API.LNSound_GetPitch( _handle, out outPitch);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outPitch;
+            
+            }
+            
+            set
+            {
+                var result = API.LNSound_SetPitch( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドのループ再生の有無
+        /// </summary>
+        public bool LoopEnabled
+        {
+            set
+            {
+                var result = API.LNSound_SetLoopEnabled( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドのループ再生が有効であるかを確認します。
+        /// </summary>
+        public bool IsLoopEnabled
+        {
+            get
+            {
+                var outEnabled = new bool();
+                var result = API.LNSound_IsLoopEnabled( _handle, out outEnabled);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outEnabled;
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドのループ再生の範囲
+        /// </summary>
+        /// <remarks>
+        /// begin と length に 0 を指定すると、全体をループ領域として設定します。
+        /// </remarks>
+        public int LoopRange
+        {
+            set
+            {
+                var result = API.LNSound_SetLoopRange( _handle,  value,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドを 3D 音源として再生するか
+        /// </summary>
+        public bool 3DEnabled
+        {
+            set
+            {
+                var result = API.LNSound_Set3DEnabled( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドが 3D 音源であるかを確認します。
+        /// </summary>
+        public bool Is3DEnabled
+        {
+            get
+            {
+                var outEnabled = new bool();
+                var result = API.LNSound_Is3DEnabled( _handle, out outEnabled);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outEnabled;
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンド再生時の音声データの再生方法
+        /// </summary>
+        public void PlayingMode
+        {
+            get
+            {
+                var result = API.LNSound_GetPlayingMode( _handle,  outMode);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+            set
+            {
+                var result = API.LNSound_SetPlayingMode( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドの再生状態
+        /// </summary>
+        public SoundPlayingState PlayingState
+        {
+            get
+            {
+                var outState = new SoundPlayingState();
+                var result = API.LNSound_GetPlayingState( _handle, out outState);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outState;
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドの再生したサンプル数
+        /// </summary>
+        public long PlayedSamples
+        {
+            get
+            {
+                var outSamples = new long();
+                var result = API.LNSound_GetPlayedSamples( _handle, out outSamples);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outSamples;
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドの音声データ全体のサンプル数
+        /// </summary>
+        public long TotalSamples
+        {
+            get
+            {
+                var outSamples = new long();
+                var result = API.LNSound_GetTotalSamples( _handle, out outSamples);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outSamples;
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドのサンプリングレート
+        /// </summary>
+        public int SamplingRate
+        {
+            get
+            {
+                var outRate = new int();
+                var result = API.LNSound_GetSamplingRate( _handle, out outRate);
+                if (result != Result.OK) throw new LNoteException(result);
+                return outRate;
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドの 3D 音源としての位置
+        /// </summary>
+        public Vector3 EmitterPosition
+        {
+            set
+            {
+                var result = API.LNSound_SetEmitterPosition( _handle, ref value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドの 3D 音源としての速度
+        /// </summary>
+        public Vector3 EmitterVelocity
+        {
+            set
+            {
+                var result = API.LNSound_SetEmitterVelocity( _handle, ref value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+        /// <summary>
+        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) 
+        /// </summary>
+        public float EmitterDistance
+        {
+            set
+            {
+                var result = API.LNSound_SetEmitterDistance( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
+            
+            }
+            
+        }
+    
+        internal Sound(_LNInternal i) : base(i) {}
+        
+        /// <summary>
+        /// ファイルからサウンドオブジェクトを作成します。
+        /// </summary>
+        /// <param name="filePath">音声ファイルのパス</param>
+        public  Sound( string filePath) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr sound;
+            var result = API.LNSound_Create( filePath, out sound);
+            if (result != Result.OK) throw new LNoteException(result);
+            InternalManager.RegisterWrapperObject(this, sound);
+        
+        }
+        
+        /// <summary>
+        /// メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
+        /// </summary>
+        /// <param name="data">メモリ上の音声データへのポインタ</param>
+        /// <param name="dataSize">データサイズ (バイト単位)</param>
+        public  Sound( byte[] data,  int dataSize) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr sound;
+            var result = API.LNSound_CreateMem( data,  dataSize, out sound);
+            if (result != Result.OK) throw new LNoteException(result);
+            InternalManager.RegisterWrapperObject(this, sound);
+        
+        }
+        
+        /// <summary>
+        /// サウンドを再生します。
+        /// </summary>
+        public void Play()
+        {
+            var result = API.LNSound_Play( _handle);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// サウンドの再生を停止します。
+        /// </summary>
+        public void Stop()
+        {
+            var result = API.LNSound_Stop( _handle);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// サウンドの再生を一時停止します。
+        /// </summary>
+        public void Pause()
+        {
+            var result = API.LNSound_Pause( _handle);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// サウンドの再生を一時停止します。
+        /// </summary>
+        public void Resume()
+        {
+            var result = API.LNSound_Resume( _handle);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// サウンド音量のフェード操作を行います。
+        /// </summary>
+        /// <param name="targetVolume">変更先の音量</param>
+        /// <param name="time">フェードにかける時間 (秒)</param>
+        /// <param name="behavior">フェード完了後の動作の指定</param>
+        public void FadeVolume( int targetVolume,  double time,  SoundFadeBehavior behavior)
+        {
+            var result = API.LNSound_FadeVolume( _handle,  targetVolume,  time,  behavior);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// サウンドの 3D 音源としての位置を設定します。
+        /// </summary>
+        /// <param name="x">3D 空間上の X 座標</param>
+        /// <param name="y">3D 空間上の Y 座標</param>
+        /// <param name="z">3D 空間上の Z 座標</param>
+        public void SetEmitterPosition( float x,  float y,  float z)
+        {
+            var result = API.LNSound_SetEmitterPositionXYZ( _handle,  x,  y,  z);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+        /// <summary>
+        /// サウンドの 3D 音源としての速度を設定します。
+        /// </summary>
+        /// <param name="x">速度の X 成分</param>
+        /// <param name="y">速度の Y 成分</param>
+        /// <param name="z">速度の Z 成分</param>
+        public void SetEmitterVelocity( float x,  float y,  float z)
+        {
+            var result = API.LNSound_SetEmitterVelocityXYZ( _handle,  x,  y,  z);
+            if (result != Result.OK) throw new LNoteException(result);
+        
+        }
+        
+    
+    };
+    
 	
 
     
@@ -601,6 +954,16 @@ namespace LN
         public static void Register()
         {
 
+var _Sound = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new Sound(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_Sound);
+LNSound_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -611,6 +974,9 @@ namespace LN
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
         private static extern IntPtr LNObject_GetTypeUserData(IntPtr handle);
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
+
 
     }
 

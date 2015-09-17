@@ -453,8 +453,8 @@ LN_CLASS(LNSound, LNObject)
 
 	/**
 		@brief		サウンドの再生したサンプル数を取得します。
-		@param[in]	sound		: サウンドハンドル
-		@param[out]	samples		: 再生したサンプル数を格納する変数
+		@param[in]	sound			: サウンドハンドル
+		@param[out]	outSamples		: 再生したサンプル数を格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
@@ -462,8 +462,8 @@ LN_CLASS(LNSound, LNObject)
 
 	/**
 		@brief		サウンドの音声データ全体のサンプル数を取得します。
-		@param[in]	sound		: サウンドハンドル
-		@param[out]	samples		: 音声データ全体のサンプル数を格納する変数
+		@param[in]	sound			: サウンドハンドル
+		@param[out]	outSamples		: 音声データ全体のサンプル数を格納する変数
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY

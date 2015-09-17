@@ -294,6 +294,13 @@ void UIElement::AttachContext(GUIContext* ownerContext)
 		LN_THROW(0, ArgumentException, "GUIContext attached.");
 	}
 	m_ownerContext = ownerContext;
+
+	// 子要素にも設定する
+	int count = GetVisualChildrenCount();
+	for (int i = 0; i < count; ++i) {
+		UIElement* child = GetVisualChild(i);
+		child->AttachContext(m_ownerContext);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -302,6 +309,13 @@ void UIElement::AttachContext(GUIContext* ownerContext)
 void UIElement::DetachContext()
 {
 	m_ownerContext = NULL;
+
+	// 子要素にも設定する
+	int count = GetVisualChildrenCount();
+	for (int i = 0; i < count; ++i) {
+		UIElement* child = GetVisualChild(i);
+		child->DetachContext();
+	}
 }
 
 

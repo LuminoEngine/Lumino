@@ -267,6 +267,8 @@ namespace BinderMaker.Parser
             from start      in Parse.String("LN_CLASS").Or(Parse.String("LN_STATIC_CLASS")).Or(Parse.String("LN_GENERIC_CLASS")).Or(Parse.String("LN_STRUCT_CLASS")).Or(Parse.String("LN_EXTENSION_CLASS"))
             from lparen     in Parse.Char('(').GenericToken()                   // (
             from name       in ParserUtils.Identifier                           // クラス名
+            from c          in Parse.Char(',').Or(Parse.Return(' '))              // opt
+            from baseClass  in ParserUtils.Identifier.GenericToken().Or(Parse.Return(""))              // opt
             from rparen     in Parse.Char(')').GenericToken()                   // )
             from body       in Parse.AnyChar.Until(Parse.String("LN_CLASS_END")).Text()    // 終端キーワードが見つかるまで ("LN_CLASS_END" は消費される)
             from optionText in (CLAPIOptions.OptionCommentRange.GenericToken()).Or(Parse.Return(""))              // オプションコメント

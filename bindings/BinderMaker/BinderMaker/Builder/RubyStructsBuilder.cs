@@ -207,6 +207,7 @@ __CONTENTS__
             {
                 MakeFuncDecl(overloads.Value);
             }
+            _allModuleDefines.NewLine();
         }
 
         /// <summary>
@@ -397,23 +398,14 @@ __CONTENTS__
             funcBody.AppendWithIndent(@"rb_raise(rb_eArgError, ""Lumino::{0}.{1} - wrong argument type."");", baseMethod.OwnerClass.Name, rubyMethodName).NewLine();
             funcBody.AppendWithIndent("return Qnil;");
 
-            // Init_lnote 登録処理
-            string def;
-            if (baseMethod.IsRefObjectConstructor)
-                def = string.Format(@"rb_define_private_method({0}, ""initialize"", LN_TO_RUBY_FUNC({1}), -1);", typeValName, funcName);
-            else if (baseMethod.IsInstanceMethod)
-                def = string.Format(@"rb_define_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
-            else
-                def = string.Format(@"rb_define_singleton_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
-            _allModuleDefines.IncreaseIndent();
-            _allModuleDefines.AppendWithIndent(def).NewLine();
-            _allModuleDefines.DecreaseIndent();
-
             // 関数作成
             string t = FuncDeclTemplate.Trim()
                 .Replace("__FUNC_NAME__", funcName)
                 .Replace("__CONTENTS__", funcBody.ToString());
             _allFuncDefines.AppendWithIndent(t).NewLine(2);
+
+            // rb_define_method 等のメソッド登録を作成する
+            RubyCommon.MakeRubyMethodRegister(_allModuleDefines, baseMethod, typeValName, rubyMethodName, funcName);
         }
 
     }

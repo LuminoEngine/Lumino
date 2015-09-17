@@ -43,7 +43,7 @@ namespace BinderMaker.Builder
             { CLPrimitiveType.String,       "str" },
             { CLPrimitiveType.Bool,         "int" },
             { CLPrimitiveType.Byte,         "int" },
-            { CLPrimitiveType.Int,          "int" },
+            { CLPrimitiveType.Int32,          "int" },
             { CLPrimitiveType.UInt32,       "int" },
             { CLPrimitiveType.Float,        "double" },
             { CLPrimitiveType.Double,       "double" },
