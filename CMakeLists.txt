@@ -284,7 +284,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/ControlTemplate.h
 	include/Lumino/GUI/CursorImage.h
 	include/Lumino/GUI/Decorator.h
-	include/Lumino/GUI/EventArgs.h
+	include/Lumino/GUI/RoutedEventArgs.h
 	include/Lumino/GUI/GUIContext.h
 	include/Lumino/GUI/GUIInputGesture.h
 	include/Lumino/GUI/GUIManager.h
@@ -298,6 +298,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/TextBox.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/UIElementCollection.h
+	include/Lumino/GUI/UIInjectedInputReceiver.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/VisualTreeHelper.h
 	include/Lumino/GUI/Controls/ButtonBase.h
@@ -322,7 +323,7 @@ set(LN_SOURCES_GUI
 	src/GUI/ControlTemplate.cpp
 	src/GUI/CursorImage.cpp
 	src/GUI/Decorator.cpp
-	src/GUI/EventArgs.cpp
+	src/GUI/RoutedEventArgs.cpp
 	src/GUI/GUIContext.cpp
 	src/GUI/GUIHelper.h
 	src/GUI/GUIInputGesture.cpp

@@ -57,20 +57,6 @@ void Button::OnClick()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Button::OnEvent(EventType type, RoutedEventArgs* args)
-{
-
-	//
-
-	//if (m_childElement != NULL) {
-	//	if (m_childElement->OnEvent(type, args)) { return true; }
-	//}
-	return ContentControl::OnEvent(type, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void Button::OnRender(Painter* painter)
 {
 }

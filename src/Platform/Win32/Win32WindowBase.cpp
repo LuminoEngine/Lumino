@@ -379,7 +379,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					EventArgs e;
 					e.Type = EventType_KeyChar;
 					e.Sender = this;
-					e.Key.KeyCode = Key_Unknown;
+					e.Key.KeyCode = Key::Unknown;
 					e.Key.IsAlt = ::GetKeyState(VK_MENU) < 0;
 					e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
 					e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
@@ -443,131 +443,131 @@ bool Win32WindowBase::NortifyEvent(const EventArgs& e)
 //-----------------------------------------------------------------------------
 Key Win32WindowBase::ConvertVirtualKeyCode(DWORD winVK)
 {
-	if ('A' <= winVK && winVK <= 'Z') return (Key)(Key_A + (winVK - 'A'));
-	if ('0' <= winVK && winVK <= '9') return (Key)(Key_0 + (winVK - '0'));
-	if (VK_F1 <= winVK && winVK <= VK_F12) return (Key)(Key_F1 + (winVK - VK_F1));
+	if ('A' <= winVK && winVK <= 'Z') return (Key)((int)Key::A + (winVK - 'A'));
+	if ('0' <= winVK && winVK <= '9') return (Key)((int)Key::D0 + (winVK - '0'));
+	if (VK_F1 <= winVK && winVK <= VK_F12) return (Key)((int)Key::F1 + (winVK - VK_F1));
 
 	switch (winVK)
 	{
 	case VK_SPACE:
-		return Key_Space;
+		return Key::Space;
 	case VK_ESCAPE:
-		return Key_Escape;
+		return Key::Escape;
 	case VK_UP:
-		return Key_Up;
+		return Key::Up;
 	case VK_DOWN:
-		return Key_Down;
+		return Key::Down;
 	case VK_LEFT:
-		return Key_Left;
+		return Key::Left;
 	case VK_RIGHT:
-		return Key_Right;
+		return Key::Right;
 	case VK_LSHIFT:
-		return Key_LShift;
+		return Key::LShift;
 	case VK_RSHIFT:
-		return Key_RShift;
+		return Key::RShift;
 	case VK_LCONTROL:
-		return Key_LCtrl;
+		return Key::LCtrl;
 	case VK_RCONTROL:
-		return Key_RCtrl;
+		return Key::RCtrl;
 	case VK_LMENU:
-		return Key_LAlt;
+		return Key::LAlt;
 	case VK_RMENU:
-		return Key_RAlt;
+		return Key::RAlt;
 	case VK_TAB:
-		return Key_Tab;
+		return Key::Tab;
 	case VK_RETURN:
-		return Key_Enter;
+		return Key::Enter;
 	case VK_BACK:
-		return Key_BackSpace;
+		return Key::BackSpace;
 	case VK_INSERT:
-		return Key_Insert;
+		return Key::Insert;
 	case VK_DELETE:
-		return Key_Delete;
+		return Key::Delete;
 	case VK_PRIOR:
-		return Key_PageUp;
+		return Key::PageUp;
 	case VK_NEXT:
-		return Key_PageDown;
+		return Key::PageDown;
 	case VK_HOME:
-		return Key_Home;
+		return Key::Home;
 	case VK_END:
-		return Key_End;
+		return Key::End;
 
 	case VK_OEM_1:
-		return Key_Colon;
+		return Key::Colon;
 	case VK_OEM_PLUS:
-		return Key_SemiColon;
+		return Key::SemiColon;
 	case VK_OEM_COMMA:
-		return Key_Comma;
+		return Key::Comma;
 	case VK_OEM_PERIOD:
-		return Key_Period;
+		return Key::Period;
 	case VK_OEM_2:
-		return Key_Slash;
+		return Key::Slash;
 	case VK_OEM_MINUS:
-		return Key_Minus;
+		return Key::Minus;
 	case VK_OEM_102:
-		return Key_BackSlash;
+		return Key::BackSlash;
 	case VK_OEM_5:
-		return Key_Yen;
+		return Key::Yen;
 	case VK_OEM_7:
-		return Key_Caret;
+		return Key::Caret;
 	case VK_OEM_4:
-		return Key_LBracket;
+		return Key::LBracket;
 	case VK_OEM_6:
-		return Key_RBracket;
+		return Key::RBracket;
 		/*
-		case 'A': return Key_A;
-		case 'B': return Key_B;
-		case 'C': return Key_C;
-		case 'D': return Key_D;
-		case 'E': return Key_E;
-		case 'F': return Key_F;
-		case 'G': return Key_G;
-		case 'H': return Key_H;
-		case 'I': return Key_I;
-		case 'J': return Key_J;
-		case 'K': return Key_K;
-		case 'L': return Key_L;
-		case 'M': return Key_M;
-		case 'N': return Key_N;
-		case 'O': return Key_O;
-		case 'P': return Key_P;
-		case 'Q': return Key_Q;
-		case 'R': return Key_R;
-		case 'S': return Key_S;
-		case 'T': return Key_T;
-		case 'U': return Key_U;
-		case 'V': return Key_V;
-		case 'W': return Key_W;
-		case 'X': return Key_X;
-		case 'Y': return Key_Y;
-		case 'Z': return Key_Z;
+		case 'A': return Key::A;
+		case 'B': return Key::B;
+		case 'C': return Key::C;
+		case 'D': return Key::D;
+		case 'E': return Key::E;
+		case 'F': return Key::F;
+		case 'G': return Key::G;
+		case 'H': return Key::H;
+		case 'I': return Key::I;
+		case 'J': return Key::J;
+		case 'K': return Key::K;
+		case 'L': return Key::L;
+		case 'M': return Key::M;
+		case 'N': return Key::N;
+		case 'O': return Key::O;
+		case 'P': return Key::P;
+		case 'Q': return Key::Q;
+		case 'R': return Key::R;
+		case 'S': return Key::S;
+		case 'T': return Key::T;
+		case 'U': return Key::U;
+		case 'V': return Key::V;
+		case 'W': return Key::W;
+		case 'X': return Key::X;
+		case 'Y': return Key::Y;
+		case 'Z': return Key::Z;
 
-		Key_0                    = '0',
-		Key_1                    = '1',
-		Key_2                    = '2',
-		Key_3                    = '3',
-		Key_4                    = '4',
-		Key_5                    = '5',
-		Key_6                    = '6',
-		Key_7                    = '7',
-		Key_8                    = '8',
-		Key_9                    = '9',
+		Key::0                    = '0',
+		Key::1                    = '1',
+		Key::2                    = '2',
+		Key::3                    = '3',
+		Key::4                    = '4',
+		Key::5                    = '5',
+		Key::6                    = '6',
+		Key::7                    = '7',
+		Key::8                    = '8',
+		Key::9                    = '9',
 
-		Key_F1					= VK_F1,
-		Key_F2					= VK_F2,
-		Key_F3					= VK_F3,
-		Key_F4					= VK_F4,
-		Key_F5					= VK_F5,
-		Key_F6					= VK_F6,
-		Key_F7					= VK_F7,
-		Key_F8					= VK_F8,
-		Key_F9					= VK_F9,
-		Key_F10					= VK_F10,
-		Key_F11					= VK_F11,
-		Key_F12					= VK_F12,
+		Key::F1					= VK_F1,
+		Key::F2					= VK_F2,
+		Key::F3					= VK_F3,
+		Key::F4					= VK_F4,
+		Key::F5					= VK_F5,
+		Key::F6					= VK_F6,
+		Key::F7					= VK_F7,
+		Key::F8					= VK_F8,
+		Key::F9					= VK_F9,
+		Key::F10					= VK_F10,
+		Key::F11					= VK_F11,
+		Key::F12					= VK_F12,
 		*/
 	}
-	return Key_Unknown;
+	return Key::Unknown;
 }
 
 

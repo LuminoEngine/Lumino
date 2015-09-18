@@ -513,7 +513,7 @@ void UIElement::Render()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
+bool UIElement::OnEvent(RoutedEventType type, RoutedEventArgs* args)
 {
 	/* 今のところ、イベントを再帰で通知していく必要はない。
 		マウスイベントは Hover しているものへ Manager が直接送り込む。
@@ -533,34 +533,34 @@ bool UIElement::OnEvent(EventType type, RoutedEventArgs* args)
 
 	switch (type)
 	{
-	case Lumino::EventType_Unknown:
+	case RoutedEventType::Unknown:
 		break;
-	case Lumino::EventType_MouseMove:
+	case RoutedEventType::MouseMove:
 		OnMouseMove(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::EventType_MouseButtonDown:
+	case RoutedEventType::MouseButtonDown:
 		OnMouseDown(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::EventType_MouseButtonUp:
+	case RoutedEventType::MouseButtonUp:
 		OnMouseUp(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::EventType_MouseWheel:
+	case RoutedEventType::MouseWheel:
 		break;
-	case Lumino::EventType_KeyDown:
+	case RoutedEventType::KeyDown:
 		OnKeyDown(static_cast<KeyEventArgs*>(args));
 		break;
-	case Lumino::EventType_KeyUp:
+	case RoutedEventType::KeyUp:
 		OnKeyUp(static_cast<KeyEventArgs*>(args));
 		break;
-	case Lumino::EventType_Char:	// TODO: TextInput
+	case RoutedEventType::TextInput:
 		OnTextInput(static_cast<KeyEventArgs*>(args));
 		break;
-	case Lumino::EventType_ElapsedTime:
+	case RoutedEventType::ElapsedTime:
 		break;
-	case Lumino::EventType_MouseEnter:
+	case RoutedEventType::MouseEnter:
 		OnMouseEnter(static_cast<MouseEventArgs*>(args));
 		break;
-	case Lumino::EventType_MouseLeave:
+	case RoutedEventType::MouseLeave:
 		OnMouseLeave(static_cast<MouseEventArgs*>(args));
 		break;
 	default:

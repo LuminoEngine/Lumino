@@ -6,7 +6,7 @@
 #include <Lumino/Property.h>
 #include "Common.h"
 #include "../RoutedEvent.h"
-#include "EventArgs.h"
+#include "RoutedEventArgs.h"
 #include "DependencyObject.h"
 #include "ControlTemplate.h"
 #include "AnimationClock.h"
@@ -400,7 +400,7 @@ public:
 	/// 現在のテンプレートからビジュアルツリーが再構築された後に呼び出されます。
 	/// 派生クラスは localResource に対してキー値からリソースを取得することができます。
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource) {}
-	virtual bool OnEvent(EventType type, RoutedEventArgs* args);
+	virtual bool OnEvent(RoutedEventType type, RoutedEventArgs* args);
 
 	// IAddChild
 	virtual void AddChild(const Variant& value) { LN_THROW(0, InvalidOperationException); }	// 論理要素の追加。オーバーライドする。

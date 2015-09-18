@@ -10,6 +10,10 @@ namespace Lumino
 LN_NAMESPACE_GUI_BEGIN
 
 class GUIContext;
+class RoutedEventArgs;
+
+
+
 
 
 

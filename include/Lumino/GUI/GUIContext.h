@@ -5,6 +5,8 @@
 #define LUMINO_GUI_GUICONTEXT_H
 
 #include "Common.h"
+#include "RoutedEventArgs.h"
+#include "UIInjectedInputReceiver.h"
 
 namespace Lumino
 {
@@ -15,6 +17,7 @@ LN_NAMESPACE_GUI_BEGIN
 */
 class GUIContext
 	: public CoreObject
+	, public IUIInjectedInputReceiver
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
@@ -35,6 +38,16 @@ public:
 		@brief	このコンテキストのルート GUI 要素を取得します。
 	*/
 	UIElement* GetRootElement() const;
+	
+	// Implements IUIInjectedInputReceiver
+	virtual bool InjectMouseMove(float clientX, float clientY);
+	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY);
+	virtual bool InjectMouseButtonUp(MouseButton button, float clientX, float clientY);
+	virtual bool InjectMouseWheel(int delta, float clientX, float clientY);
+	virtual bool InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl);
+	virtual bool InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl);
+	virtual bool InjectTextInput(TCHAR ch);
+	virtual void InjectElapsedTime(float elapsedTime);
 
 private:
 	friend class GUIManagerImpl;

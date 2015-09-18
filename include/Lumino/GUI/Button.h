@@ -34,7 +34,6 @@ public:
 
 protected:
 	virtual void OnClick();
-	virtual bool OnEvent(EventType type, RoutedEventArgs* args);	// TODO: 意味的には RoutedEvent ではない
 	virtual void OnRender(Painter* painter);
 	//virtual void Render();
 

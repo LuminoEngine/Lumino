@@ -547,7 +547,7 @@ void TextBox::Handler_KeyDown(KeyEventArgs* e)
 		Menu とかは直近では考えていない。
 		それなので、ショートカットの検出もとりあえずここでやってしまう。
 	*/
-	if (e->KeyCode == Key_V && e->IsControl)
+	if (e->KeyCode == Key::V && e->IsControl)
 	{
 		Paste();
 		e->Handled = true;
@@ -570,7 +570,7 @@ void TextBox::Handler_TextInput(KeyEventArgs* e)
 //-----------------------------------------------------------------------------
 void TextBox::Handler_MouseDown(MouseEventArgs* e)
 {
-	Point pt(e->X, e->Y);
+	Point pt((int)e->X, (int)e->Y);
 	m_dragStartContentIndex = m_document->GetContentIndexFromPixel(pt);
 	Select(m_dragStartContentIndex, 0);
 
