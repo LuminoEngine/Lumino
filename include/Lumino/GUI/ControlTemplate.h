@@ -322,6 +322,8 @@ public:
 	ResourceDictionary();
 	virtual ~ResourceDictionary();
 
+	CoreObject* GetItem(const String& key);
+
 	bool TryGetItem(const String& key, CoreObject** outObject);
 
 	void AddItem(const String& key, CoreObject* obj);

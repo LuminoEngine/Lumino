@@ -427,7 +427,7 @@ bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 		break;
 	case Platform::EventType_KeyChar:		//  文字入力
 		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectChar(e.Key.Char)) { return true; }
+			if (m_guiManager->InjectTextInput(e.Key.Char)) { return true; }
 		}
 		break;
 	default:

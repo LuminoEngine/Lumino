@@ -80,6 +80,16 @@ struct BrushData
 			BrushWrapMode		WrapMode;
 
 		} TextureBrush;
+
+		struct
+		{
+			Device::ITexture*	Texture;
+			int					SourceRect[4];	///< XYWH
+			int					InnerSourceRect[4];	///< XYWH
+			BrushWrapMode		WrapMode;
+			int					FrameThicness;
+
+		} FrameTextureBrush;
 	};
 };
 

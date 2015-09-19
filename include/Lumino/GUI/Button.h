@@ -9,6 +9,15 @@ LN_NAMESPACE_GUI_BEGIN
 
 /**
 	@brief
+	@details
+				| VisualState | VisualStateGroup | description 
+				|-------------|------------------|-------------
+				| Normal      | CommonStates     | 既定の状態です。 
+				| MouseOver   | CommonStates     | マウスカーソルがボタンの上にあります。
+				| Pressed     | CommonStates     | ボタンが押されています。
+				| Disabled    | CommonStates     | ボタンが無効状態です。
+				| Focused     | FocusStates      | フォーカスがあります。
+				| Unfocused   | FocusStates      | フォーカスがありません。
 */
 class Button
 	: public ContentControl
@@ -38,10 +47,16 @@ protected:
 	//virtual void Render();
 
 
-	virtual void OnMouseMove(MouseEventArgs* e);
+	//virtual void OnMouseMove(MouseEventArgs* e);
 	//void UIElement_MouseMove(CoreObject* sender, MouseEventArgs* e);
 
-protected:
+private:
+	void RoutedHandler_MouseEnter(MouseEventArgs* e);
+	void RoutedHandler_MouseLeave(MouseEventArgs* e);
+	void RoutedHandler_MouseMove(MouseEventArgs* e);
+	void RoutedHandler_MouseDown(MouseEventArgs* e);
+	void RoutedHandler_MouseUp(MouseEventArgs* e);
+
 	// override UIElement
 
 	//virtual bool ApplyTemplateInternal()

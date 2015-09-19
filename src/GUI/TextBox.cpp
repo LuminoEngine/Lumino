@@ -14,6 +14,7 @@
 #include "../Internal.h"
 #include <Lumino/Platform/Clipboard.h>
 #include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/GUI/GUIContext.h>
 #include <Lumino/GUI/TextBox.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
@@ -467,7 +468,7 @@ void TextBox::Select(int start, int length)
 //-----------------------------------------------------------------------------
 void TextBox::Paste()
 {
-	String text = Platform::Clipboard::GetText(m_manager->GetNativeWindow());
+	String text = Platform::Clipboard::GetText(m_manager->GetMainWindow());
 	int len = m_document->Replace(m_selection, text);
 	Select(m_selection->Start += len, 0);
 }
@@ -505,7 +506,7 @@ void TextBox::OnRender(Painter* painter)
 	painter->SetBrush(brush);
 	m_document->Render(painter);
 
-	m_caretAnimation->SetTime(m_manager->GetTime());
+	m_caretAnimation->SetTime(GetContext()->GetTime());
 
 	// ‘I‘ð—Ìˆæ
 

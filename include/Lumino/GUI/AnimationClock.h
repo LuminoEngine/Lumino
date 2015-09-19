@@ -52,7 +52,7 @@ class AnimationClock
 	: public CoreObject
 {
 public:
-	AnimationClock(GUIManagerImpl* manager, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines);
+	AnimationClock(GUIContext* context, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines);
 	virtual ~AnimationClock();
 
 	bool IsFinished() const { return m_isFinished; }
@@ -73,7 +73,7 @@ private:
 		Variant		StartValue;
 	};
 
-	GUIManagerImpl*			m_manager;
+	GUIContext*				m_context;
 	Storyboard*				m_sourceStoryboard;		// 停止するときのキーにしたいので参照カウントを上げる必要はない
 	Array<TimeLineInstance>	m_timeLineInstanceList;
 	float					m_currentTime;

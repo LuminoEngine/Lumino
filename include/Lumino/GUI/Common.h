@@ -12,6 +12,8 @@ LN_NAMESPACE_GUI_BEGIN
 class GUIContext;
 class RoutedEventArgs;
 
+class CursorImage;
+
 
 
 
@@ -124,6 +126,8 @@ LN_ENUM_DECLARE(Orientation);
 LN_ENUM(CommonCursorImage)
 {
 	Arrow = 0,			/**< 矢印カーソル */
+
+	TERMINATOR,
 };
 LN_ENUM_REFLECTION(CommonCursorImage, Arrow)
 LN_ENUM_DECLARE(CommonCursorImage);

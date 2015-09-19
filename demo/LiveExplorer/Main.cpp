@@ -32,6 +32,9 @@ int main()
 #endif
 	try
 	{
+		auto fff = ColorF::Green;
+		ColorBrush ff(ColorF(1, 0, 0, 1));
+		auto aa = ColorBrush::Green;
 		ApplicationSettings appData;
 		Application::Initialize(appData);
 

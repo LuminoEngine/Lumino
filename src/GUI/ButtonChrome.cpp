@@ -15,7 +15,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ButtonChrome);
 
 // Register property
 LN_PROPERTY_IMPLEMENT(ButtonChrome, bool, IsMouseOverProperty, "IsMouseOver", m_isMouseOver, PropertyMetadata(false));
-LN_PROPERTY_IMPLEMENT(ButtonChrome, float, FrameWidthProperty, "FrameWidth", m_frameWidth, PropertyMetadata(8.0f));
+//LN_PROPERTY_IMPLEMENT(ButtonChrome, float, FrameWidthProperty, "FrameWidth", m_frameWidth, PropertyMetadata(8.0f));
 
 //-----------------------------------------------------------------------------
 //
@@ -30,7 +30,7 @@ ButtonChromePtr ButtonChrome::Create()
 //-----------------------------------------------------------------------------
 ButtonChrome::ButtonChrome(GUIManagerImpl* manager)
 	: Decorator(manager)
-	, m_frameWidth(8.0f)
+	//, m_frameWidth(8.0f)
 	, m_isMouseOver(false)
 {
 	// プロパティの登録
@@ -39,12 +39,12 @@ ButtonChrome::ButtonChrome(GUIManagerImpl* manager)
 	// TODO
 	// ボタンのスタイルとテンプレート
 	// https://msdn.microsoft.com/ja-jp/library/ms753328%28v=vs.110%29.aspx
-	RefPtr<VisualStateManager> vsm(LN_NEW VisualStateManager());
+	//RefPtr<VisualStateManager> vsm(LN_NEW VisualStateManager());
 
-	RefPtr<VisualStateGroup> group1(LN_NEW VisualStateGroup(_T("CommonStates")));
+	//RefPtr<VisualStateGroup> group1(LN_NEW VisualStateGroup(_T("CommonStates")));
 
 
-	RefPtr<VisualState> state1(LN_NEW VisualState(m_manager, _T("Normal")));
+	//RefPtr<VisualState> state1(LN_NEW VisualState(m_manager, _T("Normal")));
 
 }
 
@@ -77,8 +77,8 @@ ButtonChrome::~ButtonChrome()
 //-----------------------------------------------------------------------------
 void ButtonChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 {
-	m_brush = static_cast<TextureBrush*>(localResource->GetItem(_T("ButtonNormalFrameBrush")));
-	m_bgBrush = static_cast<TextureBrush*>(localResource->GetItem(_T("ButtonNormalBackgroundBrush")));
+	m_brush = static_cast<Brush*>(localResource->GetItem(_T("ButtonNormalBrush")));
+	//m_bgBrush = static_cast<Brush*>(localResource->GetItem(_T("ButtonNormalBackgroundBrush")));
 }
 
 //-----------------------------------------------------------------------------
@@ -89,15 +89,15 @@ void ButtonChrome::OnRender(Painter* painter)
 	RectF bgRect = m_finalLocalRect;
 	RectF rect = m_finalLocalRect;
 
-	if (!m_isMouseOver)
-	{
-		bgRect.Inflate(-m_frameWidth, -m_frameWidth);
-		painter->SetBrush(m_bgBrush);
-		painter->DrawRectangle(bgRect);
-	}
+	//if (!m_isMouseOver)
+	//{
+	//	bgRect.Inflate(-m_frameWidth, -m_frameWidth);
+	//	painter->SetBrush(m_bgBrush);
+	//	painter->DrawRectangle(bgRect);
+	//}
 
 	painter->SetBrush(m_brush);
-	painter->DrawFrameRectangle(rect, m_frameWidth);
+	painter->DrawRectangle(rect);
 }
 
 LN_NAMESPACE_GUI_END

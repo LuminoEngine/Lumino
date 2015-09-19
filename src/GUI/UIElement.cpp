@@ -99,7 +99,7 @@ void UIElement::Focus()
 {
 	if (IsFocusable())
 	{
-		m_manager->SetFocusElement(this);
+		m_ownerContext->SetFocusElement(this);
 	}
 }
 
@@ -108,7 +108,7 @@ void UIElement::Focus()
 //-----------------------------------------------------------------------------
 void UIElement::CaptureMouse() 
 {
-	m_manager->CaptureMouse(this);
+	m_ownerContext->CaptureMouse(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void UIElement::CaptureMouse()
 //-----------------------------------------------------------------------------
 void UIElement::ReleaseMouseCapture()
 {
-	m_manager->ReleaseMouseCapture(this);
+	m_ownerContext->ReleaseMouseCapture(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -139,6 +139,14 @@ UIElement* UIElement::GetVisualChild(int index) const
 		また、ItemsControl や Panel が握っている論理要素とビジュアル要素を常に同期する必要があり、漏れが心配。
 	*/
 	return m_visualChildren.GetAt(index);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GUIContext* UIElement::GetContext() const
+{
+	return m_ownerContext;
 }
 
 //-----------------------------------------------------------------------------

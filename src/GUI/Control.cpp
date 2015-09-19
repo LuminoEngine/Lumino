@@ -17,6 +17,8 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 LN_PROPERTY_IMPLEMENT(Control, BrushPtr, BackgroundProperty, "Background", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
 LN_PROPERTY_IMPLEMENT(Control, BrushPtr, ForegroundProperty, "Foreground", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
 LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Control, VisualStateGroupList*, VisualStateGroupsProperty, "VisualStateGroups", m_visualStateGroupList, PropertyMetadata(NULL));
+
 // TODO: フォント設定は子要素へ継承する
 LN_PROPERTY_IMPLEMENT(Control, String, FontFamilyProperty, "FontFamily", m_fontData.Family, PropertyMetadata(String::GetEmpty(), PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
 LN_PROPERTY_IMPLEMENT(Control, int, FontSizeProperty, "FontSize", m_fontData.Size, PropertyMetadata(20, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));

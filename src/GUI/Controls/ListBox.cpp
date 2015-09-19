@@ -157,7 +157,6 @@ ListBoxItem::~ListBoxItem()
 void ListBoxItem::Handler_MouseEnter(MouseEventArgs* e)
 {
 	VisualStateManager::GoToState(this, VisualStatus::MouseOver);
-	printf("Handler_MouseEnter (%p)\n", this);
 	e->Handled = true;
 
 
@@ -171,7 +170,6 @@ void ListBoxItem::Handler_MouseEnter(MouseEventArgs* e)
 void ListBoxItem::Handler_MouseLeave(MouseEventArgs* e)
 {
 	VisualStateManager::GoToState(this, VisualStatus::Normal);
-	printf("Handler_MouseLeave (%p)\n", this);
 	e->Handled = true;
 }
 

@@ -19,8 +19,6 @@ public:
 	static RefPtr<T> CreateUIElemenInstance(TArgs... args) { return RefPtr<T>(T::internalCreateInstance(args...)); }
 
 	static Internal::GUIPainter* GUIManager_GetGUIPainter(GUIManagerImpl* manager) { return manager->m_painter; }
-	static void GUIManager_AddAnimationClock(GUIManagerImpl* manager, AnimationClock* clock) { manager->AddAnimationClock(clock); }
-	static void GUIManager_RemoveAnimationClock(GUIManagerImpl* manager, AnimationClock* clock) { manager->RemoveAnimationClock(clock); }
 
 
 	static void UIElement_SetKeyName(UIElement* element, const String& name) { element->m_keyName = name; }
@@ -33,6 +31,13 @@ public:
 
 #ifdef LUMINO_GUI_GUICONTEXT_H
 	static const Size& GetViewPixelSize(GUIContext* context) { return context->GetViewPixelSize(); }
+	static void SetFocusElement(GUIContext* context, UIElement* element) { context->SetFocusElement(element); }
+	static void CaptureMouse(GUIContext* context, UIElement* element) { context->CaptureMouse(element); }
+	static void ReleaseMouseCapture(GUIContext* context, UIElement* element) { context->ReleaseMouseCapture(element); }
+	static void AddAnimationClock(GUIContext* context, AnimationClock* clock) { context->AddAnimationClock(clock); }
+	static void RemoveAnimationClock(GUIContext* context, AnimationClock* clock) { context->RemoveAnimationClock(clock); }
+	static double GetTime(GUIContext* context) { return context->GetTime(); }
+
 #endif
 
 

@@ -173,7 +173,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 
 	if (m_currentState.Brush.Type == BrushType_Texture)
 	{
-		Device::ITexture*srcTexture = m_currentState.Brush.TextureBrush.Texture;
+		Device::ITexture* srcTexture = m_currentState.Brush.TextureBrush.Texture;
 		Rect& srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
 
 		SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
@@ -188,6 +188,37 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		}
 		else {
 			LN_THROW(0, NotImplementedException);
+		}
+	}
+	else if (m_currentState.Brush.Type == BrushType_FrameTexture)
+	{
+		auto& brush = m_currentState.Brush.FrameTextureBrush;
+
+		// 枠
+		{
+			//Rect& srcRect = *((Rect*)brush.SourceRect);
+			DrawFrameRectangle(rect, brush.FrameThicness);
+		}
+
+		// Inner
+		{
+			Rect& srcRect = *((Rect*)brush.InnerSourceRect);
+			Device::ITexture* srcTexture = brush.Texture;
+			SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
+			texSize.Width = 1.0f / texSize.Width;
+			texSize.Height = 1.0f / texSize.Height;
+			RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
+
+			if (brush.WrapMode == BrushWrapMode_Stretch)
+			{
+				RectF tr = rect;
+				tr.Inflate(-brush.FrameThicness, -brush.FrameThicness);
+				InternalDrawRectangleStretch(tr, uvSrcRect);
+			}
+			else {
+				LN_THROW(0, NotImplementedException);
+			}
+
 		}
 	}
 	else
@@ -223,6 +254,9 @@ void PainterEngine::Flush()
 	Device::ITexture* srcTexture = NULL;
 	if (m_currentState.Brush.Type == BrushType_Texture) {
 		srcTexture = m_currentState.Brush.TextureBrush.Texture;
+	}
+	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
+		srcTexture = m_currentState.Brush.FrameTextureBrush.Texture;
 	}
 
 	if (srcTexture == NULL) {
@@ -292,6 +326,11 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, De
 	{
 		srcTexture = m_currentState.Brush.TextureBrush.Texture;
 		srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
+	}
+	else if (m_currentState.Brush.Type == BrushType_FrameTexture)
+	{
+		srcTexture = m_currentState.Brush.FrameTextureBrush.Texture;
+		srcRect = *((Rect*)m_currentState.Brush.FrameTextureBrush.SourceRect);
 	}
 	else {
 		// テクスチャブラシ以外で書くことはできない
@@ -551,6 +590,9 @@ void PainterEngine::AttachBrushData()
 	else if (m_currentState.Brush.Type == BrushType_Texture) {
 		LN_SAFE_ADDREF(m_currentState.Brush.TextureBrush.Texture);
 	}
+	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
+		LN_SAFE_ADDREF(m_currentState.Brush.FrameTextureBrush.Texture);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -560,6 +602,9 @@ void PainterEngine::DetachBrushData()
 {
 	if (m_currentState.Brush.Type == BrushType_Texture) {
 		LN_SAFE_RELEASE(m_currentState.Brush.TextureBrush.Texture);
+	}
+	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
+		LN_SAFE_RELEASE(m_currentState.Brush.FrameTextureBrush.Texture);
 	}
 }
 

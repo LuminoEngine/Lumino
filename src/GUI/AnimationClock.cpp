@@ -4,6 +4,7 @@
 #include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/AnimationClock.h>
 #include <Lumino/GUI/VisualTreeHelper.h>
+#include <Lumino/GUI/GUIContext.h>
 #include "GUIManagerImpl.h"
 #include "GUIHelper.h"
 
@@ -42,8 +43,8 @@ AnimationTimeline::~AnimationTimeline()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AnimationClock::AnimationClock(GUIManagerImpl* manager, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines)
-	: m_manager(manager)
+AnimationClock::AnimationClock(GUIContext* context, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines)
+	: m_context(context)
 	, m_sourceStoryboard(sourceStoryboard)
 	, m_timeLineInstanceList()
 	, m_currentTime(0)
@@ -80,7 +81,7 @@ AnimationClock::AnimationClock(GUIManagerImpl* manager, Storyboard* sourceStoryb
 	// 初期値セットの意味も込めて、ここでまずは 0 タイムで値をセットしておく。
 	SetTime(0);
 
-	GUIHelper::GUIManager_AddAnimationClock(m_manager, this);
+	GUIHelper::AddAnimationClock(m_context, this);
 }
 
 //-----------------------------------------------------------------------------
@@ -126,7 +127,7 @@ void AnimationClock::AdvanceTime(float elapsedTime)
 void AnimationClock::StopInternal()
 {
 	// Manager から外す
-	GUIHelper::GUIManager_RemoveAnimationClock(m_manager, this);
+	GUIHelper::RemoveAnimationClock(m_context, this);
 }
 
 LN_NAMESPACE_GUI_END

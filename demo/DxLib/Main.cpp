@@ -30,8 +30,8 @@ int main()
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
 
 	ApplicationSettings appData;
-	appData.GraphicsAPI = Graphics::GraphicsAPI::DirectX9;
-	appData.RenderingType = Graphics::RenderingType::Immediate;
+	appData.GraphicsAPI = GraphicsAPI::DirectX9;
+	appData.RenderingType = RenderingType::Immediate;
 	appData.UserMainWindow = GetMainWindowHandle();
 	appData.D3D9Device = (IDirect3DDevice9*)GetUseDirect3DDevice9();
 

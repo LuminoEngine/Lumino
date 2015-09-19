@@ -61,7 +61,7 @@ public:
 		@brief	PilePanel を作成します。
 		@return	作成されたインスタンスのポインタ。使い終えたら Release() を呼び出して、参照を解放してください。	
 	*/
-	PilePanel* Create();
+	static PilePanel* Create();
 
 protected:
 	PilePanel(GUIManagerImpl* manager);

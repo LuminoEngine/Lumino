@@ -24,21 +24,21 @@ public:
 
 	/**
 		@brief	メインウィンドウのトップレベルに配置される GUIContext を作成します。
-	*/
+		*/
 	static GUIContext* Create();
 
 public:
 
 	/**
 		@brief	このコンテキストのルート GUI 要素を設定します。
-	*/
+		*/
 	void SetRootElement(UIElement* element);
-	
+
 	/**
 		@brief	このコンテキストのルート GUI 要素を取得します。
-	*/
+		*/
 	UIElement* GetRootElement() const;
-	
+
 	// Implements IUIInjectedInputReceiver
 	virtual bool InjectMouseMove(float clientX, float clientY);
 	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY);
@@ -49,7 +49,7 @@ public:
 	virtual bool InjectTextInput(TCHAR ch);
 	virtual void InjectElapsedTime(float elapsedTime);
 
-private:
+LN_INTERNAL_ACCESS:
 	friend class GUIManagerImpl;
 	friend class GUIHelper;
 	GUIContext(GUIManagerImpl* manager);
@@ -58,10 +58,44 @@ private:
 	void UpdateLayout(const Size& viewPixelSize);
 	void Render();
 
-	GUIManagerImpl*	m_manager;
-	UIElement*		m_rootElement;
-	Size			m_viewPixelSize;
-	bool			m_onMainWindow;
+	void SetFocusElement(UIElement* element);
+	void CaptureMouse(UIElement* element);
+	void ReleaseMouseCapture(UIElement* element);
+	bool UpdateMouseHover(const PointF& mousePos);
+	void AddAnimationClock(AnimationClock* clock);
+	void RemoveAnimationClock(AnimationClock* clock);
+	double GetTime() const { return m_time; }
+
+private:
+
+	struct MouseClickTracker
+	{
+		double		LastTime;
+		int			ClickCount;
+		UIElement*	HoverElement;
+	};
+
+	GUIManagerImpl*				m_manager;
+	RefPtr<Platform::Window>	m_nativeWindow;
+	Size						m_viewPixelSize;
+	UIElement*					m_rootElement;
+
+	UIElement*					m_focusElement;
+	UIElement*					m_mouseHoverElement;
+	UIElement*					m_capturedElement;
+
+	PointF						m_mousePosition;
+	MouseClickTracker			m_mouseClickTrackers[MouseButton::TERMINATOR];
+	float						m_mouseButtonClickTimeout;
+
+	double						m_time;
+	
+	Array<AnimationClock*>		m_activeAnimationClockList;	///< TODO: インデックススタックを使ったリストにしたい
+
+	CursorImage*				m_currentCursorImage;
+	float						m_cursorAnimationTime;
+
+	bool						m_onMainWindow;
 };
 
 LN_NAMESPACE_GUI_END

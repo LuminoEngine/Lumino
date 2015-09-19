@@ -1,4 +1,23 @@
-﻿
+﻿/*
+	・StoryBoard とアニメーションの仕組みについて
+
+		Storyboard は複数の AnimationTimeline を持ち、再生/停止を行う。
+
+		AnimationTimeline(派生 FloatEasing 等) はどの名前の要素の
+		どのプロパティにどんなアニメーションを適用したいかを管理する。
+
+		Storyboard::Begin ではその Storyboard が持っているすべての
+		AnimationTimeline をまとめた1つの AnimationClock を生成する。
+
+		AnimationClock のコンストラクタでは、AnimationTimeline の設定先となる
+		要素を検索する。ここで AnimationTimeline が持っている TargetName が使われる。
+
+		生成された AnimationClock は Context に登録され、
+		時間の経過に合わせて AdvanceTime() が呼ばれる。
+
+		AnimationClock::AdvanceTime() で、ターゲットのプロパティに実際に値を設定する。
+
+*/
 #include "../Internal.h"
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/Control.h>
@@ -209,7 +228,7 @@ void Storyboard::AddTimeline(AnimationTimeline* timeline)
 void Storyboard::Begin(UIElement* target)
 {
 	// TODO: AnimationClock は頻繁に作成されるのでキャッシュしたい
-	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(m_manager, this, target, &m_animationTimelineList));
+	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(target->GetContext(), this, target, &m_animationTimelineList));
 
 	// TODO: Manager にも登録してアニメしてもらう
 	GUIHelper::UIElement_GetAnimationClockList(target)->Add(clock);

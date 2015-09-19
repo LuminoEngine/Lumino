@@ -17,7 +17,7 @@ class ButtonChrome
 	LN_UI_ELEMENT_SUBCLASS_DECL(ButtonChrome);
 public:
 	LN_PROPERTY(bool,	IsMouseOverProperty);
-	LN_PROPERTY(float,	FrameWidthProperty);
+	//LN_PROPERTY(float,	FrameWidthProperty);
 
 public:
 	static ButtonChromePtr Create();
@@ -30,11 +30,11 @@ public:
 	void SetMouseOver(bool value) { SetTypedPropertyValue<bool>(IsMouseOverProperty, value); }
 	bool IsMouseOver() const { return GetTypedPropertyValue<bool>(IsMouseOverProperty); }
 
-	/// ボタンイメージの外枠の幅を設定します。
-	void SetFrameWidth(float value) { SetTypedPropertyValue<float>(FrameWidthProperty, value); }
+	///// ボタンイメージの外枠の幅を設定します。
+	//void SetFrameWidth(float value) { SetTypedPropertyValue<float>(FrameWidthProperty, value); }
 
-	/// ボタンイメージの外枠の幅を取得します。
-	float GetFrameWidth() const { return GetTypedPropertyValue<float>(FrameWidthProperty); }
+	///// ボタンイメージの外枠の幅を取得します。
+	//float GetFrameWidth() const { return GetTypedPropertyValue<float>(FrameWidthProperty); }
 
 public:
 	// override CoreObject
@@ -46,9 +46,9 @@ protected:
 	virtual void OnRender(Painter* painter);
 
 private:
-	RefPtr<TextureBrush>	m_brush;
-	RefPtr<TextureBrush>	m_bgBrush;
-	float							m_frameWidth;	///< 枠の幅 (描画で使用するためパフォーマンスを考慮し、GetValue() ではなくメンバに持っておく)
+	RefPtr<Brush>	m_brush;
+	//RefPtr<Brush>	m_bgBrush;
+	//float							m_frameWidth;	///< 枠の幅 (描画で使用するためパフォーマンスを考慮し、GetValue() ではなくメンバに持っておく)
 	bool							m_isMouseOver;
 };
 

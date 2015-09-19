@@ -229,6 +229,9 @@ public:
 
 	/** この要素内の指定したインデックスにある子ビジュアル要素を取得します。*/
 	virtual UIElement* GetVisualChild(int index) const;
+	
+	/** この要素が関連付けられているコンテキストを取得します。*/
+	GUIContext* GetContext() const;
 
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);

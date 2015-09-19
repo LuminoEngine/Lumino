@@ -34,13 +34,14 @@ Brush::~Brush()
 // ColorBrush
 //=============================================================================
 
-static ColorBrush g_ColorBrush_White(ColorF::White);
-static ColorBrush g_ColorBrush_Black(ColorF::Black);
-static ColorBrush g_ColorBrush_Gray(ColorF::Gray);
-static ColorBrush g_ColorBrush_Red(ColorF::Red);
-static ColorBrush g_ColorBrush_Green(ColorF::Green);
-static ColorBrush g_ColorBrush_Blue(ColorF::Blue);
-static ColorBrush g_ColorBrush_DimGray(ColorF::DimGray);
+// 以前は ColorF の static 変数を参照していたが、それだと初期化の順によってはこちらの値がすべて 0,0,0,0 になってしまうことがあった
+static ColorBrush g_ColorBrush_White(1.0, 1.0, 1.0, 1.0);
+static ColorBrush g_ColorBrush_Black(0.0, 0.0, 0.0, 1.0);
+static ColorBrush g_ColorBrush_Gray(0.5, 0.5, 0.5, 1.0);
+static ColorBrush g_ColorBrush_Red(1.0, 0.0, 0.0, 1.0);
+static ColorBrush g_ColorBrush_Green(0.0, 1.0, 0.0, 1.0);
+static ColorBrush g_ColorBrush_Blue(0.0, 0.0, 1.0, 1.0);
+static ColorBrush g_ColorBrush_DimGray(0.25, 0.25, 0.25, 1.0);
 ColorBrush*	ColorBrush::White = &g_ColorBrush_White;
 ColorBrush*	ColorBrush::Black = &g_ColorBrush_Black;
 ColorBrush*	ColorBrush::Gray = &g_ColorBrush_Gray;
@@ -62,6 +63,14 @@ ColorBrush::ColorBrush(const Color& color)
 //-----------------------------------------------------------------------------
 ColorBrush::ColorBrush(const ColorF& color)
 	: m_color(color)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ColorBrush::ColorBrush(float r, float g, float b, float a)
+	: m_color(r, g, b, a)
 {
 }
 
@@ -140,6 +149,8 @@ FrameTextureBrushPtr FrameTextureBrush::Create(Texture* texture)
 FrameTextureBrush::FrameTextureBrush()
 	: m_texture()
 	, m_srcRect(0, 0, INT_MAX, INT_MAX)
+	, m_frameThickness(8)
+	, m_wrapMode(BrushWrapMode_Stretch)
 {
 }
 
@@ -225,6 +236,9 @@ struct SetBrushCommand : public RenderingCommand
 	{
 		if (data.Type == BrushType_Texture) {
 			MarkGC(data.TextureBrush.Texture);
+		}
+		if (data.Type == BrushType_FrameTexture) {
+			MarkGC(data.FrameTextureBrush.Texture);
 		}
 		m_engine = engine;
 		m_brushData = data;
@@ -483,6 +497,23 @@ void Painter::SetBrush(Brush* brush)
 			data.TextureBrush.SourceRect[2] = r.Width;
 			data.TextureBrush.SourceRect[3] = r.Height;
 			data.TextureBrush.WrapMode = t->GetWrapMode();
+		}
+		else if (data.Type == BrushType_FrameTexture)
+		{
+			auto t = static_cast<FrameTextureBrush*>(brush);
+			data.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? Helper::GetDeviceObject(t->GetTexture()) : NULL;
+			const Rect& r = t->GetSourceRect();
+			const Rect& r2 = t->GetInnerAreaSourceRect();
+			data.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+			data.FrameTextureBrush.SourceRect[1] = r.Y;
+			data.FrameTextureBrush.SourceRect[2] = r.Width;
+			data.FrameTextureBrush.SourceRect[3] = r.Height;
+			data.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+			data.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
+			data.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
+			data.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+			data.FrameTextureBrush.WrapMode = t->GetWrapMode();
+			data.FrameTextureBrush.FrameThicness = t->GetThickness();
 		}
 		else {
 			LN_THROW(0, NotImplementedException);

@@ -36,6 +36,13 @@ Button::Button(GUIManagerImpl* manager)
 	//SetContent(Variant(m_chrome));
 
 	//MouseMove += LN_CreateDelegate(this, &Button::UIElement_MouseMove);
+
+	// Register handler
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseEnterEvent, RoutedHandler_MouseEnter);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseLeaveEvent, RoutedHandler_MouseLeave);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseMoveEvent, RoutedHandler_MouseMove);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseDownEvent, RoutedHandler_MouseDown);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseUpEvent, RoutedHandler_MouseUp);
 }
 
 //-----------------------------------------------------------------------------
@@ -61,19 +68,53 @@ void Button::OnRender(Painter* painter)
 {
 }
 
-
-
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::RoutedHandler_MouseEnter(MouseEventArgs* e)
+{
+	VisualStateManager::GoToState(this, VisualStatus::MouseOver);
+	e->Handled = true;
+}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::OnMouseMove(MouseEventArgs* e)
+void Button::RoutedHandler_MouseLeave(MouseEventArgs* e)
 {
+	VisualStateManager::GoToState(this, VisualStatus::Normal);
+	e->Handled = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::RoutedHandler_MouseMove(MouseEventArgs* e)
+{
+	//VisualStateManager::GoToState(this, VisualStatus::MouseOver);
+
 	m_isMouseOver = true;
 	// TODO
 	//OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
 	e->Handled = true;
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::RoutedHandler_MouseDown(MouseEventArgs* e)
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::RoutedHandler_MouseUp(MouseEventArgs* e)
+{
+	
+}
+
 
 //-----------------------------------------------------------------------------
 //

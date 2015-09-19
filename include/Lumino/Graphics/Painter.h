@@ -46,6 +46,7 @@ public:
 public:
 	ColorBrush(const Color& color);
 	ColorBrush(const ColorF& color);
+	ColorBrush(float r, float g, float b, float a);
 	virtual ~ColorBrush();
 
 public:
@@ -101,15 +102,29 @@ public:
 	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
 	const Rect& GetSourceRect() const { return m_srcRect; }
 
+	void SetInnerAreaSourceRect(const Rect& rect) { m_innerSrcRect = rect; }
+	const Rect& GetInnerAreaSourceRect() const { return m_innerSrcRect; }
+
+
+	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
+	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
+
+
+	void SetThickness(int thickness) { m_frameThickness = thickness; }
+	int GetThickness() const { return m_frameThickness; }
+
 	virtual BrushType GetType() const { return BrushType_FrameTexture; }
 
-private:
+public:
 	FrameTextureBrush();
 	virtual ~FrameTextureBrush();
 
 private:
 	RefPtr<Texture>		m_texture;
 	Rect				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
+	Rect				m_innerSrcRect;
+	int					m_frameThickness;
+	BrushWrapMode		m_wrapMode;
 };
 
 //struct StringLayout
@@ -183,6 +198,7 @@ public:
 
 
 	//void DrawRectangle(const RectF& rect);	// TODO: 変える
+	// TODO: DrawRectangle がこの機能を兼ねる。いらない。
 	void DrawFrameRectangle(const RectF& rect, float frameWidth);
 
 	/// セットされている Brush は影響しません

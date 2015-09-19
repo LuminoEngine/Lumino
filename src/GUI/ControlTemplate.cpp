@@ -617,6 +617,19 @@ ResourceDictionary::~ResourceDictionary()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+CoreObject* ResourceDictionary::GetItem(const String& key)
+{
+	CoreObject* item;
+	if (TryGetItem(key, &item)) {
+		return item;
+	}
+	LN_THROW(0, KeyNotFoundException);
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 bool ResourceDictionary::TryGetItem(const String& key, CoreObject** outObject)
 {
 	if (LN_VERIFY_ASSERT(outObject != NULL)) { return false; }

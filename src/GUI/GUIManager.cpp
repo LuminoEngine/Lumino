@@ -1075,17 +1075,10 @@ static const size_t g_DefaultSkin_png_Len = LN_ARRAY_SIZE_OF(g_DefaultSkin_png_D
 //
 //-----------------------------------------------------------------------------
 GUIManagerImpl::GUIManagerImpl()
-	: m_mouseHoverElement(NULL)
-	, m_defaultTheme(NULL)
+	: m_defaultTheme(NULL)
 	, m_rootCombinedResource(NULL)
 	, m_defaultRootFrame(NULL)
-	, m_focusElement(NULL)
-	, m_capturedElement(NULL)
-	, m_mouseButtonClickTimeout(DefaultouseButtonClickTimeout)
-	, m_cursorAnimationTime(0)
-	, m_time(0.0)
 {
-	memset(m_mouseClickTrackers, 0, sizeof(m_mouseClickTrackers));
 }
 
 //-----------------------------------------------------------------------------
@@ -1141,7 +1134,6 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 	m_cursorImageTable[CommonCursorImage::Arrow]->SetSourceRect(Rect(0, 480, 32, 32));
 	m_cursorImageTable[CommonCursorImage::Arrow]->SetPatternCount(6);
 	m_cursorImageTable[CommonCursorImage::Arrow]->SetPatternDuration(1.0);
-	m_currentCursorImage = m_cursorImageTable[CommonCursorImage::Arrow];
 
 	m_defaultTheme = LN_NEW ResourceDictionary();
 	BuildDefaultTheme();
@@ -1187,6 +1179,65 @@ void GUIManagerImpl::RenderOnMainWindow()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+bool GUIManagerImpl::InjectMouseMove(float clientX, float clientY)
+{
+	for (auto* c : m_mainWindowContextList) { 
+		if (c->InjectMouseMove(clientX, clientY)) { return true; }
+	}
+	return false;
+}
+bool GUIManagerImpl::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
+{
+	for (auto* c : m_mainWindowContextList) {
+		if (c->InjectMouseButtonDown(button, clientX, clientY)) { return true; }
+	}
+	return false;
+}
+bool GUIManagerImpl::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
+{
+	for (auto* c : m_mainWindowContextList) {
+		if (c->InjectMouseButtonUp(button, clientX, clientY)) { return true; }
+	}
+	return false;
+}
+bool GUIManagerImpl::InjectMouseWheel(int delta, float clientX, float clientY)
+{
+	for (auto* c : m_mainWindowContextList) {
+		if (c->InjectMouseWheel(delta, clientX, clientY)) { return true; }
+	}
+	return false;
+}
+bool GUIManagerImpl::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
+{
+	for (auto* c : m_mainWindowContextList) {
+		if (c->InjectKeyDown(keyCode, isAlt, isShift, isControl)) { return true; }
+	}
+	return false;
+}
+bool GUIManagerImpl::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
+{
+	for (auto* c : m_mainWindowContextList) {
+		if (c->InjectKeyDown(keyCode, isAlt, isShift, isControl)) { return true; }
+	}
+	return false;
+}
+bool GUIManagerImpl::InjectTextInput(TCHAR ch)
+{
+	for (auto* c : m_mainWindowContextList) {
+		if (c->InjectTextInput(ch)) { return true; }
+	}
+	return false;
+}
+void GUIManagerImpl::InjectElapsedTime(float elapsedTime)
+{
+	for (auto* c : m_mainWindowContextList) { 
+		c->InjectElapsedTime(elapsedTime);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 //RootFrame* GUIManagerImpl::CreateRootFrame()
 //{
 //	m_defaultRootFrame = LN_NEW RootFrame(this);
@@ -1212,275 +1263,6 @@ CoreObject* GUIManagerImpl::CreateObject(const String& typeFullName)
 	return f(this);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectMouseMove(float clientX, float clientY)
-{
-	m_mousePosition.Set(clientX, clientY);
-
-	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != NULL) 
-	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
-		return m_capturedElement->OnEvent(RoutedEventType::MouseMove, args);
-	}
-	//if (m_defaultRootFrame == NULL) { return false; }
-	UpdateMouseHover(PointF(clientX, clientY));
-	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
-	//if (m_mouseHoverElement != NULL)
-	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseMove, args);
-	//bool r = m_defaultRootFrame->OnEvent(EventType_MouseMove, args);
-	//return UpdateMouseHover(PointF(clientX, clientY));
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
-{
-	m_mousePosition.Set(clientX, clientY);
-
-	// マウスクリック回数の処理
-	MouseClickTracker& tracker = m_mouseClickTrackers[button];
-	tracker.ClickCount++;
-
-	double curTime = 0.001 * Environment::GetTickCount();
-	float elapsed = (float)(curTime - tracker.LastTime);
-	if (elapsed > m_mouseButtonClickTimeout ||
-		m_mouseHoverElement != tracker.HoverElement ||
-		tracker.ClickCount > 3)
-	{
-		tracker.ClickCount = 1;
-		tracker.HoverElement = m_mouseHoverElement;
-	}
-	tracker.LastTime = curTime;
-
-
-
-	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != NULL)
-	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount));
-		return m_capturedElement->OnEvent(RoutedEventType::MouseButtonDown, args);
-	}
-	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount));
-	//if (m_mouseHoverElement != NULL) {
-	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseButtonDown, args);
-	//}
-	//return m_defaultRootFrame->OnEvent(EventType_MouseButtonDown, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
-{
-	m_mousePosition.Set(clientX, clientY);
-
-	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != NULL)
-	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, 0));
-		return m_capturedElement->OnEvent(RoutedEventType::MouseButtonUp, args);
-	}
-	//if (m_defaultRootFrame == NULL) { return false; }
-	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(button, 0, clientX, clientY, 0));
-	//return m_defaultRootFrame->OnEvent(EventType_MouseButtonUp, args);
-	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseButtonUp, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectMouseWheel(int delta, float clientX, float clientY)
-{
-	m_mousePosition.Set(clientX, clientY);
-
-	// キャプチャ中のコントロールがあればそちらに送る
-	if (m_capturedElement != NULL)
-	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
-		return m_capturedElement->OnEvent(RoutedEventType::MouseMove, args);
-	}
-	//if (m_defaultRootFrame == NULL) { return false; }
-	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, delta, clientX, clientY, 0));
-	//return m_defaultRootFrame->OnEvent(EventType_MouseWheel, args);
-	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseWheel, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl)
-{
-	if (m_focusElement == NULL) { return false; }
-	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_focusElement->OnEvent(RoutedEventType::KeyDown, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl)
-{
-	if (m_focusElement == NULL) { return false; }
-	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
-	return m_focusElement->OnEvent(RoutedEventType::KeyUp, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::InjectChar(TCHAR ch)
-{
-	if (m_focusElement == NULL) { return false; }
-	RefPtr<KeyEventArgs> args(m_eventArgsPool.CreateKeyEventArgs(Key::Unknown, false, false, false));
-	args->Char = ch;
-	return m_focusElement->OnEvent(RoutedEventType::TextInput, args);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::InjectElapsedTime(float elapsedTime)
-{
-	m_time += elapsedTime;
-
-	for (AnimationClock* clock : m_activeAnimationClockList)
-	{
-		clock->AdvanceTime(elapsedTime);
-	}
-
-	m_activeAnimationClockList.RemoveAll([](AnimationClock* clock) { return clock->IsFinished(); });
-
-	// マウスカーソルのアニメーション
-	if (m_currentCursorImage != NULL)
-	{
-		m_cursorAnimationTime += elapsedTime;
-		if (m_cursorAnimationTime >= m_currentCursorImage->GetPatternDuration()) {
-			m_cursorAnimationTime = 0;
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::Render()
-{
-	/*	以前はここでカレントのレンダーターゲットを取得し、そこからサイズを取得していた。
-		しかしそれだと他アプリに組み込む仕組みを作るのに少し面倒なことになる。
-	*/
-	m_painter->SetProjection(m_viewPixelSize);
-
-	m_painter->ResetState();
-	m_defaultRootFrame->Render();
-
-	// マウスカーソル
-	if (m_currentCursorImage != NULL)
-	{
-		m_painter->ResetState();
-		m_currentCursorImage->Draw(m_painter, m_mousePosition, m_cursorAnimationTime);
-	}
-
-	m_painter->Flush();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::SetFocusElement(UIElement* element)
-{
-	m_focusElement = element;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::CaptureMouse(UIElement* element)
-{
-	m_capturedElement = element;
-	m_mainWindow->CaptureMouse();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::ReleaseMouseCapture(UIElement* element)
-{
-	if (m_capturedElement == element)
-	{
-		m_capturedElement = NULL;
-		m_mainWindow->ReleaseMouseCapture();
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool GUIManagerImpl::UpdateMouseHover(const PointF& mousePos)
-{
-	UIElement* old = m_mouseHoverElement;
-
-	// TODO:IME側のイベントを処理する
-	//if ( m_pIme != NULL )
-	//{
-	//	if ( m_pIme->OnMouseHoverCheck( m_MousePosition, &mMouseHoverControl ) )
-	//	{
-	//		goto EXIT;
-	//	}
-	//}
-
-	// 通常のウィンドウのイベントを処理する
-	if (m_defaultRootFrame != NULL)
-	{
-		m_mouseHoverElement = m_defaultRootFrame->CheckMouseHoverElement(mousePos);
-		if (m_mouseHoverElement != NULL) {
-			goto EXIT;
-		}
-	}
-
-	m_mouseHoverElement = NULL;
-
-EXIT:
-	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
-	if (m_mouseHoverElement != old)
-	{
-		RefPtr<MouseEventArgs> args(m_eventArgsPool.CreateMouseEventArgs(MouseButton::None, 0, mousePos.X, mousePos.Y, 0));
-		if (old != NULL) {
-			old->OnEvent(RoutedEventType::MouseLeave, args);
-		}
-
-		// EventType_MouseLeave とで使いまわしているのでリセットを忘れずに
-		args->Handled = false;
-
-		if (m_mouseHoverElement != NULL) {
-			return m_mouseHoverElement->OnEvent(RoutedEventType::MouseEnter, args);
-		}
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::AddAnimationClock(AnimationClock* clock)
-{
-	m_activeAnimationClockList.Add(clock);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GUIManagerImpl::RemoveAnimationClock(AnimationClock* clock)
-{
-	m_activeAnimationClockList.Remove(clock);
-}
 
 //-----------------------------------------------------------------------------
 //
@@ -1515,20 +1297,36 @@ void GUIManagerImpl::BuildDefaultTheme()
 		m_defaultTheme->AddStyle(style);
 	}
 
-	// Brush (ボタン枠)
+	// Brush (ボタン枠と内側領域)
 	{
-		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
-		obj->Create(m_defaultSkinTexture);
+		RefPtr<FrameTextureBrush> obj(LN_NEW FrameTextureBrush());	//TODO:
+		//obj->Create(m_defaultSkinTexture);
+		obj->SetTexture(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 0, 32, 32));
-		m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
+		obj->SetInnerAreaSourceRect(Rect(8, 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ButtonNormalBrush"), obj);
+
+
+		RefPtr<FrameTextureBrush> brush2(LN_NEW FrameTextureBrush());	//TODO:
+		brush2->SetTexture(m_defaultSkinTexture);
+		brush2->SetSourceRect(Rect(32, 0, 32, 32));
+		brush2->SetInnerAreaSourceRect(Rect(32 + 8, 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ButtonMouseOnBrush"), brush2);
+
+
+		//RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
+		////obj->Create(m_defaultSkinTexture);
+		//obj->SetTexture(m_defaultSkinTexture);
+		//obj->SetSourceRect(Rect(0, 0, 32, 32));
+		//m_defaultTheme->AddItem(_T("ButtonNormalFrameBrush"), obj);
 	}
-	// Brush (ボタン背景)
-	{
-		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
-		obj->Create(m_defaultSkinTexture);
-		obj->SetSourceRect(Rect(8, 8, 16, 16));
-		m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
-	}
+	//// Brush (ボタン背景)
+	//{
+	//	RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
+	//	obj->Create(m_defaultSkinTexture);
+	//	obj->SetSourceRect(Rect(8, 8, 16, 16));
+	//	m_defaultTheme->AddItem(_T("ButtonNormalBackgroundBrush"), obj);
+	//}
 	// Brush (ListBox 枠)
 	{
 		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
@@ -1553,14 +1351,71 @@ void GUIManagerImpl::BuildDefaultTheme()
 		t->SetTargetType(_T("Button"));
 		style->AddSetter(Control::TemplateProperty, t);
 
-		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
-		ef1->SetTypeName(_T("ButtonChrome"));
-		ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
-		t->SetVisualTreeRoot(ef1);
+		GCPtr<UIElementFactory> panel1 = LN_NEW UIElementFactory(this);
+		panel1->SetTypeName(_T("PilePanel"));
+		{
+			RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+			ef1->SetKeyName(_T("chrome"));
+			ef1->SetTypeName(_T("ButtonChrome"));
+			ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+			panel1->AddChild(ef1);
 
-		RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
-		ef2->SetTypeName(_T("ContentPresenter"));
-		ef1->AddChild(ef2);
+			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this));
+			rectangle->SetKeyName(_T("Border"));
+			rectangle->SetTypeName(_T("Rectangle"));
+			rectangle->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonMouseOnBrush")));
+			panel1->AddChild(rectangle);
+
+			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+			ef2->SetTypeName(_T("ContentPresenter"));
+			panel1->AddChild(ef2);
+		}
+		t->SetVisualTreeRoot(panel1);
+
+
+		//RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		//ef1->SetKeyName(_T("chrome"));
+		//ef1->SetTypeName(_T("ButtonChrome"));
+		//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+		//t->SetVisualTreeRoot(ef1);
+
+		//RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+		//ef2->SetTypeName(_T("ContentPresenter"));
+		//ef1->AddChild(ef2);
+
+
+
+		//VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
+		// Normal
+		RefPtr<FloatEasing> easing1(LN_NEW FloatEasing());
+		easing1->SetTargetName(_T("Border"));
+		easing1->SetTargetProperty(UIElement::OpacityProperty->GetName());
+		easing1->SetTargetValue(0.0f);
+		easing1->SetEasingMode(Animation::EasingMode::EaseOutExpo);
+		easing1->SetDuration(1.0f);
+		// MouseOver
+		RefPtr<FloatEasing> easing2(LN_NEW FloatEasing());
+		easing2->SetTargetName(_T("Border"));
+		easing2->SetTargetProperty(UIElement::OpacityProperty->GetName());
+		easing2->SetTargetValue(1.0f);
+		easing2->SetEasingMode(Animation::EasingMode::EaseOutExpo);
+		easing2->SetDuration(1.0f);
+
+		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
+		{
+			VisualStatePtr vstate1(LN_NEW VisualState(this, _T("Normal")));
+			vstate1->GetStoryboard()->AddTimeline(easing1);
+			vgroup1->AddState(vstate1);
+
+			VisualStatePtr vstate2(LN_NEW VisualState(this, _T("MouseOver")));
+			vstate2->GetStoryboard()->AddTimeline(easing2);
+			vgroup1->AddState(vstate2);
+		}
+		RefPtr<VisualStateGroupList> groups1(LN_NEW VisualStateGroupList());
+		groups1->Add(vgroup1);
+		style->AddSetter(Control::VisualStateGroupsProperty, groups1);
+
+
 
 		m_defaultTheme->AddStyle(style);
 	}
