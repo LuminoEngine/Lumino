@@ -168,6 +168,8 @@ class VisualStatus
 public:
 	static const String	Normal;		/* "Normal" 状態の名前です。*/
 	static const String	MouseOver;	/* "MouseOver" 状態の名前です。*/
+	static const String	Pressed;	/* "Pressed" 状態の名前です。*/
+	static const String	Disabled;	/* "Disabled" 状態の名前です。*/
 
 };
 	

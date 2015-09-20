@@ -36,7 +36,7 @@ namespace BinderMaker
         /// <summary>
         /// クラス名
         /// </summary>
-        public string Name { get; set; }
+        public override string Name { get; set; }
 
         /// <summary>
         /// メンバメソッドリスト

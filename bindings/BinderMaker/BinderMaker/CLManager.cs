@@ -132,6 +132,7 @@ namespace BinderMaker
             CLPrimitiveType.Int64 = new CLPrimitiveType("Int64");
             CLPrimitiveType.Float = new CLPrimitiveType("Float");
             CLPrimitiveType.Double = new CLPrimitiveType("Double");
+            CLPrimitiveType.VoidPtr = new CLPrimitiveType("VoidPtr");
             CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
 
             CLClass.Array = new CLClass("Array", false);
@@ -164,7 +165,7 @@ namespace BinderMaker
                 { "int64_t*",           CLPrimitiveType.Int64 },
                 { "intptr_t",           CLPrimitiveType.IntPtr },
                 { "LNUserData",         CLPrimitiveType.IntPtr },
-                { "void*",              CLPrimitiveType.IntPtr },
+                { "void*",              CLPrimitiveType.VoidPtr },
             
                 //{ "const int*",         CLClass.IntArray },
             }; 

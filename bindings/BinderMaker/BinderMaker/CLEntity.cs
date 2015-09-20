@@ -48,9 +48,15 @@ namespace BinderMaker
     /// <summary>
     /// 型エンティティ
     /// </summary>
-    class CLType : CLEntity
+    abstract class CLType : CLEntity
     {
         #region Properties
+        
+        /// <summary>
+        /// 型の名前
+        /// </summary>
+        public abstract string Name { get; set; }
+
         /// <summary>
         /// エラーコードであるか
         /// </summary>
@@ -117,6 +123,7 @@ namespace BinderMaker
         public static CLPrimitiveType Int64;
         public static CLPrimitiveType Float;
         public static CLPrimitiveType Double;
+        public static CLPrimitiveType VoidPtr;  // ユーザーに intptr_t へのキャストを要求するなら IntPtr と同じにしてもいい
         public static CLPrimitiveType IntPtr;
 
         #endregion
@@ -125,7 +132,7 @@ namespace BinderMaker
         /// <summary>
         /// 名前
         /// </summary>
-        public string Name { get; private set; }
+        public override string Name { get; set; }
         #endregion
 
         #region Methods
@@ -226,7 +233,7 @@ namespace BinderMaker
         /// <summary>
         /// 名前
         /// </summary>
-        public string Name { get; private set; }
+        public override string Name { get; set; }
 
         /// <summary>
         /// メンバリスト
@@ -318,7 +325,7 @@ namespace BinderMaker
         /// <summary>
         /// 名前
         /// </summary>
-        public string Name { get; private set; }
+        public override string Name { get; set; }
 
         /// <summary>
         /// オリジナルの名前
@@ -466,12 +473,12 @@ namespace BinderMaker
 
                 //---------------------------------------------
                 // LN_BUTTON 特殊化 (数値だけになってしまうものは頭に "Button" を付ける)
-                if (idents[1] == "BUTTON")
-                {
-                    int tmp;
-                    if (int.TryParse(name, out tmp))
-                        name = "Button" + name;
-                }
+                //if (idents[1] == "BUTTON")
+                //{
+                //    int tmp;
+                //    if (int.TryParse(name, out tmp))
+                //        name = "Button" + name;
+                //}
 
                 return name;
             }
@@ -480,8 +487,9 @@ namespace BinderMaker
         /// <summary>
         /// プレフィックスを除いた名前
         /// 例: LN_BACKBUFFERRESIZEMODE_SCALING_WITH_LETTER_BOX → SCALING_WITH_LETTER_BOX
+        /// ※ Ruby の定数は大文字である必要があるため必須。
         /// </summary>
-        public string CommonName
+        public string CommonUpperSnakeName
         { 
             get
             {
@@ -544,7 +552,7 @@ namespace BinderMaker
         /// <summary>
         /// 名前
         /// </summary>
-        public string Name { get; private set; }
+        public override string Name { get; set; }
 
         /// <summary>
         /// 仮引数リスト

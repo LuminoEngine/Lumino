@@ -972,7 +972,7 @@ namespace LN
         /// </summary>
         /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNConfig_SetUserWindowHandle( IntPtr windowHandle);
+        public extern static void LNConfig_SetUserWindowHandle( VoidPtr windowHandle);
 
         /// <summary>
         /// サウンドオブジェクトのキャッシュサイズの設定
@@ -1856,7 +1856,7 @@ namespace LN
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="outMode">再生方法を格納する変数のアドレス</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSound_GetPlayingMode( IntPtr sound,  SoundPlayingMode outMode);
+        public extern static Result LNSound_GetPlayingMode( IntPtr sound, out SoundPlayingMode outMode);
 
         /// <summary>
         /// サウンド再生時の音声データの再生方法を設定します。
@@ -1920,7 +1920,7 @@ namespace LN
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="distance">距離</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSound_SetEmitterDistance( IntPtr sound,  float distance);
+        public extern static Result LNSound_SetEmitterMaxDistance( IntPtr sound,  float distance);
 
         /// <summary>
         /// ファイルからサウンドオブジェクトを作成します。

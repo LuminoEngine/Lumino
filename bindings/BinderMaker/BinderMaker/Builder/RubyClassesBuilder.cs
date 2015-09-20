@@ -17,9 +17,14 @@ using System.Threading.Tasks;
  * ×初期化関数 (initialize)
  *      コンストラクタ扱い。必須ではない
  *      
+ * RefObject 型に必要なもの
+ * ・allocateForGetRefObject 関数
+ *      RefObject を返す getter 等で使用する。
+ *      まだ ruby の管理に入っていない RefObject の WrapObject を作成するために使用する。
+ * ・コンストラクタ関数は、定義は他のメソッドと同じようにし、rb_define_private_method() で "initialize" に登録する。
  * 
  * 
- * RefObject 型のプロパティに必要なもの
+ * RefObject 型の"プロパティ"の実現に必要なもの
  * ・wrapStruct に VALUE 型のメンバを持たせる
  * ・allocate 関数で初期化する
  * ・これは GCMark の対象。
@@ -30,6 +35,50 @@ namespace BinderMaker.Builder
 {
     class RubyClassesBuilder : Builder
     {
+        private static string AllocFuncDeclTemplate = @"
+static VALUE __MODULE_NAME___allocate( VALUE klass )
+{
+    VALUE obj;
+    __STRUCT_NAME__* internalObj;
+
+    internalObj = (__STRUCT_NAME__*)malloc(sizeof(__STRUCT_NAME__));
+    if (internalObj == NULL) rb_raise( g_luminoModule, ""Faild alloc - __MODULE_NAME___allocate"" );
+    obj = Data_Wrap_Struct(klass, __MODULE_NAME___mark, __MODULE_NAME___delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(__STRUCT_NAME__));
+__INIT__
+    return obj;
+}
+";
+        private static string Alloc2FuncDeclTemplate = @"
+static VALUE __MODULE_NAME___allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    __STRUCT_NAME__* internalObj;
+
+    internalObj = (__STRUCT_NAME__*)malloc(sizeof(__STRUCT_NAME__));
+    if (internalObj == NULL) rb_raise( g_luminoModule, ""Faild alloc - __MODULE_NAME___allocate"" );
+    obj = Data_Wrap_Struct(klass, __MODULE_NAME___mark, __MODULE_NAME___delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(__STRUCT_NAME__));
+__INIT__
+    internalObj->Handle = handle;
+    return obj;
+}
+";
+        private static string DeleteFuncDeclTemplate = @"
+static void __MODULE_NAME___delete(__STRUCT_NAME__* obj)
+{
+    __CONTENTS__
+    free(obj);
+}
+";
+        private static string MarkFuncDeclTemplate = @"
+static void __MODULE_NAME___mark(__STRUCT_NAME__* obj)
+{
+__CONTENTS__
+}
+";
         class CurrentClassInfo
         {
             /// <summary>
@@ -116,6 +165,39 @@ namespace BinderMaker.Builder
             _allWrapStructs.AppendLine("};").NewLine();
 
             //-------------------------------------------------
+            // フレームワーク関数
+
+            if (!classType.IsStatic)
+            {
+                string t;
+                // delete
+                string deleteFuncContents = "if (obj->Handle != 0) LNObject_Release(obj->Handle);";
+                t = DeleteFuncDeclTemplate.Trim()
+                    .Replace("__MODULE_NAME__", classType.OriginalName)
+                    .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
+                    .Replace("__CONTENTS__", deleteFuncContents);
+                _allFuncDefines.AppendWithIndent(t).NewLine(2);
+                // mark
+                t = MarkFuncDeclTemplate.Trim()
+                    .Replace("__MODULE_NAME__", classType.OriginalName)
+                    .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
+                    .Replace("__CONTENTS__", _currentClassInfo.AdditionalWrapStructMemberMark.ToString());
+                _allFuncDefines.AppendWithIndent(t).NewLine(2);
+                // allocate
+                t = AllocFuncDeclTemplate.Trim()
+                     .Replace("__MODULE_NAME__", classType.OriginalName)
+                     .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
+                     .Replace("__INIT__", _currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+                _allFuncDefines.AppendWithIndent(t).NewLine(2);
+                // allocateForGetRefObject
+                t = Alloc2FuncDeclTemplate.Trim()
+                    .Replace("__MODULE_NAME__", classType.OriginalName)
+                    .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
+                    .Replace("__INIT__", _currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+                _allFuncDefines.AppendWithIndent(t).NewLine(2);
+            }
+
+            //-------------------------------------------------
             // メソッド出力
             foreach (var overloads in _currentClassInfo.OverloadTable)
             {
@@ -151,9 +233,9 @@ namespace BinderMaker.Builder
         /// <param name="enumType"></param>
         protected override void OnMethodLooked(CLMethod method)
         {
+            if (method.Option.CheckDisabled(LangFlags.Ruby)) return;
             // Ruby として出力できるメソッドであるか
-            if (!RubyCommon.CheckInvalidMethod(method))
-                return;
+            if (!RubyCommon.CheckInvalidMethod(method)) return;
 
             // オーバーロードの集計
             string key = (method.IsStatic) ? "static" + method.Name : method.Name;
@@ -218,9 +300,12 @@ namespace BinderMaker.Builder
                 funcBody.AppendLine("Data_Get_Struct(self, {0}, selfObj);", GetWrapStructName(baseMethod.OwnerClass));
             }
 
-
-
-
+            // Body 作成
+            foreach (var method in overloadMethods)
+            {
+                // if () { ～ } までのオーバーロード呼び出し1つ分
+                RubyCommon.MakeOverloadedMethod(method, funcBody);
+            }
 
             // 関数終端まで到達してしまったら例外
             string rubyMethodName = RubyCommon.ConvertCommonNameToRubyMethodName(baseMethod);

@@ -58,6 +58,15 @@ namespace BinderMaker
                     ClassAddCodeOptions.Add((CLClassAddCodeOption)opt);
             }
         }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="options"></param>
+        public bool CheckDisabled(LangFlags lang)
+        {
+            return DisableOptions.Find((item) => item.LangFlags.HasFlag(lang)) != null;
+        }
         #endregion
     }
 

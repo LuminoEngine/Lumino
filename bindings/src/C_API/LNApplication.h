@@ -14,7 +14,7 @@ LN_MODULE(Application)
 /**
 	@brief		
 */
-LN_STATIC_CLASS(LNote)
+LN_STATIC_CLASS(LNConfig)
 
 	/**
 		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)

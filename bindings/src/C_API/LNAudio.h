@@ -37,6 +37,9 @@ LN_STATIC_CLASS(LNAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief		BGM の演奏を停止します。
@@ -65,6 +68,9 @@ LN_STATIC_CLASS(LNAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief		BGS の演奏を停止します。、
@@ -91,6 +97,9 @@ LN_STATIC_CLASS(LNAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief	  ME の演奏を停止します。
@@ -141,6 +150,9 @@ LN_STATIC_CLASS(LNAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief		メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
@@ -153,6 +165,9 @@ LN_STATIC_CLASS(LNAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief		メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
@@ -168,6 +183,9 @@ LN_STATIC_CLASS(LNAudio)
 	LN_STATIC_API
 	LN_ATTR_OVERLOAD(LNAudio_PlaySE3DMem)
 	LNResult LNAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief		すべての SE の演奏を停止します。
@@ -302,6 +320,9 @@ LN_CLASS(LNSound, LNObject)
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
 	LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSound)* sound);
+	/*Option
+		@disable[cs,ruby]
+	Option*/
 
 	/**
 		@brief		サウンドのボリュームを設定します。
@@ -398,7 +419,7 @@ LN_CLASS(LNSound, LNObject)
 	/**
 		@brief		サウンド再生時の音声データの再生方法を取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[in]	outMode		: 再生方法を格納する変数のアドレス
+		@param[out]	outMode		: 再生方法を格納する変数のアドレス
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
@@ -527,7 +548,7 @@ LN_CLASS(LNSound, LNObject)
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
-	LNResult LNSound_SetEmitterDistance(LN_HANDLE(LNSound) sound, float distance);
+	LNResult LNSound_SetEmitterMaxDistance(LN_HANDLE(LNSound) sound, float distance);
 
 LN_CLASS_END
 	

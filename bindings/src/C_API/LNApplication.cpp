@@ -45,7 +45,6 @@ void LNConfig_SetSoundCacheSize(int count, int memorySize)
 //-----------------------------------------------------------------------------
 void LNConfig_SetDirectMusicInitializeMode(LNDirectMusicMode mode)
 {
-
 }
 
 //-----------------------------------------------------------------------------

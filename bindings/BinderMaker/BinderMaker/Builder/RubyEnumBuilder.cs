@@ -41,7 +41,7 @@ namespace BinderMaker.Builder
             {
                 if (member.IsTerminator) continue;  // ターミネータは出力しない
 
-                string name = member.CommonName.ToUpper();
+                string name = member.CommonUpperSnakeName;
                 _allModuleDefine.AppendLine(@"rb_define_const({0}, ""{1}"", INT2FIX({2}));", varName, name, member.Value);
             }
             _allModuleDefine.NewLine();

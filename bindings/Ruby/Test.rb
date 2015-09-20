@@ -1,6 +1,15 @@
 require './Lumino'
 include Lumino
 
+Application.initialize_audio
+sound1 = Sound.new("D:/tmp/ZIGG-ZAGG.mp3")
+sound1.play
+
+
+gets
+
+Application.finalize
+
 p Result::OUT_OF_MEMORY
 
 vec1 = Vector3.new

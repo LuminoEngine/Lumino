@@ -1313,6 +1313,18 @@ void GUIManagerImpl::BuildDefaultTheme()
 		brush2->SetInnerAreaSourceRect(Rect(32 + 8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonMouseOnBrush"), brush2);
 
+		RefPtr<FrameTextureBrush> brush3(LN_NEW FrameTextureBrush());	//TODO:
+		brush3->SetTexture(m_defaultSkinTexture);
+		brush3->SetSourceRect(Rect(64, 0, 32, 32));
+		brush3->SetInnerAreaSourceRect(Rect(64 + 8, 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ButtonPressedBrush"), brush3);
+
+		RefPtr<FrameTextureBrush> brush4(LN_NEW FrameTextureBrush());	//TODO:
+		brush4->SetTexture(m_defaultSkinTexture);
+		brush4->SetSourceRect(Rect(64, 0, 32, 32));
+		brush4->SetInnerAreaSourceRect(Rect(64 + 8, 8, 16, 16));
+		m_defaultTheme->AddItem(_T("ButtonDisabledBrush"), brush4);
+
 
 		//RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
 		////obj->Create(m_defaultSkinTexture);

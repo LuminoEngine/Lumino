@@ -8,6 +8,7 @@ extern "C" void Init_Lumino()
 	g_luminoModule = rb_define_module("Lumino");
 	InitEnums();
 	InitStructs();
+	InitClasses();
 }
 
 

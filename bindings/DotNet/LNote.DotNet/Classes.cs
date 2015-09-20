@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LN
 {
-    public partial class ote
+    public partial class Config
     {
     
     
@@ -33,7 +33,7 @@ namespace LN
         /// ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
         /// </summary>
         /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
-        public static void SetUserWindowHandle( IntPtr windowHandle)
+        public static void SetUserWindowHandle( VoidPtr windowHandle)
         {
             API.LNConfig_SetUserWindowHandle( windowHandle);
         
@@ -663,12 +663,14 @@ namespace LN
         /// <summary>
         /// サウンド再生時の音声データの再生方法
         /// </summary>
-        public void PlayingMode
+        public SoundPlayingMode PlayingMode
         {
             get
             {
-                var result = API.LNSound_GetPlayingMode( _handle,  outMode);
+                var outMode = new SoundPlayingMode();
+                var result = API.LNSound_GetPlayingMode( _handle, out outMode);
                 if (result != Result.OK) throw new LNoteException(result);
+                return outMode;
             
             }
             
@@ -769,11 +771,11 @@ namespace LN
         /// <summary>
         /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) 
         /// </summary>
-        public float EmitterDistance
+        public float EmitterMaxDistance
         {
             set
             {
-                var result = API.LNSound_SetEmitterDistance( _handle,  value);
+                var result = API.LNSound_SetEmitterMaxDistance( _handle,  value);
                 if (result != Result.OK) throw new LNoteException(result);
             
             }

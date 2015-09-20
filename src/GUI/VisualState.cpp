@@ -263,6 +263,8 @@ void Storyboard::Stop(UIElement* target)
 //-----------------------------------------------------------------------------
 const String VisualStatus::Normal = _T("Normal");
 const String VisualStatus::MouseOver = _T("MouseOver");
+const String VisualStatus::Pressed = _T("Pressed");
+const String VisualStatus::Disabled = _T("Disabled");
 
 LN_NAMESPACE_GUI_END
 } // namespace Lumino

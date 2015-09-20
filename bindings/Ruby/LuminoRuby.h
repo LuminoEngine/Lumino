@@ -5,6 +5,7 @@ extern VALUE g_luminoModule;
 
 extern void InitEnums();
 extern void InitStructs();
+extern void InitClasses();
 
 #define LN_TO_RUBY_FUNC( f ) reinterpret_cast< VALUE(__cdecl *)(...) >( f )
 
@@ -21,6 +22,8 @@ inline VALUE toVALUE(LNBool v)			{ return (v != LN_FALSE) ? Qtrue : Qfalse; }
 inline VALUE toVALUE(uint8_t v)			{ return INT2FIX(v); }
 inline VALUE toVALUE(int v)				{ return INT2NUM(v); }
 inline VALUE toVALUE(uint32_t v)			{ return INT2NUM(v); }
+inline VALUE toVALUE(int64_t v)			{ return INT2NUM(v); }
+inline VALUE toVALUE(uint64_t v)			{ return INT2NUM(v); }
 inline VALUE toVALUE(float v)			{ return DBL2NUM(v); }
 inline VALUE toVALUE(double v)			{ return DBL2NUM(v); }
 //inline VALUE toVALUE(lnErrorCode v)		{ return INT2FIX(v); }

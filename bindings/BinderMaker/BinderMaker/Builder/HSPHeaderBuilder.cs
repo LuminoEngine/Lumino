@@ -47,6 +47,7 @@ namespace BinderMaker.Builder
             { CLPrimitiveType.UInt32,       "int" },
             { CLPrimitiveType.Float,        "double" },
             { CLPrimitiveType.Double,       "double" },
+            { CLPrimitiveType.VoidPtr,       "void*" },
             { CLPrimitiveType.IntPtr,       "int" },
         };
 

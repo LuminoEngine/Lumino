@@ -264,12 +264,12 @@
 #func native_LNObject_GetRefCount "LNObject_GetRefCount" int, var
 #define LNObject_GetRefCount(%1, %2) native_LNObject_GetRefCount %1, %2
 
-//LNote
+//LNConfig
 #func native_LNConfig_SetApplicationLogEnabled "LNConfig_SetApplicationLogEnabled" int
 #define LNConfig_SetApplicationLogEnabled(%1) native_LNConfig_SetApplicationLogEnabled %1
 #func native_LNConfig_SetConsoleEnabled "LNConfig_SetConsoleEnabled" int
 #define LNConfig_SetConsoleEnabled(%1) native_LNConfig_SetConsoleEnabled %1
-#func native_LNConfig_SetUserWindowHandle "LNConfig_SetUserWindowHandle" int
+#func native_LNConfig_SetUserWindowHandle "LNConfig_SetUserWindowHandle" void*
 #define LNConfig_SetUserWindowHandle(%1) native_LNConfig_SetUserWindowHandle %1
 #func native_LNConfig_SetSoundCacheSize "LNConfig_SetSoundCacheSize" int, int
 #define LNConfig_SetSoundCacheSize(%1, %2) native_LNConfig_SetSoundCacheSize %1, %2
@@ -481,7 +481,7 @@
 #define LNSound_Set3DEnabled(%1, %2) native_LNSound_Set3DEnabled %1, %2
 #func native_LNSound_Is3DEnabled "LNSound_Is3DEnabled" int, var
 #define LNSound_Is3DEnabled(%1, %2) native_LNSound_Is3DEnabled %1, %2
-#func native_LNSound_GetPlayingMode "LNSound_GetPlayingMode" int, int
+#func native_LNSound_GetPlayingMode "LNSound_GetPlayingMode" int, var
 #define LNSound_GetPlayingMode(%1, %2) native_LNSound_GetPlayingMode %1, %2
 #func native_LNSound_SetPlayingMode "LNSound_SetPlayingMode" int, int
 #define LNSound_SetPlayingMode(%1, %2) native_LNSound_SetPlayingMode %1, %2
@@ -497,8 +497,8 @@
 #define LNSound_SetEmitterPosition(%1, %2) native_LNSound_SetEmitterPosition %1, %2
 #func native_LNSound_SetEmitterVelocity "LNSound_SetEmitterVelocity" int, var
 #define LNSound_SetEmitterVelocity(%1, %2) native_LNSound_SetEmitterVelocity %1, %2
-#func native_LNSound_SetEmitterDistance "LNSound_SetEmitterDistanceD" int, double
-#define LNSound_SetEmitterDistance(%1, %2) native_LNSound_SetEmitterDistance %1, %2
+#func native_LNSound_SetEmitterMaxDistance "LNSound_SetEmitterMaxDistanceD" int, double
+#define LNSound_SetEmitterMaxDistance(%1, %2) native_LNSound_SetEmitterMaxDistance %1, %2
 #func native_LNSound_Create "LNSound_Create" str, var
 #define LNSound_Create(%1, %2) native_LNSound_Create %1, %2
 #func native_LNSound_CreateMem "LNSound_CreateMem" int, int, var

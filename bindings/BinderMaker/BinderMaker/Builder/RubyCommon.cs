@@ -37,16 +37,17 @@ namespace BinderMaker.Builder
             //{ CLPrimitiveType.ByteArray,    new RubyTypeInfo("Array",   "", "", "", "") },
             { CLPrimitiveType.String,       new RubyTypeInfo("String",  "isRbString({0})", "char*",        "StringValuePtr({0})",       "char* {0} = StringValuePtr({1});") },
 
-            { CLPrimitiveType.Bool,         new RubyTypeInfo("Bool",    "isRbBool({0})",   "lnBool",       "RbBooltoBool({0})",         "lnBool {0} = RbBooltoBool({1});") },
-            { CLPrimitiveType.Byte,         new RubyTypeInfo("Integer", "isRbNumber({0})", "lnU8",         "FIX2INT({0})",              "lnU8 {0} = FIX2INT({1});") },
+            { CLPrimitiveType.Bool,         new RubyTypeInfo("Bool",    "isRbBool({0})",   "LNBool",       "RbBooltoBool({0})",         "lnBool {0} = RbBooltoBool({1});") },
+            { CLPrimitiveType.Byte,         new RubyTypeInfo("Integer", "isRbNumber({0})", "uint8_t",         "FIX2INT({0})",              "lnU8 {0} = FIX2INT({1});") },
             { CLPrimitiveType.Int32,          new RubyTypeInfo("Integer", "isRbNumber({0})", "int",          "FIX2INT({0})",              "int {0} = FIX2INT({1});") },
-            { CLPrimitiveType.UInt32,       new RubyTypeInfo("Integer", "isRbNumber({0})", "lnU32",        "FIX2INT({0})",              "lnU32 {0} = FIX2INT({1});") },
+            { CLPrimitiveType.UInt32,       new RubyTypeInfo("Integer", "isRbNumber({0})", "uint32_t",        "FIX2INT({0})",              "lnU32 {0} = FIX2INT({1});") },
             { CLPrimitiveType.Float,        new RubyTypeInfo("Float",   "isRbFloat({0})",  "float",        "((float)NUM2DBL({0}))",    "float {0} = static_cast<float>(NUM2DBL({1}));") },
             { CLPrimitiveType.Double,       new RubyTypeInfo("Float",   "isRbFloat({0})",  "double",       "NUM2DBL({0})",              "double {0} = NUM2DBL({1});") },
 
             // { CLPrimitiveType.ResultCode,   new RubyTypeInfo("Integer", "isRbNumber({0})", "lnResultCode", "(lnResultCode)FIX2INT({0})",   "lnResultCode {0} = (lnResultCode)FIX2INT({1});") },
             //{ CLPrimitiveType.ExceptionCallback, new RubyTypeInfo("",   "isRbNumber({0})", "lnExceptionCallback", null, null) },
-            { CLPrimitiveType.IntPtr,       new RubyTypeInfo("",        "isRbNumber({0})", "lnIntPtr", null, null) },    // TODO:bignum?
+            { CLPrimitiveType.VoidPtr,       new RubyTypeInfo("",        "isRbNumber({0})", "void*", "((void*)FIX2INT({0}))", null) },  
+            { CLPrimitiveType.IntPtr,       new RubyTypeInfo("",        "isRbNumber({0})", "intptr_t", "FIX2INT({0})", null) },    // ruby の FixNum は x64 なら 64bit までOK
             // { CLPrimitiveType.HWND,         new RubyTypeInfo("",        "isRbNumber({0})", "HWND",         "FIX2INT({0})", "int {0} = FIX2INT({1});") },      // TODO:bignum?
 
             //{ CLPrimitiveType.Handle = new CLPrimitiveType("Handle");
@@ -190,7 +191,7 @@ namespace BinderMaker.Builder
                 // RefObj 型
                 else
                 {
-                    decl = string.Format("lnHandle {0}", cVarName);
+                    decl = string.Format("LNHandle {0}", cVarName);
                     exp = string.Format("RbRefObjToHandle({0})", rubyVarName);
                 }
             }
@@ -358,6 +359,134 @@ namespace BinderMaker.Builder
             else
                 def = string.Format(@"rb_define_singleton_method({0}, ""{1}"", LN_TO_RUBY_FUNC({2}), -1);", typeValName, rubyMethodName, funcName);
             output.AppendLine(def);
+        }
+
+        /// <summary>
+        /// オーバーロード1つ分の関数定義を作成する。
+        /// </summary>
+        public static void MakeOverloadedMethod(CLMethod method, OutputBuffer funcBody)
+        {
+            var callBody = new OutputBuffer();
+
+            int normalArgsCount = 0;
+            int defaultArgsCount = 0;
+            var scan_args_Inits = new OutputBuffer();
+            var scan_args_Args = new OutputBuffer();
+            string typeCheckExp = "";
+            var initStmt = new OutputBuffer();
+            var argsText = new OutputBuffer();
+            var postStmt = new OutputBuffer();
+            var returnStmt = new OutputBuffer();
+
+            // オリジナルの全仮引数を見ていく
+            foreach (var param in method.FuncDecl.Params)
+            {
+                // コンストラクタの最後の引数は、WrapStruct::Handle への格納になる
+                if (method.IsRefObjectConstructor && param == method.FuncDecl.Params.Last())
+                {
+                    argsText.AppendCommad("&selfObj->Handle");
+                }
+                // 第1引数かつインスタンスメソッドの場合は特殊な実引数になる
+                else if (
+                    !method.IsRefObjectConstructor &&
+                    method.IsInstanceMethod &&
+                    param == method.FuncDecl.Params.First())
+                {
+                    var classType = param.Type as CLClass;
+                    if (classType == null) throw new InvalidOperationException("インスタンスメソッドの第1引数が不正。");
+                    if (classType.IsStruct)
+                        argsText.AppendCommad("selfObj");
+                    else
+                        argsText.AppendCommad("selfObj->Handle");
+                }
+                // return として選択されている引数である場合
+                else if (param == method.ReturnParam)
+                {
+                    var varName = "_" + param.Name;
+                    // 宣言
+                    initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
+                    // API実引数
+                    argsText.AppendCommad("&" + varName);
+                    // return
+                    RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
+                }
+                // return として選択されていない引数である場合
+                else
+                {
+                    // 通常引数とデフォルト引数のカウント
+                    if (string.IsNullOrEmpty(param.OriginalDefaultValue))
+                        normalArgsCount++;
+                    else
+                        defaultArgsCount++;
+
+                    // out の場合は C++ 型で受け取るための変数を定義
+                    if (param.IOModifier == IOModifier.Out)
+                    {
+                        // ruby は複数 out を扱えないためここに来ることはないはず
+                        throw new InvalidOperationException();
+                    }
+                    // 入力引数 (in とinout)
+                    else
+                    {
+                        // rb_scan_args の格納先 VALUE 宣言
+                        scan_args_Inits.AppendLine("VALUE {0};", param.Name);
+                        // rb_scan_args の引数
+                        scan_args_Args.AppendCommad("&{0}", param.Name);
+                        // 型チェック条件式
+                        if (!string.IsNullOrEmpty(typeCheckExp))
+                            typeCheckExp += " && ";
+                        typeCheckExp += RubyCommon.GetTypeCheckExp(param.Type, param.Name);
+                        // C変数宣言 & 初期化代入
+                        initStmt.AppendLine(RubyCommon.GetDeclCastExpVALUEtoC(param.Type, "_" + param.Name, param.Name, param.OriginalDefaultValue));
+                        // API実引数
+                        if (param.Type is CLClass &&
+                            ((CLClass)param.Type).IsStruct)
+                            argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
+                        else
+                            argsText.AppendCommad("_" + param.Name);
+                    }
+                }
+            }
+
+            // rb_scan_args の呼び出し
+            string rb_scan_args_Text = "";
+            if (!scan_args_Args.IsEmpty)
+                rb_scan_args_Text = string.Format(@"rb_scan_args(argc, argv, ""{0}{1}"", {2});", normalArgsCount, (defaultArgsCount > 0) ? defaultArgsCount.ToString() : "", scan_args_Args);
+
+            // 型チェック式が空なら true にしておく
+            if (string.IsNullOrEmpty(typeCheckExp))
+                typeCheckExp = "true";
+
+            // エラーコードと throw
+            string preErrorStmt = "";
+            string postErrorStmt = "";
+            if (method.ReturnType.IsResultCodeType)
+            {
+                preErrorStmt = "LNResult errorCode = ";
+                postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""internal error. code:%d"", errorCode);" + OutputBuffer.NewLineCode;
+            }
+
+            // API 呼び出し
+            var apiCall = string.Format("{0}({1});", method.FuncDecl.OriginalFullName, argsText.ToString());
+
+            // オーバーロードひとつ分の塊を作成する
+            callBody.AppendWithIndent("if ({0} <= argc && argc <= {1}) {{", normalArgsCount.ToString(), (normalArgsCount + defaultArgsCount).ToString()).NewLine();
+            callBody.IncreaseIndent();
+            callBody.AppendWithIndent(scan_args_Inits.ToString());
+            callBody.AppendWithIndent(rb_scan_args_Text).NewLine();
+            callBody.AppendWithIndent("if ({0}) {{", typeCheckExp).NewLine();
+            callBody.IncreaseIndent();
+            callBody.AppendWithIndent(initStmt.ToString());
+            callBody.AppendWithIndent(preErrorStmt + apiCall + OutputBuffer.NewLineCode);
+            callBody.AppendWithIndent(postErrorStmt);
+            callBody.AppendWithIndent(postStmt.ToString());
+            callBody.AppendLine((returnStmt.IsEmpty) ? "return Qnil;" : returnStmt.ToString());
+            callBody.DecreaseIndent();
+            callBody.AppendWithIndent("}").NewLine();
+            callBody.DecreaseIndent();
+            callBody.AppendWithIndent("}").NewLine();
+
+            funcBody.AppendWithIndent(callBody.ToString());
         }
     }
 }

@@ -6,6 +6,32 @@ struct wrapReferenceObject
 	LNHandle	Handle;
 };
 
+//-----------------------------------------------------------------------------
+// Utils
+
+static LNHandle RbRefObjToHandle(VALUE v)
+{
+    if (v == Qnil) {
+        return NULL;    
+    }
+	wrapReferenceObject* obj;
+	Data_Get_Struct(v, wrapReferenceObject, obj);
+	return obj->Handle;
+}
+
+bool checkEqualHandle(VALUE obj, LNHandle handle)
+{
+	if (obj == Qnil)
+		return false;
+	if (((wrapReferenceObject*)DATA_PTR(obj))->Handle != handle)
+		return false;
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// WrapStructs
+
+
 __WRAP_STRUCTS__
 
 __GLOBALS__

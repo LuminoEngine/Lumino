@@ -32,10 +32,11 @@ namespace BinderMaker.Builder
             //{ CLPrimitiveType.ByteArray,    new CTypeInfo("const void*", "void**", "const void*", "void**", "void*") },
             { CLPrimitiveType.String,       new CTypeInfo("const lnChar*", "lnChar**", "const lnChar*", "lnChar**", null) },
 
-            { CLPrimitiveType.Bool,         new CTypeInfo("lnBool", "lnBool*", "bool", "bool*", null) },
-            { CLPrimitiveType.Byte,         new CTypeInfo("lnU8", "lnU8*", "lnU8", "lnU8*", null) },
+            { CLPrimitiveType.Bool,         new CTypeInfo("LNBool", "LNBool*", "bool", "bool*", null) },
+            { CLPrimitiveType.Byte,         new CTypeInfo("uint8_t", "uint8_t*", "uint8_t", "uint8_t*", null) },
             { CLPrimitiveType.Int32,          new CTypeInfo("int", "int*", "int", "int*", null) },
-            { CLPrimitiveType.UInt32,       new CTypeInfo("lnU32", "lnU32*", "lnU32", "lnU32*", null) },
+            { CLPrimitiveType.UInt32,       new CTypeInfo("uint32_t", "uint32_t*", "uint32_t", "uint32_t*", null) },
+            { CLPrimitiveType.Int64,       new CTypeInfo("int64_t", "int64_t*", "int64_t", "int64_t*", null) },
             { CLPrimitiveType.Float,        new CTypeInfo("float", "float*", "float", "float*", null) },
             { CLPrimitiveType.Double,       new CTypeInfo("double", "double*", "double", "double*", null) },
 

@@ -104,7 +104,7 @@ void Button::RoutedHandler_MouseMove(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 void Button::RoutedHandler_MouseDown(MouseEventArgs* e)
 {
-
+	VisualStateManager::GoToState(this, VisualStatus::Pressed);
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ void Button::RoutedHandler_MouseDown(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 void Button::RoutedHandler_MouseUp(MouseEventArgs* e)
 {
-	
+	VisualStateManager::GoToState(this, VisualStatus::Normal);
 }
 
 

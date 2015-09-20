@@ -82,6 +82,7 @@ static VALUE lnrbLNVector2_GetLength(int argc, VALUE *argv, VALUE self)
             float _outLength;
             LNVector2_GetLength(selfObj, &_outLength);
             return toVALUE(_outLength);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector2.length - wrong argument type.");
@@ -98,6 +99,7 @@ static VALUE lnrbLNVector2_GetSquareLength(int argc, VALUE *argv, VALUE self)
             float _outLength;
             LNVector2_GetSquareLength(selfObj, &_outLength);
             return toVALUE(_outLength);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector2.square_length - wrong argument type.");
@@ -116,7 +118,8 @@ static VALUE lnrbLNVector2_Set(int argc, VALUE *argv, VALUE self)
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             LNVector2_Set(selfObj, _x, _y);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Vector2.set - wrong argument type.");
     return Qnil;
@@ -132,8 +135,9 @@ static VALUE static_lnrbLNVector2_Normalize(int argc, VALUE *argv, VALUE self)
             LNVector2 _outVec;
             LNVector2_Normalize(&_vec, &_outVec);
             VALUE retObj = LNVector2_allocate(g_struct_Vector2);
-            *((LNVector2*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector2*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector2.normalize - wrong argument type.");
@@ -148,7 +152,8 @@ static VALUE lnrbLNVector2_NormalizeV(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector2_NormalizeV(selfObj);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Vector2.normalize - wrong argument type.");
     return Qnil;
@@ -245,6 +250,7 @@ static VALUE lnrbLNVector3_GetLength(int argc, VALUE *argv, VALUE self)
             float _outLength;
             LNVector3_GetLength(selfObj, &_outLength);
             return toVALUE(_outLength);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.length - wrong argument type.");
@@ -261,6 +267,7 @@ static VALUE lnrbLNVector3_GetSquareLength(int argc, VALUE *argv, VALUE self)
             float _outLength;
             LNVector3_GetSquareLength(selfObj, &_outLength);
             return toVALUE(_outLength);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.square_length - wrong argument type.");
@@ -281,7 +288,8 @@ static VALUE lnrbLNVector3_Set(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNVector3_Set(selfObj, _x, _y, _z);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.set - wrong argument type.");
     return Qnil;
@@ -299,7 +307,8 @@ static VALUE lnrbLNVector3_SetVZ(int argc, VALUE *argv, VALUE self)
             LNVector2* tmp__vec2; Data_Get_Struct(vec2, LNVector2, tmp__vec2);LNVector2& _vec2 = *tmp__vec2;
             float _z = ((float)NUM2DBL(z));
             LNVector3_SetVZ(selfObj, &_vec2, _z);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.set_vz - wrong argument type.");
     return Qnil;
@@ -315,8 +324,9 @@ static VALUE static_lnrbLNVector3_Normalize(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNVector3_Normalize(&_vec, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.normalize - wrong argument type.");
@@ -331,7 +341,8 @@ static VALUE lnrbLNVector3_NormalizeV(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector3_NormalizeV(selfObj);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.normalize - wrong argument type.");
     return Qnil;
@@ -349,6 +360,7 @@ static VALUE static_lnrbLNVector3_Dot(int argc, VALUE *argv, VALUE self)
             float _dot;
             LNVector3_Dot(&_vec1, &_vec2, &_dot);
             return toVALUE(_dot);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.dot - wrong argument type.");
@@ -367,8 +379,9 @@ static VALUE static_lnrbLNVector3_Cross(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNVector3_Cross(&_vec1, &_vec2, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.cross - wrong argument type.");
@@ -387,8 +400,9 @@ static VALUE static_lnrbLNVector3_Reflect(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNVector3_Reflect(&_vec, &_normal, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.reflect - wrong argument type.");
@@ -407,8 +421,9 @@ static VALUE static_lnrbLNVector3_Slide(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNVector3_Slide(&_vec, &_normal, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.slide - wrong argument type.");
@@ -429,8 +444,9 @@ static VALUE static_lnrbLNVector3_Lerp(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNVector3_Lerp(&_vec1, &_vec2, _t, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.lerp - wrong argument type.");
@@ -455,8 +471,9 @@ static VALUE static_lnrbLNVector3_CatmullRom(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNVector3_CatmullRom(&_vec1, &_vec2, &_vec3, &_vec4, _t, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.catmull_rom - wrong argument type.");
@@ -475,8 +492,9 @@ static VALUE static_lnrbLNVector3_Transform(int argc, VALUE *argv, VALUE self)
             LNVector4 _outVec;
             LNVector3_Transform(&_vec, &_mat, &_outVec);
             VALUE retObj = LNVector4_allocate(g_struct_Vector4);
-            *((LNVector4*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector4*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.transform - wrong argument type.");
@@ -495,8 +513,9 @@ static VALUE static_lnrbLNVector3_TransformCoord(int argc, VALUE *argv, VALUE se
             LNVector3 _outVec;
             LNVector3_TransformCoord(&_vec, &_mat, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Vector3.transform_coord - wrong argument type.");
@@ -617,7 +636,8 @@ static VALUE lnrbLNVector4_Set(int argc, VALUE *argv, VALUE self)
             float _z = ((float)NUM2DBL(z));
             float _w = ((float)NUM2DBL(w));
             LNVector4_Set(selfObj, _x, _y, _z, _w);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Vector4.set - wrong argument type.");
     return Qnil;
@@ -935,8 +955,9 @@ static VALUE lnrbLNMatrix_GetRight(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNMatrix_GetRight(selfObj, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.right - wrong argument type.");
@@ -953,8 +974,9 @@ static VALUE lnrbLNMatrix_GetUp(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNMatrix_GetUp(selfObj, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.up - wrong argument type.");
@@ -971,8 +993,9 @@ static VALUE lnrbLNMatrix_GetFront(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNMatrix_GetFront(selfObj, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.front - wrong argument type.");
@@ -989,8 +1012,9 @@ static VALUE lnrbLNMatrix_GetPosition(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNMatrix_GetPosition(selfObj, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.position - wrong argument type.");
@@ -1005,7 +1029,8 @@ static VALUE lnrbLNMatrix_Identity(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNMatrix_Identity(selfObj);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.identity - wrong argument type.");
     return Qnil;
@@ -1025,7 +1050,8 @@ static VALUE lnrbLNMatrix_Translate(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNMatrix_Translate(selfObj, _x, _y, _z);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.translate - wrong argument type.");
     return Qnil;
@@ -1041,7 +1067,8 @@ static VALUE lnrbLNMatrix_TranslateVec3(int argc, VALUE *argv, VALUE self)
         if (isRbObject(vec)) {
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNMatrix_TranslateVec3(selfObj, &_vec);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.translate_vec_3 - wrong argument type.");
     return Qnil;
@@ -1057,7 +1084,8 @@ static VALUE lnrbLNMatrix_RotateX(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
             LNMatrix_RotateX(selfObj, _radian);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_x - wrong argument type.");
     return Qnil;
@@ -1073,7 +1101,8 @@ static VALUE lnrbLNMatrix_RotateY(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
             LNMatrix_RotateY(selfObj, _radian);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_y - wrong argument type.");
     return Qnil;
@@ -1089,7 +1118,8 @@ static VALUE lnrbLNMatrix_RotateZ(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
             LNMatrix_RotateZ(selfObj, _radian);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_z - wrong argument type.");
     return Qnil;
@@ -1111,7 +1141,8 @@ static VALUE lnrbLNMatrix_Rotate(int argc, VALUE *argv, VALUE self)
             float _zRad = ((float)NUM2DBL(zRad));
             LNRotationOrder _rotOrder = (rotOrder != Qnil) ? (LNRotationOrder)FIX2INT(rotOrder) : LN_ROTATIONORDER_XYZ;
             LNMatrix_Rotate(selfObj, _xRad, _yRad, _zRad, _rotOrder);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate - wrong argument type.");
     return Qnil;
@@ -1129,7 +1160,8 @@ static VALUE lnrbLNMatrix_RotateVec3(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNRotationOrder _rotOrder = (rotOrder != Qnil) ? (LNRotationOrder)FIX2INT(rotOrder) : LN_ROTATIONORDER_XYZ;
             LNMatrix_RotateVec3(selfObj, &_vec, _rotOrder);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_vec_3 - wrong argument type.");
     return Qnil;
@@ -1147,7 +1179,8 @@ static VALUE lnrbLNMatrix_RotateAxis(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__axis; Data_Get_Struct(axis, LNVector3, tmp__axis);LNVector3& _axis = *tmp__axis;
             float _radian = ((float)NUM2DBL(radian));
             LNMatrix_RotateAxis(selfObj, &_axis, _radian);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_axis - wrong argument type.");
     return Qnil;
@@ -1163,7 +1196,8 @@ static VALUE lnrbLNMatrix_RotateQuaternion(int argc, VALUE *argv, VALUE self)
         if (isRbObject(qua)) {
             LNQuaternion* tmp__qua; Data_Get_Struct(qua, LNQuaternion, tmp__qua);LNQuaternion& _qua = *tmp__qua;
             LNMatrix_RotateQuaternion(selfObj, &_qua);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.rotate_quaternion - wrong argument type.");
     return Qnil;
@@ -1179,7 +1213,8 @@ static VALUE lnrbLNMatrix_Scale(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(xyz)) {
             float _xyz = ((float)NUM2DBL(xyz));
             LNMatrix_Scale(selfObj, _xyz);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.scale - wrong argument type.");
     return Qnil;
@@ -1199,7 +1234,8 @@ static VALUE lnrbLNMatrix_ScaleXYZ(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNMatrix_ScaleXYZ(selfObj, _x, _y, _z);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.scale_xyz - wrong argument type.");
     return Qnil;
@@ -1215,7 +1251,8 @@ static VALUE lnrbLNMatrix_ScaleVec3(int argc, VALUE *argv, VALUE self)
         if (isRbObject(scale)) {
             LNVector3* tmp__scale; Data_Get_Struct(scale, LNVector3, tmp__scale);LNVector3& _scale = *tmp__scale;
             LNMatrix_ScaleVec3(selfObj, &_scale);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.scale_vec_3 - wrong argument type.");
     return Qnil;
@@ -1233,8 +1270,9 @@ static VALUE static_lnrbLNMatrix_Multiply(int argc, VALUE *argv, VALUE self)
             LNMatrix _matOut;
             LNMatrix_Multiply(&_mat1, &_mat2, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.multiply - wrong argument type.");
@@ -1251,8 +1289,9 @@ static VALUE static_lnrbLNMatrix_Inverse(int argc, VALUE *argv, VALUE self)
             LNMatrix _matOut;
             LNMatrix_Inverse(&_mat, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.inverse - wrong argument type.");
@@ -1269,8 +1308,9 @@ static VALUE static_lnrbLNMatrix_Transpose(int argc, VALUE *argv, VALUE self)
             LNMatrix _matOut;
             LNMatrix_Transpose(&_mat, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.transpose - wrong argument type.");
@@ -1291,8 +1331,9 @@ static VALUE static_lnrbLNMatrix_ViewTransformLH(int argc, VALUE *argv, VALUE se
             LNMatrix _matOut;
             LNMatrix_ViewTransformLH(&_pos, &_lookAt, &_upDir, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.view_transform_lh - wrong argument type.");
@@ -1313,8 +1354,9 @@ static VALUE static_lnrbLNMatrix_ViewTransformRH(int argc, VALUE *argv, VALUE se
             LNMatrix _matOut;
             LNMatrix_ViewTransformRH(&_pos, &_lookAt, &_upDir, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.view_transform_rh - wrong argument type.");
@@ -1337,8 +1379,9 @@ static VALUE static_lnrbLNMatrix_PerspectiveFovLH(int argc, VALUE *argv, VALUE s
             LNMatrix _matOut;
             LNMatrix_PerspectiveFovLH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.perspective_fov_lh - wrong argument type.");
@@ -1361,8 +1404,9 @@ static VALUE static_lnrbLNMatrix_PerspectiveFovRH(int argc, VALUE *argv, VALUE s
             LNMatrix _matOut;
             LNMatrix_PerspectiveFovRH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.perspective_fov_rh - wrong argument type.");
@@ -1385,8 +1429,9 @@ static VALUE static_lnrbLNMatrix_OrthoLH(int argc, VALUE *argv, VALUE self)
             LNMatrix _matOut;
             LNMatrix_OrthoLH(_width, _height, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.ortho_lh - wrong argument type.");
@@ -1409,8 +1454,9 @@ static VALUE static_lnrbLNMatrix_OrthoRH(int argc, VALUE *argv, VALUE self)
             LNMatrix _matOut;
             LNMatrix_OrthoRH(_width, _height, _nearZ, _farZ, &_matOut);
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
-            *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
-            return retObj;
+    *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.ortho_rh - wrong argument type.");
@@ -1427,8 +1473,9 @@ static VALUE lnrbLNMatrix_GetEulerAngles(int argc, VALUE *argv, VALUE self)
             LNVector3 _outVec;
             LNMatrix_GetEulerAngles(selfObj, &_outVec);
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
-            *((LNVector3*)DATA_PTR(retObj)) = _outVec;
-            return retObj;
+    *((LNVector3*)DATA_PTR(retObj)) = _outVec;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Matrix.get_euler_angles - wrong argument type.");
@@ -1549,7 +1596,8 @@ static VALUE lnrbLNQuaternion_Set(int argc, VALUE *argv, VALUE self)
             float _z = ((float)NUM2DBL(z));
             float _w = ((float)NUM2DBL(w));
             LNQuaternion_Set(selfObj, _x, _y, _z, _w);
-            return Qnil;    }
+            return Qnil;
+        }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.set - wrong argument type.");
     return Qnil;
@@ -1563,8 +1611,9 @@ static VALUE static_lnrbLNQuaternion_Identity(int argc, VALUE *argv, VALUE self)
             LNQuaternion _qua;
             LNQuaternion_Identity(&_qua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _qua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _qua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.identity - wrong argument type.");
@@ -1583,8 +1632,9 @@ static VALUE static_lnrbLNQuaternion_RotationAxis(int argc, VALUE *argv, VALUE s
             LNQuaternion _outQua;
             LNQuaternion_RotationAxis(&_axis, _r, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.rotation_axis - wrong argument type.");
@@ -1601,8 +1651,9 @@ static VALUE static_lnrbLNQuaternion_RotationMatrix(int argc, VALUE *argv, VALUE
             LNQuaternion _outQua;
             LNQuaternion_RotationMatrix(&_mat, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.rotation_matrix - wrong argument type.");
@@ -1623,8 +1674,9 @@ static VALUE static_lnrbLNQuaternion_RotationYawPitchRoll(int argc, VALUE *argv,
             LNQuaternion _outQua;
             LNQuaternion_RotationYawPitchRoll(_yaw, _pitch, _roll, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.rotation_yaw_pitch_roll - wrong argument type.");
@@ -1641,8 +1693,9 @@ static VALUE static_lnrbLNQuaternion_Normalize(int argc, VALUE *argv, VALUE self
             LNQuaternion _outQua;
             LNQuaternion_Normalize(&_qua, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.normalize - wrong argument type.");
@@ -1659,8 +1712,9 @@ static VALUE static_lnrbLNQuaternion_Conjugate(int argc, VALUE *argv, VALUE self
             LNQuaternion _outQua;
             LNQuaternion_Conjugate(&_qua, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.conjugate - wrong argument type.");
@@ -1679,8 +1733,9 @@ static VALUE static_lnrbLNQuaternion_Multiply(int argc, VALUE *argv, VALUE self)
             LNQuaternion _outQua;
             LNQuaternion_Multiply(&_qua1, &_qua2, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.multiply - wrong argument type.");
@@ -1701,8 +1756,9 @@ static VALUE static_lnrbLNQuaternion_Slerp(int argc, VALUE *argv, VALUE self)
             LNQuaternion _outQua;
             LNQuaternion_Slerp(&_qua1, &_qua2, _t, &_outQua);
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
-            *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
-            return retObj;
+    *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
+    return retObj;
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Quaternion.slerp - wrong argument type.");
