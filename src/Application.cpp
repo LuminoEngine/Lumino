@@ -46,6 +46,7 @@
 
 #pragma once
 #include "Internal.h"
+#include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Graphics/Renderer.h>
@@ -93,6 +94,7 @@ ApplicationImpl* ApplicationImpl::Create(const ApplicationSettings& configData)
 //-----------------------------------------------------------------------------
 ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	: m_configData(configData)
+	, m_fileManager(NULL)
 	, m_audioManager(NULL)
 	, m_guiManager(NULL)
 	, m_sceneGraphManager(NULL)
@@ -135,6 +137,8 @@ ApplicationImpl::~ApplicationImpl()
 	if (ApplicationContext::GetCurrent() == this) {
 		ApplicationContext::SetCurrent(NULL);
 	}
+
+	Console::Free();
 }
 
 //-----------------------------------------------------------------------------
@@ -157,10 +161,30 @@ void ApplicationImpl::InitializeCommon()
 {
 	if (!m_commonInitied)
 	{
+		// ログファイル出力
 		if (m_configData.ApplicationLogEnabled) {
 			Logger::Initialize(LogFileName);
 		}
+		// コンソール割り当て
+		if (m_configData.ConsoleEnabled) {
+			Console::Alloc();
+		}
+
 		m_commonInitied = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ApplicationImpl::InitialzeFileManager()
+{
+	if (m_fileManager == NULL)
+	{
+		m_fileManager = &FileManager::GetInstance();
+		for (auto& e : m_configData.ArchiveFileEntryList) {
+			m_fileManager->RegisterArchive(e.FilePath, e.Password);
+		}
 	}
 }
 
@@ -198,6 +222,7 @@ void ApplicationImpl::InitialzeAudioManager()
 	if (m_audioManager == NULL)
 	{
 		InitializeCommon();
+		InitialzeFileManager();
 
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
@@ -237,6 +262,7 @@ void ApplicationImpl::InitialzeGraphicsManager()
 	if (m_graphicsManager.IsNull())
 	{
 		InitializeCommon();
+		InitialzeFileManager();
 		InitialzePlatformManager();
 		InitialzePhysicsManager();
 

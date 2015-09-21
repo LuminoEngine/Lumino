@@ -97,6 +97,38 @@ static VALUE static_lnrbLNConfig_SetConsoleEnabled(int argc, VALUE *argv, VALUE 
     return Qnil;
 }
 
+static VALUE static_lnrbLNConfig_RegisterArchive(int argc, VALUE *argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE filePath;
+        VALUE password;
+        rb_scan_args(argc, argv, "2", &filePath, &password);
+        if (isRbString(filePath) && isRbString(password)) {
+            char* _filePath = StringValuePtr(filePath);
+            char* _password = StringValuePtr(password);
+            LNConfig_RegisterArchive(_filePath, _password);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Config.register_archive - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNConfig_SetFileAccessPriority(int argc, VALUE *argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE priority;
+        rb_scan_args(argc, argv, "1", &priority);
+        if (isRbNumber(priority)) {
+            LNFileAccessPriority _priority = (LNFileAccessPriority)FIX2INT(priority);
+            LNConfig_SetFileAccessPriority(_priority);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Config.set_file_access_priority - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE static_lnrbLNConfig_SetUserWindowHandle(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 1) {
@@ -1056,6 +1088,8 @@ void InitClasses()
     g_class_Config = rb_define_class_under(g_luminoModule, "Config", rb_cObject);
     rb_define_singleton_method(g_class_Config, "set_application_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetApplicationLogEnabled), -1);
     rb_define_singleton_method(g_class_Config, "set_console_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetConsoleEnabled), -1);
+    rb_define_singleton_method(g_class_Config, "register_archive", LN_TO_RUBY_FUNC(static_lnrbLNConfig_RegisterArchive), -1);
+    rb_define_singleton_method(g_class_Config, "set_file_access_priority", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetFileAccessPriority), -1);
     rb_define_singleton_method(g_class_Config, "set_user_window_handle", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetUserWindowHandle), -1);
     rb_define_singleton_method(g_class_Config, "set_sound_cache_size", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetSoundCacheSize), -1);
     rb_define_singleton_method(g_class_Config, "set_direct_music_initialize_mode", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicInitializeMode), -1);

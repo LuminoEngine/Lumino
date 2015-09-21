@@ -462,6 +462,17 @@ class LN::Config
     #   @param [Bool] enabled LN_TRUE:割り当てる / LN_FALSE:割り当てない
     def set_console_enabled
     end
+    # ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+    # @overload register_archive(filePath, password)
+    #   @param [String] filePath アーカイブファイルパス
+    #   @param [String] password アーカイブファイルを開くためのパスワード
+    def register_archive
+    end
+    # ファイルへのアクセス優先順位を設定します。
+    # @overload set_file_access_priority(priority)
+    #   @param [LN::FileAccessPriority] priority 制限方法 (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
+    def set_file_access_priority
+    end
     # ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
     # @overload set_user_window_handle(windowHandle)
     #   @param [] windowHandle ユーザー定義のウィンドウハンドル

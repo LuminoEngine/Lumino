@@ -398,7 +398,7 @@ LNResult LNSound_Set3DEnabled(LN_HANDLE(LNSound) sound, LNBool enabled)
 {
 	LN_CHECK_ARG_HANDLE(sound);
 	LN_FUNC_TRY_BEGIN;
-	TO_REFOBJ(Sound, sound)->SetLoopEnabled(LNC_TO_BOOL(enabled));
+	TO_REFOBJ(Sound, sound)->Set3DEnabled(LNC_TO_BOOL(enabled));
 	LN_FUNC_TRY_END_RETURN;
 }
 

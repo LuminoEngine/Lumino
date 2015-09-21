@@ -188,7 +188,7 @@ bool Archive::ExistsFile(const PathName& fileFullPath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Archive::TryCreateStream(const PathName& fileFullPath, Stream** outStream)
+bool Archive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -429,17 +429,16 @@ bool DummyArchive::ExistsFile(const PathName& fileFullPath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStream)
+bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring)
 {
-	try
-	{
-		*outStream = LN_NEW FileStream(fileFullPath, FileOpenMode::Read);
-		return true;
+	if (!FileSystem::Exists(fileFullPath)) {
+		return false;
 	}
-	catch (...) {
 
-	}
-	return false;
+	FileOpenMode mode = FileOpenMode::Read;
+	if (isDeferring) { mode |= FileOpenMode::Deferring; }
+	*outStream = LN_NEW FileStream(fileFullPath, mode);
+	return true;
 }
 
 } // namespace Lumino

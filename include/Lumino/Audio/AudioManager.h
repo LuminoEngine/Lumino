@@ -59,6 +59,7 @@ public:
 
 private:
 	friend class Sound;
+	Lumino::FileManager* GetFileManager() { return m_fileManager; }
 	//AudioStream* CreateAudioStream(const TCHAR* filePath);
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
 	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// ‰Šú‰»Š®—¹Ï‚İ‚Ì AudioStream ‚ğ“n‚·‚±‚Æ

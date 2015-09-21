@@ -98,30 +98,31 @@ bool FileManager::ExistsFile(const PathName& filePath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Stream* FileManager::CreateFileStream(const char* filePath)
+Stream* FileManager::CreateFileStream(const char* filePath, bool isDeferring)
 {
-	return CreateFileStream(PathName(filePath));
+	return CreateFileStream(PathName(filePath), isDeferring);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Stream* FileManager::CreateFileStream(const wchar_t* filePath)
+Stream* FileManager::CreateFileStream(const wchar_t* filePath, bool isDeferring)
 {
-	return CreateFileStream(PathName(filePath));
+	return CreateFileStream(PathName(filePath), isDeferring);
 }
 
 //-----------------------------------------------------------------------------
-//
+// Note: isDeferring は今のところ Sound の遅延読み込み用のもの。
+// ディクス上のファイルから FileStream を作るときに使用する。
 //-----------------------------------------------------------------------------
-Stream* FileManager::CreateFileStream(const PathName& filePath)
+Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring)
 {
 	PathName absPath = filePath.CanonicalizePath();
 
 	Stream* stream = NULL;
 	LN_FOREACH(IArchive* archive, m_archiveList)
 	{
-		if (archive->TryCreateStream(absPath, &stream)) {
+		if (archive->TryCreateStream(absPath, &stream, isDeferring)) {
 			break;
 		}
 	}

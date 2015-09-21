@@ -31,6 +31,21 @@ LN_STATIC_CLASS(LNConfig)
 	void LNConfig_SetConsoleEnabled(LNBool enabled);
 
 	/**
+		@brief		ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+		@param[in]	filePath	: アーカイブファイルパス
+		@param[in]	password	: アーカイブファイルを開くためのパスワード
+	*/
+	LN_STATIC_API
+	void LNConfig_RegisterArchive(const LNChar* filePath, const LNChar* password);
+
+	/**
+		@brief		ファイルへのアクセス優先順位を設定します。
+		@param[in]	priority	: 制限方法 (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
+	*/
+	LN_STATIC_API
+	void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority);
+
+	/**
 		@brief		ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
 		@param[in]	windowHandle　: ユーザー定義のウィンドウハンドル
 	*/

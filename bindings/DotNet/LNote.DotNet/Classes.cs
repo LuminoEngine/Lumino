@@ -30,6 +30,27 @@ namespace LN
         }
         
         /// <summary>
+        /// ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+        /// </summary>
+        /// <param name="filePath">アーカイブファイルパス</param>
+        /// <param name="password">アーカイブファイルを開くためのパスワード</param>
+        public static void RegisterArchive( string filePath,  string password)
+        {
+            API.LNConfig_RegisterArchive( filePath,  password);
+        
+        }
+        
+        /// <summary>
+        /// ファイルへのアクセス優先順位を設定します。
+        /// </summary>
+        /// <param name="priority">制限方法 (default:FileAccessPriority.DirectoryFirst)</param>
+        public static void SetFileAccessPriority( FileAccessPriority priority)
+        {
+            API.LNConfig_SetFileAccessPriority( priority);
+        
+        }
+        
+        /// <summary>
         /// ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
         /// </summary>
         /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>

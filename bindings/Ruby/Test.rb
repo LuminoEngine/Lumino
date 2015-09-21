@@ -1,8 +1,10 @@
 require './Lumino'
 include Lumino
 
+Config.register_archive("audio.lna", "test")
 Application.initialize_audio
-sound1 = Sound.new("D:/tmp/ZIGG-ZAGG.mp3")
+sound1 = Sound.new("audio/ZIGG-ZAGG.mp3")
+sound1.pitch = 105
 sound1.play
 
 

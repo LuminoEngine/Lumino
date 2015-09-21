@@ -968,6 +968,21 @@ namespace LN
         public extern static void LNConfig_SetConsoleEnabled( bool enabled);
 
         /// <summary>
+        /// ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+        /// </summary>
+        /// <param name="filePath">アーカイブファイルパス</param>
+        /// <param name="password">アーカイブファイルを開くためのパスワード</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_RegisterArchive( string filePath,  string password);
+
+        /// <summary>
+        /// ファイルへのアクセス優先順位を設定します。
+        /// </summary>
+        /// <param name="priority">制限方法 (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_SetFileAccessPriority( FileAccessPriority priority);
+
+        /// <summary>
         /// ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
         /// </summary>
         /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>

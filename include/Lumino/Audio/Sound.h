@@ -129,7 +129,7 @@ public:
 	const Vector3& GetEmitterVelocity() const;
 
 	/**
-		@brief		3D 音声としての減衰距離を設定します。
+		@brief		3D 音声としての減衰距離を設定します。(default:100)
 	*/
 	void SetEmitterMaxDistance(float distance);
 

@@ -21,6 +21,25 @@ void LNConfig_SetApplicationLogEnabled(LNBool enabled)
 //-----------------------------------------------------------------------------
 void LNConfig_SetConsoleEnabled(LNBool enabled)
 {
+	LFManager::ConfigData.ConsoleEnabled = LNC_TO_BOOL(enabled);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNConfig_RegisterArchive(const LNChar* filePath, const LNChar* password)
+{
+	ApplicationSettings::ArchiveFileEntry e;
+	e.FilePath = filePath;
+	e.Password = password;
+	LFManager::ConfigData.ArchiveFileEntryList.Add(e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority)
+{
 
 }
 

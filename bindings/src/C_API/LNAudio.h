@@ -542,7 +542,7 @@ LN_CLASS(LNSound, LNObject)
 	LNResult LNSound_SetEmitterVelocityXYZ(LN_HANDLE(LNSound) sound, float x, float y, float z);
 
 	/**
-		@brief		サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。
+		@brief		サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。(default:100)
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	distance	: 距離
 	*/

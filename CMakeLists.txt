@@ -647,3 +647,5 @@ endif()
 #------------------------------
 # 
 add_subdirectory(bindings/src)
+add_subdirectory(bindings/C/Test)
+add_subdirectory(tools/ArchiveMaker)

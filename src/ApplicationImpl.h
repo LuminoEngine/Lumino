@@ -81,6 +81,7 @@ protected:
 public:
 	void Initialize();
 	void InitializeCommon();
+	void InitialzeFileManager();
 	void InitialzePlatformManager();
 	void InitialzeAudioManager();
 	void InitialzePhysicsManager();
@@ -94,6 +95,7 @@ private:
 	//class NativeWindowEventListener;
 	ApplicationSettings				m_configData;
 	FpsController						m_fpsController;
+	FileManager*						m_fileManager;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
 	AudioManagerImpl*					m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;

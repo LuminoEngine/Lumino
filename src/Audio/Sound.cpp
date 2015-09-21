@@ -26,8 +26,9 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Sound, CoreObject);
 Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
 {
 	manager = (manager) ? manager : Internal::Manager;
+	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true));
 
-	RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
+	//RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
 	return manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync);
 }
 
@@ -55,7 +56,7 @@ Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType pla
 	, m_is3DSound(false)
 	, m_position(0, 0, 0)
 	, m_velocity(0, 0, 0)
-	, m_maxDistance(0)
+	, m_maxDistance(100)
 	, m_playState(SoundPlayingState::Stopped)
 	, m_gameAudioFlags(0)
 	, m_fadeValue()

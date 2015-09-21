@@ -269,6 +269,10 @@
 #define LNConfig_SetApplicationLogEnabled(%1) native_LNConfig_SetApplicationLogEnabled %1
 #func native_LNConfig_SetConsoleEnabled "LNConfig_SetConsoleEnabled" int
 #define LNConfig_SetConsoleEnabled(%1) native_LNConfig_SetConsoleEnabled %1
+#func native_LNConfig_RegisterArchive "LNConfig_RegisterArchive" str, str
+#define LNConfig_RegisterArchive(%1, %2) native_LNConfig_RegisterArchive %1, %2
+#func native_LNConfig_SetFileAccessPriority "LNConfig_SetFileAccessPriority" int
+#define LNConfig_SetFileAccessPriority(%1) native_LNConfig_SetFileAccessPriority %1
 #func native_LNConfig_SetUserWindowHandle "LNConfig_SetUserWindowHandle" void*
 #define LNConfig_SetUserWindowHandle(%1) native_LNConfig_SetUserWindowHandle %1
 #func native_LNConfig_SetSoundCacheSize "LNConfig_SetSoundCacheSize" int, int

@@ -30,7 +30,7 @@ public:
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
 	*/
-	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream) = 0;
+	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring) = 0;
 
 };
 
@@ -84,7 +84,7 @@ public:
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
 	*/
-	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream);
+	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring);
 
 private:
 
@@ -171,7 +171,7 @@ class DummyArchive
 {
 public:
 	virtual bool ExistsFile(const PathName& fileFullPath);
-	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream);
+	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring);
 };
 
 } // namespace Lumino

@@ -1,0 +1,11 @@
+
+#regcmd "_hsp3cmdinit@4", "LuminoHSP.dll", 1
+#cmd LNVector3 $000
+#cmd LNAudio_PlaySE3D $10
+
+
+vec = LNVector3(10.0, 0.0, 1.0)
+mes "TYPE="+vartype(vec)
+
+//LNAudio_PlaySE3D "D:/tmp/ZIGG-ZAGG.mp3", vec, 100
+stop

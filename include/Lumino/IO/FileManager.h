@@ -50,9 +50,9 @@ public:
 		@brief		読み取り専用モードでファイルストリームを開きます。
 		@details	初期化時に指定したアクセス優先度に従い、登録されているアーカイブがあればその内部も確認します。
 	*/
-	Stream* CreateFileStream(const char* filePath);
-	Stream* CreateFileStream(const wchar_t* filePath);	///< @overload CreateInFileStream
-	Stream* CreateFileStream(const PathName& filePath);	///< @overload CreateInFileStream
+	Stream* CreateFileStream(const char* filePath, bool isDeferring = false);
+	Stream* CreateFileStream(const wchar_t* filePath, bool isDeferring = false);	///< @overload CreateInFileStream
+	Stream* CreateFileStream(const PathName& filePath, bool isDeferring = false);	///< @overload CreateInFileStream
 
 	/**
 		@brief		現在の環境のファイルシステムが、パス文字列の大文字と小文字を区別するかを確認します。

@@ -50,6 +50,9 @@
     <Compile Include="Builder\CSCommon.cs" />
     <Compile Include="Builder\CSPInvokeBuilder.cs" />
     <Compile Include="Builder\CSStructsBuilder.cs" />
+    <Compile Include="Builder\HSPCommandsBuilder.cs" />
+    <Compile Include="Builder\HSPHelpBuilder.cs" />
+    <Compile Include="Builder\HSPStructsBuilder.cs" />
     <Compile Include="Builder\OutputBuffer.cs" />
     <Compile Include="Builder\RubyClassesBuilder.cs" />
     <Compile Include="Builder\RubyCommon.cs" />

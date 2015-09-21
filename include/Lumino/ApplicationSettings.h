@@ -11,11 +11,28 @@ namespace Lumino
 class ApplicationSettings
 {
 public:
+	struct ArchiveFileEntry
+	{
+		PathName	FilePath;
+		String		Password;
+	};
+
+public:
 
 	/**
 		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:Debugモードの場合true、それ以外は false)
 	*/
 	bool ApplicationLogEnabled;
+
+	/**
+		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:false)
+	*/
+	bool ConsoleEnabled;
+
+	/**
+		@brief		登録するアーカイブファイルのリストです。
+	*/
+	Array<ArchiveFileEntry>	ArchiveFileEntryList;
 
 	/**
 		@brief		グラフィックス機能で使用する描画 API を指定します。
@@ -39,6 +56,7 @@ public:
 public:
 	ApplicationSettings()
 		: ApplicationLogEnabled(false)
+		, ConsoleEnabled(false)
 		, GraphicsAPI(Lumino::GraphicsAPI::DirectX9)
 		, RenderingType(Lumino::RenderingType::Deferred)
 		, UserMainWindow(NULL)

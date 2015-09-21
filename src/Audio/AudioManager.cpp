@@ -73,6 +73,8 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	, m_endRequested()
 	, m_pollingThread()
 {
+	m_fileManager = settings.FileManager;
+
 #ifdef LN_OS_WIN32
 	if (m_audioDevice == NULL)
 	{
