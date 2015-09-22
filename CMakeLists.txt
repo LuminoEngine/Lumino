@@ -627,7 +627,7 @@ target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 add_custom_command(
 	TARGET ${PROJECT_NAME}_Static
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}_Static> "${PROJECT_SOURCE_DIR}/lib")
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}_Static> "${CMAKE_SOURCE_DIR}/lib")
 
 #------------------------------
 # Unit test.

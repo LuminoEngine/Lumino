@@ -60,6 +60,9 @@ public:
 	static Lumino::ApplicationSettings	ConfigData;
 	static Lumino::ApplicationImpl*		Application;
 	static bool							IsSystemInitialized;
+	static Exception*					LastException;
+	static LNResult						LastErrorCode;
+	static EncodingConverter			TCharToUTF8Converter;
 
 private:
 	typedef Array<ObjectEntry>	ObjectEntryList;

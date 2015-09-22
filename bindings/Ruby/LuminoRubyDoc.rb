@@ -1,37 +1,41 @@
 ﻿# RESULT
 module LN::Result
-    # 成功
+    # < 成功
     OK = 0
-    # 不明なエラー
+    # < 不明なエラー
     UNKNOWN = -1
-    # メモリ確保に失敗
-    OUT_OF_MEMORY = -2
-    # その他のIOエラー
-    IO = -3
-    # ストリームの末尾を越えてアクセスしようとした
-    END_OF_STREAM = -4
-    # 引数が無効
-    ARGUMENT = -5
-    # オブジェクトの現在の状態に対して無効な呼び出しが行われた
-    INVALID_OPERATION = -6
-    # サポートされない機能を呼び出そうとした
-    NOT_SUPPORTED = -7
-    # ファイルにアクセスしようとして失敗した
-    FILE_NOT_FOUND = -8
-    # 無効なディレクトリにアクセスしようとした
-    DIRECTORY_NOT_FOUND = -9
-    # ファイルや文字列等の形式が不正
-    INVALID_FORMAT = -10
-    # 未実装の機能を呼び出した
-    NOT_IMPLEMENTED = -11
-    # C/C++ランタイム API でエラーが発生した
-    RUNTIME = -12
-    # 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
-    ENCODING_FALLBACK = -13
-    # WindowsAPI のエラー
-    WIN32 = -14
-    # COM のエラー
-    COM = -15
+    # < 前提条件の検証エラー
+    VERIFY = -2
+    # < 引数が無効
+    ARGUMENT = -3
+    # < オブジェクトの現在の状態に対して無効な呼び出しが行われた
+    INVALID_OPERATION = -4
+    # < 未実装の機能を呼び出した
+    NOT_IMPLEMENTED = -5
+    # < メモリ確保に失敗
+    OUT_OF_MEMORY = -6
+    # < 値が有効な範囲に存在しない
+    OUT_OF_RANGE = -7
+    # < 検索に使用したキーが存在しない
+    KEY_NOT_FOUND = -8
+    # < 数値演算によるオーバーフローが発生した
+    OVERFLOW = -9
+    # < その他のIOエラー
+    IO = -10
+    # < ファイルにアクセスしようとして失敗した
+    FILE_NOT_FOUND = -11
+    # < 無効なディレクトリにアクセスしようとした
+    DIRECTORY_NOT_FOUND = -12
+    # < ファイルや文字列等の形式が不正
+    INVALID_FORMAT = -13
+    # < ストリームの末尾を越えてアクセスしようとした
+    END_OF_STREAM = -14
+    # < 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
+    ENCODING = -15
+    # < WindowsAPI のエラー
+    WIN32 = -16
+    # < COM のエラー
+    COM = -17
 end
 # VARIANTTYPE
 module LN::VariantType
@@ -428,6 +432,17 @@ end
 module LN::ObjectType
     # 
     SOUND = 0
+end
+# エラーに関係する処理を行います。
+class LN::Error < ReferenceObject
+    # 最後に発生したエラーのエラーコードを取得します。
+    # @overload get_last_error_code()
+    def get_last_error_code
+    end
+    # 最後に発生したエラーのエラーメッセージを取得します。
+    # @overload get_last_error_message()
+    def get_last_error_message
+    end
 end
 # 全てのオブジェクトのベースオブジェクトです。
 class LN::ReferenceObject < ReferenceObject

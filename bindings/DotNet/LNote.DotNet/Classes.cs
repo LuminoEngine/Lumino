@@ -790,7 +790,7 @@ namespace LN
             
         }
         /// <summary>
-        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) 
+        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) (default:100)
         /// </summary>
         public float EmitterMaxDistance
         {

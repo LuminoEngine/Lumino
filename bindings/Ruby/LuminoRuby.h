@@ -1,7 +1,8 @@
 #include "ruby.h"
-#include "../src/C_API/lumino.h"
+#include "../src/C_API/LuminoC.h"
 
 extern VALUE g_luminoModule;
+extern VALUE g_luminoError;  // exception
 
 extern void InitEnums();
 extern void InitStructs();
@@ -28,3 +29,11 @@ inline VALUE toVALUE(float v)			{ return DBL2NUM(v); }
 inline VALUE toVALUE(double v)			{ return DBL2NUM(v); }
 //inline VALUE toVALUE(lnErrorCode v)		{ return INT2FIX(v); }
 //inline VALUE toVALUE(lnIntPtr v)		{ return INT2NUM(v); }
+
+extern "C"
+{
+
+// Internal API
+const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len);
+
+} // extern "C"

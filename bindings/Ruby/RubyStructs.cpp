@@ -80,7 +80,8 @@ static VALUE lnrbLNVector2_GetLength(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             float _outLength;
-            LNVector2_GetLength(selfObj, &_outLength);
+            LNResult errorCode = LNVector2_GetLength(selfObj, &_outLength);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_outLength);
     
         }
@@ -97,7 +98,8 @@ static VALUE lnrbLNVector2_GetSquareLength(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             float _outLength;
-            LNVector2_GetSquareLength(selfObj, &_outLength);
+            LNResult errorCode = LNVector2_GetSquareLength(selfObj, &_outLength);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_outLength);
     
         }
@@ -117,7 +119,8 @@ static VALUE lnrbLNVector2_Set(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(x) && isRbFloat(y)) {
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
-            LNVector2_Set(selfObj, _x, _y);
+            LNResult errorCode = LNVector2_Set(selfObj, _x, _y);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -133,7 +136,8 @@ static VALUE static_lnrbLNVector2_Normalize(int argc, VALUE *argv, VALUE self)
         if (isRbObject(vec)) {
             LNVector2* tmp__vec; Data_Get_Struct(vec, LNVector2, tmp__vec);LNVector2& _vec = *tmp__vec;
             LNVector2 _outVec;
-            LNVector2_Normalize(&_vec, &_outVec);
+            LNResult errorCode = LNVector2_Normalize(&_vec, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector2_allocate(g_struct_Vector2);
     *((LNVector2*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -151,7 +155,8 @@ static VALUE lnrbLNVector2_NormalizeV(int argc, VALUE *argv, VALUE self)
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNVector2_NormalizeV(selfObj);
+            LNResult errorCode = LNVector2_NormalizeV(selfObj);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -248,7 +253,8 @@ static VALUE lnrbLNVector3_GetLength(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             float _outLength;
-            LNVector3_GetLength(selfObj, &_outLength);
+            LNResult errorCode = LNVector3_GetLength(selfObj, &_outLength);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_outLength);
     
         }
@@ -265,7 +271,8 @@ static VALUE lnrbLNVector3_GetSquareLength(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             float _outLength;
-            LNVector3_GetSquareLength(selfObj, &_outLength);
+            LNResult errorCode = LNVector3_GetSquareLength(selfObj, &_outLength);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_outLength);
     
         }
@@ -287,7 +294,8 @@ static VALUE lnrbLNVector3_Set(int argc, VALUE *argv, VALUE self)
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
-            LNVector3_Set(selfObj, _x, _y, _z);
+            LNResult errorCode = LNVector3_Set(selfObj, _x, _y, _z);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -306,7 +314,8 @@ static VALUE lnrbLNVector3_SetVZ(int argc, VALUE *argv, VALUE self)
         if (isRbObject(vec2) && isRbFloat(z)) {
             LNVector2* tmp__vec2; Data_Get_Struct(vec2, LNVector2, tmp__vec2);LNVector2& _vec2 = *tmp__vec2;
             float _z = ((float)NUM2DBL(z));
-            LNVector3_SetVZ(selfObj, &_vec2, _z);
+            LNResult errorCode = LNVector3_SetVZ(selfObj, &_vec2, _z);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -322,7 +331,8 @@ static VALUE static_lnrbLNVector3_Normalize(int argc, VALUE *argv, VALUE self)
         if (isRbObject(vec)) {
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNVector3 _outVec;
-            LNVector3_Normalize(&_vec, &_outVec);
+            LNResult errorCode = LNVector3_Normalize(&_vec, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -340,7 +350,8 @@ static VALUE lnrbLNVector3_NormalizeV(int argc, VALUE *argv, VALUE self)
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNVector3_NormalizeV(selfObj);
+            LNResult errorCode = LNVector3_NormalizeV(selfObj);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -358,7 +369,8 @@ static VALUE static_lnrbLNVector3_Dot(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec1; Data_Get_Struct(vec1, LNVector3, tmp__vec1);LNVector3& _vec1 = *tmp__vec1;
             LNVector3* tmp__vec2; Data_Get_Struct(vec2, LNVector3, tmp__vec2);LNVector3& _vec2 = *tmp__vec2;
             float _dot;
-            LNVector3_Dot(&_vec1, &_vec2, &_dot);
+            LNResult errorCode = LNVector3_Dot(&_vec1, &_vec2, &_dot);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_dot);
     
         }
@@ -377,7 +389,8 @@ static VALUE static_lnrbLNVector3_Cross(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec1; Data_Get_Struct(vec1, LNVector3, tmp__vec1);LNVector3& _vec1 = *tmp__vec1;
             LNVector3* tmp__vec2; Data_Get_Struct(vec2, LNVector3, tmp__vec2);LNVector3& _vec2 = *tmp__vec2;
             LNVector3 _outVec;
-            LNVector3_Cross(&_vec1, &_vec2, &_outVec);
+            LNResult errorCode = LNVector3_Cross(&_vec1, &_vec2, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -398,7 +411,8 @@ static VALUE static_lnrbLNVector3_Reflect(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNVector3* tmp__normal; Data_Get_Struct(normal, LNVector3, tmp__normal);LNVector3& _normal = *tmp__normal;
             LNVector3 _outVec;
-            LNVector3_Reflect(&_vec, &_normal, &_outVec);
+            LNResult errorCode = LNVector3_Reflect(&_vec, &_normal, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -419,7 +433,8 @@ static VALUE static_lnrbLNVector3_Slide(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNVector3* tmp__normal; Data_Get_Struct(normal, LNVector3, tmp__normal);LNVector3& _normal = *tmp__normal;
             LNVector3 _outVec;
-            LNVector3_Slide(&_vec, &_normal, &_outVec);
+            LNResult errorCode = LNVector3_Slide(&_vec, &_normal, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -442,7 +457,8 @@ static VALUE static_lnrbLNVector3_Lerp(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec2; Data_Get_Struct(vec2, LNVector3, tmp__vec2);LNVector3& _vec2 = *tmp__vec2;
             float _t = ((float)NUM2DBL(t));
             LNVector3 _outVec;
-            LNVector3_Lerp(&_vec1, &_vec2, _t, &_outVec);
+            LNResult errorCode = LNVector3_Lerp(&_vec1, &_vec2, _t, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -469,7 +485,8 @@ static VALUE static_lnrbLNVector3_CatmullRom(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec4; Data_Get_Struct(vec4, LNVector3, tmp__vec4);LNVector3& _vec4 = *tmp__vec4;
             float _t = ((float)NUM2DBL(t));
             LNVector3 _outVec;
-            LNVector3_CatmullRom(&_vec1, &_vec2, &_vec3, &_vec4, _t, &_outVec);
+            LNResult errorCode = LNVector3_CatmullRom(&_vec1, &_vec2, &_vec3, &_vec4, _t, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -490,7 +507,8 @@ static VALUE static_lnrbLNVector3_Transform(int argc, VALUE *argv, VALUE self)
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNMatrix* tmp__mat; Data_Get_Struct(mat, LNMatrix, tmp__mat);LNMatrix& _mat = *tmp__mat;
             LNVector4 _outVec;
-            LNVector3_Transform(&_vec, &_mat, &_outVec);
+            LNResult errorCode = LNVector3_Transform(&_vec, &_mat, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector4_allocate(g_struct_Vector4);
     *((LNVector4*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -511,7 +529,8 @@ static VALUE static_lnrbLNVector3_TransformCoord(int argc, VALUE *argv, VALUE se
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNMatrix* tmp__mat; Data_Get_Struct(mat, LNMatrix, tmp__mat);LNMatrix& _mat = *tmp__mat;
             LNVector3 _outVec;
-            LNVector3_TransformCoord(&_vec, &_mat, &_outVec);
+            LNResult errorCode = LNVector3_TransformCoord(&_vec, &_mat, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -635,7 +654,8 @@ static VALUE lnrbLNVector4_Set(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             float _w = ((float)NUM2DBL(w));
-            LNVector4_Set(selfObj, _x, _y, _z, _w);
+            LNResult errorCode = LNVector4_Set(selfObj, _x, _y, _z, _w);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -953,7 +973,8 @@ static VALUE lnrbLNMatrix_GetRight(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector3 _outVec;
-            LNMatrix_GetRight(selfObj, &_outVec);
+            LNResult errorCode = LNMatrix_GetRight(selfObj, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -972,7 +993,8 @@ static VALUE lnrbLNMatrix_GetUp(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector3 _outVec;
-            LNMatrix_GetUp(selfObj, &_outVec);
+            LNResult errorCode = LNMatrix_GetUp(selfObj, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -991,7 +1013,8 @@ static VALUE lnrbLNMatrix_GetFront(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector3 _outVec;
-            LNMatrix_GetFront(selfObj, &_outVec);
+            LNResult errorCode = LNMatrix_GetFront(selfObj, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -1010,7 +1033,8 @@ static VALUE lnrbLNMatrix_GetPosition(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector3 _outVec;
-            LNMatrix_GetPosition(selfObj, &_outVec);
+            LNResult errorCode = LNMatrix_GetPosition(selfObj, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -1028,7 +1052,8 @@ static VALUE lnrbLNMatrix_Identity(int argc, VALUE *argv, VALUE self)
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNMatrix_Identity(selfObj);
+            LNResult errorCode = LNMatrix_Identity(selfObj);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1049,7 +1074,8 @@ static VALUE lnrbLNMatrix_Translate(int argc, VALUE *argv, VALUE self)
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
-            LNMatrix_Translate(selfObj, _x, _y, _z);
+            LNResult errorCode = LNMatrix_Translate(selfObj, _x, _y, _z);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1066,7 +1092,8 @@ static VALUE lnrbLNMatrix_TranslateVec3(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &vec);
         if (isRbObject(vec)) {
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
-            LNMatrix_TranslateVec3(selfObj, &_vec);
+            LNResult errorCode = LNMatrix_TranslateVec3(selfObj, &_vec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1083,7 +1110,8 @@ static VALUE lnrbLNMatrix_RotateX(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &radian);
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateX(selfObj, _radian);
+            LNResult errorCode = LNMatrix_RotateX(selfObj, _radian);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1100,7 +1128,8 @@ static VALUE lnrbLNMatrix_RotateY(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &radian);
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateY(selfObj, _radian);
+            LNResult errorCode = LNMatrix_RotateY(selfObj, _radian);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1117,7 +1146,8 @@ static VALUE lnrbLNMatrix_RotateZ(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &radian);
         if (isRbFloat(radian)) {
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateZ(selfObj, _radian);
+            LNResult errorCode = LNMatrix_RotateZ(selfObj, _radian);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1140,7 +1170,8 @@ static VALUE lnrbLNMatrix_Rotate(int argc, VALUE *argv, VALUE self)
             float _yRad = ((float)NUM2DBL(yRad));
             float _zRad = ((float)NUM2DBL(zRad));
             LNRotationOrder _rotOrder = (rotOrder != Qnil) ? (LNRotationOrder)FIX2INT(rotOrder) : LN_ROTATIONORDER_XYZ;
-            LNMatrix_Rotate(selfObj, _xRad, _yRad, _zRad, _rotOrder);
+            LNResult errorCode = LNMatrix_Rotate(selfObj, _xRad, _yRad, _zRad, _rotOrder);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1159,7 +1190,8 @@ static VALUE lnrbLNMatrix_RotateVec3(int argc, VALUE *argv, VALUE self)
         if (isRbObject(vec) && isRbNumber(rotOrder)) {
             LNVector3* tmp__vec; Data_Get_Struct(vec, LNVector3, tmp__vec);LNVector3& _vec = *tmp__vec;
             LNRotationOrder _rotOrder = (rotOrder != Qnil) ? (LNRotationOrder)FIX2INT(rotOrder) : LN_ROTATIONORDER_XYZ;
-            LNMatrix_RotateVec3(selfObj, &_vec, _rotOrder);
+            LNResult errorCode = LNMatrix_RotateVec3(selfObj, &_vec, _rotOrder);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1178,7 +1210,8 @@ static VALUE lnrbLNMatrix_RotateAxis(int argc, VALUE *argv, VALUE self)
         if (isRbObject(axis) && isRbFloat(radian)) {
             LNVector3* tmp__axis; Data_Get_Struct(axis, LNVector3, tmp__axis);LNVector3& _axis = *tmp__axis;
             float _radian = ((float)NUM2DBL(radian));
-            LNMatrix_RotateAxis(selfObj, &_axis, _radian);
+            LNResult errorCode = LNMatrix_RotateAxis(selfObj, &_axis, _radian);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1195,7 +1228,8 @@ static VALUE lnrbLNMatrix_RotateQuaternion(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &qua);
         if (isRbObject(qua)) {
             LNQuaternion* tmp__qua; Data_Get_Struct(qua, LNQuaternion, tmp__qua);LNQuaternion& _qua = *tmp__qua;
-            LNMatrix_RotateQuaternion(selfObj, &_qua);
+            LNResult errorCode = LNMatrix_RotateQuaternion(selfObj, &_qua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1212,7 +1246,8 @@ static VALUE lnrbLNMatrix_Scale(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &xyz);
         if (isRbFloat(xyz)) {
             float _xyz = ((float)NUM2DBL(xyz));
-            LNMatrix_Scale(selfObj, _xyz);
+            LNResult errorCode = LNMatrix_Scale(selfObj, _xyz);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1233,7 +1268,8 @@ static VALUE lnrbLNMatrix_ScaleXYZ(int argc, VALUE *argv, VALUE self)
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
-            LNMatrix_ScaleXYZ(selfObj, _x, _y, _z);
+            LNResult errorCode = LNMatrix_ScaleXYZ(selfObj, _x, _y, _z);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1250,7 +1286,8 @@ static VALUE lnrbLNMatrix_ScaleVec3(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &scale);
         if (isRbObject(scale)) {
             LNVector3* tmp__scale; Data_Get_Struct(scale, LNVector3, tmp__scale);LNVector3& _scale = *tmp__scale;
-            LNMatrix_ScaleVec3(selfObj, &_scale);
+            LNResult errorCode = LNMatrix_ScaleVec3(selfObj, &_scale);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1268,7 +1305,8 @@ static VALUE static_lnrbLNMatrix_Multiply(int argc, VALUE *argv, VALUE self)
             LNMatrix* tmp__mat1; Data_Get_Struct(mat1, LNMatrix, tmp__mat1);LNMatrix& _mat1 = *tmp__mat1;
             LNMatrix* tmp__mat2; Data_Get_Struct(mat2, LNMatrix, tmp__mat2);LNMatrix& _mat2 = *tmp__mat2;
             LNMatrix _matOut;
-            LNMatrix_Multiply(&_mat1, &_mat2, &_matOut);
+            LNResult errorCode = LNMatrix_Multiply(&_mat1, &_mat2, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1287,7 +1325,8 @@ static VALUE static_lnrbLNMatrix_Inverse(int argc, VALUE *argv, VALUE self)
         if (isRbObject(mat)) {
             LNMatrix* tmp__mat; Data_Get_Struct(mat, LNMatrix, tmp__mat);LNMatrix& _mat = *tmp__mat;
             LNMatrix _matOut;
-            LNMatrix_Inverse(&_mat, &_matOut);
+            LNResult errorCode = LNMatrix_Inverse(&_mat, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1306,7 +1345,8 @@ static VALUE static_lnrbLNMatrix_Transpose(int argc, VALUE *argv, VALUE self)
         if (isRbObject(mat)) {
             LNMatrix* tmp__mat; Data_Get_Struct(mat, LNMatrix, tmp__mat);LNMatrix& _mat = *tmp__mat;
             LNMatrix _matOut;
-            LNMatrix_Transpose(&_mat, &_matOut);
+            LNResult errorCode = LNMatrix_Transpose(&_mat, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1329,7 +1369,8 @@ static VALUE static_lnrbLNMatrix_ViewTransformLH(int argc, VALUE *argv, VALUE se
             LNVector3* tmp__lookAt; Data_Get_Struct(lookAt, LNVector3, tmp__lookAt);LNVector3& _lookAt = *tmp__lookAt;
             LNVector3* tmp__upDir; Data_Get_Struct(upDir, LNVector3, tmp__upDir);LNVector3& _upDir = *tmp__upDir;
             LNMatrix _matOut;
-            LNMatrix_ViewTransformLH(&_pos, &_lookAt, &_upDir, &_matOut);
+            LNResult errorCode = LNMatrix_ViewTransformLH(&_pos, &_lookAt, &_upDir, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1352,7 +1393,8 @@ static VALUE static_lnrbLNMatrix_ViewTransformRH(int argc, VALUE *argv, VALUE se
             LNVector3* tmp__lookAt; Data_Get_Struct(lookAt, LNVector3, tmp__lookAt);LNVector3& _lookAt = *tmp__lookAt;
             LNVector3* tmp__upDir; Data_Get_Struct(upDir, LNVector3, tmp__upDir);LNVector3& _upDir = *tmp__upDir;
             LNMatrix _matOut;
-            LNMatrix_ViewTransformRH(&_pos, &_lookAt, &_upDir, &_matOut);
+            LNResult errorCode = LNMatrix_ViewTransformRH(&_pos, &_lookAt, &_upDir, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1377,7 +1419,8 @@ static VALUE static_lnrbLNMatrix_PerspectiveFovLH(int argc, VALUE *argv, VALUE s
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_PerspectiveFovLH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
+            LNResult errorCode = LNMatrix_PerspectiveFovLH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1402,7 +1445,8 @@ static VALUE static_lnrbLNMatrix_PerspectiveFovRH(int argc, VALUE *argv, VALUE s
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_PerspectiveFovRH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
+            LNResult errorCode = LNMatrix_PerspectiveFovRH(_fovY, _aspect, _nearZ, _farZ, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1427,7 +1471,8 @@ static VALUE static_lnrbLNMatrix_OrthoLH(int argc, VALUE *argv, VALUE self)
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_OrthoLH(_width, _height, _nearZ, _farZ, &_matOut);
+            LNResult errorCode = LNMatrix_OrthoLH(_width, _height, _nearZ, _farZ, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1452,7 +1497,8 @@ static VALUE static_lnrbLNMatrix_OrthoRH(int argc, VALUE *argv, VALUE self)
             float _nearZ = ((float)NUM2DBL(nearZ));
             float _farZ = ((float)NUM2DBL(farZ));
             LNMatrix _matOut;
-            LNMatrix_OrthoRH(_width, _height, _nearZ, _farZ, &_matOut);
+            LNResult errorCode = LNMatrix_OrthoRH(_width, _height, _nearZ, _farZ, &_matOut);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNMatrix_allocate(g_struct_Matrix);
     *((LNMatrix*)DATA_PTR(retObj)) = _matOut;
     return retObj;
@@ -1471,7 +1517,8 @@ static VALUE lnrbLNMatrix_GetEulerAngles(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNVector3 _outVec;
-            LNMatrix_GetEulerAngles(selfObj, &_outVec);
+            LNResult errorCode = LNMatrix_GetEulerAngles(selfObj, &_outVec);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outVec;
     return retObj;
@@ -1595,7 +1642,8 @@ static VALUE lnrbLNQuaternion_Set(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             float _w = ((float)NUM2DBL(w));
-            LNQuaternion_Set(selfObj, _x, _y, _z, _w);
+            LNResult errorCode = LNQuaternion_Set(selfObj, _x, _y, _z, _w);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
@@ -1609,7 +1657,8 @@ static VALUE static_lnrbLNQuaternion_Identity(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNQuaternion _qua;
-            LNQuaternion_Identity(&_qua);
+            LNResult errorCode = LNQuaternion_Identity(&_qua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _qua;
     return retObj;
@@ -1630,7 +1679,8 @@ static VALUE static_lnrbLNQuaternion_RotationAxis(int argc, VALUE *argv, VALUE s
             LNVector3* tmp__axis; Data_Get_Struct(axis, LNVector3, tmp__axis);LNVector3& _axis = *tmp__axis;
             float _r = ((float)NUM2DBL(r));
             LNQuaternion _outQua;
-            LNQuaternion_RotationAxis(&_axis, _r, &_outQua);
+            LNResult errorCode = LNQuaternion_RotationAxis(&_axis, _r, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;
@@ -1649,7 +1699,8 @@ static VALUE static_lnrbLNQuaternion_RotationMatrix(int argc, VALUE *argv, VALUE
         if (isRbObject(mat)) {
             LNMatrix* tmp__mat; Data_Get_Struct(mat, LNMatrix, tmp__mat);LNMatrix& _mat = *tmp__mat;
             LNQuaternion _outQua;
-            LNQuaternion_RotationMatrix(&_mat, &_outQua);
+            LNResult errorCode = LNQuaternion_RotationMatrix(&_mat, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;
@@ -1672,7 +1723,8 @@ static VALUE static_lnrbLNQuaternion_RotationYawPitchRoll(int argc, VALUE *argv,
             float _pitch = ((float)NUM2DBL(pitch));
             float _roll = ((float)NUM2DBL(roll));
             LNQuaternion _outQua;
-            LNQuaternion_RotationYawPitchRoll(_yaw, _pitch, _roll, &_outQua);
+            LNResult errorCode = LNQuaternion_RotationYawPitchRoll(_yaw, _pitch, _roll, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;
@@ -1691,7 +1743,8 @@ static VALUE static_lnrbLNQuaternion_Normalize(int argc, VALUE *argv, VALUE self
         if (isRbObject(qua)) {
             LNQuaternion* tmp__qua; Data_Get_Struct(qua, LNQuaternion, tmp__qua);LNQuaternion& _qua = *tmp__qua;
             LNQuaternion _outQua;
-            LNQuaternion_Normalize(&_qua, &_outQua);
+            LNResult errorCode = LNQuaternion_Normalize(&_qua, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;
@@ -1710,7 +1763,8 @@ static VALUE static_lnrbLNQuaternion_Conjugate(int argc, VALUE *argv, VALUE self
         if (isRbObject(qua)) {
             LNQuaternion* tmp__qua; Data_Get_Struct(qua, LNQuaternion, tmp__qua);LNQuaternion& _qua = *tmp__qua;
             LNQuaternion _outQua;
-            LNQuaternion_Conjugate(&_qua, &_outQua);
+            LNResult errorCode = LNQuaternion_Conjugate(&_qua, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;
@@ -1731,7 +1785,8 @@ static VALUE static_lnrbLNQuaternion_Multiply(int argc, VALUE *argv, VALUE self)
             LNQuaternion* tmp__qua1; Data_Get_Struct(qua1, LNQuaternion, tmp__qua1);LNQuaternion& _qua1 = *tmp__qua1;
             LNQuaternion* tmp__qua2; Data_Get_Struct(qua2, LNQuaternion, tmp__qua2);LNQuaternion& _qua2 = *tmp__qua2;
             LNQuaternion _outQua;
-            LNQuaternion_Multiply(&_qua1, &_qua2, &_outQua);
+            LNResult errorCode = LNQuaternion_Multiply(&_qua1, &_qua2, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;
@@ -1754,7 +1809,8 @@ static VALUE static_lnrbLNQuaternion_Slerp(int argc, VALUE *argv, VALUE self)
             LNQuaternion* tmp__qua2; Data_Get_Struct(qua2, LNQuaternion, tmp__qua2);LNQuaternion& _qua2 = *tmp__qua2;
             float _t = ((float)NUM2DBL(t));
             LNQuaternion _outQua;
-            LNQuaternion_Slerp(&_qua1, &_qua2, _t, &_outQua);
+            LNResult errorCode = LNQuaternion_Slerp(&_qua1, &_qua2, _t, &_outQua);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             VALUE retObj = LNQuaternion_allocate(g_struct_Quaternion);
     *((LNQuaternion*)DATA_PTR(retObj)) = _outQua;
     return retObj;

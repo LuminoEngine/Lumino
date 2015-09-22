@@ -460,10 +460,10 @@ namespace BinderMaker.Builder
             // エラーコードと throw
             string preErrorStmt = "";
             string postErrorStmt = "";
-            if (method.ReturnType.IsResultCodeType)
+            if (method.FuncDecl.ReturnType.IsResultCodeType)
             {
                 preErrorStmt = "LNResult errorCode = ";
-                postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""internal error. code:%d"", errorCode);" + OutputBuffer.NewLineCode;
+                postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""Lumino error. (%d)\n%s"", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));" + OutputBuffer.NewLineCode;
             }
 
             // API 呼び出し

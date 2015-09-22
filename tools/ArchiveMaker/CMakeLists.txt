@@ -17,6 +17,12 @@ set(LN_INCLUDE_DIRECTORIES
 #------------------------------------------------------------------------------
 # Options
 #------------------------------------------------------------------------------
+# Unicode char set.
+if (LN_USE_UNICODE_CHAR_SET)
+	add_definitions(-DUNICODE)
+	add_definitions(-D_UNICODE)
+endif()
+
 if (WIN32)
 	# ランタイムライブラリ
 	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)

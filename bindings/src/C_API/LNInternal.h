@@ -196,6 +196,8 @@ LN_API void LException_SetEnableWrappedException(LNBool f);
 //LN_API int LHSPInternal_GetIntPtrStringLength(int string);
 //LN_API void LHSPInternal_GetIntPtrString(int string, char* buf);
 
+//LN_API const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len);
+
 
 //==============================================================================
 // LArchiveMaker

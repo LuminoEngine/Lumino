@@ -61,15 +61,16 @@ Exception* CompilationException::Copy() const
 //-----------------------------------------------------------------------------
 OpenGLException::OpenGLException(unsigned int gl_enum)
 {
+	const String& caption = InternalResource::GetString(InternalResource::OpenGLError);
 	switch (gl_enum)
 	{
-	case GL_INVALID_ENUM:		SetMessage("GL_INVALID_ENUM"); break;
-	case GL_INVALID_VALUE:		SetMessage("GL_INVALID_VALUE"); break;
-	case GL_INVALID_OPERATION:	SetMessage("GL_INVALID_OPERATION"); break;
-	case GL_STACK_OVERFLOW:		SetMessage("GL_STACK_OVERFLOW"); break;
-	case GL_STACK_UNDERFLOW:	SetMessage("GL_STACK_UNDERFLOW"); break;
-	case GL_OUT_OF_MEMORY:		SetMessage("GL_OUT_OF_MEMORY"); break;
-	default:					SetMessage("GLenum %d", gl_enum); break;
+	case GL_INVALID_ENUM:		SetMessage(caption, "GL_INVALID_ENUM"); break;
+	case GL_INVALID_VALUE:		SetMessage(caption, "GL_INVALID_VALUE"); break;
+	case GL_INVALID_OPERATION:	SetMessage(caption, "GL_INVALID_OPERATION"); break;
+	case GL_STACK_OVERFLOW:		SetMessage(caption, "GL_STACK_OVERFLOW"); break;
+	case GL_STACK_UNDERFLOW:	SetMessage(caption, "GL_STACK_UNDERFLOW"); break;
+	case GL_OUT_OF_MEMORY:		SetMessage(caption, "GL_OUT_OF_MEMORY"); break;
+	default:					SetMessage(caption, "GLenum %d", gl_enum); break;
 	}
 }
 

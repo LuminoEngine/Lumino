@@ -13,6 +13,28 @@ LN_MODULE(Base)
 
 //=============================================================================
 /**
+	@brief	エラーに関係する処理を行います。
+*/
+LN_EXTENSION_CLASS(LNError)
+
+	/**
+		@brief		最後に発生したエラーのエラーコードを取得します。
+		@return		エラーコード
+	*/
+	LN_STATIC_API
+	LNResult LNError_GetLastErrorCode();
+
+	/**
+		@brief		最後に発生したエラーのエラーメッセージを取得します。
+		@return		エラーメッセージ。発生していない場合は NULL を返します。
+	*/
+	LN_STATIC_API
+	const LNChar* LNError_GetLastErrorMessage();
+	
+LN_CLASS_END
+
+//=============================================================================
+/**
 	@brief	全てのオブジェクトのベースオブジェクトです。
 */
 LN_EXTENSION_CLASS(LNObject)

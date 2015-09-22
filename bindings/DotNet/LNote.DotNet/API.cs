@@ -13,84 +13,94 @@ namespace LN
     public enum Result
     {
         /// <summary>
-        /// 成功
+        /// < 成功
         /// </summary>
         OK = 0,
 
         /// <summary>
-        /// 不明なエラー
+        /// < 不明なエラー
         /// </summary>
         Unknown = -1,
 
         /// <summary>
-        /// メモリ確保に失敗
+        /// < 前提条件の検証エラー
         /// </summary>
-        OutOfMemory = -2,
+        Verify = -2,
 
         /// <summary>
-        /// その他のIOエラー
+        /// < 引数が無効
         /// </summary>
-        Io = -3,
+        Argument = -3,
 
         /// <summary>
-        /// ストリームの末尾を越えてアクセスしようとした
+        /// < オブジェクトの現在の状態に対して無効な呼び出しが行われた
         /// </summary>
-        EndOfStream = -4,
+        InvalidOperation = -4,
 
         /// <summary>
-        /// 引数が無効
+        /// < 未実装の機能を呼び出した
         /// </summary>
-        Argument = -5,
+        NotImplemented = -5,
 
         /// <summary>
-        /// オブジェクトの現在の状態に対して無効な呼び出しが行われた
+        /// < メモリ確保に失敗
         /// </summary>
-        InvalidOperation = -6,
+        OutOfMemory = -6,
 
         /// <summary>
-        /// サポートされない機能を呼び出そうとした
+        /// < 値が有効な範囲に存在しない
         /// </summary>
-        NotSupported = -7,
+        OutOfRange = -7,
 
         /// <summary>
-        /// ファイルにアクセスしようとして失敗した
+        /// < 検索に使用したキーが存在しない
         /// </summary>
-        FileNotFound = -8,
+        KeyNotFound = -8,
 
         /// <summary>
-        /// 無効なディレクトリにアクセスしようとした
+        /// < 数値演算によるオーバーフローが発生した
         /// </summary>
-        DirectoryNotFound = -9,
+        Overflow = -9,
 
         /// <summary>
-        /// ファイルや文字列等の形式が不正
+        /// < その他のIOエラー
         /// </summary>
-        InvalidFormat = -10,
+        Io = -10,
 
         /// <summary>
-        /// 未実装の機能を呼び出した
+        /// < ファイルにアクセスしようとして失敗した
         /// </summary>
-        NotImplemented = -11,
+        FileNotFound = -11,
 
         /// <summary>
-        /// C/C++ランタイム API でエラーが発生した
+        /// < 無効なディレクトリにアクセスしようとした
         /// </summary>
-        Runtime = -12,
+        DirectoryNotFound = -12,
 
         /// <summary>
-        /// 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
+        /// < ファイルや文字列等の形式が不正
         /// </summary>
-        EncodingFallback = -13,
+        InvalidFormat = -13,
 
         /// <summary>
-        /// WindowsAPI のエラー
+        /// < ストリームの末尾を越えてアクセスしようとした
         /// </summary>
-        Win32 = -14,
+        EndOfStream = -14,
 
         /// <summary>
-        /// COM のエラー
+        /// < 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
         /// </summary>
-        Com = -15,
+        Encoding = -15,
+
+        /// <summary>
+        /// < WindowsAPI のエラー
+        /// </summary>
+        Win32 = -16,
+
+        /// <summary>
+        /// < COM のエラー
+        /// </summary>
+        Com = -17,
 
     }
 
@@ -931,6 +941,18 @@ namespace LN
         internal const CharSet DLLCharSet = CharSet.Ansi;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
+        /// <summary>
+        /// 最後に発生したエラーのエラーコードを取得します。
+        /// </summary>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNError_GetLastErrorCode();
+
+        /// <summary>
+        /// 最後に発生したエラーのエラーメッセージを取得します。
+        /// </summary>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static string LNError_GetLastErrorMessage();
+
         /// <summary>
         /// オブジェクトを解放します。
         /// </summary>
@@ -1930,7 +1952,7 @@ namespace LN
         public extern static Result LNSound_SetEmitterVelocity( IntPtr sound, ref Vector3 velocity);
 
         /// <summary>
-        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。
+        /// サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。(default:100)
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
         /// <param name="distance">距離</param>

@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 		}
 
 		// アーカイブファイル名
-		PathNameA archivePath = archiveDir.ChangeExtension(_T(".lna"));
+		PathNameA archivePath = archiveDir.ChangeExtension(".lna");
 
 		printf("Root Dir : %s\n", archiveDir.GetCStr());
 		printf("Output   : %s\n", archivePath.GetCStr());
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 			std::cout << "file :" << absPath.GetCStr() << std::endl;
 			std::cout << "alias:" << relPath.GetCStr() << std::endl;
 			//}
-			archive.AddFile(absPath, relPath.GetCStr());
+			archive.AddFile(PathName(absPath), relPath.GetCStr());
 		}
 
 		std::cout << "Succeeded.";

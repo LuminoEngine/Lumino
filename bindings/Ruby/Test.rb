@@ -1,7 +1,14 @@
+#! ruby -EWindows-31J
+# -*- mode:ruby; coding:Windows-31J -*-
 require './Lumino'
 include Lumino
 
-Config.register_archive("audio.lna", "test")
+#p "sssssssssssssssssssssssssssssssssssssssssssssssss"
+#p "‚É‚Ù‚ñ‚²"
+
+#raise "‚ ‚ ‚ "
+
+#Config.register_archive("audio.lna", "test")
 Application.initialize_audio
 sound1 = Sound.new("audio/ZIGG-ZAGG.mp3")
 sound1.pitch = 105
