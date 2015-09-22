@@ -523,9 +523,42 @@ EXPORT void HspVarFloat_Init(HspVarProc *p)
 /*------------------------------------------------------------*/
 
 
+int CodeGetI(int* defaultValue = NULL)
+{
+	if (defaultValue != NULL)
+		return code_getdi(*defaultValue);
+	else
+		return code_geti();
+}
 
+int CodeGetD(double* defaultValue = NULL)
+{
+	if (defaultValue != NULL)
+		return code_getdd(*defaultValue);
+	else
+		return code_getd();
+}
 
+const char* CodeGetS(const char** defaultValue = NULL)
+{
+	if (defaultValue != NULL)
+		return code_getds(*defaultValue);
+	else
+		return code_gets();
+}
 
+#define CodeGetVA_TypeChecked(ppval, type) \
+	code_getva(ppval); \
+	if ((*ppval)->flag != hsp##type##_typeid()) { throw HSPVAR_ERROR_TYPEMISS; }
+
+std::string str_p1;
+std::string str_p2;
+std::string str_p3;
+std::string str_p4;
+std::string str_p5;
+std::string str_p6;
+std::string str_p7;
+std::string str_p8;
 
 //-----------------------------------------------------------------------------
 // 命令実行時に呼び出される
@@ -574,14 +607,37 @@ static int cmdfunc(int cmd)
 	return RUNMODE_RUN;
 }
 
-static LNVector3 retVal;
+//static LNVector3 retVal;
 void* retValPtr = NULL;
+
+
+//bool g_leadSupport = false;
+//
+//bool CheclDefault()
+//{
+//	int r = code_getprm();
+//	g_leadSupport = true;
+//	return (r == PARAM_ENDSPLIT);	// ')'だったs
+//}
+//
+//double GetParamDouble()
+//{
+//	if (g_leadSupport) {
+//		return *((double*)mpval->pt);
+//	}
+//	else {
+//		return code_getd();
+//	}
+//}
+
 //-----------------------------------------------------------------------------
 // 組み込み変数または関数実行時に呼ばれる
 //-----------------------------------------------------------------------------
 static void *reffunc(int *type_res, int cmd)
 {
-	TRACE("reffunc s\n");
+	//g_leadSupport = false;
+
+	//TRACE("reffunc s\n");
 	//		関数・システム変数の実行処理 (値の参照時に呼ばれます)
 	//
 	//			'('で始まるかを調べる
@@ -590,28 +646,32 @@ static void *reffunc(int *type_res, int cmd)
 	if (*val != '(') puterror(HSPERR_INVALID_FUNCPARAM);
 	code_next();
 
-
-	switch (cmd) {							// サブコマンドごとの分岐
-
-	case 0x00:								// float関数
+	if (!Structs_reffunc(cmd, type_res, &retValPtr))
 	{
-		int r = code_getprm();
-		printf("r:%d\n", r);
-		double p1 = *((double*)mpval->pt);// code_getd();
-		printf("r:%d\n", r);
-		puterror(HSPERR_NO_DEFAULT);	// long jump
-		printf("rf:%d\n", r);
-		double p2 = code_getd();
-		double p3 = code_getd();
-		retVal.X = p1;
-		retVal.Y = p2;
-		retVal.Z = p3;
-		retValPtr = &retVal;
-		break;
-	}
-	default:
 		puterror(HSPERR_UNSUPPORTED_FUNCTION);
 	}
+
+	//switch (cmd) {							// サブコマンドごとの分岐
+
+	//case 0x00:								// float関数
+	//{
+	//	int r = code_getprm();
+	//	printf("r:%d\n", r);
+	//	double p1 = *((double*)mpval->pt);// code_getd();
+	//	printf("r:%d\n", r);
+	//	puterror(HSPERR_NO_DEFAULT);	// long jump
+	//	printf("rf:%d\n", r);
+	//	double p2 = code_getd();
+	//	double p3 = code_getd();
+	//	retVal.X = p1;
+	//	retVal.Y = p2;
+	//	retVal.Z = p3;
+	//	retValPtr = &retVal;
+	//	break;
+	//}
+	//default:
+	//	puterror(HSPERR_UNSUPPORTED_FUNCTION);
+	//}
 
 	//			'('で終わるかを調べる
 	//
@@ -619,10 +679,10 @@ static void *reffunc(int *type_res, int cmd)
 	if (*val != ')') puterror(HSPERR_INVALID_FUNCPARAM);
 	code_next();
 
-	TRACE("reffunc e\n");
+	//TRACE("reffunc e\n");
 	//*type_res = HspVarFloat_typeid();		// 返値のタイプを指定する
 	//*type_res = hspLNVector3_typeid();
-	*type_res = HspVarFloat_typeid();
+	//*type_res = HspVarFloat_typeid();
 	return retValPtr;//(void *)&ref_fval;
 }
 
@@ -632,14 +692,14 @@ static void *reffunc(int *type_res, int cmd)
 static int termfunc(int option)
 {
 	LNApplication_Finalize();
-	printf("LNApplication_Finalize\n");
+	//printf("LNApplication_Finalize\n");
 	return 0;
 }
 
 //-----------------------------------------------------------------------------
 // HSP 用プラグインのエントリーポイント
 //-----------------------------------------------------------------------------
-EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO *info)
+EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 {
 	//		プラグイン初期化 (実行・終了処理を登録します)
 	//
@@ -658,12 +718,14 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO *info)
 	LNConfig_SetConsoleEnabled(LN_TRUE);
 	LNApplication_InitializeAudio();
 
+	RegisterStructTypes(info);
+
 	// 新しい型の追加
-	registvar(-1, HspVarFloat_Init);
+	//registvar(-1, HspVarFloat_Init);
 	//registvar(-1, hspLNVector3_Init);
-	printf("hsp3cmdinit e\n");
+	//printf("hsp3cmdinit e\n");
 
 
-	printf("LNApplication_InitializeAudio\n");
+	//printf("LNApplication_InitializeAudio\n");
 }
 

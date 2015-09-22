@@ -1,0 +1,21 @@
+
+#include <windows.h>
+#include "../hsp3plugin/hsp3plugin.h"
+#include "../../../src/C_API/LuminoC.h"
+#include "LuminoHSP.h"
+
+//=============================================================================
+// cmdfunc
+//=============================================================================
+
+bool Commands_cmdfunc(int cmd, int* retVal)
+{
+	switch (cmd)
+	{
+[COMMANDS]
+	default:
+		puterror(HSPERR_UNSUPPORTED_FUNCTION);
+	}
+	*retVal = RUNMODE_RUN;
+}
+

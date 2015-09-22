@@ -10,13 +10,5 @@
 #define LUMINOHSP_API __declspec(dllimport)
 #endif
 
-// このクラスは LuminoHSP.dll からエクスポートされました。
-class LUMINOHSP_API CLuminoHSP {
-public:
-	CLuminoHSP(void);
-	// TODO: メソッドをここに追加してください。
-};
-
-extern LUMINOHSP_API int nLuminoHSP;
-
-LUMINOHSP_API int fnLuminoHSP(void);
+bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
+void RegisterStructTypes(HSP3TYPEINFO *info);

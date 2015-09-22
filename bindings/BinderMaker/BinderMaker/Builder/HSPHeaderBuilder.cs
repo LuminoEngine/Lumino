@@ -37,6 +37,78 @@ namespace BinderMaker.Builder
 {
     class HSPHeaderBuilder : Builder
     {
+        private OutputBuffer _structCmds = new OutputBuffer();
+        private OutputBuffer _funcCmds = new OutputBuffer();
+        private int _idStructCount = HSPStructsBuilder.ConstIdBegin;
+        private int _idCmdCount = HSPCommandsBuilder.ConstIdBegin;
+
+        /// <summary>
+        /// クラスor構造体 通知 (開始)
+        /// </summary>
+        /// <param name="classType"></param>
+        /// <returns>false の場合このクラスの出力を無視する</returns>
+        protected override bool OnClassLookedStart(CLClass classType)
+        {
+            if (classType.IsStruct)
+            {
+                _structCmds.AppendLine(string.Format("#cmd {0} ${1:X4}", classType.StructData.OriginalName, _idStructCount));
+                _idStructCount++;
+            }
+            else
+            {
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// クラスor構造体 通知 (終了)
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnClassLookedEnd(CLClass classType)
+        {
+        }
+
+        /// <summary>
+        /// プロパティ 通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnPropertyLooked(CLProperty prop)
+        {
+            // プロパティとして割り振られたメソッドは OnMethodLooked() ではなくこの OnPropertyLooked() にくる。
+            // やりたいことは OnMethodLooked() と同じなのでそちらにまわす。
+            if (prop.Getter != null) OnMethodLooked(prop.Getter);
+            if (prop.Setter != null) OnMethodLooked(prop.Setter);
+        }
+
+        /// <summary>
+        /// メソッド 通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnMethodLooked(CLMethod method)
+        {
+            _funcCmds.AppendLine(string.Format("#cmd {0} ${1:X4}", method.FuncDecl.OriginalFullName, _idCmdCount));
+            _idCmdCount++;
+        }
+
+        /// <summary>
+        /// ファイルに出力するための最終文字列を生成する
+        /// </summary>
+        protected override string OnMakeOutoutFileText()
+        {
+            string t = GetTemplate("HSPHeader.txt");
+            t = t.Replace("[NEWTYPE_COUNT]", (_idStructCount - HSPStructsBuilder.ConstIdBegin).ToString());
+            t = t.Replace("[STRUCTS_CMD]", _structCmds.ToString());
+            t = t.Replace("[FUNCS_CMD]", _funcCmds.ToString());
+            return t;
+        }
+
+        /// <summary>
+        /// 出力ファイルのエンコーディング
+        /// </summary>
+        protected override Encoding GetOutputEncoding() { return Encoding.GetEncoding(932); }
+
+
+#if false
         private Dictionary<CLType, string> _primitiveTypeInfoTable = new Dictionary<CLType, string>()
         {
             //{ CLPrimitiveType.Void,     "void" },
@@ -231,5 +303,6 @@ namespace BinderMaker.Builder
 
             return "int";    // 登録された方でなければenumとみなして int にする
         }
+#endif
     }
 }

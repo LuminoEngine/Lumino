@@ -1034,35 +1034,10 @@ namespace LN
         public extern static void LNConfig_SetDirectMusicReverbLevel( int level);
 
         /// <summary>
-        /// アプリケーションを初期化します。
-        /// </summary>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_Initialize();
-
-        /// <summary>
         /// アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNApplication_InitializeAudio();
-
-        /// <summary>
-        /// フレームを更新します。
-        /// </summary>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_Update();
-
-        /// <summary>
-        /// 画面の更新タイミングをリセットします。
-        /// </summary>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_ResetFrameDelay();
-
-        /// <summary>
-        /// アプリケーションを終了するべきかを確認します。
-        /// </summary>
-        /// <param name="requested">終了要求の有無を格納する変数</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_IsEndRequested(out bool requested);
 
         /// <summary>
         /// LightNote の終了処理を行います。

@@ -57,7 +57,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>LuminoCore_msvc120x86_static_MTd.lib;zlib_msvc120x86_static_MTd.lib;bullet_msvc120x86_static_MTd.lib;freetype_msvc120x86_static_MTd.lib;libogg_msvc120x86_static_MTd.lib;libpng_msvc120x86_static_MTd.lib;libvorbis_msvc120x86_static_MTd.lib;Lumino_msvc120x86_static_MTd.lib;D:\Proj\Lumino\build\external\Lumino.Math\Debug\LuminoMath_msvc120x86_static_MTd.lib;imagehlp.lib;msacm32.lib;Opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LuminoCore_msvc120x86_static_MTd.lib;zlib_msvc120x86_static_MTd.lib;bullet_msvc120x86_static_MTd.lib;freetype_msvc120x86_static_MTd.lib;libogg_msvc120x86_static_MTd.lib;libpng_msvc120x86_static_MTd.lib;libvorbis_msvc120x86_static_MTd.lib;Lumino_msvc120x86_static_MTd.lib;LuminoMath_msvc120x86_static_MTd.lib;imagehlp.lib;msacm32.lib;Opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -110,6 +110,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="HSPStructs.cpp" />
     <ClCompile Include="LuminoHSP.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

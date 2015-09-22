@@ -465,7 +465,7 @@ class LN::ReferenceObject < ReferenceObject
     def get_ref_count
     end
 end
-# 
+# 初期設定を行います。
 class LN::Config
     # デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
     # @overload set_application_log_enabled(enabled)
@@ -516,38 +516,11 @@ class LN::Config
     def set_direct_music_reverb_level
     end
 end
-# LightNote の初期化や更新等、包括的な処理を行うクラスです。
+# ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
 class LN::Application
-    # アプリケーションを初期化します。
-    # @overload initialize()
-    #   　
-    #     ライブラリのすべての機能を使用できるように初期化を行います。
-    def initialize
-    end
     # アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
     # @overload initialize_audio()
     def initialize_audio
-    end
-    # フレームを更新します。
-    # @overload update()
-    #   　
-    #     LightNote の状態を更新し、時間を1フレーム分進めます。
-    #     					この関数は必ず1フレームに1度だけ呼び出す必要があります。
-    def update
-    end
-    # 画面の更新タイミングをリセットします。
-    # @overload reset_frame_delay()
-    #   　
-    #     時間のかかる処理の後にこのメソッドを呼ぶことで、
-    #     					極端なフレームスキップが発生しないようにすることができます。
-    def reset_frame_delay
-    end
-    # アプリケーションを終了するべきかを確認します。
-    # @overload end_requested?()
-    #   　
-    #     ウィンドウのクローズボタンが押された場合等、
-    #     					アプリケーションを終了するべき時には LN_FALSE を返します。
-    def end_requested?
     end
     # LightNote の終了処理を行います。
     # @overload finalize()

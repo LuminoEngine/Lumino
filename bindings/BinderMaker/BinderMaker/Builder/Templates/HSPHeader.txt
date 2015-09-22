@@ -1,0 +1,12 @@
+
+#ifndef __lumino__
+#define __lumino__
+
+#regcmd "_hsp3cmdinit@4","LuminoHSP.dll", [NEWTYPE_COUNT]
+
+[STRUCTS_CMD]
+
+[FUNCS_CMD]
+
+#endif // __lumino__
+

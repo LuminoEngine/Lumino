@@ -265,20 +265,6 @@ static VALUE static_lnrbLNConfig_SetDirectMusicReverbLevel(int argc, VALUE *argv
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_Initialize(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNResult errorCode = LNApplication_Initialize();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Application.initialize - wrong argument type.");
-    return Qnil;
-}
-
 static VALUE static_lnrbLNApplication_InitializeAudio(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
@@ -290,50 +276,6 @@ static VALUE static_lnrbLNApplication_InitializeAudio(int argc, VALUE *argv, VAL
         }
     }
     rb_raise(rb_eArgError, "Lumino::Application.initialize_audio - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNApplication_Update(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNResult errorCode = LNApplication_Update();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Application.update - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNApplication_ResetFrameDelay(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNResult errorCode = LNApplication_ResetFrameDelay();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Application.reset_frame_delay - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNApplication_IsEndRequested(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNBool _requested;
-            LNResult errorCode = LNApplication_IsEndRequested(&_requested);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return toVALUE(_requested);
-    
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Application.end_requested? - wrong argument type.");
     return Qnil;
 }
 
@@ -1226,11 +1168,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Config, "set_direct_music_reverb_level", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicReverbLevel), -1);
 
     g_class_Application = rb_define_class_under(g_luminoModule, "Application", rb_cObject);
-    rb_define_singleton_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Initialize), -1);
     rb_define_singleton_method(g_class_Application, "initialize_audio", LN_TO_RUBY_FUNC(static_lnrbLNApplication_InitializeAudio), -1);
-    rb_define_singleton_method(g_class_Application, "update", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Update), -1);
-    rb_define_singleton_method(g_class_Application, "reset_frame_delay", LN_TO_RUBY_FUNC(static_lnrbLNApplication_ResetFrameDelay), -1);
-    rb_define_singleton_method(g_class_Application, "end_requested?", LN_TO_RUBY_FUNC(static_lnrbLNApplication_IsEndRequested), -1);
     rb_define_singleton_method(g_class_Application, "finalize", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Finalize), -1);
 
     g_class_Audio = rb_define_class_under(g_luminoModule, "Audio", rb_cObject);

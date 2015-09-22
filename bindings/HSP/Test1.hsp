@@ -1,7 +1,4 @@
-
-#regcmd "_hsp3cmdinit@4", "LuminoHSP.dll", 1
-#cmd LNVector3 $000
-#cmd LNAudio_PlaySE3D $10
+#include "lumino.as"
 
 
 vec = LNVector3(10.0, 0.0, 1.0)

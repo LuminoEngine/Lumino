@@ -5,6 +5,9 @@ using System.Text;
 
 namespace LN
 {
+    /// <summary>
+    /// 初期設定を行います。
+    /// </summary>
     public partial class Config
     {
     
@@ -103,26 +106,12 @@ namespace LN
     };
     
     /// <summary>
-    /// LightNote の初期化や更新等、包括的な処理を行うクラスです。
+    /// ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
     /// </summary>
     public partial class Application
     {
     
     
-        /// <summary>
-        /// アプリケーションを初期化します。
-        /// </summary>
-        /// <remarks>
-        /// ライブラリのすべての機能を使用できるように初期化を行います。
-        /// </remarks>
-        public static void Initialize()
-        {
-            InternalManager.Initialize();
-            var result = API.LNApplication_Initialize();
-            if (result != Result.OK) throw new LNoteException(result);
-        
-        }
-        
         /// <summary>
         /// アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
@@ -131,50 +120,6 @@ namespace LN
             InternalManager.Initialize();
             var result = API.LNApplication_InitializeAudio();
             if (result != Result.OK) throw new LNoteException(result);
-        
-        }
-        
-        /// <summary>
-        /// フレームを更新します。
-        /// </summary>
-        /// <remarks>
-        /// LightNote の状態を更新し、時間を1フレーム分進めます。
-        /// 					この関数は必ず1フレームに1度だけ呼び出す必要があります。
-        /// </remarks>
-        public static void Update()
-        {
-            var result = API.LNApplication_Update();
-            if (result != Result.OK) throw new LNoteException(result);
-        
-        }
-        
-        /// <summary>
-        /// 画面の更新タイミングをリセットします。
-        /// </summary>
-        /// <remarks>
-        /// 時間のかかる処理の後にこのメソッドを呼ぶことで、
-        /// 					極端なフレームスキップが発生しないようにすることができます。
-        /// </remarks>
-        public static void ResetFrameDelay()
-        {
-            var result = API.LNApplication_ResetFrameDelay();
-            if (result != Result.OK) throw new LNoteException(result);
-        
-        }
-        
-        /// <summary>
-        /// アプリケーションを終了するべきかを確認します。
-        /// </summary>
-        /// <remarks>
-        /// ウィンドウのクローズボタンが押された場合等、
-        /// 					アプリケーションを終了するべき時には false を返します。
-        /// </remarks>
-        public static bool IsEndRequested()
-        {
-            var requested = new bool();
-            var result = API.LNApplication_IsEndRequested(out requested);
-            if (result != Result.OK) throw new LNoteException(result);
-            return requested;
         
         }
         

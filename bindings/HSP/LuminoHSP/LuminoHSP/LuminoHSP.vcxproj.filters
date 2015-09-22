@@ -59,5 +59,8 @@
     <ClCompile Include="..\..\..\src\C_API\LNManager.cpp">
       <Filter>C_API</Filter>
     </ClCompile>
+    <ClCompile Include="HSPStructs.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
