@@ -127,6 +127,12 @@ private:
 	BrushWrapMode		m_wrapMode;
 };
 
+
+//class TransitionBrush
+//	: public Brush
+//{
+//};
+
 //struct StringLayout
 //{
 //	TextAlignment	Alignment;	///< 文字列の水平方向の配置
