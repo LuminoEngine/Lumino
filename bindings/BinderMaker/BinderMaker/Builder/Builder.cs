@@ -40,6 +40,15 @@ namespace BinderMaker.Builder
 
                 if (OnClassLookedStart(classType))
                 {
+                    // コンストラクタ (並び順的に先頭の方にしたい)
+                    foreach (var method in classType.Methods)
+                    {
+                        if (method.IsRefObjectConstructor)
+                        {
+                            OnMethodLooked(method);
+                        }
+                    }
+
                     // プロパティ
                     foreach (var prop in classType.Properties)
                     {
@@ -51,7 +60,8 @@ namespace BinderMaker.Builder
                     {
                         // プロパティ や internal は出力しない
                         if (method.PropertyNameType == PropertyNameType.NotProperty &&
-                            method.Modifier != MethodModifier.Internal)
+                            method.Modifier != MethodModifier.Internal &&
+                            !method.IsRefObjectConstructor)
                         {
                             OnMethodLooked(method);
                         }

@@ -30,7 +30,7 @@ namespace BinderMaker.Builder
         {
             { CLPrimitiveType.Void,         new CTypeInfo("void", "void", "void", "void", null) },
             //{ CLPrimitiveType.ByteArray,    new CTypeInfo("const void*", "void**", "const void*", "void**", "void*") },
-            { CLPrimitiveType.String,       new CTypeInfo("const lnChar*", "lnChar**", "const lnChar*", "lnChar**", null) },
+            { CLPrimitiveType.String,       new CTypeInfo("const LNChar*", "LNChar**", "const LNChar*", "LNChar**", null) },
 
             { CLPrimitiveType.Bool,         new CTypeInfo("LNBool", "LNBool*", "bool", "bool*", null) },
             { CLPrimitiveType.Byte,         new CTypeInfo("uint8_t", "uint8_t*", "uint8_t", "uint8_t*", null) },
@@ -42,7 +42,8 @@ namespace BinderMaker.Builder
 
             //{ CLPrimitiveType.ResultCode,   new CTypeInfo("lnResult", "lnResult*", "lnResult", "lnResult*", null) },
             //{ CLPrimitiveType.ExceptionCallback, new CTypeInfo("lnExceptionCallback", "lnExceptionCallback*", "lnExceptionCallback", "lnExceptionCallback*", null) },
-            //{ CLPrimitiveType.IntPtr,       new CTypeInfo("lnIntPtr", "lnIntPtr*", "lnIntPtr", "lnIntPtr*", null) },
+            { CLPrimitiveType.IntPtr,       new CTypeInfo("intptr_t", "intptr_t*", "intptr_t", "intptr_t*", null) },
+            { CLPrimitiveType.VoidPtr,       new CTypeInfo("void*", "void**", "void*", "void**", null) },
             //{ CLPrimitiveType.HWND,         new CTypeInfo("HWND", "HWND*", "void*", "void**", null) },
 
             //{ CLPrimitiveType.Handle,       new CTypeInfo("void", "void") },

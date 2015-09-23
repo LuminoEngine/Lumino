@@ -1261,7 +1261,7 @@ class LN::Audio
     end
     # メモリ上の音声ファイルデータを使用して BGM を演奏します。
     # @overload play_bgm_mem(data, dataSize, volume=100, pitch=100, fadeTime=0.0)
-    #   @param [LN::] data メモリ上の音声ファイルデータ
+    #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [Integer] volume ボリューム (0 ～ 100)
     #   @param [Integer] pitch ピッチ (50 ～ 200)
@@ -1283,7 +1283,7 @@ class LN::Audio
     end
     # メモリ上の音声ファイルデータから BGS を演奏します。
     # @overload play_bgs_mem(data, dataSize, volume=100, pitch=100, fadeTime=0.0)
-    #   @param [LN::] data メモリ上の音声ファイルデータ
+    #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [Integer] volume ボリューム (0 ～ 100)
     #   @param [Integer] pitch ピッチ (50 ～ 200)
@@ -1304,7 +1304,7 @@ class LN::Audio
     end
     # メモリ上の音声ファイルデータから ME を演奏します。
     # @overload play_me_mem(data, dataSize, volume=100, pitch=100)
-    #   @param [LN::] data メモリ上の音声ファイルデータ
+    #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [Integer] volume ボリューム (0 ～ 100)
     #   @param [Integer] pitch ピッチ (50 ～ 200)
@@ -1342,7 +1342,7 @@ class LN::Audio
     end
     # メモリ上の音声データから SE を演奏します。
     # @overload play_se_mem(data, dataSize, volume=100, pitch=100)
-    #   @param [LN::] data メモリ上の音声ファイルデータ
+    #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [Integer] volume ボリューム (0 ～ 100)
     #   @param [Integer] pitch ピッチ (50 ～ 200)
@@ -1351,7 +1351,7 @@ class LN::Audio
     # メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
     # @overload play_se3d_mem(data, dataSize, position, distance, volume=100, pitch=100)
     #   メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
-    #   @param [LN::] data メモリ上の音声ファイルデータ
+    #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [LN::Vector3] position 3D 空間上の座標
     #   @param [Float] distance 減衰距離
@@ -1359,7 +1359,7 @@ class LN::Audio
     #   @param [Integer] pitch ピッチ (50 ～ 200)
     # @overload play_se3d_mem(data, dataSize, x, y, z, distance, volume=100, pitch=100)
     #   メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
-    #   @param [LN::] data メモリ上の音声ファイルデータ
+    #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [Float] x 3D 空間上の X 座標
     #   @param [Float] y 3D 空間上の Y 座標

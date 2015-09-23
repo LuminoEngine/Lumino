@@ -136,13 +136,13 @@ namespace BinderMaker
             CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
 
             CLClass.Array = new CLClass("Array", false);
-            CLClass.ByteArray = new CLClass(CLClass.Array, CLPrimitiveType.Byte);
+            //CLClass.ByteArray = new CLClass(CLClass.Array, CLPrimitiveType.Byte);
             //CLClass.IntArray = new CLClass("Array", CLPrimitiveType.Int);
 
             _typeInfoTable = new Dictionary<string, CLType>()
             {
                 { "void",               CLPrimitiveType.Void },
-                { "const void*",        CLClass.ByteArray },
+                { "const void*",        CLPrimitiveType.VoidPtr },
                 //{ "void**",             CLClass.ByteArray },  //TODO: この2つは
                 //{ "const void**",       CLClass.ByteArray },   //TODO: バッファクラスを用意する必要がありそう
 
@@ -165,7 +165,7 @@ namespace BinderMaker
                 { "int64_t*",           CLPrimitiveType.Int64 },
                 { "intptr_t",           CLPrimitiveType.IntPtr },
                 { "LNUserData",         CLPrimitiveType.IntPtr },
-                { "void*",              CLPrimitiveType.VoidPtr },
+                //{ "void*",              CLPrimitiveType.VoidPtr },
             
                 //{ "const int*",         CLClass.IntArray },
             }; 

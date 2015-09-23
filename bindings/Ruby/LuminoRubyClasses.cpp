@@ -133,8 +133,10 @@ static VALUE static_lnrbLNError_GetLastErrorMessage(int argc, VALUE *argv, VALUE
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNError_GetLastErrorMessage();
-            return Qnil;
+            const LNChar* _outStr;
+            LNError_GetLastErrorMessage(&_outStr);
+            return toVALUE(_outStr);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Error.get_last_error_message - wrong argument type.");
@@ -209,7 +211,7 @@ static VALUE static_lnrbLNConfig_SetUserWindowHandle(int argc, VALUE *argv, VALU
         VALUE windowHandle;
         rb_scan_args(argc, argv, "1", &windowHandle);
         if (isRbNumber(windowHandle)) {
-            void* _windowHandle = ((void*)FIX2INT(windowHandle));
+            intptr_t _windowHandle = FIX2INT(windowHandle);
             LNConfig_SetUserWindowHandle(_windowHandle);
             return Qnil;
         }
@@ -690,6 +692,24 @@ static VALUE LNSound_allocateForGetRefObject(VALUE klass, LNHandle handle)
     return obj;
 }
 
+static VALUE lnrbLNSound_Create(int argc, VALUE *argv, VALUE self)
+{
+    wrapSound* selfObj;
+    Data_Get_Struct(self, wrapSound, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (isRbString(filePath)) {
+            char* _filePath = StringValuePtr(filePath);
+            LNResult errorCode = LNSound_Create(_filePath, &selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Sound.sound - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE lnrbLNSound_SetVolume(int argc, VALUE *argv, VALUE self)
 {
     wrapSound* selfObj;
@@ -1044,24 +1064,6 @@ static VALUE lnrbLNSound_SetEmitterMaxDistance(int argc, VALUE *argv, VALUE self
     return Qnil;
 }
 
-static VALUE lnrbLNSound_Create(int argc, VALUE *argv, VALUE self)
-{
-    wrapSound* selfObj;
-    Data_Get_Struct(self, wrapSound, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE filePath;
-        rb_scan_args(argc, argv, "1", &filePath);
-        if (isRbString(filePath)) {
-            char* _filePath = StringValuePtr(filePath);
-            LNResult errorCode = LNSound_Create(_filePath, &selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Sound.sound - wrong argument type.");
-    return Qnil;
-}
-
 static VALUE lnrbLNSound_Play(int argc, VALUE *argv, VALUE self)
 {
     wrapSound* selfObj;
@@ -1194,6 +1196,7 @@ void InitClasses()
 
     g_class_Sound = rb_define_class_under(g_luminoModule, "Sound", rb_cObject);
     rb_define_alloc_func(g_class_Sound, LNSound_allocate);
+    rb_define_private_method(g_class_Sound, "initialize", LN_TO_RUBY_FUNC(lnrbLNSound_Create), -1);
     rb_define_method(g_class_Sound, "volume=", LN_TO_RUBY_FUNC(lnrbLNSound_SetVolume), -1);
     rb_define_method(g_class_Sound, "volume", LN_TO_RUBY_FUNC(lnrbLNSound_GetVolume), -1);
     rb_define_method(g_class_Sound, "pitch=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPitch), -1);
@@ -1212,7 +1215,6 @@ void InitClasses()
     rb_define_method(g_class_Sound, "emitter_position=", LN_TO_RUBY_FUNC(lnrbLNSound_SetEmitterPosition), -1);
     rb_define_method(g_class_Sound, "emitter_velocity=", LN_TO_RUBY_FUNC(lnrbLNSound_SetEmitterVelocity), -1);
     rb_define_method(g_class_Sound, "emitter_max_distance=", LN_TO_RUBY_FUNC(lnrbLNSound_SetEmitterMaxDistance), -1);
-    rb_define_private_method(g_class_Sound, "initialize", LN_TO_RUBY_FUNC(lnrbLNSound_Create), -1);
     rb_define_method(g_class_Sound, "play", LN_TO_RUBY_FUNC(lnrbLNSound_Play), -1);
     rb_define_method(g_class_Sound, "stop", LN_TO_RUBY_FUNC(lnrbLNSound_Stop), -1);
     rb_define_method(g_class_Sound, "pause", LN_TO_RUBY_FUNC(lnrbLNSound_Pause), -1);

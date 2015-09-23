@@ -46,7 +46,7 @@ void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNConfig_SetUserWindowHandle(void* windowHandle)
+void LNConfig_SetUserWindowHandle(intptr_t windowHandle)
 {
 
 }

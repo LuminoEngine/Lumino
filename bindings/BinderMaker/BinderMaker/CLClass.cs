@@ -16,7 +16,7 @@ namespace BinderMaker
         /// ※これらは  LinkTypes() でも参照オブジェクトではないとする条件で使っているので、追加するときはそこも修正する。
         /// </summary>
         public static CLClass Array;
-        public static CLClass ByteArray;
+        //public static CLClass ByteArray;
         //public static CLClass IntArray;
 
         #endregion

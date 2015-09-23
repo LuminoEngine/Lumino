@@ -39,8 +39,23 @@ namespace BinderMaker.Builder
     {
         private OutputBuffer _structCmds = new OutputBuffer();
         private OutputBuffer _funcCmds = new OutputBuffer();
+        private OutputBuffer _enumConsts = new OutputBuffer();
         private int _idStructCount = HSPStructsBuilder.ConstIdBegin;
         private int _idCmdCount = HSPCommandsBuilder.ConstIdBegin;
+
+
+        /// <summary>
+        /// enum 通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnEnumLooked(CLEnum enumType)
+        {
+            foreach (var member in enumType.Members)
+            {
+                _enumConsts.AppendLine("#const global {0} {1}", member.OriginalName, member.Value.ToString());
+            }
+            _enumConsts.NewLine();
+        }
 
         /// <summary>
         /// クラスor構造体 通知 (開始)
@@ -97,6 +112,7 @@ namespace BinderMaker.Builder
         {
             string t = GetTemplate("HSPHeader.txt");
             t = t.Replace("[NEWTYPE_COUNT]", (_idStructCount - HSPStructsBuilder.ConstIdBegin).ToString());
+            t = t.Replace("[ENUMS]", _enumConsts.ToString());
             t = t.Replace("[STRUCTS_CMD]", _structCmds.ToString());
             t = t.Replace("[FUNCS_CMD]", _funcCmds.ToString());
             return t;

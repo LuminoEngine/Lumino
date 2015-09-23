@@ -34,7 +34,7 @@ namespace BinderMaker.Builder
             { CLPrimitiveType.VoidPtr, "VoidPtr" },
             { CLPrimitiveType.IntPtr, "IntPtr" },
             
-            { CLClass.ByteArray, "byte[]" },
+            //{ CLClass.ByteArray, "byte[]" },
             //{ CLClass.IntArray, "int[]" },
 
             //{ CLPrimitiveType.Handle, "IntPtr" },

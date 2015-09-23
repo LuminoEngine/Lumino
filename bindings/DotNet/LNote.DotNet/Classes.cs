@@ -57,7 +57,7 @@ namespace LN
         /// ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
         /// </summary>
         /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
-        public static void SetUserWindowHandle( VoidPtr windowHandle)
+        public static void SetUserWindowHandle( IntPtr windowHandle)
         {
             API.LNConfig_SetUserWindowHandle( windowHandle);
         
@@ -165,7 +165,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
-        public static void PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
+        public static void PlayBGMMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -205,7 +205,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
-        public static void PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
+        public static void PlayBGSMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -243,7 +243,7 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlayMEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
+        public static void PlayMEMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlayMEMem( data,  dataSize,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -312,7 +312,7 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlaySEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
+        public static void PlaySEMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySEMem( data,  dataSize,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -328,7 +328,7 @@ namespace LN
         /// <param name="distance">減衰距離</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlaySE3DMem( byte[] data,  int dataSize,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
+        public static void PlaySE3DMem( VoidPtr data,  int dataSize,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DMem( data,  dataSize, ref position,  distance,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -346,7 +346,7 @@ namespace LN
         /// <param name="distance">減衰距離</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlaySE3DMem( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
+        public static void PlaySE3DMem( VoidPtr data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DMemXYZ( data,  dataSize,  x,  y,  z,  distance,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -768,7 +768,7 @@ namespace LN
         /// </summary>
         /// <param name="data">メモリ上の音声データへのポインタ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
-        public  Sound( byte[] data,  int dataSize) : base(_LNInternal.InternalBlock)
+        public  Sound( VoidPtr data,  int dataSize) : base(_LNInternal.InternalBlock)
         {
             IntPtr sound;
             var result = API.LNSound_CreateMem( data,  dataSize, out sound);

@@ -5,7 +5,7 @@
 
 static int g_[TYPE]_typeid = 0;
 
-static int hsp[TYPE]_typeid()
+int hsp[TYPE]_typeid()
 {
 	return g_[TYPE]_typeid;
 }

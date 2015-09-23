@@ -171,12 +171,14 @@ LNResult LNError_GetLastErrorCode()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const LNChar* LNError_GetLastErrorMessage()
+void LNError_GetLastErrorMessage(const LNChar** outStr)
 {
 	if (LFManager::LastException != NULL) {
-		return LFManager::LastException->GetMessage();
+		*outStr =  LFManager::LastException->GetMessage();
 	}
-	return NULL;
+	else {
+		*outStr = NULL;
+	}
 }
 
 //=============================================================================

@@ -950,8 +950,9 @@ namespace LN
         /// <summary>
         /// 最後に発生したエラーのエラーメッセージを取得します。
         /// </summary>
+        /// <param name="outStr">メッセージ文字列へのアドレスを格納する変数のアドレス。発生していない場合は NULL を格納します。</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static string LNError_GetLastErrorMessage();
+        public extern static void LNError_GetLastErrorMessage(out IntPtr outStr);
 
         /// <summary>
         /// オブジェクトを解放します。
@@ -1009,7 +1010,7 @@ namespace LN
         /// </summary>
         /// <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNConfig_SetUserWindowHandle( VoidPtr windowHandle);
+        public extern static void LNConfig_SetUserWindowHandle( IntPtr windowHandle);
 
         /// <summary>
         /// サウンドオブジェクトのキャッシュサイズの設定
@@ -1572,7 +1573,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
+        public extern static Result LNAudio_PlayBGMMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
 
         /// <summary>
         /// BGM の演奏を停止します。
@@ -1600,7 +1601,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
+        public extern static Result LNAudio_PlayBGSMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0);
 
         /// <summary>
         /// BGS の演奏を停止します。、
@@ -1626,7 +1627,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlayMEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100);
+        public extern static Result LNAudio_PlayMEMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100);
 
         /// <summary>
         /// ME の演奏を停止します。
@@ -1675,7 +1676,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlaySEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100);
+        public extern static Result LNAudio_PlaySEMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100);
 
         /// <summary>
         /// メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
@@ -1687,7 +1688,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlaySE3DMem( byte[] data,  int dataSize, ref Vector3 position,  float distance,  int volume = 100,  int pitch = 100);
+        public extern static Result LNAudio_PlaySE3DMem( VoidPtr data,  int dataSize, ref Vector3 position,  float distance,  int volume = 100,  int pitch = 100);
 
         /// <summary>
         /// メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
@@ -1701,7 +1702,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNAudio_PlaySE3DMemXYZ( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100);
+        public extern static Result LNAudio_PlaySE3DMemXYZ( VoidPtr data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100);
 
         /// <summary>
         /// すべての SE の演奏を停止します。
@@ -1788,6 +1789,23 @@ namespace LN
         /// <param name="z">速度の Z 成分</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSoundListener_SetVelocityXYZ( float x,  float y,  float z);
+
+        /// <summary>
+        /// ファイルからサウンドオブジェクトを作成します。
+        /// </summary>
+        /// <param name="filePath">音声ファイルのパス</param>
+        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSound_Create( string filePath, out IntPtr sound);
+
+        /// <summary>
+        /// メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
+        /// </summary>
+        /// <param name="data">メモリ上の音声データへのポインタ</param>
+        /// <param name="dataSize">データサイズ (バイト単位)</param>
+        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSound_CreateMem( VoidPtr data,  int dataSize, out IntPtr sound);
 
         /// <summary>
         /// サウンドのボリュームを取得します。
@@ -1933,23 +1951,6 @@ namespace LN
         /// <param name="distance">距離</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_SetEmitterMaxDistance( IntPtr sound,  float distance);
-
-        /// <summary>
-        /// ファイルからサウンドオブジェクトを作成します。
-        /// </summary>
-        /// <param name="filePath">音声ファイルのパス</param>
-        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSound_Create( string filePath, out IntPtr sound);
-
-        /// <summary>
-        /// メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
-        /// </summary>
-        /// <param name="data">メモリ上の音声データへのポインタ</param>
-        /// <param name="dataSize">データサイズ (バイト単位)</param>
-        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSound_CreateMem( byte[] data,  int dataSize, out IntPtr sound);
 
         /// <summary>
         /// サウンドを再生します。

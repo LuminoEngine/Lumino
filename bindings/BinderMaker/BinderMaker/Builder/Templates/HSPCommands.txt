@@ -1,8 +1,53 @@
 
 #include <windows.h>
+#include <string>
 #include "../hsp3plugin/hsp3plugin.h"
 #include "../../../src/C_API/LuminoC.h"
 #include "LuminoHSP.h"
+
+[PROTOTYPE]
+
+//=============================================================================
+// Common
+//=============================================================================
+int CodeGetI()
+{
+	return code_geti();
+}
+int CodeGetI(int defaultValue)
+{
+	return code_getdi(defaultValue);
+}
+double CodeGetD()
+{
+	return code_getd();
+}
+double CodeGetD(double defaultValue)
+{
+	return code_getdd(defaultValue);
+}
+const char* CodeGetS()
+{
+	return code_gets();
+}
+const char* CodeGetS(const char* defaultValue)
+{
+	return code_getds(defaultValue);
+}
+
+#define CodeGetVA_TypeChecked(ppval, type) \
+	code_getva(ppval); \
+	if ((*ppval)->flag != hsp##type##_typeid()) { throw HSPVAR_ERROR_TYPEMISS; }
+
+std::string str_p0;
+std::string str_p1;
+std::string str_p2;
+std::string str_p3;
+std::string str_p4;
+std::string str_p5;
+std::string str_p6;
+std::string str_p7;
+std::string str_p8;
 
 //=============================================================================
 // cmdfunc
@@ -10,12 +55,13 @@
 
 bool Commands_cmdfunc(int cmd, int* retVal)
 {
+	*retVal = RUNMODE_RUN;
 	switch (cmd)
 	{
 [COMMANDS]
 	default:
 		puterror(HSPERR_UNSUPPORTED_FUNCTION);
 	}
-	*retVal = RUNMODE_RUN;
+	return false;
 }
 

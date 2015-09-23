@@ -30,7 +30,7 @@ static void hspCommon_AllocBlock(PVal *pval, PDAT *pdat, int size)
 
 static int g_LNVector2_typeid = 0;
 
-static int hspLNVector2_typeid()
+int hspLNVector2_typeid()
 {
 	return g_LNVector2_typeid;
 }
@@ -110,7 +110,7 @@ static void hspLNVector2_Init(HspVarProc* p)
 
 static int g_LNVector3_typeid = 0;
 
-static int hspLNVector3_typeid()
+int hspLNVector3_typeid()
 {
 	return g_LNVector3_typeid;
 }
@@ -190,7 +190,7 @@ static void hspLNVector3_Init(HspVarProc* p)
 
 static int g_LNVector4_typeid = 0;
 
-static int hspLNVector4_typeid()
+int hspLNVector4_typeid()
 {
 	return g_LNVector4_typeid;
 }
@@ -270,7 +270,7 @@ static void hspLNVector4_Init(HspVarProc* p)
 
 static int g_LNMatrix_typeid = 0;
 
-static int hspLNMatrix_typeid()
+int hspLNMatrix_typeid()
 {
 	return g_LNMatrix_typeid;
 }
@@ -350,7 +350,7 @@ static void hspLNMatrix_Init(HspVarProc* p)
 
 static int g_LNQuaternion_typeid = 0;
 
-static int hspLNQuaternion_typeid()
+int hspLNQuaternion_typeid()
 {
 	return g_LNQuaternion_typeid;
 }

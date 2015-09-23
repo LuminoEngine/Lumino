@@ -522,53 +522,59 @@ EXPORT void HspVarFloat_Init(HspVarProc *p)
 
 /*------------------------------------------------------------*/
 
-
-int CodeGetI(int* defaultValue = NULL)
-{
-	if (defaultValue != NULL)
-		return code_getdi(*defaultValue);
-	else
-		return code_geti();
-}
-
-int CodeGetD(double* defaultValue = NULL)
-{
-	if (defaultValue != NULL)
-		return code_getdd(*defaultValue);
-	else
-		return code_getd();
-}
-
-const char* CodeGetS(const char** defaultValue = NULL)
-{
-	if (defaultValue != NULL)
-		return code_getds(*defaultValue);
-	else
-		return code_gets();
-}
-
-#define CodeGetVA_TypeChecked(ppval, type) \
-	code_getva(ppval); \
-	if ((*ppval)->flag != hsp##type##_typeid()) { throw HSPVAR_ERROR_TYPEMISS; }
-
-std::string str_p1;
-std::string str_p2;
-std::string str_p3;
-std::string str_p4;
-std::string str_p5;
-std::string str_p6;
-std::string str_p7;
-std::string str_p8;
+//
+//int CodeGetI(int* defaultValue = NULL)
+//{
+//	if (defaultValue != NULL)
+//		return code_getdi(*defaultValue);
+//	else
+//		return code_geti();
+//}
+//
+//int CodeGetD(double* defaultValue = NULL)
+//{
+//	if (defaultValue != NULL)
+//		return code_getdd(*defaultValue);
+//	else
+//		return code_getd();
+//}
+//
+//const char* CodeGetS(const char** defaultValue = NULL)
+//{
+//	if (defaultValue != NULL)
+//		return code_getds(*defaultValue);
+//	else
+//		return code_gets();
+//}
+//
+//#define CodeGetVA_TypeChecked(ppval, type) \
+//	code_getva(ppval); \
+//	if ((*ppval)->flag != hsp##type##_typeid()) { throw HSPVAR_ERROR_TYPEMISS; }
+//
+//std::string str_p1;
+//std::string str_p2;
+//std::string str_p3;
+//std::string str_p4;
+//std::string str_p5;
+//std::string str_p6;
+//std::string str_p7;
+//std::string str_p8;
 
 //-----------------------------------------------------------------------------
 // 命令実行時に呼び出される
 //-----------------------------------------------------------------------------
 static int cmdfunc(int cmd)
 {
-	TRACE("cmdfunc\n");
 	//		実行処理 (命令実行時に呼ばれます)
 	//
 	code_next();							// 次のコードを取得(最初に必ず必要です)
+
+	int ret = 0;
+	if (Commands_cmdfunc(cmd, &ret)) {
+		return ret;
+	}
+	puterror(HSPERR_UNSUPPORTED_FUNCTION);
+#if 0
 
 	switch (cmd) {							// サブコマンドごとの分岐
 
@@ -604,6 +610,7 @@ static int cmdfunc(int cmd)
 	default:
 		puterror(HSPERR_UNSUPPORTED_FUNCTION);
 	}
+#endif
 	return RUNMODE_RUN;
 }
 

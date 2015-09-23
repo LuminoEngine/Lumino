@@ -4,6 +4,8 @@
 
 #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", [NEWTYPE_COUNT]
 
+[ENUMS]
+
 [STRUCTS_CMD]
 
 [FUNCS_CMD]

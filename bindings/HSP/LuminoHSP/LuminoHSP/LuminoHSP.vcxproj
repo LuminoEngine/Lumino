@@ -110,6 +110,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="HSPCommands.cpp" />
     <ClCompile Include="HSPStructs.cpp" />
     <ClCompile Include="LuminoHSP.cpp" />
   </ItemGroup>

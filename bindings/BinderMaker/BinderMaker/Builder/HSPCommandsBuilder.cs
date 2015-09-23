@@ -16,36 +16,40 @@ case [ID]:
 [BEFORE]
 [CALL]
 [AFTER]
-    return;
+    return true;
 }
 ";
         struct TypeInfo
         {
             public string GetParamExp;
+            public string SetToHSPVal;
 
-            public TypeInfo(string getParamExp)
+            public TypeInfo(string getParamExp, string setToHSPVal)
             {
                 GetParamExp = getParamExp;
+                SetToHSPVal = setToHSPVal;
             }
         }
 
         private Dictionary<CLType, TypeInfo> _primitiveTypeInfoTable = new Dictionary<CLType, TypeInfo>()
         {
             //{ CLPrimitiveType.Void,     "void" },
-            { CLPrimitiveType.String,       new TypeInfo("str_p{0} = CodeGetS({1});") },
-            { CLPrimitiveType.Bool,         new TypeInfo("LNBool p{0} = CodeGetI({1});") },
-            { CLPrimitiveType.Byte,         new TypeInfo("byte_t p{0} = CodeGetI({1});") },
-            { CLPrimitiveType.Int32,        new TypeInfo("int32_t p{0} = CodeGetI({1});") },
-            { CLPrimitiveType.UInt32,       new TypeInfo("uint32_t p{0} = CodeGetI({1});") },
-            { CLPrimitiveType.Float,        new TypeInfo("float p{0} = CodeGetD({1});") },
-            { CLPrimitiveType.Double,       new TypeInfo("double p{0} = CodeGetD({1});") },
-            { CLPrimitiveType.VoidPtr,      new TypeInfo("void* p{0} = (void*)CodeGetI({1});") },
-            { CLPrimitiveType.IntPtr,       new TypeInfo("intptr_t p{0} = CodeGetI({1});") },
+            { CLPrimitiveType.String,       new TypeInfo("CodeGetS({1})", "code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_STR, p{0});") },
+            { CLPrimitiveType.Bool,         new TypeInfo("(LNBool)CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.Byte,         new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.Int32,        new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.UInt32,       new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.Int64,        new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.Float,        new TypeInfo("CodeGetD({1})", "double rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_DOUBLE, &rp{0});") },
+            { CLPrimitiveType.Double,       new TypeInfo("CodeGetD({1})", "double rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_DOUBLE, &rp{0});") },
+            { CLPrimitiveType.VoidPtr,      new TypeInfo("(void*)CodeGetS({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.IntPtr,       new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
         };
 
         public const int ConstIdBegin = 100;
         private int _idCount = ConstIdBegin;
         private OutputBuffer _cmdCases = new OutputBuffer(1);
+        private OutputBuffer _prototype = new OutputBuffer();
 
         /// <summary>
         /// クラスor構造体 通知 (開始)
@@ -54,6 +58,10 @@ case [ID]:
         /// <returns>false の場合このクラスの出力を無視する</returns>
         protected override bool OnClassLookedStart(CLClass classType)
         {
+            if (classType.IsStruct)
+            {
+                _prototype.AppendLine("extern int hsp{0}_typeid();", classType.StructData.OriginalName);
+            }
             return true;
         }
 
@@ -84,21 +92,25 @@ case [ID]:
         protected override void OnMethodLooked(CLMethod method)
         {
             var beforeCall = new OutputBuffer(1);
+            var argsText = new OutputBuffer();
+            var afterCall = new OutputBuffer(1);
             for (int i = 0; i < method.FuncDecl.Params.Count; ++i)
             {
                 var param = method.FuncDecl.Params[i];
-                MakeGetParamExp(beforeCall, i, param);
+                MakeCall(beforeCall, argsText, afterCall, i, param);
             }
+
+            // 呼び出し式
             string callExp = "    ";
-            if (method.FuncDecl.ReturnType != null)
+            if (method.FuncDecl.ReturnType != CLPrimitiveType.Void)
                 callExp += "stat = ";
-            callExp += method.FuncDecl.OriginalFullName + "(" + ");";
+            callExp += method.FuncDecl.OriginalFullName + "(" + argsText.ToString() + ");";
 
             string t = CmdCaseTemplate.TrimStart();
             t = t.Replace("[ID]", string.Format("0x{0:X4}", _idCount));
-            t = t.Replace("[BEFORE]", beforeCall.ToString());
+            t = t.Replace("[BEFORE]", beforeCall.ToString().TrimEnd());
             t = t.Replace("[CALL]", callExp);
-            t = t.Replace("[AFTER]", "");
+            t = t.Replace("[AFTER]", afterCall.ToString().TrimEnd());
             _cmdCases.AppendWithIndent(t);
             _idCount++;
         }
@@ -109,6 +121,7 @@ case [ID]:
         protected override string OnMakeOutoutFileText()
         {
             string t = GetTemplate("HSPCommands.txt");
+            t = t.Replace("[PROTOTYPE]", _prototype.ToString());
             t = t.Replace("[COMMANDS]", _cmdCases.ToString());
             return t;
         }
@@ -123,25 +136,52 @@ case [ID]:
         /// 呼び出し前処理
         /// </summary>
         /// <returns></returns>
-        private void MakeGetParamExp(OutputBuffer beforeCall, int index, CLParam param)
+        private void MakeCall(OutputBuffer beforeCall, OutputBuffer argsText, OutputBuffer afterCall, int index, CLParam param)
         {
-            string defaultValue = (string.IsNullOrEmpty(param.OriginalDefaultValue)) ? "NULL" : param.OriginalDefaultValue;
+            string t;
+            string defaultValue = (string.IsNullOrEmpty(param.OriginalDefaultValue)) ? "" : param.OriginalDefaultValue;
 
-            // out 型は一律これ
+            // out 型は一律、値を格納する HSP 変数への参照を準備
             if (param.IOModifier == IOModifier.Out)
             {
-                beforeCall.AppendLine(string.Format("PVal* pval{0};", index));
-                beforeCall.AppendLine(string.Format("APTR aptr{0} = code_getva(&pval{0});", index));
-                return;
+                beforeCall.AppendLine(string.Format("PVal* pval_p{0};", index));
+                beforeCall.AppendLine(string.Format("APTR aptr_p{0} = code_getva(&pval_p{0});", index));
             }
 
             // プリミティブ型
             if (_primitiveTypeInfoTable.ContainsKey(param.Type))
             {
-                string t = string.Format(
-                    _primitiveTypeInfoTable[param.Type].GetParamExp,
-                    index, defaultValue);
-                beforeCall.AppendLine(t);
+                if (param.IOModifier == IOModifier.Out)
+                {
+                    // 前処理
+                    t = string.Format("{0} p{1};", CppCommon.ConvertTypeToCName(param.Type), index);
+                    beforeCall.AppendLine(t);
+                    // 実引数
+                    argsText.AppendCommad("&p{0}", index.ToString());
+                    // 後処理
+                    t = string.Format(_primitiveTypeInfoTable[param.Type].SetToHSPVal, index);
+                    afterCall.AppendLine(t);
+                }
+                else
+                {
+                    // 前処理
+                    string name = "p" + index.ToString();
+                    t = string.Format(_primitiveTypeInfoTable[param.Type].GetParamExp, index, defaultValue);
+                    if (param.Type == CLPrimitiveType.String)
+                    {
+                        // string 型はキャッシュしたい
+                        name = "str_" + name;
+                        t = string.Format("{0} = {1};", name, t);
+                        name += ".c_str()";
+                    }
+                    else
+                    {
+                        t = string.Format("{0} {1} = {2};", CppCommon.ConvertTypeToCName(param.Type), name, t);
+                    }
+                    beforeCall.AppendLine(t);
+                    // 実引数
+                    argsText.AppendCommad(name);
+                }
                 return;
             }
 
@@ -149,30 +189,76 @@ case [ID]:
             var classType = param.Type as CLClass;
             if (classType != null && classType.IsStruct)
             {
-                string t = string.Format(
-                    "PVal* pval{0}; CodeGetVA_TypeChecked(&pval{0}, {1});",
-                    index, classType.OriginalName);
-                beforeCall.AppendLine(t);
+                if (param.IOModifier == IOModifier.Out)
+                {
+                    // 前処理
+                    t = string.Format("{0} p{1};", classType.OriginalName, index);
+                    beforeCall.AppendLine(t);
+                    // 実引数
+                    argsText.AppendCommad("&p{0}", index.ToString());
+                    // 後処理
+                    t = string.Format("code_setva(pval_p{0}, aptr_p{0}, hsp{1}_typeid(), &p{0});", index, classType.OriginalName);
+                    afterCall.AppendLine(t);
+                }
+                else
+                {
+                    t = string.Format(
+                        "PVal* pval_p{0}; CodeGetVA_TypeChecked(&pval_p{0}, {1});",
+                        index, classType.OriginalName);
+                    beforeCall.AppendLine(t);
+                    argsText.AppendCommad("({0}*)pval_p{1}->pt", classType.OriginalName, index.ToString());
+                }
                 return;
             }
 
             // class 型は intptr と同じ
             if (classType != null && !classType.IsStruct)
             {
-                string t = string.Format(
-                    _primitiveTypeInfoTable[CLPrimitiveType.IntPtr].GetParamExp,
-                    index, defaultValue);
-                beforeCall.AppendLine(t);
+                if (param.IOModifier == IOModifier.Out)
+                {
+                    // 前処理
+                    t = string.Format("{0} p{1};", "intptr_t", index);
+                    beforeCall.AppendLine(t);
+                    // 実引数
+                    argsText.AppendCommad("&p{0}", index.ToString());
+                    // 後処理
+                    t = string.Format(_primitiveTypeInfoTable[CLPrimitiveType.IntPtr].SetToHSPVal, index);
+                    afterCall.AppendLine(t);
+                }
+                else
+                {
+                    string name = "p" + index.ToString();
+                    t = string.Format(_primitiveTypeInfoTable[CLPrimitiveType.IntPtr].GetParamExp, index, defaultValue);
+                    t = string.Format("intptr_t {0} = {1};", name, t);
+                    beforeCall.AppendLine(t);
+                    argsText.AppendCommad(name);
+                }
                 return;
             }
 
-            // enum 型は int と同じ
-            if (param.Type is CLEnum)
+            // enum 型は int と同じ。ただ、キャスト式が付く
+            CLEnum enumType = param.Type as CLEnum;
+            if (enumType != null)
             {
-                string t = string.Format(
-                    _primitiveTypeInfoTable[CLPrimitiveType.Int32].GetParamExp,
-                    index, defaultValue);
-                beforeCall.AppendLine(t);
+                if (param.IOModifier == IOModifier.Out)
+                {
+                    // 前処理
+                    t = string.Format("{0} p{1};", enumType.OriginalName, index);
+                    beforeCall.AppendLine(t);
+                    // 実引数
+                    argsText.AppendCommad("&p{0}", index.ToString());
+                    // 後処理
+                    t = string.Format(_primitiveTypeInfoTable[CLPrimitiveType.Int32].SetToHSPVal, index);
+                    afterCall.AppendLine(t);
+                }
+                else
+                {
+                    string name = "p" + index.ToString();
+                    t = string.Format(_primitiveTypeInfoTable[CLPrimitiveType.Int32].GetParamExp, index, defaultValue);
+                    t = string.Format("int {0} = {1};", name, t);
+                    beforeCall.AppendLine(t);
+                    argsText.AppendCommad("(" + enumType.OriginalName + ")" + name);
+                }
                 return;
             }
 

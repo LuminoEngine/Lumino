@@ -10,5 +10,6 @@
 #define LUMINOHSP_API __declspec(dllimport)
 #endif
 
+bool Commands_cmdfunc(int cmd, int* retVal);
 bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
 void RegisterStructTypes(HSP3TYPEINFO *info);

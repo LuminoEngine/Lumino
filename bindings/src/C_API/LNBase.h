@@ -26,10 +26,10 @@ LN_EXTENSION_CLASS(LNError)
 
 	/**
 		@brief		最後に発生したエラーのエラーメッセージを取得します。
-		@return		エラーメッセージ。発生していない場合は NULL を返します。
+		@param[out]	outStr	: メッセージ文字列へのアドレスを格納する変数のアドレス。発生していない場合は NULL を格納します。
 	*/
 	LN_STATIC_API
-	const LNChar* LNError_GetLastErrorMessage();
+	void LNError_GetLastErrorMessage(const LNChar** outStr);
 	
 LN_CLASS_END
 

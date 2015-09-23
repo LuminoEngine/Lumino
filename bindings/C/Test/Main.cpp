@@ -12,7 +12,8 @@ int main()
 
 	LNHandle sound1;
 	r = LNSound_Create(_T("D:/Proj/Lumino/build/bindings/C/Test/Debug/audio/ZIGG-ZAGG.mp3"), &sound1);
-	const LNChar* str = LNError_GetLastErrorMessage();
+	const LNChar* str;
+	LNError_GetLastErrorMessage(&str);
 	LNSound_Set3DEnabled(sound1, LN_TRUE);
 	LNSound_SetEmitterPosition(sound1, &pos);
 	LNSound_Play(sound1);

@@ -314,6 +314,19 @@ LNResult LNSound_Create(const LNChar* filename, LNHandle* sound)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSound)* sound)
+{
+	LN_FUNC_TRY_BEGIN;
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize, true));
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	*sound = LFManager::CheckRegisterObject(obj);
+	obj.SafeAddRef();
+	LN_FUNC_TRY_END_RETURN
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 LNResult LNSound_SetVolume(LN_HANDLE(LNSound) sound, int volume)
 {
 	LN_CHECK_ARG_HANDLE(sound);

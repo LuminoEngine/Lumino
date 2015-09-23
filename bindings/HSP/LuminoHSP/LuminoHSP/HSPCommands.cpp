@@ -1,8 +1,58 @@
 
 #include <windows.h>
+#include <string>
 #include "../hsp3plugin/hsp3plugin.h"
 #include "../../../src/C_API/LuminoC.h"
 #include "LuminoHSP.h"
+
+extern int hspLNVector2_typeid();
+extern int hspLNVector3_typeid();
+extern int hspLNVector4_typeid();
+extern int hspLNMatrix_typeid();
+extern int hspLNQuaternion_typeid();
+
+
+//=============================================================================
+// Common
+//=============================================================================
+int CodeGetI()
+{
+	return code_geti();
+}
+int CodeGetI(int defaultValue)
+{
+	return code_getdi(defaultValue);
+}
+double CodeGetD()
+{
+	return code_getd();
+}
+double CodeGetD(double defaultValue)
+{
+	return code_getdd(defaultValue);
+}
+const char* CodeGetS()
+{
+	return code_gets();
+}
+const char* CodeGetS(const char* defaultValue)
+{
+	return code_getds(defaultValue);
+}
+
+#define CodeGetVA_TypeChecked(ppval, type) \
+	code_getva(ppval); \
+	if ((*ppval)->flag != hsp##type##_typeid()) { throw HSPVAR_ERROR_TYPEMISS; }
+
+std::string str_p0;
+std::string str_p1;
+std::string str_p2;
+std::string str_p3;
+std::string str_p4;
+std::string str_p5;
+std::string str_p6;
+std::string str_p7;
+std::string str_p8;
 
 //=============================================================================
 // cmdfunc
@@ -10,6 +60,7 @@
 
 bool Commands_cmdfunc(int cmd, int* retVal)
 {
+	*retVal = RUNMODE_RUN;
 	switch (cmd)
 	{
     case 0x0064:
@@ -17,1251 +68,1189 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         stat = LNError_GetLastErrorCode();
     
-        return;
+        return true;
     }
     case 0x0065:
     {
-    
-        stat = LNError_GetLastErrorMessage();
-    
-        return;
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        const LNChar* p0;
+        LNError_GetLastErrorMessage(&p0);
+        code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_STR, p0);
+        return true;
     }
     case 0x0066:
     {
-        intptr_t p0 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        stat = LNObject_Release(p0);
     
-        stat = LNObject_Release();
-    
-        return;
+        return true;
     }
     case 0x0067:
     {
-        intptr_t p0 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        stat = LNObject_AddRef(p0);
     
-        stat = LNObject_AddRef();
-    
-        return;
+        return true;
     }
     case 0x0068:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNObject_GetRefCount();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNObject_GetRefCount(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x0069:
     {
-        LNBool p0 = CodeGetI(NULL);
+        LNBool p0 = (LNBool)CodeGetI();
+        LNConfig_SetApplicationLogEnabled(p0);
     
-        stat = LNConfig_SetApplicationLogEnabled();
-    
-        return;
+        return true;
     }
     case 0x006A:
     {
-        LNBool p0 = CodeGetI(NULL);
+        LNBool p0 = (LNBool)CodeGetI();
+        LNConfig_SetConsoleEnabled(p0);
     
-        stat = LNConfig_SetConsoleEnabled();
-    
-        return;
+        return true;
     }
     case 0x006B:
     {
-        str_p0 = CodeGetS(NULL);
-        str_p1 = CodeGetS(NULL);
+        str_p0 = CodeGetS();
+        str_p1 = CodeGetS();
+        LNConfig_RegisterArchive(str_p0.c_str(), str_p1.c_str());
     
-        stat = LNConfig_RegisterArchive();
-    
-        return;
+        return true;
     }
     case 0x006C:
     {
-        int32_t p0 = CodeGetI(NULL);
+        int p0 = CodeGetI();
+        LNConfig_SetFileAccessPriority((LNFileAccessPriority)p0);
     
-        stat = LNConfig_SetFileAccessPriority();
-    
-        return;
+        return true;
     }
     case 0x006D:
     {
-        void* p0 = (void*)CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        LNConfig_SetUserWindowHandle(p0);
     
-        stat = LNConfig_SetUserWindowHandle();
-    
-        return;
+        return true;
     }
     case 0x006E:
     {
-        int32_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
+        int p0 = CodeGetI();
+        int p1 = CodeGetI();
+        LNConfig_SetSoundCacheSize(p0, p1);
     
-        stat = LNConfig_SetSoundCacheSize();
-    
-        return;
+        return true;
     }
     case 0x006F:
     {
-        int32_t p0 = CodeGetI(NULL);
+        int p0 = CodeGetI();
+        LNConfig_SetDirectMusicInitializeMode((LNDirectMusicMode)p0);
     
-        stat = LNConfig_SetDirectMusicInitializeMode();
-    
-        return;
+        return true;
     }
     case 0x0070:
     {
-        int32_t p0 = CodeGetI(NULL);
+        int p0 = CodeGetI();
+        LNConfig_SetDirectMusicReverbLevel(p0);
     
-        stat = LNConfig_SetDirectMusicReverbLevel();
-    
-        return;
+        return true;
     }
     case 0x0071:
     {
     
         stat = LNApplication_InitializeAudio();
     
-        return;
+        return true;
     }
     case 0x0072:
     {
     
-        stat = LNApplication_Finalize();
+        LNApplication_Finalize();
     
-        return;
+        return true;
     }
     case 0x0073:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector2);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNVector2_GetLength();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        float p1;
+        stat = LNVector2_GetLength((LNVector2*)pval_p0->pt, &p1);
+        double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
+        return true;
     }
     case 0x0074:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector2);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNVector2_GetSquareLength();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        float p1;
+        stat = LNVector2_GetSquareLength((LNVector2*)pval_p0->pt, &p1);
+        double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
+        return true;
     }
     case 0x0075:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector2);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNVector2_Set((LNVector2*)pval_p0->pt, p1, p2);
     
-        stat = LNVector2_Set();
-    
-        return;
+        return true;
     }
     case 0x0076:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector2);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNVector2_Normalize();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector2 p1;
+        stat = LNVector2_Normalize((LNVector2*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector2_typeid(), &p1);
+        return true;
     }
     case 0x0077:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector2);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
+        stat = LNVector2_NormalizeV((LNVector2*)pval_p0->pt);
     
-        stat = LNVector2_NormalizeV();
-    
-        return;
+        return true;
     }
     case 0x0078:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNVector3_GetLength();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        float p1;
+        stat = LNVector3_GetLength((LNVector3*)pval_p0->pt, &p1);
+        double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
+        return true;
     }
     case 0x0079:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNVector3_GetSquareLength();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        float p1;
+        stat = LNVector3_GetSquareLength((LNVector3*)pval_p0->pt, &p1);
+        double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
+        return true;
     }
     case 0x007A:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        stat = LNVector3_Set((LNVector3*)pval_p0->pt, p1, p2, p3);
     
-        stat = LNVector3_Set();
-    
-        return;
+        return true;
     }
     case 0x007B:
     {
-        PVal* pval0;
-        APTR aptr0 = code_getva(&pval0);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector2);
-        float p2 = CodeGetD(NULL);
-    
-        stat = LNVector3_SetVZ();
-    
-        return;
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        LNVector3 p0;
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector2);
+        float p2 = CodeGetD();
+        stat = LNVector3_SetVZ(&p0, (LNVector2*)pval_p1->pt, p2);
+        code_setva(pval_p0, aptr_p0, hspLNVector3_typeid(), &p0);
+        return true;
     }
     case 0x007C:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNVector3_Normalize();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        stat = LNVector3_Normalize((LNVector3*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        return true;
     }
     case 0x007D:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        stat = LNVector3_NormalizeV((LNVector3*)pval_p0->pt);
     
-        stat = LNVector3_NormalizeV();
-    
-        return;
+        return true;
     }
     case 0x007E:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNVector3_Dot();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        float p2;
+        stat = LNVector3_Dot((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, &p2);
+        double rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_DOUBLE, &rp2);
+        return true;
     }
     case 0x007F:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNVector3_Cross();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNVector3 p2;
+        stat = LNVector3_Cross((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
+        return true;
     }
     case 0x0080:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNVector3_Reflect();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNVector3 p2;
+        stat = LNVector3_Reflect((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
+        return true;
     }
     case 0x0081:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNVector3_Slide();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNVector3 p2;
+        stat = LNVector3_Slide((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
+        return true;
     }
     case 0x0082:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        float p2 = CodeGetD(NULL);
-        PVal* pval3;
-        APTR aptr3 = code_getva(&pval3);
-    
-        stat = LNVector3_Lerp();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        float p2 = CodeGetD();
+        PVal* pval_p3;
+        APTR aptr_p3 = code_getva(&pval_p3);
+        LNVector3 p3;
+        stat = LNVector3_Lerp((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, p2, &p3);
+        code_setva(pval_p3, aptr_p3, hspLNVector3_typeid(), &p3);
+        return true;
     }
     case 0x0083:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2; CodeGetVA_TypeChecked(&pval2, LNVector3);
-        PVal* pval3; CodeGetVA_TypeChecked(&pval3, LNVector3);
-        float p4 = CodeGetD(NULL);
-        PVal* pval5;
-        APTR aptr5 = code_getva(&pval5);
-    
-        stat = LNVector3_CatmullRom();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2; CodeGetVA_TypeChecked(&pval_p2, LNVector3);
+        PVal* pval_p3; CodeGetVA_TypeChecked(&pval_p3, LNVector3);
+        float p4 = CodeGetD();
+        PVal* pval_p5;
+        APTR aptr_p5 = code_getva(&pval_p5);
+        LNVector3 p5;
+        stat = LNVector3_CatmullRom((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, (LNVector3*)pval_p2->pt, (LNVector3*)pval_p3->pt, p4, &p5);
+        code_setva(pval_p5, aptr_p5, hspLNVector3_typeid(), &p5);
+        return true;
     }
     case 0x0084:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNMatrix);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNVector3_Transform();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNMatrix);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNVector4 p2;
+        stat = LNVector3_Transform((LNVector3*)pval_p0->pt, (LNMatrix*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNVector4_typeid(), &p2);
+        return true;
     }
     case 0x0085:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNMatrix);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNVector3_TransformCoord();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNMatrix);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNVector3 p2;
+        stat = LNVector3_TransformCoord((LNVector3*)pval_p0->pt, (LNMatrix*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
+        return true;
     }
     case 0x0086:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector4);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        float p4 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector4);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        float p4 = CodeGetD();
+        stat = LNVector4_Set((LNVector4*)pval_p0->pt, p1, p2, p3, p4);
     
-        stat = LNVector4_Set();
-    
-        return;
+        return true;
     }
     case 0x0087:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_GetRight();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        stat = LNMatrix_GetRight((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        return true;
     }
     case 0x0088:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_GetUp();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        stat = LNMatrix_GetUp((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        return true;
     }
     case 0x0089:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_GetFront();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        stat = LNMatrix_GetFront((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        return true;
     }
     case 0x008A:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_GetPosition();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        stat = LNMatrix_GetPosition((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        return true;
     }
     case 0x008B:
     {
-        PVal* pval0;
-        APTR aptr0 = code_getva(&pval0);
-    
-        stat = LNMatrix_Identity();
-    
-        return;
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        LNMatrix p0;
+        stat = LNMatrix_Identity(&p0);
+        code_setva(pval_p0, aptr_p0, hspLNMatrix_typeid(), &p0);
+        return true;
     }
     case 0x008C:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        stat = LNMatrix_Translate((LNMatrix*)pval_p0->pt, p1, p2, p3);
     
-        stat = LNMatrix_Translate();
-    
-        return;
+        return true;
     }
     case 0x008D:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        stat = LNMatrix_TranslateVec3((LNMatrix*)pval_p0->pt, (LNVector3*)pval_p1->pt);
     
-        stat = LNMatrix_TranslateVec3();
-    
-        return;
+        return true;
     }
     case 0x008E:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        stat = LNMatrix_RotateX((LNMatrix*)pval_p0->pt, p1);
     
-        stat = LNMatrix_RotateX();
-    
-        return;
+        return true;
     }
     case 0x008F:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        stat = LNMatrix_RotateY((LNMatrix*)pval_p0->pt, p1);
     
-        stat = LNMatrix_RotateY();
-    
-        return;
+        return true;
     }
     case 0x0090:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        stat = LNMatrix_RotateZ((LNMatrix*)pval_p0->pt, p1);
     
-        stat = LNMatrix_RotateZ();
-    
-        return;
+        return true;
     }
     case 0x0091:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        int32_t p4 = CodeGetI(LN_ROTATIONORDER_XYZ);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        int p4 = CodeGetI(LN_ROTATIONORDER_XYZ);
+        stat = LNMatrix_Rotate((LNMatrix*)pval_p0->pt, p1, p2, p3, (LNRotationOrder)p4);
     
-        stat = LNMatrix_Rotate();
-    
-        return;
+        return true;
     }
     case 0x0092:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        int32_t p2 = CodeGetI(LN_ROTATIONORDER_XYZ);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        int p2 = CodeGetI(LN_ROTATIONORDER_XYZ);
+        stat = LNMatrix_RotateVec3((LNMatrix*)pval_p0->pt, (LNVector3*)pval_p1->pt, (LNRotationOrder)p2);
     
-        stat = LNMatrix_RotateVec3();
-    
-        return;
+        return true;
     }
     case 0x0093:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        float p2 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        float p2 = CodeGetD();
+        stat = LNMatrix_RotateAxis((LNMatrix*)pval_p0->pt, (LNVector3*)pval_p1->pt, p2);
     
-        stat = LNMatrix_RotateAxis();
-    
-        return;
+        return true;
     }
     case 0x0094:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNQuaternion);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNQuaternion);
+        stat = LNMatrix_RotateQuaternion((LNMatrix*)pval_p0->pt, (LNQuaternion*)pval_p1->pt);
     
-        stat = LNMatrix_RotateQuaternion();
-    
-        return;
+        return true;
     }
     case 0x0095:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        stat = LNMatrix_Scale((LNMatrix*)pval_p0->pt, p1);
     
-        stat = LNMatrix_Scale();
-    
-        return;
+        return true;
     }
     case 0x0096:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        stat = LNMatrix_ScaleXYZ((LNMatrix*)pval_p0->pt, p1, p2, p3);
     
-        stat = LNMatrix_ScaleXYZ();
-    
-        return;
+        return true;
     }
     case 0x0097:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        stat = LNMatrix_ScaleVec3((LNMatrix*)pval_p0->pt, (LNVector3*)pval_p1->pt);
     
-        stat = LNMatrix_ScaleVec3();
-    
-        return;
+        return true;
     }
     case 0x0098:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNMatrix);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNMatrix_Multiply();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNMatrix);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNMatrix p2;
+        stat = LNMatrix_Multiply((LNMatrix*)pval_p0->pt, (LNMatrix*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNMatrix_typeid(), &p2);
+        return true;
     }
     case 0x0099:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_Inverse();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNMatrix p1;
+        stat = LNMatrix_Inverse((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNMatrix_typeid(), &p1);
+        return true;
     }
     case 0x009A:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_Transpose();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNMatrix p1;
+        stat = LNMatrix_Transpose((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNMatrix_typeid(), &p1);
+        return true;
     }
     case 0x009B:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2; CodeGetVA_TypeChecked(&pval2, LNVector3);
-        PVal* pval3;
-        APTR aptr3 = code_getva(&pval3);
-    
-        stat = LNMatrix_ViewTransformLH();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2; CodeGetVA_TypeChecked(&pval_p2, LNVector3);
+        PVal* pval_p3;
+        APTR aptr_p3 = code_getva(&pval_p3);
+        LNMatrix p3;
+        stat = LNMatrix_ViewTransformLH((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, (LNVector3*)pval_p2->pt, &p3);
+        code_setva(pval_p3, aptr_p3, hspLNMatrix_typeid(), &p3);
+        return true;
     }
     case 0x009C:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        PVal* pval2; CodeGetVA_TypeChecked(&pval2, LNVector3);
-        PVal* pval3;
-        APTR aptr3 = code_getva(&pval3);
-    
-        stat = LNMatrix_ViewTransformRH();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        PVal* pval_p2; CodeGetVA_TypeChecked(&pval_p2, LNVector3);
+        PVal* pval_p3;
+        APTR aptr_p3 = code_getva(&pval_p3);
+        LNMatrix p3;
+        stat = LNMatrix_ViewTransformRH((LNVector3*)pval_p0->pt, (LNVector3*)pval_p1->pt, (LNVector3*)pval_p2->pt, &p3);
+        code_setva(pval_p3, aptr_p3, hspLNMatrix_typeid(), &p3);
+        return true;
     }
     case 0x009D:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        PVal* pval4;
-        APTR aptr4 = code_getva(&pval4);
-    
-        stat = LNMatrix_PerspectiveFovLH();
-    
-        return;
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        PVal* pval_p4;
+        APTR aptr_p4 = code_getva(&pval_p4);
+        LNMatrix p4;
+        stat = LNMatrix_PerspectiveFovLH(p0, p1, p2, p3, &p4);
+        code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
+        return true;
     }
     case 0x009E:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        PVal* pval4;
-        APTR aptr4 = code_getva(&pval4);
-    
-        stat = LNMatrix_PerspectiveFovRH();
-    
-        return;
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        PVal* pval_p4;
+        APTR aptr_p4 = code_getva(&pval_p4);
+        LNMatrix p4;
+        stat = LNMatrix_PerspectiveFovRH(p0, p1, p2, p3, &p4);
+        code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
+        return true;
     }
     case 0x009F:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        PVal* pval4;
-        APTR aptr4 = code_getva(&pval4);
-    
-        stat = LNMatrix_OrthoLH();
-    
-        return;
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        PVal* pval_p4;
+        APTR aptr_p4 = code_getva(&pval_p4);
+        LNMatrix p4;
+        stat = LNMatrix_OrthoLH(p0, p1, p2, p3, &p4);
+        code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
+        return true;
     }
     case 0x00A0:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        PVal* pval4;
-        APTR aptr4 = code_getva(&pval4);
-    
-        stat = LNMatrix_OrthoRH();
-    
-        return;
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        PVal* pval_p4;
+        APTR aptr_p4 = code_getva(&pval_p4);
+        LNMatrix p4;
+        stat = LNMatrix_OrthoRH(p0, p1, p2, p3, &p4);
+        code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
+        return true;
     }
     case 0x00A1:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNMatrix_GetEulerAngles();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        stat = LNMatrix_GetEulerAngles((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        return true;
     }
     case 0x00A2:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-        PVal* pval3;
-        APTR aptr3 = code_getva(&pval3);
-    
-        stat = LNMatrix_Decompose();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNVector3 p1;
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNQuaternion p2;
+        PVal* pval_p3;
+        APTR aptr_p3 = code_getva(&pval_p3);
+        LNVector3 p3;
+        stat = LNMatrix_Decompose((LNMatrix*)pval_p0->pt, &p1, &p2, &p3);
+        code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
+        code_setva(pval_p2, aptr_p2, hspLNQuaternion_typeid(), &p2);
+        code_setva(pval_p3, aptr_p3, hspLNVector3_typeid(), &p3);
+        return true;
     }
     case 0x00A3:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNQuaternion);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        float p4 = CodeGetD(NULL);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        float p4 = CodeGetD();
+        stat = LNQuaternion_Set((LNQuaternion*)pval_p0->pt, p1, p2, p3, p4);
     
-        stat = LNQuaternion_Set();
-    
-        return;
+        return true;
     }
     case 0x00A4:
     {
-        PVal* pval0;
-        APTR aptr0 = code_getva(&pval0);
-    
-        stat = LNQuaternion_Identity();
-    
-        return;
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        LNQuaternion p0;
+        stat = LNQuaternion_Identity(&p0);
+        code_setva(pval_p0, aptr_p0, hspLNQuaternion_typeid(), &p0);
+        return true;
     }
     case 0x00A5:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
-        float p1 = CodeGetD(NULL);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNQuaternion_RotationAxis();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        float p1 = CodeGetD();
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNQuaternion p2;
+        stat = LNQuaternion_RotationAxis((LNVector3*)pval_p0->pt, p1, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNQuaternion_typeid(), &p2);
+        return true;
     }
     case 0x00A6:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNMatrix);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNQuaternion_RotationMatrix();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNQuaternion p1;
+        stat = LNQuaternion_RotationMatrix((LNMatrix*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNQuaternion_typeid(), &p1);
+        return true;
     }
     case 0x00A7:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        PVal* pval3;
-        APTR aptr3 = code_getva(&pval3);
-    
-        stat = LNQuaternion_RotationYawPitchRoll();
-    
-        return;
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        PVal* pval_p3;
+        APTR aptr_p3 = code_getva(&pval_p3);
+        LNQuaternion p3;
+        stat = LNQuaternion_RotationYawPitchRoll(p0, p1, p2, &p3);
+        code_setva(pval_p3, aptr_p3, hspLNQuaternion_typeid(), &p3);
+        return true;
     }
     case 0x00A8:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNQuaternion);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNQuaternion_Normalize();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNQuaternion p1;
+        stat = LNQuaternion_Normalize((LNQuaternion*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNQuaternion_typeid(), &p1);
+        return true;
     }
     case 0x00A9:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNQuaternion);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNQuaternion_Conjugate();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNQuaternion p1;
+        stat = LNQuaternion_Conjugate((LNQuaternion*)pval_p0->pt, &p1);
+        code_setva(pval_p1, aptr_p1, hspLNQuaternion_typeid(), &p1);
+        return true;
     }
     case 0x00AA:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNQuaternion);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNQuaternion);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
-    
-        stat = LNQuaternion_Multiply();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNQuaternion);
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNQuaternion p2;
+        stat = LNQuaternion_Multiply((LNQuaternion*)pval_p0->pt, (LNQuaternion*)pval_p1->pt, &p2);
+        code_setva(pval_p2, aptr_p2, hspLNQuaternion_typeid(), &p2);
+        return true;
     }
     case 0x00AB:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNQuaternion);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNQuaternion);
-        float p2 = CodeGetD(NULL);
-        PVal* pval3;
-        APTR aptr3 = code_getva(&pval3);
-    
-        stat = LNQuaternion_Slerp();
-    
-        return;
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNQuaternion);
+        float p2 = CodeGetD();
+        PVal* pval_p3;
+        APTR aptr_p3 = code_getva(&pval_p3);
+        LNQuaternion p3;
+        stat = LNQuaternion_Slerp((LNQuaternion*)pval_p0->pt, (LNQuaternion*)pval_p1->pt, p2, &p3);
+        code_setva(pval_p3, aptr_p3, hspLNQuaternion_typeid(), &p3);
+        return true;
     }
     case 0x00AC:
     {
-        str_p0 = CodeGetS(NULL);
-        int32_t p1 = CodeGetI(100);
-        int32_t p2 = CodeGetI(100);
+        str_p0 = CodeGetS();
+        int p1 = CodeGetI(100);
+        int p2 = CodeGetI(100);
         double p3 = CodeGetD(0.0);
+        stat = LNAudio_PlayBGM(str_p0.c_str(), p1, p2, p3);
     
-        stat = LNAudio_PlayBGM();
-    
-        return;
+        return true;
     }
     case 0x00AD:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        int32_t p2 = CodeGetI(100);
-        int32_t p3 = CodeGetI(100);
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        int p2 = CodeGetI(100);
+        int p3 = CodeGetI(100);
         double p4 = CodeGetD(0.0);
+        stat = LNAudio_PlayBGMMem(p0, p1, p2, p3, p4);
     
-        stat = LNAudio_PlayBGMMem();
-    
-        return;
+        return true;
     }
     case 0x00AE:
     {
         double p0 = CodeGetD(0.0);
+        stat = LNAudio_StopBGM(p0);
     
-        stat = LNAudio_StopBGM();
-    
-        return;
+        return true;
     }
     case 0x00AF:
     {
-        str_p0 = CodeGetS(NULL);
-        int32_t p1 = CodeGetI(100);
-        int32_t p2 = CodeGetI(100);
+        str_p0 = CodeGetS();
+        int p1 = CodeGetI(100);
+        int p2 = CodeGetI(100);
         double p3 = CodeGetD(0.0);
+        stat = LNAudio_PlayBGS(str_p0.c_str(), p1, p2, p3);
     
-        stat = LNAudio_PlayBGS();
-    
-        return;
+        return true;
     }
     case 0x00B0:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        int32_t p2 = CodeGetI(100);
-        int32_t p3 = CodeGetI(100);
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        int p2 = CodeGetI(100);
+        int p3 = CodeGetI(100);
         double p4 = CodeGetD(0.0);
+        stat = LNAudio_PlayBGSMem(p0, p1, p2, p3, p4);
     
-        stat = LNAudio_PlayBGSMem();
-    
-        return;
+        return true;
     }
     case 0x00B1:
     {
         double p0 = CodeGetD(0.0);
+        stat = LNAudio_StopBGS(p0);
     
-        stat = LNAudio_StopBGS();
-    
-        return;
+        return true;
     }
     case 0x00B2:
     {
-        str_p0 = CodeGetS(NULL);
-        int32_t p1 = CodeGetI(100);
-        int32_t p2 = CodeGetI(100);
+        str_p0 = CodeGetS();
+        int p1 = CodeGetI(100);
+        int p2 = CodeGetI(100);
+        stat = LNAudio_PlayME(str_p0.c_str(), p1, p2);
     
-        stat = LNAudio_PlayME();
-    
-        return;
+        return true;
     }
     case 0x00B3:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        int32_t p2 = CodeGetI(100);
-        int32_t p3 = CodeGetI(100);
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        int p2 = CodeGetI(100);
+        int p3 = CodeGetI(100);
+        stat = LNAudio_PlayMEMem(p0, p1, p2, p3);
     
-        stat = LNAudio_PlayMEMem();
-    
-        return;
+        return true;
     }
     case 0x00B4:
     {
     
         stat = LNAudio_StopME();
     
-        return;
+        return true;
     }
     case 0x00B5:
     {
-        str_p0 = CodeGetS(NULL);
-        int32_t p1 = CodeGetI(100);
-        int32_t p2 = CodeGetI(100);
+        str_p0 = CodeGetS();
+        int p1 = CodeGetI(100);
+        int p2 = CodeGetI(100);
+        stat = LNAudio_PlaySE(str_p0.c_str(), p1, p2);
     
-        stat = LNAudio_PlaySE();
-    
-        return;
+        return true;
     }
     case 0x00B6:
     {
-        str_p0 = CodeGetS(NULL);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-        float p2 = CodeGetD(NULL);
-        int32_t p3 = CodeGetI(100);
-        int32_t p4 = CodeGetI(100);
+        str_p0 = CodeGetS();
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        float p2 = CodeGetD();
+        int p3 = CodeGetI(100);
+        int p4 = CodeGetI(100);
+        stat = LNAudio_PlaySE3D(str_p0.c_str(), (LNVector3*)pval_p1->pt, p2, p3, p4);
     
-        stat = LNAudio_PlaySE3D();
-    
-        return;
+        return true;
     }
     case 0x00B7:
     {
-        str_p0 = CodeGetS(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        float p4 = CodeGetD(NULL);
-        int32_t p5 = CodeGetI(100);
-        int32_t p6 = CodeGetI(100);
+        str_p0 = CodeGetS();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        float p4 = CodeGetD();
+        int p5 = CodeGetI(100);
+        int p6 = CodeGetI(100);
+        stat = LNAudio_PlaySE3DXYZ(str_p0.c_str(), p1, p2, p3, p4, p5, p6);
     
-        stat = LNAudio_PlaySE3DXYZ();
-    
-        return;
+        return true;
     }
     case 0x00B8:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        int32_t p2 = CodeGetI(100);
-        int32_t p3 = CodeGetI(100);
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        int p2 = CodeGetI(100);
+        int p3 = CodeGetI(100);
+        stat = LNAudio_PlaySEMem(p0, p1, p2, p3);
     
-        stat = LNAudio_PlaySEMem();
-    
-        return;
+        return true;
     }
     case 0x00B9:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        PVal* pval2; CodeGetVA_TypeChecked(&pval2, LNVector3);
-        float p3 = CodeGetD(NULL);
-        int32_t p4 = CodeGetI(100);
-        int32_t p5 = CodeGetI(100);
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        PVal* pval_p2; CodeGetVA_TypeChecked(&pval_p2, LNVector3);
+        float p3 = CodeGetD();
+        int p4 = CodeGetI(100);
+        int p5 = CodeGetI(100);
+        stat = LNAudio_PlaySE3DMem(p0, p1, (LNVector3*)pval_p2->pt, p3, p4, p5);
     
-        stat = LNAudio_PlaySE3DMem();
-    
-        return;
+        return true;
     }
     case 0x00BA:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
-        float p4 = CodeGetD(NULL);
-        float p5 = CodeGetD(NULL);
-        int32_t p6 = CodeGetI(100);
-        int32_t p7 = CodeGetI(100);
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        float p4 = CodeGetD();
+        float p5 = CodeGetD();
+        int p6 = CodeGetI(100);
+        int p7 = CodeGetI(100);
+        stat = LNAudio_PlaySE3DMemXYZ(p0, p1, p2, p3, p4, p5, p6, p7);
     
-        stat = LNAudio_PlaySE3DMemXYZ();
-    
-        return;
+        return true;
     }
     case 0x00BB:
     {
     
         stat = LNAudio_StopSE();
     
-        return;
+        return true;
     }
     case 0x00BC:
     {
-        int32_t p0 = CodeGetI(NULL);
+        int p0 = CodeGetI();
         double p1 = CodeGetD(0.0);
+        stat = LNAudio_SetBGMVolume(p0, p1);
     
-        stat = LNAudio_SetBGMVolume();
-    
-        return;
+        return true;
     }
     case 0x00BD:
     {
-        int32_t p0 = CodeGetI(NULL);
+        int p0 = CodeGetI();
         double p1 = CodeGetD(0.0);
+        stat = LNAudio_SetBGSVolume(p0, p1);
     
-        stat = LNAudio_SetBGSVolume();
-    
-        return;
+        return true;
     }
     case 0x00BE:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        stat = LNSoundListener_SetPosition((LNVector3*)pval_p0->pt);
     
-        stat = LNSoundListener_SetPosition();
-    
-        return;
+        return true;
     }
     case 0x00BF:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        stat = LNSoundListener_SetDirection((LNVector3*)pval_p0->pt);
     
-        stat = LNSoundListener_SetDirection();
-    
-        return;
+        return true;
     }
     case 0x00C0:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        stat = LNSoundListener_SetUpDirection((LNVector3*)pval_p0->pt);
     
-        stat = LNSoundListener_SetUpDirection();
-    
-        return;
+        return true;
     }
     case 0x00C1:
     {
-        PVal* pval0; CodeGetVA_TypeChecked(&pval0, LNVector3);
+        PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
+        stat = LNSoundListener_SetVelocity((LNVector3*)pval_p0->pt);
     
-        stat = LNSoundListener_SetVelocity();
-    
-        return;
+        return true;
     }
     case 0x00C2:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNSoundListener_SetPositionXYZ(p0, p1, p2);
     
-        stat = LNSoundListener_SetPositionXYZ();
-    
-        return;
+        return true;
     }
     case 0x00C3:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNSoundListener_SetDirectionXYZ(p0, p1, p2);
     
-        stat = LNSoundListener_SetDirectionXYZ();
-    
-        return;
+        return true;
     }
     case 0x00C4:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNSoundListener_SetUpDirectionXYZ(p0, p1, p2);
     
-        stat = LNSoundListener_SetUpDirectionXYZ();
-    
-        return;
+        return true;
     }
     case 0x00C5:
     {
-        float p0 = CodeGetD(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNSoundListener_SetVelocityXYZ(p0, p1, p2);
     
-        stat = LNSoundListener_SetVelocityXYZ();
-    
-        return;
+        return true;
     }
     case 0x00C6:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNSound_GetVolume();
-    
-        return;
+        str_p0 = CodeGetS();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        intptr_t p1;
+        stat = LNSound_Create(str_p0.c_str(), &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00C7:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-    
-        stat = LNSound_SetVolume();
-    
-        return;
+        void* p0 = (void*)CodeGetS();
+        int p1 = CodeGetI();
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        intptr_t p2;
+        stat = LNSound_CreateMem(p0, p1, &p2);
+        int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
+        return true;
     }
     case 0x00C8:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNSound_GetPitch();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNSound_GetVolume(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00C9:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        stat = LNSound_SetVolume(p0, p1);
     
-        stat = LNSound_SetPitch();
-    
-        return;
+        return true;
     }
     case 0x00CA:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        LNBool p1 = CodeGetI(NULL);
-    
-        stat = LNSound_SetLoopEnabled();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNSound_GetPitch(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00CB:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        stat = LNSound_SetPitch(p0, p1);
     
-        stat = LNSound_IsLoopEnabled();
-    
-        return;
+        return true;
     }
     case 0x00CC:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        int32_t p2 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        LNBool p1 = (LNBool)CodeGetI();
+        stat = LNSound_SetLoopEnabled(p0, p1);
     
-        stat = LNSound_SetLoopRange();
-    
-        return;
+        return true;
     }
     case 0x00CD:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        LNBool p1 = CodeGetI(NULL);
-    
-        stat = LNSound_Set3DEnabled();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNBool p1;
+        stat = LNSound_IsLoopEnabled(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00CE:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        int p2 = CodeGetI();
+        stat = LNSound_SetLoopRange(p0, p1, p2);
     
-        stat = LNSound_Is3DEnabled();
-    
-        return;
+        return true;
     }
     case 0x00CF:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
+        intptr_t p0 = CodeGetI();
+        LNBool p1 = (LNBool)CodeGetI();
+        stat = LNSound_Set3DEnabled(p0, p1);
     
-        stat = LNSound_GetPlayingMode();
-    
-        return;
+        return true;
     }
     case 0x00D0:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-    
-        stat = LNSound_SetPlayingMode();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNBool p1;
+        stat = LNSound_Is3DEnabled(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00D1:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNSound_GetPlayingState();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNSoundPlayingMode p1;
+        stat = LNSound_GetPlayingMode(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00D2:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        stat = LNSound_SetPlayingMode(p0, (LNSoundPlayingMode)p1);
     
-        stat = LNSound_GetPlayedSamples();
-    
-        return;
+        return true;
     }
     case 0x00D3:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNSound_GetTotalSamples();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNSoundPlayingState p1;
+        stat = LNSound_GetPlayingState(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00D4:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
-    
-        stat = LNSound_GetSamplingRate();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int64_t p1;
+        stat = LNSound_GetPlayedSamples(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00D5:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-    
-        stat = LNSound_SetEmitterPosition();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int64_t p1;
+        stat = LNSound_GetTotalSamples(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00D6:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        PVal* pval1; CodeGetVA_TypeChecked(&pval1, LNVector3);
-    
-        stat = LNSound_SetEmitterVelocity();
-    
-        return;
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNSound_GetSamplingRate(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
     }
     case 0x00D7:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        float p1 = CodeGetD(NULL);
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        stat = LNSound_SetEmitterPosition(p0, (LNVector3*)pval_p1->pt);
     
-        stat = LNSound_SetEmitterMaxDistance();
-    
-        return;
+        return true;
     }
     case 0x00D8:
     {
-        str_p0 = CodeGetS(NULL);
-        PVal* pval1;
-        APTR aptr1 = code_getva(&pval1);
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        stat = LNSound_SetEmitterVelocity(p0, (LNVector3*)pval_p1->pt);
     
-        stat = LNSound_Create();
-    
-        return;
+        return true;
     }
     case 0x00D9:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        PVal* pval2;
-        APTR aptr2 = code_getva(&pval2);
+        intptr_t p0 = CodeGetI();
+        float p1 = CodeGetD();
+        stat = LNSound_SetEmitterMaxDistance(p0, p1);
     
-        stat = LNSound_CreateMem();
-    
-        return;
+        return true;
     }
     case 0x00DA:
     {
-        intptr_t p0 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        stat = LNSound_Play(p0);
     
-        stat = LNSound_Play();
-    
-        return;
+        return true;
     }
     case 0x00DB:
     {
-        intptr_t p0 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        stat = LNSound_Stop(p0);
     
-        stat = LNSound_Stop();
-    
-        return;
+        return true;
     }
     case 0x00DC:
     {
-        intptr_t p0 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        stat = LNSound_Pause(p0);
     
-        stat = LNSound_Pause();
-    
-        return;
+        return true;
     }
     case 0x00DD:
     {
-        intptr_t p0 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        stat = LNSound_Resume(p0);
     
-        stat = LNSound_Resume();
-    
-        return;
+        return true;
     }
     case 0x00DE:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        int32_t p1 = CodeGetI(NULL);
-        double p2 = CodeGetD(NULL);
-        int32_t p3 = CodeGetI(NULL);
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        double p2 = CodeGetD();
+        int p3 = CodeGetI();
+        stat = LNSound_FadeVolume(p0, p1, p2, (LNSoundFadeBehavior)p3);
     
-        stat = LNSound_FadeVolume();
-    
-        return;
+        return true;
     }
     case 0x00DF:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
+        intptr_t p0 = CodeGetI();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        stat = LNSound_SetEmitterPositionXYZ(p0, p1, p2, p3);
     
-        stat = LNSound_SetEmitterPositionXYZ();
-    
-        return;
+        return true;
     }
     case 0x00E0:
     {
-        intptr_t p0 = CodeGetI(NULL);
-        float p1 = CodeGetD(NULL);
-        float p2 = CodeGetD(NULL);
-        float p3 = CodeGetD(NULL);
+        intptr_t p0 = CodeGetI();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        float p3 = CodeGetD();
+        stat = LNSound_SetEmitterVelocityXYZ(p0, p1, p2, p3);
     
-        stat = LNSound_SetEmitterVelocityXYZ();
-    
-        return;
+        return true;
     }
 
 	default:
 		puterror(HSPERR_UNSUPPORTED_FUNCTION);
 	}
-	*retVal = RUNMODE_RUN;
+	return false;
 }
 
