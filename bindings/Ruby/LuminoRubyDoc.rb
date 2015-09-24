@@ -1410,11 +1410,11 @@ class LN::SoundListener
     def set_up_direction
     end
     # 3D音声のリスナーの速度を設定します。
-    # @overload velocity(x, y, z)
+    # @overload set_velocity(x, y, z)
     #   @param [Float] x 速度の X 成分
     #   @param [Float] y 速度の Y 成分
     #   @param [Float] z 速度の Z 成分
-    def velocity
+    def set_velocity
     end
 end
 # 音声データひとつ分を表し、再生などの操作を行うクラスです。

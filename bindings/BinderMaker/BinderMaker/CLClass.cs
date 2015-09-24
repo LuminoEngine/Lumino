@@ -203,7 +203,7 @@ namespace BinderMaker
             {
                 if (CLProperty.CheckProperty(method))
                 {
-                    var prop = Properties.Find((p) => p.Name == CLProperty.GetPropertyName(method));
+                    var prop = Properties.Find((p) => p.KeyName == CLProperty.GetPropertyKeyName(method));
                     if (prop != null)
                         prop.Attach(method);
                     else

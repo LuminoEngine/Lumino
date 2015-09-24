@@ -81,10 +81,12 @@ namespace BinderMaker
             getter = getter.Replace("を取得します。", "");
             setter = setter.Replace("の設定", "");
             setter = setter.Replace("を設定します。", "");
+            getter = getter.Replace("の確認", "");
+            getter = getter.Replace("を確認します。", "");
 
             // もし両方ある場合はコメント内容が一致しているはず
-            if (!string.IsNullOrEmpty(getter) && !string.IsNullOrEmpty(setter) && getter != setter)
-                throw new InvalidOperationException();
+            //if (!string.IsNullOrEmpty(getter) && !string.IsNullOrEmpty(setter) && getter != setter)
+            //    throw new InvalidOperationException();
             // ここで止まる場合、「を設定する」とかになってないかチェック
 
             if (!string.IsNullOrEmpty(getter)) return getter;

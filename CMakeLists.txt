@@ -615,8 +615,10 @@ link_libraries(libvorbis)
 # library. (Unicode)
 
 if (LN_USE_UNICODE_CHAR_SET)
-	list(APPEND my_definitions "UNICODE")
-	list(APPEND my_definitions "_UNICODE")
+	#list(APPEND my_definitions "UNICODE")
+	#list(APPEND my_definitions "_UNICODE")
+	add_definitions(-DUNICODE)
+	add_definitions(-D_UNICODE)
 endif()
 
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})

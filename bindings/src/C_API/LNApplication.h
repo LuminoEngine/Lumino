@@ -82,12 +82,12 @@ LN_CLASS_END
 
 //==============================================================================
 /**
-	@brief		ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+	@brief		Lumino ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
 */
 LN_STATIC_CLASS(LNApplication)
 
 	/**
-		@brief		アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+		@brief		Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
@@ -95,11 +95,11 @@ LN_STATIC_CLASS(LNApplication)
 
 
 	/**
-		@brief		LightNote の終了処理を行います。
+		@brief		Lumino ライブラリの終了処理を行います。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_TERMINATOR
-	void LNApplication_Finalize();
+	void LNApplication_Terminate();
 
 LN_CLASS_END
 

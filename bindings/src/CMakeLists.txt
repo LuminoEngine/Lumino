@@ -58,6 +58,11 @@ if (WIN32)
 	endif()
 	# 出力ファイルのサフィックス
 	set(LN_OUTPUT_POSTFIX "_")
+	if (${CMAKE_EXE_LINKER_FLAGS} MATCHES "/machine:x64")	# /machine:x64
+		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}x64")
+	else()
+		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}x86")
+	endif()
 	if (${LN_USE_UNICODE_CHAR_SET})
 		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}u")
 	endif()

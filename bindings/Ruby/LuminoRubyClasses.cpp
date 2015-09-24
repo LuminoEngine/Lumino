@@ -608,6 +608,20 @@ static VALUE static_lnrbLNSoundListener_SetVelocity(int argc, VALUE *argv, VALUE
             return Qnil;
         }
     }
+    if (3 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "3", &x, &y, &z);
+        if (isRbFloat(x) && isRbFloat(y) && isRbFloat(z)) {
+            float _x = ((float)NUM2DBL(x));
+            float _y = ((float)NUM2DBL(y));
+            float _z = ((float)NUM2DBL(z));
+            LNResult errorCode = LNSoundListener_SetVelocityXYZ(_x, _y, _z);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
     rb_raise(rb_eArgError, "Lumino::SoundListener.velocity= - wrong argument type.");
     return Qnil;
 }
@@ -629,26 +643,6 @@ static VALUE static_lnrbLNSoundListener_SetPositionXYZ(int argc, VALUE *argv, VA
         }
     }
     rb_raise(rb_eArgError, "Lumino::SoundListener.set_position_xyz - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNSoundListener_SetVelocityXYZ(int argc, VALUE *argv, VALUE self)
-{
-    if (3 <= argc && argc <= 3) {
-        VALUE x;
-        VALUE y;
-        VALUE z;
-        rb_scan_args(argc, argv, "3", &x, &y, &z);
-        if (isRbFloat(x) && isRbFloat(y) && isRbFloat(z)) {
-            float _x = ((float)NUM2DBL(x));
-            float _y = ((float)NUM2DBL(y));
-            float _z = ((float)NUM2DBL(z));
-            LNResult errorCode = LNSoundListener_SetVelocityXYZ(_x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SoundListener.velocity - wrong argument type.");
     return Qnil;
 }
 
@@ -1192,7 +1186,6 @@ void InitClasses()
     rb_define_singleton_method(g_class_SoundListener, "up_direction=", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetUpDirection), -1);
     rb_define_singleton_method(g_class_SoundListener, "velocity=", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetVelocity), -1);
     rb_define_singleton_method(g_class_SoundListener, "set_position_xyz", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetPositionXYZ), -1);
-    rb_define_singleton_method(g_class_SoundListener, "velocity", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetVelocityXYZ), -1);
 
     g_class_Sound = rb_define_class_under(g_luminoModule, "Sound", rb_cObject);
     rb_define_alloc_func(g_class_Sound, LNSound_allocate);

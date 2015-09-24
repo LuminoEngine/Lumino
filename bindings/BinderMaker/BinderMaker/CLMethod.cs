@@ -488,7 +488,20 @@ namespace BinderMaker
         /// <summary>
         /// プロパティ名
         /// </summary>
-        public string Name { get; private set; }
+        public string Name
+        {
+            get
+            {
+                if (Getter != null && Getter.PropertyNameType == PropertyNameType.Is)
+                    return "Is" + KeyName;
+                return KeyName;
+            }
+        }
+
+        /// <summary>
+        /// プロパティ名 (Get, Set, Is を除いた検索用の名前)
+        /// </summary>
+        public string KeyName { get; private set; }
 
         /// <summary>
         /// getter
@@ -538,7 +551,7 @@ namespace BinderMaker
         public CLProperty(CLMethod method)
         {
             Attach(method);
-            Name = GetPropertyName(method);
+            KeyName = GetPropertyKeyName(method);
         }
 
         /// <summary>
@@ -590,7 +603,7 @@ namespace BinderMaker
         /// </summary>
         /// <param name="method"></param>
         /// <returns></returns>
-        public static string GetPropertyName(CLMethod method)
+        public static string GetPropertyKeyName(CLMethod method)
         {
             if (string.Compare(method.Name, 0, "Get", 0, 3) == 0)
             {
@@ -602,7 +615,7 @@ namespace BinderMaker
             }
             else if (string.Compare(method.Name, 0, "Is", 0, 2) == 0)
             {
-                return method.Name;//.Substring(2);
+                return method.Name.Substring(2);
             }
             throw new InvalidOperationException();
         }

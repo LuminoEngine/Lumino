@@ -174,11 +174,11 @@ LNResult LNApplication_IsEndRequested(LNBool* requested)
 #endif
 
 //-----------------------------------------------------------------------------
-//
+// Note: Finalize という名前から変更した。Finalize は .NET で特殊な名前となってしまう。
 //-----------------------------------------------------------------------------
-void LNApplication_Finalize()
+void LNApplication_Terminate()
 {
-	LFManager::Finalize();
+	LFManager::Terminate();
 }
 
 //LN_INTERNAL_API void* LNApplication_GetInternalObject();

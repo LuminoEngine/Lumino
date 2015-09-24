@@ -39,7 +39,7 @@ public:
 	static void PostInitialize();
 
 	/// 終了処理
-	static void Finalize();
+	static void Terminate();
 
 	/// obj の Handle を返す。obj がこのクラスに登録済みかを確認し、登録されていなければ新しく登録する。
 	static LNHandle CheckRegisterObject(CoreObject* obj);

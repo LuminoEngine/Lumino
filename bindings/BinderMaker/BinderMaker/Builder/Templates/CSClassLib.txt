@@ -81,6 +81,7 @@ TYPE_INFO_REGISTERS
 TYPE_INFO_PINVOKES
     }
 
+#if false
     /// <summary>
     /// オブジェクトのコレクション
     /// </summary>
@@ -198,6 +199,7 @@ TYPE_INFO_PINVOKES
             }
         }
     }
+#endif
 
 	internal class UserData
     {

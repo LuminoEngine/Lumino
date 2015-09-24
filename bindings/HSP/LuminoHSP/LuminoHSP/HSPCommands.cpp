@@ -1065,19 +1065,19 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x00CC:
     {
         intptr_t p0 = CodeGetI();
-        LNBool p1 = (LNBool)CodeGetI();
-        stat = LNSound_SetLoopEnabled(p0, p1);
-    
-        return true;
-    }
-    case 0x00CD:
-    {
-        intptr_t p0 = CodeGetI();
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         LNBool p1;
         stat = LNSound_IsLoopEnabled(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00CD:
+    {
+        intptr_t p0 = CodeGetI();
+        LNBool p1 = (LNBool)CodeGetI();
+        stat = LNSound_SetLoopEnabled(p0, p1);
+    
         return true;
     }
     case 0x00CE:
@@ -1092,19 +1092,19 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x00CF:
     {
         intptr_t p0 = CodeGetI();
-        LNBool p1 = (LNBool)CodeGetI();
-        stat = LNSound_Set3DEnabled(p0, p1);
-    
-        return true;
-    }
-    case 0x00D0:
-    {
-        intptr_t p0 = CodeGetI();
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         LNBool p1;
         stat = LNSound_Is3DEnabled(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00D0:
+    {
+        intptr_t p0 = CodeGetI();
+        LNBool p1 = (LNBool)CodeGetI();
+        stat = LNSound_Set3DEnabled(p0, p1);
+    
         return true;
     }
     case 0x00D1:

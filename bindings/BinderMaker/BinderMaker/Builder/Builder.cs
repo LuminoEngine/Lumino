@@ -72,7 +72,9 @@ namespace BinderMaker.Builder
             }
 
             // ファイルに出力
-            System.IO.File.WriteAllText(outputFilePath, OnMakeOutoutFileText(), GetOutputEncoding());
+            string output = OnMakeOutoutFileText();
+            output = output.Replace("\r\n", "\n").Replace("\n", "\r\n");
+            System.IO.File.WriteAllText(outputFilePath, output, GetOutputEncoding());
         }
 
         /// <summary>

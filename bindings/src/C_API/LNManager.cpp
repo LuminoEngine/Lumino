@@ -57,7 +57,7 @@ void LFManager::PostInitialize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LFManager::Finalize()
+void LFManager::Terminate()
 {
 	// 残っているオブジェクトを全て削除
 	LN_FOREACH(ObjectEntry& e, m_objectEntryList) {

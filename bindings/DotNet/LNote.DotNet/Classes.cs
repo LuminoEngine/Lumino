@@ -165,7 +165,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
-        public static void PlayBGMMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
+        public static void PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -205,7 +205,7 @@ namespace LN
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
-        public static void PlayBGSMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
+        public static void PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) throw new LNoteException(result);
@@ -243,7 +243,7 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlayMEMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100)
+        public static void PlayMEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlayMEMem( data,  dataSize,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -312,7 +312,7 @@ namespace LN
         /// <param name="dataSize">データサイズ (バイト単位)</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlaySEMem( VoidPtr data,  int dataSize,  int volume = 100,  int pitch = 100)
+        public static void PlaySEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySEMem( data,  dataSize,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -328,7 +328,7 @@ namespace LN
         /// <param name="distance">減衰距離</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlaySE3DMem( VoidPtr data,  int dataSize,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
+        public static void PlaySE3DMem( byte[] data,  int dataSize,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DMem( data,  dataSize, ref position,  distance,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -346,7 +346,7 @@ namespace LN
         /// <param name="distance">減衰距離</param>
         /// <param name="volume">ボリューム (0 ～ 100)</param>
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
-        public static void PlaySE3DMem( VoidPtr data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
+        public static void PlaySE3DMem( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DMemXYZ( data,  dataSize,  x,  y,  z,  distance,  volume,  pitch);
             if (result != Result.OK) throw new LNoteException(result);
@@ -494,7 +494,7 @@ namespace LN
         /// <param name="x">速度の X 成分</param>
         /// <param name="y">速度の Y 成分</param>
         /// <param name="z">速度の Z 成分</param>
-        public static void Velocity( float x,  float y,  float z)
+        public static void SetVelocity( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetVelocityXYZ( x,  y,  z);
             if (result != Result.OK) throw new LNoteException(result);
@@ -555,20 +555,7 @@ namespace LN
             
         }
         /// <summary>
-        /// サウンドのループ再生の有無
-        /// </summary>
-        public bool LoopEnabled
-        {
-            set
-            {
-                var result = API.LNSound_SetLoopEnabled( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
-            
-            }
-            
-        }
-        /// <summary>
-        /// サウンドのループ再生が有効であるかを確認します。
+        /// サウンドのループ再生が有効であるか
         /// </summary>
         public bool IsLoopEnabled
         {
@@ -578,6 +565,13 @@ namespace LN
                 var result = API.LNSound_IsLoopEnabled( _handle, out outEnabled);
                 if (result != Result.OK) throw new LNoteException(result);
                 return outEnabled;
+            
+            }
+            
+            set
+            {
+                var result = API.LNSound_SetLoopEnabled( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
             
             }
             
@@ -599,20 +593,7 @@ namespace LN
             
         }
         /// <summary>
-        /// サウンドを 3D 音源として再生するか
-        /// </summary>
-        public bool 3DEnabled
-        {
-            set
-            {
-                var result = API.LNSound_Set3DEnabled( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
-            
-            }
-            
-        }
-        /// <summary>
-        /// サウンドが 3D 音源であるかを確認します。
+        /// サウンドが 3D 音源であるか
         /// </summary>
         public bool Is3DEnabled
         {
@@ -622,6 +603,13 @@ namespace LN
                 var result = API.LNSound_Is3DEnabled( _handle, out outEnabled);
                 if (result != Result.OK) throw new LNoteException(result);
                 return outEnabled;
+            
+            }
+            
+            set
+            {
+                var result = API.LNSound_Set3DEnabled( _handle,  value);
+                if (result != Result.OK) throw new LNoteException(result);
             
             }
             
@@ -768,7 +756,7 @@ namespace LN
         /// </summary>
         /// <param name="data">メモリ上の音声データへのポインタ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
-        public  Sound( VoidPtr data,  int dataSize) : base(_LNInternal.InternalBlock)
+        public  Sound( byte[] data,  int dataSize) : base(_LNInternal.InternalBlock)
         {
             IntPtr sound;
             var result = API.LNSound_CreateMem( data,  dataSize, out sound);
@@ -948,6 +936,7 @@ private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
 
     }
 
+#if false
     /// <summary>
     /// オブジェクトのコレクション
     /// </summary>
@@ -1065,6 +1054,7 @@ private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
             }
         }
     }
+#endif
 
 	internal class UserData
     {

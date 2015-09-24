@@ -291,7 +291,7 @@ LN_STATIC_CLASS(LNSoundListener)
 	*/
 	LN_STATIC_API
 	LN_ATTR_PROPERTY
-	LN_ATTR_OVERLOAD(LNSoundListener_Velocity)
+	LN_ATTR_OVERLOAD(LNSoundListener_SetVelocity)
 	LNResult LNSoundListener_SetVelocityXYZ(float x, float y, float z);
 
 LN_CLASS_END
@@ -390,7 +390,7 @@ LN_CLASS(LNSound, LNObject)
 	LNResult LNSound_SetLoopRange(LN_HANDLE(LNSound) sound, int begin, int length);
 
 	/**
-		@brief		サウンドを 3D 音源として再生するかを設定します。
+		@brief		サウンドを 3D 音源であるかを設定します。
 		@param[in]	sound		: サウンドハンドル
 		@param[in]	enabled		: LN_TRUE = 3D音声 / LN_FALSE = 非3D
 	*/

@@ -70,13 +70,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\LightNote\LNote.dll">
-      <Link>LNote.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="..\..\..\lib\LuminoC_x86uMT.dll">
+      <Link>LuminoC_x86uMT.dll</Link>
     </Content>
-    <Content Include="..\..\LightNote\LNote_d.dll">
-      <Link>LNote_d.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="..\..\..\lib\LuminoC_x86uMTd.dll">
+      <Link>LuminoC_x86uMTd.dll</Link>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
