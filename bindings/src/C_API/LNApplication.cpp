@@ -1,5 +1,6 @@
 ﻿
 #include "LNInternal.h"
+#include <Lumino/Version.h>
 #include "LNApplication.h"
 
 extern "C" {
@@ -189,5 +190,61 @@ void LNApplication_Terminate()
 //{
 //	return LFManager::CoreManager;
 //}
+
+
+
+//=============================================================================
+// NVersion
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNVersion_GetMajor(int* outMajor)
+{
+	if (outMajor != NULL) {
+		*outMajor = Version::GetMajor();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNVersion_GetMinor(int* outMinor)
+{
+	if (outMinor != NULL) {
+		*outMinor = Version::GetMinor();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNVersion_GetRevision(int* outRevision)
+{
+	if (outRevision != NULL) {
+		*outRevision = Version::GetRevision();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNVersion_GetString(const LNChar** outStr)
+{
+	if (outStr != NULL) {
+		*outStr = Version::GetString();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void LNVersion_IsAtLeast(int major, int minor, int revision, LNBool* outResult)
+{
+	if (outResult != NULL) {
+		*outResult = LNC_TO_LNBOOL(Version::IsAtLeast(major, minor, revision));
+	}
+}
 
 } // extern "C"

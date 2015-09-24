@@ -72,9 +72,11 @@
   <ItemGroup>
     <Content Include="..\..\..\lib\LuminoC_x86uMT.dll">
       <Link>LuminoC_x86uMT.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\..\lib\LuminoC_x86uMTd.dll">
       <Link>LuminoC_x86uMTd.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

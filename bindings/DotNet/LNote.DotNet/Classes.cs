@@ -106,30 +106,104 @@ namespace LN
     };
     
     /// <summary>
-    /// ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+    /// Lumino ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
     /// </summary>
     public partial class Application
     {
     
     
         /// <summary>
-        /// アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+        /// Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         public static void InitializeAudio()
         {
             InternalManager.Initialize();
             var result = API.LNApplication_InitializeAudio();
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
         /// <summary>
-        /// LightNote の終了処理を行います。
+        /// Lumino ライブラリの終了処理を行います。
         /// </summary>
-        public static void Finalize()
+        public static void Terminate()
         {
-            API.LNApplication_Finalize();
+            API.LNApplication_Terminate();
             InternalManager.Terminate();
+        
+        }
+        
+    
+    };
+    
+    /// <summary>
+    /// バージョン情報です。
+    /// </summary>
+    public partial class Version
+    {
+    
+    
+        /// <summary>
+        /// メジャーバージョンを取得します。
+        /// </summary>
+        public static int GetMajor()
+        {
+            var outMajor = new int();
+            API.LNVersion_GetMajor(out outMajor);
+            return outMajor;
+        
+        }
+        
+        /// <summary>
+        /// マイナーバージョンを取得します。
+        /// </summary>
+        public static int GetMinor()
+        {
+            var outMinor = new int();
+            API.LNVersion_GetMinor(out outMinor);
+            return outMinor;
+        
+        }
+        
+        /// <summary>
+        /// リビジョンバージョンを取得します。
+        /// </summary>
+        public static int GetRevision()
+        {
+            var outRevision = new int();
+            API.LNVersion_GetRevision(out outRevision);
+            return outRevision;
+        
+        }
+        
+        /// <summary>
+        /// バージョン文字列の取得を取得します。
+        /// </summary>
+        public static string GetString()
+        {
+            IntPtr strPtr;
+            API.LNVersion_GetString(out strPtr);
+            int len;
+            API.LCSInternal_GetIntPtrStringLength(strPtr, out len);
+            var sb = new StringBuilder(len + 1);
+            API.LCSInternal_GetIntPtrString(strPtr, sb);
+            return sb.ToString();
+        }
+        
+        /// <summary>
+        /// 指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+        /// </summary>
+        /// <param name="major">メジャーバージョン</param>
+        /// <param name="minor">マイナーバージョン</param>
+        /// <param name="revision">リビジョンバージョン</param>
+        /// <remarks>
+        /// 指定バージョン >= コンパイルバージョン である場合、true となります。
+        /// </remarks>
+        public static bool IsAtLeast( int major,  int minor,  int revision)
+        {
+            var outResult = new bool();
+            API.LNVersion_IsAtLeast( major,  minor,  revision, out outResult);
+            return outResult;
         
         }
         
@@ -153,7 +227,7 @@ namespace LN
         public static void PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGM( filePath,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -168,7 +242,7 @@ namespace LN
         public static void PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -179,7 +253,7 @@ namespace LN
         public static void StopBGM( double fadeTime = 0.0)
         {
             var result = API.LNAudio_StopBGM( fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -193,7 +267,7 @@ namespace LN
         public static void PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGS( filePath,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -208,7 +282,7 @@ namespace LN
         public static void PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -219,7 +293,7 @@ namespace LN
         public static void StopBGS( double fadeTime = 0.0)
         {
             var result = API.LNAudio_StopBGS( fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -232,7 +306,7 @@ namespace LN
         public static void PlayME( string filePath,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlayME( filePath,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -246,7 +320,7 @@ namespace LN
         public static void PlayMEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlayMEMem( data,  dataSize,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -256,7 +330,7 @@ namespace LN
         public static void StopME()
         {
             var result = API.LNAudio_StopME();
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -269,7 +343,7 @@ namespace LN
         public static void PlaySE( string filePath,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE( filePath,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -284,7 +358,7 @@ namespace LN
         public static void PlaySE3D( string filePath,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3D( filePath, ref position,  distance,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -301,7 +375,7 @@ namespace LN
         public static void PlaySE3D( string filePath,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DXYZ( filePath,  x,  y,  z,  distance,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -315,7 +389,7 @@ namespace LN
         public static void PlaySEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySEMem( data,  dataSize,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -331,7 +405,7 @@ namespace LN
         public static void PlaySE3DMem( byte[] data,  int dataSize,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DMem( data,  dataSize, ref position,  distance,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -349,7 +423,7 @@ namespace LN
         public static void PlaySE3DMem( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
         {
             var result = API.LNAudio_PlaySE3DMemXYZ( data,  dataSize,  x,  y,  z,  distance,  volume,  pitch);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -359,7 +433,7 @@ namespace LN
         public static void StopSE()
         {
             var result = API.LNAudio_StopSE();
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -371,7 +445,7 @@ namespace LN
         public static void SetBGMVolume( int volume,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_SetBGMVolume( volume,  fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -383,7 +457,7 @@ namespace LN
         public static void SetBGSVolume( int volume,  double fadeTime = 0.0)
         {
             var result = API.LNAudio_SetBGSVolume( volume,  fadeTime);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -404,7 +478,7 @@ namespace LN
             set
             {
                 var result = API.LNSoundListener_SetPosition(ref value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -417,7 +491,7 @@ namespace LN
             set
             {
                 var result = API.LNSoundListener_SetDirection(ref value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -430,7 +504,7 @@ namespace LN
             set
             {
                 var result = API.LNSoundListener_SetUpDirection(ref value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -443,7 +517,7 @@ namespace LN
             set
             {
                 var result = API.LNSoundListener_SetVelocity(ref value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -458,7 +532,7 @@ namespace LN
         public static void SetPositionXYZ( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetPositionXYZ( x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -471,7 +545,7 @@ namespace LN
         public static void SetDirection( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetDirectionXYZ( x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -484,7 +558,7 @@ namespace LN
         public static void SetUpDirection( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetUpDirectionXYZ( x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -497,7 +571,7 @@ namespace LN
         public static void SetVelocity( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetVelocityXYZ( x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -519,7 +593,7 @@ namespace LN
             {
                 var outVolume = new int();
                 var result = API.LNSound_GetVolume( _handle, out outVolume);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outVolume;
             
             }
@@ -527,7 +601,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetVolume( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -541,7 +615,7 @@ namespace LN
             {
                 var outPitch = new int();
                 var result = API.LNSound_GetPitch( _handle, out outPitch);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outPitch;
             
             }
@@ -549,7 +623,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetPitch( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -563,7 +637,7 @@ namespace LN
             {
                 var outEnabled = new bool();
                 var result = API.LNSound_IsLoopEnabled( _handle, out outEnabled);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outEnabled;
             
             }
@@ -571,7 +645,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetLoopEnabled( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -587,7 +661,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetLoopRange( _handle,  value,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -601,7 +675,7 @@ namespace LN
             {
                 var outEnabled = new bool();
                 var result = API.LNSound_Is3DEnabled( _handle, out outEnabled);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outEnabled;
             
             }
@@ -609,7 +683,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_Set3DEnabled( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -623,7 +697,7 @@ namespace LN
             {
                 var outMode = new SoundPlayingMode();
                 var result = API.LNSound_GetPlayingMode( _handle, out outMode);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outMode;
             
             }
@@ -631,7 +705,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetPlayingMode( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -645,7 +719,7 @@ namespace LN
             {
                 var outState = new SoundPlayingState();
                 var result = API.LNSound_GetPlayingState( _handle, out outState);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outState;
             
             }
@@ -660,7 +734,7 @@ namespace LN
             {
                 var outSamples = new long();
                 var result = API.LNSound_GetPlayedSamples( _handle, out outSamples);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outSamples;
             
             }
@@ -675,7 +749,7 @@ namespace LN
             {
                 var outSamples = new long();
                 var result = API.LNSound_GetTotalSamples( _handle, out outSamples);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outSamples;
             
             }
@@ -690,7 +764,7 @@ namespace LN
             {
                 var outRate = new int();
                 var result = API.LNSound_GetSamplingRate( _handle, out outRate);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outRate;
             
             }
@@ -704,7 +778,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetEmitterPosition( _handle, ref value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -717,7 +791,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetEmitterVelocity( _handle, ref value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -730,7 +804,7 @@ namespace LN
             set
             {
                 var result = API.LNSound_SetEmitterMaxDistance( _handle,  value);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
             
             }
             
@@ -746,7 +820,7 @@ namespace LN
         {
             IntPtr sound;
             var result = API.LNSound_Create( filePath, out sound);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             InternalManager.RegisterWrapperObject(this, sound);
         
         }
@@ -760,7 +834,7 @@ namespace LN
         {
             IntPtr sound;
             var result = API.LNSound_CreateMem( data,  dataSize, out sound);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             InternalManager.RegisterWrapperObject(this, sound);
         
         }
@@ -771,7 +845,7 @@ namespace LN
         public void Play()
         {
             var result = API.LNSound_Play( _handle);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -781,7 +855,7 @@ namespace LN
         public void Stop()
         {
             var result = API.LNSound_Stop( _handle);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -791,7 +865,7 @@ namespace LN
         public void Pause()
         {
             var result = API.LNSound_Pause( _handle);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -801,7 +875,7 @@ namespace LN
         public void Resume()
         {
             var result = API.LNSound_Resume( _handle);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -814,7 +888,7 @@ namespace LN
         public void FadeVolume( int targetVolume,  double time,  SoundFadeBehavior behavior)
         {
             var result = API.LNSound_FadeVolume( _handle,  targetVolume,  time,  behavior);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -827,7 +901,7 @@ namespace LN
         public void SetEmitterPosition( float x,  float y,  float z)
         {
             var result = API.LNSound_SetEmitterPositionXYZ( _handle,  x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         
@@ -840,7 +914,7 @@ namespace LN
         public void SetEmitterVelocity( float x,  float y,  float z)
         {
             var result = API.LNSound_SetEmitterVelocityXYZ( _handle,  x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         
         }
         

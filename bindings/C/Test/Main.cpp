@@ -20,7 +20,7 @@ int main()
 
 	getchar();
 
-	LNApplication_Finalize();
+	LNApplication_Terminate();
 	return 0;
 }
 

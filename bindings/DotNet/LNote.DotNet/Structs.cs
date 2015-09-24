@@ -23,7 +23,7 @@ namespace LN
             {
                 var outLength = new float();
                 var result = API.LNVector2_GetLength(ref this, out outLength);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outLength;
             }
             
@@ -38,7 +38,7 @@ namespace LN
             {
                 var outLength = new float();
                 var result = API.LNVector2_GetSquareLength(ref this, out outLength);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outLength;
             }
             
@@ -53,7 +53,7 @@ namespace LN
         public void Set( float x,  float y)
         {
             var result = API.LNVector2_Set(ref this,  x,  y);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -64,7 +64,7 @@ namespace LN
         {
             var outVec = new Vector2();
             var result = API.LNVector2_Normalize(ref vec, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -74,7 +74,7 @@ namespace LN
         public void Normalize()
         {
             var result = API.LNVector2_NormalizeV(ref this);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
     
@@ -102,7 +102,7 @@ namespace LN
             {
                 var outLength = new float();
                 var result = API.LNVector3_GetLength(ref this, out outLength);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outLength;
             }
             
@@ -117,7 +117,7 @@ namespace LN
             {
                 var outLength = new float();
                 var result = API.LNVector3_GetSquareLength(ref this, out outLength);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outLength;
             }
             
@@ -133,7 +133,7 @@ namespace LN
         public void Set( float x,  float y,  float z)
         {
             var result = API.LNVector3_Set(ref this,  x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -144,7 +144,7 @@ namespace LN
         public void SetVZ( Vector2 vec2,  float z)
         {
             var result = API.LNVector3_SetVZ(out this, ref vec2,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -155,7 +155,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Normalize(ref vec, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -165,7 +165,7 @@ namespace LN
         public void Normalize()
         {
             var result = API.LNVector3_NormalizeV(ref this);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -177,7 +177,7 @@ namespace LN
         {
             var dot = new float();
             var result = API.LNVector3_Dot(ref vec1, ref vec2, out dot);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return dot;
         }
         
@@ -190,7 +190,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Cross(ref vec1, ref vec2, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -203,7 +203,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Reflect(ref vec, ref normal, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -216,7 +216,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Slide(ref vec, ref normal, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -230,7 +230,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Lerp(ref vec1, ref vec2,  t, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -246,7 +246,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_CatmullRom(ref vec1, ref vec2, ref vec3, ref vec4,  t, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -265,7 +265,7 @@ namespace LN
         {
             var outVec = new Vector4();
             var result = API.LNVector3_Transform(ref vec, ref mat, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -282,7 +282,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNVector3_TransformCoord(ref vec, ref mat, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -315,7 +315,7 @@ namespace LN
         public void Set( float x,  float y,  float z,  float w)
         {
             var result = API.LNVector4_Set(ref this,  x,  y,  z,  w);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
     
@@ -369,7 +369,7 @@ namespace LN
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetRight(ref this, out outVec);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outVec;
             }
             
@@ -384,7 +384,7 @@ namespace LN
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetUp(ref this, out outVec);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outVec;
             }
             
@@ -399,7 +399,7 @@ namespace LN
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetFront(ref this, out outVec);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outVec;
             }
             
@@ -414,7 +414,7 @@ namespace LN
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetPosition(ref this, out outVec);
-                if (result != Result.OK) throw new LNoteException(result);
+                if (result != Result.OK) throw new LuminoException(result);
                 return outVec;
             }
             
@@ -427,7 +427,7 @@ namespace LN
         public void Identity()
         {
             var result = API.LNMatrix_Identity(out this);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -442,7 +442,7 @@ namespace LN
         public void Translate( float x,  float y,  float z)
         {
             var result = API.LNMatrix_Translate(ref this,  x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -455,7 +455,7 @@ namespace LN
         public void TranslateVec3( Vector3 vec)
         {
             var result = API.LNMatrix_TranslateVec3(ref this, ref vec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -468,7 +468,7 @@ namespace LN
         public void RotateX( float radian)
         {
             var result = API.LNMatrix_RotateX(ref this,  radian);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -481,7 +481,7 @@ namespace LN
         public void RotateY( float radian)
         {
             var result = API.LNMatrix_RotateY(ref this,  radian);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -494,7 +494,7 @@ namespace LN
         public void RotateZ( float radian)
         {
             var result = API.LNMatrix_RotateZ(ref this,  radian);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -510,7 +510,7 @@ namespace LN
         public void Rotate( float xRad,  float yRad,  float zRad,  RotationOrder rotOrder = RotationOrder.XYZ)
         {
             var result = API.LNMatrix_Rotate(ref this,  xRad,  yRad,  zRad,  rotOrder);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -524,7 +524,7 @@ namespace LN
         public void RotateVec3( Vector3 vec,  RotationOrder rotOrder = RotationOrder.XYZ)
         {
             var result = API.LNMatrix_RotateVec3(ref this, ref vec,  rotOrder);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -539,7 +539,7 @@ namespace LN
         public void RotateAxis( Vector3 axis,  float radian)
         {
             var result = API.LNMatrix_RotateAxis(ref this, ref axis,  radian);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -552,7 +552,7 @@ namespace LN
         public void RotateQuaternion( Quaternion qua)
         {
             var result = API.LNMatrix_RotateQuaternion(ref this, ref qua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -565,7 +565,7 @@ namespace LN
         public void Scale( float xyz)
         {
             var result = API.LNMatrix_Scale(ref this,  xyz);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -580,7 +580,7 @@ namespace LN
         public void ScaleXYZ( float x,  float y,  float z)
         {
             var result = API.LNMatrix_ScaleXYZ(ref this,  x,  y,  z);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -593,7 +593,7 @@ namespace LN
         public void ScaleVec3( Vector3 scale)
         {
             var result = API.LNMatrix_ScaleVec3(ref this, ref scale);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -605,7 +605,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_Multiply(ref mat1, ref mat2, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -617,7 +617,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_Inverse(ref mat, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -629,7 +629,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_Transpose(ref mat, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -643,7 +643,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_ViewTransformLH(ref pos, ref lookAt, ref upDir, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -657,7 +657,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_ViewTransformRH(ref pos, ref lookAt, ref upDir, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -672,7 +672,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_PerspectiveFovLH( fovY,  aspect,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -687,7 +687,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_PerspectiveFovRH( fovY,  aspect,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -702,7 +702,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_OrthoLH( width,  height,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -717,7 +717,7 @@ namespace LN
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_OrthoRH( width,  height,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return matOut;
         }
         
@@ -728,7 +728,7 @@ namespace LN
         {
             var outVec = new Vector3();
             var result = API.LNMatrix_GetEulerAngles(ref this, out outVec);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outVec;
         }
         
@@ -741,7 +741,7 @@ namespace LN
         {
             var trans = new Vector3();
             var result = API.LNMatrix_Decompose(ref this, out scale, out rot, out trans);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return trans;
         }
         
@@ -774,7 +774,7 @@ namespace LN
         public void Set( float x,  float y,  float z,  float w)
         {
             var result = API.LNQuaternion_Set(ref this,  x,  y,  z,  w);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
         }
         
         /// <summary>
@@ -784,7 +784,7 @@ namespace LN
         {
             var qua = new Quaternion();
             var result = API.LNQuaternion_Identity(out qua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return qua;
         }
         
@@ -800,7 +800,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_RotationAxis(ref axis,  r, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         
@@ -812,7 +812,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_RotationMatrix(ref mat, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         
@@ -826,7 +826,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_RotationYawPitchRoll( yaw,  pitch,  roll, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         
@@ -838,7 +838,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Normalize(ref qua, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         
@@ -850,7 +850,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Conjugate(ref qua, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         
@@ -863,7 +863,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Multiply(ref qua1, ref qua2, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         
@@ -877,7 +877,7 @@ namespace LN
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Slerp(ref qua1, ref qua2,  t, out outQua);
-            if (result != Result.OK) throw new LNoteException(result);
+            if (result != Result.OK) throw new LuminoException(result);
             return outQua;
         }
         

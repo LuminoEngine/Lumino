@@ -313,7 +313,7 @@ return {0};".Trim();
                 if (method.FuncDecl.ReturnType == Manager.ResultEnumType)
                 {
                     preErrorStmt = "var result = ";
-                    postErrorStmt = "if (result != Result.OK) throw new LNoteException(result);" + OutputBuffer.NewLineCode;
+                    postErrorStmt = "if (result != Result.OK) throw new LuminoException(result);" + OutputBuffer.NewLineCode;
                 }
 
                 // Terminator の場合は終了処理を埋め込む

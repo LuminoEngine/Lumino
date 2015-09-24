@@ -934,11 +934,11 @@ namespace LN
     {
     
 #if DEBUG
-    	internal const string DLLName = "LNote_d.dll";
+    	internal const string DLLName = "LuminoC_x86uMTd.dll";
 #else
-    	internal const string DLLName = "LNote.dll";
+    	internal const string DLLName = "LuminoC_x86uMT.dll";
 #endif
-        internal const CharSet DLLCharSet = CharSet.Ansi;
+        internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
         /// <summary>
@@ -1035,16 +1035,54 @@ namespace LN
         public extern static void LNConfig_SetDirectMusicReverbLevel( int level);
 
         /// <summary>
-        /// アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+        /// Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNApplication_InitializeAudio();
 
         /// <summary>
-        /// LightNote の終了処理を行います。
+        /// Lumino ライブラリの終了処理を行います。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNApplication_Finalize();
+        public extern static void LNApplication_Terminate();
+
+        /// <summary>
+        /// メジャーバージョンを取得します。
+        /// </summary>
+        /// <param name="outMajor">バージョン番号を格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNVersion_GetMajor(out int outMajor);
+
+        /// <summary>
+        /// マイナーバージョンを取得します。
+        /// </summary>
+        /// <param name="outMinor">バージョン番号を格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNVersion_GetMinor(out int outMinor);
+
+        /// <summary>
+        /// リビジョンバージョンを取得します。
+        /// </summary>
+        /// <param name="outRevision">バージョン番号を格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNVersion_GetRevision(out int outRevision);
+
+        /// <summary>
+        /// バージョン文字列の取得を取得します。
+        /// </summary>
+        /// <param name="outStr">文字列へのアドレスを格納する変数のアドレス。</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNVersion_GetString(out IntPtr outStr);
+
+        /// <summary>
+        /// 指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+        /// </summary>
+        /// <param name="major">メジャーバージョン</param>
+        /// <param name="minor">マイナーバージョン</param>
+        /// <param name="revision">リビジョンバージョン</param>
+        /// <param name="outResult">結果を格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNVersion_IsAtLeast( int major,  int minor,  int revision, out bool outResult);
 
         /// <summary>
         /// 2D ベクトルの長さを計算します。

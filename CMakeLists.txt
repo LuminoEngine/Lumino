@@ -392,6 +392,7 @@ set(LN_SOURCES_Application
 	include/Lumino/Property.h
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
+	include/Lumino/Version.h
 	src/Application.cpp
 	src/ApplicationContext.cpp
 	src/ApplicationContext.h
@@ -402,6 +403,7 @@ set(LN_SOURCES_Application
 	src/Property.cpp
 	src/RoutedEvent.cpp
 	src/Variant.cpp
+	src/Version.cpp
 )
 
 #--------------------------------------

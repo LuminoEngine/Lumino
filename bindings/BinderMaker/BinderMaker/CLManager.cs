@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -314,6 +315,25 @@ namespace BinderMaker
         //    newName = name;
         //    return false;
         //}
+
+        
+        [DllImport("../../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private extern static void LNVersion_GetString(out IntPtr outStr);
+
+        [DllImport("../../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private extern static void LCSInternal_GetIntPtrStringLength(IntPtr str, out int len);
+        
+        [DllImport("../../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private extern static void LCSInternal_GetIntPtrString(IntPtr str, StringBuilder buf);
+
+        public static string GetLibararyVersion()
+        {
+            IntPtr str;
+            var b = new StringBuilder(128);
+            LNVersion_GetString(out str);
+            LCSInternal_GetIntPtrString(str, b);
+            return b.ToString();
+        }
 
         #endregion
     }

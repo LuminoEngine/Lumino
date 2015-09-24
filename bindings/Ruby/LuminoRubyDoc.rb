@@ -516,15 +516,43 @@ class LN::Config
     def set_direct_music_reverb_level
     end
 end
-# ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+# Lumino ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
 class LN::Application
-    # アプリケーションを初期化します。音声機能のみを使用する場合に呼び出します。
+    # Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
     # @overload initialize_audio()
     def initialize_audio
     end
-    # LightNote の終了処理を行います。
-    # @overload finalize()
-    def finalize
+    # Lumino ライブラリの終了処理を行います。
+    # @overload terminate()
+    def terminate
+    end
+end
+# バージョン情報です。
+class LN::Version
+    # メジャーバージョンを取得します。
+    # @overload get_major()
+    def get_major
+    end
+    # マイナーバージョンを取得します。
+    # @overload get_minor()
+    def get_minor
+    end
+    # リビジョンバージョンを取得します。
+    # @overload get_revision()
+    def get_revision
+    end
+    # バージョン文字列の取得を取得します。
+    # @overload get_string()
+    def get_string
+    end
+    # 指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+    # @overload at_least?(major, minor, revision)
+    #   　
+    #     指定バージョン >= コンパイルバージョン である場合、LN_TRUE となります。
+    #   @param [Integer] major メジャーバージョン
+    #   @param [Integer] minor マイナーバージョン
+    #   @param [Integer] revision リビジョンバージョン
+    def at_least?
     end
 end
 # 2次元のベクトルのクラスです。

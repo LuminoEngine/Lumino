@@ -12,11 +12,11 @@ ENUM_LIST
     {
     
 #if DEBUG
-    	internal const string DLLName = "LNote_d.dll";
+    	internal const string DLLName = "LuminoC_x86uMTd.dll";
 #else
-    	internal const string DLLName = "LNote.dll";
+    	internal const string DLLName = "LuminoC_x86uMT.dll";
 #endif
-        internal const CharSet DLLCharSet = CharSet.Ansi;
+        internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
 API_LIST

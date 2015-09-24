@@ -201,7 +201,7 @@ namespace BinderMaker.Builder
             if (method.FuncDecl.ReturnType == Manager.ResultEnumType)
             {
                 preErrorStmt = "var result = ";
-                postErrorStmt = "if (result != Result.OK) throw new LNoteException(result);" + OutputBuffer.NewLineCode;
+                postErrorStmt = "if (result != Result.OK) throw new LuminoException(result);" + OutputBuffer.NewLineCode;
             }
 
             // 定義文を結合

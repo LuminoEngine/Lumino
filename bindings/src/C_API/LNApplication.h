@@ -103,6 +103,53 @@ LN_STATIC_CLASS(LNApplication)
 
 LN_CLASS_END
 
+//=============================================================================
+/**
+	@brief	バージョン情報です。
+*/
+LN_STATIC_CLASS(LNVersion)
+
+	/**
+		@brief		メジャーバージョンを取得します。
+		@param[out]	outMajor	: バージョン番号を格納する変数のアドレス
+	*/
+	LN_STATIC_API
+	void LNVersion_GetMajor(int* outMajor);
+
+	/**
+		@brief		マイナーバージョンを取得します。
+		@param[out]	outMinor	: バージョン番号を格納する変数のアドレス
+	*/
+	LN_STATIC_API
+	void LNVersion_GetMinor(int* outMinor);
+
+	/**
+		@brief		リビジョンバージョンを取得します。
+		@param[out]	outRevision	: バージョン番号を格納する変数のアドレス
+	*/
+	LN_STATIC_API
+	void LNVersion_GetRevision(int* outRevision);
+
+	/**
+		@brief		バージョン文字列の取得を取得します。
+		@param[out]	outStr	: 文字列へのアドレスを格納する変数のアドレス。
+	*/
+	LN_STATIC_API
+	void LNVersion_GetString(const LNChar** outStr);
+
+	/**
+		@brief		指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+		@param[in]	major		: メジャーバージョン
+		@param[in]	minor		: マイナーバージョン
+		@param[in]	revision	: リビジョンバージョン
+		@param[out]	outResult	: 結果を格納する変数のアドレス
+		@details	指定バージョン >= コンパイルバージョン である場合、LN_TRUE となります。
+	*/
+	LN_STATIC_API
+	void LNVersion_IsAtLeast(int major, int minor, int revision, LNBool* outResult);
+
+LN_CLASS_END
+
 LN_MODULE_END
 
 } // extern "C"

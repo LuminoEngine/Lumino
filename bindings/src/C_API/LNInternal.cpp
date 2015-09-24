@@ -17,20 +17,20 @@ LN_API void LCSInternal_GetIntPtrStringLength(int string, int* len)
 		*len = 0;
 		return;
 	}
-	*len = strlen((const char*)string);
+	*len = _tcslen((const LNChar*)string);
 }
 
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-LN_API void LCSInternal_GetIntPtrString(int string, char* buf)
+LN_API void LCSInternal_GetIntPtrString(int string, LNChar* buf)
 {
 	if (string == 0 || buf == NULL)
 		return;
 
 	int len;
 	LCSInternal_GetIntPtrStringLength(string, &len);
-	memcpy(buf, (const char*)string, len);
+	memcpy(buf, (const LNChar*)string, len * sizeof(LNChar));
 }
 
 //------------------------------------------------------------------------------
@@ -42,20 +42,20 @@ LN_API void LHSPInternal_GetIntPtrStringLength(int string, int* len)
 		*len = 0;
 		return;
 	}
-	*len = strlen((const char*)string);
+	*len = _tcslen((const LNChar*)string);
 }
 
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-LN_API void LHSPInternal_GetIntPtrString(int string, char* buf)
+LN_API void LHSPInternal_GetIntPtrString(int string, LNChar* buf)
 {
 	if (string == 0 || buf == NULL)
 		return;
 
 	int len;
 	LHSPInternal_GetIntPtrStringLength(string, &len);
-	memcpy(buf, (const char*)string, len);
+	memcpy(buf, (const LNChar*)string, len * sizeof(LNChar));
 }
 
 

@@ -6,7 +6,7 @@ namespace LN
     /// <summary>
     /// ライブラリ内部で発生した例外
     /// </summary>
-    public class LNoteException : Exception
+    public class LuminoException : Exception
     {
         /// <summary>
         /// 結果コード
@@ -17,7 +17,7 @@ namespace LN
         /// コンストラクタ
         /// </summary>
         /// <param name=""resultCode"">結果コード</param>
-        public LNoteException(Result resultCode)
+        public LuminoException(Result resultCode)
         {
             ResultCode = resultCode;
         }

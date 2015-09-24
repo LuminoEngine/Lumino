@@ -492,4 +492,5 @@ bool Application::UpdateFrame()
 	return ApplicationImpl::Instance->UpdateFrame();
 }
 
+
 } // namespace Lumino

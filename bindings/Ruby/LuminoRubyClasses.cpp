@@ -48,6 +48,11 @@ struct wrapApplication
 
 };
 
+struct wrapVersion
+{
+
+};
+
 struct wrapAudio
 {
 
@@ -69,6 +74,7 @@ struct wrapSound
 VALUE g_class_Error;
 VALUE g_class_Config;
 VALUE g_class_Application;
+VALUE g_class_Version;
 VALUE g_class_Audio;
 VALUE g_class_SoundListener;
 VALUE g_class_Sound;
@@ -281,16 +287,97 @@ static VALUE static_lnrbLNApplication_InitializeAudio(int argc, VALUE *argv, VAL
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_Finalize(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNApplication_Terminate(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNApplication_Finalize();
+            LNApplication_Terminate();
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Application.finalize - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Application.terminate - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNVersion_GetMajor(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            int _outMajor;
+            LNVersion_GetMajor(&_outMajor);
+            return toVALUE(_outMajor);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Version.get_major - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNVersion_GetMinor(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            int _outMinor;
+            LNVersion_GetMinor(&_outMinor);
+            return toVALUE(_outMinor);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Version.get_minor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNVersion_GetRevision(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            int _outRevision;
+            LNVersion_GetRevision(&_outRevision);
+            return toVALUE(_outRevision);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Version.get_revision - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNVersion_GetString(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            const LNChar* _outStr;
+            LNVersion_GetString(&_outStr);
+            return toVALUE(_outStr);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Version.get_string - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
+{
+    if (3 <= argc && argc <= 3) {
+        VALUE major;
+        VALUE minor;
+        VALUE revision;
+        rb_scan_args(argc, argv, "3", &major, &minor, &revision);
+        if (isRbNumber(major) && isRbNumber(minor) && isRbNumber(revision)) {
+            int _major = FIX2INT(major);
+            int _minor = FIX2INT(minor);
+            int _revision = FIX2INT(revision);
+            LNBool _outResult;
+            LNVersion_IsAtLeast(_major, _minor, _revision, &_outResult);
+            return toVALUE(_outResult);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Version.at_least? - wrong argument type.");
     return Qnil;
 }
 
@@ -1165,7 +1252,14 @@ void InitClasses()
 
     g_class_Application = rb_define_class_under(g_luminoModule, "Application", rb_cObject);
     rb_define_singleton_method(g_class_Application, "initialize_audio", LN_TO_RUBY_FUNC(static_lnrbLNApplication_InitializeAudio), -1);
-    rb_define_singleton_method(g_class_Application, "finalize", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Finalize), -1);
+    rb_define_singleton_method(g_class_Application, "terminate", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Terminate), -1);
+
+    g_class_Version = rb_define_class_under(g_luminoModule, "Version", rb_cObject);
+    rb_define_singleton_method(g_class_Version, "get_major", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetMajor), -1);
+    rb_define_singleton_method(g_class_Version, "get_minor", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetMinor), -1);
+    rb_define_singleton_method(g_class_Version, "get_revision", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetRevision), -1);
+    rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
+    rb_define_singleton_method(g_class_Version, "at_least?", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
 
     g_class_Audio = rb_define_class_under(g_luminoModule, "Audio", rb_cObject);
     rb_define_singleton_method(g_class_Audio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlayBGM), -1);
