@@ -48,7 +48,7 @@ namespace BinderMaker.Builder
                 _fieldsText.AppendLine("public {0} {1};", CSCommon.MakeTypeName(member.Type), member.Name).NewLine();
             }
 
-#if false   // C_API の Create をコンストラクタとするようにした。
+#if true
             // 各要素指定のコンストラクタを作る
             {
                 // XML コメント

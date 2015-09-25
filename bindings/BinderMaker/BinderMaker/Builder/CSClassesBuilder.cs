@@ -318,7 +318,7 @@ return {0};".Trim();
 
                 // Terminator の場合は終了処理を埋め込む
                 if (method.IsLibraryTerminator)
-                    postStmtText.AppendWithIndent("InternalManager.Terminate();").NewLine();
+                    initStmtText.AppendLine("InternalManager.Terminate();");
 
                 // 定義文を結合
                 output.AppendWithIndent("{").NewLine();

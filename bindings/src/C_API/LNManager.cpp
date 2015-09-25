@@ -13,7 +13,7 @@ Lumino::ApplicationImpl*	LFManager::Application = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;
 LNResult					LFManager::LastErrorCode = LN_OK;
-EncodingConverter			LFManager::TCharToUTF8Converter;
+EncodingConverter*			LFManager::TCharToUTF8Converter = NULL;
 
 LFManager::ObjectEntryList	LFManager::m_objectEntryList;
 Stack<int>					LFManager::m_objectIndexStack;
@@ -36,6 +36,11 @@ void LFManager::PreInitialize()
 //-----------------------------------------------------------------------------
 void LFManager::PostInitialize()
 {
+	// 文字コード変換器
+	TCharToUTF8Converter = LN_NEW EncodingConverter();
+	TCharToUTF8Converter->SetSourceEncoding(Encoding::GetTCharEncoding());
+	TCharToUTF8Converter->SetDestinationEncoding(Encoding::GetUTF8Encoding());
+
 	// オブジェクト管理配列
 	for (int i = 0; i < 512; ++i)
 	{
@@ -48,10 +53,6 @@ void LFManager::PostInitialize()
 			m_objectIndexStack.Push(i);
 		}
 	}
-
-	// 文字コード変換器
-	TCharToUTF8Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
-	TCharToUTF8Converter.SetDestinationEncoding(Encoding::GetUTF8Encoding());
 }
 
 //-----------------------------------------------------------------------------
@@ -71,6 +72,7 @@ void LFManager::Terminate()
 	}
 
 	LN_SAFE_DELETE(LastException);
+	LN_SAFE_DELETE(TCharToUTF8Converter);
 
 	IsSystemInitialized = false;
 }

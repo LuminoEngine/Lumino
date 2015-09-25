@@ -65,7 +65,7 @@ LN_API void LHSPInternal_GetIntPtrString(int string, LNChar* buf)
 LN_API const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len)
 {
 	len = (len < 0) ? _tcslen(str) : len;
-	const ByteBuffer& buf = LFManager::TCharToUTF8Converter.Convert(str, len * sizeof(LNChar));
+	const ByteBuffer& buf = LFManager::TCharToUTF8Converter->Convert(str, len * sizeof(LNChar));
 	return (const char*)buf.GetConstData();
 }
 

@@ -62,7 +62,7 @@ public:
 	static bool							IsSystemInitialized;
 	static Exception*					LastException;
 	static LNResult						LastErrorCode;
-	static EncodingConverter			TCharToUTF8Converter;
+	static EncodingConverter*			TCharToUTF8Converter;
 
 private:
 	typedef Array<ObjectEntry>	ObjectEntryList;
