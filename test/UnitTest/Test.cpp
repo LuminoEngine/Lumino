@@ -1,7 +1,6 @@
 ﻿// なんか試したくなった時用テスト
 #include "TestConfig.h"
 #include "../../src/Graphics/Device/DeviceInterface.h"
-using namespace Lumino::Graphics;
 
 class Test_Temp : public ::testing::Test
 {

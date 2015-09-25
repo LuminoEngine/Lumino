@@ -35,12 +35,12 @@ public:
 	static Platform::PlatformManager*	Platform;
 	static Physics::PhysicsManager*	PhysicsManager;
 	static GraphicsManagerPtr			Manager;
-	static Renderer*		Renderer;
+	static Lumino::Renderer*		Renderer;
 	static SwapChain*		MainSwapChain;
 	static SceneGraphManager*		MMDSceneGraph;
 
 public:
-	static Renderer* BeginRendering();
+	static Lumino::Renderer* BeginRendering();
 	static void EndRendering();
 	static PathName MakeScreenShotPath(const char* fileName);
 	static void SaveScreenShot(const TCHAR* filePath);

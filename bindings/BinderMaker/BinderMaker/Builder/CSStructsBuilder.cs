@@ -179,12 +179,14 @@ namespace BinderMaker.Builder
             {
                 var param = method.ReturnParam;
 
+#if false   // 以前は "Set" をコンストラクタ扱いにしていたが、やめた
                 // コンストラクタの場合は out this 固定。
                 if (method.IsRefObjectConstructor)
                 {
                     argsText.AppendCommad("out this");
                 }
                 else
+#endif
                 {
                     // 一時変数初期化
                     initStmtText.AppendWithIndent("var {0} = new {1}();", param.Name, CSCommon.MakeTypeName(param.Type)).NewLine();

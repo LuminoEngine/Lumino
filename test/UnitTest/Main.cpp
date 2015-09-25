@@ -1,16 +1,46 @@
 #include "TestConfig.h"
 
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GTEST_API_ int main(int argc, char **argv)
+{
+
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	setlocale(LC_ALL, "");
+
+
+#if 1	// 部分的にテストを実行したりする
+	char* testArgs[] = {
+		argv[0],
+		"--gtest_filter=Test_Scene_Sprite.*"
+		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
+		//"--gtest_filter=Test_Graphics_Texture.Lock"
+	};
+	argc = sizeof(testArgs) / sizeof(char*);
+	testing::InitGoogleTest(&argc, (char**)testArgs);
+#else
+	testing::InitGoogleTest(&argc, argv);
+#endif
+	::testing::AddGlobalTestEnvironment(new TestEnv());
+	return RUN_ALL_TESTS();
+}
+
+#if 0
 Platform::PlatformManager*	TestEnv::Platform = NULL;
 Physics::PhysicsManager*	TestEnv::PhysicsManager = NULL;
 GraphicsManagerPtr			TestEnv::Manager;
-Renderer*			TestEnv::Renderer = NULL;
+Lumino::Renderer*			TestEnv::Renderer = NULL;
 SwapChain*		TestEnv::MainSwapChain = NULL;
 SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Renderer* TestEnv::BeginRendering()
+Lumino::Renderer* TestEnv::BeginRendering()
 {
 	Renderer* r = TestEnv::Renderer;
 	SwapChain* swap = TestEnv::MainSwapChain;
@@ -162,3 +192,4 @@ GTEST_API_ int main(int argc, char **argv)
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 	return RUN_ALL_TESTS();
 }
+#endif
