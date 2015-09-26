@@ -125,7 +125,7 @@ __CONTENTS__
         protected override bool OnClassLookedStart(CLClass classType)
         {
             if (classType.IsStruct) return false;
-            if (classType.Name == "ReferenceObject") return false;
+            if (classType.Name == "RefObject") return false;
 
             _currentClassInfo = new CurrentClassInfo();
 

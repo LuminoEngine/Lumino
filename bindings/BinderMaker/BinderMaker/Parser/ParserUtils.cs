@@ -89,7 +89,7 @@ namespace BinderMaker.Parser
         /// Doxygen の行コメント
         /// </summary>
         public static readonly Parser<string> DoxyLineComment2 =
-            from start in Parse.String("/**")
+            from start in Parse.String("/**<")
             //from comment in Parse.AnyChar.Until(Parse.String("*/")).Many()
             //select EmToString(comment);
             from comment in Parse.AnyChar.Except(Parse.String("*/")).Many().Text() // \n 以外の文字。\n は消費しない

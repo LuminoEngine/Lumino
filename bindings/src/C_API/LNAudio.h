@@ -305,7 +305,7 @@ LN_CLASS(LNSound, LNObject)
 	/**
 		@brief		ファイルからサウンドオブジェクトを作成します。
 		@param[in]	filePath	: 音声ファイルのパス
-		@param[out]	sound		: 作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス
+		@param[out]	sound		: 作成されたサウンドオブジェクトのハンドルを格納する変数のポインタ
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
@@ -315,7 +315,7 @@ LN_CLASS(LNSound, LNObject)
 		@brief		メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
 		@param[in]	data		: メモリ上の音声データへのポインタ
 		@param[in]	dataSize	: データサイズ (バイト単位)
-		@param[out]	sound		: 作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス
+		@param[out]	sound		: 作成されたサウンドオブジェクトのハンドルを格納する変数のポインタ
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
@@ -386,7 +386,6 @@ LN_CLASS(LNSound, LNObject)
 		@details	begin と length に 0 を指定すると、全体をループ領域として設定します。
 	*/
 	LN_INSTANCE_API
-	LN_ATTR_PROPERTY
 	LNResult LNSound_SetLoopRange(LN_HANDLE(LNSound) sound, int begin, int length);
 
 	/**
@@ -401,7 +400,7 @@ LN_CLASS(LNSound, LNObject)
 	/**
 		@brief		サウンドが 3D 音源であるかを確認します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	outEnabled	: 状態を格納する変数のアドレス (LN_TRUE = 3D音声 / LN_FALSE = 非 3D)
+		@param[out]	outEnabled	: 状態を格納する変数のポインタ (LN_TRUE = 3D音声 / LN_FALSE = 非 3D)
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
@@ -419,7 +418,7 @@ LN_CLASS(LNSound, LNObject)
 	/**
 		@brief		サウンド再生時の音声データの再生方法を取得します。
 		@param[in]	sound		: サウンドハンドル
-		@param[out]	outMode		: 再生方法を格納する変数のアドレス
+		@param[out]	outMode		: 再生方法を格納する変数のポインタ
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY

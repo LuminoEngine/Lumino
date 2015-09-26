@@ -33,7 +33,7 @@ bool checkEqualHandle(VALUE obj, LNHandle handle)
 
 
 struct wrapError
-    : public wrapReferenceObject
+    : public wrapRefObject
 {
 
 };
@@ -64,7 +64,7 @@ struct wrapSoundListener
 };
 
 struct wrapSound
-    : public wrapReferenceObject
+    : public wrapRefObject
 {
 
 };
@@ -377,7 +377,7 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
     
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Version.at_least? - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Version.is_at_least - wrong argument type.");
     return Qnil;
 }
 
@@ -877,7 +877,7 @@ static VALUE lnrbLNSound_SetLoopEnabled(int argc, VALUE *argv, VALUE self)
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Sound.loop_enabled= - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Sound.is_loop_enabled= - wrong argument type.");
     return Qnil;
 }
 
@@ -899,26 +899,6 @@ static VALUE lnrbLNSound_IsLoopEnabled(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
-static VALUE lnrbLNSound_SetLoopRange(int argc, VALUE *argv, VALUE self)
-{
-    wrapSound* selfObj;
-    Data_Get_Struct(self, wrapSound, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE begin;
-        VALUE length;
-        rb_scan_args(argc, argv, "2", &begin, &length);
-        if (isRbNumber(begin) && isRbNumber(length)) {
-            int _begin = FIX2INT(begin);
-            int _length = FIX2INT(length);
-            LNResult errorCode = LNSound_SetLoopRange(selfObj->Handle, _begin, _length);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Sound.loop_range= - wrong argument type.");
-    return Qnil;
-}
-
 static VALUE lnrbLNSound_Set3DEnabled(int argc, VALUE *argv, VALUE self)
 {
     wrapSound* selfObj;
@@ -933,7 +913,7 @@ static VALUE lnrbLNSound_Set3DEnabled(int argc, VALUE *argv, VALUE self)
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Sound.3d_enabled= - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Sound.is_3d_enabled= - wrong argument type.");
     return Qnil;
 }
 
@@ -1145,6 +1125,26 @@ static VALUE lnrbLNSound_SetEmitterMaxDistance(int argc, VALUE *argv, VALUE self
     return Qnil;
 }
 
+static VALUE lnrbLNSound_SetLoopRange(int argc, VALUE *argv, VALUE self)
+{
+    wrapSound* selfObj;
+    Data_Get_Struct(self, wrapSound, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE begin;
+        VALUE length;
+        rb_scan_args(argc, argv, "2", &begin, &length);
+        if (isRbNumber(begin) && isRbNumber(length)) {
+            int _begin = FIX2INT(begin);
+            int _length = FIX2INT(length);
+            LNResult errorCode = LNSound_SetLoopRange(selfObj->Handle, _begin, _length);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Sound.set_loop_range - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE lnrbLNSound_Play(int argc, VALUE *argv, VALUE self)
 {
     wrapSound* selfObj;
@@ -1259,7 +1259,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Version, "get_minor", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetMinor), -1);
     rb_define_singleton_method(g_class_Version, "get_revision", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetRevision), -1);
     rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
-    rb_define_singleton_method(g_class_Version, "at_least?", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
+    rb_define_singleton_method(g_class_Version, "is_at_least", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
 
     g_class_Audio = rb_define_class_under(g_luminoModule, "Audio", rb_cObject);
     rb_define_singleton_method(g_class_Audio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlayBGM), -1);
@@ -1288,10 +1288,9 @@ void InitClasses()
     rb_define_method(g_class_Sound, "volume", LN_TO_RUBY_FUNC(lnrbLNSound_GetVolume), -1);
     rb_define_method(g_class_Sound, "pitch=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPitch), -1);
     rb_define_method(g_class_Sound, "pitch", LN_TO_RUBY_FUNC(lnrbLNSound_GetPitch), -1);
-    rb_define_method(g_class_Sound, "loop_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopEnabled), -1);
+    rb_define_method(g_class_Sound, "is_loop_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopEnabled), -1);
     rb_define_method(g_class_Sound, "loop_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_IsLoopEnabled), -1);
-    rb_define_method(g_class_Sound, "loop_range=", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopRange), -1);
-    rb_define_method(g_class_Sound, "3d_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_Set3DEnabled), -1);
+    rb_define_method(g_class_Sound, "is_3d_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_Set3DEnabled), -1);
     rb_define_method(g_class_Sound, "is_3d_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_Is3DEnabled), -1);
     rb_define_method(g_class_Sound, "playing_mode=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPlayingMode), -1);
     rb_define_method(g_class_Sound, "playing_mode", LN_TO_RUBY_FUNC(lnrbLNSound_GetPlayingMode), -1);
@@ -1302,6 +1301,7 @@ void InitClasses()
     rb_define_method(g_class_Sound, "emitter_position=", LN_TO_RUBY_FUNC(lnrbLNSound_SetEmitterPosition), -1);
     rb_define_method(g_class_Sound, "emitter_velocity=", LN_TO_RUBY_FUNC(lnrbLNSound_SetEmitterVelocity), -1);
     rb_define_method(g_class_Sound, "emitter_max_distance=", LN_TO_RUBY_FUNC(lnrbLNSound_SetEmitterMaxDistance), -1);
+    rb_define_method(g_class_Sound, "set_loop_range", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopRange), -1);
     rb_define_method(g_class_Sound, "play", LN_TO_RUBY_FUNC(lnrbLNSound_Play), -1);
     rb_define_method(g_class_Sound, "stop", LN_TO_RUBY_FUNC(lnrbLNSound_Stop), -1);
     rb_define_method(g_class_Sound, "pause", LN_TO_RUBY_FUNC(lnrbLNSound_Pause), -1);

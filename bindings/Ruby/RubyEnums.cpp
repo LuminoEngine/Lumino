@@ -15,7 +15,6 @@ VALUE g_enum_DirectMusicMode;
 VALUE g_enum_SoundPlayingMode;
 VALUE g_enum_SoundPlayingState;
 VALUE g_enum_SoundFadeBehavior;
-VALUE g_enum_InternalGameSound;
 VALUE g_enum_BackbufferResizeMode;
 VALUE g_enum_TextureFormat;
 VALUE g_enum_BlendMode;
@@ -192,11 +191,6 @@ void InitEnums()
     rb_define_const(g_enum_SoundFadeBehavior, "STOP_RESET", INT2FIX(2));
     rb_define_const(g_enum_SoundFadeBehavior, "PAUSE", INT2FIX(3));
     rb_define_const(g_enum_SoundFadeBehavior, "PAUSE_RESET", INT2FIX(4));
-
-    g_enum_InternalGameSound = rb_define_module_under(g_luminoModule, "InternalGameSound");
-    rb_define_const(g_enum_InternalGameSound, "BGM", INT2FIX(0));
-    rb_define_const(g_enum_InternalGameSound, "BGS", INT2FIX(1));
-    rb_define_const(g_enum_InternalGameSound, "ME", INT2FIX(2));
 
     g_enum_BackbufferResizeMode = rb_define_module_under(g_luminoModule, "BackbufferResizeMode");
     rb_define_const(g_enum_BackbufferResizeMode, "SCALING", INT2FIX(0));

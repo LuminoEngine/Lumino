@@ -193,8 +193,8 @@ namespace BinderMaker
 
             // RefObject 型を探す
             ReferenceObjectClass = AllClasses.Find((e) => e.OriginalName == "LNObject");
-            if (ReferenceObjectClass  == null) throw new InvalidOperationException("not found ReferenceObjectClass.");
-            ReferenceObjectClass.Name = "ReferenceObject";  // 特殊な名前にする
+            if (ReferenceObjectClass == null) throw new InvalidOperationException("not found RefObject.");
+            ReferenceObjectClass.Name = "RefObject";  // 特殊な名前にする
 
             // CLType をリンクする
             foreach (var e in AllEntities)

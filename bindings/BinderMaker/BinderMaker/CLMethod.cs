@@ -70,9 +70,17 @@ namespace BinderMaker
         public CLOption Option { get; private set; }
 
         /// <summary>
-        /// メソッド名 (コンストラクタであれば親クラス名、そうでなければ関数名)
+        /// メソッド名 (コンストラクタであれば親クラス名、プロパティであればプロパティ名。そうでなければ関数名)
         /// </summary>
-        public string Name { get { return (IsRefObjectConstructor) ? OwnerClass.Name : FuncDecl.Name; } }
+        public string Name
+        {
+            get
+            {
+                //if (OwnerProperty != null)
+                //    return OwnerProperty.Name;
+                return (IsRefObjectConstructor) ? OwnerClass.Name : FuncDecl.Name;
+            }
+        }
 
         /// <summary>
         /// このメソッドをオーバーロードするメソッドリスト
@@ -141,6 +149,11 @@ namespace BinderMaker
         /// プロパティ種別
         /// </summary>
         public PropertyNameType PropertyNameType { get; set; }
+
+        /// <summary>
+        /// プロパティ
+        /// </summary>
+        public CLProperty OwnerProperty { get; set; }
         #endregion
 
         #region Methods
@@ -559,24 +572,38 @@ namespace BinderMaker
         /// </summary>
         public void Attach(CLMethod method)
         {
-            if (string.Compare(method.Name, 0, "Get", 0, 3) == 0)
+            method.OwnerProperty = this;
+
+            if (string.Compare(method.FuncDecl.OriginalName, 0, "Get", 0, 3) == 0)
             {
                 if (Getter != null) throw new InvalidOperationException("get プロパティ割り当て済み");
                 Getter = method;
                 Getter.PropertyNameType = PropertyNameType.Get;
             }
-            else if (string.Compare(method.Name, 0, "Is", 0, 2) == 0)
+            else if (string.Compare(method.FuncDecl.OriginalName, 0, "Is", 0, 2) == 0)
             {
                 if (Getter != null) throw new InvalidOperationException("get プロパティ割り当て済み");
                 Getter = method;
                 Getter.PropertyNameType = PropertyNameType.Is;
             }
-            else if (string.Compare(method.Name, 0, "Set", 0, 3) == 0)
+            else if (string.Compare(method.FuncDecl.OriginalName, 0, "Set", 0, 3) == 0)
             {
                 if (Setter != null) throw new InvalidOperationException("set プロパティ割り当て済み");
                 Setter = method;
                 Setter.PropertyNameType = PropertyNameType.Set;
             }
+
+            if (Getter != null)
+            {
+                if (Getter.ReturnType == null) throw new InvalidOperationException("get プロパティなのに戻り値が無い。");
+                if (Getter.Params.Count != 0) throw new InvalidOperationException("get プロパティなのに引数がある。");
+            }
+            if (Setter != null)
+            {
+                if (Setter.ReturnType != CLPrimitiveType.Void) throw new InvalidOperationException("set プロパティなのに戻り値がある。");
+                if (Setter.Params.Count != 1) throw new InvalidOperationException("set プロパティなのに引数が1個ではない。");
+            }
+
         }
 
         /// <summary>
@@ -588,9 +615,9 @@ namespace BinderMaker
         {
             if (method.FuncDecl.Attribute == MethodAttribute.Property)
             {
-                if (string.Compare(method.Name, 0, "Get", 0, 3) == 0 ||
-                    string.Compare(method.Name, 0, "Set", 0, 3) == 0 ||
-                    string.Compare(method.Name, 0, "Is", 0, 2) == 0)
+                if (string.Compare(method.FuncDecl.OriginalName, 0, "Get", 0, 3) == 0 ||
+                    string.Compare(method.FuncDecl.OriginalName, 0, "Set", 0, 3) == 0 ||
+                    string.Compare(method.FuncDecl.OriginalName, 0, "Is", 0, 2) == 0)
                 {
                     return true;
                 }
@@ -605,17 +632,18 @@ namespace BinderMaker
         /// <returns></returns>
         public static string GetPropertyKeyName(CLMethod method)
         {
-            if (string.Compare(method.Name, 0, "Get", 0, 3) == 0)
+            string name = method.FuncDecl.OriginalName;
+            if (string.Compare(name, 0, "Get", 0, 3) == 0)
             {
-                return method.Name.Substring(3);
+                return name.Substring(3);
             }
-            else if (string.Compare(method.Name, 0, "Set", 0, 3) == 0)
+            else if (string.Compare(name, 0, "Set", 0, 3) == 0)
             {
-                return method.Name.Substring(3);
+                return name.Substring(3);
             }
-            else if (string.Compare(method.Name, 0, "Is", 0, 2) == 0)
+            else if (string.Compare(name, 0, "Is", 0, 2) == 0)
             {
-                return method.Name.Substring(2);
+                return name.Substring(2);
             }
             throw new InvalidOperationException();
         }

@@ -165,6 +165,8 @@ namespace BinderMaker.Builder
         /// <param name="enumType"></param>
         protected override void OnPropertyLooked(CLProperty prop)
         {
+            if (prop.Getter != null) OnMethodLooked(prop.Getter);
+            if (prop.Setter != null) OnMethodLooked(prop.Setter);
         }
 
         /// <summary>
@@ -205,9 +207,9 @@ namespace BinderMaker.Builder
         /// </summary>
         protected override string OnMakeOutoutFileText()
         {
-            //_output.DecreaseIndent();
-            //_output.AppendWithIndent("end");
-            return _output.ToString();
+            string t = GetTemplate("RubyDoc.txt");
+            t = t.Replace("[OUTPUT]", _output.ToString());
+            return t;
         }
 
         /// <summary>

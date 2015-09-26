@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace BinderMaker.Builder
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class HSPHelpBuilder : Builder
     {
         #region Templates
@@ -111,14 +114,118 @@ _HREF_
         {
             if (method.Option.CheckDisabled(LangFlags.HSP)) return;
 
-            // 基本
-            string t = FuncTemplate.TrimStart();
-            t = t.Replace("_NAME_", method.FuncDecl.OriginalFullName);
-            t = t.Replace("_BRIEF_", method.Document.OriginalBriefText);
-            t = t.Replace("_INST_", method.Document.OriginalDetailsText);
-            t = t.Replace("_HREF_", "");
-            t = t.Replace("_GROUP_", method.OwnerClass.OriginalName);
+            // 関数
+            string allFuncText = "";
 
+            // 基本
+            string funcText = FuncTemplate.TrimStart();
+            funcText = funcText.Replace("_NAME_", method.FuncDecl.OriginalFullName);
+            funcText = funcText.Replace("_BRIEF_", TranslateComment(method.Document.OriginalBriefText));
+            funcText = funcText.Replace("_INST_", TranslateComment(method.Document.OriginalDetailsText));
+            funcText = funcText.Replace("_HREF_", "");
+            funcText = funcText.Replace("_GROUP_", method.OwnerClass.OriginalName);
+
+            // 引数リスト
+            var paramsText = new OutputBuffer();
+            foreach (var param in method.FuncDecl.Params)
+            {
+                paramsText.AppendCommad(param.Name);
+            }
+            if (paramsText.IsEmpty) paramsText.Append("　"); // 空なら全角スペースでごまかす
+            funcText = funcText.Replace("_PRM_LIST_", paramsText.ToString());
+
+            // インデント量の計算
+            // [out] pp   : 説明
+            // [in]  name : 説明
+            // ^^^^^        … ioColumnWidth
+            //       ^^^^   … nameColumnWidth
+            int ioColumnWidth = 0;
+            int nameColumnWidth = 0;
+            foreach (var param in method.FuncDecl.Params)
+            {
+                // 名前部分はデフォルト引数も含んだ長さで考える
+                int nameLen = param.Name.Length;
+                if (!string.IsNullOrEmpty(param.OriginalDefaultValue))
+                    nameLen += param.OriginalDefaultValue.Length + 2;   // +2 は () の分
+
+                ioColumnWidth = Math.Max(ioColumnWidth, GetIOName(param.IOModifier).Length);
+                nameColumnWidth = Math.Max(nameColumnWidth, nameLen);
+            }
+            ioColumnWidth += 2; // 前後の [ ] の分
+
+            // 引数の1行説明
+            string detailText = "";
+            foreach (var param in method.FuncDecl.Params)
+            {
+                string name = param.Name;
+
+                // デフォルト値がある場合は () を付けて表現
+                if (!string.IsNullOrEmpty(param.OriginalDefaultValue))
+                    name += "(" + param.OriginalDefaultValue + ")";
+
+                detailText += string.Format("{0,-" + ioColumnWidth + "}", "[" + GetIOName(param.IOModifier) + "]");
+                detailText += string.Format(" {0,-" + nameColumnWidth + "}", name);
+                detailText += " : ";
+                detailText += TranslateComment(param.Document.OriginalText);
+                //detailText += "\n";
+
+                // enum 型の場合は候補値も追加しておく
+                CLEnum enumType = param.Type as CLEnum;
+                if (enumType != null)
+                {
+                    string indent = string.Format(" {0,-" + (ioColumnWidth + 3 + nameColumnWidth + 3) + "}", " ");
+
+                    foreach (var member in enumType.Members)
+                    {
+                        if (member.IsTerminator) continue;  // ターミネータは追加しない
+                        detailText += indent;
+                        detailText += member.OriginalName + OutputBuffer.NewLineCode;
+                        detailText += indent + "    ";
+                        detailText += member.Comment + OutputBuffer.NewLineCode;
+                    }
+                }
+            }
+
+            // 戻り値 (全て stat 扱い)
+            if (method.FuncDecl.ReturnType != null && method.FuncDecl.ReturnType.IsResultCodeType)
+            {
+                if (method.FuncDecl.OriginalFullName == "LNError_GetLastErrorCode")
+                {
+                    detailText += OutputBuffer.NewLineCode;
+                    detailText += "stat : エラーコード" + OutputBuffer.NewLineCode;
+                    
+                    CLEnum enumType = (CLEnum)method.FuncDecl.ReturnType;
+                    foreach (var member in enumType.Members)
+                    {
+                        if (member.IsTerminator) continue;  // ターミネータは追加しない
+                        detailText += "    ";
+                        detailText += member.OriginalName + OutputBuffer.NewLineCode;
+                        detailText += "        ";
+                        detailText += member.Comment + OutputBuffer.NewLineCode;
+                    }
+                    
+                    detailText += OutputBuffer.NewLineCode;
+                }
+                else
+                {
+                    detailText += OutputBuffer.NewLineCode;
+                    detailText += "stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)";
+                    detailText += OutputBuffer.NewLineCode;
+                }
+            }
+
+            funcText = funcText.Replace("_PRM_DETAIL_", detailText);
+
+            // サンプルコード
+            //TestCode sampleCode;
+            //if (_sampleCodeMap.TryGetValue(func.CPPName, out sampleCode) &&
+            //    !sampleCode.IsSkipTest)
+            //{
+            //    funcText += "\n%sample\n" + sampleCode.ExtractedCode + "\n";
+            //}
+
+            allFuncText += funcText;
+            _output.AppendWithIndent(allFuncText);
         }
 
         /// <summary>
@@ -133,5 +240,26 @@ _HREF_
         /// 出力ファイルのエンコーディング
         /// </summary>
         protected override Encoding GetOutputEncoding() { return Encoding.GetEncoding(932); }
+
+
+        public static string TranslateComment(string text)
+        {
+            text = text.Replace("関数", "命令");
+            text = text.Replace("のポインタ", "");
+
+            string doc = "";
+            string[] lines = text.Replace("\r", "").Split('\n');
+            foreach (var line in lines)
+                doc += line.Trim() + OutputBuffer.NewLineCode;
+
+            return doc;
+        }
+
+        public static string GetIOName(IOModifier m)
+        {
+            if (m == IOModifier.Out)
+                return "out";
+            return "in";
+        }
     }
 }

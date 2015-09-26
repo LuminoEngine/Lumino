@@ -1131,15 +1131,6 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x00D3:
     {
         intptr_t p0 = CodeGetI();
-        int p1 = CodeGetI();
-        int p2 = CodeGetI();
-        stat = LNSound_SetLoopRange(p0, p1, p2);
-    
-        return true;
-    }
-    case 0x00D4:
-    {
-        intptr_t p0 = CodeGetI();
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         LNBool p1;
@@ -1147,7 +1138,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00D5:
+    case 0x00D4:
     {
         intptr_t p0 = CodeGetI();
         LNBool p1 = (LNBool)CodeGetI();
@@ -1155,7 +1146,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00D6:
+    case 0x00D5:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1165,7 +1156,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00D7:
+    case 0x00D6:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -1173,7 +1164,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00D8:
+    case 0x00D7:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1183,7 +1174,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00D9:
+    case 0x00D8:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1193,7 +1184,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00DA:
+    case 0x00D9:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1203,7 +1194,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00DB:
+    case 0x00DA:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1213,7 +1204,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00DC:
+    case 0x00DB:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -1221,7 +1212,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00DD:
+    case 0x00DC:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -1229,11 +1220,20 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00DE:
+    case 0x00DD:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
         stat = LNSound_SetEmitterMaxDistance(p0, p1);
+    
+        return true;
+    }
+    case 0x00DE:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        int p2 = CodeGetI();
+        stat = LNSound_SetLoopRange(p0, p1, p2);
     
         return true;
     }

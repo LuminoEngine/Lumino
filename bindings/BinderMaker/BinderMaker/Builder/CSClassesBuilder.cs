@@ -311,10 +311,7 @@ return {0};".Trim();
                 string preErrorStmt = "";
                 string postErrorStmt = "";
                 if (method.FuncDecl.ReturnType == Manager.ResultEnumType)
-                {
-                    preErrorStmt = "var result = ";
-                    postErrorStmt = "if (result != Result.OK) throw new LuminoException(result);" + OutputBuffer.NewLineCode;
-                }
+                    CSCommon.MakeThrowException(out preErrorStmt, out postErrorStmt);
 
                 // Terminator の場合は終了処理を埋め込む
                 if (method.IsLibraryTerminator)

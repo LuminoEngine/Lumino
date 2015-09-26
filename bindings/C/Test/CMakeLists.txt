@@ -46,3 +46,13 @@ add_executable(${PROJECT_NAME} ${LN_SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_OUTPUT_POSTFIX})
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
 
+#get_property(fancy_lib_location TARGET fancy_lib PROPERTY LOCATION)
+#get_property(fancy_lib_location TARGET ${PROJECT_NAME} PROPERTY TARGET_FILE)
+#message ("s:${fancy_lib_location}")
+
+        
+#add_custom_command(
+#	TARGET ${PROJECT_NAME}
+#	POST_BUILD
+#	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/lib/LuminoC*.dll" $<LIBRARY_OUTPUT_DIRECTORY:${PROJECT_NAME}>)
+

@@ -13,7 +13,7 @@ namespace Test
         {
             Application.InitializeAudio();
 
-            var s1 = new Sound(@"D:\tmp\ZIGG-ZAGG.mp3");
+            var s1 = new Sound(@"D:\tmp\ZIGG-ZrAGG.mp3");
             s1.Pitch = 105;
             Console.WriteLine(s1.Pitch);
             Console.WriteLine(s1.Volume);

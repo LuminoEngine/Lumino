@@ -187,11 +187,6 @@
 #const global LN_SOUNDFADEBEHAVIOR_PAUSE_RESET 4
 #const global LN_SOUNDFADEBEHAVIOR__TERMINATOR 5
 
-#const global LN_INTERNALGAMESOUND_BGM 0
-#const global LN_INTERNALGAMESOUND_BGS 1
-#const global LN_INTERNALGAMESOUND_ME 2
-#const global LN_INTERNALGAMESOUND__TERMINATOR 3
-
 #const global LN_BACKBUFFERRESIZEMODE_SCALING 0
 #const global LN_BACKBUFFERRESIZEMODE_SCALING_WITH_LETTER_BOX 1
 #const global LN_BACKBUFFERRESIZEMODE_RESIZE 2
@@ -376,18 +371,18 @@
 #cmd LNSound_SetPitch $00D0
 #cmd LNSound_IsLoopEnabled $00D1
 #cmd LNSound_SetLoopEnabled $00D2
-#cmd LNSound_SetLoopRange $00D3
-#cmd LNSound_Is3DEnabled $00D4
-#cmd LNSound_Set3DEnabled $00D5
-#cmd LNSound_GetPlayingMode $00D6
-#cmd LNSound_SetPlayingMode $00D7
-#cmd LNSound_GetPlayingState $00D8
-#cmd LNSound_GetPlayedSamples $00D9
-#cmd LNSound_GetTotalSamples $00DA
-#cmd LNSound_GetSamplingRate $00DB
-#cmd LNSound_SetEmitterPosition $00DC
-#cmd LNSound_SetEmitterVelocity $00DD
-#cmd LNSound_SetEmitterMaxDistance $00DE
+#cmd LNSound_Is3DEnabled $00D3
+#cmd LNSound_Set3DEnabled $00D4
+#cmd LNSound_GetPlayingMode $00D5
+#cmd LNSound_SetPlayingMode $00D6
+#cmd LNSound_GetPlayingState $00D7
+#cmd LNSound_GetPlayedSamples $00D8
+#cmd LNSound_GetTotalSamples $00D9
+#cmd LNSound_GetSamplingRate $00DA
+#cmd LNSound_SetEmitterPosition $00DB
+#cmd LNSound_SetEmitterVelocity $00DC
+#cmd LNSound_SetEmitterMaxDistance $00DD
+#cmd LNSound_SetLoopRange $00DE
 #cmd LNSound_Play $00DF
 #cmd LNSound_Stop $00E0
 #cmd LNSound_Pause $00E1

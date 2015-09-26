@@ -89,6 +89,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
+
+
 add_custom_command(
 	TARGET ${PROJECT_NAME}
 	POST_BUILD

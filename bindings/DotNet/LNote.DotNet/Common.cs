@@ -23,6 +23,16 @@ namespace LN
         {
             ResultCode = resultCode;
         }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name=""resultCode"">結果コード</param>
+        public LuminoException(Result resultCode, string message)
+            : base(message)
+        {
+            ResultCode = resultCode;
+        }
     }
 
     internal class UserData

@@ -251,25 +251,44 @@ namespace BinderMaker.Builder
         /// <returns></returns>
         public static string ConvertCommonNameToRubyMethodName(CLMethod method)
         {
-            // まずはスネークスタイルに変換
-            var name = GetSnakeStyleName(method.Name);
-
-            // 先頭が is の場合は 末尾 ? に変換
-            if (name.IndexOf("is_") == 0)
+            string name;
+            if (method.OwnerProperty != null)
             {
-                if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
-                    name += "?";                // ? はつけてあげる
-                else
-                    name = name.Substring(3) + "?";
+                name = GetSnakeStyleName(method.OwnerProperty.Name);
+
+                // 先頭が is の場合は 末尾 ? に変換
+                if (method.PropertyNameType == PropertyNameType.Is && name.IndexOf("is_") == 0)
+                {
+                    if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
+                        name += "?";                // ? はつけてあげる
+                    else
+                        name = name.Substring(3) + "?";
+                }
             }
+            else
+            {
+                name = GetSnakeStyleName(method.Name);
+            }
+
+            // まずはスネークスタイルに変換
+            //var name = GetSnakeStyleName(method.Name);
+
+            //// 先頭が is の場合は 末尾 ? に変換
+            //if (name.IndexOf("is_") == 0)
+            //{
+            //    if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
+            //        name += "?";                // ? はつけてあげる
+            //    else
+            //        name = name.Substring(3) + "?";
+            //}
 
             // プロパティの場合は = 等に変更
             if (method.PropertyNameType != PropertyNameType.NotProperty)
             {
-                if (method.PropertyNameType == PropertyNameType.Get)
+                /*if (method.PropertyNameType == PropertyNameType.Get)
                     name = name.Substring(4);   // 先頭の get_ を取り除く
-                else if (method.PropertyNameType == PropertyNameType.Set)
-                    name = name.Substring(4) + "=";   // 先頭の set_ を取り除き、後ろに =
+                else*/ if (method.PropertyNameType == PropertyNameType.Set)
+                    name += /*name.Substring(4) + */"=";   // 先頭の set_ を取り除き、後ろに =
             }
 
             return name;

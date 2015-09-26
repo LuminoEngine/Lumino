@@ -13,92 +13,92 @@ namespace LN
     public enum Result
     {
         /// <summary>
-        /// < 成功
+        /// 成功
         /// </summary>
         OK = 0,
 
         /// <summary>
-        /// < 不明なエラー
+        /// 不明なエラー
         /// </summary>
         Unknown = -1,
 
         /// <summary>
-        /// < 前提条件の検証エラー
+        /// 前提条件の検証エラー
         /// </summary>
         Verify = -2,
 
         /// <summary>
-        /// < 引数が無効
+        /// 引数が無効
         /// </summary>
         Argument = -3,
 
         /// <summary>
-        /// < オブジェクトの現在の状態に対して無効な呼び出しが行われた
+        /// オブジェクトの現在の状態に対して無効な呼び出しが行われた
         /// </summary>
         InvalidOperation = -4,
 
         /// <summary>
-        /// < 未実装の機能を呼び出した
+        /// 未実装の機能を呼び出した
         /// </summary>
         NotImplemented = -5,
 
         /// <summary>
-        /// < メモリ確保に失敗
+        /// メモリ確保に失敗
         /// </summary>
         OutOfMemory = -6,
 
         /// <summary>
-        /// < 値が有効な範囲に存在しない
+        /// 値が有効な範囲に存在しない
         /// </summary>
         OutOfRange = -7,
 
         /// <summary>
-        /// < 検索に使用したキーが存在しない
+        /// 検索に使用したキーが存在しない
         /// </summary>
         KeyNotFound = -8,
 
         /// <summary>
-        /// < 数値演算によるオーバーフローが発生した
+        /// 数値演算によるオーバーフローが発生した
         /// </summary>
         Overflow = -9,
 
         /// <summary>
-        /// < その他のIOエラー
+        /// その他のIOエラー
         /// </summary>
         Io = -10,
 
         /// <summary>
-        /// < ファイルにアクセスしようとして失敗した
+        /// ファイルにアクセスしようとして失敗した
         /// </summary>
         FileNotFound = -11,
 
         /// <summary>
-        /// < 無効なディレクトリにアクセスしようとした
+        /// 無効なディレクトリにアクセスしようとした
         /// </summary>
         DirectoryNotFound = -12,
 
         /// <summary>
-        /// < ファイルや文字列等の形式が不正
+        /// ファイルや文字列等の形式が不正
         /// </summary>
         InvalidFormat = -13,
 
         /// <summary>
-        /// < ストリームの末尾を越えてアクセスしようとした
+        /// ストリームの末尾を越えてアクセスしようとした
         /// </summary>
         EndOfStream = -14,
 
         /// <summary>
-        /// < 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
+        /// 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
         /// </summary>
         Encoding = -15,
 
         /// <summary>
-        /// < WindowsAPI のエラー
+        /// WindowsAPI のエラー
         /// </summary>
         Win32 = -16,
 
         /// <summary>
-        /// < COM のエラー
+        /// COM のエラー
         /// </summary>
         Com = -17,
 
@@ -601,7 +601,7 @@ namespace LN
         Continue = 0,
 
         /// <summary>
-        /// 停止する (stop())
+        /// 停止する
         /// </summary>
         Stop = 1,
 
@@ -611,7 +611,7 @@ namespace LN
         StopReset = 2,
 
         /// <summary>
-        /// 一時停止する (pause( true ))
+        /// 一時停止する
         /// </summary>
         Pause = 3,
 
@@ -619,28 +619,6 @@ namespace LN
         /// 一時停止して、音量を元の値に戻す
         /// </summary>
         PauseReset = 4,
-
-    }
-
-    /// <summary>
-    /// GameAudio 内部 Sound
-    /// </summary>
-    public enum InternalGameSound
-    {
-        /// <summary>
-        /// BGM
-        /// </summary>
-        BGM = 0,
-
-        /// <summary>
-        /// BGS
-        /// </summary>
-        BGS = 1,
-
-        /// <summary>
-        /// ME
-        /// </summary>
-        ME = 2,
 
     }
 
@@ -950,7 +928,7 @@ namespace LN
         /// <summary>
         /// 最後に発生したエラーのエラーメッセージを取得します。
         /// </summary>
-        /// <param name="outStr">メッセージ文字列へのアドレスを格納する変数のアドレス。発生していない場合は NULL を格納します。</param>
+        /// <param name="outStr">メッセージ文字列のポインタを格納する変数のポインタ。</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNError_GetLastErrorMessage(out IntPtr outStr);
 
@@ -1049,28 +1027,28 @@ namespace LN
         /// <summary>
         /// メジャーバージョンを取得します。
         /// </summary>
-        /// <param name="outMajor">バージョン番号を格納する変数のアドレス</param>
+        /// <param name="outMajor">バージョン番号を格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNVersion_GetMajor(out int outMajor);
 
         /// <summary>
         /// マイナーバージョンを取得します。
         /// </summary>
-        /// <param name="outMinor">バージョン番号を格納する変数のアドレス</param>
+        /// <param name="outMinor">バージョン番号を格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNVersion_GetMinor(out int outMinor);
 
         /// <summary>
         /// リビジョンバージョンを取得します。
         /// </summary>
-        /// <param name="outRevision">バージョン番号を格納する変数のアドレス</param>
+        /// <param name="outRevision">バージョン番号を格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNVersion_GetRevision(out int outRevision);
 
         /// <summary>
         /// バージョン文字列の取得を取得します。
         /// </summary>
-        /// <param name="outStr">文字列へのアドレスを格納する変数のアドレス。</param>
+        /// <param name="outStr">文字列へのアドレスを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNVersion_GetString(out IntPtr outStr);
 
@@ -1080,12 +1058,12 @@ namespace LN
         /// <param name="major">メジャーバージョン</param>
         /// <param name="minor">マイナーバージョン</param>
         /// <param name="revision">リビジョンバージョン</param>
-        /// <param name="outResult">結果を格納する変数のアドレス</param>
+        /// <param name="outResult">結果を格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNVersion_IsAtLeast( int major,  int minor,  int revision, out bool outResult);
 
         /// <summary>
-        /// 2D ベクトルの長さを計算します。
+        /// 2D ベクトルの長さを取得します。
         /// </summary>
         /// <param name="vec">処理の基になる 2D ベクトル</param>
         /// <param name="outLength">ベクトルの長さを格納する変数</param>
@@ -1093,7 +1071,7 @@ namespace LN
         public extern static Result LNVector2_GetLength(ref Vector2 vec, out float outLength);
 
         /// <summary>
-        /// 2D ベクトルの長さの2乗を計算します。
+        /// 2D ベクトルの長さの2乗を取得します。
         /// </summary>
         /// <param name="vec">処理の基になる 2D ベクトル</param>
         /// <param name="outLength">ベクトルの長さの2乗を格納する変数</param>
@@ -1103,7 +1081,7 @@ namespace LN
         /// <summary>
         /// 2D ベクトルに値を設定します。
         /// </summary>
-        /// <param name="vec">値を格納する 2D ベクトル変数のアドレス</param>
+        /// <param name="vec">値を格納する 2D ベクトル変数のポインタ</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
@@ -1125,7 +1103,7 @@ namespace LN
         public extern static Result LNVector2_NormalizeV(ref Vector2 vec);
 
         /// <summary>
-        /// 3Dベクトルの長さを計算する
+        /// 3Dベクトルの長さを取得します。
         /// </summary>
         /// <param name="vec">処理の基になるベクトル</param>
         /// <param name="outLength">ベクトルの長さを格納する変数</param>
@@ -1143,7 +1121,7 @@ namespace LN
         /// <summary>
         /// 3Dベクトルに値を設定します。
         /// </summary>
-        /// <param name="vec">値を格納する 3D ベクトル変数のアドレス</param>
+        /// <param name="vec">値を格納する 3D ベクトル変数のポインタ</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
@@ -1153,14 +1131,14 @@ namespace LN
         /// <summary>
         /// 2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
         /// </summary>
-        /// <param name="vec">値を格納する 3Dベクトル 変数のアドレス</param>
+        /// <param name="vec">値を格納する 3Dベクトル 変数のポインタ</param>
         /// <param name="vec2">2D ベクトル</param>
         /// <param name="z">Z 値</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNVector3_SetVZ(out Vector3 vec, ref Vector2 vec2,  float z);
 
         /// <summary>
-        /// 3D ベクトルを正規化する
+        /// 3D ベクトルを正規化します。
         /// </summary>
         /// <param name="vec">処理の基になる 3D ベクトル</param>
         /// <param name="outVec">演算結果を格納する 3D ベクトル</param>
@@ -1175,7 +1153,7 @@ namespace LN
         public extern static Result LNVector3_NormalizeV(ref Vector3 vec);
 
         /// <summary>
-        /// 2 つの 3D ベクトルの内積を計算する
+        /// 2 つの 3D ベクトルの内積を計算します。
         /// </summary>
         /// <param name="vec1">処理の基になる 3D ベクトル</param>
         /// <param name="vec2">処理の基になる 3D ベクトル</param>
@@ -1184,7 +1162,7 @@ namespace LN
         public extern static Result LNVector3_Dot(ref Vector3 vec1, ref Vector3 vec2, out float dot);
 
         /// <summary>
-        /// 2 つの 3D ベクトルの外積を計算する
+        /// 2 つの 3D ベクトルの外積を計算します。
         /// </summary>
         /// <param name="vec1">処理の基になる 3D ベクトル</param>
         /// <param name="vec2">処理の基になる 3D ベクトル</param>
@@ -1193,7 +1171,7 @@ namespace LN
         public extern static Result LNVector3_Cross(ref Vector3 vec1, ref Vector3 vec2, out Vector3 outVec);
 
         /// <summary>
-        /// 指定された法線で反射させたベクトルを計算する
+        /// 指定された法線で反射させたベクトルを計算します。
         /// </summary>
         /// <param name="vec">処理の基になる 3D ベクトル</param>
         /// <param name="normal">面方向を表す法線 3D ベクトル</param>
@@ -1202,7 +1180,7 @@ namespace LN
         public extern static Result LNVector3_Reflect(ref Vector3 vec, ref Vector3 normal, out Vector3 outVec);
 
         /// <summary>
-        /// 指定された法線と方向から滑りベクトルを計算する
+        /// 指定された法線と方向から滑りベクトルを計算します。
         /// </summary>
         /// <param name="vec">処理の基になる 3D ベクトル</param>
         /// <param name="normal">面方向を表す法線 3D ベクトル</param>
@@ -1211,7 +1189,7 @@ namespace LN
         public extern static Result LNVector3_Slide(ref Vector3 vec, ref Vector3 normal, out Vector3 outVec);
 
         /// <summary>
-        /// 2 つの 3D ベクトル間を線形補間する
+        /// 2 つの 3D ベクトル間を線形補間します。
         /// </summary>
         /// <param name="vec1">処理の基になる 3D ベクトル ( t = 0.0 のときの値 )</param>
         /// <param name="vec2">処理の基になる 3D ベクトル ( t = 1.0 のときの値 )</param>
@@ -1221,7 +1199,7 @@ namespace LN
         public extern static Result LNVector3_Lerp(ref Vector3 vec1, ref Vector3 vec2,  float t, out Vector3 outVec);
 
         /// <summary>
-        /// 指定された 3D ベクトルを Catmull-Rom 補間する
+        /// 指定された 3D ベクトルを Catmull-Rom 補間します。
         /// </summary>
         /// <param name="vec1">処理の基になる 3D ベクトル</param>
         /// <param name="vec2">処理の基になる 3D ベクトル ( t = 0.0 のときの値 )</param>
@@ -1233,7 +1211,7 @@ namespace LN
         public extern static Result LNVector3_CatmullRom(ref Vector3 vec1, ref Vector3 vec2, ref Vector3 vec3, ref Vector3 vec4,  float t, out Vector3 outVec);
 
         /// <summary>
-        /// 指定された行列を使用して座標変換する
+        /// 指定された行列を使用して座標変換します。
         /// </summary>
         /// <param name="vec">処理の基になる 3D ベクトル</param>
         /// <param name="mat">処理の基になる 行列</param>
@@ -1242,7 +1220,7 @@ namespace LN
         public extern static Result LNVector3_Transform(ref Vector3 vec, ref Matrix mat, out Vector4 outVec);
 
         /// <summary>
-        /// 指定された行列を使用して座標変換し、結果を w = 1 に射影する
+        /// 指定された行列を使用して座標変換し、結果を w = 1 に射影します。
         /// </summary>
         /// <param name="vec">処理の基になる 3D ベクトル</param>
         /// <param name="mat">処理の基になる 行列</param>
@@ -1253,7 +1231,7 @@ namespace LN
         /// <summary>
         /// 4Dベクトルに値を設定します。
         /// </summary>
-        /// <param name="vec">値を格納する4Dベクトル変数のアドレス</param>
+        /// <param name="vec">値を格納する4Dベクトル変数のポインタ</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
@@ -1262,7 +1240,7 @@ namespace LN
         public extern static Result LNVector4_Set(ref Vector4 vec,  float x,  float y,  float z,  float w);
 
         /// <summary>
-        /// 右方向を示す 3D ベクトルの取得
+        /// 右方向を示す 3D ベクトルを取得します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="outVec">結果を格納する Vector3 変数</param>
@@ -1270,7 +1248,7 @@ namespace LN
         public extern static Result LNMatrix_GetRight(ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 上方向を示す 3D ベクトルの取得
+        /// 上方向を示す 3D ベクトルを取得します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="outVec">結果を格納する Vector3 変数</param>
@@ -1278,7 +1256,7 @@ namespace LN
         public extern static Result LNMatrix_GetUp(ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 正面方向を示す 3D ベクトルの取得
+        /// 正面方向を示す 3D ベクトルを取得します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="outVec">結果を格納する Vector3 変数</param>
@@ -1286,7 +1264,7 @@ namespace LN
         public extern static Result LNMatrix_GetFront(ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 位置を示す 3D ベクトルの取得
+        /// 位置を示す 3D ベクトルを取得します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="outVec">結果を格納する Vector3 変数</param>
@@ -1294,14 +1272,14 @@ namespace LN
         public extern static Result LNMatrix_GetPosition(ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 単位行列を作成する
+        /// 単位行列を作成します。
         /// </summary>
         /// <param name="mat">結果を格納する行列</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNMatrix_Identity(out Matrix mat);
 
         /// <summary>
-        /// 行列を平行移動する
+        /// 行列を平行移動します。
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="x">X 方向の移動量</param>
@@ -1311,7 +1289,7 @@ namespace LN
         public extern static Result LNMatrix_Translate(ref Matrix mat,  float x,  float y,  float z);
 
         /// <summary>
-        /// 行列を平行移動する
+        /// 行列を平行移動します。
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="vec">移動量</param>
@@ -1319,7 +1297,7 @@ namespace LN
         public extern static Result LNMatrix_TranslateVec3(ref Matrix mat, ref Vector3 vec);
 
         /// <summary>
-        /// X 軸を回転軸にして行列を回転する ( ラジアン単位 )
+        /// X 軸を回転軸にして行列を回転します。 (ラジアン単位)
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="radian">回転角度 ( 軸方向に対して反時計回り )</param>
@@ -1327,7 +1305,7 @@ namespace LN
         public extern static Result LNMatrix_RotateX(ref Matrix mat,  float radian);
 
         /// <summary>
-        /// Y 軸を回転軸にして行列を回転する ( ラジアン単位 )
+        /// Y 軸を回転軸にして行列を回転します。 (ラジアン単位)
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="radian">回転角度</param>
@@ -1335,7 +1313,7 @@ namespace LN
         public extern static Result LNMatrix_RotateY(ref Matrix mat,  float radian);
 
         /// <summary>
-        /// Z 軸を回転軸にして行列を回転する ( ラジアン単位 )
+        /// Z 軸を回転軸にして行列を回転します。 (ラジアン単位)
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="radian">回転角度</param>
@@ -1343,7 +1321,7 @@ namespace LN
         public extern static Result LNMatrix_RotateZ(ref Matrix mat,  float radian);
 
         /// <summary>
-        /// 行列を回転する ( ラジアン単位 )
+        /// 行列を回転します。 (ラジアン単位)
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="xRad">X 軸を回転軸とした角度</param>
@@ -1354,7 +1332,7 @@ namespace LN
         public extern static Result LNMatrix_Rotate(ref Matrix mat,  float xRad,  float yRad,  float zRad,  RotationOrder rotOrder = RotationOrder.XYZ);
 
         /// <summary>
-        /// 行列を回転する ( ラジアン単位 )
+        /// 行列を回転します。 (ラジアン単位)
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="vec">各軸の回転角度</param>
@@ -1363,7 +1341,7 @@ namespace LN
         public extern static Result LNMatrix_RotateVec3(ref Matrix mat, ref Vector3 vec,  RotationOrder rotOrder = RotationOrder.XYZ);
 
         /// <summary>
-        /// 任意の軸を回転軸にして行列を回転する ( ラジアン単位 )
+        /// 任意の軸を回転軸にして行列を回転します。 (ラジアン単位)
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="axis">回転軸を示す Vector3</param>
@@ -1372,7 +1350,7 @@ namespace LN
         public extern static Result LNMatrix_RotateAxis(ref Matrix mat, ref Vector3 axis,  float radian);
 
         /// <summary>
-        /// クォータニオンを使って行列を回転する
+        /// クォータニオンを使って行列を回転します。
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="qua">処理の基になる Quaternion</param>
@@ -1380,7 +1358,7 @@ namespace LN
         public extern static Result LNMatrix_RotateQuaternion(ref Matrix mat, ref Quaternion qua);
 
         /// <summary>
-        /// 行列をスケーリングする
+        /// 行列をスケーリングします。
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="xyz">X Y Z 全ての方向に適用する拡大率 (X Y Z を同じ値で拡大)</param>
@@ -1388,7 +1366,7 @@ namespace LN
         public extern static Result LNMatrix_Scale(ref Matrix mat,  float xyz);
 
         /// <summary>
-        /// 行列をスケーリングする
+        /// 行列をスケーリングします。
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="x">X 方向の拡大率</param>
@@ -1398,7 +1376,7 @@ namespace LN
         public extern static Result LNMatrix_ScaleXYZ(ref Matrix mat,  float x,  float y,  float z);
 
         /// <summary>
-        /// 行列をスケーリングする
+        /// 行列をスケーリングします。
         /// </summary>
         /// <param name="mat">演算結果を格納する行列</param>
         /// <param name="scale">各方向の拡大率</param>
@@ -1406,7 +1384,7 @@ namespace LN
         public extern static Result LNMatrix_ScaleVec3(ref Matrix mat, ref Vector3 scale);
 
         /// <summary>
-        /// 行列を乗算する
+        /// 行列を乗算します。
         /// </summary>
         /// <param name="mat1">処理の基になる行列</param>
         /// <param name="mat2">処理の基になる行列</param>
@@ -1415,7 +1393,7 @@ namespace LN
         public extern static Result LNMatrix_Multiply(ref Matrix mat1, ref Matrix mat2, out Matrix matOut);
 
         /// <summary>
-        /// 逆行列を求める
+        /// 逆行列を求めます。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="matOut">演算結果を格納する行列</param>
@@ -1423,7 +1401,7 @@ namespace LN
         public extern static Result LNMatrix_Inverse(ref Matrix mat, out Matrix matOut);
 
         /// <summary>
-        /// 転置行列を求める
+        /// 転置行列を求めます。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="matOut">演算結果を格納する行列</param>
@@ -1431,7 +1409,7 @@ namespace LN
         public extern static Result LNMatrix_Transpose(ref Matrix mat, out Matrix matOut);
 
         /// <summary>
-        /// 左手座標系ビュー行列を作成する
+        /// 左手座標系ビュー行列を作成します。
         /// </summary>
         /// <param name="pos">視点の位置を示す Vector3</param>
         /// <param name="lookAt">注視点を示す Vector3</param>
@@ -1441,7 +1419,7 @@ namespace LN
         public extern static Result LNMatrix_ViewTransformLH(ref Vector3 pos, ref Vector3 lookAt, ref Vector3 upDir, out Matrix matOut);
 
         /// <summary>
-        /// 右手座標系ビュー行列を作成する
+        /// 右手座標系ビュー行列を作成します。
         /// </summary>
         /// <param name="pos">視点の位置を示す Vector3</param>
         /// <param name="lookAt">注視点を示す Vector3</param>
@@ -1451,7 +1429,7 @@ namespace LN
         public extern static Result LNMatrix_ViewTransformRH(ref Vector3 pos, ref Vector3 lookAt, ref Vector3 upDir, out Matrix matOut);
 
         /// <summary>
-        /// 左手座標系射影行列の作成
+        /// 左手座標系射影行列を作成します。
         /// </summary>
         /// <param name="fovY">Y 方向への視野角 (ラジアン単位)</param>
         /// <param name="aspect">アスペクト比</param>
@@ -1462,7 +1440,7 @@ namespace LN
         public extern static Result LNMatrix_PerspectiveFovLH( float fovY,  float aspect,  float nearZ,  float farZ, out Matrix matOut);
 
         /// <summary>
-        /// 右手座標系射影行列の作成
+        /// 右手座標系射影行列作成します。
         /// </summary>
         /// <param name="fovY">Y 方向への視野角 (ラジアン単位)</param>
         /// <param name="aspect">アスペクト比</param>
@@ -1473,7 +1451,7 @@ namespace LN
         public extern static Result LNMatrix_PerspectiveFovRH( float fovY,  float aspect,  float nearZ,  float farZ, out Matrix matOut);
 
         /// <summary>
-        /// 左手座標系正射影行列の作成
+        /// 左手座標系正射影行列作成します。
         /// </summary>
         /// <param name="width">ビューの幅</param>
         /// <param name="height">ビューの高さ</param>
@@ -1484,7 +1462,7 @@ namespace LN
         public extern static Result LNMatrix_OrthoLH( float width,  float height,  float nearZ,  float farZ, out Matrix matOut);
 
         /// <summary>
-        /// 右手座標系正射影行列の作成
+        /// 右手座標系正射影行列作成します。
         /// </summary>
         /// <param name="width">ビューの幅</param>
         /// <param name="height">ビューの高さ</param>
@@ -1495,7 +1473,7 @@ namespace LN
         public extern static Result LNMatrix_OrthoRH( float width,  float height,  float nearZ,  float farZ, out Matrix matOut);
 
         /// <summary>
-        /// 回転行列からオイラー角を計算する
+        /// 回転行列からオイラー角を計算します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="outVec">各軸の回転角度(ラジアン)を格納する Vector3 変数</param>
@@ -1503,7 +1481,7 @@ namespace LN
         public extern static Result LNMatrix_GetEulerAngles(ref Matrix mat, out Vector3 outVec);
 
         /// <summary>
-        /// 行列をスケーリング、回転、移動成分に分解する
+        /// 行列をスケーリング、回転、移動成分に分解します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="scale">各軸のスケーリング量を格納する Vector3 変数</param>
@@ -1515,7 +1493,7 @@ namespace LN
         /// <summary>
         /// クォータニオンに値を設定します。
         /// </summary>
-        /// <param name="qua">値を格納する Quaternion 変数のアドレス</param>
+        /// <param name="qua">値を格納する Quaternion 変数のポインタ</param>
         /// <param name="x">X 値</param>
         /// <param name="y">Y 値</param>
         /// <param name="z">Z 値</param>
@@ -1524,14 +1502,14 @@ namespace LN
         public extern static Result LNQuaternion_Set(ref Quaternion qua,  float x,  float y,  float z,  float w);
 
         /// <summary>
-        /// 単位クォータニオンを作成する
+        /// 単位クォータニオンを作成します。
         /// </summary>
         /// <param name="qua">結果を格納する Quaternion 変数</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNQuaternion_Identity(out Quaternion qua);
 
         /// <summary>
-        /// 任意の軸を回転軸にして回転するクォータニオンを作成する
+        /// 任意の軸を回転軸にして回転するクォータニオンを作成します。
         /// </summary>
         /// <param name="axis">回転軸を示す Vector3 変数</param>
         /// <param name="r">回転角度 (ラジアン)</param>
@@ -1540,7 +1518,7 @@ namespace LN
         public extern static Result LNQuaternion_RotationAxis(ref Vector3 axis,  float r, out Quaternion outQua);
 
         /// <summary>
-        /// 回転行列からクォータニオンを作成する
+        /// 回転行列からクォータニオンを作成します。
         /// </summary>
         /// <param name="mat">処理の基になる行列</param>
         /// <param name="outQua">演算結果を格納する Quaternion 変数</param>
@@ -1548,7 +1526,7 @@ namespace LN
         public extern static Result LNQuaternion_RotationMatrix(ref Matrix mat, out Quaternion outQua);
 
         /// <summary>
-        /// ヨー、ピッチ、およびロールを指定してクォータニオンを作成する
+        /// ヨー、ピッチ、およびロールを指定してクォータニオンを作成します。
         /// </summary>
         /// <param name="yaw">y 軸を中心とするヨー (ラジアン単位)</param>
         /// <param name="pitch">x 軸を中心とするピッチ (ラジアン単位)</param>
@@ -1558,7 +1536,7 @@ namespace LN
         public extern static Result LNQuaternion_RotationYawPitchRoll( float yaw,  float pitch,  float roll, out Quaternion outQua);
 
         /// <summary>
-        /// クォータニオンを正規化する
+        /// クォータニオンを正規化します。
         /// </summary>
         /// <param name="qua">処理の基になるクォータニオン</param>
         /// <param name="outQua">演算結果を格納する Quaternion 変数</param>
@@ -1566,7 +1544,7 @@ namespace LN
         public extern static Result LNQuaternion_Normalize(ref Quaternion qua, out Quaternion outQua);
 
         /// <summary>
-        /// クォータニオンの共役を計算する
+        /// クォータニオンの共役を計算します。
         /// </summary>
         /// <param name="qua">処理の基になるクォータニオン</param>
         /// <param name="outQua">演算結果を格納する Quaternion 変数</param>
@@ -1574,7 +1552,7 @@ namespace LN
         public extern static Result LNQuaternion_Conjugate(ref Quaternion qua, out Quaternion outQua);
 
         /// <summary>
-        /// 2 つのクォータニオンの積を計算する
+        /// 2 つのクォータニオンの積を計算します。
         /// </summary>
         /// <param name="qua1">処理の基になるクォータニオン</param>
         /// <param name="qua2">処理の基になるクォータニオン</param>
@@ -1583,7 +1561,7 @@ namespace LN
         public extern static Result LNQuaternion_Multiply(ref Quaternion qua1, ref Quaternion qua2, out Quaternion outQua);
 
         /// <summary>
-        /// 2 つのクォータニオンを球面線形補間する
+        /// 2 つのクォータニオンを球面線形補間します。
         /// </summary>
         /// <param name="qua1">処理の基になるクォータニオン</param>
         /// <param name="qua2">処理の基になるクォータニオン</param>
@@ -1832,7 +1810,7 @@ namespace LN
         /// ファイルからサウンドオブジェクトを作成します。
         /// </summary>
         /// <param name="filePath">音声ファイルのパス</param>
-        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス</param>
+        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_Create( string filePath, out IntPtr sound);
 
@@ -1841,7 +1819,7 @@ namespace LN
         /// </summary>
         /// <param name="data">メモリ上の音声データへのポインタ</param>
         /// <param name="dataSize">データサイズ (バイト単位)</param>
-        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のアドレス</param>
+        /// <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_CreateMem( byte[] data,  int dataSize, out IntPtr sound);
 
@@ -1894,19 +1872,10 @@ namespace LN
         public extern static Result LNSound_SetLoopEnabled( IntPtr sound,  bool loopEnable);
 
         /// <summary>
-        /// サウンドのループ再生の範囲を設定します。
-        /// </summary>
-        /// <param name="sound">サウンドハンドル</param>
-        /// <param name="begin">ループ領域の先頭位置 (サンプル数単位)</param>
-        /// <param name="length">ループ領域長さ (サンプル数単位)</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSound_SetLoopRange( IntPtr sound,  int begin,  int length);
-
-        /// <summary>
         /// サウンドが 3D 音源であるかを確認します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
-        /// <param name="outEnabled">状態を格納する変数のアドレス (LN_TRUE = 3D音声 / LN_FALSE = 非 3D)</param>
+        /// <param name="outEnabled">状態を格納する変数のポインタ (LN_TRUE = 3D音声 / LN_FALSE = 非 3D)</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_Is3DEnabled( IntPtr sound, out bool outEnabled);
 
@@ -1922,7 +1891,7 @@ namespace LN
         /// サウンド再生時の音声データの再生方法を取得します。
         /// </summary>
         /// <param name="sound">サウンドハンドル</param>
-        /// <param name="outMode">再生方法を格納する変数のアドレス</param>
+        /// <param name="outMode">再生方法を格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_GetPlayingMode( IntPtr sound, out SoundPlayingMode outMode);
 
@@ -1989,6 +1958,15 @@ namespace LN
         /// <param name="distance">距離</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_SetEmitterMaxDistance( IntPtr sound,  float distance);
+
+        /// <summary>
+        /// サウンドのループ再生の範囲を設定します。
+        /// </summary>
+        /// <param name="sound">サウンドハンドル</param>
+        /// <param name="begin">ループ領域の先頭位置 (サンプル数単位)</param>
+        /// <param name="length">ループ領域長さ (サンプル数単位)</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSound_SetLoopRange( IntPtr sound,  int begin,  int length);
 
         /// <summary>
         /// サウンドを再生します。

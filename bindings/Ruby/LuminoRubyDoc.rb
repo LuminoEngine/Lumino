@@ -1,40 +1,41 @@
-﻿# RESULT
+﻿
+# RESULT
 module LN::Result
-    # < 成功
+    # 成功
     OK = 0
-    # < 不明なエラー
+    # 不明なエラー
     UNKNOWN = -1
-    # < 前提条件の検証エラー
+    # 前提条件の検証エラー
     VERIFY = -2
-    # < 引数が無効
+    # 引数が無効
     ARGUMENT = -3
-    # < オブジェクトの現在の状態に対して無効な呼び出しが行われた
+    # オブジェクトの現在の状態に対して無効な呼び出しが行われた
     INVALID_OPERATION = -4
-    # < 未実装の機能を呼び出した
+    # 未実装の機能を呼び出した
     NOT_IMPLEMENTED = -5
-    # < メモリ確保に失敗
+    # メモリ確保に失敗
     OUT_OF_MEMORY = -6
-    # < 値が有効な範囲に存在しない
+    # 値が有効な範囲に存在しない
     OUT_OF_RANGE = -7
-    # < 検索に使用したキーが存在しない
+    # 検索に使用したキーが存在しない
     KEY_NOT_FOUND = -8
-    # < 数値演算によるオーバーフローが発生した
+    # 数値演算によるオーバーフローが発生した
     OVERFLOW = -9
-    # < その他のIOエラー
+    # その他のIOエラー
     IO = -10
-    # < ファイルにアクセスしようとして失敗した
+    # ファイルにアクセスしようとして失敗した
     FILE_NOT_FOUND = -11
-    # < 無効なディレクトリにアクセスしようとした
+    # 無効なディレクトリにアクセスしようとした
     DIRECTORY_NOT_FOUND = -12
-    # < ファイルや文字列等の形式が不正
+    # ファイルや文字列等の形式が不正
     INVALID_FORMAT = -13
-    # < ストリームの末尾を越えてアクセスしようとした
+    # ストリームの末尾を越えてアクセスしようとした
     END_OF_STREAM = -14
-    # < 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
+    # 文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
     ENCODING = -15
-    # < WindowsAPI のエラー
+    # WindowsAPI のエラー
     WIN32 = -16
-    # < COM のエラー
+    # COM のエラー
     COM = -17
 end
 # VARIANTTYPE
@@ -298,23 +299,14 @@ end
 module LN::SoundFadeBehavior
     # 継続(なにもしない)
     CONTINUE = 0
-    # 停止する (stop())
+    # 停止する
     STOP = 1
     # 停止して、音量を元の値に戻す
     STOP_RESET = 2
-    # 一時停止する (pause( true ))
+    # 一時停止する
     PAUSE = 3
     # 一時停止して、音量を元の値に戻す
     PAUSE_RESET = 4
-end
-# INTERNALGAMESOUND
-module LN::InternalGameSound
-    # BGM
-    BGM = 0
-    # BGS
-    BGS = 1
-    # ME
-    ME = 2
 end
 # BACKBUFFERRESIZEMODE
 module LN::BackbufferResizeMode
@@ -434,7 +426,7 @@ module LN::ObjectType
     SOUND = 0
 end
 # エラーに関係する処理を行います。
-class LN::Error < ReferenceObject
+class LN::Error < RefObject
     # 最後に発生したエラーのエラーコードを取得します。
     # @overload get_last_error_code()
     def get_last_error_code
@@ -445,7 +437,7 @@ class LN::Error < ReferenceObject
     end
 end
 # 全てのオブジェクトのベースオブジェクトです。
-class LN::ReferenceObject < ReferenceObject
+class LN::RefObject < RefObject
     # オブジェクトを解放します。
     # @overload release()
     #   　
@@ -546,13 +538,13 @@ class LN::Version
     def get_string
     end
     # 指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
-    # @overload at_least?(major, minor, revision)
+    # @overload is_at_least(major, minor, revision)
     #   　
     #     指定バージョン >= コンパイルバージョン である場合、LN_TRUE となります。
     #   @param [Integer] major メジャーバージョン
     #   @param [Integer] minor マイナーバージョン
     #   @param [Integer] revision リビジョンバージョン
-    def at_least?
+    def is_at_least
     end
 end
 # 2次元のベクトルのクラスです。
@@ -588,6 +580,14 @@ class LN::Vector2
     def y
     end
 
+    # 2D ベクトルの長さを取得します。
+    # @overload length()
+    def length
+    end
+    # 2D ベクトルの長さの2乗を取得します。
+    # @overload square_length()
+    def square_length
+    end
     # 2D ベクトルに値を設定します。
     # @overload set(y)
     #   @param [Float] y Y 値
@@ -648,6 +648,14 @@ class LN::Vector3
     def z
     end
 
+    # 3Dベクトルの長さを取得します。
+    # @overload length()
+    def length
+    end
+    # 3D ベクトルの長さの2乗を計算する
+    # @overload square_length()
+    def square_length
+    end
     # 3Dベクトルに値を設定します。
     # @overload set(y, z)
     #   @param [Float] y Y 値
@@ -659,46 +667,46 @@ class LN::Vector3
     #   @param [Float] z Z 値
     def set_vz
     end
-    # 3D ベクトルを正規化する
+    # 3D ベクトルを正規化します。
     # @overload normalize(vec)
-    #   3D ベクトルを正規化する
+    #   3D ベクトルを正規化します。
     #   @param [LN::Vector3] vec 処理の基になる 3D ベクトル
     # @overload normalize()
     #   3D ベクトルを正規化します。
     def normalize
     end
-    # 2 つの 3D ベクトルの内積を計算する
+    # 2 つの 3D ベクトルの内積を計算します。
     # @overload dot(vec1, vec2)
     #   @param [LN::Vector3] vec1 処理の基になる 3D ベクトル
     #   @param [LN::Vector3] vec2 処理の基になる 3D ベクトル
     def dot
     end
-    # 2 つの 3D ベクトルの外積を計算する
+    # 2 つの 3D ベクトルの外積を計算します。
     # @overload cross(vec1, vec2)
     #   @param [LN::Vector3] vec1 処理の基になる 3D ベクトル
     #   @param [LN::Vector3] vec2 処理の基になる 3D ベクトル
     def cross
     end
-    # 指定された法線で反射させたベクトルを計算する
+    # 指定された法線で反射させたベクトルを計算します。
     # @overload reflect(vec, normal)
     #   @param [LN::Vector3] vec 処理の基になる 3D ベクトル
     #   @param [LN::Vector3] normal 面方向を表す法線 3D ベクトル
     def reflect
     end
-    # 指定された法線と方向から滑りベクトルを計算する
+    # 指定された法線と方向から滑りベクトルを計算します。
     # @overload slide(vec, normal)
     #   @param [LN::Vector3] vec 処理の基になる 3D ベクトル
     #   @param [LN::Vector3] normal 面方向を表す法線 3D ベクトル
     def slide
     end
-    # 2 つの 3D ベクトル間を線形補間する
+    # 2 つの 3D ベクトル間を線形補間します。
     # @overload lerp(vec1, vec2, t)
     #   @param [LN::Vector3] vec1 処理の基になる 3D ベクトル ( t = 0.0 のときの値 )
     #   @param [LN::Vector3] vec2 処理の基になる 3D ベクトル ( t = 1.0 のときの値 )
     #   @param [Float] t 補間値 ( 0.0 ～ 1.0 )
     def lerp
     end
-    # 指定された 3D ベクトルを Catmull-Rom 補間する
+    # 指定された 3D ベクトルを Catmull-Rom 補間します。
     # @overload catmull_rom(vec1, vec2, vec3, vec4, t)
     #   @param [LN::Vector3] vec1 処理の基になる 3D ベクトル
     #   @param [LN::Vector3] vec2 処理の基になる 3D ベクトル ( t = 0.0 のときの値 )
@@ -707,7 +715,7 @@ class LN::Vector3
     #   @param [Float] t 補間値 ( 0.0 ～ 1.0 )
     def catmull_rom
     end
-    # 指定された行列を使用して座標変換する
+    # 指定された行列を使用して座標変換します。
     # @overload transform(vec, mat)
     #   　
     #     ベクトルを ( x, y, z, 1 ) として座標変換します。
@@ -718,7 +726,7 @@ class LN::Vector3
     #   @param [LN::Matrix] mat 処理の基になる 行列
     def transform
     end
-    # 指定された行列を使用して座標変換し、結果を w = 1 に射影する
+    # 指定された行列を使用して座標変換し、結果を w = 1 に射影します。
     # @overload transform_coord(vec, mat)
     #   　
     #     ベクトルを ( x, y, z, 1 ) として座標変換し、
@@ -1010,11 +1018,27 @@ class LN::Matrix
     def m44
     end
 
-    # 単位行列を作成する
+    # 右方向を示す 3D ベクトルを取得します。
+    # @overload right()
+    def right
+    end
+    # 上方向を示す 3D ベクトルを取得します。
+    # @overload up()
+    def up
+    end
+    # 正面方向を示す 3D ベクトルを取得します。
+    # @overload front()
+    def front
+    end
+    # 位置を示す 3D ベクトルを取得します。
+    # @overload position()
+    def position
+    end
+    # 単位行列を作成します。
     # @overload identity()
     def identity
     end
-    # 行列を平行移動する
+    # 行列を平行移動します。
     # @overload translate(y, z)
     #   　
     #     与えられた引数から平行移動行列を作り、現在の行列に乗算します。
@@ -1022,31 +1046,31 @@ class LN::Matrix
     #   @param [Float] z Z 方向の移動量
     def translate
     end
-    # 行列を平行移動する
+    # 行列を平行移動します。
     # @overload translate_vec_3()
     #   　
     #     与えられた引数から平行移動行列を作り、現在の行列に乗算します。
     def translate_vec_3
     end
-    # X 軸を回転軸にして行列を回転する ( ラジアン単位 )
+    # X 軸を回転軸にして行列を回転します。 (ラジアン単位)
     # @overload rotate_x()
     #   　
     #     与えられた引数から回転行列を作り、現在の行列に乗算します。
     def rotate_x
     end
-    # Y 軸を回転軸にして行列を回転する ( ラジアン単位 )
+    # Y 軸を回転軸にして行列を回転します。 (ラジアン単位)
     # @overload rotate_y()
     #   　
     #     与えられた引数から回転行列を作り、現在の行列に乗算します。
     def rotate_y
     end
-    # Z 軸を回転軸にして行列を回転する ( ラジアン単位 )
+    # Z 軸を回転軸にして行列を回転します。 (ラジアン単位)
     # @overload rotate_z()
     #   　
     #     与えられた引数から回転行列を作り、現在の行列に乗算します。
     def rotate_z
     end
-    # 行列を回転する ( ラジアン単位 )
+    # 行列を回転します。 (ラジアン単位)
     # @overload rotate(yRad, zRad, rotOrder=XYZ)
     #   　
     #     与えられた引数から回転行列を作り、現在の行列に乗算します。
@@ -1055,14 +1079,14 @@ class LN::Matrix
     #   @param [LN::RotationOrder] rotOrder 回転順序の指定
     def rotate
     end
-    # 行列を回転する ( ラジアン単位 )
+    # 行列を回転します。 (ラジアン単位)
     # @overload rotate_vec_3(rotOrder=XYZ)
     #   　
     #     与えられた引数から回転行列を作り、現在の行列に乗算します。
     #   @param [LN::RotationOrder] rotOrder 回転順序の指定
     def rotate_vec_3
     end
-    # 任意の軸を回転軸にして行列を回転する ( ラジアン単位 )
+    # 任意の軸を回転軸にして行列を回転します。 (ラジアン単位)
     # @overload rotate_axis(radian)
     #   　
     #     与えられた引数から回転行列を作り、現在の行列に乗算します。<br>
@@ -1070,19 +1094,19 @@ class LN::Matrix
     #   @param [Float] radian 回転角度
     def rotate_axis
     end
-    # クォータニオンを使って行列を回転する
+    # クォータニオンを使って行列を回転します。
     # @overload rotate_quaternion()
     #   　
     #     クォータニオンから回転行列を作り、現在の行列に乗算します。
     def rotate_quaternion
     end
-    # 行列をスケーリングする
+    # 行列をスケーリングします。
     # @overload scale()
     #   　
     #     与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
     def scale
     end
-    # 行列をスケーリングする
+    # 行列をスケーリングします。
     # @overload scale_xyz(y, z)
     #   　
     #     与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
@@ -1090,43 +1114,43 @@ class LN::Matrix
     #   @param [Float] z Z 方向の拡大率
     def scale_xyz
     end
-    # 行列をスケーリングする
+    # 行列をスケーリングします。
     # @overload scale_vec_3()
     #   　
     #     与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
     def scale_vec_3
     end
-    # 行列を乗算する
+    # 行列を乗算します。
     # @overload multiply(mat1, mat2)
     #   @param [LN::Matrix] mat1 処理の基になる行列
     #   @param [LN::Matrix] mat2 処理の基になる行列
     def multiply
     end
-    # 逆行列を求める
+    # 逆行列を求めます。
     # @overload inverse(mat)
     #   @param [LN::Matrix] mat 処理の基になる行列
     def inverse
     end
-    # 転置行列を求める
+    # 転置行列を求めます。
     # @overload transpose(mat)
     #   @param [LN::Matrix] mat 処理の基になる行列
     def transpose
     end
-    # 左手座標系ビュー行列を作成する
+    # 左手座標系ビュー行列を作成します。
     # @overload view_transform_lh(pos, lookAt, upDir)
     #   @param [LN::Vector3] pos 視点の位置を示す Vector3
     #   @param [LN::Vector3] lookAt 注視点を示す Vector3
     #   @param [LN::Vector3] upDir 上方向を示す Vector3
     def view_transform_lh
     end
-    # 右手座標系ビュー行列を作成する
+    # 右手座標系ビュー行列を作成します。
     # @overload view_transform_rh(pos, lookAt, upDir)
     #   @param [LN::Vector3] pos 視点の位置を示す Vector3
     #   @param [LN::Vector3] lookAt 注視点を示す Vector3
     #   @param [LN::Vector3] upDir 上方向を示す Vector3
     def view_transform_rh
     end
-    # 左手座標系射影行列の作成
+    # 左手座標系射影行列を作成します。
     # @overload perspective_fov_lh(fovY, aspect, nearZ, farZ)
     #   @param [Float] fovY Y 方向への視野角 (ラジアン単位)
     #   @param [Float] aspect アスペクト比
@@ -1134,7 +1158,7 @@ class LN::Matrix
     #   @param [Float] farZ 遠くのビュー平面の Z 値
     def perspective_fov_lh
     end
-    # 右手座標系射影行列の作成
+    # 右手座標系射影行列作成します。
     # @overload perspective_fov_rh(fovY, aspect, nearZ, farZ)
     #   @param [Float] fovY Y 方向への視野角 (ラジアン単位)
     #   @param [Float] aspect アスペクト比
@@ -1142,7 +1166,7 @@ class LN::Matrix
     #   @param [Float] farZ 遠くのビュー平面の Z 値
     def perspective_fov_rh
     end
-    # 左手座標系正射影行列の作成
+    # 左手座標系正射影行列作成します。
     # @overload ortho_lh(width, height, nearZ, farZ)
     #   @param [Float] width ビューの幅
     #   @param [Float] height ビューの高さ
@@ -1150,7 +1174,7 @@ class LN::Matrix
     #   @param [Float] farZ 遠くのビュー平面の Z 値
     def ortho_lh
     end
-    # 右手座標系正射影行列の作成
+    # 右手座標系正射影行列作成します。
     # @overload ortho_rh(width, height, nearZ, farZ)
     #   @param [Float] width ビューの幅
     #   @param [Float] height ビューの高さ
@@ -1158,7 +1182,7 @@ class LN::Matrix
     #   @param [Float] farZ 遠くのビュー平面の Z 値
     def ortho_rh
     end
-    # 回転行列からオイラー角を計算する
+    # 回転行列からオイラー角を計算します。
     # @overload get_euler_angles()
     def get_euler_angles
     end
@@ -1229,11 +1253,11 @@ class LN::Quaternion
     #   @param [Float] w W 値
     def set
     end
-    # 単位クォータニオンを作成する
+    # 単位クォータニオンを作成します。
     # @overload identity()
     def identity
     end
-    # 任意の軸を回転軸にして回転するクォータニオンを作成する
+    # 任意の軸を回転軸にして回転するクォータニオンを作成します。
     # @overload rotation_axis(axis, r)
     #   　
     #     与えられた軸が正規化されていない場合は正規化された軸を使用します。
@@ -1241,35 +1265,35 @@ class LN::Quaternion
     #   @param [Float] r 回転角度 (ラジアン)
     def rotation_axis
     end
-    # 回転行列からクォータニオンを作成する
+    # 回転行列からクォータニオンを作成します。
     # @overload rotation_matrix(mat)
     #   @param [LN::Matrix] mat 処理の基になる行列
     def rotation_matrix
     end
-    # ヨー、ピッチ、およびロールを指定してクォータニオンを作成する
+    # ヨー、ピッチ、およびロールを指定してクォータニオンを作成します。
     # @overload rotation_yaw_pitch_roll(yaw, pitch, roll)
     #   @param [Float] yaw y 軸を中心とするヨー (ラジアン単位)
     #   @param [Float] pitch x 軸を中心とするピッチ (ラジアン単位)
     #   @param [Float] roll z 軸を中心とするロール (ラジアン単位)
     def rotation_yaw_pitch_roll
     end
-    # クォータニオンを正規化する
+    # クォータニオンを正規化します。
     # @overload normalize(qua)
     #   @param [LN::Quaternion] qua 処理の基になるクォータニオン
     def normalize
     end
-    # クォータニオンの共役を計算する
+    # クォータニオンの共役を計算します。
     # @overload conjugate(qua)
     #   @param [LN::Quaternion] qua 処理の基になるクォータニオン
     def conjugate
     end
-    # 2 つのクォータニオンの積を計算する
+    # 2 つのクォータニオンの積を計算します。
     # @overload multiply(qua1, qua2)
     #   @param [LN::Quaternion] qua1 処理の基になるクォータニオン
     #   @param [LN::Quaternion] qua2 処理の基になるクォータニオン
     def multiply
     end
-    # 2 つのクォータニオンを球面線形補間する
+    # 2 つのクォータニオンを球面線形補間します。
     # @overload slerp(qua1, qua2, t)
     #   @param [LN::Quaternion] qua1 処理の基になるクォータニオン
     #   @param [LN::Quaternion] qua2 処理の基になるクォータニオン
@@ -1417,36 +1441,53 @@ end
 # 3D音声のリスナーに関する情報を表します。
 class LN::SoundListener
     # 3D音声のリスナーの位置を設定します。
+    # @overload position=(position)
+    #   @param [LN::Vector3] position 3D 空間上の座標
+    def position=
+    end
+    # 3D音声のリスナーの正面方向を設定します。
+    # @overload direction=(direction)
+    #   3D音声のリスナーの正面方向を設定します。
+    #   @param [LN::Vector3] direction 向き
+    # @overload direction=(x, y, z)
+    #   3D音声のリスナーの正面方向を設定します。
+    #   @param [Float] x 向きの X 成分
+    #   @param [Float] y 向きの Y 成分
+    #   @param [Float] z 向きの Z 成分
+    def direction=
+    end
+    # 3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+    # @overload up_direction=(direction)
+    #   3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+    #   @param [LN::Vector3] direction 上方向
+    # @overload up_direction=(x, y, z)
+    #   3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+    #   @param [Float] x 向きの X 成分
+    #   @param [Float] y 向きの Y 成分
+    #   @param [Float] z 向きの Z 成分
+    def up_direction=
+    end
+    # 3D音声のリスナーの速度を設定します。
+    # @overload velocity=(velocity)
+    #   3D音声のリスナーの速度を設定します。
+    #   @param [LN::Vector3] velocity 速度
+    # @overload velocity=(x, y, z)
+    #   3D音声のリスナーの速度を設定します。
+    #   @param [Float] x 速度の X 成分
+    #   @param [Float] y 速度の Y 成分
+    #   @param [Float] z 速度の Z 成分
+    def velocity=
+    end
+    # 3D音声のリスナーの位置を設定します。
     # @overload set_position_xyz(x, y, z)
     #   @param [Float] x 3D 空間上の X 座標
     #   @param [Float] y 3D 空間上の Y 座標
     #   @param [Float] z 3D 空間上の Z 座標
     def set_position_xyz
     end
-    # 3D音声のリスナーの正面方向を設定します。
-    # @overload set_direction(x, y, z)
-    #   @param [Float] x 向きの X 成分
-    #   @param [Float] y 向きの Y 成分
-    #   @param [Float] z 向きの Z 成分
-    def set_direction
-    end
-    # 3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
-    # @overload set_up_direction(x, y, z)
-    #   @param [Float] x 向きの X 成分
-    #   @param [Float] y 向きの Y 成分
-    #   @param [Float] z 向きの Z 成分
-    def set_up_direction
-    end
-    # 3D音声のリスナーの速度を設定します。
-    # @overload set_velocity(x, y, z)
-    #   @param [Float] x 速度の X 成分
-    #   @param [Float] y 速度の Y 成分
-    #   @param [Float] z 速度の Z 成分
-    def set_velocity
-    end
 end
 # 音声データひとつ分を表し、再生などの操作を行うクラスです。
-class LN::Sound < ReferenceObject
+class LN::Sound < RefObject
     # ファイルからサウンドオブジェクトを作成します。
     # @overload initialize()
     #   ファイルからサウンドオブジェクトを作成します。
@@ -1454,6 +1495,91 @@ class LN::Sound < ReferenceObject
     #   メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
     #   @param [Integer] dataSize データサイズ (バイト単位)
     def initialize
+    end
+    # サウンドのボリュームを取得します。
+    # @overload volume()
+    def volume
+    end
+    # サウンドのボリュームを設定します。
+    # @overload volume=()
+    def volume=
+    end
+    # サウンドのピッチを取得します。
+    # @overload pitch()
+    def pitch
+    end
+    # サウンドのピッチを設定します。
+    # @overload pitch=()
+    def pitch=
+    end
+    # サウンドのループ再生が有効であるかを確認します。
+    # @overload loop_enabled?()
+    def loop_enabled?
+    end
+    # サウンドのループ再生の有無を設定します。
+    # @overload is_loop_enabled=()
+    def is_loop_enabled=
+    end
+    # サウンドが 3D 音源であるかを確認します。
+    # @overload is_3d_enabled?()
+    def is_3d_enabled?
+    end
+    # サウンドを 3D 音源であるかを設定します。
+    # @overload is_3d_enabled=()
+    def is_3d_enabled=
+    end
+    # サウンド再生時の音声データの再生方法を取得します。
+    # @overload playing_mode()
+    def playing_mode
+    end
+    # サウンド再生時の音声データの再生方法を設定します。
+    # @overload playing_mode=()
+    def playing_mode=
+    end
+    # サウンドの再生状態を取得します。
+    # @overload playing_state()
+    def playing_state
+    end
+    # サウンドの再生したサンプル数を取得します。
+    # @overload played_samples()
+    def played_samples
+    end
+    # サウンドの音声データ全体のサンプル数を取得します。
+    # @overload total_samples()
+    def total_samples
+    end
+    # サウンドのサンプリングレートを取得します。
+    # @overload sampling_rate()
+    def sampling_rate
+    end
+    # サウンドの 3D 音源としての位置を設定します。
+    # @overload emitter_position=()
+    #   サウンドの 3D 音源としての位置を設定します。
+    # @overload emitter_position=(y, z)
+    #   サウンドの 3D 音源としての位置を設定します。
+    #   @param [Float] y 3D 空間上の Y 座標
+    #   @param [Float] z 3D 空間上の Z 座標
+    def emitter_position=
+    end
+    # サウンドの 3D 音源としての速度を設定します。
+    # @overload emitter_velocity=()
+    #   サウンドの 3D 音源としての速度を設定します。
+    # @overload emitter_velocity=(y, z)
+    #   サウンドの 3D 音源としての速度を設定します。
+    #   @param [Float] y 速度の Y 成分
+    #   @param [Float] z 速度の Z 成分
+    def emitter_velocity=
+    end
+    # サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。(default:100)
+    # @overload emitter_max_distance=()
+    def emitter_max_distance=
+    end
+    # サウンドのループ再生の範囲を設定します。
+    # @overload set_loop_range(length)
+    #   　
+    #     begin と length に 0 を指定すると、全体をループ領域として設定します。
+    #   @param [Integer] length ループ領域長さ (サンプル数単位)
+    def set_loop_range
     end
     # サウンドを再生します。
     # @overload play()
@@ -1477,16 +1603,6 @@ class LN::Sound < ReferenceObject
     #   @param [LN::SoundFadeBehavior] behavior フェード完了後の動作の指定
     def fade_volume
     end
-    # サウンドの 3D 音源としての位置を設定します。
-    # @overload set_emitter_position(y, z)
-    #   @param [Float] y 3D 空間上の Y 座標
-    #   @param [Float] z 3D 空間上の Z 座標
-    def set_emitter_position
-    end
-    # サウンドの 3D 音源としての速度を設定します。
-    # @overload set_emitter_velocity(y, z)
-    #   @param [Float] y 速度の Y 成分
-    #   @param [Float] z 速度の Z 成分
-    def set_emitter_velocity
-    end
 end
+
+
