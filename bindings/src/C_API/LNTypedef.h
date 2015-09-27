@@ -365,7 +365,7 @@ typedef enum tagLNDirectMusicMode
 	LN_DIRECTMUSICMODE_THREAD_WAIT,		/**< 別スレッドで初期化して、再生時に未完了の場合は待つ */
 	LN_DIRECTMUSICMODE_THREAD_REQUEST,	/**< 別スレッドで初期化して、再生時に未完了の場合は再生を予約する */
 
-	LN_DMINITMODE__TERMINATOR,
+	LN_DIRECTMUSICMODE__TERMINATOR,
 
 } LNDirectMusicMode;
 

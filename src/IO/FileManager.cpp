@@ -13,17 +13,17 @@ namespace Lumino
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FileManager& FileManager::GetInstance()
-{
-	static FileManager instance;
-	return instance;
-}
-
+//FileManager& FileManager::GetInstance()
+//{
+//	static FileManager instance;
+//	return instance;
+//}
+//
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FileManager::FileManager()
-	: m_fileAccessPriority(FileAccessPriority_DirectoryFirst)
+FileManager::FileManager(const Settings& settings)
+	: m_fileAccessPriority(settings.AccessMode)//FileAccessPriority_DirectoryFirst)
 	, m_dummyArchive(LN_NEW DummyArchive())
 	, m_endRequested(false)
 	, m_isASyncTaskListEmpty(true)

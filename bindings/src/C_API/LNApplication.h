@@ -6,7 +6,8 @@
 extern "C" {
 
 /**
-	@brief	LightNote の初期化やフレーム更新、終了処理等のアプリケーション全体に関わる機能です。
+	@brief		アプリケーション
+	@details	ライブラリの初期化やフレーム更新、終了処理等のアプリケーション全体に関わる機能です。
 */
 LN_MODULE(Application)
 
@@ -17,14 +18,14 @@ LN_MODULE(Application)
 LN_STATIC_CLASS(LNConfig)
 
 	/**
-		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
+		@brief		デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
 		@param[in]	enabled	: LN_TRUE:出力する / LN_FALSE:出力しない
 	*/
 	LN_STATIC_API
 	void LNConfig_SetApplicationLogEnabled(LNBool enabled);
 
 	/**
-		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:LN_FALSE)
+		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
 		@param[in]	enabled	: LN_TRUE:割り当てる / LN_FALSE:割り当てない
 	*/
 	LN_STATIC_API
@@ -46,7 +47,7 @@ LN_STATIC_CLASS(LNConfig)
 	void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority);
 
 	/**
-		@brief		ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
+		@brief		ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
 		@param[in]	windowHandle　: ユーザー定義のウィンドウハンドル
 	*/
 	LN_STATIC_API
@@ -54,40 +55,40 @@ LN_STATIC_CLASS(LNConfig)
 
 	/**
 		@brief		サウンドオブジェクトのキャッシュサイズの設定
-		@param[in]	count		: キャッシュできるサウンドオブジェクトの最大数 (初期値:32)
-		@param[in]	memorySize	: サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (初期値:0)
-		@details	count が 0 の場合、キャッシュを使用しません。
+		@param[in]	objectCount	: キャッシュできるサウンドオブジェクトの最大数 (既定値:32)
+		@param[in]	memorySize	: サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (既定値:0)
+		@details	objectCount が 0 の場合、キャッシュを使用しません。
 					memorySize が 0 の場合、メモリ使用量に制限を設けません。
 	*/
 	LN_STATIC_API
-	void LNConfig_SetSoundCacheSize(int count, int memorySize);
+	void LNConfig_SetSoundCacheSize(int objectCount, int memorySize);
 	
 	/**
-		@brief		DirectMusic の初期化方法を設定します。(初期値:LN_DIRECTMUSICMODE_NOT_USE)
+		@brief		DirectMusic の初期化方法を設定します。(既定値:LN_DIRECTMUSICMODE_NOT_USE)
 		@param[in]	mode	: DirectMusic の初期化方法
 		@details	DirectMusic の初期化には比較的時間がかかります。
 					これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
 	*/
 	LN_STATIC_API
-	void LNConfig_SetDirectMusicInitializeMode(LNDirectMusicMode mode);
+		void LNConfig_SetDirectMusicMode(LNDirectMusicMode mode);
 
 	/**
-		@brief		DirectMusic のリバーブエフェクトの強さを設定します。(初期値:70)
-		@param[in]	level		: リバーブの強さ (0 ～ 100)
+		@brief		DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
+		@param[in]	level		: リバーブの強さ (0.0 ～ 1.0)
 	*/
 	LN_STATIC_API
-	void LNConfig_SetDirectMusicReverbLevel(int level);
+	void LNConfig_SetDirectMusicReverbLevel(float level);
 
 LN_CLASS_END
 
 //==============================================================================
 /**
-	@brief		Lumino ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+	@brief		ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
 */
 LN_STATIC_CLASS(LNApplication)
 
 	/**
-		@brief		Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+		@brief		ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
@@ -95,7 +96,7 @@ LN_STATIC_CLASS(LNApplication)
 
 
 	/**
-		@brief		Lumino ライブラリの終了処理を行います。
+		@brief		ライブラリの終了処理を行います。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_TERMINATOR
@@ -131,7 +132,7 @@ LN_STATIC_CLASS(LNVersion)
 	void LNVersion_GetRevision(int* outRevision);
 
 	/**
-		@brief		バージョン文字列の取得を取得します。
+		@brief		バージョン文字列を取得します。
 		@param[out]	outStr	: 文字列へのアドレスを格納する変数のポインタ
 	*/
 	LN_STATIC_API

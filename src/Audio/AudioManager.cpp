@@ -46,7 +46,7 @@ LN_NAMESPACE_AUDIO_BEGIN
 // AudioManagerImplImpl
 //=============================================================================
 
-AudioManagerImpl* Internal::Manager = NULL;
+AudioManagerImpl* Internal::AudioManager = NULL;
 
 //-----------------------------------------------------------------------------
 //
@@ -91,6 +91,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 		DirectMusicAudioDevice::ConfigData data;
 		data.DMInitMode = settings.DMInitMode;
 		data.hWnd = (HWND)settings.hWnd;
+		data.ReverbLevel = settings.DirectMusicReverbLevel;
 		device->Initialize(data);
 		device.SafeAddRef();
 		m_midiAudioDevice = device;
@@ -98,7 +99,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 #else
 #endif
 	// キャッシュ初期化
-	m_audioStreamCache = LN_NEW CacheManager(32, 65535);
+	m_audioStreamCache = LN_NEW CacheManager(settings.StreamCacheObjectCount, settings.StreamSourceCacheMemorySize);
 
 	// GameAudio
 	m_gameAudio = LN_NEW GameAudio(this);
@@ -106,7 +107,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	// ポーリングスレッド開始
 	m_pollingThread.Start(LN_CreateDelegate(this, &AudioManagerImpl::Thread_Polling));
 
-	Internal::Manager = this;
+	Internal::AudioManager = this;
 }
 
 //-----------------------------------------------------------------------------
@@ -146,11 +147,11 @@ void AudioManagerImpl::Finalize()
 		m_audioStreamCache->Finalize();
 		LN_SAFE_RELEASE(m_audioStreamCache);
 	}
-	LN_SAFE_RELEASE(m_audioDevice);
 	LN_SAFE_RELEASE(m_midiAudioDevice);
+	LN_SAFE_RELEASE(m_audioDevice);
 
-	if (Internal::Manager == this) {
-		Internal::Manager = NULL;
+	if (Internal::AudioManager == this) {
+		Internal::AudioManager = NULL;
 	}
 }
 
@@ -175,7 +176,7 @@ AudioStream* AudioManagerImpl::CreateAudioStream(Stream* stream, const CacheKey&
 	// キャッシュに見つからなかったら新しく作る
 	if (audioStream.IsNull())
 	{
-		audioStream.Attach(LN_NEW AudioStream(stream), false);
+		audioStream.Attach(LN_NEW AudioStream(this, stream), false);
 		audioStream->Create(loadingMode == SoundLoadingMode::ASync);	// 非同期読み込み開始
 								// TODO: 同期読み込みだけにして、Polling スレッドで読み込んでも良いかも？
 		/*

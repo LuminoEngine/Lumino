@@ -65,59 +65,19 @@ bool Commands_cmdfunc(int cmd, int* retVal)
 	{
     case 0x0064:
     {
-    
-        stat = LNError_GetLastErrorCode();
-    
-        return true;
-    }
-    case 0x0065:
-    {
-        PVal* pval_p0;
-        APTR aptr_p0 = code_getva(&pval_p0);
-        const LNChar* p0;
-        LNError_GetLastErrorMessage(&p0);
-        code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_STR, p0);
-        return true;
-    }
-    case 0x0066:
-    {
-        intptr_t p0 = CodeGetI();
-        stat = LNObject_Release(p0);
-    
-        return true;
-    }
-    case 0x0067:
-    {
-        intptr_t p0 = CodeGetI();
-        stat = LNObject_AddRef(p0);
-    
-        return true;
-    }
-    case 0x0068:
-    {
-        intptr_t p0 = CodeGetI();
-        PVal* pval_p1;
-        APTR aptr_p1 = code_getva(&pval_p1);
-        int p1;
-        stat = LNObject_GetRefCount(p0, &p1);
-        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
-        return true;
-    }
-    case 0x0069:
-    {
         LNBool p0 = (LNBool)CodeGetI();
         LNConfig_SetApplicationLogEnabled(p0);
     
         return true;
     }
-    case 0x006A:
+    case 0x0065:
     {
         LNBool p0 = (LNBool)CodeGetI();
         LNConfig_SetConsoleEnabled(p0);
     
         return true;
     }
-    case 0x006B:
+    case 0x0066:
     {
         str_p0 = CodeGetS();
         str_p1 = CodeGetS();
@@ -125,21 +85,21 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x006C:
+    case 0x0067:
     {
         int p0 = CodeGetI();
         LNConfig_SetFileAccessPriority((LNFileAccessPriority)p0);
     
         return true;
     }
-    case 0x006D:
+    case 0x0068:
     {
         intptr_t p0 = CodeGetI();
         LNConfig_SetUserWindowHandle(p0);
     
         return true;
     }
-    case 0x006E:
+    case 0x0069:
     {
         int p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -147,35 +107,35 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x006F:
+    case 0x006A:
     {
         int p0 = CodeGetI();
         LNConfig_SetDirectMusicInitializeMode((LNDirectMusicMode)p0);
     
         return true;
     }
-    case 0x0070:
+    case 0x006B:
     {
         int p0 = CodeGetI();
         LNConfig_SetDirectMusicReverbLevel(p0);
     
         return true;
     }
-    case 0x0071:
+    case 0x006C:
     {
     
         stat = LNApplication_InitializeAudio();
     
         return true;
     }
-    case 0x0072:
+    case 0x006D:
     {
     
         LNApplication_Terminate();
     
         return true;
     }
-    case 0x0073:
+    case 0x006E:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -184,7 +144,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x0074:
+    case 0x006F:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -193,7 +153,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x0075:
+    case 0x0070:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -202,7 +162,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x0076:
+    case 0x0071:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -211,7 +171,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_STR, p0);
         return true;
     }
-    case 0x0077:
+    case 0x0072:
     {
         int p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -221,6 +181,46 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         LNBool p3;
         LNVersion_IsAtLeast(p0, p1, p2, &p3);
         int rp3 = p3; code_setva(pval_p3, aptr_p3, HSPVAR_FLAG_INT, &rp3);
+        return true;
+    }
+    case 0x0073:
+    {
+    
+        stat = LNError_GetLastErrorCode();
+    
+        return true;
+    }
+    case 0x0074:
+    {
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        const LNChar* p0;
+        LNError_GetLastErrorMessage(&p0);
+        code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_STR, p0);
+        return true;
+    }
+    case 0x0075:
+    {
+        intptr_t p0 = CodeGetI();
+        stat = LNObject_Release(p0);
+    
+        return true;
+    }
+    case 0x0076:
+    {
+        intptr_t p0 = CodeGetI();
+        stat = LNObject_AddRef(p0);
+    
+        return true;
+    }
+    case 0x0077:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNObject_GetRefCount(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
     case 0x0078:
@@ -821,7 +821,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int p1 = CodeGetI(100);
         int p2 = CodeGetI(100);
         double p3 = CodeGetD(0.0);
-        stat = LNAudio_PlayBGM(str_p0.c_str(), p1, p2, p3);
+        stat = LNGameAudio_PlayBGM(str_p0.c_str(), p1, p2, p3);
     
         return true;
     }
@@ -832,14 +832,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int p2 = CodeGetI(100);
         int p3 = CodeGetI(100);
         double p4 = CodeGetD(0.0);
-        stat = LNAudio_PlayBGMMem(p0, p1, p2, p3, p4);
+        stat = LNGameAudio_PlayBGMMem(p0, p1, p2, p3, p4);
     
         return true;
     }
     case 0x00B3:
     {
         double p0 = CodeGetD(0.0);
-        stat = LNAudio_StopBGM(p0);
+        stat = LNGameAudio_StopBGM(p0);
     
         return true;
     }
@@ -849,7 +849,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int p1 = CodeGetI(100);
         int p2 = CodeGetI(100);
         double p3 = CodeGetD(0.0);
-        stat = LNAudio_PlayBGS(str_p0.c_str(), p1, p2, p3);
+        stat = LNGameAudio_PlayBGS(str_p0.c_str(), p1, p2, p3);
     
         return true;
     }
@@ -860,14 +860,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int p2 = CodeGetI(100);
         int p3 = CodeGetI(100);
         double p4 = CodeGetD(0.0);
-        stat = LNAudio_PlayBGSMem(p0, p1, p2, p3, p4);
+        stat = LNGameAudio_PlayBGSMem(p0, p1, p2, p3, p4);
     
         return true;
     }
     case 0x00B6:
     {
         double p0 = CodeGetD(0.0);
-        stat = LNAudio_StopBGS(p0);
+        stat = LNGameAudio_StopBGS(p0);
     
         return true;
     }
@@ -876,7 +876,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         str_p0 = CodeGetS();
         int p1 = CodeGetI(100);
         int p2 = CodeGetI(100);
-        stat = LNAudio_PlayME(str_p0.c_str(), p1, p2);
+        stat = LNGameAudio_PlayME(str_p0.c_str(), p1, p2);
     
         return true;
     }
@@ -886,14 +886,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int p1 = CodeGetI();
         int p2 = CodeGetI(100);
         int p3 = CodeGetI(100);
-        stat = LNAudio_PlayMEMem(p0, p1, p2, p3);
+        stat = LNGameAudio_PlayMEMem(p0, p1, p2, p3);
     
         return true;
     }
     case 0x00B9:
     {
     
-        stat = LNAudio_StopME();
+        stat = LNGameAudio_StopME();
     
         return true;
     }
@@ -902,7 +902,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         str_p0 = CodeGetS();
         int p1 = CodeGetI(100);
         int p2 = CodeGetI(100);
-        stat = LNAudio_PlaySE(str_p0.c_str(), p1, p2);
+        stat = LNGameAudio_PlaySE(str_p0.c_str(), p1, p2);
     
         return true;
     }
@@ -913,7 +913,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         float p2 = CodeGetD();
         int p3 = CodeGetI(100);
         int p4 = CodeGetI(100);
-        stat = LNAudio_PlaySE3D(str_p0.c_str(), (LNVector3*)pval_p1->pt, p2, p3, p4);
+        stat = LNGameAudio_PlaySE3D(str_p0.c_str(), (LNVector3*)pval_p1->pt, p2, p3, p4);
     
         return true;
     }
@@ -926,7 +926,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         float p4 = CodeGetD();
         int p5 = CodeGetI(100);
         int p6 = CodeGetI(100);
-        stat = LNAudio_PlaySE3DXYZ(str_p0.c_str(), p1, p2, p3, p4, p5, p6);
+        stat = LNGameAudio_PlaySE3DXYZ(str_p0.c_str(), p1, p2, p3, p4, p5, p6);
     
         return true;
     }
@@ -936,7 +936,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int p1 = CodeGetI();
         int p2 = CodeGetI(100);
         int p3 = CodeGetI(100);
-        stat = LNAudio_PlaySEMem(p0, p1, p2, p3);
+        stat = LNGameAudio_PlaySEMem(p0, p1, p2, p3);
     
         return true;
     }
@@ -948,7 +948,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         float p3 = CodeGetD();
         int p4 = CodeGetI(100);
         int p5 = CodeGetI(100);
-        stat = LNAudio_PlaySE3DMem(p0, p1, (LNVector3*)pval_p2->pt, p3, p4, p5);
+        stat = LNGameAudio_PlaySE3DMem(p0, p1, (LNVector3*)pval_p2->pt, p3, p4, p5);
     
         return true;
     }
@@ -962,14 +962,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         float p5 = CodeGetD();
         int p6 = CodeGetI(100);
         int p7 = CodeGetI(100);
-        stat = LNAudio_PlaySE3DMemXYZ(p0, p1, p2, p3, p4, p5, p6, p7);
+        stat = LNGameAudio_PlaySE3DMemXYZ(p0, p1, p2, p3, p4, p5, p6, p7);
     
         return true;
     }
     case 0x00C0:
     {
     
-        stat = LNAudio_StopSE();
+        stat = LNGameAudio_StopSE();
     
         return true;
     }
@@ -977,7 +977,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     {
         int p0 = CodeGetI();
         double p1 = CodeGetD(0.0);
-        stat = LNAudio_SetBGMVolume(p0, p1);
+        stat = LNGameAudio_SetBGMVolume(p0, p1);
     
         return true;
     }
@@ -985,7 +985,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     {
         int p0 = CodeGetI();
         double p1 = CodeGetD(0.0);
-        stat = LNAudio_SetBGSVolume(p0, p1);
+        stat = LNGameAudio_SetBGSVolume(p0, p1);
     
         return true;
     }

@@ -40,6 +40,10 @@ namespace BinderMaker
             Name = name;
             Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
             Classes = new List<CLClass>(Parser.CLAPIModule.ModuleBody.Parse(bodyText));
+            foreach (var c in Classes)
+            {
+                c.OwnerModule = this;
+            }
         }
 
         #endregion

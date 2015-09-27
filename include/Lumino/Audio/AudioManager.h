@@ -28,15 +28,17 @@ public:
 		Lumino::FileManager*	FileManager;					///< ファイルからの読み込みに使うファイル管理クラス
 		uint32_t				StreamCacheObjectCount;			///< キャッシュサイズ (ファイル数)
 		uint32_t				StreamSourceCacheMemorySize;	///< キャッシュサイズ (メモリ量(byte))
-		DirectMusicInitMode		DMInitMode;						///< DirectMusic の初期化方法
+		DirectMusicMode			DMInitMode;						///< DirectMusic の初期化方法
 		void*					hWnd;							///< DirectMusic の初期化に使うウィンドウハンドル
+		float					DirectMusicReverbLevel;
 
 		Settings()
 			: FileManager(NULL)
 			, StreamCacheObjectCount(32)
 			, StreamSourceCacheMemorySize(0)
-			, DMInitMode(DirectMusicInitMode_NotUse)
+			, DMInitMode(DirectMusicMode::NotUse)
 			, hWnd(NULL)
+			, DirectMusicReverbLevel(0.75f)
 		{}
 	};
 
@@ -57,8 +59,9 @@ public:
 	/// デバイスクラスの取得
 	AudioDevice* GetAudioDevice() { return m_audioDevice; }
 
-private:
-	friend class Sound;
+//LN_INTERNAL_ACCESS:
+public:	// TODO
+	friend class Sound;	// TODO
 	Lumino::FileManager* GetFileManager() { return m_fileManager; }
 	//AudioStream* CreateAudioStream(const TCHAR* filePath);
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);

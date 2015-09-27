@@ -21,13 +21,14 @@ class FileManager
 {
 public:
 	/// 初期化データ
-	struct ConfigData
+	struct Settings
 	{
 		FileAccessPriority	AccessMode;     ///< ファイルへのアクセス優先度
-	};
 
-public:
-	static FileManager& GetInstance();
+		Settings()
+			: AccessMode(FileAccessPriority_DirectoryFirst)
+		{}
+	};
 
 public:
 
@@ -70,8 +71,8 @@ public:
 	*/
 	void WaitForAllASyncTask();
 
-private:
-	FileManager();
+LN_INTERNAL_ACCESS:
+	FileManager(const Settings& settings);
 	virtual ~FileManager();
 
 	void RefreshArchiveList();

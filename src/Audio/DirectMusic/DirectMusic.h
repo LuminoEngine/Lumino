@@ -10,6 +10,8 @@ namespace Lumino
 {
 LN_NAMESPACE_AUDIO_BEGIN
 
+class DirectMusicManager;
+
 /**
 	@brief      DirectMusic 上での再生シーケンスひとつ分を扱うクラス
 
@@ -25,7 +27,7 @@ class DirectMusicSegment
 {
 public:
 	/// (midiStream は保持しないため、参照カウントは変化させません。ただし、コンストラクタに渡す前に fillBuffer() を呼んでおく必要があります)
-	DirectMusicSegment(IDirectMusicPerformance8* dmPerformance, MidiDecoder* midiStream);
+	DirectMusicSegment(DirectMusicManager* manager, IDirectMusicPerformance8* dmPerformance, MidiDecoder* midiStream);
 	virtual ~DirectMusicSegment();
 
 public:
@@ -85,8 +87,9 @@ public:
 	/// 渡す初期化データ
     struct ConfigData
     {
-        HWND                    WindowHandle;
-        DirectMusicInitMode		DMInitMode;
+        HWND				WindowHandle;
+		DirectMusicMode		DMInitMode;
+		float				ReverbLevel;
     };
 
 	/// 再生要求を持つクラスの基底
@@ -119,6 +122,8 @@ public:
 
 	/// エラー状態の取得 (エラー番号(内部用)。 正常な場合は 0)
     uint32_t GetErrorState();
+
+	float GetReverbLevel() const { return m_reverbLevel; }
 
 	/// 再生要求の追加 (既に同じオブジェクトが追加されている場合はなにもしません。)
 	void AddPlayRequest( PlayerObject* obj );
@@ -175,7 +180,7 @@ private:
 	typedef Array<PlayerObject*> PlayRequestList;
 
     HWND						m_windowHandle;
-	DirectMusicInitMode			m_initMode;
+	DirectMusicMode				m_initMode;
 	IDirectSound8*				m_directSound;
 	IDirectMusic8*				m_directMusic;
 	IDirectMusicPerformance8*	m_firstPerformance;	///< 初期化スレッドによって作成された IDirectMusicPerformance8
@@ -185,10 +190,11 @@ private:
     Threading::Mutex			m_mutex;
     Threading::Mutex			m_listLock;
 
-    PlayRequestList             m_playRequestList;
-    uint32_t                       mErrorState;
+    PlayRequestList				m_playRequestList;
+    uint32_t					mErrorState;
+	float						m_reverbLevel;
 
-	static DirectMusicManager* m_instance;
+	static DirectMusicManager*	m_instance;
 };
 
 LN_NAMESPACE_AUDIO_END

@@ -53,6 +53,7 @@ void DirectMusicAudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
 	if (DirectMusicManager::GetInstance()->IsInitialized() && !m_segment)
 	{
 		m_segment = LN_NEW DirectMusicSegment(
+			DirectMusicManager::GetInstance(),
 			DirectMusicManager::GetInstance()->CreateDMPerformance(),
 			m_midiDecoder);
 	}
@@ -212,7 +213,7 @@ uint32_t DirectMusicAudioPlayer::getTotalTime() const
 //-----------------------------------------------------------------------------
 void DirectMusicAudioPlayer::onFinishDMInit(IDirectMusicPerformance8* dmPerformance)
 {
-	m_segment = LN_NEW DirectMusicSegment(dmPerformance, m_midiDecoder);
+	m_segment = LN_NEW DirectMusicSegment(DirectMusicManager::GetInstance(), dmPerformance, m_midiDecoder);
 
 	// 初期化中に設定されたパラメータを再設定する
 	SetVolume(static_cast< int >(mVolume));
@@ -245,6 +246,7 @@ void DirectMusicAudioPlayer::_play()
 	if (!m_segment)
 	{
 		m_segment = LN_NEW DirectMusicSegment(
+			DirectMusicManager::GetInstance(),
 			DirectMusicManager::GetInstance()->CreateDMPerformance(),
 			m_midiDecoder);
 

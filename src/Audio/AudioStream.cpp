@@ -1,5 +1,6 @@
 
 #include "Internal.h"
+#include <Lumino/Audio/AudioManager.h>
 #include "AudioStream.h"
 #include "WaveDecoder.h"
 #include "OggDecoder.h"
@@ -18,8 +19,9 @@ LN_NAMESPACE_AUDIO_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioStream::AudioStream(Stream* stream)
-	: m_stream(NULL)
+AudioStream::AudioStream(AudioManagerImpl* manager, Stream* stream)
+	: m_manager(manager)
+	, m_stream(NULL)
 	, m_format(StreamFormat_Unknown)
 	, m_decoder(NULL)
 {
@@ -33,6 +35,14 @@ AudioStream::~AudioStream()
 {
 	LN_SAFE_RELEASE(m_stream);
 	LN_SAFE_RELEASE(m_decoder);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AudioStream::Create(bool async)
+{
+	InvokeIOProc(async, m_manager->GetFileManager());
 }
 
 //-----------------------------------------------------------------------------

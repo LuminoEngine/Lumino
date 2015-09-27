@@ -39,15 +39,15 @@ struct WaveFormat
 	uint16_t	EXSize;
 };
 
-/// DirectMusic の初期化方法
-enum DirectMusicInitMode
+/** DirectMusic の初期化方法。*/
+enum class DirectMusicMode
 {
-	DirectMusicInitMode_NotUse = 0,			///< DirectMusic を使用しない
-	DirectMusicInitMode_Normal,				///< 通常
-	DirectMusicInitMode_ThreadWait,			///< 別スレッドで初期化して、再生時に未完了の場合は待つ
-	DirectMusicInitMode_ThreadRequest,		///< 別スレッドで初期化して、再生時に未完了の場合は再生を予約する
+	NotUse = 0,			/**< DirectMusic を使用しない */
+	Normal,				/**< 通常 */
+	ThreadWait,			/**< 別スレッドで初期化して、再生時に未完了の場合は待つ */
+	ThreadRequest,		/**< 別スレッドで初期化して、再生時に未完了の場合は再生を予約する */
 
-	DirectMusicInitMode_MAX,
+	TERMINATOR,
 };
 
 /** 音声データの読み込み方法を表します。*/

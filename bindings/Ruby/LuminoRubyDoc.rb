@@ -425,38 +425,6 @@ module LN::ObjectType
     # 
     SOUND = 0
 end
-# エラーに関係する処理を行います。
-class LN::Error < RefObject
-    # 最後に発生したエラーのエラーコードを取得します。
-    # @overload get_last_error_code()
-    def get_last_error_code
-    end
-    # 最後に発生したエラーのエラーメッセージを取得します。
-    # @overload get_last_error_message()
-    def get_last_error_message
-    end
-end
-# 全てのオブジェクトのベースオブジェクトです。
-class LN::RefObject < RefObject
-    # オブジェクトを解放します。
-    # @overload release()
-    #   　
-    #     指定されたオブジェクトの参照を解放します。
-    def release
-    end
-    # オブジェクトの参照カウントをインクリメントします。
-    # @overload add_ref()
-    #   　
-    #     この関数は「参照カウント」という概念について十分に理解した上で使用してください。
-    #     					参照カウントは LNObject_AddRef でインクリメントされ、LNObject_Release でデクリメントされます。
-    #     					Release 漏れがあるとメモリリークの原因になります。
-    def add_ref
-    end
-    # オブジェクトの参照カウント取得します。
-    # @overload get_ref_count()
-    def get_ref_count
-    end
-end
 # 初期設定を行います。
 class LN::Config
     # デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
@@ -508,13 +476,13 @@ class LN::Config
     def set_direct_music_reverb_level
     end
 end
-# Lumino ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+# ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
 class LN::Application
-    # Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+    # ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
     # @overload initialize_audio()
     def initialize_audio
     end
-    # Lumino ライブラリの終了処理を行います。
+    # ライブラリの終了処理を行います。
     # @overload terminate()
     def terminate
     end
@@ -533,7 +501,7 @@ class LN::Version
     # @overload get_revision()
     def get_revision
     end
-    # バージョン文字列の取得を取得します。
+    # バージョン文字列を取得します。
     # @overload get_string()
     def get_string
     end
@@ -545,6 +513,38 @@ class LN::Version
     #   @param [Integer] minor マイナーバージョン
     #   @param [Integer] revision リビジョンバージョン
     def is_at_least
+    end
+end
+# エラーに関係する処理を行います。
+class LN::Error < RefObject
+    # 最後に発生したエラーのエラーコードを取得します。
+    # @overload get_last_error_code()
+    def get_last_error_code
+    end
+    # 最後に発生したエラーのエラーメッセージを取得します。
+    # @overload get_last_error_message()
+    def get_last_error_message
+    end
+end
+# 全てのオブジェクトのベースオブジェクトです。
+class LN::RefObject < RefObject
+    # オブジェクトを解放します。
+    # @overload release()
+    #   　
+    #     指定されたオブジェクトの参照を解放します。
+    def release
+    end
+    # オブジェクトの参照カウントをインクリメントします。
+    # @overload add_ref()
+    #   　
+    #     この関数は「参照カウント」という概念について十分に理解した上で使用してください。
+    #     					参照カウントは LNObject_AddRef でインクリメントされ、LNObject_Release でデクリメントされます。
+    #     					Release 漏れがあるとメモリリークの原因になります。
+    def add_ref
+    end
+    # オブジェクトの参照カウント取得します。
+    # @overload get_ref_count()
+    def get_ref_count
     end
 end
 # 2次元のベクトルのクラスです。
@@ -1301,8 +1301,8 @@ class LN::Quaternion
     def slerp
     end
 end
-# 音声再生のユーティリティクラスです。
-class LN::Audio
+# ゲーム向け音声再生のユーティリティクラスです。
+class LN::GameAudio
     # BGM を演奏します。
     # @overload play_bgm(filePath, volume=100, pitch=100, fadeTime=0.0)
     #   @param [String] filePath ファイルパス
@@ -1438,7 +1438,7 @@ class LN::Audio
     def set_bgs_volume
     end
 end
-# 3D音声のリスナーに関する情報を表します。
+# 3D音声のリスナーに関する情報を操作します。
 class LN::SoundListener
     # 3D音声のリスナーの位置を設定します。
     # @overload position=(position)
@@ -1496,45 +1496,45 @@ class LN::Sound < RefObject
     #   @param [Integer] dataSize データサイズ (バイト単位)
     def initialize
     end
-    # サウンドのボリュームを取得します。
-    # @overload volume()
-    def volume
-    end
     # サウンドのボリュームを設定します。
     # @overload volume=()
     def volume=
     end
-    # サウンドのピッチを取得します。
-    # @overload pitch()
-    def pitch
+    # サウンドのボリュームを取得します。
+    # @overload volume()
+    def volume
     end
     # サウンドのピッチを設定します。
     # @overload pitch=()
     def pitch=
     end
-    # サウンドのループ再生が有効であるかを確認します。
-    # @overload loop_enabled?()
-    def loop_enabled?
+    # サウンドのピッチを取得します。
+    # @overload pitch()
+    def pitch
     end
     # サウンドのループ再生の有無を設定します。
     # @overload is_loop_enabled=()
     def is_loop_enabled=
     end
-    # サウンドが 3D 音源であるかを確認します。
-    # @overload is_3d_enabled?()
-    def is_3d_enabled?
+    # サウンドのループ再生が有効であるかを確認します。
+    # @overload loop_enabled?()
+    def loop_enabled?
     end
     # サウンドを 3D 音源であるかを設定します。
     # @overload is_3d_enabled=()
     def is_3d_enabled=
     end
-    # サウンド再生時の音声データの再生方法を取得します。
-    # @overload playing_mode()
-    def playing_mode
+    # サウンドが 3D 音源であるかを確認します。
+    # @overload is_3d_enabled?()
+    def is_3d_enabled?
     end
     # サウンド再生時の音声データの再生方法を設定します。
     # @overload playing_mode=()
     def playing_mode=
+    end
+    # サウンド再生時の音声データの再生方法を取得します。
+    # @overload playing_mode()
+    def playing_mode
     end
     # サウンドの再生状態を取得します。
     # @overload playing_state()

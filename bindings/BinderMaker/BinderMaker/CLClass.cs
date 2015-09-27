@@ -24,6 +24,11 @@ namespace BinderMaker
         #region Properties
 
         /// <summary>
+        /// 属しているモジュール
+        /// </summary>
+        public CLModule OwnerModule { get; set; }
+
+        /// <summary>
         /// ドキュメント
         /// </summary>
         public CLDocument Document { get; private set; }

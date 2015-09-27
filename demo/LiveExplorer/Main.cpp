@@ -36,16 +36,25 @@ int main()
 		ColorBrush ff(ColorF(1, 0, 0, 1));
 		auto aa = ColorBrush::Green;
 		ApplicationSettings appData;
+		appData.DirectMusicMode = DirectMusicMode::Normal;
 		Application::Initialize(appData);
 
-		GCPtr<GUIContext> context1 = GUIContext::Create();
+		GCPtr<Sound> s = Sound::Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"));
+		s->SetLoopEnabled(true);
+		s->SetPitch(110);
+		s->Play();
 
-		GCPtr<Button> button1 = Button::Create();
-		context1->SetRootElement(button1);
+		//GCPtr<GUIContext> context1 = GUIContext::Create();
+
+		//GCPtr<Button> button1 = Button::Create();
+		//context1->SetRootElement(button1);
 
 		while (Application::UpdateFrame())
 		{
 		}
+
+		s->Stop();
+		s.SafeRelease();
 
 		Application::Finalize();
 

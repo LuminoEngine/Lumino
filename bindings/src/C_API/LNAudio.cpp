@@ -3,13 +3,13 @@
 #include "LNAudio.h"
 
 //=============================================================================
-// LNAudio
+// LNGameAudio
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume, int pitch, double fadeTime)
+LNResult LNGameAudio_PlayBGM(const LNChar* filePath, int volume, int pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
@@ -19,7 +19,7 @@ LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume, int pitch, double f
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
+LNResult LNGameAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -31,7 +31,7 @@ LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitc
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopBGM(double fadeTime)
+LNResult LNGameAudio_StopBGM(double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->StopBGM( fadeTime );
@@ -41,7 +41,7 @@ LNResult LNAudio_StopBGM(double fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, double fadeTime )
+LNResult LNGameAudio_PlayBGS( const LNChar* filename, int volume, int pitch, double fadeTime )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGS( filename, volume, pitch, fadeTime );
@@ -51,7 +51,7 @@ LNResult LNAudio_PlayBGS( const LNChar* filename, int volume, int pitch, double 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
+LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -63,7 +63,7 @@ LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitc
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopBGS(double fadeTime)
+LNResult LNGameAudio_StopBGS(double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->StopBGS( fadeTime );
@@ -73,7 +73,7 @@ LNResult LNAudio_StopBGS(double fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayME( const LNChar* filename, int volume, int pitch )
+LNResult LNGameAudio_PlayME( const LNChar* filename, int volume, int pitch )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayME( filename, volume, pitch );
@@ -83,7 +83,7 @@ LNResult LNAudio_PlayME( const LNChar* filename, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch)
+LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -95,7 +95,7 @@ LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopME()
+LNResult LNGameAudio_StopME()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->StopME();
@@ -105,7 +105,7 @@ LNResult LNAudio_StopME()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySE( const LNChar* filename, int volume, int pitch )
+LNResult LNGameAudio_PlaySE( const LNChar* filename, int volume, int pitch )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySE( filename, volume, pitch );
@@ -115,7 +115,7 @@ LNResult LNAudio_PlaySE( const LNChar* filename, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySE3D(const LNChar* filename, const LNVector3* position, float distance, int volume, int pitch)
+LNResult LNGameAudio_PlaySE3D(const LNChar* filename, const LNVector3* position, float distance, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySE3D(filename, *cp_cast<Vector3>(position), distance, volume, pitch);
@@ -125,16 +125,16 @@ LNResult LNAudio_PlaySE3D(const LNChar* filename, const LNVector3* position, flo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, float z, float distance, int volume, int pitch )
+LNResult LNGameAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, float z, float distance, int volume, int pitch )
 {
 	LNVector3 pos = { x, y, z };
-	return LNAudio_PlaySE3D(filename, &pos, distance, volume, pitch);
+	return LNGameAudio_PlaySE3D(filename, &pos, distance, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch)
+LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -146,7 +146,7 @@ LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume, int pitch)
+LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume, int pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -160,16 +160,16 @@ LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* po
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume, int pitch)
+LNResult LNGameAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume, int pitch)
 {
 	LNVector3 pos = { x, y, z };
-	return LNAudio_PlaySE3DMem(data, dataSize, &pos, distance, volume, pitch);
+	return LNGameAudio_PlaySE3DMem(data, dataSize, &pos, distance, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_StopSE()
+LNResult LNGameAudio_StopSE()
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->StopSE();
@@ -182,11 +182,11 @@ LNResult LNAudio_StopSE()
 //@param[in]  distance	: 距離
 //*/
 //LN_STATIC_API
-//LNResult LNAudio_Set3DMetreUnitDistance(float distance);
+//LNResult LNGameAudio_Set3DMetreUnitDistance(float distance);
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//LNResult LNAudio_Set3DMetreUnitDistance(float distance)
+//LNResult LNGameAudio_Set3DMetreUnitDistance(float distance)
 //{
 //	LN_FUNC_TRY_BEGIN;
 //	LFManager::Application->GetAudioManager()->SetMetreUnitDistance(distance);
@@ -196,7 +196,7 @@ LNResult LNAudio_StopSE()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_SetBGMVolume(int volume, double fadeTime)
+LNResult LNGameAudio_SetBGMVolume(int volume, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGMVolume( volume, fadeTime );
@@ -206,7 +206,7 @@ LNResult LNAudio_SetBGMVolume(int volume, double fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNAudio_SetBGSVolume(int volume, double fadeTime)
+LNResult LNGameAudio_SetBGSVolume(int volume, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGSVolume( volume, fadeTime );
@@ -956,7 +956,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayBGM( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
+    LNOTEAPI LNResult LNGameAudio_PlayBGM( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -972,7 +972,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayBGMMem( const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
+    LNOTEAPI LNResult LNGameAudio_PlayBGMMem( const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -981,7 +981,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_StopBGM(double fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNGameAudio_StopBGM(double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -993,7 +993,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayBGS( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
+    LNOTEAPI LNResult LNGameAudio_PlayBGS( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -1009,7 +1009,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100), double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1018,7 +1018,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_StopBGS(double fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNGameAudio_StopBGS(double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1029,7 +1029,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlayME( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100) );
+    LNOTEAPI LNResult LNGameAudio_PlayME( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -1044,14 +1044,14 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
+	LNOTEAPI LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
 
 	//-----------------------------------------------------------------------------
 	///**
 	//  @brief      ME の演奏を停止する
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI void LNAudio_StopME();
+	LNOTEAPI void LNGameAudio_StopME();
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1062,7 +1062,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlaySE( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100) );
+    LNOTEAPI LNResult LNGameAudio_PlaySE( const LNChar* filePath, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -1078,7 +1078,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
+	LNOTEAPI LNResult LNGameAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -1096,7 +1096,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-    LNOTEAPI LNResult LNAudio_PlaySE3DXYZ( const LNChar* filePath, float x, float y, float z, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100) );
+    LNOTEAPI LNResult LNGameAudio_PlaySE3DXYZ( const LNChar* filePath, float x, float y, float z, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100) );
 	/*DeclOpt
 	HSP_Override = true;
 	DeclOpt*/
@@ -1111,7 +1111,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
+	LNOTEAPI LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1125,7 +1125,7 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
+	LNOTEAPI LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1141,14 +1141,14 @@ extern "C" {
 	//  @return     処理結果 (LN_OK=成功 / それ以外=エラーコード)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
+	LNOTEAPI LNResult LNGameAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume LNOTE_DEFAULT_ARG(100), int pitch LNOTE_DEFAULT_ARG(100));
 
 	//-----------------------------------------------------------------------------
 	///**
 	//  @brief      すべての SE の演奏を停止する
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI void LNAudio_StopSE();
+	LNOTEAPI void LNGameAudio_StopSE();
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1156,7 +1156,7 @@ extern "C" {
 	//  @param[in]  distance	: 距離
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_SetMetreUnitDistance(float distance);
+	LNOTEAPI LNResult LNGameAudio_SetMetreUnitDistance(float distance);
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1165,7 +1165,7 @@ extern "C" {
 	//  @param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_SetBGMVolume(int volume, double fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNGameAudio_SetBGMVolume(int volume, double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1174,7 +1174,7 @@ extern "C" {
 	//  @param[in]  fadeTime	: フェードアウトにかける時間 (ミリ秒)
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNResult LNAudio_SetBGSVolume(int volume, double fadeTime LNOTE_DEFAULT_ARG(0));
+	LNOTEAPI LNResult LNGameAudio_SetBGSVolume(int volume, double fadeTime LNOTE_DEFAULT_ARG(0));
 
 	//-----------------------------------------------------------------------------
 	///**
@@ -1187,7 +1187,7 @@ extern "C" {
 	//				Release、Play、Stop、Pause を行わないでください。
 	//*/
 	//-----------------------------------------------------------------------------
-	LNOTEAPI LNHandle LNAudio_GetInternalGameSound( LNInternalGameSound type );
+	LNOTEAPI LNHandle LNGameAudio_GetInternalGameSound( LNInternalGameSound type );
 	/*DeclOpt
 	ReturnHandleType = "LNSound";
 	DeclOpt*/

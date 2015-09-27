@@ -1,8 +1,8 @@
 ﻿
+#include "Internal.h"
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Audio/Sound.h>
 #include <Lumino/IO/FileStream.h>
-#include "Internal.h"
 #include "AudioStream.h"
 #include "AudioPlayer.h"
 #ifdef LN_OS_WIN32
@@ -25,7 +25,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Sound, CoreObject);
 //-----------------------------------------------------------------------------
 Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
 {
-	manager = (manager) ? manager : Internal::Manager;
+	manager = (manager) ? manager : Internal::AudioManager;
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true));
 
 	//RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
@@ -37,7 +37,7 @@ Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
 //-----------------------------------------------------------------------------
 Sound* Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
 {
-	return Internal::Manager->CreateSound(stream, CacheKey::Null, loadingMode);
+	return Internal::AudioManager->CreateSound(stream, CacheKey::Null, loadingMode);
 }
 
 //-----------------------------------------------------------------------------
@@ -78,6 +78,7 @@ Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType pla
 //-----------------------------------------------------------------------------
 Sound::~Sound()
 {
+
 	LN_SAFE_RELEASE(m_audioStream);
 	LN_SAFE_RELEASE(m_audioPlayer);
 	LN_SAFE_RELEASE(m_manager);

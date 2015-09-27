@@ -106,14 +106,14 @@ namespace LN
     };
     
     /// <summary>
-    /// Lumino ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+    /// ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
     /// </summary>
     public partial class Application
     {
     
     
         /// <summary>
-        /// Lumino ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+        /// ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         public static void InitializeAudio()
         {
@@ -132,7 +132,7 @@ namespace LN
         }
         
         /// <summary>
-        /// Lumino ライブラリの終了処理を行います。
+        /// ライブラリの終了処理を行います。
         /// </summary>
         public static void Terminate()
         {
@@ -185,7 +185,7 @@ namespace LN
         }
         
         /// <summary>
-        /// バージョン文字列の取得を取得します。
+        /// バージョン文字列を取得します。
         /// </summary>
         public static string GetString()
         {
@@ -219,9 +219,9 @@ namespace LN
     };
     
     /// <summary>
-    /// 音声再生のユーティリティクラスです。
+    /// ゲーム向け音声再生のユーティリティクラスです。
     /// </summary>
-    public partial class Audio
+    public partial class GameAudio
     {
     
     
@@ -234,7 +234,7 @@ namespace LN
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         public static void PlayBGM( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
-            var result = API.LNAudio_PlayBGM( filePath,  volume,  pitch,  fadeTime);
+            var result = API.LNGameAudio_PlayBGM( filePath,  volume,  pitch,  fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -257,7 +257,7 @@ namespace LN
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         public static void PlayBGMMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
-            var result = API.LNAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
+            var result = API.LNGameAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -276,7 +276,7 @@ namespace LN
         /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         public static void StopBGM( double fadeTime = 0.0)
         {
-            var result = API.LNAudio_StopBGM( fadeTime);
+            var result = API.LNGameAudio_StopBGM( fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -298,7 +298,7 @@ namespace LN
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         public static void PlayBGS( string filePath,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
-            var result = API.LNAudio_PlayBGS( filePath,  volume,  pitch,  fadeTime);
+            var result = API.LNGameAudio_PlayBGS( filePath,  volume,  pitch,  fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -321,7 +321,7 @@ namespace LN
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
         public static void PlayBGSMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100,  double fadeTime = 0.0)
         {
-            var result = API.LNAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
+            var result = API.LNGameAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -340,7 +340,7 @@ namespace LN
         /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         public static void StopBGS( double fadeTime = 0.0)
         {
-            var result = API.LNAudio_StopBGS( fadeTime);
+            var result = API.LNGameAudio_StopBGS( fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -361,7 +361,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlayME( string filePath,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlayME( filePath,  volume,  pitch);
+            var result = API.LNGameAudio_PlayME( filePath,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -383,7 +383,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlayMEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlayMEMem( data,  dataSize,  volume,  pitch);
+            var result = API.LNGameAudio_PlayMEMem( data,  dataSize,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -401,7 +401,7 @@ namespace LN
         /// </summary>
         public static void StopME()
         {
-            var result = API.LNAudio_StopME();
+            var result = API.LNGameAudio_StopME();
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -422,7 +422,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySE( string filePath,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlaySE( filePath,  volume,  pitch);
+            var result = API.LNGameAudio_PlaySE( filePath,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -445,7 +445,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySE3D( string filePath,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlaySE3D( filePath, ref position,  distance,  volume,  pitch);
+            var result = API.LNGameAudio_PlaySE3D( filePath, ref position,  distance,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -470,7 +470,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySE3D( string filePath,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlaySE3DXYZ( filePath,  x,  y,  z,  distance,  volume,  pitch);
+            var result = API.LNGameAudio_PlaySE3DXYZ( filePath,  x,  y,  z,  distance,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -492,7 +492,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySEMem( byte[] data,  int dataSize,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlaySEMem( data,  dataSize,  volume,  pitch);
+            var result = API.LNGameAudio_PlaySEMem( data,  dataSize,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -516,7 +516,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySE3DMem( byte[] data,  int dataSize,  Vector3 position,  float distance,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlaySE3DMem( data,  dataSize, ref position,  distance,  volume,  pitch);
+            var result = API.LNGameAudio_PlaySE3DMem( data,  dataSize, ref position,  distance,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -542,7 +542,7 @@ namespace LN
         /// <param name="pitch">ピッチ (50 ～ 200)</param>
         public static void PlaySE3DMem( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  int volume = 100,  int pitch = 100)
         {
-            var result = API.LNAudio_PlaySE3DMemXYZ( data,  dataSize,  x,  y,  z,  distance,  volume,  pitch);
+            var result = API.LNGameAudio_PlaySE3DMemXYZ( data,  dataSize,  x,  y,  z,  distance,  volume,  pitch);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -560,7 +560,7 @@ namespace LN
         /// </summary>
         public static void StopSE()
         {
-            var result = API.LNAudio_StopSE();
+            var result = API.LNGameAudio_StopSE();
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -580,7 +580,7 @@ namespace LN
         /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         public static void SetBGMVolume( int volume,  double fadeTime = 0.0)
         {
-            var result = API.LNAudio_SetBGMVolume( volume,  fadeTime);
+            var result = API.LNGameAudio_SetBGMVolume( volume,  fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -600,7 +600,7 @@ namespace LN
         /// <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
         public static void SetBGSVolume( int volume,  double fadeTime = 0.0)
         {
-            var result = API.LNAudio_SetBGSVolume( volume,  fadeTime);
+            var result = API.LNGameAudio_SetBGSVolume( volume,  fadeTime);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -617,7 +617,7 @@ namespace LN
     };
     
     /// <summary>
-    /// 3D音声のリスナーに関する情報を表します。
+    /// 3D音声のリスナーに関する情報を操作します。
     /// </summary>
     public partial class SoundListener
     {

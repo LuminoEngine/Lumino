@@ -717,7 +717,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	{
 		Device::DX9GraphicsDevice::ConfigData data;
 		data.MainWindow = configData.MainWindow;
-		data.FileManager = &FileManager::GetInstance();			// TODO
+		data.FileManager = configData.FileManager;
 		data.D3D9Device = (IDirect3DDevice9*)configData.D3D9Device;
 		data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
 		data.EnableVSyncWait = false;			// TODO

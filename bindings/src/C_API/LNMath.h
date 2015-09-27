@@ -7,7 +7,7 @@
 extern "C" {
 
 /**
-	@brief	
+	@brief	算術機能
 */
 LN_MODULE(Math)
 

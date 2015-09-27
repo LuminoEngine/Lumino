@@ -13,9 +13,9 @@ LN_MODULE(Audio)
 	
 //==============================================================================
 /**
-	@brief	音声再生のユーティリティクラスです。
+	@brief	ゲーム向け音声再生のユーティリティクラスです。
 */
-LN_STATIC_CLASS(LNAudio)
+LN_STATIC_CLASS(LNGameAudio)
 	
 	/**
 		@brief		BGM を演奏します。
@@ -25,7 +25,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]	fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGM(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_PlayBGM(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 	
 	/**
 		@brief		メモリ上の音声ファイルデータを使用して BGM を演奏します。
@@ -36,7 +36,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGMMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_PlayBGMMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 	/*Option
 		@disable[cs,ruby]
 	Option*/
@@ -46,7 +46,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_StopBGM(double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_StopBGM(double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		BGS を演奏します。
@@ -56,7 +56,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGS(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_PlayBGS(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		メモリ上の音声ファイルデータから BGS を演奏します。
@@ -67,7 +67,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードインにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayBGSMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100), double fadeTime LN_DEFAULT_ARG(0.0));
 	/*Option
 		@disable[cs,ruby]
 	Option*/
@@ -77,7 +77,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_StopBGS(double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_StopBGS(double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		ME を演奏します。
@@ -86,7 +86,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayME(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LNResult LNGameAudio_PlayME(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
 		@brief		メモリ上の音声ファイルデータから ME を演奏します。
@@ -96,7 +96,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlayMEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 	/*Option
 		@disable[cs,ruby]
 	Option*/
@@ -105,7 +105,7 @@ LN_STATIC_CLASS(LNAudio)
 		@brief	  ME の演奏を停止します。
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_StopME();
+	LNResult LNGameAudio_StopME();
 
 	/**
 		@brief		SE を演奏します。
@@ -114,7 +114,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlaySE(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LNResult LNGameAudio_PlaySE(const LNChar* filePath, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
 		@brief		SE を演奏します。(3D サウンド)
@@ -125,7 +125,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LNResult LNGameAudio_PlaySE3D(const LNChar* filePath, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
 		@brief		SE を演奏します。(3D サウンド)
@@ -138,8 +138,8 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LN_ATTR_OVERLOAD(LNAudio_PlaySE3D)
-	LNResult LNAudio_PlaySE3DXYZ(const LNChar* filePath, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LN_ATTR_OVERLOAD(LNGameAudio_PlaySE3D)
+	LNResult LNGameAudio_PlaySE3DXYZ(const LNChar* filePath, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 
 	/**
 		@brief		メモリ上の音声データから SE を演奏します。
@@ -149,7 +149,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlaySEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 	/*Option
 		@disable[cs,ruby]
 	Option*/
@@ -164,7 +164,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 	/*Option
 		@disable[cs,ruby]
 	Option*/
@@ -181,8 +181,8 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  pitch		: ピッチ (50 ～ 200)
 	*/
 	LN_STATIC_API
-	LN_ATTR_OVERLOAD(LNAudio_PlaySE3DMem)
-	LNResult LNAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
+	LN_ATTR_OVERLOAD(LNGameAudio_PlaySE3DMem)
+	LNResult LNGameAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume LN_DEFAULT_ARG(100), int pitch LN_DEFAULT_ARG(100));
 	/*Option
 		@disable[cs,ruby]
 	Option*/
@@ -191,7 +191,7 @@ LN_STATIC_CLASS(LNAudio)
 		@brief		すべての SE の演奏を停止します。
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_StopSE();
+	LNResult LNGameAudio_StopSE();
 
 	/**
 		@brief		再生中のBGMの音量を設定します。(フェードアウト中は無効)
@@ -199,7 +199,7 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_SetBGMVolume(int volume, double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_SetBGMVolume(int volume, double fadeTime LN_DEFAULT_ARG(0.0));
 
 	/**
 		@brief		再生中のBGSの音量を設定します。(フェードアウト中は無効)
@@ -207,14 +207,14 @@ LN_STATIC_CLASS(LNAudio)
 		@param[in]  fadeTime	: フェードアウトにかける時間 (秒)
 	*/
 	LN_STATIC_API
-	LNResult LNAudio_SetBGSVolume(int volume, double fadeTime LN_DEFAULT_ARG(0.0));
+	LNResult LNGameAudio_SetBGSVolume(int volume, double fadeTime LN_DEFAULT_ARG(0.0));
 
 
 LN_CLASS_END
 
 //==============================================================================
 /**
-	@brief		3D音声のリスナーに関する情報を表します。
+	@brief		3D音声のリスナーに関する情報を操作します。
 */
 LN_STATIC_CLASS(LNSoundListener)
 

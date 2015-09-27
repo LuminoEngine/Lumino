@@ -41,7 +41,7 @@ void LNConfig_RegisterArchive(const LNChar* filePath, const LNChar* password)
 //-----------------------------------------------------------------------------
 void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority)
 {
-
+	LFManager::ConfigData.FileAccessPriority = (Lumino::FileAccessPriority)priority;
 }
 
 //-----------------------------------------------------------------------------
@@ -49,30 +49,32 @@ void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority)
 //-----------------------------------------------------------------------------
 void LNConfig_SetUserWindowHandle(intptr_t windowHandle)
 {
-
+	LFManager::ConfigData.UserMainWindow = (void*)windowHandle;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNConfig_SetSoundCacheSize(int count, int memorySize)
+void LNConfig_SetSoundCacheSize(int objectCount, int memorySize)
 {
-
+	LFManager::ConfigData.SoundCacheCapacity.ObjectCount = objectCount;
+	LFManager::ConfigData.SoundCacheCapacity.MemorySize = memorySize;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNConfig_SetDirectMusicInitializeMode(LNDirectMusicMode mode)
+void LNConfig_SetDirectMusicMode(LNDirectMusicMode mode)
 {
+	LFManager::ConfigData.DirectMusicMode = (Lumino::DirectMusicMode)mode;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void LNConfig_SetDirectMusicReverbLevel(int level)
+void LNConfig_SetDirectMusicReverbLevel(float level)
 {
-
+	LFManager::ConfigData.DirectMusicReverbLevel = level;
 }
 
 //=============================================================================

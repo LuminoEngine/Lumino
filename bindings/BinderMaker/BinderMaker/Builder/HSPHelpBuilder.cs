@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace BinderMaker.Builder
 {
     /// <summary>
-    /// 
+    /// .hs 生成
     /// </summary>
     class HSPHelpBuilder : Builder
     {
@@ -123,7 +123,7 @@ _HREF_
             funcText = funcText.Replace("_BRIEF_", TranslateComment(method.Document.OriginalBriefText));
             funcText = funcText.Replace("_INST_", TranslateComment(method.Document.OriginalDetailsText));
             funcText = funcText.Replace("_HREF_", "");
-            funcText = funcText.Replace("_GROUP_", method.OwnerClass.OriginalName);
+            funcText = funcText.Replace("_GROUP_", method.OwnerClass.OwnerModule.Document.OriginalBriefText);
 
             // 引数リスト
             var paramsText = new OutputBuffer();
@@ -246,6 +246,7 @@ _HREF_
         {
             text = text.Replace("関数", "命令");
             text = text.Replace("のポインタ", "");
+            text = text.Replace("クラス", "モジュール");
 
             string doc = "";
             string[] lines = text.Replace("\r", "").Split('\n');
@@ -260,6 +261,117 @@ _HREF_
             if (m == IOModifier.Out)
                 return "out";
             return "in";
+        }
+    }
+
+    
+    /// <summary>
+    /// 命令一覧
+    /// </summary>
+    class HSPFuncListBuilder : Builder
+    {
+        private struct DocLine
+        {
+            public string Name;
+            public string Brief;
+        }
+
+        private List<DocLine> _oneClass;
+        private OutputBuffer _output = new OutputBuffer();
+
+        /// <summary>
+        /// ビルド開始前(初期化)通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnInitialize()
+        {
+            _output.AppendLine("===============================================================================");
+            _output.AppendLine(" Lumino HSP 命令一覧");
+            _output.AppendLine("-------------------------------------------------------------------------------");
+            _output.AppendLine("  このファイルは、本ライブラリがどのような機能を持っているかを示す概要です。");
+            _output.AppendLine("  個々の命令の詳しい説明は、同梱の lumino.hs を HSP インストールフォルダ内の");
+            _output.AppendLine("  「hsphelp」フォルダにコピーし、エディタから F1 キーヘルプにて参照してください。");
+            _output.AppendLine("===============================================================================");
+        }
+
+        /// <summary>
+        /// クラスor構造体 通知 (開始)
+        /// </summary>
+        /// <param name="classType"></param>
+        /// <returns>false の場合このクラスの出力を無視する</returns>
+        protected override bool OnClassLookedStart(CLClass classType)
+        {
+            _oneClass = new List<DocLine>();
+
+            if (classType.IsStruct)
+            {
+                _oneClass.Add(
+                    new DocLine()
+                    {
+                        Name = classType.OriginalName + "()",
+                        Brief = classType.OriginalName + "型変数の作成" + OutputBuffer.NewLineCode
+                    });
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// クラスor構造体 通知 (終了)
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnClassLookedEnd(CLClass classType)
+        {
+            _output.AppendLine("-------------------------------------------------------------------------------");
+            _output.AppendLine(" ■ [{0}]  {1}", classType.OriginalName, HSPHelpBuilder.TranslateComment(classType.Document.OriginalBriefText));
+
+            // 関数名カラムの最大文字数を求める
+            int col1Len = 0;
+            foreach (var line in _oneClass)
+            {
+                col1Len = Math.Max(col1Len, line.Name.Length);
+            }
+
+            // インデントを考慮し、テキストを作る
+            foreach (var line in _oneClass)
+            {
+                _output.Append(string.Format("{0,-" + col1Len + "}  ", line.Name));
+                _output.Append(line.Brief);
+            }
+            _output.NewLine();
+        }
+        
+        /// <summary>
+        /// プロパティ 通知
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnPropertyLooked(CLProperty prop)
+        {
+            if (prop.Setter != null) OnMethodLooked(prop.Setter);
+            if (prop.Getter != null) OnMethodLooked(prop.Getter);
+        }
+
+        /// <summary>
+        /// メソッド 通知 (プロパティや internal は通知されない)
+        /// </summary>
+        /// <param name="enumType"></param>
+        protected override void OnMethodLooked(CLMethod method)
+        {
+            // あとでインデント量を調整するため、まずはテキストを覚えておく
+            _oneClass.Add(
+                new DocLine()
+                {
+                    Name = method.FuncDecl.OriginalFullName,
+                    Brief = HSPHelpBuilder.TranslateComment(method.Document.OriginalBriefText)
+                });
+        }
+
+        /// <summary>
+        /// ファイルに出力するための最終文字列を生成する
+        /// </summary>
+        protected override string OnMakeOutoutFileText()
+        {
+            return _output.ToString();
         }
     }
 }

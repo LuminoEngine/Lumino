@@ -165,8 +165,8 @@ namespace BinderMaker.Builder
         /// <param name="enumType"></param>
         protected override void OnPropertyLooked(CLProperty prop)
         {
-            if (prop.Getter != null) OnMethodLooked(prop.Getter);
             if (prop.Setter != null) OnMethodLooked(prop.Setter);
+            if (prop.Getter != null) OnMethodLooked(prop.Getter);
         }
 
         /// <summary>

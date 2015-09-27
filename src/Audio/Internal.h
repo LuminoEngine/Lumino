@@ -1,5 +1,6 @@
 
 #pragma once
+#include "../Internal.h"
 
 #define INITGUID
 
@@ -22,10 +23,9 @@ namespace Lumino
 {
 class AudioManagerImpl;
 
-class Internal
+namespace Internal
 {
-public:
-	static AudioManagerImpl* Manager;
+	extern AudioManagerImpl* AudioManager;
 };
 
 

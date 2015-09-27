@@ -23,8 +23,8 @@ namespace BinderMaker
             // 関数が定義されているヘッダを解析する
             var apiHeaders = new string[]
             {
-                SourcesRootDir + "LNBase.h",
                 SourcesRootDir + "LNApplication.h",
+                SourcesRootDir + "LNBase.h",
                 SourcesRootDir + "LNMath.h",
                 SourcesRootDir + "LNAudio.h",
             };
@@ -63,6 +63,8 @@ namespace BinderMaker
             hspStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPStructs.cpp");
             var hspHelpBuilder = new Builder.HSPHelpBuilder();
             hspHelpBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.hs");
+            var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
+            hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/命令一覧.txt");
         }
     }
 }

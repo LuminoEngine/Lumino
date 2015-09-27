@@ -9,7 +9,7 @@ Lumino
 0.1.0
 
 %date
-2015/09/26
+2015/09/27
 
 %author
 lriki
@@ -27,11 +27,302 @@ http://nnmy.sakura.ne.jp/
 ;
 ;-----------------------------------------------------------
 %index
+LNConfig_SetApplicationLogEnabled
+ƒfƒoƒbƒO—p‚ÌƒƒOƒtƒ@ƒCƒ‹‚Ìo—Í—L–³‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:LN_FALSE)
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+enabled
+[in] enabled : LN_TRUE:o—Í‚·‚é / LN_FALSE:o—Í‚µ‚È‚¢
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_SetConsoleEnabled
+•W€“üo—Í—p‚ÌƒRƒ“ƒ\[ƒ‹ƒEƒBƒ“ƒhƒE‚ğŠ„‚è“–‚Ä‚é‚©‚Ç‚¤‚©‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:LN_FALSE)
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+enabled
+[in] enabled : LN_TRUE:Š„‚è“–‚Ä‚é / LN_FALSE:Š„‚è“–‚Ä‚È‚¢
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_RegisterArchive
+ƒtƒ@ƒCƒ‹‚ğŠJ‚­‚Æ‚«‚ÉƒAƒNƒZƒX‚·‚éˆÃ†‰»ƒA[ƒJƒCƒu‚ğ“o˜^‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+filePath, password
+[in] filePath : ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹ƒpƒX
+[in] password : ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚ğŠJ‚­‚½‚ß‚ÌƒpƒXƒ[ƒh
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_SetFileAccessPriority
+ƒtƒ@ƒCƒ‹‚Ö‚ÌƒAƒNƒZƒX—Dæ‡ˆÊ‚ğİ’è‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+priority
+[in] priority : §ŒÀ•û–@ (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
+                   LN_FILEACCESSPRIORITY_ARCHIVE_FIRST
+                       ƒA[ƒJƒCƒu—Dæ
+                   LN_FILEACCESSPRIORITY_DIRECTORY_FIRST
+                       ƒfƒBƒŒƒNƒgƒŠ—Dæ
+                   LN_FILEACCESSPRIORITY_ARCHIVE_ONLY
+                       ƒA[ƒJƒCƒu‚Ì‚İ
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_SetUserWindowHandle
+ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:NULL)
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+windowHandle
+[in] windowHandle : ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_SetSoundCacheSize
+ƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌƒLƒƒƒbƒVƒ…ƒTƒCƒY‚Ìİ’è
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+count, memorySize
+[in] count      : ƒLƒƒƒbƒVƒ…‚Å‚«‚éƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌÅ‘å” (‰Šú’l:32)
+[in] memorySize : ƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌƒLƒƒƒbƒVƒ…‚ªg—p‚Å‚«‚éÅ‘åƒƒ‚ƒŠƒTƒCƒY (‰Šú’l:0)
+
+%inst
+count ‚ª 0 ‚Ìê‡AƒLƒƒƒbƒVƒ…‚ğg—p‚µ‚Ü‚¹‚ñB
+memorySize ‚ª 0 ‚Ìê‡Aƒƒ‚ƒŠg—p—Ê‚É§ŒÀ‚ğİ‚¯‚Ü‚¹‚ñB
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_SetDirectMusicInitializeMode
+DirectMusic ‚Ì‰Šú‰»•û–@‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:LN_DIRECTMUSICMODE_NOT_USE)
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+mode
+[in] mode : DirectMusic ‚Ì‰Šú‰»•û–@
+               LN_DIRECTMUSICMODE_NOT_USE
+                   DirectMusic ‚ğg—p‚µ‚È‚¢
+               LN_DIRECTMUSICMODE_NORMAL
+                   ’Êí
+               LN_DIRECTMUSICMODE_THREAD_WAIT
+                   •ÊƒXƒŒƒbƒh‚Å‰Šú‰»‚µ‚ÄAÄ¶‚É–¢Š®—¹‚Ìê‡‚Í‘Ò‚Â
+               LN_DIRECTMUSICMODE_THREAD_REQUEST
+                   •ÊƒXƒŒƒbƒh‚Å‰Šú‰»‚µ‚ÄAÄ¶‚É–¢Š®—¹‚Ìê‡‚ÍÄ¶‚ğ—\–ñ‚·‚é
+
+%inst
+DirectMusic ‚Ì‰Šú‰»‚É‚Í”äŠr“IŠÔ‚ª‚©‚©‚è‚Ü‚·B
+‚±‚ê‚ğ‰ñ”ğ‚·‚é‚½‚ß‚É‰Šú‰»ê—p‚ÌƒXƒŒƒbƒh‚Å‰Šú‰»‚ğs‚¤‚±‚Æ‚ªo—ˆ‚Ü‚·B
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNConfig_SetDirectMusicReverbLevel
+DirectMusic ‚ÌƒŠƒo[ƒuƒGƒtƒFƒNƒg‚Ì‹­‚³‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:70)
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+level
+[in] level : ƒŠƒo[ƒu‚Ì‹­‚³ (0 ` 100)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNApplication_InitializeAudio
+ƒ‰ƒCƒuƒ‰ƒŠ‚ğ‰Šú‰»‚µ‚Ü‚·B‰¹º‹@”\‚Ì‚İ‚ğg—p‚·‚éê‡‚ÉŒÄ‚Ño‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+@
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNApplication_Terminate
+ƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹ˆ—‚ğs‚¢‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+@
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNVersion_GetMajor
+ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+outMajor
+[out] outMajor : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNVersion_GetMinor
+ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+outMinor
+[out] outMinor : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNVersion_GetRevision
+ƒŠƒrƒWƒ‡ƒ“ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+outRevision
+[out] outRevision : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNVersion_GetString
+ƒo[ƒWƒ‡ƒ“•¶š—ñ‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+outStr
+[out] outStr : •¶š—ñ‚Ö‚ÌƒAƒhƒŒƒX‚ğŠi”[‚·‚é•Ï”
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNVersion_IsAtLeast
+w’è‚µ‚½ƒo[ƒWƒ‡ƒ“”Ô†‚ÆAƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚ÌƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“”Ô†‚ğ”äŠr‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+major, minor, revision, outResult
+[in]  major     : ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“
+[in]  minor     : ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“
+[in]  revision  : ƒŠƒrƒWƒ‡ƒ“ƒo[ƒWƒ‡ƒ“
+[out] outResult : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”
+
+%inst
+w’èƒo[ƒWƒ‡ƒ“ >= ƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“ ‚Å‚ ‚éê‡ALN_TRUE ‚Æ‚È‚è‚Ü‚·B
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
 LNError_GetLastErrorCode
 ÅŒã‚É”­¶‚µ‚½ƒGƒ‰[‚ÌƒGƒ‰[ƒR[ƒh‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNError
+Šî–{‹@”\
 %prm
 @
 
@@ -87,7 +378,7 @@ LNError_GetLastErrorMessage
 ÅŒã‚É”­¶‚µ‚½ƒGƒ‰[‚ÌƒGƒ‰[ƒƒbƒZ[ƒW‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNError
+Šî–{‹@”\
 %prm
 outStr
 [out] outStr : ƒƒbƒZ[ƒW•¶š—ñ‚ğŠi”[‚·‚é•Ï”B
@@ -105,7 +396,7 @@ LNObject_Release
 ƒIƒuƒWƒFƒNƒg‚ğ‰ğ•ú‚µ‚Ü‚·B
 
 %group
-LNObject
+Šî–{‹@”\
 %prm
 hadnleObject
 [in] hadnleObject : ƒIƒuƒWƒFƒNƒgƒnƒ“ƒhƒ‹
@@ -125,7 +416,7 @@ LNObject_AddRef
 ƒIƒuƒWƒFƒNƒg‚ÌQÆƒJƒEƒ“ƒg‚ğƒCƒ“ƒNƒŠƒƒ“ƒg‚µ‚Ü‚·B
 
 %group
-LNObject
+Šî–{‹@”\
 %prm
 hadnleObject
 [in] hadnleObject : ƒIƒuƒWƒFƒNƒgƒnƒ“ƒhƒ‹
@@ -147,7 +438,7 @@ LNObject_GetRefCount
 ƒIƒuƒWƒFƒNƒg‚ÌQÆƒJƒEƒ“ƒgæ“¾‚µ‚Ü‚·B
 
 %group
-LNObject
+Šî–{‹@”\
 %prm
 hadnleObject, count
 [in]  hadnleObject : ƒIƒuƒWƒFƒNƒgƒnƒ“ƒhƒ‹
@@ -164,302 +455,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNConfig_SetApplicationLogEnabled
-ƒfƒoƒbƒO—p‚ÌƒƒOƒtƒ@ƒCƒ‹‚Ìo—Í—L–³‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:LN_FALSE)
-
-%group
-LNConfig
-%prm
-enabled
-[in] enabled : LN_TRUE:o—Í‚·‚é / LN_FALSE:o—Í‚µ‚È‚¢
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetConsoleEnabled
-•W€“üo—Í—p‚ÌƒRƒ“ƒ\[ƒ‹ƒEƒBƒ“ƒhƒE‚ğŠ„‚è“–‚Ä‚é‚©‚Ç‚¤‚©‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:LN_FALSE)
-
-%group
-LNConfig
-%prm
-enabled
-[in] enabled : LN_TRUE:Š„‚è“–‚Ä‚é / LN_FALSE:Š„‚è“–‚Ä‚È‚¢
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_RegisterArchive
-ƒtƒ@ƒCƒ‹‚ğŠJ‚­‚Æ‚«‚ÉƒAƒNƒZƒX‚·‚éˆÃ†‰»ƒA[ƒJƒCƒu‚ğ“o˜^‚µ‚Ü‚·B
-
-%group
-LNConfig
-%prm
-filePath, password
-[in] filePath : ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹ƒpƒX
-[in] password : ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚ğŠJ‚­‚½‚ß‚ÌƒpƒXƒ[ƒh
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetFileAccessPriority
-ƒtƒ@ƒCƒ‹‚Ö‚ÌƒAƒNƒZƒX—Dæ‡ˆÊ‚ğİ’è‚µ‚Ü‚·B
-
-%group
-LNConfig
-%prm
-priority
-[in] priority : §ŒÀ•û–@ (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
-                   LN_FILEACCESSPRIORITY_ARCHIVE_FIRST
-                       ƒA[ƒJƒCƒu—Dæ
-                   LN_FILEACCESSPRIORITY_DIRECTORY_FIRST
-                       ƒfƒBƒŒƒNƒgƒŠ—Dæ
-                   LN_FILEACCESSPRIORITY_ARCHIVE_ONLY
-                       ƒA[ƒJƒCƒu‚Ì‚İ
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetUserWindowHandle
-ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:NULL)
-
-%group
-LNConfig
-%prm
-windowHandle
-[in] windowHandle : ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetSoundCacheSize
-ƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌƒLƒƒƒbƒVƒ…ƒTƒCƒY‚Ìİ’è
-
-%group
-LNConfig
-%prm
-count, memorySize
-[in] count      : ƒLƒƒƒbƒVƒ…‚Å‚«‚éƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌÅ‘å” (‰Šú’l:32)
-[in] memorySize : ƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌƒLƒƒƒbƒVƒ…‚ªg—p‚Å‚«‚éÅ‘åƒƒ‚ƒŠƒTƒCƒY (‰Šú’l:0)
-
-%inst
-count ‚ª 0 ‚Ìê‡AƒLƒƒƒbƒVƒ…‚ğg—p‚µ‚Ü‚¹‚ñB
-memorySize ‚ª 0 ‚Ìê‡Aƒƒ‚ƒŠg—p—Ê‚É§ŒÀ‚ğİ‚¯‚Ü‚¹‚ñB
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetDirectMusicInitializeMode
-DirectMusic ‚Ì‰Šú‰»•û–@‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:LN_DIRECTMUSICMODE_NOT_USE)
-
-%group
-LNConfig
-%prm
-mode
-[in] mode : DirectMusic ‚Ì‰Šú‰»•û–@
-               LN_DIRECTMUSICMODE_NOT_USE
-                   DirectMusic ‚ğg—p‚µ‚È‚¢
-               LN_DIRECTMUSICMODE_NORMAL
-                   ’Êí
-               LN_DIRECTMUSICMODE_THREAD_WAIT
-                   •ÊƒXƒŒƒbƒh‚Å‰Šú‰»‚µ‚ÄAÄ¶‚É–¢Š®—¹‚Ìê‡‚Í‘Ò‚Â
-               LN_DIRECTMUSICMODE_THREAD_REQUEST
-                   •ÊƒXƒŒƒbƒh‚Å‰Šú‰»‚µ‚ÄAÄ¶‚É–¢Š®—¹‚Ìê‡‚ÍÄ¶‚ğ—\–ñ‚·‚é
-
-%inst
-DirectMusic ‚Ì‰Šú‰»‚É‚Í”äŠr“IŠÔ‚ª‚©‚©‚è‚Ü‚·B
-‚±‚ê‚ğ‰ñ”ğ‚·‚é‚½‚ß‚É‰Šú‰»ê—p‚ÌƒXƒŒƒbƒh‚Å‰Šú‰»‚ğs‚¤‚±‚Æ‚ªo—ˆ‚Ü‚·B
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetDirectMusicReverbLevel
-DirectMusic ‚ÌƒŠƒo[ƒuƒGƒtƒFƒNƒg‚Ì‹­‚³‚ğİ’è‚µ‚Ü‚·B(‰Šú’l:70)
-
-%group
-LNConfig
-%prm
-level
-[in] level : ƒŠƒo[ƒu‚Ì‹­‚³ (0 ` 100)
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNApplication_InitializeAudio
-Lumino ƒ‰ƒCƒuƒ‰ƒŠ‚ğ‰Šú‰»‚µ‚Ü‚·B‰¹º‹@”\‚Ì‚İ‚ğg—p‚·‚éê‡‚ÉŒÄ‚Ño‚µ‚Ü‚·B
-
-%group
-LNApplication
-%prm
-@
-
-stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNApplication_Terminate
-Lumino ƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹ˆ—‚ğs‚¢‚Ü‚·B
-
-%group
-LNApplication
-%prm
-@
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNVersion_GetMajor
-ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
-
-%group
-LNVersion
-%prm
-outMajor
-[out] outMajor : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNVersion_GetMinor
-ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
-
-%group
-LNVersion
-%prm
-outMinor
-[out] outMinor : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNVersion_GetRevision
-ƒŠƒrƒWƒ‡ƒ“ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
-
-%group
-LNVersion
-%prm
-outRevision
-[out] outRevision : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNVersion_GetString
-ƒo[ƒWƒ‡ƒ“•¶š—ñ‚Ìæ“¾‚ğæ“¾‚µ‚Ü‚·B
-
-%group
-LNVersion
-%prm
-outStr
-[out] outStr : •¶š—ñ‚Ö‚ÌƒAƒhƒŒƒX‚ğŠi”[‚·‚é•Ï”
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNVersion_IsAtLeast
-w’è‚µ‚½ƒo[ƒWƒ‡ƒ“”Ô†‚ÆAƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚ÌƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“”Ô†‚ğ”äŠr‚µ‚Ü‚·B
-
-%group
-LNVersion
-%prm
-major, minor, revision, outResult
-[in]  major     : ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“
-[in]  minor     : ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“
-[in]  revision  : ƒŠƒrƒWƒ‡ƒ“ƒo[ƒWƒ‡ƒ“
-[out] outResult : Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”
-
-%inst
-w’èƒo[ƒWƒ‡ƒ“ >= ƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“ ‚Å‚ ‚éê‡ALN_TRUE ‚Æ‚È‚è‚Ü‚·B
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
 LNVector2_GetLength
 2D ƒxƒNƒgƒ‹‚Ì’·‚³‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNVector2
+Zp‹@”\
 %prm
 vec, outLength
 [in]  vec       : ˆ—‚ÌŠî‚É‚È‚é 2D ƒxƒNƒgƒ‹
@@ -480,7 +480,7 @@ LNVector2_GetSquareLength
 2D ƒxƒNƒgƒ‹‚Ì’·‚³‚Ì2æ‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNVector2
+Zp‹@”\
 %prm
 vec, outLength
 [in]  vec       : ˆ—‚ÌŠî‚É‚È‚é 2D ƒxƒNƒgƒ‹
@@ -501,7 +501,7 @@ LNVector2_Set
 2D ƒxƒNƒgƒ‹‚É’l‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNVector2
+Zp‹@”\
 %prm
 vec, x, y
 [in] vec : ’l‚ğŠi”[‚·‚é 2D ƒxƒNƒgƒ‹•Ï”
@@ -523,7 +523,7 @@ LNVector2_Normalize
 2D ƒxƒNƒgƒ‹‚ğ³‹K‰»‚µ‚Ü‚·B
 
 %group
-LNVector2
+Zp‹@”\
 %prm
 vec, outVec
 [in]  vec    : ˆ—‚ÌŠî‚É‚È‚é 2D ƒxƒNƒgƒ‹
@@ -544,7 +544,7 @@ LNVector2_NormalizeV
 2D ƒxƒNƒgƒ‹‚ğ³‹K‰»‚µ‚Ü‚·B
 
 %group
-LNVector2
+Zp‹@”\
 %prm
 vec
 [in] vec : ˆ—‘ÎÛ‚Ì 2D ƒxƒNƒgƒ‹
@@ -564,7 +564,7 @@ LNVector3_GetLength
 3DƒxƒNƒgƒ‹‚Ì’·‚³‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, outLength
 [in]  vec       : ˆ—‚ÌŠî‚É‚È‚éƒxƒNƒgƒ‹
@@ -585,7 +585,7 @@ LNVector3_GetSquareLength
 3D ƒxƒNƒgƒ‹‚Ì’·‚³‚Ì2æ‚ğŒvZ‚·‚é
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, outLength
 [in]  vec       : ˆ—‚ÌŠî‚É‚È‚é Vector3
@@ -606,7 +606,7 @@ LNVector3_Set
 3DƒxƒNƒgƒ‹‚É’l‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, x, y, z
 [in] vec : ’l‚ğŠi”[‚·‚é 3D ƒxƒNƒgƒ‹•Ï”
@@ -629,7 +629,7 @@ LNVector3_SetVZ
 2D ƒxƒNƒgƒ‹ ‚Æ Z’l ‚ğw’è‚µ‚ÄA3DƒxƒNƒgƒ‹‚É’l‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, vec2, z
 [out] vec  : ’l‚ğŠi”[‚·‚é 3DƒxƒNƒgƒ‹ •Ï”
@@ -651,7 +651,7 @@ LNVector3_Normalize
 3D ƒxƒNƒgƒ‹‚ğ³‹K‰»‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, outVec
 [in]  vec    : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -672,7 +672,7 @@ LNVector3_NormalizeV
 3D ƒxƒNƒgƒ‹‚ğ³‹K‰»‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec
 [in] vec : ˆ—‘ÎÛ‚Ì 2D ƒxƒNƒgƒ‹
@@ -692,7 +692,7 @@ LNVector3_Dot
 2 ‚Â‚Ì 3D ƒxƒNƒgƒ‹‚Ì“àÏ‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec1, vec2, dot
 [in]  vec1 : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -714,7 +714,7 @@ LNVector3_Cross
 2 ‚Â‚Ì 3D ƒxƒNƒgƒ‹‚ÌŠOÏ‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec1, vec2, outVec
 [in]  vec1   : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -736,7 +736,7 @@ LNVector3_Reflect
 w’è‚³‚ê‚½–@ü‚Å”½Ë‚³‚¹‚½ƒxƒNƒgƒ‹‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, normal, outVec
 [in]  vec    : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -758,7 +758,7 @@ LNVector3_Slide
 w’è‚³‚ê‚½–@ü‚Æ•ûŒü‚©‚çŠŠ‚èƒxƒNƒgƒ‹‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, normal, outVec
 [in]  vec    : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -780,7 +780,7 @@ LNVector3_Lerp
 2 ‚Â‚Ì 3D ƒxƒNƒgƒ‹ŠÔ‚ğüŒ`•âŠÔ‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec1, vec2, t, outVec
 [in]  vec1   : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹ ( t = 0.0 ‚Ì‚Æ‚«‚Ì’l )
@@ -803,7 +803,7 @@ LNVector3_CatmullRom
 w’è‚³‚ê‚½ 3D ƒxƒNƒgƒ‹‚ğ Catmull-Rom •âŠÔ‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec1, vec2, vec3, vec4, t, outVec
 [in]  vec1   : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -828,7 +828,7 @@ LNVector3_Transform
 w’è‚³‚ê‚½s—ñ‚ğg—p‚µ‚ÄÀ•W•ÏŠ·‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, mat, outVec
 [in]  vec    : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -853,7 +853,7 @@ LNVector3_TransformCoord
 w’è‚³‚ê‚½s—ñ‚ğg—p‚µ‚ÄÀ•W•ÏŠ·‚µAŒ‹‰Ê‚ğ w = 1 ‚ÉË‰e‚µ‚Ü‚·B
 
 %group
-LNVector3
+Zp‹@”\
 %prm
 vec, mat, outVec
 [in]  vec    : ˆ—‚ÌŠî‚É‚È‚é 3D ƒxƒNƒgƒ‹
@@ -876,7 +876,7 @@ LNVector4_Set
 4DƒxƒNƒgƒ‹‚É’l‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNVector4
+Zp‹@”\
 %prm
 vec, x, y, z, w
 [in] vec : ’l‚ğŠi”[‚·‚é4DƒxƒNƒgƒ‹•Ï”
@@ -900,7 +900,7 @@ LNMatrix_GetRight
 ‰E•ûŒü‚ğ¦‚· 3D ƒxƒNƒgƒ‹‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, outVec
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -921,7 +921,7 @@ LNMatrix_GetUp
 ã•ûŒü‚ğ¦‚· 3D ƒxƒNƒgƒ‹‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, outVec
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -942,7 +942,7 @@ LNMatrix_GetFront
 ³–Ê•ûŒü‚ğ¦‚· 3D ƒxƒNƒgƒ‹‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, outVec
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -963,7 +963,7 @@ LNMatrix_GetPosition
 ˆÊ’u‚ğ¦‚· 3D ƒxƒNƒgƒ‹‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, outVec
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -984,7 +984,7 @@ LNMatrix_Identity
 ’PˆÊs—ñ‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat
 [out] mat : Œ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1004,7 +1004,7 @@ LNMatrix_Translate
 s—ñ‚ğ•½sˆÚ“®‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, x, y, z
 [in] mat : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1027,7 +1027,7 @@ LNMatrix_TranslateVec3
 s—ñ‚ğ•½sˆÚ“®‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, vec
 [in] mat : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1048,7 +1048,7 @@ LNMatrix_RotateX
 X ²‚ğ‰ñ“]²‚É‚µ‚Äs—ñ‚ğ‰ñ“]‚µ‚Ü‚·B (ƒ‰ƒWƒAƒ“’PˆÊ)
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, radian
 [in] mat    : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1069,7 +1069,7 @@ LNMatrix_RotateY
 Y ²‚ğ‰ñ“]²‚É‚µ‚Äs—ñ‚ğ‰ñ“]‚µ‚Ü‚·B (ƒ‰ƒWƒAƒ“’PˆÊ)
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, radian
 [in] mat    : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1090,7 +1090,7 @@ LNMatrix_RotateZ
 Z ²‚ğ‰ñ“]²‚É‚µ‚Äs—ñ‚ğ‰ñ“]‚µ‚Ü‚·B (ƒ‰ƒWƒAƒ“’PˆÊ)
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, radian
 [in] mat    : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1111,7 +1111,7 @@ LNMatrix_Rotate
 s—ñ‚ğ‰ñ“]‚µ‚Ü‚·B (ƒ‰ƒWƒAƒ“’PˆÊ)
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, xRad, yRad, zRad, rotOrder
 [in] mat                            : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1147,7 +1147,7 @@ LNMatrix_RotateVec3
 s—ñ‚ğ‰ñ“]‚µ‚Ü‚·B (ƒ‰ƒWƒAƒ“’PˆÊ)
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, vec, rotOrder
 [in] mat                            : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1181,7 +1181,7 @@ LNMatrix_RotateAxis
 ”CˆÓ‚Ì²‚ğ‰ñ“]²‚É‚µ‚Äs—ñ‚ğ‰ñ“]‚µ‚Ü‚·B (ƒ‰ƒWƒAƒ“’PˆÊ)
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, axis, radian
 [in] mat    : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1204,7 +1204,7 @@ LNMatrix_RotateQuaternion
 ƒNƒH[ƒ^ƒjƒIƒ“‚ğg‚Á‚Äs—ñ‚ğ‰ñ“]‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, qua
 [in] mat : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1225,7 +1225,7 @@ LNMatrix_Scale
 s—ñ‚ğƒXƒP[ƒŠƒ“ƒO‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, xyz
 [in] mat : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1246,7 +1246,7 @@ LNMatrix_ScaleXYZ
 s—ñ‚ğƒXƒP[ƒŠƒ“ƒO‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, x, y, z
 [in] mat : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1269,7 +1269,7 @@ LNMatrix_ScaleVec3
 s—ñ‚ğƒXƒP[ƒŠƒ“ƒO‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, scale
 [in] mat   : ‰‰ZŒ‹‰Ê‚ğŠi”[‚·‚és—ñ
@@ -1290,7 +1290,7 @@ LNMatrix_Multiply
 s—ñ‚ğæZ‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat1, mat2, matOut
 [in]  mat1   : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -1312,7 +1312,7 @@ LNMatrix_Inverse
 ‹ts—ñ‚ğ‹‚ß‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, matOut
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -1333,7 +1333,7 @@ LNMatrix_Transpose
 “]’us—ñ‚ğ‹‚ß‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, matOut
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -1354,7 +1354,7 @@ LNMatrix_ViewTransformLH
 ¶èÀ•WŒnƒrƒ…[s—ñ‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 pos, lookAt, upDir, matOut
 [in]  pos    : ‹“_‚ÌˆÊ’u‚ğ¦‚· Vector3
@@ -1377,7 +1377,7 @@ LNMatrix_ViewTransformRH
 ‰EèÀ•WŒnƒrƒ…[s—ñ‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 pos, lookAt, upDir, matOut
 [in]  pos    : ‹“_‚ÌˆÊ’u‚ğ¦‚· Vector3
@@ -1400,7 +1400,7 @@ LNMatrix_PerspectiveFovLH
 ¶èÀ•WŒnË‰es—ñ‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 fovY, aspect, nearZ, farZ, matOut
 [in]  fovY   : Y •ûŒü‚Ö‚Ì‹–ìŠp (ƒ‰ƒWƒAƒ“’PˆÊ)
@@ -1424,7 +1424,7 @@ LNMatrix_PerspectiveFovRH
 ‰EèÀ•WŒnË‰es—ñì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 fovY, aspect, nearZ, farZ, matOut
 [in]  fovY   : Y •ûŒü‚Ö‚Ì‹–ìŠp (ƒ‰ƒWƒAƒ“’PˆÊ)
@@ -1448,7 +1448,7 @@ LNMatrix_OrthoLH
 ¶èÀ•WŒn³Ë‰es—ñì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 width, height, nearZ, farZ, matOut
 [in]  width  : ƒrƒ…[‚Ì•
@@ -1472,7 +1472,7 @@ LNMatrix_OrthoRH
 ‰EèÀ•WŒn³Ë‰es—ñì¬‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 width, height, nearZ, farZ, matOut
 [in]  width  : ƒrƒ…[‚Ì•
@@ -1496,7 +1496,7 @@ LNMatrix_GetEulerAngles
 ‰ñ“]s—ñ‚©‚çƒIƒCƒ‰[Šp‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, outVec
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -1517,7 +1517,7 @@ LNMatrix_Decompose
 s—ñ‚ğƒXƒP[ƒŠƒ“ƒOA‰ñ“]AˆÚ“®¬•ª‚É•ª‰ğ‚µ‚Ü‚·B
 
 %group
-LNMatrix
+Zp‹@”\
 %prm
 mat, scale, rot, trans
 [in]  mat   : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -1540,7 +1540,7 @@ LNQuaternion_Set
 ƒNƒH[ƒ^ƒjƒIƒ“‚É’l‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 qua, x, y, z, w
 [in] qua : ’l‚ğŠi”[‚·‚é Quaternion •Ï”
@@ -1564,7 +1564,7 @@ LNQuaternion_Identity
 ’PˆÊƒNƒH[ƒ^ƒjƒIƒ“‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 qua
 [out] qua : Œ‹‰Ê‚ğŠi”[‚·‚é Quaternion •Ï”
@@ -1584,7 +1584,7 @@ LNQuaternion_RotationAxis
 ”CˆÓ‚Ì²‚ğ‰ñ“]²‚É‚µ‚Ä‰ñ“]‚·‚éƒNƒH[ƒ^ƒjƒIƒ“‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 axis, r, outQua
 [in]  axis   : ‰ñ“]²‚ğ¦‚· Vector3 •Ï”
@@ -1606,7 +1606,7 @@ LNQuaternion_RotationMatrix
 ‰ñ“]s—ñ‚©‚çƒNƒH[ƒ^ƒjƒIƒ“‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 mat, outQua
 [in]  mat    : ˆ—‚ÌŠî‚É‚È‚és—ñ
@@ -1627,7 +1627,7 @@ LNQuaternion_RotationYawPitchRoll
 ƒˆ[Aƒsƒbƒ`A‚¨‚æ‚Ñƒ[ƒ‹‚ğw’è‚µ‚ÄƒNƒH[ƒ^ƒjƒIƒ“‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 yaw, pitch, roll, outQua
 [in]  yaw    : y ²‚ğ’†S‚Æ‚·‚éƒˆ[ (ƒ‰ƒWƒAƒ“’PˆÊ)
@@ -1650,7 +1650,7 @@ LNQuaternion_Normalize
 ƒNƒH[ƒ^ƒjƒIƒ“‚ğ³‹K‰»‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 qua, outQua
 [in]  qua    : ˆ—‚ÌŠî‚É‚È‚éƒNƒH[ƒ^ƒjƒIƒ“
@@ -1671,7 +1671,7 @@ LNQuaternion_Conjugate
 ƒNƒH[ƒ^ƒjƒIƒ“‚Ì‹¤–ğ‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 qua, outQua
 [in]  qua    : ˆ—‚ÌŠî‚É‚È‚éƒNƒH[ƒ^ƒjƒIƒ“
@@ -1692,7 +1692,7 @@ LNQuaternion_Multiply
 2 ‚Â‚ÌƒNƒH[ƒ^ƒjƒIƒ“‚ÌÏ‚ğŒvZ‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 qua1, qua2, outQua
 [in]  qua1   : ˆ—‚ÌŠî‚É‚È‚éƒNƒH[ƒ^ƒjƒIƒ“
@@ -1714,7 +1714,7 @@ LNQuaternion_Slerp
 2 ‚Â‚ÌƒNƒH[ƒ^ƒjƒIƒ“‚ğ‹…–ÊüŒ`•âŠÔ‚µ‚Ü‚·B
 
 %group
-LNQuaternion
+Zp‹@”\
 %prm
 qua1, qua2, t, outQua
 [in]  qua1   : ˆ—‚ÌŠî‚É‚È‚éƒNƒH[ƒ^ƒjƒIƒ“
@@ -1733,11 +1733,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlayBGM
+LNGameAudio_PlayBGM
 BGM ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 filePath, volume, pitch, fadeTime
 [in] filePath      : ƒtƒ@ƒCƒ‹ƒpƒX
@@ -1756,11 +1756,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlayBGMMem
+LNGameAudio_PlayBGMMem
 ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^‚ğg—p‚µ‚Ä BGM ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 data, dataSize, volume, pitch, fadeTime
 [in] data          : ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^
@@ -1780,11 +1780,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_StopBGM
+LNGameAudio_StopBGM
 BGM ‚Ì‰‰‘t‚ğ’â~‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 fadeTime
 [in] fadeTime(0.0) : ƒtƒF[ƒhƒAƒEƒg‚É‚©‚¯‚éŠÔ (•b)
@@ -1800,11 +1800,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlayBGS
+LNGameAudio_PlayBGS
 BGS ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 filePath, volume, pitch, fadeTime
 [in] filePath      : ƒtƒ@ƒCƒ‹ƒpƒX
@@ -1823,11 +1823,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlayBGSMem
+LNGameAudio_PlayBGSMem
 ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^‚©‚ç BGS ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 data, dataSize, volume, pitch, fadeTime
 [in] data          : ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^
@@ -1847,11 +1847,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_StopBGS
+LNGameAudio_StopBGS
 BGS ‚Ì‰‰‘t‚ğ’â~‚µ‚Ü‚·BA
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 fadeTime
 [in] fadeTime(0.0) : ƒtƒF[ƒhƒAƒEƒg‚É‚©‚¯‚éŠÔ (•b)
@@ -1867,11 +1867,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlayME
+LNGameAudio_PlayME
 ME ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 filePath, volume, pitch
 [in] filePath    : ƒtƒ@ƒCƒ‹ƒpƒX
@@ -1889,11 +1889,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlayMEMem
+LNGameAudio_PlayMEMem
 ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^‚©‚ç ME ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 data, dataSize, volume, pitch
 [in] data        : ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^
@@ -1912,11 +1912,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_StopME
+LNGameAudio_StopME
 ME ‚Ì‰‰‘t‚ğ’â~‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 @
 
@@ -1931,11 +1931,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlaySE
+LNGameAudio_PlaySE
 SE ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 filePath, volume, pitch
 [in] filePath    : ƒtƒ@ƒCƒ‹ƒpƒX
@@ -1953,11 +1953,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlaySE3D
+LNGameAudio_PlaySE3D
 SE ‚ğ‰‰‘t‚µ‚Ü‚·B(3D ƒTƒEƒ“ƒh)
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 filePath, position, distance, volume, pitch
 [in] filePath    : ƒtƒ@ƒCƒ‹ƒpƒX
@@ -1977,11 +1977,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlaySE3DXYZ
+LNGameAudio_PlaySE3DXYZ
 SE ‚ğ‰‰‘t‚µ‚Ü‚·B(3D ƒTƒEƒ“ƒh)
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 filePath, x, y, z, distance, volume, pitch
 [in] filePath    : ƒtƒ@ƒCƒ‹ƒpƒX
@@ -2003,11 +2003,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlaySEMem
+LNGameAudio_PlaySEMem
 ƒƒ‚ƒŠã‚Ì‰¹ºƒf[ƒ^‚©‚ç SE ‚ğ‰‰‘t‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 data, dataSize, volume, pitch
 [in] data        : ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^
@@ -2026,11 +2026,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlaySE3DMem
+LNGameAudio_PlaySE3DMem
 ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^‚©‚ç SE ‚ğ‰‰‘t‚µ‚Ü‚·B (3D ƒTƒEƒ“ƒh)
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 data, dataSize, position, distance, volume, pitch
 [in] data        : ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^
@@ -2051,11 +2051,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_PlaySE3DMemXYZ
+LNGameAudio_PlaySE3DMemXYZ
 ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^‚©‚ç SE ‚ğ‰‰‘t‚µ‚Ü‚·B(3D ƒTƒEƒ“ƒh)
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 data, dataSize, x, y, z, distance, volume, pitch
 [in] data        : ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^
@@ -2078,11 +2078,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_StopSE
+LNGameAudio_StopSE
 ‚·‚×‚Ä‚Ì SE ‚Ì‰‰‘t‚ğ’â~‚µ‚Ü‚·B
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 @
 
@@ -2097,11 +2097,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_SetBGMVolume
+LNGameAudio_SetBGMVolume
 Ä¶’†‚ÌBGM‚Ì‰¹—Ê‚ğİ’è‚µ‚Ü‚·B(ƒtƒF[ƒhƒAƒEƒg’†‚Í–³Œø)
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 volume, fadeTime
 [in] volume        : ƒ{ƒŠƒ…[ƒ€ (0 ` 100)
@@ -2118,11 +2118,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNAudio_SetBGSVolume
+LNGameAudio_SetBGSVolume
 Ä¶’†‚ÌBGS‚Ì‰¹—Ê‚ğİ’è‚µ‚Ü‚·B(ƒtƒF[ƒhƒAƒEƒg’†‚Í–³Œø)
 
 %group
-LNAudio
+‰¹º‹@”\
 %prm
 volume, fadeTime
 [in] volume        : ƒ{ƒŠƒ…[ƒ€ (0 ` 100)
@@ -2143,7 +2143,7 @@ LNSoundListener_SetPosition
 3D‰¹º‚ÌƒŠƒXƒi[‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 position
 [in] position : 3D ‹óŠÔã‚ÌÀ•W
@@ -2163,7 +2163,7 @@ LNSoundListener_SetDirection
 3D‰¹º‚ÌƒŠƒXƒi[‚Ì³–Ê•ûŒü‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 direction
 [in] direction : Œü‚«
@@ -2183,7 +2183,7 @@ LNSoundListener_SetUpDirection
 3D‰¹º‚ÌƒŠƒXƒi[‚Ìã•ûŒü‚ğİ’è‚µ‚Ü‚·B(³–Ê•ûŒü‚Æ‚Í’¼Œğ‚Å‚ ‚é‚±‚Æ)
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 direction
 [in] direction : ã•ûŒü
@@ -2203,7 +2203,7 @@ LNSoundListener_SetVelocity
 3D‰¹º‚ÌƒŠƒXƒi[‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 velocity
 [in] velocity : ‘¬“x
@@ -2223,7 +2223,7 @@ LNSoundListener_SetPositionXYZ
 3D‰¹º‚ÌƒŠƒXƒi[‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 x, y, z
 [in] x : 3D ‹óŠÔã‚Ì X À•W
@@ -2245,7 +2245,7 @@ LNSoundListener_SetDirectionXYZ
 3D‰¹º‚ÌƒŠƒXƒi[‚Ì³–Ê•ûŒü‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 x, y, z
 [in] x : Œü‚«‚Ì X ¬•ª
@@ -2267,7 +2267,7 @@ LNSoundListener_SetUpDirectionXYZ
 3D‰¹º‚ÌƒŠƒXƒi[‚Ìã•ûŒü‚ğİ’è‚µ‚Ü‚·B(³–Ê•ûŒü‚Æ‚Í’¼Œğ‚Å‚ ‚é‚±‚Æ)
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 x, y, z
 [in] x : Œü‚«‚Ì X ¬•ª
@@ -2289,7 +2289,7 @@ LNSoundListener_SetVelocityXYZ
 3D‰¹º‚ÌƒŠƒXƒi[‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSoundListener
+‰¹º‹@”\
 %prm
 x, y, z
 [in] x : ‘¬“x‚Ì X ¬•ª
@@ -2311,7 +2311,7 @@ LNSound_Create
 ƒtƒ@ƒCƒ‹‚©‚çƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 filePath, sound
 [in]  filePath : ‰¹ºƒtƒ@ƒCƒ‹‚ÌƒpƒX
@@ -2332,7 +2332,7 @@ LNSound_CreateMem
 ƒƒ‚ƒŠã‚Ì‰¹ºƒtƒ@ƒCƒ‹ƒf[ƒ^‚©‚çƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 data, dataSize, sound
 [in]  data     : ƒƒ‚ƒŠã‚Ì‰¹ºƒf[ƒ^‚Ö
@@ -2354,7 +2354,7 @@ LNSound_GetVolume
 ƒTƒEƒ“ƒh‚Ìƒ{ƒŠƒ…[ƒ€‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outVolume
 [in]  sound     : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2375,7 +2375,7 @@ LNSound_SetVolume
 ƒTƒEƒ“ƒh‚Ìƒ{ƒŠƒ…[ƒ€‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, volume
 [in] sound  : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2396,7 +2396,7 @@ LNSound_GetPitch
 ƒTƒEƒ“ƒh‚Ìƒsƒbƒ`‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outPitch
 [in]  sound    : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2417,7 +2417,7 @@ LNSound_SetPitch
 ƒTƒEƒ“ƒh‚Ìƒsƒbƒ`‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, pitch
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2438,7 +2438,7 @@ LNSound_IsLoopEnabled
 ƒTƒEƒ“ƒh‚Ìƒ‹[ƒvÄ¶‚ª—LŒø‚Å‚ ‚é‚©‚ğŠm”F‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outEnabled
 [in]  sound      : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2459,7 +2459,7 @@ LNSound_SetLoopEnabled
 ƒTƒEƒ“ƒh‚Ìƒ‹[ƒvÄ¶‚Ì—L–³‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, loopEnable
 [in] sound      : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2480,7 +2480,7 @@ LNSound_Is3DEnabled
 ƒTƒEƒ“ƒh‚ª 3D ‰¹Œ¹‚Å‚ ‚é‚©‚ğŠm”F‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outEnabled
 [in]  sound      : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2501,7 +2501,7 @@ LNSound_Set3DEnabled
 ƒTƒEƒ“ƒh‚ğ 3D ‰¹Œ¹‚Å‚ ‚é‚©‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, enabled
 [in] sound   : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2522,7 +2522,7 @@ LNSound_GetPlayingMode
 ƒTƒEƒ“ƒhÄ¶‚Ì‰¹ºƒf[ƒ^‚ÌÄ¶•û–@‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outMode
 [in]  sound   : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2553,7 +2553,7 @@ LNSound_SetPlayingMode
 ƒTƒEƒ“ƒhÄ¶‚Ì‰¹ºƒf[ƒ^‚ÌÄ¶•û–@‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, mode
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2584,7 +2584,7 @@ LNSound_GetPlayingState
 ƒTƒEƒ“ƒh‚ÌÄ¶ó‘Ô‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outState
 [in]  sound    : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2611,7 +2611,7 @@ LNSound_GetPlayedSamples
 ƒTƒEƒ“ƒh‚ÌÄ¶‚µ‚½ƒTƒ“ƒvƒ‹”‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outSamples
 [in]  sound      : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2632,7 +2632,7 @@ LNSound_GetTotalSamples
 ƒTƒEƒ“ƒh‚Ì‰¹ºƒf[ƒ^‘S‘Ì‚ÌƒTƒ“ƒvƒ‹”‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outSamples
 [in]  sound      : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2653,7 +2653,7 @@ LNSound_GetSamplingRate
 ƒTƒEƒ“ƒh‚ÌƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, outRate
 [in]  sound   : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2674,7 +2674,7 @@ LNSound_SetEmitterPosition
 ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚Æ‚µ‚Ä‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, position
 [in] sound    : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2695,7 +2695,7 @@ LNSound_SetEmitterVelocity
 ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚Æ‚µ‚Ä‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, velocity
 [in] sound    : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2716,7 +2716,7 @@ LNSound_SetEmitterMaxDistance
 ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚ÌŒ¸Š‹——£ (’®‚±‚¦‚È‚­‚È‚é‹——£) ‚ğİ’è‚µ‚Ü‚·B(default:100)
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, distance
 [in] sound    : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2737,7 +2737,7 @@ LNSound_SetLoopRange
 ƒTƒEƒ“ƒh‚Ìƒ‹[ƒvÄ¶‚Ì”ÍˆÍ‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, begin, length
 [in] sound  : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2759,7 +2759,7 @@ LNSound_Play
 ƒTƒEƒ“ƒh‚ğÄ¶‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2779,7 +2779,7 @@ LNSound_Stop
 ƒTƒEƒ“ƒh‚ÌÄ¶‚ğ’â~‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2799,7 +2799,7 @@ LNSound_Pause
 ƒTƒEƒ“ƒh‚ÌÄ¶‚ğˆê’â~‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2819,7 +2819,7 @@ LNSound_Resume
 ƒTƒEƒ“ƒh‚ÌÄ¶‚ğˆê’â~‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2839,7 +2839,7 @@ LNSound_FadeVolume
 ƒTƒEƒ“ƒh‰¹—Ê‚ÌƒtƒF[ƒh‘€ì‚ğs‚¢‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, targetVolume, time, behavior
 [in] sound        : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2872,7 +2872,7 @@ LNSound_SetEmitterPositionXYZ
 ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚Æ‚µ‚Ä‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, x, y, z
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹
@@ -2895,7 +2895,7 @@ LNSound_SetEmitterVelocityXYZ
 ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚Æ‚µ‚Ä‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
 
 %group
-LNSound
+‰¹º‹@”\
 %prm
 sound, x, y, z
 [in] sound : ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹

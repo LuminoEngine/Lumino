@@ -134,6 +134,8 @@ ApplicationImpl::~ApplicationImpl()
 		LN_SAFE_RELEASE(m_audioManager);
 	}
 
+	LN_SAFE_RELEASE(m_fileManager);
+
 	if (ApplicationContext::GetCurrent() == this) {
 		ApplicationContext::SetCurrent(NULL);
 	}
@@ -181,7 +183,9 @@ void ApplicationImpl::InitialzeFileManager()
 {
 	if (m_fileManager == NULL)
 	{
-		m_fileManager = &FileManager::GetInstance();
+		FileManager::Settings data;
+		data.AccessMode = m_configData.FileAccessPriority;
+		m_fileManager = LN_NEW FileManager(data);
 		for (auto& e : m_configData.ArchiveFileEntryList) {
 			m_fileManager->RegisterArchive(e.FilePath, e.Password);
 		}
@@ -231,13 +235,14 @@ void ApplicationImpl::InitialzeAudioManager()
 		}
 
 		AudioManagerImpl::Settings data;
-		data.FileManager = &FileManager::GetInstance();
-		data.StreamCacheObjectCount = 32;
-		data.StreamSourceCacheMemorySize = 0;
-		data.DMInitMode = DirectMusicInitMode_NotUse;//Audio::DirectMusicInitMode_ThreadRequest;
+		data.FileManager = m_fileManager;
+		data.StreamCacheObjectCount = m_configData.SoundCacheCapacity.ObjectCount;
+		data.StreamSourceCacheMemorySize = m_configData.SoundCacheCapacity.MemorySize;
+		data.DMInitMode = m_configData.DirectMusicMode;
 #ifdef LN_OS_WIN32
 		data.hWnd = (m_platformManager != NULL) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : NULL;
 #endif
+		data.DirectMusicReverbLevel = m_configData.DirectMusicReverbLevel;
 		m_audioManager = AudioManagerImpl::Create(data);
 	}
 }
@@ -270,7 +275,7 @@ void ApplicationImpl::InitialzeGraphicsManager()
 		data.GraphicsAPI = m_configData.GraphicsAPI;
 		data.RenderingType = m_configData.RenderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
-		data.FileManager = &FileManager::GetInstance();
+		data.FileManager = m_fileManager;
 		data.PlatformTextureLoading = true;
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
@@ -328,9 +333,10 @@ void ApplicationImpl::InitialzeSceneGraphManager()
 	if (m_sceneGraphManager == NULL)
 	{
 		InitializeCommon();
+		InitialzeFileManager();
 		InitialzeGraphicsManager();
 		SceneGraphManager::ConfigData data;
-		data.FileManager = &FileManager::GetInstance();
+		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		SceneGraphManager::Instance = m_sceneGraphManager;

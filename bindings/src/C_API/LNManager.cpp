@@ -42,7 +42,7 @@ void LFManager::PostInitialize()
 	TCharToUTF8Converter->SetDestinationEncoding(Encoding::GetUTF8Encoding());
 
 	// オブジェクト管理配列
-	for (int i = 0; i < 512; ++i)
+	for (int i = 511; i >= 0; --i)
 	{
 		ObjectEntry e;
 		e.Object = NULL;

@@ -29,34 +29,37 @@ LN_NAMESPACE_AUDIO_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-	DirectMusicSegment::DirectMusicSegment(IDirectMusicPerformance8* dmPerformance, MidiDecoder* midiStream)
+DirectMusicSegment::DirectMusicSegment(DirectMusicManager* manager, IDirectMusicPerformance8* dmPerformance, MidiDecoder* midiStream)
 	: m_dmPerformance(dmPerformance)
 	, m_dmAudioPath(NULL)
 	, m_dmSegment(NULL)
 	, m_dmSegmentState(NULL)
 	, m_dsSoundBuffer(NULL)
 {
-    if ( m_dmPerformance )
-    {
+    if (m_dmPerformance != NULL)
+	{
 		//-----------------------------------------------------
-		// dmPerformance に対してエフェクトを設定する
+		// IDirectSoundBuffer8 を作る。これはピッチ変更やエフェクトの適用に必要となる。
 
-        // DirectSound のバッファを取得するため、オーディオパスを取得する
+		// DirectSound のバッファを取得するため、オーディオパスを取得する
 		LN_COMCALL(m_dmPerformance->CreateStandardAudioPath(
 			LN_DMUS_TYPE,		// パスのタイプ
 			64,					// パス内のパフォーマンス チャンネルの数
 			FALSE,				// 作成時にパスをアクティブにするか
 			&m_dmAudioPath));
-            
-        // DirectSound バッファの取得
+
+		// DirectSound バッファの取得
 		LN_COMCALL(m_dmAudioPath->GetObjectInPath(
-            DMUS_PCHANNEL_ALL,			// 検索するパフォーマンス チャンネル。DMUS_PCHANNEL_ALL を指定すると、すべてのチャンネルが検索される。
-            DMUS_PATH_BUFFER,			// オーディオパス内のステージ。DMUS_PATH_BUFFER で DirectSound バッファを取得する。
-            0,							// バッファのインデックス
+			DMUS_PCHANNEL_ALL,			// 検索するパフォーマンス チャンネル。DMUS_PCHANNEL_ALL を指定すると、すべてのチャンネルが検索される。
+			DMUS_PATH_BUFFER,			// オーディオパス内のステージ。DMUS_PATH_BUFFER で DirectSound バッファを取得する。
+			0,							// バッファのインデックス
 			GUID_NULL,					// 検索するオブジェクトのクラス識別子。
 			0,							// 一致するオブジェクトのリストにおけるオブジェクトのインデックス。
-            IID_IDirectSoundBuffer8,	// 目的のインターフェイスの識別子。
-            (void**)&m_dsSoundBuffer));
+			IID_IDirectSoundBuffer8,	// 目的のインターフェイスの識別子。
+			(void**)&m_dsSoundBuffer));
+
+		//-----------------------------------------------------
+		// dmPerformance に対してエフェクトを設定する
 
         // バッファにエフェクトを設定する
 		//		GUID_DSFX_STANDARD_CHORUS
@@ -86,10 +89,10 @@ LN_NAMESPACE_AUDIO_BEGIN
 		DSFXWavesReverb rv;
 		rv.fInGain			= 0.f;//DSFX_WAVESREVERB_INGAIN_MIN ;//DSFX_WAVESREVERB_INGAIN_DEFAULT;
 		rv.fReverbMix		= 0.f;//DSFX_WAVESREVERB_REVERBMIX_MIN  DSFX_WAVESREVERB_REVERBMIX_DEFAULT;
-		rv.fReverbTime		= 600.f;//DSFX_WAVESREVERB_REVERBTIME_DEFAULT;DSFX_WAVESREVERB_REVERBTIME_MIN 
+		rv.fReverbTime = Math::Lerp(DSFX_WAVESREVERB_REVERBTIME_MIN, 800.f, std::max(manager->GetReverbLevel(), 1.0f));	// 上限 800 くらいが現実的。また、万一大きな値になるとものすごく壊れた音が鳴るので max で制限。
 		rv.fHighFreqRTRatio = DSFX_WAVESREVERB_HIGHFREQRTRATIO_DEFAULT;//DSFX_WAVESREVERB_HIGHFREQRTRATIO_MIN; //DSFX_WAVESREVERB_HIGHFREQRTRATIO_DEFAULT;DSFX_WAVESREVERB_HIGHFREQRTRATIO_MAX
 		LN_COMCALL(waves_reverb->SetAllParameters(&rv));
-		    
+
 		//-----------------------------------------------------
 		// セグメントを作成する
 
@@ -300,7 +303,7 @@ DirectMusicManager* DirectMusicManager::m_instance = NULL;
 //-----------------------------------------------------------------------------
 void DirectMusicManager::Initialize(const ConfigData& configData)
 {
-	if (!m_instance && configData.DMInitMode != DirectMusicInitMode_NotUse)
+	if (!m_instance && configData.DMInitMode != DirectMusicMode::NotUse)
 	{
 		m_instance = LN_NEW DirectMusicManager();
 		m_instance->InternalInitialize(configData);
@@ -320,11 +323,12 @@ void DirectMusicManager::Finalize()
 //-----------------------------------------------------------------------------
 DirectMusicManager::DirectMusicManager()
 	: m_windowHandle(NULL)
-	, m_initMode(DirectMusicInitMode_ThreadWait)
+	, m_initMode(DirectMusicMode::ThreadWait)
 	, m_directSound(NULL)
 	, m_directMusic(NULL)
 	, m_firstPerformance(NULL)
 	, mErrorState(1)       // 最初はエラーにしておく。正常に初期化できたら 0
+	, m_reverbLevel(0.75)
 {
 }
 
@@ -446,6 +450,7 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
 
     m_windowHandle	= configData.WindowHandle;
     m_initMode		= configData.DMInitMode;
+	m_reverbLevel	= configData.ReverbLevel;
 
     // COM 初期化
     //HRESULT hr = ::CoInitializeEx( NULL, COINIT_MULTITHREADED );
@@ -471,7 +476,7 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
 	// 作成した DirectMusic に DirectSound を設定
 	LN_COMCALL(m_directMusic->SetDirectSound(m_directSound, m_windowHandle));
 
-	if (m_initMode == DirectMusicInitMode_ThreadWait || m_initMode == DirectMusicInitMode_ThreadRequest)
+	if (m_initMode == DirectMusicMode::ThreadWait || m_initMode == DirectMusicMode::ThreadRequest)
 	{
 		m_initThread.Start(LN_CreateDelegate(this, &DirectMusicManager::Thread_InitPerformance));
 	}

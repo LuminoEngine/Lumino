@@ -15,8 +15,9 @@ public:
 
     struct ConfigData
     {
-        DirectMusicInitMode		DMInitMode;		///< DirectMusic を初期化する時の方法
-        HWND					hWnd;			///< DirectMusic の初期化に使うウィンドウハンドル
+        DirectMusicMode		DMInitMode;		///< DirectMusic を初期化する時の方法
+        HWND				hWnd;			///< DirectMusic の初期化に使うウィンドウハンドル
+		float				ReverbLevel;
     };
 
 public:

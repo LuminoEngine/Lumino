@@ -7,7 +7,7 @@
 extern "C" {
 
 /**
-	@brief	
+	@brief	基本機能
 */
 LN_MODULE(Base)
 

@@ -34,6 +34,10 @@ void LNTypeDef_CheckCommonDefinition()
 {
 	if (sizeof(LNVariant) >= sizeof(Variant)) goto ERR_EXIT;
 	if (LN_VARIANTTYPE__TERMINATOR != VariantType_Max) goto ERR_EXIT;
+
+	if (LN_FILEACCESSPRIORITY__TERMINATOR != (int)FileAccessPriority_TERMINATOR) goto ERR_EXIT;
+
+	if (LN_DIRECTMUSICMODE__TERMINATOR != (int)DirectMusicMode::TERMINATOR) goto ERR_EXIT;
 	if (LN_SOUNDPLAYINGTYPE__TERMINATOR != (int)SoundPlayingMode::TERMINATOR) goto ERR_EXIT;
 	if (LN_SOUNDFADEBEHAVIOR__TERMINATOR != (int)SoundFadeBehavior::TERMINATOR) goto ERR_EXIT;
 

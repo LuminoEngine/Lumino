@@ -32,12 +32,6 @@ bool checkEqualHandle(VALUE obj, LNHandle handle)
 // WrapStructs
 
 
-struct wrapError
-    : public wrapRefObject
-{
-
-};
-
 struct wrapConfig
 {
 
@@ -53,7 +47,13 @@ struct wrapVersion
 
 };
 
-struct wrapAudio
+struct wrapError
+    : public wrapRefObject
+{
+
+};
+
+struct wrapGameAudio
 {
 
 };
@@ -71,83 +71,14 @@ struct wrapSound
 
 
 
-VALUE g_class_Error;
 VALUE g_class_Config;
 VALUE g_class_Application;
 VALUE g_class_Version;
-VALUE g_class_Audio;
+VALUE g_class_Error;
+VALUE g_class_GameAudio;
 VALUE g_class_SoundListener;
 VALUE g_class_Sound;
 
-
-static void LNError_delete(wrapError* obj)
-{
-    if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
-}
-
-static void LNError_mark(wrapError* obj)
-{
-
-}
-
-static VALUE LNError_allocate( VALUE klass )
-{
-    VALUE obj;
-    wrapError* internalObj;
-
-    internalObj = (wrapError*)malloc(sizeof(wrapError));
-    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNError_allocate" );
-    obj = Data_Wrap_Struct(klass, LNError_mark, LNError_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapError));
-
-    return obj;
-}
-
-static VALUE LNError_allocateForGetRefObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    wrapError* internalObj;
-
-    internalObj = (wrapError*)malloc(sizeof(wrapError));
-    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNError_allocate" );
-    obj = Data_Wrap_Struct(klass, LNError_mark, LNError_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapError));
-
-    internalObj->Handle = handle;
-    return obj;
-}
-
-static VALUE static_lnrbLNError_GetLastErrorCode(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNResult errorCode = LNError_GetLastErrorCode();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Error.get_last_error_code - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNError_GetLastErrorMessage(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            const LNChar* _outStr;
-            LNError_GetLastErrorMessage(&_outStr);
-            return toVALUE(_outStr);
-    
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Error.get_last_error_message - wrong argument type.");
-    return Qnil;
-}
 
 static VALUE static_lnrbLNConfig_SetApplicationLogEnabled(int argc, VALUE *argv, VALUE self)
 {
@@ -381,117 +312,152 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
-static VALUE static_lnrbLNAudio_PlayBGM(int argc, VALUE *argv, VALUE self)
+static void LNError_delete(wrapError* obj)
 {
-    if (1 <= argc && argc <= 4) {
-        VALUE filePath;
-        VALUE volume;
-        VALUE pitch;
-        VALUE fadeTime;
-        rb_scan_args(argc, argv, "13", &filePath, &volume, &pitch, &fadeTime);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch) && isRbFloat(fadeTime)) {
-            char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
-            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
-            LNResult errorCode = LNAudio_PlayBGM(_filePath, _volume, _pitch, _fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Audio.play_bgm - wrong argument type.");
-    return Qnil;
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    free(obj);
 }
 
-static VALUE static_lnrbLNAudio_StopBGM(int argc, VALUE *argv, VALUE self)
+static void LNError_mark(wrapError* obj)
 {
-    if (0 <= argc && argc <= 1) {
-        VALUE fadeTime;
-        rb_scan_args(argc, argv, "01", &fadeTime);
-        if (isRbFloat(fadeTime)) {
-            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
-            LNResult errorCode = LNAudio_StopBGM(_fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Audio.stop_bgm - wrong argument type.");
-    return Qnil;
+
 }
 
-static VALUE static_lnrbLNAudio_PlayBGS(int argc, VALUE *argv, VALUE self)
+static VALUE LNError_allocate( VALUE klass )
 {
-    if (1 <= argc && argc <= 4) {
-        VALUE filePath;
-        VALUE volume;
-        VALUE pitch;
-        VALUE fadeTime;
-        rb_scan_args(argc, argv, "13", &filePath, &volume, &pitch, &fadeTime);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch) && isRbFloat(fadeTime)) {
-            char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
-            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
-            LNResult errorCode = LNAudio_PlayBGS(_filePath, _volume, _pitch, _fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Audio.play_bgs - wrong argument type.");
-    return Qnil;
+    VALUE obj;
+    wrapError* internalObj;
+
+    internalObj = (wrapError*)malloc(sizeof(wrapError));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNError_allocate" );
+    obj = Data_Wrap_Struct(klass, LNError_mark, LNError_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapError));
+
+    return obj;
 }
 
-static VALUE static_lnrbLNAudio_StopBGS(int argc, VALUE *argv, VALUE self)
+static VALUE LNError_allocateForGetRefObject(VALUE klass, LNHandle handle)
 {
-    if (0 <= argc && argc <= 1) {
-        VALUE fadeTime;
-        rb_scan_args(argc, argv, "01", &fadeTime);
-        if (isRbFloat(fadeTime)) {
-            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
-            LNResult errorCode = LNAudio_StopBGS(_fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Audio.stop_bgs - wrong argument type.");
-    return Qnil;
+    VALUE obj;
+    wrapError* internalObj;
+
+    internalObj = (wrapError*)malloc(sizeof(wrapError));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNError_allocate" );
+    obj = Data_Wrap_Struct(klass, LNError_mark, LNError_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapError));
+
+    internalObj->Handle = handle;
+    return obj;
 }
 
-static VALUE static_lnrbLNAudio_PlayME(int argc, VALUE *argv, VALUE self)
-{
-    if (1 <= argc && argc <= 3) {
-        VALUE filePath;
-        VALUE volume;
-        VALUE pitch;
-        rb_scan_args(argc, argv, "12", &filePath, &volume, &pitch);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch)) {
-            char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
-            LNResult errorCode = LNAudio_PlayME(_filePath, _volume, _pitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Audio.play_me - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNAudio_StopME(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNError_GetLastErrorCode(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNResult errorCode = LNAudio_StopME();
+            LNResult errorCode = LNError_GetLastErrorCode();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Audio.stop_me - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Error.get_last_error_code - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNAudio_PlaySE(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNError_GetLastErrorMessage(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            const LNChar* _outStr;
+            LNError_GetLastErrorMessage(&_outStr);
+            return toVALUE(_outStr);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Error.get_last_error_message - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_PlayBGM(int argc, VALUE *argv, VALUE self)
+{
+    if (1 <= argc && argc <= 4) {
+        VALUE filePath;
+        VALUE volume;
+        VALUE pitch;
+        VALUE fadeTime;
+        rb_scan_args(argc, argv, "13", &filePath, &volume, &pitch, &fadeTime);
+        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch) && isRbFloat(fadeTime)) {
+            char* _filePath = StringValuePtr(filePath);
+            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
+            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
+            LNResult errorCode = LNGameAudio_PlayBGM(_filePath, _volume, _pitch, _fadeTime);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::GameAudio.play_bgm - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_StopBGM(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE fadeTime;
+        rb_scan_args(argc, argv, "01", &fadeTime);
+        if (isRbFloat(fadeTime)) {
+            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
+            LNResult errorCode = LNGameAudio_StopBGM(_fadeTime);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::GameAudio.stop_bgm - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_PlayBGS(int argc, VALUE *argv, VALUE self)
+{
+    if (1 <= argc && argc <= 4) {
+        VALUE filePath;
+        VALUE volume;
+        VALUE pitch;
+        VALUE fadeTime;
+        rb_scan_args(argc, argv, "13", &filePath, &volume, &pitch, &fadeTime);
+        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch) && isRbFloat(fadeTime)) {
+            char* _filePath = StringValuePtr(filePath);
+            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
+            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
+            LNResult errorCode = LNGameAudio_PlayBGS(_filePath, _volume, _pitch, _fadeTime);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::GameAudio.play_bgs - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_StopBGS(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 1) {
+        VALUE fadeTime;
+        rb_scan_args(argc, argv, "01", &fadeTime);
+        if (isRbFloat(fadeTime)) {
+            double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
+            LNResult errorCode = LNGameAudio_StopBGS(_fadeTime);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::GameAudio.stop_bgs - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_PlayME(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 3) {
         VALUE filePath;
@@ -502,16 +468,50 @@ static VALUE static_lnrbLNAudio_PlaySE(int argc, VALUE *argv, VALUE self)
             char* _filePath = StringValuePtr(filePath);
             int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
             int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
-            LNResult errorCode = LNAudio_PlaySE(_filePath, _volume, _pitch);
+            LNResult errorCode = LNGameAudio_PlayME(_filePath, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Audio.play_se - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::GameAudio.play_me - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNGameAudio_StopME(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNResult errorCode = LNGameAudio_StopME();
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::GameAudio.stop_me - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_PlaySE(int argc, VALUE *argv, VALUE self)
+{
+    if (1 <= argc && argc <= 3) {
+        VALUE filePath;
+        VALUE volume;
+        VALUE pitch;
+        rb_scan_args(argc, argv, "12", &filePath, &volume, &pitch);
+        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch)) {
+            char* _filePath = StringValuePtr(filePath);
+            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
+            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            LNResult errorCode = LNGameAudio_PlaySE(_filePath, _volume, _pitch);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::GameAudio.play_se - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNGameAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
 {
     if (3 <= argc && argc <= 5) {
         VALUE filePath;
@@ -526,7 +526,7 @@ static VALUE static_lnrbLNAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
             float _distance = ((float)NUM2DBL(distance));
             int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
             int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
-            LNResult errorCode = LNAudio_PlaySE3D(_filePath, &_position, _distance, _volume, _pitch);
+            LNResult errorCode = LNGameAudio_PlaySE3D(_filePath, &_position, _distance, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
@@ -548,30 +548,30 @@ static VALUE static_lnrbLNAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
             float _distance = ((float)NUM2DBL(distance));
             int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
             int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
-            LNResult errorCode = LNAudio_PlaySE3DXYZ(_filePath, _x, _y, _z, _distance, _volume, _pitch);
+            LNResult errorCode = LNGameAudio_PlaySE3DXYZ(_filePath, _x, _y, _z, _distance, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Audio.play_se3d - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::GameAudio.play_se3d - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNAudio_StopSE(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNGameAudio_StopSE(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNResult errorCode = LNAudio_StopSE();
+            LNResult errorCode = LNGameAudio_StopSE();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Audio.stop_se - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::GameAudio.stop_se - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNAudio_SetBGMVolume(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNGameAudio_SetBGMVolume(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 2) {
         VALUE volume;
@@ -580,16 +580,16 @@ static VALUE static_lnrbLNAudio_SetBGMVolume(int argc, VALUE *argv, VALUE self)
         if (isRbNumber(volume) && isRbFloat(fadeTime)) {
             int _volume = FIX2INT(volume);
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
-            LNResult errorCode = LNAudio_SetBGMVolume(_volume, _fadeTime);
+            LNResult errorCode = LNGameAudio_SetBGMVolume(_volume, _fadeTime);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Audio.set_bgm_volume - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::GameAudio.set_bgm_volume - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNAudio_SetBGSVolume(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNGameAudio_SetBGSVolume(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 2) {
         VALUE volume;
@@ -598,12 +598,12 @@ static VALUE static_lnrbLNAudio_SetBGSVolume(int argc, VALUE *argv, VALUE self)
         if (isRbNumber(volume) && isRbFloat(fadeTime)) {
             int _volume = FIX2INT(volume);
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
-            LNResult errorCode = LNAudio_SetBGSVolume(_volume, _fadeTime);
+            LNResult errorCode = LNGameAudio_SetBGSVolume(_volume, _fadeTime);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Audio.set_bgs_volume - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::GameAudio.set_bgs_volume - wrong argument type.");
     return Qnil;
 }
 
@@ -1235,11 +1235,6 @@ static VALUE lnrbLNSound_FadeVolume(int argc, VALUE *argv, VALUE self)
 
 void InitClasses()
 {
-    g_class_Error = rb_define_class_under(g_luminoModule, "Error", rb_cObject);
-    rb_define_alloc_func(g_class_Error, LNError_allocate);
-    rb_define_singleton_method(g_class_Error, "get_last_error_code", LN_TO_RUBY_FUNC(static_lnrbLNError_GetLastErrorCode), -1);
-    rb_define_singleton_method(g_class_Error, "get_last_error_message", LN_TO_RUBY_FUNC(static_lnrbLNError_GetLastErrorMessage), -1);
-
     g_class_Config = rb_define_class_under(g_luminoModule, "Config", rb_cObject);
     rb_define_singleton_method(g_class_Config, "set_application_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetApplicationLogEnabled), -1);
     rb_define_singleton_method(g_class_Config, "set_console_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetConsoleEnabled), -1);
@@ -1261,18 +1256,23 @@ void InitClasses()
     rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
     rb_define_singleton_method(g_class_Version, "is_at_least", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
 
-    g_class_Audio = rb_define_class_under(g_luminoModule, "Audio", rb_cObject);
-    rb_define_singleton_method(g_class_Audio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlayBGM), -1);
-    rb_define_singleton_method(g_class_Audio, "stop_bgm", LN_TO_RUBY_FUNC(static_lnrbLNAudio_StopBGM), -1);
-    rb_define_singleton_method(g_class_Audio, "play_bgs", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlayBGS), -1);
-    rb_define_singleton_method(g_class_Audio, "stop_bgs", LN_TO_RUBY_FUNC(static_lnrbLNAudio_StopBGS), -1);
-    rb_define_singleton_method(g_class_Audio, "play_me", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlayME), -1);
-    rb_define_singleton_method(g_class_Audio, "stop_me", LN_TO_RUBY_FUNC(static_lnrbLNAudio_StopME), -1);
-    rb_define_singleton_method(g_class_Audio, "play_se", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlaySE), -1);
-    rb_define_singleton_method(g_class_Audio, "play_se3d", LN_TO_RUBY_FUNC(static_lnrbLNAudio_PlaySE3D), -1);
-    rb_define_singleton_method(g_class_Audio, "stop_se", LN_TO_RUBY_FUNC(static_lnrbLNAudio_StopSE), -1);
-    rb_define_singleton_method(g_class_Audio, "set_bgm_volume", LN_TO_RUBY_FUNC(static_lnrbLNAudio_SetBGMVolume), -1);
-    rb_define_singleton_method(g_class_Audio, "set_bgs_volume", LN_TO_RUBY_FUNC(static_lnrbLNAudio_SetBGSVolume), -1);
+    g_class_Error = rb_define_class_under(g_luminoModule, "Error", rb_cObject);
+    rb_define_alloc_func(g_class_Error, LNError_allocate);
+    rb_define_singleton_method(g_class_Error, "get_last_error_code", LN_TO_RUBY_FUNC(static_lnrbLNError_GetLastErrorCode), -1);
+    rb_define_singleton_method(g_class_Error, "get_last_error_message", LN_TO_RUBY_FUNC(static_lnrbLNError_GetLastErrorMessage), -1);
+
+    g_class_GameAudio = rb_define_class_under(g_luminoModule, "GameAudio", rb_cObject);
+    rb_define_singleton_method(g_class_GameAudio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlayBGM), -1);
+    rb_define_singleton_method(g_class_GameAudio, "stop_bgm", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_StopBGM), -1);
+    rb_define_singleton_method(g_class_GameAudio, "play_bgs", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlayBGS), -1);
+    rb_define_singleton_method(g_class_GameAudio, "stop_bgs", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_StopBGS), -1);
+    rb_define_singleton_method(g_class_GameAudio, "play_me", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlayME), -1);
+    rb_define_singleton_method(g_class_GameAudio, "stop_me", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_StopME), -1);
+    rb_define_singleton_method(g_class_GameAudio, "play_se", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlaySE), -1);
+    rb_define_singleton_method(g_class_GameAudio, "play_se3d", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlaySE3D), -1);
+    rb_define_singleton_method(g_class_GameAudio, "stop_se", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_StopSE), -1);
+    rb_define_singleton_method(g_class_GameAudio, "set_bgm_volume", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_SetBGMVolume), -1);
+    rb_define_singleton_method(g_class_GameAudio, "set_bgs_volume", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_SetBGSVolume), -1);
 
     g_class_SoundListener = rb_define_class_under(g_luminoModule, "SoundListener", rb_cObject);
     rb_define_singleton_method(g_class_SoundListener, "position=", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetPosition), -1);

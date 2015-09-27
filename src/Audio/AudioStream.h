@@ -14,6 +14,7 @@ namespace Lumino
 {
 LN_NAMESPACE_AUDIO_BEGIN
 class AudioDecoder;
+class AudioManagerImpl;
 
 class AudioStream
 	: public ASyncIOObject
@@ -21,10 +22,10 @@ class AudioStream
 {
 	LN_CACHE_OBJECT_DECL;
 public:
-	AudioStream(Stream* stream);
+	AudioStream(AudioManagerImpl* manager, Stream* stream);
 	virtual ~AudioStream();
 
-	void Create(bool async) { InvokeIOProc(async, &FileManager::GetInstance()); }
+	void Create(bool async);
 
 	StreamFormat GetFormat() const { return m_format; }
 
@@ -40,9 +41,10 @@ protected:
 	virtual void OnASyncIOProc();
 
 private:
-	Stream*			m_stream;
-	StreamFormat	m_format;
-	AudioDecoder*	m_decoder;
+	AudioManagerImpl*	m_manager;
+	Stream*				m_stream;
+	StreamFormat		m_format;
+	AudioDecoder*		m_decoder;
 };
 
 /// 音声データのベースクラス

@@ -37,11 +37,12 @@ DirectMusicAudioDevice::~DirectMusicAudioDevice()
 void DirectMusicAudioDevice::Initialize( const ConfigData& configData )
 {
     // DirectMusic を初期化する場合
-	if (configData.DMInitMode != DirectMusicInitMode_NotUse)
+	if (configData.DMInitMode != DirectMusicMode::NotUse)
     {
         DirectMusicManager::ConfigData dm_data;
         dm_data.DMInitMode		= configData.DMInitMode;
 		dm_data.WindowHandle	= configData.hWnd;
+		dm_data.ReverbLevel		= configData.ReverbLevel;
         DirectMusicManager::Initialize(dm_data);
     }
 }
