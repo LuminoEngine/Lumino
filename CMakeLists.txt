@@ -635,7 +635,7 @@ add_custom_command(
 
 #------------------------------
 # Unit test.
-add_subdirectory(test)
+#add_subdirectory(test)
 
 #------------------------------
 # Demo.

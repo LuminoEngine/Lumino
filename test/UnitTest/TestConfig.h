@@ -49,8 +49,10 @@ public:
 	static RefPtr<Shader> CreateShader(const TCHAR* filePath);
 
 protected:
+#if 0
 	virtual void SetUp();
 	virtual void TearDown();
+#endif
 };
 
 /// 頂点データ (位置+頂点カラー)

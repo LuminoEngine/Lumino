@@ -39,15 +39,15 @@ int main()
 		appData.DirectMusicMode = DirectMusicMode::Normal;
 		Application::Initialize(appData);
 
-		GCPtr<Sound> s = Sound::Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"));
-		s->SetLoopEnabled(true);
-		s->SetPitch(110);
-		s->Play();
+		//GCPtr<Sound> s = Sound::Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"));
+		//s->SetLoopEnabled(true);
+		//s->SetPitch(110);
+		//s->Play();
 
-		//GCPtr<GUIContext> context1 = GUIContext::Create();
+		GCPtr<GUIContext> context1 = GUIContext::Create();
 
-		//GCPtr<Button> button1 = Button::Create();
-		//context1->SetRootElement(button1);
+		GCPtr<Button> button1 = Button::Create();
+		context1->SetRootElement(button1);
 
 		while (Application::UpdateFrame())
 		{
