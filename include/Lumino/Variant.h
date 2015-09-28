@@ -147,6 +147,85 @@ public:
 };
 #endif
 
+class EventArgs;
+
+/**
+	@brief		
+*/
+class EventSlotBase
+{
+protected:
+	EventSlotBase() {}
+	virtual ~EventSlotBase() {}
+
+private:
+	friend class CoreObject;
+	virtual void Raise(EventArgs* e) = 0;
+};
+
+
+/**
+	@brief		
+	@details	RoutedEvent は UIElement 及びそのサブクラス内部からのみ発生させることが出来ます。
+*/
+template<class TArgs>
+class EventSlot
+	: public EventSlotBase
+{
+public:
+	EventSlot() {}
+	virtual ~EventSlot() {}
+
+public:
+
+	/**
+		@brief	ルーティングイベントのハンドラを追加します。
+	*/
+	void AddHandler(const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Add(handler);
+	}
+	
+	/**
+		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
+	*/
+	void RemoveHandler(const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Remove(handler);
+	}
+	
+	/**
+		@brief	ルーティングイベントのハンドラを追加します。
+	*/
+	void operator += (const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Add(handler);
+	}
+	
+	/**
+		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
+	*/
+	void operator -= (const Delegate01<TArgs*>& handler)
+	{
+		m_handlerList.Remove(handler);
+	}
+
+private:
+	Array< Delegate01<TArgs*> > m_handlerList;
+
+	virtual void Raise(EventArgs* e)
+	{
+		for (Delegate01<TArgs*>& d : m_handlerList)
+		{
+			d.Call(static_cast<TArgs*>(e));
+		}
+	}
+
+	// Lumino::EventXX のような使い方と同時に、
+	// Property にたいする メンバ変数のような意味も持つ。
+	// 即ち、ハンドラのリスト。
+	// RoutedEventSlot は、いわゆる「動的なハンドラ」
+};
 
 
 class CoreObjectCollection : public Collection < CoreObject* >
@@ -234,6 +313,8 @@ public:
 	//CoreObjectHierarchicalIterator endHierarchical() { return CoreObjectHierarchicalIterator(this, m_inheritanceChildren.end()); }
 
 protected:
+	void RaiseEvent(EventSlotBase& eventSlot, EventArgs* e);	// TODO: UIElement の関数名と被っている
+
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	virtual void RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e);
 

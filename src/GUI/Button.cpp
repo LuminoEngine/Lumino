@@ -38,6 +38,7 @@ Button::Button(GUIManagerImpl* manager)
 	//MouseMove += LN_CreateDelegate(this, &Button::UIElement_MouseMove);
 
 	// Register handler
+	IsEnabledChanged += LN_CreateDelegate(this, &Button::Handler_IsEnabledChanged);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseEnterEvent, RoutedHandler_MouseEnter);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseLeaveEvent, RoutedHandler_MouseLeave);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseMoveEvent, RoutedHandler_MouseMove);
@@ -66,6 +67,19 @@ void Button::OnClick()
 //-----------------------------------------------------------------------------
 void Button::OnRender(Painter* painter)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Button::Handler_IsEnabledChanged(PropertyChangedEventArgs* e)
+{
+	if (e->NewValue.GetBool()) {
+		VisualStateManager::GoToState(this, VisualStatus::Disabled);
+	}
+	else {
+		VisualStateManager::GoToState(this, VisualStatus::Normal);	// TODO: 前の値に戻さなくて良い？
+	}
 }
 
 //-----------------------------------------------------------------------------

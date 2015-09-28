@@ -6,6 +6,15 @@
 namespace Lumino
 {
 
+
+class EventArgs
+	: public CoreObject
+{
+public:
+	EventArgs() {}
+	virtual ~EventArgs() {}
+};
+
 /**
 	@brief		
 */
@@ -29,7 +38,7 @@ protected:
 
 
 class PropertyChangedEventArgs
-	: public CoreObject
+	: public EventArgs//CoreObject
 	//: public RoutedEventArgs
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();

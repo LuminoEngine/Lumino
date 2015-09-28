@@ -145,6 +145,7 @@ public:
 	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity プロパティの識別子 */
+	LN_PROPERTY(bool,					IsEnabledProperty);				/**< IsEnabled プロパティの識別子 */
 	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
 
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
@@ -160,6 +161,14 @@ public:
 	LN_ROUTED_EVENT(RoutedEventArgs,	ExecuteRoutedCommandEvent);		/**< このイベントは内部用 */
 
 public:
+	//-------------------------------------------------------------------------
+	/** @name Events */
+	/** @{ */
+
+	EventSlot<PropertyChangedEventArgs>	IsEnabledChanged;
+
+	/** @{ */
+
 	//-------------------------------------------------------------------------
 	/** @name RoutedEvents */
 	/** @{ */
@@ -195,6 +204,12 @@ public:
 
 	/** 要素の不透明度を取得します。*/
 	float GetOpacity() const { return GetTypedPropertyValue<float>(OpacityProperty); }
+
+	/** この要素が有効かどうかを示す値を設定します。規定値は true です。*/
+	void SetEnabled(bool value) { SetTypedPropertyValue<bool>(IsEnabledProperty, value); }
+
+	/** この要素が有効かどうかを示す値を取得します。*/
+	bool IsEnabled() const { return GetTypedPropertyValue<bool>(IsEnabledProperty); }
 
 	/** @} */
 
@@ -291,6 +306,7 @@ private:
 	float							m_combinedOpacity;
 	Array< RefPtr<AnimationClock> >	m_animationClockList;
 	InvalidateFlags					m_invalidateFlags;
+	bool							m_isEnabled;
 
 
 

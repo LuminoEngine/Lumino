@@ -19,11 +19,6 @@ LN_ENUM(ListChangedAction)
 };
 LN_ENUM_DECLARE(ListChangedAction);
 
-class EventArgs
-	: public CoreObject
-{
-
-};
 
 class ListChangedEventArgs
 	: public EventArgs

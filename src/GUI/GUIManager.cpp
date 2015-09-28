@@ -1378,6 +1378,20 @@ void GUIManagerImpl::BuildDefaultTheme()
 			rectangle->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonMouseOnBrush")));
 			panel1->AddChild(rectangle);
 
+			RefPtr<UIElementFactory> rectangle2(LN_NEW UIElementFactory(this));
+			rectangle2->SetKeyName(_T("PressedBorder"));
+			rectangle2->SetTypeName(_T("Rectangle"));
+			rectangle2->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
+			rectangle2->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonPressedBrush")));
+			panel1->AddChild(rectangle2);
+
+			RefPtr<UIElementFactory> rectangle3(LN_NEW UIElementFactory(this));
+			rectangle3->SetKeyName(_T("DisabledBorder"));
+			rectangle3->SetTypeName(_T("Rectangle"));
+			rectangle3->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
+			rectangle3->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonDisabledBrush")));
+			panel1->AddChild(rectangle2);
+
 			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
 			ef2->SetTypeName(_T("ContentPresenter"));
 			panel1->AddChild(ef2);
@@ -1413,15 +1427,36 @@ void GUIManagerImpl::BuildDefaultTheme()
 		easing2->SetEasingMode(Animation::EasingMode::EaseOutExpo);
 		easing2->SetDuration(1.0f);
 
+		GCPtr<FloatEasing> buttonPressedEasingIn = FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo);
+		GCPtr<FloatEasing> buttonPressedEasingOut = FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo);
+		GCPtr<FloatEasing> buttonDisabledEasingIn = FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo);
+		GCPtr<FloatEasing> buttonDisabledEasingOut = FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo);
+
 		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
 		{
 			VisualStatePtr vstate1(LN_NEW VisualState(this, _T("Normal")));
 			vstate1->GetStoryboard()->AddTimeline(easing1);
+			vstate1->GetStoryboard()->AddTimeline(buttonPressedEasingOut);
+			vstate1->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstate1);
 
 			VisualStatePtr vstate2(LN_NEW VisualState(this, _T("MouseOver")));
 			vstate2->GetStoryboard()->AddTimeline(easing2);
+			vstate2->GetStoryboard()->AddTimeline(buttonPressedEasingOut);
+			vstate2->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstate2);
+
+			VisualStatePtr vstatePressed(LN_NEW VisualState(this, _T("Pressed")));
+			vstatePressed->GetStoryboard()->AddTimeline(easing1);
+			vstatePressed->GetStoryboard()->AddTimeline(buttonPressedEasingIn);
+			vstatePressed->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
+			vgroup1->AddState(vstatePressed);
+
+			VisualStatePtr vstateDisabled(LN_NEW VisualState(this, _T("Disabled")));
+			vstateDisabled->GetStoryboard()->AddTimeline(easing1);
+			vstateDisabled->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
+			vstateDisabled->GetStoryboard()->AddTimeline(buttonDisabledEasingIn);
+			vgroup1->AddState(vstateDisabled);
 		}
 		RefPtr<VisualStateGroupList> groups1(LN_NEW VisualStateGroupList());
 		groups1->Add(vgroup1);

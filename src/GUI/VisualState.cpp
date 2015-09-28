@@ -36,6 +36,26 @@ LN_NAMESPACE_GUI_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+FloatEasing* FloatEasing::Create(
+	const String& targetName,
+	const String& targetProperty,
+	float targetValue,
+	float duration,
+	Animation::EasingMode easingMode)
+{
+	GCPtr<FloatEasing> easing = LN_NEW FloatEasing();
+	easing->SetTargetName(targetName);
+	easing->SetTargetProperty(targetProperty);
+	easing->SetTargetValue(targetValue);
+	easing->SetDuration(duration);
+	easing->SetEasingMode(easingMode);
+	easing.SafeAddRef();
+	return easing;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 FloatEasing::FloatEasing()
 	:/* m_targetName()
 	, m_targetProperty(NULL)

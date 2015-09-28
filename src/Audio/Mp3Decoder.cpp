@@ -1,4 +1,5 @@
 
+#include "../Internal.h"
 #include <Lumino/Base/Exception.h>
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/IO/BinaryReader.h>

@@ -25,6 +25,7 @@ LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin,
 LN_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, PropertyMetadata(HorizontalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, PropertyMetadata(1.0f));
+LN_PROPERTY_IMPLEMENT(UIElement, bool, IsEnabledProperty, "IsEnabled", m_isEnabled, PropertyMetadata(true));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, PropertyMetadata(true));
 
 // Register routed event
@@ -52,7 +53,7 @@ UIElement::UIElement(GUIManagerImpl* manager)
 	, m_combinedOpacity(1.0f)
 	, m_animationClockList()
 	, m_invalidateFlags(InvalidateFlags::None)
-
+	, m_isEnabled(true)
 
 	, m_manager(manager)
 	, m_localResource(NULL)
@@ -466,6 +467,10 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 void UIElement::OnPropertyChanged(PropertyChangedEventArgs* e)
 {
 	CoreObject::OnPropertyChanged(e);
+
+	if (e->ChangedProperty == IsEnabledProperty) {
+		CoreObject::RaiseEvent(IsEnabledChanged, e);
+	}
 	
 	// TemplateBinding に伝える
 	PropertyChangedForTemplateBindings(e);

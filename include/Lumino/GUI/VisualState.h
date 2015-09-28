@@ -30,6 +30,10 @@ class FloatEasing
 	: public AnimationTimeline
 {
 public:
+
+	static FloatEasing* Create(const String& targetName, const String& targetProperty, float targetValue, float duration, Animation::EasingMode easingMode);
+
+public:
 	FloatEasing();
 	virtual ~FloatEasing();
 

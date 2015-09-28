@@ -51,6 +51,7 @@ protected:
 	//void UIElement_MouseMove(CoreObject* sender, MouseEventArgs* e);
 
 private:
+	void Handler_IsEnabledChanged(PropertyChangedEventArgs* e);
 	void RoutedHandler_MouseEnter(MouseEventArgs* e);
 	void RoutedHandler_MouseLeave(MouseEventArgs* e);
 	void RoutedHandler_MouseMove(MouseEventArgs* e);

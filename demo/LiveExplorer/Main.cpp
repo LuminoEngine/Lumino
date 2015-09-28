@@ -49,12 +49,14 @@ int main()
 		GCPtr<Button> button1 = Button::Create();
 		context1->SetRootElement(button1);
 
+		button1->SetEnabled(false);
+
 		while (Application::UpdateFrame())
 		{
 		}
 
-		s->Stop();
-		s.SafeRelease();
+		//s->Stop();
+		//s.SafeRelease();
 
 		Application::Finalize();
 

@@ -544,6 +544,14 @@ void CoreObject::SetPropertyValueInternal(const Property* prop, const Variant& v
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void CoreObject::RaiseEvent(EventSlotBase& eventSlot, EventArgs* e)
+{
+	eventSlot.Raise(e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void CoreObject::RaiseEventInternal(const RoutedEvent* ev, RoutedEventArgs* e)
 {
 	LN_VERIFY_RETURN(ev != NULL);
