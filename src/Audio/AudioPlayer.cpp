@@ -20,8 +20,8 @@ LN_NAMESPACE_AUDIO_BEGIN
 AudioPlayer::AudioPlayer(AudioDevice* device)
 	: mDevice(device)
 	, m_audioStream(NULL)
-	, mVolume(100)
-	, mPitch(100)
+	, mVolume(1.0f)
+	, mPitch(1.0f)
 	, mLoopBegin(0)
 	, mLoopLength(0)
 	, mIsPlaying(false)
@@ -59,19 +59,17 @@ void AudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void AudioPlayer::SetVolume( int volume )
+void AudioPlayer::SetVolume(float volume)
 {
-    mVolume = volume;
-	mVolume = LN_CLAMP(mVolume, 0, 100);
+	mVolume = Math::Clamp(volume, 0.0f, 1.0f);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void AudioPlayer::SetPitch( int pitch )
+void AudioPlayer::SetPitch(float pitch)
 {
-	mPitch = pitch;
-	mPitch = LN_CLAMP(mPitch, 50, 200);
+	mPitch = Math::Clamp(pitch, 0.5f, 2.0f);
 }
 
 //-----------------------------------------------------------------------------

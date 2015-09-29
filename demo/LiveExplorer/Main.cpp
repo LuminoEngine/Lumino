@@ -40,9 +40,16 @@ int main()
 		Application::Initialize(appData);
 
 		//GCPtr<Sound> s = Sound::Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"));
+		//GCPtr<Sound> s = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//s->SetLoopEnabled(true);
-		//s->SetPitch(110);
+		////s->SetPitch(110);
 		//s->Play();
+
+		//GameAudio::PlayBGM(_T("D:/tmp/ZIGG-ZAGG.mp3"));
+
+		//::Sleep(1000);
+
+		//s->Stop();
 
 
 		GCPtr<GUIContext> context1 = GUIContext::Create();

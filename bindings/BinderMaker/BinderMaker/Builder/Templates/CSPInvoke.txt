@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LN
+namespace Lumino
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ExceptionCallback(Result errorCode);

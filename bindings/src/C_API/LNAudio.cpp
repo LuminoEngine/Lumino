@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlayBGM(const LNChar* filePath, int volume, int pitch, double fadeTime)
+LNResult LNGameAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
@@ -19,7 +19,7 @@ LNResult LNGameAudio_PlayBGM(const LNChar* filePath, int volume, int pitch, doub
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlayBGMMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
+LNResult LNGameAudio_PlayBGMMem(const void* data, int dataSize, float volume, float pitch, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -41,7 +41,7 @@ LNResult LNGameAudio_StopBGM(double fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlayBGS( const LNChar* filename, int volume, int pitch, double fadeTime )
+LNResult LNGameAudio_PlayBGS( const LNChar* filename, float volume, float pitch, double fadeTime )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGS( filename, volume, pitch, fadeTime );
@@ -51,7 +51,7 @@ LNResult LNGameAudio_PlayBGS( const LNChar* filename, int volume, int pitch, dou
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, int volume, int pitch, double fadeTime)
+LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, float volume, float pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -73,7 +73,7 @@ LNResult LNGameAudio_StopBGS(double fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlayME( const LNChar* filename, int volume, int pitch )
+LNResult LNGameAudio_PlayME( const LNChar* filename, float volume, float pitch )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayME( filename, volume, pitch );
@@ -83,7 +83,7 @@ LNResult LNGameAudio_PlayME( const LNChar* filename, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, int volume, int pitch)
+LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -105,7 +105,7 @@ LNResult LNGameAudio_StopME()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlaySE( const LNChar* filename, int volume, int pitch )
+LNResult LNGameAudio_PlaySE( const LNChar* filename, float volume, float pitch )
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySE( filename, volume, pitch );
@@ -115,7 +115,7 @@ LNResult LNGameAudio_PlaySE( const LNChar* filename, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlaySE3D(const LNChar* filename, const LNVector3* position, float distance, int volume, int pitch)
+LNResult LNGameAudio_PlaySE3D(const LNChar* filename, const LNVector3* position, float distance, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySE3D(filename, *cp_cast<Vector3>(position), distance, volume, pitch);
@@ -125,7 +125,7 @@ LNResult LNGameAudio_PlaySE3D(const LNChar* filename, const LNVector3* position,
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, float z, float distance, int volume, int pitch )
+LNResult LNGameAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, float z, float distance, float volume, float pitch )
 {
 	LNVector3 pos = { x, y, z };
 	return LNGameAudio_PlaySE3D(filename, &pos, distance, volume, pitch);
@@ -134,7 +134,7 @@ LNResult LNGameAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, floa
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, int volume, int pitch)
+LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -146,7 +146,7 @@ LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, int volume, int p
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, int volume, int pitch)
+LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
@@ -160,7 +160,7 @@ LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, int volume, int pitch)
+LNResult LNGameAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, float volume, float pitch)
 {
 	LNVector3 pos = { x, y, z };
 	return LNGameAudio_PlaySE3DMem(data, dataSize, &pos, distance, volume, pitch);
@@ -196,7 +196,7 @@ LNResult LNGameAudio_StopSE()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_SetBGMVolume(int volume, double fadeTime)
+LNResult LNGameAudio_SetBGMVolume(float volume, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGMVolume( volume, fadeTime );
@@ -206,7 +206,7 @@ LNResult LNGameAudio_SetBGMVolume(int volume, double fadeTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNGameAudio_SetBGSVolume(int volume, double fadeTime)
+LNResult LNGameAudio_SetBGSVolume(float volume, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
 	LFManager::Application->GetAudioManager()->GetGameAudio()->SetBGSVolume( volume, fadeTime );
@@ -327,7 +327,7 @@ LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_SetVolume(LN_HANDLE(LNSound) sound, int volume)
+LNResult LNSound_SetVolume(LN_HANDLE(LNSound) sound, float volume)
 {
 	LN_CHECK_ARG_HANDLE(sound);
 	LN_FUNC_TRY_BEGIN;
@@ -338,7 +338,7 @@ LNResult LNSound_SetVolume(LN_HANDLE(LNSound) sound, int volume)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, int* outVolume)
+LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, float* outVolume)
 {
 	LN_CHECK_ARG_HANDLE(sound);
 	LN_CHECK_ARG(outVolume != NULL);
@@ -350,7 +350,7 @@ LNResult LNSound_GetVolume(LN_HANDLE(LNSound) sound, int* outVolume)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_SetPitch(LN_HANDLE(LNSound) sound, int pitch)
+LNResult LNSound_SetPitch(LN_HANDLE(LNSound) sound, float pitch)
 {
 	LN_CHECK_ARG_HANDLE(sound);
 	LN_FUNC_TRY_BEGIN;
@@ -361,7 +361,7 @@ LNResult LNSound_SetPitch(LN_HANDLE(LNSound) sound, int pitch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_GetPitch(LN_HANDLE(LNSound) sound, int* outPitch)
+LNResult LNSound_GetPitch(LN_HANDLE(LNSound) sound, float* outPitch)
 {
 	LN_CHECK_ARG_HANDLE(sound);
 	LN_CHECK_ARG(outPitch != NULL);
@@ -509,7 +509,7 @@ LNResult LNSound_Resume(LN_HANDLE(LNSound) sound)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, int targetVolume, double time, LNSoundFadeBehavior behavior)
+LNResult LNSound_FadeVolume(LN_HANDLE(LNSound) sound, float targetVolume, double time, LNSoundFadeBehavior behavior)
 {
 	LN_FUNC_TRY_BEGIN;
 	TO_REFOBJ(Sound, sound)->FadeVolume(targetVolume, time, (SoundFadeBehavior)behavior);

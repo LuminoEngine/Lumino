@@ -19,6 +19,7 @@
 - LSound_Create の引数で指定していた一部の設定を別の機能として分けました。(LNSound_Set3DEnabled, LNSound_SetLoadingType)
 - HSP の true/false マクロを LN_TRUE/LN_FALSE に変更しました。
 - LAudio の BGM, BGS, SE, ME 再生機能は LNGameAudio というモジュールに変更しました。
+- 音量とピッチをそれぞれ 0.0～1.0、0.5～2.0 の範囲に変更しました。
 
 修正点:
 

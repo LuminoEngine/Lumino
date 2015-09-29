@@ -36,11 +36,11 @@ namespace BinderMaker
 
             // C#
             var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
-            csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/API.cs");
+            csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");
             var csStructsBuilder = new Builder.CSStructsBuilder();
-            csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Structs.cs");
+            csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Structs.cs");
             var csClassesBuilder = new Builder.CSClassesBuilder();
-            csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LNote.DotNet/Classes.cs");
+            csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
 
             // Ruby
             var rubyEnumBuilder = new Builder.RubyEnumBuilder();

@@ -62,7 +62,7 @@ void DirectMusicAudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicAudioPlayer::SetVolume(int volume)
+void DirectMusicAudioPlayer::SetVolume(float volume)
 {
 	AudioPlayer::SetVolume(volume);
 	if (m_segment) {
@@ -73,7 +73,7 @@ void DirectMusicAudioPlayer::SetVolume(int volume)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicAudioPlayer::SetPitch(int pitch)
+void DirectMusicAudioPlayer::SetPitch(float pitch)
 {
 	AudioPlayer::SetPitch(pitch);
 	if (m_segment) {
@@ -173,9 +173,12 @@ void DirectMusicAudioPlayer::pause(bool isPause)
 bool DirectMusicAudioPlayer::polling()
 {
 	// 再生中ではない場合は中断
-	if (!mIsPlaying || mIsPausing)
-	{
+	if (!mIsPlaying) {
 		return false;
+	}
+	// ポーズ中は何もしないが再生中扱いとする
+	if (mIsPausing) {
+		return true;
 	}
 
 	// ループ再生ではない場合
@@ -216,8 +219,8 @@ void DirectMusicAudioPlayer::onFinishDMInit(IDirectMusicPerformance8* dmPerforma
 	m_segment = LN_NEW DirectMusicSegment(DirectMusicManager::GetInstance(), dmPerformance, m_midiDecoder);
 
 	// 初期化中に設定されたパラメータを再設定する
-	SetVolume(static_cast< int >(mVolume));
-	SetPitch(static_cast< int >(mPitch));
+	SetVolume(mVolume);
+	SetPitch(mPitch);
 
 	// 初期化完了前にユーザーによってループ位置が設定されていなければ
 	// CC111 を目印とした位置に設定する

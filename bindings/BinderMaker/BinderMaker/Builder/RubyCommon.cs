@@ -259,10 +259,10 @@ namespace BinderMaker.Builder
                 // 先頭が is の場合は 末尾 ? に変換
                 if (method.PropertyNameType == PropertyNameType.Is && name.IndexOf("is_") == 0)
                 {
-                    if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
+                    //if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
                         name += "?";                // ? はつけてあげる
-                    else
-                        name = name.Substring(3) + "?";
+                    //else
+                    //    name = name.Substring(3) + "?";
                 }
             }
             else
@@ -302,6 +302,11 @@ namespace BinderMaker.Builder
         {
             string output = "";
 
+            //if (text == "PlaySE3D")
+            //{
+            //    Console.WriteLine();
+            //}
+
             // 後ろから
             bool isLastLow = char.IsLower(text, text.Length - 1);
             int upperCount = 0;
@@ -309,9 +314,10 @@ namespace BinderMaker.Builder
             int i;
             for (i = text.Length - 2; i >= 0; i--)
             {
+                // 小文字の連続を探している状態
                 if (isLastLow)
                 {
-                    if (char.IsUpper(text, i))
+                    if (char.IsUpper(text, i) || char.IsNumber(text, i))
                     {
                         if (lastIndex - i > 0)
                         {
@@ -326,6 +332,7 @@ namespace BinderMaker.Builder
                         // 小文字が続いている
                     }
                 }
+                // 大文字の連続を探している状態
                 else
                 {
                     upperCount++;

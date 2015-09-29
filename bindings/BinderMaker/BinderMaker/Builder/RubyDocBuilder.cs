@@ -303,6 +303,14 @@ namespace BinderMaker.Builder
         /// <returns></returns>
         private string ConvertDefaultArgVaue(string value)
         {
+            if (value.LastIndexOf("f") == value.Length - 1)
+            {
+                // double に変換できれば、数値リテラル
+                double tmp2;
+                if (double.TryParse(value.Substring(0, value.Length - 1), out tmp2))
+                    return value.Substring(0, value.Length - 1);
+            }
+
             // double に変換できれば、数値リテラル
             double tmp;
             if (double.TryParse(value, out tmp))

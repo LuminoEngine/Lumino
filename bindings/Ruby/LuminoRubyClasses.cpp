@@ -160,13 +160,13 @@ static VALUE static_lnrbLNConfig_SetUserWindowHandle(int argc, VALUE *argv, VALU
 static VALUE static_lnrbLNConfig_SetSoundCacheSize(int argc, VALUE *argv, VALUE self)
 {
     if (2 <= argc && argc <= 2) {
-        VALUE count;
+        VALUE objectCount;
         VALUE memorySize;
-        rb_scan_args(argc, argv, "2", &count, &memorySize);
-        if (isRbNumber(count) && isRbNumber(memorySize)) {
-            int _count = FIX2INT(count);
+        rb_scan_args(argc, argv, "2", &objectCount, &memorySize);
+        if (isRbNumber(objectCount) && isRbNumber(memorySize)) {
+            int _objectCount = FIX2INT(objectCount);
             int _memorySize = FIX2INT(memorySize);
-            LNConfig_SetSoundCacheSize(_count, _memorySize);
+            LNConfig_SetSoundCacheSize(_objectCount, _memorySize);
             return Qnil;
         }
     }
@@ -174,18 +174,18 @@ static VALUE static_lnrbLNConfig_SetSoundCacheSize(int argc, VALUE *argv, VALUE 
     return Qnil;
 }
 
-static VALUE static_lnrbLNConfig_SetDirectMusicInitializeMode(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNConfig_SetDirectMusicMode(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 1) {
         VALUE mode;
         rb_scan_args(argc, argv, "1", &mode);
         if (isRbNumber(mode)) {
             LNDirectMusicMode _mode = (LNDirectMusicMode)FIX2INT(mode);
-            LNConfig_SetDirectMusicInitializeMode(_mode);
+            LNConfig_SetDirectMusicMode(_mode);
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Config.set_direct_music_initialize_mode - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Config.set_direct_music_mode - wrong argument type.");
     return Qnil;
 }
 
@@ -194,8 +194,8 @@ static VALUE static_lnrbLNConfig_SetDirectMusicReverbLevel(int argc, VALUE *argv
     if (1 <= argc && argc <= 1) {
         VALUE level;
         rb_scan_args(argc, argv, "1", &level);
-        if (isRbNumber(level)) {
-            int _level = FIX2INT(level);
+        if (isRbFloat(level)) {
+            float _level = ((float)NUM2DBL(level));
             LNConfig_SetDirectMusicReverbLevel(_level);
             return Qnil;
         }
@@ -389,10 +389,10 @@ static VALUE static_lnrbLNGameAudio_PlayBGM(int argc, VALUE *argv, VALUE self)
         VALUE pitch;
         VALUE fadeTime;
         rb_scan_args(argc, argv, "13", &filePath, &volume, &pitch, &fadeTime);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch) && isRbFloat(fadeTime)) {
+        if (isRbString(filePath) && isRbFloat(volume) && isRbFloat(pitch) && isRbFloat(fadeTime)) {
             char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
+            float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_PlayBGM(_filePath, _volume, _pitch, _fadeTime);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
@@ -427,10 +427,10 @@ static VALUE static_lnrbLNGameAudio_PlayBGS(int argc, VALUE *argv, VALUE self)
         VALUE pitch;
         VALUE fadeTime;
         rb_scan_args(argc, argv, "13", &filePath, &volume, &pitch, &fadeTime);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch) && isRbFloat(fadeTime)) {
+        if (isRbString(filePath) && isRbFloat(volume) && isRbFloat(pitch) && isRbFloat(fadeTime)) {
             char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
+            float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_PlayBGS(_filePath, _volume, _pitch, _fadeTime);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
@@ -464,10 +464,10 @@ static VALUE static_lnrbLNGameAudio_PlayME(int argc, VALUE *argv, VALUE self)
         VALUE volume;
         VALUE pitch;
         rb_scan_args(argc, argv, "12", &filePath, &volume, &pitch);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch)) {
+        if (isRbString(filePath) && isRbFloat(volume) && isRbFloat(pitch)) {
             char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
+            float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlayME(_filePath, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
@@ -498,10 +498,10 @@ static VALUE static_lnrbLNGameAudio_PlaySE(int argc, VALUE *argv, VALUE self)
         VALUE volume;
         VALUE pitch;
         rb_scan_args(argc, argv, "12", &filePath, &volume, &pitch);
-        if (isRbString(filePath) && isRbNumber(volume) && isRbNumber(pitch)) {
+        if (isRbString(filePath) && isRbFloat(volume) && isRbFloat(pitch)) {
             char* _filePath = StringValuePtr(filePath);
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
+            float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlaySE(_filePath, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
@@ -520,12 +520,12 @@ static VALUE static_lnrbLNGameAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
         VALUE volume;
         VALUE pitch;
         rb_scan_args(argc, argv, "32", &filePath, &position, &distance, &volume, &pitch);
-        if (isRbString(filePath) && isRbObject(position) && isRbFloat(distance) && isRbNumber(volume) && isRbNumber(pitch)) {
+        if (isRbString(filePath) && isRbObject(position) && isRbFloat(distance) && isRbFloat(volume) && isRbFloat(pitch)) {
             char* _filePath = StringValuePtr(filePath);
             LNVector3* tmp__position; Data_Get_Struct(position, LNVector3, tmp__position);LNVector3& _position = *tmp__position;
             float _distance = ((float)NUM2DBL(distance));
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
+            float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlaySE3D(_filePath, &_position, _distance, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
@@ -540,14 +540,14 @@ static VALUE static_lnrbLNGameAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
         VALUE volume;
         VALUE pitch;
         rb_scan_args(argc, argv, "52", &filePath, &x, &y, &z, &distance, &volume, &pitch);
-        if (isRbString(filePath) && isRbFloat(x) && isRbFloat(y) && isRbFloat(z) && isRbFloat(distance) && isRbNumber(volume) && isRbNumber(pitch)) {
+        if (isRbString(filePath) && isRbFloat(x) && isRbFloat(y) && isRbFloat(z) && isRbFloat(distance) && isRbFloat(volume) && isRbFloat(pitch)) {
             char* _filePath = StringValuePtr(filePath);
             float _x = ((float)NUM2DBL(x));
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             float _distance = ((float)NUM2DBL(distance));
-            int _volume = (volume != Qnil) ? FIX2INT(volume) : 100;
-            int _pitch = (pitch != Qnil) ? FIX2INT(pitch) : 100;
+            float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
+            float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlaySE3DXYZ(_filePath, _x, _y, _z, _distance, _volume, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
@@ -577,8 +577,8 @@ static VALUE static_lnrbLNGameAudio_SetBGMVolume(int argc, VALUE *argv, VALUE se
         VALUE volume;
         VALUE fadeTime;
         rb_scan_args(argc, argv, "11", &volume, &fadeTime);
-        if (isRbNumber(volume) && isRbFloat(fadeTime)) {
-            int _volume = FIX2INT(volume);
+        if (isRbFloat(volume) && isRbFloat(fadeTime)) {
+            float _volume = ((float)NUM2DBL(volume));
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_SetBGMVolume(_volume, _fadeTime);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
@@ -595,8 +595,8 @@ static VALUE static_lnrbLNGameAudio_SetBGSVolume(int argc, VALUE *argv, VALUE se
         VALUE volume;
         VALUE fadeTime;
         rb_scan_args(argc, argv, "11", &volume, &fadeTime);
-        if (isRbNumber(volume) && isRbFloat(fadeTime)) {
-            int _volume = FIX2INT(volume);
+        if (isRbFloat(volume) && isRbFloat(fadeTime)) {
+            float _volume = ((float)NUM2DBL(volume));
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_SetBGSVolume(_volume, _fadeTime);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
@@ -798,8 +798,8 @@ static VALUE lnrbLNSound_SetVolume(int argc, VALUE *argv, VALUE self)
     if (1 <= argc && argc <= 1) {
         VALUE volume;
         rb_scan_args(argc, argv, "1", &volume);
-        if (isRbNumber(volume)) {
-            int _volume = FIX2INT(volume);
+        if (isRbFloat(volume)) {
+            float _volume = ((float)NUM2DBL(volume));
             LNResult errorCode = LNSound_SetVolume(selfObj->Handle, _volume);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
@@ -816,7 +816,7 @@ static VALUE lnrbLNSound_GetVolume(int argc, VALUE *argv, VALUE self)
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            int _outVolume;
+            float _outVolume;
             LNResult errorCode = LNSound_GetVolume(selfObj->Handle, &_outVolume);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_outVolume);
@@ -834,8 +834,8 @@ static VALUE lnrbLNSound_SetPitch(int argc, VALUE *argv, VALUE self)
     if (1 <= argc && argc <= 1) {
         VALUE pitch;
         rb_scan_args(argc, argv, "1", &pitch);
-        if (isRbNumber(pitch)) {
-            int _pitch = FIX2INT(pitch);
+        if (isRbFloat(pitch)) {
+            float _pitch = ((float)NUM2DBL(pitch));
             LNResult errorCode = LNSound_SetPitch(selfObj->Handle, _pitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return Qnil;
@@ -852,7 +852,7 @@ static VALUE lnrbLNSound_GetPitch(int argc, VALUE *argv, VALUE self)
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            int _outPitch;
+            float _outPitch;
             LNResult errorCode = LNSound_GetPitch(selfObj->Handle, &_outPitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
             return toVALUE(_outPitch);
@@ -895,7 +895,7 @@ static VALUE lnrbLNSound_IsLoopEnabled(int argc, VALUE *argv, VALUE self)
     
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Sound.loop_enabled? - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Sound.is_loop_enabled? - wrong argument type.");
     return Qnil;
 }
 
@@ -1218,8 +1218,8 @@ static VALUE lnrbLNSound_FadeVolume(int argc, VALUE *argv, VALUE self)
         VALUE time;
         VALUE behavior;
         rb_scan_args(argc, argv, "3", &targetVolume, &time, &behavior);
-        if (isRbNumber(targetVolume) && isRbFloat(time) && isRbNumber(behavior)) {
-            int _targetVolume = FIX2INT(targetVolume);
+        if (isRbFloat(targetVolume) && isRbFloat(time) && isRbNumber(behavior)) {
+            float _targetVolume = ((float)NUM2DBL(targetVolume));
             double _time = NUM2DBL(time);
             LNSoundFadeBehavior _behavior = (LNSoundFadeBehavior)FIX2INT(behavior);
             LNResult errorCode = LNSound_FadeVolume(selfObj->Handle, _targetVolume, _time, _behavior);
@@ -1242,7 +1242,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Config, "set_file_access_priority", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetFileAccessPriority), -1);
     rb_define_singleton_method(g_class_Config, "set_user_window_handle", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetUserWindowHandle), -1);
     rb_define_singleton_method(g_class_Config, "set_sound_cache_size", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetSoundCacheSize), -1);
-    rb_define_singleton_method(g_class_Config, "set_direct_music_initialize_mode", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicInitializeMode), -1);
+    rb_define_singleton_method(g_class_Config, "set_direct_music_mode", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicMode), -1);
     rb_define_singleton_method(g_class_Config, "set_direct_music_reverb_level", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicReverbLevel), -1);
 
     g_class_Application = rb_define_class_under(g_luminoModule, "Application", rb_cObject);
@@ -1289,7 +1289,7 @@ void InitClasses()
     rb_define_method(g_class_Sound, "pitch=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPitch), -1);
     rb_define_method(g_class_Sound, "pitch", LN_TO_RUBY_FUNC(lnrbLNSound_GetPitch), -1);
     rb_define_method(g_class_Sound, "is_loop_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopEnabled), -1);
-    rb_define_method(g_class_Sound, "loop_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_IsLoopEnabled), -1);
+    rb_define_method(g_class_Sound, "is_loop_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_IsLoopEnabled), -1);
     rb_define_method(g_class_Sound, "is_3d_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_Set3DEnabled), -1);
     rb_define_method(g_class_Sound, "is_3d_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_Is3DEnabled), -1);
     rb_define_method(g_class_Sound, "playing_mode=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPlayingMode), -1);

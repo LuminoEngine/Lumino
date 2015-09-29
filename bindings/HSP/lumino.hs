@@ -9,7 +9,7 @@ Lumino
 0.1.0
 
 %date
-2015/09/27
+2015/09/29
 
 %author
 lriki
@@ -28,7 +28,7 @@ http://nnmy.sakura.ne.jp/
 ;-----------------------------------------------------------
 %index
 LNConfig_SetApplicationLogEnabled
-デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
+デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
 
 %group
 アプリケーション
@@ -46,7 +46,7 @@ enabled
 ;-----------------------------------------------------------
 %index
 LNConfig_SetConsoleEnabled
-標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:LN_FALSE)
+標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
 
 %group
 アプリケーション
@@ -107,7 +107,7 @@ priority
 ;-----------------------------------------------------------
 %index
 LNConfig_SetUserWindowHandle
-ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
+ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
 
 %group
 アプリケーション
@@ -130,12 +130,12 @@ LNConfig_SetSoundCacheSize
 %group
 アプリケーション
 %prm
-count, memorySize
-[in] count      : キャッシュできるサウンドオブジェクトの最大数 (初期値:32)
-[in] memorySize : サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (初期値:0)
+objectCount, memorySize
+[in] objectCount : キャッシュできるサウンドオブジェクトの最大数 (既定値:32)
+[in] memorySize  : サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (既定値:0)
 
 %inst
-count が 0 の場合、キャッシュを使用しません。
+objectCount が 0 の場合、キャッシュを使用しません。
 memorySize が 0 の場合、メモリ使用量に制限を設けません。
 
 %href
@@ -144,8 +144,8 @@ memorySize が 0 の場合、メモリ使用量に制限を設けません。
 ;
 ;-----------------------------------------------------------
 %index
-LNConfig_SetDirectMusicInitializeMode
-DirectMusic の初期化方法を設定します。(初期値:LN_DIRECTMUSICMODE_NOT_USE)
+LNConfig_SetDirectMusicMode
+DirectMusic の初期化方法を設定します。(既定値:LN_DIRECTMUSICMODE_NOT_USE)
 
 %group
 アプリケーション
@@ -172,13 +172,13 @@ DirectMusic の初期化には比較的時間がかかります。
 ;-----------------------------------------------------------
 %index
 LNConfig_SetDirectMusicReverbLevel
-DirectMusic のリバーブエフェクトの強さを設定します。(初期値:70)
+DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
 
 %group
 アプリケーション
 %prm
 level
-[in] level : リバーブの強さ (0 ～ 100)
+[in] level : リバーブの強さ (0.0 ～ 1.0)
 
 %inst
 
@@ -1741,8 +1741,8 @@ BGM を演奏します。
 %prm
 filePath, volume, pitch, fadeTime
 [in] filePath      : ファイルパス
-[in] volume(100)   : ボリューム (0 ～ 100)
-[in] pitch(100)    : ピッチ (50 ～ 200)
+[in] volume(1.0f)  : ボリューム (0.0～1.0)
+[in] pitch(1.0f)   : ピッチ (0.5～2.0)
 [in] fadeTime(0.0) : フェードインにかける時間 (秒)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
@@ -1765,8 +1765,8 @@ LNGameAudio_PlayBGMMem
 data, dataSize, volume, pitch, fadeTime
 [in] data          : メモリ上の音声ファイルデータ
 [in] dataSize      : データサイズ (バイト単位)
-[in] volume(100)   : ボリューム (0 ～ 100)
-[in] pitch(100)    : ピッチ (50 ～ 200)
+[in] volume(1.0f)  : ボリューム (0.0～1.0)
+[in] pitch(1.0f)   : ピッチ (0.5～2.0)
 [in] fadeTime(0.0) : フェードインにかける時間 (秒)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
@@ -1808,8 +1808,8 @@ BGS を演奏します。
 %prm
 filePath, volume, pitch, fadeTime
 [in] filePath      : ファイルパス
-[in] volume(100)   : ボリューム (0 ～ 100)
-[in] pitch(100)    : ピッチ (50 ～ 200)
+[in] volume(1.0f)  : ボリューム (0.0～1.0)
+[in] pitch(1.0f)   : ピッチ (0.5～2.0)
 [in] fadeTime(0.0) : フェードインにかける時間 (秒)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
@@ -1832,8 +1832,8 @@ LNGameAudio_PlayBGSMem
 data, dataSize, volume, pitch, fadeTime
 [in] data          : メモリ上の音声ファイルデータ
 [in] dataSize      : データサイズ (バイト単位)
-[in] volume(100)   : ボリューム (0 ～ 100)
-[in] pitch(100)    : ピッチ (50 ～ 200)
+[in] volume(1.0f)  : ボリューム (0.0～1.0)
+[in] pitch(1.0f)   : ピッチ (0.5～2.0)
 [in] fadeTime(0.0) : フェードインにかける時間 (秒)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
@@ -1874,9 +1874,9 @@ ME を演奏します。
 音声機能
 %prm
 filePath, volume, pitch
-[in] filePath    : ファイルパス
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] filePath     : ファイルパス
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -1896,10 +1896,10 @@ LNGameAudio_PlayMEMem
 音声機能
 %prm
 data, dataSize, volume, pitch
-[in] data        : メモリ上の音声ファイルデータ
-[in] dataSize    : データサイズ (バイト単位)
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] data         : メモリ上の音声ファイルデータ
+[in] dataSize     : データサイズ (バイト単位)
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -1938,9 +1938,9 @@ SE を演奏します。
 音声機能
 %prm
 filePath, volume, pitch
-[in] filePath    : ファイルパス
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] filePath     : ファイルパス
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -1960,11 +1960,11 @@ SE を演奏します。(3D サウンド)
 音声機能
 %prm
 filePath, position, distance, volume, pitch
-[in] filePath    : ファイルパス
-[in] position    : 3D 空間上の座標
-[in] distance    : 減衰距離
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] filePath     : ファイルパス
+[in] position     : 3D 空間上の座標
+[in] distance     : 減衰距離
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -1984,13 +1984,13 @@ SE を演奏します。(3D サウンド)
 音声機能
 %prm
 filePath, x, y, z, distance, volume, pitch
-[in] filePath    : ファイルパス
-[in] x           : 3D 空間上の X 座標
-[in] y           : 3D 空間上の Y 座標
-[in] z           : 3D 空間上の Z 座標
-[in] distance    : 減衰距離
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] filePath     : ファイルパス
+[in] x            : 3D 空間上の X 座標
+[in] y            : 3D 空間上の Y 座標
+[in] z            : 3D 空間上の Z 座標
+[in] distance     : 減衰距離
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -2010,10 +2010,10 @@ LNGameAudio_PlaySEMem
 音声機能
 %prm
 data, dataSize, volume, pitch
-[in] data        : メモリ上の音声ファイルデータ
-[in] dataSize    : データサイズ (バイト単位)
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] data         : メモリ上の音声ファイルデータ
+[in] dataSize     : データサイズ (バイト単位)
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -2033,12 +2033,12 @@ LNGameAudio_PlaySE3DMem
 音声機能
 %prm
 data, dataSize, position, distance, volume, pitch
-[in] data        : メモリ上の音声ファイルデータ
-[in] dataSize    : データサイズ (バイト単位)
-[in] position    : 3D 空間上の座標
-[in] distance    : 減衰距離
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] data         : メモリ上の音声ファイルデータ
+[in] dataSize     : データサイズ (バイト単位)
+[in] position     : 3D 空間上の座標
+[in] distance     : 減衰距離
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -2058,14 +2058,14 @@ LNGameAudio_PlaySE3DMemXYZ
 音声機能
 %prm
 data, dataSize, x, y, z, distance, volume, pitch
-[in] data        : メモリ上の音声ファイルデータ
-[in] dataSize    : データサイズ (バイト単位)
-[in] x           : 3D 空間上の X 座標
-[in] y           : 3D 空間上の Y 座標
-[in] z           : 3D 空間上の Z 座標
-[in] distance    : 減衰距離
-[in] volume(100) : ボリューム (0 ～ 100)
-[in] pitch(100)  : ピッチ (50 ～ 200)
+[in] data         : メモリ上の音声ファイルデータ
+[in] dataSize     : データサイズ (バイト単位)
+[in] x            : 3D 空間上の X 座標
+[in] y            : 3D 空間上の Y 座標
+[in] z            : 3D 空間上の Z 座標
+[in] distance     : 減衰距離
+[in] volume(1.0f) : ボリューム (0.0～1.0)
+[in] pitch(1.0f)  : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -2104,7 +2104,7 @@ LNGameAudio_SetBGMVolume
 音声機能
 %prm
 volume, fadeTime
-[in] volume        : ボリューム (0 ～ 100)
+[in] volume        : ボリューム (0.0～1.0)
 [in] fadeTime(0.0) : フェードアウトにかける時間 (秒)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
@@ -2125,7 +2125,7 @@ LNGameAudio_SetBGSVolume
 音声機能
 %prm
 volume, fadeTime
-[in] volume        : ボリューム (0 ～ 100)
+[in] volume        : ボリューム (0.0～1.0)
 [in] fadeTime(0.0) : フェードアウトにかける時間 (秒)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
@@ -2379,7 +2379,7 @@ LNSound_SetVolume
 %prm
 sound, volume
 [in] sound  : サウンドハンドル
-[in] volume : ボリューム (0～100)
+[in] volume : ボリューム (0.0～1.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
@@ -2421,7 +2421,7 @@ LNSound_SetPitch
 %prm
 sound, pitch
 [in] sound : サウンドハンドル
-[in] pitch : ピッチ (50～200)
+[in] pitch : ピッチ (0.5～2.0)
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 

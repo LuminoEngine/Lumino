@@ -17,7 +17,7 @@
 	
 #endif
 
-#define LN_CLAMP(value, minValue, maxValue)		(value > maxValue) ? maxValue : (value < minValue) ? minValue : value;
+//#define LN_CLAMP(value, minValue, maxValue)		(value > maxValue) ? maxValue : (value < minValue) ? minValue : value;
 
 namespace Lumino
 {

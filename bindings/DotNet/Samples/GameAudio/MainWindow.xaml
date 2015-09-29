@@ -1,0 +1,52 @@
+﻿<Window x:Class="GameAudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameAudio"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+        <Style TargetType="StackPanel">
+            <Setter Property="Margin" Value="4" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="100" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="150" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <Button Content="BGM 演奏" Click="Button_Click_PlayBGM" />
+            <Button Content="BGM 停止" Click="Button_Click_StopBGM" />
+            <Button Content="BGM フェードアウト" Click="Button_Click_FadeoutBGM" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <Button Content="BGS 演奏" Click="Button_Click_PlayBGS" />
+            <Button Content="BGS 停止" Click="Button_Click_StopBGS" />
+            <Button Content="BGS フェードアウト" Click="Button_Click_FadeoutBGS" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <Button Content="ME 演奏" Click="Button_Click_PlayME" />
+            <Button Content="ME 停止" Click="Button_Click_StopME" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <Button Content="SE 演奏" Click="Button_Click_PlaySE" />
+            <Button Content="SE 停止" Click="Button_Click_StopSE" />
+        </StackPanel>
+    </Grid>
+</Window>

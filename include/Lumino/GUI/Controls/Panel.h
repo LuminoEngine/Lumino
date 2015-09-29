@@ -48,6 +48,7 @@ private:
 	void Children_ItemRemoved(UIElement* item);
 
 LN_INTERNAL_ACCESS:
+	virtual UIElement* GetVisualChildOrderd(int index) const;
 	virtual void ActivateInternal(UIElement* child);
 
 protected:

@@ -11,19 +11,17 @@ namespace PlaySound
         [STAThread] // for OpenFileDialog
         static void Main(string[] args)
         {
+            // ファイルを開く
             var dlg = new System.Windows.Forms.OpenFileDialog();
             if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-
-            // (初期設定) Midi の再生に DirectMusic を使用する
-            Config.SetDirectMusicInitializeMode(DirectMusicMode.Normal);
-
+            
             // 音声機能を初期化する
             Application.InitializeAudio();
 
             // 音声ファイルから Sound オブジェクトを作る
-            var sound = new Sound("Media/ln21.wav");
-            sound.Volume = 1.0;				// 音量
-            sound.Pitch = 1.0;				// ピッチ
+            var sound = new Sound(dlg.FileName);
+            sound.Volume = 1.0f;			// 音量
+            sound.Pitch = 1.0f;				// ピッチ
             sound.IsLoopEnabled = true;	    // ループON
 
             // 再生

@@ -423,7 +423,7 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	int count = GetVisualChildrenCount();
 	for (int i = count - 1; i >= 0; i--)
 	{
-		UIElement* e = GetVisualChild(i)->CheckMouseHoverElement(globalPt);
+		UIElement* e = GetVisualChildOrderd(i)->CheckMouseHoverElement(globalPt);
 		if (e != NULL) { return e; }
 	}
 
@@ -539,9 +539,11 @@ void UIElement::UpdateTransformHierarchy()
 void UIElement::Render()
 {
 	// 子要素
-	GUIHelper::ForEachVisualChildren(this, [](UIElement* child) {
-		child->Render();
-	});
+	int count = GetVisualChildrenCount();
+	for (int i = 0; i < count; ++i)
+	{
+		GetVisualChildOrderd(i)->Render();
+	}
 
 	// TODO: Panel とか、描く必要の無いものは特殊あつかいにして、Painter 作らないようにしたい
 	Internal::GUIPainter* painter = GUIHelper::GUIManager_GetGUIPainter(m_manager);

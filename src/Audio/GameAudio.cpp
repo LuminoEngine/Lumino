@@ -30,8 +30,8 @@ GameAudio::GameAudio(AudioManagerImpl* mamager)
 	, mBGMPitch(0)
 	, mBGSVolume(0)
 	, mBGSPitch(0)
-	, mBGMFadeOutTime(500)
-	, mBGMFadeInTime(1000)
+	, mBGMFadeOutTime(0.5)
+	, mBGMFadeInTime(1.0)
 	, mMEPlaying(false)
 	, mBGMRestart(false)
 	, mBGSRestart(false)
@@ -65,7 +65,7 @@ GameAudio::~GameAudio()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlayBGM( const TCHAR* filePath, int volume, int pitch, double fadeTime )
+void GameAudio::PlayBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
 {
 	// 演奏再開チェック
 	//if ( !mBGMRestart && mBGM )
@@ -88,7 +88,7 @@ void GameAudio::PlayBGM( const TCHAR* filePath, int volume, int pitch, double fa
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlayBGMFromSound( Sound* sound, int volume, int pitch, double fadeTime )
+void GameAudio::PlayBGMFromSound( Sound* sound, float volume, float pitch, double fadeTime )
 {
 	LN_CHECK_ARGS(sound != NULL);
 
@@ -197,7 +197,7 @@ void GameAudio::StopBGM( double fadeTime )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlayBGS( const TCHAR* filePath, int volume, int pitch, double fadeTime )
+void GameAudio::PlayBGS( const TCHAR* filePath, float volume, float pitch, double fadeTime )
 {
 	// 演奏再開チェック
 	//if ( !mBGSRestart && mBGS )
@@ -219,7 +219,7 @@ void GameAudio::PlayBGS( const TCHAR* filePath, int volume, int pitch, double fa
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlayBGSFromSound( Sound* sound, int volume, int pitch, double fadeTime )
+void GameAudio::PlayBGSFromSound( Sound* sound, float volume, float pitch, double fadeTime )
 {
 	// 演奏再開チェック
 	//if ( !mBGSRestart && mBGS )
@@ -302,7 +302,7 @@ void GameAudio::StopBGS( double fadeTime )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlayME( const TCHAR* filePath, int volume, int pitch )
+void GameAudio::PlayME( const TCHAR* filePath, float volume, float pitch )
 {	   
 	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
 	PlayMEFromSound( sound, volume, pitch );
@@ -311,7 +311,7 @@ void GameAudio::PlayME( const TCHAR* filePath, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlayMEFromSound( Sound* sound, int volume, int pitch )
+void GameAudio::PlayMEFromSound( Sound* sound, float volume, float pitch )
 {
 	StopME();
 
@@ -349,7 +349,7 @@ void GameAudio::PlayMEFromSound( Sound* sound, int volume, int pitch )
 		else
 		{
 			// すぐに一時停止
-			mBGM->Pause(  );
+			mBGM->Pause();
 		}
 	}
 	// BGM がない場合はすぐ演奏開始
@@ -389,7 +389,7 @@ void GameAudio::StopME()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlaySE( const TCHAR* filePath, int volume, int pitch )
+void GameAudio::PlaySE( const TCHAR* filePath, float volume, float pitch )
 {
 	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
@@ -410,7 +410,7 @@ void GameAudio::PlaySE( const TCHAR* filePath, int volume, int pitch )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float distance, int volume, int pitch )
+void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch )
 {
 	// サウンド作成
 	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
@@ -435,7 +435,7 @@ void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::PlaySEFromSound( Sound* srcSound, int volume, int pitch )
+void GameAudio::PlaySEFromSound( Sound* srcSound, float volume, float pitch )
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
 	RefPtr<Sound> sound(AudioHelper::CreateSound(mManager, AudioHelper::GetAudioStream(srcSound)));
@@ -493,7 +493,7 @@ void GameAudio::SetMEFadeState( int begin, int end )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::SetBGMVolume( int volume, double fadeTime )
+void GameAudio::SetBGMVolume( float volume, double fadeTime )
 {
 	Threading::MutexScopedLock lock(mLock );
 
@@ -507,7 +507,7 @@ void GameAudio::SetBGMVolume( int volume, double fadeTime )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::SetBGSVolume( int volume, double fadeTime )
+void GameAudio::SetBGSVolume(float volume, double fadeTime)
 {
 	Threading::MutexScopedLock lock(mLock);
 

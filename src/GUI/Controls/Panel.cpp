@@ -66,8 +66,21 @@ void Panel::Children_ItemRemoved(UIElement* item)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+UIElement* Panel::GetVisualChildOrderd(int index) const
+{
+	return m_orderdVisualChildren[index];
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Panel::ActivateInternal(UIElement* child)
 {
+	// オーダーの末尾へ　TODO: Zオーダー考慮
+	if (m_orderdVisualChildren.Remove(child)) {
+		m_orderdVisualChildren.Add(child);
+	}
+
 	UIElement::ActivateInternal(child);
 }
 

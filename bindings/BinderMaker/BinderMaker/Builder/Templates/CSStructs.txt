@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LN
+namespace Lumino
 {
 STRUCTS
 }

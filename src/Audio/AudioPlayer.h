@@ -30,11 +30,12 @@ public:
 	virtual void Initialize(AudioStream* audioStream, bool enable3d);
 
 public:
+	// ↓TODO get 系はもういらなくなった。Sound で遅延生成の対応するため、むしろ 残しておくとあとで混乱するかも。
 	virtual AudioStream*		GetAudioStream() const { return m_audioStream; }
-    virtual void				SetVolume( int volume );
-    virtual int					getVolume() const { return static_cast< int >( mVolume ); }
-    virtual void				SetPitch( int pitch );
-	virtual int					getPitch() const { return static_cast< int >( mPitch ); }
+    virtual void				SetVolume( float volume );
+	virtual float				getVolume() const { return mVolume; }
+	virtual void				SetPitch(float pitch);
+	virtual float				getPitch() const { return mPitch; }
 	virtual void				setLoopState(uint32_t loop_begin, uint32_t loop_length);
     virtual bool				isPlaying() const { return mIsPlaying; }
     virtual bool				isPausing() const { return mIsPausing; }
@@ -81,8 +82,8 @@ protected:
 	AudioDevice*		mDevice;
 	AudioStream*		m_audioStream;
 	AudioDecoder*		m_decoder;
-    int				    mVolume;		///< 音量 ( 0 ～ 100 )
-	int				    mPitch;			///< ピッチ ( 50 ～ 200 )
+	float				mVolume;		///< 音量
+	float				mPitch;			///< ピッチ
 	uint32_t			mLoopBegin;		///< ループされる領域の最初のサンプル (Midi なら ミュージックタイム単位)
 	uint32_t			mLoopLength;	///< ループ領域の長さ (サンプル数単位)  (Midi なら ミュージックタイム単位)
 	bool			    mIsPlaying;

@@ -38,25 +38,25 @@ public:
 	
 	/**
 		@brief		この音声の音量を設定します。
-		@param[in]	volume	: 音量 (0～100。初期値は 100)
+		@param[in]	volume	: 音量 (0.0～1.0。初期値は 1.0)
 	*/
-	void SetVolume(int volume);
+	void SetVolume(float volume);
 
 	/**
 		@brief		この音声の音量を取得します。
 	*/
-	int GetVolume() const;
+	float GetVolume() const;
 
 	/**
 		@brief		この音声のピッチ (音高) を設定します。
-		@param[in]	volume	: ピッチ (50～200。初期値は 100)
+		@param[in]	volume	: ピッチ (0.5～2.0。初期値は 1.0)
 	*/
-	void SetPitch(int pitch);
+	void SetPitch(float pitch);
 
 	/**
 		@brief		この音声のピッチ (音高) を取得します。
 	*/
-	int GetPitch() const;
+	float GetPitch() const;
 
 	/**
 		@brief		ループ再生の有無を設定します。
@@ -173,7 +173,7 @@ public:
 		@param[in]	time			: 変化にかける時間 (秒)
 		@param[in]	state			: 音量フェード完了時の動作
 	*/
-	void FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior);
+	void FadeVolume(float targetVolume, double time, SoundFadeBehavior behavior);
 
 	/**
 		@brief		音量のフェード中であるかを確認します。
@@ -193,8 +193,8 @@ private:
     AudioPlayer*				m_audioPlayer;
 	SoundPlayingMode			m_playingMode;
 
-	int							m_volume;
-	int							m_pitch;
+	float						m_volume;
+	float						m_pitch;
 	bool						m_loopEnabled;
 	uint32_t					m_loopBegin;
 	uint32_t					m_loopLength;
@@ -202,7 +202,7 @@ private:
 	Vector3						m_position;
 	Vector3						m_velocity;
 	float						m_maxDistance;
-	SoundPlayingState			m_playState;
+	SoundPlayingState			m_playState;		// AudioPlayer の遅延作成に対応する
 
 	uint32_t					m_gameAudioFlags;
 

@@ -151,11 +151,11 @@ DirectMusicSegment::~DirectMusicSegment()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicSegment::SetVolume(int volume)
+void DirectMusicSegment::SetVolume(float volume)
 {
 	// 10db ～ -100db が実用範囲。渡す値は 1000 ～ -10000
 	// デフォルトは 1db ( 100 ) で、これを超えると大体音割れする。(リバーブエフェクト)
-	long v = 70 * (100 - static_cast< long >(volume)) / 100;
+	long v = 70 * (100 - static_cast< long >(volume * 100)) / 100;
 	v *= v;
 	v = -v + 100;
 	if (v > 100)
@@ -168,9 +168,9 @@ void DirectMusicSegment::SetVolume(int volume)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicSegment::SetPitch(int pitch)
+void DirectMusicSegment::SetPitch(float pitch)
 {
-	DWORD p = 22050 * static_cast< DWORD >(pitch) / 100;
+	DWORD p = 22050 * static_cast< DWORD >(pitch * 100) / 100;
 	HRESULT hr = m_dsSoundBuffer->SetFrequency(p);
 }
 

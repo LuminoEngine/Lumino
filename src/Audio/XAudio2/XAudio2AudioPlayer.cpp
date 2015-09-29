@@ -111,24 +111,24 @@ void XAudio2OnMemoryAudioPlayer::Initialize(AudioStream* audioStream, bool enabl
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::SetVolume( int volume )
+void XAudio2OnMemoryAudioPlayer::SetVolume(float volume)
 {
     XAudio2AudioPlayerBase::SetVolume( volume );
     if ( mSourceVoice )
 	{
-		LN_COMCALL(mSourceVoice->SetVolume(0.01f * mVolume));
+		LN_COMCALL(mSourceVoice->SetVolume(/*0.01f * */mVolume));
 	}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::SetPitch( int pitch )
+void XAudio2OnMemoryAudioPlayer::SetPitch(float pitch)
 {
     XAudio2AudioPlayerBase::SetPitch( pitch );
     if ( mSourceVoice )
 	{
-		LN_COMCALL(mSourceVoice->SetFrequencyRatio(0.01f * mPitch));
+		LN_COMCALL(mSourceVoice->SetFrequencyRatio(/*0.01f * */mPitch));
 	}
 }
 
@@ -183,8 +183,8 @@ void XAudio2OnMemoryAudioPlayer::play()
 
 	// ボイスキューにデータを送る
 	LN_COMCALL(mSourceVoice->SubmitSourceBuffer(&submit));
-	LN_COMCALL(mSourceVoice->SetVolume(mVolume * 0.01f));
-	LN_COMCALL(mSourceVoice->SetFrequencyRatio(mPitch * 0.01f));
+	LN_COMCALL(mSourceVoice->SetVolume(mVolume /** 0.01f*/));
+	LN_COMCALL(mSourceVoice->SetFrequencyRatio(mPitch /** 0.01f*/));
 
 	// 再生開始
 	LN_COMCALL(mSourceVoice->Start());
@@ -242,9 +242,12 @@ void XAudio2OnMemoryAudioPlayer::pause( bool isPause )
 bool XAudio2OnMemoryAudioPlayer::polling()
 {
 	// 再生中ではない場合は中断
-	if ( !mSourceVoice || !mIsPlaying || mIsPausing )
-	{
+	if (!mSourceVoice || !mIsPlaying) {
 		return false;
+	}
+	// ポーズ中は何もしないが再生中扱いとする
+	if (mIsPausing) {
+		return true;
 	}
 
 	// ループ再生ではない場合
@@ -337,24 +340,24 @@ void XAudio2StreamingAudioPlayer::Initialize(AudioStream* audioStream, bool enab
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::SetVolume( int volume )
+void XAudio2StreamingAudioPlayer::SetVolume(float volume)
 {
     XAudio2AudioPlayerBase::SetVolume( volume );
     if ( mSourceVoice )
 	{
-		LN_COMCALL(mSourceVoice->SetVolume(0.01f * mVolume));
+		LN_COMCALL(mSourceVoice->SetVolume(/*0.01f * */mVolume));
 	}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::SetPitch(int pitch)
+void XAudio2StreamingAudioPlayer::SetPitch(float pitch)
 {
 	XAudio2AudioPlayerBase::SetPitch(pitch);
     if ( mSourceVoice )
 	{
-		LN_COMCALL(mSourceVoice->SetFrequencyRatio(0.01f * mPitch));
+		LN_COMCALL(mSourceVoice->SetFrequencyRatio(/*0.01f * */mPitch));
 	}
 }
 
@@ -404,8 +407,8 @@ void XAudio2StreamingAudioPlayer::play()
 	// 最初のデータをキューに追加する
 	_addNextBuffer();
 
-	LN_COMCALL(mSourceVoice->SetVolume(mVolume * 0.01f));
-	LN_COMCALL(mSourceVoice->SetFrequencyRatio(mPitch * 0.01f));
+	LN_COMCALL(mSourceVoice->SetVolume(mVolume/* * 0.01f*/));
+	LN_COMCALL(mSourceVoice->SetFrequencyRatio(mPitch/* * 0.01f*/));
 
 	// 再生開始
 	LN_COMCALL(mSourceVoice->Start());
@@ -463,9 +466,12 @@ void XAudio2StreamingAudioPlayer::pause( bool isPause )
 bool XAudio2StreamingAudioPlayer::polling()
 {
 	// 再生中ではない場合は中断
-	if ( !mSourceVoice || !mIsPlaying || mIsPausing )
-	{
+	if ( !mSourceVoice || !mIsPlaying ) {
 		return false;
+	}
+	// ポーズ中は何もしないが再生中扱いとする
+	if (mIsPausing) {
+		return true;
 	}
 
 	// 状態の取得

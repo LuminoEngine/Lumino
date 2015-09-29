@@ -166,7 +166,7 @@
 #const global LN_DIRECTMUSICMODE_NORMAL 1
 #const global LN_DIRECTMUSICMODE_THREAD_WAIT 2
 #const global LN_DIRECTMUSICMODE_THREAD_REQUEST 3
-#const global LN_DMINITMODE__TERMINATOR 4
+#const global LN_DIRECTMUSICMODE__TERMINATOR 4
 
 #const global LN_SOUNDPLAYINGMODE_UNKNOWN 0
 #const global LN_SOUNDPLAYINGMODE_AUTO 1
@@ -266,7 +266,7 @@
 #cmd LNConfig_SetFileAccessPriority $0067
 #cmd LNConfig_SetUserWindowHandle $0068
 #cmd LNConfig_SetSoundCacheSize $0069
-#cmd LNConfig_SetDirectMusicInitializeMode $006A
+#cmd LNConfig_SetDirectMusicMode $006A
 #cmd LNConfig_SetDirectMusicReverbLevel $006B
 #cmd LNApplication_InitializeAudio $006C
 #cmd LNApplication_Terminate $006D

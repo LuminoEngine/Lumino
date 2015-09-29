@@ -427,12 +427,12 @@ module LN::ObjectType
 end
 # 初期設定を行います。
 class LN::Config
-    # デバッグ用のログファイルの出力有無を設定します。(初期値:LN_FALSE)
+    # デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
     # @overload set_application_log_enabled(enabled)
     #   @param [Bool] enabled LN_TRUE:出力する / LN_FALSE:出力しない
     def set_application_log_enabled
     end
-    # 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:LN_FALSE)
+    # 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
     # @overload set_console_enabled(enabled)
     #   @param [Bool] enabled LN_TRUE:割り当てる / LN_FALSE:割り当てない
     def set_console_enabled
@@ -448,31 +448,31 @@ class LN::Config
     #   @param [LN::FileAccessPriority] priority 制限方法 (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
     def set_file_access_priority
     end
-    # ユーザー定義のウィンドウハンドルを設定します。(初期値:NULL)
+    # ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
     # @overload set_user_window_handle(windowHandle)
     #   @param [] windowHandle ユーザー定義のウィンドウハンドル
     def set_user_window_handle
     end
     # サウンドオブジェクトのキャッシュサイズの設定
-    # @overload set_sound_cache_size(count, memorySize)
+    # @overload set_sound_cache_size(objectCount, memorySize)
     #   　
-    #     count が 0 の場合、キャッシュを使用しません。
+    #     objectCount が 0 の場合、キャッシュを使用しません。
     #     					memorySize が 0 の場合、メモリ使用量に制限を設けません。
-    #   @param [Integer] count キャッシュできるサウンドオブジェクトの最大数 (初期値:32)
-    #   @param [Integer] memorySize サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (初期値:0)
+    #   @param [Integer] objectCount キャッシュできるサウンドオブジェクトの最大数 (既定値:32)
+    #   @param [Integer] memorySize サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (既定値:0)
     def set_sound_cache_size
     end
-    # DirectMusic の初期化方法を設定します。(初期値:LN_DIRECTMUSICMODE_NOT_USE)
-    # @overload set_direct_music_initialize_mode(mode)
+    # DirectMusic の初期化方法を設定します。(既定値:LN_DIRECTMUSICMODE_NOT_USE)
+    # @overload set_direct_music_mode(mode)
     #   　
     #     DirectMusic の初期化には比較的時間がかかります。
     #     					これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
     #   @param [LN::DirectMusicMode] mode DirectMusic の初期化方法
-    def set_direct_music_initialize_mode
+    def set_direct_music_mode
     end
-    # DirectMusic のリバーブエフェクトの強さを設定します。(初期値:70)
+    # DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
     # @overload set_direct_music_reverb_level(level)
-    #   @param [Integer] level リバーブの強さ (0 ～ 100)
+    #   @param [Float] level リバーブの強さ (0.0 ～ 1.0)
     def set_direct_music_reverb_level
     end
 end
@@ -1304,19 +1304,19 @@ end
 # ゲーム向け音声再生のユーティリティクラスです。
 class LN::GameAudio
     # BGM を演奏します。
-    # @overload play_bgm(filePath, volume=100, pitch=100, fadeTime=0.0)
+    # @overload play_bgm(filePath, volume=1.0, pitch=1.0, fadeTime=0.0)
     #   @param [String] filePath ファイルパス
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     #   @param [Float] fadeTime フェードインにかける時間 (秒)
     def play_bgm
     end
     # メモリ上の音声ファイルデータを使用して BGM を演奏します。
-    # @overload play_bgm_mem(data, dataSize, volume=100, pitch=100, fadeTime=0.0)
+    # @overload play_bgm_mem(data, dataSize, volume=1.0, pitch=1.0, fadeTime=0.0)
     #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     #   @param [Float] fadeTime フェードインにかける時間 (秒)
     def play_bgm_mem
     end
@@ -1326,19 +1326,19 @@ class LN::GameAudio
     def stop_bgm
     end
     # BGS を演奏します。
-    # @overload play_bgs(filePath, volume=100, pitch=100, fadeTime=0.0)
+    # @overload play_bgs(filePath, volume=1.0, pitch=1.0, fadeTime=0.0)
     #   @param [String] filePath ファイルパス
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     #   @param [Float] fadeTime フェードインにかける時間 (秒)
     def play_bgs
     end
     # メモリ上の音声ファイルデータから BGS を演奏します。
-    # @overload play_bgs_mem(data, dataSize, volume=100, pitch=100, fadeTime=0.0)
+    # @overload play_bgs_mem(data, dataSize, volume=1.0, pitch=1.0, fadeTime=0.0)
     #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     #   @param [Float] fadeTime フェードインにかける時間 (秒)
     def play_bgs_mem
     end
@@ -1348,18 +1348,18 @@ class LN::GameAudio
     def stop_bgs
     end
     # ME を演奏します。
-    # @overload play_me(filePath, volume=100, pitch=100)
+    # @overload play_me(filePath, volume=1.0, pitch=1.0)
     #   @param [String] filePath ファイルパス
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     def play_me
     end
     # メモリ上の音声ファイルデータから ME を演奏します。
-    # @overload play_me_mem(data, dataSize, volume=100, pitch=100)
+    # @overload play_me_mem(data, dataSize, volume=1.0, pitch=1.0)
     #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     def play_me_mem
     end
     # ME の演奏を停止します。
@@ -1367,49 +1367,49 @@ class LN::GameAudio
     def stop_me
     end
     # SE を演奏します。
-    # @overload play_se(filePath, volume=100, pitch=100)
+    # @overload play_se(filePath, volume=1.0, pitch=1.0)
     #   @param [String] filePath ファイルパス
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     def play_se
     end
     # SE を演奏します。(3D サウンド)
-    # @overload play_se3d(filePath, position, distance, volume=100, pitch=100)
+    # @overload play_se3d(filePath, position, distance, volume=1.0, pitch=1.0)
     #   SE を演奏します。(3D サウンド)
     #   @param [String] filePath ファイルパス
     #   @param [LN::Vector3] position 3D 空間上の座標
     #   @param [Float] distance 減衰距離
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
-    # @overload play_se3d(filePath, x, y, z, distance, volume=100, pitch=100)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
+    # @overload play_se3d(filePath, x, y, z, distance, volume=1.0, pitch=1.0)
     #   SE を演奏します。(3D サウンド)
     #   @param [String] filePath ファイルパス
     #   @param [Float] x 3D 空間上の X 座標
     #   @param [Float] y 3D 空間上の Y 座標
     #   @param [Float] z 3D 空間上の Z 座標
     #   @param [Float] distance 減衰距離
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     def play_se3d
     end
     # メモリ上の音声データから SE を演奏します。
-    # @overload play_se_mem(data, dataSize, volume=100, pitch=100)
+    # @overload play_se_mem(data, dataSize, volume=1.0, pitch=1.0)
     #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     def play_se_mem
     end
     # メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
-    # @overload play_se3d_mem(data, dataSize, position, distance, volume=100, pitch=100)
+    # @overload play_se3d_mem(data, dataSize, position, distance, volume=1.0, pitch=1.0)
     #   メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
     #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
     #   @param [LN::Vector3] position 3D 空間上の座標
     #   @param [Float] distance 減衰距離
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
-    # @overload play_se3d_mem(data, dataSize, x, y, z, distance, volume=100, pitch=100)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
+    # @overload play_se3d_mem(data, dataSize, x, y, z, distance, volume=1.0, pitch=1.0)
     #   メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
     #   @param [] data メモリ上の音声ファイルデータ
     #   @param [Integer] dataSize データサイズ (バイト単位)
@@ -1417,8 +1417,8 @@ class LN::GameAudio
     #   @param [Float] y 3D 空間上の Y 座標
     #   @param [Float] z 3D 空間上の Z 座標
     #   @param [Float] distance 減衰距離
-    #   @param [Integer] volume ボリューム (0 ～ 100)
-    #   @param [Integer] pitch ピッチ (50 ～ 200)
+    #   @param [Float] volume ボリューム (0.0～1.0)
+    #   @param [Float] pitch ピッチ (0.5～2.0)
     def play_se3d_mem
     end
     # すべての SE の演奏を停止します。
@@ -1427,13 +1427,13 @@ class LN::GameAudio
     end
     # 再生中のBGMの音量を設定します。(フェードアウト中は無効)
     # @overload set_bgm_volume(volume, fadeTime=0.0)
-    #   @param [Integer] volume ボリューム (0 ～ 100)
+    #   @param [Float] volume ボリューム (0.0～1.0)
     #   @param [Float] fadeTime フェードアウトにかける時間 (秒)
     def set_bgm_volume
     end
     # 再生中のBGSの音量を設定します。(フェードアウト中は無効)
     # @overload set_bgs_volume(volume, fadeTime=0.0)
-    #   @param [Integer] volume ボリューム (0 ～ 100)
+    #   @param [Float] volume ボリューム (0.0～1.0)
     #   @param [Float] fadeTime フェードアウトにかける時間 (秒)
     def set_bgs_volume
     end
@@ -1517,8 +1517,8 @@ class LN::Sound < RefObject
     def is_loop_enabled=
     end
     # サウンドのループ再生が有効であるかを確認します。
-    # @overload loop_enabled?()
-    def loop_enabled?
+    # @overload is_loop_enabled?()
+    def is_loop_enabled?
     end
     # サウンドを 3D 音源であるかを設定します。
     # @overload is_3d_enabled=()

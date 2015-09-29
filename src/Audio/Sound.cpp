@@ -48,8 +48,8 @@ Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType pla
 	, m_audioStream(stream)
 	, m_audioPlayer(NULL)
 	, m_playingMode(SoundPlayingMode::Unknown)
-	, m_volume(100)
-	, m_pitch(100)
+	, m_volume(1.0)
+	, m_pitch(1.0)
 	, m_loopEnabled(false)
 	, m_loopBegin(0)
 	, m_loopLength(0)
@@ -78,7 +78,6 @@ Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType pla
 //-----------------------------------------------------------------------------
 Sound::~Sound()
 {
-
 	LN_SAFE_RELEASE(m_audioStream);
 	LN_SAFE_RELEASE(m_audioPlayer);
 	LN_SAFE_RELEASE(m_manager);
@@ -87,10 +86,10 @@ Sound::~Sound()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::SetVolume(int volume)
+void Sound::SetVolume(float volume)
 {
 	Threading::MutexScopedLock lock(m_mutex);
-	m_volume = volume;
+	m_volume = Math::Clamp(volume, 0.0f, 1.0f);
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->SetVolume(m_volume);
 	}
@@ -99,7 +98,7 @@ void Sound::SetVolume(int volume)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-int Sound::GetVolume() const
+float Sound::GetVolume() const
 {
 	return m_volume;
 }
@@ -107,9 +106,9 @@ int Sound::GetVolume() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::SetPitch(int pitch)
+void Sound::SetPitch(float pitch)
 {
-	m_pitch = pitch;
+	m_pitch = Math::Clamp(pitch, 0.5f, 2.0f);
 	if (m_audioPlayer != NULL) {
 		m_audioPlayer->SetPitch(m_pitch);
 	}
@@ -118,7 +117,7 @@ void Sound::SetPitch(int pitch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-int Sound::GetPitch() const
+float Sound::GetPitch() const
 {
 	return m_pitch;
 }
@@ -175,7 +174,7 @@ void Sound::Stop()
 	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayingState::Stopped;
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->play();
+		m_audioPlayer->stop();
 	}
 }
 
@@ -369,7 +368,7 @@ SoundPlayingMode Sound::GetPlayingMode() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior)
+void Sound::FadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
 {
 	// 即時更新
 	if (time <= 0) {
@@ -379,7 +378,8 @@ void Sound::FadeVolume(int targetVolume, double time, SoundFadeBehavior behavior
 	Threading::MutexScopedLock lock(m_mutex);
 
 	// 現在の音量から volume_ へのフェード
-	m_fadeValue.Start((float)GetVolume(), (float)targetVolume, time);
+	targetVolume = Math::Clamp(targetVolume, 0.0f, 1.0f);
+	m_fadeValue.Start(GetVolume(), targetVolume, time);
 	m_fadeBehavior = behavior;
 	m_fading = true;
 }
@@ -452,7 +452,9 @@ void Sound::Polling(float elapsedTime)
 
 	if (m_audioPlayer != NULL)
 	{
-		m_audioPlayer->polling();
+		if (!m_audioPlayer->polling()) {
+			m_playState = SoundPlayingState::Stopped;
+		}
 	}
 
 	Threading::MutexScopedLock lock(m_mutex);
@@ -463,7 +465,8 @@ void Sound::Polling(float elapsedTime)
 		m_fadeValue.AdvanceTime(elapsedTime);
 
 		if (m_audioPlayer != NULL) {
-			m_audioPlayer->SetVolume((int)m_fadeValue.GetValue());
+			m_volume = m_fadeValue.GetValue();
+			m_audioPlayer->SetVolume(m_volume);
 		}
 
 		// フェード完了
@@ -498,7 +501,7 @@ void Sound::Polling(float elapsedTime)
 			// 音量を元に戻す
 			if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
 			{
-				m_volume = (int)m_fadeValue.GetStartValue();	// SetVolume() を呼ぶとデッドロックするのでここでセット
+				m_volume = m_fadeValue.GetStartValue();	// SetVolume() を呼ぶとデッドロックするのでここでセット
 				if (m_audioPlayer != NULL) {
 					m_audioPlayer->SetVolume(m_volume);
 				}

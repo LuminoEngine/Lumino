@@ -32,11 +32,11 @@ public:
 
 public:
 
-	/// 音量の設定 (100.0 ～ 0.0)
-	void SetVolume(int volume);
+	/// 音量の設定 (0.0～1.0)
+	void SetVolume(float volume);
 
-	/// ピッチの設定 (50 ～ 200 が基本。範囲外も一応可。)
-	void SetPitch(int pitch);
+	/// ピッチの設定 (0.5 ～ 2.0 が基本。範囲外も一応可。)
+	void SetPitch(float pitch);
 
 	/// 全体の再生時間の取得 (ミュージックタイム単位)
     uint32_t GetTotalTime() const;

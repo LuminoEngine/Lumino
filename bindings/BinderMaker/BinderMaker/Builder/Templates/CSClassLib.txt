@@ -3,63 +3,16 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LN
+namespace Lumino
 {
 CLASSES	
 
     
 
-    internal enum _LNInternal
-    {
-        InternalBlock,
-    }   
-
-    /// <summary>
-    /// 参照カウントを持つオブジェクトをラップする
-    /// </summary>
-    public class ReferenceObject : IDisposable
-    {
-        internal IntPtr _handle;
-
-        internal ReferenceObject() {}
-        internal ReferenceObject(_LNInternal i) {}
-
-        /// <summary>
-        /// ハンドルの取得
-        /// </summary>
-        public IntPtr Handle { get { return _handle; } }
-
-        /// <summary>
-        /// デストラクタ
-        /// </summary>
-        ~ReferenceObject() { Dispose(); }
-
-        internal virtual void SetHandle(IntPtr handle)
-        {
-            _handle = handle;
-        }       
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            if (_handle != IntPtr.Zero)
-            {
-                if (InternalManager.SystemInitialized)
-                {
-                    InternalManager.UnregisterWrapperObject(this);
-                    API.LNObject_Release(_handle);
-                }
-                _handle = IntPtr.Zero;
-            }
-            GC.SuppressFinalize(this);
-        }
-    }
 
     internal class TypeInfo
     {
-        public delegate ReferenceObject ReferenceObjectFactory(IntPtr handle);
+        public delegate RefObject ReferenceObjectFactory(IntPtr handle);
 
         public ReferenceObjectFactory Factory;
 

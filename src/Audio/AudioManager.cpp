@@ -286,6 +286,10 @@ void AudioManagerImpl::Thread_Polling()
 				++itr;
 			}
 		}
+
+		if (m_gameAudio != NULL) {
+			m_gameAudio->Polling();
+		}
 	}
 
 #ifdef LN_OS_WIN32
