@@ -274,7 +274,6 @@ set(LN_SOURCES_Scene
 
 set(LN_SOURCES_GUI
 	include/Lumino/GUI/AnimationClock.h
-	include/Lumino/GUI/Button.h
 	include/Lumino/GUI/ButtonChrome.h
 	include/Lumino/GUI/Common.h
 	include/Lumino/GUI/ContentControl.h
@@ -296,6 +295,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/TextBox.h
+	include/Lumino/GUI/UIButton.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/UIElementCollection.h
 	include/Lumino/GUI/UIInjectedInputReceiver.h
@@ -314,7 +314,6 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Controls/Thumb.h
 	include/Lumino/GUI/Controls/Track.h
 	src/GUI/AnimationClock.cpp
-	src/GUI/Button.cpp
 	src/GUI/ButtonChrome.cpp
 	src/GUI/ContentControl.cpp
 	src/GUI/ContentElement.cpp
@@ -338,6 +337,7 @@ set(LN_SOURCES_GUI
 	src/GUI/RoutedCommand.cpp
 	src/GUI/TextBlock.cpp
 	src/GUI/TextBox.cpp
+	src/GUI/UIButton.cpp
 	src/GUI/UIElement.cpp
 	src/GUI/UIElementCollection.cpp
 	src/GUI/VisualState.cpp

@@ -47,8 +47,13 @@ private:
 	void Children_ItemAdded(UIElement* item);
 	void Children_ItemRemoved(UIElement* item);
 
+LN_INTERNAL_ACCESS:
+	virtual void ActivateInternal(UIElement* child);
+
 protected:
 	RefPtr<UIElementCollection>		m_children;
+private:
+	Array<UIElement*>	m_orderdVisualChildren;
 };
 
 class PilePanel
@@ -68,6 +73,7 @@ protected:
 	virtual ~PilePanel();
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
+
 };
 
 LN_NAMESPACE_GUI_END

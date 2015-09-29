@@ -18,7 +18,7 @@ public:
 	LN_PROPERTY(Orientation, OrientationProperty);
 
 public:
-	static StackPanelPtr Create();
+	static StackPanel* Create();
 
 	StackPanel(GUIManagerImpl* manager);
 	virtual ~StackPanel();

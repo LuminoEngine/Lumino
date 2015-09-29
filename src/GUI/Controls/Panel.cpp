@@ -51,6 +51,7 @@ void Panel::Children_ItemAdded(UIElement* item)
 {
 	// TODO: ここは AddVisualChild ではなくて、GeVisualChild() をオーバーライドする。WPF はそうなっている。
 	AddVisualChild(item);
+	m_orderdVisualChildren.Add(item);
 }
 
 //-----------------------------------------------------------------------------
@@ -59,6 +60,15 @@ void Panel::Children_ItemAdded(UIElement* item)
 void Panel::Children_ItemRemoved(UIElement* item)
 {
 	RemoveVisualChild(item);
+	m_orderdVisualChildren.Remove(item);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Panel::ActivateInternal(UIElement* child)
+{
+	UIElement::ActivateInternal(child);
 }
 
 #if 0
@@ -148,7 +158,7 @@ SizeF PilePanel::MeasureOverride(const SizeF& constraint)
 	SizeF desiredSize = Panel::MeasureOverride(constraint);
 	for (UIElement* child : *m_children)
 	{
-		child->MeasureLayout(desiredSize);
+		child->MeasureLayout(constraint);
 		const SizeF& childDesiredSize = child->GetDesiredSize();
 
 		desiredSize.Width = std::max(desiredSize.Width, childDesiredSize.Width);
@@ -165,7 +175,10 @@ SizeF PilePanel::ArrangeOverride(const SizeF& finalSize)
 	RectF childFinal(0, 0, finalSize);
 	for (UIElement* child : *m_children)
 	{
-		child->ArrangeLayout(childFinal);
+		SizeF childDesiredSize = child->GetDesiredSize();
+		childDesiredSize.Width = std::max(finalSize.Width, childDesiredSize.Width);
+		childDesiredSize.Height = std::max(finalSize.Height, childDesiredSize.Height);
+		child->ArrangeLayout(RectF(0, 0, childDesiredSize));
 	}
 	return finalSize;
 }

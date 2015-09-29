@@ -1,23 +1,23 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/GUI/Button.h>
+#include <Lumino/GUI/UIButton.h>
 
 namespace Lumino
 {
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
-// Button
+// UIButton
 //=============================================================================
 
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Button, ContentControl);
-LN_UI_ELEMENT_SUBCLASS_IMPL(Button);
-const String	Button::IsMouseOverProperty(_T("IsMouseOver"));
+LN_CORE_OBJECT_TYPE_INFO_IMPL(UIButton, ContentControl);
+LN_UI_ELEMENT_SUBCLASS_IMPL(UIButton);
+const String	UIButton::IsMouseOverProperty(_T("IsMouseOver"));
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Button* Button::Create()
+UIButton* UIButton::Create()
 {
 	return internalCreateInstance(ApplicationContext::GetGUIManager());
 }
@@ -25,31 +25,31 @@ Button* Button::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Button::Button(GUIManagerImpl* manager)
+UIButton::UIButton(GUIManagerImpl* manager)
 	: ContentControl(manager)
 	, m_isMouseOver(false)
 {
 	// プロパティの登録
-	//LN_DEFINE_PROPERTY(Button, bool, IsMouseOverProperty, NULL, &Button::IsMouseOver, false);
+	//LN_DEFINE_PROPERTY(UIButton, bool, IsMouseOverProperty, NULL, &UIButton::IsMouseOver, false);
 
 	//m_chrome.Attach(LN_NEW ButtonChrome(manager));
 	//SetContent(Variant(m_chrome));
 
-	//MouseMove += LN_CreateDelegate(this, &Button::UIElement_MouseMove);
+	//MouseMove += LN_CreateDelegate(this, &UIButton::UIElement_MouseMove);
 
 	// Register handler
-	IsEnabledChanged += LN_CreateDelegate(this, &Button::Handler_IsEnabledChanged);
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseEnterEvent, RoutedHandler_MouseEnter);
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseLeaveEvent, RoutedHandler_MouseLeave);
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseMoveEvent, RoutedHandler_MouseMove);
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseDownEvent, RoutedHandler_MouseDown);
-	LN_REGISTER_ROUTED_EVENT_HANDLER(Button, MouseEventArgs, UIElement::MouseUpEvent, RoutedHandler_MouseUp);
+	IsEnabledChanged += LN_CreateDelegate(this, &UIButton::Handler_IsEnabledChanged);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseEnterEvent, RoutedHandler_MouseEnter);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseLeaveEvent, RoutedHandler_MouseLeave);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseMoveEvent, RoutedHandler_MouseMove);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseDownEvent, RoutedHandler_MouseDown);
+	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseUpEvent, RoutedHandler_MouseUp);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Button::~Button()
+UIButton::~UIButton()
 {
 
 }
@@ -57,7 +57,7 @@ Button::~Button()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::OnClick()
+void UIButton::OnClick()
 {
 
 }
@@ -65,27 +65,27 @@ void Button::OnClick()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::OnRender(Painter* painter)
+void UIButton::OnRender(Painter* painter)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::Handler_IsEnabledChanged(PropertyChangedEventArgs* e)
+void UIButton::Handler_IsEnabledChanged(PropertyChangedEventArgs* e)
 {
 	if (e->NewValue.GetBool()) {
-		VisualStateManager::GoToState(this, VisualStatus::Disabled);
+		VisualStateManager::GoToState(this, VisualStatus::Normal);
 	}
 	else {
-		VisualStateManager::GoToState(this, VisualStatus::Normal);	// TODO: 前の値に戻さなくて良い？
+		VisualStateManager::GoToState(this, VisualStatus::Disabled);	// TODO: 前の値に戻さなくて良い？
 	}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::RoutedHandler_MouseEnter(MouseEventArgs* e)
+void UIButton::RoutedHandler_MouseEnter(MouseEventArgs* e)
 {
 	VisualStateManager::GoToState(this, VisualStatus::MouseOver);
 	e->Handled = true;
@@ -94,7 +94,7 @@ void Button::RoutedHandler_MouseEnter(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::RoutedHandler_MouseLeave(MouseEventArgs* e)
+void UIButton::RoutedHandler_MouseLeave(MouseEventArgs* e)
 {
 	VisualStateManager::GoToState(this, VisualStatus::Normal);
 	e->Handled = true;
@@ -103,7 +103,7 @@ void Button::RoutedHandler_MouseLeave(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::RoutedHandler_MouseMove(MouseEventArgs* e)
+void UIButton::RoutedHandler_MouseMove(MouseEventArgs* e)
 {
 	//VisualStateManager::GoToState(this, VisualStatus::MouseOver);
 
@@ -116,15 +116,16 @@ void Button::RoutedHandler_MouseMove(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::RoutedHandler_MouseDown(MouseEventArgs* e)
+void UIButton::RoutedHandler_MouseDown(MouseEventArgs* e)
 {
+	Focus();
 	VisualStateManager::GoToState(this, VisualStatus::Pressed);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Button::RoutedHandler_MouseUp(MouseEventArgs* e)
+void UIButton::RoutedHandler_MouseUp(MouseEventArgs* e)
 {
 	VisualStateManager::GoToState(this, VisualStatus::Normal);
 }
@@ -133,7 +134,7 @@ void Button::RoutedHandler_MouseUp(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void Button::UIElement_MouseMove(CoreObject* sender, MouseEventArgs* e)
+//void UIButton::UIElement_MouseMove(CoreObject* sender, MouseEventArgs* e)
 //{
 //	m_isMouseOver = true;
 //	OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
@@ -143,9 +144,9 @@ void Button::RoutedHandler_MouseUp(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void Button::Render()
+//void UIButton::Render()
 //{
-//	printf("Button::Render()\n");
+//	printf("UIButton::Render()\n");
 //	ContentControl::Render();
 //}
 

@@ -131,9 +131,14 @@ SizeF Control::MeasureOverride(const SizeF& constraint)
 	
 	SizeF desiredSize;
 	if (GUIHelper::SimpleMeasureOverrideSingleVisual(this, constraint, &desiredSize)) {
-		return desiredSize;
+		//return desiredSize;
 	}
-	return UIElement::MeasureOverride(constraint);
+	SizeF thisDesiredSize = UIElement::MeasureOverride(constraint);
+
+	desiredSize.Width = std::max(desiredSize.Width, thisDesiredSize.Width);
+	desiredSize.Height = std::max(desiredSize.Height, thisDesiredSize.Height);
+	return desiredSize;
+	//return UIElement::MeasureOverride(constraint);
 }
 
 //-----------------------------------------------------------------------------

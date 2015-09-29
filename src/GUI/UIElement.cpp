@@ -100,6 +100,7 @@ void UIElement::Focus()
 {
 	if (IsFocusable())
 	{
+		if (m_parent != NULL) { m_parent->ActivateInternal(this); }
 		m_ownerContext->SetFocusElement(this);
 	}
 }
@@ -140,6 +141,16 @@ UIElement* UIElement::GetVisualChild(int index) const
 		また、ItemsControl や Panel が握っている論理要素とビジュアル要素を常に同期する必要があり、漏れが心配。
 	*/
 	return m_visualChildren.GetAt(index);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIElement* UIElement::GetVisualChildOrderd(int index) const
+{
+	// ここではソートしないので GetVisualChild() と同じものを返す。
+	// コンテナ系の要素はこの関数をオーバーライドする必要がある。
+	return GetVisualChild(index);
 }
 
 //-----------------------------------------------------------------------------
@@ -197,7 +208,13 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	// Margin を考慮する
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
-	SizeF arrangeSize = finalLocalRect.GetSize();
+	SizeF arrangeSize;
+
+	// この要素のサイズが明示的に指定されている場合はそちらを優先する
+	arrangeSize.Width = Math::IsNaNOrInf(m_size.Width) ? finalLocalRect.Width : m_size.Width;
+	arrangeSize.Height = Math::IsNaNOrInf(m_size.Height) ? finalLocalRect.Height : m_size.Height;
+
+	// 0 以下には出来ない
 	arrangeSize.Width = std::max(arrangeSize.Width - marginWidth, 0.0f);
 	arrangeSize.Height = std::max(arrangeSize.Height - marginHeight, 0.0f);
 
@@ -243,6 +260,7 @@ void UIElement::AddVisualChild(UIElement* element)
 	LN_THROW(element->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 
 	m_visualChildren.Add(element);		// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
+	element->AttachContext(m_ownerContext);
 	element->SetInheritanceParent(this);
 	element->SetParent(this);			// Visualツリーでも、論理的な親の扱いは共通。
 	element->SetTemplateModified(true);	// テンプレートを再構築する必要がありそう
@@ -259,6 +277,7 @@ void UIElement::RemoveVisualChild(UIElement* element)
 	m_visualChildren.Remove(element);
 	element->SetInheritanceParent(NULL);
 	element->SetParent(NULL);
+	element->DetachContext();
 }
 
 //-----------------------------------------------------------------------------
@@ -271,8 +290,9 @@ SizeF UIElement::MeasureOverride(const SizeF& constraint)
 	// ただし、constraint を超えることはできない。
 
 	SizeF size;
-	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : size.Width;
-	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : size.Height;
+	// NaN の場合、この要素として必要な最小サイズは 0 となる。
+	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : m_size.Width;
+	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : m_size.Height;
 	size.Width = std::min(size.Width, constraint.Width);
 	size.Height = std::min(size.Height, constraint.Height);
 
@@ -292,6 +312,14 @@ SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 void UIElement::OnRender(Painter* painter)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::ActivateInternal(UIElement* child)
+{
+	if (m_parent != NULL) { m_parent->ActivateInternal(this); }
 }
 
 //-----------------------------------------------------------------------------
@@ -549,32 +577,32 @@ bool UIElement::OnEvent(RoutedEventType type, RoutedEventArgs* args)
 	case RoutedEventType::Unknown:
 		break;
 	case RoutedEventType::MouseMove:
-		OnMouseMove(static_cast<MouseEventArgs*>(args));
+		if (m_isEnabled) { OnMouseMove(static_cast<MouseEventArgs*>(args)); }
 		break;
 	case RoutedEventType::MouseButtonDown:
-		OnMouseDown(static_cast<MouseEventArgs*>(args));
+		if (m_isEnabled) { OnMouseDown(static_cast<MouseEventArgs*>(args)); }
 		break;
 	case RoutedEventType::MouseButtonUp:
-		OnMouseUp(static_cast<MouseEventArgs*>(args));
+		if (m_isEnabled) { OnMouseUp(static_cast<MouseEventArgs*>(args)); }
 		break;
 	case RoutedEventType::MouseWheel:
 		break;
 	case RoutedEventType::KeyDown:
-		OnKeyDown(static_cast<KeyEventArgs*>(args));
+		if (m_isEnabled) { OnKeyDown(static_cast<KeyEventArgs*>(args)); }
 		break;
 	case RoutedEventType::KeyUp:
-		OnKeyUp(static_cast<KeyEventArgs*>(args));
+		if (m_isEnabled) { OnKeyUp(static_cast<KeyEventArgs*>(args)); }
 		break;
 	case RoutedEventType::TextInput:
-		OnTextInput(static_cast<KeyEventArgs*>(args));
+		if (m_isEnabled) { OnTextInput(static_cast<KeyEventArgs*>(args)); }
 		break;
 	case RoutedEventType::ElapsedTime:
 		break;
-	case RoutedEventType::MouseEnter:
-		OnMouseEnter(static_cast<MouseEventArgs*>(args));
+	case RoutedEventType::MouseEnter:	// TODO: 親領域
+		if (m_isEnabled) { OnMouseEnter(static_cast<MouseEventArgs*>(args)); }
 		break;
-	case RoutedEventType::MouseLeave:
-		OnMouseLeave(static_cast<MouseEventArgs*>(args));
+	case RoutedEventType::MouseLeave:	// TODO: 親領域
+		if (m_isEnabled) { OnMouseLeave(static_cast<MouseEventArgs*>(args)); }
 		break;
 	default:
 		break;

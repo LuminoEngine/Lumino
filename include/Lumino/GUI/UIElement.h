@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/Array.h>
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/Property.h>
@@ -188,10 +187,10 @@ public:
 	/** @{ */
 
 	/** 要素のサイズを設定します。規定値は NaN で、この値は自動サイズ変更が有効であることを示します。*/
-	//void SetSize(const SizeF& size) { SetTypedPropertyValue(SizeProperty, size); }
+	void SetSize(const SizeF& size) { SetTypedPropertyValue(SizeProperty, size); }
 
 	/** 要素のサイズを取得します。*/
-	//const SizeF& GetSize() const { return GetTypedPropertyValue<const SizeF&>(SizeProperty); }
+	SizeF GetSize() const { return GetTypedPropertyValue<SizeF>(SizeProperty); }
 
 	/** 要素の外側の余白を設定します。*/
 	//void SetMargin(const ThicknessF& margin) { SetTypedPropertyValue(MarginProperty, margin); }
@@ -244,6 +243,9 @@ public:
 
 	/** この要素内の指定したインデックスにある子ビジュアル要素を取得します。*/
 	virtual UIElement* GetVisualChild(int index) const;
+
+	/** Zオーダーやアクティブ状態を考慮した順で、子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。*/
+	virtual UIElement* GetVisualChildOrderd(int index) const;
 	
 	/** この要素が関連付けられているコンテキストを取得します。*/
 	GUIContext* GetContext() const;
@@ -268,7 +270,7 @@ protected:
 	/**
 		@brief		この要素を表示するために必要なサイズを計測します。
 		@params[in]	constraint	: この要素を配置できる領域の最大サイズ。通常は親要素のサイズが渡されます。
-		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。
+		@return		この要素のレイアウトの際に必要となる最低限のサイズ。この要素のサイズと、全ての子要素のサイズに基づき決定します。Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
 	virtual SizeF MeasureOverride(const SizeF& constraint);
@@ -290,7 +292,8 @@ protected:
 	UIElement(GUIManagerImpl* manager);
 	virtual ~UIElement();
 
-private:
+LN_INTERNAL_ACCESS:
+	virtual void ActivateInternal(UIElement* child);
 	void AttachContext(GUIContext* ownerContext);
 	void DetachContext();
 

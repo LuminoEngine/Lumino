@@ -400,7 +400,7 @@ void ApplicationImpl::Render()
 		}
 
 		if (m_profilerRenderer != NULL) {
-			m_profilerRenderer->Render(Vector2(640, 480));	//TODO
+			//m_profilerRenderer->Render(Vector2(640, 480));	//TODO
 		}
 
 		renderer->End();

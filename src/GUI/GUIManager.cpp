@@ -5,6 +5,11 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/9/29] MouseEnter MouseLeave について
+		兄弟要素間では、重なっていても排他。
+		親子では、子が IsMouseOver なら親も IsMouseOver。このとき、マウスが子領域から出て親に乗っても、親の Enter は発生しない。
+
+
 	[2015/9/14] Variant は必要？
 		・ContentControl::SetContent() 等のコントロール自動生成は？
 			→	自分で TextBlock 作ればいいだけ。
@@ -1037,7 +1042,7 @@
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/RootFrame.h>
-#include <Lumino/GUI/Button.h>
+#include <Lumino/GUI/UIButton.h>
 #include <Lumino/GUI/ButtonChrome.h>
 #include <Lumino/GUI/Controls/Thumb.h>
 #include <Lumino/GUI/Controls/Track.h>
@@ -1107,7 +1112,7 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 	RegisterFactory(ContentPresenter::TypeID,		[](GUIManagerImpl* m) -> CoreObject* { return ContentPresenter::internalCreateInstance(m); });
 	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ItemsPresenter::internalCreateInstance(m); });
 	RegisterFactory(ButtonChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ButtonChrome::internalCreateInstance(m); });
-	RegisterFactory(Button::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Button::internalCreateInstance(m); });
+	RegisterFactory(UIButton::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return UIButton::internalCreateInstance(m); });
 	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ListBoxChrome::internalCreateInstance(m); });
 	RegisterFactory(ThumbChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ThumbChrome::internalCreateInstance(m); });
 	RegisterFactory(Thumb::TypeID,					[](GUIManagerImpl* m) -> CoreObject* { return Thumb::internalCreateInstance(m); });
@@ -1321,8 +1326,8 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 		RefPtr<FrameTextureBrush> brush4(LN_NEW FrameTextureBrush());	//TODO:
 		brush4->SetTexture(m_defaultSkinTexture);
-		brush4->SetSourceRect(Rect(64, 0, 32, 32));
-		brush4->SetInnerAreaSourceRect(Rect(64 + 8, 8, 16, 16));
+		brush4->SetSourceRect(Rect(96, 0, 32, 32));
+		brush4->SetInnerAreaSourceRect(Rect(96 + 8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonDisabledBrush"), brush4);
 
 
@@ -1357,7 +1362,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 	// Button
 	{
 		RefPtr<Style> style = RefPtr<Style>::Create();
-		style->SetTargetType(Button::GetClassTypeInfo());
+		style->SetTargetType(UIButton::GetClassTypeInfo());
 
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
 		t->SetTargetType(_T("Button"));
@@ -1369,7 +1374,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 			RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
 			ef1->SetKeyName(_T("chrome"));
 			ef1->SetTypeName(_T("ButtonChrome"));
-			ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
+			ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
 			panel1->AddChild(ef1);
 
 			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this));
@@ -1390,7 +1395,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 			rectangle3->SetTypeName(_T("Rectangle"));
 			rectangle3->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle3->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonDisabledBrush")));
-			panel1->AddChild(rectangle2);
+			panel1->AddChild(rectangle3);
 
 			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
 			ef2->SetTypeName(_T("ContentPresenter"));
@@ -1454,7 +1459,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 			VisualStatePtr vstateDisabled(LN_NEW VisualState(this, _T("Disabled")));
 			vstateDisabled->GetStoryboard()->AddTimeline(easing1);
-			vstateDisabled->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
+			vstateDisabled->GetStoryboard()->AddTimeline(buttonPressedEasingOut);
 			vstateDisabled->GetStoryboard()->AddTimeline(buttonDisabledEasingIn);
 			vgroup1->AddState(vstateDisabled);
 		}

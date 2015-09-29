@@ -19,11 +19,11 @@ LN_NAMESPACE_GUI_BEGIN
 				| Focused     | FocusStates      | フォーカスがあります。
 				| Unfocused   | FocusStates      | フォーカスがありません。
 */
-class Button
+class UIButton
 	: public ContentControl
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
-	LN_UI_ELEMENT_SUBCLASS_DECL(Button);
+	LN_UI_ELEMENT_SUBCLASS_DECL(UIButton);
 public:
 	static const String	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
 
@@ -31,10 +31,10 @@ public:
 	static const String ControlTemplateTypeName;	///< "Button"
 
 
-	static Button* Create();
+	static UIButton* Create();
 
-	Button(GUIManagerImpl* manager);
-	virtual ~Button();
+	UIButton(GUIManagerImpl* manager);
+	virtual ~UIButton();
 
 public:
 	bool IsMouseOver() const { return m_isMouseOver; }

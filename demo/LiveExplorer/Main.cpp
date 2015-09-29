@@ -44,10 +44,20 @@ int main()
 		//s->SetPitch(110);
 		//s->Play();
 
+
 		GCPtr<GUIContext> context1 = GUIContext::Create();
 
-		GCPtr<Button> button1 = Button::Create();
-		context1->SetRootElement(button1);
+
+		GCPtr<PilePanel> panel1 = PilePanel::Create();
+		context1->SetRootElement(panel1);
+
+		GCPtr<UIButton> button1 = UIButton::Create();
+		button1->SetSize(SizeF(200, 100));
+		panel1->GetChildren()->Add(button1);
+
+		GCPtr<UIButton> button2 = UIButton::Create();
+		button2->SetSize(SizeF(100, 200));
+		panel1->GetChildren()->Add(button2);
 
 		button1->SetEnabled(false);
 

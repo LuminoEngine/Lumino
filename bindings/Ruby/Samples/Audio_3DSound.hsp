@@ -1,0 +1,113 @@
+//=============================================================================
+// ■ Audio_3DSound
+//-----------------------------------------------------------------------------
+//	3D サウンドのサンプルです。
+//	XZ 平面上で移動させています。
+//=============================================================================
+
+#include "lnote.as"
+
+#const VELOCITY		2.0
+	
+	sound_x = 0.0
+	sound_z = 10.0
+	sound_dist = 100.0
+	
+	listener_x = 0.0
+	listener_z = 0.0
+	listener_dir_x = 0.0
+	listener_dir_z = 1.0
+
+	LNote_InitAudio
+	
+	LAudio_SetMetreUnitDistance 0.1		// 0.1 ピクセルを 1 メートルとする
+
+	LSound_Create sound, "Media/water02.wav", true
+	LSound_SetEmitterPosition sound, sound_x, 0.0, sound_z
+	LSound_SetEmitterDistance sound, sound_dist
+	LSound_SetLoopState sound, true
+	LSound_Play sound
+	
+*main
+	
+	// サウンドの移動処理
+	last_x = sound_x
+	last_z = sound_z
+	getkey k, 37
+	if k : sound_x -= VELOCITY
+	getkey k, 38
+	if k : sound_z += VELOCITY
+	getkey k, 39
+	if k : sound_x += VELOCITY
+	getkey k, 40
+	if k : sound_z -= VELOCITY
+	
+	LSound_SetEmitterPosition sound, sound_x, 0.0, sound_z
+	LSound_SetEmitterVelocity sound, sound_x - last_x, 0.0, sound_z - last_z
+	
+	// リスナーの移動処理
+	getkey k, 'A'
+	if k {
+		listener_dir_x = listener_dir_x * cos(0.1) - listener_dir_z * sin(0.1)
+		listener_dir_z = listener_dir_x * sin(0.1) + listener_dir_z * cos(0.1)
+	}
+	getkey k, 'D'
+	if k {
+		listener_dir_x = listener_dir_x * cos(-0.1) - listener_dir_z * sin(-0.1)
+		listener_dir_z = listener_dir_x * sin(-0.1) + listener_dir_z * cos(-0.1)
+	}
+	
+	last_x = listener_x
+	last_z = listener_z
+	getkey k, 'W'
+	if k : listener_x += listener_dir_x * VELOCITY : listener_z += listener_dir_z * VELOCITY
+	getkey k, 'S'
+	if k : listener_x -= listener_dir_x * VELOCITY : listener_z -= listener_dir_z * VELOCITY
+
+	L3DSoundListener_SetPosition listener_x, 0.0, listener_z
+	L3DSoundListener_SetDirection listener_dir_x, 0.0, listener_dir_z
+	L3DSoundListener_Velocity listener_x - last_x, 0.0, listener_z - last_z
+	
+	// 描画処理
+	gosub *draw
+	await 32
+
+	goto *main
+
+*draw
+	
+	redraw 0
+	color 255, 255, 255
+	boxf
+	
+	color 255, 0, 0
+	pos 620, 220
+	mes "X"
+	line 320, 240, 640, 240
+	
+	color 0, 0, 255
+	pos 325, 5
+	mes "Z"
+	line 320, 0, 320, 240
+	
+	color 128, 128, 128
+	sx = sound_x + 320
+	sy = -sound_z + 240
+	hd = sound_dist
+	circle sx - hd, sy - hd, sx + hd, sy + hd, 0
+	hd = 5
+	circle sx - hd, sy - hd, sx + hd, sy + hd, 1
+	
+	sx = listener_x + 320
+	sy = -listener_z + 240
+	circle sx - hd, sy - hd, sx + hd, sy + hd, 1
+	line sx, sy, sx + listener_dir_x * 20, sy + -listener_dir_z * 20
+	
+	pos 0, 400
+	mes "サウンド位置(" + sound_x + ", " + sound_z + ")"
+	mes "リスナー位置(" + listener_x + ", " + listener_z + ")"
+	mes "←, ↑, →, ↓:サウンド移動"
+	mes "W , S , A , D :リスナー移動"
+	
+	redraw 1
+	return
