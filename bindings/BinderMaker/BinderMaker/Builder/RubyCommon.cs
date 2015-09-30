@@ -40,14 +40,15 @@ namespace BinderMaker.Builder
             { CLPrimitiveType.Bool,         new RubyTypeInfo("Bool",    "isRbBool({0})",   "LNBool",       "RbBooltoBool({0})",         "lnBool {0} = RbBooltoBool({1});") },
             { CLPrimitiveType.Byte,         new RubyTypeInfo("Integer", "isRbNumber({0})", "uint8_t",         "FIX2INT({0})",              "lnU8 {0} = FIX2INT({1});") },
             { CLPrimitiveType.Int32,          new RubyTypeInfo("Integer", "isRbNumber({0})", "int",          "FIX2INT({0})",              "int {0} = FIX2INT({1});") },
-            { CLPrimitiveType.UInt32,       new RubyTypeInfo("Integer", "isRbNumber({0})", "uint32_t",        "FIX2INT({0})",              "lnU32 {0} = FIX2INT({1});") },
+            { CLPrimitiveType.UInt32,       new RubyTypeInfo("Integer", "isRbNumber({0})", "uint64_t",        "FIX2INT({0})",              "lnU32 {0} = FIX2INT({1});") },
+            { CLPrimitiveType.Int64,       new RubyTypeInfo("Integer", "isRbNumber({0})", "uint32_t",        "FIX2INT({0})",              "lnU32 {0} = FIX2INT({1});") },
             { CLPrimitiveType.Float,        new RubyTypeInfo("Float",   "isRbFloat({0})",  "float",        "((float)NUM2DBL({0}))",    "float {0} = static_cast<float>(NUM2DBL({1}));") },
             { CLPrimitiveType.Double,       new RubyTypeInfo("Float",   "isRbFloat({0})",  "double",       "NUM2DBL({0})",              "double {0} = NUM2DBL({1});") },
 
             // { CLPrimitiveType.ResultCode,   new RubyTypeInfo("Integer", "isRbNumber({0})", "lnResultCode", "(lnResultCode)FIX2INT({0})",   "lnResultCode {0} = (lnResultCode)FIX2INT({1});") },
             //{ CLPrimitiveType.ExceptionCallback, new RubyTypeInfo("",   "isRbNumber({0})", "lnExceptionCallback", null, null) },
-            { CLPrimitiveType.VoidPtr,       new RubyTypeInfo("",        "isRbNumber({0})", "void*", "((void*)FIX2INT({0}))", null) },  
-            { CLPrimitiveType.IntPtr,       new RubyTypeInfo("",        "isRbNumber({0})", "intptr_t", "FIX2INT({0})", null) },    // ruby の FixNum は x64 なら 64bit までOK
+            { CLPrimitiveType.VoidPtr,       new RubyTypeInfo("String",        "isRbNumber({0})", "void*", "((void*)FIX2INT({0}))", null) },  
+            { CLPrimitiveType.IntPtr,       new RubyTypeInfo("Integer",        "isRbNumber({0})", "intptr_t", "FIX2INT({0})", null) },    // ruby の FixNum は x64 なら 64bit までOK
             // { CLPrimitiveType.HWND,         new RubyTypeInfo("",        "isRbNumber({0})", "HWND",         "FIX2INT({0})", "int {0} = FIX2INT({1});") },      // TODO:bignum?
 
             //{ CLPrimitiveType.Handle = new CLPrimitiveType("Handle");
@@ -489,7 +490,7 @@ namespace BinderMaker.Builder
             if (method.FuncDecl.ReturnType.IsResultCodeType)
             {
                 preErrorStmt = "LNResult errorCode = ";
-                postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""Lumino error. (%d)\n%s"", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));" + OutputBuffer.NewLineCode;
+                postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""Lumino error. (%d)\n%s"", errorCode, LNGetLastErrorMessage());" + OutputBuffer.NewLineCode;
             }
 
             // API 呼び出し

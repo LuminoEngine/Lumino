@@ -225,7 +225,7 @@ namespace Lumino
         /// </summary>
         /// <param name="vec2">2D ベクトル</param>
         /// <param name="z">Z 値</param>
-        public void SetVZ( Vector2 vec2,  float z)
+        public void Set( Vector2 vec2,  float z)
         {
             var result = API.LNVector3_SetVZ(out this, ref vec2,  z);
             if (result != Result.OK) {

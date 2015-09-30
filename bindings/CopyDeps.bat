@@ -8,5 +8,6 @@ copy %NativeReleaseDllU% DotNet\
 copy %NativeReleaseDll% Ruby\
 
 xcopy Common\Media DotNet\Samples\Media /i /d /y
+xcopy Common\Media Ruby\Samples\Media /i /d /y
 
 pause

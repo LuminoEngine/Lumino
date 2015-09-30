@@ -68,6 +68,7 @@ LN_STATIC_CLASS(LNConfig)
 		@param[in]	mode	: DirectMusic の初期化方法
 		@details	DirectMusic の初期化には比較的時間がかかります。
 					これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
+					なお、DirectMusic を使用するためには LNConfig_SetUserWindowHandle でウィンドウハンドルを設定する必要があります。
 	*/
 	LN_STATIC_API
 		void LNConfig_SetDirectMusicMode(LNDirectMusicMode mode);
@@ -133,7 +134,7 @@ LN_STATIC_CLASS(LNVersion)
 
 	/**
 		@brief		バージョン文字列を取得します。
-		@param[out]	outStr	: 文字列へのアドレスを格納する変数のポインタ
+		@param[out]	outStr	: 文字列へのポインタを格納する変数のポインタ
 	*/
 	LN_STATIC_API
 	void LNVersion_GetString(const LNChar** outStr);

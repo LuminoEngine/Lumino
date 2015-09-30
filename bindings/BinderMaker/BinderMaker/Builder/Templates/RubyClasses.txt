@@ -1,7 +1,7 @@
 ﻿#include "LuminoRuby.h"
 #include "RubyStructs.h"
 
-struct wrapReferenceObject
+struct wrapRefObject
 {
 	LNHandle	Handle;
 };
@@ -14,8 +14,8 @@ static LNHandle RbRefObjToHandle(VALUE v)
     if (v == Qnil) {
         return NULL;    
     }
-	wrapReferenceObject* obj;
-	Data_Get_Struct(v, wrapReferenceObject, obj);
+	wrapRefObject* obj;
+	Data_Get_Struct(v, wrapRefObject, obj);
 	return obj->Handle;
 }
 
@@ -23,7 +23,7 @@ bool checkEqualHandle(VALUE obj, LNHandle handle)
 {
 	if (obj == Qnil)
 		return false;
-	if (((wrapReferenceObject*)DATA_PTR(obj))->Handle != handle)
+	if (((wrapRefObject*)DATA_PTR(obj))->Handle != handle)
 		return false;
 	return true;
 }

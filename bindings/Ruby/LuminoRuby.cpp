@@ -3,6 +3,13 @@
 VALUE g_luminoModule;
 VALUE g_luminoError;
 
+const char* LNGetLastErrorMessage()
+{
+	const LNChar* str;
+	LNError_GetLastErrorMessage(&str);
+	return LNInternal_ConvertToUTF8String(str, -1);
+}
+
 // ŠÖ”–¼‚Í create_makefile ‚Åw’è‚µ‚½–¼‘O‚Æ‡‚í‚¹‚Ä‚¨‚©‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
 extern "C" void Init_Lumino()
 {

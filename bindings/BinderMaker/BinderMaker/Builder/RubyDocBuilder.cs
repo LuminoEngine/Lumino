@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 /*
  * yard 0.8.7.4 は、module をネストすると解析できない不具合がある。
- * そのため、全てのクラスに LN:: を付けて module を表現している。
+ * そのため、全てのクラスに Lumino:: を付けて module を表現している。
  */
 
 namespace BinderMaker.Builder
@@ -32,7 +32,7 @@ namespace BinderMaker.Builder
 
         public RubyDocBuilder()
         {
-            //_output.AppendWithIndent("module LN").NewLine();
+            //_output.AppendWithIndent("module Lumino").NewLine();
             //_output.IncreaseIndent();
         }
 
@@ -56,7 +56,7 @@ namespace BinderMaker.Builder
                 return;
 
             _output.AppendWithIndent("# " + enumType.Name.ToUpper()).NewLine();
-            _output.AppendWithIndent("module LN::" + enumType.Name/*.ToUpper()*/).NewLine();
+            _output.AppendWithIndent("module Lumino::" + enumType.Name/*.ToUpper()*/).NewLine();
             _output.IncreaseIndent();
             foreach (var member in enumType.Members)
             {
@@ -99,7 +99,7 @@ namespace BinderMaker.Builder
             //-------------------------------------------------
             // クラス定義の開始・スーパークラス
             _output.AppendWithIndent("# " + classType.Document.OriginalBriefText).NewLine();
-            _output.AppendWithIndent("class LN::" + classType.Name);
+            _output.AppendWithIndent("class Lumino::" + classType.Name);
             if (classType.BaseClass != null)
                 _output.Append(" < " + classType.BaseClass.Name);
             _output.NewLine();
@@ -227,7 +227,7 @@ namespace BinderMaker.Builder
                 rubyMethodName = "initialize";
 
             // キャプション。オーバーロード全てをリスト要素で並べる
-            _output.AppendWithIndent("# " + baseMethod.Document.OriginalBriefText).NewLine();
+            _output.AppendWithIndent("# " + TranslateComment(baseMethod.Document.OriginalBriefText)).NewLine();
             //foreach (var info in overloadMethods)
             //{
             //    _output.AppendWithIndent("# - " + info.Method.Summary).NewLine();
@@ -240,22 +240,25 @@ namespace BinderMaker.Builder
                 string returnText = "";
                 foreach (var param in info.Method.Params)
                 {
-                    // 第1引数かつインスタンスメソッドの場合はドキュメント化する必要はない
-                    if (param == info.Method.Params.First() &&
-                        info.Method.IsInstanceMethod)
-                    {
-                    }
-                    else if (param == info.ReturnParam)
-                    {
-                        returnText = param.Document.OriginalText;
-                    }
-                    else
+                    //// 第1引数かつインスタンスメソッドの場合はドキュメント化する必要はない
+                    //if (param == info.Method.Params.First() &&
+                    //    info.Method.IsInstanceMethod)
+                    //{
+                    //}
+                    
+                    //else
                     {
                         argsText.AppendCommad(param.Name);
                         if (!string.IsNullOrEmpty(param.OriginalDefaultValue))
                             argsText.Append("=" + ConvertDefaultArgVaue(param.OriginalDefaultValue));
-                        paramsText.AppendWithIndent("#   @param [{0}] {1} {2}", ConvertTypeCToRuby(param.Type), param.Name, param.Document.OriginalText).NewLine();
+                        paramsText.AppendWithIndent("#   @param [{0}] {1} {2}", ConvertTypeCToRuby(param.Type), param.Name, TranslateComment(param.Document.OriginalText)).NewLine();
                     }
+                }
+
+                // 戻り値
+                if (info.ReturnParam != null)
+                {
+                    returnText = TranslateComment(info.ReturnParam.Document.OriginalText);
                 }
 
                 //---------------------------------------------
@@ -266,9 +269,9 @@ namespace BinderMaker.Builder
                 // overrload がある場合は @overload 下にも概要を書いておく
                 // (- を付けてリスト要素化することで details と区別する)
                 if (overloadMethods.Count > 1)
-                    _output.AppendWithIndent("#   " + info.Method.Document.OriginalBriefText).NewLine();
+                    _output.AppendWithIndent("#   " + TranslateComment(info.Method.Document.OriginalBriefText)).NewLine();
 
-                // @note
+                // @note (詳細説明)
                 if (!string.IsNullOrEmpty(info.Method.Document.OriginalDetailsText))
                 {
                     if (overloadMethods.Count == 1)
@@ -276,9 +279,9 @@ namespace BinderMaker.Builder
                     //_output.AppendWithIndent("#   @note ").NewLine();
                     //_output.AppendWithIndent("#   ").NewLine();    // @note は必要なし。また、インデントも @override のすぐ下にしておく
                     // 概要とはインデントをひとつ下げると、別のセクションで表示できる。
-                    string[] lines = info.Method.Document.OriginalDetailsText.Split('\n');
+                    string[] lines = TranslateComment(info.Method.Document.OriginalDetailsText).Split('\n');
                     foreach (var line in lines)
-                        _output.AppendWithIndent("#     " + line).NewLine();
+                        _output.AppendWithIndent("#     " + line.Trim()).NewLine();
                 }
 
                 // @param
@@ -286,7 +289,7 @@ namespace BinderMaker.Builder
 
                 // @return
                 if (!string.IsNullOrEmpty(returnText))
-                    _output.AppendWithIndent("#   @return [{0}] {1}", ConvertTypeCToRuby(info.ReturnParam.Type), returnText).NewLine();
+                    _output.AppendWithIndent("# @return [{0}] {1}", ConvertTypeCToRuby(info.ReturnParam.Type), returnText).NewLine();
 
 
             }
@@ -347,17 +350,55 @@ namespace BinderMaker.Builder
                 return info.RubyType;
 
             // enum 型                    
-            // ※ LN:: を付けて完全修飾名にすることで、ドキュメントにリンクが張られる
+            // ※ Lumino:: を付けて完全修飾名にすることで、ドキュメントにリンクが張られる
             var enumType = type as CLEnum;
             if (enumType != null)
-                return "LN::" + enumType.Name; // 大文字化
+                return "Lumino::" + enumType.Name; // 大文字化
 
             // class 型
             var classType = type as CLClass;
             if (classType != null)
-                return "LN::" + classType.Name;
+                return "Lumino::" + classType.Name;
 
             throw new InvalidOperationException();
+        }
+
+        /// <summary>
+        /// Ruby 用の説明文に変換する
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private string TranslateComment(string text)
+        {
+            text = text.Replace("LN_TRUE", "true");
+            text = text.Replace("LN_FALSE", "false");
+            text = text.Replace("NULL", "nil");
+            text = text.Replace("へのポインタ", "");
+            text = text.Replace("を格納する変数のポインタ", "");    // return 用
+
+            // 関数名の置換
+            foreach (var method in CLManager.Instance.AllMethods)
+            {
+                if (text.Contains(method.FuncDecl.OriginalFullName))
+                {
+                    string rubyMethodName = method.OwnerClass.Name + "." + RubyCommon.ConvertCommonNameToRubyMethodName(method);
+                    text = text.Replace(method.FuncDecl.OriginalFullName, rubyMethodName);
+                }
+            }
+
+            // enum 名の置換
+            foreach (var enumType in CLManager.Instance.AllEnums)
+            {
+                foreach (var m in enumType.Members)
+                {
+                    if (text.Contains(m.OriginalName))
+                    {
+                        text = text.Replace(m.OriginalName, enumType.Name + "::" + m.CommonUpperSnakeName);
+                    }
+                }
+            }
+
+            return text;
         }
     }
 }

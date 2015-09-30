@@ -1013,7 +1013,7 @@ namespace Lumino
         /// <summary>
         /// バージョン文字列を取得します。
         /// </summary>
-        /// <param name="outStr">文字列へのアドレスを格納する変数のポインタ</param>
+        /// <param name="outStr">文字列へのポインタを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static void LNVersion_GetString(out IntPtr outStr);
 

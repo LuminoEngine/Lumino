@@ -85,6 +85,7 @@ namespace Lumino
         /// <remarks>
         /// DirectMusic の初期化には比較的時間がかかります。
         /// 					これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
+        /// 					なお、DirectMusic を使用するためには LNConfig_SetUserWindowHandle でウィンドウハンドルを設定する必要があります。
         /// </remarks>
         public static void SetDirectMusicMode( DirectMusicMode mode)
         {

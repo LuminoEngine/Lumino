@@ -1,7 +1,7 @@
 ﻿#include "LuminoRuby.h"
 #include "RubyStructs.h"
 
-struct wrapReferenceObject
+struct wrapRefObject
 {
 	LNHandle	Handle;
 };
@@ -14,8 +14,8 @@ static LNHandle RbRefObjToHandle(VALUE v)
     if (v == Qnil) {
         return NULL;    
     }
-	wrapReferenceObject* obj;
-	Data_Get_Struct(v, wrapReferenceObject, obj);
+	wrapRefObject* obj;
+	Data_Get_Struct(v, wrapRefObject, obj);
 	return obj->Handle;
 }
 
@@ -23,7 +23,7 @@ bool checkEqualHandle(VALUE obj, LNHandle handle)
 {
 	if (obj == Qnil)
 		return false;
-	if (((wrapReferenceObject*)DATA_PTR(obj))->Handle != handle)
+	if (((wrapRefObject*)DATA_PTR(obj))->Handle != handle)
 		return false;
 	return true;
 }
@@ -210,7 +210,7 @@ static VALUE static_lnrbLNApplication_InitializeAudio(int argc, VALUE *argv, VAL
     
         if (true) {
             LNResult errorCode = LNApplication_InitializeAudio();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -358,7 +358,7 @@ static VALUE static_lnrbLNError_GetLastErrorCode(int argc, VALUE *argv, VALUE se
     
         if (true) {
             LNResult errorCode = LNError_GetLastErrorCode();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -395,7 +395,7 @@ static VALUE static_lnrbLNGameAudio_PlayBGM(int argc, VALUE *argv, VALUE self)
             float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_PlayBGM(_filePath, _volume, _pitch, _fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -411,7 +411,7 @@ static VALUE static_lnrbLNGameAudio_StopBGM(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(fadeTime)) {
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_StopBGM(_fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -433,7 +433,7 @@ static VALUE static_lnrbLNGameAudio_PlayBGS(int argc, VALUE *argv, VALUE self)
             float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_PlayBGS(_filePath, _volume, _pitch, _fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -449,7 +449,7 @@ static VALUE static_lnrbLNGameAudio_StopBGS(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(fadeTime)) {
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_StopBGS(_fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -469,7 +469,7 @@ static VALUE static_lnrbLNGameAudio_PlayME(int argc, VALUE *argv, VALUE self)
             float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
             float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlayME(_filePath, _volume, _pitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -483,7 +483,7 @@ static VALUE static_lnrbLNGameAudio_StopME(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNResult errorCode = LNGameAudio_StopME();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -503,7 +503,7 @@ static VALUE static_lnrbLNGameAudio_PlaySE(int argc, VALUE *argv, VALUE self)
             float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
             float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlaySE(_filePath, _volume, _pitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -527,7 +527,7 @@ static VALUE static_lnrbLNGameAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
             float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
             float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlaySE3D(_filePath, &_position, _distance, _volume, _pitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -549,7 +549,7 @@ static VALUE static_lnrbLNGameAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
             float _volume = (volume != Qnil) ? ((float)NUM2DBL(volume)) : 1.0f;
             float _pitch = (pitch != Qnil) ? ((float)NUM2DBL(pitch)) : 1.0f;
             LNResult errorCode = LNGameAudio_PlaySE3DXYZ(_filePath, _x, _y, _z, _distance, _volume, _pitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -563,7 +563,7 @@ static VALUE static_lnrbLNGameAudio_StopSE(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNResult errorCode = LNGameAudio_StopSE();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -581,7 +581,7 @@ static VALUE static_lnrbLNGameAudio_SetBGMVolume(int argc, VALUE *argv, VALUE se
             float _volume = ((float)NUM2DBL(volume));
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_SetBGMVolume(_volume, _fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -599,7 +599,7 @@ static VALUE static_lnrbLNGameAudio_SetBGSVolume(int argc, VALUE *argv, VALUE se
             float _volume = ((float)NUM2DBL(volume));
             double _fadeTime = (fadeTime != Qnil) ? NUM2DBL(fadeTime) : 0.0;
             LNResult errorCode = LNGameAudio_SetBGSVolume(_volume, _fadeTime);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -615,7 +615,7 @@ static VALUE static_lnrbLNSoundListener_SetPosition(int argc, VALUE *argv, VALUE
         if (isRbObject(position)) {
             LNVector3* tmp__position; Data_Get_Struct(position, LNVector3, tmp__position);LNVector3& _position = *tmp__position;
             LNResult errorCode = LNSoundListener_SetPosition(&_position);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -631,7 +631,7 @@ static VALUE static_lnrbLNSoundListener_SetDirection(int argc, VALUE *argv, VALU
         if (isRbObject(direction)) {
             LNVector3* tmp__direction; Data_Get_Struct(direction, LNVector3, tmp__direction);LNVector3& _direction = *tmp__direction;
             LNResult errorCode = LNSoundListener_SetDirection(&_direction);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -645,7 +645,7 @@ static VALUE static_lnrbLNSoundListener_SetDirection(int argc, VALUE *argv, VALU
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNResult errorCode = LNSoundListener_SetDirectionXYZ(_x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -661,7 +661,7 @@ static VALUE static_lnrbLNSoundListener_SetUpDirection(int argc, VALUE *argv, VA
         if (isRbObject(direction)) {
             LNVector3* tmp__direction; Data_Get_Struct(direction, LNVector3, tmp__direction);LNVector3& _direction = *tmp__direction;
             LNResult errorCode = LNSoundListener_SetUpDirection(&_direction);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -675,7 +675,7 @@ static VALUE static_lnrbLNSoundListener_SetUpDirection(int argc, VALUE *argv, VA
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNResult errorCode = LNSoundListener_SetUpDirectionXYZ(_x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -691,7 +691,7 @@ static VALUE static_lnrbLNSoundListener_SetVelocity(int argc, VALUE *argv, VALUE
         if (isRbObject(velocity)) {
             LNVector3* tmp__velocity; Data_Get_Struct(velocity, LNVector3, tmp__velocity);LNVector3& _velocity = *tmp__velocity;
             LNResult errorCode = LNSoundListener_SetVelocity(&_velocity);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -705,7 +705,7 @@ static VALUE static_lnrbLNSoundListener_SetVelocity(int argc, VALUE *argv, VALUE
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNResult errorCode = LNSoundListener_SetVelocityXYZ(_x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -725,7 +725,7 @@ static VALUE static_lnrbLNSoundListener_SetPositionXYZ(int argc, VALUE *argv, VA
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNResult errorCode = LNSoundListener_SetPositionXYZ(_x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -783,7 +783,7 @@ static VALUE lnrbLNSound_Create(int argc, VALUE *argv, VALUE self)
         if (isRbString(filePath)) {
             char* _filePath = StringValuePtr(filePath);
             LNResult errorCode = LNSound_Create(_filePath, &selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -801,7 +801,7 @@ static VALUE lnrbLNSound_SetVolume(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(volume)) {
             float _volume = ((float)NUM2DBL(volume));
             LNResult errorCode = LNSound_SetVolume(selfObj->Handle, _volume);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -818,7 +818,7 @@ static VALUE lnrbLNSound_GetVolume(int argc, VALUE *argv, VALUE self)
         if (true) {
             float _outVolume;
             LNResult errorCode = LNSound_GetVolume(selfObj->Handle, &_outVolume);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outVolume);
     
         }
@@ -837,7 +837,7 @@ static VALUE lnrbLNSound_SetPitch(int argc, VALUE *argv, VALUE self)
         if (isRbFloat(pitch)) {
             float _pitch = ((float)NUM2DBL(pitch));
             LNResult errorCode = LNSound_SetPitch(selfObj->Handle, _pitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -854,7 +854,7 @@ static VALUE lnrbLNSound_GetPitch(int argc, VALUE *argv, VALUE self)
         if (true) {
             float _outPitch;
             LNResult errorCode = LNSound_GetPitch(selfObj->Handle, &_outPitch);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outPitch);
     
         }
@@ -873,7 +873,7 @@ static VALUE lnrbLNSound_SetLoopEnabled(int argc, VALUE *argv, VALUE self)
         if (isRbBool(loopEnable)) {
             LNBool _loopEnable = RbBooltoBool(loopEnable);
             LNResult errorCode = LNSound_SetLoopEnabled(selfObj->Handle, _loopEnable);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -890,7 +890,7 @@ static VALUE lnrbLNSound_IsLoopEnabled(int argc, VALUE *argv, VALUE self)
         if (true) {
             LNBool _outEnabled;
             LNResult errorCode = LNSound_IsLoopEnabled(selfObj->Handle, &_outEnabled);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outEnabled);
     
         }
@@ -909,7 +909,7 @@ static VALUE lnrbLNSound_Set3DEnabled(int argc, VALUE *argv, VALUE self)
         if (isRbBool(enabled)) {
             LNBool _enabled = RbBooltoBool(enabled);
             LNResult errorCode = LNSound_Set3DEnabled(selfObj->Handle, _enabled);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -926,7 +926,7 @@ static VALUE lnrbLNSound_Is3DEnabled(int argc, VALUE *argv, VALUE self)
         if (true) {
             LNBool _outEnabled;
             LNResult errorCode = LNSound_Is3DEnabled(selfObj->Handle, &_outEnabled);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outEnabled);
     
         }
@@ -945,7 +945,7 @@ static VALUE lnrbLNSound_SetPlayingMode(int argc, VALUE *argv, VALUE self)
         if (isRbNumber(mode)) {
             LNSoundPlayingMode _mode = (LNSoundPlayingMode)FIX2INT(mode);
             LNResult errorCode = LNSound_SetPlayingMode(selfObj->Handle, _mode);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -962,7 +962,7 @@ static VALUE lnrbLNSound_GetPlayingMode(int argc, VALUE *argv, VALUE self)
         if (true) {
             LNSoundPlayingMode _outMode;
             LNResult errorCode = LNSound_GetPlayingMode(selfObj->Handle, &_outMode);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return INT2FIX(_outMode);
     
         }
@@ -980,7 +980,7 @@ static VALUE lnrbLNSound_GetPlayingState(int argc, VALUE *argv, VALUE self)
         if (true) {
             LNSoundPlayingState _outState;
             LNResult errorCode = LNSound_GetPlayingState(selfObj->Handle, &_outState);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return INT2FIX(_outState);
     
         }
@@ -998,7 +998,7 @@ static VALUE lnrbLNSound_GetPlayedSamples(int argc, VALUE *argv, VALUE self)
         if (true) {
             int64_t _outSamples;
             LNResult errorCode = LNSound_GetPlayedSamples(selfObj->Handle, &_outSamples);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outSamples);
     
         }
@@ -1016,7 +1016,7 @@ static VALUE lnrbLNSound_GetTotalSamples(int argc, VALUE *argv, VALUE self)
         if (true) {
             int64_t _outSamples;
             LNResult errorCode = LNSound_GetTotalSamples(selfObj->Handle, &_outSamples);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outSamples);
     
         }
@@ -1034,7 +1034,7 @@ static VALUE lnrbLNSound_GetSamplingRate(int argc, VALUE *argv, VALUE self)
         if (true) {
             int _outRate;
             LNResult errorCode = LNSound_GetSamplingRate(selfObj->Handle, &_outRate);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outRate);
     
         }
@@ -1053,7 +1053,7 @@ static VALUE lnrbLNSound_SetEmitterPosition(int argc, VALUE *argv, VALUE self)
         if (isRbObject(position)) {
             LNVector3* tmp__position; Data_Get_Struct(position, LNVector3, tmp__position);LNVector3& _position = *tmp__position;
             LNResult errorCode = LNSound_SetEmitterPosition(selfObj->Handle, &_position);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1067,7 +1067,7 @@ static VALUE lnrbLNSound_SetEmitterPosition(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNResult errorCode = LNSound_SetEmitterPositionXYZ(selfObj->Handle, _x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1085,7 +1085,7 @@ static VALUE lnrbLNSound_SetEmitterVelocity(int argc, VALUE *argv, VALUE self)
         if (isRbObject(velocity)) {
             LNVector3* tmp__velocity; Data_Get_Struct(velocity, LNVector3, tmp__velocity);LNVector3& _velocity = *tmp__velocity;
             LNResult errorCode = LNSound_SetEmitterVelocity(selfObj->Handle, &_velocity);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1099,7 +1099,7 @@ static VALUE lnrbLNSound_SetEmitterVelocity(int argc, VALUE *argv, VALUE self)
             float _y = ((float)NUM2DBL(y));
             float _z = ((float)NUM2DBL(z));
             LNResult errorCode = LNSound_SetEmitterVelocityXYZ(selfObj->Handle, _x, _y, _z);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1117,7 +1117,7 @@ static VALUE lnrbLNSound_SetEmitterMaxDistance(int argc, VALUE *argv, VALUE self
         if (isRbFloat(distance)) {
             float _distance = ((float)NUM2DBL(distance));
             LNResult errorCode = LNSound_SetEmitterMaxDistance(selfObj->Handle, _distance);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1137,7 +1137,7 @@ static VALUE lnrbLNSound_SetLoopRange(int argc, VALUE *argv, VALUE self)
             int _begin = FIX2INT(begin);
             int _length = FIX2INT(length);
             LNResult errorCode = LNSound_SetLoopRange(selfObj->Handle, _begin, _length);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1153,7 +1153,7 @@ static VALUE lnrbLNSound_Play(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNResult errorCode = LNSound_Play(selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1169,7 +1169,7 @@ static VALUE lnrbLNSound_Stop(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNResult errorCode = LNSound_Stop(selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1185,7 +1185,7 @@ static VALUE lnrbLNSound_Pause(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNResult errorCode = LNSound_Pause(selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1201,7 +1201,7 @@ static VALUE lnrbLNSound_Resume(int argc, VALUE *argv, VALUE self)
     
         if (true) {
             LNResult errorCode = LNSound_Resume(selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1223,7 +1223,7 @@ static VALUE lnrbLNSound_FadeVolume(int argc, VALUE *argv, VALUE self)
             double _time = NUM2DBL(time);
             LNSoundFadeBehavior _behavior = (LNSoundFadeBehavior)FIX2INT(behavior);
             LNResult errorCode = LNSound_FadeVolume(selfObj->Handle, _targetVolume, _time, _behavior);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNInternal_ConvertToUTF8String(LNError_GetLastErrorMessage(), -1));
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }

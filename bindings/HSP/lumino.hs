@@ -9,7 +9,7 @@ Lumino
 0.1.0
 
 %date
-2015/09/29
+2015/09/30
 
 %author
 lriki
@@ -164,6 +164,7 @@ mode
 %inst
 DirectMusic の初期化には比較的時間がかかります。
 これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
+なお、DirectMusic を使用するためには LNConfig_SetUserWindowHandle でウィンドウハンドルを設定する必要があります。
 
 %href
 
@@ -286,7 +287,7 @@ LNVersion_GetString
 アプリケーション
 %prm
 outStr
-[out] outStr : 文字列へのアドレスを格納する変数
+[out] outStr : 文字列へを格納する変数
 
 %inst
 

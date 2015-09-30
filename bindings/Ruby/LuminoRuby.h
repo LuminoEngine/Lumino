@@ -34,6 +34,7 @@ extern "C"
 {
 
 // Internal API
-const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len);
+extern const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len);
+extern const char* LNGetLastErrorMessage();
 
 } // extern "C"

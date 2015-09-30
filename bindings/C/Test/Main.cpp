@@ -47,26 +47,26 @@ int main()
 
 	LNResult r;
 
-	LNConfig_SetUserWindowHandle((intptr_t)GetConsoleHwnd());
-	LNConfig_SetDirectMusicMode(LN_DIRECTMUSICMODE_NORMAL);
-	LNConfig_SetDirectMusicReverbLevel(1.0f);
+	//LNConfig_SetUserWindowHandle((intptr_t)GetConsoleHwnd());
+	//LNConfig_SetDirectMusicMode(LN_DIRECTMUSICMODE_NORMAL);
+	//LNConfig_SetDirectMusicReverbLevel(1.0f);
 
 	//LNConfig_RegisterArchive(_T("D:/Proj/Lumino/build/bindings/C/Test/Debug/audio.lna"), _T("test"));
 	LNApplication_InitializeAudio();
 
-	LNGameAudio_PlayBGM(_T("D:/tmp/ZIGG-ZAGG.mp3"));
-	::Sleep(2000);
-	LNGameAudio_PlayME(_T("D:/Proj/Lumino/bindings/DotNet/Samples/Media/lnme_victory1.ogg"));
+	//LNGameAudio_PlayBGM(_T("D:/tmp/ZIGG-ZAGG.mp3"));
+	//::Sleep(2000);
+	//LNGameAudio_PlayME(_T("D:/Proj/Lumino/bindings/DotNet/Samples/Media/lnme_victory1.ogg"));
 
 	LNVector3 pos = { 2, 0, 0 };
 
-	//LNHandle sound1;
-	//r = LNSound_Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"), &sound1);
+	LNHandle sound1;
+	r = LNSound_Create(_T("D:/Proj/Lumino/bindings/Common/Media/water02.wav"), &sound1);
 	//const LNChar* str;
 	//LNError_GetLastErrorMessage(&str);
-	//LNSound_Set3DEnabled(sound1, LN_TRUE);
-	//LNSound_SetEmitterPosition(sound1, &pos);
-	//LNSound_Play(sound1);
+	LNSound_Set3DEnabled(sound1, LN_TRUE);
+	LNSound_SetEmitterPosition(sound1, &pos);
+	LNSound_Play(sound1);
 
 	//LNSound_Stop(sound1);
 	//

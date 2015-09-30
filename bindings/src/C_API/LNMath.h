@@ -80,7 +80,6 @@ LN_STRUCT_CLASS(LNVector3)
 		@param[in]	z		: Z 値
 	*/
 	LN_INSTANCE_API
-	LN_ATTR_CONSTRUCTOR
 	LNResult LNVector3_Set(LNVector3* vec, float x, float y, float z);
 
 	/**
@@ -90,7 +89,7 @@ LN_STRUCT_CLASS(LNVector3)
 		@param[in]	z		: Z 値
 	*/
 	LN_INSTANCE_API
-	LN_ATTR_CONSTRUCTOR
+	LN_ATTR_OVERLOAD(LNVector3_Set)
 	LNResult LNVector3_SetVZ(LNVector3* vec, const LNVector2* vec2, float z);
 
 	/**

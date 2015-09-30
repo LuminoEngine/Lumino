@@ -269,7 +269,7 @@ bool XAudio2OnMemoryAudioPlayer::polling()
     {
         m_XAudio2AudioDevice->CalcEmitterState( mEmitterState );
 
-		LN_COMCALL(mSourceVoice->SetFrequencyRatio(mEmitterState->DSPSettings.DopplerFactor * (mPitch * 0.01f)));
+		LN_COMCALL(mSourceVoice->SetFrequencyRatio(mEmitterState->DSPSettings.DopplerFactor * (mPitch/* * 0.01f*/)));
 
 		LN_COMCALL(mSourceVoice->SetOutputMatrix(
 			m_XAudio2AudioDevice->GetMasteringVoice(),   // NULL でもいいみたいだけど一応
@@ -521,7 +521,7 @@ bool XAudio2StreamingAudioPlayer::polling()
     {
         m_XAudio2AudioDevice->CalcEmitterState( mEmitterState );
 
-		LN_COMCALL(mSourceVoice->SetFrequencyRatio(mEmitterState->DSPSettings.DopplerFactor * (mPitch * 0.01f)));
+		LN_COMCALL(mSourceVoice->SetFrequencyRatio(mEmitterState->DSPSettings.DopplerFactor * (mPitch/* * 0.01f*/)));
 
 		LN_COMCALL(mSourceVoice->SetOutputMatrix(
 			m_XAudio2AudioDevice->GetMasteringVoice(),   // NULL でもいいみたいだけど一応
