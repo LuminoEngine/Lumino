@@ -750,7 +750,7 @@ Variant::~Variant()
 //-----------------------------------------------------------------------------
 bool Variant::GetBool() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_Bool)) { return false; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_Bool, false);
 	return m_bool;
 }
 
@@ -769,7 +769,7 @@ void Variant::SetInt(int value)
 //-----------------------------------------------------------------------------
 int Variant::GetInt() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_Int)) { return 0; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_Int, 0);
 	return (int)m_int;
 }
 
@@ -788,7 +788,7 @@ void Variant::SetFloat(float value)
 //-----------------------------------------------------------------------------
 float Variant::GetFloat() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_Float)) { return 0; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_Float, 0.0f);
 	return m_float;
 }
 
@@ -807,7 +807,7 @@ void Variant::SetString(const String& value)
 //-----------------------------------------------------------------------------
 String Variant::GetString() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_String)) { return String::GetEmpty(); }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_String, String::GetEmpty());
 	return m_string;
 }
 
@@ -826,7 +826,7 @@ void Variant::SetList(CoreList* value)
 //-----------------------------------------------------------------------------
 CoreList* Variant::GetList() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_List)) { return NULL; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_List, NULL);
 	return m_valueList;
 }
 
@@ -846,7 +846,6 @@ void Variant::Set(CoreObject* obj)
 CoreObject* Variant::GetObject() const
 {
 	LN_CHECK_STATE(m_type == VariantType_Object || m_type == VariantType_List);	// List も Object の一部。
-	//if (LN_VERIFY_ASSERT(m_type == VariantType_Object)) { return NULL; }
 	return m_object;
 }
 
@@ -865,7 +864,7 @@ void Variant::SetSizeF(const SizeF& value)
 //-----------------------------------------------------------------------------
 const SizeF& Variant::GetSizeF() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_SizeF)) { return SizeF::Zero; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_SizeF, SizeF::Zero);
 	return *((SizeF*)m_sizeF);
 }
 //-----------------------------------------------------------------------------
@@ -883,7 +882,7 @@ void Variant::SetRect(const Rect& value)
 //-----------------------------------------------------------------------------
 const Rect& Variant::GetRect() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_Rect)) { return Rect::Zero; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_Rect, Rect::Zero);
 	return *((Rect*)m_rect);
 }
 
@@ -903,7 +902,7 @@ void Variant::SetThicknessF(const ThicknessF& value)
 //-----------------------------------------------------------------------------
 const ThicknessF& Variant::GetThicknessF() const
 {
-	if (LN_VERIFY_ASSERT(m_type == VariantType_ThicknessF)) { return ThicknessF::Zero; }
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_ThicknessF, ThicknessF::Zero);
 	return *((ThicknessF*)m_thicknessF);
 }
 

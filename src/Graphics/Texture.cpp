@@ -201,7 +201,7 @@ void Texture::SetSubData(const Point& offset, Bitmap* bitmap)
 //-----------------------------------------------------------------------------
 //void Texture::SetSubData(const Point& offset, const void* data)
 //{
-//	if (LN_VERIFY_ASSERT(data != NULL)) { return; }
+//LN_CHECK_ARGS_RETURN(data != NULL);
 //	// TODO: m_primarySurface にもセット
 //	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<SetSubDataTextureCommand>(
 //		m_deviceObj, offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());

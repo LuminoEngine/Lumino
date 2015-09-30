@@ -56,7 +56,7 @@ void Image::SetSource(const Variant& value)
 		}
 	}
 
-	LN_VERIFY(0);
+	LN_CHECK_ARGS(0);
 }
 
 //-----------------------------------------------------------------------------

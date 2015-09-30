@@ -495,12 +495,12 @@ public:
 
 /// GUI 用 Set ユーティリティ
 #define LN_SET_ATTACHED_PROPERTY(element, prop, value) \
-	LN_VERIFY(element != NULL); \
+	LN_CHECK_ARGS_RETURN(element != NULL); \
 	element->SetPropertyValue(prop, value);
 
 /// GUI 用 Get ユーティリティ
 #define LN_GET_ATTACHED_PROPERTY(element, prop, type) \
-	LN_VERIFY(element != NULL); \
+	LN_CHECK_ARGS_RETURNV(element != NULL, type()); \
 	return Variant::Cast<type>(element->GetPropertyValue(prop));
 
 } // namespace Lumino

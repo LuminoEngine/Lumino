@@ -82,7 +82,7 @@ void LFManager::Terminate()
 //-----------------------------------------------------------------------------
 LNHandle LFManager::CheckRegisterObject(CoreObject* obj)
 {
-	if (LN_VERIFY_ASSERT(obj != NULL)) { return NULL; }
+	LN_CHECK_ARGS_RETURNV(obj != NULL, NULL);
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
 	if (obj->GetUserData() != NULL) {

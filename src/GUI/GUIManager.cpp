@@ -1101,7 +1101,7 @@ GUIManagerImpl::~GUIManagerImpl()
 //-----------------------------------------------------------------------------
 void GUIManagerImpl::Initialize(const ConfigData& configData)
 {
-	if (LN_VERIFY_ASSERT(configData.GraphicsManager != NULL)) { return; }
+	LN_CHECK_ARGS_RETURN(configData.GraphicsManager != NULL);
 
 	m_graphicsManager = configData.GraphicsManager;
 	m_mainWindow = configData.MainWindow;

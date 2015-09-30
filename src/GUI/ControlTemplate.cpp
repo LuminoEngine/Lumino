@@ -287,7 +287,7 @@ ControlTemplate::~ControlTemplate()
 //-----------------------------------------------------------------------------
 void ControlTemplate::Apply(Control* control)
 {
-	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
+	LN_CHECK_ARGS_RETURN(control != NULL);
 
 	// いろいろリセット。TemplateBinding も解除。
 	control->SetTemplateChild(NULL);
@@ -372,7 +372,7 @@ DataTemplate::~DataTemplate()
 //-----------------------------------------------------------------------------
 void DataTemplate::Apply(Control* control)
 {
-	if (LN_VERIFY_ASSERT(control != NULL)) { return; }
+	LN_CHECK_ARGS_RETURN(control != NULL);
 
 	if (m_visualTreeRoot != NULL)
 	{
@@ -632,7 +632,7 @@ CoreObject* ResourceDictionary::GetItem(const String& key)
 //-----------------------------------------------------------------------------
 bool ResourceDictionary::TryGetItem(const String& key, CoreObject** outObject)
 {
-	if (LN_VERIFY_ASSERT(outObject != NULL)) { return false; }
+	LN_CHECK_ARGS_RETURNV(outObject != NULL, false);
 	ItemMap::iterator itr = m_items.find(key);
 	if (itr != m_items.end()) {
 		*outObject = itr->second;
@@ -646,7 +646,7 @@ bool ResourceDictionary::TryGetItem(const String& key, CoreObject** outObject)
 //-----------------------------------------------------------------------------
 void ResourceDictionary::AddItem(const String& key, CoreObject* obj)
 {
-	if (LN_VERIFY_ASSERT(obj != NULL)) { return; }
+	LN_CHECK_ARGS_RETURN(obj != NULL);
 	m_items[key] = obj;
 	obj->AddRef();
 }
@@ -663,26 +663,10 @@ Style* ResourceDictionary::FindStyle(TypeInfo* type)
 	}
 	return NULL;
 }
-//bool ResourceDictionary::TryGetControlTemplate(const String& fullTypeName, ControlTemplate** outTemplate)
-//{
-//	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return false; }
-//	ControlTemplateMap::iterator itr = m_controlTemplateMap.find(fullTypeName);
-//	if (itr != m_controlTemplateMap.end()) {
-//		*outTemplate = itr->second;
-//		return true;
-//	}
-//	return false;
-//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void ResourceDictionary::AddControlTemplate(ControlTemplate* outTemplate)
-//{
-//	if (LN_VERIFY_ASSERT(outTemplate != NULL)) { return; }
-//	m_controlTemplateMap[outTemplate->GetTargetType()] = outTemplate;
-//	outTemplate->AddRef();
-//}
 void ResourceDictionary::AddStyle(Style* style)
 {
 	LN_VERIFY_RETURN(style != NULL);
