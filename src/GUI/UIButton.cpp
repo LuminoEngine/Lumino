@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include "GUIManagerImpl.h"
 #include <Lumino/GUI/UIButton.h>
 
 namespace Lumino
@@ -9,9 +10,12 @@ LN_NAMESPACE_GUI_BEGIN
 //=============================================================================
 // UIButton
 //=============================================================================
-
 LN_CORE_OBJECT_TYPE_INFO_IMPL(UIButton, ContentControl);
 LN_UI_ELEMENT_SUBCLASS_IMPL(UIButton);
+
+// Register routed event
+LN_ROUTED_EVENT_IMPLEMENT(UIButton, RoutedEventArgs, ClickEvent, "Click", Click);
+
 const String	UIButton::IsMouseOverProperty(_T("IsMouseOver"));
 
 //-----------------------------------------------------------------------------
@@ -59,7 +63,8 @@ UIButton::~UIButton()
 //-----------------------------------------------------------------------------
 void UIButton::OnClick()
 {
-
+	GCPtr<RoutedEventArgs> args = m_manager->GetEventArgsPool()->Create<RoutedEventArgs>();
+	RaiseEvent(ClickEvent, this, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -128,6 +133,7 @@ void UIButton::RoutedHandler_MouseDown(MouseEventArgs* e)
 void UIButton::RoutedHandler_MouseUp(MouseEventArgs* e)
 {
 	VisualStateManager::GoToState(this, VisualStatus::Normal);
+	OnClick();
 }
 
 

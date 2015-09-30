@@ -17,6 +17,11 @@ int TestA()
 	return 10;
 }
 
+void LN_STDCALL Button_Click(RoutedEventArgs* e)
+{
+	printf("click\n");
+}
+
 int g_test2 = TestA();
 
 class TestRef1 : public RefObject
@@ -58,8 +63,10 @@ int main()
 		GCPtr<PilePanel> panel1 = PilePanel::Create();
 		context1->SetRootElement(panel1);
 
+
 		GCPtr<UIButton> button1 = UIButton::Create();
 		button1->SetSize(SizeF(200, 100));
+		button1->Click += LN_CreateDelegate(Button_Click);
 		panel1->GetChildren()->Add(button1);
 
 		GCPtr<UIButton> button2 = UIButton::Create();

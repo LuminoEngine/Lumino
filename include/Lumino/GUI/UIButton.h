@@ -25,6 +25,22 @@ class UIButton
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(UIButton);
 public:
+	LN_ROUTED_EVENT(RoutedEventArgs,		ClickEvent);	/**< Click ルーティングイベントの識別子 */
+
+public:
+	//-------------------------------------------------------------------------
+	/** @name RoutedEvents */
+	/** @{ */
+
+	RoutedEventSlot<RoutedEventArgs>		Click;			/**< ボタンがクリックされたときに発生します。*/
+
+	/** @{ */
+
+
+
+
+
+
 	static const String	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
 
 
