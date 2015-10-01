@@ -22,8 +22,8 @@ public:
 	UIElementCollection() {}
 	virtual ~UIElementCollection() {}
 
-	Event01<UIElement*>	ItemAdded;
-	Event01<UIElement*>	ItemRemoved;
+	Event<void(UIElement*)>	ItemAdded;
+	Event<void(UIElement*)>	ItemRemoved;
 
 protected:
 	virtual void InsertItem(int index, const value_type& item);

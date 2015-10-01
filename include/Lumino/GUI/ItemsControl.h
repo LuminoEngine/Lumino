@@ -80,7 +80,7 @@ public:
 	typedef GenericCoreList<UIElement*>::value_type value_type;
 
 public:
-	Event01<ListChangedEventArgs*>	ItemsChanged;
+	Event<void(ListChangedEventArgs*)>	ItemsChanged;
 
 protected:
 	virtual void InsertItem(int index, const value_type& item);

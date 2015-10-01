@@ -81,7 +81,7 @@ public:
 	/**
 		@brief	ルーティングイベントのハンドラを追加します。
 	*/
-	void AddHandler(const Delegate01<TArgs*>& handler)
+	void AddHandler(const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Add(handler);
 	}
@@ -89,7 +89,7 @@ public:
 	/**
 		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
 	*/
-	void RemoveHandler(const Delegate01<TArgs*>& handler)
+	void RemoveHandler(const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Remove(handler);
 	}
@@ -97,7 +97,12 @@ public:
 	/**
 		@brief	ルーティングイベントのハンドラを追加します。
 	*/
-	void operator += (const Delegate01<TArgs*>& handler)
+	void operator += (const std::function<void(TArgs*)>& handler)
+	{
+		AddHandler(handler);
+	}
+
+	void operator += (const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Add(handler);
 	}
@@ -105,17 +110,17 @@ public:
 	/**
 		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
 	*/
-	void operator -= (const Delegate01<TArgs*>& handler)
+	void operator -= (const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Remove(handler);
 	}
 
 private:
-	Array< Delegate01<TArgs*> > m_handlerList;
+	Array< Delegate<void(TArgs*)> > m_handlerList;
 
 	virtual void Raise(RoutedEventArgs* e)
 	{
-		for (Delegate01<TArgs*>& d : m_handlerList)
+		for (Delegate<void(TArgs*)>& d : m_handlerList)
 		{
 			d.Call(static_cast<TArgs*>(e));
 		}
@@ -570,8 +575,8 @@ private:
 	/// テンプレートを適用した要素。TemplateBinding のソースオブジェクト。これが NULL でなければ、this は VisualTree 要素である。
 	/// 例えば Button にテンプレートを適用すると、Button よりしたのビジュアル要素.m_rootLogicalParent はすべて Button を指す。
 	UIElement*		m_rootLogicalParent;
-	Delegate01<PropertyChangedEventArgs*>	m_templateBindingHandler;
-	Event01<PropertyChangedEventArgs*>		PropertyChangedForTemplateBindings;
+	Delegate<void(PropertyChangedEventArgs*)>	m_templateBindingHandler;
+	EventSlot<PropertyChangedEventArgs>	PropertyChangedForTemplateBindings;
 
 	bool			m_childTemplateModified;	///< 子要素のテンプレートを更新するべきか
 	bool			m_templateModified;

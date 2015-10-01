@@ -146,7 +146,7 @@ ItemsControl::ItemsControl(GUIManagerImpl* manager)
 	, m_itemList()
 {
 	m_itemList.Attach(LN_NEW ItemList());
-	m_itemList->ItemsChanged += LN_CreateDelegate(this, &ItemsControl::Items_ListChanged);
+	m_itemList->ItemsChanged += CreateDelegate(this, &ItemsControl::Items_ListChanged);
 
 	m_groupItemList.Attach(LN_NEW GroupItemList(this));
 }

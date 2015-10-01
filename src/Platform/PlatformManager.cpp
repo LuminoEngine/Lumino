@@ -132,7 +132,7 @@ void PlatformManager::Initialize(const Settings& settings)
 	if (m_useThread) {
 		m_mainWindowThreadInitFinished.SetFalse();
 		m_mainWindowThreadEndRequested.SetFalse();
-		m_mainWindowThread.Start(LN_CreateDelegate(this, &PlatformManager::Thread_MainWindow));
+		m_mainWindowThread.Start(CreateDelegate(this, &PlatformManager::Thread_MainWindow));
 		m_mainWindowThreadInitFinished.Wait();	// 初期化終了まで待機する
 	}
 	else {

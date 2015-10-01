@@ -3,7 +3,6 @@
 #include <memory>
 #include <functional>
 #include <Lumino/Base/String.h>
-#include <Lumino/DataModel/Event.h>
 #include "../Variant.h"
 #include "RoutedEventArgs.h"
 
@@ -19,7 +18,7 @@ class Command
 	: public RefObject
 {
 public:
-	Event01<bool>	CanExecuteChanged;
+	Event<void(bool)>	CanExecuteChanged;
 
 	virtual bool CanExecute(const Variant& parameter) = 0;
 

@@ -160,7 +160,7 @@ protected:
 
 private:
 	friend class CoreObject;
-	virtual void Raise(EventArgs* e) = 0;
+	virtual void Raise(CoreObject* e) = 0;
 };
 
 
@@ -168,8 +168,8 @@ private:
 	@brief		
 	@details	RoutedEvent は UIElement 及びそのサブクラス内部からのみ発生させることが出来ます。
 */
-template<class TArgs>
-class EventSlot
+template<class TArgs>	// TODO: ここは * ありでよいと思う。
+class EventSlot			// TODO: Signal
 	: public EventSlotBase
 {
 public:
@@ -181,7 +181,7 @@ public:
 	/**
 		@brief	ルーティングイベントのハンドラを追加します。
 	*/
-	void AddHandler(const Delegate01<TArgs*>& handler)
+	void AddHandler(const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Add(handler);
 	}
@@ -189,7 +189,7 @@ public:
 	/**
 		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
 	*/
-	void RemoveHandler(const Delegate01<TArgs*>& handler)
+	void RemoveHandler(const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Remove(handler);
 	}
@@ -197,7 +197,7 @@ public:
 	/**
 		@brief	ルーティングイベントのハンドラを追加します。
 	*/
-	void operator += (const Delegate01<TArgs*>& handler)
+	void operator += (const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Add(handler);
 	}
@@ -205,17 +205,17 @@ public:
 	/**
 		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
 	*/
-	void operator -= (const Delegate01<TArgs*>& handler)
+	void operator -= (const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.Remove(handler);
 	}
 
 private:
-	Array< Delegate01<TArgs*> > m_handlerList;
+	Array< Delegate<void(TArgs*)> > m_handlerList;
 
-	virtual void Raise(EventArgs* e)
+	virtual void Raise(CoreObject* e)
 	{
-		for (Delegate01<TArgs*>& d : m_handlerList)
+		for (Delegate<void(TArgs*)>& d : m_handlerList)
 		{
 			d.Call(static_cast<TArgs*>(e));
 		}

@@ -6,18 +6,12 @@ void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 	printf("Button1_MouseMove\n");
 }
 
-template < typename A1, typename A2 >
-Delegate02< A1, A2 > LN_CreateDelegate2(void (LN_STDCALL *method)(A1 a, A2 s))
-{
-	return Delegate02< A1, A2 >(method);
-}
-
 int TestA()
 {
 	return 10;
 }
 
-void LN_STDCALL Button_Click(RoutedEventArgs* e)
+void Button_Click(RoutedEventArgs* e)
 {
 	printf("click\n");
 }
@@ -66,7 +60,8 @@ int main()
 
 		GCPtr<UIButton> button1 = UIButton::Create();
 		button1->SetSize(SizeF(200, 100));
-		button1->Click += LN_CreateDelegate(Button_Click);
+		//button1->Click += CreateDelegate(Button_Click);
+		button1->Click += [](RoutedEventArgs* e) { printf("ttt\n"); };
 		panel1->GetChildren()->Add(button1);
 
 		GCPtr<UIButton> button2 = UIButton::Create();

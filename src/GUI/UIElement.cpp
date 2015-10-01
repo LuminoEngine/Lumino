@@ -462,7 +462,7 @@ void UIElement::UpdateTemplateLogicalParentHierarchy(UIElement* logicalParent)
 
 	// delegate が未作成であれば作る (初回時)
 	if (m_templateBindingHandler.IsEmpty()) {
-		m_templateBindingHandler = LN_CreateDelegate(this, &UIElement::TemplateBindingSource_PropertyChanged);
+		m_templateBindingHandler = Delegate<void(PropertyChangedEventArgs*)>(this, &UIElement::TemplateBindingSource_PropertyChanged);
 	}
 
 	// 要素を保持する
@@ -501,7 +501,7 @@ void UIElement::OnPropertyChanged(PropertyChangedEventArgs* e)
 	}
 	
 	// TemplateBinding に伝える
-	PropertyChangedForTemplateBindings(e);
+	CoreObject::RaiseEvent(PropertyChangedForTemplateBindings, e);
 	
 	// スタイルの持つトリガーに伝える
 	if (m_style != NULL) {

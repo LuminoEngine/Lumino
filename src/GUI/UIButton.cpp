@@ -42,7 +42,7 @@ UIButton::UIButton(GUIManagerImpl* manager)
 	//MouseMove += LN_CreateDelegate(this, &UIButton::UIElement_MouseMove);
 
 	// Register handler
-	IsEnabledChanged += LN_CreateDelegate(this, &UIButton::Handler_IsEnabledChanged);
+	IsEnabledChanged += CreateDelegate(this, &UIButton::Handler_IsEnabledChanged);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseEnterEvent, RoutedHandler_MouseEnter);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseLeaveEvent, RoutedHandler_MouseLeave);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseMoveEvent, RoutedHandler_MouseMove);

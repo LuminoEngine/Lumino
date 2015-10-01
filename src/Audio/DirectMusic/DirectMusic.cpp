@@ -478,7 +478,7 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
 
 	if (m_initMode == DirectMusicMode::ThreadWait || m_initMode == DirectMusicMode::ThreadRequest)
 	{
-		m_initThread.Start(LN_CreateDelegate(this, &DirectMusicManager::Thread_InitPerformance));
+		m_initThread.Start(CreateDelegate(this, &DirectMusicManager::Thread_InitPerformance));
 	}
 	else
 	{

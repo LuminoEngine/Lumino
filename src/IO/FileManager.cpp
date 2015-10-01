@@ -19,6 +19,8 @@ namespace Lumino
 //	return instance;
 //}
 //
+
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -31,7 +33,7 @@ FileManager::FileManager(const Settings& settings)
 	m_archiveList.Add(m_dummyArchive);
 	m_dummyArchive->AddRef();	// m_archiveList からの参照を示す
 
-	m_asyncProcThread.Start(LN_CreateDelegate(this, &FileManager::Thread_ASyncProc));
+	m_asyncProcThread.Start(CreateDelegate(this, &FileManager::Thread_ASyncProc));
 }
 
 //-----------------------------------------------------------------------------

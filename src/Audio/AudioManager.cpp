@@ -105,7 +105,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	m_gameAudio = LN_NEW GameAudio(this);
 
 	// ポーリングスレッド開始
-	m_pollingThread.Start(LN_CreateDelegate(this, &AudioManagerImpl::Thread_Polling));
+	m_pollingThread.Start(Delegate<void()>(this, &AudioManagerImpl::Thread_Polling));
 
 	Internal::AudioManager = this;
 }
