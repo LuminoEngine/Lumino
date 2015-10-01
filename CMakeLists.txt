@@ -22,6 +22,8 @@ option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or D
 # Exceprion Backtrace.
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
 
+option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." OFF)
+
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
 
@@ -222,6 +224,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
 )
 	
+if (LN_BUILD_SCENE_MODULE)
 set(LN_SOURCES_Scene
 	include/Lumino/Scene/Camera.h
 	include/Lumino/Scene/Collection.h
@@ -271,6 +274,7 @@ set(LN_SOURCES_Scene
 	src/Scene/MME/MMEShaderTechnique.h
 	src/Scene/MME/MMETypes.h
 )
+endif()
 
 set(LN_SOURCES_GUI
 	include/Lumino/GUI/AnimationClock.h
@@ -621,6 +625,9 @@ if (LN_USE_UNICODE_CHAR_SET)
 	#list(APPEND my_definitions "_UNICODE")
 	add_definitions(-DUNICODE)
 	add_definitions(-D_UNICODE)
+endif()
+if (LN_BUILD_SCENE_MODULE)
+	add_definitions(-DLN_BUILD_SCENE_MODULE)
 endif()
 
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})

@@ -1,8 +1,9 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "LNCommon.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif // __cplusplus
 
 //=============================================================================
 // Common
@@ -578,4 +579,6 @@ typedef enum tagLNObjectType
 
 } LNObjectType;
 
+#ifdef __cplusplus
 } // extern "C" {
+#endif // __cplusplus

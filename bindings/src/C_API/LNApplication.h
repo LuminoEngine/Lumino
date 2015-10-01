@@ -1,9 +1,10 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "LNCommon.h"
 #include "LNTypedef.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif // __cplusplus
 
 /**
 	@brief		アプリケーション
@@ -154,4 +155,6 @@ LN_CLASS_END
 
 LN_MODULE_END
 
-} // extern "C"
+#ifdef __cplusplus
+} // extern "C" {
+#endif // __cplusplus

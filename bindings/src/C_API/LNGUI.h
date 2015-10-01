@@ -21,7 +21,10 @@ typedef void(*LNCallback_Void_Void)(LN_HANDLE(LNObject) handle);
 #include "LNCommon.h"
 #include "LNTypedef.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif // __cplusplus
+
 
 /**
 	@brief	
@@ -140,5 +143,7 @@ LN_CLASS_END
 
 LN_MODULE_END
 
-} // extern "C"
+#ifdef __cplusplus
+} // extern "C" {
+#endif // __cplusplus
 
