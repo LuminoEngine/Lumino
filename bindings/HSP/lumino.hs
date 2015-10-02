@@ -9,7 +9,7 @@ Lumino
 0.1.0
 
 %date
-2015/09/30
+2015/10/03
 
 %author
 lriki

@@ -1,0 +1,194 @@
+﻿===============================================================================
+ Lumino HSP 命令一覧
+-------------------------------------------------------------------------------
+  このファイルは、本ライブラリがどのような機能を持っているかを示す概要です。
+  個々の命令の詳しい説明は、同梱の lumino.hs を HSP インストールフォルダ内の
+  「hsphelp」フォルダにコピーし、エディタから F1 キーヘルプにて参照してください。
+===============================================================================
+-------------------------------------------------------------------------------
+ ■ [LNConfig]  初期設定を行います。
+
+LNConfig_SetApplicationLogEnabled   デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
+LNConfig_SetConsoleEnabled          標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
+LNConfig_RegisterArchive            ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+LNConfig_SetFileAccessPriority      ファイルへのアクセス優先順位を設定します。
+LNConfig_SetUserWindowHandle        ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
+LNConfig_SetSoundCacheSize          サウンドオブジェクトのキャッシュサイズの設定
+LNConfig_SetDirectMusicMode         DirectMusic の初期化方法を設定します。(既定値:LN_DIRECTMUSICMODE_NOT_USE)
+LNConfig_SetDirectMusicReverbLevel  DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
+
+-------------------------------------------------------------------------------
+ ■ [LNApplication]  ライブラリ全体の初期化や更新等、包括的な処理を行うモジュールです。
+
+LNApplication_InitializeAudio  ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+LNApplication_Terminate        ライブラリの終了処理を行います。
+
+-------------------------------------------------------------------------------
+ ■ [LNVersion]  バージョン情報です。
+
+LNVersion_GetMajor     メジャーバージョンを取得します。
+LNVersion_GetMinor     マイナーバージョンを取得します。
+LNVersion_GetRevision  リビジョンバージョンを取得します。
+LNVersion_GetString    バージョン文字列を取得します。
+LNVersion_IsAtLeast    指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+
+-------------------------------------------------------------------------------
+ ■ [LNError]  エラーに関係する処理を行います。
+
+LNError_GetLastErrorCode     最後に発生したエラーのエラーコードを取得します。
+LNError_GetLastErrorMessage  最後に発生したエラーのエラーメッセージを取得します。
+
+-------------------------------------------------------------------------------
+ ■ [LNObject]  全てのオブジェクトのベースオブジェクトです。
+
+LNObject_Release      オブジェクトを解放します。
+LNObject_AddRef       オブジェクトの参照カウントをインクリメントします。
+LNObject_GetRefCount  オブジェクトの参照カウント取得します。
+
+-------------------------------------------------------------------------------
+ ■ [LNVector2]  2次元のベクトルのモジュールです。
+
+LNVector2()                LNVector2型変数の作成
+LNVector2_GetLength        2D ベクトルの長さを取得します。
+LNVector2_GetSquareLength  2D ベクトルの長さの2乗を取得します。
+LNVector2_Set              2D ベクトルに値を設定します。
+LNVector2_Normalize        2D ベクトルを正規化します。
+LNVector2_NormalizeV       2D ベクトルを正規化します。
+
+-------------------------------------------------------------------------------
+ ■ [LNVector3]  3 次元ベクトルのモジュールです。
+
+LNVector3()                LNVector3型変数の作成
+LNVector3_GetLength        3Dベクトルの長さを取得します。
+LNVector3_GetSquareLength  3D ベクトルの長さの2乗を計算する
+LNVector3_Set              3Dベクトルに値を設定します。
+LNVector3_SetVZ            2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
+LNVector3_Normalize        3D ベクトルを正規化します。
+LNVector3_NormalizeV       3D ベクトルを正規化します。
+LNVector3_Dot              2 つの 3D ベクトルの内積を計算します。
+LNVector3_Cross            2 つの 3D ベクトルの外積を計算します。
+LNVector3_Reflect          指定された法線で反射させたベクトルを計算します。
+LNVector3_Slide            指定された法線と方向から滑りベクトルを計算します。
+LNVector3_Lerp             2 つの 3D ベクトル間を線形補間します。
+LNVector3_CatmullRom       指定された 3D ベクトルを Catmull-Rom 補間します。
+LNVector3_Transform        指定された行列を使用して座標変換します。
+LNVector3_TransformCoord   指定された行列を使用して座標変換し、結果を w = 1 に射影します。
+
+-------------------------------------------------------------------------------
+ ■ [LNVector4]  4 次元ベクトルのモジュールです。
+
+LNVector4()    LNVector4型変数の作成
+LNVector4_Set  4Dベクトルに値を設定します。
+
+-------------------------------------------------------------------------------
+ ■ [LNMatrix]  4x4 行列のモジュールです。
+
+LNMatrix()                 LNMatrix型変数の作成
+LNMatrix_GetRight          右方向を示す 3D ベクトルを取得します。
+LNMatrix_GetUp             上方向を示す 3D ベクトルを取得します。
+LNMatrix_GetFront          正面方向を示す 3D ベクトルを取得します。
+LNMatrix_GetPosition       位置を示す 3D ベクトルを取得します。
+LNMatrix_Identity          単位行列を作成します。
+LNMatrix_Translate         行列を平行移動します。
+LNMatrix_TranslateVec3     行列を平行移動します。
+LNMatrix_RotateX           X 軸を回転軸にして行列を回転します。 (ラジアン単位)
+LNMatrix_RotateY           Y 軸を回転軸にして行列を回転します。 (ラジアン単位)
+LNMatrix_RotateZ           Z 軸を回転軸にして行列を回転します。 (ラジアン単位)
+LNMatrix_Rotate            行列を回転します。 (ラジアン単位)
+LNMatrix_RotateVec3        行列を回転します。 (ラジアン単位)
+LNMatrix_RotateAxis        任意の軸を回転軸にして行列を回転します。 (ラジアン単位)
+LNMatrix_RotateQuaternion  クォータニオンを使って行列を回転します。
+LNMatrix_Scale             行列をスケーリングします。
+LNMatrix_ScaleXYZ          行列をスケーリングします。
+LNMatrix_ScaleVec3         行列をスケーリングします。
+LNMatrix_Multiply          行列を乗算します。
+LNMatrix_Inverse           逆行列を求めます。
+LNMatrix_Transpose         転置行列を求めます。
+LNMatrix_ViewTransformLH   左手座標系ビュー行列を作成します。
+LNMatrix_ViewTransformRH   右手座標系ビュー行列を作成します。
+LNMatrix_PerspectiveFovLH  左手座標系射影行列を作成します。
+LNMatrix_PerspectiveFovRH  右手座標系射影行列作成します。
+LNMatrix_OrthoLH           左手座標系正射影行列作成します。
+LNMatrix_OrthoRH           右手座標系正射影行列作成します。
+LNMatrix_GetEulerAngles    回転行列からオイラー角を計算します。
+LNMatrix_Decompose         行列をスケーリング、回転、移動成分に分解します。
+
+-------------------------------------------------------------------------------
+ ■ [LNQuaternion]  クォータニオンのモジュールです。
+
+LNQuaternion()                     LNQuaternion型変数の作成
+LNQuaternion_Set                   クォータニオンに値を設定します。
+LNQuaternion_Identity              単位クォータニオンを作成します。
+LNQuaternion_RotationAxis          任意の軸を回転軸にして回転するクォータニオンを作成します。
+LNQuaternion_RotationMatrix        回転行列からクォータニオンを作成します。
+LNQuaternion_RotationYawPitchRoll  ヨー、ピッチ、およびロールを指定してクォータニオンを作成します。
+LNQuaternion_Normalize             クォータニオンを正規化します。
+LNQuaternion_Conjugate             クォータニオンの共役を計算します。
+LNQuaternion_Multiply              2 つのクォータニオンの積を計算します。
+LNQuaternion_Slerp                 2 つのクォータニオンを球面線形補間します。
+
+-------------------------------------------------------------------------------
+ ■ [LNGameAudio]  ゲーム向け音声再生のユーティリティモジュールです。
+
+LNGameAudio_PlayBGM         BGM を演奏します。
+LNGameAudio_PlayBGMMem      メモリ上の音声ファイルデータを使用して BGM を演奏します。
+LNGameAudio_StopBGM         BGM の演奏を停止します。
+LNGameAudio_PlayBGS         BGS を演奏します。
+LNGameAudio_PlayBGSMem      メモリ上の音声ファイルデータから BGS を演奏します。
+LNGameAudio_StopBGS         BGS の演奏を停止します。、
+LNGameAudio_PlayME          ME を演奏します。
+LNGameAudio_PlayMEMem       メモリ上の音声ファイルデータから ME を演奏します。
+LNGameAudio_StopME          ME の演奏を停止します。
+LNGameAudio_PlaySE          SE を演奏します。
+LNGameAudio_PlaySE3D        SE を演奏します。(3D サウンド)
+LNGameAudio_PlaySE3DXYZ     SE を演奏します。(3D サウンド)
+LNGameAudio_PlaySEMem       メモリ上の音声データから SE を演奏します。
+LNGameAudio_PlaySE3DMem     メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
+LNGameAudio_PlaySE3DMemXYZ  メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
+LNGameAudio_StopSE          すべての SE の演奏を停止します。
+LNGameAudio_SetBGMVolume    再生中のBGMの音量を設定します。(フェードアウト中は無効)
+LNGameAudio_SetBGSVolume    再生中のBGSの音量を設定します。(フェードアウト中は無効)
+
+-------------------------------------------------------------------------------
+ ■ [LNSoundListener]  3D音声のリスナーに関する情報を操作します。
+
+LNSoundListener_SetPosition        3D音声のリスナーの位置を設定します。
+LNSoundListener_SetDirection       3D音声のリスナーの正面方向を設定します。
+LNSoundListener_SetUpDirection     3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+LNSoundListener_SetVelocity        3D音声のリスナーの速度を設定します。
+LNSoundListener_SetPositionXYZ     3D音声のリスナーの位置を設定します。
+LNSoundListener_SetDirectionXYZ    3D音声のリスナーの正面方向を設定します。
+LNSoundListener_SetUpDirectionXYZ  3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+LNSoundListener_SetVelocityXYZ     3D音声のリスナーの速度を設定します。
+
+-------------------------------------------------------------------------------
+ ■ [LNSound]  音声データひとつ分を表し、再生などの操作を行うモジュールです。
+
+LNSound_Create                 ファイルからサウンドオブジェクトを作成します。
+LNSound_CreateMem              メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
+LNSound_SetVolume              サウンドのボリュームを設定します。
+LNSound_GetVolume              サウンドのボリュームを取得します。
+LNSound_SetPitch               サウンドのピッチを設定します。
+LNSound_GetPitch               サウンドのピッチを取得します。
+LNSound_SetLoopEnabled         サウンドのループ再生の有無を設定します。
+LNSound_IsLoopEnabled          サウンドのループ再生が有効であるかを確認します。
+LNSound_Set3DEnabled           サウンドを 3D 音源であるかを設定します。
+LNSound_Is3DEnabled            サウンドが 3D 音源であるかを確認します。
+LNSound_SetPlayingMode         サウンド再生時の音声データの再生方法を設定します。
+LNSound_GetPlayingMode         サウンド再生時の音声データの再生方法を取得します。
+LNSound_GetPlayingState        サウンドの再生状態を取得します。
+LNSound_GetPlayedSamples       サウンドの再生したサンプル数を取得します。
+LNSound_GetTotalSamples        サウンドの音声データ全体のサンプル数を取得します。
+LNSound_GetSamplingRate        サウンドのサンプリングレートを取得します。
+LNSound_SetEmitterPosition     サウンドの 3D 音源としての位置を設定します。
+LNSound_SetEmitterVelocity     サウンドの 3D 音源としての速度を設定します。
+LNSound_SetEmitterMaxDistance  サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。(default:100)
+LNSound_SetLoopRange           サウンドのループ再生の範囲を設定します。
+LNSound_Play                   サウンドを再生します。
+LNSound_Stop                   サウンドの再生を停止します。
+LNSound_Pause                  サウンドの再生を一時停止します。
+LNSound_Resume                 サウンドの再生を一時停止します。
+LNSound_FadeVolume             サウンド音量のフェード操作を行います。
+LNSound_SetEmitterPositionXYZ  サウンドの 3D 音源としての位置を設定します。
+LNSound_SetEmitterVelocityXYZ  サウンドの 3D 音源としての速度を設定します。
+

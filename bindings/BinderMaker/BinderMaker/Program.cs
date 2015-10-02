@@ -64,7 +64,7 @@ namespace BinderMaker
             var hspHelpBuilder = new Builder.HSPHelpBuilder();
             hspHelpBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.hs");
             var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
-            hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/命令一覧.txt");
+            hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/CommandList.txt");
         }
     }
 }

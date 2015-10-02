@@ -153,7 +153,9 @@ void ApplicationImpl::Initialize()
 	InitialzePhysicsManager();
 	InitialzeGraphicsManager();
 	InitialzeGUIManager();
+#ifdef LN_BUILD_SCENE_MODULE
 	InitialzeSceneGraphManager();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -328,6 +330,7 @@ void ApplicationImpl::InitialzeGUIManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+#ifdef LN_BUILD_SCENE_MODULE
 void ApplicationImpl::InitialzeSceneGraphManager()
 {
 	if (m_sceneGraphManager == NULL)
@@ -342,6 +345,7 @@ void ApplicationImpl::InitialzeSceneGraphManager()
 		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //

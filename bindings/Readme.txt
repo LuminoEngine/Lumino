@@ -70,7 +70,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------
  ■ 作者情報
 
-	・HN          ：Riki
+	・HN          ：lriki
 	・メール      ：lriki.net@gmail.com
 	・ホームページ：http://nnmy.sakura.ne.jp/
 
