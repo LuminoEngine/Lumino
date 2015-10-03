@@ -31,7 +31,7 @@ LNConfig_SetApplicationLogEnabled
 デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 enabled
 [in] enabled : LN_TRUE:出力する / LN_FALSE:出力しない
@@ -49,7 +49,7 @@ LNConfig_SetConsoleEnabled
 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 enabled
 [in] enabled : LN_TRUE:割り当てる / LN_FALSE:割り当てない
@@ -67,7 +67,7 @@ LNConfig_RegisterArchive
 ファイルを開くときにアクセスする暗号化アーカイブを登録します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 filePath, password
 [in] filePath : アーカイブファイルパス
@@ -86,7 +86,7 @@ LNConfig_SetFileAccessPriority
 ファイルへのアクセス優先順位を設定します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 priority
 [in] priority : 制限方法 (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
@@ -110,7 +110,7 @@ LNConfig_SetUserWindowHandle
 ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 windowHandle
 [in] windowHandle : ユーザー定義のウィンドウハンドル
@@ -128,7 +128,7 @@ LNConfig_SetSoundCacheSize
 サウンドオブジェクトのキャッシュサイズの設定
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 objectCount, memorySize
 [in] objectCount : キャッシュできるサウンドオブジェクトの最大数 (既定値:32)
@@ -148,7 +148,7 @@ LNConfig_SetDirectMusicMode
 DirectMusic の初期化方法を設定します。(既定値:LN_DIRECTMUSICMODE_NOT_USE)
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 mode
 [in] mode : DirectMusic の初期化方法
@@ -176,7 +176,7 @@ LNConfig_SetDirectMusicReverbLevel
 DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 level
 [in] level : リバーブの強さ (0.0 ～ 1.0)
@@ -194,7 +194,7 @@ LNApplication_InitializeAudio
 ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 　
 
@@ -213,7 +213,7 @@ LNApplication_Terminate
 ライブラリの終了処理を行います。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 　
 
@@ -230,7 +230,7 @@ LNVersion_GetMajor
 メジャーバージョンを取得します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 outMajor
 [out] outMajor : バージョン番号を格納する変数
@@ -248,7 +248,7 @@ LNVersion_GetMinor
 マイナーバージョンを取得します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 outMinor
 [out] outMinor : バージョン番号を格納する変数
@@ -266,7 +266,7 @@ LNVersion_GetRevision
 リビジョンバージョンを取得します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 outRevision
 [out] outRevision : バージョン番号を格納する変数
@@ -284,7 +284,7 @@ LNVersion_GetString
 バージョン文字列を取得します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 outStr
 [out] outStr : 文字列へを格納する変数
@@ -302,7 +302,7 @@ LNVersion_IsAtLeast
 指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
 
 %group
-アプリケーション
+ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 %prm
 major, minor, revision, outResult
 [in]  major     : メジャーバージョン

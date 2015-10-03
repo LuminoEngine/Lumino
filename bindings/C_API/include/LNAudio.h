@@ -7,7 +7,9 @@ extern "C" {
 #endif // __cplusplus
 
 /**
-	@brief	音声機能
+	@defgroup   group_audio 音声機能
+	@brief		音声機能
+	@{
 */
 LN_MODULE(Audio)
 	
@@ -559,8 +561,8 @@ LN_CLASS(LNSound, LNObject)
 	LNResult LNSound_SetEmitterMaxDistance(LN_HANDLE(LNSound) sound, float distance);
 
 LN_CLASS_END
-	
-LN_MODULE_END
+
+LN_MODULE_END /** @} */
 
 #ifdef __cplusplus
 } // extern "C" {

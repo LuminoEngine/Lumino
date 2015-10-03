@@ -110,6 +110,7 @@ namespace BinderMaker
         /// コンストラクタ
         /// </summary>
         public CLDocument(
+            string group,
             string briefText,
             IEnumerable<CLParamDocument> paramDocs,
             string returnText,

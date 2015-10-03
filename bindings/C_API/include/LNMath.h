@@ -7,7 +7,9 @@ extern "C" {
 #endif // __cplusplus
 
 /**
-	@brief	算術機能
+	@defgroup   group_math 算術機能
+	@brief		算術機能
+	@{
 */
 LN_MODULE(Math)
 
@@ -621,7 +623,7 @@ LN_STRUCT_CLASS(LNQuaternion)
 	
 LN_CLASS_END
 
-LN_MODULE_END
+LN_MODULE_END /** @} */
 
 #ifdef __cplusplus
 } // extern "C" {

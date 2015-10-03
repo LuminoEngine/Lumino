@@ -8,7 +8,7 @@ namespace BinderMaker
 {
     class Program
     {
-        const string SourcesRootDir = "../../../../src/C_API/";
+        const string SourcesRootDir = "../../../../C_API/include/";
         const string DotNetOutputDir = "../../../../";
 
         static void Main(string[] args)

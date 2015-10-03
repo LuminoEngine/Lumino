@@ -1,7 +1,7 @@
 ﻿
 #include "LNInternal.h"
 #include <Lumino/Version.h>
-#include "LNApplication.h"
+#include "../include/LNApplication.h"
 
 extern "C" {
 

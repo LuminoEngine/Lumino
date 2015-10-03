@@ -9,7 +9,9 @@ extern "C" {
 #endif // __cplusplus
 
 /**
-	@brief	基本機能
+	@defgroup   group_base 音声機能
+	@brief		基本機能
+	@{
 */
 LN_MODULE(Base)
 
@@ -74,7 +76,7 @@ LN_EXTENSION_CLASS(LNObject)
 	
 LN_CLASS_END
 
-LN_MODULE_END
+LN_MODULE_END /** @} */
 
 #ifdef __cplusplus
 } // extern "C" {

@@ -35,6 +35,13 @@ namespace BinderMaker.Parser
         public static readonly Parser<IEnumerable<char>> DocumentCommentSectionEnd =
             Parse.String("@").XOr(Parse.String("*/"));    // 次の @ または //*/
 
+        // ドキュメントコメント - グループ
+        public static readonly Parser<string> DocumentCommentDefGroup =
+            from mark       in Parse.String("@defgroup").GenericToken()                         // "@defgroup" から
+            from tag        in ParserUtils.Identifier.GenericToken()
+            from text       in Parse.AnyChar.Except(DocumentCommentSectionEnd).Many().Text()    // DocumentCommentSectionEnd までの任意の文字。最後の DocumentCommentSectionEnd は消費しない。
+            select text;
+
         // ドキュメントコメント - 概要
         public static readonly Parser<string> DocumentCommentBrief =
             from mark1      in Parse.String("@brief").GenericToken()                            // "@biref" から
@@ -100,10 +107,17 @@ namespace BinderMaker.Parser
             from langs      in Parse.Regex(@"\[.+\]").Text()
             from text       in Parse.AnyChar.Until(Parse.String("@example_end")).Text()    // "@example_end" までの任意の文字。最後の "@example_end" は消費される。
             select new CLExampleDocument(langs, text);
+  
+        // ドキュメントコメント - スコープ開始
+        public static readonly Parser<string> DocumentCommentStartScope =
+            from mark       in Parse.String("@{").GenericToken()                                
+            from text       in Parse.AnyChar.Except(DocumentCommentSectionEnd).Many().Text()    // DocumentCommentSectionEnd までの任意の文字。最後の DocumentCommentSectionEnd は消費しない。
+            select text;
         
         // ドキュメントコメント
         public static readonly Parser<CLDocument> DocumentComment =
             from start      in Parse.String("/**")
+            from group1     in DocumentCommentDefGroup.Or(Parse.Return(""))
             from brief      in DocumentCommentBrief
             from params1    in DocumentCommentParam.Many()      // 引数 (0個以上)
             from return1    in DocumentCommentReturn.Or(Parse.Return(""))
@@ -113,8 +127,9 @@ namespace BinderMaker.Parser
             from postscript in DocumentCommentPostscript.Many()
             from overwrite  in DocumentCommentOverwrite.Many()
             from example    in DocumentCommentExample.Many()
+            from scope      in DocumentCommentStartScope.Or(Parse.Return(""))
             from text       in Parse.AnyChar.Until(Parse.String("*/")).Text()       // "*/" が見つかるまで任意の文字を繰り返す。見つかった "*/" は破棄される。
-            select new CLDocument(brief, params1, return1, details, extends, replace, postscript, overwrite, example);
+            select new CLDocument(group1, brief, params1, return1, details, extends, replace, postscript, overwrite, example);
     }
 
     /// <summary>

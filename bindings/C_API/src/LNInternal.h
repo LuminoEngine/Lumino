@@ -7,8 +7,8 @@
 // 通常は LFManager.h だけ include しようとするとコンパイルエラーになる。(これによってとりあえず internal であることを示す)
 using namespace Lumino;
 
-#include "LNTypedef.h"
-#include "LNCommon.h"
+#include "../include/LNTypedef.h"
+#include "../include/LNCommon.h"
 #include "LNManager.h"
 
 

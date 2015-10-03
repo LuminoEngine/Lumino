@@ -18,8 +18,8 @@ typedef void(*LNCallback_Void_Void)(LN_HANDLE(LNObject) handle);
 
 #pragma once
 
-#include "LNCommon.h"
-#include "LNTypedef.h"
+#include "../include/LNCommon.h"
+#include "../include/LNTypedef.h"
 
 #ifdef __cplusplus
 extern "C" {

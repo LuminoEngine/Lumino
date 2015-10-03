@@ -28,7 +28,7 @@
 //==============================================================================
 
 #include "LNInternal.h"
-#include "LNTypedef.h"
+#include "../include/LNTypedef.h"
 
 void LNTypeDef_CheckCommonDefinition()
 {

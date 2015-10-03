@@ -1,6 +1,6 @@
 ﻿
 #include "LNInternal.h"
-#include "LNAudio.h"
+#include "../include/LNAudio.h"
 
 //=============================================================================
 // LNGameAudio

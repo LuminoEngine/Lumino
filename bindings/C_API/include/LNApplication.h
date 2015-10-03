@@ -7,8 +7,9 @@ extern "C" {
 #endif // __cplusplus
 
 /**
-	@brief		アプリケーション
-	@details	ライブラリの初期化やフレーム更新、終了処理等のアプリケーション全体に関わる機能です。
+	@defgroup   group_application アプリケーション
+	@brief		ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
+	@{
 */
 LN_MODULE(Application)
 
@@ -153,7 +154,7 @@ LN_STATIC_CLASS(LNVersion)
 
 LN_CLASS_END
 
-LN_MODULE_END
+LN_MODULE_END /** @} */
 
 #ifdef __cplusplus
 } // extern "C" {

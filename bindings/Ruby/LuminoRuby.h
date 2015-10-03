@@ -1,5 +1,5 @@
 #include "ruby.h"
-#include "../src/C_API/LuminoC.h"
+#include "../C_API/include/LuminoC.h"
 
 extern VALUE g_luminoModule;
 extern VALUE g_luminoError;  // exception

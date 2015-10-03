@@ -40,15 +40,8 @@ typedef void*			LNUserData;
 // C_API
 
 // デフォルト引数定義の細工
-#ifdef LN_DISABLE_AT_DOXY_BUILD
-	// Doxygen 実行時は何も定義しない
-	// Doxygen 設定 [Preprcessor] > [PREDEFINED] >「LN_DEFAULT_ARG(x)= =x」によって
-	// ドキュメント上はデフォルト引数が存在することになる。
-/*
-	[Preprcessor] > [MACRO_EXPANSION] … ON
-	[Preprcessor] > [PREDEFINED] … "LN_DISABLE_AT_DOXY_BUILD"
-	[Preprcessor] > [PREDEFINED] … "LN_DEFAULT_ARG(x)= =x"
-*/
+#ifdef LN_DOXYGEN
+	#define LN_DEFAULT_ARG(x)
 #else
 	#ifdef __cplusplus
 		// C++ ビルド時はデフォルト引数を有効にする

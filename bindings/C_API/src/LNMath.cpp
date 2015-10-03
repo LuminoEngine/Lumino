@@ -5,7 +5,7 @@
 */
 #pragma once
 #include "LNInternal.h"
-#include "LNMath.h"
+#include "../include/LNMath.h"
 
 
 //=============================================================================

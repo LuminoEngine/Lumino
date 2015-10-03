@@ -10,7 +10,7 @@ set(LN_SOURCES
 )
 
 set(LN_INCLUDE_DIRECTORIES
-	${PROJECT_SOURCE_DIR}/../../src/C_API
+	${PROJECT_SOURCE_DIR}/../../C_API/include
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/external/Lumino.Core/include
 	${CMAKE_SOURCE_DIR}/external/Lumino.Math/include)

@@ -6,23 +6,25 @@ project (LuminoC)
 #------------------------------------------------------------------------------
 
 set(LN_SOURCES_C_API
-	C_API/LNCommon.h
-	C_API/LNAudio.cpp
-	C_API/LNAudio.h
-	C_API/LNGUI.cpp
-	C_API/LNGUI.h
-	C_API/LNInternal.cpp
-	C_API/LNInternal.h
-	C_API/LNApplication.cpp
-	C_API/LNApplication.h
-	C_API/LNBase.cpp
-	C_API/LNBase.h
-	C_API/LNManager.cpp
-	C_API/LNManager.h
-	C_API/LNMath.cpp
-	C_API/LNMath.h
-	C_API/LNTypedef.cpp
-	C_API/LNTypedef.h
+	include/LuminoC.h
+	include/LNApplication.h
+	include/LNAudio.h
+	include/LNBase.h
+	include/LNCommon.h
+	include/LNMath.h
+	include/LNTypedef.h
+	src/LNApplication.cpp
+	src/LNAudio.cpp
+	src/LNBase.cpp
+	src/LNGUI.cpp
+	src/LNGUI.h
+	src/LNInternal.cpp
+	src/LNInternal.h
+	src/LNManager.cpp
+	src/LNManager.h
+	src/LNMath.cpp
+	src/LNOverride_src.cpp
+	src/LNTypedef.cpp
 )
 
 source_group("C_API"	FILES ${LN_SOURCES_C_API})

@@ -96,12 +96,13 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\C_API\LNApplication.cpp" />
-    <ClCompile Include="..\..\..\src\C_API\LNAudio.cpp" />
-    <ClCompile Include="..\..\..\src\C_API\LNBase.cpp" />
-    <ClCompile Include="..\..\..\src\C_API\LNManager.cpp" />
-    <ClCompile Include="..\..\..\src\C_API\LNMath.cpp" />
-    <ClCompile Include="..\..\..\src\C_API\LNTypedef.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNApplication.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNAudio.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNBase.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNInternal.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNManager.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNMath.cpp" />
+    <ClCompile Include="..\..\..\C_API\src\LNTypedef.cpp" />
     <ClCompile Include="..\hsp3plugin\hsp3plugin.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>

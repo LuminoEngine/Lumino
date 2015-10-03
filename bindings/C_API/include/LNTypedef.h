@@ -5,6 +5,9 @@
 extern "C" {
 #endif // __cplusplus
 
+/// @defgroup types 型定義
+/// @{
+
 //=============================================================================
 // Common
 //=============================================================================
@@ -578,6 +581,8 @@ typedef enum tagLNObjectType
 	LN_OBJECTTYPE__TERMINATOR,
 
 } LNObjectType;
+
+/// @}
 
 #ifdef __cplusplus
 } // extern "C" {

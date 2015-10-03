@@ -36,9 +36,7 @@
 #pragma once
 
 #include "LNInternal.h"
-#include "LNBase.h"
-
-
+#include "../include/LNBase.h"
 
 //=============================================================================
 /**
