@@ -52,9 +52,12 @@ hsp_release_dir = "Release/LuminoHSP_" + version + "/"
 
 ENV["PATH"] = binder_root + "../../DevKit-mingw64-32-4.7.2-20130224-1151-sfx/mingw/bin;" + binder_root + "../../DevKit-mingw64-32-4.7.2-20130224-1151-sfx/bin;" + ENV["PATH"]
 
+Dir.chdir("BinderMaker")
+system("MSBuild /t:Rebuild /p:Configuration=\"Release\" /p:Platform=\"Any CPU\" /m BinderMaker.sln")
+Dir.chdir(binder_root)
+
 #--------------------------------------------------------------
 # C
-=begin
 mkdir(c_release_dir)
 copy("Readme.txt", c_release_dir)
 
@@ -90,8 +93,8 @@ compress(c_release_dir)
 
 # クラスライブラリとヘルプをビルドする
 Dir.chdir("DotNet")
-#system("MSBuild /t:Rebuild /p:Configuration=\"Release\" /p:Platform=\"x86\" /m LuminoDotNet.sln")
-#system("MSBuild /p:Configuration=Release /property:SHFBROOT=\"" + shfb_install_dir + "\" LuminoDotNet.shfbproj")
+system("MSBuild /t:Rebuild /p:Configuration=\"Release\" /p:Platform=\"x86\" /m LuminoDotNet.sln")
+system("MSBuild /p:Configuration=Release /property:SHFBROOT=\"" + shfb_install_dir + "\" LuminoDotNet.shfbproj")
 Dir.chdir(binder_root)
 
 mkdir(dotnet_release_dir)
@@ -113,8 +116,6 @@ xcopy("Common/Media", dotnet_samples_dir)
 
 # zip
 compress(dotnet_release_dir)
-
-=end
 
 #--------------------------------------------------------------
 # Ruby
@@ -147,7 +148,6 @@ compress(ruby_release_dir)
 
 #--------------------------------------------------------------
 # HSP
-=begin
 system("MSBuild ./HSP/LuminoHSP/LuminoHSP.sln /t:Build /p:Configuration=\"Release\" /p:Platform=\"Win32\" /m")
 
 mkdir(hsp_release_dir)
@@ -168,4 +168,4 @@ xcopy("Common/Media", hsp_samples_dir)
 # zip
 compress(hsp_release_dir)
 
-=end
+

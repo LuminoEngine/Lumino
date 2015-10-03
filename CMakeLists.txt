@@ -630,6 +630,8 @@ if (LN_BUILD_SCENE_MODULE)
 	add_definitions(-DLN_BUILD_SCENE_MODULE)
 endif()
 
+add_definitions("/EHsc")	# VS2015, cmake Ç≈ê∂ê¨Ç∑ÇÈÇ∆âΩåÃÇ©è¡Ç¶ÇƒÇµÇ‹Ç§ÇÃÇ≈ñæé¶ìIÇ…éwíËÇ∑ÇÈ
+
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
