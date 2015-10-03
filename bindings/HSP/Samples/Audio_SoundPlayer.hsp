@@ -4,22 +4,22 @@
 //	簡単なサウンドプレイヤーのサンプルです。
 //=============================================================================
 
-#include "lnote.as"
+#include "lumino.as"
 
 	sound = 0
 
 	screen 0, 320, 160
 	
-	// midi を使用する場合はコメントを外してください
-	//LConfig_SetDirectMusicInitMode LN_DMINITMODE_NORMAL
+	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_THREAD_REQUEST
+	LNConfig_SetUserWindowHandle hwnd
 	
-	LNote_InitAudio
-	if FAILED(stat) : end
+	LNApplication_InitializeAudio
+	if stat != LN_OK : end
 
 	dialog "wav;*.ogg;*.mp3;*.mid", 16
 	if stat == 0 : end
 
-	LSound_Create sound, refstr
+	LNSound_Create refstr, sound
 	
 	objsize 96, 24
 	button "再生", *sound_play
@@ -42,68 +42,56 @@
 	pos 100, 64
 	
 	// 再生状態
-	LSound_GetPlayState sound
+	LNSound_GetPlayingState sound, state
 	switch stat
-		case LN_SOUNDPLAYSTATE_STOP
+		case LN_SOUNDPLAYINGSTATE_STOPPED
 			mes "停止中"
 			swbreak
-		case LN_SOUNDPLAYSTATE_PLAYING
+		case LN_SOUNDPLAYINGSTATE_PLAYING
 			mes "再生中"
 			swbreak
-		case LN_SOUNDPLAYSTATE_PAUSING
+		case LN_SOUNDPLAYINGSTATE_PAUSING
 			mes "一時停止中"
 			swbreak
 	swend
 	
 	// 再生サンプル数
-	LSound_GetUnitsPlayed sound
-	mes "Played : " + stat
+	LNSound_GetPlayedSamples sound, samples
+	mes "Played : " + samples
 	
 	// トータルサンプル数
-	LSound_GetTotalUnits sound
-	mes "Total  : " + stat
+	LNSound_GetTotalSamples sound, total
+	mes "Total  : " + total
 
 	redraw 1
 	await 32
 	goto *main
 
 *sound_play
-
-	LSound_Play sound
-	
+	LNSound_Play sound
 	goto *main
 	
 *sound_stop
-
-	LSound_Stop sound
-	
+	LNSound_Stop sound
 	goto *main
 	
 *sound_pause_on
-
-	LSound_Pause sound, true
-
+	LNSound_Pause sound
 	goto *main
 	
 *sound_pause_off
-
-	LSound_Pause sound, false
-
+	LNSound_Resume sound
 	goto *main
 	
 *sound_fadein
-
-	LSound_SetVolume sound, 0
-	LSound_Play sound
+	LNSound_SetVolume sound, 0
+	LNSound_Play sound
 	
 	// 10 秒かけてフェードイン
-	LSound_FadeVolume sound, 100, 10000, LN_SOUNDFADE_CONTINUE	
-
+	LNSound_FadeVolume sound, 100, 10.0, LN_SOUNDFADEBEHAVIORBEHAVIOR_CONTINUE	
 	goto *main
 	
 *sound_fadeout
-
 	// 10 秒かけてフェードアウト → 停止
-	LSound_FadeVolume sound, 0, 10000, LN_SOUNDFADE_STOP_RESET	
-	
+	LNSound_FadeVolume sound, 0, 10.0, LN_SOUNDFADEBEHAVIOR_STOP_RESET	
 	goto *main

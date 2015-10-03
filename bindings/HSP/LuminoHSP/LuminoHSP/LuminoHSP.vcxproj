@@ -80,7 +80,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(ProjectDir)..\..\..\..\lib\LuminoC_MTd.lib;$(ProjectDir)..\..\..\..\lib\LuminoCore_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\zlib_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\bullet_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\freetype_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\libogg_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\libpng_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\libvorbis_msvc120x86_static_MTd.lib;$(ProjectDir)..\..\..\..\lib\Lumino_msvc120x86_static_MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\..\..\lib\LuminoCore_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\LuminoMath_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\zlib_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\bullet_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\freetype_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\libogg_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\libpng_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\libvorbis_msvc120x86_static_MT.lib;$(ProjectDir)..\..\..\..\lib\Lumino_msvc120x86_static_MT.lib;imagehlp.lib;msacm32.lib;Opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) $(ProjectDir)..\..\</Command>
@@ -91,6 +91,7 @@
     <ClInclude Include="..\hsp3plugin\hsp3plugin.h" />
     <ClInclude Include="..\hsp3plugin\hsp3struct.h" />
     <ClInclude Include="..\hsp3plugin\hspvar_core.h" />
+    <ClInclude Include="..\hsp3plugin\hspwnd.h" />
     <ClInclude Include="LuminoHSP.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

@@ -30,6 +30,9 @@
     <ClInclude Include="targetver.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\hsp3plugin\hspwnd.h">
+      <Filter>hsp3plugin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\hsp3plugin\hsp3plugin.cpp">

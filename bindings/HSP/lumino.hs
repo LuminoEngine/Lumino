@@ -1749,7 +1749,9 @@ filePath, volume, pitch, fadeTime
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
-
+BGM はひとつだけ演奏することができ、ループ再生します。
+新しい BGM を演奏ようとした場合、再生中の BGM は停止します。
+フェードイン時間を指定した場合はクロスフェードしながら音声を切り替えます。
 
 %href
 
@@ -1816,7 +1818,8 @@ filePath, volume, pitch, fadeTime
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
-
+BGS は風や滝の音などの環境音です。
+BGM と同様、ひとつだけ演奏することができ、ループ再生します。
 
 %href
 
@@ -1882,7 +1885,9 @@ filePath, volume, pitch
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
-
+ME は レベルアップやアイテム取得時のファンファーレ等の効果音楽です。
+ME はひとつだけ演奏することができ、ループ再生せずに一度だけ演奏されます。
+BGM が再生中であれば一時停止し、ME 終了後に再開させます。
 
 %href
 
@@ -1946,7 +1951,7 @@ filePath, volume, pitch
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
-
+SE はゲーム中の効果音です。 SE は同時に複数再生することができ、同じ音声を演奏した場合は 重ねがけされて演奏されます。
 
 %href
 

@@ -1365,6 +1365,10 @@ end
 class Lumino::GameAudio
     # BGM を演奏します。
     # @overload play_bgm(filePath, volume=1.0, pitch=1.0, fadeTime=0.0)
+    #   　
+    #     BGM はひとつだけ演奏することができ、ループ再生します。
+    #     新しい BGM を演奏ようとした場合、再生中の BGM は停止します。
+    #     フェードイン時間を指定した場合はクロスフェードしながら音声を切り替えます。
     #   @param [String] filePath ファイルパス
     #   @param [Float] volume ボリューム (0.0～1.0)
     #   @param [Float] pitch ピッチ (0.5～2.0)
@@ -1387,6 +1391,9 @@ class Lumino::GameAudio
     end
     # BGS を演奏します。
     # @overload play_bgs(filePath, volume=1.0, pitch=1.0, fadeTime=0.0)
+    #   　
+    #     BGS は風や滝の音などの環境音です。
+    #     BGM と同様、ひとつだけ演奏することができ、ループ再生します。
     #   @param [String] filePath ファイルパス
     #   @param [Float] volume ボリューム (0.0～1.0)
     #   @param [Float] pitch ピッチ (0.5～2.0)
@@ -1409,6 +1416,10 @@ class Lumino::GameAudio
     end
     # ME を演奏します。
     # @overload play_me(filePath, volume=1.0, pitch=1.0)
+    #   　
+    #     ME は レベルアップやアイテム取得時のファンファーレ等の効果音楽です。
+    #     ME はひとつだけ演奏することができ、ループ再生せずに一度だけ演奏されます。
+    #     BGM が再生中であれば一時停止し、ME 終了後に再開させます。
     #   @param [String] filePath ファイルパス
     #   @param [Float] volume ボリューム (0.0～1.0)
     #   @param [Float] pitch ピッチ (0.5～2.0)
@@ -1428,6 +1439,8 @@ class Lumino::GameAudio
     end
     # SE を演奏します。
     # @overload play_se(filePath, volume=1.0, pitch=1.0)
+    #   　
+    #     SE はゲーム中の効果音です。 SE は同時に複数再生することができ、同じ音声を演奏した場合は 重ねがけされて演奏されます。
     #   @param [String] filePath ファイルパス
     #   @param [Float] volume ボリューム (0.0～1.0)
     #   @param [Float] pitch ピッチ (0.5～2.0)

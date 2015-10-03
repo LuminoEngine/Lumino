@@ -6,17 +6,16 @@
 //	ループ位置が指定されています。
 //=============================================================================
 
-#include "lnote.as"
+#include "lumino.as"
 
-//#define BGM_FILE "Media/ln23.ogg"
 #define BGM_FILE "Media/ln21.mid"
-//#define BGM_FILE "Media/ln28ti.ogg"
 #define BGS_FILE "Media/water02.wav"
 #define ME_FILE "Media/lnme_victory1.ogg"
 #define SE_FILE "Media/ln_cursor_1.wav"
 
-	LConfig_SetDirectMusicInitMode LN_DMINITMODE_NORMAL
-	LNote_InitAudio
+	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_THREAD_REQUEST
+	LNConfig_SetUserWindowHandle hwnd
+	LNApplication_InitializeAudio
 	
 	objsize 128, 24
 	button "BGM 演奏", *play_bgm
@@ -40,44 +39,44 @@
 	
 ; BGM --------------------------
 *play_bgm
-	LAudio_PlayBGM BGM_FILE
+	LNGameAudio_PlayBGM BGM_FILE
 	stop
 
 *stop_bgm
-	LAudio_StopBGM
+	LNGameAudio_StopBGM
 	stop
 
 *fadeout_bgm
-	LAudio_StopBGM 5000
+	LNGameAudio_StopBGM 5.0
 	stop
 
 ; BGS --------------------------
 *play_bgs
-	LAudio_PlayBGS BGS_FILE
+	LNGameAudio_PlayBGS BGS_FILE
 	stop
 
 *stop_bgs
-	LAudio_StopBGS
+	LNGameAudio_StopBGS
 	stop
 
 *fadeout_bgs
-	LAudio_StopBGS 5000
+	LNGameAudio_StopBGS 5.0
 	stop
 
 ; ME ---------------------------
 *play_me
-	LAudio_PlayME ME_FILE
+	LNGameAudio_PlayME ME_FILE
 	stop
 
 *stop_me
-	LAudio_StopME
+	LNGameAudio_StopME
 	stop
 
 ; SE ---------------------------
 *play_se
-	LAudio_PlaySE SE_FILE
+	LNGameAudio_PlaySE SE_FILE
 	stop
 
 *stop_se
-	LAudio_StopSE
+	LNGameAudio_StopSE
 	stop

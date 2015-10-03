@@ -5,7 +5,7 @@
 //	XZ 平面上で移動させています。
 //=============================================================================
 
-#include "lnote.as"
+#include "lumino.as"
 
 #const VELOCITY		2.0
 	
@@ -18,15 +18,14 @@
 	listener_dir_x = 0.0
 	listener_dir_z = 1.0
 
-	LNote_InitAudio
-	
-	LAudio_SetMetreUnitDistance 0.1		// 0.1 ピクセルを 1 メートルとする
+	LNApplication_InitializeAudio
 
-	LSound_Create sound, "Media/water02.wav", true
-	LSound_SetEmitterPosition sound, sound_x, 0.0, sound_z
-	LSound_SetEmitterDistance sound, sound_dist
-	LSound_SetLoopState sound, true
-	LSound_Play sound
+	LNSound_Create "Media/water02.wav", sound
+	LNSound_Set3DEnabled sound, LN_TRUE
+	LNSound_SetEmitterPositionXYZ sound, sound_x, 0.0, sound_z
+	LNSound_SetEmitterMaxDistance sound, sound_dist
+	LNSound_SetLoopEnabled sound, LN_TRUE
+	LNSound_Play sound
 	
 *main
 	
@@ -42,8 +41,8 @@
 	getkey k, 40
 	if k : sound_z -= VELOCITY
 	
-	LSound_SetEmitterPosition sound, sound_x, 0.0, sound_z
-	LSound_SetEmitterVelocity sound, sound_x - last_x, 0.0, sound_z - last_z
+	LNSound_SetEmitterPositionXYZ sound, sound_x, 0.0, sound_z
+	LNSound_SetEmitterVelocityXYZ sound, sound_x - last_x, 0.0, sound_z - last_z
 	
 	// リスナーの移動処理
 	getkey k, 'A'
@@ -64,9 +63,9 @@
 	getkey k, 'S'
 	if k : listener_x -= listener_dir_x * VELOCITY : listener_z -= listener_dir_z * VELOCITY
 
-	L3DSoundListener_SetPosition listener_x, 0.0, listener_z
-	L3DSoundListener_SetDirection listener_dir_x, 0.0, listener_dir_z
-	L3DSoundListener_Velocity listener_x - last_x, 0.0, listener_z - last_z
+	LNSoundListener_SetPositionXYZ listener_x, 0.0, listener_z
+	LNSoundListener_SetDirectionXYZ listener_dir_x, 0.0, listener_dir_z
+	LNSoundListener_SetVelocityXYZ listener_x - last_x, 0.0, listener_z - last_z
 	
 	// 描画処理
 	gosub *draw

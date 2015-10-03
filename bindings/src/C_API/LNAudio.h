@@ -23,6 +23,9 @@ LN_STATIC_CLASS(LNGameAudio)
 		@param[in]	volume		: ボリューム (0.0～1.0)
 		@param[in]	pitch		: ピッチ (0.5～2.0)
 		@param[in]	fadeTime	: フェードインにかける時間 (秒)
+		@details	BGM はひとつだけ演奏することができ、ループ再生します。
+					新しい BGM を演奏ようとした場合、再生中の BGM は停止します。
+					フェードイン時間を指定した場合はクロスフェードしながら音声を切り替えます。
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlayBGM(const LNChar* filePath, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f), double fadeTime LN_DEFAULT_ARG(0.0));
@@ -54,6 +57,8 @@ LN_STATIC_CLASS(LNGameAudio)
 		@param[in]  volume		: ボリューム (0.0～1.0)
 		@param[in]  pitch		: ピッチ (0.5～2.0)
 		@param[in]  fadeTime	: フェードインにかける時間 (秒)
+		@details	BGS は風や滝の音などの環境音です。
+					BGM と同様、ひとつだけ演奏することができ、ループ再生します。
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlayBGS(const LNChar* filePath, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f), double fadeTime LN_DEFAULT_ARG(0.0));
@@ -84,6 +89,9 @@ LN_STATIC_CLASS(LNGameAudio)
 		@param[in]  filePath	: ファイルパス
 		@param[in]  volume		: ボリューム (0.0～1.0)
 		@param[in]  pitch		: ピッチ (0.5～2.0)
+		@details	ME は レベルアップやアイテム取得時のファンファーレ等の効果音楽です。
+					ME はひとつだけ演奏することができ、ループ再生せずに一度だけ演奏されます。
+					BGM が再生中であれば一時停止し、ME 終了後に再開させます。
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlayME(const LNChar* filePath, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f));
@@ -112,6 +120,7 @@ LN_STATIC_CLASS(LNGameAudio)
 		@param[in]  filePath	: ファイルパス
 		@param[in]  volume		: ボリューム (0.0～1.0)
 		@param[in]  pitch		: ピッチ (0.5～2.0)
+		@details	SE はゲーム中の効果音です。 SE は同時に複数再生することができ、同じ音声を演奏した場合は 重ねがけされて演奏されます。
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlaySE(const LNChar* filePath, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f));

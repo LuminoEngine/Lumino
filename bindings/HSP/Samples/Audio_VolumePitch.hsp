@@ -5,16 +5,16 @@
 //	ウィンドウ内をクリックすると音量とピッチを変更します。
 //=============================================================================
 
-#include "lnote.as"
+#include "lumino.as"
 
 	sound = 0
 	
 	screen 0, 300, 300, 1
 
-	// midi を使用する
-	LConfig_SetDirectMusicInitMode LN_DMINITMODE_NORMAL
+	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_THREAD_REQUEST
+	LNConfig_SetUserWindowHandle hwnd
 
-	LNote_InitAudio
+	LNApplication_InitializeAudio
 
 	color 128, 128, 128
 	line -1, 150, 300, 150
@@ -33,8 +33,8 @@
 	if key & 256 {
 		pos mousex - 2, mousey - 6
 		mes "*"
-		LSound_SetVolume sound, 100 * mousex / 300
-		LSound_SetPitch  sound, 100 * mousey / 300 + 50
+		LNSound_SetVolume sound, double(mousex) / 300
+		LNSound_SetPitch  sound, double(mousey) / 300 + 0.5
 	}
 
 	if key & 512 {
@@ -49,8 +49,8 @@
 	dialog "wav;*.ogg;*.mp3;*.mid", 16
 	if stat == 0 : end
 
-	LSound_Create sound, refstr
-	LSound_SetLoopState sound, true
-	LSound_Play sound
+	LNSound_Create refstr, sound
+	LNSound_SetLoopEnabled sound, LN_TRUE
+	LNSound_Play sound
 
 	return

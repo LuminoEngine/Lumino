@@ -233,6 +233,11 @@ namespace Lumino
         /// <param name="volume">ボリューム (0.0～1.0)</param>
         /// <param name="pitch">ピッチ (0.5～2.0)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        /// <remarks>
+        /// BGM はひとつだけ演奏することができ、ループ再生します。
+        /// 					新しい BGM を演奏ようとした場合、再生中の BGM は停止します。
+        /// 					フェードイン時間を指定した場合はクロスフェードしながら音声を切り替えます。
+        /// </remarks>
         public static void PlayBGM( string filePath,  float volume = 1.0f,  float pitch = 1.0f,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_PlayBGM( filePath,  volume,  pitch,  fadeTime);
@@ -297,6 +302,10 @@ namespace Lumino
         /// <param name="volume">ボリューム (0.0～1.0)</param>
         /// <param name="pitch">ピッチ (0.5～2.0)</param>
         /// <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        /// <remarks>
+        /// BGS は風や滝の音などの環境音です。
+        /// 					BGM と同様、ひとつだけ演奏することができ、ループ再生します。
+        /// </remarks>
         public static void PlayBGS( string filePath,  float volume = 1.0f,  float pitch = 1.0f,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_PlayBGS( filePath,  volume,  pitch,  fadeTime);
@@ -360,6 +369,11 @@ namespace Lumino
         /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0.0～1.0)</param>
         /// <param name="pitch">ピッチ (0.5～2.0)</param>
+        /// <remarks>
+        /// ME は レベルアップやアイテム取得時のファンファーレ等の効果音楽です。
+        /// 					ME はひとつだけ演奏することができ、ループ再生せずに一度だけ演奏されます。
+        /// 					BGM が再生中であれば一時停止し、ME 終了後に再開させます。
+        /// </remarks>
         public static void PlayME( string filePath,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlayME( filePath,  volume,  pitch);
@@ -421,6 +435,9 @@ namespace Lumino
         /// <param name="filePath">ファイルパス</param>
         /// <param name="volume">ボリューム (0.0～1.0)</param>
         /// <param name="pitch">ピッチ (0.5～2.0)</param>
+        /// <remarks>
+        /// SE はゲーム中の効果音です。 SE は同時に複数再生することができ、同じ音声を演奏した場合は 重ねがけされて演奏されます。
+        /// </remarks>
         public static void PlaySE( string filePath,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySE( filePath,  volume,  pitch);

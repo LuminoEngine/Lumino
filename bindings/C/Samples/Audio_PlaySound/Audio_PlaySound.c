@@ -14,7 +14,7 @@ int main()
 	// 音声ファイルから Sound オブジェクトを作る
 	if (LNSound_Create(_T("../Media/ln23.ogg"), &sound) != LN_OK) return 1;
 	LNSound_SetVolume(sound, 1.0);			// 音量
-	LNSound_SetPitch(sound, 1.5);			// ピッチ
+	LNSound_SetPitch(sound, 1.0);			// ピッチ
 	LNSound_SetLoopEnabled(sound, LN_TRUE);	// ループON
 
 	// 再生

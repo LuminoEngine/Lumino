@@ -267,7 +267,7 @@ void Sound::SetEmitterVelocity(const Vector3& v)
 {
 	m_velocity = v;
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->setPosition(m_velocity);
+		m_audioPlayer->setVelocity(m_velocity);
 	}
 }
 
