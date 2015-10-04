@@ -70,7 +70,7 @@ void SwapChain::Initialize(const Size& backbufferSize)
 {
 	m_commandList = LN_NEW RenderingCommandList();
 
-	Device::IGraphicsDevice* device = Helper::GetGraphicsDevice(m_manager);
+	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 	m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
 	m_backColorBuffer = LN_NEW Texture(m_manager, m_deviceObj->GetBackBuffer(), NULL);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
 	m_backDepthBuffer = Texture::CreateDepthBuffer(m_manager, backbufferSize, TextureFormat_D24S8);
@@ -105,10 +105,10 @@ void SwapChain::Present()
 		m_waiting.Wait();
 
 		// デバイスロストのチェック
-		auto* device = Helper::GetGraphicsDevice(m_manager);
+		auto* device = m_manager->GetGraphicsDevice();
 		if (device->GetDeviceState() == Device::DeviceState_Lost)
 		{
-			auto* thread = Helper::GetRenderingThread(m_manager);
+			auto* thread = m_manager->GetRenderingThread();
 
 			// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
 			thread->RequestPauseAndWait();

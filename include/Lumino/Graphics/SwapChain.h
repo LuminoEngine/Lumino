@@ -43,10 +43,10 @@ public:
 	*/
 	void Present();
 
-private:
-	friend class GraphicsManager;
-	friend class Renderer;
-	friend struct PresentCommand;	// TODO
+LN_INTERNAL_ACCESS:
+	//friend class GraphicsManager;
+	//friend class Renderer;
+	//friend struct PresentCommand;	// TODO
 	SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Device::ISwapChain* deviceSwapChain);
 	void Initialize(const Size& backbufferSize);
 

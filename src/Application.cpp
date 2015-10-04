@@ -383,7 +383,7 @@ void ApplicationImpl::Render()
 	if (m_graphicsManager != NULL)
 	{
 
-		Renderer* renderer = m_graphicsManager->GetRenderer();
+		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
 		SwapChain* swap = m_graphicsManager->GetMainSwapChain();
 
 

@@ -12,13 +12,15 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace Details
+{
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 Renderer::Renderer(GraphicsManager* manager)
 	: m_manager(manager)
-	, m_internal(Helper::GetGraphicsDevice(manager)->GetRenderer())
+	, m_internal(manager->GetGraphicsDevice()->GetRenderer())
 	, m_primaryCommandList(NULL)
 	, m_currentRenderState()
 	, m_currentDepthStencilState()
@@ -59,7 +61,7 @@ void Renderer::Begin()
 		m_primaryCommandList->AddCommand<Renderer_BeginCommand>();
 	}
 	else {
-		if (Helper::GetGraphicsDevice(m_manager)->IsStandalone()) {
+		if (m_manager->GetGraphicsDevice()->IsStandalone()) {
 			m_internal->Begin();
 			m_internal->EnterRenderState();
 		}
@@ -78,7 +80,7 @@ void Renderer::End()
 		m_primaryCommandList->AddCommand<Renderer_EndCommand>();
 	}
 	else {
-		if (Helper::GetGraphicsDevice(m_manager)->IsStandalone()) {
+		if (m_manager->GetGraphicsDevice()->IsStandalone()) {
 			m_internal->LeaveRenderState();
 			m_internal->End();
 		}
@@ -232,7 +234,7 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 
 	m_primaryCommandList->AddCommand<PresentCommand>(swapChain);
 	
-	auto* renderingThread = Helper::GetRenderingThread(m_manager);
+	auto* renderingThread = m_manager->GetRenderingThread();
 	renderingThread->PushRenderingCommand(m_primaryCommandList);
 
 	// swapChain の持っているコマンドリストとスワップ。それをプライマリにする。
@@ -241,5 +243,6 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 	m_primaryCommandList = t;
 }
 
+} // namespace Details
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

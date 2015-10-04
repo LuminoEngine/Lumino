@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Base/StringTraits.h>
+#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/Painter.h>
 #include "PainterEngine.h"
 #include "RenderingCommand.h"
@@ -364,7 +365,7 @@ struct DrawGlyphRunCommand : public RenderingCommand
 //-----------------------------------------------------------------------------
 Painter::Painter(GraphicsManager* manager)
 	: m_manager(manager)
-	, m_internal(Helper::GetPainterEngine(manager))
+	, m_internal(manager->GetPainterEngine())
 {
 	//LN_CALL_COMMAND(Begin, BeginCommand);
 }

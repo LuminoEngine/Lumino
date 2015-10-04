@@ -376,7 +376,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
-	auto* device = Helper::GetGraphicsDevice(m_manager);
+	auto* device = m_manager->GetGraphicsDevice();
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
@@ -744,7 +744,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Vertices[2].TexUV.Y = 1;
 		sprite.Vertices[3].TexUV.X = 1;
 		sprite.Vertices[3].TexUV.Y = 1;
-		sprite.Texture = Helper::GetDummyTexture(m_manager);
+		sprite.Texture = m_manager->GetDummyTexture();
 	}
 
 	// カメラからの距離をソート用Z値にする場合
@@ -1009,7 +1009,7 @@ void SpriteRendererImpl::Flash()
 	//-----------------------------------------------------
 	// 描画
 
-	auto* r = Helper::GetGraphicsDevice(m_manager)->GetRenderer();
+	auto* r = m_manager->GetGraphicsDevice()->GetRenderer();
 	r->SetVertexBuffer(m_vertexBuffer);
 	r->SetIndexBuffer(m_indexBuffer);
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);

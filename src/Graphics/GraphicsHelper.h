@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-#include <Lumino/Graphics/GraphicsManager.h>
-#include <Lumino/Graphics/Renderer.h>
+//#include <Lumino/Graphics/GraphicsManager.h>
+//#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Texture.h>
@@ -15,13 +15,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class Helper	// TODO: GraphicsHelper
 {
 public:
-	inline static Device::IGraphicsDevice*	GetGraphicsDevice(GraphicsManager* manager) { return manager->m_graphicsDevice; }
-	inline static RenderingThread*			GetRenderingThread(GraphicsManager* manager) { return manager->m_renderingThread; }
-	inline static bool						IsPlatformTextureLoading(GraphicsManager* manager) { return manager->m_platformTextureLoading; }
-	inline static RenderingCommandList*		GetPrimaryRenderingCommandList(GraphicsManager* manager) { return manager->m_renderer->m_primaryCommandList; }
-	inline static PainterEngine*			GetPainterEngine(GraphicsManager* manager) { return manager->m_painterEngine; }
-	inline static Device::ITexture*			GetDummyTexture(GraphicsManager* manager) { return manager->m_dummyTexture; }
-
 	inline static Device::ITexture*			GetDeviceObject(Texture* texture) { return texture->m_deviceObj; }
 	inline static Device::IVertexBuffer*	GetDeviceObject(VertexBuffer* vb) { return vb->m_deviceObj; }
 	inline static Device::IIndexBuffer*		GetDeviceObject(IndexBuffer* ib) { return ib->m_deviceObj; }

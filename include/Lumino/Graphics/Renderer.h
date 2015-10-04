@@ -15,6 +15,9 @@ class Texture;
 class VertexBuffer;
 class IndexBuffer;
 
+namespace Details
+{
+
 /**
 	@brief		
 */
@@ -136,6 +139,8 @@ private:
 
 	Threading::Mutex		m_lockPresentCommandList;
 };
+
+} // namespace Details
 
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

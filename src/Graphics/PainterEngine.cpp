@@ -39,7 +39,7 @@ PainterEngine::~PainterEngine()
 //-----------------------------------------------------------------------------
 void PainterEngine::Create(GraphicsManager* manager)
 {
-	auto* device = Helper::GetGraphicsDevice(manager);
+	auto* device = manager->GetGraphicsDevice();
 
 	const int DefaultFaceCount = 1024;
 

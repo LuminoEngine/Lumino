@@ -37,6 +37,10 @@ namespace Internal
 {
 class FontGlyphTextureCache;
 }
+namespace Details
+{
+	class Renderer;
+}
 
 /// グラフィックス API
 LN_ENUM(GraphicsAPI)

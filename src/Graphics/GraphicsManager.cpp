@@ -676,7 +676,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // GraphicsManager
 //=============================================================================
 
-GraphicsManager* Internal::Manager = NULL;
+GraphicsManager* Internal::Manager = NULL;	// TODO: 移動
 
 //public:
 //
@@ -757,7 +757,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	//m_graphicsDevice.Attach(LN_NEW GraphicsDevice(d));
 
 	// Renderer
-	m_renderer = LN_NEW Renderer(this);
+	m_renderer = LN_NEW Details::Renderer(this);
 
 	Device::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
 	if (deviceSwapChain != NULL) {
@@ -935,6 +935,14 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* 
 //	m_textRendererCache->RegisterCacheObject(key, tr);
 //	return tr;
 //}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
+{
+	return m_renderer->m_primaryCommandList;
+}
 
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

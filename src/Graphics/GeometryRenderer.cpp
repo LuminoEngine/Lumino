@@ -32,7 +32,7 @@ GeometryRenderer::GeometryRenderer(GraphicsManager* manager)
 	, m_internal(NULL)
 {
 	LN_REFOBJ_SET(m_manager, manager);
-	m_internal = LN_NEW GeometryRendererCore(Helper::GetGraphicsDevice(m_manager));
+	m_internal = LN_NEW GeometryRendererCore(m_manager->GetGraphicsDevice());
 }
 
 //-----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ void GeometryRenderer::DrawSquare(
 		_v3.Position.Set(x3, y3, z3); _v3.TexUV.Set(u3, v3); _v3.Color = c3;
 		_v4.Position.Set(x4, y4, z4); _v4.TexUV.Set(u4, v4); _v4.Color = c4;
 
-		Helper::GetPrimaryRenderingCommandList(m_manager)->AddCommand<GeometryRendererCore::DrawSquareCommand>(m_internal, _v1, _v2, _v3, _v4);
+		m_manager->GetPrimaryRenderingCommandList()->AddCommand<GeometryRendererCore::DrawSquareCommand>(m_internal, _v1, _v2, _v3, _v4);
 			//Vector3, Vector2(), c1,
 			//Vector3(x2, y2, z2), Vector2(u2, v2), c2,
 			//Vector3(x3, y3, z3), Vector2(u3, v3), c3,

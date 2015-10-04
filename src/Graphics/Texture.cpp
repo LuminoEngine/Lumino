@@ -25,7 +25,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	auto* device = Helper::GetGraphicsDevice(manager);
+	auto* device = manager->GetGraphicsDevice();
 
 	// テクスチャを作る
 	RefPtr<Device::ITexture> obj(device->CreateTexture(size, mipLevels, format));
@@ -44,7 +44,7 @@ Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, 
 Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	auto* device = Helper::GetGraphicsDevice(manager);
+	auto* device = manager->GetGraphicsDevice();
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath));
 	return Create(stream, format, mipLevels, manager);
 }
@@ -55,9 +55,9 @@ Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLev
 Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	auto* device = Helper::GetGraphicsDevice(manager);
+	auto* device = manager->GetGraphicsDevice();
 
-	if (Helper::IsPlatformTextureLoading(manager))
+	if (manager->IsPlatformTextureLoading())
 	{
 		RefPtr<Device::ITexture> obj(device->CreateTexturePlatformLoading(stream, mipLevels, format));
 		if (!obj.IsNull())
@@ -89,7 +89,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
 	manager = (manager != NULL) ? manager : Internal::Manager;
-	auto* device = Helper::GetGraphicsDevice(manager);
+	auto* device = manager->GetGraphicsDevice();
 	MemoryStream stream;
 	stream.Create(data, size);
 	return Create(&stream, format, mipLevels, manager);
@@ -101,7 +101,7 @@ Texture* Texture::Create(const void* data, size_t size, TextureFormat format, in
 Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFormat format)
 {
 	LN_THROW(Internal::Manager != NULL, InvalidOperationException);
-	Device::ITexture* obj = Helper::GetGraphicsDevice(Internal::Manager)->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
 	return LN_NEW Texture(Internal::Manager, obj, NULL);
 }
 
@@ -111,7 +111,7 @@ Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFor
 Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
 {
 	LN_THROW(Internal::Manager != NULL, InvalidOperationException);
-	Device::ITexture* obj = Helper::GetGraphicsDevice(Internal::Manager)->CreateDepthBuffer(size.Width, size.Height, format);
+	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
 	return LN_NEW Texture(Internal::Manager, obj, NULL);
 }
 
@@ -121,7 +121,7 @@ Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
 Texture* Texture::CreateRenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	Device::ITexture* obj = Helper::GetGraphicsDevice(manager)->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+	Device::ITexture* obj = manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
 	return LN_NEW Texture(manager, obj, NULL);
 }
 
@@ -131,7 +131,7 @@ Texture* Texture::CreateRenderTarget(GraphicsManager* manager, const Size& size,
 Texture* Texture::CreateDepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	Device::ITexture* obj = Helper::GetGraphicsDevice(manager)->CreateDepthBuffer(size.Width, size.Height, format);
+	Device::ITexture* obj = manager->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
 	return LN_NEW Texture(manager, obj, NULL);
 }
 
@@ -227,7 +227,7 @@ Bitmap* Texture::Lock()
 			// ここでたまっているコマンドをすべて実行する。
 			// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
 			// ロックしたビットマップがセットされる。
-			Helper::GetRenderingThread(m_manager)->PushRenderingCommand(cmdList);
+			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
 			cmdList->WaitForIdle();
 
 			return m_primarySurface;
@@ -268,7 +268,7 @@ void Texture::Unlock()
 			cmdList->AddCommand<ReadUnlockTextureCommand>(this);
 			//ReadUnlockTextureCommand::AddCommand(cmdList, this);
 			//cmdList->ReadUnlockTexture(this);
-			Helper::GetRenderingThread(m_manager)->PushRenderingCommand(cmdList);
+			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
 			cmdList->WaitForIdle();
 		}
 	}

@@ -9,7 +9,6 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class Renderer;
 class RenderingThread;
 class PainterEngine;
 class TextRenderer;
@@ -32,7 +31,7 @@ public:
 	RenderingType GetRenderingType() const { return m_renderingType; }
 
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
-	Renderer* GetRenderer() const { return m_renderer; }
+	Details::Renderer* GetRenderer() const { return m_renderer; }
 
 	/** メインの SwapChain を取得します。これは Create() で指定されたメインウィンドウへのスワップチェインです。*/
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
@@ -112,6 +111,14 @@ public:	// TODO
 	GraphicsManager(const ConfigData& configData);
 	~GraphicsManager();
 
+LN_INTERNAL_ACCESS:
+	Device::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
+	RenderingThread* GetRenderingThread() { return m_renderingThread; }
+	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
+	RenderingCommandList* GetPrimaryRenderingCommandList();
+	PainterEngine* GetPainterEngine() { return m_painterEngine; }
+	Device::ITexture* GetDummyTexture() { return m_dummyTexture; }
+
 private:
 	FileManager*					m_fileManager;
 	RefPtr<FontManager>				m_fontManager;
@@ -120,7 +127,7 @@ private:
 	
 	Device::IGraphicsDevice*		m_graphicsDevice;
 	RefPtr<SwapChain>				m_mainSwapChain;
-	Renderer*						m_renderer;
+	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
 	PainterEngine*					m_painterEngine;
