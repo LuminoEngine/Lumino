@@ -9,7 +9,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -682,6 +682,6 @@ void DX9Renderer::InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset)
 }
 
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

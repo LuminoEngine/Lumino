@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../Internal.h"
-#include "Device/DeviceInterface.h"
+#include "Device/GraphicsDriverInterface.h"
 #include <Lumino/Graphics/Shader.h>
 #include "RenderingCommand.h"
 
@@ -75,7 +75,7 @@ RenderingCommandList::~RenderingCommandList()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingCommandList::Execute(Device::IGraphicsDevice* device/*Device::IRenderer* renderer*/)
+void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
 {
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
 	// この関数は描画スレッドから呼ばれる

@@ -6,7 +6,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class WGLSwapChain;
 class WGLContext;
@@ -55,6 +55,6 @@ private:
 	bool			m_glInited;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

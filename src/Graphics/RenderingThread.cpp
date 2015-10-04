@@ -3,7 +3,7 @@
 
 #include "../Internal.h"
 #include <Lumino/Profiler.h>
-#include "Device/DeviceInterface.h"
+#include "Device/GraphicsDriverInterface.h"
 #include "RenderingThread.h"
 
 namespace Lumino
@@ -31,7 +31,7 @@ RenderingThread::~RenderingThread()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingThread::Initialize(Device::IGraphicsDevice* device)
+void RenderingThread::Initialize(Driver::IGraphicsDevice* device)
 {
 	m_device = device;
 	m_renderer = m_device->GetRenderer();

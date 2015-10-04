@@ -117,7 +117,7 @@ public:
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
-	Texture(GraphicsManager* manager, Device::ITexture* deviceObj, Bitmap* primarySurface = NULL);
+	Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
 	virtual ~Texture();
 	void FlushPrimarySurface();
 
@@ -130,7 +130,7 @@ private:
 	friend class ShaderVariable;
 	friend class SwapChain;
 	GraphicsManager*	m_manager;
-	Device::ITexture*	m_deviceObj;
+	Driver::ITexture*	m_deviceObj;
 	Bitmap*				m_primarySurface;
 	//bool				m_primarySurfaceModified;
 

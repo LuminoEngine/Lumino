@@ -128,7 +128,7 @@ private:
 	void PresentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
 
 	GraphicsManager*		m_manager;
-	Device::IRenderer*		m_internal;
+	Driver::IRenderer*		m_internal;
 	RenderingCommandList*	m_primaryCommandList;
 
 	RenderState				m_currentRenderState;

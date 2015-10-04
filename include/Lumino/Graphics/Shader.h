@@ -80,9 +80,9 @@ protected:
 
 private:
 	friend class RenderingCommandList;
-	Shader(GraphicsManager* manager, Device::IShader* shader);
+	Shader(GraphicsManager* manager, Driver::IShader* shader);
 	GraphicsManager*			m_manager;
-	Device::IShader*			m_deviceObj;
+	Driver::IShader*			m_deviceObj;
 	Array<ShaderVariable*>		m_variables;
 	Array<ShaderTechnique*>		m_techniques;
 };
@@ -114,8 +114,8 @@ public:
 	const Matrix& GetMatrix() const { return *m_value.Matrix; }
 	void SetMatrixArray(const Matrix* matrices, int count);
 	const Matrix* GetMatrixArray() const { return m_value.MatrixArray; }
-	void SetTexture(Device::ITexture* texture);
-	Device::ITexture* GetTexture() const { return m_value.Texture; }
+	void SetTexture(Driver::ITexture* texture);
+	Driver::ITexture* GetTexture() const { return m_value.Texture; }
 	void SetString(const char* str);
 	const TCHAR* GetString() const { return m_value.String; }
 
@@ -135,7 +135,7 @@ private:
 			Vector4*		VectorArray;
 			Lumino::Matrix*	Matrix;
 			Lumino::Matrix*	MatrixArray;
-			Device::ITexture*		Texture;
+			Driver::ITexture*		Texture;
 			TCHAR*			String;
 
 			byte_t*			Buffer;		// ↑のポインタ型の実態 (ITexture*以外)
@@ -206,10 +206,10 @@ private:
 	friend class Shader;
 	friend class ShaderTechnique;
 	friend class ShaderPass;
-	ShaderVariable(Shader* owner, Device::IShaderVariable* deviceObj);
+	ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj);
 	virtual ~ShaderVariable();
 	Shader*						m_owner;
-	Device::IShaderVariable*	m_deviceObj;
+	Driver::IShaderVariable*	m_deviceObj;
 	ShaderValue					m_value;
 	Texture*					m_textureValue;
 	Array<ShaderVariable*>		m_annotations;
@@ -242,9 +242,9 @@ protected:
 
 private:
 	friend class Shader;
-	ShaderTechnique(Shader* owner, Device::IShaderTechnique* deviceObj);
+	ShaderTechnique(Shader* owner, Driver::IShaderTechnique* deviceObj);
 	Shader*						m_owner;
-	Device::IShaderTechnique*	m_deviceObj;
+	Driver::IShaderTechnique*	m_deviceObj;
 	Array<ShaderPass*>			m_passes;
 	Array<ShaderVariable*>		m_annotations;
 };
@@ -284,10 +284,10 @@ protected:
 private:
 	friend class RenderingCommandList;
 	friend class ShaderTechnique;
-	ShaderPass(Shader* owner, Device::IShaderPass* deviceObj);
+	ShaderPass(Shader* owner, Driver::IShaderPass* deviceObj);
 
 	Shader*						m_owner;
-	Device::IShaderPass*		m_deviceObj;
+	Driver::IShaderPass*		m_deviceObj;
 	String						m_name;
 	Array<ShaderVariable*>		m_annotations;
 };

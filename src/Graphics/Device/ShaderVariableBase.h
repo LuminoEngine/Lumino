@@ -1,13 +1,12 @@
 ﻿
 #pragma once
-
-#include "DeviceInterface.h"
+#include "GraphicsDriverInterface.h"
 #include <Lumino/Graphics/Shader.h>
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 class ShaderVariableBase
@@ -75,6 +74,6 @@ protected:
 	bool					m_modifid;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -1,12 +1,11 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class DX9GraphicsDevice;
 
@@ -57,6 +56,6 @@ private:
 	int								m_vertexStride;	    ///< 頂点ひとつ分のサイズ
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

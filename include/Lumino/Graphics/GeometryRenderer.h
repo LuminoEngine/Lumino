@@ -34,7 +34,7 @@ public:
 	void SetViewProjTransform(const Matrix& matrix);
 
 	/// テクスチャの設定 (NULL でダミーテクスチャを使用する)
-	void SetTexture(Device::ITexture* texture);
+	void SetTexture(Driver::ITexture* texture);
 
 	/// 線分の描画
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);

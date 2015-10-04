@@ -1,13 +1,11 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
 #include "../ShaderVariableBase.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class DX9Renderer;
 class DX9ShaderVariable;
@@ -165,6 +163,6 @@ private:
 	Array<DX9ShaderAnnotation*>		m_annotations;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

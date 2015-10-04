@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/BitmapPainter.h>
+#include <Lumino/Graphics/GraphicsException.h>
 #include "PainterEngine.h"
 #include "GraphicsHelper.h"
 
@@ -74,7 +75,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	// ダミーテクスチャ
 
 	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
-	Device::IGraphicsDevice::ScopedLockContext lock(device);
+	Driver::IGraphicsDevice::ScopedLockContext lock(device);
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
@@ -173,7 +174,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 
 	if (m_currentState.Brush.Type == BrushType_Texture)
 	{
-		Device::ITexture* srcTexture = m_currentState.Brush.TextureBrush.Texture;
+		Driver::ITexture* srcTexture = m_currentState.Brush.TextureBrush.Texture;
 		Rect& srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
 
 		SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
@@ -197,13 +198,13 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		// 枠
 		{
 			//Rect& srcRect = *((Rect*)brush.SourceRect);
-			DrawFrameRectangle(rect, brush.FrameThicness);
+			DrawFrameRectangle(rect, (float)brush.FrameThicness);
 		}
 
 		// Inner
 		{
 			Rect& srcRect = *((Rect*)brush.InnerSourceRect);
-			Device::ITexture* srcTexture = brush.Texture;
+			Driver::ITexture* srcTexture = brush.Texture;
 			SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
 			texSize.Width = 1.0f / texSize.Width;
 			texSize.Height = 1.0f / texSize.Height;
@@ -212,7 +213,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 			if (brush.WrapMode == BrushWrapMode_Stretch)
 			{
 				RectF tr = rect;
-				tr.Inflate(-brush.FrameThicness, -brush.FrameThicness);
+				tr.Inflate((float)-brush.FrameThicness, (float)-brush.FrameThicness);
 				InternalDrawRectangleStretch(tr, uvSrcRect);
 			}
 			else {
@@ -251,7 +252,7 @@ void PainterEngine::Flush()
 {
 	if (m_indexCache.GetCount() == 0) { return; }
 
-	Device::ITexture* srcTexture = NULL;
+	Driver::ITexture* srcTexture = NULL;
 	if (m_currentState.Brush.Type == BrushType_Texture) {
 		srcTexture = m_currentState.Brush.TextureBrush.Texture;
 	}
@@ -282,7 +283,7 @@ void PainterEngine::Flush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
+void PainterEngine::DrawFillRectangle(const RectF& rect, Driver::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
 {
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
@@ -318,9 +319,9 @@ void PainterEngine::DrawFillRectangle(const RectF& rect, Device::ITexture* srcTe
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect_*/)
+void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Driver::ITexture* srcTexture, const Rect& srcRect_*/)
 {
-	Device::ITexture* srcTexture = NULL;
+	Driver::ITexture* srcTexture = NULL;
 	Rect srcRect;
 	if (m_currentState.Brush.Type == BrushType_Texture)
 	{
@@ -476,7 +477,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, De
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/)
+void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/)
 {
 	SetInternalGlyphMaskTexture(glyphsTexture);
 
@@ -539,7 +540,7 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 //-----------------------------------------------------------------------------
 //　Note: srcRect は、rect の中にいくつのタイルを並べられるかを計算するために使用する
 //-----------------------------------------------------------------------------
-void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture)
+void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Driver::ITexture* srcTexture)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -611,7 +612,7 @@ void PainterEngine::DetachBrushData()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::SetInternalGlyphMaskTexture(Device::ITexture* mask)
+void PainterEngine::SetInternalGlyphMaskTexture(Driver::ITexture* mask)
 {
 	if (m_currentState.InternalGlyphMask.GetObjectPtr() != mask) 
 	{

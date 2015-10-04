@@ -18,7 +18,7 @@ public:
 	virtual ~RenderingThread();
 
 public:
-	void Initialize(Device::IGraphicsDevice* device);
+	void Initialize(Driver::IGraphicsDevice* device);
 	void Dispose();
 	void PushRenderingCommand(RenderingCommandList* commandList);
 	Exception* GetException() { return m_exception; }
@@ -35,8 +35,8 @@ protected:
 	virtual void Execute();
 
 private:
-	Device::IGraphicsDevice*		m_device;
-	Device::IRenderer*				m_renderer;
+	Driver::IGraphicsDevice*		m_device;
+	Driver::IRenderer*				m_renderer;
 	Queue<RenderingCommandList*>	m_commandListQueue;
 	Threading::Mutex				m_mutex;
 	Threading::EventFlag			m_running;

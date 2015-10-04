@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Lumino/Graphics/GeometryRenderer.h>
-#include "Device/DeviceInterface.h"
+#include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 
 namespace Lumino
@@ -33,7 +33,7 @@ class GeometryRendererCore
 	: public RefObject
 {
 public:
-	GeometryRendererCore(Device::IGraphicsDevice* device);
+	GeometryRendererCore(Driver::IGraphicsDevice* device);
 	virtual ~GeometryRendererCore();
 
 public:
@@ -51,7 +51,7 @@ public:
 	void SetViewProjTransform(const Matrix& matrix);
 
 	/// テクスチャの設定 (NULL でダミーテクスチャを使用する)
-	void SetTexture(Device::ITexture* texture);
+	void SetTexture(Driver::ITexture* texture);
 
 	/// 線分の描画
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
@@ -88,22 +88,22 @@ public:
 	};
 
 private:
-	RefPtr<Device::IGraphicsDevice>	m_device;
-	RefPtr<Device::IRenderer>		m_renderer;
-	RefPtr<Device::ITexture>		m_dummyTexture;
-	RefPtr<Device::IVertexBuffer>	m_vertexBuffer;
-	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
-	Device::IShaderPass*			m_currentShaderPass;
+	RefPtr<Driver::IGraphicsDevice>	m_device;
+	RefPtr<Driver::IRenderer>		m_renderer;
+	RefPtr<Driver::ITexture>		m_dummyTexture;
+	RefPtr<Driver::IVertexBuffer>	m_vertexBuffer;
+	RefPtr<Driver::IIndexBuffer>	m_indexBuffer;
+	Driver::IShaderPass*			m_currentShaderPass;
 
 	/// シェーダ関係の変数をまとめた構造体
 	struct
 	{
-		RefPtr<Device::IShader>		Shader;
-		Device::IShaderVariable*    varWorldMatrix;
-		Device::IShaderVariable*    varViewProjMatrix;
-		Device::IShaderVariable*    varTexture;
-		Device::IShaderTechnique*   techMainDraw;
-		Device::IShaderPass*        passP0;
+		RefPtr<Driver::IShader>		Shader;
+		Driver::IShaderVariable*    varWorldMatrix;
+		Driver::IShaderVariable*    varViewProjMatrix;
+		Driver::IShaderVariable*    varTexture;
+		Driver::IShaderTechnique*   techMainDraw;
+		Driver::IShaderPass*        passP0;
 
 	} m_shaderParam;
 
@@ -152,8 +152,8 @@ public:
 	struct SetTextureCommand : public RenderingCommand
 	{
 		GeometryRendererCore*	m_renderer;
-		Device::ITexture*		m_texture;
-		void Create(GeometryRendererCore* renderer, Device::ITexture* texture)
+		Driver::ITexture*		m_texture;
+		void Create(GeometryRendererCore* renderer, Driver::ITexture* texture)
 		{
 			m_renderer = renderer;
 			m_texture = texture;

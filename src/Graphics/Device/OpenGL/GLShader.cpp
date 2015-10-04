@@ -3,13 +3,14 @@
  * http://kumar.hateblo.jp/entry/2013/08/28/200708
  */
 #include "../../../Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 //=============================================================================
 // PlainGLSLBuilder
@@ -710,6 +711,6 @@ void GLShaderPass::Apply()
 //	static_cast<GLRenderer*>(m_ownerShader->GetGraphicsDevice()->GetRenderer())->SetCurrentShaderPass(NULL);
 //}
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -15,9 +15,9 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class Helper	// TODO: GraphicsHelper
 {
 public:
-	inline static Device::ITexture*			GetDeviceObject(Texture* texture) { return texture->m_deviceObj; }
-	inline static Device::IVertexBuffer*	GetDeviceObject(VertexBuffer* vb) { return vb->m_deviceObj; }
-	inline static Device::IIndexBuffer*		GetDeviceObject(IndexBuffer* ib) { return ib->m_deviceObj; }
+	inline static Driver::ITexture*			GetDeviceObject(Texture* texture) { return texture->m_deviceObj; }
+	inline static Driver::IVertexBuffer*	GetDeviceObject(VertexBuffer* vb) { return vb->m_deviceObj; }
+	inline static Driver::IIndexBuffer*		GetDeviceObject(IndexBuffer* ib) { return ib->m_deviceObj; }
 
 	inline static void						AttachGlyphTextureCache(GlyphRun* gr, Internal::FontGlyphTextureCache* cache) { gr->AttachGlyphTextureCache(cache); }
 	inline static Internal::FontGlyphTextureCache* GetGlyphTextureCache(GlyphRun* gr) { return gr->m_glyphTextureCache; }

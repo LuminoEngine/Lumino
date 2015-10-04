@@ -12,7 +12,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -359,6 +359,6 @@ void GLGraphicsDevice::GCDeviceResource()
 	//}
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

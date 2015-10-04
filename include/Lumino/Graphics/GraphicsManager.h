@@ -96,18 +96,15 @@ public:	// TODO
 		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
 		Lumino::FileManager*	FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
-#ifdef LN_OS_WIN32
 		void*					D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
-#endif
+
 		ConfigData()
 			: GraphicsAPI(GraphicsAPI::DirectX9)
 			, RenderingType(RenderingType::Deferred)
 			, MainWindow(NULL)
 			, FileManager(NULL)
 			, PlatformTextureLoading(false)
-#ifdef LN_OS_WIN32
 			, D3D9Device(NULL)
-#endif
 		{}
 	};
 
@@ -115,12 +112,12 @@ public:	// TODO
 	~GraphicsManager();
 
 LN_INTERNAL_ACCESS:
-	Device::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
+	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
-	Device::ITexture* GetDummyTexture() { return m_dummyTexture; }
+	Driver::ITexture* GetDummyTexture() { return m_dummyTexture; }
 
 private:
 	FileManager*					m_fileManager;
@@ -128,13 +125,13 @@ private:
 	RenderingType					m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
 	
-	Device::IGraphicsDevice*		m_graphicsDevice;
+	Driver::IGraphicsDevice*		m_graphicsDevice;
 	RefPtr<SwapChain>				m_mainSwapChain;
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
 	PainterEngine*					m_painterEngine;
-	Device::ITexture*				m_dummyTexture;
+	Driver::ITexture*				m_dummyTexture;
 	bool							m_platformTextureLoading;
 };
 

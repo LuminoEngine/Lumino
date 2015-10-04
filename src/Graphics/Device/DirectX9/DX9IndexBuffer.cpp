@@ -6,7 +6,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -119,6 +119,6 @@ void DX9IndexBuffer::Unlock()
 	}
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

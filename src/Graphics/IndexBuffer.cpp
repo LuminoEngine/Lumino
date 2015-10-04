@@ -3,6 +3,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/GraphicsManager.h>
+#include "Device/GraphicsDriverInterface.h"
 #include "GraphicsHelper.h"
 
 namespace Lumino
@@ -23,7 +24,7 @@ IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexB
 IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	RefPtr<Device::IIndexBuffer> deviceObj(
+	RefPtr<Driver::IIndexBuffer> deviceObj(
 		manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, format, usage));
 	return LN_NEW IndexBuffer(deviceObj, indexCount, format);
 }
@@ -31,7 +32,7 @@ IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-IndexBuffer::IndexBuffer(Device::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format)
+IndexBuffer::IndexBuffer(Driver::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format)
 	: m_deviceObj(deviceObj)
 	, m_initialUpdate(true)
 {

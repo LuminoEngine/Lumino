@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Texture.h>
@@ -35,7 +36,7 @@ Shader* Shader::Create(const char* code, int length)
 	LN_THROW(GraphicsManager::Instance != NULL, ArgumentException);
 
 	ShaderCompileResult result;
-	RefPtr<Device::IShader> deviceObj(
+	RefPtr<Driver::IShader> deviceObj(
 		GraphicsManager::Instance->GetGraphicsDevice()->CreateShader(code, length, &result));
 
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
@@ -49,7 +50,7 @@ Shader* Shader::Create(GraphicsManager* manager, const void* textData, size_t by
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	ShaderCompileResult result;
-	RefPtr<Device::IShader> deviceObj(
+	RefPtr<Driver::IShader> deviceObj(
 		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, &result));
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
 	return LN_NEW Shader(manager, deviceObj);
@@ -64,7 +65,7 @@ bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t by
 	LN_THROW(outShader != NULL, ArgumentException);
 
 	*outShader = NULL;
-	RefPtr<Device::IShader> deviceObj(
+	RefPtr<Driver::IShader> deviceObj(
 		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, outResult));
 	if (deviceObj.IsNull()) {
 		return false;
@@ -77,7 +78,7 @@ bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t by
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Shader::Shader(GraphicsManager* manager, Device::IShader* shader)
+Shader::Shader(GraphicsManager* manager, Driver::IShader* shader)
 	: m_manager(manager)
 	, m_deviceObj(shader)
 {
@@ -243,7 +244,7 @@ void ShaderValue::SetMatrixArray(const Matrix* matrices, int count)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderValue::SetTexture(Device::ITexture* texture)
+void ShaderValue::SetTexture(Driver::ITexture* texture)
 {
 	m_type = ShaderVariableType_Texture;
 	LN_REFOBJ_SET(m_value.Texture, texture);
@@ -339,7 +340,7 @@ void ShaderValue::Copy(const ShaderValue& value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ShaderVariable::ShaderVariable(Shader* owner, Device::IShaderVariable* deviceObj)
+ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj)
 	: m_owner(owner)
 	, m_deviceObj(deviceObj)
 	, m_textureValue(NULL)
@@ -536,7 +537,7 @@ const Matrix* ShaderVariable::GetMatrixArray() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetTexture(Texture* texture)
 {
-	Device::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
+	Driver::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
 	LN_REFOBJ_SET(m_textureValue, texture);
 	LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, t);
 }
@@ -580,7 +581,7 @@ const Array<ShaderVariable*>& ShaderVariable::GetAnnotations() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ShaderTechnique::ShaderTechnique(Shader* owner, Device::IShaderTechnique* deviceObj)
+ShaderTechnique::ShaderTechnique(Shader* owner, Driver::IShaderTechnique* deviceObj)
 	: m_owner(owner)
 	, m_deviceObj(deviceObj)
 {
@@ -644,7 +645,7 @@ ShaderVariable* ShaderTechnique::FindAnnotation(const TCHAR* name, CaseSensitivi
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ShaderPass::ShaderPass(Shader* owner, Device::IShaderPass* deviceObj)
+ShaderPass::ShaderPass(Shader* owner, Driver::IShaderPass* deviceObj)
 	: m_owner(owner)
 	, m_deviceObj(deviceObj)
 	, m_name(m_deviceObj->GetName())

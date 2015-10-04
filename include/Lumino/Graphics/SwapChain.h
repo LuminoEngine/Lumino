@@ -17,8 +17,6 @@ class SwapChain
 	: public RefObject
 {
 public:
-	//SwapChain(Platform::Window* targetWindow);
-	//SwapChain(GraphicsManager* manager, Platform::Window* targetWindow, Device::ISwapChain*);
 	virtual ~SwapChain();
 
 public:
@@ -47,11 +45,11 @@ LN_INTERNAL_ACCESS:
 	//friend class GraphicsManager;
 	//friend class Renderer;
 	//friend struct PresentCommand;	// TODO
-	SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Device::ISwapChain* deviceSwapChain);
+	SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain);
 	void Initialize(const Size& backbufferSize);
 
 	GraphicsManager*		m_manager;
-	Device::ISwapChain*		m_deviceObj;
+	Driver::ISwapChain*		m_deviceObj;
 	RenderingCommandList*	m_commandList;
 	Threading::EventFlag	m_waiting;		///< コマンド実行していない
 	Texture*				m_backColorBuffer;

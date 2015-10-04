@@ -11,7 +11,7 @@ http://qiita.com/edo_m18/items/95483cabf50494f53bb5
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -389,6 +389,6 @@ WGLContext::~WGLContext()
 //	}
 //}
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

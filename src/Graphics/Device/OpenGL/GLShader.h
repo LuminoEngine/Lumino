@@ -1,14 +1,12 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
 #include "../ShaderVariableBase.h"
 #include "GLRenderer.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class GLShader;
 class GLShaderVariable;
@@ -145,6 +143,6 @@ private:
 	int								m_textureVarCount;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

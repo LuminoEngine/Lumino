@@ -1,13 +1,11 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
 #include "DX9Texture.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class DX9GraphicsDevice;
 
@@ -44,6 +42,6 @@ private:
 	DX9BackBufferTexture*		m_backBuffer;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

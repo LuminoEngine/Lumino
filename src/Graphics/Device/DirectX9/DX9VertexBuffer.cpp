@@ -7,7 +7,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -168,6 +168,6 @@ void DX9VertexBuffer::OnResetDevice()
 {
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

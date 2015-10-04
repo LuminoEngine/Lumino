@@ -3,13 +3,13 @@
 
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/RenderState.h>
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 #include "DX9Texture.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class DX9GraphicsDevice;
 class DX9VertexBuffer;
@@ -77,6 +77,6 @@ private:
 	bool					m_sceneBegan;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

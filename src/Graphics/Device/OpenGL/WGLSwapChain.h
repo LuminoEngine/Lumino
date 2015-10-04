@@ -1,7 +1,5 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
 #include "GLSwapChain.h"
 #include "GLGraphicsDevice.h"
 #include "GLTexture.h"
@@ -9,7 +7,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class WGLGraphicsDevice;
 class WGLContext;
@@ -69,6 +67,6 @@ private:
 	HGLRC	m_hGLRC;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

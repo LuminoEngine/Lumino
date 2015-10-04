@@ -1,11 +1,12 @@
 ﻿
 #include "../../../Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include "GLVertexBuffer.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -210,6 +211,6 @@ void GLVertexBuffer::OnResetDevice()
 	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

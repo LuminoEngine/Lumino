@@ -28,6 +28,8 @@ class DepthStencilState;
 class SamplerState;
 class ShaderValue;
 
+class ColorF;
+
 class VertexBuffer;
 class IndexBuffer;
 class Texture;
@@ -291,7 +293,7 @@ LN_ENUM(FlowDirection)
 };
 LN_ENUM_DECLARE(FlowDirection)
 
-namespace Device
+namespace Driver
 {
 	class IGraphicsDevice;
 	class ISwapChain;
@@ -304,7 +306,7 @@ namespace Device
 	class IShaderTechnique;
 	class IShaderPass;
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino
 

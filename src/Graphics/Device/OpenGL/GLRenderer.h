@@ -2,13 +2,13 @@
 #pragma once 
 
 #include "../../../include/Lumino/Graphics/RenderState.h"
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 #include "GLTexture.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class GLGraphicsDevice;
 class GLVertexBuffer;
@@ -81,6 +81,6 @@ private:
 	volatile bool			m_justSawReset;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

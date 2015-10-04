@@ -21,7 +21,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Device::ISwapChain* deviceSwapChain)
+SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain)
 	: m_manager(manager)
 	, m_deviceObj(deviceSwapChain)
 {
@@ -70,7 +70,7 @@ void SwapChain::Initialize(const Size& backbufferSize)
 {
 	m_commandList = LN_NEW RenderingCommandList();
 
-	Device::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 	m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
 	m_backColorBuffer = LN_NEW Texture(m_manager, m_deviceObj->GetBackBuffer(), NULL);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
 	m_backDepthBuffer = Texture::CreateDepthBuffer(m_manager, backbufferSize, TextureFormat_D24S8);
@@ -106,7 +106,7 @@ void SwapChain::Present()
 
 		// デバイスロストのチェック
 		auto* device = m_manager->GetGraphicsDevice();
-		if (device->GetDeviceState() == Device::DeviceState_Lost)
+		if (device->GetDeviceState() == Driver::DeviceState_Lost)
 		{
 			auto* thread = m_manager->GetRenderingThread();
 

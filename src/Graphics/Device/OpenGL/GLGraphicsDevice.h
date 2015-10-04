@@ -1,13 +1,12 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 #include "GLRenderer.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class GLContext;
 
@@ -115,6 +114,6 @@ public:
 	virtual ~GLContext() {}
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

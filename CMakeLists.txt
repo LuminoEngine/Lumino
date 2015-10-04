@@ -204,8 +204,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
-	src/Graphics/Device/DeviceInterface.cpp
-	src/Graphics/Device/DeviceInterface.h
+	src/Graphics/Device/GraphicsDriverInterface.cpp
+	src/Graphics/Device/GraphicsDriverInterface.h
 	src/Graphics/Device/GraphicsDeviceBase.cpp
 	src/Graphics/Device/GraphicsDeviceBase.h
 	src/Graphics/Device/ShaderVariableBase.cpp

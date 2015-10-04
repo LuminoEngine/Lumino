@@ -1,13 +1,12 @@
 ﻿
 #pragma once 
-
 #include <Lumino/Graphics/SamplerState.h>
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 /// OpenGL 用の ITexture の実装
@@ -173,6 +172,6 @@ private:
 };
 #endif
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

@@ -34,7 +34,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 
 	// キャッシュ用テクスチャ作成
 	m_glyphCacheTexture.Attach(Texture::Create(Size(w, w), TextureFormat_R8G8B8A8, 1, m_manager));
-	//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
+	//Driver::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
 	//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
 
 
@@ -258,7 +258,7 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 		m_indexStack.Pop();
 
 		{
-			Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
+			Driver::ITexture::ScopedLock lock(m_glyphCacheTexture);
 
 			Rect destRect(
 				(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,

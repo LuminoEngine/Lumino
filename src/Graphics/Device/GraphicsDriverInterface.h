@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Bitmap.h>
@@ -9,7 +8,7 @@ namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-namespace Device
+namespace Driver
 {
 class ISwapChain;
 class IRenderer;
@@ -164,7 +163,7 @@ public:
 	///		なぜこうしているのかというと、DX9 や OpenGL がデフォルトで作成するバックバッファは細かいフォーマットの制御が効かないため。
 	///		さらに、OpenGL はバックバッファを Renderer::SetRenderTarget したいときはテクスチャ番号 0 をフレームバッファにアタッチする必要がある。
 	///		これはカレントコンテキストに依存するため、複数ウィンドウへの描画を行いたいときに余計な制限をユーザに課すことになる。
-	///		TODO: でも、今は colorBuffer は Graphics::Texture に持っているけど、Device::SwapChain に持たせてもいいかも。
+	///		TODO: でも、今は colorBuffer は Graphics::Texture に持っているけど、Driver::SwapChain に持たせてもいいかも。
 	virtual void Present(ITexture* colorBuffer) = 0;
 
 protected:
@@ -507,6 +506,6 @@ protected:
 	virtual ~IShaderPass() {}
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

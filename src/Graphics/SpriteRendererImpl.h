@@ -2,7 +2,7 @@
 #pragma once
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
-#include "Device/DeviceInterface.h"
+#include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 
 namespace Lumino
@@ -38,7 +38,7 @@ public:
         const Vector3& position,
 		const Vector3& center,
 		const Vector2& size,
-        Device::ITexture* texture,
+		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const ColorF* colorTable);
 
@@ -47,7 +47,7 @@ public:
         const Vector3& position,
         const Vector3& center,
         const Vector2& size,
-		Device::ITexture* texture,
+		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const ColorF* colorTable,    // 4 頂点分。NULL の場合は白
 		AxisDirection front);
@@ -67,7 +67,7 @@ private:
 		const Vector3& position,
 		const Vector3& center,
 		const Vector2& size,
-		Device::ITexture* texture,
+		Driver::ITexture* texture,
 		const RectF& srcRect,
 		const ColorF* colorTable,
 		AxisDirection front,
@@ -97,7 +97,7 @@ private:
 	struct BatchSpriteData
 	{
 		BatchSpriteVertex	Vertices[4];  ///< 座標変換済み頂点 ([0].Position.z がソートの基準になる)
-		Device::ITexture*	Texture;
+		Driver::ITexture*	Texture;
 		int					RenderStateIndex;
 		int					Priority;       ///< 優先度 (大きい方が後から描画される =手前)
 		float				Depth;          ///< ソートに使われる Z 値 (大きいほど遠い)
@@ -110,7 +110,7 @@ private:
     {
         int StartIndex;
         int PrimitiveNum;
-		Device::ITexture*   Texture;
+		Driver::ITexture*   Texture;
 		int RenderStateIndex;
     };
 
@@ -125,8 +125,8 @@ private:
 	typedef Array<Attribute>		AttributeList;
 
 	RefPtr<GraphicsManager>			m_manager;
-	RefPtr<Device::IVertexBuffer>	m_vertexBuffer;
-	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
+	RefPtr<Driver::IVertexBuffer>	m_vertexBuffer;
+	RefPtr<Driver::IIndexBuffer>	m_indexBuffer;
     int								m_maxSprites;
 	SpriteRequestList				m_spriteRequestList;
 	int								m_spriteRequestListUsedCount;
@@ -148,11 +148,11 @@ private:
 	/// シェーダ関係の変数をまとめた構造体
     struct 
 	{
-		RefPtr<Device::IShader>		Shader;
-		Device::IShaderVariable*    varViewProjMatrix;
-		Device::IShaderVariable*    varViewPixelSize;
-		Device::IShaderVariable*    varTexture;
-		Device::IShaderTechnique*   techMainDraw;
+		RefPtr<Driver::IShader>		Shader;
+		Driver::IShaderVariable*    varViewProjMatrix;
+		Driver::IShaderVariable*    varViewPixelSize;
+		Driver::IShaderVariable*    varTexture;
+		Driver::IShaderTechnique*   techMainDraw;
 
     } m_shader;
 
@@ -241,7 +241,7 @@ public:
 		Vector3 m_position;
 		Vector3 m_center;
 		Vector2 m_size;
-		Device::ITexture* m_texture;
+		Driver::ITexture* m_texture;
 		RectF m_srcRect;
 		ColorF m_colorTable[4];
 
@@ -250,7 +250,7 @@ public:
 			const Vector3& position,
 			const Vector3& center,
 			const Vector2& size,
-			Device::ITexture* texture,
+			Driver::ITexture* texture,
 			const RectF& srcRect,
 			const ColorF* colorTable)
 		{
@@ -276,7 +276,7 @@ public:
 		Vector3 m_position;
 		Vector3 m_center;
 		Vector2 m_size;
-		Device::ITexture* m_texture;
+		Driver::ITexture* m_texture;
 		RectF m_srcRect;
 		ColorF m_colorTable[4];
 		AxisDirection m_front;
@@ -286,7 +286,7 @@ public:
 			const Vector3& position,
 			const Vector3& center,
 			const Vector2& size,
-			Device::ITexture* texture,
+			Driver::ITexture* texture,
 			const RectF& srcRect,
 			const ColorF* colorTable,
 			AxisDirection front)

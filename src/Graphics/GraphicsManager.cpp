@@ -722,26 +722,26 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 #if defined(LN_OS_WIN32)
 	if (configData.GraphicsAPI == GraphicsAPI::DirectX9)
 	{
-		Device::DX9GraphicsDevice::ConfigData data;
+		Driver::DX9GraphicsDevice::ConfigData data;
 		data.MainWindow = configData.MainWindow;
 		data.FileManager = configData.FileManager;
 		data.D3D9Device = (IDirect3DDevice9*)configData.D3D9Device;
 		data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
 		data.EnableVSyncWait = false;			// TODO
 		data.EnableFPUPreserve = false;			// TODO
-		m_graphicsDevice = LN_NEW Device::DX9GraphicsDevice();
-		static_cast<Device::DX9GraphicsDevice*>(m_graphicsDevice)->Initialize(data);
+		m_graphicsDevice = LN_NEW Driver::DX9GraphicsDevice();
+		static_cast<Driver::DX9GraphicsDevice*>(m_graphicsDevice)->Initialize(data);
 		//m_graphicsDevice.Attach(LN_NEW Device::DX9GraphicsDevice());
 		//static_cast<Device::DX9GraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(data);
 	}
 	else if (configData.GraphicsAPI == GraphicsAPI::OpenGL)
 	{
-		Device::WGLGraphicsDevice::ConfigData data;
+		Driver::WGLGraphicsDevice::ConfigData data;
 		data.MainWindow = configData.MainWindow;
 		data.OpenGLMajorVersion = 2;
 		data.OpenGLMinorVersion = 0;
-		m_graphicsDevice = LN_NEW Device::WGLGraphicsDevice();
-		static_cast<Device::WGLGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
+		m_graphicsDevice = LN_NEW Driver::WGLGraphicsDevice();
+		static_cast<Driver::WGLGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
 		//m_graphicsDevice.Attach(LN_NEW Device::WGLGraphicsDevice());
 		//static_cast<Device::WGLGraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(data);
 	}
@@ -749,8 +749,8 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		LN_THROW(0, ArgumentException);
 	}
 #elif defined(LN_X11)
-	m_graphicsDevice = LN_NEW Device::GLXGraphicsDevice();
-	static_cast<Device::GLXGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
+	m_graphicsDevice = LN_NEW Driver::GLXGraphicsDevice();
+	static_cast<Driver::GLXGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
 	//m_graphicsDevice.Attach(LN_NEW Device::GLXGraphicsDevice());
 	//static_cast<Device::GLXGraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(configData);
 #else
@@ -766,7 +766,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	// Renderer
 	m_renderer = LN_NEW Details::Renderer(this);
 
-	Device::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
+	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
 	if (deviceSwapChain != NULL) {
 		m_mainSwapChain.Attach(LN_NEW SwapChain(this, configData.MainWindow->GetSize(), deviceSwapChain));
 		//m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDefaultSwapChain();
@@ -775,7 +775,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	// ダミーテクスチャ
 	m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
 	{
-		Device::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
+		Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 		BitmapPainter painter(m_dummyTexture->Lock());
 		painter.Clear(Color::White);
 		m_dummyTexture->Unlock();

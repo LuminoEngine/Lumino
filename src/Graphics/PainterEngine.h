@@ -1,9 +1,9 @@
 ﻿
 #pragma once
-
-#include "Device/DeviceInterface.h"
+#include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Painter.h>
+#include "Device/GraphicsDriverInterface.h"
 
 namespace Lumino
 {
@@ -75,7 +75,7 @@ struct BrushData
 
 		struct
 		{
-			Device::ITexture*	Texture;
+			Driver::ITexture*	Texture;
 			int					SourceRect[4];	///< XYWH
 			BrushWrapMode		WrapMode;
 
@@ -83,7 +83,7 @@ struct BrushData
 
 		struct
 		{
-			Device::ITexture*	Texture;
+			Driver::ITexture*	Texture;
 			int					SourceRect[4];	///< XYWH
 			int					InnerSourceRect[4];	///< XYWH
 			BrushWrapMode		WrapMode;
@@ -138,23 +138,23 @@ public:
 
 
 
-	//void DrawFillRectangle(const RectF& rect, Device::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
+	//void DrawFillRectangle(const RectF& rect, Driver::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
 
 	// srcTexture は NULL ならダミーテクスチャが使われる
 	/// srcRect はサイズが INT_MAX であれば全体を転送することを示す
-	void DrawFrameRectangle(const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect*/);
+	void DrawFrameRectangle(const RectF& rect, float frameWidth/*, Driver::ITexture* srcTexture, const Rect& srcRect*/);
 
 	/// 塗りつぶし描画
-	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Device::ITexture* glyphsTexture, Device::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
+	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
 
 private:
 	void InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect);
-	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Device::ITexture* srcTexture);
+	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Driver::ITexture* srcTexture);
 
 	void AttachBrushData();
 	void DetachBrushData();
 
-	void SetInternalGlyphMaskTexture(Device::ITexture* mask);
+	void SetInternalGlyphMaskTexture(Driver::ITexture* mask);
 	void UpdateCurrentForeColor();
 
 private:
@@ -187,16 +187,16 @@ private:
 		BrushData	Brush;
 		float		Opacity;
 		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
-		RefPtr<Device::ITexture>	InternalGlyphMask;
+		RefPtr<Driver::ITexture>	InternalGlyphMask;
 	};
 
 	
-	Device::IRenderer*				m_renderer;
+	Driver::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
 	CacheBuffer<uint16_t>			m_indexCache;
-	RefPtr<Device::IVertexBuffer>	m_vertexBuffer;
-	RefPtr<Device::IIndexBuffer>	m_indexBuffer;
-	RefPtr<Device::ITexture>		m_dummyTexture;
+	RefPtr<Driver::IVertexBuffer>	m_vertexBuffer;
+	RefPtr<Driver::IIndexBuffer>	m_indexBuffer;
+	RefPtr<Driver::ITexture>		m_dummyTexture;
 	Matrix							m_baseTransform;
 
 	State	m_currentState;
@@ -205,14 +205,14 @@ private:
 
 	struct
 	{
-		RefPtr<Device::IShader>		Shader;
-		Device::IShaderTechnique*	Technique;
-		Device::IShaderPass*		Pass;
-		Device::IShaderVariable*	varWorldMatrix;
-		Device::IShaderVariable*	varViewProjMatrix;
-		Device::IShaderVariable*	varTexture;
-		Device::IShaderVariable*	varGlyphMaskSampler;
-		Device::IShaderVariable*	varViewportSize;	///< DX9 HLSL 用のピクセルオフセット計算用。GLSL では最適化により消えることもある
+		RefPtr<Driver::IShader>		Shader;
+		Driver::IShaderTechnique*	Technique;
+		Driver::IShaderPass*		Pass;
+		Driver::IShaderVariable*	varWorldMatrix;
+		Driver::IShaderVariable*	varViewProjMatrix;
+		Driver::IShaderVariable*	varTexture;
+		Driver::IShaderVariable*	varGlyphMaskSampler;
+		Driver::IShaderVariable*	varViewportSize;	///< DX9 HLSL 用のピクセルオフセット計算用。GLSL では最適化により消えることもある
 
 	} m_shader;
 };

@@ -17,7 +17,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -261,6 +261,6 @@ bool WGLGraphicsDevice::CheckContainsExtensionString(const char* string, const G
 	return GL_TRUE;
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

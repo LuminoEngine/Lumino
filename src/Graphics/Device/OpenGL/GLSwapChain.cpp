@@ -1,5 +1,6 @@
 ﻿
 #include "../../../Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include "GLTexture.h"
 #include "GLShader.h"
 #include "GLSwapChain.h"
@@ -7,7 +8,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -178,6 +179,6 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 #endif
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

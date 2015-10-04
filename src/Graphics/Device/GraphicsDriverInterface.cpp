@@ -1,11 +1,11 @@
 ﻿
 #include "../../Internal.h"
-#include "DeviceInterface.h"
+#include "GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -28,6 +28,6 @@ IShaderVariable* IShader::GetVariableByName(const TCHAR* name) const
 	return NULL;
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

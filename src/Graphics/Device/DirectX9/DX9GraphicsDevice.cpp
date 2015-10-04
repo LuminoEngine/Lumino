@@ -13,7 +13,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -477,6 +477,6 @@ void DX9GraphicsDevice::SetPresentParameters(const Size& backbufferSize, bool fu
 	}
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

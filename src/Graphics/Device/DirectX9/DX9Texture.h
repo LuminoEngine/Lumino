@@ -1,13 +1,12 @@
 ﻿
-#pragma once 
-
+#pragma once
 #include <Lumino/Graphics/SamplerState.h>
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class DX9GraphicsDevice;
 
@@ -182,6 +181,6 @@ private:
 	RefPtr<Bitmap>	m_lockedBitmap;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

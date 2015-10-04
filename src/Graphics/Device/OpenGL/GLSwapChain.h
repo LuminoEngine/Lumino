@@ -1,13 +1,11 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
 #include "GLTexture.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class GLRenderer;
 
@@ -42,6 +40,6 @@ private:
 	GLuint	m_vertexArray;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

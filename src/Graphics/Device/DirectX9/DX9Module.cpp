@@ -4,7 +4,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -423,6 +423,6 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 	return TextureFormat_Unknown;
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

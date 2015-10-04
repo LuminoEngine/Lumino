@@ -8,7 +8,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 class DX9Module
@@ -170,6 +170,6 @@ private:
 	static DllLoader	m_D3Dx9Module;	///< "d3dx9.dll"
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

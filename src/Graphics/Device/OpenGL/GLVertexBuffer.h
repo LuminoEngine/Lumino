@@ -1,12 +1,11 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 struct LNGLVertexElement
@@ -71,6 +70,6 @@ private:
 	DeviceResourceUsage	m_format;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

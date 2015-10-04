@@ -79,7 +79,7 @@ void GeometryRenderer::SetViewProjTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GeometryRenderer::SetTexture(Device::ITexture* texture)
+void GeometryRenderer::SetTexture(Driver::ITexture* texture)
 {
 	LN_CALL_COMMAND(SetTexture, GeometryRendererCore::SetTextureCommand, texture);
 }
@@ -145,7 +145,7 @@ void GeometryRenderer::DrawRect(const RectF& destRect, const RectF& texUVRect, c
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
+GeometryRendererCore::GeometryRendererCore(Driver::IGraphicsDevice* device)
 	: m_currentShaderPass(NULL)
 {
 	m_device = device;
@@ -181,7 +181,7 @@ GeometryRendererCore::GeometryRendererCore(Device::IGraphicsDevice* device)
 	// ダミーテクスチャ
 
 	m_dummyTexture.Attach(m_device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
-	Device::IGraphicsDevice::ScopedLockContext lock(m_device);
+	Driver::IGraphicsDevice::ScopedLockContext lock(m_device);
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
@@ -243,7 +243,7 @@ void GeometryRendererCore::SetViewProjTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GeometryRendererCore::SetTexture(Device::ITexture* texture)
+void GeometryRendererCore::SetTexture(Driver::ITexture* texture)
 {
 	if (texture) {
 		m_shaderParam.varTexture->SetTexture(texture);

@@ -1,12 +1,11 @@
 ﻿
 #pragma once 
-
-#include "../DeviceInterface.h"
+#include "../GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 /// OpenGL 用の IIndexBuffer の実装
@@ -41,6 +40,6 @@ private:
 	bool				m_inited;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

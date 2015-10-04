@@ -170,7 +170,7 @@ const DepthStencilState& Renderer::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void Renderer::SetRenderTarget(int index, Texture* texture)
 {
-	Device::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
+	Driver::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
 	LN_CALL_RENDERER_COMMAND(SetRenderTarget, SetRenderTargetCommand, index, t);
 	LN_REFOBJ_SET(m_currentRenderTargets[index], texture);
 }
@@ -189,7 +189,7 @@ Texture* Renderer::GetRenderTarget(int index) const
 //-----------------------------------------------------------------------------
 void Renderer::SetDepthBuffer(Texture* depthBuffer)
 {
-	Device::ITexture* t = (depthBuffer != NULL) ? Helper::GetDeviceObject(depthBuffer) : NULL;
+	Driver::ITexture* t = (depthBuffer != NULL) ? Helper::GetDeviceObject(depthBuffer) : NULL;
 	LN_CALL_RENDERER_COMMAND(SetDepthBuffer, SetDepthBufferCommand, t);
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
 }
@@ -224,7 +224,7 @@ const Rect& Renderer::GetViewport()
 //-----------------------------------------------------------------------------
 void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
-	Device::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
+	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
 	LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
 }
 
@@ -233,7 +233,7 @@ void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 //-----------------------------------------------------------------------------
 void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
-	Device::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
+	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
 	LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
 }
 

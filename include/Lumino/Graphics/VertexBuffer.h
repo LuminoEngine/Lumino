@@ -52,12 +52,12 @@ public:
 	void Unlock();
 
 protected:
-	VertexBuffer(Device::IVertexBuffer* deviceObj);
+	VertexBuffer(Driver::IVertexBuffer* deviceObj);
 	virtual ~VertexBuffer();
 
 private:	// TODO
 	friend struct SetVertexBufferCommand;
-	Device::IVertexBuffer*	m_deviceObj;
+	Driver::IVertexBuffer*	m_deviceObj;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
 	friend class Helper;

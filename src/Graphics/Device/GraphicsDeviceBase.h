@@ -1,13 +1,12 @@
 ﻿
 #pragma once 
-
 #include <Lumino/Threading/Mutex.h>
-#include "DeviceInterface.h"
+#include "GraphicsDriverInterface.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 class GraphicsDeviceBase
@@ -37,6 +36,6 @@ protected:
 	Threading::Mutex	m_deviceObjectListMutex;
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

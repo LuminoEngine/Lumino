@@ -303,7 +303,7 @@ struct DrawFrameRectangleCommand : public RenderingCommand
 	PainterEngine* m_engine;
 	RectF m_rect;
 	float m_frameWidth;
-	//Device::ITexture* m_srcTexture;
+	//Driver::ITexture* m_srcTexture;
 	//Rect m_srcRect;
 
 	void Create(PainterEngine* engine, const RectF& rect, float frameWidth/*, Device::ITexture* srcTexture, const Rect& srcRect*/)
@@ -325,8 +325,8 @@ struct DrawGlyphRunCommand : public RenderingCommand
 	PointF m_position;
 	DataHandle m_dataList;
 	int m_dataCount;
-	Device::ITexture* m_glyphsTexture;
-	Device::ITexture* m_strokesTexture;
+	Driver::ITexture* m_glyphsTexture;
+	Driver::ITexture* m_strokesTexture;
 	//ColorF m_foreColor;
 	//ColorF m_strokeColor;
 
@@ -335,8 +335,8 @@ struct DrawGlyphRunCommand : public RenderingCommand
 		const PointF& position,
 		PainterEngine::GlyphRunData* dataList,
 		int dataCount,
-		Device::ITexture* glyphsTexture,
-		Device::ITexture* strokesTexture/*,
+		Driver::ITexture* glyphsTexture,
+		Driver::ITexture* strokesTexture/*,
 		const ColorF& foreColor, 
 		const ColorF& strokeColor*/)
 	{
@@ -700,7 +700,7 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 		data[i].SrcPixelRect.Set((float)srcRect.X, (float)srcRect.Y, (float)srcRect.Width, (float)srcRect.Height);
 	}
 
-	Device::ITexture* dtex2 = (tex2 != NULL) ? Helper::GetDeviceObject(tex2) : NULL;
+	Driver::ITexture* dtex2 = (tex2 != NULL) ? Helper::GetDeviceObject(tex2) : NULL;
 	
 	
 	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, Helper::GetDeviceObject(tex1), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色

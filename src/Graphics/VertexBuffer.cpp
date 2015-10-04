@@ -1,9 +1,9 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
-#include "../../include/Lumino/Graphics/VertexBuffer.h"
-#include "../../include/Lumino/Graphics/GraphicsManager.h"
+#include <Lumino/Graphics/VertexBuffer.h>
+#include <Lumino/Graphics/GraphicsManager.h>
+#include "Device/GraphicsDriverInterface.h"
 #include "GraphicsHelper.h"
 
 namespace Lumino
@@ -28,7 +28,7 @@ VertexBuffer* VertexBuffer::Create(const VertexElement* vertexElements, int elem
 VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	RefPtr<Device::IVertexBuffer> deviceObj(
+	RefPtr<Driver::IVertexBuffer> deviceObj(
 		manager->GetGraphicsDevice()->CreateVertexBuffer(vertexElements, elementsCount, vertexCount, data, usage));
 	return LN_NEW VertexBuffer(deviceObj);
 }
@@ -36,7 +36,7 @@ VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VertexBuffer::VertexBuffer(Device::IVertexBuffer* deviceObj)
+VertexBuffer::VertexBuffer(Driver::IVertexBuffer* deviceObj)
 	: m_deviceObj(deviceObj)
 	, m_initialUpdate(true)
 {

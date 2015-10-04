@@ -55,11 +55,11 @@ public:
 	//void SetSubData(uint32_t offsetBytes, void* data, uint32_t dataBytes);
 
 protected:
-	IndexBuffer(Device::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format);
+	IndexBuffer(Driver::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format);
 	virtual ~IndexBuffer();
 
 private:
-	Device::IIndexBuffer*	m_deviceObj;
+	Driver::IIndexBuffer*	m_deviceObj;
 	ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;

@@ -4,7 +4,7 @@
 #include <vector>
 #include <Lumino/Base/Delegate.h>
 #include <Lumino/Base/Rect.h>
-#include "Device/DeviceInterface.h"
+#include "Device/GraphicsDriverInterface.h"
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/SamplerState.h>
 
@@ -58,8 +58,8 @@ public:
 	virtual void Execute() = 0;
 
 protected:
-	inline Device::IGraphicsDevice* GetDevice() const;
-	inline Device::IRenderer* GetRenderer() const;
+	inline Driver::IGraphicsDevice* GetDevice() const;
+	inline Driver::IRenderer* GetRenderer() const;
 	inline DataHandle AllocExtData(size_t byteCount, const void* copyData);
 	inline void* GetExtData(DataHandle handle);
 	inline void MarkGC(RefObject* obj);
@@ -118,7 +118,7 @@ public:
 	void ClearCommands();
 
 	/// すべてのコマンドを実行する (描画スレッドから呼ばれる)
-	void Execute(Device::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
+	void Execute(Driver::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
 
 	/// 後処理 (描画スレッドから呼ばれる)
 	void PostExecute();
@@ -277,8 +277,8 @@ private:
 	ByteBuffer				m_extDataBuffer;
 	size_t					m_extDataBufferUsed;
 	Array<RefObject*>		m_markGCList;
-	Device::IGraphicsDevice*	m_currentDevice;
-	Device::IRenderer*			m_currentRenderer;	///< 描画実行中の IRenderer
+	Driver::IGraphicsDevice*	m_currentDevice;
+	Driver::IRenderer*			m_currentRenderer;	///< 描画実行中の IRenderer
 
 	friend class RenderingThread;
 	friend class UserRenderingCommand;
@@ -288,11 +288,11 @@ private:
 };
 
 
-inline Device::IGraphicsDevice* RenderingCommand::GetDevice() const
+inline Driver::IGraphicsDevice* RenderingCommand::GetDevice() const
 {
 	return m_commandList->m_currentDevice;
 }
-inline Device::IRenderer* RenderingCommand::GetRenderer() const
+inline Driver::IRenderer* RenderingCommand::GetRenderer() const
 {
 	return m_commandList->m_currentRenderer;
 }
@@ -344,8 +344,8 @@ struct SetDepthStencilStateCommand : public RenderingCommand
 struct SetRenderTargetCommand : public RenderingCommand
 {
 	int m_index;
-	Device::ITexture* m_sourceTexture;
-	void Create(int index, Device::ITexture* texture)
+	Driver::ITexture* m_sourceTexture;
+	void Create(int index, Driver::ITexture* texture)
 	{
 		m_index = index;
 		m_sourceTexture = texture;
@@ -360,8 +360,8 @@ struct SetRenderTargetCommand : public RenderingCommand
 //=============================================================================
 struct SetDepthBufferCommand : public RenderingCommand
 {
-	Device::ITexture* m_sourceTexture;
-	void Create(Device::ITexture* texture)
+	Driver::ITexture* m_sourceTexture;
+	void Create(Driver::ITexture* texture)
 	{
 		m_sourceTexture = texture;
 		MarkGC(texture);
@@ -383,8 +383,8 @@ struct SetViewportCommand : public RenderingCommand
 //=============================================================================
 struct SetVertexBufferCommand : public RenderingCommand
 {
-	Device::IVertexBuffer* m_sourceVertexBuffer;
-	void Create(Device::IVertexBuffer* vertexBuffer)
+	Driver::IVertexBuffer* m_sourceVertexBuffer;
+	void Create(Driver::IVertexBuffer* vertexBuffer)
 	{
 		m_sourceVertexBuffer = vertexBuffer;
 		MarkGC(vertexBuffer);
@@ -398,8 +398,8 @@ struct SetVertexBufferCommand : public RenderingCommand
 //=============================================================================
 struct SetIndexBufferCommand : public RenderingCommand
 {
-	Device::IIndexBuffer* m_sourceIndexBuffer;
-	void Create(Device::IIndexBuffer* indexBuffer)
+	Driver::IIndexBuffer* m_sourceIndexBuffer;
+	void Create(Driver::IIndexBuffer* indexBuffer)
 	{
 		m_sourceIndexBuffer = indexBuffer;
 		MarkGC(indexBuffer);
@@ -469,9 +469,9 @@ struct DrawPrimitiveIndexedCommand : public RenderingCommand
 //=============================================================================
 struct SetSamplerStateCommand : public RenderingCommand
 {
-	Device::ITexture* m_targetTexture;
+	Driver::ITexture* m_targetTexture;
 	SamplerState m_state;
-	void Create(Device::ITexture* texture, const SamplerState& state)
+	void Create(Driver::ITexture* texture, const SamplerState& state)
 	{
 		m_targetTexture = texture;
 		m_state = state;
@@ -494,34 +494,34 @@ struct SetShaderVariableCommand : public RenderingCommand
 		size_t				VectorsBufferIndex;
 		//Vector4*			Vector;		///< 単一 Vector または VectorArray
 		//Lumino::Matrix*		Matrix;		///< 単一 Matrix または MatrixArray
-		Device::ITexture*	Texture;
+		Driver::ITexture*	Texture;
 	};
 	DataHandle					m_arrayLength;
 	ShaderVariableType			m_variableType;
-	Device::IShaderVariable*	m_target;
+	Driver::IShaderVariable*	m_target;
 
-	void Create(Device::IShaderVariable* target, bool value)
+	void Create(Driver::IShaderVariable* target, bool value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Bool;
 		BoolVal = value;
 		MarkGC(target);
 	}
-	void Create(Device::IShaderVariable* target, int value)
+	void Create(Driver::IShaderVariable* target, int value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Int;
 		Int = value;
 		MarkGC(target);
 	}
-	void Create(Device::IShaderVariable* target, float value)
+	void Create(Driver::IShaderVariable* target, float value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Float;
 		Float = value;
 		MarkGC(target);
 	}
-	void Create(Device::IShaderVariable* target, const Lumino::Vector4* vectors, size_t count)
+	void Create(Driver::IShaderVariable* target, const Lumino::Vector4* vectors, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Vector4) * count, vectors);
 		m_target = target;
@@ -530,7 +530,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Device::IShaderVariable* target, const Lumino::Matrix* matrices, size_t count)
+	void Create(Driver::IShaderVariable* target, const Lumino::Matrix* matrices, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Matrix) * count, matrices);
 		m_target = target;
@@ -539,7 +539,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Device::IShaderVariable* target, Device::ITexture* value)
+	void Create(Driver::IShaderVariable* target, Driver::ITexture* value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Texture;
@@ -586,8 +586,8 @@ struct SetShaderVariableCommand : public RenderingCommand
 //=============================================================================
 struct ApplyShaderPassCommand : public RenderingCommand
 {
-	Device::IShaderPass* m_pass;
-	void Create(Device::IShaderPass* pass)
+	Driver::IShaderPass* m_pass;
+	void Create(Driver::IShaderPass* pass)
 	{
 		m_pass = pass;
 		MarkGC(pass);
@@ -624,14 +624,14 @@ struct PresentCommand : public RenderingCommand
 //=============================================================================
 struct SetSubDataTextureCommand : public RenderingCommand
 {
-	Device::ITexture*		m_targetTexture;
+	Driver::ITexture*		m_targetTexture;
 	Point					m_offset;
 	DataHandle				m_bmpDataIndex;
 	size_t					m_dataSize;
 	Size					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
-	void Create(Device::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const Size& bmpSize)
+	void Create(Driver::ITexture* texture, const Point& offset, const void* data, size_t dataSize, const Size& bmpSize)
 	{
 		m_targetTexture = texture;
 		m_offset = offset;

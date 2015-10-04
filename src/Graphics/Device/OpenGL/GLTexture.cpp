@@ -1,14 +1,14 @@
 ﻿
 #pragma once 
-
 #include "../../../Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Utils.h>
 #include "GLTexture.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -403,6 +403,6 @@ void GLBackbufferRenderTarget::OnResetDevice()
 }
 #endif
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

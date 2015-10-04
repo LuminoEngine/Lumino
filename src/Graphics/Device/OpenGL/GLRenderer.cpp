@@ -1,5 +1,6 @@
 ﻿
 #include "../../../Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
 #include "GLShader.h"
@@ -8,7 +9,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 
 //=============================================================================
@@ -663,6 +664,6 @@ void GLRenderer::GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, G
 	}
 }
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

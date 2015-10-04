@@ -1,14 +1,13 @@
 ﻿
 #pragma once 
 #include <Lumino/IO/FileManager.h>
-#include "../DeviceInterface.h"
 #include "../GraphicsDeviceBase.h"
 #include "DX9Renderer.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Device
+namespace Driver
 {
 class DX9SwapChain;
 
@@ -112,6 +111,6 @@ private:
 
 };
 
-} // namespace Device
+} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

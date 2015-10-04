@@ -199,6 +199,7 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…�
 */
 
 #include "Internal.h"
+#include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include "SpriteRendererImpl.h"
 #include "GraphicsHelper.h"
@@ -532,7 +533,7 @@ void SpriteRendererImpl::DrawRequest2D(
     const Vector3& position,
 	const Vector3& center,
 	const Vector2& size,
-	Device::ITexture* texture,
+	Driver::ITexture* texture,
 	const RectF& srcRect,
 	const ColorF* colorTable)
 {
@@ -554,7 +555,7 @@ void SpriteRendererImpl::DrawRequest3D(
 	const Vector3& position,
 	const Vector3& center,
 	const Vector2& size,
-	Device::ITexture* texture,
+	Driver::ITexture* texture,
 	const RectF& srcRect,
 	const ColorF* colorTable,
 	AxisDirection front)
@@ -569,7 +570,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
     const Vector3& position,
     const Vector3& center,
     const Vector2& size,
-	Device::ITexture* texture,
+	Driver::ITexture* texture,
     const RectF& srcRect,
 	const ColorF* colorTable,
 	AxisDirection front,
@@ -944,7 +945,7 @@ void SpriteRendererImpl::Flash()
 	int ri = 0;     // Request Index (m_spriteRequestList)
 	int start_idx = 0;
 	int prim_num = 0;
-	Device::ITexture* current_tex = m_spriteRequestList[m_spriteIndexList[0]].Texture;
+	Driver::ITexture* current_tex = m_spriteRequestList[m_spriteIndexList[0]].Texture;
 	int currnetRenderStateIndex = m_spriteRequestList[m_spriteIndexList[0]].RenderStateIndex;
 
 	//-----------------------------------------------------
@@ -1015,7 +1016,7 @@ void SpriteRendererImpl::Flash()
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
 	m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.X, m_viewPixelSize.Y, 0, 0));
 
-	Device::IShaderPass* pass = m_shader.techMainDraw->GetPass(0);
+	Driver::IShaderPass* pass = m_shader.techMainDraw->GetPass(0);
 
 	AttributeList::iterator itr = m_attributeList.begin();
 	AttributeList::iterator end = m_attributeList.end();
