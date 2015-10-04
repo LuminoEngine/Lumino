@@ -1,7 +1,7 @@
 
 #include <windows.h>
 #include "../hsp3plugin/hsp3plugin.h"
-#include "../../../C_API/include/LuminoC.h"
+#include "../../../src/C_API/LuminoC.h"
 #include "LuminoHSP.h"
 
 //=============================================================================

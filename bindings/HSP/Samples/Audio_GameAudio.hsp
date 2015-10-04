@@ -13,7 +13,7 @@
 #define ME_FILE "Media/lnme_victory1.ogg"
 #define SE_FILE "Media/ln_cursor_1.wav"
 
-	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_THREAD_REQUEST
+	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_NORMAL
 	LNConfig_SetUserWindowHandle hwnd
 	LNApplication_InitializeAudio
 	

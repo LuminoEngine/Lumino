@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <string>
 #include "../hsp3plugin/hsp3plugin.h"
-#include "../../../C_API/include/LuminoC.h"
+#include "../../../src/C_API/LuminoC.h"
 #include "LuminoHSP.h"
 
 extern int hspLNVector2_typeid();
