@@ -123,7 +123,7 @@ _HREF_
             funcText = funcText.Replace("_BRIEF_", TranslateComment(method.Document.OriginalBriefText));
             funcText = funcText.Replace("_INST_", TranslateComment(method.Document.OriginalDetailsText));
             funcText = funcText.Replace("_HREF_", "");
-            funcText = funcText.Replace("_GROUP_", method.OwnerClass.OwnerModule.Document.OriginalBriefText);
+            funcText = funcText.Replace("_GROUP_", method.OwnerClass.OwnerModule.Document.OriginalGroup);
 
             // 引数リスト
             var paramsText = new OutputBuffer();

@@ -317,13 +317,13 @@ namespace BinderMaker
         //}
 
         
-        [DllImport("../../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("../../../../../lib/LuminoC_x86uMT", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         private extern static void LNVersion_GetString(out IntPtr outStr);
 
-        [DllImport("../../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("../../../../../lib/LuminoC_x86uMT", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         private extern static void LCSInternal_GetIntPtrStringLength(IntPtr str, out int len);
         
-        [DllImport("../../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("../../../../../lib/LuminoC_x86uMT", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         private extern static void LCSInternal_GetIntPtrString(IntPtr str, StringBuilder buf);
 
         public static string GetLibararyVersion()

@@ -38,6 +38,12 @@ namespace BinderMaker
         #region Properties
 
         /// <summary>
+        /// オリジナルのグループ名
+        /// (このテキストはそのまま出力せず、LangContext を通すこと)
+        /// </summary>
+        public string OriginalGroup { get; private set; }
+
+        /// <summary>
         /// オリジナルの概要テキスト
         /// (このテキストはそのまま出力せず、LangContext を通すこと)
         /// </summary>
@@ -121,6 +127,7 @@ namespace BinderMaker
             IEnumerable<CLOverwriteDocument> overwriteDocs,
             IEnumerable<CLExampleDocument> exampleDocs)
         {
+            OriginalGroup = group.Trim();
             OriginalBriefText = briefText.Trim();   // 渡されるテキストは前後に空白が入っていたりするので Trim() とかしておく
             OriginalParams = new List<CLParamDocument>(paramDocs);
             OriginalReturnText = returnText.Trim();

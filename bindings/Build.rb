@@ -1,4 +1,4 @@
-# ‚±‚ÌƒXƒNƒŠƒvƒg‚Í VisualStudio ƒRƒ}ƒ“ƒhƒvƒƒ“ƒvƒgã‚ÅÀs‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+ï»¿# ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¯ VisualStudio ã‚³ãƒãƒ³ãƒ‰ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆä¸Šã§å®Ÿè¡Œã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 
 require 'fileutils'
 require './Ruby/ZipFileGenerator.rb'  # gem 'rubyzip'
@@ -45,11 +45,13 @@ shfb_install_dir = "D:\\Program Files (x86)\\EWSoftware\\Sandcastle Help File Bu
 binder_root = File.expand_path(".") + "/"
 c_api_dir = File.expand_path("C_API/include") + "/"
 lib_dir = "../lib/"
-c_release_dir = "Release/LuminoC_" + version + "/"
+release_dir = "Release/LuminoC_" + version + "/"
+c_release_dir = "Release/"
 dotnet_release_dir = "Release/LuminoDotNet_" + version + "/"
 ruby_release_dir = "Release/LuminoRuby_" + version + "/"
 hsp_release_dir = "Release/LuminoHSP_" + version + "/"
 
+# Ruby é–‹ç™ºã‚­ãƒƒãƒˆã®ãƒ‘ã‚¹
 ENV["PATH"] = binder_root + "../../DevKit-mingw64-32-4.7.2-20130224-1151-sfx/mingw/bin;" + binder_root + "../../DevKit-mingw64-32-4.7.2-20130224-1151-sfx/bin;" + ENV["PATH"]
 
 Dir.chdir("BinderMaker")
@@ -57,12 +59,16 @@ system("MSBuild /t:Rebuild /p:Configuration=\"Release\" /p:Platform=\"Any CPU\" 
 Dir.chdir(binder_root)
 
 #--------------------------------------------------------------
+# Common
+mkdir(release_dir)
+copy("ReleaseNote.txt", release_dir)
+
+#--------------------------------------------------------------
 # C
 mkdir(c_release_dir)
 copy("Readme.txt", c_release_dir)
 
 c_Include_dir = c_release_dir + "Include/"
-mkdir(c_Include_dir)
 xcopy(c_api_dir, c_Include_dir)
 
 c_lib_dir = c_release_dir + "Lib/"
@@ -75,7 +81,7 @@ copy(lib_dir + "LuminoC_x86uMT.dll",  c_lib_dir)
 # help
 Dir.chdir("C")
 system("doxygen Doxyfile")
-xcopy("../../external/Lumino.Core/doc/src/theme", "Help/html", true)  # ƒe[ƒ}ƒtƒ@ƒCƒ‹
+xcopy("../../external/Lumino.Core/doc/src/theme", "Help/html", true)  # ãƒ†ãƒ¼ãƒãƒ•ã‚¡ã‚¤ãƒ«
 Dir.chdir(binder_root)
 xcopy("C/Help/html", c_release_dir + "Help/")
 
@@ -91,7 +97,7 @@ compress(c_release_dir)
 #--------------------------------------------------------------
 # DotNet
 
-# ƒNƒ‰ƒXƒ‰ƒCƒuƒ‰ƒŠ‚Æƒwƒ‹ƒv‚ğƒrƒ‹ƒh‚·‚é
+# ã‚¯ãƒ©ã‚¹ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¨ãƒ˜ãƒ«ãƒ—ã‚’ãƒ“ãƒ«ãƒ‰ã™ã‚‹
 Dir.chdir("DotNet")
 system("MSBuild /t:Rebuild /p:Configuration=\"Release\" /p:Platform=\"x86\" /m LuminoDotNet.sln")
 system("MSBuild /p:Configuration=Release /property:SHFBROOT=\"" + shfb_install_dir + "\" LuminoDotNet.shfbproj")
@@ -120,7 +126,7 @@ compress(dotnet_release_dir)
 #--------------------------------------------------------------
 # Ruby
 
-# Šg’£ƒ‰ƒCƒuƒ‰ƒŠ‚Æƒwƒ‹ƒv‚ğƒrƒ‹ƒh‚·‚é
+# æ‹¡å¼µãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¨ãƒ˜ãƒ«ãƒ—ã‚’ãƒ“ãƒ«ãƒ‰ã™ã‚‹
 copy(lib_dir + "LuminoC_x86MT.dll",  "Ruby")
 Dir.chdir("Ruby")
 system("ruby extconf.rb")

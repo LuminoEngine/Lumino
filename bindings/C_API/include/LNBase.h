@@ -9,7 +9,7 @@ extern "C" {
 #endif // __cplusplus
 
 /**
-	@defgroup   group_base 音声機能
+	@defgroup   group_base 基本機能
 	@brief		基本機能
 	@{
 */
