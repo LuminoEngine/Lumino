@@ -68,6 +68,9 @@ public:
 
 	/// 終了処理
 	virtual void Finalize() = 0;
+	
+	/// グラフィックスデバイスをライブラリ内部で生成したかを確認する
+	virtual bool IsStandalone() const = 0;
 
 	/// API 種類の取得
 	virtual GraphicsAPI GetGraphicsAPI() const = 0;
@@ -180,6 +183,9 @@ public:
 	static const int MaxMultiRenderTargets = 4;
 
 public:
+
+	virtual void EnterRenderState() = 0;
+	virtual void LeaveRenderState() = 0;
 
 	virtual void Begin() = 0;
 	virtual void End() = 0;

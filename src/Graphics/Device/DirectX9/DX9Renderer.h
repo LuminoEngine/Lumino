@@ -33,6 +33,8 @@ public:
 	//void TryEndScene();
 
 public:
+	virtual void EnterRenderState();
+	virtual void LeaveRenderState();
 	virtual void Begin();
 	virtual void End();
 	virtual void SetRenderState(const RenderState& state);

@@ -1432,10 +1432,10 @@ void GUIManagerImpl::BuildDefaultTheme()
 		easing2->SetEasingMode(Animation::EasingMode::EaseOutExpo);
 		easing2->SetDuration(1.0f);
 
-		GCPtr<FloatEasing> buttonPressedEasingIn = FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo);
-		GCPtr<FloatEasing> buttonPressedEasingOut = FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo);
-		GCPtr<FloatEasing> buttonDisabledEasingIn = FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo);
-		GCPtr<FloatEasing> buttonDisabledEasingOut = FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo);
+		RefPtr<FloatEasing> buttonPressedEasingIn(FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo), false);
+		RefPtr<FloatEasing> buttonPressedEasingOut(FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo), false);
+		RefPtr<FloatEasing> buttonDisabledEasingIn(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo), false);
+		RefPtr<FloatEasing> buttonDisabledEasingOut(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo), false);
 
 		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
 		{

@@ -254,11 +254,13 @@ void ApplicationImpl::InitialzeAudioManager()
 //-----------------------------------------------------------------------------
 void ApplicationImpl::InitialzePhysicsManager()
 {
+#ifdef LN_BUILD_SCENE_MODULE
 	if (m_physicsManager.IsNull())
 	{
 		InitializeCommon();
 		m_physicsManager.Attach(LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync));
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

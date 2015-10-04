@@ -36,6 +36,8 @@ public:
 	void ResetRenderState() { m_justSawReset = true; }	// Present の内部描画の後に呼ばれる
 
 public:
+	virtual void EnterRenderState();
+	virtual void LeaveRenderState();
 	virtual void Begin();
 	virtual void End();
 	virtual void SetRenderState(const RenderState& state);

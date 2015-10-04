@@ -55,7 +55,18 @@ Renderer::~Renderer()
 //-----------------------------------------------------------------------------
 void Renderer::Begin()
 {
-	LN_CALL_RENDERER_COMMAND(Begin, Renderer_BeginCommand);
+	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+		m_primaryCommandList->AddCommand<Renderer_BeginCommand>();
+	}
+	else {
+		if (Helper::GetGraphicsDevice(m_manager)->IsStandalone()) {
+			m_internal->Begin();
+			m_internal->EnterRenderState();
+		}
+		else {
+			m_internal->EnterRenderState();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -63,7 +74,18 @@ void Renderer::Begin()
 //-----------------------------------------------------------------------------
 void Renderer::End()
 {
-	LN_CALL_RENDERER_COMMAND(End, Renderer_EndCommand);
+	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+		m_primaryCommandList->AddCommand<Renderer_EndCommand>();
+	}
+	else {
+		if (Helper::GetGraphicsDevice(m_manager)->IsStandalone()) {
+			m_internal->LeaveRenderState();
+			m_internal->End();
+		}
+		else {
+			m_internal->LeaveRenderState();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

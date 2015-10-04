@@ -54,10 +54,10 @@ public:
 	/// デバイスロスト状態を通知する
 	void SetDeviceLostFlag() { m_deviceState = DeviceState_Lost; }
 
-	bool IsStandalone() const { return m_direct3D != NULL; }
 
 public:
 	virtual void Finalize();
+	virtual bool IsStandalone() const { return m_direct3D != NULL; }
 	virtual GraphicsAPI GetGraphicsAPI() const { return GraphicsAPI::DirectX9; }
 	virtual ISwapChain* GetDefaultSwapChain();
 	virtual IRenderer* GetRenderer() { return m_renderer; }

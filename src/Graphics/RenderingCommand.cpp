@@ -47,7 +47,15 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //
 //-----------------------------------------------------------------------------
 RenderingCommandList::RenderingCommandList()
-	: m_running(false)
+	: m_commandList()
+	, m_commandDataBuffer()
+	, m_commandDataBufferUsed(0)
+	, m_extDataBuffer()
+	, m_extDataBufferUsed(0)
+	, m_markGCList()
+	, m_currentDevice(NULL)
+	, m_currentRenderer(NULL)
+	, m_running(false)
 	, m_idling(true)
 {
 	m_commandList.Reserve(DataBufferReserve);	// 適当に
@@ -67,12 +75,13 @@ RenderingCommandList::~RenderingCommandList()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingCommandList::Execute(Device::IRenderer* renderer)
+void RenderingCommandList::Execute(Device::IGraphicsDevice* device/*Device::IRenderer* renderer*/)
 {
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
 	// この関数は描画スレッドから呼ばれる
 
-	m_currentRenderer = renderer;
+	m_currentDevice = device;
+	m_currentRenderer = device->GetRenderer();
 	LN_FOREACH(size_t dataIdx, m_commandList)
 	{
 		((RenderingCommand*)GetCommand(dataIdx))->Execute();

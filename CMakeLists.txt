@@ -604,7 +604,6 @@ ln_make_postfix(LN_LIB_POSTFIX)
 
 add_subdirectory(external/zlib)
 add_subdirectory(external/libpng)
-add_subdirectory(external/bullet-2.82)
 add_subdirectory(external/freetype-2.6)
 add_subdirectory(external/libogg)
 add_subdirectory(external/libvorbis)
@@ -612,10 +611,14 @@ link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath_Static)
 link_libraries(zlib)
 link_libraries(libpng)
-link_libraries(bullet)
 link_libraries(freetype)
 link_libraries(libogg)
 link_libraries(libvorbis)
+
+if (LN_BUILD_SCENE_MODULE)
+	add_subdirectory(external/bullet-2.82)
+	link_libraries(bullet)
+endif()
 
 #------------------------------
 # library. (Unicode)

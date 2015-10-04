@@ -9,7 +9,6 @@ int PlayerGraph;
 void DeviceLostFunction(void *Data)
 {
 	printf("Start LostFunction\n");
-
 	printf("End LostFunction\n");
 }
 void DeviceRestoreFunction(void *Data)
@@ -22,19 +21,22 @@ void DeviceRestoreFunction(void *Data)
 //	LPSTR lpCmdLine, int nCmdShow)
 int main()
 {
-	// 初期化
+	// DX ライブラリの初期化
 	ChangeWindowMode(TRUE);
 	SetUseDirect3D9Ex(FALSE);
 	SetGraphMode(640, 480, 32);
 	if (DxLib_Init() == -1 || SetDrawScreen(DX_SCREEN_BACK)) return -1;
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
 
+
+	printf("%p\n", GetUseDirect3DDevice9());
+
+	// Lumino 初期化
 	ApplicationSettings appData;
 	appData.GraphicsAPI = GraphicsAPI::DirectX9;
 	appData.RenderingType = RenderingType::Immediate;
 	appData.UserMainWindow = GetMainWindowHandle();
 	appData.D3D9Device = (IDirect3DDevice9*)GetUseDirect3DDevice9();
-
 	Application::Initialize(appData);
 
 	// デバイスロスト時のコールバック設定(フルスクリーンウインドウ切り替えのために必要)
@@ -91,7 +93,6 @@ int main()
 
 		//app->Render();
 
-
 		// DXライブラリの設定を戻す。
 		RefreshDxLibDirect3DSetting();
 
@@ -104,12 +105,14 @@ int main()
 			ChangeWindowMode(FALSE);
 			SetDrawScreen(DX_SCREEN_BACK);
 			isFullScreen = true;
+			printf("%p\n", GetUseDirect3DDevice9());
 		}
 		if (CheckHitKey(KEY_INPUT_F2) && isFullScreen)
 		{
 			ChangeWindowMode(TRUE);
 			SetDrawScreen(DX_SCREEN_BACK);
 			isFullScreen = false;
+			printf("%p\n", GetUseDirect3DDevice9());
 		}
 	}
 

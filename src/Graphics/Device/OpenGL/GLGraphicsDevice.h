@@ -54,6 +54,7 @@ public:
 
 public:
 	virtual void Finalize();
+	virtual bool IsStandalone() const { return true; }
 	virtual GraphicsAPI GetGraphicsAPI() const { return GraphicsAPI::OpenGL; }
 	virtual IRenderer* GetRenderer() { return m_renderer; }
 	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);

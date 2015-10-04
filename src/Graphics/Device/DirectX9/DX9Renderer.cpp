@@ -80,7 +80,6 @@ void DX9Renderer::OnLostDevice()
 //-----------------------------------------------------------------------------
 void DX9Renderer::OnResetDevice()
 {
-	RestoreStatus();
 }
 
 ////-----------------------------------------------------------------------------
@@ -99,14 +98,13 @@ void DX9Renderer::OnResetDevice()
 //{
 //}
 
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DX9Renderer::Begin()
+void DX9Renderer::EnterRenderState()
 {
-	if (m_owner->IsStandalone()) {
-		m_dxDevice->BeginScene();
-	}
+	RestoreStatus();
 
 	InternalSetRenderState(m_currentRenderState, true);
 	InternalSetDepthStencilState(m_currentDepthStencilState, true);
@@ -120,6 +118,24 @@ void DX9Renderer::Begin()
 	InternalSetViewport(m_currentViewportRect, true);
 	InternalSetVertexBuffer(m_currentVertexBuffer, true);
 	InternalSetIndexBuffer(m_currentIndexBuffer, true);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DX9Renderer::LeaveRenderState()
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DX9Renderer::Begin()
+{
+	if (m_owner->IsStandalone()) {
+		m_dxDevice->BeginScene();
+	}
 
 	m_sceneBegan = true;
 }

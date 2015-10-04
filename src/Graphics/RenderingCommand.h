@@ -58,6 +58,7 @@ public:
 	virtual void Execute() = 0;
 
 protected:
+	inline Device::IGraphicsDevice* GetDevice() const;
 	inline Device::IRenderer* GetRenderer() const;
 	inline DataHandle AllocExtData(size_t byteCount, const void* copyData);
 	inline void* GetExtData(DataHandle handle);
@@ -117,7 +118,7 @@ public:
 	void ClearCommands();
 
 	/// すべてのコマンドを実行する (描画スレッドから呼ばれる)
-	void Execute(Device::IRenderer* renderer);
+	void Execute(Device::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
 
 	/// 後処理 (描画スレッドから呼ばれる)
 	void PostExecute();
@@ -276,7 +277,8 @@ private:
 	ByteBuffer				m_extDataBuffer;
 	size_t					m_extDataBufferUsed;
 	Array<RefObject*>		m_markGCList;
-	Device::IRenderer*		m_currentRenderer;	///< 描画実行中の IRenderer
+	Device::IGraphicsDevice*	m_currentDevice;
+	Device::IRenderer*			m_currentRenderer;	///< 描画実行中の IRenderer
 
 	friend class RenderingThread;
 	friend class UserRenderingCommand;
@@ -285,6 +287,11 @@ private:
 	Threading::EventFlag	m_idling;
 };
 
+
+inline Device::IGraphicsDevice* RenderingCommand::GetDevice() const
+{
+	return m_commandList->m_currentDevice;
+}
 inline Device::IRenderer* RenderingCommand::GetRenderer() const
 {
 	return m_commandList->m_currentRenderer;
@@ -307,14 +314,14 @@ inline void RenderingCommand::MarkGC(RefObject* obj)
 struct Renderer_BeginCommand : public RenderingCommand
 {
 	void Create() { }
-	void Execute() { GetRenderer()->Begin(); }
+	void Execute() { GetRenderer()->Begin(); GetRenderer()->EnterRenderState(); }
 };
 
 //=============================================================================
 struct Renderer_EndCommand : public RenderingCommand
 {
 	void Create() { }
-	void Execute() { GetRenderer()->End(); }
+	void Execute() { GetRenderer()->LeaveRenderState(); GetRenderer()->End(); }
 };
 
 //=============================================================================

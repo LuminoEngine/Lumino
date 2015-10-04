@@ -30,3 +30,4 @@ tmp/
 *.sdf
 *.o
 *.so
+build*/
