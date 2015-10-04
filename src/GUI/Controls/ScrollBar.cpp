@@ -29,7 +29,7 @@
 #include "../../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ScrollBar.h>
-#include "../GUIManagerImpl.h"
+#include "../UIManagerImpl.h"
 
 namespace Lumino
 {

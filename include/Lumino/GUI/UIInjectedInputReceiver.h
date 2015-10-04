@@ -13,6 +13,13 @@ LN_NAMESPACE_GUI_BEGIN
 class IUIInjectedInputReceiver
 {
 public:
+	
+	/**
+		@brief		描画先のピクセルサイズ変更イベントを受け取ります。
+		@param[in]	width		: 幅
+		@param[in]	height		: 高さ
+	*/
+	virtual bool InjectViewportSizeChanged(int width, int height) = 0;
 
 	/**
 		@brief		マウス移動イベントを受け取ります。

@@ -16,10 +16,10 @@
 
 #include "Lumino/Graphics/Common.h"
 #include "Lumino/Graphics/GraphicsManager.h"
+#include "Lumino/Graphics/Renderer.h"
 #include "Lumino/Graphics/RenderState.h"
 #include "Lumino/Graphics/SamplerState.h"
 #include "Lumino/Graphics/Color.h"
-#include "Lumino/Graphics/Renderer.h"
 #include "Lumino/Graphics/SwapChain.h"
 #include "Lumino/Graphics/VertexBuffer.h"
 #include "Lumino/Graphics/IndexBuffer.h"
@@ -36,7 +36,7 @@
 #include "Lumino/Platform/EventListener.h"
 #include "Lumino/Platform/Clipboard.h"
 
-#include "Lumino/GUI/GUIManager.h"
+#include "Lumino/GUI/UI.h"
 #include "Lumino/GUI/GUIContext.h"
 #include "Lumino/GUI/UIElement.h"
 #include "Lumino/GUI/Control.h"

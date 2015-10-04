@@ -40,6 +40,7 @@ public:
 	UIElement* GetRootElement() const;
 
 	// Implements IUIInjectedInputReceiver
+	virtual bool InjectViewportSizeChanged(int width, int height);
 	virtual bool InjectMouseMove(float clientX, float clientY);
 	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY);
 	virtual bool InjectMouseButtonUp(MouseButton button, float clientX, float clientY);
@@ -55,7 +56,7 @@ LN_INTERNAL_ACCESS:
 	GUIContext(GUIManagerImpl* manager);
 	virtual ~GUIContext();
 	const Size& GetViewPixelSize() const;
-	void UpdateLayout(const Size& viewPixelSize);
+	void UpdateLayout();
 	void Render();
 
 	void SetFocusElement(UIElement* element);

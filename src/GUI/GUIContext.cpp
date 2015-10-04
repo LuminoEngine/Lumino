@@ -2,7 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/GUIContext.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include "GUIHelper.h"
 #include "GUIPainter.h"
 
@@ -87,6 +87,14 @@ UIElement* GUIContext::GetRootElement() const
 	return m_rootElement;
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GUIContext::InjectViewportSizeChanged(int width, int height)
+{
+	m_viewPixelSize.Set(width, height);
+	return true;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -266,9 +274,9 @@ const Size& GUIContext::GetViewPixelSize() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIContext::UpdateLayout(const Size& viewSize)
+void GUIContext::UpdateLayout()
 {
-	m_viewPixelSize = viewSize;	// この後の UIElement::UpdateLayout() で参照される
+	//m_viewPixelSize = viewSize;	// この後の UIElement::UpdateLayout() で参照される
 
 	if (m_rootElement != NULL)
 	{
@@ -297,8 +305,8 @@ void GUIContext::Render()
 	// マウスカーソル
 	if (m_currentCursorImage != NULL)
 	{
-		painter->ResetState();
-		m_currentCursorImage->Draw(painter, m_mousePosition, m_cursorAnimationTime);
+		//painter->ResetState();
+		//m_currentCursorImage->Draw(painter, m_mousePosition, m_cursorAnimationTime);
 	}
 
 	painter->Flush();

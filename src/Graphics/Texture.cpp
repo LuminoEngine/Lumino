@@ -4,8 +4,8 @@
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/Texture.h"
 #include "../../include/Lumino/Graphics/GraphicsManager.h"
-#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/Utils.h>
+#include "RendererImpl.h"
 #include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
@@ -24,7 +24,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
-	manager = (manager != NULL) ? manager : Internal::Manager;
+	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
 	auto* device = manager->GetGraphicsDevice();
 
 	// テクスチャを作る
@@ -43,7 +43,7 @@ Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, 
 //-----------------------------------------------------------------------------
 Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
-	manager = (manager != NULL) ? manager : Internal::Manager;
+	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
 	auto* device = manager->GetGraphicsDevice();
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath));
 	return Create(stream, format, mipLevels, manager);
@@ -54,7 +54,7 @@ Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLev
 //-----------------------------------------------------------------------------
 Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
-	manager = (manager != NULL) ? manager : Internal::Manager;
+	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
 	auto* device = manager->GetGraphicsDevice();
 
 	if (manager->IsPlatformTextureLoading())
@@ -88,7 +88,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, Gr
 //-----------------------------------------------------------------------------
 Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels, GraphicsManager* manager)
 {
-	manager = (manager != NULL) ? manager : Internal::Manager;
+	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
 	auto* device = manager->GetGraphicsDevice();
 	MemoryStream stream;
 	stream.Create(data, size);
@@ -100,9 +100,9 @@ Texture* Texture::Create(const void* data, size_t size, TextureFormat format, in
 //-----------------------------------------------------------------------------
 Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFormat format)
 {
-	LN_THROW(Internal::Manager != NULL, InvalidOperationException);
-	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
-	return LN_NEW Texture(Internal::Manager, obj, NULL);
+	LN_THROW(GraphicsManager::Instance != NULL, InvalidOperationException);
+	Device::ITexture* obj = GraphicsManager::Instance->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+	return LN_NEW Texture(GraphicsManager::Instance, obj, NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -110,9 +110,9 @@ Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFor
 //-----------------------------------------------------------------------------
 Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
 {
-	LN_THROW(Internal::Manager != NULL, InvalidOperationException);
-	Device::ITexture* obj = Internal::Manager->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
-	return LN_NEW Texture(Internal::Manager, obj, NULL);
+	LN_THROW(GraphicsManager::Instance != NULL, InvalidOperationException);
+	Device::ITexture* obj = GraphicsManager::Instance->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
+	return LN_NEW Texture(GraphicsManager::Instance, obj, NULL);
 }
 
 //-----------------------------------------------------------------------------

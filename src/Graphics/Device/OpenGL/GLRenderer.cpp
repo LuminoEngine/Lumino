@@ -141,10 +141,10 @@ void GLRenderer::SetRenderState(const RenderState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const RenderState& GLRenderer::GetRenderState()
-{
-	return m_currentRenderState;
-}
+//const RenderState& GLRenderer::GetRenderState()
+//{
+//	return m_currentRenderState;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -157,10 +157,10 @@ void GLRenderer::SetDepthStencilState(const DepthStencilState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const DepthStencilState& GLRenderer::GetDepthStencilState()
-{
-	return m_currentDepthStencilState;
-}
+//const DepthStencilState& GLRenderer::GetDepthStencilState()
+//{
+//	return m_currentDepthStencilState;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -175,11 +175,11 @@ void GLRenderer::SetRenderTarget(int index, ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* GLRenderer::GetRenderTarget(int index)
-{
-	LN_THROW(0, NotImplementedException);
-	return 0;
-}
+//ITexture* GLRenderer::GetRenderTarget(int index)
+//{
+//	LN_THROW(0, NotImplementedException);
+//	return 0;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -194,11 +194,11 @@ void GLRenderer::SetDepthBuffer(ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* GLRenderer::GetDepthBuffer()
-{
-	LN_THROW(0, NotImplementedException);
-	return 0;
-}
+//ITexture* GLRenderer::GetDepthBuffer()
+//{
+//	LN_THROW(0, NotImplementedException);
+//	return 0;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -211,10 +211,10 @@ void GLRenderer::SetViewport(const Rect& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Rect& GLRenderer::GetViewport()
-{
-	return m_currentViewportRect;
-}
+//const Rect& GLRenderer::GetViewport()
+//{
+//	return m_currentViewportRect;
+//}
 
 //-----------------------------------------------------------------------------
 //

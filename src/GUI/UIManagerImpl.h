@@ -150,7 +150,7 @@ public:
 
 	void AddContextOnMainWindow(GUIContext* context) { m_mainWindowContextList.Add(context); }
 	void RemoveContextOnMainWindow(GUIContext* context) { m_mainWindowContextList.Remove(context); }
-	void UpdateLayoutOnMainWindow(const Size& viewPixelSize);
+	void UpdateLayoutOnMainWindow();
 	void RenderOnMainWindow();
 
 	bool InjectMouseMove(float clientX, float clientY);

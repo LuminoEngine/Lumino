@@ -37,9 +37,11 @@ public:
 	/// 頂点ひとつ分のサイズ
 	int GetVertexStride() const { return m_vertexStride; }
 
+
+	DeviceResourceUsage GetUsage() const { return (m_vertices != NULL) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static; }
+
 public:
 	virtual size_t GetByteCount() const { return m_vertexStride * m_vertexCount; }
-	virtual DeviceResourceUsage GetUsage() const { return (m_vertices != NULL) ? DeviceResourceUsage_Dynamic : DeviceResourceUsage_Static; }
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
 	virtual void* Lock();
 	virtual void Unlock();

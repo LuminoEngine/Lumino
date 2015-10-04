@@ -1,6 +1,5 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/GUI/ItemsPresenter.h>
 
 namespace Lumino

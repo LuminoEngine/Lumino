@@ -17,19 +17,78 @@ void DeviceRestoreFunction(void *Data)
 	printf("End RestoreFunction\n");
 }
 
+GUIContext* g_mainContext = NULL;
+
+LRESULT CALLBACK HookDxLibMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_MOUSEMOVE:
+		g_mainContext->InjectMouseMove(LOWORD(lParam), HIWORD(lParam));
+		break;
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	{
+		float x = LOWORD(lParam);
+		float y = HIWORD(lParam);
+		switch (msg)
+		{
+		case WM_LBUTTONDOWN:
+			g_mainContext->InjectMouseButtonDown(MouseButton::Left, x, y);
+			break;
+		case WM_LBUTTONUP:
+			g_mainContext->InjectMouseButtonUp(MouseButton::Left, x, y);
+			break;
+		case WM_RBUTTONDOWN:
+			g_mainContext->InjectMouseButtonDown(MouseButton::Right, x, y);
+			break;
+		case WM_RBUTTONUP:
+			g_mainContext->InjectMouseButtonUp(MouseButton::Right, x, y);
+			break;
+		case WM_MBUTTONDOWN:
+			g_mainContext->InjectMouseButtonDown(MouseButton::Middle, x, y);
+			break;
+		case WM_MBUTTONUP:
+			g_mainContext->InjectMouseButtonUp(MouseButton::Middle, x, y);
+			break;
+		}
+		return 0;
+	}
+	}
+	//SetUseHookWinProcReturnValue(TRUE);
+	return 0;
+}
+
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 //	LPSTR lpCmdLine, int nCmdShow)
 int main()
 {
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	// DX ライブラリの初期化
 	ChangeWindowMode(TRUE);
-	SetUseDirect3D9Ex(FALSE);
-	SetGraphMode(640, 480, 32);
+	SetDrawScreen(DX_SCREEN_BACK);
+	//SetUseDirect3D9Ex(FALSE);
+	SetUseDirect3DVersion(DX_DIRECT3D_9);	// DirectX9を使用するようにする。
 	if (DxLib_Init() == -1 || SetDrawScreen(DX_SCREEN_BACK)) return -1;
+
+	// フルスクリーンウインドウの切り替えでリソースが消えるのを防ぐ。
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
 
+	// Zバッファを有効にする。
+	SetUseZBuffer3D(TRUE);
 
-	printf("%p\n", GetUseDirect3DDevice9());
+	// Zバッファへの書き込みを有効にする。
+	SetWriteZBuffer3D(TRUE);
+
+	SetHookWinProc(HookDxLibMessage);
+
+	//printf("%p\n", GetUseDirect3DDevice9());
 
 	// Lumino 初期化
 	ApplicationSettings appData;
@@ -55,25 +114,35 @@ int main()
 
 	int dummyGraph = MakeGraph(32, 32);
 
+
+
+
+#if 1
+	GCPtr<GUIContext> context1 = GUIContext::Create();
+	g_mainContext = context1;
+	context1->InjectViewportSizeChanged(640, 480);
+
+
+	GCPtr<PilePanel> panel1 = PilePanel::Create();
+	context1->SetRootElement(panel1);
+
+	GCPtr<UIButton> button1 = UIButton::Create();
+	button1->SetSize(SizeF(200, 100));
+	button1->Click += [](RoutedEventArgs* e) { printf("Click!\n"); };
+	panel1->GetChildren()->Add(button1);
+
+	//GCPtr<UIButton> button2 = UIButton::Create();
+	//button2->SetSize(SizeF(100, 200));
+	//panel1->GetChildren()->Add(button2);
+
+	button1->SetEnabled(false);
+#endif
+
+
 	// ループ
 	bool isFullScreen = false;
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
-		// キー入力取得
-		int Key = GetJoypadInputState(DX_INPUT_KEY_PAD1);
-
-		// 上を押していたら上に進む
-		if (Key & PAD_INPUT_UP) PlayerY -= 3;
-
-		// 下を押していたら下に進む
-		if (Key & PAD_INPUT_DOWN) PlayerY += 3;
-
-		// 右を押していたら右に進む
-		if (Key & PAD_INPUT_RIGHT) PlayerX += 3;
-
-		// 左を押していたら左に進む
-		if (Key & PAD_INPUT_LEFT) PlayerX -= 3;
-
 		// 画面を初期化する
 		ClearDrawScreen();
 
@@ -84,17 +153,20 @@ int main()
 		RenderVertex();
 
 
+		context1->InjectElapsedTime(0.016);
 
+		UI::UpdateAllContext();
 
+		Renderer::BeginRendering();
 
+		Renderer::Clear(ClearFlags::All, ColorF::White);
+		UI::RenderAllContext();
 
-		// プレイヤーを描画する
-		//DrawGraph(PlayerX, PlayerY, PlayerGraph, TRUE);
+		Renderer::EndRendering();
 
-		//app->Render();
 
 		// DXライブラリの設定を戻す。
-		RefreshDxLibDirect3DSetting();
+		//RefreshDxLibDirect3DSetting();
 
 		// 裏画面の内容を表画面に反映させる
 		ScreenFlip();

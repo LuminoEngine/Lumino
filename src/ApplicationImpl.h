@@ -10,7 +10,6 @@
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Documents/DocumentsManager.h>
-#include <Lumino/GUI/GUIManager.h>
 #include <Lumino/Game/FpsController.h>
 #include <Lumino/ApplicationSettings.h>
 

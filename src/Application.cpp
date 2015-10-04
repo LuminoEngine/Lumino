@@ -49,11 +49,11 @@
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
 #include <Lumino/Audio/AudioManager.h>
-#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Application.h>
+#include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Scene/SceneGraphManager.h"
-#include "GUI/GUIManagerImpl.h"
+#include "GUI/UIManagerImpl.h"
 #include "ApplicationImpl.h"
 #include "ApplicationContext.h"
 
@@ -285,6 +285,7 @@ void ApplicationImpl::InitialzeGraphicsManager()
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
 		m_graphicsManager.Attach(LN_NEW GraphicsManager(data));
+		GraphicsManager::Instance = m_graphicsManager;
 
 		m_profilerRenderer = LN_NEW ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
 	}
@@ -361,7 +362,7 @@ bool ApplicationImpl::UpdateFrame()
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
-			m_guiManager->UpdateLayoutOnMainWindow(m_platformManager->GetMainWindow()->GetSize());
+			m_guiManager->UpdateLayoutOnMainWindow();
 		}
 	}
 

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <functional>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 
 namespace Lumino
 {

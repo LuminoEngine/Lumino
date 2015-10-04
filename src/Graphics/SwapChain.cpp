@@ -2,10 +2,10 @@
 #pragma once
 
 #include "../Internal.h"
-#include "../../include/Lumino/Graphics/SwapChain.h"
-#include "../../include/Lumino/Graphics/GraphicsManager.h"
-#include "../../include/Lumino/Graphics/Renderer.h"
-#include "../../include/Lumino/Graphics/Texture.h"
+#include <Lumino/Graphics/SwapChain.h>
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/Texture.h>
+#include "RendererImpl.h"
 #include "RenderingThread.h"
 #include "RenderingCommand.h"
 #include "GraphicsHelper.h"

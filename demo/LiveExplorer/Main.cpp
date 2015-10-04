@@ -50,8 +50,8 @@ int main()
 
 		//s->Stop();
 
-
 		GCPtr<GUIContext> context1 = GUIContext::Create();
+		context1->InjectViewportSizeChanged(640, 480);
 
 
 		GCPtr<PilePanel> panel1 = PilePanel::Create();

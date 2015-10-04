@@ -144,6 +144,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/FontManager.h
 	include/Lumino/Graphics/GeometryRenderer.h
 	include/Lumino/Graphics/GlyphRun.h
+	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsManager.h
 	include/Lumino/Graphics/IndexBuffer.h
@@ -185,6 +186,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/ProfilerRenderer.cpp
 	src/Graphics/ProfilerRenderer.h
 	src/Graphics/Renderer.cpp
+	src/Graphics/RendererImpl.h
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingCommand.h
 	src/Graphics/RenderingThread.cpp
@@ -290,7 +292,6 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/RoutedEventArgs.h
 	include/Lumino/GUI/GUIContext.h
 	include/Lumino/GUI/GUIInputGesture.h
-	include/Lumino/GUI/GUIManager.h
 	include/Lumino/GUI/GUIObjectCollection.h
 	include/Lumino/GUI/ItemsControl.h
 	include/Lumino/GUI/ItemsPresenter.h
@@ -299,6 +300,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/RoutedCommand.h
 	include/Lumino/GUI/TextBlock.h
 	include/Lumino/GUI/TextBox.h
+	include/Lumino/GUI/UI.h
 	include/Lumino/GUI/UIButton.h
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/UIElementCollection.h
@@ -330,8 +332,8 @@ set(LN_SOURCES_GUI
 	src/GUI/GUIContext.cpp
 	src/GUI/GUIHelper.h
 	src/GUI/GUIInputGesture.cpp
-	src/GUI/GUIManager.cpp
-	src/GUI/GUIManagerImpl.h
+	src/GUI/UIManager.cpp
+	src/GUI/UIManagerImpl.h
 	src/GUI/GUIPainter.cpp
 	src/GUI/GUIPainter.h
 	src/GUI/ItemsControl.cpp

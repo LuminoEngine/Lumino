@@ -1038,7 +1038,6 @@
 
 */
 #include "../Internal.h"
-#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/RootFrame.h>
@@ -1055,13 +1054,53 @@
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/Rectangle.h>
 #include <Lumino/GUI/GUIContext.h>
-#include "GUIManagerImpl.h"
+#include <Lumino/GUI/UI.h>
+#include "UIManagerImpl.h"
 #include "GUIPainter.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GUI_BEGIN
 	
+
+//=============================================================================
+// UI
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UI::UpdateAllContext()
+{
+	GUIManagerImpl::Instance->UpdateLayoutOnMainWindow();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UI::RenderAllContext()
+{
+	GUIManagerImpl::Instance->RenderOnMainWindow();
+}
+
+//static GUIManagerImpl* GetManager()
+//{
+//	return GUIManagerImpl::Instance;
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//bool UI::InjectViewportSizeChanged(int width, int height) { return true; }
+//bool UI::InjectMouseMove(float clientX, float clientY) { GetManager()->InjectMouseMove(clientX, clientY); }
+//bool UI::InjectMouseButtonDown(MouseButton button, float clientX, float clientY);
+//bool UI::InjectMouseButtonUp(MouseButton button, float clientX, float clientY);
+//bool UI::InjectMouseWheel(int delta, float clientX, float clientY);
+//bool UI::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl);
+//bool UI::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl);
+//bool UI::InjectTextInput(TCHAR ch);
+//void UI::InjectElapsedTime(float elapsedTime);
+
 //=============================================================================
 // GUIManagerImpl
 //=============================================================================
@@ -1164,10 +1203,10 @@ void GUIManagerImpl::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GUIManagerImpl::UpdateLayoutOnMainWindow(const Size& viewPixelSize)
+void GUIManagerImpl::UpdateLayoutOnMainWindow()
 {
 	for (GUIContext* context : m_mainWindowContextList) {
-		context->UpdateLayout(viewPixelSize);
+		context->UpdateLayout();
 	}
 }
 

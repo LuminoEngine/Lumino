@@ -3,7 +3,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/RoutedCommand.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 
 namespace Lumino
 {

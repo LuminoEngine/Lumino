@@ -2,10 +2,10 @@
 #pragma once
 
 #include "../Internal.h"
-#include "../../include/Lumino/Graphics/Shader.h"
-#include "../../include/Lumino/Graphics/GraphicsManager.h"
-#include "../../include/Lumino/Graphics/Renderer.h"
-#include "../../include/Lumino/Graphics/Texture.h"
+#include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/Texture.h>
+#include "RendererImpl.h"
 #include "RenderingCommand.h"
 #include "GraphicsHelper.h"
 
@@ -32,14 +32,14 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 Shader* Shader::Create(const char* code, int length)
 {
-	LN_THROW(Internal::Manager != NULL, ArgumentException);
+	LN_THROW(GraphicsManager::Instance != NULL, ArgumentException);
 
 	ShaderCompileResult result;
 	RefPtr<Device::IShader> deviceObj(
-		Internal::Manager->GetGraphicsDevice()->CreateShader(code, length, &result));
+		GraphicsManager::Instance->GetGraphicsDevice()->CreateShader(code, length, &result));
 
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
-	return LN_NEW Shader(Internal::Manager, deviceObj);
+	return LN_NEW Shader(GraphicsManager::Instance, deviceObj);
 }
 
 //-----------------------------------------------------------------------------

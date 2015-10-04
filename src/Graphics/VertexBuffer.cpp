@@ -19,7 +19,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 VertexBuffer* VertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
-	return Create(Internal::Manager, vertexElements, elementsCount, vertexCount, data, usage);
+	return Create(GraphicsManager::Instance, vertexElements, elementsCount, vertexCount, data, usage);
 }
 
 //-----------------------------------------------------------------------------

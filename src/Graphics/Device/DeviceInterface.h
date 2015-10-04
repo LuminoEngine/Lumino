@@ -8,10 +8,6 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class RenderState;
-class DepthStencilState;
-class SamplerState;
-class ShaderValue;
 
 namespace Device
 {
@@ -194,31 +190,31 @@ public:
 	virtual void SetRenderState(const RenderState& state) = 0;
 
 	/// レンダリングステートの取得
-	virtual const RenderState& GetRenderState() = 0;
+	//virtual const RenderState& GetRenderState() = 0;
 
 	/// 深度テスト及びステンシルテストステートの設定
 	virtual void SetDepthStencilState(const DepthStencilState& state) = 0;
 
 	/// 深度テスト及びステンシルテストステートの取得
-	virtual const DepthStencilState& GetDepthStencilState() = 0;
+	//virtual const DepthStencilState& GetDepthStencilState() = 0;
 
 	/// レンダリングターゲットの設定
 	virtual void SetRenderTarget(int index, ITexture* texture) = 0;
 
 	/// レンダリングターゲットの取得
-	virtual ITexture* GetRenderTarget(int index) = 0;
+	//virtual ITexture* GetRenderTarget(int index) = 0;
 
 	/// 深度バッファの設定
 	virtual void SetDepthBuffer(ITexture* texture) = 0;
 
 	/// 深度バッファの取得
-	virtual ITexture* GetDepthBuffer() = 0;
+	//virtual ITexture* GetDepthBuffer() = 0;
 
 	/// ビューポート矩形の設定
 	virtual void SetViewport(const Rect& rect) = 0;
 
 	/// ビューポート矩形の取得
-	virtual const Rect& GetViewport() = 0;
+	//virtual const Rect& GetViewport() = 0;
 
 	/// 頂点バッファの設定
 	virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer) = 0;
@@ -248,8 +244,8 @@ public:
 	/// 頂点データのバイト数の取得
 	virtual size_t GetByteCount() const = 0;
 
-	/// 頂点バッファリソースの使用方法の取得
-	virtual DeviceResourceUsage GetUsage() const = 0;
+	///// 頂点バッファリソースの使用方法の取得
+	//virtual DeviceResourceUsage GetUsage() const = 0;
 
 	/// データを転送する
 	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;

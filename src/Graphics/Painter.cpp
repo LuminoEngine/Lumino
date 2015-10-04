@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Base/StringTraits.h>
-#include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/Painter.h>
+#include "RendererImpl.h"
 #include "PainterEngine.h"
 #include "RenderingCommand.h"
 #include "GraphicsHelper.h"
@@ -726,7 +726,7 @@ LocalPainter::LocalPainter(const Size& renderTargetSize, GraphicsManager* manage
 //
 //-----------------------------------------------------------------------------
 LocalPainter::LocalPainter(const SizeF& renderTargetSize, GraphicsManager* manager)
-	: Painter(Internal::SelectManager(manager))
+	: Painter((manager != NULL) ? manager : GraphicsManager::Instance)
 {
 	LN_CALL_COMMAND(Begin, BeginCommand);
 	SetProjection(renderTargetSize, DefaultDepthMin, DefaultDepthMax);
@@ -753,7 +753,7 @@ LocalPainter::~LocalPainter()
 //}
 
 RenderTargetPainter::RenderTargetPainter(Texture* renderTarget, GraphicsManager* manager)
-	: Painter((manager != NULL) ? manager : Internal::Manager)
+	: Painter((manager != NULL) ? manager : GraphicsManager::Instance)
 {
 	if (renderTarget == NULL) {
 		renderTarget = m_manager->GetRenderer()->GetRenderTarget(0);

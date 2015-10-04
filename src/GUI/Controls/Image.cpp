@@ -2,7 +2,7 @@
 #include "../../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Image.h>
-#include "../GUIManagerImpl.h"
+#include "../UIManagerImpl.h"
 
 namespace Lumino
 {

@@ -1,9 +1,10 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include "../../include/Lumino/Graphics/GraphicsManager.h"
-#include "../../include/Lumino/Graphics/Renderer.h"
-#include "../../include/Lumino/Graphics/SwapChain.h"
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/Renderer.h>
+#include <Lumino/Graphics/SwapChain.h>
+#include "RendererImpl.h"
 #include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
@@ -11,6 +12,46 @@
 
 namespace Lumino
 {
+
+//=============================================================================
+// Renderer
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+static Details::Renderer* GetRenderer()
+{
+	// TODO: 未初期化エラー
+	return GraphicsManager::Instance->GetRenderer();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Renderer::BeginRendering() { GetRenderer()->Begin(); }
+void Renderer::EndRendering() { GetRenderer()->End(); }
+void Renderer::SetRenderState(const RenderState& state) { GetRenderer()->SetRenderState(state); }
+const RenderState& Renderer::GetRenderState() { return GetRenderer()->GetRenderState(); }
+void Renderer::SetDepthStencilState(const DepthStencilState& state) { GetRenderer()->SetDepthStencilState(state); }
+const DepthStencilState& Renderer::GetDepthStencilState() { return GetRenderer()->GetDepthStencilState(); }
+void Renderer::SetRenderTarget(int index, Texture* texture) { GetRenderer()->SetRenderTarget(index, texture); }
+Texture* Renderer::GetRenderTarget(int index) { return GetRenderer()->GetRenderTarget(index); }
+void Renderer::SetDepthBuffer(Texture* depthBuffer) { GetRenderer()->SetDepthBuffer(depthBuffer); }
+Texture* Renderer::GetDepthBuffer() { return GetRenderer()->GetDepthBuffer(); }
+void Renderer::SetViewport(const Rect& rect) { GetRenderer()->SetViewport(rect); }
+const Rect& Renderer::GetViewport() { return GetRenderer()->GetViewport(); }
+void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer) { GetRenderer()->SetVertexBuffer(vertexBuffer); }
+void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer) { GetRenderer()->SetIndexBuffer(indexBuffer); }
+// TODO: Get はいらない？
+void Renderer::Clear(ClearFlags flags, const ColorF& color, float zf, uint8_t stencil) { GetRenderer()->Clear(flags, color, zf, stencil); }
+void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) { GetRenderer()->DrawPrimitive(primitive, startVertex, primitiveCount); }
+void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) { GetRenderer()->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount); }
+
+//=============================================================================
+// Details::Renderer
+//=============================================================================
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Details
 {

@@ -3,7 +3,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/ControlTemplate.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include "GUIHelper.h"
 
 namespace Lumino

@@ -6,7 +6,7 @@
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/GUIContext.h>
 #include <Lumino/GUI/UIElement.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include "GUIPainter.h"
 #include "GUIHelper.h"
 

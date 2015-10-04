@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/GUI/ItemsControl.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include "GUIHelper.h"
 
 namespace Lumino

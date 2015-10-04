@@ -23,6 +23,9 @@ class GraphicsManager
 	: public RefObject
 {
 public:
+	static GraphicsManager*	Instance;
+
+public:
 
 	/** 現在のグラフィックスシステムが使用している API の種類を確認します。*/
 	GraphicsAPI GetGraphicsAPI() const;

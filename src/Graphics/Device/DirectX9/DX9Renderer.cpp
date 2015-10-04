@@ -125,7 +125,11 @@ void DX9Renderer::EnterRenderState()
 //-----------------------------------------------------------------------------
 void DX9Renderer::LeaveRenderState()
 {
-
+	// アクティブなパスをここで終了しておく
+	if (m_currentShaderPass != NULL) {
+		m_currentShaderPass->EndPass();
+	}
+	LN_SAFE_RELEASE(m_currentShaderPass);
 }
 
 //-----------------------------------------------------------------------------
@@ -136,7 +140,6 @@ void DX9Renderer::Begin()
 	if (m_owner->IsStandalone()) {
 		m_dxDevice->BeginScene();
 	}
-
 	m_sceneBegan = true;
 }
 
@@ -147,12 +150,6 @@ void DX9Renderer::End()
 {
 	if (m_sceneBegan)
 	{
-		// アクティブなパスもここで終了しておく
-		if (m_currentShaderPass != NULL) {
-			m_currentShaderPass->EndPass();
-		}
-		LN_SAFE_RELEASE(m_currentShaderPass);
-
 		if (m_owner->IsStandalone()) {
 			m_dxDevice->EndScene();
 		}
@@ -172,10 +169,10 @@ void DX9Renderer::SetRenderState(const RenderState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const RenderState& DX9Renderer::GetRenderState()
-{
-	return m_currentRenderState;
-}
+//const RenderState& DX9Renderer::GetRenderState()
+//{
+//	return m_currentRenderState;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -189,10 +186,10 @@ void DX9Renderer::SetDepthStencilState(const DepthStencilState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const DepthStencilState& DX9Renderer::GetDepthStencilState()
-{
-	return m_currentDepthStencilState;
-}
+//const DepthStencilState& DX9Renderer::GetDepthStencilState()
+//{
+//	return m_currentDepthStencilState;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -206,10 +203,10 @@ void DX9Renderer::SetRenderTarget(int index, ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* DX9Renderer::GetRenderTarget(int index)
-{
-	return m_currentRenderTargets[index];
-}
+//ITexture* DX9Renderer::GetRenderTarget(int index)
+//{
+//	return m_currentRenderTargets[index];
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -223,10 +220,10 @@ void DX9Renderer::SetDepthBuffer(ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* DX9Renderer::GetDepthBuffer()
-{
-	return m_currentDepthBuffer;
-}
+//ITexture* DX9Renderer::GetDepthBuffer()
+//{
+//	return m_currentDepthBuffer;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -240,10 +237,10 @@ void DX9Renderer::SetViewport(const Rect& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Rect& DX9Renderer::GetViewport()
-{
-	return m_currentViewportRect;
-}
+//const Rect& DX9Renderer::GetViewport()
+//{
+//	return m_currentViewportRect;
+//}
 
 //-----------------------------------------------------------------------------
 //

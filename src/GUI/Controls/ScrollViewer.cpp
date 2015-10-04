@@ -29,7 +29,7 @@
 
 */
 #include "../../Internal.h"
-#include "../GUIManagerImpl.h"
+#include "../UIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ScrollViewer.h>
 

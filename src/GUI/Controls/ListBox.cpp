@@ -108,7 +108,7 @@
 #include <Lumino/GUI/Controls/StackPanel.h>
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/VisualState.h>
-#include "../GUIManagerImpl.h"
+#include "../UIManagerImpl.h"
 #include "../GUIHelper.h"
 
 namespace Lumino

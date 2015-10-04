@@ -36,14 +36,6 @@ namespace Lumino
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 
-namespace Internal
-{
-extern GraphicsManager* Manager;
-
-inline GraphicsManager* SelectManager(GraphicsManager* manager) { return (manager != NULL) ? manager : Manager; }
-
-};
-
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino
 

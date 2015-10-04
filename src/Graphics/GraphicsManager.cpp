@@ -663,7 +663,8 @@
 
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsManager.h>
-#include <Lumino/Graphics/Renderer.h>
+#include <Lumino/Graphics/Graphics.h>
+#include "RendererImpl.h"
 #include "FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "PainterEngine.h"
@@ -673,10 +674,15 @@ namespace Lumino
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
+// Graphics
+//=============================================================================
+
+
+//=============================================================================
 // GraphicsManager
 //=============================================================================
 
-GraphicsManager* Internal::Manager = NULL;	// TODO: 移動
+GraphicsManager* GraphicsManager::Instance = NULL;
 
 //public:
 //
@@ -694,6 +700,7 @@ GraphicsManager* Internal::Manager = NULL;	// TODO: 移動
 //{
 //	return GraphicsManagerPtr(LN_NEW GraphicsManager(configData));
 //}
+
 
 //-----------------------------------------------------------------------------
 //
@@ -764,11 +771,6 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		m_mainSwapChain.Attach(LN_NEW SwapChain(this, configData.MainWindow->GetSize(), deviceSwapChain));
 		//m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDefaultSwapChain();
 	}
-
-	if (Internal::Manager == NULL) {
-		Internal::Manager = this;
-	}
-
 	
 	// ダミーテクスチャ
 	m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
@@ -821,10 +823,6 @@ GraphicsManager::~GraphicsManager()
 	if (m_graphicsDevice != NULL) {
 		m_graphicsDevice->Finalize();
 		LN_SAFE_RELEASE(m_graphicsDevice);
-	}
-
-	if (Internal::Manager == this) {
-		Internal::Manager = NULL;
 	}
 }
 

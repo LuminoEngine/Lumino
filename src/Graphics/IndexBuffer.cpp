@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
-	return Create(Internal::Manager, indexCount, initialData, format, usage);
+	return Create(GraphicsManager::Instance, indexCount, initialData, format, usage);
 }
 
 //-----------------------------------------------------------------------------

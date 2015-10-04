@@ -22,9 +22,20 @@ namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
+
+class RenderState;
+class DepthStencilState;
+class SamplerState;
+class ShaderValue;
+
+class VertexBuffer;
+class IndexBuffer;
 class Texture;
+
 class PainterEngine;
 class Helper;
+
+
 
 class Brush;
 class FrameTextureBrush;

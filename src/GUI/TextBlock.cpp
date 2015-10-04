@@ -5,7 +5,7 @@
 
 */
 #include "../Internal.h"
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>

@@ -18,7 +18,7 @@
 #include <Lumino/GUI/TextBox.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include "../Animation/AnimationCurve.h"
 #include "../Graphics/FontGlyphTextureCache.h"
 #include "../Graphics/GraphicsHelper.h"

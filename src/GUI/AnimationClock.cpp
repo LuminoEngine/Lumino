@@ -5,7 +5,7 @@
 #include <Lumino/GUI/AnimationClock.h>
 #include <Lumino/GUI/VisualTreeHelper.h>
 #include <Lumino/GUI/GUIContext.h>
-#include "GUIManagerImpl.h"
+#include "UIManagerImpl.h"
 #include "GUIHelper.h"
 
 namespace Lumino
