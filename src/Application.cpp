@@ -55,7 +55,6 @@
 #include "Scene/SceneGraphManager.h"
 #include "GUI/UIManagerImpl.h"
 #include "ApplicationImpl.h"
-#include "ApplicationContext.h"
 
 namespace Lumino
 {
@@ -105,10 +104,6 @@ ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	m_fpsController.SetEnableFpsTest(true);
 	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO 
 	Profiler::Instance.SetBaseFrameRate(Profiler::Group_RenderThread, 60.0f);
-
-	if (ApplicationContext::GetCurrent() == NULL) {
-		ApplicationContext::SetCurrent(this);
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -135,10 +130,6 @@ ApplicationImpl::~ApplicationImpl()
 	}
 
 	LN_SAFE_RELEASE(m_fileManager);
-
-	if (ApplicationContext::GetCurrent() == this) {
-		ApplicationContext::SetCurrent(NULL);
-	}
 
 	Console::Free();
 }

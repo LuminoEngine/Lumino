@@ -1,18 +1,17 @@
 ﻿
 #pragma once
-
 #include "Common.h"
+#include "GraphicsResourceObject.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
 
 /**
 	@brief		頂点バッファのクラスです。
 */
 class VertexBuffer
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 
@@ -52,12 +51,18 @@ public:
 	void Unlock();
 
 protected:
-	VertexBuffer(Driver::IVertexBuffer* deviceObj);
+	VertexBuffer(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
 	virtual ~VertexBuffer();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:	// TODO
 	friend struct SetVertexBufferCommand;
+	GraphicsManager*		m_manager;
 	Driver::IVertexBuffer*	m_deviceObj;
+	Array<VertexElement>	m_vertexElements;
+	int						m_vertexCount;
+	DeviceResourceUsage		m_usage;
+	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
 	friend class Helper;

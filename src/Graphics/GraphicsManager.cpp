@@ -1,4 +1,9 @@
 ﻿/*
+	[2015/10/5] Driver に Lock/Unlock は必要？
+		ラップするのだから SubData だけでよいと思うが・・・。
+		→ ダメ。GeometryRenderer とかは直接　Driver に触っていて、ここで Lock を使いたい。
+
+
 	[2015/8/23] EnterRenderState / LeaveRenderState
 		
 		他アプリに組み込む場合に使用する、レンダリングステートの保存・復元処理。
@@ -729,10 +734,10 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
 		data.EnableVSyncWait = false;			// TODO
 		data.EnableFPUPreserve = false;			// TODO
-		m_graphicsDevice = LN_NEW Driver::DX9GraphicsDevice();
-		static_cast<Driver::DX9GraphicsDevice*>(m_graphicsDevice)->Initialize(data);
-		//m_graphicsDevice.Attach(LN_NEW Device::DX9GraphicsDevice());
-		//static_cast<Device::DX9GraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(data);
+		auto* device = LN_NEW Driver::DX9GraphicsDevice();
+		device->Initialize(data);
+		ChangeDevice(device);
+		device->Release();
 	}
 	else if (configData.GraphicsAPI == GraphicsAPI::OpenGL)
 	{
@@ -740,45 +745,29 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		data.MainWindow = configData.MainWindow;
 		data.OpenGLMajorVersion = 2;
 		data.OpenGLMinorVersion = 0;
-		m_graphicsDevice = LN_NEW Driver::WGLGraphicsDevice();
-		static_cast<Driver::WGLGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
-		//m_graphicsDevice.Attach(LN_NEW Device::WGLGraphicsDevice());
-		//static_cast<Device::WGLGraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(data);
+		auto* device = LN_NEW Driver::WGLGraphicsDevice();
+		device->Initialize(data);
+		ChangeDevice(device);
+		device->Release();
 	}
 	else {
 		LN_THROW(0, ArgumentException);
 	}
 #elif defined(LN_X11)
-	m_graphicsDevice = LN_NEW Driver::GLXGraphicsDevice();
-	static_cast<Driver::GLXGraphicsDevice*>(m_graphicsDevice)->Initialize(data);
-	//m_graphicsDevice.Attach(LN_NEW Device::GLXGraphicsDevice());
-	//static_cast<Device::GLXGraphicsDevice*>(m_graphicsDevice.GetObjectPtr())->Initialize(configData);
+	auto* device = LN_NEW Driver::GLXGraphicsDevice();
+	device->Initialize(data);
+	ChangeDevice(device);
+	device->Release();
 #else
 	LN_THROW(0, NotImplementedException);
 #endif
-	//GraphicsDeviceConfigData d;
-	//d.API = GraphicsAPI_DirectX9;
-	//d.MainWindow = configData.MainWindow;
-	//d.OpenGLMajorVersion = 2;
-	//d.OpenGLMinorVersion = 0;
-	//m_graphicsDevice.Attach(LN_NEW GraphicsDevice(d));
 
 	// Renderer
 	m_renderer = LN_NEW Details::Renderer(this);
 
 	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
 	if (deviceSwapChain != NULL) {
-		m_mainSwapChain.Attach(LN_NEW SwapChain(this, configData.MainWindow->GetSize(), deviceSwapChain));
-		//m_mainSwapChain->m_deviceObj = m_graphicsDevice->GetDefaultSwapChain();
-	}
-	
-	// ダミーテクスチャ
-	m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
-	{
-		Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
-		BitmapPainter painter(m_dummyTexture->Lock());
-		painter.Clear(Color::White);
-		m_dummyTexture->Unlock();
+		m_mainSwapChain.Attach(LN_NEW SwapChain(this, true/*configData.MainWindow->GetSize(), deviceSwapChain*/));
 	}
 
 	// PainterEngine
@@ -858,6 +847,42 @@ void GraphicsManager::ResumeDevice()
 {
 	m_graphicsDevice->OnResetDevice();
 	// TODO: ユーザーコールバック
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		// 全オブジェクトに通知
+		for (auto* obj : m_resourceObjectList) {
+			obj->OnChangeDevice(NULL);
+		}
+
+		// 色々解放
+		LN_SAFE_RELEASE(m_dummyTexture);
+		LN_SAFE_RELEASE(m_graphicsDevice);
+	}
+	else
+	{
+		LN_REFOBJ_SET(m_graphicsDevice, device);
+
+		// ダミーテクスチャ
+		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
+		{
+			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
+			BitmapPainter painter(m_dummyTexture->Lock());
+			painter.Clear(Color::White);
+			m_dummyTexture->Unlock();
+		}
+
+		// 全オブジェクトに通知
+		for (auto* obj : m_resourceObjectList) {
+			obj->OnChangeDevice(device);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

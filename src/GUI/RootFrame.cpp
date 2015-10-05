@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/GUI/RootFrame.h>
 
 namespace Lumino
@@ -18,10 +18,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(RootFrame);
 //-----------------------------------------------------------------------------
 RootFrame* RootFrame::Create()
 {
-	RefPtr<RootFrame> obj(ApplicationContext::CreateRefObject<RootFrame>(ApplicationContext::GetGUIManager()));
-	obj->InitializeComponent();
-	obj.SafeAddRef();
-	return obj;
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

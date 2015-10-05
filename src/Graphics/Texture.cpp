@@ -143,8 +143,17 @@ Texture::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* 
 	, m_deviceObj(deviceObj)
 	, m_primarySurface(primarySurface)
 	//, m_primarySurfaceModified(false)
+	, m_isDefaultBackBuffer(false)
 {
 	LN_SAFE_ADDREF(m_primarySurface);
+}
+
+Texture::Texture(GraphicsManager* manager, bool isDefaultBackBuffer)
+	: m_manager(manager)
+	, m_deviceObj(NULL)
+	, m_primarySurface(NULL)
+	, m_isDefaultBackBuffer(isDefaultBackBuffer)
+{
 }
 
 //-----------------------------------------------------------------------------
@@ -277,6 +286,34 @@ void Texture::Unlock()
 	{
 		m_deviceObj->Unlock();
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
+{
+	assert(m_isDefaultBackBuffer);
+	assert(m_deviceObj == NULL);
+	LN_REFOBJ_SET(m_deviceObj, deviceObj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture::DetachDefaultBackBuffer()
+{
+	assert(m_isDefaultBackBuffer);
+	assert(m_deviceObj != NULL);
+	LN_SAFE_RELEASE(m_deviceObj);
 }
 
 LN_NAMESPACE_GRAPHICS_END

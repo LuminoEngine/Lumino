@@ -1,5 +1,5 @@
 ﻿
-#include "../../Internal.h"
+#include "../Internal.h"
 #include "../UIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Thumb.h>
@@ -33,7 +33,7 @@ LN_ROUTED_EVENT_IMPLEMENT(Thumb, DragEventArgs, DragCanceledEvent, "DragCanceled
 //-----------------------------------------------------------------------------
 ThumbPtr Thumb::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -146,7 +146,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ThumbChrome);
 //-----------------------------------------------------------------------------
 ThumbChromePtr ThumbChrome::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

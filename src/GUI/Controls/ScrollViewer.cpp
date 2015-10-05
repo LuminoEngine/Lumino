@@ -28,7 +28,7 @@
 	ちなみに、ItemsPresenter は IScrollInfo ではない。
 
 */
-#include "../../Internal.h"
+#include "../Internal.h"
 #include "../UIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ScrollViewer.h>
@@ -50,7 +50,7 @@ const float ScrollContentPresenter::m_scrollLineDelta = 16.0f;
 //-----------------------------------------------------------------------------
 ScrollContentPresenterPtr ScrollContentPresenter::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -192,7 +192,7 @@ const String ScrollViewer::PART_HorizontalScrollBarTemplateName(_T("PART_Horizon
 //-----------------------------------------------------------------------------
 ScrollViewerPtr ScrollViewer::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

@@ -13,9 +13,6 @@ class RenderingThread;
 class PainterEngine;
 class TextRenderer;
 
-
-typedef RefPtr<GraphicsManager>	GraphicsManagerPtr;
-
 /**
 	@brief		グラフィックス機能の管理クラスです。
 */
@@ -49,6 +46,9 @@ public:
 	void PauseDevice();
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void ResumeDevice();
+
+	void ChangeDevice(Driver::IGraphicsDevice* device);
+
 
 public:	// TODO: internal
 	struct FontData
@@ -112,6 +112,8 @@ public:	// TODO
 	~GraphicsManager();
 
 LN_INTERNAL_ACCESS:
+	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
+	void RemoveResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Remove(obj); }
 	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
@@ -124,6 +126,7 @@ private:
 	RefPtr<FontManager>				m_fontManager;
 	RenderingType					m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
+	Array<GraphicsResourceObject*>	m_resourceObjectList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
 	RefPtr<SwapChain>				m_mainSwapChain;

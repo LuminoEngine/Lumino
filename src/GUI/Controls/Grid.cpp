@@ -1,5 +1,5 @@
 ﻿
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/Property.h>
 #include <Lumino/GUI/Controls/Grid.h>
 #include "../GUIHelper.h"
@@ -27,7 +27,7 @@ LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", m_m
 //-----------------------------------------------------------------------------
 ColumnDefinitionPtr ColumnDefinition::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ LN_PROPERTY_IMPLEMENT(RowDefinition, float, MaxHeightProperty, "MaxHeight", m_ma
 //-----------------------------------------------------------------------------
 RowDefinitionPtr RowDefinition::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
 //-----------------------------------------------------------------------------
 GridPtr Grid::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

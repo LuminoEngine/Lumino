@@ -147,6 +147,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsManager.h
+	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
 	include/Lumino/Graphics/Painter.h
@@ -336,6 +337,7 @@ set(LN_SOURCES_GUI
 	src/GUI/UIManagerImpl.h
 	src/GUI/GUIPainter.cpp
 	src/GUI/GUIPainter.h
+	src/GUI/Internal.h
 	src/GUI/ItemsControl.cpp
 	src/GUI/ItemsPresenter.cpp
 	src/GUI/Rectangle.cpp
@@ -400,8 +402,6 @@ set(LN_SOURCES_Application
 	include/Lumino/Variant.h
 	include/Lumino/Version.h
 	src/Application.cpp
-	src/ApplicationContext.cpp
-	src/ApplicationContext.h
 	src/ApplicationImpl.h
 	src/CoreObject.cpp
 	src/Internal.h

@@ -1,5 +1,5 @@
 ﻿
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/Property.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
 
@@ -21,7 +21,7 @@ LN_PROPERTY_IMPLEMENT(StackPanel, Orientation, OrientationProperty, "Orientation
 //-----------------------------------------------------------------------------
 StackPanel* StackPanel::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

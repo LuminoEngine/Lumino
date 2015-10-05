@@ -1,16 +1,10 @@
 ﻿
 #pragma once
-
 #include "Common.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
-class ShaderVariable;
-class ShaderTechnique;
-class ShaderPass;
-class Texture;
 
 /**
 	@brief	シェーダのクラスです。

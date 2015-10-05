@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/GUI/Rectangle.h>
 
 namespace Lumino
@@ -42,7 +42,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Rectangle);
 //-----------------------------------------------------------------------------
 Rectangle* Rectangle::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

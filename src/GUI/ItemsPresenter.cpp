@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/GUI/ItemsPresenter.h>
 
 namespace Lumino
@@ -17,7 +17,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
 //-----------------------------------------------------------------------------
 ItemsPresenterPtr ItemsPresenter::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

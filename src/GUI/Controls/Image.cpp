@@ -1,5 +1,5 @@
 ﻿
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Image.h>
 #include "../UIManagerImpl.h"
@@ -23,7 +23,7 @@ LN_PROPERTY_IMPLEMENT(Image, Rect, SourceRectProperty, "SourceRect", m_srcRect, 
 //-----------------------------------------------------------------------------
 ImagePtr Image::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

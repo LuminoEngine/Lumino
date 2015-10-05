@@ -1,5 +1,5 @@
 ﻿
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/GUI/Controls/Panel.h>
 
 namespace Lumino
@@ -145,7 +145,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(PilePanel);
 //-----------------------------------------------------------------------------
 PilePanel* PilePanel::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

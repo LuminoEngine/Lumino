@@ -26,7 +26,7 @@
 	(null は可能だが、実際そんな ScrollBar を作ることがあるのか・・・？)
 	であれば、TemplateBinding しなくても ScrollBar 側から直接値を set してもそんなに問題ない。
 */
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ScrollBar.h>
 #include "../UIManagerImpl.h"
@@ -60,7 +60,7 @@ LN_ROUTED_EVENT_IMPLEMENT(ScrollBar, ScrollEventArgs, ScrollEvent, "Scroll", Scr
 //-----------------------------------------------------------------------------
 ScrollBarPtr ScrollBar::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

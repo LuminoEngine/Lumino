@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/GUI/ButtonChrome.h>
 #include <Lumino/GUI/VisualState.h>	// for button
 
@@ -22,7 +22,7 @@ LN_PROPERTY_IMPLEMENT(ButtonChrome, bool, IsMouseOverProperty, "IsMouseOver", m_
 //-----------------------------------------------------------------------------
 ButtonChromePtr ButtonChrome::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

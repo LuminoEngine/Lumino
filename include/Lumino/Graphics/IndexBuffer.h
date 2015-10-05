@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "GraphicsResourceObject.h"
 
 namespace Lumino
 {
@@ -10,7 +11,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 	@brief		インデックスバッファのクラスです。
 */
 class IndexBuffer
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 
@@ -55,11 +56,17 @@ public:
 	//void SetSubData(uint32_t offsetBytes, void* data, uint32_t dataBytes);
 
 protected:
-	IndexBuffer(Driver::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format);
+	IndexBuffer(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
 	virtual ~IndexBuffer();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
+	GraphicsManager*		m_manager;
 	Driver::IIndexBuffer*	m_deviceObj;
+	int						m_indexCount;
+	IndexBufferFormat		m_format;
+	DeviceResourceUsage		m_usage;
+	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_data;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;

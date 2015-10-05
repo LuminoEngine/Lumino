@@ -28,13 +28,3 @@
 // glGetError() でエラーチェック (各 gl～ の後で必ず呼ばないと正しいエラーが取れないので注意)
 #define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 
 
-
-namespace Lumino
-{
-LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
-
-LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
-
-#include "ApplicationContext.h"

@@ -21,6 +21,8 @@ public:
 		@brief		レンダリングを終了します。
 	*/
 	//void EndRendering();
+
+
 };
 
 } // namespace Lumino

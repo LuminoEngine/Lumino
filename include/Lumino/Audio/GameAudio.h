@@ -56,7 +56,7 @@ public:
 	void StopSE();
 
 	/// ME 演奏時の BGM のフェード時間を設定する
-	void SetMEFadeState(int begin, int end);
+	void SetMEFadeState(double begin, double end);
 
 	/// 再生中のBGMの音量を設定する (フェードアウト中は無効)
 	void SetBGMVolume(float volume, double fadeTime = 0.0);
@@ -95,8 +95,8 @@ private:
 	float						mBGMPitch;
 	float						mBGSVolume;
 	float						mBGSPitch;
-	float						mBGMFadeOutTime;
-	float						mBGMFadeInTime;
+	double						mBGMFadeOutTime;
+	double						mBGMFadeInTime;
 	bool                        mMEPlaying;
 	bool                        mBGMRestart;
 	bool                        mBGSRestart;

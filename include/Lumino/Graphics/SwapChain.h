@@ -1,12 +1,11 @@
 ﻿
 #pragma once
-
 #include "Common.h"
+#include "GraphicsResourceObject.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
 class RenderingCommandList;
 class Texture;
 
@@ -14,7 +13,7 @@ class Texture;
 	@brief		スワップチェインのクラスです。
 */
 class SwapChain
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	virtual ~SwapChain();
@@ -42,11 +41,9 @@ public:
 	void Present();
 
 LN_INTERNAL_ACCESS:
-	//friend class GraphicsManager;
-	//friend class Renderer;
-	//friend struct PresentCommand;	// TODO
-	SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain);
-	void Initialize(const Size& backbufferSize);
+	SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain*/);
+	void Initialize(/*const Size& backbufferSize*/);
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 	GraphicsManager*		m_manager;
 	Driver::ISwapChain*		m_deviceObj;
@@ -54,14 +51,8 @@ LN_INTERNAL_ACCESS:
 	Threading::EventFlag	m_waiting;		///< コマンド実行していない
 	Texture*				m_backColorBuffer;
 	Texture*				m_backDepthBuffer;
+	bool					m_isDefault;
 };
-
-//typedef RefPtr < SwapChain > SwapChainPtr;
-//class SwapChainPtr : public RefPtr < SwapChain >
-//{
-//	void New(Platform::Window* targetWindow) { LN_NEW SwapChain(targetWindow); }
-//	void New(GraphicsManager* manager, Platform::Window* targetWindow) { LN_NEW SwapChain(manager, targetWindow); }
-//};
 
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

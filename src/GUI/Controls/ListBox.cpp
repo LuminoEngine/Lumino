@@ -102,7 +102,7 @@
 									
 
 */
-#include "../../Internal.h"
+#include "../Internal.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/ListBox.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
@@ -228,7 +228,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxChrome);
 //-----------------------------------------------------------------------------
 ListBoxChromePtr ListBoxChrome::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------
@@ -287,7 +287,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBox);
 //-----------------------------------------------------------------------------
 ListBoxPtr ListBox::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

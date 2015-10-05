@@ -1,13 +1,12 @@
 ﻿
 #pragma once
-
+#include <Lumino/Graphics/Common.h>
 #include <Lumino/Base/Rect.h>
 #include <Lumino/Math/Matrix.h>
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
 class GeometryRendererCore;
 
 /**

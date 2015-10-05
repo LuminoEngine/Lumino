@@ -18,7 +18,7 @@
 	プロパティと TemplateBinding する。
 */
 
-#include "../../Internal.h"
+#include "../Internal.h"
 #include "../UIManagerImpl.h"
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Track.h>
@@ -47,7 +47,7 @@ LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButto
 //-----------------------------------------------------------------------------
 TrackPtr Track::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

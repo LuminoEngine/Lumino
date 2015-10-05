@@ -8,12 +8,6 @@
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
-class RenderingCommandList;
-class RenderingThread;
-class Texture;
-class VertexBuffer;
-class IndexBuffer;
 
 namespace Details
 {
@@ -118,13 +112,12 @@ public:
 	*/
 	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
-private:
+LN_INTERNAL_ACCESS:
 	friend class Helper;
 	friend class SwapChain;
 	friend class ShaderPass;
 	friend class Texture;
 	friend class ShaderVariable;
-	friend class GraphicsManager;
 	void PresentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
 
 	GraphicsManager*		m_manager;

@@ -1061,7 +1061,7 @@
 namespace Lumino
 {
 LN_NAMESPACE_GUI_BEGIN
-	
+
 
 //=============================================================================
 // UI
@@ -1100,6 +1100,15 @@ void UI::RenderAllContext()
 //bool UI::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl);
 //bool UI::InjectTextInput(TCHAR ch);
 //void UI::InjectElapsedTime(float elapsedTime);
+
+//=============================================================================
+// Internal
+//=============================================================================
+GUIManagerImpl* GetUIManager()
+{
+	// TODO: エラー表示
+	return GUIManagerImpl::Instance;
+}
 
 //=============================================================================
 // GUIManagerImpl

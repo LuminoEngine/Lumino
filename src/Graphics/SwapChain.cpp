@@ -21,12 +21,14 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SwapChain::SwapChain(GraphicsManager* manager, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain)
+SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain*/)
 	: m_manager(manager)
-	, m_deviceObj(deviceSwapChain)
+	, m_deviceObj(NULL)
+	, m_isDefault(isDefault)
 {
-	m_deviceObj->AddRef();
-	Initialize(mainWindowSize);
+	//m_deviceObj->AddRef();
+	Initialize(/*mainWindowSize*/);
+	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -57,23 +59,41 @@ SwapChain::~SwapChain()
 	// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
 	m_waiting.Wait();
 
+	m_backColorBuffer->DetachDefaultBackBuffer();
+
 	LN_SAFE_RELEASE(m_commandList);
 	LN_SAFE_RELEASE(m_backColorBuffer);
 	LN_SAFE_RELEASE(m_backDepthBuffer);
-	LN_SAFE_RELEASE(m_deviceObj);
+	LN_SAFE_RELEASE(m_deviceObj);;
+	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SwapChain::Initialize(const Size& backbufferSize)
+void SwapChain::Initialize(/*const Size& backbufferSize*/)
 {
 	m_commandList = LN_NEW RenderingCommandList();
 
-	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
-	m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
-	m_backColorBuffer = LN_NEW Texture(m_manager, m_deviceObj->GetBackBuffer(), NULL);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
-	m_backDepthBuffer = Texture::CreateDepthBuffer(m_manager, backbufferSize, TextureFormat_D24S8);
+	if (m_isDefault)
+	{
+		// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
+		// こちら側でレンダリングターゲット作って、Present で全体転送してもらえばいいし。
+
+		m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
+		m_deviceObj->AddRef();
+		//Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+		//m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
+		m_backColorBuffer = LN_NEW Texture(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
+		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+
+		// 独自管理できる深度バッファを作る。
+		// これがないと、OpenGL のバックバッファはレンダリングターゲットと深度バッファを分離することが出来ないため、本Lib的に不都合が起こる。
+		m_backDepthBuffer = Texture::CreateDepthBuffer(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat_D24S8);
+	}
+	else {
+		LN_THROW(0, NotImplementedException);
+	}
 
 	m_waiting.SetTrue();
 }
@@ -136,6 +156,28 @@ void SwapChain::Present()
 
 		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
 		m_manager->GetRenderer()->PresentCommandList(this);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		if (m_isDefault) {
+			m_backColorBuffer->DetachDefaultBackBuffer();
+		}
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else
+	{
+		if (m_isDefault) {
+			m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
+			m_deviceObj->AddRef();
+			m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+		}
 	}
 }
 

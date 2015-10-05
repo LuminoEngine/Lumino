@@ -478,7 +478,7 @@ void GameAudio::StopSE()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameAudio::SetMEFadeState( int begin, int end )
+void GameAudio::SetMEFadeState(double begin, double end)
 {
 	if ( begin >= 0 )
 	{

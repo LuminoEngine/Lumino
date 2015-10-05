@@ -24,22 +24,28 @@ IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexB
 IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	LN_THROW(manager != NULL, ArgumentException);
-	RefPtr<Driver::IIndexBuffer> deviceObj(
-		manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, format, usage));
-	return LN_NEW IndexBuffer(deviceObj, indexCount, format);
+	return LN_NEW IndexBuffer(manager, indexCount, initialData, format, usage);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-IndexBuffer::IndexBuffer(Driver::IIndexBuffer* deviceObj, int indexCount, IndexBufferFormat format)
-	: m_deviceObj(deviceObj)
+IndexBuffer::IndexBuffer(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+	: m_manager(manager)
+	, m_deviceObj(NULL)
+	, m_indexCount(indexCount)
+	, m_format(format)
+	, m_usage(usage)
+	, m_pool(GraphicsResourcePool::Managed)	// TODO
 	, m_initialUpdate(true)
 {
 	LN_SAFE_ADDREF(m_deviceObj);
 
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
 	m_data = ByteBuffer(stride * indexCount);
+
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, initialData, m_format, m_usage);
+	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -48,6 +54,7 @@ IndexBuffer::IndexBuffer(Driver::IIndexBuffer* deviceObj, int indexCount, IndexB
 IndexBuffer::~IndexBuffer()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
+	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,6 +95,41 @@ void IndexBuffer::Unlock()
 //{
 //
 //}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		// 必要があればデータを保存する
+		if (m_pool == GraphicsResourcePool::Managed)
+		{
+			void* buffer;
+			size_t size;
+			m_deviceObj->Lock(&buffer, &size);
+			m_lockedBuffer.Attach(buffer, size);
+			m_deviceObj->Unlock();
+		}
+
+		// オブジェクト破棄
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else
+	{
+		assert(m_deviceObj == NULL);
+
+		// 保存したデータはあるか？
+		const void* data = NULL;
+		if (m_pool == GraphicsResourcePool::Managed) {
+			data = m_lockedBuffer.GetConstData();
+		}
+
+		// オブジェクトを作り直す
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateIndexBuffer(m_indexCount, data, m_format, m_usage);
+	}
+}
 
 
 LN_NAMESPACE_GRAPHICS_END

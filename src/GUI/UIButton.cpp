@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include "UIManagerImpl.h"
 #include <Lumino/GUI/UIButton.h>
 
@@ -23,7 +23,7 @@ const String	UIButton::IsMouseOverProperty(_T("IsMouseOver"));
 //-----------------------------------------------------------------------------
 UIButton* UIButton::Create()
 {
-	return internalCreateInstance(ApplicationContext::GetGUIManager());
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

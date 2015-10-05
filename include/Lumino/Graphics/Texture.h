@@ -1,19 +1,17 @@
 ﻿
 #pragma once
-
 #include "../Graphics/Bitmap.h"
 #include "Common.h"
 
 namespace Lumino
 {
 LN_NAMESPACE_GRAPHICS_BEGIN
-class GraphicsManager;
 
 /**
 	@brief		テクスチャのクラスです。
 */
 class Texture
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 
@@ -118,8 +116,14 @@ public:
 
 protected:
 	Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
+	Texture(GraphicsManager* manager, bool isDefaultBackBuffer);
 	virtual ~Texture();
 	void FlushPrimarySurface();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+LN_INTERNAL_ACCESS:
+	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
+	void DetachDefaultBackBuffer();
 
 private:
 	friend struct SetRenderTargetCommand;	// TODO: ダサイ
@@ -132,6 +136,7 @@ private:
 	GraphicsManager*	m_manager;
 	Driver::ITexture*	m_deviceObj;
 	Bitmap*				m_primarySurface;
+	bool				m_isDefaultBackBuffer;
 	//bool				m_primarySurfaceModified;
 
 	friend class Helper;

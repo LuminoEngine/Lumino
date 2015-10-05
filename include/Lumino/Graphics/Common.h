@@ -30,14 +30,19 @@ class ShaderValue;
 
 class ColorF;
 
+class GraphicsResourceObject;
 class VertexBuffer;
 class IndexBuffer;
 class Texture;
+class Shader;
+class ShaderVariable;
+class ShaderTechnique;
+class ShaderPass;
 
 class PainterEngine;
 class Helper;
-
-
+class RenderingCommandList;
+class RenderingThread;
 
 class Brush;
 class FrameTextureBrush;
@@ -73,6 +78,13 @@ LN_ENUM_FLAGS(ClearFlags)
 	All		= Color | Depth | Stencil,	///< 全てのバッファをクリアします。
 };
 LN_ENUM_FLAGS_DECLARE(ClearFlags);
+
+/** グラフィックスリソースの管理方法 */
+enum class GraphicsResourcePool
+{
+	None = 0,		/**< デバイス変更時に内容を復元しません。*/
+	Managed,		/**< デバイス変更時に内容を復元します。*/
+};
 
 
 /// 頂点宣言の要素の型
