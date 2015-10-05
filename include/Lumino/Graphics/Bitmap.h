@@ -110,6 +110,9 @@ public:
 
 	void SetSize(const Size& size) { m_size = size; }
 
+	void CopyRawData(const void* data, size_t byteCount);
+	size_t GetByteCount() const;
+
 public:
 	
 	/// フォーマット毎のバイト数を求める (A1 の場合は 1 を返す)

@@ -98,31 +98,11 @@ Texture* Texture::Create(const void* data, size_t size, TextureFormat format, in
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Texture::CreateRenderTarget(const Size& size, int mipLevels, TextureFormat format)
-{
-	LN_THROW(GraphicsManager::Instance != NULL, InvalidOperationException);
-	Driver::ITexture* obj = GraphicsManager::Instance->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
-	return LN_NEW Texture(GraphicsManager::Instance, obj, NULL);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
 {
 	LN_THROW(GraphicsManager::Instance != NULL, InvalidOperationException);
 	Driver::ITexture* obj = GraphicsManager::Instance->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
 	return LN_NEW Texture(GraphicsManager::Instance, obj, NULL);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::CreateRenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
-{
-	LN_THROW(manager != NULL, ArgumentException);
-	Driver::ITexture* obj = manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
-	return LN_NEW Texture(manager, obj, NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -138,6 +118,15 @@ Texture* Texture::CreateDepthBuffer(GraphicsManager* manager, const Size& size, 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Texture::Texture(GraphicsManager* manager)
+	: m_manager(NULL)
+	, m_deviceObj(NULL)
+	, m_primarySurface(NULL)
+	, m_isDefaultBackBuffer(false)
+{
+	m_manager->AddResourceObject(this);
+}
+
 Texture::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
 	: m_manager(manager)
 	, m_deviceObj(deviceObj)
@@ -146,6 +135,7 @@ Texture::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* 
 	, m_isDefaultBackBuffer(false)
 {
 	LN_SAFE_ADDREF(m_primarySurface);
+	m_manager->AddResourceObject(this);
 }
 
 Texture::Texture(GraphicsManager* manager, bool isDefaultBackBuffer)
@@ -154,6 +144,7 @@ Texture::Texture(GraphicsManager* manager, bool isDefaultBackBuffer)
 	, m_primarySurface(NULL)
 	, m_isDefaultBackBuffer(isDefaultBackBuffer)
 {
+	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -163,6 +154,7 @@ Texture::~Texture()
 {
 	LN_SAFE_RELEASE(m_primarySurface);
 	LN_SAFE_RELEASE(m_deviceObj);
+	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -293,7 +285,29 @@ void Texture::Unlock()
 //-----------------------------------------------------------------------------
 void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
+	if (device == NULL)
+	{
+		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal &&
+			m_manager->GetRenderingType() == RenderingType::Immediate)
+		{
+			Driver::ITexture::ScopedLock lock(m_deviceObj);
+			m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
+		}
+	}
+	else
+	{
+		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
+		{
+			if (m_manager->GetRenderingType() == RenderingType::Immediate)
+			{
 
+			}
+			else
+			{
+
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -315,6 +329,40 @@ void Texture::DetachDefaultBackBuffer()
 	assert(m_deviceObj != NULL);
 	LN_SAFE_RELEASE(m_deviceObj);
 }
+
+
+//=============================================================================
+// RenderTarget
+//=============================================================================
+
+
+
+	/**
+		@brief		レンダリングターゲットを作成します。
+		@param[in]	manager		: 作成に使用する GraphicsManager
+		@param[in]	size		: レンダリングターゲットのサイズ (ピクセル単位)
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
+	*/
+	//static Texture* CreateRenderTarget(GraphicsManager* manager, const Size& size, int mipLevels = 1, TextureFormat format = TextureFormat_R8G8B8A8);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RenderTarget::RenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
+	: Texture(manager)
+{
+	m_deviceObj = manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RenderTarget::~RenderTarget()
+{
+}
+
 
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino
