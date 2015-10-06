@@ -19,124 +19,121 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // Texture
 //=============================================================================
 
+static GraphicsManager* GetManager()
+{
+	assert(GraphicsManager::Instance != NULL);
+	return GraphicsManager::Instance;
+}
+static Driver::IGraphicsDevice* GetDevice()
+{
+	assert(GraphicsManager::Instance != NULL);
+	return GraphicsManager::Instance->GetGraphicsDevice();
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels, GraphicsManager* manager)
+Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels)
 {
-	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
-	auto* device = manager->GetGraphicsDevice();
-
-	// テクスチャを作る
-	RefPtr<Driver::ITexture> obj(device->CreateTexture(size, mipLevels, format));
-
 	// ロック用のビットマップを作る
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)));
-
-	// TODO: この addref はコンストラクタ内でやるほうが自然かも
-	obj.SafeAddRef();
-	return LN_NEW Texture(manager, obj, bitmap);
+	return LN_NEW Texture(GetManager(), size, format, mipLevels, bitmap);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels, GraphicsManager* manager)
+Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
 {
-	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
-	auto* device = manager->GetGraphicsDevice();
-	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath));
-	return Create(stream, format, mipLevels, manager);
+	RefPtr<Stream> stream(GetManager()->GetFileManager()->CreateFileStream(filePath));
+	return Create(stream, format, mipLevels);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels, GraphicsManager* manager)
+Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels)
 {
-	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
-	auto* device = manager->GetGraphicsDevice();
-
-	if (manager->IsPlatformTextureLoading())
+	if (GetManager()->IsPlatformTextureLoading())
 	{
-		RefPtr<Driver::ITexture> obj(device->CreateTexturePlatformLoading(stream, mipLevels, format));
-		if (!obj.IsNull())
-		{
-			RefPtr<Bitmap> bitmap(LN_NEW Bitmap(obj->GetSize(), Utils::TranslatePixelFormat(format)));
-			obj.SafeAddRef();
-			return LN_NEW Texture(manager, obj, bitmap);
-		}
+		return LN_NEW Texture(GetManager(), stream, format, mipLevels);
 	}
 
 	// ビットマップを作る
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream));
-
-	// テクスチャを作る
-	RefPtr<Driver::ITexture> obj(device->CreateTexture(bitmap->GetSize(), mipLevels, format));
-
-	// ビットマップを転送する
-	Driver::IGraphicsDevice::ScopedLockContext lock(device);
-	obj->SetSubData(Point(0, 0), bitmap->GetBitmapBuffer()->GetConstData(), bitmap->GetBitmapBuffer()->GetSize(), obj->GetSize());
-
-	// TODO: primarySurface のフォーマットは、format に合わせて変換するべきかも
-	obj.SafeAddRef();
-	return LN_NEW Texture(manager, obj, bitmap);
+	return LN_NEW Texture(GetManager(), bitmap->GetSize(), format, mipLevels, bitmap);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels, GraphicsManager* manager)
+Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
 {
-	manager = (manager != NULL) ? manager : GraphicsManager::Instance;
-	auto* device = manager->GetGraphicsDevice();
 	MemoryStream stream;
 	stream.Create(data, size);
-	return Create(&stream, format, mipLevels, manager);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::CreateDepthBuffer(const Size& size, TextureFormat format)
-{
-	LN_THROW(GraphicsManager::Instance != NULL, InvalidOperationException);
-	Driver::ITexture* obj = GraphicsManager::Instance->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
-	return LN_NEW Texture(GraphicsManager::Instance, obj, NULL);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::CreateDepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format)
-{
-	LN_THROW(manager != NULL, ArgumentException);
-	Driver::ITexture* obj = manager->GetGraphicsDevice()->CreateDepthBuffer(size.Width, size.Height, format);
-	return LN_NEW Texture(manager, obj, NULL);
+	return Create(&stream, format, mipLevels);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 Texture::Texture(GraphicsManager* manager)
-	: m_manager(NULL)
+	: m_manager(manager)
 	, m_deviceObj(NULL)
 	, m_primarySurface(NULL)
+	, m_isPlatformLoaded(false)
 	, m_isDefaultBackBuffer(false)
 {
 	m_manager->AddResourceObject(this);
 }
 
-Texture::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
-	: m_manager(manager)
-	, m_deviceObj(deviceObj)
-	, m_primarySurface(primarySurface)
-	//, m_primarySurfaceModified(false)
-	, m_isDefaultBackBuffer(false)
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture::Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
+	: Texture(manager)
 {
-	LN_SAFE_ADDREF(m_primarySurface);
-	m_manager->AddResourceObject(this);
+	m_size = size;
+	m_mipLevels = mipLevels;
+	m_format = format;
+
+	// テクスチャを作る
+	RefPtr<Driver::ITexture> obj(GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format));
+
+	// ビットマップを転送する
+	Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
+	obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
 }
+
+//-----------------------------------------------------------------------------
+// プラットフォーム依存用
+//-----------------------------------------------------------------------------
+Texture::Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
+	: Texture(manager)
+{
+	m_isPlatformLoaded = true;
+
+	m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
+	if (m_deviceObj != NULL)
+	{
+		m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+		// TODO: m_primarySurface へ内容をフィードバックする
+		//Driver::ITexture::ScopedLock lock(m_deviceObj);
+		//m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
+	}
+	// TODO: 失敗したら普通の処理
+}
+
+//Texture::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
+//	: m_manager(manager)
+//	, m_deviceObj(deviceObj)
+//	, m_primarySurface(primarySurface)
+//	//, m_primarySurfaceModified(false)
+//	, m_isDefaultBackBuffer(false)
+//{
+//	LN_SAFE_ADDREF(m_primarySurface);
+//	m_manager->AddResourceObject(this);
+//}
 
 Texture::Texture(GraphicsManager* manager, bool isDefaultBackBuffer)
 	: m_manager(manager)
@@ -287,26 +284,20 @@ void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
 	{
-		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal &&
-			m_manager->GetRenderingType() == RenderingType::Immediate)
+		// Immediate のときは Lock で取得する必要がある。Deferred のときは m_primarySurface が持っている。
+		if (m_manager->GetRenderingType() == RenderingType::Immediate)
 		{
 			Driver::ITexture::ScopedLock lock(m_deviceObj);
 			m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
 		}
+		LN_SAFE_RELEASE(m_deviceObj);
 	}
 	else
 	{
-		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
-		{
-			if (m_manager->GetRenderingType() == RenderingType::Immediate)
-			{
-
-			}
-			else
-			{
-
-			}
-		}
+		// この時点では描画モードにかかわらず m_primarySurface がバックアップデータを保持しているのでそれから復元する。
+		m_deviceObj = device->CreateTexture(m_primarySurface->GetSize(), m_mipLevels, m_format);
+		m_deviceObj->SetSubData(Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
+		// TODO: Create でinitialデータも渡してしまう。
 	}
 }
 
@@ -352,8 +343,11 @@ void Texture::DetachDefaultBackBuffer()
 //-----------------------------------------------------------------------------
 RenderTarget::RenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
 	: Texture(manager)
+	, m_size(size)
+	, m_mipLevels(mipLevels)
+	, m_format(format)
 {
-	m_deviceObj = manager->GetGraphicsDevice()->CreateRenderTarget(size.Width, size.Height, mipLevels, format);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.Width, m_size.Height, m_mipLevels, m_format);
 }
 
 //-----------------------------------------------------------------------------
@@ -363,6 +357,60 @@ RenderTarget::~RenderTarget()
 {
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL) {
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else {
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.Width, m_size.Height, m_mipLevels, m_format);
+	}
+}
+
+//=============================================================================
+// DepthBuffer
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
+{
+	return LN_NEW DepthBuffer(GraphicsManager::Instance, size, format);
+}
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+DepthBuffer::DepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format)
+	: Texture(manager)
+	, m_size(size)
+	, m_format(format)
+{
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.Width, m_size.Height, m_format);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+DepthBuffer::~DepthBuffer()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DepthBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL) {
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else {
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.Width, m_size.Height, m_format);
+	}
+}
 
 LN_NAMESPACE_GRAPHICS_END
 } // namespace Lumino

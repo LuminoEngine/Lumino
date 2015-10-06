@@ -107,7 +107,7 @@ TextureBrush::~TextureBrush()
 //-----------------------------------------------------------------------------
 void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 {
-	m_texture.Attach(Texture::Create(filePath, TextureFormat_R8G8B8A8, 1, manager));
+	m_texture.Attach(Texture::Create(filePath, TextureFormat_R8G8B8A8, 1));		//TODO: GraphicsManager?
 }
 
 //-----------------------------------------------------------------------------

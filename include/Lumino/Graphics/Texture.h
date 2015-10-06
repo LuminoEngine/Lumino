@@ -21,27 +21,24 @@ public:
 		@param[in]	size		: テクスチャサイズ (ピクセル単位)
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
-		@param[in]	manager		: 作成に使用する GraphicsManager
 	*/
-	static Texture* Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1, GraphicsManager* manager = NULL);
+	static Texture* Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		ファイルからテクスチャを作成します。
 		@param[in]	filePath	: ファイルパス
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
-		@param[in]	manager		: 作成に使用する GraphicsManager
 	*/
-	static Texture* Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1, GraphicsManager* manager = NULL);
+	static Texture* Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
 		@param[in]	stream		: 画像ファイルデータのストリーム
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
-		@param[in]	manager		: 作成に使用する GraphicsManager
 	*/
-	static Texture* Create(Stream* stream, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1, GraphicsManager* manager = NULL);
+	static Texture* Create(Stream* stream, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
@@ -49,24 +46,8 @@ public:
 		@param[in]	size		: データのバイト数
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
-		@param[in]	manager		: 作成に使用する GraphicsManager
 	*/
-	static Texture* Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1, GraphicsManager* manager = NULL);
-
-	/**
-		@brief		深度バッファを作成します。
-		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-	*/
-	static Texture* CreateDepthBuffer(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8);
-	
-	/**
-		@brief		深度バッファを作成します。
-		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
-	*/
-	static Texture* CreateDepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format = TextureFormat_R8G8B8A8);
+	static Texture* Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 public:
 
@@ -99,7 +80,9 @@ public:
 
 protected:
 	Texture(GraphicsManager* manager);
-	Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
+	Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
+	Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
+	//Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
 	Texture(GraphicsManager* manager, bool isDefaultBackBuffer);
 	virtual ~Texture();
 	void FlushPrimarySurface();
@@ -119,7 +102,11 @@ protected:
 	friend class SwapChain;
 	GraphicsManager*	m_manager;
 	Driver::ITexture*	m_deviceObj;
+	Size				m_size;
+	int					m_mipLevels;
+	TextureFormat		m_format;
 	Bitmap*				m_primarySurface;
+	bool				m_isPlatformLoaded;
 	bool				m_isDefaultBackBuffer;
 	//bool				m_primarySurfaceModified;
 
@@ -143,11 +130,44 @@ public:
 	*/
 	static Texture* Create(const Size& size, int mipLevels = 1, TextureFormat format = TextureFormat_R8G8B8A8);
 
-protected:
+LN_INTERNAL_ACCESS:
 	RenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format);
+
+protected:
 	virtual ~RenderTarget();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
+	Size			m_size;
+	int				m_mipLevels;
+	TextureFormat	m_format;
+};
+
+/**
+	@brief		深度バッファのクラスです。
+*/
+class DepthBuffer
+	: public Texture
+{
+public:
+
+	/**
+		@brief		深度バッファを作成します。
+		@param[in]	size		: テクスチャのサイズ (ピクセル単位)
+		@param[in]	format		: ピクセルフォーマット
+	*/
+	static Texture* Create(const Size& size, TextureFormat format = TextureFormat_D24S8);
+
+LN_INTERNAL_ACCESS:
+	DepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format);
+
+protected:
+	virtual ~DepthBuffer();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+private:
+	Size			m_size;
+	TextureFormat	m_format;
 };
 
 LN_NAMESPACE_GRAPHICS_END
