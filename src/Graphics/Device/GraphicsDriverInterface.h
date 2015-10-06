@@ -83,7 +83,8 @@ public:
 	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) = 0;
 
 	/// テクスチャの作成
-	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format) = 0;
+	/// initialData : 初期データまたは NULL
+	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
 
 	/// テクスチャの作成 (環境依存の画像ファイル読み込み)
 	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;

@@ -15,7 +15,8 @@ class Utils
 {
 public:
 
-	static PixelFormat TranslatePixelFormat(TextureFormat textureFormat);
+	static int GetTextureFormatByteCount(TextureFormat format);
+	static PixelFormat TranslatePixelFormat(TextureFormat format);
 	
 	static void SaveScreenShot(const TCHAR* filePath);
 	static void WaitSaveScreenShot();

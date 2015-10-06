@@ -180,7 +180,7 @@ GeometryRendererCore::GeometryRendererCore(Driver::IGraphicsDevice* device)
 	//-----------------------------------------------------
 	// ダミーテクスチャ
 
-	m_dummyTexture.Attach(m_device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
+	m_dummyTexture.Attach(m_device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8, NULL), false);
 	Driver::IGraphicsDevice::ScopedLockContext lock(m_device);
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);

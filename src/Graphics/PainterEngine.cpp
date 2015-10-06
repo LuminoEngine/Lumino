@@ -74,7 +74,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	//-----------------------------------------------------
 	// ダミーテクスチャ
 
-	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8), false);
+	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8, NULL), false);
 	Driver::IGraphicsDevice::ScopedLockContext lock(device);
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);

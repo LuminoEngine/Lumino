@@ -98,11 +98,11 @@ Texture::Texture(GraphicsManager* manager, const Size& size, TextureFormat forma
 	m_format = format;
 
 	// テクスチャを作る
-	RefPtr<Driver::ITexture> obj(GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format));
+	RefPtr<Driver::ITexture> obj(GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData()));
 
 	// ビットマップを転送する
-	Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
-	obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
+	//Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
+	//obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
 }
 
 //-----------------------------------------------------------------------------
@@ -295,8 +295,8 @@ void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
 	else
 	{
 		// この時点では描画モードにかかわらず m_primarySurface がバックアップデータを保持しているのでそれから復元する。
-		m_deviceObj = device->CreateTexture(m_primarySurface->GetSize(), m_mipLevels, m_format);
-		m_deviceObj->SetSubData(Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
+		m_deviceObj = device->CreateTexture(m_primarySurface->GetSize(), m_mipLevels, m_format, m_primarySurface->GetBitmapBuffer()->GetConstData());
+		//m_deviceObj->SetSubData(Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
 		// TODO: Create でinitialデータも渡してしまう。
 	}
 }

@@ -40,7 +40,7 @@ Shader* Shader::Create(const char* code, int length)
 		GraphicsManager::Instance->GetGraphicsDevice()->CreateShader(code, length, &result));
 
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
-	return LN_NEW Shader(GraphicsManager::Instance, deviceObj);
+	return LN_NEW Shader(GraphicsManager::Instance, deviceObj, ByteBuffer(code, length));
 }
 
 //-----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ Shader* Shader::Create(GraphicsManager* manager, const void* textData, size_t by
 	RefPtr<Driver::IShader> deviceObj(
 		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, &result));
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
-	return LN_NEW Shader(manager, deviceObj);
+	return LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
 }
 
 //-----------------------------------------------------------------------------
@@ -71,16 +71,17 @@ bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t by
 		return false;
 	}
 
-	*outShader = LN_NEW Shader(manager, deviceObj);
+	*outShader = LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
 	return true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Shader::Shader(GraphicsManager* manager, Driver::IShader* shader)
+Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode)
 	: m_manager(manager)
 	, m_deviceObj(shader)
+	, m_sourceCode(sourceCode)
 {
 	LN_SAFE_ADDREF(m_deviceObj);
 
@@ -117,7 +118,7 @@ Shader::~Shader()
 //-----------------------------------------------------------------------------
 ShaderVariable* Shader::FindVariable(const TCHAR* name, CaseSensitivity cs) const
 {
-	LN_FOREACH(ShaderVariable* var, m_variables) {
+	for (ShaderVariable* var : m_variables) {
 		if (var->GetName().Compare(name, -1, cs) == 0) {
 			return var;
 		}
@@ -131,6 +132,54 @@ ShaderVariable* Shader::FindVariable(const TCHAR* name, CaseSensitivity cs) cons
 const Array<ShaderTechnique*>& Shader::GetTechniques() const
 {
 	return m_techniques;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ShaderTechnique* Shader::FindTechnique(const TCHAR* name, CaseSensitivity cs) const
+{
+	for (auto* var : m_techniques) {
+		if (var->GetName().Compare(name, -1, cs) == 0) {
+			return var;
+		}
+	}
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Shader::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		LN_SAFE_RELEASE(m_deviceObj);
+	}
+	else
+	{
+		ShaderCompileResult result;
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(m_sourceCode.GetConstData(), m_sourceCode.GetSize(), &result);
+		LN_THROW(result.Level != ShaderCompileResultLevel_Error, InvalidOperationException);	// 一度生成に成功しているので発生はしないはず
+
+		// 変数再割り当て
+		int varCount = m_deviceObj->GetVariableCount();
+		for (int i = 0; i < varCount; ++i)
+		{
+			auto* varObj = m_deviceObj->GetVariable(i);
+			auto* var = FindVariable(varObj->GetName());
+			var->ChangeDevice(varObj);
+		}
+
+		// テクニック再割り当て
+		int techCount = m_deviceObj->GetTechniqueCount();
+		for (int i = 0; i < techCount; ++i)
+		{
+			auto* techObj = m_deviceObj->GetTechnique(i);
+			auto* tech = FindTechnique(techObj->GetName());
+			tech->ChangeDevice(techObj);
+		}
+	}
 }
 
 //=============================================================================
@@ -574,6 +623,41 @@ const Array<ShaderVariable*>& ShaderVariable::GetAnnotations() const
 	return m_annotations;
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ShaderVariable* ShaderVariable::FindAnnotation(const TCHAR* name, CaseSensitivity cs) const
+{
+	for (ShaderVariable* anno : m_annotations) {
+		if (anno->GetName().Compare(name, -1, cs) == 0) {
+			return anno;
+		}
+	}
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ShaderVariable::ChangeDevice(Driver::IShaderVariable* obj)
+{
+	if (obj == NULL) {
+	}
+	else
+	{
+		m_deviceObj = obj;	// 今は特に参照カウントを操作してはいないのでこれだけ
+
+		// アノテーション再割り当て
+		int annoCount = m_deviceObj->GetAnnotationCount();
+		for (int i = 0; i < annoCount; ++i)
+		{
+			auto* annoObj = m_deviceObj->GetAnnotation(i);
+			auto* anno = FindAnnotation(annoObj->GetName());
+			anno->ChangeDevice(annoObj);
+		}
+	}
+}
+
 //=============================================================================
 // ShaderTechnique
 //=============================================================================
@@ -585,6 +669,8 @@ ShaderTechnique::ShaderTechnique(Shader* owner, Driver::IShaderTechnique* device
 	: m_owner(owner)
 	, m_deviceObj(deviceObj)
 {
+	m_name = m_deviceObj->GetName();
+
 	// パスの展開
 	for (int i = 0; i < m_deviceObj->GetPassCount(); ++i) {
 		m_passes.Add(LN_NEW ShaderPass(m_owner, m_deviceObj->GetPass(i)));
@@ -612,9 +698,27 @@ ShaderTechnique::~ShaderTechnique()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+const String& ShaderTechnique::GetName() const
+{
+	return m_name;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 const Array<ShaderPass*>& ShaderTechnique::GetPasses() const
 {
 	return m_passes;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ShaderPass* ShaderTechnique::GetPass(const TCHAR* name) const
+{
+	auto itr = std::find_if(m_passes.begin(), m_passes.end(), [name](ShaderPass* pass) { return pass->GetName() == name; });
+	LN_THROW(itr != m_passes.end(), KeyNotFoundException);
+	return *itr;
 }
 
 //-----------------------------------------------------------------------------
@@ -630,12 +734,43 @@ const Array<ShaderVariable*>& ShaderTechnique::GetAnnotations() const
 //-----------------------------------------------------------------------------
 ShaderVariable* ShaderTechnique::FindAnnotation(const TCHAR* name, CaseSensitivity cs) const
 {
-	LN_FOREACH(ShaderVariable* anno, m_annotations) {
+	for (ShaderVariable* anno : m_annotations) {
 		if (anno->GetName().Compare(name, -1, cs) == 0) {
 			return anno;
 		}
 	}
 	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ShaderTechnique::ChangeDevice(Driver::IShaderTechnique* obj)
+{
+	if (obj == NULL) {
+	}
+	else
+	{
+		m_deviceObj = obj;	// 今は特に参照カウントを操作してはいないのでこれだけ
+
+		// パス再割り当て
+		int passCount = m_deviceObj->GetPassCount();
+		for (int i = 0; i < passCount; ++i)
+		{
+			auto* passObj = m_deviceObj->GetPass(i);
+			auto* pass = GetPass(passObj->GetName());
+			pass->ChangeDevice(passObj);
+		}
+
+		// アノテーション再割り当て
+		int annoCount = m_deviceObj->GetAnnotationCount();
+		for (int i = 0; i < annoCount; ++i)
+		{
+			auto* annoObj = m_deviceObj->GetAnnotation(i);
+			auto* anno = FindAnnotation(annoObj->GetName());
+			anno->ChangeDevice(annoObj);
+		}
+	}
 }
 
 //=============================================================================
@@ -661,7 +796,7 @@ ShaderPass::ShaderPass(Shader* owner, Driver::IShaderPass* deviceObj)
 //-----------------------------------------------------------------------------
 ShaderPass::~ShaderPass()
 {
-	LN_FOREACH(ShaderVariable* anno, m_annotations) {
+	for (ShaderVariable* anno : m_annotations) {
 		LN_SAFE_RELEASE(anno);
 	}
 }
@@ -695,12 +830,34 @@ const Array<ShaderVariable*>& ShaderPass::GetAnnotations() const
 //-----------------------------------------------------------------------------
 ShaderVariable* ShaderPass::FindAnnotation(const TCHAR* name, CaseSensitivity cs) const
 {
-	LN_FOREACH(ShaderVariable* anno, m_annotations) {
+	for (ShaderVariable* anno : m_annotations) {
 		if (anno->GetName().Compare(name, -1, cs) == 0) {
 			return anno;
 		}
 	}
 	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ShaderPass::ChangeDevice(Driver::IShaderPass* obj)
+{
+	if (obj == NULL) {
+	}
+	else
+	{
+		m_deviceObj = obj;	// 今は特に参照カウントを操作してはいないのでこれだけ
+
+		// アノテーション再割り当て
+		int annoCount = m_deviceObj->GetAnnotationCount();
+		for (int i = 0; i < annoCount; ++i)
+		{
+			auto* annoObj = m_deviceObj->GetAnnotation(i);
+			auto* anno = FindAnnotation(annoObj->GetName());
+			anno->ChangeDevice(annoObj);
+		}
+	}
 }
 
 LN_NAMESPACE_GRAPHICS_END

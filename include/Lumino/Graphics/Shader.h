@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "GraphicsResourceObject.h"
 
 namespace Lumino
 {
@@ -10,7 +11,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 	@brief	シェーダのクラスです。
 */
 class Shader
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	
@@ -67,15 +68,23 @@ public:
 	*/
 	const Array<ShaderTechnique*>& GetTechniques() const;
 
+	/**
+		@brief		名前を指定してテクニックを検索します。
+		@return		見つからなかった場合は NULL を返します。
+	*/
+	ShaderTechnique* FindTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
+
 	GraphicsManager* GetManager() { return m_manager; }
 
 protected:
 	virtual ~Shader();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
 	friend class RenderingCommandList;
-	Shader(GraphicsManager* manager, Driver::IShader* shader);
+	Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode);
 	GraphicsManager*			m_manager;
+	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;
 	Array<ShaderVariable*>		m_variables;
 	Array<ShaderTechnique*>		m_techniques;
@@ -195,7 +204,16 @@ public:
 		@brief		このシェーダ変数で定義されている全てのアノテーションを取得します。
 	*/
 	const Array<ShaderVariable*>& GetAnnotations() const;
+
+	/**
+		@brief		名前を指定してアノテーションを検索します。
+		@return		見つからなかった場合は NULL を返します。
+	*/
+	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
 	
+LN_INTERNAL_ACCESS:
+	void ChangeDevice(Driver::IShaderVariable* obj);
+
 private:
 	friend class Shader;
 	friend class ShaderTechnique;
@@ -217,8 +235,15 @@ class ShaderTechnique
 {
 public:
 
+	const String& GetName() const;
+
 	const Array<ShaderPass*>& GetPasses() const;
 	
+	/**
+		@brief		名前を指定してパスを検索します。
+		@exception	KeyNotFoundException
+	*/
+	ShaderPass* GetPass(const TCHAR* name) const;
 
 	/**
 		@brief		このテクニックで定義されている全てのアノテーションを取得します。
@@ -234,11 +259,15 @@ public:
 protected:
 	virtual ~ShaderTechnique();
 
+LN_INTERNAL_ACCESS:
+	void ChangeDevice(Driver::IShaderTechnique* obj);
+
 private:
 	friend class Shader;
 	ShaderTechnique(Shader* owner, Driver::IShaderTechnique* deviceObj);
 	Shader*						m_owner;
 	Driver::IShaderTechnique*	m_deviceObj;
+	String						m_name;
 	Array<ShaderPass*>			m_passes;
 	Array<ShaderVariable*>		m_annotations;
 };
@@ -274,6 +303,9 @@ public:
 	
 protected:
 	virtual ~ShaderPass();
+
+LN_INTERNAL_ACCESS:
+	void ChangeDevice(Driver::IShaderPass* obj);
 
 private:
 	friend class RenderingCommandList;

@@ -3,6 +3,7 @@
  *	https://shikihuiku.wordpress.com/2013/10/08/hardtounderstandoglext/
  */
 #include "../../../Internal.h"
+#include <Lumino/Graphics/Utils.h>
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
 #include "GLTexture.h"
@@ -94,10 +95,13 @@ IIndexBuffer* GLGraphicsDevice::CreateIndexBuffer(int indexCount, const void* in
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format)
+ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	ScopedContext lock(this);
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels));
+	if (initialData != NULL) {
+		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
+	}
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;

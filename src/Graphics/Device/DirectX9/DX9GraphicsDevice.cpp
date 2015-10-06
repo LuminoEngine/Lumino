@@ -2,6 +2,7 @@
 #include "../../../Internal.h"
 #include <algorithm>
 #include <Lumino/Platform/PlatformSupport.h>
+#include <Lumino/Graphics/Utils.h>
 #include "DX9Module.h"
 #include "DX9VertexBuffer.h"
 #include "DX9IndexBuffer.h"
@@ -159,9 +160,12 @@ IIndexBuffer* DX9GraphicsDevice::CreateIndexBuffer(int indexCount, const void* i
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* DX9GraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format)
+ITexture* DX9GraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels));
+	if (initialData != NULL) {
+		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
+	}
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;

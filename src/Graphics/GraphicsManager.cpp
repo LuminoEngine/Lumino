@@ -870,7 +870,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		LN_REFOBJ_SET(m_graphicsDevice, device);
 
 		// ダミーテクスチャ
-		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8);
+		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8, NULL);
 		{
 			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 			BitmapPainter painter(m_dummyTexture->Lock());

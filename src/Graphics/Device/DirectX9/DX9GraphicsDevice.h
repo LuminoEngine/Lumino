@@ -62,7 +62,7 @@ public:
 	virtual IRenderer* GetRenderer() { return m_renderer; }
 	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
 	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
-	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format);
+	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData);
 	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format);
 	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format);
 	virtual ITexture* CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format);
