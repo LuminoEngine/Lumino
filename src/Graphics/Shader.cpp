@@ -96,6 +96,8 @@ Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuff
 	{
 		m_techniques.Add(LN_NEW ShaderTechnique(this, shader->GetTechnique(i)));
 	}
+
+	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -111,6 +113,7 @@ Shader::~Shader()
 	}
 
 	LN_SAFE_RELEASE(m_deviceObj);
+	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -293,10 +296,19 @@ void ShaderValue::SetMatrixArray(const Matrix* matrices, int count)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderValue::SetTexture(Driver::ITexture* texture)
+void ShaderValue::SetDeviceTexture(Driver::ITexture* texture)
 {
-	m_type = ShaderVariableType_Texture;
-	LN_REFOBJ_SET(m_value.Texture, texture);
+	m_type = ShaderVariableType_DeviceTexture;
+	LN_REFOBJ_SET(m_value.DeviceTexture, texture);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ShaderValue::SetManagedTexture(Texture* texture)
+{
+	m_type = ShaderVariableType_ManagedTexture;
+	LN_REFOBJ_SET(m_value.ManagedTexture, texture);
 }
 
 //-----------------------------------------------------------------------------
@@ -336,8 +348,11 @@ void ShaderValue::ReleaseValueBuffer()
 		LN_SAFE_DELETE_ARRAY(m_value.Buffer);
 	}
 	else */
-	if (m_type == ShaderVariableType_Texture) {
-		LN_SAFE_RELEASE(m_value.Texture);
+	if (m_type == ShaderVariableType_DeviceTexture) {
+		LN_SAFE_RELEASE(m_value.DeviceTexture);
+	}
+	if (m_type == ShaderVariableType_ManagedTexture) {
+		LN_SAFE_RELEASE(m_value.ManagedTexture);
 	}
 	//m_value.ByteCount = 0;
 	m_buffer.Release();
@@ -375,9 +390,13 @@ void ShaderValue::Copy(const ShaderValue& value)
 	//}
 	m_value.Buffer = m_buffer.GetData();
 
-	if (m_type == ShaderVariableType_Texture) {
-		m_value.Texture = value.m_value.Texture;
-		LN_SAFE_ADDREF(m_value.Texture);
+	if (m_type == ShaderVariableType_DeviceTexture) {
+		m_value.DeviceTexture = value.m_value.DeviceTexture;
+		LN_SAFE_ADDREF(m_value.DeviceTexture);
+	}
+	if (m_type == ShaderVariableType_ManagedTexture) {
+		m_value.ManagedTexture = value.m_value.ManagedTexture;
+		LN_SAFE_ADDREF(m_value.ManagedTexture);
 	}
 
 }

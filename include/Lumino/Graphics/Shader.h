@@ -117,8 +117,10 @@ public:
 	const Matrix& GetMatrix() const { return *m_value.Matrix; }
 	void SetMatrixArray(const Matrix* matrices, int count);
 	const Matrix* GetMatrixArray() const { return m_value.MatrixArray; }
-	void SetTexture(Driver::ITexture* texture);
-	Driver::ITexture* GetTexture() const { return m_value.Texture; }
+	void SetDeviceTexture(Driver::ITexture* texture);
+	Driver::ITexture* GetDeviceTexture() const { return m_value.DeviceTexture; }
+	void SetManagedTexture(Texture* texture);
+	Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
 	void SetString(const char* str);
 	const TCHAR* GetString() const { return m_value.String; }
 
@@ -138,7 +140,8 @@ private:
 			Vector4*		VectorArray;
 			Lumino::Matrix*	Matrix;
 			Lumino::Matrix*	MatrixArray;
-			Driver::ITexture*		Texture;
+			Driver::ITexture*	DeviceTexture;
+			Texture*			ManagedTexture;	// TODO: 必要ない。ShaderVariable クラス側で持つようにした
 			TCHAR*			String;
 
 			byte_t*			Buffer;		// ↑のポインタ型の実態 (ITexture*以外)

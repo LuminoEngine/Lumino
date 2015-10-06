@@ -70,6 +70,10 @@ int main()
 
 		button1->SetEnabled(false);
 
+
+
+
+
 		while (Application::UpdateFrame())
 		{
 		}

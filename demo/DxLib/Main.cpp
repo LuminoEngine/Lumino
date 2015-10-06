@@ -9,11 +9,13 @@ int PlayerGraph;
 void DeviceLostFunction(void *Data)
 {
 	printf("Start LostFunction\n");
+	Graphics::ChangeDirectX9Device(NULL);
 	printf("End LostFunction\n");
 }
 void DeviceRestoreFunction(void *Data)
 {
 	printf("Start RestoreFunction\n");
+	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
 	printf("End RestoreFunction\n");
 }
 
@@ -114,8 +116,9 @@ int main()
 
 	int dummyGraph = MakeGraph(32, 32);
 
+	Graphics::ChangeDirectX9Device(NULL);
 
-
+	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
 
 #if 1
 	GCPtr<GUIContext> context1 = GUIContext::Create();
@@ -174,7 +177,7 @@ int main()
 		// フルスクリーン切り替え
 		if (CheckHitKey(KEY_INPUT_F1) && !isFullScreen)
 		{
-			ChangeWindowMode(FALSE);
+			ChangeWindowMode(TRUE);
 			SetDrawScreen(DX_SCREEN_BACK);
 			isFullScreen = true;
 			printf("%p\n", GetUseDirect3DDevice9());

@@ -542,7 +542,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 	void Create(Driver::IShaderVariable* target, Driver::ITexture* value)
 	{
 		m_target = target;
-		m_variableType = ShaderVariableType_Texture;
+		m_variableType = ShaderVariableType_DeviceTexture;
 		Texture = value;
 		MarkGC(target);
 		MarkGC(value);
@@ -573,7 +573,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		case ShaderVariableType_MatrixArray:
 			m_target->SetMatrixArray((Matrix*)GetExtData(VectorsBufferIndex), m_arrayLength);
 			break;
-		case ShaderVariableType_Texture:
+		case ShaderVariableType_DeviceTexture:
 			m_target->SetTexture(Texture);
 			break;
 		//case ShaderVariableType_String:

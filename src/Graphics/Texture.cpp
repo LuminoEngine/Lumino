@@ -111,6 +111,8 @@ Texture::Texture(GraphicsManager* manager, const Size& size, TextureFormat forma
 Texture::Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
 	: Texture(manager)
 {
+	m_mipLevels = mipLevels;
+	m_format = format;
 	m_isPlatformLoaded = true;
 
 	m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
@@ -120,6 +122,7 @@ Texture::Texture(GraphicsManager* manager, Stream* stream, TextureFormat format,
 		// TODO: m_primarySurface へ内容をフィードバックする
 		//Driver::ITexture::ScopedLock lock(m_deviceObj);
 		//m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
+		m_size = m_deviceObj->GetSize();
 	}
 	// TODO: 失敗したら普通の処理
 }
@@ -288,7 +291,8 @@ void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
 		if (m_manager->GetRenderingType() == RenderingType::Immediate)
 		{
 			Driver::ITexture::ScopedLock lock(m_deviceObj);
-			m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
+			m_primarySurface->CopyRawData(lock.GetBitmap()->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetByteCount());
+			//m_primarySurface->Save(_T("test.png"));
 		}
 		LN_SAFE_RELEASE(m_deviceObj);
 	}

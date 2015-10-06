@@ -162,7 +162,7 @@ const Matrix* ShaderVariableBase::GetMatrixArray()
 //-----------------------------------------------------------------------------
 void ShaderVariableBase::SetTexture(ITexture* texture)
 {
-	m_value.SetTexture(texture);
+	m_value.SetDeviceTexture(texture);
 	m_modifid = true;
 }
 
@@ -171,7 +171,7 @@ void ShaderVariableBase::SetTexture(ITexture* texture)
 //-----------------------------------------------------------------------------
 ITexture* ShaderVariableBase::GetTexture()
 {
-	return m_value.GetTexture();
+	return m_value.GetDeviceTexture();
 }
 
 //-----------------------------------------------------------------------------
@@ -212,7 +212,7 @@ void ShaderVariableBase::OnResetDevice()
 	case ShaderVariableType_VectorArray:	SetVectorArray(m_value.GetVectorArray(), m_value.GetArrayLength()); break;
 	case ShaderVariableType_Matrix:			SetMatrix(m_value.GetMatrix()); break;
 	case ShaderVariableType_MatrixArray:	SetMatrixArray(m_value.GetMatrixArray(), m_value.GetArrayLength()); break;
-	case ShaderVariableType_Texture:		SetTexture(m_value.GetTexture()); break;
+	case ShaderVariableType_DeviceTexture:		SetTexture(m_value.GetDeviceTexture()); break;
 	//case ShaderVariableType_String:			SetString(m_value.String); break;
 	}
 }

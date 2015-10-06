@@ -682,6 +682,30 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // Graphics
 //=============================================================================
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Graphics::ChangeDirectX9Device(void* id3d9device)
+{
+	if (id3d9device == NULL)
+	{
+		GraphicsManager::Instance->ChangeDevice(NULL);
+	}
+	else
+	{
+		Driver::DX9GraphicsDevice::ConfigData data;
+		data.MainWindow = GraphicsManager::Instance->GetMainWindow();
+		data.FileManager = GraphicsManager::Instance->GetFileManager();
+		data.D3D9Device = (IDirect3DDevice9*)id3d9device;
+		//data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
+		//data.EnableVSyncWait = false;			// TODO
+		//data.EnableFPUPreserve = false;			// TODO
+		auto* device = LN_NEW Driver::DX9GraphicsDevice();
+		device->Initialize(data);
+		GraphicsManager::Instance->ChangeDevice(device);
+		device->Release();
+	}
+}
 
 //=============================================================================
 // GraphicsManager
@@ -712,6 +736,7 @@ GraphicsManager* GraphicsManager::Instance = NULL;
 //-----------------------------------------------------------------------------
 GraphicsManager::GraphicsManager(const ConfigData& configData)
 	: m_fileManager(NULL)
+	, m_mainWindow(NULL)
 	, m_graphicsDevice(NULL)
 	, m_renderingType(configData.RenderingType)
 	, m_dummyTexture(NULL)
@@ -720,6 +745,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	, m_painterEngine(NULL)
 {
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
+	m_mainWindow = configData.MainWindow;
 	m_platformTextureLoading = configData.PlatformTextureLoading;
 
 	// フォント管理

@@ -257,16 +257,16 @@ void D3DXParamDescToLNParamDesc(
 	case D3DXPT_INT:			*type = ShaderVariableType_Int;	break;
 	case D3DXPT_FLOAT:			*type = ShaderVariableType_Float; break;
 	case D3DXPT_STRING:			*type = ShaderVariableType_String; break;
-	case D3DXPT_TEXTURE:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_TEXTURE1D:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_TEXTURE2D:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_TEXTURE3D:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_TEXTURECUBE:	*type = ShaderVariableType_Texture; break;
-	case D3DXPT_SAMPLER:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_SAMPLER1D:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_SAMPLER2D:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_SAMPLER3D:		*type = ShaderVariableType_Texture; break;
-	case D3DXPT_SAMPLERCUBE:	*type = ShaderVariableType_Texture; break;
+	case D3DXPT_TEXTURE:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_TEXTURE1D:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_TEXTURE2D:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_TEXTURE3D:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_TEXTURECUBE:	*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_SAMPLER:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_SAMPLER1D:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_SAMPLER2D:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_SAMPLER3D:		*type = ShaderVariableType_DeviceTexture; break;
+	case D3DXPT_SAMPLERCUBE:	*type = ShaderVariableType_DeviceTexture; break;
 	case D3DXPT_PIXELSHADER:	*type = ShaderVariableType_Unknown; break;
 	case D3DXPT_VERTEXSHADER:	*type = ShaderVariableType_Unknown; break;
 	case D3DXPT_PIXELFRAGMENT:	*type = ShaderVariableType_Unknown; break;
@@ -361,7 +361,7 @@ void DX9ShaderVariable::GetValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 		LN_COMCALL(dxEffect->GetMatrixArray(handle, (D3DXMATRIX*)outValue->GetDataBuffer(), desc.Elements));
 		break;
 	}
-	case ShaderVariableType_Texture:
+	case ShaderVariableType_DeviceTexture:
 	{
 		// Texture 型の初期値は NULL
 		break;

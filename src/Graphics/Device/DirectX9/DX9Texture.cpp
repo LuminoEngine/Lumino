@@ -211,9 +211,12 @@ void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataByt
 //-----------------------------------------------------------------------------
 Bitmap* DX9Texture::Lock()
 {
+	DWORD flags = 0;//D3DLOCK_READONLY;
+
 	// Lock
+	RECT lockRect = { 0, 0, m_realSize.Width, m_realSize.Height };
 	D3DLOCKED_RECT lockedRect;
-	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, 0));
+	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, flags));	// TODO: 読むのか書くのか、ロックの種類を指定したい
 
 	// Lock したバッファを参照する Bitmap を作成して返す
 	PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);

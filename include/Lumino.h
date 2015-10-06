@@ -16,6 +16,7 @@
 
 #include "Lumino/Graphics/Common.h"
 #include "Lumino/Graphics/GraphicsManager.h"
+#include "Lumino/Graphics/Graphics.h"
 #include "Lumino/Graphics/Renderer.h"
 #include "Lumino/Graphics/RenderState.h"
 #include "Lumino/Graphics/SamplerState.h"

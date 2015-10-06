@@ -178,7 +178,7 @@ ShaderCompileResultLevel PlainGLSLBuilder::MakeShaderProgram(const void* code, s
 	int vs_sizes[] =
 	{
 		strlen(vs_codes[0]),
-		codeByteCount,
+		(int)codeByteCount,
 	};
 
 	// フラグメントシェーダコード
@@ -190,7 +190,7 @@ ShaderCompileResultLevel PlainGLSLBuilder::MakeShaderProgram(const void* code, s
 	int fs_sizes[] =
 	{
 		strlen(fs_codes[0]),
-		codeByteCount,
+		(int)codeByteCount,
 	};
 
 	GLuint vertexShader = 0;
@@ -501,10 +501,10 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 			location, m_desc.Elements, GL_TRUE,		// TODO: 転置でいいか確認
 			(const GLfloat*)m_value.GetMatrixArray());
 		break;
-	case ShaderVariableType_Texture:
+	case ShaderVariableType_DeviceTexture:
 		// textureStageIndex のテクスチャステージにバインド
 		glActiveTexture(GL_TEXTURE0 + textureStageIndex);
-		glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetTexture())->GetGLTexture());
+		glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetDeviceTexture())->GetGLTexture());
 
 		//LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
 		//LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mSamplerState->MagFilter);
@@ -571,8 +571,8 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(GLenum gl_type, GLsizei gl_var_
 	case GL_FLOAT_MAT3:     SET_LNDESC(LN_SVC_MATRIX, ShaderVariableType_Matrix, 3, 3); break;
 	case GL_FLOAT_MAT4:     SET_LNDESC(LN_SVC_MATRIX, ShaderVariableType_Matrix, 4, 4); break;
 
-	case GL_SAMPLER_2D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Texture, 1, 1); break;
-	case GL_SAMPLER_CUBE:       SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Texture, 1, 1); break;
+	case GL_SAMPLER_2D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_DeviceTexture, 1, 1); break;
+	case GL_SAMPLER_CUBE:       SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_DeviceTexture, 1, 1); break;
 
 //#if !defined(LNOTE_GLES)
 	case GL_FLOAT_MAT2x3:   SET_LNDESC(LN_SVC_MATRIX, ShaderVariableType_Matrix, 2, 3); break;
@@ -587,8 +587,8 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(GLenum gl_type, GLsizei gl_var_
 	//case GL_FLOAT_VEC3: SET_LNDESC( LN_SVC_VECTOR, LN_SVT_FLOAT, 1, 3 ); break;
 	//case GL_FLOAT_VEC4: SET_LNDESC( LN_SVC_VECTOR, LN_SVT_FLOAT, 1, 4 ); break;
 
-	case GL_SAMPLER_1D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Texture, 1, 1); break;
-	case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Texture, 1, 1); break;
+	case GL_SAMPLER_1D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_DeviceTexture, 1, 1); break;
+	case GL_SAMPLER_3D:         SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_DeviceTexture, 1, 1); break;
 
 	case GL_SAMPLER_1D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Unknown, 1, 1); break;
 	case GL_SAMPLER_2D_SHADOW:  SET_LNDESC(LN_SVC_SAMPLER, ShaderVariableType_Unknown, 1, 1); break;
@@ -657,7 +657,7 @@ GLShaderPass::GLShaderPass(GLShader* owner, const String& name, GLuint program, 
 	// テクスチャ型の変数にステージ番号を振っていく。
 	LN_FOREACH(GLShaderPassVariableInfo& v, m_passVarList)
 	{
-		if (v.Variable->GetType() == ShaderVariableType_Texture) {
+		if (v.Variable->GetType() == ShaderVariableType_DeviceTexture) {
 			v.TextureStageIndex = m_textureVarCount;
 			m_textureVarCount++;
 		}

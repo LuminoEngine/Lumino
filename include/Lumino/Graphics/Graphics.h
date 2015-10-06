@@ -22,7 +22,7 @@ public:
 	*/
 	//void EndRendering();
 
-
+	static void ChangeDirectX9Device(void* id3d9device);
 };
 
 } // namespace Lumino

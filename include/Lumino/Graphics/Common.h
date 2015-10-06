@@ -199,7 +199,8 @@ enum ShaderVariableType
 	ShaderVariableType_VectorArray,
 	ShaderVariableType_Matrix,
 	ShaderVariableType_MatrixArray,
-	ShaderVariableType_Texture,
+	ShaderVariableType_DeviceTexture,
+	ShaderVariableType_ManagedTexture,
 	ShaderVariableType_String,
 
 	/*

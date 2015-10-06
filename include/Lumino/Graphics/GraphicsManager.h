@@ -39,6 +39,8 @@ public:
 	/** 関連付けられている FileManager を取得します。*/
 	FileManager* GetFileManager() const { return m_fileManager; }
 
+	Platform::Window* GetMainWindow() const { return m_mainWindow; }
+
 	/** 関連付けられている FontManager を取得します。*/
 	FontManager* GetFontManager() const { return m_fontManager; }
 
@@ -123,6 +125,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	FileManager*					m_fileManager;
+	Platform::Window*				m_mainWindow;
 	RefPtr<FontManager>				m_fontManager;
 	RenderingType					m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
