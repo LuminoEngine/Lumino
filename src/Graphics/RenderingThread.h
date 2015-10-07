@@ -18,7 +18,7 @@ public:
 	virtual ~RenderingThread();
 
 public:
-	void Initialize(Driver::IGraphicsDevice* device);
+	void Reset(Driver::IGraphicsDevice* device);
 	void Dispose();
 	void PushRenderingCommand(RenderingCommandList* commandList);
 	Exception* GetException() { return m_exception; }

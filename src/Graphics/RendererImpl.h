@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/Color.h>
+#include <Lumino/Graphics/GraphicsResourceObject.h>
 
 namespace Lumino
 {
@@ -16,7 +17,7 @@ namespace Details
 	@brief		
 */
 class Renderer
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	static const int MaxMultiRenderTargets = 4;
@@ -111,6 +112,9 @@ public:
 		@brief	現在設定されている頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
 	*/
 	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+
+protected:
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
 	friend class Helper;

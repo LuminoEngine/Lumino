@@ -74,7 +74,33 @@ private:
 	DX9RenderTargetTexture*	m_currentRenderTargets[MaxMultiRenderTargets];
 	DX9DepthBuffer*			m_currentDepthBuffer;
 	DX9ShaderPass*			m_currentShaderPass;
+
+	DWORD	m_state_FVF;
+	DWORD	m_state_D3DRS_ALPHABLENDENABLE;
+	DWORD	m_state_D3DRS_BLENDOP;
+	DWORD	m_state_D3DRS_DESTBLEND;
+	DWORD	m_state_D3DRS_SRCBLEND;
+	DWORD	m_state_D3DRS_ALPHAREF;
+	DWORD	m_state_D3DRS_ZENABLE;
+	DWORD	m_state_D3DRS_ZWRITEENABLE;
+	DWORD	m_state_D3DRS_ALPHATESTENABLE;
+	DWORD	m_state_D3DRS_CULLMODE;
+	DWORD	m_state_D3DRS_COLORVERTEX;
+	DWORD	m_state_D3DRS_LIGHTING;
+	DWORD	m_state_D3DRS_SHADEMODE;
+	IDirect3DVertexShader9*			m_state_vertexShader;
+	IDirect3DPixelShader9*			m_state_pixelShader;
+	IDirect3DVertexDeclaration9*	m_state_vertexDeclaration;
+	IDirect3DVertexBuffer9* m_state_streamData;
+	UINT m_state_OffsetInBytes;
+	UINT m_state_pStride;
+
+	IDirect3DIndexBuffer9*	m_state_IndexData;
+
+	IDirect3DBaseTexture9*	m_state_pTexture;
+
 	bool					m_sceneBegan;
+	bool					m_restorationStates;
 };
 
 } // namespace Driver

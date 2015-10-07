@@ -33,6 +33,7 @@ PainterEngine::PainterEngine()
 PainterEngine::~PainterEngine()
 {
 	DetachBrushData();
+	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +41,22 @@ PainterEngine::~PainterEngine()
 //-----------------------------------------------------------------------------
 void PainterEngine::Create(GraphicsManager* manager)
 {
-	auto* device = manager->GetGraphicsDevice();
+	m_manager = manager;
+	CreateInternal();
+
+	memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
+	m_currentState.Opacity = 1.0f;
+	m_currentState.InternalGlyphMask = m_dummyTexture;
+
+	m_manager->AddResourceObject(this);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::CreateInternal()
+{
+	auto* device = m_manager->GetGraphicsDevice();
 
 	const int DefaultFaceCount = 1024;
 
@@ -56,7 +72,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	ShaderCompileResult r;
 	m_shader.Shader.Attach(device->CreateShader(g_Painter_fx_Data, g_Painter_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
-	
+
 	m_shader.Technique = m_shader.Shader->GetTechnique(0);
 	m_shader.Pass = m_shader.Technique->GetPass(0);
 	m_shader.varWorldMatrix = m_shader.Shader->GetVariableByName(_T("g_worldMatrix"));
@@ -79,10 +95,27 @@ void PainterEngine::Create(GraphicsManager* manager)
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();
+}
 
-	memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
-	m_currentState.Opacity = 1.0f;
-	m_currentState.InternalGlyphMask = m_dummyTexture;
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		DetachBrushData();	// TODO: TextureBrush の復元は困難。End で Detach する仕様にしたい。
+		m_vertexBuffer.SafeRelease();
+		m_indexBuffer.SafeRelease();
+		m_shader.Shader.SafeRelease();
+		m_renderer = NULL;
+		m_dummyTexture.SafeRelease();
+		m_currentState.InternalGlyphMask.SafeRelease();
+	}
+	else
+	{
+		CreateInternal();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -114,6 +147,7 @@ void PainterEngine::Begin()
 void PainterEngine::End()
 {
 	Flush();
+	DetachBrushData();
 }
 
 //-----------------------------------------------------------------------------

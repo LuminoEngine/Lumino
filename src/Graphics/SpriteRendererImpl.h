@@ -10,11 +10,13 @@ namespace Lumino
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 class SpriteRendererImpl
-    : public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount);
 	virtual ~SpriteRendererImpl();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void CreateInternal();
 
 public:
 

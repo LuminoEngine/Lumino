@@ -73,6 +73,7 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 	// DX ライブラリの初期化
+	bool isFullScreen = false;
 	ChangeWindowMode(TRUE);
 	SetDrawScreen(DX_SCREEN_BACK);
 	//SetUseDirect3D9Ex(FALSE);
@@ -116,6 +117,13 @@ int main()
 
 	int dummyGraph = MakeGraph(32, 32);
 
+
+	{
+		auto* d = (IDirect3DDevice9*)GetUseDirect3DDevice9();
+		d->AddRef();
+		printf("%p ref:%d\n", d, d->Release());
+	}
+
 	Graphics::ChangeDirectX9Device(NULL);
 
 	Graphics::ChangeDirectX9Device((IDirect3DDevice9*)GetUseDirect3DDevice9());
@@ -143,11 +151,13 @@ int main()
 
 
 	// ループ
-	bool isFullScreen = false;
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
+		printf("a\n");
 		// 画面を初期化する
 		ClearDrawScreen();
+
+		DrawBox(0, 0, 640, 480, GetColor(0, 0, 255), TRUE);
 
 		// 何でもいいのでTransFragを有効にして画像を描画する。
 		DrawGraph(0, 0, dummyGraph, TRUE);
@@ -169,7 +179,7 @@ int main()
 
 
 		// DXライブラリの設定を戻す。
-		//RefreshDxLibDirect3DSetting();
+		RefreshDxLibDirect3DSetting();
 
 		// 裏画面の内容を表画面に反映させる
 		ScreenFlip();
@@ -177,7 +187,7 @@ int main()
 		// フルスクリーン切り替え
 		if (CheckHitKey(KEY_INPUT_F1) && !isFullScreen)
 		{
-			ChangeWindowMode(TRUE);
+			ChangeWindowMode(FALSE);
 			SetDrawScreen(DX_SCREEN_BACK);
 			isFullScreen = true;
 			printf("%p\n", GetUseDirect3DDevice9());
@@ -191,9 +201,20 @@ int main()
 		}
 	}
 
+	DeleteGraph(dummyGraph);
+
+	Graphics::ChangeDirectX9Device(NULL);
+	Application::Finalize();
+
+	{
+		auto* d = (IDirect3DDevice9*)GetUseDirect3DDevice9();
+		d->AddRef();
+		printf("%p ref:%d\n", d, d->Release());
+	}
+
+
 	DxLib_End();
 
-	Application::Finalize();
 
 #if 0
 	// 初期化

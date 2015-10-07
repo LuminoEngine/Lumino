@@ -31,7 +31,7 @@ RenderingThread::~RenderingThread()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingThread::Initialize(Driver::IGraphicsDevice* device)
+void RenderingThread::Reset(Driver::IGraphicsDevice* device)
 {
 	m_device = device;
 	m_renderer = m_device->GetRenderer();

@@ -30,11 +30,13 @@ public:
 ///		このクラスは描画スレッドで生成され、各機能が呼ばれる。
 ///		他のスレッドからはアクセスできない。
 class GeometryRendererCore
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
-	GeometryRendererCore(Driver::IGraphicsDevice* device);
+	GeometryRendererCore(GraphicsManager* manager, Driver::IGraphicsDevice* device);
 	virtual ~GeometryRendererCore();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void CreateInternal();
 
 public:
 
@@ -88,6 +90,7 @@ public:
 	};
 
 private:
+	GraphicsManager*				m_manager;
 	RefPtr<Driver::IGraphicsDevice>	m_device;
 	RefPtr<Driver::IRenderer>		m_renderer;
 	RefPtr<Driver::ITexture>		m_dummyTexture;

@@ -74,6 +74,8 @@ Renderer::Renderer(GraphicsManager* manager)
 	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
 		m_primaryCommandList = LN_NEW RenderingCommandList();
 	}
+
+	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -91,6 +93,7 @@ Renderer::~Renderer()
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
 	}
 	LN_SAFE_RELEASE(m_currentDepthBuffer);
+	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -259,6 +262,18 @@ void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primi
 void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Renderer::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL) {
+	}
+	else {
+		m_internal = device->GetRenderer();
+	}
 }
 
 //-----------------------------------------------------------------------------

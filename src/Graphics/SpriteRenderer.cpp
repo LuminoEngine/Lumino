@@ -377,6 +377,40 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
+	CreateInternal();
+	m_manager->AddResourceObject(this);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SpriteRendererImpl::~SpriteRendererImpl()
+{
+	m_manager->RemoveResourceObject(this);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRendererImpl::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		m_vertexBuffer.SafeRelease();
+		m_indexBuffer.SafeRelease();
+		m_shader.Shader.SafeRelease();
+	}
+	else
+	{
+		CreateInternal();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteRendererImpl::CreateInternal()
+{
 	auto* device = m_manager->GetGraphicsDevice();
 
 	//-----------------------------------------------------
@@ -434,11 +468,11 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	m_shader.Shader.Attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
-	m_shader.varTexture			= m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
-	m_shader.varViewProjMatrix	= m_shader.Shader->GetVariableByName(_T("gViewProjMatrix"));
-	m_shader.varViewPixelSize	= m_shader.Shader->GetVariableByName(_T("gViewportSize"));
-	m_shader.varTexture			= m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
-	m_shader.techMainDraw		= m_shader.Shader->GetTechnique(0);
+	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
+	m_shader.varViewProjMatrix = m_shader.Shader->GetVariableByName(_T("gViewProjMatrix"));
+	m_shader.varViewPixelSize = m_shader.Shader->GetVariableByName(_T("gViewportSize"));
+	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
+	m_shader.techMainDraw = m_shader.Shader->GetTechnique(0);
 
 	//-----------------------------------------------------
 	// メモリ確保と各種初期値
@@ -460,14 +494,6 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 
 	m_spriteRequestListUsedCount = 0;
 	m_currentRenderStateIndex = 0;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-SpriteRendererImpl::~SpriteRendererImpl()
-{
-
 }
 
 //-----------------------------------------------------------------------------

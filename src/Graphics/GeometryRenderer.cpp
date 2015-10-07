@@ -32,7 +32,7 @@ GeometryRenderer::GeometryRenderer(GraphicsManager* manager)
 	, m_internal(NULL)
 {
 	LN_REFOBJ_SET(m_manager, manager);
-	m_internal = LN_NEW GeometryRendererCore(m_manager->GetGraphicsDevice());
+	m_internal = LN_NEW GeometryRendererCore(m_manager, m_manager->GetGraphicsDevice());
 }
 
 //-----------------------------------------------------------------------------
@@ -145,12 +145,49 @@ void GeometryRenderer::DrawRect(const RectF& destRect, const RectF& texUVRect, c
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GeometryRendererCore::GeometryRendererCore(Driver::IGraphicsDevice* device)
-	: m_currentShaderPass(NULL)
+GeometryRendererCore::GeometryRendererCore(GraphicsManager* manager, Driver::IGraphicsDevice* device)
+	: m_manager(manager)
+	, m_currentShaderPass(NULL)
 {
 	m_device = device;
 	m_renderer = device->GetRenderer();
+	CreateInternal();
+	m_manager->AddResourceObject(this);
+}
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GeometryRendererCore::~GeometryRendererCore()
+{
+	m_manager->RemoveResourceObject(this);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GeometryRendererCore::OnChangeDevice(Driver::IGraphicsDevice* device)
+{
+	if (device == NULL)
+	{
+		m_device.SafeRelease();
+		m_renderer.SafeRelease();
+		m_vertexBuffer.SafeRelease();
+		m_indexBuffer.SafeRelease();
+		m_shaderParam.Shader.SafeRelease();
+		m_dummyTexture.SafeRelease();
+	}
+	else
+	{
+		CreateInternal();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GeometryRendererCore::CreateInternal()
+{
 	//-----------------------------------------------------
 	// 各描画オブジェクト用の頂点バッファ
 
@@ -161,7 +198,7 @@ GeometryRendererCore::GeometryRendererCore(Driver::IGraphicsDevice* device)
 	// シェーダ
 	const unsigned char code[] =
 	{
-		#include "Resource/GeometryRenderer.fx.h"
+#include "Resource/GeometryRenderer.fx.h"
 	};
 	const size_t codeLen = LN_ARRAY_SIZE_OF(code);
 
@@ -171,11 +208,11 @@ GeometryRendererCore::GeometryRendererCore(Driver::IGraphicsDevice* device)
 		printf(result.Message);	// TODO:仮
 	}
 
-	m_shaderParam.varWorldMatrix	= m_shaderParam.Shader->GetVariableByName(_T("g_worldMatrix"));
+	m_shaderParam.varWorldMatrix = m_shaderParam.Shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shaderParam.varViewProjMatrix = m_shaderParam.Shader->GetVariableByName(_T("g_viewProjMatrix"));
-	m_shaderParam.varTexture		= m_shaderParam.Shader->GetVariableByName(_T("g_texture"));
-	m_shaderParam.techMainDraw		= m_shaderParam.Shader->GetTechnique(0);
-	m_shaderParam.passP0			= m_shaderParam.techMainDraw->GetPass(0);
+	m_shaderParam.varTexture = m_shaderParam.Shader->GetVariableByName(_T("g_texture"));
+	m_shaderParam.techMainDraw = m_shaderParam.Shader->GetTechnique(0);
+	m_shaderParam.passP0 = m_shaderParam.techMainDraw->GetPass(0);
 
 	//-----------------------------------------------------
 	// ダミーテクスチャ
@@ -192,13 +229,6 @@ GeometryRendererCore::GeometryRendererCore(Driver::IGraphicsDevice* device)
 	SetTransform(Matrix::Identity);
 	SetViewProjTransform(Matrix::Identity);
 	SetTexture(NULL);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-GeometryRendererCore::~GeometryRendererCore()
-{
 }
 
 //-----------------------------------------------------------------------------

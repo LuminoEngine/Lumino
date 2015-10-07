@@ -99,7 +99,7 @@ struct BrushData
 /// PainterEngine
 ///		このクラスは Brush を参照しないようにすること。
 class PainterEngine
-	: public RefObject
+	: public GraphicsResourceObject
 {
 public:
 	struct GlyphRunData
@@ -111,9 +111,11 @@ public:
 public:
 	PainterEngine();
 	virtual ~PainterEngine();
+	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 public:
 	void Create(GraphicsManager* manager);
+	void CreateInternal();
 
 
 	void Begin();	// 今のところネスト禁止
@@ -190,7 +192,7 @@ private:
 		RefPtr<Driver::ITexture>	InternalGlyphMask;
 	};
 
-	
+	GraphicsManager*				m_manager;
 	Driver::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
 	CacheBuffer<uint16_t>			m_indexCache;

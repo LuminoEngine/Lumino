@@ -807,7 +807,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	{
 		// 描画スレッドを立ち上げる
 		m_renderingThread = LN_NEW RenderingThread();
-		m_renderingThread->Initialize(m_graphicsDevice);
+		m_renderingThread->Reset(m_graphicsDevice);
 		m_renderingThread->Start();
 	}
 }
@@ -880,6 +880,10 @@ void GraphicsManager::ResumeDevice()
 //-----------------------------------------------------------------------------
 void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 {
+	if (m_renderingThread != NULL) {
+		LN_THROW(0, InvalidOperationException);
+	}
+
 	if (device == NULL)
 	{
 		// 全オブジェクトに通知
@@ -889,7 +893,11 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 
 		// 色々解放
 		LN_SAFE_RELEASE(m_dummyTexture);
-		LN_SAFE_RELEASE(m_graphicsDevice);
+
+		if (m_graphicsDevice != NULL) {
+			m_graphicsDevice->Finalize();
+			LN_SAFE_RELEASE(m_graphicsDevice);
+		}
 	}
 	else
 	{

@@ -35,6 +35,8 @@ int main()
 		ColorBrush ff(ColorF(1, 0, 0, 1));
 		auto aa = ColorBrush::Green;
 		ApplicationSettings appData;
+		appData.GraphicsAPI = GraphicsAPI::DirectX9;
+		appData.RenderingType = RenderingType::Immediate;
 		appData.DirectMusicMode = DirectMusicMode::Normal;
 		Application::Initialize(appData);
 

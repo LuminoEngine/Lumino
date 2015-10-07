@@ -29,6 +29,7 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	, m_currentDepthBuffer(NULL)
 	, m_currentShaderPass(NULL)
 	, m_sceneBegan(false)
+	, m_restorationStates(true)
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
 
@@ -104,6 +105,35 @@ void DX9Renderer::OnResetDevice()
 //-----------------------------------------------------------------------------
 void DX9Renderer::EnterRenderState()
 {
+	// ステートを保存する
+	if (m_restorationStates)
+	{
+		IDirect3DDevice9* device = m_owner->GetIDirect3DDevice9();
+		device->GetRenderState(D3DRS_ALPHABLENDENABLE, &m_state_D3DRS_ALPHABLENDENABLE);
+		device->GetRenderState(D3DRS_BLENDOP, &m_state_D3DRS_BLENDOP);
+		device->GetRenderState(D3DRS_DESTBLEND, &m_state_D3DRS_DESTBLEND);
+		device->GetRenderState(D3DRS_SRCBLEND, &m_state_D3DRS_SRCBLEND);
+		device->GetRenderState(D3DRS_ALPHAREF, &m_state_D3DRS_ALPHAREF);
+
+		device->GetRenderState(D3DRS_ZENABLE, &m_state_D3DRS_ZENABLE);
+		device->GetRenderState(D3DRS_ZWRITEENABLE, &m_state_D3DRS_ZWRITEENABLE);
+		device->GetRenderState(D3DRS_ALPHATESTENABLE, &m_state_D3DRS_ALPHATESTENABLE);
+		device->GetRenderState(D3DRS_CULLMODE, &m_state_D3DRS_CULLMODE);
+
+		device->GetRenderState(D3DRS_COLORVERTEX, &m_state_D3DRS_COLORVERTEX);
+		device->GetRenderState(D3DRS_LIGHTING, &m_state_D3DRS_LIGHTING);
+		device->GetRenderState(D3DRS_SHADEMODE, &m_state_D3DRS_SHADEMODE);
+
+		device->GetVertexShader(&m_state_vertexShader);
+		device->GetPixelShader(&m_state_pixelShader);
+		device->GetVertexDeclaration(&m_state_vertexDeclaration);
+		//device->GetStreamSource( 0, &m_state_streamData, &m_state_OffsetInBytes, &m_state_pStride );
+		//device->GetIndices( &m_state_IndexData );
+
+		device->GetTexture(0, &m_state_pTexture);
+		device->GetFVF(&m_state_FVF);
+	}
+
 	RestoreStatus();
 
 	InternalSetRenderState(m_currentRenderState, true);
@@ -130,6 +160,66 @@ void DX9Renderer::LeaveRenderState()
 		m_currentShaderPass->EndPass();
 	}
 	LN_SAFE_RELEASE(m_currentShaderPass);
+
+
+
+
+
+	////InternalSetRenderState(NULL, true);
+	////InternalSetDepthStencilState(NULL, true);
+	//for (int i = 0; i < MaxMultiRenderTargets; ++i)
+	//{
+	//	//if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
+	//		//InternalSetRenderTarget(i, NULL, true);
+	//	//}
+	//}
+	//InternalSetDepthBuffer(NULL, true);
+	////InternalSetViewport(NULL, true);
+	//InternalSetVertexBuffer(NULL, true);
+	//InternalSetIndexBuffer(NULL, true);
+
+
+
+
+	// ステートを復元する
+	if (m_restorationStates)
+	{
+		IDirect3DDevice9* device = m_owner->GetIDirect3DDevice9();
+		device->SetRenderState(D3DRS_ALPHABLENDENABLE, m_state_D3DRS_ALPHABLENDENABLE);
+		device->SetRenderState(D3DRS_BLENDOP, m_state_D3DRS_BLENDOP);
+		device->SetRenderState(D3DRS_DESTBLEND, m_state_D3DRS_DESTBLEND);
+		device->SetRenderState(D3DRS_SRCBLEND, m_state_D3DRS_SRCBLEND);
+		device->SetRenderState(D3DRS_ALPHAREF, m_state_D3DRS_ALPHAREF);
+
+		device->SetRenderState(D3DRS_ZENABLE, m_state_D3DRS_ZENABLE);
+		device->SetRenderState(D3DRS_ZWRITEENABLE, m_state_D3DRS_ZWRITEENABLE);
+		device->SetRenderState(D3DRS_ALPHATESTENABLE, m_state_D3DRS_ALPHATESTENABLE);
+		device->SetRenderState(D3DRS_CULLMODE, m_state_D3DRS_CULLMODE);
+
+		device->SetRenderState(D3DRS_COLORVERTEX, m_state_D3DRS_COLORVERTEX);
+		device->SetRenderState(D3DRS_LIGHTING, m_state_D3DRS_LIGHTING);
+		device->SetRenderState(D3DRS_SHADEMODE, m_state_D3DRS_SHADEMODE);
+
+		device->SetVertexShader(m_state_vertexShader);
+		LN_SAFE_RELEASE(m_state_vertexShader);
+
+		device->SetPixelShader(m_state_pixelShader);
+		LN_SAFE_RELEASE(m_state_pixelShader);
+
+		device->SetVertexDeclaration(m_state_vertexDeclaration);
+		LN_SAFE_RELEASE(m_state_vertexDeclaration);
+
+		//device->SetStreamSource( 0, m_state_streamData, m_state_OffsetInBytes, m_state_pStride );
+		//LN_SAFE_RELEASE( m_state_streamData );
+
+		//device->SetIndices( m_state_IndexData );
+		//LN_SAFE_RELEASE( m_state_IndexData );
+
+		device->SetTexture(0, m_state_pTexture);
+		LN_SAFE_RELEASE(m_state_pTexture);
+
+		device->SetFVF(m_state_FVF);
+	}
 }
 
 //-----------------------------------------------------------------------------
