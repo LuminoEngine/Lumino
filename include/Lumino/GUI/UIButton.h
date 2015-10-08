@@ -41,9 +41,6 @@ public:
 
 
 
-	static const String	IsMouseOverProperty;	///< IsMouseOver プロパティの識別子
-
-
 	static const String ControlTemplateTypeName;	///< "Button"
 
 
@@ -53,7 +50,7 @@ public:
 	virtual ~UIButton();
 
 public:
-	bool IsMouseOver() const { return m_isMouseOver; }
+	//bool IsMouseOver() const { return m_isMouseOver; }
 
 	//virtual void Render();
 
@@ -84,7 +81,7 @@ private:
 
 private:
 	RefPtr<ButtonChrome>	m_chrome;	// TODO: 仮。ちゃんとテーマから読みだす
-	bool m_isMouseOver;
+	//bool m_isMouseOver;
 };
 
 LN_NAMESPACE_GUI_END

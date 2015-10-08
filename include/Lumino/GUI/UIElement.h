@@ -150,6 +150,7 @@ public:
 	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity プロパティの識別子 */
 	LN_PROPERTY(bool,					IsEnabledProperty);				/**< IsEnabled プロパティの識別子 */
+	LN_PROPERTY(bool,					IsMouseOverProperty);			/**< IsMouseOver プロパティの識別子 */
 	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
 
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
@@ -214,6 +215,9 @@ public:
 
 	/** この要素が有効かどうかを示す値を取得します。*/
 	bool IsEnabled() const { return GetTypedPropertyValue<bool>(IsEnabledProperty); }
+
+	/** マウスポインタがこの要素の上にあるかを確認します。*/
+	bool IsMouseOver() const { return GetTypedPropertyValue<bool>(IsMouseOverProperty); }
 
 	/** @} */
 
@@ -315,6 +319,7 @@ private:
 	Array< RefPtr<AnimationClock> >	m_animationClockList;
 	InvalidateFlags					m_invalidateFlags;
 	bool							m_isEnabled;
+	bool							m_isMouseOver;
 
 
 
@@ -521,8 +526,8 @@ protected:
 	virtual void OnMouseMove(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 	virtual void OnMouseDown(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseDownEvent, this, e); } }
 	virtual void OnMouseUp(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseUpEvent, this, e); } }
-	virtual void OnMouseEnter(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseEnterEvent, this, e); } }
-	virtual void OnMouseLeave(MouseEventArgs* e) { if (!e->Handled) { RaiseEvent(MouseLeaveEvent, this, e); } }
+	virtual void OnMouseEnter(MouseEventArgs* e);
+	virtual void OnMouseLeave(MouseEventArgs* e);
 	virtual void OnKeyDown(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(KeyDownEvent, this, e); } }
 	virtual void OnKeyUp(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(KeyUpEvent, this, e); } }
 	virtual void OnTextInput(KeyEventArgs* e) { if (!e->Handled) { RaiseEvent(TextInputEvent, this, e); } }

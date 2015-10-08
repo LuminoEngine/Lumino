@@ -1422,7 +1422,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 			RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
 			ef1->SetKeyName(_T("chrome"));
 			ef1->SetTypeName(_T("ButtonChrome"));
-			ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
+			//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
 			panel1->AddChild(ef1);
 
 			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this));

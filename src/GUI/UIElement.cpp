@@ -26,6 +26,7 @@ LN_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentPropert
 LN_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, PropertyMetadata(1.0f));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsEnabledProperty, "IsEnabled", m_isEnabled, PropertyMetadata(true));
+LN_PROPERTY_IMPLEMENT(UIElement, bool, IsMouseOverProperty, "IsMouseOver", m_isMouseOver, PropertyMetadata(false));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, PropertyMetadata(true));
 
 // Register routed event
@@ -54,6 +55,7 @@ UIElement::UIElement(GUIManagerImpl* manager)
 	, m_animationClockList()
 	, m_invalidateFlags(InvalidateFlags::None)
 	, m_isEnabled(true)
+	, m_isMouseOver(false)
 
 	, m_manager(manager)
 	, m_localResource(NULL)
@@ -412,6 +414,38 @@ void UIElement::UpdateLocalResource()
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnMouseEnter(MouseEventArgs* e)
+{
+	// 親にもマウスがはじめて乗ったのであれば親にも通知する
+	if (m_parent != NULL && !m_parent->m_isMouseOver) {
+		m_parent->OnMouseEnter(e);
+	}
+
+	m_isMouseOver = true;
+
+	if (!e->Handled) { RaiseEvent(MouseEnterEvent, this, e); }
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnMouseLeave(MouseEventArgs* e)
+{
+	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
+	if (m_parent != NULL && m_parent->m_isMouseOver)
+	{
+		if (!m_parent->m_finalGlobalRect.Contains(PointF(e->X, e->X))) {
+			m_parent->OnMouseLeave(e);
+		}
+	}
+
+	m_isMouseOver = false;
+
+	if (!e->Handled) { RaiseEvent(MouseLeaveEvent, this, e); }
+}
 
 //-----------------------------------------------------------------------------
 //

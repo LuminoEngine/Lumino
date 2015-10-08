@@ -16,8 +16,6 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(UIButton);
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(UIButton, RoutedEventArgs, ClickEvent, "Click", Click);
 
-const String	UIButton::IsMouseOverProperty(_T("IsMouseOver"));
-
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -31,7 +29,6 @@ UIButton* UIButton::Create()
 //-----------------------------------------------------------------------------
 UIButton::UIButton(GUIManagerImpl* manager)
 	: ContentControl(manager)
-	, m_isMouseOver(false)
 {
 	// プロパティの登録
 	//LN_DEFINE_PROPERTY(UIButton, bool, IsMouseOverProperty, NULL, &UIButton::IsMouseOver, false);
@@ -112,7 +109,6 @@ void UIButton::RoutedHandler_MouseMove(MouseEventArgs* e)
 {
 	//VisualStateManager::GoToState(this, VisualStatus::MouseOver);
 
-	m_isMouseOver = true;
 	// TODO
 	//OnPropertyChanged(IsMouseOverProperty, m_isMouseOver);
 	e->Handled = true;
