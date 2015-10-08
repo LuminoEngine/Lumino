@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include "ContentControl.h"
-#include "ButtonChrome.h"
 
 namespace Lumino
 {
@@ -71,17 +70,7 @@ private:
 	void RoutedHandler_MouseDown(MouseEventArgs* e);
 	void RoutedHandler_MouseUp(MouseEventArgs* e);
 
-	// override UIElement
-
-	//virtual bool ApplyTemplateInternal()
-	//{
-	//	if (ApplyTemplateInternalMain(ControlTemplateTypeName)) { return true; }
-	//	return ContentControl::ApplyTemplateInternal();	// base
-	//}
-
 private:
-	RefPtr<ButtonChrome>	m_chrome;	// TODO: 仮。ちゃんとテーマから読みだす
-	//bool m_isMouseOver;
 };
 
 LN_NAMESPACE_GUI_END

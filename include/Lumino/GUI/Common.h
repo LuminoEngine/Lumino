@@ -32,7 +32,6 @@ class Style;
 
 class ContentPresenter;
 class UIButton;
-class ButtonChrome;
 class Image;
 class StackPanel;
 class Grid;
@@ -63,8 +62,6 @@ typedef RefPtr<Style>					StylePtr;
 
 typedef RefPtr<UIElement>				UIElementPtr;
 typedef RefPtr<ContentPresenter>		ContentPresenterPtr;
-//typedef RefPtr<Button>					ButtonPtr;
-typedef RefPtr<ButtonChrome>			ButtonChromePtr;
 typedef RefPtr<Image>					ImagePtr;
 typedef RefPtr<StackPanel>				StackPanelPtr;
 typedef RefPtr<Grid>					GridPtr;

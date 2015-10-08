@@ -30,14 +30,6 @@ UIButton* UIButton::Create()
 UIButton::UIButton(GUIManagerImpl* manager)
 	: ContentControl(manager)
 {
-	// プロパティの登録
-	//LN_DEFINE_PROPERTY(UIButton, bool, IsMouseOverProperty, NULL, &UIButton::IsMouseOver, false);
-
-	//m_chrome.Attach(LN_NEW ButtonChrome(manager));
-	//SetContent(Variant(m_chrome));
-
-	//MouseMove += LN_CreateDelegate(this, &UIButton::UIElement_MouseMove);
-
 	// Register handler
 	IsEnabledChanged += CreateDelegate(this, &UIButton::Handler_IsEnabledChanged);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseEnterEvent, RoutedHandler_MouseEnter);

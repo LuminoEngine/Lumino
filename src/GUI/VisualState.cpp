@@ -194,7 +194,18 @@ void VisualStateManager::GoToState(Control* control, const String& stateName)
 	LN_CHECK_ARGS_RETURN(control != NULL);
 	if (stateName.IsEmpty()) { return; }
 
+	// 先に stateName がカレントではないかを確認する。
+	// 1つでも同じ名前のモノがあれば中断。(同名ステートの追加は許可しない)
 	VisualStateGroupList* groupList = control->GetVisualStateGroups();
+	for (auto* group : *groupList)
+	{
+		if (group->GetCurrentState() != NULL &&
+			group->GetCurrentState()->GetName() == stateName)
+		{
+			return;
+		}
+	}
+
 	for (auto* group : *groupList)
 	{
 		VisualStateList* stateList = group->GetVisualStateList();

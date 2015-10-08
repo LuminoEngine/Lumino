@@ -281,7 +281,6 @@ endif()
 
 set(LN_SOURCES_GUI
 	include/Lumino/GUI/AnimationClock.h
-	include/Lumino/GUI/ButtonChrome.h
 	include/Lumino/GUI/Common.h
 	include/Lumino/GUI/ContentControl.h
 	include/Lumino/GUI/ContentElement.h
@@ -321,7 +320,6 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/Controls/Thumb.h
 	include/Lumino/GUI/Controls/Track.h
 	src/GUI/AnimationClock.cpp
-	src/GUI/ButtonChrome.cpp
 	src/GUI/ContentControl.cpp
 	src/GUI/ContentElement.cpp
 	src/GUI/ContentPresenter.cpp
@@ -392,6 +390,7 @@ set(LN_SOURCES_Game
 set(LN_SOURCES_Application
 	include/Lumino/Application.h
 	include/Lumino/ApplicationSettings.h
+	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
 	include/Lumino/CoreObject.h
@@ -403,6 +402,7 @@ set(LN_SOURCES_Application
 	include/Lumino/Version.h
 	src/Application.cpp
 	src/ApplicationImpl.h
+	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
 	src/Internal.h
 	src/Profiler.cpp

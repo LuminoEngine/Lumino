@@ -42,7 +42,6 @@
 #include "Lumino/GUI/UIElement.h"
 #include "Lumino/GUI/Control.h"
 #include "Lumino/GUI/UIButton.h"
-#include "Lumino/GUI/ButtonChrome.h"
 #include "Lumino/GUI/RootFrame.h"
 #include "Lumino/GUI/Controls/Panel.h"
 #include "Lumino/GUI/Controls/StackPanel.h"

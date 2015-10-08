@@ -1042,7 +1042,6 @@
 #include <Lumino/GUI/UIElement.h>
 #include <Lumino/GUI/RootFrame.h>
 #include <Lumino/GUI/UIButton.h>
-#include <Lumino/GUI/ButtonChrome.h>
 #include <Lumino/GUI/Controls/Thumb.h>
 #include <Lumino/GUI/Controls/Track.h>
 #include <Lumino/GUI/Controls/Grid.h>
@@ -1159,7 +1158,6 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 	// TODO: static で登録したい
 	RegisterFactory(ContentPresenter::TypeID,		[](GUIManagerImpl* m) -> CoreObject* { return ContentPresenter::internalCreateInstance(m); });
 	RegisterFactory(ItemsPresenter::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ItemsPresenter::internalCreateInstance(m); });
-	RegisterFactory(ButtonChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ButtonChrome::internalCreateInstance(m); });
 	RegisterFactory(UIButton::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return UIButton::internalCreateInstance(m); });
 	RegisterFactory(ListBoxChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ListBoxChrome::internalCreateInstance(m); });
 	RegisterFactory(ThumbChrome::TypeID,			[](GUIManagerImpl* m) -> CoreObject* { return ThumbChrome::internalCreateInstance(m); });
@@ -1419,11 +1417,11 @@ void GUIManagerImpl::BuildDefaultTheme()
 		GCPtr<UIElementFactory> panel1 = LN_NEW UIElementFactory(this);
 		panel1->SetTypeName(_T("PilePanel"));
 		{
-			RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
-			ef1->SetKeyName(_T("chrome"));
-			ef1->SetTypeName(_T("ButtonChrome"));
-			//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
-			panel1->AddChild(ef1);
+			//RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+			//ef1->SetKeyName(_T("chrome"));
+			//ef1->SetTypeName(_T("ButtonChrome"));
+			////ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
+			//panel1->AddChild(ef1);
 
 			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this));
 			rectangle->SetKeyName(_T("Border"));

@@ -25,9 +25,13 @@ private:
 	@brief		
 	@note	WPF の FrameworkElementFactory に相当する。
 */
-class UIElementFactory	// TODO: UIElement 以外も作れるように。名前変更。
+class UIElementFactory	// TODO: UIElement 以外も作れるように。RowDefinitionとか。名前変更。
 	: public CoreObject
 {
+public:
+
+
+
 public:
 	UIElementFactory(GUIManagerImpl* manager);
 	virtual ~UIElementFactory();
