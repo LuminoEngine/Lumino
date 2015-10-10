@@ -228,39 +228,40 @@ struct SetProjectionCommand : public RenderingCommand
 };
 
 //=============================================================================
-struct SetBrushCommand : public RenderingCommand
+struct SetPainterEngineStateCommand : public RenderingCommand
 {
 	PainterEngine* m_engine;
-	BrushData m_brushData;
+	PainterEngineState m_state;
 
-	void Create(PainterEngine* engine, const BrushData& data)
+	void Create(PainterEngine* engine, const Details::PainterState& state)
 	{
-		if (data.Type == BrushType_Texture) {
-			MarkGC(data.TextureBrush.Texture);
-		}
-		if (data.Type == BrushType_FrameTexture) {
-			MarkGC(data.FrameTextureBrush.Texture);
-		}
 		m_engine = engine;
-		m_brushData = data;
+		m_state.Create(state);
+
+		if (m_state.Brush.Type == BrushType_Texture) {
+			MarkGC(m_state.Brush.TextureBrush.Texture);
+		}
+		if (m_state.Brush.Type == BrushType_FrameTexture) {
+			MarkGC(m_state.Brush.FrameTextureBrush.Texture);
+		}
 	}
-	void Execute() { m_engine->SetBrush(m_brushData); }
+	void Execute() { m_engine->SetState(m_state); }
 };
 
 //=============================================================================
-struct SetOpacityCommand : public RenderingCommand
-{
-	PainterEngine* m_engine;
-	float m_opacity;
-
-	void Create(PainterEngine* engine, float opacity)
-	{
-		m_engine = engine;
-		m_opacity = opacity;
-	}
-	void Execute() { m_engine->SetOpacity(m_opacity); }
-};
-
+//struct SetOpacityCommand : public RenderingCommand
+//{
+//	PainterEngine* m_engine;
+//	float m_opacity;
+//
+//	void Create(PainterEngine* engine, float opacity)
+//	{
+//		m_engine = engine;
+//		m_opacity = opacity;
+//	}
+//	void Execute() { m_engine->SetOpacity(m_opacity); }
+//};
+//
 
 //=============================================================================
 struct DrawRectangleCommand : public RenderingCommand
@@ -366,6 +367,9 @@ struct DrawGlyphRunCommand : public RenderingCommand
 Painter::Painter(GraphicsManager* manager)
 	: m_manager(manager)
 	, m_internal(manager->GetPainterEngine())
+	, m_stateModified(true)
+	, m_internalSolidColorBrush(ColorF::White)
+	, m_internalTextureBrush()
 {
 	//LN_CALL_COMMAND(Begin, BeginCommand);
 }
@@ -469,58 +473,59 @@ void Painter::SetTransform(const Matrix& matrix)
 void Painter::SetBrush(Brush* brush)
 {
 	m_currentState.Brush = brush;
+	m_stateModified = true;
 
-	BrushData data;
-	if (brush == NULL)
-	{
-		data.Type = BrushType_Unknown;	// no set
-	}
-	else
-	{
-		data.Type = brush->GetType();
-		if (data.Type == BrushType_SolidColor)
-		{
-			auto t = static_cast<ColorBrush*>(brush);
-			const ColorF& c = t->GetColor();
-			data.SolidColorBrush.Color[0] = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
-			data.SolidColorBrush.Color[1] = c.G;
-			data.SolidColorBrush.Color[2] = c.B;
-			data.SolidColorBrush.Color[3] = c.A;
-		}
-		else if (data.Type == BrushType_Texture)
-		{
-			auto t = static_cast<TextureBrush*>(brush);
-			data.TextureBrush.Texture = (t->GetTexture() != NULL) ? Helper::GetDeviceObject(t->GetTexture()) : NULL;
-			const Rect& r = t->GetSourceRect();
-			data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-			data.TextureBrush.SourceRect[1] = r.Y;
-			data.TextureBrush.SourceRect[2] = r.Width;
-			data.TextureBrush.SourceRect[3] = r.Height;
-			data.TextureBrush.WrapMode = t->GetWrapMode();
-		}
-		else if (data.Type == BrushType_FrameTexture)
-		{
-			auto t = static_cast<FrameTextureBrush*>(brush);
-			data.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? Helper::GetDeviceObject(t->GetTexture()) : NULL;
-			const Rect& r = t->GetSourceRect();
-			const Rect& r2 = t->GetInnerAreaSourceRect();
-			data.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-			data.FrameTextureBrush.SourceRect[1] = r.Y;
-			data.FrameTextureBrush.SourceRect[2] = r.Width;
-			data.FrameTextureBrush.SourceRect[3] = r.Height;
-			data.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-			data.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
-			data.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
-			data.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
-			data.FrameTextureBrush.WrapMode = t->GetWrapMode();
-			data.FrameTextureBrush.FrameThicness = t->GetThickness();
-		}
-		else {
-			LN_THROW(0, NotImplementedException);
-		}
-	}
+	//BrushData data;
+	//if (brush == NULL)
+	//{
+	//	data.Type = BrushType_Unknown;	// no set
+	//}
+	//else
+	//{
+	//	data.Type = brush->GetType();
+	//	if (data.Type == BrushType_SolidColor)
+	//	{
+	//		auto t = static_cast<ColorBrush*>(brush);
+	//		const ColorF& c = t->GetColor();
+	//		data.SolidColorBrush.Color[0] = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
+	//		data.SolidColorBrush.Color[1] = c.G;
+	//		data.SolidColorBrush.Color[2] = c.B;
+	//		data.SolidColorBrush.Color[3] = c.A;
+	//	}
+	//	else if (data.Type == BrushType_Texture)
+	//	{
+	//		auto t = static_cast<TextureBrush*>(brush);
+	//		data.TextureBrush.Texture = (t->GetTexture() != NULL) ? Helper::GetDeviceObject(t->GetTexture()) : NULL;
+	//		const Rect& r = t->GetSourceRect();
+	//		data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+	//		data.TextureBrush.SourceRect[1] = r.Y;
+	//		data.TextureBrush.SourceRect[2] = r.Width;
+	//		data.TextureBrush.SourceRect[3] = r.Height;
+	//		data.TextureBrush.WrapMode = t->GetWrapMode();
+	//	}
+	//	else if (data.Type == BrushType_FrameTexture)
+	//	{
+	//		auto t = static_cast<FrameTextureBrush*>(brush);
+	//		data.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? Helper::GetDeviceObject(t->GetTexture()) : NULL;
+	//		const Rect& r = t->GetSourceRect();
+	//		const Rect& r2 = t->GetInnerAreaSourceRect();
+	//		data.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+	//		data.FrameTextureBrush.SourceRect[1] = r.Y;
+	//		data.FrameTextureBrush.SourceRect[2] = r.Width;
+	//		data.FrameTextureBrush.SourceRect[3] = r.Height;
+	//		data.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+	//		data.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
+	//		data.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
+	//		data.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+	//		data.FrameTextureBrush.WrapMode = t->GetWrapMode();
+	//		data.FrameTextureBrush.FrameThicness = t->GetThickness();
+	//	}
+	//	else {
+	//		LN_THROW(0, NotImplementedException);
+	//	}
+	//}
 
-	LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
+	//LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
 }
 
 //-----------------------------------------------------------------------------
@@ -528,16 +533,20 @@ void Painter::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 void Painter::SetSolidColor(const ColorF& color)
 {
-	m_currentState.Brush = NULL;
+	m_internalSolidColorBrush.SetColor(color);
+	m_currentState.Brush = &m_internalSolidColorBrush;
+	m_stateModified = true;
 
-	BrushData data;
-	data.Type = BrushType_SolidColor;
-	data.SolidColorBrush.Color[0] = color.R;
-	data.SolidColorBrush.Color[1] = color.G;
-	data.SolidColorBrush.Color[2] = color.B;
-	data.SolidColorBrush.Color[3] = color.A;
+	//m_currentState.Brush = NULL;
 
-	LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
+	//BrushData data;
+	//data.Type = BrushType_SolidColor;
+	//data.SolidColorBrush.Color[0] = color.R;
+	//data.SolidColorBrush.Color[1] = color.G;
+	//data.SolidColorBrush.Color[2] = color.B;
+	//data.SolidColorBrush.Color[3] = color.A;
+
+	//LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
 }
 
 //-----------------------------------------------------------------------------
@@ -545,18 +554,23 @@ void Painter::SetSolidColor(const ColorF& color)
 //-----------------------------------------------------------------------------
 void Painter::SetTexture(Texture* texture, const Rect& r)
 {
-	m_currentState.Brush = NULL;
+	m_internalTextureBrush.SetTexture(texture);
+	m_internalTextureBrush.SetSourceRect(r);
+	m_currentState.Brush = &m_internalTextureBrush;
+	m_stateModified = true;
 
-	BrushData data;
-	data.Type = BrushType_Texture;
-	data.TextureBrush.Texture = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
-	data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-	data.TextureBrush.SourceRect[1] = r.Y;
-	data.TextureBrush.SourceRect[2] = r.Width;
-	data.TextureBrush.SourceRect[3] = r.Height;
-	data.TextureBrush.WrapMode = BrushWrapMode_Stretch;
+	//m_currentState.Brush = NULL;
 
-	LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
+	//BrushData data;
+	//data.Type = BrushType_Texture;
+	//data.TextureBrush.Texture = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
+	//data.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+	//data.TextureBrush.SourceRect[1] = r.Y;
+	//data.TextureBrush.SourceRect[2] = r.Width;
+	//data.TextureBrush.SourceRect[3] = r.Height;
+	//data.TextureBrush.WrapMode = BrushWrapMode_Stretch;
+
+	//LN_CALL_COMMAND(SetBrush, SetBrushCommand, data);
 }
 
 //-----------------------------------------------------------------------------
@@ -564,7 +578,18 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 //-----------------------------------------------------------------------------
 void Painter::SetOpacity(float opacity)
 {
-	LN_CALL_COMMAND(SetOpacity, SetOpacityCommand, opacity);
+	//LN_CALL_COMMAND(SetOpacity, SetOpacityCommand, opacity);
+	m_currentState.Opacity = opacity;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::SetTone(const ToneF& tone)
+{
+	m_currentState.Tone = tone;
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -573,6 +598,7 @@ void Painter::SetOpacity(float opacity)
 void Painter::SetFont(Font* font)
 {
 	m_currentState.Font = font;
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -580,6 +606,7 @@ void Painter::SetFont(Font* font)
 //-----------------------------------------------------------------------------
 void Painter::DrawRectangle(const RectF& rect)
 {
+	CheckUpdateState();
 	LN_CALL_COMMAND(DrawRectangle, DrawRectangleCommand, rect);
 }
 
@@ -588,6 +615,7 @@ void Painter::DrawRectangle(const RectF& rect)
 //-----------------------------------------------------------------------------
 void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 {
+	CheckUpdateState();
 	LN_CALL_COMMAND(DrawFrameRectangle, DrawFrameRectangleCommand, rect, frameWidth);
 }
 
@@ -602,6 +630,7 @@ void Painter::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
 void Painter::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
+	CheckUpdateState();
 	Painter::DrawGlyphs(position, Helper::GetGlyphData(glyphRun), Helper::GetGlyphTextureCache(glyphRun));
 }
 
@@ -677,6 +706,8 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 //-----------------------------------------------------------------------------
 void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
 {
+	CheckUpdateState();
+
 	/*	Font 系は非スレッドセーフ。
 		グリフとその配置はメインスレッドで作ってから PainterEngine に送る。
 	*/
@@ -703,6 +734,26 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 	
 	
 	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, Helper::GetDeviceObject(tex1), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Painter::CheckUpdateState()
+{
+	if (m_stateModified)
+	{
+		if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+			m_manager->GetPrimaryRenderingCommandList()->AddCommand<SetPainterEngineStateCommand>(m_internal, m_currentState);
+		}
+		else
+		{
+			PainterEngineState state;
+			state.Create(m_currentState);
+			m_internal->SetState(state);
+		}
+		m_stateModified = false;
+	}
 }
 
 

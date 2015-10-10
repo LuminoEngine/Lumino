@@ -32,7 +32,7 @@ PainterEngine::PainterEngine()
 //-----------------------------------------------------------------------------
 PainterEngine::~PainterEngine()
 {
-	DetachBrushData();
+	m_currentState.ReleaseObjects();
 	m_manager->RemoveResourceObject(this);
 }
 
@@ -46,7 +46,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 
 	memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
 	m_currentState.Opacity = 1.0f;
-	m_currentState.InternalGlyphMask = m_dummyTexture;
+	m_currentInternalGlyphMask = m_dummyTexture;
 
 	m_manager->AddResourceObject(this);
 }
@@ -77,6 +77,7 @@ void PainterEngine::CreateInternal()
 	m_shader.Pass = m_shader.Technique->GetPass(0);
 	m_shader.varWorldMatrix = m_shader.Shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shader.varViewProjMatrix = m_shader.Shader->GetVariableByName(_T("g_viewProjMatrix"));
+	m_shader.varTone = m_shader.Shader->GetVariableByName(_T("g_tone"));
 	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("g_texture"));
 	m_shader.varGlyphMaskSampler = m_shader.Shader->GetVariableByName(_T("g_glyphMaskTexture"));
 	m_shader.varViewportSize = m_shader.Shader->GetVariableByName(_T("g_viewportSize"));
@@ -104,13 +105,13 @@ void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
 	{
-		DetachBrushData();	// TODO: TextureBrush の復元は困難。End で Detach する仕様にしたい。
+		m_currentState.ReleaseObjects();	// TODO: TextureBrush の復元は困難。End で Detach する仕様にしたい。
 		m_vertexBuffer.SafeRelease();
 		m_indexBuffer.SafeRelease();
 		m_shader.Shader.SafeRelease();
 		m_renderer = NULL;
 		m_dummyTexture.SafeRelease();
-		m_currentState.InternalGlyphMask.SafeRelease();
+		m_currentInternalGlyphMask.SafeRelease();
 	}
 	else
 	{
@@ -132,13 +133,13 @@ void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
 void PainterEngine::Begin()
 {
 	Flush();
-	DetachBrushData();
+	m_currentState.ReleaseObjects();
 	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
 	//m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
 	m_currentState.Brush.Type = BrushType_Unknown;
 	m_currentState.Opacity = 1.0f;
 	m_currentState.ForeColor = ColorF::Black;
-	m_currentState.InternalGlyphMask = m_dummyTexture;
+	m_currentInternalGlyphMask = m_dummyTexture;
 }
 
 //-----------------------------------------------------------------------------
@@ -147,7 +148,7 @@ void PainterEngine::Begin()
 void PainterEngine::End()
 {
 	Flush();
-	DetachBrushData();
+	m_currentState.ReleaseObjects();
 }
 
 //-----------------------------------------------------------------------------
@@ -179,24 +180,38 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::SetBrush(const BrushData& data)
+void PainterEngine::SetState(const PainterEngineState& state)
 {
 	Flush();	// 描画設定が変わるのでここでフラッシュ
-	DetachBrushData();
-	memcpy(&m_currentState.Brush, &data, sizeof(m_currentState.Brush));
-	AttachBrushData();
+	m_currentState.Copy(state);
 	UpdateCurrentForeColor();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::SetOpacity(float opacity)
-{
-	Flush();	// 描画設定が変わるのでここでフラッシュ
-	m_currentState.Opacity = opacity;
-	UpdateCurrentForeColor();
-}
+//void PainterEngine::SetBrush(const BrushData& data)
+//{
+//	Flush();	// 描画設定が変わるのでここでフラッシュ
+//	m_currentState.ReleaseObjects();
+//	memcpy(&m_currentState.Brush, &data, sizeof(m_currentState.Brush));
+//	AttachBrushData();
+//	UpdateCurrentForeColor();
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void PainterEngine::SetOpacity(float opacity)
+//{
+//	Flush();	// 描画設定が変わるのでここでフラッシュ
+//	m_currentState.Opacity = opacity;
+//	UpdateCurrentForeColor();
+//}
+//
+//void SetTone(const ToneF& tone)
+//{
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -303,8 +318,9 @@ void PainterEngine::Flush()
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 	m_renderer->SetVertexBuffer(m_vertexBuffer);
 	m_renderer->SetIndexBuffer(m_indexBuffer);
+	m_shader.varTone->SetVector((Vector4&)m_currentState.Tone);
 	m_shader.varTexture->SetTexture(srcTexture);
-	m_shader.varGlyphMaskSampler->SetTexture(m_currentState.InternalGlyphMask);
+	m_shader.varGlyphMaskSampler->SetTexture(m_currentInternalGlyphMask);
 	m_shader.Pass->Apply();
 	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
@@ -613,49 +629,49 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::AttachBrushData()
-{
-	m_currentState.ForeColor = ColorF::White;
-	if (m_currentState.Brush.Type == BrushType_SolidColor) {
-		m_currentState.ForeColor.R = m_currentState.Brush.SolidColorBrush.Color[0];
-		m_currentState.ForeColor.G = m_currentState.Brush.SolidColorBrush.Color[1];
-		m_currentState.ForeColor.B = m_currentState.Brush.SolidColorBrush.Color[2];
-		m_currentState.ForeColor.A = m_currentState.Brush.SolidColorBrush.Color[3];
-	}
-	else if (m_currentState.Brush.Type == BrushType_Texture) {
-		LN_SAFE_ADDREF(m_currentState.Brush.TextureBrush.Texture);
-	}
-	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
-		LN_SAFE_ADDREF(m_currentState.Brush.FrameTextureBrush.Texture);
-	}
-}
+//void PainterEngine::AttachBrushData()
+//{
+//	m_currentState.ForeColor = ColorF::White;
+//	if (m_currentState.Brush.Type == BrushType_SolidColor) {
+//		m_currentState.ForeColor.R = m_currentState.Brush.SolidColorBrush.Color[0];
+//		m_currentState.ForeColor.G = m_currentState.Brush.SolidColorBrush.Color[1];
+//		m_currentState.ForeColor.B = m_currentState.Brush.SolidColorBrush.Color[2];
+//		m_currentState.ForeColor.A = m_currentState.Brush.SolidColorBrush.Color[3];
+//	}
+//	else if (m_currentState.Brush.Type == BrushType_Texture) {
+//		LN_SAFE_ADDREF(m_currentState.Brush.TextureBrush.Texture);
+//	}
+//	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
+//		LN_SAFE_ADDREF(m_currentState.Brush.FrameTextureBrush.Texture);
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PainterEngine::DetachBrushData()
-{
-	if (m_currentState.Brush.Type == BrushType_Texture) {
-		LN_SAFE_RELEASE(m_currentState.Brush.TextureBrush.Texture);
-	}
-	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
-		LN_SAFE_RELEASE(m_currentState.Brush.FrameTextureBrush.Texture);
-	}
-}
+//void PainterEngine::DetachBrushData()
+//{
+//	if (m_currentState.Brush.Type == BrushType_Texture) {
+//		LN_SAFE_RELEASE(m_currentState.Brush.TextureBrush.Texture);
+//	}
+//	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
+//		LN_SAFE_RELEASE(m_currentState.Brush.FrameTextureBrush.Texture);
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void PainterEngine::SetInternalGlyphMaskTexture(Driver::ITexture* mask)
 {
-	if (m_currentState.InternalGlyphMask.GetObjectPtr() != mask) 
+	if (m_currentInternalGlyphMask.GetObjectPtr() != mask) 
 	{
 		Flush();
 		if (mask != NULL) {
-			m_currentState.InternalGlyphMask = mask;
+			m_currentInternalGlyphMask = mask;
 		}
 		else {
-			m_currentState.InternalGlyphMask = m_dummyTexture;
+			m_currentInternalGlyphMask = m_dummyTexture;
 		}
 	}
 }

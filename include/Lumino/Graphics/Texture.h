@@ -89,6 +89,7 @@ protected:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
+	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void DetachDefaultBackBuffer();
 

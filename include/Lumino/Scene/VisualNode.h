@@ -41,10 +41,10 @@ public:
 	const ColorF& GetBlendColor(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor; }
 
 	/// 色調の設定
-	void SetTone(const Tone& tone, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Tone = tone; }
+	void SetTone(const ToneF& tone, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Tone = tone; }
 
 	/// 色調の取得
-	const Tone& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
+	const ToneF& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
 
 	/// UV 変換行列の設定
 	void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }

@@ -50,6 +50,7 @@ public:
 	virtual ~ColorBrush();
 
 public:
+	void SetColor(const ColorF& color) { m_color = color; }
 	const ColorF& GetColor() const { return m_color; }
 
 	virtual BrushType GetType() const { return BrushType_SolidColor; }
@@ -156,7 +157,7 @@ LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 
 
 
-namespace Internal
+namespace Details
 {
 
 struct PainterState
@@ -164,9 +165,11 @@ struct PainterState
 	Matrix			Transform;
 	RefPtr<Brush>	Brush;
 	RefPtr<Font>	Font;
+	float			Opacity;
+	ToneF			Tone;
 };
 
-} // namespace Internal
+} // namespace Details
 
 
 /**
@@ -193,6 +196,7 @@ public:
 	void SetSolidColor(const ColorF& color);
 	void SetTexture(Texture* texture, const Rect& srcRect);	///< ユーティリティ。TextureBrush をセットする
 	void SetOpacity(float opacity);	// 0~1
+	void SetTone(const ToneF& tone);
 	void SetFont(Font* font);
 
 	//void PushState();
@@ -225,14 +229,19 @@ protected:
 
 private:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
+	void CheckUpdateState();
 
 protected:	// TODO
 	GraphicsManager*				m_manager;
 	PainterEngine*					m_internal;
-	Internal::PainterState			m_currentState;
+	Details::PainterState			m_currentState;
+	bool							m_stateModified;
 	//Stack<Internal::PainterState>	m_stateStack;
 	//Stack<Matrix>			m_transformStack;
 	//RefPtr<Brush>			m_currentBrush;
+	ColorBrush				m_internalSolidColorBrush;
+	TextureBrush			m_internalTextureBrush;
+
 	ByteBuffer				m_tempBuffer;
 	//RefPtr<Font>			m_currentFont;
 };

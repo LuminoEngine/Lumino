@@ -93,7 +93,113 @@ struct BrushData
 	};
 };
 
+// このクラスは描画コマンドの引数となるクラス。RefPtr とかはメンバに置かないこと。
+struct PainterEngineState
+{
+	BrushData	Brush;
+	float		Opacity;
+	ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+	ToneF		Tone;
 
+	// Painter 側で作り、PainterEngineState をコマンドリストに乗せるときに使う。
+	void Create(const Details::PainterState& state)
+	{
+		// ブラシデータ
+		ForeColor = ColorF::White;
+		Lumino::Brush* brush = state.Brush;
+		if (brush == NULL)
+		{
+			Brush.Type = BrushType_Unknown;	// no set
+		}
+		else
+		{
+			Brush.Type = brush->GetType();
+			if (Brush.Type == BrushType_SolidColor)
+			{
+				auto t = static_cast<ColorBrush*>(brush);
+				const ColorF& c = t->GetColor();
+				Brush.SolidColorBrush.Color[0] = ForeColor.R = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.SolidColorBrush.Color[1] = ForeColor.G = c.G;
+				Brush.SolidColorBrush.Color[2] = ForeColor.B = c.B;
+				Brush.SolidColorBrush.Color[3] = ForeColor.A = c.A;
+			}
+			else if (Brush.Type == BrushType_Texture)
+			{
+				auto t = static_cast<TextureBrush*>(brush);
+				Brush.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
+				const Rect& r = t->GetSourceRect();
+				Brush.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.TextureBrush.SourceRect[1] = r.Y;
+				Brush.TextureBrush.SourceRect[2] = r.Width;
+				Brush.TextureBrush.SourceRect[3] = r.Height;
+				Brush.TextureBrush.WrapMode = t->GetWrapMode();
+			}
+			else if (Brush.Type == BrushType_FrameTexture)
+			{
+				auto t = static_cast<FrameTextureBrush*>(brush);
+				Brush.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
+				const Rect& r = t->GetSourceRect();
+				const Rect& r2 = t->GetInnerAreaSourceRect();
+				Brush.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.FrameTextureBrush.SourceRect[1] = r.Y;
+				Brush.FrameTextureBrush.SourceRect[2] = r.Width;
+				Brush.FrameTextureBrush.SourceRect[3] = r.Height;
+				Brush.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
+				Brush.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
+				Brush.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+				Brush.FrameTextureBrush.WrapMode = t->GetWrapMode();
+				Brush.FrameTextureBrush.FrameThicness = t->GetThickness();
+			}
+			else {
+				LN_THROW(0, NotImplementedException);
+			}
+		}
+
+		// 不透明度
+		Opacity = state.Opacity;
+
+		// 色調
+		Tone = state.Tone;
+	}
+
+	void Copy(const PainterEngineState& state)
+	{
+		ReleaseObjects();
+
+		// ブラシデータ
+		ForeColor = ColorF::White;
+		memcpy(&Brush, &state.Brush, sizeof(Brush));
+		if (Brush.Type == BrushType_SolidColor) {
+			ForeColor.R = Brush.SolidColorBrush.Color[0];
+			ForeColor.G = Brush.SolidColorBrush.Color[1];
+			ForeColor.B = Brush.SolidColorBrush.Color[2];
+			ForeColor.A = Brush.SolidColorBrush.Color[3];
+		}
+		else if (Brush.Type == BrushType_Texture) {
+			LN_SAFE_ADDREF(Brush.TextureBrush.Texture);
+		}
+		else if (Brush.Type == BrushType_FrameTexture) {
+			LN_SAFE_ADDREF(Brush.FrameTextureBrush.Texture);
+		}
+
+		// 不透明度
+		Opacity = state.Opacity;
+
+		// 色調
+		Tone = state.Tone;
+	}
+
+	void ReleaseObjects()
+	{
+		if (Brush.Type == BrushType_Texture) {
+			LN_SAFE_RELEASE(Brush.TextureBrush.Texture);
+		}
+		else if (Brush.Type == BrushType_FrameTexture) {
+			LN_SAFE_RELEASE(Brush.FrameTextureBrush.Texture);
+		}
+	}
+};
 
 
 /// PainterEngine
@@ -129,8 +235,11 @@ public:
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
 
-	void SetBrush(const BrushData& data);
-	void SetOpacity(float opacity);
+	void SetState(const PainterEngineState& state);
+
+	//void SetBrush(const BrushData& data);
+	//void SetOpacity(float opacity);
+	//void SetTone(const ToneF& tone);
 	
 
 	void DrawRectangle(const RectF& rect);
@@ -154,7 +263,7 @@ private:
 	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Driver::ITexture* srcTexture);
 
 	void AttachBrushData();
-	void DetachBrushData();
+	//void DetachBrushData();
 
 	void SetInternalGlyphMaskTexture(Driver::ITexture* mask);
 	void UpdateCurrentForeColor();
@@ -184,13 +293,7 @@ private:
 		static const int ElementCount = 4;
 	};
 
-	struct State
-	{
-		BrushData	Brush;
-		float		Opacity;
-		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
-		RefPtr<Driver::ITexture>	InternalGlyphMask;
-	};
+	
 
 	GraphicsManager*				m_manager;
 	Driver::IRenderer*				m_renderer;
@@ -201,7 +304,8 @@ private:
 	RefPtr<Driver::ITexture>		m_dummyTexture;
 	Matrix							m_baseTransform;
 
-	State	m_currentState;
+	PainterEngineState			m_currentState;
+	RefPtr<Driver::ITexture>	m_currentInternalGlyphMask;	// 文字描画時に使うグリフの形状をマスクするためのテクスチャ
 
 	//BrushData						m_currentBrushData;
 
@@ -212,6 +316,7 @@ private:
 		Driver::IShaderPass*		Pass;
 		Driver::IShaderVariable*	varWorldMatrix;
 		Driver::IShaderVariable*	varViewProjMatrix;
+		Driver::IShaderVariable*	varTone;
 		Driver::IShaderVariable*	varTexture;
 		Driver::IShaderVariable*	varGlyphMaskSampler;
 		Driver::IShaderVariable*	varViewportSize;	///< DX9 HLSL 用のピクセルオフセット計算用。GLSL では最適化により消えることもある

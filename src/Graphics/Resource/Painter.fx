@@ -7,6 +7,7 @@ float4x4	g_viewProjMatrix;
 float2 g_viewportSize;
 static float2 g_pixelStep = (float2(2.0, 2.0) / g_viewportSize);
 
+float4		g_tone;
 texture		g_texture;
 texture		g_glyphMaskTexture;
 
@@ -72,7 +73,13 @@ float4 psBasic(
 	float2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
 	//uv -= g_pixelStep;
 	
-	return tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
+	float4 outColor = tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
+	
+	// êFí≤ÇÃåvéZ (NTSC ånâ¡èdïΩãœñ@ÅBóŒÇæÇØÇ™Ç»ÇÒÇ∆Ç»Ç≠ñæÇÈÇ≠ä¥Ç∂ÇÈÇ∆Ç©ÇñhÇÆ)
+	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
+    outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
+	
+	return outColor;
 }
 
 //-------------------------------------------------------------------------
@@ -111,6 +118,7 @@ void main()
 #endif
 //=============================================================================
 #ifdef LN_GLSL_FRAGMENT
+uniform vec4		g_tone;
 uniform sampler2D	g_texture;
 uniform sampler2D	g_glyphMaskTexture;
 varying vec4		v_Color;
@@ -122,6 +130,12 @@ void main()
 	vec2 uvWidth = v_UVOffset.zw;		// ì]ëóå≥ãÈå`ÇÃïù UV
 	vec2 uvRatio = fmod(v_UVTileUnit, 1.0);	// 1Ç¬ÇÃéläpå`ÇÃíÜÇÃÇ«Ç±Ç…Ç¢ÇÈÇÃÇ© (0.0Å`1.0)
 	vec2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
-    gl_FragColor = texture2D(g_texture, uv) * tex2D(g_glyphMaskTexture, uv) * v_Color;
+	vec4 outColor = texture2D(g_texture, uv) * tex2D(g_glyphMaskTexture, uv) * v_Color;
+	
+	// êFí≤ÇÃåvéZ
+	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
+    outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
+	
+    gl_FragColor = outColor;
 }
 #endif

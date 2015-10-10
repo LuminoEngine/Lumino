@@ -179,7 +179,7 @@ public:
 /**
 	@brief	色調を定義します。
 */
-class Tone
+class ToneF
 {
 public:
 
@@ -193,12 +193,12 @@ public:
 	/**
 		@brief	すべての要素を 0.0 で初期化します。
 	*/
-	Tone() { R = 0.0f; G = 0.0f; B = 0.0f; GS = 0.0f; }
+	ToneF() { R = 0.0f; G = 0.0f; B = 0.0f; GS = 0.0f; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	Tone(float r, float g, float b, float gs) { R = r; G = g; B = b; GS = gs; }
+	ToneF(float r, float g, float b, float gs) { R = r; G = g; B = b; GS = gs; }
 
 public:
 
@@ -210,7 +210,7 @@ public:
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void AddClamp(const Tone& tone);
+	void AddClamp(const ToneF& tone);
 
 public:
 	//operator Vector4() { return *reinterpret_cast< Vector4* >(this); }

@@ -1,4 +1,18 @@
 ﻿/*
+	[2015/10/10] 各高レベル Renderer クラスの置き場
+		Painter とか SpriteRenderer とか。
+		QPainter とか CDC みたいにローカル変数として定義すれば C++ では使い易い。
+		でも、他言語バインダでラップし辛くなる。
+
+		・Begin/End の扱い。
+			SpriteRenderer や RingRenderer は必須。
+			Painter はグローバルでも使いたいが…。
+			→ Begin/End していなければ Draw の中でそのペアを呼び出してしまうとか。速度は落ちるけど…。
+				最適化したければ Begin/End を呼んでね、で。
+
+		とにかく、Begin/End は公開する方向で。
+
+
 	[2015/10/5] Driver に Lock/Unlock は必要？
 		ラップするのだから SubData だけでよいと思うが・・・。
 		→ ダメ。GeometryRenderer とかは直接　Driver に触っていて、ここで Lock を使いたい。
