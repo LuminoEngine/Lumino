@@ -71,11 +71,11 @@ GUIContext::~GUIContext()
 void GUIContext::SetRootElement(UIElement* element)
 {
 	if (m_rootElement != NULL && element == NULL) {
-		GUIHelper::DetachContext(m_rootElement);
+		m_rootElement->ChangeContext(NULL);
 	}
 	LN_REFOBJ_SET(m_rootElement, element);
 	if (m_rootElement != NULL) {
-		GUIHelper::AttachContext(m_rootElement, this);
+		m_rootElement->ChangeContext(this);
 	}
 }
 

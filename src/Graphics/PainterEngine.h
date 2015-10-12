@@ -52,15 +52,6 @@ private:
 };
 
 
-
-
-//enum BrushDataType
-//{
-//	BrushDataType_NoSet = 0,
-//	BrushDataType_SolidColor,
-//	BrushDataType_Texture,
-//};
-
 struct BrushData
 {
 	BrushType	Type;
@@ -237,11 +228,6 @@ public:
 
 	void SetState(const PainterEngineState& state);
 
-	//void SetBrush(const BrushData& data);
-	//void SetOpacity(float opacity);
-	//void SetTone(const ToneF& tone);
-	
-
 	void DrawRectangle(const RectF& rect);
 
 	void Flush();
@@ -293,8 +279,6 @@ private:
 		static const int ElementCount = 4;
 	};
 
-	
-
 	GraphicsManager*				m_manager;
 	Driver::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
@@ -304,10 +288,8 @@ private:
 	RefPtr<Driver::ITexture>		m_dummyTexture;
 	Matrix							m_baseTransform;
 
-	PainterEngineState			m_currentState;
-	RefPtr<Driver::ITexture>	m_currentInternalGlyphMask;	// 文字描画時に使うグリフの形状をマスクするためのテクスチャ
-
-	//BrushData						m_currentBrushData;
+	PainterEngineState				m_currentState;
+	RefPtr<Driver::ITexture>		m_currentInternalGlyphMask;	// 文字描画時に使うグリフの形状をマスクするためのテクスチャ
 
 	struct
 	{

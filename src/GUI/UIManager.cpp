@@ -1480,33 +1480,36 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 		RefPtr<FloatEasing> buttonPressedEasingIn(FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo), false);
 		RefPtr<FloatEasing> buttonPressedEasingOut(FloatEasing::Create(_T("PressedBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo), false);
-		RefPtr<FloatEasing> buttonDisabledEasingIn(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo), false);
+		//RefPtr<FloatEasing> buttonDisabledEasingIn(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo), false);
 		RefPtr<FloatEasing> buttonDisabledEasingOut(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo), false);
+
+		RefPtr<ToneAnimation> buttonDisabledEasingIn(ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo), false);
+
 
 		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
 		{
 			VisualStatePtr vstate1(LN_NEW VisualState(this, _T("Normal")));
-			vstate1->GetStoryboard()->AddTimeline(easing1);
-			vstate1->GetStoryboard()->AddTimeline(buttonPressedEasingOut);
-			vstate1->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
+			vstate1->GetEnteringStoryboard()->AddTimeline(easing1);
+			vstate1->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingOut);
+			vstate1->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstate1);
 
 			VisualStatePtr vstate2(LN_NEW VisualState(this, _T("MouseOver")));
-			vstate2->GetStoryboard()->AddTimeline(easing2);
-			vstate2->GetStoryboard()->AddTimeline(buttonPressedEasingOut);
-			vstate2->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
+			vstate2->GetEnteringStoryboard()->AddTimeline(easing2);
+			vstate2->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingOut);
+			vstate2->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstate2);
 
 			VisualStatePtr vstatePressed(LN_NEW VisualState(this, _T("Pressed")));
-			vstatePressed->GetStoryboard()->AddTimeline(easing1);
-			vstatePressed->GetStoryboard()->AddTimeline(buttonPressedEasingIn);
-			vstatePressed->GetStoryboard()->AddTimeline(buttonDisabledEasingOut);
+			vstatePressed->GetEnteringStoryboard()->AddTimeline(easing1);
+			vstatePressed->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingIn);
+			vstatePressed->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstatePressed);
 
 			VisualStatePtr vstateDisabled(LN_NEW VisualState(this, _T("Disabled")));
-			vstateDisabled->GetStoryboard()->AddTimeline(easing1);
-			vstateDisabled->GetStoryboard()->AddTimeline(buttonPressedEasingOut);
-			vstateDisabled->GetStoryboard()->AddTimeline(buttonDisabledEasingIn);
+			vstateDisabled->GetEnteringStoryboard()->AddTimeline(easing1);
+			vstateDisabled->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingOut);
+			vstateDisabled->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingIn);
 			vgroup1->AddState(vstateDisabled);
 		}
 		RefPtr<VisualStateGroupList> groups1(LN_NEW VisualStateGroupList());

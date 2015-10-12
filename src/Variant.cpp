@@ -25,6 +25,8 @@
 #include <Lumino/Property.h>
 #include <Lumino/RoutedEvent.h>
 
+#include <Lumino/Graphics/Color.h>	// TODO
+
 namespace Lumino
 {
 
@@ -740,6 +742,16 @@ Variant::Variant(const ThicknessF& value)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Variant::Variant(const ToneF& value)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)
+{
+	SetToneF(value);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Variant::~Variant()
 {
 	Release();
@@ -909,6 +921,21 @@ const ThicknessF& Variant::GetThicknessF() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Variant::SetToneF(const ToneF& value)
+{
+	Release();
+	m_type = VariantType_ToneF;
+	*((ToneF*)m_toneF) = value;
+}
+const ToneF& Variant::GetToneF() const
+{
+	LN_CHECK_STATE_RETURNV(m_type == VariantType_ToneF, ToneF::Zero);
+	return *((ToneF*)m_toneF);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 bool Variant::operator == (const Variant& right) const
 {
 	if (m_type != right.m_type) { return false; }
@@ -965,6 +992,9 @@ void Variant::Copy(const Variant& obj)
 		break;
 	case Lumino::VariantType_ThicknessF:
 		memcpy(m_thicknessF, obj.m_thicknessF, sizeof(m_thicknessF));
+		break;
+	case Lumino::VariantType_ToneF:
+		memcpy(m_toneF, obj.m_toneF, sizeof(m_toneF));
 		break;
 	default:
 		LN_ASSERT(0);

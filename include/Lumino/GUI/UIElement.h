@@ -149,6 +149,7 @@ public:
 	LN_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
 	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity プロパティの識別子 */
+	LN_PROPERTY(ToneF,					ToneProperty);					/**< Tone プロパティの識別子 */
 	LN_PROPERTY(bool,					IsEnabledProperty);				/**< IsEnabled プロパティの識別子 */
 	LN_PROPERTY(bool,					IsMouseOverProperty);			/**< IsMouseOver プロパティの識別子 */
 	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
@@ -209,6 +210,12 @@ public:
 
 	/** 要素の不透明度を取得します。*/
 	float GetOpacity() const { return GetTypedPropertyValue<float>(OpacityProperty); }
+
+	/** 要素の色調を設定します。*/
+	void SetTone(const ToneF& value) { SetTypedPropertyValue<ToneF>(ToneProperty, value); }
+
+	/** 要素の色調を取得します。*/
+	ToneF GetTone() const { return GetTypedPropertyValue<ToneF>(ToneProperty); }
 
 	/** この要素が有効かどうかを示す値を設定します。規定値は true です。*/
 	void SetEnabled(bool value) { SetTypedPropertyValue<bool>(IsEnabledProperty, value); }
@@ -303,8 +310,8 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	virtual void ActivateInternal(UIElement* child);
-	void AttachContext(GUIContext* ownerContext);
-	void DetachContext();
+	void ChangeContext(GUIContext* ownerContext);
+	Array< RefPtr<AnimationClock> >& GetAnimationClockList() { return m_animationClockList; }
 
 private:
 	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
@@ -315,6 +322,7 @@ private:
 	SizeF							m_size; 
 	ThicknessF						m_margin;
 	float							m_opacity;
+	ToneF							m_tone;
 	float							m_combinedOpacity;
 	Array< RefPtr<AnimationClock> >	m_animationClockList;
 	InvalidateFlags					m_invalidateFlags;

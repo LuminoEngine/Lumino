@@ -73,7 +73,22 @@ AnimationClock::AnimationClock(GUIContext* context, Storyboard* sourceStoryboard
 				tli.TargetElement = target;
 				tli.TargetProperty = prop;
 				tli.StartValue = target->GetPropertyValue(prop);	// 現在のプロパティ値を開始値とする
+				tli.Active = true;
 				m_timeLineInstanceList.Add(tli);
+
+				// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
+				auto& playingList = owner->GetAnimationClockList();
+				for (auto& clock : playingList)
+				{
+					for (auto& playingTimeLineInst : clock->m_timeLineInstanceList)
+					{
+						if (playingTimeLineInst.OwnerTimeLine->GetTargetName() == timeline->GetTargetName() &&
+							playingTimeLineInst.OwnerTimeLine->GetTargetProperty() == timeline->GetTargetProperty())
+						{
+							playingTimeLineInst.Active = false;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -102,9 +117,12 @@ void AnimationClock::SetTime(float time)
 
 	for (TimeLineInstance& tli : m_timeLineInstanceList)
 	{
-		bool r = tli.OwnerTimeLine->Apply(tli.TargetElement, tli.TargetProperty, tli.StartValue, time);
-		if (r) {
-			m_isFinished = false;
+		if (tli.Active)
+		{
+			bool r = tli.OwnerTimeLine->Apply(tli.TargetElement, tli.TargetProperty, tli.StartValue, time);
+			if (r) {
+				m_isFinished = false;
+			}
 		}
 	}
 	

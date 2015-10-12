@@ -71,6 +71,7 @@ private:
 		UIElement*	TargetElement;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
 		Property*	TargetProperty;
 		Variant		StartValue;
+		bool		Active;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
 	};
 
 	GUIContext*				m_context;

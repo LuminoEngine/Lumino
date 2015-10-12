@@ -13,10 +13,10 @@ public:
 
 	typedef std::function< float(float, float, float, float) >	FloatEasingFunction;
 
-	template<typename T>
-	static std::function< T(T, T, T, T) > SelectEasingFunction(Animation::EasingMode mode)
+	template<typename TValue, typename TTime>
+	static std::function< TValue(TTime, TValue, TValue, TTime) > SelectEasingFunction(Animation::EasingMode mode)
 	{
-		typedef T(*EasingFunctionPtr)(T, T, T, T);
+		typedef TValue(*EasingFunctionPtr)(TTime, TValue, TValue, TTime);
 		EasingFunctionPtr table[] =
 		{
 			EasingFunctions::LinearTween,

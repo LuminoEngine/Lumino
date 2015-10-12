@@ -25,6 +25,7 @@ LN_PROPERTY_IMPLEMENT(UIElement, ThicknessF, MarginProperty, "Margin", m_margin,
 LN_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, PropertyMetadata(HorizontalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, PropertyMetadata(1.0f));
+LN_PROPERTY_IMPLEMENT(UIElement, ToneF, ToneProperty, "Tone", m_tone, PropertyMetadata(ToneF()));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsEnabledProperty, "IsEnabled", m_isEnabled, PropertyMetadata(true));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsMouseOverProperty, "IsMouseOver", m_isMouseOver, PropertyMetadata(false));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, PropertyMetadata(true));
@@ -262,10 +263,10 @@ void UIElement::AddVisualChild(UIElement* element)
 	LN_THROW(element->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 
 	m_visualChildren.Add(element);		// m_visualChildren に追加したものは OnEvent や Render が呼ばれるようになる
-	element->AttachContext(m_ownerContext);
 	element->SetInheritanceParent(this);
 	element->SetParent(this);			// Visualツリーでも、論理的な親の扱いは共通。
 	element->SetTemplateModified(true);	// テンプレートを再構築する必要がありそう
+	element->ChangeContext(m_ownerContext);	// この中でビジュアルツリーの再構築が行われる。Parent は決まっていなければならない。
 }
 
 //-----------------------------------------------------------------------------
@@ -278,8 +279,8 @@ void UIElement::RemoveVisualChild(UIElement* element)
 
 	m_visualChildren.Remove(element);
 	element->SetInheritanceParent(NULL);
+	element->ChangeContext(NULL);
 	element->SetParent(NULL);
-	element->DetachContext();
 }
 
 //-----------------------------------------------------------------------------
@@ -327,37 +328,27 @@ void UIElement::ActivateInternal(UIElement* child)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::AttachContext(GUIContext* ownerContext)
+void UIElement::ChangeContext(GUIContext* ownerContext)
 {
-	if (m_ownerContext != NULL && ownerContext != NULL) {
-		LN_THROW(0, ArgumentException, "GUIContext attached.");
+	// 取り外す
+	if (m_ownerContext != NULL && m_ownerContext != ownerContext)
+	{
 	}
-	m_ownerContext = ownerContext;
+
+	// 新しい Context に変更
+	if (m_ownerContext != ownerContext)
+	{
+		m_ownerContext = ownerContext;
+		ApplyTemplate();
+	}
 
 	// 子要素にも設定する
 	int count = GetVisualChildrenCount();
 	for (int i = 0; i < count; ++i) {
 		UIElement* child = GetVisualChild(i);
-		child->AttachContext(m_ownerContext);
+		child->ChangeContext(m_ownerContext);
 	}
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void UIElement::DetachContext()
-{
-	m_ownerContext = NULL;
-
-	// 子要素にも設定する
-	int count = GetVisualChildrenCount();
-	for (int i = 0; i < count; ++i) {
-		UIElement* child = GetVisualChild(i);
-		child->DetachContext();
-	}
-}
-
-
 
 
 
@@ -584,6 +575,7 @@ void UIElement::Render()
 	painter->ResetState();
 	painter->SetTransform(Matrix::Translation(Vector3(m_finalGlobalRect.X, m_finalGlobalRect.Y, 0)));	// TODO: 初期 Transform は DrawingContext とかベースクラスに作って隠したい。
 	painter->SetOpacity(m_combinedOpacity);
+	painter->SetTone(m_tone);	// TODO: combind
 	OnRender(painter);
 }
 

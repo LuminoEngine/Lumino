@@ -182,6 +182,9 @@ public:
 class ToneF
 {
 public:
+	static const ToneF Zero;	///< ToneF(0, 0, 0, 0);
+
+public:
 
 	float	R;	///< 赤成分のカラーバランス (-1.0～1.0)
 	float	G;	///< 緑成分のカラーバランス (-1.0～1.0)
@@ -212,10 +215,43 @@ public:
 	*/
 	void AddClamp(const ToneF& tone);
 
+
 public:
 	//operator Vector4() { return *reinterpret_cast< Vector4* >(this); }
 	operator const Vector4&() const { return *reinterpret_cast< const Vector4* >(this); }
+
+	friend Vector3 operator - (const Vector3& v1);
+	friend ToneF operator + (const ToneF& v1, const ToneF& v2);
+	friend ToneF operator + (const ToneF& v1, float v2);
+	friend ToneF operator + (float v1, const ToneF& v2);
+	friend ToneF operator - (const ToneF& v1, const ToneF& v2);
+	friend ToneF operator - (const ToneF& v1, float v2);
+	friend ToneF operator - (float v1, const ToneF& v2);
+	friend ToneF operator * (const ToneF& v1, const ToneF& v2);
+	friend ToneF operator * (const ToneF& v1, float v2);
+	friend ToneF operator * (float v1, const ToneF& v2);
+	friend ToneF operator / (const ToneF& v1, const ToneF& v2);
+	friend ToneF operator / (const ToneF& v1, float v2);
+	friend ToneF operator / (float v1, const ToneF& v2);
 };
+
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.R, -v1.G, -v1.B, -v1.GS); }
+inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R + v2.R, v1.G + v2.G, v1.B + v2.B, v1.GS + v2.GS); }
+inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.R + v2, v1.G + v2, v1.B + v2, v1.GS + v2); }
+inline ToneF operator + (float v1, const ToneF& v2) { return ToneF(v1 + v2.R, v1 + v2.G, v1 + v2.B, v1 + v2.GS); }
+inline ToneF operator - (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R - v2.R, v1.G - v2.G, v1.B - v2.B, v1.GS - v2.GS); }
+inline ToneF operator - (const ToneF& v1, float v2) { return ToneF(v1.R - v2, v1.G - v2, v1.B - v2, v1.GS - v2); }
+inline ToneF operator - (float v1, const ToneF& v2) { return ToneF(v1 - v2.R, v1 - v2.G, v1 - v2.B, v1 - v2.GS); }
+inline ToneF operator * (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R * v2.R, v1.G * v2.G, v1.B * v2.B, v1.GS * v2.GS); }
+inline ToneF operator * (const ToneF& v1, float v2) { return ToneF(v1.R * v2, v1.G * v2, v1.B * v2, v1.GS * v2); }
+inline ToneF operator * (float v1, const ToneF& v2) { return ToneF(v1 * v2.R, v1 * v2.G, v1 * v2.B, v1 * v2.GS); }
+inline ToneF operator / (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R / v2.R, v1.G / v2.G, v1.B / v2.B, v1.GS / v2.GS); }
+inline ToneF operator / (const ToneF& v1, float v2) { return ToneF(v1.R / v2, v1.G / v2, v1.B / v2, v1.GS / v2); }
+inline ToneF operator / (float v1, const ToneF& v2) { return ToneF(v1 / v2.R, v1 / v2.G, v1 / v2.B, v1 / v2.GS); }
 
 
 /**

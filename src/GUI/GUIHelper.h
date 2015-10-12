@@ -26,8 +26,6 @@ public:
 	static Array< RefPtr<AnimationClock> >* UIElement_GetAnimationClockList(UIElement* element) { return &element->m_animationClockList; }
 	static InvalidateFlags UIElement_GetInvalidateFlags(UIElement* element) { return element->m_invalidateFlags; }
 
-	static void AttachContext(UIElement* element, GUIContext* ownerContext) { element->AttachContext(ownerContext); }
-	static void DetachContext(UIElement* element){ element->DetachContext(); }
 
 #ifdef LUMINO_GUI_GUICONTEXT_H
 	static const Size& GetViewPixelSize(GUIContext* context) { return context->GetViewPixelSize(); }

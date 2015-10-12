@@ -173,7 +173,7 @@ struct PainterState
 
 
 /**
-	@brief		
+	@brief	図形や画像、テキストを描画するための機能を提供します。
 */
 class Painter
 	: public RefObject
@@ -186,10 +186,6 @@ public:
 
 	void SetProjection(const Size& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
 	void SetProjection(const SizeF& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
-
-
-	//void PushTransform(const Matrix& matrix);
-	//void PopTransform();
 
 	void SetTransform(const Matrix& matrix);
 	void SetBrush(Brush* brush);

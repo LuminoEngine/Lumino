@@ -56,6 +56,40 @@ private:
 
 };
 
+class ToneAnimation
+	: public AnimationTimeline
+{
+public:
+	typedef std::function< ToneF(float, const ToneF&, const ToneF&, float) >	EasingFunction;
+
+public:
+
+	static ToneAnimation* Create(const String& targetName, const String& targetProperty, const ToneF& targetValue, float duration, Animation::EasingMode easingMode);
+
+public:
+	ToneAnimation();
+	virtual ~ToneAnimation();
+
+	//void SetTargetName(const String& name) { m_targetName = name; }
+	//void SetTargetProperty(const Property* prop) { m_targetProperty = prop; }
+	void SetTargetValue(const ToneF& value) { m_targetValue = value; }
+	void SetEasingMode(Animation::EasingMode easingMode);
+	void SetDuration(float duration) { m_duration = duration; }
+
+protected:
+	virtual bool Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time);
+
+private:
+	//String					m_targetName;
+	//const Property*			m_targetProperty;
+	ToneF					m_targetValue;
+	Animation::EasingMode	m_easingMode;
+	//float					m_duration;
+	EasingFunction	m_easingFunction;
+
+};
+
+
 /**
 	@brief		
 */
@@ -72,6 +106,7 @@ public:
 	
 	/**
 		@brief	指定した要素にアニメーションを適用して開始します。
+		@note	ターゲット名とプロパティが重複するアニメーションが再生中である場合、それは停止する。
 	*/
 	void Begin(UIElement* target);
 
@@ -99,12 +134,14 @@ public:
 	virtual ~VisualState();
 
 	const String& GetName() const { return m_name; }
-	Storyboard* GetStoryboard() const { return m_storyboard; }
+	Storyboard* GetEnteringStoryboard() const { return m_storyboard; }
+	Storyboard* GetLeavingStoryboard() const { return m_leavingStoryboard; }
 
 protected:
 	GUIManagerImpl* m_manager;
 	String	m_name;
 	RefPtr<Storyboard>	m_storyboard;
+	RefPtr<Storyboard>	m_leavingStoryboard;
 };
 
 typedef GenericCoreList<VisualState*>	VisualStateList;

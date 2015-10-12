@@ -61,14 +61,14 @@ int main()
 
 
 		GCPtr<UIButton> button1 = UIButton::Create();
+		panel1->GetChildren()->Add(button1);
 		button1->SetSize(SizeF(200, 100));
 		//button1->Click += CreateDelegate(Button_Click);
 		button1->Click += [](RoutedEventArgs* e) { printf("ttt\n"); };
-		panel1->GetChildren()->Add(button1);
 
 		GCPtr<UIButton> button2 = UIButton::Create();
-		button2->SetSize(SizeF(100, 200));
 		panel1->GetChildren()->Add(button2);
+		button2->SetSize(SizeF(100, 200));
 
 		button1->SetEnabled(false);
 

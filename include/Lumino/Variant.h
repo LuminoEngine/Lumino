@@ -24,6 +24,8 @@ class RoutedEventArgs;
 class ApplicationContext;
 template<typename T> class TypedProperty;
 
+class ToneF;	// TODO: Graphics のだしここには置きたくないが…
+
 enum VariantType
 {
 	VariantType_Unknown = 0,
@@ -37,6 +39,7 @@ enum VariantType
 	VariantType_SizeF,
 	VariantType_Rect,
 	VariantType_ThicknessF,
+	VariantType_ToneF,
 
 	VariantType_Max,			///< (Terminator)
 };
@@ -450,6 +453,7 @@ public:
 	Variant(const SizeF& value);
 	Variant(const Rect& value);
 	Variant(const ThicknessF& value);
+	Variant(const ToneF& value);	// TODO: 新しい構造体を追加するたびに追加はキツイ…
 	~Variant();
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
 
@@ -485,6 +489,9 @@ public:
 
 	void SetThicknessF(const ThicknessF& value);
 	const ThicknessF& GetThicknessF() const;
+
+	void SetToneF(const ToneF& value);
+	const ToneF& GetToneF() const;
 
 	template<typename T>
 	T& RefCast() const { return static_cast<T&>(GetObject()); }
@@ -543,6 +550,7 @@ private:
 		float			m_sizeF[2];
 		int				m_rect[4];
 		float			m_thicknessF[4];
+		float			m_toneF[4];
 		Enum			m_enum;
 	};
 	String			m_string;
@@ -575,6 +583,7 @@ template<> struct Variant::CastSelector < String, std::false_type, std::false_ty
 template<> struct Variant::CastSelector < Rect, std::false_type, std::false_type >			{ static Rect GetValue(const Variant& v) { return v.GetRect(); } };
 template<> struct Variant::CastSelector < SizeF, std::false_type, std::false_type >			{ static SizeF GetValue(const Variant& v) { return v.GetSizeF(); } };
 template<> struct Variant::CastSelector < ThicknessF, std::false_type, std::false_type >	{ static const ThicknessF& GetValue(const Variant& v) { return v.GetThicknessF(); } };
+template<> struct Variant::CastSelector < ToneF, std::false_type, std::false_type >			{ static const ToneF& GetValue(const Variant& v) { return v.GetToneF(); } };
 template<typename T> struct Variant::CastSelector < T, std::true_type, std::false_type >	{ static T GetValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
 template<typename T> struct Variant::CastSelector  < T, std::false_type, std::true_type >	{ static T GetValue(const Variant& v) { return T(static_cast<typename T::PtrType>(v.GetObject())); } };
 

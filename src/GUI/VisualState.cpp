@@ -80,7 +80,7 @@ FloatEasing::~FloatEasing()
 void FloatEasing::SetEasingMode(Animation::EasingMode easingMode)
 {
 	m_easingMode = easingMode;
-	m_easingFunction = AnimationUtilities::SelectEasingFunction<float>(m_easingMode);
+	m_easingFunction = AnimationUtilities::SelectEasingFunction<float, float>(m_easingMode);
 }
 
 //-----------------------------------------------------------------------------
@@ -112,6 +112,87 @@ bool FloatEasing::Apply(UIElement* targetElement, Property* targetProp, const Va
 	return (time < m_duration);
 }
 
+
+//=============================================================================
+// ToneAnimation
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ToneAnimation* ToneAnimation::Create(
+	const String& targetName,
+	const String& targetProperty,
+	const ToneF& targetValue,
+	float duration,
+	Animation::EasingMode easingMode)
+{
+	GCPtr<ToneAnimation> easing = LN_NEW ToneAnimation();
+	easing->SetTargetName(targetName);
+	easing->SetTargetProperty(targetProperty);
+	easing->SetTargetValue(targetValue);
+	easing->SetDuration(duration);
+	easing->SetEasingMode(easingMode);
+	easing.SafeAddRef();
+	return easing;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ToneAnimation::ToneAnimation()
+	: m_easingMode(Animation::EasingMode::Linear)
+	, m_easingFunction()
+{
+	SetEasingMode(Animation::EasingMode::Linear);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ToneAnimation::~ToneAnimation()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ToneAnimation::SetEasingMode(Animation::EasingMode easingMode)
+{
+	m_easingMode = easingMode;
+	m_easingFunction = AnimationUtilities::SelectEasingFunction<ToneF, float>(m_easingMode);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool ToneAnimation::Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time)
+{
+	ToneF value;
+
+	// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
+	// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
+	if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
+	{
+		value = m_targetValue;
+	}
+	// 時間が 0 以前の場合は初期値。
+	else if (time <= 0)
+	{
+		value = Variant::Cast<ToneF>(startValue);
+	}
+	// 補間で求める
+	else
+	{
+		ToneF b = Variant::Cast<ToneF>(startValue);
+		value = m_easingFunction(time, b, m_targetValue - b, m_duration);
+	}
+
+	targetElement->SetTypedPropertyValue<ToneF>(targetProp, value);
+	return (time < m_duration);
+}
+
+
 //=============================================================================
 // VisualState
 //=============================================================================
@@ -122,6 +203,7 @@ VisualState::VisualState(GUIManagerImpl* manager)
 	: m_manager(manager)
 {
 	m_storyboard.Attach(LN_NEW Storyboard(m_manager));
+	m_leavingStoryboard.Attach(LN_NEW Storyboard(m_manager));
 }
 
 //-----------------------------------------------------------------------------
@@ -132,6 +214,7 @@ VisualState::VisualState(GUIManagerImpl* manager, const String& name)
 	, m_name(name)
 {
 	m_storyboard.Attach(LN_NEW Storyboard(m_manager));
+	m_leavingStoryboard.Attach(LN_NEW Storyboard(m_manager));
 }
 
 //-----------------------------------------------------------------------------
@@ -212,14 +295,19 @@ void VisualStateManager::GoToState(Control* control, const String& stateName)
 		VisualStateList::iterator itr = std::find_if(stateList->begin(), stateList->end(), [stateName](VisualState* state) { return state->GetName() == stateName; });
 		if (itr != stateList->end())
 		{
-			// 再生中のアニメを止める
+			// 再生中のアニメに対する処理
 			VisualState* current = group->GetCurrentState();
-			if (current != NULL) {
-				current->GetStoryboard()->Stop(control);
+			if (current != NULL)
+			{
+				current->GetEnteringStoryboard()->Stop(control);
+				current->GetLeavingStoryboard()->Begin(control);
 			}
 
-			group->SetCurrentState(*itr);				// カレント変更
-			(*itr)->GetStoryboard()->Begin(control);	// アニメーション開始
+			// カレント変更
+			group->SetCurrentState(*itr);
+
+			// 新しいアニメに対する処理
+			(*itr)->GetEnteringStoryboard()->Begin(control);	// アニメーション開始
 			return;	// 処理終了
 		}
 	}
