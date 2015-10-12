@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Graphics/GraphicsManager.h"
-#include "UIElement.h"
+#include "UITextElement.h"
 #include "VisualState.h"
 
 namespace Lumino
@@ -13,21 +13,20 @@ class ContentPresenter;
 	@brief		ユーザー操作によって特定の動作を行う UI 要素の基本クラスです。
 */
 class Control
-	: public UIElement
+	: public UITextElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(Control);
 public:
-	LN_PROPERTY(BrushPtr,				BackgroundProperty);			/**< Background プロパティの識別子 */
-	LN_PROPERTY(BrushPtr,				ForegroundProperty);			/**< Foreground プロパティの識別子 */
 	LN_PROPERTY(ControlTemplate*,		TemplateProperty);
 	LN_PROPERTY(VisualStateGroupList*,	VisualStateGroupsProperty);
-	LN_PROPERTY(String,					FontFamilyProperty);			/**< FontFamily プロパティの識別子 */
-	LN_PROPERTY(int,					FontSizeProperty);				/**< FontSize プロパティの識別子 */
-	//LN_PROPERTY(int,					FontEdgeSizeProperty);			// TODO: Pen に移したい
-	LN_PROPERTY(bool,					IsFontBoldProperty);			/**< IsFontBold プロパティの識別子 */
-	LN_PROPERTY(bool,					IsFontItalicProperty);			/**< IsFontItalic プロパティの識別子 */
-	LN_PROPERTY(bool,					IsFontAntiAliasProperty);		/**< IsFontAntiAlias プロパティの識別子 */
+	LN_PROPERTY(HorizontalAlignment,	HorizontalContentAlignmentProperty);	/**< HorizontalContentAlignment プロパティの識別子 */
+	LN_PROPERTY(VerticalAlignment,		VerticalContentAlignmentProperty);		/**< VerticalContentAlignment プロパティの識別子 */
+	//LN_PROPERTY(int,					FontSizeProperty);				/**< FontSize プロパティの識別子 */
+	////LN_PROPERTY(int,					FontEdgeSizeProperty);			// TODO: Pen に移したい
+	//LN_PROPERTY(bool,					IsFontBoldProperty);			/**< IsFontBold プロパティの識別子 */
+	//LN_PROPERTY(bool,					IsFontItalicProperty);			/**< IsFontItalic プロパティの識別子 */
+	//LN_PROPERTY(bool,					IsFontAntiAliasProperty);		/**< IsFontAntiAlias プロパティの識別子 */
 
 	LN_ROUTED_EVENT(MouseEventArgs,		MouseDoubleClickEvent);			/**< MouseDoubleClick ルーティングイベントの識別子 */
 
@@ -46,49 +45,18 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	/** コントロールの背景の描画に使用するブラシを設定します。*/
-	void SetBackground(BrushPtr value) { SetTypedPropertyValue<BrushPtr>(BackgroundProperty, value); }
+	/** コントロールのコンテンツの水平方向の配置方法を設定します。*/
+	void SetHorizontalContentAlignment(HorizontalAlignment value) { SetTypedPropertyValue(HorizontalContentAlignmentProperty, value); }
 
-	/** コントロールの背景の描画に使用するブラシを取得します。*/
-	BrushPtr GetBackground() const { return GetTypedPropertyValue<BrushPtr>(BackgroundProperty); }
-
-	/** コントロールの前景の描画に使用するブラシを設定します。*/
-	void SetForeground(BrushPtr value) { SetTypedPropertyValue<BrushPtr>(ForegroundProperty, value); }
-
-	/** コントロールの背景の描画に使用するブラシを取得します。*/
-	BrushPtr GetForeground() const { return GetTypedPropertyValue<BrushPtr>(ForegroundProperty); }
-
-	/** コントロールのフォントファミリ名を設定します。*/
-	void SetFontFamily(const String& value) { SetTypedPropertyValue<String>(FontFamilyProperty, value); }
-
-	/** コントロールのフォントファミリ名を取得します。*/
-	String GetFontFamily() const { return GetTypedPropertyValue<String>(FontFamilyProperty); }
-
-	/** コントロールのフォントサイズを設定します。*/
-	void SetFontSize(int value) { SetTypedPropertyValue<int>(FontSizeProperty, value); }
-
-	/** コントロールのフォントサイズを取得します。*/
-	int GetFontSize() const { return GetTypedPropertyValue<int>(FontSizeProperty); }
-
-	/** コントロールのフォントの太字有無を設定します。*/
-	void SetFontBold(bool value) { SetTypedPropertyValue<bool>(IsFontBoldProperty, value); }
-
-	/** コントロールのフォントの太字有無を取得します。*/
-	bool IsFontBold() const { return GetTypedPropertyValue<bool>(IsFontBoldProperty); }
-
-	/** コントロールのフォントのイタリック体有無を設定します。*/
-	void SetFontItalic(bool value) { SetTypedPropertyValue<bool>(IsFontItalicProperty, value); }
-
-	/** コントロールのフォントのイタリック体有無を取得します。*/
-	bool IsFontItalic() const { return GetTypedPropertyValue<bool>(IsFontItalicProperty); }
-
-	/** コントロールのフォントのアンチエイリアス有無を設定します。*/
-	void SetFontAntiAlias(bool value) { SetTypedPropertyValue<bool>(IsFontAntiAliasProperty, value); }
-
-	/** コントロールのフォントのアンチエイリアス有無を取得します。*/
-	bool IsFontAntiAlias() const { return GetTypedPropertyValue<bool>(IsFontAntiAliasProperty); }
-
+	/** コントロールのコンテンツの水平方向の配置方法を取得します。*/
+	HorizontalAlignment GetHorizontalContentAlignment() const { return GetTypedPropertyValue<HorizontalAlignment>(HorizontalContentAlignmentProperty); }
 	
+	/** コントロールのコンテンツの垂直方向の配置方法を設定します。*/
+	void SetVerticalContentAlignment(VerticalAlignment value) { SetTypedPropertyValue(VerticalContentAlignmentProperty, value); }
+
+	/** コントロールのコンテンツの垂直方向の配置方法を取得します。*/
+	VerticalAlignment GetVerticalContentAlignment() const { return GetTypedPropertyValue<VerticalAlignment>(VerticalContentAlignmentProperty); }
+
 
 	void SetTemplate(ControlTemplate* controlTemplate);	// TODO: OnTemplatePropertyChanged
 	ControlTemplate* GetTemplate() const { return m_controlTemplate; }
@@ -113,7 +81,7 @@ protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
-	virtual void OnRender(Painter* painter);
+	//virtual void OnRender(Painter* painter);
 
 	//virtual void ApplyTemplateHierarchy(CombinedLocalResource* parent);
 
@@ -138,13 +106,12 @@ protected:
 	//virtual void OnFontUpdated();
 
 private:
-	void OnFontPropertyChanged(PropertyChangedEventArgs* e);
+	//void OnFontPropertyChanged(PropertyChangedEventArgs* e);
 	void Handler_MouseDown(MouseEventArgs* e);
 
 private:
-	BrushPtr	m_background;
-	BrushPtr	m_foreground;
-	GraphicsManager::FontData	m_fontData;
+	HorizontalAlignment				m_horizontalContentAlignment;
+	VerticalAlignment				m_verticalContentAlignment;
 	RefPtr<ControlTemplate>			m_controlTemplate;
 	RefPtr<VisualStateGroupList>	m_visualStateGroupList;
 };

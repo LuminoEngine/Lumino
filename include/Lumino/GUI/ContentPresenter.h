@@ -37,7 +37,11 @@ protected:
 
 	// TODO: InvalidateArrange/Measure
 
+LN_INTERNAL_ACCESS:
+	void SetOwner(ContentControl* owner);
+
 private:
+	ContentControl*		m_owner;
 	RefPtr<UIElement>	m_content;
 	//virtual void AddVisualChild(UIElement* child) { LN_THROW(0, InvalidOperationException); }	// ContentPresenter は論理的な子要素の配置先をマークするメタデータのようなものなので、子要素は持たない。
 };

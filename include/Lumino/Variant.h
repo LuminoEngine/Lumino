@@ -457,6 +457,9 @@ public:
 	~Variant();
 	Variant& operator = (const Variant& obj) { Copy(obj); return (*this); }
 
+	// TODO: 各種 explicit にしたい。
+	// Variant(_T("text")) が bool 扱いになってしまう
+
 	Variant(CoreObject* obj);
 
 	template<class T>

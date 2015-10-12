@@ -5,6 +5,66 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/10/12] HorizontalAlignment と HorizontalContentAlignment
+		HorizontalAlignment は、自分が親要素内のどこに配置されるか、
+		HorizontalContentAlignment は、自分が持っている子要素をどこに配置するか。
+
+		で、ポイントとなるのが HorizontalContentAlignment の適用先は「コンテンツ」であるということ。
+		必ずしも子要素(ビジュアルツリー)ではない。
+		つまるところ、ContentPresenter の直接の子要素が適用先となる。
+
+		Button なら Content、ItemsControl なら 全 Item.Content が適用先となる。
+		→ 一般的には TextBlock
+		ContentPresenter や ListBoxItem は適用先ではないので注意。
+		※ ListBox と ListBoxItem はそれぞれ HorizontalContentAlignment を持つことができ、適用先は同じ。
+			この場合は ListBoxItem のが優先された。
+			なお、HorizontalContentAlignment は継承プロパティではない。
+			ListBoxItem が ListBox から引き継ぐか独自判断しているみたい。
+
+		また、HorizontalContentAlignment は「コンテンツの RenderRect」に対する配置方法である点にも注意。
+		Arrange で考慮される。
+
+		この2つの値は互いに影響しない。配置結果的には影響しているように見えるが。
+
+		HorizontalContentAlignment が Strach 以外の場合、RenderSize は決まってしまうので、
+		HorizontalAlignment は無意味なものとなる。
+
+
+		参考ソース
+		-----------------------
+		<StackPanel>
+			<Button Width="300" HorizontalAlignment="Left" HorizontalContentAlignment="Right">
+				<TextBlock Width="100" HorizontalAlignment="Center">
+					button1
+				</TextBlock>
+			</Button>
+			<Button HorizontalContentAlignment="Center"  Foreground="Red">
+				<Decorator Width="200" >
+					<TextBlock Text="button2" />
+				</Decorator>
+			</Button>
+			<ListBox  HorizontalContentAlignment="Right" >
+				<ListBoxItem  HorizontalContentAlignment="Center">a</ListBoxItem>
+				<ListBoxItem Width="200" HorizontalAlignment="Left">
+					<TextBlock Width="100" HorizontalAlignment="Center">
+						button1
+					</TextBlock>
+				</ListBoxItem>
+			</ListBox>
+		</StackPanel>	
+		-----------------------
+
+	[2015/10/12] TransitionBrush は必要？
+		必須ではない。メモリ使用量やコーディング量を減らすためのユーティリティ。
+		アニメーションさせるときは、ブラシ自体は static リソースで、
+		TransitionBrushAnimation クラスを作れば良い。
+		→ ×TransitionBrushAnimation が共有できない。
+			→ AnimationClockInstance 内で TransitionBrush を作ればOK。
+
+		また、2ステート以上は複雑になってしまう気がする・・・。
+		Normal→MouseOver→Pressed と連続した場合は一瞬3ステートが重なるタイミングがあるわけで…
+
+
 	[2015/9/29] MouseEnter MouseLeave について
 		兄弟要素間では、重なっていても排他。
 		親子では、子が IsMouseOver なら親も IsMouseOver。このとき、マウスが子領域から出て親に乗っても、親の Enter は発生しない。
@@ -1409,6 +1469,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 	{
 		RefPtr<Style> style = RefPtr<Style>::Create();
 		style->SetTargetType(UIButton::GetClassTypeInfo());
+		style->AddSetter(UIButton::BackgroundProperty, m_defaultTheme->GetItem(_T("ButtonNormalBrush")));
 
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
 		t->SetTargetType(_T("Button"));

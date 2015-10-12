@@ -119,8 +119,8 @@ public:
 	const Matrix* GetMatrixArray() const { return m_value.MatrixArray; }
 	void SetDeviceTexture(Driver::ITexture* texture);
 	Driver::ITexture* GetDeviceTexture() const { return m_value.DeviceTexture; }
-	void SetManagedTexture(Texture* texture);
-	Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
+	//void SetManagedTexture(Texture* texture);
+	//Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
 	void SetString(const char* str);
 	const TCHAR* GetString() const { return m_value.String; }
 

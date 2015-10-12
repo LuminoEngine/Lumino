@@ -305,11 +305,11 @@ void ShaderValue::SetDeviceTexture(Driver::ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ShaderValue::SetManagedTexture(Texture* texture)
-{
-	m_type = ShaderVariableType_ManagedTexture;
-	LN_REFOBJ_SET(m_value.ManagedTexture, texture);
-}
+//void ShaderValue::SetManagedTexture(Texture* texture)
+//{
+//	m_type = ShaderVariableType_ManagedTexture;
+//	LN_REFOBJ_SET(m_value.ManagedTexture, texture);
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -351,9 +351,9 @@ void ShaderValue::ReleaseValueBuffer()
 	if (m_type == ShaderVariableType_DeviceTexture) {
 		LN_SAFE_RELEASE(m_value.DeviceTexture);
 	}
-	if (m_type == ShaderVariableType_ManagedTexture) {
-		LN_SAFE_RELEASE(m_value.ManagedTexture);
-	}
+	//if (m_type == ShaderVariableType_ManagedTexture) {
+	//	LN_SAFE_RELEASE(m_value.ManagedTexture);
+	//}
 	//m_value.ByteCount = 0;
 	m_buffer.Release();
 }
@@ -394,10 +394,10 @@ void ShaderValue::Copy(const ShaderValue& value)
 		m_value.DeviceTexture = value.m_value.DeviceTexture;
 		LN_SAFE_ADDREF(m_value.DeviceTexture);
 	}
-	if (m_type == ShaderVariableType_ManagedTexture) {
-		m_value.ManagedTexture = value.m_value.ManagedTexture;
-		LN_SAFE_ADDREF(m_value.ManagedTexture);
-	}
+	//if (m_type == ShaderVariableType_ManagedTexture) {
+	//	m_value.ManagedTexture = value.m_value.ManagedTexture;
+	//	LN_SAFE_ADDREF(m_value.ManagedTexture);
+	//}
 
 }
 

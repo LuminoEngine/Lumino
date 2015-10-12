@@ -37,6 +37,11 @@ UIButton::UIButton(GUIManagerImpl* manager)
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseMoveEvent, RoutedHandler_MouseMove);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseDownEvent, RoutedHandler_MouseDown);
 	LN_REGISTER_ROUTED_EVENT_HANDLER(UIButton, MouseEventArgs, UIElement::MouseUpEvent, RoutedHandler_MouseUp);
+
+	// TODO: 初期値の再設定は MetadataOverride というメソッドを設ける。
+	// 今はまだリセット未対応なので問題ないが。
+	SetHorizontalContentAlignment(HorizontalAlignment::Center);
+	SetVerticalContentAlignment(VerticalAlignment::Center);
 }
 
 //-----------------------------------------------------------------------------
@@ -61,6 +66,7 @@ void UIButton::OnClick()
 //-----------------------------------------------------------------------------
 void UIButton::OnRender(Painter* painter)
 {
+	ContentControl::OnRender(painter);
 }
 
 //-----------------------------------------------------------------------------

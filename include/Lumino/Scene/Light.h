@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-
+#include "../Graphics/Color.h"
 #include "SceneNode.h"
 
 namespace Lumino

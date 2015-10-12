@@ -308,7 +308,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
 						{
 							// 変数を検索し、コマンド化
 							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == ShaderVariableType_Texture) {
+							if (v != NULL && v->GetType() == ShaderVariableType_DeviceTexture) {
 								commandList->Add_RenderColorTarget(index, v);
 							}
 							else {
@@ -330,7 +330,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
 						{
 							// 変数を検索し、コマンド化
 							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
-							if (v != NULL && v->GetType() == ShaderVariableType_Texture) {
+							if (v != NULL && v->GetType() == ShaderVariableType_DeviceTexture) {
 								commandList->Add_RenderDepthStencilTarget(v);
 							}
 							else {

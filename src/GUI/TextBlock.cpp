@@ -6,6 +6,7 @@
 */
 #include "../Internal.h"
 #include "UIManagerImpl.h"
+#include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/Documents/DocumentsRenderer.h>
 #include <Lumino/Documents/Run.h>
@@ -37,7 +38,7 @@ TextBlock* TextBlock::Create(GUIManagerImpl* manager)
 //
 //-----------------------------------------------------------------------------
 TextBlock::TextBlock(GUIManagerImpl* manager)
-	: UIElement(manager)
+	: UITextElement(manager)
 {
 	m_paragraph = RefPtr<Documents::Paragraph>::Create(m_manager->GetDocumentsManager());
 }
@@ -82,6 +83,10 @@ SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 void TextBlock::OnRender(Painter* painter)
 {
+	Brush* brush = GetForeground();
+	painter->SetBrush(brush);
+	//m_document->Render(painter);
+
 	UIElement::OnRender(painter);
 	Documents::RenderTargetDocumentsRenderer r(painter);
 	m_paragraph->Render(&r);

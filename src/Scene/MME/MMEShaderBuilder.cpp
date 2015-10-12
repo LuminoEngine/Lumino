@@ -648,7 +648,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 	if (req == MME_VARREQ_NONE)
 	{
 		//if ( var_desc.Class == LN_SVC_OBJECT && var_desc.Type == LN_SVT_TEXTURE )
-		if (var->GetType() == ShaderVariableType_Texture)
+		if (var->GetType() == ShaderVariableType_DeviceTexture)
 		{
 			req = MME_VARREQ_TEXTURE;
 		}

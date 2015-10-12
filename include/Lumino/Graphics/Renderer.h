@@ -13,6 +13,9 @@ namespace Lumino
 class Renderer
 {
 public:
+	static const int MaxMultiRenderTargets = 4;
+
+public:
 	
 	/**
 		@brief		レンダリングを開始します。

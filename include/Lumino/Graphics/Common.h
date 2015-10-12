@@ -200,7 +200,7 @@ enum ShaderVariableType
 	ShaderVariableType_Matrix,
 	ShaderVariableType_MatrixArray,
 	ShaderVariableType_DeviceTexture,
-	ShaderVariableType_ManagedTexture,
+	//ShaderVariableType_ManagedTexture,
 	ShaderVariableType_String,
 
 	/*

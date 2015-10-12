@@ -30,6 +30,7 @@ class Storyboard;
 
 class Style;
 
+class ContentControl;
 class ContentPresenter;
 class UIButton;
 class Image;

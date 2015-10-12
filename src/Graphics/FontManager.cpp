@@ -67,7 +67,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // FontManager
 //=============================================================================
 
-static const TCHAR* DefaultFontName = _T("MS PGothic");
+static const TCHAR* DefaultFontName = _T("Meiryo UI");
 
 //-----------------------------------------------------------------------------
 //

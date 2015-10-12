@@ -10,22 +10,24 @@ LN_NAMESPACE_GUI_BEGIN
 //=============================================================================
 // Control
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UIElement);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Control, UITextElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(Control);
 
 // Register property
-LN_PROPERTY_IMPLEMENT(Control, BrushPtr, BackgroundProperty, "Background", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
-LN_PROPERTY_IMPLEMENT(Control, BrushPtr, ForegroundProperty, "Foreground", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
-LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Control, HorizontalAlignment, HorizontalContentAlignmentProperty, "HorizontalContentAlignment", m_horizontalContentAlignment, PropertyMetadata(HorizontalAlignment::Left));
+LN_PROPERTY_IMPLEMENT(Control, VerticalAlignment, VerticalContentAlignmentProperty, "VerticalContentAlignment", m_verticalContentAlignment, PropertyMetadata(VerticalAlignment::Top));
+//LN_PROPERTY_IMPLEMENT(Control, Brush*, BackgroundProperty, "Background", m_background, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+//LN_PROPERTY_IMPLEMENT(Control, Brush*, ForegroundProperty, "Foreground", m_foreground, PropertyMetadata(NULL, &Control::OnFontPropertyChanged));
+LN_PROPERTY_IMPLEMENT(Control, ControlTemplate*, TemplateProperty, "Template", m_controlTemplate, PropertyMetadata(NULL/*, &Control::OnFontPropertyChanged*/));
 LN_PROPERTY_IMPLEMENT(Control, VisualStateGroupList*, VisualStateGroupsProperty, "VisualStateGroups", m_visualStateGroupList, PropertyMetadata(NULL));
 
 // TODO: フォント設定は子要素へ継承する
-LN_PROPERTY_IMPLEMENT(Control, String, FontFamilyProperty, "FontFamily", m_fontData.Family, PropertyMetadata(String::GetEmpty(), PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
-LN_PROPERTY_IMPLEMENT(Control, int, FontSizeProperty, "FontSize", m_fontData.Size, PropertyMetadata(20, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
-//LN_PROPERTY_IMPLEMENT(TextElement, int, FontEdgeSizeProperty, "FontEdgeSize", m_fontData.EdgeSize, 20, &Control::OnFontPropertyChanged);
-LN_PROPERTY_IMPLEMENT(Control, bool, IsFontBoldProperty, "IsFontBold", m_fontData.IsBold, PropertyMetadata(false, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
-LN_PROPERTY_IMPLEMENT(Control, bool, IsFontItalicProperty, "IsFontItalic", m_fontData.IsItalic, PropertyMetadata(false, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
-LN_PROPERTY_IMPLEMENT(Control, bool, IsFontAntiAliasProperty, "IsFontAntiAlias", m_fontData.IsAntiAlias, PropertyMetadata(true, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
+//LN_PROPERTY_IMPLEMENT(Control, String, FontFamilyProperty, "FontFamily", m_fontData.Family, PropertyMetadata(String::GetEmpty(), PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
+//LN_PROPERTY_IMPLEMENT(Control, int, FontSizeProperty, "FontSize", m_fontData.Size, PropertyMetadata(20, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
+////LN_PROPERTY_IMPLEMENT(TextElement, int, FontEdgeSizeProperty, "FontEdgeSize", m_fontData.EdgeSize, 20, &Control::OnFontPropertyChanged);
+//LN_PROPERTY_IMPLEMENT(Control, bool, IsFontBoldProperty, "IsFontBold", m_fontData.IsBold, PropertyMetadata(false, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
+//LN_PROPERTY_IMPLEMENT(Control, bool, IsFontItalicProperty, "IsFontItalic", m_fontData.IsItalic, PropertyMetadata(false, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
+//LN_PROPERTY_IMPLEMENT(Control, bool, IsFontAntiAliasProperty, "IsFontAntiAlias", m_fontData.IsAntiAlias, PropertyMetadata(true, PropertyOptions::Inherits, &Control::OnFontPropertyChanged));
 
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(Control, MouseEventArgs, MouseDoubleClickEvent, "MouseDoubleClick", MouseDoubleClick);
@@ -34,10 +36,10 @@ LN_ROUTED_EVENT_IMPLEMENT(Control, MouseEventArgs, MouseDoubleClickEvent, "Mouse
 //
 //-----------------------------------------------------------------------------
 Control::Control(GUIManagerImpl* manager)
-	: UIElement(manager)
-	, m_background()
-	, m_foreground()
-	, m_fontData()
+	: UITextElement(manager)
+	//, m_background()
+	//, m_foreground()
+	//, m_fontData()
 	, m_controlTemplate()
 	, m_visualStateGroupList()
 {
@@ -155,15 +157,16 @@ SizeF Control::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Control::OnRender(Painter* painter)
-{
-	UIElement::OnRender(painter);
-
-	if (m_background != NULL) {
-		painter->SetBrush(m_background);
-		painter->DrawRectangle(RectF(0, 0, GetRenderSize()));
-	}
-}
+//void Control::OnRender(Painter* painter)
+//{
+//	// 背景を先に描く
+//	if (m_background != NULL) {
+//		painter->SetBrush(m_background);
+//		painter->DrawRectangle(RectF(0, 0, GetRenderSize()));
+//	}
+//
+//	UIElement::OnRender(painter);
+//}
 
 //void Control::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 //{
@@ -224,11 +227,11 @@ void Control::OnMouseDoubleClick(MouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Control::OnFontPropertyChanged(PropertyChangedEventArgs* e)
-{
-	InvalidateFont();
-	// TODO: InvalidateMeasure
-}
+//void Control::OnFontPropertyChanged(PropertyChangedEventArgs* e)
+//{
+//	InvalidateFont();
+//	// TODO: InvalidateMeasure
+//}
 
 //-----------------------------------------------------------------------------
 //

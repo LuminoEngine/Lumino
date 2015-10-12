@@ -563,13 +563,6 @@ void UIElement::UpdateTransformHierarchy()
 //-----------------------------------------------------------------------------
 void UIElement::Render()
 {
-	// 子要素
-	int count = GetVisualChildrenCount();
-	for (int i = 0; i < count; ++i)
-	{
-		GetVisualChildOrderd(i)->Render();
-	}
-
 	// TODO: Panel とか、描く必要の無いものは特殊あつかいにして、Painter 作らないようにしたい
 	Internal::GUIPainter* painter = GUIHelper::GUIManager_GetGUIPainter(m_manager);
 	painter->ResetState();
@@ -577,6 +570,13 @@ void UIElement::Render()
 	painter->SetOpacity(m_combinedOpacity);
 	painter->SetTone(m_tone);	// TODO: combind
 	OnRender(painter);
+
+	// 子要素
+	int count = GetVisualChildrenCount();
+	for (int i = 0; i < count; ++i)
+	{
+		GetVisualChildOrderd(i)->Render();
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Documents/Paragraph.h"
-#include "UIElement.h"
+#include "UITextElement.h"
 
 namespace Lumino
 {
@@ -11,12 +11,13 @@ LN_NAMESPACE_GUI_BEGIN
 	@brief		
 */
 class TextBlock
-	: public UIElement
+	: public UITextElement
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
 	LN_UI_ELEMENT_SUBCLASS_DECL(TextBlock);
 public:
-	LN_PROPERTY(String,		TextProperty);
+	LN_PROPERTY(String,		TextProperty);				/**< Text プロパティの識別子 */
+
 
 public:
 	static TextBlock* Create(GUIManagerImpl* manager);

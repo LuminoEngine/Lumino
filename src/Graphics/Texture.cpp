@@ -98,7 +98,7 @@ Texture::Texture(GraphicsManager* manager, const Size& size, TextureFormat forma
 	m_format = format;
 
 	// テクスチャを作る
-	RefPtr<Driver::ITexture> obj(GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData()));
+	m_deviceObj = GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData());
 
 	// ビットマップを転送する
 	//Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());

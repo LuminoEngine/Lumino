@@ -416,7 +416,7 @@ void CoreObject::ForEachInheritanceChildrenHierarchical(CoreObject* parent, cons
 }
 
 //-----------------------------------------------------------------------------
-//
+// obj の prop プロパティが継承設定であれば、直近の親から値を持ってきてセットする。
 //-----------------------------------------------------------------------------
 void CoreObject::UpdateInheritanceProperty(CoreObject* obj, const Property* prop)
 {
@@ -447,7 +447,8 @@ void CoreObject::UpdateInheritanceProperty(CoreObject* obj, const Property* prop
 			bool updated = false;
 			if (pathUpdate)
 			{
-				// まず、継承できるプロパティを持つ最も近い親を更新しに行く
+				// まず、継承できるプロパティを持つ最も近い親を更新しに行く。
+				// (親に対してもこの関数、UpdateInheritanceProperty() を呼び出し、値を更新する)
 				if (obj->m_inheritanceParent != NULL)
 				{
 					CoreObject* nearParent = obj->m_inheritanceParent;

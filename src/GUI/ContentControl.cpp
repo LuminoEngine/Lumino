@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/ContentControl.h>
 
 namespace Lumino
@@ -47,6 +48,12 @@ void ContentControl::SetContent(Variant value)
 		}
 		LN_THROW(m_childElement->GetParent() == NULL, InvalidOperationException);	// 既に親要素があった
 	}
+	else if (m_content.GetType() == VariantType_String)
+	{
+		RefPtr<TextBlock> t = TextBlock::internalCreateInstance(m_manager);
+		t->SetText(m_content.GetString());
+		m_childElement = t;
+	}
 
 	//m_content.SetFloat(0);
 
@@ -71,6 +78,7 @@ void ContentControl::PollingTemplateChildCreated(UIElement* newElement)
 	if (presenter != NULL)
 	{
 		m_contentPresenter = presenter;
+		m_contentPresenter->SetOwner(this);
 
 		// m_childElement があればこの時点でセットしてしまう
 		if (m_childElement != NULL &&

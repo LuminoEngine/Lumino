@@ -239,7 +239,7 @@ void Bitmap::ConvertPixelFormat(
 	{
 		const uint32_t* in = (const uint32_t*)input;
 		uint32_t* out = (uint32_t*)output;
-		size_t count = inputSize / sizeof(uint32_t);
+		size_t count = outputSize / sizeof(uint32_t);	// ピクセル数は outputSize を使用しなければ危ない。FontGlyphTextureCache 等ではメモリ確保を抑えるために input 側を多めに確保している。
 		for (size_t i = 0; i < count; ++i) {
 			uint32_t c = in[i];
 			out[i] =

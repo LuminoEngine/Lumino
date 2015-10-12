@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/GUI/ContentControl.h>
 #include <Lumino/GUI/ContentPresenter.h>
 
 namespace Lumino
@@ -25,6 +26,8 @@ ContentPresenterPtr ContentPresenter::Create()
 //-----------------------------------------------------------------------------
 ContentPresenter::ContentPresenter(GUIManagerImpl* manager)
 	: UIElement(manager)
+	, m_owner(NULL)
+	, m_content()
 {
 
 }
@@ -109,14 +112,70 @@ SizeF ContentPresenter::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 SizeF ContentPresenter::ArrangeOverride(const SizeF& finalSize)
 {
-	if (m_content != NULL) {
-		m_content->ArrangeLayout(RectF(0, 0, finalSize));
+	if (m_content != NULL)
+	{
+		RectF childRect;
+		const SizeF& ds = m_content->GetDesiredSize();
+
+		// 水平方向
+		HorizontalAlignment ha = m_owner->GetHorizontalContentAlignment();
+		switch (ha)
+		{
+		case HorizontalAlignment::Left:
+			childRect.X = 0;
+			childRect.Width = ds.Width;
+			break;
+		case HorizontalAlignment::Center:
+			childRect.X = (finalSize.Width - ds.Width) / 2;
+			childRect.Width = ds.Width;
+			break;
+		case HorizontalAlignment::Right:
+			childRect.X = finalSize.Width - ds.Width;
+			childRect.Width = ds.Width;
+			break;
+		case HorizontalAlignment::Stretch:
+			childRect.X = 0;
+			childRect.Width = finalSize.Width;
+			break;
+		}
+		// 垂直方向
+		VerticalAlignment va = m_owner->GetVerticalContentAlignment();
+		switch (va)
+		{
+		case VerticalAlignment::Top:
+			childRect.Y = 0;
+			childRect.Height = ds.Height;
+			break;
+		case VerticalAlignment::Center:
+			childRect.Y = (finalSize.Height - ds.Height) / 2;
+			childRect.Height = ds.Height;
+			break;
+		case VerticalAlignment::Bottom:
+			childRect.Y = finalSize.Height - ds.Height;
+			childRect.Height = ds.Height;
+			break;
+		case VerticalAlignment::Stretch:
+			childRect.Y = 0;
+			childRect.Height = finalSize.Height;
+			break;
+		}
+
+		m_content->ArrangeLayout(childRect);
 	}
 	return finalSize;
 }
 
 
 #endif
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContentPresenter::SetOwner(ContentControl* owner)
+{
+	assert(m_owner == NULL);
+	m_owner = owner;
+}
 
 
 LN_NAMESPACE_GUI_END

@@ -14,7 +14,7 @@
 public: \
 	static const String TypeID; \
 	virtual const String& GetTypeID() const { return TypeID; } \
-private: \
+LN_INTERNAL_ACCESS: \
 	friend class GUIManagerImpl;\
 	friend class GUIHelper;\
 	static className* internalCreateInstance(GUIManagerImpl* manager) \

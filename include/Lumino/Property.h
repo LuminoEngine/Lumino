@@ -374,7 +374,9 @@ public:
 	}
 };
 
-
+// 現状、valueType にスマートポインタを指定してはならない。
+// これは RefPtr のデフォルトコンストラクタは参照カウントをインクリメントしないため。
+// RefPtr を使いたいときはメンバ変数の型を RefPtr にし、valueType にはそのポインタを指定する。
 #define LN_PROPERTY(valueType, propVar) \
 	public:  static const Lumino::Property*	propVar##; \
 	private: static void  set_##propVar(CoreObject* obj, valueType value); \

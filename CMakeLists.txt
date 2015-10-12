@@ -305,6 +305,7 @@ set(LN_SOURCES_GUI
 	include/Lumino/GUI/UIElement.h
 	include/Lumino/GUI/UIElementCollection.h
 	include/Lumino/GUI/UIInjectedInputReceiver.h
+	include/Lumino/GUI/UITextElement.h
 	include/Lumino/GUI/VisualState.h
 	include/Lumino/GUI/VisualTreeHelper.h
 	include/Lumino/GUI/Controls/ButtonBase.h
@@ -346,6 +347,7 @@ set(LN_SOURCES_GUI
 	src/GUI/UIButton.cpp
 	src/GUI/UIElement.cpp
 	src/GUI/UIElementCollection.cpp
+	src/GUI/UITextElement.cpp
 	src/GUI/VisualState.cpp
 	src/GUI/VisualTreeHelper.cpp
 	src/GUI/Controls/ButtonBase.cpp

@@ -103,6 +103,8 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 		m_tmpBitmap->BitBlt(dst, glyphBitmap->GlyphBitmap, src, Color::Red, false);
 
 
+		m_tmpBitmap->Save(_T("test4.png"));
+
 
 		Point pt(
 			(cacheIndex % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width,

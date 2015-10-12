@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
+#include "../Graphics/RendererImpl.h"
 #include "Internal.h"
 #include "MME/MMEShader.h"
 
@@ -17,7 +18,7 @@ class RenderingParams
 {
 public:
 	RenderingPass*				Pass;
-	Renderer*					Renderer;
+	Details::Renderer*			Renderer;	// TODO 内部クラス
 	GeometryRenderer*			GeometryRenderer;
 	Camera*						CurrentCamera;
 	MMEShader*					Shader;				///< 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)

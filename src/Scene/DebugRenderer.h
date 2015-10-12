@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
 #include <Lumino/Physics/IDebugRenderer.h>
 #include <Lumino/Scene/Common.h>
