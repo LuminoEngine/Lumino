@@ -130,11 +130,11 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 
 	// まずは左詰めで計測する
 	FontGlyphLocation* prevInfo = NULL;
-	int planeWidth = 0;
+	//int planeWidth = 0;
 	for (int i = 0; i < length; ++i)
 	{
 		prevInfo = m_font->AdvanceKerning(text[i], prevInfo);
-		planeWidth += prevInfo->BitmapSize.Width;
+		//planeWidth += prevInfo->BitmapSize.Width;
 		outLineSize->Height = std::max(outLineSize->Height, prevInfo->BitmapSize.Height);
 
 		TextLayoutResultItem item;
@@ -142,6 +142,8 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 		item.Location = *prevInfo;
 		m_result->Items.Add(item);
 	}
+
+	int planeWidth = m_result->Items[length - 1].Location.OuterTopLeftPosition.X + m_result->Items[length - 1].Location.BitmapSize.Width;
 
 	// TODO: GUI から呼ばれるときは、UI要素のサイズを図る目的でも使用する。
 	// TextAlignment::Left 固定でいいのか考えておく。

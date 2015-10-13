@@ -165,6 +165,7 @@ void PainterEngine::SetTransform(const Matrix& matrix)
 void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 {
 	m_shader.varViewProjMatrix->SetMatrix(matrix);
+
 }
 
 //-----------------------------------------------------------------------------

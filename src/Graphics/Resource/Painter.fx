@@ -4,8 +4,8 @@
 float4x4	g_worldMatrix;
 float4x4	g_viewProjMatrix;
 
-float2 g_viewportSize;
-static float2 g_pixelStep = (float2(2.0, 2.0) / g_viewportSize);
+float2 g_viewportSize = float2(640, 480);
+static float2 g_pixelStep = (float2(0.5, 0.5) / g_viewportSize);
 
 float4		g_tone;
 texture		g_texture;
@@ -42,14 +42,16 @@ VS_OUTPUT vsBasic(
 	float4 inUVOffset	: TEXCOORD0,
 	float2 inUVTileUnit	: TEXCOORD1)
 {
-	inPos.xy -= 0.5;
+	inPos.x -= 0.5;
+	inPos.y += 0.5;
 	VS_OUTPUT o;
 	o.Pos			= mul(float4(inPos, 1.0f), g_worldMatrix);
 	o.Pos			= mul(o.Pos, g_viewProjMatrix);
-	//o.Pos.xy -= g_pixelStep;
 	o.Color			= inColor;
 	o.UVOffset		= inUVOffset;
 	o.UVTileUnit	= inUVTileUnit;
+	//o.Pos.x -= g_pixelStep.x;
+	//o.Pos.y += g_pixelStep.y;
 	return o;
 }
 
