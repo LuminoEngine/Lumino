@@ -20,7 +20,7 @@ LN_INTERNAL_ACCESS: \
 	friend class GUIHelper;\
 	static className* internalCreateInstance(GUIManagerImpl* manager) \
 	{ \
-		RefPtr<className> obj(LN_NEW className(manager), false); \
+		GCPtr<className> obj = LN_NEW className(manager); \
 		obj->InitializeComponent(); \
 		obj.SafeAddRef(); \
 		return obj; \

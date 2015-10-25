@@ -1467,13 +1467,13 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 	// Button
 	{
-		RefPtr<Style> style = RefPtr<Style>::Create();
+		GCPtr<Style> style = LN_NEW Style();
 		style->SetTargetType(UIButton::GetClassTypeInfo());
 		style->AddSetter(UIButton::BackgroundProperty, m_defaultTheme->GetItem(_T("ButtonNormalBrush")));
 
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
+		GCPtr<ControlTemplate> t = LN_NEW ControlTemplate();
 		t->SetTargetType(_T("Button"));
-		style->AddSetter(Control::TemplateProperty, t);
+		style->AddSetter(Control::TemplateProperty, t.GetObjectPtr());
 
 		GCPtr<UIElementFactory> panel1 = LN_NEW UIElementFactory(this);
 		panel1->SetTypeName(_T("PilePanel"));
@@ -1484,27 +1484,27 @@ void GUIManagerImpl::BuildDefaultTheme()
 			////ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
 			//panel1->AddChild(ef1);
 
-			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this), false);
+			GCPtr<UIElementFactory> rectangle = LN_NEW UIElementFactory(this);
 			rectangle->SetKeyName(_T("Border"));
 			rectangle->SetTypeName(_T("Rectangle"));
 			rectangle->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonMouseOnBrush")));
 			panel1->AddChild(rectangle);
 
-			RefPtr<UIElementFactory> rectangle2(LN_NEW UIElementFactory(this), false);
+			GCPtr<UIElementFactory> rectangle2 = LN_NEW UIElementFactory(this);
 			rectangle2->SetKeyName(_T("PressedBorder"));
 			rectangle2->SetTypeName(_T("Rectangle"));
 			rectangle2->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle2->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonPressedBrush")));
 			panel1->AddChild(rectangle2);
 
-			RefPtr<UIElementFactory> rectangle3(LN_NEW UIElementFactory(this), false);
+			GCPtr<UIElementFactory> rectangle3 = LN_NEW UIElementFactory(this);
 			rectangle3->SetKeyName(_T("DisabledBorder"));
 			rectangle3->SetTypeName(_T("Rectangle"));
 			rectangle3->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle3->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonDisabledBrush")));
 			panel1->AddChild(rectangle3);
 
-			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this), false);
+			GCPtr<UIElementFactory> ef2 = LN_NEW UIElementFactory(this);
 			ef2->SetTypeName(_T("ContentPresenter"));
 			panel1->AddChild(ef2);
 		}
