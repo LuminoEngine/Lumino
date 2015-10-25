@@ -152,7 +152,7 @@ FreeTypeFont::~FreeTypeFont()
 //-----------------------------------------------------------------------------
 Font* FreeTypeFont::Copy() const
 {
-	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager));
+	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager), false);
 	font->SetName(m_fontName);
 	font->SetSize(m_fontSize);
 	font->SetEdgeSize(m_edgeSize);

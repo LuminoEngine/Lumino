@@ -138,7 +138,7 @@ ISwapChain* DX9GraphicsDevice::GetDefaultSwapChain()
 //-----------------------------------------------------------------------------
 IVertexBuffer* DX9GraphicsDevice::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
-	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer());
+	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
 	obj->Create(this, vertexElements, elementsCount, vertexCount, data, usage);
 	AddDeviceResource(obj);		// GC 対象
 	obj.SafeAddRef();
@@ -150,7 +150,7 @@ IVertexBuffer* DX9GraphicsDevice::CreateVertexBuffer(const VertexElement* vertex
 //-----------------------------------------------------------------------------
 IIndexBuffer* DX9GraphicsDevice::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
-	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer());
+	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
 	obj->Create(this, indexCount, initialData, format, usage);
 	AddDeviceResource(obj);		// GC 対象
 	obj.SafeAddRef();
@@ -162,7 +162,7 @@ IIndexBuffer* DX9GraphicsDevice::CreateIndexBuffer(int indexCount, const void* i
 //-----------------------------------------------------------------------------
 ITexture* DX9GraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
-	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels));
+	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels), false);
 	if (initialData != NULL) {
 		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
 	}
@@ -180,7 +180,7 @@ ITexture* DX9GraphicsDevice::CreateTexturePlatformLoading(Stream* stream, uint32
 	buffer.Resize((size_t)stream->GetLength(), false);
 	stream->Read(buffer.GetData(), buffer.GetSize());
 
-	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color::Transparency, mipLevels, format));
+	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color::Transparency, mipLevels, format), false);
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;
@@ -191,7 +191,7 @@ ITexture* DX9GraphicsDevice::CreateTexturePlatformLoading(Stream* stream, uint32
 //-----------------------------------------------------------------------------
 ITexture* DX9GraphicsDevice::CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
-	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, Size(width, height), format, mipLevels));
+	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, Size(width, height), format, mipLevels), false);
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;
@@ -202,7 +202,7 @@ ITexture* DX9GraphicsDevice::CreateRenderTarget(uint32_t width, uint32_t height,
 //-----------------------------------------------------------------------------
 ITexture* DX9GraphicsDevice::CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format)
 {
-	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, Size(width, height), format));
+	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, Size(width, height), format), false);
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;

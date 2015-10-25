@@ -169,13 +169,13 @@ public:
 		int nlIndex = 0, nlCount = 0;
 		while (StringTraits::IndexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
 		{
-			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, nlIndex));
+			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, nlIndex), false);
 			m_lineSegments.Add(line);
 			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
 		}
 		if (pos != end)
 		{
-			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, end - pos));
+			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, end - pos), false);
 			m_lineSegments.Add(line);
 		}
 		m_selectionRenderingInfoModified = true;
@@ -312,7 +312,7 @@ public:
 	}
 
 	// 選択範囲を描画する。ブラシはあらかじめセットしておくこと。
-	void RenderSelection(Painter* painter, const Selection* sel)
+	void RenderSelection(RenderingContext* painter, const Selection* sel)
 	{
 		if (m_selectionRenderingInfoModified)
 		{
@@ -339,7 +339,7 @@ public:
 		}
 	}
 
-	void Render(Painter* painter)
+	void Render(RenderingContext* painter)
 	{
 		Point pt(0, 0);
 		for (auto& seg : m_lineSegments)
@@ -401,7 +401,7 @@ LN_PROPERTY_IMPLEMENT_GETTER_SETTER(TextBox, String, TextProperty, "Text", get_T
 //-----------------------------------------------------------------------------
 TextBox* TextBox::Create(GUIManagerImpl* manager)
 {
-	RefPtr<TextBox> obj(LN_NEW TextBox(manager));
+	RefPtr<TextBox> obj(LN_NEW TextBox(manager), false);
 	obj->InitializeComponent();
 	obj.SafeAddRef();
 	return obj;
@@ -486,7 +486,7 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 		fontData.IsBold = IsFontBold();
 		fontData.IsItalic = IsFontItalic();
 		fontData.IsAntiAlias = IsFontAntiAlias();
-		RefPtr<Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData);
+		RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->GetGraphicsManager()->LookupGlyphTextureCache(fontData), false);
 		m_document->SetFontGlyphTextureCache(cache);
 	}
 	return Control::MeasureOverride(constraint);
@@ -495,7 +495,7 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextBox::OnRender(Painter* painter)
+void TextBox::OnRender(RenderingContext* painter)
 {
 	Control::OnRender(painter);
 	m_document->RenderSelection(painter, m_selection);

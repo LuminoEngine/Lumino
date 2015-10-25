@@ -12,7 +12,7 @@ private: \
 	friend class GUIManagerImpl;\
 	static className* internalCreateInstance(GUIManagerImpl* manager) \
 	{ \
-		auto obj = RefPtr<className>(LN_NEW className(manager)); \
+		RefPtr<className> obj(LN_NEW className(manager), false); \
 		obj.SafeAddRef(); \
 		return obj; \
 	}

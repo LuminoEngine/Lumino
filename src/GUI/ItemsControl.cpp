@@ -273,7 +273,7 @@ void ItemsControl::RefreshHostPanel()
 
 	// アイテムを保持する Panel を作る
 	// TODO: Template に関数ポインタ持つようにしておけば少し早くできる
-	RefPtr<CoreObject> obj(m_manager->CreateObject(m_itemsPanelTemplate->GetTargetType()));
+	RefPtr<CoreObject> obj(m_manager->CreateObject(m_itemsPanelTemplate->GetTargetType()), false);
 	auto panel = dynamic_cast<Panel*>(obj.GetObjectPtr());
 	LN_THROW(panel != NULL, InvalidOperationException);		// Panel のサブクラスでなければならない
 	m_hostPanel = panel;

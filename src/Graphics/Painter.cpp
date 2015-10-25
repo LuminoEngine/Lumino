@@ -128,8 +128,8 @@ void TextureBrush::Create(Texture* texture)
 //-----------------------------------------------------------------------------
 FrameTextureBrushPtr FrameTextureBrush::Create(const TCHAR* filePath)
 {
-	RefPtr<Texture> tex(Texture::Create(filePath));
-	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush());
+	RefPtr<Texture> tex(Texture::Create(filePath), false);
+	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush(), false);
 	ptr->SetTexture(tex);
 	return ptr;
 }
@@ -139,7 +139,7 @@ FrameTextureBrushPtr FrameTextureBrush::Create(const TCHAR* filePath)
 //-----------------------------------------------------------------------------
 FrameTextureBrushPtr FrameTextureBrush::Create(Texture* texture)
 {
-	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush());
+	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush(), false);
 	ptr->SetTexture(texture);
 	return ptr;
 }
@@ -180,7 +180,7 @@ FrameTextureBrush::~FrameTextureBrush()
 //}
 
 //=============================================================================
-// Painter
+// RenderingContext
 //=============================================================================
 
 //=============================================================================
@@ -364,7 +364,7 @@ struct DrawGlyphRunCommand : public RenderingCommand
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Painter::Painter(GraphicsManager* manager)
+RenderingContext::RenderingContext(GraphicsManager* manager)
 	: m_manager(manager)
 	, m_internal(manager->GetPainterEngine())
 	, m_stateModified(true)
@@ -377,7 +377,7 @@ Painter::Painter(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Painter::~Painter()
+RenderingContext::~RenderingContext()
 {
 	//LN_CALL_COMMAND(End, EndCommand);
 }
@@ -386,7 +386,7 @@ Painter::~Painter()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::ResetState()
+void RenderingContext::ResetState()
 {
 	m_currentState.Transform = Matrix::Identity;
 	m_currentState.Brush = NULL;
@@ -398,7 +398,7 @@ void Painter::ResetState()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::Flush()
+void RenderingContext::Flush()
 {
 	LN_CALL_COMMAND(End, EndCommand);
 }
@@ -427,11 +427,11 @@ static void perspective2DLH(Matrix* out_, float width_, float height_, float nea
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetProjection(const Size& viewSize, float nearZ, float farZ)
+void RenderingContext::SetProjection(const Size& viewSize, float nearZ, float farZ)
 {
 	SetProjection(SizeF((float)viewSize.Width, (float)viewSize.Height), nearZ, farZ);
 }
-void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
+void RenderingContext::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
 {
 	Matrix mat;
 	perspective2DLH(&mat, viewSize.Width,  viewSize.Height, nearZ, farZ);
@@ -443,7 +443,7 @@ void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void Painter::PushTransform(const Matrix& matrix)
+//void RenderingContext::PushTransform(const Matrix& matrix)
 //{
 //	m_transformStack.Push(matrix);
 //	LN_CALL_COMMAND(SetTransform, SetTransformCommand, matrix);
@@ -452,7 +452,7 @@ void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void Painter::PopTransform()
+//void RenderingContext::PopTransform()
 //{
 //	LN_CALL_COMMAND(SetTransform, SetTransformCommand, m_transformStack.GetTop());
 //	m_transformStack.Pop();
@@ -461,7 +461,7 @@ void Painter::SetProjection(const SizeF& viewSize, float nearZ, float farZ)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetTransform(const Matrix& matrix)
+void RenderingContext::SetTransform(const Matrix& matrix)
 {
 	m_currentState.Transform = matrix;
 	LN_CALL_COMMAND(SetTransform, SetTransformCommand, matrix);
@@ -470,7 +470,7 @@ void Painter::SetTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetBrush(Brush* brush)
+void RenderingContext::SetBrush(Brush* brush)
 {
 	m_currentState.Brush = brush;
 	m_stateModified = true;
@@ -531,7 +531,7 @@ void Painter::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetSolidColor(const ColorF& color)
+void RenderingContext::SetSolidColor(const ColorF& color)
 {
 	m_internalSolidColorBrush.SetColor(color);
 	m_currentState.Brush = &m_internalSolidColorBrush;
@@ -552,7 +552,7 @@ void Painter::SetSolidColor(const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetTexture(Texture* texture, const Rect& r)
+void RenderingContext::SetTexture(Texture* texture, const Rect& r)
 {
 	m_internalTextureBrush.SetTexture(texture);
 	m_internalTextureBrush.SetSourceRect(r);
@@ -576,7 +576,7 @@ void Painter::SetTexture(Texture* texture, const Rect& r)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetOpacity(float opacity)
+void RenderingContext::SetOpacity(float opacity)
 {
 	//LN_CALL_COMMAND(SetOpacity, SetOpacityCommand, opacity);
 	m_currentState.Opacity = opacity;
@@ -586,7 +586,7 @@ void Painter::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetTone(const ToneF& tone)
+void RenderingContext::SetTone(const ToneF& tone)
 {
 	m_currentState.Tone = tone;
 	m_stateModified = true;
@@ -595,7 +595,7 @@ void Painter::SetTone(const ToneF& tone)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::SetFont(Font* font)
+void RenderingContext::SetFont(Font* font)
 {
 	m_currentState.Font = font;
 	m_stateModified = true;
@@ -604,7 +604,7 @@ void Painter::SetFont(Font* font)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawRectangle(const RectF& rect)
+void RenderingContext::DrawRectangle(const RectF& rect)
 {
 	CheckUpdateState();
 	LN_CALL_COMMAND(DrawRectangle, DrawRectangleCommand, rect);
@@ -613,7 +613,7 @@ void Painter::DrawRectangle(const RectF& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
+void RenderingContext::DrawFrameRectangle(const RectF& rect, float frameWidth)
 {
 	CheckUpdateState();
 	LN_CALL_COMMAND(DrawFrameRectangle, DrawFrameRectangleCommand, rect, frameWidth);
@@ -623,21 +623,21 @@ void Painter::DrawFrameRectangle(const RectF& rect, float frameWidth)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
+void RenderingContext::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
 {
 	DrawGlyphRun(PointF((float)position.X, (float)position.Y), glyphRun);
 }
-void Painter::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
+void RenderingContext::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
 	CheckUpdateState();
-	Painter::DrawGlyphs(position, Helper::GetGlyphData(glyphRun), Helper::GetGlyphTextureCache(glyphRun));
+	RenderingContext::DrawGlyphs(position, Helper::GetGlyphData(glyphRun), Helper::GetGlyphTextureCache(glyphRun));
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawString(const String& str, const PointF& position)
+void RenderingContext::DrawString(const String& str, const PointF& position)
 {
 	DrawString(str.GetCStr(), str.GetLength(), position);
 }
@@ -645,7 +645,7 @@ void Painter::DrawString(const String& str, const PointF& position)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawString(const TCHAR* str, int length, const PointF& position)
+void RenderingContext::DrawString(const TCHAR* str, int length, const PointF& position)
 {
 	length = (length < 0) ? StringTraits::StrLen(str) : length;
 
@@ -653,20 +653,20 @@ void Painter::DrawString(const TCHAR* str, int length, const PointF& position)
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentState.Font));
+	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentState.Font), false);
 
 	// 
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->ResetSettings();
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
 
-	Painter::DrawGlyphs(position, &result, cache);
+	RenderingContext::DrawGlyphs(position, &result, cache);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
+void RenderingContext::DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
 {
 	length = (length < 0) ? StringTraits::StrLen(str) : length;
 
@@ -674,7 +674,7 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
 
 	// 現在のフォント設定に一致するテクスチャキャッシュを探す
-	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentState.Font));
+	RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->LookupGlyphTextureCache(m_currentState.Font), false);
 
 	// 
 	TextLayoutEngine* layout = cache->GetTextLayoutEngine();
@@ -698,13 +698,13 @@ void Painter::DrawString(const TCHAR* str, int length, const RectF& rect, String
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
 
-	Painter::DrawGlyphs(rect.GetTopLeft(), &result, cache);
+	RenderingContext::DrawGlyphs(rect.GetTopLeft(), &result, cache);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
+void RenderingContext::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
 {
 	CheckUpdateState();
 
@@ -739,7 +739,7 @@ void Painter::DrawGlyphs(const PointF& position, const TextLayoutResult* result,
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Painter::CheckUpdateState()
+void RenderingContext::CheckUpdateState()
 {
 	if (m_stateModified)
 	{
@@ -776,7 +776,7 @@ LocalPainter::LocalPainter(const Size& renderTargetSize, GraphicsManager* manage
 //
 //-----------------------------------------------------------------------------
 LocalPainter::LocalPainter(const SizeF& renderTargetSize, GraphicsManager* manager)
-	: Painter((manager != NULL) ? manager : GraphicsManager::Instance)
+	: RenderingContext((manager != NULL) ? manager : GraphicsManager::Instance)
 {
 	LN_CALL_COMMAND(Begin, BeginCommand);
 	SetProjection(renderTargetSize, DefaultDepthMin, DefaultDepthMax);
@@ -803,7 +803,7 @@ LocalPainter::~LocalPainter()
 //}
 
 RenderTargetPainter::RenderTargetPainter(Texture* renderTarget, GraphicsManager* manager)
-	: Painter((manager != NULL) ? manager : GraphicsManager::Instance)
+	: RenderingContext((manager != NULL) ? manager : GraphicsManager::Instance)
 {
 	if (renderTarget == NULL) {
 		renderTarget = m_manager->GetRenderer()->GetRenderTarget(0);

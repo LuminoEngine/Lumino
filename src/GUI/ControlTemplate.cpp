@@ -184,7 +184,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 				if (item.GetType() == VariantType_Object &&
 					dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
 				{
-					RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent));
+					RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent), false);
 					pair.first->AddItem(obj, v);
 				}
 				else {
@@ -207,7 +207,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 			if (item.GetType() == VariantType_Object &&
 				dynamic_cast<UIElementFactory*>(item.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
 			{
-				RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent));
+				RefPtr<CoreObject> v(static_cast<UIElementFactory*>(item.GetObject())->CreateInstance(rootLogicalParent), false);
 				pair.first->AddItem(obj, v);
 			}
 			else {
@@ -248,7 +248,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		//
 		// 子の処理
 		LN_FOREACH(UIElementFactory* c, m_children) {
-			RefPtr<CoreObject> e(c->CreateInstance(rootLogicalParent));
+			RefPtr<CoreObject> e(c->CreateInstance(rootLogicalParent), false);
 			element->AddChild(e);
 		}
 		
@@ -304,7 +304,7 @@ void ControlTemplate::Apply(Control* control)
 		// 最後にプロパティの設定や孫要素の作成を行う
 		m_visualTreeRoot->BuildInstance(m_visualTreeRoot, control);
 #else
-		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance(control));
+		RefPtr<CoreObject> obj(m_visualTreeRoot->CreateInstance(control), false);
 		UIElement* element = dynamic_cast<UIElement*>(obj.GetObjectPtr());
 		if (element != NULL)
 		{
@@ -559,7 +559,7 @@ void Style::Apply(UIElement* element)
 			dynamic_cast<UIElementFactory*>(value.GetObject()) != NULL)	// TODO: dynamic_cast じゃなくて TypeInfo 使えば少し速くなるかも？
 		{
 			// InitializeComponent() も呼ばれる
-			RefPtr<CoreObject> v(static_cast<UIElementFactory*>(value.GetObject())->CreateInstance(NULL));
+			RefPtr<CoreObject> v(static_cast<UIElementFactory*>(value.GetObject())->CreateInstance(NULL), false);
 			element->SetPropertyValue(prop, v);
 		}
 		else {

@@ -33,7 +33,7 @@ LN_ROUTED_EVENT_IMPLEMENT(Thumb, DragEventArgs, DragCanceledEvent, "DragCanceled
 //-----------------------------------------------------------------------------
 ThumbPtr Thumb::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ThumbPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ void Thumb::CancelDrag()
 		// ドラッグキャンセルイベント
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			m_lastScreenPosition.X,
-			m_lastScreenPosition.Y));
+			m_lastScreenPosition.Y), false);
 		OnDragDelta(args);
 	}
 }
@@ -84,7 +84,7 @@ void Thumb::Handler_MouseMove(MouseEventArgs* e)
 		// ドラッグ中イベント
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
-			e->Y - m_lastScreenPosition.Y));
+			e->Y - m_lastScreenPosition.Y), false);
 		OnDragDelta(args);
 
 		e->Handled = true;
@@ -106,7 +106,7 @@ void Thumb::Handler_MouseDown(MouseEventArgs* e)
 		// ドラッグ開始イベント
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
-			e->Y - m_lastScreenPosition.Y));
+			e->Y - m_lastScreenPosition.Y), false);
 		OnDragStarted(args);
 
 		e->Handled = true;
@@ -127,7 +127,7 @@ void Thumb::Handler_MouseUp(MouseEventArgs* e)
 		// ドラッグ終了イベント
 		RefPtr<DragEventArgs> args(m_manager->GetEventArgsPool()->Create<DragEventArgs>(
 			e->X - m_lastScreenPosition.X,
-			e->Y - m_lastScreenPosition.Y));
+			e->Y - m_lastScreenPosition.Y), false);
 		OnDragCompleted(args);
 
 		e->Handled = true;
@@ -146,7 +146,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ThumbChrome);
 //-----------------------------------------------------------------------------
 ThumbChromePtr ThumbChrome::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ThumbChromePtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -176,7 +176,7 @@ void ThumbChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ThumbChrome::OnRender(Painter* painter)
+void ThumbChrome::OnRender(RenderingContext* painter)
 {
 	RectF rect = m_finalLocalRect;
 

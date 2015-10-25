@@ -37,7 +37,7 @@ Shader* Shader::Create(const char* code, int length)
 
 	ShaderCompileResult result;
 	RefPtr<Driver::IShader> deviceObj(
-		GraphicsManager::Instance->GetGraphicsDevice()->CreateShader(code, length, &result));
+		GraphicsManager::Instance->GetGraphicsDevice()->CreateShader(code, length, &result), false);
 
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
 	return LN_NEW Shader(GraphicsManager::Instance, deviceObj, ByteBuffer(code, length));
@@ -51,7 +51,7 @@ Shader* Shader::Create(GraphicsManager* manager, const void* textData, size_t by
 	LN_THROW(manager != NULL, ArgumentException);
 	ShaderCompileResult result;
 	RefPtr<Driver::IShader> deviceObj(
-		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, &result));
+		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, &result), false);
 	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
 	return LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
 }
@@ -66,7 +66,7 @@ bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t by
 
 	*outShader = NULL;
 	RefPtr<Driver::IShader> deviceObj(
-		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, outResult));
+		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, outResult), false);
 	if (deviceObj.IsNull()) {
 		return false;
 	}

@@ -18,7 +18,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ContentControl);
 //-----------------------------------------------------------------------------
 ContentControl::ContentControl(GUIManagerImpl* manager)
 	: Control(manager)
-	, m_childElement(NULL)
+	, m_childElement()
 	, m_contentPresenter(NULL)
 {
 
@@ -50,7 +50,7 @@ void ContentControl::SetContent(Variant value)
 	}
 	else if (m_content.GetType() == VariantType_String)
 	{
-		RefPtr<TextBlock> t = TextBlock::internalCreateInstance(m_manager);
+		RefPtr<TextBlock> t(TextBlock::internalCreateInstance(m_manager), false);
 		t->SetText(m_content.GetString());
 		m_childElement = t;
 	}

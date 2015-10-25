@@ -1397,11 +1397,11 @@ void GUIManagerImpl::BuildDefaultTheme()
 		RefPtr<Style> style = RefPtr<Style>::Create();
 		style->SetTargetType(RootFrame::GetClassTypeInfo());
 
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
 		t->SetTargetType(_T("RootFrame"));
 		style->AddSetter(Control::TemplateProperty, t);
 
-		RefPtr<UIElementFactory> presenter1(LN_NEW UIElementFactory(this));
+		RefPtr<UIElementFactory> presenter1(LN_NEW UIElementFactory(this), false);
 		presenter1->SetTypeName(_T("ContentPresenter"));
 		t->SetVisualTreeRoot(presenter1);
 
@@ -1410,7 +1410,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 	// Brush (ボタン枠と内側領域)
 	{
-		RefPtr<FrameTextureBrush> obj(LN_NEW FrameTextureBrush());	//TODO:
+		RefPtr<FrameTextureBrush> obj(LN_NEW FrameTextureBrush(), false);	//TODO:
 		//obj->Create(m_defaultSkinTexture);
 		obj->SetTexture(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 0, 32, 32));
@@ -1418,19 +1418,19 @@ void GUIManagerImpl::BuildDefaultTheme()
 		m_defaultTheme->AddItem(_T("ButtonNormalBrush"), obj);
 
 
-		RefPtr<FrameTextureBrush> brush2(LN_NEW FrameTextureBrush());	//TODO:
+		RefPtr<FrameTextureBrush> brush2(LN_NEW FrameTextureBrush(), false);	//TODO:
 		brush2->SetTexture(m_defaultSkinTexture);
 		brush2->SetSourceRect(Rect(32, 0, 32, 32));
 		brush2->SetInnerAreaSourceRect(Rect(32 + 8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonMouseOnBrush"), brush2);
 
-		RefPtr<FrameTextureBrush> brush3(LN_NEW FrameTextureBrush());	//TODO:
+		RefPtr<FrameTextureBrush> brush3(LN_NEW FrameTextureBrush(), false);	//TODO:
 		brush3->SetTexture(m_defaultSkinTexture);
 		brush3->SetSourceRect(Rect(64, 0, 32, 32));
 		brush3->SetInnerAreaSourceRect(Rect(64 + 8, 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ButtonPressedBrush"), brush3);
 
-		RefPtr<FrameTextureBrush> brush4(LN_NEW FrameTextureBrush());	//TODO:
+		RefPtr<FrameTextureBrush> brush4(LN_NEW FrameTextureBrush(), false);	//TODO:
 		brush4->SetTexture(m_defaultSkinTexture);
 		brush4->SetSourceRect(Rect(96, 0, 32, 32));
 		brush4->SetInnerAreaSourceRect(Rect(96 + 8, 8, 16, 16));
@@ -1452,14 +1452,14 @@ void GUIManagerImpl::BuildDefaultTheme()
 	//}
 	// Brush (ListBox 枠)
 	{
-		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);	//TODO:
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 32, 32, 32));
 		m_defaultTheme->AddItem(_T("ListBoxNormalFrameBrush"), obj);
 	}
 	// Brush (ListBox 背景)
 	{
-		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());	//TODO:
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);	//TODO:
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 32 + 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ListBoxNormalBackgroundBrush"), obj);
@@ -1471,7 +1471,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 		style->SetTargetType(UIButton::GetClassTypeInfo());
 		style->AddSetter(UIButton::BackgroundProperty, m_defaultTheme->GetItem(_T("ButtonNormalBrush")));
 
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
 		t->SetTargetType(_T("Button"));
 		style->AddSetter(Control::TemplateProperty, t);
 
@@ -1484,27 +1484,27 @@ void GUIManagerImpl::BuildDefaultTheme()
 			////ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
 			//panel1->AddChild(ef1);
 
-			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this), false);
 			rectangle->SetKeyName(_T("Border"));
 			rectangle->SetTypeName(_T("Rectangle"));
 			rectangle->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonMouseOnBrush")));
 			panel1->AddChild(rectangle);
 
-			RefPtr<UIElementFactory> rectangle2(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> rectangle2(LN_NEW UIElementFactory(this), false);
 			rectangle2->SetKeyName(_T("PressedBorder"));
 			rectangle2->SetTypeName(_T("Rectangle"));
 			rectangle2->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle2->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonPressedBrush")));
 			panel1->AddChild(rectangle2);
 
-			RefPtr<UIElementFactory> rectangle3(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> rectangle3(LN_NEW UIElementFactory(this), false);
 			rectangle3->SetKeyName(_T("DisabledBorder"));
 			rectangle3->SetTypeName(_T("Rectangle"));
 			rectangle3->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle3->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonDisabledBrush")));
 			panel1->AddChild(rectangle3);
 
-			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this), false);
 			ef2->SetTypeName(_T("ContentPresenter"));
 			panel1->AddChild(ef2);
 		}
@@ -1525,14 +1525,14 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 		//VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
 		// Normal
-		RefPtr<FloatEasing> easing1(LN_NEW FloatEasing());
+		RefPtr<FloatEasing> easing1(LN_NEW FloatEasing(), false);
 		easing1->SetTargetName(_T("Border"));
 		easing1->SetTargetProperty(UIElement::OpacityProperty->GetName());
 		easing1->SetTargetValue(0.0f);
 		easing1->SetEasingMode(Animation::EasingMode::EaseOutExpo);
 		easing1->SetDuration(1.0f);
 		// MouseOver
-		RefPtr<FloatEasing> easing2(LN_NEW FloatEasing());
+		RefPtr<FloatEasing> easing2(LN_NEW FloatEasing(), false);
 		easing2->SetTargetName(_T("Border"));
 		easing2->SetTargetProperty(UIElement::OpacityProperty->GetName());
 		easing2->SetTargetValue(1.0f);
@@ -1544,36 +1544,36 @@ void GUIManagerImpl::BuildDefaultTheme()
 		//RefPtr<FloatEasing> buttonDisabledEasingIn(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 1.0f, 0.25f, Animation::EasingMode::EaseOutExpo), false);
 		RefPtr<FloatEasing> buttonDisabledEasingOut(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo), false);
 
-		RefPtr<ToneAnimation> buttonDisabledEasingIn(ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo), false);
+		//RefPtr<ToneAnimation> buttonDisabledEasingIn(ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo), false);
+		GCPtr<ToneAnimation> buttonDisabledEasingIn = ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo);
 
-
-		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")));
+		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")), false);
 		{
-			VisualStatePtr vstate1(LN_NEW VisualState(this, _T("Normal")));
+			VisualStatePtr vstate1(LN_NEW VisualState(this, _T("Normal")), false);
 			vstate1->GetEnteringStoryboard()->AddTimeline(easing1);
 			vstate1->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingOut);
 			vstate1->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstate1);
 
-			VisualStatePtr vstate2(LN_NEW VisualState(this, _T("MouseOver")));
+			VisualStatePtr vstate2(LN_NEW VisualState(this, _T("MouseOver")), false);
 			vstate2->GetEnteringStoryboard()->AddTimeline(easing2);
 			vstate2->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingOut);
 			vstate2->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstate2);
 
-			VisualStatePtr vstatePressed(LN_NEW VisualState(this, _T("Pressed")));
+			VisualStatePtr vstatePressed(LN_NEW VisualState(this, _T("Pressed")), false);
 			vstatePressed->GetEnteringStoryboard()->AddTimeline(easing1);
 			vstatePressed->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingIn);
 			vstatePressed->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingOut);
 			vgroup1->AddState(vstatePressed);
 
-			VisualStatePtr vstateDisabled(LN_NEW VisualState(this, _T("Disabled")));
+			VisualStatePtr vstateDisabled(LN_NEW VisualState(this, _T("Disabled")), false);
 			vstateDisabled->GetEnteringStoryboard()->AddTimeline(easing1);
 			vstateDisabled->GetEnteringStoryboard()->AddTimeline(buttonPressedEasingOut);
 			vstateDisabled->GetEnteringStoryboard()->AddTimeline(buttonDisabledEasingIn);
 			vgroup1->AddState(vstateDisabled);
 		}
-		RefPtr<VisualStateGroupList> groups1(LN_NEW VisualStateGroupList());
+		RefPtr<VisualStateGroupList> groups1(LN_NEW VisualStateGroupList(), false);
 		groups1->Add(vgroup1);
 		style->AddSetter(Control::VisualStateGroupsProperty, groups1);
 
@@ -1584,14 +1584,14 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 	// Thumb (枠 Brush)
 	{
-		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(0, 64, 32, 32));
 		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundFrameBrush"), obj);
 	}
 	// Thumb (枠背景 Brush)
 	{
-		RefPtr<TextureBrush> obj(LN_NEW TextureBrush());
+		RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);
 		obj->Create(m_defaultSkinTexture);
 		obj->SetSourceRect(Rect(8, 64 + 8, 16, 16));
 		m_defaultTheme->AddItem(_T("ThumbChromeBackgroundInnerBrush"), obj);
@@ -1601,11 +1601,11 @@ void GUIManagerImpl::BuildDefaultTheme()
 		RefPtr<Style> style = RefPtr<Style>::Create();
 		style->SetTargetType(Thumb::GetClassTypeInfo());
 
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
 		t->SetTargetType(_T("Thumb"));
 		style->AddSetter(Control::TemplateProperty, t);
 
-		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
+		RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this), false);
 		ef1->SetTypeName(_T("ThumbChrome"));
 		//ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, Button::IsMouseOverProperty);
 		t->SetVisualTreeRoot(ef1);
@@ -1618,19 +1618,19 @@ void GUIManagerImpl::BuildDefaultTheme()
 		RefPtr<Style> style = RefPtr<Style>::Create();
 		style->SetTargetType(Track::GetClassTypeInfo());
 
-		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate());
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
 		t->SetTargetType(_T("Track"));
 		style->AddSetter(Control::TemplateProperty, t);
 
-		RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this));
+		RefPtr<UIElementFactory> button1(LN_NEW UIElementFactory(this), false);
 		button1->SetTypeName(_T("Button"));
 		style->AddSetter(Track::DecreaseButtonProperty, button1);
 
-		RefPtr<UIElementFactory> thumb1(LN_NEW UIElementFactory(this));
+		RefPtr<UIElementFactory> thumb1(LN_NEW UIElementFactory(this), false);
 		thumb1->SetTypeName(_T("Thumb"));
 		style->AddSetter(Track::ThumbProperty, thumb1);
 
-		RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this));
+		RefPtr<UIElementFactory> button2(LN_NEW UIElementFactory(this), false);
 		button2->SetTypeName(_T("Button"));
 		style->AddSetter(Track::IncreaseButtonProperty, button2);
 
@@ -1640,27 +1640,27 @@ void GUIManagerImpl::BuildDefaultTheme()
 	// ScrollBar
 	{
 		// H ScrollBar
-		RefPtr<ControlTemplate> scrollBarTemplateH(LN_NEW ControlTemplate());
+		RefPtr<ControlTemplate> scrollBarTemplateH(LN_NEW ControlTemplate(), false);
 		scrollBarTemplateH->SetTargetType(_T("ScrollBar"));
 		{
-			RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this), false);
 			grid1->SetTypeName(_T("Grid"));
 			scrollBarTemplateH->SetVisualTreeRoot(grid1);
 
 			auto columns = RefPtr<UIElementFactorylist>::Create();
 			grid1->SetPropertyValue(Grid::ColumnDefinitionsProperty, columns);
 
-			RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> col1(LN_NEW UIElementFactory(this), false);
 			col1->SetTypeName(_T("ColumnDefinition"));
 			col1->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
 			columns->Add(col1);
 
-			RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> col2(LN_NEW UIElementFactory(this), false);
 			col2->SetTypeName(_T("ColumnDefinition"));
 			col2->SetPropertyValue(ColumnDefinition::WidthProperty, ColumnDefinition::Star);
 			columns->Add(col2);
 
-			RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> col3(LN_NEW UIElementFactory(this), false);
 			col3->SetTypeName(_T("ColumnDefinition"));
 			col3->SetPropertyValue(ColumnDefinition::WidthProperty, 16.0f);
 			columns->Add(col3);
@@ -1669,7 +1669,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 			//button1->SetTypeName(_T("Button"));
 			//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
 
-			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this), false);
 			track->SetTypeName(_T("Track"));
 			track->SetKeyName(ScrollBar::PART_TrackKeyName);
 			track->SetPropertyValue(Track::OrientationProperty, Orientation::Horizontal);
@@ -1682,27 +1682,27 @@ void GUIManagerImpl::BuildDefaultTheme()
 		}
 
 		// V ScrollBar
-		RefPtr<ControlTemplate> scrollBarTemplateV(LN_NEW ControlTemplate());
+		RefPtr<ControlTemplate> scrollBarTemplateV(LN_NEW ControlTemplate(), false);
 		scrollBarTemplateV->SetTargetType(_T("ScrollBar"));
 		{
-			RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> grid1(LN_NEW UIElementFactory(this), false);
 			grid1->SetTypeName(_T("Grid"));
 			scrollBarTemplateV->SetVisualTreeRoot(grid1);
 
 			auto columns = RefPtr<UIElementFactorylist>::Create();
 			grid1->SetPropertyValue(Grid::RowDefinitionsProperty, columns);
 
-			RefPtr<UIElementFactory> row1(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> row1(LN_NEW UIElementFactory(this), false);
 			row1->SetTypeName(_T("RowDefinition"));
 			row1->SetPropertyValue(RowDefinition::HeightProperty, 16.0f);
 			columns->Add(row1);
 
-			RefPtr<UIElementFactory> row2(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> row2(LN_NEW UIElementFactory(this), false);
 			row2->SetTypeName(_T("RowDefinition"));
 			row2->SetPropertyValue(RowDefinition::HeightProperty, RowDefinition::Star);
 			columns->Add(row2);
 
-			RefPtr<UIElementFactory> row3(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> row3(LN_NEW UIElementFactory(this), false);
 			row3->SetTypeName(_T("RowDefinition"));
 			row3->SetPropertyValue(RowDefinition::HeightProperty, 16.0f);
 			columns->Add(row3);
@@ -1711,7 +1711,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 			//button1->SetTypeName(_T("Button"));
 			//t->SetPropertyValue(Track::DecreaseButtonProperty, button1);
 
-			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this));
+			RefPtr<UIElementFactory> track(LN_NEW UIElementFactory(this), false);
 			track->SetTypeName(_T("Track"));
 			track->SetKeyName(ScrollBar::PART_TrackKeyName);
 			track->SetPropertyValue(Track::OrientationProperty, Orientation::Vertical);
@@ -1878,7 +1878,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 		controlTemplate->SetTargetType(_T("GroupItem"));	// TODO: TypeInfoにしたい
 		style->AddSetter(Control::TemplateProperty, controlTemplate);
 
-		RefPtr<UIElementFactory> staclPanel(LN_NEW UIElementFactory(this));
+		RefPtr<UIElementFactory> staclPanel(LN_NEW UIElementFactory(this), false);
 		staclPanel->SetTypeName(_T("StackPanel"));
 		controlTemplate->SetVisualTreeRoot(staclPanel);
 

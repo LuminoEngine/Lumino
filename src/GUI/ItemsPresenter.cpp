@@ -17,7 +17,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ItemsPresenter);
 //-----------------------------------------------------------------------------
 ItemsPresenterPtr ItemsPresenter::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ItemsPresenterPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------

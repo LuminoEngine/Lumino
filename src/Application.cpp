@@ -82,7 +82,7 @@ const TCHAR* ApplicationImpl::LogFileName = _T("lnlog.txt");
 //-----------------------------------------------------------------------------
 ApplicationImpl* ApplicationImpl::Create(const ApplicationSettings& configData)
 {
-	RefPtr<ApplicationImpl> app(LN_NEW ApplicationImpl(configData));
+	RefPtr<ApplicationImpl> app(LN_NEW ApplicationImpl(configData), false);
 	//app->Initialize();
 	app.SafeAddRef();
 	return app;

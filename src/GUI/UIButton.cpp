@@ -64,7 +64,7 @@ void UIButton::OnClick()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIButton::OnRender(Painter* painter)
+void UIButton::OnRender(RenderingContext* painter)
 {
 	ContentControl::OnRender(painter);
 }

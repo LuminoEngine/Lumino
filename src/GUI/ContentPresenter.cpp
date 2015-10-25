@@ -18,7 +18,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ContentPresenter);
 //-----------------------------------------------------------------------------
 ContentPresenterPtr ContentPresenter::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ContentPresenterPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------

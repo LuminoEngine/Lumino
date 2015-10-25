@@ -26,7 +26,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Sound, CoreObject);
 Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
 {
 	manager = (manager) ? manager : Internal::AudioManager;
-	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true));
+	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
 
 	//RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
 	return manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync);

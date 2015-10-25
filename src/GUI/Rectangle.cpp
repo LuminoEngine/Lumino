@@ -63,7 +63,7 @@ Rectangle::~Rectangle()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Rectangle::OnRender(Painter* painter)
+void Rectangle::OnRender(RenderingContext* painter)
 {
 	if (m_fillBrush != NULL)
 	{

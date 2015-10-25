@@ -16,7 +16,7 @@ class GUIHelper	// TODO: Internal
 {
 public:
 	template<class T, typename... TArgs>
-	static RefPtr<T> CreateUIElemenInstance(TArgs... args) { return RefPtr<T>(T::internalCreateInstance(args...)); }
+	static RefPtr<T> CreateUIElemenInstance(TArgs... args) { return RefPtr<T>(T::internalCreateInstance(args...), false); }
 
 	static Internal::GUIPainter* GUIManager_GetGUIPainter(GUIManagerImpl* manager) { return manager->m_painter; }
 

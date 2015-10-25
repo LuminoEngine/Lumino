@@ -27,7 +27,7 @@ LN_PROPERTY_IMPLEMENT(ColumnDefinition, float, MaxWidthProperty, "MaxWidth", m_m
 //-----------------------------------------------------------------------------
 ColumnDefinitionPtr ColumnDefinition::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ColumnDefinitionPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ LN_PROPERTY_IMPLEMENT(RowDefinition, float, MaxHeightProperty, "MaxHeight", m_ma
 //-----------------------------------------------------------------------------
 RowDefinitionPtr RowDefinition::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return RowDefinitionPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
 //-----------------------------------------------------------------------------
 GridPtr Grid::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return GridPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -352,12 +352,12 @@ int		Grid::GetRowSpan(UIElement* element)				{ LN_GET_ATTACHED_PROPERTY(element,
 //-----------------------------------------------------------------------------
 void Grid::AddColumnDefinition(float width, float minWidth, float maxWidth)
 {
-	RefPtr<ColumnDefinition> col(LN_NEW ColumnDefinition(m_manager));
+	RefPtr<ColumnDefinition> col(LN_NEW ColumnDefinition(m_manager), false);
 	m_columnDefinitionList->Add(col);
 }
 void Grid::AddRowDefinition(float height, float minHeight, float maxHeight)
 {
-	RefPtr<RowDefinition> row(LN_NEW RowDefinition(m_manager));
+	RefPtr<RowDefinition> row(LN_NEW RowDefinition(m_manager), false);
 	m_rowDefinitionList->Add(row);
 }
 

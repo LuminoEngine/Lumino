@@ -14,7 +14,7 @@ namespace Documents
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RenderTargetDocumentsRenderer::RenderTargetDocumentsRenderer(Painter* painter)
+RenderTargetDocumentsRenderer::RenderTargetDocumentsRenderer(RenderingContext* painter)
 	: m_painter(painter)
 {
 }

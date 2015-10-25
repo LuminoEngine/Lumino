@@ -70,7 +70,7 @@ public:
 protected:
 	UITextElement(GUIManagerImpl* manager);
 	virtual ~UITextElement();
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 
 private:
 	void OnTextPropertyChanged(PropertyChangedEventArgs* e);

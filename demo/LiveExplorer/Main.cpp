@@ -52,6 +52,10 @@ int main()
 
 		//s->Stop();
 
+		
+
+
+#if 1
 		GCPtr<GUIContext> context1 = GUIContext::Create();
 		context1->InjectViewportSizeChanged(640, 480);
 
@@ -73,7 +77,7 @@ int main()
 		button2->SetSize(SizeF(100, 200));
 
 		button1->SetEnabled(false);
-
+#endif
 
 
 
@@ -81,6 +85,8 @@ int main()
 		while (Application::UpdateFrame())
 		{
 		}
+
+		//AutoReleasePool::GetCurrent()->Clear();
 
 		//s->Stop();
 		//s.SafeRelease();

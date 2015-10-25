@@ -347,7 +347,7 @@ void Storyboard::AddTimeline(AnimationTimeline* timeline)
 void Storyboard::Begin(UIElement* target)
 {
 	// TODO: AnimationClock は頻繁に作成されるのでキャッシュしたい
-	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(target->GetContext(), this, target, &m_animationTimelineList));
+	RefPtr<AnimationClock> clock(LN_NEW AnimationClock(target->GetContext(), this, target, &m_animationTimelineList), false);
 
 	// TODO: Manager にも登録してアニメしてもらう
 	GUIHelper::UIElement_GetAnimationClockList(target)->Add(clock);

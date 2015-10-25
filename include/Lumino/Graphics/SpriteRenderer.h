@@ -53,7 +53,7 @@ public:
 		@param[in]	basis		: ソートの基準
 		@details	この設定は次の Flash で使用します。
 	*/
-	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);	// TODO: enum flags
+	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
 	
 	/**
 		@brief		スプライトの描画を要求します。

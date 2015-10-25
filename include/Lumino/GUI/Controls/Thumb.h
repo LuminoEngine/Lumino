@@ -109,7 +109,7 @@ protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
 	//virtual Size MeasureOverride(Size availableSize);	// 必要ないかも
 	//virtual Size ArrangeOverride(Size finalSize);		// 必要ないかも
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 
 private:
 	RefPtr<TextureBrush>	m_bgFrameBrush;

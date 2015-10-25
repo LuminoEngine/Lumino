@@ -26,7 +26,7 @@ public:
 	/**
 		@brief		追加されているオブジェクトの Release() を呼び出し、プールをクリアします。
 	*/
-	void Clear(RefObject* obj);
+	void Clear();
 
 private:
 	AutoReleasePool();

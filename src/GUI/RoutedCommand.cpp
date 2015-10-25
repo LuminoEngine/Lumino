@@ -49,7 +49,7 @@ bool CommandManager::CanExecute(UIElement* caller, Command* command, const Varia
 	{
 		// RoutedEvent として、実行できるコマンドを探す。
 		// UIElement::Handler_CanExecuteRoutedCommandEventArgs() が呼ばれて、その中でその UIElement が持っているコマンドを探す。
-		RefPtr<CanExecuteRoutedCommandEventArgs> args(caller->GetManager()->GetEventArgsPool()->Create<CanExecuteRoutedCommandEventArgs>(parameter));
+		RefPtr<CanExecuteRoutedCommandEventArgs> args(caller->GetManager()->GetEventArgsPool()->Create<CanExecuteRoutedCommandEventArgs>(parameter), false);
 		caller->RaiseEvent(UIElement::CanExecuteRoutedCommandEvent, caller, args);
 		return args->CanExecute;
 	}
@@ -69,7 +69,7 @@ void CommandManager::Execute(UIElement* caller, Command* command, const Variant&
 	{
 		// RoutedEvent として、実行できるコマンドを探す。
 		// UIElement::Handler_ExecuteRoutedCommandEventArgs() が呼ばれて、その中でその UIElement が持っているコマンドを探す。
-		RefPtr<ExecuteRoutedCommandEventArgs> args(caller->GetManager()->GetEventArgsPool()->Create<ExecuteRoutedCommandEventArgs>(parameter));
+		RefPtr<ExecuteRoutedCommandEventArgs> args(caller->GetManager()->GetEventArgsPool()->Create<ExecuteRoutedCommandEventArgs>(parameter), false);
 		caller->RaiseEvent(UIElement::ExecuteRoutedCommandEvent, caller, args);
 	}
 	else {

@@ -137,7 +137,7 @@ Win32WindowBase* Win32WindowManager::CreateNativeWindow(const NativeWindowCreati
 		::ValidateRect(hWnd, 0);
 
 		// Win32Window 作成
-		RefPtr<Win32Window> window(LN_NEW Win32Window(this, hWnd, dwStyle, hAccel, data.TitleText));
+		RefPtr<Win32Window> window(LN_NEW Win32Window(this, hWnd, dwStyle, hAccel, data.TitleText), false);
 
 		// ウィンドウハンドルと Win32Window のポインタを関連付ける
 		BOOL r = ::SetProp(hWnd, PROP_WINPROC, window);

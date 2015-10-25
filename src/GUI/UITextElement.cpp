@@ -39,7 +39,7 @@ UITextElement::~UITextElement()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UITextElement::OnRender(Painter* painter)
+void UITextElement::OnRender(RenderingContext* painter)
 {
 	// 背景を先に描く
 	if (m_background != NULL) {

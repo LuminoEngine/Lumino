@@ -76,7 +76,7 @@ void GameAudio::PlayBGM(const TCHAR* filePath, float volume, float pitch, double
 	//	}
 	//}
 
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
 	//mManager->createSound( filePath, SOUNDPLAYTYPE_STREAMING, false ) );
 
 	PlayBGMFromSound(sound, volume, pitch, fadeTime);
@@ -208,7 +208,7 @@ void GameAudio::PlayBGS( const TCHAR* filePath, float volume, float pitch, doubl
 	//	}
 	//}
 
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
 
 	PlayBGSFromSound( sound, volume, pitch, fadeTime );
 		
@@ -304,7 +304,7 @@ void GameAudio::StopBGS( double fadeTime )
 //-----------------------------------------------------------------------------
 void GameAudio::PlayME( const TCHAR* filePath, float volume, float pitch )
 {	   
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
 	PlayMEFromSound( sound, volume, pitch );
 }
 
@@ -391,7 +391,7 @@ void GameAudio::StopME()
 //-----------------------------------------------------------------------------
 void GameAudio::PlaySE( const TCHAR* filePath, float volume, float pitch )
 {
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 
 	// ボリューム・ピッチ設定
@@ -413,7 +413,7 @@ void GameAudio::PlaySE( const TCHAR* filePath, float volume, float pitch )
 void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch )
 {
 	// サウンド作成
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager));
+	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(true);
 
@@ -438,7 +438,7 @@ void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float 
 void GameAudio::PlaySEFromSound( Sound* srcSound, float volume, float pitch )
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
-	RefPtr<Sound> sound(AudioHelper::CreateSound(mManager, AudioHelper::GetAudioStream(srcSound)));
+	RefPtr<Sound> sound(AudioHelper::CreateSound(mManager, AudioHelper::GetAudioStream(srcSound)), false);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(srcSound->Is3DEnabled());
 

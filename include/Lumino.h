@@ -55,6 +55,7 @@
 #include "Lumino/GUI/TextBlock.h"
 #include "Lumino/GUI/TextBox.h"
 
+#include "Lumino/AutoReleasePool.h"
 #include "Lumino/Application.h"
 #include "Lumino/Profiler.h"
 

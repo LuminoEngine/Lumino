@@ -193,6 +193,14 @@ struct PainterEngineState
 };
 
 
+// Begin～Endをネストするため
+struct PainterEngineSection
+{
+public:
+	PainterEngineState	CurrentState;
+
+};
+
 /// PainterEngine
 ///		このクラスは Brush を参照しないようにすること。
 class PainterEngine
@@ -215,8 +223,9 @@ public:
 	void CreateInternal();
 
 
-	void Begin();	// 今のところネスト禁止
+	void Begin();
 	void End();
+	void Flush();
 
 
 	void SetTransform(const Matrix& matrix);
@@ -230,12 +239,6 @@ public:
 
 	void DrawRectangle(const RectF& rect);
 
-	void Flush();
-
-
-
-
-	//void DrawFillRectangle(const RectF& rect, Driver::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode);
 
 	// srcTexture は NULL ならダミーテクスチャが使われる
 	/// srcRect はサイズが INT_MAX であれば全体を転送することを示す
@@ -245,6 +248,7 @@ public:
 	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
 
 private:
+	PainterEngineState& GetCurrentState() { return m_sectionStack.GetTop().CurrentState; }
 	void InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect);
 	void InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Driver::ITexture* srcTexture);
 
@@ -253,6 +257,7 @@ private:
 
 	void SetInternalGlyphMaskTexture(Driver::ITexture* mask);
 	void UpdateCurrentForeColor();
+
 
 private:
 	struct PainterVertex
@@ -288,7 +293,8 @@ private:
 	RefPtr<Driver::ITexture>		m_dummyTexture;
 	Matrix							m_baseTransform;
 
-	PainterEngineState				m_currentState;
+	Stack<PainterEngineSection>		m_sectionStack;
+
 	RefPtr<Driver::ITexture>		m_currentInternalGlyphMask;	// 文字描画時に使うグリフの形状をマスクするためのテクスチャ
 
 	struct

@@ -58,7 +58,7 @@ public:
 protected:
 	Rectangle(GUIManagerImpl* manager);
 	virtual ~Rectangle();
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 
 public:
 };

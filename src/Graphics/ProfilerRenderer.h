@@ -28,8 +28,8 @@ public:
 	void Render(const Vector2& viewSize);
 
 private:
-	void DrawGroupList(Painter& painter, const RectF& listRect);
-	void DrawSectionGraphBar(Painter& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect);
+	void DrawGroupList(RenderingContext& painter, const RectF& listRect);
+	void DrawSectionGraphBar(RenderingContext& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect);
 
 private:
 	GraphicsManager*		m_manager;

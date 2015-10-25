@@ -42,16 +42,16 @@ VS_OUTPUT vsBasic(
 	float4 inUVOffset	: TEXCOORD0,
 	float2 inUVTileUnit	: TEXCOORD1)
 {
-	inPos.x -= 0.5;
-	inPos.y += 0.5;
+	//inPos.x -= 0.5;
+	//inPos.y += 0.5;
 	VS_OUTPUT o;
 	o.Pos			= mul(float4(inPos, 1.0f), g_worldMatrix);
 	o.Pos			= mul(o.Pos, g_viewProjMatrix);
 	o.Color			= inColor;
 	o.UVOffset		= inUVOffset;
 	o.UVTileUnit	= inUVTileUnit;
-	//o.Pos.x -= g_pixelStep.x;
-	//o.Pos.y += g_pixelStep.y;
+	o.Pos.x -= g_pixelStep.x;
+	o.Pos.y += g_pixelStep.y;
 	return o;
 }
 

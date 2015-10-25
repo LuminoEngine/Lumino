@@ -174,7 +174,7 @@ ISwapChain* WGLGraphicsDevice::GetDefaultSwapChain()
 ISwapChain* WGLGraphicsDevice::CreateSwapChain(Platform::Window* window)
 {
 	ScopedContext lock(this);
-	RefPtr<WGLSwapChain> obj(LN_NEW WGLSwapChain());
+	RefPtr<WGLSwapChain> obj(LN_NEW WGLSwapChain(), false);
 	obj->Create(this, window, m_mainContext);
 	AddDeviceResource(obj);
 	obj.SafeAddRef();

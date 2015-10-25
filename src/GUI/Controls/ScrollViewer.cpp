@@ -50,7 +50,7 @@ const float ScrollContentPresenter::m_scrollLineDelta = 16.0f;
 //-----------------------------------------------------------------------------
 ScrollContentPresenterPtr ScrollContentPresenter::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ScrollContentPresenterPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -192,7 +192,7 @@ const String ScrollViewer::PART_HorizontalScrollBarTemplateName(_T("PART_Horizon
 //-----------------------------------------------------------------------------
 ScrollViewerPtr ScrollViewer::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ScrollViewerPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------

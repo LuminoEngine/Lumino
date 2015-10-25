@@ -27,7 +27,7 @@ ShaderCompileResultLevel PlainGLSLBuilder::Build(GLGraphicsDevice* device, const
 		return resultLevel;
 	}
 
-	RefPtr<GLShader> shader(LN_NEW GLShader(device, program));
+	RefPtr<GLShader> shader(LN_NEW GLShader(device, program), false);
 
 	// uniform 変数の数を調べて、その数分 ShaderVariable 作成
 	GLint params;

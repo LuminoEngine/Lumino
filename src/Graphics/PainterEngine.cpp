@@ -1,4 +1,18 @@
-﻿
+﻿/*
+	ユーザーのシェーダとの共存の仕方。
+	
+	ストローク付きのテキストをテクスチャブラシ描画しようとしたら、
+	テクスチャ2枚をレジスタに送るか、2パス描画が必須。
+	また、テクスチャブラシのタイル配置のためには特殊な意味を持つUVを
+	頂点バッファに持たせなければならない。
+
+	ユーザーシェーダ側をシンプルにするなら、WPFのように
+	1度別のRTに描画し、それを矩形で描画する2パスで行うのが良い。
+	このままだとメモリ使用量やドローコールが増えるが、
+	ユーザーシェーダを使わない場合はこの処理を行わないようにしたり、
+	一時RTはできるだけ使いまわすようにすれば少しはましかも。
+
+*/
 #include "../Internal.h"
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsException.h>
@@ -32,7 +46,11 @@ PainterEngine::PainterEngine()
 //-----------------------------------------------------------------------------
 PainterEngine::~PainterEngine()
 {
-	m_currentState.ReleaseObjects();
+	while (!m_sectionStack.IsEmpty())
+	{
+		m_sectionStack.GetTop().CurrentState.ReleaseObjects();
+		m_sectionStack.Pop();
+	}
 	m_manager->RemoveResourceObject(this);
 }
 
@@ -44,8 +62,8 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_manager = manager;
 	CreateInternal();
 
-	memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
-	m_currentState.Opacity = 1.0f;
+	//memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
+	//m_currentState.Opacity = 1.0f;
 	m_currentInternalGlyphMask = m_dummyTexture;
 
 	m_manager->AddResourceObject(this);
@@ -105,7 +123,13 @@ void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
 	{
-		m_currentState.ReleaseObjects();	// TODO: TextureBrush の復元は困難。End で Detach する仕様にしたい。
+		// TODO: TextureBrush の復元は困難。End で Detach する仕様にしたい。
+		while (!m_sectionStack.IsEmpty())
+		{
+			m_sectionStack.GetTop().CurrentState.ReleaseObjects();
+			m_sectionStack.Pop();
+		}
+
 		m_vertexBuffer.SafeRelease();
 		m_indexBuffer.SafeRelease();
 		m_shader.Shader.SafeRelease();
@@ -128,17 +152,20 @@ void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
 //}
 
 //-----------------------------------------------------------------------------
-// TODO: いらないかも？
+//
 //-----------------------------------------------------------------------------
 void PainterEngine::Begin()
 {
 	Flush();
-	m_currentState.ReleaseObjects();
+	m_sectionStack.Push(PainterEngineSection());
+
 	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
 	//m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
-	m_currentState.Brush.Type = BrushType_Unknown;
-	m_currentState.Opacity = 1.0f;
-	m_currentState.ForeColor = ColorF::Black;
+
+	GetCurrentState().ReleaseObjects();
+	GetCurrentState().Brush.Type = BrushType_Unknown;
+	GetCurrentState().Opacity = 1.0f;
+	GetCurrentState().ForeColor = ColorF::Black;
 	m_currentInternalGlyphMask = m_dummyTexture;
 }
 
@@ -148,7 +175,44 @@ void PainterEngine::Begin()
 void PainterEngine::End()
 {
 	Flush();
-	m_currentState.ReleaseObjects();
+	m_sectionStack.GetTop().CurrentState.ReleaseObjects();
+	m_sectionStack.Pop();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PainterEngine::Flush()
+{
+	if (m_indexCache.GetCount() == 0) { return; }
+
+	Driver::ITexture* srcTexture = NULL;
+	PainterEngineState& state = GetCurrentState();
+	if (state.Brush.Type == BrushType_Texture) {
+		srcTexture = state.Brush.TextureBrush.Texture;
+	}
+	else if (state.Brush.Type == BrushType_FrameTexture) {
+		srcTexture = state.Brush.FrameTextureBrush.Texture;
+	}
+
+	if (srcTexture == NULL) {
+		srcTexture = m_dummyTexture;
+	}
+
+	// 描画する
+	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+	m_renderer->SetVertexBuffer(m_vertexBuffer);
+	m_renderer->SetIndexBuffer(m_indexBuffer);
+	m_shader.varTone->SetVector((Vector4&)state.Tone);
+	m_shader.varTexture->SetTexture(srcTexture);
+	m_shader.varGlyphMaskSampler->SetTexture(m_currentInternalGlyphMask);
+	m_shader.Pass->Apply();
+	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+
+	// キャッシュクリア
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -156,6 +220,7 @@ void PainterEngine::End()
 //-----------------------------------------------------------------------------
 void PainterEngine::SetTransform(const Matrix& matrix)
 {
+	// TODO: 遅延
 	m_shader.varWorldMatrix->SetMatrix(matrix);
 }
 
@@ -165,7 +230,6 @@ void PainterEngine::SetTransform(const Matrix& matrix)
 void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 {
 	m_shader.varViewProjMatrix->SetMatrix(matrix);
-
 }
 
 //-----------------------------------------------------------------------------
@@ -184,7 +248,7 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 void PainterEngine::SetState(const PainterEngineState& state)
 {
 	Flush();	// 描画設定が変わるのでここでフラッシュ
-	m_currentState.Copy(state);
+	GetCurrentState().Copy(state);
 	UpdateCurrentForeColor();
 }
 
@@ -222,10 +286,11 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	// DrawGlyphRun() 以外は NULL で呼び出しておく
 	SetInternalGlyphMaskTexture(NULL);
 
-	if (m_currentState.Brush.Type == BrushType_Texture)
+	PainterEngineState& state = GetCurrentState();
+	if (state.Brush.Type == BrushType_Texture)
 	{
-		Driver::ITexture* srcTexture = m_currentState.Brush.TextureBrush.Texture;
-		Rect& srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
+		Driver::ITexture* srcTexture = state.Brush.TextureBrush.Texture;
+		Rect& srcRect = *((Rect*)state.Brush.TextureBrush.SourceRect);
 
 		SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
 		texSize.Width = 1.0f / texSize.Width;
@@ -233,7 +298,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
 
 
-		if (m_currentState.Brush.TextureBrush.WrapMode == BrushWrapMode_Stretch)
+		if (state.Brush.TextureBrush.WrapMode == BrushWrapMode_Stretch)
 		{
 			InternalDrawRectangleStretch(rect, uvSrcRect);
 		}
@@ -241,9 +306,9 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 			LN_THROW(0, NotImplementedException);
 		}
 	}
-	else if (m_currentState.Brush.Type == BrushType_FrameTexture)
+	else if (state.Brush.Type == BrushType_FrameTexture)
 	{
-		auto& brush = m_currentState.Brush.FrameTextureBrush;
+		auto& brush = state.Brush.FrameTextureBrush;
 
 		// 枠
 		{
@@ -283,7 +348,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		m_indexCache.Add(i + 3);
 
 		PainterVertex v;
-		v.Color = m_currentState.ForeColor;
+		v.Color = state.ForeColor;
 		v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 左上
 		m_vertexCache.Add(v);
 		v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(0, 0, 0, 0); v.UVTileUnit.Set(0, 0);	// 右上
@@ -295,40 +360,6 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void PainterEngine::Flush()
-{
-	if (m_indexCache.GetCount() == 0) { return; }
-
-	Driver::ITexture* srcTexture = NULL;
-	if (m_currentState.Brush.Type == BrushType_Texture) {
-		srcTexture = m_currentState.Brush.TextureBrush.Texture;
-	}
-	else if (m_currentState.Brush.Type == BrushType_FrameTexture) {
-		srcTexture = m_currentState.Brush.FrameTextureBrush.Texture;
-	}
-
-	if (srcTexture == NULL) {
-		srcTexture = m_dummyTexture;
-	}
-
-	// 描画する
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	m_renderer->SetVertexBuffer(m_vertexBuffer);
-	m_renderer->SetIndexBuffer(m_indexBuffer);
-	m_shader.varTone->SetVector((Vector4&)m_currentState.Tone);
-	m_shader.varTexture->SetTexture(srcTexture);
-	m_shader.varGlyphMaskSampler->SetTexture(m_currentInternalGlyphMask);
-	m_shader.Pass->Apply();
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
-
-	// キャッシュクリア
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
-}
 
 #if 0
 //-----------------------------------------------------------------------------
@@ -374,15 +405,16 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 {
 	Driver::ITexture* srcTexture = NULL;
 	Rect srcRect;
-	if (m_currentState.Brush.Type == BrushType_Texture)
+	PainterEngineState& state = GetCurrentState();
+	if (state.Brush.Type == BrushType_Texture)
 	{
-		srcTexture = m_currentState.Brush.TextureBrush.Texture;
-		srcRect = *((Rect*)m_currentState.Brush.TextureBrush.SourceRect);
+		srcTexture = state.Brush.TextureBrush.Texture;
+		srcRect = *((Rect*)state.Brush.TextureBrush.SourceRect);
 	}
-	else if (m_currentState.Brush.Type == BrushType_FrameTexture)
+	else if (state.Brush.Type == BrushType_FrameTexture)
 	{
-		srcTexture = m_currentState.Brush.FrameTextureBrush.Texture;
-		srcRect = *((Rect*)m_currentState.Brush.FrameTextureBrush.SourceRect);
+		srcTexture = state.Brush.FrameTextureBrush.Texture;
+		srcRect = *((Rect*)state.Brush.FrameTextureBrush.SourceRect);
 	}
 	else {
 		// テクスチャブラシ以外で書くことはできない
@@ -577,7 +609,7 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 	m_indexCache.Add(i + 3);
 
 	PainterVertex v;
-	v.Color = m_currentState.ForeColor;
+	v.Color = GetCurrentState().ForeColor;
 	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// 左上
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(2, 1);	// 右上
@@ -616,7 +648,7 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 	m_indexCache.Add(i + 3);
 
 	PainterVertex v;
-	v.Color = m_currentState.ForeColor;
+	v.Color = GetCurrentState().ForeColor;
 	v.Position.Set(rect.GetLeft(),  rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1, 1);	// 左上
 	m_vertexCache.Add(v);
 	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1);	// 右上
@@ -682,12 +714,13 @@ void PainterEngine::SetInternalGlyphMaskTexture(Driver::ITexture* mask)
 //-----------------------------------------------------------------------------
 void PainterEngine::UpdateCurrentForeColor()
 {
-	if (m_currentState.Brush.Type == BrushType_SolidColor)
+	PainterEngineState& state = GetCurrentState();
+	if (state.Brush.Type == BrushType_SolidColor)
 	{
-		m_currentState.ForeColor.A = m_currentState.Opacity * m_currentState.Brush.SolidColorBrush.Color[3];
+		state.ForeColor.A = state.Opacity * state.Brush.SolidColorBrush.Color[3];
 	}
 	else {
-		m_currentState.ForeColor.A = m_currentState.Opacity;
+		state.ForeColor.A = state.Opacity;
 	}
 }
 

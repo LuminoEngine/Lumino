@@ -228,7 +228,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBoxChrome);
 //-----------------------------------------------------------------------------
 ListBoxChromePtr ListBoxChrome::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ListBoxChromePtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -259,7 +259,7 @@ void ListBoxChrome::OnApplyTemplate(CombinedLocalResource* localResource)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ListBoxChrome::OnRender(Painter* painter)
+void ListBoxChrome::OnRender(RenderingContext* painter)
 {
 	RectF bgRect = m_finalLocalRect;
 	RectF rect = m_finalLocalRect;
@@ -287,7 +287,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(ListBox);
 //-----------------------------------------------------------------------------
 ListBoxPtr ListBox::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ListBoxPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -342,7 +342,7 @@ ListBoxItemPtr ListBox::AddTextItem(const String& text)
 //-----------------------------------------------------------------------------
 void ListBox::InsertListBoxItem(int index, UIElement* element)
 {
-	RefPtr<ListBoxItem> item(ListBoxItem::Create(m_manager));
+	RefPtr<ListBoxItem> item(ListBoxItem::Create(m_manager), false);
 	item->SetContent(element);
 	GetItems()->Add(item);	// TODO: インデックス
 	//m_listBoxItems->Insert(index, item);

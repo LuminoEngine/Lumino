@@ -60,7 +60,7 @@ LN_ROUTED_EVENT_IMPLEMENT(ScrollBar, ScrollEventArgs, ScrollEvent, "Scroll", Scr
 //-----------------------------------------------------------------------------
 ScrollBarPtr ScrollBar::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ScrollBarPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ void ScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta)
 
 	float newValue = m_dragStartValue/*GetValue()*/ + valueDelta;
 	ChangeValue(newValue);
-	RefPtr<ScrollEventArgs> args(m_manager->GetEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack));
+	RefPtr<ScrollEventArgs> args(m_manager->GetEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
 	RaiseEvent(ScrollEvent, this, args);
 }
 

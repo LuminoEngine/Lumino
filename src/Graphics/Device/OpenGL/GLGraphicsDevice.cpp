@@ -72,7 +72,7 @@ void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なので�
 IVertexBuffer* GLGraphicsDevice::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	ScopedContext lock(this);
-	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer());
+	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
 	obj->Create(vertexElements, elementsCount, vertexCount, data, usage);
 	AddDeviceResource(obj);		// GC 対象
 	obj.SafeAddRef();
@@ -85,7 +85,7 @@ IVertexBuffer* GLGraphicsDevice::CreateVertexBuffer(const VertexElement* vertexE
 IIndexBuffer* GLGraphicsDevice::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	ScopedContext lock(this);
-	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer());
+	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
 	obj->Create(indexCount, initialData, format, usage);
 	AddDeviceResource(obj);		// GC 対象
 	obj.SafeAddRef();
@@ -98,7 +98,7 @@ IIndexBuffer* GLGraphicsDevice::CreateIndexBuffer(int indexCount, const void* in
 ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	ScopedContext lock(this);
-	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels));
+	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
 	if (initialData != NULL) {
 		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
 	}
@@ -122,7 +122,7 @@ ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, 
 ITexture* GLGraphicsDevice::CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	ScopedContext lock(this);
-	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(Size(width, height), format, mipLevels));
+	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(Size(width, height), format, mipLevels), false);
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;
@@ -134,7 +134,7 @@ ITexture* GLGraphicsDevice::CreateRenderTarget(uint32_t width, uint32_t height, 
 ITexture* GLGraphicsDevice::CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format)
 {
 	ScopedContext lock(this);
-	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(Size(width, height), format));
+	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(Size(width, height), format), false);
 	AddDeviceResource(obj);
 	obj.SafeAddRef();
 	return obj;

@@ -128,7 +128,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
+void ProfilerRenderer::DrawGroupList(RenderingContext& painter, const RectF& listRect)
 {
 	int groupCount = m_profiler->GetCommitedGroups().GetCount();
 
@@ -185,7 +185,7 @@ void ProfilerRenderer::DrawGroupList(Painter& painter, const RectF& listRect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ProfilerRenderer::DrawSectionGraphBar(Painter& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect)
+void ProfilerRenderer::DrawSectionGraphBar(RenderingContext& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect)
 {
 	float nextX = 0;
 	int index = 0;

@@ -64,7 +64,7 @@ Size Run::Measure()
 	{
 		UpdateFontData();
 
-		RefPtr<Internal::FontGlyphTextureCache> cache = m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData);
+		RefPtr<Internal::FontGlyphTextureCache> cache(m_manager->GetGraphicsManager()->LookupGlyphTextureCache(m_fontData), false);
 		Helper::AttachGlyphTextureCache(m_glyphRun, cache);
 	}
 

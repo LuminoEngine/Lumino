@@ -44,7 +44,7 @@ void AutoReleasePool::AddObject(RefObject* obj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void AutoReleasePool::Clear(RefObject* obj)
+void AutoReleasePool::Clear()
 {
 	std::vector<RefObject*> releaseList;
 	releaseList.swap(m_objectList);

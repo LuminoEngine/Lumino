@@ -47,7 +47,7 @@ LN_PROPERTY_IMPLEMENT(Track, ButtonBase*, IncreaseButtonProperty, "IncreaseButto
 //-----------------------------------------------------------------------------
 TrackPtr Track::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return TrackPtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------

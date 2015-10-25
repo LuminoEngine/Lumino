@@ -3,8 +3,9 @@
 #include <Lumino/Base/Array.h>
 #include <Lumino/Graphics/Painter.h>
 #include <Lumino/Property.h>
-#include "Common.h"
+#include "../AutoReleasePool.h"
 #include "../RoutedEvent.h"
+#include "Common.h"
 #include "RoutedEventArgs.h"
 #include "DependencyObject.h"
 #include "ControlTemplate.h"
@@ -19,7 +20,7 @@ LN_INTERNAL_ACCESS: \
 	friend class GUIHelper;\
 	static className* internalCreateInstance(GUIManagerImpl* manager) \
 	{ \
-		auto obj = RefPtr<className>(LN_NEW className(manager)); \
+		RefPtr<className> obj(LN_NEW className(manager), false); \
 		obj->InitializeComponent(); \
 		obj.SafeAddRef(); \
 		return obj; \
@@ -302,7 +303,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 
 protected:
 	UIElement(GUIManagerImpl* manager);

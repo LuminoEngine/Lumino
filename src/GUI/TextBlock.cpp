@@ -81,7 +81,7 @@ SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextBlock::OnRender(Painter* painter)
+void TextBlock::OnRender(RenderingContext* painter)
 {
 	Brush* brush = GetForeground();
 	painter->SetBrush(brush);
@@ -98,7 +98,7 @@ void TextBlock::OnRender(Painter* painter)
 void TextBlock::OnTextPropertyChanged(PropertyChangedEventArgs* e)
 {
 	m_paragraph->GetInlines()->Clear();
-	RefPtr<Documents::Run> run(LN_NEW Documents::Run(m_text, m_manager->GetDocumentsManager()));
+	RefPtr<Documents::Run> run(LN_NEW Documents::Run(m_text, m_manager->GetDocumentsManager()), false);
 	m_paragraph->GetInlines()->Add(run);
 }
 

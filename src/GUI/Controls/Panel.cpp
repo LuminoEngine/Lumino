@@ -17,7 +17,7 @@ LN_UI_ELEMENT_SUBCLASS_IMPL(Panel);
 //-----------------------------------------------------------------------------
 Panel::Panel(GUIManagerImpl* manager)
 	: UIElement(manager)
-	, m_children(LN_NEW UIElementCollection())
+	, m_children(LN_NEW UIElementCollection(), false)
 {
 	m_children->ItemAdded += CreateDelegate(this, &Panel::Children_ItemAdded);
 	m_children->ItemRemoved += CreateDelegate(this, &Panel::Children_ItemRemoved);

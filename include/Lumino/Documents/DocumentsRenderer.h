@@ -27,13 +27,13 @@ class RenderTargetDocumentsRenderer
 	: public DocumentsRenderer
 {
 public:
-	RenderTargetDocumentsRenderer(Painter* painter);
+	RenderTargetDocumentsRenderer(RenderingContext* painter);
 	virtual ~RenderTargetDocumentsRenderer();
 
 	virtual void OnDrawGlyphRun(GlyphRun* glyphRun, const Point& point);
 
 private:
-	Painter*	m_painter;
+	RenderingContext*	m_painter;
 };
 
 } // namespace Documents

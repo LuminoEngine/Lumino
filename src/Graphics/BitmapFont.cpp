@@ -24,7 +24,7 @@ Font* Font::CreateBuiltInBitmapFont(FontManager* manager, int size)
 {
 	MemoryStream stream;
 	stream.Create(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream));
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
 	return LN_NEW BitmapFont(manager, bitmap);
 }
 
@@ -37,7 +37,7 @@ Font* Font::CreateBuiltInBitmapFont(FontManager* manager, int size)
 //-----------------------------------------------------------------------------
 BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	: m_manager(NULL)
-	, m_fontBitmap(NULL)
+	, m_fontBitmap()
 	, m_charWidth(0)
 	, m_charHeight(0)
 {
@@ -133,7 +133,7 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 //-----------------------------------------------------------------------------
 Font* BitmapFont::Copy() const
 {
-	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap));
+	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap), false);
 	font.SafeAddRef();
 	return font;
 }

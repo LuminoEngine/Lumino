@@ -15,7 +15,7 @@ namespace Internal
 //
 //-----------------------------------------------------------------------------
 GUIPainter::GUIPainter(GraphicsManager* manager)
-	: Painter(manager)
+	: RenderingContext(manager)
 {
 }
 

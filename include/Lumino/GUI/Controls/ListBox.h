@@ -89,7 +89,7 @@ public:
 
 protected:
 	virtual void OnApplyTemplate(CombinedLocalResource* localResource);
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 
 private:
 	RefPtr<TextureBrush>	m_frameBrush;

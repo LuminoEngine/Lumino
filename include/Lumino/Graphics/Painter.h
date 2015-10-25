@@ -175,12 +175,12 @@ struct PainterState
 /**
 	@brief	図形や画像、テキストを描画するための機能を提供します。
 */
-class Painter
+class RenderingContext
 	: public RefObject
 {
 public:
-	void Begin();
-	void End();
+	//void Begin();
+	//void End();
 
 	void ResetState();
 
@@ -220,8 +220,8 @@ public:
 	void Flush();
 
 protected:
-	Painter(GraphicsManager* manager);
-	virtual ~Painter();
+	RenderingContext(GraphicsManager* manager);
+	virtual ~RenderingContext();
 
 private:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
@@ -248,7 +248,7 @@ protected:	// TODO
 	@details	インスタンスの生成と破棄はレンダリング中に行わなければなりません。
 */
 class LocalPainter
-	: public Painter
+	: public RenderingContext
 {
 public:
 	static const float DefaultDepthMin;		// 0.0f
@@ -263,7 +263,7 @@ public:
 
 // TODO
 class RenderTargetPainter
-	: public Painter
+	: public RenderingContext
 {
 public:
 	RenderTargetPainter(Texture* renderTarget = NULL, GraphicsManager* manager = NULL);

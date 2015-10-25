@@ -20,7 +20,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(GUIContext, CoreObject);
 //-----------------------------------------------------------------------------
 GUIContext* GUIContext::Create()
 {
-	RefPtr<GUIContext> obj(LN_NEW GUIContext(GUIManagerImpl::Instance));
+	RefPtr<GUIContext> obj(LN_NEW GUIContext(GUIManagerImpl::Instance), false);
 	GUIManagerImpl::Instance->AddContextOnMainWindow(obj);
 	obj->m_nativeWindow = GUIManagerImpl::Instance->GetMainWindow();
 	obj->m_onMainWindow = true;
@@ -108,13 +108,13 @@ bool GUIContext::InjectMouseMove(float clientX, float clientY)
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
+		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0), false);
 		return m_capturedElement->OnEvent(RoutedEventType::MouseMove, args);
 	}
 	//if (m_defaultRootFrame == NULL) { return false; }
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
+	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0), false);
 	//if (m_mouseHoverElement != NULL)
 	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseMove, args);
 	//bool r = m_defaultRootFrame->OnEvent(EventType_MouseMove, args);
@@ -150,11 +150,11 @@ bool GUIContext::InjectMouseButtonDown(MouseButton button, float clientX, float 
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount));
+		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount), false);
 		return m_capturedElement->OnEvent(RoutedEventType::MouseButtonDown, args);
 	}
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount));
+	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, tracker.ClickCount), false);
 	//if (m_mouseHoverElement != NULL) {
 	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseButtonDown, args);
 	//}
@@ -173,12 +173,12 @@ bool GUIContext::InjectMouseButtonUp(MouseButton button, float clientX, float cl
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, 0));
+		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, 0), false);
 		return m_capturedElement->OnEvent(RoutedEventType::MouseButtonUp, args);
 	}
 	//if (m_defaultRootFrame == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, 0));
+	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(button, 0, clientX, clientY, 0), false);
 	//return m_defaultRootFrame->OnEvent(EventType_MouseButtonUp, args);
 	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseButtonUp, args);
 }
@@ -195,12 +195,12 @@ bool GUIContext::InjectMouseWheel(int delta, float clientX, float clientY)
 	// キャプチャ中のコントロールがあればそちらに送る
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0));
+		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, clientX, clientY, 0), false);
 		return m_capturedElement->OnEvent(RoutedEventType::MouseMove, args);
 	}
 	//if (m_defaultRootFrame == NULL) { return false; }
 	if (m_mouseHoverElement == NULL) { return false; }
-	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, delta, clientX, clientY, 0));
+	RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, delta, clientX, clientY, 0), false);
 	//return m_defaultRootFrame->OnEvent(EventType_MouseWheel, args);
 	return m_mouseHoverElement->OnEvent(RoutedEventType::MouseWheel, args);
 }
@@ -212,7 +212,7 @@ bool GUIContext::InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isCon
 {
 	if (m_focusElement == NULL) { return false; }
 	EventArgsPool* pool = m_manager->GetEventArgsPool();
-	RefPtr<KeyEventArgs> args(pool->CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
+	RefPtr<KeyEventArgs> args(pool->CreateKeyEventArgs(keyCode, isAlt, isShift, isControl), false);
 	return m_focusElement->OnEvent(RoutedEventType::KeyDown, args);
 }
 
@@ -223,7 +223,7 @@ bool GUIContext::InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isContr
 {
 	if (m_focusElement == NULL) { return false; }
 	EventArgsPool* pool = m_manager->GetEventArgsPool();
-	RefPtr<KeyEventArgs> args(pool->CreateKeyEventArgs(keyCode, isAlt, isShift, isControl));
+	RefPtr<KeyEventArgs> args(pool->CreateKeyEventArgs(keyCode, isAlt, isShift, isControl), false);
 	return m_focusElement->OnEvent(RoutedEventType::KeyUp, args);
 }
 
@@ -234,7 +234,7 @@ bool GUIContext::InjectTextInput(TCHAR ch)
 {
 	if (m_focusElement == NULL) { return false; }
 	EventArgsPool* pool = m_manager->GetEventArgsPool();
-	RefPtr<KeyEventArgs> args(pool->CreateKeyEventArgs(Key::Unknown, false, false, false));
+	RefPtr<KeyEventArgs> args(pool->CreateKeyEventArgs(Key::Unknown, false, false, false), false);
 	args->Char = ch;
 	return m_focusElement->OnEvent(RoutedEventType::TextInput, args);
 }
@@ -373,7 +373,7 @@ EXIT:
 	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
 	if (m_mouseHoverElement != old)
 	{
-		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, mousePos.X, mousePos.Y, 0));
+		RefPtr<MouseEventArgs> args(pool->CreateMouseEventArgs(MouseButton::None, 0, mousePos.X, mousePos.Y, 0), false);
 		if (old != NULL) {
 			old->OnEvent(RoutedEventType::MouseLeave, args);
 		}

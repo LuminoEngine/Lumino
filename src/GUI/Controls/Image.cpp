@@ -23,7 +23,7 @@ LN_PROPERTY_IMPLEMENT(Image, Rect, SourceRectProperty, "SourceRect", m_srcRect, 
 //-----------------------------------------------------------------------------
 ImagePtr Image::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	return ImagePtr(internalCreateInstance(GetUIManager()), false);
 }
 
 //-----------------------------------------------------------------------------
@@ -129,7 +129,7 @@ SizeF Image::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Image::OnRender(Painter* painter)
+void Image::OnRender(RenderingContext* painter)
 {
 	if (m_texture == NULL) { return; }
 

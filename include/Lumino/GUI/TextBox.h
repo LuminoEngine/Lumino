@@ -57,7 +57,7 @@ protected:
 	TextBox(GUIManagerImpl* manager);
 	virtual ~TextBox();
 	virtual SizeF MeasureOverride(const SizeF& constraint);
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 
 private:
 	void set_Text(const String& string);

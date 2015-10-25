@@ -11,7 +11,7 @@ namespace Internal
 {
 
 class GUIPainter
-	: public Painter
+	: public RenderingContext
 {
 public:
 	GUIPainter(GraphicsManager* manager);

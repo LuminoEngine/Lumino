@@ -36,7 +36,7 @@ static Driver::IGraphicsDevice* GetDevice()
 Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	// ロック用のビットマップを作る
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)));
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
 	return LN_NEW Texture(GetManager(), size, format, mipLevels, bitmap);
 }
 
@@ -45,7 +45,7 @@ Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels)
 //-----------------------------------------------------------------------------
 Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
 {
-	RefPtr<Stream> stream(GetManager()->GetFileManager()->CreateFileStream(filePath));
+	RefPtr<Stream> stream(GetManager()->GetFileManager()->CreateFileStream(filePath), false);
 	return Create(stream, format, mipLevels);
 }
 
@@ -60,7 +60,7 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels)
 	}
 
 	// ビットマップを作る
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream));
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
 	return LN_NEW Texture(GetManager(), bitmap->GetSize(), format, mipLevels, bitmap);
 }
 

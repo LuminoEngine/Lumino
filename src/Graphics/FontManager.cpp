@@ -164,7 +164,7 @@ void FontManager::Dispose()
 void FontManager::RegisterFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
-	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath));
+	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath), false);
 	ByteBuffer buffer((size_t)file->GetLength(), false);
 	file->Read(buffer.GetData(), buffer.GetSize());
 

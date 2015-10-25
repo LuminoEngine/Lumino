@@ -22,8 +22,8 @@ LNResult LNGameAudio_PlayBGM(const LNChar* filePath, float volume, float pitch, 
 LNResult LNGameAudio_PlayBGMMem(const void* data, int dataSize, float volume, float pitch, double fadeTime)
 {
     LN_FUNC_TRY_BEGIN;
-	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize), false);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGMFromSound(obj, volume, pitch, fadeTime);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -54,8 +54,8 @@ LNResult LNGameAudio_PlayBGS( const LNChar* filename, float volume, float pitch,
 LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, float volume, float pitch, double fadeTime)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize), false);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayBGSFromSound(obj, volume, pitch, fadeTime);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -86,8 +86,8 @@ LNResult LNGameAudio_PlayME( const LNChar* filename, float volume, float pitch )
 LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize), false);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlayMEFromSound(obj, volume, pitch);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -137,8 +137,8 @@ LNResult LNGameAudio_PlaySE3DXYZ( const LNChar* filename, float x, float y, floa
 LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize), false);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySEFromSound(obj, volume, pitch);
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -149,8 +149,8 @@ LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, float volume, flo
 LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, float volume, float pitch)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize));
-	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize), false);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	obj->SetEmitterPosition(*cp_cast<Vector3>(position));
 	obj->SetEmitterMaxDistance(distance);
 	LFManager::Application->GetAudioManager()->GetGameAudio()->PlaySEFromSound(obj, volume, pitch);
@@ -305,7 +305,7 @@ LN_TYPE_INFO_IMPL(Lumino::Sound, LNSound);
 LNResult LNSound_Create(const LNChar* filename, LNHandle* sound)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<Sound> obj(Sound::Create(filename, LFManager::Application->GetAudioManager()));
+	RefPtr<Sound> obj(Sound::Create(filename, LFManager::Application->GetAudioManager()), false);
 	*sound = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN
@@ -317,8 +317,8 @@ LNResult LNSound_Create(const LNChar* filename, LNHandle* sound)
 LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSound)* sound)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize, true));
-	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync));
+	RefPtr<MemoryStream> stream(LN_NEW MemoryStream(data, dataSize, true), false);
+	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	*sound = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN

@@ -55,7 +55,7 @@ public:
 
 protected:
 	virtual void OnClick();
-	virtual void OnRender(Painter* painter);
+	virtual void OnRender(RenderingContext* painter);
 	//virtual void Render();
 
 

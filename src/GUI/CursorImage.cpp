@@ -28,7 +28,7 @@ CursorImage::~CursorImage()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CursorImage::Draw(Painter* painter, const PointF& point, float time)
+void CursorImage::Draw(RenderingContext* painter, const PointF& point, float time)
 {
 	if (painter == NULL) { return; }
 	if (m_texture == NULL) { return; }

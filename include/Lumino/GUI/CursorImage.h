@@ -23,7 +23,7 @@ public:
 	void SetPatternDuration(float time) { m_patternDuration = time; }	// アニメーションが1ループするのにかかる時間
 	float GetPatternDuration() const { return m_patternDuration; }
 
-	void Draw(Painter* painter, const PointF& point, float time);
+	void Draw(RenderingContext* painter, const PointF& point, float time);
 
 private:
 	GUIManagerImpl*				m_manager;

@@ -73,7 +73,7 @@ public:
 		LPCVOID * ppData,
 		UINT * pBytes)
 	{
-		RefPtr<Stream> file(m_fileManager->CreateFileStream(pFileName));
+		RefPtr<Stream> file(m_fileManager->CreateFileStream(pFileName), false);
 
 		size_t size = (size_t)file->GetLength();
 		byte_t* data = LN_NEW byte_t[size];

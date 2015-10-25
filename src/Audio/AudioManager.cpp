@@ -78,7 +78,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 #ifdef LN_OS_WIN32
 	if (m_audioDevice == NULL)
 	{
-		RefPtr<XAudio2AudioDevice> device(LN_NEW XAudio2AudioDevice());
+		RefPtr<XAudio2AudioDevice> device(LN_NEW XAudio2AudioDevice(), false);
 		if (device->Initialize()) {
 			device.SafeAddRef();
 			m_audioDevice = device;
@@ -87,7 +87,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	}
 	if (m_midiAudioDevice == NULL)
 	{
-		RefPtr<DirectMusicAudioDevice> device(LN_NEW DirectMusicAudioDevice());
+		RefPtr<DirectMusicAudioDevice> device(LN_NEW DirectMusicAudioDevice(), false);
 		DirectMusicAudioDevice::ConfigData data;
 		data.DMInitMode = settings.DMInitMode;
 		data.hWnd = (HWND)settings.hWnd;
@@ -216,8 +216,8 @@ AudioPlayer* AudioManagerImpl::CreateAudioPlayer(AudioStream* stream, SoundPlayi
 //-----------------------------------------------------------------------------
 Sound* AudioManagerImpl::CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
-	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key, loadingMode));
-	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream));
+	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key, loadingMode), false);
+	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream), false);
 
 	if (loadingMode == SoundLoadingMode::Sync) {
 		sound->CreateAudioPlayerSync();
