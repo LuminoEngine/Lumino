@@ -60,23 +60,31 @@ int main()
 		context1->InjectViewportSizeChanged(640, 480);
 
 
-		GCPtr<PilePanel> panel1 = PilePanel::Create();
-		context1->SetRootElement(panel1);
+		GCPtr<Grid> rootGrid = Grid::Create();
+		context1->SetRootElement(rootGrid);
 
+		{
+			GCPtr<StackPanel> panel = StackPanel::Create();
+			rootGrid->GetChildren()->Add(panel);
 
-		GCPtr<UIButton> button1 = UIButton::Create();
-		panel1->GetChildren()->Add(button1);
-		button1->SetSize(SizeF(200, 100));
-		//button1->Click += CreateDelegate(Button_Click);
-		button1->Click += [](RoutedEventArgs* e) { printf("ttt\n"); };
+			//auto* p = TextBlock::Create();
+			//p->SetText(_T("test"));
+			//panel->GetChildren()->Add(p);
 
-		GCPtr<UIButton> button2 = UIButton::Create();
-		panel1->GetChildren()->Add(button2);
-		button2->SetForeground(ColorBrush::Blue);
-		button2->SetContent(String(_T("Button")));
-		button2->SetSize(SizeF(100, 200));
+			GCPtr<UIButton> button1 = UIButton::Create();
+			panel->GetChildren()->Add(button1);
+			button1->SetSize(SizeF(120, 40));
+			//button1->Click += CreateDelegate(Button_Click);
+			button1->Click += [](RoutedEventArgs* e) { printf("ttt\n"); };
 
-		button1->SetEnabled(false);
+			GCPtr<UIButton> button2 = UIButton::Create();
+			panel->GetChildren()->Add(button2);
+			button2->SetForeground(ColorBrush::Blue);
+			button2->SetContent(String(_T("Button")));
+			button2->SetSize(SizeF(120, 40));
+
+			button1->SetEnabled(false);
+		}
 #endif
 
 
@@ -86,7 +94,7 @@ int main()
 		{
 		}
 
-		//AutoReleasePool::GetCurrent()->Clear();
+		AutoReleasePool::GetCurrent()->Clear();
 
 		//s->Stop();
 		//s.SafeRelease();

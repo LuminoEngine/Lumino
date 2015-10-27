@@ -146,9 +146,9 @@ LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GridPtr Grid::Create()
+Grid* Grid::Create()
 {
-	return GridPtr(internalCreateInstance(GetUIManager()), false);
+	return internalCreateInstance(GetUIManager());
 }
 
 //-----------------------------------------------------------------------------

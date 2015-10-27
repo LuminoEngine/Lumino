@@ -139,7 +139,7 @@ public:
 	static const AttachedProperty*	RowSpanProperty;
 
 public:
-	static GridPtr Create();
+	static Grid* Create();
 
 	Grid(GUIManagerImpl* manager);
 	virtual ~Grid();

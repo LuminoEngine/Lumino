@@ -4,7 +4,7 @@
 	この2つは、表示するグリフは同じ。書き方が違うだけ。
 
 */
-#include "../Internal.h"
+#include "Internal.h"
 #include "UIManagerImpl.h"
 #include <Lumino/GUI/Control.h>
 #include <Lumino/GUI/TextBlock.h>
@@ -25,9 +25,12 @@ LN_PROPERTY_IMPLEMENT(TextBlock, String, TextProperty, "Text", m_text, PropertyM
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextBlock* TextBlock::Create(GUIManagerImpl* manager)
+TextBlock* TextBlock::Create(/*GUIManagerImpl* manager*/)
 {
-	auto obj = RefPtr<TextBlock>::Create(manager);
+	//auto obj = internalCreateInstance(GetUIManager());
+	//AutoReleasePool::GetCurrent()->AddObject(obj);
+	//return obj;
+	auto obj = RefPtr<TextBlock>::Create(GetUIManager());
 	obj->InitializeComponent();
 	obj.SafeAddRef();
 	return obj;

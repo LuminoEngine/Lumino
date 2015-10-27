@@ -21,7 +21,7 @@ AutoReleasePool::AutoReleasePool()
 //-----------------------------------------------------------------------------
 AutoReleasePool::~AutoReleasePool()
 {
-
+	Clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -29,7 +29,8 @@ AutoReleasePool::~AutoReleasePool()
 //-----------------------------------------------------------------------------
 AutoReleasePool* AutoReleasePool::GetCurrent()
 {
-	return NULL;
+	static AutoReleasePool s_instance;
+	return &s_instance;
 }
 
 //-----------------------------------------------------------------------------
@@ -51,6 +52,5 @@ void AutoReleasePool::Clear()
 		obj->Release();
 	}
 }
-
 
 LN_NAMESPACE_END

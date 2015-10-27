@@ -19,7 +19,12 @@ public:
 
 
 public:
-	static TextBlock* Create(GUIManagerImpl* manager);
+
+	/**
+		@brief	TextBlock を作成します。
+		@return	作成された TextBlock。このオブジェクトは AutoReleasePool で管理されています。
+	*/
+	static TextBlock* Create(/*GUIManagerImpl* manager*/);
 
 	TextBlock(GUIManagerImpl* manager);
 	virtual ~TextBlock();

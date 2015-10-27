@@ -29,7 +29,7 @@ public:
 public:
 
 	/**
-		@brief	TextBox ‚ğì¬‚µ‚Ü‚·B
+		@brief		TextBox ‚ğì¬‚µ‚Ü‚·B
 	*/
 	static TextBox* Create(GUIManagerImpl* manager = NULL);
 
