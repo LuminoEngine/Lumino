@@ -4,8 +4,7 @@
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/GraphicsException.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -83,4 +82,4 @@ OpenGLException::~OpenGLException() throw()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

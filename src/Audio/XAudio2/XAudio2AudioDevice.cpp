@@ -5,8 +5,7 @@
 #include "XAudio2AudioPlayer.h"
 #include "XAudio2AudioDevice.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
@@ -366,4 +365,4 @@ void EmitterState::UpdateXAudioEmitter( float scale )
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

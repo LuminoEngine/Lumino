@@ -5,8 +5,7 @@
 #include <Lumino/Graphics/Painter.h>
 #include "Device/GraphicsDriverInterface.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 template<typename T>
@@ -97,7 +96,7 @@ struct PainterEngineState
 	{
 		// ブラシデータ
 		ForeColor = ColorF::White;
-		Lumino::Brush* brush = state.Brush;
+		ln::Brush* brush = state.Brush;
 		if (brush == NULL)
 		{
 			Brush.Type = BrushType_Unknown;	// no set
@@ -313,4 +312,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/VisualTreeHelper.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -41,4 +40,4 @@ UIElement* VisualTreeHelper::FindChildByName(UIElement* parent, const TCHAR* nam
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

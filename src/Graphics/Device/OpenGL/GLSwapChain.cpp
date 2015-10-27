@@ -5,8 +5,7 @@
 #include "GLShader.h"
 #include "GLSwapChain.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -181,4 +180,4 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

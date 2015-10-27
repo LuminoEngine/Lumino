@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Scene/Camera.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -89,4 +88,4 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -5,8 +5,7 @@
 #include <Lumino/Graphics/Utils.h>
 #include "GLTexture.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -405,4 +404,4 @@ void GLBackbufferRenderTarget::OnResetDevice()
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

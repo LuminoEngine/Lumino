@@ -1,8 +1,7 @@
 ﻿
 #pragma once
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief      イージングによりシンプルに遷移する値のクラスです。
@@ -140,4 +139,4 @@ private:
 	EasingFunction	m_easing;
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

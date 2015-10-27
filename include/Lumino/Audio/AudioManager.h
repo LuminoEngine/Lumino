@@ -6,8 +6,7 @@
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/IO/FileManager.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 class GameAudio;
 class AudioDevice;
@@ -25,7 +24,7 @@ public:
 	/// initialize() に渡す初期化データ
 	struct Settings
 	{
-		Lumino::FileManager*	FileManager;					///< ファイルからの読み込みに使うファイル管理クラス
+		ln::FileManager*		FileManager;					///< ファイルからの読み込みに使うファイル管理クラス
 		uint32_t				StreamCacheObjectCount;			///< キャッシュサイズ (ファイル数)
 		uint32_t				StreamSourceCacheMemorySize;	///< キャッシュサイズ (メモリ量(byte))
 		DirectMusicMode			DMInitMode;						///< DirectMusic の初期化方法
@@ -62,7 +61,7 @@ public:
 //LN_INTERNAL_ACCESS:
 public:	// TODO
 	friend class Sound;	// TODO
-	Lumino::FileManager* GetFileManager() { return m_fileManager; }
+	FileManager* GetFileManager() { return m_fileManager; }
 	//AudioStream* CreateAudioStream(const TCHAR* filePath);
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
 	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// 初期化完了済みの AudioStream を渡すこと
@@ -100,7 +99,7 @@ private:
 
 private:
 
-	Lumino::FileManager*	m_fileManager;
+	FileManager*			m_fileManager;
 	AudioDevice*			m_audioDevice;		///< PCM 再生用デバイスクラス
 	AudioDevice*			m_midiAudioDevice;	///< MIDI 再生用デバイスクラス (内部処理が PCM とは全然違うので、1つの AudioDevice にまとめない方が管理が楽)
 	GameAudio*				m_gameAudio;
@@ -117,4 +116,4 @@ private:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

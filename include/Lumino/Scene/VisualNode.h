@@ -5,8 +5,7 @@
 #include "SceneNode.h"
 #include "VisualNodeParams.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 /// VisualNode
@@ -134,4 +133,4 @@ protected:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

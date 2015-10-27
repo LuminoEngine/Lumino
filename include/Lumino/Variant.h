@@ -11,8 +11,8 @@
 #include <Lumino/Base/Delegate.h>
 //#include "RoutedEvent.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
+
 class CoreObject;
 class CoreList;
 class Variant;
@@ -224,7 +224,7 @@ private:
 		}
 	}
 
-	// Lumino::EventXX のような使い方と同時に、
+	// ln::EventXX のような使い方と同時に、
 	// Property にたいする メンバ変数のような意味も持つ。
 	// 即ち、ハンドラのリスト。
 	// RoutedEventSlot は、いわゆる「動的なハンドラ」
@@ -1049,4 +1049,4 @@ public:
 
 #endif
 
-} // namespace Lumino
+LN_NAMESPACE_END

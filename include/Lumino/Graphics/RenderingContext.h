@@ -5,8 +5,7 @@
 #include "GlyphRun.h"
 #include "Painter.h"	// Brush
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief	
@@ -75,4 +74,4 @@ namespace Lumino
 //	//RefPtr<Font>			m_currentFont;
 //};
 
-} // namespace Lumino
+LN_NAMESPACE_END

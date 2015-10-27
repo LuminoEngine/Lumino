@@ -3,8 +3,7 @@
 #include "Archive.h"
 #include <Lumino/IO/FileManager.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // FileManager
@@ -259,4 +258,4 @@ void FileManager::Thread_ASyncProc()
 	}
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

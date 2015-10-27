@@ -3,8 +3,7 @@
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Documents/TextElement.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -72,5 +71,5 @@ void TextElement::UpdateFontData()
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

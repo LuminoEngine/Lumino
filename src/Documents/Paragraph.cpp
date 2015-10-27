@@ -4,8 +4,7 @@
 #include <Lumino/Documents/Paragraph.h>
 #include "DocumentsHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -142,5 +141,5 @@ void Paragraph::OnInlineRemoved(Inline* item)
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

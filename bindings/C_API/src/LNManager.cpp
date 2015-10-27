@@ -9,7 +9,7 @@
 //=============================================================================
 
 ApplicationSettings			LFManager::ConfigData;
-Lumino::ApplicationImpl*	LFManager::Application = NULL;
+ApplicationImpl*			LFManager::Application = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;
 LNResult					LFManager::LastErrorCode = LN_OK;
@@ -26,7 +26,7 @@ void LFManager::PreInitialize()
 	if (Application == NULL)
 	{
 		LNTypeDef_CheckCommonDefinition();
-		Application = Lumino::ApplicationImpl::Create(ConfigData);
+		Application = ApplicationImpl::Create(ConfigData);
 		IsSystemInitialized = true;
 	}
 }

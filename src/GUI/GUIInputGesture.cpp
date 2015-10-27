@@ -3,8 +3,7 @@
 #include <Lumino/GUI/GUIInputGesture.h>
 #include <Lumino/GUI/RoutedCommand.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -78,4 +77,4 @@ InputBinding::~InputBinding()
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

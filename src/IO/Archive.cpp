@@ -39,8 +39,7 @@
 #include <Lumino/Text/Encoding.h>
 #include "Archive.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // Archive
@@ -441,4 +440,4 @@ bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStr
 	return true;
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -7,8 +7,7 @@
 #define LUMINO_MERSION_REVISION		0			/**< パッチ番号 */
 #define LUMINO_VERSION_STRING		_T("0.1.0")	/**< バージョン文字列 */
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		ライブラリのバージョン情報です。
@@ -47,6 +46,6 @@ bool IsAtLeast(int major = LUMINO_VERSION_MAJOR, int minor = LUMINO_VERSION_MINO
 
 
 } // namespace Version
-} // namespace Lumino
+LN_NAMESPACE_END
 
 #endif // LUMINO_VERSION_H

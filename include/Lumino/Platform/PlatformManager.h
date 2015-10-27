@@ -7,8 +7,7 @@
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class WindowManagerBase;
@@ -83,4 +82,4 @@ private:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

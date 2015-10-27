@@ -10,8 +10,7 @@
 #include "DirectMusic/DirectMusicAudioPlayer.h"
 #endif
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
@@ -512,4 +511,4 @@ void Sound::Polling(float elapsedTime)
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

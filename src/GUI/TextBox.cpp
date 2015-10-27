@@ -24,8 +24,7 @@
 #include "../Graphics/GraphicsHelper.h"
 #include "GUIHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 class TextBox::Selection
@@ -620,5 +619,5 @@ void TextBox::Handler_MouseMove(MouseEventArgs* e)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

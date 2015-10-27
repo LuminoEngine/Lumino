@@ -2,8 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Version.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Version
 {
 
@@ -53,4 +52,4 @@ bool IsAtLeast(int major, int minor, int revision)
 }
 
 } // namespace Version
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include <Lumino/Property.h>
 #include <Lumino/GUI/Controls/StackPanel.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -113,5 +112,5 @@ SizeF StackPanel::ArrangeOverride(const SizeF& finalSize)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

@@ -11,8 +11,7 @@
 #include <Lumino/IO/Stream.h>
 #include "../../include/Lumino/Graphics/Bitmap.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// png ファイル
@@ -290,4 +289,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

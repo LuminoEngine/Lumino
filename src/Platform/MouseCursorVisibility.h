@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Base/Environment.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 class MouseCursorVisibility
 {
@@ -68,4 +67,4 @@ private:
 
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

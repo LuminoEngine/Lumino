@@ -6,8 +6,7 @@
 #include <Lumino/Base/ByteBuffer.h>
 #include "AudioStream.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 /// MP3 ÉfÅ[É^ AudioStream
@@ -79,4 +78,4 @@ private:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

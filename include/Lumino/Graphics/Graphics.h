@@ -1,8 +1,7 @@
 #pragma once
 #include "Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief	レンダリングに関する機能を提供します。
@@ -25,4 +24,4 @@ public:
 	static void ChangeDirectX9Device(void* id3d9device);
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

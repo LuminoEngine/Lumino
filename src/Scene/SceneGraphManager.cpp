@@ -96,8 +96,7 @@
 #include "MME/MMERenderingPass.h"
 #include "InfomationRenderingPass.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 	
 //=============================================================================
@@ -294,4 +293,4 @@ void SceneGraphManager::RemoveShader(MMEShader* shader)
 
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

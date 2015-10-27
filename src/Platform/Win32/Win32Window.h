@@ -1,12 +1,10 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Size.h>
 #include "Win32WindowBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -67,4 +65,4 @@ private:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

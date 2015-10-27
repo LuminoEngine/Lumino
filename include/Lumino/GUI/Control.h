@@ -4,8 +4,7 @@
 #include "UITextElement.h"
 #include "VisualState.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 class ContentPresenter;
 
@@ -118,4 +117,4 @@ private:
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

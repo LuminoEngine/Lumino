@@ -19,8 +19,7 @@
 
 //#define LN_CLAMP(value, minValue, maxValue)		(value > maxValue) ? maxValue : (value < minValue) ? minValue : value;
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 class AudioManagerImpl;
 
 namespace Internal
@@ -30,4 +29,4 @@ namespace Internal
 
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

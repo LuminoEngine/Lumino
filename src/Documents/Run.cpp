@@ -5,8 +5,7 @@
 #include "../Graphics/FontGlyphTextureCache.h"
 #include "../Graphics/GraphicsHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -84,5 +83,5 @@ void Run::Render(DocumentsRenderer* renderer)
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

@@ -297,7 +297,7 @@ LNResult LNSoundListener_SetVelocityXYZ(float x, float y, float z)
 // LNSound
 //=============================================================================
 
-LN_TYPE_INFO_IMPL(Lumino::Sound, LNSound);
+LN_TYPE_INFO_IMPL(ln::Sound, LNSound);
 
 //-----------------------------------------------------------------------------
 //

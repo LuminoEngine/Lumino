@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include "AnimationCurve.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -490,4 +489,4 @@ double VMDBezierSQTTransformAnimation::GetLastFrameTime() const
 }
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END

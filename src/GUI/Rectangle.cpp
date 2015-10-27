@@ -2,8 +2,7 @@
 #include "Internal.h"
 #include <Lumino/GUI/Rectangle.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -73,5 +72,5 @@ void Rectangle::OnRender(RenderingContext* painter)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

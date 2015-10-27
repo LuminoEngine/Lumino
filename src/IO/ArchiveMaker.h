@@ -4,8 +4,7 @@
 #pragma once
 #include <Lumino/IO/PathName.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief	暗号化アーカイブを作成するためのクラスです。
@@ -78,5 +77,5 @@ private:
     int						m_blockLength;
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END
 

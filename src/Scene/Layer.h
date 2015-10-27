@@ -3,8 +3,7 @@
 #include "Internal.h"
 #include <Lumino/Scene/Camera.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 class Layer
@@ -70,4 +69,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

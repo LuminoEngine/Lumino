@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/Controls/Panel.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -197,5 +196,5 @@ SizeF PilePanel::ArrangeOverride(const SizeF& finalSize)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

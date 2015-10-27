@@ -2,7 +2,7 @@
 #include <iostream>
 #include <filesystem>
 #include "../../src/IO/ArchiveMaker.h"
-using namespace Lumino;
+using namespace ln;
 namespace sys = std::tr2::sys;
 
 int main(int argc, char **argv)

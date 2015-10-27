@@ -1117,8 +1117,7 @@
 #include "UIManagerImpl.h"
 #include "GUIPainter.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 
@@ -1987,4 +1986,4 @@ KeyEventArgs* EventArgsPool::CreateKeyEventArgs(Key keyCode, bool isAlt, bool is
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

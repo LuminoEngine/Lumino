@@ -4,8 +4,7 @@
 #include "DX9GraphicsDevice.h"
 #include "DX9SwapChain.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -222,4 +221,4 @@ void DX9SwapChain::Present(ITexture* colorBuffer)
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/CursorImage.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -44,5 +43,5 @@ void CursorImage::Draw(RenderingContext* painter, const PointF& point, float tim
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

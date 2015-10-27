@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Documents/Span.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -28,5 +27,5 @@ Span::~Span()
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

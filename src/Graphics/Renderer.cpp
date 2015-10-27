@@ -10,8 +10,7 @@
 #include "RenderingThread.h"
 #include "GraphicsHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // Renderer
@@ -301,4 +300,4 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 
 } // namespace Details
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

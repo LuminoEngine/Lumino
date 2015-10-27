@@ -4,8 +4,7 @@
 #include "../Graphics/GraphicsManager.h"
 #include "DocumentsRenderer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 class DocumentsManager;
@@ -59,4 +58,4 @@ protected:
 
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END

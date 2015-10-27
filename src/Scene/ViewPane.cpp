@@ -4,8 +4,7 @@
 #include "SceneGraphManager.h"
 #include "ViewPane.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -85,17 +84,17 @@ bool ViewPane::InjectMouseButtonDown(MouseButton button)
 {
 	switch (button)
 	{
-	case Lumino::MouseButton::Left:
+	case MouseButton::Left:
 		m_leftMouseState.Position = m_mousePosition;
 		m_leftMouseState.Time = static_cast<float>(m_manager->GetTime());
 		m_leftMouseState.IsDown = true;
 		return true;
-	case Lumino::MouseButton::Right:
+	case MouseButton::Right:
 		m_rightMouseState.Position = m_mousePosition;
 		m_rightMouseState.Time = static_cast<float>(m_manager->GetTime());
 		m_rightMouseState.IsDown = true;
 		return true;
-	case Lumino::MouseButton::Middle:
+	case MouseButton::Middle:
 		m_middleMouseState.Position = m_mousePosition;
 		m_middleMouseState.Time = static_cast<float>(m_manager->GetTime());
 		m_middleMouseState.IsDown = true;
@@ -113,13 +112,13 @@ bool ViewPane::InjectMouseButtonUp(MouseButton button)
 {
 	switch (button)
 	{
-	case Lumino::MouseButton::Left:
+	case MouseButton::Left:
 		m_leftMouseState.IsDown = false;
 		return true;
-	case Lumino::MouseButton::Right:
+	case MouseButton::Right:
 		m_leftMouseState.IsDown = false;
 		return true;
-	case Lumino::MouseButton::Middle:
+	case MouseButton::Middle:
 		m_leftMouseState.IsDown = false;
 		return true;
 	default:
@@ -129,4 +128,4 @@ bool ViewPane::InjectMouseButtonUp(MouseButton button)
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -7,8 +7,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/GlyphRun.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 // internal クラス。公開禁止。
@@ -25,4 +24,4 @@ public:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

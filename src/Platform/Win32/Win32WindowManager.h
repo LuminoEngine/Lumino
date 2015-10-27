@@ -1,11 +1,9 @@
 ﻿
 #pragma once
-
 #include "../WindowManagerBase.h"
 #include "Win32WindowBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class Win32Window;
@@ -72,4 +70,4 @@ private:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

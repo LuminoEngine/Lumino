@@ -9,8 +9,7 @@
 #include "MMEShaderTechnique.h"
 #include "MMEShader.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -34,8 +33,8 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 	newCode += StringA::GetNewLine();
 	newCode += StringA(code, codeLength);
 
-	RefPtr<Shader> shader(Shader::Create(newCode.GetCStr(), newCode.GetLength()));
-	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo));
+	RefPtr<Shader> shader(Shader::Create(newCode.GetCStr(), newCode.GetLength()), false);
+	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo), false);
 	mmeShader.SafeAddRef();
 	return mmeShader;
 }
@@ -45,7 +44,7 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 //-----------------------------------------------------------------------------
 MMEShader::MMEShader(SceneGraphManager* manager)
 	: m_manager(NULL)
-	, m_coreShader(NULL)
+	, m_coreShader()
 	, m_mmeScriptOutput(MME_SCROUT_color)
 	, m_mmeScriptClass(MME_SCRCLS_object)
 	, m_mmeScriptOrder(MME_SCRORDER_standard)
@@ -780,4 +779,4 @@ MMEShaderTechnique* MMEShader::FindTechnique(MMDPass mmdPass, bool UseTexture, b
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

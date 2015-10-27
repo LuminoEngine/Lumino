@@ -31,14 +31,13 @@
 #include <Lumino/GUI/Controls/ScrollBar.h>
 #include "../UIManagerImpl.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // ScrollEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::ScrollEventArgs, RoutedEventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ln::ScrollEventArgs, RoutedEventArgs);
 
 //=============================================================================
 // ScrollBar
@@ -146,5 +145,5 @@ void ScrollBar::Handler_Thumb_DragDelta(DragEventArgs* e)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

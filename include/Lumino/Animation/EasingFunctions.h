@@ -4,8 +4,7 @@
 #include <math.h>
 #include <cmath>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 typedef std::function< float(float, float, float, float) >		FloatEasingFunction;
 typedef std::function< float(double, double, double, double) >	DoubleEasingFunction;
@@ -202,4 +201,4 @@ public:
 	};
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

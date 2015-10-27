@@ -4,8 +4,7 @@
 #pragma once
 #include <Lumino/Base/String.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -29,4 +28,4 @@ public:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "UIManagerImpl.h"
 #include <Lumino/GUI/UIButton.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -151,4 +150,4 @@ void UIButton::RoutedHandler_MouseUp(MouseEventArgs* e)
 //}
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

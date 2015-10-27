@@ -3,8 +3,7 @@
 #include <functional>
 #include "UIManagerImpl.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 	
 // 様々なオブジェクトの private メンバにアクセスする内部クラス。
@@ -81,4 +80,4 @@ public:
 };
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

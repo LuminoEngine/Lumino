@@ -5,8 +5,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include "Layer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 class LayerList
@@ -70,4 +69,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

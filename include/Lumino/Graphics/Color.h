@@ -3,8 +3,7 @@
 */
 #pragma once
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 class Vector3;
 class Vector4;
 
@@ -306,4 +305,4 @@ public:
 
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

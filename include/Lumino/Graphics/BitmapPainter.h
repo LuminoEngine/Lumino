@@ -4,8 +4,7 @@
 #include <Lumino/Graphics/Color.h>
 #include "Bitmap.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
@@ -44,4 +43,4 @@ public:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

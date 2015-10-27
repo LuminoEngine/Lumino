@@ -5,8 +5,7 @@
 #include "Texture.h"
 #include "Shader.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
@@ -43,9 +42,9 @@ public:
 	float						Power;				///< 光沢の強さ
 
 	RefPtr<Shader>				Shader;				///< シェーダ
-	RefPtr<Lumino::Texture>				Texture;			///< テクスチャ
-	RefPtr<Lumino::Texture>				ToonTexture;		///< [PMD] トゥーンテクスチャ (getToonTexture() setToonTexture()でアクセスする)
-	RefPtr<Lumino::Texture>				SphereTexture;		///< [PMD] スフィアテクスチャ (getSphereTexture() setSphereTexture()でアクセスする)
+	RefPtr<ln::Texture>			Texture;			///< テクスチャ
+	RefPtr<ln::Texture>			ToonTexture;		///< [PMD] トゥーンテクスチャ (getToonTexture() setToonTexture()でアクセスする)
+	RefPtr<ln::Texture>			SphereTexture;		///< [PMD] スフィアテクスチャ (getSphereTexture() setSphereTexture()でアクセスする)
 
 	ColorF						ToonColor;			///< [PMD] トゥーンカラー
 	ColorF						EdgeColor;			///< [PMX] エッジカラー
@@ -77,4 +76,4 @@ public:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

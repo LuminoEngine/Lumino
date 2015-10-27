@@ -20,8 +20,7 @@
 	}
 
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -880,4 +879,4 @@ void ShaderPass::ChangeDevice(Driver::IShaderPass* obj)
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include <algorithm>
 #include "BitmapFont.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -187,4 +186,4 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code)
 
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

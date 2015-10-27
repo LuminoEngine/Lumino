@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Documents/Inline.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -28,5 +27,5 @@ Inline::~Inline()
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

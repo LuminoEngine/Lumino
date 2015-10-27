@@ -4,8 +4,7 @@
 #include "DirectMusic.h"
 #include "../AudioPlayer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 class AudioDevice;
 
@@ -64,4 +63,4 @@ private:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -2,8 +2,7 @@
 #include "Internal.h"
 #include <Lumino/AutoReleasePool.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // AutoReleasePool
@@ -54,4 +53,4 @@ void AutoReleasePool::Clear()
 }
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

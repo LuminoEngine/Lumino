@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/Decorator.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -109,4 +108,4 @@ void Decorator::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 #endif
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -4,8 +4,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Utils.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 	
 //=============================================================================
@@ -60,4 +59,4 @@ PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -204,8 +204,7 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…�
 #include "SpriteRendererImpl.h"
 #include "GraphicsHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -1072,4 +1071,4 @@ void SpriteRendererImpl::Clear()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

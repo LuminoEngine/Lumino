@@ -1,8 +1,7 @@
 
 #pragma once
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace Internal
 {
@@ -19,4 +18,4 @@ public:
 
 } // namespace Internal
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -41,7 +41,7 @@ void LNConfig_RegisterArchive(const LNChar* filePath, const LNChar* password)
 //-----------------------------------------------------------------------------
 void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority)
 {
-	LFManager::ConfigData.FileAccessPriority = (Lumino::FileAccessPriority)priority;
+	LFManager::ConfigData.FileAccessPriority = (FileAccessPriority)priority;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ void LNConfig_SetSoundCacheSize(int objectCount, int memorySize)
 //-----------------------------------------------------------------------------
 void LNConfig_SetDirectMusicMode(LNDirectMusicMode mode)
 {
-	LFManager::ConfigData.DirectMusicMode = (Lumino::DirectMusicMode)mode;
+	LFManager::ConfigData.DirectMusicMode = (DirectMusicMode)mode;
 }
 
 //-----------------------------------------------------------------------------

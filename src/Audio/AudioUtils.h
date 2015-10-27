@@ -6,8 +6,7 @@
 #include <Lumino/IO/Stream.h>
 #include <Lumino/Audio/Common.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 class AudioStream;
 
@@ -38,4 +37,4 @@ public:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

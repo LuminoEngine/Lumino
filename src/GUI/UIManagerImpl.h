@@ -8,8 +8,7 @@
 #include <Lumino/GUI/Common.h>
 #include <Lumino/GUI/RoutedEventArgs.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 namespace Internal { class GUIPainter; }
 	
@@ -237,4 +236,4 @@ private:
 };
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -1,10 +1,8 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Material.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief	マテリアルのクラスです。
@@ -38,4 +36,4 @@ LN_NAMESPACE_SCENE_BEGIN
 //};
 //
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

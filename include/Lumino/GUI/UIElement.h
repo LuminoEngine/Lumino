@@ -30,8 +30,7 @@ LN_INTERNAL_ACCESS: \
 #define LN_UI_ELEMENT_SUBCLASS_IMPL(className) \
 	const String className::TypeID(_T(#className))
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 class CanExecuteRoutedCommandEventArgs;
 class ExecuteRoutedCommandEventArgs;
@@ -127,7 +126,7 @@ private:
 		}
 	}
 
-	// Lumino::EventXX のような使い方と同時に、
+	// ln::EventXX のような使い方と同時に、
 	// Property にたいする メンバ変数のような意味も持つ。
 	// 即ち、ハンドラのリスト。
 	// RoutedEventSlot は、いわゆる「動的なハンドラ」
@@ -611,4 +610,4 @@ private:
 };
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -13,8 +13,8 @@
 #include <Lumino/Game/FpsController.h>
 #include <Lumino/ApplicationSettings.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
+
 class AudioManagerImpl;
 class ProfilerRenderer;
 class SceneGraphManager;
@@ -110,4 +110,4 @@ private:
 	bool								m_endRequested;
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

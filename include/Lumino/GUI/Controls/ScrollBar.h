@@ -6,8 +6,7 @@
 #include "Track.h"
 #include "Panel.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 /// Scroll イベントの原因となった動作を表します。
@@ -144,4 +143,4 @@ private:
 
 	
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

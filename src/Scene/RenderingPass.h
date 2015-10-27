@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/Nullable.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
@@ -10,8 +9,7 @@
 #include "Internal.h"
 #include "MME/MMEShader.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 class RenderingParams
@@ -100,4 +98,4 @@ protected:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -16,8 +16,7 @@
 
 #define LN_RC_TRACE /*printf*/
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class SwapChain;
 class Texture;
@@ -493,7 +492,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		float				Float;
 		size_t				VectorsBufferIndex;
 		//Vector4*			Vector;		///< 単一 Vector または VectorArray
-		//Lumino::Matrix*		Matrix;		///< 単一 Matrix または MatrixArray
+		//ln::Matrix*		Matrix;		///< 単一 Matrix または MatrixArray
 		Driver::ITexture*	Texture;
 	};
 	DataHandle					m_arrayLength;
@@ -521,7 +520,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		Float = value;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Lumino::Vector4* vectors, size_t count)
+	void Create(Driver::IShaderVariable* target, const Vector4* vectors, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Vector4) * count, vectors);
 		m_target = target;
@@ -530,7 +529,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Lumino::Matrix* matrices, size_t count)
+	void Create(Driver::IShaderVariable* target, const Matrix* matrices, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Matrix) * count, matrices);
 		m_target = target;
@@ -720,4 +719,4 @@ struct ReadUnlockTextureCommand : public RenderingCommand
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

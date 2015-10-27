@@ -3,8 +3,7 @@
 #include "Common.h"
 #include "AnimationCurve.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -58,4 +57,5 @@ private:
 };
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END
+

@@ -4,8 +4,7 @@
 #include "Common.h"
 #include "PhysicsManager.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -99,4 +98,4 @@ private:
 };
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		UI 機能の管理クラスです。
@@ -93,4 +92,4 @@ public:
 #endif
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

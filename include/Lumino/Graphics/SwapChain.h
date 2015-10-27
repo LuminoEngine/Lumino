@@ -3,8 +3,7 @@
 #include "Common.h"
 #include "GraphicsResourceObject.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingCommandList;
 class Texture;
@@ -55,4 +54,4 @@ LN_INTERNAL_ACCESS:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -4,8 +4,7 @@
 #include <Lumino/Audio/AudioManager.h>
 #include "AudioDevice.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //-----------------------------------------------------------------------------
@@ -105,4 +104,4 @@ const Vector3& SoundListener::GetVelocity()
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/RoutedEventArgs.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -94,5 +93,5 @@ KeyEventArgs::~KeyEventArgs()
 //}
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

@@ -56,8 +56,7 @@
 #include "GUI/UIManagerImpl.h"
 #include "ApplicationImpl.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 ////=============================================================================
 //// NativeWindowEventListener
@@ -497,4 +496,4 @@ bool Application::UpdateFrame()
 }
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

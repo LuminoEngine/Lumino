@@ -27,8 +27,7 @@
 
 #include <Lumino/Graphics/Color.h>	// TODO
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // TypeInfo
@@ -942,16 +941,16 @@ bool Variant::operator == (const Variant& right) const
 	if (m_type != right.m_type) { return false; }
 	switch (m_type)
 	{
-	case Lumino::VariantType_Unknown:	return true;
-	case Lumino::VariantType_Bool:		return m_bool == right.m_bool;
-	case Lumino::VariantType_Int:		return m_int == right.m_int;
-	case Lumino::VariantType_Float:		return m_float == right.m_float;
-	case Lumino::VariantType_String:	return m_string == right.m_string;
-	case Lumino::VariantType_List:		return m_valueList == right.m_valueList;
-	case Lumino::VariantType_Object:	return m_object == right.m_object;
-	case Lumino::VariantType_SizeF:		return *((SizeF*)m_sizeF) == *((SizeF*)right.m_sizeF);
-	case Lumino::VariantType_Rect:		return *((Rect*)m_rect) == *((Rect*)right.m_rect);
-	case Lumino::VariantType_ThicknessF:return *((ThicknessF*)m_thicknessF) == *((ThicknessF*)right.m_thicknessF);
+	case VariantType_Unknown:	return true;
+	case VariantType_Bool:		return m_bool == right.m_bool;
+	case VariantType_Int:		return m_int == right.m_int;
+	case VariantType_Float:		return m_float == right.m_float;
+	case VariantType_String:	return m_string == right.m_string;
+	case VariantType_List:		return m_valueList == right.m_valueList;
+	case VariantType_Object:	return m_object == right.m_object;
+	case VariantType_SizeF:		return *((SizeF*)m_sizeF) == *((SizeF*)right.m_sizeF);
+	case VariantType_Rect:		return *((Rect*)m_rect) == *((Rect*)right.m_rect);
+	case VariantType_ThicknessF:return *((ThicknessF*)m_thicknessF) == *((ThicknessF*)right.m_thicknessF);
 	default: LN_ASSERT(0); return false;
 	}
 }
@@ -965,36 +964,36 @@ void Variant::Copy(const Variant& obj)
 	m_type = obj.m_type;
 	switch (m_type)
 	{
-	case Lumino::VariantType_Unknown:
+	case VariantType_Unknown:
 		break;
-	case Lumino::VariantType_Bool:
+	case VariantType_Bool:
 		m_bool = obj.m_bool;
 		break;
-	case Lumino::VariantType_Int:
+	case VariantType_Int:
 		m_int = obj.m_int;
 		break;
-	case Lumino::VariantType_Float:
+	case VariantType_Float:
 		m_float = obj.m_float;
 		break;
-	case Lumino::VariantType_String:
+	case VariantType_String:
 		m_string = obj.m_string;
 		break;
-	case Lumino::VariantType_List:
+	case VariantType_List:
 		LN_REFOBJ_SET(m_valueList, obj.m_valueList);
 		break;
-	case Lumino::VariantType_Object:
+	case VariantType_Object:
 		LN_REFOBJ_SET(m_object, obj.m_object);
 		break;
-	case Lumino::VariantType_SizeF:
+	case VariantType_SizeF:
 		memcpy(m_sizeF, obj.m_sizeF, sizeof(m_sizeF));
 		break;
-	case Lumino::VariantType_Rect:
+	case VariantType_Rect:
 		memcpy(m_rect, obj.m_rect, sizeof(m_rect));
 		break;
-	case Lumino::VariantType_ThicknessF:
+	case VariantType_ThicknessF:
 		memcpy(m_thicknessF, obj.m_thicknessF, sizeof(m_thicknessF));
 		break;
-	case Lumino::VariantType_ToneF:
+	case VariantType_ToneF:
 		memcpy(m_toneF, obj.m_toneF, sizeof(m_toneF));
 		break;
 	default:
@@ -1017,4 +1016,4 @@ void Variant::Release()
 	m_uint = 0;	// union 全てを初期化
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

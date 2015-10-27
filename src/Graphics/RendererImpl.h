@@ -6,8 +6,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/GraphicsResourceObject.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 namespace Details
@@ -140,4 +139,4 @@ LN_INTERNAL_ACCESS:
 } // namespace Details
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

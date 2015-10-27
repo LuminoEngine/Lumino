@@ -3,8 +3,7 @@
 #include "../../CoreObjectList.h"
 #include "../UIElement.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 /// コンテンツサイズの計算方法
@@ -75,4 +74,4 @@ private:
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

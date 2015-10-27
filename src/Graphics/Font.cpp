@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Font.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -25,4 +24,4 @@ Font::~Font()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

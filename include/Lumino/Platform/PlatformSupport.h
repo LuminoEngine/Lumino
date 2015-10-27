@@ -1,10 +1,8 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/Common.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class Window;
@@ -45,4 +43,4 @@ public:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

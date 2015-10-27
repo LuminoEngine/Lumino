@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Base/Array.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		複数のスレッドからの要素の追加・削除を補助する RefObject の配列です。
@@ -146,4 +145,4 @@ public:
 	}
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

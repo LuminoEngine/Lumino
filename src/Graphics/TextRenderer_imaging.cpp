@@ -13,8 +13,7 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 #include <algorithm>
 #include "TextRenderer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 #if 0
 
@@ -204,4 +203,4 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect&
 #endif
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

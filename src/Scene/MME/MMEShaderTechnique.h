@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 //#include "../../Graphics/Interface.h"
 //#include "../../Graphics/DeviceObjects.h"
 //#include "../DrawCommand.h"
@@ -10,8 +9,7 @@
 #include "MMETypes.h"
 #include "ShaderScriptCommandList.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class MMEShader;
 class MMEShaderPass;
@@ -113,4 +111,4 @@ public:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

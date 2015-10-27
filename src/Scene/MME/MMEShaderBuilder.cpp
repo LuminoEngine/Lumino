@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "../../Internal.h"
 #include <Lumino/Graphics/Shader.h>
 #include "MMETypes.h"
@@ -8,8 +7,7 @@
 #include "MMEShaderTechnique.h"
 #include "MMEShaderBuilder.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -827,4 +825,4 @@ uint32_t MMEShaderBuilder::CheckMatrixMask(MMEVariableRequest req)
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

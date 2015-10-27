@@ -1,8 +1,7 @@
 ﻿
 #include "Internal.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -6,8 +6,7 @@
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingThread.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //-----------------------------------------------------------------------------
@@ -212,4 +211,4 @@ void RenderingThread::Execute()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

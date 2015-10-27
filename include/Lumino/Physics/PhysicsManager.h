@@ -5,8 +5,7 @@
 #include "Common.h"
 #include "IDebugRenderer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -87,4 +86,4 @@ private:
 };
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

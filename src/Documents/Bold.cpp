@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Documents/Bold.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -28,5 +27,5 @@ Bold::~Bold()
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

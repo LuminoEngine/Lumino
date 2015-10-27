@@ -6,8 +6,7 @@
 #include <Lumino/Graphics/Shader.h>
 #include "MME/MMESceneObject.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 class SceneNodeRefList
@@ -170,4 +169,4 @@ protected:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

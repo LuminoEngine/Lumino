@@ -4,8 +4,7 @@
 #include <Lumino/Graphics/GlyphRun.h>
 #include "FontGlyphTextureCache.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -58,4 +57,4 @@ void GlyphRun::AttachGlyphTextureCache(Internal::FontGlyphTextureCache* cache)
 
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

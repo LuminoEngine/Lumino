@@ -4,8 +4,7 @@
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/Color.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		
@@ -105,4 +104,4 @@ public:
 
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

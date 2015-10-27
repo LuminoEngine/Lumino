@@ -3,8 +3,7 @@
 #include <Lumino/Graphics/Font.h>
 #include <Lumino/Graphics/FontManager.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class FontManager;
 
@@ -120,4 +119,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

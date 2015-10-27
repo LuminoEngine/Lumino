@@ -3,8 +3,7 @@
 #include "Win32WindowManager.h"
 #include "Win32Window.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -153,4 +152,4 @@ void Win32UserHostWindow::ReleaseMouseCapture()
 }
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

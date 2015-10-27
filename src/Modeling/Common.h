@@ -3,8 +3,7 @@
 
 #include <Lumino/Graphics/Material.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Modeling
 {
 class ModelManager;
@@ -145,4 +144,5 @@ public:
 };
 
 } // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END
+

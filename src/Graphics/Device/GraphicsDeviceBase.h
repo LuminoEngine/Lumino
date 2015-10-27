@@ -3,8 +3,7 @@
 #include <Lumino/Threading/Mutex.h>
 #include "GraphicsDriverInterface.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -38,4 +37,4 @@ protected:
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "Internal.h"
 #include <Lumino/RoutedEvent.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // RoutedEventArgs
@@ -50,4 +49,4 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(PropertyChangedEventArgs, CoreObject);	// キャ�
 //{
 //}
 
-} // namespace Lumino
+LN_NAMESPACE_END

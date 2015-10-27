@@ -10,8 +10,7 @@
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Threading/Mutex.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief	
@@ -94,4 +93,4 @@ private:
 	Threading::DelegateThread	m_asyncProcThread;
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

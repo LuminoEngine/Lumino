@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Base/Array.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 #if 1	// Scene モジュールを修正したら削除する予定
 
 /**
@@ -210,4 +209,4 @@ public:
 };
 #endif
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -2,8 +2,7 @@
 #include "../../Internal.h"
 #include "MMEShaderErrorInfo.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 	
 //=============================================================================
@@ -31,4 +30,4 @@ void MMEShaderErrorInfo::AddError(MMEShaderError errorCode, const String& messag
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

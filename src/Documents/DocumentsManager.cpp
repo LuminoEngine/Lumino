@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Documents/DocumentsManager.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -31,5 +30,5 @@ DocumentsManager::~DocumentsManager()
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

@@ -3,8 +3,7 @@
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Font.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 ///// テキストの配置方法
@@ -90,4 +89,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

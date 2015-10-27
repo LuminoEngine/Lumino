@@ -4,9 +4,8 @@
 #include <memory>
 #include <functional>
 
+LN_NAMESPACE_BEGIN
 
-namespace Lumino
-{
 class Property;
 class CoreObject;
 class PropertyMetadata;
@@ -378,7 +377,7 @@ public:
 // これは RefPtr のデフォルトコンストラクタは参照カウントをインクリメントしないため。
 // RefPtr を使いたいときはメンバ変数の型を RefPtr にし、valueType にはそのポインタを指定する。
 #define LN_PROPERTY(valueType, propVar) \
-	public:  static const Lumino::Property*	propVar##; \
+	public:  static const ln::Property*	propVar##; \
 	private: static void  set_##propVar(CoreObject* obj, valueType value); \
 	private: static valueType get_##propVar(const CoreObject* obj); \
 	private: static void  changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e); \
@@ -390,7 +389,7 @@ public:
 #define LN_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, propName, memberVar, metadata) \
 	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
 	static TypedProperty<valueType>			_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
-	const Lumino::Property*					ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	const ln::Property*						ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
 	void									ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->memberVar = value; } \
 	valueType								ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->memberVar; } \
 	void									ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
@@ -401,7 +400,7 @@ public:
 #define LN_PROPERTY_IMPLEMENT_GETTER_SETTER(ownerClass, valueType, propVar, propName, getter, setter, metadata) \
 	typedef void(ownerClass::*PropertyChangedCallback_##propVar)(PropertyChangedEventArgs*); \
 	static TypedProperty<valueType>			_##propVar(ownerClass::GetClassTypeInfo(), _T(propName), NULL); \
-	const Lumino::Property*					ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
+	const ln::Property*						ownerClass::propVar = PropertyManager::RegisterProperty(ownerClass::GetClassTypeInfo(), &_##propVar); \
 	void									ownerClass::set_##propVar(CoreObject* obj, valueType value) { static_cast<ownerClass*>(obj)->setter(value); } \
 	valueType								ownerClass::get_##propVar(const CoreObject* obj) { return static_cast<const ownerClass*>(obj)->getter(); } \
 	void									ownerClass::changed_##propVar(CoreObject* obj, PropertyChangedEventArgs* e) { auto func = metadata_##propVar.GetPropertyChangedCallback<PropertyChangedCallback_##propVar>(); if (func != NULL) { (static_cast<ownerClass*>(obj)->*func)(e); } } \
@@ -505,4 +504,4 @@ public:
 	LN_CHECK_ARGS_RETURNV(element != NULL, type()); \
 	return Variant::Cast<type>(element->GetPropertyValue(prop));
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -16,8 +16,7 @@
 
 #define LN_OUT_LOG  // 念のためログを出しておく
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
@@ -545,4 +544,4 @@ void DirectMusicManager::Thread_InitPerformance()
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

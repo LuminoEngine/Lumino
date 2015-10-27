@@ -3,8 +3,7 @@
 #include <vector>
 #include <Lumino/Base/RefObject.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		自動 Release するオブジェクトを管理するプール。
@@ -35,4 +34,4 @@ private:
 	std::vector<RefObject*>	m_objectList;
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

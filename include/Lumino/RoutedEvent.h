@@ -3,9 +3,7 @@
 #include <functional>
 #include "Variant.h"
 
-namespace Lumino
-{
-
+LN_NAMESPACE_BEGIN
 
 class EventArgs
 	: public CoreObject
@@ -184,14 +182,14 @@ private:
 
 
 //{ \
-//	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
+//	static ::ln::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
 //	RegisterRoutedEvent(&ev); \
 //}
 //
 //
 //#define LN_DEFINE_ROUTED_EVENT(classType, eventArgsType, name, onEventFuncPtr, callEventFuncPtr) \
 //{ \
-//	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, onEventFuncPtr, callEventFuncPtr); \
+//	static ::ln::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, onEventFuncPtr, callEventFuncPtr); \
 //	RegisterRoutedEvent(&ev); \
 //}
 
@@ -242,7 +240,7 @@ private:
 /// つまり、子Visualで発生したルーティングイベントを元に処理したい場合はこのマクロで登録する必要がある。
 #define LN_REGISTER_ROUTED_EVENT_HANDLER(ownerClass, eventArgs, routedEvent, handler) \
 { \
-	static ::Lumino::TypedRoutedEventHandler<ownerClass, eventArgs> h(routedEvent, [](ownerClass* t, eventArgs* e) { t->handler(e); }); \
+	static ::ln::TypedRoutedEventHandler<ownerClass, eventArgs> h(routedEvent, [](ownerClass* t, eventArgs* e) { t->handler(e); }); \
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

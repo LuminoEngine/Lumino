@@ -4,8 +4,7 @@
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Physics/BodyBase.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -41,4 +40,4 @@ void BodyBase::Create(PhysicsManager* manager, btCollisionObject* obj)
 }
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

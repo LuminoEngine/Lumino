@@ -1,14 +1,12 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
 #include "MME/MMEShaderTechnique.h"
 #include "MME/MMEShader.h"
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -202,4 +200,4 @@ void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MM
 
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

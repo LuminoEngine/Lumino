@@ -6,8 +6,7 @@
 #include "Archive.h"
 #include "ArchiveMaker.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //-----------------------------------------------------------------------------
 //
@@ -248,4 +247,4 @@ void ArchiveMaker::WriteU32Padding16(uint32_t v0, uint32_t v1)
     fwrite( &buf, sizeof( b ), 1, m_stream );
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 */
 #pragma once
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /** マウスボタン */
 LN_ENUM(MouseButton)
@@ -113,4 +112,4 @@ enum class Key
 	TERMINATOR,
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

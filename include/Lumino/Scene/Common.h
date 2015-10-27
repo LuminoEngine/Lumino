@@ -5,8 +5,7 @@
 #define LN_NAMESPACE_SCENE_BEGIN	//namespace Scene {
 #define LN_NAMESPACE_SCENE_END		//}
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class SceneGraphManager;
 class ViewPane;
@@ -147,5 +146,5 @@ struct RenderingPassClientData
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

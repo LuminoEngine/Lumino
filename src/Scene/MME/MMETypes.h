@@ -1,14 +1,12 @@
 ﻿
 #pragma once
-
 #include <vector>
 #include <list>
 #include <map>
 #include <Lumino/Graphics/Shader.h>
 #include "../Internal.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 //
 //class SceneNode;
@@ -470,4 +468,4 @@ struct MMESceneParams	// TOOD: 昇格
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -5,8 +5,7 @@
 #include "SceneGraphManager.h"
 #include "InfomationRenderingPass.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -44,4 +43,4 @@ void InfomationRenderingPass::PostRender(RenderingParams& params)
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

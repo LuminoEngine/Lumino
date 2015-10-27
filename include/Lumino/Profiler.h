@@ -6,8 +6,7 @@
 #include <Lumino/Base/ElapsedTimer.h>
 #include <Lumino/Threading/Mutex.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief
@@ -140,4 +139,4 @@ private:
 };
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

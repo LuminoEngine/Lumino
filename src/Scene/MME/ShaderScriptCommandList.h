@@ -1,13 +1,11 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
 #include <Lumino/Graphics/Shader.h>
 #include "MMETypes.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class MMEShader;
 
@@ -241,4 +239,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

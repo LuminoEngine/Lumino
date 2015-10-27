@@ -3,8 +3,7 @@
 #include <Lumino/IO/BinaryReader.h>
 #include "WaveDecoder.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 /// wave ファイルのヘッダ
@@ -194,4 +193,4 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

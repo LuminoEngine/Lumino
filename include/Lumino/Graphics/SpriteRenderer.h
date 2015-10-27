@@ -2,8 +2,7 @@
 #pragma once
 #include "Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class SpriteRendererImpl;
 
@@ -123,4 +122,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

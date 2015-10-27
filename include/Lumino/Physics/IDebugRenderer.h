@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Math/Vector3.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -19,4 +18,4 @@ public:
 };
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

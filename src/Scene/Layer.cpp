@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
@@ -8,8 +7,7 @@
 #include <Lumino/Scene/Light.h>
 #include "Layer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -23,7 +21,7 @@ DrawingLayer::DrawingLayer(SceneGraphManager* manager)
 	: m_manager(manager)
 	, m_camera(NULL)
 	, m_renderingRootNode(NULL)
-	, m_renderingPassList(LN_NEW RenderingPassRefList())
+	, m_renderingPassList(LN_NEW RenderingPassRefList(), false)
 {
 
 }
@@ -92,4 +90,4 @@ void DrawingLayer::Render()
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

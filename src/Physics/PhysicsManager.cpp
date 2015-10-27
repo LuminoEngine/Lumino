@@ -102,8 +102,7 @@
 #include <Lumino/Physics/Joint.h>
 #include <Lumino/Physics/PhysicsManager.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -468,4 +467,4 @@ void PhysicsManager::AddJoint(Joint* joint)
 }
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

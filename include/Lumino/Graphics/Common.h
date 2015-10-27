@@ -15,11 +15,10 @@
 #define LN_NAMESPACE_GRAPHICS_BEGIN		//namespace Graphics {
 #define LN_NAMESPACE_GRAPHICS_END		//}
 
-#define LN_BEGIN_INTERNAL_NAMESPACE(module)	namespace Lumino { /*namespace module {*/ namespace Internal {
-#define LN_END_INTERNAL_NAMESPACE	} /*}*/ }
+#define LN_BEGIN_INTERNAL_NAMESPACE(module)	LN_NAMESPACE_BEGIN /*namespace module {*/ namespace Internal {
+#define LN_END_INTERNAL_NAMESPACE	} /*}*/ LN_NAMESPACE_END
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
 
@@ -321,5 +320,5 @@ namespace Driver
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

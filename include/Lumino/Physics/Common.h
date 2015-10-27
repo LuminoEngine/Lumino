@@ -1,8 +1,7 @@
 ﻿
 #pragma once
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 class PhysicsManager;
@@ -39,7 +38,7 @@ enum ASyncSimulationState
 };
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END
 
 
 class btDynamicsWorld;

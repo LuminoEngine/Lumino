@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/UIElementCollection.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -41,5 +40,5 @@ void UIElementCollection::SetItem(int index, const value_type& item)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

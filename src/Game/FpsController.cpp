@@ -3,8 +3,7 @@
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Game/FpsController.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /*
 待機だけを行いたい場合は初期化後、process() を呼び出すだけで
@@ -365,4 +364,4 @@ void FpsController::ProcessForMeasure()
 	m_fps = (m_averageTime > 0) ? (1.0f / m_averageTime) : 0;
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -6,8 +6,7 @@
 #include "GUIHelper.h"
 #include "GUIPainter.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 	
 //=============================================================================
@@ -406,4 +405,4 @@ void GUIContext::RemoveAnimationClock(AnimationClock* clock)
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

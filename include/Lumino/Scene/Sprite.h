@@ -1,11 +1,9 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Texture.h>
 #include "VisualNode.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 /// Sprite
@@ -74,4 +72,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

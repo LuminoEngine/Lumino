@@ -5,8 +5,7 @@
 #include "TextElement.h"
 #include "Inline.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 class Paragraph;
@@ -58,4 +57,4 @@ private:
 
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END

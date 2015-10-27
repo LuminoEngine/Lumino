@@ -5,7 +5,7 @@
 // 内部利用ということでここでグローバルな using namespace している。
 // LFManager.h では これがあること前提でいろいろ定義しているので、
 // 通常は LFManager.h だけ include しようとするとコンパイルエラーになる。(これによってとりあえず internal であることを示す)
-using namespace Lumino;
+using namespace ln;
 
 #include "../include/LNTypedef.h"
 #include "../include/LNCommon.h"
@@ -167,13 +167,13 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 
 /// try 空間の終了
 #define LN_FUNC_TRY_END		} \
-    catch (Lumino::Exception& e) { \
+    catch (ln::Exception& e) { \
 		LFManager::ProcException( &e ); \
 	}
 
 /// try 空間の終了
 #define LN_FUNC_TRY_END_RETURN		} \
-    catch (Lumino::Exception& e) { \
+    catch (ln::Exception& e) { \
 		return LFManager::ProcException(&e); \
 	} \
 	return ::LN_OK;

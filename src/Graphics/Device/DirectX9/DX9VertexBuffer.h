@@ -2,8 +2,7 @@
 #pragma once 
 #include "../GraphicsDriverInterface.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -58,4 +57,4 @@ private:
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -61,8 +61,7 @@
 #include <Lumino/Platform/Window.h>
 
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -206,4 +205,4 @@ void PlatformManager::Thread_MainWindow()
 }
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

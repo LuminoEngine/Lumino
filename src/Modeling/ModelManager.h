@@ -8,8 +8,7 @@
 #include <Lumino/Physics/PhysicsManager.h>
 #include "Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Modeling
 {
 
@@ -22,7 +21,7 @@ public:
 	/// 初期化データ
 	struct ConfigData
 	{
-		Lumino::FileManager*		FileManager;
+		FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
 		GraphicsManager*			GraphicsManager;
 		int							ModelCoreCacheSize;
@@ -52,7 +51,7 @@ public:
 	Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 private:
-	RefPtr<Lumino::FileManager>			m_fileManager;
+	RefPtr<FileManager>			m_fileManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	RefPtr<CacheManager>				m_cacheManager;
@@ -60,4 +59,5 @@ private:
 };
 
 } // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END
+

@@ -6,8 +6,7 @@
 #include "../Graphics/Font.h"
 #include "SwapChain.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
 class PainterEngine;
@@ -96,7 +95,7 @@ public:	// TODO
 		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
 		RenderingType			RenderingType;
 		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
-		Lumino::FileManager*	FileManager;			/**< FileManager */
+		FileManager*			FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
 		void*					D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
 
@@ -142,4 +141,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

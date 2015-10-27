@@ -2,8 +2,7 @@
 #include "AudioStream.h"
 #include "AudioUtils.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
@@ -153,4 +152,4 @@ SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStre
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

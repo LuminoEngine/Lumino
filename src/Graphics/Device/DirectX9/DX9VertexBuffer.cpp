@@ -4,8 +4,7 @@
 #include "DX9GraphicsDevice.h"
 #include "DX9VertexBuffer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -170,4 +169,4 @@ void DX9VertexBuffer::OnResetDevice()
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

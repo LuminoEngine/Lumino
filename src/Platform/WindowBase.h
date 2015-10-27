@@ -1,11 +1,9 @@
 ﻿
 #pragma once
-
 #include "NativeWindow.h"
 #include "MouseCursorVisibility.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class WindowManagerBase;
@@ -43,4 +41,5 @@ protected:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END
+

@@ -5,8 +5,7 @@
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// GeometryRenderer の実装クラス
@@ -231,4 +230,4 @@ public:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

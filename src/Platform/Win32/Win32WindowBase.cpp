@@ -21,8 +21,7 @@
 #include "Win32WindowManager.h"
 #include "Win32WindowBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -572,4 +571,4 @@ Key Win32WindowBase::ConvertVirtualKeyCode(DWORD winVK)
 
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

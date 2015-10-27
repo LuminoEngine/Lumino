@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/GUI/ContentElement.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -29,4 +28,4 @@ ContentElement::~ContentElement()
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

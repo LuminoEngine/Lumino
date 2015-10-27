@@ -3,8 +3,7 @@
 #include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Font.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 #if 0
@@ -73,4 +72,4 @@ private:
 #endif
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

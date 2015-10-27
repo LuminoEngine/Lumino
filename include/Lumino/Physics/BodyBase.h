@@ -3,8 +3,7 @@
 
 #include "Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -65,4 +64,4 @@ protected:
 };
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

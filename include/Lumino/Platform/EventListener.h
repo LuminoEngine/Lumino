@@ -1,11 +1,9 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/Array.h>
 #include "EventArgs.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -27,7 +25,7 @@ protected:
 };
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END
 
 
 

@@ -3,8 +3,7 @@
 #include "WindowManagerBase.h"
 #include "WindowBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -50,4 +49,4 @@ bool WindowBase::SendEventToAllListener(const EventArgs& e)
 }
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include <Lumino/GUI/ContentControl.h>
 #include <Lumino/GUI/ContentPresenter.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 	
 //=============================================================================
@@ -179,4 +178,4 @@ void ContentPresenter::SetOwner(ContentControl* owner)
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

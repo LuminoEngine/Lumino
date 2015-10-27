@@ -3,8 +3,7 @@
 #include <Lumino/GUI/TextBlock.h>
 #include <Lumino/GUI/ContentControl.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -170,4 +169,4 @@ void ContentControl::ApplyTemplateHierarchy(CombinedLocalResource* parent)
 #endif
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

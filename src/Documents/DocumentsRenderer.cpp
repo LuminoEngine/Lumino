@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Documents/DocumentsRenderer.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -35,5 +34,5 @@ void RenderTargetDocumentsRenderer::OnDrawGlyphRun(GlyphRun* glyphRun, const Poi
 }
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
 

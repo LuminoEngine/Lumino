@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Base/EnumExtension.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 class AnimationCurve;
@@ -111,4 +110,4 @@ LN_ENUM_REFLECTION(EasingMode,
 LN_ENUM_DECLARE(EasingMode);
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END

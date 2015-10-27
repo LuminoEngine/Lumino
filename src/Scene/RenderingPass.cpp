@@ -6,8 +6,7 @@
 #include <Lumino/Scene/VisualNode.h>
 #include "RenderingPass.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -44,4 +43,4 @@ void RenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

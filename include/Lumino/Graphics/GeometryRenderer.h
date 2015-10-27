@@ -4,8 +4,7 @@
 #include <Lumino/Base/Rect.h>
 #include <Lumino/Math/Matrix.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GeometryRendererCore;
 
@@ -56,4 +55,4 @@ protected:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

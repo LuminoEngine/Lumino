@@ -4,8 +4,7 @@
 #include <Lumino/GUI/Controls/Image.h>
 #include "../UIManagerImpl.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -138,5 +137,5 @@ void Image::OnRender(RenderingContext* painter)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

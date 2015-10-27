@@ -1,10 +1,8 @@
 ﻿
 #pragma once
-
 #include "../RenderingPass.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 /// MMDPass をキーとしてシェーダテクニックを検索する RenderingPass
@@ -28,4 +26,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

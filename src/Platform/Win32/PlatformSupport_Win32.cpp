@@ -1,12 +1,9 @@
 ﻿
-#pragma once
-
 #include "../../Internal.h"
 #include "../../../include/Lumino/Platform/PlatformSupport.h"
 #include "Win32WindowBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -21,4 +18,4 @@ HWND PlatformSupport::GetWindowHandle(Window* window)
 }
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

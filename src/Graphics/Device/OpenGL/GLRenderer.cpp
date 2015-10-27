@@ -6,8 +6,7 @@
 #include "GLShader.h"
 #include "GLRenderer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -666,4 +665,4 @@ void GLRenderer::GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, G
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "../Graphics/Color.h"
 #include "SceneNode.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 /// Light
@@ -106,4 +105,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

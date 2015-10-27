@@ -4,8 +4,7 @@
 #include "MMEShaderErrorInfo.h"
 #include "MMEShaderTechnique.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 #define LN_SET_SHADER_ERR_MSG( fmt_, ... ) \
@@ -730,4 +729,4 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

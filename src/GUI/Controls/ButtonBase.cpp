@@ -4,8 +4,7 @@
 #include <Lumino/GUI/Controls/ButtonBase.h>
 #include "../UIManagerImpl.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -30,5 +29,5 @@ ButtonBase::~ButtonBase()
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

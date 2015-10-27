@@ -6,8 +6,7 @@
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -121,4 +120,4 @@ void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

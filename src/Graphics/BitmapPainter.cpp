@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/BitmapPainter.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -95,4 +94,4 @@ uint32_t BitmapPainter::GetColorByteSec(const Color& color, PixelFormat format)
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

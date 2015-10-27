@@ -12,11 +12,11 @@
 // LNVector2
 //=============================================================================
 
-typedef Lumino::Vector2 LVector2;
-typedef Lumino::Vector3 LVector3;
-typedef Lumino::Vector4 LVector4;
-typedef Lumino::Matrix LMatrix;
-typedef Lumino::Quaternion LQuaternion;
+typedef Vector2 LVector2;
+typedef Vector3 LVector3;
+typedef Vector4 LVector4;
+typedef Matrix LMatrix;
+typedef Quaternion LQuaternion;
 
 //-----------------------------------------------------------------------------
 //
@@ -438,7 +438,7 @@ LNResult LNMatrix_RotateZD(LNMatrix* mat, double radian)
 LNResult LNMatrix_Rotate(LNMatrix* mat, float xRad, float yRad, float zRad, LNRotationOrder rotOrder)
 {
 	LN_CHECK_ARG(mat != NULL);
-	LMatrix m = LMatrix::RotationEulerAngles(LVector3(xRad, yRad, zRad), (Lumino::RotationOrder)rotOrder);
+	LMatrix m = LMatrix::RotationEulerAngles(LVector3(xRad, yRad, zRad), (RotationOrder)rotOrder);
 	*(p_cast<LMatrix>(mat)) *= m;
 	//LMatrix::rotation( p_cast<LMatrix>( mat ), xRad, yRad, zRad, (Core::Math::RotationOrder)rotOrder );
 	return ::LN_OK;

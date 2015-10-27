@@ -2,8 +2,7 @@
 #include "Internal.h"
 #include <Lumino/GUI/ItemsPresenter.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -92,5 +91,5 @@ SizeF ItemsPresenter::ArrangeOverride(const SizeF& finalSize)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

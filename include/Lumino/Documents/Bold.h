@@ -2,8 +2,7 @@
 #pragma once
 #include "Span.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -21,4 +20,4 @@ public:
 
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END

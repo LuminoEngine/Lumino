@@ -7,8 +7,7 @@
 #include "../../external/libvorbis/include/vorbis/vorbisfile.h"
 #include "AudioStream.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 /// Ogg âπê∫óp Decoder
@@ -70,4 +69,4 @@ private:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -4,8 +4,7 @@
 #include <Lumino/Scene/VisualNodeParams.h>
 #include "MME/MMEShader.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace Internal
 {
@@ -127,4 +126,4 @@ void VisualNodeParams::UpdateSubsetRenderParam(const VisualNodeParams* parentPar
 
 } // namespace Internal
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -6,8 +6,7 @@
 #include "DX9Shader.h"
 #include "DX9Renderer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -774,4 +773,4 @@ void DX9Renderer::InternalSetIndexBuffer(IIndexBuffer* indexBuffer, bool reset)
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

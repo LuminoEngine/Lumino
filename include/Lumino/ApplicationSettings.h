@@ -3,8 +3,7 @@
 #include "Audio/Common.h"
 #include "Graphics/Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		アプリケーションの初期化設定です。
@@ -86,8 +85,8 @@ public:
 		, ConsoleEnabled(false)
 		, ArchiveFileEntryList()
 		, FileAccessPriority(FileAccessPriority_DirectoryFirst)
-		, GraphicsAPI(Lumino::GraphicsAPI::DirectX9)
-		, RenderingType(Lumino::RenderingType::Deferred)
+		, GraphicsAPI(GraphicsAPI::DirectX9)
+		, RenderingType(RenderingType::Deferred)
 		, UserMainWindow(NULL)
 #ifdef LN_OS_WIN32
 		, D3D9Device(NULL)
@@ -103,4 +102,4 @@ public:
 	}
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include <Lumino/Base/Collection.h>
 #include "Variant.h"	// TODO
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 	
 enum class GenericInstanceType
 {
@@ -180,4 +179,4 @@ private:
 };
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

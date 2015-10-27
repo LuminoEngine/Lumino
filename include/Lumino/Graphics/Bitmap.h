@@ -5,8 +5,7 @@
 #include <Lumino/IO/Stream.h>
 #include "Color.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// ビットマップのピクセルフォーマット
@@ -780,4 +779,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

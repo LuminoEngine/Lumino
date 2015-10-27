@@ -19,8 +19,7 @@
 #include "PainterEngine.h"
 #include "GraphicsHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -725,4 +724,4 @@ void PainterEngine::UpdateCurrentForeColor()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -1,8 +1,7 @@
 ﻿
 #include "DX9Module.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -425,4 +424,4 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

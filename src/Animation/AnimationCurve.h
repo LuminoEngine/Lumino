@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Animation/Common.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -159,4 +158,4 @@ private:
 };
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END

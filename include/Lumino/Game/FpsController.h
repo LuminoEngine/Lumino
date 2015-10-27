@@ -2,8 +2,7 @@
 #pragma once
 #include <Lumino/Base/NonCopyable.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		FPS (Frame Par Second) の制御クラス
@@ -123,4 +122,4 @@ private:
     bool		m_enableFpsTest;		///< true の場合、FPS テストを行う
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

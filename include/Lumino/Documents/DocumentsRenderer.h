@@ -4,8 +4,7 @@
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Painter.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -37,4 +36,4 @@ private:
 };
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END

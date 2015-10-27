@@ -47,8 +47,7 @@
 #include "DX9GraphicsDevice.h"
 #include "DX9Shader.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -693,4 +692,4 @@ void DX9ShaderPass::EndPass()
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

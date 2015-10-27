@@ -11,8 +11,7 @@
 
 #define LN_MUSIC_TIME_BASE	768	// TODO
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 /// 音声ファイルフォーマット
@@ -94,4 +93,4 @@ enum class SoundFadeBehavior
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

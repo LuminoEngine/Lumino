@@ -4,14 +4,13 @@
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Thumb.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
 // DragEventArgs
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Lumino::DragEventArgs, RoutedEventArgs);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(ln::DragEventArgs, RoutedEventArgs);
 
 //=============================================================================
 // Thumb
@@ -192,5 +191,5 @@ void ThumbChrome::OnRender(RenderingContext* painter)
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

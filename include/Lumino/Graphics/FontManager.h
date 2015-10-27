@@ -18,8 +18,7 @@ typedef struct FT_OutlineGlyphRec_*  FT_OutlineGlyph;
 typedef struct FT_StreamRec_*  FT_Stream;
 typedef struct FT_GlyphRec_*  FT_Glyph;
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Font;
 
@@ -131,4 +130,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

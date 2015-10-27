@@ -4,8 +4,7 @@
 #include "RenderingPass.h"
 #include <Lumino/Scene/Sprite.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -238,4 +237,4 @@ void Sprite::DrawSubset(RenderingParams& params, int subsetIndex)
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

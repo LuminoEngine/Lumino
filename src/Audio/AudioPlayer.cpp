@@ -6,8 +6,7 @@
 #include "AudioDevice.h"
 #include "AudioPlayer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
@@ -93,4 +92,4 @@ void AudioPlayer::setLoopState(uint32_t loop_begin, uint32_t loop_length)
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

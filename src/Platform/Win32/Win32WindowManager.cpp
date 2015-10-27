@@ -3,8 +3,7 @@
 #include "Win32Window.h"
 #include "Win32WindowManager.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 //=============================================================================
@@ -280,4 +279,4 @@ void Win32WindowManager::Finalize()
 }
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -4,8 +4,7 @@
 #include <Lumino/Platform/Clipboard.h>
 #include <Lumino/Platform/PlatformSupport.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -86,4 +85,4 @@ String Clipboard::GetText(Window* window)
 }
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

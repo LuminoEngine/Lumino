@@ -6,8 +6,7 @@
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/IO/Common.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 class Exception;
 class FileManager;
 
@@ -54,4 +53,4 @@ private:
 	Exception*		m_ayncIOException;
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

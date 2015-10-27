@@ -3,8 +3,7 @@
 #include "../Documents/Paragraph.h"
 #include "UITextElement.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 /**
@@ -43,4 +42,4 @@ private:
 };
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

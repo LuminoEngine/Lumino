@@ -5,8 +5,7 @@
 #include <Lumino/Base/Size.h>
 #include "EventListener.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class PlatformManager;
@@ -152,7 +151,7 @@ private:
 #endif
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END
 
 
 

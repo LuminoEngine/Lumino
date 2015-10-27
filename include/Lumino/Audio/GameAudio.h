@@ -2,8 +2,7 @@
 #pragma once
 #include <list>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 class Vector3;
 
 LN_NAMESPACE_AUDIO_BEGIN
@@ -103,4 +102,4 @@ private:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

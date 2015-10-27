@@ -59,8 +59,7 @@ AfterEffects は、"テキストレイヤー" なるものに "エフェクト" 
 #include <Lumino/Graphics/FontManager.h>
 #include "FreeTypeFont.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 	
 //=============================================================================
@@ -601,4 +600,4 @@ void FontManager::StreamCloseFunc(FT_Stream stream)
 #endif
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

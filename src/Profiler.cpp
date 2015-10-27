@@ -2,8 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Profiler.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // Profiler
@@ -130,4 +129,4 @@ void Profiler::Commit()
 }
 
 
-} // namespace Lumino
+LN_NAMESPACE_END

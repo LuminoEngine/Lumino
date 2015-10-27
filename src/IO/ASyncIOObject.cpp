@@ -3,8 +3,7 @@
 #include <Lumino/IO/ASyncIOObject.h>
 #include <Lumino/IO/FileManager.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // ASyncIOObject
@@ -67,4 +66,4 @@ void ASyncIOObject::InvokeIOProc(bool isASync, FileManager* fileManager)
 	}
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

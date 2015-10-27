@@ -21,8 +21,7 @@
 #include <Lumino/Variant.h>
 #include <Lumino/Property.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // Property
@@ -66,4 +65,4 @@ PropertyManager::PropertyMap	PropertyManager::m_propertyMap;
 #endif;
 }
 
-} // namespace Lumino
+LN_NAMESPACE_END

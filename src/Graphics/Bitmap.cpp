@@ -4,8 +4,7 @@
 #include "PngFile.h"
 #include <Lumino/Graphics/Bitmap.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -458,4 +457,4 @@ void Bitmap::BitBltInternal(
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

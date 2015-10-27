@@ -688,8 +688,7 @@
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -1016,4 +1015,4 @@ RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

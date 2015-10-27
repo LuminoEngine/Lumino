@@ -5,8 +5,7 @@
 #include <Lumino/Physics/Joint.h>
 #include "BulletUtils.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -231,4 +230,4 @@ void DofSpringJoint::SyncBeforeStepSimulation()
 }
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

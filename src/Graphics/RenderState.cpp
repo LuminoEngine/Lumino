@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/RenderState.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //-----------------------------------------------------------------------------
@@ -68,4 +67,4 @@ DepthStencilState::DepthStencilState()
 }
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

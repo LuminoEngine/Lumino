@@ -6,8 +6,7 @@
 #include <Lumino/Physics/RigidBody.h>
 #include "BulletUtils.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
@@ -595,4 +594,4 @@ Sphere::~Sphere()
 }
 
 } // namespace Physics
-} // namespace Lumino
+LN_NAMESPACE_END

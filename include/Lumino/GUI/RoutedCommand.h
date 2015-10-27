@@ -6,8 +6,7 @@
 #include "../Variant.h"
 #include "RoutedEventArgs.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 class UIElement;
 
@@ -74,7 +73,7 @@ private:
 
 //#define LN_DEFINE_ROUTED_EVENT(classType, eventArgsType, name, callEventFuncPtr) \
 //{ \
-//	static ::Lumino::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
+//	static ::ln::GUI::TypedRoutedEvent<classType, eventArgsType> ev(name, callEventFuncPtr); \
 //	RegisterRoutedEvent(&ev); \
 //}
 
@@ -132,4 +131,4 @@ public:
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

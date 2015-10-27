@@ -2,8 +2,7 @@
 #include "Internal.h"
 #include <Lumino/GUI/RootFrame.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -37,4 +36,4 @@ RootFrame::~RootFrame()
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

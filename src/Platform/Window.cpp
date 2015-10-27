@@ -1,14 +1,11 @@
 ﻿
-#pragma once
-
 #include "../Internal.h"
 #include <Lumino/Platform/Window.h>
 #include <Lumino/Platform/PlatformManager.h>
 #include "NativeWindow.h"
 #include "WindowManagerBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -136,7 +133,7 @@ void Window::DetachEventListener(IEventListener* listener)
 #endif
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END
 
 
 

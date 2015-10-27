@@ -20,8 +20,7 @@ private: \
 #define LN_GUI_CONTENT_ELEMENT_IMPLEMENT(className) \
 	const String className::TypeID(_T(#className))
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 class ContentElement
@@ -37,4 +36,4 @@ private:
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

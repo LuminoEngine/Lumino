@@ -4,8 +4,7 @@
 #include "Common.h"
 #include "EasingFunctions.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 class AnimationUtilities
 {
@@ -49,4 +48,4 @@ public:
 
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

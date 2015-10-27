@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include "WindowManagerBase.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Platform
 {
 
@@ -12,4 +11,4 @@ namespace Platform
 //=============================================================================
 
 } // namespace Platform
-} // namespace Lumino
+LN_NAMESPACE_END

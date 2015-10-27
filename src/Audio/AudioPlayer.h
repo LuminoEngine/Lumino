@@ -10,8 +10,7 @@
 //#include "../Interface.h"
 //#include "../Types.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 class AudioDevice;
 class AudioStream;
@@ -92,4 +91,4 @@ protected:
 };
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

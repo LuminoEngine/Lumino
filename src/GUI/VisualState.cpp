@@ -25,8 +25,7 @@
 #include <Lumino/GUI/VisualTreeHelper.h>
 #include "GUIHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -386,5 +385,5 @@ const String VisualStatus::Pressed = _T("Pressed");
 const String VisualStatus::Disabled = _T("Disabled");
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

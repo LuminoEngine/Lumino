@@ -5,8 +5,7 @@
 #include "MMEShaderTechnique.h"
 #include "MMERenderingPass.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -183,4 +182,4 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

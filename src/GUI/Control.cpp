@@ -3,8 +3,7 @@
 #include <Lumino/GUI/Control.h>
 #include "GUIHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -246,4 +245,4 @@ void Control::Handler_MouseDown(MouseEventArgs* e)
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

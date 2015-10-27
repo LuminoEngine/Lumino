@@ -3,8 +3,7 @@
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneNode.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
@@ -34,7 +33,7 @@ SceneNode::SceneNode(SceneGraphManager* manager)
 	, m_billboardType(BillboardType_None)
 	, m_transformModified(true)
 	, m_isAutoUpdate(false)
-	, m_children(LN_NEW SceneNodeRefList())
+	, m_children(LN_NEW SceneNodeRefList(), false)
 	, m_parentNode(NULL)
 	, m_zDistance(FLT_MAX)
 {
@@ -136,4 +135,4 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 }
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -10,8 +10,7 @@
 #include "GUIPainter.h"
 #include "GUIHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -756,4 +755,4 @@ void UIElement::TemplateBindingSource_PropertyChanged(/*CoreObject* sender, */Pr
 
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -1,8 +1,7 @@
 ﻿
 #pragma once 
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /// 合成方法を表します
@@ -123,4 +122,4 @@ public:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

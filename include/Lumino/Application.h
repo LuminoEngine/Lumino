@@ -14,8 +14,7 @@
 //#include "Game/FpsController.h"
 #include "ApplicationSettings.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief		アプリケーション全体にかかわる処理を行います。
@@ -161,4 +160,4 @@ private:
 	bool								m_endRequested;
 };
 #endif
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -10,8 +10,7 @@
 
 #include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 /// SceneGraphManager
@@ -23,7 +22,7 @@ public:
 	/// 初期化データ
 	struct ConfigData
 	{
-		Lumino::FileManager*		FileManager;
+		FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
 		GraphicsManager*	GraphicsManager;
 		Modeling::ModelManager*		ModelManager;
@@ -128,4 +127,4 @@ private:
 };
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

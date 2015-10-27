@@ -7,8 +7,7 @@
 #include "AudioUtils.h"
 #include "Mp3Decoder.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
@@ -390,4 +389,4 @@ void Mp3Decoder::GetPCMFormat()
 }
 
 LN_NAMESPACE_AUDIO_END
-} // namespace Lumino
+LN_NAMESPACE_END

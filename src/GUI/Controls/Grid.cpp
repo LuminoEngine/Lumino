@@ -4,8 +4,7 @@
 #include <Lumino/GUI/Controls/Grid.h>
 #include "../GUIHelper.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -362,5 +361,5 @@ void Grid::AddRowDefinition(float height, float minHeight, float maxHeight)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

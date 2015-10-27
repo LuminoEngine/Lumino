@@ -3,8 +3,7 @@
 #include "Common.h"
 #include "GraphicsResourceObject.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
@@ -138,8 +137,8 @@ private:
 			float			Float;
 			Vector4*		Vector;
 			Vector4*		VectorArray;
-			Lumino::Matrix*	Matrix;
-			Lumino::Matrix*	MatrixArray;
+			ln::Matrix*	Matrix;
+			ln::Matrix*	MatrixArray;
 			Driver::ITexture*	DeviceTexture;
 			Texture*			ManagedTexture;	// TODO: 必要ない。ShaderVariable クラス側で持つようにした
 			TCHAR*			String;
@@ -322,4 +321,4 @@ private:
 };
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

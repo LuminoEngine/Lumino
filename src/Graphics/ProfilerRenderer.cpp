@@ -3,8 +3,7 @@
 #include <Lumino/Graphics/GraphicsManager.h>
 #include "ProfilerRenderer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
@@ -214,4 +213,4 @@ void ProfilerRenderer::DrawSectionGraphBar(RenderingContext& painter, const Prof
 
 
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

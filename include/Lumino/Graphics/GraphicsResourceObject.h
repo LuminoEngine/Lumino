@@ -2,8 +2,7 @@
 #pragma once
 #include "Common.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 
 /**
 	@brief	グラフィックスモジュールの基本的なリソースオブジェクトのベースクラスです。デバイスの状態変化を通知する機能を実装します。
@@ -21,4 +20,4 @@ protected:
 	virtual ~GraphicsResourceObject() {}
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "DX9GraphicsDevice.h"
 #include "DX9IndexBuffer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -121,4 +120,4 @@ void DX9IndexBuffer::Unlock()
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
-} // namespace Lumino
+LN_NAMESPACE_END

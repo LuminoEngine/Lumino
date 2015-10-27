@@ -23,8 +23,7 @@
 #include <Lumino/GUI/ControlTemplate.h>
 #include <Lumino/GUI/Controls/Track.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -377,5 +376,5 @@ void Track::Handler_Thumb_DragDelta(DragEventArgs* e)
 #endif
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

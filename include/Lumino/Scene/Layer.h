@@ -4,8 +4,7 @@
 #include "Common.h"
 #include "Layer.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 /**
@@ -57,4 +56,4 @@ protected:
 
 
 LN_NAMESPACE_SCENE_END
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,7 @@
 #include "../Graphics/Font.h"
 #include "../Graphics/GraphicsManager.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
@@ -53,4 +52,4 @@ private:
 
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END

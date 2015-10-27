@@ -9,8 +9,7 @@
 #include <Lumino/IO/Stream.h>
 #include <Lumino/IO/PathName.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 class ArchiveStream;
 
 class IArchive
@@ -174,4 +173,4 @@ public:
 	virtual bool TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring);
 };
 
-} // namespace Lumino
+LN_NAMESPACE_END

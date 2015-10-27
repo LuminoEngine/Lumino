@@ -3,8 +3,7 @@
 #include "UIManagerImpl.h"
 #include <Lumino/GUI/UITextElement.h>
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 //=============================================================================
@@ -61,5 +60,5 @@ void UITextElement::OnFontPropertyChanged(PropertyChangedEventArgs* e)
 }
 
 LN_NAMESPACE_GUI_END
-} // namespace Lumino
+LN_NAMESPACE_END
 

@@ -1,11 +1,10 @@
 ﻿
 #pragma once
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Documents
 {
 
 
 } // namespace Documents
-} // namespace Lumino
+LN_NAMESPACE_END
