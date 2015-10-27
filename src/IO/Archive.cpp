@@ -37,6 +37,7 @@
 #include <Lumino/IO/FileStream.h>
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Text/Encoding.h>
+#include "ArchiveMaker.h"
 #include "Archive.h"
 
 LN_NAMESPACE_BEGIN
