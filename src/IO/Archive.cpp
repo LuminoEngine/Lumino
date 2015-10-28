@@ -93,7 +93,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 	{
 		StringA k(m_key);
 		byte_t key_buf[KEY_SIZE] = { 0 };
-		memcpy(key_buf, k.GetCStr(), k.GetLength());
+		memcpy(key_buf, k.c_str(), k.GetLength());
 		memset(m_keyTable, 0, sizeof(m_keyTable));
 		Camellia_Ekeygen(KEY_SIZE, key_buf, m_keyTable);
     }
@@ -168,10 +168,10 @@ bool Archive::ExistsFile(const PathName& fileFullPath)
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
 	CaseSensitivity cs = FileManager::GetInstance().GetFileSystemCaseSensitivity();
-	if (StringUtils::Compare(fileFullPath.GetCStr(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) == 0)
+	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) == 0)
 	{
 		// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-		const TCHAR* internalPath = fileFullPath.GetCStr() + m_virtualDirectoryPath.GetString().GetLength();
+		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.GetString().GetLength();
 		if (*internalPath != _T('\0'))
 		{
 			// 検索
@@ -201,13 +201,13 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, 
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
 	CaseSensitivity cs = FileManager::GetInstance().GetFileSystemCaseSensitivity();
-	if (StringUtils::Compare(fileFullPath.GetCStr(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) != 0)
+	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) != 0)
 	{
 		LN_THROW(0, FileNotFoundException, fileFullPath);
 	}
 
 	// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-	const TCHAR* internalPath = fileFullPath.GetCStr() + m_virtualDirectoryPath.GetString().GetLength();
+	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.GetString().GetLength();
 	LN_THROW((*internalPath != _T('\0')), FileNotFoundException, fileFullPath);	// ファイル名が空だった
 
 	EntriesMap::iterator itr = m_entriesMap.find(internalPath);

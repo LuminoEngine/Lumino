@@ -33,7 +33,7 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 	newCode += StringA::GetNewLine();
 	newCode += StringA(code, codeLength);
 
-	RefPtr<Shader> shader(Shader::Create(newCode.GetCStr(), newCode.GetLength()), false);
+	RefPtr<Shader> shader(Shader::Create(newCode.c_str(), newCode.GetLength()), false);
 	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo), false);
 	mmeShader.SafeAddRef();
 	return mmeShader;

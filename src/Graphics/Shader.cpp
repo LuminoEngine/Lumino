@@ -319,7 +319,7 @@ void ShaderValue::SetString(const char* str)
 	String s;
 	s.AssignCStr(str);
 	AllocValueBuffer(s.GetByteCount());
-	memcpy(m_value.String, s.GetCStr(), s.GetByteCount());
+	memcpy(m_value.String, s.c_str(), s.GetByteCount());
 }
 
 //-----------------------------------------------------------------------------

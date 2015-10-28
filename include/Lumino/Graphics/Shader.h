@@ -60,7 +60,7 @@ public:
 		@brief		名前を指定してシェーダ変数を検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindVariable(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
+	ShaderVariable* FindVariable(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 	/**
 		@brief		このシェーダで定義されている全てのテクニックを取得します。
@@ -71,7 +71,7 @@ public:
 		@brief		名前を指定してテクニックを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderTechnique* FindTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
+	ShaderTechnique* FindTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 	GraphicsManager* GetManager() { return m_manager; }
 
@@ -211,7 +211,7 @@ public:
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
+	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	
 LN_INTERNAL_ACCESS:
 	void ChangeDevice(Driver::IShaderVariable* obj);
@@ -256,7 +256,7 @@ public:
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
+	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 protected:
 	virtual ~ShaderTechnique();
@@ -301,7 +301,7 @@ public:
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity_CaseSensitive) const;
+	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	
 protected:
 	virtual ~ShaderPass();

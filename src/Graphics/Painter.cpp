@@ -638,7 +638,7 @@ void RenderingContext::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 //-----------------------------------------------------------------------------
 void RenderingContext::DrawString(const String& str, const PointF& position)
 {
-	DrawString(str.GetCStr(), str.GetLength(), position);
+	DrawString(str.c_str(), str.GetLength(), position);
 }
 
 //-----------------------------------------------------------------------------

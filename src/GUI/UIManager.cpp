@@ -1369,7 +1369,7 @@ void GUIManagerImpl::RegisterFactory(const String& typeFullName, ObjectFactory f
 CoreObject* GUIManagerImpl::CreateObject(const String& typeFullName)
 {
 	ObjectFactory f = m_objectFactoryMap[typeFullName];
-	LN_THROW(f != NULL, KeyNotFoundException, typeFullName.GetCStr());
+	LN_THROW(f != NULL, KeyNotFoundException, typeFullName.c_str());
 	return f(this);
 }
 

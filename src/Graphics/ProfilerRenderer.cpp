@@ -67,11 +67,11 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 	TCHAR text[256] = { 0 };
 
-	StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().GetCStr());
+	StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
 	painter.DrawString(text, -1, location);
 	location.Y += 16;
 
-	StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->GetRenderingType().ToString().GetCStr());
+	StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->GetRenderingType().ToString().c_str());
 	painter.DrawString(text, -1, location);
 	location.Y += 16;
 

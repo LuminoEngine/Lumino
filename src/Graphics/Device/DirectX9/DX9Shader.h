@@ -121,7 +121,7 @@ public:
 
 public:
 	// override IShaderTechnique
-	virtual const TCHAR* GetName() const { return m_name.GetCStr(); }
+	virtual const TCHAR* GetName() const { return m_name.c_str(); }
 	virtual int GetPassCount() const { return m_passes.GetCount(); }
 	virtual IShaderPass* GetPass(int index);
 	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
@@ -145,7 +145,7 @@ public:
 
 public:
 	// override IShaderPass
-	virtual const TCHAR* GetName() const { return m_name.GetCStr(); }
+	virtual const TCHAR* GetName() const { return m_name.c_str(); }
 	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 	virtual void Apply();

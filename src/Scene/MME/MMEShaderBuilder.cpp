@@ -714,7 +714,7 @@ MMESemantic MMEShaderBuilder::GetMMESemanticBySemanticName(const String& name)
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(g_MMESemanticTable); ++i)
 	{
 		// 大文字小文字を区別しない
-		if (name.Compare(g_MMESemanticTable[i].SemanticsName, -1, CaseSensitivity_CaseInsensitive) == 0)
+		if (name.Compare(g_MMESemanticTable[i].SemanticsName, -1, CaseSensitivity::CaseInsensitive) == 0)
 		{
 			return (MMESemantic)i;
 		}
@@ -763,7 +763,7 @@ ShaderVariable* MMEShaderBuilder::GetAnnotationByName(ShaderVariable* var, const
 {
 	LN_FOREACH(ShaderVariable* anno, var->GetAnnotations())
 	{
-		if (anno->GetName().Compare(name, -1, CaseSensitivity_CaseInsensitive)) {
+		if (anno->GetName().Compare(name, -1, CaseSensitivity::CaseInsensitive)) {
 			return anno;
 		}
 	}

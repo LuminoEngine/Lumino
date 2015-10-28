@@ -63,7 +63,7 @@ bool ArchiveMaker::Open(const PathName& filePath, const char* key)
 	}
 
 	// ファイルを新規作成
-	if (_tfopen_s(&m_stream, filePath.GetCStr(), _T("wb")) != 0) {
+	if (_tfopen_s(&m_stream, filePath.c_str(), _T("wb")) != 0) {
 		return false;
 	}
 	
@@ -115,7 +115,7 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
         // アクセス用の名前がなければ、ファイル名を代わりに使う
 		if (aliasPath.IsEmpty())
         {
-			aliasPath = filePath.GetCStr();
+			aliasPath = filePath.c_str();
         }
 
         // アクセス用ファイル名のスラッシュをバックスラッシュ化
@@ -133,7 +133,7 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
         // ファイル名とファイル内容を書き込む
 
         // ファイル名を書き込む (終端NULLはナシ)
-		WritePadding16((byte_t*)filename.GetCStr(), nameSize * sizeof(wchar_t));
+		WritePadding16((byte_t*)filename.c_str(), nameSize * sizeof(wchar_t));
 
 		//wprintf(L"filename : %s\n", filename.c_str());
 		//wprintf(L"seek     : %u\n", ftell(m_stream));

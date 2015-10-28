@@ -163,7 +163,7 @@ public:
 	void Replace(int start, int length, const String& text)
 	{
 		// TODO:‚Æ‚è‚ ‚¦‚¸‰‰ñ‘O’ñ
-		const TCHAR* pos = text.GetCStr();
+		const TCHAR* pos = text.c_str();
 		const TCHAR* end = pos + text.GetLength();
 		int nlIndex = 0, nlCount = 0;
 		while (StringTraits::IndexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
@@ -183,7 +183,7 @@ public:
 	// UTF32•¶Žš”‚ð•Ô‚·
 	int Replace(const Selection* sel, const String& text)
 	{
-		const ByteBuffer& utf32 = m_TCharToUTF32Converter.Convert(text.GetCStr(), text.GetByteCount());
+		const ByteBuffer& utf32 = m_TCharToUTF32Converter.Convert(text.c_str(), text.GetByteCount());
 		int len = utf32.GetSize() / sizeof(UTF32);
 		Replace(sel, (const UTF32*)utf32.GetConstData(), len);
 		m_selectionRenderingInfoModified = true;
@@ -381,7 +381,7 @@ void TextBox::LineSegment::UpdateGlyphRuns()
 	if (m_textModified)
 	{
 		Helper::AttachGlyphTextureCache(m_glyphRun, m_document->GetFontGlyphTextureCache());
-		m_glyphRun->Update(m_utf32Text.GetCStr(), m_utf32Text.GetLength());
+		m_glyphRun->Update(m_utf32Text.c_str(), m_utf32Text.GetLength());
 		m_textModified = false;
 	}
 }

@@ -138,9 +138,9 @@ Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring
 CaseSensitivity FileManager::GetFileSystemCaseSensitivity() const
 {
 #ifdef LN_OS_WIN32
-	return CaseSensitivity_CaseInsensitive;
+	return CaseSensitivity::CaseInsensitive;
 #else
-	return CaseSensitivity_CaseSensitive;
+	return CaseSensitivity::CaseSensitive;
 #endif
 }
 

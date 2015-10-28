@@ -114,10 +114,10 @@ void MidiDecoder::SearchData()
 	// Midi ファイルのヘッダ読み込み
 	MidiHeader header;
 	size_t size = reader.Read(&(header.mChunktype), 4);
-	header.mLength = reader.ReadUInt32(ByteOrder_Big);
-	header.mFormat = reader.ReadUInt16(ByteOrder_Big);
-	header.mNumtrack = reader.ReadUInt16(ByteOrder_Big);
-	header.mTimebase = reader.ReadUInt16(ByteOrder_Big);
+	header.mLength = reader.ReadUInt32(ByteOrder::Big);
+	header.mFormat = reader.ReadUInt16(ByteOrder::Big);
+	header.mNumtrack = reader.ReadUInt16(ByteOrder::Big);
+	header.mTimebase = reader.ReadUInt16(ByteOrder::Big);
 
 	// ベースタイム格納
 	m_baseTime = header.mTimebase;
@@ -168,7 +168,7 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 
 	// トラックの長さ読み込み
 	uint32_t   track_length;
-	track_length = reader.ReadUInt32(ByteOrder_Big);
+	track_length = reader.ReadUInt32(ByteOrder::Big);
 
 	uint8_t prev_state = 0; // ひとつ前のイベントのステータスバイトを記憶する変数
 	uint8_t state;

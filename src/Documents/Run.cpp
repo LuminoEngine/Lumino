@@ -47,7 +47,7 @@ Run::~Run()
 void Run::SetText(const String& text)
 {
 	m_text.Clear();
-	m_text.Append(m_manager->GetTCharToUTF32Converter()->Convert(text.GetCStr(), text.GetByteCount()));
+	m_text.Append(m_manager->GetTCharToUTF32Converter()->Convert(text.c_str(), text.GetByteCount()));
 }
 
 //-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ Size Run::Measure()
 	auto* glyphData = Helper::GetGlyphData(m_glyphRun);
 	auto* cache = Helper::GetGlyphTextureCache(m_glyphRun);
 
-	cache->Measure(m_text.GetCStr(), m_text.GetLength(), glyphData);
+	cache->Measure(m_text.c_str(), m_text.GetLength(), glyphData);
 	return glyphData->AreaSize;
 }
 

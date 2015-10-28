@@ -30,7 +30,7 @@ UIElementFactory::~UIElementFactory()
 	}
 
 	//if (m_targetTypeFullName == _T("ColumnDefinition"))
-	//	_tprintf(_T("%s\n"), m_targetTypeFullName.GetCStr());
+	//	_tprintf(_T("%s\n"), m_targetTypeFullName.c_str());
 }
 
 //-----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ CoreObject* UIElementFactory::CreateInstance(UIElement* rootLogicalParent)
 		LN_THROW(0, InvalidOperationException);
 	}
 	//if (m_targetTypeFullName == _T("Grid"))
-	//	_tprintf(_T("%s\n"), m_targetTypeFullName.GetCStr());
+	//	_tprintf(_T("%s\n"), m_targetTypeFullName.c_str());
 
 	// プロパティを設定する
 	for (const PropertyValueList::Pair& pair : m_propertyValueList)

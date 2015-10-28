@@ -23,8 +23,8 @@ int main(int argc, char **argv)
 		// アーカイブファイル名
 		PathNameA archivePath = archiveDir.ChangeExtension(".lna");
 
-		printf("Root Dir : %s\n", archiveDir.GetCStr());
-		printf("Output   : %s\n", archivePath.GetCStr());
+		printf("Root Dir : %s\n", archiveDir.c_str());
+		printf("Output   : %s\n", archivePath.c_str());
 
 
 		std::string pass;
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		ArchiveMaker archive;
 		archive.Open(archivePath, pass.c_str());
 
-		sys::path dir(archiveDir.GetCStr());
+		sys::path dir(archiveDir.c_str());
 		sys::recursive_directory_iterator itr = sys::recursive_directory_iterator(dir);
 		sys::recursive_directory_iterator end = sys::recursive_directory_iterator();
 		for (; itr != end; ++itr)
@@ -43,10 +43,10 @@ int main(int argc, char **argv)
 			PathNameA relPath = archiveDir.MakeRelative(absPath);
 
 			//if (sys::is_regular_file(*itr)) {
-			std::cout << "file :" << absPath.GetCStr() << std::endl;
-			std::cout << "alias:" << relPath.GetCStr() << std::endl;
+			std::cout << "file :" << absPath.c_str() << std::endl;
+			std::cout << "alias:" << relPath.c_str() << std::endl;
 			//}
-			archive.AddFile(PathName(absPath), relPath.GetCStr());
+			archive.AddFile(PathName(absPath), relPath.c_str());
 		}
 
 		std::cout << "Succeeded.";

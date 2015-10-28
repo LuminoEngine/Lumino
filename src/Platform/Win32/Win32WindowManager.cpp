@@ -62,7 +62,7 @@ Win32WindowManager::Win32WindowManager(int IconResourceID)
 		::LoadCursor(NULL, IDC_ARROW),	// カーソルの形
 		(HBRUSH)(COLOR_WINDOW + 1),	    // 背景色
 		NULL,							    // メニューなし
-		m_windowClassName.GetCStr(),				// クラス名の指定
+		m_windowClassName.c_str(),				// クラス名の指定
 		NULL };							    // 小アイコン（なし）
 
 	// ウィンドウクラスの登録
@@ -77,7 +77,7 @@ Win32WindowManager::Win32WindowManager(int IconResourceID)
 //-----------------------------------------------------------------------------
 Win32WindowManager::~Win32WindowManager()
 {
-	UnregisterClass(m_windowClassName.GetCStr(), m_hInst);
+	UnregisterClass(m_windowClassName.c_str(), m_hInst);
 
 	if (m_comInited)
 	{
@@ -112,7 +112,7 @@ Win32WindowBase* Win32WindowManager::CreateNativeWindow(const NativeWindowCreati
 		// ウィンドウの作成
 		HWND hWnd = ::CreateWindowEx(
 			dwExStyle,
-			m_windowClassName.GetCStr(),
+			m_windowClassName.c_str(),
 			data.TitleText,
 			dwStyle,
 			CW_USEDEFAULT, CW_USEDEFAULT,

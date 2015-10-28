@@ -536,7 +536,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
 void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange)
 {
 	*endToRange = false;
-	Array<String> tokens = StringTraits::Split(String(subsetText), _T(","), StringSplitOptions_RemoveEmptyEntries);
+	Array<String> tokens = StringTraits::Split(String(subsetText), _T(","), StringSplitOptions::RemoveEmptyEntries);
 
 	LN_FOREACH(String& token, tokens)
 	{

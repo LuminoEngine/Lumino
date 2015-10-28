@@ -4,7 +4,7 @@
 #include <Lumino/Testing/TestUtils.h>
 using namespace ln;
 
-#define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).GetCStr()
+#define LOCALFILE(fileName) TestUtils::GetFilePath(__FILE__, fileName).c_str()
 
 class DemoManager
 {

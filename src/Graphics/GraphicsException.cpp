@@ -32,7 +32,7 @@ CompilationException::~CompilationException() throw()
 //-----------------------------------------------------------------------------
 const TCHAR* CompilationException::GetMessage() const
 {
-	return m_message.GetCStr();
+	return m_message.c_str();
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +40,7 @@ const TCHAR* CompilationException::GetMessage() const
 //-----------------------------------------------------------------------------
 const char* CompilationException::what() const throw()
 {
-	return m_messageMBCS.GetCStr();
+	return m_messageMBCS.c_str();
 }
 
 //-----------------------------------------------------------------------------
