@@ -1188,7 +1188,6 @@ static const size_t g_DefaultSkin_png_Len = LN_ARRAY_SIZE_OF(g_DefaultSkin_png_D
 GUIManagerImpl::GUIManagerImpl()
 	: m_defaultTheme(NULL)
 	, m_rootCombinedResource(NULL)
-	, m_defaultRootFrame(NULL)
 {
 }
 
@@ -1254,8 +1253,6 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 
 
 
-	m_defaultRootFrame = RootFrame::internalCreateInstance(this);
-	m_defaultRootFrame->ApplyTemplate();	// テーマを直ちに更新
 }
 
 //-----------------------------------------------------------------------------
@@ -1263,7 +1260,6 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 void GUIManagerImpl::Finalize()
 {
-	LN_SAFE_RELEASE(m_defaultRootFrame);
 }
 
 //-----------------------------------------------------------------------------

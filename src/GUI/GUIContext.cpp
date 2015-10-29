@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/GUI/UIElement.h>
+#include <Lumino/GUI/RootFrame.h>
 #include <Lumino/GUI/GUIContext.h>
 #include "UIManagerImpl.h"
 #include "GUIHelper.h"
@@ -34,6 +35,7 @@ GUIContext::GUIContext(GUIManagerImpl* manager)
 	: m_manager(NULL)
 	, m_nativeWindow()
 	, m_viewPixelSize()
+	, m_rootFrame(NULL)
 	, m_rootElement(NULL)
 	, m_focusElement(NULL)
 	, m_mouseHoverElement(NULL)
@@ -49,6 +51,10 @@ GUIContext::GUIContext(GUIManagerImpl* manager)
 	memset(m_mouseClickTrackers, 0, sizeof(m_mouseClickTrackers));
 	LN_REFOBJ_SET(m_manager, manager);
 
+	m_rootFrame = RootFrame::internalCreateInstance(m_manager);
+	m_rootFrame->ChangeContext(this);
+	m_rootFrame->ApplyTemplate();	// テーマを直ちに更新
+
 	m_currentCursorImage = m_manager->GetCursorImage(CommonCursorImage::Arrow);
 }
 
@@ -58,6 +64,10 @@ GUIContext::GUIContext(GUIManagerImpl* manager)
 GUIContext::~GUIContext()
 {
 	LN_SAFE_RELEASE(m_rootElement);
+	if (m_rootFrame) {
+		m_rootFrame->ChangeContext(NULL);
+		LN_SAFE_RELEASE(m_rootFrame);
+	}
 	if (m_onMainWindow) {
 		m_manager->RemoveContextOnMainWindow(this);
 	}
@@ -69,13 +79,14 @@ GUIContext::~GUIContext()
 //-----------------------------------------------------------------------------
 void GUIContext::SetRootElement(UIElement* element)
 {
-	if (m_rootElement != NULL && element == NULL) {
-		m_rootElement->ChangeContext(NULL);
-	}
+	//if (m_rootElement != NULL && element == NULL) {
+	//	m_rootElement->ChangeContext(NULL);
+	//}
 	LN_REFOBJ_SET(m_rootElement, element);
-	if (m_rootElement != NULL) {
-		m_rootElement->ChangeContext(this);
-	}
+	m_rootFrame->SetContent(m_rootElement);
+	//if (m_rootElement != NULL) {
+	//	m_rootElement->ChangeContext(this);
+	//}
 }
 
 //-----------------------------------------------------------------------------

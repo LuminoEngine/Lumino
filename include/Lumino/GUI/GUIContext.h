@@ -78,6 +78,7 @@ private:
 	GUIManagerImpl*				m_manager;
 	RefPtr<Platform::Window>	m_nativeWindow;
 	Size						m_viewPixelSize;
+	RootFrame*					m_rootFrame;
 	UIElement*					m_rootElement;
 
 	UIElement*					m_focusElement;

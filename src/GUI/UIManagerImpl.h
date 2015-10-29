@@ -177,7 +177,7 @@ private:
 
 public:
 
-	RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
+	//RootFrame* GetDefaultRootFrame() const { return m_defaultRootFrame; }
 
 	Platform::Window* GetMainWindow() const { return m_mainWindow; }
 
@@ -218,7 +218,6 @@ private:
 	Internal::GUIPainter*				m_painter;
 
 	EventArgsPool						m_eventArgsPool;
-	RootFrame*							m_defaultRootFrame;
 	ResourceDictionary*					m_defaultTheme;
 	CombinedLocalResource*				m_rootCombinedResource;
 	RefPtr<Platform::Window>			m_mainWindow;

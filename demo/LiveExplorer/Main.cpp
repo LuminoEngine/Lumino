@@ -79,7 +79,7 @@ int main()
 
 			GCPtr<UIButton> button2 = UIButton::Create();
 			panel->GetChildren()->Add(button2);
-			//button2->SetForeground(ColorBrush::Blue);
+			button2->SetForeground(ColorBrush::Blue);
 			button2->SetContent(String(_T("Button")));
 			button2->SetSize(SizeF(120, 40));
 

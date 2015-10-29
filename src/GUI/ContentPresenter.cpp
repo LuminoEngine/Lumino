@@ -51,12 +51,15 @@ void ContentPresenter::SetContent(UIElement* content)
 	// 先に古いのは取り除く
 	if (m_content != NULL) {
 		m_content->SetInheritanceParent(NULL);
+		m_content->ChangeContext(NULL);
 		m_content->SetParent(NULL);
 	}
 
 	m_content = content;
 	m_content->SetInheritanceParent(this);
 	m_content->SetParent(this);
+	m_content->SetTemplateModified(true);	// テンプレートを再構築する必要がありそう
+	m_content->ChangeContext(GetContext());	// この中でビジュアルツリーの再構築が行われる。Parent は決まっていなければならない。
 }
 
 //-----------------------------------------------------------------------------
