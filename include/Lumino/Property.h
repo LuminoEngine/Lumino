@@ -162,6 +162,11 @@ public:
 	{
 		LN_THROW(m_setter != NULL, InvalidOperationException);
 
+
+		uint32_t f = 0x1 << GetLocalIndex();
+		uint32_t* flags = GetOwnerClassType()->GetHasLocalValueFlags(target);
+		(*flags) |= f;
+
 		if (m_getter != NULL)
 		{
 			Variant oldValue = m_getter(target);

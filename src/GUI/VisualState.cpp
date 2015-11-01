@@ -42,7 +42,7 @@ FloatEasing* FloatEasing::Create(
 	float duration,
 	Animation::EasingMode easingMode)
 {
-	GCPtr<FloatEasing> easing = LN_NEW FloatEasing();
+	RefPtr<FloatEasing> easing(LN_NEW FloatEasing(), false);
 	easing->SetTargetName(targetName);
 	easing->SetTargetProperty(targetProperty);
 	easing->SetTargetValue(targetValue);
@@ -126,7 +126,7 @@ ToneAnimation* ToneAnimation::Create(
 	float duration,
 	Animation::EasingMode easingMode)
 {
-	GCPtr<ToneAnimation> easing = LN_NEW ToneAnimation();
+	RefPtr<ToneAnimation> easing(LN_NEW ToneAnimation(), false);
 	easing->SetTargetName(targetName);
 	easing->SetTargetProperty(targetProperty);
 	easing->SetTargetValue(targetValue);

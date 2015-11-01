@@ -479,6 +479,7 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 {
 	if (GUIHelper::UIElement_GetInvalidateFlags(this).TestFlag(InvalidateFlags::Font))
 	{
+		// TODO: OnUpdateFont() ‚Ö
 		GraphicsManager::FontData fontData;
 		fontData.Family = GetFontFamily();
 		fontData.Size = GetFontSize();

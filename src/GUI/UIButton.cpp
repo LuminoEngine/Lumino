@@ -18,9 +18,15 @@ LN_ROUTED_EVENT_IMPLEMENT(UIButton, RoutedEventArgs, ClickEvent, "Click", Click)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIButton* UIButton::Create()
+UIButton* UIButton::Create(UIElement* parent, const Variant& content)
 {
-	return internalCreateInstance(GetUIManager());
+	auto* obj = internalCreateInstance(GetUIManager());
+	AutoReleasePool::AddObjectToCurrent(obj);
+	if (parent != nullptr) {
+		parent->AddChild(obj);
+	}
+	obj->SetContent(content);
+	return obj;
 }
 
 //-----------------------------------------------------------------------------
@@ -56,7 +62,7 @@ UIButton::~UIButton()
 //-----------------------------------------------------------------------------
 void UIButton::OnClick()
 {
-	GCPtr<RoutedEventArgs> args = m_manager->GetEventArgsPool()->Create<RoutedEventArgs>();
+	RefPtr<RoutedEventArgs> args(m_manager->GetEventArgsPool()->Create<RoutedEventArgs>(), false);
 	RaiseEvent(ClickEvent, this, args);
 }
 

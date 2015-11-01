@@ -70,6 +70,15 @@ void TextElement::UpdateFontData()
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextElement::SetFontData(const GraphicsManager::FontData& fontData)
+{
+	m_fontData = fontData;
+	m_fontDataModified = true;
+}
+
 } // namespace Documents
 LN_NAMESPACE_END
 

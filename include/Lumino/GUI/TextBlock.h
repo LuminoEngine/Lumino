@@ -19,12 +19,14 @@ public:
 
 
 public:
-
+	
 	/**
-		@brief	TextBlock を作成します。
-		@return	作成された TextBlock。このオブジェクトは AutoReleasePool で管理されています。
+		@brief		StackPanel を作成します。
+		@param[in]	parent	: この要素の親要素
+		@param[in]	text	: 表示するテキスト
+		@return		作成された StackPanel。このオブジェクトは AutoReleasePool で管理されています。
 	*/
-	static TextBlock* Create(/*GUIManagerImpl* manager*/);
+	static TextBlock* Create(UIElement* parent, const String& text);
 
 	TextBlock(GUIManagerImpl* manager);
 	virtual ~TextBlock();
@@ -37,6 +39,7 @@ protected:
 	virtual SizeF MeasureOverride(const SizeF& availableSize);
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 	virtual void OnRender(RenderingContext* painter);
+	virtual void OnUpdateFont(const GraphicsManager::FontData& fontData);
 
 private:
 	void OnTextPropertyChanged(PropertyChangedEventArgs* e);

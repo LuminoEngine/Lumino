@@ -444,9 +444,11 @@ public:
 public:
 	Variant();
 	Variant(const Variant& value);
+	Variant(std::nullptr_t value);
 	Variant(bool value);
 	Variant(int value);
 	Variant(float value);
+	Variant(const TCHAR* value);
 	Variant(const String& value);
 	Variant(const Enum& value);
 	Variant(CoreList* value);

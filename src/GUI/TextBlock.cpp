@@ -17,7 +17,7 @@ LN_NAMESPACE_GUI_BEGIN
 //=============================================================================
 // TextBlock
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(TextBlock, UIElement);
+LN_CORE_OBJECT_TYPE_INFO_IMPL(TextBlock, UITextElement);
 LN_UI_ELEMENT_SUBCLASS_IMPL(TextBlock);
 
 LN_PROPERTY_IMPLEMENT(TextBlock, String, TextProperty, "Text", m_text, PropertyMetadata(String::GetEmpty(), &TextBlock::OnTextPropertyChanged));
@@ -25,14 +25,14 @@ LN_PROPERTY_IMPLEMENT(TextBlock, String, TextProperty, "Text", m_text, PropertyM
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-TextBlock* TextBlock::Create(/*GUIManagerImpl* manager*/)
+TextBlock* TextBlock::Create(UIElement* parent, const String& text)
 {
-	//auto obj = internalCreateInstance(GetUIManager());
-	//AutoReleasePool::GetCurrent()->AddObject(obj);
-	//return obj;
-	auto obj = RefPtr<TextBlock>::Create(GetUIManager());
-	obj->InitializeComponent();
-	obj.SafeAddRef();
+	auto* obj = internalCreateInstance(GetUIManager());
+	AutoReleasePool::AddObjectToCurrent(obj);
+	if (parent != nullptr) {
+		parent->AddChild(obj);
+	}
+	obj->SetText(text);
 	return obj;
 }
 
@@ -64,7 +64,7 @@ TextBlock::~TextBlock()
 //-----------------------------------------------------------------------------
 SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 {
-	SizeF size = UIElement::MeasureOverride(availableSize);
+	SizeF size = UITextElement::MeasureOverride(availableSize);
 	Size parSize = m_paragraph->Measure();
 
 	size.Width = (float)std::max(parSize.Width, parSize.Width);
@@ -77,7 +77,7 @@ SizeF TextBlock::MeasureOverride(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 SizeF TextBlock::ArrangeOverride(const SizeF& finalSize)
 {
-	return UIElement::ArrangeOverride(finalSize);
+	return UITextElement::ArrangeOverride(finalSize);
 }
 
 //-----------------------------------------------------------------------------
@@ -89,9 +89,24 @@ void TextBlock::OnRender(RenderingContext* painter)
 	painter->SetBrush(brush);
 	//m_document->Render(painter);
 
-	UIElement::OnRender(painter);
+	UITextElement::OnRender(painter);
 	Documents::RenderTargetDocumentsRenderer r(painter);
 	m_paragraph->Render(&r);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TextBlock::OnUpdateFont(const GraphicsManager::FontData& fontData)
+{
+	if (m_paragraph != NULL)
+	{
+		if (HasLocalPropertyValue(FontFamilyProperty)) { m_paragraph->SetFontFamily(fontData.Family); }
+		if (HasLocalPropertyValue(FontSizeProperty)) { m_paragraph->SetFontSize(fontData.Size); }
+		if (HasLocalPropertyValue(IsFontBoldProperty)) { m_paragraph->SetFontBold(fontData.IsBold); }
+		if (HasLocalPropertyValue(IsFontItalicProperty)) { m_paragraph->SetFontItalic(fontData.IsItalic); }
+		if (HasLocalPropertyValue(IsFontAntiAliasProperty)) { m_paragraph->SetFontAntiAlias(fontData.IsAntiAlias); }
+	}
 }
 
 //-----------------------------------------------------------------------------

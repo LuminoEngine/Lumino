@@ -116,7 +116,7 @@ FontManager::FontManager(FileManager* fileManager)
 	// デフォルトフォント
 	m_defaultFont = LN_NEW FreeTypeFont(this);
 	m_defaultFont->SetName(DefaultFontName);
-	m_defaultFont->SetSize(20);
+	m_defaultFont->SetSize(12);
 	m_defaultFont->SetAntiAlias(true);
 }
 

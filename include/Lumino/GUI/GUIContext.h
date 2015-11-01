@@ -23,19 +23,20 @@ public:
 
 	/**
 		@brief	メインウィンドウのトップレベルに配置される GUIContext を作成します。
-		*/
+		@return	作成された GUIContext。このオブジェクトは AutoReleasePool で管理されています。
+	*/
 	static GUIContext* Create();
 
 public:
 
 	/**
 		@brief	このコンテキストのルート GUI 要素を設定します。
-		*/
+	*/
 	void SetRootElement(UIElement* element);
 
 	/**
 		@brief	このコンテキストのルート GUI 要素を取得します。
-		*/
+	*/
 	UIElement* GetRootElement() const;
 
 	// Implements IUIInjectedInputReceiver

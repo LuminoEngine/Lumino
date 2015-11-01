@@ -18,9 +18,14 @@ LN_PROPERTY_IMPLEMENT(StackPanel, Orientation, OrientationProperty, "Orientation
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-StackPanel* StackPanel::Create()
+StackPanel* StackPanel::Create(UIElement* parent)
 {
-	return internalCreateInstance(GetUIManager());
+	auto* obj = internalCreateInstance(GetUIManager());
+	AutoReleasePool::AddObjectToCurrent(obj);
+	if (parent != nullptr) {
+		parent->AddChild(obj);
+	}
+	return obj;
 }
 
 //-----------------------------------------------------------------------------
@@ -95,14 +100,14 @@ SizeF StackPanel::ArrangeOverride(const SizeF& finalSize)
 			childRect.X += prevChildSize;
 			prevChildSize = childDesiredSize.Width;
 			childRect.Width = prevChildSize;
-			childRect.Height = std::min(finalSize.Height, childDesiredSize.Height);
+			childRect.Height = finalSize.Height;//std::min(finalSize.Height, childDesiredSize.Height);
 		}
 		else
 		{
 			childRect.Y += prevChildSize;
 			prevChildSize = childDesiredSize.Height;
 			childRect.Height = prevChildSize;
-			childRect.Width = std::min(finalSize.Width, childDesiredSize.Width);
+			childRect.Width = finalSize.Width;// std::min(finalSize.Width, childDesiredSize.Width);
 		}
 
 		child->ArrangeLayout(childRect);

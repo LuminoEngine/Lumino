@@ -139,6 +139,11 @@ public:
 	static const AttachedProperty*	RowSpanProperty;
 
 public:
+	
+	/**
+		@brief	Grid を作成します。
+		@return	作成された Grid。このオブジェクトは AutoReleasePool で管理されています。
+	*/
 	static Grid* Create();
 
 	Grid(GUIManagerImpl* manager);

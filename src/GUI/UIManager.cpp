@@ -5,6 +5,11 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/11/1] HorizontalAlignment と HorizontalContentAlignment
+		前回のはちょっと違ってた。
+		HorizontalContentAlignment は、ContentPresenter を親要素のどこに配置するかを指定する。
+		HorizontalAlignment は、親要素の内のどこに配置するかを指定する。
+
 	[2015/10/12] HorizontalAlignment と HorizontalContentAlignment
 		HorizontalAlignment は、自分が親要素内のどこに配置されるか、
 		HorizontalContentAlignment は、自分が持っている子要素をどこに配置するか。
@@ -1394,8 +1399,8 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
 		t->SetTargetType(_T("RootFrame"));
+		style->AddSetter(UITextElement::ForegroundProperty, ColorBrush::DimGray);
 		style->AddSetter(Control::TemplateProperty, t);
-
 		RefPtr<UIElementFactory> presenter1(LN_NEW UIElementFactory(this), false);
 		presenter1->SetTypeName(_T("ContentPresenter"));
 		t->SetVisualTreeRoot(presenter1);
@@ -1462,15 +1467,15 @@ void GUIManagerImpl::BuildDefaultTheme()
 
 	// Button
 	{
-		GCPtr<Style> style = LN_NEW Style();
+		RefPtr<Style> style(LN_NEW Style(), false);
 		style->SetTargetType(UIButton::GetClassTypeInfo());
 		style->AddSetter(UIButton::BackgroundProperty, m_defaultTheme->GetItem(_T("ButtonNormalBrush")));
 
-		GCPtr<ControlTemplate> t = LN_NEW ControlTemplate();
+		RefPtr<ControlTemplate> t(LN_NEW ControlTemplate(), false);
 		t->SetTargetType(_T("Button"));
 		style->AddSetter(Control::TemplateProperty, t.GetObjectPtr());
 
-		GCPtr<UIElementFactory> panel1 = LN_NEW UIElementFactory(this);
+		RefPtr<UIElementFactory> panel1(LN_NEW UIElementFactory(this), false);
 		panel1->SetTypeName(_T("PilePanel"));
 		{
 			//RefPtr<UIElementFactory> ef1(LN_NEW UIElementFactory(this));
@@ -1479,27 +1484,27 @@ void GUIManagerImpl::BuildDefaultTheme()
 			////ef1->AddTemplateBinding(ButtonChrome::IsMouseOverProperty, UIButton::IsMouseOverProperty);
 			//panel1->AddChild(ef1);
 
-			GCPtr<UIElementFactory> rectangle = LN_NEW UIElementFactory(this);
+			RefPtr<UIElementFactory> rectangle(LN_NEW UIElementFactory(this), false);
 			rectangle->SetKeyName(_T("Border"));
 			rectangle->SetTypeName(_T("Rectangle"));
 			rectangle->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonMouseOnBrush")));
 			panel1->AddChild(rectangle);
 
-			GCPtr<UIElementFactory> rectangle2 = LN_NEW UIElementFactory(this);
+			RefPtr<UIElementFactory> rectangle2(LN_NEW UIElementFactory(this), false);
 			rectangle2->SetKeyName(_T("PressedBorder"));
 			rectangle2->SetTypeName(_T("Rectangle"));
 			rectangle2->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle2->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonPressedBrush")));
 			panel1->AddChild(rectangle2);
 
-			GCPtr<UIElementFactory> rectangle3 = LN_NEW UIElementFactory(this);
+			RefPtr<UIElementFactory> rectangle3(LN_NEW UIElementFactory(this), false);
 			rectangle3->SetKeyName(_T("DisabledBorder"));
 			rectangle3->SetTypeName(_T("Rectangle"));
 			rectangle3->SetPropertyValue(UIElement::OpacityProperty, 0.0f);
 			rectangle3->SetPropertyValue(Shape::FillBrushProperty, m_defaultTheme->GetItem(_T("ButtonDisabledBrush")));
 			panel1->AddChild(rectangle3);
 
-			GCPtr<UIElementFactory> ef2 = LN_NEW UIElementFactory(this);
+			RefPtr<UIElementFactory> ef2(LN_NEW UIElementFactory(this), false);
 			ef2->SetTypeName(_T("ContentPresenter"));
 			panel1->AddChild(ef2);
 		}
@@ -1540,7 +1545,7 @@ void GUIManagerImpl::BuildDefaultTheme()
 		RefPtr<FloatEasing> buttonDisabledEasingOut(FloatEasing::Create(_T("DisabledBorder"), UIElement::OpacityProperty->GetName(), 0.0f, 1.0f, Animation::EasingMode::EaseOutExpo), false);
 
 		//RefPtr<ToneAnimation> buttonDisabledEasingIn(ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo), false);
-		GCPtr<ToneAnimation> buttonDisabledEasingIn = ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo);
+		RefPtr<ToneAnimation> buttonDisabledEasingIn(ToneAnimation::Create(_T("PressedBorder"), UIElement::ToneProperty->GetName(), ToneF(0, 0, 0, 1), 1.0f, Animation::EasingMode::EaseOutExpo), false);
 
 		VisualStateGroupPtr vgroup1(LN_NEW VisualStateGroup(_T("CommonStates")), false);
 		{

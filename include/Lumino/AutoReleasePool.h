@@ -27,6 +27,11 @@ public:
 	*/
 	void Clear();
 
+	/**
+		@brief		カレントの AutoRseleasePool にオブジェクトを追加するユーティリティです。
+	*/
+	static void AddObjectToCurrent(RefObject* obj);
+
 private:
 	AutoReleasePool();
 	~AutoReleasePool();

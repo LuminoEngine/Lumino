@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include "UIManagerImpl.h"
 #include <Lumino/GUI/UITextElement.h>
+#include "GUIHelper.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
@@ -38,6 +39,18 @@ UITextElement::~UITextElement()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+SizeF UITextElement::MeasureOverride(const SizeF& constraint)
+{
+	if (GUIHelper::UIElement_GetInvalidateFlags(this).TestFlag(InvalidateFlags::Font))
+	{
+		OnUpdateFont(m_fontData);
+	}
+	return UIElement::MeasureOverride(constraint);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void UITextElement::OnRender(RenderingContext* painter)
 {
 	// 背景を先に描く
@@ -49,6 +62,12 @@ void UITextElement::OnRender(RenderingContext* painter)
 	UIElement::OnRender(painter);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UITextElement::OnUpdateFont(const GraphicsManager::FontData& fontData)
+{
+}
 
 //-----------------------------------------------------------------------------
 //

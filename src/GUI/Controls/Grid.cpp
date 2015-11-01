@@ -148,7 +148,9 @@ LN_DEFINE_ATTACHED_PROPERTY(Grid, RowSpanProperty, "RowSpan", 0);
 //-----------------------------------------------------------------------------
 Grid* Grid::Create()
 {
-	return internalCreateInstance(GetUIManager());
+	auto* obj = internalCreateInstance(GetUIManager());
+	AutoReleasePool::AddObjectToCurrent(obj);
+	return obj;
 }
 
 //-----------------------------------------------------------------------------

@@ -17,7 +17,13 @@ public:
 	LN_PROPERTY(Orientation, OrientationProperty);
 
 public:
-	static StackPanel* Create();
+	
+	/**
+		@brief		StackPanel を作成します。
+		@param[in]	parent	: この要素の親要素
+		@return		作成された StackPanel。このオブジェクトは AutoReleasePool で管理されています。
+	*/
+	static StackPanel* Create(UIElement* parent);
 
 	StackPanel(GUIManagerImpl* manager);
 	virtual ~StackPanel();

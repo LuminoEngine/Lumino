@@ -41,8 +41,14 @@ public:
 
 	static const String ControlTemplateTypeName;	///< "Button"
 
-
-	static UIButton* Create();
+	
+	/**
+		@brief		StackPanel を作成します。
+		@param[in]	parent	: この要素の親要素
+		@param[in]	content	: 表示するコンテンツ
+		@return		作成された StackPanel。このオブジェクトは AutoReleasePool で管理されています。
+	*/
+	static UIButton* Create(UIElement* parent, const Variant& content);
 
 	UIButton(GUIManagerImpl* manager);
 	virtual ~UIButton();

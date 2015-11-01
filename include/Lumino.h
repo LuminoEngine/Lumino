@@ -40,6 +40,7 @@
 #include "Lumino/GUI/UI.h"
 #include "Lumino/GUI/GUIContext.h"
 #include "Lumino/GUI/UIElement.h"
+#include "Lumino/GUI/UIStyle.h"
 #include "Lumino/GUI/Control.h"
 #include "Lumino/GUI/UIButton.h"
 #include "Lumino/GUI/RootFrame.h"

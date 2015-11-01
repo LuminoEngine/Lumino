@@ -56,34 +56,34 @@ int main()
 
 
 #if 1
-		GCPtr<GUIContext> context1 = GUIContext::Create();
+		auto* captionStyle = Style::Create();
+		captionStyle->AddSetter(UITextElement::FontSizeProperty, 24);
+		captionStyle->AddSetter(UITextElement::ForegroundProperty, ColorBrush::Blue);
+
+
+		RefPtr<GUIContext> context1 = GUIContext::Create();
 		context1->InjectViewportSizeChanged(640, 480);
 
 
-		GCPtr<Grid> rootGrid = Grid::Create();
+		Grid* rootGrid = Grid::Create();
 		context1->SetRootElement(rootGrid);
 
 		{
-			GCPtr<StackPanel> panel = StackPanel::Create();
-			rootGrid->GetChildren()->Add(panel);
+			auto* panel = StackPanel::Create(rootGrid);
+			panel->SetHorizontalAlignment(HorizontalAlignment::Left);
 
-			//auto* p = TextBlock::Create();
-			//p->SetText(_T("test"));
-			//panel->GetChildren()->Add(p);
+			auto* text = TextBlock::Create(panel, _T("test"));
+			text->SetStyle(captionStyle);
+			text->SetHorizontalAlignment(HorizontalAlignment::Center);
 
-			GCPtr<UIButton> button1 = UIButton::Create();
-			panel->GetChildren()->Add(button1);
+			auto* button1 = UIButton::Create(panel, _T("Normal"));
 			button1->SetSize(SizeF(120, 40));
-			//button1->Click += CreateDelegate(Button_Click);
+			button1->SetEnabled(false);
 			button1->Click += [](RoutedEventArgs* e) { printf("ttt\n"); };
 
-			GCPtr<UIButton> button2 = UIButton::Create();
-			panel->GetChildren()->Add(button2);
-			button2->SetForeground(ColorBrush::Blue);
-			button2->SetContent(String(_T("Button")));
-			button2->SetSize(SizeF(120, 40));
+			//auto* button2 = UIButton::Create(panel, _T("Disabled"));
+			//button2->SetSize(SizeF(120, 40));
 
-			button1->SetEnabled(false);
 		}
 #endif
 
@@ -92,6 +92,7 @@ int main()
 
 		while (Application::UpdateFrame())
 		{
+			AutoReleasePool::GetCurrent()->Clear();
 		}
 
 		AutoReleasePool::GetCurrent()->Clear();

@@ -20,11 +20,18 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(GUIContext, CoreObject);
 //-----------------------------------------------------------------------------
 GUIContext* GUIContext::Create()
 {
-	RefPtr<GUIContext> obj(LN_NEW GUIContext(GUIManagerImpl::Instance), false);
+	GUIContext* obj = LN_NEW GUIContext(GUIManagerImpl::Instance);
+	AutoReleasePool::GetCurrent()->AddObject(obj);
+
 	GUIManagerImpl::Instance->AddContextOnMainWindow(obj);
 	obj->m_nativeWindow = GUIManagerImpl::Instance->GetMainWindow();
 	obj->m_onMainWindow = true;
-	obj.SafeAddRef();
+
+	//RefPtr<GUIContext> obj(LN_NEW GUIContext(GUIManagerImpl::Instance), false);
+	//GUIManagerImpl::Instance->AddContextOnMainWindow(obj);
+	//obj->m_nativeWindow = GUIManagerImpl::Instance->GetMainWindow();
+	//obj->m_onMainWindow = true;
+	//obj.SafeAddRef();
 	return obj;
 }
 

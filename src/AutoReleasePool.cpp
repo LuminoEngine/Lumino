@@ -53,4 +53,12 @@ void AutoReleasePool::Clear()
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AutoReleasePool::AddObjectToCurrent(RefObject* obj)
+{
+	GetCurrent()->AddObject(obj);
+}
+
 LN_NAMESPACE_END

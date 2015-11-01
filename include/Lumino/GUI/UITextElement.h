@@ -69,7 +69,11 @@ public:
 protected:
 	UITextElement(GUIManagerImpl* manager);
 	virtual ~UITextElement();
+	virtual SizeF MeasureOverride(const SizeF& constraint);
 	virtual void OnRender(RenderingContext* painter);
+
+	/** フォントオブジェクトを再構築する必要があるときに呼び出されます。*/
+	virtual void OnUpdateFont(const GraphicsManager::FontData& fontData);
 
 private:
 	void OnTextPropertyChanged(PropertyChangedEventArgs* e);

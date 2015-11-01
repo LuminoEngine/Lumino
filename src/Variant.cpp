@@ -645,6 +645,15 @@ Variant::Variant(const Variant& obj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Variant::Variant(std::nullptr_t value)
+	: m_type(VariantType_Unknown)
+	, m_uint(0)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Variant::Variant(bool value)
 	: m_type(VariantType_Bool)
 	, m_bool(value)
@@ -666,6 +675,14 @@ Variant::Variant(int value)
 Variant::Variant(float value)
 	: m_type(VariantType_Float)
 	, m_float(value)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Variant::Variant(const TCHAR* value)
+	: Variant(String(value))
 {
 }
 

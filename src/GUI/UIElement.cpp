@@ -25,6 +25,7 @@ LN_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentPropert
 LN_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, PropertyMetadata(VerticalAlignment::Stretch));
 LN_PROPERTY_IMPLEMENT(UIElement, float, OpacityProperty, "Opacity", m_opacity, PropertyMetadata(1.0f));
 LN_PROPERTY_IMPLEMENT(UIElement, ToneF, ToneProperty, "Tone", m_tone, PropertyMetadata(ToneF()));
+LN_PROPERTY_IMPLEMENT(UIElement, Style*, StyleProperty, "Style", m_style, PropertyMetadata(nullptr, &UIElement::OnStylePropertyChanged));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsEnabledProperty, "IsEnabled", m_isEnabled, PropertyMetadata(true));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsMouseOverProperty, "IsMouseOver", m_isMouseOver, PropertyMetadata(false));
 LN_PROPERTY_IMPLEMENT(UIElement, bool, IsHitTestProperty, "IsHitTest", m_isHitTest, PropertyMetadata(true));
@@ -194,6 +195,7 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	m_desiredSize.Height += marginHeight;
 
 	// フォントの無効フラグを落とす
+	// TODO: UITextElement へ移動した方が良いかも？
 	m_invalidateFlags &= ~InvalidateFlags::Font;
 }
 
@@ -207,22 +209,27 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	// Margin を考慮する
-	float marginWidth = m_margin.Left + m_margin.Right;
-	float marginHeight = m_margin.Top + m_margin.Bottom;
 	SizeF arrangeSize;
 
 	// この要素のサイズが明示的に指定されている場合はそちらを優先する
 	arrangeSize.Width = Math::IsNaNOrInf(m_size.Width) ? finalLocalRect.Width : m_size.Width;
 	arrangeSize.Height = Math::IsNaNOrInf(m_size.Height) ? finalLocalRect.Height : m_size.Height;
 
-	// 0 以下には出来ない
-	arrangeSize.Width = std::max(arrangeSize.Width - marginWidth, 0.0f);
-	arrangeSize.Height = std::max(arrangeSize.Height - marginHeight, 0.0f);
+	const SizeF& ds = GetDesiredSize();
+	RectF arrangeRect;
+	GUIHelper::AdjustHorizontalAlignment(arrangeSize, ds, GetHorizontalAlignment(), &arrangeRect);
+	GUIHelper::AdjustVerticalAlignment(arrangeSize, ds, GetVerticalAlignment(), &arrangeRect);
 
-	SizeF renderSize = ArrangeOverride(arrangeSize);
-	m_finalLocalRect.X = finalLocalRect.X + m_margin.Left;
-	m_finalLocalRect.Y = finalLocalRect.Y + m_margin.Top;
+	// Margin を考慮する (0 以下には出来ない)
+	float marginWidth = m_margin.Left + m_margin.Right;
+	float marginHeight = m_margin.Top + m_margin.Bottom;
+	arrangeRect.Width = std::max(arrangeRect.Width - marginWidth, 0.0f);
+	arrangeRect.Height = std::max(arrangeRect.Height - marginHeight, 0.0f);
+
+
+	SizeF renderSize = ArrangeOverride(arrangeRect.GetSize());
+	m_finalLocalRect.X = finalLocalRect.X + m_margin.Left + arrangeRect.X;
+	m_finalLocalRect.Y = finalLocalRect.Y + m_margin.Top + arrangeRect.Y;
 	m_finalLocalRect.Width = renderSize.Width;
 	m_finalLocalRect.Height = renderSize.Height;
 
@@ -348,6 +355,26 @@ void UIElement::ChangeContext(GUIContext* ownerContext)
 		child->ChangeContext(m_ownerContext);
 	}
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnStylePropertyChanged(PropertyChangedEventArgs* e)
+{
+	if (m_style != NULL) {
+		m_style->Apply(this);
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

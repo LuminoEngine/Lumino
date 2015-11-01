@@ -20,7 +20,7 @@ LN_INTERNAL_ACCESS: \
 	friend class GUIHelper;\
 	static className* internalCreateInstance(GUIManagerImpl* manager) \
 	{ \
-		GCPtr<className> obj = LN_NEW className(manager); \
+		RefPtr<className> obj(LN_NEW className(manager), false); \
 		obj->InitializeComponent(); \
 		obj.SafeAddRef(); \
 		return obj; \
@@ -150,6 +150,7 @@ public:
 	LN_PROPERTY(VerticalAlignment,		VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
 	LN_PROPERTY(float,					OpacityProperty);				/**< Opacity プロパティの識別子 */
 	LN_PROPERTY(ToneF,					ToneProperty);					/**< Tone プロパティの識別子 */
+	LN_PROPERTY(Style*,					StyleProperty);					/**< Style プロパティの識別子 */
 	LN_PROPERTY(bool,					IsEnabledProperty);				/**< IsEnabled プロパティの識別子 */
 	LN_PROPERTY(bool,					IsMouseOverProperty);			/**< IsMouseOver プロパティの識別子 */
 	LN_PROPERTY(bool,					IsHitTestProperty);				/**< IsHitTest プロパティの識別子 */
@@ -216,6 +217,12 @@ public:
 
 	/** 要素の色調を取得します。*/
 	ToneF GetTone() const { return GetTypedPropertyValue<ToneF>(ToneProperty); }
+
+	/** 要素のスタイルを設定します。*/
+	void SetStyle(Style* value) { SetTypedPropertyValue<Style*>(StyleProperty, value); }
+
+	/** 要素のスタイルを取得します。*/
+	Style* GetStyle() const { return GetTypedPropertyValue<Style*>(StyleProperty); }
 
 	/** この要素が有効かどうかを示す値を設定します。規定値は true です。*/
 	void SetEnabled(bool value) { SetTypedPropertyValue<bool>(IsEnabledProperty, value); }
@@ -317,12 +324,15 @@ private:
 	RoutedEventSlot<RoutedEventArgs>	CanExecuteRoutedCommand;
 	RoutedEventSlot<RoutedEventArgs>	ExecuteRoutedCommand;
 
+	void OnStylePropertyChanged(PropertyChangedEventArgs* e);
+
 	GUIContext*						m_ownerContext;
 	UIElement*						m_parent;				///< 親要素 (論理・ビジュアルは関係ない。RoutedEvent(Bubble) の通知先となる)
 	SizeF							m_size; 
 	ThicknessF						m_margin;
 	float							m_opacity;
 	ToneF							m_tone;
+	RefPtr<Style>					m_style;
 	float							m_combinedOpacity;
 	Array< RefPtr<AnimationClock> >	m_animationClockList;
 	InvalidateFlags					m_invalidateFlags;
@@ -595,7 +605,6 @@ private:
 	bool			m_templateModified;
 
 protected:
-	RefPtr<Style>		m_style;
 	RefPtr<UIElement>	m_templateChild;		///< TODO: Control に移動するべきかも。テンプレート子要素のルート要素。論理要素だけが持つ。
 	UIElement*			m_templateParent;		///< テンプレートのルート要素。例えば ScrollViewer - Grid - ScrollContentPresenter という階層がある場合、ScrollContentPresenter.m_templateParent は ScrollViewer を指す。
 
