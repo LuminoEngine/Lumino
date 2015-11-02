@@ -78,11 +78,11 @@ int main()
 
 			auto* button1 = UIButton::Create(panel, _T("Normal"));
 			button1->SetSize(SizeF(120, 40));
-			button1->SetEnabled(false);
 			button1->Click += [](RoutedEventArgs* e) { printf("ttt\n"); };
 
-			//auto* button2 = UIButton::Create(panel, _T("Disabled"));
-			//button2->SetSize(SizeF(120, 40));
+			auto* button2 = UIButton::Create(panel, _T("Disabled"));
+			button2->SetSize(SizeF(120, 40));
+			button2->SetEnabled(false);
 
 		}
 #endif

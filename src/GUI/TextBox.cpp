@@ -280,7 +280,7 @@ public:
 			{
 				int lenFromLineHead = sel->Start - head;
 				int x = m_lineSegments[line]->GetPixelPosFromLineHead(lenFromLineHead);
-				m_selectionRenderingInfo.StartLineRect.Set(x, y, m_lineSegments[line]->GetLinePixelWidth(), m_lineSegments[line]->GetLinePixelHeight());
+				m_selectionRenderingInfo.StartLineRect.Set((float)x, (float)y, (float)m_lineSegments[line]->GetLinePixelWidth(), (float)m_lineSegments[line]->GetLinePixelHeight());
 				m_selectionRenderingInfo.StartLineNumber = line;
 				break;
 			}
@@ -297,7 +297,7 @@ public:
 			{
 				int lenFromLineHead = (sel->Start + sel->Length) - head;
 				int x = m_lineSegments[line]->GetPixelPosFromLineHead(lenFromLineHead);
-				m_selectionRenderingInfo.EndLineRect.Set(x, y, m_lineSegments[line]->GetLinePixelWidth(), m_lineSegments[line]->GetLinePixelHeight());
+				m_selectionRenderingInfo.EndLineRect.Set((float)x, (float)y, (float)m_lineSegments[line]->GetLinePixelWidth(), (float)m_lineSegments[line]->GetLinePixelHeight());
 				m_selectionRenderingInfo.EndLineNumber = line;
 				break;
 			}

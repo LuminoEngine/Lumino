@@ -61,18 +61,18 @@ public:
 	virtual ~FreeTypeFont();
 
 public:
-	virtual void SetName(const String& fontName) { m_fontName = fontName; m_modified = true; }
-	virtual const String& GetName() const { return m_fontName; }
-	virtual void SetSize(int size) { m_fontSize = size; m_modified = true; }
-	virtual int GetSize() const  { return m_fontSize; }
-	virtual void SetEdgeSize(int size) { m_edgeSize = size; m_modified = true; }
-	virtual int GetEdgeSize() const  { return m_edgeSize; }
-	virtual void SetBold(bool enabled) { m_isBold = enabled; m_modified = true; }
-	virtual bool IsBold() const  { return m_isBold; }
-	virtual void SetItalic(bool enabled) { m_isItalic = enabled; m_modified = true; }
-	virtual bool IsItalic() const { return m_isItalic; }
-	virtual void SetAntiAlias(bool enabled) { m_isAntiAlias = enabled; m_modified = true; }
-	virtual bool IsAntiAlias() const { return m_isAntiAlias; }
+	virtual void SetName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }
+	virtual const String& GetName() const { return m_fontData.Family; }
+	virtual void SetSize(int size) { m_fontData.Size = size; m_modified = true; }
+	virtual int GetSize() const  { return m_fontData.Size; }
+	virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
+	virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
+	virtual void SetBold(bool enabled) { m_fontData.IsBold = enabled; m_modified = true; }
+	virtual bool IsBold() const  { return m_fontData.IsBold; }
+	virtual void SetItalic(bool enabled) { m_fontData.IsItalic = enabled; m_modified = true; }
+	virtual bool IsItalic() const { return m_fontData.IsItalic; }
+	virtual void SetAntiAlias(bool enabled) { m_fontData.IsAntiAlias = enabled; m_modified = true; }
+	virtual bool IsAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 	virtual Font* Copy() const;
 	virtual int GetLineHeight() { UpdateFont(); return m_lineHeight; }
@@ -92,12 +92,13 @@ private:
 
 private:
 	FontManager*		m_manager;
-	String				m_fontName;
-	int					m_fontSize;
-	int					m_edgeSize;
-	bool				m_isBold;
-	bool				m_isItalic;
-	bool				m_isAntiAlias;
+	//String				m_fontName;
+	//int					m_fontSize;
+	//int					m_edgeSize;
+	//bool				m_isBold;
+	//bool				m_isItalic;
+	//bool				m_isAntiAlias;
+	FontKey				m_fontData;
 	bool				m_modified;
 
 	FTC_FaceID			m_ftFaceID;			///< キャッシュから FT_Face を検索するためのキー値

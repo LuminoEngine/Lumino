@@ -115,12 +115,6 @@ void FreeTypeGlyphData::ReleaseGlyph()
 //-----------------------------------------------------------------------------
 FreeTypeFont::FreeTypeFont(FontManager* manager)
 	: m_manager(manager)
-	, m_fontName()
-	, m_fontSize(16)
-	, m_edgeSize(0)
-	, m_isBold(false)
-	, m_isItalic(false)
-	, m_isAntiAlias(false)
 	, m_modified(false)
 	, m_ftFaceID(0)
 	, m_ftFace(NULL)
@@ -152,12 +146,8 @@ FreeTypeFont::~FreeTypeFont()
 Font* FreeTypeFont::Copy() const
 {
 	RefPtr<FreeTypeFont> font(LN_NEW FreeTypeFont(m_manager), false);
-	font->SetName(m_fontName);
-	font->SetSize(m_fontSize);
-	font->SetEdgeSize(m_edgeSize);
-	font->SetBold(m_isBold);
-	font->SetItalic(m_isItalic);
-	font->SetAntiAlias(m_isAntiAlias);
+	font->m_fontData = m_fontData;
+	font->m_modified = true;
 	font.SafeAddRef();
 	return font;
 }
@@ -337,7 +327,7 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
 
 	// 太字フォント
-	if (m_isBold)
+	if (m_fontData.IsBold)
 	{
 		// アウトラインフォントである必要がある
 		LN_THROW((glyph->format == FT_GLYPH_FORMAT_OUTLINE), InvalidOperationException, "glyph->format != FT_GLYPH_FORMAT_OUTLINE");
@@ -365,8 +355,8 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 	// アウトライン有り
 	if (m_ftStroker != NULL)
 	{
-		locData->OutlineBitmapTopLeftPosition.X = locData->BitmapTopLeftPosition.X - m_edgeSize;
-		locData->OutlineBitmapTopLeftPosition.Y = locData->BitmapTopLeftPosition.Y - m_edgeSize;
+		locData->OutlineBitmapTopLeftPosition.X = locData->BitmapTopLeftPosition.X - m_fontData.EdgeSize;
+		locData->OutlineBitmapTopLeftPosition.Y = locData->BitmapTopLeftPosition.Y - m_fontData.EdgeSize;
 		locData->OuterTopLeftPosition = locData->OutlineBitmapTopLeftPosition;
 	}
 	// アウトライン無し
@@ -400,7 +390,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
 
 	// 太字フォント
-	if (m_isBold)
+	if (m_fontData.IsBold)
 	{
 		// アウトラインフォントである必要がある
 		LN_THROW((glyph->format == FT_GLYPH_FORMAT_OUTLINE), InvalidOperationException, "glyph->format != FT_GLYPH_FORMAT_OUTLINE");
@@ -409,7 +399,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 		err = FT_Outline_Embolden(&m_ftFace->glyph->outline, strength);
 		LN_THROW(err == 0, InvalidOperationException, "failed FT_Outline_Embolden : %d\n", err);
 	}
-	FT_Render_Mode renderMode = (m_isAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
+	FT_Render_Mode renderMode = (m_fontData.IsAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
 
 	FT_BitmapGlyph glyph_bitmap;
 	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
@@ -453,7 +443,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 		FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
 		RefreshBitmap(m_outlineBitmap, ft_bitmap);
 		m_fontGlyphBitmap.OutlineBitmap = m_outlineBitmap;
-		m_fontGlyphBitmap.OutlineOffset = m_edgeSize;
+		m_fontGlyphBitmap.OutlineOffset = m_fontData.EdgeSize;
 	}
 	else
 	{
@@ -628,14 +618,14 @@ void FreeTypeFont::UpdateFont()
 {
 	if (m_modified)
 	{
-		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName.c_str());
+		m_ftFaceID = (FTC_FaceID)m_fontData.CalcHash();//(FTC_FaceID)Hash::CalcHash(m_fontData.Family.c_str());
 		FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
-		m_manager->m_requesterFaceName = m_fontName.c_str();
+		m_manager->m_requesterFaceName = m_fontData.Family.c_str();
 
 		FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
 		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);
 
-		if (m_isItalic)
+		if (m_fontData.IsItalic)
 		{
 			// イタリック体の場合は Transform で傾ける
 			FT_Vector transform = { 0, 0 };
@@ -662,7 +652,7 @@ void FreeTypeFont::UpdateFont()
 		FTC_ScalerRec scaler;
 		scaler.face_id = m_ftFaceID;
 		scaler.width = 0;
-		scaler.height = m_fontSize << 6;
+		scaler.height = m_fontData.Size << 6;
 		scaler.pixel = 0;
 		scaler.x_res = RESOLUTION_X;
 		scaler.y_res = RESOLUTION_Y;
@@ -673,12 +663,12 @@ void FreeTypeFont::UpdateFont()
 		m_lineHeight = ft_size->metrics.height >> 6;
 
 		Dispose();
-		if (m_edgeSize > 0)
+		if (m_fontData.EdgeSize > 0)
 		{
 			// エッジの描画情報
 			FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
 			FT_Stroker_Set(m_ftStroker,
-				(int)(m_edgeSize * 64),
+				(int)(m_fontData.EdgeSize * 64),
 				FT_STROKER_LINECAP_ROUND,	// 線分の両端は半円でレンダリングする
 				FT_STROKER_LINEJOIN_ROUND,	// 線分の接合点は半円でレンダリングする
 				0);
@@ -688,7 +678,7 @@ void FreeTypeFont::UpdateFont()
 		// font_typeを設定
 		m_ftImageType.face_id = m_ftFaceID;
 		m_ftImageType.width = 0;
-		m_ftImageType.height = m_fontSize;
+		m_ftImageType.height = m_fontData.Size;
 		/* ビットマップまでキャッシュする場合はFT_LOAD_RENDER | FT_LOAD_TARGET_*
 		* とする。ただし途中でTARGETを変更した場合等はキャッシュが邪魔する。
 		* そういう時はFT_LOAD_DEFAULTにしてFTC_ImageCache_Lookup後に
@@ -701,7 +691,7 @@ void FreeTypeFont::UpdateFont()
 		*/
 
 		// アウトライン ON
-		if (m_edgeSize > 0 || m_isBold) {
+		if (m_fontData.EdgeSize > 0 || m_fontData.IsBold) {
 			m_ftImageType.flags = FT_LOAD_NO_BITMAP;
 		}
 		// アウトライン OFF
@@ -709,7 +699,7 @@ void FreeTypeFont::UpdateFont()
 			m_ftImageType.flags = FT_LOAD_RENDER;
 		}
 		// アンチエイリアス ON
-		if (m_isAntiAlias) {
+		if (m_fontData.IsAntiAlias) {
 			//m_ftImageType.flags = ; そのまま
 		}
 		// アンチエイリアス OFF
@@ -718,8 +708,8 @@ void FreeTypeFont::UpdateFont()
 		}
 
 		// グリフ格納用ビットマップ (仮確保)
-		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontSize, m_fontSize), PixelFormat_A8));
-		m_outlineBitmap.Attach(LN_NEW Bitmap(Size(m_fontSize, m_fontSize), PixelFormat_A8));
+		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat_A8));
+		m_outlineBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat_A8));
 
 		// ラスタライズで使用する
 		//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];

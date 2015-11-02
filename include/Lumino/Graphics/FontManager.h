@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <map>
+#include <Lumino/Base/Hash.h>
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Text/EncodingConverter.h>
 
@@ -21,6 +22,55 @@ typedef struct FT_GlyphRec_*  FT_Glyph;
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Font;
+
+class FontKey
+{
+public:
+
+	String	Family;
+	int		Size;
+	int		EdgeSize;
+	bool	IsBold;
+	bool	IsItalic;
+	bool	IsAntiAlias;
+
+	FontKey()
+		: Family()
+		, Size(16)
+		, EdgeSize(0)
+		, IsBold(false)
+		, IsItalic(false)
+		, IsAntiAlias(false)
+	{}
+
+	bool operator < (const FontKey& right)
+	{
+		if (Family < right.Family) { return true; }
+		if (Family > right.Family) { return false; }
+		if (Size < right.Size) { return true; }
+		if (Size > right.Size) { return false; }
+		if (EdgeSize < right.EdgeSize) { return true; }
+		if (EdgeSize > right.EdgeSize) { return false; }
+		if (IsBold < right.IsBold) { return true; }
+		if (IsBold > right.IsBold) { return false; }
+		if (IsItalic < right.IsItalic) { return true; }
+		if (IsItalic > right.IsItalic) { return false; }
+		if (IsAntiAlias < right.IsAntiAlias) { return true; }
+		if (IsAntiAlias > right.IsAntiAlias) { return false; }
+		return false;
+	}
+
+	uint32_t CalcHash()
+	{
+		uint32_t v = Hash::CalcHash(Family.c_str());
+		v += Size;
+		v += 10 * EdgeSize;
+		v += 100 * (int)IsBold;
+		v += 1000 * (int)IsItalic;
+		v += 10000 * (int)IsAntiAlias;
+		return v;
+	}
+};
 
 /**
 	@brief		フォントの管理クラス
