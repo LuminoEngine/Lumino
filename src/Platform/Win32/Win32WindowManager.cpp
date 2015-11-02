@@ -113,7 +113,7 @@ Win32WindowBase* Win32WindowManager::CreateNativeWindow(const NativeWindowCreati
 		HWND hWnd = ::CreateWindowEx(
 			dwExStyle,
 			m_windowClassName.c_str(),
-			data.TitleText,
+			data.TitleText.c_str(),
 			dwStyle,
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			CW_USEDEFAULT, CW_USEDEFAULT,

@@ -181,7 +181,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 	if (face->num_faces == 1)
 	{
 		String familyName(face->family_name);
-		uint32_t key = Hash::CalcHash(familyName);
+		uint32_t key = Hash::CalcHash(familyName.c_str());
 		if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 		{
 			TTFDataEntry e;
@@ -218,7 +218,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
 			String familyName(face->family_name);
-			uint32_t key = Hash::CalcHash(familyName);
+			uint32_t key = Hash::CalcHash(familyName.c_str());
 			if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 			{
 				TTFDataEntry e;

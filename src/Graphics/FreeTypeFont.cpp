@@ -628,9 +628,9 @@ void FreeTypeFont::UpdateFont()
 {
 	if (m_modified)
 	{
-		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName);
+		m_ftFaceID = (FTC_FaceID)Hash::CalcHash(m_fontName.c_str());
 		FTC_Manager ftc_manager = m_manager->GetFTCacheManager();
-		m_manager->m_requesterFaceName = m_fontName;
+		m_manager->m_requesterFaceName = m_fontName.c_str();
 
 		FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
 		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);

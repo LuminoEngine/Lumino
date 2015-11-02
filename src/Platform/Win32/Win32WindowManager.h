@@ -15,15 +15,15 @@ public:
 	/// CreateNativeWindow の引数
 	struct NativeWindowCreationData
 	{
-		const TCHAR*	        TitleText;		///< ウィンドウタイトルの文字列
-		int				        Width;			///< クライアント領域の幅
-		int				        Height;			///< クライアント領域の高さ
-		bool			        Fullscreen;		///< フルスクリーンモードで初期化する場合 true
-		bool					Resizable;
-		HWND					UserWindow;
+		String	        TitleText;		///< ウィンドウタイトルの文字列
+		int				Width;			///< クライアント領域の幅
+		int				Height;			///< クライアント領域の高さ
+		bool			Fullscreen;		///< フルスクリーンモードで初期化する場合 true
+		bool			Resizable;
+		HWND			UserWindow;
 
 		NativeWindowCreationData()
-			: TitleText(NULL)
+			: TitleText()
 			, Width(0)
 			, Height(0)
 			, Fullscreen(false)

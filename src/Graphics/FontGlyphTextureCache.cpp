@@ -140,7 +140,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 {
 	uint32_t v[2];
-	v[0] = Hash::CalcHash(m_font->GetName());
+	v[0] = Hash::CalcHash(m_font->GetName().c_str());
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = m_font->GetSize();

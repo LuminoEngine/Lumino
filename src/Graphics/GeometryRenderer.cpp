@@ -204,7 +204,7 @@ void GeometryRendererCore::CreateInternal()
 	ShaderCompileResult result;
 	m_shaderParam.Shader.Attach(m_device->CreateShader(code, codeLen, &result), false);
 	if (result.Level != ShaderCompileResultLevel_Success) {
-		printf(result.Message);	// TODO:仮
+		printf(result.Message.c_str());	// TODO:仮
 	}
 
 	m_shaderParam.varWorldMatrix = m_shaderParam.Shader->GetVariableByName(_T("g_worldMatrix"));

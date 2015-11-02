@@ -938,7 +938,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
 {
 	uint32_t v[2];
-	v[0] = Hash::CalcHash(fontData.Family);
+	v[0] = Hash::CalcHash(fontData.Family.c_str());
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = fontData.Size;

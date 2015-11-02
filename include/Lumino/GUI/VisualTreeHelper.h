@@ -12,6 +12,7 @@ class VisualTreeHelper
 {
 public:
 	static UIElement* FindChildByName(UIElement* parent, const TCHAR* name);
+	static UIElement* FindChildByName(UIElement* parent, const String& name) { return FindChildByName(parent, name.c_str()); }
 };
 
 LN_NAMESPACE_GUI_END
