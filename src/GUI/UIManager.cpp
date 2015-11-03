@@ -5,6 +5,11 @@
 	・バインディング
 	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
+	[2015/11/3] IsEnabled
+		親の IsEnabled は子の IsEnabled に伝播する。
+		親が false の時は子は false を返す。子に true を設定しても true を返すようにはならない。
+		親の変更時にはこの IsEnabledChaged も発生する。
+
 	[2015/11/1] HorizontalAlignment と HorizontalContentAlignment
 		前回のはちょっと違ってた。
 		HorizontalContentAlignment は、ContentPresenter を親要素のどこに配置するかを指定する。
