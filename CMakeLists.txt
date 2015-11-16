@@ -421,9 +421,12 @@ set(LN_SOURCES_Application
 if (LN_BUILD_FOUNDATION_MODULE)
 set(LN_SOURCES_Foundation
 	include/Lumino/Foundation/Application.h
+	include/Lumino/Foundation/GameScene.h
 	src/Foundation/Application.cpp
 	src/Foundation/EntryPoint.cpp
 	src/Foundation/EntryPoint.h
+	src/Foundation/GameSceneManager.cpp
+	src/Foundation/GameSceneManager.h
 	src/Foundation/Main_Win32.cpp
 )
 endif()
