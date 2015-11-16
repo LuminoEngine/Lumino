@@ -1,46 +1,46 @@
-﻿/*
+/*
 
 
-[2015/8/30] プロパティの継承
-	リビジョンカウントを用いた方法
-	・親～孫間の要素のプロパティが変更された時は？
-		そのプロパティの独自設定ON/OFFが切り替わった時、全ての子の同じプロパティに再更新フラグを立てる。
-		→全子走査は時間かかる・・・親のリビジョンを操作するのは？
-			→ルートまでデフォルトだった時対応できない
-				→ルートを継承元として参照する。
-	・ツリーからツリーが切り離された/追加された時は？
-		切り離された/追加されたツリーの全ノードのプロパティの再更新フラグをONにする。
+[2015/8/30] �v���p�e�B�̌p��
+	���r�W�����J�E���g��p�������@
+	�E�e�`���Ԃ̗v�f�̃v���p�e�B���ύX���ꂽ���́H
+		���̃v���p�e�B�̓Ǝ��ݒ�ON/OFF���؂�ւ�������A�S�Ă̎q�̓����v���p�e�B�ɍčX�V�t���O�𗧂Ă�B
+		���S�q�����͎��Ԃ�����E�E�E�e�̃��r�W�����𑀍삷��̂́H
+			�����[�g�܂Ńf�t�H���g���������Ή��ł��Ȃ�
+				�����[�g���p�����Ƃ��ĎQ�Ƃ���B
+	�E�c���[����c���[���؂藣���ꂽ/�ǉ����ꂽ���́H
+		�؂藣���ꂽ/�ǉ����ꂽ�c���[�̑S�m�[�h�̃v���p�e�B�̍čX�V�t���O��ON�ɂ���B
 
 
-[2015/7/31] トップレベルインターフェイス
-	- 継承による拡張
-	- 言語バインダを実装する上での使いやすさ
-	- Variant への保持しやすさ
-	- アプリを実装する上での使いやすさ
+[2015/7/31] �g�b�v���x���C���^�[�t�F�C�X
+	- �p���ɂ��g��
+	- ����o�C���_�����������ł̎g���₷��
+	- Variant �ւ̕ێ����₷��
+	- �A�v�������������ł̎g���₷��
 
-	以下のような方針で。
-	- トップレベルオブジェクト (ApplicationImpl) はグローバル。
-	  (完全にグローバルではなく、インスタンスのポインタをグローバル変数に入れておくイメージ。必要に応じて継承し、拡張できる)
+	�ȉ��̂悤�ȕ��j�ŁB
+	- �g�b�v���x���I�u�W�F�N�g (ApplicationImpl) �̓O���[�o���B
+	  (���S�ɃO���[�o���ł͂Ȃ��A�C���X�^���X�̃|�C���^���O���[�o���ϐ��ɓ���Ă����C���[�W�B�K�v�ɉ����Čp�����A�g���ł���)
 	- 
 
 
 
-	・Font font = Font::CreateBitmapFont();
+	�EFont font = Font::CreateBitmapFont();
 	
 
-	・FontPtr font = Font::CreateBitmapFont();
+	�EFontPtr font = Font::CreateBitmapFont();
 
-	- スタックへの生成を許可するか？
-		完全に禁止することは出来ない。派生させればなんとでも出来てしまう。
+	- �X�^�b�N�ւ̐����������邩�H
+		���S�ɋ֎~���邱�Ƃ͏o���Ȃ��B�h��������΂Ȃ�Ƃł��o���Ă��܂��B
 	
 
-	・Siv3D、セガGameLib
-		公開するのはスマートポインタクラス。実体は可能な限り見せない。
-		→ 派生させて拡張できない。GUI のユーザーコントロールとか作れないことになる。
-		ただ、Siv3D の GUI は static Create() が shared_ptr 返していた。
+	�ESiv3D�A�Z�KGameLib
+		���J����̂̓X�}�[�g�|�C���^�N���X�B���͉̂\�Ȍ��茩���Ȃ��B
+		�� �h�������Ċg���ł��Ȃ��BGUI �̃��[�U�[�R���g���[���Ƃ����Ȃ����ƂɂȂ�B
+		�����ASiv3D �� GUI �� static Create() �� shared_ptr �Ԃ��Ă����B
 
-	・SDL2、GLFW、GDI+、Nux なんかはトップレベルオブジェクトはグローバルインスタンス。
-	  OpenSceneGraph もたぶんそう。
+	�ESDL2�AGLFW�AGDI+�ANux �Ȃ񂩂̓g�b�v���x���I�u�W�F�N�g�̓O���[�o���C���X�^���X�B
+	  OpenSceneGraph �����Ԃ񂻂��B
 */
 
 
@@ -49,7 +49,7 @@
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
 #include <Lumino/Audio/AudioManager.h>
-#include <Lumino/Application.h>
+#include <Lumino/Engine.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Scene/SceneGraphManager.h"
@@ -155,11 +155,11 @@ void ApplicationImpl::InitializeCommon()
 {
 	if (!m_commonInitied)
 	{
-		// ログファイル出力
+		// ���O�t�@�C���o��
 		if (m_configData.ApplicationLogEnabled) {
 			Logger::Initialize(LogFileName);
 		}
-		// コンソール割り当て
+		// �R���\�[�����蓖��
 		if (m_configData.ConsoleEnabled) {
 			Console::Alloc();
 		}
@@ -205,7 +205,7 @@ void ApplicationImpl::InitialzePlatformManager()
 		m_platformManager.Attach(LN_NEW Platform::PlatformManager());
 		m_platformManager->Initialize(data);
 
-		// イベントリスナー登録
+		// �C�x���g���X�i�[�o�^
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
 	}
 }
@@ -220,8 +220,8 @@ void ApplicationImpl::InitialzeAudioManager()
 		InitializeCommon();
 		InitialzeFileManager();
 
-		// ユーザー定義のウィンドウハンドルが指定されている場合、
-		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
+		// ���[�U�[��`�̃E�B���h�E�n���h�����w�肳��Ă���ꍇ�A
+		// �_�~�[�E�B���h�E�N���X����邽�߂� PlatformManager �̏��������K�v�B
 		if (m_configData.UserMainWindow != NULL) {
 			InitialzePlatformManager();
 		}
@@ -350,7 +350,7 @@ bool ApplicationImpl::UpdateFrame()
 	if (m_guiManager != NULL) {
 		m_guiManager->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
 
-		{	// プロファイリング範囲
+		{	// �v���t�@�C�����O�͈�
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 			m_guiManager->UpdateLayoutOnMainWindow();
 		}
@@ -420,41 +420,41 @@ bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 {
 	switch (e.Type)
 	{
-	case Platform::EventType_Quit:	///< アプリ終了要求
-	case Platform::EventType_Close:			///< ウィンドウが閉じられようとしている
+	case Platform::EventType_Quit:	///< �A�v���I���v��
+	case Platform::EventType_Close:			///< �E�B���h�E�������悤�Ƃ��Ă���
 		break;
 
-	case Platform::EventType_MouseDown:		// ウスボタンが押された
+	case Platform::EventType_MouseDown:		// �E�X�{�^���������ꂽ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseUp:			// マウスボタンが離された
+	case Platform::EventType_MouseUp:			// �}�E�X�{�^���������ꂽ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseMove:		// マウスが移動した
+	case Platform::EventType_MouseMove:		// �}�E�X���ړ�����
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseWheel:		// マウスホイールが操作された
+	case Platform::EventType_MouseWheel:		// �}�E�X�z�C�[�������삳�ꂽ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseWheel(e.Mouse.Delta, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyDown:	// キー押下
+	case Platform::EventType_KeyDown:	// �L�[����
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyUp:		//  キー押し上げ
+	case Platform::EventType_KeyUp:		//  �L�[�����グ
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyChar:		//  文字入力
+	case Platform::EventType_KeyChar:		//  ��������
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectTextInput(e.Key.Char)) { return true; }
 		}
@@ -466,13 +466,13 @@ bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 }
 
 //=============================================================================
-// Application
+// Engine
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::Initialize(const ApplicationSettings& settings)
+void Engine::Initialize(const ApplicationSettings& settings)
 {
 	ApplicationImpl::Instance = ApplicationImpl::Create(settings);
 	ApplicationImpl::Instance->Initialize();
@@ -481,7 +481,7 @@ void Application::Initialize(const ApplicationSettings& settings)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Application::Finalize()
+void Engine::Finalize()
 {
 	LN_SAFE_RELEASE(ApplicationImpl::Instance);
 }
@@ -489,7 +489,7 @@ void Application::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Application::UpdateFrame()
+bool Engine::UpdateFrame()
 {
 	LN_CHECK_STATE(ApplicationImpl::Instance != NULL);
 	return ApplicationImpl::Instance->UpdateFrame();

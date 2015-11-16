@@ -1,0 +1,6 @@
+
+
+namespace ln
+{
+int EntryPoint();
+}

@@ -550,7 +550,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<b
 		// '-' の無い普通の数値だった
 		if (rangeMarkPos == -1)
 		{
-			int n = _ttoi(token);
+			int n = token.ToInt32();//_ttoi(token.c_str());
 			while (subsetIndexArray->GetCount() < n - 1) {	// サブセット番号 n までに足りない要素を詰めていく
 				subsetIndexArray->Add(false);
 			}
@@ -559,7 +559,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<b
 		// トークンの最後が '-' だった。以降全てのサブセットを描画することを示す
 		else if (rangeMarkPos == token.GetLength() - 1)
 		{
-			int n = _ttoi(token.Left(rangeMarkPos));
+			int n = token.Left(rangeMarkPos).ToInt32(); //_ttoi(token.Left(rangeMarkPos));
 			while (subsetIndexArray->GetCount() < n - 1) {	// サブセット番号 n までに足りない要素を詰めていく
 				subsetIndexArray->Add(false);
 			}
@@ -569,8 +569,8 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<b
 		// "2-5" のようなトークン
 		else
 		{
-			int start = _ttoi(token.Left(rangeMarkPos));
-			int end = _ttoi(token.Right((token.GetLength() - rangeMarkPos) - 1));
+			int start = token.Left(rangeMarkPos).ToInt32();//_ttoi(token.Left(rangeMarkPos));
+			int end = token.Right((token.GetLength() - rangeMarkPos) - 1).ToInt32();// _ttoi(token.Right((token.GetLength() - rangeMarkPos) - 1));
 			while (subsetIndexArray->GetCount() < start - 1) {	// サブセット番号 start までに足りない要素を詰めていく
 				subsetIndexArray->Add(false);
 			}

@@ -23,6 +23,7 @@ option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or D
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
 
 option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." OFF)
+option(LN_BUILD_FOUNDATION_MODULE "Build 'Foundation' module." OFF)
 
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
@@ -393,22 +394,22 @@ set(LN_SOURCES_Game
 )
 
 set(LN_SOURCES_Application
-	include/Lumino/Application.h
 	include/Lumino/ApplicationSettings.h
 	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
 	include/Lumino/CoreObject.h
+	include/Lumino/Engine.h
 	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Profiler.h
 	include/Lumino/Property.h
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	include/Lumino/Version.h
-	src/Application.cpp
 	src/ApplicationImpl.h
 	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
+	src/Engine.cpp
 	src/Internal.h
 	src/Profiler.cpp
 	src/Property.cpp
@@ -416,6 +417,16 @@ set(LN_SOURCES_Application
 	src/Variant.cpp
 	src/Version.cpp
 )
+
+if (LN_BUILD_FOUNDATION_MODULE)
+set(LN_SOURCES_Foundation
+	include/Lumino/Foundation/Application.h
+	src/Foundation/Application.cpp
+	src/Foundation/EntryPoint.cpp
+	src/Foundation/EntryPoint.h
+	src/Foundation/Main_Win32.cpp
+)
+endif()
 
 #--------------------------------------
 # Platform source files.
@@ -505,6 +516,7 @@ source_group("GUI"			FILES ${LN_SOURCES_GUI})
 source_group("Documents"	FILES ${LN_SOURCES_Documents})
 source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
+source_group("Foundation"	FILES ${LN_SOURCES_Foundation})
 
 set(LN_SOURCES
 	${LN_SOURCES}
@@ -519,6 +531,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application}
+	${LN_SOURCES_Foundation}
 	${LN_SOURCES_C_API})
 
 #------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/IO/PathName.h>
 #include "Audio/Common.h"
 #include "Graphics/Common.h"
 
