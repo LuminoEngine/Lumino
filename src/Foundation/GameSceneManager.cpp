@@ -63,25 +63,71 @@ GameSceneManager::~GameSceneManager()
 {
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GameSceneManager::GotoScene(GameScene* scene)
+//{
+//	if (scene == m_nextScene) {
+//		return;
+//	}
 //
-//-----------------------------------------------------------------------------
-void GameSceneManager::GotoScene(GameScene* scene)
-{
-}
-
-//-----------------------------------------------------------------------------
+//	size_t index = m_sceneStack.size();
 //
-//-----------------------------------------------------------------------------
-void GameSceneManager::PushScene(GameScene* scene)
-{
-}
-
-//-----------------------------------------------------------------------------
+//	m_sceneStack.replace(index - 1, scene);
 //
-//-----------------------------------------------------------------------------
-void GameSceneManager::PopScene()
-{
-}
+//	m_nextScene = scene;
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GameSceneManager::CallScene(GameScene* scene)
+//{
+//	m_sceneStack.Push(m_runningScene);
+//	m_nextScene = scene;
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GameSceneManager::ReturnScene()
+//{
+//	m_sceneStack.Pop();
+//	m_nextScene = m_sceneStack.GetTop();
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GameSceneManager::UpdateFrame()
+//{
+//	if (m_nextScene != nullptr)
+//	{
+//		ChangeNextScene();
+//	}
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GameSceneManager::ChangeNextScene()
+//{
+//	if (m_runningScene != nullptr)
+//	{
+//		m_runningScene->onExitTransitionDidStart();
+//		_runningScene->onExit();
+//		_runningScene.SafeRelease();
+//	}
+//
+//	m_runningScene = m_nextScene;
+//	m_nextScene = nullptr;
+//
+//	if (m_runningScene != nullptr)
+//	{
+//		m_runningScene->onEnter();
+//		m_runningScene->onEnterTransitionDidFinish();
+//	}
+//}
 
 LN_NAMESPACE_END
