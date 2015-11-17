@@ -556,7 +556,7 @@ private:
 		int				m_rect[4];
 		float			m_thicknessF[4];
 		float			m_toneF[4];
-		Enum			m_enum;
+		EnumValueType	m_enum;
 	};
 	String			m_string;
 };

@@ -723,7 +723,7 @@ Variant::Variant(const Enum& value)
 	: m_type(VariantType_Unknown)
 	, m_uint(0)	// union 全てを初期化
 {
-	SetInt(value);
+	SetInt(value.GetInt());
 }
 
 //-----------------------------------------------------------------------------

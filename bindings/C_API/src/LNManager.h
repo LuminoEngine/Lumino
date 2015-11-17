@@ -1,7 +1,7 @@
 
 #pragma once
 #include "../../../src/ApplicationImpl.h"	// TODO
-#include <Lumino/Application.h>
+#include <Lumino/Engine.h>
 #include "../include/LNCommon.h"
 
 /// Handle ‚ÌŠÇ—ƒŠƒXƒg‚Ì—v‘f

@@ -38,7 +38,7 @@ int main()
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;
 		appData.DirectMusicMode = DirectMusicMode::Normal;
-		Application::Initialize(appData);
+		Engine::Initialize(appData);
 
 		//GCPtr<Sound> s = Sound::Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"));
 		//GCPtr<Sound> s = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
@@ -90,7 +90,7 @@ int main()
 
 
 
-		while (Application::UpdateFrame())
+		while (Engine::UpdateFrame())
 		{
 			AutoReleasePool::GetCurrent()->Clear();
 		}
@@ -100,7 +100,7 @@ int main()
 		//s->Stop();
 		//s.SafeRelease();
 
-		Application::Finalize();
+		Engine::Finalize();
 
 #if 0
 		//RefPtr<TestRef1> ttt(LN_NEW TestRef1());
