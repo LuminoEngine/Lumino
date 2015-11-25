@@ -8,6 +8,7 @@
 #include <Lumino/Base/Rect.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/EnumExtension.h>
+#include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Platform/Window.h>
 #include <LuminoMath.h>
 #include "../Common.h"
@@ -33,6 +34,7 @@ class GraphicsResourceObject;
 class VertexBuffer;
 class IndexBuffer;
 class Texture;
+class DepthBuffer;
 class Shader;
 class ShaderVariable;
 class ShaderTechnique;

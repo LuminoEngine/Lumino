@@ -11,11 +11,14 @@ set(LN_SOURCES_C_API
 	include/LNAudio.h
 	include/LNBase.h
 	include/LNCommon.h
+	include/LNGraphics.h
 	include/LNMath.h
+	include/LNScene.h
 	include/LNTypedef.h
 	src/LNApplication.cpp
 	src/LNAudio.cpp
 	src/LNBase.cpp
+	src/LNGraphics.cpp
 	src/LNGUI.cpp
 	src/LNGUI.h
 	src/LNInternal.cpp
@@ -24,6 +27,7 @@ set(LN_SOURCES_C_API
 	src/LNManager.h
 	src/LNMath.cpp
 	src/LNOverride_src.cpp
+	src/LNScene.cpp
 	src/LNTypedef.cpp
 )
 

@@ -36,7 +36,10 @@ Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	// ロック用のビットマップを作る
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
-	return LN_NEW Texture(GetManager(), size, format, mipLevels, bitmap);
+	RefPtr<Texture> tex(LN_NEW Texture(), false);
+	tex->CreateImpl(GetManager(), size, format, mipLevels, bitmap);
+	tex.SafeAddRef();
+	return tex;
 }
 
 //-----------------------------------------------------------------------------
@@ -55,12 +58,18 @@ Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels)
 {
 	if (GetManager()->IsPlatformTextureLoading())
 	{
-		return LN_NEW Texture(GetManager(), stream, format, mipLevels);
+		RefPtr<Texture> tex(LN_NEW Texture(), false);
+		tex->CreateImpl(GetManager(), stream, format, mipLevels);
+		tex.SafeAddRef();
+		return tex;
 	}
 
 	// ビットマップを作る
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
-	return LN_NEW Texture(GetManager(), bitmap->GetSize(), format, mipLevels, bitmap);
+	RefPtr<Texture> tex(LN_NEW Texture(), false);
+	tex->CreateImpl(GetManager(), bitmap->GetSize(), format, mipLevels, bitmap);
+	tex.SafeAddRef();
+	return tex;
 }
 
 //-----------------------------------------------------------------------------
@@ -76,22 +85,23 @@ Texture* Texture::Create(const void* data, size_t size, TextureFormat format, in
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture::Texture(GraphicsManager* manager)
-	: m_manager(manager)
+Texture::Texture()
+	: m_manager(NULL)
 	, m_deviceObj(NULL)
 	, m_primarySurface(NULL)
 	, m_isPlatformLoaded(false)
 	, m_isDefaultBackBuffer(false)
 {
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture::Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
-	: Texture(manager)
+void Texture::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
 {
+	m_manager = manager;
+	m_manager->AddResourceObject(this);
+
 	m_size = size;
 	m_mipLevels = mipLevels;
 	m_format = format;
@@ -107,9 +117,11 @@ Texture::Texture(GraphicsManager* manager, const Size& size, TextureFormat forma
 //-----------------------------------------------------------------------------
 // プラットフォーム依存用
 //-----------------------------------------------------------------------------
-Texture::Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
-	: Texture(manager)
+void Texture::CreateImpl(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
 {
+	m_manager = manager;
+	m_manager->AddResourceObject(this);
+
 	m_mipLevels = mipLevels;
 	m_format = format;
 	m_isPlatformLoaded = true;
@@ -137,13 +149,14 @@ Texture::Texture(GraphicsManager* manager, Stream* stream, TextureFormat format,
 //	m_manager->AddResourceObject(this);
 //}
 
-Texture::Texture(GraphicsManager* manager, bool isDefaultBackBuffer)
-	: m_manager(manager)
-	, m_deviceObj(NULL)
-	, m_primarySurface(NULL)
-	, m_isDefaultBackBuffer(isDefaultBackBuffer)
+void Texture::CreateImpl(GraphicsManager* manager, bool isDefaultBackBuffer)
 {
+	m_manager = manager;
 	m_manager->AddResourceObject(this);
+
+	m_deviceObj = NULL;
+	m_primarySurface = NULL;
+	m_isDefaultBackBuffer = isDefaultBackBuffer;
 }
 
 //-----------------------------------------------------------------------------
@@ -344,12 +357,25 @@ void Texture::DetachDefaultBackBuffer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RenderTarget::RenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
-	: Texture(manager)
-	, m_size(size)
-	, m_mipLevels(mipLevels)
-	, m_format(format)
+RenderTarget::RenderTarget()
+	: Texture()
+	, m_size()
+	, m_mipLevels(0)
+	, m_format(TextureFormat_Unknown)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
+{
+	m_manager = manager;
+	m_manager->AddResourceObject(this);
+
+	m_size = size;
+	m_mipLevels = mipLevels;
+	m_format = format;
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.Width, m_size.Height, m_mipLevels, m_format);
 }
 
@@ -382,16 +408,31 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 //-----------------------------------------------------------------------------
 Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
 {
-	return LN_NEW DepthBuffer(GraphicsManager::Instance, size, format);
+	RefPtr<DepthBuffer> tex(LN_NEW DepthBuffer(), false);
+	tex->CreateImpl(GraphicsManager::Instance, size, format);
+	tex.SafeAddRef();
+	return tex;
 }
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-DepthBuffer::DepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format)
-	: Texture(manager)
-	, m_size(size)
-	, m_format(format)
+DepthBuffer::DepthBuffer()
+	: m_size()
+	, m_format(TextureFormat_Unknown)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format)
+{
+	m_manager = manager;
+	m_manager->AddResourceObject(this);
+
+	m_size = size;
+	m_format = format;
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.Width, m_size.Height, m_format);
 }
 

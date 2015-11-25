@@ -5,8 +5,6 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class RenderingCommandList;
-class Texture;
 
 /**
 	@brief		スワップチェインのクラスです。
@@ -27,7 +25,7 @@ public:
 	/**
 		@brief	バックバッファの深度バッファを取得します。
 	*/
-	Texture* GetBackBufferDepth() { return m_backDepthBuffer; }
+	DepthBuffer* GetBackBufferDepth() { return m_backDepthBuffer; }
 
 	/**
 		@brief	バックバッファのサイズを変更します。
@@ -49,7 +47,7 @@ LN_INTERNAL_ACCESS:
 	RenderingCommandList*	m_commandList;
 	Threading::EventFlag	m_waiting;		///< コマンド実行していない
 	Texture*				m_backColorBuffer;
-	Texture*				m_backDepthBuffer;
+	DepthBuffer*			m_backDepthBuffer;
 	bool					m_isDefault;
 };
 

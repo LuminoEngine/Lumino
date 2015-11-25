@@ -78,16 +78,19 @@ public:
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
-	Texture(GraphicsManager* manager);
-	Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
-	Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
-	//Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
-	Texture(GraphicsManager* manager, bool isDefaultBackBuffer);
+	Texture();
+	//Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
+	//Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
+	////Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
+	//Texture(GraphicsManager* manager, bool isDefaultBackBuffer);
 	virtual ~Texture();
 	void FlushPrimarySurface();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
+	void CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
+	void CreateImpl(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
+	void CreateImpl(GraphicsManager* manager, bool isDefaultBackBuffer);
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void DetachDefaultBackBuffer();
@@ -131,7 +134,8 @@ public:
 	static Texture* Create(const Size& size, int mipLevels = 1, TextureFormat format = TextureFormat_R8G8B8A8);
 
 LN_INTERNAL_ACCESS:
-	RenderTarget(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format);
+	RenderTarget();
+	void CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format);
 
 protected:
 	virtual ~RenderTarget();
@@ -159,7 +163,8 @@ public:
 	static Texture* Create(const Size& size, TextureFormat format = TextureFormat_D24S8);
 
 LN_INTERNAL_ACCESS:
-	DepthBuffer(GraphicsManager* manager, const Size& size, TextureFormat format);
+	DepthBuffer();
+	void CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format);
 
 protected:
 	virtual ~DepthBuffer();

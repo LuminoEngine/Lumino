@@ -83,12 +83,14 @@ void SwapChain::Initialize(/*const Size& backbufferSize*/)
 		m_deviceObj->AddRef();
 		//Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 		//m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
-		m_backColorBuffer = LN_NEW Texture(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
+		m_backColorBuffer = LN_NEW Texture();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
+		m_backColorBuffer->CreateImpl(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);
 		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
 
 		// 独自管理できる深度バッファを作る。
 		// これがないと、OpenGL のバックバッファはレンダリングターゲットと深度バッファを分離することが出来ないため、本Lib的に不都合が起こる。
-		m_backDepthBuffer = LN_NEW DepthBuffer(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat_D24S8);
+		m_backDepthBuffer = LN_NEW DepthBuffer();
+		m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat_D24S8);
 	}
 	else {
 		LN_THROW(0, NotImplementedException);
@@ -106,7 +108,8 @@ void SwapChain::Resize(const Size& newSize)
 
 	// m_backColorBuffer は特殊なので Device 層でリサイズされるが、深度バッファはこちらで確保しなおす必要がある。
 	LN_SAFE_RELEASE(m_backDepthBuffer);
-	m_backDepthBuffer = LN_NEW DepthBuffer(m_manager, newSize, TextureFormat_D24S8);
+	m_backDepthBuffer = LN_NEW DepthBuffer();
+	m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat_D24S8);
 }
 
 //-----------------------------------------------------------------------------

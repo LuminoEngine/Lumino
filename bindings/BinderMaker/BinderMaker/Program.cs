@@ -34,6 +34,10 @@ namespace BinderMaker
             // 解析結果を Manager に登録する
             CLManager.Instance.LinkEntities();
 
+            // Wrapper
+            var wrapperBuilder = new Builder.WrapperImplementBuilder();
+            wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
+            return;
             // C#
             var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
             csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");

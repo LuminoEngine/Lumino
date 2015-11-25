@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 	@brief	グラフィックスモジュールの基本的なリソースオブジェクトのベースクラスです。デバイスの状態変化を通知する機能を実装します。
 */
 class GraphicsResourceObject
-	: public RefObject
+	: public ln::tr::ReflectionObject
 {
 protected:
 	friend class GraphicsManager;
