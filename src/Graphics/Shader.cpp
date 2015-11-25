@@ -78,10 +78,10 @@ bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t by
 //
 //-----------------------------------------------------------------------------
 Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode)
-	: m_manager(manager)
-	, m_deviceObj(shader)
+	: m_deviceObj(shader)
 	, m_sourceCode(sourceCode)
 {
+	GraphicsResourceObject::Initialize(manager);
 	LN_SAFE_ADDREF(m_deviceObj);
 
 	// 変数を展開
@@ -95,8 +95,6 @@ Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuff
 	{
 		m_techniques.Add(LN_NEW ShaderTechnique(this, shader->GetTechnique(i)));
 	}
-
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +110,6 @@ Shader::~Shader()
 	}
 
 	LN_SAFE_RELEASE(m_deviceObj);
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

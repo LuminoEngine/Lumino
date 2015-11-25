@@ -145,13 +145,12 @@ void GeometryRenderer::DrawRect(const RectF& destRect, const RectF& texUVRect, c
 //
 //-----------------------------------------------------------------------------
 GeometryRendererCore::GeometryRendererCore(GraphicsManager* manager, Driver::IGraphicsDevice* device)
-	: m_manager(manager)
-	, m_currentShaderPass(NULL)
+	: m_currentShaderPass(NULL)
 {
+	GraphicsResourceObject::Initialize(manager);
 	m_device = device;
 	m_renderer = device->GetRenderer();
 	CreateInternal();
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -159,7 +158,6 @@ GeometryRendererCore::GeometryRendererCore(GraphicsManager* manager, Driver::IGr
 //-----------------------------------------------------------------------------
 GeometryRendererCore::~GeometryRendererCore()
 {
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

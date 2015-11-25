@@ -59,8 +59,7 @@ namespace Details
 //
 //-----------------------------------------------------------------------------
 Renderer::Renderer(GraphicsManager* manager)
-	: m_manager(manager)
-	, m_internal(manager->GetGraphicsDevice()->GetRenderer())
+	: m_internal(manager->GetGraphicsDevice()->GetRenderer())
 	, m_primaryCommandList(NULL)
 	, m_currentRenderState()
 	, m_currentDepthStencilState()
@@ -69,12 +68,11 @@ Renderer::Renderer(GraphicsManager* manager)
 	, m_lockPresentCommandList()
 {
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
+	GraphicsResourceObject::Initialize(manager);
 
 	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
 		m_primaryCommandList = LN_NEW RenderingCommandList();
 	}
-
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -92,7 +90,6 @@ Renderer::~Renderer()
 		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
 	}
 	LN_SAFE_RELEASE(m_currentDepthBuffer);
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

@@ -42,7 +42,6 @@ LN_INTERNAL_ACCESS:
 	void Initialize(/*const Size& backbufferSize*/);
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
-	GraphicsManager*		m_manager;
 	Driver::ISwapChain*		m_deviceObj;
 	RenderingCommandList*	m_commandList;
 	Threading::EventFlag	m_waiting;		///< コマンド実行していない

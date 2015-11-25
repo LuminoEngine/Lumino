@@ -60,7 +60,6 @@ protected:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	GraphicsManager*		m_manager;
 	Driver::IIndexBuffer*	m_deviceObj;
 	int						m_indexCount;
 	IndexBufferFormat		m_format;

@@ -89,7 +89,6 @@ public:
 	};
 
 private:
-	GraphicsManager*				m_manager;
 	RefPtr<Driver::IGraphicsDevice>	m_device;
 	RefPtr<Driver::IRenderer>		m_renderer;
 	RefPtr<Driver::ITexture>		m_dummyTexture;

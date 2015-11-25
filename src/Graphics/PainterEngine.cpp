@@ -50,7 +50,6 @@ PainterEngine::~PainterEngine()
 		m_sectionStack.GetTop().CurrentState.ReleaseObjects();
 		m_sectionStack.Pop();
 	}
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -58,14 +57,12 @@ PainterEngine::~PainterEngine()
 //-----------------------------------------------------------------------------
 void PainterEngine::Create(GraphicsManager* manager)
 {
-	m_manager = manager;
+	GraphicsResourceObject::Initialize(manager);
 	CreateInternal();
 
 	//memset(&m_currentState.Brush, 0, sizeof(m_currentState.Brush));
 	//m_currentState.Opacity = 1.0f;
 	m_currentInternalGlyphMask = m_dummyTexture;
-
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

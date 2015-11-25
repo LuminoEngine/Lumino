@@ -103,7 +103,6 @@ protected:
 	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;
 	friend class SwapChain;
-	GraphicsManager*	m_manager;
 	Driver::ITexture*	m_deviceObj;
 	Size				m_size;
 	int					m_mipLevels;

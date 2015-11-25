@@ -357,8 +357,7 @@ static const size_t g_SpriteRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_SpriteRenderer_
 //
 //-----------------------------------------------------------------------------
 SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCount)
-	: m_manager(manager, true)
-	, m_vertexBuffer()
+	: m_vertexBuffer()
 	, m_indexBuffer()
 	, m_maxSprites(maxSpriteCount)
 	, m_spriteRequestList()
@@ -376,8 +375,8 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
+	GraphicsResourceObject::Initialize(manager);
 	CreateInternal();
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -385,7 +384,6 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 //-----------------------------------------------------------------------------
 SpriteRendererImpl::~SpriteRendererImpl()
 {
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

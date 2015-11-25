@@ -86,8 +86,7 @@ Texture* Texture::Create(const void* data, size_t size, TextureFormat format, in
 //
 //-----------------------------------------------------------------------------
 Texture::Texture()
-	: m_manager(NULL)
-	, m_deviceObj(NULL)
+	: m_deviceObj(NULL)
 	, m_primarySurface(NULL)
 	, m_isPlatformLoaded(false)
 	, m_isDefaultBackBuffer(false)
@@ -99,8 +98,7 @@ Texture::Texture()
 //-----------------------------------------------------------------------------
 void Texture::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
 {
-	m_manager = manager;
-	m_manager->AddResourceObject(this);
+	GraphicsResourceObject::Initialize(manager);
 
 	m_size = size;
 	m_mipLevels = mipLevels;
@@ -119,8 +117,7 @@ void Texture::CreateImpl(GraphicsManager* manager, const Size& size, TextureForm
 //-----------------------------------------------------------------------------
 void Texture::CreateImpl(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
 {
-	m_manager = manager;
-	m_manager->AddResourceObject(this);
+	GraphicsResourceObject::Initialize(manager);
 
 	m_mipLevels = mipLevels;
 	m_format = format;
@@ -151,9 +148,7 @@ void Texture::CreateImpl(GraphicsManager* manager, Stream* stream, TextureFormat
 
 void Texture::CreateImpl(GraphicsManager* manager, bool isDefaultBackBuffer)
 {
-	m_manager = manager;
-	m_manager->AddResourceObject(this);
-
+	GraphicsResourceObject::Initialize(manager);
 	m_deviceObj = NULL;
 	m_primarySurface = NULL;
 	m_isDefaultBackBuffer = isDefaultBackBuffer;
@@ -166,7 +161,6 @@ Texture::~Texture()
 {
 	LN_SAFE_RELEASE(m_primarySurface);
 	LN_SAFE_RELEASE(m_deviceObj);
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -370,8 +364,7 @@ RenderTarget::RenderTarget()
 //-----------------------------------------------------------------------------
 void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
 {
-	m_manager = manager;
-	m_manager->AddResourceObject(this);
+	GraphicsResourceObject::Initialize(manager);
 
 	m_size = size;
 	m_mipLevels = mipLevels;
@@ -428,8 +421,7 @@ DepthBuffer::DepthBuffer()
 //-----------------------------------------------------------------------------
 void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format)
 {
-	m_manager = manager;
-	m_manager->AddResourceObject(this);
+	GraphicsResourceObject::Initialize(manager);
 
 	m_size = size;
 	m_format = format;

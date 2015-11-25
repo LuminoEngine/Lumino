@@ -123,7 +123,6 @@ LN_INTERNAL_ACCESS:
 	friend class ShaderVariable;
 	void PresentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
 
-	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_internal;
 	RenderingCommandList*	m_primaryCommandList;
 

@@ -21,13 +21,12 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //
 //-----------------------------------------------------------------------------
 SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain*/)
-	: m_manager(manager)
-	, m_deviceObj(NULL)
+	: m_deviceObj(NULL)
 	, m_isDefault(isDefault)
 {
+	GraphicsResourceObject::Initialize(manager);
 	//m_deviceObj->AddRef();
 	Initialize(/*mainWindowSize*/);
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -64,7 +63,6 @@ SwapChain::~SwapChain()
 	LN_SAFE_RELEASE(m_backColorBuffer);
 	LN_SAFE_RELEASE(m_backDepthBuffer);
 	LN_SAFE_RELEASE(m_deviceObj);;
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

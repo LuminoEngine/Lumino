@@ -84,7 +84,6 @@ protected:
 private:
 	friend class RenderingCommandList;
 	Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode);
-	GraphicsManager*			m_manager;
 	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;
 	Array<ShaderVariable*>		m_variables;

@@ -34,20 +34,19 @@ VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement
 //
 //-----------------------------------------------------------------------------
 VertexBuffer::VertexBuffer(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
-	: m_manager(manager)
-	, m_deviceObj(NULL)
+	: m_deviceObj(NULL)
 	, m_vertexElements()
 	, m_vertexCount(vertexCount)
 	, m_usage(usage)
 	, m_pool(GraphicsResourcePool::Managed)	// TODO
 	, m_initialUpdate(true)
 {
+	GraphicsResourceObject::Initialize(manager);
 	m_vertexElements.Reserve(elementsCount);
 	for (int i = 0; i < elementsCount; ++i) {
 		m_vertexElements.Add(vertexElements[i]);
 	}
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(vertexElements, elementsCount, m_vertexCount, data, usage);
-	m_manager->AddResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -56,7 +55,6 @@ VertexBuffer::VertexBuffer(GraphicsManager* manager, const VertexElement* vertex
 VertexBuffer::~VertexBuffer()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
-	m_manager->RemoveResourceObject(this);
 }
 
 //-----------------------------------------------------------------------------

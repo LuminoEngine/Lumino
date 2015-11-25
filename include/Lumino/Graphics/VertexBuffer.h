@@ -56,7 +56,6 @@ protected:
 
 private:	// TODO
 	friend struct SetVertexBufferCommand;
-	GraphicsManager*		m_manager;
 	Driver::IVertexBuffer*	m_deviceObj;
 	Array<VertexElement>	m_vertexElements;
 	int						m_vertexCount;

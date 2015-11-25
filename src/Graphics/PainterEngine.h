@@ -283,7 +283,6 @@ private:
 		static const int ElementCount = 4;
 	};
 
-	GraphicsManager*				m_manager;
 	Driver::IRenderer*				m_renderer;
 	CacheBuffer<PainterVertex>		m_vertexCache;
 	CacheBuffer<uint16_t>			m_indexCache;
