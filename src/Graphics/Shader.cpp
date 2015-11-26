@@ -601,7 +601,7 @@ const Matrix* ShaderVariable::GetMatrixArray() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetTexture(Texture* texture)
 {
-	Driver::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
+	Driver::ITexture* t = (texture != NULL) ? texture->GetDeviceObject() : NULL;
 	LN_REFOBJ_SET(m_textureValue, texture);
 	LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, t);
 }

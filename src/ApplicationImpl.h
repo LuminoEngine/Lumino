@@ -80,14 +80,14 @@ protected:
 public:
 	void Initialize();
 	void InitializeCommon();
-	void InitialzeFileManager();
-	void InitialzePlatformManager();
-	void InitialzeAudioManager();
-	void InitialzePhysicsManager();
-	void InitialzeGraphicsManager();
-	void InitialzeDocumentsManager();
-	void InitialzeGUIManager();
-	void InitialzeSceneGraphManager();
+	void InitializeFileManager();
+	void InitializePlatformManager();
+	void InitializeAudioManager();
+	void InitializePhysicsManager();
+	void InitializeGraphicsManager();
+	void InitializeDocumentsManager();
+	void InitializeGUIManager();
+	void InitializeSceneGraphManager();
 	virtual bool OnEvent(const Platform::EventArgs& e);
 
 private:

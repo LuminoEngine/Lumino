@@ -169,7 +169,7 @@ const DepthStencilState& Renderer::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void Renderer::SetRenderTarget(int index, Texture* texture)
 {
-	Driver::ITexture* t = (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL;
+	Driver::ITexture* t = (texture != NULL) ? texture->GetDeviceObject() : NULL;
 	LN_CALL_RENDERER_COMMAND(SetRenderTarget, SetRenderTargetCommand, index, t);
 	LN_REFOBJ_SET(m_currentRenderTargets[index], texture);
 }
@@ -188,7 +188,7 @@ Texture* Renderer::GetRenderTarget(int index) const
 //-----------------------------------------------------------------------------
 void Renderer::SetDepthBuffer(Texture* depthBuffer)
 {
-	Driver::ITexture* t = (depthBuffer != NULL) ? Helper::GetDeviceObject(depthBuffer) : NULL;
+	Driver::ITexture* t = (depthBuffer != NULL) ? depthBuffer->GetDeviceObject() : NULL;
 	LN_CALL_RENDERER_COMMAND(SetDepthBuffer, SetDepthBufferCommand, t);
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
 }

@@ -13,145 +13,20 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-	
+
 //=============================================================================
 // Texture
 //=============================================================================
-
-static GraphicsManager* GetManager()
-{
-	assert(GraphicsManager::Instance != NULL);
-	return GraphicsManager::Instance;
-}
-static Driver::IGraphicsDevice* GetDevice()
-{
-	assert(GraphicsManager::Instance != NULL);
-	return GraphicsManager::Instance->GetGraphicsDevice();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::Create(const Size& size, TextureFormat format, int mipLevels)
-{
-	// ロック用のビットマップを作る
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
-	RefPtr<Texture> tex(LN_NEW Texture(), false);
-	tex->CreateImpl(GetManager(), size, format, mipLevels, bitmap);
-	tex.SafeAddRef();
-	return tex;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
-{
-	RefPtr<Stream> stream(GetManager()->GetFileManager()->CreateFileStream(filePath), false);
-	return Create(stream, format, mipLevels);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::Create(Stream* stream, TextureFormat format, int mipLevels)
-{
-	if (GetManager()->IsPlatformTextureLoading())
-	{
-		RefPtr<Texture> tex(LN_NEW Texture(), false);
-		tex->CreateImpl(GetManager(), stream, format, mipLevels);
-		tex.SafeAddRef();
-		return tex;
-	}
-
-	// ビットマップを作る
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
-	RefPtr<Texture> tex(LN_NEW Texture(), false);
-	tex->CreateImpl(GetManager(), bitmap->GetSize(), format, mipLevels, bitmap);
-	tex.SafeAddRef();
-	return tex;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* Texture::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
-{
-	MemoryStream stream;
-	stream.Create(data, size);
-	return Create(&stream, format, mipLevels);
-}
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Texture, CoreObject);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 Texture::Texture()
 	: m_deviceObj(NULL)
-	, m_primarySurface(NULL)
-	, m_isPlatformLoaded(false)
-	, m_isDefaultBackBuffer(false)
+	, m_size()
+	, m_format(TextureFormat_Unknown)
 {
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Texture::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
-{
-	GraphicsResourceObject::Initialize(manager);
-
-	m_size = size;
-	m_mipLevels = mipLevels;
-	m_format = format;
-
-	// テクスチャを作る
-	m_deviceObj = GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData());
-
-	// ビットマップを転送する
-	//Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
-	//obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
-}
-
-//-----------------------------------------------------------------------------
-// プラットフォーム依存用
-//-----------------------------------------------------------------------------
-void Texture::CreateImpl(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
-{
-	GraphicsResourceObject::Initialize(manager);
-
-	m_mipLevels = mipLevels;
-	m_format = format;
-	m_isPlatformLoaded = true;
-
-	m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
-	if (m_deviceObj != NULL)
-	{
-		m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
-		// TODO: m_primarySurface へ内容をフィードバックする
-		//Driver::ITexture::ScopedLock lock(m_deviceObj);
-		//m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
-		m_size = m_deviceObj->GetSize();
-	}
-	// TODO: 失敗したら普通の処理
-}
-
-//Texture::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
-//	: m_manager(manager)
-//	, m_deviceObj(deviceObj)
-//	, m_primarySurface(primarySurface)
-//	//, m_primarySurfaceModified(false)
-//	, m_isDefaultBackBuffer(false)
-//{
-//	LN_SAFE_ADDREF(m_primarySurface);
-//	m_manager->AddResourceObject(this);
-//}
-
-void Texture::CreateImpl(GraphicsManager* manager, bool isDefaultBackBuffer)
-{
-	GraphicsResourceObject::Initialize(manager);
-	m_deviceObj = NULL;
-	m_primarySurface = NULL;
-	m_isDefaultBackBuffer = isDefaultBackBuffer;
 }
 
 //-----------------------------------------------------------------------------
@@ -159,7 +34,6 @@ void Texture::CreateImpl(GraphicsManager* manager, bool isDefaultBackBuffer)
 //-----------------------------------------------------------------------------
 Texture::~Texture()
 {
-	LN_SAFE_RELEASE(m_primarySurface);
 	LN_SAFE_RELEASE(m_deviceObj);
 }
 
@@ -187,10 +61,195 @@ TextureFormat Texture::GetFormat() const
 	return m_deviceObj->GetTextureFormat();
 }
 
+//=============================================================================
+// Texture2D
+//=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Texture2D, Texture);
+
+static GraphicsManager* GetManager()
+{
+	assert(GraphicsManager::Instance != NULL);
+	return GraphicsManager::Instance;
+}
+static Driver::IGraphicsDevice* GetDevice()
+{
+	assert(GraphicsManager::Instance != NULL);
+	return GraphicsManager::Instance->GetGraphicsDevice();
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::SetSubData(const Point& offset, Bitmap* bitmap)
+Texture2D* Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
+{
+	// ロック用のビットマップを作る
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
+	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	tex->CreateCore(GetManager(), size, format, mipLevels, bitmap);
+	tex.SafeAddRef();
+	return tex;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture2D* Texture2D::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
+{
+	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	tex->CreateCore(GetManager(), filePath, format, mipLevels);
+	tex.SafeAddRef();
+	return tex;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture2D* Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels)
+{
+	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	tex->CreateCore(GetManager(), stream, format, mipLevels);
+	tex.SafeAddRef();
+	return tex;
+	/*
+	if (GetManager()->IsPlatformTextureLoading())
+	{
+		RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+		tex->CreateImpl(GetManager(), stream, format, mipLevels);
+		tex.SafeAddRef();
+		return tex;
+	}
+
+	// ビットマップを作る
+	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
+	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	tex->CreateImpl(GetManager(), bitmap->GetSize(), format, mipLevels, bitmap);
+	tex.SafeAddRef();
+	return tex;
+	*/
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture2D* Texture2D::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
+{
+	MemoryStream stream;
+	stream.Create(data, size);
+	return Create(&stream, format, mipLevels);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture2D::Texture2D()
+	: m_primarySurface(NULL)
+	, m_isPlatformLoaded(false)
+	, m_isDefaultBackBuffer(false)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture2D::CreateCore(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
+{
+	GraphicsResourceObject::Initialize(manager);
+
+	m_size = size;
+	m_mipLevels = mipLevels;
+	m_format = format;
+	LN_REFOBJ_SET(m_primarySurface, primarySurface);
+
+	// テクスチャを作る
+	m_deviceObj = GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData());
+
+	// ビットマップを転送する
+	//Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
+	//obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture2D::CreateCore(GraphicsManager* manager, const TCHAR* filePath, TextureFormat format, int mipLevels)
+{
+	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
+	CreateCore(manager, stream, format, mipLevels);
+}
+
+//-----------------------------------------------------------------------------
+// プラットフォーム依存用
+//-----------------------------------------------------------------------------
+void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
+{
+	GraphicsResourceObject::Initialize(manager);
+	m_mipLevels = mipLevels;
+	m_format = format;
+
+	if (m_manager->IsPlatformTextureLoading())
+	{
+		m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
+		if (m_deviceObj != NULL)
+		{
+			m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+			m_size = m_deviceObj->GetSize();
+		}
+	}
+
+	// プラットフォーム依存のロードが失敗したら普通の処理
+	if (m_deviceObj == NULL)
+	{
+		RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
+		CreateCore(m_manager, bitmap->GetSize(), format, mipLevels, bitmap);
+	}
+
+#if 0
+	m_isPlatformLoaded = true;
+
+	m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
+	if (m_deviceObj != NULL)
+	{
+		m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+		// TODO: m_primarySurface へ内容をフィードバックする
+		//Driver::ITexture::ScopedLock lock(m_deviceObj);
+		//m_primarySurface->CopyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
+		m_size = m_deviceObj->GetSize();
+	}
+	// TODO: 失敗したら普通の処理
+#endif
+}
+
+//Texture2D::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
+//	: m_manager(manager)
+//	, m_deviceObj(deviceObj)
+//	, m_primarySurface(primarySurface)
+//	//, m_primarySurfaceModified(false)
+//	, m_isDefaultBackBuffer(false)
+//{
+//	LN_SAFE_ADDREF(m_primarySurface);
+//	m_manager->AddResourceObject(this);
+//}
+
+void Texture2D::CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer)
+{
+	GraphicsResourceObject::Initialize(manager);
+	m_deviceObj = NULL;
+	m_primarySurface = NULL;
+	m_isDefaultBackBuffer = isDefaultBackBuffer;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture2D::~Texture2D()
+{
+	LN_SAFE_RELEASE(m_primarySurface);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 {
 	LN_CHECK_ARGS_RETURN(bitmap != NULL);
 
@@ -206,7 +265,7 @@ void Texture::SetSubData(const Point& offset, Bitmap* bitmap)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void Texture::SetSubData(const Point& offset, const void* data)
+//void Texture2D::SetSubData(const Point& offset, const void* data)
 //{
 //LN_CHECK_ARGS_RETURN(data != NULL);
 //	// TODO: m_primarySurface にもセット
@@ -217,7 +276,7 @@ void Texture::SetSubData(const Point& offset, Bitmap* bitmap)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Bitmap* Texture::Lock()
+Bitmap* Texture2D::Lock()
 {
 	// Deferred
 	if (m_manager->GetRenderingType() == RenderingType::Deferred)
@@ -251,7 +310,7 @@ Bitmap* Texture::Lock()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::Unlock()
+void Texture2D::Unlock()
 {
 	// Deferred
 	if (m_manager->GetRenderingType() == RenderingType::Deferred)
@@ -289,7 +348,7 @@ void Texture::Unlock()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
+void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
 	{
@@ -314,7 +373,7 @@ void Texture::OnChangeDevice(Driver::IGraphicsDevice* device)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
+void Texture2D::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 {
 	assert(m_isDefaultBackBuffer);
 	assert(m_deviceObj == NULL);
@@ -324,7 +383,7 @@ void Texture::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture::DetachDefaultBackBuffer()
+void Texture2D::DetachDefaultBackBuffer()
 {
 	assert(m_isDefaultBackBuffer);
 	assert(m_deviceObj != NULL);
@@ -353,9 +412,7 @@ void Texture::DetachDefaultBackBuffer()
 //-----------------------------------------------------------------------------
 RenderTarget::RenderTarget()
 	: Texture()
-	, m_size()
 	, m_mipLevels(0)
-	, m_format(TextureFormat_Unknown)
 {
 }
 
@@ -411,8 +468,6 @@ Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
 //
 //-----------------------------------------------------------------------------
 DepthBuffer::DepthBuffer()
-	: m_size()
-	, m_format(TextureFormat_Unknown)
 {
 }
 

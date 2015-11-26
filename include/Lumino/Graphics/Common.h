@@ -34,6 +34,7 @@ class GraphicsResourceObject;
 class VertexBuffer;
 class IndexBuffer;
 class Texture;
+class Texture2D;
 class DepthBuffer;
 class Shader;
 class ShaderVariable;

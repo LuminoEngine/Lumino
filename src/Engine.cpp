@@ -138,13 +138,13 @@ ApplicationImpl::~ApplicationImpl()
 //-----------------------------------------------------------------------------
 void ApplicationImpl::Initialize()
 {
-	InitialzePlatformManager();
-	InitialzeAudioManager();
-	InitialzePhysicsManager();
-	InitialzeGraphicsManager();
-	InitialzeGUIManager();
+	InitializePlatformManager();
+	InitializeAudioManager();
+	InitializePhysicsManager();
+	InitializeGraphicsManager();
+	InitializeGUIManager();
 #ifdef LN_BUILD_SCENE_MODULE
-	InitialzeSceneGraphManager();
+	InitializeSceneGraphManager();
 #endif
 }
 
@@ -171,7 +171,7 @@ void ApplicationImpl::InitializeCommon()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzeFileManager()
+void ApplicationImpl::InitializeFileManager()
 {
 	if (m_fileManager == NULL)
 	{
@@ -187,7 +187,7 @@ void ApplicationImpl::InitialzeFileManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzePlatformManager()
+void ApplicationImpl::InitializePlatformManager()
 {
 	if (m_platformManager.IsNull())
 	{
@@ -213,17 +213,17 @@ void ApplicationImpl::InitialzePlatformManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzeAudioManager()
+void ApplicationImpl::InitializeAudioManager()
 {
 	if (m_audioManager == NULL)
 	{
 		InitializeCommon();
-		InitialzeFileManager();
+		InitializeFileManager();
 
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
 		if (m_configData.UserMainWindow != NULL) {
-			InitialzePlatformManager();
+			InitializePlatformManager();
 		}
 
 		AudioManagerImpl::Settings data;
@@ -242,7 +242,7 @@ void ApplicationImpl::InitialzeAudioManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzePhysicsManager()
+void ApplicationImpl::InitializePhysicsManager()
 {
 #ifdef LN_BUILD_SCENE_MODULE
 	if (m_physicsManager.IsNull())
@@ -256,14 +256,14 @@ void ApplicationImpl::InitialzePhysicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzeGraphicsManager()
+void ApplicationImpl::InitializeGraphicsManager()
 {
 	if (m_graphicsManager.IsNull())
 	{
 		InitializeCommon();
-		InitialzeFileManager();
-		InitialzePlatformManager();
-		InitialzePhysicsManager();
+		InitializeFileManager();
+		InitializePlatformManager();
+		InitializePhysicsManager();
 
 		GraphicsManager::ConfigData data;
 		data.GraphicsAPI = m_configData.GraphicsAPI;
@@ -284,12 +284,12 @@ void ApplicationImpl::InitialzeGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzeDocumentsManager()
+void ApplicationImpl::InitializeDocumentsManager()
 {
 	if (m_documentsManager.IsNull())
 	{
 		InitializeCommon();
-		InitialzeGraphicsManager();
+		InitializeGraphicsManager();
 
 		Documents::DocumentsManager::ConfigData data;
 		data.GraphicsManager = m_graphicsManager;
@@ -300,14 +300,14 @@ void ApplicationImpl::InitialzeDocumentsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ApplicationImpl::InitialzeGUIManager()
+void ApplicationImpl::InitializeGUIManager()
 {
 	if (m_guiManager == NULL)
 	{
 		InitializeCommon();
-		InitialzePlatformManager();
-		InitialzeGraphicsManager();
-		InitialzeDocumentsManager();
+		InitializePlatformManager();
+		InitializeGraphicsManager();
+		InitializeDocumentsManager();
 
 		GUIManagerImpl::ConfigData data;
 		data.GraphicsManager = m_graphicsManager;
@@ -324,13 +324,13 @@ void ApplicationImpl::InitialzeGUIManager()
 //
 //-----------------------------------------------------------------------------
 #ifdef LN_BUILD_SCENE_MODULE
-void ApplicationImpl::InitialzeSceneGraphManager()
+void ApplicationImpl::InitializeSceneGraphManager()
 {
 	if (m_sceneGraphManager == NULL)
 	{
 		InitializeCommon();
-		InitialzeFileManager();
-		InitialzeGraphicsManager();
+		InitializeFileManager();
+		InitializeGraphicsManager();
 		SceneGraphManager::ConfigData data;
 		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;

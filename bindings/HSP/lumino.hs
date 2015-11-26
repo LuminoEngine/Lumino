@@ -9,7 +9,7 @@ Lumino
 0.1.0
 
 %date
-2015/10/04
+2015/11/26
 
 %author
 lriki
@@ -180,6 +180,25 @@ DirectMusic ‚ÌƒŠƒo[ƒuƒGƒtƒFƒNƒg‚Ì‹­‚³‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:0.75)
 %prm
 level
 [in] level : ƒŠƒo[ƒu‚Ì‹­‚³ (0.0 ` 1.0)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNApplication_Initialize
+ƒ‰ƒCƒuƒ‰ƒŠ‚ğ‰Šú‰»‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+@
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
 %inst
 
@@ -2913,6 +2932,49 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 
 %inst
 
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNTexture_GetSize
+ƒeƒNƒXƒ`ƒƒ‚ÌƒTƒCƒY‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
+%prm
+texture, outSize
+[in]  texture : ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+[out] outSize : ƒTƒCƒY‚ğŠi”[‚·‚é•Ï”‚ÌƒAƒhƒŒƒX
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNTexture2D_Create
+ƒtƒ@ƒCƒ‹‚©‚ç2DƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+
+%group
+ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
+%prm
+filePath, texture2D
+[in]  filePath  : ‰æ‘œƒtƒ@ƒCƒ‹‚ÌƒpƒX
+[out] texture2D : ì¬‚³‚ê‚½2DƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+‘S‚Ä‚Ìƒvƒ‰ƒbƒgƒtƒH[ƒ€‚ÅƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg‚Í .png ‚Å‚·B
+ƒOƒ‰ƒtƒBƒbƒNƒXAPI ‚É DirectX9 ‚ğg—p‚µ‚Ä‚¢‚éê‡‚Í MSDN ‚Ì D3DXCreateTextureFromFileEx ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 
 %href
 

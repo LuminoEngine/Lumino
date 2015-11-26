@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LN;
+using Lumino;
 
 namespace Test
 {
     class Program
     {
+        const string TestDataFolder = "../../../../../../test/UnitTest/Graphics/TestData/";
+
         static void Main(string[] args)
         {
-            Application.InitializeAudio();
+            Application.Initialize();
 
+            var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
+            Console.WriteLine(tex1.Size.Width);
+
+            Application.Terminate();
+
+#if false
             var s1 = new Sound(@"D:\tmp\ZIGG-ZrAGG.mp3");
             s1.Pitch = 105;
             Console.WriteLine(s1.Pitch);
@@ -38,9 +46,8 @@ namespace Test
 
             // <Test> Struct static メソッド
             Vector3 v2 = Vector3.Normalize(v1);
+#endif
 
-
-            Console.WriteLine();
         }
     }
 }

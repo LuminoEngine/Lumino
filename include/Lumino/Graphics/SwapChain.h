@@ -20,7 +20,7 @@ public:
 	/**
 		@brief	バックバッファのレンダリングターゲットを取得します。
 	*/
-	Texture* GetBackBuffer() { return m_backColorBuffer; }
+	Texture2D* GetBackBuffer() { return m_backColorBuffer; }
 	
 	/**
 		@brief	バックバッファの深度バッファを取得します。
@@ -45,7 +45,7 @@ LN_INTERNAL_ACCESS:
 	Driver::ISwapChain*		m_deviceObj;
 	RenderingCommandList*	m_commandList;
 	Threading::EventFlag	m_waiting;		///< コマンド実行していない
-	Texture*				m_backColorBuffer;
+	Texture2D*				m_backColorBuffer;	// TODO: Rendertarget
 	DepthBuffer*			m_backDepthBuffer;
 	bool					m_isDefault;
 };

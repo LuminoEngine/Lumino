@@ -69,9 +69,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LNote.DotNet\LNote.DotNet.csproj">
-      <Project>{ae85c9ac-f4a2-432f-8a4e-b58827cff4d6}</Project>
-      <Name>LNote.DotNet</Name>
+    <ProjectReference Include="..\LuminoDotNet\LuminoDotNet.csproj">
+      <Project>{a5af6708-3d6d-43cb-b9f6-f36b0873f508}</Project>
+      <Name>LuminoDotNet</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

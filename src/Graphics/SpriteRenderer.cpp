@@ -293,7 +293,7 @@ void SpriteRenderer::DrawRequest2D(
 	}
 	LN_CALL_COMMAND(
 		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
-		position, center, size, (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL, srcRect, colorTable);
+		position, center, size, (texture != NULL) ? texture->GetDeviceObject() : NULL, srcRect, colorTable);
 }
 
 //-----------------------------------------------------------------------------
@@ -310,7 +310,7 @@ void SpriteRenderer::DrawRequest2D(
 	const ColorF colorTable[] = { color, color, color, color };
 	LN_CALL_COMMAND(
 		DrawRequest2D, SpriteRendererImpl::DrawRequest2DCommand,
-		position, center, size, (texture != NULL) ? Helper::GetDeviceObject(texture) : NULL, srcRect, colorTable);
+		position, center, size, (texture != NULL) ? texture->GetDeviceObject() : NULL, srcRect, colorTable);
 }
 
 //-----------------------------------------------------------------------------
@@ -331,7 +331,7 @@ void SpriteRenderer::DrawRequest3D(
 	}
 	LN_CALL_COMMAND(
 		DrawRequest3D, SpriteRendererImpl::DrawRequest3DCommand,
-		position, center, size, Helper::GetDeviceObject(texture), srcRect, colorTable, front);
+		position, center, size, texture->GetDeviceObject(), srcRect, colorTable, front);
 }
 
 //-----------------------------------------------------------------------------

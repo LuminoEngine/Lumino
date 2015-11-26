@@ -479,6 +479,10 @@ class Lumino::Config
 end
 # ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
 class Lumino::Application
+    # ライブラリを初期化します。
+    # @overload initialize()
+    def initialize
+    end
     # ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
     # @overload initialize_audio()
     def initialize_audio
@@ -554,6 +558,40 @@ class Lumino::RefObject < RefObject
     # @return [Integer] 参照カウントを格納する変数
     def get_ref_count
     end
+end
+# オブジェクトの幅と高さを表します。
+class Lumino::Size
+    # 初期化
+    # @overload initialize(width, height)
+    #   @param [Int] width 幅
+    #   @param [Int] height 高さ
+    def initialize
+    end
+
+    # 幅
+    # @overload width=(v)
+    #   @param [Int] v 
+    def width=(v)
+    end
+
+    # 幅
+    # @overload width
+    #   @return [Int]
+    def width
+    end
+
+    # 高さ
+    # @overload height=(v)
+    #   @param [Int] v 
+    def height=(v)
+    end
+
+    # 高さ
+    # @overload height
+    #   @return [Int]
+    def height
+    end
+
 end
 # 2次元のベクトルのクラスです。
 class Lumino::Vector2
@@ -1700,6 +1738,26 @@ class Lumino::Sound < RefObject
     #   @param [Float] time フェードにかける時間 (秒)
     #   @param [Lumino::SoundFadeBehavior] behavior フェード完了後の動作の指定
     def fade_volume
+    end
+end
+# テクスチャを操作するためのベースクラスです。
+class Lumino::Texture < RefObject
+    # テクスチャのサイズを取得します。
+    # @overload size()
+    # @return [Lumino::Size] サイズを格納する変数のアドレス
+    def size
+    end
+end
+# 2Dテクスチャを操作するためのクラスです。
+class Lumino::Texture2D < Texture
+    # ファイルから2Dテクスチャオブジェクトを作成します。
+    # @overload initialize(filePath)
+    #   　
+    #     全てのプラットフォームでサポートされているファイルフォーマットは .png です。
+    #     グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
+    #   @param [String] filePath 画像ファイルのパス
+    # @return [Lumino::Texture2D] 作成された2Dテクスチャオブジェクトのハンドル
+    def initialize
     end
 end
 

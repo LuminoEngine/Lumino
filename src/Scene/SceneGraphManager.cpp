@@ -129,7 +129,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	m_geometryRenderer.Attach(GeometryRenderer::Create(m_graphicsManager), false);
 
 	// ダミーテクスチャ
-	m_dummyTexture.Attach(Texture::Create(Size(32, 32)));
+	m_dummyTexture.Attach(Texture2D::Create(Size(32, 32)));
 	BitmapPainter painter(m_dummyTexture->Lock());
 	painter.Clear(Color::White);
 	m_dummyTexture->Unlock();

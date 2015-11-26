@@ -39,6 +39,11 @@ namespace BinderMaker
         public string OriginalName { get; private set; }
 
         /// <summary>
+        /// ベースクラスのオリジナルのクラス名 (LN プレフィックス付き)
+        /// </summary>
+        public string BaseClassOriginalName { get; private set; }
+
+        /// <summary>
         /// クラス名
         /// </summary>
         public override string Name { get; set; }
@@ -114,10 +119,11 @@ namespace BinderMaker
         /// <param name="doc"></param>
         /// <param name="methods"></param>
         /// <param name="option"></param>
-        public CLClass(IEnumerable<char> startTag, string docText, string originalName, string bodyText, string optionText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
+        public CLClass(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText, string optionText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
         {
             Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
             OriginalName = originalName.Trim();
+            BaseClassOriginalName = baseClassName;
             Name = OriginalName.Substring(2);
             Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
             Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
@@ -190,7 +196,7 @@ namespace BinderMaker
             if (!IsPreDefined)
             {
                 // ベースクラス
-                string baseClassName = Document.GetBaseClassOriginalName();
+                string baseClassName = BaseClassOriginalName;//Document.GetBaseClassOriginalName();
                 if (IsReferenceObject && string.IsNullOrWhiteSpace(baseClassName))  // ベースクラスを省略している RefObject　型はデフォルト継承
                     BaseClass = Manager.ReferenceObjectClass;
                 else

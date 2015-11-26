@@ -99,7 +99,7 @@ private:
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	RefPtr<Modeling::ModelManager>		m_modelManager;
 	RefPtr<GeometryRenderer>	m_geometryRenderer;
-	RefPtr<Texture>			m_dummyTexture;
+	RefPtr<Texture2D>			m_dummyTexture;
 
 	double								m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float								m_elapsedTime;			///< 前回フレームからの経過時間 (秒)

@@ -29,6 +29,7 @@ set(LN_SOURCES_C_API
 	src/LNOverride_src.cpp
 	src/LNScene.cpp
 	src/LNTypedef.cpp
+	src/LNWrapperImplement.h
 )
 
 source_group("C_API"	FILES ${LN_SOURCES_C_API})

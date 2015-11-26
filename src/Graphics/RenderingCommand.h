@@ -607,7 +607,7 @@ struct PresentCommand : public RenderingCommand
 
 	void Execute()
 	{
-		m_targetSwapChain->m_deviceObj->Present(m_targetSwapChain->m_backColorBuffer->m_deviceObj);
+		m_targetSwapChain->m_deviceObj->Present(m_targetSwapChain->m_backColorBuffer->GetDeviceObject());
 
 
 		// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
@@ -686,8 +686,8 @@ struct SetSubDataTextureCommand : public RenderingCommand
 //=============================================================================
 struct ReadLockTextureCommand : public RenderingCommand
 {
-	Texture*	m_targetTexture;
-	void Create(Texture* texture)
+	Texture2D*	m_targetTexture;
+	void Create(Texture2D* texture)
 	{
 		m_targetTexture = texture;
 		MarkGC(texture);
@@ -703,8 +703,8 @@ struct ReadLockTextureCommand : public RenderingCommand
 //=============================================================================
 struct ReadUnlockTextureCommand : public RenderingCommand
 {
-	Texture*	m_targetTexture;
-	void Create(Texture* texture)
+	Texture2D*	m_targetTexture;
+	void Create(Texture2D* texture)
 	{
 		m_targetTexture = texture;
 		MarkGC(texture);

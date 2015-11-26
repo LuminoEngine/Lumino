@@ -287,7 +287,7 @@ namespace BinderMaker.Parser
             from rparen     in Parse.Char(')').GenericToken()                   // )
             from body       in Parse.AnyChar.Until(Parse.String("LN_CLASS_END")).Text()    // 終端キーワードが見つかるまで ("LN_CLASS_END" は消費される)
             from optionText in (CLAPIOptions.OptionCommentRange.GenericToken()).Or(Parse.Return(""))              // オプションコメント
-            select new CLClass(start, doc, name, body, optionText);
+            select new CLClass(start, doc, name, baseClass, body, optionText);
 
         // body
         public static readonly Parser<IEnumerable<CLMethod>> ClassBody =

@@ -978,6 +978,12 @@ namespace Lumino
         public extern static void LNConfig_SetDirectMusicReverbLevel( float level);
 
         /// <summary>
+        /// ライブラリを初期化します。
+        /// </summary>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNApplication_Initialize();
+
+        /// <summary>
         /// ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
@@ -2025,6 +2031,22 @@ namespace Lumino
         /// <param name="z">速度の Z 成分</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSound_SetEmitterVelocityXYZ( IntPtr sound,  float x,  float y,  float z);
+
+        /// <summary>
+        /// テクスチャのサイズを取得します。
+        /// </summary>
+        /// <param name="texture">テクスチャハンドル</param>
+        /// <param name="outSize">サイズを格納する変数のアドレス</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNTexture_GetSize( IntPtr texture, out Size outSize);
+
+        /// <summary>
+        /// ファイルから2Dテクスチャオブジェクトを作成します。
+        /// </summary>
+        /// <param name="filePath">画像ファイルのパス</param>
+        /// <param name="texture2D">作成された2Dテクスチャオブジェクトのハンドルを格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNTexture2D_Create( string filePath, out IntPtr texture2D);
 
 
 

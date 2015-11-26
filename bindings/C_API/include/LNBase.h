@@ -76,6 +76,15 @@ LN_EXTENSION_CLASS(LNObject)
 	
 LN_CLASS_END
 
+
+//=============================================================================
+/**
+	@brief	オブジェクトの幅と高さを表します。
+*/
+LN_STRUCT_CLASS(LNSize)
+
+LN_CLASS_END
+
 LN_MODULE_END /** @} */
 
 #ifdef __cplusplus

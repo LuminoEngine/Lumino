@@ -1,12 +1,77 @@
 ﻿#include "LuminoRuby.h"
 #include "RubyStructs.h"
 
+VALUE g_struct_Size;
 VALUE g_struct_Vector2;
 VALUE g_struct_Vector3;
 VALUE g_struct_Vector4;
 VALUE g_struct_Matrix;
 VALUE g_struct_Quaternion;
 
+
+
+void LNSize_delete(LNSize* obj)
+{
+    free(obj);
+}
+
+VALUE LNSize_allocate( VALUE klass )
+{
+    VALUE obj;
+    LNSize* internalObj;
+
+    internalObj = (LNSize*)malloc(sizeof(LNSize));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSize_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LNSize_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LNSize));
+
+    return obj;
+}
+
+VALUE LNSize_struct_initialize( int argc, VALUE *argv, VALUE self )
+{
+    LNSize* selfObj;
+    Data_Get_Struct(self, LNSize, selfObj);
+    if (argc == 0) {    // 引数 0 個を許可する
+        return self;
+    }
+    VALUE Width_;
+    VALUE Height_;
+    rb_scan_args(argc, argv, "2", &Width_, &Height_);
+    selfObj->Width = FIX2INT(Width_);
+    selfObj->Height = FIX2INT(Height_);
+    return self;
+}
+static VALUE LNSize_Width_set(VALUE self, VALUE v)
+{
+    LNSize* selfObj;
+    Data_Get_Struct(self, LNSize, selfObj);
+    selfObj->Width = FIX2INT(v);
+    return self;
+}
+
+static VALUE LNSize_Width_get(VALUE self)
+{
+    LNSize* selfObj;
+    Data_Get_Struct(self, LNSize, selfObj);
+    return toVALUE(selfObj->Width);
+}
+
+static VALUE LNSize_Height_set(VALUE self, VALUE v)
+{
+    LNSize* selfObj;
+    Data_Get_Struct(self, LNSize, selfObj);
+    selfObj->Height = FIX2INT(v);
+    return self;
+}
+
+static VALUE LNSize_Height_get(VALUE self)
+{
+    LNSize* selfObj;
+    Data_Get_Struct(self, LNSize, selfObj);
+    return toVALUE(selfObj->Height);
+}
 
 
 void LNVector2_delete(LNVector2* obj)
@@ -1817,6 +1882,14 @@ static VALUE static_lnrbLNQuaternion_Slerp(int argc, VALUE *argv, VALUE self)
 
 void InitStructs()
 {
+    g_struct_Size = rb_define_class_under(g_luminoModule, "Size", rb_cObject);
+    rb_define_alloc_func(g_struct_Size, LNSize_allocate);
+    rb_define_private_method(g_struct_Size, "initialize", LN_TO_RUBY_FUNC(LNSize_struct_initialize), -1);
+    rb_define_method(g_struct_Size, "width=", LN_TO_RUBY_FUNC(LNSize_Width_set), 1);
+    rb_define_method(g_struct_Size, "width", LN_TO_RUBY_FUNC(LNSize_Width_get), 0);
+    rb_define_method(g_struct_Size, "height=", LN_TO_RUBY_FUNC(LNSize_Height_set), 1);
+    rb_define_method(g_struct_Size, "height", LN_TO_RUBY_FUNC(LNSize_Height_get), 0);
+
     g_struct_Vector2 = rb_define_class_under(g_luminoModule, "Vector2", rb_cObject);
     rb_define_alloc_func(g_struct_Vector2, LNVector2_allocate);
     rb_define_private_method(g_struct_Vector2, "initialize", LN_TO_RUBY_FUNC(LNVector2_struct_initialize), -1);

@@ -296,19 +296,18 @@ LNResult LNSoundListener_SetVelocityXYZ(float x, float y, float z)
 //=============================================================================
 // LNSound
 //=============================================================================
-
 LN_TYPE_INFO_IMPL(ln::Sound, LNSound);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNSound_Create(const LNChar* filename, LNHandle* sound)
+LNResult LNSound_Create(const LNChar* filePath, LNHandle* sound)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<Sound> obj(Sound::Create(filename, LFManager::Application->GetAudioManager()), false);
+	RefPtr<Sound> obj(Sound::Create(filePath, LFManager::Application->GetAudioManager()), false);
 	*sound = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();
-	LN_FUNC_TRY_END_RETURN
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------
@@ -321,7 +320,7 @@ LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSo
 	RefPtr<Sound> obj(Sound::Create(stream, SoundLoadingMode::Sync), false);
 	*sound = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();
-	LN_FUNC_TRY_END_RETURN
+	LN_FUNC_TRY_END_RETURN;
 }
 
 //-----------------------------------------------------------------------------

@@ -91,6 +91,13 @@ LN_CLASS_END
 LN_STATIC_CLASS(LNApplication)
 
 	/**
+		@brief		ライブラリを初期化します。
+	*/
+	LN_STATIC_API
+	LN_ATTR_LIBRARY_INITIALIZER
+	LNResult LNApplication_Initialize();
+
+	/**
 		@brief		ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
 	*/
 	LN_STATIC_API

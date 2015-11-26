@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#define LN_INTERNAL_ACCESS	public
 #include <Lumino.h>
 
 // 内部利用ということでここでグローバルな using namespace している。
@@ -10,7 +11,7 @@ using namespace ln;
 #include "../include/LNTypedef.h"
 #include "../include/LNCommon.h"
 #include "LNManager.h"
-
+#include "LNWrapperImplement.h"
 
 //------------------------------------------------------------------------------
 
@@ -160,6 +161,14 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 #define TO_CORE_RECTF( v )		LRectF( static_cast<float>(v->X), static_cast<float>(v->Y), static_cast<float>(v->Width), static_cast<float>(v->Height) )
 
 #define TO_LN_COLOR( v )		(const LNColor*)&(v)
+
+//---------------------------------------------------------------------
+//template<class T, typename... TArgs>
+//static T CreateWrapperObject(TArgs... args)
+//{
+//	return RefPtr<T>(LN_NEW T(args...), false);
+//}
+
 
 //---------------------------------------------------------------------
 /// try 空間の開始

@@ -226,7 +226,7 @@ private:
 
 
 
-	RefPtr<Texture>	m_defaultSkinTexture;
+	RefPtr<Texture2D>	m_defaultSkinTexture;
 	RefPtr<CursorImage>			m_cursorImageTable[CommonCursorImage::TERMINATOR];
 	//Size						m_viewPixelSize;
 

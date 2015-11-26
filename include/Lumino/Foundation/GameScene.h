@@ -9,6 +9,7 @@ LN_NAMESPACE_BEGIN
 	@details	ゲームシーンはタイトル画面やゲームオーバー画面などの画面遷移の単位です。
 */
 class GameScene
+	: public RefObject
 {
 public:
 

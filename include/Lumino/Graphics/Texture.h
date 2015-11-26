@@ -13,41 +13,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class Texture
 	: public GraphicsResourceObject
 {
-public:
-
-	/**
-		@brief		指定したサイズのテクスチャを作成します。
-		@param[in]	size		: テクスチャサイズ (ピクセル単位)
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-	*/
-	static Texture* Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
-
-	/**
-		@brief		ファイルからテクスチャを作成します。
-		@param[in]	filePath	: ファイルパス
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-	*/
-	static Texture* Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
-
-	/**
-		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
-		@param[in]	stream		: 画像ファイルデータのストリーム
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-	*/
-	static Texture* Create(Stream* stream, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
-
-	/**
-		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
-		@param[in]	data		: 画像ファイルデータの先頭アドレス
-		@param[in]	size		: データのバイト数
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-	*/
-	static Texture* Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
-
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 
 	/**
@@ -55,7 +21,7 @@ public:
 		@return		テクスチャのサイズ (ピクセル単位)
 	*/
 	const Size& GetSize() const;
-	
+
 	/**
 		@brief		テクスチャの実サイズを取得します。
 		@return		テクスチャの実サイズ (ピクセル単位)
@@ -66,6 +32,63 @@ public:
 		@brief		テクスチャのピクセルフォーマットを取得します。
 	*/
 	TextureFormat GetFormat() const;
+
+protected:
+	Texture();
+	virtual ~Texture();
+
+LN_INTERNAL_ACCESS:
+	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+
+protected:
+	Driver::ITexture*	m_deviceObj;
+	Size				m_size;
+	TextureFormat		m_format;
+};
+
+/**
+	@brief		テクスチャのクラスです。
+*/
+class Texture2D
+	: public Texture
+{
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
+public:
+
+	/**
+		@brief		指定したサイズのテクスチャを作成します。
+		@param[in]	size		: テクスチャサイズ (ピクセル単位)
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+	*/
+	static Texture2D* Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+
+	/**
+		@brief		ファイルからテクスチャを作成します。
+		@param[in]	filePath	: ファイルパス
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+	*/
+	static Texture2D* Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+
+	/**
+		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
+		@param[in]	stream		: 画像ファイルデータのストリーム
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+	*/
+	static Texture2D* Create(Stream* stream, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+
+	/**
+		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
+		@param[in]	data		: 画像ファイルデータの先頭アドレス
+		@param[in]	size		: データのバイト数
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+	*/
+	static Texture2D* Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+
+public:
 	
 	/*
 		@brief		
@@ -78,19 +101,20 @@ public:
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
-	Texture();
+	Texture2D();
 	//Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
 	//Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
 	////Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface = NULL);
 	//Texture(GraphicsManager* manager, bool isDefaultBackBuffer);
-	virtual ~Texture();
+	virtual ~Texture2D();
 	void FlushPrimarySurface();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	void CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
-	void CreateImpl(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
-	void CreateImpl(GraphicsManager* manager, bool isDefaultBackBuffer);
+	void CreateCore(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
+	void CreateCore(GraphicsManager* manager, const TCHAR* filePath, TextureFormat format, int mipLevels);
+	void CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
+	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void DetachDefaultBackBuffer();
@@ -103,10 +127,7 @@ protected:
 	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;
 	friend class SwapChain;
-	Driver::ITexture*	m_deviceObj;
-	Size				m_size;
 	int					m_mipLevels;
-	TextureFormat		m_format;
 	Bitmap*				m_primarySurface;
 	bool				m_isPlatformLoaded;
 	bool				m_isDefaultBackBuffer;
@@ -141,9 +162,9 @@ protected:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	Size			m_size;
+	//Size			m_size;
 	int				m_mipLevels;
-	TextureFormat	m_format;
+	//TextureFormat	m_format;
 };
 
 /**
@@ -170,8 +191,8 @@ protected:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	Size			m_size;
-	TextureFormat	m_format;
+	//Size			m_size;
+	//TextureFormat	m_format;
 };
 
 LN_NAMESPACE_GRAPHICS_END

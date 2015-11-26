@@ -69,6 +69,18 @@ struct wrapSound
 
 };
 
+struct wrapTexture
+    : public wrapRefObject
+{
+
+};
+
+struct wrapTexture2D
+    : public wrapTexture
+{
+
+};
+
 
 
 VALUE g_class_Config;
@@ -78,6 +90,8 @@ VALUE g_class_Error;
 VALUE g_class_GameAudio;
 VALUE g_class_SoundListener;
 VALUE g_class_Sound;
+VALUE g_class_Texture;
+VALUE g_class_Texture2D;
 
 
 static VALUE static_lnrbLNConfig_SetApplicationLogEnabled(int argc, VALUE *argv, VALUE self)
@@ -201,6 +215,20 @@ static VALUE static_lnrbLNConfig_SetDirectMusicReverbLevel(int argc, VALUE *argv
         }
     }
     rb_raise(rb_eArgError, "Lumino::Config.set_direct_music_reverb_level - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNApplication_Initialize(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNResult errorCode = LNApplication_Initialize();
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Application.initialize - wrong argument type.");
     return Qnil;
 }
 
@@ -1231,6 +1259,124 @@ static VALUE lnrbLNSound_FadeVolume(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+static void LNTexture_delete(wrapTexture* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    free(obj);
+}
+
+static void LNTexture_mark(wrapTexture* obj)
+{
+
+}
+
+static VALUE LNTexture_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapTexture* internalObj;
+
+    internalObj = (wrapTexture*)malloc(sizeof(wrapTexture));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture_allocate" );
+    obj = Data_Wrap_Struct(klass, LNTexture_mark, LNTexture_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapTexture));
+
+    return obj;
+}
+
+static VALUE LNTexture_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapTexture* internalObj;
+
+    internalObj = (wrapTexture*)malloc(sizeof(wrapTexture));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture_allocate" );
+    obj = Data_Wrap_Struct(klass, LNTexture_mark, LNTexture_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapTexture));
+
+    internalObj->Handle = handle;
+    return obj;
+}
+
+static VALUE lnrbLNTexture_GetSize(int argc, VALUE *argv, VALUE self)
+{
+    wrapTexture* selfObj;
+    Data_Get_Struct(self, wrapTexture, selfObj);
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNSize _outSize;
+            LNResult errorCode = LNTexture_GetSize(selfObj->Handle, &_outSize);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            VALUE retObj = LNSize_allocate(g_struct_Size);
+    *((LNSize*)DATA_PTR(retObj)) = _outSize;
+    return retObj;
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Texture.size - wrong argument type.");
+    return Qnil;
+}
+
+static void LNTexture2D_delete(wrapTexture2D* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    free(obj);
+}
+
+static void LNTexture2D_mark(wrapTexture2D* obj)
+{
+
+}
+
+static VALUE LNTexture2D_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapTexture2D* internalObj;
+
+    internalObj = (wrapTexture2D*)malloc(sizeof(wrapTexture2D));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture2D_allocate" );
+    obj = Data_Wrap_Struct(klass, LNTexture2D_mark, LNTexture2D_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapTexture2D));
+
+    return obj;
+}
+
+static VALUE LNTexture2D_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapTexture2D* internalObj;
+
+    internalObj = (wrapTexture2D*)malloc(sizeof(wrapTexture2D));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture2D_allocate" );
+    obj = Data_Wrap_Struct(klass, LNTexture2D_mark, LNTexture2D_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapTexture2D));
+
+    internalObj->Handle = handle;
+    return obj;
+}
+
+static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
+{
+    wrapTexture2D* selfObj;
+    Data_Get_Struct(self, wrapTexture2D, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (isRbString(filePath)) {
+            char* _filePath = StringValuePtr(filePath);
+            LNResult errorCode = LNTexture2D_Create(_filePath, &selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Texture2D.texture_2d - wrong argument type.");
+    return Qnil;
+}
+
 
 
 void InitClasses()
@@ -1246,6 +1392,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Config, "set_direct_music_reverb_level", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicReverbLevel), -1);
 
     g_class_Application = rb_define_class_under(g_luminoModule, "Application", rb_cObject);
+    rb_define_singleton_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Initialize), -1);
     rb_define_singleton_method(g_class_Application, "initialize_audio", LN_TO_RUBY_FUNC(static_lnrbLNApplication_InitializeAudio), -1);
     rb_define_singleton_method(g_class_Application, "terminate", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Terminate), -1);
 
@@ -1307,6 +1454,14 @@ void InitClasses()
     rb_define_method(g_class_Sound, "pause", LN_TO_RUBY_FUNC(lnrbLNSound_Pause), -1);
     rb_define_method(g_class_Sound, "resume", LN_TO_RUBY_FUNC(lnrbLNSound_Resume), -1);
     rb_define_method(g_class_Sound, "fade_volume", LN_TO_RUBY_FUNC(lnrbLNSound_FadeVolume), -1);
+
+    g_class_Texture = rb_define_class_under(g_luminoModule, "Texture", rb_cObject);
+    rb_define_alloc_func(g_class_Texture, LNTexture_allocate);
+    rb_define_method(g_class_Texture, "size", LN_TO_RUBY_FUNC(lnrbLNTexture_GetSize), -1);
+
+    g_class_Texture2D = rb_define_class_under(g_luminoModule, "Texture2D", rb_cObject);
+    rb_define_alloc_func(g_class_Texture2D, LNTexture2D_allocate);
+    rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNTexture2D_Create), -1);
 
 
 }

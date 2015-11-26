@@ -39,7 +39,7 @@ private:
 
 	GraphicsManager*		m_manager;
 	RefPtr<Font>			m_font;
-	RefPtr<Texture>			m_glyphCacheTexture;
+	RefPtr<Texture2D>		m_glyphCacheTexture;
 	CachedGlyphInfoMap		m_cachedGlyphInfoMap;
 	int						m_glyphWidthCount;
 	Size					m_glyphMaxBitmapSize;	///< 現在のフォント情報の1文字分のビットマップの最大サイズ

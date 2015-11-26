@@ -5,6 +5,36 @@ using System.Text;
 namespace Lumino
 {
     /// <summary>
+    /// オブジェクトの幅と高さを表します。
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Size
+    {
+        /// <summary>
+        /// 幅
+        /// </summary>
+        public int Width;
+        
+        /// <summary>
+        /// 高さ
+        /// </summary>
+        public int Height;
+        
+    
+    
+        /// <summary>
+        /// 各要素を指定して初期化します。
+        /// </summary>
+        public Size(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+        
+    
+    };
+    
+    /// <summary>
     /// 2次元のベクトルのクラスです。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]

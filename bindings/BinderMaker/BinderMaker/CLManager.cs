@@ -244,7 +244,7 @@ namespace BinderMaker
                         return c;
                     }
                 }
-                throw new InvalidOperationException("invalid class type.");
+                throw new InvalidOperationException("invalid class type. LN_HANDLE() に指定された型が見つからない。");
             }
 
             // ジェネリッククラス型を検索

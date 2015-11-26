@@ -107,11 +107,23 @@ LNResult LNApplication_Initialize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+LNResult LNApplication_Initialize()
+{
+	LN_FUNC_TRY_BEGIN;
+	LFManager::PreInitialize();
+	LFManager::Application->Initialize();
+	LFManager::PostInitialize();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 LNResult LNApplication_InitializeAudio()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
-	LFManager::Application->InitialzeAudioManager();
+	LFManager::Application->InitializeAudioManager();
 	LFManager::PostInitialize();
 	LN_FUNC_TRY_END_RETURN;
 }

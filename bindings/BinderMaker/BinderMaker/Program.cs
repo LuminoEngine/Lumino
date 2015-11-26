@@ -27,6 +27,7 @@ namespace BinderMaker
                 SourcesRootDir + "LNBase.h",
                 SourcesRootDir + "LNMath.h",
                 SourcesRootDir + "LNAudio.h",
+                SourcesRootDir + "LNGraphics.h",
             };
             var parser = new Parser.CLAPIHeaderParser();
             var modules = parser.Analyze(apiHeaders);
@@ -35,9 +36,9 @@ namespace BinderMaker
             CLManager.Instance.LinkEntities();
 
             // Wrapper
-            var wrapperBuilder = new Builder.WrapperImplementBuilder();
-            wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
-            return;
+            //var wrapperBuilder = new Builder.WrapperImplementBuilder();
+            //wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
+
             // C#
             var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
             csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");

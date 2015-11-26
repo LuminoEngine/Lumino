@@ -1244,7 +1244,7 @@ void GUIManagerImpl::Initialize(const ConfigData& configData)
 	RegisterFactory(Rectangle::TypeID,				[](GUIManagerImpl* m) -> CoreObject* { return Rectangle::internalCreateInstance(m); });
 
 	// GUI スキン
-	m_defaultSkinTexture.Attach(Texture::Create(g_DefaultSkin_png_Data, g_DefaultSkin_png_Len, TextureFormat_R8G8B8A8, 1));	// TODO: GraphicsManager?
+	m_defaultSkinTexture.Attach(Texture2D::Create(g_DefaultSkin_png_Data, g_DefaultSkin_png_Len, TextureFormat_R8G8B8A8, 1));	// TODO: GraphicsManager?
 	
 	// マウスカーソル
 	assert(LN_ARRAY_SIZE_OF(m_cursorImageTable) == CommonCursorImage::GetMemberCount());

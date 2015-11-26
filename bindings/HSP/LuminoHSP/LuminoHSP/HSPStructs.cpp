@@ -1,7 +1,7 @@
 
 #include <windows.h>
 #include "../hsp3plugin/hsp3plugin.h"
-#include "../../../C_API/include/LuminoC.h"
+#include "../../../src/C_API/LuminoC.h"
 #include "LuminoHSP.h"
 
 //=============================================================================
@@ -23,6 +23,86 @@ static void hspCommon_AllocBlock(PVal *pval, PDAT *pdat, int size)
 //=============================================================================
 // Structs
 //=============================================================================
+//-----------------------------------------------------------------------------
+// LNSize
+//-----------------------------------------------------------------------------
+#define GetPtr_LNSize(pval) ((LNSize*)pval)
+
+static int g_LNSize_typeid = 0;
+
+int hspLNSize_typeid()
+{
+	return g_LNSize_typeid;
+}
+
+static int hspLNSize_GetVarSize(PVal *pval)
+{
+	int size;
+	size = pval->len[1];
+	if (pval->len[2]) size *= pval->len[2];
+	if (pval->len[3]) size *= pval->len[3];
+	if (pval->len[4]) size *= pval->len[4];
+	size *= sizeof(LNSize);
+	return size;
+}
+
+static void hspLNSize_Alloc(PVal *pval, const PVal *pval2)
+{
+	if (pval->len[1] < 1) pval->len[1] = 1;
+	int size = hspLNSize_GetVarSize(pval);
+	pval->mode = HSPVAR_MODE_MALLOC;
+	char* pt = sbAlloc(size);
+	LNSize* fv = (LNSize *)pt;
+	memset(fv, 0, size);
+	if (pval2 != NULL) {
+		memcpy(pt, pval->pt, pval->size);
+		sbFree(pval->pt);
+	}
+	pval->pt = pt;
+	pval->size = size;
+}
+
+static void hspLNSize_Free(PVal* pval)
+{
+	if (pval->mode == HSPVAR_MODE_MALLOC) { sbFree(pval->pt); }
+	pval->pt = NULL;
+	pval->mode = HSPVAR_MODE_NONE;
+}
+
+static PDAT* hspLNSize_GetPtr(PVal* pval)
+{
+	return (PDAT*)(((LNSize*)(pval->pt)) + pval->offset);
+}
+
+static int hspLNSize_GetSize(const PDAT *pdatl)
+{
+	return sizeof(LNSize);
+}
+
+static void hspLNSize_Set(PVal* pval, PDAT* pdat, const void* in)
+{
+	*GetPtr_LNSize(pdat) = *((LNSize*)(in));
+}
+
+static void hspLNSize_Init(HspVarProc* p)
+{
+	p->Alloc = hspLNSize_Alloc;
+	p->Free = hspLNSize_Free;
+	
+	p->GetPtr = hspLNSize_GetPtr;
+	p->GetSize = hspLNSize_GetSize;
+	p->GetBlockSize = hspCommon_GetBlockSize;
+	p->AllocBlock = hspCommon_AllocBlock;
+
+	p->Set = hspLNSize_Set;
+
+	p->vartype_name = "LNSize";
+	p->version = 0x001;
+	p->support = HSPVAR_SUPPORT_STORAGE | HSPVAR_SUPPORT_FLEXARRAY;
+	p->basesize = sizeof(LNSize);
+	g_LNSize_typeid = p->flag;
+}
+
 //-----------------------------------------------------------------------------
 // LNVector2
 //-----------------------------------------------------------------------------
@@ -455,6 +535,20 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
 	{
     case 0x000A:
     {
+        static LNSize returnValue;
+        if (CheclDefault()) {
+            memset(&returnValue, 0, sizeof(returnValue));
+        }
+        else {
+            returnValue.Width = GetParamDouble();
+            returnValue.Height = GetParamDouble();
+        }
+        *retValPtr = &returnValue;
+        *typeRes = hspLNSize_typeid();
+        return true;
+    }
+    case 0x000B:
+    {
         static LNVector2 returnValue;
         if (CheclDefault()) {
             memset(&returnValue, 0, sizeof(returnValue));
@@ -467,7 +561,7 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
         *typeRes = hspLNVector2_typeid();
         return true;
     }
-    case 0x000B:
+    case 0x000C:
     {
         static LNVector3 returnValue;
         if (CheclDefault()) {
@@ -482,7 +576,7 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
         *typeRes = hspLNVector3_typeid();
         return true;
     }
-    case 0x000C:
+    case 0x000D:
     {
         static LNVector4 returnValue;
         if (CheclDefault()) {
@@ -498,7 +592,7 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
         *typeRes = hspLNVector4_typeid();
         return true;
     }
-    case 0x000D:
+    case 0x000E:
     {
         static LNMatrix returnValue;
         if (CheclDefault()) {
@@ -526,7 +620,7 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
         *typeRes = hspLNMatrix_typeid();
         return true;
     }
-    case 0x000E:
+    case 0x000F:
     {
         static LNQuaternion returnValue;
         if (CheclDefault()) {
@@ -552,6 +646,7 @@ bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr)
 //=============================================================================
 void RegisterStructTypes(HSP3TYPEINFO *info)
 {
+    registvar(-1, hspLNSize_Init);
     registvar(-1, hspLNVector2_Init);
     registvar(-1, hspLNVector3_Init);
     registvar(-1, hspLNVector4_Init);

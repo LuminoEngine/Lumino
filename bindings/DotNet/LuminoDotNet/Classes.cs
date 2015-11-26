@@ -114,6 +114,25 @@ namespace Lumino
     
     
         /// <summary>
+        /// ライブラリを初期化します。
+        /// </summary>
+        public static void Initialize()
+        {
+            InternalManager.Initialize();
+            var result = API.LNApplication_Initialize();
+            if (result != Result.OK) {
+                IntPtr errStr;
+                int errStrLen;
+                API.LNError_GetLastErrorMessage(out errStr);
+                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                var errBuf = new StringBuilder(errStrLen);
+                API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                throw new LuminoException(result, errBuf.ToString());
+            }
+        
+        }
+        
+        /// <summary>
         /// ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         public static void InitializeAudio()
@@ -1370,6 +1389,78 @@ namespace Lumino
     
     };
     
+    /// <summary>
+    /// テクスチャを操作するためのベースクラスです。
+    /// </summary>
+    public partial class Texture : RefObject
+    {
+    
+        /// <summary>
+        /// テクスチャのサイズ
+        /// </summary>
+        public Size Size
+        {
+            get
+            {
+                var outSize = new Size();
+                var result = API.LNTexture_GetSize( _handle, out outSize);
+                if (result != Result.OK) {
+                    IntPtr errStr;
+                    int errStrLen;
+                    API.LNError_GetLastErrorMessage(out errStr);
+                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                    var errBuf = new StringBuilder(errStrLen);
+                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                    throw new LuminoException(result, errBuf.ToString());
+                }
+                return outSize;
+            
+            }
+            
+        }
+    
+        internal Texture(_LNInternal i) : base(i) {}
+        
+    
+    };
+    
+    /// <summary>
+    /// 2Dテクスチャを操作するためのクラスです。
+    /// </summary>
+    public partial class Texture2D : Texture
+    {
+    
+    
+        internal Texture2D(_LNInternal i) : base(i) {}
+        
+        /// <summary>
+        /// ファイルから2Dテクスチャオブジェクトを作成します。
+        /// </summary>
+        /// <param name="filePath">画像ファイルのパス</param>
+        /// <remarks>
+        /// 全てのプラットフォームでサポートされているファイルフォーマットは .png です。
+        /// 					グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
+        /// </remarks>
+        public  Texture2D( string filePath) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr texture2D;
+            var result = API.LNTexture2D_Create( filePath, out texture2D);
+            if (result != Result.OK) {
+                IntPtr errStr;
+                int errStrLen;
+                API.LNError_GetLastErrorMessage(out errStr);
+                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                var errBuf = new StringBuilder(errStrLen);
+                API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                throw new LuminoException(result, errBuf.ToString());
+            }
+            InternalManager.RegisterWrapperObject(this, texture2D);
+        
+        }
+        
+    
+    };
+    
 	
 
     
@@ -1396,6 +1487,26 @@ var _Sound = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_Sound);
 LNSound_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _Texture = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new Texture(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_Texture);
+LNTexture_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+var _Texture2D = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new Texture2D(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_Texture2D);
+LNTexture2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -1408,6 +1519,12 @@ LNSound_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
         private static extern IntPtr LNObject_GetTypeUserData(IntPtr handle);
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNTexture_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNTexture2D_SetBindingTypeInfo(IntPtr data);
 
 
     }

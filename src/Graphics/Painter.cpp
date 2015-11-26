@@ -106,7 +106,7 @@ TextureBrush::~TextureBrush()
 //-----------------------------------------------------------------------------
 void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 {
-	m_texture.Attach(Texture::Create(filePath, TextureFormat_R8G8B8A8, 1));		//TODO: GraphicsManager?
+	m_texture.Attach(Texture2D::Create(filePath, TextureFormat_R8G8B8A8, 1));		//TODO: GraphicsManager?
 }
 
 //-----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ void TextureBrush::Create(Texture* texture)
 //-----------------------------------------------------------------------------
 FrameTextureBrushPtr FrameTextureBrush::Create(const TCHAR* filePath)
 {
-	RefPtr<Texture> tex(Texture::Create(filePath), false);
+	RefPtr<Texture> tex(Texture2D::Create(filePath), false);
 	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush(), false);
 	ptr->SetTexture(tex);
 	return ptr;
@@ -729,10 +729,10 @@ void RenderingContext::DrawGlyphs(const PointF& position, const TextLayoutResult
 		data[i].SrcPixelRect.Set((float)srcRect.X, (float)srcRect.Y, (float)srcRect.Width, (float)srcRect.Height);
 	}
 
-	Driver::ITexture* dtex2 = (tex2 != NULL) ? Helper::GetDeviceObject(tex2) : NULL;
+	Driver::ITexture* dtex2 = (tex2 != NULL) ? tex2->GetDeviceObject() : NULL;
 	
 	
-	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, Helper::GetDeviceObject(tex1), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
+	LN_CALL_COMMAND(DrawGlyphRun, DrawGlyphRunCommand, position, data, count, tex1->GetDeviceObject(), dtex2/*, ColorF::Black, ColorF::Blue*/);	// TODO: 色
 }
 
 //-----------------------------------------------------------------------------
