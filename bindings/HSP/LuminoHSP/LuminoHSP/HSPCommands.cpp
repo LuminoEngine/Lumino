@@ -139,11 +139,27 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x006E:
     {
     
-        LNApplication_Terminate();
+        stat = LNApplication_UpdateFrame();
     
         return true;
     }
     case 0x006F:
+    {
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        LNBool p0;
+        stat = LNApplication_IsEndRequested(&p0);
+        int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
+        return true;
+    }
+    case 0x0070:
+    {
+    
+        LNApplication_Terminate();
+    
+        return true;
+    }
+    case 0x0071:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -152,7 +168,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x0070:
+    case 0x0072:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -161,7 +177,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x0071:
+    case 0x0073:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -170,7 +186,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x0072:
+    case 0x0074:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -179,7 +195,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_STR, p0);
         return true;
     }
-    case 0x0073:
+    case 0x0075:
     {
         int p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -191,14 +207,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp3 = p3; code_setva(pval_p3, aptr_p3, HSPVAR_FLAG_INT, &rp3);
         return true;
     }
-    case 0x0074:
+    case 0x0076:
     {
     
         stat = LNError_GetLastErrorCode();
     
         return true;
     }
-    case 0x0075:
+    case 0x0077:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -207,21 +223,21 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_STR, p0);
         return true;
     }
-    case 0x0076:
+    case 0x0078:
     {
         intptr_t p0 = CodeGetI();
         stat = LNObject_Release(p0);
     
         return true;
     }
-    case 0x0077:
+    case 0x0079:
     {
         intptr_t p0 = CodeGetI();
         stat = LNObject_AddRef(p0);
     
         return true;
     }
-    case 0x0078:
+    case 0x007A:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -231,7 +247,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x0079:
+    case 0x007B:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
         PVal* pval_p1;
@@ -241,7 +257,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
         return true;
     }
-    case 0x007A:
+    case 0x007C:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
         PVal* pval_p1;
@@ -251,7 +267,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
         return true;
     }
-    case 0x007B:
+    case 0x007D:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
         float p1 = CodeGetD();
@@ -260,7 +276,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x007C:
+    case 0x007E:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
         PVal* pval_p1;
@@ -270,14 +286,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector2_typeid(), &p1);
         return true;
     }
-    case 0x007D:
+    case 0x007F:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector2);
         stat = LNVector2_NormalizeV((LNVector2*)pval_p0->pt);
     
         return true;
     }
-    case 0x007E:
+    case 0x0080:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1;
@@ -287,7 +303,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
         return true;
     }
-    case 0x007F:
+    case 0x0081:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1;
@@ -297,7 +313,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
         return true;
     }
-    case 0x0080:
+    case 0x0082:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         float p1 = CodeGetD();
@@ -307,7 +323,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0081:
+    case 0x0083:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -318,7 +334,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p0, aptr_p0, hspLNVector3_typeid(), &p0);
         return true;
     }
-    case 0x0082:
+    case 0x0084:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1;
@@ -328,14 +344,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x0083:
+    case 0x0085:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         stat = LNVector3_NormalizeV((LNVector3*)pval_p0->pt);
     
         return true;
     }
-    case 0x0084:
+    case 0x0086:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -346,7 +362,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_DOUBLE, &rp2);
         return true;
     }
-    case 0x0085:
+    case 0x0087:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -357,7 +373,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
         return true;
     }
-    case 0x0086:
+    case 0x0088:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -368,7 +384,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
         return true;
     }
-    case 0x0087:
+    case 0x0089:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -379,7 +395,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
         return true;
     }
-    case 0x0088:
+    case 0x008A:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -391,7 +407,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p3, aptr_p3, hspLNVector3_typeid(), &p3);
         return true;
     }
-    case 0x0089:
+    case 0x008B:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -405,7 +421,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p5, aptr_p5, hspLNVector3_typeid(), &p5);
         return true;
     }
-    case 0x008A:
+    case 0x008C:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNMatrix);
@@ -416,7 +432,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNVector4_typeid(), &p2);
         return true;
     }
-    case 0x008B:
+    case 0x008D:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNMatrix);
@@ -427,7 +443,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNVector3_typeid(), &p2);
         return true;
     }
-    case 0x008C:
+    case 0x008E:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector4);
         float p1 = CodeGetD();
@@ -438,7 +454,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x008D:
+    case 0x008F:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -448,7 +464,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x008E:
+    case 0x0090:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -458,7 +474,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x008F:
+    case 0x0091:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -468,7 +484,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x0090:
+    case 0x0092:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -478,7 +494,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x0091:
+    case 0x0093:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -487,7 +503,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p0, aptr_p0, hspLNMatrix_typeid(), &p0);
         return true;
     }
-    case 0x0092:
+    case 0x0094:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -497,7 +513,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0093:
+    case 0x0095:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -505,7 +521,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0094:
+    case 0x0096:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -513,7 +529,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0095:
+    case 0x0097:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -521,7 +537,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0096:
+    case 0x0098:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -529,7 +545,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0097:
+    case 0x0099:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -540,7 +556,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0098:
+    case 0x009A:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -549,7 +565,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x0099:
+    case 0x009B:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -558,7 +574,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x009A:
+    case 0x009C:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNQuaternion);
@@ -566,7 +582,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x009B:
+    case 0x009D:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -574,7 +590,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x009C:
+    case 0x009E:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         float p1 = CodeGetD();
@@ -584,7 +600,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x009D:
+    case 0x009F:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -592,7 +608,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x009E:
+    case 0x00A0:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNMatrix);
@@ -603,7 +619,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNMatrix_typeid(), &p2);
         return true;
     }
-    case 0x009F:
+    case 0x00A1:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -613,7 +629,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNMatrix_typeid(), &p1);
         return true;
     }
-    case 0x00A0:
+    case 0x00A2:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -623,7 +639,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNMatrix_typeid(), &p1);
         return true;
     }
-    case 0x00A1:
+    case 0x00A3:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -635,7 +651,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p3, aptr_p3, hspLNMatrix_typeid(), &p3);
         return true;
     }
-    case 0x00A2:
+    case 0x00A4:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -647,7 +663,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p3, aptr_p3, hspLNMatrix_typeid(), &p3);
         return true;
     }
-    case 0x00A3:
+    case 0x00A5:
     {
         float p0 = CodeGetD();
         float p1 = CodeGetD();
@@ -660,7 +676,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
         return true;
     }
-    case 0x00A4:
+    case 0x00A6:
     {
         float p0 = CodeGetD();
         float p1 = CodeGetD();
@@ -673,7 +689,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
         return true;
     }
-    case 0x00A5:
+    case 0x00A7:
     {
         float p0 = CodeGetD();
         float p1 = CodeGetD();
@@ -686,7 +702,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
         return true;
     }
-    case 0x00A6:
+    case 0x00A8:
     {
         float p0 = CodeGetD();
         float p1 = CodeGetD();
@@ -699,7 +715,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p4, aptr_p4, hspLNMatrix_typeid(), &p4);
         return true;
     }
-    case 0x00A7:
+    case 0x00A9:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -709,7 +725,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x00A8:
+    case 0x00AA:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -727,7 +743,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p3, aptr_p3, hspLNVector3_typeid(), &p3);
         return true;
     }
-    case 0x00A9:
+    case 0x00AB:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
         float p1 = CodeGetD();
@@ -738,7 +754,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00AA:
+    case 0x00AC:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -747,7 +763,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p0, aptr_p0, hspLNQuaternion_typeid(), &p0);
         return true;
     }
-    case 0x00AB:
+    case 0x00AD:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         float p1 = CodeGetD();
@@ -758,7 +774,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNQuaternion_typeid(), &p2);
         return true;
     }
-    case 0x00AC:
+    case 0x00AE:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNMatrix);
         PVal* pval_p1;
@@ -768,7 +784,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNQuaternion_typeid(), &p1);
         return true;
     }
-    case 0x00AD:
+    case 0x00AF:
     {
         float p0 = CodeGetD();
         float p1 = CodeGetD();
@@ -780,7 +796,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p3, aptr_p3, hspLNQuaternion_typeid(), &p3);
         return true;
     }
-    case 0x00AE:
+    case 0x00B0:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
         PVal* pval_p1;
@@ -790,7 +806,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNQuaternion_typeid(), &p1);
         return true;
     }
-    case 0x00AF:
+    case 0x00B1:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
         PVal* pval_p1;
@@ -800,7 +816,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNQuaternion_typeid(), &p1);
         return true;
     }
-    case 0x00B0:
+    case 0x00B2:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNQuaternion);
@@ -811,7 +827,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p2, aptr_p2, hspLNQuaternion_typeid(), &p2);
         return true;
     }
-    case 0x00B1:
+    case 0x00B3:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNQuaternion);
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNQuaternion);
@@ -823,7 +839,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p3, aptr_p3, hspLNQuaternion_typeid(), &p3);
         return true;
     }
-    case 0x00B2:
+    case 0x00B4:
     {
         str_p0 = CodeGetS();
         float p1 = CodeGetD(1.0f);
@@ -833,7 +849,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00B3:
+    case 0x00B5:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -844,14 +860,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00B4:
+    case 0x00B6:
     {
         double p0 = CodeGetD(0.0);
         stat = LNGameAudio_StopBGM(p0);
     
         return true;
     }
-    case 0x00B5:
+    case 0x00B7:
     {
         str_p0 = CodeGetS();
         float p1 = CodeGetD(1.0f);
@@ -861,7 +877,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00B6:
+    case 0x00B8:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -872,14 +888,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00B7:
+    case 0x00B9:
     {
         double p0 = CodeGetD(0.0);
         stat = LNGameAudio_StopBGS(p0);
     
         return true;
     }
-    case 0x00B8:
+    case 0x00BA:
     {
         str_p0 = CodeGetS();
         float p1 = CodeGetD(1.0f);
@@ -888,7 +904,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00B9:
+    case 0x00BB:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -898,14 +914,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00BA:
+    case 0x00BC:
     {
     
         stat = LNGameAudio_StopME();
     
         return true;
     }
-    case 0x00BB:
+    case 0x00BD:
     {
         str_p0 = CodeGetS();
         float p1 = CodeGetD(1.0f);
@@ -914,7 +930,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00BC:
+    case 0x00BE:
     {
         str_p0 = CodeGetS();
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -925,7 +941,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00BD:
+    case 0x00BF:
     {
         str_p0 = CodeGetS();
         float p1 = CodeGetD();
@@ -938,7 +954,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00BE:
+    case 0x00C0:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -948,7 +964,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00BF:
+    case 0x00C1:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -960,7 +976,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00C0:
+    case 0x00C2:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -974,14 +990,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00C1:
+    case 0x00C3:
     {
     
         stat = LNGameAudio_StopSE();
     
         return true;
     }
-    case 0x00C2:
+    case 0x00C4:
     {
         float p0 = CodeGetD();
         double p1 = CodeGetD(0.0);
@@ -989,7 +1005,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00C3:
+    case 0x00C5:
     {
         float p0 = CodeGetD();
         double p1 = CodeGetD(0.0);
@@ -997,49 +1013,31 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00C4:
+    case 0x00C6:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         stat = LNSoundListener_SetPosition((LNVector3*)pval_p0->pt);
     
         return true;
     }
-    case 0x00C5:
+    case 0x00C7:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         stat = LNSoundListener_SetDirection((LNVector3*)pval_p0->pt);
     
         return true;
     }
-    case 0x00C6:
+    case 0x00C8:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         stat = LNSoundListener_SetUpDirection((LNVector3*)pval_p0->pt);
     
         return true;
     }
-    case 0x00C7:
+    case 0x00C9:
     {
         PVal* pval_p0; CodeGetVA_TypeChecked(&pval_p0, LNVector3);
         stat = LNSoundListener_SetVelocity((LNVector3*)pval_p0->pt);
-    
-        return true;
-    }
-    case 0x00C8:
-    {
-        float p0 = CodeGetD();
-        float p1 = CodeGetD();
-        float p2 = CodeGetD();
-        stat = LNSoundListener_SetPositionXYZ(p0, p1, p2);
-    
-        return true;
-    }
-    case 0x00C9:
-    {
-        float p0 = CodeGetD();
-        float p1 = CodeGetD();
-        float p2 = CodeGetD();
-        stat = LNSoundListener_SetDirectionXYZ(p0, p1, p2);
     
         return true;
     }
@@ -1048,7 +1046,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         float p0 = CodeGetD();
         float p1 = CodeGetD();
         float p2 = CodeGetD();
-        stat = LNSoundListener_SetUpDirectionXYZ(p0, p1, p2);
+        stat = LNSoundListener_SetPositionXYZ(p0, p1, p2);
     
         return true;
     }
@@ -1057,11 +1055,29 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         float p0 = CodeGetD();
         float p1 = CodeGetD();
         float p2 = CodeGetD();
-        stat = LNSoundListener_SetVelocityXYZ(p0, p1, p2);
+        stat = LNSoundListener_SetDirectionXYZ(p0, p1, p2);
     
         return true;
     }
     case 0x00CC:
+    {
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNSoundListener_SetUpDirectionXYZ(p0, p1, p2);
+    
+        return true;
+    }
+    case 0x00CD:
+    {
+        float p0 = CodeGetD();
+        float p1 = CodeGetD();
+        float p2 = CodeGetD();
+        stat = LNSoundListener_SetVelocityXYZ(p0, p1, p2);
+    
+        return true;
+    }
+    case 0x00CE:
     {
         str_p0 = CodeGetS();
         PVal* pval_p1;
@@ -1071,7 +1087,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00CD:
+    case 0x00CF:
     {
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
@@ -1082,7 +1098,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
         return true;
     }
-    case 0x00CE:
+    case 0x00D0:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1092,7 +1108,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
         return true;
     }
-    case 0x00CF:
+    case 0x00D1:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
@@ -1100,7 +1116,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00D0:
+    case 0x00D2:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1110,29 +1126,11 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         double rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_DOUBLE, &rp1);
         return true;
     }
-    case 0x00D1:
+    case 0x00D3:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
         stat = LNSound_SetPitch(p0, p1);
-    
-        return true;
-    }
-    case 0x00D2:
-    {
-        intptr_t p0 = CodeGetI();
-        PVal* pval_p1;
-        APTR aptr_p1 = code_getva(&pval_p1);
-        LNBool p1;
-        stat = LNSound_IsLoopEnabled(p0, &p1);
-        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
-        return true;
-    }
-    case 0x00D3:
-    {
-        intptr_t p0 = CodeGetI();
-        LNBool p1 = (LNBool)CodeGetI();
-        stat = LNSound_SetLoopEnabled(p0, p1);
     
         return true;
     }
@@ -1142,7 +1140,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         LNBool p1;
-        stat = LNSound_Is3DEnabled(p0, &p1);
+        stat = LNSound_IsLoopEnabled(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
@@ -1150,11 +1148,29 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     {
         intptr_t p0 = CodeGetI();
         LNBool p1 = (LNBool)CodeGetI();
-        stat = LNSound_Set3DEnabled(p0, p1);
+        stat = LNSound_SetLoopEnabled(p0, p1);
     
         return true;
     }
     case 0x00D6:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        LNBool p1;
+        stat = LNSound_Is3DEnabled(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00D7:
+    {
+        intptr_t p0 = CodeGetI();
+        LNBool p1 = (LNBool)CodeGetI();
+        stat = LNSound_Set3DEnabled(p0, p1);
+    
+        return true;
+    }
+    case 0x00D8:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1164,7 +1180,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00D7:
+    case 0x00D9:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -1172,7 +1188,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00D8:
+    case 0x00DA:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1182,7 +1198,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00D9:
+    case 0x00DB:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1192,7 +1208,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00DA:
+    case 0x00DC:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1202,7 +1218,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00DB:
+    case 0x00DD:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1212,7 +1228,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00DC:
+    case 0x00DE:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -1220,7 +1236,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00DD:
+    case 0x00DF:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -1228,7 +1244,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00DE:
+    case 0x00E0:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
@@ -1236,7 +1252,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00DF:
+    case 0x00E1:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -1245,35 +1261,35 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00E0:
+    case 0x00E2:
     {
         intptr_t p0 = CodeGetI();
         stat = LNSound_Play(p0);
     
         return true;
     }
-    case 0x00E1:
+    case 0x00E3:
     {
         intptr_t p0 = CodeGetI();
         stat = LNSound_Stop(p0);
     
         return true;
     }
-    case 0x00E2:
+    case 0x00E4:
     {
         intptr_t p0 = CodeGetI();
         stat = LNSound_Pause(p0);
     
         return true;
     }
-    case 0x00E3:
+    case 0x00E5:
     {
         intptr_t p0 = CodeGetI();
         stat = LNSound_Resume(p0);
     
         return true;
     }
-    case 0x00E4:
+    case 0x00E6:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
@@ -1283,7 +1299,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00E5:
+    case 0x00E7:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
@@ -1293,7 +1309,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00E6:
+    case 0x00E8:
     {
         intptr_t p0 = CodeGetI();
         float p1 = CodeGetD();
@@ -1303,7 +1319,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00E7:
+    case 0x00E9:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1313,13 +1329,31 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNSize_typeid(), &p1);
         return true;
     }
-    case 0x00E8:
+    case 0x00EA:
     {
         str_p0 = CodeGetS();
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         intptr_t p1;
         stat = LNTexture2D_Create(str_p0.c_str(), &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00EB:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
+        stat = LNSceneNode_SetPosition(p0, (LNVector3*)pval_p1->pt);
+    
+        return true;
+    }
+    case 0x00EC:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        intptr_t p1;
+        stat = LNSprite_Create(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }

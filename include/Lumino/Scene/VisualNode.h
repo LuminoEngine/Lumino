@@ -12,7 +12,7 @@ LN_NAMESPACE_SCENE_BEGIN
 class VisualNode
 	: public SceneNode
 {
-
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 
 	/// 可視状態の設定
@@ -112,9 +112,9 @@ public:
 	static bool CmpLightSort(const Light* left, const Light* right);
 
 protected:
-	VisualNode(SceneGraphManager* manager);
+	VisualNode();
 	virtual ~VisualNode();
-	void Initialize(int subsetCount);
+	void CreateCore(SceneGraphManager* manager, int subsetCount);
 
 protected:
 	int						m_subsetCount;

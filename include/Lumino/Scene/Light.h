@@ -11,8 +11,9 @@ class Light
 	: public SceneNode
 {
 public:
-	Light(SceneGraphManager* manager, LightType type);
+	Light();
 	virtual ~Light();
+	void CreateCore(SceneGraphManager* manager, LightType type);
 
 public:
 

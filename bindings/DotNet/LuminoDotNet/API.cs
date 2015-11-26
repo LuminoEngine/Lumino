@@ -990,6 +990,19 @@ namespace Lumino
         public extern static Result LNApplication_InitializeAudio();
 
         /// <summary>
+        /// 1フレーム分の更新処理を行います。
+        /// </summary>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNApplication_UpdateFrame();
+
+        /// <summary>
+        /// アプリケーションを終了するべきかを確認します。
+        /// </summary>
+        /// <param name="outRequested">終了要求の有無を格納する変数</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNApplication_IsEndRequested(out bool outRequested);
+
+        /// <summary>
         /// ライブラリの終了処理を行います。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
@@ -2044,9 +2057,25 @@ namespace Lumino
         /// ファイルから2Dテクスチャオブジェクトを作成します。
         /// </summary>
         /// <param name="filePath">画像ファイルのパス</param>
-        /// <param name="texture2D">作成された2Dテクスチャオブジェクトのハンドルを格納する変数のポインタ</param>
+        /// <param name="outTexture2D">作成された2Dテクスチャオブジェクトのハンドルを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNTexture2D_Create( string filePath, out IntPtr texture2D);
+        public extern static Result LNTexture2D_Create( string filePath, out IntPtr outTexture2D);
+
+        /// <summary>
+        /// サウンドの 3D 音源としての位置を設定します。
+        /// </summary>
+        /// <param name="sceneNode">シーンノードハンドル</param>
+        /// <param name="position">座標</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNode_SetPosition( IntPtr sceneNode, ref Vector3 position);
+
+        /// <summary>
+        /// スプライトオブジェクトを作成します。
+        /// </summary>
+        /// <param name="texture">スプライトが表示するテクスチャのハンドル</param>
+        /// <param name="outSprite">作成されたスプライトオブジェクトのハンドルを格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSprite_Create( IntPtr texture, out IntPtr outSprite);
 
 
 

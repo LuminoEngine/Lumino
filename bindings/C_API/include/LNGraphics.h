@@ -39,14 +39,14 @@ LN_CLASS(LNTexture2D, LNTexture)
 
 	/**
 		@brief		ファイルから2Dテクスチャオブジェクトを作成します。
-		@param[in]	filePath	: 画像ファイルのパス
-		@param[out]	texture2D	: 作成された2Dテクスチャオブジェクトのハンドルを格納する変数のポインタ
+		@param[in]	filePath		: 画像ファイルのパス
+		@param[out]	outTexture2D	: 作成された2Dテクスチャオブジェクトのハンドルを格納する変数のポインタ
 		@details	全てのプラットフォームでサポートされているファイルフォーマットは .png です。
 					グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNTexture2D_Create(const LNChar* filePath, LN_OUT LN_HANDLE(LNTexture2D)* texture2D);
+	LNResult LNTexture2D_Create(const LNChar* filePath, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D);
 
 	
 LN_CLASS_END

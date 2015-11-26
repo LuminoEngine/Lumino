@@ -21,9 +21,10 @@ public:
 
 /// SceneNode
 class SceneNode
-	: public RefObject
+	: public CoreObject
 	, public IMMESceneObject
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 
 	/// ノード名の設定
@@ -137,9 +138,10 @@ public:
 	virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
 	virtual LightNodeList* GetAffectLightList() { return NULL; }
 
-protected:
-	SceneNode(SceneGraphManager* manager);
+LN_INTERNAL_ACCESS:
+	SceneNode();
 	virtual ~SceneNode();
+	void CreateCore(SceneGraphManager* manager);
 
 protected:
 	SceneGraphManager*	m_manager;

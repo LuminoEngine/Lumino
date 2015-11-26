@@ -12,8 +12,8 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Light::Light(SceneGraphManager* manager, LightType type)
-	: SceneNode(manager)
+Light::Light()
+	: SceneNode()
 	, m_type(LightType_Directional)
 	, m_diffuse(1.0f, 1.0f, 1.0f, 1.0f)
 	, m_ambient(1.0f, 1.0f, 1.0f, 1.0f)
@@ -31,6 +31,15 @@ Light::Light(SceneGraphManager* manager, LightType type)
 //-----------------------------------------------------------------------------
 Light::~Light()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Light::CreateCore(SceneGraphManager* manager, LightType type)
+{
+	SceneNode::CreateCore(manager);
+	m_type = type;
 }
 
 //-----------------------------------------------------------------------------

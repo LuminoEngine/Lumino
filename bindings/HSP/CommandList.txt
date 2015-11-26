@@ -22,6 +22,8 @@ LNConfig_SetDirectMusicReverbLevel  DirectMusic のリバーブエフェクト�
 
 LNApplication_Initialize       ライブラリを初期化します。
 LNApplication_InitializeAudio  ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+LNApplication_UpdateFrame      1フレーム分の更新処理を行います。
+LNApplication_IsEndRequested   アプリケーションを終了するべきかを確認します。
 LNApplication_Terminate        ライブラリの終了処理を行います。
 
 -------------------------------------------------------------------------------
@@ -207,4 +209,14 @@ LNTexture_GetSize  テクスチャのサイズを取得します。
  ■ [LNTexture2D]  2Dテクスチャを操作するためのモジュールです。
 
 LNTexture2D_Create  ファイルから2Dテクスチャオブジェクトを作成します。
+
+-------------------------------------------------------------------------------
+ ■ [LNSceneNode]  シーングラフを構成するノードのベースモジュールです。
+
+LNSceneNode_SetPosition  サウンドの 3D 音源としての位置を設定します。
+
+-------------------------------------------------------------------------------
+ ■ [LNSprite]  スプライト
+
+LNSprite_Create  スプライトオブジェクトを作成します。
 

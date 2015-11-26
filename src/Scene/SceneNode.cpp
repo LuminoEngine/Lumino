@@ -16,13 +16,14 @@ LN_NAMESPACE_SCENE_BEGIN
 //SceneNodeRefList::iterator::reference SceneNodeRefList::iterator::operator[](difference_type offset) const { return static_cast<reference>(m_internalItr[offset]); }
 
 //=============================================================================
-// SceneGraphManager
+// SceneNode
 //=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(SceneNode, CoreObject);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SceneNode::SceneNode(SceneGraphManager* manager)
+SceneNode::SceneNode()
 	: m_manager(NULL)
 	, m_name()
 	, m_localMatrix()
@@ -38,9 +39,6 @@ SceneNode::SceneNode(SceneGraphManager* manager)
 	, m_zDistance(FLT_MAX)
 {
 	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
-
-	LN_REFOBJ_SET(m_manager, manager);
-	m_manager->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -53,6 +51,15 @@ SceneNode::~SceneNode()
 		m_manager->RemoveNode(this);
 		LN_SAFE_RELEASE(m_manager);
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SceneNode::CreateCore(SceneGraphManager* manager)
+{
+	LN_REFOBJ_SET(m_manager, manager);
+	m_manager->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------

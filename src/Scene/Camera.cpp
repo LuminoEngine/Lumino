@@ -12,9 +12,9 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Camera::Camera(SceneGraphManager* manager, CameraProjection proj)
-	: SceneNode(manager)
-	, m_projectionMode(proj)
+Camera::Camera()
+	: SceneNode()
+	, m_projectionMode()
 	, m_fovY(Math::PI * 0.125f)
 	, m_nearClip(1.0f)
 	, m_farClip(1000.0f)
@@ -27,6 +27,15 @@ Camera::Camera(SceneGraphManager* manager, CameraProjection proj)
 //-----------------------------------------------------------------------------
 Camera::~Camera()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Camera::CreateCore(SceneGraphManager* manager, CameraProjection proj)
+{
+	SceneNode::CreateCore(manager);
+	m_projectionMode = proj;
 }
 
 /// ピクセル単位の2D描画に使う射影行列の作成

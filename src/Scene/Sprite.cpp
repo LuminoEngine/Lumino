@@ -10,20 +10,24 @@ LN_NAMESPACE_SCENE_BEGIN
 //=============================================================================
 // Sprite
 //=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(Sprite, VisualNode);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 Sprite* Sprite::Create()
 {
-	return LN_NEW Sprite(SceneGraphManager::Instance);
+	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
+	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_RZ);
+	obj.SafeAddRef();
+	return obj;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sprite::Sprite(SceneGraphManager* manager)
-	: VisualNode(manager)
+Sprite::Sprite()
+	: VisualNode()
 	, m_spriteCoord(SpriteCoord_RZ)
 	, m_size()
 	, m_srcRect()
@@ -45,9 +49,9 @@ Sprite::~Sprite()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::Initialize(SpriteCoord spriteCoord)
+void Sprite::CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord)
 {
-	VisualNode::Initialize(1);
+	VisualNode::CreateCore(manager, 1);
 	m_spriteCoord = spriteCoord;
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(SizeF(-1, -1));

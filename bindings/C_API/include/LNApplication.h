@@ -103,7 +103,22 @@ LN_STATIC_CLASS(LNApplication)
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
 	LNResult LNApplication_InitializeAudio();
-
+	
+	/**
+		@brief		1フレーム分の更新処理を行います。
+		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+	*/
+	LN_STATIC_API
+	LNResult LNApplication_UpdateFrame();
+	
+	/**
+		@brief		アプリケーションを終了するべきかを確認します。
+		@param[out]	outRequested	: 終了要求の有無を格納する変数
+		@details	ウィンドウのクローズボタンが押された場合等、
+					アプリケーションを終了するべき時には LN_FALSE を返します。
+	*/
+	LN_STATIC_API
+	LNResult LNApplication_IsEndRequested(LNBool* outRequested);
 
 	/**
 		@brief		ライブラリの終了処理を行います。

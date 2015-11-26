@@ -487,6 +487,20 @@ class Lumino::Application
     # @overload initialize_audio()
     def initialize_audio
     end
+    # 1フレーム分の更新処理を行います。
+    # @overload update_frame()
+    #   　
+    #     この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+    def update_frame
+    end
+    # アプリケーションを終了するべきかを確認します。
+    # @overload is_end_requested()
+    #   　
+    #     ウィンドウのクローズボタンが押された場合等、
+    #     アプリケーションを終了するべき時には false を返します。
+    # @return [Bool] 終了要求の有無を格納する変数
+    def is_end_requested
+    end
     # ライブラリの終了処理を行います。
     # @overload terminate()
     def terminate
@@ -1757,6 +1771,23 @@ class Lumino::Texture2D < Texture
     #     グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
     #   @param [String] filePath 画像ファイルのパス
     # @return [Lumino::Texture2D] 作成された2Dテクスチャオブジェクトのハンドル
+    def initialize
+    end
+end
+# シーングラフを構成するノードのベースクラスです。
+class Lumino::SceneNode < RefObject
+    # サウンドの 3D 音源としての位置を設定します。
+    # @overload position=(position)
+    #   @param [Lumino::Vector3] position 座標
+    def position=
+    end
+end
+# スプライト
+class Lumino::Sprite < SceneNode
+    # スプライトオブジェクトを作成します。
+    # @overload initialize(texture)
+    #   @param [Lumino::Texture] texture スプライトが表示するテクスチャのハンドル
+    # @return [Lumino::Sprite] 作成されたスプライトオブジェクトのハンドル
     def initialize
     end
 end

@@ -10,6 +10,7 @@ LN_NAMESPACE_SCENE_BEGIN
 class Sprite
 	: public VisualNode
 {
+	LN_CORE_OBJECT_TYPE_INFO_DECL();
 public:
 	
 	/**
@@ -51,9 +52,9 @@ private:
 	static void NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b);
 
 protected:
-	Sprite(SceneGraphManager* manager);
+	Sprite();
 	virtual ~Sprite();
-	void Initialize(SpriteCoord spriteCoord);
+	void CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord);
 
 	virtual void DrawSubset(RenderingParams& params, int subsetIndex);
 

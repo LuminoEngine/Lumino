@@ -12,11 +12,12 @@ LN_NAMESPACE_SCENE_BEGIN
 //=============================================================================
 // VisualNode
 //=============================================================================
+LN_CORE_OBJECT_TYPE_INFO_IMPL(VisualNode, SceneNode);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VisualNode::VisualNode(SceneGraphManager* manager)
-	: SceneNode(manager)
+VisualNode::VisualNode()
 {
 }
 
@@ -30,8 +31,9 @@ VisualNode::~VisualNode()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VisualNode::Initialize(int subsetCount)
+void VisualNode::CreateCore(SceneGraphManager* manager, int subsetCount)
 {
+	SceneNode::CreateCore(manager);
 	m_visualNodeParams.Create(subsetCount);
 	m_subsetCount = subsetCount;
 }

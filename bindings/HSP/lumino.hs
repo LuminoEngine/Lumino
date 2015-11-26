@@ -6,10 +6,10 @@
 Lumino
 
 %ver
-0.1.0
+0.1.0g?*
 
 %date
-2015/11/26
+2015/11/27
 
 %author
 lriki
@@ -221,6 +221,46 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 
 %inst
 
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNApplication_UpdateFrame
+1ƒtƒŒ[ƒ€•ª‚ÌXVˆ—‚ğs‚¢‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+@
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+‚±‚Ì–½—ß‚ÍƒOƒ‰ƒtƒBƒbƒNƒX‚Æ“ü—Í‚ğXV‚µAw’è‚³‚ê‚½ƒtƒŒ[ƒ€ƒŒ[ƒg‚É‚È‚é‚æ‚¤‚É‘Ò‹@‚µ‚Ü‚·B
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNApplication_IsEndRequested
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğI—¹‚·‚é‚×‚«‚©‚ğŠm”F‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+outRequested
+[out] outRequested : I—¹—v‹‚Ì—L–³‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+ƒEƒBƒ“ƒhƒE‚ÌƒNƒ[ƒYƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½ê‡“™A
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğI—¹‚·‚é‚×‚«‚É‚Í LN_FALSE ‚ğ•Ô‚µ‚Ü‚·B
 
 %href
 
@@ -2966,15 +3006,57 @@ LNTexture2D_Create
 %group
 ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
 %prm
-filePath, texture2D
-[in]  filePath  : ‰æ‘œƒtƒ@ƒCƒ‹‚ÌƒpƒX
-[out] texture2D : ì¬‚³‚ê‚½2DƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+filePath, outTexture2D
+[in]  filePath     : ‰æ‘œƒtƒ@ƒCƒ‹‚ÌƒpƒX
+[out] outTexture2D : ì¬‚³‚ê‚½2DƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
 %inst
 ‘S‚Ä‚Ìƒvƒ‰ƒbƒgƒtƒH[ƒ€‚ÅƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg‚Í .png ‚Å‚·B
 ƒOƒ‰ƒtƒBƒbƒNƒXAPI ‚É DirectX9 ‚ğg—p‚µ‚Ä‚¢‚éê‡‚Í MSDN ‚Ì D3DXCreateTextureFromFileEx ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSceneNode_SetPosition
+ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚Æ‚µ‚Ä‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+sceneNode, position
+[in] sceneNode : ƒV[ƒ“ƒm[ƒhƒnƒ“ƒhƒ‹
+[in] position  : À•W
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSprite_Create
+ƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+texture, outSprite
+[in]  texture   : ƒXƒvƒ‰ƒCƒg‚ª•\¦‚·‚éƒeƒNƒXƒ`ƒƒ‚Ìƒnƒ“ƒhƒ‹
+[out] outSprite : ì¬‚³‚ê‚½ƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
 
 %href
 

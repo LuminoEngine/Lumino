@@ -152,18 +152,23 @@ SceneGraphManager::~SceneGraphManager()
 //-----------------------------------------------------------------------------
 void SceneGraphManager::CreateMMDSceneGraph()
 {
-	m_defaultRoot = Internal::SceneHelper::CreateObject<SceneNode>(this);
+	m_defaultRoot = LN_NEW SceneNode();
+	m_defaultRoot->CreateCore(this);
 
-	m_default3DRoot = Internal::SceneHelper::CreateObject<SceneNode>(this);
+	m_default3DRoot = LN_NEW SceneNode();
+	m_default3DRoot->CreateCore(this);
 	m_defaultRoot->AddChild(m_default3DRoot);
 
-	m_default2DRoot = Internal::SceneHelper::CreateObject<SceneNode>(this);
+	m_default2DRoot = LN_NEW SceneNode();
+	m_default2DRoot->CreateCore(this);
 	m_defaultRoot->AddChild(m_default2DRoot);
 
-	m_default3DCamera = Internal::SceneHelper::CreateObject<Camera>(this, CameraProjection_3D);
+	m_default3DCamera = LN_NEW Camera();
+	m_default3DCamera->CreateCore(this, CameraProjection_3D);
 	m_default3DRoot->AddChild(m_default3DCamera);
 
-	m_default2DCamera = Internal::SceneHelper::CreateObject<Camera>(this, CameraProjection_2D);
+	m_default2DCamera = LN_NEW Camera(); 
+	m_default2DCamera->CreateCore(this, CameraProjection_2D);
 	m_default2DRoot->AddChild(m_default2DCamera);
 	
 	m_default3DLayer = LN_NEW DrawingLayer(this);

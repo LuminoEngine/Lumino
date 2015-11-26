@@ -159,10 +159,11 @@ LNResult LNApplication_InitializeAudio()
 	LN_STATIC_API
 	LNResult LNApplication_IsEndRequested(LNBool* requested);
 
+#endif
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNApplication_Update()
+LNResult LNApplication_UpdateFrame()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Application->UpdateFrame();
@@ -172,11 +173,11 @@ LNResult LNApplication_Update()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNResult LNApplication_ResetFrameDelay()
-{
-	LFManager::Application->ResetFrameDelay();
-	return ::LN_OK;
-}
+//LNResult LNApplication_ResetFrameDelay()
+//{
+//	LFManager::Application->ResetFrameDelay();
+//	return ::LN_OK;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -186,7 +187,6 @@ LNResult LNApplication_IsEndRequested(LNBool* requested)
 	*requested = LNOTE_BOOL_TO_LNBOOL(LFManager::Application->IsEndRequested());
 	return ::LN_OK;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Note: Finalize という名前から変更した。Finalize は .NET で特殊な名前となってしまう。

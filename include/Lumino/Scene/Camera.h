@@ -51,9 +51,10 @@ public:	// internal
 	const Matrix& GetProjectionMatrixIT() const { return m_projMatrixIT; }
 	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
-protected:
-	Camera(SceneGraphManager* manager, CameraProjection proj);
+LN_INTERNAL_ACCESS:
+	Camera();
 	virtual ~Camera();
+	void CreateCore(SceneGraphManager* manager, CameraProjection proj);
 
 private:
 

@@ -152,6 +152,51 @@ namespace Lumino
         }
         
         /// <summary>
+        /// 1フレーム分の更新処理を行います。
+        /// </summary>
+        /// <remarks>
+        /// この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+        /// </remarks>
+        public static void UpdateFrame()
+        {
+            var result = API.LNApplication_UpdateFrame();
+            if (result != Result.OK) {
+                IntPtr errStr;
+                int errStrLen;
+                API.LNError_GetLastErrorMessage(out errStr);
+                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                var errBuf = new StringBuilder(errStrLen);
+                API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                throw new LuminoException(result, errBuf.ToString());
+            }
+        
+        }
+        
+        /// <summary>
+        /// アプリケーションを終了するべきかを確認します。
+        /// </summary>
+        /// <remarks>
+        /// ウィンドウのクローズボタンが押された場合等、
+        /// 					アプリケーションを終了するべき時には false を返します。
+        /// </remarks>
+        public static bool IsEndRequested()
+        {
+            var outRequested = new bool();
+            var result = API.LNApplication_IsEndRequested(out outRequested);
+            if (result != Result.OK) {
+                IntPtr errStr;
+                int errStrLen;
+                API.LNError_GetLastErrorMessage(out errStr);
+                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                var errBuf = new StringBuilder(errStrLen);
+                API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                throw new LuminoException(result, errBuf.ToString());
+            }
+            return outRequested;
+        
+        }
+        
+        /// <summary>
         /// ライブラリの終了処理を行います。
         /// </summary>
         public static void Terminate()
@@ -1443,8 +1488,8 @@ namespace Lumino
         /// </remarks>
         public  Texture2D( string filePath) : base(_LNInternal.InternalBlock)
         {
-            IntPtr texture2D;
-            var result = API.LNTexture2D_Create( filePath, out texture2D);
+            IntPtr outTexture2D;
+            var result = API.LNTexture2D_Create( filePath, out outTexture2D);
             if (result != Result.OK) {
                 IntPtr errStr;
                 int errStrLen;
@@ -1454,7 +1499,73 @@ namespace Lumino
                 API.LCSInternal_GetIntPtrString(errStr, errBuf);
                 throw new LuminoException(result, errBuf.ToString());
             }
-            InternalManager.RegisterWrapperObject(this, texture2D);
+            InternalManager.RegisterWrapperObject(this, outTexture2D);
+        
+        }
+        
+    
+    };
+    
+    /// <summary>
+    /// シーングラフを構成するノードのベースクラスです。
+    /// </summary>
+    public partial class SceneNode : RefObject
+    {
+    
+        /// <summary>
+        /// サウンドの 3D 音源としての位置
+        /// </summary>
+        public Vector3 Position
+        {
+            set
+            {
+                var result = API.LNSceneNode_SetPosition( _handle, ref value);
+                if (result != Result.OK) {
+                    IntPtr errStr;
+                    int errStrLen;
+                    API.LNError_GetLastErrorMessage(out errStr);
+                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                    var errBuf = new StringBuilder(errStrLen);
+                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                    throw new LuminoException(result, errBuf.ToString());
+                }
+            
+            }
+            
+        }
+    
+        internal SceneNode(_LNInternal i) : base(i) {}
+        
+    
+    };
+    
+    /// <summary>
+    /// スプライト
+    /// </summary>
+    public partial class Sprite : SceneNode
+    {
+    
+    
+        internal Sprite(_LNInternal i) : base(i) {}
+        
+        /// <summary>
+        /// スプライトオブジェクトを作成します。
+        /// </summary>
+        /// <param name="texture">スプライトが表示するテクスチャのハンドル</param>
+        public  Sprite( Texture texture) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outSprite;
+            var result = API.LNSprite_Create( (texture != null) ? texture.Handle : default(IntPtr), out outSprite);
+            if (result != Result.OK) {
+                IntPtr errStr;
+                int errStrLen;
+                API.LNError_GetLastErrorMessage(out errStr);
+                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+                var errBuf = new StringBuilder(errStrLen);
+                API.LCSInternal_GetIntPtrString(errStr, errBuf);
+                throw new LuminoException(result, errBuf.ToString());
+            }
+            InternalManager.RegisterWrapperObject(this, outSprite);
         
         }
         
@@ -1507,6 +1618,26 @@ var _Texture2D = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_Texture2D);
 LNTexture2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _SceneNode = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new SceneNode(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_SceneNode);
+LNSceneNode_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+var _Sprite = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new Sprite(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_Sprite);
+LNSprite_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -1525,6 +1656,12 @@ private static extern void LNTexture_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNTexture2D_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNSceneNode_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNSprite_SetBindingTypeInfo(IntPtr data);
 
 
     }
