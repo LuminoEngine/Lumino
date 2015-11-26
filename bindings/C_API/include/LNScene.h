@@ -29,7 +29,7 @@ LN_CLASS_END
 /**
 	@brief	
 */
-LN_CLASS(LNSprite, LNObject)
+LN_CLASS(LNSprite, LNSceneNode)
 
 	
 	
