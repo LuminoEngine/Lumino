@@ -41,7 +41,7 @@ void VisualNode::CreateCore(SceneGraphManager* manager, int subsetCount)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VisualNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList)
+void VisualNode::UpdateFrameHierarchy(SceneNode* parent)
 {
 	// 親が VisualNode であれば Visual 関係のプロパティを継承して更新する
 	if (parent != NULL && parent->GetSceneNodeType() == SceneNodeType_VisualNode) {
@@ -51,10 +51,7 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderin
 		m_visualNodeParams.UpdateSubsetRenderParam(NULL);
 	}
 
-	// このノードは描画できる
-	renderingNodeList->Add(this);
-
-	SceneNode::UpdateFrameHierarchy(parent, renderingNodeList);
+	SceneNode::UpdateFrameHierarchy(parent);
 }
 
 //-----------------------------------------------------------------------------

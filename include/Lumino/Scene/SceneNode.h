@@ -107,7 +107,7 @@ public:
 	/// グローバル座標変換行列と各プロパティを階層的に更新する
 	///		この処理は1フレーム内で開始時に1度だけ呼ばれる。
 	///		座標変換行列を更新し、描画するべきノードであるかをフィルタリングする。
-	virtual void UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList);
+	virtual void UpdateFrameHierarchy(SceneNode* parent);
 
 	/// 視点に依るデータを階層的に更新する (ある視点から描画されるとき、最初に呼び出される)
 	///		renderingNodeList	: この視点の中で実際に描画するものはこのリストに追加する (視錘台カリングなど)
@@ -142,9 +142,11 @@ LN_INTERNAL_ACCESS:
 	SceneNode();
 	virtual ~SceneNode();
 	void CreateCore(SceneGraphManager* manager);
+	void SetOwnerSceneGraph(SceneGraph* owner) { m_ownerSceneGraph = owner; }
 
 protected:
-	SceneGraphManager*	m_manager;
+	SceneGraphManager*	m_manager;	// TODO: いらない
+	SceneGraph*			m_ownerSceneGraph;
 	String				m_name;
 	Matrix				m_localMatrix;
 	SQTTransform		m_transform;

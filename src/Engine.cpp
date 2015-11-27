@@ -116,7 +116,10 @@ ApplicationImpl::~ApplicationImpl()
 		m_platformManager->Dispose();
 	}
 
-	LN_SAFE_RELEASE(m_sceneGraphManager);
+	if (m_sceneGraphManager != NULL) {
+		m_sceneGraphManager->ReleaseDefaultSceneGraph();
+		LN_SAFE_RELEASE(m_sceneGraphManager);
+	}
 
 	if (m_guiManager != NULL) {
 		m_guiManager->Finalize();
@@ -335,6 +338,7 @@ void ApplicationImpl::InitializeSceneGraphManager()
 		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
+		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
 }
@@ -346,6 +350,10 @@ void ApplicationImpl::InitializeSceneGraphManager()
 bool ApplicationImpl::UpdateFrame()
 {
 	m_endRequested = !m_platformManager->DoEvents();
+
+	if (m_sceneGraphManager != nullptr) {
+		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(m_fpsController.GetElapsedGameTime());
+	}
 
 	if (m_guiManager != NULL) {
 		m_guiManager->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
@@ -391,6 +399,10 @@ void ApplicationImpl::Render()
 		//state.DepthWriteEnable = false;
 		//state.StencilEnable = false;
 		//m_graphicsManager->GetRenderer()->SetDepthStencilState(state);
+
+		if (m_sceneGraphManager != nullptr) {
+			m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
+		}
 
 		if (m_guiManager != NULL) {
 			m_guiManager->RenderOnMainWindow();

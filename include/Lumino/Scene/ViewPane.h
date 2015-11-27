@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #pragma once
 #include <Lumino/Graphics/Texture.h>
 #include "Common.h"
@@ -40,3 +41,4 @@ public:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
+#endif

@@ -1,59 +1,72 @@
 ﻿
 #pragma once
-#include <Lumino/Graphics/Texture.h>
-#include "Common.h"
-#include "Layer.h"
+#include "Internal.h"
+#include <Lumino/Scene/Camera.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-/**
-	@brief		レイヤーの基本クラスです。
-*/
 class Layer
 	: public RefObject
 {
-protected:
-	Layer();
-	virtual ~Layer();
+public:
+	Layer() {}
+	virtual ~Layer() {}
+
+public:
+
+	/// 前描画
+	virtual void PreRender(const SizeF& viewSize) {}
+
+	/// 本描画
+	virtual void Render() {}
+
+	/// 後描画
+	virtual void PostRender() {}
+
+private:
+	friend class LayerList;
+
 };
 
-/**
-	@brief		シーングラフのノードツリーを描画するレイヤーです。
-*/
+
+class RenderingPassRefList
+	: public RefObjectListBase<RenderingPass>
+{
+public:
+	RenderingPassRefList() {}
+	virtual ~RenderingPassRefList() {}
+};
+
 class DrawingLayer
 	: public Layer
 {
 public:
-
-	/**
-		@brief		このレイヤーが描画するノードを指定します。
-		@details	このレイヤーには指定したノードと、全ての子ノードが描画されます。
-	*/
-	virtual void SetRenderingRootNode(SceneNode* node) = 0;
-
-	/**
-		@brief		このレイヤーが描画するノードを取得します。
-	*/
-	virtual SceneNode* GetRenderingRootNode() const = 0;
-
-	/**
-		@brief		このレイヤーの描画に使用する視点を設定します。
-	*/
-	virtual void SetCamera(Camera* camera) = 0;
-
-	/**
-		@brief		このレイヤーの描画に使用する視点を取得します。
-	*/
-	virtual Camera* GetCamera() const = 0;
-
-protected:
-	DrawingLayer();
+	DrawingLayer(SceneGraphManager* manager);
 	virtual ~DrawingLayer();
-	class DrawingLayerImpl;
-	DrawingLayerImpl*	m_impl;
-};
+	
+public:
+	void SetCamera(Camera* camera)  { LN_REFOBJ_SET(m_camera, camera); }
+	Camera* GetCamera() const { return m_camera; }
+	void SetRenderingRootNode(SceneNode* node) { LN_REFOBJ_SET(m_renderingRootNode, node); }
+	SceneNode* GetRenderingRootNode() const { return m_renderingRootNode; }
+	RenderingPassRefList* GetRenderingPasses() { return m_renderingPassList; }
+	
 
+	virtual void PreRender(const SizeF& viewSize);
+	virtual void Render();
+
+private:
+
+private:
+	SceneGraphManager*				m_manager;
+	Camera*							m_camera;
+	SceneNode*						m_renderingRootNode;
+	RefPtr<RenderingPassRefList>	m_renderingPassList;
+
+	SceneNodeList					m_renderingNodeList;	///< 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
+	LightNodeList					m_renderingLightList;	///< 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
+};
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

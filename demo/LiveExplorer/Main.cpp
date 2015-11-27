@@ -40,6 +40,19 @@ int main()
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
+		RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
+		RefPtr<Sprite> sp1(Sprite::Create(), false);
+		sp1->SetTexture(tex1);
+
+		
+
+		while (Engine::UpdateFrame())
+		{
+		}
+
+
+
+
 		//GCPtr<Sound> s = Sound::Create(_T("D:/Proj/Lumino/bindings/Common/Media/ln21.mid"));
 		//GCPtr<Sound> s = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//s->SetLoopEnabled(true);
@@ -55,7 +68,7 @@ int main()
 		
 
 
-#if 1
+#if 0
 		auto* captionStyle = Style::Create();
 		captionStyle->AddSetter(UITextElement::FontSizeProperty, 24);
 		captionStyle->AddSetter(UITextElement::ForegroundProperty, ColorBrush::Blue);
@@ -85,7 +98,6 @@ int main()
 			button2->SetEnabled(false);
 
 		}
-#endif
 
 
 
@@ -101,6 +113,7 @@ int main()
 		//s.SafeRelease();
 
 		Engine::Finalize();
+#endif
 
 #if 0
 		//RefPtr<TestRef1> ttt(LN_NEW TestRef1());
@@ -403,6 +416,7 @@ int main()
 		printf(e.what());
 	}
 
+	Engine::Finalize();
 	return 0;
 }
 

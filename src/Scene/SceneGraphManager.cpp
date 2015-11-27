@@ -1,4 +1,10 @@
 ﻿/*
+	
+	[2015/12/27] ViewPane 廃止
+		廃止というか、SceneGraph クラスにした。
+		半年くらい間空いた後に見直したけど、やっぱり直感的ではない。
+
+
 	[2015/5/11]	シェーダ周りのパフォーマンス改善案
 		・シェーダ変数は Scene 単位データ、Node 単位データのようにグループ化する
 			今は全ての変数を1つの配列で持っており、サブセット単位の描画したいときも Scene 単位の変数を for で見に行っている。
@@ -89,12 +95,13 @@
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
 #include "SceneHelper.h"
+#include "RenderingPass.h"
+#include <Lumino/Scene/MMDSceneGraph.h>
 
 // TODO: 移動
 #include <Lumino/Scene/Camera.h>
-#include "Layer.h"
-#include "MME/MMERenderingPass.h"
-#include "InfomationRenderingPass.h"
+#include <Lumino/Scene/SceneGraph.h>
+#include <Lumino/Scene/Layer.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -114,17 +121,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_graphicsManager(configData.GraphicsManager, true)
 	, m_modelManager(configData.ModelManager, true)
 	//, m_rootNode(NULL)
-	, m_time(0.0)
-	, m_defaultRoot(NULL)
-	, m_default3DRoot(NULL)
-	, m_default2DRoot(NULL)
-	, m_default3DCamera(NULL)
-	, m_default2DCamera(NULL)
-	, m_mmdViewPane(NULL)
-	, m_default3DLayer(NULL)
-	, m_default2DLayer(NULL)
 {
-	memset(m_mmdRenderingPasses, 0, sizeof(m_mmdRenderingPasses));
 
 	m_geometryRenderer.Attach(GeometryRenderer::Create(m_graphicsManager), false);
 
@@ -150,67 +147,40 @@ SceneGraphManager::~SceneGraphManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneGraphManager::CreateMMDSceneGraph()
+void SceneGraphManager::CreateDefaultSceneGraph()
 {
-	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->CreateCore(this);
-
-	m_default3DRoot = LN_NEW SceneNode();
-	m_default3DRoot->CreateCore(this);
-	m_defaultRoot->AddChild(m_default3DRoot);
-
-	m_default2DRoot = LN_NEW SceneNode();
-	m_default2DRoot->CreateCore(this);
-	m_defaultRoot->AddChild(m_default2DRoot);
-
-	m_default3DCamera = LN_NEW Camera();
-	m_default3DCamera->CreateCore(this, CameraProjection_3D);
-	m_default3DRoot->AddChild(m_default3DCamera);
-
-	m_default2DCamera = LN_NEW Camera(); 
-	m_default2DCamera->CreateCore(this, CameraProjection_2D);
-	m_default2DRoot->AddChild(m_default2DCamera);
-	
-	m_default3DLayer = LN_NEW DrawingLayer(this);
-	m_default3DLayer->SetCamera(m_default3DCamera);
-	m_default3DLayer->SetRenderingRootNode(m_default3DRoot);
-	
-	m_default2DLayer = LN_NEW DrawingLayer(this);
-	m_default2DLayer->SetCamera(m_default2DCamera);
-	m_default2DLayer->SetRenderingRootNode(m_default2DRoot);
-
-	m_mmdViewPane = LN_NEW ViewPane(this);
-	m_mmdViewPane->GetLayerList()->Add(m_default3DLayer);
-	m_mmdViewPane->GetLayerList()->Add(m_default2DLayer);
-
-	//m_mmdRenderingPasses[MMD_PASS_zplot] = LN_NEW MMERenderingPass(this, MMD_PASS_zplot);
-	//m_mmdRenderingPasses[MMD_PASS_shadow] = LN_NEW MMERenderingPass(this, MMD_PASS_shadow);
-	//m_mmdRenderingPasses[MMD_PASS_edge] = LN_NEW MMERenderingPass(this, MMD_PASS_edge);
-	m_mmdRenderingPasses[MMD_PASS_object] = LN_NEW MMERenderingPass(this, MMD_PASS_object);
-	//m_mmdRenderingPasses[MMD_PASS_object_ss] = LN_NEW MMERenderingPass(this, MMD_PASS_object_ss);
-	m_mmdRenderingPasses[MMD_PASS_Infomation] = LN_NEW InfomationRenderingPass(this);
-
-	m_default3DLayer->GetRenderingPasses()->Add(m_mmdRenderingPasses[MMD_PASS_object]);
-	m_default3DLayer->GetRenderingPasses()->Add(m_mmdRenderingPasses[MMD_PASS_Infomation]);
+	RefPtr<MMDSceneGraph> sg(LN_NEW MMDSceneGraph(), false);
+	sg->CreateCore(this);
+	sg.SafeAddRef();
+	m_defaultSceneGraph = sg;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneGraphManager::ReleaseMMDSceneGraph()
+void SceneGraphManager::ReleaseDefaultSceneGraph()
 {
-	for (int i = 0; i < MMD_PASS_Max; i++) {
-		LN_SAFE_RELEASE(m_mmdRenderingPasses[i]);
-	}
+	LN_SAFE_RELEASE(m_defaultSceneGraph);
+}
 
-	LN_SAFE_RELEASE(m_default3DLayer);
-	LN_SAFE_RELEASE(m_default2DLayer);
-	LN_SAFE_RELEASE(m_defaultRoot);
-	LN_SAFE_RELEASE(m_default3DCamera);
-	LN_SAFE_RELEASE(m_default2DCamera);
-	LN_SAFE_RELEASE(m_default2DRoot);
-	LN_SAFE_RELEASE(m_default3DRoot);
-	LN_SAFE_RELEASE(m_mmdViewPane);
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
+{
+	if (m_defaultSceneGraph != nullptr) {
+		m_defaultSceneGraph->UpdateFrame(elapsedTime);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SceneGraphManager::RenderDefaultSceneGraph(Texture* renderTarget)
+{
+	if (m_defaultSceneGraph != nullptr) {
+		m_defaultSceneGraph->Render(renderTarget);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -225,19 +195,6 @@ SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 	return NULL;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void SceneGraphManager::UpdateFrame(float elapsedTime)
-{
-	LN_FOREACH(SceneNode* node, m_allNodes) {
-		node->UpdateFrame(elapsedTime);
-	}
-
-	m_elapsedTime = elapsedTime;
-	m_time += elapsedTime;
-	m_defaultRoot->UpdateFrameHierarchy(NULL, &m_renderingNodeList);
-}
 
 //-----------------------------------------------------------------------------
 //

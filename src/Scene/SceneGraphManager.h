@@ -45,13 +45,11 @@ public:
 public:
 
 	// TODO: SceneGraphManager はホントに単純なシーングラフ管理だけにとどめておいて、MMD 用のシーン構築は別クラスにしてもいいかも
-	void CreateMMDSceneGraph();
-	void ReleaseMMDSceneGraph();
-	ViewPane* GetMMDViewPane() { return m_mmdViewPane; }
-	SceneNode* GetRootNode() { return m_defaultRoot; }
-	SceneNode* Get2DRootNode() { return m_default2DRoot; }
-	SceneNode* Get3DRootNode() { return m_default3DRoot; }
-	Camera* GetDefault3DCamera() { return m_default3DCamera; }
+	void CreateDefaultSceneGraph();
+	void ReleaseDefaultSceneGraph();
+	SceneGraph* GetDefaultSceneGraph() { return m_defaultSceneGraph; }
+	void UpdateFrameDefaultSceneGraph(float elapsedTime);
+	void RenderDefaultSceneGraph(Texture* renderTarget);
 
 	
 
@@ -59,14 +57,6 @@ public:
 	/// 名前を指定してノードを検索する (同名ノードの場合は最初のノード)
 	SceneNode* FindNodeFirst(const String& name);
 
-	/// 全てのノードを階層的に更新する
-	void UpdateFrame(float elapsedTime);
-
-	/// 現在の時間を取得する (秒)
-	double GetTime() const { return m_time; }
-
-	/// 前回フレームからの経過時間を取得する (秒)
-	float GetElapsedTime() const { return m_elapsedTime; }
 
 public:	// internal
 
@@ -78,8 +68,6 @@ public:	// internal
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
-	void AddNode(SceneNode* node) { m_allNodes.Add(node); }
-	void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
 	void AddRenderingPass(RenderingPass* pass);
 	void RemoveRenderingPass(RenderingPass* pass);
 	void AddLight(Light* light);
@@ -101,29 +89,15 @@ private:
 	RefPtr<GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Texture2D>			m_dummyTexture;
 
-	double								m_time;					///< 時間処理の開始通知からの経過時間 (秒)
-	float								m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-
-	SceneNodeList						m_allNodes;
 
 	Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
 	//SceneNode*							m_rootNode;
 	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
-	SceneNodeList						m_renderingNodeList;	///< (いらないかも？)最後の UpdateFrame() で抽出された描画可能なノードのリスト
+	//SceneNodeList						m_renderingNodeList;	///< (いらないかも？)最後の UpdateFrame() で抽出された描画可能なノードのリスト
 	SceneShaderList						m_sceneShaderList;
 
-	SceneNode*		m_defaultRoot;
-	SceneNode*		m_default3DRoot;
-	SceneNode*		m_default2DRoot;
-	Camera*			m_default3DCamera;
-	Camera*			m_default2DCamera;
-	ViewPane*		m_mmdViewPane;
-	DrawingLayer*	m_default3DLayer;
-	DrawingLayer*	m_default2DLayer;
-	RenderingPass*	m_mmdRenderingPasses[MMD_PASS_Max];
-
-	
+	SceneGraph*		m_defaultSceneGraph;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -91,7 +91,7 @@ public:
 	const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
-	virtual void UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList);
+	virtual void UpdateFrameHierarchy(SceneNode* parent) override;
 	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
 	virtual void UpdateAffectLights(LightNodeList* renderingLightList, int maxCount);
 

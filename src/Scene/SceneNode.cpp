@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include "SceneGraphManager.h"
+#include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
 
 LN_NAMESPACE_BEGIN
@@ -25,6 +26,7 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(SceneNode, CoreObject);
 //-----------------------------------------------------------------------------
 SceneNode::SceneNode()
 	: m_manager(NULL)
+	, m_ownerSceneGraph(nullptr)
 	, m_name()
 	, m_localMatrix()
 	, m_transform()
@@ -46,11 +48,10 @@ SceneNode::SceneNode()
 //-----------------------------------------------------------------------------
 SceneNode::~SceneNode()
 {
-	if (m_manager != NULL)
-	{
-		m_manager->RemoveNode(this);
-		LN_SAFE_RELEASE(m_manager);
+	if (m_ownerSceneGraph != nullptr) {
+		m_ownerSceneGraph->RemoveNode(this);
 	}
+	LN_SAFE_RELEASE(m_manager);
 }
 
 //-----------------------------------------------------------------------------
@@ -59,7 +60,7 @@ SceneNode::~SceneNode()
 void SceneNode::CreateCore(SceneGraphManager* manager)
 {
 	LN_REFOBJ_SET(m_manager, manager);
-	m_manager->AddNode(this);
+	//m_manager->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -77,19 +78,27 @@ void SceneNode::SetName(const String& name)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneNode::AddChild(SceneNode* node)
+void SceneNode::AddChild(SceneNode* child)
 {
-	LN_THROW(node != NULL, ArgumentException);
-	LN_THROW(node->m_parentNode == NULL, InvalidOperationException);	// 既に別のノードの子になっている
+	LN_THROW(child != NULL, ArgumentException);
+	LN_THROW(child->m_parentNode == NULL, InvalidOperationException);	// 既に別のノードの子になっている
 
-	m_children->Add(node);
-	node->m_parentNode = this;
+	if (child->m_ownerSceneGraph != nullptr) {
+		child->m_ownerSceneGraph->RemoveNode(this);
+		child->m_ownerSceneGraph = nullptr;
+	}
+
+	m_children->Add(child);
+	child->m_parentNode = this;
+
+	child->m_ownerSceneGraph = m_ownerSceneGraph;
+	child->m_ownerSceneGraph->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* renderingNodeList)
+void SceneNode::UpdateFrameHierarchy(SceneNode* parent)
 {
 	// ワールド行列の更新が必要な場合は再計算
 	if (m_transformModified)
@@ -112,7 +121,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, SceneNodeList* rendering
 
 	// 子ノード更新
 	LN_FOREACH(SceneNode* child, *m_children) {
-		child->UpdateFrameHierarchy(this, renderingNodeList);
+		child->UpdateFrameHierarchy(this);
 	}
 }
 

@@ -1,9 +1,8 @@
 ﻿
-#if 0
 #pragma once
-#include <Lumino/BindingSupport.h>
-#include <Lumino/Platform/EventArgs.h>
-#include <Lumino/Graphics/Texture.h>
+#include "../BindingSupport.h"
+#include "../Platform/EventArgs.h"
+#include "../Graphics/Texture.h"
 #include "Layer.h"
 
 LN_NAMESPACE_BEGIN
@@ -19,17 +18,19 @@ public:
 };
 
 /// ViewPane
-class ViewPane
+class SceneGraph
 	: public RefObject
 {
-public:
-	ViewPane(SceneGraphManager* manager);
-	virtual ~ViewPane();
-
 public:
 
 	/// レイヤーリストの取得
 	LayerList* GetLayerList() { return &m_layerList; }
+
+	/// 現在の時間を取得する (秒)
+	double GetTime() const { return m_time; }
+
+	/// 前回フレームからの経過時間を取得する (秒)
+	float GetElapsedTime() const { return m_elapsedTime; }
 
 	/// 描画
 	void Render(Texture* renderTarget);
@@ -42,6 +43,18 @@ public:
 
 	/// マウスボタンイベントを通知する
 	bool InjectMouseButtonUp(MouseButton button);
+
+
+	virtual void UpdateFrame(float elapsedTime);
+
+protected:
+	SceneGraph();
+	virtual ~SceneGraph();
+	void CreateCore(SceneGraphManager* manager);
+
+LN_INTERNAL_ACCESS:
+	void AddNode(SceneNode* node) { m_allNodes.Add(node); }
+	void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
 
 private:
 
@@ -63,6 +76,10 @@ private:
 	SceneGraphManager*	m_manager;
 	LayerList			m_layerList;
 
+	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
+	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
+	SceneNodeList		m_allNodes;
+
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態
 	MouseState			m_rightMouseState;		///< マウスの右ボタンの状態
 	MouseState			m_middleMouseState;		///< マウスの中ボタンの状態
@@ -71,4 +88,3 @@ private:
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
-#endif

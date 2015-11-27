@@ -5,7 +5,7 @@
 #include "RenderingPass.h"
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
-#include "Layer.h"
+#include <Lumino/Scene/Layer.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN

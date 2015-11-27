@@ -238,7 +238,8 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
 	include/Lumino/Scene/Material.h
-	include/Lumino/Scene/SceneGraphManager.h
+	include/Lumino/Scene/MMDSceneGraph.h
+	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneNode.h
 	include/Lumino/Scene/Sprite.h
 	include/Lumino/Scene/ViewPane.h
@@ -251,10 +252,11 @@ set(LN_SOURCES_Scene
 	src/Scene/InfomationRenderingPass.cpp
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp
-	src/Scene/Layer.h
 	src/Scene/Light.cpp
+	src/Scene/MMDSceneGraph.cpp
 	src/Scene/RenderingPass.cpp
 	src/Scene/RenderingPass.h
+	src/Scene/SceneGraph.cpp
 	src/Scene/SceneGraphManager.cpp
 	src/Scene/SceneGraphManager.h
 	src/Scene/SceneHelper.h

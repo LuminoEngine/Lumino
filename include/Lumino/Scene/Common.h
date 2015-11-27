@@ -8,7 +8,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class SceneGraphManager;
-class ViewPane;
+class SceneGraph;
 class Layer;
 class DrawingLayer;
 class RenderingPass;
