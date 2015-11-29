@@ -66,6 +66,19 @@ void SceneNode::CreateCore(SceneGraphManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void SceneNode::SetOwnerSceneGraph(SceneGraph* owner)
+{
+	SceneGraph* old = m_ownerSceneGraph;
+	m_ownerSceneGraph = owner;
+	if (m_ownerSceneGraph != old)
+	{
+		OnOwnerSceneGraphChanged(m_ownerSceneGraph, old);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void SceneNode::SetName(const String& name)
 {
 	if (m_name != name)
@@ -83,16 +96,19 @@ void SceneNode::AddChild(SceneNode* child)
 	LN_THROW(child != NULL, ArgumentException);
 	LN_THROW(child->m_parentNode == NULL, InvalidOperationException);	// 既に別のノードの子になっている
 
-	if (child->m_ownerSceneGraph != nullptr) {
-		child->m_ownerSceneGraph->RemoveNode(this);
-		child->m_ownerSceneGraph = nullptr;
-	}
+	//if (child->m_ownerSceneGraph != nullptr) {
+	//	child->m_ownerSceneGraph->RemoveNode(this);
+	//	child->m_ownerSceneGraph = nullptr;
+	//}
 
 	m_children->Add(child);
 	child->m_parentNode = this;
 
-	child->m_ownerSceneGraph = m_ownerSceneGraph;
-	child->m_ownerSceneGraph->AddNode(this);
+	// 子要素は this と同じ SceneGraph に属するようになる
+	child->SetOwnerSceneGraph(m_ownerSceneGraph);
+
+	//child->m_ownerSceneGraph = m_ownerSceneGraph;
+	//child->m_ownerSceneGraph->AddNode(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -148,6 +164,19 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 	}
 	// 優先度は降順。高いほうを先に描画する。
 	return left->m_priority < right->m_priority;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
+{
+	if (oldOwner != nullptr) {
+		oldOwner->RemoveNode(this);
+	}
+	if (newOwner != nullptr) {
+		newOwner->AddNode(this);
+	}
 }
 
 LN_NAMESPACE_SCENE_END

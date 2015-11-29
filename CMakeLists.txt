@@ -242,6 +242,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneNode.h
 	include/Lumino/Scene/Sprite.h
+	include/Lumino/Scene/Tilemap.h
 	include/Lumino/Scene/ViewPane.h
 	include/Lumino/Scene/VisualNode.h
 	include/Lumino/Scene/VisualNodeParams.h
@@ -262,6 +263,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
 	src/Scene/Sprite.cpp
+	src/Scene/Tilemap.cpp
 	src/Scene/ViewPane.cpp
 	src/Scene/ViewPane.h
 	src/Scene/VisualNode.cpp

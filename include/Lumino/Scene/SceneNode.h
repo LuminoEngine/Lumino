@@ -96,6 +96,8 @@ public:
 	/// 子ノードの追加 (WPF の StakPanel.Children みたいに Collection を返すのも良いけど、AddChild() はよく使うのでユーティリティとして定義s手置くのが良いかも)
 	void AddChild(SceneNode* node);
 
+	SceneGraph* GetOwnerSceneGraph() { return m_ownerSceneGraph; }
+
 public:
 
 	/// ノード種別の取得
@@ -138,11 +140,14 @@ public:
 	virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
 	virtual LightNodeList* GetAffectLightList() { return NULL; }
 
+protected:
+	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner);
+
 LN_INTERNAL_ACCESS:
 	SceneNode();
 	virtual ~SceneNode();
 	void CreateCore(SceneGraphManager* manager);
-	void SetOwnerSceneGraph(SceneGraph* owner) { m_ownerSceneGraph = owner; }
+	void SetOwnerSceneGraph(SceneGraph* owner);
 
 protected:
 	SceneGraphManager*	m_manager;	// TODO: いらない

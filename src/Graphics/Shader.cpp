@@ -534,7 +534,7 @@ float ShaderVariable::GetFloat() const
 void ShaderVariable::SetVector(const Vector4& value)
 {
 	m_value.SetVector(value);
-	LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, &value, 1);
+	LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, value);
 }
 
 //-----------------------------------------------------------------------------
@@ -568,7 +568,7 @@ const Vector4* ShaderVariable::GetVectorArray() const
 void ShaderVariable::SetMatrix(const Matrix& value)
 {
 	m_value.SetMatrix(value);
-	LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, &value, 1);
+	LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, value);
 }
 
 //-----------------------------------------------------------------------------

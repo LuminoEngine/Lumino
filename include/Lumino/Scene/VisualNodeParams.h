@@ -37,6 +37,7 @@ struct VisualNodeSubsetParams
 
 /// VisualNodeParams
 ///		TODO: このクラスは昔の、描画スレッドを Scene で管理していたころの名残。VisualNode に統合してもよい。
+///		・・・でも、これが完全に一致しているサブセットはステートを変更せずに1度のドローコールにまとめることができる。後々使えるかも。
 class VisualNodeParams
 {
 public:

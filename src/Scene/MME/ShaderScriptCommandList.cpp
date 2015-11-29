@@ -71,7 +71,7 @@ void ShaderScriptCommandList::AddChildPassCommandList(ShaderScriptCommandList* c
 void ShaderScriptCommandList::Execute(DrawParams& params)
 {
 	//params.SubsetNumbers = &m_drawingSubsetNumbers;
-	PushCurrentState(params);
+	PushCurrentState(params);	// TODO まいかいやるのはちょっとむだ
 	InternalExecute(params, 0, 0);
 	PopCurrentState(params);
 }

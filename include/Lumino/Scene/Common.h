@@ -20,6 +20,8 @@ class Light;
 class MMEShader;
 class MMEShaderTechnique;
 
+class CameraBehavior;
+
 typedef Array<RenderingPass*>	RenderingPassList;
 typedef Array<Light*>			LightNodeList;
 typedef Array<SceneNode*>		SceneNodeList;
@@ -39,6 +41,13 @@ enum CameraProjection
 	CameraProjection_3D,		///< 3D モード
 
 	CameraProjection_Max,		///< (Terminator)
+};
+
+/** カメラの向きの指定方法 */
+enum class CameraDirection
+{
+	LookAt,			/**< SetLookAt() により注視点を指定する */
+	Transform,		/**< 姿勢の正面方向を向く */
 };
 
 /// ライトの種類

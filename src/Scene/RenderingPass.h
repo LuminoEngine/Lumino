@@ -58,6 +58,7 @@ public:
 
 	//int GetPassID() const { return m_passID; }
 
+	void SetDefaultShader(MMEShader* shader) { m_defaultShader = shader; }
 	MMEShader* GetDefaultShader() { return m_defaultShader; }
 
 	/// このパスで優先的に使用されるシェーダを追加する

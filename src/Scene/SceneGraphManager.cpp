@@ -121,6 +121,8 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_graphicsManager(configData.GraphicsManager, true)
 	, m_modelManager(configData.ModelManager, true)
 	//, m_rootNode(NULL)
+	, m_default3DSceneGraph(nullptr)
+	, m_default2DSceneGraph(nullptr)
 {
 
 	m_geometryRenderer.Attach(GeometryRenderer::Create(m_graphicsManager), false);
@@ -152,7 +154,12 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 	RefPtr<MMDSceneGraph> sg(LN_NEW MMDSceneGraph(), false);
 	sg->CreateCore(this);
 	sg.SafeAddRef();
-	m_defaultSceneGraph = sg;
+	m_default3DSceneGraph = sg;
+
+	RefPtr<Basic2DSceneGraph> sg2d(LN_NEW Basic2DSceneGraph(), false);
+	sg2d->CreateCore(this);
+	sg2d.SafeAddRef();
+	m_default2DSceneGraph = sg2d;
 }
 
 //-----------------------------------------------------------------------------
@@ -160,7 +167,8 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 //-----------------------------------------------------------------------------
 void SceneGraphManager::ReleaseDefaultSceneGraph()
 {
-	LN_SAFE_RELEASE(m_defaultSceneGraph);
+	LN_SAFE_RELEASE(m_default3DSceneGraph);
+	LN_SAFE_RELEASE(m_default2DSceneGraph);
 }
 
 //-----------------------------------------------------------------------------
@@ -168,8 +176,11 @@ void SceneGraphManager::ReleaseDefaultSceneGraph()
 //-----------------------------------------------------------------------------
 void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 {
-	if (m_defaultSceneGraph != nullptr) {
-		m_defaultSceneGraph->UpdateFrame(elapsedTime);
+	if (m_default3DSceneGraph != nullptr) {
+		m_default3DSceneGraph->UpdateFrame(elapsedTime);
+	}
+	if (m_default2DSceneGraph != nullptr) {
+		m_default2DSceneGraph->UpdateFrame(elapsedTime);
 	}
 }
 
@@ -178,9 +189,16 @@ void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 //-----------------------------------------------------------------------------
 void SceneGraphManager::RenderDefaultSceneGraph(Texture* renderTarget)
 {
-	if (m_defaultSceneGraph != nullptr) {
-		m_defaultSceneGraph->Render(renderTarget);
+	for (Camera* camera : m_allCameraList)
+	{
+		camera->GetOwnerSceneGraph()->Render(renderTarget, camera);
 	}
+	//if (m_default3DSceneGraph != nullptr) {
+	//	m_default3DSceneGraph->Render(renderTarget);
+	//}
+	//if (m_default2DSceneGraph != nullptr) {
+	//	m_default2DSceneGraph->Render(renderTarget);
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -194,7 +212,6 @@ SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 	}
 	return NULL;
 }
-
 
 //-----------------------------------------------------------------------------
 //

@@ -53,6 +53,7 @@
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Scene/SceneGraphManager.h"
+#include <Lumino/Scene/SceneGraph.h>
 #include "GUI/UIManagerImpl.h"
 #include "ApplicationImpl.h"
 
@@ -440,20 +441,32 @@ bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
+		if (m_sceneGraphManager != nullptr) {
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
 		break;
 	case Platform::EventType_MouseUp:			// マウスボタンが離された
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
+		if (m_sceneGraphManager != nullptr) {
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case Platform::EventType_MouseMove:		// マウスが移動した
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
+		if (m_sceneGraphManager != nullptr) {
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
 		break;
 	case Platform::EventType_MouseWheel:		// マウスホイールが操作された
 		if (m_guiManager != NULL) {
 			if (m_guiManager->InjectMouseWheel(e.Mouse.Delta, e.Mouse.X, e.Mouse.Y)) { return true; }
+		}
+		if (m_sceneGraphManager != nullptr) {
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.Delta)) { return true; }
 		}
 		break;
 	case Platform::EventType_KeyDown:	// キー押下

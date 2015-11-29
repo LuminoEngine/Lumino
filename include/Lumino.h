@@ -56,6 +56,9 @@
 #include "Lumino/GUI/TextBlock.h"
 #include "Lumino/GUI/TextBox.h"
 
+#include "Lumino/Scene/SceneGraph.h"
+#include "Lumino/Scene/Camera.h"
+
 #include "Lumino/AutoReleasePool.h"
 #include "Lumino/Profiler.h"
 #include "Lumino/Engine.h"

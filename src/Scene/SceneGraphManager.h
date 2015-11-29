@@ -47,7 +47,8 @@ public:
 	// TODO: SceneGraphManager はホントに単純なシーングラフ管理だけにとどめておいて、MMD 用のシーン構築は別クラスにしてもいいかも
 	void CreateDefaultSceneGraph();
 	void ReleaseDefaultSceneGraph();
-	SceneGraph* GetDefaultSceneGraph() { return m_defaultSceneGraph; }
+	SceneGraph* GetDefault3DSceneGraph() { return m_default3DSceneGraph; }
+	SceneGraph* GetDefault2DSceneGraph() { return m_default2DSceneGraph; }
 	void UpdateFrameDefaultSceneGraph(float elapsedTime);
 	void RenderDefaultSceneGraph(Texture* renderTarget);
 
@@ -74,6 +75,7 @@ public:	// internal
 	void AddShader(MMEShader* shader);
 	void RemoveShader(MMEShader* shader);
 	SceneShaderList* GetShaderList() { return &m_sceneShaderList; }
+	Array<Camera*>* GetAllCameraList() { return &m_allCameraList; }
 
 	/// 指定した座標に近いライトを取得する (取得する数は outList の要素数。あらかじめ Resize() しておくこと)
 	void SelectLight(Vector3* pos, LightNodeList* outList);
@@ -97,7 +99,10 @@ private:
 	//SceneNodeList						m_renderingNodeList;	///< (いらないかも？)最後の UpdateFrame() で抽出された描画可能なノードのリスト
 	SceneShaderList						m_sceneShaderList;
 
-	SceneGraph*		m_defaultSceneGraph;
+	Array<Camera*>	m_allCameraList;
+
+	SceneGraph*		m_default3DSceneGraph;
+	SceneGraph*		m_default2DSceneGraph;
 };
 
 LN_NAMESPACE_SCENE_END

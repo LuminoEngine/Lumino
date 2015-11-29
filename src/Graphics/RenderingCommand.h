@@ -520,12 +520,20 @@ struct SetShaderVariableCommand : public RenderingCommand
 		Float = value;
 		MarkGC(target);
 	}
+	void Create(Driver::IShaderVariable* target, const Vector4& value)
+	{
+		size_t tmpData = AllocExtData(sizeof(Vector4), &value);
+		m_target = target;
+		m_variableType = ShaderVariableType_Vector;
+		VectorsBufferIndex = tmpData;
+		MarkGC(target);
+	}
 	void Create(Driver::IShaderVariable* target, const Vector4* vectors, size_t count)
 	{
 		size_t tmpData = AllocExtData(sizeof(Vector4) * count, vectors);
 		m_target = target;
 		m_arrayLength = count;
-		m_variableType = (count == 1) ? ShaderVariableType_Vector : ShaderVariableType_VectorArray;
+		m_variableType = ShaderVariableType_VectorArray;
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}
@@ -534,7 +542,15 @@ struct SetShaderVariableCommand : public RenderingCommand
 		size_t tmpData = AllocExtData(sizeof(Matrix) * count, matrices);
 		m_target = target;
 		m_arrayLength = count;
-		m_variableType = (count == 1) ? ShaderVariableType_Matrix : ShaderVariableType_MatrixArray;
+		m_variableType = ShaderVariableType_MatrixArray;
+		VectorsBufferIndex = tmpData;
+		MarkGC(target);
+	}
+	void Create(Driver::IShaderVariable* target, const Matrix& value)
+	{
+		size_t tmpData = AllocExtData(sizeof(Matrix), &value);
+		m_target = target;
+		m_variableType = ShaderVariableType_Matrix;
 		VectorsBufferIndex = tmpData;
 		MarkGC(target);
 	}

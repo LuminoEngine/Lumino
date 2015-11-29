@@ -1,7 +1,12 @@
 ﻿
 #include "../Internal.h"
+#include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"
+#include "MME/MMERenderingPass.h"
 #include "SceneGraphManager.h"
+#include "RenderingPass.h"
+#include <Lumino/Scene/Camera.h>
+#include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/SceneGraph.h>
 
 LN_NAMESPACE_BEGIN
@@ -13,8 +18,24 @@ LN_NAMESPACE_SCENE_BEGIN
 LN_REF_OBJECT_LIST_IMPL(LayerList, Layer);
 
 //=============================================================================
-// ViewPane
+// SceneGraph
 //=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SceneGraph* SceneGraph::GetDefault2DSceneGraph()
+{
+	return SceneGraphManager::Instance->GetDefault2DSceneGraph();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SceneGraph* SceneGraph::GetDefault3DSceneGraph()
+{
+	return SceneGraphManager::Instance->GetDefault3DSceneGraph();
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -62,7 +83,7 @@ void SceneGraph::UpdateFrame(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneGraph::Render(Texture* renderTarget)
+void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 {
 	SizeF viewSize((float)renderTarget->GetSize().Width, (float)renderTarget->GetSize().Height);
 
@@ -78,17 +99,65 @@ void SceneGraph::Render(Texture* renderTarget)
 		shader->UpdateSceneParams(sceneParams, m_manager);
 	}
 	
+	
+	{
+		m_renderingNodeList.Clear();
+		m_renderingLightList.Clear();
+
+		// カメラ行列の更新
+		camera->UpdateMatrices(viewSize);
+
+		// シェーダのカメラ単位データの更新
+		//		TODO: とりあえず全シェーダ更新している。そんなにたくさんのシェーダは使わないだろうという想定。
+		//		もちろん数が増えてくればこの辺がパフォーマンス的にクリティカルになる。
+		//		改善案はあるが、とりあえず。(SceneGraphManaer.cpp 参照)
+		LN_FOREACH(MMEShader* shader, *m_manager->GetShaderList()) {
+			shader->UpdateCameraParams(camera, viewSize);
+		}
+
+		// このレイヤーのカメラに依るデータを更新する (視錘台カリングやカメラからの距離の更新)
+		GetRootNode()->UpdateViewFlustumHierarchy(camera, &m_renderingNodeList, &m_renderingLightList);
+
+		// ライト行列の更新
+		LN_FOREACH(Light* light, m_renderingLightList) {
+			light->UpdateMatrices(viewSize);
+		}
+
+		// Z ソート・優先度ソート
+		std::stable_sort(m_renderingNodeList.begin(), m_renderingNodeList.end(), SceneNode::CmpZAndPrioritySort);
+
+	}
+
+	{
+		RenderingParams params;
+		params.Renderer = m_manager->GetGraphicsManager()->GetRenderer();
+		params.GeometryRenderer = m_manager->GetGeometryRenderer();
+		params.CurrentCamera = camera;
+		for (RenderingPass* pass : *GetRenderingPasses())
+		{
+			if (pass == nullptr) continue;
+
+			params.Pass = pass;	// TODO: いらないかも
+			for (SceneNode* node : m_renderingNodeList)
+			{
+				pass->RenderNode(params, node);
+			}
+			pass->PostRender(params);
+		}
+	}
+
+
 	// 各レイヤーのレンダリングを実行する
-	int count = m_layerList.GetCount();
-	for (int i = 0; i < count; i++) {
-		m_layerList.GetAt(i)->PreRender(viewSize);
-	}
-	for (int i = 0; i < count; i++) {
-		m_layerList.GetAt(i)->Render();
-	}
-	for (int i = count - 1; i >= 0; i--) {	// post は逆順
-		m_layerList.GetAt(i)->PostRender();
-	}
+	//int count = m_layerList.GetCount();
+	//for (int i = 0; i < count; i++) {
+	//	m_layerList.GetAt(i)->PreRender(viewSize);
+	//}
+	//for (int i = 0; i < count; i++) {
+	//	m_layerList.GetAt(i)->Render();
+	//}
+	//for (int i = count - 1; i >= 0; i--) {	// post は逆順
+	//	m_layerList.GetAt(i)->PostRender();
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -96,34 +165,50 @@ void SceneGraph::Render(Texture* renderTarget)
 //-----------------------------------------------------------------------------
 bool SceneGraph::InjectMouseMove(int x, int y)
 {
+	// シェーダ系
 	m_mousePosition.Set(x, y);
+
+	// カメラ
+	for (Camera* camera : m_allCameraList) {
+		if (camera->GetCameraBehavior() != nullptr) {
+			camera->GetCameraBehavior()->InjectMouseMove(x, y);
+		}
+	}
 	return true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonDown(MouseButton button)
+bool SceneGraph::InjectMouseButtonDown(MouseButton button, int x, int y)
 {
+	// シェーダ系
 	switch (button)
 	{
 	case MouseButton::Left:
 		m_leftMouseState.Position = m_mousePosition;
 		m_leftMouseState.Time = static_cast<float>(m_time);
 		m_leftMouseState.IsDown = true;
-		return true;
+		break;
 	case MouseButton::Right:
 		m_rightMouseState.Position = m_mousePosition;
 		m_rightMouseState.Time = static_cast<float>(m_time);
 		m_rightMouseState.IsDown = true;
-		return true;
+		break;
 	case MouseButton::Middle:
 		m_middleMouseState.Position = m_mousePosition;
 		m_middleMouseState.Time = static_cast<float>(m_time);
 		m_middleMouseState.IsDown = true;
-		return true;
+		break;
 	default:
 		break;
+	}
+
+	// カメラ
+	for (Camera* camera : m_allCameraList) {
+		if (camera->GetCameraBehavior() != nullptr) {
+			camera->GetCameraBehavior()->InjectMouseButtonDown(button, x, y);
+		}
 	}
 	return false;
 }
@@ -131,23 +216,106 @@ bool SceneGraph::InjectMouseButtonDown(MouseButton button)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonUp(MouseButton button)
+bool SceneGraph::InjectMouseButtonUp(MouseButton button, int x, int y)
 {
+	// シェーダ系
 	switch (button)
 	{
 	case MouseButton::Left:
 		m_leftMouseState.IsDown = false;
-		return true;
+		break;
 	case MouseButton::Right:
 		m_leftMouseState.IsDown = false;
-		return true;
+		break;
 	case MouseButton::Middle:
 		m_leftMouseState.IsDown = false;
-		return true;
+		break;
 	default:
 		break;
 	}
+	
+	// カメラ
+	for (Camera* camera : m_allCameraList) {
+		if (camera->GetCameraBehavior() != nullptr) {
+			camera->GetCameraBehavior()->InjectMouseButtonUp(button, x, y);
+		}
+	}
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool SceneGraph::InjectMouseWheel(int delta)
+{
+	for (Camera* camera : m_allCameraList) {
+		if (camera->GetCameraBehavior() != nullptr) {
+			camera->GetCameraBehavior()->InjectMouseWheel(delta);
+		}
+	}
+	return false;
+}
+
+//=============================================================================
+// Basic2DSceneGraph
+//=============================================================================
+
+static const byte_t g_SSBasic2D_Data[] =
+{
+#include "Resource/SSBasic2D.fx.h"
+};
+static const size_t g_SSBasic2D_Data_Len = LN_ARRAY_SIZE_OF(g_SSBasic2D_Data);
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Basic2DSceneGraph::Basic2DSceneGraph()
+	: m_defaultRoot(nullptr)
+	, m_defaultCamera(nullptr)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Basic2DSceneGraph::~Basic2DSceneGraph()
+{
+	for (RenderingPass* pass : m_renderingPasses) {
+		LN_SAFE_RELEASE(pass);
+	}
+
+	LN_SAFE_RELEASE(m_defaultCamera);
+	LN_SAFE_RELEASE(m_defaultRoot);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
+{
+	SceneGraph::CreateCore(manager);
+
+	m_defaultRoot = LN_NEW SceneNode();
+	m_defaultRoot->CreateCore(manager);
+	m_defaultRoot->SetOwnerSceneGraph(this);
+
+	m_defaultCamera = LN_NEW Camera();
+	m_defaultCamera->CreateCore(manager, CameraProjection_2D);
+	m_defaultRoot->AddChild(m_defaultCamera);
+
+	MMEShaderErrorInfo result;
+	RefPtr<MMEShader> defaultShader(MMEShader::Create((const char*)g_SSBasic2D_Data, g_SSBasic2D_Data_Len, &result, GetManager()), false);
+	m_renderingPasses.Add(LN_NEW MMERenderingPass(manager, MMD_PASS_object));
+	m_renderingPasses[0]->SetDefaultShader(defaultShader);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Basic2DSceneGraph::UpdateFrame(float elapsedTime)
+{
+	SceneGraph::UpdateFrame(elapsedTime);
+	m_defaultRoot->UpdateFrameHierarchy(NULL);
 }
 
 LN_NAMESPACE_SCENE_END

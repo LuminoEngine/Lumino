@@ -5,11 +5,26 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-/// Camera
+/**
+	@brief
+*/
 class Camera
 	: public SceneNode
 {
 public:
+	static Camera* GetDefault2DCamera();
+
+	static Camera* GetDefault3DCamera();
+
+public:
+
+	void SetLookAt(const Vector3& position) { m_lookAt = position; }
+	const Vector3& GetLookAt() const { return m_lookAt; }
+
+	void SetUpDirection(const Vector3& up) { m_upDirection = up; }
+	const Vector3& GetUpDirection() const { return m_upDirection; }
+
+	
 
 	/// Y 方向視野角の設定
 	void SetFovY(float fov_y) { m_fovY = fov_y; }
@@ -28,6 +43,9 @@ public:
 
 	/// 最も遠いビュープレーン位置の取得
 	float GetFarClip() const { return m_farClip; }
+
+	void SetCameraBehavior(CameraBehavior* behavior);
+	CameraBehavior* GetCameraBehavior() const { return m_cameraBehavior; }
 
 public:	// internal
 
@@ -51,22 +69,33 @@ public:	// internal
 	const Matrix& GetProjectionMatrixIT() const { return m_projMatrixIT; }
 	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
+	//void DoMouseMoveR(float dx, float dy, float width, float height);
+	//void DoMouseMoveM(float offsetX, float offsetY);
+	//void DoMouseWheel(int pos);
+
+protected:
+	virtual void OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner) override;
+
 LN_INTERNAL_ACCESS:
 	Camera();
 	virtual ~Camera();
 	void CreateCore(SceneGraphManager* manager, CameraProjection proj);
 
 private:
-
 	CameraProjection	m_projectionMode;
+	CameraDirection		m_directionMode;
+	Vector3				m_lookAt;
+	Vector3				m_upDirection;
 	float				m_fovY;
 	float				m_nearClip;
 	float				m_farClip;
+	CameraBehavior*		m_cameraBehavior;
 
 	Matrix				m_viewMatrix;		///< ビュー行列
 	Matrix				m_projMatrix;		///< プロジェクション行列
 	Matrix				m_viewProjMatrix;	///< ビュー行列とプロジェクション行列の積
 	Vector4				m_direction;		///< 向き
+	ViewFrustum			m_viewFrustum;		// 視錐台カリング用 (3D,2D共用)
 
 	// 以下はシェーダ変数への設定用。ライトは個々のノードに比べて参照される回数が多いので
 	// 必要になるたびに計算するのではなく、あらかじめ計算しておく。
@@ -81,6 +110,49 @@ private:
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
 
 	friend class Internal::SceneHelper;
+};
+
+/**
+	@brief
+*/
+class CameraBehavior
+	: public RefObject
+{
+public:
+	CameraBehavior();
+	virtual ~CameraBehavior();
+
+	void SetTargetCamera(Camera* camera) { m_targetCamera = camera; }
+	Camera* GetTargetCamera() const { return m_targetCamera; }
+
+	virtual bool InjectMouseMove(int x, int y) = 0;
+	virtual bool InjectMouseButtonDown(MouseButton button, int x, int y) = 0;
+	virtual bool InjectMouseButtonUp(MouseButton button, int x, int y) = 0;
+	virtual bool InjectMouseWheel(int delta) = 0;
+
+private:
+	Camera* m_targetCamera;
+};
+
+/**
+	@brief
+*/
+class CylinderMouseMoveCameraBehavior
+	: public CameraBehavior
+{
+public:
+	CylinderMouseMoveCameraBehavior();
+	virtual ~CylinderMouseMoveCameraBehavior();
+
+	virtual bool InjectMouseMove(int x, int y) override;
+	virtual bool InjectMouseButtonDown(MouseButton button, int x, int y) override;
+	virtual bool InjectMouseButtonUp(MouseButton button, int x, int y) override;
+	virtual bool InjectMouseWheel(int delta) override;
+
+private:
+	Point	m_prevPos;
+	bool	m_RDrag;
+	bool	m_MDrag;
 };
 
 LN_NAMESPACE_SCENE_END

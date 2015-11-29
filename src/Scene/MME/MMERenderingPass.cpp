@@ -18,8 +18,9 @@ LN_NAMESPACE_SCENE_BEGIN
 MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, MMEShader* ownerShader)
 	: RenderingPass(manager)
 	, m_mmdPass(mmdPass)
-	, m_ownerShader(ownerShader)
+	, m_ownerShader(nullptr)
 {
+	LN_REFOBJ_SET(m_ownerShader, ownerShader);
 }
 
 //-----------------------------------------------------------------------------
@@ -27,6 +28,7 @@ MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, 
 //-----------------------------------------------------------------------------
 MMERenderingPass::~MMERenderingPass()
 {
+	LN_SAFE_RELEASE(m_ownerShader);
 }
 
 //-----------------------------------------------------------------------------

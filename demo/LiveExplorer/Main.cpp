@@ -35,15 +35,19 @@ int main()
 		ColorBrush ff(ColorF(1, 0, 0, 1));
 		auto aa = ColorBrush::Green;
 		ApplicationSettings appData;
-		//appData.GraphicsAPI = GraphicsAPI::DirectX9;
-		//appData.RenderingType = RenderingType::Immediate;
+		appData.GraphicsAPI = GraphicsAPI::DirectX9;
+		appData.RenderingType = RenderingType::Immediate;
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
 		RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
-		RefPtr<Sprite> sp1(Sprite::Create(), false);
+		RefPtr<Sprite> sp1(Sprite::Create3D(), false);
 		sp1->SetTexture(tex1);
+		//sp1->SetScale(Vector3(0.1, 0.1, 0.1));
 
+		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::Create();
+		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
+		//Camera::GetDefault3DCamera()->SetPosition(Vector3(200,0,-20));
 		
 
 		while (Engine::UpdateFrame())

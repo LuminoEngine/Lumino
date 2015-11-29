@@ -18,6 +18,11 @@ public:
 	*/
 	static Sprite* Create();
 
+	/**
+		@brief		
+	*/
+	static Sprite* Create3D();
+
 public:
 
 	/// 作成

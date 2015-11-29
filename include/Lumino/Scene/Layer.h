@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "Internal.h"
+#include "Common.h"
 #include <Lumino/Scene/Camera.h>
 
 LN_NAMESPACE_BEGIN

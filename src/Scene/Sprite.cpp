@@ -2,6 +2,7 @@
 #pragma once
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
 
 LN_NAMESPACE_BEGIN
@@ -16,6 +17,17 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(Sprite, VisualNode);
 //
 //-----------------------------------------------------------------------------
 Sprite* Sprite::Create()
+{
+	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
+	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_2D);
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Sprite* Sprite::Create3D()
 {
 	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
 	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_RZ);
@@ -55,6 +67,13 @@ void Sprite::CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord)
 	m_spriteCoord = spriteCoord;
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(SizeF(-1, -1));
+
+	if (spriteCoord == SpriteCoord_2D) {
+		manager->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
+	}
+	else {
+		manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	}
 }
 
 //-----------------------------------------------------------------------------
