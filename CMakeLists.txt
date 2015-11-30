@@ -231,6 +231,14 @@ set(LN_SOURCES_Graphics
 )
 	
 if (LN_BUILD_SCENE_MODULE)
+set(LN_SOURCES_TileMap
+	include/Lumino/TileMap/TileLayer.h
+	include/Lumino/TileMap/TileMap.h
+	include/Lumino/TileMap/TileSet.h
+	src/TileMap/TileLayer.cpp
+	src/TileMap/TileMap.cpp
+	src/TileMap/TileSet.cpp
+)
 set(LN_SOURCES_Scene
 	include/Lumino/Scene/Camera.h
 	include/Lumino/Scene/Collection.h
@@ -242,7 +250,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneNode.h
 	include/Lumino/Scene/Sprite.h
-	include/Lumino/Scene/Tilemap.h
+	include/Lumino/Scene/TileMapNode.h
 	include/Lumino/Scene/ViewPane.h
 	include/Lumino/Scene/VisualNode.h
 	include/Lumino/Scene/VisualNodeParams.h
@@ -263,7 +271,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
 	src/Scene/Sprite.cpp
-	src/Scene/Tilemap.cpp
+	src/Scene/TileMapNode.cpp
 	src/Scene/ViewPane.cpp
 	src/Scene/ViewPane.h
 	src/Scene/VisualNode.cpp
@@ -518,6 +526,7 @@ source_group("Platform"		FILES ${LN_SOURCES_Platform})
 source_group("Audio"		FILES ${LN_SOURCES_Audio})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
+source_group("Tilemap"		FILES ${LN_SOURCES_TileMap})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
 source_group("Documents"	FILES ${LN_SOURCES_Documents})
@@ -533,6 +542,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Audio}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
+	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}
 	${LN_SOURCES_Documents}

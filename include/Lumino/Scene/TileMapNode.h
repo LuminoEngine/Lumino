@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief	
 */
-class Tilemap
+class TileMapNode
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -18,19 +18,20 @@ public:
 	/**
 		@brief		
 	*/
-	static Tilemap* Create();
+	static TileMapNode* Create();
 
 	/**
 		@brief
 	*/
-	static Tilemap* Create3D();
+	static TileMapNode* Create3D();
 
 public:
+	void SetTileMap();
 
 protected:
-	Tilemap();
-	virtual ~Tilemap();
-	void CreateCore(SceneGraphManager* manager);
+	TileMapNode();
+	virtual ~TileMapNode();
+	void Create3DCore(SceneGraphManager* manager);
 	virtual void DrawSubset(RenderingParams& params, int subsetIndex);
 
 private:

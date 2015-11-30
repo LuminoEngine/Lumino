@@ -1,20 +1,21 @@
 
 #pragma once
+#include "../Common.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 /**
 	@brief	
 */
 class TileLayer
+	: public tr::ReflectionObject
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	TileLayer();
 	virtual ~TileLayer();
-	void CreateCore(SceneGraphManager* manager);
 	
+	void Resize(int width, int height);
 	void SetTileId(int x, int y, int id);
 	int GetTileId(int x, int y);
 
@@ -23,5 +24,4 @@ private:
 	Size		m_size;
 };
 
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

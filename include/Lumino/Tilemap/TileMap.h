@@ -1,8 +1,10 @@
 
 #pragma once
+#include "../Common.h"
+#include "TileLayer.h"
+#include "TileSet.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 class TileLayer;
 
@@ -10,15 +12,23 @@ class TileLayer;
 	@brief	
 */
 class TileMap
+	: public tr::ReflectionObject
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	TileMap();
 	virtual ~TileMap();
-	void CreateCore(SceneGraphManager* manager);
+	void CreateCore();
+
+
+	TileSet* GetTileSet();
+	void SetTileSet(TileSet* tileSet);
+
+	tr::ReflectionObjectList<TileLayer*>* GetLayers() { return &m_layers; }
 
 private:
+	TileSet*	m_tileSet;
+	tr::ReflectionObjectList<TileLayer*>	m_layers;
 };
 
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

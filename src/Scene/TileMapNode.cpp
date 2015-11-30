@@ -3,23 +3,34 @@
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/Tilemap.h>
+#include <Lumino/Scene/TileMapNode.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
-// Tilemap
+// TileMapNode
 //=============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Tilemap, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMapNode, VisualNode);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Tilemap* Tilemap::Create()
+//TileMapNode* TileMapNode::Create()
+//{
+//	RefPtr<TileMapNode> obj(LN_NEW TileMapNode(), false);
+//	obj->CreateCore(SceneGraphManager::Instance);
+//	obj.SafeAddRef();
+//	return obj;
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+TileMapNode* TileMapNode::Create3D()
 {
-	RefPtr<Tilemap> obj(LN_NEW Tilemap(), false);
-	obj->CreateCore(SceneGraphManager::Instance);
+	RefPtr<TileMapNode> obj(LN_NEW TileMapNode(), false);
+	obj->Create3DCore(SceneGraphManager::Instance);
 	obj.SafeAddRef();
 	return obj;
 }
@@ -27,18 +38,7 @@ Tilemap* Tilemap::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Tilemap* Tilemap::Create3D()
-{
-	RefPtr<Tilemap> obj(LN_NEW Tilemap(), false);
-	obj->CreateCore(SceneGraphManager::Instance);
-	obj.SafeAddRef();
-	return obj;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Tilemap::Tilemap()
+TileMapNode::TileMapNode()
 	: VisualNode()
 {
 }
@@ -46,22 +46,23 @@ Tilemap::Tilemap()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Tilemap::~Tilemap()
+TileMapNode::~TileMapNode()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Tilemap::CreateCore(SceneGraphManager* manager)
+void TileMapNode::Create3DCore(SceneGraphManager* manager)
 {
 	VisualNode::CreateCore(manager, 1);
+	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Tilemap::DrawSubset(RenderingParams& params, int subsetIndex)
+void TileMapNode::DrawSubset(RenderingParams& params, int subsetIndex)
 {
 }
 
@@ -70,7 +71,7 @@ LN_NAMESPACE_END
 
 #if 0
 //==============================================================================
-// Tilemap 
+// TileMapNode 
 //==============================================================================
 
 #include "stdafx.h"
@@ -78,7 +79,7 @@ LN_NAMESPACE_END
 #include "../SceneShader/SceneShaderManager.h"
 #include "../SceneShader/SceneShader.h"
 #include "../SceneGraph.h"
-#include "Tilemap.h"
+#include "TileMapNode.h"
 
 namespace LNote
 {
@@ -88,9 +89,9 @@ namespace Scene
 {
 
 //==============================================================================
-// Tilemap::DrawingContext
+// TileMapNode::DrawingContext
 //==============================================================================
-class Tilemap::DrawingContext
+class TileMapNode::DrawingContext
     : public VisualNodeContext
 {
 public:
@@ -125,7 +126,7 @@ public:
 	//----------------------------------------------------------------------
 	virtual void updateContext(SceneNodeContext* parentContext)
 	{
-		Tilemap* owner = static_cast<Tilemap*>(mSceneNode);
+		TileMapNode* owner = static_cast<TileMapNode*>(mSceneNode);
 		mMapData->copy(owner->mMapData);
 		LN_REFOBJ_SET(mTilesetTexture, owner->mTilesetTexture);
 		mDirection = owner->mDirection;
@@ -312,13 +313,13 @@ private:
 
 
 //==============================================================================
-// Tilemap
+// TileMapNode
 //==============================================================================
 
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-Tilemap::Tilemap( SceneGraph* scene_ )
+TileMapNode::TileMapNode( SceneGraph* scene_ )
     : VisualNode         ( scene_ )
     , mTilesetTexture   ( NULL )
     //, mXSize            ( 0 )
@@ -336,7 +337,7 @@ Tilemap::Tilemap( SceneGraph* scene_ )
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-Tilemap::~Tilemap()
+TileMapNode::~TileMapNode()
 {
 	LN_SAFE_RELEASE(mMapData);
 	LN_SAFE_RELEASE(mTilesetTexture);
@@ -345,9 +346,9 @@ Tilemap::~Tilemap()
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Tilemap::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir_ */)
+void TileMapNode::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir_ */)
 {
-	Tilemap::DrawingContext* context = LN_NEW Tilemap::DrawingContext();
+	TileMapNode::DrawingContext* context = LN_NEW TileMapNode::DrawingContext();
 	context->initialize( this );
     SceneNode::initialize( 1, LN_DRAWCOORD_2D, context );
 
@@ -369,7 +370,7 @@ void Tilemap::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir_ */
     LRefPtr<SceneShader> shader( 
 		mSceneGraph->getSceneShaderManager()->createSceneShader( 
 			Resource::ID_Shader_Tilemap,
-			lnSharingKey(_T( "LNResource\\Shader\\Tilemap.lnfx" ) ) ) );
+			lnSharingKey(_T( "LNResource\\Shader\\TileMapNode.lnfx" ) ) ) );
 
     setShader( shader );
 }
@@ -377,7 +378,7 @@ void Tilemap::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir_ */
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-//void Tilemap::setPosition( int x_, int y_ )
+//void TileMapNode::setPosition( int x_, int y_ )
 //{
 //    LN_PRINT_NOT_IMPL_FUNCTION
 //}
@@ -385,7 +386,7 @@ void Tilemap::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir_ */
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Tilemap::setTilesetTexture( Graphics::Texture* texture_ )
+void TileMapNode::setTilesetTexture( Graphics::Texture* texture_ )
 {
     LN_SAFE_ADDREF( texture_ );
     LN_SAFE_RELEASE( mTilesetTexture );
@@ -403,7 +404,7 @@ void Tilemap::setTilesetTexture( Graphics::Texture* texture_ )
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Tilemap::setTileSize(size_t width, size_t height)
+void TileMapNode::setTileSize(size_t width, size_t height)
 {
 	mTileWidth = static_cast<lnFloat>(width);
 	mTileHeight = static_cast<lnFloat>(height);
@@ -412,7 +413,7 @@ void Tilemap::setTileSize(size_t width, size_t height)
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Tilemap::update( float elapsedTime ) 
+void TileMapNode::update( float elapsedTime ) 
 {
 }
 

@@ -1,5 +1,7 @@
 #include "Common.h"
 #include "../../src/ApplicationImpl.h"
+#include <Lumino/Tilemap/TileMap.h>
+#include <Lumino/Scene/TileMapNode.h>
 
 void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 {
@@ -48,7 +50,16 @@ int main()
 		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::Create();
 		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
 		//Camera::GetDefault3DCamera()->SetPosition(Vector3(200,0,-20));
-		
+
+
+		RefPtr<Texture2D> tex2(Texture2D::Create(_T("D:/tmp/tiles.png")), false);
+		RefPtr<TileMap> tilemap(LN_NEW TileMap(), false);
+		RefPtr<TileSet> tileset(LN_NEW TileSet(), false);
+		tileset->SetImageSource(tex2);
+		RefPtr<TileLayer> tileLayer(LN_NEW TileLayer(), false);
+		tilemap->GetLayers()->Add(tileLayer);
+
+		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
 
 		while (Engine::UpdateFrame())
 		{

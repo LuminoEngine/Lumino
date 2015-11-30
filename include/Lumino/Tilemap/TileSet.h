@@ -1,22 +1,27 @@
 
 #pragma once
+#include "../Common.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
+class Texture;
 
 /**
 	@brief	
 */
 class TileSet
+	: public tr::ReflectionObject
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	TileSet();
 	virtual ~TileSet();
-	void CreateCore(SceneGraphManager* manager);
+	void CreateCore();
+
+	void SetImageSource(Texture* texture);
+	Texture* GetImageSource() const;
 	
-	const PathName& GetImageFilePath();
-	void SetImageFilePath(const PathName& filePath);
+	//const PathName& GetImageFilePath();
+	//void SetImageFilePath(const PathName& filePath);
 
 private:
 	struct TileInfo
@@ -24,8 +29,8 @@ private:
 		int	priority;
 	};
 	
-	PathName	m_imageFilePath;
+	Texture*	m_imageSource;
+	//PathName	m_imageFilePath;
 };
 
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
