@@ -80,7 +80,7 @@ void LFManager::Terminate()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LNHandle LFManager::CheckRegisterObject(CoreObject* obj)
+LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 {
 	LN_CHECK_ARGS_RETURNV(obj != NULL, NULL);
 

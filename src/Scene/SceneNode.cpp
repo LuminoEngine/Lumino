@@ -19,7 +19,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //=============================================================================
 // SceneNode
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(SceneNode, CoreObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNode, tr::ReflectionObject);
 
 //-----------------------------------------------------------------------------
 //

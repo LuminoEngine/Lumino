@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/Collection.h>
+#include <Lumino/Reflection/ReflectionObject.h>
 #include "Variant.h"	// TODO
 
 LN_NAMESPACE_BEGIN

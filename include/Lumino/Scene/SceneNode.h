@@ -21,10 +21,10 @@ public:
 
 /// SceneNode
 class SceneNode
-	: public CoreObject
+	: public tr::ReflectionObject
 	, public IMMESceneObject
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/// ノード名の設定

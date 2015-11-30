@@ -18,9 +18,9 @@ class AudioPlayer;
 	@brief	音声の再生、制御を行います。
 */
 class Sound
-    : public CoreObject
+    : public tr::ReflectionObject
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**

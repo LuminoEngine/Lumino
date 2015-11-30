@@ -10,7 +10,7 @@ LN_NAMESPACE_SCENE_BEGIN
 class Sprite
 	: public VisualNode
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	
 	/**

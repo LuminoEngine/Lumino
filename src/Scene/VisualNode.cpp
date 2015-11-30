@@ -12,7 +12,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //=============================================================================
 // VisualNode
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(VisualNode, SceneNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualNode, SceneNode);
 
 //-----------------------------------------------------------------------------
 //

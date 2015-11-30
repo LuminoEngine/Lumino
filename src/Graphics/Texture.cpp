@@ -17,7 +17,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //=============================================================================
 // Texture
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Texture, CoreObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture, GraphicsResourceObject);
 
 //-----------------------------------------------------------------------------
 //
@@ -64,7 +64,7 @@ TextureFormat Texture::GetFormat() const
 //=============================================================================
 // Texture2D
 //=============================================================================
-LN_CORE_OBJECT_TYPE_INFO_IMPL(Texture2D, Texture);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture2D, Texture);
 
 static GraphicsManager* GetManager()
 {

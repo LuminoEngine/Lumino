@@ -13,7 +13,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class Texture
 	: public GraphicsResourceObject
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**
@@ -52,7 +52,7 @@ protected:
 class Texture2D
 	: public Texture
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/**

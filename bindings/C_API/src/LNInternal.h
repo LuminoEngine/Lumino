@@ -107,7 +107,7 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 #define LN_TYPE_INFO_IMPL(coreClassName, apiClassName) \
 	extern "C" LN_API void apiClassName##_SetBindingTypeInfo(void* data) \
 	{ \
-		coreClassName::SetBindingTypeInfo(data); \
+		tr::TypeInfo::GetTypeInfo<coreClassName>()->SetBindingTypeInfo(data); \
 	}
 
 //---------------------------------------------------------------------

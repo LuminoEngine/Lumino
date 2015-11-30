@@ -217,7 +217,8 @@ LNResult LNObject_GetRefCount(LNHandle hadnleObject, int* count)
 //-----------------------------------------------------------------------------
 LN_INTERNAL_API LNUserData LNObject_GetBindingTypeData(LNHandle hadnleObject)
 {
-	return LFManager::GetObjectEntry(hadnleObject)->Object->GetBindingTypeData();
+	auto* obj = LFManager::GetObjectEntry(hadnleObject)->Object;
+	return tr::TypeInfo::GetBindingTypeInfo(obj);
 }
 
 //-----------------------------------------------------------------------------
@@ -252,7 +253,7 @@ LN_INTERNAL_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
 //=============================================================================
 // LNVariant
 //=============================================================================
-
+#if 0
 //-----------------------------------------------------------------------------
 // structSize は binder 側で確保したメモリサイズ。
 // この関数内で LNVariant のサイズと異なっていないかチェックする。
@@ -283,3 +284,4 @@ LN_API LNResult LNVariant_SetObject(LNVariant* value, LN_HANDLE(LNObject) obj)
 	reinterpret_cast<Variant*>(value)->Set(TO_REFOBJ(CoreObject, obj));
 	return ::LN_OK;
 }
+#endif
