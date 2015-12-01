@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../Common.h"
+#include "Common.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -18,6 +18,8 @@ public:
 	void Resize(int width, int height);
 	void SetTileId(int x, int y, int id);
 	int GetTileId(int x, int y);
+
+LN_INTERNAL_ACCESS:
 
 private:
 	Array<int>	m_data;		// マップデータ本体。m_size.X*m_size.Y のサイズを持つ。

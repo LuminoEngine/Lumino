@@ -337,9 +337,9 @@ void SpriteRenderer::DrawRequest3D(
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteRenderer::Flash()
+void SpriteRenderer::Flush()
 {
-	LN_CALL_COMMAND(Flash, SpriteRendererImpl::FlashCommand);
+	LN_CALL_COMMAND(Flush, SpriteRendererImpl::FlushCommand);
 }
 
 
@@ -920,7 +920,7 @@ public:
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteRendererImpl::Flash()
+void SpriteRendererImpl::Flush()
 {
 	int spriteCount = m_spriteRequestListUsedCount;	// 描画するスプライトの数
 	if (spriteCount == 0) { return; }				// 0 個ならなにもしない

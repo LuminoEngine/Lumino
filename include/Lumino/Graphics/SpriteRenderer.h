@@ -60,7 +60,7 @@ public:
 		@param[in]	center		: 
 		@param[in]	size		: 
 		@param[in]	texture		: 
-		@param[in]	srcRect		: 
+		@param[in]	srcRect		: (ピクセル単位)
 		@param[in]	colorTable	: 
 	*/
 	void DrawRequest2D(
@@ -68,7 +68,7 @@ public:
 		const Vector3& center,
 		const Vector2& size,
 		Texture* texture,
-		const RectF& srcRect,
+		const RectF& srcRect,		// TODO: Rect のほうがピクセル単位であることがわかりやすい
 		const ColorF* colorTable);
 
 	/**
@@ -110,7 +110,7 @@ public:
 	/**
 		@brief		要求されているスプライトを全て描画します。
 	*/
-	void Flash();
+	void Flush();
 
 	GraphicsManager* GetManager() const { return m_manager; }
 

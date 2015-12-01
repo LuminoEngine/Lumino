@@ -1,7 +1,8 @@
 ﻿
 #pragma once
 
-#define LN_INTERNAL_ACCESS	public
+#define LN_INTERNAL_ACCESS				public
+#define LN_PROTECTED_INTERNAL_ACCESS	public
 
 #include <LuminoCore.h>
 #include "../include/Lumino/Graphics/Common.h"

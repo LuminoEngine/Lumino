@@ -1,10 +1,12 @@
 
 #pragma once
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Tilemap/TileMapRenderer.h>
 #include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+class TileMapRenderer;
 
 /**
 	@brief	
@@ -35,6 +37,7 @@ protected:
 	virtual void DrawSubset(RenderingParams& params, int subsetIndex);
 
 private:
+	SpriteTileMapRenderer*	m_renderer;
 };
 
 LN_NAMESPACE_SCENE_END

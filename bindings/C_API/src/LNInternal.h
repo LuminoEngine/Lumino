@@ -1,6 +1,7 @@
 ﻿
 #pragma once
-#define LN_INTERNAL_ACCESS	public
+#define LN_INTERNAL_ACCESS				public
+#define LN_PROTECTED_INTERNAL_ACCESS	public
 #include <Lumino.h>
 
 // 内部利用ということでここでグローバルな using namespace している。

@@ -1,5 +1,7 @@
 
 #include "../Internal.h"
+#include <Lumino/TileMap/TileSet.h>
+#include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileLayer.h>
 
 LN_NAMESPACE_BEGIN
@@ -47,5 +49,6 @@ int TileLayer::GetTileId(int x, int y)
 {
 	return m_data[y * m_size.Width + x];
 }
+
 
 LN_NAMESPACE_END

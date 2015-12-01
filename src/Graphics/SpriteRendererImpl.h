@@ -54,7 +54,7 @@ public:
 		AxisDirection front);
 
 	/// バッチ処理されているスプライトの描画
-	void Flash();
+	void Flush();
 
 	/// 描画せずにバッチをすべてクリアする
 	void Clear();
@@ -308,7 +308,7 @@ public:
 		}
 	};
 
-	struct FlashCommand : public RenderingCommand
+	struct FlushCommand : public RenderingCommand
 	{
 		SpriteRendererImpl*	m_renderer;
 
@@ -317,7 +317,7 @@ public:
 			m_renderer = renderer;
 			MarkGC(m_renderer);
 		}
-		void Execute() { m_renderer->Flash(); }
+		void Execute() { m_renderer->Flush(); }
 	};
 
 	struct ClearCommand : public RenderingCommand

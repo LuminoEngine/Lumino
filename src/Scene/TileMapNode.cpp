@@ -2,8 +2,10 @@
 #pragma once
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Tilemap/TileMapRenderer.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TileMapNode.h>
+#include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -40,6 +42,7 @@ TileMapNode* TileMapNode::Create3D()
 //-----------------------------------------------------------------------------
 TileMapNode::TileMapNode()
 	: VisualNode()
+	, m_renderer(nullptr)
 {
 }
 
@@ -48,6 +51,7 @@ TileMapNode::TileMapNode()
 //-----------------------------------------------------------------------------
 TileMapNode::~TileMapNode()
 {
+	LN_SAFE_DELETE(m_renderer);
 }
 
 //-----------------------------------------------------------------------------
@@ -57,6 +61,7 @@ void TileMapNode::Create3DCore(SceneGraphManager* manager)
 {
 	VisualNode::CreateCore(manager, 1);
 	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	m_renderer = LN_NEW SpriteTileMapRenderer(manager->GetGraphicsManager());
 }
 
 //-----------------------------------------------------------------------------

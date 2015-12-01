@@ -1,12 +1,10 @@
 
 #pragma once
-#include "../Common.h"
+#include "Common.h"
 #include "TileLayer.h"
 #include "TileSet.h"
 
 LN_NAMESPACE_BEGIN
-
-class TileLayer;
 
 /**
 	@brief	
@@ -27,7 +25,7 @@ public:
 	tr::ReflectionObjectList<TileLayer*>* GetLayers() { return &m_layers; }
 
 private:
-	TileSet*	m_tileSet;
+	TileSet*								m_tileSet;
 	tr::ReflectionObjectList<TileLayer*>	m_layers;
 };
 
