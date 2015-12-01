@@ -28,7 +28,7 @@ public:
 	static TileMapNode* Create3D();
 
 public:
-	void SetTileMap();
+	void SetTileMap(TileMap* tileMap);
 
 protected:
 	TileMapNode();
@@ -38,6 +38,7 @@ protected:
 
 private:
 	SpriteTileMapRenderer*	m_renderer;
+	TileMap*				m_tileMap;
 };
 
 LN_NAMESPACE_SCENE_END

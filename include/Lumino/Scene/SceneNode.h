@@ -98,6 +98,9 @@ public:
 
 	SceneGraph* GetOwnerSceneGraph() { return m_ownerSceneGraph; }
 
+	SceneNodeRenderingMode GetRenderingMode() const { return m_renderingMode; }
+	void SetRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
+
 public:
 
 	/// ノード種別の取得
@@ -159,6 +162,7 @@ protected:
 	RotationOrder		m_rotOrder;
 	int					m_priority;
 	BillboardType		m_billboardType;
+	SceneNodeRenderingMode	m_renderingMode;
 	//bool				m_isVisible;
 	bool				m_transformModified;	///< 座標変換行列の再計算が必要か
 	bool				m_isAutoUpdate;

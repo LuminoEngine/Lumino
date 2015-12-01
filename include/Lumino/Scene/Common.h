@@ -34,6 +34,14 @@ enum SceneNodeType
 	SceneNodeType_VisualNode,
 };
 
+/// 
+enum class SceneNodeRenderingMode
+{
+	Invisible,
+	Visible,
+	NonShaderVisible,
+};
+
 /// カメラのプロジェクション
 enum CameraProjection
 {

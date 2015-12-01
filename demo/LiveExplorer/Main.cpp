@@ -45,6 +45,7 @@ int main()
 		RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
 		RefPtr<Sprite> sp1(Sprite::Create3D(), false);
 		sp1->SetTexture(tex1);
+		//sp1->SetPosition(Vector3(100, 0, 0));
 		//sp1->SetScale(Vector3(0.1, 0.1, 0.1));
 
 		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::Create();
@@ -56,10 +57,15 @@ int main()
 		RefPtr<TileMap> tilemap(LN_NEW TileMap(), false);
 		RefPtr<TileSet> tileset(LN_NEW TileSet(), false);
 		tileset->SetImageSource(tex2);
+		tileset->SetTileSize(Size(32, 32));
+		tilemap->SetTileSet(tileset);
 		RefPtr<TileLayer> tileLayer(LN_NEW TileLayer(), false);
+		tileLayer->Resize(20,15);
+		tileLayer->SetTileId(1, 1, 1);
 		tilemap->GetLayers()->Add(tileLayer);
 
 		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
+		tilemapNode->SetTileMap(tilemap);
 
 		while (Engine::UpdateFrame())
 		{

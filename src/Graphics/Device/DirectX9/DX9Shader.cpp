@@ -669,10 +669,15 @@ void DX9ShaderPass::Apply()
 {
 //	m_renderer->TryBeginScene();
 
-	if (m_renderer->GetCurrentShaderPass() == this) {
+	auto* current = m_renderer->GetCurrentShaderPass();
+	if (current == this) {
 		m_dxEffect->CommitChanges();
 	}
-	else {
+	else 
+	{
+		if (current != nullptr) {
+			current->EndPass();
+		}
 		UINT dummy;
 		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
 		LN_COMCALL(m_dxEffect->Begin(&dummy, 0));

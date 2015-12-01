@@ -5,6 +5,7 @@
 #include "MME/MMERenderingPass.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Scene/VisualNode.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/SceneGraph.h>
@@ -140,7 +141,28 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 			params.Pass = pass;	// TODO: いらないかも
 			for (SceneNode* node : m_renderingNodeList)
 			{
-				pass->RenderNode(params, node);
+				if (node->GetSceneNodeType() != SceneNodeType_VisualNode) {
+					continue;
+				}
+				switch (node->GetRenderingMode())
+				{
+					case SceneNodeRenderingMode::Invisible:
+						break;
+					case SceneNodeRenderingMode::Visible:
+						pass->RenderNode(params, node);
+						break;
+					case SceneNodeRenderingMode::NonShaderVisible:
+					{
+						VisualNode* visualNode = static_cast<VisualNode*>(node);
+						int subsetCount = visualNode->GetSubsetCount();
+						for (int iSubset = 0; iSubset < subsetCount; iSubset++)
+						{
+							params.Shader = nullptr;
+							visualNode->DrawSubsetInternal(params, iSubset, nullptr, nullptr);
+						}
+						break;
+					}
+				}
 			}
 			pass->PostRender(params);
 		}

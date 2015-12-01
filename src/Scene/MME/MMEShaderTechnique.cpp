@@ -271,7 +271,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
 		while (true)
 		{
 			// ; を探して '\0' に置換。無ければ終端ということで終了
-			int nextSemiColonIdx = StringTraits::IndexOf(cmdLine, _T(";"));
+			int nextSemiColonIdx = StringTraits::IndexOf(cmdLine, -1, _T(";"), 1);
 			if (nextSemiColonIdx == -1) { return; }
 
 			cmdLine[nextSemiColonIdx] = _T('\0');
@@ -299,7 +299,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
                         }
 
                         // = の後ろがテクスチャ型変数名になっているはず
-						int idx = StringTraits::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 						if (idx == -1) {									// テクスチャ変数名が省略されている
 							commandList->Add_RenderColorTarget(index, NULL);// デフォルトに戻すコマンド
 						}
@@ -321,7 +321,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
 					else if (cmdLine[6] == _T('D'))
                     {
 						// = の後ろがテクスチャ型変数名になっているはず
-						int idx = StringTraits::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 						if (idx == -1) {									// テクスチャ変数名が省略されている
 							commandList->Add_RenderDepthStencilTarget(NULL);// デフォルトに戻すコマンド
 						}
@@ -357,7 +357,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
                     ///////////////////////////// ClearSetColor
 					if (cmdLine[8] == _T('C'))
 					{
-						int idx = StringTraits::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 						if (idx != -1)
 						{
 							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -380,7 +380,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
                     ///////////////////////////// ClearSetDepth
 					else if (cmdLine[8] == _T('D'))
 					{
-						int idx = StringTraits::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 						if (idx != -1)
 						{
 							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -425,7 +425,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
                 // Pass
                 case _T('P'):
 				{
-					int idx = StringTraits::IndexOf(cmdLine, _T("="));
+					int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 					if (idx != -1)
 					{
 						MMEShaderPass* mmeShaderPass = FindMMEShaderPass(&cmdLine[idx + 1]);
@@ -455,7 +455,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
                     ///////////////////////////// LoopByCount
 					if (cmdLine[4] == _T('B'))
                     {
-						int idx = StringTraits::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 						if (idx != -1)
 						{
 							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);
@@ -483,7 +483,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
                     ///////////////////////////// LoopGetIndex
 					else if (cmdLine[4] == _T('G'))
                     {
-						int idx = StringTraits::IndexOf(cmdLine, _T("="));
+						int idx = StringTraits::IndexOf(cmdLine, -1, _T("="), 1);
 						if (idx != -1)
 						{
 							ShaderVariable* v = m_coreShader->FindVariable(&cmdLine[idx + 1]);

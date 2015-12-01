@@ -54,9 +54,9 @@ DX9Renderer::~DX9Renderer()
 //-----------------------------------------------------------------------------
 void DX9Renderer::SetCurrentShaderPass(DX9ShaderPass* pass)
 {
-	if (m_currentShaderPass != NULL && m_currentShaderPass != pass) {
-		m_currentShaderPass->EndPass();
-	}
+	//if (m_currentShaderPass != NULL && m_currentShaderPass != pass) {
+	//	m_currentShaderPass->EndPass();
+	//}
 	LN_REFOBJ_SET(m_currentShaderPass, pass);	// TODO: DX9Shader の参照カウントも増やさないとまずいかも
 }
 

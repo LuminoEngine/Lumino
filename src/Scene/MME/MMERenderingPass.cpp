@@ -36,10 +36,6 @@ MMERenderingPass::~MMERenderingPass()
 //-----------------------------------------------------------------------------
 void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
 {
-	if (node->GetSceneNodeType() != SceneNodeType_VisualNode) {
-		return;
-	}
-
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
 
 	// レンダリングステートの設定

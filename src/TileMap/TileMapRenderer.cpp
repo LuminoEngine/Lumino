@@ -20,9 +20,11 @@ LN_NAMESPACE_BEGIN
 void TileMapRenderer::Draw(TileMap* tileMap, const RectF& boundingRect)
 {
 	LN_CHECK_ARGS_RETURN(tileMap != nullptr);
+	Begin();
 	for (TileLayer* layer : *tileMap->GetLayers()) {
 		DrawLayer(layer, boundingRect, tileMap->GetTileSet());
 	}
+	End();
 }
 
 //-----------------------------------------------------------------------------
@@ -35,8 +37,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	const Size& tileSize = tileSet->SetTileSize();
 
 	// boundingRect ‘S‘Ì‚ð–„‚ß‚é‚æ‚¤‚É•`‰æ‚·‚é‚×‚«ƒZƒ‹”ÍˆÍ‚ðŒˆ‚ß‚é
-	int x = boundingRect.X / tileSize.Width;
-	int y = boundingRect.Y / tileSize.Height;
+	int ox = boundingRect.X / tileSize.Width;
+	int oy = boundingRect.Y / tileSize.Height;
 	int w = (boundingRect.Width + tileSize.Width) / tileSize.Width;
 	int h = (boundingRect.Height + tileSize.Height) / tileSize.Height;
 
@@ -45,12 +47,12 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	Texture* texture;
 	Rect srcRect;
 
-	for (; x < w; ++x)
+	for (int x = ox; x < w; ++x)
 	{
-		for (; y < h; ++y)
+		for (int y = oy; y < h; ++y)
 		{
 			tileSet->LookupTileImage(layer->GetTileId(x, y), &texture, &srcRect);
-			pos.Set(x, y, 0);
+			pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
 			size.Set(srcRect.Width, srcRect.Height);
 			DrawTile(pos, size, texture, srcRect);
 		}
@@ -126,7 +128,7 @@ void SpriteTileMapRenderer::DrawTile(
 	Texture* texture,
 	const Rect& srcRect)
 {
-	m_spriteRenderer->DrawRequest3D(position, Vector3::Zero, size, texture, srcRect, nullptr, AxisDirection_RZ);
+	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 }
 
 

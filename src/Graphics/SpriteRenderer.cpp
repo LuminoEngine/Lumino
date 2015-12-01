@@ -710,8 +710,8 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	{
 	}
 
-	mat.Translation(position);
-	mat.Translation(m_transformMatrix.GetPosition());
+	mat.Translate(position);
+	mat.Translate(m_transformMatrix.GetPosition());
 
 	// 座標変換
 	sprite.Vertices[0].Position.TransformCoord(mat);
