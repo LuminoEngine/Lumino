@@ -88,10 +88,12 @@ void TileMapNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		m_renderer->Draw(m_tileMap, RectF(0,0,320,240));
 	}
 
-	dc->ResetState();
-	dc->SetProjection(SizeF(640, 480));
-	dc->SetSolidColor(ColorF::Red);
-	dc->DrawRectangle(RectF(0, 0, 1, 2));
+	//dc->ResetState();
+	//dc->SetProjection(SizeF(640, 480));
+	//dc->SetSolidColor(ColorF::Red);
+	//dc->DrawRectangle(RectF(0, 0, 1, 2));
+	dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+	dc->DrawLine(Vector3(0, 0, 0), Vector3(1, 1, 1), ColorF::Red);
 	dc->Flush();
 
 }

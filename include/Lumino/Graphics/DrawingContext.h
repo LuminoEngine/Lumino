@@ -24,12 +24,19 @@ class DrawingContext
 	: public RefObject
 {
 public:
-	
+
+	void SetViewProjection(const Matrix& view, const Matrix& proj);
+
 	/**
 		@brief		’¼ü‚ğ•`‰æ‚µ‚Ü‚·B
 	*/
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& color);
+
+	/**
+		@brief		‹éŒ`‚ğ•`‰æ‚µ‚Ü‚·B
+	*/
+	void DrawRectangle(const RectF& rect, const ColorF& toColor);
 
 	void Flush();
 

@@ -13,8 +13,9 @@ LN_NAMESPACE_SCENE_BEGIN
 //
 //-----------------------------------------------------------------------------
 SceneGraphRenderingContext::SceneGraphRenderingContext(GraphicsManager* manager)
-	: RenderingContext(manager)
+	: DrawingContext()
 {
+	Initialize(manager);
 }
 
 //-----------------------------------------------------------------------------

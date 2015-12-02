@@ -85,6 +85,29 @@ LN_NAMESPACE_BEGIN
 //	GraphicsManager*	m_manager;
 //};
 
+struct DrawingBasicVertex
+{
+public:
+
+	Vector3	Position;			///< 位置
+	Vector4	Color;				///< 頂点カラー
+	Vector4	UVOffset;		///< テクスチャUV (転送元のUV情報)
+	Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
+
+							/// 頂点レイアウト
+	static VertexElement* Elements()
+	{
+		static VertexElement elements[] =
+		{
+			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
+			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
+		};
+		return elements;
+	}
+	static const int ElementCount = 4;
+};
 
 //=============================================================================
 // DrawingCommands
@@ -104,64 +127,45 @@ struct DrawingCommands_DrawLine
 
 
 //=============================================================================
-// PrimitiveRenderer
+// PrimitiveCache
 //=============================================================================
-class PrimitiveRenderer
+class PrimitiveCache
 {
 public:
-	PrimitiveRenderer();
-	virtual ~PrimitiveRenderer();
+	PrimitiveCache();
+	virtual ~PrimitiveCache();
 
 	void Clear();
-	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
+	void DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
 
+	void ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib);
+	int GetIndexCount() const { return m_indexCache.GetCount(); }
 private:
-	struct PainterVertex
-	{
-	public:
 
-		Vector3	Position;			///< 位置
-		Vector4	Color;				///< 頂点カラー
-		Vector4	UVOffset;		///< テクスチャUV (転送元のUV情報)
-		Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
-
-		/// 頂点レイアウト
-		static VertexElement* Elements()
-		{
-			static VertexElement elements[] =
-			{
-				{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
-				{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-				{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
-				{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
-			};
-			return elements;
-		}
-		static const int ElementCount = 4;
-	};
-
-	CacheBuffer<PainterVertex>		m_vertexCache;
+	CacheBuffer<DrawingBasicVertex>	m_vertexCache;
 	CacheBuffer<uint16_t>			m_indexCache;
 };
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-PrimitiveRenderer::PrimitiveRenderer()
+PrimitiveCache::PrimitiveCache()
+{
+	m_vertexCache.Reserve(1024);
+	m_indexCache.Reserve(1024);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+PrimitiveCache::~PrimitiveCache()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-PrimitiveRenderer::~PrimitiveRenderer()
-{
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void PrimitiveRenderer::Clear()
+void PrimitiveCache::Clear()
 {
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
@@ -170,17 +174,29 @@ void PrimitiveRenderer::Clear()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PrimitiveRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
+void PrimitiveCache::DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
-	//PainterVertex v;
-	//v.Position = from;
-	//v.Color = fromColor;
-	//m_vertexCache.Add(v);
-	//v.Position = to;
-	//v.Color = toColor;
-	//m_vertexCache.Add(v);
+	DrawingBasicVertex v;
+	v.Position = from;
+	v.Color = fromColor;
+	m_vertexCache.Add(v);
+	v.Position = to;
+	v.Color = toColor;
+	m_vertexCache.Add(v);
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PrimitiveCache::ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib)
+{
+	vb->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	ib->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+}
 
 
 
@@ -194,18 +210,34 @@ public:
 	DrawingContextImpl(GraphicsManager* manager);
 	~DrawingContextImpl();
 
+	void SetViewProjection(const Matrix& view, const Matrix& proj);
 	void DoCommandList(const void* commandBuffer, size_t size);
 	void Flush();
 
 public:
+	struct SetViewProjectionCommand : public RenderingCommand
+	{
+		DrawingContextImpl* m_impl;
+		Matrix m_view;
+		Matrix m_proj;
+
+		void Create(DrawingContextImpl* impl, const Matrix& view, const Matrix& proj)
+		{
+			m_impl = impl;
+			m_view = view;
+			m_proj = proj;
+		}
+		void Execute() { m_impl->SetViewProjection(m_view, m_proj); }
+	};
+
 	struct DoCommandListCommand : public RenderingCommand
 	{
 		DrawingContextImpl* m_impl;
 		DataHandle m_commandBuffer;
 		size_t	m_size;
-		void Create(DrawingContextImpl* engine, const void* commandBuffer, size_t size)
+		void Create(DrawingContextImpl* impl, const void* commandBuffer, size_t size)
 		{
-			m_impl = engine;
+			m_impl = impl;
 			m_commandBuffer = AllocExtData(size, commandBuffer);
 			m_size = size;
 		}
@@ -215,18 +247,22 @@ public:
 	struct FlushCommand : public RenderingCommand
 	{
 		DrawingContextImpl* m_impl;
-		void Create(DrawingContextImpl* engine) { m_impl = engine; }
+		void Create(DrawingContextImpl* impl) { m_impl = impl; }
 		void Execute() { m_impl->Flush(); }
 	};
 
 private:
-	GraphicsManager* m_manager;
-	PrimitiveRenderer	m_primitiveRenderer;
+	GraphicsManager*		m_manager;
+	PrimitiveCache			m_primitiveCache;
+	Driver::IVertexBuffer*	m_vertexBuffer;
+	Driver::IIndexBuffer*	m_indexBuffer;
+	Matrix					m_view;
+	Matrix					m_proj;
 
 	// DrawingContext3D
 	struct
 	{
-		RefPtr<Driver::IShader>		shader;
+		Driver::IShader*			shader;
 		Driver::IShaderVariable*    varWorldMatrix;
 		Driver::IShaderVariable*    varViewProjMatrix;
 		Driver::IShaderVariable*    varTexture;
@@ -242,8 +278,15 @@ private:
 //-----------------------------------------------------------------------------
 DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	: m_manager(manager)
+	, m_vertexBuffer(nullptr)
+	, m_indexBuffer(nullptr)
 {
 	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+
+	const int DefaultFaceCount = 1024;
+
+	m_vertexBuffer = device->CreateVertexBuffer(DrawingBasicVertex::Elements(), DrawingBasicVertex::ElementCount, DefaultFaceCount * 4, NULL, DeviceResourceUsage_Dynamic);
+	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, NULL, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
 	//-----------------------------------------------------
 	// シェーダ (DrawingContext3D)
@@ -254,7 +297,7 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	const size_t codeLen = LN_ARRAY_SIZE_OF(code);
 
 	ShaderCompileResult result;
-	m_shader3D.shader.Attach(device->CreateShader(code, codeLen, &result), false);
+	m_shader3D.shader = device->CreateShader(code, codeLen, &result);
 	if (result.Level != ShaderCompileResultLevel_Success) {
 		printf(result.Message.c_str());	// TODO:仮
 	}
@@ -271,6 +314,18 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 DrawingContextImpl::~DrawingContextImpl()
 {
+	LN_SAFE_RELEASE(m_vertexBuffer);
+	LN_SAFE_RELEASE(m_indexBuffer);
+	LN_SAFE_RELEASE(m_shader3D.shader);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::SetViewProjection(const Matrix& view, const Matrix& proj)
+{
+	m_view = view;
+	m_proj = proj;
 }
 
 //-----------------------------------------------------------------------------
@@ -291,7 +346,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 			case DrawingCommandType::DrawLine:
 			{
 				const DrawingCommands_DrawLine* cmd = (const DrawingCommands_DrawLine*)pos;
-				m_primitiveRenderer.DrawLine(cmd->from, cmd->to, cmd->fromColor, cmd->toColor);
+				m_primitiveCache.DrawSimpleLine(cmd->from, cmd->to, cmd->fromColor, cmd->toColor);
 				pos += sizeof(DrawingCommands_DrawLine);
 				break;
 			}
@@ -307,7 +362,16 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 //-----------------------------------------------------------------------------
 void DrawingContextImpl::Flush()
 {
+	m_primitiveCache.ApplyBuffers(m_vertexBuffer, m_indexBuffer);
 
+	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
+	renderer->SetVertexBuffer(m_vertexBuffer);
+	renderer->SetIndexBuffer(m_indexBuffer);
+	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
+	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
+	m_shader3D.varTexture->SetTexture(m_manager->GetDummyTexture());
+	m_shader3D.passP0->Apply();
+	renderer->DrawPrimitiveIndexed(PrimitiveType_LineList, 0, m_primitiveCache.GetIndexCount() / 3);
 }
 
 
@@ -340,8 +404,16 @@ DrawingContext::~DrawingContext()
 void DrawingContext::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_internal = LN_NEW	DrawingContextImpl();
+	m_internal = LN_NEW	DrawingContextImpl(m_manager);
 	m_commandsBuffer.Resize(1024);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
+{
+	LN_CALL_COMMAND(SetViewProjection, DrawingContextImpl::SetViewProjectionCommand, view, proj);
 }
 
 //-----------------------------------------------------------------------------
@@ -349,6 +421,8 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
+	CheckFlush(detail::DrawingClass::LineList);
+
 	DrawingCommands_DrawLine cmd;
 	cmd.type = DrawingCommandType::DrawLine;
 	cmd.from = from;
@@ -363,8 +437,15 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 //-----------------------------------------------------------------------------
 void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const ColorF& color)
 {
-	CheckFlush(m_currentDrawingClass);
 	DrawLine(from, to, color, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& toColor)
+{
+
 }
 
 //-----------------------------------------------------------------------------
@@ -403,7 +484,11 @@ void DrawingContext::AddCommand(const void* command, size_t size)
 //-----------------------------------------------------------------------------
 void DrawingContext::FlushInternal()
 {
+	LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte);
+	m_commandsUsingByte = 0;
+
 	LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
+
 }
 
 //-----------------------------------------------------------------------------

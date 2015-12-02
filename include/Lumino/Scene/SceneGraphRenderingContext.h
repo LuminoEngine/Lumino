@@ -1,7 +1,7 @@
 
 #pragma once
 #include "Common.h"
-#include "../Graphics/Painter.h"
+#include "../Graphics/DrawingContext.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -10,7 +10,7 @@ LN_NAMESPACE_SCENE_BEGIN
 	@brief	
 */
 class SceneGraphRenderingContext
-	: public RenderingContext
+	: public DrawingContext
 {
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
