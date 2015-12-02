@@ -138,6 +138,7 @@ private:
 	PainterEngine*					m_painterEngine;
 	Driver::ITexture*				m_dummyTexture;
 	bool							m_platformTextureLoading;
+
 };
 
 LN_NAMESPACE_GRAPHICS_END

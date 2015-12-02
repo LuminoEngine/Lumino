@@ -1,8 +1,9 @@
 
-#pragma once
+#include "../Internal.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Tilemap/TileMap.h>
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Tilemap/TileMapRenderer.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TileMapNode.h>
@@ -79,13 +80,20 @@ void TileMapNode::SetTileMap(TileMap* tileMap)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TileMapNode::DrawSubset(RenderingParams& params, int subsetIndex)
+void TileMapNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (m_tileMap != nullptr)
 	{
-		m_renderer->SetViewProjMatrix(params.CurrentCamera->GetViewMatrix(), params.CurrentCamera->GetProjectionMatrix());
+		m_renderer->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 		m_renderer->Draw(m_tileMap, RectF(0,0,320,240));
 	}
+
+	dc->ResetState();
+	dc->SetProjection(SizeF(640, 480));
+	dc->SetSolidColor(ColorF::Red);
+	dc->DrawRectangle(RectF(0, 0, 1, 2));
+	dc->Flush();
+
 }
 
 LN_NAMESPACE_SCENE_END

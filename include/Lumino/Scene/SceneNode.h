@@ -129,7 +129,7 @@ public:
 	/// このノードを描画する
 	//virtual void Render(RenderingParams& params) {}
 
-	virtual void DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, ShaderPass* pass) {};
+	virtual void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass) {};
 
 	/// Z ソート用の比較関数 (距離と優先度でソート)
 	static bool CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right);

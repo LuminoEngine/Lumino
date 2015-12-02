@@ -31,7 +31,7 @@ public:
 	{
 		//Renderer*			Renderer;
 		//GeometryRenderer*	GeometryRenderer;
-		RenderingParams*			Params;
+		SceneGraphRenderingContext*			Params;
 		//int							SubsetCount;
 		SceneNode*					RenderingNode;
 		int							SubsetIndex;

@@ -14,7 +14,7 @@ public:
 	virtual ~InfomationRenderingPass();
 
 public:
-	virtual void PostRender(RenderingParams& params);
+	virtual void PostRender(SceneGraphRenderingContext* dc);
 };
 
 LN_NAMESPACE_SCENE_END

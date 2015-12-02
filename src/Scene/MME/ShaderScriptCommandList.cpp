@@ -1,6 +1,7 @@
 ﻿
 #include "../../Internal.h"
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneNode.h>
 #include "ShaderScriptCommandList.h"
 #include "../RenderingPass.h"
@@ -503,7 +504,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 //-----------------------------------------------------------------------------
 void ShaderScriptCommandList::DrawGeometry(DrawParams& params, ShaderPass* pass)
 {
-	params.RenderingNode->DrawSubsetInternal(*params.Params, params.SubsetIndex, m_ownerShader, pass);
+	params.RenderingNode->DrawSubsetInternal(params.Params, params.SubsetIndex, m_ownerShader, pass);
 #if 0
 	// サブセットの指定がなければすべて描画する
 	if (params.SubsetNumbers->IsEmpty())

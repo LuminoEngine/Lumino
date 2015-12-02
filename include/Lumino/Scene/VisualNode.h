@@ -102,9 +102,10 @@ public:
 	// IMMESubsetRenerer
 //	virtual void OnDrawSubset(int subsetIndex, void* userData, MMEShader* shader, pass) { DrawSubset(*((RenderingParams*)userData), subsetIndex); }
 
-	void DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, ShaderPass* pass);
+	void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 
-	virtual void DrawSubset(RenderingParams& params, int subsetIndex) = 0;
+	virtual void OnRender(SceneGraphRenderingContext* dc);
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) = 0;
 
 	virtual LightNodeList* GetAffectLightList() { return &m_affectLightList; }
 

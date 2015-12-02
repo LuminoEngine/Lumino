@@ -20,6 +20,7 @@ protected:
 	// 次に新しいデバイスが渡されて呼ばれる。このとき、保存したリソースをデバイスオブジェクトにロードする。
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) = 0;
 	
+	GraphicsResourceObject();
 	virtual ~GraphicsResourceObject();
 
 

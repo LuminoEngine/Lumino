@@ -61,7 +61,7 @@ protected:
 	virtual ~Sprite();
 	void CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord);
 
-	virtual void DrawSubset(RenderingParams& params, int subsetIndex);
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:
 	SpriteCoord	m_spriteCoord;

@@ -1,5 +1,6 @@
 ﻿
 #include "../../Internal.h"
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/VisualNode.h>
 #include "ShaderScriptCommandList.h"
 #include "MMEShaderTechnique.h"
@@ -34,67 +35,76 @@ MMERenderingPass::~MMERenderingPass()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MMERenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
+void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* node)
 {
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
 
 	// レンダリングステートの設定
-	params.Renderer->SetRenderState(visualNode->GetRenderState());
+	dc->Renderer->SetRenderState(visualNode->GetRenderState());
+	visualNode->OnRender(dc);
 
-	int subsetCount = visualNode->GetSubsetCount();
-	for (int iSubset = 0; iSubset < subsetCount; iSubset++)
+	//int subsetCount = visualNode->GetSubsetCount();
+	//for (int iSubset = 0; iSubset < subsetCount; iSubset++)
+	//{
+	//	RenderSubset(params, visualNode, iSubset);
+	//}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* visualNode, int subset)
+{
+	// 今回のパスで本当に必要な情報 (使用するシェーダ等) を取得する
+	RenderingPriorityParams priorityParams;
+	SelectPriorityParams(visualNode, subset, &priorityParams);
+	if (priorityParams.Hide) {	// このパスでは描画しない
+		return;
+	}
+	dc->Shader = priorityParams.Shader;
+
+	// ノード単位データを更新する
+	priorityParams.Shader->UpdateNodeParams(visualNode, dc->CurrentCamera, *visualNode->GetAffectLightList());
+	visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
+
+	const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
+
+	// テクニックの検索
+	MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(
+		m_mmdPass,
+		!material.Texture.IsNull(),
+		!material.SphereTexture.IsNull(),
+		!material.ToonTexture.IsNull(),
+		false,	// TODO
+		subset);
+
+	// テクニックが見つからなかった。この条件に当てはまるのは、テクニックのターゲットサブセット範囲が指定されていて、
+	// iSubset がいずれにもマッチしなかった場合。この場合はデフォルトのシェーダを探す。
+	if (tech == NULL)
 	{
-		// 今回のパスで本当に必要な情報 (使用するシェーダ等) を取得する
-		RenderingPriorityParams priorityParams;
-		SelectPriorityParams(visualNode, iSubset, &priorityParams);
-		if (priorityParams.Hide) {	// このパスでは描画しない
-			return;
-		}
-		params.Shader = priorityParams.Shader;
-
-		// ノード単位データを更新する
-		priorityParams.Shader->UpdateNodeParams(visualNode, params.CurrentCamera, *visualNode->GetAffectLightList());
-		visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
-
-		const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(iSubset).Material;
-
-		// テクニックの検索
-		MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(
-			m_mmdPass,
-			!material.Texture.IsNull(),
-			!material.SphereTexture.IsNull(),
-			!material.ToonTexture.IsNull(),
-			false,	// TODO
-			iSubset);
-
-		// テクニックが見つからなかった。この条件に当てはまるのは、テクニックのターゲットサブセット範囲が指定されていて、
-		// iSubset がいずれにもマッチしなかった場合。この場合はデフォルトのシェーダを探す。
-		if (tech == NULL)
+		if (dc->Pass->GetDefaultShader() != NULL)
 		{
-			if (params.Pass->GetDefaultShader() != NULL)
-			{
-				tech = params.Pass->GetDefaultShader()->FindTechnique(
-					m_mmdPass,
-					material.Texture.IsNull(),
-					material.SphereTexture.IsNull(),
-					material.ToonTexture.IsNull(),
-					false,	// TODO
-					iSubset);
-				if (tech == NULL) {
-					// デフォルトのシェーダにも一致するテクニックが見つからなかった。
-					// この iSubset は描画しない。というかできない。
-					continue;
-				}
+			tech = dc->Pass->GetDefaultShader()->FindTechnique(
+				m_mmdPass,
+				material.Texture.IsNull(),
+				material.SphereTexture.IsNull(),
+				material.ToonTexture.IsNull(),
+				false,	// TODO
+				subset);
+			if (tech == NULL) {
+				// デフォルトのシェーダにも一致するテクニックが見つからなかった。
+				// この iSubset は描画しない。というかできない。
+				return;
 			}
 		}
-
-		// コマンド経由で描画実行
-		ShaderScriptCommandList::DrawParams dp;
-		dp.Params = &params;
-		dp.RenderingNode = visualNode;
-		dp.SubsetIndex = iSubset;
-		tech->GetDrawingCommandList().Execute(dp);
 	}
+
+	// コマンド経由で描画実行
+	ShaderScriptCommandList::DrawParams dp;
+	dp.Params = dc;
+	dp.RenderingNode = visualNode;
+	dp.SubsetIndex = subset;
+	tech->GetDrawingCommandList().Execute(dp);
 }
 
 //-----------------------------------------------------------------------------

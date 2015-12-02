@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include "DebugRenderer.h"
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Camera.h>
 #include "SceneGraphManager.h"
 #include "InfomationRenderingPass.h"
@@ -30,15 +31,15 @@ InfomationRenderingPass::~InfomationRenderingPass()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void InfomationRenderingPass::PostRender(RenderingParams& params)
+void InfomationRenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
 	if (m_manager->GetPhysicsManager() != NULL)
 	{
-		DebugRenderer dr(params.GeometryRenderer);
-		params.GeometryRenderer->SetViewProjTransform(params.CurrentCamera->GetViewProjectionMatrix());
-		params.GeometryRenderer->BeginPass();
+		DebugRenderer dr(dc->GeometryRenderer);
+		dc->GeometryRenderer->SetViewProjTransform(dc->CurrentCamera->GetViewProjectionMatrix());
+		dc->GeometryRenderer->BeginPass();
 		m_manager->GetPhysicsManager()->DrawDebugShapes(&dr);
-		params.GeometryRenderer->EndPass();
+		dc->GeometryRenderer->EndPass();
 	}
 }
 

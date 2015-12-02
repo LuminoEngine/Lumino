@@ -11,7 +11,7 @@ class GeometryRendererCore;
 /**
 	@brief		基本的な形状の描画クラス
 */
-class GeometryRenderer
+class GeometryRenderer	// TODO: シェーダつきの描画は DrawingContext にもっていく。これは PrimitiveRenderer とかいう名前のほうがいいと思う
 	: public RefObject
 {
 public:

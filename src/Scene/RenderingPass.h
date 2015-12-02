@@ -12,15 +12,15 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-class RenderingParams
-{
-public:
-	RenderingPass*				Pass;
-	Details::Renderer*			Renderer;	// TODO 内部クラス
-	GeometryRenderer*			GeometryRenderer;
-	Camera*						CurrentCamera;
-	MMEShader*					Shader;				///< 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
-};
+//class RenderingParams
+//{
+//public:
+//	RenderingPass*				Pass;
+//	Details::Renderer*			Renderer;	// TODO 内部クラス
+//	GeometryRenderer*			GeometryRenderer;
+//	Camera*						CurrentCamera;
+//	MMEShader*					Shader;				///< 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
+//};
 
 
 struct RenderingPriorityParams
@@ -71,9 +71,10 @@ public:
 	///		目的はノード単位のレンダリングの流れをパス側でカスタマイズできるようにすること。
 	///		例えば、基底の処理は汎用的 MME 用のパスとなっており、ゲーム向けにはややオーバースペック気味。
 	///		もっとゲーム向けにスマート化したカスタムパスを実装するとき、オーバーライドする。
-	virtual void RenderNode(RenderingParams& params, SceneNode* node);
+	virtual void RenderNode(SceneGraphRenderingContext* dc, SceneNode* node);
+	virtual void RenderSubset(SceneGraphRenderingContext* dc, VisualNode* node, int subset);
 
-	virtual void PostRender(RenderingParams& params) {}
+	virtual void PostRender(SceneGraphRenderingContext* dc) {}
 
 
 protected:

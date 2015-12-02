@@ -14,7 +14,8 @@ public:
 	virtual ~MMERenderingPass();
 
 private:
-	virtual void RenderNode(RenderingParams& params, SceneNode* node);
+	virtual void RenderNode(SceneGraphRenderingContext* dc, SceneNode* node);
+	virtual void RenderSubset(SceneGraphRenderingContext* dc, VisualNode* node, int subset) override;
 
 private:
 	/// このパスのデフォルト&優先シェーダと、指定したノードのシェーダから描画に使用するテクニックを選択する。

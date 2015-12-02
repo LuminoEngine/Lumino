@@ -1,7 +1,8 @@
 ﻿
-#pragma once
+#include "../Internal.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
 
@@ -247,11 +248,11 @@ void Sprite::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, floa
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::DrawSubset(RenderingParams& params, int subsetIndex)
+void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{
-		params.GeometryRenderer->DrawSquare(
+		dc->GeometryRenderer->DrawSquare(
 			m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
 			m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
 			m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White,

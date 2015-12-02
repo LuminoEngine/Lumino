@@ -1,6 +1,12 @@
 ﻿/*
+	[2015/12/2] RenderingPass::RenderNode/RenderSubset と VisualNote::Render について
+		従来は RenderingPass::RenderNode の中でサブセットループまわしていた。
+		でも、VisualNode を拡張して自前描画したいとき、DrawSubset をオーバーライドするっていうのは少し直感的ではない。
+		Render なり OnRender なりをオーバーロードし、基底を呼び出せばデフォルトの処理、
+		完全自前にしたければ基底は呼び出さない、が自然。
+		また、外部に「自前描画するのでデフォルトのシェーダ使った描画は必要ないよ、でもメインの(MME用など)シーン内に描画するよ」フラグは必要なくなる。
 	
-	[2015/12/27] ViewPane 廃止
+	[2015/11/27] ViewPane 廃止
 		廃止というか、SceneGraph クラスにした。
 		半年くらい間空いた後に見直したけど、やっぱり直感的ではない。
 
@@ -97,6 +103,7 @@
 #include "SceneHelper.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/MMDSceneGraph.h>
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 
 // TODO: 移動
 #include <Lumino/Scene/Camera.h>
@@ -137,6 +144,8 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {
 		m_renderingPassIDStack.Push(i);
 	}
+
+	m_renderingContext = LN_NEW SceneGraphRenderingContext(m_graphicsManager);
 }
 
 //-----------------------------------------------------------------------------
@@ -144,6 +153,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 SceneGraphManager::~SceneGraphManager()
 {
+	LN_SAFE_RELEASE(m_renderingContext);
 }
 
 //-----------------------------------------------------------------------------

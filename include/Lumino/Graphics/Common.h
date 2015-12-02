@@ -41,6 +41,7 @@ class ShaderVariable;
 class ShaderTechnique;
 class ShaderPass;
 
+class GeometryRenderer;
 class PainterEngine;
 class Helper;
 class RenderingCommandList;

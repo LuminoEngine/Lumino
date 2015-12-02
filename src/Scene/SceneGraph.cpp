@@ -5,6 +5,7 @@
 #include "MME/MMERenderingPass.h"
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/VisualNode.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
@@ -130,15 +131,16 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 	}
 
 	{
-		RenderingParams params;
-		params.Renderer = m_manager->GetGraphicsManager()->GetRenderer();
-		params.GeometryRenderer = m_manager->GetGeometryRenderer();
-		params.CurrentCamera = camera;
+		//RenderingParams params;
+		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
+		dc->Renderer = m_manager->GetGraphicsManager()->GetRenderer();
+		dc->GeometryRenderer = m_manager->GetGeometryRenderer();
+		dc->CurrentCamera = camera;
 		for (RenderingPass* pass : *GetRenderingPasses())
 		{
 			if (pass == nullptr) continue;
 
-			params.Pass = pass;	// TODO: いらないかも
+			dc->Pass = pass;	// TODO: いらないかも
 			for (SceneNode* node : m_renderingNodeList)
 			{
 				if (node->GetSceneNodeType() != SceneNodeType_VisualNode) {
@@ -149,7 +151,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 					case SceneNodeRenderingMode::Invisible:
 						break;
 					case SceneNodeRenderingMode::Visible:
-						pass->RenderNode(params, node);
+						pass->RenderNode(dc, node);
 						break;
 					case SceneNodeRenderingMode::NonShaderVisible:
 					{
@@ -157,14 +159,14 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 						int subsetCount = visualNode->GetSubsetCount();
 						for (int iSubset = 0; iSubset < subsetCount; iSubset++)
 						{
-							params.Shader = nullptr;
-							visualNode->DrawSubsetInternal(params, iSubset, nullptr, nullptr);
+							dc->Shader = nullptr;
+							visualNode->DrawSubsetInternal(dc, iSubset, nullptr, nullptr);
 						}
 						break;
 					}
 				}
 			}
-			pass->PostRender(params);
+			pass->PostRender(dc);
 		}
 	}
 

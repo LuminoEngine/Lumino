@@ -390,6 +390,8 @@ void RenderingContext::ResetState()
 	m_currentState.Transform = Matrix::Identity;
 	m_currentState.Brush = NULL;
 	m_currentState.Font = NULL;
+	m_currentState.Opacity = 1.0f;
+	m_currentState.Tone = ToneF();
 	LN_CALL_COMMAND(Begin, BeginCommand);	// TODO: Reset
 }
 

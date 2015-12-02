@@ -38,7 +38,14 @@ RenderingPass::~RenderingPass()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingPass::RenderNode(RenderingParams& params, SceneNode* node)
+void RenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* node)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* node, int subset)
 {
 }
 

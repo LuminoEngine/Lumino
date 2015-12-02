@@ -698,9 +698,19 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+GraphicsResourceObject::GraphicsResourceObject()
+	: m_manager(nullptr)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 GraphicsResourceObject::~GraphicsResourceObject()
 {
-	m_manager->RemoveResourceObject(this);
+	if (m_manager != nullptr) {
+		m_manager->RemoveResourceObject(this);
+	}
 }
 
 //-----------------------------------------------------------------------------

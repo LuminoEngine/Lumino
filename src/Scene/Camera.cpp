@@ -280,7 +280,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		//newPos.TransformCoord(mat);
 		//camera->SetPosition(newPos);
 
-		float s = 0.01;
+		float s = 0.01f;
 		float dx = s * (x - m_prevPos.X);
 		float dy = s * (y - m_prevPos.Y);
 

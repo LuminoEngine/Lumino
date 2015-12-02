@@ -43,6 +43,7 @@ public:
 	virtual ~SceneGraphManager();
 
 public:
+	SceneGraphRenderingContext* GetRenderingContext() { return m_renderingContext; }
 
 	// TODO: SceneGraphManager はホントに単純なシーングラフ管理だけにとどめておいて、MMD 用のシーン構築は別クラスにしてもいいかも
 	void CreateDefaultSceneGraph();
@@ -90,6 +91,8 @@ private:
 	RefPtr<Modeling::ModelManager>		m_modelManager;
 	RefPtr<GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Texture2D>			m_dummyTexture;
+
+	SceneGraphRenderingContext*		m_renderingContext;
 
 
 	Stack<int>							m_renderingPassIDStack;	///< (0～MaxRenderingPass-1)

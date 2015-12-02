@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Common.h"
 #include "../Graphics/Font.h"
 #include "Texture.h"
 #include "GlyphRun.h"
@@ -183,12 +184,13 @@ public:
 
 	void ResetState();
 
+	// TODO: これはサブクラスに持っていくべき
 	void SetProjection(const Size& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
 	void SetProjection(const SizeF& viewSize, float nearZ = 0.0f, float farZ = 1.0f);
 
 	void SetTransform(const Matrix& matrix);
 	void SetBrush(Brush* brush);
-	void SetSolidColor(const ColorF& color);
+	void SetSolidColor(const ColorF& color);	///< ユーティリティ。SolidColorBrush をセットする
 	void SetTexture(Texture* texture, const Rect& srcRect);	///< ユーティリティ。TextureBrush をセットする
 	void SetOpacity(float opacity);	// 0~1
 	void SetTone(const ToneF& tone);

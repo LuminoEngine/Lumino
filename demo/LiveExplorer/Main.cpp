@@ -31,6 +31,21 @@ int main()
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	//ByteBuffer buf1;
+	//buf1.Resize(sizeof(Matrix) * 1000);
+	//ByteBuffer buf2;
+	//buf2.Resize(sizeof(Matrix) * 1000);
+
+	//for (int i = 0; i < 10; ++i)
+	//{
+	//	ElapsedTimer t;
+	//	t.Start();
+	//	memcpy(buf1.GetData(), buf2.GetData(), buf1.GetSize());
+	//	printf("%lld\n", t.GetElapsedTimeNS());
+	//}
+
+
 	try
 	{
 		auto fff = ColorF::Green;
@@ -42,9 +57,9 @@ int main()
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
-		RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
-		RefPtr<Sprite> sp1(Sprite::Create3D(), false);
-		sp1->SetTexture(tex1);
+		//RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
+		//RefPtr<Sprite> sp1(Sprite::Create3D(), false);
+		//sp1->SetTexture(tex1);
 		//sp1->SetPosition(Vector3(100, 0, 0));
 		//sp1->SetScale(Vector3(0.1, 0.1, 0.1));
 
@@ -53,6 +68,7 @@ int main()
 		//Camera::GetDefault3DCamera()->SetPosition(Vector3(200,0,-20));
 
 
+#if 0
 		RefPtr<Texture2D> tex2(Texture2D::Create(_T("D:/tmp/tiles.png")), false);
 		RefPtr<TileMap> tilemap(LN_NEW TileMap(), false);
 		RefPtr<TileSet> tileset(LN_NEW TileSet(), false);
@@ -64,8 +80,9 @@ int main()
 		tileLayer->SetTileId(1, 1, 1);
 		tilemap->GetLayers()->Add(tileLayer);
 
+#endif
 		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
-		tilemapNode->SetTileMap(tilemap);
+		//tilemapNode->SetTileMap(tilemap);
 
 		while (Engine::UpdateFrame())
 		{

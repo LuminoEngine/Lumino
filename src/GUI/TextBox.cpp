@@ -605,7 +605,7 @@ void TextBox::Handler_MouseMove(MouseEventArgs* e)
 {
 	if (m_isDragging)
 	{
-		Point pt(e->X, e->Y);
+		Point pt((int)e->X, (int)e->Y);
 		int index = m_document->GetContentIndexFromPixel(pt);
 		if (index < m_dragStartContentIndex) {
 			Select(index, m_dragStartContentIndex - index);

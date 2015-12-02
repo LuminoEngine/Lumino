@@ -34,7 +34,7 @@ protected:
 	TileMapNode();
 	virtual ~TileMapNode();
 	void Create3DCore(SceneGraphManager* manager);
-	virtual void DrawSubset(RenderingParams& params, int subsetIndex);
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
 
 private:
 	SpriteTileMapRenderer*	m_renderer;

@@ -3,6 +3,8 @@
 #include "../Internal.h"
 #include "MME/MMEShaderTechnique.h"
 #include "MME/MMEShader.h"
+#include "RenderingPass.h"
+#include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
 
@@ -181,7 +183,7 @@ void VisualNode::Render(RenderingParams& params)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MMEShader* shader, ShaderPass* pass)
+void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass)
 {
 	// シェーダのサブセット単位のデータを更新する
 	if (shader != NULL) {
@@ -194,9 +196,20 @@ void VisualNode::DrawSubsetInternal(RenderingParams& params, int subsetIndex, MM
 	}
 
 	// サブセット描画の本体
-	DrawSubset(params, subsetIndex);
+	DrawSubset(dc, subsetIndex);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void VisualNode::OnRender(SceneGraphRenderingContext* dc)
+{
+	int subsetCount = GetSubsetCount();
+	for (int i = 0; i < subsetCount; ++i)
+	{
+		dc->Pass->RenderSubset(dc, this, i);
+	}
+}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

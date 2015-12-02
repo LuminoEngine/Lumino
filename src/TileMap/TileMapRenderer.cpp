@@ -78,6 +78,7 @@ SpriteTileMapRenderer::SpriteTileMapRenderer(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 SpriteTileMapRenderer::~SpriteTileMapRenderer()
 {
+	LN_SAFE_RELEASE(m_spriteRenderer);
 }
 
 //-----------------------------------------------------------------------------

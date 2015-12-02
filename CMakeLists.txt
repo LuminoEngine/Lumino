@@ -141,6 +141,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/BitmapPainter.h
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
+	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/Font.h
 	include/Lumino/Graphics/FontManager.h
 	include/Lumino/Graphics/GeometryRenderer.h
@@ -153,7 +154,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Material.h
 	include/Lumino/Graphics/Painter.h
 	include/Lumino/Graphics/Renderer.h
-	include/Lumino/Graphics/RenderingContext.h
 	include/Lumino/Graphics/RenderState.h
 	include/Lumino/Graphics/SamplerState.h
 	include/Lumino/Graphics/Shader.h
@@ -168,6 +168,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/BitmapFont.h
 	src/Graphics/BitmapPainter.cpp
 	src/Graphics/Color.cpp
+	src/Graphics/DrawingContext.cpp
 	src/Graphics/Font.cpp
 	src/Graphics/FontGlyphTextureCache.cpp
 	src/Graphics/FontGlyphTextureCache.h
@@ -192,7 +193,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/RendererImpl.h
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingCommand.h
-	src/Graphics/RenderingContext.cpp
 	src/Graphics/RenderingThread.cpp
 	src/Graphics/RenderingThread.h
 	src/Graphics/RenderState.cpp
@@ -251,6 +251,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MMDSceneGraph.h
 	include/Lumino/Scene/SceneGraph.h
+	include/Lumino/Scene/SceneGraphRenderingContext.h
 	include/Lumino/Scene/SceneNode.h
 	include/Lumino/Scene/Sprite.h
 	include/Lumino/Scene/TileMapNode.h
@@ -271,6 +272,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneGraph.cpp
 	src/Scene/SceneGraphManager.cpp
 	src/Scene/SceneGraphManager.h
+	src/Scene/SceneGraphRenderingContext.cpp
 	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
 	src/Scene/Sprite.cpp
