@@ -300,70 +300,122 @@ public:
 
 			} FrameTextureBrush;
 		};
+
+		void Set(ln::Brush* brush)
+		{
+			if (brush == nullptr)
+			{
+				Type = BrushType_Unknown;	// no set
+			}
+			else
+			{
+				Type = brush->GetType();
+				if (Type == BrushType_SolidColor)
+				{
+					auto t = static_cast<ColorBrush*>(brush);
+					const ColorF& c = t->GetColor();
+					SolidColorBrush.Color[0] = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					SolidColorBrush.Color[1] = c.G;
+					SolidColorBrush.Color[2] = c.B;
+					SolidColorBrush.Color[3] = c.A;
+				}
+				else if (Type == BrushType_Texture)
+				{
+					auto t = static_cast<ln::TextureBrush*>(brush);
+					TextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->GetDeviceObject() : nullptr;
+					const Rect& r = t->GetSourceRect();
+					TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					TextureBrush.SourceRect[1] = r.Y;
+					TextureBrush.SourceRect[2] = r.Width;
+					TextureBrush.SourceRect[3] = r.Height;
+					TextureBrush.WrapMode = t->GetWrapMode();
+				}
+				else if (Type == BrushType_FrameTexture)
+				{
+					auto t = static_cast<ln::FrameTextureBrush*>(brush);
+					FrameTextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->GetDeviceObject() : nullptr;
+					const Rect& r = t->GetSourceRect();
+					const Rect& r2 = t->GetInnerAreaSourceRect();
+					FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					FrameTextureBrush.SourceRect[1] = r.Y;
+					FrameTextureBrush.SourceRect[2] = r.Width;
+					FrameTextureBrush.SourceRect[3] = r.Height;
+					FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					FrameTextureBrush.InnerSourceRect[1] = r2.Y;
+					FrameTextureBrush.InnerSourceRect[2] = r2.Width;
+					FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+					FrameTextureBrush.WrapMode = t->GetWrapMode();
+					FrameTextureBrush.FrameThicness = t->GetThickness();
+				}
+				else {
+					LN_THROW(0, NotImplementedException);
+				}
+			}
+		}
+
+		void Copy(const BrushData& data)
+		{
+			memcpy(this, &data, sizeof(BrushData));
+			if (Type == BrushType_SolidColor) {
+				//ForeColor.R = Brush.SolidColorBrush.Color[0];
+				//ForeColor.G = Brush.SolidColorBrush.Color[1];
+				//ForeColor.B = Brush.SolidColorBrush.Color[2];
+				//ForeColor.A = Brush.SolidColorBrush.Color[3];
+			}
+			else if (Type == BrushType_Texture) {
+				LN_SAFE_ADDREF(TextureBrush.Texture);
+			}
+			else if (Type == BrushType_FrameTexture) {
+				LN_SAFE_ADDREF(FrameTextureBrush.Texture);
+			}
+		}
+	};
+
+	struct PenData
+	{
+		BrushData	brush;
+		float		thickness;
+
+		void Set(ln::Pen* pen)
+		{
+			if (pen != nullptr)
+			{
+				brush.Set(pen->GetBrush());
+				thickness = pen->GetThickness();
+			}
+			else
+			{
+				brush.Set(nullptr);
+				thickness = 0.0f;
+			}
+		}
+		void Copy(const PenData& data)
+		{
+			brush.Copy(data.brush);
+			thickness = data.thickness;
+		}
 	};
 
 	// このクラスは描画コマンドの引数となるクラス。RefPtr とかはメンバに置かないこと。
 	struct DrawingState
 	{
 		BrushData	Brush;
+		PenData		pen;
 		float		Opacity;
-		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+		//ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
 		ToneF		Tone;
+
+		DrawingState()
+		{
+			pen.brush.Type = BrushType_Unknown;
+		}
 
 		// Painter 側で作り、PainterEngineState をコマンドリストに乗せるときに使う。
 		void Create(const detail::DrawingState& state)
 		{
 			// ブラシデータ
-			ForeColor = ColorF::White;
-			ln::Brush* brush = state.brush;
-			if (brush == NULL)
-			{
-				Brush.Type = BrushType_Unknown;	// no set
-			}
-			else
-			{
-				Brush.Type = brush->GetType();
-				if (Brush.Type == BrushType_SolidColor)
-				{
-					auto t = static_cast<ColorBrush*>(brush);
-					const ColorF& c = t->GetColor();
-					Brush.SolidColorBrush.Color[0] = ForeColor.R = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					Brush.SolidColorBrush.Color[1] = ForeColor.G = c.G;
-					Brush.SolidColorBrush.Color[2] = ForeColor.B = c.B;
-					Brush.SolidColorBrush.Color[3] = ForeColor.A = c.A;
-				}
-				else if (Brush.Type == BrushType_Texture)
-				{
-					auto t = static_cast<TextureBrush*>(brush);
-					Brush.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
-					const Rect& r = t->GetSourceRect();
-					Brush.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					Brush.TextureBrush.SourceRect[1] = r.Y;
-					Brush.TextureBrush.SourceRect[2] = r.Width;
-					Brush.TextureBrush.SourceRect[3] = r.Height;
-					Brush.TextureBrush.WrapMode = t->GetWrapMode();
-				}
-				else if (Brush.Type == BrushType_FrameTexture)
-				{
-					auto t = static_cast<FrameTextureBrush*>(brush);
-					Brush.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
-					const Rect& r = t->GetSourceRect();
-					const Rect& r2 = t->GetInnerAreaSourceRect();
-					Brush.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					Brush.FrameTextureBrush.SourceRect[1] = r.Y;
-					Brush.FrameTextureBrush.SourceRect[2] = r.Width;
-					Brush.FrameTextureBrush.SourceRect[3] = r.Height;
-					Brush.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					Brush.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
-					Brush.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
-					Brush.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
-					Brush.FrameTextureBrush.WrapMode = t->GetWrapMode();
-					Brush.FrameTextureBrush.FrameThicness = t->GetThickness();
-				}
-				else {
-					LN_THROW(0, NotImplementedException);
-				}
-			}
+			Brush.Set(state.brush);
+			pen.Set(state.pen);
 
 			// 不透明度
 			Opacity = state.opacity;
@@ -377,20 +429,8 @@ public:
 			ReleaseObjects();
 
 			// ブラシデータ
-			ForeColor = ColorF::White;
-			memcpy(&Brush, &state.Brush, sizeof(Brush));
-			if (Brush.Type == BrushType_SolidColor) {
-				ForeColor.R = Brush.SolidColorBrush.Color[0];
-				ForeColor.G = Brush.SolidColorBrush.Color[1];
-				ForeColor.B = Brush.SolidColorBrush.Color[2];
-				ForeColor.A = Brush.SolidColorBrush.Color[3];
-			}
-			else if (Brush.Type == BrushType_Texture) {
-				LN_SAFE_ADDREF(Brush.TextureBrush.Texture);
-			}
-			else if (Brush.Type == BrushType_FrameTexture) {
-				LN_SAFE_ADDREF(Brush.FrameTextureBrush.Texture);
-			}
+			Brush.Copy(state.Brush);
+			pen.Copy(state.pen);
 
 			// 不透明度
 			Opacity = state.Opacity;
@@ -436,7 +476,7 @@ public:
 		void Execute() { m_impl->SetViewProjection(m_view, m_proj); }
 	};
 
-	struct SetPainterEngineStateCommand : public RenderingCommand
+	struct SetStateCommand : public RenderingCommand
 	{
 		DrawingContextImpl* m_impl;
 		DrawingState m_state;
@@ -648,7 +688,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 				StrokePoint pt;
 				pt.point = cmd->from; pt.color = cmd->fromColor;
 				m_strokePoints.Add(pt);
-				pt.point = cmd->from; pt.color = cmd->fromColor;
+				pt.point = cmd->to; pt.color = cmd->toColor;
 				m_strokePoints.Add(pt);
 
 				GetCurrentPath()->pointCount = 2;
@@ -713,21 +753,24 @@ void DrawingContextImpl::Flush()
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
 
 	
-	ExpandStroke();
+	if (m_currentState.pen.brush.Type != BrushType_Unknown && m_currentState.pen.thickness == 0.0f)
+	{
+		ExpandStroke();
 
-	//m_primitiveCache.ApplyBuffers(m_vertexBuffer, m_indexBuffer);
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+		//m_primitiveCache.ApplyBuffers(m_vertexBuffer, m_indexBuffer);
+		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
-	renderer->SetVertexBuffer(m_vertexBuffer);
-	renderer->SetIndexBuffer(m_indexBuffer);
-	m_shader3D.varTexture->SetTexture(m_manager->GetDummyTexture());
-	m_shader3D.passP0->Apply();
-	renderer->DrawPrimitiveIndexed(PrimitiveType_LineList, 0, m_indexCache.GetCount()/* / 3*/);
+		renderer->SetVertexBuffer(m_vertexBuffer);
+		renderer->SetIndexBuffer(m_indexBuffer);
+		m_shader3D.varTexture->SetTexture(m_manager->GetDummyTexture());
+		m_shader3D.passP0->Apply();
+		renderer->DrawPrimitiveIndexed(PrimitiveType_LineList, 0, m_indexCache.GetCount() / 2);
 
-	m_pathes.Clear();
-	m_pathPoints.Clear();
-	m_strokePoints.Clear();
+		m_pathes.Clear();
+		m_pathPoints.Clear();
+		m_strokePoints.Clear();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -803,7 +846,7 @@ void DrawingContextImpl::ExpandStroke()
 		switch (path.type)
 		{
 		case PathType::Line:
-			for (int iPt = 0; iPt < path.pointCount; ++iPt)
+			for (int iPt = path.firstIndex; iPt < path.firstIndex+path.pointCount; ++iPt)
 			{
 				const StrokePoint& pt = m_strokePoints.GetAt(iPt);
 
@@ -812,12 +855,32 @@ void DrawingContextImpl::ExpandStroke()
 				v.Color = pt.color;
 				m_vertexCache.Add(v);
 
-				uint16_t i = m_vertexCache.GetCount();
+				uint16_t i = m_indexCache.GetCount();
 				m_indexCache.Add(i);
 			}
 			break;
 		case PathType::Rectangle:
+		{
+			const StrokePoint* pts = &m_strokePoints.GetAt(path.firstIndex);
+
+			DrawingBasicVertex v;
+			v.Position = pts[0].point; v.Color = pts[0].color; m_vertexCache.Add(v);
+			v.Position = pts[1].point; v.Color = pts[1].color; m_vertexCache.Add(v);
+			v.Position = pts[2].point; v.Color = pts[2].color; m_vertexCache.Add(v);
+			v.Position = pts[3].point; v.Color = pts[3].color; m_vertexCache.Add(v);
+
+			uint16_t i = m_indexCache.GetCount();
+			m_indexCache.Add(i + 0);
+			m_indexCache.Add(i + 1);
+			m_indexCache.Add(i + 1);
+			m_indexCache.Add(i + 3);
+			m_indexCache.Add(i + 3);
+			m_indexCache.Add(i + 2);
+			m_indexCache.Add(i + 2);
+			m_indexCache.Add(i + 0);
 			break;
+		}
+
 		case PathType::Path:
 			LN_THROW(0, NotImplementedException);
 			break;
@@ -1013,6 +1076,7 @@ void DrawingContext::FlushInternal()
 {
 	DrawingContextImpl::DrawingState state;
 	state.Create(m_currentState);
+	LN_CALL_COMMAND(SetState, DrawingContextImpl::SetStateCommand, state);
 
 	LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte);
 	m_commandsUsingByte = 0;

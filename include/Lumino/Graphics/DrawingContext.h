@@ -14,8 +14,19 @@ class Pen
 	: public RefObject
 {
 public:
+	Pen()
+		: m_thickness(0)
+	{}
+
+	void SetBrush(Brush* brush) { m_brush = brush; }
+	Brush* GetBrush() const { return m_brush; }
+
+	void SetThickness(float thickness) { m_thickness = thickness; }
+	float GetThickness() const { return m_thickness; }
 
 private:
+	RefPtr<Brush>	m_brush;
+	float			m_thickness;
 };
 
 namespace detail
