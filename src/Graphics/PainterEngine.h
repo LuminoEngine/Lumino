@@ -39,6 +39,9 @@ public:
 		m_count = 0;
 	}
 
+	T& GetAt(int index) { return ((T*)(m_buffer.GetData()))[index]; }
+	T& GetLast() { return GetAt(m_count - 1); }
+
 	int GetCount() const { return m_count; }
 	byte_t* GetBuffer() { return m_buffer.GetData(); }
 	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }

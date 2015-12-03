@@ -6,6 +6,18 @@
 LN_NAMESPACE_BEGIN
 class DrawingContextImpl;
 
+
+/**
+	@brief	図形の枠線の描画方法を表します。
+*/
+class Pen
+	: public RefObject
+{
+public:
+
+private:
+};
+
 namespace detail
 {
 enum class DrawingClass : uint32_t
@@ -15,7 +27,20 @@ enum class DrawingClass : uint32_t
 	TriangleList,
 	GryphRun,
 };
+
+
+struct DrawingState
+{
+	Matrix			transform;
+	RefPtr<Brush>	brush;
+	RefPtr<Pen>		pen;
+	RefPtr<Font>	font;
+	float			opacity;
+	ToneF			tone;
+};
+
 }
+
 
 /**
 	@brief	図形や画像、テキストを描画するための機能を提供します。
@@ -27,6 +52,13 @@ public:
 
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
 
+	void SetTransform(const Matrix& matrix);
+	void SetBrush(Brush* brush);
+	void SetPen(Pen* pen);
+	void SetOpacity(float opacity);	// 0~1
+	void SetTone(const ToneF& tone);
+	void SetFont(Font* font);
+
 	/**
 		@brief		直線を描画します。
 	*/
@@ -36,7 +68,7 @@ public:
 	/**
 		@brief		矩形を描画します。
 	*/
-	void DrawRectangle(const RectF& rect, const ColorF& toColor);
+	void DrawRectangle(const RectF& rect, const ColorF& color);
 
 	void Flush();
 
@@ -48,13 +80,16 @@ protected:
 private:
 	void AddCommand(const void* command, size_t size);
 	void FlushInternal();
-	void CheckFlush(detail::DrawingClass newDrawingClass);
+	void SetDrawingClassInternal(detail::DrawingClass dc);
+	void CheckFlush();
 
 	GraphicsManager*		m_manager;
 	DrawingContextImpl*		m_internal;
 	ByteBuffer				m_commandsBuffer;
 	size_t					m_commandsUsingByte;
 	detail::DrawingClass	m_currentDrawingClass;
+	detail::DrawingState	m_currentState;
+	bool					m_stateModified;
 };
 
 LN_NAMESPACE_END

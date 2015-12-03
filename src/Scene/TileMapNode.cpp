@@ -94,6 +94,7 @@ void TileMapNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	//dc->DrawRectangle(RectF(0, 0, 1, 2));
 	dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 	dc->DrawLine(Vector3(0, 0, 0), Vector3(1, 1, 1), ColorF::Red);
+	dc->DrawRectangle(RectF(0, 0, 1, 2), ColorF::Blue);
 	dc->Flush();
 
 }

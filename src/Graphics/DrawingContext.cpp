@@ -1,4 +1,28 @@
 /*
+	[2015/12/3]
+		Arc
+		Polygon
+		PolyLine
+		Ellipse
+		Pie
+		Point
+		Rect
+		RoundRect
+		Text
+		Image
+		Path
+
+		・Path 以外は汎用的な面張りを行うよりも自前で頂点作ってしまったほうが高速。
+		・ストロークとアンチエイリアスは面張りしなければならないので、外周の頂点は素早く参照できるようにする必要がある。
+
+		アウトラインのポイントリスト作成
+		(Path以外)頂点リスト作成
+		(Path)面張り・頂点リスト作成
+		Fill頂点バッファ作成
+		描画
+		Stroke頂点バッファ作成
+		描画
+
 	[2015/12/2] タイリング描画について
 		デフォルトでは有効にしない。シェーダは分ける。
 		タイル配置するブラシが指定された場合、描画モードを切り替える。
@@ -115,6 +139,7 @@ public:
 enum class DrawingCommandType : uint32_t
 {
 	DrawLine = 0,
+	DrawRectangle,
 };
 struct DrawingCommands_DrawLine
 {
@@ -123,6 +148,12 @@ struct DrawingCommands_DrawLine
 	Vector3				to;
 	ColorF				fromColor;
 	ColorF				toColor;
+};
+struct DrawingCommands_DrawRectangle
+{
+	DrawingCommandType	type;
+	RectF				rect;
+	ColorF				color;
 };
 
 
@@ -137,6 +168,7 @@ public:
 
 	void Clear();
 	void DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
+	void DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color);
 
 	void ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib);
 	int GetIndexCount() const { return m_indexCache.GetCount(); }
@@ -192,6 +224,36 @@ void PrimitiveCache::DrawSimpleLine(const Vector3& from, const Vector3& to, cons
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void PrimitiveCache::DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color)
+{
+	float lu = srcUVRect.GetLeft();
+	float tv = srcUVRect.GetTop();
+	float uvWidth = srcUVRect.Width;
+	float uvHeight = srcUVRect.Height;
+
+	DrawingBasicVertex v;
+	v.Color = color;
+	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 1);	// 左上
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 1);	// 右上
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 2);	// 左下
+	m_vertexCache.Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 2);	// 右下
+	m_vertexCache.Add(v);
+
+	uint16_t i = m_vertexCache.GetCount();
+	m_indexCache.Add(i + 0);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 2);
+	m_indexCache.Add(i + 1);
+	m_indexCache.Add(i + 3);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void PrimitiveCache::ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib)
 {
 	vb->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -207,12 +269,156 @@ class DrawingContextImpl
 	: public RefObject
 {
 public:
+
+	struct BrushData
+	{
+		BrushType	Type;
+
+		union
+		{
+			struct
+			{
+				float				Color[4];	///< RGBA
+
+			} SolidColorBrush;
+
+			struct
+			{
+				Driver::ITexture*	Texture;
+				int					SourceRect[4];	///< XYWH
+				BrushWrapMode		WrapMode;
+
+			} TextureBrush;
+
+			struct
+			{
+				Driver::ITexture*	Texture;
+				int					SourceRect[4];	///< XYWH
+				int					InnerSourceRect[4];	///< XYWH
+				BrushWrapMode		WrapMode;
+				int					FrameThicness;
+
+			} FrameTextureBrush;
+		};
+	};
+
+	// このクラスは描画コマンドの引数となるクラス。RefPtr とかはメンバに置かないこと。
+	struct DrawingState
+	{
+		BrushData	Brush;
+		float		Opacity;
+		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+		ToneF		Tone;
+
+		// Painter 側で作り、PainterEngineState をコマンドリストに乗せるときに使う。
+		void Create(const detail::DrawingState& state)
+		{
+			// ブラシデータ
+			ForeColor = ColorF::White;
+			ln::Brush* brush = state.brush;
+			if (brush == NULL)
+			{
+				Brush.Type = BrushType_Unknown;	// no set
+			}
+			else
+			{
+				Brush.Type = brush->GetType();
+				if (Brush.Type == BrushType_SolidColor)
+				{
+					auto t = static_cast<ColorBrush*>(brush);
+					const ColorF& c = t->GetColor();
+					Brush.SolidColorBrush.Color[0] = ForeColor.R = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					Brush.SolidColorBrush.Color[1] = ForeColor.G = c.G;
+					Brush.SolidColorBrush.Color[2] = ForeColor.B = c.B;
+					Brush.SolidColorBrush.Color[3] = ForeColor.A = c.A;
+				}
+				else if (Brush.Type == BrushType_Texture)
+				{
+					auto t = static_cast<TextureBrush*>(brush);
+					Brush.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
+					const Rect& r = t->GetSourceRect();
+					Brush.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					Brush.TextureBrush.SourceRect[1] = r.Y;
+					Brush.TextureBrush.SourceRect[2] = r.Width;
+					Brush.TextureBrush.SourceRect[3] = r.Height;
+					Brush.TextureBrush.WrapMode = t->GetWrapMode();
+				}
+				else if (Brush.Type == BrushType_FrameTexture)
+				{
+					auto t = static_cast<FrameTextureBrush*>(brush);
+					Brush.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
+					const Rect& r = t->GetSourceRect();
+					const Rect& r2 = t->GetInnerAreaSourceRect();
+					Brush.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					Brush.FrameTextureBrush.SourceRect[1] = r.Y;
+					Brush.FrameTextureBrush.SourceRect[2] = r.Width;
+					Brush.FrameTextureBrush.SourceRect[3] = r.Height;
+					Brush.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					Brush.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
+					Brush.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
+					Brush.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+					Brush.FrameTextureBrush.WrapMode = t->GetWrapMode();
+					Brush.FrameTextureBrush.FrameThicness = t->GetThickness();
+				}
+				else {
+					LN_THROW(0, NotImplementedException);
+				}
+			}
+
+			// 不透明度
+			Opacity = state.opacity;
+
+			// 色調
+			Tone = state.tone;
+		}
+
+		void Copy(const DrawingState& state)
+		{
+			ReleaseObjects();
+
+			// ブラシデータ
+			ForeColor = ColorF::White;
+			memcpy(&Brush, &state.Brush, sizeof(Brush));
+			if (Brush.Type == BrushType_SolidColor) {
+				ForeColor.R = Brush.SolidColorBrush.Color[0];
+				ForeColor.G = Brush.SolidColorBrush.Color[1];
+				ForeColor.B = Brush.SolidColorBrush.Color[2];
+				ForeColor.A = Brush.SolidColorBrush.Color[3];
+			}
+			else if (Brush.Type == BrushType_Texture) {
+				LN_SAFE_ADDREF(Brush.TextureBrush.Texture);
+			}
+			else if (Brush.Type == BrushType_FrameTexture) {
+				LN_SAFE_ADDREF(Brush.FrameTextureBrush.Texture);
+			}
+
+			// 不透明度
+			Opacity = state.Opacity;
+
+			// 色調
+			Tone = state.Tone;
+		}
+
+		void ReleaseObjects()
+		{
+			if (Brush.Type == BrushType_Texture) {
+				LN_SAFE_RELEASE(Brush.TextureBrush.Texture);
+			}
+			else if (Brush.Type == BrushType_FrameTexture) {
+				LN_SAFE_RELEASE(Brush.FrameTextureBrush.Texture);
+			}
+		}
+	};
+
+public:
 	DrawingContextImpl(GraphicsManager* manager);
 	~DrawingContextImpl();
 
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
+	void SetState(const DrawingState& state);
 	void DoCommandList(const void* commandBuffer, size_t size);
 	void Flush();
+
 
 public:
 	struct SetViewProjectionCommand : public RenderingCommand
@@ -228,6 +434,26 @@ public:
 			m_proj = proj;
 		}
 		void Execute() { m_impl->SetViewProjection(m_view, m_proj); }
+	};
+
+	struct SetPainterEngineStateCommand : public RenderingCommand
+	{
+		DrawingContextImpl* m_impl;
+		DrawingState m_state;
+
+		void Create(DrawingContextImpl* impl, const DrawingState& state)
+		{
+			m_impl = impl;
+			m_state.Copy(state);
+
+			if (m_state.Brush.Type == BrushType_Texture) {
+				MarkGC(m_state.Brush.TextureBrush.Texture);
+			}
+			if (m_state.Brush.Type == BrushType_FrameTexture) {
+				MarkGC(m_state.Brush.FrameTextureBrush.Texture);
+			}
+		}
+		void Execute() { m_impl->SetState(m_state); }
 	};
 
 	struct DoCommandListCommand : public RenderingCommand
@@ -252,12 +478,67 @@ public:
 	};
 
 private:
+
+	enum class PathPointAttr
+	{
+		MoveTo,
+		LineTo,
+	};
+
+	enum class PathType
+	{
+		Line,
+		Rectangle,
+		Path,	// ExpandFill などを実行して面張りを行う
+	};
+
+	struct PathPoint
+	{
+		PathPointAttr	attr;
+		Vector3			point;
+		ColorF			color;
+	};
+
+	struct StrokePoint
+	{
+		Vector3			point;
+		ColorF			color;
+	};
+
+	struct Path
+	{
+		PathType		type;
+		int				firstIndex;		// このパスの開始点を示す m_pathPoints 上のインデックス
+		int				pointCount;		// このパスを構成する m_pathPoints 上の点の数
+		bool			closed;			// パスが閉じているか (false は線分)
+	};
+
+	void AddPath(PathType type);
+	Path* GetCurrentPath();
+	void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
+	void ClosePath();
+
+	void PutMoveTo(const Vector3& pt, const ColorF& color);
+	void PutLineTo(const Vector3& pt, const ColorF& color);
+
+	void ExpandStroke();
+	void AddVertex(const Vector3& point, const ColorF& color);
+
 	GraphicsManager*		m_manager;
-	PrimitiveCache			m_primitiveCache;
+	//PrimitiveCache			m_primitiveCache;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
 	Matrix					m_view;
 	Matrix					m_proj;
+	DrawingState			m_currentState;
+
+	CacheBuffer<PathPoint>	m_pathPoints;
+	CacheBuffer<Path>		m_pathes;
+
+	CacheBuffer<StrokePoint>		m_strokePoints;
+
+	CacheBuffer<DrawingBasicVertex>	m_vertexCache;	// 頂点バッファ本体をリサイズすることになると余計に時間がかかるので、まずはここに作ってからコピーする
+	CacheBuffer<uint16_t>			m_indexCache;
 
 	// DrawingContext3D
 	struct
@@ -281,6 +562,12 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
 {
+	m_pathPoints.Reserve(1024);
+	m_pathes.Reserve(1024);
+	m_strokePoints.Reserve(1024);
+	m_vertexCache.Reserve(1024);
+	m_indexCache.Reserve(1024);
+
 	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
 
 	const int DefaultFaceCount = 1024;
@@ -331,6 +618,14 @@ void DrawingContextImpl::SetViewProjection(const Matrix& view, const Matrix& pro
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void DrawingContextImpl::SetState(const DrawingState& state)
+{
+	m_currentState.Copy(state);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 {
 	const byte_t* pos = (const byte_t*)commandBuffer;
@@ -346,8 +641,56 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 			case DrawingCommandType::DrawLine:
 			{
 				const DrawingCommands_DrawLine* cmd = (const DrawingCommands_DrawLine*)pos;
-				m_primitiveCache.DrawSimpleLine(cmd->from, cmd->to, cmd->fromColor, cmd->toColor);
+
+				// パスを作る (Stroke を作るために使う)
+				AddPath(PathType::Line);
+
+				StrokePoint pt;
+				pt.point = cmd->from; pt.color = cmd->fromColor;
+				m_strokePoints.Add(pt);
+				pt.point = cmd->from; pt.color = cmd->fromColor;
+				m_strokePoints.Add(pt);
+
+				GetCurrentPath()->pointCount = 2;
+				ClosePath();
+
+				//PutMoveTo(cmd->from, cmd->fromColor);
+				//PutLineTo(cmd->to, cmd->toColor);
+				//ClosePath();
+
+				//// 頂点バッファ
+				//DrawingBasicVertex v;
+				//v.Position = cmd->from; v.Color = cmd->fromColor;
+				//m_vertexCache.Add(v);
+				//v.Position = cmd->to; v.Color = cmd->toColor;
+				//m_vertexCache.Add(v);
+				//
+				//// インデックスバッファ
+				//uint16_t i = m_vertexCache.GetCount();
+				//m_indexCache.Add(i + 0);
+				//m_indexCache.Add(i + 1);
+
 				pos += sizeof(DrawingCommands_DrawLine);
+				break;
+			}
+			case DrawingCommandType::DrawRectangle:
+			{
+				const DrawingCommands_DrawRectangle* cmd = (const DrawingCommands_DrawRectangle*)pos;
+
+				AddPath(PathType::Rectangle);
+
+				const RectF& rect = cmd->rect;
+				StrokePoint pt;
+				pt.color = cmd->color;
+				pt.point.Set(rect.GetLeft(), rect.GetTop(), 0); m_strokePoints.Add(pt);
+				pt.point.Set(rect.GetRight(), rect.GetTop(), 0); m_strokePoints.Add(pt);
+				pt.point.Set(rect.GetLeft(), rect.GetBottom(), 0); m_strokePoints.Add(pt);
+				pt.point.Set(rect.GetRight(), rect.GetBottom(), 0); m_strokePoints.Add(pt);
+
+				GetCurrentPath()->pointCount = 4;
+				ClosePath();
+
+				pos += sizeof(DrawingCommands_DrawRectangle);
 				break;
 			}
 			default:
@@ -362,17 +705,139 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 //-----------------------------------------------------------------------------
 void DrawingContextImpl::Flush()
 {
-	m_primitiveCache.ApplyBuffers(m_vertexBuffer, m_indexBuffer);
+	if (m_pathes.GetCount() == 0) { return; }
+
 
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
-	renderer->SetVertexBuffer(m_vertexBuffer);
-	renderer->SetIndexBuffer(m_indexBuffer);
 	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
+
+	
+	ExpandStroke();
+
+	//m_primitiveCache.ApplyBuffers(m_vertexBuffer, m_indexBuffer);
+	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+
+	renderer->SetVertexBuffer(m_vertexBuffer);
+	renderer->SetIndexBuffer(m_indexBuffer);
 	m_shader3D.varTexture->SetTexture(m_manager->GetDummyTexture());
 	m_shader3D.passP0->Apply();
-	renderer->DrawPrimitiveIndexed(PrimitiveType_LineList, 0, m_primitiveCache.GetIndexCount() / 3);
+	renderer->DrawPrimitiveIndexed(PrimitiveType_LineList, 0, m_indexCache.GetCount()/* / 3*/);
+
+	m_pathes.Clear();
+	m_pathPoints.Clear();
+	m_strokePoints.Clear();
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::AddPath(PathType type)
+{
+	Path path;
+	path.type = type;
+	path.firstIndex = m_pathPoints.GetCount();
+	path.pointCount = 0;
+	path.closed = false;
+	m_pathes.Add(path);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color)
+{
+	PathPoint pt;
+	pt.attr = attr;
+	pt.point = point;
+	pt.color = color;
+	m_pathPoints.Add(pt);
+	GetCurrentPath()->pointCount++;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::ClosePath()
+{
+	GetCurrentPath()->closed = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+DrawingContextImpl::Path* DrawingContextImpl::GetCurrentPath()
+{
+	return &m_pathes.GetLast();
+}
+
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void DrawingContextImpl::PutMoveTo(const Vector3& pt, const ColorF& color)
+//{
+//	AddPathPoint(PathPointAttr::MoveTo, pt, color);
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void DrawingContextImpl::PutLineTo(const Vector3& pt, const ColorF& color)
+//{
+//	AddPathPoint(PathPointAttr::LineTo, pt, color);
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::ExpandStroke()
+{
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
+
+	for (int iPath = 0; iPath < m_pathes.GetCount(); ++iPath)
+	{
+		const Path& path = m_pathes.GetAt(iPath);
+
+		switch (path.type)
+		{
+		case PathType::Line:
+			for (int iPt = 0; iPt < path.pointCount; ++iPt)
+			{
+				const StrokePoint& pt = m_strokePoints.GetAt(iPt);
+
+				DrawingBasicVertex v;
+				v.Position = pt.point;
+				v.Color = pt.color;
+				m_vertexCache.Add(v);
+
+				uint16_t i = m_vertexCache.GetCount();
+				m_indexCache.Add(i);
+			}
+			break;
+		case PathType::Rectangle:
+			break;
+		case PathType::Path:
+			LN_THROW(0, NotImplementedException);
+			break;
+		}
+	}
+}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void DrawingContextImpl::AddVertex(const Vector3& point, const ColorF& color)
+//{
+//	DrawingBasicVertex v;
+//	v.Position = point;
+//	v.Color = color;
+//	m_vertexCache.Add(v);
+//
+//	uint16_t i = m_vertexCache.GetCount();
+//	m_indexCache.Add(i);
+//}
 
 
 //=============================================================================
@@ -419,9 +884,64 @@ void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void DrawingContext::SetTransform(const Matrix& matrix)
+{
+	m_currentState.transform = matrix;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::SetBrush(Brush* brush)
+{
+	m_currentState.brush = brush;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::SetPen(Pen* pen)
+{
+	m_currentState.pen = pen;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::SetOpacity(float opacity)
+{
+	m_currentState.opacity = opacity;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::SetTone(const ToneF& tone)
+{
+	m_currentState.tone = tone;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::SetFont(Font* font)
+{
+	m_currentState.font = font;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
-	CheckFlush(detail::DrawingClass::LineList);
+	SetDrawingClassInternal(detail::DrawingClass::LineList);
+	CheckFlush();
 
 	DrawingCommands_DrawLine cmd;
 	cmd.type = DrawingCommandType::DrawLine;
@@ -443,9 +963,16 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& toColor)
+void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
+	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
+	CheckFlush();
 
+	DrawingCommands_DrawRectangle cmd;
+	cmd.type = DrawingCommandType::DrawRectangle;
+	cmd.rect = rect;
+	cmd.color = color;
+	AddCommand(&cmd, sizeof(cmd));
 }
 
 //-----------------------------------------------------------------------------
@@ -484,6 +1011,9 @@ void DrawingContext::AddCommand(const void* command, size_t size)
 //-----------------------------------------------------------------------------
 void DrawingContext::FlushInternal()
 {
+	DrawingContextImpl::DrawingState state;
+	state.Create(m_currentState);
+
 	LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte);
 	m_commandsUsingByte = 0;
 
@@ -494,13 +1024,23 @@ void DrawingContext::FlushInternal()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::CheckFlush(detail::DrawingClass newDrawingClass)
+void DrawingContext::SetDrawingClassInternal(detail::DrawingClass dc)
 {
-	if (m_currentDrawingClass != newDrawingClass &&
-		m_currentDrawingClass != detail::DrawingClass::Unknown) {
-		FlushInternal();
+	if (m_currentDrawingClass != dc) {
+		m_currentDrawingClass = dc;
+		m_stateModified = true;
 	}
-	m_currentDrawingClass = newDrawingClass;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::CheckFlush()
+{
+	if (m_stateModified) {
+		FlushInternal();
+		m_stateModified = false;
+	}
 
 	// コマンドバッファの先頭に区分を入れておく
 	AddCommand(&m_currentDrawingClass, sizeof(uint32_t));
