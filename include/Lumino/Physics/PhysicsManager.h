@@ -15,6 +15,9 @@ class PhysicsManager
 	: public RefObject
 {
 public:
+	static PhysicsManager* Instance;
+
+public:
 	PhysicsManager(SimulationType type);
 	virtual ~PhysicsManager();
 

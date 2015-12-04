@@ -31,6 +31,20 @@ InfomationRenderingPass::~InfomationRenderingPass()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void InfomationRenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* node)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void InfomationRenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* node, int subset)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void InfomationRenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
 	if (m_manager->GetPhysicsManager() != NULL)

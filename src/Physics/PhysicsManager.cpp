@@ -106,6 +106,13 @@ LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
+PhysicsManager* GetPhysicsManager(PhysicsManager* priority)
+{
+	if (priority != NULL) return priority;
+	return PhysicsManager::Instance;
+}
+
+
 //=============================================================================
 // DebugDrawer
 //=============================================================================
@@ -178,6 +185,8 @@ protected:
 //=============================================================================
 // PhysicsManager
 //=============================================================================
+
+PhysicsManager* PhysicsManager::Instance = nullptr;
 
 //-----------------------------------------------------------------------------
 //
@@ -311,6 +320,10 @@ PhysicsManager::PhysicsManager(SimulationType type)
 	//	psb->m_cfg.viterations = 10;
 
 	*/
+
+	if (Instance == nullptr) {
+		Instance = this;
+	}
 }
 
 PhysicsManager::~PhysicsManager()
@@ -334,6 +347,11 @@ PhysicsManager::~PhysicsManager()
 #endif
 
 	LN_SAFE_DELETE(m_debugDrawer);
+
+
+	if (Instance == this) {
+		Instance = nullptr;
+	}
 }
 
 //-----------------------------------------------------------------------------

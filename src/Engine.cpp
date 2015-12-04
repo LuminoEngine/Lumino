@@ -335,9 +335,11 @@ void ApplicationImpl::InitializeSceneGraphManager()
 		InitializeCommon();
 		InitializeFileManager();
 		InitializeGraphicsManager();
+		InitializePhysicsManager();
 		SceneGraphManager::ConfigData data;
 		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;
+		data.PhysicsManager = m_physicsManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;

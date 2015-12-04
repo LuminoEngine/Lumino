@@ -124,6 +124,7 @@ set(LN_SOURCES_Audio
 
 set(LN_SOURCES_Physics
 	include/Lumino/Physics/BodyBase.h
+	include/Lumino/Physics/Collider.h
 	include/Lumino/Physics/Common.h
 	include/Lumino/Physics/IDebugRenderer.h
 	include/Lumino/Physics/Joint.h
@@ -131,6 +132,8 @@ set(LN_SOURCES_Physics
 	include/Lumino/Physics/RigidBody.h
 	src/Physics/BodyBase.cpp
 	src/Physics/BulletUtils.h
+	src/Physics/Collider.cpp
+	src/Physics/Internal.h
 	src/Physics/Joint.cpp
 	src/Physics/PhysicsManager.cpp
 	src/Physics/RigidBody.cpp

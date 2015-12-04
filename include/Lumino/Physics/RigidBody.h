@@ -154,6 +154,7 @@ protected:
 	uint32_t				m_modifiedFlags;
 };
 
+#if 0
 /// 平面のクラス
 class Plane
 	: public RigidBody
@@ -192,6 +193,7 @@ public:
 	Sphere(PhysicsManager* manager, float radius, const ConfigData& configData);
 	virtual ~Sphere();
 };
+#endif
 
 } // namespace Physics
 LN_NAMESPACE_END

@@ -465,7 +465,7 @@ void RigidBody::SyncAfterStepSimulation()
 	}
 }
 
-
+#if 0
 
 //=============================================================================
 // Plane
@@ -548,7 +548,7 @@ Capsule::Capsule(PhysicsManager* manager, float radius, float length, float mass
 //-----------------------------------------------------------------------------
 Capsule::Capsule(PhysicsManager* manager, float radius, float length, const ConfigData& configData)
 {
-	btCollisionShape* shape = new btCapsuleShape(radius, length);
+	btCollisionShape* shape = new (radius, length);
 	RigidBody::Create(manager, shape, configData);
 }
 
@@ -592,6 +592,8 @@ Sphere::Sphere(PhysicsManager* manager, float radius, const ConfigData& configDa
 Sphere::~Sphere()
 {
 }
+
+#endif
 
 } // namespace Physics
 LN_NAMESPACE_END

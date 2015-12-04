@@ -14,7 +14,9 @@ public:
 	virtual ~InfomationRenderingPass();
 
 public:
-	virtual void PostRender(SceneGraphRenderingContext* dc);
+	virtual void RenderNode(SceneGraphRenderingContext* dc, SceneNode* node) override;
+	virtual void RenderSubset(SceneGraphRenderingContext* dc, VisualNode* node, int subset) override;
+	virtual void PostRender(SceneGraphRenderingContext* dc) override;
 };
 
 LN_NAMESPACE_SCENE_END

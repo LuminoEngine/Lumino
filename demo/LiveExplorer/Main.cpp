@@ -57,9 +57,9 @@ int main()
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
-		RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
-		RefPtr<Sprite> sp1(Sprite::Create3D(), false);
-		sp1->SetTexture(tex1);
+		//RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
+		//RefPtr<Sprite> sp1(Sprite::Create3D(), false);
+		//sp1->SetTexture(tex1);
 		//sp1->SetPosition(Vector3(100, 0, 0));
 		//sp1->SetScale(Vector3(0.1, 0.1, 0.1));
 
@@ -84,8 +84,13 @@ int main()
 		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
 		//tilemapNode->SetTileMap(tilemap);
 
+		//RefPtr<Physics::RigidBody> b1(LN_NEW Physics::Capsule(Physics::PhysicsManager::Instance, 2, 4, 1.0f));
+
 		while (Engine::UpdateFrame())
 		{
+			//b1->GetWorldTransform().GetPosition().Print();
+			Physics::PhysicsManager::Instance->SyncBeforeStepSimulation();
+			Physics::PhysicsManager::Instance->StepSimulation(0.016);
 		}
 
 
