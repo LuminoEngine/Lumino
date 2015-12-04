@@ -81,6 +81,11 @@ set(LN_SOURCES_Platform
 	src/Platform/Window.cpp
 )
 
+set(LN_SOURCES_Input
+	include/Lumino/Input/Common.h
+	include/Lumino/Input/Input.h
+)
+
 set(LN_SOURCES_Audio
 	include/LuminoAudio.h
 	include/Lumino/Audio/AudioManager.h
@@ -531,6 +536,7 @@ endif()
 source_group("Animation"	FILES ${LN_SOURCES_Animation})
 source_group("IO"			FILES ${LN_SOURCES_IO})
 source_group("Platform"		FILES ${LN_SOURCES_Platform})
+source_group("Input"		FILES ${LN_SOURCES_Input})
 source_group("Audio"		FILES ${LN_SOURCES_Audio})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
@@ -547,6 +553,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Animation}
 	${LN_SOURCES_IO}
 	${LN_SOURCES_Platform}
+	${LN_SOURCES_Input}
 	${LN_SOURCES_Audio}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
@@ -557,7 +564,8 @@ set(LN_SOURCES
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application}
 	${LN_SOURCES_Foundation}
-	${LN_SOURCES_C_API})
+	${LN_SOURCES_C_API}
+)
 
 #------------------------------------------------------------------------------
 # Apply options

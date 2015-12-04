@@ -33,6 +33,14 @@ Collider::~Collider()
 	LN_SAFE_DELETE(m_shape);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Collider::Initialize(PhysicsManager* manager, btCollisionShape* shape)
+{
+	m_manager = manager;
+	m_shape = shape;
+}
 
 //=============================================================================
 // PlaneCollider

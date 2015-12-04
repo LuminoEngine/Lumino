@@ -1,10 +1,12 @@
 ﻿
 #pragma once
+#include <Lumino/Reflection/ReflectionObject.h>
 
 LN_NAMESPACE_BEGIN
 namespace Physics
 {
 class PhysicsManager;
+class Collider;
 class BodyBase;
 class RigidBody;
 class CollisionBody;

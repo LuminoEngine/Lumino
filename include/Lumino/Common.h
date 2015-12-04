@@ -14,6 +14,11 @@ LN_ENUM(MouseButton)
 	Right,			/**< 右ボタン */
 	Middle,			/**< 中央ボタン */
 
+	X1,				/**< 拡張ボタン1 */
+	X2,				/**< 拡張ボタン2 */
+	X3,				/**< 拡張ボタン3 */
+	X4,				/**< 拡張ボタン4 */
+
 	TERMINATOR,
 };
 LN_ENUM_DECLARE(MouseButton);

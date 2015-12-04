@@ -7,6 +7,7 @@
 #include "Lumino/IO/ASyncIOObject.h"
 #include "Lumino/IO/FileManager.h"
 
+#include "Lumino/Physics/Collider.h"
 #include "Lumino/Physics/BodyBase.h"
 #include "Lumino/Physics/Joint.h"
 #include "Lumino/Physics/PhysicsManager.h"

@@ -1,8 +1,9 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btMotionState.h>
 #include <Lumino/Physics/PhysicsManager.h>
+#include <Lumino/Physics/Collider.h>
 #include <Lumino/Physics/RigidBody.h>
 #include "BulletUtils.h"
 
@@ -118,9 +119,22 @@ void setMatrix( const LMatrix& matrix )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+RigidBody* RigidBody::Create(Collider* collider)
+{
+	ConfigData data;
+	RefPtr<RigidBody> obj(LN_NEW RigidBody(), false);
+	obj->Initialize(GetPhysicsManager(nullptr), collider, data);
+	obj.SafeAddRef();
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 RigidBody::RigidBody()
     : BodyBase()
-	, m_btRigidBody(NULL)
+	, m_btRigidBody(nullptr)
+	, m_collider(nullptr)
 	, m_group(0xffff)
 	, m_groupMask(0xffff)
 	, m_worldTransform()
@@ -142,8 +156,9 @@ RigidBody::~RigidBody()
 		btMotionState* state = m_btRigidBody->getMotionState();
 		LN_SAFE_DELETE(state);
 
-		btCollisionShape* shape = m_btRigidBody->getCollisionShape();
-		LN_SAFE_DELETE(shape);
+		LN_SAFE_RELEASE(m_collider);
+		//btCollisionShape* shape = m_btRigidBody->getCollisionShape();
+		//LN_SAFE_DELETE(shape);
 
 		LN_SAFE_DELETE(m_btRigidBody);
 	}
@@ -152,8 +167,10 @@ RigidBody::~RigidBody()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RigidBody::Create(PhysicsManager* manager, btCollisionShape* collisionShape, const ConfigData& configData)
+void RigidBody::Initialize(PhysicsManager* manager, Collider* collider, const ConfigData& configData)
 {
+	LN_REFOBJ_SET(m_collider, collider);
+
 	// 各初期プロパティ
 	float num = configData.Mass * configData.Scale;
 	float friction;
@@ -171,7 +188,7 @@ void RigidBody::Create(PhysicsManager* manager, btCollisionShape* collisionShape
 	}
 	else
 	{
-		collisionShape->calculateLocalInertia(num, localInertia);
+		collider->GetBtCollisionShape()->calculateLocalInertia(num, localInertia);
 		friction = configData.Friction;
 		hitFraction = configData.Restitution;
 		linearDamping = configData.LinearDamping;
@@ -202,7 +219,7 @@ void RigidBody::Create(PhysicsManager* manager, btCollisionShape* collisionShape
 	}
 
 	// RigidBody 作成
-	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, collisionShape, localInertia);
+	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, collider->GetBtCollisionShape(), localInertia);
 	bodyInfo.m_linearDamping = configData.LinearDamping;	// 移動減
 	bodyInfo.m_angularDamping = configData.AngularDamping;	// 回転減
 	bodyInfo.m_restitution = configData.Restitution;	    // 反発力

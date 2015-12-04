@@ -19,6 +19,9 @@ protected:
 	Collider();
 	virtual ~Collider();
 	void Initialize(PhysicsManager* manager, btCollisionShape* shape);
+
+LN_INTERNAL_ACCESS:
+	btCollisionShape* GetBtCollisionShape() { return m_shape; }
 		
 private:
 	PhysicsManager*		m_manager;

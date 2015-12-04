@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "Common.h"
 #include "BodyBase.h"
 
@@ -8,23 +7,23 @@ LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
-struct RigidBodyInitArgs
-{
-    btCollisionShape*   Shape;      ///< (BodyBase  削除時に delete される)
-    btRigidBody*        RigidBody;  ///< (RigidBody 削除時に delete される	PMD 側を修正したら削除予定)
-	//uint16_t               Group;
-	//uint16_t               Mask;
-	//float				Mass;
-	//bool				AdditionalDamping;
-	//bool				KinematicObject;	///< Kinematicオブジェクトとする (MotionState の getWorldTransform() が呼ばれるようになる)
-
-	RigidBodyInitArgs()
-	{
-		//AdditionalDamping = false;
-		RigidBody = NULL;
-		//KinematicObject = false;
-	}
-};
+//struct RigidBodyInitArgs
+//{
+//    btCollisionShape*   Shape;      ///< (BodyBase  削除時に delete される)
+//    btRigidBody*        RigidBody;  ///< (RigidBody 削除時に delete される	PMD 側を修正したら削除予定)
+//	//uint16_t               Group;
+//	//uint16_t               Mask;
+//	//float				Mass;
+//	//bool				AdditionalDamping;
+//	//bool				KinematicObject;	///< Kinematicオブジェクトとする (MotionState の getWorldTransform() が呼ばれるようになる)
+//
+//	RigidBodyInitArgs()
+//	{
+//		//AdditionalDamping = false;
+//		RigidBody = NULL;
+//		//KinematicObject = false;
+//	}
+//};
 
 /// 剛体のクラス
 class RigidBody
@@ -46,7 +45,7 @@ public:
 		bool			AdditionalDamping;	///< 減衰の有効
 		bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
 
-		float			Scale;				///< (Mass に乗算するスケール値)
+		float			Scale;				///< (*Mass に乗算するスケール値)
 
 		ConfigData()
 		{
@@ -64,6 +63,13 @@ public:
 		}
 	};
 
+	/**
+		@brief		RigidBody オブジェクトを作成します。
+		@param[in]	collider	: 衝突判定形状
+		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
+	*/
+	static RigidBody* Create(Collider* collider);
+
 public:
     RigidBody();
     virtual ~RigidBody();
@@ -72,7 +78,7 @@ public:
 
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
 	///		shape		: (BodyBase  削除時に delete される)
-	void Create(PhysicsManager* manager, btCollisionShape* shape, const ConfigData& configData);
+	void Initialize(PhysicsManager* manager, Collider* collider, const ConfigData& configData);
 
 #if 0
 	/// 位置の設定
@@ -148,6 +154,7 @@ protected:
 	struct KinematicMotionState;
 
 	btRigidBody*			m_btRigidBody;
+	Collider*				m_collider;
 	uint16_t				m_group;
 	uint16_t				m_groupMask;
 	Matrix					m_worldTransform;			///< (postUpdate() で設定される)
