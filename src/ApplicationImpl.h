@@ -15,7 +15,7 @@
 
 LN_NAMESPACE_BEGIN
 
-class InputManager;
+namespace detail { class InputManager; }
 class AudioManagerImpl;
 class ProfilerRenderer;
 class SceneGraphManager;
@@ -98,7 +98,7 @@ private:
 	FpsController						m_fpsController;
 	FileManager*						m_fileManager;
 	RefPtr<Platform::PlatformManager>	m_platformManager;
-	InputManager*						m_inputManager;
+	detail::InputManager*				m_inputManager;
 	AudioManagerImpl*					m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;

@@ -85,12 +85,12 @@ int main()
 		//tilemapNode->SetTileMap(tilemap);
 
 		//RefPtr<Physics::RigidBody> b1(LN_NEW Physics::Capsule(Physics::PhysicsManager::Instance, 2, 4, 1.0f));
-		RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2));
-		RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1));
+		RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2), false);
+		RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1), false);
 
 		while (Engine::UpdateFrame())
 		{
-			rigidBody1->GetWorldTransform().GetPosition().Print();
+			//rigidBody1->GetWorldTransform().GetPosition().Print();
 			Physics::PhysicsManager::Instance->SyncBeforeStepSimulation();
 			Physics::PhysicsManager::Instance->StepSimulation(0.016);
 		}

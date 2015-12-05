@@ -14,29 +14,41 @@ public:
 	/**
 		@brief		ボタンが現在押されているかを判定します。
 	*/
-	static bool IsPress(const TCHAR* bindingName) const;
+	static bool IsPress(const TCHAR* bindingName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間を判定します。
 	*/
-	static bool IsOnTrigger(const TCHAR* bindingName) const;
+	static bool IsOnTrigger(const TCHAR* bindingName);
 
 	/**
 		@brief		ボタンが離された瞬間を判定します。
 	*/
-	static bool IsOffTrigger(const TCHAR* bindingName) const;
+	static bool IsOffTrigger(const TCHAR* bindingName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間とリピート状態を判定します。
 	*/
-	static bool IsRepeat(const TCHAR* bindingName) const;
+	static bool IsRepeat(const TCHAR* bindingName);
 
 	/**
 		@brief		指定した軸のアナログ値を取得します。(0.0～1.0)
 	*/
-	static float GetAxisValue(const TCHAR* bindingName) const;
+	static float GetAxisValue(const TCHAR* bindingName);
 
 private:
+};
+
+/**
+	@brief	
+*/
+class InputButtons
+{
+public:
+	static const String& Left;
+	static const String& Right;
+	static const String& Up;
+	static const String& Down;
 };
 
 LN_NAMESPACE_END

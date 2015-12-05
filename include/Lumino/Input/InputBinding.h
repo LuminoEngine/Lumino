@@ -19,13 +19,26 @@ public:
 	*/
 	static InputBinding* Create(const String& bindingName, Key key, int joyNumber);
 
-protected:
+public:
+
+	const String& GetName() const { return m_bindingName; }
+
+	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
+
+	bool IsNegativeValue() const { return m_negativeValue; }
+
+LN_INTERNAL_ACCESS:
 	InputBinding();
+	InputBinding(const String& bindingName, Key key);
 	virtual ~InputBinding();
+	void Initialize(detail::InputManager* manager);
+	const detail::DeviceInputSource& GetDeviceInputSource() const { return m_source; }
 
 private:
 	String						m_bindingName;
 	detail::DeviceInputSource	m_source;
+	float						m_minValidMThreshold;
+	bool						m_negativeValue;
 };
 
 LN_NAMESPACE_END

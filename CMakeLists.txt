@@ -85,10 +85,15 @@ set(LN_SOURCES_Input
 	include/Lumino/Input/Common.h
 	include/Lumino/Input/Input.h
 	include/Lumino/Input/InputBinding.h
+	src/Input/Input.cpp
+	src/Input/InputBinding.cpp
 	src/Input/InputDriver.cpp
 	src/Input/InputDriver.h
 	src/Input/InputManager.cpp
 	src/Input/InputManager.h
+	src/Input/Internal.h
+	src/Input/VirtualPad.cpp
+	src/Input/VirtualPad.h
 )
 
 set(LN_SOURCES_Audio
@@ -480,6 +485,8 @@ if (WIN32)
 		${LN_SOURCES_Input}
 		src/Input/Win32InputDriver.cpp
 		src/Input/Win32InputDriver.h
+		src/Input/Win32JoystickDriver.cpp
+		src/Input/Win32JoystickDriver.h
 	)
  	set(LN_SOURCES_Graphics
  		${LN_SOURCES_Graphics}

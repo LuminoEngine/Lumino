@@ -128,7 +128,11 @@ ApplicationImpl::~ApplicationImpl()
 		m_guiManager->Finalize();
 		LN_SAFE_RELEASE(m_guiManager);
 	}
-
+	if (m_physicsManager != nullptr) {
+		m_physicsManager->Finalize();
+		m_physicsManager.SafeRelease();
+		//LN_SAFE_RELEASE(m_physicsManager);
+	}
 	if (m_audioManager != NULL) {
 		m_audioManager->Finalize();
 		LN_SAFE_RELEASE(m_audioManager);
@@ -149,6 +153,7 @@ ApplicationImpl::~ApplicationImpl()
 void ApplicationImpl::Initialize()
 {
 	InitializePlatformManager();
+	InitializeInputManager();
 	InitializeAudioManager();
 	InitializePhysicsManager();
 	InitializeGraphicsManager();
@@ -229,9 +234,10 @@ void ApplicationImpl::InitializeInputManager()
 	{
 		InitializePlatformManager();
 
-		InputManager::Settings data;
+		detail::InputManager::Settings data;
+		data.mainWindow = m_platformManager->GetMainWindow();
 
-		m_inputManager = LN_NEW InputManager();
+		m_inputManager = LN_NEW detail::InputManager();
 		m_inputManager->Initialize(data);
 	}
 }
@@ -514,6 +520,10 @@ bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 		break;
 	default:
 		break;
+	}
+
+	if (m_inputManager != nullptr) {
+		m_inputManager->OnEvent(e);
 	}
 	return false;
 }

@@ -15,26 +15,38 @@
 		InputManager が直接 MainWindow にリスナーを登録すると、後々優先度をいじりづらくなるかも。
 		(まぁ内部クラスなのでどう変更しても良いけど・・・)
 */
-#include "../Internal.h"
+#include "Internal.h"
 #include "InputDriver.h"
 #include "InputManager.h"
-//#ifdef _WIN32
-//	#include "Win32/Win32InputDevice.h"
-//#endif
-//#include "Mouse.h"
-//#include "Keyboard.h"
+#ifdef LN_OS_WIN32
+	#include "Win32InputDriver.h"
+#endif
+#include <Lumino/Input/Input.h>
+#include <Lumino/Input/InputBinding.h>
+#include "VirtualPad.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail
+{
+
+InputManager* GetInputManager(InputManager* priority)
+{
+	if (priority != NULL) return priority;
+	return InputManager::Instance;
+}
 
 //=============================================================================
 // InputManager
 //=============================================================================
 
+InputManager* InputManager::Instance = nullptr;
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 InputManager::InputManager()
-	: m_InputDriver(nullptr)
+	: m_inputDriver(nullptr)
+	, m_defaultVirtualPads{}
 {
 }
 
@@ -50,6 +62,25 @@ InputManager::~InputManager()
 //-----------------------------------------------------------------------------
 void InputManager::Initialize(const Settings& settings)
 {
+#ifdef LN_OS_WIN32
+	RefPtr<Win32InputDriver> driver(LN_NEW Win32InputDriver());
+	driver->Initialize(Platform::PlatformSupport::GetWindowHandle(settings.mainWindow));
+	m_inputDriver = driver;
+#endif
+
+	auto pad = RefPtr<VirtualPad>::Construct(this);
+	m_defaultVirtualPads[0] = pad;
+	m_defaultVirtualPads[0]->AddRef();
+
+	auto left = RefPtr<InputBinding>::Construct(InputButtons::Left, Key::Left);
+	pad->AttachBinding(left);
+	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Right, Key::Right));
+	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Up, Key::Up));
+	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Down, Key::Down));
+
+	if (Instance == nullptr) {
+		Instance = this;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -57,7 +88,17 @@ void InputManager::Initialize(const Settings& settings)
 //-----------------------------------------------------------------------------
 void InputManager::Finalize()
 {
-	LN_SAFE_RELEASE(m_InputDriver);
+	for (auto* pad : m_defaultVirtualPads) {
+		LN_SAFE_RELEASE(pad);
+	}
+
+	if (m_inputDriver != nullptr) {
+		LN_SAFE_RELEASE(m_inputDriver);
+	}
+
+	if (Instance == this) {
+		Instance = nullptr;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -65,6 +106,12 @@ void InputManager::Finalize()
 //-----------------------------------------------------------------------------
 void InputManager::UpdateFrame()
 {
+	for (auto* pad : m_defaultVirtualPads)
+	{
+		if (pad != nullptr) {
+			pad->UpdateFrame();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -72,9 +119,48 @@ void InputManager::UpdateFrame()
 //-----------------------------------------------------------------------------
 void InputManager::OnEvent(const Platform::EventArgs& e)
 {
+	if (m_inputDriver != nullptr) {
+		m_inputDriver->OnEvent(e);
+	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+float InputManager::GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse)
+{
+	// キーボード
+	if (input.id & detail::DeviceInputSource::KeyboardFlag)
+	{
+		uint32_t k = input.id & detail::DeviceInputSource::ValumeMask;
+		return m_inputDriver->GetKeyState((Key)k) ? 1.0f : 0.0f;
+	}
+	// マウス
+	if (input.id & detail::DeviceInputSource::MouseFlag)
+	{
+		uint32_t k = input.id & detail::DeviceInputSource::ValumeMask;
+		return m_inputDriver->GetMouseState((MouseButton::enum_type)k) ? 1.0f : 0.0f;
+	}
+	// ジョイスティック - ボタン
+	if (input.id & detail::DeviceInputSource::JoystickButtonFlag)
+	{
+		uint32_t number = (input.id & detail::DeviceInputSource::JoystickNumberMask) >> 12;
+		LN_THROW(0, NotImplementedException);
+	}
+	// ジョイスティック - 軸
+	if (input.id & detail::DeviceInputSource::JoystickAxisFlag)
+	{
+		LN_THROW(0, NotImplementedException);
+	}
+	// ジョイスティック - POV
+	if (input.id & detail::DeviceInputSource::JoystickPovFlag)
+	{
+		LN_THROW(0, NotImplementedException);
+	}
+	return 0.0f;
+}
 
+} // namespace detail
 LN_NAMESPACE_END
 
 #if 0
