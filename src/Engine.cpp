@@ -48,6 +48,7 @@
 #include "Internal.h"
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
+#include "Input/InputManager.h"
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Engine.h>
 #include "Graphics/RendererImpl.h"
@@ -94,6 +95,7 @@ ApplicationImpl* ApplicationImpl::Create(const ApplicationSettings& configData)
 ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	: m_configData(configData)
 	, m_fileManager(NULL)
+	, m_inputManager(nullptr)
 	, m_audioManager(NULL)
 	, m_guiManager(NULL)
 	, m_sceneGraphManager(NULL)
@@ -130,6 +132,10 @@ ApplicationImpl::~ApplicationImpl()
 	if (m_audioManager != NULL) {
 		m_audioManager->Finalize();
 		LN_SAFE_RELEASE(m_audioManager);
+	}
+	if (m_inputManager != nullptr) {
+		m_inputManager->Finalize();
+		LN_SAFE_RELEASE(m_inputManager);
 	}
 
 	LN_SAFE_RELEASE(m_fileManager);
@@ -211,6 +217,22 @@ void ApplicationImpl::InitializePlatformManager()
 
 		// イベントリスナー登録
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ApplicationImpl::InitializeInputManager()
+{
+	if (m_inputManager == nullptr)
+	{
+		InitializePlatformManager();
+
+		InputManager::Settings data;
+
+		m_inputManager = LN_NEW InputManager();
+		m_inputManager->Initialize(data);
 	}
 }
 
@@ -354,6 +376,10 @@ bool ApplicationImpl::UpdateFrame()
 {
 	m_endRequested = !m_platformManager->DoEvents();
 
+	if (m_inputManager != nullptr) {
+		m_inputManager->UpdateFrame();
+	}
+
 	if (m_sceneGraphManager != nullptr) {
 		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(m_fpsController.GetElapsedGameTime());
 	}
@@ -465,10 +491,10 @@ bool ApplicationImpl::OnEvent(const Platform::EventArgs& e)
 		break;
 	case Platform::EventType_MouseWheel:		// マウスホイールが操作された
 		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectMouseWheel(e.Mouse.Delta, e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (m_guiManager->InjectMouseWheel(e.Mouse.WheelDelta, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr) {
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.Delta)) { return true; }
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.WheelDelta)) { return true; }
 		}
 		break;
 	case Platform::EventType_KeyDown:	// キー押下

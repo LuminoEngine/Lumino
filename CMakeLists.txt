@@ -84,6 +84,11 @@ set(LN_SOURCES_Platform
 set(LN_SOURCES_Input
 	include/Lumino/Input/Common.h
 	include/Lumino/Input/Input.h
+	include/Lumino/Input/InputBinding.h
+	src/Input/InputDriver.cpp
+	src/Input/InputDriver.h
+	src/Input/InputManager.cpp
+	src/Input/InputManager.h
 )
 
 set(LN_SOURCES_Audio
@@ -469,8 +474,13 @@ if (WIN32)
 		src/Platform/Win32/Win32WindowBase.cpp
 		src/Platform/Win32/Win32WindowBase.h
 		src/Platform/Win32/Win32WindowManager.cpp
-		src/Platform/Win32/Win32WindowManager.h)
-
+		src/Platform/Win32/Win32WindowManager.h
+	)
+	set(LN_SOURCES_Input
+		${LN_SOURCES_Input}
+		src/Input/Win32InputDriver.cpp
+		src/Input/Win32InputDriver.h
+	)
  	set(LN_SOURCES_Graphics
  		${LN_SOURCES_Graphics}
 		src/Graphics/Device/DirectX9/DX9Texture.h
@@ -492,7 +502,8 @@ if (WIN32)
 		src/Graphics/Device/DirectX9/DX9Shader.cpp
 		src/Graphics/Device/DirectX9/DX9SwapChain.cpp
 		src/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
-		src/Graphics/Device/OpenGL/WGLSwapChain.cpp)
+		src/Graphics/Device/OpenGL/WGLSwapChain.cpp
+	)
 
 elseif (APPLE)
 

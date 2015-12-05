@@ -52,13 +52,13 @@ KeyGesture::~KeyGesture()
 
 
 //=============================================================================
-// InputBinding
+// UIInputBinding
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-InputBinding::InputBinding(Command* command, InputGesture* gesture)
+UIInputBinding::UIInputBinding(Command* command, InputGesture* gesture)
 	: m_command(NULL)
 	, m_gesture(NULL)
 {
@@ -69,7 +69,7 @@ InputBinding::InputBinding(Command* command, InputGesture* gesture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-InputBinding::~InputBinding()
+UIInputBinding::~UIInputBinding()
 {
 	LN_SAFE_RELEASE(m_command);
 	LN_SAFE_RELEASE(m_gesture);

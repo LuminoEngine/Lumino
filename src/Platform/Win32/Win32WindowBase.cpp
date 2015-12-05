@@ -195,6 +195,8 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 			case WM_RBUTTONUP:
 			case WM_MBUTTONDOWN:
 			case WM_MBUTTONUP:
+			case WM_XBUTTONDOWN:
+			case WM_XBUTTONUP:
 			{
 				EventArgs e;
 				e.Sender = this;
@@ -225,11 +227,19 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					e.Type = EventType_MouseUp;
 					e.Mouse.Button = MouseButton::Middle;
 					break;
+				case WM_XBUTTONDOWN:
+					e.Type = EventType_MouseDown;
+					e.Mouse.Button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
+					break;
+				case WM_XBUTTONUP:
+					e.Type = EventType_MouseUp;
+					e.Mouse.Button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
+					break;
 				}
 
 				e.Mouse.X = LOWORD(lparam);
 				e.Mouse.Y = HIWORD(lparam);
-				e.Mouse.Delta = 0;
+				e.Mouse.WheelDelta = 0;
 				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
 				e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
 				NortifyEvent(e);
@@ -247,7 +257,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				e.Type = EventType_MouseMove;
 				e.Sender = this;
 				e.Mouse.Button = MouseButton::None;
-				e.Mouse.Delta = 0;
+				e.Mouse.WheelDelta = 0;
 				e.Mouse.X = static_cast< short >(LOWORD(lparam));     // 一度 short にキャストしないと、
 				e.Mouse.Y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
 				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
@@ -276,7 +286,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 					e.Type = EventType_MouseMove;
 					e.Sender = this;
 					e.Mouse.Button = MouseButton::None;
-					e.Mouse.Delta = 0;
+					e.Mouse.WheelDelta = 0;
 					e.Mouse.X = (short)pt.x;
 					e.Mouse.Y = (short)pt.y;
 					e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
@@ -298,7 +308,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 				e.Type = EventType_MouseWheel;
 				e.Sender = this;
 				e.Mouse.Button = MouseButton::None;
-				e.Mouse.Delta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
+				e.Mouse.WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
 				e.Mouse.X = static_cast< short >(LOWORD(lparam));
 				e.Mouse.Y = static_cast< short >(HIWORD(lparam));
 				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;

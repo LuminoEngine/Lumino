@@ -1,5 +1,8 @@
 
 #pragma once
+#include <Lumino/Base/EnumExtension.h>
+#include <Lumino/Reflection/ReflectionObject.h>
+#include "../Common.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -30,71 +33,86 @@ enum InputDeviceID
 	InputDeviceID_Joypad4,
 };
 
-/// 各仮想ボタンを示す値
-enum VirtualButton
+#if 0
+/** 入力デバイスから受け取る値の種別 */
+LN_ENUM(DeviceInputSource)
 {
-	VirtualButton_Unknown = 0,
+	Unknown = 0,
 
-	VirtualButton_Mouse1 = 256,		// GLFW と合わせて 1 スタート
-	VirtualButton_Mouse2,
-	VirtualButton_Mouse3,
-	VirtualButton_Mouse4,
-	VirtualButton_Mouse5,
-	VirtualButton_Mouse6,
-	VirtualButton_Mouse7,
-	VirtualButton_Mouse8,
+	/* 255 以前はキーボード */
 
-	VirtualButton_JoypadButton1,
-	VirtualButton_JoypadButton2,
-	VirtualButton_JoypadButton3,
-	VirtualButton_JoypadButton4,
-	VirtualButton_JoypadButton5,
-	VirtualButton_JoypadButton6,
-	VirtualButton_JoypadButton7,
-	VirtualButton_JoypadButton8,
-	VirtualButton_JoypadButton9,
-	VirtualButton_JoypadButton10,
-	VirtualButton_JoypadButton11,
-	VirtualButton_JoypadButton12,
-	VirtualButton_JoypadButton13,
-	VirtualButton_JoypadButton14,
-	VirtualButton_JoypadButton15,
-	VirtualButton_JoypadButton16,
+	Mouse1 = 256,
+	Mouse2,
+	Mouse3,
+	Mouse4,
+	Mouse5,
+	Mouse6,
+	Mouse7,
+	Mouse8,
 
-	VirtualButton_JoypadPOVUp,
-	VirtualButton_JoypadPOVRight,
-	VirtualButton_JoypadPOVDown,
-	VirtualButton_JoypadPOVLeft,
+	JoypadButton1,
+	JoypadButton2,
+	JoypadButton3,
+	JoypadButton4,
+	JoypadButton5,
+	JoypadButton6,
+	JoypadButton7,
+	JoypadButton8,
+	JoypadButton9,
+	JoypadButton10,
+	JoypadButton11,
+	JoypadButton12,
+	JoypadButton13,
+	JoypadButton14,
+	JoypadButton15,
+	JoypadButton16,
 
-	VirtualButton_JoypadAxis1Minus,		///< X1 -1.0
-	VirtualButton_JoypadAxis1Plus,		///< X1  1.0
-	VirtualButton_JoypadAxis2Minus,		///< Y1 -1.0
-	VirtualButton_JoypadAxis2Plus,		///< Y1  1.0
-	VirtualButton_JoypadAxis3Minus,		///< X2 -1.0
-	VirtualButton_JoypadAxis3Plus,		///< X2  1.0
-	VirtualButton_JoypadAxis4Minus,		///< Y2 -1.0
-	VirtualButton_JoypadAxis4Plus,		///< Y2  1.0
-	VirtualButton_JoypadAxis5Minus,		///< X3 -1.0
-	VirtualButton_JoypadAxis5Plus,		///< X3  1.0     XInput LT
-	VirtualButton_JoypadAxis6Minus,		///< Y3 -1.0
-	VirtualButton_JoypadAxis6Plus,		///< Y3  1.0     XInput RT
-	VirtualButton_JoypadAxis7Minus,		///< X4 -1.0
-	VirtualButton_JoypadAxis7Plus,		///< X4  1.0
-	VirtualButton_JoypadAxis8Minus,		///< Y4 -1.0
-	VirtualButton_JoypadAxis8Plus,		///< Y4  1.0
+	JoypadPOVUp,
+	JoypadPOVRight,
+	JoypadPOVDown,
+	JoypadPOVLeft,
 
-	VirtualButton_IDLast,
+	JoypadAxis1Minus,		///< X1 -1.0
+	JoypadAxis1Plus,		///< X1  1.0
+	JoypadAxis2Minus,		///< Y1 -1.0
+	JoypadAxis2Plus,		///< Y1  1.0
+	JoypadAxis3Minus,		///< X2 -1.0
+	JoypadAxis3Plus,		///< X2  1.0
+	JoypadAxis4Minus,		///< Y2 -1.0
+	JoypadAxis4Plus,		///< Y2  1.0
+	JoypadAxis5Minus,		///< X3 -1.0
+	JoypadAxis5Plus,		///< X3  1.0     XInput LT
+	JoypadAxis6Minus,		///< Y3 -1.0
+	JoypadAxis6Plus,		///< Y3  1.0     XInput RT
+	JoypadAxis7Minus,		///< X4 -1.0
+	JoypadAxis7Plus,		///< X4  1.0
+	JoypadAxis8Minus,		///< Y4 -1.0
+	JoypadAxis8Plus,		///< Y4  1.0
 
-	VirtualButton_Keyboard_Begin		= 1,        // 1～255 はとりあえずキーボード用
-	VirtualButton_Keyboard_End			= 255,
-	VirtualButton_Mouse_Begin			= VirtualButton_Mouse1,
-	VirtualButton_Mouse_End				= VirtualButton_Mouse8,
-	VirtualButton_JoypadButtonBegin		= VirtualButton_JoypadButton1,
-	VirtualButton_JoypadButtonEnd		= VirtualButton_JoypadButton16,
-	VirtualButton_JoypadPOV_Begin		= VirtualButton_JoypadPOVUp,
-	VirtualButton_JoypadPOV_End			= VirtualButton_JoypadPOVLeft,
-	VirtualButton_JoypadAxisBegin		= VirtualButton_JoypadAxis1Minus,
-	VirtualButton_JoypadAxisEnd			= VirtualButton_JoypadAxis8Plus,
+	IDLast,
+
+	Keyboard_Begin		= 1,        // 1～255 はとりあえずキーボード用
+	Keyboard_End			= 255,
+	Mouse_Begin			= Mouse1,
+	Mouse_End				= Mouse8,
+	JoypadButtonBegin		= JoypadButton1,
+	JoypadButtonEnd		= JoypadButton16,
+	JoypadPOV_Begin		= JoypadPOVUp,
+	JoypadPOV_End			= JoypadPOVLeft,
+	JoypadAxisBegin		= JoypadAxis1Minus,
+	JoypadAxisEnd			= JoypadAxis8Plus,
 };
+LN_ENUM_DECLARE(DeviceInputSource);
+#endif
+
+namespace detail
+{
+
+struct DeviceInputSource
+{
+	uint32_t	id;
+};
+
+}
 
 LN_NAMESPACE_END

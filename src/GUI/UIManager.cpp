@@ -96,7 +96,7 @@
 			→	コードから生成するときは必要なし。
 				UIElementFactory で AddItem した先で方チェックとかすればいいだけ。
 
-	[2015/9/8] ショートカットキー (InputBinding)
+	[2015/9/8] ショートカットキー (UIInputBinding)
 		TranslateInput
 
 	[2015/9/8] コマンドとフォーカス

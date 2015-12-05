@@ -543,7 +543,7 @@ const String& TextBox::get_Text() const
 void TextBox::Handler_KeyDown(KeyEventArgs* e)
 {
 	/* TODO:
-		本来であれば、ショートカットは InputBinding を使って実現するべき。
+		本来であれば、ショートカットは UIInputBinding を使って実現するべき。
 		ただ、現時点でショートカットが必要なコントロールは TextBox だけ。
 		Menu とかは直近では考えていない。
 		それなので、ショートカットの検出もとりあえずここでやってしまう。

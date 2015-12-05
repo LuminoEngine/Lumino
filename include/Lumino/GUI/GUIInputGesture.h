@@ -31,12 +31,12 @@ public:
 /**
 	@brief
 */
-class InputBinding
+class UIInputBinding
 	: public RefObject
 {
 public:
-	InputBinding(Command* command, InputGesture* gesture);
-	virtual ~InputBinding();
+	UIInputBinding(Command* command, InputGesture* gesture);
+	virtual ~UIInputBinding();
 	
 public:
 	Command*		m_command;
