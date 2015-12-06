@@ -90,6 +90,11 @@ int main()
 
 		while (Engine::UpdateFrame())
 		{
+			if (Input::IsPress(InputButtons::Right.c_str()))
+			{
+				printf("Oo");
+			}
+
 			//rigidBody1->GetWorldTransform().GetPosition().Print();
 			Physics::PhysicsManager::Instance->SyncBeforeStepSimulation();
 			Physics::PhysicsManager::Instance->StepSimulation(0.016);

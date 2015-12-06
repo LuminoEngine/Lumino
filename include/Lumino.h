@@ -38,6 +38,9 @@
 #include "Lumino/Platform/EventListener.h"
 #include "Lumino/Platform/Clipboard.h"
 
+#include "Lumino/Input/InputBinding.h"
+#include "Lumino/Input/Input.h"
+
 #include "Lumino/GUI/UI.h"
 #include "Lumino/GUI/GUIContext.h"
 #include "Lumino/GUI/UIElement.h"

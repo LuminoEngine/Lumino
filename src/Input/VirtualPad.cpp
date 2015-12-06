@@ -14,6 +14,8 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 VirtualPad::VirtualPad(detail::InputManager* manager)
 	: m_manager(manager)
+	, m_repeatIntervalStart(20)	// TODO —v’²®BŽžŠÔ‚Ì•û‚ª‚¢‚¢‚©‚àH
+	, m_repeatIntervalStep(5)
 {
 }
 
@@ -27,9 +29,74 @@ VirtualPad::~VirtualPad()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+bool VirtualPad::IsPress(const TCHAR* bindingName) const
+{
+	auto* state = m_inputStatus.Find(bindingName);
+	LN_THROW(state != nullptr, KeyNotFoundException);
+	return (state->state > 0);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool VirtualPad::IsOnTrigger(const TCHAR* bindingName) const
+{
+	auto* state = m_inputStatus.Find(bindingName);
+	LN_THROW(state != nullptr, KeyNotFoundException);
+	return (state->state == 1);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool VirtualPad::IsOffTrigger(const TCHAR* bindingName) const
+{
+	auto* state = m_inputStatus.Find(bindingName);
+	LN_THROW(state != nullptr, KeyNotFoundException);
+	return (state->state == -1);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool VirtualPad::IsRepeat(const TCHAR* bindingName) const
+{
+	auto* state = m_inputStatus.Find(bindingName);
+	LN_THROW(state != nullptr, KeyNotFoundException);
+	int s = state->state;
+	return ((s == 1) || (s > m_repeatIntervalStart && (s % m_repeatIntervalStep) == 0));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+float VirtualPad::GetAxisValue(const TCHAR* bindingName) const
+{
+	auto* state = m_inputStatus.Find(bindingName);
+	LN_THROW(state != nullptr, KeyNotFoundException);
+	return state->current;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void VirtualPad::AttachBinding(InputBinding* binding)
 {
 	m_bindings.Add(RefPtr<InputBinding>(binding));
+
+	auto* state = m_inputStatus.Find(binding->GetName());
+	if (state == nullptr)
+	{
+		InputState newState;
+		newState.current = 0;
+		newState.state = 0;
+		newState.ref = 1;
+		m_inputStatus.Add(binding->GetName(), newState);
+	}
+	else
+	{
+		state->ref++;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -38,6 +105,21 @@ void VirtualPad::AttachBinding(InputBinding* binding)
 void VirtualPad::DetachBinding(InputBinding* binding)
 {
 	m_bindings.Remove(binding);
+
+	auto* state = m_inputStatus.Find(binding->GetName());
+	state->ref--;
+	if (state->ref <= 0) {
+		m_inputStatus.Remove(binding->GetName());
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void VirtualPad::SetRepeatInterval(int start, int step)
+{
+	m_repeatIntervalStart = start;
+	m_repeatIntervalStep = step;
 }
 
 //-----------------------------------------------------------------------------
