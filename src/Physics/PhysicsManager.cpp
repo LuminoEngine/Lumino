@@ -1,4 +1,18 @@
 ﻿/*
+
+	btRigidBody::applyImpulse関数を使うと撃力を重心以外に加えられる(つまりトルクも発生する)． 
+	applyImpulse関数で任意の場所(重心からの相対座標値)に力を加えてみよう．
+
+	applyForce（）の値は、完全秒です。しかし、それは。力がステップの終了時にクリアされるすべてのステップを適用する必要がある（）applyImpulseそれが瞬時に速度を変更するようインスタントプッシュです。
+	http://bulletphysics.org/Bullet/phpBB3/viewtopic.php?t=8622
+
+	角度固定は
+	http://bulletjpn.web.fc2.com/09_Actions.html
+
+	[2015/12/6]
+		RigidBody のプロパティは遅延設定。
+		後から再設定できないのは bullet の Additiona～系。
+
 	[2015/5/13] Bullet の btCollisionObject::get/setWorldTransform と btMotionState::get/setWorldTransform について
 
 		btCollisionObject の m_worldTransform は、初期姿勢または setCenterOfMassTransform() で set されるだけ。

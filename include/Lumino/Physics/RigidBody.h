@@ -29,6 +29,7 @@ namespace Physics
 class RigidBody
     : public BodyBase
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	/// 初期状態データ (MMD 実装にあわせて用意している。実際に使うときはプロパティ的に Get/Set で編集し、遅延で bt オブジェクトを作るのがスマートかも)
@@ -80,10 +81,11 @@ public:
 	///		shape		: (BodyBase  削除時に delete される)
 	void Initialize(PhysicsManager* manager, Collider* collider, const ConfigData& configData);
 
-#if 0
 	/// 位置の設定
-	void setPosition( const Vector3& position );
+	void SetPosition(const Vector3& position);
+	void SetPosition(float x, float y, float z);
 
+#if 0
 	/// 回転の設定
 	void setRotation( const Quaternion& rotation );
 
@@ -111,6 +113,18 @@ public:
 	/// (キネマティックな剛体用 setWorldMatrix())
 	void setKinematicAlignmentMatrix( const Matrix& matrix );
 #endif
+
+	void SetMass(float mass);
+
+	void SetConstraintFlags(RigidBodyConstraintFlags flags);
+
+	void ApplyForce(const Vector3& force);
+
+	// ApplyForce は、力を与える間毎フレーム継続的に呼び出す必要がある。
+	// そのフレームで与えられたトータルの力を更新する。そのフレームのシミュレーションが終了すれば 0 にリセットされる。
+	// ApplyImpulse() は、直ちに速度を更新する。
+	// ApplyForce のように継続的に呼び出す必要はない。
+
 	/// 剛体の sleep 状態を解除する (公開する必要は無いかも？)
 	void Activate();
 
@@ -148,7 +162,11 @@ protected:
 		Modified_None = 0x0000,
 		Modified_Activate = 0x0001,
 		Modified_WorldTransform = 0x0002,
-		Modified_ClearForces = 0x0003,
+		Modified_ClearForces = 0x0004,
+		Modified_Mass = 0x0008,
+		Modified_ApplyForce = 0x0010,
+		Modified_RigidBodyConstraintFlags = 0x0020,
+		
 	};
 
 	struct KinematicMotionState;
@@ -158,6 +176,10 @@ protected:
 	uint16_t				m_group;
 	uint16_t				m_groupMask;
 	Matrix					m_worldTransform;			///< (postUpdate() で設定される)
+	float					m_mass;
+	Vector3					m_appliedForce;
+	RigidBodyConstraintFlags	m_rigidBodyConstraintFlags;
+
 	uint32_t				m_modifiedFlags;
 };
 

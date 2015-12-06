@@ -13,6 +13,7 @@ set(LN_SOURCES_C_API
 	include/LNCommon.h
 	include/LNGraphics.h
 	include/LNMath.h
+	include/LNPhysics.h
 	include/LNScene.h
 	include/LNTypedef.h
 	src/LNApplication.cpp
@@ -27,6 +28,7 @@ set(LN_SOURCES_C_API
 	src/LNManager.h
 	src/LNMath.cpp
 	src/LNOverride_src.cpp
+	src/LNPhysics.cpp
 	src/LNScene.cpp
 	src/LNTypedef.cpp
 	src/LNWrapperImplement.h

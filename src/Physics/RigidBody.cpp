@@ -115,6 +115,7 @@ void setMatrix( const LMatrix& matrix )
 //=============================================================================
 // RigidBody
 //=============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, BodyBase);
 
 //-----------------------------------------------------------------------------
 //
@@ -132,12 +133,13 @@ RigidBody* RigidBody::Create(Collider* collider)
 //
 //-----------------------------------------------------------------------------
 RigidBody::RigidBody()
-    : BodyBase()
+	: BodyBase()
 	, m_btRigidBody(nullptr)
 	, m_collider(nullptr)
 	, m_group(0xffff)
 	, m_groupMask(0xffff)
 	, m_worldTransform()
+	, m_rigidBodyConstraintFlags(RigidBodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
 {
 }
@@ -246,31 +248,44 @@ void RigidBody::Initialize(PhysicsManager* manager, Collider* collider, const Co
 
 	BodyBase::Create(manager, m_btRigidBody);
 	m_manager->AddRigidBody(this);
-}
 
-#if 0
+
+	m_mass = configData.Mass;
+}
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RigidBody::setPosition( const LVector3& position )
+void RigidBody::SetPosition(const Vector3& position)
 {
-	btVector3 pos = BulletUtil::LNVector3ToBtVector3( position );
+	m_worldTransform.M41 = position.X;
+	m_worldTransform.M42 = position.Y;
+	m_worldTransform.M43 = position.Z;
+	m_modifiedFlags |= Modified_WorldTransform;	// 姿勢を更新した
+	m_modifiedFlags |= Modified_Activate;		// Activate要求
 
-	if ( m_btRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT )
-	{
-		btTransform Transform = m_btRigidBody->getWorldTransform();
-		Transform.setOrigin( pos );
-		m_btRigidBody->setWorldTransform( Transform );
-	}
-	else
-	{
-		m_btRigidBody->getWorldTransform().setOrigin( pos );
-	}
-	m_btRigidBody->activate( true );
+	//btVector3 pos = BulletUtil::LNVector3ToBtVector3( position );
 
-	m_btRigidBody->getWorldTransform().getOpenGLMatrix((btScalar*)&mWorldMatrix);
+	//if ( m_btRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT )
+	//{
+	//	btTransform Transform = m_btRigidBody->getWorldTransform();
+	//	Transform.setOrigin( pos );
+	//	m_btRigidBody->setWorldTransform( Transform );
+	//}
+	//else
+	//{
+	//	m_btRigidBody->getWorldTransform().setOrigin( pos );
+	//}
+	//m_btRigidBody->activate( true );
+
+	//m_btRigidBody->getWorldTransform().getOpenGLMatrix((btScalar*)&mWorldMatrix);
+}
+void RigidBody::SetPosition(float x, float y, float z)
+{
+	SetPosition(Vector3(x, y, z));
 }
 
+
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -376,7 +391,36 @@ void RigidBody::setKinematicAlignmentMatrix( const LMatrix& matrix )
 }
 #endif
 	
-	
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void RigidBody::SetMass(float mass)
+{
+	m_mass = mass;
+	btVector3 localInertia(0, 0, 0);
+	m_collider->GetBtCollisionShape()->calculateLocalInertia(m_mass, localInertia);
+	m_modifiedFlags |= Modified_Mass;
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void RigidBody::SetConstraintFlags(RigidBodyConstraintFlags flags)
+{
+	m_rigidBodyConstraintFlags = flags;
+	m_modifiedFlags |= Modified_RigidBodyConstraintFlags;
+}
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void RigidBody::ApplyForce(const Vector3& force)
+{
+	m_appliedForce += force;	// 次のシミュレーションまでの力を総和したい
+	m_modifiedFlags |= Modified_ApplyForce;
+}
+
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
@@ -415,10 +459,19 @@ void RigidBody::ClearForces()
 //-----------------------------------------------------------------------------
 void RigidBody::SyncBeforeStepSimulation()
 {
-	// Activate 要求
-	if ((m_modifiedFlags & Modified_Activate) != 0)
+	// RigidBodyConstraintFlags
+	if ((m_modifiedFlags & Modified_RigidBodyConstraintFlags) != 0)
 	{
-		m_btRigidBody->activate();
+		btVector3 linearFactor(1.0f, 1.0f, 1.0f);
+		btVector3 angularFactor(1.0f, 1.0f, 1.0f);
+		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezePositionX)) linearFactor.setX(0.0f);
+		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezePositionY)) linearFactor.setY(0.0f);
+		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezePositionZ)) linearFactor.setZ(0.0f);
+		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezeRotationX)) angularFactor.setX(0.0f);
+		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezeRotationY)) angularFactor.setY(0.0f);
+		if (m_rigidBodyConstraintFlags.TestFlag(RigidBodyConstraintFlags::FreezeRotationZ)) angularFactor.setZ(0.0f);
+		m_btRigidBody->setLinearFactor(linearFactor);
+		m_btRigidBody->setAngularFactor(angularFactor);
 	}
 
 	// SetWorldTransform 要求
@@ -451,6 +504,27 @@ void RigidBody::SyncBeforeStepSimulation()
 		m_btRigidBody->setWorldTransform(transform);
 	}
 
+	// Mass
+	if ((m_modifiedFlags & Modified_Mass) != 0)
+	{
+		/* Bullet は StaticObject はシミュレーションから完全に除外している。
+		 * StaticObject でないものは World の m_nonStaticRigidBodies に追加されてシミュレーションの
+		 * 対象となるのだが、このリストに追加されるのは addRigidBody() された時のみ。
+		 * 後から StaticObject であるフラグが変更されても、再度 addRigidBody() しなければ
+		 * シミュレーションの対象とはならない。
+		 * ここでは、setMassProps() の前後でフラグ isStaticObject() が変わった場合、World に追加しなおしている。
+		 */
+		bool isStatic = m_btRigidBody->isStaticObject();
+		btVector3 inertia;
+		m_btRigidBody->getCollisionShape()->calculateLocalInertia(m_mass, inertia);
+		m_btRigidBody->setMassProps(m_mass, inertia);
+		if (isStatic != m_btRigidBody->isStaticObject())
+		{
+			m_manager->GetBtWorld()->removeRigidBody(m_btRigidBody);
+			m_manager->GetBtWorld()->addRigidBody(m_btRigidBody);
+		}
+	}
+
 	// ClearForces 要求
 	if ((m_modifiedFlags & Modified_ClearForces) != 0)
 	{
@@ -460,6 +534,20 @@ void RigidBody::SyncBeforeStepSimulation()
 		//m_btRigidBody->setInterpolationAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
 		//m_btRigidBody->setInterpolationWorldTransform(m_btRigidBody->getCenterOfMassTransform());
 		m_btRigidBody->clearForces();
+	}
+
+	// ApplyForce
+	if ((m_modifiedFlags & Modified_ApplyForce) != 0)
+	{
+		m_btRigidBody->applyForce(BulletUtil::LNVector3ToBtVector3(m_appliedForce), btVector3(0,0,0));
+		m_appliedForce = Vector3::Zero;
+	}
+	//m_btRigidBody->applyImpulse
+
+	// Activate 要求
+	if ((m_modifiedFlags & Modified_Activate) != 0)
+	{
+		m_btRigidBody->activate();
 	}
 
 	m_modifiedFlags = Modified_None;

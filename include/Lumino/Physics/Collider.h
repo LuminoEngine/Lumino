@@ -29,7 +29,7 @@ private:
 };
 
 /**
-	@brief	静的な無限平面の衝突判定形状です。
+	@brief	無限平面の衝突判定形状です。
 */
 class PlaneCollider
 	: public Collider

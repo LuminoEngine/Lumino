@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -17,8 +16,9 @@ struct ContactInfo
 
 /// 各種 Body のベースクラス
 class BodyBase
-    : public RefObject
+	: public tr::ReflectionObject
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	typedef Array<ContactInfo>	ContactInfoList;
 

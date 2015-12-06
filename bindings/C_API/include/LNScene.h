@@ -22,7 +22,7 @@ LN_MODULE(Scene)
 LN_CLASS(LNSceneNode, LNObject)
 
 	/**
-		@brief		サウンドの 3D 音源としての位置を設定します。
+		@brief		ノードの位置を設定します。
 		@param[in]	sceneNode	: シーンノードハンドル
 		@param[in]	position	: 座標
 	*/

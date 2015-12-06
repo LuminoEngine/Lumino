@@ -84,15 +84,26 @@ int main()
 		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
 		//tilemapNode->SetTileMap(tilemap);
 
+		RefPtr<Physics::Collider> collider2(Physics::PlaneCollider::Create(), false);
+		RefPtr<Physics::RigidBody> rigidBody2(Physics::RigidBody::Create(collider2), false);
+
 		//RefPtr<Physics::RigidBody> b1(LN_NEW Physics::Capsule(Physics::PhysicsManager::Instance, 2, 4, 1.0f));
 		RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2), false);
 		RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1), false);
+		rigidBody1->SetPosition(0, 10, 0);
+		rigidBody1->SetMass(1.0f);
+
+		RefPtr<Physics::Collider> collider3(Physics::CapsuleCollider::Create(0.5, 2), false);
+		RefPtr<Physics::RigidBody> rigidBody3(Physics::RigidBody::Create(collider3), false);
+		rigidBody3->SetPosition(0.1, 10, 0.5);
+		rigidBody3->SetMass(1.0f);
+		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
 
 		while (Engine::UpdateFrame())
 		{
-			if (Input::IsPress(InputButtons::Right.c_str()))
+			if (Input::IsPress(InputButtons::Left.c_str()))
 			{
-				printf("Oo");
+				rigidBody3->ApplyForce(Vector3(-10.1, 0, 0));
 			}
 
 			//rigidBody1->GetWorldTransform().GetPosition().Print();
