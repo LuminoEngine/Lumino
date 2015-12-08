@@ -101,7 +101,7 @@ int main()
 
 		while (Engine::UpdateFrame())
 		{
-			if (Input::IsPress(InputButtons::Left.c_str()))
+			if (Input::IsPress(InputButtons::Left))
 			{
 				rigidBody3->ApplyForce(Vector3(-10.1, 0, 0));
 			}

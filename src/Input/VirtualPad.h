@@ -13,11 +13,11 @@ public:
 	VirtualPad(detail::InputManager* manager);
 	virtual ~VirtualPad();
 
-	bool IsPress(const TCHAR* bindingName) const;
-	bool IsOnTrigger(const TCHAR* bindingName) const;
-	bool IsOffTrigger(const TCHAR* bindingName) const;
-	bool IsRepeat(const TCHAR* bindingName) const;
-	float GetAxisValue(const TCHAR* bindingName) const;
+	bool IsPress(const StringRef& bindingName) const;
+	bool IsOnTrigger(const StringRef& bindingName) const;
+	bool IsOffTrigger(const StringRef& bindingName) const;
+	bool IsRepeat(const StringRef& bindingName) const;
+	float GetAxisValue(const StringRef& bindingName) const;
 
 	void AttachBinding(InputBinding* binding);
 	void DetachBinding(InputBinding* binding);

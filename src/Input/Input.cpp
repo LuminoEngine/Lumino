@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsPress(const TCHAR* bindingName)
+bool Input::IsPress(const StringRef& bindingName)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsPress(bindingName);
 }
@@ -21,7 +21,7 @@ bool Input::IsPress(const TCHAR* bindingName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsOnTrigger(const TCHAR* bindingName)
+bool Input::IsOnTrigger(const StringRef& bindingName)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOnTrigger(bindingName);
 }
@@ -29,7 +29,7 @@ bool Input::IsOnTrigger(const TCHAR* bindingName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsOffTrigger(const TCHAR* bindingName)
+bool Input::IsOffTrigger(const StringRef& bindingName)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOffTrigger(bindingName);
 }
@@ -37,7 +37,7 @@ bool Input::IsOffTrigger(const TCHAR* bindingName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsRepeat(const TCHAR* bindingName)
+bool Input::IsRepeat(const StringRef& bindingName)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsRepeat(bindingName);
 }
@@ -45,7 +45,7 @@ bool Input::IsRepeat(const TCHAR* bindingName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-float Input::GetAxisValue(const TCHAR* bindingName)
+float Input::GetAxisValue(const StringRef& bindingName)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->GetAxisValue(bindingName);
 }

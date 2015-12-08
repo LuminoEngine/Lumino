@@ -348,6 +348,12 @@ class TypedPropertyInitializer
 	// 現在 TypedProperty はメンバ static ではなく、グローバル static を前提としている。
 	// となると、private メンバには当然アクセスできないが、このクラス経由で各メンバへの参照経路を設定する。
 
+	// ・LN_PROPERTY を書く宣言(.h)側に、TypedProperty<> を公開したくない。基底のポインタ Property* として公開したい。
+	//		→	TypedProperty<> 以外のプロパティを作りたいとき、マクロ名を変えないとならなくなる。
+	//			「宣言は LN_PROPERTY だけ書けばOK」にして、考えることは極力減らしたい。
+	// ・とすると、TypedProperty<> の実体はメンバではなくグローバル変数にしなければならない。
+	//		→	マクロで生成される各種アクセサにアクセスできなくなる。
+
 public:
 	typedef void(*SetterFunc)(CoreObject* obj, TValue value);
 	typedef TValue(*GetterFunc)(const CoreObject* obj);

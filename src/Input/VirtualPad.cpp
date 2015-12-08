@@ -29,7 +29,7 @@ VirtualPad::~VirtualPad()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsPress(const TCHAR* bindingName) const
+bool VirtualPad::IsPress(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.Find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -39,7 +39,7 @@ bool VirtualPad::IsPress(const TCHAR* bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsOnTrigger(const TCHAR* bindingName) const
+bool VirtualPad::IsOnTrigger(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.Find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -49,7 +49,7 @@ bool VirtualPad::IsOnTrigger(const TCHAR* bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsOffTrigger(const TCHAR* bindingName) const
+bool VirtualPad::IsOffTrigger(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.Find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -59,7 +59,7 @@ bool VirtualPad::IsOffTrigger(const TCHAR* bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsRepeat(const TCHAR* bindingName) const
+bool VirtualPad::IsRepeat(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.Find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -70,7 +70,7 @@ bool VirtualPad::IsRepeat(const TCHAR* bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-float VirtualPad::GetAxisValue(const TCHAR* bindingName) const
+float VirtualPad::GetAxisValue(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.Find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);

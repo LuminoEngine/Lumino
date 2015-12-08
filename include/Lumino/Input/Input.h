@@ -14,27 +14,27 @@ public:
 	/**
 		@brief		ボタンが現在押されているかを判定します。
 	*/
-	static bool IsPress(const TCHAR* bindingName);
+	static bool IsPress(const StringRef& bindingName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間を判定します。
 	*/
-	static bool IsOnTrigger(const TCHAR* bindingName);
+	static bool IsOnTrigger(const StringRef& bindingName);
 
 	/**
 		@brief		ボタンが離された瞬間を判定します。
 	*/
-	static bool IsOffTrigger(const TCHAR* bindingName);
+	static bool IsOffTrigger(const StringRef& bindingName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間とリピート状態を判定します。
 	*/
-	static bool IsRepeat(const TCHAR* bindingName);
+	static bool IsRepeat(const StringRef& bindingName);
 
 	/**
 		@brief		指定した軸のアナログ値を取得します。(0.0～1.0)
 	*/
-	static float GetAxisValue(const TCHAR* bindingName);
+	static float GetAxisValue(const StringRef& bindingName);
 
 private:
 };
