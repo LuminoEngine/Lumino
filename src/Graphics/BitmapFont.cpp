@@ -41,7 +41,7 @@ BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	, m_charHeight(0)
 {
 	LN_REFOBJ_SET(m_manager, manager);
-	m_name = String::Format(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
+	m_name = String::SPrintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
 	m_charWidth = m_fontBitmap->GetSize().Width / 16;
