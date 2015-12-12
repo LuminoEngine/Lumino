@@ -247,6 +247,10 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
 )
+set(LN_SOURCES_Graphics_Effect
+	src/Graphics/Effect/EffectManager.h
+	src/Graphics/Effect/EffectManager.cpp
+)
 	
 if (LN_BUILD_SCENE_MODULE)
 set(LN_SOURCES_TileMap
@@ -558,6 +562,7 @@ source_group("Input"		FILES ${LN_SOURCES_Input})
 source_group("Audio"		FILES ${LN_SOURCES_Audio})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
+source_group("Graphics/Effect"	FILES ${LN_SOURCES_Graphics_Effect})
 source_group("Tilemap"		FILES ${LN_SOURCES_TileMap})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
@@ -575,6 +580,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Audio}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
+	${LN_SOURCES_Graphics_Effect}
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}
@@ -673,11 +679,27 @@ add_subdirectory(external/Lumino.Math)
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
 
+# Effekseer ÇÃê›íË
+if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
+	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
+else()
+	set(USE_MSVC_RUNTIME_LIBRARY_DLL ON)
+endif()
+set(USE_INTERNAL_LOADER ON)
+set(USE_GLEW_STATIC OFF)
+set(USE_GLEW_DLL ON)
+set(USE_OPENAL OFF)
+set(USE_OPENGLES2 OFF)
+set(USE_OPENGLES3 OFF)
+set(USE_OPENGL3 OFF)
+#mark_as_advanced(USE_OPENGLES3)
+
 add_subdirectory(external/zlib)
 add_subdirectory(external/libpng)
 add_subdirectory(external/freetype-2.6)
 add_subdirectory(external/libogg)
 add_subdirectory(external/libvorbis)
+add_subdirectory(external/EffekseerRuntime101/src)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath_Static)
 link_libraries(zlib)
@@ -685,6 +707,8 @@ link_libraries(libpng)
 link_libraries(freetype)
 link_libraries(libogg)
 link_libraries(libvorbis)
+link_libraries(effekseer)
+link_libraries(effekseer_renderer_dx9)
 
 if (LN_BUILD_SCENE_MODULE)
 	add_subdirectory(external/bullet-2.82)
