@@ -8,6 +8,8 @@
 //#include "../../../System/Interface.h"
 //#include "../../Interface.h"
 //#include "../DirectMusic/DirectMusicAudioDevice.h"
+#include <xaudio2.h>
+#include <x3daudio.h>
 #include "../AudioDevice.h"
 
 LN_NAMESPACE_BEGIN

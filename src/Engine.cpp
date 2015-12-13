@@ -53,8 +53,10 @@
 #include <Lumino/Engine.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
+#include "Graphics/RenderingThread.h"
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
+#include "Effect/EffectManager.h"
 #include "GUI/UIManagerImpl.h"
 #include "ApplicationImpl.h"
 
@@ -97,6 +99,7 @@ ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	, m_fileManager(NULL)
 	, m_inputManager(nullptr)
 	, m_audioManager(NULL)
+	, m_effectManager(nullptr)
 	, m_guiManager(NULL)
 	, m_sceneGraphManager(NULL)
 	, m_profilerRenderer(NULL)
@@ -123,7 +126,10 @@ ApplicationImpl::~ApplicationImpl()
 		m_sceneGraphManager->ReleaseDefaultSceneGraph();
 		LN_SAFE_RELEASE(m_sceneGraphManager);
 	}
-
+	if (m_effectManager != nullptr) {
+		m_effectManager->Finalize();
+		LN_SAFE_RELEASE(m_effectManager);
+	}
 	if (m_guiManager != NULL) {
 		m_guiManager->Finalize();
 		LN_SAFE_RELEASE(m_guiManager);
@@ -157,6 +163,7 @@ void ApplicationImpl::Initialize()
 	InitializeAudioManager();
 	InitializePhysicsManager();
 	InitializeGraphicsManager();
+	InitializeEffectManager();
 	InitializeGUIManager();
 #ifdef LN_BUILD_SCENE_MODULE
 	InitializeSceneGraphManager();
@@ -316,6 +323,25 @@ void ApplicationImpl::InitializeGraphicsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void ApplicationImpl::InitializeEffectManager()
+{
+	if (m_effectManager == nullptr)
+	{
+		InitializeCommon();
+		InitializeGraphicsManager();
+
+		detail::EffectManager::Settings data;
+		data.fileManager = m_fileManager;
+		data.audioManager = m_audioManager;
+		data.graphicsManager = m_graphicsManager;
+		m_effectManager = LN_NEW detail::EffectManager();
+		m_effectManager->Initialize(data);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void ApplicationImpl::InitializeDocumentsManager()
 {
 	if (m_documentsManager.IsNull())
@@ -416,6 +442,24 @@ void ApplicationImpl::Render()
 {
 	if (m_graphicsManager != NULL)
 	{
+		// •`‰æ’x‰„‚ÌŠm”F
+		bool delay = false;
+		if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
+		{
+			if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
+				delay = true;
+			}
+		}
+		else {
+			// TODO:
+		}
+		if (delay) {
+			return;
+		}
+
+		if (m_effectManager != nullptr) {
+			m_effectManager->PreRender();
+		}
 
 		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
 		SwapChain* swap = m_graphicsManager->GetMainSwapChain();
@@ -425,7 +469,7 @@ void ApplicationImpl::Render()
 		renderer->Begin();
 		renderer->SetRenderTarget(0, swap->GetBackBuffer());
 		renderer->SetDepthBuffer(swap->GetBackBufferDepth());
-		renderer->Clear(ClearFlags::All, ColorF::White);
+		renderer->Clear(ClearFlags::All, ColorF::Black);
 
 		//m_graphicsManager->GetRenderer()->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
 
@@ -438,7 +482,9 @@ void ApplicationImpl::Render()
 		if (m_sceneGraphManager != nullptr) {
 			m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
 		}
-
+		if (m_effectManager != nullptr) {
+			m_effectManager->Render();
+		}
 		if (m_guiManager != NULL) {
 			m_guiManager->RenderOnMainWindow();
 		}

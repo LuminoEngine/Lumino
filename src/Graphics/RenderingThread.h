@@ -19,8 +19,12 @@ public:
 public:
 	void Reset(Driver::IGraphicsDevice* device);
 	void Dispose();
+
+	// 指定したコマンドリストの実行を直ちに開始する
 	void PushRenderingCommand(RenderingCommandList* commandList);
 	Exception* GetException() { return m_exception; }
+
+	bool IsRunning() { return m_running.IsTrue(); }
 
 	/// 描画スレッドへ一時停止を要求し、停止するまで待つ。
 	/// 描画スレッドは、現在実行中のコマンドリストの実行が終わってから一時停止する。

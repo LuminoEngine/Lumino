@@ -247,9 +247,16 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
 )
-set(LN_SOURCES_Graphics_Effect
-	src/Graphics/Effect/EffectManager.h
-	src/Graphics/Effect/EffectManager.cpp
+set(LN_SOURCES_Effect
+	include/Lumino/Effect/Effect.h
+	src/Effect/Effect.cpp
+	src/Effect/EffectDriver.h
+	src/Effect/EffectDriver.cpp
+	src/Effect/EffectManager.h
+	src/Effect/EffectManager.cpp
+	src/Effect/Internal.h
+	src/Effect/Effekseer/EffekseerDriver.h
+	src/Effect/Effekseer/EffekseerDriver.cpp
 )
 	
 if (LN_BUILD_SCENE_MODULE)
@@ -562,7 +569,7 @@ source_group("Input"		FILES ${LN_SOURCES_Input})
 source_group("Audio"		FILES ${LN_SOURCES_Audio})
 source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
-source_group("Graphics/Effect"	FILES ${LN_SOURCES_Graphics_Effect})
+source_group("Effect"		FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"		FILES ${LN_SOURCES_TileMap})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
@@ -580,7 +587,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Audio}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
-	${LN_SOURCES_Graphics_Effect}
+	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}
@@ -624,6 +631,10 @@ if (WIN32)
 		"imagehlp.lib"
 		"msacm32.lib"
 		"Opengl32.lib")
+		
+		
+	# effekseer が pragma でリンクしてるので・・・
+	link_directories("$ENV{DXSDK_DIR}Lib/x86")
 
 elseif (APPLE)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")
@@ -654,8 +665,11 @@ set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/external/Lumino.Math/include
 	${PROJECT_SOURCE_DIR}/external/bullet-2.82
 	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include
-	${PROJECT_SOURCE_DIR}/external/libogg/include)
+	${PROJECT_SOURCE_DIR}/external/libogg/include
+	${PROJECT_SOURCE_DIR}/external/EffekseerRuntime101/src/Effekseer
+)
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
+
 
 #------------------------------------------------------------------------------
 # Output
@@ -709,6 +723,7 @@ link_libraries(libogg)
 link_libraries(libvorbis)
 link_libraries(effekseer)
 link_libraries(effekseer_renderer_dx9)
+link_libraries(effekseer_sound_xaudio2)
 
 if (LN_BUILD_SCENE_MODULE)
 	add_subdirectory(external/bullet-2.82)
