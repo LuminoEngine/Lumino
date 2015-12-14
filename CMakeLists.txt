@@ -248,7 +248,9 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
 )
 set(LN_SOURCES_Effect
-	include/Lumino/Effect/Effect.h
+	include/Lumino/Effect/Common.h
+	include/Lumino/Effect/VisualEffect.h
+	include/Lumino/Effect/VisualEffectInstance.h
 	src/Effect/Effect.cpp
 	src/Effect/EffectDriver.h
 	src/Effect/EffectDriver.cpp
