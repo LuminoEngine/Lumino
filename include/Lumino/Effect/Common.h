@@ -9,7 +9,7 @@ typedef RefPtr<VisualEffect>	VisualEffectPtr;
 
 namespace detail
 {
-class EffectCore;
+//class EffectCore;
 }
 
 LN_NAMESPACE_END

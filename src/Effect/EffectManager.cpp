@@ -1,4 +1,9 @@
 /*
+	[2015/12/14] 公開クラスは PImpl? abstruct?
+		EffectInstance を new するのは内部なので、今のところはどっちにしても abstruct になる。
+		Effect モジュール的には現時点では拡張を考慮していないのでこれでもいい。
+		（イベントコールバックが必要になったら考える必要がある）
+
 エフェクトの構成について
 	Core … 単なるデータクラス。
 
@@ -72,6 +77,8 @@ void EffectManager::Initialize(const Settings& settings)
 	engine->Initialize(this, 32, 0, 2000);
 	m_engine = engine.DetachAddRef();
 
+	m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
+
 	if (g_managerInstance == nullptr) {
 		g_managerInstance = this;
 	}
@@ -106,6 +113,14 @@ void EffectManager::PreRender()
 void EffectManager::Render()
 {
 	m_engine->Render();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EffectManager::Thread_UpdateFrame()
+{
+
 }
 
 } // namespace detail

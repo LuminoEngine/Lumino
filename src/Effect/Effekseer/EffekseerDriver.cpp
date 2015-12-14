@@ -123,6 +123,9 @@ EffekseerEffectEngine::EffekseerEffectEngine()
 	, m_efkRenderer(nullptr)
 	, m_efkSound(nullptr)
 {
+	EncodingConversionOptions options;
+	options.NullTerminated = true;
+	m_TCharToUTF16Converter.SetConversionOptions(options);
 	m_TCharToUTF16Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
 	m_TCharToUTF16Converter.SetDestinationEncoding(Encoding::GetUTF16Encoding());
 }
@@ -134,8 +137,6 @@ EffekseerEffectEngine::~EffekseerEffectEngine()
 {
 }
 
-static ::Effekseer::Effect*				g_effect = NULL;
-static ::Effekseer::Handle				g_handle = -1;
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -199,12 +200,6 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 	// カメラ行列を設定
 	m_efkRenderer->SetCameraMatrix(
 		::Effekseer::Matrix44().LookAtRH(::Effekseer::Vector3D(10.0f, 5.0f, 20.0f), ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
-
-	// エフェクトの読込
-	g_effect = Effekseer::Effect::Create(m_efkManager, (const EFK_CHAR*)L"D:/Programing/Effekseer/Effekseer-master/Release/Sample/00_Basic/Laser01.efk");
-
-	// エフェクトの再生
-	g_handle = m_efkManager->Play(g_effect, 0, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -212,8 +207,6 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 //-----------------------------------------------------------------------------
 void EffekseerEffectEngine::Finalize()
 {
-	ES_SAFE_RELEASE(g_effect);
-
 	EffectEngine::Finalize();
 
 	// Effekseer のサンプルでは先にエフェクト管理用インスタンスを破棄する必要があるようだ
@@ -258,7 +251,7 @@ void EffekseerEffectEngine::UpdateRenderContents()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-EffekseerEffectCore* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
+VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 {
 	CacheKey key(filePath);
 
@@ -337,6 +330,15 @@ EffekseerEffectCore::~EffekseerEffectCore()
 	ES_SAFE_RELEASE(m_efkEffect);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+VisualEffectInstance* EffekseerEffectCore::PlayNewInstance()
+{
+	auto handle = GetEffectEngine()->GetEffekseerManager()->Play(GetEffekseerEffect(), 0, 0, 0);
+	return LN_NEW EffekseerEffectInstance(this, handle);
+}
+
 //=============================================================================
 // EffekseerEffectCore
 //=============================================================================
@@ -344,9 +346,9 @@ EffekseerEffectCore::~EffekseerEffectCore()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-EffekseerEffectInstance::EffekseerEffectInstance(EffekseerEffectCore* ownerCore)
+EffekseerEffectInstance::EffekseerEffectInstance(EffekseerEffectCore* ownerCore, ::Effekseer::Handle handle)
 	: m_ownerEffectCore(ownerCore)
-	, m_currentHandle(0)
+	, m_currentHandle(handle)
 {
 }
 
@@ -360,18 +362,17 @@ EffekseerEffectInstance::~EffekseerEffectInstance()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void EffekseerEffectInstance::Play(bool overlap)
-{
-	if (m_currentHandle != 0)
-	{
-		// 今の状態で更新した後、バックへ
-		::Effekseer::Matrix43 efkMat;
-		LNToEFKMatrix43(m_worldMatrix, &efkMat);
-		m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->SetMatrix(m_currentHandle, efkMat);
-		m_drawHandleArray.Add(m_currentHandle);
-	}
-	m_currentHandle = m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->Play(m_ownerEffectCore->GetEffekseerEffect(), 0, 0, 0);
-}
+//void EffekseerEffectInstance::Play(bool overlap)
+//{
+//	if (m_currentHandle != 0)
+//	{
+//		// 今の状態で更新した後、バックへ
+//		::Effekseer::Matrix43 efkMat;
+//		LNToEFKMatrix43(m_worldMatrix, &efkMat);
+//		m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->SetMatrix(m_currentHandle, efkMat);
+//		m_drawHandleArray.Add(m_currentHandle);
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -398,6 +399,14 @@ bool EffekseerEffectInstance::IsPlaying()
 		return false;
 	}
 	return m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->Exists(m_currentHandle);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EffekseerEffectInstance::SetWorldMatrix(const Matrix& matrix)
+{
+	m_worldMatrix = matrix;
 }
 
 //-----------------------------------------------------------------------------

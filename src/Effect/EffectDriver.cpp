@@ -41,10 +41,10 @@ void EffectEngine::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void EffectInstance::Initialize(EffectManager* manager)
-{
-	m_manager = manager;
-}
+//void EffectInstance::Initialize(EffectManager* manager)
+//{
+//	m_manager = manager;
+//}
 
 //-----------------------------------------------------------------------------
 //

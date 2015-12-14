@@ -2,6 +2,7 @@
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Math/Matrix.h>
+#include <Lumino/Effect/Common.h>
 #include "../Graphics/RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
@@ -19,6 +20,7 @@ public:
 
 	void Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
 	virtual void Finalize();
+	virtual VisualEffect* CreateEffectCore(const PathName& filePath) = 0;
 	virtual void UpdateFrame(float elapsedTime) = 0;
 	virtual void Render() = 0;
 
@@ -31,41 +33,41 @@ protected:
 	CacheManager*	m_effectCoreCache = nullptr;
 };
 
-// エフェクトオブジェクト Wrapper。キャッシュ管理される。
-class EffectCore
-	: public RefObject
-	, public ICacheObject
-{
-	LN_CACHE_OBJECT_DECL;
-public:
-	EffectCore();
-	virtual ~EffectCore() = default;
-};
-
-// エフェクトインスタンス Wrapper
-class EffectInstance
-	: public RefObject
-{
-public:
-	EffectInstance() = default;
-	virtual ~EffectInstance() = default;
-
-	void Initialize(EffectManager* manager);
-	void SetWorldMatrix(const Matrix& matrix) { m_worldMatrix = matrix; }
-	//void AdvanceTime(float deltaTime);
-
-	virtual void Play(bool overlap) = 0;
-	virtual void Stop() = 0;
-	virtual bool IsPlaying() = 0;
-
-	virtual void UpdateFrame() = 0;	// 更新スレッド
-	virtual void Draw() = 0;	// 描画スレッド
-
-protected:
-	EffectManager*	m_manager = nullptr;
-	Matrix			m_worldMatrix;
-	//float			m_deltaTime = 0;
-};
+//// エフェクトオブジェクト Wrapper。キャッシュ管理される。
+//class EffectCore
+//	: public RefObject
+//	, public ICacheObject
+//{
+//	LN_CACHE_OBJECT_DECL;
+//public:
+//	EffectCore();
+//	virtual ~EffectCore() = default;
+//};
+//
+//// エフェクトインスタンス Wrapper
+//class EffectInstance
+//	: public RefObject
+//{
+//public:
+//	EffectInstance() = default;
+//	virtual ~EffectInstance() = default;
+//
+//	void Initialize(EffectManager* manager);
+//	void SetWorldMatrix(const Matrix& matrix) { m_worldMatrix = matrix; }
+//	//void AdvanceTime(float deltaTime);
+//
+//	//virtual void Play(bool overlap) = 0;
+//	virtual void Stop() = 0;
+//	virtual bool IsPlaying() = 0;
+//
+//	virtual void UpdateFrame() = 0;	// 更新スレッド
+//	virtual void Draw() = 0;	// 描画スレッド
+//
+//protected:
+//	EffectManager*	m_manager = nullptr;
+//	Matrix			m_worldMatrix;
+//	//float			m_deltaTime = 0;
+//};
 
 // 一括描画の描画コマンド
 struct SetTransformCommand : public RenderingCommand

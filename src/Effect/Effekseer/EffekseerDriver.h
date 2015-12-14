@@ -6,6 +6,8 @@
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Math/Matrix.h>
 #include <Lumino/IO/FileManager.h>
+#include <Lumino/Effect/VisualEffect.h>
+#include <Lumino/Effect/VisualEffectInstance.h>
 #include "../EffectDriver.h"
 
 LN_NAMESPACE_BEGIN
@@ -61,7 +63,7 @@ public:
 	/// EffectCore の作成 (キャッシュ検索有効)
 	///		エフェクトランタイムがファイルフォーマットエラーとなった場合は例外にせず、NULL を返す。
 	///		(そもそもファイルが見つからない場合は例外となる)
-	EffekseerEffectCore* CreateEffectCore(const PathName& filePath);
+	virtual VisualEffect* CreateEffectCore(const PathName& filePath) override;
 
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual void Render() override;
@@ -80,13 +82,15 @@ private:
 
 // Effekseer のエフェクトオブジェクト Wrapper。キャッシュ管理される。
 class EffekseerEffectCore
-	: public RefObject
+	: public VisualEffect
 	, public ICacheObject
 {
 	LN_CACHE_OBJECT_DECL;
 public:
 	EffekseerEffectCore(EffekseerEffectEngine* engine, ::Effekseer::Effect* efkEffeect);
 	virtual ~EffekseerEffectCore();
+
+	virtual VisualEffectInstance* PlayNewInstance() override;
 
 	EffekseerEffectEngine*	GetEffectEngine() { return m_effectEngine; }
 	::Effekseer::Effect*	GetEffekseerEffect() { return m_efkEffect; }
@@ -98,20 +102,21 @@ private:
 
 // Effekseer のエフェクトインスタンス Wrapper
 class EffekseerEffectInstance
-	: public EffectInstance
+	: public VisualEffectInstance//EffectInstance
 {
 public:
-	EffekseerEffectInstance(EffekseerEffectCore* ownerCore);
+	EffekseerEffectInstance(EffekseerEffectCore* ownerCore, ::Effekseer::Handle handle);
 	virtual ~EffekseerEffectInstance();
 
 	EffekseerEffectCore* GetEffectCore() { return m_ownerEffectCore; }
 
-	virtual void Play(bool overlap) override;
+	//virtual void Play(bool overlap) override;
 	virtual void Stop() override;
 	virtual bool IsPlaying() override;
+	virtual void SetWorldMatrix(const Matrix& matrix) override;
 
-	virtual void UpdateFrame() override;	// 更新スレッド
-	virtual void Draw() override;	// 描画スレッド
+	void UpdateFrame();	// 更新スレッド
+	void Draw();	// 描画スレッド
 
 	static void LNToEFKMatrix43(const Matrix& mat, ::Effekseer::Matrix43* efkMat);
 
@@ -119,6 +124,7 @@ private:
 	EffekseerEffectCore*		m_ownerEffectCore;
 	::Effekseer::Handle			m_currentHandle;
 	Array<::Effekseer::Handle>	m_drawHandleArray;
+	Matrix						m_worldMatrix;
 };
 
 } // namespace detail

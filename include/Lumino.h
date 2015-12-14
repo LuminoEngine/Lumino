@@ -31,6 +31,9 @@
 #include "Lumino/Graphics/SpriteRenderer.h"
 #include "Lumino/Graphics/Bitmap.h"
 
+#include "Lumino/Effect/VisualEffect.h"
+#include "Lumino/Effect/VisualEffectInstance.h"
+
 #include "Lumino/Platform/PlatformSupport.h"
 #include "Lumino/Platform/Window.h"
 #include "Lumino/Platform/PlatformManager.h"

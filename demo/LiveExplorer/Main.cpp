@@ -67,7 +67,8 @@ int main()
 		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
 		//Camera::GetDefault3DCamera()->SetPosition(Vector3(200,0,-20));
 
-
+		auto effect1 = VisualEffect::Create(_T("D:/Programing/Effekseer/Effekseer-master/Release/Sample/00_Basic/Laser01.efk"));
+		effect1->Play();
 #if 0
 		RefPtr<Texture2D> tex2(Texture2D::Create(_T("D:/tmp/tiles.png")), false);
 		RefPtr<TileMap> tilemap(LN_NEW TileMap(), false);
