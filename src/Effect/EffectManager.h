@@ -50,7 +50,8 @@ private:
 
 	EffectEngine*	m_engine;	// •¡”ƒc[ƒ‹“¯‘Î‰‚Æ‚©‚È‚Á‚½‚ç•¡”‚Å‚«‚é
 
-	Threading::DelegateThread	m_threadUpdateFrame;
+	//Threading::DelegateThread	m_threadUpdateFrame;
+	tr::TaskPtr	m_taskUpdateFrame;
 };
 
 } // namespace detail

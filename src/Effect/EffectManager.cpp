@@ -77,7 +77,8 @@ void EffectManager::Initialize(const Settings& settings)
 	engine->Initialize(this, 32, 0, 2000);
 	m_engine = engine.DetachAddRef();
 
-	m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
+	//m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
+	m_taskUpdateFrame = tr::Task::Create(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
 
 	if (g_managerInstance == nullptr) {
 		g_managerInstance = this;
@@ -104,7 +105,7 @@ void EffectManager::Finalize()
 //-----------------------------------------------------------------------------
 void EffectManager::PreRender()
 {
-	m_engine->UpdateFrame(0.016);	// TODO: time
+	m_taskUpdateFrame->Start();
 }
 
 //-----------------------------------------------------------------------------
@@ -112,6 +113,7 @@ void EffectManager::PreRender()
 //-----------------------------------------------------------------------------
 void EffectManager::Render()
 {
+	m_taskUpdateFrame->Wait();
 	m_engine->Render();
 }
 
@@ -120,7 +122,7 @@ void EffectManager::Render()
 //-----------------------------------------------------------------------------
 void EffectManager::Thread_UpdateFrame()
 {
-
+	m_engine->UpdateFrame(0.016);	// TODO: time
 }
 
 } // namespace detail
