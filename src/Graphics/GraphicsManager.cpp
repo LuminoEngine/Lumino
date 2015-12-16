@@ -862,11 +862,6 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 GraphicsManager::~GraphicsManager()
 {
-	if (m_renderingThread != NULL) {
-		m_renderingThread->Dispose();
-		LN_SAFE_DELETE(m_renderingThread);
-	}
-
 	if (m_glyphTextureCache != NULL) {
 		m_glyphTextureCache->Finalize();
 	}
@@ -883,6 +878,17 @@ GraphicsManager::~GraphicsManager()
 	if (m_graphicsDevice != NULL) {
 		m_graphicsDevice->Finalize();
 		LN_SAFE_RELEASE(m_graphicsDevice);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsManager::Finalize()
+{
+	if (m_renderingThread != NULL) {
+		m_renderingThread->Dispose();
+		LN_SAFE_DELETE(m_renderingThread);
 	}
 }
 

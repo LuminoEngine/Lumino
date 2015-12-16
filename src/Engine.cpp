@@ -118,6 +118,13 @@ ApplicationImpl::~ApplicationImpl()
 {
 	LN_SAFE_RELEASE(m_profilerRenderer);
 
+	if (m_graphicsManager != nullptr)
+	{
+		// 先に描画スレッドを終了しておく。
+		// 他モジュールで発行されたコマンドがまだ実行待機中にそのモジュールが解放されるとマズイ。
+		m_graphicsManager->Finalize();
+	}
+
 	if (m_platformManager != NULL) {
 		m_platformManager->Dispose();
 	}

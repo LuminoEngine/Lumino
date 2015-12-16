@@ -24,6 +24,7 @@
 
 */
 #include "Internal.h"
+#include <Lumino/Graphics/GraphicsManager.h>
 #include "Effekseer\EffekseerDriver.h"
 #include "EffectManager.h"
 
@@ -113,8 +114,13 @@ void EffectManager::PreRender()
 //-----------------------------------------------------------------------------
 void EffectManager::Render()
 {
-	m_taskUpdateFrame->Wait();
-	m_engine->Render();
+	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred) {
+		m_graphicsManager->GetPrimaryRenderingCommandList()->AddCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
+	}
+	else {
+		m_taskUpdateFrame->Wait();
+		m_engine->Render();
+	}
 }
 
 //-----------------------------------------------------------------------------

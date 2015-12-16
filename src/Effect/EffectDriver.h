@@ -31,6 +31,24 @@ public:
 protected:
 	EffectManager*	m_manager = nullptr;
 	CacheManager*	m_effectCoreCache = nullptr;
+
+public:
+	// 一括描画の描画コマンド
+	struct RenderCommand : public RenderingCommand
+	{
+		EffectEngine*	m_engine;
+		tr::Task* m_updateTask;
+		void Create(EffectEngine* engine, tr::Task* updateTask)
+		{
+			m_engine = engine;
+			m_updateTask = updateTask;
+		}
+		void Execute()
+		{
+			m_updateTask->Wait();
+			m_engine->Render();
+		}
+	};
 };
 
 //// エフェクトオブジェクト Wrapper。キャッシュ管理される。
@@ -69,17 +87,6 @@ protected:
 //	//float			m_deltaTime = 0;
 //};
 
-// 一括描画の描画コマンド
-struct SetTransformCommand : public RenderingCommand
-{
-	EffectEngine*	m_engine;
-
-	void Create(EffectEngine* engine)
-	{
-		m_engine = engine;
-	}
-	void Execute() { m_engine->Render(); }
-};
 
 } // namespace detail
 LN_NAMESPACE_END
