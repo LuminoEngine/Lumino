@@ -2,6 +2,7 @@
 #include "../../src/ApplicationImpl.h"
 #include <Lumino/Tilemap/TileMap.h>
 #include <Lumino/Scene/TileMapNode.h>
+#include <Lumino/Testing/TestUtils.h>
 
 void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 {
@@ -68,7 +69,7 @@ int main()
 		//Camera::GetDefault3DCamera()->SetPosition(Vector3(200,0,-20));
 
 		//auto effect1 = VisualEffect::Create(_T("D:/Programing/Effekseer/Effekseer-master/Release/Sample/00_Basic/Laser01.efk"));
-		auto effect1 = VisualEffect::Create(_T("D:/Proj/lightnote-9f1e9050a066054d19a65880b9f8f388204429f4/LightNote/Samples/Media/Sun1.efk"));
+		auto effect1 = VisualEffect::Create(LN_LOCALFILE("../Media/Sun1.efk"));
 		effect1->Play();
 #if 0
 		RefPtr<Texture2D> tex2(Texture2D::Create(_T("D:/tmp/tiles.png")), false);
