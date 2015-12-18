@@ -141,6 +141,8 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteC
 //-----------------------------------------------------------------------------
 RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteCount, const void* copyData)
 {
+	// TODO: Bug: 確保メモリ量が増え続けている。
+
 	// バッファが足りなければ拡張する
 	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.GetSize()) {
 		size_t newSize = m_extDataBuffer.GetSize() + std::max(m_extDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
