@@ -17,7 +17,9 @@ public:
 	virtual ~LayerList() {}
 };
 
-/// ViewPane
+/**
+	@brief
+*/
 class SceneGraph
 	: public RefObject
 {

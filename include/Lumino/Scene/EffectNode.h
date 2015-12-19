@@ -1,23 +1,27 @@
-/*
-	[2015/12/19]
-エフェクトのバッチ (というかほかのスプライトやモデルのバッチにも当てはまるかも) について。
 
-半透明オブジェクトは後から描画するのが鉄則。
-エフェクトに関してはほとんどのケースでPostRender なタイミングでのバッチになる。
+#pragma once
+#include <Lumino/Graphics/Texture.h>
+#include <Lumino/Scene/VisualNode.h>
 
-シーン内オブジェクトの松明とかはゲームオブジェクトとして扱うのが直感的だが、
-中身的にはこれもバッチ描画としたい。
+LN_NAMESPACE_BEGIN
+LN_NAMESPACE_SCENE_BEGIN
+namespace detail { class EffectManager; }
 
-EffectNode という1つのクラスでバッチON/OFFのフラグを持たせる？
-→それでいいと思う。ON/OFFでクラス分けても、同じような公開関数を持ったクラスが2つできるだけだし。
-
-ただ、バッチ描画をどのタイミングで行うかは制御できたほうがいいと思う。
-（エフェクトは基本Postなので、他のバッチ描画用）
-→ Pre/Post だけだと不足な気がする。優先度や子ノード化とかでタイミングを制御できるように SceneNode 扱いにしたいかも。
-	BatchedEffectRenderer。
-	EffectNode は Draw() オーバーライドで、BatchedEffectRenderer に対して書き込んでいく。
-	→ コレだけだと BatchedEffectRenderer::Draw の後に呼ばれた EffectNode::Draw() が実際は描かれないことになる。
-		EffectNode::PreDraw() で描くのがいいかも。
-
-
+/**
+	@brief
 */
+class EffectNode
+	: public VisualNode	// TODO: 単に SceneNode のほうがいい気がするが・・
+{
+public:
+
+	
+
+protected:
+	EffectNode();
+	virtual ~EffectNode();
+	void Initialize(SceneGraphManager* manager, detail::EffectManager* effectManager);
+};
+
+LN_NAMESPACE_SCENE_END
+LN_NAMESPACE_END

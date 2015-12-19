@@ -6,7 +6,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-/// Sprite
+/**
+	@brief
+*/
 class Sprite
 	: public VisualNode
 {
