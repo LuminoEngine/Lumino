@@ -5,6 +5,7 @@
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
+#include "../Effect/EffectManager.h"
 #include "../Modeling/ModelManager.h"
 #include "Internal.h"
 
@@ -25,13 +26,16 @@ public:
 		FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
 		GraphicsManager*	GraphicsManager;
+		detail::EffectManager*		effectManager;
+
 		Modeling::ModelManager*		ModelManager;
 
 		ConfigData()
-			: FileManager(NULL)
-			, PhysicsManager(NULL)
-			, GraphicsManager(NULL)
-			, ModelManager(NULL)
+			: FileManager(nullptr)
+			, PhysicsManager(nullptr)
+			, GraphicsManager(nullptr)
+			, effectManager(nullptr)
+			, ModelManager(nullptr)
 		{}
 	};
 
@@ -64,6 +68,7 @@ public:	// internal
 
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	detail::EffectManager* GetEffectManager() { return m_effectManager; }
 	Modeling::ModelManager* GetModelManager() { return m_modelManager; }
 	GeometryRenderer* GetGeometryRenderer() { return m_geometryRenderer; }
 	Texture* GetDummyTexture() { return m_dummyTexture; }
@@ -88,6 +93,7 @@ private:
 	RefPtr<FileManager>					m_fileManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;
+	detail::EffectManager*				m_effectManager;
 	RefPtr<Modeling::ModelManager>		m_modelManager;
 	RefPtr<GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Texture2D>			m_dummyTexture;

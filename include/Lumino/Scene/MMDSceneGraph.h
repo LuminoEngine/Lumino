@@ -34,11 +34,17 @@ private:
 	SceneNode*		m_defaultRoot;
 	//SceneNode*		m_default3DRoot;
 	//SceneNode*		m_default2DRoot;
+
 	Camera*			m_default3DCamera;
 	//Camera*			m_default2DCamera;
+	EffectBatchRendererNode*	m_effectBatchRendererNode;
+
 	//DrawingLayer*	m_default3DLayer;
 	//DrawingLayer*	m_default2DLayer;
 	//std::array<RenderingPass*, MMD_PASS_Max>	m_mmdRenderingPasses;
+
+
+
 	Array<RenderingPass*>	m_mmdRenderingPasses;
 };
 

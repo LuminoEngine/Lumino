@@ -1,5 +1,16 @@
 /*
-	Effekseer メモ
+	[2015/12/19] Effekseer の個別描画について
+		機能としては用意されているが効率はあまりよくなさそう。
+
+		DrawHandle() のたびにクリティカルセクションに入っているし、ハンドルからインスタンスを求めるのに set の検索が走る。
+		(一括描画ならイテレートするだけ)
+		この仕組みは Update() も同じ。
+
+		また、個別に BeginRendering()、EndRedering() する必要があり、ここで全てのステートを保存する。
+		(これはステートを自動保存しないようにすることはできるが)
+
+
+	[2015/12/15] Effekseer メモ
 
 	InstanceContainer
 		InstanceContainer
@@ -191,15 +202,6 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 			// サウンドドライバが無いときや NullDevice を使用している時
 		}
 	}
-
-	// TODO: TEST
-	// 投影行列を設定
-	m_efkRenderer->SetProjectionMatrix(
-		::Effekseer::Matrix44().PerspectiveFovRH(90.0f / 180.0f * 3.14f, (float)640 / (float)480, 1.0f, 50.0f));
-
-	// カメラ行列を設定
-	m_efkRenderer->SetCameraMatrix(
-		::Effekseer::Matrix44().LookAtRH(::Effekseer::Vector3D(10.0f, 5.0f, 20.0f), ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
 }
 
 //-----------------------------------------------------------------------------
@@ -283,6 +285,23 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 
 	core.SafeAddRef();
 	return core;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EffekseerEffectEngine::SetViewProjectin(const Matrix& view, const Matrix& proj)
+{
+	m_efkRenderer->SetCameraMatrix((const ::Effekseer::Matrix44&)view);
+	m_efkRenderer->SetProjectionMatrix((const ::Effekseer::Matrix44&)proj);
+
+	// 投影行列を設定
+	//	::Effekseer::Matrix44().PerspectiveFovRH(90.0f / 180.0f * 3.14f, (float)640 / (float)480, 1.0f, 50.0f));
+
+	//// カメラ行列を設定
+	//m_efkRenderer->SetCameraMatrix(
+	//	::Effekseer::Matrix44().LookAtRH(::Effekseer::Vector3D(10.0f, 5.0f, 20.0f), ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
+
 }
 
 //-----------------------------------------------------------------------------

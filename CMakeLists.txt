@@ -277,6 +277,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Camera.h
 	include/Lumino/Scene/Collection.h
 	include/Lumino/Scene/Common.h
+	include/Lumino/Scene/EffectNode.h
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
 	include/Lumino/Scene/Material.h
@@ -293,6 +294,9 @@ set(LN_SOURCES_Scene
 	src/Scene/Camera.cpp
 	src/Scene/Internal.h
 	src/Scene/DebugRenderer.h
+	src/Scene/EffectBatchRendererNode.cpp
+	src/Scene/EffectBatchRendererNode.h
+	src/Scene/EffectNode.cpp
 	src/Scene/InfomationRenderingPass.cpp
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp

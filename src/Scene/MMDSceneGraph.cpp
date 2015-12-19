@@ -5,6 +5,8 @@
 #include "MME/MMERenderingPass.h"
 #include <Lumino/Scene/MMDSceneGraph.h>
 #include "InfomationRenderingPass.h"
+#include "EffectBatchRendererNode.h"
+#include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -38,6 +40,7 @@ MMDSceneGraph::~MMDSceneGraph()
 		LN_SAFE_RELEASE(m_mmdRenderingPasses[i]);
 	}
 
+	LN_SAFE_RELEASE(m_effectBatchRendererNode);
 	LN_SAFE_RELEASE(m_defaultRoot);
 	LN_SAFE_RELEASE(m_default3DCamera);
 }
@@ -53,6 +56,10 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_defaultRoot->CreateCore(manager);
 	m_defaultRoot->SetOwnerSceneGraph(this);
 
+	m_effectBatchRendererNode = LN_NEW EffectBatchRendererNode();
+	m_effectBatchRendererNode->Initialize(manager, manager->GetEffectManager());
+	m_effectBatchRendererNode->SetPriority(-1000);
+	m_defaultRoot->AddChild(m_effectBatchRendererNode);
 
 	m_default3DCamera = LN_NEW Camera();
 	m_default3DCamera->CreateCore(manager, CameraProjection_3D);

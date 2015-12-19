@@ -126,6 +126,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	: m_fileManager(configData.FileManager, true)
 	, m_physicsManager(configData.PhysicsManager, true)
 	, m_graphicsManager(configData.GraphicsManager, true)
+	, m_effectManager(configData.effectManager)
 	, m_modelManager(configData.ModelManager, true)
 	//, m_rootNode(NULL)
 	, m_default3DSceneGraph(nullptr)
@@ -228,7 +229,7 @@ SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 //-----------------------------------------------------------------------------
 void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, const String& newName)
 {
-	// もし古い前があればリネームされたということ。一度 map から取り除く
+	// もし古い名前があればリネームされたということ。一度 map から取り除く
 	if (!oldName.IsEmpty())
 	{
 		std::pair<NodeNameMap::iterator, NodeNameMap::iterator> range = m_nodeNameMap.equal_range(oldName);

@@ -65,6 +65,7 @@ public:
 	///		(そもそもファイルが見つからない場合は例外となる)
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) override;
 
+	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) override;
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual void Render() override;
 

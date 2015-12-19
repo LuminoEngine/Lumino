@@ -19,6 +19,9 @@ class SceneNode;
 class VisualNode;
 class Camera;
 class Light;
+class EffectBatchRendererNode;
+
+
 class MMEShader;
 class MMEShaderTechnique;
 

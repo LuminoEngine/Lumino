@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Internal.h"
 #include <Lumino/Base/Array.h>
 #include <Lumino/Scene/Common.h>
 

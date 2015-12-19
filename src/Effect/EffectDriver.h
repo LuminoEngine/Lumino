@@ -21,6 +21,7 @@ public:
 	void Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
 	virtual void Finalize();
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) = 0;
+	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) = 0;
 	virtual void UpdateFrame(float elapsedTime) = 0;
 	virtual void Render() = 0;
 

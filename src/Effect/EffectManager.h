@@ -1,7 +1,7 @@
 
 #pragma once
 #include <array>
-#include <Lumino/Threading/Thread.h>
+#include <Lumino/Threading/Task.h>
 #include <Lumino/Input/Common.h>
 
 LN_NAMESPACE_BEGIN

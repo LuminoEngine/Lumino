@@ -397,10 +397,12 @@ void ApplicationImpl::InitializeSceneGraphManager()
 		InitializeFileManager();
 		InitializeGraphicsManager();
 		InitializePhysicsManager();
+		InitializeEffectManager();
 		SceneGraphManager::ConfigData data;
 		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;
 		data.PhysicsManager = m_physicsManager;
+		data.effectManager = m_effectManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
@@ -465,7 +467,7 @@ void ApplicationImpl::Render()
 		}
 
 		if (m_effectManager != nullptr) {
-			m_effectManager->PreRender();
+			m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
 		}
 
 		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
@@ -488,9 +490,6 @@ void ApplicationImpl::Render()
 
 		if (m_sceneGraphManager != nullptr) {
 			m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
-		}
-		if (m_effectManager != nullptr) {
-			m_effectManager->Render();
 		}
 		if (m_guiManager != NULL) {
 			m_guiManager->RenderOnMainWindow();
