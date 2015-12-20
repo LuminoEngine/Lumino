@@ -6,10 +6,7 @@
 #include <Lumino/Graphics/IndexBuffer.h>
 #include "Common.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
 /// 共有マテリアルデータ
 class ModelMaterialCore
@@ -114,7 +111,7 @@ public:
 	int			LoopCount;				///< 演算回数
 	float		IKRotateLimit;			///< IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意
 
-	ArrayList<IKLink> IKLinks;			///< IK影響ボーンと制限のリスト
+	Array<IKLink> IKLinks;			///< IK影響ボーンと制限のリスト
 
 	/* PMD の場合の IKRotateLimit は以下の計算結果を格納する
 	*		PI * Fact * (iLink + 1)
@@ -198,7 +195,7 @@ public:
 		} ImpulseMorphOffset;
 	};
 
-	ArrayList<MorphOffset>	MorphOffsets;
+	Array<MorphOffset>	MorphOffsets;
 };
 
 /// 共有剛体データ
@@ -294,8 +291,8 @@ public:
 	//String				Comment;			///< コメント
 	//String				EnglishComment;		///< コメント英
 
-	RefPtr<Graphics::VertexBuffer>	VertexBuffer;///< 頂点バッファ
-	RefPtr<Graphics::IndexBuffer>	IndexBuffer;///< インデックスバッファ
+	RefPtr<VertexBuffer>	VertexBuffer;///< 頂点バッファ
+	RefPtr<IndexBuffer>	IndexBuffer;///< インデックスバッファ
 
 	ModelMaterialCore		Material;			///< マテリアル
 	ModelBoneCoreList		Bones;				///< ボーンリスト
@@ -309,5 +306,4 @@ public:
 
 };
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -3,8 +3,6 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace Driver
-{
 
 //=============================================================================
 // DX9Module
@@ -422,6 +420,5 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 	return TextureFormat_Unknown;
 }
 
-} // namespace Driver
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -140,7 +140,7 @@ enum DeviceResourceUsage
 /// インデックスバッファのフォーマット
 enum IndexBufferFormat
 {
-	IndexBufferFormat_UInt16 = 0,
+	IndexBufferFormat_UInt16 = 0,	// TODO: Index16
 	IndexBufferFormat_UInt32,
 };
 

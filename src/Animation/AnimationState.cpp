@@ -4,8 +4,7 @@
 #include "AnimationClip.h"
 #include "AnimationState.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -48,7 +47,7 @@ const String& AnimationState::GetName() const
 //-----------------------------------------------------------------------------
 void AnimationState::Refresh(Animator* animator)
 {
-	LN_VERIFY(animator != NULL) { return; }
+	LN_CHECK_ARGS_RETURN(animator != NULL);
 
 	ClearTargetList();
 
@@ -167,4 +166,4 @@ void AnimationState::SetLocalTime(double time)
 }
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END

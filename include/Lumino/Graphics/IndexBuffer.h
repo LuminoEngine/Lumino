@@ -37,6 +37,11 @@ public:
 public:
 
 	/**
+		@brief		インデックスデータ1つあたりのバイト数を返します。
+	*/
+	int GetIndexStride() const;
+
+	/**
 		@brief		リソースをロックします。
 	*/
 	ByteBuffer* Lock();
@@ -54,7 +59,7 @@ public:
 	*/
 	//void SetSubData(uint32_t offsetBytes, void* data, uint32_t dataBytes);
 
-protected:
+LN_INTERNAL_ACCESS:
 	IndexBuffer(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
 	virtual ~IndexBuffer();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);

@@ -49,8 +49,14 @@ set(LN_SOURCES_Animation
 	include/Lumino/Animation/Common.h
 	include/Lumino/Animation/EasingFunctions.h
 	include/Lumino/Animation/EasingValue.h
+	src/Animation/AnimationClip.cpp
+	src/Animation/AnimationClip.h
 	src/Animation/AnimationCurve.cpp
 	src/Animation/AnimationCurve.h
+	src/Animation/AnimationState.cpp
+	src/Animation/AnimationState.h
+	src/Animation/Animator.cpp
+	src/Animation/Animator.h
 )
 
 set(LN_SOURCES_IO
@@ -273,6 +279,19 @@ set(LN_SOURCES_TileMap
 	src/TileMap/TileMapRenderer.cpp
 	src/TileMap/TileSet.cpp
 )
+
+set(LN_SOURCES_Modeling
+	src/Modeling/Common.h
+	src/Modeling/ModelBone.cpp
+	src/Modeling/ModelBone.h
+	src/Modeling/ModelCore.cpp
+	src/Modeling/ModelCore.h
+	src/Modeling/ModelManager.cpp
+	src/Modeling/ModelManager.h
+	src/Modeling/XFileLoader.cpp
+	src/Modeling/XFileLoader.h
+)
+
 set(LN_SOURCES_Scene
 	include/Lumino/Scene/Camera.h
 	include/Lumino/Scene/Collection.h
@@ -577,6 +596,7 @@ source_group("Physics"		FILES ${LN_SOURCES_Physics})
 source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
 source_group("Effect"		FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"		FILES ${LN_SOURCES_TileMap})
+source_group("Modeling"		FILES ${LN_SOURCES_Modeling})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
 source_group("GUI"			FILES ${LN_SOURCES_GUI})
 source_group("Documents"	FILES ${LN_SOURCES_Documents})
@@ -595,6 +615,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
+	${LN_SOURCES_Modeling}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_GUI}
 	${LN_SOURCES_Documents}

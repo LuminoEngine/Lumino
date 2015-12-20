@@ -58,6 +58,21 @@ IndexBuffer::~IndexBuffer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+int IndexBuffer::GetIndexStride() const
+{
+	if (m_format == IndexBufferFormat_UInt16) {
+		return 2;
+	}
+	else if (m_format == IndexBufferFormat_UInt32) {
+		return 4;
+	}
+	assert(0);
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ByteBuffer* IndexBuffer::Lock()
 {
 	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる

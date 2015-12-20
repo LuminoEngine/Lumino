@@ -28,14 +28,14 @@ public:
 		GraphicsManager*	GraphicsManager;
 		detail::EffectManager*		effectManager;
 
-		Modeling::ModelManager*		ModelManager;
+		//Modeling::ModelManager*		ModelManager;
 
 		ConfigData()
 			: FileManager(nullptr)
 			, PhysicsManager(nullptr)
 			, GraphicsManager(nullptr)
 			, effectManager(nullptr)
-			, ModelManager(nullptr)
+			//, ModelManager(nullptr)
 		{}
 	};
 
@@ -69,9 +69,9 @@ public:	// internal
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
-	Modeling::ModelManager* GetModelManager() { return m_modelManager; }
+	//Modeling::ModelManager* GetModelManager() { return m_modelManager; }
 	GeometryRenderer* GetGeometryRenderer() { return m_geometryRenderer; }
-	Texture* GetDummyTexture() { return m_dummyTexture; }
+	Texture2D* GetDummyTexture() { return m_dummyTexture; }
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
@@ -94,7 +94,7 @@ private:
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
-	RefPtr<Modeling::ModelManager>		m_modelManager;
+	//RefPtr<Modeling::ModelManager>		m_modelManager;
 	RefPtr<GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Texture2D>			m_dummyTexture;
 

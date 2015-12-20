@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "../../src/ApplicationImpl.h"
+#include "../../src/Modeling/ModelManager.h"
 #include <Lumino/Tilemap/TileMap.h>
 #include <Lumino/Scene/TileMapNode.h>
 #include <Lumino/Testing/TestUtils.h>

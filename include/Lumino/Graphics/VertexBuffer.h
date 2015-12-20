@@ -49,7 +49,7 @@ public:
 	*/
 	void Unlock();
 
-protected:
+LN_INTERNAL_ACCESS:
 	VertexBuffer(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
 	virtual ~VertexBuffer();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);

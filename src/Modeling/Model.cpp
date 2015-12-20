@@ -5,11 +5,7 @@
 #include "ModelBone.h"
 #include "Model.h"
 
-//Lumino::Graphics::Device::IVertexBuffer* g_ttttt = NULL;
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // Model
@@ -157,5 +153,4 @@ void Model::DrawSubset(int subsetIndex)
 		m_modelCore->Material.Attributes[subsetIndex].PrimitiveNum);
 }
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END

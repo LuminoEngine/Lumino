@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "Common.h"
+#include <Lumino/Animation/Common.h>
 #include "AnimationCurve.h"
 
 LN_NAMESPACE_BEGIN

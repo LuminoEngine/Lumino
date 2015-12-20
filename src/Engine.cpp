@@ -100,6 +100,7 @@ ApplicationImpl::ApplicationImpl(const ApplicationSettings& configData)
 	, m_inputManager(nullptr)
 	, m_audioManager(NULL)
 	, m_effectManager(nullptr)
+	, m_modelManager(nullptr)
 	, m_guiManager(NULL)
 	, m_sceneGraphManager(NULL)
 	, m_profilerRenderer(NULL)
@@ -132,6 +133,10 @@ ApplicationImpl::~ApplicationImpl()
 	if (m_sceneGraphManager != NULL) {
 		m_sceneGraphManager->ReleaseDefaultSceneGraph();
 		LN_SAFE_RELEASE(m_sceneGraphManager);
+	}
+	if (m_modelManager != nullptr) {
+		m_modelManager->Finalize();
+		LN_SAFE_RELEASE(m_modelManager);
 	}
 	if (m_effectManager != nullptr) {
 		m_effectManager->Finalize();
@@ -171,6 +176,7 @@ void ApplicationImpl::Initialize()
 	InitializePhysicsManager();
 	InitializeGraphicsManager();
 	InitializeEffectManager();
+	InitializeModelManager();
 	InitializeGUIManager();
 #ifdef LN_BUILD_SCENE_MODULE
 	InitializeSceneGraphManager();
@@ -343,6 +349,28 @@ void ApplicationImpl::InitializeEffectManager()
 		data.graphicsManager = m_graphicsManager;
 		m_effectManager = LN_NEW detail::EffectManager();
 		m_effectManager->Initialize(data);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ApplicationImpl::InitializeModelManager()
+{
+	if (m_modelManager == nullptr)
+	{
+		InitializeCommon();
+		InitializeGraphicsManager();
+		InitializePhysicsManager();
+
+		detail::ModelManager::Settings data;
+		data.FileManager = m_fileManager;
+		data.PhysicsManager = m_physicsManager;
+		data.GraphicsManager = m_graphicsManager;
+		data.ModelCoreCacheSize = 32;
+		data.ModelCoreCacheMemorySize = 0;
+		m_modelManager = LN_NEW detail::ModelManager();
+		m_modelManager->Initialize(data);
 	}
 }
 

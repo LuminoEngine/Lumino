@@ -1,12 +1,9 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Material.h>
 
 LN_NAMESPACE_BEGIN
-namespace Modeling
-{
-class ModelManager;
+
 class ModelCore;
 class ModelBoneCore;
 class ModelIKCore;
@@ -32,6 +29,15 @@ enum ModelFormat
 	ModelFormat_PMD,
 	ModelFormat_PMX,
 };
+
+/// モデル生成オプション
+LN_ENUM_FLAGS(ModelCreationFlag)
+{
+	None = 0x0000,
+	IgnoreTextureNotFound = 0x04,		///< マテリアルに含まれるテクスチャファイルが見つからなくても無視する
+	//ModelCreateFlag_CopyMaterials = 0x08,		///< マテリアルを共有せずにコピーする
+};
+LN_ENUM_FLAGS_DECLARE(ModelCreationFlag)
 
 /// メッシュの属性
 struct MeshAttribute
@@ -107,6 +113,7 @@ public:
 	float	BlendWeights[4];	///< ボーンブレンド率
 	float	BlendIndices[4];	///< ボーンインデックス
 	Vector3	Normal;				///< 法線
+	ColorF	Color;				///< 頂点カラー (ライブラリ独自仕様)
 	Vector2	TexUV;				///< テクスチャUV
 
 	Vector4	AdditionalUV[4];	///< 追加UV
@@ -125,6 +132,7 @@ public:
 			{ 0, VertexElementType_Float4, VertexElementUsage_BlendWeight, 0 },
 			{ 0, VertexElementType_Float4, VertexElementUsage_BlendIndices, 0 },
 			{ 0, VertexElementType_Float3, VertexElementUsage_Normal, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
 			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
 
 			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 1 },
@@ -140,9 +148,8 @@ public:
 		};
 		return elements;
 	}
-	static const int ElementCount = 14;
+	static const int ElementCount = 15;
 };
 
-} // namespace Modeling
 LN_NAMESPACE_END
 

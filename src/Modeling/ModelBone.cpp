@@ -2,10 +2,7 @@
 #include "../Internal.h"
 #include "ModelBone.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // ModelBone
@@ -60,9 +57,9 @@ void ModelBone::UpdateTransformHierarchy(const Matrix& parentMatrix)
 //-----------------------------------------------------------------------------
 void ModelBone::SetAnimationTargetValue(Animation::ValueType type, const void* value)
 {
-	LN_VERIFY(type == Animation::ValueType_SQTTransform) { return; }
+	LN_CHECK_ARGS_RETURN(type == Animation::ValueType_SQTTransform);
 	m_localTransform = *((SQTTransform*)value);
 }
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END
+

@@ -1,15 +1,18 @@
 ﻿
 #pragma once
-#include <Lumino/Base/Cache.h>
-#include <Lumino/IO/FileManager.h>
-#include <Lumino/Graphics/GraphicsManager.h>
-#include <Lumino/Graphics/Texture.h>
-#include "../Animation/AnimationClip.h"
-#include <Lumino/Physics/PhysicsManager.h>
+#include <array>
+//#include <Lumino/Base/Cache.h>
+//#include <Lumino/IO/FileManager.h>
+//#include <Lumino/Graphics/GraphicsManager.h>
+//#include <Lumino/Graphics/Texture.h>
+//#include "../Animation/AnimationClip.h"
+//#include <Lumino/Physics/PhysicsManager.h>
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace Modeling
+class FileManager;
+namespace Physics { class PhysicsManager; }
+namespace detail
 {
 
 ///
@@ -19,7 +22,7 @@ class ModelManager
 public:
 
 	/// 初期化データ
-	struct ConfigData
+	struct Settings
 	{
 		FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
@@ -27,7 +30,7 @@ public:
 		int							ModelCoreCacheSize;
 		int							ModelCoreCacheMemorySize;
 
-		ConfigData()
+		Settings()
 			: FileManager(NULL)
 			, PhysicsManager(NULL)
 			, GraphicsManager(NULL)
@@ -41,23 +44,25 @@ public:
 	virtual ~ModelManager();
 
 public:
-	void Initialize(const ConfigData& configData);
+	void Initialize(const Settings& configData);
 	void Finalize();
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	Texture* GetMMDDefaultToonTexture(int index);
+	Texture2D* GetMMDDefaultToonTexture(int index);
+
+	Texture* CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
 	ModelCore* CreateModelCore(const PathName& filePath);
-	Animation::AnimationClip* CreateMotion(const PathName& filePath);
+	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 private:
-	RefPtr<FileManager>			m_fileManager;
-	RefPtr<Physics::PhysicsManager>		m_physicsManager;
-	RefPtr<GraphicsManager>	m_graphicsManager;
-	RefPtr<CacheManager>				m_cacheManager;
-	RefPtr<Texture>			m_mmdDefaultToonTexture[10];
+	FileManager*			m_fileManager;
+	Physics::PhysicsManager*		m_physicsManager;
+	GraphicsManager*	m_graphicsManager;
+	//RefPtr<CacheManager>				m_cacheManager;
+	std::array<Texture2D*, 10>	m_mmdDefaultToonTexture;
 };
 
-} // namespace Modeling
+} // namespace detail
 LN_NAMESPACE_END
 

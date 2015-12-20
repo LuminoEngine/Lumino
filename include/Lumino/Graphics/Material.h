@@ -8,6 +8,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
+// TODO: MMD 用のデータがいくつか含まれているので、そちらは ModelMaterial に移動したい。
 /**
 	@brief	マテリアルのクラスです。
 */

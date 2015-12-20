@@ -100,7 +100,7 @@ public:
 	void Unlock();
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
-protected:
+LN_PROTECTED_INTERNAL_ACCESS:
 	Texture2D();
 	//Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
 	//Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);

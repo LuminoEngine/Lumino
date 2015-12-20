@@ -1,12 +1,8 @@
 ﻿
-#pragma once
 #include "../Internal.h"
 #include "ModelCore.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // ModelBoneCore
@@ -42,19 +38,19 @@ void ModelBoneCore::RefreshInitialValues()
 //-----------------------------------------------------------------------------
 ModelCore::~ModelCore()
 {
-	LN_FOREACH(ModelBoneCore* c, Bones) {
+	for (ModelBoneCore* c : Bones) {
 		c->Release();
 	}
-	LN_FOREACH(ModelIKCore* c, IKs) {
+	for (ModelIKCore* c : IKs) {
 		c->Release();
 	}
-	LN_FOREACH(ModelMorphCore* c, Morphs) {
+	for (ModelMorphCore* c : Morphs) {
 		c->Release();
 	}
-	LN_FOREACH(ModelRigidBodyCore* c, RigidBodys) {
+	for (ModelRigidBodyCore* c : RigidBodys) {
 		c->Release();
 	}
-	LN_FOREACH(ModelJointCore* c, Joints) {
+	for (ModelJointCore* c : Joints) {
 		c->Release();
 	}
 }
@@ -64,11 +60,9 @@ ModelCore::~ModelCore()
 //-----------------------------------------------------------------------------
 void ModelCore::RefreshInitialValues()
 {
-	LN_FOREACH(ModelBoneCore* c, Bones) {
+	for (ModelBoneCore* c : Bones) {
 		c->RefreshInitialValues();
 	}
 }
 
-
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END

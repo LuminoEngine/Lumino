@@ -2,8 +2,7 @@
 #include "../Internal.h"
 #include "AnimationClip.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -48,4 +47,5 @@ void AnimationClip::AddAnimationCurve(const String& relativePath, AnimationCurve
 //}
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END
+

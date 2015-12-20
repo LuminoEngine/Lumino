@@ -1,5 +1,6 @@
 
 #pragma once
+#include "Common.h"
 
 LN_NAMESPACE_BEGIN
 

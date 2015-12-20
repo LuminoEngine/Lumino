@@ -17,6 +17,7 @@ LN_NAMESPACE_BEGIN
 
 namespace detail { class InputManager; }
 namespace detail { class EffectManager; }
+namespace detail { class ModelManager; }
 class AudioManagerImpl;
 class ProfilerRenderer;
 class SceneGraphManager;
@@ -89,6 +90,7 @@ public:
 	void InitializePhysicsManager();
 	void InitializeGraphicsManager();
 	void InitializeEffectManager();
+	void InitializeModelManager();
 	void InitializeDocumentsManager();
 	void InitializeGUIManager();
 	void InitializeSceneGraphManager();
@@ -105,6 +107,7 @@ private:
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
+	detail::ModelManager*				m_modelManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	GUIManagerImpl*						m_guiManager;
 	SceneGraphManager*					m_sceneGraphManager;

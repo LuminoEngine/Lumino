@@ -100,8 +100,7 @@
 #include "AnimationState.h"
 #include "Animator.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -122,9 +121,9 @@ Animator::Animator()
 //-----------------------------------------------------------------------------
 Animator::~Animator()
 {
-	LN_FOREACH(AnimationState* s, m_animationStateList)
+	for (auto& pair : m_animationStateList)
 	{
-		s->Release();
+		pair.second->Release();
 	}
 }
 
@@ -180,9 +179,9 @@ void Animator::AdvanceTime(double elapsedTime)
 	}
 
 	// TODO: レイヤーの考慮
-	LN_FOREACH(AnimationState* state, m_animationStateList)
+	for (auto& pair : m_animationStateList)
 	{
-		state->AdvanceTime(elapsedTime);
+		pair.second->AdvanceTime(elapsedTime);
 	}
 
 	LN_FOREACH(AnimationTargetAttributeEntity& e, m_animationTargetAttributeEntityList)
@@ -202,7 +201,7 @@ void Animator::AdvanceTime(double elapsedTime)
 //-----------------------------------------------------------------------------
 void Animator::AddAnimationClip(AnimationClip* animationClip, int layer)
 {
-	LN_VERIFY(animationClip != NULL) { return; }
+	LN_CHECK_ARGS_RETURN(animationClip != NULL);
 
 	AnimationState* state = LN_NEW AnimationState(animationClip);
 	m_animationStateList.Add(animationClip->GetName(), state);
@@ -214,7 +213,7 @@ void Animator::AddAnimationClip(AnimationClip* animationClip, int layer)
 //-----------------------------------------------------------------------------
 void Animator::RemoveAnimationClip(AnimationClip* animationClip)
 {
-	LN_VERIFY(animationClip != NULL) { return; }
+	LN_CHECK_ARGS_RETURN(animationClip != NULL);
 	LN_THROW(0, NotImplementedException);
 }
 
@@ -237,16 +236,11 @@ AnimationTargetAttributeEntity* Animator::FindAnimationTargetAttributeEntity(con
 //-----------------------------------------------------------------------------
 AnimationState* Animator::FindAnimationState(const TCHAR* clipName)
 {
-	LN_VERIFY(clipName != NULL) { return NULL; }
-	LN_FOREACH(AnimationState* state, m_animationStateList)
-	{
-		if (state->GetName() == clipName) {
-			return state;
-		}
-	}
-	return NULL;
+	LN_CHECK_ARGS_RETURNV(clipName != NULL, nullptr);
+	AnimationState** state = m_animationStateList.Find(clipName);
+	if (state == nullptr) { return nullptr; }
+	return *state;
 }
 
-
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END

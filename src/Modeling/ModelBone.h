@@ -3,10 +3,7 @@
 #include "../Animation/AnimationState.h"
 #include "ModelCore.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
 /// ボーンのインスタンスクラス
 class ModelBone
@@ -49,5 +46,5 @@ private:
 	Matrix					m_combinedMatrix;	///< 結合済み行列 (モデル内のグローバル行列)
 };
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END
+

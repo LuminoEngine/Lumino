@@ -1,10 +1,9 @@
 ﻿
 #pragma once
-#include "Common.h"
+#include <Lumino/Animation/Common.h>
 #include "AnimationCurve.h"
 
-namespace Lumino
-{
+LN_NAMESPACE_BEGIN
 namespace Animation
 {
 
@@ -78,7 +77,7 @@ public:
 	//void addAnimationApplyTarget(IAnimationApplyTarget* target);
 
 private:
-	typedef ArrayList<AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
+	typedef Array<AnimationTargetAttributeEntity>	AnimationTargetAttributeEntityList;
 	typedef SortedArray<String, AnimationState*>		AnimationStateList;
 
 	IAnimationTargetElement*			m_element;
@@ -96,4 +95,4 @@ private:
 };
 
 } // namespace Animation
-} // namespace Lumino
+LN_NAMESPACE_END

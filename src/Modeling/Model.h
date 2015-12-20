@@ -5,10 +5,7 @@
 #include "ModelCore.h"
 #include "ModelBone.h"
 
-namespace Lumino
-{
-namespace Modeling
-{
+LN_NAMESPACE_BEGIN
 
 /// Model
 class Model
@@ -64,5 +61,4 @@ private:
 	
 };
 
-} // namespace Modeling
-} // namespace Lumino
+LN_NAMESPACE_END
