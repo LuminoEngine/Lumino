@@ -265,13 +265,13 @@ void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void Texture2D::SetSubData(const Point& offset, const void* data)
-//{
-//LN_CHECK_ARGS_RETURN(data != NULL);
-//	// TODO: m_primarySurface にもセット
-//	m_manager->GetRenderer()->m_primaryCommandList->AddCommand<SetSubDataTextureCommand>(
-//		m_deviceObj, offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
-//}
+void Texture2D::SetSubData(const Point& offset, const void* data)
+{
+	LN_CHECK_ARGS_RETURN(data != NULL);
+	// TODO: m_primarySurface にもセット
+	LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
+		offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+}
 
 //-----------------------------------------------------------------------------
 //

@@ -446,11 +446,13 @@ void EngineManager::InitializeSceneGraphManager()
 		InitializeGraphicsManager();
 		InitializePhysicsManager();
 		InitializeEffectManager();
+		InitializeModelManager();
 		SceneGraphManager::ConfigData data;
 		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;
 		data.PhysicsManager = m_physicsManager;
 		data.effectManager = m_effectManager;
+		data.modelManager = m_modelManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;

@@ -77,7 +77,7 @@ void EffectManager::Initialize(const Settings& settings)
 #ifdef LN_USE_EXTERNAL_Effekseer
 	auto engine = RefPtr<EffekseerEffectEngine>::Create();
 	engine->Initialize(this, 32, 0, 2000);
-	m_engine = engine.DetachAddRef();
+	m_engine = engine.DetachMove();
 #endif
 
 	//m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));

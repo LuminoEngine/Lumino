@@ -263,13 +263,13 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 //-----------------------------------------------------------------------------
 ModelCore* ModelManager::CreateModelCore(const PathName& filePath)
 {
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath));
+	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 
 	//PMXLoader loader;
 	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 	
 	XFileLoader loader;
-	RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None));
+	RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None), false);
 
 	modelCore->RefreshInitialValues();
 	modelCore.SafeAddRef();
@@ -319,9 +319,9 @@ Texture* ModelManager::CreateTexture(const PathName& parentDir, const StringRef&
 	}
 
 	// TODO: キャッシュが効かない
-	RefPtr<Texture2D> tex(LN_NEW Texture2D());
+	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->CreateCore(m_graphicsManager, path, TextureFormat_B8G8R8A8, 1);
-	return tex.DetachAddRef();
+	return tex.DetachMove();
 }
 
 } // namespace detail

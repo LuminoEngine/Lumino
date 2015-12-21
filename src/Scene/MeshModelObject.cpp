@@ -1,36 +1,47 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/Scene/MeshNode.h>
+#include <Lumino/Scene/MeshModelObject.h>
 #include "MME/MMEShader.h"
+#include <Lumino/Scene/SceneGraph.h>
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// MeshNode
+// MeshModelObject
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MeshNode::MeshNode()
+RefPtr<MeshModelObject> MeshModelObject::Create(const StringRef& filePath)
+{
+	RefPtr<MeshModelObject> obj(LN_NEW MeshModelObject(), false);
+	obj->Initialize(SceneGraphManager::Instance, filePath);
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+MeshModelObject::MeshModelObject()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MeshNode::~MeshNode()
+MeshModelObject::~MeshModelObject()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MeshNode::Create(const TCHAR* filePath, SceneGraphManager* manager)
+void MeshModelObject::Initialize(SceneGraphManager* manager, const StringRef& filePath)
 {
-	m_model.Attach(LN_NEW Model());
+	m_model.Attach(LN_NEW Model(), false);
 	m_model->Create(manager->GetModelManager(), filePath);
 	VisualNode::CreateCore(manager, m_model->GetSubsetCount());
 
@@ -39,44 +50,46 @@ void MeshNode::Create(const TCHAR* filePath, SceneGraphManager* manager)
 	{
 		m_visualNodeParams.GetSubsetParams(i).Material = m_model->GetMaterial(i);
 	}
+
+	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MeshNode::UpdateFrame(float elapsedTime)
+void MeshModelObject::UpdateFrame(float elapsedTime)
 {
-	m_model->GetAnimator()->AdvanceTime((double)elapsedTime);
-	m_model->UpdateBoneTransformHierarchy();
-	m_model->UpdateSkinningMatrices();
+	//m_model->GetAnimator()->AdvanceTime((double)elapsedTime);
+	//m_model->UpdateBoneTransformHierarchy();
+	//m_model->UpdateSkinningMatrices();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MeshNode::UpdateNodeRenderingParams(MMEShader* priorityShader)
+void MeshModelObject::UpdateNodeRenderingParams(MMEShader* priorityShader)
 {
-	Shader* core = priorityShader->GetCoreShader();
-	ShaderVariable* v;
+	//Shader* core = priorityShader->GetCoreShader();
+	//ShaderVariable* v;
 
-	v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
-	if (v) {
-		Vector4 invSize;
-		invSize.X = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Width;
-		invSize.Y = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Height;
-		v->SetVector(invSize);
-	}
+	//v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
+	//if (v) {
+	//	Vector4 invSize;
+	//	invSize.X = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Width;
+	//	invSize.Y = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Height;
+	//	v->SetVector(invSize);
+	//}
 
-	v = core->FindVariable(_T("lnBoneTexture"));
-	if (v) {
-		v->SetTexture(m_model->GetSkinningMatricesTexture());
-	}
+	//v = core->FindVariable(_T("lnBoneTexture"));
+	//if (v) {
+	//	v->SetTexture(m_model->GetSkinningMatricesTexture());
+	//}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MeshNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+void MeshModelObject::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	m_model->DrawSubset(subsetIndex);
 }

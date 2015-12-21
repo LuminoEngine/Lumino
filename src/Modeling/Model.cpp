@@ -17,6 +17,13 @@ LN_NAMESPACE_BEGIN
 //
 //-----------------------------------------------------------------------------
 Model::Model()
+	: m_manager(nullptr)
+	, m_modelCore()
+	, m_animator()
+	, m_boneList()
+	, m_rootBoneList()
+	, m_skinningMatrices(nullptr)
+	, m_skinningMatricesTexture()
 {
 }
 
@@ -38,7 +45,7 @@ Model::~Model()
 void Model::Create(detail::ModelManager* manager, const PathName& filePath)
 {
 	m_manager = manager;
-	m_modelCore.Attach(manager->CreateModelCore(filePath));
+	m_modelCore.Attach(manager->CreateModelCore(filePath), false);
 
 	//---------------------------------------------------------
 	// Bone のインスタンス化

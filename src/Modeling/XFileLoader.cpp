@@ -626,7 +626,7 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 
 	try
 	{
-		RefPtr<ModelCore> core(LN_NEW ModelCore());
+		RefPtr<ModelCore> core(LN_NEW ModelCore(), false);
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)
@@ -791,7 +791,7 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 			}
 		}
 
-		return core.DetachAddRef();
+		return core.DetachMove();
 	}
 	catch (Exception&)
 	{

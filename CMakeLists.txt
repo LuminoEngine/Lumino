@@ -304,7 +304,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/EffectNode.h
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
-	include/Lumino/Scene/MeshNode.h
+	include/Lumino/Scene/MeshModelObject.h
 	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MMDSceneGraph.h
 	include/Lumino/Scene/SceneGraph.h
@@ -326,7 +326,7 @@ set(LN_SOURCES_Scene
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp
 	src/Scene/Light.cpp
-	src/Scene/MeshNode.cpp
+	src/Scene/MeshModelObject.cpp
 	src/Scene/MMDSceneGraph.cpp
 	src/Scene/RenderingPass.cpp
 	src/Scene/RenderingPass.h

@@ -8,22 +8,25 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief		
 */
-class MeshNode
+class MeshModelObject
 	: public VisualNode
 {
 public:
-	MeshNode();
-	virtual ~MeshNode();
+	static RefPtr<MeshModelObject> Create(const StringRef& filePath);
 
 public:
 
-	/// 作成
-	void Create(const TCHAR* filePath, SceneGraphManager* manager = NULL);
+public:
+
 
 	/// このモデルに対するアニメーションを行うクラスの取得
 	Animation::Animator* GetAnimator() { return m_model->GetAnimator(); }
 
 protected:
+	MeshModelObject();
+	virtual ~MeshModelObject();
+	void Initialize(SceneGraphManager* manager, const StringRef& filePath);
+
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;

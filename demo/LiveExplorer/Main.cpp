@@ -3,6 +3,7 @@
 #include "../../src/Modeling/ModelManager.h"
 #include <Lumino/Tilemap/TileMap.h>
 #include <Lumino/Scene/TileMapNode.h>
+#include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
 
 void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
@@ -102,6 +103,8 @@ int main()
 		rigidBody3->SetPosition(0.1, 10, 0.5);
 		rigidBody3->SetMass(1.0f);
 		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
+
+		auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
 
 		while (Engine::UpdateFrame())
 		{
