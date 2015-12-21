@@ -9,7 +9,7 @@
 //=============================================================================
 
 ApplicationSettings			LFManager::ConfigData;
-ApplicationImpl*			LFManager::Application = NULL;
+EngineManager*				LFManager::Application = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;
 LNResult					LFManager::LastErrorCode = LN_OK;
@@ -26,7 +26,7 @@ void LFManager::PreInitialize()
 	if (Application == NULL)
 	{
 		LNTypeDef_CheckCommonDefinition();
-		Application = ApplicationImpl::Create(ConfigData);
+		Application = EngineManager::Create(ConfigData);
 		IsSystemInitialized = true;
 	}
 }

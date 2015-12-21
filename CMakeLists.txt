@@ -22,8 +22,11 @@ option(LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME "static runtime (/MT, /MTd) or D
 # Exceprion Backtrace.
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
 
-option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." OFF)
-option(LN_BUILD_FOUNDATION_MODULE "Build 'Foundation' module." OFF)
+option(LN_BUILD_AUDIO_MODULE "Build 'Audio' module." ON)
+option(LN_BUILD_SCENE_MODULE "Build 'Scene' module." ON)
+option(LN_BUILD_FOUNDATION_MODULE "Build 'Foundation' module." ON)
+option(LN_BUILD_C_API "Build 'C API' module." ON)
+option(LN_USE_EXTERNAL_Effekseer "" ON)
 
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
@@ -102,6 +105,7 @@ set(LN_SOURCES_Input
 	src/Input/VirtualPad.h
 )
 
+if (LN_BUILD_AUDIO_MODULE)
 set(LN_SOURCES_Audio
 	include/LuminoAudio.h
 	include/Lumino/Audio/AudioManager.h
@@ -142,6 +146,7 @@ set(LN_SOURCES_Audio
 	src/Audio/DirectMusic/DirectMusicAudioPlayer.cpp
 	src/Audio/DirectMusic/DirectMusicAudioPlayer.h
 )
+endif()
 
 set(LN_SOURCES_Physics
 	include/Lumino/Physics/BodyBase.h
@@ -263,8 +268,6 @@ set(LN_SOURCES_Effect
 	src/Effect/EffectManager.h
 	src/Effect/EffectManager.cpp
 	src/Effect/Internal.h
-	src/Effect/Effekseer/EffekseerDriver.h
-	src/Effect/Effekseer/EffekseerDriver.cpp
 )
 	
 if (LN_BUILD_SCENE_MODULE)
@@ -282,6 +285,8 @@ set(LN_SOURCES_TileMap
 
 set(LN_SOURCES_Modeling
 	src/Modeling/Common.h
+	src/Modeling/Model.cpp
+	src/Modeling/Model.h
 	src/Modeling/ModelBone.cpp
 	src/Modeling/ModelBone.h
 	src/Modeling/ModelCore.cpp
@@ -299,6 +304,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/EffectNode.h
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
+	include/Lumino/Scene/MeshNode.h
 	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MMDSceneGraph.h
 	include/Lumino/Scene/SceneGraph.h
@@ -320,6 +326,7 @@ set(LN_SOURCES_Scene
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp
 	src/Scene/Light.cpp
+	src/Scene/MeshNode.cpp
 	src/Scene/MMDSceneGraph.cpp
 	src/Scene/RenderingPass.cpp
 	src/Scene/RenderingPass.h
@@ -477,10 +484,11 @@ set(LN_SOURCES_Application
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	include/Lumino/Version.h
-	src/ApplicationImpl.h
 	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
 	src/Engine.cpp
+	src/EngineManager.cpp
+	src/EngineManager.h
 	src/Internal.h
 	src/Profiler.cpp
 	src/Property.cpp
@@ -500,6 +508,16 @@ set(LN_SOURCES_Foundation
 	src/Foundation/GameSceneManager.h
 	src/Foundation/Main_Win32.cpp
 )
+endif()
+
+#--------------------------------------
+# External linker source files.
+if (LN_USE_EXTERNAL_Effekseer)
+	set(LN_SOURCES_Effect
+		${LN_SOURCES_Effect}
+		src/Effect/Effekseer/EffekseerDriver.h
+		src/Effect/Effekseer/EffekseerDriver.cpp
+	)
 endif()
 
 #--------------------------------------
@@ -738,23 +756,31 @@ set(USE_OPENGL3 OFF)
 add_subdirectory(external/zlib)
 add_subdirectory(external/libpng)
 add_subdirectory(external/freetype-2.6)
-add_subdirectory(external/libogg)
-add_subdirectory(external/libvorbis)
-add_subdirectory(external/EffekseerRuntime101/src)
 link_libraries(LuminoCore_Static)
 link_libraries(LuminoMath_Static)
 link_libraries(zlib)
 link_libraries(libpng)
 link_libraries(freetype)
-link_libraries(libogg)
-link_libraries(libvorbis)
-link_libraries(effekseer)
-link_libraries(effekseer_renderer_dx9)
-link_libraries(effekseer_sound_xaudio2)
 
+# Audio モジュールの依存
+if (LN_BUILD_AUDIO_MODULE)
+	add_subdirectory(external/libogg)
+	add_subdirectory(external/libvorbis)
+	link_libraries(libogg)
+	link_libraries(libvorbis)
+endif()
+
+# Scene モジュールの依存
 if (LN_BUILD_SCENE_MODULE)
 	add_subdirectory(external/bullet-2.82)
 	link_libraries(bullet)
+endif()
+
+if (LN_USE_EXTERNAL_Effekseer)
+	add_subdirectory(external/EffekseerRuntime101/src)
+	link_libraries(effekseer)
+	link_libraries(effekseer_renderer_dx9)
+	link_libraries(effekseer_sound_xaudio2)
 endif()
 
 #------------------------------
@@ -766,8 +792,14 @@ if (LN_USE_UNICODE_CHAR_SET)
 	add_definitions(-DUNICODE)
 	add_definitions(-D_UNICODE)
 endif()
+if (LN_BUILD_AUDIO_MODULE)
+	add_definitions(-DLN_BUILD_AUDIO_MODULE)
+endif()
 if (LN_BUILD_SCENE_MODULE)
 	add_definitions(-DLN_BUILD_SCENE_MODULE)
+endif()
+if (LN_USE_EXTERNAL_Effekseer)
+	add_definitions(-DLN_USE_EXTERNAL_Effekseer)
 endif()
 
 add_definitions("/EHsc")	# VS2015, cmake で生成すると何故か消えてしまうので明示的に指定する
@@ -799,6 +831,8 @@ endif()
 
 #------------------------------
 # 
-add_subdirectory(bindings/C_API)
-add_subdirectory(bindings/C/Test)
-add_subdirectory(tools/ArchiveMaker)
+if (LN_BUILD_C_API)
+	add_subdirectory(bindings/C_API)
+	add_subdirectory(bindings/C/Test)
+	add_subdirectory(tools/ArchiveMaker)
+endif()

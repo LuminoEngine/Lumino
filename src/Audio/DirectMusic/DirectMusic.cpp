@@ -451,10 +451,6 @@ void DirectMusicManager::InternalInitialize(const ConfigData& configData)
     m_initMode		= configData.DMInitMode;
 	m_reverbLevel	= configData.ReverbLevel;
 
-    // COM 初期化
-    //HRESULT hr = ::CoInitializeEx( NULL, COINIT_MULTITHREADED );
-    //LN_SET_DXERR_R_S( hr, "< DirectMusicManager::_initialize >\nCoInitializeEx" );
-
     // DirectSound の作成
 	LN_COMCALL(::CoCreateInstance(
 		CLSID_DirectSound8,

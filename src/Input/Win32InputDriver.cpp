@@ -38,12 +38,6 @@ void Win32InputDriver::Initialize(HWND hWnd)
 {
 	m_hWnd = hWnd;
 
-	// COM 初期化
-	if (SUCCEEDED(::CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
-		// エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
-		m_comInited = true;
-	}
-
 	// DirectInput 初期化
 	LN_COMCALL(CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_ALL, IID_IDirectInput8, (void**)&m_directInput));
 	LN_COMCALL(m_directInput->Initialize(::GetModuleHandle(NULL), DIRECTINPUT_VERSION));
@@ -58,12 +52,6 @@ void Win32InputDriver::Finalize()
 {
 	ReleaseDevice();
 	LN_SAFE_RELEASE(m_directInput);
-
-	if (m_comInited)
-	{
-		::CoUninitialize();
-		m_comInited = false;
-	}
 }
 
 //-----------------------------------------------------------------------------

@@ -100,7 +100,6 @@ private:
     float                     mMetreUnitDistanceInv;  ///< 3D 空間の1メートル相当の距離の逆数
     
     //DirectMusic::AudioDevice*   mDirectMusicAudioDevice;
-    bool                        mCoInited;
 };
 
 LN_NAMESPACE_AUDIO_END

@@ -27,6 +27,7 @@ public:
 		Physics::PhysicsManager*	PhysicsManager;
 		GraphicsManager*	GraphicsManager;
 		detail::EffectManager*		effectManager;
+		detail::ModelManager*		modelManager = nullptr;
 
 		//Modeling::ModelManager*		ModelManager;
 
@@ -69,7 +70,7 @@ public:	// internal
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
-	//Modeling::ModelManager* GetModelManager() { return m_modelManager; }
+	detail::ModelManager* GetModelManager() { return m_modelManager; }
 	GeometryRenderer* GetGeometryRenderer() { return m_geometryRenderer; }
 	Texture2D* GetDummyTexture() { return m_dummyTexture; }
 
@@ -94,7 +95,7 @@ private:
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
-	//RefPtr<Modeling::ModelManager>		m_modelManager;
+	detail::ModelManager*				m_modelManager;
 	RefPtr<GeometryRenderer>	m_geometryRenderer;
 	RefPtr<Texture2D>			m_dummyTexture;
 

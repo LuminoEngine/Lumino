@@ -151,5 +151,9 @@ public:
 	static const int ElementCount = 15;
 };
 
+namespace detail
+{
+	class ModelManager;
+}
 LN_NAMESPACE_END
 

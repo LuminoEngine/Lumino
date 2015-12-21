@@ -34,7 +34,6 @@ XAudio2AudioDevice::XAudio2AudioDevice()
     , mMD_X3DAudioCalculate     ( NULL )
     , mMetreUnitDistanceInv     ( 1.0f )
     // , mDirectMusicAudioDevice   ( NULL )
-    , mCoInited                 ( false )
 {
     memset( mX3DInstance, 0, sizeof( mX3DInstance ) );
 }
@@ -58,12 +57,6 @@ XAudio2AudioDevice::~XAudio2AudioDevice()
 		LN_SAFE_RELEASE( mXAudio );
     }
 
-    if ( mCoInited )
-    {
-        ::CoUninitialize();
-        mCoInited = false;
-    }
-
     if ( mX3DAudioModule )
     {
         ::FreeLibrary( mX3DAudioModule );
@@ -76,11 +69,6 @@ XAudio2AudioDevice::~XAudio2AudioDevice()
 //-----------------------------------------------------------------------------
 bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 {
-    if ( SUCCEEDED( ::CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) )
-    {
-        mCoInited = true;
-    }
-        
     mX3DAudioModule = ::LoadLibrary( _T( "X3DAudio1_7.dll" ) );
 	if ( mX3DAudioModule == NULL ) {
 		return false;

@@ -66,7 +66,7 @@ private:
 	HINSTANCE	m_hInst;
 	HICON		m_hIcon;
 	String		m_windowClassName;
-	bool		m_comInited;
+	//bool		m_comInited;
 };
 
 } // namespace Platform

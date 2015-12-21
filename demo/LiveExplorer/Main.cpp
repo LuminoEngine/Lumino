@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "../../src/ApplicationImpl.h"
+#include "../../src/EngineManager.h"
 #include "../../src/Modeling/ModelManager.h"
 #include <Lumino/Tilemap/TileMap.h>
 #include <Lumino/Scene/TileMapNode.h>
@@ -190,7 +190,7 @@ int main()
 		ApplicationSettings appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		//appData.RenderingType = Graphics::RenderingType::Immediate;
-		RefPtr<ApplicationImpl> app(ApplicationImpl::Create(appData));
+		RefPtr<EngineManager> app(EngineManager::Create(appData));
 		app->Initialize();
 
 

@@ -80,6 +80,11 @@ public:
 	*/
 	float	DirectMusicReverbLevel;
 
+	/**
+		@brief	内部的に COM の初期化を行います。
+	*/
+	bool autoCoInitialize = true;
+
 public:
 	ApplicationSettings()
 		: ApplicationLogEnabled(false)

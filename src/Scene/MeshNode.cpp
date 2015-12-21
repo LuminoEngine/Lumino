@@ -1,41 +1,38 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
+#include <Lumino/Scene/MeshNode.h>
+#include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
-#include "Model.h"
 
-namespace Lumino
-{
-namespace Scene
-{
+LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// Model
+// MeshNode
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Model::Model()
+MeshNode::MeshNode()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Model::~Model()
+MeshNode::~MeshNode()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Model::Create(const TCHAR* filePath, SceneGraphManager* manager)
+void MeshNode::Create(const TCHAR* filePath, SceneGraphManager* manager)
 {
-	m_model.Attach(LN_NEW Modeling::Model());
+	m_model.Attach(LN_NEW Model());
 	m_model->Create(manager->GetModelManager(), filePath);
-	VisualNode::Create(manager, m_model->GetSubsetCount());
+	VisualNode::CreateCore(manager, m_model->GetSubsetCount());
 
 	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
 	for (int i = 0; i < m_model->GetSubsetCount(); i++)
@@ -47,7 +44,7 @@ void Model::Create(const TCHAR* filePath, SceneGraphManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Model::UpdateFrame(float elapsedTime)
+void MeshNode::UpdateFrame(float elapsedTime)
 {
 	m_model->GetAnimator()->AdvanceTime((double)elapsedTime);
 	m_model->UpdateBoneTransformHierarchy();
@@ -57,10 +54,10 @@ void Model::UpdateFrame(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Model::UpdateNodeRenderingParams(MMEShader* priorityShader)
+void MeshNode::UpdateNodeRenderingParams(MMEShader* priorityShader)
 {
-	Graphics::Shader* core = priorityShader->GetCoreShader();
-	Graphics::ShaderVariable* v;
+	Shader* core = priorityShader->GetCoreShader();
+	ShaderVariable* v;
 
 	v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
 	if (v) {
@@ -79,11 +76,9 @@ void Model::UpdateNodeRenderingParams(MMEShader* priorityShader)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Model::DrawSubset(RenderingParams& params, int subsetIndex)
+void MeshNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-
 	m_model->DrawSubset(subsetIndex);
 }
 
-} // namespace Scene
-} // namespace Lumino
+LN_NAMESPACE_END

@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../../../src/ApplicationImpl.h"	// TODO
+#include "../../../src/EngineManager.h"	// TODO
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Engine.h>
 #include "../include/LNCommon.h"
@@ -60,7 +60,7 @@ public:
 
 public:
 	static ApplicationSettings	ConfigData;
-	static ApplicationImpl*		Application;
+	static EngineManager*		Application;
 	static bool					IsSystemInitialized;
 	static Exception*			LastException;
 	static LNResult				LastErrorCode;

@@ -1,6 +1,5 @@
 
 #pragma once
-
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Size.h>
 #include <Lumino/Base/String.h>
@@ -23,12 +22,12 @@ class ProfilerRenderer;
 class SceneGraphManager;
 class GUIManagerImpl;
 
-class ApplicationImpl
+class EngineManager
 	: public RefObject
 	, public Platform::IEventListener
 {
 public:
-	static ApplicationImpl*	Instance;
+	static EngineManager*	Instance;
 
 public:
 	static const TCHAR*	LogFileName;
@@ -38,7 +37,7 @@ public:
 	/**
 		@brief		Application のインスタンスを作成し、アプリケーションを初期化します。
 	*/
-	static ApplicationImpl* Create(const ApplicationSettings& configData);
+	static EngineManager* Create(const ApplicationSettings& configData);
 
 public:
 
@@ -77,8 +76,8 @@ public:
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
 
 protected:
-	ApplicationImpl(const ApplicationSettings& configData);
-	virtual ~ApplicationImpl();
+	EngineManager(const ApplicationSettings& configData);
+	virtual ~EngineManager();
 
 public:
 	void Initialize();
@@ -117,6 +116,7 @@ private:
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_commonInitied;
 	bool								m_endRequested;
+	bool								m_comInitialized;
 };
 
 LN_NAMESPACE_END

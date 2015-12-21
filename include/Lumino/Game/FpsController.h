@@ -88,7 +88,7 @@ public:
 	void RefreshSystemDelay();
 
 private:	// internal
-	friend class ApplicationImpl;
+	friend class EngineManager;
 	void Process();
     void ProcessForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)
 

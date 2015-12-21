@@ -74,9 +74,11 @@ void EffectManager::Initialize(const Settings& settings)
 	m_graphicsManager = settings.graphicsManager;
 	m_audioManager = settings.audioManager;
 
+#ifdef LN_USE_EXTERNAL_Effekseer
 	auto engine = RefPtr<EffekseerEffectEngine>::Create();
 	engine->Initialize(this, 32, 0, 2000);
 	m_engine = engine.DetachAddRef();
+#endif
 
 	//m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
 	m_taskUpdateFrame = tr::Task::Create(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
@@ -114,6 +116,8 @@ void EffectManager::PreRender()
 //-----------------------------------------------------------------------------
 void EffectManager::Render()
 {
+	if (m_engine == nullptr) return;
+
 	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred) {
 		m_graphicsManager->GetPrimaryRenderingCommandList()->AddCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
 	}
@@ -128,6 +132,7 @@ void EffectManager::Render()
 //-----------------------------------------------------------------------------
 void EffectManager::Thread_UpdateFrame()
 {
+	if (m_engine == nullptr) return;
 	m_engine->UpdateFrame(0.016);	// TODO: time
 }
 
