@@ -4,6 +4,7 @@
 #include <Lumino/Tilemap/TileMap.h>
 #include <Lumino/Scene/TileMapNode.h>
 #include <Lumino/Scene/MeshModelObject.h>
+#include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
 
 void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
@@ -104,7 +105,8 @@ int main()
 		rigidBody3->SetMass(1.0f);
 		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
 
-		auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
+		//auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
+		auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
 
 		while (Engine::UpdateFrame())
 		{

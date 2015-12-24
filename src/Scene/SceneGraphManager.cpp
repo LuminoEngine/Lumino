@@ -154,7 +154,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 SceneGraphManager::~SceneGraphManager()
 {
-	LN_SAFE_RELEASE(m_renderingContext);
+	LN_SAFE_DELETE(m_renderingContext);
 }
 
 //-----------------------------------------------------------------------------

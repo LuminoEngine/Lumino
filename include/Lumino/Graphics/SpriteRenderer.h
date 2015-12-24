@@ -114,7 +114,7 @@ public:
 
 	GraphicsManager* GetManager() const { return m_manager; }
 
-private:
+LN_INTERNAL_ACCESS:
 	SpriteRenderer(GraphicsManager* manager, int maxSpriteCount);
 	virtual ~SpriteRenderer();
 	GraphicsManager*	m_manager;

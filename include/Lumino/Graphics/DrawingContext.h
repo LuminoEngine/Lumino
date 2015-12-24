@@ -83,7 +83,7 @@ public:
 
 	void Flush();
 
-protected:
+LN_INTERNAL_ACCESS:
 	DrawingContext();
 	virtual ~DrawingContext();
 	void Initialize(GraphicsManager* manager);

@@ -311,6 +311,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SceneGraphRenderingContext.h
 	include/Lumino/Scene/SceneNode.h
 	include/Lumino/Scene/Sprite.h
+	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/TileMapNode.h
 	include/Lumino/Scene/ViewPane.h
 	include/Lumino/Scene/VisualNode.h
@@ -337,6 +338,7 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
 	src/Scene/Sprite.cpp
+	src/Scene/SpriteModelObject.cpp
 	src/Scene/TileMapNode.cpp
 	src/Scene/ViewPane.cpp
 	src/Scene/ViewPane.h
@@ -357,6 +359,23 @@ set(LN_SOURCES_Scene
 	src/Scene/MME/MMEShaderTechnique.cpp
 	src/Scene/MME/MMEShaderTechnique.h
 	src/Scene/MME/MMETypes.h
+	external/ssbpLib/ssShader_frag.h
+	external/ssbpLib/SS5Player.cpp
+	external/ssbpLib/SS5Player.h
+	external/ssbpLib/SS5PlayerData.h
+	external/ssbpLib/SS5PlayerPlatform.cpp
+	external/ssbpLib/SS5PlayerPlatform.h
+	external/ssbpLib/SS5PlayerTypes.h
+	external/ssbpLib/common/Animator/ssplayer_PartState.h
+	external/ssbpLib/common/Animator/ssplayer_cellmap.h
+	external/ssbpLib/common/Animator/ssplayer_effect.cpp
+	external/ssbpLib/common/Animator/ssplayer_effect.h
+	external/ssbpLib/common/Animator/ssplayer_effectfunction.cpp
+	external/ssbpLib/common/Animator/ssplayer_effectfunction.h
+	external/ssbpLib/common/Animator/ssplayer_macro.h
+	external/ssbpLib/common/Animator/ssplayer_matrix.cpp
+	external/ssbpLib/common/Animator/ssplayer_matrix.h
+	external/ssbpLib/common/Animator/ssplayer_PartState.cpp
 )
 endif()
 
