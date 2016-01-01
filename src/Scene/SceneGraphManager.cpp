@@ -132,9 +132,6 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_default3DSceneGraph(nullptr)
 	, m_default2DSceneGraph(nullptr)
 {
-
-	m_geometryRenderer.Attach(GeometryRenderer::Create(m_graphicsManager), false);
-
 	// ダミーテクスチャ
 	m_dummyTexture.Attach(Texture2D::Create(Size(32, 32)));
 	BitmapPainter painter(m_dummyTexture->Lock());
@@ -146,7 +143,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 		m_renderingPassIDStack.Push(i);
 	}
 
-	m_renderingContext = LN_NEW SceneGraphRenderingContext(m_graphicsManager);
+	m_renderingContext = LN_NEW SceneGraphRenderingContext(m_graphicsManager->GetGraphicsContext());
 }
 
 //-----------------------------------------------------------------------------

@@ -105,7 +105,7 @@ public:
 	void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 
 	virtual void OnRender(SceneGraphRenderingContext* dc);
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) = 0;
+	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
 
 	virtual LightNodeList* GetAffectLightList() { return &m_affectLightList; }
 

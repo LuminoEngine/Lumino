@@ -81,13 +81,14 @@ protected:
 	virtual ~Shader();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
-private:
+LN_INTERNAL_ACCESS:
 	friend class RenderingCommandList;
 	Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode);
 	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;
 	Array<ShaderVariable*>		m_variables;
 	Array<ShaderTechnique*>		m_techniques;
+	ShaderVariable*				m_viewportPixelSize;
 };
 
 

@@ -1,9 +1,10 @@
 ﻿
 #include "../Internal.h"
-#include <ssbpLib\SS5PlayerPlatform.h>
-#include <ssbpLib\SS5Player.h>
+#include <ssbpLib/SS5PlayerPlatform.h>
+#include <ssbpLib/SS5Player.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
+#include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteModelObject.h>
@@ -82,9 +83,22 @@ void SpriteModelObject::UpdateFrame(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteModelObject::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//void SpriteModelObject::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//{
+//	m_player->draw();
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void SpriteModelObject::OnRender(SceneGraphRenderingContext* dc)
 {
+	auto sr = dc->BeginSpriteRendering();
+	sr->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+	sr->SetViewPixelSize(Size(640, 480));
+	ss::g_spriteRenderer = sr;
 	m_player->draw();
+	sr->Flush();
 }
 
 } // namespace tr

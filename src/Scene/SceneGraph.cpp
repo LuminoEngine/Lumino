@@ -133,8 +133,8 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 	{
 		//RenderingParams params;
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
-		dc->Renderer = m_manager->GetGraphicsManager()->GetRenderer();
-		dc->GeometryRenderer = m_manager->GetGeometryRenderer();
+		//dc->Renderer = m_manager->GetGraphicsManager()->GetRenderer();
+		//dc->GeometryRenderer = m_manager->GetGeometryRenderer();
 		dc->CurrentCamera = camera;
 		for (RenderingPass* pass : *GetRenderingPasses())
 		{

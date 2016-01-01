@@ -57,7 +57,7 @@ int main()
 		auto aa = ColorBrush::Green;
 		ApplicationSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
-		appData.RenderingType = RenderingType::Deferred;
+		appData.RenderingType = RenderingType::Immediate;
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
@@ -94,30 +94,56 @@ int main()
 		RefPtr<Physics::RigidBody> rigidBody2(Physics::RigidBody::Create(collider2), false);
 
 		//RefPtr<Physics::RigidBody> b1(LN_NEW Physics::Capsule(Physics::PhysicsManager::Instance, 2, 4, 1.0f));
-		RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2), false);
-		RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1), false);
-		rigidBody1->SetPosition(0, 10, 0);
-		rigidBody1->SetMass(1.0f);
+		//RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2), false);
+		//RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1), false);
+		//rigidBody1->SetPosition(0, 10, 0);
+		//rigidBody1->SetMass(1.0f);
 
-		RefPtr<Physics::Collider> collider3(Physics::CapsuleCollider::Create(0.5, 2), false);
-		RefPtr<Physics::RigidBody> rigidBody3(Physics::RigidBody::Create(collider3), false);
-		rigidBody3->SetPosition(0.1, 10, 0.5);
-		rigidBody3->SetMass(1.0f);
-		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
+		//RefPtr<Physics::Collider> collider3(Physics::CapsuleCollider::Create(0.5, 2), false);
+		//RefPtr<Physics::RigidBody> rigidBody3(Physics::RigidBody::Create(collider3), false);
+		//rigidBody3->SetPosition(0.1, 10, 0.5);
+		//rigidBody3->SetMass(1.0f);
+		//rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
 
-		//auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
-		auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
+		auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
+		//auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
+
+		auto s2 = Sprite::Create3D();
+		s2->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
+		s2->SetSrcRect(Rect(0, 0, 48,80));
+		s2->SetSize(SizeF(48.0 / 40, 80.0 / 40));
+		//s2->SsetCenter(Vector3(48.0 / 40, 80.0/40, 0));
+		s2->SetPosition(Vector3 (1, 1, 0));
+
+		auto s3 = Sprite::Create3D();
+		s3->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
+		s3->SetSrcRect(Rect(88, 0, 48, 48));
+		s3->SetSize(SizeF(1, 1));
+		s3->SetCenter(Vector3(0.5, 2.0, 0));
+		s3->SetPosition(Vector3(5, 1, 0));
 
 		while (Engine::UpdateFrame())
 		{
 			if (Input::IsPress(InputButtons::Left))
 			{
-				rigidBody3->ApplyForce(Vector3(-10.1, 0, 0));
+				//rigidBody3->ApplyForce(Vector3(-10.1, 0, 0));
 			}
 
 			//rigidBody1->GetWorldTransform().GetPosition().Print();
 			Physics::PhysicsManager::Instance->SyncBeforeStepSimulation();
 			Physics::PhysicsManager::Instance->StepSimulation(0.016);
+
+			//// ‚©‚ß‚ç‚Í 0,0,z
+
+			Matrix view = Matrix::LookAtLH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0));
+			Matrix proj = Matrix::PerspectiveFovLH(Camera::GetDefault3DCamera()->GetFovY(), 640.0f / 480.f, 1, 1000);
+			Matrix inv = Matrix::Inverse(view * proj);
+			Vector3 vec1(-1, 1, 1);		// ‹‘ä‚Ì¶ã‰œ
+			vec1.TransformCoord(inv);	// ƒJƒƒ‰(0, 0, 0) ‚©‚ç‹‘ä‚Ì¶ã‰œ‚ğ‚Â‚È‚®ƒŒƒC
+
+
+
+
 		}
 
 

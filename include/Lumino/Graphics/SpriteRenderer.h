@@ -107,6 +107,15 @@ public:
 		const ColorF* colorTable,
 		AxisDirection front);
 
+	void DrawRequest3D(
+		const Vector3& position,
+		const Vector3& center,
+		const Vector2& size,
+		Texture* texture,
+		const RectF& srcRect,
+		const ColorF& color,
+		AxisDirection front);
+
 	/**
 		@brief		要求されているスプライトを全て描画します。
 	*/

@@ -35,7 +35,7 @@ protected:
 	void Initialize(SceneGraphManager* manager, const String& filePath);
 
 	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+	virtual void OnRender(SceneGraphRenderingContext* dc) override;
 
 private:
 	ss::ResourceManager*	m_resource;

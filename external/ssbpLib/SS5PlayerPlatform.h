@@ -12,11 +12,13 @@
 namespace ln
 {
 	class GraphicsManager;
+	class SpriteRenderer;
 }
 
 namespace ss
 {
 	extern ln::GraphicsManager*	g_graphicsManager;
+	extern ln::SpriteRenderer*		g_spriteRenderer;
 
 	struct State;
 	struct UserData;

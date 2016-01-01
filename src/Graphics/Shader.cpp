@@ -80,6 +80,7 @@ bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t by
 Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode)
 	: m_deviceObj(shader)
 	, m_sourceCode(sourceCode)
+	, m_viewportPixelSize(nullptr)
 {
 	GraphicsResourceObject::Initialize(manager);
 	LN_SAFE_ADDREF(m_deviceObj);
@@ -87,7 +88,13 @@ Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuff
 	// 変数を展開
 	for (int i = 0; i < shader->GetVariableCount(); ++i)
 	{
-		m_variables.Add(LN_NEW ShaderVariable(this, shader->GetVariable(i)));
+		ShaderVariable* v = LN_NEW ShaderVariable(this, shader->GetVariable(i));
+		m_variables.Add(v);
+
+		if (v->GetSemanticName().Compare(_T("VIEWPORTPIXELSIZE"), 17, CaseSensitivity::CaseInsensitive) == 0)
+		{
+			m_viewportPixelSize = v;
+		}
 	}
 
 	// テクニックを展開
@@ -829,6 +836,18 @@ const String& ShaderPass::GetName() const
 //-----------------------------------------------------------------------------
 void ShaderPass::Apply()
 {
+	if (m_owner->m_viewportPixelSize != nullptr)
+	{
+		Texture* tex = m_owner->GetManager()->GetRenderer()->GetRenderTarget(0);
+		const Size& size = tex->GetRealSize();
+		float w = size.Width;
+		float h = size.Height;
+		const Vector4& vec = m_owner->m_viewportPixelSize->GetVector();
+		if (vec.X != w || vec.Y != h) {
+			m_owner->m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
+		}
+	}
+
 	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
 }
 

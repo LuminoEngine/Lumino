@@ -58,7 +58,7 @@ public:
 	const Vector3& GetScale() const { return m_transform.Scale; }
 
 	/// 原点の設定
-	void SsetCenter(const Vector3& center) { m_transformCenter = center; m_transformModified = true; }
+	void SetCenter(const Vector3& center) { m_transformCenter = center; m_transformModified = true; }
 
 	/// 原点の取得
 	const Vector3& GetCenter() const { return m_transformCenter; }

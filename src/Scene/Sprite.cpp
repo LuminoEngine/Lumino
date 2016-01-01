@@ -252,7 +252,7 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{
-		dc->GeometryRenderer->DrawSquare(
+		dc->GetGeometryRenderer()->DrawSquare(
 			m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
 			m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
 			m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White,

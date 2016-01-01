@@ -528,7 +528,7 @@ void EngineManager::Render()
 		renderer->Begin();
 		renderer->SetRenderTarget(0, swap->GetBackBuffer());
 		renderer->SetDepthBuffer(swap->GetBackBufferDepth());
-		renderer->Clear(ClearFlags::All, ColorF::Black);
+		renderer->Clear(ClearFlags::All, ColorF::White);
 
 		//m_graphicsManager->GetRenderer()->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
 

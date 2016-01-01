@@ -40,7 +40,7 @@ void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* nod
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
 
 	// レンダリングステートの設定
-	dc->Renderer->SetRenderState(visualNode->GetRenderState());
+	dc->GetRenderer()->SetRenderState(visualNode->GetRenderState());
 	visualNode->OnRender(dc);
 
 	//int subsetCount = visualNode->GetSubsetCount();

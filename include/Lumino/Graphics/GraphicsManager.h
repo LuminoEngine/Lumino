@@ -9,6 +9,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
+class GraphicsContext;
 class PainterEngine;
 class TextRenderer;
 
@@ -43,6 +44,8 @@ public:
 
 	/** 関連付けられている FontManager を取得します。*/
 	FontManager* GetFontManager() const { return m_fontManager; }
+
+	GraphicsContext* GetGraphicsContext() const { return m_graphicsContext; }
 
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
@@ -136,6 +139,7 @@ private:
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
+	GraphicsContext*				m_graphicsContext;
 	PainterEngine*					m_painterEngine;
 	Driver::ITexture*				m_dummyTexture;
 	bool							m_platformTextureLoading;

@@ -92,6 +92,9 @@
 #include "RenderingCommand.h"
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/SpriteRenderer.h>
+#include <Lumino/Graphics/GeometryRenderer.h>
+
 
 LN_NAMESPACE_BEGIN
 
@@ -1109,5 +1112,72 @@ void DrawingContext::CheckFlush()
 	// コマンドバッファの先頭に区分を入れておく
 	AddCommand(&m_currentDrawingClass, sizeof(uint32_t));
 }
+
+
+
+
+//=============================================================================
+// GraphicsContext
+/*		GraphicsContext は JavaFX のクラス。
+*/
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GraphicsContext::GraphicsContext(GraphicsManager* manager)
+	: m_currentRenderer(RendererType::None)
+	, m_spriteRenderer(nullptr)
+{
+	Renderer = manager->GetRenderer();
+	GeometryRenderer = GeometryRenderer::Create(manager);
+	m_drawingContext.Initialize(manager);
+	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GraphicsContext::~GraphicsContext()
+{
+	LN_SAFE_RELEASE(GeometryRenderer);
+	LN_SAFE_RELEASE(m_spriteRenderer);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+DrawingContext* GraphicsContext::BeginDrawingContext()
+{
+	if (m_currentRenderer != RendererType::DrawingContext)
+	{
+		Flush();
+		m_currentRenderer = RendererType::DrawingContext;
+	}
+	return &m_drawingContext;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SpriteRenderer* GraphicsContext::BeginSpriteRendering()
+{
+	if (m_currentRenderer != RendererType::DrawingContext)
+	{
+		Flush();
+		m_currentRenderer = RendererType::SpriteRenderer;
+	}
+	return m_spriteRenderer;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::Flush()
+{
+	m_drawingContext.Flush();
+	m_spriteRenderer->Flush();
+}
+
 
 LN_NAMESPACE_END

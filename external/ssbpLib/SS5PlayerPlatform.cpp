@@ -5,6 +5,7 @@
 #include <set>
 #include "../../src/Graphics/Internal.h"
 #include "../../include/Lumino/Graphics/Texture.h"
+#include "../../include/Lumino/Graphics/SpriteRenderer.h"
 
 /**
 * 各プラットフォームに合わせて処理を作成してください
@@ -15,6 +16,7 @@
 namespace ss
 {
 	ln::GraphicsManager*	g_graphicsManager = nullptr;
+	ln::SpriteRenderer*		g_spriteRenderer = nullptr;
 	std::set<ln::Texture2D*>	g_texPtrSet;
 
 	/**
@@ -160,7 +162,47 @@ namespace ss
 	void SSDrawSprite(State state)
 	{
 		//printf("%f\n", state.scaleY);
+
+		float x = state.mat[12];	/// 表示座標はマトリクスから取得します。
+		float y = state.mat[13];	/// 表示座標はマトリクスから取得します。
+
+		g_spriteRenderer->SetTransform(
+			ln::Matrix::AffineTransformation(
+				ln::Vector3(state.scaleX, state.scaleY, 0),
+				ln::Vector3::Zero,
+				ln::Quaternion::RotationEulerAngles(ln::Vector3(state.rotationX, state.rotationY, state.rotationZ)),
+				ln::Vector3(x, y, 0)));
 		
+
+		if (0)
+		{
+			g_spriteRenderer->DrawRequest2D(
+				ln::Vector3(0, 0, 0),
+				ln::Vector3(0, 0, 0),
+				ln::Vector2(state.rect.size.width, state.rect.size.height),
+				(ln::Texture2D*)state.texture.handle,
+				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
+				ln::ColorF::White);
+		}
+		else
+		{
+			g_spriteRenderer->DrawRequest3D(
+				ln::Vector3(0, 0, 0),
+				ln::Vector3(0, 0, 0),
+				ln::Vector2(state.rect.size.width, state.rect.size.height),
+				(ln::Texture2D*)state.texture.handle,
+				ln::RectF(state.rect.origin.x, state.rect.origin.y, state.rect.size.width, state.rect.size.height),
+				ln::ColorF::White,
+				ln::AxisDirection_RZ);
+		}
+
+
+		//DrawRectRotaGraph(
+		//	(int)x, (int)y,	//この座標が画像の中心になります。
+		//	(int)state.rect.origin.x, (int)state.rect.origin.y, (int)state.rect.size.width, (int)state.rect.size.height,
+		//	scaleX, SSRadianToDegree(rotationZ),
+		//	state.texture.handle, TRUE, state.flipX
+		//	);
 #if 0
 		//未対応機能
 		//ステータスから情報を取得し、各プラットフォームに合わせて機能を実装してください。

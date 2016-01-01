@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class DrawingContextImpl;
-
+class SpriteRenderer;
 
 /**
 	@brief	図形の枠線の描画方法を表します。
@@ -101,6 +101,41 @@ private:
 	detail::DrawingClass	m_currentDrawingClass;
 	detail::DrawingState	m_currentState;
 	bool					m_stateModified;
+};
+
+
+class GraphicsContext
+	: public RefObject
+{
+public:	// TODO
+	//RenderingPass*				Pass;
+	Details::Renderer*			Renderer;	// TODO 内部クラス
+	GeometryRenderer*			GeometryRenderer;
+	//Camera*						CurrentCamera;
+	//MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
+
+public:
+
+	DrawingContext* BeginDrawingContext();
+	SpriteRenderer* BeginSpriteRendering();
+
+	void Flush();
+
+protected:
+	friend class GraphicsManager;
+	GraphicsContext(GraphicsManager* manager);
+	virtual ~GraphicsContext();
+
+	enum class RendererType
+	{
+		None,
+		DrawingContext,
+		SpriteRenderer,
+	};
+
+	RendererType	m_currentRenderer;
+	DrawingContext	m_drawingContext;
+	SpriteRenderer*	m_spriteRenderer;
 };
 
 LN_NAMESPACE_END

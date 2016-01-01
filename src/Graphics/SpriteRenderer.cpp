@@ -337,6 +337,22 @@ void SpriteRenderer::DrawRequest3D(
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void SpriteRenderer::DrawRequest3D(
+	const Vector3& position,
+	const Vector3& center,
+	const Vector2& size,
+	Texture* texture,
+	const RectF& srcRect,
+	const ColorF& color,
+	AxisDirection front)
+{
+	ColorF colors[] = { color, color, color, color };
+	DrawRequest3D(position, center, size, texture, srcRect, colors, front);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void SpriteRenderer::Flush()
 {
 	LN_CALL_COMMAND(Flush, SpriteRendererImpl::FlushCommand);

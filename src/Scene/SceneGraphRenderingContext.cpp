@@ -13,13 +13,9 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SceneGraphRenderingContext::SceneGraphRenderingContext(GraphicsManager* manager)
-	//: DrawingContext()
-	: m_currentRenderer(RendererType::None)
-	, m_spriteRenderer(nullptr)
+SceneGraphRenderingContext::SceneGraphRenderingContext(GraphicsContext* internalContext)
+	: m_internalContext(internalContext)
 {
-	m_drawingContext.Initialize(manager);
-	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
 }
 
 //-----------------------------------------------------------------------------
@@ -27,7 +23,6 @@ SceneGraphRenderingContext::SceneGraphRenderingContext(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 SceneGraphRenderingContext::~SceneGraphRenderingContext()
 {
-	LN_SAFE_RELEASE(m_spriteRenderer);
 }
 
 //-----------------------------------------------------------------------------
@@ -35,34 +30,15 @@ SceneGraphRenderingContext::~SceneGraphRenderingContext()
 //-----------------------------------------------------------------------------
 DrawingContext* SceneGraphRenderingContext::BeginDrawingContext()
 {
-	if (m_currentRenderer != RendererType::DrawingContext)
-	{
-		Flush();
-		m_currentRenderer = RendererType::DrawingContext;
-	}
-	return &m_drawingContext;
+	return m_internalContext->BeginDrawingContext();
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 SpriteRenderer* SceneGraphRenderingContext::BeginSpriteRendering()
 {
-	if (m_currentRenderer != RendererType::DrawingContext)
-	{
-		Flush();
-		m_currentRenderer = RendererType::SpriteRenderer;
-	}
-	return m_spriteRenderer;
+	return m_internalContext->BeginSpriteRendering();
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void SceneGraphRenderingContext::Flush()
 {
-	m_drawingContext.Flush();
-	m_spriteRenderer->Flush();
+	return m_internalContext->Flush();
 }
 
 LN_NAMESPACE_SCENE_END
