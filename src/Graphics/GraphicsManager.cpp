@@ -724,34 +724,6 @@ void GraphicsResourceObject::Initialize(GraphicsManager* manager)
 }
 
 
-//=============================================================================
-// Graphics
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Graphics::ChangeDirectX9Device(void* id3d9device)
-{
-	if (id3d9device == NULL)
-	{
-		GraphicsManager::Instance->ChangeDevice(NULL);
-	}
-	else
-	{
-		Driver::DX9GraphicsDevice::ConfigData data;
-		data.MainWindow = GraphicsManager::Instance->GetMainWindow();
-		data.FileManager = GraphicsManager::Instance->GetFileManager();
-		data.D3D9Device = (IDirect3DDevice9*)id3d9device;
-		//data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
-		//data.EnableVSyncWait = false;			// TODO
-		//data.EnableFPUPreserve = false;			// TODO
-		auto* device = LN_NEW Driver::DX9GraphicsDevice();
-		device->Initialize(data);
-		GraphicsManager::Instance->ChangeDevice(device);
-		device->Release();
-	}
-}
 
 //=============================================================================
 // GraphicsManager
@@ -869,7 +841,6 @@ GraphicsManager::~GraphicsManager()
 	if (m_glyphTextureCache != NULL) {
 		m_glyphTextureCache->Finalize();
 	}
-	LN_SAFE_RELEASE(m_graphicsContext);
 	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_dummyTexture);
 	LN_SAFE_RELEASE(m_renderer);
@@ -895,6 +866,8 @@ void GraphicsManager::Finalize()
 		m_renderingThread->Dispose();
 		LN_SAFE_DELETE(m_renderingThread);
 	}
+
+	LN_SAFE_RELEASE(m_graphicsContext);
 }
 
 //-----------------------------------------------------------------------------

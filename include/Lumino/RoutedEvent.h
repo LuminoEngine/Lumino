@@ -169,15 +169,15 @@ private:
 //
 //};
 //
-#define LN_ROUTED_EVENT(eventArgs, eventVar) \
-	public:  static const RoutedEvent* eventVar; \
-	private: static void  _raise_##eventVar(CoreObject* obj, RoutedEventArgs* e); \
-	private: static StaticTypedRoutedEvent _init_##eventVar;
-
-#define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventVar, name, slot) \
-	StaticTypedRoutedEvent	ownerClass::_init_##eventVar(_T(name), &ownerClass::_raise_##eventVar); \
-	const RoutedEvent*		ownerClass::eventVar = StaticTypedRoutedEvent::RegisterRoutedEvent(ownerClass::GetClassTypeInfo(), &_init_##eventVar); \
-	void					ownerClass::_raise_##eventVar(CoreObject* obj, RoutedEventArgs* e) { static_cast<ownerClass*>(obj)->EmitEventSlot(static_cast<ownerClass*>(obj)->slot, static_cast<eventArgs*>(e)); }
+//#define LN_ROUTED_EVENT(eventArgs, eventVar) \
+//	public:  static const RoutedEvent* eventVar; \
+//	private: static void  _raise_##eventVar(CoreObject* obj, RoutedEventArgs* e); \
+//	private: static StaticTypedRoutedEvent _init_##eventVar;
+//
+//#define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventVar, name, slot) \
+//	StaticTypedRoutedEvent	ownerClass::_init_##eventVar(_T(name), &ownerClass::_raise_##eventVar); \
+//	const RoutedEvent*		ownerClass::eventVar = StaticTypedRoutedEvent::RegisterRoutedEvent(ownerClass::GetClassTypeInfo(), &_init_##eventVar); \
+//	void					ownerClass::_raise_##eventVar(CoreObject* obj, RoutedEventArgs* e) { static_cast<ownerClass*>(obj)->EmitEventSlot(static_cast<ownerClass*>(obj)->slot, static_cast<eventArgs*>(e)); }
 	
 
 

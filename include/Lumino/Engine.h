@@ -30,6 +30,10 @@ public:
 	*/
 	static bool UpdateFrame();
 
+
+	static bool BeginRendering();
+	static void EndRendering();
+	static void Render();
 };
 
 LN_NAMESPACE_END

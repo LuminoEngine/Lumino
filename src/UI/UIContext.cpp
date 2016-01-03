@@ -1,73 +1,73 @@
 
 #include "Internal.h"
-#include <Lumino/IO/Console.h>
-#include <Lumino/Profiler.h>
-#include "Input/InputManager.h"
-#include <Lumino/Audio/AudioManager.h>
-#include <Lumino/Engine.h>
-#include "Graphics/RendererImpl.h"
-#include "Graphics/ProfilerRenderer.h"
-#include "Graphics/RenderingThread.h"
-#include "Scene/SceneGraphManager.h"
-#include <Lumino/Scene/SceneGraph.h>
-#include "Effect/EffectManager.h"
-#include "UI/UIManager.h"
-#include "EngineManager.h"
+#include <Lumino/UI/UILayoutView.h>
+#include <Lumino/UI/UIContext.h>
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/DrawingContext.h>
+#include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// Engine
+// UIContext
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Engine::Initialize(const ApplicationSettings& settings)
+UIContext::UIContext()
+	: m_manager(nullptr)
+	, m_mainWindowView(nullptr)
+	, m_focusElement(nullptr)
 {
-	EngineManager::Instance = EngineManager::Create(settings);
-	EngineManager::Instance->Initialize();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Engine::Finalize()
+UIContext::~UIContext()
 {
-	LN_SAFE_RELEASE(EngineManager::Instance);
+	LN_SAFE_RELEASE(m_mainWindowView);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Engine::UpdateFrame()
+void UIContext::Initialize(detail::UIManager* manager)
 {
-	LN_CHECK_STATE(EngineManager::Instance != NULL);
-	return EngineManager::Instance->UpdateFrame();
+	m_manager = manager;
+	m_mainWindowView = LN_NEW UILayoutView();
+	m_mainWindowView->Initialize(this, m_manager->GetMainWindow());
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Engine::BeginRendering()
+void UIContext::SetFocusElement(UIElement* element)
 {
-	return EngineManager::Instance->BeginRendering();
+	m_focusElement = element;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Engine::EndRendering()
+void UIContext::InjectElapsedTime(float elapsedTime)
 {
-	EngineManager::Instance->EndRendering();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Engine::Render()
+void UIContext::Render()
 {
-	EngineManager::Instance->Render();
+	//auto* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
+	//auto* d = g->BeginDrawingContext();
+
+	//d->SetViewProjection(Matrix::Identity, Matrix::Perspective2DLH(640, 480, 0, 1));
+
+	//d->DrawRectangle(RectF(10, 10, 20, 30), ColorF::Red);
+
+	//g->Flush();
 }
 
 LN_NAMESPACE_END

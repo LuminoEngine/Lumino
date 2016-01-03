@@ -2,15 +2,16 @@
 #include "../../src/EngineManager.h"
 #include "../../src/Modeling/ModelManager.h"
 #include <Lumino/Tilemap/TileMap.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Scene/TileMapNode.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
 
-void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
-{
-	printf("Button1_MouseMove\n");
-}
+//void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
+//{
+//	printf("Button1_MouseMove\n");
+//}
 
 int TestA()
 {
@@ -52,14 +53,16 @@ int main()
 
 	try
 	{
-		auto fff = ColorF::Green;
-		ColorBrush ff(ColorF(1, 0, 0, 1));
-		auto aa = ColorBrush::Green;
+		//auto fff = ColorF::Green;
+		//ColorBrush ff(ColorF(1, 0, 0, 1));
+		//auto aa = ColorBrush::Green;
 		ApplicationSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
+
+
 
 		//RefPtr<Texture2D> tex1(Texture2D::Create(_T("D:/tmp/9.png")), false);
 		//RefPtr<Sprite> sp1(Sprite::Create3D(), false);
@@ -108,6 +111,7 @@ int main()
 		auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
 		//auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
 
+#if 0
 		auto s2 = Sprite::Create3D();
 		s2->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
 		s2->SetSrcRect(Rect(0, 0, 48,80));
@@ -121,8 +125,9 @@ int main()
 		s3->SetSize(SizeF(1, 1));
 		s3->SetCenter(Vector3(0.5, 2.0, 0));
 		s3->SetPosition(Vector3(5, 1, 0));
+#endif
 
-		while (Engine::UpdateFrame())
+		do
 		{
 			if (Input::IsPress(InputButtons::Left))
 			{
@@ -141,10 +146,21 @@ int main()
 			Vector3 vec1(-1, 1, 1);		// éãêçë‰ÇÃç∂è„âú
 			vec1.TransformCoord(inv);	// ÉJÉÅÉâ(0, 0, 0) Ç©ÇÁéãêçë‰ÇÃç∂è„âúÇÇ¬Ç»ÇÆÉåÉC
 
+			if (Engine::BeginRendering())
+			{
+				Engine::Render();
+
+				Graphics::Set2DRenderingMode();
+				Graphics::SetBrush(ColorBrush::Blue);
+				Graphics::DrawRectangle(RectF(10, 10, 10, 20), ColorF::White);
+				Graphics::Flush();
+
+				Engine::EndRendering();
+			}
 
 
 
-		}
+		} while (Engine::UpdateFrame());
 
 
 

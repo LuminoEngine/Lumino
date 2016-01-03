@@ -207,6 +207,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRendererImpl.h
 	src/Graphics/GlyphRun.cpp
+	src/Graphics/Graphics.cpp
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsHelper.h
 	src/Graphics/GraphicsManager.cpp
@@ -379,89 +380,26 @@ set(LN_SOURCES_Scene
 )
 endif()
 
-set(LN_SOURCES_GUI
-	include/Lumino/GUI/AnimationClock.h
-	include/Lumino/GUI/Common.h
-	include/Lumino/GUI/ContentControl.h
-	include/Lumino/GUI/ContentElement.h
-	include/Lumino/GUI/ContentPresenter.h
-	include/Lumino/GUI/Control.h
-	include/Lumino/GUI/ControlTemplate.h
-	include/Lumino/GUI/CursorImage.h
-	include/Lumino/GUI/Decorator.h
-	include/Lumino/GUI/RoutedEventArgs.h
-	include/Lumino/GUI/GUIContext.h
-	include/Lumino/GUI/GUIInputGesture.h
-	include/Lumino/GUI/GUIObjectCollection.h
-	include/Lumino/GUI/ItemsControl.h
-	include/Lumino/GUI/ItemsPresenter.h
-	include/Lumino/GUI/Rectangle.h
-	include/Lumino/GUI/RootFrame.h
-	include/Lumino/GUI/RoutedCommand.h
-	include/Lumino/GUI/TextBlock.h
-	include/Lumino/GUI/TextBox.h
-	include/Lumino/GUI/UI.h
-	include/Lumino/GUI/UIButton.h
-	include/Lumino/GUI/UIElement.h
-	include/Lumino/GUI/UIElementCollection.h
-	include/Lumino/GUI/UIInjectedInputReceiver.h
-	include/Lumino/GUI/UIStyle.h
-	include/Lumino/GUI/UITextElement.h
-	include/Lumino/GUI/VisualState.h
-	include/Lumino/GUI/VisualTreeHelper.h
-	include/Lumino/GUI/Controls/ButtonBase.h
-	include/Lumino/GUI/Controls/Grid.h
-	include/Lumino/GUI/Controls/Image.h
-	include/Lumino/GUI/Controls/IScrollInfo.h
-	include/Lumino/GUI/Controls/ListBox.h
-	include/Lumino/GUI/Controls/Panel.h
-	include/Lumino/GUI/Controls/RepeatButton.h
-	include/Lumino/GUI/Controls/ScrollBar.h
-	include/Lumino/GUI/Controls/ScrollViewer.h
-	include/Lumino/GUI/Controls/StackPanel.h
-	include/Lumino/GUI/Controls/Thumb.h
-	include/Lumino/GUI/Controls/Track.h
-	src/GUI/AnimationClock.cpp
-	src/GUI/ContentControl.cpp
-	src/GUI/ContentElement.cpp
-	src/GUI/ContentPresenter.cpp
-	src/GUI/Control.cpp
-	src/GUI/ControlTemplate.cpp
-	src/GUI/CursorImage.cpp
-	src/GUI/Decorator.cpp
-	src/GUI/RoutedEventArgs.cpp
-	src/GUI/GUIContext.cpp
-	src/GUI/GUIHelper.h
-	src/GUI/GUIInputGesture.cpp
-	src/GUI/UIManager.cpp
-	src/GUI/UIManagerImpl.h
-	src/GUI/GUIPainter.cpp
-	src/GUI/GUIPainter.h
-	src/GUI/Internal.h
-	src/GUI/ItemsControl.cpp
-	src/GUI/ItemsPresenter.cpp
-	src/GUI/Rectangle.cpp
-	src/GUI/RootFrame.cpp
-	src/GUI/RoutedCommand.cpp
-	src/GUI/TextBlock.cpp
-	src/GUI/TextBox.cpp
-	src/GUI/UIButton.cpp
-	src/GUI/UIElement.cpp
-	src/GUI/UIElementCollection.cpp
-	src/GUI/UITextElement.cpp
-	src/GUI/VisualState.cpp
-	src/GUI/VisualTreeHelper.cpp
-	src/GUI/Controls/ButtonBase.cpp
-	src/GUI/Controls/Grid.cpp
-	src/GUI/Controls/Image.cpp
-	src/GUI/Controls/ListBox.cpp
-	src/GUI/Controls/Panel.cpp
-	src/GUI/Controls/RepeatButton.cpp
-	src/GUI/Controls/ScrollBar.cpp
-	src/GUI/Controls/ScrollViewer.cpp
-	src/GUI/Controls/StackPanel.cpp
-	src/GUI/Controls/Thumb.cpp
-	src/GUI/Controls/Track.cpp
+set(LN_SOURCES_UI
+	include/Lumino/UI/Common.h
+	include/Lumino/UI/UIContext.h
+	include/Lumino/UI/UIElement.h
+	include/Lumino/UI/UIEvent.h
+	include/Lumino/UI/UIEventArgs.h
+	include/Lumino/UI/UIInjectedInputReceiver.h
+	include/Lumino/UI/UILayoutView.h
+	include/Lumino/UI/UITypeInfo.h
+	src/UI/EventArgsPool.h
+	src/UI/Internal.h
+	src/UI/UIContext.cpp
+	src/UI/UIElement.cpp
+	src/UI/UIEvent.cpp
+	src/UI/UIEventArgs.cpp
+	src/UI/UIHelper.h
+	src/UI/UILayoutView.cpp
+	src/UI/UIManager.cpp
+	src/UI/UIManager.h
+	src/UI/UITypeInfo.cpp
 )
 
 set(LN_SOURCES_Documents
@@ -635,7 +573,7 @@ source_group("Effect"		FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"		FILES ${LN_SOURCES_TileMap})
 source_group("Modeling"		FILES ${LN_SOURCES_Modeling})
 source_group("Scene"		FILES ${LN_SOURCES_Scene})
-source_group("GUI"			FILES ${LN_SOURCES_GUI})
+source_group("UI"			FILES ${LN_SOURCES_UI})
 source_group("Documents"	FILES ${LN_SOURCES_Documents})
 source_group("Game"			FILES ${LN_SOURCES_Game})
 source_group("Application"	FILES ${LN_SOURCES_Application})
@@ -654,7 +592,7 @@ set(LN_SOURCES
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Modeling}
 	${LN_SOURCES_Scene}
-	${LN_SOURCES_GUI}
+	${LN_SOURCES_UI}
 	${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application}

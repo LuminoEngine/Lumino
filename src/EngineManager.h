@@ -17,10 +17,10 @@ LN_NAMESPACE_BEGIN
 namespace detail { class InputManager; }
 namespace detail { class EffectManager; }
 namespace detail { class ModelManager; }
+namespace detail { class UIManager; }
 class AudioManagerImpl;
 class ProfilerRenderer;
 class SceneGraphManager;
-class GUIManagerImpl;
 
 class EngineManager
 	: public RefObject
@@ -41,15 +41,9 @@ public:
 
 public:
 
-	/**
-		@brief		
-		@return		アプリケーションの終了が要求されている場合は false を返します。
-	*/
 	bool UpdateFrame();
-
-	/**
-		@brief		
-	*/
+	bool BeginRendering();
+	void EndRendering();
 	void Render();
 
 	/**
@@ -72,7 +66,7 @@ public:
 	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
-	GUIManagerImpl* GetGUIManager() const { return m_guiManager; }
+	detail::UIManager* GetUIManager() const { return m_uiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
 
 protected:
@@ -108,12 +102,14 @@ private:
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
-	GUIManagerImpl*						m_guiManager;
+	detail::UIManager*						m_uiManager;
 	SceneGraphManager*					m_sceneGraphManager;
 
 	ProfilerRenderer*			m_profilerRenderer;
 	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
+	bool								m_frameRenderingSkip;
+	bool								m_frameRenderd;
 	bool								m_commonInitied;
 	bool								m_endRequested;
 	bool								m_comInitialized;

@@ -57,7 +57,9 @@
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "Effect/EffectManager.h"
-#include "GUI/UIManagerImpl.h"
+#include "UI/UIManager.h"
+#include <Lumino/UI/UIContext.h>
+#include <Lumino/UI/UILayoutView.h>
 #include "EngineManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -101,9 +103,11 @@ EngineManager::EngineManager(const ApplicationSettings& configData)
 	, m_audioManager(NULL)
 	, m_effectManager(nullptr)
 	, m_modelManager(nullptr)
-	, m_guiManager(NULL)
+	, m_uiManager(nullptr)
 	, m_sceneGraphManager(NULL)
 	, m_profilerRenderer(NULL)
+	, m_frameRenderingSkip(false)
+	, m_frameRenderd(false)
 	, m_commonInitied(false)
 	, m_endRequested(false)
 	, m_comInitialized(false)
@@ -151,9 +155,9 @@ EngineManager::~EngineManager()
 		m_effectManager->Finalize();
 		LN_SAFE_RELEASE(m_effectManager);
 	}
-	if (m_guiManager != NULL) {
-		m_guiManager->Finalize();
-		LN_SAFE_RELEASE(m_guiManager);
+	if (m_uiManager != NULL) {
+		m_uiManager->Finalize();
+		LN_SAFE_RELEASE(m_uiManager);
 	}
 	if (m_physicsManager != nullptr) {
 		m_physicsManager->Finalize();
@@ -415,21 +419,19 @@ void EngineManager::InitializeDocumentsManager()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeGUIManager()
 {
-	if (m_guiManager == NULL)
+	if (m_uiManager == NULL)
 	{
 		InitializeCommon();
 		InitializePlatformManager();
 		InitializeGraphicsManager();
 		InitializeDocumentsManager();
 
-		GUIManagerImpl::ConfigData data;
-		data.GraphicsManager = m_graphicsManager;
-		data.MainWindow = m_platformManager->GetMainWindow();
-		data.DocumentsManager = m_documentsManager;
-		m_guiManager = LN_NEW GUIManagerImpl();
-		m_guiManager->Initialize(data);
-
-		GUIManagerImpl::Instance = m_guiManager;
+		detail::UIManager::Settings data;
+		data.graphicsManager = m_graphicsManager;
+		data.mainWindow = m_platformManager->GetMainWindow();
+		data.documentsManager = m_documentsManager;
+		m_uiManager = LN_NEW detail::UIManager();
+		m_uiManager->Initialize(data);
 	}
 }
 
@@ -475,23 +477,89 @@ bool EngineManager::UpdateFrame()
 		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(m_fpsController.GetElapsedGameTime());
 	}
 
-	if (m_guiManager != NULL) {
-		m_guiManager->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
+	if (m_uiManager != NULL)
+	{
+		m_uiManager->GetDefaultUIContext()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
-			m_guiManager->UpdateLayoutOnMainWindow();
+			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
+			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(size.Width, size.Height));
 		}
 	}
 
-	Render();
+	// 手動描画されていなければここで自動描画する
+	if (!m_frameRenderd)
+	{
+		if (BeginRendering())
+		{
+			Render();
+			EndRendering();
+		}
+	}
 
 	m_fpsController.Process();
 
 	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
 	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
 
+	m_frameRenderd = false;
 	return !m_endRequested;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool EngineManager::BeginRendering()
+{
+	m_frameRenderingSkip = true;
+	if (m_graphicsManager == nullptr) return false;
+
+	// 描画遅延の確認
+	bool delay = false;
+	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
+	{
+		if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
+			delay = true;
+		}
+	}
+	else {
+		// TODO:
+	}
+	if (delay) {
+		return false;
+	}
+
+	m_frameRenderingSkip = false;
+
+
+
+	if (m_effectManager != nullptr) {
+		m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
+	}
+
+	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
+	SwapChain* swap = m_graphicsManager->GetMainSwapChain();
+	renderer->Begin();
+	renderer->SetRenderTarget(0, swap->GetBackBuffer());
+	renderer->SetDepthBuffer(swap->GetBackBufferDepth());
+	renderer->Clear(ClearFlags::All, ColorF::White);
+
+	m_frameRenderd = true;
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EngineManager::EndRendering()
+{
+	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
+
+	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
+	SwapChain* swap = m_graphicsManager->GetMainSwapChain();
+	renderer->End();
+	swap->Present();
 }
 
 //-----------------------------------------------------------------------------
@@ -499,36 +567,40 @@ bool EngineManager::UpdateFrame()
 //-----------------------------------------------------------------------------
 void EngineManager::Render()
 {
-	if (m_graphicsManager != NULL)
+	if (m_graphicsManager != nullptr)
 	{
-		// 描画遅延の確認
-		bool delay = false;
-		if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
-		{
-			if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
-				delay = true;
-			}
-		}
-		else {
-			// TODO:
-		}
-		if (delay) {
-			return;
-		}
+		//// 描画遅延の確認
+		//bool delay = false;
+		//if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
+		//{
+		//	if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
+		//		delay = true;
+		//	}
+		//}
+		//else {
+		//	// TODO:
+		//}
+		//if (delay) {
+		//	m_frameRenderingSkip = true;
+		//	return;
+		//}
+		//m_frameRenderingSkip = false;
 
-		if (m_effectManager != nullptr) {
-			m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
-		}
+
+		//if (m_effectManager != nullptr) {
+		//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
+		//}
 
 		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
 		SwapChain* swap = m_graphicsManager->GetMainSwapChain();
 
 
 
-		renderer->Begin();
-		renderer->SetRenderTarget(0, swap->GetBackBuffer());
-		renderer->SetDepthBuffer(swap->GetBackBufferDepth());
-		renderer->Clear(ClearFlags::All, ColorF::White);
+		//renderer->Begin();
+		//renderer->SetRenderTarget(0, swap->GetBackBuffer());
+		//renderer->SetDepthBuffer(swap->GetBackBufferDepth());
+		//renderer->Clear(ClearFlags::All, ColorF::White);
+
 
 		//m_graphicsManager->GetRenderer()->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
 
@@ -541,16 +613,14 @@ void EngineManager::Render()
 		if (m_sceneGraphManager != nullptr) {
 			m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
 		}
-		if (m_guiManager != NULL) {
-			m_guiManager->RenderOnMainWindow();
+		if (m_uiManager != NULL) {
+			m_uiManager->GetDefaultUIContext()->Render();
 		}
 
 		if (m_profilerRenderer != NULL) {
 			//m_profilerRenderer->Render(Vector2(640, 480));	//TODO
 		}
 
-		renderer->End();
-		swap->Present();
 	}
 }
 
@@ -567,6 +637,12 @@ void EngineManager::ResetFrameDelay()
 //-----------------------------------------------------------------------------
 bool EngineManager::OnEvent(const Platform::EventArgs& e)
 {
+	UILayoutView* uiView = nullptr;
+	if (m_uiManager != NULL) {
+		uiView = m_uiManager->GetDefaultUIContext()->GetMainWindowView();
+	}
+
+
 	switch (e.Type)
 	{
 	case Platform::EventType_Quit:	///< アプリ終了要求
@@ -574,50 +650,50 @@ bool EngineManager::OnEvent(const Platform::EventArgs& e)
 		break;
 
 	case Platform::EventType_MouseDown:		// ウスボタンが押された
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr) {
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case Platform::EventType_MouseUp:			// マウスボタンが離された
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr) {
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case Platform::EventType_MouseMove:		// マウスが移動した
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr) {
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case Platform::EventType_MouseWheel:		// マウスホイールが操作された
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectMouseWheel(e.Mouse.WheelDelta, e.Mouse.X, e.Mouse.Y)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectMouseWheel(e.Mouse.WheelDelta, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr) {
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.WheelDelta)) { return true; }
 		}
 		break;
 	case Platform::EventType_KeyDown:	// キー押下
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
 		}
 		break;
 	case Platform::EventType_KeyUp:		//  キー押し上げ
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
 		}
 		break;
 	case Platform::EventType_KeyChar:		//  文字入力
-		if (m_guiManager != NULL) {
-			if (m_guiManager->InjectTextInput(e.Key.Char)) { return true; }
+		if (uiView != nullptr) {
+			if (uiView->InjectTextInput(e.Key.Char)) { return true; }
 		}
 		break;
 	default:

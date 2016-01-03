@@ -1,4 +1,8 @@
 /*
+	[2015/1/3] 面張りについて
+		とりあえずねじれパスは想定しない。これは軽量な組み込みモードとする。
+		本当にちゃんとしたのが使いたい要望あれば、ExpandFill だけを poly2tri で置き換えるモードを作る。
+
 	[2015/12/3]
 		Arc
 		Polygon
@@ -94,7 +98,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
-
+#include "RendererImpl.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -206,53 +210,53 @@ void PrimitiveCache::Clear()
 	m_indexCache.Clear();
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void PrimitiveCache::DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
+//{
+//	DrawingBasicVertex v;
+//	v.Position = from;
+//	v.Color = fromColor;
+//	m_vertexCache.Add(v);
+//	v.Position = to;
+//	v.Color = toColor;
+//	m_vertexCache.Add(v);
 //
-//-----------------------------------------------------------------------------
-void PrimitiveCache::DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
-{
-	DrawingBasicVertex v;
-	v.Position = from;
-	v.Color = fromColor;
-	m_vertexCache.Add(v);
-	v.Position = to;
-	v.Color = toColor;
-	m_vertexCache.Add(v);
-
-	uint16_t i = m_vertexCache.GetCount();
-	m_indexCache.Add(i + 0);
-	m_indexCache.Add(i + 1);
-}
-
-//-----------------------------------------------------------------------------
+//	uint16_t i = m_vertexCache.GetCount();
+//	m_indexCache.Add(i + 0);
+//	m_indexCache.Add(i + 1);
+//}
 //
-//-----------------------------------------------------------------------------
-void PrimitiveCache::DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color)
-{
-	float lu = srcUVRect.GetLeft();
-	float tv = srcUVRect.GetTop();
-	float uvWidth = srcUVRect.Width;
-	float uvHeight = srcUVRect.Height;
-
-	DrawingBasicVertex v;
-	v.Color = color;
-	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 1);	// 左上
-	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 1);	// 右上
-	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 2);	// 左下
-	m_vertexCache.Add(v);
-	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 2);	// 右下
-	m_vertexCache.Add(v);
-
-	uint16_t i = m_vertexCache.GetCount();
-	m_indexCache.Add(i + 0);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 2);
-	m_indexCache.Add(i + 1);
-	m_indexCache.Add(i + 3);
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void PrimitiveCache::DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color)
+//{
+//	float lu = srcUVRect.GetLeft();
+//	float tv = srcUVRect.GetTop();
+//	float uvWidth = srcUVRect.Width;
+//	float uvHeight = srcUVRect.Height;
+//
+//	DrawingBasicVertex v;
+//	v.Color = color;
+//	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 1);	// 左上
+//	m_vertexCache.Add(v);
+//	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 1);	// 右上
+//	m_vertexCache.Add(v);
+//	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 2);	// 左下
+//	m_vertexCache.Add(v);
+//	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 2);	// 右下
+//	m_vertexCache.Add(v);
+//
+//	uint16_t i = m_vertexCache.GetCount();
+//	m_indexCache.Add(i + 0);
+//	m_indexCache.Add(i + 1);
+//	m_indexCache.Add(i + 2);
+//	m_indexCache.Add(i + 2);
+//	m_indexCache.Add(i + 1);
+//	m_indexCache.Add(i + 3);
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -405,10 +409,12 @@ public:
 		BrushData	Brush;
 		PenData		pen;
 		float		Opacity;
-		//ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
+		ColorF		ForeColor;		///< 乗算する色。SolidColorBrush の時はその色になる。それと Opacity の乗算結果。
 		ToneF		Tone;
 
 		DrawingState()
+			: ForeColor(ColorF::White)
+			, Opacity(1.0f)
 		{
 			pen.brush.Type = BrushType_Unknown;
 		}
@@ -449,6 +455,21 @@ public:
 			}
 			else if (Brush.Type == BrushType_FrameTexture) {
 				LN_SAFE_RELEASE(Brush.FrameTextureBrush.Texture);
+			}
+		}
+
+		void UpdateCurrentForeColor()
+		{
+			if (Brush.Type == BrushType_SolidColor)
+			{
+				ForeColor.R = Brush.SolidColorBrush.Color[0];
+				ForeColor.G = Brush.SolidColorBrush.Color[1];
+				ForeColor.B = Brush.SolidColorBrush.Color[2];
+				ForeColor.A = Opacity * Brush.SolidColorBrush.Color[3];
+			}
+			else
+			{
+				ForeColor.Set(1, 1, 1, Opacity);
 			}
 		}
 	};
@@ -522,11 +543,11 @@ public:
 
 private:
 
-	enum class PathPointAttr
-	{
-		MoveTo,
-		LineTo,
-	};
+	//enum class PathPointAttr
+	//{
+	//	MoveTo,
+	//	LineTo,
+	//};
 
 	enum class PathType
 	{
@@ -535,17 +556,18 @@ private:
 		Path,	// ExpandFill などを実行して面張りを行う
 	};
 
-	struct PathPoint
-	{
-		PathPointAttr	attr;
-		Vector3			point;
-		ColorF			color;
-	};
+	//struct PathPoint
+	//{
+	//	PathPointAttr	attr;
+	//	Vector3			point;
+	//	ColorF			color;
+	//};
 
-	struct StrokePoint
+	struct BasePoint
 	{
 		Vector3			point;
 		ColorF			color;
+		BasePoint(const Vector3& p, const ColorF& c) : point(p), color(c) {}
 	};
 
 	struct Path
@@ -558,11 +580,14 @@ private:
 
 	void AddPath(PathType type);
 	Path* GetCurrentPath();
-	void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
+	void AddBasePoint(const Vector3& point, const ColorF& color);
+	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
 	void ClosePath();
 
-	void PutMoveTo(const Vector3& pt, const ColorF& color);
-	void PutLineTo(const Vector3& pt, const ColorF& color);
+	void ExpandFill();
+
+	//void PutMoveTo(const Vector3& pt, const ColorF& color);
+	//void PutLineTo(const Vector3& pt, const ColorF& color);
 
 	void ExpandStroke();
 	void AddVertex(const Vector3& point, const ColorF& color);
@@ -575,10 +600,10 @@ private:
 	Matrix					m_proj;
 	DrawingState			m_currentState;
 
-	CacheBuffer<PathPoint>	m_pathPoints;
+	//CacheBuffer<PathPoint>	m_pathPoints;
 	CacheBuffer<Path>		m_pathes;
 
-	CacheBuffer<StrokePoint>		m_strokePoints;
+	CacheBuffer<BasePoint>	m_basePoints;
 
 	CacheBuffer<DrawingBasicVertex>	m_vertexCache;	// 頂点バッファ本体をリサイズすることになると余計に時間がかかるので、まずはここに作ってからコピーする
 	CacheBuffer<uint16_t>			m_indexCache;
@@ -605,9 +630,9 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
 {
-	m_pathPoints.Reserve(1024);
+	//m_pathPoints.Reserve(1024);
 	m_pathes.Reserve(1024);
-	m_strokePoints.Reserve(1024);
+	m_basePoints.Reserve(1024);
 	m_vertexCache.Reserve(1024);
 	m_indexCache.Reserve(1024);
 
@@ -664,6 +689,7 @@ void DrawingContextImpl::SetViewProjection(const Matrix& view, const Matrix& pro
 void DrawingContextImpl::SetState(const DrawingState& state)
 {
 	m_currentState.Copy(state);
+	m_currentState.UpdateCurrentForeColor();
 }
 
 //-----------------------------------------------------------------------------
@@ -685,33 +711,10 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 			{
 				const DrawingCommands_DrawLine* cmd = (const DrawingCommands_DrawLine*)pos;
 
-				// パスを作る (Stroke を作るために使う)
 				AddPath(PathType::Line);
-
-				StrokePoint pt;
-				pt.point = cmd->from; pt.color = cmd->fromColor;
-				m_strokePoints.Add(pt);
-				pt.point = cmd->to; pt.color = cmd->toColor;
-				m_strokePoints.Add(pt);
-
-				GetCurrentPath()->pointCount = 2;
+				AddBasePoint(cmd->from, cmd->fromColor);
+				AddBasePoint(cmd->to, cmd->toColor);
 				ClosePath();
-
-				//PutMoveTo(cmd->from, cmd->fromColor);
-				//PutLineTo(cmd->to, cmd->toColor);
-				//ClosePath();
-
-				//// 頂点バッファ
-				//DrawingBasicVertex v;
-				//v.Position = cmd->from; v.Color = cmd->fromColor;
-				//m_vertexCache.Add(v);
-				//v.Position = cmd->to; v.Color = cmd->toColor;
-				//m_vertexCache.Add(v);
-				//
-				//// インデックスバッファ
-				//uint16_t i = m_vertexCache.GetCount();
-				//m_indexCache.Add(i + 0);
-				//m_indexCache.Add(i + 1);
 
 				pos += sizeof(DrawingCommands_DrawLine);
 				break;
@@ -719,18 +722,13 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 			case DrawingCommandType::DrawRectangle:
 			{
 				const DrawingCommands_DrawRectangle* cmd = (const DrawingCommands_DrawRectangle*)pos;
+				const RectF& rect = cmd->rect;
 
 				AddPath(PathType::Rectangle);
-
-				const RectF& rect = cmd->rect;
-				StrokePoint pt;
-				pt.color = cmd->color;
-				pt.point.Set(rect.GetLeft(), rect.GetTop(), 0); m_strokePoints.Add(pt);
-				pt.point.Set(rect.GetRight(), rect.GetTop(), 0); m_strokePoints.Add(pt);
-				pt.point.Set(rect.GetLeft(), rect.GetBottom(), 0); m_strokePoints.Add(pt);
-				pt.point.Set(rect.GetRight(), rect.GetBottom(), 0); m_strokePoints.Add(pt);
-
-				GetCurrentPath()->pointCount = 4;
+				AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
+				AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
+				AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
+				AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
 				ClosePath();
 
 				pos += sizeof(DrawingCommands_DrawRectangle);
@@ -755,7 +753,21 @@ void DrawingContextImpl::Flush()
 	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
 
-	
+	if (1)
+	{
+		ExpandFill();
+
+		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+
+		renderer->SetVertexBuffer(m_vertexBuffer);
+		renderer->SetIndexBuffer(m_indexBuffer);
+		m_shader3D.varTexture->SetTexture(m_manager->GetDummyTexture());
+		m_shader3D.passP0->Apply();
+		renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+	}
+
+#if 0
 	if (m_currentState.pen.brush.Type != BrushType_Unknown && m_currentState.pen.thickness == 0.0f)
 	{
 		ExpandStroke();
@@ -770,10 +782,11 @@ void DrawingContextImpl::Flush()
 		m_shader3D.passP0->Apply();
 		renderer->DrawPrimitiveIndexed(PrimitiveType_LineList, 0, m_indexCache.GetCount() / 2);
 
-		m_pathes.Clear();
-		m_pathPoints.Clear();
-		m_strokePoints.Clear();
 	}
+#endif
+	m_pathes.Clear();
+	//m_pathPoints.Clear();
+	m_basePoints.Clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -783,7 +796,7 @@ void DrawingContextImpl::AddPath(PathType type)
 {
 	Path path;
 	path.type = type;
-	path.firstIndex = m_pathPoints.GetCount();
+	path.firstIndex = m_basePoints.GetCount();//m_pathPoints.GetCount();
 	path.pointCount = 0;
 	path.closed = false;
 	m_pathes.Add(path);
@@ -792,13 +805,27 @@ void DrawingContextImpl::AddPath(PathType type)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContextImpl::AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color)
+//void DrawingContextImpl::AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color)
+//{
+//	PathPoint pt;
+//	pt.attr = attr;
+//	pt.point = point;
+//	pt.color = color;
+//	m_pathPoints.Add(pt);
+//	GetCurrentPath()->pointCount++;
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 {
-	PathPoint pt;
-	pt.attr = attr;
-	pt.point = point;
-	pt.color = color;
-	m_pathPoints.Add(pt);
+	BasePoint pt(point, color);
+	pt.color.R *= m_currentState.ForeColor.R;
+	pt.color.G *= m_currentState.ForeColor.G;
+	pt.color.B *= m_currentState.ForeColor.B;
+	pt.color.A *= m_currentState.ForeColor.A;
+	m_basePoints.Add(pt);
 	GetCurrentPath()->pointCount++;
 }
 
@@ -834,6 +861,55 @@ DrawingContextImpl::Path* DrawingContextImpl::GetCurrentPath()
 //	AddPathPoint(PathPointAttr::LineTo, pt, color);
 //}
 
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::ExpandFill()
+{
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
+
+	for (int iPath = 0; iPath < m_pathes.GetCount(); ++iPath)
+	{
+		const Path& path = m_pathes.GetAt(iPath);
+
+		int count = path.pointCount;
+		if (count < 3) continue;
+
+		// 頂点バッファはそのまま位置と頂点色をコピーでOK
+		for (int i = 0; i < count; ++i)
+		{
+			const BasePoint& pt = m_basePoints.GetAt(i);
+			DrawingBasicVertex v;
+			v.Position = pt.point;
+			v.Color = pt.color;
+			m_vertexCache.Add(v);
+		}
+
+		// インデックスバッファを作る (時計回り)
+		int ib = path.firstIndex;
+		int i0 = 0;
+		int i1 = 1;
+		int i2 = count - 1;
+		for (int iPt = 0; iPt < count - 2; ++iPt)
+		{
+			m_indexCache.Add(ib + i0);
+			m_indexCache.Add(ib + i1);
+			m_indexCache.Add(ib + i2);
+
+			if (iPt & 1) {	// 奇数回
+				i0 = i2;
+				--i2;
+			}
+			else {	// 偶数回
+				i0 = i1;
+				++i1;
+			}
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -851,7 +927,7 @@ void DrawingContextImpl::ExpandStroke()
 		case PathType::Line:
 			for (int iPt = path.firstIndex; iPt < path.firstIndex+path.pointCount; ++iPt)
 			{
-				const StrokePoint& pt = m_strokePoints.GetAt(iPt);
+				const BasePoint& pt = m_basePoints.GetAt(iPt);
 
 				DrawingBasicVertex v;
 				v.Position = pt.point;
@@ -864,7 +940,7 @@ void DrawingContextImpl::ExpandStroke()
 			break;
 		case PathType::Rectangle:
 		{
-			const StrokePoint* pts = &m_strokePoints.GetAt(path.firstIndex);
+			const BasePoint* pts = &m_basePoints.GetAt(path.firstIndex);
 
 			DrawingBasicVertex v;
 			v.Position = pts[0].point; v.Color = pts[0].color; m_vertexCache.Add(v);
@@ -1125,6 +1201,14 @@ void DrawingContext::CheckFlush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+GraphicsContext* GraphicsContext::GetContext()
+{
+	return GraphicsManager::Instance->GetGraphicsContext();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	: m_currentRenderer(RendererType::None)
 	, m_spriteRenderer(nullptr)
@@ -1142,6 +1226,43 @@ GraphicsContext::~GraphicsContext()
 {
 	LN_SAFE_RELEASE(GeometryRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
+{
+	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
+	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, minZ, maxZ);
+	m_drawingContext.SetViewProjection(Matrix::Identity, proj);
+	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::SetBrush(Brush* brush)
+{
+	m_drawingContext.SetBrush(brush);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.DrawRectangle(rect, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::Flush()
+{
+	m_drawingContext.Flush();
+	m_spriteRenderer->Flush();
 }
 
 //-----------------------------------------------------------------------------
@@ -1173,11 +1294,14 @@ SpriteRenderer* GraphicsContext::BeginSpriteRendering()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GraphicsContext::Flush()
+void GraphicsContext::TryChangeRenderingClass(RendererType dc)
 {
-	m_drawingContext.Flush();
-	m_spriteRenderer->Flush();
-}
+	if (dc != m_currentRenderer)
+	{
+		Flush();
+		m_currentRenderer = dc;
+	}
 
+}
 
 LN_NAMESPACE_END

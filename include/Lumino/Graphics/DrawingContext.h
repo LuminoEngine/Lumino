@@ -46,7 +46,7 @@ struct DrawingState
 	RefPtr<Brush>	brush;
 	RefPtr<Pen>		pen;
 	RefPtr<Font>	font;
-	float			opacity;
+	float			opacity = 1.0f;
 	ToneF			tone;
 };
 
@@ -114,18 +114,31 @@ public:	// TODO
 	//Camera*						CurrentCamera;
 	//MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
+	
+	/**
+		@brief	
+	*/
+	static GraphicsContext* GetContext();
+
 public:
+
+	void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
+
+	void SetBrush(Brush* brush);
+	void DrawRectangle(const RectF& rect, const ColorF& color);
+
+	void Flush();
+
+
+
+
+
 
 	DrawingContext* BeginDrawingContext();
 	SpriteRenderer* BeginSpriteRendering();
 
-	void Flush();
 
 protected:
-	friend class GraphicsManager;
-	GraphicsContext(GraphicsManager* manager);
-	virtual ~GraphicsContext();
-
 	enum class RendererType
 	{
 		None,
@@ -133,9 +146,17 @@ protected:
 		SpriteRenderer,
 	};
 
+	friend class GraphicsManager;
+	GraphicsContext(GraphicsManager* manager);
+	virtual ~GraphicsContext();
+
+
 	RendererType	m_currentRenderer;
 	DrawingContext	m_drawingContext;
 	SpriteRenderer*	m_spriteRenderer;
+
+private:
+	void TryChangeRenderingClass(RendererType dc);
 };
 
 LN_NAMESPACE_END

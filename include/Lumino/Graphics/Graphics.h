@@ -10,6 +10,13 @@ class Graphics
 {
 public:
 
+	static void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
+
+	static void SetBrush(Brush* brush);
+	static void DrawRectangle(const RectF& rect, const ColorF& color);
+
+	static void Flush();
+
 	/**
 		@brief		レンダリングを開始します。
 		@details	Application::UpdateFrame() を使用する場合、この関数を呼び出す必要はありません。
