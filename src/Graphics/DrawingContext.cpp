@@ -1250,6 +1250,14 @@ void GraphicsContext::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GraphicsContext::SetOpacity(float opacity)
+{
+	m_drawingContext.SetOpacity(opacity);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	TryChangeRenderingClass(RendererType::DrawingContext);

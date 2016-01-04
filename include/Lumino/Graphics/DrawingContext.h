@@ -125,6 +125,7 @@ public:
 	void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 
 	void SetBrush(Brush* brush);
+	void SetOpacity(float opacity);	// 0~1
 	void DrawRectangle(const RectF& rect, const ColorF& color);
 
 	void Flush();

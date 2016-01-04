@@ -13,6 +13,7 @@ public:
 	static void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 
 	static void SetBrush(Brush* brush);
+	static void SetOpacity(float opacity);	// 0~1
 	static void DrawRectangle(const RectF& rect, const ColorF& color);
 
 	static void Flush();

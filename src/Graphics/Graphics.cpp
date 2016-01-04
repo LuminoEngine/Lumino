@@ -27,6 +27,10 @@ void Graphics::SetBrush(Brush* brush)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->SetBrush(brush);
 }
+void Graphics::SetOpacity(float opacity)
+{
+	GraphicsManager::Instance->GetGraphicsContext()->SetOpacity(opacity);
+}
 void Graphics::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->DrawRectangle(rect, color);

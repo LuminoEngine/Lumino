@@ -153,6 +153,8 @@ int main()
 				Graphics::Set2DRenderingMode();
 				Graphics::SetBrush(ColorBrush::Blue);
 				Graphics::DrawRectangle(RectF(10, 10, 10, 20), ColorF::White);
+				Graphics::SetOpacity(0.5f);
+				Graphics::DrawRectangle(RectF(30, 10, 10, 20), ColorF::White);
 				Graphics::Flush();
 
 				Engine::EndRendering();
