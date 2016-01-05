@@ -97,16 +97,16 @@ int main()
 		RefPtr<Physics::RigidBody> rigidBody2(Physics::RigidBody::Create(collider2), false);
 
 		//RefPtr<Physics::RigidBody> b1(LN_NEW Physics::Capsule(Physics::PhysicsManager::Instance, 2, 4, 1.0f));
-		//RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2), false);
-		//RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1), false);
-		//rigidBody1->SetPosition(0, 10, 0);
-		//rigidBody1->SetMass(1.0f);
+		RefPtr<Physics::Collider> collider1(Physics::SphereCollider::Create(2), false);
+		RefPtr<Physics::RigidBody> rigidBody1(Physics::RigidBody::Create(collider1), false);
+		rigidBody1->SetPosition(0, 10, 0);
+		rigidBody1->SetMass(1.0f);
 
-		//RefPtr<Physics::Collider> collider3(Physics::CapsuleCollider::Create(0.5, 2), false);
-		//RefPtr<Physics::RigidBody> rigidBody3(Physics::RigidBody::Create(collider3), false);
-		//rigidBody3->SetPosition(0.1, 10, 0.5);
-		//rigidBody3->SetMass(1.0f);
-		//rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
+		RefPtr<Physics::Collider> collider3(Physics::CapsuleCollider::Create(0.5, 2), false);
+		RefPtr<Physics::RigidBody> rigidBody3(Physics::RigidBody::Create(collider3), false);
+		rigidBody3->SetPosition(0.1, 10, 0.5);
+		rigidBody3->SetMass(1.0f);
+		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
 
 		auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
 		//auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
@@ -127,6 +127,8 @@ int main()
 		s3->SetPosition(Vector3(5, 1, 0));
 #endif
 
+		auto texBrush1 = TextureBrush::Create(LN_LOCALFILE("../Media/Fire1.png"));
+
 		do
 		{
 			if (Input::IsPress(InputButtons::Left))
@@ -146,14 +148,17 @@ int main()
 			Vector3 vec1(-1, 1, 1);		// éãêçë‰ÇÃç∂è„âú
 			vec1.TransformCoord(inv);	// ÉJÉÅÉâ(0, 0, 0) Ç©ÇÁéãêçë‰ÇÃç∂è„âúÇÇ¬Ç»ÇÆÉåÉC
 
+
 			if (Engine::BeginRendering())
 			{
 				Engine::Render();
 
 				Graphics::Set2DRenderingMode();
+				Graphics::SetOpacity(1.0f);
 				Graphics::SetBrush(ColorBrush::Blue);
 				Graphics::DrawRectangle(RectF(10, 10, 10, 20), ColorF::White);
 				Graphics::SetOpacity(0.5f);
+				Graphics::SetBrush(texBrush1);
 				Graphics::DrawRectangle(RectF(30, 10, 10, 20), ColorF::White);
 				Graphics::Flush();
 

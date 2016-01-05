@@ -232,6 +232,8 @@ public:
 	friend ToneF operator / (const ToneF& v1, const ToneF& v2);
 	friend ToneF operator / (const ToneF& v1, float v2);
 	friend ToneF operator / (float v1, const ToneF& v2);
+
+	bool operator != (const ToneF& tone) { return R != tone.R || G != tone.G || B != tone.B || GS != tone.GS; }
 };
 
 

@@ -699,8 +699,8 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 {
 	const byte_t* pos = (const byte_t*)commandBuffer;
 	const byte_t* end = pos + size;
-	detail::DrawingClass c = *((const detail::DrawingClass*)pos);
-	pos += sizeof(detail::DrawingClass);
+	//detail::DrawingClass c = *((const detail::DrawingClass*)pos);
+	//pos += sizeof(detail::DrawingClass);
 
 	while (pos < end)
 	{
@@ -880,7 +880,7 @@ void DrawingContextImpl::ExpandFill()
 		// 頂点バッファはそのまま位置と頂点色をコピーでOK
 		for (int i = 0; i < count; ++i)
 		{
-			const BasePoint& pt = m_basePoints.GetAt(i);
+			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex+i);
 			DrawingBasicVertex v;
 			v.Position = pt.point;
 			v.Color = pt.color;
@@ -994,6 +994,7 @@ DrawingContext::DrawingContext()
 	, m_commandsUsingByte(0)
 	, m_internal(nullptr)
 	, m_currentDrawingClass(detail::DrawingClass::Unknown)
+	, m_flushRequested(false)
 {
 }
 
@@ -1028,8 +1029,11 @@ void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetTransform(const Matrix& matrix)
 {
-	m_currentState.transform = matrix;
-	m_stateModified = true;
+	if (m_currentState.transform != matrix)
+	{
+		FlushInternal();
+		m_currentState.transform = matrix;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1037,8 +1041,11 @@ void DrawingContext::SetTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetBrush(Brush* brush)
 {
-	m_currentState.brush = brush;
-	m_stateModified = true;
+	if (m_currentState.brush != brush)
+	{
+		FlushInternal();
+		m_currentState.brush = brush;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1046,8 +1053,11 @@ void DrawingContext::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetPen(Pen* pen)
 {
-	m_currentState.pen = pen;
-	m_stateModified = true;
+	if (m_currentState.pen != pen)
+	{
+		FlushInternal();
+		m_currentState.pen = pen;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1055,8 +1065,11 @@ void DrawingContext::SetPen(Pen* pen)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetOpacity(float opacity)
 {
-	m_currentState.opacity = opacity;
-	m_stateModified = true;
+	if (m_currentState.opacity != opacity)
+	{
+		FlushInternal();
+		m_currentState.opacity = opacity;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1064,8 +1077,11 @@ void DrawingContext::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetTone(const ToneF& tone)
 {
-	m_currentState.tone = tone;
-	m_stateModified = true;
+	if (m_currentState.tone != tone)
+	{
+		FlushInternal();
+		m_currentState.tone = tone;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1073,8 +1089,11 @@ void DrawingContext::SetTone(const ToneF& tone)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetFont(Font* font)
 {
-	m_currentState.font = font;
-	m_stateModified = true;
+	if (m_currentState.font != font)
+	{
+		FlushInternal();
+		m_currentState.font = font;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1083,7 +1102,7 @@ void DrawingContext::SetFont(Font* font)
 void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
 	SetDrawingClassInternal(detail::DrawingClass::LineList);
-	CheckFlush();
+	//CheckFlush();
 
 	DrawingCommands_DrawLine cmd;
 	cmd.type = DrawingCommandType::DrawLine;
@@ -1092,6 +1111,7 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 	cmd.fromColor = fromColor;
 	cmd.toColor = toColor;
 	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1108,13 +1128,14 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
-	CheckFlush();
+	//CheckFlush();
 
 	DrawingCommands_DrawRectangle cmd;
 	cmd.type = DrawingCommandType::DrawRectangle;
 	cmd.rect = rect;
 	cmd.color = color;
 	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1153,15 +1174,19 @@ void DrawingContext::AddCommand(const void* command, size_t size)
 //-----------------------------------------------------------------------------
 void DrawingContext::FlushInternal()
 {
-	DrawingContextImpl::DrawingState state;
-	state.Create(m_currentState);
-	LN_CALL_COMMAND(SetState, DrawingContextImpl::SetStateCommand, state);
+	if (m_flushRequested)
+	{
+		DrawingContextImpl::DrawingState state;
+		state.Create(m_currentState);
+		LN_CALL_COMMAND(SetState, DrawingContextImpl::SetStateCommand, state);
 
-	LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte);
-	m_commandsUsingByte = 0;
+		LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte);
+		m_commandsUsingByte = 0;
 
-	LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
+		LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
 
+		m_flushRequested = false;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1169,25 +1194,24 @@ void DrawingContext::FlushInternal()
 //-----------------------------------------------------------------------------
 void DrawingContext::SetDrawingClassInternal(detail::DrawingClass dc)
 {
-	if (m_currentDrawingClass != dc) {
-		m_currentDrawingClass = dc;
-		m_stateModified = true;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void DrawingContext::CheckFlush()
-{
-	if (m_stateModified) {
+	if (m_currentDrawingClass != dc)
+	{
 		FlushInternal();
-		m_stateModified = false;
+		m_currentDrawingClass = dc;
+		// コマンドバッファの先頭に区分を入れておく
+		//AddCommand(&m_currentDrawingClass, sizeof(uint32_t));
 	}
-
-	// コマンドバッファの先頭に区分を入れておく
-	AddCommand(&m_currentDrawingClass, sizeof(uint32_t));
 }
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void DrawingContext::CheckFlush()
+//{
+//		FlushInternal();
+//	}
+//
+//}
 
 
 

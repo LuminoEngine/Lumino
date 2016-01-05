@@ -92,7 +92,7 @@ private:
 	void AddCommand(const void* command, size_t size);
 	void FlushInternal();
 	void SetDrawingClassInternal(detail::DrawingClass dc);
-	void CheckFlush();
+	//void CheckFlush();
 
 	GraphicsManager*		m_manager;
 	DrawingContextImpl*		m_internal;
@@ -100,7 +100,8 @@ private:
 	size_t					m_commandsUsingByte;
 	detail::DrawingClass	m_currentDrawingClass;
 	detail::DrawingState	m_currentState;
-	bool					m_stateModified;
+	bool					m_flushRequested;
+	//bool					m_stateModified;
 };
 
 

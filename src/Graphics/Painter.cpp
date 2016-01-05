@@ -88,6 +88,16 @@ ColorBrush::~ColorBrush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+RefPtr<TextureBrush> TextureBrush::Create(const StringRef& filePath)
+{
+	RefPtr<TextureBrush> obj(LN_NEW TextureBrush());
+	obj->Create(filePath.GetBegin(), nullptr);	// TODO: getBegin
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 TextureBrush::TextureBrush()
 	: m_srcRect(0, 0, INT_MAX, INT_MAX)
 	, m_wrapMode(BrushWrapMode_Stretch)

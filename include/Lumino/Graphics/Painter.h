@@ -64,6 +64,10 @@ class TextureBrush
 	: public Brush
 {
 public:
+
+	static RefPtr<TextureBrush> Create(const StringRef& filePath);
+
+public:
 	TextureBrush();
 	virtual ~TextureBrush();
 
