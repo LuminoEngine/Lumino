@@ -101,36 +101,6 @@ void DX9SwapChain::Present(ITexture* colorBuffer)
 	r->SetRenderTarget(0, m_backBuffer);
 	r->SetDepthBuffer(NULL);
 
-	// バックエンドにコピー
-
-		//GeometryRenderer* gr = this->mGraphicsDevice->getManager()->getGeometryRenderer();
-		//const LVector2& size = this->mBackendBuffer->getSize();
-		//const LVector2& backbufferSize = this->mBackbuffer->getSize();
-
-		//// 0.5 オフセット
-		//LVector2 viewOffset(0.5 / size.X, 0.5 / size.Y);
-
-		//// 単純コピー用のステートにする
-		//r->setRenderState(LRenderState::BUFFER_COPY_STATE, true);
-
-		//// コピー
-		//r->beginScene();
-		//gr->setMatrix(mBackbufferOffset);
-		//gr->setViewSize(size);
-		//gr->setTexture(this->mBackbuffer);
-		//gr->begin(GeometryRenderer::PASS_BASIC);
-		//gr->drawSquare(
-		//	0.0f, 0.0f, 0xffffffff, 0.0f + viewOffset.X, 0.0f + viewOffset.Y,
-		//	backbufferSize.X, 0.0f, 0xffffffff, 1.0f + viewOffset.X, 0.0f + viewOffset.Y,
-		//	0.0f, backbufferSize.Y, 0xffffffff, 0.0f + viewOffset.X, 1.0f + viewOffset.Y,
-		//	backbufferSize.X, backbufferSize.Y, 0xffffffff, 1.0f + viewOffset.X, 1.0f + viewOffset.Y);
-		//gr->end();
-		//r->endScene();
-	//}
-
-	// シーン終了通知
-//	r->TryEndScene();
-
 	// 転送
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
 	HRESULT hr = dxDevice->Present(NULL, NULL, m_targetHWnd, NULL);

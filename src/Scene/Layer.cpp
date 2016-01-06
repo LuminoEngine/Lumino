@@ -74,19 +74,6 @@ void DrawingLayer::PreRender(const SizeF& viewSize)
 //-----------------------------------------------------------------------------
 void DrawingLayer::Render()
 {
-	////RenderingParams params;
-	//params.Renderer = m_manager->GetGraphicsManager()->GetRenderer();
-	//params.GeometryRenderer = m_manager->GetGeometryRenderer();
-	//params.CurrentCamera = m_camera;
-	//LN_FOREACH(RenderingPass* pass, *m_renderingPassList)
-	//{
-	//	params.Pass = pass;	// TODO: いらないかも
-	//	LN_FOREACH(SceneNode* node, m_renderingNodeList)
-	//	{
-	//		pass->RenderNode(params, node);
-	//	}
-	//	pass->PostRender(params);
-	//}
 }
 
 LN_NAMESPACE_SCENE_END

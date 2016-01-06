@@ -376,6 +376,17 @@ public:
 				LN_SAFE_ADDREF(FrameTextureBrush.Texture);
 			}
 		}
+
+		Driver::ITexture* SelectTexutre(Driver::ITexture* defaultTexture)
+		{
+			if (Type == BrushType_Texture) {
+				return TextureBrush.Texture;
+			}
+			else if (Type == BrushType_FrameTexture) {
+				return FrameTextureBrush.Texture;
+			}
+			return defaultTexture;
+		}
 	};
 
 	struct PenData
@@ -762,7 +773,7 @@ void DrawingContextImpl::Flush()
 
 		renderer->SetVertexBuffer(m_vertexBuffer);
 		renderer->SetIndexBuffer(m_indexBuffer);
-		m_shader3D.varTexture->SetTexture(m_manager->GetDummyTexture());
+		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.passP0->Apply();
 		renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 	}
@@ -877,13 +888,30 @@ void DrawingContextImpl::ExpandFill()
 		int count = path.pointCount;
 		if (count < 3) continue;
 
-		// 頂点バッファはそのまま位置と頂点色をコピーでOK
+		// 境界の矩形を求めておく
+		Vector2 posMin(FLT_MAX, FLT_MAX);
+		Vector2 posMax(FLT_MIN, FLT_MIN);
+		for (int i = 0; i < count; ++i)
+		{
+			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
+			posMin.X = std::min(posMin.X, pt.point.X);
+			posMin.Y = std::min(posMin.Y, pt.point.Y);
+			posMax.X = std::max(posMax.X, pt.point.X);
+			posMax.Y = std::max(posMax.Y, pt.point.Y);
+		}
+		Vector2 uvSpan = posMax - posMin;
+		if (uvSpan.X == 0.0f || uvSpan.Y == 0.0) continue;	// 潰れたパス。描く必要はない
+		uvSpan = 1.0f / uvSpan;
+
+		// 頂点バッファを作る
 		for (int i = 0; i < count; ++i)
 		{
 			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex+i);
 			DrawingBasicVertex v;
 			v.Position = pt.point;
 			v.Color = pt.color;
+			v.UVOffset.X = (pt.point.X - posMin.X) * uvSpan.X;
+			v.UVOffset.Y = (pt.point.Y - posMin.Y) * uvSpan.Y;
 			m_vertexCache.Add(v);
 		}
 
