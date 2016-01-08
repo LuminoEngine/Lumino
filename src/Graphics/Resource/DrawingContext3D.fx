@@ -5,6 +5,7 @@
 
 float4x4	g_worldMatrix;
 float4x4	g_viewProjMatrix;
+float2		g_pixelStep;
 
 texture		g_texture;
 sampler2D	g_texSampler = sampler_state
@@ -34,6 +35,8 @@ VS_OUTPUT vsBasic(
 	o.Pos   = mul(o.Pos, g_viewProjMatrix);
 	o.Color = inColor;
 	o.TexUV = inUV;
+	o.Pos.x -= g_pixelStep.x;
+	o.Pos.y += g_pixelStep.y;
 	return o;
 }
 

@@ -14,7 +14,12 @@ public:
 
 	static void SetBrush(Brush* brush);
 	static void SetOpacity(float opacity);	// 0~1
+
+	static void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
+
 	static void DrawRectangle(const RectF& rect, const ColorF& color);
+
+	static void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 
 	static void Flush();
 

@@ -108,7 +108,7 @@ int main()
 		rigidBody3->SetMass(1.0f);
 		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
 
-		auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
+		//auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
 		//auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
 
 #if 0
@@ -160,6 +160,11 @@ int main()
 				Graphics::SetOpacity(0.5f);
 				Graphics::SetBrush(texBrush1);
 				Graphics::DrawRectangle(RectF(30, 10, 10, 20), ColorF::White);
+
+				Graphics::SetOpacity(1.0f);
+				Graphics::DrawTriangle(Vector3(120, 120, 0), ColorF::Red, Vector3(200, 100, 0), ColorF::Green, Vector3(100, 200, 0), ColorF::Blue);
+
+				Graphics::DrawTexture(RectF(50, 10, 10, 20), texBrush1->GetTexture(), Rect(0, 0, 128, 128),  ColorF::White);
 				Graphics::Flush();
 
 				Engine::EndRendering();

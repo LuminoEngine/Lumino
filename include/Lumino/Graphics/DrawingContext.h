@@ -76,10 +76,14 @@ public:
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
 	void DrawLine(const Vector3& from, const Vector3& to, const ColorF& color);
 
+	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
+
 	/**
 		@brief		ãÈå`Çï`âÊÇµÇ‹Ç∑ÅB
 	*/
 	void DrawRectangle(const RectF& rect, const ColorF& color);
+
+	void DrawTexture(const RectF& rect, Texture* texture, const Rect& secRect, const ColorF& color);
 
 	void Flush();
 
@@ -102,6 +106,8 @@ private:
 	detail::DrawingState	m_currentState;
 	bool					m_flushRequested;
 	//bool					m_stateModified;
+
+	TextureBrush*			m_internalTextureBrush;
 };
 
 
@@ -127,7 +133,9 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
+	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 	void DrawRectangle(const RectF& rect, const ColorF& color);
+	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 
 	void Flush();
 

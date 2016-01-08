@@ -122,8 +122,8 @@ public:
 
 	Vector3	Position;			///< 位置
 	Vector4	Color;				///< 頂点カラー
-	Vector4	UVOffset;		///< テクスチャUV (転送元のUV情報)
-	Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
+	Vector2	UVOffset;		///< テクスチャUV (転送元のUV情報)
+	Vector4	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
 
 							/// 頂点レイアウト
 	static VertexElement* Elements()
@@ -132,8 +132,8 @@ public:
 		{
 			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
 			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
-			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
+			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 1 },
 		};
 		return elements;
 	}
@@ -146,6 +146,7 @@ public:
 enum class DrawingCommandType : uint32_t
 {
 	DrawLine = 0,
+	DrawTriangle,
 	DrawRectangle,
 };
 struct DrawingCommands_DrawLine
@@ -155,6 +156,16 @@ struct DrawingCommands_DrawLine
 	Vector3				to;
 	ColorF				fromColor;
 	ColorF				toColor;
+};
+struct DrawingCommands_DrawTriangle
+{
+	DrawingCommandType	type;
+	Vector3				p1;
+	Vector3				p2;
+	Vector3				p3;
+	ColorF				p1Color;
+	ColorF				p2Color;
+	ColorF				p3Color;
 };
 struct DrawingCommands_DrawRectangle
 {
@@ -560,6 +571,7 @@ private:
 	//	LineTo,
 	//};
 
+	// TODO: いらないかも
 	enum class PathType
 	{
 		Line,
@@ -625,6 +637,7 @@ private:
 		Driver::IShader*			shader;
 		Driver::IShaderVariable*    varWorldMatrix;
 		Driver::IShaderVariable*    varViewProjMatrix;
+		Driver::IShaderVariable*    varPixelStep;
 		Driver::IShaderVariable*    varTexture;
 		Driver::IShaderTechnique*   techMainDraw;
 		Driver::IShaderPass*        passP0;
@@ -670,6 +683,7 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 
 	m_shader3D.varWorldMatrix = m_shader3D.shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shader3D.varViewProjMatrix = m_shader3D.shader->GetVariableByName(_T("g_viewProjMatrix"));
+	m_shader3D.varPixelStep = m_shader3D.shader->GetVariableByName(_T("g_pixelStep"));
 	m_shader3D.varTexture = m_shader3D.shader->GetVariableByName(_T("g_texture"));
 	m_shader3D.techMainDraw = m_shader3D.shader->GetTechnique(0);
 	m_shader3D.passP0 = m_shader3D.techMainDraw->GetPass(0);
@@ -718,9 +732,10 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 		DrawingCommandType type = *((const DrawingCommandType*)pos);
 		switch (type)
 		{
+			////////////////////////////////////////////////////////////
 			case DrawingCommandType::DrawLine:
 			{
-				const DrawingCommands_DrawLine* cmd = (const DrawingCommands_DrawLine*)pos;
+				auto* cmd = (const DrawingCommands_DrawLine*)pos;
 
 				AddPath(PathType::Line);
 				AddBasePoint(cmd->from, cmd->fromColor);
@@ -730,9 +745,22 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 				pos += sizeof(DrawingCommands_DrawLine);
 				break;
 			}
+			////////////////////////////////////////////////////////////
+			case DrawingCommandType::DrawTriangle:
+			{
+				auto* cmd = (const DrawingCommands_DrawTriangle*)pos;
+				AddPath(PathType::Path);
+				AddBasePoint(cmd->p1, cmd->p1Color);
+				AddBasePoint(cmd->p2, cmd->p2Color);
+				AddBasePoint(cmd->p3, cmd->p3Color);
+				ClosePath();
+				pos += sizeof(DrawingCommands_DrawTriangle);
+				break;
+			}
+			////////////////////////////////////////////////////////////
 			case DrawingCommandType::DrawRectangle:
 			{
-				const DrawingCommands_DrawRectangle* cmd = (const DrawingCommands_DrawRectangle*)pos;
+				auto* cmd = (const DrawingCommands_DrawRectangle*)pos;
 				const RectF& rect = cmd->rect;
 
 				AddPath(PathType::Rectangle);
@@ -763,6 +791,11 @@ void DrawingContextImpl::Flush()
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
 	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
+	if (m_shader3D.varPixelStep != nullptr)
+	{
+		const Size& size = m_manager->GetRenderer()->GetRenderTarget(0)->GetSize();
+		m_shader3D.varPixelStep->SetVector(Vector4(1.0f / size.Width, 1.0f / size.Height, 0, 0));
+	}
 
 	if (1)
 	{
@@ -1023,7 +1056,9 @@ DrawingContext::DrawingContext()
 	, m_internal(nullptr)
 	, m_currentDrawingClass(detail::DrawingClass::Unknown)
 	, m_flushRequested(false)
+	, m_internalTextureBrush(nullptr)
 {
+	m_internalTextureBrush = LN_NEW TextureBrush();
 }
 
 //-----------------------------------------------------------------------------
@@ -1031,6 +1066,7 @@ DrawingContext::DrawingContext()
 //-----------------------------------------------------------------------------
 DrawingContext::~DrawingContext()
 {
+	LN_SAFE_RELEASE(m_internalTextureBrush);
 	LN_SAFE_RELEASE(m_internal);
 }
 
@@ -1093,6 +1129,7 @@ void DrawingContext::SetPen(Pen* pen)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetOpacity(float opacity)
 {
+	// TODO: opacity はFlushいらないと思う。直接頂点色に乗算しておいた方が高速？
 	if (m_currentState.opacity != opacity)
 	{
 		FlushInternal();
@@ -1153,6 +1190,21 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void DrawingContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
+{
+	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
+	DrawingCommands_DrawTriangle cmd;
+	cmd.type = DrawingCommandType::DrawTriangle;
+	cmd.p1 = p1; cmd.p1Color = p1Color;
+	cmd.p2 = p2; cmd.p2Color = p2Color;
+	cmd.p3 = p3; cmd.p3Color = p3Color;
+	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
@@ -1164,6 +1216,30 @@ void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
 	cmd.color = color;
 	AddCommand(&cmd, sizeof(cmd));
 	m_flushRequested = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
+{
+	bool flish = false;
+	if (texture != m_internalTextureBrush->GetTexture())
+	{
+		m_internalTextureBrush->SetTexture(texture);
+		flish = true;
+	}
+	else if (m_currentState.brush != m_internalTextureBrush)
+	{
+		flish = true;
+	}
+	if (flish)
+	{
+		FlushInternal();
+		m_currentState.brush = m_internalTextureBrush;
+	}
+	m_internalTextureBrush->SetSourceRect(srcRect);
+	DrawRectangle(rect, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -1310,10 +1386,28 @@ void GraphicsContext::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	TryChangeRenderingClass(RendererType::DrawingContext);
 	m_drawingContext.DrawRectangle(rect, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.DrawTexture(rect, texture, srcRect, color);
 }
 
 //-----------------------------------------------------------------------------
