@@ -75,8 +75,8 @@ int main()
 		//Camera::GetDefault3DCamera()->SetPosition(Vector3(200,0,-20));
 
 		//auto effect1 = VisualEffect::Create(_T("D:/Programing/Effekseer/Effekseer-master/Release/Sample/00_Basic/Laser01.efk"));
-		auto effect1 = VisualEffect::Create(LN_LOCALFILE("../Media/Sun1.efk"));
-		effect1->Play();
+		//auto effect1 = VisualEffect::Create(LN_LOCALFILE("../Media/Sun1.efk"));
+		//effect1->Play();
 #if 0
 		RefPtr<Texture2D> tex2(Texture2D::Create(_T("D:/tmp/tiles.png")), false);
 		RefPtr<TileMap> tilemap(LN_NEW TileMap(), false);
@@ -165,6 +165,22 @@ int main()
 				Graphics::DrawTriangle(Vector3(120, 120, 0), ColorF::Red, Vector3(200, 100, 0), ColorF::Green, Vector3(100, 200, 0), ColorF::Blue);
 
 				Graphics::DrawTexture(RectF(50, 10, 10, 20), texBrush1->GetTexture(), Rect(0, 0, 128, 128),  ColorF::White);
+				
+
+				Graphics::SetBrush(ColorBrush::Red);
+				Graphics::DrawPoint(Vector3(1, 1, 0), ColorF::White);
+
+				Vector2 st(400, 100);
+				Vector2 stv(1, 0);
+				Vector2 ed(500, 200);
+				Vector2 edv(0, 1);
+				for (int i = 0; i < 100; i++)
+				{
+					auto v2 = Vector2::Hermite(st, stv, ed, edv, ((float)i) / 100.0f);
+					Graphics::DrawPoint(Vector3(v2.X, v2.Y, 0), ColorF::White);
+				}
+
+				
 				Graphics::Flush();
 
 				Engine::EndRendering();

@@ -34,9 +34,10 @@ namespace detail
 enum class DrawingClass : uint32_t
 {
 	Unknown,
+	PointList,
 	LineList,
 	TriangleList,
-	GryphRun,
+	GryphRun,		// TODO: いらないかも。専用クラスに任せたい
 };
 
 
@@ -61,7 +62,7 @@ class DrawingContext
 {
 public:
 
-	void SetViewProjection(const Matrix& view, const Matrix& proj);
+	void SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
 	void SetTransform(const Matrix& matrix);
 	void SetBrush(Brush* brush);
@@ -69,6 +70,8 @@ public:
 	void SetOpacity(float opacity);	// 0~1
 	void SetTone(const ToneF& tone);
 	void SetFont(Font* font);
+
+	void DrawPoint(const Vector3& point, const ColorF& color);
 
 	/**
 		@brief		直線を描画します。
@@ -104,6 +107,11 @@ private:
 	size_t					m_commandsUsingByte;
 	detail::DrawingClass	m_currentDrawingClass;
 	detail::DrawingState	m_currentState;
+	
+	Vector2					m_uvParPixel;
+	Matrix					m_invViewProj;
+	Vector2					m_viewOnePixelOffset;
+
 	bool					m_flushRequested;
 	//bool					m_stateModified;
 
@@ -133,6 +141,7 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
+	void DrawPoint(const Vector3& point, const ColorF& color);
 	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 	void DrawRectangle(const RectF& rect, const ColorF& color);
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);

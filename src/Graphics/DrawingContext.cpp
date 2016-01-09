@@ -145,9 +145,16 @@ public:
 //=============================================================================
 enum class DrawingCommandType : uint32_t
 {
-	DrawLine = 0,
+	DrawPoint = 0,
+	DrawLine,
 	DrawTriangle,
 	DrawRectangle,
+};
+struct DrawingCommands_DrawPoint
+{
+	DrawingCommandType	type;
+	Vector3				point;
+	ColorF				color;
 };
 struct DrawingCommands_DrawLine
 {
@@ -428,6 +435,7 @@ public:
 	// このクラスは描画コマンドの引数となるクラス。RefPtr とかはメンバに置かないこと。
 	struct DrawingState
 	{
+		detail::DrawingClass	drawingClass;
 		BrushData	Brush;
 		PenData		pen;
 		float		Opacity;
@@ -435,7 +443,8 @@ public:
 		ToneF		Tone;
 
 		DrawingState()
-			: ForeColor(ColorF::White)
+			: drawingClass(detail::DrawingClass::PointList)
+			, ForeColor(ColorF::White)
 			, Opacity(1.0f)
 		{
 			pen.brush.Type = BrushType_Unknown;
@@ -458,6 +467,7 @@ public:
 		void Copy(const DrawingState& state)
 		{
 			ReleaseObjects();
+			drawingClass = state.drawingClass;
 
 			// ブラシデータ
 			Brush.Copy(state.Brush);
@@ -502,7 +512,7 @@ public:
 
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
 	void SetState(const DrawingState& state);
-	void DoCommandList(const void* commandBuffer, size_t size);
+	void DoCommandList(const void* commandBuffer, size_t size, detail::DrawingClass drawingClass);
 	void Flush();
 
 
@@ -547,13 +557,15 @@ public:
 		DrawingContextImpl* m_impl;
 		DataHandle m_commandBuffer;
 		size_t	m_size;
-		void Create(DrawingContextImpl* impl, const void* commandBuffer, size_t size)
+		detail::DrawingClass m_dc;
+		void Create(DrawingContextImpl* impl, const void* commandBuffer, size_t size, detail::DrawingClass dc)
 		{
 			m_impl = impl;
 			m_commandBuffer = AllocExtData(size, commandBuffer);
 			m_size = size;
+			m_dc = dc;
 		}
-		void Execute() { m_impl->DoCommandList(GetExtData(m_commandBuffer), m_size); }
+		void Execute() { m_impl->DoCommandList(GetExtData(m_commandBuffer), m_size, m_dc); }
 	};
 
 	struct FlushCommand : public RenderingCommand
@@ -571,11 +583,12 @@ private:
 	//	LineTo,
 	//};
 
-	// TODO: いらないかも
+	
 	enum class PathType
 	{
-		Line,
-		Rectangle,
+		Point,
+		Line,		// Stroke のみ
+		Rectangle,	// TODO: いらないかも
 		Path,	// ExpandFill などを実行して面張りを行う
 	};
 
@@ -612,7 +625,7 @@ private:
 	//void PutMoveTo(const Vector3& pt, const ColorF& color);
 	//void PutLineTo(const Vector3& pt, const ColorF& color);
 
-	void ExpandStroke();
+	void ExpandStroke(bool vertexOnly);
 	void AddVertex(const Vector3& point, const ColorF& color);
 
 	GraphicsManager*		m_manager;
@@ -720,10 +733,11 @@ void DrawingContextImpl::SetState(const DrawingState& state)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
+void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, detail::DrawingClass drawingClass)
 {
 	const byte_t* pos = (const byte_t*)commandBuffer;
 	const byte_t* end = pos + size;
+	m_currentState.drawingClass = drawingClass;
 	//detail::DrawingClass c = *((const detail::DrawingClass*)pos);
 	//pos += sizeof(detail::DrawingClass);
 
@@ -732,6 +746,22 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size)
 		DrawingCommandType type = *((const DrawingCommandType*)pos);
 		switch (type)
 		{
+			////////////////////////////////////////////////////////////
+			case DrawingCommandType::DrawPoint:
+			{
+				// Point は連続する DrawingCommandType::DrawPoint を全て1つの Path にまとめる
+				AddPath(PathType::Point);
+				do
+				{
+					auto* cmd = (const DrawingCommands_DrawPoint*)pos;
+					AddBasePoint(cmd->point, cmd->color);
+					pos += sizeof(DrawingCommands_DrawLine);
+
+				} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
+
+				ClosePath();
+				break;
+			}
 			////////////////////////////////////////////////////////////
 			case DrawingCommandType::DrawLine:
 			{
@@ -794,10 +824,19 @@ void DrawingContextImpl::Flush()
 	if (m_shader3D.varPixelStep != nullptr)
 	{
 		const Size& size = m_manager->GetRenderer()->GetRenderTarget(0)->GetSize();
-		m_shader3D.varPixelStep->SetVector(Vector4(1.0f / size.Width, 1.0f / size.Height, 0, 0));
+		m_shader3D.varPixelStep->SetVector(Vector4(0.5f / size.Width, 0.5f / size.Height, 0, 0));
 	}
 
-	if (1)
+	if (m_currentState.drawingClass == detail::DrawingClass::PointList)
+	{
+		ExpandStroke(true);	// 頂点バッファだけ作る
+		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+		renderer->SetVertexBuffer(m_vertexBuffer);
+		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
+		m_shader3D.passP0->Apply();
+		renderer->DrawPrimitive(PrimitiveType_PointList, 0, m_vertexCache.GetCount());
+	}
+	else if (1)
 	{
 		ExpandFill();
 
@@ -974,7 +1013,7 @@ void DrawingContextImpl::ExpandFill()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContextImpl::ExpandStroke()
+void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 {
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
@@ -982,50 +1021,87 @@ void DrawingContextImpl::ExpandStroke()
 	for (int iPath = 0; iPath < m_pathes.GetCount(); ++iPath)
 	{
 		const Path& path = m_pathes.GetAt(iPath);
+		int count = path.pointCount;
 
-		switch (path.type)
+		// 境界の矩形を求めておく
+		Vector2 posMin(FLT_MAX, FLT_MAX);
+		Vector2 posMax(FLT_MIN, FLT_MIN);
+		for (int i = 0; i < count; ++i)
 		{
-		case PathType::Line:
-			for (int iPt = path.firstIndex; iPt < path.firstIndex+path.pointCount; ++iPt)
-			{
-				const BasePoint& pt = m_basePoints.GetAt(iPt);
-
-				DrawingBasicVertex v;
-				v.Position = pt.point;
-				v.Color = pt.color;
-				m_vertexCache.Add(v);
-
-				uint16_t i = m_indexCache.GetCount();
-				m_indexCache.Add(i);
-			}
-			break;
-		case PathType::Rectangle:
-		{
-			const BasePoint* pts = &m_basePoints.GetAt(path.firstIndex);
-
-			DrawingBasicVertex v;
-			v.Position = pts[0].point; v.Color = pts[0].color; m_vertexCache.Add(v);
-			v.Position = pts[1].point; v.Color = pts[1].color; m_vertexCache.Add(v);
-			v.Position = pts[2].point; v.Color = pts[2].color; m_vertexCache.Add(v);
-			v.Position = pts[3].point; v.Color = pts[3].color; m_vertexCache.Add(v);
-
-			uint16_t i = m_indexCache.GetCount();
-			m_indexCache.Add(i + 0);
-			m_indexCache.Add(i + 1);
-			m_indexCache.Add(i + 1);
-			m_indexCache.Add(i + 3);
-			m_indexCache.Add(i + 3);
-			m_indexCache.Add(i + 2);
-			m_indexCache.Add(i + 2);
-			m_indexCache.Add(i + 0);
-			break;
+			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
+			posMin.X = std::min(posMin.X, pt.point.X);
+			posMin.Y = std::min(posMin.Y, pt.point.Y);
+			posMax.X = std::max(posMax.X, pt.point.X);
+			posMax.Y = std::max(posMax.Y, pt.point.Y);
+		}
+		Vector2 uvSpan = posMax - posMin;
+		if (uvSpan.X == 0.0f || uvSpan.Y == 0.0) {
+			// パスがつぶれている。が、1点だけ描くとかあり得る。その場合uvは(0,0) とする。
+		}
+		else {
+			uvSpan = 1.0f / uvSpan;
 		}
 
-		case PathType::Path:
-			LN_THROW(0, NotImplementedException);
-			break;
+		// 頂点バッファを作る
+		for (int i = 0; i < count; ++i)
+		{
+			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
+			DrawingBasicVertex v;
+			v.Position = pt.point;
+			v.Color = pt.color;
+			v.UVOffset.X = (pt.point.X - posMin.X) * uvSpan.X;
+			v.UVOffset.Y = (pt.point.Y - posMin.Y) * uvSpan.Y;
+			m_vertexCache.Add(v);
 		}
 	}
+
+	//for (int iPath = 0; iPath < m_pathes.GetCount(); ++iPath)
+	//{
+	//	const Path& path = m_pathes.GetAt(iPath);
+
+	//	switch (path.type)
+	//	{
+	//	case PathType::Line:
+	//		for (int iPt = path.firstIndex; iPt < path.firstIndex+path.pointCount; ++iPt)
+	//		{
+	//			const BasePoint& pt = m_basePoints.GetAt(iPt);
+
+	//			DrawingBasicVertex v;
+	//			v.Position = pt.point;
+	//			v.Color = pt.color;
+	//			m_vertexCache.Add(v);
+
+	//			uint16_t i = m_indexCache.GetCount();
+	//			m_indexCache.Add(i);
+	//		}
+	//		break;
+	//	case PathType::Rectangle:
+	//	{
+	//		const BasePoint* pts = &m_basePoints.GetAt(path.firstIndex);
+
+	//		DrawingBasicVertex v;
+	//		v.Position = pts[0].point; v.Color = pts[0].color; m_vertexCache.Add(v);
+	//		v.Position = pts[1].point; v.Color = pts[1].color; m_vertexCache.Add(v);
+	//		v.Position = pts[2].point; v.Color = pts[2].color; m_vertexCache.Add(v);
+	//		v.Position = pts[3].point; v.Color = pts[3].color; m_vertexCache.Add(v);
+
+	//		uint16_t i = m_indexCache.GetCount();
+	//		m_indexCache.Add(i + 0);
+	//		m_indexCache.Add(i + 1);
+	//		m_indexCache.Add(i + 1);
+	//		m_indexCache.Add(i + 3);
+	//		m_indexCache.Add(i + 3);
+	//		m_indexCache.Add(i + 2);
+	//		m_indexCache.Add(i + 2);
+	//		m_indexCache.Add(i + 0);
+	//		break;
+	//	}
+
+	//	case PathType::Path:
+	//		LN_THROW(0, NotImplementedException);
+	//		break;
+	//	}
+	//}
 }
 //
 ////-----------------------------------------------------------------------------
@@ -1083,8 +1159,12 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
+void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
 {
+	m_uvParPixel.X = 1.0f / viewPixelSize.Width;
+	m_uvParPixel.Y = 1.0f / viewPixelSize.Height;
+	m_invViewProj = Matrix::Inverse(view * proj);
+	m_viewOnePixelOffset = Vector2::TransformCoord(m_uvParPixel, m_invViewProj);
 	LN_CALL_COMMAND(SetViewProjection, DrawingContextImpl::SetViewProjectionCommand, view, proj);
 }
 
@@ -1159,6 +1239,20 @@ void DrawingContext::SetFont(Font* font)
 		FlushInternal();
 		m_currentState.font = font;
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::DrawPoint(const Vector3& point, const ColorF& color)
+{
+	SetDrawingClassInternal(detail::DrawingClass::PointList);
+	DrawingCommands_DrawPoint cmd;
+	cmd.type = DrawingCommandType::DrawPoint;
+	cmd.point = point;
+	cmd.color = color;
+	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1284,7 +1378,7 @@ void DrawingContext::FlushInternal()
 		state.Create(m_currentState);
 		LN_CALL_COMMAND(SetState, DrawingContextImpl::SetStateCommand, state);
 
-		LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte);
+		LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte, m_currentDrawingClass);
 		m_commandsUsingByte = 0;
 
 		LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
@@ -1363,7 +1457,7 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
 	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, minZ, maxZ);
-	m_drawingContext.SetViewProjection(Matrix::Identity, proj);
+	m_drawingContext.SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 }
 
@@ -1381,6 +1475,15 @@ void GraphicsContext::SetBrush(Brush* brush)
 void GraphicsContext::SetOpacity(float opacity)
 {
 	m_drawingContext.SetOpacity(opacity);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.DrawPoint(point, color);
 }
 
 //-----------------------------------------------------------------------------

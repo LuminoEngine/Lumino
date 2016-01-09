@@ -94,16 +94,16 @@ void TileMapNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	//dc->DrawRectangle(RectF(0, 0, 1, 2));
 	//dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 
-	RefPtr<Pen> pen(LN_NEW Pen(), false);
-	pen->SetBrush(ColorBrush::Green);
+	//RefPtr<Pen> pen(LN_NEW Pen(), false);
+	//pen->SetBrush(ColorBrush::Green);
 
-	auto* d = dc->BeginDrawingContext();
+	//auto* d = dc->BeginDrawingContext();
 
-	d->SetPen(pen);
-	d->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
-	d->DrawLine(Vector3(0, 0, 0), Vector3(1, 1, 1), ColorF::Red);
-	d->DrawRectangle(RectF(0, 0, 1, 2), ColorF::Blue);
-	d->Flush();
+	//d->SetPen(pen);
+	//d->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+	//d->DrawLine(Vector3(0, 0, 0), Vector3(1, 1, 1), ColorF::Red);
+	//d->DrawRectangle(RectF(0, 0, 1, 2), ColorF::Blue);
+	//d->Flush();
 
 }
 

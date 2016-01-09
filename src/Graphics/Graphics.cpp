@@ -31,6 +31,10 @@ void Graphics::SetOpacity(float opacity)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->SetOpacity(opacity);
 }
+void Graphics::DrawPoint(const Vector3& point, const ColorF& color)
+{
+	GraphicsManager::Instance->GetGraphicsContext()->DrawPoint(point, color);
+}
 void Graphics::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
