@@ -31,6 +31,14 @@ void Graphics::SetOpacity(float opacity)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->SetOpacity(opacity);
 }
+void Graphics::MoveTo(const Vector3& point, const ColorF& color)
+{
+	GraphicsManager::Instance->GetGraphicsContext()->MoveTo(point, color);
+}
+void Graphics::LineTo(const Vector3& point, const ColorF& color)
+{
+	GraphicsManager::Instance->GetGraphicsContext()->LineTo(point, color);
+}
 void Graphics::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->DrawPoint(point, color);
@@ -42,6 +50,11 @@ void Graphics::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vect
 void Graphics::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->DrawRectangle(rect, color);
+}
+void Graphics::DrawEllipse(const Vector3& center, const Vector2& radius)
+{
+	GraphicsManager::Instance->GetGraphicsContext()->DrawEllipse(center, radius);
+
 }
 void Graphics::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
 {

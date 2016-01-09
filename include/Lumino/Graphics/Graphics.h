@@ -15,11 +15,17 @@ public:
 	static void SetBrush(Brush* brush);
 	static void SetOpacity(float opacity);	// 0~1
 
+	static void MoveTo(const Vector3& point, const ColorF& color);
+	static void LineTo(const Vector3& point, const ColorF& color);
+
+
 	static void DrawPoint(const Vector3& point, const ColorF& color);
 
 	static void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 
 	static void DrawRectangle(const RectF& rect, const ColorF& color);
+
+	static void DrawEllipse(const Vector3& center, const Vector2& radius);
 
 	static void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 

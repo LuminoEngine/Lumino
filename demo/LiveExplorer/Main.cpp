@@ -168,12 +168,12 @@ int main()
 				
 
 				Graphics::SetBrush(ColorBrush::Red);
-				Graphics::DrawPoint(Vector3(1, 1, 0), ColorF::White);
+				//Graphics::DrawPoint(Vector3(1, 1, 0), ColorF::White);
 
 				Vector2 st(400, 100);
-				Vector2 stv(1, 0);
+				Vector2 stv(100, 0);
 				Vector2 ed(500, 200);
-				Vector2 edv(0, 1);
+				Vector2 edv(0, 100);
 				for (int i = 0; i < 100; i++)
 				{
 					auto v2 = Vector2::Hermite(st, stv, ed, edv, ((float)i) / 100.0f);

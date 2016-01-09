@@ -145,10 +145,27 @@ public:
 //=============================================================================
 enum class DrawingCommandType : uint32_t
 {
-	DrawPoint = 0,
+	MoveTo,
+	LineTo,
+	BezierTo,
+	DrawPoint,
 	DrawLine,
 	DrawTriangle,
 	DrawRectangle,
+	//DrawEllipse,
+
+};
+struct DrawingCommands_MoveTo
+{
+	DrawingCommandType	type;
+	Vector3				point;
+	ColorF				color;
+};
+struct DrawingCommands_LineTo
+{
+	DrawingCommandType	type;
+	Vector3				point;
+	ColorF				color;
 };
 struct DrawingCommands_DrawPoint
 {
@@ -180,6 +197,12 @@ struct DrawingCommands_DrawRectangle
 	RectF				rect;
 	ColorF				color;
 };
+//struct DrawingCommands_DrawEllipse
+//{
+//	DrawingCommandType	type;
+//	Vector3				center;
+//	Vector2				radius;
+//};
 
 
 //=============================================================================
@@ -755,7 +778,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 				{
 					auto* cmd = (const DrawingCommands_DrawPoint*)pos;
 					AddBasePoint(cmd->point, cmd->color);
-					pos += sizeof(DrawingCommands_DrawLine);
+					pos += sizeof(DrawingCommands_DrawPoint);
 
 				} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
 
@@ -1244,6 +1267,21 @@ void DrawingContext::SetFont(Font* font)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void DrawingContext::MoveTo(const Vector3& point, const ColorF& color)
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::LineTo(const Vector3& point, const ColorF& color)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void DrawingContext::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PointList);
@@ -1310,6 +1348,13 @@ void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
 	cmd.color = color;
 	AddCommand(&cmd, sizeof(cmd));
 	m_flushRequested = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::DrawEllipse(const Vector3& center, const Vector2& radius)
+{
 }
 
 //-----------------------------------------------------------------------------
@@ -1502,6 +1547,15 @@ void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	TryChangeRenderingClass(RendererType::DrawingContext);
 	m_drawingContext.DrawRectangle(rect, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.DrawEllipse(center, radius);
 }
 
 //-----------------------------------------------------------------------------
