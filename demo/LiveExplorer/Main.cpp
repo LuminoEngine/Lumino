@@ -30,6 +30,30 @@ class TestRef1 : public RefObject
 
 };
 
+/*
+(x1,y1)始点
+(x2,y2)制御点
+(x3,y3)終点 
+*/
+float BezierCurve2D(float x1, float x2, float x3, float t)
+{
+	float tp = 1.f - t;
+	return t*t*x3 + 2.f*t*tp*x2 + tp*tp*x1;
+}
+
+/*
+(x1,y1)始点
+(x2,y2)制御点
+(x3,y3)制御点
+(x4,y4)終点 
+*/
+float BezierCurve1(float x1, float x2, float x3, float x4, float t)
+{
+	float tp = 1.f - t;
+	return t*t*t*x4 + 3.f*t*t*tp*x3 + 3.f*t*tp*tp*x2 + tp*tp*tp*x1;
+}
+
+
 int main()
 {
 
@@ -170,20 +194,40 @@ int main()
 				//Graphics::SetBrush(ColorBrush::Red);
 				////Graphics::DrawPoint(Vector3(1, 1, 0), ColorF::White);
 
-				//Vector2 st(400, 100);
-				//Vector2 stv(100, 0);
-				//Vector2 ed(500, 200);
-				//Vector2 edv(0, 100);
-				//for (int i = 0; i < 100; i++)
-				//{
-				//	auto v2 = Vector2::Hermite(st, stv, ed, edv, ((float)i) / 100.0f);
-				//	Graphics::DrawPoint(Vector3(v2.X, v2.Y, 0), ColorF::White);
-				//}
+				Vector2 st(400, 100);
+				Vector2 stv(100, 0);
+				Vector2 ed(500, 200);
+				Vector2 edv(0, 100);
+				for (int i = 0; i < 100; i++)
+				{
+					auto v2 = Vector2::Hermite(st, stv, ed, edv, ((float)i) / 100.0f);
+					Graphics::DrawPoint(Vector3(v2.X, v2.Y, 0), ColorF::White);
+				}
+
+				{
+					Vector2 p1(400, 200);
+					Vector2 p2(500, 200);
+					Vector2 p3(300, 300);
+					Vector2 p4(400, 300);
+					for (int i = 0; i < 100; i++)
+					{
+						Vector3 pt(
+							BezierCurve1(p1.X, p2.X, p3.X, p4.X, ((float)i) / 100.0f),
+							BezierCurve1(p1.Y, p2.Y, p3.Y, p4.Y, ((float)i) / 100.0f),
+							0);
+						Graphics::DrawPoint(pt, ColorF::White);
+					}
+				}
+
 
 				Graphics::MoveTo(Vector3(100, 100, 0), ColorF::White);
 				Graphics::LineTo(Vector3(200, 200, 0), ColorF::White);
 				Graphics::LineTo(Vector3(100, 300, 0), ColorF::White);
 				//Graphics::LineTo(Vector3(100, 150, 1), ColorF::White);
+				Graphics::BezierCurveTo(Vector3(200, 300, 0), Vector3(0, 400, 0), Vector3(100, 400, 0), ColorF::White);
+				Graphics::ClosePath();
+
+
 
 				
 				Graphics::Flush();

@@ -98,6 +98,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
+#include "TextRenderer.h"
 #include "RendererImpl.h"
 
 LN_NAMESPACE_BEGIN
@@ -147,12 +148,13 @@ enum class DrawingCommandType : uint32_t
 {
 	MoveTo,
 	LineTo,
-	BezierTo,
+	BezierCurveTo,
 	DrawPoint,
 	DrawLine,
 	DrawTriangle,
 	DrawRectangle,
 	//DrawEllipse,
+	ClosePath,
 
 };
 struct DrawingCommands_MoveTo
@@ -165,6 +167,14 @@ struct DrawingCommands_LineTo
 {
 	DrawingCommandType	type;
 	Vector3				point;
+	ColorF				color;
+};
+struct DrawingCommands_BezierCurveTo
+{
+	DrawingCommandType	type;
+	Vector3				cp1;
+	Vector3				cp2;
+	Vector3				endPoint;
 	ColorF				color;
 };
 struct DrawingCommands_DrawPoint
@@ -203,6 +213,10 @@ struct DrawingCommands_DrawRectangle
 //	Vector3				center;
 //	Vector2				radius;
 //};
+struct DrawingCommands_ClosePath
+{
+	DrawingCommandType	type;
+};
 
 
 //=============================================================================
@@ -649,7 +663,9 @@ private:
 	Path* GetCurrentPath();
 	void AddBasePoint(const Vector3& point, const ColorF& color);
 	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
-	void ClosePath(const Vector3* lastPoint, const ColorF* lastColor);
+	void EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose);
+
+	void ExpandPoints();
 
 	void ExpandFill();
 
@@ -777,6 +793,12 @@ void DrawingContextImpl::SetState(const DrawingState& state)
 	m_currentState.UpdateCurrentForeColor();
 }
 
+static float BezierCurve(float x1, float x2, float x3, float x4, float t)
+{
+	float tp = 1.f - t;
+	return t*t*t*x4 + 3.f*t*t*tp*x3 + 3.f*t*tp*tp*x2 + tp*tp*tp*x1;
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -785,8 +807,6 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 	const byte_t* pos = (const byte_t*)commandBuffer;
 	const byte_t* end = pos + size;
 	m_currentState.drawingClass = drawingClass;
-	//detail::DrawingClass c = *((const detail::DrawingClass*)pos);
-	//pos += sizeof(detail::DrawingClass);
 
 	const Vector3* lastPoint = nullptr;
 	const ColorF* lastColor = nullptr;
@@ -824,6 +844,39 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 					break;
 				}
 				////////////////////////////////////////////////////////////
+				case DrawingCommandType::BezierCurveTo:
+				{
+					auto* cmd = (const DrawingCommands_BezierCurveTo*)pos;
+					if (!GetCurrentPath()->closed)
+					{
+						// 
+						float lenMax = ((*lastPoint) - cmd->endPoint).GetLength() * 2;
+						int divCount = lenMax / 10;// TODO:pixel
+						for (float i = 0; i < divCount; i += 1.f)
+						{
+							float t = i / divCount;
+							AddBasePoint(
+								Vector3(
+									BezierCurve(lastPoint->X, cmd->cp1.X, cmd->cp2.X, cmd->endPoint.X, t),
+									BezierCurve(lastPoint->Y, cmd->cp1.Y, cmd->cp2.Y, cmd->endPoint.Y, t),
+									cmd->endPoint.Z),	// TODO
+								ColorF::Lerp(*lastColor, cmd->color, t));
+						}
+						lastPoint = &cmd->endPoint;
+						lastColor = &cmd->color;
+					}
+					pos += sizeof(*cmd);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::ClosePath:
+				{
+					auto* cmd = (const DrawingCommands_ClosePath*)pos;
+					EndPath(lastPoint, lastColor, true);
+					pos += sizeof(*cmd);
+					break;
+				}
+				////////////////////////////////////////////////////////////
 				default:
 					LN_THROW(0, InvalidOperationException);
 					return;
@@ -846,7 +899,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 
 					} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
 
-					ClosePath(nullptr, nullptr);
+					EndPath(nullptr, nullptr, false);
 					break;
 				}
 				////////////////////////////////////////////////////////////
@@ -857,7 +910,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 					AddPath(PathType::Line);
 					AddBasePoint(cmd->from, cmd->fromColor);
 					AddBasePoint(cmd->to, cmd->toColor);
-					ClosePath(nullptr, nullptr);
+					EndPath(nullptr, nullptr, false);
 
 					pos += sizeof(DrawingCommands_DrawLine);
 					break;
@@ -870,7 +923,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 					AddBasePoint(cmd->p1, cmd->p1Color);
 					AddBasePoint(cmd->p2, cmd->p2Color);
 					AddBasePoint(cmd->p3, cmd->p3Color);
-					ClosePath(nullptr, nullptr);
+					EndPath(nullptr, nullptr, true);
 					pos += sizeof(DrawingCommands_DrawTriangle);
 					break;
 				}
@@ -885,7 +938,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 					AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
 					AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
 					AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
-					ClosePath(nullptr, nullptr);
+					EndPath(nullptr, nullptr, true);
 
 					pos += sizeof(DrawingCommands_DrawRectangle);
 					break;
@@ -897,7 +950,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 		}
 	}
 
-	ClosePath(lastPoint, lastColor);
+	EndPath(lastPoint, lastColor, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -924,12 +977,12 @@ void DrawingContextImpl::Flush()
 		renderer->SetVertexBuffer(m_vertexBuffer);
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount());
+		renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount()-2);
 	}
 	// PointList
 	else if (m_currentState.drawingClass == detail::DrawingClass::PointList)
 	{
-		ExpandStroke(true);	// 頂点バッファだけ作る
+		ExpandPoints();
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		renderer->SetVertexBuffer(m_vertexBuffer);
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
@@ -1019,7 +1072,7 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContextImpl::ClosePath(const Vector3* lastPoint, const ColorF* lastColor)
+void DrawingContextImpl::EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose)
 {
 	if (m_pathCreating)
 	{
@@ -1027,7 +1080,7 @@ void DrawingContextImpl::ClosePath(const Vector3* lastPoint, const ColorF* lastC
 			AddBasePoint(*lastPoint, *lastColor);
 		}
 		Path* curPath = GetCurrentPath();
-		//curPath->closed = true;
+		curPath->closed = pathClose;
 		m_pathCreating = false;
 
 		// 各頂点について、距離などの情報を作る。
@@ -1089,6 +1142,29 @@ DrawingContextImpl::Path* DrawingContextImpl::GetCurrentPath()
 //	AddPathPoint(PathPointAttr::LineTo, pt, color);
 //}
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::ExpandPoints()
+{
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
+
+	for (int iPath = 0; iPath < m_pathes.GetCount(); ++iPath)
+	{
+		const Path& path = m_pathes.GetAt(iPath);
+
+		// 頂点バッファを作る
+		for (int i = 0; i < path.pointCount; ++i)
+		{
+			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
+			DrawingBasicVertex v;
+			v.Position = pt.point;
+			v.Color = pt.color;
+			m_vertexCache.Add(v);
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -1198,6 +1274,9 @@ void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 			p0 = p1++;
 			--count;	// ループ数も-1
 		}
+		else {
+			// パスが閉じている時は、最初に last->begin へ線が引かれることになる。
+		}
 
 		// 頂点バッファを作る
 		for (int i = 0; i < count; ++i)
@@ -1251,15 +1330,19 @@ void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
 			m_vertexCache.Add(v);
 
-			if (i == count - 1)
+
+			
+			/*if (i == count - 1)
 			{
 
 			}
-			else if (!path.closed && i == count - 2)
+			else *//*if (!path.closed && i == count - 2)
 			{
 			}
-			else
+			else*/
 			{
+				// p1 → p2 への接合を行う
+
 				v.Position = p1->point - (p0->extrusionDir * 5);	// 内側
 				v.Color = pt.color;
 				//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
@@ -1561,6 +1644,34 @@ void DrawingContext::LineTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void DrawingContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+{
+	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
+	DrawingCommands_BezierCurveTo cmd;
+	cmd.type = DrawingCommandType::BezierCurveTo;
+	cmd.cp1 = cp1;
+	cmd.cp2 = cp2;
+	cmd.endPoint = endPt;
+	cmd.color = color;
+	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContext::ClosePath()
+{
+	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
+	DrawingCommands_ClosePath cmd;
+	cmd.type = DrawingCommandType::ClosePath;
+	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void DrawingContext::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PointList);
@@ -1763,6 +1874,9 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	GeometryRenderer = GeometryRenderer::Create(manager);
 	m_drawingContext.Initialize(manager);
 	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
+
+	m_textRenderer = LN_NEW detail::TextRenderer();
+	m_textRenderer->Initialize(manager);
 }
 
 //-----------------------------------------------------------------------------
@@ -1772,6 +1886,7 @@ GraphicsContext::~GraphicsContext()
 {
 	LN_SAFE_RELEASE(GeometryRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
+	LN_SAFE_RELEASE(m_textRenderer);
 }
 
 //-----------------------------------------------------------------------------
@@ -1816,6 +1931,24 @@ void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
 {
 	TryChangeRenderingClass(RendererType::DrawingContext);
 	m_drawingContext.LineTo(point, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.BezierCurveTo(cp1, cp2, endPt, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::ClosePath()
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.ClosePath();
 }
 
 //-----------------------------------------------------------------------------

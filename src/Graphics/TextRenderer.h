@@ -2,9 +2,125 @@
 #pragma once
 #include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Painter.h>
+#include "PainterEngine.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+
+namespace detail
+{
+
+class TextRendererCore
+	: public RefObject
+{
+public:
+	struct GlyphRunData
+	{
+		PointF		Position;
+		RectF		SrcPixelRect;
+	};
+
+	TextRendererCore();
+	~TextRendererCore();
+	void Initialize(GraphicsManager* manager);
+
+	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize);
+	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
+	void Flush();
+
+private:
+
+	struct Vertex
+	{
+	public:
+		Vector3	position;
+		Vector4	color;
+		Vector2	uv;
+
+		// 頂点レイアウト
+		static VertexElement* Elements()
+		{
+			static VertexElement elements[] =
+			{
+				{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+				{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+				{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
+			};
+			return elements;
+		}
+		static const int ElementCount = 3;
+	};
+
+	void InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect);
+
+	GraphicsManager*		m_manager;
+	Driver::IRenderer*		m_renderer;
+	Driver::IVertexBuffer*	m_vertexBuffer;
+	Driver::IIndexBuffer*	m_indexBuffer;
+	CacheBuffer<Vertex>		m_vertexCache;
+	CacheBuffer<uint16_t>	m_indexCache;
+
+	ColorF					m_foreColor;
+	ToneF					m_tone;
+	Driver::ITexture*		m_foreTexture;
+	Driver::ITexture*		m_glyphsMaskTexture;
+
+
+	struct
+	{
+		Driver::IShader*			shader;
+		Driver::IShaderTechnique*	technique;
+		Driver::IShaderPass*		pass;
+		Driver::IShaderVariable*	varWorldMatrix;
+		Driver::IShaderVariable*	varViewProjMatrix;
+		Driver::IShaderVariable*	varTone;
+		Driver::IShaderVariable*	varTexture;
+		Driver::IShaderVariable*	varGlyphMaskSampler;
+		Driver::IShaderVariable*	varPixelStep;
+
+	} m_shader;
+};
+
+class TextRenderer
+	: public RefObject
+{
+public:
+	TextRenderer();
+	~TextRenderer();
+	void Initialize(GraphicsManager* manager);
+
+	void SetTransform(const Matrix& matrix);
+	void SetViewProjMatrix(const Matrix& matrix);
+	void SetViewPixelSize(const Size& size);
+	void SetFont(Font* font);
+
+	void DrawGlyphRun(const Point& position, GlyphRun* glyphRun);
+	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
+
+	void DrawString(const String& str, const PointF& position);
+	void DrawString(const TCHAR* str, int length, const PointF& position);
+	void DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
+
+	void Flush();
+
+public:
+	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
+	void CheckUpdateState();
+
+private:
+	GraphicsManager*	m_manager;
+	TextRendererCore*	m_core;
+	ByteBuffer			m_tempBuffer;
+
+	Matrix				m_transform;
+	Matrix				m_viewProj;
+	Size				m_viewPixelSize;
+	Font*				m_font;
+	bool				m_stateModified;
+};
+
+} // namespace detail
 
 #if 0
 /// テキストの配置方法

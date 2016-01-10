@@ -17,7 +17,8 @@ public:
 
 	static void MoveTo(const Vector3& point, const ColorF& color);
 	static void LineTo(const Vector3& point, const ColorF& color);
-
+	static void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
+	static void ClosePath();
 
 	static void DrawPoint(const Vector3& point, const ColorF& color);
 

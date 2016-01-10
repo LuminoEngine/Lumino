@@ -141,6 +141,8 @@ public:
 	*/
 	void MultiplyClamp(const ColorF& color);
 
+	static ColorF Lerp(const ColorF& color1, const ColorF& color2, float t);
+
 	//----------------------------------------------------------------------
 	///**
 	//  @brief      32 ビットの色コードから色を作成
@@ -161,6 +163,7 @@ public:
 
 
 	//void dump(const char* str_ = NULL) const;
+
 
 
 public:

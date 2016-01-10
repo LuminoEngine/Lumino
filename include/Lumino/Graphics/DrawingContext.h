@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class DrawingContextImpl;
 class SpriteRenderer;
+namespace detail { class TextRenderer; }
 
 /**
 	@brief	ê}å`ÇÃògê¸ÇÃï`âÊï˚ñ@Çï\ÇµÇ‹Ç∑ÅB
@@ -74,6 +75,8 @@ public:
 
 	void MoveTo(const Vector3& point, const ColorF& color);
 	void LineTo(const Vector3& point, const ColorF& color);
+	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
+	void ClosePath();
 
 	void DrawPoint(const Vector3& point, const ColorF& color);
 
@@ -149,6 +152,9 @@ public:
 	void SetOpacity(float opacity);	// 0~1
 	void MoveTo(const Vector3& point, const ColorF& color);
 	void LineTo(const Vector3& point, const ColorF& color);
+	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
+	void ClosePath();
+
 	void DrawPoint(const Vector3& point, const ColorF& color);
 	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 	void DrawRectangle(const RectF& rect, const ColorF& color);
@@ -179,9 +185,10 @@ protected:
 	virtual ~GraphicsContext();
 
 
-	RendererType	m_currentRenderer;
-	DrawingContext	m_drawingContext;
-	SpriteRenderer*	m_spriteRenderer;
+	RendererType			m_currentRenderer;
+	DrawingContext			m_drawingContext;
+	SpriteRenderer*			m_spriteRenderer;
+	detail::TextRenderer*	m_textRenderer;
 
 private:
 	void TryChangeRenderingClass(RendererType dc);

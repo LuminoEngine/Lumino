@@ -91,6 +91,18 @@ void ColorF::MultiplyClamp(const ColorF& color)
 	A = Math::Clamp(A * color.A, 0.0f, 1.0f);
 }
 
+//-----------------------------------------------------------------------------
+// static
+//-----------------------------------------------------------------------------
+ColorF ColorF::Lerp(const ColorF& color1, const ColorF& color2, float t)
+{
+	return ColorF(
+		Math::Lerp(color1.R, color2.R, t),
+		Math::Lerp(color1.G, color2.G, t),
+		Math::Lerp(color1.B, color2.B, t),
+		Math::Lerp(color1.A, color2.A, t));
+}
+
 //=============================================================================
 // ToneF
 //=============================================================================

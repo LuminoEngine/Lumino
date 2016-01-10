@@ -39,6 +39,14 @@ void Graphics::LineTo(const Vector3& point, const ColorF& color)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->LineTo(point, color);
 }
+void Graphics::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+{
+	GraphicsManager::Instance->GetGraphicsContext()->BezierCurveTo(cp1, cp2, endPt, color);
+}
+void Graphics::ClosePath()
+{
+	GraphicsManager::Instance->GetGraphicsContext()->ClosePath();
+}
 void Graphics::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	GraphicsManager::Instance->GetGraphicsContext()->DrawPoint(point, color);
