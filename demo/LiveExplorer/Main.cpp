@@ -156,29 +156,34 @@ int main()
 				Graphics::Set2DRenderingMode();
 				Graphics::SetOpacity(1.0f);
 				Graphics::SetBrush(ColorBrush::Blue);
-				Graphics::DrawRectangle(RectF(10, 10, 10, 20), ColorF::White);
-				Graphics::SetOpacity(0.5f);
-				Graphics::SetBrush(texBrush1);
-				Graphics::DrawRectangle(RectF(30, 10, 10, 20), ColorF::White);
+				//Graphics::DrawRectangle(RectF(10, 10, 10, 20), ColorF::White);
+				//Graphics::SetOpacity(0.5f);
+				//Graphics::SetBrush(texBrush1);
+				//Graphics::DrawRectangle(RectF(30, 10, 10, 20), ColorF::White);
 
-				Graphics::SetOpacity(1.0f);
-				Graphics::DrawTriangle(Vector3(120, 120, 0), ColorF::Red, Vector3(200, 100, 0), ColorF::Green, Vector3(100, 200, 0), ColorF::Blue);
+				//Graphics::SetOpacity(1.0f);
+				//Graphics::DrawTriangle(Vector3(120, 120, 0), ColorF::Red, Vector3(200, 100, 0), ColorF::Green, Vector3(100, 200, 0), ColorF::Blue);
 
-				Graphics::DrawTexture(RectF(50, 10, 10, 20), texBrush1->GetTexture(), Rect(0, 0, 128, 128),  ColorF::White);
-				
+				//Graphics::DrawTexture(RectF(50, 10, 10, 20), texBrush1->GetTexture(), Rect(0, 0, 128, 128),  ColorF::White);
+				//
 
-				Graphics::SetBrush(ColorBrush::Red);
-				//Graphics::DrawPoint(Vector3(1, 1, 0), ColorF::White);
+				//Graphics::SetBrush(ColorBrush::Red);
+				////Graphics::DrawPoint(Vector3(1, 1, 0), ColorF::White);
 
-				Vector2 st(400, 100);
-				Vector2 stv(100, 0);
-				Vector2 ed(500, 200);
-				Vector2 edv(0, 100);
-				for (int i = 0; i < 100; i++)
-				{
-					auto v2 = Vector2::Hermite(st, stv, ed, edv, ((float)i) / 100.0f);
-					Graphics::DrawPoint(Vector3(v2.X, v2.Y, 0), ColorF::White);
-				}
+				//Vector2 st(400, 100);
+				//Vector2 stv(100, 0);
+				//Vector2 ed(500, 200);
+				//Vector2 edv(0, 100);
+				//for (int i = 0; i < 100; i++)
+				//{
+				//	auto v2 = Vector2::Hermite(st, stv, ed, edv, ((float)i) / 100.0f);
+				//	Graphics::DrawPoint(Vector3(v2.X, v2.Y, 0), ColorF::White);
+				//}
+
+				Graphics::MoveTo(Vector3(100, 100, 0), ColorF::White);
+				Graphics::LineTo(Vector3(200, 200, 0), ColorF::White);
+				Graphics::LineTo(Vector3(100, 300, 0), ColorF::White);
+				//Graphics::LineTo(Vector3(100, 150, 1), ColorF::White);
 
 				
 				Graphics::Flush();

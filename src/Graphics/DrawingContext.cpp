@@ -626,6 +626,14 @@ private:
 	{
 		Vector3			point;
 		ColorF			color;
+		Vector3			dir;			// 次の点への向き
+		float			len;			// 次の点との距離
+		Vector3			extrusionDir;	// 押し出し方向 (dirに対する左方向。符号を反転すると右方向への押し出し量になる)
+		
+
+		//Vector3			distance;	// 次の点との距離
+		//Vector3			left;		// 左方向。つまり、ストロークの押し出し方向
+		//float			len;
 		BasePoint(const Vector3& p, const ColorF& c) : point(p), color(c) {}
 	};
 
@@ -641,7 +649,7 @@ private:
 	Path* GetCurrentPath();
 	void AddBasePoint(const Vector3& point, const ColorF& color);
 	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
-	void ClosePath();
+	void ClosePath(const Vector3* lastPoint, const ColorF* lastColor);
 
 	void ExpandFill();
 
@@ -649,7 +657,20 @@ private:
 	//void PutLineTo(const Vector3& pt, const ColorF& color);
 
 	void ExpandStroke(bool vertexOnly);
+	void MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p1);
+
 	void AddVertex(const Vector3& point, const ColorF& color);
+
+	static float Normalize(float *x, float* y)
+	{
+		float d = sqrtf((*x)*(*x) + (*y)*(*y));
+		if (d > 1e-6f) {
+			float id = 1.0f / d;
+			*x *= id;
+			*y *= id;
+		}
+		return d;
+	}
 
 	GraphicsManager*		m_manager;
 	//PrimitiveCache			m_primitiveCache;
@@ -661,11 +682,13 @@ private:
 
 	//CacheBuffer<PathPoint>	m_pathPoints;
 	CacheBuffer<Path>		m_pathes;
+	bool					m_pathCreating;
 
 	CacheBuffer<BasePoint>	m_basePoints;
 
 	CacheBuffer<DrawingBasicVertex>	m_vertexCache;	// 頂点バッファ本体をリサイズすることになると余計に時間がかかるので、まずはここに作ってからコピーする
 	CacheBuffer<uint16_t>			m_indexCache;
+	
 
 	// DrawingContext3D
 	struct
@@ -687,6 +710,7 @@ private:
 //-----------------------------------------------------------------------------
 DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	: m_manager(manager)
+	, m_pathCreating(false)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
 {
@@ -764,73 +788,116 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 	//detail::DrawingClass c = *((const detail::DrawingClass*)pos);
 	//pos += sizeof(detail::DrawingClass);
 
+	const Vector3* lastPoint = nullptr;
+	const ColorF* lastColor = nullptr;
+	m_pathCreating = false;
+
 	while (pos < end)
 	{
 		DrawingCommandType type = *((const DrawingCommandType*)pos);
-		switch (type)
+
+		if (drawingClass == detail::DrawingClass::PathStroke)
 		{
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawPoint:
+			switch (type)
 			{
-				// Point は連続する DrawingCommandType::DrawPoint を全て1つの Path にまとめる
-				AddPath(PathType::Point);
-				do
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::MoveTo:
 				{
-					auto* cmd = (const DrawingCommands_DrawPoint*)pos;
-					AddBasePoint(cmd->point, cmd->color);
-					pos += sizeof(DrawingCommands_DrawPoint);
-
-				} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
-
-				ClosePath();
-				break;
+					AddPath(PathType::Path);
+					auto* cmd = (const DrawingCommands_MoveTo*)pos;
+					lastPoint = &cmd->point;
+					lastColor = &cmd->color;
+					pos += sizeof(*cmd);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::LineTo:
+				{
+					auto* cmd = (const DrawingCommands_LineTo*)pos;
+					if (!GetCurrentPath()->closed)
+					{
+						AddBasePoint(*lastPoint, *lastColor);
+						lastPoint = &cmd->point;
+						lastColor = &cmd->color;
+					}
+					pos += sizeof(*cmd);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				default:
+					LN_THROW(0, InvalidOperationException);
+					return;
 			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawLine:
+		}
+		else
+		{
+			switch (type)
 			{
-				auto* cmd = (const DrawingCommands_DrawLine*)pos;
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawPoint:
+				{
+					// Point は連続する DrawingCommandType::DrawPoint を全て1つの Path にまとめる
+					AddPath(PathType::Point);
+					do
+					{
+						auto* cmd = (const DrawingCommands_DrawPoint*)pos;
+						AddBasePoint(cmd->point, cmd->color);
+						pos += sizeof(DrawingCommands_DrawPoint);
 
-				AddPath(PathType::Line);
-				AddBasePoint(cmd->from, cmd->fromColor);
-				AddBasePoint(cmd->to, cmd->toColor);
-				ClosePath();
+					} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
 
-				pos += sizeof(DrawingCommands_DrawLine);
-				break;
+					ClosePath(nullptr, nullptr);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawLine:
+				{
+					auto* cmd = (const DrawingCommands_DrawLine*)pos;
+
+					AddPath(PathType::Line);
+					AddBasePoint(cmd->from, cmd->fromColor);
+					AddBasePoint(cmd->to, cmd->toColor);
+					ClosePath(nullptr, nullptr);
+
+					pos += sizeof(DrawingCommands_DrawLine);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawTriangle:
+				{
+					auto* cmd = (const DrawingCommands_DrawTriangle*)pos;
+					AddPath(PathType::Path);
+					AddBasePoint(cmd->p1, cmd->p1Color);
+					AddBasePoint(cmd->p2, cmd->p2Color);
+					AddBasePoint(cmd->p3, cmd->p3Color);
+					ClosePath(nullptr, nullptr);
+					pos += sizeof(DrawingCommands_DrawTriangle);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawRectangle:
+				{
+					auto* cmd = (const DrawingCommands_DrawRectangle*)pos;
+					const RectF& rect = cmd->rect;
+
+					AddPath(PathType::Rectangle);
+					AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
+					ClosePath(nullptr, nullptr);
+
+					pos += sizeof(DrawingCommands_DrawRectangle);
+					break;
+				}
+				default:
+					LN_THROW(0, InvalidOperationException);
+					return;
 			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawTriangle:
-			{
-				auto* cmd = (const DrawingCommands_DrawTriangle*)pos;
-				AddPath(PathType::Path);
-				AddBasePoint(cmd->p1, cmd->p1Color);
-				AddBasePoint(cmd->p2, cmd->p2Color);
-				AddBasePoint(cmd->p3, cmd->p3Color);
-				ClosePath();
-				pos += sizeof(DrawingCommands_DrawTriangle);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawRectangle:
-			{
-				auto* cmd = (const DrawingCommands_DrawRectangle*)pos;
-				const RectF& rect = cmd->rect;
-
-				AddPath(PathType::Rectangle);
-				AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
-				AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
-				AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
-				AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
-				ClosePath();
-
-				pos += sizeof(DrawingCommands_DrawRectangle);
-				break;
-			}
-			default:
-				LN_THROW(0, InvalidOperationException);
-				return;
 		}
 	}
+
+	ClosePath(lastPoint, lastColor);
 }
 
 //-----------------------------------------------------------------------------
@@ -850,7 +917,17 @@ void DrawingContextImpl::Flush()
 		m_shader3D.varPixelStep->SetVector(Vector4(0.5f / size.Width, 0.5f / size.Height, 0, 0));
 	}
 
-	if (m_currentState.drawingClass == detail::DrawingClass::PointList)
+	if (m_currentState.drawingClass == detail::DrawingClass::PathStroke)
+	{
+		ExpandStroke(false);	// TODO test
+		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+		renderer->SetVertexBuffer(m_vertexBuffer);
+		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
+		m_shader3D.passP0->Apply();
+		renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount());
+	}
+	// PointList
+	else if (m_currentState.drawingClass == detail::DrawingClass::PointList)
 	{
 		ExpandStroke(true);	// 頂点バッファだけ作る
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -859,7 +936,7 @@ void DrawingContextImpl::Flush()
 		m_shader3D.passP0->Apply();
 		renderer->DrawPrimitive(PrimitiveType_PointList, 0, m_vertexCache.GetCount());
 	}
-	else if (1)
+	else
 	{
 		ExpandFill();
 
@@ -900,12 +977,16 @@ void DrawingContextImpl::Flush()
 //-----------------------------------------------------------------------------
 void DrawingContextImpl::AddPath(PathType type)
 {
-	Path path;
-	path.type = type;
-	path.firstIndex = m_basePoints.GetCount();//m_pathPoints.GetCount();
-	path.pointCount = 0;
-	path.closed = false;
-	m_pathes.Add(path);
+	if (!m_pathCreating)
+	{
+		Path path;
+		path.type = type;
+		path.firstIndex = m_basePoints.GetCount();//m_pathPoints.GetCount();
+		path.pointCount = 0;
+		path.closed = false;
+		m_pathes.Add(path);
+		m_pathCreating = true;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -938,9 +1019,50 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContextImpl::ClosePath()
+void DrawingContextImpl::ClosePath(const Vector3* lastPoint, const ColorF* lastColor)
 {
-	GetCurrentPath()->closed = true;
+	if (m_pathCreating)
+	{
+		if (lastPoint != nullptr && lastColor != nullptr) {
+			AddBasePoint(*lastPoint, *lastColor);
+		}
+		Path* curPath = GetCurrentPath();
+		//curPath->closed = true;
+		m_pathCreating = false;
+
+		// 各頂点について、距離などの情報を作る。
+		// 終端の点は先頭の点との距離になる。
+		if (curPath->pointCount >= 2)
+		{
+			BasePoint* p0 = &m_basePoints.GetAt(curPath->pointCount - 1);
+			BasePoint* p1 = &m_basePoints.GetAt(curPath->firstIndex);
+			for (int i = 0; i < curPath->pointCount; ++i)
+			{
+				p0->dir.X = p1->point.X - p0->point.X;
+				p0->dir.Y = p1->point.Y - p0->point.Y;
+				p0->len = Normalize(&p0->dir.X, &p0->dir.Y);	// dir を正規化した上で長さを返す
+
+				//p0->distance.X = p1->point.X - p0->point.X;
+				//p0->distance.Y = p1->point.Y - p0->point.Y;
+				//p0->left = Vector3::Cross(p0->distance, Vector3::UnitZ);
+				//p0->left.Normalize();
+				//p0->len = p0->distance.GetLength();
+				p0 = p1++;
+			}
+
+			// 押し出し方向を求める
+			p0 = &m_basePoints.GetAt(curPath->pointCount - 1);
+			p1 = &m_basePoints.GetAt(curPath->firstIndex);
+			for (int i = 0; i < curPath->pointCount; ++i)
+			{
+				//p1->extrusion.X = (p0->dir.Y + p1->dir.Y);
+				//p1->extrusion.Y = (p0->dir.X + p1->dir.X);
+				//Normalize(&p1->extrusion.X, &p1->extrusion.Y);
+				p1->extrusionDir = Vector3::Cross(p1->dir, Vector3::UnitZ);
+				p0 = p1++;
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1046,6 +1168,7 @@ void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 		const Path& path = m_pathes.GetAt(iPath);
 		int count = path.pointCount;
 
+#if 0
 		// 境界の矩形を求めておく
 		Vector2 posMin(FLT_MAX, FLT_MAX);
 		Vector2 posMax(FLT_MIN, FLT_MIN);
@@ -1064,18 +1187,129 @@ void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 		else {
 			uvSpan = 1.0f / uvSpan;
 		}
+#endif
+
+		// パスが閉じていれば p0 は[last]、p1は[0] として以下の処理を開始
+		// パスが閉じていなければ p0 は[0]、p1は[1] として以下の処理を開始
+		BasePoint* p0 = &m_basePoints.GetAt(path.firstIndex + path.pointCount - 1);
+		BasePoint* p1 = &m_basePoints.GetAt(path.firstIndex);
+		if (!path.closed)
+		{
+			p0 = p1++;
+			--count;	// ループ数も-1
+		}
 
 		// 頂点バッファを作る
 		for (int i = 0; i < count; ++i)
 		{
-			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
+			const BasePoint& pt = *p0;//m_basePoints.GetAt(path.firstIndex + i);
 			DrawingBasicVertex v;
-			v.Position = pt.point;
+
+			//MakeJoint_Bevel(p0, p1);
+
+			//v.Position = pt.point - (pt.left * 5);	// 内側
+			//v.Color = pt.color;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			//m_vertexCache.Add(v);
+			//v.Position = p0->point + (p0->left * 5);	// 外側
+			//v.Color = pt.color;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			//m_vertexCache.Add(v);
+
+
+			//v.Position = pt.point + (pt.extrusionDir * 5);	// 外側
+			//v.Color = pt.color;
+			////v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			////v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			//m_vertexCache.Add(v);
+
+			// 直線の視点部分
+
+			v.Position = pt.point - (pt.extrusionDir * 5);	// 内側
 			v.Color = pt.color;
-			v.UVOffset.X = (pt.point.X - posMin.X) * uvSpan.X;
-			v.UVOffset.Y = (pt.point.Y - posMin.Y) * uvSpan.Y;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
 			m_vertexCache.Add(v);
+
+			v.Position = pt.point + (pt.extrusionDir * 5);	// 外側
+			v.Color = pt.color;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			m_vertexCache.Add(v);
+
+			v.Position = p1->point - (p0->extrusionDir * 5);	// 内側
+			v.Color = pt.color;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			m_vertexCache.Add(v);
+
+			v.Position = p1->point + (p0->extrusionDir * 5);	// 外側
+			v.Color = pt.color;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			m_vertexCache.Add(v);
+
+			if (i == count - 1)
+			{
+
+			}
+			else if (!path.closed && i == count - 2)
+			{
+			}
+			else
+			{
+				v.Position = p1->point - (p0->extrusionDir * 5);	// 内側
+				v.Color = pt.color;
+				//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+				//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+				m_vertexCache.Add(v);
+
+				v.Position = p1->point + (p1->extrusionDir * 5);	// 外側
+				v.Color = pt.color;
+				//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+				//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+				m_vertexCache.Add(v);
+			}
+
+
+			//v.Position = p1->point + (p0->left * 5);	// 外側
+			//v.Color = pt.color;
+			//v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+			//v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+			//m_vertexCache.Add(v);
+
+			/*
+				方針
+				p1 の点を打つ。p0はもう打たれている (終点はまだだが)
+				つまりというか、p0→p1の線を引くのが1ループ。
+				p1が処理の中心で、p0は「1つ前の点」
+				接合点の処理はp0の部分に対して行う。
+			*/
+
+
+			p0 = p1++;
 		}
+
+		// パスが閉じていれば end->begin へも引く
+		//if (path.closed)
+		//{
+		//	const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
+
+		//	DrawingBasicVertex v;
+		//	v.Position = pt.point;
+		//	v.Color = pt.color;
+		//	v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+		//	v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+		//	m_vertexCache.Add(v);
+
+		//	v.Position = pt.point + (pt.left * 5);
+		//	v.Color = pt.color;
+		//	v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+		//	v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+		//	m_vertexCache.Add(v);
+		//}
 	}
 
 	//for (int iPath = 0; iPath < m_pathes.GetCount(); ++iPath)
@@ -1126,6 +1360,38 @@ void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 	//	}
 	//}
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p1)
+{
+	//DrawingBasicVertex v;
+	//v.Position = p0->point - (p0->left * 5);	// 内側
+	//v.Color = p0->color;
+	////v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+	////v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+	//m_vertexCache.Add(v);
+
+	//v.Position = p0->point + (p0->left * 5);	// 外側
+	//v.Color = p0->color;
+	////v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+	////v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+	//m_vertexCache.Add(v);
+
+	//v.Position = p1->point - (p0->left * 5);	// 内側
+	//v.Color = p1->color;
+	////v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+	////v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+	//m_vertexCache.Add(v);
+
+	//v.Position = p1->point + (p0->left * 5);	// 外側
+	//v.Color = p1->color;
+	////v.UVOffset.X = (v.Position.X - posMin.X) * uvSpan.X;
+	////v.UVOffset.Y = (v.Position.Y - posMin.Y) * uvSpan.Y;
+	//m_vertexCache.Add(v);
+}
+
 //
 ////-----------------------------------------------------------------------------
 ////
@@ -1269,7 +1535,13 @@ void DrawingContext::SetFont(Font* font)
 //-----------------------------------------------------------------------------
 void DrawingContext::MoveTo(const Vector3& point, const ColorF& color)
 {
-
+	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
+	DrawingCommands_MoveTo cmd;
+	cmd.type = DrawingCommandType::MoveTo;
+	cmd.point = point;
+	cmd.color = color;
+	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1277,6 +1549,13 @@ void DrawingContext::MoveTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void DrawingContext::LineTo(const Vector3& point, const ColorF& color)
 {
+	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
+	DrawingCommands_LineTo cmd;
+	cmd.type = DrawingCommandType::LineTo;
+	cmd.point = point;
+	cmd.color = color;
+	AddCommand(&cmd, sizeof(cmd));
+	m_flushRequested = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1520,6 +1799,23 @@ void GraphicsContext::SetBrush(Brush* brush)
 void GraphicsContext::SetOpacity(float opacity)
 {
 	m_drawingContext.SetOpacity(opacity);
+}
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.MoveTo(point, color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
+{
+	TryChangeRenderingClass(RendererType::DrawingContext);
+	m_drawingContext.LineTo(point, color);
 }
 
 //-----------------------------------------------------------------------------

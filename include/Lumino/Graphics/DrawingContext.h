@@ -34,6 +34,7 @@ namespace detail
 enum class DrawingClass : uint32_t
 {
 	Unknown,
+	PathStroke,
 	PointList,
 	LineList,
 	TriangleList,
@@ -146,6 +147,8 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
+	void MoveTo(const Vector3& point, const ColorF& color);
+	void LineTo(const Vector3& point, const ColorF& color);
 	void DrawPoint(const Vector3& point, const ColorF& color);
 	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 	void DrawRectangle(const RectF& rect, const ColorF& color);
