@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Renderer.h>
-#include <Lumino/Graphics/GeometryRenderer.h>
 #include <Lumino/Graphics/Shader.h>
 #include "MMETypes.h"
 
@@ -29,8 +28,6 @@ public:
 
 	struct DrawParams
 	{
-		//Renderer*			Renderer;
-		//GeometryRenderer*	GeometryRenderer;
 		SceneGraphRenderingContext*			Params;
 		//int							SubsetCount;
 		SceneNode*					RenderingNode;

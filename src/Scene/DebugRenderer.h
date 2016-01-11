@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Color.h>
-#include <Lumino/Graphics/GeometryRenderer.h>
+#include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Physics/IDebugRenderer.h>
 #include <Lumino/Scene/Common.h>
 
@@ -12,8 +12,8 @@ class DebugRenderer
 	: public Physics::IDebugRenderer
 {
 public:
-	DebugRenderer(GeometryRenderer* renderer)
-		: m_renderer(renderer)
+	DebugRenderer(GraphicsContext* context)
+		: m_context(context)
 	{
 	}
 
@@ -21,11 +21,11 @@ public:
 
 	virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
 	{
-		m_renderer->DrawLine(from, to, ColorF(fromColor, 1.0f), ColorF(toColor, 1.0f));
+		m_context->DrawPrimitiveLine(from, ColorF(fromColor, 1.0f), to, ColorF(toColor, 1.0f));
 	}
 
 private:
-	GeometryRenderer*	m_renderer;
+	GraphicsContext*		m_context;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -49,7 +49,8 @@ void InfomationRenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
 	if (m_manager->GetPhysicsManager() != NULL)
 	{
-		DebugRenderer dr(dc->GetGeometryRenderer());
+		DebugRenderer dr(dc->BeginGraphicsContext());
+		// TODO: このへんのGetGeometryRendererもいらない
 		dc->GetGeometryRenderer()->SetViewProjTransform(dc->CurrentCamera->GetViewProjectionMatrix());
 		dc->GetGeometryRenderer()->BeginPass();
 		m_manager->GetPhysicsManager()->DrawDebugShapes(&dr);

@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 class DrawingContextImpl;
 class SpriteRenderer;
 namespace detail { class TextRenderer; }
+namespace detail { class PrimitiveRenderer; }
 
 /**
 	@brief	図形の枠線の描画方法を表します。
@@ -160,6 +161,22 @@ public:
 	void DrawRectangle(const RectF& rect, const ColorF& color);
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
+	
+
+	// プリミティブ 
+	void DrawPrimitiveLine(
+		const Vector3& from, const ColorF& fromColor,
+		const Vector3& to, const ColorF& toColor);
+
+	// 左回り
+	void DrawSquare(
+		float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
+		float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
+		float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
+		float x4, float y4, float z4, float u4, float v4, const ColorF& c4);
+
+
+	void DrawText(const PointF& position, const StringRef& text);
 
 	void Flush();
 
@@ -172,12 +189,14 @@ public:
 	SpriteRenderer* BeginSpriteRendering();
 
 
-protected:
+public:
 	enum class RendererType
 	{
 		None,
 		DrawingContext,
 		SpriteRenderer,
+		TextRenderer,
+		PrimitiveRenderer,
 	};
 
 	friend class GraphicsManager;
@@ -185,10 +204,11 @@ protected:
 	virtual ~GraphicsContext();
 
 
-	RendererType			m_currentRenderer;
-	DrawingContext			m_drawingContext;
-	SpriteRenderer*			m_spriteRenderer;
-	detail::TextRenderer*	m_textRenderer;
+	RendererType				m_currentRenderer;
+	DrawingContext				m_drawingContext;
+	SpriteRenderer*				m_spriteRenderer;
+	detail::TextRenderer*		m_textRenderer;
+	detail::PrimitiveRenderer*	m_primitiveRenderer;
 
 private:
 	void TryChangeRenderingClass(RendererType dc);

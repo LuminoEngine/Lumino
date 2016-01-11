@@ -118,6 +118,7 @@ private:
 	Size				m_viewPixelSize;
 	Font*				m_font;
 	bool				m_stateModified;
+	bool				m_flushRequested;
 };
 
 } // namespace detail

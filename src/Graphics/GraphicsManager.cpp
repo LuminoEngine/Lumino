@@ -691,6 +691,19 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail
+{
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GraphicsManager* GetGraphicsManager(GraphicsManager* priority)
+{
+	GraphicsManager* manager = priority;
+	if (manager == nullptr) manager = GraphicsManager::Instance;
+	assert(manager != nullptr);
+	return manager;
+}
+} // namespace detail
 
 //=============================================================================
 // GraphicsResourceObject

@@ -217,6 +217,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
 	src/Graphics/PngFile.h
+	src/Graphics/PrimitiveRenderer.cpp
+	src/Graphics/PrimitiveRenderer.h
 	src/Graphics/ProfilerRenderer.cpp
 	src/Graphics/ProfilerRenderer.h
 	src/Graphics/Renderer.cpp
@@ -232,7 +234,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/SpriteRendererImpl.h
 	src/Graphics/TextLayoutEngine.cpp
 	src/Graphics/TextLayoutEngine.h
-	src/Graphics/TextRenderer_imaging.cpp
+	src/Graphics/TextRenderer.cpp
 	src/Graphics/TextRenderer.h
 	src/Graphics/SwapChain.cpp
 	src/Graphics/Texture.cpp

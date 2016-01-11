@@ -1,4 +1,7 @@
 /*
+	[2015/1/11] PrimitiveRenderer とはなぜ区別する？
+		PrimitiveRenderer は単純な形状を高速・大量に描画するために使用する。
+
 	[2015/1/3] 面張りについて
 		とりあえずねじれパスは想定しない。これは軽量な組み込みモードとする。
 		本当にちゃんとしたのが使いたい要望あれば、ExpandFill だけを poly2tri で置き換えるモードを作る。
@@ -99,6 +102,7 @@
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
 #include "TextRenderer.h"
+#include "PrimitiveRenderer.h"
 #include "RendererImpl.h"
 
 LN_NAMESPACE_BEGIN
@@ -643,6 +647,9 @@ private:
 		Vector3			dir;			// 次の点への向き
 		float			len;			// 次の点との距離
 		Vector3			extrusionDir;	// 押し出し方向 (dirに対する左方向。符号を反転すると右方向への押し出し量になる)
+
+		Vector2			userUV;
+		bool			userUVUsed = false;
 		
 
 		//Vector3			distance;	// 次の点との距離
@@ -662,6 +669,7 @@ private:
 	void AddPath(PathType type);
 	Path* GetCurrentPath();
 	void AddBasePoint(const Vector3& point, const ColorF& color);
+	void AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed);
 	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
 	void EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose);
 
@@ -1065,6 +1073,22 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 	pt.color.G *= m_currentState.ForeColor.G;
 	pt.color.B *= m_currentState.ForeColor.B;
 	pt.color.A *= m_currentState.ForeColor.A;
+	m_basePoints.Add(pt);
+	GetCurrentPath()->pointCount++;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed)
+{
+	BasePoint pt(point, color);
+	pt.color.R *= m_currentState.ForeColor.R;
+	pt.color.G *= m_currentState.ForeColor.G;
+	pt.color.B *= m_currentState.ForeColor.B;
+	pt.color.A *= m_currentState.ForeColor.A;
+	pt.userUV = userUV;
+	pt.userUVUsed = userUVUsed;
 	m_basePoints.Add(pt);
 	GetCurrentPath()->pointCount++;
 }
@@ -1869,6 +1893,8 @@ GraphicsContext* GraphicsContext::GetContext()
 GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	: m_currentRenderer(RendererType::None)
 	, m_spriteRenderer(nullptr)
+	, m_textRenderer(nullptr)
+	, m_primitiveRenderer(nullptr)
 {
 	Renderer = manager->GetRenderer();
 	GeometryRenderer = GeometryRenderer::Create(manager);
@@ -1877,6 +1903,10 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 
 	m_textRenderer = LN_NEW detail::TextRenderer();
 	m_textRenderer->Initialize(manager);
+
+	m_primitiveRenderer = LN_NEW detail::PrimitiveRenderer();
+	m_primitiveRenderer->Initialize(manager);
+	m_primitiveRenderer->SetUseInternalShader(false);	// TODO
 }
 
 //-----------------------------------------------------------------------------
@@ -1887,6 +1917,7 @@ GraphicsContext::~GraphicsContext()
 	LN_SAFE_RELEASE(GeometryRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_textRenderer);
+	LN_SAFE_RELEASE(m_primitiveRenderer);
 }
 
 //-----------------------------------------------------------------------------
@@ -1898,6 +1929,10 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, minZ, maxZ);
 	m_drawingContext.SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
+	m_textRenderer->SetViewProjMatrix(proj);
+	m_textRenderer->SetViewPixelSize(size);
+	m_primitiveRenderer->SetViewProjMatrix(proj);
+	m_primitiveRenderer->SetViewPixelSize(size);
 }
 
 //-----------------------------------------------------------------------------
@@ -1999,10 +2034,47 @@ void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rec
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GraphicsContext::DrawPrimitiveLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+{
+	TryChangeRenderingClass(RendererType::PrimitiveRenderer);
+	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawSquare(
+	float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
+	float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
+	float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
+	float x4, float y4, float z4, float u4, float v4, const ColorF& c4)
+{
+	TryChangeRenderingClass(RendererType::PrimitiveRenderer);
+	m_primitiveRenderer->DrawSquare(
+		Vector3(x1, y1, z1), Vector2(u1, v1), c1,
+		Vector3(x2, y2, z2), Vector2(u2, v2), c2,
+		Vector3(x3, y3, z3), Vector2(u3, v3), c3,
+		Vector3(x4, y4, z4), Vector2(u4, v4), c4);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawText(const PointF& position, const StringRef& text)
+{
+	TryChangeRenderingClass(RendererType::TextRenderer);
+	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), position);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GraphicsContext::Flush()
 {
 	m_drawingContext.Flush();
 	m_spriteRenderer->Flush();
+	m_textRenderer->Flush();
+	m_primitiveRenderer->Flush();
 }
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Internal.h"
+#include <Lumino/Graphics/Common.h>
 
 #define LN_CALL_COMMAND(func, command, ...) \
 	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
@@ -25,3 +26,14 @@
 	else { \
 		m_deviceObj->func(__VA_ARGS__); \
 	}
+
+LN_NAMESPACE_BEGIN
+namespace detail
+{
+
+// Manager のメンバではなく普通の関数。include を少なくできる。
+GraphicsManager* GetGraphicsManager(GraphicsManager* priority);
+
+} // namespace detail
+LN_NAMESPACE_END
+

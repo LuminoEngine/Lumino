@@ -15,14 +15,13 @@ class SceneGraphRenderingContext
 {
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
-	//Details::Renderer*			Renderer;	// TODO 内部クラス
-	//GeometryRenderer*			GeometryRenderer;
 	Camera*						CurrentCamera;
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
 public:
 	DrawingContext* BeginDrawingContext();
 	SpriteRenderer* BeginSpriteRendering();
+	GraphicsContext* BeginGraphicsContext() { return m_internalContext; }
 	void Flush();
 
 	Details::Renderer* GetRenderer() { return m_internalContext->Renderer; }

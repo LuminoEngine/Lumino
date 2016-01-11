@@ -1,3 +1,7 @@
+/*
+インタラクティブアート
+*/
+
 #include "Common.h"
 #include "../../src/EngineManager.h"
 #include "../../src/Modeling/ModelManager.h"
@@ -135,23 +139,25 @@ int main()
 		//auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
 		//auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
 
-#if 0
-		auto s2 = Sprite::Create3D();
-		s2->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
-		s2->SetSrcRect(Rect(0, 0, 48,80));
-		s2->SetSize(SizeF(48.0 / 40, 80.0 / 40));
-		//s2->SsetCenter(Vector3(48.0 / 40, 80.0/40, 0));
-		s2->SetPosition(Vector3 (1, 1, 0));
+#if 1
+		//auto s2 = Sprite::Create3D();
+		//s2->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
+		//s2->SetSrcRect(Rect(0, 0, 48,80));
+		//s2->SetSize(SizeF(48.0 / 40, 80.0 / 40));
+		////s2->SsetCenter(Vector3(48.0 / 40, 80.0/40, 0));
+		//s2->SetPosition(Vector3 (1, 1, 0));
 
-		auto s3 = Sprite::Create3D();
-		s3->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
-		s3->SetSrcRect(Rect(88, 0, 48, 48));
-		s3->SetSize(SizeF(1, 1));
-		s3->SetCenter(Vector3(0.5, 2.0, 0));
-		s3->SetPosition(Vector3(5, 1, 0));
+		//auto s3 = Sprite::Create3D();
+		//s3->SetTexture(Texture2D::Create(_T("D:/GameProjects/Chronicles/ch_1/Battler1.png")));
+		//s3->SetSrcRect(Rect(88, 0, 48, 48));
+		//s3->SetSize(SizeF(1, 1));
+		//s3->SetCenter(Vector3(0.5, 2.0, 0));
+		//s3->SetPosition(Vector3(5, 1, 0));
 #endif
 
 		auto texBrush1 = TextureBrush::Create(LN_LOCALFILE("../Media/Fire1.png"));
+
+		
 
 		do
 		{
@@ -226,6 +232,8 @@ int main()
 				//Graphics::LineTo(Vector3(100, 150, 1), ColorF::White);
 				Graphics::BezierCurveTo(Vector3(200, 300, 0), Vector3(0, 400, 0), Vector3(100, 400, 0), ColorF::White);
 				Graphics::ClosePath();
+
+				Graphics::DrawText(PointF(200, 10), _T("lumino"));
 
 
 

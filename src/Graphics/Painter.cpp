@@ -90,7 +90,7 @@ ColorBrush::~ColorBrush()
 //-----------------------------------------------------------------------------
 RefPtr<TextureBrush> TextureBrush::Create(const StringRef& filePath)
 {
-	RefPtr<TextureBrush> obj(LN_NEW TextureBrush());
+	RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);
 	obj->Create(filePath.GetBegin(), nullptr);	// TODO: getBegin
 	return obj;
 }

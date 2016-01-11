@@ -14,6 +14,7 @@ public:
 
 	static void SetBrush(Brush* brush);
 	static void SetOpacity(float opacity);	// 0~1
+	static void SetPrimitiveRenderingEnabled(bool enabled);
 
 	static void MoveTo(const Vector3& point, const ColorF& color);
 	static void LineTo(const Vector3& point, const ColorF& color);
@@ -29,6 +30,8 @@ public:
 	static void DrawEllipse(const Vector3& center, const Vector2& radius);
 
 	static void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
+
+	static void DrawText(const PointF& position, const StringRef& text);
 
 	static void Flush();
 

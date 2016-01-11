@@ -5,6 +5,7 @@
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
+#include "../Graphics/PrimitiveRenderer.h"	// todo
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -252,11 +253,18 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{
-		dc->GetGeometryRenderer()->DrawSquare(
+		dc->BeginGraphicsContext()->m_primitiveRenderer->SetViewProjMatrix(dc->CurrentCamera->GetViewProjectionMatrix());
+		dc->BeginGraphicsContext()->DrawSquare(
 			m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
 			m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
-			m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White,
-			m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, ColorF::White);
+			m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, ColorF::White,
+			m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White);
+		dc->BeginGraphicsContext()->Flush();
+		//dc->GetGeometryRenderer()->DrawSquare(
+		//	m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
+		//	m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
+		//	m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White,
+		//	m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, ColorF::White);
 	}
 }
 
