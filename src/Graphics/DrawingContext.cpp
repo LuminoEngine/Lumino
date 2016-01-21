@@ -1,4 +1,29 @@
 /*
+	[2015/1/21] 全体構成
+
+		RenderingContext	Renderer	
+							PrimitiveRenderer
+							SpriteRenderer		
+		GraphicsContext		Renderer
+							GeometryRenderer
+							TextRenderer
+
+
+		最上位は RenderingContext と GraphicsContext。これ以外はユーザーや他のモジュールに公開しない。
+		RenderingContext と GraphicsContext が持つステートは排他。
+		根っこでは1つの IRenderer を使うが、互いのステート変更は影響しない。
+
+		まず、そもそもの問題は GraphicsContext と Renderer を同時に使いたいということにある。
+		例えば、Scene の中に GUI を描きたいとか。
+		そうでなくても、最初は GraphicsContext に Renderer の機能を持たせてしまおうとしていたが、
+		それだとある状態でしか使えない関数があまりにも多くなるし、クラスの規模も大きくなる。
+		つまりユーザーが気を付けなければならないことが増えてしまう。
+
+		Context は、IRenderer に設定できる全ての設定を保持する。あとシェーダ。
+		Context の Draw～ や Flush で、アクティブなコンテキストの切り替えを行う。
+		このとき古いコンテキストは Flush し、新しいコンテキストのステートを全て適用する。
+		切り替え通知は Context レベルに通知する。包含している各種 Renderer の Flush を呼ぶため。
+
 	[2015/1/21] SceneGraph 向けに低レベル Renderer は公開する？
 		
 		そもそも各種 Renderer を隠しているのは、ユーザーの知らないところでステートが変わって
