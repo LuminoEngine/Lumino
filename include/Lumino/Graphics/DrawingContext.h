@@ -129,6 +129,9 @@ private:
 };
 
 
+
+
+
 class GraphicsContext
 	: public RefObject
 {
@@ -151,6 +154,9 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
+	void SetShader(Shader* shader);
+
+
 	void MoveTo(const Vector3& point, const ColorF& color);
 	void LineTo(const Vector3& point, const ColorF& color);
 	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
@@ -209,6 +215,9 @@ public:
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
 	detail::PrimitiveRenderer*	m_primitiveRenderer;
+
+	// このクラスが管理するステート。VertexBuffer などは描画時に各種 RendererCore 内で変更されるからちょっと考える必要がありそう。
+	//Shader*						m_shader;
 
 private:
 	void TryChangeRenderingClass(RendererType dc);

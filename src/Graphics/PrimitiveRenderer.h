@@ -32,7 +32,7 @@ public:
 	~PrimitiveRendererCore();
 	void Initialize(GraphicsManager* manager);
 
-	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode);
+	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader);
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
 	void DrawSquare(const DrawSquareData& data);
 	void Flush();
@@ -73,6 +73,7 @@ private:
 	CacheBuffer<uint16_t>	m_indexCache;
 	Driver::ITexture*		m_foreTexture;
 	PrimitiveRendererMode	m_mode;
+	Driver::IShader*		m_userShader;
 	bool					m_useInternalShader;
 
 	struct
@@ -83,7 +84,7 @@ private:
 		Driver::IShaderVariable*	varWorldMatrix;
 		Driver::IShaderVariable*	varViewProjMatrix;
 		Driver::IShaderVariable*	varPixelStep;
-		Driver::IShaderVariable*	varTexture;
+		Driver::IShaderVariable*	varTexture;		// TODO: égÇ¡ÇƒÇ»Ç¢ÅH
 
 	} m_shader;
 };
@@ -99,7 +100,8 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
-	void SetUseInternalShader(bool useInternalShader);
+	void SetUseInternalShader(bool useInternalShader);	// TODO: Ç¢ÇÁÇ»Ç¢Ç©Ç‡
+	void SetUserShader(Shader* shader) { LN_REFOBJ_SET(m_userShader, shader); m_stateModified = true; }
 	//void SetTexture(Texture* texture);
 
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
@@ -121,7 +123,8 @@ private:
 	Matrix					m_transform;
 	Matrix					m_viewProj;
 	Size					m_viewPixelSize;
-	Texture*				m_texture;
+	//Texture*				m_texture;
+	Shader*					m_userShader;
 	PrimitiveRendererMode	m_mode;
 	bool					m_useInternalShader;
 	bool					m_stateModified;

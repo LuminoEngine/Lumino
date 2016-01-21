@@ -323,6 +323,39 @@ namespace Driver
 	class IShaderPass;
 
 } // namespace Driver
+
+namespace detail
+{
+
+	class HiLevelRendererFront : public RefObject
+	{
+	public:
+		virtual void Flush() = 0;
+	};
+
+	class HiLevelRendererCore : public RefObject
+	{
+	public:
+
+		void ActivateFront(HiLevelRendererFront* renderer)
+		{
+			if (renderer != m_rendererFront)
+			{
+				if (m_rendererFront != nullptr)
+				{
+					m_rendererFront->Flush();
+				}
+				m_rendererFront = renderer;
+			}
+		}
+
+	private:
+		HiLevelRendererFront*	m_rendererFront = nullptr;
+	};
+
+} // namespace detail
+
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

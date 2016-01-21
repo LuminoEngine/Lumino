@@ -687,6 +687,7 @@
 #include "FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "PainterEngine.h"
+#include "TextRenderer.h"
 #include <Lumino/Graphics/DrawingContext.h>
 
 LN_NAMESPACE_BEGIN
@@ -775,6 +776,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	, m_renderingThread(nullptr)
 	, m_graphicsContext(nullptr)
 	, m_painterEngine(nullptr)
+	, m_textRendererCore(nullptr)
 {
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
 	m_mainWindow = configData.MainWindow;
@@ -832,6 +834,9 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	m_painterEngine = LN_NEW PainterEngine();
 	m_painterEngine->Create(this);
 
+	m_textRendererCore = LN_NEW detail::TextRendererCore();
+	m_textRendererCore->Initialize(this);
+
 	m_graphicsContext = LN_NEW GraphicsContext(this);
 
 	// TextRendererCache
@@ -854,6 +859,7 @@ GraphicsManager::~GraphicsManager()
 	if (m_glyphTextureCache != NULL) {
 		m_glyphTextureCache->Finalize();
 	}
+	LN_SAFE_RELEASE(m_textRendererCore);
 	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_dummyTexture);
 	LN_SAFE_RELEASE(m_renderer);

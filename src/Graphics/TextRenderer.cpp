@@ -279,7 +279,6 @@ TextRenderer::TextRenderer()
 TextRenderer::~TextRenderer()
 {
 	LN_SAFE_RELEASE(m_font);
-	LN_SAFE_RELEASE(m_core);
 }
 
 //-----------------------------------------------------------------------------
@@ -288,10 +287,7 @@ TextRenderer::~TextRenderer()
 void TextRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-
-	m_core = LN_NEW TextRendererCore();
-	m_core->Initialize(m_manager);
-
+	m_core = m_manager->GetTextRendererCore();
 	SetFont(m_manager->GetFontManager()->GetDefaultFont());
 }
 
@@ -462,8 +458,10 @@ void TextRenderer::Flush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextRenderer::CheckUpdateState()
+void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりたいこと
 {
+	m_core->ActivateFront(this);
+
 	if (m_stateModified)
 	{
 		Flush();

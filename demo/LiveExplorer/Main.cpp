@@ -118,6 +118,7 @@ int main()
 		tilemap->GetLayers()->Add(tileLayer);
 
 #endif
+#if 1
 		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
 		//tilemapNode->SetTileMap(tilemap);
 
@@ -135,6 +136,7 @@ int main()
 		rigidBody3->SetPosition(0.1, 10, 0.5);
 		rigidBody3->SetMass(1.0f);
 		rigidBody3->SetConstraintFlags(Physics::RigidBodyConstraintFlags::FreezePositionZ);
+#endif
 
 		//auto m1 = MeshModelObject::Create(_T("D:/Documents/Modeling/BG_Sky1/BG_Sky1.x"));
 		//auto s1 = tr::SpriteModelObject::Create(_T("D:/GameProjects/Chronicles/ch_1/test/NewProject.ssbp"));
@@ -182,6 +184,10 @@ int main()
 			if (Engine::BeginRendering())
 			{
 				Engine::Render();
+
+
+
+#if 1
 
 				Graphics::Set2DRenderingMode();
 				Graphics::SetOpacity(1.0f);
@@ -239,6 +245,7 @@ int main()
 
 				
 				Graphics::Flush();
+#endif
 
 				Engine::EndRendering();
 			}

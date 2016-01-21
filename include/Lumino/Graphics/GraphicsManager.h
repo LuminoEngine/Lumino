@@ -13,6 +13,11 @@ class GraphicsContext;
 class PainterEngine;
 class TextRenderer;
 
+namespace detail
+{
+	class TextRendererCore;
+}
+
 /**
 	@brief		グラフィックス機能の管理クラスです。
 */
@@ -124,6 +129,7 @@ LN_INTERNAL_ACCESS:
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
+	detail::TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
 	Driver::ITexture* GetDummyTexture() { return m_dummyTexture; }
 
 private:
@@ -140,6 +146,7 @@ private:
 	RenderingThread*				m_renderingThread;
 
 	GraphicsContext*				m_graphicsContext;
+	detail::TextRendererCore*		m_textRendererCore;
 	PainterEngine*					m_painterEngine;
 	Driver::ITexture*				m_dummyTexture;
 	bool							m_platformTextureLoading;

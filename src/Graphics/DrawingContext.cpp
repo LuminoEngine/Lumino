@@ -1,4 +1,23 @@
 /*
+	[2015/1/21] SceneGraph 向けに低レベル Renderer は公開する？
+		
+		そもそも各種 Renderer を隠しているのは、ユーザーの知らないところでステートが変わって
+		原因のわかりにくい問題にならないようにするため。
+
+
+	[2015/1/21] カレントの Shader を管理するのは誰？
+		×GraphicsContext。
+		×個々の Renderer に管理させるのはあまりよろしくない気がする。
+		××PrimitiveRenderer はまぁ SetShader とかあってもいいと思うけど、
+		××GeometryRenderer は WPF みたいにシステムによって必ず実行される Shader があって、
+		×その後でユーザーの Shader が動くかもしれない。
+		×（まぁ、ユーザー Shader の中で GeometryRenderer 用の関数を呼んでもらってもいいが）
+
+		・・・でも、個々のRendereに任せてしまってもいいかも？
+		Activate のとき GraphicsContext が面倒見る必要ないということだし。
+		とりあえずこっちの方向で。
+
+
 	[2015/1/11] PrimitiveRenderer とはなぜ区別する？
 		PrimitiveRenderer は単純な形状を高速・大量に描画するために使用する。
 
@@ -101,6 +120,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/GeometryRenderer.h>
+#include <Lumino/Graphics/Shader.h>
 #include "TextRenderer.h"
 #include "PrimitiveRenderer.h"
 #include "RendererImpl.h"
@@ -1895,6 +1915,7 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	, m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
 	, m_primitiveRenderer(nullptr)
+	//, m_shader(nullptr)
 {
 	Renderer = manager->GetRenderer();
 	GeometryRenderer = GeometryRenderer::Create(manager);
@@ -1918,6 +1939,7 @@ GraphicsContext::~GraphicsContext()
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_textRenderer);
 	LN_SAFE_RELEASE(m_primitiveRenderer);
+	//LN_SAFE_RELEASE(m_shader);
 }
 
 //-----------------------------------------------------------------------------
@@ -1950,6 +1972,15 @@ void GraphicsContext::SetOpacity(float opacity)
 {
 	m_drawingContext.SetOpacity(opacity);
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::SetShader(Shader* shader)
+{
+	m_primitiveRenderer->SetUserShader(shader);
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

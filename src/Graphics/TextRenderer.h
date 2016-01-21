@@ -12,7 +12,7 @@ namespace detail
 {
 
 class TextRendererCore
-	: public RefObject
+	: public HiLevelRendererCore
 {
 public:
 	struct GlyphRunData
@@ -66,7 +66,6 @@ private:
 	Driver::ITexture*		m_foreTexture;
 	Driver::ITexture*		m_glyphsMaskTexture;
 
-
 	struct
 	{
 		Driver::IShader*			shader;
@@ -80,10 +79,12 @@ private:
 		Driver::IShaderVariable*	varPixelStep;
 
 	} m_shader;
+
+	TextRenderer*			m_activeRenderer;
 };
 
 class TextRenderer
-	: public RefObject
+	: public HiLevelRendererFront
 {
 public:
 	TextRenderer();
@@ -102,16 +103,16 @@ public:
 	void DrawString(const TCHAR* str, int length, const PointF& position);
 	void DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
 
-	void Flush();
+	virtual void Flush() override;
 
 public:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 
 private:
-	GraphicsManager*	m_manager;
+	GraphicsManager*	m_manager;	// TODO: core から取れる。いらない
 	TextRendererCore*	m_core;
-	ByteBuffer			m_tempBuffer;
+	ByteBuffer			m_tempBuffer;	// TODO: 複数 Renderer が作られたときに備えて、メモリ効率のため core に移動してしまうのも手
 
 	Matrix				m_transform;
 	Matrix				m_viewProj;
