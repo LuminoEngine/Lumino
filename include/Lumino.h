@@ -27,7 +27,6 @@
 #include "Lumino/Graphics/IndexBuffer.h"
 #include "Lumino/Graphics/Texture.h"
 #include "Lumino/Graphics/Shader.h"
-#include "Lumino/Graphics/GeometryRenderer.h"
 #include "Lumino/Graphics/SpriteRenderer.h"
 #include "Lumino/Graphics/Bitmap.h"
 #include "Lumino/Graphics/RenderingContext.h"

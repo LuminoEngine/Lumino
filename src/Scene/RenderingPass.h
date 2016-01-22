@@ -4,7 +4,6 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Renderer.h>
-#include <Lumino/Graphics/GeometryRenderer.h>
 #include "../Graphics/RendererImpl.h"
 #include "Internal.h"
 #include "MME/MMEShader.h"

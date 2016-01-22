@@ -25,7 +25,6 @@ public:
 	void Flush();
 
 	Details::Renderer* GetRenderer() { return m_internalContext->Renderer; }
-	GeometryRenderer* GetGeometryRenderer() { return m_internalContext->GeometryRenderer; }	// TODO: あとで消すと思う
 
 	// view proj は パス開始時にカメラのものが設定されている
 	RenderingContext2* GetRenderingContext() { return m_renderingContext; }

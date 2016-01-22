@@ -173,7 +173,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/Font.h
 	include/Lumino/Graphics/FontManager.h
-	include/Lumino/Graphics/GeometryRenderer.h
 	include/Lumino/Graphics/GlyphRun.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
@@ -206,7 +205,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/FreeTypeFont.cpp
 	src/Graphics/FreeTypeFont.h
 	src/Graphics/GeometryRenderer.cpp
-	src/Graphics/GeometryRendererImpl.h
+	src/Graphics/GeometryRenderer.h
 	src/Graphics/GlyphRun.cpp
 	src/Graphics/Graphics.cpp
 	src/Graphics/GraphicsException.cpp

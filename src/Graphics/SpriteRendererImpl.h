@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/GraphicsManager.h>
-#include <Lumino/Graphics/GeometryRenderer.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 

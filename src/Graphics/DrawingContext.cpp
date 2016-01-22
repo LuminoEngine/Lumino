@@ -151,7 +151,6 @@
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
-#include <Lumino/Graphics/GeometryRenderer.h>
 #include <Lumino/Graphics/Shader.h>
 #include "TextRenderer.h"
 #include "PrimitiveRenderer.h"
@@ -1948,7 +1947,6 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	, m_textRenderer(nullptr)
 {
 	Renderer = manager->GetRenderer();
-	GeometryRenderer = GeometryRenderer::Create(manager);
 	m_drawingContext.Initialize(manager);
 	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
 
@@ -1961,10 +1959,8 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 GraphicsContext::~GraphicsContext()
 {
-	LN_SAFE_RELEASE(GeometryRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_textRenderer);
-	//LN_SAFE_RELEASE(m_shader);
 }
 
 //-----------------------------------------------------------------------------

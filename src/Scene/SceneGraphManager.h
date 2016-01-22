@@ -4,7 +4,6 @@
 #include <Lumino/Base/Stack.h>
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
-#include <Lumino/Graphics/GeometryRenderer.h>
 #include "../Effect/EffectManager.h"
 #include "../Modeling/ModelManager.h"
 #include "Internal.h"
