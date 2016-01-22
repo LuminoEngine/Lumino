@@ -52,6 +52,8 @@ class FrameTextureBrush;
 typedef RefPtr<Brush>				BrushPtr;
 typedef RefPtr<FrameTextureBrush>	FrameTextureBrushPtr;
 
+class RenderingContext2;
+
 struct TextLayoutResult;
 
 namespace Internal

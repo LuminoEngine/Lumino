@@ -169,17 +169,17 @@ public:
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 	
 
-	// プリミティブ 
-	void DrawPrimitiveLine(
-		const Vector3& from, const ColorF& fromColor,
-		const Vector3& to, const ColorF& toColor);
+	//// プリミティブ 
+	//void DrawPrimitiveLine(
+	//	const Vector3& from, const ColorF& fromColor,
+	//	const Vector3& to, const ColorF& toColor);
 
-	// 左回り
-	void DrawSquare(
-		float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
-		float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
-		float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
-		float x4, float y4, float z4, float u4, float v4, const ColorF& c4);
+	//// 左回り
+	//void DrawSquare(
+	//	float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
+	//	float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
+	//	float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
+	//	float x4, float y4, float z4, float u4, float v4, const ColorF& c4);
 
 
 	void DrawText(const PointF& position, const StringRef& text);

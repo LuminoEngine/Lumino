@@ -49,13 +49,10 @@ void InfomationRenderingPass::PostRender(SceneGraphRenderingContext* dc)
 {
 	if (m_manager->GetPhysicsManager() != NULL)
 	{
-		DebugRenderer dr(m_manager->GetGraphicsManager()->GetRenderingContext()/*dc->BeginGraphicsContext()*/);
+		DebugRenderer dr(m_manager->GetGraphicsManager()->GetRenderingContext());
+		// TODO: SetViewProjection は別の場所でやったほうがステート変更少なくてすむかも？
 		m_manager->GetGraphicsManager()->GetRenderingContext()->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
-		// TODO: このへんのGetGeometryRendererもいらない
-		//dc->GetGeometryRenderer()->SetViewProjTransform(dc->CurrentCamera->GetViewProjectionMatrix());
-		//dc->GetGeometryRenderer()->BeginPass();
 		m_manager->GetPhysicsManager()->DrawDebugShapes(&dr);
-		//dc->GetGeometryRenderer()->EndPass();
 	}
 }
 

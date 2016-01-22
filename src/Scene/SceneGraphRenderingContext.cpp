@@ -13,8 +13,9 @@ LN_NAMESPACE_SCENE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SceneGraphRenderingContext::SceneGraphRenderingContext(GraphicsContext* internalContext)
-	: m_internalContext(internalContext)
+SceneGraphRenderingContext::SceneGraphRenderingContext(RenderingContext2* renderingContext, GraphicsContext* internalContext)
+	: m_renderingContext(renderingContext)
+	, m_internalContext(internalContext)
 {
 }
 

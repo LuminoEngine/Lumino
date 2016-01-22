@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Graphics/RenderingContext.h>
 #include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"
 #include "MME/MMERenderingPass.h"
@@ -134,6 +135,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 		//RenderingParams params;
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
 		dc->CurrentCamera = camera;
+		dc->GetRenderingContext()->SetViewProjection(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 		for (RenderingPass* pass : *GetRenderingPasses())
 		{
 			if (pass == nullptr) continue;
