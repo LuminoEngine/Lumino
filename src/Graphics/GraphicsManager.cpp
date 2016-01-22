@@ -983,9 +983,15 @@ void GraphicsManager::SwitchActiveContext(detail::IContext* context)
 	{
 		if (m_activeContext != nullptr)
 		{
+			m_activeContext->OnDeactivated();
+		}
+
+		m_activeContext = context;
+
+		if (m_activeContext != nullptr)
+		{
 			m_activeContext->OnActivated();
 		}
-		m_activeContext = context;
 	}
 }
 

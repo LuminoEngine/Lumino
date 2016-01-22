@@ -836,17 +836,17 @@ const String& ShaderPass::GetName() const
 //-----------------------------------------------------------------------------
 void ShaderPass::Apply()
 {
-	if (m_owner->m_viewportPixelSize != nullptr)
-	{
-		Texture* tex = m_owner->GetManager()->GetRenderer()->GetRenderTarget(0);
-		const Size& size = tex->GetRealSize();
-		float w = size.Width;
-		float h = size.Height;
-		const Vector4& vec = m_owner->m_viewportPixelSize->GetVector();
-		if (vec.X != w || vec.Y != h) {
-			m_owner->m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
-		}
-	}
+	//if (m_owner->m_viewportPixelSize != nullptr)
+	//{
+	//	Texture* tex = m_owner->GetManager()->GetRenderer()->GetRenderTarget(0);
+	//	const Size& size = tex->GetRealSize();
+	//	float w = size.Width;
+	//	float h = size.Height;
+	//	const Vector4& vec = m_owner->m_viewportPixelSize->GetVector();
+	//	if (vec.X != w || vec.Y != h) {
+	//		m_owner->m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
+	//	}
+	//}
 
 	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
 }

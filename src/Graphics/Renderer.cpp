@@ -279,7 +279,7 @@ void Renderer::FlushState(const detail::ContextState& state)
 		SetVertexBuffer(state.vertexBuffer);
 		SetIndexBuffer(state.indexBuffer);
 	}
-	else if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::ShaderPass))
+	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::ShaderPass))
 	{
 		if (state.GetShaderPass() != nullptr)
 		{

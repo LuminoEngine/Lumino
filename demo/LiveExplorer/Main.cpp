@@ -118,7 +118,7 @@ int main()
 		tilemap->GetLayers()->Add(tileLayer);
 
 #endif
-#if 1
+#if 0
 		RefPtr<TileMapNode> tilemapNode(TileMapNode::Create3D(), false);
 		//tilemapNode->SetTileMap(tilemap);
 
@@ -159,7 +159,8 @@ int main()
 
 		auto texBrush1 = TextureBrush::Create(LN_LOCALFILE("../Media/Fire1.png"));
 
-		
+		ByteBuffer buf = FileSystem::ReadAllBytes(LN_LOCALFILE("../Media/TestShader1.fx"));
+		RefPtr<Shader> shader1(Shader::Create((const char*)buf.GetConstData(), buf.GetSize()), false);
 
 		do
 		{
@@ -186,8 +187,17 @@ int main()
 				Engine::Render();
 
 				auto* rc = RenderingContext2::GetContext();
-				//rc->Clear(ClearFlags::Color, ColorF::White);
+				rc->SetViewProjection(Matrix::Identity, Matrix::Identity);
+				//rc->Clear(ClearFlags::Color, ColorF::Green);
 				rc->DrawLine(Vector3(0, 0, 0), ColorF::Red, Vector3(1, 1, 1), ColorF::Red);
+
+				//rc->SetShaderPass(shader1->GetTechniques()[0]->GetPasses()[0]);
+
+				//rc->DrawSquare(
+				//	Vector3(-1.0f, 1.0f, 0.0f)/2, Vector2(0.0f, 0.0f), ColorF::Red,		// ¶ã
+				//	Vector3(1.0f, 1.0f, 0.0f)/2, Vector2(1.0f, 0.0f), ColorF::Green,		// ‰Eã
+				//	Vector3(1.0f, -1.0f, 0.0f)/2, Vector2(1.0f, 1.0f), ColorF::Blue,		// ‰E‰º
+				//	Vector3(-1.0f, -1.0f, 0.0f)/2, Vector2(0.0f, 1.0f), ColorF::White);	// ¶‰º
 				rc->Flush();
 
 #if 0

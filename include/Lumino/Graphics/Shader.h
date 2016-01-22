@@ -13,6 +13,11 @@ class Shader
 	: public GraphicsResourceObject
 {
 public:
+
+
+
+
+
 	
 	/**
 		@brief		文字列をコンパイルし、シェーダを作成します。

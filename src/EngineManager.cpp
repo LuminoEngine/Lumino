@@ -558,6 +558,7 @@ void EngineManager::EndRendering()
 
 	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
 	SwapChain* swap = m_graphicsManager->GetMainSwapChain();
+	m_graphicsManager->SwitchActiveContext(nullptr);
 	renderer->End();
 	swap->Present();
 }

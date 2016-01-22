@@ -90,13 +90,13 @@ bool DepthStencilState::Equals(const DepthStencilState& state) const
 	return
 		DepthEnable == state.DepthEnable &&
 		DepthWriteEnable == state.DepthEnable &&
-		DepthFunc == state.DepthEnable &&
-		StencilEnable == state.DepthEnable &&
-		StencilFunc == state.DepthEnable &&
-		StencilReferenceValue == state.DepthEnable &&
-		StencilFailOp == state.DepthEnable &&
-		StencilDepthFailOp == state.DepthEnable &&
-		StencilPassOp == state.DepthEnable;
+		DepthFunc == state.DepthFunc &&
+		StencilEnable == state.StencilEnable &&
+		StencilFunc == state.StencilFunc &&
+		StencilReferenceValue == state.StencilReferenceValue &&
+		StencilFailOp == state.StencilFailOp &&
+		StencilDepthFailOp == state.StencilDepthFailOp &&
+		StencilPassOp == state.StencilPassOp;
 }
 
 //=============================================================================
@@ -129,10 +129,12 @@ void ContextState::SetShaderPass(ShaderPass* pass)
 		if (pass != nullptr)
 		{
 			LN_REFOBJ_SET(m_ownerShader, pass->GetOwnerShader());
+			m_shaderPass = pass;
 		}
 		else
 		{
 			m_ownerShader = nullptr;
+			m_shaderPass = nullptr;
 		}
 		modifiedFlags |= ContextStateFlags::ShaderPass;
 	}

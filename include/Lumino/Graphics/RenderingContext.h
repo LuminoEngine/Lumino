@@ -18,6 +18,7 @@ class RenderingContext2
 public:
 	static const int MaxMultiRenderTargets = 4;
 
+	// TODO: Sceneなどで内部的に使用するものと共用にしない。ステートがどこで変わるかわかりづらい。あるいはちゃんと push/pop する。
 	static RenderingContext2* GetContext();
 
 	/**

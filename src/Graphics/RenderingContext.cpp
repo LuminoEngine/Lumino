@@ -218,6 +218,7 @@ void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 void RenderingContext2::SetShaderPass(ShaderPass* pass)
 {
 	m_state.SetShaderPass(pass);
+	m_primitiveRenderer->SetUseInternalShader(pass == nullptr);
 }
 
 //-----------------------------------------------------------------------------
@@ -342,8 +343,9 @@ void RenderingContext2::SwitchActiveRendererPloxy(detail::IRendererPloxy* render
 void RenderingContext2::OnActivated()
 {
 	// ステート強制送信
-	m_ploxy->FlushState(m_state);
-	m_state.modifiedFlags = detail::ContextStateFlags::None;
+	m_state.modifiedFlags = detail::ContextStateFlags::All;
+	//m_ploxy->FlushState(m_state);
+	//m_state.modifiedFlags = detail::ContextStateFlags::None;
 }
 
 //-----------------------------------------------------------------------------
@@ -351,11 +353,7 @@ void RenderingContext2::OnActivated()
 //-----------------------------------------------------------------------------
 void RenderingContext2::OnDeactivated()
 {
-	if (m_activeRendererPloxy != nullptr)
-	{
-		m_activeRendererPloxy->OnDeactivated();
-		m_activeRendererPloxy = nullptr;
-	}
+	SwitchActiveRendererPloxy(nullptr);
 }
 
 LN_NAMESPACE_END
