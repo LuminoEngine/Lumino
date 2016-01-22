@@ -154,7 +154,6 @@ public:
 
 	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
-	void SetShader(Shader* shader);
 
 
 	void MoveTo(const Vector3& point, const ColorF& color);
@@ -214,7 +213,6 @@ public:
 	DrawingContext				m_drawingContext;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
-	detail::PrimitiveRenderer*	m_primitiveRenderer;
 
 	// このクラスが管理するステート。VertexBuffer などは描画時に各種 RendererCore 内で変更されるからちょっと考える必要がありそう。
 	//Shader*						m_shader;

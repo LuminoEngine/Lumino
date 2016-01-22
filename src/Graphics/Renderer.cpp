@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/SwapChain.h>
+#include <Lumino/Graphics/Shader.h>
 #include "RendererImpl.h"
 #include "Internal.h"
 #include "RenderingCommand.h"
@@ -266,15 +267,25 @@ void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int
 void Renderer::FlushState(const detail::ContextState& state)
 {
 	// TODO: 1つのコマンドで一括設定したい
-	SetRenderState(state.renderState);
-	SetDepthStencilState(state.depthStencilState);
-	for (int i = 0; i < state.renderTargets.size(); ++i) {
-		SetRenderTarget(i, state.renderTargets[i]);
+	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::CommonState))
+	{
+		SetRenderState(state.renderState);
+		SetDepthStencilState(state.depthStencilState);
+		for (int i = 0; i < state.renderTargets.size(); ++i) {
+			SetRenderTarget(i, state.renderTargets[i]);
+		}
+		SetDepthBuffer(state.depthBuffer);
+		SetViewport(state.viewport);
+		SetVertexBuffer(state.vertexBuffer);
+		SetIndexBuffer(state.indexBuffer);
 	}
-	SetDepthBuffer(state.depthBuffer);
-	SetViewport(state.viewport);
-	SetVertexBuffer(state.vertexBuffer);
-	SetIndexBuffer(state.indexBuffer);
+	else if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::ShaderPass))
+	{
+		if (state.GetShaderPass() != nullptr)
+		{
+			state.GetShaderPass()->Apply();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

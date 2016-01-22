@@ -259,19 +259,6 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 			Vector3(m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z), Vector2(m_lowerRightUV.X, m_upperLeftUV.Y), ColorF::White,
 			Vector3(m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_lowerRightUV.X, m_lowerRightUV.Y), ColorF::White,
 			Vector3(m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_upperLeftUV.X, m_lowerRightUV.Y), ColorF::White);
-
-		//dc->BeginGraphicsContext()->m_primitiveRenderer->SetViewProjMatrix(dc->CurrentCamera->GetViewProjectionMatrix());
-		//dc->BeginGraphicsContext()->DrawSquare(
-		//	m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
-		//	m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
-		//	m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, ColorF::White,
-		//	m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White);
-		//dc->BeginGraphicsContext()->Flush();
-		//dc->GetGeometryRenderer()->DrawSquare(
-		//	m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z, m_upperLeftUV.X, m_upperLeftUV.Y, ColorF::White,
-		//	m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z, m_lowerRightUV.X, m_upperLeftUV.Y, ColorF::White,
-		//	m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z, m_upperLeftUV.X, m_lowerRightUV.Y, ColorF::White,
-		//	m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z, m_lowerRightUV.X, m_lowerRightUV.Y, ColorF::White);
 	}
 }
 

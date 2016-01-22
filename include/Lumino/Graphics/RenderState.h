@@ -87,6 +87,8 @@ public:
 	*/
 	uint32_t GetHashCode() const;
 
+	bool Equals(const RenderState& state) const;
+
 public:
 	bool operator == (const RenderState& obj) const;
 	bool operator != (const RenderState& obj) const { return !operator==(obj); }
@@ -119,14 +121,28 @@ public:
 	// OpenGL : デプスバッファでの比較→ステンシルバッファでの比較
 	// DirectX : 「ステンシルテスト」→「深度テスト」
 	// ・・・らしい。要確認。
+
+	bool Equals(const DepthStencilState& state) const;
 };
 
 
 namespace detail
 {
 
+	
+LN_ENUM_FLAGS(ContextStateFlags)
+{
+	None = 0x00,
+	CommonState = 0x01,
+	ShaderPass = 0x02,		// これ以外のステートに比べて割と頻繁に変更されるので個別に分ける
+	All = 0xFFFF,
+};
+LN_ENUM_FLAGS_DECLARE(ContextStateFlags);
+
 struct ContextState
 {
+
+
 	static const int MaxMultiRenderTargets = 4;
 
 	RenderState				renderState;
@@ -137,7 +153,16 @@ struct ContextState
 	VertexBuffer*			vertexBuffer = nullptr;
 	IndexBuffer*			indexBuffer = nullptr;
 
+	ContextStateFlags		modifiedFlags = ContextStateFlags::None;
+
 	~ContextState();
+
+	void SetShaderPass(ShaderPass* pass);
+	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+
+private:
+	Shader*		m_ownerShader = nullptr;
+	ShaderPass*	m_shaderPass = nullptr;
 };
 
 }

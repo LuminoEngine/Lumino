@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
+#include <Lumino/Graphics/Shader.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -32,6 +33,18 @@ uint32_t RenderState::GetHashCode() const
 		((uint32_t)DepthTest) * 100 +
 		((uint32_t)DepthWrite) * 10*/;
 		//((uint32_t)PointSprite);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool RenderState::Equals(const RenderState& state) const
+{
+	return
+		Blend == state.Blend &&
+		Culling == state.Culling &&
+		Fill == state.Fill &&
+		AlphaTest == state.AlphaTest;
 }
 
 //-----------------------------------------------------------------------------
@@ -69,6 +82,23 @@ DepthStencilState::DepthStencilState()
 {
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool DepthStencilState::Equals(const DepthStencilState& state) const
+{
+	return
+		DepthEnable == state.DepthEnable &&
+		DepthWriteEnable == state.DepthEnable &&
+		DepthFunc == state.DepthEnable &&
+		StencilEnable == state.DepthEnable &&
+		StencilFunc == state.DepthEnable &&
+		StencilReferenceValue == state.DepthEnable &&
+		StencilFailOp == state.DepthEnable &&
+		StencilDepthFailOp == state.DepthEnable &&
+		StencilPassOp == state.DepthEnable;
+}
+
 //=============================================================================
 // ContextState
 //=============================================================================
@@ -86,8 +116,29 @@ ContextState::~ContextState()
 	LN_SAFE_RELEASE(depthBuffer);
 	LN_SAFE_RELEASE(vertexBuffer);
 	LN_SAFE_RELEASE(indexBuffer);
+	LN_SAFE_RELEASE(m_ownerShader);
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContextState::SetShaderPass(ShaderPass* pass)
+{
+	if (m_shaderPass != pass)
+	{
+		if (pass != nullptr)
+		{
+			LN_REFOBJ_SET(m_ownerShader, pass->GetOwnerShader());
+		}
+		else
+		{
+			m_ownerShader = nullptr;
+		}
+		modifiedFlags |= ContextStateFlags::ShaderPass;
+	}
 }
+
+} // namespace detail
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

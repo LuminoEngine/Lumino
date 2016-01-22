@@ -1946,8 +1946,6 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	: m_currentRenderer(RendererType::None)
 	, m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
-	, m_primitiveRenderer(nullptr)
-	//, m_shader(nullptr)
 {
 	Renderer = manager->GetRenderer();
 	GeometryRenderer = GeometryRenderer::Create(manager);
@@ -1956,10 +1954,6 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 
 	m_textRenderer = LN_NEW detail::TextRenderer();
 	m_textRenderer->Initialize(manager);
-
-	m_primitiveRenderer = LN_NEW detail::PrimitiveRenderer();
-	m_primitiveRenderer->Initialize(manager);
-	m_primitiveRenderer->SetUseInternalShader(false);	// TODO
 }
 
 //-----------------------------------------------------------------------------
@@ -1970,7 +1964,6 @@ GraphicsContext::~GraphicsContext()
 	LN_SAFE_RELEASE(GeometryRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_textRenderer);
-	LN_SAFE_RELEASE(m_primitiveRenderer);
 	//LN_SAFE_RELEASE(m_shader);
 }
 
@@ -1985,8 +1978,6 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);
 	m_textRenderer->SetViewPixelSize(size);
-	m_primitiveRenderer->SetViewProjMatrix(proj);
-	m_primitiveRenderer->SetViewPixelSize(size);
 }
 
 //-----------------------------------------------------------------------------
@@ -2003,14 +1994,6 @@ void GraphicsContext::SetBrush(Brush* brush)
 void GraphicsContext::SetOpacity(float opacity)
 {
 	m_drawingContext.SetOpacity(opacity);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GraphicsContext::SetShader(Shader* shader)
-{
-	m_primitiveRenderer->SetUserShader(shader);
 }
 
 //-----------------------------------------------------------------------------
@@ -2094,32 +2077,6 @@ void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rec
 	m_drawingContext.DrawTexture(rect, texture, srcRect, color);
 }
 
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//void GraphicsContext::DrawPrimitiveLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
-//{
-//	TryChangeRenderingClass(RendererType::PrimitiveRenderer);
-//	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
-//}
-//
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//void GraphicsContext::DrawSquare(
-//	float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
-//	float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
-//	float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
-//	float x4, float y4, float z4, float u4, float v4, const ColorF& c4)
-//{
-//	TryChangeRenderingClass(RendererType::PrimitiveRenderer);
-//	m_primitiveRenderer->DrawSquare(
-//		Vector3(x1, y1, z1), Vector2(u1, v1), c1,
-//		Vector3(x2, y2, z2), Vector2(u2, v2), c2,
-//		Vector3(x3, y3, z3), Vector2(u3, v3), c3,
-//		Vector3(x4, y4, z4), Vector2(u4, v4), c4);
-//}
-
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -2137,7 +2094,6 @@ void GraphicsContext::Flush()
 	m_drawingContext.Flush();
 	m_spriteRenderer->Flush();
 	m_textRenderer->Flush();
-	m_primitiveRenderer->Flush();
 }
 
 //-----------------------------------------------------------------------------

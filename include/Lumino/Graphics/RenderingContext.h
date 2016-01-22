@@ -80,6 +80,8 @@ public:
 	*/
 	void SetIndexBuffer(IndexBuffer* indexBuffer);
 
+	void SetShaderPass(ShaderPass* pass);
+
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。
 	*/
@@ -128,7 +130,7 @@ private:
 	SpriteRenderer*				m_spriteRenderer;
 	detail::PrimitiveRenderer*	m_primitiveRenderer;
 
-	bool						m_stateModified;
+	//bool						m_stateModified;
 };
 
 LN_NAMESPACE_END

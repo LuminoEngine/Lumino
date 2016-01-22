@@ -1,6 +1,7 @@
 ﻿
 #include "../../Internal.h"
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneNode.h>
 #include "ShaderScriptCommandList.h"
@@ -483,15 +484,22 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 			//state.DepthWrite = false;
 			//params.Renderer->setRenderState(state);
 
-			if (cmd->DrawBuffer.Pass) {
-				cmd->DrawBuffer.Pass->Apply();
+			if (cmd->DrawBuffer.Pass != nullptr) {
+				params.Params->GetRenderingContext()->SetShaderPass(cmd->DrawBuffer.Pass);
+				//cmd->DrawBuffer.Pass->Apply();
 			}
 
-			params.Params->GetGeometryRenderer()->DrawSquare(
-				-1.0f,	1.0f,	0.0f,	0.0f, 0.0f, ColorF::White,	// 左上
-				1.0f,	1.0f,	0.0f,	1.0f, 0.0f, ColorF::White,	// 右上
-				-1.0f,	-1.0f,	0.0f,	0.0f, 1.0f, ColorF::White,	// 左下
-				1.0f,	-1.0f,	0.0f,	1.0f, 1.0f, ColorF::White);	// 右下
+			params.Params->GetRenderingContext()->DrawSquare(
+				Vector3(-1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f), ColorF::White,		// 左上
+				Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f), ColorF::White,		// 右上
+				Vector3(1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f), ColorF::White,		// 右下
+				Vector3(-1.0f, -1.0f, 0.0f), Vector2(0.0f, 1.0f), ColorF::White);	// 左下
+
+			//params.Params->GetGeometryRenderer()->DrawSquare(
+			//	-1.0f,	1.0f,	0.0f,	0.0f, 0.0f, ColorF::White,	// 左上
+			//	1.0f,	1.0f,	0.0f,	1.0f, 0.0f, ColorF::White,	// 右上
+			//	-1.0f,	-1.0f,	0.0f,	0.0f, 1.0f, ColorF::White,	// 左下
+			//	1.0f,	-1.0f,	0.0f,	1.0f, 1.0f, ColorF::White);	// 右下
 			break;
 		}
 		}

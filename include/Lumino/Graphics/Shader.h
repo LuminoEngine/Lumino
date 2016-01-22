@@ -313,6 +313,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	void ChangeDevice(Driver::IShaderPass* obj);
+	Shader* GetOwnerShader() { return m_owner; }
 
 private:
 	friend class RenderingCommandList;
