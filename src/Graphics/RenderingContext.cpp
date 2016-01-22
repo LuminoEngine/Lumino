@@ -1,131 +1,332 @@
 
 #pragma once
 #include "Internal.h"
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/VertexBuffer.h>
+#include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/RenderingContext.h>
+#include "RendererImpl.h"
+
+#include <Lumino/Graphics/SpriteRenderer.h>
+#include "PrimitiveRenderer.h"
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// RenderingContext
+// RenderingContext2
 //=============================================================================
 
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//RenderingContext::RenderingContext(GraphicsManager* manager)
-//{
-//}
+//-----------------------------------------------------------------------------
 //
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//RenderingContext::~RenderingContext()
-//{
-//}
+//-----------------------------------------------------------------------------
+RenderingContext2* RenderingContext2::GetContext()
+{
+	return detail::GetGraphicsManager(nullptr)->GetRenderingContext();
+}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetRenderState(const RenderState& state)
+RenderingContext2::RenderingContext2()
+	: m_manager(nullptr)
+	, m_activeRendererPloxy(nullptr)
+	, m_spriteRenderer(nullptr)
+	, m_primitiveRenderer(nullptr)
+	, m_stateModified(false)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const RenderState& RenderingContext::GetRenderState() const
+RenderingContext2::~RenderingContext2()
 {
+	LN_SAFE_RELEASE(m_spriteRenderer);
+	LN_SAFE_RELEASE(m_primitiveRenderer);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetDepthStencilState(const DepthStencilState& state)
+void RenderingContext2::Initialize(GraphicsManager* manager)
 {
+	m_manager = manager;
+	m_ploxy = m_manager->GetRenderer();
+
+	// ステート初期値
+	LN_REFOBJ_SET(m_state.renderTargets[0], m_manager->GetMainSwapChain()->GetBackBuffer());
+	LN_REFOBJ_SET(m_state.depthBuffer, m_manager->GetMainSwapChain()->GetBackBufferDepth());
+
+	
+
+	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
+
+	m_primitiveRenderer = LN_NEW detail::PrimitiveRenderer();
+	m_primitiveRenderer->Initialize(manager);
+	m_primitiveRenderer->SetUseInternalShader(true);	// TODO
+
+
+	const Size& size = m_state.renderTargets[0]->GetSize();
+	m_primitiveRenderer->SetViewPixelSize(size);
+	m_spriteRenderer->SetViewPixelSize(size);
+
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const DepthStencilState& RenderingContext::GetDepthStencilState() const
+void RenderingContext2::SetRenderState(const RenderState& state)
 {
+	m_state.renderState = state;
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetRenderTarget(int index, Texture* texture)
+const RenderState& RenderingContext2::GetRenderState() const
 {
+	return m_state.renderState;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* RenderingContext::GetRenderTarget(int index) const
+void RenderingContext2::SetDepthStencilState(const DepthStencilState& state)
 {
+	m_state.depthStencilState = state;
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetDepthBuffer(Texture* depthBuffer)
+const DepthStencilState& RenderingContext2::GetDepthStencilState() const
 {
+	return m_state.depthStencilState;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* RenderingContext::GetDepthBuffer() const
+void RenderingContext2::SetRenderTarget(int index, Texture* texture)
 {
+	if (index == 0 && texture == nullptr)
+	{
+		// index0 は null であってはならない
+		LN_THROW(0, ArgumentException);
+	}
+
+	LN_REFOBJ_SET(m_state.renderTargets[index], texture);
+
+	if (index == 0)
+	{
+		const Size& size = m_state.renderTargets[0]->GetSize();
+		m_primitiveRenderer->SetViewPixelSize(size);
+		m_spriteRenderer->SetViewPixelSize(size);
+	}
+
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetViewport(const Rect& rect)
+Texture* RenderingContext2::GetRenderTarget(int index) const
 {
+	return m_state.renderTargets[index];
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Rect& RenderingContext::GetViewport() const
+void RenderingContext2::SetDepthBuffer(Texture* depthBuffer)
 {
+	LN_REFOBJ_SET(m_state.depthBuffer, depthBuffer);
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetVertexBuffer(VertexBuffer* vertexBuffer)
+Texture* RenderingContext2::GetDepthBuffer() const
 {
+	return m_state.depthBuffer;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::SetIndexBuffer(IndexBuffer* indexBuffer)
+void RenderingContext2::SetViewport(const Rect& rect)
 {
+	m_state.viewport = rect;
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+const Rect& RenderingContext2::GetViewport() const
 {
+	return m_state.viewport;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
+	LN_REFOBJ_SET(m_state.vertexBuffer, vertexBuffer);
+	m_stateModified = true;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
+	LN_REFOBJ_SET(m_state.indexBuffer, indexBuffer);
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+{
+	m_manager->SwitchActiveContext(this);
+	CheckFlushRendererState();
+	SwitchActiveRendererPloxy(m_ploxy);
+	m_ploxy->Clear(flags, color, z, stencil);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+{
+	m_manager->SwitchActiveContext(this);
+	CheckFlushRendererState();
+	SwitchActiveRendererPloxy(m_ploxy);
+	m_ploxy->DrawPrimitive(primitive, startVertex, primitiveCount);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	m_manager->SwitchActiveContext(this);
+	CheckFlushRendererState();
+	SwitchActiveRendererPloxy(m_ploxy);
+	m_ploxy->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::SetViewProjection(const Matrix& view, const Matrix& proj)
+{
+	m_primitiveRenderer->SetViewProjMatrix(view * proj);
+	m_spriteRenderer->SetViewProjMatrix(view, proj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+{
+	m_manager->SwitchActiveContext(this);
+	CheckFlushRendererState();
+	SwitchActiveRendererPloxy(m_primitiveRenderer);
+	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::DrawSquare(
+	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
+	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
+	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
+	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
+{
+	m_manager->SwitchActiveContext(this);
+	CheckFlushRendererState();
+	SwitchActiveRendererPloxy(m_primitiveRenderer);
+	m_primitiveRenderer->DrawSquare(
+		position1, uv1, color1,
+		position2, uv2, color2,
+		position3, uv3, color3,
+		position4, uv4, color4);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::Flush()
+{
+	if (m_activeRendererPloxy != nullptr)
+	{
+		m_activeRendererPloxy->Flush();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::CheckFlushRendererState()
+{
+	if (m_stateModified)
+	{
+		m_ploxy->FlushState(m_state);
+		m_stateModified = false;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy)
+{
+	if (rendererPloxy != m_activeRendererPloxy)
+	{
+		if (m_activeRendererPloxy != nullptr)
+		{
+			m_activeRendererPloxy->OnDeactivated();	// 古いものを Deactivate
+		}
+
+		m_activeRendererPloxy = rendererPloxy;
+
+		if (m_activeRendererPloxy != nullptr)
+		{
+			m_activeRendererPloxy->OnActivated();	// 新しいものを Activate
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::OnActivated()
+{
+	// ステート強制送信
+	m_ploxy->FlushState(m_state);
+	m_stateModified = false;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::OnDeactivated()
+{
+	if (m_activeRendererPloxy != nullptr)
+	{
+		m_activeRendererPloxy->OnDeactivated();
+		m_activeRendererPloxy = nullptr;
+	}
 }
 
 LN_NAMESPACE_END

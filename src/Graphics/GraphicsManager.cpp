@@ -688,6 +688,7 @@
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 #include "TextRenderer.h"
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
 
 LN_NAMESPACE_BEGIN
@@ -774,6 +775,8 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	, m_dummyTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
+	, m_activeContext(nullptr)
+	, m_renderingContext(nullptr)
 	, m_graphicsContext(nullptr)
 	, m_painterEngine(nullptr)
 	, m_textRendererCore(nullptr)
@@ -837,6 +840,9 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
 	m_textRendererCore->Initialize(this);
 
+	m_renderingContext = LN_NEW RenderingContext2();
+	m_renderingContext->Initialize(this);
+
 	m_graphicsContext = LN_NEW GraphicsContext(this);
 
 	// TextRendererCache
@@ -887,6 +893,7 @@ void GraphicsManager::Finalize()
 	}
 
 	LN_SAFE_RELEASE(m_graphicsContext);
+	LN_SAFE_RELEASE(m_renderingContext);
 }
 
 //-----------------------------------------------------------------------------
@@ -964,6 +971,21 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		for (auto* obj : m_resourceObjectList) {
 			obj->OnChangeDevice(device);
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsManager::SwitchActiveContext(detail::IContext* context)
+{
+	if (context != m_activeContext)
+	{
+		if (m_activeContext != nullptr)
+		{
+			m_activeContext->OnActivated();
+		}
+		m_activeContext = context;
 	}
 }
 

@@ -5,14 +5,20 @@
 #include "Color.h"
 
 LN_NAMESPACE_BEGIN
+class SpriteRenderer;
+namespace detail { class PrimitiveRenderer; }
 
 /**
 	@brief		
 */
-class RenderingContext
+class RenderingContext2
+	: public RefObject
+	, public detail::IContext
 {
 public:
 	static const int MaxMultiRenderTargets = 4;
+
+	static RenderingContext2* GetContext();
 
 	/**
 		@brief	レンダリングステートを設定します。
@@ -87,8 +93,42 @@ public:
 	/**
 		@brief	現在設定されている頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
 	*/
-	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);	// TODO: DrawIndexedPrimitive
 
+
+
+	// pass が null のときに使われるデフォルトシェーダ用
+	void SetViewProjection(const Matrix& view, const Matrix& proj);
+
+	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
+
+	void DrawSquare(
+		const Vector3& position1, const Vector2& uv1, const ColorF& color1,
+		const Vector3& position2, const Vector2& uv2, const ColorF& color2,
+		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
+		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
+
+	void Flush();
+
+LN_INTERNAL_ACCESS:
+	RenderingContext2();
+	virtual ~RenderingContext2();
+	void Initialize(GraphicsManager* manager);
+	void CheckFlushRendererState();
+	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
+	virtual void OnActivated() override;
+	virtual void OnDeactivated() override;
+
+private:
+	GraphicsManager*			m_manager;
+	Details::Renderer*			m_ploxy;
+	detail::ContextState		m_state;
+
+	detail::IRendererPloxy*		m_activeRendererPloxy;
+	SpriteRenderer*				m_spriteRenderer;
+	detail::PrimitiveRenderer*	m_primitiveRenderer;
+
+	bool						m_stateModified;
 };
 
 LN_NAMESPACE_END

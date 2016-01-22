@@ -9,6 +9,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
+class RenderingContext2;
 class GraphicsContext;
 class PainterEngine;
 class TextRenderer;
@@ -59,6 +60,7 @@ public:
 
 	void ChangeDevice(Driver::IGraphicsDevice* device);
 
+	void SwitchActiveContext(detail::IContext* context);
 
 public:	// TODO: internal
 	struct FontData
@@ -127,6 +129,7 @@ LN_INTERNAL_ACCESS:
 	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
 	RenderingThread* GetRenderingThread() { return m_renderingThread; }
 	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
+	RenderingContext2* GetRenderingContext() { return m_renderingContext; }
 	RenderingCommandList* GetPrimaryRenderingCommandList();
 	PainterEngine* GetPainterEngine() { return m_painterEngine; }
 	detail::TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
@@ -145,6 +148,8 @@ private:
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
+	detail::IContext*				m_activeContext;
+	RenderingContext2*				m_renderingContext;
 	GraphicsContext*				m_graphicsContext;
 	detail::TextRendererCore*		m_textRendererCore;
 	PainterEngine*					m_painterEngine;

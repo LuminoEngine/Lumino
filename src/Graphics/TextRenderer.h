@@ -84,7 +84,8 @@ private:
 };
 
 class TextRenderer
-	: public HiLevelRendererFront
+	: public RefObject
+	, public IRendererPloxy
 {
 public:
 	TextRenderer();
@@ -104,6 +105,8 @@ public:
 	void DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags);
 
 	virtual void Flush() override;
+	virtual void OnActivated() { m_stateModified = true; }
+	virtual void OnDeactivated() { Flush(); }
 
 public:
 	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);

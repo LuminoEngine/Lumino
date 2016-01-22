@@ -11,6 +11,7 @@ class SpriteRendererImpl;
 */
 class SpriteRenderer
 	: public RefObject
+	, public detail::IRendererPloxy
 {
 public:
 
@@ -119,7 +120,9 @@ public:
 	/**
 		@brief		要求されているスプライトを全て描画します。
 	*/
-	void Flush();
+	virtual void Flush() override;
+	virtual void OnActivated() {}
+	virtual void OnDeactivated() { Flush(); }
 
 	GraphicsManager* GetManager() const { return m_manager; }
 

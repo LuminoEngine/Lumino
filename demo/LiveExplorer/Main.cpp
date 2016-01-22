@@ -185,9 +185,12 @@ int main()
 			{
 				Engine::Render();
 
+				auto* rc = RenderingContext2::GetContext();
+				//rc->Clear(ClearFlags::Color, ColorF::White);
+				rc->DrawLine(Vector3(0, 0, 0), ColorF::Red, Vector3(1, 1, 1), ColorF::Red);
+				rc->Flush();
 
-
-#if 1
+#if 0
 
 				Graphics::Set2DRenderingMode();
 				Graphics::SetOpacity(1.0f);

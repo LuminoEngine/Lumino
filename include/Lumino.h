@@ -30,6 +30,7 @@
 #include "Lumino/Graphics/GeometryRenderer.h"
 #include "Lumino/Graphics/SpriteRenderer.h"
 #include "Lumino/Graphics/Bitmap.h"
+#include "Lumino/Graphics/RenderingContext.h"
 
 #include "Lumino/Effect/VisualEffect.h"
 #include "Lumino/Effect/VisualEffectInstance.h"

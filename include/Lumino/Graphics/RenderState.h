@@ -121,5 +121,26 @@ public:
 	// ・・・らしい。要確認。
 };
 
+
+namespace detail
+{
+
+struct ContextState
+{
+	static const int MaxMultiRenderTargets = 4;
+
+	RenderState				renderState;
+	DepthStencilState		depthStencilState;
+	std::array<Texture*, MaxMultiRenderTargets>	renderTargets = {};
+	Texture*				depthBuffer = nullptr;
+	Rect					viewport;
+	VertexBuffer*			vertexBuffer = nullptr;
+	IndexBuffer*			indexBuffer = nullptr;
+
+	~ContextState();
+};
+
+}
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

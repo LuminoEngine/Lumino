@@ -1,6 +1,9 @@
 ﻿
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/RenderState.h"
+#include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/VertexBuffer.h>
+#include <Lumino/Graphics/IndexBuffer.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -64,6 +67,26 @@ DepthStencilState::DepthStencilState()
 	, StencilDepthFailOp(StencilOp::Keep)
 	, StencilPassOp(StencilOp::Keep)
 {
+}
+
+//=============================================================================
+// ContextState
+//=============================================================================
+namespace detail
+{
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ContextState::~ContextState()
+{
+	for (Texture* t : renderTargets) {
+		LN_SAFE_RELEASE(t);
+	}
+	LN_SAFE_RELEASE(depthBuffer);
+	LN_SAFE_RELEASE(vertexBuffer);
+	LN_SAFE_RELEASE(indexBuffer);
+}
 }
 
 LN_NAMESPACE_GRAPHICS_END

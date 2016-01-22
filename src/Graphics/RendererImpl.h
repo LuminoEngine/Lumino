@@ -9,6 +9,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
+
 namespace Details
 {
 
@@ -17,6 +18,7 @@ namespace Details
 */
 class Renderer
 	: public GraphicsResourceObject
+	, public detail::IRendererPloxy
 {
 public:
 	static const int MaxMultiRenderTargets = 4;
@@ -111,6 +113,11 @@ public:
 		@brief	現在設定されている頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
 	*/
 	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+
+	void FlushState(const detail::ContextState& state);
+	virtual void Flush() override;
+	virtual void OnActivated() {}
+	virtual void OnDeactivated() { }
 
 protected:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);

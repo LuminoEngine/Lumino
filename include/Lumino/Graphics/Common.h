@@ -327,17 +327,19 @@ namespace Driver
 namespace detail
 {
 
-	class HiLevelRendererFront : public RefObject
+	class IRendererPloxy// : public RefObject
 	{
 	public:
 		virtual void Flush() = 0;
+		virtual void OnActivated() = 0;
+		virtual void OnDeactivated() = 0;
 	};
 
 	class HiLevelRendererCore : public RefObject
 	{
 	public:
 
-		void ActivateFront(HiLevelRendererFront* renderer)
+		void ActivateFront(IRendererPloxy* renderer)
 		{
 			if (renderer != m_rendererFront)
 			{
@@ -350,7 +352,18 @@ namespace detail
 		}
 
 	private:
-		HiLevelRendererFront*	m_rendererFront = nullptr;
+		IRendererPloxy*	m_rendererFront = nullptr;
+	};
+
+
+
+
+	class IContext
+	{
+	protected:
+		friend class GraphicsManager;
+		virtual void OnActivated() = 0;
+		virtual void OnDeactivated() = 0;
 	};
 
 } // namespace detail

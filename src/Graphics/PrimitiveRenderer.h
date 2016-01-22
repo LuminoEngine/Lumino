@@ -1,5 +1,6 @@
 
 #pragma once
+#include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Font.h>
 #include <Lumino/Graphics/Painter.h>
@@ -91,6 +92,7 @@ private:
 
 class PrimitiveRenderer
 	: public RefObject
+	, public detail::IRendererPloxy
 {
 public:
 	PrimitiveRenderer();
@@ -101,7 +103,7 @@ public:
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
 	void SetUseInternalShader(bool useInternalShader);	// TODO: ‚¢‚ç‚È‚¢‚©‚à
-	void SetUserShader(Shader* shader) { LN_REFOBJ_SET(m_userShader, shader); m_stateModified = true; }
+	void SetUserShader(Shader* shader);
 	//void SetTexture(Texture* texture);
 
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
@@ -112,7 +114,9 @@ public:
 		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
 
-	void Flush();
+	virtual void Flush() override;
+	virtual void OnActivated() { m_stateModified = true; }
+	virtual void OnDeactivated() { Flush(); }
 
 private:
 	void SetPrimitiveRendererMode(PrimitiveRendererMode mode);

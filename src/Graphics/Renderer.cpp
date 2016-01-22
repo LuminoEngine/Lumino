@@ -263,6 +263,31 @@ void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Renderer::FlushState(const detail::ContextState& state)
+{
+	// TODO: 1つのコマンドで一括設定したい
+	SetRenderState(state.renderState);
+	SetDepthStencilState(state.depthStencilState);
+	for (int i = 0; i < state.renderTargets.size(); ++i) {
+		SetRenderTarget(i, state.renderTargets[i]);
+	}
+	SetDepthBuffer(state.depthBuffer);
+	SetViewport(state.viewport);
+	SetVertexBuffer(state.vertexBuffer);
+	SetIndexBuffer(state.indexBuffer);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Renderer::Flush()
+{
+
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Renderer::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL) {

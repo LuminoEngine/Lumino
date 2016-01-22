@@ -157,9 +157,12 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader)
 {
+	float vw = (viewPixelSize.Width != 0.0) ? (0.5f / viewPixelSize.Width) : 0.0f;
+	float vh = (viewPixelSize.Height != 0.0) ? (0.5f / viewPixelSize.Height) : 0.0f;
+
 	m_shader.varWorldMatrix->SetMatrix(world);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);
-	m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.Width, 0.5f / viewPixelSize.Height, 0, 0));
+	m_shader.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
 	m_useInternalShader = useInternalShader;
 	m_mode = mode;
 	m_userShader = userShader;
@@ -345,6 +348,15 @@ void PrimitiveRenderer::SetViewPixelSize(const Size& size)
 void PrimitiveRenderer::SetUseInternalShader(bool useInternalShader)
 {
 	m_useInternalShader = useInternalShader;
+	m_stateModified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PrimitiveRenderer::SetUserShader(Shader* shader)
+{
+	LN_REFOBJ_SET(m_userShader, shader);
 	m_stateModified = true;
 }
 

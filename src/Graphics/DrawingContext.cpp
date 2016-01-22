@@ -1,5 +1,5 @@
 /*
-	[2015/1/21] 全体構成
+	全体構成
 
 		RenderingContext	Renderer	
 							PrimitiveRenderer
@@ -23,6 +23,13 @@
 		Context の Draw～ や Flush で、アクティブなコンテキストの切り替えを行う。
 		このとき古いコンテキストは Flush し、新しいコンテキストのステートを全て適用する。
 		切り替え通知は Context レベルに通知する。包含している各種 Renderer の Flush を呼ぶため。
+
+		[2015/1/22]
+			Renderer == RenderingContext ではないのか？RenderingContext は必要なのか？と思うかもしれない。
+			Renderer にまとめてしまうと、GraphicsContext と Renderer が同レベルのクラスとなる。
+			GraphicsContext は描画先のレンダリングターゲットをステートとして持たなければならないため、Renderer を包含する必要がある。
+			Context の中に別の Context ができてしまうということ。非常に複雑。
+
 
 	[2015/1/21] SceneGraph 向けに低レベル Renderer は公開する？
 		
