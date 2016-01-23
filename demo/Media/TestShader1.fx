@@ -42,8 +42,8 @@ technique MainDraw
 {
 	pass P0
 	{
-		//VertexShader = compile vs_2_0 vsBasic();
-		//PixelShader	 = compile ps_2_0 psBasic();
+		VertexShader = compile vs_2_0 vsBasic();
+		PixelShader	 = compile ps_2_0 psBasic();
 	}
 }
 #endif

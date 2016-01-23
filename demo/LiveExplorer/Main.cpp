@@ -159,8 +159,7 @@ int main()
 
 		auto texBrush1 = TextureBrush::Create(LN_LOCALFILE("../Media/Fire1.png"));
 
-		ByteBuffer buf = FileSystem::ReadAllBytes(LN_LOCALFILE("../Media/TestShader1.fx"));
-		RefPtr<Shader> shader1(Shader::Create((const char*)buf.GetConstData(), buf.GetSize()), false);
+		auto shader1 = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
 
 		do
 		{
@@ -189,15 +188,15 @@ int main()
 				auto* rc = RenderingContext2::GetContext();
 				rc->SetViewProjection(Matrix::Identity, Matrix::Identity);
 				//rc->Clear(ClearFlags::Color, ColorF::Green);
-				rc->DrawLine(Vector3(0, 0, 0), ColorF::Red, Vector3(1, 1, 1), ColorF::Red);
+				//rc->DrawLine(Vector3(0, 0, 0), ColorF::Red, Vector3(1, 1, 1), ColorF::Red);
 
-				//rc->SetShaderPass(shader1->GetTechniques()[0]->GetPasses()[0]);
+				rc->SetShaderPass(shader1->GetTechniques()[0]->GetPasses()[0]);
 
-				//rc->DrawSquare(
-				//	Vector3(-1.0f, 1.0f, 0.0f)/2, Vector2(0.0f, 0.0f), ColorF::Red,		// 左上
-				//	Vector3(1.0f, 1.0f, 0.0f)/2, Vector2(1.0f, 0.0f), ColorF::Green,		// 右上
-				//	Vector3(1.0f, -1.0f, 0.0f)/2, Vector2(1.0f, 1.0f), ColorF::Blue,		// 右下
-				//	Vector3(-1.0f, -1.0f, 0.0f)/2, Vector2(0.0f, 1.0f), ColorF::White);	// 左下
+				rc->DrawSquare(
+					Vector3(-1.0f, 1.0f, 0.0f)/2, Vector2(0.0f, 0.0f), ColorF::Red,		// 左上
+					Vector3(1.0f, 1.0f, 0.0f)/2, Vector2(1.0f, 0.0f), ColorF::Green,		// 右上
+					Vector3(1.0f, -1.0f, 0.0f)/2, Vector2(1.0f, 1.0f), ColorF::Blue,		// 右下
+					Vector3(-1.0f, -1.0f, 0.0f)/2, Vector2(0.0f, 1.0f), ColorF::White);	// 左下
 				rc->Flush();
 
 #if 0

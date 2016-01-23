@@ -7,52 +7,64 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
-	@brief	シェーダのクラスです。
+	@brief		シェーダのクラスです。
+	@details	シェーダコードテキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
+				コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
+				(成功または警告のみの場合は throw されません)
+				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 */
 class Shader
 	: public GraphicsResourceObject
 {
 public:
-
-
-
-
-
 	
 	/**
-		@brief		文字列をコンパイルし、シェーダを作成します。
+		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
+		@param[in]	filePath		: ファイルパス
+	*/
+	static RefPtr<Shader> Create(const StringRef& filePath);
+
+	/**
+		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
-		@details	テキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
-					コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
-					(成功または警告のみの場合は throw されません)
-					例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 	*/
-	static Shader* Create(const char* code, int length = -1);
-
-	/**
-		@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
-		@param[in]	manager			: 作成に使用する GraphicsManager
-		@param[in]	textData		: シェーダコードが格納されているバッファアドレス
-		@param[in]	byteCount		: textData のバイト数
-		@details	テキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
-					コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
-					(成功または警告のみの場合は throw されません)
-					例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
-	*/
-	static Shader* Create(GraphicsManager* manager, const void* textData, size_t byteCount);
+	static RefPtr<Shader> Create(const char* code, int length = -1);
 	
-	/**
-		@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
-		@param[in]	manager			: 作成に使用する GraphicsManager
-		@param[in]	textData		: シェーダコードが格納されているバッファアドレス
-		@param[in]	byteCount		: textData のバイト数
-		@param[in]	outShader		: 作成された Shader のポインタを格納する変数のアドレス
-		@param[in]	outResult		: コンパイル結果の詳細を格納する変数のアドレス
-		@return		コンパイルエラーがない場合は true (成功または警告のみの場合)
-		@details	テキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
-	*/
-	static bool TryCreate(GraphicsManager* manager, const void* textData, size_t byteCount, Shader** outShader, ShaderCompileResult* outResult);
+	///**
+	//	@brief		文字列をコンパイルし、シェーダを作成します。
+	//	@param[in]	code			: シェーダコード文字列
+	//	@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
+	//	@details	テキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
+	//				コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
+	//				(成功または警告のみの場合は throw されません)
+	//				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
+	//*/
+	//static Shader* Create(const char* code, int length = -1);
+
+	///**
+	//	@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
+	//	@param[in]	manager			: 作成に使用する GraphicsManager
+	//	@param[in]	textData		: シェーダコードが格納されているバッファアドレス
+	//	@param[in]	byteCount		: textData のバイト数
+	//	@details	テキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
+	//				コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
+	//				(成功または警告のみの場合は throw されません)
+	//				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
+	//*/
+	//static Shader* Create(GraphicsManager* manager, const void* textData, size_t byteCount);
+	//
+	///**
+	//	@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
+	//	@param[in]	manager			: 作成に使用する GraphicsManager
+	//	@param[in]	textData		: シェーダコードが格納されているバッファアドレス
+	//	@param[in]	byteCount		: textData のバイト数
+	//	@param[in]	outShader		: 作成された Shader のポインタを格納する変数のアドレス
+	//	@param[in]	outResult		: コンパイル結果の詳細を格納する変数のアドレス
+	//	@return		コンパイルエラーがない場合は true (成功または警告のみの場合)
+	//	@details	テキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
+	//*/
+	//static bool TryCreate(GraphicsManager* manager, const void* textData, size_t byteCount, Shader** outShader, ShaderCompileResult* outResult);
 
 public:
 
@@ -88,7 +100,10 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	friend class RenderingCommandList;
-	Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode);
+	Shader();
+	void Initialize(GraphicsManager* manager, const StringRef& filePath);
+	void Initialize(GraphicsManager* manager, const void* code, int length);
+	void PostInitialize();
 	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;
 	Array<ShaderVariable*>		m_variables;

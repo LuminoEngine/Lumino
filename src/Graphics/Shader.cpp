@@ -1,7 +1,5 @@
 ﻿
-#pragma once
-
-#include "../Internal.h"
+#include "Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/GraphicsManager.h>
@@ -30,78 +28,63 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Shader* Shader::Create(const char* code, int length)
+RefPtr<Shader> Shader::Create(const StringRef& filePath)
 {
-	LN_THROW(GraphicsManager::Instance != NULL, ArgumentException);
-
-	ShaderCompileResult result;
-	RefPtr<Driver::IShader> deviceObj(
-		GraphicsManager::Instance->GetGraphicsDevice()->CreateShader(code, length, &result), false);
-
-	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
-	return LN_NEW Shader(GraphicsManager::Instance, deviceObj, ByteBuffer(code, length));
+	RefPtr<Shader> obj(LN_NEW Shader(), false);
+	obj->Initialize(detail::GetGraphicsManager(nullptr), filePath);
+	return obj;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Shader* Shader::Create(GraphicsManager* manager, const void* textData, size_t byteCount)
+RefPtr<Shader> Shader::Create(const char* code, int length)
 {
-	LN_THROW(manager != NULL, ArgumentException);
-	ShaderCompileResult result;
-	RefPtr<Driver::IShader> deviceObj(
-		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, &result), false);
-	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
-	return LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
+	RefPtr<Shader> obj(LN_NEW Shader(), false);
+	obj->Initialize(detail::GetGraphicsManager(nullptr), code, length);
+	return obj;
 }
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//Shader* Shader::Create(GraphicsManager* manager, const void* textData, size_t byteCount)
+//{
+//	LN_THROW(manager != NULL, ArgumentException);
+//	ShaderCompileResult result;
+//	RefPtr<Driver::IShader> deviceObj(
+//		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, &result), false);
+//	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
+//	return LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t byteCount, Shader** outShader, ShaderCompileResult* outResult)
+//{
+//	LN_THROW(manager != NULL, ArgumentException);
+//	LN_THROW(outShader != NULL, ArgumentException);
+//
+//	*outShader = NULL;
+//	RefPtr<Driver::IShader> deviceObj(
+//		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, outResult), false);
+//	if (deviceObj.IsNull()) {
+//		return false;
+//	}
+//
+//	*outShader = LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
+//	return true;
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Shader::TryCreate(GraphicsManager* manager, const void* textData, size_t byteCount, Shader** outShader, ShaderCompileResult* outResult)
-{
-	LN_THROW(manager != NULL, ArgumentException);
-	LN_THROW(outShader != NULL, ArgumentException);
-
-	*outShader = NULL;
-	RefPtr<Driver::IShader> deviceObj(
-		manager->GetGraphicsDevice()->CreateShader(textData, byteCount, outResult), false);
-	if (deviceObj.IsNull()) {
-		return false;
-	}
-
-	*outShader = LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Shader::Shader(GraphicsManager* manager, Driver::IShader* shader, const ByteBuffer& sourceCode)
-	: m_deviceObj(shader)
-	, m_sourceCode(sourceCode)
+Shader::Shader()
+	: m_deviceObj(nullptr)
+	, m_sourceCode()
 	, m_viewportPixelSize(nullptr)
 {
-	GraphicsResourceObject::Initialize(manager);
-	LN_SAFE_ADDREF(m_deviceObj);
-
-	// 変数を展開
-	for (int i = 0; i < shader->GetVariableCount(); ++i)
-	{
-		ShaderVariable* v = LN_NEW ShaderVariable(this, shader->GetVariable(i));
-		m_variables.Add(v);
-
-		if (v->GetSemanticName().Compare(_T("VIEWPORTPIXELSIZE"), 17, CaseSensitivity::CaseInsensitive) == 0)
-		{
-			m_viewportPixelSize = v;
-		}
-	}
-
-	// テクニックを展開
-	for (int i = 0; i < shader->GetTechniqueCount(); ++i)
-	{
-		m_techniques.Add(LN_NEW ShaderTechnique(this, shader->GetTechnique(i)));
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -117,6 +100,63 @@ Shader::~Shader()
 	}
 
 	LN_SAFE_RELEASE(m_deviceObj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Shader::Initialize(GraphicsManager* manager, const StringRef& filePath)
+{
+	GraphicsResourceObject::Initialize(manager);
+	
+	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
+	ByteBuffer buf(stream->GetLength() + 1, false);
+	stream->Read(buf.GetData(), buf.GetSize());
+	buf[stream->GetLength()] = 0x00;
+
+	ShaderCompileResult result;
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(buf.GetConstData(), buf.GetSize(), &result);
+	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+	PostInitialize();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Shader::Initialize(GraphicsManager* manager, const void* code, int length)
+{
+	GraphicsResourceObject::Initialize(manager);
+
+	ShaderCompileResult result;
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(code, length, &result);
+	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+	PostInitialize();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Shader::PostInitialize()
+{
+	// 変数を展開
+	for (int i = 0; i < m_deviceObj->GetVariableCount(); ++i)
+	{
+		ShaderVariable* v = LN_NEW ShaderVariable(this, m_deviceObj->GetVariable(i));
+		m_variables.Add(v);
+
+		if (v->GetSemanticName().Compare(_T("VIEWPORTPIXELSIZE"), 17, CaseSensitivity::CaseInsensitive) == 0)
+		{
+			m_viewportPixelSize = v;
+		}
+	}
+
+	// テクニックを展開
+	for (int i = 0; i < m_deviceObj->GetTechniqueCount(); ++i)
+	{
+		m_techniques.Add(LN_NEW ShaderTechnique(this, m_deviceObj->GetTechnique(i)));
+	}
 }
 
 //-----------------------------------------------------------------------------

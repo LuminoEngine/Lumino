@@ -147,7 +147,6 @@ struct ContextState
 
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
-	std::array<Texture*, MaxMultiRenderTargets>	renderTargets = {};
 	Texture*				depthBuffer = nullptr;
 	Rect					viewport;
 	VertexBuffer*			vertexBuffer = nullptr;
@@ -157,10 +156,14 @@ struct ContextState
 
 	~ContextState();
 
+
+	void SetRenderTarget(int index, Texture* texture);
+	Texture* GetRenderTarget(int index) const;
 	void SetShaderPass(ShaderPass* pass);
 	ShaderPass* GetShaderPass() const { return m_shaderPass; }
 
 private:
+	std::array<Texture*, MaxMultiRenderTargets>	m_renderTargets = {};
 	Shader*		m_ownerShader = nullptr;
 	ShaderPass*	m_shaderPass = nullptr;
 };

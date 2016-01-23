@@ -271,8 +271,8 @@ void Renderer::FlushState(const detail::ContextState& state)
 	{
 		SetRenderState(state.renderState);
 		SetDepthStencilState(state.depthStencilState);
-		for (int i = 0; i < state.renderTargets.size(); ++i) {
-			SetRenderTarget(i, state.renderTargets[i]);
+		for (int i = 0; i < detail::ContextState::MaxMultiRenderTargets; ++i) {
+			SetRenderTarget(i, state.GetRenderTarget(i));
 		}
 		SetDepthBuffer(state.depthBuffer);
 		SetViewport(state.viewport);

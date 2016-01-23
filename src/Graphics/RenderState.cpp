@@ -110,13 +110,46 @@ namespace detail
 //-----------------------------------------------------------------------------
 ContextState::~ContextState()
 {
-	for (Texture* t : renderTargets) {
+	for (Texture* t : m_renderTargets) {
 		LN_SAFE_RELEASE(t);
 	}
 	LN_SAFE_RELEASE(depthBuffer);
 	LN_SAFE_RELEASE(vertexBuffer);
 	LN_SAFE_RELEASE(indexBuffer);
 	LN_SAFE_RELEASE(m_ownerShader);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ContextState::SetRenderTarget(int index, Texture* texture)
+{
+	if (index == 0 && texture == nullptr)
+	{
+		// index0 は null であってはならない
+		LN_THROW(0, ArgumentException);
+	}
+
+	if (m_renderTargets[index] != texture)
+	{
+		LN_REFOBJ_SET(m_renderTargets[index], texture);
+
+		if (index == 0)
+		{
+			const Size& size = texture->GetSize();
+			viewport.Set(0, 0, size.Width, size.Height);
+		}
+
+		modifiedFlags |= ContextStateFlags::CommonState;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Texture* ContextState::GetRenderTarget(int index) const
+{
+	return m_renderTargets[index];
 }
 
 //-----------------------------------------------------------------------------

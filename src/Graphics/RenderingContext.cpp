@@ -55,7 +55,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	m_ploxy = m_manager->GetRenderer();
 
 	// ステート初期値
-	LN_REFOBJ_SET(m_state.renderTargets[0], m_manager->GetMainSwapChain()->GetBackBuffer());
+	m_state.SetRenderTarget(0, m_manager->GetMainSwapChain()->GetBackBuffer());
 	LN_REFOBJ_SET(m_state.depthBuffer, m_manager->GetMainSwapChain()->GetBackBufferDepth());
 
 	
@@ -67,7 +67,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	m_primitiveRenderer->SetUseInternalShader(true);	// TODO
 
 
-	const Size& size = m_state.renderTargets[0]->GetSize();
+	const Size& size = m_state.GetRenderTarget(0)->GetSize();
 	m_primitiveRenderer->SetViewPixelSize(size);
 	m_spriteRenderer->SetViewPixelSize(size);
 
@@ -119,24 +119,12 @@ const DepthStencilState& RenderingContext2::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetRenderTarget(int index, Texture* texture)
 {
-	if (index == 0 && texture == nullptr)
+	m_state.SetRenderTarget(index, texture);
+	if (index == 0)
 	{
-		// index0 は null であってはならない
-		LN_THROW(0, ArgumentException);
-	}
-
-	if (m_state.renderTargets[index] != texture)
-	{
-		LN_REFOBJ_SET(m_state.renderTargets[index], texture);
-
-		if (index == 0)
-		{
-			const Size& size = m_state.renderTargets[0]->GetSize();
-			m_primitiveRenderer->SetViewPixelSize(size);
-			m_spriteRenderer->SetViewPixelSize(size);
-		}
-
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+		const Size& size = m_state.GetRenderTarget(0)->GetSize();
+		m_primitiveRenderer->SetViewPixelSize(size);
+		m_spriteRenderer->SetViewPixelSize(size);
 	}
 }
 
@@ -145,7 +133,7 @@ void RenderingContext2::SetRenderTarget(int index, Texture* texture)
 //-----------------------------------------------------------------------------
 Texture* RenderingContext2::GetRenderTarget(int index) const
 {
-	return m_state.renderTargets[index];
+	return m_state.GetRenderTarget(index);
 }
 
 //-----------------------------------------------------------------------------
