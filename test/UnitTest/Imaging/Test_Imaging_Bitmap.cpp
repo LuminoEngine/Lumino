@@ -10,7 +10,7 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Imaging_Bitmap, PngFile)
 {
-	Bitmap bmp1(LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
+	Bitmap bmp1(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
 
 	// png のデフォルトの読み取り
 	ASSERT_EQ(PixelFormat_BYTE_R8G8B8A8, bmp1.GetPixelFormat());
@@ -49,16 +49,16 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 //-----------------------------------------------------------------------------
 TEST_F(Test_Imaging_Bitmap, Save)
 {
-	Bitmap bmp1(LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
-	bmp1.Save(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_cpy.png"));
+	Bitmap bmp1(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
+	bmp1.Save(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_cpy.png"));
 }
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_Imaging_Bitmap, BitBlt)
-{
-	Bitmap bmp1(Size(32, 32), PixelFormat_BYTE_R8G8B8A8);
-	Bitmap bmp2(LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png"));
-	bmp1.BitBlt(Rect(0, 0, 32, 32), &bmp2, Rect(0, 0, 32, 32), Color::White, false);
-	ASSERT_TRUE(TestEnv::EqualsBitmapFile(&bmp1, LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png")));
-
-}
+//TEST_F(Test_Imaging_Bitmap, BitBlt)
+//{
+//	Bitmap bmp1(Size(32, 32), PixelFormat_BYTE_R8G8B8A8);
+//	Bitmap bmp2(LN_LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png"));
+//	bmp1.BitBlt(Rect(0, 0, 32, 32), &bmp2, Rect(0, 0, 32, 32), Color::White, false);
+//	ASSERT_TRUE(TestEnv::EqualsBitmapFile(&bmp1, LN_LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png")));
+//
+//}

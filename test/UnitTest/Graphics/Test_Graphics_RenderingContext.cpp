@@ -1,6 +1,6 @@
 #include <TestConfig.h>
 
-class Test_Graphics_BasicRendering : public ::testing::Test
+class Test_Graphics_RenderingContext : public ::testing::Test
 {
 protected:
 	RefPtr<Shader> m_shader;
@@ -15,7 +15,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_Graphics_BasicRendering, PosColorVertex)
+TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 {
 	PosColorVertex vertices[] =
 	{

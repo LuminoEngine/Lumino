@@ -197,7 +197,7 @@ int main()
 					Vector3(1.0f, 1.0f, 0.0f)/2, Vector2(1.0f, 0.0f), ColorF::Green,		// ‰Eã
 					Vector3(1.0f, -1.0f, 0.0f)/2, Vector2(1.0f, 1.0f), ColorF::Blue,		// ‰E‰º
 					Vector3(-1.0f, -1.0f, 0.0f)/2, Vector2(0.0f, 1.0f), ColorF::White);	// ¶‰º
-				rc->Flush();
+				//rc->Flush();
 
 #if 0
 
