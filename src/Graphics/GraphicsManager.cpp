@@ -1,4 +1,23 @@
 ﻿/*
+	[2016/1/29] 座標系
+		http://blog.cnu.jp/blog/2015/10/01/game-math-coodinate/
+		右手系：OpenGL
+		左手系：Direct X、Unity、UE4、CryEngine
+
+		UE4 面方向 (反時計回り)
+		http://monsho.blog63.fc2.com/blog-entry-167.html
+		ここで考えなければならないのは三角ポリゴンの表面(面法線が正の方向)はどちらかということですが、ここには右ねじの法則が適用されます。
+
+
+		スクリーン座標は DirectX、OpenGL ともに
+		-1.0, 1.0  ------ 1.0, 1.0
+		  |
+		  |
+		  |
+		-1.0, -1.0 ------ 1.0, -1.0
+
+		
+
 	[2015/10/10] 各高レベル Renderer クラスの置き場
 		Painter とか SpriteRenderer とか。
 		QPainter とか CDC みたいにローカル変数として定義すれば C++ では使い易い。
@@ -794,7 +813,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		data.MainWindow = configData.MainWindow;
 		data.FileManager = configData.FileManager;
 		data.D3D9Device = (IDirect3DDevice9*)configData.D3D9Device;
-		data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
+		data.BackbufferSize = configData.backBufferSize;	// TODO
 		data.EnableVSyncWait = false;			// TODO
 		data.EnableFPUPreserve = false;			// TODO
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
@@ -834,8 +853,8 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	}
 
 	// PainterEngine
-	m_painterEngine = LN_NEW PainterEngine();
-	m_painterEngine->Create(this);
+	//m_painterEngine = LN_NEW PainterEngine();
+	//m_painterEngine->Create(this);
 
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
 	m_textRendererCore->Initialize(this);

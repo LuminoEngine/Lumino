@@ -106,6 +106,7 @@ public:	// TODO
 		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
 		RenderingType			RenderingType;
 		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
+		Size					backBufferSize;			// バックバッファのサイズ
 		FileManager*			FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
 		void*					D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */

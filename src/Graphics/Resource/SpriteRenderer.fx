@@ -80,7 +80,7 @@ varying vec2	v_TexUV;
 
 void main()
 {
-	gl_Position		= float4(ln_Vertex, 1.0f) * gViewProjMatrix;
+	gl_Position		= vec4(ln_Vertex, 1.0f) * gViewProjMatrix;
 	v_Color			= ln_Color0;
 	v_TexUV			= ln_MultiTexCoord0;
 }

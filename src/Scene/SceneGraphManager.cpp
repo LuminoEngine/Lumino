@@ -133,10 +133,10 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_default2DSceneGraph(nullptr)
 {
 	// ダミーテクスチャ
-	m_dummyTexture.Attach(Texture2D::Create(Size(32, 32)));
-	BitmapPainter painter(m_dummyTexture->Lock());
-	painter.Clear(Color::White);
-	m_dummyTexture->Unlock();
+	//m_dummyTexture.Attach(Texture2D::Create(Size(32, 32)));
+	//BitmapPainter painter(m_dummyTexture->Lock());
+	//painter.Clear(Color::White);
+	//m_dummyTexture->Unlock();
 
 	// RenderingPass に割り当てる ID
 	for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {

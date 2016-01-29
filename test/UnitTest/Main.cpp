@@ -1,33 +1,33 @@
 #include "TestConfig.h"
-
+#include "../../../src/EngineManager.h"
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GTEST_API_ int main(int argc, char **argv)
-{
-
-#ifdef _WIN32
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-	setlocale(LC_ALL, "");
-
-
-#if 0	// 部分的にテストを実行したりする
-	char* testArgs[] = {
-		argv[0],
-		"--gtest_filter=Test_Scene_Sprite.*"
-		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
-		//"--gtest_filter=Test_Graphics_Texture.Lock"
-	};
-	argc = sizeof(testArgs) / sizeof(char*);
-	testing::InitGoogleTest(&argc, (char**)testArgs);
-#else
-	testing::InitGoogleTest(&argc, argv);
-#endif
-	::testing::AddGlobalTestEnvironment(new TestEnv());
-	return RUN_ALL_TESTS();
-}
+//GTEST_API_ int main(int argc, char **argv)
+//{
+//
+//#ifdef _WIN32
+//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+//#endif
+//	setlocale(LC_ALL, "");
+//
+//
+//#if 0	// 部分的にテストを実行したりする
+//	char* testArgs[] = {
+//		argv[0],
+//		"--gtest_filter=Test_Scene_Sprite.*"
+//		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
+//		//"--gtest_filter=Test_Graphics_Texture.Lock"
+//	};
+//	argc = sizeof(testArgs) / sizeof(char*);
+//	testing::InitGoogleTest(&argc, (char**)testArgs);
+//#else
+//	testing::InitGoogleTest(&argc, argv);
+//#endif
+//	::testing::AddGlobalTestEnvironment(new TestEnv());
+//	return RUN_ALL_TESTS();
+//}
 
 #if 0
 Platform::PlatformManager*	TestEnv::Platform = NULL;
@@ -69,35 +69,8 @@ PathName TestEnv::MakeScreenShotPath(const char* fileName)
 	return path;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void TestEnv::SaveScreenShot(const TCHAR* filePath)
-{
-	MainSwapChain->GetBackBuffer()->Lock()->Save(filePath);
-	MainSwapChain->GetBackBuffer()->Unlock();
-}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
-{
-	bool r = TestEnv::EqualsBitmapFile(MainSwapChain->GetBackBuffer()->Lock(), filePath);
-	MainSwapChain->GetBackBuffer()->Unlock();
-	return r;
-}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
-{
-	Bitmap bmp2(filePath);
-	bmp1->ConvertToDownFlow();
-	bmp2.ConvertToDownFlow();
-	return bmp1->Equals(&bmp2);
-}
 
 //-----------------------------------------------------------------------------
 //
@@ -108,81 +81,145 @@ RefPtr<Shader> TestEnv::CreateShader(const TCHAR* filePath)
 	RefPtr<Shader> shader(Shader::Create((char*)code.GetData(), code.GetSize()));
 	return shader;
 }
+#endif
 
 //-----------------------------------------------------------------------------
-// プログラム開始時の初期化処理
+//
 //-----------------------------------------------------------------------------
 void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
 
-	//Platform::ApplicationSettings s;
-	//s.MainWindowSettings.ClientSize.Set(160, 120);
-	//Application = LN_NEW Platform::PlatformManager(s);
-
-	//PhysicsManager = LN_NEW Physics::PhysicsManager(Physics::SimulationType_Sync);
-
-	ApplicationSettings data;
-
-	Platform = Application->GetPlatformManager();
-	PhysicsManager = Application->GetPhysicsManager();
-
-	//Graphics::GraphicsManager::ConfigData gmcd;
-	//gmcd.GraphicsAPI = GraphicsAPI::DirectX9;//GraphicsAPI::OpenGL;
-	//gmcd.MainWindow = Application->GetMainWindow();
-	//gmcd.FileManager = &FileManager::GetInstance();
-	Manager = Application->GetGraphicsManager();//Graphics::GraphicsManager::Create(gmcd);
-
-	Renderer = Manager->GetRenderer();
-	MainSwapChain = Manager->GetMainSwapChain();
-	//Device = Manager->GetGraphicsDevice()->GetDeviceObject();
-
-
-	// SceneGraph
-	SceneGraphManager::ConfigData c;
-	c.FileManager = &FileManager::GetInstance();
-	c.PhysicsManager = Application->GetPhysicsManager();
-	c.GraphicsManager = TestEnv::Manager;
-	MMDSceneGraph = LN_NEW SceneGraphManager(c);
-	MMDSceneGraph->CreateMMDSceneGraph();
-
+	ApplicationSettings settings;
+	settings.mainWindowSize = Size(160, 120);
+	settings.backBufferSize = Size(160, 120);
+	settings.GraphicsAPI = GraphicsAPI::OpenGL;//GraphicsAPI::DirectX9;
+	settings.RenderingType = RenderingType::Deferred;//RenderingType::Immediate;
+	Engine::Initialize(settings);
 }
 
 //-----------------------------------------------------------------------------
-// プログラム終了時の終了処理
+//
 //-----------------------------------------------------------------------------
 void TestEnv::TearDown()
 {
-	if (MMDSceneGraph) {
-		MMDSceneGraph->ReleaseMMDSceneGraph();
-		LN_SAFE_RELEASE(MMDSceneGraph);
-	}
-	
-	Manager.SafeRelease();
-	//LN_SAFE_RELEASE(PhysicsManager);
-	//LN_SAFE_RELEASE(Application);
-	Application.SafeRelease();
+	Engine::Finalize();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TestEnv::SaveScreenShot(const TCHAR* filePath)
+{
+	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock()->Save(filePath);
+	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
+{
+	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock(), filePath);
+	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
+	return r;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Color MixPixels(Bitmap* bmp, int x, int y)
+{
+	const Color& c = bmp->GetPixel(x, y);
+	int r = c.R; int g = c.G; int b = c.B; int a = c.A;
+	int count = 1;
+
+	if (y > 0) {
+		if (x > 0) {
+			const Color& c = bmp->GetPixel(x - 1, y - 1);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+		{
+			const Color& c = bmp->GetPixel(x, y - 1);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+		if (x < bmp->GetSize().Width - 1) {
+			const Color& c = bmp->GetPixel(x + 1, y - 1);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+	}
+	{
+		if (x > 0) {
+			const Color& c = bmp->GetPixel(x - 1, y);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+		if (x < bmp->GetSize().Width - 1) {
+			const Color& c = bmp->GetPixel(x + 1, y);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+	}
+	if (y < bmp->GetSize().Height - 1) {
+		if (x > 0) {
+			const Color& c = bmp->GetPixel(x - 1, y + 1);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+		{
+			const Color& c = bmp->GetPixel(x, y + 1);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+		if (x < bmp->GetSize().Width - 1) {
+			const Color& c = bmp->GetPixel(x + 1, y + 1);
+			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+		}
+	}
+
+	return Color(r / count, g / count, b / count, a / count);
+}
+
+bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
+{
+	Bitmap bmp2(filePath);
+	//bmp1->ConvertToDownFlow();
+	//bmp2.ConvertToDownFlow();
+
+	int passRate = 90;
+
+	int colorRange = 255 - (255 * passRate / 100);
+	int pass = 0;
+
+	for (int y = 0; y < bmp1->GetSize().Height; ++y)
+	{
+		for (int x = 0; x < bmp1->GetSize().Width; ++x)
+		{
+			Color c1 = MixPixels(bmp1, x, y);
+			Color c2 = MixPixels(&bmp2, x, y);
+			if (abs(c1.R - c2.R) <= colorRange &&
+				abs(c1.G - c2.G) <= colorRange &&
+				abs(c1.B - c2.B) <= colorRange &&
+				abs(c1.A - c2.A) <= colorRange)
+			{
+				++pass;
+			}
+		}
+	}
+
+	return pass >= ((bmp1->GetSize().Height * bmp1->GetSize().Width) * passRate / 100);
+}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 GTEST_API_ int main(int argc, char **argv)
 {
-
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 	setlocale(LC_ALL, "");
 
-
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_Sprite.*"
-		//"--gtest_filter=Test_Imaging_Bitmap.BitBlt"
-		//"--gtest_filter=Test_Graphics_Texture.Lock"
+		"--gtest_filter=Test_Graphics_RenderingContext.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -192,4 +229,3 @@ GTEST_API_ int main(int argc, char **argv)
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 	return RUN_ALL_TESTS();
 }
-#endif

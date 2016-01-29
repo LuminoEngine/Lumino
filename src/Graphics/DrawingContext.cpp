@@ -1,4 +1,23 @@
 /*
+	[2016/1/29] Begin End Swap
+		・End と Swap は1つにまとめてもいい。(OpenGL とか Direct2D はこんなかんじ)
+		・Begin と End は RenderingContext や GraphicsContext に含めないほうがいいと思う。
+
+		ゲームモードではこう。
+			Engine::BeginRender();
+			r1 = RenderingContext::GetContext();
+			r1->Draw～
+			sceneGraph->Render(r1);
+			Engine::EndRender();
+
+		ツールモードではこんな感じが自然。
+			window->BeginRender();
+			r1 = RenderingContext::GetContext();
+			r1->Draw～
+			sceneGraph->Render(r1);
+			window->EndRender();
+
+
 	全体構成
 
 		RenderingContext	Renderer	

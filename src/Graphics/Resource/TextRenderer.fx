@@ -86,7 +86,7 @@ varying vec4	v_Color;
 varying vec2	v_TexUV;
 void main()
 {
-	gl_Position		= g_worldMatrix * float4(ln_Vertex, 1.0f);
+	gl_Position		= g_worldMatrix * vec4(ln_Vertex, 1.0f);
 	gl_Position		= g_viewProjMatrix * gl_Position;
 	v_Color			= ln_Color0;
 	v_TexUV			= ln_MultiTexCoord0;
@@ -102,7 +102,7 @@ varying vec4		v_Color;
 varying vec2		v_TexUV;
 void main()
 {
-	vec4 outColor = texture2D(g_texture, v_TexUV) * tex2D(g_glyphMaskTexture, v_TexUV) * v_Color;
+	vec4 outColor = texture2D(g_texture, v_TexUV) * texture2D(g_glyphMaskTexture, v_TexUV) * v_Color;
 	
 	// êFí≤ÇÃåvéZ
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;

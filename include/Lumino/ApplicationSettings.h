@@ -27,6 +27,16 @@ public:
 public:
 
 	/**
+		@brief		メインウィンドウのクライアント領域の幅と高さを設定します。(初期値:640x480)
+	*/
+	Size mainWindowSize = Size(640, 480);
+
+	/**
+		@brief		メインウィンドウに対して作成されるバックバッファのサイズを設定します。(初期値:640x480)
+	*/
+	Size backBufferSize = Size(640, 480);
+	
+	/**
 		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:Debugモードの場合true、それ以外は false)
 	*/
 	bool ApplicationLogEnabled;
@@ -35,6 +45,7 @@ public:
 		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:false)
 	*/
 	bool ConsoleEnabled;
+	// TODO: いらない。Core の Console クラスを利用する。
 
 	/**
 		@brief		登録するアーカイブファイルのリストです。

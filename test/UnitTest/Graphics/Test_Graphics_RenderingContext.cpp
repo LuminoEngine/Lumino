@@ -1,4 +1,4 @@
-#include <TestConfig.h>
+Ôªø#include <TestConfig.h>
 
 class Test_Graphics_RenderingContext : public ::testing::Test
 {
@@ -7,8 +7,10 @@ protected:
 
 	virtual void SetUp()
 	{
-		ByteBuffer code = FileSystem::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl"));
-		m_shader.Attach(Shader::Create((char*)code.GetData(), code.GetSize()));
+		//ByteBuffer code = FileSystem::ReadAllBytes(LOCALFILE("TestData/PosColor.lnsl"));
+		//m_shader.Attach(Shader::Create((char*)code.GetData(), code.GetSize()));
+
+		m_shader = Shader::Create(LN_LOCALFILE("TestData/PosColor.lnsl"));
 	}
 	virtual void TearDown() {}
 
@@ -17,21 +19,32 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 {
+	// ÂèçÊôÇË®àÂõû„Çä„ÇíË°®„Å®„Åô„Çã
 	PosColorVertex vertices[] =
 	{
-		{ Vector3(-1.0f, -1.0f, 0.0f), ColorF::Blue },	// ç∂â∫ ê¬
-		{ Vector3(1.0f, -1.0f, 0.0f), ColorF::Green },	// âEâ∫ óŒ
-		{ Vector3(0.0f, 1.0f, 0.0f), ColorF::Red },		// í∏ì_ ê‘
+		{ Vector3(-1.0f, -1.0f, 0.0f), ColorF::Blue },	// Â∑¶‰∏ã Èùí
+		{ Vector3(1.0f, -1.0f, 0.0f), ColorF::Green },	// Âè≥‰∏ã Á∑ë
+		{ Vector3(0.0f, 1.0f, 0.0f), ColorF::Red },		// È†ÇÁÇπ Ëµ§
 	};
 	RefPtr<VertexBuffer> vb(VertexBuffer::Create(
-		PosColorVertex::GetLayout(), PosColorVertex::LayoutCount, LN_ARRAY_SIZE_OF(vertices), vertices));
+		PosColorVertex::GetLayout(), PosColorVertex::LayoutCount, LN_ARRAY_SIZE_OF(vertices), vertices), false);
 
-	Renderer* r = TestEnv::BeginRendering();
+	Engine::BeginRendering();
+	auto* r = RenderingContext2::GetContext();
 	r->SetVertexBuffer(vb);
-	m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
+	r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
 	r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
-	TestEnv::EndRendering();
+	Engine::EndRendering();
 
-	SS_CHECK(SS_SAVE, "Test_Graphics_BasicRendering.PosColorVertex.png");
-	//SS_CHECK("Test_Graphics_BasicRendering.PosColorVertex.png");
+	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+//	bool r7 = TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));
+	printf("");
+	//Renderer* r = TestEnv::BeginRendering();
+	//r->SetVertexBuffer(vb);
+	//m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
+	//r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
+	//TestEnv::EndRendering();
+
+	//SS_CHECK(SS_SAVE, "Test_Graphics_BasicRendering.PosColorVertex.png");
+	////SS_CHECK("Test_Graphics_BasicRendering.PosColorVertex.png");
 }

@@ -114,6 +114,8 @@ void Shader::Initialize(GraphicsManager* manager, const StringRef& filePath)
 	stream->Read(buf.GetData(), buf.GetSize());
 	buf[stream->GetLength()] = 0x00;
 
+	// TODO: 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+
 	ShaderCompileResult result;
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateShader(buf.GetConstData(), buf.GetSize(), &result);
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);

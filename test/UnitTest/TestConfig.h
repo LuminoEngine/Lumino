@@ -5,13 +5,13 @@
 #include <Lumino.h>
 #include <Lumino/Testing/TestUtils.h>
 
-#include "../../../src/Scene/SceneGraphManager.h"
-#include "../../../src/Scene/ViewPane.h"
-#include <Lumino/Scene/Sprite.h>
-#include "../../../src/Scene/MME/MMEShader.h"
-#include "../../../src/Scene/MME/MMEShaderBuilder.h"
-#include "../../../src/Scene/MME/MMEShaderErrorInfo.h"
-
+//#include "../../../src/Scene/SceneGraphManager.h"
+//#include "../../../src/Scene/ViewPane.h"
+//#include <Lumino/Scene/Sprite.h>
+//#include "../../../src/Scene/MME/MMEShader.h"
+//#include "../../../src/Scene/MME/MMEShaderBuilder.h"
+//#include "../../../src/Scene/MME/MMEShaderErrorInfo.h"
+//
 
 
 using namespace ln;
@@ -39,7 +39,7 @@ class TestEnv : public ::testing::Environment
 //	static SwapChain*		MainSwapChain;
 //	static SceneGraphManager*		MMDSceneGraph;
 //
-//public:
+public:
 //	static Lumino::Renderer* BeginRendering();
 //	static void EndRendering();
 //	static PathName MakeScreenShotPath(const char* fileName);
@@ -49,45 +49,57 @@ class TestEnv : public ::testing::Environment
 //	static RefPtr<Shader> CreateShader(const TCHAR* filePath);
 //
 protected:
-#if 0
 	virtual void SetUp();
 	virtual void TearDown();
-#endif
 };
 
+
+inline PathName Test_GetTempFilePath(const TCHAR* fileName)
+{
+	PathName base(__FILE__);
+	PathName tempDir(base.GetParent(), _T("../../"));
+	tempDir.Append(_T("tmp"));
+	PathName path(tempDir, fileName);
+	FileSystem::CreateDirectory(path.GetParent());
+	return PathName(path.c_str());
+}
+
+#define LN_TEMPFILE(fileName)	Test_GetTempFilePath(_T(fileName)).c_str()
+
+
 /// 頂点データ (位置+頂点カラー)
-//class PosColorVertex
-//{
-//public:
-//	Vector3		Position;
-//	ColorF		Color;
-//
-//	static VertexElement* GetLayout()
-//	{
-//		static VertexElement elements[] =
-//		{
-//			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
-//			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-//		};
-//		return elements;
-//	}
-//	static const int LayoutCount = 2;
-//};
-//
-///// 頂点データ (位置+テクスチャUV)
-//class PosUVVertex
-//{
-//public:
-//	Vector3		Position;
-//	Vector2		TexUV;
-//
-//	static VertexElement* GetLayout()
-//	{
-//		static VertexElement elements[] =
-//		{
-//			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
-//			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
-//		};
-//		return elements;
-//	}
-//};
+class PosColorVertex
+{
+public:
+	Vector3		Position;
+	ColorF		Color;
+
+	static VertexElement* GetLayout()
+	{
+		static VertexElement elements[] =
+		{
+			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+		};
+		return elements;
+	}
+	static const int LayoutCount = 2;
+};
+
+/// 頂点データ (位置+テクスチャUV)
+class PosUVVertex
+{
+public:
+	Vector3		Position;
+	Vector2		TexUV;
+
+	static VertexElement* GetLayout()
+	{
+		static VertexElement elements[] =
+		{
+			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
+		};
+		return elements;
+	}
+};

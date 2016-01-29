@@ -167,7 +167,9 @@ void GLRenderer::SetDepthStencilState(const DepthStencilState& state)
 //-----------------------------------------------------------------------------
 void GLRenderer::SetRenderTarget(int index, ITexture* texture)
 {
-	LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
+	if (texture != nullptr) {
+		LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
+	}
 	LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<GLRenderTargetTexture*>(texture));
 	m_modifiedFrameBuffer = true;
 }
@@ -205,7 +207,9 @@ void GLRenderer::SetDepthBuffer(ITexture* texture)
 //-----------------------------------------------------------------------------
 void GLRenderer::SetViewport(const Rect& rect)
 {
-	LN_THROW(0, NotImplementedException);
+	const Size& scr = m_currentRenderTargets[0]->GetSize();
+	glViewport(rect.X, scr.Height - rect.Y, rect.Width, rect.Height);
+	//LN_THROW(0, NotImplementedException);
 }
 
 //-----------------------------------------------------------------------------
@@ -348,7 +352,7 @@ void GLRenderer::UpdateRenderState(const RenderState& newState, bool reset)
 	if (reset)
 	{
 		// 時計回りを表にする
-		glFrontFace(GL_CW); LN_CHECK_GLERROR();
+		//glFrontFace(GL_CW); LN_CHECK_GLERROR();
 	}
 
 	// 合成方法

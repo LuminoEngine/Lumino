@@ -253,7 +253,7 @@ void EngineManager::InitializePlatformManager()
 		Platform::PlatformManager::Settings data;
 		data.API = Platform::WindowSystemAPI_Win32API;
 		data.MainWindowSettings.Title = _T("");
-		data.MainWindowSettings.ClientSize.Set(640, 480);
+		data.MainWindowSettings.ClientSize = m_configData.mainWindowSize;
 		data.MainWindowSettings.Fullscreen = false;
 		data.MainWindowSettings.Resizable = true;
 		data.MainWindowSettings.UserWindow = m_configData.UserMainWindow;
@@ -345,6 +345,7 @@ void EngineManager::InitializeGraphicsManager()
 		data.GraphicsAPI = m_configData.GraphicsAPI;
 		data.RenderingType = m_configData.RenderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
+		data.backBufferSize = m_configData.backBufferSize;
 		data.FileManager = m_fileManager;
 		data.PlatformTextureLoading = true;
 #ifdef LN_OS_WIN32
@@ -362,6 +363,7 @@ void EngineManager::InitializeGraphicsManager()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeEffectManager()
 {
+#if 0
 	if (m_effectManager == nullptr)
 	{
 		InitializeCommon();
@@ -374,6 +376,7 @@ void EngineManager::InitializeEffectManager()
 		m_effectManager = LN_NEW detail::EffectManager();
 		m_effectManager->Initialize(data);
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -441,6 +444,7 @@ void EngineManager::InitializeGUIManager()
 #ifdef LN_BUILD_SCENE_MODULE
 void EngineManager::InitializeSceneGraphManager()
 {
+#if 0
 	if (m_sceneGraphManager == NULL)
 	{
 		InitializeCommon();
@@ -459,6 +463,7 @@ void EngineManager::InitializeSceneGraphManager()
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
+#endif
 }
 #endif
 

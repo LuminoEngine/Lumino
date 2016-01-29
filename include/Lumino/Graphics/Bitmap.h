@@ -112,6 +112,23 @@ public:
 	void CopyRawData(const void* data, size_t byteCount);
 	size_t GetByteCount() const;
 
+	// テスト用
+	Color GetPixel(int x, int y) const
+	{
+		struct U32
+		{
+			byte_t	D[4];
+		};
+		const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.Width + x];
+		if (m_format == PixelFormat_BYTE_B8G8R8A8 || m_format == PixelFormat_BYTE_B8G8R8X8)
+		{
+			return Color(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
+		}
+		else {
+			return *((const Color*)buf);
+		}
+	}
+
 public:
 	
 	/// フォーマット毎のバイト数を求める (A1 の場合は 1 を返す)
