@@ -91,8 +91,8 @@ void GLSwapChain::OnResetDevice()
 	// 頂点バッファ
 	const GLfloat vertices[] = {
 		-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,	// 左上
-		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,	// 右上
 		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,	// 左下
+		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,	// 右上
 		1.0f, -1.0f, 0.0f, 1.0f, 0.0f,	// 右下
 	};
 	glGenBuffers(1, &m_vertexBuffer); LN_CHECK_GLERROR();
@@ -107,7 +107,7 @@ void GLSwapChain::OnResetDevice()
 void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 {
 	//glEnable(GL_TEXTURE_2D);
-	//glDisable(GL_CULL_FACE);	// 両面描画
+	glDisable(GL_CULL_FACE);	// 両面描画
 
 	// 各設定をデフォルトに戻す
 	glUseProgram(0);
@@ -148,6 +148,8 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glEnableVertexAttribArray(m_positionLoc); LN_CHECK_GLERROR();
 	glEnableVertexAttribArray(m_texCoordLoc); LN_CHECK_GLERROR();
 
+	glClearColor(1, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
 	// 描画
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); LN_CHECK_GLERROR();
 

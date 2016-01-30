@@ -103,10 +103,11 @@ void WGLSwapChain::Present(ITexture* colorBuffer)
 	//m_device->MakeCurrentContext(NULL);
 	try
 	{
+		m_device->MakeCurrentContext(m_context);
 		// colorBuffer をバックバッファに描画する
 		InternalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->GetRenderer()));
-		m_device->MakeCurrentContext(m_context);
 		//printf("swap\n");
+	
 		// バックバッファをフロントバッファに転送する
 		BOOL r = ::SwapBuffers(m_context->GetDC());
 		LN_THROW(r, Win32Exception, ::GetLastError());
