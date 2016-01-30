@@ -28,11 +28,55 @@ public:
 	/// GC 実行
 	void GCDeviceResource();
 
-protected:
-	typedef Array<IDeviceObject*>	DeviceObjectList;
+	virtual void AttachRenderingThread();
+	virtual void DetachRenderingThread();
 
+	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage) override;
+	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) override;
+	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) override;
+	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format) override;
+	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
+	virtual ITexture* CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format) override;
+	virtual IShader* CreateShader(const void* textData, size_t size, ShaderCompileResult* result) override;
+	virtual ISwapChain* CreateSwapChain(Platform::Window* window) override;
+
+protected:
+	virtual RefPtr<IVertexBuffer> CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage) = 0;
+	virtual RefPtr<IIndexBuffer> CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) = 0;
+	virtual RefPtr<ITexture> CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) = 0;
+	virtual RefPtr<ITexture> CreateTexturePlatformLoadingImplement(Stream* stream, uint32_t mipLevels, TextureFormat format) = 0;
+	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
+	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) = 0;
+	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) = 0;
+	virtual RefPtr<ISwapChain> CreateSwapChainImplement(Platform::Window* window) = 0;
+	virtual void OnBeginAccessContext();
+	virtual void OnEndAccessContext();
+
+protected:
+
+	class ScopedAccessContext
+	{
+	public:
+		GraphicsDeviceBase* m_device;
+		ScopedAccessContext(GraphicsDeviceBase* d)
+		{
+			m_device = d;
+			m_device->m_contextAccessMutex.Lock();
+			m_device->OnBeginAccessContext();
+		}
+		~ScopedAccessContext()
+		{
+			m_device->OnEndAccessContext();
+			m_device->m_contextAccessMutex.Unlock();
+		}
+	};
+
+	typedef Array<IDeviceObject*>	DeviceObjectList;
+	
+	uint32_t			m_attachRenderingThreadId;
 	DeviceObjectList	m_deviceObjectList;
 	Threading::Mutex	m_deviceObjectListMutex;
+	Threading::Mutex	m_contextAccessMutex;
 };
 
 } // namespace Driver

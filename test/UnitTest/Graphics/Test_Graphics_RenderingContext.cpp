@@ -1,4 +1,5 @@
 ﻿#include <TestConfig.h>
+#include "../../src/Graphics/RendererImpl.h"
 
 class Test_Graphics_RenderingContext : public ::testing::Test
 {
@@ -35,7 +36,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 	{
 		{ Vector3(-1.0f, -1.0f, 0.0f), ColorF::Blue },	// 左下 青
 		{ Vector3(1.0f, -1.0f, 0.0f), ColorF::Green },	// 右下 緑
-		{ Vector3(0.0f, 0.0f, 0.0f), ColorF::Red },		// 頂点 赤
+		{ Vector3(0.0f, 1.0f, 1.0f), ColorF::Red },		// 頂点 赤
 	};
 	RefPtr<VertexBuffer> vb(VertexBuffer::Create(
 		PosColorVertex::GetLayout(), PosColorVertex::LayoutCount, LN_ARRAY_SIZE_OF(vertices), vertices), false);
@@ -43,14 +44,14 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 	Engine::BeginRendering();
 	auto* r = RenderingContext2::GetContext();
 	r->SetVertexBuffer(vb);
-	//r->SetDepthBuffer(nullptr);
-	r->Clear(ClearFlags::Color, ColorF::Gray);
 	r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
 	r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
 	Engine::EndRendering();
 
-	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png")));
+	//TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
 
+#if 0
 	{
 		do
 		{
@@ -58,10 +59,20 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 			{
 				auto* r = RenderingContext2::GetContext();
 				r->SetVertexBuffer(vb);
-				//r->SetDepthBuffer(nullptr);
-				r->Clear(ClearFlags::Color, ColorF::Gray);
+				r->SetDepthBuffer(nullptr);
+				r->Clear(ClearFlags::All, ColorF::Gray);
 				r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
 				r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
+
+
+				auto* r2 = GraphicsManager::Instance->GetRenderer();
+				r2->SetVertexBuffer(vb);
+				r2->SetDepthBuffer(nullptr);
+				r2->Clear(ClearFlags::All, ColorF::Gray);
+				////r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
+				m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
+				r2->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
+
 				Engine::EndRendering();
 			}
 		} while (Engine::UpdateFrame());
@@ -78,4 +89,5 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 
 	//SS_CHECK(SS_SAVE, "Test_Graphics_BasicRendering.PosColorVertex.png");
 	////SS_CHECK("Test_Graphics_BasicRendering.PosColorVertex.png");
+#endif
 }

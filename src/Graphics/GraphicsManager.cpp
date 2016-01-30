@@ -1,4 +1,8 @@
 ﻿/*
+	[2016/1/29] 何故 RenderingContext が必要になったのか？
+		RenderingContext の他、GraphicsContext とステートを排他にするため。
+		ライブラリ内でステートが変わってもユーザーは気にせず使用できるようにしたい。
+
 	[2016/1/29] 座標系
 		http://blog.cnu.jp/blog/2015/10/01/game-math-coodinate/
 		右手系：OpenGL
@@ -823,6 +827,8 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	}
 	else if (configData.GraphicsAPI == GraphicsAPI::OpenGL)
 	{
+		m_platformTextureLoading = false;
+
 		Driver::WGLGraphicsDevice::ConfigData data;
 		data.MainWindow = configData.MainWindow;
 		data.OpenGLMajorVersion = 2;
@@ -843,6 +849,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 #else
 	LN_THROW(0, NotImplementedException);
 #endif
+
 
 	// Renderer
 	m_renderer = LN_NEW Details::Renderer(this);
@@ -881,7 +888,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 GraphicsManager::~GraphicsManager()
 {
-	if (m_glyphTextureCache != NULL) {
+	if (m_glyphTextureCache != nullptr) {
 		m_glyphTextureCache->Finalize();
 	}
 	LN_SAFE_RELEASE(m_textRendererCore);
@@ -890,12 +897,14 @@ GraphicsManager::~GraphicsManager()
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
 
-	if (m_fontManager != NULL) {
+	if (m_fontManager != nullptr)
+	{
 		m_fontManager->Dispose();
 		m_fontManager.SafeRelease();
 	}
 
-	if (m_graphicsDevice != NULL) {
+	if (m_graphicsDevice != nullptr)
+	{
 		m_graphicsDevice->Finalize();
 		LN_SAFE_RELEASE(m_graphicsDevice);
 	}
@@ -968,7 +977,12 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		// 色々解放
 		LN_SAFE_RELEASE(m_dummyTexture);
 
-		if (m_graphicsDevice != NULL) {
+		if (m_graphicsDevice != NULL)
+		{
+			if (m_renderingType == RenderingType::Immediate) {
+				m_graphicsDevice->DetachRenderingThread();
+			}
+
 			m_graphicsDevice->Finalize();
 			LN_SAFE_RELEASE(m_graphicsDevice);
 		}
@@ -976,6 +990,11 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 	else
 	{
 		LN_REFOBJ_SET(m_graphicsDevice, device);
+
+		// Immediate の場合は Initialize したスレッドをレンダリングスレッドとする
+		if (m_renderingType == RenderingType::Immediate) {
+			m_graphicsDevice->AttachRenderingThread();
+		}
 
 		// ダミーテクスチャ
 		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8, NULL);

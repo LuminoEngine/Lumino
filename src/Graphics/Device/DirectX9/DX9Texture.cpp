@@ -483,11 +483,12 @@ Bitmap* DX9BackBufferTexture::Lock()
 	D3DLOCKED_RECT	lockedRect;
 	LN_COMCALL(m_lockedSystemSurface->LockRect(&lockedRect, NULL, D3DLOCK_READONLY));
 
-	// Lock したバッファを参照する Bitmap を作成して返す
+	// Lock したバッファを参照する Bitmap を作成して返す。
+	// 取得できるビットマップデータの [0] は (0, 0)
 	PixelFormat pixelFormat = Utils::TranslatePixelFormat(m_format);
 	size_t size = Bitmap::GetPixelFormatByteCount(pixelFormat, m_realSize);
 	m_lockedBuffer = ByteBuffer(lockedRect.pBits, size, true);
-	m_lockedBitmap.Attach(LN_NEW Bitmap(m_lockedBuffer, m_realSize, pixelFormat));
+	m_lockedBitmap.Attach(LN_NEW Bitmap(m_lockedBuffer, m_realSize, pixelFormat, false));
 
 	return m_lockedBitmap;
 }

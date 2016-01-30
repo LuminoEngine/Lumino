@@ -68,6 +68,14 @@ Bitmap::Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format)
 	m_format = format;
 	m_bitmapData = buffer;
 }
+Bitmap::Bitmap(const ByteBuffer& buffer, const Size& size, PixelFormat format, bool upFlow)
+{
+	Init();
+	m_size = size;
+	m_format = format;
+	m_bitmapData = buffer;
+	m_upFlow = upFlow;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -114,6 +122,7 @@ void Bitmap::Save(const TCHAR* filePath)
 {
 	// png に保存するときは RGBA
 	Bitmap bitmap(m_size, PixelFormat_BYTE_R8G8B8A8);
+	bitmap.m_upFlow = m_upFlow;
 	ConvertPixelFormat(
 		m_bitmapData.GetData(), m_bitmapData.GetSize(), m_format,
 		bitmap.m_bitmapData.GetData(), bitmap.m_bitmapData.GetSize(), bitmap.m_format);

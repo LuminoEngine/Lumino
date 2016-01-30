@@ -148,8 +148,8 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glEnableVertexAttribArray(m_positionLoc); LN_CHECK_GLERROR();
 	glEnableVertexAttribArray(m_texCoordLoc); LN_CHECK_GLERROR();
 
-	glClearColor(1, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(1, 0, 0, 1);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	// 描画
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); LN_CHECK_GLERROR();
 

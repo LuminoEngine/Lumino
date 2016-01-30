@@ -56,12 +56,13 @@ public:
 		@brief		指定した ByteBuffer を参照する Bitmap を作成します。
 	*/
 	Bitmap(ByteBuffer buffer, const Size& size, PixelFormat format);
+	Bitmap(const ByteBuffer& buffer, const Size& size, PixelFormat format, bool upFlow);
 
 	/**
 		@brief		
 	*/
 	Bitmap(void* buffer, const Size& size, PixelFormat format);	// 参照モード
-	Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
+	//Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
 
 
 
@@ -119,6 +120,11 @@ public:
 		{
 			byte_t	D[4];
 		};
+
+		if (m_upFlow) {
+			y = m_size.Height - 1 - y;
+		}
+
 		const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.Width + x];
 		if (m_format == PixelFormat_BYTE_B8G8R8A8 || m_format == PixelFormat_BYTE_B8G8R8X8)
 		{

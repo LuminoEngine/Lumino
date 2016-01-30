@@ -93,8 +93,8 @@ void TestEnv::SetUp()
 	ApplicationSettings settings;
 	settings.mainWindowSize = Size(160, 120);
 	settings.backBufferSize = Size(160, 120);
-	settings.GraphicsAPI = GraphicsAPI::OpenGL;//GraphicsAPI::DirectX9;
-	settings.RenderingType = RenderingType::Deferred;//RenderingType::Immediate;
+	settings.GraphicsAPI = GraphicsAPI::OpenGL;//GraphicsAPI::DirectX9; //
+	settings.RenderingType = RenderingType::Deferred;//RenderingType::Immediate; //
 	Engine::Initialize(settings);
 }
 
@@ -179,10 +179,9 @@ Color MixPixels(Bitmap* bmp, int x, int y)
 bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 {
 	Bitmap bmp2(filePath);
-	//bmp1->ConvertToDownFlow();
-	//bmp2.ConvertToDownFlow();
 
 	int passRate = 90;
+	bool ignoreAlpha = true;
 
 	int colorRange = 255 - (255 * passRate / 100);
 	int pass = 0;
@@ -196,7 +195,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 			if (abs(c1.R - c2.R) <= colorRange &&
 				abs(c1.G - c2.G) <= colorRange &&
 				abs(c1.B - c2.B) <= colorRange &&
-				abs(c1.A - c2.A) <= colorRange)
+				(ignoreAlpha || abs(c1.A - c2.A) <= colorRange))
 			{
 				++pass;
 			}

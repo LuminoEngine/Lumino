@@ -54,27 +54,25 @@ public:
 
 
 public:
-	virtual void Finalize();
-	virtual bool IsStandalone() const { return m_direct3D != NULL; }
-	virtual GraphicsAPI GetGraphicsAPI() const { return GraphicsAPI::DirectX9; }
-	virtual ISwapChain* GetDefaultSwapChain();
-	virtual IRenderer* GetRenderer() { return m_renderer; }
-	virtual IVertexBuffer* CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
-	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage);
-	virtual ITexture* CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData);
-	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format);
-	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format);
-	virtual ITexture* CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format);
-	virtual IShader* CreateShader(const void* textData, size_t size, ShaderCompileResult* result);
-	virtual ISwapChain* CreateSwapChain(Platform::Window* window);
-	virtual DeviceState GetDeviceState() { return m_deviceState; }
-	virtual void ResetDevice();
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
-	virtual void LockContext() {}
-	virtual void UnlockContext() {}
-	virtual void AttachRenderingThread() {}
-	virtual void DetachRenderingThread() {}
+	virtual void Finalize() override;
+	virtual bool IsStandalone() const override { return m_direct3D != NULL; }
+	virtual GraphicsAPI GetGraphicsAPI() const override { return GraphicsAPI::DirectX9; }
+	virtual ISwapChain* GetDefaultSwapChain() override;
+	virtual IRenderer* GetRenderer() override { return m_renderer; }
+	virtual RefPtr<IVertexBuffer> CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage) override;
+	virtual RefPtr<IIndexBuffer> CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage) override;
+	virtual RefPtr<ITexture> CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData) override;
+	virtual RefPtr<ITexture> CreateTexturePlatformLoadingImplement(Stream* stream, uint32_t mipLevels, TextureFormat format) override;
+	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
+	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
+	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
+	virtual RefPtr<ISwapChain> CreateSwapChainImplement(Platform::Window* window) override;
+	virtual DeviceState GetDeviceState()  override { return m_deviceState; }
+	virtual void ResetDevice() override;
+	virtual void OnLostDevice() override;
+	virtual void OnResetDevice() override;
+	virtual void LockContext() override {}
+	virtual void UnlockContext() override {}
 
 private:
 	void CheckDeviceInformation();

@@ -56,53 +56,47 @@ void GLGraphicsDevice::Initialize(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なのでデストラクタとは別に開放用関数を用意した
 {
+	OnBeginAccessContext();
+	GraphicsDeviceBase::Finalize();
 	LN_SAFE_RELEASE(m_renderer);
+	OnEndAccessContext();
 
-	ScopedContext lock(this);
-	LN_FOREACH(IDeviceObject* obj, m_allDeviceResourceList) {
-		obj->Release();
-	}
-	m_allDeviceResourceList.Clear();
+	//ScopedContext lock(this);
+	//LN_FOREACH(IDeviceObject* obj, m_allDeviceResourceList) {
+	//	obj->Release();
+	//}
+	//m_allDeviceResourceList.Clear();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-IVertexBuffer* GLGraphicsDevice::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
-	ScopedContext lock(this);
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
 	obj->Create(vertexElements, elementsCount, vertexCount, data, usage);
-	AddDeviceResource(obj);		// GC 対象
-	obj.SafeAddRef();
 	return obj;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-IIndexBuffer* GLGraphicsDevice::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
-	ScopedContext lock(this);
 	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
 	obj->Create(indexCount, initialData, format, usage);
-	AddDeviceResource(obj);		// GC 対象
-	obj.SafeAddRef();
 	return obj;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
-	ScopedContext lock(this);
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
-	if (initialData != NULL) {
+	if (initialData != nullptr) {
 		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
 	}
-	AddDeviceResource(obj);
-	obj.SafeAddRef();
 	return obj;
 }
 
@@ -118,41 +112,34 @@ ITexture* GLGraphicsDevice::CreateTexture(const Size& size, uint32_t mipLevels, 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* GLGraphicsDevice::CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
+RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
-	ScopedContext lock(this);
 	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(Size(width, height), format, mipLevels), false);
-	AddDeviceResource(obj);
-	obj.SafeAddRef();
 	return obj;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ITexture* GLGraphicsDevice::CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format)
+RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
-	ScopedContext lock(this);
 	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(Size(width, height), format), false);
-	AddDeviceResource(obj);
-	obj.SafeAddRef();
 	return obj;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-IShader* GLGraphicsDevice::CreateShader(const void* textData, size_t size, ShaderCompileResult* result)
+RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
-	ScopedContext lock(this);
 	//printf("▼\n");
 
 	GLShader* shader = NULL;
 	result->Level = PlainGLSLBuilder::Build(this, textData, size, &shader, &result->Message);
 
-	if (shader != NULL) {
-		AddDeviceResource(shader);
-	}
+	//if (shader != NULL) {
+	//	AddDeviceResource(shader);
+	//}
 	/*
 		シェーダを作った直後、Shader の Apply() → DrawPrimitive() → Present() すると、
 		glFlush() とか wglMakeCurrent() とかでビジー状態になり、「ディスプレイドライバが応答しません」とか右下からエラー出た。
@@ -170,7 +157,17 @@ IShader* GLGraphicsDevice::CreateShader(const void* textData, size_t size, Shade
 	//MakeCurrentContext(GetMainContext());
 
 	//printf("▲\n");
-	return shader;
+	RefPtr<IShader> obj(shader, false);
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RefPtr<ISwapChain> GLGraphicsDevice::CreateSwapChainImplement(Platform::Window* window)
+{
+	LN_THROW(0, NotImplementedException);
+	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -204,7 +201,7 @@ void GLGraphicsDevice::OnResetDevice()
 void GLGraphicsDevice::LockContext()
 {
 	m_mutex.Lock();
-	MakeCurrentContext(GetMainContext());
+	OnBeginAccessContext();
 }
 
 //-----------------------------------------------------------------------------
@@ -212,7 +209,7 @@ void GLGraphicsDevice::LockContext()
 //-----------------------------------------------------------------------------
 void GLGraphicsDevice::UnlockContext()
 {
-	MakeCurrentContext(NULL);
+	OnEndAccessContext();
 	m_mutex.Unlock();
 }
 
@@ -303,64 +300,64 @@ void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 
 	Logger::WriteLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
 }
-
-//-----------------------------------------------------------------------------
 //
-//-----------------------------------------------------------------------------
-void GLGraphicsDevice::AddDeviceResource(IDeviceObject* obj)
-{
-	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
-
-	m_allDeviceResourceList.Add(obj);
-	obj->AddRef();
-}
-
-//-----------------------------------------------------------------------------
-// 
-//-----------------------------------------------------------------------------
-void GLGraphicsDevice::GCDeviceResource()
-{
-	/*
-		この関数は描画スレッドの、SwapChain::Present() の直後で実行される。
-		リソースがこのクラス以外から参照されていなければ開放する。
-
-		なお、このような仕組みにしたのは、リソースの開放を容易にするため。
-		Create 系はスレッドセーフかつ GPU 固有の不具合に備えるため、
-		作成の前後でコンテキストをアクティブ/ディアクティブしているが、
-		開放時 (glDelete～) の前後でも当然必要になる。
-
-		遅延描画の都合上、メインスレッドで不要になっても描画スレッドではまだ使っていることは普通にある。
-		描画スレッドでも必要なくなった時点でリソースを Release すれば良いのだが、
-		それだとデストラクタで「現在のスレッドがメインスレッドであれば MakeCurrent する」のような処理が必要になる。
-		この場合問題となるのは、
-		・Create系の内部でエラーが発生し、Release したいときにデッドロックの危険性がある
-		・デストラクタで例外を発生させる可能性がある
-		やりようはいくらでもあるが、シンプルに実装するのは少し難しい。
-	*/
-	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
-
-	Array<IDeviceObject*>::iterator itr = m_allDeviceResourceList.begin();
-	Array<IDeviceObject*>::iterator end = m_allDeviceResourceList.end();
-	for (; itr != end;)
-	{
-		if ((*itr)->GetRefCount() == 1) {
-			(*itr)->Release();
-			itr = m_allDeviceResourceList.erase(itr);
-			end = m_allDeviceResourceList.end();
-		}
-		else {
-			++itr;
-		}
-	}
-	
-
-	//LN_FOREACH(IDeviceObject* obj, m_allDeviceResourceList)
-	//{
-	//	if (obj->GetRefCount() == 1) {
-	//		obj->Release();
-	//	}
-	//}
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GLGraphicsDevice::AddDeviceResource(IDeviceObject* obj)
+//{
+//	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
+//
+//	m_allDeviceResourceList.Add(obj);
+//	obj->AddRef();
+//}
+//
+////-----------------------------------------------------------------------------
+//// 
+////-----------------------------------------------------------------------------
+//void GLGraphicsDevice::GCDeviceResource()
+//{
+//	/*
+//		この関数は描画スレッドの、SwapChain::Present() の直後で実行される。
+//		リソースがこのクラス以外から参照されていなければ開放する。
+//
+//		なお、このような仕組みにしたのは、リソースの開放を容易にするため。
+//		Create 系はスレッドセーフかつ GPU 固有の不具合に備えるため、
+//		作成の前後でコンテキストをアクティブ/ディアクティブしているが、
+//		開放時 (glDelete～) の前後でも当然必要になる。
+//
+//		遅延描画の都合上、メインスレッドで不要になっても描画スレッドではまだ使っていることは普通にある。
+//		描画スレッドでも必要なくなった時点でリソースを Release すれば良いのだが、
+//		それだとデストラクタで「現在のスレッドがメインスレッドであれば MakeCurrent する」のような処理が必要になる。
+//		この場合問題となるのは、
+//		・Create系の内部でエラーが発生し、Release したいときにデッドロックの危険性がある
+//		・デストラクタで例外を発生させる可能性がある
+//		やりようはいくらでもあるが、シンプルに実装するのは少し難しい。
+//	*/
+//	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
+//
+//	Array<IDeviceObject*>::iterator itr = m_allDeviceResourceList.begin();
+//	Array<IDeviceObject*>::iterator end = m_allDeviceResourceList.end();
+//	for (; itr != end;)
+//	{
+//		if ((*itr)->GetRefCount() == 1) {
+//			(*itr)->Release();
+//			itr = m_allDeviceResourceList.erase(itr);
+//			end = m_allDeviceResourceList.end();
+//		}
+//		else {
+//			++itr;
+//		}
+//	}
+//	
+//
+//	//LN_FOREACH(IDeviceObject* obj, m_allDeviceResourceList)
+//	//{
+//	//	if (obj->GetRefCount() == 1) {
+//	//		obj->Release();
+//	//	}
+//	//}
+//}
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

@@ -33,10 +33,12 @@ public:
 
 public:
 	// override IGraphicsDevice
-	virtual ISwapChain* GetDefaultSwapChain();
-	virtual ISwapChain* CreateSwapChain(Platform::Window* window);
-	virtual void AttachRenderingThread();
-	virtual void DetachRenderingThread();
+	virtual ISwapChain* GetDefaultSwapChain() override;
+	virtual ISwapChain* CreateSwapChain(Platform::Window* window) override;
+	virtual void AttachRenderingThread() override;
+	virtual void DetachRenderingThread() override;
+	virtual void OnBeginAccessContext() override;
+	virtual void OnEndAccessContext() override;
 
 public:
 	static PFNWGLGETEXTENSIONSSTRINGEXTPROC		GetExtensionsStringEXT;

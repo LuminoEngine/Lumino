@@ -1,6 +1,5 @@
 ﻿
-#pragma once 
-
+#include "../Internal.h"
 #include "GraphicsDeviceBase.h"
 
 LN_NAMESPACE_BEGIN
@@ -16,6 +15,7 @@ namespace Driver
 //
 //-----------------------------------------------------------------------------
 GraphicsDeviceBase::GraphicsDeviceBase()
+	: m_attachRenderingThreadId(0)
 {
 }
 
@@ -95,6 +95,130 @@ void GraphicsDeviceBase::GCDeviceResource()
 	}
 }
 
+
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsDeviceBase::AttachRenderingThread()
+{
+	LN_THROW(m_attachRenderingThreadId == 0, InvalidOperationException);
+	m_attachRenderingThreadId = Threading::Thread::GetCurrentThreadID();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsDeviceBase::DetachRenderingThread()
+{
+	LN_THROW(m_attachRenderingThreadId != 0, InvalidOperationException);
+	m_attachRenderingThreadId = 0;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateVertexBufferImplement(vertexElements, elementsCount, vertexCount, data, usage);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateIndexBufferImplement(indexCount, initialData, format, usage);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ITexture* GraphicsDeviceBase::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateTextureImplement(size, mipLevels, format, initialData);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateTexturePlatformLoadingImplement(stream, mipLevels, format);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ITexture* GraphicsDeviceBase::CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateRenderTargetImplement(width, height, mipLevels, format);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ITexture* GraphicsDeviceBase::CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateDepthBufferImplement(width, height, format);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+IShader* GraphicsDeviceBase::CreateShader(const void* textData, size_t size, ShaderCompileResult* result)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateShaderImplement(textData, size, result);
+	if (!obj.IsNull()) { 
+		AddDeviceResource(obj);
+	}
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ISwapChain* GraphicsDeviceBase::CreateSwapChain(Platform::Window* window)
+{
+	ScopedAccessContext lock(this);
+	auto obj = CreateSwapChainImplement(window);
+	AddDeviceResource(obj);
+	return obj.DetachMove();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsDeviceBase::OnBeginAccessContext()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsDeviceBase::OnEndAccessContext()
+{
+}
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

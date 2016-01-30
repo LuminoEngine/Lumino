@@ -188,7 +188,10 @@ void GLRenderer::SetRenderTarget(int index, ITexture* texture)
 //-----------------------------------------------------------------------------
 void GLRenderer::SetDepthBuffer(ITexture* texture)
 {
-	LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
+	if (texture != nullptr)
+	{
+		LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
+	}
 	LN_REFOBJ_SET(m_currentDepthBuffer, static_cast<GLDepthBuffer*>(texture));
 	m_modifiedFrameBuffer = true;
 }
@@ -208,7 +211,7 @@ void GLRenderer::SetDepthBuffer(ITexture* texture)
 void GLRenderer::SetViewport(const Rect& rect)
 {
 	const Size& scr = m_currentRenderTargets[0]->GetSize();
-	glViewport(rect.X, scr.Height - rect.Y, rect.Width, rect.Height);
+	glViewport(rect.X, scr.Height - (rect.Y + rect.Height), rect.Width, rect.Height);
 	//LN_THROW(0, NotImplementedException);
 }
 
@@ -262,8 +265,7 @@ void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t s
 //-----------------------------------------------------------------------------
 void GLRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	if (m_currentVertexBuffer == NULL ||
-		m_currentShaderPass == NULL) {
+	if (m_currentVertexBuffer == NULL) {
 		LN_THROW(0, InvalidOperationException);
 		return;
 	}
@@ -611,6 +613,8 @@ void GLRenderer::UpdateVAO()
 //-----------------------------------------------------------------------------
 void GLRenderer::UpdateVertexAttribPointer()
 {
+	if (m_currentShaderPass == nullptr) return;
+
 	// シェーダの頂点属性の更新
 	const Array<LNGLVertexElement>& elements = m_currentVertexBuffer->GetVertexElements();
 	LN_FOREACH(const LNGLVertexElement& elm, elements)

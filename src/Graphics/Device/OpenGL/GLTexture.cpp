@@ -281,6 +281,7 @@ void GLRenderTargetTexture::OnResetDevice()
 //-----------------------------------------------------------------------------
 Bitmap* GLRenderTargetTexture::Lock()
 {
+	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
 	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
