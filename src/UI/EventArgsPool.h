@@ -8,6 +8,57 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
+	
+class RefrectionObjectPool
+{
+public:
+	RefrectionObjectPool() = default;
+	~RefrectionObjectPool()
+	{
+		for (auto* obj : m_poolList)
+		{
+			obj->Release();
+		}
+	}
+
+	template<class TObject, typename ...TArgs>
+	TObject* Create(TArgs... args)
+	{
+		TObject* obj = static_cast<TObject* >(FindFreeObject(tr::TypeInfo::GetTypeInfo<TObject>()));
+		if (obj == nullptr) {
+			obj = LN_NEW TObject(args...);
+			Register(obj);
+		}
+		else {
+			obj->~TObject();
+			new (obj)TObject(args...);
+		}
+		obj->handled = false;
+		obj->AddRef();
+		return e;
+	}
+
+private:
+	typedef Array<tr::ReflectionObject*>	ObjectList;
+	ObjectList					m_poolList;
+
+	tr::ReflectionObject* FindFreeObject(tr::TypeInfo* typeId)
+	{
+		for (auto* e : m_poolList)
+		{
+			if (e->GetRefCount() == 1) {	// このリストからしか参照されていなければ返す
+				return e;
+			}
+		}
+		return nullptr;
+	}
+
+	void Register(tr::ReflectionObject* obj)
+	{
+		m_poolList.Add(obj);
+	}
+};
+
 /**
 	@brief	
 	@note	このクラスはイベント引数の頻繁な new を避けるために使用する。

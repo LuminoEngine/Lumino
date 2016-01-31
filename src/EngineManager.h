@@ -85,7 +85,7 @@ public:
 	void InitializeEffectManager();
 	void InitializeModelManager();
 	void InitializeDocumentsManager();
-	void InitializeGUIManager();
+	void InitializeUIManager();
 	void InitializeSceneGraphManager();
 	virtual bool OnEvent(const Platform::EventArgs& e);
 

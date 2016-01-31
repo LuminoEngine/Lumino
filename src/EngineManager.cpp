@@ -199,7 +199,7 @@ void EngineManager::Initialize()
 	InitializeGraphicsManager();
 	InitializeEffectManager();
 	InitializeModelManager();
-	InitializeGUIManager();
+	InitializeUIManager();
 #ifdef LN_BUILD_SCENE_MODULE
 	InitializeSceneGraphManager();
 #endif
@@ -420,7 +420,7 @@ void EngineManager::InitializeDocumentsManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void EngineManager::InitializeGUIManager()
+void EngineManager::InitializeUIManager()
 {
 	if (m_uiManager == NULL)
 	{

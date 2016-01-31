@@ -8,6 +8,7 @@ set(LN_TEST_SOURCES
 	UnitTest/IO/Test_IO_ASync.cpp
 	UnitTest/Platform/Test_Platform_Clipboard.cpp
 	UnitTest/Imaging/Test_Imaging_Bitmap.cpp
+	UnitTest/Graphics/Test_Graphics_GraphicsContext.cpp
 	UnitTest/Graphics/Test_Graphics_RenderingContext.cpp
 	#UnitTest/Graphics/Test_Graphics_GeometryRenderer.cpp
 	#UnitTest/Graphics/Test_Graphics_IndexBuffer.cpp
