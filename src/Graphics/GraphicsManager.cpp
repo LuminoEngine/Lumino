@@ -819,7 +819,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		data.D3D9Device = (IDirect3DDevice9*)configData.D3D9Device;
 		data.BackbufferSize = configData.backBufferSize;	// TODO
 		data.EnableVSyncWait = false;			// TODO
-		data.EnableFPUPreserve = false;			// TODO
+		data.EnableFPUPreserve = configData.fpuPreserveEnabled;			// TODO
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
 		device->Initialize(data);
 		ChangeDevice(device);

@@ -110,6 +110,7 @@ public:	// TODO
 		FileManager*			FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
 		void*					D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
+		bool					fpuPreserveEnabled = false;
 
 		ConfigData()
 			: GraphicsAPI(GraphicsAPI::DirectX9)

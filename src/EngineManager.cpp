@@ -252,7 +252,7 @@ void EngineManager::InitializePlatformManager()
 
 		Platform::PlatformManager::Settings data;
 		data.API = Platform::WindowSystemAPI_Win32API;
-		data.MainWindowSettings.Title = _T("");
+		data.MainWindowSettings.Title = m_configData.mainWindowTitle;
 		data.MainWindowSettings.ClientSize = m_configData.mainWindowSize;
 		data.MainWindowSettings.Fullscreen = false;
 		data.MainWindowSettings.Resizable = true;
@@ -303,9 +303,9 @@ void EngineManager::InitializeAudioManager()
 
 		AudioManagerImpl::Settings data;
 		data.FileManager = m_fileManager;
-		data.StreamCacheObjectCount = m_configData.SoundCacheCapacity.ObjectCount;
-		data.StreamSourceCacheMemorySize = m_configData.SoundCacheCapacity.MemorySize;
-		data.DMInitMode = m_configData.DirectMusicMode;
+		data.StreamCacheObjectCount = m_configData.soundCacheCapacity.objectCount;
+		data.StreamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
+		data.DMInitMode = m_configData.directMusicMode;
 #ifdef LN_OS_WIN32
 		data.hWnd = (m_platformManager != NULL) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : NULL;
 #endif

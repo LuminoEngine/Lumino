@@ -20,8 +20,8 @@ public:
 
 	struct CacheCapacity
 	{
-		int			ObjectCount;	/**< キャッシュに保持できる最大オブジェクト数 */
-		size_t		MemorySize;		/**< キャッシュに保持できる最大メモリ量 (byte単位。0 の場合はメモリ量を考慮しない) */
+		int			objectCount = 32;	/**< キャッシュに保持できる最大オブジェクト数 */
+		size_t		memorySize = 0;		/**< キャッシュに保持できる最大メモリ量 (byte単位。0 の場合はメモリ量を考慮しない) */
 	};
 
 public:
@@ -35,6 +35,11 @@ public:
 		@brief		メインウィンドウに対して作成されるバックバッファのサイズを設定します。(初期値:640x480)
 	*/
 	Size backBufferSize = Size(640, 480);
+
+	/**
+		@brief		メインウィンドウに対して作成されるバックバッファのサイズを設定します。(初期値:640x480)
+	*/
+	String mainWindowTitle = _T("");
 	
 	/**
 		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:Debugモードの場合true、それ以外は false)
@@ -71,6 +76,11 @@ public:
 	/** ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
 	void*	UserMainWindow;
 
+	/**
+		@brief		Direct3D の浮動小数点計算の精度に関する情報です。詳しくは MSDN の D3DCREATE_ENABLE_PRESENTSTATS を参照してください。
+	*/
+	bool	fpuPreserveEnabled = false;
+
 #ifdef LN_OS_WIN32
 	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 	void*	D3D9Device;
@@ -79,12 +89,12 @@ public:
 	/**
 		@brief		音声データのキャッシュ容量です。
 	*/
-	CacheCapacity	SoundCacheCapacity;
+	CacheCapacity	soundCacheCapacity;
 	
 	/**
 		@brief		DirectMusic の初期化方法の指定です。
 	*/
-	DirectMusicMode	DirectMusicMode;
+	DirectMusicMode	directMusicMode = DirectMusicMode::NotUse;
 
 	/**
 		@brief		DirectMusic のリバーブエフェクトの強さです。(規定値:0.75f)
@@ -108,11 +118,8 @@ public:
 #ifdef LN_OS_WIN32
 		, D3D9Device(NULL)
 #endif
-		, DirectMusicMode(DirectMusicMode::NotUse)
 		, DirectMusicReverbLevel(0.75f)
 	{
-		SoundCacheCapacity.ObjectCount = 32;
-		SoundCacheCapacity.MemorySize = 0;
 #ifdef LN_DEBUG
 		ApplicationLogEnabled = true;
 #endif
