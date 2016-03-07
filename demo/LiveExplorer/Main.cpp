@@ -65,6 +65,35 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+
+	try
+	{
+		ApplicationSettings appData;
+		appData.GraphicsAPI = GraphicsAPI::DirectX9;
+		appData.RenderingType = RenderingType::Immediate;
+		Engine::Initialize(appData);
+
+		do
+		{
+			if (Engine::BeginRendering())
+			{
+				Engine::Render();
+				Engine::EndRendering();
+			}
+
+		} while (Engine::UpdateFrame());
+	}
+	catch (Exception& e)
+	{
+		printf(e.what());
+	}
+
+	Engine::Finalize();
+	return 0;
+
+
+#if 0
+
 	//ByteBuffer buf1;
 	//buf1.Resize(sizeof(Matrix) * 1000);
 	//ByteBuffer buf2;
@@ -280,7 +309,7 @@ int main()
 		//::Sleep(1000);
 
 		//s->Stop();
-
+#endif
 		
 
 
@@ -626,14 +655,14 @@ int main()
 
 		} while (app->UpdateFrame());
 #endif
-	}
-	catch (Exception& e)
-	{
-		printf(e.what());
-	}
+	//}
+	//catch (Exception& e)
+	//{
+	//	printf(e.what());
+	//}
 
-	Engine::Finalize();
-	return 0;
+	//Engine::Finalize();
+	//return 0;
 }
 
 

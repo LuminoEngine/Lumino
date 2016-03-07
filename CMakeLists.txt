@@ -490,8 +490,6 @@ if (WIN32)
 		src/Platform/Win32/PlatformSupport_Win32.cpp
 		src/Platform/Win32/Win32Window.cpp
 		src/Platform/Win32/Win32Window.h
-		src/Platform/Win32/Win32WindowBase.cpp
-		src/Platform/Win32/Win32WindowBase.h
 		src/Platform/Win32/Win32WindowManager.cpp
 		src/Platform/Win32/Win32WindowManager.h
 	)

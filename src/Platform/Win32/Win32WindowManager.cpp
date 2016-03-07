@@ -136,7 +136,7 @@ Win32WindowBase* Win32WindowManager::CreateNativeWindow(const NativeWindowCreati
 		::ValidateRect(hWnd, 0);
 
 		// Win32Window 作成
-		RefPtr<Win32Window> window(LN_NEW Win32Window(this, hWnd, dwStyle, hAccel, data.TitleText), false);
+		RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this, hWnd, dwStyle, hAccel, data.TitleText), false);
 
 		// ウィンドウハンドルと Win32Window のポインタを関連付ける
 		BOOL r = ::SetProp(hWnd, PROP_WINPROC, window);
@@ -167,7 +167,7 @@ LRESULT CALLBACK Win32WindowManager::StaticWndProc(HWND hwnd, UINT msg, WPARAM w
 	0x007F SPI_SETMOUSEDOCKTHRESHOLD
 	*/
 
-	Win32Window* window = (Win32Window*)::GetProp(hwnd, PROP_WINPROC);
+	Win32NativeWindow* window = (Win32NativeWindow*)::GetProp(hwnd, PROP_WINPROC);
 
 	if (window) {
 		//if (msg == WM_SIZE) {
@@ -235,6 +235,14 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 	data.Resizable = settings.Resizable;
 	data.UserWindow = (HWND)settings.UserWindow;
 	mMainWindow.Attach(CreateNativeWindow(data));
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Window* Win32WindowManager::GetMainWindow()
+{
+	return mMainWindow;
 }
 
 //-----------------------------------------------------------------------------

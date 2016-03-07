@@ -2,18 +2,62 @@
 #pragma once
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Size.h>
-#include "Win32WindowBase.h"
+#include "../NativeWindow.h"
+#include "../WindowBase.h"
 
 LN_NAMESPACE_BEGIN
 namespace Platform
 {
+class Win32WindowManager;
+	
+/**
+	@brief	
+*/
+class Win32WindowBase
+	: public WindowBase
+{
+public:
+	Win32WindowBase(Win32WindowManager* app);
+	virtual ~Win32WindowBase();
 
-class Win32Window
+public:
+	// override Window
+	virtual bool IsActive() const { return mIsActive; }
+	//virtual void HideCursor();
+	//virtual void ShowCursor();
+
+public:
+	/// メッセージ処理のベース
+	///		この処理はメインウィンドウの他、ユーザーウィンドウのホストクラスでも使用する。
+	///		ホストの場合、ライブラリのユーザーが直接この関数を呼び出し、windows メッセージをライブラリに知らせる必要がある。
+	///		ホストの場合、メッセージループおよび DefWndProc はユーザー側で呼ぶことになるのでこの中では行わない。代わりに handled でメッセージを処理したことを伝える。
+	LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled);
+
+	bool NortifyEvent(const EventArgs& e);
+
+	/// ウィンドウハンドルの取得
+	virtual HWND GetWindowHandle() = 0;
+
+public:
+	static Key ConvertVirtualKeyCode(DWORD winVK);
+
+protected:
+	Size	mClientSize;        ///< クライアント領域の大きさ
+	int		mLastMouseX;
+	int		mLastMouseY;
+	bool	mIsActive;
+	bool	m_systemMouseShown;
+};
+
+/**
+	@brief	
+*/
+class Win32NativeWindow
 	: public Win32WindowBase
 {
 public:
-	Win32Window(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title);
-	virtual ~Win32Window();
+	Win32NativeWindow(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title);
+	virtual ~Win32NativeWindow();
 
 public:
 	// override Window
@@ -38,8 +82,9 @@ private:
 
 };
 
-
-
+/**
+	@brief	
+*/
 class Win32UserHostWindow
 	: public Win32WindowBase
 {

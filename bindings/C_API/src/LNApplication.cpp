@@ -57,8 +57,8 @@ void LNConfig_SetUserWindowHandle(intptr_t windowHandle)
 //-----------------------------------------------------------------------------
 void LNConfig_SetSoundCacheSize(int objectCount, int memorySize)
 {
-	LFManager::ConfigData.SoundCacheCapacity.ObjectCount = objectCount;
-	LFManager::ConfigData.SoundCacheCapacity.MemorySize = memorySize;
+	LFManager::ConfigData.soundCacheCapacity.objectCount = objectCount;
+	LFManager::ConfigData.soundCacheCapacity.memorySize = memorySize;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ void LNConfig_SetSoundCacheSize(int objectCount, int memorySize)
 //-----------------------------------------------------------------------------
 void LNConfig_SetDirectMusicMode(LNDirectMusicMode mode)
 {
-	LFManager::ConfigData.DirectMusicMode = (DirectMusicMode)mode;
+	LFManager::ConfigData.directMusicMode = (DirectMusicMode)mode;
 }
 
 //-----------------------------------------------------------------------------

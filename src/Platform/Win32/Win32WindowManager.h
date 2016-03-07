@@ -1,12 +1,12 @@
 ﻿
 #pragma once
 #include "../WindowManagerBase.h"
-#include "Win32WindowBase.h"
 
 LN_NAMESPACE_BEGIN
 namespace Platform
 {
-class Win32Window;
+class Win32NativeWindow;
+class Win32WindowBase;
 
 class Win32WindowManager
 	: public WindowManagerBase
@@ -56,7 +56,7 @@ public:
 public:
 	// override Application
 	virtual void CreateMainWindow(const WindowCreationSettings& settings);
-	virtual Window* GetMainWindow() { return mMainWindow; }
+	virtual Window* GetMainWindow();
 	virtual Window* CreateSubWindow(const WindowCreationSettings& settings);
 	virtual void DoEvents();
 	virtual void Finalize();

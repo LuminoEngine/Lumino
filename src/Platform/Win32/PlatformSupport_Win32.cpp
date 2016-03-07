@@ -1,7 +1,7 @@
 ﻿
 #include "../../Internal.h"
 #include "../../../include/Lumino/Platform/PlatformSupport.h"
-#include "Win32WindowBase.h"
+#include "Win32Window.h"
 
 LN_NAMESPACE_BEGIN
 namespace Platform
