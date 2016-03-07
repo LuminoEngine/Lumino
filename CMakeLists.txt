@@ -77,6 +77,7 @@ set(LN_SOURCES_IO
 
 set(LN_SOURCES_Platform
 	include/Lumino/Platform/Clipboard.h
+	include/Lumino/Platform/Common.h
 	include/Lumino/Platform/EventArgs.h
 	include/Lumino/Platform/EventListener.h
 	include/Lumino/Platform/Ime.h
@@ -86,7 +87,6 @@ set(LN_SOURCES_Platform
 	src/Platform/MouseCursorVisibility.h
 	src/Platform/PlatformManager.cpp
 	src/Platform/WindowManagerBase.cpp
-	src/Platform/WindowBase.cpp
 	src/Platform/Window.cpp
 )
 
@@ -485,11 +485,11 @@ endif()
 if (WIN32)
 	set(LN_SOURCES_Platform
 		${LN_SOURCES_Platform}
+		include/Lumino/Platform/Win32/Win32Window.h
 		src/Platform/Win32/Clipboard_Win32.cpp
 		src/Platform/Win32/Ime_Win32.cpp
 		src/Platform/Win32/PlatformSupport_Win32.cpp
 		src/Platform/Win32/Win32Window.cpp
-		src/Platform/Win32/Win32Window.h
 		src/Platform/Win32/Win32WindowManager.cpp
 		src/Platform/Win32/Win32WindowManager.h
 	)

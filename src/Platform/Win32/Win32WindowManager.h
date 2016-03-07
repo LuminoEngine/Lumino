@@ -6,7 +6,7 @@ LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class Win32NativeWindow;
-class Win32WindowBase;
+class Win32Window;
 
 class Win32WindowManager
 	: public WindowManagerBase
@@ -43,7 +43,7 @@ public:
 	HINSTANCE GetInstanceHandle() const { return m_hInst; }
 	const String& GetWindowClassName() const { return m_windowClassName; }
 
-	Win32WindowBase* CreateNativeWindow(const NativeWindowCreationData& data);
+	Win32Window* CreateNativeWindow(const NativeWindowCreationData& data);
 
 	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -62,11 +62,11 @@ public:
 	virtual void Finalize();
 
 private:
-	RefPtr<Win32WindowBase>	mMainWindow;
-	HINSTANCE	m_hInst;
-	HICON		m_hIcon;
-	String		m_windowClassName;
-	//bool		m_comInited;
+	RefPtr<Win32Window>	m_mainWindow;
+	HINSTANCE			m_hInst;
+	HICON				m_hIcon;
+	String				m_windowClassName;
+	//bool				m_comInited;
 };
 
 } // namespace Platform

@@ -1,6 +1,6 @@
 ﻿
 #include "../../Internal.h"
-#include "Win32Window.h"
+#include <Lumino/Platform/Win32/Win32Window.h>
 #include "Win32WindowManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -89,7 +89,7 @@ Win32WindowManager::~Win32WindowManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Win32WindowBase* Win32WindowManager::CreateNativeWindow(const NativeWindowCreationData& data)
+Win32Window* Win32WindowManager::CreateNativeWindow(const NativeWindowCreationData& data)
 {
 	if (data.UserWindow == NULL)
 	{
@@ -234,7 +234,7 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 	data.Fullscreen = settings.Fullscreen;
 	data.Resizable = settings.Resizable;
 	data.UserWindow = (HWND)settings.UserWindow;
-	mMainWindow.Attach(CreateNativeWindow(data));
+	m_mainWindow.Attach(CreateNativeWindow(data));
 }
 
 //-----------------------------------------------------------------------------
@@ -242,7 +242,7 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 //-----------------------------------------------------------------------------
 Window* Win32WindowManager::GetMainWindow()
 {
-	return mMainWindow;
+	return m_mainWindow;
 }
 
 //-----------------------------------------------------------------------------
@@ -283,7 +283,7 @@ void Win32WindowManager::DoEvents()
 //-----------------------------------------------------------------------------
 void Win32WindowManager::Finalize()
 {
-	mMainWindow.SafeRelease();
+	m_mainWindow.SafeRelease();
 }
 
 } // namespace Platform

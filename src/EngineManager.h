@@ -7,7 +7,6 @@
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Platform/PlatformManager.h>
 #include <Lumino/Physics/PhysicsManager.h>
-#include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Game/FpsController.h>
 #include <Lumino/ApplicationSettings.h>
@@ -20,6 +19,7 @@ namespace detail { class ModelManager; }
 namespace detail { class UIManager; }
 class AudioManagerImpl;
 class ProfilerRenderer;
+class GraphicsManager;
 class SceneGraphManager;
 
 class EngineManager
@@ -98,7 +98,7 @@ private:
 	detail::InputManager*				m_inputManager;
 	AudioManagerImpl*					m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
-	RefPtr<GraphicsManager>	m_graphicsManager;
+	GraphicsManager*					m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;

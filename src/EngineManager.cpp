@@ -54,6 +54,7 @@
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
+#include <Lumino/Graphics/GraphicsManager.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "Effect/EffectManager.h"
@@ -79,7 +80,7 @@ LN_NAMESPACE_BEGIN
 // EngineManager
 //=============================================================================
 
-EngineManager* EngineManager::Instance = NULL;
+EngineManager* EngineManager::Instance = nullptr;
 const TCHAR* EngineManager::LogFileName = _T("lnlog.txt");
 
 //-----------------------------------------------------------------------------
@@ -98,14 +99,15 @@ EngineManager* EngineManager::Create(const ApplicationSettings& configData)
 //-----------------------------------------------------------------------------
 EngineManager::EngineManager(const ApplicationSettings& configData)
 	: m_configData(configData)
-	, m_fileManager(NULL)
+	, m_fileManager(nullptr)
 	, m_inputManager(nullptr)
-	, m_audioManager(NULL)
+	, m_audioManager(nullptr)
+	, m_graphicsManager(nullptr)
 	, m_effectManager(nullptr)
 	, m_modelManager(nullptr)
 	, m_uiManager(nullptr)
-	, m_sceneGraphManager(NULL)
-	, m_profilerRenderer(NULL)
+	, m_sceneGraphManager(nullptr)
+	, m_profilerRenderer(nullptr)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
@@ -119,7 +121,7 @@ EngineManager::EngineManager(const ApplicationSettings& configData)
 
 
 	// COM 初期化
-	if (m_configData.autoCoInitialize && SUCCEEDED(::CoInitializeEx(NULL, COINIT_MULTITHREADED)))
+	if (m_configData.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
 		// エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
 		m_comInitialized = true;
@@ -140,10 +142,10 @@ EngineManager::~EngineManager()
 		m_graphicsManager->Finalize();
 	}
 
-	if (m_platformManager != NULL) {
+	if (m_platformManager != nullptr) {
 		m_platformManager->Dispose();
 	}
-	if (m_sceneGraphManager != NULL) {
+	if (m_sceneGraphManager != nullptr) {
 		m_sceneGraphManager->ReleaseDefaultSceneGraph();
 		LN_SAFE_RELEASE(m_sceneGraphManager);
 	}
@@ -155,17 +157,20 @@ EngineManager::~EngineManager()
 		m_effectManager->Finalize();
 		LN_SAFE_RELEASE(m_effectManager);
 	}
-	if (m_uiManager != NULL) {
+	if (m_uiManager != nullptr) {
 		m_uiManager->Finalize();
 		LN_SAFE_RELEASE(m_uiManager);
 	}
+
+	LN_SAFE_RELEASE(m_graphicsManager);
+
 	if (m_physicsManager != nullptr) {
 		m_physicsManager->Finalize();
 		m_physicsManager.SafeRelease();
 		//LN_SAFE_RELEASE(m_physicsManager);
 	}
 #ifdef LN_BUILD_AUDIO_MODULE
-	if (m_audioManager != NULL) {
+	if (m_audioManager != nullptr) {
 		m_audioManager->Finalize();
 		LN_SAFE_RELEASE(m_audioManager);
 	}
@@ -230,7 +235,7 @@ void EngineManager::InitializeCommon()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeFileManager()
 {
-	if (m_fileManager == NULL)
+	if (m_fileManager == nullptr)
 	{
 		FileManager::Settings data;
 		data.AccessMode = m_configData.FileAccessPriority;
@@ -290,14 +295,14 @@ void EngineManager::InitializeInputManager()
 void EngineManager::InitializeAudioManager()
 {
 #ifdef LN_BUILD_AUDIO_MODULE
-	if (m_audioManager == NULL)
+	if (m_audioManager == nullptr)
 	{
 		InitializeCommon();
 		InitializeFileManager();
 
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
-		if (m_configData.UserMainWindow != NULL) {
+		if (m_configData.UserMainWindow != nullptr) {
 			InitializePlatformManager();
 		}
 
@@ -307,7 +312,7 @@ void EngineManager::InitializeAudioManager()
 		data.StreamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
 		data.DMInitMode = m_configData.directMusicMode;
 #ifdef LN_OS_WIN32
-		data.hWnd = (m_platformManager != NULL) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : NULL;
+		data.hWnd = (m_platformManager != nullptr) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : nullptr;
 #endif
 		data.DirectMusicReverbLevel = m_configData.DirectMusicReverbLevel;
 		m_audioManager = AudioManagerImpl::Create(data);
@@ -334,7 +339,7 @@ void EngineManager::InitializePhysicsManager()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeGraphicsManager()
 {
-	if (m_graphicsManager.IsNull())
+	if (m_graphicsManager == nullptr)
 	{
 		InitializeCommon();
 		InitializeFileManager();
@@ -351,7 +356,7 @@ void EngineManager::InitializeGraphicsManager()
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
-		m_graphicsManager.Attach(LN_NEW GraphicsManager(data));
+		m_graphicsManager = LN_NEW GraphicsManager(data);
 		GraphicsManager::Instance = m_graphicsManager;
 
 		m_profilerRenderer = LN_NEW ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
@@ -422,7 +427,7 @@ void EngineManager::InitializeDocumentsManager()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeUIManager()
 {
-	if (m_uiManager == NULL)
+	if (m_uiManager == nullptr)
 	{
 		InitializeCommon();
 		InitializePlatformManager();
@@ -445,7 +450,7 @@ void EngineManager::InitializeUIManager()
 void EngineManager::InitializeSceneGraphManager()
 {
 #if 0
-	if (m_sceneGraphManager == NULL)
+	if (m_sceneGraphManager == nullptr)
 	{
 		InitializeCommon();
 		InitializeFileManager();
@@ -482,14 +487,14 @@ bool EngineManager::UpdateFrame()
 		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(m_fpsController.GetElapsedGameTime());
 	}
 
-	if (m_uiManager != NULL)
+	if (m_uiManager != nullptr)
 	{
 		m_uiManager->GetDefaultUIContext()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
-			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(size.Width, size.Height));
+			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(static_cast<float>(size.Width), static_cast<float>(size.Height)));
 		}
 	}
 
@@ -619,11 +624,11 @@ void EngineManager::Render()
 		if (m_sceneGraphManager != nullptr) {
 			m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
 		}
-		if (m_uiManager != NULL) {
+		if (m_uiManager != nullptr) {
 			m_uiManager->GetDefaultUIContext()->Render();
 		}
 
-		if (m_profilerRenderer != NULL) {
+		if (m_profilerRenderer != nullptr) {
 			//m_profilerRenderer->Render(Vector2(640, 480));	//TODO
 		}
 
@@ -644,7 +649,7 @@ void EngineManager::ResetFrameDelay()
 bool EngineManager::OnEvent(const Platform::EventArgs& e)
 {
 	UILayoutView* uiView = nullptr;
-	if (m_uiManager != NULL) {
+	if (m_uiManager != nullptr) {
 		uiView = m_uiManager->GetDefaultUIContext()->GetMainWindowView();
 	}
 

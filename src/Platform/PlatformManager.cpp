@@ -53,7 +53,7 @@
 #include "../Internal.h"
 #ifdef LN_OS_WIN32
 	#include "Win32/Win32WindowManager.h"
-	#include "Win32/Win32Window.h"
+	#include <Lumino/Platform/Win32/Win32Window.h>
 #endif
 #ifdef LN_X11
 	#include "X11/X11WindowManager.h"

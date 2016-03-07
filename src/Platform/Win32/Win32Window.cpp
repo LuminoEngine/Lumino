@@ -17,22 +17,23 @@
 */
 
 #include "../../Internal.h"
+#include <Lumino/Platform/Win32/Win32Window.h>
 #include "Win32WindowManager.h"
-#include "Win32Window.h"
+#include "../MouseCursorVisibility.h"
 
 LN_NAMESPACE_BEGIN
 namespace Platform
 {
 	
 //=============================================================================
-// Win32WindowBase
+// Win32Window
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Win32WindowBase::Win32WindowBase(Win32WindowManager* app)
-	: WindowBase(app)
+Win32Window::Win32Window(Win32WindowManager* app)
+	: Window(app)
 	, mLastMouseX(-1)
 	, mLastMouseY(-1)
 	, mIsActive(true)	// 初期値 true。WM_ACTIVATE は初回表示で最前面になった時は呼ばれない
@@ -43,14 +44,14 @@ Win32WindowBase::Win32WindowBase(Win32WindowManager* app)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Win32WindowBase::~Win32WindowBase()
+	Win32Window::~Win32Window()
 {
 }
 
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void Win32WindowBase::HideCursor()
+//void Win32Window::HideCursor()
 //{
 //	if (m_cursorShown)
 //	{
@@ -62,7 +63,7 @@ Win32WindowBase::~Win32WindowBase()
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void Win32WindowBase::ShowCursor()
+//void Win32Window::ShowCursor()
 //{
 //	if (!m_cursorShown)
 //	{
@@ -74,7 +75,7 @@ Win32WindowBase::~Win32WindowBase()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
+LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
 {
 	*handled = false;
 
@@ -405,7 +406,7 @@ LRESULT Win32WindowBase::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Win32WindowBase::NortifyEvent(const EventArgs& e)
+bool Win32Window::NortifyEvent(const EventArgs& e)
 {
 	/*	マウス非表示はもっと上のレベルで共通処理できるかと思ったけど、
 		割とOSにより変わりそうなので (ウィンドウ上にあるときだけカーソルが変わるのかとか)
@@ -415,21 +416,21 @@ bool Win32WindowBase::NortifyEvent(const EventArgs& e)
 	// 非アクティブの場合はクライアント領域外で移動したことにして、カーソルを表示する
 	if (!mIsActive)
 	{
-		m_mouseCursorVisibility.OnMoveCursor(false);
+		m_mouseCursorVisibility->OnMoveCursor(false);
 	}
 	// クライアント上移動によるマウスカーソル非表示処理
 	else if (e.Type == EventType_MouseMove)
 	{
 		if (e.Mouse.InClientArea) {
-			m_mouseCursorVisibility.OnMoveCursor(true);
+			m_mouseCursorVisibility->OnMoveCursor(true);
 		}
 		else {
-			m_mouseCursorVisibility.OnMoveCursor(false);
+			m_mouseCursorVisibility->OnMoveCursor(false);
 		}
 	}
 
 	// 時間経過によるマウスカーソルの非表示処理
-	bool mc_visible = m_mouseCursorVisibility.CheckVisible();
+	bool mc_visible = m_mouseCursorVisibility->CheckVisible();
 	if (mc_visible != m_systemMouseShown)
 	{
 		if (mc_visible)
@@ -449,7 +450,7 @@ bool Win32WindowBase::NortifyEvent(const EventArgs& e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Key Win32WindowBase::ConvertVirtualKeyCode(DWORD winVK)
+Key Win32Window::ConvertVirtualKeyCode(DWORD winVK)
 {
 	if ('A' <= winVK && winVK <= 'Z') return (Key)((int)Key::A + (winVK - 'A'));
 	if ('0' <= winVK && winVK <= '9') return (Key)((int)Key::D0 + (winVK - '0'));
@@ -586,7 +587,7 @@ Key Win32WindowBase::ConvertVirtualKeyCode(DWORD winVK)
 //
 //-----------------------------------------------------------------------------
 Win32NativeWindow::Win32NativeWindow(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title)
-	: Win32WindowBase(windowManager)
+	: Win32Window(windowManager)
 	, mTitleText(title)
 	, mWindowHandle(hWnd)
 	, mAccelerators(hAccel)
@@ -680,7 +681,7 @@ void Win32NativeWindow::ReleaseMouseCapture()
 //
 //-----------------------------------------------------------------------------
 Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND hWnd)
-	: Win32WindowBase(windowManager)
+	: Win32Window(windowManager)
 	, m_hWnd(hWnd)
 	, m_clientSize()
 {

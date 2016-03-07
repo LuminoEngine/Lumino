@@ -3,6 +3,8 @@
 #include <Lumino/Base/Environment.h>
 
 LN_NAMESPACE_BEGIN
+namespace detail
+{
 
 class MouseCursorVisibility
 {
@@ -67,4 +69,5 @@ private:
 
 };
 
+} // namespace detail
 LN_NAMESPACE_END

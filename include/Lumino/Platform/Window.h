@@ -1,14 +1,16 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Size.h>
+#include <Lumino/Base/SortedArray.h>
+#include "Common.h"
 #include "EventListener.h"
 
 LN_NAMESPACE_BEGIN
 namespace Platform
 {
 class PlatformManager;
+class WindowManagerBase;
 
 /**
 	@brief	プラットフォーム固有のウィンドウシステムのウィンドウを抽象化します。
@@ -54,7 +56,7 @@ public:
 	/**
 		@brief		マウスカーソルがクライアント領域上にある場合に表示するかを設定します。
 	*/
-	virtual void SetCursorVisible(bool visible) = 0;
+	virtual void SetCursorVisible(bool visible);
 
 	/**
 		@brief		このウィンドウにマウスキャプチャを設定します。
@@ -69,16 +71,26 @@ public:
 	/**
 		@brief		このウィンドウにイベントリスナーをアタッチします。(priority が大きいものが先に処理される。必ずデタッチすること)
 	*/
-	virtual void AttachEventListener(IEventListener* listener, int priority) = 0;
+	void AttachEventListener(IEventListener* listener, int priority);
 
 	/**
 		@brief		このウィンドウからイベントリスナーをデタッチします。
 	*/
-	virtual void DetachEventListener(IEventListener* listener) = 0;
+	void DetachEventListener(IEventListener* listener);
 
 protected:
-	Window();
+	Window(WindowManagerBase* windowManager);
 	virtual ~Window();
+
+	typedef SortedArray<int, IEventListener*>	EventListenerList;
+
+	WindowManagerBase*		m_windowManager;
+	EventListenerList		m_listenerEntryArray;
+
+LN_INTERNAL_ACCESS:
+	bool SendEventToAllListener(const EventArgs& e);
+
+	detail::MouseCursorVisibility* m_mouseCursorVisibility;
 };
 
 #if 0
