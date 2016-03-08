@@ -5,43 +5,43 @@
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/Sprite.h>
+#include <Lumino/Scene/SpriteBase.h>
 #include "../Graphics/PrimitiveRenderer.h"	// todo
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
-// Sprite
+// SpriteBase
 //=============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteBase, VisualNode);
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//SpriteBase* SpriteBase::Create()
+//{
+//	RefPtr<SpriteBase> obj(LN_NEW SpriteBase(), false);
+//	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_2D);
+//	obj.SafeAddRef();
+//	return obj;
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//SpriteBase* SpriteBase::Create3D()
+//{
+//	RefPtr<SpriteBase> obj(LN_NEW SpriteBase(), false);
+//	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_RZ);
+//	obj.SafeAddRef();
+//	return obj;
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sprite* Sprite::Create()
-{
-	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
-	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_2D);
-	obj.SafeAddRef();
-	return obj;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Sprite* Sprite::Create3D()
-{
-	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
-	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_RZ);
-	obj.SafeAddRef();
-	return obj;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Sprite::Sprite()
+SpriteBase::SpriteBase()
 	: VisualNode()
 	, m_spriteCoord(SpriteCoord_RZ)
 	, m_size()
@@ -57,14 +57,14 @@ Sprite::Sprite()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sprite::~Sprite()
+SpriteBase::~SpriteBase()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord)
+void SpriteBase::Initialize(SceneGraphManager* manager, SpriteCoord spriteCoord)
 {
 	VisualNode::CreateCore(manager, 1);
 	m_spriteCoord = spriteCoord;
@@ -82,7 +82,7 @@ void Sprite::CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::SetTexture(Texture* texture)
+void SpriteBase::SetTexture(Texture* texture)
 {
 	m_visualNodeParams.GetSubsetParams(0).Material.Texture = texture;
 	UpdateTexUV();
@@ -92,7 +92,7 @@ void Sprite::SetTexture(Texture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture* Sprite::GetTexture() const
+Texture* SpriteBase::GetTexture() const
 {
 	return m_visualNodeParams.GetSubsetParams(0).Material.Texture;
 }
@@ -100,7 +100,7 @@ Texture* Sprite::GetTexture() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::SetSrcRect(const Rect& rect)
+void SpriteBase::SetSrcRect(const Rect& rect)
 {
 	m_srcRect = rect;
 	UpdateTexUV();
@@ -110,7 +110,7 @@ void Sprite::SetSrcRect(const Rect& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::UpdateTexUV()
+void SpriteBase::UpdateTexUV()
 {
 	Texture* tex = GetTexture();
 	if (tex)
@@ -164,7 +164,7 @@ void Sprite::UpdateTexUV()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::UpdateVertexData()
+void SpriteBase::UpdateVertexData()
 {
 	// サイズが負値     → 転送矩形を使う
 	// 転送矩形が負値   → テクスチャサイズを使う
@@ -237,7 +237,7 @@ void Sprite::UpdateVertexData()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b)
+void SpriteBase::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b)
 {
 	float tex_rw = 1.0f / textureSize.Width;
 	float tex_rh = 1.0f / textureSize.Height;
@@ -250,7 +250,7 @@ void Sprite::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, floa
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+void SpriteBase::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{

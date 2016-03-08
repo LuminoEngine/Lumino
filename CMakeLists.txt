@@ -315,7 +315,9 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SceneGraph.h
 	include/Lumino/Scene/SceneGraphRenderingContext.h
 	include/Lumino/Scene/SceneNode.h
-	include/Lumino/Scene/Sprite.h
+	include/Lumino/Scene/Sprite2D.h
+	include/Lumino/Scene/Sprite3D.h
+	include/Lumino/Scene/SpriteBase.h
 	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/TileMapNode.h
 	include/Lumino/Scene/ViewPane.h
@@ -342,7 +344,9 @@ set(LN_SOURCES_Scene
 	src/Scene/SceneGraphRenderingContext.cpp
 	src/Scene/SceneHelper.h
 	src/Scene/SceneNode.cpp
-	src/Scene/Sprite.cpp
+	src/Scene/Sprite2D.cpp
+	src/Scene/Sprite3D.cpp
+	src/Scene/SpriteBase.cpp
 	src/Scene/SpriteModelObject.cpp
 	src/Scene/TileMapNode.cpp
 	src/Scene/ViewPane.cpp

@@ -26,7 +26,7 @@ LNResult LNSceneNode_SetPosition(LN_HANDLE(LNSceneNode) sceneNode, const LNVecto
 //=============================================================================
 // LNSprite
 //=============================================================================
-LN_TYPE_INFO_IMPL(Sprite, LNSprite);
+LN_TYPE_INFO_IMPL(Sprite2D, LNSprite);
 
 //-----------------------------------------------------------------------------
 //

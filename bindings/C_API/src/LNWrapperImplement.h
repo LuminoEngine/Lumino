@@ -14,7 +14,7 @@ class Wrapper_SceneNode : public ln::SceneNode
 {
 };
 
-class Wrapper_Sprite : public ln::Sprite
+class Wrapper_Sprite : public ln::Sprite2D
 {
 };
 

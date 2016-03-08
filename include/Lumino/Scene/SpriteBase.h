@@ -9,21 +9,21 @@ LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief
 */
-class Sprite
+class SpriteBase
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	
-	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
-	*/
-	static Sprite* Create();
+	//
+	///**
+	//	@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+	//*/
+	//static SpriteBase* Create();
 
-	/**
-		@brief		
-	*/
-	static Sprite* Create3D();
+	///**
+	//	@brief		
+	//*/
+	//static SpriteBase* Create3D();
 
 public:
 
@@ -59,9 +59,9 @@ private:
 	static void NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b);
 
 protected:
-	Sprite();
-	virtual ~Sprite();
-	void CreateCore(SceneGraphManager* manager, SpriteCoord spriteCoord);
+	SpriteBase();
+	virtual ~SpriteBase();
+	void Initialize(SceneGraphManager* manager, SpriteCoord spriteCoord);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

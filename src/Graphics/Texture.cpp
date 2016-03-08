@@ -80,35 +80,32 @@ static Driver::IGraphicsDevice* GetDevice()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture2D* Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
+Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	// ロック用のビットマップを作る
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->CreateCore(GetManager(), size, format, mipLevels, bitmap);
-	tex.SafeAddRef();
 	return tex;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture2D* Texture2D::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
+Texture2DPtr Texture2D::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->CreateCore(GetManager(), filePath, format, mipLevels);
-	tex.SafeAddRef();
 	return tex;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture2D* Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels)
+Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->CreateCore(GetManager(), stream, format, mipLevels);
-	tex.SafeAddRef();
 	return tex;
 	/*
 	if (GetManager()->IsPlatformTextureLoading())
@@ -131,7 +128,7 @@ Texture2D* Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture2D* Texture2D::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
+Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
 {
 	MemoryStream stream;
 	stream.Create(data, size);

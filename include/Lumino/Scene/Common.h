@@ -21,6 +21,10 @@ class Camera;
 class Light;
 class EffectBatchRendererNode;
 
+class Sprite3D;
+typedef RefPtr<Sprite3D>	Sprite3DPtr;
+class Sprite2D;
+typedef RefPtr<Sprite2D>	Sprite2DPtr;
 
 class MMEShader;
 class MMEShaderTechnique;

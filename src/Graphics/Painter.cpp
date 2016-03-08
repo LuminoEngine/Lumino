@@ -116,7 +116,7 @@ TextureBrush::~TextureBrush()
 //-----------------------------------------------------------------------------
 void TextureBrush::Create(const TCHAR* filePath, GraphicsManager* manager)
 {
-	m_texture.Attach(Texture2D::Create(filePath, TextureFormat_R8G8B8A8, 1));		//TODO: GraphicsManager?
+	m_texture = Texture2D::Create(filePath, TextureFormat_R8G8B8A8, 1);		//TODO: GraphicsManager?
 }
 
 //-----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ void TextureBrush::Create(Texture* texture)
 //-----------------------------------------------------------------------------
 FrameTextureBrushPtr FrameTextureBrush::Create(const TCHAR* filePath)
 {
-	RefPtr<Texture> tex(Texture2D::Create(filePath), false);
+	auto tex = Texture2D::Create(filePath);
 	FrameTextureBrushPtr ptr(LN_NEW FrameTextureBrush(), false);
 	ptr->SetTexture(tex);
 	return ptr;

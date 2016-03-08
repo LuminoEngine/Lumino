@@ -34,6 +34,7 @@ class VertexBuffer;
 class IndexBuffer;
 class Texture;
 class Texture2D;
+typedef RefPtr<Texture2D>	Texture2DPtr;
 class DepthBuffer;
 class Shader;
 class ShaderVariable;

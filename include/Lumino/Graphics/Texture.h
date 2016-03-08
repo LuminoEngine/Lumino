@@ -61,7 +61,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture2D* Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		ファイルからテクスチャを作成します。
@@ -69,7 +69,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture2D* Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
@@ -77,7 +77,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture2D* Create(Stream* stream, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(Stream* stream, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		メモリ上に展開された画像ファイルデータからテクスチャを作成します。
@@ -86,7 +86,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture2D* Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 public:
 	

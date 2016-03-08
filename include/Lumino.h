@@ -65,6 +65,8 @@
 
 #include "Lumino/Scene/SceneGraph.h"
 #include "Lumino/Scene/Camera.h"
+#include "Lumino/Scene/Sprite2D.h"
+#include "Lumino/Scene/Sprite3D.h"
 
 #include "Lumino/AutoReleasePool.h"
 #include "Lumino/Profiler.h"

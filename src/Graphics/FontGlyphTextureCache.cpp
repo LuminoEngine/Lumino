@@ -33,7 +33,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	m_glyphCacheTexture.Attach(Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1));	// TODO: GraphicsManager?
+	m_glyphCacheTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 	//Driver::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
 	//m_glyphCacheTexture.Attach(device->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8));
 
