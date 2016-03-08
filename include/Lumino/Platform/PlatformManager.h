@@ -58,8 +58,6 @@ public:
 
 	void Initialize(const Settings& settings);
 	Window* GetMainWindow();
-	// override Application
-	//virtual void CreateMainWindow(const WindowCreationSettings& settings, bool useThread);
 	bool DoEvents();
 
 public:

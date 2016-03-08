@@ -79,9 +79,9 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 {
 	*handled = false;
 
-	if (!PreWndProc.IsEmpty())
+	if (!UserWndProc.IsEmpty())
 	{
-		LRESULT dr = PreWndProc.Call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
+		LRESULT dr = UserWndProc.Call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
 		if (handled) {
 			return dr;
 		}

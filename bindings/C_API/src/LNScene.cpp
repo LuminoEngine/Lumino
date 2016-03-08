@@ -35,7 +35,7 @@ LNResult LNSprite_Create(LN_HANDLE(LNTexture) texture, LN_OUT LN_HANDLE(LNSprite
 {
 	LN_FUNC_TRY_BEGIN;
 	//RefPtr<Texture2D> obj(LN_NEW Wrapper_Texture2D(), false);
-	//obj->CreateCore(LFManager::Application->GetGraphicsManager(), filePath, TextureFormat_B8G8R8A8, 1);
+	//obj->CreateCore(LFManager::Engine->GetGraphicsManager(), filePath, TextureFormat_B8G8R8A8, 1);
 	//*texture2D = LFManager::CheckRegisterObject(obj);
 	//obj.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN;

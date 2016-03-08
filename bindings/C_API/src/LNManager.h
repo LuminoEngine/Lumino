@@ -34,10 +34,10 @@ class LFManager
 {
 public:
 
-	/// Application ‰Šú‰»‘Oˆ—
+	/// Engine ‰Šú‰»‘Oˆ—
 	static void PreInitialize();
 
-	/// Application ‰Šú‰»Œãˆ—
+	/// Engine ‰Šú‰»Œãˆ—
 	static void PostInitialize();
 
 	/// I—¹ˆ—

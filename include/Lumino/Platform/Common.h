@@ -4,7 +4,10 @@
 
 LN_NAMESPACE_BEGIN
 class Win32WindowManager;
-
+namespace Platform
+{
+class Window;
+}
 namespace detail
 {
 	class MouseCursorVisibility;

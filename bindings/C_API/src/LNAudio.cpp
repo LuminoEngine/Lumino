@@ -189,7 +189,7 @@ LNResult LNGameAudio_StopSE()
 //LNResult LNGameAudio_Set3DMetreUnitDistance(float distance)
 //{
 //	LN_FUNC_TRY_BEGIN;
-//	LFManager::Application->GetAudioManager()->SetMetreUnitDistance(distance);
+//	LFManager::Engine->GetAudioManager()->SetMetreUnitDistance(distance);
 //	LN_FUNC_TRY_END_RETURN;
 //}
 //

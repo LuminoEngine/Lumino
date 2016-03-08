@@ -67,7 +67,7 @@ void LFManager::Terminate()
 
 	if (Engine != NULL)
 	{
-		//Application->Finalize();
+		//Engine->Finalize();
 		LN_SAFE_RELEASE(Engine);
 	}
 

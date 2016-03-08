@@ -17,7 +17,7 @@ class Win32Window
 public:
 
 	/** ウィンドウメッセージが処理される前に実行されるイベント */
-	Delegate<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
+	Delegate<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	UserWndProc;
 	//tr::DelegateEvent<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
 
 	// override Window

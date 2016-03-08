@@ -164,7 +164,7 @@ LN_TYPE_INFO_IMPL(LNGUIRootFrame, GUI::RootFrame);
 LN_API LNResult LNGUIRootFrame_GetDefaultRootFrame(LN_OUT LN_HANDLE(LNGUIRootFrame)* rootPane)
 {
 	LN_CHECK_ARG(rootPane != NULL);
-	*rootPane = LFManager::CheckRegisterObject(LFManager::Application->GetGUIManager()->GetDefaultRootFrame());
+	*rootPane = LFManager::CheckRegisterObject(LFManager::Engine->GetGUIManager()->GetDefaultRootFrame());
 	return ::LN_OK;
 }
 
@@ -181,7 +181,7 @@ LN_API LNResult LNGUIRootFrame_GetDefaultRootFrame(LN_OUT LN_HANDLE(LNGUIRootFra
 //LN_API LNResult LNGUIRootFrame_Create(LN_HANDLE(LNGUIRootFrame)* rootPane)
 //{
 //	LN_FUNC_TRY_BEGIN;
-//	RefPtr<GUI::RootFrame> obj(LFManager::Application->GetGUIManager()->CreateRootFrame());
+//	RefPtr<GUI::RootFrame> obj(LFManager::Engine->GetGUIManager()->CreateRootFrame());
 //	obj.SafeAddRef();
 //	*rootPane = LFManager::CheckRegisterObject(obj);
 //	LN_FUNC_TRY_END_RETURN;
@@ -280,7 +280,7 @@ public:
 LN_API LNResult LNGUIButton_Create(LN_HANDLE(LNGUIButton)* button)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<LNGUIButtonIF> obj(LN_NEW LNGUIButtonIF(LFManager::Application->GetGUIManager()));
+	RefPtr<LNGUIButtonIF> obj(LN_NEW LNGUIButtonIF(LFManager::Engine->GetGUIManager()));
 	obj.SafeAddRef();
 	*button = LFManager::CheckRegisterObject(obj);
 	LN_FUNC_TRY_END_RETURN;

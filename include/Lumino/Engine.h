@@ -1,5 +1,6 @@
 
 #pragma once
+#include "Foundation/Application.h"
 #include "EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
@@ -29,7 +30,7 @@ public:
 	*/
 	static bool UpdateFrame();
 
-
+	static Application* GetApplication();
 	static bool BeginRendering();
 	static void EndRendering();
 	static void Render();

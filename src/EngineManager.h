@@ -21,6 +21,7 @@ class AudioManagerImpl;
 class ProfilerRenderer;
 class GraphicsManager;
 class SceneGraphManager;
+class Application;
 
 class EngineManager
 	: public RefObject
@@ -35,7 +36,7 @@ public:
 public:
 
 	/**
-		@brief		Application のインスタンスを作成し、アプリケーションを初期化します。
+		@brief		
 	*/
 	static EngineManager* Create(const EngineSettings& configData);
 
@@ -68,6 +69,7 @@ public:
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	detail::UIManager* GetUIManager() const { return m_uiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
+	Application* GetApplication() const { return m_application; }
 
 protected:
 	EngineManager(const EngineSettings& configData);
@@ -106,6 +108,8 @@ private:
 	SceneGraphManager*					m_sceneGraphManager;
 
 	ProfilerRenderer*			m_profilerRenderer;
+
+	Application*						m_application;
 	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_frameRenderingSkip;

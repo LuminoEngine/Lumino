@@ -6,6 +6,8 @@
 
 LN_NAMESPACE_BEGIN
 
+class EngineManager;
+
 /** マウスボタン */
 LN_ENUM(MouseButton)
 {

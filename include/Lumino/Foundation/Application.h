@@ -1,9 +1,41 @@
 ﻿
 #pragma once
-
+#include "../Platform/Common.h"
 #include "../EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
+
+/**
+	@brief		アプリケーションを表します。
+*/
+class Application
+	: public RefObject
+{
+public:
+	Platform::Window* GetNativeMainWindow();
+
+protected:
+	Application();
+	virtual ~Application();
+
+LN_INTERNAL_ACCESS:
+	void Initialize(EngineManager* engineManager);
+
+private:
+	EngineManager*	m_engineManager;
+};
+
+namespace detail
+{
+class InternalApplicationImpl
+	: public Application
+{
+public:
+	InternalApplicationImpl() = default;
+	virtual ~InternalApplicationImpl() = default;
+};
+} // namespace detail
+
 
 /**
 	@brief		ゲームアプリケーションを表します。

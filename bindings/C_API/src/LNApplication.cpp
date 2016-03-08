@@ -98,7 +98,7 @@ LNResult LNApplication_Initialize()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
-	LFManager::Application->Initialize();
+	LFManager::Engine->Initialize();
 	LFManager::PostInitialize();
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -175,7 +175,7 @@ LNResult LNApplication_UpdateFrame()
 //-----------------------------------------------------------------------------
 //LNResult LNApplication_ResetFrameDelay()
 //{
-//	LFManager::Application->ResetFrameDelay();
+//	LFManager::Engine->ResetFrameDelay();
 //	return ::LN_OK;
 //}
 

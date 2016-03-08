@@ -61,6 +61,7 @@
 #include "UI/UIManager.h"
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
+#include <Lumino/Foundation/Application.h>
 #include "EngineManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -108,6 +109,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_uiManager(nullptr)
 	, m_sceneGraphManager(nullptr)
 	, m_profilerRenderer(nullptr)
+	, m_application(nullptr)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
@@ -133,6 +135,8 @@ EngineManager::EngineManager(const EngineSettings& configData)
 //-----------------------------------------------------------------------------
 EngineManager::~EngineManager()
 {
+	LN_SAFE_RELEASE(m_application);
+
 	LN_SAFE_RELEASE(m_profilerRenderer);
 
 	if (m_graphicsManager != nullptr)
@@ -208,6 +212,8 @@ void EngineManager::Initialize()
 #ifdef LN_BUILD_SCENE_MODULE
 	InitializeSceneGraphManager();
 #endif
+	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: ‚Æ‚è‚ ‚¦‚¸
+	m_application->Initialize(this);
 }
 
 //-----------------------------------------------------------------------------
