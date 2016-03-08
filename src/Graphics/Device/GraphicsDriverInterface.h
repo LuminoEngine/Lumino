@@ -98,7 +98,7 @@ public:
 	virtual IShader* CreateShader(const void* textData, size_t size, ShaderCompileResult* result) = 0;
 
 	/// スワップチェインの作成
-	virtual ISwapChain* CreateSwapChain(Platform::Window* window) = 0;
+	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) = 0;
 
 	/// デバイスの状態を取得する
 	virtual DeviceState GetDeviceState() = 0;

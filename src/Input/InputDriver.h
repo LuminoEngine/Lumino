@@ -1,6 +1,7 @@
 
 #pragma once
 #include <array>
+#include <Lumino/Platform/EventArgs.h>
 #include <Lumino/Input/Common.h>
 
 LN_NAMESPACE_BEGIN
@@ -41,7 +42,7 @@ public:
 	int GetMouseWheel() const { return m_mouseWheel; }
 	
 	virtual void UpdateFrame();
-	virtual void OnEvent(const Platform::EventArgs& e);
+	virtual void OnEvent(const PlatformEventArgs& e);
 
 private:
 	std::array<bool, (int)Key::TERMINATOR>			m_keyStatus;

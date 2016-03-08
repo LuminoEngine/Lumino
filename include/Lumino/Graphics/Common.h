@@ -9,7 +9,6 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/EnumExtension.h>
 #include <Lumino/Reflection/ReflectionObject.h>
-#include <Lumino/Platform/Window.h>
 #include <LuminoMath.h>
 #include "../Common.h"
 

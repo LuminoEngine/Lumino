@@ -198,7 +198,7 @@ IShader* GraphicsDeviceBase::CreateShader(const void* textData, size_t size, Sha
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ISwapChain* GraphicsDeviceBase::CreateSwapChain(Platform::Window* window)
+ISwapChain* GraphicsDeviceBase::CreateSwapChain(PlatformWindow* window)
 {
 	ScopedAccessContext lock(this);
 	auto obj = CreateSwapChainImplement(window);

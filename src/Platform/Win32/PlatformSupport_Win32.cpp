@@ -1,21 +1,18 @@
 ﻿
 #include "../../Internal.h"
 #include <Lumino/Platform/PlatformSupport.h>
-#include <Lumino/Platform/Win32/Win32Window.h>
+#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-HWND PlatformSupport::GetWindowHandle(Window* window)
+HWND PlatformSupport::GetWindowHandle(PlatformWindow* window)
 {
-	Win32Window* w = dynamic_cast<Win32Window*>(window);
+	Win32PlatformWindow* w = dynamic_cast<Win32PlatformWindow*>(window);
 	LN_THROW(w, ArgumentException);
 	return w->GetWindowHandle();
 }
 
-} // namespace Platform
 LN_NAMESPACE_END

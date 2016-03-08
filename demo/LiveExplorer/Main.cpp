@@ -11,7 +11,7 @@
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
-#include <Lumino/Platform/Win32/Win32Window.h>
+#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 //{
@@ -79,7 +79,7 @@ int main()
 		appData.RenderingType = RenderingType::Immediate;
 		Engine::Initialize(appData);
 
-		auto* window = dynamic_cast<Platform::Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
+		auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		window->UserWndProc = TestWndProc;
 
 		do

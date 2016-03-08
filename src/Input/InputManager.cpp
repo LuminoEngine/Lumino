@@ -64,7 +64,7 @@ void InputManager::Initialize(const Settings& settings)
 {
 #ifdef LN_OS_WIN32
 	RefPtr<Win32InputDriver> driver(LN_NEW Win32InputDriver());
-	driver->Initialize(Platform::PlatformSupport::GetWindowHandle(settings.mainWindow));
+	driver->Initialize(PlatformSupport::GetWindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
 #endif
 
@@ -117,7 +117,7 @@ void InputManager::UpdateFrame()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void InputManager::OnEvent(const Platform::EventArgs& e)
+void InputManager::OnEvent(const PlatformEventArgs& e)
 {
 	if (m_inputDriver != nullptr) {
 		m_inputDriver->OnEvent(e);

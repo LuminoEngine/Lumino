@@ -1,5 +1,6 @@
 ﻿
 #pragma once 
+#include <Lumino/Platform/PlatformWindow.h>
 #include "../GraphicsDriverInterface.h"
 #include "../GraphicsDeviceBase.h"
 #include "GLRenderer.h"
@@ -19,7 +20,7 @@ class GLGraphicsDevice
 public:
 	struct ConfigData
 	{
-		Platform::Window*	MainWindow;
+		PlatformWindow*		MainWindow;
 		int					OpenGLMajorVersion;
 		int					OpenGLMinorVersion;
 
@@ -63,7 +64,7 @@ public:
 	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
 	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
 	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
-	virtual RefPtr<ISwapChain> CreateSwapChainImplement(Platform::Window* window) override;
+	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) override;
 	virtual DeviceState GetDeviceState() override { return m_deviceState; }
 	virtual void ResetDevice() override;
 	virtual void OnLostDevice() override;
@@ -99,7 +100,7 @@ protected:
 
 protected:
 	DeviceState					m_deviceState;
-	RefPtr<Platform::Window>	m_mainWindow;
+	RefPtr<PlatformWindow>		m_mainWindow;
 	GLRenderer*					m_renderer;
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;

@@ -6,6 +6,7 @@
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Platform/PlatformManager.h>
+#include <Lumino/Platform/EventListener.h>
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Game/FpsController.h>
@@ -25,7 +26,7 @@ class Application;
 
 class EngineManager
 	: public RefObject
-	, public Platform::IEventListener
+	, public IEventListener
 {
 public:
 	static EngineManager*	Instance;
@@ -62,7 +63,7 @@ public:
 	bool IsEndRequested() const { return m_endRequested; }
 
 
-	Platform::PlatformManager* GetPlatformManager() const { return m_platformManager; }
+	PlatformManager* GetPlatformManager() const { return m_platformManager; }
 	AudioManagerImpl* GetAudioManager() const { return m_audioManager; }
 	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
@@ -89,14 +90,14 @@ public:
 	void InitializeDocumentsManager();
 	void InitializeUIManager();
 	void InitializeSceneGraphManager();
-	virtual bool OnEvent(const Platform::EventArgs& e);
+	virtual bool OnEvent(const PlatformEventArgs& e);
 
 private:
 	//class NativeWindowEventListener;
 	EngineSettings						m_configData;
 	FpsController						m_fpsController;
 	FileManager*						m_fileManager;
-	RefPtr<Platform::PlatformManager>	m_platformManager;
+	RefPtr<PlatformManager>	m_platformManager;
 	detail::InputManager*				m_inputManager;
 	AudioManagerImpl*					m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;

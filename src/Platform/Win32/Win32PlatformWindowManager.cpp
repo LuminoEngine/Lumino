@@ -1,11 +1,9 @@
 ﻿
 #include "../../Internal.h"
-#include <Lumino/Platform/Win32/Win32Window.h>
-#include "Win32WindowManager.h"
+#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
+#include "Win32PlatformWindowManager.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
 
 //=============================================================================
 // Win32WindowManager
@@ -82,7 +80,7 @@ Win32WindowManager::~Win32WindowManager()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Win32Window* Win32WindowManager::CreateNativeWindow(const NativeWindowCreationData& data)
+Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCreationData& data)
 {
 	if (data.UserWindow == NULL)
 	{
@@ -233,7 +231,7 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Window* Win32WindowManager::GetMainWindow()
+PlatformWindow* Win32WindowManager::GetMainWindow()
 {
 	return m_mainWindow;
 }
@@ -241,7 +239,7 @@ Window* Win32WindowManager::GetMainWindow()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Window* Win32WindowManager::CreateSubWindow(const WindowCreationSettings& settings)
+PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
 	data.TitleText = settings.Title;
@@ -279,5 +277,4 @@ void Win32WindowManager::Finalize()
 	m_mainWindow.SafeRelease();
 }
 
-} // namespace Platform
 LN_NAMESPACE_END

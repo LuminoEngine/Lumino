@@ -1,5 +1,6 @@
 
 #include "Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
@@ -34,7 +35,7 @@ UILayoutView::~UILayoutView()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UILayoutView::Initialize(UIContext* ownerContext, Platform::Window* ownerNativeWindow)
+void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;

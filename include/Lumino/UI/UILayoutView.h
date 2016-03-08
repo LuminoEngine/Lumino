@@ -49,9 +49,9 @@ private:
 
 	UILayoutView();
 	virtual ~UILayoutView();
-	void Initialize(UIContext* ownerContext, Platform::Window* ownerNativeWindow);
+	void Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
 
-	Platform::Window*	m_ownerNativeWindow;
+	PlatformWindow*		m_ownerNativeWindow;
 
 	UIContext*			m_ownerContext;
 	UIElement*			m_rootElement;

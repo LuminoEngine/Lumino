@@ -32,7 +32,7 @@ SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mai
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//SwapChain::SwapChain(Platform::Window* targetWindow)
+//SwapChain::SwapChain(PlatformWindow* targetWindow)
 //	: m_manager(Internal::Manager)
 //{
 //	Initialize(targetWindow->GetSize());
@@ -42,7 +42,7 @@ SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mai
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//SwapChain::SwapChain(GraphicsManager* manager, Platform::Window* targetWindow)
+//SwapChain::SwapChain(GraphicsManager* manager, PlatformWindow* targetWindow)
 //	: m_manager(manager)
 //{
 //	Initialize(targetWindow->GetSize());

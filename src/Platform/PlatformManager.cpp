@@ -51,20 +51,18 @@
 */
 
 #include "../Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
+#include <Lumino/Platform/PlatformManager.h>
 #ifdef LN_OS_WIN32
-	#include "Win32/Win32WindowManager.h"
-	#include <Lumino/Platform/Win32/Win32Window.h>
+	#include "Win32/Win32PlatformWindowManager.h"
+	#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 #endif
 #ifdef LN_X11
 	#include "X11/X11WindowManager.h"
 #endif
-#include <Lumino/Platform/PlatformManager.h>
-#include <Lumino/Platform/Window.h>
 
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
 
 //=============================================================================
 // Settings
@@ -140,13 +138,13 @@ void PlatformManager::Initialize(const Settings& settings)
 	}
 
 	// MainWindow
-	//m_mainWindow = LN_NEW Window(m_windowManager->GetMainWindow());
+	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->GetMainWindow());
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Window* PlatformManager::GetMainWindow()
+PlatformWindow* PlatformManager::GetMainWindow()
 {
 	return m_windowManager->GetMainWindow();
 }
@@ -205,5 +203,4 @@ void PlatformManager::Thread_MainWindow()
 	m_windowManager->Finalize();
 }
 
-} // namespace Platform
 LN_NAMESPACE_END

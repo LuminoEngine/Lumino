@@ -5,8 +5,6 @@
 #include <Lumino/Platform/PlatformSupport.h>
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
 
 //=============================================================================
 // Clipboard
@@ -15,7 +13,7 @@ namespace Platform
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Clipboard::SetText(Window* window, const String& text)
+void Clipboard::SetText(PlatformWindow* window, const String& text)
 {
 	ByteBuffer wideStr = text.ConvertTo(Encoding::GetWideCharEncoding());
 	int wideCount = (wideStr.GetSize() + 1) * sizeof(WCHAR);
@@ -45,7 +43,7 @@ void Clipboard::SetText(Window* window, const String& text)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-String Clipboard::GetText(Window* window)
+String Clipboard::GetText(PlatformWindow* window)
 {
 	// クリップボードのデータ形式チェック
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT)) {
@@ -84,5 +82,4 @@ String Clipboard::GetText(Window* window)
 	return str;
 }
 
-} // namespace Platform
 LN_NAMESPACE_END

@@ -3,9 +3,6 @@
 #include <Lumino/Platform/PlatformManager.h>
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
-class Window;
 
 /**
 	@note	[2015/2/8]
@@ -36,22 +33,21 @@ protected:
 
 public:
 	virtual void CreateMainWindow(const WindowCreationSettings& settings) = 0;
-	virtual Window* GetMainWindow() = 0;
-	virtual Window* CreateSubWindow(const WindowCreationSettings& settings) = 0;
+	virtual PlatformWindow* GetMainWindow() = 0;
+	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings) = 0;
 	virtual void DoEvents() = 0;
 	virtual void Finalize() = 0;
 
 public:
-	void AddWindow(Window* window) { m_windowArray.Add(window); }
-	void RemoveWindow(Window* window) { m_windowArray.Remove(window); }
+	void AddWindow(PlatformWindow* window) { m_windowArray.Add(window); }
+	void RemoveWindow(PlatformWindow* window) { m_windowArray.Remove(window); }
 	bool IsEndRequested() const { return m_endRequested; }
 	void Exit() { m_endRequested = true; }
 
 protected:
-	Array<Window*>		m_windowArray;
-	bool				m_endRequested;
+	Array<PlatformWindow*>	m_windowArray;
+	bool					m_endRequested;
 };
 
-} // namespace Platform
 LN_NAMESPACE_END
 

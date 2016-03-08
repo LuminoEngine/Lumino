@@ -38,7 +38,7 @@ public:
 	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
 	virtual ITexture* CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format) override;
 	virtual IShader* CreateShader(const void* textData, size_t size, ShaderCompileResult* result) override;
-	virtual ISwapChain* CreateSwapChain(Platform::Window* window) override;
+	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
 
 protected:
 	virtual RefPtr<IVertexBuffer> CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage) = 0;
@@ -48,7 +48,7 @@ protected:
 	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
 	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) = 0;
 	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) = 0;
-	virtual RefPtr<ISwapChain> CreateSwapChainImplement(Platform::Window* window) = 0;
+	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) = 0;
 	virtual void OnBeginAccessContext();
 	virtual void OnEndAccessContext();
 

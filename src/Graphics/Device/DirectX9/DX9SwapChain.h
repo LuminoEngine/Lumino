@@ -12,7 +12,7 @@ class DX9SwapChain
 	: public ISwapChain
 {
 public:
-	DX9SwapChain(DX9GraphicsDevice* device, Platform::Window* window, const Size& backBufferSize);
+	DX9SwapChain(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize);
 	virtual ~DX9SwapChain();
 
 public:
@@ -35,7 +35,7 @@ public:
 
 private:
 	DX9GraphicsDevice*			m_graphicsDevice;
-	Platform::Window*			m_targetWindow;
+	PlatformWindow*				m_targetWindow;
 	HWND						m_targetHWnd;
 	Size						m_backBufferSize;
 	DX9BackBufferTexture*		m_backBuffer;

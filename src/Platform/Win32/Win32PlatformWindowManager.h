@@ -1,12 +1,8 @@
 ﻿
 #pragma once
-#include "../WindowManagerBase.h"
+#include "../PlatformWindowManagerBase.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
-class Win32NativeWindow;
-class Win32Window;
 
 class Win32WindowManager
 	: public WindowManagerBase
@@ -43,7 +39,7 @@ public:
 	HINSTANCE GetInstanceHandle() const { return m_hInst; }
 	const String& GetWindowClassName() const { return m_windowClassName; }
 
-	Win32Window* CreateNativeWindow(const NativeWindowCreationData& data);
+	Win32PlatformWindow* CreateNativeWindow(const NativeWindowCreationData& data);
 
 	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -56,18 +52,17 @@ public:
 public:
 	// override Application
 	virtual void CreateMainWindow(const WindowCreationSettings& settings);
-	virtual Window* GetMainWindow();
-	virtual Window* CreateSubWindow(const WindowCreationSettings& settings);
+	virtual PlatformWindow* GetMainWindow();
+	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings);
 	virtual void DoEvents();
 	virtual void Finalize();
 
 private:
-	RefPtr<Win32Window>	m_mainWindow;
-	HINSTANCE			m_hInst;
-	HICON				m_hIcon;
-	String				m_windowClassName;
-	//bool				m_comInited;
+	RefPtr<Win32PlatformWindow>	m_mainWindow;
+	HINSTANCE					m_hInst;
+	HICON						m_hIcon;
+	String						m_windowClassName;
+	//bool						m_comInited;
 };
 
-} // namespace Platform
 LN_NAMESPACE_END

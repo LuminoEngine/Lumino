@@ -1,5 +1,6 @@
 ﻿
 #include "../../../Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Platform/PlatformSupport.h>
 #include "DX9GraphicsDevice.h"
 #include "DX9SwapChain.h"
@@ -16,7 +17,7 @@ namespace Driver
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-DX9SwapChain::DX9SwapChain(DX9GraphicsDevice* device, Platform::Window* window, const Size& backBufferSize)
+DX9SwapChain::DX9SwapChain(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize)
 	: m_graphicsDevice(NULL)
 	, m_targetWindow(NULL)
 	, m_targetHWnd(NULL)
@@ -25,7 +26,7 @@ DX9SwapChain::DX9SwapChain(DX9GraphicsDevice* device, Platform::Window* window, 
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	LN_REFOBJ_SET(m_targetWindow, window);
-	m_targetHWnd = Platform::PlatformSupport::GetWindowHandle(m_targetWindow);
+	m_targetHWnd = PlatformSupport::GetWindowHandle(m_targetWindow);
 
 	// デバイスロスト発生時も getBackbuffer() 等で一応正常なポインタを
 	// 返すようにするため、実態は常に持っておく。ラップするテクスチャは復帰時に再取得。

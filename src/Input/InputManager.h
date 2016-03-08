@@ -1,6 +1,7 @@
 
 #pragma once
 #include <array>
+#include <Lumino/Platform/EventArgs.h>
 #include <Lumino/Input/Common.h>
 
 LN_NAMESPACE_BEGIN
@@ -18,7 +19,7 @@ public:
 
 	struct Settings
 	{
-		Platform::Window*	mainWindow;
+		PlatformWindow*	mainWindow;
 	};
 
 public:
@@ -38,7 +39,7 @@ public:
 	//int GetButtonRepertIntervalFrameCount()const { return 5; }
 	//const Matrix& GetMouseTransform() const { return m_mouseTransform; }
 
-	void OnEvent(const Platform::EventArgs& e);
+	void OnEvent(const PlatformEventArgs& e);
 
 
 	float GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse);

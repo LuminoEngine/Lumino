@@ -3,9 +3,6 @@
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
-class Window;
 
 /// システムイベントの種類
 enum EventType
@@ -46,10 +43,10 @@ enum EventType
 				ということがあるのかというと、まずないと思われる。
 				例えあったとしても相当レアケースなので、new のコストと天秤に掛けると却下するべき。ユーザーデータとして void* 持っておくだけで十分。
 */
-struct EventArgs
+struct PlatformEventArgs
 {
 	EventType		Type;			///< イベントの種類
-	Window*			Sender;			///< イベントの送信元ウィンドウ
+	PlatformWindow*	Sender;			///< イベントの送信元ウィンドウ
 
 	union
 	{
@@ -81,10 +78,9 @@ struct EventArgs
 public:
 
 	/// 種類と送信元ウィンドウを指定して初期化する
-	EventArgs(EventType type, Window* sender) { Type = type; Sender = sender; }
-	EventArgs() {}
+	PlatformEventArgs(EventType type, PlatformWindow* sender) { Type = type; Sender = sender; }
+	PlatformEventArgs() {}
 };
 
-} // namespace Platform
 LN_NAMESPACE_END
 

@@ -16,7 +16,7 @@ public:
 	struct Settings
 	{
 		GraphicsManager*				graphicsManager = nullptr;
-		Platform::Window*				mainWindow = nullptr;
+		PlatformWindow*					mainWindow = nullptr;
 		Documents::DocumentsManager*	documentsManager = nullptr;
 	};
 
@@ -30,13 +30,13 @@ public:
 	void Finalize();
 	EventArgsPool* GetEventArgsPool() { return m_eventArgsPool; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	Platform::Window* GetMainWindow() { return m_mainWindow; }
+	PlatformWindow* GetMainWindow() { return m_mainWindow; }
 	UIContext* GetDefaultUIContext() { return m_defaultUIContext; }
 
 private:
 	EventArgsPool*		m_eventArgsPool;
 	GraphicsManager*	m_graphicsManager;
-	Platform::Window*	m_mainWindow;
+	PlatformWindow*		m_mainWindow;
 	UIContext*			m_defaultUIContext;
 };
 

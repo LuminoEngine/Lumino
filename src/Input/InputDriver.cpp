@@ -41,27 +41,27 @@ void InputDriver::UpdateFrame()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void InputDriver::OnEvent(const Platform::EventArgs& e)
+void InputDriver::OnEvent(const PlatformEventArgs& e)
 {
 	switch (e.Type)
 	{
-	case Platform::EventType_MouseDown:
+	case EventType_MouseDown:
 		m_mouseStatus[e.Mouse.Button] = true;
 		break;
-	case Platform::EventType_MouseUp:
+	case EventType_MouseUp:
 		m_mouseStatus[e.Mouse.Button] = false;
 		break;
-	case Platform::EventType_MouseMove:
+	case EventType_MouseMove:
 		m_mousePoint.X = e.Mouse.X;
 		m_mousePoint.Y = e.Mouse.Y;
 		break;
-	case Platform::EventType_MouseWheel:
+	case EventType_MouseWheel:
 		m_mouseWheel = e.Mouse.WheelDelta;
 		break;
-	case Platform::EventType_KeyDown:
+	case EventType_KeyDown:
 		m_keyStatus[(int)e.Key.KeyCode] = true;
 		break;
-	case Platform::EventType_KeyUp:
+	case EventType_KeyUp:
 		m_keyStatus[(int)e.Key.KeyCode] = false;
 		break;
 	default:

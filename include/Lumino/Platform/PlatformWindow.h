@@ -8,15 +8,11 @@
 #include "EventListener.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
-class PlatformManager;
-class WindowManagerBase;
 
 /**
 	@brief	プラットフォーム固有のウィンドウシステムのウィンドウを抽象化します。
 */
-class Window
+class PlatformWindow
 	: public tr::ReflectionObject
 {
 public:
@@ -27,7 +23,7 @@ public:
 		@param[in]	size		: クライアント領域のピクセルサイズ
 		@param[in]	resizable	: 可変ウィンドウとして作成するかどうか
 	*/
-	static Window* Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager);
+	static PlatformWindow* Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager);
 
 public:
 
@@ -80,8 +76,8 @@ public:
 	void DetachEventListener(IEventListener* listener);
 
 protected:
-	Window(WindowManagerBase* windowManager);
-	virtual ~Window();
+	PlatformWindow(WindowManagerBase* windowManager);
+	virtual ~PlatformWindow();
 
 	typedef SortedArray<int, IEventListener*>	EventListenerList;
 
@@ -89,12 +85,11 @@ protected:
 	EventListenerList		m_listenerEntryArray;
 
 LN_INTERNAL_ACCESS:
-	bool SendEventToAllListener(const EventArgs& e);
+	bool SendEventToAllListener(const PlatformEventArgs& e);
 
 	detail::MouseCursorVisibility* m_mouseCursorVisibility;
 };
 
-} // namespace Platform
 LN_NAMESPACE_END
 
 

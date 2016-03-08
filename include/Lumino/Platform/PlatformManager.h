@@ -1,17 +1,13 @@
 ﻿
 #pragma once
-
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Size.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
+#include "Common.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
-class WindowManagerBase;
-class Window;
 
 /// ウィンドウシステムに使用するAPI・ライブラリ
 enum WindowSystemAPI
@@ -57,7 +53,7 @@ public:
 public:
 
 	void Initialize(const Settings& settings);
-	Window* GetMainWindow();
+	PlatformWindow* GetMainWindow();
 	bool DoEvents();
 
 public:
@@ -69,15 +65,14 @@ private:
 	void Thread_MainWindow();
 
 private:
-	friend class Window;
+	friend class PlatformWindow;
 	bool						m_useThread;
 	WindowCreationSettings		m_windowCreationSettings;
 	WindowManagerBase*			m_windowManager;
-	//Window*						m_mainWindow;
+	//PlatformWindow*						m_mainWindow;
 	Threading::DelegateThread	m_mainWindowThread;
 	Threading::EventFlag		m_mainWindowThreadInitFinished;
 	Threading::EventFlag		m_mainWindowThreadEndRequested;
 };
 
-} // namespace Platform
 LN_NAMESPACE_END

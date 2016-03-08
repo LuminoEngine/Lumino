@@ -4,6 +4,7 @@
  */
 #include "../../../Internal.h"
 #include <Lumino/Graphics/Utils.h>
+#include <Lumino/Platform/PlatformWindow.h>
 #include "GLVertexBuffer.h"
 #include "GLIndexBuffer.h"
 #include "GLTexture.h"
@@ -164,7 +165,7 @@ RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, si
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RefPtr<ISwapChain> GLGraphicsDevice::CreateSwapChainImplement(Platform::Window* window)
+RefPtr<ISwapChain> GLGraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
 {
 	LN_THROW(0, NotImplementedException);
 	return nullptr;

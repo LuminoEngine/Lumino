@@ -34,7 +34,7 @@ public:
 public:
 	// override IGraphicsDevice
 	virtual ISwapChain* GetDefaultSwapChain() override;
-	virtual ISwapChain* CreateSwapChain(Platform::Window* window) override;
+	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
 	virtual void AttachRenderingThread() override;
 	virtual void DetachRenderingThread() override;
 	virtual void OnBeginAccessContext() override;

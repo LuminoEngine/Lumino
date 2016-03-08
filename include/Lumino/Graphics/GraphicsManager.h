@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/Cache.h>
+#include "../Platform/Common.h"
 #include "Common.h"
 #include "../Graphics/FontManager.h"
 #include "../Graphics/Font.h"
@@ -46,7 +47,7 @@ public:
 	/** 関連付けられている FileManager を取得します。*/
 	FileManager* GetFileManager() const { return m_fileManager; }
 
-	Platform::Window* GetMainWindow() const { return m_mainWindow; }
+	PlatformWindow* GetMainWindow() const { return m_mainWindow; }
 
 	/** 関連付けられている FontManager を取得します。*/
 	FontManager* GetFontManager() const { return m_fontManager; }
@@ -105,7 +106,7 @@ public:	// TODO
 	{
 		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
 		RenderingType			RenderingType;
-		Platform::Window*		MainWindow;				/**< アプリケーションのメインウィンドウ */
+		PlatformWindow*			MainWindow;				/**< アプリケーションのメインウィンドウ */
 		Size					backBufferSize;			// バックバッファのサイズ
 		FileManager*			FileManager;			/**< FileManager */
 		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
@@ -139,7 +140,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	FileManager*					m_fileManager;
-	Platform::Window*				m_mainWindow;
+	PlatformWindow*					m_mainWindow;
 	RefPtr<FontManager>				m_fontManager;
 	RenderingType					m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;

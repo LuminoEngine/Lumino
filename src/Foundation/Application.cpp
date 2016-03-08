@@ -37,7 +37,7 @@ void Application::Initialize(EngineManager* engineManager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Platform::Window* Application::GetNativeMainWindow()
+PlatformWindow* Application::GetNativeMainWindow()
 {
 	return m_engineManager->GetPlatformManager()->GetMainWindow();
 }

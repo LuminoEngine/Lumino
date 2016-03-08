@@ -7,7 +7,7 @@
 
 		デメリット
 		・イベントは必ず PostEvent で一度メインスレッドに渡した後、
-		  メイン側から各 Window にアタッチされている Listener に送信する必要がある。少し複雑。
+		  メイン側から各 PlatformWindow にアタッチされている Listener に送信する必要がある。少し複雑。
 		・PostEvent しなければならないということは、キューに入れるイベントデータは
 		  new したオブジェクトかサイズ固定の構造体でなければならない。
 		  イベント1つごとに new はコストが高いし、サイズ固定構造体は拡張性が無い。
@@ -17,23 +17,21 @@
 */
 
 #include "../../Internal.h"
-#include <Lumino/Platform/Win32/Win32Window.h>
-#include "Win32WindowManager.h"
+#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
+#include "Win32PlatformWindowManager.h"
 #include "../MouseCursorVisibility.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
 	
 //=============================================================================
-// Win32Window
+// Win32PlatformWindow
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Win32Window::Win32Window(Win32WindowManager* app)
-	: Window(app)
+Win32PlatformWindow::Win32PlatformWindow(Win32WindowManager* app)
+	: PlatformWindow(app)
 	, mLastMouseX(-1)
 	, mLastMouseY(-1)
 	, mIsActive(true)	// 初期値 true。WM_ACTIVATE は初回表示で最前面になった時は呼ばれない
@@ -44,14 +42,14 @@ Win32Window::Win32Window(Win32WindowManager* app)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-	Win32Window::~Win32Window()
+	Win32PlatformWindow::~Win32PlatformWindow()
 {
 }
 
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void Win32Window::HideCursor()
+//void Win32PlatformWindow::HideCursor()
 //{
 //	if (m_cursorShown)
 //	{
@@ -63,7 +61,7 @@ Win32Window::Win32Window(Win32WindowManager* app)
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void Win32Window::ShowCursor()
+//void Win32PlatformWindow::ShowCursor()
 //{
 //	if (!m_cursorShown)
 //	{
@@ -75,14 +73,14 @@ Win32Window::Win32Window(Win32WindowManager* app)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
+LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
 {
 	*handled = false;
 
 	if (!UserWndProc.IsEmpty())
 	{
 		LRESULT dr = UserWndProc.Call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
-		if (handled) {
+		if (*handled) {
 			return dr;
 		}
 	}
@@ -120,7 +118,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 				その後の finalize() 呼び出しで DestroyWindow() を呼び出す。
 				*/
 
-				EventArgs e(EventType_Close, this);
+				PlatformEventArgs e(EventType_Close, this);
 				if (NortifyEvent(e)) {
 					*handled = true;
 					return 0;
@@ -143,7 +141,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 				{
 					mIsActive = active;
 
-					//EventArgs e;
+					//PlatformEventArgs e;
 					//e.Type = (mIsActive) ? LN_EVENT_APP_ACTIVATE : LN_EVENT_APP_DEACTIVATE;
 					//e.Sender = this;
 					//SendEventToAllListener(e);		// 同期処理の場合はこの場で通知
@@ -164,7 +162,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 				//::GetClientRect(mWindowHandle, &rc);
 				//window->mClientSize.Set(rc.right, rc.bottom);
 
-				//EventArgs e;
+				//PlatformEventArgs e;
 				//e.Type = LN_EVENT_WINDOW_SIZE_CHANGED;
 				//e.Sender = this;
 				//SendEventToAllListener(e);		// 同期処理の場合はこの場で通知
@@ -178,10 +176,10 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			//{
 			//	if ( wparam == VK_RETURN )
 			//	{
-			//		EventArgs e;
+			//		PlatformEventArgs e;
 			//		e.Type			= LN_EVENT_ALTENTER;
 			//		e.Sender		= this;
-			//		e.StructSize	= sizeof(EventArgs);
+			//		e.StructSize	= sizeof(PlatformEventArgs);
 			//		mWindowManager->getManager()->postEventFromWindowThread( &e );
 
 			//		return MAKELONG( -1, MNC_EXECUTE );     // 第一引数はメニューの属性。今回はメニュー使ってないのでとりあえずこのまま
@@ -206,7 +204,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			case WM_XBUTTONDOWN:
 			case WM_XBUTTONUP:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Sender = this;
 
 				switch (msg)
@@ -261,7 +259,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			/////////////////////////////////////////////// マウス移動
 			case WM_MOUSEMOVE:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Type = EventType_MouseMove;
 				e.Sender = this;
 				e.Mouse.Button = MouseButton::None;
@@ -290,7 +288,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 					pt.y = static_cast<short>(HIWORD(lparam));
 					::ScreenToClient(hwnd, &pt);
 
-					EventArgs e;
+					PlatformEventArgs e;
 					e.Type = EventType_MouseMove;
 					e.Sender = this;
 					e.Mouse.Button = MouseButton::None;
@@ -312,7 +310,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			///////////////////////////////////////////// マウスホイールが操作された
 			case WM_MOUSEWHEEL:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Type = EventType_MouseWheel;
 				e.Sender = this;
 				e.Mouse.Button = MouseButton::None;
@@ -332,7 +330,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			///////////////////////////////////////////// キー↓
 			case WM_KEYDOWN:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Type = EventType_KeyDown;
 				e.Sender = this;
 				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
@@ -347,7 +345,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			///////////////////////////////////////////// キー↑
 			case WM_KEYUP:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Type = EventType_KeyUp;
 				e.Sender = this;
 				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
@@ -362,7 +360,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			///////////////////////////////////////////// Alt + KeyDown
 			case WM_SYSKEYDOWN:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Type = EventType_KeyDown;
 				e.Sender = this;
 				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
@@ -377,7 +375,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 			///////////////////////////////////////////// Alt + KeyUp
 			case WM_SYSKEYUP:
 			{
-				EventArgs e;
+				PlatformEventArgs e;
 				e.Type = EventType_KeyUp;
 				e.Sender = this;
 				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
@@ -393,7 +391,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 				// 文字のみ送る
 				if (0x20 <= wparam && wparam <= 0x7E)
 				{
-					EventArgs e;
+					PlatformEventArgs e;
 					e.Type = EventType_KeyChar;
 					e.Sender = this;
 					e.Key.KeyCode = Key::Unknown;
@@ -414,7 +412,7 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Win32Window::NortifyEvent(const EventArgs& e)
+bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
 {
 	/*	マウス非表示はもっと上のレベルで共通処理できるかと思ったけど、
 		割とOSにより変わりそうなので (ウィンドウ上にあるときだけカーソルが変わるのかとか)
@@ -458,7 +456,7 @@ bool Win32Window::NortifyEvent(const EventArgs& e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Key Win32Window::ConvertVirtualKeyCode(DWORD winVK)
+Key Win32PlatformWindow::ConvertVirtualKeyCode(DWORD winVK)
 {
 	if ('A' <= winVK && winVK <= 'Z') return (Key)((int)Key::A + (winVK - 'A'));
 	if ('0' <= winVK && winVK <= '9') return (Key)((int)Key::D0 + (winVK - '0'));
@@ -595,7 +593,7 @@ Key Win32Window::ConvertVirtualKeyCode(DWORD winVK)
 //
 //-----------------------------------------------------------------------------
 Win32NativeWindow::Win32NativeWindow(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title)
-	: Win32Window(windowManager)
+	: Win32PlatformWindow(windowManager)
 	, mTitleText(title)
 	, mWindowHandle(hWnd)
 	, mAccelerators(hAccel)
@@ -689,7 +687,7 @@ void Win32NativeWindow::ReleaseMouseCapture()
 //
 //-----------------------------------------------------------------------------
 Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND hWnd)
-	: Win32Window(windowManager)
+	: Win32PlatformWindow(windowManager)
 	, m_hWnd(hWnd)
 	, m_clientSize()
 {
@@ -731,5 +729,4 @@ void Win32UserHostWindow::ReleaseMouseCapture()
 	::ReleaseCapture();
 }
 
-} // namespace Platform
 LN_NAMESPACE_END

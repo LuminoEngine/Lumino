@@ -1,6 +1,7 @@
 ﻿
 #pragma once 
 #include <Lumino/IO/FileManager.h>
+#include <Lumino/Platform/PlatformWindow.h>
 #include "../GraphicsDeviceBase.h"
 #include "DX9Renderer.h"
 
@@ -16,7 +17,7 @@ class DX9GraphicsDevice
 public:
 	struct ConfigData
 	{
-		Platform::Window*		MainWindow;
+		PlatformWindow*			MainWindow;
 		FileManager*			FileManager;
 		IDirect3DDevice9*		D3D9Device;
 		Size					BackbufferSize;
@@ -66,7 +67,7 @@ public:
 	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
 	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
 	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
-	virtual RefPtr<ISwapChain> CreateSwapChainImplement(Platform::Window* window) override;
+	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) override;
 	virtual DeviceState GetDeviceState()  override { return m_deviceState; }
 	virtual void ResetDevice() override;
 	virtual void OnLostDevice() override;
@@ -81,7 +82,7 @@ private:
 
 private:
 	FileManager*				m_fileManager;
-	RefPtr<Platform::Window>	m_mainWindow;
+	RefPtr<PlatformWindow>		m_mainWindow;
 	DX9Renderer*				m_renderer;
 	DX9SwapChain*				m_defaultSwapChain;
 	volatile DeviceState		m_deviceState;

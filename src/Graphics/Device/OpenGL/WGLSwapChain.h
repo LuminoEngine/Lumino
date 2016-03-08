@@ -21,7 +21,7 @@ public:
 
 public:
 	/// オブジェクト生成
-	void Create(WGLGraphicsDevice* device, Platform::Window* window, WGLContext* parentContext);
+	void Create(WGLGraphicsDevice* device, PlatformWindow* window, WGLContext* parentContext);
 
 
 public:
@@ -38,7 +38,7 @@ public:
 
 private:
 	WGLGraphicsDevice*		m_device;
-	Platform::Window*		m_window;
+	PlatformWindow*			m_window;
 	WGLContext*				m_context;
 	GLRenderTargetTexture*	m_renderTarget;	///< 外部へ公開する見かけ上のレンダリングターゲット
 
@@ -52,7 +52,7 @@ class WGLContext
 	: public GLContext
 {
 public:
-	WGLContext(WGLGraphicsDevice* device, Platform::Window* window, WGLContext* parentContext);
+	WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLContext* parentContext);
 	virtual ~WGLContext();
 
 	//virtual void MakeCurrentContext(bool attach);

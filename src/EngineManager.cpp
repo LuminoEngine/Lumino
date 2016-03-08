@@ -48,6 +48,7 @@
 #include "Internal.h"
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
+#include <Lumino/Platform/PlatformWindow.h>
 #include "Input/InputManager.h"
 #include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Engine.h>
@@ -261,8 +262,8 @@ void EngineManager::InitializePlatformManager()
 	{
 		InitializeCommon();
 
-		Platform::PlatformManager::Settings data;
-		data.API = Platform::WindowSystemAPI_Win32API;
+		PlatformManager::Settings data;
+		data.API = WindowSystemAPI_Win32API;
 		data.MainWindowSettings.Title = m_configData.mainWindowTitle;
 		data.MainWindowSettings.ClientSize = m_configData.mainWindowSize;
 		data.MainWindowSettings.Fullscreen = false;
@@ -270,7 +271,7 @@ void EngineManager::InitializePlatformManager()
 		data.MainWindowSettings.UserWindow = m_configData.UserMainWindow;
 		data.UseInternalUIThread = false;
 
-		m_platformManager.Attach(LN_NEW Platform::PlatformManager());
+		m_platformManager.Attach(LN_NEW PlatformManager());
 		m_platformManager->Initialize(data);
 
 		// イベントリスナー登録
@@ -318,7 +319,7 @@ void EngineManager::InitializeAudioManager()
 		data.StreamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
 		data.DMInitMode = m_configData.directMusicMode;
 #ifdef LN_OS_WIN32
-		data.hWnd = (m_platformManager != nullptr) ? Platform::PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : nullptr;
+		data.hWnd = (m_platformManager != nullptr) ? PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : nullptr;
 #endif
 		data.DirectMusicReverbLevel = m_configData.DirectMusicReverbLevel;
 		m_audioManager = AudioManagerImpl::Create(data);
@@ -652,7 +653,7 @@ void EngineManager::ResetFrameDelay()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool EngineManager::OnEvent(const Platform::EventArgs& e)
+bool EngineManager::OnEvent(const PlatformEventArgs& e)
 {
 	UILayoutView* uiView = nullptr;
 	if (m_uiManager != nullptr) {
@@ -662,11 +663,11 @@ bool EngineManager::OnEvent(const Platform::EventArgs& e)
 
 	switch (e.Type)
 	{
-	case Platform::EventType_Quit:	///< アプリ終了要求
-	case Platform::EventType_Close:			///< ウィンドウが閉じられようとしている
+	case EventType_Quit:	///< アプリ終了要求
+	case EventType_Close:			///< ウィンドウが閉じられようとしている
 		break;
 
-	case Platform::EventType_MouseDown:		// ウスボタンが押された
+	case EventType_MouseDown:		// ウスボタンが押された
 		if (uiView != nullptr) {
 			if (uiView->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
@@ -674,7 +675,7 @@ bool EngineManager::OnEvent(const Platform::EventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseUp:			// マウスボタンが離された
+	case EventType_MouseUp:			// マウスボタンが離された
 		if (uiView != nullptr) {
 			if (uiView->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
@@ -682,7 +683,7 @@ bool EngineManager::OnEvent(const Platform::EventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseMove:		// マウスが移動した
+	case EventType_MouseMove:		// マウスが移動した
 		if (uiView != nullptr) {
 			if (uiView->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
@@ -690,7 +691,7 @@ bool EngineManager::OnEvent(const Platform::EventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
-	case Platform::EventType_MouseWheel:		// マウスホイールが操作された
+	case EventType_MouseWheel:		// マウスホイールが操作された
 		if (uiView != nullptr) {
 			if (uiView->InjectMouseWheel(e.Mouse.WheelDelta, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
@@ -698,17 +699,17 @@ bool EngineManager::OnEvent(const Platform::EventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.WheelDelta)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyDown:	// キー押下
+	case EventType_KeyDown:	// キー押下
 		if (uiView != nullptr) {
 			if (uiView->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyUp:		//  キー押し上げ
+	case EventType_KeyUp:		//  キー押し上げ
 		if (uiView != nullptr) {
 			if (uiView->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
 		}
 		break;
-	case Platform::EventType_KeyChar:		//  文字入力
+	case EventType_KeyChar:		//  文字入力
 		if (uiView != nullptr) {
 			if (uiView->InjectTextInput(e.Key.Char)) { return true; }
 		}

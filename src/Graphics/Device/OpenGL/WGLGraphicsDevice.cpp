@@ -11,6 +11,7 @@
 
  */
 #include "../../../Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
 #include "WGLSwapChain.h"
 #include "WGLGraphicsDevice.h"
 
@@ -54,7 +55,7 @@ void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 {
 	GLGraphicsDevice::Initialize(configData);
 
-	HWND hWnd = Platform::PlatformSupport::GetWindowHandle(m_mainWindow);
+	HWND hWnd = PlatformSupport::GetWindowHandle(m_mainWindow);
 	HDC hDC = ::GetDC(hWnd);
 
 	// まずは wglCreateContext で適当にコンテキストを作る。
@@ -210,7 +211,7 @@ ISwapChain* WGLGraphicsDevice::GetDefaultSwapChain()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ISwapChain* WGLGraphicsDevice::CreateSwapChain(Platform::Window* window)
+ISwapChain* WGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 {
 	//ScopedContext lock(this);
 	RefPtr<WGLSwapChain> obj(LN_NEW WGLSwapChain(), false);

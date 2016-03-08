@@ -12,7 +12,7 @@ class Application
 	: public RefObject
 {
 public:
-	Platform::Window* GetNativeMainWindow();
+	PlatformWindow* GetNativeMainWindow();
 
 protected:
 	Application();

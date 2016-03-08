@@ -2,17 +2,16 @@
 #pragma once
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Size.h>
+#include "../Common.h"
+#include "../PlatformWindow.h"
 
 LN_NAMESPACE_BEGIN
-namespace Platform
-{
-class Win32WindowManager;
 	
 /**
 	@brief	
 */
-class Win32Window
-	: public Window
+class Win32PlatformWindow
+	: public PlatformWindow
 {
 public:
 
@@ -20,7 +19,7 @@ public:
 	Delegate<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	UserWndProc;
 	//tr::DelegateEvent<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
 
-	// override Window
+	// override PlatformWindow
 	virtual bool IsActive() const { return mIsActive; }
 	//virtual void HideCursor();
 	//virtual void ShowCursor();
@@ -32,7 +31,7 @@ public:
 	///		ホストの場合、メッセージループおよび DefWndProc はユーザー側で呼ぶことになるのでこの中では行わない。代わりに handled でメッセージを処理したことを伝える。
 	LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled);
 
-	bool NortifyEvent(const EventArgs& e);
+	bool NortifyEvent(const PlatformEventArgs& e);
 
 	/// ウィンドウハンドルの取得
 	virtual HWND GetWindowHandle() = 0;
@@ -48,22 +47,22 @@ protected:
 	bool	m_systemMouseShown;
 
 LN_INTERNAL_ACCESS:
-	Win32Window(Win32WindowManager* app);
-	virtual ~Win32Window();
+	Win32PlatformWindow(Win32WindowManager* app);
+	virtual ~Win32PlatformWindow();
 };
 
 /**
 	@brief	
 */
 class Win32NativeWindow
-	: public Win32Window
+	: public Win32PlatformWindow
 {
 public:
 	Win32NativeWindow(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title);
 	virtual ~Win32NativeWindow();
 
 public:
-	// Window interface
+	// PlatformWindow interface
 	virtual const Size& GetSize() const { return mClientSize; }
 	virtual void SetVisible(bool visible);
 	virtual void SetFullScreenEnabled(bool enabled);
@@ -88,14 +87,14 @@ private:
 	@brief	
 */
 class Win32UserHostWindow
-	: public Win32Window
+	: public Win32PlatformWindow
 {
 public:
 	Win32UserHostWindow(Win32WindowManager* windowManager, HWND hWnd);
 	virtual ~Win32UserHostWindow();
 
 public:
-	// Window interface
+	// PlatformWindow interface
 	virtual const Size& GetSize() const;
 	virtual void SetVisible(bool visible) {}
 	virtual void SetFullScreenEnabled(bool enabled) {}
@@ -111,5 +110,4 @@ private:
 	mutable Size	m_clientSize;
 };
 
-} // namespace Platform
 LN_NAMESPACE_END

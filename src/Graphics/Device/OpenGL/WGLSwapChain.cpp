@@ -5,6 +5,7 @@ http://qiita.com/edo_m18/items/95483cabf50494f53bb5
 */
 
 #include "../../../Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
 #include "WGLGraphicsDevice.h"
 #include "WGLSwapChain.h"
 
@@ -41,7 +42,7 @@ WGLSwapChain::~WGLSwapChain()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void WGLSwapChain::Create(WGLGraphicsDevice* device, Platform::Window* window, WGLContext* parentContext)
+void WGLSwapChain::Create(WGLGraphicsDevice* device, PlatformWindow* window, WGLContext* parentContext)
 {
 	m_device = device;
 	LN_REFOBJ_SET(m_window, window);
@@ -176,12 +177,12 @@ void WGLSwapChain::Present(ITexture* colorBuffer)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-WGLContext::WGLContext(WGLGraphicsDevice* device, Platform::Window* window, WGLContext* parentContext)
+WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLContext* parentContext)
 	: m_hWnd(NULL)
 	, m_hDC(NULL)
 	, m_hGLRC(NULL)
 {
-	m_hWnd = Platform::PlatformSupport::GetWindowHandle(window);
+	m_hWnd = PlatformSupport::GetWindowHandle(window);
 	m_hDC = ::GetDC(m_hWnd);
 
 	HGLRC share = NULL;
