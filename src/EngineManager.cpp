@@ -86,7 +86,7 @@ const TCHAR* EngineManager::LogFileName = _T("lnlog.txt");
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-EngineManager* EngineManager::Create(const ApplicationSettings& configData)
+EngineManager* EngineManager::Create(const EngineSettings& configData)
 {
 	RefPtr<EngineManager> app(LN_NEW EngineManager(configData), false);
 	//app->Initialize();
@@ -97,7 +97,7 @@ EngineManager* EngineManager::Create(const ApplicationSettings& configData)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-EngineManager::EngineManager(const ApplicationSettings& configData)
+EngineManager::EngineManager(const EngineSettings& configData)
 	: m_configData(configData)
 	, m_fileManager(nullptr)
 	, m_inputManager(nullptr)

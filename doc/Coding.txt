@@ -1,0 +1,23 @@
+
+
+エンジンのルートオブジェクト/シングルトンの扱い方
+----------------------------------------
+Engine::Initialize() のような static クラスとする。
+- ユーザーにインスタンスを作らせるのは煩わしくなる気がする
+- 組み込みを考慮したエンジンなので、グローバルスコープを汚すのはNG
+	- ln::Engine.Initialize() とかは？ → ユーザーにコンストラクタを公開することになる。
+- シングルトンの GetInstans() も冗長。今後派生させる必要が出てきたら変えるかもしれないけど、今は無し。
+
+### 参考
+グローバル変数
+- UE4 (GEngine)
+
+static クラス
+- Unity (http://docs.unity3d.com/ja/current/ScriptReference/Application.LoadLevel.html)
+- Siv3D (System)
+- SFML (Keyboard とか)
+
+インスタンスを自分で作る
+- Cocos2dx
+- Ogre
+

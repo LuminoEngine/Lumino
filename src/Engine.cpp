@@ -23,7 +23,7 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Engine::Initialize(const ApplicationSettings& settings)
+void Engine::Initialize(const EngineSettings& settings)
 {
 	EngineManager::Instance = EngineManager::Create(settings);
 	EngineManager::Instance->Initialize();

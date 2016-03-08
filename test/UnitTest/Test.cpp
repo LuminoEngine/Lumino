@@ -55,7 +55,7 @@
 //#endif
 //
 //#if 0
-//	//Platform::ApplicationSettings s;
+//	//Platform::EngineSettings s;
 //	//Platform::Application pm(s);
 //
 //	//Graphics::GraphicsManagerConfigData gmcd;

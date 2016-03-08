@@ -15,10 +15,11 @@ class Win32Window
 	: public Window
 {
 public:
-	Win32Window(Win32WindowManager* app);
-	virtual ~Win32Window();
 
-public:
+	/** ウィンドウメッセージが処理される前に実行されるイベント */
+	Delegate<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
+	//tr::DelegateEvent<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
+
 	// override Window
 	virtual bool IsActive() const { return mIsActive; }
 	//virtual void HideCursor();
@@ -45,6 +46,10 @@ protected:
 	int		mLastMouseY;
 	bool	mIsActive;
 	bool	m_systemMouseShown;
+
+LN_INTERNAL_ACCESS:
+	Win32Window(Win32WindowManager* app);
+	virtual ~Win32Window();
 };
 
 /**

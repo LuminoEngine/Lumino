@@ -432,7 +432,7 @@ set(LN_SOURCES_Game
 )
 
 set(LN_SOURCES_Application
-	include/Lumino/ApplicationSettings.h
+	include/Lumino/EngineSettings.h
 	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h

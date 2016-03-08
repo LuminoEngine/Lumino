@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief		アプリケーションの初期化設定です。
 */
-class ApplicationSettings
+class EngineSettings
 {
 public:
 	struct ArchiveFileEntry
@@ -107,7 +107,7 @@ public:
 	bool autoCoInitialize = true;
 
 public:
-	ApplicationSettings()
+	EngineSettings()
 		: ApplicationLogEnabled(false)
 		, ConsoleEnabled(false)
 		, ArchiveFileEntryList()

@@ -104,7 +104,7 @@ void VirtualPad::AttachBinding(InputBinding* binding)
 //-----------------------------------------------------------------------------
 void VirtualPad::DetachBinding(InputBinding* binding)
 {
-	m_bindings.Remove(binding);
+	m_bindings.Remove(RefPtr<InputBinding>(binding));
 
 	auto* state = m_inputStatus.Find(binding->GetName());
 	state->ref--;

@@ -1,7 +1,6 @@
 
 #pragma once
-
-#include "ApplicationSettings.h"
+#include "EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -16,7 +15,7 @@ public:
 		@brief		エンジンの初期化処理を行います。
 		@params[in]	settings	: 初期化設定
 	*/
-	static void Initialize(const ApplicationSettings& settings);
+	static void Initialize(const EngineSettings& settings);
 	
 	/**
 		@brief		エンジンの終了処理を行います。

@@ -30,7 +30,7 @@ void LNConfig_SetConsoleEnabled(LNBool enabled)
 //-----------------------------------------------------------------------------
 void LNConfig_RegisterArchive(const LNChar* filePath, const LNChar* password)
 {
-	ApplicationSettings::ArchiveFileEntry e;
+	EngineSettings::ArchiveFileEntry e;
 	e.FilePath = filePath;
 	e.Password = password;
 	LFManager::ConfigData.ArchiveFileEntryList.Add(e);
@@ -111,7 +111,7 @@ LNResult LNApplication_Initialize()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
-	LFManager::Application->Initialize();
+	LFManager::Engine->Initialize();
 	LFManager::PostInitialize();
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -123,7 +123,7 @@ LNResult LNApplication_InitializeAudio()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
-	LFManager::Application->InitializeAudioManager();
+	LFManager::Engine->InitializeAudioManager();
 	LFManager::PostInitialize();
 	LN_FUNC_TRY_END_RETURN;
 }
@@ -166,7 +166,7 @@ LNResult LNApplication_InitializeAudio()
 LNResult LNApplication_UpdateFrame()
 {
 	LN_FUNC_TRY_BEGIN;
-	LFManager::Application->UpdateFrame();
+	LFManager::Engine->UpdateFrame();
 	LN_FUNC_TRY_END_RETURN;
 }
 
@@ -184,7 +184,7 @@ LNResult LNApplication_UpdateFrame()
 //-----------------------------------------------------------------------------
 LNResult LNApplication_IsEndRequested(LNBool* requested)
 {
-	*requested = LNOTE_BOOL_TO_LNBOOL(LFManager::Application->IsEndRequested());
+	*requested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->IsEndRequested());
 	return ::LN_OK;
 }
 

@@ -3,6 +3,7 @@
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Size.h>
 #include <Lumino/Base/SortedArray.h>
+#include <Lumino/Reflection/ReflectionObject.h>
 #include "Common.h"
 #include "EventListener.h"
 
@@ -16,7 +17,7 @@ class WindowManagerBase;
 	@brief	プラットフォーム固有のウィンドウシステムのウィンドウを抽象化します。
 */
 class Window
-	: public RefObject
+	: public tr::ReflectionObject
 {
 public:
 

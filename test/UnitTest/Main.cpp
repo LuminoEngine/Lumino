@@ -90,7 +90,7 @@ void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
 
-	ApplicationSettings settings;
+	EngineSettings settings;
 	settings.mainWindowSize = Size(160, 120);
 	settings.backBufferSize = Size(160, 120);
 	settings.GraphicsAPI = GraphicsAPI::OpenGL;//GraphicsAPI::DirectX9; //

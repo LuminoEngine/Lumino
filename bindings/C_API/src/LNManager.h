@@ -59,8 +59,8 @@ public:
 	static ObjectEntry* GetObjectEntry(LNHandle handle);
 
 public:
-	static ApplicationSettings	ConfigData;
-	static EngineManager*		Application;
+	static EngineSettings		ConfigData;
+	static EngineManager*		Engine;
 	static bool					IsSystemInitialized;
 	static Exception*			LastException;
 	static LNResult				LastErrorCode;

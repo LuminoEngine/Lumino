@@ -26,7 +26,7 @@ GameApplication::~GameApplication()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GameApplication::OnConfigure(ApplicationSettings* settings)
+void GameApplication::OnConfigure(EngineSettings* settings)
 {
 }
 
@@ -37,7 +37,7 @@ void GameApplication::Run()
 {
 	try
 	{
-		ApplicationSettings data;
+		EngineSettings data;
 		data.GraphicsAPI = GraphicsAPI::DirectX9;
 		data.RenderingType = RenderingType::Immediate;
 

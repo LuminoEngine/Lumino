@@ -57,6 +57,10 @@ float BezierCurve1(float x1, float x2, float x3, float x4, float t)
 	return t*t*t*x4 + 3.f*t*t*tp*x3 + 3.f*t*tp*tp*x2 + tp*tp*tp*x1;
 }
 
+LRESULT TestWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
+{
+	return 0;
+}
 
 int main()
 {
@@ -68,7 +72,7 @@ int main()
 
 	try
 	{
-		ApplicationSettings appData;
+		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;
 		Engine::Initialize(appData);
@@ -113,7 +117,7 @@ int main()
 		//auto fff = ColorF::Green;
 		//ColorBrush ff(ColorF(1, 0, 0, 1));
 		//auto aa = ColorBrush::Green;
-		ApplicationSettings appData;
+		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
@@ -367,7 +371,7 @@ int main()
 
 		//return 0;
 
-		ApplicationSettings appData;
+		EngineSettings appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
 		//appData.RenderingType = Graphics::RenderingType::Immediate;
 		RefPtr<EngineManager> app(EngineManager::Create(appData));

@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 
-#include "../ApplicationSettings.h"
+#include "../EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -15,7 +15,7 @@ public:
 	/**
 		@brief		アプリケーションの初期化設定を構築する際に呼び出されます。
 	*/
-	virtual void OnConfigure(ApplicationSettings* settings);
+	virtual void OnConfigure(EngineSettings* settings);
 
 	/**
 		@brief		アプリケーションを実行します。

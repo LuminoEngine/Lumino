@@ -9,7 +9,7 @@
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Documents/DocumentsManager.h>
 #include <Lumino/Game/FpsController.h>
-#include <Lumino/ApplicationSettings.h>
+#include <Lumino/EngineSettings.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -37,7 +37,7 @@ public:
 	/**
 		@brief		Application のインスタンスを作成し、アプリケーションを初期化します。
 	*/
-	static EngineManager* Create(const ApplicationSettings& configData);
+	static EngineManager* Create(const EngineSettings& configData);
 
 public:
 
@@ -70,7 +70,7 @@ public:
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
 
 protected:
-	EngineManager(const ApplicationSettings& configData);
+	EngineManager(const EngineSettings& configData);
 	virtual ~EngineManager();
 
 public:
@@ -91,7 +91,7 @@ public:
 
 private:
 	//class NativeWindowEventListener;
-	ApplicationSettings				m_configData;
+	EngineSettings						m_configData;
 	FpsController						m_fpsController;
 	FileManager*						m_fileManager;
 	RefPtr<Platform::PlatformManager>	m_platformManager;

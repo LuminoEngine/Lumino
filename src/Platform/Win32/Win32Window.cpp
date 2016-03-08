@@ -79,6 +79,14 @@ LRESULT Win32Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, 
 {
 	*handled = false;
 
+	if (!PreWndProc.IsEmpty())
+	{
+		LRESULT dr = PreWndProc.Call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
+		if (handled) {
+			return dr;
+		}
+	}
+
 	// WM_SYSKEYDOWN 関係をむやみに postMessage() すると強制終了するので必要なものだけフィルタリング
 	//if ( msg != WM_SYSKEYDOWN || (msg == WM_SYSKEYDOWN && wparam == VK_RETURN) )
 	{

@@ -8,8 +8,8 @@
 // LFManager
 //=============================================================================
 
-ApplicationSettings			LFManager::ConfigData;
-EngineManager*				LFManager::Application = NULL;
+EngineSettings				LFManager::ConfigData;
+EngineManager*				LFManager::Engine = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;
 LNResult					LFManager::LastErrorCode = LN_OK;
@@ -23,10 +23,10 @@ Stack<int>					LFManager::m_objectIndexStack;
 //-----------------------------------------------------------------------------
 void LFManager::PreInitialize()
 {
-	if (Application == NULL)
+	if (Engine == nullptr)
 	{
 		LNTypeDef_CheckCommonDefinition();
-		Application = EngineManager::Create(ConfigData);
+		Engine = EngineManager::Create(ConfigData);
 		IsSystemInitialized = true;
 	}
 }
@@ -65,10 +65,10 @@ void LFManager::Terminate()
 		LN_SAFE_RELEASE(e.Object);
 	}
 
-	if (Application != NULL)
+	if (Engine != NULL)
 	{
 		//Application->Finalize();
-		LN_SAFE_RELEASE(Application);
+		LN_SAFE_RELEASE(Engine);
 	}
 
 	LN_SAFE_DELETE(LastException);
