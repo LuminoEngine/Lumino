@@ -397,6 +397,7 @@ set(LN_SOURCES_UI
 	include/Lumino/UI/UIInjectedInputReceiver.h
 	include/Lumino/UI/UILayoutView.h
 	include/Lumino/UI/UITypeInfo.h
+	include/Lumino/UI/UIWindow.h
 	src/UI/EventArgsPool.h
 	src/UI/Internal.h
 	src/UI/UIContext.cpp
@@ -408,6 +409,7 @@ set(LN_SOURCES_UI
 	src/UI/UIManager.cpp
 	src/UI/UIManager.h
 	src/UI/UITypeInfo.cpp
+	src/UI/UIWindow.cpp
 )
 
 set(LN_SOURCES_Documents
@@ -449,6 +451,7 @@ set(LN_SOURCES_Application
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	include/Lumino/Version.h
+	include/Lumino/Viewport.h
 	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
 	src/Engine.cpp
@@ -460,6 +463,7 @@ set(LN_SOURCES_Application
 	src/RoutedEvent.cpp
 	src/Variant.cpp
 	src/Version.cpp
+	src/Viewport.cpp
 )
 
 if (LN_BUILD_FOUNDATION_MODULE)

@@ -140,7 +140,7 @@ protected:
 /**
 	@brief		レンダリングターゲットのクラスです。
 */
-class RenderTarget
+class RenderTarget		// TODO: RenderTargetTexture
 	: public Texture
 {
 public:

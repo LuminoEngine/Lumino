@@ -1,4 +1,30 @@
 /*
+[2016/3/9] レンダリングパス
+	一番えらいのは Viewport クラスにしたい。
+	Engine や Window はコレに対して Render() を呼ぶだけでOK、みたいな。
+
+	Editor モードのとき、Viewport でペインを分けると再描画の範囲を限定できる。
+	1つのWidgetに再描画が必要になってもウィンドウ全体を再描画する必要はない。
+	→ Viewport は レンダーターゲットを持つ。
+
+	Game モードのときは基本的に Viewport は 1つだけになると思う。
+
+	Window 内は Viweport の階層構造。
+	ルートの Viewport は Window 全体で、swapchain のレンダーターゲットをアタッチするのがいいかも。
+
+	GameMode (毎フレーム)
+		1.Scene 描画。Scene 内のすべてのカメラのレンダーターゲットに描画する
+		2.Viewport 描画。ルートから順に、レンダーターゲットをバックバッファに描画する
+
+	EditorMode
+		再描画要求あったときだけ↑のを行う。
+
+	ImageEffect
+		ポストエフェクト。カメラにくっつく。Unity と同じかんじ。
+
+
+	参考:UE4
+	https://shikihuiku.wordpress.com/2014/05/09/%E3%83%A1%E3%83%A2-ue4%E3%81%AErendering%E3%81%AE%E5%91%BC%E3%81%B0%E3%82%8C%E6%96%B9/
 
 
 [2015/8/30] プロパティの継承
