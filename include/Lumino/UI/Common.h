@@ -9,6 +9,7 @@ class UIEventArgs;
 class UIContext;
 class UILayoutView;
 class UIElement;
+class UIWindow;
 
 
 /** 縦方向の表示位置を示します。*/

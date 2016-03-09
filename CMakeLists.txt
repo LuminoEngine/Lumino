@@ -192,6 +192,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Texture.h
 	include/Lumino/Graphics/Utils.h
 	include/Lumino/Graphics/VertexBuffer.h
+	include/Lumino/Graphics/Viewport.h
 	external/GL/glew.c
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapFont.cpp
@@ -242,6 +243,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
+	src/Graphics/Viewport.cpp
 	src/Graphics/Device/GraphicsDriverInterface.cpp
 	src/Graphics/Device/GraphicsDriverInterface.h
 	src/Graphics/Device/GraphicsDeviceBase.cpp
@@ -451,7 +453,6 @@ set(LN_SOURCES_Application
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	include/Lumino/Version.h
-	include/Lumino/Viewport.h
 	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
 	src/Engine.cpp
@@ -463,7 +464,6 @@ set(LN_SOURCES_Application
 	src/RoutedEvent.cpp
 	src/Variant.cpp
 	src/Version.cpp
-	src/Viewport.cpp
 )
 
 if (LN_BUILD_FOUNDATION_MODULE)

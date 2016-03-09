@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
+#include <Lumino/UI/UIWindow.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include "UIManager.h"
@@ -37,7 +38,7 @@ void UIContext::Initialize(detail::UIManager* manager)
 {
 	m_manager = manager;
 	m_mainWindowView = LN_NEW UILayoutView();
-	m_mainWindowView->Initialize(this, m_manager->GetMainWindow());
+	m_mainWindowView->Initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
 }
 
 //-----------------------------------------------------------------------------

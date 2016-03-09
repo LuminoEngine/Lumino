@@ -1173,6 +1173,7 @@
 */
 #include "Internal.h"
 #include <Lumino/UI/UIContext.h>
+#include <Lumino/UI/UIWindow.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
 
@@ -1191,6 +1192,7 @@ const float UIManager::MouseButtonClickTimeout = 0.3f;
 UIManager::UIManager()
 	: m_eventArgsPool(nullptr)
 	, m_graphicsManager(nullptr)
+	, m_mainWindow(nullptr)
 	, m_defaultUIContext(nullptr)
 {
 }
@@ -1209,7 +1211,9 @@ void UIManager::Initialize(const Settings& settings)
 {
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_graphicsManager = settings.graphicsManager;
-	m_mainWindow = settings.mainWindow;
+
+	m_mainWindow = LN_NEW UIWindow();
+	m_mainWindow->InitializeDefault(this, settings.mainWindow);
 
 	m_defaultUIContext = LN_NEW UIContext();
 	m_defaultUIContext->Initialize(this);
@@ -1220,6 +1224,7 @@ void UIManager::Initialize(const Settings& settings)
 //-----------------------------------------------------------------------------
 void UIManager::Finalize()
 {
+	LN_SAFE_RELEASE(m_mainWindow);
 	LN_SAFE_RELEASE(m_defaultUIContext);
 	LN_SAFE_DELETE(m_eventArgsPool);
 }

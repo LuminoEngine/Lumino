@@ -33,6 +33,9 @@ public:
 	*/
 	TextureFormat GetFormat() const;
 
+	Bitmap* Lock();
+	void Unlock();
+
 protected:
 	Texture();
 	virtual ~Texture();
@@ -41,9 +44,12 @@ LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
+	friend struct ReadLockTextureCommand;
+	friend struct ReadUnlockTextureCommand;
 	Driver::ITexture*	m_deviceObj;
 	Size				m_size;
 	TextureFormat		m_format;
+	Bitmap*				m_primarySurface;
 };
 
 /**
@@ -96,8 +102,6 @@ public:
 	void SetSubData(const Point& offset, Bitmap* bitmap);
 	void SetSubData(const Point& offset, const void* data);
 
-	Bitmap* Lock();
-	void Unlock();
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
@@ -116,21 +120,14 @@ LN_INTERNAL_ACCESS:
 	void CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
 	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
-	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
-	void DetachDefaultBackBuffer();
 
 protected:
 	friend struct SetRenderTargetCommand;	// TODO: ダサイ
 	friend struct SetDepthBufferCommand;
-	friend struct ReadLockTextureCommand;
-	friend struct ReadUnlockTextureCommand;
 	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;
-	friend class SwapChain;
 	int					m_mipLevels;
-	Bitmap*				m_primarySurface;
 	bool				m_isPlatformLoaded;
-	bool				m_isDefaultBackBuffer;
 	//bool				m_primarySurfaceModified;
 
 	friend class Helper;
@@ -156,15 +153,20 @@ public:
 LN_INTERNAL_ACCESS:
 	RenderTarget();
 	void CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format);
+	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
+	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
+	void DetachDefaultBackBuffer();
 
 protected:
 	virtual ~RenderTarget();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
+	friend class SwapChain;
 	//Size			m_size;
 	int				m_mipLevels;
 	//TextureFormat	m_format;
+	bool				m_isDefaultBackBuffer;
 };
 
 /**

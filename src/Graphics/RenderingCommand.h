@@ -702,8 +702,8 @@ struct SetSubDataTextureCommand : public RenderingCommand
 //=============================================================================
 struct ReadLockTextureCommand : public RenderingCommand
 {
-	Texture2D*	m_targetTexture;
-	void Create(Texture2D* texture)
+	Texture*	m_targetTexture;
+	void Create(Texture* texture)
 	{
 		m_targetTexture = texture;
 		MarkGC(texture);
@@ -719,8 +719,8 @@ struct ReadLockTextureCommand : public RenderingCommand
 //=============================================================================
 struct ReadUnlockTextureCommand : public RenderingCommand
 {
-	Texture2D*	m_targetTexture;
-	void Create(Texture2D* texture)
+	Texture*	m_targetTexture;
+	void Create(Texture* texture)
 	{
 		m_targetTexture = texture;
 		MarkGC(texture);

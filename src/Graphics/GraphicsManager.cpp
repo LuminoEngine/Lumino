@@ -711,6 +711,7 @@
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 #include "TextRenderer.h"
+#include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
 
@@ -798,6 +799,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	, m_dummyTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
+	, m_mainViewport(nullptr)
 	, m_activeContext(nullptr)
 	, m_renderingContext(nullptr)
 	, m_graphicsContext(nullptr)
@@ -859,6 +861,10 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		m_mainSwapChain.Attach(LN_NEW SwapChain(this, true/*configData.MainWindow->GetSize(), deviceSwapChain*/));
 	}
 
+	// MainViewport
+	m_mainViewport = LN_NEW Viewport();
+	m_mainViewport->Initialize(m_mainSwapChain->GetBackBuffer());
+
 	// PainterEngine
 	//m_painterEngine = LN_NEW PainterEngine();
 	//m_painterEngine->Create(this);
@@ -894,6 +900,7 @@ GraphicsManager::~GraphicsManager()
 	LN_SAFE_RELEASE(m_textRendererCore);
 	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_dummyTexture);
+	LN_SAFE_RELEASE(m_mainViewport);
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
 

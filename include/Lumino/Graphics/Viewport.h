@@ -1,6 +1,6 @@
 
 #pragma once
-#include "Graphics/Texture.h"
+#include "Texture.h"
 
 LN_NAMESPACE_BEGIN
 

@@ -30,13 +30,13 @@ public:
 	void Finalize();
 	EventArgsPool* GetEventArgsPool() { return m_eventArgsPool; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	PlatformWindow* GetMainWindow() { return m_mainWindow; }
+	UIWindow* GetMainWindow() { return m_mainWindow; }
 	UIContext* GetDefaultUIContext() { return m_defaultUIContext; }
 
 private:
 	EventArgsPool*		m_eventArgsPool;
 	GraphicsManager*	m_graphicsManager;
-	PlatformWindow*		m_mainWindow;
+	UIWindow*			m_mainWindow;
 	UIContext*			m_defaultUIContext;
 };
 

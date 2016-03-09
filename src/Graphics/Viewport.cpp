@@ -1,6 +1,13 @@
+/*
+	Viewport は「スクリーンに表示するためのレンダーターゲット」と考える。
+	レンダリング開始前に Viewport を集計し、そのフレームで、主にポストエフェクトに使われる
+	レンダーターゲットをキャッシュするのも仕事。
 
+	このレンダーターゲットは「ある Viewport をオーナーとする自動リサイズするレンダーターゲット」とすれば
+	Scene の Camera とか ImageEffect とかからは独立して使える。 Graphics に入れておいてもいい。
+*/
 #include "Internal.h"
-#include <Lumino/Viewport.h>
+#include <Lumino/Graphics/Viewport.h>
 
 LN_NAMESPACE_BEGIN
 

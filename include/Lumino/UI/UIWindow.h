@@ -1,7 +1,7 @@
 
 #pragma once
 #include "UIElement.h"
-#include "../Viewport.h"
+//#include "../Graphics/Viewport.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -13,14 +13,17 @@ class UIWindow
 {
 public:
 
+	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
 
 LN_INTERNAL_ACCESS:	// TODO: ‚¢‚Ü‚Í‚Æ‚è‚ ‚¦‚¸“à•”—p“r
 	UIWindow();
 	virtual ~UIWindow();
-	void Initialize();
+	void InitializeDefault(detail::UIManager* manager, PlatformWindow* platformWindow);
 
 private:
-	Viewport*	m_backBufferViewport;
+	detail::UIManager*	m_manager;
+	PlatformWindow*		m_platformWindow;
+	//Viewport*			m_backBufferViewport;
 };
 
 LN_NAMESPACE_END

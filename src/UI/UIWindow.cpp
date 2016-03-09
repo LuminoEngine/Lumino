@@ -5,14 +5,16 @@
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// Viewport
+// UIWindow
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 UIWindow::UIWindow()
-	: m_backBufferViewport(nullptr)
+	: m_manager(nullptr)
+	, m_platformWindow(nullptr)
+	//, m_backBufferViewport(nullptr)
 {
 }
 
@@ -26,8 +28,11 @@ UIWindow::~UIWindow()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIWindow::Initialize()
+void UIWindow::InitializeDefault(detail::UIManager* manager, PlatformWindow* platformWindow)
 {
+	LN_CHECK_ARGS_RETURN(manager);
+	m_manager = manager;
+	m_platformWindow = platformWindow;
 }
 
 LN_NAMESPACE_END

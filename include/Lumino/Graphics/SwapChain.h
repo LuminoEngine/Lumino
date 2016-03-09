@@ -20,7 +20,7 @@ public:
 	/**
 		@brief	バックバッファのレンダリングターゲットを取得します。
 	*/
-	Texture2D* GetBackBuffer() { return m_backColorBuffer; }
+	RenderTarget* GetBackBuffer() { return m_backColorBuffer; }
 	
 	/**
 		@brief	バックバッファの深度バッファを取得します。
@@ -29,6 +29,7 @@ public:
 
 	/**
 		@brief	バックバッファのサイズを変更します。
+		TODO: 公開しない。サイズ変更は Viewport から。
 	*/
 	void Resize(const Size& newSize);
 
@@ -45,7 +46,7 @@ LN_INTERNAL_ACCESS:
 	Driver::ISwapChain*		m_deviceObj;
 	RenderingCommandList*	m_commandList;
 	Threading::EventFlag	m_waiting;		///< コマンド実行していない
-	Texture2D*				m_backColorBuffer;	// TODO: Rendertarget
+	RenderTarget*			m_backColorBuffer;
 	DepthBuffer*			m_backDepthBuffer;
 	bool					m_isDefault;
 };

@@ -44,6 +44,8 @@ public:
 	/** メインの SwapChain を取得します。これは Create() で指定されたメインウィンドウへのスワップチェインです。*/
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
 
+	Viewport* GetMainViewport() { return m_mainViewport; }
+
 	/** 関連付けられている FileManager を取得します。*/
 	FileManager* GetFileManager() const { return m_fileManager; }
 
@@ -150,6 +152,7 @@ private:
 	RefPtr<SwapChain>				m_mainSwapChain;
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
+	Viewport*						m_mainViewport;
 
 	detail::IContext*				m_activeContext;
 	RenderingContext2*				m_renderingContext;

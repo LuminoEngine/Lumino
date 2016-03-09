@@ -26,6 +26,7 @@ Texture::Texture()
 	: m_deviceObj(NULL)
 	, m_size()
 	, m_format(TextureFormat_Unknown)
+	, m_primarySurface(NULL)
 {
 }
 
@@ -59,6 +60,79 @@ const Size& Texture::GetRealSize() const
 TextureFormat Texture::GetFormat() const
 {
 	return m_deviceObj->GetTextureFormat();
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Bitmap* Texture::Lock()
+{
+	// Deferred
+	if (m_manager->GetRenderingType() == RenderingType::Deferred)
+	{
+		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
+		{
+			return m_primarySurface;
+		}
+		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
+		{
+			RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
+			cmdList->AddCommand<ReadLockTextureCommand>(this);
+
+			// ここでたまっているコマンドをすべて実行する。
+			// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
+			// ロックしたビットマップがセットされる。
+			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
+			cmdList->WaitForIdle();
+
+			return m_primarySurface;
+		}
+		return NULL;
+	}
+	// Immediate
+	else
+	{
+		return m_deviceObj->Lock();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Texture::Unlock()
+{
+	// Deferred
+	if (m_manager->GetRenderingType() == RenderingType::Deferred)
+	{
+		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
+		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
+		{
+			// 変更済みフラグを ON にしておく。
+			// あとで本当に使うタイミング (=シェーダパスのApply時) になったら FlushPrimarySurface() が呼ばれる
+			//m_primarySurfaceModified = true;
+
+			// TODO: 遅延転送
+			//cmdList->SetTextureSubData(m_deviceObj, m_primarySurface);
+			//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
+			//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
+			cmdList->AddCommand<SetSubDataTextureCommand>(
+				m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
+		}
+		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
+		{
+			cmdList->AddCommand<ReadUnlockTextureCommand>(this);
+			//ReadUnlockTextureCommand::AddCommand(cmdList, this);
+			//cmdList->ReadUnlockTexture(this);
+			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
+			cmdList->WaitForIdle();
+		}
+	}
+	// Immediate
+	else
+	{
+		m_deviceObj->Unlock();
+	}
 }
 
 //=============================================================================
@@ -139,9 +213,7 @@ Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat form
 //
 //-----------------------------------------------------------------------------
 Texture2D::Texture2D()
-	: m_primarySurface(NULL)
-	, m_isPlatformLoaded(false)
-	, m_isDefaultBackBuffer(false)
+	: m_isPlatformLoaded(false)
 {
 }
 
@@ -227,13 +299,6 @@ void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureForm
 //	m_manager->AddResourceObject(this);
 //}
 
-void Texture2D::CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer)
-{
-	GraphicsResourceObject::Initialize(manager);
-	m_deviceObj = NULL;
-	m_primarySurface = NULL;
-	m_isDefaultBackBuffer = isDefaultBackBuffer;
-}
 
 //-----------------------------------------------------------------------------
 //
@@ -273,78 +338,6 @@ void Texture2D::SetSubData(const Point& offset, const void* data)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Bitmap* Texture2D::Lock()
-{
-	// Deferred
-	if (m_manager->GetRenderingType() == RenderingType::Deferred)
-	{
-		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
-		{
-			return m_primarySurface;
-		}
-		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
-		{
-			RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
-			cmdList->AddCommand<ReadLockTextureCommand>(this);
-
-			// ここでたまっているコマンドをすべて実行する。
-			// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
-			// ロックしたビットマップがセットされる。
-			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
-			cmdList->WaitForIdle();
-
-			return m_primarySurface;
-		}
-		return NULL;
-	}
-	// Immediate
-	else
-	{
-		return m_deviceObj->Lock();
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Texture2D::Unlock()
-{
-	// Deferred
-	if (m_manager->GetRenderingType() == RenderingType::Deferred)
-	{
-		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
-		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
-		{
-			// 変更済みフラグを ON にしておく。
-			// あとで本当に使うタイミング (=シェーダパスのApply時) になったら FlushPrimarySurface() が呼ばれる
-			//m_primarySurfaceModified = true;
-
-			// TODO: 遅延転送
-			//cmdList->SetTextureSubData(m_deviceObj, m_primarySurface);
-			//cmdList->AddCommand<SetTextureSubDataCommand>(m_deviceObj, m_primarySurface);
-			//SetTextureSubDataCommand::AddCommand(cmdList, m_deviceObj, m_primarySurface);
-			cmdList->AddCommand<SetSubDataTextureCommand>(
-				m_deviceObj, Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
-		}
-		else if (m_deviceObj->GetTextureType() == Driver::TextureType_RenderTarget)
-		{
-			cmdList->AddCommand<ReadUnlockTextureCommand>(this);
-			//ReadUnlockTextureCommand::AddCommand(cmdList, this);
-			//cmdList->ReadUnlockTexture(this);
-			m_manager->GetRenderingThread()->PushRenderingCommand(cmdList);
-			cmdList->WaitForIdle();
-		}
-	}
-	// Immediate
-	else
-	{
-		m_deviceObj->Unlock();
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
@@ -365,26 +358,6 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 		//m_deviceObj->SetSubData(Point(0, 0), m_primarySurface->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetBitmapBuffer()->GetSize(), m_primarySurface->GetSize());
 		// TODO: Create でinitialデータも渡してしまう。
 	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Texture2D::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
-{
-	assert(m_isDefaultBackBuffer);
-	assert(m_deviceObj == NULL);
-	LN_REFOBJ_SET(m_deviceObj, deviceObj);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Texture2D::DetachDefaultBackBuffer()
-{
-	assert(m_isDefaultBackBuffer);
-	assert(m_deviceObj != NULL);
-	LN_SAFE_RELEASE(m_deviceObj);
 }
 
 
@@ -410,6 +383,7 @@ void Texture2D::DetachDefaultBackBuffer()
 RenderTarget::RenderTarget()
 	: Texture()
 	, m_mipLevels(0)
+	, m_isDefaultBackBuffer(false)
 {
 }
 
@@ -429,8 +403,39 @@ void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mi
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void RenderTarget::CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer)
+{
+	GraphicsResourceObject::Initialize(manager);
+	m_deviceObj = NULL;
+	//m_primarySurface = NULL;
+	m_isDefaultBackBuffer = isDefaultBackBuffer;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 RenderTarget::~RenderTarget()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderTarget::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
+{
+	assert(m_isDefaultBackBuffer);
+	assert(m_deviceObj == NULL);
+	LN_REFOBJ_SET(m_deviceObj, deviceObj);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderTarget::DetachDefaultBackBuffer()
+{
+	assert(m_isDefaultBackBuffer);
+	assert(m_deviceObj != NULL);
+	LN_SAFE_RELEASE(m_deviceObj);
 }
 
 //-----------------------------------------------------------------------------
