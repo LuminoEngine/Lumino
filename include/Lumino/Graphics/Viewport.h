@@ -4,6 +4,19 @@
 
 LN_NAMESPACE_BEGIN
 
+class RenderingCompositionContext
+{
+public:
+	RenderTarget* RequestRenderTarget(int width, int height);
+};
+
+// Camera Ç∆Ç©Ç™åpè≥Ç∑ÇÈ
+class IRenderingCompositionItem
+{
+public:
+	void Render(RenderingCompositionContext* context);
+};
+
 /**
 	@brief		
 */
