@@ -256,9 +256,9 @@ void SpriteBase::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	{
 		dc->GetRenderingContext()->DrawSquare(
 			Vector3(m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z), Vector2(m_upperLeftUV.X, m_upperLeftUV.Y), ColorF::White,
-			Vector3(m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z), Vector2(m_lowerRightUV.X, m_upperLeftUV.Y), ColorF::White,
+			Vector3(m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_upperLeftUV.X, m_lowerRightUV.Y), ColorF::White,
 			Vector3(m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_lowerRightUV.X, m_lowerRightUV.Y), ColorF::White,
-			Vector3(m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_upperLeftUV.X, m_lowerRightUV.Y), ColorF::White);
+			Vector3(m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z), Vector2(m_lowerRightUV.X, m_upperLeftUV.Y), ColorF::White);
 	}
 }
 

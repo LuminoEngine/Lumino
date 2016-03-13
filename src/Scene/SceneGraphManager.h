@@ -4,6 +4,7 @@
 #include <Lumino/Base/Stack.h>
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Scene/Common.h>
 #include "../Effect/EffectManager.h"
 #include "../Modeling/ModelManager.h"
 #include "Internal.h"
@@ -27,6 +28,7 @@ public:
 		GraphicsManager*	GraphicsManager;
 		detail::EffectManager*		effectManager;
 		detail::ModelManager*		modelManager = nullptr;
+		Viewport*					mainViewport = nullptr;
 
 		//Modeling::ModelManager*		ModelManager;
 
@@ -55,7 +57,7 @@ public:
 	SceneGraph* GetDefault3DSceneGraph() { return m_default3DSceneGraph; }
 	SceneGraph* GetDefault2DSceneGraph() { return m_default2DSceneGraph; }
 	void UpdateFrameDefaultSceneGraph(float elapsedTime);
-	void RenderDefaultSceneGraph(Texture* renderTarget);
+	//void RenderDefaultSceneGraph(Texture* renderTarget);
 
 	
 
@@ -110,6 +112,10 @@ private:
 
 	SceneGraph*		m_default3DSceneGraph;
 	SceneGraph*		m_default2DSceneGraph;
+
+	CameraViewportLayer*	m_default3DCameraViewportLayer;
+	CameraViewportLayer*	m_default2DCameraViewportLayer;
+	Viewport*				m_mainViewport;
 };
 
 LN_NAMESPACE_SCENE_END

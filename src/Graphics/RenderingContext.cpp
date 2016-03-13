@@ -271,14 +271,39 @@ void RenderingContext2::DrawSquare(
 	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
 {
+	// TODO: ‚±‚Ì3s’èŒ^•¶?
 	m_manager->SwitchActiveContext(this);
 	CheckFlushRendererState();
 	SwitchActiveRendererPloxy(m_primitiveRenderer);
+
 	m_primitiveRenderer->DrawSquare(
 		position1, uv1, color1,
 		position2, uv2, color2,
 		position3, uv3, color3,
 		position4, uv4, color4);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
+{
+	LN_NOTIMPLEMENTED();
+	//Texture* oldTarget = GetRenderTarget(0);
+	//SetRenderTarget(0, dest);
+
+	//// TODO: ‚±‚Ì3s’èŒ^•¶?
+	//m_manager->SwitchActiveContext(this);
+	//CheckFlushRendererState();
+	//SwitchActiveRendererPloxy(m_primitiveRenderer);
+
+	//m_primitiveRenderer->DrawSquare(
+	//	Vector3(-1, 1, 0), Vector2(0, 0), ColorF::White,
+	//	Vector3(-1, -1, 0), Vector2(0, 1), ColorF::White,
+	//	Vector3(1, 1, 0), Vector2(1, 0), ColorF::White,
+	//	Vector3(1,-1, 0), Vector2(1, 1), ColorF::White);
+
+	//SetRenderTarget(0, oldTarget);
 }
 
 //-----------------------------------------------------------------------------

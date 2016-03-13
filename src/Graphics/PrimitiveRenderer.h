@@ -33,9 +33,10 @@ public:
 	~PrimitiveRendererCore();
 	void Initialize(GraphicsManager* manager);
 
-	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader);
+	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture);
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
 	void DrawSquare(const DrawSquareData& data);
+	void Blt(Texture2D* source, RenderTarget* dest, Driver::IShader* shader = nullptr);
 	void Flush();
 
 private:
@@ -68,6 +69,7 @@ private:
 	Driver::IRenderer*		m_renderer;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
+	Driver::IVertexBuffer*	m_vertexBufferForBlt;
 	ByteBuffer				m_vertexCache;
 	size_t					m_vertexCacheUsed;
 	size_t					m_vertexStride;
@@ -76,6 +78,8 @@ private:
 	PrimitiveRendererMode	m_mode;
 	Driver::IShader*		m_userShader;
 	bool					m_useInternalShader;
+
+
 
 	struct
 	{
@@ -88,6 +92,16 @@ private:
 		Driver::IShaderVariable*	varTexture;		// TODO: égÇ¡ÇƒÇ»Ç¢ÅH
 
 	} m_shader;
+
+	struct
+	{
+		Driver::IShader*			shader;
+		Driver::IShaderTechnique*	technique;
+		Driver::IShaderPass*		pass;
+		Driver::IShaderVariable*	varPixelStep;
+		Driver::IShaderVariable*	varTexture;
+
+	} m_shaderForBlt;
 };
 
 class PrimitiveRenderer
@@ -104,7 +118,7 @@ public:
 	void SetViewPixelSize(const Size& size);
 	void SetUseInternalShader(bool useInternalShader);	// TODO: Ç¢ÇÁÇ»Ç¢Ç©Ç‡
 	void SetUserShader(Shader* shader);
-	//void SetTexture(Texture* texture);
+	void SetTexture(Texture* texture);
 
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
 
@@ -113,6 +127,10 @@ public:
 		const Vector3& position2, const Vector2& uv2, const ColorF& color2,
 		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
+
+	void DrawRectangle(const RectF& rect);
+
+	void Blt(Texture2D* source, RenderTarget* dest, Shader* shader = nullptr);
 
 	virtual void Flush() override;
 	virtual void OnActivated() { m_stateModified = true; }
@@ -127,7 +145,7 @@ private:
 	Matrix					m_transform;
 	Matrix					m_viewProj;
 	Size					m_viewPixelSize;
-	//Texture*				m_texture;
+	Texture*				m_texture;
 	Shader*					m_userShader;
 	PrimitiveRendererMode	m_mode;
 	bool					m_useInternalShader;

@@ -292,10 +292,10 @@ void DX9Renderer::SetRenderTarget(int index, ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//ITexture* DX9Renderer::GetRenderTarget(int index)
-//{
-//	return m_currentRenderTargets[index];
-//}
+ITexture* DX9Renderer::GetRenderTarget(int index)
+{
+	return m_currentRenderTargets[index];
+}
 
 //-----------------------------------------------------------------------------
 //

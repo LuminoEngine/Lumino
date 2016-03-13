@@ -49,6 +49,22 @@ const Size& Texture::GetSize() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+int Texture::GetWidth() const
+{
+	return m_deviceObj->GetSize().Width;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int Texture::GetHeight() const
+{
+	return m_deviceObj->GetSize().Height;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 const Size& Texture::GetRealSize() const
 {
 	return m_deviceObj->GetRealSize();
@@ -166,7 +182,7 @@ Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLe
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Texture2DPtr Texture2D::Create(const TCHAR* filePath, TextureFormat format, int mipLevels)
+Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->CreateCore(GetManager(), filePath, format, mipLevels);
@@ -240,7 +256,7 @@ void Texture2D::CreateCore(GraphicsManager* manager, const Size& size, TextureFo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Texture2D::CreateCore(GraphicsManager* manager, const TCHAR* filePath, TextureFormat format, int mipLevels)
+void Texture2D::CreateCore(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
 	CreateCore(manager, stream, format, mipLevels);

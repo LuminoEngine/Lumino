@@ -401,7 +401,6 @@ void EngineManager::InitializeGraphicsManager()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeEffectManager()
 {
-#if 0
 	if (m_effectManager == nullptr)
 	{
 		InitializeCommon();
@@ -414,7 +413,6 @@ void EngineManager::InitializeEffectManager()
 		m_effectManager = LN_NEW detail::EffectManager();
 		m_effectManager->Initialize(data);
 	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -482,7 +480,6 @@ void EngineManager::InitializeUIManager()
 #ifdef LN_BUILD_SCENE_MODULE
 void EngineManager::InitializeSceneGraphManager()
 {
-#if 0
 	if (m_sceneGraphManager == nullptr)
 	{
 		InitializeCommon();
@@ -497,11 +494,11 @@ void EngineManager::InitializeSceneGraphManager()
 		data.PhysicsManager = m_physicsManager;
 		data.effectManager = m_effectManager;
 		data.modelManager = m_modelManager;
+		data.mainViewport = m_graphicsManager->GetMainViewport();
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
-#endif
 }
 #endif
 
@@ -654,9 +651,15 @@ void EngineManager::Render()
 		//state.StencilEnable = false;
 		//m_graphicsManager->GetRenderer()->SetDepthStencilState(state);
 
-		if (m_sceneGraphManager != nullptr) {
-			m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
+		//if (m_sceneGraphManager != nullptr) {
+		//	m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
+		//}
+
+		if (m_graphicsManager != nullptr)
+		{
+			m_graphicsManager->GetMainViewport()->Render();
 		}
+
 		if (m_uiManager != nullptr) {
 			m_uiManager->GetDefaultUIContext()->Render();
 		}

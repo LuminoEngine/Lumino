@@ -30,7 +30,8 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 	bool					m_useInternalShader;
 	PrimitiveRendererMode	m_mode;
 	Driver::IShader*		m_userShader;
-	void Create(PrimitiveRendererCore* core, const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader)
+	Driver::ITexture*		m_foreTexture;
+	void Create(PrimitiveRendererCore* core, const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* foreTexture)
 	{
 		m_core = core;
 		m_transform = world;
@@ -40,10 +41,12 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 		m_mode = mode;
 		m_userShader = userShader;
 		MarkGC(m_userShader);
+		m_foreTexture = foreTexture;
+		MarkGC(m_foreTexture);
 	}
 	void Execute()
 	{
-		m_core->SetState(m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode, m_userShader);
+		m_core->SetState(m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode, m_userShader, m_foreTexture);
 	}
 };
 
@@ -73,8 +76,29 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 	PrimitiveRendererCore* m_core;
 	PrimitiveRendererCore::DrawSquareData	m_data;
 
-	void Create(PrimitiveRendererCore* core, const PrimitiveRendererCore::DrawSquareData& data) { m_data = data; }
+	void Create(PrimitiveRendererCore* core, const PrimitiveRendererCore::DrawSquareData& data) { m_core = core; m_data = data; }
 	void Execute() { m_core->DrawSquare(m_data); }
+};
+
+//=============================================================================
+struct PrimitiveRendererCore_Blt : public RenderingCommand
+{
+	PrimitiveRendererCore* m_core;
+	Texture2D* m_source;
+	RenderTarget* m_dest;
+	Driver::IShader* m_shader;
+
+	void Create(PrimitiveRendererCore* core, Texture2D* source, RenderTarget* dest, Driver::IShader* shader)
+	{
+		m_core = core;
+		m_source = source;
+		MarkGC(m_source);
+		m_dest = dest;
+		MarkGC(m_dest);
+		m_shader = shader;
+		MarkGC(m_shader);
+	}
+	void Execute() { m_core->Blt(m_source, m_dest, m_shader); }
 };
 
 //=============================================================================
@@ -95,6 +119,12 @@ static const byte_t g_PrimitiveRenderer_fx_Data[] =
 };
 static const size_t g_PrimitiveRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRenderer_fx_Data);
 
+static const byte_t g_PrimitiveRendererForBlt_fx_Data[] =
+{
+#include "Resource/PrimitiveRendererForBlt.fx.h"
+};
+static const size_t g_PrimitiveRendererForBlt_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRendererForBlt_fx_Data);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -103,6 +133,7 @@ PrimitiveRendererCore::PrimitiveRendererCore()
 	, m_renderer(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
+	, m_vertexBufferForBlt(nullptr)
 	, m_vertexCacheUsed(0)
 	, m_foreTexture(nullptr)
 	, m_mode(PrimitiveRendererMode::TriangleList)
@@ -116,8 +147,10 @@ PrimitiveRendererCore::PrimitiveRendererCore()
 //-----------------------------------------------------------------------------
 PrimitiveRendererCore::~PrimitiveRendererCore()
 {
+	LN_SAFE_RELEASE(m_foreTexture);
 	LN_SAFE_RELEASE(m_userShader);
 	LN_SAFE_RELEASE(m_shader.shader);
+	LN_SAFE_RELEASE(m_vertexBufferForBlt);
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
 }
@@ -149,13 +182,29 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	m_shader.varTexture = m_shader.shader->GetVariableByName(_T("g_texture"));
 	m_shader.varPixelStep = m_shader.shader->GetVariableByName(_T("g_pixelStep"));
 
+	// Blt 用頂点バッファ
+	Vertex tv[4];
+	tv[0].position.Set(-1,  1, 0); tv[0].color = ColorF::White; tv[0].uv.Set(0, 0);	// 左上
+	tv[1].position.Set(-1, -1, 0); tv[1].color = ColorF::White; tv[1].uv.Set(0, 1);	// 左下
+	tv[2].position.Set( 1,  1, 0); tv[2].color = ColorF::White; tv[2].uv.Set(1, 0);	// 右上
+	tv[3].position.Set( 1, -1, 0); tv[3].color = ColorF::White; tv[3].uv.Set(1, 1);	// 右下
+	m_vertexBufferForBlt = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, 4, tv, DeviceResourceUsage_Static);
+
+	// Blt 用デフォルトシェーダ
+	m_shaderForBlt.shader = device->CreateShader(g_PrimitiveRendererForBlt_fx_Data, g_PrimitiveRendererForBlt_fx_Len, &r);
+	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+	m_shaderForBlt.technique = m_shaderForBlt.shader->GetTechnique(0);
+	m_shaderForBlt.pass = m_shaderForBlt.technique->GetPass(0);
+	m_shaderForBlt.varTexture = m_shaderForBlt.shader->GetVariableByName(_T("g_texture"));
+	m_shaderForBlt.varPixelStep = m_shaderForBlt.shader->GetVariableByName(_T("g_pixelStep"));
+
 	m_vertexStride = sizeof(Vertex);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader)
+void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture)
 {
 	float vw = (viewPixelSize.Width != 0.0) ? (0.5f / viewPixelSize.Width) : 0.0f;
 	float vh = (viewPixelSize.Height != 0.0) ? (0.5f / viewPixelSize.Height) : 0.0f;
@@ -163,9 +212,11 @@ void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj
 	m_shader.varWorldMatrix->SetMatrix(world);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);
 	m_shader.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
+	m_shaderForBlt.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
 	m_useInternalShader = useInternalShader;
 	m_mode = mode;
-	m_userShader = userShader;
+	LN_REFOBJ_SET(m_userShader, userShader);
+	LN_REFOBJ_SET(m_foreTexture, texture);
 }
 
 //-----------------------------------------------------------------------------
@@ -194,6 +245,38 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 	AddVertex(data.pos[1], data.uv[1], data.color[1]);
 	AddVertex(data.pos[2], data.uv[2], data.color[2]);
 	AddVertex(data.pos[3], data.uv[3], data.color[3]);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PrimitiveRendererCore::Blt(Texture2D* source, RenderTarget* dest, Driver::IShader* shader)
+{
+	// Flush 済みであることが前提。
+
+	// 設定を保存する
+	Driver::ITexture* oldRT = m_renderer->GetRenderTarget(0);
+
+	m_renderer->SetVertexBuffer(m_vertexBufferForBlt);
+	m_renderer->SetIndexBuffer(nullptr);
+
+	// シェーダ選択
+	shader = (shader == nullptr) ? m_shaderForBlt.shader : shader;
+
+	int techCount = shader->GetTechniqueCount();
+	for (int iTech = 0; iTech < techCount; ++iTech)
+	{
+		Driver::IShaderTechnique* tech = shader->GetTechnique(iTech);
+		int passCount = tech->GetPassCount();
+		for (int iPass = 0; iPass < passCount; ++iPass)
+		{
+			tech->GetPass(iPass)->Apply();
+			m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
+		}
+	}
+
+	// 設定を元に戻す
+	m_renderer->SetRenderTarget(0, oldRT);
 }
 
 //-----------------------------------------------------------------------------
@@ -289,6 +372,7 @@ PrimitiveRenderer::PrimitiveRenderer()
 	: m_manager(nullptr)
 	, m_core(nullptr)
 	, m_userShader(nullptr)
+	, m_texture(nullptr)
 	, m_useInternalShader(true)
 	, m_stateModified(false)
 	, m_flushRequested(false)
@@ -301,6 +385,7 @@ PrimitiveRenderer::PrimitiveRenderer()
 PrimitiveRenderer::~PrimitiveRenderer()
 {
 	LN_SAFE_RELEASE(m_userShader);
+	LN_SAFE_RELEASE(m_texture);
 	LN_SAFE_RELEASE(m_core);
 }
 
@@ -363,11 +448,11 @@ void PrimitiveRenderer::SetUserShader(Shader* shader)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void PrimitiveRenderer::SetTexture(Texture* texture)
-//{
-//	LN_REFOBJ_SET(m_texture, texture);
-//	m_stateModified = true;
-//}
+void PrimitiveRenderer::SetTexture(Texture* texture)
+{
+	LN_REFOBJ_SET(m_texture, texture);
+	m_stateModified = true;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -403,6 +488,34 @@ void PrimitiveRenderer::DrawSquare(
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void PrimitiveRenderer::DrawRectangle(const RectF& rect)
+{
+	float l = rect.GetLeft();
+	float t = rect.GetTop();
+	float r = rect.GetRight();
+	float b = rect.GetBottom();
+	DrawSquare(
+		Vector3(l, t, 0), Vector2(0, 0), ColorF::White,
+		Vector3(l, b, 0), Vector2(0, 1), ColorF::White,
+		Vector3(r, t, 0), Vector2(1, 0), ColorF::White,
+		Vector3(r, b, 0), Vector2(1, 1), ColorF::White);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PrimitiveRenderer::Blt(Texture2D* source, RenderTarget* dest, Shader* shader)
+{
+	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
+	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
+	CheckUpdateState();	// TODO: Blt に限っては必要ないかも？
+	LN_CALL_CORE_COMMAND(Blt, PrimitiveRendererCore_Blt, source, dest, (shader != nullptr) ? shader->m_deviceObj : nullptr);
+	m_flushRequested = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void PrimitiveRenderer::Flush()
 {
 	if (m_flushRequested)
@@ -432,7 +545,9 @@ void PrimitiveRenderer::CheckUpdateState()
 	if (m_stateModified)
 	{
 		Flush();
-		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode, (m_userShader != nullptr) ? m_userShader->m_deviceObj : nullptr);
+		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode,
+			(m_userShader != nullptr) ? m_userShader->m_deviceObj : nullptr,
+			(m_texture != nullptr) ? m_texture->GetDeviceObject() : nullptr);
 		m_stateModified = false;
 	}
 }

@@ -4,6 +4,7 @@
 #include "MME/MMEShaderTechnique.h"
 #include "MME/MMEShader.h"
 #include "RenderingPass.h"
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
@@ -192,7 +193,8 @@ void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIn
 
 	// パス開始
 	if (pass != NULL) {
-		pass->Apply();
+		//pass->Apply();
+		dc->GetRenderingContext()->SetShaderPass(pass);
 	}
 
 	// サブセット描画の本体

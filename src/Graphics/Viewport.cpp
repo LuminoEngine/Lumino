@@ -80,6 +80,8 @@
 
 */
 #include "Internal.h"
+#include <Lumino/Graphics/GraphicsManager.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
 
 LN_NAMESPACE_BEGIN
@@ -91,8 +93,18 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Viewport* Viewport::GetMainWindowViewport()
+{
+	return detail::GetGraphicsManager(nullptr)->GetMainViewport();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Viewport::Viewport()
-	: m_renderTarget(nullptr)
+	: m_manager(nullptr)
+	, m_renderTarget(nullptr)
+	, m_backgroundColor(ColorF::White)
 {
 }
 
@@ -106,9 +118,32 @@ Viewport::~Viewport()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Viewport::Initialize(RenderTarget* renderTarget)
+void Viewport::Initialize(GraphicsManager* manager, RenderTarget* renderTarget)
 {
+	m_manager = manager;
 	m_renderTarget = renderTarget;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Viewport::SetBackgroundColor(const Color& color)
+{
+	m_backgroundColor = color;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Viewport::Render()
+{
+	m_manager->GetRenderingContext()->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
+	m_manager->GetRenderingContext()->SetRenderTarget(0, m_renderTarget);
+
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->Render(m_renderTarget);
+	}
 }
 
 LN_NAMESPACE_END

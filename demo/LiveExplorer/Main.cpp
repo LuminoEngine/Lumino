@@ -79,14 +79,30 @@ int main()
 		appData.RenderingType = RenderingType::Immediate;
 		Engine::Initialize(appData);
 
-		auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
-		window->UserWndProc = TestWndProc;
+		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
+		//window->UserWndProc = TestWndProc;
 
+		auto tex = Texture2D::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
+
+		auto s = Shader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/SSBasic2D.fx"));
+		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
+		
 		do
 		{
 			if (Engine::BeginRendering())
 			{
 				Engine::Render();
+
+				RenderingContext2* r = RenderingContext2::GetContext();
+				//r->SetViewProjection(Matrix::Identity, Matrix::Identity);
+				r->SetShaderPass(s->GetTechniques()[0]->GetPasses()[0]);
+				r->DrawSquare(
+					Vector3(-1, 0, 0), Vector2(0, 0), ColorF::Red,
+					Vector3(1, 0, 0), Vector2(1, 0), ColorF::Red, 
+					Vector3(1, 1, 0), Vector2(1, 1), ColorF::Red, 
+					Vector3(0, 1, 0), Vector2(0, 1), ColorF::Red);
+
+
 				Engine::EndRendering();
 			}
 

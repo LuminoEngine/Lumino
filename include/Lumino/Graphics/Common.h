@@ -54,6 +54,9 @@ typedef RefPtr<Brush>				BrushPtr;
 typedef RefPtr<FrameTextureBrush>	FrameTextureBrushPtr;
 
 class RenderingContext2;
+class ScreenMotionBlurImageEffect;
+typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
+
 
 struct TextLayoutResult;
 

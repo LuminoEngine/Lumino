@@ -35,13 +35,16 @@ struct VS_OUTPUT
 //-------------------------------------------------------------------------
 VS_OUTPUT vsBasic(
     float3 inPos  : POSITION,
+	float4 inColor	: COLOR0,
     float2 inUV   : TEXCOORD0 )
 {
     VS_OUTPUT o;
     
     o.Pos = mul( float4( inPos, 1.0 ), gWorldMatrix );
     o.Pos = mul( o.Pos, g2DProjMatrix );
-    
+	//o.Pos = float4(inPos, 1.0);
+	//o.Pos.x /= 640;
+	//o.Pos.y /= 480;
     o.TexUV = inUV + gViewportOffset;
 
     return o;
@@ -63,7 +66,7 @@ float4 psBasic(
 	float y = ( 0.208012 * out_color.r + 0.586611 * out_color.g + 0.114478 * out_color.b ) * gTone.w;
     out_color.rgb = ( out_color.rgb * ( 1.0 - gTone.w ) ) + y + gTone.rgb;
     
-    return out_color;
+	return out_color;
 }
 
 //-------------------------------------------------------------------------

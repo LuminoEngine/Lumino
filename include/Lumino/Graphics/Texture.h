@@ -23,6 +23,18 @@ public:
 	const Size& GetSize() const;
 
 	/**
+		@brief		テクスチャの幅を取得します。
+		@return		テクスチャの幅 (ピクセル単位)
+	*/
+	int GetWidth() const;
+
+	/**
+		@brief		テクスチャの高さを取得します。
+		@return		テクスチャの高さ (ピクセル単位)
+	*/
+	int GetHeight() const;
+
+	/**
 		@brief		テクスチャの実サイズを取得します。
 		@return		テクスチャの実サイズ (ピクセル単位)
 	*/
@@ -75,7 +87,7 @@ public:
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 	*/
-	static Texture2DPtr Create(const TCHAR* filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+	static Texture2DPtr Create(const StringRef& filePath, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 	/**
 		@brief		画像ファイルデータのストリームを指定してテクスチャを作成します。
@@ -116,7 +128,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void CreateCore(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
-	void CreateCore(GraphicsManager* manager, const TCHAR* filePath, TextureFormat format, int mipLevels);
+	void CreateCore(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels);
 	void CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
 	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }

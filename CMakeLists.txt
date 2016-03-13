@@ -193,6 +193,9 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Utils.h
 	include/Lumino/Graphics/VertexBuffer.h
 	include/Lumino/Graphics/Viewport.h
+	include/Lumino/Graphics/ImageEffect/ImageEffect.h
+	include/Lumino/Graphics/ImageEffect/BlurImageEffect.h
+	include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
 	external/GL/glew.c
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapFont.cpp
@@ -264,6 +267,9 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLTexture.h
 	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
+	src/Graphics/ImageEffect/ImageEffect.cpp
+	src/Graphics/ImageEffect/BlurImageEffect.cpp
+	src/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
 )
 set(LN_SOURCES_Effect
 	include/Lumino/Effect/Common.h

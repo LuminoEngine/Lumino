@@ -131,6 +131,9 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	//, m_rootNode(NULL)
 	, m_default3DSceneGraph(nullptr)
 	, m_default2DSceneGraph(nullptr)
+	, m_default3DCameraViewportLayer(nullptr)
+	, m_default2DCameraViewportLayer(nullptr)
+	, m_mainViewport(configData.mainViewport)
 {
 	// ダミーテクスチャ
 	//m_dummyTexture.Attach(Texture2D::Create(Size(32, 32)));
@@ -168,6 +171,12 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 	sg2d->CreateCore(this);
 	sg2d.SafeAddRef();
 	m_default2DSceneGraph = sg2d;
+
+	m_default3DCameraViewportLayer = LN_NEW CameraViewportLayer(m_default3DSceneGraph->GetMainCamera());
+	m_mainViewport->AddViewportLayer(m_default3DCameraViewportLayer);
+
+	m_default2DCameraViewportLayer = LN_NEW CameraViewportLayer(m_default2DSceneGraph->GetMainCamera());
+	m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -175,6 +184,11 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 //-----------------------------------------------------------------------------
 void SceneGraphManager::ReleaseDefaultSceneGraph()
 {
+	m_mainViewport->RemoveViewportLayer(m_default3DCameraViewportLayer);
+	LN_SAFE_RELEASE(m_default3DCameraViewportLayer);
+	m_mainViewport->RemoveViewportLayer(m_default2DCameraViewportLayer);
+	LN_SAFE_RELEASE(m_default2DCameraViewportLayer);
+
 	LN_SAFE_RELEASE(m_default3DSceneGraph);
 	LN_SAFE_RELEASE(m_default2DSceneGraph);
 }
@@ -195,20 +209,20 @@ void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneGraphManager::RenderDefaultSceneGraph(Texture* renderTarget)
-{
-	for (Camera* camera : m_allCameraList)
-	{
-		camera->GetOwnerSceneGraph()->Render(renderTarget, camera);
-	}
-	//if (m_default3DSceneGraph != nullptr) {
-	//	m_default3DSceneGraph->Render(renderTarget);
-	//}
-	//if (m_default2DSceneGraph != nullptr) {
-	//	m_default2DSceneGraph->Render(renderTarget);
-	//}
-}
-
+//void SceneGraphManager::RenderDefaultSceneGraph(Texture* renderTarget)
+//{
+//	for (Camera* camera : m_allCameraList)
+//	{
+//		camera->GetOwnerSceneGraph()->Render(renderTarget, camera);
+//	}
+//	//if (m_default3DSceneGraph != nullptr) {
+//	//	m_default3DSceneGraph->Render(renderTarget);
+//	//}
+//	//if (m_default2DSceneGraph != nullptr) {
+//	//	m_default2DSceneGraph->Render(renderTarget);
+//	//}
+//}
+//
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

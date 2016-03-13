@@ -177,11 +177,10 @@ void GLRenderer::SetRenderTarget(int index, ITexture* texture)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//ITexture* GLRenderer::GetRenderTarget(int index)
-//{
-//	LN_THROW(0, NotImplementedException);
-//	return 0;
-//}
+ITexture* GLRenderer::GetRenderTarget(int index)
+{
+	return m_currentRenderTargets[index];
+}
 
 //-----------------------------------------------------------------------------
 //

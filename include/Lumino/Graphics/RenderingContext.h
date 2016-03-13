@@ -111,6 +111,8 @@ public:
 		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
 
+	void Blt(Texture* source, RenderTarget* dest);
+
 	void Flush();
 
 LN_INTERNAL_ACCESS:

@@ -201,7 +201,7 @@ public:
 	virtual void SetRenderTarget(int index, ITexture* texture) = 0;
 
 	/// レンダリングターゲットの取得
-	//virtual ITexture* GetRenderTarget(int index) = 0;
+	virtual ITexture* GetRenderTarget(int index) = 0;
 
 	/// 深度バッファの設定
 	virtual void SetDepthBuffer(ITexture* texture) = 0;

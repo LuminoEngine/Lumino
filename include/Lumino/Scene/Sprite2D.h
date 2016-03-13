@@ -18,6 +18,11 @@ public:
 		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
 	*/
 	static Sprite2DPtr Create();
+	
+	/**
+		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
+	*/
+	static Sprite2DPtr Create(const StringRef& filePath);
 
 protected:
 	Sprite2D();

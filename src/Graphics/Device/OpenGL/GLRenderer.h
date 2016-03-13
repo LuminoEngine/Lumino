@@ -44,7 +44,7 @@ public:
 	virtual void SetDepthStencilState(const DepthStencilState& state);
 	//virtual const DepthStencilState& GetDepthStencilState();
 	virtual void SetRenderTarget(int index, ITexture* texture);
-	//virtual ITexture* GetRenderTarget(int index);
+	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
 	//virtual ITexture* GetDepthBuffer();
 	virtual void SetViewport(const Rect& rect);

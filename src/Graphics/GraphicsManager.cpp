@@ -863,7 +863,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 
 	// MainViewport
 	m_mainViewport = LN_NEW Viewport();
-	m_mainViewport->Initialize(m_mainSwapChain->GetBackBuffer());
+	m_mainViewport->Initialize(this, m_mainSwapChain->GetBackBuffer());
 
 	// PainterEngine
 	//m_painterEngine = LN_NEW PainterEngine();

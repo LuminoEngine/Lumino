@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Graphics/Viewport.h"
 #include "SceneNode.h"
 
 LN_NAMESPACE_BEGIN
@@ -110,6 +111,23 @@ private:
 	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (Inverse * Transpose)
 
 	friend class Internal::SceneHelper;
+};
+
+/**
+	@brief
+*/
+class CameraViewportLayer
+	: public ViewportLayer
+{
+public:
+	virtual void Render(RenderTarget* renderTarget) override;
+
+LN_INTERNAL_ACCESS:
+	CameraViewportLayer(Camera* ownerCamera);
+	virtual ~CameraViewportLayer();
+
+private:
+	RefPtr<Camera>		m_ownerCamera;
 };
 
 /**
