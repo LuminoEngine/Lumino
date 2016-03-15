@@ -42,7 +42,7 @@ ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 //-----------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 {
-	LN_SAFE_RELEASE(m_shader);
+	LN_SAFE_RELEASE(m_shader.shader);
 }
 
 //-----------------------------------------------------------------------------
@@ -51,8 +51,14 @@ ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_shader = LN_NEW Shader();
-	m_shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
+	m_shader.shader = LN_NEW Shader();
+	m_shader.shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
+
+	m_shader.varBlurPower = m_shader.shader->FindVariable(_T("gBlurPower"));
+	m_shader.varBlurColor = m_shader.shader->FindVariable(_T("gBlurColor"));
+	m_shader.varBlurMatrix = m_shader.shader->FindVariable(_T("gBlurMatrix"));
+	m_shader.varSecondaryTexture = m_shader.shader->FindVariable(_T("gSecondaryTexture"));
+	m_shader.techMainDraw = m_shader.shader->GetTechniques()[0];
 }
 
 //-----------------------------------------------------------------------------
@@ -62,17 +68,37 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 {
 	//LN_NOTIMPLEMENTED();
 
-	//const Size& sourceSize = source->GetSize();
+	const Size& sourceSize = source->GetSize();
 
-	//// m_accumTexture と source のサイズが異なる場合は作り直す
-	//if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
-	//{
-	//	m_accumTexture = LN_NEW RenderTarget();
-	//	m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat_R8G8B8A8);
-	//	renderingContext->Blt(source, m_accumTexture);
-	//}
+	// m_accumTexture と source のサイズが異なる場合は作り直す
+	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
+	{
+		m_accumTexture = LN_NEW RenderTarget();
+		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat_R8G8B8A8);
+		renderingContext->Blt(source, m_accumTexture);
+	}
 
-	renderingContext->Blt(source, destination, m_shader);
+#if 1
+	Matrix m;
+	m.Scale(1.05);
+	m_shader.varBlurPower->SetFloat(0.5);
+	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
+	m_shader.varBlurMatrix->SetMatrix(m);
+	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
+	renderingContext->Blt(source, m_accumTexture, m_shader.shader);
+	renderingContext->Blt(m_accumTexture, destination);
+#endif
+#if 0
+	Matrix m;
+	m.Scale(1.05);
+	m_shader.varBlurPower->SetFloat(0.5);
+	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
+	m_shader.varBlurMatrix->SetMatrix(m);
+	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
+	renderingContext->Blt(source, source, m_shader.shader);
+	renderingContext->Blt(source, m_accumTexture);
+	renderingContext->Blt(source, destination);
+#endif
 }
 
 LN_NAMESPACE_GRAPHICS_END

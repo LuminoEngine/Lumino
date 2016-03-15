@@ -73,16 +73,17 @@ int main()
 		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;
+		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;
 
 		//auto tex = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
-		auto sp = Sprite2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto sp = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 
 		auto if1 = ScreenMotionBlurImageEffect::Create();
-		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
+		CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
 			//Viewport::GetMainWindowViewport()->AddViewportLayer();
 
 		//auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));
@@ -91,7 +92,8 @@ int main()
 
 		//auto s = Shader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/SSBasic2D.fx"));
 		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
-		
+
+
 		while (true)
 		{
 			if (!Engine::UpdateFrame()) {

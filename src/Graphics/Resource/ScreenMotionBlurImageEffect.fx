@@ -6,12 +6,19 @@
 float2          g_viewportSize   : VIEWPORTPIXELSIZE;
 static float2   g_viewportOffset = (float2(0.5, 0.5) / g_viewportSize);
 
-texture		g_texture;
+float       gBlurPower;         // ブラーの強さ
+float4      gBlurColor;         // ブラーの色
+float4x4    gBlurMatrix;        // ブラーイメージの座標変換行列
+
+texture		gSecondaryTexture;
 sampler2D	g_texSampler = sampler_state
 {
-	texture = <g_texture>;
-	MINFILTER = NONE;
-	MAGFILTER = NONE;
+	texture = <gSecondaryTexture>;
+    MinFilter = POINT;
+    MagFilter = POINT;
+    MipFilter = NONE;
+    AddressU  = CLAMP;
+    AddressV  = CLAMP;
 };
 
 struct VS_OUTPUT
@@ -27,10 +34,10 @@ VS_OUTPUT vsBasic(
 	float3 inPos	: POSITION,
 	float2 inUV		: TEXCOORD0)
 {
-	VS_OUTPUT o;
-	o.pos   = float4(inPos, 1.0f);
-    o.texUV = inUV + g_viewportOffset;
-	return o;
+    VS_OUTPUT o;
+    o.pos = mul( float4( inPos, 1.0f ), gBlurMatrix );
+    o.texUV = inUV;// + g_viewportOffset;
+    return o;
 }
 
 //-------------------------------------------------------------------------
@@ -39,7 +46,18 @@ VS_OUTPUT vsBasic(
 float4 psBasic(
 	float2 inUV		: TEXCOORD0) : COLOR0
 {
-    return tex2D(g_texSampler, inUV) + float4(1, 0, 0, 0);
+    float4 out_color = tex2D( g_texSampler, inUV );
+    out_color.a *= gBlurPower;
+    out_color *= gBlurColor;
+    
+    // ブラーを青っぽくする
+    //out_color.rgb *= float3(0, 0, 1);
+    
+    // 外側ほど透明になるようにする
+    //float len = length( in_uv_ - 0.5 );
+    //color.a *= 1.0 - len;
+    
+    return out_color;
 }
 
 //-------------------------------------------------------------------------
