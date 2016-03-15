@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Texture.h"
+#include "ImageEffect/ImageEffect.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -21,14 +22,25 @@ class ViewportLayer
 	: public Object
 {
 public:
+	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
+
+protected:
+	ViewportLayer();
+	virtual ~ViewportLayer();
+
 	///// ‘O•`‰æ
 	//virtual void PreRender(const SizeF& viewSize) {}
 
 	/// –{•`‰æ
-	virtual void Render(RenderTarget* renderTarget) {}
+	virtual void Render(RenderTarget* renderTarget) = 0;
 
 	/// Œã•`‰æ
-	//virtual void PostRender() {}
+	virtual void PostRender();
+
+private:
+	RefPtr<ImageEffectList>	m_imageEffects;
+
+	friend class Viewport;
 };
 
 /**

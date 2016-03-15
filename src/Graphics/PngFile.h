@@ -242,10 +242,10 @@ public:
 		for (int i = 0; i < size.Height; i++)
 		{
 			if (upFlow) {
-				rows[i] = &data[rowBytes * i];
+				rows[size.Height - i - 1] = &data[rowBytes * i];
 			}
 			else {
-				rows[size.Height - i - 1] = &data[rowBytes * i];
+				rows[i] = &data[rowBytes * i];
 			}
 		}
 

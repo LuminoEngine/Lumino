@@ -93,8 +93,8 @@ void TestEnv::SetUp()
 	EngineSettings settings;
 	settings.mainWindowSize = Size(160, 120);
 	settings.backBufferSize = Size(160, 120);
-	settings.GraphicsAPI = GraphicsAPI::OpenGL;//GraphicsAPI::DirectX9; //
-	settings.RenderingType = RenderingType::Deferred;//RenderingType::Immediate; //
+	settings.GraphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
+	settings.RenderingType = RenderingType::Immediate; //RenderingType::Deferred;//
 	Engine::Initialize(settings);
 }
 
@@ -122,6 +122,16 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
 {
 	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock(), filePath);
 	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
+	return r;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
+{
+	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath);
+	texture->Unlock();
 	return r;
 }
 
@@ -218,7 +228,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_RenderingContext.PosColorVertex"
+		"--gtest_filter=Test_Graphics_RenderingContext.Blt"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

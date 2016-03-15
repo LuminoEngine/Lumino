@@ -36,7 +36,7 @@ public:
 	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture);
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
 	void DrawSquare(const DrawSquareData& data);
-	void Blt(Texture2D* source, RenderTarget* dest, Driver::IShader* shader = nullptr);
+	void Blt(Driver::ITexture* source, Driver::ITexture* dest, Driver::IShader* shader = nullptr);
 	void Flush();
 
 private:
@@ -130,7 +130,7 @@ public:
 
 	void DrawRectangle(const RectF& rect);
 
-	void Blt(Texture2D* source, RenderTarget* dest, Shader* shader = nullptr);
+	void Blt(Texture* source, RenderTarget* dest, Shader* shader = nullptr);
 
 	virtual void Flush() override;
 	virtual void OnActivated() { m_stateModified = true; }

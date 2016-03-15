@@ -45,6 +45,7 @@ public:
 //	static PathName MakeScreenShotPath(const char* fileName);
 	static void SaveScreenShot(const TCHAR* filePath);
 	static bool EqualsScreenShot(const TCHAR* filePath);
+	static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
 	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath);
 //	static RefPtr<Shader> CreateShader(const TCHAR* filePath);
 //

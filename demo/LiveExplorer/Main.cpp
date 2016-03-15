@@ -82,9 +82,15 @@ int main()
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;
 
-		auto tex = Texture2D::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
+		//auto tex = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto sp = Sprite2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 
-		auto s = Shader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/SSBasic2D.fx"));
+
+		//auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));
+		//auto t2 = RenderTarget::Create(t1->GetSize());
+
+
+		//auto s = Shader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/SSBasic2D.fx"));
 		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
 		
 		do
@@ -94,13 +100,14 @@ int main()
 				Engine::Render();
 
 				RenderingContext2* r = RenderingContext2::GetContext();
-				//r->SetViewProjection(Matrix::Identity, Matrix::Identity);
-				r->SetShaderPass(s->GetTechniques()[0]->GetPasses()[0]);
-				r->DrawSquare(
-					Vector3(-1, 0, 0), Vector2(0, 0), ColorF::Red,
-					Vector3(1, 0, 0), Vector2(1, 0), ColorF::Red, 
-					Vector3(1, 1, 0), Vector2(1, 1), ColorF::Red, 
-					Vector3(0, 1, 0), Vector2(0, 1), ColorF::Red);
+
+				//if (sp->GetTexture() == nullptr)
+				//{
+				//	auto t1 = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+				//	auto t2 = RenderTarget::Create(t1->GetSize());
+				//	r->Blt(t1, t2);
+				//	sp->SetTexture(t2);
+				//}
 
 
 				Engine::EndRendering();

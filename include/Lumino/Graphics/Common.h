@@ -34,10 +34,10 @@ class VertexBuffer;
 class IndexBuffer;
 class Texture;
 class Texture2D;
-typedef RefPtr<Texture2D>	Texture2DPtr;
+typedef RefPtr<Texture2D>		Texture2DPtr;
 class RenderTarget;
+typedef RefPtr<RenderTarget>	RenderTargetPtr;
 class DepthBuffer;
-class Viewport;
 class Shader;
 class ShaderVariable;
 class ShaderTechnique;
@@ -57,6 +57,10 @@ class RenderingContext2;
 class ScreenMotionBlurImageEffect;
 typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
 
+class Viewport;
+class ViewportLayer;
+class ImageEffect;
+typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
 
 struct TextLayoutResult;
 

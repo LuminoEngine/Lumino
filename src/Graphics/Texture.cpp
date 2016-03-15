@@ -381,17 +381,15 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 // RenderTarget
 //=============================================================================
 
-
-
-	/**
-		@brief		レンダリングターゲットを作成します。
-		@param[in]	manager		: 作成に使用する GraphicsManager
-		@param[in]	size		: レンダリングターゲットのサイズ (ピクセル単位)
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
-		@param[in]	format		: テクスチャのピクセルフォーマット
-		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
-	*/
-	//static Texture* CreateRenderTarget(GraphicsManager* manager, const Size& size, int mipLevels = 1, TextureFormat format = TextureFormat_R8G8B8A8);
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+RenderTargetPtr RenderTarget::Create(const Size& size, TextureFormat format, int mipLevels)
+{
+	RefPtr<RenderTarget> tex(LN_NEW RenderTarget(), false);
+	tex->CreateImpl(GetManager(), size, mipLevels, format);
+	return tex;
+}
 
 //-----------------------------------------------------------------------------
 //

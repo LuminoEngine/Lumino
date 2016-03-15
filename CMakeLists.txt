@@ -234,6 +234,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/RenderingThread.cpp
 	src/Graphics/RenderingThread.h
 	src/Graphics/RenderState.cpp
+	src/Graphics/RenderTargetTextureCache.cpp
+	src/Graphics/RenderTargetTextureCache.h
 	src/Graphics/SamplerState.cpp
 	src/Graphics/Shader.cpp
 	src/Graphics/SpriteRenderer.cpp

@@ -94,13 +94,20 @@ public:
 	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return m_dxTexture; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
 
+	static void LockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const Size& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap);
+	static void UnlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap);
+
 private:
-	IDirect3DTexture9*	m_dxTexture;
-	IDirect3DSurface9*	m_dxSurface;
-	TextureFormat		m_format;
-	Size				m_size;
-	Size				m_realSize;
-	int					m_mipLevels;
+	IDirect3DTexture9*		m_dxTexture;
+	IDirect3DSurface9*		m_dxSurface;
+	TextureFormat			m_format;
+	Size					m_size;
+	Size					m_realSize;
+	int						m_mipLevels;
+
+	IDirect3DSurface9*		m_lockedSystemSurface;
+	ByteBuffer				m_lockedBuffer;
+	Bitmap*					m_lockedBitmap;
 };
 
 /// 深度バッファ
@@ -177,7 +184,7 @@ private:
 
 	IDirect3DSurface9*		m_lockedSystemSurface;
 	ByteBuffer				m_lockedBuffer;
-	RefPtr<Bitmap>	m_lockedBitmap;
+	Bitmap*					m_lockedBitmap;
 };
 
 } // namespace Driver

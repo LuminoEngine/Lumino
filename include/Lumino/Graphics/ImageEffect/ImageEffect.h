@@ -17,6 +17,8 @@ protected:
 	ImageEffect();
 	virtual ~ImageEffect();
 	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) = 0;
+
+	friend class ViewportLayer;
 };
 
 LN_NAMESPACE_GRAPHICS_END

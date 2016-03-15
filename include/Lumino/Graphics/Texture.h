@@ -157,10 +157,10 @@ public:
 	/**
 		@brief		レンダリングターゲットを作成します。
 		@param[in]	size		: レンダリングターゲットのサイズ (ピクセル単位)
-		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 	*/
-	static Texture* Create(const Size& size, int mipLevels = 1, TextureFormat format = TextureFormat_R8G8B8A8);
+	static RenderTargetPtr Create(const Size& size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 LN_INTERNAL_ACCESS:
 	RenderTarget();

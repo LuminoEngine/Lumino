@@ -49,7 +49,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 	Engine::EndRendering();
 
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png")));
-	//TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+	//TestEnv::SaveScreenShot(LN_TEMPFILE("test1.png"));
 
 #if 0
 	{
@@ -90,4 +90,20 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 	//SS_CHECK(SS_SAVE, "Test_Graphics_BasicRendering.PosColorVertex.png");
 	////SS_CHECK("Test_Graphics_BasicRendering.PosColorVertex.png");
 #endif
+}
+
+//-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_RenderingContext, Blt)
+{
+	auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));
+	auto t2 = RenderTarget::Create(t1->GetSize());
+
+	Engine::BeginRendering();
+	auto* r = RenderingContext2::GetContext();
+
+	r->Blt(t1, t2);
+
+	Engine::EndRendering();
+
+	ASSERT_TRUE(TestEnv::EqualsTexture(t2, LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png")));
 }

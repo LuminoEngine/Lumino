@@ -84,11 +84,11 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 struct PrimitiveRendererCore_Blt : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
-	Texture2D* m_source;
-	RenderTarget* m_dest;
+	Driver::ITexture* m_source;
+	Driver::ITexture* m_dest;
 	Driver::IShader* m_shader;
 
-	void Create(PrimitiveRendererCore* core, Texture2D* source, RenderTarget* dest, Driver::IShader* shader)
+	void Create(PrimitiveRendererCore* core, Driver::ITexture* source, Driver::ITexture* dest, Driver::IShader* shader)
 	{
 		m_core = core;
 		m_source = source;
@@ -150,6 +150,7 @@ PrimitiveRendererCore::~PrimitiveRendererCore()
 	LN_SAFE_RELEASE(m_foreTexture);
 	LN_SAFE_RELEASE(m_userShader);
 	LN_SAFE_RELEASE(m_shader.shader);
+	LN_SAFE_RELEASE(m_shaderForBlt.shader);
 	LN_SAFE_RELEASE(m_vertexBufferForBlt);
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
@@ -250,19 +251,25 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PrimitiveRendererCore::Blt(Texture2D* source, RenderTarget* dest, Driver::IShader* shader)
+void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest, Driver::IShader* shader)
 {
 	// Flush 済みであることが前提。
 
 	// 設定を保存する
 	Driver::ITexture* oldRT = m_renderer->GetRenderTarget(0);
+	m_renderer->SetRenderTarget(0, dest);
 
 	m_renderer->SetVertexBuffer(m_vertexBufferForBlt);
 	m_renderer->SetIndexBuffer(nullptr);
 
-	// シェーダ選択
-	shader = (shader == nullptr) ? m_shaderForBlt.shader : shader;
+	// シェーダが指定されていなければデフォルトのを使う
+	if (shader == nullptr)
+	{
+		m_shaderForBlt.varTexture->SetTexture(source);
+		shader = m_shaderForBlt.shader;
+	}
 
+	// パスごとに描画
 	int techCount = shader->GetTechniqueCount();
 	for (int iTech = 0; iTech < techCount; ++iTech)
 	{
@@ -504,12 +511,15 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PrimitiveRenderer::Blt(Texture2D* source, RenderTarget* dest, Shader* shader)
+void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 {
 	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
 	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
 	CheckUpdateState();	// TODO: Blt に限っては必要ないかも？
-	LN_CALL_CORE_COMMAND(Blt, PrimitiveRendererCore_Blt, source, dest, (shader != nullptr) ? shader->m_deviceObj : nullptr);
+	LN_CALL_CORE_COMMAND(Blt, PrimitiveRendererCore_Blt,
+		(source != nullptr) ? source->GetDeviceObject() : nullptr,
+		(dest != nullptr) ? dest->GetDeviceObject() : nullptr,
+		(shader != nullptr) ? shader->m_deviceObj : nullptr);
 	m_flushRequested = true;
 }
 
