@@ -21,6 +21,7 @@ protected:
 	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) override;
 
 	GraphicsManager*	m_manager;
+	Shader*				m_shader;
 	RenderTarget*		m_accumTexture;	// ‘O‰ñ‚Ì‰æ–Ê•`‰æ“à—e
 };
 

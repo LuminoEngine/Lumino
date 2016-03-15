@@ -136,6 +136,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
 		dc->CurrentCamera = camera;
 		dc->GetRenderingContext()->SetViewProjection(camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		dc->GetRenderingContext()->SetRenderTarget(0, renderTarget);
 		for (RenderingPass* pass : *GetRenderingPasses())
 		{
 			if (pass == nullptr) continue;

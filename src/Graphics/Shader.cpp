@@ -150,6 +150,7 @@ void Shader::PostInitialize()
 
 		if (v->GetSemanticName().Compare(_T("VIEWPORTPIXELSIZE"), 17, CaseSensitivity::CaseInsensitive) == 0)
 		{
+			// こいつが必要なのは DX9 の HLSL だけなので、セマンティクスだけ見ればOK
 			m_viewportPixelSize = v;
 		}
 	}

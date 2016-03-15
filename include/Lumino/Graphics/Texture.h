@@ -175,10 +175,13 @@ protected:
 
 private:
 	friend class SwapChain;
+	friend class detail::RenderTargetTextureCache;
 	//Size			m_size;
 	int				m_mipLevels;
 	//TextureFormat	m_format;
 	bool				m_isDefaultBackBuffer;
+
+	bool			m_usedCacheOnFrame;
 };
 
 /**

@@ -398,6 +398,7 @@ RenderTarget::RenderTarget()
 	: Texture()
 	, m_mipLevels(0)
 	, m_isDefaultBackBuffer(false)
+	, m_usedCacheOnFrame(false)
 {
 }
 

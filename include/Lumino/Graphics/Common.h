@@ -336,6 +336,7 @@ namespace Driver
 
 namespace detail
 {
+	class RenderTargetTextureCache;
 
 	class IRendererPloxy// : public RefObject
 	{

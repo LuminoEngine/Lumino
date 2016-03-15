@@ -108,12 +108,13 @@ ViewportLayer::~ViewportLayer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ViewportLayer::PostRender()
+void ViewportLayer::PostRender(RenderingContext2* renderingContext, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget)
 {
-	//for (ImageEffect* e : *m_imageEffects)
-	//{
-	//	e->OnRender();
-	//}
+	for (ImageEffect* e : *m_imageEffects)
+	{
+		e->OnRender(renderingContext, *primaryLayerTarget, *secondaryLayerTarget);
+		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
+	}
 }
 
 //=============================================================================
@@ -135,6 +136,8 @@ Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_renderTarget(nullptr)
 	, m_backgroundColor(ColorF::White)
+	, m_primaryLayerTarget(nullptr)
+	, m_secondaryLayerTarget(nullptr)
 {
 }
 
@@ -143,6 +146,8 @@ Viewport::Viewport()
 //-----------------------------------------------------------------------------
 Viewport::~Viewport()
 {
+	LN_SAFE_RELEASE(m_primaryLayerTarget);
+	LN_SAFE_RELEASE(m_secondaryLayerTarget);
 }
 
 //-----------------------------------------------------------------------------
@@ -152,6 +157,7 @@ void Viewport::Initialize(GraphicsManager* manager, RenderTarget* renderTarget)
 {
 	m_manager = manager;
 	m_renderTarget = renderTarget;
+	TryRemakeLayerTargets();
 }
 
 //-----------------------------------------------------------------------------
@@ -167,13 +173,37 @@ void Viewport::SetBackgroundColor(const Color& color)
 //-----------------------------------------------------------------------------
 void Viewport::Render()
 {
-	m_manager->GetRenderingContext()->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
-	m_manager->GetRenderingContext()->SetRenderTarget(0, m_renderTarget);
+	TryRemakeLayerTargets();
+
+	RenderingContext2* context = m_manager->GetRenderingContext();
+	m_manager->GetRenderingContext()->SetRenderTarget(0, m_primaryLayerTarget);
+	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->Render(m_renderTarget);
+		layer->Render(m_primaryLayerTarget);
+		layer->PostRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+	}
+
+	context->Blt(m_primaryLayerTarget, m_renderTarget);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Viewport::TryRemakeLayerTargets()
+{
+	if (m_primaryLayerTarget == nullptr || m_renderTarget->GetSize() != m_primaryLayerTarget->GetSize())
+	{
+		LN_SAFE_RELEASE(m_primaryLayerTarget);
+		LN_SAFE_RELEASE(m_secondaryLayerTarget);
+
+		m_primaryLayerTarget = LN_NEW RenderTarget();
+		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat_R8G8B8X8);
+		m_secondaryLayerTarget = LN_NEW RenderTarget();
+		m_secondaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat_R8G8B8X8);
 	}
 }
+
 
 LN_NAMESPACE_END

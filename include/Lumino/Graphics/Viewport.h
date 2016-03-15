@@ -35,7 +35,7 @@ protected:
 	virtual void Render(RenderTarget* renderTarget) = 0;
 
 	/// Œã•`‰æ
-	virtual void PostRender();
+	void PostRender(RenderingContext2* renderingContext, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
 
 private:
 	RefPtr<ImageEffectList>	m_imageEffects;
@@ -65,10 +65,14 @@ LN_INTERNAL_ACCESS:	// TODO: ‚¢‚Ü‚Í‚Æ‚è‚ ‚¦‚¸“à•”—p“r
 	void Render();
 
 private:
+	void TryRemakeLayerTargets();
+
 	GraphicsManager*				m_manager;
 	RenderTarget*					m_renderTarget;
 	Array<RefPtr<ViewportLayer>>	m_viewportLayerList;
 	ColorF							m_backgroundColor;
+	RenderTarget*					m_primaryLayerTarget;
+	RenderTarget*					m_secondaryLayerTarget;
 };
 
 LN_NAMESPACE_END
