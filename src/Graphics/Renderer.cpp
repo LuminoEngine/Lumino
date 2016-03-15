@@ -240,6 +240,14 @@ void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Renderer::SetShaderPass(ShaderPass* pass)
+{
+	pass->Apply();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	LN_CALL_RENDERER_COMMAND(Clear, ClearCommand, flags, color, z, stencil);

@@ -71,6 +71,8 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 	//	m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat_R8G8B8A8);
 	//	renderingContext->Blt(source, m_accumTexture);
 	//}
+
+	renderingContext->Blt(source, destination, m_shader);
 }
 
 LN_NAMESPACE_GRAPHICS_END

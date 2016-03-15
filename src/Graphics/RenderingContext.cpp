@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsManager.h>
@@ -54,7 +54,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	m_manager = manager;
 	m_ploxy = m_manager->GetRenderer();
 
-	// ƒXƒe[ƒg‰Šú’l
+	// ã‚¹ãƒ†ãƒ¼ãƒˆåˆæœŸå€¤
 	m_state.SetRenderTarget(0, m_manager->GetMainSwapChain()->GetBackBuffer());
 	LN_REFOBJ_SET(m_state.depthBuffer, m_manager->GetMainSwapChain()->GetBackBufferDepth());
 
@@ -271,7 +271,7 @@ void RenderingContext2::DrawSquare(
 	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
 {
-	// TODO: ‚±‚Ì3s’èŒ^•¶?
+	// TODO: ã“ã®3è¡Œå®šåž‹æ–‡?
 	m_manager->SwitchActiveContext(this);
 	CheckFlushRendererState();
 	SwitchActiveRendererPloxy(m_primitiveRenderer);
@@ -288,15 +288,10 @@ void RenderingContext2::DrawSquare(
 //-----------------------------------------------------------------------------
 void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
 {
+	Blt(source, dest, nullptr);
 	//Texture* oldTarget = GetRenderTarget(0);
 	//SetRenderTarget(0, dest);
 
-	// TODO: ‚±‚Ì3s’èŒ^•¶?
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_primitiveRenderer);
-
-	m_primitiveRenderer->Blt(source, dest, nullptr);
 
 	//m_primitiveRenderer->DrawSquare(
 	//	Vector3(-1, 1, 0), Vector2(0, 0), ColorF::White,
@@ -305,6 +300,19 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
 	//	Vector3(1,-1, 0), Vector2(1, 1), ColorF::White);
 
 	//SetRenderTarget(0, oldTarget);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
+{
+	// TODO: ã“ã®3è¡Œå®šåž‹æ–‡?
+	m_manager->SwitchActiveContext(this);
+	CheckFlushRendererState();
+	SwitchActiveRendererPloxy(m_primitiveRenderer);
+
+	m_primitiveRenderer->Blt(source, dest, shader);
 }
 
 //-----------------------------------------------------------------------------
@@ -339,14 +347,14 @@ void RenderingContext2::SwitchActiveRendererPloxy(detail::IRendererPloxy* render
 	{
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->OnDeactivated();	// ŒÃ‚¢‚à‚Ì‚ð Deactivate
+			m_activeRendererPloxy->OnDeactivated();	// å¤ã„ã‚‚ã®ã‚’ Deactivate
 		}
 
 		m_activeRendererPloxy = rendererPloxy;
 
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->OnActivated();	// V‚µ‚¢‚à‚Ì‚ð Activate
+			m_activeRendererPloxy->OnActivated();	// æ–°ã—ã„ã‚‚ã®ã‚’ Activate
 		}
 	}
 }
@@ -356,7 +364,7 @@ void RenderingContext2::SwitchActiveRendererPloxy(detail::IRendererPloxy* render
 //-----------------------------------------------------------------------------
 void RenderingContext2::OnActivated()
 {
-	// ƒXƒe[ƒg‹­§‘—M
+	// ã‚¹ãƒ†ãƒ¼ãƒˆå¼·åˆ¶é€ä¿¡
 	m_state.modifiedFlags = detail::ContextStateFlags::All;
 	//m_ploxy->FlushState(m_state);
 	//m_state.modifiedFlags = detail::ContextStateFlags::None;

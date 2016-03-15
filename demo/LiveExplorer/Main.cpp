@@ -85,6 +85,9 @@ int main()
 		//auto tex = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		auto sp = Sprite2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 
+		auto if1 = ScreenMotionBlurImageEffect::Create();
+		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
+			//Viewport::GetMainWindowViewport()->AddViewportLayer();
 
 		//auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));
 		//auto t2 = RenderTarget::Create(t1->GetSize());
@@ -93,8 +96,12 @@ int main()
 		//auto s = Shader::Create(_T("D:/Proj/Volkoff/External/Lumino/src/Scene/Resource/SSBasic2D.fx"));
 		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
 		
-		do
+		while (true)
 		{
+			if (!Engine::UpdateFrame()) {
+				break;
+			}
+
 			if (Engine::BeginRendering())
 			{
 				Engine::Render();
@@ -113,7 +120,7 @@ int main()
 				Engine::EndRendering();
 			}
 
-		} while (Engine::UpdateFrame());
+		}
 	}
 	catch (Exception& e)
 	{

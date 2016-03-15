@@ -120,6 +120,10 @@ class CameraViewportLayer
 	: public ViewportLayer
 {
 public:
+	static CameraViewportLayer* GetDefault2D();
+	static CameraViewportLayer* GetDefault3D();
+
+
 	virtual void Render(RenderTarget* renderTarget) override;
 
 LN_INTERNAL_ACCESS:

@@ -30,6 +30,8 @@
 #include "Lumino/Graphics/SpriteRenderer.h"
 #include "Lumino/Graphics/Bitmap.h"
 #include "Lumino/Graphics/RenderingContext.h"
+#include "Lumino/Graphics/ImageEffect/ImageEffect.h"
+#include "Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h"
 
 #include "Lumino/Effect/VisualEffect.h"
 #include "Lumino/Effect/VisualEffectInstance.h"

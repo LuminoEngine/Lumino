@@ -311,10 +311,6 @@ public:
 	*/
 	const String& GetName() const;
 
-	/**
-		@brief	パスを適用します。
-	*/
-	void Apply();
 
 	/**
 		@brief		このパスで定義されている全てのアノテーションを取得します。
@@ -328,6 +324,10 @@ public:
 	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* FindAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindAnnotation(name.c_str(), cs); }
 	
+private:
+	friend class Details::Renderer;
+	void Apply();
+
 protected:
 	virtual ~ShaderPass();
 

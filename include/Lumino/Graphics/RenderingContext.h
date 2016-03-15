@@ -112,6 +112,7 @@ public:
 		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
 
 	void Blt(Texture* source, RenderTarget* dest);
+	void Blt(Texture* source, RenderTarget* dest, Shader* shader);
 
 	void Flush();
 

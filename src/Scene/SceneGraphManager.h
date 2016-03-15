@@ -56,6 +56,8 @@ public:
 	void ReleaseDefaultSceneGraph();
 	SceneGraph* GetDefault3DSceneGraph() { return m_default3DSceneGraph; }
 	SceneGraph* GetDefault2DSceneGraph() { return m_default2DSceneGraph; }
+	CameraViewportLayer* GetDefault3DCameraViewportLayer() { return m_default3DCameraViewportLayer; }
+	CameraViewportLayer* GetDefault2DCameraViewportLayer() { return m_default2DCameraViewportLayer; }
 	void UpdateFrameDefaultSceneGraph(float elapsedTime);
 	//void RenderDefaultSceneGraph(Texture* renderTarget);
 

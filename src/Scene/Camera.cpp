@@ -204,6 +204,22 @@ void Camera::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+CameraViewportLayer* CameraViewportLayer::GetDefault2D()
+{
+	return SceneGraphManager::Instance->GetDefault2DCameraViewportLayer();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+CameraViewportLayer* CameraViewportLayer::GetDefault3D()
+{
+	return SceneGraphManager::Instance->GetDefault3DCameraViewportLayer();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 CameraViewportLayer::CameraViewportLayer(Camera* ownerCamera)
 {
 	m_ownerCamera = ownerCamera;

@@ -98,6 +98,11 @@ public:
 		@brief	インデックスバッファを設定します。
 	*/
 	void SetIndexBuffer(IndexBuffer* indexBuffer);
+	
+	/**
+		@brief	
+	*/
+	void SetShaderPass(ShaderPass* pass);
 
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。

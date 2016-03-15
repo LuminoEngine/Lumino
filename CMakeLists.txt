@@ -249,6 +249,11 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Utils.cpp
 	src/Graphics/VertexBuffer.cpp
 	src/Graphics/Viewport.cpp
+	src/Graphics/ImageEffect/ImageEffect.cpp
+	src/Graphics/ImageEffect/BlurImageEffect.cpp
+	src/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
+)
+set(LN_SOURCES_Graphics_Device
 	src/Graphics/Device/GraphicsDriverInterface.cpp
 	src/Graphics/Device/GraphicsDriverInterface.h
 	src/Graphics/Device/GraphicsDeviceBase.cpp
@@ -269,10 +274,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Device/OpenGL/GLTexture.h
 	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
-	src/Graphics/ImageEffect/ImageEffect.cpp
-	src/Graphics/ImageEffect/BlurImageEffect.cpp
-	src/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
 )
+
 set(LN_SOURCES_Effect
 	include/Lumino/Effect/Common.h
 	include/Lumino/Effect/VisualEffect.h
@@ -517,8 +520,8 @@ if (WIN32)
 		src/Input/Win32JoystickDriver.cpp
 		src/Input/Win32JoystickDriver.h
 	)
- 	set(LN_SOURCES_Graphics
- 		${LN_SOURCES_Graphics}
+ 	set(LN_SOURCES_Graphics_Device
+ 		${LN_SOURCES_Graphics_Device}
 		src/Graphics/Device/DirectX9/DX9Texture.h
 		src/Graphics/Device/DirectX9/DX9VertexBuffer.h
 		src/Graphics/Device/DirectX9/DX9GraphicsDevice.h
@@ -580,22 +583,23 @@ endif()
 
 #--------------------------------------
 # Grouping.
-source_group("Animation"	FILES ${LN_SOURCES_Animation})
-source_group("IO"			FILES ${LN_SOURCES_IO})
-source_group("Platform"		FILES ${LN_SOURCES_Platform})
-source_group("Input"		FILES ${LN_SOURCES_Input})
-source_group("Audio"		FILES ${LN_SOURCES_Audio})
-source_group("Physics"		FILES ${LN_SOURCES_Physics})
-source_group("Graphics"		FILES ${LN_SOURCES_Graphics})
-source_group("Effect"		FILES ${LN_SOURCES_Effect})
-source_group("Tilemap"		FILES ${LN_SOURCES_TileMap})
-source_group("Modeling"		FILES ${LN_SOURCES_Modeling})
-source_group("Scene"		FILES ${LN_SOURCES_Scene})
-source_group("UI"			FILES ${LN_SOURCES_UI})
-source_group("Documents"	FILES ${LN_SOURCES_Documents})
-source_group("Game"			FILES ${LN_SOURCES_Game})
-source_group("Application"	FILES ${LN_SOURCES_Application})
-source_group("Foundation"	FILES ${LN_SOURCES_Foundation})
+source_group("Animation"		FILES ${LN_SOURCES_Animation})
+source_group("IO"				FILES ${LN_SOURCES_IO})
+source_group("Platform"			FILES ${LN_SOURCES_Platform})
+source_group("Input"			FILES ${LN_SOURCES_Input})
+source_group("Audio"			FILES ${LN_SOURCES_Audio})
+source_group("Physics"			FILES ${LN_SOURCES_Physics})
+source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
+source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
+source_group("Effect"			FILES ${LN_SOURCES_Effect})
+source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
+source_group("Modeling"			FILES ${LN_SOURCES_Modeling})
+source_group("Scene"			FILES ${LN_SOURCES_Scene})
+source_group("UI"				FILES ${LN_SOURCES_UI})
+source_group("Documents"		FILES ${LN_SOURCES_Documents})
+source_group("Game"				FILES ${LN_SOURCES_Game})
+source_group("Application"		FILES ${LN_SOURCES_Application})
+source_group("Foundation"		FILES ${LN_SOURCES_Foundation})
 
 set(LN_SOURCES
 	${LN_SOURCES}
@@ -606,6 +610,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Audio}
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
+	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Modeling}
