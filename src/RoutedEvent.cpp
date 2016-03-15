@@ -1,4 +1,6 @@
 ﻿
+#if 0
+
 #pragma once
 #include "Internal.h"
 #include <Lumino/RoutedEvent.h>
@@ -50,3 +52,5 @@ LN_CORE_OBJECT_TYPE_INFO_IMPL(PropertyChangedEventArgs, CoreObject);	// キャ�
 //}
 
 LN_NAMESPACE_END
+
+#endif

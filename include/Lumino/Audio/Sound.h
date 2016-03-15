@@ -5,7 +5,6 @@
 
 #include <Lumino/Math/Vector3.h>
 #include "../Animation/EasingValue.h"
-#include "../CoreObject.h"
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN

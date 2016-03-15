@@ -1,4 +1,6 @@
-﻿/*
+﻿
+#if 0
+/*
 	■ Cast について
 		LN_ENUM で定義した拡張列挙型は、Enum クラスの派生。
 		これらは全て m_enum を派生にキャストして返したいのだが、
@@ -1034,3 +1036,5 @@ void Variant::Release()
 }
 
 LN_NAMESPACE_END
+
+#endif

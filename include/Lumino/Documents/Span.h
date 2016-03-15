@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include "../CoreObject.h"
 #include "Inline.h"
 
 LN_NAMESPACE_BEGIN
@@ -19,7 +18,7 @@ public:
 	virtual ~Span();
 
 private:
-	GenericCoreList<Inline*>	m_inlineList;
+	tr::ReflectionObjectList<Inline*>	m_inlineList;
 };
 
 

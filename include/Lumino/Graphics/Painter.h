@@ -17,7 +17,7 @@ enum BrushWrapMode
 };
 
 class Brush
-	: public CoreObject
+	: public Object
 {
 public:
 	Brush();

@@ -616,7 +616,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Modeling}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_UI}
-	${LN_SOURCES_Documents}
+	#${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application}
 	${LN_SOURCES_Foundation}

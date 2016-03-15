@@ -442,6 +442,7 @@ void EngineManager::InitializeModelManager()
 //-----------------------------------------------------------------------------
 void EngineManager::InitializeDocumentsManager()
 {
+#if 0
 	if (m_documentsManager.IsNull())
 	{
 		InitializeCommon();
@@ -451,6 +452,7 @@ void EngineManager::InitializeDocumentsManager()
 		data.GraphicsManager = m_graphicsManager;
 		m_documentsManager.Attach(LN_NEW Documents::DocumentsManager(data));
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

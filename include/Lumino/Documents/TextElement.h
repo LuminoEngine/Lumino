@@ -13,9 +13,9 @@ class DocumentsManager;
 	@brief
 */
 class TextElement
-	: public CoreObject
+	: public Object
 {
-	LN_CORE_OBJECT_TYPE_INFO_DECL();
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	LN_PROPERTY(String, FontFamilyProperty);
 	LN_PROPERTY(int,	FontSizeProperty);

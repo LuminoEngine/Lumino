@@ -1,4 +1,6 @@
 ﻿
+#if 0
+
 #pragma once
 #include <map>
 #include <memory>
@@ -516,3 +518,5 @@ public:
 	return Variant::Cast<type>(element->GetPropertyValue(prop));
 
 LN_NAMESPACE_END
+
+#endif

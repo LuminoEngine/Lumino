@@ -23,10 +23,6 @@ int TestA()
 	return 10;
 }
 
-void Button_Click(RoutedEventArgs* e)
-{
-	printf("click\n");
-}
 
 int g_test2 = TestA();
 

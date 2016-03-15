@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #pragma once
 #include <functional>
 #include "Variant.h"
@@ -244,3 +245,5 @@ private:
 }
 
 LN_NAMESPACE_END
+
+#endif

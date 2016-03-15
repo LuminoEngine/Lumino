@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include "../Graphics/Common.h"
-#include "../CoreObject.h"
 #include "TextElement.h"
 #include "Inline.h"
 
@@ -11,10 +10,10 @@ namespace Documents
 class Paragraph;
 
 class InlineList
-	: public GenericCoreList<Inline*>
+	: public tr::ReflectionObjectList<Inline*>
 {
 public:
-	typedef GenericCoreList<Inline*>::value_type value_type;
+	typedef tr::ReflectionObjectList<Inline*>::value_type value_type;
 
 private:
 	InlineList(Paragraph* owner) : m_owner(owner) {}

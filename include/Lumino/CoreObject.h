@@ -1,4 +1,5 @@
 ﻿
+#if 0
 #pragma once
 #include <Lumino/Base/Collection.h>
 #include <Lumino/Reflection/ReflectionObject.h>
@@ -181,3 +182,5 @@ private:
 
 
 LN_NAMESPACE_END
+
+#endif

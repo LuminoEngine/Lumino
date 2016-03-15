@@ -1,5 +1,8 @@
 ﻿
 #pragma once
+
+#if 0
+
 #include <iterator>
 #include <type_traits>
 #include <functional>
@@ -1052,3 +1055,5 @@ public:
 #endif
 
 LN_NAMESPACE_END
+
+#endif

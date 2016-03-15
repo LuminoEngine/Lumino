@@ -1,4 +1,6 @@
-﻿/*
+﻿
+#if 0
+/*
 	[2015/7/30] LN_PROPERTY_BEGIN と LN_PROPERTY_END はやっぱりやめる
 		ベースクラスのプロパティにアクセスしづらくなる。
 		例えば StackPanel::Properties::Size と書けない。
@@ -66,3 +68,5 @@ PropertyManager::PropertyMap	PropertyManager::m_propertyMap;
 }
 
 LN_NAMESPACE_END
+
+#endif
