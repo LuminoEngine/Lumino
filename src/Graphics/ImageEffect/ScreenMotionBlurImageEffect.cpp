@@ -41,6 +41,7 @@ ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 //-----------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 {
+	LN_SAFE_RELEASE(m_accumTexture);
 	LN_SAFE_RELEASE(m_shader.shader);
 }
 
@@ -85,7 +86,10 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
 	m_shader.varBlurMatrix->SetMatrix(m);
 	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
-	renderingContext->Blt(source, m_accumTexture, m_shader.shader);
+	renderingContext->Blt(nullptr, source, m_shader.shader);
+
+	renderingContext->Blt(source, m_accumTexture);
+
 	renderingContext->Blt(m_accumTexture, destination);
 #endif
 #if 0

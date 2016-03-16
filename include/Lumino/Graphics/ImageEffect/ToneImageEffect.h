@@ -16,7 +16,7 @@ class ToneImageEffect
 public:
 	static ToneImageEffectPtr Create();
 
-	void ChangeTone(const ToneF& tone, double duration);
+	void SetTone(const ToneF& tone);
 
 protected:
 	ToneImageEffect();
@@ -25,7 +25,7 @@ protected:
 	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) override;
 
 private:
-	EasingValue<Vector4>	m_tone;
+	Vector4		m_tone;
 
 	struct ShaderInfo
 	{
