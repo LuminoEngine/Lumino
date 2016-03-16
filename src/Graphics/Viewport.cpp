@@ -163,6 +163,14 @@ void Viewport::Initialize(GraphicsManager* manager, RenderTarget* renderTarget)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+const Size& Viewport::GetSize() const
+{
+	return m_renderTarget->GetSize();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Viewport::SetBackgroundColor(const Color& color)
 {
 	m_backgroundColor = color;

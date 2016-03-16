@@ -24,6 +24,8 @@ public:
 	*/
 	static Sprite2DPtr Create(const StringRef& filePath);
 
+	static Sprite2DPtr Create(Texture* texture);
+
 protected:
 	Sprite2D();
 	virtual ~Sprite2D();

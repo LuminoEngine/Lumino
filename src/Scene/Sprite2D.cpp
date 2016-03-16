@@ -27,8 +27,16 @@ Sprite2DPtr Sprite2D::Create()
 Sprite2DPtr Sprite2D::Create(const StringRef& filePath)
 {
 	auto tex = Texture2D::Create(filePath);
+	return Create(tex);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Sprite2DPtr Sprite2D::Create(Texture* texture)
+{
 	auto obj = Create();
-	obj->SetTexture(tex);
+	obj->SetTexture(texture);
 	return obj;
 }
 

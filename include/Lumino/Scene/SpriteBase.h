@@ -41,6 +41,7 @@ public:
 
 	/// テクスチャの転送矩形の設定 (ピクセル単位)
 	void SetSrcRect(const Rect& rect);
+	void SetSrcRect(int x, int y, int width, int height) { SetSrcRect(Rect(x, y, width, height)); }
 
 	/// テクスチャの転送矩形の取得 (ピクセル単位)
 	const Rect& GetSrcRect() const { return m_srcRect; }

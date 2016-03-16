@@ -84,6 +84,7 @@ Shader::Shader()
 	: m_deviceObj(nullptr)
 	, m_sourceCode()
 	, m_viewportPixelSize(nullptr)
+	, m_modifiedVariables(true)
 {
 }
 
@@ -532,8 +533,12 @@ int ShaderVariable::GetArrayElements() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetBool(bool value)
 {
-	m_value.SetBool(value);
-	LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, value);
+	if (value != m_value.GetBool())
+	{
+		m_owner->SetModifiedVariables(true);
+		m_value.SetBool(value);
+		LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, value);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -549,8 +554,12 @@ bool ShaderVariable::GetBool() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetInt(int value)
 {
-	m_value.SetInt(value);
-	LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, value);
+	if (value != m_value.GetInt())
+	{
+		m_owner->SetModifiedVariables(true);
+		m_value.SetInt(value);
+		LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, value);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -566,8 +575,12 @@ int ShaderVariable::GetInt() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetFloat(float value)
 {
-	m_value.SetFloat(value);
-	LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, value);
+	if (value != m_value.GetFloat())
+	{
+		m_owner->SetModifiedVariables(true);
+		m_value.SetFloat(value);
+		LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, value);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -583,8 +596,12 @@ float ShaderVariable::GetFloat() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetVector(const Vector4& value)
 {
-	m_value.SetVector(value);
-	LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, value);
+	if (value != m_value.GetVector())
+	{
+		m_owner->SetModifiedVariables(true);
+		m_value.SetVector(value);
+		LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, value);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -600,6 +617,8 @@ const Vector4& ShaderVariable::GetVector() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetVectorArray(const Vector4* values, int count)
 {
+	// TODO: != チェックした方がパフォーマンス良い？
+	m_owner->SetModifiedVariables(true);
 	m_value.SetVectorArray(values, count);
 	LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, values, count);
 }
@@ -617,8 +636,12 @@ const Vector4* ShaderVariable::GetVectorArray() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetMatrix(const Matrix& value)
 {
-	m_value.SetMatrix(value);
-	LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, value);
+	if (value != m_value.GetMatrix())
+	{
+		m_owner->SetModifiedVariables(true);
+		m_value.SetMatrix(value);
+		LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, value);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -634,6 +657,8 @@ const Matrix& ShaderVariable::GetMatrix() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetMatrixArray(const Matrix* values, int count)
 {
+	// TODO: != チェックした方がパフォーマンス良い？
+	m_owner->SetModifiedVariables(true);
 	m_value.SetMatrixArray(values, count);
 	LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, values, count);
 }
@@ -651,9 +676,26 @@ const Matrix* ShaderVariable::GetMatrixArray() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetTexture(Texture* texture)
 {
-	Driver::ITexture* t = (texture != NULL) ? texture->GetDeviceObject() : NULL;
-	LN_REFOBJ_SET(m_textureValue, texture);
-	LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, t);
+	bool modified = false;
+	if (texture == nullptr)
+	{
+		if (m_value.GetDeviceTexture() != nullptr)
+		{
+			modified = true;
+		}
+	}
+	else if (texture->GetDeviceObject() != m_value.GetDeviceTexture())
+	{
+		modified = true;
+	}
+
+	if (modified)
+	{
+		m_owner->SetModifiedVariables(true);
+		Driver::ITexture* t = (texture != NULL) ? texture->GetDeviceObject() : NULL;
+		LN_REFOBJ_SET(m_textureValue, texture);
+		LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, t);
+	}
 }
 
 //-----------------------------------------------------------------------------

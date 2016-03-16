@@ -53,6 +53,8 @@ public:
 
 	static Viewport* GetMainWindowViewport();
 
+	const Size& GetSize() const;
+
 	void SetBackgroundColor(const Color& color);
 
 	void AddViewportLayer(ViewportLayer* layer) { m_viewportLayerList.Add(layer); }

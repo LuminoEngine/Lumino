@@ -33,6 +33,9 @@ ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 //-----------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	: m_accumTexture(nullptr)
+	, m_amount(0.25)
+	, m_center(0, 0)
+	, m_scale(1.0)
 {
 }
 
@@ -80,11 +83,15 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 	}
 
 #if 1
-	Matrix m;
-	m.Scale(1.05);
-	m_shader.varBlurPower->SetFloat(0.5);
+	Matrix blurMatrix;
+	blurMatrix.Translate(-m_center.X, -m_center.Y, 0);
+	blurMatrix.Scale(m_scale);
+	blurMatrix.Translate(m_center.X, m_center.Y, 0);
+
+
+	m_shader.varBlurPower->SetFloat(m_amount);
 	m_shader.varBlurColor->SetVector(Vector4(1, 1, 1, 1));
-	m_shader.varBlurMatrix->SetMatrix(m);
+	m_shader.varBlurMatrix->SetMatrix(blurMatrix);
 	m_shader.varSecondaryTexture->SetTexture(m_accumTexture);
 	renderingContext->Blt(nullptr, source, m_shader.shader);
 

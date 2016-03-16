@@ -157,7 +157,7 @@ Texture* ContextState::GetRenderTarget(int index) const
 //-----------------------------------------------------------------------------
 void ContextState::SetShaderPass(ShaderPass* pass)
 {
-	if (m_shaderPass != pass)
+	if (m_shaderPass != pass || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
 	{
 		if (pass != nullptr)
 		{

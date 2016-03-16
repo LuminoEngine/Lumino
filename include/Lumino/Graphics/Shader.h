@@ -104,11 +104,15 @@ LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager, const StringRef& filePath);
 	void Initialize(GraphicsManager* manager, const void* code, int length);
 	void PostInitialize();
+	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
+	bool IsModifiedVariables() const { return m_modifiedVariables; }
+
 	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;
 	Array<ShaderVariable*>		m_variables;
 	Array<ShaderTechnique*>		m_techniques;
 	ShaderVariable*				m_viewportPixelSize;
+	bool						m_modifiedVariables;
 };
 
 
