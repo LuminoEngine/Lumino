@@ -10,7 +10,7 @@ template < typename TValue, typename TTime = double >
 class EasingValue
 {
 public:
-	typedef TValue(*EasingFunction)(TValue, TValue, TValue, TValue);
+	typedef TValue(*EasingFunction)(TTime, TValue, TValue, TTime);
 
 public:
 

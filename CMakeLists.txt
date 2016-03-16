@@ -196,6 +196,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/ImageEffect/ImageEffect.h
 	include/Lumino/Graphics/ImageEffect/BlurImageEffect.h
 	include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
+	include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
 	external/GL/glew.c
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapFont.cpp
@@ -252,6 +253,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/ImageEffect/ImageEffect.cpp
 	src/Graphics/ImageEffect/BlurImageEffect.cpp
 	src/Graphics/ImageEffect/ScreenMotionBlurImageEffect.cpp
+	src/Graphics/ImageEffect/ToneImageEffect.cpp
 )
 set(LN_SOURCES_Graphics_Device
 	src/Graphics/Device/GraphicsDriverInterface.cpp

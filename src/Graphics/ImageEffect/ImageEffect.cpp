@@ -13,6 +13,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //
 //-----------------------------------------------------------------------------
 ImageEffect::ImageEffect()
+	: m_manager(nullptr)
 {
 }
 
@@ -21,6 +22,15 @@ ImageEffect::ImageEffect()
 //-----------------------------------------------------------------------------
 ImageEffect::~ImageEffect()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ImageEffect::Initialize(GraphicsManager* manager)
+{
+	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	m_manager = manager;
 }
 
 LN_NAMESPACE_GRAPHICS_END

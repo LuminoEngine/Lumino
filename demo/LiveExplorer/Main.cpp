@@ -83,7 +83,10 @@ int main()
 		auto sp = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 
 		auto if1 = ScreenMotionBlurImageEffect::Create();
-		CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
+		auto if2 = ToneImageEffect::Create();
+		if2->ChangeTone(ToneF(-0.1, -0.4, -0.7, 1.0), 0);
+		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
+		CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if2);
 			//Viewport::GetMainWindowViewport()->AddViewportLayer();
 
 		//auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));

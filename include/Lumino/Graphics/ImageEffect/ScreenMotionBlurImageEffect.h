@@ -23,7 +23,6 @@ protected:
 	void Initialize(GraphicsManager* manager);
 	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) override;
 
-	GraphicsManager*	m_manager;
 	RenderTarget*		m_accumTexture;	// ‘O‰ñ‚Ì‰æ–Ê•`‰æ“à—e
 
 

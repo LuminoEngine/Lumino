@@ -56,6 +56,8 @@ typedef RefPtr<FrameTextureBrush>	FrameTextureBrushPtr;
 class RenderingContext2;
 class ScreenMotionBlurImageEffect;
 typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
+class ToneImageEffect;
+typedef RefPtr<ToneImageEffect>	ToneImageEffectPtr;
 
 class Viewport;
 class ViewportLayer;

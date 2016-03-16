@@ -32,8 +32,7 @@ ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 //
 //-----------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
-	: m_manager(nullptr)
-	, m_accumTexture(nullptr)
+	: m_accumTexture(nullptr)
 {
 }
 
@@ -50,7 +49,8 @@ ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 //-----------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
 {
-	m_manager = manager;
+	ImageEffect::Initialize(manager);
+
 	m_shader.shader = LN_NEW Shader();
 	m_shader.shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
