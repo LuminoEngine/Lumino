@@ -17,6 +17,9 @@ public:
 	/// ブラ―適用 (center はスクリーン座標空間で指定する(-1.0～1.0) )
 	void StartBlur(double duration, float power, float scale, const Vector3& center);
 
+	/** ブラーエフェクトを放射状に適用するための情報を設定します。*/
+	void SetRadialBlur(const Vector3& center, float scale);
+
 protected:
 	ScreenMotionBlurImageEffect();
 	virtual ~ScreenMotionBlurImageEffect();
