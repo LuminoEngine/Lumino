@@ -54,6 +54,7 @@ public:
 
 	/// 拡大率の設定
 	void SetScale(const Vector3& scale) { m_transform.Scale = scale; m_transformModified = true; }
+	void SetScale(float xyz) { m_transform.Scale.Set(xyz, xyz, xyz); m_transformModified = true; }
 
 	/// 拡大率の取得
 	const Vector3& GetScale() const { return m_transform.Scale; }

@@ -121,8 +121,8 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent)
 	if (m_transformModified)
 	{
 		m_localMatrix = Matrix::Identity;
-		m_localMatrix.Translation(-m_transformCenter.X, -m_transformCenter.Y, -m_transformCenter.Z);
-		m_localMatrix.Scaling(m_transform.Scale);
+		m_localMatrix.Translate(-m_transformCenter.X, -m_transformCenter.Y, -m_transformCenter.Z);
+		m_localMatrix.Scale(m_transform.Scale);
 		m_localMatrix.RotateQuaternion(m_transform.Rotation);
 		m_localMatrix.Translate(m_transform.Translation);
 		m_transformModified = false;

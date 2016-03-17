@@ -18,7 +18,7 @@ public:
 	//void StartBlur(double duration, float power, float scale, const Vector3& center);
 
 	/** 画像内に残す前のフレームの量 (0.0～1.0)。値が高くなるほど、モーショントレイルが長くなります。*/
-	void SetBlurAmount(float amount);
+	void SetAmount(float amount);
 
 	/** ブラーエフェクトを放射状に適用するための情報を設定します。*/
 	void SetRadialCenter(const Vector2& center);
