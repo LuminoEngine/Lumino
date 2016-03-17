@@ -29,6 +29,7 @@ ProfilerRenderer::~ProfilerRenderer()
 
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -210,7 +211,7 @@ void ProfilerRenderer::DrawSectionGraphBar(RenderingContext& painter, const Prof
 		++index;
 	}
 }
-
+#endif
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

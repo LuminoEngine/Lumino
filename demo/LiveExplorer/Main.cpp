@@ -60,6 +60,61 @@ LRESULT TestWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* han
 	return 0;
 }
 
+#if 0
+class TestClass1
+{
+public:
+	int value = 0;
+};
+class TestClass2
+{
+public:
+	TestClass2()
+		: t1(new TestClass1())
+	{	
+	}
+	TestClass1* t1;
+};
+
+volatile TestClass2* g_ptr = nullptr;
+volatile bool bbb = false;
+
+void Thread1()
+{
+	//printf("Thread1\n");
+	volatile int i = 0;
+	for (; i < 100000000; ++i) {
+	}
+	g_ptr = new TestClass2();
+	i = 0;
+	for (; i < 100000000; ++i) {
+	}
+	i = 0;
+	for (; i < 100000000; ++i) {
+	}
+	volatile TestClass2* t = g_ptr;
+	g_ptr = nullptr;
+	delete t;
+	//printf("delete\n");
+}
+
+#pragma optimize("", off)
+void Thread2()
+{
+	//printf("Thread2\n");
+	while (g_ptr == nullptr) {}
+	bbb = true;
+	do 
+	{
+		g_ptr->t1->value++;
+	} while (g_ptr != nullptr);
+	//printf("Thread2 e\n");
+}
+
+#pragma optimize("", on)
+#endif
+
+
 int main()
 {
 
@@ -70,6 +125,22 @@ int main()
 
 	try
 	{
+#if 0
+		for (int i = 0; i < 100; ++i)
+		{
+			Threading::DelegateThread thr1;
+			Threading::DelegateThread thr2;
+			thr1.Start(Thread1);
+			thr2.Start(Thread2);
+			thr1.Wait();
+			thr2.Wait();
+			printf("con %d\n", i);
+		}
+		printf("end\n");
+		return 0;
+		//printf("%d\n", g_ptr->t1->value);
+#endif
+
 		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;

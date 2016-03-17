@@ -34,7 +34,6 @@ RenderingContext2::RenderingContext2()
 	, m_activeRendererPloxy(nullptr)
 	, m_spriteRenderer(nullptr)
 	, m_primitiveRenderer(nullptr)
-	//, m_stateModified(false)
 {
 }
 
@@ -73,6 +72,19 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	m_spriteRenderer->SetViewPixelSize(size);
 
 	m_state.modifiedFlags = detail::ContextStateFlags::All;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::SetBlendMode(BlendMode mode)
+{
+	if (mode != m_state.renderState.Blend)
+	{
+		Flush();
+		m_state.renderState.Blend = mode;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
 }
 
 //-----------------------------------------------------------------------------

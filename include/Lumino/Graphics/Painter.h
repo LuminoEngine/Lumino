@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "GlyphRun.h"
 
+
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
@@ -175,6 +176,7 @@ struct PainterState
 
 } // namespace Details
 
+#if 0
 
 /**
 	@brief	図形や画像、テキストを描画するための機能を提供します。
@@ -280,6 +282,8 @@ public:
 private:
 
 };
+#endif
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
+

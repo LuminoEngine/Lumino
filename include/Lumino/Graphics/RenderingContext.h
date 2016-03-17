@@ -21,6 +21,8 @@ public:
 	// TODO: Sceneなどで内部的に使用するものと共用にしない。ステートがどこで変わるかわかりづらい。あるいはちゃんと push/pop する。
 	static RenderingContext2* GetContext();
 
+	void SetBlendMode(BlendMode mode);
+
 	/**
 		@brief	レンダリングステートを設定します。
 	*/

@@ -9,6 +9,7 @@
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
 
+
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
@@ -172,6 +173,7 @@ FrameTextureBrush::~FrameTextureBrush()
 }
 
 
+#if 0
 //=============================================================================
 // StringLayout
 //=============================================================================
@@ -835,6 +837,8 @@ RenderTargetPainter::~RenderTargetPainter()
 void RenderTargetPainter::SetRenderTarget(Texture* renderTarget)
 {
 }
+#endif
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
+
