@@ -83,6 +83,8 @@ public:
 
 	void SetShaderPass(ShaderPass* pass);
 
+	virtual ShaderPass* GetShaderPass() const override;
+
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。
 	*/
@@ -124,6 +126,7 @@ LN_INTERNAL_ACCESS:
 	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
 	virtual void OnActivated() override;
 	virtual void OnDeactivated() override;
+	virtual void RequestFlush() override;
 
 private:
 	GraphicsManager*			m_manager;

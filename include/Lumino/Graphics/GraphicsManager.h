@@ -64,6 +64,7 @@ public:
 	void ChangeDevice(Driver::IGraphicsDevice* device);
 
 	void SwitchActiveContext(detail::IContext* context);
+	detail::IContext* GetActiveContext() const { return m_activeContext; }
 
 public:	// TODO: internal
 	struct FontData

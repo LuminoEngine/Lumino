@@ -108,7 +108,6 @@ int main()
 
 			if (Engine::BeginRendering())
 			{
-				printf("----\n");
 				Engine::Render();
 
 				RenderingContext2* r = RenderingContext2::GetContext();

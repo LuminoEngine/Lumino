@@ -377,6 +377,10 @@ namespace detail
 		friend class GraphicsManager;
 		virtual void OnActivated() = 0;
 		virtual void OnDeactivated() = 0;
+
+	LN_INTERNAL_ACCESS:
+		virtual ShaderPass* GetShaderPass() const = 0;
+		virtual void RequestFlush() = 0;
 	};
 
 } // namespace detail

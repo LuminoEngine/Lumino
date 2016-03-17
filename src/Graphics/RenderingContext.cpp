@@ -3,6 +3,7 @@
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/RenderingContext.h>
@@ -81,6 +82,7 @@ void RenderingContext2::SetRenderState(const RenderState& state)
 {
 	if (!m_state.renderState.Equals(state))
 	{
+		Flush();
 		m_state.renderState = state;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -101,6 +103,7 @@ void RenderingContext2::SetDepthStencilState(const DepthStencilState& state)
 {
 	if (!m_state.depthStencilState.Equals(state))
 	{
+		Flush();
 		m_state.depthStencilState = state;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -119,12 +122,16 @@ const DepthStencilState& RenderingContext2::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetRenderTarget(int index, Texture* texture)
 {
-	m_state.SetRenderTarget(index, texture);
-	if (index == 0)
+	if (texture != m_state.GetRenderTarget(index))
 	{
-		const Size& size = m_state.GetRenderTarget(0)->GetSize();
-		m_primitiveRenderer->SetViewPixelSize(size);
-		m_spriteRenderer->SetViewPixelSize(size);
+		Flush();
+		m_state.SetRenderTarget(index, texture);
+		if (index == 0)
+		{
+			const Size& size = m_state.GetRenderTarget(0)->GetSize();
+			m_primitiveRenderer->SetViewPixelSize(size);
+			m_spriteRenderer->SetViewPixelSize(size);
+		}
 	}
 }
 
@@ -143,6 +150,7 @@ void RenderingContext2::SetDepthBuffer(Texture* depthBuffer)
 {
 	if (m_state.depthBuffer != depthBuffer)
 	{
+		Flush();
 		LN_REFOBJ_SET(m_state.depthBuffer, depthBuffer);
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -163,6 +171,7 @@ void RenderingContext2::SetViewport(const Rect& rect)
 {
 	if (m_state.viewport != rect)
 	{
+		Flush();
 		m_state.viewport = rect;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -183,6 +192,7 @@ void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
 	if (m_state.vertexBuffer != vertexBuffer)
 	{
+		Flush();
 		LN_REFOBJ_SET(m_state.vertexBuffer, vertexBuffer);
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -195,6 +205,7 @@ void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
 	if (m_state.indexBuffer != indexBuffer)
 	{
+		Flush();
 		LN_REFOBJ_SET(m_state.indexBuffer, indexBuffer);
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -205,8 +216,20 @@ void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetShaderPass(ShaderPass* pass)
 {
-	m_state.SetShaderPass(pass);
-	m_primitiveRenderer->SetUseInternalShader(pass == nullptr);
+	if (pass != m_state.GetShaderPass() || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
+	{
+		Flush();
+		m_state.SetShaderPass(pass);
+		m_primitiveRenderer->SetUseInternalShader(pass == nullptr);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ShaderPass* RenderingContext2::GetShaderPass() const
+{
+	return m_state.GetShaderPass();
 }
 
 //-----------------------------------------------------------------------------
@@ -376,6 +399,14 @@ void RenderingContext2::OnActivated()
 void RenderingContext2::OnDeactivated()
 {
 	SwitchActiveRendererPloxy(nullptr);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::RequestFlush()
+{
+	Flush();
 }
 
 LN_NAMESPACE_END
