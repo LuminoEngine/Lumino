@@ -80,12 +80,15 @@ int main()
 		//window->UserWndProc = TestWndProc;
 
 		//auto tex = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
-		auto sp = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto sp1 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto sp2 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_IndexBuffer.BasicTriangle.png"));
+		sp2->SetPosition(100, 240, 0);
+		
 
-		auto if1 = ScreenMotionBlurImageEffect::Create();
-		auto if2 = ToneImageEffect::Create();
-		if2->SetTone(ToneF(-0.1, -0.4, -0.7, 1.0));
-		CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
+		//auto if1 = ScreenMotionBlurImageEffect::Create();
+		//auto if2 = ToneImageEffect::Create();
+		//if2->SetTone(ToneF(-0.1, -0.4, -0.7, 1.0));
+		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
 		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if2);
 			//Viewport::GetMainWindowViewport()->AddViewportLayer();
 
@@ -105,6 +108,7 @@ int main()
 
 			if (Engine::BeginRendering())
 			{
+				printf("----\n");
 				Engine::Render();
 
 				RenderingContext2* r = RenderingContext2::GetContext();

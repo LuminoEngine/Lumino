@@ -510,7 +510,10 @@ void DX9ShaderVariable::SetMatrixArray(const Matrix* matrices, int count)
 //-----------------------------------------------------------------------------
 void DX9ShaderVariable::SetTexture(ITexture* texture)
 {
+	printf("DX9ShaderVariable::SetTexture\n");
+
 	if (texture != NULL) {
+		printf("%d\n", texture->GetSize().Width);
 		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->GetIDirect3DTexture9()));
 	}
 	else {

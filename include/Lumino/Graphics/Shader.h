@@ -116,7 +116,7 @@ LN_INTERNAL_ACCESS:
 };
 
 
-
+// TODO: Driver でも使っている。初期値を保持するため。
 class ShaderValue
 {
 public:
@@ -127,6 +127,7 @@ public:
 
 public:
 	bool IsValid() const { return m_type != ShaderVariableType_Unknown; }
+	ShaderVariableType GetType() const { return m_type; }
 
 	void SetBool(bool value);
 	bool GetBool() const { return m_value.BoolVal; }
@@ -153,6 +154,16 @@ public:
 	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
 private:
+
+	static bool IsBufferCopyType(ShaderVariableType type)
+	{
+		return
+			type == ShaderVariableType_Vector ||
+			type == ShaderVariableType_VectorArray ||
+			type == ShaderVariableType_Matrix ||
+			type == ShaderVariableType_MatrixArray ||
+			type == ShaderVariableType_String;
+	}
 
 	struct Value
 	{
@@ -242,6 +253,8 @@ public:
 	
 LN_INTERNAL_ACCESS:
 	void ChangeDevice(Driver::IShaderVariable* obj);
+	void SetModified();
+	void TryCommitChanges();
 
 private:
 	friend class Shader;
@@ -252,8 +265,9 @@ private:
 	Shader*						m_owner;
 	Driver::IShaderVariable*	m_deviceObj;
 	ShaderValue					m_value;
-	Texture*					m_textureValue;
+	Texture*					m_textureValue;		// ShaderValue は Driver でも使われるので ITexture* を持ち、Texture* は持たない。 
 	Array<ShaderVariable*>		m_annotations;
+	bool						m_modified;
 };
 
 /**

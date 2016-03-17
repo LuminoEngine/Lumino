@@ -435,7 +435,9 @@ void ShaderValue::Copy(const ShaderValue& value)
 	//else {
 	//	m_value.Buffer = m_buffer->GetData();
 	//}
-	m_value.Buffer = m_buffer.GetData();
+	if (IsBufferCopyType(m_type)) {
+		m_value.Buffer = m_buffer.GetData();
+	}
 
 	if (m_type == ShaderVariableType_DeviceTexture) {
 		m_value.DeviceTexture = value.m_value.DeviceTexture;
@@ -459,6 +461,7 @@ ShaderVariable::ShaderVariable(Shader* owner, Driver::IShaderVariable* deviceObj
 	: m_owner(owner)
 	, m_deviceObj(deviceObj)
 	, m_textureValue(NULL)
+	, m_modified(true)
 {
 	// 初期値として保持しておく
 	m_value = deviceObj->GetValue();
@@ -533,11 +536,10 @@ int ShaderVariable::GetArrayElements() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetBool(bool value)
 {
-	if (value != m_value.GetBool())
+	if (m_value.GetType() != ShaderVariableType_Bool || value != m_value.GetBool())
 	{
-		m_owner->SetModifiedVariables(true);
+		SetModified();
 		m_value.SetBool(value);
-		LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, value);
 	}
 }
 
@@ -554,11 +556,10 @@ bool ShaderVariable::GetBool() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetInt(int value)
 {
-	if (value != m_value.GetInt())
+	if (m_value.GetType() != ShaderVariableType_Int || value != m_value.GetInt())
 	{
-		m_owner->SetModifiedVariables(true);
+		SetModified();
 		m_value.SetInt(value);
-		LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, value);
 	}
 }
 
@@ -575,11 +576,10 @@ int ShaderVariable::GetInt() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetFloat(float value)
 {
-	if (value != m_value.GetFloat())
+	if (m_value.GetType() != ShaderVariableType_Float || value != m_value.GetFloat())
 	{
-		m_owner->SetModifiedVariables(true);
+		SetModified();
 		m_value.SetFloat(value);
-		LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, value);
 	}
 }
 
@@ -596,11 +596,10 @@ float ShaderVariable::GetFloat() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetVector(const Vector4& value)
 {
-	if (value != m_value.GetVector())
+	if (m_value.GetType() != ShaderVariableType_Vector || value != m_value.GetVector())
 	{
-		m_owner->SetModifiedVariables(true);
+		SetModified();
 		m_value.SetVector(value);
-		LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, value);
 	}
 }
 
@@ -618,9 +617,8 @@ const Vector4& ShaderVariable::GetVector() const
 void ShaderVariable::SetVectorArray(const Vector4* values, int count)
 {
 	// TODO: != チェックした方がパフォーマンス良い？
-	m_owner->SetModifiedVariables(true);
+	SetModified();
 	m_value.SetVectorArray(values, count);
-	LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, values, count);
 }
 
 //-----------------------------------------------------------------------------
@@ -636,11 +634,10 @@ const Vector4* ShaderVariable::GetVectorArray() const
 //-----------------------------------------------------------------------------
 void ShaderVariable::SetMatrix(const Matrix& value)
 {
-	if (value != m_value.GetMatrix())
+	if (m_value.GetType() != ShaderVariableType_Matrix || value != m_value.GetMatrix())
 	{
-		m_owner->SetModifiedVariables(true);
+		SetModified();
 		m_value.SetMatrix(value);
-		LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, value);
 	}
 }
 
@@ -658,9 +655,8 @@ const Matrix& ShaderVariable::GetMatrix() const
 void ShaderVariable::SetMatrixArray(const Matrix* values, int count)
 {
 	// TODO: != チェックした方がパフォーマンス良い？
-	m_owner->SetModifiedVariables(true);
+	SetModified();
 	m_value.SetMatrixArray(values, count);
-	LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, values, count);
 }
 
 //-----------------------------------------------------------------------------
@@ -677,24 +673,31 @@ const Matrix* ShaderVariable::GetMatrixArray() const
 void ShaderVariable::SetTexture(Texture* texture)
 {
 	bool modified = false;
-	if (texture == nullptr)
+	if (m_value.GetType() == ShaderVariableType_DeviceTexture)
 	{
-		if (m_value.GetDeviceTexture() != nullptr)
+		if (texture == nullptr)
+		{
+			if (m_value.GetDeviceTexture() != nullptr)
+			{
+				modified = true;
+			}
+		}
+		else if (texture->GetDeviceObject() != m_value.GetDeviceTexture())
 		{
 			modified = true;
 		}
 	}
-	else if (texture->GetDeviceObject() != m_value.GetDeviceTexture())
+	else
 	{
 		modified = true;
 	}
 
 	if (modified)
 	{
-		m_owner->SetModifiedVariables(true);
-		Driver::ITexture* t = (texture != NULL) ? texture->GetDeviceObject() : NULL;
+		SetModified();
+		Driver::ITexture* t = (texture != nullptr) ? texture->GetDeviceObject() : nullptr;
+		m_value.SetDeviceTexture(t);
 		LN_REFOBJ_SET(m_textureValue, texture);
-		LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, t);
 	}
 }
 
@@ -702,7 +705,8 @@ void ShaderVariable::SetTexture(Texture* texture)
 //
 //-----------------------------------------------------------------------------
 Texture* ShaderVariable::GetTexture() const
-{ 
+{
+	//return m_value.GetDeviceTexture();
 	return m_textureValue;
 }
 
@@ -762,6 +766,53 @@ void ShaderVariable::ChangeDevice(Driver::IShaderVariable* obj)
 			auto* anno = FindAnnotation(annoObj->GetName());
 			anno->ChangeDevice(annoObj);
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ShaderVariable::SetModified()
+{
+	m_owner->SetModifiedVariables(true);
+	m_modified = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ShaderVariable::TryCommitChanges()
+{
+	if (m_modified)
+	{
+		switch (m_value.GetType())
+		{
+			case ShaderVariableType_Bool:
+				LN_CALL_SHADER_COMMAND(SetBool, SetShaderVariableCommand, m_value.GetBool());
+				break;
+			case ShaderVariableType_Int:
+				LN_CALL_SHADER_COMMAND(SetInt, SetShaderVariableCommand, m_value.GetInt());
+				break;
+			case ShaderVariableType_Float:
+				LN_CALL_SHADER_COMMAND(SetFloat, SetShaderVariableCommand, m_value.GetFloat());
+				break;
+			case ShaderVariableType_Vector:
+				LN_CALL_SHADER_COMMAND(SetVector, SetShaderVariableCommand, m_value.GetVector());
+				break;
+			case ShaderVariableType_VectorArray:
+				LN_CALL_SHADER_COMMAND(SetVectorArray, SetShaderVariableCommand, m_value.GetVectorArray(), m_value.GetArrayLength());
+				break;
+			case ShaderVariableType_Matrix:
+				LN_CALL_SHADER_COMMAND(SetMatrix, SetShaderVariableCommand, m_value.GetMatrix());
+				break;
+			case ShaderVariableType_MatrixArray:
+				LN_CALL_SHADER_COMMAND(SetMatrixArray, SetShaderVariableCommand, m_value.GetMatrixArray(), m_value.GetArrayLength());
+				break;
+			case ShaderVariableType_DeviceTexture:
+				LN_CALL_SHADER_COMMAND(SetTexture, SetShaderVariableCommand, m_value.GetDeviceTexture());
+				break;
+		}
+		m_modified = false;
 	}
 }
 
@@ -932,6 +983,11 @@ void ShaderPass::Apply()
 	//		m_owner->m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
 	//	}
 	//}
+
+	for (ShaderVariable* v : m_owner->GetVariables())
+	{
+		v->TryCommitChanges();
+	}
 
 	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
 }
