@@ -74,6 +74,7 @@
 #include "Internal.h"
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
+#include "Animation/AnimationManager.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include "Input/InputManager.h"
 #include <Lumino/Audio/AudioManager.h>
@@ -127,6 +128,7 @@ EngineManager* EngineManager::Create(const EngineSettings& configData)
 //-----------------------------------------------------------------------------
 EngineManager::EngineManager(const EngineSettings& configData)
 	: m_configData(configData)
+	, m_animationManager(nullptr)
 	, m_fileManager(nullptr)
 	, m_inputManager(nullptr)
 	, m_audioManager(nullptr)
@@ -213,6 +215,8 @@ EngineManager::~EngineManager()
 
 	LN_SAFE_RELEASE(m_fileManager);
 
+	LN_SAFE_RELEASE(m_animationManager);
+
 	Console::Free();
 
 
@@ -260,6 +264,18 @@ void EngineManager::InitializeCommon()
 		}
 
 		m_commonInitied = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EngineManager::InitializeAnimationManager()
+{
+	if (m_animationManager == nullptr)
+	{
+		m_animationManager = LN_NEW detail::AnimationManager();
+		m_animationManager->Initialize();
 	}
 }
 
@@ -375,6 +391,7 @@ void EngineManager::InitializeGraphicsManager()
 	if (m_graphicsManager == nullptr)
 	{
 		InitializeCommon();
+		InitializeAnimationManager();
 		InitializeFileManager();
 		InitializePlatformManager();
 		InitializePhysicsManager();
@@ -384,6 +401,7 @@ void EngineManager::InitializeGraphicsManager()
 		data.RenderingType = m_configData.RenderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.backBufferSize = m_configData.backBufferSize;
+		data.animationManager = m_animationManager;
 		data.FileManager = m_fileManager;
 		data.PlatformTextureLoading = true;
 #ifdef LN_OS_WIN32
@@ -510,6 +528,11 @@ void EngineManager::InitializeSceneGraphManager()
 bool EngineManager::UpdateFrame()
 {
 	m_endRequested = !m_platformManager->DoEvents();
+
+	if (m_animationManager != nullptr)
+	{
+		m_animationManager->AdvanceTime(m_fpsController.GetElapsedGameTime());
+	}
 
 	if (m_inputManager != nullptr) {
 		m_inputManager->UpdateFrame();

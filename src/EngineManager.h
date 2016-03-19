@@ -14,6 +14,7 @@
 
 LN_NAMESPACE_BEGIN
 
+namespace detail { class AnimationManager; }
 namespace detail { class InputManager; }
 namespace detail { class EffectManager; }
 namespace detail { class ModelManager; }
@@ -79,6 +80,7 @@ protected:
 public:
 	void Initialize();
 	void InitializeCommon();
+	void InitializeAnimationManager();
 	void InitializeFileManager();
 	void InitializePlatformManager();
 	void InitializeInputManager();
@@ -96,6 +98,7 @@ private:
 	//class NativeWindowEventListener;
 	EngineSettings						m_configData;
 	FpsController						m_fpsController;
+	detail::AnimationManager*			m_animationManager;
 	FileManager*						m_fileManager;
 	RefPtr<PlatformManager>	m_platformManager;
 	detail::InputManager*				m_inputManager;

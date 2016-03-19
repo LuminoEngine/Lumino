@@ -4,6 +4,8 @@
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/ImageEffect/ToneImageEffect.h>
+#include "../../Animation/AnimationManager.h"
+#include <Lumino/Graphics/GraphicsManager.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -11,6 +13,8 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //=============================================================================
 // ToneImageEffect
 //=============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ToneImageEffect, ImageEffect);
+LN_TR_PROPERTY_IMPLEMENT(ToneImageEffect, ToneF, Tone, "Tone", m_tone, tr::PropertyMetadata());
 
 static const byte_t g_ToneImageEffect_fx_Data[] =
 {
@@ -62,6 +66,16 @@ void ToneImageEffect::Initialize(GraphicsManager* manager)
 void ToneImageEffect::SetTone(const ToneF& tone)
 {
 	m_tone = tone;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
+{
+	static Animation::ValueEasingCurve<Vector4> anim(tone, time, Animation::EasingMode::Linear);
+	AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation();
+	ac->AddAnimationCurve(&anim, this, ToneImageEffect::Tone, m_tone);
 }
 
 //-----------------------------------------------------------------------------

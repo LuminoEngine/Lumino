@@ -48,18 +48,23 @@ set(LN_SOURCES
 )
 
 set(LN_SOURCES_Animation
+	include/Lumino/Animation/AnimationClock.h
 	include/Lumino/Animation/AnimationUtilities.h
 	include/Lumino/Animation/Common.h
 	include/Lumino/Animation/EasingFunctions.h
 	include/Lumino/Animation/EasingValue.h
 	src/Animation/AnimationClip.cpp
 	src/Animation/AnimationClip.h
+	src/Animation/AnimationClock.cpp
 	src/Animation/AnimationCurve.cpp
 	src/Animation/AnimationCurve.h
+	src/Animation/AnimationManager.cpp
+	src/Animation/AnimationManager.h
 	src/Animation/AnimationState.cpp
 	src/Animation/AnimationState.h
 	src/Animation/Animator.cpp
 	src/Animation/Animator.h
+	src/Animation/Internal.h
 )
 
 set(LN_SOURCES_IO

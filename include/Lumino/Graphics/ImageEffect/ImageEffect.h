@@ -11,6 +11,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ImageEffect
 	: public Object
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 protected:

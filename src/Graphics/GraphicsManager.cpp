@@ -792,7 +792,8 @@ GraphicsManager* GraphicsManager::Instance = NULL;
 //
 //-----------------------------------------------------------------------------
 GraphicsManager::GraphicsManager(const ConfigData& configData)
-	: m_fileManager(nullptr)
+	: m_animationManager(nullptr)
+	, m_fileManager(nullptr)
 	, m_mainWindow(nullptr)
 	, m_graphicsDevice(nullptr)
 	, m_renderingType(configData.RenderingType)
@@ -806,6 +807,7 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	, m_painterEngine(nullptr)
 	, m_textRendererCore(nullptr)
 {
+	m_animationManager = configData.animationManager;
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
 	m_mainWindow = configData.MainWindow;
 	m_platformTextureLoading = configData.PlatformTextureLoading;

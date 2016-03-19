@@ -122,7 +122,7 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	std::weak_ptr
+	//std::weak_ptr
 	try
 	{
 #if 0
@@ -157,10 +157,11 @@ int main()
 		
 
 		//auto if1 = ScreenMotionBlurImageEffect::Create();
-		//auto if2 = ToneImageEffect::Create();
+		auto if2 = ToneImageEffect::Create();
 		//if2->SetTone(ToneF(-0.1, -0.4, -0.7, 1.0));
+		if2->ChangeTone(ToneF(-0.1, -0.4, -0.7, 1.0), 5);
 		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
-		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if2);
+		CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if2);
 			//Viewport::GetMainWindowViewport()->AddViewportLayer();
 
 		//auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));

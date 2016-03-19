@@ -1,10 +1,38 @@
 ﻿
 #pragma once
 #include <Lumino/Animation/Common.h>
+#include <Lumino/Animation/AnimationUtilities.h>
 
 LN_NAMESPACE_BEGIN
 namespace Animation
 {
+class AnimationCurveInstance
+	: public RefObject
+{
+public:
+	RefPtr<AnimationCurve>	owner;
+	Object*			targetObject;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
+	const tr::Property*	targetProperty;
+	//Variant		StartValue;
+	//bool		Active;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
+};
+
+template<typename TValue>
+class TypedAnimationCurveInstance
+	: public AnimationCurveInstance
+{
+public:
+	TValue	startValue;
+
+	TypedAnimationCurveInstance(AnimationCurve* owner_, Object* targetObject_, const tr::Property* targetProperty_, const TValue& startValue_)
+		: startValue(startValue_)
+	{
+		owner = owner_;
+		targetObject = targetObject_;
+		targetProperty = targetProperty_;
+	}
+};
+
 
 /// 値を補完するクラスのベースクラス
 class AnimationCurve
@@ -29,9 +57,86 @@ public:
 
 	void SetTime(double time);
 
+	//virtual AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, tr::Property* targetProperty) = 0;
+	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance, double time) { return false; }
+
 private:
 	WrapMode	m_wrapMode;
 };
+
+
+template<typename TValue>
+class ValueEasingCurve
+	: public AnimationCurve
+{
+public:
+
+	//static FloatEasing* Create(const String& targetName, const String& targetProperty, float targetValue, float duration, Animation::EasingMode easingMode);
+	virtual ValueType GetValueType() const { return ValueType_Float; }
+	virtual void UpdateValue(double time) {}
+	virtual double GetLastFrameTime() const { return 0; }
+
+public:
+	ValueEasingCurve(TValue targetValue, double duration, Animation::EasingMode easingMode)
+		: m_targetValue(targetValue)
+		, m_duration(duration)
+		, m_easingMode(Animation::EasingMode::Linear)
+		, m_easingFunction()
+	{
+		SetEasingMode(easingMode);
+	}
+
+	virtual ~ValueEasingCurve() {}
+
+	//void SetTargetName(const String& name) { m_targetName = name; }
+	//void SetTargetProperty(const Property* prop) { m_targetProperty = prop; }
+	void SetTargetValue(TValue value) { m_targetValue = value; }
+	void SetEasingMode(Animation::EasingMode easingMode)
+	{
+		m_easingMode = easingMode;
+		m_easingFunction = AnimationUtilities::SelectEasingFunction<TValue, double>(m_easingMode);
+	}
+
+	void SetDuration(double duration) { m_duration = duration; }
+
+	AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, const tr::Property* targetProperty, const TValue& startValue)
+	{
+		return LN_NEW TypedAnimationCurveInstance<TValue>(this, targetObject, targetProperty, startValue);
+	}
+
+	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
+	{
+		auto* instance = static_cast<TypedAnimationCurveInstance<TValue>*>(instance_);
+
+		// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
+		// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
+		if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
+		{
+			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_targetValue);
+		}
+		// 時間が 0 以前の場合は初期値
+		else if (time <= 0)
+		{
+			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue);
+		}
+		// 補間で求める
+		else
+		{
+			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration));
+		}
+
+		return (time < m_duration);
+	}
+
+private:
+	TValue					m_targetValue;
+	Animation::EasingMode	m_easingMode;
+	double					m_duration;
+	std::function< TValue(double, TValue, TValue, double) >	m_easingFunction;
+};
+
+
+
 
 /// FloatAnimationCurve のキーフレーム
 struct FloatKeyFrame
@@ -81,6 +186,21 @@ public:
 	virtual ValueType GetValueType() const { return ValueType_Float; }
 	virtual void UpdateValue(double time);
 	virtual double GetLastFrameTime() const;
+
+#if 0
+	//template<typename TValue>
+	/*virtual*/ AnimationCurveInstance* CreateAnimationCurveInstance(Object* targetObject, tr::Property* targetProperty, float startValue)
+	{
+		return LN_NEW TypedAnimationCurveInstance<float>(this, targetObject, targetProperty, startValue);
+	}
+
+	bool ApplyPorpertyAnimation(Object* targetObject, tr::Property* targetProp, float startValue, float time)
+	{
+		UpdateValue(time);
+		targetObject->SetTypedPropertyValue<float>(targetProp, GetValue());
+		return (time < m_duration);
+	}
+#endif
 
 private:
 	typedef Array<FloatKeyFrame>	KeyFrameList;

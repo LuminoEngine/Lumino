@@ -1,86 +1,107 @@
 ﻿
-#pragma once
-#include "Common.h"
+#include "Internal.h"
+#include <Lumino/Animation/AnimationClock.h>
+#include "AnimationCurve.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GUI_BEGIN
-	
-/**
-	@brief		
-	@note		
-*/
-class AnimationTimeline
-	: public CoreObject
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+AnimationClock::AnimationClock()
+	: m_currentTime(0)
+	, m_isFinished(false)
 {
-public:
-	AnimationTimeline();
-	virtual ~AnimationTimeline();
 
-	/// アニメーション化するオブジェクトの名前 (x;key で指定された名前)
-	/// 指定していない場合は論理要素がターゲットとなる。
-	void SetTargetName(const String& name) { m_targetName = name; }
+}
 
-	const String& GetTargetName() const { return m_targetName; }
-
-	/// アニメーション化するプロパティの名前
-	void SetTargetProperty(const String& name) { m_targetProperty = name; }	// WPF では添付プロパティで型は PropertyPath
-
-	const String& GetTargetProperty() const { return m_targetProperty; }
-
-	void SetDuration(float duration) { m_duration = duration; }
-
-protected:
-	// time : このタイムラインの再生開始からの経過時間
-	// return : time が m_duration 以上であれば false
-	virtual bool Apply(UIElement* targetElement, Property* targetProp, const Variant& startValue, float time) = 0;
-
-protected:
-	String	m_targetName;		///< ターゲットの UI 要素名。ビジュアルツリーから対象要素を検索するときに使用する。
-	String	m_targetProperty;	///< ターゲットプロパティ名
-	float	m_duration;			///< 再生時間 (ミリ秒)
-
-	friend class AnimationClock;
-};
-	
-
-/**
-	@brief		
-	@note		このインスタンスは UIElement が保持する。
-*/
-class AnimationClock
-	: public CoreObject
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+AnimationClock::~AnimationClock()
 {
-public:
-	AnimationClock(GUIContext* context, Storyboard* sourceStoryboard, UIElement* owner, Array< RefPtr<AnimationTimeline> >* timelines);
-	virtual ~AnimationClock();
 
-	bool IsFinished() const { return m_isFinished; }
-	
-	// TODO: internal
-	void SetTime(float time);
-	void AdvanceTime(float elapsedTime);
+}
 
-private:
-	void StopInternal();
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//void AnimationClock::Initialize(AnimationClockArgs* list, int listCount)
+//{
+//	for (int iArgs = 0; iArgs < listCount; ++iArgs)
+//	{
+//		const AnimationClockArgs& timeline = list[iArgs];
+//
+//		// タイムラインの適用先を選択する
+//		Object* target = timeline.targetObject;
+//		//if (timeline->GetTargetName().IsEmpty()) {
+//		//	target = owner;
+//		//}
+//		//else {
+//		//	target = VisualTreeHelper::FindChildByName(owner, timeline->GetTargetName());
+//		//}
+//
+//		tr::Property* prop = timeline.targetProperty;
+//
+//		// タイムラインの適用先プロパティを検索する
+//		if (target != nullptr && prop != nullptr)
+//		{
+//			TimeLineInstance tli;
+//			tli.OwnerTimeLine = timeline;
+//			tli.TargetElement = target;
+//			tli.TargetProperty = prop;
+//			tli.StartValue = target->GetPropertyValue(prop);	// 現在のプロパティ値を開始値とする
+//			tli.Active = true;
+//			m_timeLineInstanceList.Add(tli);
+//
+//			// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
+//			auto& playingList = owner->GetAnimationClockList();
+//			for (auto& clock : playingList)
+//			{
+//				for (auto& playingTimeLineInst : clock->m_timeLineInstanceList)
+//				{
+//					if (playingTimeLineInst.OwnerTimeLine->GetTargetName() == timeline->GetTargetName() &&
+//						playingTimeLineInst.OwnerTimeLine->GetTargetProperty() == timeline->GetTargetProperty())
+//					{
+//						playingTimeLineInst.Active = false;
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 
-private:
-	struct TimeLineInstance
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AnimationClock::SetTime(double time)
+{
+	// とりあえず true にしておいて、タイムラインが1つでも実行中だったら false にする
+	m_isFinished = true;
+
+	for (RefPtr<Animation::AnimationCurveInstance>& tli : m_instanceList)
 	{
-		RefPtr<AnimationTimeline>	OwnerTimeLine;
-		UIElement*	TargetElement;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
-		Property*	TargetProperty;
-		Variant		StartValue;
-		bool		Active;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
-	};
+		//if (tli.Active)
+		{
+			bool r = tli->owner->ApplyPropertyAnimation(tli, time);
+			if (r) {
+				m_isFinished = false;
+			}
+		}
+	}
 
-	GUIContext*				m_context;
-	Storyboard*				m_sourceStoryboard;		// 停止するときのキーにしたいので参照カウントを上げる必要はない
-	Array<TimeLineInstance>	m_timeLineInstanceList;
-	float					m_currentTime;
-	bool					m_isFinished;
+	// 終了したら Manager の時間管理から外す…のだが、
+	// この関数の中ではまだイテレート中である。m_isFinished フラグを Manager で見て、そちらで外してもらう。
+}
 
-	friend class Storyboard;
-};
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AnimationClock::AdvanceTime(float deltaTime)
+{
+	m_currentTime += deltaTime;
+	SetTime(m_currentTime);
+}
 
-LN_NAMESPACE_GUI_END
+
 LN_NAMESPACE_END

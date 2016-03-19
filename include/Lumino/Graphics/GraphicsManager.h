@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/Cache.h>
+#include "../Animation/Common.h"
 #include "../Platform/Common.h"
 #include "Common.h"
 #include "../Graphics/FontManager.h"
@@ -45,6 +46,8 @@ public:
 	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
 
 	Viewport* GetMainViewport() { return m_mainViewport; }
+
+	detail::AnimationManager* GetAnimationManager() const { return m_animationManager; }
 
 	/** 関連付けられている FileManager を取得します。*/
 	FileManager* GetFileManager() const { return m_fileManager; }
@@ -111,10 +114,11 @@ public:	// TODO
 		RenderingType			RenderingType;
 		PlatformWindow*			MainWindow;				/**< アプリケーションのメインウィンドウ */
 		Size					backBufferSize;			// バックバッファのサイズ
-		FileManager*			FileManager;			/**< FileManager */
-		bool					PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
-		void*					D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
-		bool					fpuPreserveEnabled = false;
+		detail::AnimationManager*	animationManager = nullptr;
+		FileManager*				FileManager;			/**< FileManager */
+		bool						PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
+		void*						D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
+		bool						fpuPreserveEnabled = false;
 
 		ConfigData()
 			: GraphicsAPI(GraphicsAPI::DirectX9)
@@ -142,6 +146,7 @@ LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDummyTexture() { return m_dummyTexture; }
 
 private:
+	detail::AnimationManager*		m_animationManager;
 	FileManager*					m_fileManager;
 	PlatformWindow*					m_mainWindow;
 	RefPtr<FontManager>				m_fontManager;

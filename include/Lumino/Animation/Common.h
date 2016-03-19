@@ -3,6 +3,13 @@
 #include <Lumino/Base/EnumExtension.h>
 
 LN_NAMESPACE_BEGIN
+class AnimationClock;
+
+namespace detail
+{
+class AnimationManager;
+}
+
 namespace Animation
 {
 class AnimationCurve;
@@ -12,6 +19,7 @@ class Animator;
 class IAnimationTargetAttribute;
 class IAnimationTargetElement;
 struct AnimationTargetAttributeEntity;
+
 
 /// AnimationCurve の値の種類
 enum ValueType

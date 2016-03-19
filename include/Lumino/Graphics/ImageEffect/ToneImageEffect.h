@@ -13,10 +13,16 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ToneImageEffect
 	: public ImageEffect
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	LN_TR_PROPERTY(ToneF, Tone);
+
 public:
 	static ToneImageEffectPtr Create();
 
 	void SetTone(const ToneF& tone);
+
+	void ChangeTone(const ToneF& tone, double time);
 
 protected:
 	ToneImageEffect();
@@ -25,7 +31,7 @@ protected:
 	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) override;
 
 private:
-	Vector4		m_tone;
+	ToneF m_tone;
 
 	struct ShaderInfo
 	{
