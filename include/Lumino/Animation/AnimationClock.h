@@ -13,6 +13,29 @@ struct AnimationClockArgs
 	tr::Property*	targetProperty;
 };
 
+
+namespace detail
+{
+
+	class RefrectionObjectAnimationData
+		: public tr::detail::ReflectionObjectAnimationData
+	{
+	public:
+		virtual ~RefrectionObjectAnimationData() {}
+		Array<RefPtr<AnimationClock>>	playingAnimationClockList;
+	};
+
+	//static inline RefrectionObjectAnimationData* RequestAnimationData(Object* obj)
+	//{
+	//	auto* data = reinterpret_cast<RefrectionObjectAnimationData*>(tr::ReflectionHelper::GetAnimationData(obj));
+	//	if (data == nullptr)
+	//	{
+	//		data = LN_NEW 
+	//	}
+	//}
+
+} // namespace detail
+
 /**
 	@brief		
 */
@@ -23,20 +46,38 @@ public:
 	AnimationClock();
 	virtual ~AnimationClock();
 	// TODO: internal
-	//void Initialize(AnimationClockArgs* list, int listCount);
+	void Initialize(Object* targetObject);
+	const tr::WeakRefPtr<Object>& GetTargetObject() const { return m_targetObject; }
 
 	void SetTime(double time);
 	void AdvanceTime(float deltaTime);
+	bool IsFinished() const { return m_isFinished; }
 
 	template<typename TCurve, typename TValue>
 	void AddAnimationCurve(TCurve* curve, Object* targetObject, const tr::Property* targetProperty, const TValue& startValue)
 	{
-		Animation::AnimationCurveInstance* inst = curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue);
+		// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
+		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(targetObject);
+		for (auto& clock : data->playingAnimationClockList)
+		{
+			for (auto& playingCurveLineInst : clock->m_instanceList)
+			{
+				if (playingCurveLineInst->targetObject == targetObject &&
+					playingCurveLineInst->targetProperty == targetProperty)
+				{
+					playingCurveLineInst->isActive = false;
+				}
+			}
+		}
+
+		RefPtr<Animation::AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
 		m_instanceList.Add(inst);
-		// TODO:再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
+
+		
 	}
 
 private:
+	tr::WeakRefPtr<Object>	m_targetObject;
 	Array<RefPtr<Animation::AnimationCurveInstance>>	m_instanceList;
 	float					m_currentTime;
 	bool					m_isFinished;
@@ -71,5 +112,6 @@ private:
 //
 //	friend class Storyboard;
 };
+
 
 LN_NAMESPACE_END

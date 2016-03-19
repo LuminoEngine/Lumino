@@ -22,6 +22,15 @@ AnimationManager::AnimationManager()
 //-----------------------------------------------------------------------------
 AnimationManager::~AnimationManager()
 {
+	//for (auto& ac : m_clockList)
+	//{
+	//	auto obj = ac->GetTargetObject().Resolve();
+	//	if (!obj.IsNull())
+	//	{
+	//		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(obj);
+	//		data->playingAnimationClockList.Remove(ac);
+	//	}
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -36,9 +45,24 @@ void AnimationManager::Initialize()
 //-----------------------------------------------------------------------------
 void AnimationManager::AdvanceTime(float deltaTime)
 {
-	for (RefPtr<AnimationClock>& ac : m_clockList)
+	// アクティブな AnimationClock の時間を進める。
+	// もし適用対象のオブジェクトが存在しなければ AnimationClock は削除する。
+	auto itr = m_clockList.begin();
+	auto end = m_clockList.end();
+	while (itr != end)
 	{
-		ac->AdvanceTime(deltaTime);
+		if (!(*itr)->IsFinished() && (*itr)->GetTargetObject().IsAlive())
+		{
+			(*itr)->AdvanceTime(deltaTime);
+			++itr;
+		}
+		else
+		{
+			auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>((*itr)->GetTargetObject().Resolve());
+			data->playingAnimationClockList.Remove((*itr));
+			itr = m_clockList.erase(itr);
+			end = m_clockList.end();
+		}
 	}
 }
 

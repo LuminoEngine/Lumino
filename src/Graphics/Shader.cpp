@@ -166,6 +166,17 @@ void Shader::PostInitialize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Shader::TryCommitChanges()
+{
+	for (ShaderVariable* v : GetVariables())
+	{
+		v->TryCommitChanges();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 ShaderVariable* Shader::FindVariable(const TCHAR* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* var : m_variables) {
@@ -989,10 +1000,7 @@ void ShaderPass::Apply()
 	//	}
 	//}
 
-	for (ShaderVariable* v : m_owner->GetVariables())
-	{
-		v->TryCommitChanges();
-	}
+	m_owner->TryCommitChanges();
 
 	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
 }

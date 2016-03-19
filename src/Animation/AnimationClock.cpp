@@ -26,6 +26,14 @@ AnimationClock::~AnimationClock()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void AnimationClock::Initialize(Object* targetObject)
+{
+	m_targetObject = targetObject;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 //void AnimationClock::Initialize(AnimationClockArgs* list, int listCount)
 //{
 //	for (int iArgs = 0; iArgs < listCount; ++iArgs)
@@ -81,7 +89,7 @@ void AnimationClock::SetTime(double time)
 
 	for (RefPtr<Animation::AnimationCurveInstance>& tli : m_instanceList)
 	{
-		//if (tli.Active)
+		if (tli->isActive)
 		{
 			bool r = tli->owner->ApplyPropertyAnimation(tli, time);
 			if (r) {

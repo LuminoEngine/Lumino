@@ -106,6 +106,7 @@ LN_INTERNAL_ACCESS:
 	void PostInitialize();
 	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool IsModifiedVariables() const { return m_modifiedVariables; }
+	void TryCommitChanges();
 
 	ByteBuffer					m_sourceCode;
 	Driver::IShader*			m_deviceObj;

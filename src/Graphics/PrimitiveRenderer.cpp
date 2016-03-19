@@ -516,6 +516,11 @@ void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
 	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
 	CheckUpdateState();	// TODO: Blt に限っては必要ないかも？
+
+	if (shader)
+	{
+		shader->TryCommitChanges();
+	}
 	LN_CALL_CORE_COMMAND(Blt, PrimitiveRendererCore_Blt,
 		(source != nullptr) ? source->GetDeviceObject() : nullptr,
 		(dest != nullptr) ? dest->GetDeviceObject() : nullptr,
@@ -555,6 +560,11 @@ void PrimitiveRenderer::CheckUpdateState()
 	if (m_stateModified)
 	{
 		Flush();
+
+		if (m_userShader != nullptr)
+		{
+			m_userShader->TryCommitChanges();
+		}
 		LN_CALL_CORE_COMMAND(SetState, PrimitiveRendererCore_SetStateCommand, m_transform, m_viewProj, m_viewPixelSize, m_useInternalShader, m_mode,
 			(m_userShader != nullptr) ? m_userShader->m_deviceObj : nullptr,
 			(m_texture != nullptr) ? m_texture->GetDeviceObject() : nullptr);

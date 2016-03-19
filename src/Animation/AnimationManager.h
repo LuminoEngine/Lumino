@@ -20,11 +20,15 @@ public:
 
 	void AdvanceTime(float deltaTime);
 
-	AnimationClock* StartPropertyAnimation(/*AnimationClockArgs* list, int listCount*/)
+	AnimationClock* StartPropertyAnimation(Object* targetObject/*AnimationClockArgs* list, int listCount*/)
 	{
 		auto ac = RefPtr<AnimationClock>::MakeRef();
-		//ac->Initialize(list, listCount);
+		ac->Initialize(targetObject);
 		m_clockList.Add(ac);
+
+		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(targetObject);
+		data->playingAnimationClockList.Add(ac);
+
 		return ac;
 	}
 

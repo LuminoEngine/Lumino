@@ -14,7 +14,7 @@ public:
 	Object*			targetObject;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
 	const tr::Property*	targetProperty;
 	//Variant		StartValue;
-	//bool		Active;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
+	bool			isActive;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
 };
 
 template<typename TValue>
@@ -30,6 +30,7 @@ public:
 		owner = owner_;
 		targetObject = targetObject_;
 		targetProperty = targetProperty_;
+		isActive = true;
 	}
 };
 
@@ -77,6 +78,11 @@ public:
 	virtual double GetLastFrameTime() const { return 0; }
 
 public:
+	static RefPtr<ValueEasingCurve<TValue>> Create(TValue targetValue, double duration, Animation::EasingMode easingMode)
+	{
+		return RefPtr<ValueEasingCurve<TValue>>::MakeRef(targetValue, duration, easingMode);
+	}
+
 	ValueEasingCurve(TValue targetValue, double duration, Animation::EasingMode easingMode)
 		: m_targetValue(targetValue)
 		, m_duration(duration)
