@@ -13,33 +13,33 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsPress(const StringRef& bindingName)
+bool Input::IsPressed(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsPress(bindingName);
+	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsPressed(bindingName);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsOnTrigger(const StringRef& bindingName)
+bool Input::IsOnTriggered(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOnTrigger(bindingName);
+	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOnTriggered(bindingName);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsOffTrigger(const StringRef& bindingName)
+bool Input::IsOffTriggered(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOffTrigger(bindingName);
+	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOffTriggered(bindingName);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsRepeat(const StringRef& bindingName)
+bool Input::IsRepeated(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsRepeat(bindingName);
+	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsRepeated(bindingName);
 }
 
 //-----------------------------------------------------------------------------
@@ -53,9 +53,10 @@ float Input::GetAxisValue(const StringRef& bindingName)
 //=============================================================================
 // InputButton
 //=============================================================================
-const String& InputButtons::Left = _T("Left");
-const String& InputButtons::Right = _T("Right");
-const String& InputButtons::Up = _T("Up");
-const String& InputButtons::Down = _T("Down");
+const String InputButtons::Any = String::GetEmpty();
+const String InputButtons::Left = _T("Left");
+const String InputButtons::Right = _T("Right");
+const String InputButtons::Up = _T("Up");
+const String InputButtons::Down = _T("Down");
 
 LN_NAMESPACE_END

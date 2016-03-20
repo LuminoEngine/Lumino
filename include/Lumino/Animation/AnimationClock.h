@@ -22,6 +22,7 @@ namespace detail
 	{
 	public:
 		virtual ~RefrectionObjectAnimationData() {}
+		virtual void OnPropertyChangedByLocal(Object* owner, const tr::Property* prop);
 		Array<RefPtr<AnimationClock>>	playingAnimationClockList;
 	};
 
@@ -56,7 +57,17 @@ public:
 	template<typename TCurve, typename TValue>
 	void AddAnimationCurve(TCurve* curve, Object* targetObject, const tr::Property* targetProperty, const TValue& startValue)
 	{
-		// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
+		DeactivatePropertyAnimation(targetObject, targetProperty);
+
+		RefPtr<Animation::AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
+		m_instanceList.Add(inst);
+
+		
+	}
+
+	// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
+	static void DeactivatePropertyAnimation(Object* targetObject, const tr::Property* targetProperty)
+	{
 		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(targetObject);
 		for (auto& clock : data->playingAnimationClockList)
 		{
@@ -69,11 +80,6 @@ public:
 				}
 			}
 		}
-
-		RefPtr<Animation::AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
-		m_instanceList.Add(inst);
-
-		
 	}
 
 private:

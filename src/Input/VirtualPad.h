@@ -13,10 +13,10 @@ public:
 	VirtualPad(detail::InputManager* manager);
 	virtual ~VirtualPad();
 
-	bool IsPress(const StringRef& bindingName) const;
-	bool IsOnTrigger(const StringRef& bindingName) const;
-	bool IsOffTrigger(const StringRef& bindingName) const;
-	bool IsRepeat(const StringRef& bindingName) const;
+	bool IsPressed(const StringRef& bindingName) const;
+	bool IsOnTriggered(const StringRef& bindingName) const;
+	bool IsOffTriggered(const StringRef& bindingName) const;
+	bool IsRepeated(const StringRef& bindingName) const;
 	float GetAxisValue(const StringRef& bindingName) const;
 
 	void AttachBinding(InputBinding* binding);
@@ -33,9 +33,13 @@ private:
 		int		ref;
 	};
 
+	void UpdateOneInputState(InputState* state);
+	const InputState* LockupState(const StringRef& bindingName) const;
+
 	detail::InputManager*			m_manager;
 	Array<RefPtr<InputBinding>>		m_bindings;
 	SortedArray<String, InputState>	m_inputStatus;
+	InputState						m_inputStateForAny;
 	int								m_repeatIntervalStart;
 	int								m_repeatIntervalStep;
 };

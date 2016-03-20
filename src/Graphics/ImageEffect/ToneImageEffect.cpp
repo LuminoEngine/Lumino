@@ -83,9 +83,12 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 //-----------------------------------------------------------------------------
 void ToneImageEffect::OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination)
 {
-	m_shader.varTone->SetVector(m_tone);
-	m_shader.varScreenTexture->SetTexture(source);
-	renderingContext->Blt(nullptr, destination, m_shader.shader);
+	if (m_tone != ToneF::Zero)
+	{
+		m_shader.varTone->SetVector(m_tone);
+		m_shader.varScreenTexture->SetTexture(source);
+		renderingContext->Blt(nullptr, destination, m_shader.shader);
+	}
 }
 
 LN_NAMESPACE_GRAPHICS_END

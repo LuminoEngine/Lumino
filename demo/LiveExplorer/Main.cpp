@@ -159,7 +159,7 @@ int main()
 		//auto if1 = ScreenMotionBlurImageEffect::Create();
 		auto if2 = ToneImageEffect::Create();
 		//if2->SetTone(ToneF(-0.1, -0.4, -0.7, 1.0));
-		if2->ChangeTone(ToneF(-0.1, -0.4, -0.7, 1.0), 5);
+		//if2->ChangeTone(ToneF(-0.1, -0.4, -0.7, 1.0), 5);
 		//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if1);
 		CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(if2);
 			//Viewport::GetMainWindowViewport()->AddViewportLayer();

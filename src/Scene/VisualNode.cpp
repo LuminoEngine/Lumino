@@ -63,15 +63,18 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent)
 //-----------------------------------------------------------------------------
 void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
-	// TODO: 視錘台カリング等
+	if (IsVisible())
+	{
+		// TODO: 視錘台カリング等
 
-	// TOOD: Zソート用の距離を計算
+		// TOOD: Zソート用の距離を計算
 
 
-	// このノードは描画できる
-	renderingNodeList->Add(this);
+		// このノードは描画できる
+		renderingNodeList->Add(this);
 
-	SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
+		SceneNode::UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
+	}
 }
 
 //-----------------------------------------------------------------------------

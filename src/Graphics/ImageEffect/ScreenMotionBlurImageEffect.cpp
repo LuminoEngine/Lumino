@@ -4,6 +4,8 @@
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h>
+#include "../../Animation/AnimationManager.h"
+#include <Lumino/Graphics/GraphicsManager.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -11,6 +13,8 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //=============================================================================
 // ScreenMotionBlurImageEffect
 //=============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ScreenMotionBlurImageEffect, ImageEffect);
+LN_TR_PROPERTY_IMPLEMENT(ScreenMotionBlurImageEffect, float, AmountProperty, "Amount", m_amount, tr::PropertyMetadata());
 
 static const byte_t g_ScreenMotionBlurImageEffect_fx_Data[] =
 {
@@ -33,7 +37,7 @@ ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 //-----------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	: m_accumTexture(nullptr)
-	, m_amount(0.25)
+	, m_amount(0)
 	, m_center(0, 0)
 	, m_scale(1.0)
 {
@@ -68,9 +72,33 @@ void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& center, float scale, float duration)
+{
+	if (duration == 0.0f)
+	{
+		AnimationClock::DeactivatePropertyAnimation(this, AmountProperty);
+		SetAmount(amount);
+		SetRadialCenter(center);
+		SetRadialScale(scale);
+	}
+	else
+	{
+		auto anim = Animation::ValueEasingCurve<float>::Create(0, duration, Animation::EasingMode::Linear);
+		AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
+		ac->AddAnimationCurve(anim.GetObjectPtr(), this, AmountProperty, amount);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination)
 {
-	//LN_NOTIMPLEMENTED();
+	if (m_amount == 0.0)
+	{
+		// ˆ—‚·‚é•K—v‚È‚µ
+		return;
+	}
 
 	const Size& sourceSize = source->GetSize();
 

@@ -17,6 +17,9 @@ VirtualPad::VirtualPad(detail::InputManager* manager)
 	, m_repeatIntervalStart(20)	// TODO 要調整。時間の方がいいかも？
 	, m_repeatIntervalStep(5)
 {
+	m_inputStateForAny.current = 0;
+	m_inputStateForAny.state = 0;
+	m_inputStateForAny.ref = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -29,9 +32,9 @@ VirtualPad::~VirtualPad()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsPress(const StringRef& bindingName) const
+bool VirtualPad::IsPressed(const StringRef& bindingName) const
 {
-	auto* state = m_inputStatus.Find(bindingName);
+	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
 	return (state->state > 0);
 }
@@ -39,9 +42,9 @@ bool VirtualPad::IsPress(const StringRef& bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsOnTrigger(const StringRef& bindingName) const
+bool VirtualPad::IsOnTriggered(const StringRef& bindingName) const
 {
-	auto* state = m_inputStatus.Find(bindingName);
+	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
 	return (state->state == 1);
 }
@@ -49,9 +52,9 @@ bool VirtualPad::IsOnTrigger(const StringRef& bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsOffTrigger(const StringRef& bindingName) const
+bool VirtualPad::IsOffTriggered(const StringRef& bindingName) const
 {
-	auto* state = m_inputStatus.Find(bindingName);
+	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
 	return (state->state == -1);
 }
@@ -59,9 +62,9 @@ bool VirtualPad::IsOffTrigger(const StringRef& bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsRepeat(const StringRef& bindingName) const
+bool VirtualPad::IsRepeated(const StringRef& bindingName) const
 {
-	auto* state = m_inputStatus.Find(bindingName);
+	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
 	int s = state->state;
 	return ((s == 1) || (s > m_repeatIntervalStart && (s % m_repeatIntervalStep) == 0));
@@ -135,6 +138,7 @@ void VirtualPad::UpdateFrame()
 	for (auto& state : m_inputStatus) {
 		state.second.current = 0;
 	}
+	m_inputStateForAny.current = 0;
 
 	// m_inputStatus に現在の入力値を展開する
 	for (auto& binding : m_bindings)
@@ -153,19 +157,45 @@ void VirtualPad::UpdateFrame()
 	// 現在の入力値から状態を遷移させる
 	for (auto& state : m_inputStatus)
 	{
-		if (state.second.current > 0.0f) {
-			state.second.state++;	// 押されてる間は毎フレームインクリメントする
-		}
-		else
+		UpdateOneInputState(&state.second);
+
+		if (state.second.current > 0.0f)
 		{
-			if (state.second.state > 0.0f) {
-				state.second.state = -1;	// 離された瞬間のフレーム
-			}
-			else {
-				state.second.state = 0;		// 離された瞬間の次のフレーム
-			}
+			m_inputStateForAny.current = 1.0f;
 		}
 	}
+	UpdateOneInputState(&m_inputStateForAny);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void VirtualPad::UpdateOneInputState(InputState* state)
+{
+	if (state->current > 0.0f) {
+		state->state++;	// 押されてる間は毎フレームインクリメントする
+	}
+	else
+	{
+		if (state->state > 0.0f) {
+			state->state = -1;	// 離された瞬間のフレーム
+		}
+		else {
+			state->state = 0;		// 離された瞬間の次のフレーム
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const VirtualPad::InputState* VirtualPad::LockupState(const StringRef& bindingName) const
+{
+	if (bindingName.IsEmpty())
+	{
+		return &m_inputStateForAny;
+	}
+	return m_inputStatus.Find(bindingName);
 }
 
 LN_NAMESPACE_END

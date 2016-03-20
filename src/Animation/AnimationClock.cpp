@@ -5,6 +5,18 @@
 
 LN_NAMESPACE_BEGIN
 
+namespace detail
+{
+
+	void RefrectionObjectAnimationData::OnPropertyChangedByLocal(Object* owner, const tr::Property* prop)
+	{
+		//AnimationClock::DeactivatePropertyAnimation(owner, prop);
+	}
+
+} // namespace detail
+
+
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
