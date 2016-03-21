@@ -96,7 +96,7 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 {
 	if (m_amount == 0.0)
 	{
-		// ˆ—‚·‚é•K—v‚È‚µ
+		renderingContext->Blt(source, destination);
 		return;
 	}
 
@@ -106,7 +106,7 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
 	{
 		m_accumTexture = LN_NEW RenderTarget();
-		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat_R8G8B8A8);
+		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat_R8G8B8X8);
 		renderingContext->Blt(source, m_accumTexture);
 	}
 

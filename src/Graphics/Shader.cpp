@@ -168,6 +168,18 @@ void Shader::PostInitialize()
 //-----------------------------------------------------------------------------
 void Shader::TryCommitChanges()
 {
+	if (m_viewportPixelSize != nullptr)
+	{
+		Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
+		const Size& size = tex->GetRealSize();
+		float w = size.Width;
+		float h = size.Height;
+		const Vector4& vec = m_viewportPixelSize->GetVector();
+		if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.X != w || vec.Y != h) {
+			m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
+		}
+	}
+
 	for (ShaderVariable* v : GetVariables())
 	{
 		v->TryCommitChanges();
@@ -988,18 +1000,6 @@ const String& ShaderPass::GetName() const
 //-----------------------------------------------------------------------------
 void ShaderPass::Apply()
 {
-	//if (m_owner->m_viewportPixelSize != nullptr)
-	//{
-	//	Texture* tex = m_owner->GetManager()->GetRenderer()->GetRenderTarget(0);
-	//	const Size& size = tex->GetRealSize();
-	//	float w = size.Width;
-	//	float h = size.Height;
-	//	const Vector4& vec = m_owner->m_viewportPixelSize->GetVector();
-	//	if (vec.X != w || vec.Y != h) {
-	//		m_owner->m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
-	//	}
-	//}
-
 	m_owner->TryCommitChanges();
 
 	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);

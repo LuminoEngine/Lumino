@@ -184,6 +184,8 @@ void Viewport::Render()
 	TryRemakeLayerTargets();
 
 	RenderingContext2* context = m_manager->GetRenderingContext();
+	//m_manager->GetRenderingContext()->SetRenderTarget(0, m_secondaryLayerTarget);
+	//context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 	m_manager->GetRenderingContext()->SetRenderTarget(0, m_primaryLayerTarget);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 

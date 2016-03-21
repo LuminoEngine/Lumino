@@ -3,6 +3,9 @@
 //-----------------------------------------------------------------------------
 //=============================================================================
 
+float2          gViewportSize   : VIEWPORTPIXELSIZE;
+static float2   gViewportOffset = ( float2( 0.5, 0.5 ) / gViewportSize );
+
 // êFí≤
 float4 Tone;
 
@@ -33,7 +36,7 @@ VSOutput VSMain(
 {
 	VSOutput o;
 	o.Pos	= float4(pos, 1.0f);
-	o.TexUV	= texUV;
+	o.TexUV	= texUV + gViewportOffset;
 	return o;
 }
 
