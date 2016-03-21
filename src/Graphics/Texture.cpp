@@ -170,6 +170,14 @@ static Driver::IGraphicsDevice* GetDevice()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, int mipLevels)
+{
+	return Create(Size(width, height), format, mipLevels);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	// ロック用のビットマップを作る

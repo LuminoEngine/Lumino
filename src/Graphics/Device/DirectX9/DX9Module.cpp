@@ -20,6 +20,7 @@ DX9Module::MD_D3DXLoadMeshHierarchyFromXInMemory	DX9Module::D3DXLoadMeshHierarch
 DX9Module::MD_D3DXFrameDestroy						DX9Module::D3DXFrameDestroy = NULL;
 DX9Module::MD_D3DXComputeNormals					DX9Module::D3DXComputeNormals = NULL;
 DX9Module::MD_D3DXCreateEffectPool					DX9Module::D3DXCreateEffectPool = NULL;
+DX9Module::MD_D3DXGetShaderConstantTable			DX9Module::D3DXGetShaderConstantTable = NULL;
 DllLoader	DX9Module::m_D3D9Module;
 DllLoader	DX9Module::m_D3Dx9Module;
 
@@ -50,6 +51,7 @@ void DX9Module::Initialize()
 		D3DXFrameDestroy = reinterpret_cast< MD_D3DXFrameDestroy >(m_D3Dx9Module.GetProcAddress("D3DXFrameDestroy"));
 		D3DXComputeNormals = reinterpret_cast< MD_D3DXComputeNormals >(m_D3Dx9Module.GetProcAddress("D3DXComputeNormals"));
 		D3DXCreateEffectPool = reinterpret_cast< MD_D3DXCreateEffectPool >(m_D3Dx9Module.GetProcAddress("D3DXCreateEffectPool"));
+		D3DXGetShaderConstantTable = reinterpret_cast< MD_D3DXGetShaderConstantTable >(m_D3Dx9Module.GetProcAddress("D3DXGetShaderConstantTable"));
 	}
 }
 

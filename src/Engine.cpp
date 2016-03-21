@@ -3,7 +3,7 @@
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
 #include "Input/InputManager.h"
-#include <Lumino/Audio/AudioManager.h>
+#include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
@@ -77,6 +77,22 @@ void Engine::EndRendering()
 void Engine::Render()
 {
 	EngineManager::Instance->Render();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Engine::Exit()
+{
+	EngineManager::Instance->Exit();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Engine::ResetFrameDelay()
+{
+	EngineManager::Instance->ResetFrameDelay();
 }
 
 LN_NAMESPACE_END

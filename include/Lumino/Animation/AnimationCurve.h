@@ -118,17 +118,17 @@ public:
 		// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
 		if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
 		{
-			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_targetValue);
+			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
 		}
 		// 時間が 0 以前の場合は初期値
 		else if (time <= 0)
 		{
-			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue);
+			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue, tr::PropertySetSource::ByAnimation);
 		}
 		// 補間で求める
 		else
 		{
-			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration));
+			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration), tr::PropertySetSource::ByAnimation);
 		}
 
 		return (time < m_duration);
@@ -182,7 +182,7 @@ public:
 	void AddKeyFrame(const FloatKeyFrame& keyFrame);
 
 	/// キーフレーム追加 (線形補間のキーフレーム)
-	void AddKeyFrame(double frame_pos, float value);
+	void AddKeyFrame(double frame_pos, float value, InterpolationMode mode = InterpolationMode_Linear);
 
 	/// 補間結果の取得 (SetTime() で更新される)
 	float GetValue() const { return m_value; }

@@ -49,6 +49,7 @@ set(LN_SOURCES
 
 set(LN_SOURCES_Animation
 	include/Lumino/Animation/AnimationClock.h
+	include/Lumino/Animation/AnimationCurve.h
 	include/Lumino/Animation/AnimationUtilities.h
 	include/Lumino/Animation/Common.h
 	include/Lumino/Animation/EasingFunctions.h
@@ -57,7 +58,6 @@ set(LN_SOURCES_Animation
 	src/Animation/AnimationClip.h
 	src/Animation/AnimationClock.cpp
 	src/Animation/AnimationCurve.cpp
-	src/Animation/AnimationCurve.h
 	src/Animation/AnimationManager.cpp
 	src/Animation/AnimationManager.h
 	src/Animation/AnimationState.cpp
@@ -114,7 +114,6 @@ set(LN_SOURCES_Input
 if (LN_BUILD_AUDIO_MODULE)
 set(LN_SOURCES_Audio
 	include/LuminoAudio.h
-	include/Lumino/Audio/AudioManager.h
 	include/Lumino/Audio/Common.h
 	include/Lumino/Audio/GameAudio.h
 	include/Lumino/Audio/Sound.h
@@ -123,6 +122,7 @@ set(LN_SOURCES_Audio
 	src/Audio/AudioDevice.h
 	src/Audio/AudioHelper.h
 	src/Audio/AudioManager.cpp
+	src/Audio/AudioManager.h
 	src/Audio/AudioPlayer.cpp
 	src/Audio/AudioPlayer.h
 	src/Audio/AudioStream.cpp
@@ -130,6 +130,8 @@ set(LN_SOURCES_Audio
 	src/Audio/AudioUtils.cpp
 	src/Audio/AudioUtils.h
 	src/Audio/GameAudio.cpp
+	src/Audio/GameAudioImpl.cpp
+	src/Audio/GameAudioImpl.h
 	src/Audio/Internal.h
 	src/Audio/MidiDecoder.cpp
 	src/Audio/MidiDecoder.h
@@ -459,12 +461,13 @@ set(LN_SOURCES_Game
 )
 
 set(LN_SOURCES_Application
-	include/Lumino/EngineSettings.h
 	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
 	include/Lumino/CoreObject.h
 	include/Lumino/Engine.h
+	include/Lumino/EngineSettings.h
+	include/Lumino/GameTime.h
 	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Profiler.h
 	include/Lumino/Property.h
@@ -476,6 +479,7 @@ set(LN_SOURCES_Application
 	src/Engine.cpp
 	src/EngineManager.cpp
 	src/EngineManager.h
+	src/GameTime.cpp
 	src/Internal.h
 	src/Profiler.cpp
 	src/Property.cpp

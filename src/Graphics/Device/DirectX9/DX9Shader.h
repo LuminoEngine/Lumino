@@ -29,6 +29,8 @@ public:
 	DX9GraphicsDevice* GetGraphicsDevice() { return m_device; }
 	ID3DXEffect* GetID3DXEffect() { return m_dxEffect; }
 
+	const SamplerState* FindSamplerState(IDirect3DBaseTexture9* dxTexture) const;
+
 public:
 	// override IShader
 	virtual int GetVariableCount() const { return m_variables.GetCount(); }
@@ -43,6 +45,7 @@ private:
 	DX9GraphicsDevice*				m_device;
 	ID3DXEffect*					m_dxEffect;
 	Array<DX9ShaderVariable*>		m_variables;
+	Array<DX9ShaderVariable*>		m_textureVariables;	// GetSamplerState の検索を早くするため、テクスチャ型のものはここに覚えておく
 	Array<DX9ShaderTechnique*>		m_techniques;
 
 
@@ -151,8 +154,10 @@ public:
 	virtual void Apply();
 
 	void EndPass();		// Renderer から呼ばれる
+	void CommitSamplerStatus();
 
 private:
+	DX9Shader*						m_owner;
 	DX9Renderer*					m_renderer;
 	ID3DXEffect*					m_dxEffect;
 	D3DXHANDLE						m_handle;
@@ -160,6 +165,7 @@ private:
 	int								m_passIndex;
 	String							m_name;
 	Array<DX9ShaderAnnotation*>		m_annotations;
+	Array<int>						m_samplerIndices;
 };
 
 } // namespace Driver

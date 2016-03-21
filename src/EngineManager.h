@@ -32,6 +32,8 @@ class EngineManager
 public:
 	static EngineManager*	Instance;
 
+	static EngineManager* GetInstance(EngineManager* priority = nullptr);
+
 public:
 	static const TCHAR*	LogFileName;
 
@@ -48,20 +50,9 @@ public:
 	bool BeginRendering();
 	void EndRendering();
 	void Render();
-
-	/**
-		@brief		遅延をリセットします。
-		@details	リソースのロード等で時間がかかり長い時間更新処理が行われなかった場合、
-					UpdateFrame() は本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
-					その間はアプリケーションが非常に高速に動作しているように見えてしまします。
-					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
-	*/
 	void ResetFrameDelay();
-
-	/**
-		@brief		アプリケーションの終了が要求されているかを確認します。
-	*/
 	bool IsEndRequested() const { return m_endRequested; }
+	void Exit();
 
 
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }
@@ -72,6 +63,8 @@ public:
 	detail::UIManager* GetUIManager() const { return m_uiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
 	Application* GetApplication() const { return m_application; }
+
+	const FpsController& GetFpsController() const { return m_fpsController; }
 
 protected:
 	EngineManager(const EngineSettings& configData);

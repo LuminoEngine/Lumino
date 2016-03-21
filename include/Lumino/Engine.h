@@ -34,6 +34,17 @@ public:
 	static bool BeginRendering();
 	static void EndRendering();
 	static void Render();
+	static void Exit();
+
+	
+	/**
+		@brief		遅延をリセットします。
+		@details	リソースのロード等で時間がかかり長い時間更新処理が行われなかった場合、
+					UpdateFrame() は本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
+					その間はアプリケーションが非常に高速に動作しているように見えてしまします。
+					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
+	*/
+	static void ResetFrameDelay();
 };
 
 LN_NAMESPACE_END

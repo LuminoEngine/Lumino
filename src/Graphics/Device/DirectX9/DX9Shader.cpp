@@ -173,7 +173,13 @@ DX9Shader::DX9Shader(DX9GraphicsDevice* device, ID3DXEffect* dxEffect)
 		handle = m_dxEffect->GetParameter(NULL, idx);
 		if (!handle) break;
 
-		m_variables.Add(LN_NEW DX9ShaderVariable(this, handle));
+		auto* v = LN_NEW DX9ShaderVariable(this, handle);
+		m_variables.Add(v);
+		if (v->GetType() == ShaderVariableType_DeviceTexture)
+		{
+			m_textureVariables.Add(v);
+		}
+
 		++idx;
 	}
 
@@ -237,6 +243,21 @@ void DX9Shader::OnResetDevice()
 	LN_COMCALL(m_dxEffect->OnResetDevice());
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const SamplerState* DX9Shader::FindSamplerState(IDirect3DBaseTexture9* dxTexture) const
+{
+	for (DX9ShaderVariable* v : m_textureVariables)
+	{
+		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->GetTexture());
+		if (tex != nullptr && tex->GetIDirect3DTexture9() == dxTexture)
+		{
+			return &tex->GetSamplerState();
+		}
+	}
+	return nullptr;
+}
 
 //=============================================================================
 // DX9Shader
@@ -610,7 +631,8 @@ IShaderPass* DX9ShaderTechnique::GetPass(int index)
 //
 //-----------------------------------------------------------------------------
 DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex, D3DXHANDLE tech)
-	: m_renderer(static_cast<DX9Renderer*>(owner->GetGraphicsDevice()->GetRenderer()))
+	: m_owner(owner)
+	, m_renderer(static_cast<DX9Renderer*>(owner->GetGraphicsDevice()->GetRenderer()))
 	, m_dxEffect(owner->GetID3DXEffect())
 	, m_handle(handle)
 	, m_technique(tech)
@@ -630,16 +652,35 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 		m_annotations.Add(LN_NEW DX9ShaderAnnotation(owner, anno));
 	}
 
+	// サンプラ変数が指しているサンプラインデックスを取得しておく (もしかしたら連番でもいいのかもしれないが、そんなこと明記されていないので一応)
+	ID3DXConstantTable* constantTablePS;
+	DX9Module::D3DXGetShaderConstantTable(desc.pPixelShaderFunction, &constantTablePS);
+	D3DXCONSTANTTABLE_DESC constDesc;
+	constantTablePS->GetDesc(&constDesc);
+	for (UINT i = 0; i < constDesc.Constants; ++i)
+	{
+		D3DXHANDLE handle = constantTablePS->GetConstant(NULL, i);
+		D3DXCONSTANT_DESC cd;
+		constantTablePS->GetConstantDesc(handle, &cd, NULL);
+		if (cd.RegisterSet == D3DXRS_SAMPLER)
+		{
+			m_samplerIndices.Add(constantTablePS->GetSamplerIndex(handle));
+		}
+		//printf("%s\n", cd.Name);	// これでサンプラ変数が取れる
+	}
+	constantTablePS->Release();
+
 #if 0
+	printf("----------------\n");
 	LPD3DXCONSTANTTABLE constantTable;
 	//D3DXGetShaderConstantTable(desc.pVertexShaderFunction, &constantTable);
-	D3DXGetShaderConstantTable(desc.pPixelShaderFunction, &constantTable);
+	
 
 	D3DXCONSTANTTABLE_DESC constDesc;
 	constantTable->GetDesc(&constDesc);
-	_p(constDesc.Creator);
-	_p(constDesc.Version);
-	_p(constDesc.Constants);
+	//_p(constDesc.Creator);
+	//_p(constDesc.Version);
+	//_p(constDesc.Constants);
 #pragma comment(lib, "d3dx9.lib")
 	for (int i = 0; i < constDesc.Constants; ++i)
 	{
@@ -647,7 +688,6 @@ DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex,
 		D3DXHANDLE handle = constantTable->GetConstant(NULL, i);
 		D3DXCONSTANT_DESC cd;
 		constantTable->GetConstantDesc(handle, &cd, NULL);
-		_p(cd.Name);	// これでサンプラ変数が取れる
 	}
 #endif
 }
@@ -684,6 +724,7 @@ void DX9ShaderPass::Apply()
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
 		m_renderer->SetCurrentShaderPass(this);		// 前の Pass の EndPass() が呼ばれる
 	}
+	CommitSamplerStatus();
 }
 
 //-----------------------------------------------------------------------------
@@ -693,6 +734,49 @@ void DX9ShaderPass::EndPass()
 {
 	m_dxEffect->EndPass();
 	m_dxEffect->End();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void DX9ShaderPass::CommitSamplerStatus()
+{
+	IDirect3DDevice9* dxDevice = m_owner->GetGraphicsDevice()->GetIDirect3DDevice9();
+	IDirect3DBaseTexture9* dxTexture;
+	for (int index : m_samplerIndices)
+	{
+		dxDevice->GetTexture(index, &dxTexture);
+		if (dxTexture != nullptr)
+		{
+			const SamplerState* ss = m_owner->FindSamplerState(dxTexture);
+			if (ss != nullptr)
+			{
+				// フィルタモード
+				{
+					D3DTEXTUREFILTERTYPE table[] =
+					{
+						D3DTEXF_POINT,	// TextureFilterMode_Point
+						D3DTEXF_LINEAR,	// TextureFilterMode_Linear
+					};
+					dxDevice->SetSamplerState(index, D3DSAMP_MAGFILTER, table[ss->FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_MINFILTER, table[ss->FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_MIPFILTER, table[ss->FilterMode]);
+				}
+				// ラップモード
+				{
+					D3DTEXTUREADDRESS table[] =
+					{
+						D3DTADDRESS_WRAP,	// TextureWrapMode_Repeat
+						D3DTADDRESS_CLAMP,	// TextureWrapMode_Clamp
+					};
+					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSU, table[ss->FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSV, table[ss->FilterMode]);
+					dxDevice->SetSamplerState(index, D3DSAMP_ADDRESSW, table[ss->FilterMode]);
+				}
+			}
+			dxTexture->Release();
+		}
+	}
 }
 
 } // namespace Driver

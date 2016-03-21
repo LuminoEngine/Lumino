@@ -50,6 +50,8 @@ public:
 	static const String Right;
 	static const String Up;
 	static const String Down;
+	static const String Ok;
+	static const String Cancel;
 };
 
 LN_NAMESPACE_END

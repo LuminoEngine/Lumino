@@ -79,17 +79,7 @@ public:	// TODO: internal
 		bool	IsItalic;
 		bool	IsAntiAlias;
 
-		Font* CreateFontFromData(FontManager* m) const
-		{
-			Font* font = Font::Create(m);
-			font->SetName(Family);
-			font->SetSize(Size);
-			font->SetEdgeSize(EdgeSize);
-			font->SetBold(IsBold);
-			font->SetItalic(IsItalic);
-			font->SetAntiAlias(IsAntiAlias);
-			return font;
-		}
+		Font* CreateFontFromData(FontManager* m) const;
 	};
 
 	static uint64_t CalcFontSettingHash(const FontData& fontData);

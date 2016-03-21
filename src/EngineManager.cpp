@@ -77,7 +77,7 @@
 #include "Animation/AnimationManager.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include "Input/InputManager.h"
-#include <Lumino/Audio/AudioManager.h>
+#include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
 #include "Graphics/RendererImpl.h"
 #include "Graphics/ProfilerRenderer.h"
@@ -111,6 +111,16 @@ LN_NAMESPACE_BEGIN
 
 EngineManager* EngineManager::Instance = nullptr;
 const TCHAR* EngineManager::LogFileName = _T("lnlog.txt");
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+EngineManager* EngineManager::GetInstance(EngineManager* priority)
+{
+	if (priority != nullptr)
+		return priority;
+	return EngineManager::Instance;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -527,7 +537,10 @@ void EngineManager::InitializeSceneGraphManager()
 //-----------------------------------------------------------------------------
 bool EngineManager::UpdateFrame()
 {
-	m_endRequested = !m_platformManager->DoEvents();
+	if (!m_platformManager->DoEvents())
+	{
+		m_endRequested = true;
+	}
 
 	if (m_animationManager != nullptr)
 	{
@@ -702,6 +715,14 @@ void EngineManager::Render()
 void EngineManager::ResetFrameDelay()
 {
 	m_fpsController.RefreshSystemDelay();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EngineManager::Exit()
+{
+	m_endRequested = true;
 }
 
 //-----------------------------------------------------------------------------

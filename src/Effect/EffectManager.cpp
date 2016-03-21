@@ -133,7 +133,7 @@ void EffectManager::Render()
 void EffectManager::Thread_UpdateFrame()
 {
 	if (m_engine == nullptr) return;
-	m_engine->UpdateFrame(0.016);	// TODO: time
+	m_engine->UpdateFrame(0.016f);	// TODO: time
 }
 
 } // namespace detail

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Animation/AnimationClock.h>
-#include "AnimationCurve.h"
+#include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -10,7 +10,7 @@ namespace detail
 
 	void RefrectionObjectAnimationData::OnPropertyChangedByLocal(Object* owner, const tr::Property* prop)
 	{
-		//AnimationClock::DeactivatePropertyAnimation(owner, prop);
+		AnimationClock::DeactivatePropertyAnimation(owner, prop);
 	}
 
 } // namespace detail

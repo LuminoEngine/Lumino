@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include "AnimationCurve.h"
+#include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
 namespace Animation
@@ -40,8 +40,8 @@ void AnimationCurve::SetTime(double time)
 		if (time > lastTime)
 		{
 			time = fmod(time, lastTime);
-			UpdateValue(time);
 		}
+		UpdateValue(time);
 	}
 	else
 	{
@@ -139,11 +139,12 @@ void FloatAnimationCurve::AddKeyFrame(const FloatKeyFrame& keyFrame)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void FloatAnimationCurve::AddKeyFrame(double frame_pos, float value)
+void FloatAnimationCurve::AddKeyFrame(double frame_pos, float value, InterpolationMode mode)
 {
 	FloatKeyFrame key;
 	key.FrameTime = frame_pos;
 	key.Value = value;
+	key.Mode = mode;
 	AddKeyFrame(key);
 }
 

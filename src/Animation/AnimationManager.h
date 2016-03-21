@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "AnimationCurve.h"
+#include <Lumino/Animation/AnimationCurve.h>
 #include <Lumino/Animation/AnimationClock.h>
 
 LN_NAMESPACE_BEGIN

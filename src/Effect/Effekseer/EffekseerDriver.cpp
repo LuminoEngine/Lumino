@@ -83,7 +83,7 @@
 #include "../Internal.h"
 #include "../../Audio/XAudio2/XAudio2AudioDevice.h"
 #include "../../Graphics/Device/DirectX9/DX9GraphicsDevice.h"
-#include <Lumino/Audio/AudioManager.h>
+#include "../../Audio/AudioManager.h"
 #include <Lumino/Graphics/GraphicsManager.h>
 #include "../EffectManager.h"
 #include "EffekseerDriver.h"

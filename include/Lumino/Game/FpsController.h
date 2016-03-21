@@ -24,7 +24,7 @@ public:
 	/**
 		@brief		前回のフレームから経過したゲーム時間 (秒) を取得します。
 	*/
-	float GetElapsedGameTime() const { return m_elapsedGameTime; }
+	float GetElapsedGameTime() const { return m_elapsedGameTime; }	// TODO: double にしたい
 
 	/**
 		@brief		前回のフレームから経過した実時間 (秒) を取得します。

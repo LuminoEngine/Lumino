@@ -1,7 +1,14 @@
 ﻿
 #pragma once
+#include <ft2build.h>
+#include FT_FREETYPE_H	/* <freetype/freetype.h> */
+#include FT_CACHE_H	/* <freetype/ftcache.h> */
 #include <Lumino/Graphics/Font.h>
 #include <Lumino/Graphics/FontManager.h>
+
+//typedef struct  FT_Bitmap_  FT_Bitmap;
+//typedef signed int  FT_Int;
+//typedef struct  FTC_ImageTypeRec_ FTC_ImageTypeRec;
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

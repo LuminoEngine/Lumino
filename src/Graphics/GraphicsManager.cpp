@@ -706,6 +706,7 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Graphics.h>
+#include "FreeTypeFont.h"
 #include "RendererImpl.h"
 #include "FontGlyphTextureCache.h"
 #include "RenderingThread.h"
@@ -1122,6 +1123,21 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* 
 RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
 {
 	return m_renderer->m_primaryCommandList;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Font* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
+{
+	Font* font = LN_NEW FreeTypeFont(m);
+	font->SetName(Family);
+	font->SetSize(Size);
+	font->SetEdgeSize(EdgeSize);
+	font->SetBold(IsBold);
+	font->SetItalic(IsItalic);
+	font->SetAntiAlias(IsAntiAlias);
+	return font;
 }
 
 LN_NAMESPACE_GRAPHICS_END

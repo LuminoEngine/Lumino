@@ -2,7 +2,7 @@
 #pragma once
 #include "Common.h"
 #include <Lumino/Reflection/ReflectionObject.h>
-#include "../../src/Animation/AnimationCurve.h"
+#include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
 

@@ -1,5 +1,7 @@
 ﻿
 #include "LNInternal.h"
+#include "../../../src/Audio/AudioManager.h"
+#include "../../../src/Audio/GameAudioImpl.h"
 #include "../include/LNAudio.h"
 
 //=============================================================================

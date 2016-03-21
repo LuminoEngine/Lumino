@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/EnumExtension.h>
+#include <Lumino/Reflection/ReflectionObject.h>
 
 LN_NAMESPACE_BEGIN
 class AnimationClock;

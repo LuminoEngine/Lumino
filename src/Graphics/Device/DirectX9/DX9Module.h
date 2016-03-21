@@ -97,6 +97,10 @@ public:
 	typedef HRESULT(WINAPI *MD_D3DXCreateEffectPool)(
 		LPD3DXEFFECTPOOL* ppPool);
 
+	typedef HRESULT(WINAPI *MD_D3DXGetShaderConstantTable)(
+		CONST DWORD* pFunction,
+		LPD3DXCONSTANTTABLE* ppConstantTable);
+
 public:
 
 	/// 初期化
@@ -114,6 +118,7 @@ public:
 	static MD_D3DXFrameDestroy						D3DXFrameDestroy;
 	static MD_D3DXComputeNormals					D3DXComputeNormals;
 	static MD_D3DXCreateEffectPool					D3DXCreateEffectPool;
+	static MD_D3DXGetShaderConstantTable			D3DXGetShaderConstantTable;
 
 	//static IDirect3D9* Direct3DCreate9(UINT SDKVersion);
 	//static HRESULT D3DXCreateTextureFromFileInMemoryEx(LPDIRECT3DDEVICE9 pDevice, LPCVOID pSrcData, UINT SrcDataSize, UINT Width, UINT Height, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO* pSrcInfo, PALETTEENTRY* pPalette, LPDIRECT3DTEXTURE9* ppTexture);

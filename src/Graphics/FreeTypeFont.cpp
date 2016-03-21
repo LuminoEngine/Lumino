@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H	/* <freetype/freetype.h> */
 #include FT_CACHE_H	/* <freetype/ftcache.h> */
@@ -8,6 +8,7 @@
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
 #include <Lumino/Base/Hash.h>
+#include <Lumino/Graphics/GraphicsManager.h>
 #include "FreeTypeFont.h"
 #include "BitmapFont.h"
 
@@ -21,9 +22,10 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Font* Font::Create(FontManager* manager)
+FontPtr Font::Create()
 {
-	return LN_NEW FreeTypeFont(manager);
+	FontPtr obj(LN_NEW FreeTypeFont(detail::GetGraphicsManager(nullptr)->GetFontManager()), false);
+	return obj;
 }
 
 //=============================================================================

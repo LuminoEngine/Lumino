@@ -1,10 +1,9 @@
 
 #pragma once
-
-#include "Common.h"
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/IO/FileManager.h>
+#include <Lumino/Audio/Common.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
@@ -13,6 +12,7 @@ class AudioDevice;
 class AudioStream;
 class AudioPlayer;
 class Sound;
+class GameAudioImpl;
 
 /*
 	@brief	音声機能の管理クラスです。
@@ -42,6 +42,8 @@ public:
 	};
 
 public:
+	static AudioManagerImpl* GetInstance(AudioManagerImpl* priority = nullptr);
+
 	static AudioManagerImpl* Create(const Settings& settings);
 
 public:
@@ -52,11 +54,9 @@ public:
 	/// オンメモリorストリーミング自動選択の音声データバイト数閾値
 	void SetAutoPlayTypeSelectThreshold(uint32_t threshold) { mOnMemoryLimitSize = threshold; }
 
-	/// GameAudio クラスの取得
-	GameAudio* GetGameAudio() { return m_gameAudio; }
+	GameAudioImpl* GetGameAudio() const { return m_gameAudio; }
 
-	/// デバイスクラスの取得
-	AudioDevice* GetAudioDevice() { return m_audioDevice; }
+	AudioDevice* GetAudioDevice() const { return m_audioDevice; }
 
 //LN_INTERNAL_ACCESS:
 public:	// TODO
@@ -102,7 +102,7 @@ private:
 	FileManager*			m_fileManager;
 	AudioDevice*			m_audioDevice;		///< PCM 再生用デバイスクラス
 	AudioDevice*			m_midiAudioDevice;	///< MIDI 再生用デバイスクラス (内部処理が PCM とは全然違うので、1つの AudioDevice にまとめない方が管理が楽)
-	GameAudio*				m_gameAudio;
+	GameAudioImpl*				m_gameAudio;
 	uint32_t				mOnMemoryLimitSize;
 	Threading::Mutex			m_resourceMutex;
 

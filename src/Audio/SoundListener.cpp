@@ -1,7 +1,7 @@
 
 #include "Internal.h"
 #include <Lumino/Audio/SoundListener.h>
-#include <Lumino/Audio/AudioManager.h>
+#include "AudioManager.h"
 #include "AudioDevice.h"
 
 LN_NAMESPACE_BEGIN

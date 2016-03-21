@@ -75,6 +75,15 @@ public:
 
 	/**
 		@brief		指定したサイズのテクスチャを作成します。
+		@param[in]	width		: テクスチャの幅 (ピクセル単位)
+		@param[in]	height		: テクスチャの高さ (ピクセル単位)
+		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
+		@param[in]	format		: テクスチャのピクセルフォーマット
+	*/
+	static Texture2DPtr Create(int width, int height, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
+	
+	/**
+		@brief		指定したサイズのテクスチャを作成します。
 		@param[in]	size		: テクスチャサイズ (ピクセル単位)
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 		@param[in]	format		: テクスチャのピクセルフォーマット

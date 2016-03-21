@@ -55,9 +55,10 @@ class Font
 {
 public:
 
+	static FontPtr Create();
 
-	static Font* Create(FontManager* manager);			// TODO: manager を何とかしたい
-	static Font* CreateBuiltInBitmapFont(FontManager* manager, int size);			// TODO: manager を何とかしたい
+
+	static Font* CreateBuiltInBitmapFontInternal(FontManager* manager, int size);			// TODO: manager を何とかしたい
 
 public:
 

@@ -11,12 +11,13 @@
 #endif
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/ASyncIOObject.h>
-#include <Lumino/Audio/AudioManager.h>
 #include <Lumino/Audio/Sound.h>
 #include <Lumino/Audio/GameAudio.h>
 #include "AudioUtils.h"
 #include "WaveDecoder.h"
 #include "MidiDecoder.h"
+#include "GameAudioImpl.h"
+#include "AudioManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
@@ -46,6 +47,16 @@ LN_NAMESPACE_AUDIO_BEGIN
 //=============================================================================
 
 AudioManagerImpl* Internal::AudioManager = NULL;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+AudioManagerImpl* AudioManagerImpl::GetInstance(AudioManagerImpl* priority)
+{
+	if (priority != nullptr)
+		return priority;
+	return Internal::AudioManager;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -101,7 +112,7 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	m_audioStreamCache = LN_NEW CacheManager(settings.StreamCacheObjectCount, settings.StreamSourceCacheMemorySize);
 
 	// GameAudio
-	m_gameAudio = LN_NEW GameAudio(this);
+	m_gameAudio = LN_NEW GameAudioImpl(this);
 
 	// ポーリングスレッド開始
 	m_pollingThread.Start(Delegate<void()>(this, &AudioManagerImpl::Thread_Polling));

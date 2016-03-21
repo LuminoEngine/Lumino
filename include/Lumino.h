@@ -4,6 +4,8 @@
 #include <LuminoCore.h>
 #include <LuminoMath.h>
 
+#include "Lumino/Animation/AnimationCurve.h"
+
 #include "Lumino/IO/ASyncIOObject.h"
 #include "Lumino/IO/FileManager.h"
 
@@ -74,6 +76,7 @@
 #include "Lumino/AutoReleasePool.h"
 #include "Lumino/Profiler.h"
 #include "Lumino/Engine.h"
+#include "Lumino/GameTime.h"
 
 #include "LuminoAudio.h"
 #include "LuminoScene.h"

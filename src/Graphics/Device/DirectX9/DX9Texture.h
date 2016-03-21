@@ -19,6 +19,7 @@ public:
 public:
 	virtual IDirect3DTexture9* GetIDirect3DTexture9() = 0;
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() = 0;
+	virtual const SamplerState& GetSamplerState() const { LN_THROW(0, InvalidOperationException); };
 
 protected:
 	DX9GraphicsDevice*	m_graphicsDevice;
@@ -55,6 +56,7 @@ public:
 	// override GLTextureBase
 	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return m_dxTexture; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
+	virtual const SamplerState& GetSamplerState() const { return m_samplerState; }
 
 private:
 	IDirect3DTexture9*		m_dxTexture;	///< Direct3DTexture 本体
@@ -85,7 +87,7 @@ public:
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const Size& GetSize() const { return m_size; }
 	virtual const Size& GetRealSize() const { return m_realSize; }
-	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetSamplerState(const SamplerState& state) { m_samplerState = state; }
 	virtual void SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual Bitmap* Lock();
 	virtual void Unlock();
@@ -93,6 +95,7 @@ public:
 	// override GLTextureBase
 	virtual IDirect3DTexture9* GetIDirect3DTexture9() { return m_dxTexture; }
 	virtual IDirect3DSurface9* GetIDirect3DSurface9() { return m_dxSurface; }
+	virtual const SamplerState& GetSamplerState() const { return m_samplerState; }
 
 	static void LockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const Size& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap);
 	static void UnlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap);
@@ -104,6 +107,7 @@ private:
 	Size					m_size;
 	Size					m_realSize;
 	int						m_mipLevels;
+	SamplerState			m_samplerState;
 
 	IDirect3DSurface9*		m_lockedSystemSurface;
 	ByteBuffer				m_lockedBuffer;

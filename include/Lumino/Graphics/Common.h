@@ -44,6 +44,10 @@ class ShaderVariable;
 class ShaderTechnique;
 class ShaderPass;
 
+class Font;
+typedef RefPtr<Font>		FontPtr;
+
+
 class PainterEngine;
 class Helper;
 class RenderingCommandList;

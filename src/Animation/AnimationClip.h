@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Animation/Common.h>
-#include "AnimationCurve.h"
+#include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
 namespace Animation
