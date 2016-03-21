@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 */
 class Model
 	: public RefObject
-	, public Animation::IAnimationTargetElement
+	, public IAnimationTargetElement
 {
 public:
 	Model();
@@ -25,7 +25,7 @@ public:
 	void Create(detail::ModelManager* manager, const PathName& filePath);
 
 	/// このモデルに対するアニメーションを行うクラスの取得
-	Animation::Animator* GetAnimator() { return m_animator; }
+	Animator* GetAnimator() { return m_animator; }
 
 	/// ボーン行列を、ルートボーンから階層的に更新する
 	/// (アニメーション適用後に呼び出す)
@@ -51,12 +51,12 @@ public:
 
 protected:
 	virtual int GetAnimationTargetAttributeCount() const { return m_boneList.GetCount(); }
-	virtual Animation::IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) { return m_boneList[index]; }
+	virtual IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) { return m_boneList[index]; }
 
 private:
 	detail::ModelManager*		m_manager;
 	RefPtr<ModelCore>			m_modelCore;
-	RefPtr<Animation::Animator>	m_animator;		// TODO: ボーンアニメと表情アニメは分けるべきかも？
+	RefPtr<Animator>			m_animator;		// TODO: ボーンアニメと表情アニメは分けるべきかも？
 	ModelBoneList				m_boneList;					///< 全ボーンリスト
 	ModelBoneList				m_rootBoneList;				///< ルートボーンリスト (親を持たないボーンリスト)
 	Matrix*						m_skinningMatrices;			///< キニングに使用する最終ボーン行列 (要素数はボーン数)

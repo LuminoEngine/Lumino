@@ -3,8 +3,6 @@
 #include "AnimationClip.h"
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
 
 //=============================================================================
 // AnimationClip
@@ -46,6 +44,5 @@ void AnimationClip::AddAnimationCurve(const String& relativePath, AnimationCurve
 //{
 //}
 
-} // namespace Animation
 LN_NAMESPACE_END
 

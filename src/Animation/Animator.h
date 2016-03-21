@@ -4,8 +4,6 @@
 #include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
 
 /// アニメーションしたいオブジェクトを保持するオブジェクトのインターフェイス
 class IAnimationTargetElement
@@ -94,5 +92,4 @@ private:
 	//AnimationApplyTargetStateArray	mAnimationApplyTargetStateArray;
 };
 
-} // namespace Animation
 LN_NAMESPACE_END

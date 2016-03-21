@@ -929,7 +929,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 					{
 						// 
 						float lenMax = ((*lastPoint) - cmd->endPoint).GetLength() * 2;
-						int divCount = lenMax / 10;// TODO:pixel
+						int divCount = (int)(lenMax / 10);// TODO:pixel
 						for (float i = 0; i < divCount; i += 1.f)
 						{
 							float t = i / divCount;
@@ -1988,7 +1988,7 @@ GraphicsContext::~GraphicsContext()
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
-	Matrix proj = Matrix::Perspective2DLH(size.Width, size.Height, minZ, maxZ);
+	Matrix proj = Matrix::Perspective2DLH((float)size.Width, (float)size.Height, minZ, maxZ);
 	m_drawingContext.SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);

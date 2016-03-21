@@ -13,7 +13,7 @@ public:
 	typedef std::function< float(float, float, float, float) >	FloatEasingFunction;
 
 	template<typename TValue, typename TTime>
-	static std::function< TValue(TTime, TValue, TValue, TTime) > SelectEasingFunction(Animation::EasingMode mode)
+	static std::function< TValue(TTime, TValue, TValue, TTime) > SelectEasingFunction(EasingMode mode)
 	{
 		typedef TValue(*EasingFunctionPtr)(TTime, TValue, TValue, TTime);
 		EasingFunctionPtr table[] =
@@ -41,7 +41,7 @@ public:
 			EasingFunctions::EaseOutCirc,
 			EasingFunctions::EaseInOutCirc,
 		};
-		assert(LN_ARRAY_SIZE_OF(table) == Animation::EasingMode::GetMemberCount());
+		assert(LN_ARRAY_SIZE_OF(table) == EasingMode::GetMemberCount());
 		return table[mode];
 	}
 

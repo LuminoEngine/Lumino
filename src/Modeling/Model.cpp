@@ -80,7 +80,7 @@ void Model::Create(detail::ModelManager* manager, const PathName& filePath)
 
 
 		// アニメーション管理
-		m_animator.Attach(LN_NEW Animation::Animator());
+		m_animator.Attach(LN_NEW Animator());
 		m_animator->Create(this);
 	}
 }

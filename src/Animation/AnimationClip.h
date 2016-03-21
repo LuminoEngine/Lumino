@@ -4,8 +4,6 @@
 #include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
 
 class AnimationClip
 	: public RefObject
@@ -56,6 +54,5 @@ private:
 	AnimationCurveEntryList		m_animationCurveEntryList;
 };
 
-} // namespace Animation
 LN_NAMESPACE_END
 

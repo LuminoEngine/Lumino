@@ -101,8 +101,6 @@
 #include "Animator.h"
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
 
 //=============================================================================
 // Animator
@@ -242,5 +240,4 @@ AnimationState* Animator::FindAnimationState(const TCHAR* clipName)
 	return *state;
 }
 
-} // namespace Animation
 LN_NAMESPACE_END

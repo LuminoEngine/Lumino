@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 /// ボーンのインスタンスクラス
 class ModelBone
 	: public RefObject
-	, public Animation::IAnimationTargetAttribute
+	, public IAnimationTargetAttribute
 {
 public:
 	ModelBone();
@@ -37,7 +37,7 @@ public:
 protected:
 	// override Animation::IAnimationTargetAttribute
 	virtual const String& GetAnimationTargetName() const { return m_core->Name; }
-	virtual void SetAnimationTargetValue(Animation::ValueType type, const void* value);
+	virtual void SetAnimationTargetValue(ValueType type, const void* value);
 
 private:
 	RefPtr<ModelBoneCore>	m_core;				///< 共有データクラス

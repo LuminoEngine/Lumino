@@ -11,8 +11,6 @@ namespace detail
 class AnimationManager;
 }
 
-namespace Animation
-{
 class AnimationCurve;
 class AnimationClip;
 class AnimationState;
@@ -118,5 +116,4 @@ LN_ENUM_REFLECTION(EasingMode,
 	EaseInOutCirc);
 LN_ENUM_DECLARE(EasingMode);
 
-} // namespace Animation
 LN_NAMESPACE_END

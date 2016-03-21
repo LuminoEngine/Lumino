@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 
 struct AnimationClockArgs
 {
-	Animation::AnimationCurve* curve;
+	AnimationCurve* curve;
 	Object*			targetObject;
 	tr::Property*	targetProperty;
 };
@@ -59,7 +59,7 @@ public:
 	{
 		DeactivatePropertyAnimation(targetObject, targetProperty);
 
-		RefPtr<Animation::AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
+		RefPtr<AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
 		m_instanceList.Add(inst);
 
 		
@@ -84,7 +84,7 @@ public:
 
 private:
 	tr::WeakRefPtr<Object>	m_targetObject;
-	Array<RefPtr<Animation::AnimationCurveInstance>>	m_instanceList;
+	Array<RefPtr<AnimationCurveInstance>>	m_instanceList;
 	float					m_currentTime;
 	bool					m_isFinished;
 

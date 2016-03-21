@@ -4,8 +4,6 @@
 #include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
 
 /// アニメーションの値を設定するオブジェクトのインターフェイス
 class IAnimationTargetAttribute
@@ -74,5 +72,4 @@ private:
 	float					m_addingBlendWeight;
 };
 
-} // namespace Animation
 LN_NAMESPACE_END

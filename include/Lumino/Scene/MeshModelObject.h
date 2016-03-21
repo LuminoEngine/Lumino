@@ -20,7 +20,7 @@ public:
 
 
 	/// このモデルに対するアニメーションを行うクラスの取得
-	Animation::Animator* GetAnimator() { return m_model->GetAnimator(); }
+	Animator* GetAnimator() { return m_model->GetAnimator(); }
 
 protected:
 	MeshModelObject();

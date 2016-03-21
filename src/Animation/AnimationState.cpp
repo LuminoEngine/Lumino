@@ -5,8 +5,6 @@
 #include "AnimationState.h"
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
 
 //=============================================================================
 // AnimationState
@@ -165,5 +163,4 @@ void AnimationState::SetLocalTime(double time)
 	}
 }
 
-} // namespace Animation
 LN_NAMESPACE_END

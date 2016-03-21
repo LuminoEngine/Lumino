@@ -4,8 +4,7 @@
 #include <Lumino/Animation/AnimationUtilities.h>
 
 LN_NAMESPACE_BEGIN
-namespace Animation
-{
+
 class AnimationCurveInstance
 	: public RefObject
 {
@@ -78,15 +77,15 @@ public:
 	virtual double GetLastFrameTime() const { return 0; }
 
 public:
-	static RefPtr<ValueEasingCurve<TValue>> Create(TValue targetValue, double duration, Animation::EasingMode easingMode)
+	static RefPtr<ValueEasingCurve<TValue>> Create(TValue targetValue, double duration, EasingMode easingMode)
 	{
 		return RefPtr<ValueEasingCurve<TValue>>::MakeRef(targetValue, duration, easingMode);
 	}
 
-	ValueEasingCurve(TValue targetValue, double duration, Animation::EasingMode easingMode)
+	ValueEasingCurve(TValue targetValue, double duration, EasingMode easingMode)
 		: m_targetValue(targetValue)
 		, m_duration(duration)
-		, m_easingMode(Animation::EasingMode::Linear)
+		, m_easingMode(EasingMode::Linear)
 		, m_easingFunction()
 	{
 		SetEasingMode(easingMode);
@@ -97,7 +96,7 @@ public:
 	//void SetTargetName(const String& name) { m_targetName = name; }
 	//void SetTargetProperty(const Property* prop) { m_targetProperty = prop; }
 	void SetTargetValue(TValue value) { m_targetValue = value; }
-	void SetEasingMode(Animation::EasingMode easingMode)
+	void SetEasingMode(EasingMode easingMode)
 	{
 		m_easingMode = easingMode;
 		m_easingFunction = AnimationUtilities::SelectEasingFunction<TValue, double>(m_easingMode);
@@ -135,9 +134,9 @@ public:
 	}
 
 private:
-	TValue					m_targetValue;
-	Animation::EasingMode	m_easingMode;
-	double					m_duration;
+	TValue		m_targetValue;
+	EasingMode	m_easingMode;
+	double		m_duration;
 	std::function< TValue(double, TValue, TValue, double) >	m_easingFunction;
 };
 
@@ -283,5 +282,4 @@ private:
 	SQTTransform	m_transform;
 };
 
-} // namespace Animation
 LN_NAMESPACE_END
