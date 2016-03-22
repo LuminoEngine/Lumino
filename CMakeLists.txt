@@ -179,8 +179,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/DrawingContext.h
-	include/Lumino/Graphics/Font.h
-	include/Lumino/Graphics/GlyphRun.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsResourceObject.h
@@ -204,21 +202,11 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
 	external/GL/glew.c
 	src/Graphics/Bitmap.cpp
-	src/Graphics/BitmapFont.cpp
-	src/Graphics/BitmapFont.h
 	src/Graphics/BitmapPainter.cpp
 	src/Graphics/Color.cpp
 	src/Graphics/DrawingContext.cpp
-	src/Graphics/Font.cpp
-	src/Graphics/FontGlyphTextureCache.cpp
-	src/Graphics/FontGlyphTextureCache.h
-	src/Graphics/FontManager.cpp
-	src/Graphics/FontManager.h
-	src/Graphics/FreeTypeFont.cpp
-	src/Graphics/FreeTypeFont.h
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h
-	src/Graphics/GlyphRun.cpp
 	src/Graphics/Graphics.cpp
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsHelper.h
@@ -248,10 +236,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Shader.cpp
 	src/Graphics/SpriteRenderer.cpp
 	src/Graphics/SpriteRendererImpl.h
-	src/Graphics/TextLayoutEngine.cpp
-	src/Graphics/TextLayoutEngine.h
-	src/Graphics/TextRenderer.cpp
-	src/Graphics/TextRenderer.h
 	src/Graphics/SwapChain.cpp
 	src/Graphics/Texture.cpp
 	src/Graphics/Utils.cpp
@@ -283,6 +267,24 @@ set(LN_SOURCES_Graphics_Device
 	src/Graphics/Device/OpenGL/GLTexture.h
 	src/Graphics/Device/OpenGL/GLVertexBuffer.cpp
 	src/Graphics/Device/OpenGL/GLVertexBuffer.h
+)
+set(LN_SOURCES_Graphics_Text
+	include/Lumino/Graphics/Text/Font.h
+	include/Lumino/Graphics/Text/GlyphRun.h
+	src/Graphics/Text/BitmapFont.cpp
+	src/Graphics/Text/BitmapFont.h
+	src/Graphics/Text/Font.cpp
+	src/Graphics/Text/FontGlyphTextureCache.cpp
+	src/Graphics/Text/FontGlyphTextureCache.h
+	src/Graphics/Text/FontManager.cpp
+	src/Graphics/Text/FontManager.h
+	src/Graphics/Text/FreeTypeFont.cpp
+	src/Graphics/Text/FreeTypeFont.h
+	src/Graphics/Text/GlyphRun.cpp
+	src/Graphics/Text/TextLayoutEngine.cpp
+	src/Graphics/Text/TextLayoutEngine.h
+	src/Graphics/Text/TextRenderer.cpp
+	src/Graphics/Text/TextRenderer.h
 )
 
 set(LN_SOURCES_Effect
@@ -602,6 +604,7 @@ source_group("Audio"			FILES ${LN_SOURCES_Audio})
 source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
+source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
 source_group("Modeling"			FILES ${LN_SOURCES_Modeling})
@@ -622,6 +625,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Physics}
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
+	${LN_SOURCES_Graphics_Text}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Modeling}

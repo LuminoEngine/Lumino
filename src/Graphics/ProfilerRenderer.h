@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 #include <Lumino/Profiler.h>
-#include <Lumino/Graphics/Font.h>
-#include <Lumino/Graphics/GlyphRun.h>
+#include <Lumino/Graphics/Text/Font.h>
+#include <Lumino/Graphics/Text/GlyphRun.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/Painter.h>
 

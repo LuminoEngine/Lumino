@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/Graphics/GlyphRun.h>
+#include <Lumino/Graphics/Text/GlyphRun.h>
 #include "FontGlyphTextureCache.h"
 
 LN_NAMESPACE_BEGIN

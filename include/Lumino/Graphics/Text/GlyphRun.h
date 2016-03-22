@@ -2,7 +2,7 @@
 	@file	GlyphRun.h
 */
 #pragma once
-#include "Common.h"
+#include "../Common.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

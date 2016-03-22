@@ -2,7 +2,7 @@
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Bitmap.h>
-#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Painter.h>
 #include "PainterEngine.h"
 

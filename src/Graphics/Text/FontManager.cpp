@@ -55,7 +55,7 @@ AfterEffects は、"テキストレイヤー" なるものに "エフェクト" 
 #include FT_TRUETYPE_TABLES_H	/* <freetype/tttables.h> */
 #include FT_SFNT_NAMES_H
 #include <Lumino/Base/Hash.h>
-#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Text/Font.h>
 #include "FontManager.h"
 #include "FreeTypeFont.h"
 

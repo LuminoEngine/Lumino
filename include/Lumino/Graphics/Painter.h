@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include "Common.h"
-#include "../Graphics/Font.h"
+#include "../Graphics/Text/Font.h"
 #include "Texture.h"
-#include "GlyphRun.h"
+#include "Text/GlyphRun.h"
 
 
 LN_NAMESPACE_BEGIN

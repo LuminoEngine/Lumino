@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Text/Font.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

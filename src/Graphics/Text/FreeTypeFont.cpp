@@ -1,5 +1,5 @@
 ﻿
-#include "Internal.h"
+#include "../Internal.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H	/* <freetype/freetype.h> */
 #include FT_CACHE_H	/* <freetype/ftcache.h> */
@@ -8,7 +8,7 @@
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
 #include <Lumino/Base/Hash.h>
-#include "GraphicsManager.h"
+#include "../GraphicsManager.h"
 #include "FreeTypeFont.h"
 #include "BitmapFont.h"
 

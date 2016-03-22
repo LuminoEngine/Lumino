@@ -4,8 +4,8 @@
 #include <Lumino/Animation/Common.h>
 #include <Lumino/Platform/Common.h>
 #include <Lumino/Graphics/Common.h>
-#include "FontManager.h"	// TODO: remove
-#include <Lumino/Graphics/Font.h>
+#include "Text/FontManager.h"	// TODO: remove
+#include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/SwapChain.h>
 
 LN_NAMESPACE_BEGIN

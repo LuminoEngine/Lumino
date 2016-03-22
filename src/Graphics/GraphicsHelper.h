@@ -5,7 +5,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Texture.h>
-#include <Lumino/Graphics/GlyphRun.h>
+#include <Lumino/Graphics/Text/GlyphRun.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

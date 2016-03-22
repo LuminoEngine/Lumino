@@ -171,7 +171,7 @@
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/Shader.h>
-#include "TextRenderer.h"
+#include "Text/TextRenderer.h"
 #include "PrimitiveRenderer.h"
 #include "RendererImpl.h"
 

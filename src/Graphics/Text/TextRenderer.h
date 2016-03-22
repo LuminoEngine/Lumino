@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Bitmap.h>
-#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Painter.h>
-#include "PainterEngine.h"
+#include "../PainterEngine.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

@@ -1,7 +1,7 @@
 ﻿
-#include "Internal.h"
+#include "../Internal.h"
 #include <algorithm>
-#include "GraphicsManager.h"
+#include "../GraphicsManager.h"
 #include "BitmapFont.h"
 
 LN_NAMESPACE_BEGIN
@@ -13,7 +13,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 {
-#include "../Graphics/Resource/BitmapFont1_h7_6x15.png.h"
+#include "../../Graphics/Resource/BitmapFont1_h7_6x15.png.h"
 };
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 

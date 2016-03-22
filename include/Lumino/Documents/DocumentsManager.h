@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Graphics/Font.h"
+#include "../Graphics/Text/Font.h"
 #include "../../../src/Graphics/GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN

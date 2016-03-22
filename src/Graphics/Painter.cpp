@@ -6,8 +6,8 @@
 #include "PainterEngine.h"
 #include "RenderingCommand.h"
 #include "GraphicsHelper.h"
-#include "TextLayoutEngine.h"
-#include "FontGlyphTextureCache.h"
+#include "Text/TextLayoutEngine.h"
+#include "Text/FontGlyphTextureCache.h"
 
 
 LN_NAMESPACE_BEGIN

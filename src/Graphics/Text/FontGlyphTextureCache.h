@@ -6,7 +6,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Texture.h>
-#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Text/Font.h>
 #include "TextLayoutEngine.h"	// TODO
 
 

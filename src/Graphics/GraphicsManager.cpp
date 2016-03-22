@@ -694,7 +694,7 @@
 */
 #include "../Internal.h"
 #include <Lumino/Base/Hash.h>
-#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/Text/Font.h>
 
 #if defined(LN_OS_WIN32)
 #include "Device/DirectX9/DX9GraphicsDevice.h"
@@ -706,12 +706,12 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Graphics.h>
-#include "FreeTypeFont.h"
+#include "Text/FreeTypeFont.h"
 #include "RendererImpl.h"
-#include "FontGlyphTextureCache.h"
+#include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "PainterEngine.h"
-#include "TextRenderer.h"
+#include "Text/TextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>

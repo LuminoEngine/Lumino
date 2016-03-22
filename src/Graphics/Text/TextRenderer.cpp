@@ -12,11 +12,11 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 #include "../Internal.h"
 #include <algorithm>
 #include <Lumino/Graphics/GraphicsException.h>
-#include "Device/GraphicsDriverInterface.h"
-#include "RendererImpl.h"
-#include "RenderingCommand.h"
+#include "../Device/GraphicsDriverInterface.h"
+#include "../RendererImpl.h"
+#include "../RenderingCommand.h"
 #include "TextRenderer.h"
-#include "GraphicsHelper.h"
+#include "../GraphicsHelper.h"
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
 
@@ -108,7 +108,7 @@ struct TextRendererCore_FlushCommand : public RenderingCommand
 	
 static const byte_t g_TextRenderer_fx_Data[] =
 {
-#include "Resource/TextRenderer.fx.h"
+#include "../Resource/TextRenderer.fx.h"
 };
 static const size_t g_TextRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TextRenderer_fx_Data);
 

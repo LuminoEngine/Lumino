@@ -1,8 +1,8 @@
 ﻿
 #pragma once
-#include "Common.h"
-#include "Color.h"
-#include "Bitmap.h"
+#include "../Common.h"
+#include "../Color.h"
+#include "../Bitmap.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
