@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/Texture.h>
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
@@ -31,7 +31,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 RefPtr<Shader> Shader::Create(const StringRef& filePath)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(detail::GetGraphicsManager(nullptr), filePath);
+	obj->Initialize(GraphicsManager::GetInstance(), filePath);
 	return obj;
 }
 
@@ -41,7 +41,7 @@ RefPtr<Shader> Shader::Create(const StringRef& filePath)
 RefPtr<Shader> Shader::Create(const char* code, int length)
 {
 	RefPtr<Shader> obj(LN_NEW Shader(), false);
-	obj->Initialize(detail::GetGraphicsManager(nullptr), code, length);
+	obj->Initialize(GraphicsManager::GetInstance(), code, length);
 	return obj;
 }
 //
@@ -111,9 +111,9 @@ void Shader::Initialize(GraphicsManager* manager, const StringRef& filePath)
 	GraphicsResourceObject::Initialize(manager);
 	
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
-	ByteBuffer buf(stream->GetLength() + 1, false);
+	ByteBuffer buf((size_t)stream->GetLength() + 1, false);
 	stream->Read(buf.GetData(), buf.GetSize());
-	buf[stream->GetLength()] = 0x00;
+	buf[(size_t)stream->GetLength()] = 0x00;
 
 	// TODO: 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
 

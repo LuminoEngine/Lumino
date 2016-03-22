@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Internal.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/Renderer.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Shader.h>
@@ -23,7 +23,7 @@ LN_NAMESPACE_BEGIN
 static Details::Renderer* GetRenderer()
 {
 	// TODO: 未初期化エラー
-	return GraphicsManager::Instance->GetRenderer();
+	return GraphicsManager::GetInstance()->GetRenderer();
 }
 
 //-----------------------------------------------------------------------------

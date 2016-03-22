@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 

@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include "ProfilerRenderer.h"
 
 LN_NAMESPACE_BEGIN

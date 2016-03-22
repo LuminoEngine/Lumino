@@ -184,7 +184,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GlyphRun.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
-	include/Lumino/Graphics/GraphicsManager.h
 	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
@@ -224,6 +223,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsHelper.h
 	src/Graphics/GraphicsManager.cpp
+	src/Graphics/GraphicsManager.h
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/Internal.h
 	src/Graphics/Painter.cpp

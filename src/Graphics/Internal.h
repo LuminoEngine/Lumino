@@ -28,12 +28,5 @@
 	}
 
 LN_NAMESPACE_BEGIN
-namespace detail
-{
-
-// Manager のメンバではなく普通の関数。include を少なくできる。
-GraphicsManager* GetGraphicsManager(GraphicsManager* priority);
-
-} // namespace detail
 LN_NAMESPACE_END
 

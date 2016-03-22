@@ -2,7 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include <Lumino/Graphics/IndexBuffer.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsHelper.h"
 
@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
-	return Create(GraphicsManager::Instance, indexCount, initialData, format, usage);
+	return Create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
 }
 
 //-----------------------------------------------------------------------------

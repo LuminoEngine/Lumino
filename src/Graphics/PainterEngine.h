@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/Common.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/Painter.h>
 #include "Device/GraphicsDriverInterface.h"
 

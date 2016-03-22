@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/Utils.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RendererImpl.h"
 #include "ModelManager.h"
 #include "ModelBone.h"

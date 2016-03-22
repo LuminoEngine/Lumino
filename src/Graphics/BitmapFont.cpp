@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <algorithm>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include "BitmapFont.h"
 
 LN_NAMESPACE_BEGIN

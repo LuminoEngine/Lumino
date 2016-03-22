@@ -5,7 +5,7 @@
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h>
 #include "../../Animation/AnimationManager.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "../GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -28,7 +28,7 @@ static const size_t g_ScreenMotionBlurImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_Sc
 ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 {
 	ScreenMotionBlurImageEffectPtr obj(LN_NEW ScreenMotionBlurImageEffect(), false);
-	obj->Initialize(detail::GetGraphicsManager(nullptr));
+	obj->Initialize(GraphicsManager::GetInstance());
 	return obj;
 }
 

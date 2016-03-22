@@ -3,7 +3,7 @@
 
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/Texture.h"
-#include "../../include/Lumino/Graphics/GraphicsManager.h"
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/Utils.h>
 #include "RendererImpl.h"
 #include "Internal.h"
@@ -156,16 +156,16 @@ void Texture::Unlock()
 //=============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture2D, Texture);
 
-static GraphicsManager* GetManager()
-{
-	assert(GraphicsManager::Instance != NULL);
-	return GraphicsManager::Instance;
-}
-static Driver::IGraphicsDevice* GetDevice()
-{
-	assert(GraphicsManager::Instance != NULL);
-	return GraphicsManager::Instance->GetGraphicsDevice();
-}
+//static GraphicsManager* GetManager()
+//{
+//	assert(GraphicsManager::Instance != NULL);
+//	return GraphicsManager::Instance;
+//}
+//static Driver::IGraphicsDevice* GetDevice()
+//{
+//	assert(GraphicsManager::Instance != NULL);
+//	return GraphicsManager::Instance->GetGraphicsDevice();
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -183,7 +183,7 @@ Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLe
 	// ロック用のビットマップを作る
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->CreateCore(GetManager(), size, format, mipLevels, bitmap);
+	tex->CreateCore(GraphicsManager::GetInstance(), size, format, mipLevels, bitmap);
 	return tex;
 }
 
@@ -193,7 +193,7 @@ Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLe
 Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->CreateCore(GetManager(), filePath, format, mipLevels);
+	tex->CreateCore(GraphicsManager::GetInstance(), filePath, format, mipLevels);
 	return tex;
 }
 
@@ -203,7 +203,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->CreateCore(GetManager(), stream, format, mipLevels);
+	tex->CreateCore(GraphicsManager::GetInstance(), stream, format, mipLevels);
 	return tex;
 	/*
 	if (GetManager()->IsPlatformTextureLoading())
@@ -254,7 +254,7 @@ void Texture2D::CreateCore(GraphicsManager* manager, const Size& size, TextureFo
 	LN_REFOBJ_SET(m_primarySurface, primarySurface);
 
 	// テクスチャを作る
-	m_deviceObj = GetDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData());
+	m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData());
 
 	// ビットマップを転送する
 	//Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
@@ -281,7 +281,7 @@ void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureForm
 
 	if (m_manager->IsPlatformTextureLoading())
 	{
-		m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
+		m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
 		if (m_deviceObj != NULL)
 		{
 			m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
@@ -395,7 +395,7 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 RenderTargetPtr RenderTarget::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	RefPtr<RenderTarget> tex(LN_NEW RenderTarget(), false);
-	tex->CreateImpl(GetManager(), size, mipLevels, format);
+	tex->CreateImpl(GraphicsManager::GetInstance(), size, mipLevels, format);
 	return tex;
 }
 
@@ -484,7 +484,7 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
 {
 	RefPtr<DepthBuffer> tex(LN_NEW DepthBuffer(), false);
-	tex->CreateImpl(GraphicsManager::Instance, size, format);
+	tex->CreateImpl(GraphicsManager::GetInstance(), size, format);
 	tex.SafeAddRef();
 	return tex;
 }

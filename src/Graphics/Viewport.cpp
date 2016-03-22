@@ -80,7 +80,7 @@
 
 */
 #include "Internal.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
 
@@ -126,7 +126,7 @@ void ViewportLayer::PostRender(RenderingContext2* renderingContext, RenderTarget
 //-----------------------------------------------------------------------------
 Viewport* Viewport::GetMainWindowViewport()
 {
-	return detail::GetGraphicsManager(nullptr)->GetMainViewport();
+	return GraphicsManager::GetInstance()->GetMainViewport();
 }
 
 //-----------------------------------------------------------------------------

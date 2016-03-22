@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "../Graphics/GraphicsManager.h"
 #include "../Graphics/Device/DirectX9/DX9Module.h"
 #include "../Graphics/Device/DirectX9/DX9GraphicsDevice.h"
 #include "ModelManager.h"

@@ -8,7 +8,7 @@
 #include FT_SFNT_NAMES_H
 #include FT_STROKER_H
 #include <Lumino/Base/Hash.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include "FreeTypeFont.h"
 #include "BitmapFont.h"
 
@@ -24,7 +24,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 FontPtr Font::Create()
 {
-	FontPtr obj(LN_NEW FreeTypeFont(detail::GetGraphicsManager(nullptr)->GetFontManager()), false);
+	FontPtr obj(LN_NEW FreeTypeFont(GraphicsManager::GetInstance()->GetFontManager()), false);
 	return obj;
 }
 

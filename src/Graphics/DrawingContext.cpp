@@ -167,7 +167,7 @@
 #include <algorithm>
 #include "PainterEngine.h"	// CacheBuffer
 #include "RenderingCommand.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Graphics/Shader.h>
@@ -1954,7 +1954,7 @@ void DrawingContext::SetDrawingClassInternal(detail::DrawingClass dc)
 //-----------------------------------------------------------------------------
 GraphicsContext* GraphicsContext::GetContext()
 {
-	return GraphicsManager::Instance->GetGraphicsContext();
+	return GraphicsManager::GetInstance()->GetGraphicsContext();
 }
 
 //-----------------------------------------------------------------------------

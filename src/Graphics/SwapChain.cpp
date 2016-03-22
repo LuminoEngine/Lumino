@@ -3,8 +3,8 @@
 
 #include "../Internal.h"
 #include <Lumino/Graphics/SwapChain.h>
-#include <Lumino/Graphics/GraphicsManager.h>
 #include <Lumino/Graphics/Texture.h>
+#include "GraphicsManager.h"
 #include "RendererImpl.h"
 #include "RenderingThread.h"
 #include "RenderingCommand.h"

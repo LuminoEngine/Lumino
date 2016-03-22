@@ -1,12 +1,12 @@
 ﻿
 #pragma once
 #include <Lumino/Base/Cache.h>
-#include "../Animation/Common.h"
-#include "../Platform/Common.h"
-#include "Common.h"
-#include "../Graphics/FontManager.h"
-#include "../Graphics/Font.h"
-#include "SwapChain.h"
+#include <Lumino/Animation/Common.h>
+#include <Lumino/Platform/Common.h>
+#include <Lumino/Graphics/Common.h>
+#include <Lumino/Graphics/FontManager.h>
+#include <Lumino/Graphics/Font.h>
+#include <Lumino/Graphics/SwapChain.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -28,7 +28,7 @@ class GraphicsManager
 	: public RefObject
 {
 public:
-	static GraphicsManager*	Instance;
+	static GraphicsManager*	GetInstance(GraphicsManager* priority = nullptr);
 
 public:
 	void Finalize();

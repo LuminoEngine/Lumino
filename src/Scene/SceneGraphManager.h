@@ -3,7 +3,7 @@
 #include <map>
 #include <Lumino/Base/Stack.h>
 #include <Lumino/Physics/PhysicsManager.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "../../src/Graphics/GraphicsManager.h"		// TODO: remove
 #include <Lumino/Scene/Common.h>
 #include "../Effect/EffectManager.h"
 #include "../Modeling/ModelManager.h"

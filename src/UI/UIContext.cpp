@@ -3,7 +3,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UIWindow.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "../Graphics/GraphicsManager.h"
 #include <Lumino/Graphics/DrawingContext.h>
 #include "UIManager.h"
 

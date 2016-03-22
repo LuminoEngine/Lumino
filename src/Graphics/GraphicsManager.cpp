@@ -704,7 +704,7 @@
 #endif
 
 #include <Lumino/Graphics/BitmapPainter.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/Graphics.h>
 #include "FreeTypeFont.h"
 #include "RendererImpl.h"
@@ -718,19 +718,6 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-namespace detail
-{
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-GraphicsManager* GetGraphicsManager(GraphicsManager* priority)
-{
-	GraphicsManager* manager = priority;
-	if (manager == nullptr) manager = GraphicsManager::Instance;
-	assert(manager != nullptr);
-	return manager;
-}
-} // namespace detail
 
 //=============================================================================
 // GraphicsResourceObject
@@ -769,25 +756,19 @@ void GraphicsResourceObject::Initialize(GraphicsManager* manager)
 // GraphicsManager
 //=============================================================================
 
-GraphicsManager* GraphicsManager::Instance = NULL;
+static GraphicsManager* g_GraphicsManagerInstance = nullptr;
 
-//public:
+//-----------------------------------------------------------------------------
 //
-//	/**
-//	@brief		GraphicsManager を作成します。
-//	@details	通常、このクラスのインスタンスは Application::GetGraphicsManager() で取得します。
-//	この関数は、Application クラスとは独立した GraphicsManager が必要な場合に使用します。
-//	*/
-//	static GraphicsManagerPtr Create(const ConfigData& configData);
-//
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//GraphicsManagerPtr GraphicsManager::Create(const ConfigData& configData)
-//{
-//	return GraphicsManagerPtr(LN_NEW GraphicsManager(configData));
-//}
-
+//-----------------------------------------------------------------------------
+GraphicsManager* GraphicsManager::GetInstance(GraphicsManager* priority)
+{
+	if (priority != nullptr)
+	{
+		return priority;
+	}
+	return g_GraphicsManagerInstance;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -890,6 +871,11 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 		m_renderingThread->Reset(m_graphicsDevice);
 		m_renderingThread->Start();
 	}
+
+	if (g_GraphicsManagerInstance == nullptr)
+	{
+		g_GraphicsManagerInstance = this;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -917,6 +903,11 @@ GraphicsManager::~GraphicsManager()
 	{
 		m_graphicsDevice->Finalize();
 		LN_SAFE_RELEASE(m_graphicsDevice);
+	}
+
+	if (g_GraphicsManagerInstance == this)
+	{
+		g_GraphicsManagerInstance = nullptr;
 	}
 }
 

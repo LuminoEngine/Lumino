@@ -2,7 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include <Lumino/Graphics/VertexBuffer.h>
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
 #include "GraphicsHelper.h"
 
@@ -18,7 +18,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 VertexBuffer* VertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
-	return Create(GraphicsManager::Instance, vertexElements, elementsCount, vertexCount, data, usage);
+	return Create(GraphicsManager::GetInstance(), vertexElements, elementsCount, vertexCount, data, usage);
 }
 
 //-----------------------------------------------------------------------------

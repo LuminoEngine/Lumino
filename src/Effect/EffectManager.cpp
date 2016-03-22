@@ -24,7 +24,7 @@
 
 */
 #include "Internal.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "../Graphics/GraphicsManager.h"
 #include "Effekseer\EffekseerDriver.h"
 #include "EffectManager.h"
 

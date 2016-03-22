@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Internal.h"
-#include <Lumino/Graphics/GraphicsManager.h>
+#include "GraphicsManager.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/VertexBuffer.h>
@@ -23,7 +23,7 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 RenderingContext2* RenderingContext2::GetContext()
 {
-	return detail::GetGraphicsManager(nullptr)->GetRenderingContext();
+	return GraphicsManager::GetInstance()->GetRenderingContext();
 }
 
 //-----------------------------------------------------------------------------
