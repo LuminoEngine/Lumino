@@ -1,4 +1,7 @@
-﻿
+﻿/*
+	texture-font.c - Hackage
+	https://www.google.co.jp/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=0ahUKEwj23beps9TLAhXHpZQKHcezDtgQFggkMAE&url=http%3A%2F%2Fwww.freetype.org%2Ffreetype2%2Fdocs%2Ftutorial%2Fexample2.cpp&usg=AFQjCNFYn2N68mYpv6IU5ZXQGGrWBYu4rg
+*/
 #include "../Internal.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H	/* <freetype/freetype.h> */
@@ -117,6 +120,7 @@ void FreeTypeGlyphData::ReleaseGlyph()
 //-----------------------------------------------------------------------------
 FreeTypeFont::FreeTypeFont(FontManager* manager)
 	: m_manager(manager)
+	, m_edgeSize(0)
 	, m_modified(false)
 	, m_ftFaceID(0)
 	, m_ftFace(NULL)
@@ -131,6 +135,8 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 	LN_SAFE_ADDREF(m_manager);
 	m_glyphData.CopyGlyph = NULL;
 	m_glyphData.CopyOutlineGlyph = NULL;
+
+	FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
 }
 
 //-----------------------------------------------------------------------------
@@ -139,6 +145,13 @@ FreeTypeFont::FreeTypeFont(FontManager* manager)
 FreeTypeFont::~FreeTypeFont()
 {
 	Dispose();
+
+	if (m_ftStroker)
+	{
+		FT_Stroker_Done(m_ftStroker);
+		m_ftStroker = NULL;
+	}
+
 	LN_SAFE_RELEASE(m_manager);
 }
 
@@ -154,6 +167,7 @@ Font* FreeTypeFont::Copy() const
 	return font;
 }
 
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -259,11 +273,12 @@ Size FreeTypeFont::GetTextSize(const UTF32* text, int length)
 
 	return Size(w, m_ftFace->size->metrics.height >> 6);//m_ftImageType.height/*m_ftFace->size->metrics.height >> 6*/ );
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData_)
+FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData_)
 {
 	FreeTypeGlyphLocation* prevData = static_cast<FreeTypeGlyphLocation*>(prevData_);
 	FreeTypeGlyphLocation* locData;
@@ -277,6 +292,7 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 	else
 	{
 		UpdateFont();
+		TryUpdateStroke(strokeSize);
 		m_fontGlyphLocation.BitmapTopLeftPosition = Point::Zero;
 		m_fontGlyphLocation.OutlineBitmapTopLeftPosition = Point::Zero;
 		m_fontGlyphLocation.OuterTopLeftPosition = Point::Zero;
@@ -355,10 +371,10 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 	locData->NextBaseX += slot->advance.x >> 6;
 
 	// アウトライン有り
-	if (m_ftStroker != NULL)
+	if (m_edgeSize > 0)
 	{
-		locData->OutlineBitmapTopLeftPosition.X = locData->BitmapTopLeftPosition.X - m_fontData.EdgeSize;
-		locData->OutlineBitmapTopLeftPosition.Y = locData->BitmapTopLeftPosition.Y - m_fontData.EdgeSize;
+		locData->OutlineBitmapTopLeftPosition.X = locData->BitmapTopLeftPosition.X - m_edgeSize;
+		locData->OutlineBitmapTopLeftPosition.Y = locData->BitmapTopLeftPosition.Y - m_edgeSize;
 		locData->OuterTopLeftPosition = locData->OutlineBitmapTopLeftPosition;
 	}
 	// アウトライン無し
@@ -374,8 +390,11 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocati
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
+FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 {
+	UpdateFont();
+	TryUpdateStroke(strokeSize);
+
 	FT_UInt glyphIndex = FTC_CMapCache_Lookup(
 		m_manager->GetFTCacheMapCache(),
 		m_ftFaceID,
@@ -427,10 +446,17 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
 
 	// 枠線
-	if (m_ftStroker)
+	if (m_edgeSize > 0)
 	{
 		err = FT_Glyph_Copy(glyph, &m_fontGlyphBitmap.CopyOutlineGlyph);
 		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
+
+		// エッジの描画情報
+		FT_Stroker_Set(m_ftStroker,
+			(int)(m_edgeSize * 64),
+			FT_STROKER_LINECAP_ROUND,	// 線分の両端は半円でレンダリングする
+			FT_STROKER_LINEJOIN_ROUND,	// 線分の接合点は半円でレンダリングする
+			0);
 
 		err = FT_Glyph_StrokeBorder(&m_fontGlyphBitmap.CopyOutlineGlyph, m_ftStroker, 0, 1);
 		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_StrokeBorder : %d\n", err);
@@ -445,7 +471,7 @@ FontGlyphBitmap* FreeTypeFont::LookupGlyphBitmap(UTF32 utf32code)
 		FT_Bitmap* ft_bitmap = &glyph_bitmap->bitmap;
 		RefreshBitmap(m_outlineBitmap, ft_bitmap);
 		m_fontGlyphBitmap.OutlineBitmap = m_outlineBitmap;
-		m_fontGlyphBitmap.OutlineOffset = m_fontData.EdgeSize;
+		m_fontGlyphBitmap.OutlineOffset = m_edgeSize;
 	}
 	else
 	{
@@ -665,49 +691,23 @@ void FreeTypeFont::UpdateFont()
 		m_lineHeight = ft_size->metrics.height >> 6;
 
 		Dispose();
-		if (m_fontData.EdgeSize > 0)
-		{
-			// エッジの描画情報
-			FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
-			FT_Stroker_Set(m_ftStroker,
-				(int)(m_fontData.EdgeSize * 64),
-				FT_STROKER_LINECAP_ROUND,	// 線分の両端は半円でレンダリングする
-				FT_STROKER_LINEJOIN_ROUND,	// 線分の接合点は半円でレンダリングする
-				0);
-		}
+		//if (m_edgeSize > 0)
+		//{
+		//	// エッジの描画情報
+		//	FT_Stroker_New(m_manager->GetFTLibrary(), &m_ftStroker);
+		//	FT_Stroker_Set(m_ftStroker,
+		//		(int)(m_edgeSize * 64),
+		//		FT_STROKER_LINECAP_ROUND,	// 線分の両端は半円でレンダリングする
+		//		FT_STROKER_LINEJOIN_ROUND,	// 線分の接合点は半円でレンダリングする
+		//		0);
+		//}
 
 
 		// font_typeを設定
 		m_ftImageType.face_id = m_ftFaceID;
 		m_ftImageType.width = 0;
 		m_ftImageType.height = m_fontData.Size;
-		/* ビットマップまでキャッシュする場合はFT_LOAD_RENDER | FT_LOAD_TARGET_*
-		* とする。ただし途中でTARGETを変更した場合等はキャッシュが邪魔する。
-		* そういう時はFT_LOAD_DEFAULTにしてFTC_ImageCache_Lookup後に
-		* FT_Glyph_To_Bitmapしたほうが都合がいいと思う。
-		*/
-		//m_ftImageType.flags = FT_LOAD_NO_BITMAP;
-
-		/* m_ftImageType.flags に　FT_LOAD_FORCE_AUTOHINT を使用すると、
-		* 一部のフォント(VL ゴシック等)で次の文字までのオフセットが正しく取れないことがある。
-		*/
-
-		// アウトライン ON
-		if (m_fontData.EdgeSize > 0 || m_fontData.IsBold) {
-			m_ftImageType.flags = FT_LOAD_NO_BITMAP;
-		}
-		// アウトライン OFF
-		else {
-			m_ftImageType.flags = FT_LOAD_RENDER;
-		}
-		// アンチエイリアス ON
-		if (m_fontData.IsAntiAlias) {
-			//m_ftImageType.flags = ; そのまま
-		}
-		// アンチエイリアス OFF
-		else {
-			m_ftImageType.flags |= FT_LOAD_MONOCHROME;
-		}
+		UpdateImageFlags();
 
 		// グリフ格納用ビットマップ (仮確保)
 		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat_A8));
@@ -723,16 +723,59 @@ void FreeTypeFont::UpdateFont()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void FreeTypeFont::UpdateImageFlags()
+{
+	/* ビットマップまでキャッシュする場合はFT_LOAD_RENDER | FT_LOAD_TARGET_*
+	* とする。ただし途中でTARGETを変更した場合等はキャッシュが邪魔する。
+	* そういう時はFT_LOAD_DEFAULTにしてFTC_ImageCache_Lookup後に
+	* FT_Glyph_To_Bitmapしたほうが都合がいいと思う。
+	*/
+	//m_ftImageType.flags = FT_LOAD_NO_BITMAP;
+
+	/* m_ftImageType.flags に　FT_LOAD_FORCE_AUTOHINT を使用すると、
+	* 一部のフォント(VL ゴシック等)で次の文字までのオフセットが正しく取れないことがある。
+	*/
+
+	// アウトライン ON
+	if (m_edgeSize > 0 || m_fontData.IsBold) {
+		m_ftImageType.flags = FT_LOAD_NO_BITMAP;
+	}
+	// アウトライン OFF
+	else {
+		m_ftImageType.flags = FT_LOAD_RENDER;
+	}
+	// アンチエイリアス ON
+	if (m_fontData.IsAntiAlias) {
+		//m_ftImageType.flags = ; そのまま
+	}
+	// アンチエイリアス OFF
+	else {
+		m_ftImageType.flags |= FT_LOAD_MONOCHROME;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FreeTypeFont::TryUpdateStroke(int newEdgeSize)
+{
+	if (newEdgeSize != m_edgeSize)
+	{
+		m_edgeSize = newEdgeSize;
+
+		// ImageFlags 再設定
+		UpdateImageFlags();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void FreeTypeFont::Dispose()
 {
 	m_glyphData.ReleaseGlyph();
 
 	//SAFE_DELETE_ARRAY(mPixelList);
-	if (m_ftStroker)
-	{
-		FT_Stroker_Done(m_ftStroker);
-		m_ftStroker = NULL;
-	}
 
 	// キャッシュを使用している場合、FT_Done_Face( m_ftFace ); などで解放の必要はない。
 	// 解放してしまうと、CacheManager の解放時に NULL アクセスが起こる。

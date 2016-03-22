@@ -150,8 +150,9 @@ int main()
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;
 
-		//auto tex = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
-		auto sp1 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto tex = Texture2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, TextAlignment::Left);
+		auto sp1 = Sprite2D::Create(tex);
 		auto sp2 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_IndexBuffer.BasicTriangle.png"));
 		sp2->SetPosition(100, 240, 0);
 		

@@ -38,6 +38,7 @@ void GlyphRun::Initialize(GraphicsManager* manager)
 	LN_CHECK_ARGS(manager != nullptr);
 	m_manager = manager;
 	m_layoutEngine = LN_NEW TextLayoutEngine();
+	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultFont());
 }
 
 //-----------------------------------------------------------------------------
@@ -47,6 +48,10 @@ void GlyphRun::SetFont(Font* font)
 {
 	if (font != m_layoutEngine->GetFont())
 	{
+		if (font == nullptr)
+		{
+			font = m_manager->GetFontManager()->GetDefaultFont();
+		}
 		m_layoutEngine->SetFont(font);
 		UpdateTextLayoutItem();
 		LN_SAFE_RELEASE(m_glyphTextureCache);	// 必要なときにまた取得しなおす
@@ -70,6 +75,22 @@ void GlyphRun::SetText(const StringRef& text)
 	m_utf32Text.Clear();
 	m_utf32Text.Append(conv->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR)));
 	UpdateTextLayoutItem();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GlyphRun::SetTextAlignment(TextAlignment align)
+{
+	m_layoutEngine->SetTextAlignment(align);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int GlyphRun::GetStrokeSize() const
+{
+	return m_layoutEngine->GetStrokeSize();
 }
 
 //-----------------------------------------------------------------------------

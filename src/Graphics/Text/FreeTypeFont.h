@@ -72,8 +72,8 @@ public:
 	virtual const String& GetName() const { return m_fontData.Family; }
 	virtual void SetSize(int size) { m_fontData.Size = size; m_modified = true; }
 	virtual int GetSize() const  { return m_fontData.Size; }
-	virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
-	virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
+	//virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
+	//virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
 	virtual void SetBold(bool enabled) { m_fontData.IsBold = enabled; m_modified = true; }
 	virtual bool IsBold() const  { return m_fontData.IsBold; }
 	virtual void SetItalic(bool enabled) { m_fontData.IsItalic = enabled; m_modified = true; }
@@ -83,11 +83,11 @@ public:
 
 	virtual Font* Copy() const;
 	virtual int GetLineHeight() { UpdateFont(); return m_lineHeight; }
-	virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
-	virtual Size GetTextSize(const wchar_t* text, int length);
-	virtual Size GetTextSize(const UTF32* text, int length);
-	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData);
-	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code);
+	//virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
+	//virtual Size GetTextSize(const wchar_t* text, int length);
+	//virtual Size GetTextSize(const UTF32* text, int length);
+	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
+	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
 	virtual FontManager* GetManager() const { return m_manager; }
@@ -96,6 +96,8 @@ private:
 	void Dispose();
 	void UpdateFont();
 	void RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
+	void UpdateImageFlags();
+	void TryUpdateStroke(int newEdgeSize);
 
 private:
 	FontManager*		m_manager;
@@ -106,6 +108,7 @@ private:
 	//bool				m_isItalic;
 	//bool				m_isAntiAlias;
 	FontKey				m_fontData;
+	int					m_edgeSize;
 	bool				m_modified;
 
 	FTC_FaceID			m_ftFaceID;			///< キャッシュから FT_Face を検索するためのキー値

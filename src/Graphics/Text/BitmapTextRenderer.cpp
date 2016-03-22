@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "BitmapTextRenderer.h"
+#include "../GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -42,16 +43,43 @@ void BitmapTextRenderer::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun)
+void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color& strokeColor, const Color& fillColor)
 {
 	LN_CHECK_ARGS_RETURN(target != nullptr);
 	LN_CHECK_ARGS_RETURN(glyphRun != nullptr);
 
 	Font* font = glyphRun->GetFont();
+
 	auto& items = glyphRun->GetLayoutItems();
 	for (auto& item : items)
 	{
-		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char);
+		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, glyphRun->GetStrokeSize());
+		Rect dstRect;
+		Rect srcRect;
+
+		// 枠線用ビットマップがある場合は先に描画する
+		if (gb->OutlineBitmap != nullptr)
+		{
+			dstRect.Set(
+				item.Location.OutlineBitmapTopLeftPosition.X,
+				item.Location.OutlineBitmapTopLeftPosition.Y,
+				item.Location.BitmapSize.Width,
+				item.Location.BitmapSize.Height);
+			srcRect.Set(0, 0, gb->OutlineBitmap->GetSize());
+			target->BitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
+		}
+
+		// 内側 (or 通常) 部分の描画
+		if (gb->GlyphBitmap != nullptr)
+		{
+			dstRect.Set(
+				item.Location.BitmapTopLeftPosition.X,
+				item.Location.BitmapTopLeftPosition.Y,
+				item.Location.BitmapSize.Width,
+				item.Location.BitmapSize.Height);
+			srcRect.Set(0, 0, gb->GlyphBitmap->GetSize());
+			target->BitBlt(dstRect, gb->GlyphBitmap, srcRect, fillColor, true);
+		}
 	}
 }
 

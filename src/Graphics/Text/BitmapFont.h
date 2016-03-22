@@ -30,8 +30,8 @@ public:
 	virtual bool IsAntiAlias() const { return false; }
 	virtual Font* Copy() const;
 	virtual int GetLineHeight() { return m_charHeight; }
-	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData);
-	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code);
+	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
+	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize);
 	virtual FontManager* GetManager() const { return m_manager; }
 
 private:

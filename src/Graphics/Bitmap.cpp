@@ -306,15 +306,68 @@ void Bitmap::BitBltInternalTemplate(
 	DestBuffer<TDestConverter> dstBuf(dest, destRect);
 	SrcBuffer<TSrcConverter> srcBuf(src, srcRect);
 
-	for (int y = 0; y < srcRect.Height; ++y)
+	if (alphaBlend)
 	{
-		dstBuf.SetLine(y);
-		srcBuf.SetLine(y);
-		for (int x = 0; x < srcRect.Width; ++x)
+		for (int y = 0; y < srcRect.Height; ++y)
 		{
-			ClColor c = srcBuf.GetPixel(x);
-			// TODO: アルファブレンド
-			dstBuf.SetPixel(x, c);
+			dstBuf.SetLine(y);
+			srcBuf.SetLine(y);
+			for (int x = 0; x < srcRect.Width; ++x)
+			{
+				ClColor src = srcBuf.GetPixel(x);
+				ClColor src_alpha = GetA(src);
+				if (src_alpha == 0) continue;     // フォントならコレでかなり高速化できるはず
+
+				uint32_t dest_color = dstBuf.GetPixel(x);
+				uint32_t dest_alpha = GetA(dest_color);
+				uint32_t a, r, g, b;
+
+				// photoshop 等のツール系の計算式ではやや時間がかかるため、
+				// DirectX 同様、dest のアルファは無視する方向で実装する。
+				// ただし、このままだと dest(0, 0, 0, 0) に半透明の色を合成する場合、
+				// 黒ずみが発生してしまう。テクスチャのデフォルトはこの状態。
+				// dest(1, 0, 0, 0) とかなら、ユーザーが黒と合成されることを意図していると考えられるが、
+				// 流石に完全に透明なのに黒ずむのはどうかと…。
+				// というわけで、dest_alpha == 0 なら src が 100% になるように細工している。
+				if (dest_alpha == 0) a = 0xff;
+				else a = src_alpha;
+
+				r = ((GetR(dest_color) * (0xff - a)) >> 8) +
+					((GetR(mulColorRGBA) * a) >> 8);
+
+				g = ((GetG(dest_color) * (0xff - a)) >> 8) +
+					((GetG(mulColorRGBA) * a) >> 8);
+
+				b = ((GetB(dest_color) * (0xff - a)) >> 8) +
+					((GetB(mulColorRGBA)* a) >> 8);
+
+				// 書き込み用に再計算。
+				// 乗算だと、半透明を重ねるごとに薄くなってしまう。
+				// イメージとしては、重ねるごとに濃くなる加算が適切だと思う。
+				// TODO: 本来はブレンドファンクションで表現するべきか…
+				a = (dest_alpha + src_alpha);
+				a = (a > 255) ? 255 : a;
+
+				dstBuf.SetPixel(x, RGBA(r, g, b, a));
+			}
+		}
+	}
+	else
+	{
+		for (int y = 0; y < srcRect.Height; ++y)
+		{
+			dstBuf.SetLine(y);
+			srcBuf.SetLine(y);
+			for (int x = 0; x < srcRect.Width; ++x)
+			{
+				ClColor src = srcBuf.GetPixel(x);
+				ClColor c = RGBA(
+					(GetR(mulColorRGBA) * GetR(src)) >> 8,
+					(GetG(mulColorRGBA) * GetG(src)) >> 8,
+					(GetB(mulColorRGBA) * GetB(src)) >> 8,
+					(GetA(mulColorRGBA) * GetA(src)) >> 8);
+				dstBuf.SetPixel(x, c);
+			}
 		}
 	}
 }

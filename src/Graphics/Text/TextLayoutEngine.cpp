@@ -14,6 +14,10 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //
 //-----------------------------------------------------------------------------
 TextLayoutEngine::TextLayoutEngine()
+	: m_strokeSize(0)
+	, m_textAlignment(TextAlignment::Left)
+	, m_textTrimming(TextTrimming::None)
+	, m_flowDirection(FlowDirection::LeftToRight)
 {
 }
 
@@ -29,6 +33,7 @@ TextLayoutEngine::~TextLayoutEngine()
 //-----------------------------------------------------------------------------
 void TextLayoutEngine::ResetSettings()
 {
+	m_strokeSize = 0;
 	m_textAlignment = TextAlignment::Left;
 	m_textTrimming = TextTrimming::None;
 	m_flowDirection = FlowDirection::LeftToRight;
@@ -133,7 +138,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	//int planeWidth = 0;
 	for (int i = 0; i < length; ++i)
 	{
-		prevInfo = m_font->AdvanceKerning(text[i], prevInfo);
+		prevInfo = m_font->AdvanceKerning(text[i], m_strokeSize, prevInfo);
 		//planeWidth += prevInfo->BitmapSize.Width;
 		outLineSize->Height = std::max(outLineSize->Height, prevInfo->BitmapSize.Height);
 

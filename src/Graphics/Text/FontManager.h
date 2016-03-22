@@ -29,7 +29,7 @@ public:
 
 	String	Family;
 	int		Size;
-	int		EdgeSize;
+	//int		EdgeSize;
 	bool	IsBold;
 	bool	IsItalic;
 	bool	IsAntiAlias;
@@ -37,7 +37,7 @@ public:
 	FontKey()
 		: Family()
 		, Size(16)
-		, EdgeSize(0)
+		//, EdgeSize(0)
 		, IsBold(false)
 		, IsItalic(false)
 		, IsAntiAlias(false)
@@ -49,8 +49,8 @@ public:
 		if (Family > right.Family) { return false; }
 		if (Size < right.Size) { return true; }
 		if (Size > right.Size) { return false; }
-		if (EdgeSize < right.EdgeSize) { return true; }
-		if (EdgeSize > right.EdgeSize) { return false; }
+		//if (EdgeSize < right.EdgeSize) { return true; }
+		//if (EdgeSize > right.EdgeSize) { return false; }
 		if (IsBold < right.IsBold) { return true; }
 		if (IsBold > right.IsBold) { return false; }
 		if (IsItalic < right.IsItalic) { return true; }
@@ -64,7 +64,7 @@ public:
 	{
 		uint32_t v = Hash::CalcHash(Family.c_str());
 		v += Size;
-		v += 10 * EdgeSize;
+		//v += 10 * EdgeSize;
 		v += 100 * (int)IsBold;
 		v += 1000 * (int)IsItalic;
 		v += 10000 * (int)IsAntiAlias;

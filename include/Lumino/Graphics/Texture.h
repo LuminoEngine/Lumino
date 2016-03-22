@@ -116,6 +116,12 @@ public:
 	static Texture2DPtr Create(const void* data, size_t size, TextureFormat format = TextureFormat_R8G8B8A8, int mipLevels = 1);
 
 public:
+
+#pragma push_macro("DrawText")
+#undef DrawText
+	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment align);
+	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment align);
+#pragma pop_macro("DrawText")
 	
 	/*
 		@brief		
@@ -219,6 +225,25 @@ protected:
 private:
 	//Size			m_size;
 	//TextureFormat	m_format;
+};
+
+class ScopedLockTexture
+{
+public:
+	ScopedLockTexture(Texture* texture)
+	{
+		m_texture = texture;
+		m_bitmap = m_texture->Lock();
+	}
+	~ScopedLockTexture()
+	{
+		m_texture->Unlock();
+	}
+
+	Bitmap* GetBitmap() const { return m_bitmap; }
+private:
+	Texture*	m_texture;
+	Bitmap*		m_bitmap;
 };
 
 LN_NAMESPACE_GRAPHICS_END

@@ -123,8 +123,8 @@ public:
 	//virtual Size GetTextSize(const UTF32* text, int length) = 0;
 
 
-	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData) = 0;
-	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code) = 0;
+	virtual FontGlyphLocation* AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData) = 0;
+	virtual FontGlyphBitmap* LookupGlyphBitmap(UTF32 utf32code, int strokeSize) = 0;
 
 
 	/// グリフデータの取得 (最初の文字の場合、prevData に NULL を渡す。以降は戻り値を渡し続ける。非スレッドセーフ)

@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/Texture.h"
 #include "GraphicsManager.h"
@@ -10,6 +9,7 @@
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
 #include "GraphicsHelper.h"
+#include "Text/BitmapTextRenderer.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -331,6 +331,24 @@ Texture2D::~Texture2D()
 {
 	LN_SAFE_RELEASE(m_primarySurface);
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+#pragma push_macro("DrawText")
+#undef DrawText
+void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment align) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, color, align); }
+void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment align)
+{
+	ScopedLockTexture lock(this);
+	auto* r = m_manager->GetBitmapTextRenderer();
+	auto* gr = r->GetTempGlyphRun();
+	gr->SetFont(font);
+	gr->SetText(text);
+	gr->SetTextAlignment(align);
+	r->DrawGlyphRun(lock.GetBitmap(), gr, Color::White, color);
+}
+#pragma pop_macro("DrawText")
 
 //-----------------------------------------------------------------------------
 //

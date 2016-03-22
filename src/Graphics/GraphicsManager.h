@@ -87,6 +87,9 @@ public:
 
 	GraphicsContext* GetGraphicsContext() const { return m_graphicsContext; }
 
+
+	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
+
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)

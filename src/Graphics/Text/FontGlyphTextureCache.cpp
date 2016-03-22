@@ -55,7 +55,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRect)
+void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture** texture, Rect* srcRect)
 {
 	// とりあえず今は1つしか無いので
 	*texture = m_glyphCacheTexture;
@@ -77,7 +77,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 		}
 
 		// 新しく作ってキャッシュに登録
-		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch);
+		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch, strokeThickness);
 
 		int cacheIndex = m_indexStack.GetTop();
 		m_indexStack.Pop();

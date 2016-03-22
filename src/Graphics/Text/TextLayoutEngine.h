@@ -44,7 +44,8 @@ public:
 	Font* GetFont() const { return m_font; }
 	//void SetForeColor(Graphics::Color color) { m_foreColor = color; }
 	//void SetStrokeColor(Graphics::Color color) { m_strokeColor = color; }
-	//void SetStrokeSize(int size) { m_strokeSize = size; }
+	void SetStrokeSize(int size) { m_strokeSize = size; }
+	int GetStrokeSize() const { return m_strokeSize; }
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
 	void SetTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
 	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
@@ -66,7 +67,7 @@ private:
 	RefPtr<Font>		m_font;
 	//Graphics::Color	m_foreColor;
 	//Graphics::Color	m_strokeColor;
-	//int				m_strokeSize;
+	int					m_strokeSize;
 	TextAlignment		m_textAlignment;
 	TextTrimming		m_textTrimming;
 	FlowDirection		m_flowDirection;

@@ -31,6 +31,8 @@ public:
 	Font* GetFont() const;
 	void SetText(const StringRef& text);
 	const Size& GetRenderSize() const { return m_glyphData.AreaSize; }
+	void SetTextAlignment(TextAlignment align);
+	int GetStrokeSize() const;
 
 LN_INTERNAL_ACCESS:
 	GlyphRun();

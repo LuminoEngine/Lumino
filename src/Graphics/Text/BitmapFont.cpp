@@ -141,7 +141,7 @@ Font* BitmapFont::Copy() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocation* prevData)
+FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData)
 {
 	FontGlyphLocation* locData;
 
@@ -170,7 +170,7 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, FontGlyphLocation
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code)
+FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 {
 	// ASCII 部分だけグリフに出来る。それ以外は '?'
 	if (utf32code > 0xFF) {
