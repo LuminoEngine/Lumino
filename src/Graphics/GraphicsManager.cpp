@@ -712,6 +712,7 @@
 #include "RenderingThread.h"
 #include "PainterEngine.h"
 #include "Text/TextRenderer.h"
+#include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/DrawingContext.h>
@@ -773,12 +774,12 @@ GraphicsManager* GraphicsManager::GetInstance(GraphicsManager* priority)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GraphicsManager::GraphicsManager(const ConfigData& configData)
+GraphicsManager::GraphicsManager()
 	: m_animationManager(nullptr)
 	, m_fileManager(nullptr)
 	, m_mainWindow(nullptr)
 	, m_graphicsDevice(nullptr)
-	, m_renderingType(configData.RenderingType)
+	, m_renderingType(RenderingType::Immediate)
 	, m_dummyTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
@@ -788,7 +789,51 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	, m_graphicsContext(nullptr)
 	, m_painterEngine(nullptr)
 	, m_textRendererCore(nullptr)
+	, m_bitmapTextRenderer(nullptr)
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GraphicsManager::~GraphicsManager()
+{
+	if (m_glyphTextureCache != nullptr) {
+		m_glyphTextureCache->Finalize();
+	}
+	LN_SAFE_RELEASE(m_bitmapTextRenderer);
+	LN_SAFE_RELEASE(m_textRendererCore);
+	LN_SAFE_RELEASE(m_painterEngine);
+	LN_SAFE_RELEASE(m_dummyTexture);
+	LN_SAFE_RELEASE(m_mainViewport);
+	LN_SAFE_RELEASE(m_renderer);
+	LN_SAFE_RELEASE(m_fileManager);
+
+	if (m_fontManager != nullptr)
+	{
+		m_fontManager->Dispose();
+		m_fontManager.SafeRelease();
+	}
+
+	if (m_graphicsDevice != nullptr)
+	{
+		m_graphicsDevice->Finalize();
+		LN_SAFE_RELEASE(m_graphicsDevice);
+	}
+
+	if (g_GraphicsManagerInstance == this)
+	{
+		g_GraphicsManagerInstance = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsManager::Initialize(const ConfigData& configData)
+{
+	m_renderingType = configData.RenderingType;
 	m_animationManager = configData.animationManager;
 	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
 	m_mainWindow = configData.MainWindow;
@@ -864,6 +909,9 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	// TextRendererCache
 	m_glyphTextureCache = RefPtr<CacheManager>::Create(512, 0);
 
+	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
+	m_bitmapTextRenderer->Initialize(m_fontManager);
+
 	if (m_renderingType == RenderingType::Deferred)
 	{
 		// 描画スレッドを立ち上げる
@@ -878,38 +926,6 @@ GraphicsManager::GraphicsManager(const ConfigData& configData)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-GraphicsManager::~GraphicsManager()
-{
-	if (m_glyphTextureCache != nullptr) {
-		m_glyphTextureCache->Finalize();
-	}
-	LN_SAFE_RELEASE(m_textRendererCore);
-	LN_SAFE_RELEASE(m_painterEngine);
-	LN_SAFE_RELEASE(m_dummyTexture);
-	LN_SAFE_RELEASE(m_mainViewport);
-	LN_SAFE_RELEASE(m_renderer);
-	LN_SAFE_RELEASE(m_fileManager);
-
-	if (m_fontManager != nullptr)
-	{
-		m_fontManager->Dispose();
-		m_fontManager.SafeRelease();
-	}
-
-	if (m_graphicsDevice != nullptr)
-	{
-		m_graphicsDevice->Finalize();
-		LN_SAFE_RELEASE(m_graphicsDevice);
-	}
-
-	if (g_GraphicsManagerInstance == this)
-	{
-		g_GraphicsManagerInstance = nullptr;
-	}
-}
 
 //-----------------------------------------------------------------------------
 //

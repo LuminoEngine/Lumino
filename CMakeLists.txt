@@ -273,6 +273,8 @@ set(LN_SOURCES_Graphics_Text
 	include/Lumino/Graphics/Text/GlyphRun.h
 	src/Graphics/Text/BitmapFont.cpp
 	src/Graphics/Text/BitmapFont.h
+	src/Graphics/Text/BitmapTextRenderer.cpp
+	src/Graphics/Text/BitmapTextRenderer.h
 	src/Graphics/Text/Font.cpp
 	src/Graphics/Text/FontGlyphTextureCache.cpp
 	src/Graphics/Text/FontGlyphTextureCache.h

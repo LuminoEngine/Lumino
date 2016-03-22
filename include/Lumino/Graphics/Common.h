@@ -47,7 +47,7 @@ class ShaderPass;
 
 class Font;
 typedef RefPtr<Font>		FontPtr;
-
+class GlyphRun;
 
 class PainterEngine;
 class Helper;

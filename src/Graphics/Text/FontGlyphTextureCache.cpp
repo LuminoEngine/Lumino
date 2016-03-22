@@ -82,10 +82,6 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, Texture** texture, Rect* srcRe
 		int cacheIndex = m_indexStack.GetTop();
 		m_indexStack.Pop();
 
-		//m_tmpBitmap
-
-		//{
-		//	Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
 
 		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
 

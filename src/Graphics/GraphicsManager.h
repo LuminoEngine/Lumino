@@ -15,6 +15,7 @@ class RenderingContext2;
 class GraphicsContext;
 class PainterEngine;
 class TextRenderer;
+class BitmapTextRenderer;
 
 namespace detail
 {
@@ -28,9 +29,36 @@ class GraphicsManager
 	: public RefObject
 {
 public:
+
+	struct ConfigData
+	{
+		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
+		RenderingType			RenderingType;
+		PlatformWindow*			MainWindow;				/**< アプリケーションのメインウィンドウ */
+		Size					backBufferSize;			// バックバッファのサイズ
+		detail::AnimationManager*	animationManager = nullptr;
+		FileManager*				FileManager;			/**< FileManager */
+		bool						PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
+		void*						D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
+		bool						fpuPreserveEnabled = false;
+
+		ConfigData()
+			: GraphicsAPI(GraphicsAPI::DirectX9)
+			, RenderingType(RenderingType::Deferred)
+			, MainWindow(NULL)
+			, FileManager(NULL)
+			, PlatformTextureLoading(false)
+			, D3D9Device(NULL)
+		{}
+	};
+
 	static GraphicsManager*	GetInstance(GraphicsManager* priority = nullptr);
 
 public:
+	GraphicsManager();
+	~GraphicsManager();
+
+	void Initialize(const ConfigData& configData);
 	void Finalize();
 
 	/** 現在のグラフィックスシステムが使用している API の種類を確認します。*/
@@ -98,30 +126,6 @@ public:	// TODO
 	friend class Helper;
 	//friend class Application;
 
-	struct ConfigData
-	{
-		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
-		RenderingType			RenderingType;
-		PlatformWindow*			MainWindow;				/**< アプリケーションのメインウィンドウ */
-		Size					backBufferSize;			// バックバッファのサイズ
-		detail::AnimationManager*	animationManager = nullptr;
-		FileManager*				FileManager;			/**< FileManager */
-		bool						PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
-		void*						D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
-		bool						fpuPreserveEnabled = false;
-
-		ConfigData()
-			: GraphicsAPI(GraphicsAPI::DirectX9)
-			, RenderingType(RenderingType::Deferred)
-			, MainWindow(NULL)
-			, FileManager(NULL)
-			, PlatformTextureLoading(false)
-			, D3D9Device(NULL)
-		{}
-	};
-
-	GraphicsManager(const ConfigData& configData);
-	~GraphicsManager();
 
 LN_INTERNAL_ACCESS:
 	void AddResourceObject(GraphicsResourceObject* obj) { m_resourceObjectList.Add(obj); }
@@ -155,9 +159,10 @@ private:
 	GraphicsContext*				m_graphicsContext;
 	detail::TextRendererCore*		m_textRendererCore;
 	PainterEngine*					m_painterEngine;
+	BitmapTextRenderer*				m_bitmapTextRenderer;
+
 	Driver::ITexture*				m_dummyTexture;
 	bool							m_platformTextureLoading;
-
 };
 
 LN_NAMESPACE_GRAPHICS_END

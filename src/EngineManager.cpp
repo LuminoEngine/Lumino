@@ -417,7 +417,8 @@ void EngineManager::InitializeGraphicsManager()
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif
-		m_graphicsManager = LN_NEW GraphicsManager(data);
+		m_graphicsManager = LN_NEW GraphicsManager();
+		m_graphicsManager->Initialize(data);
 
 		m_profilerRenderer = LN_NEW ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
 	}
