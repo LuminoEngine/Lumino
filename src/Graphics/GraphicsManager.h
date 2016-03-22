@@ -4,7 +4,7 @@
 #include <Lumino/Animation/Common.h>
 #include <Lumino/Platform/Common.h>
 #include <Lumino/Graphics/Common.h>
-#include <Lumino/Graphics/FontManager.h>
+#include "FontManager.h"	// TODO: remove
 #include <Lumino/Graphics/Font.h>
 #include <Lumino/Graphics/SwapChain.h>
 

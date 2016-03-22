@@ -180,7 +180,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/Font.h
-	include/Lumino/Graphics/FontManager.h
 	include/Lumino/Graphics/GlyphRun.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
@@ -214,6 +213,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/FontGlyphTextureCache.cpp
 	src/Graphics/FontGlyphTextureCache.h
 	src/Graphics/FontManager.cpp
+	src/Graphics/FontManager.h
 	src/Graphics/FreeTypeFont.cpp
 	src/Graphics/FreeTypeFont.h
 	src/Graphics/GeometryRenderer.cpp

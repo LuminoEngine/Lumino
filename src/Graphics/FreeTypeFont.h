@@ -4,7 +4,7 @@
 #include FT_FREETYPE_H	/* <freetype/freetype.h> */
 #include FT_CACHE_H	/* <freetype/ftcache.h> */
 #include <Lumino/Graphics/Font.h>
-#include <Lumino/Graphics/FontManager.h>
+#include "FontManager.h"
 
 //typedef struct  FT_Bitmap_  FT_Bitmap;
 //typedef signed int  FT_Int;

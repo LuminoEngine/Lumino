@@ -22,6 +22,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsManager;
+class FontManager;
 
 class RenderState;
 class DepthStencilState;
