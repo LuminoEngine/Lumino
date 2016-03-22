@@ -30,10 +30,29 @@ BitmapTextRenderer::~BitmapTextRenderer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void BitmapTextRenderer::Initialize(FontManager* manager)
+void BitmapTextRenderer::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARGS(manager != nullptr);
+	LN_CHECK_ARGS_RETURN(manager != nullptr);
 	m_manager = manager;
+
+	m_tmpGlyphRun = LN_NEW GlyphRun();
+	m_tmpGlyphRun->Initialize(m_manager);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun)
+{
+	LN_CHECK_ARGS_RETURN(target != nullptr);
+	LN_CHECK_ARGS_RETURN(glyphRun != nullptr);
+
+	Font* font = glyphRun->GetFont();
+	auto& items = glyphRun->GetLayoutItems();
+	for (auto& item : items)
+	{
+		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char);
+	}
 }
 
 LN_NAMESPACE_GRAPHICS_END

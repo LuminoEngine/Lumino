@@ -102,7 +102,7 @@ public:	// TODO: internal
 	{
 		String	Family;
 		int		Size;
-		int		EdgeSize;
+		//int		EdgeSize;
 		bool	IsBold;
 		bool	IsItalic;
 		bool	IsAntiAlias;

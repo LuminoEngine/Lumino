@@ -910,7 +910,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_glyphTextureCache = RefPtr<CacheManager>::Create(512, 0);
 
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
-	m_bitmapTextRenderer->Initialize(m_fontManager);
+	m_bitmapTextRenderer->Initialize(this);
 
 	if (m_renderingType == RenderingType::Deferred)
 	{
@@ -1060,7 +1060,7 @@ uint64_t GraphicsManager::CalcFontSettingHash(const FontData& fontData)
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = fontData.Size;
-	v2[1] = fontData.EdgeSize;
+	//v2[1] = fontData.EdgeSize;
 	v2[3] =
 		(((fontData.IsBold) ? 1 : 0)) |
 		(((fontData.IsItalic) ? 1 : 0) << 1) |
@@ -1093,7 +1093,7 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* 
 	FontData fontData;
 	fontData.Family = font->GetName();
 	fontData.Size = font->GetSize();
-	fontData.EdgeSize = font->GetEdgeSize();
+	//fontData.EdgeSize = font->GetEdgeSize();
 	fontData.IsBold = font->IsBold();
 	fontData.IsItalic = font->IsItalic();
 	fontData.IsAntiAlias = font->IsAntiAlias();
@@ -1140,7 +1140,7 @@ Font* GraphicsManager::FontData::CreateFontFromData(FontManager* m) const
 	Font* font = LN_NEW FreeTypeFont(m);
 	font->SetName(Family);
 	font->SetSize(Size);
-	font->SetEdgeSize(EdgeSize);
+	//font->SetEdgeSize(EdgeSize);
 	font->SetBold(IsBold);
 	font->SetItalic(IsItalic);
 	font->SetAntiAlias(IsAntiAlias);

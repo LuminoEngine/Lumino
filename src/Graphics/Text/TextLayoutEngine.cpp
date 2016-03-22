@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Graphics/Text/GlyphRun.h>
 #include "TextLayoutEngine.h"
 
 LN_NAMESPACE_BEGIN

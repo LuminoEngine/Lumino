@@ -338,7 +338,7 @@ void TextRenderer::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
 	CheckUpdateState();
-	DrawGlyphs(position, Helper::GetGlyphData(glyphRun), Helper::GetGlyphTextureCache(glyphRun));
+	DrawGlyphs(position, glyphRun->GetLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
 }
 
 //-----------------------------------------------------------------------------
@@ -367,7 +367,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& positi
 	cache->GetTextLayoutEngine()->ResetSettings();
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
 
-	DrawGlyphs(position, &result, cache);
+	DrawGlyphs(position, result.Items, cache);
 }
 
 //-----------------------------------------------------------------------------
@@ -405,13 +405,13 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, S
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
 
-	DrawGlyphs(rect.GetTopLeft(), &result, cache);
+	DrawGlyphs(rect.GetTopLeft(), result.Items, cache);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextRenderer::DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache)
+void TextRenderer::DrawGlyphs(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache)
 {
 	CheckUpdateState();
 
@@ -420,17 +420,17 @@ void TextRenderer::DrawGlyphs(const PointF& position, const TextLayoutResult* re
 	*/
 
 	// 一時メモリ確保
-	m_tempBuffer.Resize(sizeof(TextRendererCore::GlyphRunData) * result->Items.GetCount());
+	m_tempBuffer.Resize(sizeof(TextRendererCore::GlyphRunData) * layoutItems.GetCount());
 	auto data = (TextRendererCore::GlyphRunData*)m_tempBuffer.GetData();
 
 	// 確保したメモリにテクスチャ描画情報を作っていく
 	Texture* tex1 = NULL;
 	Texture* tex2 = NULL;	// TODO: ストローク
-	int count = result->Items.GetCount();
+	int count = layoutItems.GetCount();
 	for (int i = 0; i < count; ++i)
 	{
 		Rect srcRect;
-		const TextLayoutResultItem& item = result->Items[i];
+		const TextLayoutResultItem& item = layoutItems[i];
 		cache->LookupGlyph(item.Char, &tex1, &srcRect);
 
 		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);

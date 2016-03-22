@@ -18,9 +18,9 @@ public:
 	inline static Driver::IVertexBuffer*	GetDeviceObject(VertexBuffer* vb) { return vb->m_deviceObj; }
 	inline static Driver::IIndexBuffer*		GetDeviceObject(IndexBuffer* ib) { return ib->m_deviceObj; }
 
-	inline static void						AttachGlyphTextureCache(GlyphRun* gr, Internal::FontGlyphTextureCache* cache) { gr->AttachGlyphTextureCache(cache); }
-	inline static Internal::FontGlyphTextureCache* GetGlyphTextureCache(GlyphRun* gr) { return gr->m_glyphTextureCache; }
-	inline static TextLayoutResult*			GetGlyphData(GlyphRun* gr) { return gr->m_glyphData; }
+	//inline static void						AttachGlyphTextureCache(GlyphRun* gr, Internal::FontGlyphTextureCache* cache) { gr->AttachGlyphTextureCache(cache); }
+	//inline static Internal::FontGlyphTextureCache* GetGlyphTextureCache(GlyphRun* gr) { return gr->m_glyphTextureCache; }
+	//inline static TextLayoutResult*			GetGlyphData(GlyphRun* gr) { return gr->m_glyphData; }
 };
 
 LN_NAMESPACE_GRAPHICS_END

@@ -32,17 +32,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 
 
-struct TextLayoutResultItem
-{
-	UTF32	Char;
-	FontGlyphLocation	Location;
-};
-
-struct TextLayoutResult
-{
-	Size						AreaSize;
-	Array<TextLayoutResultItem>	Items;
-};
 
 class TextLayoutEngine
 {
@@ -52,6 +41,7 @@ public:
 
 public:
 	void SetFont(Font* font) { m_font = font; }
+	Font* GetFont() const { return m_font; }
 	//void SetForeColor(Graphics::Color color) { m_foreColor = color; }
 	//void SetStrokeColor(Graphics::Color color) { m_strokeColor = color; }
 	//void SetStrokeSize(int size) { m_strokeSize = size; }
@@ -73,7 +63,6 @@ private:
 	void LayoutLineHorizontal(const UTF32* text, int length, const Rect& lineArea, Size* outLineSize);
 
 private:
-	Bitmap*				m_targetBitmap;
 	RefPtr<Font>		m_font;
 	//Graphics::Color	m_foreColor;
 	//Graphics::Color	m_strokeColor;
@@ -83,9 +72,10 @@ private:
 	FlowDirection		m_flowDirection;
 	Rect				m_drawingArea;
 	//ByteBuffer			m_utf32Buffer;		///< UTF32 文字列への一時変換先 (頻繁にメモリ確保しないように、一度使ったメモリは使いまわしたい)
+	
+	// レイアウト処理中に使う
 	FontGlyphData*		m_prevGlyphData;
-	TextLayoutResult*			m_result;
-
+	TextLayoutResult*	m_result;
 };
 
 LN_NAMESPACE_GRAPHICS_END

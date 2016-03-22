@@ -109,7 +109,7 @@ public:
 	virtual void OnDeactivated() { Flush(); }
 
 public:
-	void DrawGlyphs(const PointF& position, const TextLayoutResult* result, Internal::FontGlyphTextureCache* cache);
+	void DrawGlyphs(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 
 private:

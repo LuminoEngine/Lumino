@@ -86,11 +86,11 @@ public:
 	///// エッジカラーの取得
 	//virtual const Graphics::Color& GetEdgeColor() const = 0;
 
-	/// エッジの幅の設定 (0 でエッジ無効)
-	virtual void SetEdgeSize(int size) = 0;
+	///// エッジの幅の設定 (0 でエッジ無効)
+	//virtual void SetEdgeSize(int size) = 0;
 
-	/// エッジの幅の取得
-	virtual int GetEdgeSize() const = 0;
+	///// エッジの幅の取得
+	//virtual int GetEdgeSize() const = 0;
 
 	/// 太文字の設定
 	virtual void SetBold(bool enabled) = 0;

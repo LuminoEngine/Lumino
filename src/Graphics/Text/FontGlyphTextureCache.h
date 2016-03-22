@@ -46,7 +46,7 @@ private:
 	Stack<int>				m_indexStack;			///< 空きキャッシュインデックス
 	RefPtr<Bitmap>			m_tmpBitmap;
 
-	TextLayoutEngine	m_layoutEngine;
+	TextLayoutEngine	m_layoutEngine;	// TODO: GlyphRun に任せていいかも？
 };
 
 LN_END_INTERNAL_NAMESPACE

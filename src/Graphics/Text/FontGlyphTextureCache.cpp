@@ -137,7 +137,7 @@ uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = m_font->GetSize();
-	v2[1] = m_font->GetEdgeSize();
+	//v2[1] = m_font->GetEdgeSize();
 	v2[3] =
 		(((m_font->IsBold()) ? 1 : 0)) |
 		(((m_font->IsItalic()) ? 1 : 0) << 1) |

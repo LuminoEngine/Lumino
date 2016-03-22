@@ -12,11 +12,15 @@ public:
 	BitmapTextRenderer();
 	virtual ~BitmapTextRenderer();
 
-	void Initialize(FontManager* manager);
+	void Initialize(GraphicsManager* manager);
+
+	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの DrawText 等、ユーティリティ的に使いたいときに new を減らす
+
+	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun);
 
 private:
-	FontManager*	m_manager;
-	GlyphRun*		m_tmpGlyphRun;
+	GraphicsManager*	m_manager;
+	GlyphRun*			m_tmpGlyphRun;
 };
 
 LN_NAMESPACE_GRAPHICS_END
