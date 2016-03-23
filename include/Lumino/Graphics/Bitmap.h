@@ -82,6 +82,8 @@ public:
 	/// ピクセルフォーマットの取得
 	PixelFormat GetPixelFormat() const { return m_format; }
 
+	void Clear(const Color& color);
+
 	/**
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
 		(Painter へ移動するべき？)

@@ -17,6 +17,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 BitmapTextRenderer::BitmapTextRenderer()
 	: m_manager(nullptr)
 	, m_tmpGlyphRun(nullptr)
+	, m_textAlignment(TextAlignment::Left)
 {
 }
 
@@ -51,6 +52,32 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	Font* font = glyphRun->GetFont();
 
 	auto& items = glyphRun->RequestLayoutItems();
+	auto& renderSize = glyphRun->GetRenderSize();
+
+	Point offset(0, 0);
+	switch (m_textAlignment)
+	{
+		case TextAlignment::Left:
+		{
+			break;
+		}
+		case TextAlignment::Center:
+		{
+			offset.X = (m_renderArea.Width - renderSize.Width) / 2;
+			break;
+		}
+		case TextAlignment::Right:
+		{
+			offset.X = m_renderArea.GetRight() - renderSize.Width;
+			break;
+		}
+		case TextAlignment::Justify:
+			LN_THROW(0, NotImplementedException);
+			break;
+	}
+
+
+	Point pos(m_renderArea.X + offset.X, m_renderArea.Y + offset.Y);
 	for (auto& item : items)
 	{
 		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, strokeThickness);
@@ -61,8 +88,8 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		if (gb->OutlineBitmap != nullptr)
 		{
 			dstRect.Set(
-				item.Location.OutlineBitmapTopLeftPosition.X,
-				item.Location.OutlineBitmapTopLeftPosition.Y,
+				pos.X + item.Location.OutlineBitmapTopLeftPosition.X,
+				pos.Y + item.Location.OutlineBitmapTopLeftPosition.Y,
 				item.Location.BitmapSize.Width,
 				item.Location.BitmapSize.Height);
 			srcRect.Set(0, 0, gb->OutlineBitmap->GetSize());
@@ -73,8 +100,8 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		if (gb->GlyphBitmap != nullptr)
 		{
 			dstRect.Set(
-				item.Location.BitmapTopLeftPosition.X,
-				item.Location.BitmapTopLeftPosition.Y,
+				pos.X + item.Location.BitmapTopLeftPosition.X,
+				pos.Y + item.Location.BitmapTopLeftPosition.Y,
 				item.Location.BitmapSize.Width,
 				item.Location.BitmapSize.Height);
 			srcRect.Set(0, 0, gb->GlyphBitmap->GetSize());

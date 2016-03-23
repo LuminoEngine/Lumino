@@ -110,6 +110,22 @@ void Bitmap::Init()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Bitmap::Clear(const Color& color)
+{
+	// 完全に透明にクリアする場合はバッファクリアでよい。
+	if (color.R == 0x00 && color.G == 0x00 && color.B == 0x00 && color.A == 0x00)
+	{
+		m_bitmapData.Clear();
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
 {
 	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.R, mulColor.G, mulColor.B, mulColor.A), alphaBlend);

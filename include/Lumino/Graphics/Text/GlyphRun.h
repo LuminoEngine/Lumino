@@ -30,7 +30,7 @@ public:
 	void SetFont(Font* font);
 	Font* GetFont() const;
 	void SetText(const StringRef& text);
-	void SetTextAlignment(TextAlignment align);
+	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
 	//int GetStrokeSize() const;
 	const Size& GetRenderSize();
 

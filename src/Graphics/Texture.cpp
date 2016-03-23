@@ -336,6 +336,15 @@ Texture2D::~Texture2D()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Texture2D::Clear(const Color& color)
+{
+	ScopedLockTexture lock(this);
+	lock.GetBitmap()->Clear(color);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
 void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
@@ -346,7 +355,9 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rec
 	auto* gr = r->GetTempGlyphRun();
 	gr->SetFont(font);
 	gr->SetText(text);
-	gr->SetTextAlignment(alignment);
+	//gr->SetTextAlignment(alignment);
+	r->SetRenderArea(rect);
+	r->SetTextAlignment(alignment);
 	r->DrawGlyphRun(lock.GetBitmap(), gr, fillColor, strokeColor, strokeThickness);
 }
 #pragma pop_macro("DrawText")
