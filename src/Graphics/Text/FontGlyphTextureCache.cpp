@@ -30,7 +30,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, Font* fon
 	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
 	// (小さくなければOK)
 	m_glyphWidthCount = (int)(sqrt((double)maxCharacters) + 1.0);
-	int w = m_glyphWidthCount * m_font->GetLineHeight();	//TODO ビットマップが収まるサイズは要チェック
+	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
 	m_glyphCacheTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
@@ -151,7 +151,7 @@ uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 //-----------------------------------------------------------------------------
 void FontGlyphTextureCache::Measure(const UTF32* text, int length, TextLayoutResult* outResult)
 {
-	m_layoutEngine.LayoutText(text, length, outResult);
+	m_layoutEngine.LayoutText(text, length, LayoutTextOptions::All, outResult);	// TODO: RenderSize だけでもいいかも？
 }
 
 LN_END_INTERNAL_NAMESPACE

@@ -2,13 +2,15 @@
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Animation/Common.h>
+#include <Lumino/IO/Common.h>
 #include <Lumino/Platform/Common.h>
 #include <Lumino/Graphics/Common.h>
-#include "Text/FontManager.h"	// TODO: remove
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/SwapChain.h>
 
 LN_NAMESPACE_BEGIN
+class FileManager;
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 class RenderingThread;
 class RenderingContext2;
@@ -146,7 +148,7 @@ private:
 	detail::AnimationManager*		m_animationManager;
 	FileManager*					m_fileManager;
 	PlatformWindow*					m_mainWindow;
-	RefPtr<FontManager>				m_fontManager;
+	FontManager*					m_fontManager;
 	RenderingType					m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
 	Array<GraphicsResourceObject*>	m_resourceObjectList;

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "../Internal.h"
+#include <Lumino/IO/FileManager.h>
 #include "../../include/Lumino/Graphics/Texture.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Utils.h>
@@ -337,16 +338,16 @@ Texture2D::~Texture2D()
 //-----------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
-void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment align) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, color, align); }
-void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment align)
+void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
+void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment)
 {
 	ScopedLockTexture lock(this);
 	auto* r = m_manager->GetBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();
 	gr->SetFont(font);
 	gr->SetText(text);
-	gr->SetTextAlignment(align);
-	r->DrawGlyphRun(lock.GetBitmap(), gr, Color::White, color);
+	gr->SetTextAlignment(alignment);
+	r->DrawGlyphRun(lock.GetBitmap(), gr, fillColor, strokeColor, strokeThickness);
 }
 #pragma pop_macro("DrawText")
 

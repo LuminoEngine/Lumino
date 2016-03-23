@@ -43,17 +43,17 @@ void BitmapTextRenderer::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color& strokeColor, const Color& fillColor)
+void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color& fillColor, const Color& strokeColor, int strokeThickness)
 {
 	LN_CHECK_ARGS_RETURN(target != nullptr);
 	LN_CHECK_ARGS_RETURN(glyphRun != nullptr);
 
 	Font* font = glyphRun->GetFont();
 
-	auto& items = glyphRun->GetLayoutItems();
+	auto& items = glyphRun->RequestLayoutItems();
 	for (auto& item : items)
 	{
-		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, glyphRun->GetStrokeSize());
+		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, strokeThickness);
 		Rect dstRect;
 		Rect srcRect;
 

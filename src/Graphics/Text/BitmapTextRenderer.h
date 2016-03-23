@@ -16,7 +16,7 @@ public:
 
 	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの DrawText 等、ユーティリティ的に使いたいときに new を減らす
 
-	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color& strokeColor, const Color& fillColor);
+	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color& fillColor, const Color& strokeColor, int strokeThickness);
 
 private:
 	GraphicsManager*	m_manager;

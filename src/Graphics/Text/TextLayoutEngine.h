@@ -31,7 +31,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //};
 
 
-
+enum class LayoutTextOptions
+{
+	All,
+	RenderSizeOnly,
+};
 
 class TextLayoutEngine
 {
@@ -53,7 +57,7 @@ public:
 
 	void ResetSettings();
 
-	void LayoutText(const UTF32* text, int length, TextLayoutResult* outResult/*, bool takeOverKerning*/);
+	void LayoutText(const UTF32* text, int length, LayoutTextOptions options, TextLayoutResult* outResult/*, bool takeOverKerning*/);
 
 protected:
 	/// ptLeftTop:DrawingArea の左上を原点とした、グリフの配置先左上座標 (配置方法によってはマイナス値になることもある)
@@ -77,6 +81,7 @@ private:
 	// レイアウト処理中に使う
 	FontGlyphData*		m_prevGlyphData;
 	TextLayoutResult*	m_result;
+	LayoutTextOptions	m_layoutTextOptions;
 };
 
 LN_NAMESPACE_GRAPHICS_END

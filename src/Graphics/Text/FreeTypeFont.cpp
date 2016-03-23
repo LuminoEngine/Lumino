@@ -1,6 +1,9 @@
 ﻿/*
 	texture-font.c - Hackage
 	https://www.google.co.jp/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=0ahUKEwj23beps9TLAhXHpZQKHcezDtgQFggkMAE&url=http%3A%2F%2Fwww.freetype.org%2Ffreetype2%2Fdocs%2Ftutorial%2Fexample2.cpp&usg=AFQjCNFYn2N68mYpv6IU5ZXQGGrWBYu4rg
+
+	本気でいろいろ詰めるなら Wine のが参考になる。
+	wine/dlls/gdi32/freetype.c
 */
 #include "../Internal.h"
 #include <ft2build.h>
@@ -675,6 +678,8 @@ void FreeTypeFont::UpdateFont()
 
 #define RESOLUTION_X 72
 #define RESOLUTION_Y 72
+//#define SCALE_X(x) (FT_MulFix(x, em_scale))
+//#define SCALE_Y(y) (FT_MulFix(y, em_scale))
 
 		// m_fontSize に対する本当の文字サイズを取得する
 		FTC_ScalerRec scaler;
@@ -689,6 +694,17 @@ void FreeTypeFont::UpdateFont()
 		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupSize : %d\n", err);
 
 		m_lineHeight = ft_size->metrics.height >> 6;
+
+		if (IsOutLineMetrix())
+		{
+			GetOutlineTextMetrix();
+		}
+		else
+		{
+			GetBitmapTextMetrix();
+		}
+		//int hh = m_ftFace->height;
+
 
 		Dispose();
 		//if (m_edgeSize > 0)
@@ -937,6 +953,58 @@ void FreeTypeFont::rasterCallback(
 	}
 }
 #endif
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool FreeTypeFont::IsOutLineMetrix() const
+{
+	return FT_IS_SCALABLE(m_ftFace);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FreeTypeFont::GetOutlineTextMetrix()
+{
+	// TrueType OS/2 table
+	TT_OS2* os2 = (TT_OS2*)FT_Get_Sfnt_Table(m_ftFace, ft_sfnt_os2);
+	LN_THROW(os2 != nullptr, InvalidFormatException);
+
+	// TrueType horizontal header
+	TT_HoriHeader* hori = (TT_HoriHeader*)FT_Get_Sfnt_Table(m_ftFace, ft_sfnt_hhea);
+	LN_THROW(hori != nullptr, InvalidFormatException);
+
+	FT_Fixed x_scale = m_ftFace->size->metrics.x_scale;
+	FT_Fixed y_scale = m_ftFace->size->metrics.y_scale;
+
+	int tmAscent = (FT_MulFix(os2->usWinAscent, y_scale) + 32) >> 6;
+	int tmDescent = (FT_MulFix(os2->usWinDescent, y_scale) + 32) >> 6;
+	int tmInternalLeading = (FT_MulFix(os2->usWinAscent + os2->usWinDescent - m_ftFace->units_per_EM, y_scale) + 32) >> 6;
+	int tmExternalLeading = std::max(0L, (FT_MulFix(hori->Line_Gap -
+		((os2->usWinAscent + os2->usWinDescent) -
+			(hori->Ascender - hori->Descender)), y_scale) + 32) >> 6);
+	m_lineHeight = tmInternalLeading + tmAscent + tmDescent + tmExternalLeading;
+
+
+//#define SCALE_X(x) (FT_MulFix(x, m_ftFace->size->metrics.x_scale))
+//#define SCALE_Y(y) (FT_MulFix(y, m_ftFace->size->metrics.y_scale))
+//
+//	TT_HoriHeader* hori = (TT_HoriHeader*)FT_Get_Sfnt_Table(m_ftFace, ft_sfnt_hhea);
+//
+//	int tmAscent = SCALE_Y(hori->Ascender);
+//	int tmDescent = SCALE_Y(hori->Descender);
+//	int tmInternalLeading = SCALE_Y(hori->Ascender + hori->Descender - m_ftFace->units_per_EM);
+//	m_lineHeight = tmInternalLeading + tmAscent + tmDescent;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FreeTypeFont::GetBitmapTextMetrix()
+{
+	LN_NOTIMPLEMENTED();
+}
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -17,6 +17,7 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 #include "../RenderingCommand.h"
 #include "TextRenderer.h"
 #include "../GraphicsHelper.h"
+#include "FontManager.h"
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
 
@@ -338,7 +339,7 @@ void TextRenderer::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == NULL) { return; }
 	CheckUpdateState();
-	DrawGlyphs(position, glyphRun->GetLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
+	DrawGlyphs(position, glyphRun->RequestLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
 }
 
 //-----------------------------------------------------------------------------
@@ -365,7 +366,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& positi
 	// 
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->ResetSettings();
-	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
+	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
 	DrawGlyphs(position, result.Items, cache);
 }
@@ -403,7 +404,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, S
 
 
 	TextLayoutResult result;
-	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), &result);
+	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.GetConstData(), utf32Buf.GetSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
 	DrawGlyphs(rect.GetTopLeft(), result.Items, cache);
 }

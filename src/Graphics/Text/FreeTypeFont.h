@@ -82,7 +82,7 @@ public:
 	virtual bool IsAntiAlias() const { return m_fontData.IsAntiAlias; }
 
 	virtual Font* Copy() const;
-	virtual int GetLineHeight() { UpdateFont(); return m_lineHeight; }
+	virtual int GetLineSpacing() { UpdateFont(); return m_lineHeight; }
 	//virtual Size GetTextSize(const char* text, int length);	// TODO: GetTextSize もいらなそう。UTF32 のだけあればいいかも？
 	//virtual Size GetTextSize(const wchar_t* text, int length);
 	//virtual Size GetTextSize(const UTF32* text, int length);
@@ -98,6 +98,9 @@ private:
 	void RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
 	void UpdateImageFlags();
 	void TryUpdateStroke(int newEdgeSize);
+	bool IsOutLineMetrix() const;
+	void GetOutlineTextMetrix();
+	void GetBitmapTextMetrix();
 
 private:
 	FontManager*		m_manager;

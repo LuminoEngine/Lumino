@@ -43,9 +43,10 @@ void TextLayoutEngine::ResetSettings()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TextLayoutEngine::LayoutText(const UTF32* text, int length, TextLayoutResult* outResult/*, bool takeOverKerning*/)
+void TextLayoutEngine::LayoutText(const UTF32* text, int length, LayoutTextOptions options, TextLayoutResult* outResult/*, bool takeOverKerning*/)
 {
 	m_result = outResult;
+	m_layoutTextOptions = options;
 
 	if (m_flowDirection == FlowDirection::LeftToRight)
 	{
@@ -67,7 +68,11 @@ void TextLayoutEngine::LayoutText(const UTF32* text, int length, TextLayoutResul
 void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 {
 	m_result->AreaSize = Size::Zero;
-	m_result->Items.Clear();
+
+	if (m_layoutTextOptions == LayoutTextOptions::All)
+	{
+		m_result->Items.Clear();
+	}
 
 	Rect rc = m_drawingArea;
 	Size lineSize;
@@ -120,7 +125,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 
 	// TODO: アンチエイリアス有効だと、↑の方法では1px 足りないことがあった。
 	// とりあえずここで強制設定している。
-	m_result->AreaSize.Height = m_font->GetLineHeight();
+	m_result->AreaSize.Height = m_font->GetLineSpacing();
 }
 
 //-----------------------------------------------------------------------------
@@ -136,65 +141,74 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	// まずは左詰めで計測する
 	FontGlyphLocation* prevInfo = NULL;
 	//int planeWidth = 0;
+	TextLayoutResultItem item;
 	for (int i = 0; i < length; ++i)
 	{
 		prevInfo = m_font->AdvanceKerning(text[i], m_strokeSize, prevInfo);
 		//planeWidth += prevInfo->BitmapSize.Width;
 		outLineSize->Height = std::max(outLineSize->Height, prevInfo->BitmapSize.Height);
 
-		TextLayoutResultItem item;
 		item.Char = text[i];
 		item.Location = *prevInfo;
-		m_result->Items.Add(item);
+
+
+		if (m_layoutTextOptions == LayoutTextOptions::All)
+		{
+			m_result->Items.Add(item);
+		}
 	}
 
-	int planeWidth = m_result->Items[length - 1].Location.OuterTopLeftPosition.X + m_result->Items[length - 1].Location.BitmapSize.Width;
+	//int planeWidth = m_result->Items[length - 1].Location.OuterTopLeftPosition.X + m_result->Items[length - 1].Location.BitmapSize.Width;
+	int planeWidth = item.Location.OuterTopLeftPosition.X + item.Location.BitmapSize.Width;
 
 	// TODO: GUI から呼ばれるときは、UI要素のサイズを図る目的でも使用する。
 	// TextAlignment::Left 固定でいいのか考えておく。
 	outLineSize->Width = planeWidth;
 
-	// 各グリフの配置を決める
-	Rect drawArea = lineArea;
-	switch (m_textAlignment)
+	if (m_layoutTextOptions == LayoutTextOptions::All)
 	{
-	case TextAlignment::Left:
-	{
-		break;
-	}
-	case TextAlignment::Center:
-	{
-		int offset = (lineArea.Width - planeWidth) / 2;
-		for (TextLayoutResultItem & item : m_result->Items) {
-			item.Location.BitmapTopLeftPosition.X += offset;
-			item.Location.OutlineBitmapTopLeftPosition.X += offset;
-			item.Location.OuterTopLeftPosition.X += offset;
+		// 各グリフの配置を決める
+		Rect drawArea = lineArea;
+		switch (m_textAlignment)
+		{
+		case TextAlignment::Left:
+		{
+			break;
 		}
-		break;
-	}
-	case TextAlignment::Right:
-	{
-		int offset = lineArea.GetRight() - planeWidth;
-		for (TextLayoutResultItem & item : m_result->Items) {
-			item.Location.BitmapTopLeftPosition.X += offset;
-			item.Location.OutlineBitmapTopLeftPosition.X += offset;
-			item.Location.OuterTopLeftPosition.X += offset;
+		case TextAlignment::Center:
+		{
+			int offset = (lineArea.Width - planeWidth) / 2;
+			for (TextLayoutResultItem & item : m_result->Items) {
+				item.Location.BitmapTopLeftPosition.X += offset;
+				item.Location.OutlineBitmapTopLeftPosition.X += offset;
+				item.Location.OuterTopLeftPosition.X += offset;
+			}
+			break;
 		}
-		break;
-	}
-	case TextAlignment::Justify:
-		LN_THROW(0, NotImplementedException);
-		break;
-	}
+		case TextAlignment::Right:
+		{
+			int offset = lineArea.GetRight() - planeWidth;
+			for (TextLayoutResultItem & item : m_result->Items) {
+				item.Location.BitmapTopLeftPosition.X += offset;
+				item.Location.OutlineBitmapTopLeftPosition.X += offset;
+				item.Location.OuterTopLeftPosition.X += offset;
+			}
+			break;
+		}
+		case TextAlignment::Justify:
+			LN_THROW(0, NotImplementedException);
+			break;
+		}
 
-	// ... トリミング
-	switch (m_textTrimming)
-	{
-	case TextTrimming::None:
-		break;
-	case TextTrimming::CharacterEllipsis:
-		LN_THROW(0, NotImplementedException);
-		break;
+		// ... トリミング
+		switch (m_textTrimming)
+		{
+		case TextTrimming::None:
+			break;
+		case TextTrimming::CharacterEllipsis:
+			LN_THROW(0, NotImplementedException);
+			break;
+		}
 	}
 }
 

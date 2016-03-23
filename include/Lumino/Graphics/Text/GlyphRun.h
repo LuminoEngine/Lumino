@@ -30,15 +30,15 @@ public:
 	void SetFont(Font* font);
 	Font* GetFont() const;
 	void SetText(const StringRef& text);
-	const Size& GetRenderSize() const { return m_glyphData.AreaSize; }
 	void SetTextAlignment(TextAlignment align);
-	int GetStrokeSize() const;
+	//int GetStrokeSize() const;
+	const Size& GetRenderSize();
 
 LN_INTERNAL_ACCESS:
 	GlyphRun();
 	virtual ~GlyphRun();
 	void Initialize(GraphicsManager* manager);
-	const Array<TextLayoutResultItem>& GetLayoutItems() const;
+	const Array<TextLayoutResultItem>& RequestLayoutItems();
 	Internal::FontGlyphTextureCache* LookupFontGlyphTextureCache();
 	const UTF32* GetText() const { return m_utf32Text.c_str(); }
 	int GetTextLength() const { return m_utf32Text.GetLength(); }
@@ -61,6 +61,8 @@ private:
 	TextLayoutResult					m_glyphData;
 	TextLayoutEngine*					m_layoutEngine;	// TODO: detail にして new しない
 	Internal::FontGlyphTextureCache*	m_glyphTextureCache;
+	bool								m_modifiedRenderSize;
+	bool								m_modifiedItems;
 };
 
 LN_NAMESPACE_GRAPHICS_END

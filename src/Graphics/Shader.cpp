@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
 #include "GraphicsManager.h"

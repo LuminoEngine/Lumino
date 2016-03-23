@@ -151,7 +151,8 @@ int main()
 		//window->UserWndProc = TestWndProc;
 
 		auto tex = Texture2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
-		tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, TextAlignment::Left);
+		tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, Color::Blue, 0, TextAlignment::Left);
+		auto size = Font::GetDefaultFont()->GetTextSize(_T("lumino"));
 		auto sp1 = Sprite2D::Create(tex);
 		auto sp2 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_IndexBuffer.BasicTriangle.png"));
 		sp2->SetPosition(100, 240, 0);

@@ -71,17 +71,24 @@ static const TCHAR* DefaultFontName = _T("Meiryo UI");
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontManager* FontManager::Create(FileManager* fileManager)
+FontManager::FontManager()
 {
-	return LN_NEW FontManager(fileManager);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontManager::FontManager(FileManager* fileManager)
+FontManager::~FontManager()
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphicsManager)
 {
 	m_fileManager = fileManager;
+	m_graphicsManager = graphicsManager;
 	m_charToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
 	m_charToUTF32Converter.SetSourceEncoding(Encoding::GetSystemMultiByteEncoding());
 	m_wcharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
@@ -123,14 +130,7 @@ FontManager::FontManager(FileManager* fileManager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-FontManager::~FontManager()
-{
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void FontManager::Dispose()
+void FontManager::Finalize()
 {
 	LN_SAFE_RELEASE(m_defaultFont);
 

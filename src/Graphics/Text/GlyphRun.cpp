@@ -2,13 +2,15 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "../GraphicsManager.h"
+#include "FontManager.h"
+#include "BitmapTextRenderer.h"
 #include "FontGlyphTextureCache.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //=============================================================================
-// BitmapTextRenderer
+// GlyphRun
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -18,6 +20,8 @@ GlyphRun::GlyphRun()
 	: m_manager(nullptr)
 	, m_layoutEngine(nullptr)
 	, m_glyphTextureCache(nullptr)
+	, m_modifiedRenderSize(false)
+	, m_modifiedItems(false)
 {
 }
 
@@ -53,8 +57,9 @@ void GlyphRun::SetFont(Font* font)
 			font = m_manager->GetFontManager()->GetDefaultFont();
 		}
 		m_layoutEngine->SetFont(font);
-		UpdateTextLayoutItem();
 		LN_SAFE_RELEASE(m_glyphTextureCache);	// 必要なときにまた取得しなおす
+		m_modifiedRenderSize = true;
+		m_modifiedItems = true;
 	}
 }
 
@@ -74,7 +79,8 @@ void GlyphRun::SetText(const StringRef& text)
 	EncodingConverter* conv = m_manager->GetFontManager()->GetTCharToUTF32Converter();
 	m_utf32Text.Clear();
 	m_utf32Text.Append(conv->Convert(text.GetBegin(), text.GetLength() * sizeof(TCHAR)));
-	UpdateTextLayoutItem();
+	m_modifiedRenderSize = true;
+	m_modifiedItems = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -88,9 +94,26 @@ void GlyphRun::SetTextAlignment(TextAlignment align)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-int GlyphRun::GetStrokeSize() const
+//int GlyphRun::GetStrokeSize() const
+//{
+//	return m_layoutEngine->GetStrokeSize();
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const Size& GlyphRun::GetRenderSize()
 {
-	return m_layoutEngine->GetStrokeSize();
+	// RenderSize だけ更新する
+	if (m_modifiedRenderSize)
+	{
+		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
+		{
+			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), LayoutTextOptions::RenderSizeOnly, &m_glyphData);
+		}
+		m_modifiedRenderSize = false;
+	}
+	return m_glyphData.AreaSize;
 }
 
 //-----------------------------------------------------------------------------
@@ -98,19 +121,25 @@ int GlyphRun::GetStrokeSize() const
 //-----------------------------------------------------------------------------
 void GlyphRun::UpdateTextLayoutItem()
 {
-	m_glyphData.AreaSize = Size::Zero;
-	m_glyphData.Items.Clear();
-	if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
+	if (m_modifiedItems)
 	{
-		m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), &m_glyphData);
+		m_glyphData.AreaSize = Size::Zero;
+		m_glyphData.Items.Clear();
+		if (m_layoutEngine->GetFont() != nullptr && m_utf32Text.GetLength() > 0)
+		{
+			m_layoutEngine->LayoutText(m_utf32Text.c_str(), m_utf32Text.GetLength(), LayoutTextOptions::All, &m_glyphData);
+		}
+		m_modifiedRenderSize = false;
+		m_modifiedItems = false;
 	}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Array<TextLayoutResultItem>& GlyphRun::GetLayoutItems() const
+const Array<TextLayoutResultItem>& GlyphRun::RequestLayoutItems()
 {
+	UpdateTextLayoutItem();
 	return m_glyphData.Items;
 }
 

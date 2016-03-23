@@ -72,16 +72,18 @@ public:
 	}
 };
 
-/**
-	@brief		フォントの管理クラス
-*/
+// フォントの管理クラス
 class FontManager
 	: public RefObject
 {
 public:
-	static FontManager* Create(FileManager* fileManager);
+	FontManager();
+	virtual ~FontManager();
+	void Initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
+	void Finalize();
 
-public:
+	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+
 
 	/// フォントファイルを追加する (ttf) (初回登録の場合はデフォルトフォント名として登録する)
 	void RegisterFontFile(const String& fontFilePath);
@@ -92,7 +94,6 @@ public:
 	/// デフォルトのフォントを取得する
 	Font* GetDefaultFont() const { return m_defaultFont; }
 
-	void Dispose();
 
 
 	EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
@@ -103,8 +104,6 @@ public:
 	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
 private:
-	FontManager(FileManager* fileManager);
-	virtual ~FontManager();
 
 	friend class FreeTypeFont;
 	FT_Library GetFTLibrary() const { return m_ftLibrary; }
@@ -156,6 +155,7 @@ private:
 	TTFDataEntryMap		m_ttfDataEntryMap;
 
 	RefPtr<FileManager>	m_fileManager;
+	GraphicsManager*	m_graphicsManager;
 	Font*  m_defaultFont;
 
 	EncodingConverter		m_charToUTF32Converter;

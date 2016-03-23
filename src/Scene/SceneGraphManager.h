@@ -2,6 +2,7 @@
 #pragma once
 #include <map>
 #include <Lumino/Base/Stack.h>
+#include <Lumino/IO/FileManager.h>
 #include <Lumino/Physics/PhysicsManager.h>
 #include "../../src/Graphics/GraphicsManager.h"		// TODO: remove
 #include <Lumino/Scene/Common.h>

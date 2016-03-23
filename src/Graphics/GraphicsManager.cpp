@@ -711,6 +711,7 @@
 #include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "PainterEngine.h"
+#include "Text/FontManager.h"
 #include "Text/TextRenderer.h"
 #include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
@@ -778,6 +779,7 @@ GraphicsManager::GraphicsManager()
 	: m_animationManager(nullptr)
 	, m_fileManager(nullptr)
 	, m_mainWindow(nullptr)
+	, m_fontManager(nullptr)
 	, m_graphicsDevice(nullptr)
 	, m_renderingType(RenderingType::Immediate)
 	, m_dummyTexture(nullptr)
@@ -811,8 +813,8 @@ GraphicsManager::~GraphicsManager()
 
 	if (m_fontManager != nullptr)
 	{
-		m_fontManager->Dispose();
-		m_fontManager.SafeRelease();
+		m_fontManager->Finalize();
+		LN_SAFE_RELEASE(m_fontManager);
 	}
 
 	if (m_graphicsDevice != nullptr)
@@ -840,7 +842,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_platformTextureLoading = configData.PlatformTextureLoading;
 
 	// フォント管理
-	m_fontManager.Attach(FontManager::Create(m_fileManager));
+	m_fontManager = LN_NEW FontManager();
+	m_fontManager->Initialize(m_fileManager, this);
+
 #if defined(LN_OS_WIN32)
 	if (configData.GraphicsAPI == GraphicsAPI::DirectX9)
 	{

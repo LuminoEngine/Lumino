@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <algorithm>
 #include "../GraphicsManager.h"
+#include "FontManager.h"
 #include "BitmapFont.h"
 
 LN_NAMESPACE_BEGIN
