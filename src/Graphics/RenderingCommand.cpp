@@ -83,7 +83,9 @@ void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRen
 	m_currentRenderer = device->GetRenderer();
 	LN_FOREACH(size_t dataIdx, m_commandList)
 	{
-		((RenderingCommand*)GetCommand(dataIdx))->Execute();
+		RenderingCommand* cmd = ((RenderingCommand*)GetCommand(dataIdx));
+		cmd->Execute();
+		cmd->~RenderingCommand();
 	}
 	LN_RC_TRACE("RenderingCommandList::Execute() e %p\n", this);
 }

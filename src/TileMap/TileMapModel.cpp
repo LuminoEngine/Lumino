@@ -1,7 +1,7 @@
 
 #include "../Internal.h"
 #include <Lumino/TileMap/TileMapRenderer.h>
-#include <Lumino/TileMap/TileMap.h>
+#include <Lumino/TileMap/TileMapModel.h>
 
 LN_NAMESPACE_BEGIN
 

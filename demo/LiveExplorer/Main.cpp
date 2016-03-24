@@ -5,7 +5,7 @@
 #include "Common.h"
 #include "../../src/EngineManager.h"
 #include "../../src/Modeling/ModelManager.h"
-#include <Lumino/Tilemap/TileMap.h>
+#include <Lumino/Tilemap/TileMapModel.h>
 #include <Lumino/Graphics/DrawingContext.h>
 #include <Lumino/Scene/TileMapNode.h>
 #include <Lumino/Scene/MeshModelObject.h>

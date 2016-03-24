@@ -305,11 +305,11 @@ if (LN_BUILD_SCENE_MODULE)
 set(LN_SOURCES_TileMap
 	include/Lumino/TileMap/Common.h
 	include/Lumino/TileMap/TileLayer.h
-	include/Lumino/TileMap/TileMap.h
+	include/Lumino/TileMap/TileMapModel.h
 	include/Lumino/TileMap/TileMapRenderer.h
 	include/Lumino/TileMap/TileSet.h
 	src/TileMap/TileLayer.cpp
-	src/TileMap/TileMap.cpp
+	src/TileMap/TileMapModel.cpp
 	src/TileMap/TileMapRenderer.cpp
 	src/TileMap/TileSet.cpp
 )
