@@ -115,12 +115,44 @@ void Thread2()
 #endif
 
 
+//template<typename T>
+//static void MarkResource(T& value)
+//{
+//	printf("MarkResource<T>\n");
+//}
+//template<typename T>
+//static void MarkResource(const T& value)
+//{
+//	printf("MarkResource<const T>\n");
+//}
+//
+//template<>
+//static void MarkResource<RefObject*>(RefObject*& value)
+//{
+//	printf("MarkResource<RefObject*>\n");
+//}
+//
+//template<>
+//static void MarkResource<Point>(Point& value)
+//{
+//	printf("MarkResource<Point>\n");
+//}
+
+
 int main()
 {
 
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	//Vector3 v;
+	//Texture* tex = nullptr;
+	//Point pt;
+	//MarkResource(10);
+	//MarkResource(v);
+	//MarkResource(tex);
+	//MarkResource(pt);
 
 	//std::weak_ptr
 	try

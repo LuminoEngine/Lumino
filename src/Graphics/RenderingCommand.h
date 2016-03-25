@@ -24,6 +24,7 @@ class VertexBuffer;
 class IndexBuffer;
 class ShaderPass;
 class RenderingCommandList;
+class RenderBulkData;
 
 /// 
 ///		×必ずメインスレッド (描画スレッド以外) で生成されて、描画スレッドで実行される。
@@ -58,10 +59,15 @@ public:
 
 protected:
 	inline Driver::IGraphicsDevice* GetDevice() const;
-	inline Driver::IRenderer* GetRenderer() const;
+	inline Driver::IRenderer* GetRenderer() const;	// TODO: いらないかも
 	inline DataHandle AllocExtData(size_t byteCount, const void* copyData);
 	inline void* GetExtData(DataHandle handle);
 	inline void MarkGC(RefObject* obj);
+
+	template<typename T>
+	inline void MarkBulkData(RenderingCommandList* commandList, T& value);
+	template<>
+	inline void MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value);
 
 private:
 	friend class RenderingCommandList;
@@ -102,6 +108,22 @@ private:
 	
 //	static void ExecuteInternal(RenderingCommand* cmd) { Execute(static_cast<cmdClass*>(cmd)); }
 
+class RenderBulkData
+{
+public:
+	RenderBulkData(void* srcData, size_t size);
+	void* GetData() const;
+	size_t GetSize() const { return m_size; }
+
+	// TODO: internal
+	void Alloc(RenderingCommandList* commandList);
+
+private:
+	void*					m_srcData;
+	size_t					m_size;
+	RenderingCommandList*	m_commandList;
+	size_t					m_dataHandle;
+};
 
 
 class RenderingCommandList
@@ -165,6 +187,17 @@ public:
 		LN_RC_TRACE("RenderingCommandList::AddCommand 0() s %p\n", this);
 		m_commandList.Add(h);
 	}
+
+	template<typename T, typename... TArgs>
+	void EnqueueCommand(TArgs... args)
+	{
+		size_t dataHandle = AllocCommand(sizeof(T), NULL);
+		T* t = new (GetCommand(dataHandle))T(args...);
+		t->m_commandList = this;
+		LN_RC_TRACE("RenderingCommandList::EnqueueCommand 0() s %p\n", this);
+		m_commandList.Add(dataHandle);
+	}
+	
 
 #if 0
 	template<typename T, typename A1>
@@ -307,7 +340,126 @@ inline void RenderingCommand::MarkGC(RefObject* obj)
 {
 	m_commandList->MarkGC(obj);
 }
+template<typename T>
+inline void RenderingCommand::MarkBulkData(RenderingCommandList* commandList, T& value)
+{
+}
+template<>
+inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value)
+{
+	value.Alloc(commandList);
+}
 
+#define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
+
+#define LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, commandName, ...) \
+	if (manager->GetRenderingType() == RenderingType::Deferred) { \
+		manager->GetPrimaryRenderingCommandList()->EnqueueCommand<commandName>(__VA_ARGS__); \
+	} \
+	else { \
+		commandName cmd(__VA_ARGS__); \
+		cmd.Execute(); \
+	}
+
+#define LN_ENQUEUE_RENDER_COMMAND_2(name, manager, type1, param1, type2, param2, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		type2 param2; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type2, in_##param2)) \
+			: param1(in_##param1) \
+			, param2(in_##param2) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::MarkBulkData(commandList, param2); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2);
+
+#define LN_ENQUEUE_RENDER_COMMAND_3(name, manager, type1, param1, type2, param2, type3, param3, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		type2 param2; \
+		type3 param3; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type2, in_##param2), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type3, in_##param3)) \
+			: param1(in_##param1) \
+			, param2(in_##param2) \
+			, param3(in_##param3) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::MarkBulkData(commandList, param2); \
+			RenderingCommand::MarkBulkData(commandList, param3); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3);
+
+#define LN_ENQUEUE_RENDER_COMMAND_8(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		type2 param2; \
+		type3 param3; \
+		type4 param4; \
+		type5 param5; \
+		type6 param6; \
+		type7 param7; \
+		type8 param8; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type2, in_##param2), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type3, in_##param3), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type4, in_##param4), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type5, in_##param5), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type6, in_##param6), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type7, in_##param7), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type8, in_##param8)) \
+			: param1(in_##param1) \
+			, param2(in_##param2) \
+			, param3(in_##param3) \
+			, param4(in_##param4) \
+			, param5(in_##param5) \
+			, param6(in_##param6) \
+			, param7(in_##param7) \
+			, param8(in_##param8) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::MarkBulkData(commandList, param2); \
+			RenderingCommand::MarkBulkData(commandList, param3); \
+			RenderingCommand::MarkBulkData(commandList, param4); \
+			RenderingCommand::MarkBulkData(commandList, param5); \
+			RenderingCommand::MarkBulkData(commandList, param6); \
+			RenderingCommand::MarkBulkData(commandList, param7); \
+			RenderingCommand::MarkBulkData(commandList, param8); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7, param8);
 
 //=============================================================================
 struct Renderer_BeginCommand : public RenderingCommand
