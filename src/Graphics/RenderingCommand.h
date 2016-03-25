@@ -194,6 +194,7 @@ public:
 		size_t dataHandle = AllocCommand(sizeof(T), NULL);
 		T* t = new (GetCommand(dataHandle))T(args...);
 		t->m_commandList = this;
+		t->OnEnqueued(this);
 		LN_RC_TRACE("RenderingCommandList::EnqueueCommand 0() s %p\n", this);
 		m_commandList.Add(dataHandle);
 	}
@@ -413,6 +414,74 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	}; \
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3);
 
+#define LN_ENQUEUE_RENDER_COMMAND_4(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		type2 param2; \
+		type3 param3; \
+		type4 param4; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type2, in_##param2), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type3, in_##param3), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type4, in_##param4)) \
+			: param1(in_##param1) \
+			, param2(in_##param2) \
+			, param3(in_##param3) \
+			, param4(in_##param4) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::MarkBulkData(commandList, param2); \
+			RenderingCommand::MarkBulkData(commandList, param3); \
+			RenderingCommand::MarkBulkData(commandList, param4); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4);
+
+#define LN_ENQUEUE_RENDER_COMMAND_5(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		type2 param2; \
+		type3 param3; \
+		type4 param4; \
+		type5 param5; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type2, in_##param2), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type3, in_##param3), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type4, in_##param4), \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type5, in_##param5)) \
+			: param1(in_##param1) \
+			, param2(in_##param2) \
+			, param3(in_##param3) \
+			, param4(in_##param4) \
+			, param5(in_##param5) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::MarkBulkData(commandList, param2); \
+			RenderingCommand::MarkBulkData(commandList, param3); \
+			RenderingCommand::MarkBulkData(commandList, param4); \
+			RenderingCommand::MarkBulkData(commandList, param5); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5);
+
 #define LN_ENQUEUE_RENDER_COMMAND_8(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
 	class RenderCommand_##name : public RenderingCommand \
 	{ \
@@ -461,162 +530,162 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	}; \
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7, param8);
 
-//=============================================================================
-struct Renderer_BeginCommand : public RenderingCommand
-{
-	void Create() { }
-	void Execute() { GetRenderer()->Begin(); GetRenderer()->EnterRenderState(); }
-};
+////=============================================================================
+//struct Renderer_BeginCommand : public RenderingCommand
+//{
+//	void Create() { }
+//	void Execute() { GetRenderer()->Begin(); GetRenderer()->EnterRenderState(); }
+//};
+//
+////=============================================================================
+//struct Renderer_EndCommand : public RenderingCommand
+//{
+//	void Create() { }
+//	void Execute() { GetRenderer()->LeaveRenderState(); GetRenderer()->End(); }
+//};
 
-//=============================================================================
-struct Renderer_EndCommand : public RenderingCommand
-{
-	void Create() { }
-	void Execute() { GetRenderer()->LeaveRenderState(); GetRenderer()->End(); }
-};
+////=============================================================================
+//struct SetRenderStateCommand : public RenderingCommand
+//{
+//	RenderState	m_state;
+//	void Create(const RenderState& state) { m_state = state; }
+//	void Execute() { GetRenderer()->SetRenderState(m_state); }
+//};
+//
+////=============================================================================
+//struct SetDepthStencilStateCommand : public RenderingCommand
+//{
+//	DepthStencilState	m_state;
+//	void Create(const DepthStencilState& state) { m_state = state; }
+//	void Execute() { GetRenderer()->SetDepthStencilState(m_state); }
+//};
+//
+////=============================================================================
+//struct SetRenderTargetCommand : public RenderingCommand
+//{
+//	int m_index;
+//	Driver::ITexture* m_sourceTexture;
+//	void Create(int index, Driver::ITexture* texture)
+//	{
+//		m_index = index;
+//		m_sourceTexture = texture;
+//		MarkGC(texture);
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->SetRenderTarget(m_index, m_sourceTexture);
+//	}
+//};
 
-//=============================================================================
-struct SetRenderStateCommand : public RenderingCommand
-{
-	RenderState	m_state;
-	void Create(const RenderState& state) { m_state = state; }
-	void Execute() { GetRenderer()->SetRenderState(m_state); }
-};
+////=============================================================================
+//struct SetDepthBufferCommand : public RenderingCommand
+//{
+//	Driver::ITexture* m_sourceTexture;
+//	void Create(Driver::ITexture* texture)
+//	{
+//		m_sourceTexture = texture;
+//		MarkGC(texture);
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->SetDepthBuffer(m_sourceTexture);
+//	}
+//};
+//
+////=============================================================================
+//struct SetViewportCommand : public RenderingCommand
+//{
+//	Rect m_viewportRect;
+//	void Create(const Rect& rect) { m_viewportRect = rect; }
+//	void Execute() { GetRenderer()->SetViewport(m_viewportRect); }
+//};
 
-//=============================================================================
-struct SetDepthStencilStateCommand : public RenderingCommand
-{
-	DepthStencilState	m_state;
-	void Create(const DepthStencilState& state) { m_state = state; }
-	void Execute() { GetRenderer()->SetDepthStencilState(m_state); }
-};
+////=============================================================================
+//struct SetVertexBufferCommand : public RenderingCommand
+//{
+//	Driver::IVertexBuffer* m_sourceVertexBuffer;
+//	void Create(Driver::IVertexBuffer* vertexBuffer)
+//	{
+//		m_sourceVertexBuffer = vertexBuffer;
+//		MarkGC(vertexBuffer);
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->SetVertexBuffer(m_sourceVertexBuffer);
+//	}
+//};
+//
+////=============================================================================
+//struct SetIndexBufferCommand : public RenderingCommand
+//{
+//	Driver::IIndexBuffer* m_sourceIndexBuffer;
+//	void Create(Driver::IIndexBuffer* indexBuffer)
+//	{
+//		m_sourceIndexBuffer = indexBuffer;
+//		MarkGC(indexBuffer);
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->SetIndexBuffer(m_sourceIndexBuffer);
+//	}
+//};
 
-//=============================================================================
-struct SetRenderTargetCommand : public RenderingCommand
-{
-	int m_index;
-	Driver::ITexture* m_sourceTexture;
-	void Create(int index, Driver::ITexture* texture)
-	{
-		m_index = index;
-		m_sourceTexture = texture;
-		MarkGC(texture);
-	}
-	void Execute()
-	{
-		GetRenderer()->SetRenderTarget(m_index, m_sourceTexture);
-	}
-};
-
-//=============================================================================
-struct SetDepthBufferCommand : public RenderingCommand
-{
-	Driver::ITexture* m_sourceTexture;
-	void Create(Driver::ITexture* texture)
-	{
-		m_sourceTexture = texture;
-		MarkGC(texture);
-	}
-	void Execute()
-	{
-		GetRenderer()->SetDepthBuffer(m_sourceTexture);
-	}
-};
-
-//=============================================================================
-struct SetViewportCommand : public RenderingCommand
-{
-	Rect m_viewportRect;
-	void Create(const Rect& rect) { m_viewportRect = rect; }
-	void Execute() { GetRenderer()->SetViewport(m_viewportRect); }
-};
-
-//=============================================================================
-struct SetVertexBufferCommand : public RenderingCommand
-{
-	Driver::IVertexBuffer* m_sourceVertexBuffer;
-	void Create(Driver::IVertexBuffer* vertexBuffer)
-	{
-		m_sourceVertexBuffer = vertexBuffer;
-		MarkGC(vertexBuffer);
-	}
-	void Execute()
-	{
-		GetRenderer()->SetVertexBuffer(m_sourceVertexBuffer);
-	}
-};
-
-//=============================================================================
-struct SetIndexBufferCommand : public RenderingCommand
-{
-	Driver::IIndexBuffer* m_sourceIndexBuffer;
-	void Create(Driver::IIndexBuffer* indexBuffer)
-	{
-		m_sourceIndexBuffer = indexBuffer;
-		MarkGC(indexBuffer);
-	}
-	void Execute()
-	{
-		GetRenderer()->SetIndexBuffer(m_sourceIndexBuffer);
-	}
-};
-
-//=============================================================================
-struct ClearCommand : public RenderingCommand
-{
-	ClearFlags m_flags;
-	ColorF m_clearColor;
-	float m_z;
-	uint8_t m_stencil;
-	void Create(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
-	{
-		m_flags = flags;
-		m_clearColor = color;
-		m_z = z;
-		m_stencil = stencil;
-	}
-	void Execute()
-	{
-		GetRenderer()->Clear(m_flags, m_clearColor, m_z, m_stencil);
-	}
-};
-
-//=============================================================================
-struct DrawPrimitiveCommand : public RenderingCommand
-{
-	PrimitiveType m_primitive;
-	int m_startVertex;
-	int m_primitiveCount;
-	void Create(PrimitiveType primitive, int startVertex, int primitiveCount)
-	{
-		m_primitive = primitive;
-		m_startVertex = startVertex;
-		m_primitiveCount = primitiveCount;
-	}
-	void Execute()
-	{
-		GetRenderer()->DrawPrimitive(m_primitive, m_startVertex, m_primitiveCount);
-	}
-};
-
-//=============================================================================
-struct DrawPrimitiveIndexedCommand : public RenderingCommand
-{
-	PrimitiveType m_primitive;
-	int m_startIndex;
-	int m_primitiveCount;
-	void Create(PrimitiveType primitive, int startIndex, int primitiveCount)
-	{
-		m_primitive = primitive;
-		m_startIndex = startIndex;
-		m_primitiveCount = primitiveCount;
-	}
-	void Execute()
-	{
-		GetRenderer()->DrawPrimitiveIndexed(m_primitive, m_startIndex, m_primitiveCount);
-	}
-};
-
+////=============================================================================
+//struct ClearCommand : public RenderingCommand
+//{
+//	ClearFlags m_flags;
+//	ColorF m_clearColor;
+//	float m_z;
+//	uint8_t m_stencil;
+//	void Create(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+//	{
+//		m_flags = flags;
+//		m_clearColor = color;
+//		m_z = z;
+//		m_stencil = stencil;
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->Clear(m_flags, m_clearColor, m_z, m_stencil);
+//	}
+//};
+//
+////=============================================================================
+//struct DrawPrimitiveCommand : public RenderingCommand
+//{
+//	PrimitiveType m_primitive;
+//	int m_startVertex;
+//	int m_primitiveCount;
+//	void Create(PrimitiveType primitive, int startVertex, int primitiveCount)
+//	{
+//		m_primitive = primitive;
+//		m_startVertex = startVertex;
+//		m_primitiveCount = primitiveCount;
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->DrawPrimitive(m_primitive, m_startVertex, m_primitiveCount);
+//	}
+//};
+//
+////=============================================================================
+//struct DrawPrimitiveIndexedCommand : public RenderingCommand
+//{
+//	PrimitiveType m_primitive;
+//	int m_startIndex;
+//	int m_primitiveCount;
+//	void Create(PrimitiveType primitive, int startIndex, int primitiveCount)
+//	{
+//		m_primitive = primitive;
+//		m_startIndex = startIndex;
+//		m_primitiveCount = primitiveCount;
+//	}
+//	void Execute()
+//	{
+//		GetRenderer()->DrawPrimitiveIndexed(m_primitive, m_startIndex, m_primitiveCount);
+//	}
+//};
+//
 //=============================================================================
 struct SetSamplerStateCommand : public RenderingCommand
 {

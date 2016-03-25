@@ -98,18 +98,35 @@ Renderer::~Renderer()
 //-----------------------------------------------------------------------------
 void Renderer::Begin()
 {
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
-		m_primaryCommandList->AddCommand<Renderer_BeginCommand>();
-	}
-	else {
-		if (m_manager->GetGraphicsDevice()->IsStandalone()) {
-			m_internal->Begin();
-			m_internal->EnterRenderState();
-		}
-		else {
-			m_internal->EnterRenderState();
-		}
-	}
+	//if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+	//	m_primaryCommandList->AddCommand<Renderer_BeginCommand>();
+	//}
+	//else {
+	//	if (m_manager->GetGraphicsDevice()->IsStandalone()) {
+	//		m_internal->Begin();
+	//		m_internal->EnterRenderState();
+	//	}
+	//	else {
+	//		m_internal->EnterRenderState();
+	//	}
+	//}
+	bool isStandalone = m_manager->GetGraphicsDevice()->IsStandalone();
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		Begin, m_manager,
+		Driver::IRenderer*, m_internal,
+		bool, isStandalone,
+		{
+			if (isStandalone)
+			{
+				m_internal->Begin();
+				m_internal->EnterRenderState();
+			}
+			else
+			{
+				m_internal->EnterRenderState();
+			}
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -117,18 +134,23 @@ void Renderer::Begin()
 //-----------------------------------------------------------------------------
 void Renderer::End()
 {
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) {
-		m_primaryCommandList->AddCommand<Renderer_EndCommand>();
-	}
-	else {
-		if (m_manager->GetGraphicsDevice()->IsStandalone()) {
-			m_internal->LeaveRenderState();
-			m_internal->End();
-		}
-		else {
-			m_internal->LeaveRenderState();
-		}
-	}
+	bool isStandalone = m_manager->GetGraphicsDevice()->IsStandalone();
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		End, m_manager,
+		Driver::IRenderer*, m_internal,
+		bool, isStandalone,
+		{
+			if (isStandalone)
+			{
+				m_internal->LeaveRenderState();
+				m_internal->End();
+			}
+			else
+			{
+				m_internal->LeaveRenderState();
+			}
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -136,8 +158,15 @@ void Renderer::End()
 //-----------------------------------------------------------------------------
 void Renderer::SetRenderState(const RenderState& state)
 {
-	LN_CALL_RENDERER_COMMAND(SetRenderState, SetRenderStateCommand, state);
 	m_currentRenderState = state;
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SetRenderState, m_manager,
+		Driver::IRenderer*, m_internal,
+		RenderState, state,
+		{
+			m_internal->SetRenderState(state);
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -153,8 +182,15 @@ const RenderState& Renderer::GetRenderState() const
 //-----------------------------------------------------------------------------
 void Renderer::SetDepthStencilState(const DepthStencilState& state)
 {
-	LN_CALL_RENDERER_COMMAND(SetDepthStencilState, SetDepthStencilStateCommand, state);
 	m_currentDepthStencilState = state;
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SetDepthStencilState, m_manager,
+		Driver::IRenderer*, m_internal,
+		DepthStencilState, state,
+		{
+			m_internal->SetDepthStencilState(state);
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -171,7 +207,6 @@ const DepthStencilState& Renderer::GetDepthStencilState() const
 void Renderer::SetRenderTarget(int index, Texture* texture)
 {
 	Driver::ITexture* t = (texture != NULL) ? texture->GetDeviceObject() : NULL;
-	//LN_CALL_RENDERER_COMMAND(SetRenderTarget, SetRenderTargetCommand, index, t);
 	LN_REFOBJ_SET(m_currentRenderTargets[index], texture);
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
@@ -199,8 +234,16 @@ Texture* Renderer::GetRenderTarget(int index) const
 void Renderer::SetDepthBuffer(Texture* depthBuffer)
 {
 	Driver::ITexture* t = (depthBuffer != NULL) ? depthBuffer->GetDeviceObject() : NULL;
-	LN_CALL_RENDERER_COMMAND(SetDepthBuffer, SetDepthBufferCommand, t);
+	//LN_CALL_RENDERER_COMMAND(SetDepthBuffer, SetDepthBufferCommand, t);
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SetDepthBuffer, m_manager,
+		Driver::IRenderer*, m_internal,
+		RefPtr<Driver::ITexture>, t,
+		{
+			m_internal->SetDepthBuffer(t);
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -216,8 +259,16 @@ Texture* Renderer::GetDepthBuffer() const
 //-----------------------------------------------------------------------------
 void Renderer::SetViewport(const Rect& rect)
 {
-	LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
+	//LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
 	m_currentViewport = rect;
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SetViewport, m_manager,
+		Driver::IRenderer*, m_internal,
+		Rect, rect,
+		{
+			m_internal->SetViewport(rect);
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -234,7 +285,15 @@ const Rect& Renderer::GetViewport()
 void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
 	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
-	LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
+	//LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SetVertexBuffer, m_manager,
+		Driver::IRenderer*, m_internal,
+		RefPtr<Driver::IVertexBuffer>, t,
+		{
+			m_internal->SetVertexBuffer(t);
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -243,7 +302,15 @@ void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
 	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
-	LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
+	//LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		SetIndexBuffer, m_manager,
+		Driver::IRenderer*, m_internal,
+		RefPtr<Driver::IIndexBuffer>, t,
+		{
+			m_internal->SetIndexBuffer(t);
+		});
 }
 
 //-----------------------------------------------------------------------------
@@ -259,7 +326,18 @@ void Renderer::SetShaderPass(ShaderPass* pass)
 //-----------------------------------------------------------------------------
 void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
-	LN_CALL_RENDERER_COMMAND(Clear, ClearCommand, flags, color, z, stencil);
+	LN_ENQUEUE_RENDER_COMMAND_5(
+		Clear, m_manager,
+		Driver::IRenderer*, m_internal,
+		ClearFlags, flags,
+		ColorF, color, 
+		float, z, 
+		uint8_t, stencil,
+		{
+			m_internal->Clear(flags, color, z, stencil);
+		});
+
+	//LN_CALL_RENDERER_COMMAND(Clear, ClearCommand, flags, color, z, stencil);
 }
 
 //-----------------------------------------------------------------------------
@@ -267,7 +345,17 @@ void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t ste
 //-----------------------------------------------------------------------------
 void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	LN_CALL_RENDERER_COMMAND(DrawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		DrawPrimitive, m_manager,
+		Driver::IRenderer*, m_internal,
+		PrimitiveType, primitive,
+		int, startVertex,
+		int, primitiveCount,
+		{
+			m_internal->DrawPrimitive(primitive, startVertex, primitiveCount);
+		});
+
+	//LN_CALL_RENDERER_COMMAND(DrawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -275,7 +363,16 @@ void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primi
 //-----------------------------------------------------------------------------
 void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		DrawPrimitiveIndexed, m_manager,
+		Driver::IRenderer*, m_internal,
+		PrimitiveType, primitive,
+		int, startIndex,
+		int, primitiveCount,
+		{
+			m_internal->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+		});
+	//LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
