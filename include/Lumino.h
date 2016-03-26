@@ -68,10 +68,15 @@
 //#include "Lumino/GUI/TextBlock.h"
 //#include "Lumino/GUI/TextBox.h"
 
+#include "Lumino/TileMap/TileSet.h"
+#include "Lumino/TileMap/TileLayer.h"
+#include "Lumino/TileMap/TileMapModel.h"
+
 #include "Lumino/Scene/SceneGraph.h"
 #include "Lumino/Scene/Camera.h"
 #include "Lumino/Scene/Sprite2D.h"
 #include "Lumino/Scene/Sprite3D.h"
+#include "Lumino/Scene/TileMapNode.h"
 
 #include "Lumino/AutoReleasePool.h"
 #include "Lumino/Profiler.h"

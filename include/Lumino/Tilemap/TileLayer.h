@@ -16,6 +16,8 @@ public:
 	virtual ~TileLayer();
 	
 	void Resize(int width, int height);
+	const Size& GetSize() const { return m_size; }
+
 	void SetTileId(int x, int y, int id);
 	int GetTileId(int x, int y);
 

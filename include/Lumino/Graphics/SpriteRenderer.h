@@ -6,6 +6,8 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class SpriteRendererImpl;
 
+// TODO: RenderingContext から公開される。諸々プロパティは RenderingContext のと同期する必要がある。
+// ユーザーに公開したいものだけ公開するインターフェイスにしたい。
 /**
 	@brief		スプライトの描画を行うクラスです。
 */

@@ -60,7 +60,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 
 	
 
-	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
+	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 8192);	// TODO:
 
 	m_primitiveRenderer = LN_NEW detail::PrimitiveRenderer();
 	m_primitiveRenderer->Initialize(manager);

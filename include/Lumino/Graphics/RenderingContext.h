@@ -120,6 +120,8 @@ public:
 
 	void Flush();
 
+	SpriteRenderer* GetSpriteRenderer() const { return m_spriteRenderer; }
+
 LN_INTERNAL_ACCESS:
 	RenderingContext2();
 	virtual ~RenderingContext2();

@@ -37,8 +37,8 @@ protected:
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
 
 private:
-	SpriteTileMapRenderer*	m_renderer;
-	TileMap*				m_tileMap;
+	TileMapRenderer*	m_renderer;
+	TileMap*			m_tileMap;
 };
 
 LN_NAMESPACE_SCENE_END

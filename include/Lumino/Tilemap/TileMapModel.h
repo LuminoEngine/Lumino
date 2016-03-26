@@ -21,6 +21,7 @@ public:
 
 	TileSet* GetTileSet();
 	void SetTileSet(TileSet* tileSet);
+	TileSet* GetTileSet() const { return m_tileSet; }
 
 	tr::ReflectionObjectList<TileLayer*>* GetLayers() { return &m_layers; }
 

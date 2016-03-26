@@ -6,6 +6,7 @@ LN_NAMESPACE_BEGIN
 
 class TileMap;
 class TileSet;
+typedef RefPtr<TileSet>	TileSetPtr;
 class TileLayer;
 class TileMapRenderer;
 

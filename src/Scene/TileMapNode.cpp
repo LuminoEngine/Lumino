@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Graphics/RenderingContext.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Tilemap/TileMapModel.h>
@@ -54,7 +55,7 @@ TileMapNode::TileMapNode()
 //-----------------------------------------------------------------------------
 TileMapNode::~TileMapNode()
 {
-	LN_SAFE_DELETE(m_renderer);
+	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_DELETE(m_tileMap);
 }
 
@@ -65,7 +66,7 @@ void TileMapNode::Create3DCore(SceneGraphManager* manager)
 {
 	VisualNode::CreateCore(manager, 1);
 	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
-	m_renderer = LN_NEW SpriteTileMapRenderer(manager->GetGraphicsManager());
+	m_renderer = LN_NEW TileMapRenderer(/*manager->GetGraphicsManager()*/);
 	SetRenderingMode(SceneNodeRenderingMode::NonShaderVisible);
 }
 
@@ -84,8 +85,9 @@ void TileMapNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (m_tileMap != nullptr)
 	{
-		m_renderer->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
-		m_renderer->Draw(m_tileMap, RectF(0,0,320,240));
+		//m_renderer->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+		
+		m_renderer->Draw(dc->GetRenderingContext()->GetSpriteRenderer(), m_tileMap, RectF(0,0,3200,2400), dc->CurrentCamera->GetViewFrustum());
 	}
 
 	//dc->ResetState();

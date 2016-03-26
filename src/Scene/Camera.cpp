@@ -36,7 +36,7 @@ Camera::Camera()
 	, m_directionMode(CameraDirection::LookAt)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI * 0.125f)
-	, m_nearClip(0.0f)
+	, m_nearClip(0.3f)	// Unity based.
 	, m_farClip(1000.0f)
 	, m_cameraBehavior(nullptr)
 {
@@ -65,13 +65,13 @@ void Camera::CreateCore(SceneGraphManager* manager, CameraProjection proj)
 
 	if (m_projectionMode == CameraProjection_2D)
 	{
-		m_nearClip = 0.0f;
+		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
 		m_transform.Translation.Set(0, 0, 0);
 	}
 	else if (m_projectionMode == CameraProjection_3D)
 	{
-		m_nearClip = 0.0f;
+		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
 		m_transform.Translation.Set(0, 0, -20.0f);
 	}

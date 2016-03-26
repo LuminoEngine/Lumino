@@ -13,15 +13,17 @@ class TileSet
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	static TileSetPtr Create();
+
+public:
 	TileSet();
 	virtual ~TileSet();
-	void CreateCore();
 
 	void SetImageSource(Texture* texture);
 	Texture* GetImageSource() const;
 
 	void SetTileSize(const Size& tileSize) { m_tileSize = tileSize; }
-	const Size& SetTileSize() const { return m_tileSize; }
+	const Size& GetTileSize() const { return m_tileSize; }
 
 	
 	
@@ -29,6 +31,7 @@ public:
 	//void SetImageFilePath(const PathName& filePath);
 
 LN_PROTECTED_INTERNAL_ACCESS:
+	void Initialize();
 	virtual void LookupTileImage(int id, Texture** outTexture, Rect* outSrcRect);
 
 private:

@@ -33,7 +33,7 @@ public:
 	/// Y 方向視野角の取得
 	float GetFovY() const { return m_fovY; }
 
-	/// 最も近いビュープレーン位置の設定
+	/// 最も近いビュープレーン位置の設定 (0.0 以下にしないこと)
 	void SetNearClip(float nearClip) { m_nearClip = nearClip; }
 
 	/// 最も近いビュープレーン位置の取得
@@ -44,6 +44,9 @@ public:
 
 	/// 最も遠いビュープレーン位置の取得
 	float GetFarClip() const { return m_farClip; }
+
+	const ViewFrustum& GetViewFrustum() const { return m_viewFrustum; }
+
 
 	void SetCameraBehavior(CameraBehavior* behavior);
 	CameraBehavior* GetCameraBehavior() const { return m_cameraBehavior; }

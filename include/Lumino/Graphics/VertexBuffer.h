@@ -38,6 +38,8 @@ public:
 	
 public:
 
+	int GetVertexCount() const { return m_vertexCount; }
+
 	/**
 		@brief		リソースをロックします。
 	*/
