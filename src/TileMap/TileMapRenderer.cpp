@@ -5,8 +5,11 @@
 */
 #include "../Internal.h"
 #include <Lumino/Graphics/SpriteRenderer.h>
+#include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
+#include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 
@@ -33,6 +36,12 @@ struct TileMapVertex
 // TileMapRenderer
 //=============================================================================
 
+static const byte_t g_TileMapRenderer_fx_Data[] =
+{
+#include "TileMapRenderer.fx.h"
+};
+static const size_t g_TileMapRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TileMapRenderer_fx_Data);
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -41,6 +50,13 @@ TileMapRenderer::TileMapRenderer(GraphicsManager* manager)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
 {
+	m_shader.shader = LN_NEW Shader();
+	m_shader.shader->Initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
+	m_shader.pass = m_shader.shader->GetTechniques()[0]->GetPasses()[0];
+	m_shader.varWorldMatrix = m_shader.shader->FindVariable(_T("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->FindVariable(_T("g_viewProjMatrix"));
+	m_shader.varTexture = m_shader.shader->FindVariable(_T("g_texture"));
+	//m_shader.varPixelStep = m_shader.shader->FindVariable(_T("g_pixelStep"));
 }
 
 //-----------------------------------------------------------------------------
@@ -50,14 +66,26 @@ TileMapRenderer::~TileMapRenderer()
 {
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
+	LN_SAFE_RELEASE(m_shader.shader);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TileMapRenderer::Draw(SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
+void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
+{
+	m_shader.varWorldMatrix->SetMatrix(world);
+	m_shader.varViewProjMatrix->SetMatrix(viewProj);
+	m_viewProj = viewProj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
 {
 	LN_CHECK_ARGS_RETURN(tileMap != nullptr);
+	m_renderingContext = context;
 	m_spriteRenderer = spriteRenderer;
 
 	// TODO: 原点と正面方向
@@ -87,32 +115,57 @@ void TileMapRenderer::Draw(SpriteRenderer* spriteRenderer, TileMap* tileMap, con
 		}
 	}
 
+	//printf("%f %f %f %f \n", l, t, r, b);
+
 	// TODO: ローカル座標→タイルマップ配列インデックスへの座標変換
 
+	// TODO: ↓いまのところ 3d 用
 	const Size& tileSize = tileMap->GetTileSet()->GetTileSize();
-	Rect renderRange;
-	renderRange.X = (int)l / tileSize.Width;
-	renderRange.Y = (int)t / tileSize.Height;
-	renderRange.Width = renderRange.X + ((int)r / tileSize.Width);
-	renderRange.Height = renderRange.Y - ((int)b / tileSize.Height);
+
+	// テーブル配列のどこの範囲を描画したい？
+	BoundingRect renderRange =
+	{
+		l / tileSize.Width,
+		t / tileSize.Height,
+		r / tileSize.Width,
+		b / tileSize.Height,
+	};
+	//Rect renderRange = Rect::MakeFromBounds(
+	//	(int)l / tileSize.Width,
+	//	(int)b / tileSize.Height,
+	//	(int)r / tileSize.Width,
+	//	(int)t / tileSize.Height);
+	//renderRange.X = (int)l / tileSize.Width;
+	//renderRange.Y = (int)t / tileSize.Height;
+	//renderRange.Width = renderRange.X + ((int)r / tileSize.Width);
+	//renderRange.Height = renderRange.Y - ((int)b / tileSize.Height);
 
 
 	Begin();
 	for (TileLayer* layer : *tileMap->GetLayers())
 	{
-		Rect r = renderRange;
+		BoundingRect clipd = renderRange;
 		// TODO: 3D で Y0 を下端とする
-		r.Y = layer->GetSize().Height - r.Y;
+		clipd.top = layer->GetSize().Height - clipd.top;
+		clipd.bottom = layer->GetSize().Height - clipd.bottom;
+		//clipd.Y = layer->GetSize().Height + clipd.Y;
 
 		// ループしない
 		// TODO:
 		if (1)
 		{
-			Rect maxSize(0, 0, layer->GetSize());
-			r.Clip(maxSize);
+			const Size& size = layer->GetSize();
+			if (clipd.left < 0) clipd.left = 0;
+			if (clipd.top < 0) clipd.top = 0;
+			if (clipd.right > size.Width) clipd.right = size.Width;		// 描画したいところ +1
+			if (clipd.bottom > size.Height) clipd.bottom = size.Height;	// 描画したいところ +1
 		}
 
-		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), r);
+
+		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.GetRight(), renderRange.GetBottom());
+		//printf("%d %d %d %d \n", clipd.GetLeft(), clipd.GetTop(), clipd.GetRight(), clipd.GetBottom());
+
+		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd);
 	}
 	End();
 }
@@ -147,7 +200,7 @@ void TileMapRenderer::DrawTile(
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const Rect& renderRange)
+void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange)
 {
 	LN_CHECK_ARGS_RETURN(layer != nullptr);
 	LN_CHECK_ARGS_RETURN(tileSet != nullptr);
@@ -158,7 +211,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 		allocedTileCount = m_vertexBuffer->GetVertexCount() / 4;
 	}
 
-	int tileCount = renderRange.Width * renderRange.Height;
+	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
 	if (tileCount > allocedTileCount)
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
@@ -191,10 +244,15 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	const Size& tileSize = tileSet->GetTileSize();
 
 	// boundingRect 全体を埋めるように描画するべきセル範囲を決める
-	int ox = boundingRect.X / tileSize.Width;
-	int oy = boundingRect.Y / tileSize.Height;
-	int w = (boundingRect.Width + tileSize.Width) / tileSize.Width;
-	int h = (boundingRect.Height + tileSize.Height) / tileSize.Height;
+	//int ox = boundingRect.X / tileSize.Width;
+	//int oy = boundingRect.Y / tileSize.Height;
+	//int w = (boundingRect.Width + tileSize.Width) / tileSize.Width;
+	//int h = (boundingRect.Height + tileSize.Height) / tileSize.Height;
+
+	Texture* tileSetTexture = tileSet->GetImageSource();
+	SizeF invSize(
+		1.0f / tileSetTexture->GetSize().Width,
+		1.0f / tileSetTexture->GetSize().Height);
 
 	Vector3 pos;
 	Vector2 size;
@@ -202,19 +260,87 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	Rect srcRect;
 	const Size& layerSize = layer->GetSize();
 
-	for (int x = ox; x < w; ++x)
+	ByteBuffer* buf = m_vertexBuffer->Lock();
+	TileMapVertex* vb = (TileMapVertex*)buf->GetData();
+
+	int plotCount = 0;
+	Vector3 offset(0/*layerSize.X * tileSize.Width*/, layerSize.Height * tileSize.Height, 0);
+	Vector3 stepX(tileSize.Width, 0, 0);
+	Vector3 stepY(0, -tileSize.Height, 0);	// 3D なので下方向へ
+	for (int y = renderRange.top; y < renderRange.bottom; ++y)
 	{
-		for (int y = oy; y < h; ++y)
+		Vector3 pos = offset + stepY * y;
+		for (int x = renderRange.left; x < renderRange.right; ++x)
 		{
-			if (x < layerSize.Width && y < layerSize.Height)
+			//if (x < layerSize.Width && y < layerSize.Height)
 			{
 				tileSet->LookupTileImage(layer->GetTileId(x, y), &texture, &srcRect);
-				pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
-				size.Set(srcRect.Width, srcRect.Height);
-				DrawTile(pos, size, texture, srcRect);
+				//float pl = (float)x;
+				//float pt = (float)y;
+				//float pr = (float)x + tileSize.Width;
+				//float pb = (float)y + tileSize.Height;
+				float tl = ((float)srcRect.GetLeft()) * invSize.Width;
+				float tt = ((float)srcRect.GetTop()) * invSize.Height;
+				float tr = ((float)srcRect.GetRight()) * invSize.Width;
+				float tb = ((float)srcRect.GetBottom()) * invSize.Height;
+				//pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
+				//size.Set(srcRect.Width, srcRect.Height);
+				//DrawTile(pos, size, texture, srcRect);
+				vb[plotCount + 0].Position = pos;
+				vb[plotCount + 0].TexUV.Set(tl, tt);
+				vb[plotCount + 1].Position = pos + stepY;
+				vb[plotCount + 1].TexUV.Set(tl, tb);
+				vb[plotCount + 2].Position = pos + stepX;
+				vb[plotCount + 2].TexUV.Set(tr, tt);
+				vb[plotCount + 3].Position = pos + stepX + stepY;
+				vb[plotCount + 3].TexUV.Set(tr, tb);
+				plotCount += 4;
+
+				//vb[plotCount + 0].Position.Set(0, 10, 0);
+				//vb[plotCount + 0].TexUV.Set(tl, tt);
+				//vb[plotCount + 1].Position.Set(0, 0, 0);
+				//vb[plotCount + 1].TexUV.Set(tl, tb);
+				//vb[plotCount + 2].Position.Set(-10, 10, 0);
+				//vb[plotCount + 2].TexUV.Set(tr, tt);
+				//vb[plotCount + 3].Position.Set(-10, 0, 0);
+				//vb[plotCount + 3].TexUV.Set(tr, tb);
 			}
+			pos += stepX;
 		}
 	}
+
+	//printf("---\n");
+	//Vector3::Transform(vb[0].Position, m_viewProj).Print();
+	//Vector3::Transform(vb[1].Position, m_viewProj).Print();
+	//Vector3::Transform(vb[2].Position, m_viewProj).Print();
+	//Vector3::Transform(vb[3].Position, m_viewProj).Print();
+
+	m_vertexBuffer->Unlock();
+
+
+
+
+
+	//m_renderingContext->Flush();
+
+
+	// TODO: 複数テクスチャ
+	// (と言っても、実際は1layerに1テクスチャでいいと思う。RGSSが少し特殊なだけ。最初に BitBlt で1つのテクスチャにまとめてしまってもいいかも)
+	m_shader.varTexture->SetTexture(tileSetTexture);
+	//m_shader.varViewProjMatrix->SetMatrix(m_viewProj);
+
+
+
+	//RenderState s = m_renderingContext->GetRenderState();
+	//s.Culling = CullingMode_None;
+	//m_renderingContext->SetRenderState(s);
+
+	m_renderingContext->SetVertexBuffer(m_vertexBuffer);
+	m_renderingContext->SetIndexBuffer(m_indexBuffer);
+	m_renderingContext->SetShaderPass(m_shader.pass);
+	m_renderingContext->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, tileCount * 2);
+	
+	//m_renderingContext->Flush();
 }
 //
 ////=============================================================================

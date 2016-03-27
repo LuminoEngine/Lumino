@@ -66,7 +66,7 @@ void TileMapNode::Create3DCore(SceneGraphManager* manager)
 {
 	VisualNode::CreateCore(manager, 1);
 	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
-	m_renderer = LN_NEW TileMapRenderer(/*manager->GetGraphicsManager()*/);
+	m_renderer = LN_NEW TileMapRenderer(manager->GetGraphicsManager());
 	SetRenderingMode(SceneNodeRenderingMode::NonShaderVisible);
 }
 
@@ -87,7 +87,9 @@ void TileMapNode::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	{
 		//m_renderer->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 		
-		m_renderer->Draw(dc->GetRenderingContext()->GetSpriteRenderer(), m_tileMap, RectF(0,0,3200,2400), dc->CurrentCamera->GetViewFrustum());
+		// TODO: WorldMatrix
+		m_renderer->SetTransform(Matrix::Identity, dc->CurrentCamera->GetViewProjectionMatrix());
+		m_renderer->Draw(dc->GetRenderingContext(), dc->GetRenderingContext()->GetSpriteRenderer(), m_tileMap, RectF(0,0,3200,2400), dc->CurrentCamera->GetViewFrustum());
 	}
 
 	//dc->ResetState();
