@@ -72,16 +72,16 @@ uniform mat4	g_worldMatrix;
 uniform mat4	g_viewProjMatrix;
 
 attribute vec3	ln_Vertex0;
-attribute vec4	ln_Color0;
+//attribute vec4	ln_Color0;
 attribute vec2	ln_MultiTexCoord0;
 
-varying vec4	v_Color;
+//varying vec4	v_Color;
 varying vec2	v_TexUV;
 
 void main()
 {
 	gl_Position = g_viewProjMatrix * g_worldMatrix * vec4(ln_Vertex0, 1.0);
-	v_Color = ln_Color0;
+	//v_Color = ln_Color0;
 	v_TexUV = ln_MultiTexCoord0;
 }
 #endif
@@ -89,13 +89,13 @@ void main()
 #ifdef LN_GLSL_FRAGMENT
 
 uniform sampler2D	g_texture;
-varying vec4		v_Color;
+//varying vec4		v_Color;
 varying vec2		v_TexUV;
 
 void main()
 {
 	vec4 color = texture2D(g_texture, v_TexUV);
-	gl_FragColor = color * v_Color;
+	gl_FragColor = color;// * v_Color;
 }
 
 #endif

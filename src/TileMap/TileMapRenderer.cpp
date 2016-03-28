@@ -130,6 +130,10 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 		r / tileSize.Width,
 		b / tileSize.Height,
 	};
+	//renderRange.left += 2;
+	renderRange.top += 1;
+	renderRange.bottom -= 1;
+	renderRange.right += 1;
 	//Rect renderRange = Rect::MakeFromBounds(
 	//	(int)l / tileSize.Width,
 	//	(int)b / tileSize.Height,
@@ -163,7 +167,7 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 
 
 		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.GetRight(), renderRange.GetBottom());
-		//printf("%d %d %d %d \n", clipd.GetLeft(), clipd.GetTop(), clipd.GetRight(), clipd.GetBottom());
+		printf("%d %d %d %d \n", clipd.left, clipd.top, clipd.right, clipd.bottom);
 
 		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd);
 	}
@@ -267,9 +271,10 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	Vector3 offset(0/*layerSize.X * tileSize.Width*/, layerSize.Height * tileSize.Height, 0);
 	Vector3 stepX(tileSize.Width, 0, 0);
 	Vector3 stepY(0, -tileSize.Height, 0);	// 3D ‚È‚Ì‚Å‰º•ûŒü‚Ö
+	float delta = 0.000001;	// TODO: DX9 “Á—LH‚Ù‚ñ‚Ì‚í‚¸‚©‚ÈŒë·‚ÅAc‰¡‚Éü‚ªŒ©‚¦‚Ä‚µ‚Ü‚¤‚±‚Æ‚ª‚ ‚Á‚½
 	for (int y = renderRange.top; y < renderRange.bottom; ++y)
 	{
-		Vector3 pos = offset + stepY * y;
+		Vector3 pos = offset + (stepY * y) + (stepX * renderRange.left);
 		for (int x = renderRange.left; x < renderRange.right; ++x)
 		{
 			//if (x < layerSize.Width && y < layerSize.Height)
@@ -279,10 +284,10 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 				//float pt = (float)y;
 				//float pr = (float)x + tileSize.Width;
 				//float pb = (float)y + tileSize.Height;
-				float tl = ((float)srcRect.GetLeft()) * invSize.Width;
-				float tt = ((float)srcRect.GetTop()) * invSize.Height;
-				float tr = ((float)srcRect.GetRight()) * invSize.Width;
-				float tb = ((float)srcRect.GetBottom()) * invSize.Height;
+				float tl = ((float)srcRect.GetLeft()) * invSize.Width + delta;
+				float tt = ((float)srcRect.GetTop()) * invSize.Height + delta;
+				float tr = ((float)srcRect.GetRight()) * invSize.Width + delta;
+				float tb = ((float)srcRect.GetBottom()) * invSize.Height + delta;
 				//pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
 				//size.Set(srcRect.Width, srcRect.Height);
 				//DrawTile(pos, size, texture, srcRect);
