@@ -14,13 +14,14 @@ public:
 	virtual ~VirtualPad();
 
 	bool IsPressed(const StringRef& bindingName) const;
-	bool IsOnTriggered(const StringRef& bindingName) const;
+	bool IsTriggered(const StringRef& bindingName) const;
 	bool IsOffTriggered(const StringRef& bindingName) const;
 	bool IsRepeated(const StringRef& bindingName) const;
 	float GetAxisValue(const StringRef& bindingName) const;
 
-	void AttachBinding(InputBinding* binding);
-	void DetachBinding(InputBinding* binding);
+	void AddBinding(InputBinding* binding);
+	void RemoveBinding(InputBinding* binding);
+	void ClearBindings();
 	void SetRepeatInterval(int start, int step);
 
 	void UpdateFrame();

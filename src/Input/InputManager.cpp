@@ -72,12 +72,12 @@ void InputManager::Initialize(const Settings& settings)
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 
-	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Left, Key::Left));
-	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Right, Key::Right));
-	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Up, Key::Up));
-	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Down, Key::Down));
-	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Ok, Key::Z));
-	pad->AttachBinding(RefPtr<InputBinding>::Construct(InputButtons::Cancel, Key::X));
+	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Left, Key::Left));
+	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Right, Key::Right));
+	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Up, Key::Up));
+	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Down, Key::Down));
+	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Ok, Key::Z));
+	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Cancel, Key::X));
 
 	if (Instance == nullptr) {
 		Instance = this;

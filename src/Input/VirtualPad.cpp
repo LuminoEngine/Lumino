@@ -42,7 +42,7 @@ bool VirtualPad::IsPressed(const StringRef& bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool VirtualPad::IsOnTriggered(const StringRef& bindingName) const
+bool VirtualPad::IsTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -83,7 +83,7 @@ float VirtualPad::GetAxisValue(const StringRef& bindingName) const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VirtualPad::AttachBinding(InputBinding* binding)
+void VirtualPad::AddBinding(InputBinding* binding)
 {
 	m_bindings.Add(RefPtr<InputBinding>(binding));
 
@@ -105,7 +105,7 @@ void VirtualPad::AttachBinding(InputBinding* binding)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VirtualPad::DetachBinding(InputBinding* binding)
+void VirtualPad::RemoveBinding(InputBinding* binding)
 {
 	m_bindings.Remove(RefPtr<InputBinding>(binding));
 
@@ -113,6 +113,18 @@ void VirtualPad::DetachBinding(InputBinding* binding)
 	state->ref--;
 	if (state->ref <= 0) {
 		m_inputStatus.Remove(binding->GetName());
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void VirtualPad::ClearBindings()
+{
+	Array<RefPtr<InputBinding>> list = m_bindings;
+	for (int i = list.GetCount() - 1; i >= 0; ++i)	// å„ÇÎÇ©ÇÁâÒÇµÇΩï˚Ç™ÇøÇÂÇ¡Ç∆çÌèúÇÃå¯ó¶Ç™Ç¢Ç¢
+	{
+		RemoveBinding(list[i]);
 	}
 }
 

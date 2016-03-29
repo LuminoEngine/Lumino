@@ -21,9 +21,9 @@ bool Input::IsPressed(const StringRef& bindingName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Input::IsOnTriggered(const StringRef& bindingName)
+bool Input::IsTriggered(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOnTriggered(bindingName);
+	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsTriggered(bindingName);
 }
 
 //-----------------------------------------------------------------------------
@@ -48,6 +48,14 @@ bool Input::IsRepeated(const StringRef& bindingName)
 float Input::GetAxisValue(const StringRef& bindingName)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->GetAxisValue(bindingName);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+VirtualPad* Input::GetController(int index)
+{
+	return detail::GetInputManager(nullptr)->GetVirtualPad(index);
 }
 
 //=============================================================================

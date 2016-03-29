@@ -19,7 +19,7 @@ public:
 	/**
 		@brief		ボタンが新しく押された瞬間を判定します。
 	*/
-	static bool IsOnTriggered(const StringRef& bindingName);
+	static bool IsTriggered(const StringRef& bindingName);
 
 	/**
 		@brief		ボタンが離された瞬間を判定します。
@@ -35,6 +35,8 @@ public:
 		@brief		指定した軸のアナログ値を取得します。(0.0～1.0)
 	*/
 	static float GetAxisValue(const StringRef& bindingName);
+
+	static VirtualPad* GetController(int index);
 
 private:
 };
