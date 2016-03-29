@@ -5,7 +5,8 @@
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
-class VirtualPad;
+class InputDriver;
+class InputController;
 
 ///// マウスのボタン番号
 //enum MouseButton

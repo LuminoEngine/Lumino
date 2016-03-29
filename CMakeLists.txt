@@ -100,6 +100,7 @@ set(LN_SOURCES_Input
 	include/Lumino/Input/Common.h
 	include/Lumino/Input/Input.h
 	include/Lumino/Input/InputBinding.h
+	include/Lumino/Input/InputController.h
 	src/Input/Input.cpp
 	src/Input/InputBinding.cpp
 	src/Input/InputDriver.cpp
@@ -107,8 +108,7 @@ set(LN_SOURCES_Input
 	src/Input/InputManager.cpp
 	src/Input/InputManager.h
 	src/Input/Internal.h
-	src/Input/VirtualPad.cpp
-	src/Input/VirtualPad.h
+	src/Input/InputController.cpp
 )
 
 if (LN_BUILD_AUDIO_MODULE)

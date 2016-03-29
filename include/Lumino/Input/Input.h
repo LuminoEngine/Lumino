@@ -36,7 +36,7 @@ public:
 	*/
 	static float GetAxisValue(const StringRef& bindingName);
 
-	static VirtualPad* GetController(int index);
+	static InputController* GetController(int index);
 
 private:
 };

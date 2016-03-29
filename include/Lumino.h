@@ -48,6 +48,8 @@
 
 #include "Lumino/Input/InputBinding.h"
 #include "Lumino/Input/Input.h"
+#include "Lumino/Input/InputBinding.h"
+#include "Lumino/Input/InputController.h"
 
 //#include "Lumino/GUI/UI.h"
 //#include "Lumino/GUI/GUIContext.h"

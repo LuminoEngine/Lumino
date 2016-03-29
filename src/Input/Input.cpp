@@ -1,7 +1,7 @@
 
 #include "Internal.h"
 #include "InputManager.h"
-#include "VirtualPad.h"
+#include <Lumino/Input/InputController.h>
 #include <Lumino/Input/Input.h>
 
 LN_NAMESPACE_BEGIN
@@ -53,7 +53,7 @@ float Input::GetAxisValue(const StringRef& bindingName)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-VirtualPad* Input::GetController(int index)
+InputController* Input::GetController(int index)
 {
 	return detail::GetInputManager(nullptr)->GetVirtualPad(index);
 }

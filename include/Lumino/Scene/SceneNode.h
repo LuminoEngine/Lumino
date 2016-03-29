@@ -48,7 +48,7 @@ public:
 
 	/// 回転の設定
 	void SetRotation(const Quaternion& rot) { m_transform.Rotation = rot; m_transformModified = true; }
-	void SetAngles(int x, int y, int z) { m_transform.Rotation = Quaternion::RotationEulerAngles(Vector3(x, y, z)); m_transformModified = true; }
+	void SetAngles(float x, float y, float z) { m_transform.Rotation = Quaternion::RotationEulerAngles(Vector3(x, y, z)); m_transformModified = true; }
 
 	/// 回転の取得
 	const Quaternion& GetRotation() const { return m_transform.Rotation; }

@@ -23,7 +23,7 @@
 #endif
 #include <Lumino/Input/Input.h>
 #include <Lumino/Input/InputBinding.h>
-#include "VirtualPad.h"
+#include <Lumino/Input/InputController.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail
@@ -68,7 +68,7 @@ void InputManager::Initialize(const Settings& settings)
 	m_inputDriver = driver;
 #endif
 
-	auto pad = RefPtr<VirtualPad>::Construct(this);
+	auto pad = RefPtr<InputController>::Construct(this);
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 

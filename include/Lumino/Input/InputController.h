@@ -4,14 +4,13 @@
 #include <Lumino/Input/InputBinding.h>
 
 LN_NAMESPACE_BEGIN
-class InputDriver;
 
-class VirtualPad
+class InputController
 	: public RefObject
 {
 public:
-	VirtualPad(detail::InputManager* manager);
-	virtual ~VirtualPad();
+	InputController(detail::InputManager* manager);
+	virtual ~InputController();
 
 	bool IsPressed(const StringRef& bindingName) const;
 	bool IsTriggered(const StringRef& bindingName) const;

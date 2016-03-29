@@ -29,7 +29,7 @@ public:
 	void Initialize(const Settings& settings);
 	void Finalize();
 
-	VirtualPad* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }
+	InputController* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }
 
 	/// 入力情報を 1 フレーム分更新
 	void UpdateFrame();
@@ -50,7 +50,7 @@ private:
 private:
 	static const int MaxVirtualPads = 1;
 	InputDriver*							m_inputDriver;
-	std::array<VirtualPad*, MaxVirtualPads>	m_defaultVirtualPads;
+	std::array<InputController*, MaxVirtualPads>	m_defaultVirtualPads;
 	//Matrix				m_mouseTransform;
 	//Mouse*				m_mouse;
 	//Keyboard*			m_keyboard;
