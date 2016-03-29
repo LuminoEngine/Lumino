@@ -24,6 +24,17 @@ Sprite3DPtr Sprite3D::Create()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Sprite3DPtr Sprite3D::Create(float width, float height)
+{
+	auto obj = Sprite3DPtr::MakeRef();
+	obj->Initialize(SceneGraphManager::Instance);
+	obj->SetSize(SizeF(width, height));
+	return obj;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Sprite3D::Sprite3D()
 {
 }

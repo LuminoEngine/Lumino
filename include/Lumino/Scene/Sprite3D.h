@@ -19,6 +19,8 @@ public:
 	*/
 	static Sprite3DPtr Create();
 
+	static Sprite3DPtr Create(float width, float height);
+
 protected:
 	Sprite3D();
 	virtual ~Sprite3D();
