@@ -101,17 +101,17 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 		plane.Intersects(corners[i], corners[i+4], &pt);
 		if (i == 0)
 		{
-			l = pt.X;
-			t = pt.Y;
-			r = pt.X;
-			b = pt.Y;
+			l = pt.x;
+			t = pt.y;
+			r = pt.x;
+			b = pt.y;
 		}
 		else
 		{
-			l = std::min(l, pt.X);
-			r = std::max(r, pt.X);
-			t = std::max(t, pt.Y);
-			b = std::min(b, pt.Y);
+			l = std::min(l, pt.x);
+			r = std::max(r, pt.x);
+			t = std::max(t, pt.y);
+			b = std::min(b, pt.y);
 		}
 	}
 

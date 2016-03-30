@@ -58,7 +58,7 @@ ColorF::ColorF(const Color& color)
 //-----------------------------------------------------------------------------
 ColorF::ColorF(const Vector3& vec, float a)
 {
-	R = vec.X; G = vec.Y; B = vec.Z; A = a;
+	R = vec.x; G = vec.y; B = vec.z; A = a;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ ColorF::ColorF(const Vector3& vec, float a)
 //-----------------------------------------------------------------------------
 ColorF::ColorF(const Vector4& vec)
 {
-	R = vec.X; G = vec.Y; B = vec.Z; A = vec.W;
+	R = vec.x; G = vec.y; B = vec.z; A = vec.w;
 }
 
 //-----------------------------------------------------------------------------

@@ -112,9 +112,9 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 
 #if 1
 	Matrix blurMatrix;
-	blurMatrix.Translate(-m_center.X, -m_center.Y, 0);
+	blurMatrix.Translate(-m_center.x, -m_center.y, 0);
 	blurMatrix.Scale(m_scale);
-	blurMatrix.Translate(m_center.X, m_center.Y, 0);
+	blurMatrix.Translate(m_center.x, m_center.y, 0);
 
 
 	m_shader.varBlurPower->SetFloat(m_amount);

@@ -24,7 +24,7 @@ public:
 
 	static btVector3 LNVector3ToBtVector3(const Vector3& v)
 	{
-		return btVector3(v.X, v.Y, v.Z);
+		return btVector3(v.x, v.y, v.z);
 	}
 
 	static Quaternion btQuaternionToLNQuaternion(const btQuaternion& q)
@@ -34,7 +34,7 @@ public:
 
 	static btQuaternion LNQuaternionToBtQuaternion(const Quaternion& q)
 	{
-		return btQuaternion(q.X, q.Y, q.Z, q.W);
+		return btQuaternion(q.x, q.y, q.z, q.w);
 	}
 
 

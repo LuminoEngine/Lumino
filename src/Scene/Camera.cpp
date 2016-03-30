@@ -40,7 +40,7 @@ Camera::Camera()
 	, m_farClip(1000.0f)
 	, m_cameraBehavior(nullptr)
 {
-	m_transform.Translation.Set(0, 0, 0.0f);
+	m_transform.translation.Set(0, 0, 0.0f);
 
 	// ※ 2D では m_nearClip を0より大きくしたり、Z位置をマイナスにすると何も見えなくなるので注意。 
 }
@@ -67,13 +67,13 @@ void Camera::CreateCore(SceneGraphManager* manager, CameraProjection proj)
 	{
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
-		m_transform.Translation.Set(0, 0, 0);
+		m_transform.translation.Set(0, 0, 0);
 	}
 	else if (m_projectionMode == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
-		m_transform.Translation.Set(0, 0, -20.0f);
+		m_transform.translation.Set(0, 0, -20.0f);
 	}
 }
 

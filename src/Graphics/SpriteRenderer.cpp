@@ -522,7 +522,7 @@ void SpriteRendererImpl::SetTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
 {
-	m_viewDirection.Set(view.M[0][2], view.M[1][2], view.M[2][2]);
+	m_viewDirection.Set(view.m[0][2], view.m[1][2], view.m[2][2]);
 	m_viewInverseMatrix = Matrix::Inverse(view);
 	m_viewPosition = m_viewInverseMatrix.GetPosition();
 	m_viewProjMatrix = (view * proj);
@@ -625,12 +625,12 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		Vector3 origin(-center);
 		Vector2 harf_size(size * 0.5f);
 		float l, t, r, b;
-		r = harf_size.X;
-		b = -harf_size.Y;
+		r = harf_size.x;
+		b = -harf_size.y;
 		l = -r;
 		t = -b;
 
-#define LN_WRITE_V3( x_, y_, z_ ) origin.X + x_, origin.Y + y_, origin.Z + z_
+#define LN_WRITE_V3( x_, y_, z_ ) origin.x + x_, origin.y + y_, origin.z + z_
 
 		switch (front)
 		{
@@ -689,10 +689,10 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	else
 	{
 		Vector3 origin(-center);
-		sprite.Vertices[0].Position.Set(origin.X, origin.Y, origin.Z);
-		sprite.Vertices[1].Position.Set(origin.X + size.X, origin.Y, origin.Z);
-		sprite.Vertices[2].Position.Set(origin.X, origin.Y + size.Y, origin.Z);
-		sprite.Vertices[3].Position.Set(origin.X + size.X, origin.Y + size.Y, origin.Z);
+		sprite.Vertices[0].Position.Set(origin.x, origin.y, origin.z);
+		sprite.Vertices[1].Position.Set(origin.x + size.x, origin.y, origin.z);
+		sprite.Vertices[2].Position.Set(origin.x, origin.y + size.y, origin.z);
+		sprite.Vertices[3].Position.Set(origin.x + size.x, origin.y + size.y, origin.z);
 	}
 
 	Matrix mat = m_transformMatrix.GetRotationMatrix();
@@ -707,17 +707,17 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	// ビルボード・Y 軸のみに適用
 	else if (0)
 	{
-		if (m_viewDirection.X > 0.0f)
+		if (m_viewDirection.x > 0.0f)
 		{
-			mat.RotationY(-atanf(m_viewDirection.Z / m_viewDirection.X) + Math::PI / 2);
+			mat.RotationY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
 		}
-		else if (m_viewDirection.X == 0.0f)
+		else if (m_viewDirection.x == 0.0f)
 		{
 			//D3DXMatrixIdentity(&matWorld); // 0除算を防ぐため
 		}
 		else
 		{
-			mat.RotationY(-atanf(m_viewDirection.Z / m_viewDirection.X) - Math::PI / 2);
+			mat.RotationY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
 		}
 
 	}
@@ -758,32 +758,32 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		const Size& texSize = texture->GetRealSize();
 		Vector2 texSizeInv(1.0f / texSize.Width, 1.0f / texSize.Height);
 		RectF sr(srcRect);
-		float l = sr.X * texSizeInv.X;
-		float t = sr.Y * texSizeInv.Y;
-		float r = (sr.X + sr.Width) * texSizeInv.X;
-		float b = (sr.Y + sr.Height) * texSizeInv.Y;
-		sprite.Vertices[0].TexUV.X = l;
-		sprite.Vertices[0].TexUV.Y = t;
-		sprite.Vertices[1].TexUV.X = r;
-		sprite.Vertices[1].TexUV.Y = t;
-		sprite.Vertices[2].TexUV.X = l;
-		sprite.Vertices[2].TexUV.Y = b;
-		sprite.Vertices[3].TexUV.X = r;
-		sprite.Vertices[3].TexUV.Y = b;
+		float l = sr.X * texSizeInv.x;
+		float t = sr.Y * texSizeInv.y;
+		float r = (sr.X + sr.Width) * texSizeInv.x;
+		float b = (sr.Y + sr.Height) * texSizeInv.y;
+		sprite.Vertices[0].TexUV.x = l;
+		sprite.Vertices[0].TexUV.y = t;
+		sprite.Vertices[1].TexUV.x = r;
+		sprite.Vertices[1].TexUV.y = t;
+		sprite.Vertices[2].TexUV.x = l;
+		sprite.Vertices[2].TexUV.y = b;
+		sprite.Vertices[3].TexUV.x = r;
+		sprite.Vertices[3].TexUV.y = b;
 
 		// テクスチャ
 		sprite.Texture = texture;	// TOOD: AddRef するべきかも？
 	}
 	else
 	{
-		sprite.Vertices[0].TexUV.X = 0;
-		sprite.Vertices[0].TexUV.Y = 0;
-		sprite.Vertices[1].TexUV.X = 1;
-		sprite.Vertices[1].TexUV.Y = 0;
-		sprite.Vertices[2].TexUV.X = 0;
-		sprite.Vertices[2].TexUV.Y = 1;
-		sprite.Vertices[3].TexUV.X = 1;
-		sprite.Vertices[3].TexUV.Y = 1;
+		sprite.Vertices[0].TexUV.x = 0;
+		sprite.Vertices[0].TexUV.y = 0;
+		sprite.Vertices[1].TexUV.x = 1;
+		sprite.Vertices[1].TexUV.y = 0;
+		sprite.Vertices[2].TexUV.x = 0;
+		sprite.Vertices[2].TexUV.y = 1;
+		sprite.Vertices[3].TexUV.x = 1;
+		sprite.Vertices[3].TexUV.y = 1;
 		sprite.Texture = m_manager->GetDummyTexture();
 	}
 
@@ -792,7 +792,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		sprite.Depth = (m_viewPosition - position).GetLengthSquared();
 	}
 	else {
-		sprite.Depth = position.Z;
+		sprite.Depth = position.z;
 	}
 
 	sprite.Visible = true;
@@ -1053,7 +1053,7 @@ void SpriteRendererImpl::Flush()
 	r->SetVertexBuffer(m_vertexBuffer);
 	r->SetIndexBuffer(m_indexBuffer);
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
-	m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.X, m_viewPixelSize.Y, 0, 0));
+	m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
 
 	Driver::IShaderPass* pass = m_shader.techMainDraw->GetPass(0);
 

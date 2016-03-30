@@ -121,7 +121,7 @@ void SpriteBase::UpdateTexUV()
 			Rect srcRect(0, 0, tex->GetSize().Width, tex->GetSize().Height);
 			NormalizeSrcRect(
 				srcRect, tex->GetRealSize(),
-				&m_upperLeftUV.X, &m_upperLeftUV.Y, &m_lowerRightUV.X, &m_lowerRightUV.Y);
+				&m_upperLeftUV.x, &m_upperLeftUV.y, &m_lowerRightUV.x, &m_lowerRightUV.y);
 		}
 		else
 		{
@@ -131,33 +131,33 @@ void SpriteBase::UpdateTexUV()
 			// 垂直反転
 			if (m_flipMode == FlipMode_V || m_flipMode == FlipMode_HV)
 			{
-				m_upperLeftUV.Y = b;
-				m_lowerRightUV.Y = t;
+				m_upperLeftUV.y = b;
+				m_lowerRightUV.y = t;
 			}
 			else
 			{
-				m_upperLeftUV.Y = t;
-				m_lowerRightUV.Y = b;
+				m_upperLeftUV.y = t;
+				m_lowerRightUV.y = b;
 			}
 			// 水平反転
 			if (m_flipMode == FlipMode_H || m_flipMode == FlipMode_HV)
 			{
-				m_upperLeftUV.X = r;
-				m_lowerRightUV.X = l;
+				m_upperLeftUV.x = r;
+				m_lowerRightUV.x = l;
 			}
 			else
 			{
-				m_upperLeftUV.X = l;
-				m_lowerRightUV.X = r;
+				m_upperLeftUV.x = l;
+				m_lowerRightUV.x = r;
 			}
 		}
 	}
 	else
 	{
-		m_upperLeftUV.X = 0.0f;
-		m_upperLeftUV.Y = 0.0f;
-		m_lowerRightUV.X = 1.0f;
-		m_lowerRightUV.Y = 1.0f;
+		m_upperLeftUV.x = 0.0f;
+		m_upperLeftUV.y = 0.0f;
+		m_lowerRightUV.x = 1.0f;
+		m_lowerRightUV.y = 1.0f;
 	}
 }
 
@@ -189,8 +189,8 @@ void SpriteBase::UpdateVertexData()
 	// 2D 空間用スプライト
 	if (m_spriteCoord == SpriteCoord_2D)
 	{
-		float r = realSize.X;
-		float b = realSize.Y;
+		float r = realSize.x;
+		float b = realSize.y;
 		float l = 0;
 		float t = 0;
 		m_upperLeft.Set(l, t, 0);
@@ -199,8 +199,8 @@ void SpriteBase::UpdateVertexData()
 	// 3D 空間用スプライト
 	else
 	{
-		float r = realSize.X * 0.5f;  // +
-		float b = -realSize.Y * 0.5f;  // -
+		float r = realSize.x * 0.5f;  // +
+		float b = -realSize.y * 0.5f;  // -
 		float l = -r;                  // -
 		float t = -b;                  // +
 
@@ -255,10 +255,10 @@ void SpriteBase::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 	if (subsetIndex == 0)
 	{
 		dc->GetRenderingContext()->DrawSquare(
-			Vector3(m_upperLeft.X, m_upperLeft.Y, m_upperLeft.Z), Vector2(m_upperLeftUV.X, m_upperLeftUV.Y), ColorF::White,
-			Vector3(m_upperLeft.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_upperLeftUV.X, m_lowerRightUV.Y), ColorF::White,
-			Vector3(m_lowerRight.X, m_lowerRight.Y, m_lowerRight.Z), Vector2(m_lowerRightUV.X, m_lowerRightUV.Y), ColorF::White,
-			Vector3(m_lowerRight.X, m_upperLeft.Y, m_upperLeft.Z), Vector2(m_lowerRightUV.X, m_upperLeftUV.Y), ColorF::White);
+			Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), ColorF::White,
+			Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), ColorF::White,
+			Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), ColorF::White,
+			Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), ColorF::White);
 	}
 }
 

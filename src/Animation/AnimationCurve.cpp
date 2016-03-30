@@ -408,24 +408,24 @@ void VMDBezierSQTTransformAnimation::UpdateValue(double time)
 	// フレーム数 1 個
 	if (m_keyFrameList.GetCount() == 1)
 	{
-		m_transform.Rotation = m_keyFrameList.GetFront().Rotation;
-		m_transform.Translation = m_keyFrameList.GetFront().Position;
+		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
+		m_transform.translation = m_keyFrameList.GetFront().Position;
 		return;
 	}
 
 	// 最初のフレーム以前であれば最初のフレームの値を返す
 	if (time <= m_keyFrameList.GetFront().Time)
 	{
-		m_transform.Rotation = m_keyFrameList.GetFront().Rotation;
-		m_transform.Translation = m_keyFrameList.GetFront().Position;
+		m_transform.rotation = m_keyFrameList.GetFront().Rotation;
+		m_transform.translation = m_keyFrameList.GetFront().Position;
 		return;
 	}
 
 	// 最後のフレーム以降であれば最後のフレームの値を返す
 	if (time >= m_keyFrameList.GetLast().Time)
 	{
-		m_transform.Rotation = m_keyFrameList.GetLast().Rotation;
-		m_transform.Translation = m_keyFrameList.GetLast().Position;
+		m_transform.rotation = m_keyFrameList.GetLast().Rotation;
+		m_transform.translation = m_keyFrameList.GetLast().Position;
 		return;
 	}
 
@@ -466,16 +466,16 @@ void VMDBezierSQTTransformAnimation::UpdateValue(double time)
 	float inter;
 
 	inter = k1.PosXInterBezier.GetInterValue(rate);
-	m_transform.Translation.X = k0.Position.X * (1.0f - inter) + k1.Position.X * inter;
+	m_transform.translation.x = k0.Position.x * (1.0f - inter) + k1.Position.x * inter;
 
 	inter = k1.PosYInterBezier.GetInterValue(rate);
-	m_transform.Translation.Y = k0.Position.Y * (1.0f - inter) + k1.Position.Y * inter;
+	m_transform.translation.y = k0.Position.y * (1.0f - inter) + k1.Position.y * inter;
 
 	inter = k1.PosZInterBezier.GetInterValue(rate);
-	m_transform.Translation.Z = k0.Position.Z * (1.0f - inter) + k1.Position.Z * inter;
+	m_transform.translation.z = k0.Position.z * (1.0f - inter) + k1.Position.z * inter;
 
 	inter = k1.RotInterBezier.GetInterValue(rate);
-	m_transform.Rotation = Quaternion::Slerp(k0.Rotation, k1.Rotation, inter);
+	m_transform.rotation = Quaternion::Slerp(k0.Rotation, k1.Rotation, inter);
 }
 
 //-----------------------------------------------------------------------------

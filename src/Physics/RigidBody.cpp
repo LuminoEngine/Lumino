@@ -257,9 +257,9 @@ void RigidBody::Initialize(PhysicsManager* manager, Collider* collider, const Co
 //-----------------------------------------------------------------------------
 void RigidBody::SetPosition(const Vector3& position)
 {
-	m_worldTransform.M41 = position.X;
-	m_worldTransform.M42 = position.Y;
-	m_worldTransform.M43 = position.Z;
+	m_worldTransform.m[3][0] = position.x;
+	m_worldTransform.m[3][1] = position.y;
+	m_worldTransform.m[3][2] = position.z;
 	m_modifiedFlags |= Modified_WorldTransform;	// 姿勢を更新した
 	m_modifiedFlags |= Modified_Activate;		// Activate要求
 

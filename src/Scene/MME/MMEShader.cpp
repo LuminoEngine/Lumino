@@ -354,7 +354,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 						case MME_VARREQ_LIGHT_POSITION:
 							for (int i = 0; i < sv->LightNum; ++i) {
 								const Vector3& v = lights->GetAt(i)->GetPosition();
-								vectors[i].Set(v.X, v.Y, v.Z, 0.0f);
+								vectors[i].Set(v.x, v.y, v.z, 0.0f);
 							}
 							break;
 						case MME_VARREQ_LIGHT_DIRECTION:
@@ -560,13 +560,13 @@ void MMEShader::SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObj
 			break;
 
 		case MME_VARREQ_CONTROLOBJECT_X:
-			var->SetFloat(obj->GetMatrix().GetPosition().X);
+			var->SetFloat(obj->GetMatrix().GetPosition().x);
 			break;
 		case MME_VARREQ_CONTROLOBJECT_Y:
-			var->SetFloat(obj->GetMatrix().GetPosition().Y);
+			var->SetFloat(obj->GetMatrix().GetPosition().y);
 			break;
 		case MME_VARREQ_CONTROLOBJECT_Z:
-			var->SetFloat(obj->GetMatrix().GetPosition().Z);
+			var->SetFloat(obj->GetMatrix().GetPosition().z);
 			break;
 		case MME_VARREQ_CONTROLOBJECT_XYZ:
 			var->SetVector((const Vector4&)obj->GetMatrix().GetPosition());
@@ -575,19 +575,19 @@ void MMEShader::SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObj
 		case MME_VARREQ_CONTROLOBJECT_Rx:
 		{
 			Vector3 rad = obj->GetMatrix().ToEulerAngles();
-			var->SetFloat(rad.X);
+			var->SetFloat(rad.x);
 			break;
 		}
 		case MME_VARREQ_CONTROLOBJECT_Ry:
 		{
 			Vector3 rad = obj->GetMatrix().ToEulerAngles();
-			var->SetFloat(rad.Y);
+			var->SetFloat(rad.y);
 			break;
 		}
 		case MME_VARREQ_CONTROLOBJECT_Rz:
 		{
 			Vector3 rad = obj->GetMatrix().ToEulerAngles();
-			var->SetFloat(rad.Z);
+			var->SetFloat(rad.z);
 			break;
 		}
 		case MME_VARREQ_CONTROLOBJECT_Rxyz:
@@ -600,7 +600,7 @@ void MMEShader::SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObj
 		{
 			Vector4 scale;
 			obj->GetMatrix().Decompose((Vector3*)&scale, NULL, NULL);
-			var->SetFloat(scale.X);
+			var->SetFloat(scale.x);
 			break;
 		}
 		case MME_VARREQ_CONTROLOBJECT_Tr:

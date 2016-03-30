@@ -935,9 +935,9 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 							float t = i / divCount;
 							AddBasePoint(
 								Vector3(
-									BezierCurve(lastPoint->X, cmd->cp1.X, cmd->cp2.X, cmd->endPoint.X, t),
-									BezierCurve(lastPoint->Y, cmd->cp1.Y, cmd->cp2.Y, cmd->endPoint.Y, t),
-									cmd->endPoint.Z),	// TODO
+									BezierCurve(lastPoint->x, cmd->cp1.x, cmd->cp2.x, cmd->endPoint.x, t),
+									BezierCurve(lastPoint->y, cmd->cp1.y, cmd->cp2.y, cmd->endPoint.y, t),
+									cmd->endPoint.z),	// TODO
 								ColorF::Lerp(*lastColor, cmd->color, t));
 						}
 						lastPoint = &cmd->endPoint;
@@ -1185,9 +1185,9 @@ void DrawingContextImpl::EndPath(const Vector3* lastPoint, const ColorF* lastCol
 			BasePoint* p1 = &m_basePoints.GetAt(curPath->firstIndex);
 			for (int i = 0; i < curPath->pointCount; ++i)
 			{
-				p0->dir.X = p1->point.X - p0->point.X;
-				p0->dir.Y = p1->point.Y - p0->point.Y;
-				p0->len = Normalize(&p0->dir.X, &p0->dir.Y);	// dir を正規化した上で長さを返す
+				p0->dir.x = p1->point.x - p0->point.x;
+				p0->dir.y = p1->point.y - p0->point.y;
+				p0->len = Normalize(&p0->dir.x, &p0->dir.y);	// dir を正規化した上で長さを返す
 
 				//p0->distance.X = p1->point.X - p0->point.X;
 				//p0->distance.Y = p1->point.Y - p0->point.Y;
@@ -1281,13 +1281,13 @@ void DrawingContextImpl::ExpandFill()
 		for (int i = 0; i < count; ++i)
 		{
 			const BasePoint& pt = m_basePoints.GetAt(path.firstIndex + i);
-			posMin.X = std::min(posMin.X, pt.point.X);
-			posMin.Y = std::min(posMin.Y, pt.point.Y);
-			posMax.X = std::max(posMax.X, pt.point.X);
-			posMax.Y = std::max(posMax.Y, pt.point.Y);
+			posMin.x = std::min(posMin.x, pt.point.x);
+			posMin.y = std::min(posMin.y, pt.point.y);
+			posMax.x = std::max(posMax.x, pt.point.x);
+			posMax.y = std::max(posMax.y, pt.point.y);
 		}
 		Vector2 uvSpan = posMax - posMin;
-		if (uvSpan.X == 0.0f || uvSpan.Y == 0.0) continue;	// 潰れたパス。描く必要はない
+		if (uvSpan.x == 0.0f || uvSpan.y == 0.0) continue;	// 潰れたパス。描く必要はない
 		uvSpan = 1.0f / uvSpan;
 
 		// 頂点バッファを作る
@@ -1297,8 +1297,8 @@ void DrawingContextImpl::ExpandFill()
 			DrawingBasicVertex v;
 			v.Position = pt.point;
 			v.Color = pt.color;
-			v.UVOffset.X = (pt.point.X - posMin.X) * uvSpan.X;
-			v.UVOffset.Y = (pt.point.Y - posMin.Y) * uvSpan.Y;
+			v.UVOffset.x = (pt.point.x - posMin.x) * uvSpan.x;
+			v.UVOffset.y = (pt.point.y - posMin.y) * uvSpan.y;
 			m_vertexCache.Add(v);
 		}
 
@@ -1627,8 +1627,8 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
 {
-	m_uvParPixel.X = 1.0f / viewPixelSize.Width;
-	m_uvParPixel.Y = 1.0f / viewPixelSize.Height;
+	m_uvParPixel.x = 1.0f / viewPixelSize.Width;
+	m_uvParPixel.y = 1.0f / viewPixelSize.Height;
 	m_invViewProj = Matrix::Inverse(view * proj);
 	m_viewOnePixelOffset = Vector2::TransformCoord(m_uvParPixel, m_invViewProj);
 	LN_CALL_COMMAND(SetViewProjection, DrawingContextImpl::SetViewProjectionCommand, view, proj);

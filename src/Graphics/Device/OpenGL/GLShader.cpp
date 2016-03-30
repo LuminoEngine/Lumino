@@ -478,13 +478,13 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 	case ShaderVariableType_Vector:
 		vec = &m_value.GetVector();
 		if (m_desc.Columns == 2) {
-			glUniform2f(location, vec->X, vec->Y);
+			glUniform2f(location, vec->x, vec->y);
 		}
 		else if (m_desc.Columns == 3) {
-			glUniform3f(location, vec->X, vec->Y, vec->Z);
+			glUniform3f(location, vec->x, vec->y, vec->z);
 		}
 		else if (m_desc.Columns == 4) {
-			glUniform4f(location, vec->X, vec->Y, vec->Z, vec->W);
+			glUniform4f(location, vec->x, vec->y, vec->z, vec->w);
 		}
 		break;
 	case ShaderVariableType_VectorArray:

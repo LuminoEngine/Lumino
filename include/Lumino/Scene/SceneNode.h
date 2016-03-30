@@ -40,26 +40,26 @@ public:
 	const Matrix& GgetMatrix() const { return m_localMatrix; }
 
 	/// 位置の設定
-	void SetPosition(const Vector3& pos) { m_transform.Translation = pos; m_transformModified = true; }
-	void SetPosition(float x, float y, float z = 0.0f) { m_transform.Translation.Set(x, y, z); m_transformModified = true; }
+	void SetPosition(const Vector3& pos) { m_transform.translation = pos; m_transformModified = true; }
+	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.Set(x, y, z); m_transformModified = true; }
 
 	/// 位置の取得
-	const Vector3& GetPosition() const { return m_transform.Translation; }
+	const Vector3& GetPosition() const { return m_transform.translation; }
 
 	/// 回転の設定
-	void SetRotation(const Quaternion& rot) { m_transform.Rotation = rot; m_transformModified = true; }
-	void SetAngles(float x, float y, float z) { m_transform.Rotation = Quaternion::RotationEulerAngles(Vector3(x, y, z)); m_transformModified = true; }
+	void SetRotation(const Quaternion& rot) { m_transform.rotation = rot; m_transformModified = true; }
+	void SetAngles(float x, float y, float z) { m_transform.rotation = Quaternion::RotationEulerAngles(Vector3(x, y, z)); m_transformModified = true; }
 
 	/// 回転の取得
-	const Quaternion& GetRotation() const { return m_transform.Rotation; }
+	const Quaternion& GetRotation() const { return m_transform.rotation; }
 
 	/// 拡大率の設定
-	void SetScale(const Vector3& scale) { m_transform.Scale = scale; m_transformModified = true; }
-	void SetScale(float xyz) { m_transform.Scale.Set(xyz, xyz, xyz); m_transformModified = true; }
-	void SetScale(float x, float y, float z = 0.0f) { m_transform.Scale.Set(x, y, z); m_transformModified = true; }
+	void SetScale(const Vector3& scale) { m_transform.scale = scale; m_transformModified = true; }
+	void SetScale(float xyz) { m_transform.scale.Set(xyz, xyz, xyz); m_transformModified = true; }
+	void SetScale(float x, float y, float z = 0.0f) { m_transform.scale.Set(x, y, z); m_transformModified = true; }
 
 	/// 拡大率の取得
-	const Vector3& GetScale() const { return m_transform.Scale; }
+	const Vector3& GetScale() const { return m_transform.scale; }
 
 	/// 原点の設定
 	void SetCenter(const Vector3& center) { m_transformCenter = center; m_transformModified = true; }

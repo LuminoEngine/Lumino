@@ -143,9 +143,9 @@ void AnimationState::SetLocalTime(double time)
 			{
 				SQTTransform v = static_cast<VMDBezierSQTTransformAnimation*>(target.Curve)->GetValue();
 				SQTTransform* t = (SQTTransform*)target.Target->Buffer;
-				t->Scale += v.Scale * m_addingBlendWeight;
-				t->Rotation *= Quaternion::Slerp(Quaternion::Identity, v.Rotation, m_addingBlendWeight);
-				t->Translation += v.Translation * m_addingBlendWeight;
+				t->scale += v.scale * m_addingBlendWeight;
+				t->rotation *= Quaternion::Slerp(Quaternion::Identity, v.rotation, m_addingBlendWeight);
+				t->translation += v.translation * m_addingBlendWeight;
 			}
 			else
 			{

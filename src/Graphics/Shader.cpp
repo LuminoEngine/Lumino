@@ -176,7 +176,7 @@ void Shader::TryCommitChanges()
 		float w = (float)size.Width;
 		float h = (float)size.Height;
 		const Vector4& vec = m_viewportPixelSize->GetVector();
-		if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.X != w || vec.Y != h) {
+		if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.x != w || vec.y != h) {
 			m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));
 		}
 	}
