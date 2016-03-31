@@ -94,7 +94,8 @@ LN_NAMESPACE_BEGIN
 //
 //-----------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
-	: m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
+	: m_owner(nullptr)
+	, m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
 {
 }
 
@@ -103,8 +104,17 @@ ViewportLayer::ViewportLayer()
 //-----------------------------------------------------------------------------
 ViewportLayer::~ViewportLayer()
 {
-
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const Size& ViewportLayer::GetViewportSize() const
+{
+	LN_CHECK_STATE_RETURNV(m_owner != nullptr, Size::Zero);
+	return m_owner->GetSize();
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

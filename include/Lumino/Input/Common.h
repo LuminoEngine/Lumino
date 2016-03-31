@@ -7,6 +7,8 @@
 LN_NAMESPACE_BEGIN
 class InputDriver;
 class InputController;
+class InputBinding;
+typedef RefPtr<InputBinding>	InputBindingPtr;
 
 ///// マウスのボタン番号
 //enum MouseButton

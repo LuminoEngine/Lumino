@@ -474,9 +474,9 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 	};
 
 	// 深度テスト
-	if (newState.DepthEnable != m_currentDepthStencilState.DepthEnable || reset)
+	if (newState.DepthTestEnabled != m_currentDepthStencilState.DepthTestEnabled || reset)
 	{
-		if (newState.DepthEnable) {
+		if (newState.DepthTestEnabled) {
 			glEnable(GL_DEPTH_TEST); LN_CHECK_GLERROR();
 		}
 		else {
@@ -484,21 +484,21 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 		}
 	}
 	// 深度書き込み
-	if (newState.DepthWriteEnable != m_currentDepthStencilState.DepthWriteEnable || reset)
+	if (newState.DepthWriteEnabled != m_currentDepthStencilState.DepthWriteEnabled || reset)
 	{
-		glDepthMask(newState.DepthWriteEnable ? GL_TRUE : GL_FALSE); LN_CHECK_GLERROR();
+		glDepthMask(newState.DepthWriteEnabled ? GL_TRUE : GL_FALSE); LN_CHECK_GLERROR();
 	}
 	// 深度比較関数
-	if (newState.DepthFunc != m_currentDepthStencilState.DepthFunc || reset)
+	if (newState.DepthTestFunc != m_currentDepthStencilState.DepthTestFunc || reset)
 	{
-		glDepthFunc(cmpFuncTable[newState.DepthFunc]); LN_CHECK_GLERROR();
+		glDepthFunc(cmpFuncTable[newState.DepthTestFunc]); LN_CHECK_GLERROR();
 	}
 
 
 	// ステンシルテスト有無
-	if (newState.StencilEnable != m_currentDepthStencilState.StencilEnable || reset)
+	if (newState.StencilEnabled != m_currentDepthStencilState.StencilEnabled || reset)
 	{
-		if (newState.StencilEnable) {
+		if (newState.StencilEnabled) {
 			glEnable(GL_STENCIL_TEST); LN_CHECK_GLERROR();
 		}
 		else {

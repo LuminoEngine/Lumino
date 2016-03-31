@@ -63,19 +63,17 @@ public:
 	/// 合成方法の取得
 	BlendMode GetBlendMode() const { return m_renderState.Blend; }
 
-#if 0	// TODO:
 	/// 深度テストの有効設定
-	void SetEnableDepthTest(bool flag) { m_renderState.DepthTest = flag; }
+	void SetDepthTestEnabled(bool flag) { m_depthStencilState.DepthTestEnabled = flag; }
 
 	/// 深度テストの有効判定
-	bool IsEnableDepthTest() const { return m_renderState.DepthTest; }
+	bool IsDepthTestEnabled() const { return m_depthStencilState.DepthTestEnabled; }
 
 	/// 深度Writeの有効設定
-	void SetEnableDepthWrite(bool flag) { m_renderState.DepthWrite = flag; }
+	void SetDepthWriteEnabled(bool flag) { m_depthStencilState.DepthWriteEnabled = flag; }
 
 	/// 深度書き込みの有効判定
-	bool IsEnableDepthWritet() const { return m_renderState.DepthWrite; }
-#endif
+	bool IsDepthWriteEnabled() const { return m_depthStencilState.DepthWriteEnabled; }
 
 	/// カリング方法の設定
 	void SetCullingMode(CullingMode mode) { m_renderState.Culling = mode; }
@@ -87,6 +85,7 @@ public:
 
 
 	const RenderState& GetRenderState() const { return m_renderState; }
+	const DepthStencilState& GetDepthStencilState() const { return m_depthStencilState; }
 	int GetSubsetCount() const { return m_subsetCount; }
 	const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
@@ -127,7 +126,9 @@ protected:
 	// いずれも、いわゆる設定の継承を考慮する必要があるもの。
 	// レンダリングステートなんかはサブセット単位で設定できるようにすることも可能だけど、
 	// 実際にサブセット単位で設定したいことってあるの？って考えるとノード単位でいいと思う。
+	// ちなみに Unity はシェーダで設定するようだ。
 	RenderState	m_renderState;	///< レンダリングステート
+	DepthStencilState	m_depthStencilState;
 	bool					m_isVisible;
 
 	LightNodeList			m_affectLightList;

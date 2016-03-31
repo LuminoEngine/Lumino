@@ -41,6 +41,7 @@ void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* nod
 
 	// レンダリングステートの設定
 	dc->GetRenderer()->SetRenderState(visualNode->GetRenderState());
+	dc->GetRenderer()->SetDepthStencilState(visualNode->GetDepthStencilState());
 	visualNode->OnRender(dc);
 
 	//int subsetCount = visualNode->GetSubsetCount();

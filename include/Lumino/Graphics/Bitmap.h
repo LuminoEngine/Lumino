@@ -89,6 +89,7 @@ public:
 		(Painter へ移動するべき？)
 	*/
 	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend);
+	void BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend);
 
 	/**
 		@brief		指定したファイルにビットマップを保存します。

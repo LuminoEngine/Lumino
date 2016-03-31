@@ -22,11 +22,13 @@ class ViewportLayer
 	: public Object
 {
 public:
+	const Size& GetViewportSize() const;
 	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
 
 protected:
 	ViewportLayer();
 	virtual ~ViewportLayer();
+
 
 	///// ‘O•`‰æ
 	//virtual void PreRender(const SizeF& viewSize) {}
@@ -38,6 +40,7 @@ protected:
 	void PostRender(RenderingContext2* renderingContext, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
 
 private:
+	Viewport*				m_owner;
 	RefPtr<ImageEffectList>	m_imageEffects;
 
 	friend class Viewport;
@@ -57,8 +60,14 @@ public:
 
 	void SetBackgroundColor(const Color& color);
 
-	void AddViewportLayer(ViewportLayer* layer) { m_viewportLayerList.Add(layer); }
-	void RemoveViewportLayer(ViewportLayer* layer) { m_viewportLayerList.Remove(RefPtr<ViewportLayer>(layer)); }
+	void AddViewportLayer(ViewportLayer* layer) { m_viewportLayerList.Add(layer); layer->m_owner = this; }
+	void RemoveViewportLayer(ViewportLayer* layer)
+	{
+		if (m_viewportLayerList.Remove(RefPtr<ViewportLayer>(layer)))
+		{
+			layer->m_owner = nullptr;
+		}
+	}
 
 LN_INTERNAL_ACCESS:	// TODO: ‚¢‚Ü‚Í‚Æ‚è‚ ‚¦‚¸“à•”—p“r
 	Viewport();

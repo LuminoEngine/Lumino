@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+class CameraViewportLayer;
 
 /**
 	@brief
@@ -51,6 +52,11 @@ public:
 	void SetCameraBehavior(CameraBehavior* behavior);
 	CameraBehavior* GetCameraBehavior() const { return m_cameraBehavior; }
 
+	// 3D→2D
+	Vector3 WorldToViewportPoint(const Vector3& position) const;
+	// 2D→3D
+	Vector3 ViewportToWorldPoint(const Vector3& position) const;
+
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::UpdateFrameHierarchy() の後で呼び出すこと)
@@ -84,6 +90,8 @@ LN_INTERNAL_ACCESS:
 	Camera();
 	virtual ~Camera();
 	void CreateCore(SceneGraphManager* manager, CameraProjection proj);
+
+	CameraViewportLayer*	m_ownerLayer;
 
 private:
 	CameraProjection	m_projectionMode;
@@ -130,11 +138,11 @@ public:
 	virtual void Render(RenderTarget* renderTarget) override;
 
 LN_INTERNAL_ACCESS:
-	CameraViewportLayer(Camera* ownerCamera);
+	CameraViewportLayer(Camera* hostingCamera);
 	virtual ~CameraViewportLayer();
 
 private:
-	RefPtr<Camera>		m_ownerCamera;
+	RefPtr<Camera>		m_hostingCamera;
 };
 
 /**

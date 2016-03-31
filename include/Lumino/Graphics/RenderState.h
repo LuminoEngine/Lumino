@@ -100,11 +100,11 @@ public:
 class DepthStencilState
 {
 public:
-	bool		DepthEnable;			///< 深度テストの有無 (default:true)
-	bool		DepthWriteEnable;		///< 深度書き込みの有無 (default:true)
-	CompareFunc	DepthFunc;				///< 深度テストの比較関数 (default:LessEqual)
+	bool		DepthTestEnabled;		///< 深度テストの有無 (default:true)
+	bool		DepthWriteEnabled;		///< 深度書き込みの有無 (default:true)
+	CompareFunc	DepthTestFunc;			///< 深度テストの比較関数 (default:LessEqual)
 
-	bool		StencilEnable;			///< ステンシルテストの有無 (default:false)
+	bool		StencilEnabled;			///< ステンシルテストの有無 (default:false)
 	CompareFunc	StencilFunc;			///< ステンシルテストの比較関数 (default:Always)
 	uint8_t		StencilReferenceValue;	///< ステンシルテストの参照値 (default:0)
 	StencilOp	StencilFailOp;			///< ステンシルテストに失敗した場合のステンシル処理です。(default:Keep)

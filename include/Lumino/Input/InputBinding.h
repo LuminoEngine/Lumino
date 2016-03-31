@@ -15,9 +15,8 @@ public:
 
 	/**
 		@brief		InputBinding オブジェクトを作成します。
-		@details	作成されたオブジェクトは使い終えたら Release() を呼び出して参照を解放する必要があります。
 	*/
-	static InputBinding* Create(const String& bindingName, Key key, int joyNumber);
+	static InputBindingPtr Create(const String& bindingName, Key key);
 
 public:
 

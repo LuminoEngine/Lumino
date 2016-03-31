@@ -167,7 +167,7 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 
 
 		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.GetRight(), renderRange.GetBottom());
-		printf("%d %d %d %d \n", clipd.left, clipd.top, clipd.right, clipd.bottom);
+		//printf("%d %d %d %d \n", clipd.left, clipd.top, clipd.right, clipd.bottom);
 
 		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd);
 	}

@@ -70,10 +70,10 @@ bool RenderState::operator == (const RenderState& obj) const
 //
 //-----------------------------------------------------------------------------
 DepthStencilState::DepthStencilState()
-	: DepthEnable(true)
-	, DepthWriteEnable(true)
-	, DepthFunc(CompareFunc::LessEqual)
-	, StencilEnable(false)
+	: DepthTestEnabled(true)
+	, DepthWriteEnabled(true)
+	, DepthTestFunc(CompareFunc::LessEqual)
+	, StencilEnabled(false)
 	, StencilFunc(CompareFunc::Always)
 	, StencilReferenceValue(0)
 	, StencilFailOp(StencilOp::Keep)
@@ -88,10 +88,10 @@ DepthStencilState::DepthStencilState()
 bool DepthStencilState::Equals(const DepthStencilState& state) const
 {
 	return
-		DepthEnable == state.DepthEnable &&
-		DepthWriteEnable == state.DepthEnable &&
-		DepthFunc == state.DepthFunc &&
-		StencilEnable == state.StencilEnable &&
+		DepthTestEnabled == state.DepthTestEnabled &&
+		DepthWriteEnabled == state.DepthWriteEnabled &&
+		DepthTestFunc == state.DepthTestFunc &&
+		StencilEnabled == state.StencilEnabled &&
 		StencilFunc == state.StencilFunc &&
 		StencilReferenceValue == state.StencilReferenceValue &&
 		StencilFailOp == state.StencilFailOp &&

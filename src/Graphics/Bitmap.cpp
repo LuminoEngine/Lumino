@@ -134,6 +134,14 @@ void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& s
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
+{
+	BitBltInternal(this, Rect(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.R, mulColor.G, mulColor.B, mulColor.A), alphaBlend);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Bitmap::Save(const TCHAR* filePath)
 {
 	// png に保存するときは RGBA

@@ -119,6 +119,8 @@ public:
 
 	void Clear(const Color& color);
 
+	void Blt(int x, int y, Texture* srcTexture, const Rect& srcRect);	// TODO: アルファブレンド有無
+
 #pragma push_macro("DrawText")
 #undef DrawText
 	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment);

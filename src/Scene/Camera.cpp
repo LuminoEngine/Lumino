@@ -102,6 +102,29 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
+{
+	const Size& size = m_ownerLayer->GetViewportSize();
+	return Vector3::Project(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
+{
+	const Size& size = m_ownerLayer->GetViewportSize();
+	//return Vector3::Unproject(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
+	Vector3 v;
+	v.x = (((position.x - 0) / size.Width) * 2.0f) - 1.0f;
+	v.y = -((((position.y - 0) / size.Height) * 2.0f) - 1.0f);
+	v.z = (position.z - m_nearClip) / (m_farClip - m_nearClip);
+	return Vector3::TransformCoord(v, m_viewProjMatrixI);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Camera::UpdateMatrices(const SizeF& viewSize)
 {
 	// 2D モード
@@ -220,9 +243,10 @@ CameraViewportLayer* CameraViewportLayer::GetDefault3D()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-CameraViewportLayer::CameraViewportLayer(Camera* ownerCamera)
+CameraViewportLayer::CameraViewportLayer(Camera* hostingCamera)
 {
-	m_ownerCamera = ownerCamera;
+	m_hostingCamera = hostingCamera;
+	m_hostingCamera->m_ownerLayer = this;
 }
 
 //-----------------------------------------------------------------------------
@@ -230,6 +254,7 @@ CameraViewportLayer::CameraViewportLayer(Camera* ownerCamera)
 //-----------------------------------------------------------------------------
 CameraViewportLayer::~CameraViewportLayer()
 {
+	m_hostingCamera->m_ownerLayer = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -237,7 +262,7 @@ CameraViewportLayer::~CameraViewportLayer()
 //-----------------------------------------------------------------------------
 void CameraViewportLayer::Render(RenderTarget* renderTarget)
 {
-	m_ownerCamera->GetOwnerSceneGraph()->Render(renderTarget, m_ownerCamera);
+	m_hostingCamera->GetOwnerSceneGraph()->Render(renderTarget, m_hostingCamera);
 }
 
 //=============================================================================

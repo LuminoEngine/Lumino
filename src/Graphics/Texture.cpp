@@ -345,6 +345,16 @@ void Texture2D::Clear(const Color& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
+{
+	ScopedLockTexture lock1(this);
+	ScopedLockTexture lock2(srcTexture);
+	lock1.GetBitmap()->BitBlt(x, y, lock2.GetBitmap(), srcRect, Color::White, true);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
 void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }

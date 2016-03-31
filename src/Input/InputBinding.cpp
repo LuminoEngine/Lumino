@@ -12,6 +12,14 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputBinding, tr::ReflectionObject);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+InputBindingPtr InputBinding::Create(const String& bindingName, Key key)
+{
+	return RefPtr<InputBinding>::Construct(bindingName, key);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 InputBinding::InputBinding()
 	: m_negativeValue(false)
 	, m_minValidMThreshold(0.2f)
