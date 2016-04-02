@@ -51,7 +51,7 @@ Sprite3D::~Sprite3D()
 //-----------------------------------------------------------------------------
 void Sprite3D::Initialize(SceneGraphManager* manager)
 {
-	SpriteBase::Initialize(manager, SpriteCoord_2D);
+	SpriteBase::Initialize(manager, SpriteCoord_RZ);
 }
 
 LN_NAMESPACE_SCENE_END

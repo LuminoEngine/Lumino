@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Common.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -21,8 +22,9 @@ public:
 		: m_startValue()
 		, m_targetValue()
 		, m_value()
-		, m_currentTime( 0.0 )
-		, m_totalTime( 0.0 )
+		, m_currentTime(0.0)
+		, m_totalTime(0.0)
+		, m_wrapMode(WrapMode_Once)
 		, m_easing(NULL)
 	{}
 
@@ -53,6 +55,14 @@ public:
 		m_totalTime = time;
 		m_currentTime = 0.0;
 		SetTime(m_currentTime);
+	}
+	
+	/**
+		@brief      アニメーションの繰り返し方法を設定します。
+	*/
+	void SetWrapMode(WrapMode mode)
+	{
+		m_wrapMode = mode;
 	}
 
 	/**
@@ -112,6 +122,28 @@ private:
 
 	void UpdateValue()
 	{
+		TTime time;
+		switch (m_wrapMode)
+		{
+			case WrapMode_Once:
+				time = m_currentTime;
+				break;
+			case WrapMode_Loop:
+				if (m_currentTime > m_totalTime)
+				{
+					m_currentTime = 0;
+				}
+				time = m_currentTime;
+				break;
+			case WrapMode_RoundTrip:
+				if (m_currentTime > m_totalTime)
+				{
+					m_currentTime = -m_currentTime;
+				}
+				time = abs(m_currentTime) / m_totalTime;
+				break;
+		}
+
 		if (m_currentTime >= m_totalTime)
 		{
 			m_value = m_targetValue;
@@ -136,6 +168,7 @@ private:
 	TValue			m_value;
 	TTime			m_currentTime;
 	TTime			m_totalTime;
+	WrapMode		m_wrapMode;
 	EasingFunction	m_easing;
 };
 

@@ -40,12 +40,13 @@ enum InterpolationMode
 	InterpolationMode_CatmullRom,	///< Catmull-Rom 補間
 };
 
-/// アニメーション再生の処理方法
+/// アニメーションの繰り返し方法
 enum WrapMode
 {
 	WrapMode_Once = 0,		///< 最後まで再生された後、停止する
 	WrapMode_Loop,			///< 最後まで再生された後、先頭に戻ってループする
-	//WrapMode_PingPong,		///< 最後まで再生された後、逆方向に戻ってループする
+	WrapMode_RoundTrip,		///< 最後まで再生された後、逆方向に戻ってループする
+	//WrapMode_PingPong,
 	//WrapMode_Default,
 	//WrapMode_ClampForever,
 };

@@ -29,6 +29,7 @@ public:
 
 	/// 乗算色の設定
 	void SetColorScale(const ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = color; }
+	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = ColorF(r, g, b, a); }
 
 	/// 乗算色の取得
 	const ColorF& GetColorScale(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale; }
