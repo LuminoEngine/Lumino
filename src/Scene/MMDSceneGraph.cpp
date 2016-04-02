@@ -75,7 +75,7 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	//m_mmdRenderingPasses[MMD_PASS_edge] = LN_NEW MMERenderingPass(this, MMD_PASS_edge);
 	m_mmdRenderingPasses[MMD_PASS_object] = LN_NEW MMERenderingPass(manager, MMD_PASS_object);
 	//m_mmdRenderingPasses[MMD_PASS_object_ss] = LN_NEW MMERenderingPass(this, MMD_PASS_object_ss);
-	m_mmdRenderingPasses[MMD_PASS_Infomation] = LN_NEW InfomationRenderingPass(manager);
+	//m_mmdRenderingPasses[MMD_PASS_Infomation] = LN_NEW InfomationRenderingPass(manager);
 
 	//m_default3DLayer->GetRenderingPasses()->Add(m_mmdRenderingPasses[MMD_PASS_object]);
 	//m_default3DLayer->GetRenderingPasses()->Add(m_mmdRenderingPasses[MMD_PASS_Infomation]);

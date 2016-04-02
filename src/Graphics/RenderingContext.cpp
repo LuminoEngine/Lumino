@@ -79,6 +79,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetBlendMode(BlendMode mode)
 {
+	m_manager->SwitchActiveContext(this);
 	if (mode != m_state.renderState.Blend)
 	{
 		Flush();
@@ -92,6 +93,7 @@ void RenderingContext2::SetBlendMode(BlendMode mode)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetRenderState(const RenderState& state)
 {
+	m_manager->SwitchActiveContext(this);
 	if (!m_state.renderState.Equals(state))
 	{
 		Flush();
@@ -113,6 +115,7 @@ const RenderState& RenderingContext2::GetRenderState() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetDepthStencilState(const DepthStencilState& state)
 {
+	m_manager->SwitchActiveContext(this);
 	if (!m_state.depthStencilState.Equals(state))
 	{
 		Flush();
@@ -134,6 +137,7 @@ const DepthStencilState& RenderingContext2::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetRenderTarget(int index, Texture* texture)
 {
+	m_manager->SwitchActiveContext(this);
 	if (texture != m_state.GetRenderTarget(index))
 	{
 		Flush();
@@ -160,6 +164,7 @@ Texture* RenderingContext2::GetRenderTarget(int index) const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetDepthBuffer(Texture* depthBuffer)
 {
+	m_manager->SwitchActiveContext(this);
 	if (m_state.depthBuffer != depthBuffer)
 	{
 		Flush();
@@ -181,6 +186,7 @@ Texture* RenderingContext2::GetDepthBuffer() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetViewport(const Rect& rect)
 {
+	m_manager->SwitchActiveContext(this);
 	if (m_state.viewport != rect)
 	{
 		Flush();
@@ -202,6 +208,7 @@ const Rect& RenderingContext2::GetViewport() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
+	m_manager->SwitchActiveContext(this);
 	if (m_state.vertexBuffer != vertexBuffer)
 	{
 		Flush();
@@ -215,6 +222,7 @@ void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
+	m_manager->SwitchActiveContext(this);
 	if (m_state.indexBuffer != indexBuffer)
 	{
 		Flush();
@@ -228,6 +236,7 @@ void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetShaderPass(ShaderPass* pass)
 {
+	m_manager->SwitchActiveContext(this);
 	if (pass != m_state.GetShaderPass() || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
 	{
 		Flush();
@@ -400,6 +409,7 @@ void RenderingContext2::SwitchActiveRendererPloxy(detail::IRendererPloxy* render
 void RenderingContext2::OnActivated()
 {
 	// ステート強制送信
+	//m_state.Reset();
 	m_state.modifiedFlags = detail::ContextStateFlags::All;
 	//m_ploxy->FlushState(m_state);
 	//m_state.modifiedFlags = detail::ContextStateFlags::None;

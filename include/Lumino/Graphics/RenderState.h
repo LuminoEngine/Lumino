@@ -162,6 +162,16 @@ struct ContextState
 	void SetShaderPass(ShaderPass* pass);
 	ShaderPass* GetShaderPass() const { return m_shaderPass; }
 
+	void Reset()
+	{
+		renderState = RenderState();
+		depthStencilState = DepthStencilState();
+		depthBuffer = nullptr;
+		viewport = Rect();
+		vertexBuffer = nullptr;
+		indexBuffer = nullptr;
+	}
+
 private:
 	std::array<Texture*, MaxMultiRenderTargets>	m_renderTargets = {};
 	Shader*		m_ownerShader = nullptr;

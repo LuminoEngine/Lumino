@@ -343,9 +343,14 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	m_renderingContext->SetVertexBuffer(m_vertexBuffer);
 	m_renderingContext->SetIndexBuffer(m_indexBuffer);
 	m_renderingContext->SetShaderPass(m_shader.pass);
-	m_renderingContext->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, tileCount * 2);
-	
-	//m_renderingContext->Flush();
+	m_renderingContext->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, plotCount / 2);
+
+	//printf("%p\n", m_shader.pass);
+	//m_renderingContext->SetVertexBuffer(nullptr);
+	//m_renderingContext->SetIndexBuffer(nullptr);
+	//m_renderingContext->SetShaderPass(nullptr);
+
+	//printf("%d %d\n", tileCount, plotCount / 2);
 }
 //
 ////=============================================================================
