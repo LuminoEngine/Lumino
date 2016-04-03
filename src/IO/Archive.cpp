@@ -437,7 +437,8 @@ bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStr
 
 	FileOpenMode mode = FileOpenMode::Read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	*outStream = LN_NEW FileStream(fileFullPath, mode);
+	FileStreamPtr file = FileStream::Create(fileFullPath, mode);
+	*outStream = file.DetachMove();
 	return true;
 }
 
