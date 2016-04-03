@@ -423,7 +423,7 @@ void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
 //-----------------------------------------------------------------------------
 bool DummyArchive::ExistsFile(const PathName& fileFullPath)
 {
-	return FileSystem::Exists(fileFullPath);
+	return FileSystem::ExistsFile(fileFullPath);
 }
 
 //-----------------------------------------------------------------------------
@@ -431,7 +431,7 @@ bool DummyArchive::ExistsFile(const PathName& fileFullPath)
 //-----------------------------------------------------------------------------
 bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring)
 {
-	if (!FileSystem::Exists(fileFullPath)) {
+	if (!FileSystem::ExistsFile(fileFullPath)) {
 		return false;
 	}
 

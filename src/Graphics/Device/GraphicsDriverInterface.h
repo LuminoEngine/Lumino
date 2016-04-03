@@ -215,20 +215,20 @@ public:
 	/// ビューポート矩形の取得
 	//virtual const Rect& GetViewport() = 0;
 
-	/// 頂点バッファの設定
-	virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer) = 0;
+	///// 頂点バッファの設定
+	//virtual void SetVertexBuffer(IVertexBuffer* vertexBuffer) = 0;
 
-	/// インデックスバッファの設定
-	virtual void SetIndexBuffer(IIndexBuffer* indexBuffer) = 0;
+	///// インデックスバッファの設定
+	//virtual void SetIndexBuffer(IIndexBuffer* indexBuffer) = 0;
 
 	/// 設定されている各種バッファをクリアする
 	virtual void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00) = 0;
 
 	/// プリミティブ描画
-	virtual void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
+	virtual void DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 
 	/// プリミティブ描画 (インデックス付き。頂点、インデックスの両方のバッファのdynamic、static が一致している必要がある)
-	virtual void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+	virtual void DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
 
 protected:
 	virtual ~IRenderer() {}

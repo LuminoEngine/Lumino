@@ -213,13 +213,11 @@ void TextRendererCore::Flush()
 	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	m_renderer->SetVertexBuffer(m_vertexBuffer);
-	m_renderer->SetIndexBuffer(m_indexBuffer);
 	m_shader.varTone->SetVector((Vector4&)m_tone);
 	m_shader.varTexture->SetTexture(srcTexture);
 	m_shader.varGlyphMaskSampler->SetTexture(m_glyphsMaskTexture);
 	m_shader.pass->Apply();
-	m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+	m_renderer->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 
 	// キャッシュクリア
 	m_vertexCache.Clear();

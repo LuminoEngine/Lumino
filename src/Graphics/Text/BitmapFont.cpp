@@ -23,8 +23,7 @@ static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBi
 //-----------------------------------------------------------------------------
 Font* Font::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
 {
-	MemoryStream stream;
-	stream.Create(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
+	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
 	return LN_NEW BitmapFont(manager, bitmap);
 }

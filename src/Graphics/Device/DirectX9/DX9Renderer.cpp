@@ -373,8 +373,10 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void DX9Renderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	// TODO
+	SetVertexBuffer(vertexBuffer);
 	//TryBeginScene();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;
@@ -409,8 +411,11 @@ void DX9Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pr
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DX9Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void DX9Renderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	// TODO
+	SetVertexBuffer(vertexBuffer);
+	SetIndexBuffer(indexBuffer);
 	//TryBeginScene();
 
 	D3DPRIMITIVETYPE dx_prim = D3DPT_TRIANGLELIST;

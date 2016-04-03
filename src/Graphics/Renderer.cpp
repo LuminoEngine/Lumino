@@ -29,6 +29,7 @@ static Details::Renderer* GetRenderer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+#if 0
 void Renderer::BeginRendering() { GetRenderer()->Begin(); }
 void Renderer::EndRendering() { GetRenderer()->End(); }
 void Renderer::SetRenderState(const RenderState& state) { GetRenderer()->SetRenderState(state); }
@@ -41,12 +42,13 @@ void Renderer::SetDepthBuffer(Texture* depthBuffer) { GetRenderer()->SetDepthBuf
 Texture* Renderer::GetDepthBuffer() { return GetRenderer()->GetDepthBuffer(); }
 void Renderer::SetViewport(const Rect& rect) { GetRenderer()->SetViewport(rect); }
 const Rect& Renderer::GetViewport() { return GetRenderer()->GetViewport(); }
-void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer) { GetRenderer()->SetVertexBuffer(vertexBuffer); }
-void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer) { GetRenderer()->SetIndexBuffer(indexBuffer); }
+//void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer) { GetRenderer()->SetVertexBuffer(vertexBuffer); }
+//void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer) { GetRenderer()->SetIndexBuffer(indexBuffer); }
 // TODO: Get はいらない？
 void Renderer::Clear(ClearFlags flags, const ColorF& color, float zf, uint8_t stencil) { GetRenderer()->Clear(flags, color, zf, stencil); }
 void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) { GetRenderer()->DrawPrimitive(primitive, startVertex, primitiveCount); }
 void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) { GetRenderer()->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount); }
+#endif
 
 //=============================================================================
 // Details::Renderer
@@ -279,39 +281,39 @@ const Rect& Renderer::GetViewport()
 	return m_currentViewport;
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
+//{
+//	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
+//	//LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
 //
-//-----------------------------------------------------------------------------
-void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
-{
-	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
-	//LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
-
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetVertexBuffer, m_manager,
-		Driver::IRenderer*, m_internal,
-		RefPtr<Driver::IVertexBuffer>, t,
-		{
-			m_internal->SetVertexBuffer(t);
-		});
-}
-
-//-----------------------------------------------------------------------------
+//	LN_ENQUEUE_RENDER_COMMAND_2(
+//		SetVertexBuffer, m_manager,
+//		Driver::IRenderer*, m_internal,
+//		RefPtr<Driver::IVertexBuffer>, t,
+//		{
+//			m_internal->SetVertexBuffer(t);
+//		});
+//}
 //
-//-----------------------------------------------------------------------------
-void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
-{
-	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
-	//LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
-
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetIndexBuffer, m_manager,
-		Driver::IRenderer*, m_internal,
-		RefPtr<Driver::IIndexBuffer>, t,
-		{
-			m_internal->SetIndexBuffer(t);
-		});
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
+//{
+//	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
+//	//LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
+//
+//	LN_ENQUEUE_RENDER_COMMAND_2(
+//		SetIndexBuffer, m_manager,
+//		Driver::IRenderer*, m_internal,
+//		RefPtr<Driver::IIndexBuffer>, t,
+//		{
+//			m_internal->SetIndexBuffer(t);
+//		});
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -343,16 +345,18 @@ void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t ste
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void Renderer::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	LN_ENQUEUE_RENDER_COMMAND_4(
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? Helper::GetDeviceObject(vertexBuffer) : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_5(
 		DrawPrimitive, m_manager,
 		Driver::IRenderer*, m_internal,
+		Driver::IVertexBuffer*, vb,
 		PrimitiveType, primitive,
 		int, startVertex,
 		int, primitiveCount,
 		{
-			m_internal->DrawPrimitive(primitive, startVertex, primitiveCount);
+			m_internal->DrawPrimitive(vb, primitive, startVertex, primitiveCount);
 		});
 
 	//LN_CALL_RENDERER_COMMAND(DrawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
@@ -361,16 +365,20 @@ void Renderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primi
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Renderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void Renderer::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	LN_ENQUEUE_RENDER_COMMAND_4(
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? Helper::GetDeviceObject(vertexBuffer) : nullptr;
+	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? Helper::GetDeviceObject(indexBuffer) : nullptr;
+	LN_ENQUEUE_RENDER_COMMAND_6(
 		DrawPrimitiveIndexed, m_manager,
 		Driver::IRenderer*, m_internal,
+		Driver::IVertexBuffer*, vb,
+		Driver::IIndexBuffer*, ib,
 		PrimitiveType, primitive,
 		int, startIndex,
 		int, primitiveCount,
 		{
-			m_internal->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+			m_internal->DrawPrimitiveIndexed(vb, ib, primitive, startIndex, primitiveCount);
 		});
 	//LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
 }
@@ -390,8 +398,8 @@ void Renderer::FlushState(const detail::ContextState& state)
 		}
 		SetDepthBuffer(state.depthBuffer);
 		SetViewport(state.viewport);
-		SetVertexBuffer(state.vertexBuffer);
-		SetIndexBuffer(state.indexBuffer);
+		//SetVertexBuffer(state.vertexBuffer);
+		//SetIndexBuffer(state.indexBuffer);
 	}
 	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::ShaderPass))
 	{

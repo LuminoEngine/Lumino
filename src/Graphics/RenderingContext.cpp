@@ -272,7 +272,7 @@ void RenderingContext2::DrawPrimitive(PrimitiveType primitive, int startVertex, 
 	m_manager->SwitchActiveContext(this);
 	CheckFlushRendererState();
 	SwitchActiveRendererPloxy(m_ploxy);
-	m_ploxy->DrawPrimitive(primitive, startVertex, primitiveCount);
+	m_ploxy->DrawPrimitive(m_state.vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -283,7 +283,7 @@ void RenderingContext2::DrawPrimitiveIndexed(PrimitiveType primitive, int startI
 	m_manager->SwitchActiveContext(this);
 	CheckFlushRendererState();
 	SwitchActiveRendererPloxy(m_ploxy);
-	m_ploxy->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+	m_ploxy->DrawPrimitiveIndexed(m_state.vertexBuffer, m_state.indexBuffer, primitive, startIndex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -351,6 +351,10 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
 //-----------------------------------------------------------------------------
 void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 {
+	// TODO: ここで null にしておかないとPrimitiveRendererが古いシェーダを適用してしまう。
+	// が、内部でステートを変えてしまうのはどうなのか。。。
+	SetShaderPass(nullptr);
+
 	// TODO: この3行定型文?
 	m_manager->SwitchActiveContext(this);
 	CheckFlushRendererState();

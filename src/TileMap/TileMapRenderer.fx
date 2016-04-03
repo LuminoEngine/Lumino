@@ -47,10 +47,7 @@ float4 psBasic(
 	float4 inColor	: COLOR0,
 	float2 inUV		: TEXCOORD0) : COLOR0
 {
-	inColor = tex2D(g_texSampler, inUV) * inColor;
-	inColor.r = 0;
-	inColor.g = 1;
-	return inColor;
+	return tex2D(g_texSampler, inUV) * inColor;
 }
 
 //-------------------------------------------------------------------------

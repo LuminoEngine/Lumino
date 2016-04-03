@@ -262,8 +262,11 @@ void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t s
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void GLRenderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	// TODO
+	SetVertexBuffer(vertexBuffer);
+
 	if (m_currentVertexBuffer == NULL) {
 		LN_THROW(0, InvalidOperationException);
 		return;
@@ -304,8 +307,12 @@ void GLRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int pri
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void GLRenderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	// TODO
+	SetVertexBuffer(vertexBuffer);
+	SetIndexBuffer(indexBuffer);
+
 	if (m_currentVertexBuffer == NULL ||
 		m_currentIndexBuffer == NULL ||
 		m_currentShaderPass == NULL) {

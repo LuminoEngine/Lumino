@@ -229,8 +229,7 @@ Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, int mipLeve
 //-----------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
 {
-	MemoryStream stream;
-	stream.Create(data, size);
+	MemoryStream stream(data, size);
 	return Create(&stream, format, mipLevels);
 }
 

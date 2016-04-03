@@ -14,6 +14,7 @@ class Renderer
 public:
 	static const int MaxMultiRenderTargets = 4;
 
+#if 0
 public:
 	
 	/**
@@ -77,15 +78,15 @@ public:
 	*/
 	static const Rect& GetViewport();
 
-	/**
-		@brief	頂点バッファを設定します。
-	*/
-	static void SetVertexBuffer(VertexBuffer* vertexBuffer);
+	///**
+	//	@brief	頂点バッファを設定します。
+	//*/
+	//static void SetVertexBuffer(VertexBuffer* vertexBuffer);
 
-	/**
-		@brief	インデックスバッファを設定します。
-	*/
-	static void SetIndexBuffer(IndexBuffer* indexBuffer);
+	///**
+	//	@brief	インデックスバッファを設定します。
+	//*/
+	//static void SetIndexBuffer(IndexBuffer* indexBuffer);
 
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。
@@ -102,6 +103,6 @@ public:
 	*/
 	static void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
+#endif
 };
-
 LN_NAMESPACE_END

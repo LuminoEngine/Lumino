@@ -35,8 +35,8 @@ Camera::Camera()
 	, m_projectionMode()
 	, m_directionMode(CameraDirection::LookAt)
 	, m_upDirection(Vector3::UnitY)
-	, m_fovY(Math::PI * 0.125f)
-	, m_nearClip(0.3f)	// Unity based.
+	, m_fovY(Math::PI / 3.0f)	// Unity based.
+	, m_nearClip(0.3f)			// Unity based.
 	, m_farClip(1000.0f)
 	, m_cameraBehavior(nullptr)
 {
@@ -158,9 +158,8 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 		m_viewMatrix = Matrix::LookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, m_upDirection);
 
 		// プロジェクション行列の更新
-		// TODO: 視野角とnear,far
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::PerspectiveFovLH(Math::PI / 4.0f, viewSize.Width / viewSize.Height, m_nearClip, m_farClip);
+		m_projMatrix = Matrix::PerspectiveFovLH(m_fovY, viewSize.Width / viewSize.Height, m_nearClip, m_farClip);
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 

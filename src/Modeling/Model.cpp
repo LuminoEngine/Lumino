@@ -163,9 +163,9 @@ void Model::DrawSubset(int subsetIndex)
 	//g_ttttt = m_modelCore->VertexBuffer->m_deviceObj;
 
 	Details::Renderer* r = m_manager->GetGraphicsManager()->GetRenderer();
-	r->SetVertexBuffer(m_modelCore->VertexBuffer);
-	r->SetIndexBuffer(m_modelCore->IndexBuffer);
 	r->DrawPrimitiveIndexed(
+		m_modelCore->VertexBuffer,
+		m_modelCore->IndexBuffer,
 		PrimitiveType_TriangleList,
 		m_modelCore->Material.Attributes[subsetIndex].StartIndex,
 		m_modelCore->Material.Attributes[subsetIndex].PrimitiveNum);

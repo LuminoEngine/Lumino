@@ -259,9 +259,6 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 	Driver::ITexture* oldRT = m_renderer->GetRenderTarget(0);
 	m_renderer->SetRenderTarget(0, dest);
 
-	m_renderer->SetVertexBuffer(m_vertexBufferForBlt);
-	m_renderer->SetIndexBuffer(nullptr);
-
 	// シェーダが指定されていなければデフォルトのを使う
 	if (shader == nullptr)
 	{
@@ -278,7 +275,7 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 		for (int iPass = 0; iPass < passCount; ++iPass)
 		{
 			tech->GetPass(iPass)->Apply();
-			m_renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
+			m_renderer->DrawPrimitive(m_vertexBufferForBlt, PrimitiveType_TriangleStrip, 0, 2);
 		}
 	}
 
@@ -294,8 +291,6 @@ void PrimitiveRendererCore::Flush()
 	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetConstData(), m_vertexCacheUsed);
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	m_renderer->SetVertexBuffer(m_vertexBuffer);
-	m_renderer->SetIndexBuffer(m_indexBuffer);
 
 	// ユーザーシェーダを使う場合
 	if (m_userShader != nullptr)
@@ -311,11 +306,11 @@ void PrimitiveRendererCore::Flush()
 
 				if (m_mode == PrimitiveRendererMode::TriangleList)
 				{
-					m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+					m_renderer->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 				}
 				else if (m_mode == PrimitiveRendererMode::LineList)
 				{
-					m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
+					m_renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
 				}
 			}
 		}
@@ -335,11 +330,11 @@ void PrimitiveRendererCore::Flush()
 
 		if (m_mode == PrimitiveRendererMode::TriangleList)
 		{
-			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+			m_renderer->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 		}
 		else if (m_mode == PrimitiveRendererMode::LineList)
 		{
-			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
+			m_renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_LineList, 0, GetCurrentVertexCount() / 2);
 		}
 	}
 
@@ -514,6 +509,7 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 {
 	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
+	m_flushRequested = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
 	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
 	CheckUpdateState();	// TODO: Blt に限っては必要ないかも？
 
@@ -525,7 +521,6 @@ void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 		(source != nullptr) ? source->GetDeviceObject() : nullptr,
 		(dest != nullptr) ? dest->GetDeviceObject() : nullptr,
 		(shader != nullptr) ? shader->m_deviceObj : nullptr);
-	m_flushRequested = true;
 }
 
 //-----------------------------------------------------------------------------

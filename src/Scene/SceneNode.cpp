@@ -164,7 +164,7 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 		return left->m_zDistance < right->m_zDistance;
 	}
 	// 優先度は降順。高いほうを先に描画する。
-	return left->m_priority < right->m_priority;
+	return left->m_priority > right->m_priority;
 }
 
 //-----------------------------------------------------------------------------

@@ -1052,20 +1052,18 @@ void DrawingContextImpl::Flush()
 	{
 		ExpandStroke(false);	// TODO test
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		renderer->SetVertexBuffer(m_vertexBuffer);
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount()-2);
+		renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount()-2);
 	}
 	// PointList
 	else if (m_currentState.drawingClass == detail::DrawingClass::PointList)
 	{
 		ExpandPoints();
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		renderer->SetVertexBuffer(m_vertexBuffer);
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitive(PrimitiveType_PointList, 0, m_vertexCache.GetCount());
+		renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_PointList, 0, m_vertexCache.GetCount());
 	}
 	else
 	{
@@ -1074,11 +1072,9 @@ void DrawingContextImpl::Flush()
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
-		renderer->SetVertexBuffer(m_vertexBuffer);
-		renderer->SetIndexBuffer(m_indexBuffer);
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
 		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
+		renderer->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 	}
 
 #if 0

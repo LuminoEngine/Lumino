@@ -1050,8 +1050,6 @@ void SpriteRendererImpl::Flush()
 	// 描画
 
 	auto* r = m_manager->GetGraphicsDevice()->GetRenderer();
-	r->SetVertexBuffer(m_vertexBuffer);
-	r->SetIndexBuffer(m_indexBuffer);
 	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
 	m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
 
@@ -1064,7 +1062,7 @@ void SpriteRendererImpl::Flush()
 		r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
 		m_shader.varTexture->SetTexture(itr->Texture);
 		pass->Apply();
-		r->DrawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
+		r->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
 	}
 
 	//-----------------------------------------------------

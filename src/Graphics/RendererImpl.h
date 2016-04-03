@@ -89,15 +89,15 @@ public:
 	*/
 	const Rect& GetViewport();
 
-	/**
-		@brief	頂点バッファを設定します。
-	*/
-	void SetVertexBuffer(VertexBuffer* vertexBuffer);
+	///**
+	//	@brief	頂点バッファを設定します。
+	//*/
+	//void SetVertexBuffer(VertexBuffer* vertexBuffer);
 
-	/**
-		@brief	インデックスバッファを設定します。
-	*/
-	void SetIndexBuffer(IndexBuffer* indexBuffer);
+	///**
+	//	@brief	インデックスバッファを設定します。
+	//*/
+	//void SetIndexBuffer(IndexBuffer* indexBuffer);
 	
 	/**
 		@brief	
@@ -110,14 +110,12 @@ public:
 	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/**
-		@brief	現在設定されている頂点バッファを使用してプリミティブをレンダリングします。
 	*/
-	void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
+	void DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
 
 	/**
-		@brief	現在設定されている頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
 	*/
-	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+	void DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 
 	void FlushState(const detail::ContextState& state);
 	virtual void Flush() override;
