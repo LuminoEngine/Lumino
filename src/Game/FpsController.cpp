@@ -119,8 +119,7 @@ void FpsController::Process()
 	m_elapsedGameTime = m_currentTime - m_lastTime;
 	m_elapsedRealTime = m_currentTime - m_lastRealTime;
 
-	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
-	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
+	AddingToTotalTime()
 
 	// (frame_rate_)フレームの1回目なら
 	if (m_frameCount == 0)
@@ -262,8 +261,7 @@ void FpsController::ProcessForMeasure()
 	m_elapsedGameTime = m_currentTime - m_lastTime;
 	m_elapsedRealTime = m_currentTime - m_lastRealTime;
 
-	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
-	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
+	AddingToTotalTime()
 
 	// (frame_rate_)フレームの1回目なら
 	if (m_frameCount == 0)
@@ -362,6 +360,12 @@ void FpsController::ProcessForMeasure()
 	m_frameCount = (++m_frameCount) % m_frameRate;
 
 	m_fps = (m_averageTime > 0) ? (1.0f / m_averageTime) : 0;
+}
+
+void FpsController::AddingToTotalTime
+{
+	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
+	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
 }
 
 LN_NAMESPACE_END

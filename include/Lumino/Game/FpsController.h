@@ -91,6 +91,7 @@ private:	// internal
 	friend class EngineManager;
 	void Process();
     void ProcessForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)
+	void AddingToTotalTime();
 
 private:
 	int			m_frameRate;		///< フレームレート
