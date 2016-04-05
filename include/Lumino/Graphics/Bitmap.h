@@ -234,7 +234,7 @@ private:
 		static inline ClColor Get(const byte_t* line, int x)
 		{
 			U32* c = &((U32*)line)[x];
-			return RGBA(c->D[2], c->D[1], c->D[2], c->D[3]);
+			return RGBA(c->D[2], c->D[1], c->D[0], c->D[3]);
 		}
 		static inline void Set(byte_t* line, int x, ClColor color)
 		{
@@ -249,7 +249,7 @@ private:
 		static inline ClColor Get(const byte_t* line, int x)
 		{
 			U32* c = &((U32*)line)[x];
-			return RGBA(c->D[2], c->D[1], c->D[2], 0xFF);
+			return RGBA(c->D[2], c->D[1], c->D[0], 0xFF);
 		}
 		static inline void Set(byte_t* line, int x, ClColor color)
 		{

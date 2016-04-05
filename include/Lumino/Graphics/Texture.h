@@ -231,15 +231,15 @@ private:
 	//TextureFormat	m_format;
 };
 
-class ScopedLockTexture
+class ScopedTextureLock
 {
 public:
-	ScopedLockTexture(Texture* texture)
+	ScopedTextureLock(Texture* texture)
 	{
 		m_texture = texture;
 		m_bitmap = m_texture->Lock();
 	}
-	~ScopedLockTexture()
+	~ScopedTextureLock()
 	{
 		m_texture->Unlock();
 	}

@@ -356,20 +356,25 @@ void Bitmap::BitBltInternalTemplate(
 				if (dest_alpha == 0) a = 0xff;
 				else a = src_alpha;
 
+				r = (GetR(mulColorRGBA) * GetR(src)) >> 8;
+				g = (GetG(mulColorRGBA) * GetG(src)) >> 8;
+				b = (GetB(mulColorRGBA) * GetB(src)) >> 8;
+				a = (GetA(mulColorRGBA) * a) >> 8;
+
 				r = ((GetR(dest_color) * (0xff - a)) >> 8) +
-					((GetR(mulColorRGBA) * a) >> 8);
+					((r * a) >> 8);
 
 				g = ((GetG(dest_color) * (0xff - a)) >> 8) +
-					((GetG(mulColorRGBA) * a) >> 8);
+					((g * a) >> 8);
 
 				b = ((GetB(dest_color) * (0xff - a)) >> 8) +
-					((GetB(mulColorRGBA)* a) >> 8);
+					((b * a) >> 8);
 
 				// 書き込み用に再計算。
 				// 乗算だと、半透明を重ねるごとに薄くなってしまう。
 				// イメージとしては、重ねるごとに濃くなる加算が適切だと思う。
 				// TODO: 本来はブレンドファンクションで表現するべきか…
-				a = (dest_alpha + src_alpha);
+				a = (dest_alpha + a);
 				a = (a > 255) ? 255 : a;
 
 				dstBuf.SetPixel(x, RGBA(r, g, b, a));

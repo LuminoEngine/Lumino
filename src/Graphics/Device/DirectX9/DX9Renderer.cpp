@@ -113,6 +113,7 @@ void DX9Renderer::EnterRenderState()
 		device->GetRenderState(D3DRS_DESTBLEND, &m_state_D3DRS_DESTBLEND);
 		device->GetRenderState(D3DRS_SRCBLEND, &m_state_D3DRS_SRCBLEND);
 		device->GetRenderState(D3DRS_ALPHAREF, &m_state_D3DRS_ALPHAREF);
+		device->GetRenderState(D3DRS_ALPHAFUNC, &m_state_D3DCMP_GREATEREQUAL);
 
 		device->GetRenderState(D3DRS_ZENABLE, &m_state_D3DRS_ZENABLE);
 		device->GetRenderState(D3DRS_ZWRITEENABLE, &m_state_D3DRS_ZWRITEENABLE);
@@ -189,6 +190,7 @@ void DX9Renderer::LeaveRenderState()
 		device->SetRenderState(D3DRS_DESTBLEND, m_state_D3DRS_DESTBLEND);
 		device->SetRenderState(D3DRS_SRCBLEND, m_state_D3DRS_SRCBLEND);
 		device->SetRenderState(D3DRS_ALPHAREF, m_state_D3DRS_ALPHAREF);
+		device->SetRenderState(D3DRS_ALPHAFUNC, m_state_D3DCMP_GREATEREQUAL);
 
 		device->SetRenderState(D3DRS_ZENABLE, m_state_D3DRS_ZENABLE);
 		device->SetRenderState(D3DRS_ZWRITEENABLE, m_state_D3DRS_ZWRITEENABLE);
@@ -490,6 +492,9 @@ void DX9Renderer::RestoreStatus()
 	m_dxDevice->SetRenderState(D3DRS_COLORVERTEX, TRUE);			// D3D default
 	m_dxDevice->SetRenderState(D3DRS_LIGHTING, TRUE);				// D3D default
 	m_dxDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);	// D3D default
+
+	// アルファテスト時の比較関数の指定 ( D3DCMPFUNC 列挙型  デフォルトは D3DCMP_ALWAYS )
+	m_dxDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 
 	// ステンシルテスト
 	m_dxDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);				// ステンシルマスク
