@@ -57,10 +57,7 @@ struct DrawingState
 }
 
 
-/**
-	@brief	図形や画像、テキストを描画するための機能を提供します。
-*/
-class DrawingContext
+class GeometryRenderer
 	: public RefObject
 {
 public:
@@ -101,8 +98,8 @@ public:
 	void Flush();
 
 LN_INTERNAL_ACCESS:
-	DrawingContext();
-	virtual ~DrawingContext();
+	GeometryRenderer();
+	virtual ~GeometryRenderer();
 	void Initialize(GraphicsManager* manager);
 
 private:
@@ -189,7 +186,7 @@ public:
 
 
 
-	DrawingContext* BeginDrawingContext();
+	GeometryRenderer* BeginDrawingContext();
 	SpriteRenderer* BeginSpriteRendering();
 
 
@@ -197,7 +194,7 @@ public:
 	enum class RendererType
 	{
 		None,
-		DrawingContext,
+		GeometryRenderer,
 		SpriteRenderer,
 		TextRenderer,
 		PrimitiveRenderer,
@@ -209,7 +206,7 @@ public:
 
 
 	RendererType				m_currentRenderer;
-	DrawingContext				m_drawingContext;
+	GeometryRenderer			m_geometryRenderer;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
 

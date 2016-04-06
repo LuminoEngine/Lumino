@@ -31,19 +31,13 @@ public:
 
 public:
 
-	/**
-		@brief	すべての要素を 0 で初期化します。
-	*/
-	Color() { r = 0; g = 0; b = 0; a = 0; }
+	/** すべての要素を 0 で初期化します。*/
+	Color() : r(0), g(0), b(0), a(0) {}
 
-	/**
-		@brief	各要素を指定して初期化します。
-	*/
+	/** 各要素を指定して初期化します。*/
 	Color(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 	
-	/**
-		@brief	ColorF を変換して設定します。
-	*/
+	/** ColorF を変換して設定します。*/
 	Color(const ColorF& colorF);
 
 public:
@@ -52,15 +46,6 @@ public:
 		@brief	各要素を設定します。
 	*/
 	void Set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
-
-	/**
-		@brief	RR GG BB AA のバイトシーケンスへ変換します。
-	*/
-	uint32_t ToR8G8B8A8() const 
-	{
-		byte_t data[4] = { r, g, b, a };
-		return *((uint32_t*)data);
-	};
 
 public:
 	bool operator == (const Color& color) const { return (memcmp(this, &color, sizeof(Color)) == 0); }
@@ -189,26 +174,26 @@ public:
 	float	r;	///< 赤成分のカラーバランス (-1.0～1.0)
 	float	g;	///< 緑成分のカラーバランス (-1.0～1.0)
 	float	b;	///< 青成分のカラーバランス (-1.0～1.0)
-	float	GS;	///< グレースケール化フィルタの強さ (0.0 ～ 1.0)
+	float	gray;	///< グレースケール化フィルタの強さ (0.0 ～ 1.0)
 
 public:
 
 	/**
 		@brief	すべての要素を 0.0 で初期化します。
 	*/
-	ToneF() { r = 0.0f; g = 0.0f; b = 0.0f; GS = 0.0f; }
+	ToneF() { r = 0.0f; g = 0.0f; b = 0.0f; gray = 0.0f; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	ToneF(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; GS = gs_; }
+	ToneF(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
 
 public:
 
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; GS = gs_; }
+	void Set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
 
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
@@ -234,26 +219,26 @@ public:
 	friend ToneF operator / (const ToneF& v1, float v2);
 	friend ToneF operator / (float v1, const ToneF& v2);
 
-	bool operator != (const ToneF& tone) { return r != tone.r || g != tone.g || b != tone.b || GS != tone.GS; }
+	bool operator != (const ToneF& tone) { return r != tone.r || g != tone.g || b != tone.b || gray != tone.gray; }
 };
 
 
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.r, -v1.g, -v1.b, -v1.GS); }
-inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b, v1.GS + v2.GS); }
-inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.r + v2, v1.g + v2, v1.b + v2, v1.GS + v2); }
-inline ToneF operator + (float v1, const ToneF& v2) { return ToneF(v1 + v2.r, v1 + v2.g, v1 + v2.b, v1 + v2.GS); }
-inline ToneF operator - (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r - v2.r, v1.g - v2.g, v1.b - v2.b, v1.GS - v2.GS); }
-inline ToneF operator - (const ToneF& v1, float v2) { return ToneF(v1.r - v2, v1.g - v2, v1.b - v2, v1.GS - v2); }
-inline ToneF operator - (float v1, const ToneF& v2) { return ToneF(v1 - v2.r, v1 - v2.g, v1 - v2.b, v1 - v2.GS); }
-inline ToneF operator * (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r * v2.r, v1.g * v2.g, v1.b * v2.b, v1.GS * v2.GS); }
-inline ToneF operator * (const ToneF& v1, float v2) { return ToneF(v1.r * v2, v1.g * v2, v1.b * v2, v1.GS * v2); }
-inline ToneF operator * (float v1, const ToneF& v2) { return ToneF(v1 * v2.r, v1 * v2.g, v1 * v2.b, v1 * v2.GS); }
-inline ToneF operator / (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r / v2.r, v1.g / v2.g, v1.b / v2.b, v1.GS / v2.GS); }
-inline ToneF operator / (const ToneF& v1, float v2) { return ToneF(v1.r / v2, v1.g / v2, v1.b / v2, v1.GS / v2); }
-inline ToneF operator / (float v1, const ToneF& v2) { return ToneF(v1 / v2.r, v1 / v2.g, v1 / v2.b, v1 / v2.GS); }
+inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.r, -v1.g, -v1.b, -v1.gray); }
+inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b, v1.gray + v2.gray); }
+inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.r + v2, v1.g + v2, v1.b + v2, v1.gray + v2); }
+inline ToneF operator + (float v1, const ToneF& v2) { return ToneF(v1 + v2.r, v1 + v2.g, v1 + v2.b, v1 + v2.gray); }
+inline ToneF operator - (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r - v2.r, v1.g - v2.g, v1.b - v2.b, v1.gray - v2.gray); }
+inline ToneF operator - (const ToneF& v1, float v2) { return ToneF(v1.r - v2, v1.g - v2, v1.b - v2, v1.gray - v2); }
+inline ToneF operator - (float v1, const ToneF& v2) { return ToneF(v1 - v2.r, v1 - v2.g, v1 - v2.b, v1 - v2.gray); }
+inline ToneF operator * (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r * v2.r, v1.g * v2.g, v1.b * v2.b, v1.gray * v2.gray); }
+inline ToneF operator * (const ToneF& v1, float v2) { return ToneF(v1.r * v2, v1.g * v2, v1.b * v2, v1.gray * v2); }
+inline ToneF operator * (float v1, const ToneF& v2) { return ToneF(v1 * v2.r, v1 * v2.g, v1 * v2.b, v1 * v2.gray); }
+inline ToneF operator / (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r / v2.r, v1.g / v2.g, v1.b / v2.b, v1.gray / v2.gray); }
+inline ToneF operator / (const ToneF& v1, float v2) { return ToneF(v1.r / v2, v1.g / v2, v1.b / v2, v1.gray / v2); }
+inline ToneF operator / (float v1, const ToneF& v2) { return ToneF(v1 / v2.r, v1 / v2.g, v1 / v2.b, v1 / v2.gray); }
 
 
 /**

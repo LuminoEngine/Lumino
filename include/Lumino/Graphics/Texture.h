@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail { class RenderTargetTextureCache; }
 
 /**
 	@brief		テクスチャのクラスです。

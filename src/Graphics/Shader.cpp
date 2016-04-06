@@ -801,7 +801,7 @@ void ShaderVariable::SetModified()
 	detail::IContext* activeContext = m_owner->GetManager()->GetActiveContext();
 	if (activeContext->GetShaderPass() != nullptr && activeContext->GetShaderPass()->GetOwnerShader() == m_owner)
 	{
-		activeContext->RequestFlush();
+		activeContext->OnStateChanging();
 	}
 	m_owner->SetModifiedVariables(true);
 	m_modified = true;

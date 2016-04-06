@@ -178,6 +178,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/BitmapPainter.h
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
+	include/Lumino/Graphics/ContextInterface.h
 	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsException.h
@@ -204,6 +205,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapPainter.cpp
 	src/Graphics/Color.cpp
+	src/Graphics/ContextInterface.cpp
 	src/Graphics/DrawingContext.cpp
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h

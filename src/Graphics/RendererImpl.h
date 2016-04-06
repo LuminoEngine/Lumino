@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/GraphicsResourceObject.h>
+#include <Lumino/Graphics/ContextInterface.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

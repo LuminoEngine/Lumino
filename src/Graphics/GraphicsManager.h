@@ -21,6 +21,7 @@ class BitmapTextRenderer;
 
 namespace detail
 {
+	class IContext;
 	class TextRendererCore;
 }
 

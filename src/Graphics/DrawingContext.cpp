@@ -118,10 +118,10 @@
 
 
 	[2015/12/2] クラス名
-		しばらく間空いて、やっぱり DrawingContext のほうがいいと思う。
+		しばらく間空いて、やっぱり GeometryRenderer のほうがいいと思う。
 		このライブラリはかなり低レベルなAPIも公開する。
 		そうなってくると DirectX11 の RenderingContext の意味が強くなってくる。
-		高レベルってことで差別化するなら DrawingContext。
+		高レベルってことで差別化するなら GeometryRenderer。
 		
 
 
@@ -129,7 +129,7 @@
 	https://developer.mozilla.org/ja/docs/Web/API/RenderingContext
 
 	このモジュールは Scene と GUI で共有されるが、
-	DrawingContext は Scene よりも GUI 寄り。
+	GeometryRenderer は Scene よりも GUI 寄り。
 	ライブラリとしては Scene の方が意味が大きい。Draw より Render かな、と。
 
 
@@ -183,8 +183,8 @@ LN_NAMESPACE_BEGIN
 //public:
 //
 //protected:
-//	DrawingContext();
-//	virtual ~DrawingContext();
+//	GeometryRenderer();
+//	virtual ~GeometryRenderer();
 //	void Initialize(GraphicsManager* manager);
 //
 //private:
@@ -1042,6 +1042,9 @@ void DrawingContextImpl::Flush()
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
 	m_shader3D.varWorldMatrix->SetMatrix(Matrix::Identity);
 	m_shader3D.varViewProjMatrix->SetMatrix(m_view * m_proj);
+
+	//renderer->Clear(ClearFlags::Depth, ColorF::White, 1.0f);
+
 	if (m_shader3D.varPixelStep != nullptr)
 	{
 		const Size& size = m_manager->GetRenderer()->GetRenderTarget(0)->GetSize();
@@ -1582,13 +1585,13 @@ void DrawingContextImpl::MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p
 
 
 //=============================================================================
-// DrawingContext
+// GeometryRenderer
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-DrawingContext::DrawingContext()
+GeometryRenderer::GeometryRenderer()
 	: m_manager(nullptr)
 	, m_commandsUsingByte(0)
 	, m_internal(nullptr)
@@ -1602,7 +1605,7 @@ DrawingContext::DrawingContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-DrawingContext::~DrawingContext()
+GeometryRenderer::~GeometryRenderer()
 {
 	LN_SAFE_RELEASE(m_internalTextureBrush);
 	LN_SAFE_RELEASE(m_internal);
@@ -1611,7 +1614,7 @@ DrawingContext::~DrawingContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::Initialize(GraphicsManager* manager)
+void GeometryRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_internal = LN_NEW	DrawingContextImpl(m_manager);
@@ -1621,7 +1624,7 @@ void DrawingContext::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
+void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
 {
 	m_uvParPixel.x = 1.0f / viewPixelSize.Width;
 	m_uvParPixel.y = 1.0f / viewPixelSize.Height;
@@ -1633,7 +1636,7 @@ void DrawingContext::SetViewProjection(const Matrix& view, const Matrix& proj, c
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetTransform(const Matrix& matrix)
+void GeometryRenderer::SetTransform(const Matrix& matrix)
 {
 	if (m_currentState.transform != matrix)
 	{
@@ -1645,7 +1648,7 @@ void DrawingContext::SetTransform(const Matrix& matrix)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetBrush(Brush* brush)
+void GeometryRenderer::SetBrush(Brush* brush)
 {
 	if (m_currentState.brush != brush)
 	{
@@ -1657,7 +1660,7 @@ void DrawingContext::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetPen(Pen* pen)
+void GeometryRenderer::SetPen(Pen* pen)
 {
 	if (m_currentState.pen != pen)
 	{
@@ -1669,7 +1672,7 @@ void DrawingContext::SetPen(Pen* pen)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetOpacity(float opacity)
+void GeometryRenderer::SetOpacity(float opacity)
 {
 	// TODO: opacity はFlushいらないと思う。直接頂点色に乗算しておいた方が高速？
 	if (m_currentState.opacity != opacity)
@@ -1682,7 +1685,7 @@ void DrawingContext::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetTone(const ToneF& tone)
+void GeometryRenderer::SetTone(const ToneF& tone)
 {
 	if (m_currentState.tone != tone)
 	{
@@ -1694,7 +1697,7 @@ void DrawingContext::SetTone(const ToneF& tone)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetFont(Font* font)
+void GeometryRenderer::SetFont(Font* font)
 {
 	if (m_currentState.font != font)
 	{
@@ -1706,7 +1709,7 @@ void DrawingContext::SetFont(Font* font)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::MoveTo(const Vector3& point, const ColorF& color)
+void GeometryRenderer::MoveTo(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_MoveTo cmd;
@@ -1720,7 +1723,7 @@ void DrawingContext::MoveTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::LineTo(const Vector3& point, const ColorF& color)
+void GeometryRenderer::LineTo(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_LineTo cmd;
@@ -1734,7 +1737,7 @@ void DrawingContext::LineTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
+void GeometryRenderer::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_BezierCurveTo cmd;
@@ -1750,7 +1753,7 @@ void DrawingContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::ClosePath()
+void GeometryRenderer::ClosePath()
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
 	DrawingCommands_ClosePath cmd;
@@ -1762,7 +1765,7 @@ void DrawingContext::ClosePath()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawPoint(const Vector3& point, const ColorF& color)
+void GeometryRenderer::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PointList);
 	DrawingCommands_DrawPoint cmd;
@@ -1776,7 +1779,7 @@ void DrawingContext::DrawPoint(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
+void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
 	SetDrawingClassInternal(detail::DrawingClass::LineList);
 	//CheckFlush();
@@ -1794,7 +1797,7 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const ColorF& color)
+void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& color)
 {
 	DrawLine(from, to, color, color);
 }
@@ -1802,7 +1805,7 @@ void DrawingContext::DrawLine(const Vector3& from, const Vector3& to, const Colo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
+void GeometryRenderer::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
 	DrawingCommands_DrawTriangle cmd;
@@ -1817,7 +1820,7 @@ void DrawingContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, cons
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
+void GeometryRenderer::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
 	//CheckFlush();
@@ -1833,14 +1836,14 @@ void DrawingContext::DrawRectangle(const RectF& rect, const ColorF& color)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawEllipse(const Vector3& center, const Vector2& radius)
+void GeometryRenderer::DrawEllipse(const Vector3& center, const Vector2& radius)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
+void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
 {
 	bool flish = false;
 	if (texture != m_internalTextureBrush->GetTexture())
@@ -1864,7 +1867,7 @@ void DrawingContext::DrawTexture(const RectF& rect, Texture* texture, const Rect
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::Flush()
+void GeometryRenderer::Flush()
 {
 	FlushInternal();
 }
@@ -1872,7 +1875,7 @@ void DrawingContext::Flush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::AddCommand(const void* command, size_t size)
+void GeometryRenderer::AddCommand(const void* command, size_t size)
 {
 	// バッファが足りなければ拡張する
 	if (m_commandsUsingByte + size > m_commandsBuffer.GetSize()) {
@@ -1895,7 +1898,7 @@ void DrawingContext::AddCommand(const void* command, size_t size)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::FlushInternal()
+void GeometryRenderer::FlushInternal()
 {
 	if (m_flushRequested)
 	{
@@ -1915,7 +1918,7 @@ void DrawingContext::FlushInternal()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DrawingContext::SetDrawingClassInternal(detail::DrawingClass dc)
+void GeometryRenderer::SetDrawingClassInternal(detail::DrawingClass dc)
 {
 	if (m_currentDrawingClass != dc)
 	{
@@ -1929,7 +1932,7 @@ void DrawingContext::SetDrawingClassInternal(detail::DrawingClass dc)
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void DrawingContext::CheckFlush()
+//void GeometryRenderer::CheckFlush()
 //{
 //		FlushInternal();
 //	}
@@ -1962,7 +1965,7 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	, m_textRenderer(nullptr)
 {
 	Renderer = manager->GetRenderer();
-	m_drawingContext.Initialize(manager);
+	m_geometryRenderer.Initialize(manager);
 	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
 
 	m_textRenderer = LN_NEW detail::TextRenderer();
@@ -1985,7 +1988,7 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
 	Matrix proj = Matrix::Perspective2DLH((float)size.Width, (float)size.Height, minZ, maxZ);
-	m_drawingContext.SetViewProjection(Matrix::Identity, proj, size);
+	m_geometryRenderer.SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);
 	m_textRenderer->SetViewPixelSize(size);
@@ -1996,7 +1999,7 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 //-----------------------------------------------------------------------------
 void GraphicsContext::SetBrush(Brush* brush)
 {
-	m_drawingContext.SetBrush(brush);
+	m_geometryRenderer.SetBrush(brush);
 }
 
 //-----------------------------------------------------------------------------
@@ -2004,7 +2007,7 @@ void GraphicsContext::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 void GraphicsContext::SetOpacity(float opacity)
 {
-	m_drawingContext.SetOpacity(opacity);
+	m_geometryRenderer.SetOpacity(opacity);
 }
 
 //-----------------------------------------------------------------------------
@@ -2012,8 +2015,8 @@ void GraphicsContext::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.MoveTo(point, color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.MoveTo(point, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2021,8 +2024,8 @@ void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.LineTo(point, color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.LineTo(point, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2030,8 +2033,8 @@ void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.BezierCurveTo(cp1, cp2, endPt, color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.BezierCurveTo(cp1, cp2, endPt, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2039,8 +2042,8 @@ void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, cons
 //-----------------------------------------------------------------------------
 void GraphicsContext::ClosePath()
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.ClosePath();
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.ClosePath();
 }
 
 //-----------------------------------------------------------------------------
@@ -2048,8 +2051,8 @@ void GraphicsContext::ClosePath()
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.DrawPoint(point, color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.DrawPoint(point, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2057,8 +2060,8 @@ void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2066,8 +2069,8 @@ void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, con
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.DrawRectangle(rect, color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.DrawRectangle(rect, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2075,8 +2078,8 @@ void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.DrawEllipse(center, radius);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.DrawEllipse(center, radius);
 }
 
 //-----------------------------------------------------------------------------
@@ -2084,8 +2087,8 @@ void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::DrawingContext);
-	m_drawingContext.DrawTexture(rect, texture, srcRect, color);
+	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	m_geometryRenderer.DrawTexture(rect, texture, srcRect, color);
 }
 
 //-----------------------------------------------------------------------------
@@ -2102,7 +2105,7 @@ void GraphicsContext::DrawText(const PointF& position, const StringRef& text)
 //-----------------------------------------------------------------------------
 void GraphicsContext::Flush()
 {
-	m_drawingContext.Flush();
+	m_geometryRenderer.Flush();
 	m_spriteRenderer->Flush();
 	m_textRenderer->Flush();
 }
@@ -2110,14 +2113,14 @@ void GraphicsContext::Flush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-DrawingContext* GraphicsContext::BeginDrawingContext()
+GeometryRenderer* GraphicsContext::BeginDrawingContext()
 {
-	if (m_currentRenderer != RendererType::DrawingContext)
+	if (m_currentRenderer != RendererType::GeometryRenderer)
 	{
 		Flush();
-		m_currentRenderer = RendererType::DrawingContext;
+		m_currentRenderer = RendererType::GeometryRenderer;
 	}
-	return &m_drawingContext;
+	return &m_geometryRenderer;
 }
 
 //-----------------------------------------------------------------------------
@@ -2125,7 +2128,7 @@ DrawingContext* GraphicsContext::BeginDrawingContext()
 //-----------------------------------------------------------------------------
 SpriteRenderer* GraphicsContext::BeginSpriteRendering()
 {
-	if (m_currentRenderer != RendererType::DrawingContext)
+	if (m_currentRenderer != RendererType::GeometryRenderer)
 	{
 		Flush();
 		m_currentRenderer = RendererType::SpriteRenderer;

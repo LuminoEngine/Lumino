@@ -69,8 +69,8 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	PointF location(m_windowRect.X, m_windowRect.Y);
 	g->SetOpacity(0.5f);
 
-	g->SetBrush(ColorBrush::DimGray);
-	g->DrawRectangle(RectF(0, 0, 100, 200), ColorF::DimGray);
+	//g->SetBrush(ColorBrush::DimGray);
+	g->DrawRectangle(RectF(0, 0, 100, 200), ColorF(1, 0, 0, 0.5));
 
 	g->Flush();
 

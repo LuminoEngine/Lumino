@@ -342,56 +342,6 @@ namespace Driver
 
 } // namespace Driver
 
-namespace detail
-{
-	class RenderTargetTextureCache;
-
-	class IRendererPloxy// : public RefObject
-	{
-	public:
-		virtual void Flush() = 0;
-		virtual void OnActivated() = 0;
-		virtual void OnDeactivated() = 0;
-	};
-
-	class HiLevelRendererCore : public RefObject
-	{
-	public:
-
-		void ActivateFront(IRendererPloxy* renderer)
-		{
-			if (renderer != m_rendererFront)
-			{
-				if (m_rendererFront != nullptr)
-				{
-					m_rendererFront->Flush();
-				}
-				m_rendererFront = renderer;
-			}
-		}
-
-	private:
-		IRendererPloxy*	m_rendererFront = nullptr;
-	};
-
-
-
-
-	class IContext
-	{
-	protected:
-		friend class GraphicsManager;
-		virtual void OnActivated() = 0;
-		virtual void OnDeactivated() = 0;
-
-	LN_INTERNAL_ACCESS:
-		virtual ShaderPass* GetShaderPass() const = 0;
-		virtual void RequestFlush() = 0;
-	};
-
-} // namespace detail
-
-
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

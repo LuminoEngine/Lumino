@@ -31,7 +31,6 @@ RenderingContext2* RenderingContext2::GetContext()
 //-----------------------------------------------------------------------------
 RenderingContext2::RenderingContext2()
 	: m_manager(nullptr)
-	, m_activeRendererPloxy(nullptr)
 	, m_spriteRenderer(nullptr)
 	, m_primitiveRenderer(nullptr)
 {
@@ -51,7 +50,9 @@ RenderingContext2::~RenderingContext2()
 //-----------------------------------------------------------------------------
 void RenderingContext2::Initialize(GraphicsManager* manager)
 {
-	m_manager = manager;
+	IContext::Initialize(manager);
+
+	m_manager = manager;	// TODO いらないかも
 	m_ploxy = m_manager->GetRenderer();
 
 	// ステート初期値
@@ -79,10 +80,9 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetBlendMode(BlendMode mode)
 {
-	m_manager->SwitchActiveContext(this);
 	if (mode != m_state.renderState.Blend)
 	{
-		Flush();
+		OnStateChanging();
 		m_state.renderState.Blend = mode;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -93,10 +93,9 @@ void RenderingContext2::SetBlendMode(BlendMode mode)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetRenderState(const RenderState& state)
 {
-	m_manager->SwitchActiveContext(this);
 	if (!m_state.renderState.Equals(state))
 	{
-		Flush();
+		OnStateChanging();
 		m_state.renderState = state;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -115,10 +114,9 @@ const RenderState& RenderingContext2::GetRenderState() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetDepthStencilState(const DepthStencilState& state)
 {
-	m_manager->SwitchActiveContext(this);
 	if (!m_state.depthStencilState.Equals(state))
 	{
-		Flush();
+		OnStateChanging();
 		m_state.depthStencilState = state;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -137,10 +135,9 @@ const DepthStencilState& RenderingContext2::GetDepthStencilState() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetRenderTarget(int index, Texture* texture)
 {
-	m_manager->SwitchActiveContext(this);
 	if (texture != m_state.GetRenderTarget(index))
 	{
-		Flush();
+		OnStateChanging();
 		m_state.SetRenderTarget(index, texture);
 		if (index == 0)
 		{
@@ -164,10 +161,9 @@ Texture* RenderingContext2::GetRenderTarget(int index) const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetDepthBuffer(Texture* depthBuffer)
 {
-	m_manager->SwitchActiveContext(this);
 	if (m_state.depthBuffer != depthBuffer)
 	{
-		Flush();
+		OnStateChanging();
 		LN_REFOBJ_SET(m_state.depthBuffer, depthBuffer);
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -186,10 +182,9 @@ Texture* RenderingContext2::GetDepthBuffer() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetViewport(const Rect& rect)
 {
-	m_manager->SwitchActiveContext(this);
 	if (m_state.viewport != rect)
 	{
-		Flush();
+		OnStateChanging();
 		m_state.viewport = rect;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -208,10 +203,9 @@ const Rect& RenderingContext2::GetViewport() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
 {
-	m_manager->SwitchActiveContext(this);
 	if (m_state.vertexBuffer != vertexBuffer)
 	{
-		Flush();
+		OnStateChanging();
 		LN_REFOBJ_SET(m_state.vertexBuffer, vertexBuffer);
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -222,10 +216,9 @@ void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 {
-	m_manager->SwitchActiveContext(this);
 	if (m_state.indexBuffer != indexBuffer)
 	{
-		Flush();
+		OnStateChanging();
 		LN_REFOBJ_SET(m_state.indexBuffer, indexBuffer);
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
@@ -236,10 +229,9 @@ void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetShaderPass(ShaderPass* pass)
 {
-	m_manager->SwitchActiveContext(this);
 	if (pass != m_state.GetShaderPass() || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
 	{
-		Flush();
+		OnStateChanging();
 		m_state.SetShaderPass(pass);
 		m_primitiveRenderer->SetUseInternalShader(pass == nullptr);
 	}
@@ -258,9 +250,7 @@ ShaderPass* RenderingContext2::GetShaderPass() const
 //-----------------------------------------------------------------------------
 void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_ploxy);
+	OnDrawing(m_ploxy);
 	m_ploxy->Clear(flags, color, z, stencil);
 }
 
@@ -269,9 +259,7 @@ void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, ui
 //-----------------------------------------------------------------------------
 void RenderingContext2::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_ploxy);
+	OnDrawing(m_ploxy);
 	m_ploxy->DrawPrimitive(m_state.vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
@@ -280,9 +268,7 @@ void RenderingContext2::DrawPrimitive(PrimitiveType primitive, int startVertex, 
 //-----------------------------------------------------------------------------
 void RenderingContext2::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_ploxy);
+	OnDrawing(m_ploxy);
 	m_ploxy->DrawPrimitiveIndexed(m_state.vertexBuffer, m_state.indexBuffer, primitive, startIndex, primitiveCount);
 }
 
@@ -291,6 +277,7 @@ void RenderingContext2::DrawPrimitiveIndexed(PrimitiveType primitive, int startI
 //-----------------------------------------------------------------------------
 void RenderingContext2::SetViewProjection(const Matrix& view, const Matrix& proj)
 {
+	OnStateChanging();
 	m_primitiveRenderer->SetViewProjMatrix(view * proj);
 	m_spriteRenderer->SetViewProjMatrix(view, proj);
 }
@@ -300,9 +287,7 @@ void RenderingContext2::SetViewProjection(const Matrix& view, const Matrix& proj
 //-----------------------------------------------------------------------------
 void RenderingContext2::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
 {
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_primitiveRenderer);
+	OnDrawing(m_ploxy);
 	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
 }
 
@@ -315,11 +300,7 @@ void RenderingContext2::DrawSquare(
 	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
 {
-	// TODO: この3行定型文?
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_primitiveRenderer);
-
+	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->DrawSquare(
 		position1, uv1, color1,
 		position2, uv2, color2,
@@ -355,12 +336,26 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 	// が、内部でステートを変えてしまうのはどうなのか。。。
 	SetShaderPass(nullptr);
 
-	// TODO: この3行定型文?
-	m_manager->SwitchActiveContext(this);
-	CheckFlushRendererState();
-	SwitchActiveRendererPloxy(m_primitiveRenderer);
+	RenderState oldState1 = GetRenderState();
+	DepthStencilState oldState2 = GetDepthStencilState();
 
+	RenderState newState1;
+	newState1.Blend = BlendMode_Normal;
+	newState1.AlphaTest = false;
+	SetRenderState(newState1);
+
+	DepthStencilState newState2;
+	newState2.DepthTestEnabled = false;
+	newState2.DepthWriteEnabled = false;
+	SetDepthStencilState(newState2);
+
+
+	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->Blt(source, dest, shader);
+
+
+	SetRenderState(oldState1);
+	SetDepthStencilState(oldState2);
 }
 
 //-----------------------------------------------------------------------------
@@ -368,42 +363,19 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 //-----------------------------------------------------------------------------
 void RenderingContext2::Flush()
 {
-	if (m_activeRendererPloxy != nullptr)
-	{
-		m_activeRendererPloxy->Flush();
-	}
+	m_manager->SwitchActiveContext(this);
+	OnPrimitiveFlushRequested();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::CheckFlushRendererState()
+void RenderingContext2::OnStateFlushRequested()
 {
 	if (m_state.modifiedFlags != detail::ContextStateFlags::None)
 	{
 		m_ploxy->FlushState(m_state);
 		m_state.modifiedFlags = detail::ContextStateFlags::None;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy)
-{
-	if (rendererPloxy != m_activeRendererPloxy)
-	{
-		if (m_activeRendererPloxy != nullptr)
-		{
-			m_activeRendererPloxy->OnDeactivated();	// 古いものを Deactivate
-		}
-
-		m_activeRendererPloxy = rendererPloxy;
-
-		if (m_activeRendererPloxy != nullptr)
-		{
-			m_activeRendererPloxy->OnActivated();	// 新しいものを Activate
-		}
 	}
 }
 
@@ -419,20 +391,5 @@ void RenderingContext2::OnActivated()
 	//m_state.modifiedFlags = detail::ContextStateFlags::None;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::OnDeactivated()
-{
-	SwitchActiveRendererPloxy(nullptr);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::RequestFlush()
-{
-	Flush();
-}
 
 LN_NAMESPACE_END

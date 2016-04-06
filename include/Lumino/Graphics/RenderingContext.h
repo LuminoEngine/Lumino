@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "RenderState.h"
 #include "Color.h"
+#include "ContextInterface.h"
 
 LN_NAMESPACE_BEGIN
 class SpriteRenderer;
@@ -115,6 +116,8 @@ public:
 		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
 		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
 
+
+	// ステート固定。
 	void Blt(Texture* source, RenderTarget* dest);
 	void Blt(Texture* source, RenderTarget* dest, Shader* shader);
 
@@ -126,18 +129,18 @@ LN_INTERNAL_ACCESS:
 	RenderingContext2();
 	virtual ~RenderingContext2();
 	void Initialize(GraphicsManager* manager);
-	void CheckFlushRendererState();
-	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
+
+
+
+
+	virtual void OnStateFlushRequested();
 	virtual void OnActivated() override;
-	virtual void OnDeactivated() override;
-	virtual void RequestFlush() override;
 
 private:
 	GraphicsManager*			m_manager;
 	Details::Renderer*			m_ploxy;
 	detail::ContextState		m_state;
 
-	detail::IRendererPloxy*		m_activeRendererPloxy;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::PrimitiveRenderer*	m_primitiveRenderer;
 

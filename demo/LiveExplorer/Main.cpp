@@ -173,6 +173,7 @@ int main()
 		//printf("%d\n", g_ptr->t1->value);
 #endif
 
+
 		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
 		appData.RenderingType = RenderingType::Immediate;
@@ -206,29 +207,34 @@ int main()
 		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
 
 
+		Color cc;
+		cc.r = 1000;
+		cc.Set(100, 0, if2->GetRefCount(), 1);
+		//cc.r = (if2->GetRefCount(), 0, 0, 1);
+
 		while (true)
 		{
 			if (!Engine::UpdateFrame()) {
 				break;
 			}
 
-			if (Engine::BeginRendering())
-			{
-				Engine::Render();
+			//if (Engine::BeginRendering())
+			//{
+			//	Engine::Render();
 
-				RenderingContext2* r = RenderingContext2::GetContext();
+			//	RenderingContext2* r = RenderingContext2::GetContext();
 
-				//if (sp->GetTexture() == nullptr)
-				//{
-				//	auto t1 = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
-				//	auto t2 = RenderTarget::Create(t1->GetSize());
-				//	r->Blt(t1, t2);
-				//	sp->SetTexture(t2);
-				//}
+			//	//if (sp->GetTexture() == nullptr)
+			//	//{
+			//	//	auto t1 = Texture2D::Create(_T("C:/Proj/Lumino/test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+			//	//	auto t2 = RenderTarget::Create(t1->GetSize());
+			//	//	r->Blt(t1, t2);
+			//	//	sp->SetTexture(t2);
+			//	//}
 
 
-				Engine::EndRendering();
-			}
+			//	Engine::EndRendering();
+			//}
 
 		}
 	}

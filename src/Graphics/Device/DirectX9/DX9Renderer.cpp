@@ -370,6 +370,11 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 	Color c(color);
 	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
 	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
+
+	IDirect3DSurface9* ff;
+	m_dxDevice->GetDepthStencilSurface(&ff);
+	printf("%p %f\n", ff, z);
+	ff->Release();
 }
 
 //-----------------------------------------------------------------------------
