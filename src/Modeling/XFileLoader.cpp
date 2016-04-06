@@ -867,22 +867,22 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 //-----------------------------------------------------------------------------
 void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material)
 {
-	material->Diffuse.R = dx_material.Diffuse.r;
-	material->Diffuse.G = dx_material.Diffuse.g;
-	material->Diffuse.B = dx_material.Diffuse.b;
-	material->Diffuse.A = dx_material.Diffuse.a;
-	material->Ambient.R = dx_material.Ambient.r;
-	material->Ambient.G = dx_material.Ambient.g;
-	material->Ambient.B = dx_material.Ambient.b;
-	material->Ambient.A = dx_material.Ambient.a;
-	material->Specular.R = dx_material.Specular.r;
-	material->Specular.G = dx_material.Specular.g;
-	material->Specular.B = dx_material.Specular.b;
-	material->Specular.A = dx_material.Specular.a;
-	material->Emissive.A = dx_material.Emissive.r;
-	material->Emissive.G = dx_material.Emissive.g;
-	material->Emissive.B = dx_material.Emissive.b;
-	material->Emissive.A = dx_material.Emissive.a;
+	material->Diffuse.a = dx_material.Diffuse.r;
+	material->Diffuse.g = dx_material.Diffuse.g;
+	material->Diffuse.b = dx_material.Diffuse.b;
+	material->Diffuse.a = dx_material.Diffuse.a;
+	material->Ambient.a = dx_material.Ambient.r;
+	material->Ambient.g = dx_material.Ambient.g;
+	material->Ambient.b = dx_material.Ambient.b;
+	material->Ambient.a = dx_material.Ambient.a;
+	material->Specular.a = dx_material.Specular.r;
+	material->Specular.g = dx_material.Specular.g;
+	material->Specular.b = dx_material.Specular.b;
+	material->Specular.a = dx_material.Specular.a;
+	material->Emissive.a = dx_material.Emissive.r;
+	material->Emissive.g = dx_material.Emissive.g;
+	material->Emissive.b = dx_material.Emissive.b;
+	material->Emissive.a = dx_material.Emissive.a;
 	material->Power = dx_material.Power;
 }
 

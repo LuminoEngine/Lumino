@@ -368,7 +368,7 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 	if (flag == 0) { return; }
 
 	Color c(color);
-	D3DCOLOR dxc = D3DCOLOR_ARGB(c.A, c.R, c.G, c.B);
+	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
 	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
 }
 

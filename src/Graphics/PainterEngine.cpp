@@ -711,10 +711,10 @@ void PainterEngine::UpdateCurrentForeColor()
 	PainterEngineState& state = GetCurrentState();
 	if (state.Brush.Type == BrushType_SolidColor)
 	{
-		state.ForeColor.A = state.Opacity * state.Brush.SolidColorBrush.Color[3];
+		state.ForeColor.a = state.Opacity * state.Brush.SolidColorBrush.Color[3];
 	}
 	else {
-		state.ForeColor.A = state.Opacity;
+		state.ForeColor.a = state.Opacity;
 	}
 }
 

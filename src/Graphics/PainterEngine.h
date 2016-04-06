@@ -111,10 +111,10 @@ struct PainterEngineState
 			{
 				auto t = static_cast<ColorBrush*>(brush);
 				const ColorF& c = t->GetColor();
-				Brush.SolidColorBrush.Color[0] = ForeColor.R = c.R;		// TODO: POD 型をまとめて定義したほうがいい気がする
-				Brush.SolidColorBrush.Color[1] = ForeColor.G = c.G;
-				Brush.SolidColorBrush.Color[2] = ForeColor.B = c.B;
-				Brush.SolidColorBrush.Color[3] = ForeColor.A = c.A;
+				Brush.SolidColorBrush.Color[0] = ForeColor.r = c.r;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.SolidColorBrush.Color[1] = ForeColor.g = c.g;
+				Brush.SolidColorBrush.Color[2] = ForeColor.b = c.b;
+				Brush.SolidColorBrush.Color[3] = ForeColor.a = c.a;
 			}
 			else if (Brush.Type == BrushType_Texture)
 			{
@@ -164,10 +164,10 @@ struct PainterEngineState
 		ForeColor = ColorF::White;
 		memcpy(&Brush, &state.Brush, sizeof(Brush));
 		if (Brush.Type == BrushType_SolidColor) {
-			ForeColor.R = Brush.SolidColorBrush.Color[0];
-			ForeColor.G = Brush.SolidColorBrush.Color[1];
-			ForeColor.B = Brush.SolidColorBrush.Color[2];
-			ForeColor.A = Brush.SolidColorBrush.Color[3];
+			ForeColor.r = Brush.SolidColorBrush.Color[0];
+			ForeColor.g = Brush.SolidColorBrush.Color[1];
+			ForeColor.b = Brush.SolidColorBrush.Color[2];
+			ForeColor.a = Brush.SolidColorBrush.Color[3];
 		}
 		else if (Brush.Type == BrushType_Texture) {
 			LN_SAFE_ADDREF(Brush.TextureBrush.Texture);

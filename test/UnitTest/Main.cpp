@@ -141,45 +141,45 @@ bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
 Color MixPixels(Bitmap* bmp, int x, int y)
 {
 	const Color& c = bmp->GetPixel(x, y);
-	int r = c.R; int g = c.G; int b = c.B; int a = c.A;
+	int r = c.r; int g = c.g; int b = c.b; int a = c.a;
 	int count = 1;
 
 	if (y > 0) {
 		if (x > 0) {
 			const Color& c = bmp->GetPixel(x - 1, y - 1);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
 			const Color& c = bmp->GetPixel(x, y - 1);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->GetSize().Width - 1) {
 			const Color& c = bmp->GetPixel(x + 1, y - 1);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	{
 		if (x > 0) {
 			const Color& c = bmp->GetPixel(x - 1, y);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->GetSize().Width - 1) {
 			const Color& c = bmp->GetPixel(x + 1, y);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	if (y < bmp->GetSize().Height - 1) {
 		if (x > 0) {
 			const Color& c = bmp->GetPixel(x - 1, y + 1);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
 			const Color& c = bmp->GetPixel(x, y + 1);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->GetSize().Width - 1) {
 			const Color& c = bmp->GetPixel(x + 1, y + 1);
-			r += c.R; g += c.G; b += c.B; a += c.A; ++count;
+			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 
@@ -202,10 +202,10 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 		{
 			Color c1 = MixPixels(bmp1, x, y);
 			Color c2 = MixPixels(&bmp2, x, y);
-			if (abs(c1.R - c2.R) <= colorRange &&
-				abs(c1.G - c2.G) <= colorRange &&
-				abs(c1.B - c2.B) <= colorRange &&
-				(ignoreAlpha || abs(c1.A - c2.A) <= colorRange))
+			if (abs(c1.r - c2.r) <= colorRange &&
+				abs(c1.g - c2.g) <= colorRange &&
+				abs(c1.b - c2.b) <= colorRange &&
+				(ignoreAlpha || abs(c1.a - c2.a) <= colorRange))
 			{
 				++pass;
 			}

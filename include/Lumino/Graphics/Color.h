@@ -1,6 +1,4 @@
-﻿/**
-	@file	Color.h
-*/
+﻿
 #pragma once
 
 LN_NAMESPACE_BEGIN
@@ -26,22 +24,22 @@ public:
 	static const Color Blue;					///< 青		(0, 0.0, 255, 255)
 
 public:
-	uint8_t		R;		///< 赤成分 (0～255)
-	uint8_t		G;		///< 緑成分 (0～255)
-	uint8_t		B;		///< 青成分 (0～255)
-	uint8_t		A;		///< アルファ成分 (0～255)
+	uint8_t		r;		///< 赤成分 (0～255)
+	uint8_t		g;		///< 緑成分 (0～255)
+	uint8_t		b;		///< 青成分 (0～255)
+	uint8_t		a;		///< アルファ成分 (0～255)
 
 public:
 
 	/**
 		@brief	すべての要素を 0 で初期化します。
 	*/
-	Color() { R = 0; G = 0; B = 0; A = 0; }
+	Color() { r = 0; g = 0; b = 0; a = 0; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) { R = r; G = g; B = b; A = a; }
+	Color(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 	
 	/**
 		@brief	ColorF を変換して設定します。
@@ -53,15 +51,15 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(uint8_t r, uint8_t g, uint8_t b, uint8_t a) { R = r; G = g; B = b; A = a; }
+	void Set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 
 	/**
 		@brief	RR GG BB AA のバイトシーケンスへ変換します。
 	*/
 	uint32_t ToR8G8B8A8() const 
 	{
-		byte_t b[4] = { R, G, B, A };
-		return *((uint32_t*)b);
+		byte_t data[4] = { r, g, b, a };
+		return *((uint32_t*)data);
 	};
 
 public:
@@ -76,10 +74,10 @@ public:
 class ColorF
 {
 public:
-	float	R;		///< 赤成分 (0.0～1.0)
-	float	G;		///< 緑成分 (0.0～1.0)
-	float	B;		///< 青成分 (0.0～1.0)
-	float	A;		///< アルファ成分 (0.0～1.0)
+	float	r;		///< 赤成分 (0.0～1.0)
+	float	g;		///< 緑成分 (0.0～1.0)
+	float	b;		///< 青成分 (0.0～1.0)
+	float	a;		///< アルファ成分 (0.0～1.0)
 
 public:
 	static const ColorF Transparency;			///< 透明 (0.0, 0.0, 0.0, 0.0)
@@ -97,17 +95,17 @@ public:
 	/**
 		@brief	すべての要素を 0.0 で初期化します。
 	*/
-	ColorF() { R = 0.0; G = 0.0; B = 0.0; A = 0.0; }
+	ColorF() { r = 0.0; g = 0.0; b = 0.0; a = 0.0; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	ColorF(float r, float g, float b, float a = 1.0f) { R = r; G = g; B = b; A = a; }
+	ColorF(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
 
 	/**
 		@brief	指定した ColorF をコピーして初期化します。
 	*/
-	ColorF(const ColorF& color) { R = color.R; G = color.G; B = color.B; A = color.A; }
+	ColorF(const ColorF& color) { r = color.r; g = color.g; b = color.b; a = color.a; }
 
 	/**
 		@brief	Color を変換して設定します。
@@ -129,7 +127,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r, float g, float b, float a) { R = r; G = g; B = b; A = a; }
+	void Set(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
 
 	/**
 		@brief	この色に指定した色を加算します。0.0～1.0 を超える場合はクランプします。
@@ -159,7 +157,7 @@ public:
 	//*/
 	//----------------------------------------------------------------------
 	//lnU32 to32Bit(LNGraphicsAPI api_) const;	// 削除よてい
-	//lnU32 to32Bit() const;	// A R G B
+	//lnU32 to32Bit() const;	// a r g b
 
 
 	//void dump(const char* str_ = NULL) const;
@@ -167,12 +165,12 @@ public:
 
 
 public:
-	//ColorF& operator = (const ColorF& src) { R = src.R; G = src.G; B = src.B; A = src.A; return *this; }
+	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
 
 	//bool operator == (const ColorF& color) { return (memcmp(this, &color, sizeof(ColorF)) == 0); }
 	//bool operator != (const ColorF& color) { return (memcmp(this, &color, sizeof(ColorF)) != 0); }
 
-	//ColorF& operator = (const LVector4& vec) { R = vec.X; G = vec.Y; B = vec.Z; A = vec.W; return *this; }
+	//ColorF& operator = (const LVector4& vec) { r = vec.X; g = vec.Y; b = vec.Z; a = vec.W; return *this; }
 
 	operator const Vector4&() { return *reinterpret_cast<Vector4*>(this); }
 	operator const Vector4&() const { return *reinterpret_cast<const Vector4*>(this); }
@@ -188,9 +186,9 @@ public:
 
 public:
 
-	float	R;	///< 赤成分のカラーバランス (-1.0～1.0)
-	float	G;	///< 緑成分のカラーバランス (-1.0～1.0)
-	float	B;	///< 青成分のカラーバランス (-1.0～1.0)
+	float	r;	///< 赤成分のカラーバランス (-1.0～1.0)
+	float	g;	///< 緑成分のカラーバランス (-1.0～1.0)
+	float	b;	///< 青成分のカラーバランス (-1.0～1.0)
 	float	GS;	///< グレースケール化フィルタの強さ (0.0 ～ 1.0)
 
 public:
@@ -198,19 +196,19 @@ public:
 	/**
 		@brief	すべての要素を 0.0 で初期化します。
 	*/
-	ToneF() { R = 0.0f; G = 0.0f; B = 0.0f; GS = 0.0f; }
+	ToneF() { r = 0.0f; g = 0.0f; b = 0.0f; GS = 0.0f; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	ToneF(float r, float g, float b, float gs) { R = r; G = g; B = b; GS = gs; }
+	ToneF(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; GS = gs_; }
 
 public:
 
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r, float g, float b, float gs) { R = r; G = g; B = b; GS = gs; }
+	void Set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; GS = gs_; }
 
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
@@ -236,26 +234,26 @@ public:
 	friend ToneF operator / (const ToneF& v1, float v2);
 	friend ToneF operator / (float v1, const ToneF& v2);
 
-	bool operator != (const ToneF& tone) { return R != tone.R || G != tone.G || B != tone.B || GS != tone.GS; }
+	bool operator != (const ToneF& tone) { return r != tone.r || g != tone.g || b != tone.b || GS != tone.GS; }
 };
 
 
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.R, -v1.G, -v1.B, -v1.GS); }
-inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R + v2.R, v1.G + v2.G, v1.B + v2.B, v1.GS + v2.GS); }
-inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.R + v2, v1.G + v2, v1.B + v2, v1.GS + v2); }
-inline ToneF operator + (float v1, const ToneF& v2) { return ToneF(v1 + v2.R, v1 + v2.G, v1 + v2.B, v1 + v2.GS); }
-inline ToneF operator - (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R - v2.R, v1.G - v2.G, v1.B - v2.B, v1.GS - v2.GS); }
-inline ToneF operator - (const ToneF& v1, float v2) { return ToneF(v1.R - v2, v1.G - v2, v1.B - v2, v1.GS - v2); }
-inline ToneF operator - (float v1, const ToneF& v2) { return ToneF(v1 - v2.R, v1 - v2.G, v1 - v2.B, v1 - v2.GS); }
-inline ToneF operator * (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R * v2.R, v1.G * v2.G, v1.B * v2.B, v1.GS * v2.GS); }
-inline ToneF operator * (const ToneF& v1, float v2) { return ToneF(v1.R * v2, v1.G * v2, v1.B * v2, v1.GS * v2); }
-inline ToneF operator * (float v1, const ToneF& v2) { return ToneF(v1 * v2.R, v1 * v2.G, v1 * v2.B, v1 * v2.GS); }
-inline ToneF operator / (const ToneF& v1, const ToneF& v2) { return ToneF(v1.R / v2.R, v1.G / v2.G, v1.B / v2.B, v1.GS / v2.GS); }
-inline ToneF operator / (const ToneF& v1, float v2) { return ToneF(v1.R / v2, v1.G / v2, v1.B / v2, v1.GS / v2); }
-inline ToneF operator / (float v1, const ToneF& v2) { return ToneF(v1 / v2.R, v1 / v2.G, v1 / v2.B, v1 / v2.GS); }
+inline ToneF operator - (const ToneF& v1) { return ToneF(-v1.r, -v1.g, -v1.b, -v1.GS); }
+inline ToneF operator + (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r + v2.r, v1.g + v2.g, v1.b + v2.b, v1.GS + v2.GS); }
+inline ToneF operator + (const ToneF& v1, float v2) { return ToneF(v1.r + v2, v1.g + v2, v1.b + v2, v1.GS + v2); }
+inline ToneF operator + (float v1, const ToneF& v2) { return ToneF(v1 + v2.r, v1 + v2.g, v1 + v2.b, v1 + v2.GS); }
+inline ToneF operator - (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r - v2.r, v1.g - v2.g, v1.b - v2.b, v1.GS - v2.GS); }
+inline ToneF operator - (const ToneF& v1, float v2) { return ToneF(v1.r - v2, v1.g - v2, v1.b - v2, v1.GS - v2); }
+inline ToneF operator - (float v1, const ToneF& v2) { return ToneF(v1 - v2.r, v1 - v2.g, v1 - v2.b, v1 - v2.GS); }
+inline ToneF operator * (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r * v2.r, v1.g * v2.g, v1.b * v2.b, v1.GS * v2.GS); }
+inline ToneF operator * (const ToneF& v1, float v2) { return ToneF(v1.r * v2, v1.g * v2, v1.b * v2, v1.GS * v2); }
+inline ToneF operator * (float v1, const ToneF& v2) { return ToneF(v1 * v2.r, v1 * v2.g, v1 * v2.b, v1 * v2.GS); }
+inline ToneF operator / (const ToneF& v1, const ToneF& v2) { return ToneF(v1.r / v2.r, v1.g / v2.g, v1.b / v2.b, v1.GS / v2.GS); }
+inline ToneF operator / (const ToneF& v1, float v2) { return ToneF(v1.r / v2, v1.g / v2, v1.b / v2, v1.GS / v2); }
+inline ToneF operator / (float v1, const ToneF& v2) { return ToneF(v1 / v2.r, v1 / v2.g, v1 / v2.b, v1 / v2.GS); }
 
 
 /**
@@ -267,19 +265,19 @@ public:
 	uint32_t	H;	///< 色相 0～360
 	uint32_t	S;	///< 彩度 0～255
 	uint32_t	V;	///< 明度 0～255
-	uint32_t	A;	///< 不透明度 0～255
+	uint32_t	a;	///< 不透明度 0～255
 
 public:
 
 	/**
 		@brief	すべての要素を 0 で初期化します。
 	*/
-	HSVColor() { H = 0; S = 0; V = 0; A = 255; }
+	HSVColor() { H = 0; S = 0; V = 0; a = 255; }
 
 	/**
 		@brief	各要素を指定して初期化します。
 	*/
-	HSVColor(uint32_t h, uint32_t s, uint32_t v, uint32_t a) { H = h; S = s; V = v; A = a; }
+	HSVColor(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
 	
 	/**
 		@brief	ColorF を変換して設定します。
@@ -291,7 +289,7 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(uint32_t h, uint32_t s, uint32_t v, uint32_t a) { H = h; S = s; V = v; A = a; }
+	void Set(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
 
 	/**
 		@brief	Color 型に変換します。

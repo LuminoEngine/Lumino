@@ -106,7 +106,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	// テクスチャのフォーマットを決める
 	D3DFORMAT dxFormat = (format == TextureFormat_Unknown) ? imageInfo.Format : DX9Module::TranslateLNFormatToDxFormat(format);
 
-	D3DCOLOR ck = D3DCOLOR_ARGB(colorKey.A, colorKey.R, colorKey.G, colorKey.B);
+	D3DCOLOR ck = D3DCOLOR_ARGB(colorKey.a, colorKey.r, colorKey.g, colorKey.b);
 	LN_COMCALL(DX9Module::D3DXCreateTextureFromFileInMemoryEx(
 		m_graphicsDevice->GetIDirect3DDevice9(),
 		data, size,

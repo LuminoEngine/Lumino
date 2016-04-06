@@ -1,4 +1,33 @@
-﻿
+﻿/*
+	- UE4
+		FColor		32bit
+		FLinerColor	float
+	- Unity
+		Color		float
+		Color32		32bit
+	- cocos2d-x
+		Color4B		32bit
+		Color4F		float
+	- WPF
+		Color		32bit
+	- XNA
+		Color		32bit
+	- Qt
+		QColor		32bit
+	- Ogre
+		ColourValue	float
+	- siv3d
+		Color		32bit
+		ColorF		float(double)
+	- altseed
+		Color		32bit
+	- dxruby
+		Color		32bit
+	
+	- Color32 → ColorF への変換はテーブルで高速化できる。
+	  外部から受け取るときは 32、内部では F でいいかも。
+	- GUI の ColorPicker とかは 0～255 で指定できたほうが操作しやすい。
+*/
 #include "../Internal.h"
 #include <Lumino/Math/Vector3.h>
 #include <Lumino/Math/Vector4.h>
@@ -24,10 +53,10 @@ const Color Color::Blue = Color(0, 0, 255, 255);
 //-----------------------------------------------------------------------------
 Color::Color(const ColorF& colorF)
 {
-	R = static_cast<uint8_t>(colorF.R * 255);
-	G = static_cast<uint8_t>(colorF.G * 255);
-	B = static_cast<uint8_t>(colorF.B * 255);
-	A = static_cast<uint8_t>(colorF.A * 255);
+	r = static_cast<uint8_t>(colorF.r * 255);
+	g = static_cast<uint8_t>(colorF.g * 255);
+	b = static_cast<uint8_t>(colorF.b * 255);
+	a = static_cast<uint8_t>(colorF.a * 255);
 }
 
 //=============================================================================
@@ -48,17 +77,17 @@ const ColorF ColorF::DimGray = ColorF(0.25, 0.25, 0.25, 1.0);
 //-----------------------------------------------------------------------------
 ColorF::ColorF(const Color& color)
 {
-	R = static_cast<float>(color.R) / 255;
-	G = static_cast<float>(color.G) / 255;
-	B = static_cast<float>(color.B) / 255;
-	A = static_cast<float>(color.A) / 255;
+	r = static_cast<float>(color.r) / 255;
+	g = static_cast<float>(color.g) / 255;
+	b = static_cast<float>(color.b) / 255;
+	a = static_cast<float>(color.a) / 255;
 }
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ColorF::ColorF(const Vector3& vec, float a)
+ColorF::ColorF(const Vector3& vec, float a_)
 {
-	R = vec.x; G = vec.y; B = vec.z; A = a;
+	r = vec.x; g = vec.y; b = vec.z; a = a_;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,7 +95,7 @@ ColorF::ColorF(const Vector3& vec, float a)
 //-----------------------------------------------------------------------------
 ColorF::ColorF(const Vector4& vec)
 {
-	R = vec.x; G = vec.y; B = vec.z; A = vec.w;
+	r = vec.x; g = vec.y; b = vec.z; a = vec.w;
 }
 
 //-----------------------------------------------------------------------------
@@ -74,10 +103,10 @@ ColorF::ColorF(const Vector4& vec)
 //-----------------------------------------------------------------------------
 void ColorF::AddClamp(const ColorF& color)
 {
-	R = Math::Clamp(R + color.R, 0.0f, 1.0f);
-	G = Math::Clamp(G + color.G, 0.0f, 1.0f);
-	B = Math::Clamp(B + color.B, 0.0f, 1.0f);
-	A = Math::Clamp(A + color.A, 0.0f, 1.0f);
+	r = Math::Clamp(r + color.r, 0.0f, 1.0f);
+	g = Math::Clamp(g + color.g, 0.0f, 1.0f);
+	b = Math::Clamp(b + color.b, 0.0f, 1.0f);
+	a = Math::Clamp(a + color.a, 0.0f, 1.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -85,10 +114,10 @@ void ColorF::AddClamp(const ColorF& color)
 //-----------------------------------------------------------------------------
 void ColorF::MultiplyClamp(const ColorF& color)
 {
-	R = Math::Clamp(R * color.R, 0.0f, 1.0f);
-	G = Math::Clamp(G * color.G, 0.0f, 1.0f);
-	B = Math::Clamp(B * color.B, 0.0f, 1.0f);
-	A = Math::Clamp(A * color.A, 0.0f, 1.0f);
+	r = Math::Clamp(r * color.r, 0.0f, 1.0f);
+	g = Math::Clamp(g * color.g, 0.0f, 1.0f);
+	b = Math::Clamp(b * color.b, 0.0f, 1.0f);
+	a = Math::Clamp(a * color.a, 0.0f, 1.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -97,10 +126,10 @@ void ColorF::MultiplyClamp(const ColorF& color)
 ColorF ColorF::Lerp(const ColorF& color1, const ColorF& color2, float t)
 {
 	return ColorF(
-		Math::Lerp(color1.R, color2.R, t),
-		Math::Lerp(color1.G, color2.G, t),
-		Math::Lerp(color1.B, color2.B, t),
-		Math::Lerp(color1.A, color2.A, t));
+		Math::Lerp(color1.r, color2.r, t),
+		Math::Lerp(color1.g, color2.g, t),
+		Math::Lerp(color1.b, color2.b, t),
+		Math::Lerp(color1.a, color2.a, t));
 }
 
 //=============================================================================
@@ -114,9 +143,9 @@ const ToneF ToneF::Zero(0, 0, 0, 0);
 //-----------------------------------------------------------------------------
 void ToneF::AddClamp(const ToneF& tone)
 {
-	R = Math::Clamp(R + tone.R, 0.0f, 1.0f);
-	G = Math::Clamp(G + tone.G, 0.0f, 1.0f);
-	B = Math::Clamp(B + tone.B, 0.0f, 1.0f);
+	r = Math::Clamp(r + tone.r, 0.0f, 1.0f);
+	g = Math::Clamp(g + tone.g, 0.0f, 1.0f);
+	b = Math::Clamp(b + tone.b, 0.0f, 1.0f);
 	GS = Math::Clamp(GS + tone.GS, 0.0f, 1.0f);
 }
 
@@ -133,7 +162,7 @@ Color HSVColor::ToColor() const
 	unsigned char c1, c2, c3;
 	if (S == 0)
 	{
-		return Color(V, V, V, A);
+		return Color(V, V, V, a);
 	}
 	else
 	{
@@ -143,15 +172,15 @@ Color HSVColor::ToColor() const
 		c3 = (V*(255 - (S*(360 - t)) / 360)) / 255;
 		switch (H / 60)
 		{
-		case 0: return Color(V, c3, c1, A);
-		case 1: return Color(c2, V, c1, A);
-		case 2: return Color(c1, V, c3, A);
-		case 3: return Color(c1, c2, V, A);
-		case 4: return Color(c3, c1, V, A);
-		case 5: return Color(V, c1, c2, A);
+		case 0: return Color(V, c3, c1, a);
+		case 1: return Color(c2, V, c1, a);
+		case 2: return Color(c1, V, c3, a);
+		case 3: return Color(c1, c2, V, a);
+		case 4: return Color(c3, c1, V, a);
+		case 5: return Color(V, c1, c2, a);
 		}
 	}
-	return Color(0, 0, 0, A);
+	return Color(0, 0, 0, a);
 }
 
 //-----------------------------------------------------------------------------

@@ -113,7 +113,7 @@ void Bitmap::Init()
 void Bitmap::Clear(const Color& color)
 {
 	// 完全に透明にクリアする場合はバッファクリアでよい。
-	if (color.R == 0x00 && color.G == 0x00 && color.B == 0x00 && color.A == 0x00)
+	if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
 	{
 		m_bitmapData.Clear();
 	}
@@ -128,7 +128,7 @@ void Bitmap::Clear(const Color& color)
 //-----------------------------------------------------------------------------
 void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
 {
-	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.R, mulColor.G, mulColor.B, mulColor.A), alphaBlend);
+	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //-----------------------------------------------------------------------------
@@ -136,7 +136,7 @@ void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& s
 //-----------------------------------------------------------------------------
 void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
 {
-	BitBltInternal(this, Rect(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.R, mulColor.G, mulColor.B, mulColor.A), alphaBlend);
+	BitBltInternal(this, Rect(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //-----------------------------------------------------------------------------

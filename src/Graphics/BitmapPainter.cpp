@@ -74,17 +74,17 @@ uint32_t BitmapPainter::GetColorByteSec(const Color& color, PixelFormat format)
 	{
 	case PixelFormat_BYTE_R8G8B8A8:
 	{
-		byte_t b[4] = { color.R, color.G, color.B, color.A };
+		byte_t b[4] = { color.r, color.g, color.b, color.a };
 		return *((uint32_t*)b);
 	}
 	case PixelFormat_BYTE_B8G8R8A8:
 	{
-		byte_t b[4] = { color.B, color.G, color.R, color.A };
+		byte_t b[4] = { color.b, color.g, color.r, color.a };
 		return *((uint32_t*)b);
 	}
 	case PixelFormat_BYTE_B8G8R8X8:
 	{
-		byte_t b[4] = { color.B, color.G, color.R, 0xFF };
+		byte_t b[4] = { color.b, color.g, color.r, 0xFF };
 		return *((uint32_t*)b);
 	}
 	default:

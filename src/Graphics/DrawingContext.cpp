@@ -450,10 +450,10 @@ public:
 				{
 					auto t = static_cast<ColorBrush*>(brush);
 					const ColorF& c = t->GetColor();
-					SolidColorBrush.Color[0] = c.R;		// TODO: POD Œ^‚ð‚Ü‚Æ‚ß‚Ä’è‹`‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é
-					SolidColorBrush.Color[1] = c.G;
-					SolidColorBrush.Color[2] = c.B;
-					SolidColorBrush.Color[3] = c.A;
+					SolidColorBrush.Color[0] = c.r;		// TODO: POD Œ^‚ð‚Ü‚Æ‚ß‚Ä’è‹`‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é
+					SolidColorBrush.Color[1] = c.g;
+					SolidColorBrush.Color[2] = c.b;
+					SolidColorBrush.Color[3] = c.a;
 				}
 				else if (Type == BrushType_Texture)
 				{
@@ -493,10 +493,10 @@ public:
 		{
 			memcpy(this, &data, sizeof(BrushData));
 			if (Type == BrushType_SolidColor) {
-				//ForeColor.R = Brush.SolidColorBrush.Color[0];
-				//ForeColor.G = Brush.SolidColorBrush.Color[1];
-				//ForeColor.B = Brush.SolidColorBrush.Color[2];
-				//ForeColor.A = Brush.SolidColorBrush.Color[3];
+				//ForeColor.r = Brush.SolidColorBrush.Color[0];
+				//ForeColor.g = Brush.SolidColorBrush.Color[1];
+				//ForeColor.b = Brush.SolidColorBrush.Color[2];
+				//ForeColor.a = Brush.SolidColorBrush.Color[3];
 			}
 			else if (Type == BrushType_Texture) {
 				LN_SAFE_ADDREF(TextureBrush.Texture);
@@ -605,10 +605,10 @@ public:
 		{
 			if (Brush.Type == BrushType_SolidColor)
 			{
-				ForeColor.R = Brush.SolidColorBrush.Color[0];
-				ForeColor.G = Brush.SolidColorBrush.Color[1];
-				ForeColor.B = Brush.SolidColorBrush.Color[2];
-				ForeColor.A = Opacity * Brush.SolidColorBrush.Color[3];
+				ForeColor.r = Brush.SolidColorBrush.Color[0];
+				ForeColor.g = Brush.SolidColorBrush.Color[1];
+				ForeColor.b = Brush.SolidColorBrush.Color[2];
+				ForeColor.a = Opacity * Brush.SolidColorBrush.Color[3];
 			}
 			else
 			{
@@ -1135,10 +1135,10 @@ void DrawingContextImpl::AddPath(PathType type)
 void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 {
 	BasePoint pt(point, color);
-	pt.color.R *= m_currentState.ForeColor.R;
-	pt.color.G *= m_currentState.ForeColor.G;
-	pt.color.B *= m_currentState.ForeColor.B;
-	pt.color.A *= m_currentState.ForeColor.A;
+	pt.color.r *= m_currentState.ForeColor.r;
+	pt.color.g *= m_currentState.ForeColor.g;
+	pt.color.b *= m_currentState.ForeColor.b;
+	pt.color.a *= m_currentState.ForeColor.a;
 	m_basePoints.Add(pt);
 	GetCurrentPath()->pointCount++;
 }
@@ -1149,10 +1149,10 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed)
 {
 	BasePoint pt(point, color);
-	pt.color.R *= m_currentState.ForeColor.R;
-	pt.color.G *= m_currentState.ForeColor.G;
-	pt.color.B *= m_currentState.ForeColor.B;
-	pt.color.A *= m_currentState.ForeColor.A;
+	pt.color.r *= m_currentState.ForeColor.r;
+	pt.color.g *= m_currentState.ForeColor.g;
+	pt.color.b *= m_currentState.ForeColor.b;
+	pt.color.a *= m_currentState.ForeColor.a;
 	pt.userUV = userUV;
 	pt.userUVUsed = userUVUsed;
 	m_basePoints.Add(pt);

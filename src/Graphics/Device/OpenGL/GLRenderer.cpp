@@ -248,7 +248,7 @@ void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t s
 
 	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
 
-	glClearColor(color.R, color.G, color.B, color.A); LN_CHECK_GLERROR();
+	glClearColor(color.r, color.g, color.b, color.a); LN_CHECK_GLERROR();
 	glClearDepth(z); LN_CHECK_GLERROR();
 	glClearStencil(0); LN_CHECK_GLERROR();
 
