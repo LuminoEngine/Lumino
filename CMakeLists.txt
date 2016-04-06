@@ -470,6 +470,7 @@ set(LN_SOURCES_Application
 	include/Lumino/Common.h
 	include/Lumino/CoreObject.h
 	include/Lumino/Engine.h
+	include/Lumino/EngineDiag.h
 	include/Lumino/EngineSettings.h
 	include/Lumino/GameTime.h
 	include/Lumino/MultiThreadingObjectList.h
@@ -481,6 +482,9 @@ set(LN_SOURCES_Application
 	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
 	src/Engine.cpp
+	src/EngineDiagCore.cpp
+	src/EngineDiagCore.h
+	src/EngineDiagRenderer.h
 	src/EngineManager.cpp
 	src/EngineManager.h
 	src/GameTime.cpp

@@ -1013,9 +1013,9 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 
 					AddPath(PathType::Rectangle);
 					AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
-					AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
-					AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
 					AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
 					EndPath(nullptr, nullptr, true);
 
 					pos += sizeof(DrawingCommands_DrawRectangle);
@@ -1298,7 +1298,7 @@ void DrawingContextImpl::ExpandFill()
 			m_vertexCache.Add(v);
 		}
 
-		// インデックスバッファを作る (時計回り)
+		// インデックスバッファを作る (反時計回り)
 		int ib = path.firstIndex;
 		int i0 = 0;
 		int i1 = 1;

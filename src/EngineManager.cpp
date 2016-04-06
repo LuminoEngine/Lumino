@@ -80,9 +80,9 @@
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
 #include "Graphics/RendererImpl.h"
-#include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
+#include <Lumino/Graphics/DrawingContext.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "Effect/EffectManager.h"
@@ -90,6 +90,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/Foundation/Application.h>
+#include "EngineDiagRenderer.h"
 #include "EngineManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -147,7 +148,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_modelManager(nullptr)
 	, m_uiManager(nullptr)
 	, m_sceneGraphManager(nullptr)
-	, m_profilerRenderer(nullptr)
+	, m_diagRenderer(nullptr)
 	, m_application(nullptr)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
@@ -176,7 +177,7 @@ EngineManager::~EngineManager()
 {
 	LN_SAFE_RELEASE(m_application);
 
-	LN_SAFE_RELEASE(m_profilerRenderer);
+	LN_SAFE_RELEASE(m_diagRenderer);
 
 	if (m_graphicsManager != nullptr)
 	{
@@ -420,7 +421,8 @@ void EngineManager::InitializeGraphicsManager()
 		m_graphicsManager = LN_NEW GraphicsManager();
 		m_graphicsManager->Initialize(data);
 
-		m_profilerRenderer = LN_NEW ProfilerRenderer(m_graphicsManager, &Profiler::Instance);
+		m_diagRenderer = LN_NEW EngineDiagRenderer();
+		m_diagRenderer->Initialize(m_graphicsManager, &EngineDiagCore::Instance);
 	}
 }
 
@@ -702,8 +704,11 @@ void EngineManager::Render()
 			m_uiManager->GetDefaultUIContext()->Render();
 		}
 
-		if (m_profilerRenderer != nullptr) {
-			//m_profilerRenderer->Render(Vector2(640, 480));	//TODO
+		if (m_diagRenderer != nullptr)
+		{
+			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+			g->Set2DRenderingMode(-1,1);	// TODO
+			m_diagRenderer->Render(g, Vector2(640, 480));	//TODO
 		}
 
 	}

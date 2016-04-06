@@ -20,10 +20,10 @@ namespace detail { class EffectManager; }
 namespace detail { class ModelManager; }
 namespace detail { class UIManager; }
 class AudioManagerImpl;
-class ProfilerRenderer;
 class GraphicsManager;
 class SceneGraphManager;
 class Application;
+class EngineDiagRenderer;
 
 class EngineManager
 	: public RefObject
@@ -104,7 +104,7 @@ private:
 	detail::UIManager*						m_uiManager;
 	SceneGraphManager*					m_sceneGraphManager;
 
-	ProfilerRenderer*			m_profilerRenderer;
+	EngineDiagRenderer*					m_diagRenderer;
 
 	Application*						m_application;
 	
