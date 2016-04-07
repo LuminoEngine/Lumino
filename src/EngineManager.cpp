@@ -82,7 +82,7 @@
 #include "Graphics/RendererImpl.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include "Scene/SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include "Effect/EffectManager.h"

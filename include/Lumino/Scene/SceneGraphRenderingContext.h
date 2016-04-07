@@ -1,7 +1,7 @@
 
 #pragma once
 #include "Common.h"
-#include "../Graphics/DrawingContext.h"
+#include "../Graphics/GraphicsContext.h"
 
 LN_NAMESPACE_BEGIN
 class SpriteRenderer;

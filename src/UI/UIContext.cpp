@@ -4,7 +4,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UIWindow.h>
 #include "../Graphics/GraphicsManager.h"
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN

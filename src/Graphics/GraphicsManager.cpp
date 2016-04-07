@@ -716,7 +716,7 @@
 #include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/RenderingContext.h>
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

@@ -180,8 +180,8 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/ContextInterface.h
-	include/Lumino/Graphics/DrawingContext.h
 	include/Lumino/Graphics/Graphics.h
+	include/Lumino/Graphics/GraphicsContext.h
 	include/Lumino/Graphics/GraphicsException.h
 	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
@@ -207,10 +207,10 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Brush.cpp
 	src/Graphics/Color.cpp
 	src/Graphics/ContextInterface.cpp
-	src/Graphics/DrawingContext.cpp
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h
 	src/Graphics/Graphics.cpp
+	src/Graphics/GraphicsContext.cpp
 	src/Graphics/GraphicsException.cpp
 	src/Graphics/GraphicsHelper.h
 	src/Graphics/GraphicsManager.cpp

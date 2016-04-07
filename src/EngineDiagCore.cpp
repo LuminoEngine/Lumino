@@ -1,8 +1,8 @@
 
 #include "Internal.h"
 #include <Lumino/Graphics/Text/Font.h>
-#include <Lumino/Graphics/DrawingContext.h>
-#include "Graphics\GraphicsManager.h"
+#include <Lumino/Graphics/GraphicsContext.h>
+#include "Graphics/GraphicsManager.h"
 #include "EngineDiagCore.h"
 #include "EngineDiagRenderer.h"
 
