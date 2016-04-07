@@ -908,7 +908,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_renderingContext = LN_NEW RenderingContext2();
 	m_renderingContext->Initialize(this);
 
-	m_graphicsContext = LN_NEW GraphicsContext(this);
+	m_graphicsContext = LN_NEW GraphicsContext();
+	m_graphicsContext->Initialize(this);
 
 	// TextRendererCache
 	m_glyphTextureCache = RefPtr<CacheManager>::Create(512, 0);

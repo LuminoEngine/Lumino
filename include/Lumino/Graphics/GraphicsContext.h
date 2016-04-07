@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Common.h"
+#include "ContextInterface.h"
 #include "Brush.h"
 
 LN_NAMESPACE_BEGIN
@@ -11,6 +12,7 @@ namespace detail { class GeometryRenderer; }
 
 class GraphicsContext
 	: public RefObject
+	, public detail::IContext
 {
 public:	// TODO
 	//RenderingPass*				Pass;
@@ -59,33 +61,34 @@ public:
 
 	void DrawText(const PointF& position, const StringRef& text);
 
-	void Flush();
+	//void Flush();
 
 
 
 
 
 
-	detail::GeometryRenderer* BeginDrawingContext();
+	//detail::GeometryRenderer* BeginDrawingContext();
 	SpriteRenderer* BeginSpriteRendering();
 
 
 public:
-	enum class RendererType
-	{
-		None,
-		GeometryRenderer,
-		SpriteRenderer,
-		TextRenderer,
-		PrimitiveRenderer,
-	};
+	//enum class RendererType
+	//{
+	//	None,
+	//	GeometryRenderer,
+	//	SpriteRenderer,
+	//	TextRenderer,
+	//	PrimitiveRenderer,
+	//};
 
 	friend class GraphicsManager;
-	GraphicsContext(GraphicsManager* manager);
+	GraphicsContext();
 	virtual ~GraphicsContext();
+	void Initialize(GraphicsManager* manager);
 
 
-	RendererType				m_currentRenderer;
+	//RendererType				m_currentRenderer;
 	detail::GeometryRenderer*	m_geometryRenderer;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
@@ -93,8 +96,12 @@ public:
 	// このクラスが管理するステート。VertexBuffer などは描画時に各種 RendererCore 内で変更されるからちょっと考える必要がありそう。
 	//Shader*						m_shader;
 
+protected:
+	// detail::IContext interface
+	virtual void OnStateFlushRequested() override;
+
 private:
-	void TryChangeRenderingClass(RendererType dc);
+	//void TryChangeRenderingClass(RendererType dc);
 };
 
 LN_NAMESPACE_END

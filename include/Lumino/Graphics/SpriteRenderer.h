@@ -124,8 +124,8 @@ public:
 		@brief		要求されているスプライトを全て描画します。
 	*/
 	virtual void Flush() override;
-	virtual void OnActivated() {}
-	virtual void OnDeactivated() { Flush(); }
+	virtual void OnActivated() override {}
+	virtual void OnDeactivated() override { Flush(); }
 
 	GraphicsManager* GetManager() const { return m_manager; }
 

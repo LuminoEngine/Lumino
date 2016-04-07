@@ -69,8 +69,8 @@ LN_INTERNAL_ACCESS:
 
 
 
-
-	virtual void OnStateFlushRequested();
+	// detail::IContext interface
+	virtual void OnStateFlushRequested() override;
 
 private:
 	GraphicsManager*			m_manager;

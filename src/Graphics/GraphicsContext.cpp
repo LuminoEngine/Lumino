@@ -191,18 +191,11 @@ GraphicsContext* GraphicsContext::GetContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GraphicsContext::GraphicsContext(GraphicsManager* manager)
-	: m_currentRenderer(RendererType::None)
-	, m_spriteRenderer(nullptr)
+GraphicsContext::GraphicsContext()
+	:/* m_currentRenderer(RendererType::None)
+	, */m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
 {
-	Renderer = manager->GetRenderer();
-	m_geometryRenderer = LN_NEW detail::GeometryRenderer();
-	m_geometryRenderer->Initialize(manager);
-	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
-
-	m_textRenderer = LN_NEW detail::TextRenderer();
-	m_textRenderer->Initialize(manager);
 }
 
 //-----------------------------------------------------------------------------
@@ -218,6 +211,22 @@ GraphicsContext::~GraphicsContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GraphicsContext::Initialize(GraphicsManager* manager)
+{
+	IContext::Initialize(manager);
+
+	Renderer = manager->GetRenderer();
+	m_geometryRenderer = LN_NEW detail::GeometryRenderer();
+	m_geometryRenderer->Initialize(manager);
+	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
+
+	m_textRenderer = LN_NEW detail::TextRenderer();
+	m_textRenderer->Initialize(manager);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
@@ -226,6 +235,7 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);
 	m_textRenderer->SetViewPixelSize(size);
+	// ªTODO: OnStateFlushRequested ‚ÉŽ‚Á‚Ä‚¢‚Á‚½‚Ù‚¤‚ª‚¢‚¢H
 }
 
 //-----------------------------------------------------------------------------
@@ -249,7 +259,7 @@ void GraphicsContext::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->MoveTo(point, color);
 }
 
@@ -258,7 +268,7 @@ void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->LineTo(point, color);
 }
 
@@ -267,7 +277,7 @@ void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->BezierCurveTo(cp1, cp2, endPt, color);
 }
 
@@ -276,7 +286,7 @@ void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, cons
 //-----------------------------------------------------------------------------
 void GraphicsContext::ClosePath()
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->ClosePath();
 }
 
@@ -285,7 +295,7 @@ void GraphicsContext::ClosePath()
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawPoint(point, color);
 }
 
@@ -294,7 +304,7 @@ void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
 }
 
@@ -303,7 +313,7 @@ void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, con
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawRectangle(rect, color);
 }
 
@@ -312,7 +322,7 @@ void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawEllipse(center, radius);
 }
 
@@ -321,7 +331,7 @@ void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
 {
-	TryChangeRenderingClass(RendererType::GeometryRenderer);
+	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawTexture(rect, texture, srcRect, color);
 }
 
@@ -330,56 +340,66 @@ void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rec
 //-----------------------------------------------------------------------------
 void GraphicsContext::DrawText(const PointF& position, const StringRef& text)
 {
-	TryChangeRenderingClass(RendererType::TextRenderer);
+	OnDrawing(m_textRenderer);
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), position);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GraphicsContext::Flush()
-{
-	m_geometryRenderer->Flush();
-	m_spriteRenderer->Flush();
-	m_textRenderer->Flush();
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GraphicsContext::Flush()
+//{
+//	m_geometryRenderer->Flush();
+//	m_spriteRenderer->Flush();
+//	m_textRenderer->Flush();
+//}
 
 //-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//detail::GeometryRenderer* GraphicsContext::BeginDrawingContext()
+//{
+//	if (m_currentRenderer != RendererType::GeometryRenderer)
+//	{
+//		Flush();
+//		m_currentRenderer = RendererType::GeometryRenderer;
+//	}
+//	return m_geometryRenderer;
+//}
 //
-//-----------------------------------------------------------------------------
-detail::GeometryRenderer* GraphicsContext::BeginDrawingContext()
-{
-	if (m_currentRenderer != RendererType::GeometryRenderer)
-	{
-		Flush();
-		m_currentRenderer = RendererType::GeometryRenderer;
-	}
-	return m_geometryRenderer;
-}
-
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 SpriteRenderer* GraphicsContext::BeginSpriteRendering()
 {
-	if (m_currentRenderer != RendererType::GeometryRenderer)
-	{
+	//if (m_currentRenderer != RendererType::GeometryRenderer)
+	//{
 		Flush();
-		m_currentRenderer = RendererType::SpriteRenderer;
-	}
+	//	m_currentRenderer = RendererType::SpriteRenderer;
+	//}
 	return m_spriteRenderer;
 }
+
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void GraphicsContext::TryChangeRenderingClass(RendererType dc)
+//{
+//	if (dc != m_currentRenderer)
+//	{
+//		Flush();
+//		m_currentRenderer = dc;
+//	}
+//
+
+//}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GraphicsContext::TryChangeRenderingClass(RendererType dc)
+void GraphicsContext::OnStateFlushRequested()
 {
-	if (dc != m_currentRenderer)
-	{
-		Flush();
-		m_currentRenderer = dc;
-	}
+	IContext::OnStateFlushRequested();
 
 }
 

@@ -29,10 +29,10 @@ SceneGraphRenderingContext::~SceneGraphRenderingContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-detail::GeometryRenderer* SceneGraphRenderingContext::BeginDrawingContext()
-{
-	return m_internalContext->BeginDrawingContext();
-}
+//detail::GeometryRenderer* SceneGraphRenderingContext::BeginDrawingContext()
+//{
+//	return m_internalContext->BeginDrawingContext();
+//}
 SpriteRenderer* SceneGraphRenderingContext::BeginSpriteRendering()
 {
 	return m_internalContext->BeginSpriteRendering();

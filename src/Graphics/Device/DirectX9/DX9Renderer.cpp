@@ -373,7 +373,6 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 
 	IDirect3DSurface9* ff;
 	m_dxDevice->GetDepthStencilSurface(&ff);
-	printf("%p %f\n", ff, z);
 	ff->Release();
 }
 

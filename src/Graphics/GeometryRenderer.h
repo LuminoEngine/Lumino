@@ -36,6 +36,7 @@ struct DrawingState
 
 class GeometryRenderer
 	: public RefObject
+	, public detail::IRendererPloxy
 {
 public:
 
@@ -72,7 +73,10 @@ public:
 
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& secRect, const ColorF& color);
 
-	void Flush();
+	//void Flush();
+	virtual void Flush() override;
+	virtual void OnActivated() override {}
+	virtual void OnDeactivated() override { Flush(); }
 
 LN_INTERNAL_ACCESS:
 	GeometryRenderer();
