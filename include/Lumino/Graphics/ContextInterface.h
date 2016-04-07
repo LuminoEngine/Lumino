@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "RenderState.h"
@@ -14,7 +14,7 @@ LN_ENUM_FLAGS(ContextStateFlags)
 {
 	None = 0x00,
 	CommonState = 0x01,
-	ShaderPass = 0x02,		// ‚±‚êˆÈŠO‚ÌƒXƒe[ƒg‚É”ä‚×‚ÄŠ„‚Æ•p”É‚É•ÏX‚³‚ê‚é‚Ì‚ÅŒÂ•Ê‚É•ª‚¯‚é
+	ShaderPass = 0x02,		// ã“ã‚Œä»¥å¤–ã®ã‚¹ãƒ†ãƒ¼ãƒˆã«æ¯”ã¹ã¦å‰²ã¨é »ç¹ã«å¤‰æ›´ã•ã‚Œã‚‹ã®ã§å€‹åˆ¥ã«åˆ†ã‘ã‚‹
 	All = 0xFFFF,
 };
 LN_ENUM_FLAGS_DECLARE(ContextStateFlags);
@@ -95,62 +95,62 @@ class IContext
 public:
 	
 	/**
-		@brief	ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚ğİ’è‚µ‚Ü‚·B
+		@brief	ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetRenderState(const RenderState& state);
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚ğæ“¾‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	const RenderState& GetRenderState() const;
 
 	/**
-		@brief	[“xƒeƒXƒg‹y‚ÑƒXƒeƒ“ƒVƒ‹ƒeƒXƒgƒXƒe[ƒg‚ğİ’è‚µ‚Ü‚·B
+		@brief	æ·±åº¦ãƒ†ã‚¹ãƒˆåŠã³ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ†ã‚¹ãƒˆã‚¹ãƒ†ãƒ¼ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetDepthStencilState(const DepthStencilState& state);
 	
 	/**
-		@brief	[“xƒeƒXƒg‹y‚ÑƒXƒeƒ“ƒVƒ‹ƒeƒXƒgƒXƒe[ƒg‚ğæ“¾‚µ‚Ü‚·B
+		@brief	æ·±åº¦ãƒ†ã‚¹ãƒˆåŠã³ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ†ã‚¹ãƒˆã‚¹ãƒ†ãƒ¼ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	const DepthStencilState& GetDepthStencilState() const;
 
 	/**
-		@brief	ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğİ’è‚µ‚Ü‚·B
+		@brief	ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetRenderTarget(int index, Texture* texture);
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğæ“¾‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	Texture* GetRenderTarget(int index) const;
 
 	/**
-		@brief	[“xƒoƒbƒtƒ@‚ğİ’è‚µ‚Ü‚·B
+		@brief	æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetDepthBuffer(Texture* depthBuffer);
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚é[“xƒoƒbƒtƒ@‚ğæ“¾‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	Texture* GetDepthBuffer() const;
 
 	/**
-		@brief	ƒrƒ…[ƒ|[ƒg‚ğİ’è‚µ‚Ü‚·B
+		@brief	ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetViewport(const Rect& rect);
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚éƒrƒ…[ƒ|[ƒg‚ğæ“¾‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	const Rect& GetViewport() const;
 
 	///**
-	//	@brief	’¸“_ƒoƒbƒtƒ@‚ğİ’è‚µ‚Ü‚·B
+	//	@brief	é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®šã—ã¾ã™ã€‚
 	//*/
 	//void SetVertexBuffer(VertexBuffer* vertexBuffer);
 
 	///**
-	//	@brief	ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğİ’è‚µ‚Ü‚·B
+	//	@brief	ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®šã—ã¾ã™ã€‚
 	//*/
 	//void SetIndexBuffer(IndexBuffer* indexBuffer);
 
@@ -158,13 +158,16 @@ public:
 
 	ShaderPass* GetShaderPass() const;
 
+	void Flush();
+
 protected:
 	IContext();
 	virtual ~IContext();
 	void Initialize(GraphicsManager* manager);
+	Details::Renderer* GetCommonRenderer() const { return m_ploxy; }
 	const detail::ContextState& GetContextState() const { return m_state; }
 
-	virtual void OnStateFlushRequested() = 0;
+	virtual void OnStateFlushRequested();
 	virtual void OnPrimitiveFlushRequested();
 
 	friend class ShaderVariable;
@@ -182,6 +185,7 @@ private:
 	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
 
 	GraphicsManager*		m_manager;
+	Details::Renderer*		m_ploxy;
 	detail::ContextState	m_state;
 	detail::IRendererPloxy*	m_activeRendererPloxy;
 };

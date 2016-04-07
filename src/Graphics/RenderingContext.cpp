@@ -53,7 +53,6 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	IContext::Initialize(manager);
 
 	m_manager = manager;	// TODO いらないかも
-	m_ploxy = m_manager->GetRenderer();
 
 
 	
@@ -90,8 +89,8 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
-	OnDrawing(m_ploxy);
-	m_ploxy->Clear(flags, color, z, stencil);
+	OnDrawing(GetCommonRenderer());
+	GetCommonRenderer()->Clear(flags, color, z, stencil);
 }
 
 //-----------------------------------------------------------------------------
@@ -99,8 +98,8 @@ void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, ui
 //-----------------------------------------------------------------------------
 void RenderingContext2::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	OnDrawing(m_ploxy);
-	m_ploxy->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
+	OnDrawing(GetCommonRenderer());
+	GetCommonRenderer()->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -108,8 +107,8 @@ void RenderingContext2::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType 
 //-----------------------------------------------------------------------------
 void RenderingContext2::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	OnDrawing(m_ploxy);
-	m_ploxy->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
+	OnDrawing(GetCommonRenderer());
+	GetCommonRenderer()->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -127,7 +126,7 @@ void RenderingContext2::SetViewProjection(const Matrix& view, const Matrix& proj
 //-----------------------------------------------------------------------------
 void RenderingContext2::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
 {
-	OnDrawing(m_ploxy);
+	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
 }
 
@@ -201,18 +200,9 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::Flush()
-{
-	m_manager->SwitchActiveContext(this);
-	OnPrimitiveFlushRequested();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void RenderingContext2::OnStateFlushRequested()
 {
-	m_ploxy->FlushState(GetContextState());
+	IContext::OnStateFlushRequested();
 
 	const Size& size = GetRenderTarget(0)->GetSize();
 	m_primitiveRenderer->SetViewPixelSize(size);

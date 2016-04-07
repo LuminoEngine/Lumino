@@ -59,7 +59,6 @@ public:
 	void Blt(Texture* source, RenderTarget* dest);
 	void Blt(Texture* source, RenderTarget* dest, Shader* shader);
 
-	void Flush();
 
 	SpriteRenderer* GetSpriteRenderer() const { return m_spriteRenderer; }
 
@@ -75,7 +74,6 @@ LN_INTERNAL_ACCESS:
 
 private:
 	GraphicsManager*			m_manager;
-	Details::Renderer*			m_ploxy;
 
 	SpriteRenderer*				m_spriteRenderer;
 	detail::PrimitiveRenderer*	m_primitiveRenderer;

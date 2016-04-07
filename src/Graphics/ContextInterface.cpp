@@ -1,10 +1,11 @@
-
+Ôªø
 #include "Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/ContextInterface.h>
+#include "RendererImpl.h"
 #include "GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -37,7 +38,7 @@ void ContextState::SetRenderTarget(int index, Texture* texture)
 {
 	if (index == 0 && texture == nullptr)
 	{
-		// index0 ÇÕ null Ç≈Ç†Ç¡ÇƒÇÕÇ»ÇÁÇ»Ç¢
+		// index0 „ÅØ null „Åß„ÅÇ„Å£„Å¶„ÅØ„Å™„Çâ„Å™„ÅÑ
 		LN_THROW(0, ArgumentException);
 	}
 
@@ -111,13 +112,14 @@ void IContext::Initialize(GraphicsManager* manager)
 {
 	LN_CHECK_ARGS_RETURN(manager != nullptr);
 	m_manager = manager;
+	m_ploxy = m_manager->GetRenderer();
 	m_activeRendererPloxy = nullptr;
 
-	// ÉXÉeÅ[Égèâä˙íl
+	// „Çπ„ÉÜ„Éº„ÉàÂàùÊúüÂÄ§
 	m_state.SetRenderTarget(0, m_manager->GetMainSwapChain()->GetBackBuffer());
 	LN_REFOBJ_SET(m_state.depthBuffer, m_manager->GetMainSwapChain()->GetBackBufferDepth());
 
-	// ç≈èâÇÕëSïîïœçXèÛë‘
+	// ÊúÄÂàù„ÅØÂÖ®ÈÉ®Â§âÊõ¥Áä∂ÊÖã
 	m_state.modifiedFlags = detail::ContextStateFlags::All;
 }
 
@@ -275,6 +277,23 @@ ShaderPass* IContext::GetShaderPass() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void IContext::Flush()
+{
+	m_manager->SwitchActiveContext(this);
+	OnPrimitiveFlushRequested();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void IContext::OnStateFlushRequested()
+{
+	m_ploxy->FlushState(GetContextState());
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void IContext::OnPrimitiveFlushRequested()
 {
 	if (m_activeRendererPloxy != nullptr)
@@ -319,7 +338,7 @@ void IContext::OnDeactivated()
 //-----------------------------------------------------------------------------
 void IContext::OnActivated()
 {
-	// ÉXÉeÅ[Égã≠êßëóêM
+	// „Çπ„ÉÜ„Éº„ÉàÂº∑Âà∂ÈÄÅ‰ø°
 	//m_state.Reset();
 	m_state.modifiedFlags = detail::ContextStateFlags::All;
 	//m_ploxy->FlushState(m_state);
@@ -335,14 +354,14 @@ void IContext::SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy)
 	{
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->OnDeactivated();	// å√Ç¢Ç‡ÇÃÇ Deactivate
+			m_activeRendererPloxy->OnDeactivated();	// Âè§„ÅÑ„ÇÇ„ÅÆ„Çí Deactivate
 		}
 
 		m_activeRendererPloxy = rendererPloxy;
 
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->OnActivated();	// êVÇµÇ¢Ç‡ÇÃÇ Activate
+			m_activeRendererPloxy->OnActivated();	// Êñ∞„Åó„ÅÑ„ÇÇ„ÅÆ„Çí Activate
 		}
 	}
 }
