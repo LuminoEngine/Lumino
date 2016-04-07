@@ -176,6 +176,7 @@ set(LN_SOURCES_Physics
 set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Bitmap.h
 	include/Lumino/Graphics/BitmapPainter.h
+	include/Lumino/Graphics/Brush.h
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/ContextInterface.h
@@ -185,7 +186,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/GraphicsResourceObject.h
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
-	include/Lumino/Graphics/Painter.h
 	include/Lumino/Graphics/Renderer.h
 	include/Lumino/Graphics/RenderingContext.h
 	include/Lumino/Graphics/RenderState.h
@@ -204,6 +204,7 @@ set(LN_SOURCES_Graphics
 	external/GL/glew.c
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapPainter.cpp
+	src/Graphics/Brush.cpp
 	src/Graphics/Color.cpp
 	src/Graphics/ContextInterface.cpp
 	src/Graphics/DrawingContext.cpp
@@ -216,7 +217,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/GraphicsManager.h
 	src/Graphics/IndexBuffer.cpp
 	src/Graphics/Internal.h
-	src/Graphics/Painter.cpp
 	src/Graphics/PainterEngine.cpp
 	src/Graphics/PainterEngine.h
 	src/Graphics/PngFile.h

@@ -4,7 +4,6 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
-#include <Lumino/Graphics/Painter.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

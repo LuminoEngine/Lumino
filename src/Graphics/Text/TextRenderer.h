@@ -2,11 +2,21 @@
 #pragma once
 #include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Text/Font.h>
-#include <Lumino/Graphics/Painter.h>
+#include <Lumino/Graphics/Text/GlyphRun.h>
 #include "../PainterEngine.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+
+LN_ENUM_FLAGS(StringFormatFlags)
+{
+	LeftAlignment = 0x0001,
+		CenterAlignment = 0x0002,
+		RightAlignment = 0x0004,
+
+		Default = LeftAlignment,
+};
+LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 
 namespace detail
 {

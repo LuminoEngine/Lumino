@@ -2,7 +2,6 @@
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Text/Font.h>
-#include <Lumino/Graphics/Painter.h>
 #include "PainterEngine.h"
 
 LN_NAMESPACE_BEGIN

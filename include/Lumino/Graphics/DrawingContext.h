@@ -1,7 +1,7 @@
 
 #pragma once
 #include "Common.h"
-#include "Painter.h"	// for Brush
+#include "Brush.h"
 
 LN_NAMESPACE_BEGIN
 class DrawingContextImpl;

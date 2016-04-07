@@ -2,11 +2,25 @@
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include "GraphicsManager.h"
-#include <Lumino/Graphics/Painter.h>
+#include <Lumino/Graphics/Brush.h>
 #include "Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+
+namespace Details
+{
+
+struct PainterState
+{
+	Matrix			Transform;
+	RefPtr<Brush>	Brush;
+	RefPtr<Font>	Font;
+	float			Opacity;
+	ToneF			Tone;
+};
+
+} // namespace Details
 
 template<typename T>
 class CacheBuffer
