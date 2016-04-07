@@ -29,7 +29,7 @@ SceneGraphRenderingContext::~SceneGraphRenderingContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GeometryRenderer* SceneGraphRenderingContext::BeginDrawingContext()
+detail::GeometryRenderer* SceneGraphRenderingContext::BeginDrawingContext()
 {
 	return m_internalContext->BeginDrawingContext();
 }

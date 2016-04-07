@@ -7,10 +7,10 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class DrawingContextImpl;
-
 namespace detail
 {
+class DrawingContextImpl;
+
 enum class DrawingClass : uint32_t
 {
 	Unknown,
@@ -32,7 +32,6 @@ struct DrawingState
 	ToneF			tone;
 };
 
-}
 
 
 class GeometryRenderer
@@ -103,6 +102,7 @@ private:
 	TextureBrush*			m_internalTextureBrush;
 };
 
+} // namespace detail
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -7,10 +7,7 @@ LN_NAMESPACE_BEGIN
 class SpriteRenderer;
 namespace detail { class TextRenderer; }
 namespace detail { class PrimitiveRenderer; }
-class GeometryRenderer;	// TODO
-
-
-
+namespace detail { class GeometryRenderer; }
 
 class GraphicsContext
 	: public RefObject
@@ -69,7 +66,7 @@ public:
 
 
 
-	GeometryRenderer* BeginDrawingContext();
+	detail::GeometryRenderer* BeginDrawingContext();
 	SpriteRenderer* BeginSpriteRendering();
 
 
@@ -89,7 +86,7 @@ public:
 
 
 	RendererType				m_currentRenderer;
-	GeometryRenderer*			m_geometryRenderer;
+	detail::GeometryRenderer*	m_geometryRenderer;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
 

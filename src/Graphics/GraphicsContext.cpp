@@ -197,7 +197,7 @@ GraphicsContext::GraphicsContext(GraphicsManager* manager)
 	, m_textRenderer(nullptr)
 {
 	Renderer = manager->GetRenderer();
-	m_geometryRenderer = LN_NEW GeometryRenderer();
+	m_geometryRenderer = LN_NEW detail::GeometryRenderer();
 	m_geometryRenderer->Initialize(manager);
 	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
 
@@ -347,7 +347,7 @@ void GraphicsContext::Flush()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GeometryRenderer* GraphicsContext::BeginDrawingContext()
+detail::GeometryRenderer* GraphicsContext::BeginDrawingContext()
 {
 	if (m_currentRenderer != RendererType::GeometryRenderer)
 	{
