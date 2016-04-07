@@ -43,9 +43,8 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 
 	Engine::BeginRendering();
 	auto* r = RenderingContext2::GetContext();
-	r->SetVertexBuffer(vb);
 	r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
-	r->DrawPrimitive(PrimitiveType_TriangleList, 0, 1);
+	r->DrawPrimitive(vb, PrimitiveType_TriangleList, 0, 1);
 	Engine::EndRendering();
 
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png")));

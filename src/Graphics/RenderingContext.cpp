@@ -55,9 +55,6 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	m_manager = manager;	// TODO いらないかも
 	m_ploxy = m_manager->GetRenderer();
 
-	// ステート初期値
-	m_state.SetRenderTarget(0, m_manager->GetMainSwapChain()->GetBackBuffer());
-	LN_REFOBJ_SET(m_state.depthBuffer, m_manager->GetMainSwapChain()->GetBackBufferDepth());
 
 	
 
@@ -68,182 +65,25 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 	m_primitiveRenderer->SetUseInternalShader(true);	// TODO
 
 
-	const Size& size = m_state.GetRenderTarget(0)->GetSize();
-	m_primitiveRenderer->SetViewPixelSize(size);
-	m_spriteRenderer->SetViewPixelSize(size);
+	//const Size& size = m_state.GetRenderTarget(0)->GetSize();
+	//m_primitiveRenderer->SetViewPixelSize(size);
+	//m_spriteRenderer->SetViewPixelSize(size);
 
-	m_state.modifiedFlags = detail::ContextStateFlags::All;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetBlendMode(BlendMode mode)
-{
-	if (mode != m_state.renderState.Blend)
-	{
-		OnStateChanging();
-		m_state.renderState.Blend = mode;
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void RenderingContext2::SetBlendMode(BlendMode mode)
+//{
+//	if (mode != m_state.renderState.Blend)
+//	{
+//		OnStateChanging();
+//		m_state.renderState.Blend = mode;
+//		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+//	}
+//}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetRenderState(const RenderState& state)
-{
-	if (!m_state.renderState.Equals(state))
-	{
-		OnStateChanging();
-		m_state.renderState = state;
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-const RenderState& RenderingContext2::GetRenderState() const
-{
-	return m_state.renderState;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetDepthStencilState(const DepthStencilState& state)
-{
-	if (!m_state.depthStencilState.Equals(state))
-	{
-		OnStateChanging();
-		m_state.depthStencilState = state;
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-const DepthStencilState& RenderingContext2::GetDepthStencilState() const
-{
-	return m_state.depthStencilState;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetRenderTarget(int index, Texture* texture)
-{
-	if (texture != m_state.GetRenderTarget(index))
-	{
-		OnStateChanging();
-		m_state.SetRenderTarget(index, texture);
-		if (index == 0)
-		{
-			const Size& size = m_state.GetRenderTarget(0)->GetSize();
-			m_primitiveRenderer->SetViewPixelSize(size);
-			m_spriteRenderer->SetViewPixelSize(size);
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* RenderingContext2::GetRenderTarget(int index) const
-{
-	return m_state.GetRenderTarget(index);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetDepthBuffer(Texture* depthBuffer)
-{
-	if (m_state.depthBuffer != depthBuffer)
-	{
-		OnStateChanging();
-		LN_REFOBJ_SET(m_state.depthBuffer, depthBuffer);
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Texture* RenderingContext2::GetDepthBuffer() const
-{
-	return m_state.depthBuffer;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetViewport(const Rect& rect)
-{
-	if (m_state.viewport != rect)
-	{
-		OnStateChanging();
-		m_state.viewport = rect;
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-const Rect& RenderingContext2::GetViewport() const
-{
-	return m_state.viewport;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetVertexBuffer(VertexBuffer* vertexBuffer)
-{
-	if (m_state.vertexBuffer != vertexBuffer)
-	{
-		OnStateChanging();
-		LN_REFOBJ_SET(m_state.vertexBuffer, vertexBuffer);
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetIndexBuffer(IndexBuffer* indexBuffer)
-{
-	if (m_state.indexBuffer != indexBuffer)
-	{
-		OnStateChanging();
-		LN_REFOBJ_SET(m_state.indexBuffer, indexBuffer);
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::SetShaderPass(ShaderPass* pass)
-{
-	if (pass != m_state.GetShaderPass() || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
-	{
-		OnStateChanging();
-		m_state.SetShaderPass(pass);
-		m_primitiveRenderer->SetUseInternalShader(pass == nullptr);
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ShaderPass* RenderingContext2::GetShaderPass() const
-{
-	return m_state.GetShaderPass();
-}
 
 //-----------------------------------------------------------------------------
 //
@@ -257,19 +97,19 @@ void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, ui
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void RenderingContext2::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	OnDrawing(m_ploxy);
-	m_ploxy->DrawPrimitive(m_state.vertexBuffer, primitive, startVertex, primitiveCount);
+	m_ploxy->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void RenderingContext2::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	OnDrawing(m_ploxy);
-	m_ploxy->DrawPrimitiveIndexed(m_state.vertexBuffer, m_state.indexBuffer, primitive, startIndex, primitiveCount);
+	m_ploxy->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
 }
 
 //-----------------------------------------------------------------------------
@@ -372,24 +212,15 @@ void RenderingContext2::Flush()
 //-----------------------------------------------------------------------------
 void RenderingContext2::OnStateFlushRequested()
 {
-	if (m_state.modifiedFlags != detail::ContextStateFlags::None)
-	{
-		m_ploxy->FlushState(m_state);
-		m_state.modifiedFlags = detail::ContextStateFlags::None;
-	}
+	m_ploxy->FlushState(GetContextState());
+
+	const Size& size = GetRenderTarget(0)->GetSize();
+	m_primitiveRenderer->SetViewPixelSize(size);
+	m_spriteRenderer->SetViewPixelSize(size);
+
+	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void RenderingContext2::OnActivated()
-{
-	// ステート強制送信
-	//m_state.Reset();
-	m_state.modifiedFlags = detail::ContextStateFlags::All;
-	//m_ploxy->FlushState(m_state);
-	//m_state.modifiedFlags = detail::ContextStateFlags::None;
-}
 
 
 LN_NAMESPACE_END
