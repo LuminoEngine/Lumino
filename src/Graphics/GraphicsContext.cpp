@@ -1,4 +1,13 @@
 /*
+	[2016/4/8] Brush? fillStyle?
+
+		- WPF
+			Brush/Pen
+		- Qt (QPainter)
+			Brush/Pen
+
+
+
 	[2016/1/29] Begin End Swap
 		・End と Swap は1つにまとめてもいい。(OpenGL とか Direct2D はこんなかんじ)
 		・Begin と End は RenderingContext や GraphicsContext に含めないほうがいいと思う。
@@ -320,7 +329,7 @@ void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, con
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GraphicsContext::DrawRectangle(const RectF& rect, const ColorF& color)
+void GraphicsContext::DrawRectangle(const RectF& rect, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawRectangle(rect, color);

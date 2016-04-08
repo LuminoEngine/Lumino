@@ -42,7 +42,7 @@ public:
 
 	void DrawPoint(const Vector3& point, const ColorF& color);
 	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
-	void DrawRectangle(const RectF& rect, const ColorF& color);
+	void DrawRectangle(const RectF& rect, const Color& color);
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 	

@@ -3,6 +3,7 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "Graphics/GraphicsManager.h"
+#include "EngineManager.h"
 #include "EngineDiagCore.h"
 #include "EngineDiagRenderer.h"
 
@@ -26,6 +27,25 @@ EngineDiagCore::EngineDiagCore()
 //-----------------------------------------------------------------------------
 EngineDiagCore::~EngineDiagCore()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EngineDiagCore::Initialize(EngineManager* manager)
+{
+	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	m_manager = manager;
+}
+
+float EngineDiagCore::GetMainFPS() const
+{
+	return m_manager->GetFpsController().GetFps();
+}
+
+float EngineDiagCore::GetMainFPSCapacity() const
+{
+	return m_manager->GetFpsController().GetCapacityFps();
 }
 
 //=============================================================================
@@ -52,10 +72,11 @@ EngineDiagRenderer::~EngineDiagRenderer()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* diag)
+void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* diagCore)
 {
 	LN_CHECK_ARGS_RETURN(manager != nullptr);
 	LN_CHECK_STATE(m_font == nullptr);
+	m_diagCore = diagCore;
 
 	m_font = Font::CreateBuiltInBitmapFontInternal(manager->GetFontManager(), 7);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
@@ -73,10 +94,10 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	//g->SetBrush(ColorBrush::DimGray);
 
 	// ウィンドウ背景
-	g->DrawRectangle(m_windowRect, ColorF::DimGray);
+	g->DrawRectangle(m_windowRect, Color::DimGray);
 
 	// キャプションバー
-	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20), ColorF::Black);
+	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20), Color::Black);
 
 	g->SetBrush(ColorBrush::White);
 	g->DrawText(_T("Statistics"), m_windowRect, StringFormatFlags::CenterAlignment);
@@ -84,24 +105,56 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	g->Flush();
 
 	//LocalPainter painter(SizeF(viewSize.X, viewSize.Y), m_manager);
-	////painter.SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
-	//painter.SetOpacity(0.5f);
-	//painter.SetFont(m_font);
+	////g->SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
+	//g->SetOpacity(0.5f);
+	//g->SetFont(m_font);
 
 	//// ウィンドウ背景
-	//painter.SetBrush(ColorBrush::DimGray);
-	//painter.DrawRectangle(m_windowRect);
+	//g->SetBrush(ColorBrush::DimGray);
+	//g->DrawRectangle(m_windowRect);
 
 	//// キャプションバー
-	//painter.SetBrush(ColorBrush::Black);
-	//painter.DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20));
+	//g->SetBrush(ColorBrush::Black);
+	//g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20));
 
 
-	//painter.SetBrush(ColorBrush::White);
-	//painter.SetOpacity(1.0f);
-	//painter.DrawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
+	//g->SetBrush(ColorBrush::White);
+	//g->SetOpacity(1.0f);
+	//g->DrawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
 
 	//location.Y += 24;
+
+	//-----------------------------------------------------
+	// Main info
+	g->DrawText(_T("Main information:"), PointF(location.X + 8, location.Y));
+	location.Y += 16;
+	location.X += 16;
+
+	TCHAR text[256] = { 0 };
+
+	//StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
+	//g->DrawText(text, -1, location);
+	location.Y += 16;
+
+	//StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->GetRenderingType().ToString().c_str());
+	//g->DrawText(text, -1, location);
+	location.Y += 16;
+
+	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_profiler->GetCommitedMainFPS());
+	g->DrawText(text, -1, location);
+
+	StringTraits::SPrintf(text, 256, _T(" / Capacity : %.1f"), m_profiler->GetCommitedMainFPSCapacity());
+	g->DrawText(text, -1, PointF(location.X + 150, location.Y));
+	location.Y += 16;
+
+	StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
+	g->DrawText(text, -1, location);
+	location.Y += 16;
+
+	StringTraits::SPrintf(text, 256, _T("Backbuffer Size : %d x %d"), m_profiler->GetCommitedMainBackbufferSize().Width, m_profiler->GetCommitedMainBackbufferSize().Height);
+	g->DrawText(text, -1, location);
+	location.Y += 24;
+	location.X -= 16;
 }
 
 LN_NAMESPACE_END

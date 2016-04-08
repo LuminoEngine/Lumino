@@ -11,12 +11,12 @@ class EngineDiagRenderer
 public:
 	EngineDiagRenderer();
 	~EngineDiagRenderer();
-	void Initialize(GraphicsManager* manager, EngineDiagCore* diag);
+	void Initialize(GraphicsManager* manager, EngineDiagCore* diagCore);
 
 	void Render(GraphicsContext* g, const Vector2& viewSize);
 	
 private:
-	EngineDiagCore*	m_diag;
+	EngineDiagCore*	m_diagCore;
 	Font*			m_font;
 	RectF			m_windowRect;
 };

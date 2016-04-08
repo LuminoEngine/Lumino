@@ -172,6 +172,29 @@ int main()
 		return 0;
 		//printf("%d\n", g_ptr->t1->value);
 #endif
+#if 0
+		StreamReader reader(_T("C:/Proj/Lumino/src/Graphics/Resource/DotNetColors.txt"));
+		StreamWriter file1(_T("decls.txt"));
+		StreamWriter file2(_T("defs.txt"));
+		String line;
+		while (reader.ReadLine(&line))
+		{
+			auto tokens = line.Split(_T(" "), StringSplitOptions::RemoveEmptyEntries);
+			Color c = Color::FromString(tokens[1]);
+			file1.WriteLine(_T("static const Color {0,-22} /** ({1}, {2}, {3}) */"), tokens[0] + _T(";"), c.r, c.g, c.b);
+			file2.WriteLine(_T("Color Color::{0}({1}, {2}, {3});"), tokens[0], c.r, c.g, c.b);
+		}
+		return 0;
+#endif
+
+
+
+
+
+
+
+
+
 
 
 		EngineSettings appData;
@@ -207,9 +230,9 @@ int main()
 		//auto s = Shader::Create(LN_LOCALFILE("../Media/TestShader1.fx"));
 
 
-		Color cc;
-		cc.r = 1000;
-		cc.Set(100, 0, if2->GetRefCount(), 1);
+		//Color cc;
+		//cc.r = 1000;
+		//cc.Set(100, 0, if2->GetRefCount(), 1);
 		//cc.r = (if2->GetRefCount(), 0, 0, 1);
 
 		while (true)

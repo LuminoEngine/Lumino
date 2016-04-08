@@ -367,7 +367,11 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Stencil)) { flag |= (D3DCLEAR_STENCIL); }
 	if (flag == 0) { return; }
 
-	Color c(color);
+	Color c;
+	c.r = static_cast<uint8_t>(color.r * 255);
+	c.g = static_cast<uint8_t>(color.g * 255);
+	c.b = static_cast<uint8_t>(color.b * 255);
+	c.a = static_cast<uint8_t>(color.a * 255);
 	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
 	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
 
