@@ -248,9 +248,9 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 	v.color = ColorF::Red;	// TODO
 	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
 	m_vertexCache.Add(v);
-	v.position.Set(rect.GetRight(), rect.GetTop(), 0);	v.uv.Set(ru, tv);	// 右上
-	m_vertexCache.Add(v);
 	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
+	m_vertexCache.Add(v);
+	v.position.Set(rect.GetRight(), rect.GetTop(), 0);	v.uv.Set(ru, tv);	// 右上
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetRight(), rect.GetBottom(), 0); v.uv.Set(ru, bv);	// 右下
 	m_vertexCache.Add(v);
@@ -435,6 +435,9 @@ void TextRenderer::DrawGlyphs(const PointF& position, const Array<TextLayoutResu
 		data[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);
 		data[i].SrcPixelRect.Set((float)srcRect.X, (float)srcRect.Y, (float)srcRect.Width, (float)srcRect.Height);
 	}
+
+	//ScopedTextureLock lock(tex1);
+	//lock.GetBitmap()->Save(L"test.png");
 
 	Driver::ITexture* dtex2 = (tex2 != NULL) ? tex2->GetDeviceObject() : NULL;
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/GraphicsContext.h>
@@ -58,7 +58,8 @@ void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* di
 	LN_CHECK_STATE(m_font == nullptr);
 
 	m_font = Font::CreateBuiltInBitmapFontInternal(manager->GetFontManager(), 7);
-	m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
+	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
+	m_windowRect.Set(8, 8, 300, 300);
 }
 
 //-----------------------------------------------------------------------------
@@ -70,7 +71,15 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	g->SetOpacity(0.5f);
 
 	//g->SetBrush(ColorBrush::DimGray);
-	g->DrawRectangle(RectF(0, 0, 100, 200), ColorF(1, 0, 0, 0.5));
+
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èƒŒæ™¯
+	g->DrawRectangle(m_windowRect, ColorF::DimGray);
+
+	// ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ãƒãƒ¼
+	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20), ColorF::Black);
+
+	g->SetBrush(ColorBrush::White);
+	g->DrawText(_T("Statistics"), m_windowRect, StringFormatFlags::CenterAlignment);
 
 	g->Flush();
 
@@ -79,11 +88,11 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	//painter.SetOpacity(0.5f);
 	//painter.SetFont(m_font);
 
-	//// ƒEƒBƒ“ƒhƒE”wŒi
+	//// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èƒŒæ™¯
 	//painter.SetBrush(ColorBrush::DimGray);
 	//painter.DrawRectangle(m_windowRect);
 
-	//// ƒLƒƒƒvƒVƒ‡ƒ“ƒo[
+	//// ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ãƒãƒ¼
 	//painter.SetBrush(ColorBrush::Black);
 	//painter.DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20));
 

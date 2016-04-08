@@ -707,6 +707,7 @@ void EngineManager::Render()
 		if (m_diagRenderer != nullptr)
 		{
 			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+			g->Clear(ClearFlags::Depth, ColorF::White);
 			g->Set2DRenderingMode(-1,1);	// TODO
 			m_diagRenderer->Render(g, Vector2(640, 480));	//TODO
 		}

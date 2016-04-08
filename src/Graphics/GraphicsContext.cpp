@@ -257,6 +257,15 @@ void GraphicsContext::SetOpacity(float opacity)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void GraphicsContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+{
+	OnDrawing(GetCommonRenderer());
+	GetCommonRenderer()->Clear(flags, color, z, stencil);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
 {
 	OnDrawing(m_geometryRenderer);
@@ -338,10 +347,19 @@ void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rec
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GraphicsContext::DrawText(const PointF& position, const StringRef& text)
+void GraphicsContext::DrawText(const StringRef& text, const PointF& position)
 {
 	OnDrawing(m_textRenderer);
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), position);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags)
+{
+	OnDrawing(m_textRenderer);
+	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), rect, flags);
 }
 
 ////-----------------------------------------------------------------------------

@@ -327,6 +327,16 @@ LN_ENUM(FlowDirection)
 };
 LN_ENUM_DECLARE(FlowDirection)
 
+LN_ENUM_FLAGS(StringFormatFlags)	// TODO: LayoutFlags のほうがいいかな？
+{
+	LeftAlignment = 0x0001,
+	CenterAlignment = 0x0002,
+	RightAlignment = 0x0004,
+
+	Default = LeftAlignment,
+};
+LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
+
 namespace Driver
 {
 	class IGraphicsDevice;

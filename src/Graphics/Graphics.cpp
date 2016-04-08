@@ -68,9 +68,9 @@ void Graphics::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcR
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawTexture(rect, texture, srcRect, color);
 }
-void Graphics::DrawText(const PointF& position, const StringRef& text)
+void Graphics::DrawText(const StringRef& text, const PointF& position)
 {
-	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawText(position, text);
+	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawText(text, position);
 }
 void Graphics::Flush()
 {

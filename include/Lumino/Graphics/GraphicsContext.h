@@ -33,6 +33,7 @@ public:
 	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
 
+	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	void MoveTo(const Vector3& point, const ColorF& color);
 	void LineTo(const Vector3& point, const ColorF& color);
@@ -59,7 +60,8 @@ public:
 	//	float x4, float y4, float z4, float u4, float v4, const ColorF& c4);
 
 
-	void DrawText(const PointF& position, const StringRef& text);
+	void DrawText(const StringRef& text, const PointF& position);
+	void DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags);
 
 	//void Flush();
 
