@@ -14,6 +14,18 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+Bitmap::Bitmap()
+	: m_bitmapData()
+	, m_size()
+	, m_pitch(0)
+	, m_format(PixelFormat_Unknown)
+	, m_upFlow(false)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 Bitmap::Bitmap(const Size& size, PixelFormat format, bool upFlow)
 {
 	Init();
@@ -222,6 +234,72 @@ size_t Bitmap::GetByteCount() const
 	return m_bitmapData.GetSize();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+size_t Bitmap::GetSerializeSize() const
+{
+	return
+		sizeof(size_t) + // m_bitmapData.GetSize()
+		m_bitmapData.GetSize() +
+		sizeof(m_size) +
+		sizeof(m_pitch) +
+		sizeof(m_format) +
+		sizeof(m_upFlow);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Bitmap::Serialize(void* buffer)
+{
+	byte_t* b = (byte_t*)buffer;
+
+	*((size_t*)b) = m_bitmapData.GetSize();
+	b += sizeof(size_t);
+
+	memcpy(b, m_bitmapData.GetConstData(), m_bitmapData.GetSize());
+	b += m_bitmapData.GetSize();
+
+	*((Size*)b) = m_size;
+	b += sizeof(m_size);
+
+	*((int*)b) = m_pitch;
+	b += sizeof(m_pitch);
+
+	*((PixelFormat*)b) = m_format;
+	b += sizeof(m_format);
+
+	*((bool*)b) = m_upFlow;
+	//b += sizeof(m_upFlow);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Bitmap::Deserialize(const void* buffer)
+{
+	const byte_t* b = (const byte_t*)buffer;
+
+	size_t size = *((size_t*)b);
+	b += sizeof(size_t);
+
+	m_bitmapData.Resize(size);
+	memcpy(m_bitmapData.GetData(), b, size);
+	b += m_bitmapData.GetSize();
+
+	m_size = *((Size*)b);
+	b += sizeof(m_size);
+
+	m_pitch = *((int*)b);
+	b += sizeof(m_pitch);
+
+	m_format = *((PixelFormat*)b);
+	b += sizeof(m_format);
+
+	m_upFlow = *((bool*)b);
+	//b += sizeof(m_upFlow);
+}
 
 //-----------------------------------------------------------------------------
 //

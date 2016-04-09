@@ -1084,7 +1084,8 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(const 
 	if (tr != NULL) { return tr; }
 
 	Font* font = fontData.CreateFontFromData(m_fontManager);
-	tr = LN_NEW Internal::FontGlyphTextureCache(this, font);
+	tr = LN_NEW Internal::FontGlyphTextureCache();
+	tr->Initialize(this, font);
 	font->Release();
 	m_glyphTextureCache->RegisterCacheObject(key, tr);
 	return tr;
@@ -1107,7 +1108,8 @@ Internal::FontGlyphTextureCache* GraphicsManager::LookupGlyphTextureCache(Font* 
 	auto* tr = (Internal::FontGlyphTextureCache*)m_glyphTextureCache->FindObjectAddRef(key);
 	if (tr != NULL) { return tr; }
 
-	tr = LN_NEW Internal::FontGlyphTextureCache(this, font);
+	tr = LN_NEW Internal::FontGlyphTextureCache();
+	tr->Initialize(this, font);
 	m_glyphTextureCache->RegisterCacheObject(key, tr);
 	return tr;
 }

@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "../PainterEngine.h"
+#include "../RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -18,7 +19,12 @@ public:
 	struct GlyphRunData
 	{
 		PointF		Position;
-		RectF		SrcPixelRect;
+		//RectF		SrcPixelRect;
+
+		// CacheGlyphInfo から取りだすデータ
+		int			outlineOffset;
+		Rect		srcRect;
+		RenderingCommandList::DataHandle	fillBitmapData;	// 無ければ 0
 	};
 
 	TextRendererCore();
@@ -26,8 +32,8 @@ public:
 	void Initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize);
-	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/);
-	void Flush();
+	void DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, RenderingCommandList* cmdList/*Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture*//*, const ColorF& foreColor, const ColorF& strokeColor*/);
+	void Flush(Internal::FontGlyphTextureCache* cache);
 
 private:
 
@@ -63,8 +69,10 @@ private:
 
 	ColorF					m_foreColor;
 	ToneF					m_tone;
-	Driver::ITexture*		m_foreTexture;
-	Driver::ITexture*		m_glyphsMaskTexture;
+	//Driver::ITexture*		m_foreTexture;
+	//Driver::ITexture*		m_glyphsMaskTexture;
+
+	Bitmap					m_tmpBitmap;
 
 	struct
 	{
@@ -75,7 +83,7 @@ private:
 		Driver::IShaderVariable*	varViewProjMatrix;
 		Driver::IShaderVariable*	varTone;
 		Driver::IShaderVariable*	varTexture;
-		Driver::IShaderVariable*	varGlyphMaskSampler;
+		//Driver::IShaderVariable*	varGlyphMaskSampler;
 		Driver::IShaderVariable*	varPixelStep;
 
 	} m_shader;
@@ -109,11 +117,12 @@ public:
 	virtual void OnDeactivated() { Flush(); }
 
 public:
-	void DrawGlyphs(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
+	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
+	void DrawGlyphsInternal(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache);
 	void CheckUpdateState();
 
 private:
-	GraphicsManager*	m_manager;	// TODO: core から取れる。いらない
+	GraphicsManager*	m_manager;
 	TextRendererCore*	m_core;
 	ByteBuffer			m_tempBuffer;	// TODO: 複数 Renderer が作られたときに備えて、メモリ効率のため core に移動してしまうのも手
 

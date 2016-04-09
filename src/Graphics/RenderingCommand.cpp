@@ -37,7 +37,14 @@ RenderBulkData::RenderBulkData(void* srcData, size_t size)
 //-----------------------------------------------------------------------------
 void* RenderBulkData::GetData() const
 {
-	return m_commandList->GetExtData(m_dataHandle);
+	if (m_dataHandle)
+	{
+		return m_commandList->GetExtData(m_dataHandle);
+	}
+	else
+	{
+		return m_srcData;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -95,7 +102,7 @@ RenderingCommandList::RenderingCommandList()
 	m_commandDataBuffer.Resize(DataBufferReserve, false);
 	m_commandDataBufferUsed = 0;
 	m_extDataBuffer.Resize(DataBufferReserve, false);
-	m_extDataBufferUsed = 0;
+	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
 }
 
 //-----------------------------------------------------------------------------

@@ -6,7 +6,7 @@ float4x4	g_viewProjMatrix;
 float2		g_pixelStep;
 float4		g_tone;
 texture		g_texture;
-texture		g_glyphMaskTexture;
+//texture		g_glyphMaskTexture;
 
 sampler2D	g_texSampler = sampler_state
 {
@@ -14,14 +14,14 @@ sampler2D	g_texSampler = sampler_state
 	MINFILTER = NONE;
 	MAGFILTER = NONE;
 };
-
+/*
 sampler2D	g_glyphMaskSampler = sampler_state
 {
 	texture = <g_glyphMaskTexture>;
 	MINFILTER = NONE;
 	MAGFILTER = NONE;
 };
-
+*/
 struct VS_OUTPUT
 {
 	float4 Pos			: POSITION;
@@ -54,7 +54,7 @@ float4 psBasic(
 	float4 inColor		: COLOR0,
 	float2 inTexUV		: TEXCOORD0) : COLOR0
 {
-	float4 outColor = tex2D(g_texSampler, inTexUV) * tex2D(g_glyphMaskSampler, inTexUV) * inColor;
+	float4 outColor = tex2D(g_texSampler, inTexUV)/* * tex2D(g_glyphMaskSampler, inTexUV) */ * inColor;
 	
 	// 色調の計算 (NTSC 系加重平均法。緑だけがなんとなく明るく感じるとかを防ぐ)
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;

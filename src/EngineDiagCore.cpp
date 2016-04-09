@@ -88,6 +88,7 @@ void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* di
 //-----------------------------------------------------------------------------
 void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 {
+	return;
 	PointF location(m_windowRect.X, m_windowRect.Y);
 	g->SetOpacity(0.5f);
 

@@ -7,6 +7,8 @@
 #include <Lumino/Base/Hash.h>
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Utils.h>
+#include "../GraphicsManager.h"
+#include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
 
 LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
@@ -15,6 +17,199 @@ LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
 // FontGlyphTextureCache
 //=============================================================================
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FontGlyphTextureCache::FontGlyphTextureCache()
+	: m_lockedFillBitmap(nullptr)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+FontGlyphTextureCache::~FontGlyphTextureCache()
+{
+	LN_SAFE_RELEASE(m_glyphsFillTexture);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::Initialize(GraphicsManager* manager, Font* font)
+{
+	m_manager = manager;
+	m_font = font;
+	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
+	m_layoutEngine.SetFont(m_font);
+
+	m_maxCacheGlyphs = 2048;// TODO 定数なのはなんとかしたい
+
+	// 横方向に並べる数
+	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。
+	// (小さくなければOK)
+	m_glyphWidthCount = (int)(sqrt((double)m_maxCacheGlyphs) + 1.0);
+	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
+
+	// キャッシュ用テクスチャ作成
+	m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8, nullptr);
+	//m_glyphsFillTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
+
+	// 検索に使う情報をリセット
+	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);
+	for (int i = 0; i < m_maxCacheGlyphs; i++)
+	{
+		m_indexStack.Push(i);
+	}
+	ResetUsedFlags();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush)
+{
+	int cacheIndex = -1;
+	CachedGlyphInfoMap::const_iterator itr = m_cachedGlyphInfoMap.find(ch);
+	if (itr != m_cachedGlyphInfoMap.end())
+	{
+		const CachedGlyphInfo& info = itr->second;
+		cacheIndex = info.index;
+		outInfo->fillGlyphBitmap = nullptr;
+		outInfo->outlineOffset = 0;
+		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
+			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
+			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
+			info.size.Width, info.size.Height);
+	}
+	else
+	{
+		if (m_indexStack.GetCount() == 0) {
+			// TODO: 古いキャッシュ破棄
+			LN_THROW(0, NotImplementedException);
+		}
+
+		// ビットマップを新しく作ってキャッシュに登録したい
+		FontGlyphBitmap* glyphBitmap = m_font->LookupGlyphBitmap(ch, 0);
+
+		// 空いてるインデックスを取りだす
+		cacheIndex = m_indexStack.GetTop();
+		m_indexStack.Pop();
+
+		// キャッシュマップに登録
+		CachedGlyphInfo info;
+		info.index = cacheIndex;
+		info.size = glyphBitmap->GlyphBitmap->GetSize();
+		m_cachedGlyphInfoMap[ch] = info;
+
+		outInfo->fillGlyphBitmap = glyphBitmap->GlyphBitmap;
+		outInfo->outlineOffset = glyphBitmap->OutlineOffset;
+		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
+			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
+			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
+			info.size.Width, info.size.Height);
+		//printf("p: %d %d\n", outInfo->srcRect.X, outInfo->srcRect.Y);
+	}
+	//
+
+	// 今回、cacheIndex を使うことをマーク
+	if (!m_curPrimUsedFlags[cacheIndex])
+	{
+		m_curPrimUsedFlags[cacheIndex] = true;
+		++m_curPrimUsedCount;
+	}
+
+	// キャッシュが一杯になっていないかチェック。
+	// 一杯になってたら呼び出し元に Flush してもらわないと、一部の文字が描画できないことになる。
+	if (m_curPrimUsedCount == m_maxCacheGlyphs)
+	{
+		ResetUsedFlags();
+		(*outFlush) = true;
+	}
+	else
+	{
+		(*outFlush) = false;
+	}
+
+	//printf("p: %p %d %d\n", outInfo->fillGlyphBitmap, outInfo->srcRect.X, outInfo->srcRect.Y);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* srcFillRect, Rect* srcOutlineRect)
+{
+	(*srcFillRect) = info->srcRect;
+	(*srcOutlineRect) = Rect(info->srcRect.X, info->srcRect.Y, info->srcRect.Width + info->outlineOffset, info->srcRect.Height + info->outlineOffset);
+
+	if (info->fillGlyphBitmap == nullptr)
+	{
+		//printf("nullptr\n");
+	}
+	else
+	{
+		if (m_lockedFillBitmap == nullptr)
+		{
+			m_lockedFillBitmap = m_glyphsFillTexture->Lock();
+		}
+
+		// Fill
+		Rect dst(info->srcRect.X + info->outlineOffset, info->srcRect.Y + info->outlineOffset, info->fillGlyphBitmap->GetSize());
+		Rect src(0, 0, info->fillGlyphBitmap->GetSize());
+		m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
+		//
+		//printf("s: %p %d %d\n", info->fillGlyphBitmap, dst.X, dst.Y);
+
+		//m_lockedFillBitmap->Clear(Color::White);
+		// TODO: Outline
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Driver::ITexture* FontGlyphTextureCache::GetGlyphsFillTexture()
+{
+	if (m_lockedFillBitmap != nullptr)
+	{
+		//m_lockedFillBitmap->Save("test4.png");
+		m_glyphsFillTexture->Unlock();
+		m_lockedFillBitmap = nullptr;
+	}
+	//printf("--\n");
+	return m_glyphsFillTexture;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::OnFlush()
+{
+	ResetUsedFlags();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const Size& FontGlyphTextureCache::GetGlyphsTextureSize() const
+{
+	return m_glyphsFillTexture->GetRealSize();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void FontGlyphTextureCache::ResetUsedFlags()
+{
+	for (int i = 0; i < m_maxCacheGlyphs; ++i)
+	{
+		m_curPrimUsedFlags[i] = false;
+	}
+	m_curPrimUsedCount = 0;
+}
+
+
+#if 0
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -145,6 +340,7 @@ uint64_t FontGlyphTextureCache::CalcFontSettingHash() const
 
 	return *((uint64_t*)&v);
 }
+#endif
 
 //-----------------------------------------------------------------------------
 //

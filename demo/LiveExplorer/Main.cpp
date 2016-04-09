@@ -210,8 +210,9 @@ int main()
 		tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, Color::Blue, 0, TextAlignment::Left);
 		auto size = Font::GetDefaultFont()->GetTextSize(_T("lumino"));
 		auto sp1 = Sprite2D::Create(tex);
-		auto sp2 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_IndexBuffer.BasicTriangle.png"));
-		sp2->SetPosition(100, 240, 0);
+		//sp1.SafeRelease();
+		//auto sp2 = Sprite2D::Create(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_IndexBuffer.BasicTriangle.png"));
+		//sp2->SetPosition(100, 240, 0);
 		
 
 		//auto if1 = ScreenMotionBlurImageEffect::Create();

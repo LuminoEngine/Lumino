@@ -138,6 +138,10 @@ public:
 		}
 	}
 
+	size_t GetSerializeSize() const;
+	void Serialize(void* buffer);
+	void Deserialize(const void* buffer);
+
 public:
 	
 	/// フォーマット毎のバイト数を求める (A1 の場合は 1 を返す)
