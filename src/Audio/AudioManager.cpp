@@ -227,7 +227,8 @@ AudioPlayer* AudioManagerImpl::CreateAudioPlayer(AudioStream* stream, SoundPlayi
 Sound* AudioManagerImpl::CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
 	RefPtr<AudioStream> audioStream(CreateAudioStream(stream, key, loadingMode), false);
-	RefPtr<Sound> sound(LN_NEW Sound(this, audioStream), false);
+	RefPtr<Sound> sound(LN_NEW Sound(), false);
+	sound->Initialize(this, audioStream);
 
 	if (loadingMode == SoundLoadingMode::Sync) {
 		sound->CreateAudioPlayerSync();

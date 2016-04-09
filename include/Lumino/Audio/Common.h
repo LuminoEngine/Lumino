@@ -1,6 +1,4 @@
-/*
-	@file	Common.h
-*/
+
 #pragma once
 
 #include <Lumino/Math/Vector3.h>
@@ -13,6 +11,9 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+class AudioManagerImpl;
+class AudioStream;
+class AudioPlayer;
 class Sound;
 
 /// 音声ファイルフォーマット

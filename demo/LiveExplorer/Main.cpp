@@ -236,8 +236,31 @@ int main()
 		//cc.Set(100, 0, if2->GetRefCount(), 1);
 		//cc.r = (if2->GetRefCount(), 0, 0, 1);
 
+		//SoundPtr sounds[] =
+		//{
+		//	Sound::Create("D:/Media/Music/Material/em.mk/empty.mp3"),
+		//	Sound::Create("D:/Media/Music/Material/em.mk/akisora.mp3"),
+		//	Sound::Create("D:/Media/Music/Material/em.mk/awake.mp3"),
+		//	Sound::Create("D:/Media/Music/Material/em.mk/a-z.mp3"),
+		//	Sound::Create("D:/Media/Music/Material/em.mk/bdoll.mp3"),
+		//	Sound::Create("D:/Media/Music/Material/em.mk/clock.mp3"),
+		//};
+
+		//for (SoundPtr s : sounds) { s->Play(); }
+
+
+		//ElapsedTimer t;
+		//t.Start();
+
 		while (true)
 		{
+			//if (Input::IsTriggered(InputButtons::Left))
+			//{
+			//	GameAudio::PlaySE("D:/Proj/Volkoff/Volkoff/Data/Sound/SE/sword1.wav");
+			//}
+
+			//printf("%d\n", t.GetElapsedTime());
+
 			if (!Engine::UpdateFrame()) {
 				break;
 			}

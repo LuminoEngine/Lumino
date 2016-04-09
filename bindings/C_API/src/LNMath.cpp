@@ -621,7 +621,7 @@ LNResult LNMatrix_OrthoRH(float width, float height, float nearZ, float farZ, LN
 }
 LNResult LNMatrix_OrthoRHD(double width, double height, double nearZ, double farZ, LNMatrix* matOut)
 {
-	return LNMatrix_OrthoRH(width, height, nearZ, farZ, matOut);
+	return LNMatrix_OrthoRH((float)width, (float)height, (float)nearZ, (float)farZ, matOut);
 }
 
 //-----------------------------------------------------------------------------

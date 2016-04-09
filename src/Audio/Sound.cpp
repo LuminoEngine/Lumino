@@ -21,9 +21,24 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, tr::ReflectionObject);
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
+SoundPtr Sound::Create(const TCHAR* filePath)
 {
-	manager = (manager) ? manager : Internal::AudioManager;
+	return CreateInternal(Internal::AudioManager, filePath);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SoundPtr Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
+{
+	return CreateInternal(Internal::AudioManager, stream, loadingMode);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+SoundPtr Sound::CreateInternal(AudioManagerImpl* manager, const StringRef& filePath)
+{
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
 
 	//RefPtr<FileStream> stream(LN_NEW FileStream(filePath, FileOpenMode::Read | FileOpenMode::Deferring));
@@ -33,18 +48,18 @@ Sound* Sound::Create(const TCHAR* filePath, AudioManagerImpl* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound* Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
+SoundPtr Sound::CreateInternal(AudioManagerImpl* manager, Stream* stream, SoundLoadingMode loadingMode)
 {
-	return Internal::AudioManager->CreateSound(stream, CacheKey::Null, loadingMode);
+	return manager->CreateSound(stream, CacheKey::Null, loadingMode);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType playerType, bool is3DSound*/)
-	: m_manager(manager)
-	, m_audioStream(stream)
-	, m_audioPlayer(NULL)
+Sound::Sound()
+	: m_manager(nullptr)
+	, m_audioStream(nullptr)
+	, m_audioPlayer(nullptr)
 	, m_playingMode(SoundPlayingMode::Unknown)
 	, m_volume(1.0)
 	, m_pitch(1.0)
@@ -67,8 +82,6 @@ Sound::Sound(AudioManagerImpl* manager, AudioStream* stream/*, SoundPlayType pla
 	, mGroupFlags(0)
 	, mIsFading(false)*/
 {
-	LN_SAFE_ADDREF(m_manager);
-	LN_SAFE_ADDREF(m_audioStream);
 }
 
 //-----------------------------------------------------------------------------
@@ -79,6 +92,17 @@ Sound::~Sound()
 	LN_SAFE_RELEASE(m_audioStream);
 	LN_SAFE_RELEASE(m_audioPlayer);
 	LN_SAFE_RELEASE(m_manager);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Sound::Initialize(AudioManagerImpl* manager, AudioStream* stream)
+{
+	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	LN_CHECK_ARGS_RETURN(stream != nullptr);
+	LN_REFOBJ_SET(m_manager, manager);
+	LN_REFOBJ_SET(m_audioStream, stream);
 }
 
 //-----------------------------------------------------------------------------

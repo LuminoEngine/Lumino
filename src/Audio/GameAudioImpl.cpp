@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Audio/Sound.h>
 #include "AudioManager.h"
@@ -47,7 +47,7 @@ GameAudioImpl::~GameAudioImpl()
 	StopME();
 	StopSE();
 
-	// Ä¶I—¹Œã‚Ì‰ğ•úƒŠƒXƒg‚É“ü‚Á‚Ä‚¢‚éƒTƒEƒ“ƒh‚ğ‰ğ•ú
+	// å†ç”Ÿçµ‚äº†å¾Œã®è§£æ”¾ãƒªã‚¹ãƒˆã«å…¥ã£ã¦ã„ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ã‚’è§£æ”¾
 	ReleaseAtPlayEndList::iterator itr = mReleaseAtPlayEndList.begin();
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
 	for (; itr != end; ++itr)
@@ -66,7 +66,7 @@ GameAudioImpl::~GameAudioImpl()
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlayBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
 {
-	// ‰‰‘tÄŠJƒ`ƒFƒbƒN
+	// æ¼”å¥å†é–‹ãƒã‚§ãƒƒã‚¯
 	//if ( !mBGMRestart && mBGM )
 	//{
 	//	if ( mBGMName == filename_ )
@@ -75,12 +75,12 @@ void GameAudioImpl::PlayBGM(const TCHAR* filePath, float volume, float pitch, do
 	//	}
 	//}
 
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
+	auto sound = Sound::CreateInternal(mManager, filePath);
 	//mManager->createSound( filePath, SOUNDPLAYTYPE_STREAMING, false ) );
 
 	PlayBGMFromSound(sound, volume, pitch, fadeTime);
 
-	// ƒtƒ@ƒCƒ‹–¼‹L‰¯
+	// ãƒ•ã‚¡ã‚¤ãƒ«åè¨˜æ†¶
 	mBGMName = filePath;
 }
 
@@ -91,8 +91,8 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 {
 	LN_CHECK_ARGS(sound != NULL);
 
-	// ‰‰‘tÄŠJƒ`ƒFƒbƒN
-	// TODO:ƒtƒF[ƒhƒAƒEƒg’†‚ÉÄŠJ‚·‚é‚Æ–³‰¹‚É‚È‚é
+	// æ¼”å¥å†é–‹ãƒã‚§ãƒƒã‚¯
+	// TODO:ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆä¸­ã«å†é–‹ã™ã‚‹ã¨ç„¡éŸ³ã«ãªã‚‹
 	//if ( !mBGMRestart && mBGM )
 	//{
 	//	if ( sound_ == mBGM && volume_ == mBGMVolume && pitch_ == mBGMPitch )
@@ -115,7 +115,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 		mBGMVolume = volume;
 		mBGMPitch = pitch;
 
-		// ME ‚ªÄ¶’†‚Å‚Í‚È‚¢‚©‚ğ’²‚×‚é
+		// ME ãŒå†ç”Ÿä¸­ã§ã¯ãªã„ã‹ã‚’èª¿ã¹ã‚‹
 		bool me_not_play = true;
 		if (mME)
 		{
@@ -126,7 +126,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 			}
 		}
 
-		// ME Ä¶’†‚Å‚Í‚È‚¢ê‡
+		// ME å†ç”Ÿä¸­ã§ã¯ãªã„å ´åˆ
 		if (me_not_play)
 		{
 			if (fadeTime > 0)
@@ -141,7 +141,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 				mBGM->Play();
 			}
 		}
-		// ME Ä¶’†‚Ìê‡‚ÍAˆê“xÄ¶‚·‚é‚¯‚Ç‚·‚®‚Éˆê’â~‚·‚é ( ME I—¹Œã‚ÉÄŠJ )
+		// ME å†ç”Ÿä¸­ã®å ´åˆã¯ã€ä¸€åº¦å†ç”Ÿã™ã‚‹ã‘ã©ã™ãã«ä¸€æ™‚åœæ­¢ã™ã‚‹ ( ME çµ‚äº†å¾Œã«å†é–‹ )
 		else
 		{
 			mBGM->Play();
@@ -150,18 +150,18 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 	}
 
 
-	// ƒtƒF[ƒhŠÔ‚ª‚ ‚éê‡
+	// ãƒ•ã‚§ãƒ¼ãƒ‰æ™‚é–“ãŒã‚ã‚‹å ´åˆ
 	if (fadeTime > 0)
 	{
 		if (prev_bgm != NULL)
 		{
-			// ‚Ğ‚Æ‚Â‘O‚ÌBGM‚ÍAfade_time_ Œã‚É’â~A‰ğ•ú‚·‚é‚æ‚¤‚É‚·‚é
+			// ã²ã¨ã¤å‰ã®BGMã¯ã€fade_time_ å¾Œã«åœæ­¢ã€è§£æ”¾ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹
 			prev_bgm->SetLoopEnabled(false);
 			prev_bgm->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 			PushReleaseAtPlayEndList(prev_bgm);
 		}
 	}
-	// ƒtƒF[ƒhŠÔ‚ª‚È‚¢ê‡‚Í‚·‚®‚É’â~
+	// ãƒ•ã‚§ãƒ¼ãƒ‰æ™‚é–“ãŒãªã„å ´åˆã¯ã™ãã«åœæ­¢
 	else
 	{
 		if (prev_bgm != NULL)
@@ -180,7 +180,7 @@ void GameAudioImpl::StopBGM(double fadeTime)
 	{
 		if (fadeTime > 0)
 		{
-			// ƒtƒF[ƒhI—¹Œã‚É’â~‚µ‚ÄA‰¹—Ê“™‚ğŒ³‚É–ß‚·
+			// ãƒ•ã‚§ãƒ¼ãƒ‰çµ‚äº†å¾Œã«åœæ­¢ã—ã¦ã€éŸ³é‡ç­‰ã‚’å…ƒã«æˆ»ã™
 			mBGM->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 		}
 		else
@@ -198,7 +198,7 @@ void GameAudioImpl::StopBGM(double fadeTime)
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlayBGS(const TCHAR* filePath, float volume, float pitch, double fadeTime)
 {
-	// ‰‰‘tÄŠJƒ`ƒFƒbƒN
+	// æ¼”å¥å†é–‹ãƒã‚§ãƒƒã‚¯
 	//if ( !mBGSRestart && mBGS )
 	//{
 	//	if ( mBGSName == filename_ )
@@ -207,11 +207,11 @@ void GameAudioImpl::PlayBGS(const TCHAR* filePath, float volume, float pitch, do
 	//	}
 	//}
 
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
+	auto sound = Sound::CreateInternal(mManager, filePath);
 
 	PlayBGSFromSound(sound, volume, pitch, fadeTime);
 
-	// ƒtƒ@ƒCƒ‹–¼‹L‰¯
+	// ãƒ•ã‚¡ã‚¤ãƒ«åè¨˜æ†¶
 	mBGSName = filePath;
 }
 
@@ -220,7 +220,7 @@ void GameAudioImpl::PlayBGS(const TCHAR* filePath, float volume, float pitch, do
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, double fadeTime)
 {
-	// ‰‰‘tÄŠJƒ`ƒFƒbƒN
+	// æ¼”å¥å†é–‹ãƒã‚§ãƒƒã‚¯
 	//if ( !mBGSRestart && mBGS )
 	//{
 	//	if ( sound_ == mBGS && volume_ == mBGSVolume && pitch_ == mBGSPitch )
@@ -256,18 +256,18 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 		}
 	}
 
-	// ƒtƒF[ƒhŠÔ‚ª‚ ‚éê‡
+	// ãƒ•ã‚§ãƒ¼ãƒ‰æ™‚é–“ãŒã‚ã‚‹å ´åˆ
 	if (fadeTime > 0)
 	{
 		if (prev_bgs != NULL)
 		{
-			// ‚Ğ‚Æ‚Â‘O‚ÌBGS‚ÍAfade_time_ Œã‚É’â~A‰ğ•ú‚·‚é‚æ‚¤‚É‚·‚é
+			// ã²ã¨ã¤å‰ã®BGSã¯ã€fade_time_ å¾Œã«åœæ­¢ã€è§£æ”¾ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹
 			prev_bgs->SetLoopEnabled(false);
 			prev_bgs->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 			PushReleaseAtPlayEndList(prev_bgs);
 		}
 	}
-	// ƒtƒF[ƒhŠÔ‚ª‚È‚¢ê‡‚Í‚·‚®‚É’â~
+	// ãƒ•ã‚§ãƒ¼ãƒ‰æ™‚é–“ãŒãªã„å ´åˆã¯ã™ãã«åœæ­¢
 	else
 	{
 		if (prev_bgs != NULL)
@@ -286,7 +286,7 @@ void GameAudioImpl::StopBGS(double fadeTime)
 	{
 		if (fadeTime > 0)
 		{
-			// ƒtƒF[ƒhI—¹Œã‚É’â~‚µ‚ÄA‰¹—Ê“™‚ğŒ³‚É–ß‚·
+			// ãƒ•ã‚§ãƒ¼ãƒ‰çµ‚äº†å¾Œã«åœæ­¢ã—ã¦ã€éŸ³é‡ç­‰ã‚’å…ƒã«æˆ»ã™
 			mBGS->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 		}
 		else
@@ -303,7 +303,7 @@ void GameAudioImpl::StopBGS(double fadeTime)
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlayME(const TCHAR* filePath, float volume, float pitch)
 {
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
+	auto sound = Sound::CreateInternal(mManager, filePath);
 	PlayMEFromSound(sound, volume, pitch);
 }
 
@@ -321,37 +321,37 @@ void GameAudioImpl::PlayMEFromSound(Sound* sound, float volume, float pitch)
 	mME->SetPitch(pitch);
 	mME->SetLoopEnabled(false);
 
-	bool flag = false;  // BGM ‚ª‚ ‚èAÄ¶‚³‚ê‚Ä‚¢‚é‚©‚ğ¦‚·ƒtƒ‰ƒO
+	bool flag = false;  // BGM ãŒã‚ã‚Šã€å†ç”Ÿã•ã‚Œã¦ã„ã‚‹ã‹ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°
 
-						// BGM ‚ª‚ ‚éê‡
+						// BGM ãŒã‚ã‚‹å ´åˆ
 	if (mBGM)
 	{
 		SoundPlayingState state = mBGM->GetPlayingState();
 
-		// Ä¶‚³‚ê‚Ä‚¢‚éê‡
+		// å†ç”Ÿã•ã‚Œã¦ã„ã‚‹å ´åˆ
 		if (state == SoundPlayingState::Playing)
 		{
 			flag = true;
 		}
 	}
 
-	// BGM ‚ªÄ¶’†‚Ìê‡
+	// BGM ãŒå†ç”Ÿä¸­ã®å ´åˆ
 	if (flag)
 	{
-		// ƒtƒF[ƒhƒAƒEƒgŠÔ‚ª‚ ‚éê‡
+		// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ãŒã‚ã‚‹å ´åˆ
 		if (mBGMFadeOutTime > 0)
 		{
-			// ƒtƒF[ƒhƒAƒEƒgŒãAˆê’â~‚·‚é
+			// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆå¾Œã€ä¸€æ™‚åœæ­¢ã™ã‚‹
 			mBGM->FadeVolume(0, mBGMFadeOutTime, SoundFadeBehavior::Pause);
 		}
-		// ƒtƒF[ƒhƒAƒEƒgŠÔ‚ª‚È‚¢ê‡
+		// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ãŒãªã„å ´åˆ
 		else
 		{
-			// ‚·‚®‚Éˆê’â~
+			// ã™ãã«ä¸€æ™‚åœæ­¢
 			mBGM->Pause();
 		}
 	}
-	// BGM ‚ª‚È‚¢ê‡‚Í‚·‚®‰‰‘tŠJn
+	// BGM ãŒãªã„å ´åˆã¯ã™ãæ¼”å¥é–‹å§‹
 	else
 	{
 		mME->Play();
@@ -369,7 +369,7 @@ void GameAudioImpl::StopME()
 		mME->Stop();
 		LN_SAFE_RELEASE(mME);
 
-		// BGM ‚ª‚ ‚Á‚ÄAˆê’â~’†‚Ìê‡‚ÍÄŠJ
+		// BGM ãŒã‚ã£ã¦ã€ä¸€æ™‚åœæ­¢ä¸­ã®å ´åˆã¯å†é–‹
 		if (mBGM)
 		{
 			SoundPlayingState state = mBGM->GetPlayingState();
@@ -390,18 +390,18 @@ void GameAudioImpl::StopME()
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlaySE(const TCHAR* filePath, float volume, float pitch)
 {
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
+	auto sound = Sound::CreateInternal(mManager, filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 
-	// ƒ{ƒŠƒ…[ƒ€Eƒsƒbƒ`İ’è
+	// ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒ»ãƒ”ãƒƒãƒè¨­å®š
 	sound->SetVolume(volume);
 	sound->SetPitch(pitch);
 
-	// Ä¶“r’†‚Å‰ğ•ú‚³‚ê‚æ‚¤‚Æ‚µ‚Ä‚àÄ¶I—¹‚Ü‚Å‚Í‰ğ•ú‚³‚ê‚È‚¢ & SE ‚Æ‚µ‚ÄÄ¶‚·‚é
+	// å†ç”Ÿé€”ä¸­ã§è§£æ”¾ã•ã‚Œã‚ˆã†ã¨ã—ã¦ã‚‚å†ç”Ÿçµ‚äº†ã¾ã§ã¯è§£æ”¾ã•ã‚Œãªã„ & SE ã¨ã—ã¦å†ç”Ÿã™ã‚‹
 	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
 	PushReleaseAtPlayEndList(sound);
 
-	// Ä¶
+	// å†ç”Ÿ
 	sound->SetLoopEnabled(false);
 	sound->Play();
 }
@@ -411,22 +411,22 @@ void GameAudioImpl::PlaySE(const TCHAR* filePath, float volume, float pitch)
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlaySE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch)
 {
-	// ƒTƒEƒ“ƒhì¬
-	RefPtr<Sound> sound(Sound::Create(filePath, mManager), false);
+	// ã‚µã‚¦ãƒ³ãƒ‰ä½œæˆ
+	auto sound = Sound::CreateInternal(mManager, filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(true);
 
-	// ˆÊ’uEƒsƒbƒ`İ’è
+	// ä½ç½®ãƒ»ãƒ”ãƒƒãƒè¨­å®š
 	sound->SetEmitterPosition(position);
 	sound->SetEmitterMaxDistance(distance);
 	sound->SetVolume(volume);
 	sound->SetPitch(pitch);
 
-	// Ä¶“r’†‚Å‰ğ•ú‚³‚ê‚æ‚¤‚Æ‚µ‚Ä‚àÄ¶I—¹‚Ü‚Å‚Í‰ğ•ú‚³‚ê‚È‚¢ & SE ‚Æ‚µ‚ÄÄ¶‚·‚é
+	// å†ç”Ÿé€”ä¸­ã§è§£æ”¾ã•ã‚Œã‚ˆã†ã¨ã—ã¦ã‚‚å†ç”Ÿçµ‚äº†ã¾ã§ã¯è§£æ”¾ã•ã‚Œãªã„ & SE ã¨ã—ã¦å†ç”Ÿã™ã‚‹
 	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
 	PushReleaseAtPlayEndList(sound);
 
-	// Ä¶
+	// å†ç”Ÿ
 	sound->SetLoopEnabled(false);
 	sound->Play();
 }
@@ -436,12 +436,13 @@ void GameAudioImpl::PlaySE3D(const TCHAR* filePath, const Vector3& position, flo
 //-----------------------------------------------------------------------------
 void GameAudioImpl::PlaySEFromSound(Sound* srcSound, float volume, float pitch)
 {
-	// ó‚¯æ‚Á‚½ Sound ‚ª‚Á‚Ä‚¢‚éƒ\[ƒX‚ğ‚à‚Æ‚ÉV‚µ‚¢ Sound ‚ğì¬
-	RefPtr<Sound> sound(AudioHelper::CreateSound(mManager, AudioHelper::GetAudioStream(srcSound)), false);
+	// å—ã‘å–ã£ãŸ Sound ãŒæŒã£ã¦ã„ã‚‹ã‚½ãƒ¼ã‚¹ã‚’ã‚‚ã¨ã«æ–°ã—ã„ Sound ã‚’ä½œæˆ
+	auto sound = RefPtr<Sound>::MakeRef();
+	sound->Initialize(mManager, AudioHelper::GetAudioStream(srcSound));
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(srcSound->Is3DEnabled());
 
-	// ˆÊ’uEƒ{ƒŠƒ…[ƒ€Eƒsƒbƒ`İ’è
+	// ä½ç½®ãƒ»ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒ»ãƒ”ãƒƒãƒè¨­å®š
 	sound->SetVolume(volume);
 	sound->SetPitch(pitch);
 	if (srcSound->Is3DEnabled())
@@ -449,11 +450,11 @@ void GameAudioImpl::PlaySEFromSound(Sound* srcSound, float volume, float pitch)
 		sound->SetEmitterPosition(srcSound->GetEmitterPosition());
 	}
 
-	// Ä¶“r’†‚Å‰ğ•ú‚³‚ê‚æ‚¤‚Æ‚µ‚Ä‚àÄ¶I—¹‚Ü‚Å‚Í‰ğ•ú‚³‚ê‚È‚¢ & SE ‚Æ‚µ‚ÄÄ¶‚·‚é
+	// å†ç”Ÿé€”ä¸­ã§è§£æ”¾ã•ã‚Œã‚ˆã†ã¨ã—ã¦ã‚‚å†ç”Ÿçµ‚äº†ã¾ã§ã¯è§£æ”¾ã•ã‚Œãªã„ & SE ã¨ã—ã¦å†ç”Ÿã™ã‚‹
 	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
 	PushReleaseAtPlayEndList(sound);
 
-	// Ä¶
+	// å†ç”Ÿ
 	sound->SetLoopEnabled(false);
 	sound->Play();
 }
@@ -510,7 +511,7 @@ void GameAudioImpl::SetBGSVolume(float volume, double fadeTime)
 {
 	Threading::MutexScopedLock lock(mLock);
 
-	// GameAudioImpl “à‚Å‚Í SOUNDFADE_STOP_RESET == ƒtƒF[ƒhƒAƒEƒg’†
+	// GameAudioImpl å†…ã§ã¯ SOUNDFADE_STOP_RESET == ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆä¸­
 	if (mBGS != NULL)// && !mBGM->IsVolumeFading())
 	{
 		mBGSVolume = volume;
@@ -542,30 +543,30 @@ void GameAudioImpl::Polling()
 {
 	Threading::MutexScopedLock lock(mLock);
 
-	// ‰‰‘t‚·‚é ME ‚ª‚ ‚éê‡
+	// æ¼”å¥ã™ã‚‹ ME ãŒã‚ã‚‹å ´åˆ
 	if (mME)
 	{
 		SoundPlayingState mestate = mME->GetPlayingState();
 
-		// BGM ‚ª‚ ‚éê‡
+		// BGM ãŒã‚ã‚‹å ´åˆ
 		if (mBGM)
 		{
 			SoundPlayingState bgmstate = mBGM->GetPlayingState();
 
-			// BGM‚ÌƒtƒF[ƒhƒAƒEƒg‚ªI‚í‚Á‚Äˆê’â~ó‘Ô‚É‚È‚Á‚Ä‚¢‚éê‡
+			// BGMã®ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆãŒçµ‚ã‚ã£ã¦ä¸€æ™‚åœæ­¢çŠ¶æ…‹ã«ãªã£ã¦ã„ã‚‹å ´åˆ
 			if (bgmstate == SoundPlayingState::Pausing)
 			{
-				// ME Ä¶ŠJn
+				// ME å†ç”Ÿé–‹å§‹
 				if (!mMEPlaying)
 				{
 					mME->SetLoopEnabled(false);
 					mME->Play();
 					mMEPlaying = true;
 				}
-				// ME ‚ÌÄ¶‚ªI—¹‚µ‚½ê‡
+				// ME ã®å†ç”ŸãŒçµ‚äº†ã—ãŸå ´åˆ
 				else if (mestate != SoundPlayingState::Playing)
 				{
-					// ME Ä¶’†‚É BGM ‚ªƒXƒgƒbƒv‚µ‚½‚Æ‚©‚Å‰ğ•ú‚³‚ê‚Ä‚¢‚éê‡‚Í‚È‚É‚à‚µ‚È‚¢
+					// ME å†ç”Ÿä¸­ã« BGM ãŒã‚¹ãƒˆãƒƒãƒ—ã—ãŸã¨ã‹ã§è§£æ”¾ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãªã«ã‚‚ã—ãªã„
 					if (mBGM)
 					{
 						mBGM->FadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
@@ -576,10 +577,10 @@ void GameAudioImpl::Polling()
 				}
 			}
 		}
-		// BGM ‚ª‚È‚¢ê‡
+		// BGM ãŒãªã„å ´åˆ
 		else
 		{
-			// ME ‚ªI—¹‚µ‚½ê‡
+			// ME ãŒçµ‚äº†ã—ãŸå ´åˆ
 			if (mestate != SoundPlayingState::Playing)
 			{
 				LN_SAFE_RELEASE(mME);
@@ -588,7 +589,7 @@ void GameAudioImpl::Polling()
 		}
 	}
 
-	/// Ä¶I—¹‚µ‚Ä‚¢‚é‰¹º‚ÍƒŠƒXƒg‚©‚çŠO‚µ‚Ä‰ğ•ú‚·‚é
+	/// å†ç”Ÿçµ‚äº†ã—ã¦ã„ã‚‹éŸ³å£°ã¯ãƒªã‚¹ãƒˆã‹ã‚‰å¤–ã—ã¦è§£æ”¾ã™ã‚‹
 
 	ReleaseAtPlayEndList::iterator itr = mReleaseAtPlayEndList.begin();
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();

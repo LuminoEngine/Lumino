@@ -9,9 +9,9 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
-class AudioManagerImpl;
-class AudioStream;
-class AudioPlayer;
+
+class Sound;
+typedef RefPtr<Sound>	SoundPtr;
 
 /**
 	@brief	音声の再生、制御を行います。
@@ -25,12 +25,12 @@ public:
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static Sound* Create(const TCHAR* filePath, AudioManagerImpl* manager = NULL);
+	static SoundPtr Create(const TCHAR* filePath);
 
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static Sound* Create(Stream* stream, SoundLoadingMode loadingMode);
+	static SoundPtr Create(Stream* stream, SoundLoadingMode loadingMode);
 
 public:
 	
@@ -178,9 +178,12 @@ public:
 	*/
 	bool IsVolumeFading() const;
 
-public:
-	Sound(AudioManagerImpl* manager, AudioStream* stream);
+LN_INTERNAL_ACCESS:
+	static SoundPtr CreateInternal(AudioManagerImpl* manager, const StringRef& filePath);
+	static SoundPtr CreateInternal(AudioManagerImpl* manager, Stream* stream, SoundLoadingMode loadingMode);
+	Sound();
 	virtual ~Sound();
+	void Initialize(AudioManagerImpl* manager, AudioStream* stream);
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 
