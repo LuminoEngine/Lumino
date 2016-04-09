@@ -1,8 +1,5 @@
 ﻿
 #pragma once
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
 
 LN_NAMESPACE_BEGIN
 
@@ -132,21 +129,21 @@ public:
 	template<typename TValue, typename TTime>
 	static TValue EaseInSine(TTime t, TValue b, TValue c, TTime d)
 	{
-		return -c * std::cos(t / d * (((float)M_PI) / 2.0f)) + c + b;
+		return -c * std::cos(t / d * ((3.14159265358979323846f) / 2.0f)) + c + b;
 	};
 
 	/// sinusoidal easing out - decelerating to zero velocity
 	template<typename TValue, typename TTime>
 	static TValue EaseOutSine(TTime t, TValue b, TValue c, TTime d)
 	{
-		return c * std::sin(t / d * (((float)M_PI) / 2.0f)) + b;
+		return c * std::sin(t / d * ((3.14159265358979323846f) / 2.0f)) + b;
 	};
 
 	/// sinusoidal easing in/out - accelerating until halfway, then decelerating
 	template<typename TValue, typename TTime>
 	static TValue EaseInOutSine(TTime t, TValue b, TValue c, TTime d)
 	{
-		return -c / 2.0 * (std::cos(((float)M_PI) *t / d) - 1) + b;
+		return -c / 2.0 * (std::cos((3.14159265358979323846f) *t / d) - 1) + b;
 	};
 
 	/// exponential easing in - accelerating from zero velocity 
