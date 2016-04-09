@@ -92,7 +92,7 @@ void MMDSceneGraph::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
 
-	m_defaultRoot->UpdateFrameHierarchy(NULL);
+	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
 }
 
 //-----------------------------------------------------------------------------

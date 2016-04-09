@@ -69,13 +69,14 @@ void SpriteModelObject::Initialize(SceneGraphManager* manager, const String& fil
 	//}
 	//else {
 		manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+		SetAutoRemove(true);
 	//}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteModelObject::UpdateFrame(float elapsedTime)
+void SpriteModelObject::OnUpdateFrame(float elapsedTime)
 {
 	m_player->update(elapsedTime);
 }

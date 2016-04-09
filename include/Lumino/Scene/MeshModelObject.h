@@ -27,7 +27,7 @@ protected:
 	virtual ~MeshModelObject();
 	void Initialize(SceneGraphManager* manager, const StringRef& filePath);
 
-	virtual void UpdateFrame(float elapsedTime) override;
+	virtual void OnUpdateFrame(float elapsedTime) override;
 	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

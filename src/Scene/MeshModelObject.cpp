@@ -52,12 +52,13 @@ void MeshModelObject::Initialize(SceneGraphManager* manager, const StringRef& fi
 	}
 
 	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	SetAutoRemove(true);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MeshModelObject::UpdateFrame(float elapsedTime)
+void MeshModelObject::OnUpdateFrame(float elapsedTime)
 {
 	//m_model->GetAnimator()->AdvanceTime((double)elapsedTime);
 	//m_model->UpdateBoneTransformHierarchy();

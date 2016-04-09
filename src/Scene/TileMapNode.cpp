@@ -66,6 +66,7 @@ void TileMapNode::Create3DCore(SceneGraphManager* manager)
 {
 	VisualNode::CreateCore(manager, 1);
 	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	SetAutoRemove(true);
 	m_renderer = LN_NEW TileMapRenderer(manager->GetGraphicsManager());
 	SetRenderingMode(SceneNodeRenderingMode::NonShaderVisible);
 }

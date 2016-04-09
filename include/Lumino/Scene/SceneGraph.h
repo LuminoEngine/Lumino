@@ -54,7 +54,7 @@ public:
 	bool InjectMouseWheel(int delta);
 
 	SceneGraphManager* GetManager() const { return m_manager; }
-	virtual void UpdateFrame(float elapsedTime);
+	virtual void UpdateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
 	virtual Camera* GetMainCamera() = 0;
 	virtual Array<RenderingPass*>* GetRenderingPasses() = 0;
@@ -65,8 +65,8 @@ protected:
 	void CreateCore(SceneGraphManager* manager);
 
 LN_INTERNAL_ACCESS:
-	void AddNode(SceneNode* node) { m_allNodes.Add(node); }
-	void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
+	//void AddNode(SceneNode* node) { m_allNodes.Add(node); }
+	//void RemoveNode(SceneNode* node) { m_allNodes.Remove(node); }
 	Array<Camera*>* GetAllCameraList() { return &m_allCameraList; }
 
 private:
@@ -91,7 +91,7 @@ private:
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-	SceneNodeList		m_allNodes;
+	//SceneNodeList		m_allNodes;
 	Array<Camera*>		m_allCameraList;
 	SceneNodeList		m_renderingNodeList;	// 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
 	LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)

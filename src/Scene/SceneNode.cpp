@@ -37,6 +37,7 @@ SceneNode::SceneNode()
 	, m_renderingMode(SceneNodeRenderingMode::Visible)
 	, m_transformModified(true)
 	, m_isAutoUpdate(false)
+	, m_isAutoRemove(false)
 	, m_children(LN_NEW SceneNodeRefList(), false)
 	, m_parentNode(NULL)
 	, m_zDistance(FLT_MAX)
@@ -49,9 +50,9 @@ SceneNode::SceneNode()
 //-----------------------------------------------------------------------------
 SceneNode::~SceneNode()
 {
-	if (m_ownerSceneGraph != nullptr) {
-		m_ownerSceneGraph->RemoveNode(this);
-	}
+	//if (m_ownerSceneGraph != nullptr) {
+	//	m_ownerSceneGraph->RemoveNode(this);
+	//}
 	LN_SAFE_RELEASE(m_manager);
 }
 
@@ -115,7 +116,7 @@ void SceneNode::AddChild(SceneNode* child)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneNode::UpdateFrameHierarchy(SceneNode* parent)
+void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// ワールド行列の更新が必要な場合は再計算
 	if (m_transformModified)
@@ -136,10 +137,46 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent)
 		m_combinedGlobalMatrix = m_localMatrix;
 	}
 
+	OnUpdateFrame(deltaTime);
+
 	// 子ノード更新
-	LN_FOREACH(SceneNode* child, *m_children) {
-		child->UpdateFrameHierarchy(this);
+	int count = m_children->GetCount();
+	for (int i = 0; i < count; )
+	{
+		SceneNode* node = m_children->GetAt(i);
+		node->UpdateFrameHierarchy(this, deltaTime);
+
+		if (node->IsAutoRemove() && node->GetRefCount() == 1)
+		{
+			m_children->RemoveAt(i);
+			count = m_children->GetCount();
+		}
+		else
+		{
+			++i;
+		}
 	}
+	
+	//LN_FOREACH(SceneNode* child, *m_children) {
+	//	child->UpdateFrameHierarchy(this, deltaTime);
+	//}
+	//SceneNodeRefList::iterator itr = m_children->begin();
+	//SceneNodeRefList::iterator end = m_children->end();
+	//for (; itr != end; )
+	//{
+	//	(*itr)->UpdateFrameHierarchy(this, deltaTime);
+
+	//	if ((*itr)->IsAutoRemove() && (*itr)->GetRefCount() == 1)
+	//	{
+	//		itr = m_allNodes.erase(itr);
+	//		end = m_allNodes.end();
+	//		(*itr)->Release();
+	//	}
+	//	else
+	//	{
+	//		++itr;
+	//	}
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -172,12 +209,12 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 //-----------------------------------------------------------------------------
 void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
 {
-	if (oldOwner != nullptr) {
-		oldOwner->RemoveNode(this);
-	}
-	if (newOwner != nullptr) {
-		newOwner->AddNode(this);
-	}
+	//if (oldOwner != nullptr) {
+	//	oldOwner->RemoveNode(this);
+	//}
+	//if (newOwner != nullptr) {
+	//	newOwner->AddNode(this);
+	//}
 }
 
 LN_NAMESPACE_SCENE_END

@@ -113,12 +113,12 @@ public:
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_BaseNode; }
 
 	/// 1フレーム分の更新処理
-	virtual void UpdateFrame(float elapsedTime) {}
+	virtual void OnUpdateFrame(float deltaTime) {}
 
 	/// グローバル座標変換行列と各プロパティを階層的に更新する
 	///		この処理は1フレーム内で開始時に1度だけ呼ばれる。
 	///		座標変換行列を更新し、描画するべきノードであるかをフィルタリングする。
-	virtual void UpdateFrameHierarchy(SceneNode* parent);
+	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime);
 
 	/// 視点に依るデータを階層的に更新する (ある視点から描画されるとき、最初に呼び出される)
 	///		renderingNodeList	: この視点の中で実際に描画するものはこのリストに追加する (視錘台カリングなど)
@@ -157,6 +157,8 @@ LN_INTERNAL_ACCESS:
 	virtual ~SceneNode();
 	void CreateCore(SceneGraphManager* manager);
 	void SetOwnerSceneGraph(SceneGraph* owner);
+	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
+	bool IsAutoRemove() const { return m_isAutoRemove; }
 
 protected:
 	SceneGraphManager*	m_manager;	// TODO: いらない
@@ -172,6 +174,7 @@ protected:
 	//bool				m_isVisible;
 	bool				m_transformModified;	///< 座標変換行列の再計算が必要か
 	bool				m_isAutoUpdate;
+	bool				m_isAutoRemove;
 
 	RefPtr<SceneNodeRefList>	m_children;
 	SceneNode*			m_parentNode;

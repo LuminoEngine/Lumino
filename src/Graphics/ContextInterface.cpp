@@ -78,7 +78,7 @@ void ContextState::SetShaderPass(ShaderPass* pass)
 		}
 		else
 		{
-			m_ownerShader = nullptr;
+			LN_SAFE_RELEASE(m_ownerShader);
 			m_shaderPass = nullptr;
 		}
 		modifiedFlags |= ContextStateFlags::ShaderPass;

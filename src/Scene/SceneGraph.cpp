@@ -58,6 +58,14 @@ SceneGraph::SceneGraph()
 //-----------------------------------------------------------------------------
 SceneGraph::~SceneGraph()
 {
+	//for (SceneNode* node : m_allNodes)
+	//{
+	//	if (node->IsAutoRemove())
+	//	{
+	//		node->Release();
+	//	}
+	//}
+
 	m_layerList.Clear();
 	LN_SAFE_RELEASE(m_manager);
 }
@@ -73,14 +81,32 @@ void SceneGraph::CreateCore(SceneGraphManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneGraph::UpdateFrame(float elapsedTime)
+void SceneGraph::UpdateFrame(float deltaTime)
 {
-	LN_FOREACH(SceneNode* node, m_allNodes) {
-		node->UpdateFrame(elapsedTime);
-	}
+	//SceneNodeList::iterator itr = m_allNodes.begin();
+	//SceneNodeList::iterator end = m_allNodes.end();
+	//for (; itr != end; )
+	//{
+	//	(*itr)->UpdateFrame(deltaTime);
 
-	m_elapsedTime = elapsedTime;
-	m_time += elapsedTime;
+	//	if ((*itr)->IsAutoRemove() && (*itr)->GetRefCount() == 1)
+	//	{
+	//		itr = m_allNodes.erase(itr);
+	//		end = m_allNodes.end();
+	//		(*itr)->Release();
+	//	}
+	//	else
+	//	{
+	//		++itr;
+	//	}
+	//}
+
+	//LN_FOREACH(SceneNode* node, m_allNodes) {
+	//	node->UpdateFrame(elapsedTime);
+	//}
+
+	m_elapsedTime = deltaTime;
+	m_time += deltaTime;
 }
 
 //-----------------------------------------------------------------------------
@@ -340,7 +366,7 @@ void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
 void Basic2DSceneGraph::UpdateFrame(float elapsedTime)
 {
 	SceneGraph::UpdateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(NULL);
+	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
 }
 
 LN_NAMESPACE_SCENE_END

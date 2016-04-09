@@ -44,7 +44,7 @@ void VisualNode::CreateCore(SceneGraphManager* manager, int subsetCount)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void VisualNode::UpdateFrameHierarchy(SceneNode* parent)
+void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// 親が VisualNode であれば Visual 関係のプロパティを継承して更新する
 	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
@@ -55,7 +55,7 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent)
 		m_visualNodeParams.UpdateSubsetRenderParam(NULL);
 	}
 
-	SceneNode::UpdateFrameHierarchy(parent);
+	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }
 
 //-----------------------------------------------------------------------------

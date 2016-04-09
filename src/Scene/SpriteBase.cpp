@@ -71,11 +71,15 @@ void SpriteBase::Initialize(SceneGraphManager* manager, SpriteCoord spriteCoord)
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(SizeF(-1, -1));
 
-	if (spriteCoord == SpriteCoord_2D) {
+	if (spriteCoord == SpriteCoord_2D)
+	{
 		manager->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
+		SetAutoRemove(true);
 	}
-	else {
+	else
+	{
 		manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+		SetAutoRemove(true);
 	}
 }
 
