@@ -135,10 +135,10 @@ struct PainterEngineState
 				auto t = static_cast<TextureBrush*>(brush);
 				Brush.TextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
 				const Rect& r = t->GetSourceRect();
-				Brush.TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-				Brush.TextureBrush.SourceRect[1] = r.Y;
-				Brush.TextureBrush.SourceRect[2] = r.Width;
-				Brush.TextureBrush.SourceRect[3] = r.Height;
+				Brush.TextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.TextureBrush.SourceRect[1] = r.y;
+				Brush.TextureBrush.SourceRect[2] = r.width;
+				Brush.TextureBrush.SourceRect[3] = r.height;
 				Brush.TextureBrush.WrapMode = t->GetWrapMode();
 			}
 			else if (Brush.Type == BrushType_FrameTexture)
@@ -147,14 +147,14 @@ struct PainterEngineState
 				Brush.FrameTextureBrush.Texture = (t->GetTexture() != NULL) ? t->GetTexture()->GetDeviceObject() : NULL;
 				const Rect& r = t->GetSourceRect();
 				const Rect& r2 = t->GetInnerAreaSourceRect();
-				Brush.FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-				Brush.FrameTextureBrush.SourceRect[1] = r.Y;
-				Brush.FrameTextureBrush.SourceRect[2] = r.Width;
-				Brush.FrameTextureBrush.SourceRect[3] = r.Height;
-				Brush.FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-				Brush.FrameTextureBrush.InnerSourceRect[1] = r2.Y;
-				Brush.FrameTextureBrush.InnerSourceRect[2] = r2.Width;
-				Brush.FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+				Brush.FrameTextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.FrameTextureBrush.SourceRect[1] = r.y;
+				Brush.FrameTextureBrush.SourceRect[2] = r.width;
+				Brush.FrameTextureBrush.SourceRect[3] = r.height;
+				Brush.FrameTextureBrush.InnerSourceRect[0] = r2.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
+				Brush.FrameTextureBrush.InnerSourceRect[1] = r2.y;
+				Brush.FrameTextureBrush.InnerSourceRect[2] = r2.width;
+				Brush.FrameTextureBrush.InnerSourceRect[3] = r2.height;
 				Brush.FrameTextureBrush.WrapMode = t->GetWrapMode();
 				Brush.FrameTextureBrush.FrameThicness = t->GetThickness();
 			}

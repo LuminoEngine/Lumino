@@ -533,7 +533,7 @@ void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& pro
 //-----------------------------------------------------------------------------
 void SpriteRendererImpl::SetViewPixelSize(const Size& size)
 {
-	m_viewPixelSize.Set((float)size.Width, (float)size.Height);
+	m_viewPixelSize.Set((float)size.width, (float)size.height);
 }
 
 //-----------------------------------------------------------------------------
@@ -756,12 +756,12 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	{
 		// テクスチャ座標
 		const Size& texSize = texture->GetRealSize();
-		Vector2 texSizeInv(1.0f / texSize.Width, 1.0f / texSize.Height);
+		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
 		RectF sr(srcRect);
-		float l = sr.X * texSizeInv.x;
-		float t = sr.Y * texSizeInv.y;
-		float r = (sr.X + sr.Width) * texSizeInv.x;
-		float b = (sr.Y + sr.Height) * texSizeInv.y;
+		float l = sr.x * texSizeInv.x;
+		float t = sr.y * texSizeInv.y;
+		float r = (sr.x + sr.width) * texSizeInv.x;
+		float b = (sr.y + sr.height) * texSizeInv.y;
 		sprite.Vertices[0].TexUV.x = l;
 		sprite.Vertices[0].TexUV.y = t;
 		sprite.Vertices[1].TexUV.x = r;

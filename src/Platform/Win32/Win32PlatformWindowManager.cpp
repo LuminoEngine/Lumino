@@ -188,8 +188,8 @@ void Win32WindowManager::SetWindowClientSize(HWND hWnd, const Size& clientSize)
 	::GetWindowRect(hWnd, &rw);
 	::GetClientRect(hWnd, &rc);
 
-	int new_width = (rw.right - rw.left) - (rc.right - rc.left) + clientSize.Width;
-	int new_height = (rw.bottom - rw.top) - (rc.bottom - rc.top) + clientSize.Height;
+	int new_width = (rw.right - rw.left) - (rc.right - rc.left) + clientSize.width;
+	int new_height = (rw.bottom - rw.top) - (rc.bottom - rc.top) + clientSize.height;
 
 	BOOL r = ::SetWindowPos(hWnd, NULL, 0, 0, new_width, new_height, SWP_NOMOVE | SWP_NOZORDER);
 	LN_THROW((r != FALSE), Win32Exception, GetLastError());
@@ -220,8 +220,8 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 {
 	Win32WindowManager::NativeWindowCreationData data;
 	data.TitleText = settings.Title;
-	data.Width = settings.ClientSize.Width;
-	data.Height = settings.ClientSize.Height;
+	data.Width = settings.ClientSize.width;
+	data.Height = settings.ClientSize.height;
 	data.Fullscreen = settings.Fullscreen;
 	data.Resizable = settings.Resizable;
 	data.UserWindow = (HWND)settings.UserWindow;
@@ -243,8 +243,8 @@ PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings
 {
 	Win32WindowManager::NativeWindowCreationData data;
 	data.TitleText = settings.Title;
-	data.Width = settings.ClientSize.Width;
-	data.Height = settings.ClientSize.Height;
+	data.Width = settings.ClientSize.width;
+	data.Height = settings.ClientSize.height;
 	data.Fullscreen = settings.Fullscreen;
 	data.Resizable = settings.Resizable;
 	return CreateNativeWindow(data);

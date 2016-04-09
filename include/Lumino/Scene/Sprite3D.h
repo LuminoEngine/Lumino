@@ -20,6 +20,7 @@ public:
 	static Sprite3DPtr Create();
 
 	static Sprite3DPtr Create(float width, float height);
+	static Sprite3DPtr Create(float width, float height, Texture* texture);
 
 protected:
 	Sprite3D();

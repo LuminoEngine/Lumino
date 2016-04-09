@@ -63,12 +63,12 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		}
 		case TextAlignment::Center:
 		{
-			offset.X = (m_renderArea.Width - renderSize.Width) / 2;
+			offset.x = (m_renderArea.width - renderSize.width) / 2;
 			break;
 		}
 		case TextAlignment::Right:
 		{
-			offset.X = m_renderArea.GetRight() - renderSize.Width;
+			offset.x = m_renderArea.GetRight() - renderSize.width;
 			break;
 		}
 		case TextAlignment::Justify:
@@ -77,7 +77,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	}
 
 
-	Point pos(m_renderArea.X + offset.X, m_renderArea.Y + offset.Y);
+	Point pos(m_renderArea.x + offset.x, m_renderArea.y + offset.y);
 	for (auto& item : items)
 	{
 		FontGlyphBitmap* gb = font->LookupGlyphBitmap(item.Char, strokeThickness);
@@ -88,10 +88,10 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		if (gb->OutlineBitmap != nullptr)
 		{
 			dstRect.Set(
-				pos.X + item.Location.OutlineBitmapTopLeftPosition.X,
-				pos.Y + item.Location.OutlineBitmapTopLeftPosition.Y,
-				item.Location.BitmapSize.Width,
-				item.Location.BitmapSize.Height);
+				pos.x + item.Location.OutlineBitmapTopLeftPosition.x,
+				pos.y + item.Location.OutlineBitmapTopLeftPosition.y,
+				item.Location.BitmapSize.width,
+				item.Location.BitmapSize.height);
 			srcRect.Set(0, 0, gb->OutlineBitmap->GetSize());
 			target->BitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
 		}
@@ -100,10 +100,10 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		if (gb->GlyphBitmap != nullptr)
 		{
 			dstRect.Set(
-				pos.X + item.Location.BitmapTopLeftPosition.X,
-				pos.Y + item.Location.BitmapTopLeftPosition.Y,
-				item.Location.BitmapSize.Width,
-				item.Location.BitmapSize.Height);
+				pos.x + item.Location.BitmapTopLeftPosition.x,
+				pos.y + item.Location.BitmapTopLeftPosition.y,
+				item.Location.BitmapSize.width,
+				item.Location.BitmapSize.height);
 			srcRect.Set(0, 0, gb->GlyphBitmap->GetSize());
 			target->BitBlt(dstRect, gb->GlyphBitmap, srcRect, fillColor, true);
 		}

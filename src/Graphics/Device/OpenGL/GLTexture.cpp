@@ -121,7 +121,7 @@ void GLTexture::OnResetDevice()
 	// テクスチャ作成
 	glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-	glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_realSize.Width, m_realSize.Height, 0, pixelFormat, elementType, NULL); LN_CHECK_GLERROR();
+	glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_realSize.width, m_realSize.height, 0, pixelFormat, elementType, NULL); LN_CHECK_GLERROR();
 	
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
 	SetGLSamplerState(m_samplerState);
@@ -162,10 +162,10 @@ void GLTexture::SetSubData(const Point& point, const void* data, size_t dataByte
 		glTexSubImage2D(
 			GL_TEXTURE_2D,
 			0,//mMipLevel,
-			point.X,
-			/*m_realSize.Height - */point.Y,
-			dataBitmapSize.Width,//bitmap->GetSize().Width,
-			dataBitmapSize.Height,///bitmap->GetSize().Height,
+			point.x,
+			/*m_realSize.Height - */point.y,
+			dataBitmapSize.width,//bitmap->GetSize().Width,
+			dataBitmapSize.height,///bitmap->GetSize().Height,
 			pixelFormat,
 			elementType,
 			data);
@@ -257,8 +257,8 @@ void GLRenderTargetTexture::OnResetDevice()
 			GL_TEXTURE_2D,
 			0/*m_mipLevels*/,	// 0 でないと glCheckFramebufferStatus が GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT を返した。MipMap についてはちゃんと調査する必要がありそう。
 			internalFormat,
-			m_realSize.Width,
-			m_realSize.Height,
+			m_realSize.width,
+			m_realSize.height,
 			0,
 			m_pixelFormat,
 			m_elementType,
@@ -346,7 +346,7 @@ void GLDepthBuffer::OnResetDevice()
 
 		glGenRenderbuffers(1, &m_glBuffer); LN_CHECK_GLERROR();
 		glBindRenderbuffer(GL_RENDERBUFFER, m_glBuffer); LN_CHECK_GLERROR();
-		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, m_realSize.Width, m_realSize.Height); LN_CHECK_GLERROR();
+		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, m_realSize.width, m_realSize.height); LN_CHECK_GLERROR();
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}
 }

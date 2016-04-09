@@ -173,8 +173,8 @@ void Shader::TryCommitChanges()
 	{
 		Texture* tex = GetManager()->GetRenderer()->GetRenderTarget(0);
 		const Size& size = tex->GetRealSize();
-		float w = (float)size.Width;
-		float h = (float)size.Height;
+		float w = (float)size.width;
+		float h = (float)size.height;
 		const Vector4& vec = m_viewportPixelSize->GetVector();
 		if (m_viewportPixelSize->GetType() == ShaderVariableType_Unknown || vec.x != w || vec.y != h) {
 			m_viewportPixelSize->SetVector(Vector4(w, h, 0, 0));

@@ -30,8 +30,9 @@ public:
 
 	void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 
-	void SetBrush(Brush* brush);
 	void SetOpacity(float opacity);	// 0~1
+	void SetBrush(Brush* brush);
+	void SetFont(Font* font);
 
 	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 

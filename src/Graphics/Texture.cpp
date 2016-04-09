@@ -52,7 +52,7 @@ const Size& Texture::GetSize() const
 //-----------------------------------------------------------------------------
 int Texture::GetWidth() const
 {
-	return m_deviceObj->GetSize().Width;
+	return m_deviceObj->GetSize().width;
 }
 
 //-----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ int Texture::GetWidth() const
 //-----------------------------------------------------------------------------
 int Texture::GetHeight() const
 {
-	return m_deviceObj->GetSize().Height;
+	return m_deviceObj->GetSize().height;
 }
 
 //-----------------------------------------------------------------------------
@@ -459,7 +459,7 @@ void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mi
 	m_size = size;
 	m_mipLevels = mipLevels;
 	m_format = format;
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.Width, m_size.Height, m_mipLevels, m_format);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.width, m_size.height, m_mipLevels, m_format);
 }
 
 //-----------------------------------------------------------------------------
@@ -509,7 +509,7 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 		LN_SAFE_RELEASE(m_deviceObj);
 	}
 	else {
-		m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.Width, m_size.Height, m_mipLevels, m_format);
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.width, m_size.height, m_mipLevels, m_format);
 	}
 }
 
@@ -544,7 +544,7 @@ void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, Texture
 
 	m_size = size;
 	m_format = format;
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.Width, m_size.Height, m_format);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.width, m_size.height, m_format);
 }
 
 //-----------------------------------------------------------------------------
@@ -563,7 +563,7 @@ void DepthBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		LN_SAFE_RELEASE(m_deviceObj);
 	}
 	else {
-		m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.Width, m_size.Height, m_format);
+		m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.width, m_size.height, m_format);
 	}
 }
 

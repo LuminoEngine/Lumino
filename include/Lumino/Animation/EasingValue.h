@@ -25,7 +25,7 @@ public:
 		, m_currentTime(0.0)
 		, m_totalTime(0.0)
 		, m_wrapMode(WrapMode_Once)
-		, m_easing(NULL)
+		, m_easing(nullptr)
 	{}
 
 	/**
@@ -152,7 +152,7 @@ private:
 		{
 			m_value = m_startValue;
 		}
-		else if (m_easing != NULL)
+		else if (m_easing != nullptr)
 		{
 			m_value = m_easing(m_currentTime, m_startValue, m_targetValue - m_startValue, m_totalTime);
 		}

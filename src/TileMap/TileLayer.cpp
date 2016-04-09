@@ -39,7 +39,7 @@ void TileLayer::Resize(int width, int height)
 //-----------------------------------------------------------------------------
 void TileLayer::SetTileId(int x, int y, int id)
 {
-	m_data[y * m_size.Width + x] = id;
+	m_data[y * m_size.width + x] = id;
 }
 	
 //-----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ void TileLayer::SetTileId(int x, int y, int id)
 //-----------------------------------------------------------------------------
 int TileLayer::GetTileId(int x, int y)
 {
-	return m_data[y * m_size.Width + x];
+	return m_data[y * m_size.width + x];
 }
 
 

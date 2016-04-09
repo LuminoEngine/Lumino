@@ -33,8 +33,8 @@ void InputDriver::UpdateFrame()
 {
 	m_keyStatus.fill(false);
 	m_mouseStatus.fill(false);
-	m_mousePoint.X = 0;
-	m_mousePoint.Y = 0;
+	m_mousePoint.x = 0;
+	m_mousePoint.y = 0;
 	m_mouseWheel = 0;
 }
 
@@ -52,8 +52,8 @@ void InputDriver::OnEvent(const PlatformEventArgs& e)
 		m_mouseStatus[e.Mouse.Button] = false;
 		break;
 	case EventType_MouseMove:
-		m_mousePoint.X = e.Mouse.X;
-		m_mousePoint.Y = e.Mouse.Y;
+		m_mousePoint.x = e.Mouse.X;
+		m_mousePoint.y = e.Mouse.Y;
 		break;
 	case EventType_MouseWheel:
 		m_mouseWheel = e.Mouse.WheelDelta;

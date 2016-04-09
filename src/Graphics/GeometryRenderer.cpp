@@ -285,10 +285,10 @@ public:
 					auto t = static_cast<ln::TextureBrush*>(brush);
 					TextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->GetDeviceObject() : nullptr;
 					const Rect& r = t->GetSourceRect();
-					TextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					TextureBrush.SourceRect[1] = r.Y;
-					TextureBrush.SourceRect[2] = r.Width;
-					TextureBrush.SourceRect[3] = r.Height;
+					TextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					TextureBrush.SourceRect[1] = r.y;
+					TextureBrush.SourceRect[2] = r.width;
+					TextureBrush.SourceRect[3] = r.height;
 					TextureBrush.WrapMode = t->GetWrapMode();
 				}
 				else if (Type == BrushType_FrameTexture)
@@ -297,14 +297,14 @@ public:
 					FrameTextureBrush.Texture = (t->GetTexture() != nullptr) ? t->GetTexture()->GetDeviceObject() : nullptr;
 					const Rect& r = t->GetSourceRect();
 					const Rect& r2 = t->GetInnerAreaSourceRect();
-					FrameTextureBrush.SourceRect[0] = r.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					FrameTextureBrush.SourceRect[1] = r.Y;
-					FrameTextureBrush.SourceRect[2] = r.Width;
-					FrameTextureBrush.SourceRect[3] = r.Height;
-					FrameTextureBrush.InnerSourceRect[0] = r2.X;		// TODO: POD 型をまとめて定義したほうがいい気がする
-					FrameTextureBrush.InnerSourceRect[1] = r2.Y;
-					FrameTextureBrush.InnerSourceRect[2] = r2.Width;
-					FrameTextureBrush.InnerSourceRect[3] = r2.Height;
+					FrameTextureBrush.SourceRect[0] = r.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					FrameTextureBrush.SourceRect[1] = r.y;
+					FrameTextureBrush.SourceRect[2] = r.width;
+					FrameTextureBrush.SourceRect[3] = r.height;
+					FrameTextureBrush.InnerSourceRect[0] = r2.x;		// TODO: POD 型をまとめて定義したほうがいい気がする
+					FrameTextureBrush.InnerSourceRect[1] = r2.y;
+					FrameTextureBrush.InnerSourceRect[2] = r2.width;
+					FrameTextureBrush.InnerSourceRect[3] = r2.height;
 					FrameTextureBrush.WrapMode = t->GetWrapMode();
 					FrameTextureBrush.FrameThicness = t->GetThickness();
 				}
@@ -873,7 +873,7 @@ void DrawingContextImpl::Flush()
 	if (m_shader3D.varPixelStep != nullptr)
 	{
 		const Size& size = m_manager->GetRenderer()->GetRenderTarget(0)->GetSize();
-		m_shader3D.varPixelStep->SetVector(Vector4(0.5f / size.Width, 0.5f / size.Height, 0, 0));
+		m_shader3D.varPixelStep->SetVector(Vector4(0.5f / size.width, 0.5f / size.height, 0, 0));
 	}
 
 	if (m_currentState.drawingClass == detail::DrawingClass::PathStroke)
@@ -1451,8 +1451,8 @@ void GeometryRenderer::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
 {
-	m_uvParPixel.x = 1.0f / viewPixelSize.Width;
-	m_uvParPixel.y = 1.0f / viewPixelSize.Height;
+	m_uvParPixel.x = 1.0f / viewPixelSize.width;
+	m_uvParPixel.y = 1.0f / viewPixelSize.height;
 	m_invViewProj = Matrix::Inverse(view * proj);
 	m_viewOnePixelOffset = Vector2::TransformCoord(m_uvParPixel, m_invViewProj);
 	LN_CALL_COMMAND(SetViewProjection, DrawingContextImpl::SetViewProjectionCommand, view, proj);

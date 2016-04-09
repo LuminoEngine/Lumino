@@ -174,10 +174,10 @@ ShaderCompileResultLevel PlainGLSLBuilder::MakeShaderProgram(const void* code, s
 		"#define LN_GLSL_VERTEX 1\n",
 		(const char*)code,
 	};
-	int vs_sizes[] =
+	GLint vs_sizes[] =
 	{
-		strlen(vs_codes[0]),
-		(int)codeByteCount,
+		(GLint)strlen(vs_codes[0]),
+		(GLint)codeByteCount,
 	};
 
 	// フラグメントシェーダコード
@@ -186,10 +186,10 @@ ShaderCompileResultLevel PlainGLSLBuilder::MakeShaderProgram(const void* code, s
 		"#define LN_GLSL_FRAGMENT 1\n",
 		(const char*)code,
 	};
-	int fs_sizes[] =
+	GLint fs_sizes[] =
 	{
-		strlen(fs_codes[0]),
-		(int)codeByteCount,
+		(GLint)strlen(fs_codes[0]),
+		(GLint)codeByteCount,
 	};
 
 	GLuint vertexShader = 0;

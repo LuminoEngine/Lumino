@@ -96,7 +96,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint
 {
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
 	if (initialData != nullptr) {
-		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
+		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
 	}
 	return obj;
 }

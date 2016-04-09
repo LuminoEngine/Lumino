@@ -203,7 +203,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 
 			// 描画先RTサイズ
 		case MME_VARREQ_VIEWPORTPIXELSIZE:
-			var->SetVector(Vector4(viewPixelSize.Width, viewPixelSize.Height, 0, 0));
+			var->SetVector(Vector4(viewPixelSize.width, viewPixelSize.height, 0, 0));
 			break;
 		}
 	}

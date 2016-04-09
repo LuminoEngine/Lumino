@@ -45,8 +45,8 @@ BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	m_name = String::SPrintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
-	m_charWidth = m_fontBitmap->GetSize().Width / 16;
-	m_charHeight = m_fontBitmap->GetSize().Height / 16;
+	m_charWidth = m_fontBitmap->GetSize().width / 16;
+	m_charHeight = m_fontBitmap->GetSize().height / 16;
 
 	// グリフ用の一時ビットマップ
 	m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_charWidth, m_charHeight), PixelFormat_BYTE_R8G8B8A8));
@@ -151,7 +151,7 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, F
 		locData = prevData;
 
 		// 横方向に送る
-		locData->BitmapTopLeftPosition.X += m_charWidth;
+		locData->BitmapTopLeftPosition.x += m_charWidth;
 		locData->OuterTopLeftPosition = locData->BitmapTopLeftPosition;
 	}
 	// 最初の文字であればデータリセット

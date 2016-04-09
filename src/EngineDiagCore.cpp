@@ -88,9 +88,9 @@ void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* di
 //-----------------------------------------------------------------------------
 void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 {
-	return;
-	PointF location(m_windowRect.X, m_windowRect.Y);
+	PointF location(m_windowRect.x, m_windowRect.y);
 	g->SetOpacity(0.5f);
+	g->SetFont(m_font);
 
 	//g->SetBrush(ColorBrush::DimGray);
 
@@ -98,12 +98,12 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	g->DrawRectangle(m_windowRect, Color::DimGray);
 
 	// キャプションバー
-	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20), Color::Black);
+	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.width, 20), Color::Black);
+
 
 	g->SetBrush(ColorBrush::White);
 	g->DrawText(_T("Statistics"), m_windowRect, StringFormatFlags::CenterAlignment);
 
-	g->Flush();
 
 	//LocalPainter painter(SizeF(viewSize.X, viewSize.Y), m_manager);
 	////g->SetProjection(SizeF(viewSize.X, viewSize.Y), 0, 1000);
@@ -123,30 +123,30 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	//g->SetOpacity(1.0f);
 	//g->DrawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
 
-	//location.Y += 24;
+	location.y += 24;
 
 	//-----------------------------------------------------
 	// Main info
-	g->DrawText(_T("Main information:"), PointF(location.X + 8, location.Y));
-	location.Y += 16;
-	location.X += 16;
+	g->DrawText(_T("Main information:"), PointF(location.x + 8, location.y));
+	location.y += 16;
+	location.x += 16;
 
 	TCHAR text[256] = { 0 };
 
 	//StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
 	//g->DrawText(text, -1, location);
-	location.Y += 16;
+	location.y += 16;
 
 	//StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->GetRenderingType().ToString().c_str());
 	//g->DrawText(text, -1, location);
-	location.Y += 16;
+	location.y += 16;
 
 	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_diagCore->GetMainFPS());
 	g->DrawText(text, location);
 
 	StringTraits::SPrintf(text, 256, _T(" / Capacity : %.1f"), m_diagCore->GetMainFPSCapacity());
-	g->DrawText(text, PointF(location.X + 150, location.Y));
-	location.Y += 16;
+	g->DrawText(text, PointF(location.x + 150, location.y));
+	location.y += 16;
 
 	//StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
 	//g->DrawText(text, -1, location);
@@ -156,6 +156,9 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	//g->DrawText(text, -1, location);
 	//location.Y += 24;
 	//location.X -= 16;
+
+
+	g->Flush();
 }
 
 LN_NAMESPACE_END

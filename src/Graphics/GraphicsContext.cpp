@@ -239,12 +239,20 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
-	Matrix proj = Matrix::Perspective2DLH((float)size.Width, (float)size.Height, minZ, maxZ);
+	Matrix proj = Matrix::Perspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
 	m_geometryRenderer->SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);
 	m_textRenderer->SetViewPixelSize(size);
 	// ªTODO: OnStateFlushRequested ‚ÉŽ‚Á‚Ä‚¢‚Á‚½‚Ù‚¤‚ª‚¢‚¢H
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GraphicsContext::SetOpacity(float opacity)
+{
+	m_geometryRenderer->SetOpacity(opacity);
 }
 
 //-----------------------------------------------------------------------------
@@ -258,9 +266,9 @@ void GraphicsContext::SetBrush(Brush* brush)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GraphicsContext::SetOpacity(float opacity)
+void GraphicsContext::SetFont(Font* font)
 {
-	m_geometryRenderer->SetOpacity(opacity);
+	m_textRenderer->SetFont(font);
 }
 
 //-----------------------------------------------------------------------------

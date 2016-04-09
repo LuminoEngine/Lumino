@@ -603,8 +603,8 @@ Win32NativeWindow::Win32NativeWindow(Win32WindowManager* windowManager, HWND hWn
 	// 初期化時のサイズ記憶
 	RECT rc;
 	GetClientRect(mWindowHandle, &rc);
-	mClientSize.Width = rc.right - rc.left;
-	mClientSize.Height = rc.bottom - rc.top;
+	mClientSize.width = rc.right - rc.left;
+	mClientSize.height = rc.bottom - rc.top;
 	m_originalClientSize = mClientSize;
 }
 
@@ -642,16 +642,16 @@ void Win32NativeWindow::SetFullScreenEnabled(bool flag)
 		//Resize(true);
 
 		// 画面いっぱい
-		mClientSize.Width = ::GetSystemMetrics(SM_CXSCREEN);
-		mClientSize.Height = ::GetSystemMetrics(SM_CYSCREEN);
+		mClientSize.width = ::GetSystemMetrics(SM_CXSCREEN);
+		mClientSize.height = ::GetSystemMetrics(SM_CYSCREEN);
 
 		::SetForegroundWindow(mWindowHandle);
 
-		int x = (::GetSystemMetrics(SM_CXSCREEN) - mClientSize.Width) / 2;
-		int y = (::GetSystemMetrics(SM_CYSCREEN) - mClientSize.Height) / 2;
+		int x = (::GetSystemMetrics(SM_CXSCREEN) - mClientSize.width) / 2;
+		int y = (::GetSystemMetrics(SM_CYSCREEN) - mClientSize.height) / 2;
 
 		//res = ::SetWindowPos( mWindowHandle, HWND_TOP, 0, 0, mWidth, mHeight, SWP_SHOWWINDOW );
-		::SetWindowPos(mWindowHandle, NULL, x, y, mClientSize.Width, mClientSize.Height, SWP_SHOWWINDOW);
+		::SetWindowPos(mWindowHandle, NULL, x, y, mClientSize.width, mClientSize.height, SWP_SHOWWINDOW);
 	}
 	// ウィンドウモードにする場合
 	else

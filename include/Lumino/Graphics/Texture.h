@@ -126,6 +126,7 @@ public:
 #undef DrawText
 	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment);
 	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment);
+	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 #pragma pop_macro("DrawText")
 	
 	/*

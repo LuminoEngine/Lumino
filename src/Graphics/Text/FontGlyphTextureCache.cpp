@@ -78,9 +78,9 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		outInfo->fillGlyphBitmap = nullptr;
 		outInfo->outlineOffset = 0;
 		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
-			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
-			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-			info.size.Width, info.size.Height);
+			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
+			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.height),
+			info.size.width, info.size.height);
 	}
 	else
 	{
@@ -105,9 +105,9 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		outInfo->fillGlyphBitmap = glyphBitmap->GlyphBitmap;
 		outInfo->outlineOffset = glyphBitmap->OutlineOffset;
 		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
-			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.Width),
-			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.Height),
-			info.size.Width, info.size.Height);
+			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
+			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.height),
+			info.size.width, info.size.height);
 		//printf("p: %d %d\n", outInfo->srcRect.X, outInfo->srcRect.Y);
 	}
 	//
@@ -140,7 +140,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* srcFillRect, Rect* srcOutlineRect)
 {
 	(*srcFillRect) = info->srcRect;
-	(*srcOutlineRect) = Rect(info->srcRect.X, info->srcRect.Y, info->srcRect.Width + info->outlineOffset, info->srcRect.Height + info->outlineOffset);
+	(*srcOutlineRect) = Rect(info->srcRect.x, info->srcRect.y, info->srcRect.width + info->outlineOffset, info->srcRect.height + info->outlineOffset);
 
 	if (info->fillGlyphBitmap == nullptr)
 	{
@@ -154,7 +154,7 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 		}
 
 		// Fill
-		Rect dst(info->srcRect.X + info->outlineOffset, info->srcRect.Y + info->outlineOffset, info->fillGlyphBitmap->GetSize());
+		Rect dst(info->srcRect.x + info->outlineOffset, info->srcRect.y + info->outlineOffset, info->fillGlyphBitmap->GetSize());
 		Rect src(0, 0, info->fillGlyphBitmap->GetSize());
 		m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
 		//

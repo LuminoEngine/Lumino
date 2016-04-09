@@ -141,8 +141,8 @@ namespace ss
 		//return true;
 		ln::Texture2D* tex = (ln::Texture2D*)handle;
 		auto& size = tex->GetSize();
-		w = size.Width;
-		h = size.Height;
+		w = size.width;
+		h = size.height;
 		return true;
 	}
 

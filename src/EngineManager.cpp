@@ -566,7 +566,7 @@ bool EngineManager::UpdateFrame()
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
-			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(static_cast<float>(size.Width), static_cast<float>(size.Height)));
+			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(static_cast<float>(size.width), static_cast<float>(size.height)));
 		}
 	}
 

@@ -79,8 +79,8 @@ private:
 		bool	IsDown;		///< 現在ボタンが押されているか
 
 		void ToVector4(const SizeF& viewSize, Vector4* v) {
-			v->x = (2.0f * ((float)Position.X) / viewSize.Width) - 1.0f;
-			v->y = (2.0f * ((float)Position.Y) / viewSize.Height) - 1.0f;
+			v->x = (2.0f * ((float)Position.x) / viewSize.width) - 1.0f;
+			v->y = (2.0f * ((float)Position.y) / viewSize.height) - 1.0f;
 			v->z = (IsDown) ? 1.0f : 0.0f;
 			v->w = Time;
 		}

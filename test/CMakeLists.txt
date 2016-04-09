@@ -4,6 +4,9 @@ set(LN_TEST_SOURCES
 	UnitTest/Main.cpp
 	UnitTest/Test.cpp
 	UnitTest/TestConfig.h
+	UnitTest/Base/Test_Base_Point.cpp
+	UnitTest/Base/Test_Base_Rect.cpp
+	UnitTest/Base/Test_Base_Size.cpp
 	UnitTest/IO/Test_IO_ArchiveMaker.cpp
 	UnitTest/IO/Test_IO_ASync.cpp
 	UnitTest/Platform/Test_Platform_Clipboard.cpp

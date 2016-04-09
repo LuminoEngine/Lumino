@@ -174,6 +174,9 @@ set(LN_SOURCES_Physics
 )
 
 set(LN_SOURCES_Graphics
+	include/Lumino/Base/Point.h
+	include/Lumino/Base/Rect.h
+	include/Lumino/Base/Size.h
 	include/Lumino/Graphics/Bitmap.h
 	include/Lumino/Graphics/BitmapPainter.h
 	include/Lumino/Graphics/Brush.h
@@ -202,6 +205,9 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h
 	include/Lumino/Graphics/ImageEffect/ToneImageEffect.h
 	external/GL/glew.c
+	src/Base/Point.cpp
+	src/Base/Rect.cpp
+	src/Base/Size.cpp
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapPainter.cpp
 	src/Graphics/Brush.cpp

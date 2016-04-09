@@ -84,11 +84,11 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 		if (text[i] == 0x0A)
 		{
 			LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
-			rc.Y += lineSize.Height;
-			rc.Height -= lineSize.Height;
+			rc.y += lineSize.height;
+			rc.height -= lineSize.height;
 			begin = i + 1;
-			m_result->AreaSize.Width = std::max(m_result->AreaSize.Width, lineSize.Width);
-			m_result->AreaSize.Height += lineSize.Height;
+			m_result->AreaSize.width = std::max(m_result->AreaSize.width, lineSize.width);
+			m_result->AreaSize.height += lineSize.height;
 		}
 		if (text[i] == 0x0D)
 		{
@@ -96,36 +96,36 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 			if (i < length - 1 && text[i + 1] == 0x0A)
 			{
 				LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
-				rc.Y += lineSize.Height;
-				rc.Height -= lineSize.Height;
+				rc.y += lineSize.height;
+				rc.height -= lineSize.height;
 				i++;
 				begin = i + 1;
-				m_result->AreaSize.Width = std::max(m_result->AreaSize.Width, lineSize.Width);
-				m_result->AreaSize.Height += lineSize.Height;
+				m_result->AreaSize.width = std::max(m_result->AreaSize.width, lineSize.width);
+				m_result->AreaSize.height += lineSize.height;
 			}
 			// CR
 			else
 			{
 				LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
-				rc.Y += lineSize.Height;
-				rc.Height -= lineSize.Height;
+				rc.y += lineSize.height;
+				rc.height -= lineSize.height;
 				begin = i;
 				begin = i + 1;
-				m_result->AreaSize.Width = std::max(m_result->AreaSize.Width, lineSize.Width);
-				m_result->AreaSize.Height += lineSize.Height;
+				m_result->AreaSize.width = std::max(m_result->AreaSize.width, lineSize.width);
+				m_result->AreaSize.height += lineSize.height;
 			}
 		}
 	}
 	if (begin != i)
 	{
 		LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
-		m_result->AreaSize.Width = std::max(m_result->AreaSize.Width, lineSize.Width);
-		m_result->AreaSize.Height += lineSize.Height;
+		m_result->AreaSize.width = std::max(m_result->AreaSize.width, lineSize.width);
+		m_result->AreaSize.height += lineSize.height;
 	}
 
 	// TODO: アンチエイリアス有効だと、↑の方法では1px 足りないことがあった。
 	// とりあえずここで強制設定している。
-	m_result->AreaSize.Height = m_font->GetLineSpacing();
+	m_result->AreaSize.height = m_font->GetLineSpacing();
 }
 
 //-----------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	{
 		prevInfo = m_font->AdvanceKerning(text[i], m_strokeSize, prevInfo);
 		//planeWidth += prevInfo->BitmapSize.Width;
-		outLineSize->Height = std::max(outLineSize->Height, prevInfo->BitmapSize.Height);
+		outLineSize->height = std::max(outLineSize->height, prevInfo->BitmapSize.height);
 
 		item.Char = text[i];
 		item.Location = *prevInfo;
@@ -159,11 +159,11 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	}
 
 	//int planeWidth = m_result->Items[length - 1].Location.OuterTopLeftPosition.X + m_result->Items[length - 1].Location.BitmapSize.Width;
-	int planeWidth = item.Location.OuterTopLeftPosition.X + item.Location.BitmapSize.Width;
+	int planeWidth = item.Location.OuterTopLeftPosition.x + item.Location.BitmapSize.width;
 
 	// TODO: GUI から呼ばれるときは、UI要素のサイズを図る目的でも使用する。
 	// TextAlignment::Left 固定でいいのか考えておく。
-	outLineSize->Width = planeWidth;
+	outLineSize->width = planeWidth;
 
 	if (m_layoutTextOptions == LayoutTextOptions::All)
 	{
@@ -177,11 +177,11 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 		}
 		case TextAlignment::Center:
 		{
-			int offset = (lineArea.Width - planeWidth) / 2;
+			int offset = (lineArea.width - planeWidth) / 2;
 			for (TextLayoutResultItem & item : m_result->Items) {
-				item.Location.BitmapTopLeftPosition.X += offset;
-				item.Location.OutlineBitmapTopLeftPosition.X += offset;
-				item.Location.OuterTopLeftPosition.X += offset;
+				item.Location.BitmapTopLeftPosition.x += offset;
+				item.Location.OutlineBitmapTopLeftPosition.x += offset;
+				item.Location.OuterTopLeftPosition.x += offset;
 			}
 			break;
 		}
@@ -189,9 +189,9 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 		{
 			int offset = lineArea.GetRight() - planeWidth;
 			for (TextLayoutResultItem & item : m_result->Items) {
-				item.Location.BitmapTopLeftPosition.X += offset;
-				item.Location.OutlineBitmapTopLeftPosition.X += offset;
-				item.Location.OuterTopLeftPosition.X += offset;
+				item.Location.BitmapTopLeftPosition.x += offset;
+				item.Location.OutlineBitmapTopLeftPosition.x += offset;
+				item.Location.OuterTopLeftPosition.x += offset;
 			}
 			break;
 		}

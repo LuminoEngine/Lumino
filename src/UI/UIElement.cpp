@@ -128,14 +128,14 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
 	SizeF localAvailableSize(
-		std::max(availableSize.Width - marginWidth, 0.0f),
-		std::max(availableSize.Height - marginHeight, 0.0f));
+		std::max(availableSize.width - marginWidth, 0.0f),
+		std::max(availableSize.height - marginHeight, 0.0f));
 
 	m_desiredSize = MeasureOverride(localAvailableSize);
 
 	// Margin を考慮する
-	m_desiredSize.Width += marginWidth;
-	m_desiredSize.Height += marginHeight;
+	m_desiredSize.width += marginWidth;
+	m_desiredSize.height += marginHeight;
 
 	// フォントの無効フラグを落とす
 	// TODO: UITextElement へ移動した方が良いかも？
@@ -155,8 +155,8 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	SizeF arrangeSize;
 
 	// この要素のサイズが明示的に指定されている場合はそちらを優先する
-	arrangeSize.Width = Math::IsNaNOrInf(m_size.Width) ? finalLocalRect.Width : m_size.Width;
-	arrangeSize.Height = Math::IsNaNOrInf(m_size.Height) ? finalLocalRect.Height : m_size.Height;
+	arrangeSize.width = Math::IsNaNOrInf(m_size.width) ? finalLocalRect.width : m_size.width;
+	arrangeSize.height = Math::IsNaNOrInf(m_size.height) ? finalLocalRect.height : m_size.height;
 
 	const SizeF& ds = GetDesiredSize();
 	RectF arrangeRect;
@@ -166,15 +166,15 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	// Margin を考慮する (0 以下には出来ない)
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
-	arrangeRect.Width = std::max(arrangeRect.Width - marginWidth, 0.0f);
-	arrangeRect.Height = std::max(arrangeRect.Height - marginHeight, 0.0f);
+	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
+	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 
 	SizeF renderSize = ArrangeOverride(arrangeRect.GetSize());
-	m_finalLocalRect.X = finalLocalRect.X + m_margin.Left + arrangeRect.X;
-	m_finalLocalRect.Y = finalLocalRect.Y + m_margin.Top + arrangeRect.Y;
-	m_finalLocalRect.Width = renderSize.Width;
-	m_finalLocalRect.Height = renderSize.Height;
+	m_finalLocalRect.x = finalLocalRect.x + m_margin.Left + arrangeRect.x;
+	m_finalLocalRect.y = finalLocalRect.y + m_margin.Top + arrangeRect.y;
+	m_finalLocalRect.width = renderSize.width;
+	m_finalLocalRect.height = renderSize.height;
 
 	OnLayoutUpdated();
 }
@@ -190,10 +190,10 @@ SizeF UIElement::MeasureOverride(const SizeF& constraint)
 
 	SizeF size;
 	// NaN の場合、この要素として必要な最小サイズは 0 となる。
-	size.Width = Math::IsNaNOrInf(m_size.Width) ? 0.0f : m_size.Width;
-	size.Height = Math::IsNaNOrInf(m_size.Height) ? 0.0f : m_size.Height;
-	size.Width = std::min(size.Width, constraint.Width);
-	size.Height = std::min(size.Height, constraint.Height);
+	size.width = Math::IsNaNOrInf(m_size.width) ? 0.0f : m_size.width;
+	size.height = Math::IsNaNOrInf(m_size.height) ? 0.0f : m_size.height;
+	size.width = std::min(size.width, constraint.width);
+	size.height = std::min(size.height, constraint.height);
 
 	return size;
 }
@@ -376,15 +376,15 @@ void UIElement::ApplyTemplateHierarchy()
 void UIElement::UpdateLayout()
 {
 	SizeF size(
-		Math::IsNaNOrInf(m_size.Width) ? m_ownerLayoutView->GetViewPixelSize().Width : m_size.Width,
-		Math::IsNaNOrInf(m_size.Height) ? m_ownerLayoutView->GetViewPixelSize().Height : m_size.Height);
+		Math::IsNaNOrInf(m_size.width) ? m_ownerLayoutView->GetViewPixelSize().width : m_size.width,
+		Math::IsNaNOrInf(m_size.height) ? m_ownerLayoutView->GetViewPixelSize().height : m_size.height);
 
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
 	MeasureLayout(size);
-	ArrangeLayout(RectF(0, 0, size.Width, size.Height));
+	ArrangeLayout(RectF(0, 0, size.width, size.height));
 }
 
 //-----------------------------------------------------------------------------
@@ -394,18 +394,18 @@ void UIElement::UpdateTransformHierarchy()
 {
 	if (m_parent != NULL)
 	{
-		m_finalGlobalRect.X = m_parent->m_finalGlobalRect.X + m_finalLocalRect.X;
-		m_finalGlobalRect.Y = m_parent->m_finalGlobalRect.Y + m_finalLocalRect.Y;
+		m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
+		m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
 		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 	}
 	else
 	{
-		m_finalGlobalRect.X = m_finalLocalRect.X;
-		m_finalGlobalRect.Y = m_finalLocalRect.Y;
+		m_finalGlobalRect.x = m_finalLocalRect.x;
+		m_finalGlobalRect.y = m_finalLocalRect.y;
 		m_combinedOpacity = m_opacity;
 	}
-	m_finalGlobalRect.Width = m_finalLocalRect.Width;
-	m_finalGlobalRect.Height = m_finalLocalRect.Height;
+	m_finalGlobalRect.width = m_finalLocalRect.width;
+	m_finalGlobalRect.height = m_finalLocalRect.height;
 
 	// 子要素
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });

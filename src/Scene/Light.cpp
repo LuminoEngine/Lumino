@@ -60,7 +60,7 @@ void Light::UpdateMatrices(const SizeF& viewSize)
 	// プロジェクション行列の更新
 	// TODO: 視野角とnear,far
 	// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-	m_projMatrix = Matrix::PerspectiveFovLH(Math::PI / 4.0f, viewSize.Width / viewSize.Height, 0.01f, 1000.0f);
+	m_projMatrix = Matrix::PerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
 
 	m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 

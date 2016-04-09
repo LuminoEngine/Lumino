@@ -88,7 +88,7 @@ EXIT:
 	// 新旧それぞれの Element に MouseLeave、MouseEnter イベントを送る
 	if (m_mouseHoverElement != old)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, 0, mousePos.X, mousePos.Y, 0), false);
+		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, 0, mousePos.x, mousePos.y, 0), false);
 		if (old != nullptr) {
 			old->OnEvent(detail::UIInternalEventType::MouseLeave, args);
 		}

@@ -153,7 +153,7 @@ Color MixPixels(Bitmap* bmp, int x, int y)
 			const Color& c = bmp->GetPixel(x, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
-		if (x < bmp->GetSize().Width - 1) {
+		if (x < bmp->GetSize().width - 1) {
 			const Color& c = bmp->GetPixel(x + 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
@@ -163,12 +163,12 @@ Color MixPixels(Bitmap* bmp, int x, int y)
 			const Color& c = bmp->GetPixel(x - 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
-		if (x < bmp->GetSize().Width - 1) {
+		if (x < bmp->GetSize().width - 1) {
 			const Color& c = bmp->GetPixel(x + 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
-	if (y < bmp->GetSize().Height - 1) {
+	if (y < bmp->GetSize().height - 1) {
 		if (x > 0) {
 			const Color& c = bmp->GetPixel(x - 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
@@ -177,7 +177,7 @@ Color MixPixels(Bitmap* bmp, int x, int y)
 			const Color& c = bmp->GetPixel(x, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
-		if (x < bmp->GetSize().Width - 1) {
+		if (x < bmp->GetSize().width - 1) {
 			const Color& c = bmp->GetPixel(x + 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
@@ -196,9 +196,9 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 	int colorRange = 255 - (255 * passRate / 100);
 	int pass = 0;
 
-	for (int y = 0; y < bmp1->GetSize().Height; ++y)
+	for (int y = 0; y < bmp1->GetSize().height; ++y)
 	{
-		for (int x = 0; x < bmp1->GetSize().Width; ++x)
+		for (int x = 0; x < bmp1->GetSize().width; ++x)
 		{
 			Color c1 = MixPixels(bmp1, x, y);
 			Color c2 = MixPixels(&bmp2, x, y);
@@ -212,7 +212,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 		}
 	}
 
-	return pass >= ((bmp1->GetSize().Height * bmp1->GetSize().Width) * passRate / 100);
+	return pass >= ((bmp1->GetSize().height * bmp1->GetSize().width) * passRate / 100);
 }
 
 //-----------------------------------------------------------------------------

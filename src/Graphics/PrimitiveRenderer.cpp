@@ -207,8 +207,8 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture)
 {
-	float vw = (viewPixelSize.Width != 0.0) ? (0.5f / viewPixelSize.Width) : 0.0f;
-	float vh = (viewPixelSize.Height != 0.0) ? (0.5f / viewPixelSize.Height) : 0.0f;
+	float vw = (viewPixelSize.width != 0.0) ? (0.5f / viewPixelSize.width) : 0.0f;
+	float vh = (viewPixelSize.height != 0.0) ? (0.5f / viewPixelSize.height) : 0.0f;
 
 	m_shader.varWorldMatrix->SetMatrix(world);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);

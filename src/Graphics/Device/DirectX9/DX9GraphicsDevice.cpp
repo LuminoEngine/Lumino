@@ -159,7 +159,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const Size& size, uin
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels), false);
 	if (initialData != NULL) {
-		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.Width * size.Height, size);
+		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
 	}
 	return obj;
 }
@@ -453,8 +453,8 @@ void DX9GraphicsDevice::SetPresentParameters(const Size& backbufferSize, bool fu
 	else
 	{
 		m_presentParameters.Windowed = TRUE;
-		m_presentParameters.BackBufferWidth = std::max(1, backbufferSize.Width);	// 0 だとデバイス作成時にエラーとなる、最低 1
-		m_presentParameters.BackBufferHeight = std::max(1, backbufferSize.Height);	// 0 だとデバイス作成時にエラーとなるため、最低 1
+		m_presentParameters.BackBufferWidth = std::max(1, backbufferSize.width);	// 0 だとデバイス作成時にエラーとなる、最低 1
+		m_presentParameters.BackBufferHeight = std::max(1, backbufferSize.height);	// 0 だとデバイス作成時にエラーとなるため、最低 1
 		m_presentParameters.BackBufferFormat = D3DFMT_X8R8G8B8;//D3DFMT_UNKNOWN;//D3DFMT_X8R8G8B8;//
 		if (false)//( mMSAAQualityWindowed > 0 )
 		{

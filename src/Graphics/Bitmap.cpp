@@ -197,18 +197,18 @@ void Bitmap::ConvertToDownFlow()
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
 		// とりあえず今は評価目的でしか使わないので愚直に swap。
 		byte_t* pixels = m_bitmapData.GetData();
-		for (int y = 0; y < (m_size.Height / 2); ++y) {
-			for (int x = 0; x < m_size.Width; ++x) {
-				std::swap(pixels[(y * m_size.Width) + x], pixels[((m_size.Height - 1 - y) * m_size.Width) + x]);
+		for (int y = 0; y < (m_size.height / 2); ++y) {
+			for (int x = 0; x < m_size.width; ++x) {
+				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
 			}
 		}
 	}
 	else if (pixelSize == 4)
 	{
 		uint32_t* pixels = (uint32_t*)m_bitmapData.GetData();
-		for (int y = 0; y < (m_size.Height / 2); ++y) {
-			for (int x = 0; x < m_size.Width; ++x) {
-				std::swap(pixels[(y * m_size.Width) + x], pixels[((m_size.Height - 1 - y) * m_size.Width) + x]);
+		for (int y = 0; y < (m_size.height / 2); ++y) {
+			for (int x = 0; x < m_size.width; ++x) {
+				std::swap(pixels[(y * m_size.width) + x], pixels[((m_size.height - 1 - y) * m_size.width) + x]);
 			}
 		}
 	}
@@ -327,7 +327,7 @@ int Bitmap::GetPixelFormatByteCount(PixelFormat format)
 int Bitmap::GetPixelFormatByteCount(PixelFormat format, const Size& size)
 {
 	int c = GetPixelFormatByteCount(format);
-	return c * size.Width * size.Height;
+	return c * size.width * size.height;
 }
 
 //-----------------------------------------------------------------------------
@@ -410,11 +410,11 @@ void Bitmap::BitBltInternalTemplate(
 
 	if (alphaBlend)
 	{
-		for (int y = 0; y < srcRect.Height; ++y)
+		for (int y = 0; y < srcRect.height; ++y)
 		{
 			dstBuf.SetLine(y);
 			srcBuf.SetLine(y);
-			for (int x = 0; x < srcRect.Width; ++x)
+			for (int x = 0; x < srcRect.width; ++x)
 			{
 				ClColor src = srcBuf.GetPixel(x);
 				ClColor src_alpha = GetA(src);
@@ -461,11 +461,11 @@ void Bitmap::BitBltInternalTemplate(
 	}
 	else
 	{
-		for (int y = 0; y < srcRect.Height; ++y)
+		for (int y = 0; y < srcRect.height; ++y)
 		{
 			dstBuf.SetLine(y);
 			srcBuf.SetLine(y);
-			for (int x = 0; x < srcRect.Width; ++x)
+			for (int x = 0; x < srcRect.width; ++x)
 			{
 				ClColor src = srcBuf.GetPixel(x);
 				ClColor c = RGBA(
@@ -528,8 +528,8 @@ void Bitmap::BitBltInternal(
 	Rect srcRect = srcRect_;
 	destRect.Clip(Rect(0, 0, dest->m_size));
 	srcRect.Clip(Rect(0, 0, src->m_size));
-	srcRect.Width = std::min(srcRect.Width, destRect.Width);
-	srcRect.Height = std::min(srcRect.Height, destRect.Height);
+	srcRect.width = std::min(srcRect.width, destRect.width);
+	srcRect.height = std::min(srcRect.height, destRect.height);
 
 	switch (dest->m_format)
 	{

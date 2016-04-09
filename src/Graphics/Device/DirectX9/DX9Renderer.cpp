@@ -739,10 +739,10 @@ void DX9Renderer::InternalSetDepthBuffer(ITexture* texture, bool reset)
 void DX9Renderer::InternalSetViewport(const Rect& rect, bool reset)
 {
 	D3DVIEWPORT9 viewport;
-	viewport.X = static_cast<DWORD>(rect.X);
-	viewport.Y = static_cast<DWORD>(rect.Y);
-	viewport.Width = static_cast<DWORD>(rect.Width);
-	viewport.Height = static_cast<DWORD>(rect.Height);
+	viewport.X = static_cast<DWORD>(rect.x);
+	viewport.Y = static_cast<DWORD>(rect.y);
+	viewport.Width = static_cast<DWORD>(rect.width);
+	viewport.Height = static_cast<DWORD>(rect.height);
 	viewport.MinZ = 0.0f;
 	viewport.MaxZ = 1.0f;
 

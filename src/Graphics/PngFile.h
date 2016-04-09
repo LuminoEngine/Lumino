@@ -110,8 +110,8 @@ public:
 			mPngStruct, mPngInfo, &width, &height,
 			&bitDepth, &colorType, &interlaceType, NULL, NULL);
 
-		m_size.Width = width;
-		m_size.Height = height;
+		m_size.width = width;
+		m_size.height = height;
 
 		int pixelDepth = png_get_bit_depth(mPngStruct, mPngInfo) * png_get_channels(mPngStruct, mPngInfo);
 
@@ -140,7 +140,7 @@ public:
 		png_bytepp		row_pointers = png_get_rows(mPngStruct, mPngInfo);	// ビットマップデータ
 
 		int sign = (swapHeight) ? -1 : 1;			// 反転するか？
-		int unit = (swapHeight) ? m_size.Height - 1 : 0;	// イテレート開始行 (一番上か、一番下か)
+		int unit = (swapHeight) ? m_size.height - 1 : 0;	// イテレート開始行 (一番上か、一番下か)
 
 		// ABGR
 		// (R155, G128, B0, A78) のとき、U32(Little) で 4e0080ff となる。
@@ -148,11 +148,11 @@ public:
 		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
 		{
 			m_format = PixelFormat_BYTE_R8G8B8A8;
-			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 4);
+			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
 			byte_t* bitmap = m_bitmapData.GetData();
 
 			// 1行ずつコピー
-			for (int h = 0; h < m_size.Height; ++h) {
+			for (int h = 0; h < m_size.height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
 			}
 		}
@@ -161,17 +161,17 @@ public:
 		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
 		{
 			m_format = PixelFormat_BYTE_R8G8B8A8;
-			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 4);
+			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
 			byte_t* bitmap = m_bitmapData.GetData();
 
 			byte_t* row;
-			for (int y = 0; y < m_size.Height; ++y)
+			for (int y = 0; y < m_size.height; ++y)
 			{
 				row = row_pointers[unit + (sign * y)];
-				for (int x = 0; x < m_size.Width; ++x)
+				for (int x = 0; x < m_size.width; ++x)
 				{
 					byte_t* src = &row[x * 3];
-					byte_t* dest = &bitmap[(x + m_size.Width * y) * 4];
+					byte_t* dest = &bitmap[(x + m_size.width * y) * 4];
 					dest[0] = src[0];	// R
 					dest[1] = src[1];	// G
 					dest[2] = src[2];	// B
@@ -183,10 +183,10 @@ public:
 		else if (colorType == PNG_COLOR_TYPE_GRAY && pixelDepth == 8)
 		{
 			m_format = PixelFormat_A8;
-			m_bitmapData = ByteBuffer(m_size.Width * m_size.Height * 1);
+			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 1);
 			byte_t* bitmap = m_bitmapData.GetData();
 
-			for (int h = 0; h < m_size.Height; ++h) {
+			for (int h = 0; h < m_size.height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
 			}
 		}
@@ -227,7 +227,7 @@ public:
 		png_info* pngInfo = png_create_info_struct(pp);
 
 		png_init_io(pp, fp);
-		png_set_IHDR(pp, pngInfo, size.Width, size.Height,
+		png_set_IHDR(pp, pngInfo, size.width, size.height,
 			8,						// 各色 8bit
 			PNG_COLOR_TYPE_RGBA,	// RGBA フォーマット
 			PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
@@ -236,13 +236,13 @@ public:
 		//png_bytepp rows = bitmapData->GetData();
 		Array<png_bytep> rows;
 		ByteBuffer tmpData = bitmapData;	// 書き込み可能ポインタでないと png の API に渡せないので一時メモリ化する。
-		rows.Resize(size.Height);
+		rows.Resize(size.height);
 		int rowBytes = png_get_rowbytes(pp, pngInfo);	// PixelFormat_BYTE_R8G8B8A8
 		byte_t* data = tmpData.GetData();//bitmapData.GetData();
-		for (int i = 0; i < size.Height; i++)
+		for (int i = 0; i < size.height; i++)
 		{
 			if (upFlow) {
-				rows[size.Height - i - 1] = &data[rowBytes * i];
+				rows[size.height - i - 1] = &data[rowBytes * i];
 			}
 			else {
 				rows[i] = &data[rowBytes * i];

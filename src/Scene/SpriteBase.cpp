@@ -120,9 +120,9 @@ void SpriteBase::UpdateTexUV()
 	if (tex)
 	{
 		// 転送元矩形が負値ならテクスチャ全体を転送する
-		if (m_srcRect.Width < 0 && m_srcRect.Height < 0)
+		if (m_srcRect.width < 0 && m_srcRect.height < 0)
 		{
-			Rect srcRect(0, 0, tex->GetSize().Width, tex->GetSize().Height);
+			Rect srcRect(0, 0, tex->GetSize().width, tex->GetSize().height);
 			NormalizeSrcRect(
 				srcRect, tex->GetRealSize(),
 				&m_upperLeftUV.x, &m_upperLeftUV.y, &m_lowerRightUV.x, &m_lowerRightUV.y);
@@ -173,20 +173,20 @@ void SpriteBase::UpdateVertexData()
 	// サイズが負値     → 転送矩形を使う
 	// 転送矩形が負値   → テクスチャサイズを使う
 	// テクスチャが無い → サイズ 0,0
-	Vector2 realSize(m_size.Width, m_size.Height);
-	if (m_size.Width < 0.0 && m_size.Height < 0.0)
+	Vector2 realSize(m_size.width, m_size.height);
+	if (m_size.width < 0.0 && m_size.height < 0.0)
 	{
-		if (m_srcRect.Width < 0.0 && m_srcRect.Height < 0.0)
+		if (m_srcRect.width < 0.0 && m_srcRect.height < 0.0)
 		{
 			Texture* tex = GetTexture();
 			if (tex)
-				realSize.Set((float)tex->GetSize().Width, (float)tex->GetSize().Height);
+				realSize.Set((float)tex->GetSize().width, (float)tex->GetSize().height);
 			else
 				realSize = Vector2::Zero;
 		}
 		else
 		{
-			realSize.Set((float)m_srcRect.Width, (float)m_srcRect.Height);
+			realSize.Set((float)m_srcRect.width, (float)m_srcRect.height);
 		}
 	}
 
@@ -243,8 +243,8 @@ void SpriteBase::UpdateVertexData()
 //-----------------------------------------------------------------------------
 void SpriteBase::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b)
 {
-	float tex_rw = 1.0f / textureSize.Width;
-	float tex_rh = 1.0f / textureSize.Height;
+	float tex_rw = 1.0f / textureSize.width;
+	float tex_rh = 1.0f / textureSize.height;
 	*l = static_cast<float>(srcRect.GetLeft()) * tex_rw;
 	*t = static_cast<float>(srcRect.GetTop()) * tex_rh;
 	*r = static_cast<float>(srcRect.GetRight()) * tex_rw;

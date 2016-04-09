@@ -179,7 +179,7 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 	DepthStencilState oldState2 = GetDepthStencilState();
 
 	RenderState newState1;
-	newState1.Blend = BlendMode_Normal;
+	newState1.Blend = BlendMode_Alpha;	// TODO:指定できた方がいい？
 	newState1.AlphaTest = false;
 	SetRenderState(newState1);
 

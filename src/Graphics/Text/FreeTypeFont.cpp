@@ -362,8 +362,8 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, int strokeSize,
 
 	// 転送座標オフセットを進める
 	locData->NextBaseY = (m_ftFace->height + m_ftFace->descender) * m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM;
-	locData->BitmapTopLeftPosition.X = locData->NextBaseX + slot->bitmap_left;
-	locData->BitmapTopLeftPosition.Y = locData->NextBaseY - (slot->metrics.horiBearingY >> 6);//slot->bitmap_top;// (slot->metrics.horiBearingY * m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM)/*- slot->bitmap_top*/;
+	locData->BitmapTopLeftPosition.x = locData->NextBaseX + slot->bitmap_left;
+	locData->BitmapTopLeftPosition.y = locData->NextBaseY - (slot->metrics.horiBearingY >> 6);//slot->bitmap_top;// (slot->metrics.horiBearingY * m_ftFace->size->metrics.y_ppem / m_ftFace->units_per_EM)/*- slot->bitmap_top*/;
 
 	locData->BitmapSize.Set(slot->bitmap.width, slot->bitmap.rows);
 
@@ -376,8 +376,8 @@ FontGlyphLocation* FreeTypeFont::AdvanceKerning(UTF32 utf32code, int strokeSize,
 	// アウトライン有り
 	if (m_edgeSize > 0)
 	{
-		locData->OutlineBitmapTopLeftPosition.X = locData->BitmapTopLeftPosition.X - m_edgeSize;
-		locData->OutlineBitmapTopLeftPosition.Y = locData->BitmapTopLeftPosition.Y - m_edgeSize;
+		locData->OutlineBitmapTopLeftPosition.x = locData->BitmapTopLeftPosition.x - m_edgeSize;
+		locData->OutlineBitmapTopLeftPosition.y = locData->BitmapTopLeftPosition.y - m_edgeSize;
 		locData->OuterTopLeftPosition = locData->OutlineBitmapTopLeftPosition;
 	}
 	// アウトライン無し
@@ -806,8 +806,8 @@ void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 	int height = ftBitmap->rows;
 
 	// サイズ
-	bitmap->m_size.Width = width;
-	bitmap->m_size.Height = height;
+	bitmap->m_size.width = width;
+	bitmap->m_size.height = height;
 	bitmap->m_pitch = abs(ftBitmap->pitch);
 	if (ftBitmap->pitch < 0) {
 		bitmap->m_upFlow = false;

@@ -61,8 +61,8 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureForma
 	m_size = size;
 
 	// 実際に作成されるべきテクスチャの情報を取得する
-	UINT w = m_size.Width;
-	UINT h = m_size.Height;
+	UINT w = m_size.width;
+	UINT h = m_size.height;
 	UINT miplevels = levels;
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(format);
 
@@ -171,17 +171,17 @@ DX9Texture::~DX9Texture()
 //-----------------------------------------------------------------------------
 void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
 {
-	RECT lockRect = { point.X, point.Y, point.X + dataBitmapSize.Width, point.Y + dataBitmapSize.Height };
+	RECT lockRect = { point.x, point.y, point.x + dataBitmapSize.width, point.y + dataBitmapSize.height };
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, D3DLOCK_DISCARD));
 
 	const byte_t* d = (const byte_t*)data;
 	byte_t* w = (byte_t*)lockedRect.pBits;
-	for (int row = 0; row < dataBitmapSize.Height; row++)
+	for (int row = 0; row < dataBitmapSize.height; row++)
 	{
-		const byte_t* line = &d[(4 * dataBitmapSize.Width) * row];	// TODO format
+		const byte_t* line = &d[(4 * dataBitmapSize.width) * row];	// TODO format
 		byte_t* wline = &w[lockedRect.Pitch * row];	// TODO format
-		memcpy(wline, line, (4 * dataBitmapSize.Width));
+		memcpy(wline, line, (4 * dataBitmapSize.width));
 	}
 
 	//memcpy(lockedRect.pBits, data, lockedRect.Pitch * dataBitmapSize.Height);
@@ -213,7 +213,7 @@ Bitmap* DX9Texture::Lock()
 	DWORD flags = 0;//D3DLOCK_READONLY;
 
 	// Lock
-	RECT lockRect = { 0, 0, m_realSize.Width, m_realSize.Height };
+	RECT lockRect = { 0, 0, m_realSize.width, m_realSize.height };
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, flags));	// TODO: 読むのか書くのか、ロックの種類を指定したい
 
@@ -300,8 +300,8 @@ void DX9RenderTargetTexture::OnResetDevice()
 	//}
 
 	// サイズ格納
-	UINT w = static_cast<UINT>(m_size.Width);
-	UINT h = static_cast<UINT>(m_size.Height);
+	UINT w = static_cast<UINT>(m_size.width);
+	UINT h = static_cast<UINT>(m_size.height);
 	UINT levels = m_mipLevels;
 	/*
 	// 実際に作成されるべきテクスチャの情報を取得する
@@ -457,8 +457,8 @@ void DX9DepthBuffer::OnResetDevice()
 
 	LN_COMCALL(
 		dxDevice->CreateDepthStencilSurface(
-		static_cast<UINT>(m_size.Width),
-		static_cast<UINT>(m_size.Height),
+		static_cast<UINT>(m_size.width),
+		static_cast<UINT>(m_size.height),
 		DX9Module::TranslateLNFormatToDxFormat(m_format),
 		D3DMULTISAMPLE_NONE,	// 高度な補間方法の設定
 		0,						// 画像の品質レベルの設定

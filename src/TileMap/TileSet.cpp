@@ -67,7 +67,7 @@ void TileSet::LookupTileImage(int id, Texture** outTexture, Rect* outSrcRect)
 {
 	int x = id % m_tileCountH;
 	int y = id / m_tileCountH;
-	outSrcRect->Set(x * m_tileSize.Width, y * m_tileSize.Height, m_tileSize.Width, m_tileSize.Height);
+	outSrcRect->Set(x * m_tileSize.width, y * m_tileSize.height, m_tileSize.width, m_tileSize.height);
 	*outTexture = m_imageSource;
 }
 

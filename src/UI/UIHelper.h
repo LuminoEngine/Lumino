@@ -23,20 +23,20 @@ public:
 		switch (align)
 		{
 		case HorizontalAlignment::Left:
-			outRect->X = 0;
-			outRect->Width = desiredSize.Width;
+			outRect->x = 0;
+			outRect->width = desiredSize.width;
 			break;
 		case HorizontalAlignment::Center:
-			outRect->X = (arrangeSize.Width - desiredSize.Width) / 2;
-			outRect->Width = desiredSize.Width;
+			outRect->x = (arrangeSize.width - desiredSize.width) / 2;
+			outRect->width = desiredSize.width;
 			break;
 		case HorizontalAlignment::Right:
-			outRect->X = arrangeSize.Width - desiredSize.Width;
-			outRect->Width = desiredSize.Width;
+			outRect->x = arrangeSize.width - desiredSize.width;
+			outRect->width = desiredSize.width;
 			break;
 		case HorizontalAlignment::Stretch:
-			outRect->X = 0;
-			outRect->Width = arrangeSize.Width;
+			outRect->x = 0;
+			outRect->width = arrangeSize.width;
 			break;
 		}
 	}
@@ -46,20 +46,20 @@ public:
 		switch (align)
 		{
 		case VerticalAlignment::Top:
-			outRect->Y = 0;
-			outRect->Height = desiredSize.Height;
+			outRect->y = 0;
+			outRect->height = desiredSize.height;
 			break;
 		case VerticalAlignment::Center:
-			outRect->Y = (arrangeSize.Height - desiredSize.Height) / 2;
-			outRect->Height = desiredSize.Height;
+			outRect->y = (arrangeSize.height - desiredSize.height) / 2;
+			outRect->height = desiredSize.height;
 			break;
 		case VerticalAlignment::Bottom:
-			outRect->Y = arrangeSize.Height - desiredSize.Height;
-			outRect->Height = desiredSize.Height;
+			outRect->y = arrangeSize.height - desiredSize.height;
+			outRect->height = desiredSize.height;
 			break;
 		case VerticalAlignment::Stretch:
-			outRect->Y = 0;
-			outRect->Height = arrangeSize.Height;
+			outRect->y = 0;
+			outRect->height = arrangeSize.height;
 			break;
 		}
 	}

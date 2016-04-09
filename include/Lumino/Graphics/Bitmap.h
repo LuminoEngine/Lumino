@@ -125,10 +125,10 @@ public:
 		};
 
 		if (m_upFlow) {
-			y = m_size.Height - 1 - y;
+			y = m_size.height - 1 - y;
 		}
 
-		const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.Width + x];
+		const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
 		if (m_format == PixelFormat_BYTE_B8G8R8A8 || m_format == PixelFormat_BYTE_B8G8R8X8)
 		{
 			return Color(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
@@ -304,7 +304,7 @@ private:
 		/// rect	: 転送先領域 (Bitmap のサイズに収まるようにクリッピングされていること)
 		DestBuffer(Bitmap* bitmap, const Rect& rect)
 			: m_data(bitmap->m_bitmapData.GetData())
-			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : (bitmap->m_size.Width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat())))
+			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : (bitmap->m_size.width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat())))
 			, m_rc(rect)
 			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
 			, m_curLine(NULL)
@@ -315,19 +315,19 @@ private:
 		inline void SetLine(int y)
 		{
 			if (!m_upFlow)
-				m_curLine = &m_data[(m_widthByteCount * (m_rc.Y + y))];
+				m_curLine = &m_data[(m_widthByteCount * (m_rc.y + y))];
 			else
 				m_curLine = &m_data[(m_widthByteCount * (m_bottomLine - y))];
 		}
 
 		inline ClColor GetPixel(int x)
 		{
-			return TConverter::Get(m_curLine, m_rc.X + x);
+			return TConverter::Get(m_curLine, m_rc.x + x);
 		}
 
 		inline void SetPixel(int x, ClColor color)
 		{
-			TConverter::Set(m_curLine, m_rc.X + x, color);
+			TConverter::Set(m_curLine, m_rc.x + x, color);
 		}
 
 	private:
@@ -347,7 +347,7 @@ private:
 		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
 		SrcBuffer(const Bitmap* bitmap, const Rect& rect)
 			: m_data(bitmap->m_bitmapData.GetConstData())
-			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : bitmap->m_size.Width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat()))
+			, m_widthByteCount((bitmap->m_format == PixelFormat_A1) ? bitmap->m_pitch : bitmap->m_size.width * Bitmap::GetPixelFormatByteCount(bitmap->GetPixelFormat()))
 			, m_rc(rect)
 			, m_bottomLine(rect.GetBottom() - 1)	// 転送範囲の最後の行 (0スタート)
 			, m_curLine(NULL)
@@ -358,14 +358,14 @@ private:
 		inline void SetLine(int y)
 		{
 			if (!m_upFlow)
-				m_curLine = &m_data[(m_widthByteCount * (m_rc.Y + y))];
+				m_curLine = &m_data[(m_widthByteCount * (m_rc.y + y))];
 			else
 				m_curLine = &m_data[(m_widthByteCount * (m_bottomLine - y))];
 		}
 
 		inline ClColor GetPixel(int x) const
 		{
-			return TConverter::Get(m_curLine, m_rc.X + x);
+			return TConverter::Get(m_curLine, m_rc.x + x);
 		}
 
 	private:

@@ -210,7 +210,7 @@ void GLRenderer::SetDepthBuffer(ITexture* texture)
 void GLRenderer::SetViewport(const Rect& rect)
 {
 	const Size& scr = m_currentRenderTargets[0]->GetSize();
-	glViewport(rect.X, scr.Height - (rect.Y + rect.Height), rect.Width, rect.Height);
+	glViewport(rect.x, scr.height - (rect.y + rect.height), rect.width, rect.height);
 	//LN_THROW(0, NotImplementedException);
 }
 

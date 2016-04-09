@@ -174,7 +174,7 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 {
 	m_shader.varWorldMatrix->SetMatrix(world);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);
-	m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.Width, 0.5f / viewPixelSize.Height, 0, 0));
+	m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
 }
 
 //-----------------------------------------------------------------------------
@@ -184,7 +184,7 @@ void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* 
 {
 	//m_glyphsMaskTexture = glyphsTexture;
 
-	SizeF texSizeInv(1.0f / cache->GetGlyphsTextureSize().Width, 1.0f / cache->GetGlyphsTextureSize().Height);
+	SizeF texSizeInv(1.0f / cache->GetGlyphsTextureSize().width, 1.0f / cache->GetGlyphsTextureSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
 		Internal::CacheGlyphInfo info;
@@ -205,15 +205,15 @@ void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* 
 
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする
 
-		RectF uvSrcRect(dataList[i].srcRect.X, dataList[i].srcRect.Y, dataList[i].srcRect.Width, dataList[i].srcRect.Height);
-		uvSrcRect.X *= texSizeInv.Width;
-		uvSrcRect.Width *= texSizeInv.Width;
-		uvSrcRect.Y *= texSizeInv.Height;
-		uvSrcRect.Height *= texSizeInv.Height;
+		RectF uvSrcRect(dataList[i].srcRect.x, dataList[i].srcRect.y, dataList[i].srcRect.width, dataList[i].srcRect.height);
+		uvSrcRect.x *= texSizeInv.width;
+		uvSrcRect.width *= texSizeInv.width;
+		uvSrcRect.y *= texSizeInv.height;
+		uvSrcRect.height *= texSizeInv.height;
 
-		RectF dstRect(dataList[i].Position, dataList[i].srcRect.Width, dataList[i].srcRect.Height);
-		dstRect.X += position.X;
-		dstRect.Y += position.Y;
+		RectF dstRect(dataList[i].Position, dataList[i].srcRect.width, dataList[i].srcRect.height);
+		dstRect.x += position.x;
+		dstRect.y += position.y;
 		InternalDrawRectangle(dstRect, uvSrcRect);
 	}
 }
@@ -351,7 +351,7 @@ void TextRenderer::SetFont(Font* font)
 //-----------------------------------------------------------------------------
 void TextRenderer::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
 {
-	DrawGlyphRun(PointF((float)position.X, (float)position.Y), glyphRun);
+	DrawGlyphRun(PointF((float)position.x, (float)position.y), glyphRun);
 }
 void TextRenderer::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 {
@@ -418,7 +418,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, S
 	else {
 	}
 
-	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, (int)rect.Width, (int)rect.Height));
+	cache->GetTextLayoutEngine()->SetDrawingArea(Rect(0, 0, (int)rect.width, (int)rect.height));
 
 
 	TextLayoutResult result;
@@ -469,7 +469,7 @@ void TextRenderer::DrawGlyphsInternal(const PointF& position, const Array<TextLa
 		
 		// TODO: Outline
 
-		dataList[i].Position.Set((float)item.Location.OuterTopLeftPosition.X, (float)item.Location.OuterTopLeftPosition.Y);
+		dataList[i].Position.Set((float)item.Location.OuterTopLeftPosition.x, (float)item.Location.OuterTopLeftPosition.y);
 		dataList[i].srcRect = info.srcRect;
 		dataList[i].outlineOffset = info.outlineOffset;
 	}

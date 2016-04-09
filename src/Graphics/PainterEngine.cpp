@@ -286,10 +286,10 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		Driver::ITexture* srcTexture = state.Brush.TextureBrush.Texture;
 		Rect& srcRect = *((Rect*)state.Brush.TextureBrush.SourceRect);
 
-		SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
-		texSize.Width = 1.0f / texSize.Width;
-		texSize.Height = 1.0f / texSize.Height;
-		RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
+		SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+		texSize.width = 1.0f / texSize.width;
+		texSize.height = 1.0f / texSize.height;
+		RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
 
 		if (state.Brush.TextureBrush.WrapMode == BrushWrapMode_Stretch)
@@ -314,10 +314,10 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 		{
 			Rect& srcRect = *((Rect*)brush.InnerSourceRect);
 			Driver::ITexture* srcTexture = brush.Texture;
-			SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
-			texSize.Width = 1.0f / texSize.Width;
-			texSize.Height = 1.0f / texSize.Height;
-			RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
+			SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+			texSize.width = 1.0f / texSize.width;
+			texSize.height = 1.0f / texSize.height;
+			RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
 			if (brush.WrapMode == BrushWrapMode_Stretch)
 			{
@@ -423,52 +423,52 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 		srcTexture = m_dummyTexture;
 	}
 
-	if (srcRect.Width == INT_MAX) {
-		srcRect.Width = srcTexture->GetSize().Width;
+	if (srcRect.width == INT_MAX) {
+		srcRect.width = srcTexture->GetSize().width;
 	}
-	if (srcRect.Height == INT_MAX) {
-		srcRect.Height = srcTexture->GetSize().Height;
+	if (srcRect.height == INT_MAX) {
+		srcRect.height = srcTexture->GetSize().height;
 	}
 
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	SizeF texSize((float)srcTexture->GetRealSize().Width, (float)srcTexture->GetRealSize().Height);
-	texSize.Width = 1.0f / texSize.Width;
-	texSize.Height = 1.0f / texSize.Height;
-	RectF uvSrcRect(srcRect.X * texSize.Width, srcRect.Y * texSize.Height, srcRect.Width * texSize.Width, srcRect.Height * texSize.Height);
+	SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+	texSize.width = 1.0f / texSize.width;
+	texSize.height = 1.0f / texSize.height;
+	RectF uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 	
 
 	float frameWidthH = frameWidth;
 	float frameWidthV = frameWidth;
-	float uvFrameWidthH = frameWidth * texSize.Width;
-	float uvFrameWidthV = frameWidth * texSize.Height;
+	float uvFrameWidthH = frameWidth * texSize.width;
+	float uvFrameWidthV = frameWidth * texSize.height;
 	int frameWidthHI = (int)frameWidth;	// 型変換回数を減らすため、あらかじめ int 化しておく
 	int frameWidthVI = (int)frameWidth;
 
 	// 横幅が小さいため、枠幅も狭めなければならない
-	if (rect.Width < frameWidthH * 2)
+	if (rect.width < frameWidthH * 2)
 	{
-		float ratio = rect.Width / (frameWidthH * 2);	// 元の幅から何 % になるか
+		float ratio = rect.width / (frameWidthH * 2);	// 元の幅から何 % になるか
 		frameWidthH *= ratio;
 		uvFrameWidthH *= ratio;
 		frameWidthHI = (int)ceil( ratio * frameWidthHI);
 	}
 	// 縦幅が小さいため、枠幅も狭めなければならない
-	if (rect.Height < frameWidthV * 2)
+	if (rect.height < frameWidthV * 2)
 	{
-		float ratio = rect.Height / (frameWidthV * 2);	// 元の幅から何 % になるか
+		float ratio = rect.height / (frameWidthV * 2);	// 元の幅から何 % になるか
 		frameWidthV *= ratio;
 		uvFrameWidthV *= ratio;
 		frameWidthVI = (int)ceil(ratio * frameWidthVI);
 	}
 
 	RectF outerRect = rect;
-	RectF innerRect(outerRect.X + frameWidthH, outerRect.Y + frameWidthV, outerRect.Width - frameWidthH * 2, outerRect.Height - frameWidthV * 2);
+	RectF innerRect(outerRect.x + frameWidthH, outerRect.y + frameWidthV, outerRect.width - frameWidthH * 2, outerRect.height - frameWidthV * 2);
 	RectF outerUVRect = uvSrcRect;
-	RectF innerUVRect(outerUVRect.X + uvFrameWidthH, outerUVRect.Y + uvFrameWidthV, outerUVRect.Width - uvFrameWidthH * 2, outerUVRect.Height - uvFrameWidthV * 2);
+	RectF innerUVRect(outerUVRect.x + uvFrameWidthH, outerUVRect.y + uvFrameWidthV, outerUVRect.width - uvFrameWidthH * 2, outerUVRect.height - uvFrameWidthV * 2);
 	Rect  outerSrcRect = srcRect;
-	Rect  innerSrcRect(outerSrcRect.X + frameWidthHI, outerSrcRect.Y + frameWidthVI, outerSrcRect.Width - frameWidthHI * 2, outerSrcRect.Height - frameWidthVI * 2);
+	Rect  innerSrcRect(outerSrcRect.x + frameWidthHI, outerSrcRect.y + frameWidthVI, outerSrcRect.width - frameWidthHI * 2, outerSrcRect.height - frameWidthVI * 2);
 
 	// 左上	■□□
 	//		□　□
@@ -483,9 +483,9 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 	//		□　□
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetLeft(),		outerRect.GetTop(),		innerRect.Width,	frameWidth),
-		Rect(innerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	innerSrcRect.Width,	frameWidthVI),
-		RectF(innerUVRect.GetLeft(),	outerUVRect.GetTop(),	innerUVRect.Width,	uvFrameWidthV),
+		RectF(innerRect.GetLeft(),		outerRect.GetTop(),		innerRect.width,	frameWidth),
+		Rect(innerSrcRect.GetLeft(),	outerSrcRect.GetTop(),	innerSrcRect.width,	frameWidthVI),
+		RectF(innerUVRect.GetLeft(),	outerUVRect.GetTop(),	innerUVRect.width,	uvFrameWidthV),
 		srcTexture);
 
 	// 右上	□□■
@@ -501,9 +501,9 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 	//		□　■
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetRight(),		innerRect.GetTop(),		frameWidthH,		innerRect.Height),
-		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.Height),
-		RectF(innerUVRect.GetRight(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.Height),
+		RectF(innerRect.GetRight(),		innerRect.GetTop(),		frameWidthH,		innerRect.height),
+		Rect(innerSrcRect.GetRight(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.height),
+		RectF(innerUVRect.GetRight(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.height),
 		srcTexture);
 
 	// 右下	□□□
@@ -519,9 +519,9 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 	//		□　□
 	//		□■□
 	InternalDrawRectangleTiling(
-		RectF(innerRect.GetLeft(),		innerRect.GetBottom(),		innerRect.Width,	frameWidthV),
-		Rect(innerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	innerSrcRect.Width,	frameWidthVI),
-		RectF(innerUVRect.GetLeft(),	innerUVRect.GetBottom(),	innerUVRect.Width,	uvFrameWidthV),
+		RectF(innerRect.GetLeft(),		innerRect.GetBottom(),		innerRect.width,	frameWidthV),
+		Rect(innerSrcRect.GetLeft(),	innerSrcRect.GetBottom(),	innerSrcRect.width,	frameWidthVI),
+		RectF(innerUVRect.GetLeft(),	innerUVRect.GetBottom(),	innerUVRect.width,	uvFrameWidthV),
 		srcTexture);
 
 	// 左下	□□□
@@ -537,9 +537,9 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 	//		■　□
 	//		□□□
 	InternalDrawRectangleTiling(
-		RectF(outerRect.GetLeft(),		innerRect.GetTop(),		frameWidthH,	innerRect.Height),
-		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.Height),
-		RectF(outerUVRect.GetLeft(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.Height),
+		RectF(outerRect.GetLeft(),		innerRect.GetTop(),		frameWidthH,	innerRect.height),
+		Rect(outerSrcRect.GetLeft(),	innerSrcRect.GetTop(),	frameWidthHI,	innerSrcRect.height),
+		RectF(outerUVRect.GetLeft(),	innerUVRect.GetTop(),	uvFrameWidthH,	innerUVRect.height),
 		srcTexture);
 
 	//m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -558,18 +558,18 @@ void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dat
 {
 	SetInternalGlyphMaskTexture(glyphsTexture);
 
-	SizeF texSizeInv(1.0f / glyphsTexture->GetRealSize().Width, 1.0f / glyphsTexture->GetRealSize().Height);
+	SizeF texSizeInv(1.0f / glyphsTexture->GetRealSize().width, 1.0f / glyphsTexture->GetRealSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
 		RectF uvSrcRect = dataList[i].SrcPixelRect;
-		uvSrcRect.X *= texSizeInv.Width;
-		uvSrcRect.Width *= texSizeInv.Width;
-		uvSrcRect.Y *= texSizeInv.Height;
-		uvSrcRect.Height *= texSizeInv.Height;
+		uvSrcRect.x *= texSizeInv.width;
+		uvSrcRect.width *= texSizeInv.width;
+		uvSrcRect.y *= texSizeInv.height;
+		uvSrcRect.height *= texSizeInv.height;
 
 		RectF dstRect(dataList[i].Position, dataList[i].SrcPixelRect.GetSize());
-		dstRect.X += position.X;
-		dstRect.Y += position.Y;
+		dstRect.x += position.x;
+		dstRect.y += position.y;
 		InternalDrawRectangleStretch(dstRect, uvSrcRect);
 	}
 
@@ -591,8 +591,8 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 
 	float lu = srcUVRect.GetLeft();
 	float tv = srcUVRect.GetTop();
-	float uvWidth = srcUVRect.Width;
-	float uvHeight = srcUVRect.Height;
+	float uvWidth = srcUVRect.width;
+	float uvHeight = srcUVRect.height;
 
 	uint16_t i = m_vertexCache.GetCount();
 	m_indexCache.Add(i + 0);
@@ -621,12 +621,12 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
-	float uvX = srcUVRect.X;
-	float uvY = srcUVRect.Y;
-	float uvWidth = srcUVRect.Width;
-	float uvHeight = srcUVRect.Height;
-	float blockCountW = (rect.Width / srcRect.Width);	// 横方向にいくつのタイルを並べられるか (端数も含む)
-	float blockCountH = (rect.Height / srcRect.Height);	// 縦方向にいくつのタイルを並べられるか (端数も含む)
+	float uvX = srcUVRect.x;
+	float uvY = srcUVRect.y;
+	float uvWidth = srcUVRect.width;
+	float uvHeight = srcUVRect.height;
+	float blockCountW = (rect.width / srcRect.width);	// 横方向にいくつのタイルを並べられるか (端数も含む)
+	float blockCountH = (rect.height / srcRect.height);	// 縦方向にいくつのタイルを並べられるか (端数も含む)
 
 	float lu = uvX;
 	float ru = uvX + uvWidth * blockCountW;

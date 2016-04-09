@@ -15,8 +15,8 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 	// png のデフォルトの読み取り
 	ASSERT_EQ(PixelFormat_BYTE_R8G8B8A8, bmp1.GetPixelFormat());
 
-	ASSERT_EQ(32, bmp1.GetSize().Width);
-	ASSERT_EQ(32, bmp1.GetSize().Height);
+	ASSERT_EQ(32, bmp1.GetSize().width);
+	ASSERT_EQ(32, bmp1.GetSize().height);
 
 	byte_t* buf = bmp1.GetBitmapBuffer()->GetData();
 	//printf("%X %X %X %X\n", buf[0], buf[1], buf[2], buf[3]);
@@ -25,7 +25,7 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 	ASSERT_EQ(0x3F, buf[2]);	// B
 	ASSERT_EQ(0xFF, buf[3]);	// A
 
-	int rowSize = bmp1.GetSize().Width * 4;
+	int rowSize = bmp1.GetSize().width * 4;
 
 	byte_t* rt = &buf[rowSize - 4];	// 右上px
 	ASSERT_EQ(0x00, rt[0]);		// R

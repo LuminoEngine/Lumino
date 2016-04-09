@@ -46,8 +46,8 @@ RefPtr<RenderTarget> RenderTargetTextureCache::RequestRenderTarget(const Size& s
 	LN_NOTIMPLEMENTED();
 
 	// ŒŸõƒL[‚ğì‚é
-	uint64_t w = (uint64_t)size.Width;
-	uint64_t h = (uint64_t)size.Height;
+	uint64_t w = (uint64_t)size.width;
+	uint64_t h = (uint64_t)size.height;
 	uint64_t f = (uint64_t)format;
 	uint64_t m = (uint64_t)mipLevel;
 	uint64_t key = m << 40 | f << 32 | h << 16 | w;

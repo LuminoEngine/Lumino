@@ -114,13 +114,13 @@ void SceneGraph::UpdateFrame(float deltaTime)
 //-----------------------------------------------------------------------------
 void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 {
-	SizeF viewSize((float)renderTarget->GetSize().Width, (float)renderTarget->GetSize().Height);
+	SizeF viewSize((float)renderTarget->GetSize().width, (float)renderTarget->GetSize().height);
 
 	// 全てのシェーダの Scene 単位データの更新
 	MMESceneParams sceneParams;
 	sceneParams.Time = (float)m_time;
 	sceneParams.ElapsedTime = m_elapsedTime;
-	sceneParams.MousePosition.Set((2.0f * ((float)m_mousePosition.X) / viewSize.Width) - 1.0f, (2.0f * ((float)m_mousePosition.Y) / viewSize.Height) - 1.0f, 0, 0);
+	sceneParams.MousePosition.Set((2.0f * ((float)m_mousePosition.x) / viewSize.width) - 1.0f, (2.0f * ((float)m_mousePosition.y) / viewSize.height) - 1.0f, 0, 0);
 	m_leftMouseState.ToVector4(viewSize, &sceneParams.LeftMouseDown);
 	m_rightMouseState.ToVector4(viewSize, &sceneParams.MiddleMouseDown);
 	m_middleMouseState.ToVector4(viewSize, &sceneParams.RightMouseDown);

@@ -105,7 +105,7 @@ void Camera::SetCameraBehavior(CameraBehavior* behavior)
 Vector3 Camera::WorldToViewportPoint(const Vector3& position) const
 {
 	const Size& size = m_ownerLayer->GetViewportSize();
-	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, (float)size.Width, (float)size.Height, m_nearClip, m_farClip);
+	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, (float)size.width, (float)size.height, m_nearClip, m_farClip);
 }
 
 //-----------------------------------------------------------------------------
@@ -116,8 +116,8 @@ Vector3 Camera::ViewportToWorldPoint(const Vector3& position) const
 	const Size& size = m_ownerLayer->GetViewportSize();
 	//return Vector3::Unproject(position, m_viewProjMatrix, 0, 0, size.Width, size.Height, m_nearClip, m_farClip);
 	Vector3 v;
-	v.x = (((position.x - 0) / size.Width) * 2.0f) - 1.0f;
-	v.y = -((((position.y - 0) / size.Height) * 2.0f) - 1.0f);
+	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
+	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
 	v.z = (position.z - m_nearClip) / (m_farClip - m_nearClip);
 	return Vector3::TransformCoord(v, m_viewProjMatrixI);
 }
@@ -135,7 +135,7 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 		m_direction = Vector4(direction, 0.0f);
 
 		m_viewMatrix = m_combinedGlobalMatrix;
-		Perspective2DLH(viewSize.Width, viewSize.Height, m_nearClip, m_farClip, &m_projMatrix);
+		Perspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip, &m_projMatrix);
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 		//Matrix vp;
@@ -159,7 +159,7 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 
 		// プロジェクション行列の更新
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::PerspectiveFovLH(m_fovY, viewSize.Width / viewSize.Height, m_nearClip, m_farClip);
+		m_projMatrix = Matrix::PerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
@@ -347,8 +347,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		//camera->SetPosition(newPos);
 
 		float s = 0.01f;
-		float dx = s * (x - m_prevPos.X);
-		float dy = s * (y - m_prevPos.Y);
+		float dx = s * (x - m_prevPos.x);
+		float dy = s * (y - m_prevPos.y);
 
 		Camera* camera = GetTargetCamera();
 		Vector3 view;
@@ -451,8 +451,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 
 		camera->SetPosition(pos);
 
-		m_prevPos.X = x;
-		m_prevPos.Y = y;
+		m_prevPos.x = x;
+		m_prevPos.y = y;
 		return true;
 	}
 	if (m_MDrag)
@@ -463,8 +463,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 
 		// 1px に付きどの程度移動するか
 		float s = 0.00175f * (pos - lookAt).GetLength();
-		float dx = s * (x - m_prevPos.X);
-		float dy = s * (y - m_prevPos.Y);
+		float dx = s * (x - m_prevPos.x);
+		float dy = s * (y - m_prevPos.y);
 
 		Vector3 xaxis, yaxis, zaxis;
 		// 注視点からカメラ位置までのベクトルをZ軸(正面方向)とする
@@ -488,8 +488,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		camera->SetLookAt(lookAt + offset);
 
 
-		m_prevPos.X = x;
-		m_prevPos.Y = y;
+		m_prevPos.x = x;
+		m_prevPos.y = y;
 
 		//Vector3 view;
 		//Matrix mat = Matrix::Inverse(GetTargetCamera()->GetViewMatrix());
@@ -516,8 +516,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonDown(MouseButton button, 
 	if (button == MouseButton::Right)
 	{
 		m_RDrag = true;
-		m_prevPos.X = x;
-		m_prevPos.Y = y;
+		m_prevPos.x = x;
+		m_prevPos.y = y;
 		return true;
 
 	}
@@ -525,8 +525,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonDown(MouseButton button, 
 	else if (button == MouseButton::Middle)
 	{
 		m_MDrag = true;
-		m_prevPos.X = x;
-		m_prevPos.Y = y;
+		m_prevPos.x = x;
+		m_prevPos.y = y;
 		return true;
 	}
 	return false;
