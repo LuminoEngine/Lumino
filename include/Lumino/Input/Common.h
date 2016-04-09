@@ -37,6 +37,17 @@ enum InputDeviceID
 	InputDeviceID_Joypad4,
 };
 
+/** 修飾キー */
+LN_ENUM_FLAGS(ModifierKeys)
+{
+	None	= 0x0000,
+	Alt		= 0x0001,	/**< Alt キー */
+	Shift	= 0x0001,	/**< Shift キー */
+	Control = 0x0001,	/**< Ctrl キー */
+};
+LN_ENUM_FLAGS_DECLARE(ModifierKeys);
+
+
 namespace detail
 {
 class InputManager;
@@ -121,7 +132,7 @@ struct DeviceInputSource
 	static const uint32_t JoystickButtonFlag	= 0x00040000;
 	static const uint32_t JoystickAxisFlag		= 0x00080000;
 	static const uint32_t JoystickPovFlag		= 0x00100000;
-	static const uint32_t ValumeMask			= 0x0000FFFF;
+	static const uint32_t ValueMask				= 0x0000FFFF;
 	static const uint32_t JoystickNumberMask	= 0x0000F000;
 	static const uint32_t JoystickValumeMask	= 0x00000FFF;
 	// Motion

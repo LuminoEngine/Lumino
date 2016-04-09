@@ -72,12 +72,12 @@ void InputManager::Initialize(const Settings& settings)
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 
-	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Left, Key::Left));
-	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Right, Key::Right));
-	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Up, Key::Up));
-	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Down, Key::Down));
-	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Ok, Key::Z));
-	pad->AddBinding(RefPtr<InputBinding>::Construct(InputButtons::Cancel, Key::X));
+	pad->AddBinding(InputBinding::Create(InputButtons::Left, Key::Left));
+	pad->AddBinding(InputBinding::Create(InputButtons::Right, Key::Right));
+	pad->AddBinding(InputBinding::Create(InputButtons::Up, Key::Up));
+	pad->AddBinding(InputBinding::Create(InputButtons::Down, Key::Down));
+	pad->AddBinding(InputBinding::Create(InputButtons::Ok, Key::Z));
+	pad->AddBinding(InputBinding::Create(InputButtons::Cancel, Key::X));
 
 	if (Instance == nullptr) {
 		Instance = this;
@@ -133,13 +133,15 @@ float InputManager::GetVirtualButtonState(const detail::DeviceInputSource& input
 	// キーボード
 	if (input.id & detail::DeviceInputSource::KeyboardFlag)
 	{
-		uint32_t k = input.id & detail::DeviceInputSource::ValumeMask;
+		uint32_t k = (input.id & detail::DeviceInputSource::ValueMask) & 0x0FFF;
+		uint32_t m = ((input.id & detail::DeviceInputSource::ValueMask) & 0xF000) >> 24;
+		if (m != 0) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->GetKeyState((Key)k) ? 1.0f : 0.0f;
 	}
 	// マウス
 	if (input.id & detail::DeviceInputSource::MouseFlag)
 	{
-		uint32_t k = input.id & detail::DeviceInputSource::ValumeMask;
+		uint32_t k = input.id & detail::DeviceInputSource::ValueMask;
 		return m_inputDriver->GetMouseState((MouseButton::enum_type)k) ? 1.0f : 0.0f;
 	}
 	// ジョイスティック - ボタン

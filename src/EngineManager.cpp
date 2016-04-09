@@ -706,7 +706,7 @@ void EngineManager::Render()
 			m_uiManager->GetDefaultUIContext()->Render();
 		}
 
-		if (m_diagRenderer != nullptr)
+		if (m_diagRenderer != nullptr && m_diagRenderer->IsVisible())
 		{
 			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
 			g->Clear(ClearFlags::Depth, ColorF::White);
@@ -739,7 +739,8 @@ void EngineManager::Exit()
 bool EngineManager::OnEvent(const PlatformEventArgs& e)
 {
 	UILayoutView* uiView = nullptr;
-	if (m_uiManager != nullptr) {
+	if (m_uiManager != nullptr)
+	{
 		uiView = m_uiManager->GetDefaultUIContext()->GetMainWindowView();
 	}
 
@@ -751,49 +752,68 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		break;
 
 	case EventType_MouseDown:		// ウスボタンが押された
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
-		if (m_sceneGraphManager != nullptr) {
+		if (m_sceneGraphManager != nullptr)
+		{
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case EventType_MouseUp:			// マウスボタンが離された
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
-		if (m_sceneGraphManager != nullptr) {
+		if (m_sceneGraphManager != nullptr)
+		{
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case EventType_MouseMove:		// マウスが移動した
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
-		if (m_sceneGraphManager != nullptr) {
+		if (m_sceneGraphManager != nullptr)
+		{
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
 		break;
 	case EventType_MouseWheel:		// マウスホイールが操作された
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectMouseWheel(e.Mouse.WheelDelta, e.Mouse.X, e.Mouse.Y)) { return true; }
 		}
-		if (m_sceneGraphManager != nullptr) {
+		if (m_sceneGraphManager != nullptr)
+		{
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.WheelDelta)) { return true; }
 		}
 		break;
 	case EventType_KeyDown:	// キー押下
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
+		}
+
+		// デバッグ表示切替
+		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
+			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl) &&
+			m_diagRenderer != nullptr)
+		{
+			m_diagRenderer->SetVisible(!m_diagRenderer->IsVisible());
 		}
 		break;
 	case EventType_KeyUp:		//  キー押し上げ
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
 		}
 		break;
 	case EventType_KeyChar:		//  文字入力
-		if (uiView != nullptr) {
+		if (uiView != nullptr)
+		{
 			if (uiView->InjectTextInput(e.Key.Char)) { return true; }
 		}
 		break;

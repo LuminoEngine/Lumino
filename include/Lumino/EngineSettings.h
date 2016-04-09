@@ -3,6 +3,7 @@
 #include <Lumino/IO/PathName.h>
 #include "Audio/Common.h"
 #include "Graphics/Common.h"
+#include "Input/InputBinding.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -23,6 +24,13 @@ public:
 		int			objectCount = 32;	/**< キャッシュに保持できる最大オブジェクト数 */
 		size_t		memorySize = 0;		/**< キャッシュに保持できる最大メモリ量 (byte単位。0 の場合はメモリ量を考慮しない) */
 	};
+
+	/** エンジンのアクセラレータキー */
+	struct EngineAcceleratorKeys
+	{
+		InputBindingPtr	toggleShowDiag;
+	};
+
 
 public:
 
@@ -101,6 +109,9 @@ public:
 	*/
 	float	DirectMusicReverbLevel;
 
+	/** エンジンのアクセラレータキー */
+	EngineAcceleratorKeys	acceleratorKeys;
+
 	/**
 		@brief	内部的に COM の初期化を行います。
 	*/
@@ -122,7 +133,9 @@ public:
 	{
 #ifdef LN_DEBUG
 		ApplicationLogEnabled = true;
+		acceleratorKeys.toggleShowDiag = InputBinding::Create("ToggleShowDiag", Key::F3);
 #endif
+		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}
 };
 

@@ -16,7 +16,7 @@ public:
 	/**
 		@brief		InputBinding オブジェクトを作成します。
 	*/
-	static InputBindingPtr Create(const String& bindingName, Key key);
+	static InputBindingPtr Create(const String& bindingName, Key key, ModifierKeys modifier = ModifierKeys::None);
 
 public:
 
@@ -26,9 +26,11 @@ public:
 
 	bool IsNegativeValue() const { return m_negativeValue; }
 
+	bool EqualKeyInput(Key keyCode, bool isAlt, bool isShift, bool isControl);
+
 LN_INTERNAL_ACCESS:
 	InputBinding();
-	InputBinding(const String& bindingName, Key key);
+	InputBinding(const String& bindingName, Key key, ModifierKeys modifier);
 	virtual ~InputBinding();
 	void Initialize(detail::InputManager* manager);
 	const detail::DeviceInputSource& GetDeviceInputSource() const { return m_source; }

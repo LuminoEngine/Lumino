@@ -58,6 +58,7 @@ float EngineDiagCore::GetMainFPSCapacity() const
 EngineDiagRenderer::EngineDiagRenderer()
 	: m_diagCore(nullptr)
 	, m_font(nullptr)
+	, m_isVisible(false)
 {
 }
 
