@@ -56,7 +56,7 @@ float EngineDiagCore::GetMainFPSCapacity() const
 //
 //-----------------------------------------------------------------------------
 EngineDiagRenderer::EngineDiagRenderer()
-	: m_diag(nullptr)
+	: m_diagCore(nullptr)
 	, m_font(nullptr)
 {
 }
@@ -140,21 +140,21 @@ void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
 	//g->DrawText(text, -1, location);
 	location.Y += 16;
 
-	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_profiler->GetCommitedMainFPS());
-	g->DrawText(text, -1, location);
+	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_diagCore->GetMainFPS());
+	g->DrawText(text, location);
 
-	StringTraits::SPrintf(text, 256, _T(" / Capacity : %.1f"), m_profiler->GetCommitedMainFPSCapacity());
-	g->DrawText(text, -1, PointF(location.X + 150, location.Y));
+	StringTraits::SPrintf(text, 256, _T(" / Capacity : %.1f"), m_diagCore->GetMainFPSCapacity());
+	g->DrawText(text, PointF(location.X + 150, location.Y));
 	location.Y += 16;
 
-	StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
-	g->DrawText(text, -1, location);
-	location.Y += 16;
+	//StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
+	//g->DrawText(text, -1, location);
+	//location.Y += 16;
 
-	StringTraits::SPrintf(text, 256, _T("Backbuffer Size : %d x %d"), m_profiler->GetCommitedMainBackbufferSize().Width, m_profiler->GetCommitedMainBackbufferSize().Height);
-	g->DrawText(text, -1, location);
-	location.Y += 24;
-	location.X -= 16;
+	//StringTraits::SPrintf(text, 256, _T("Backbuffer Size : %d x %d"), m_profiler->GetCommitedMainBackbufferSize().Width, m_profiler->GetCommitedMainBackbufferSize().Height);
+	//g->DrawText(text, -1, location);
+	//location.Y += 24;
+	//location.X -= 16;
 }
 
 LN_NAMESPACE_END

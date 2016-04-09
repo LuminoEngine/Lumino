@@ -256,6 +256,8 @@ void EngineManager::Initialize()
 #endif
 	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: ‚Æ‚è‚ ‚¦‚¸
 	m_application->Initialize(this);
+
+	EngineDiagCore::Instance.Initialize(this);
 }
 
 //-----------------------------------------------------------------------------
