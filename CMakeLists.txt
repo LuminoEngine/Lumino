@@ -473,6 +473,7 @@ set(LN_SOURCES_Game
 )
 
 set(LN_SOURCES_Application
+	include/Lumino/Assets.h
 	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
@@ -487,6 +488,8 @@ set(LN_SOURCES_Application
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Variant.h
 	include/Lumino/Version.h
+	src/AssetsManager.cpp
+	src/AssetsManager.h
 	src/AutoReleasePool.cpp
 	src/CoreObject.cpp
 	src/Engine.cpp

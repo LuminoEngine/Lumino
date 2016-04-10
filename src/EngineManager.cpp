@@ -90,6 +90,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/Foundation/Application.h>
+#include "AssetsManager.h"
 #include "EngineDiagRenderer.h"
 #include "EngineManager.h"
 
@@ -148,6 +149,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_modelManager(nullptr)
 	, m_uiManager(nullptr)
 	, m_sceneGraphManager(nullptr)
+	, m_assetsManager(nullptr)
 	, m_diagRenderer(nullptr)
 	, m_application(nullptr)
 	, m_frameRenderingSkip(false)
@@ -178,6 +180,12 @@ EngineManager::~EngineManager()
 	LN_SAFE_RELEASE(m_application);
 
 	LN_SAFE_RELEASE(m_diagRenderer);
+
+	if (m_assetsManager != nullptr)
+	{
+		m_assetsManager->Finalize();
+		LN_SAFE_RELEASE(m_assetsManager);
+	}
 
 	if (m_graphicsManager != nullptr)
 	{
@@ -254,6 +262,7 @@ void EngineManager::Initialize()
 #ifdef LN_BUILD_SCENE_MODULE
 	InitializeSceneGraphManager();
 #endif
+	InitializeAssetsManager();
 	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: ‚Æ‚è‚ ‚¦‚¸
 	m_application->Initialize(this);
 
@@ -535,6 +544,18 @@ void EngineManager::InitializeSceneGraphManager()
 	}
 }
 #endif
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void EngineManager::InitializeAssetsManager()
+{
+	if (m_assetsManager == nullptr)
+	{
+		m_assetsManager = LN_NEW AssetsManager();
+		m_assetsManager->Initialize(this);
+	}
+}
 
 //-----------------------------------------------------------------------------
 //

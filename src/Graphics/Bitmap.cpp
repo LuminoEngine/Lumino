@@ -131,6 +131,36 @@ void Bitmap::Clear(const Color& color)
 	}
 	else
 	{
+		switch (m_format)
+		{
+			case PixelFormat_A1:
+				return;
+			case PixelFormat_A8:
+				return;
+			case PixelFormat_BYTE_R8G8B8A8:
+			case PixelFormat_BYTE_R8G8B8X8:
+			{
+				byte_t c[4] = { color.r, color.g, color.b, color.a };
+				uint32_t* dst = (uint32_t*)m_bitmapData.GetData();
+				int count = m_bitmapData.GetSize() / 4;
+				for (int i = 0; i < count; ++i)
+				{
+					dst[i] = *((uint32_t*)c);
+				}
+				return;
+			}
+			case PixelFormat_BYTE_B8G8R8A8:
+			case PixelFormat_BYTE_B8G8R8X8:
+				byte_t c[4] = { color.b, color.g, color.r, color.a };
+				uint32_t* dst = (uint32_t*)m_bitmapData.GetData();
+				int count = m_bitmapData.GetSize() / 4;
+				for (int i = 0; i < count; ++i)
+				{
+					dst[i] = *((uint32_t*)c);
+				}
+				return;
+		}
+
 		LN_NOTIMPLEMENTED();
 	}
 }

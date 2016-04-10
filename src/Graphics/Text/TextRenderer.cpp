@@ -205,13 +205,13 @@ void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* 
 
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする
 
-		RectF uvSrcRect(dataList[i].srcRect.x, dataList[i].srcRect.y, dataList[i].srcRect.width, dataList[i].srcRect.height);
+		RectF uvSrcRect((float)dataList[i].srcRect.x, (float)dataList[i].srcRect.y, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
 		uvSrcRect.x *= texSizeInv.width;
 		uvSrcRect.width *= texSizeInv.width;
 		uvSrcRect.y *= texSizeInv.height;
 		uvSrcRect.height *= texSizeInv.height;
 
-		RectF dstRect(dataList[i].Position, dataList[i].srcRect.width, dataList[i].srcRect.height);
+		RectF dstRect(dataList[i].Position, (float)dataList[i].srcRect.width, (float)dataList[i].srcRect.height);
 		dstRect.x += position.x;
 		dstRect.y += position.y;
 		InternalDrawRectangle(dstRect, uvSrcRect);

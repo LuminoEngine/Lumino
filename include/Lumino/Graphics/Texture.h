@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/Cache.h>
 #include "Common.h"
 #include "../Graphics/Bitmap.h"
 #include "GraphicsResourceObject.h"
@@ -70,7 +71,9 @@ protected:
 */
 class Texture2D
 	: public Texture
+	, public ICacheObject
 {
+	LN_CACHE_OBJECT_DECL;
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
@@ -138,6 +141,7 @@ public:
 	//Device::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
+	//static Texture2DPtr CreateInternal(const StringRef& filePath, TextureFormat format, int mipLevels);
 	Texture2D();
 	//Texture(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface);
 	//Texture(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);

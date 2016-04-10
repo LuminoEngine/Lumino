@@ -84,6 +84,7 @@
 #include "Lumino/Profiler.h"
 #include "Lumino/Engine.h"
 #include "Lumino/GameTime.h"
+#include "Lumino/Assets.h"
 
 #include "LuminoAudio.h"
 #include "LuminoScene.h"

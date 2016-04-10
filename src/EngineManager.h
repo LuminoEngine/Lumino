@@ -24,6 +24,7 @@ class GraphicsManager;
 class SceneGraphManager;
 class Application;
 class EngineDiagRenderer;
+class AssetsManager;
 
 class EngineManager
 	: public RefObject
@@ -85,6 +86,7 @@ public:
 	void InitializeDocumentsManager();
 	void InitializeUIManager();
 	void InitializeSceneGraphManager();
+	void InitializeAssetsManager();
 	virtual bool OnEvent(const PlatformEventArgs& e);
 
 private:
@@ -103,6 +105,7 @@ private:
 	RefPtr<Documents::DocumentsManager>	m_documentsManager;
 	detail::UIManager*						m_uiManager;
 	SceneGraphManager*					m_sceneGraphManager;
+	AssetsManager*						m_assetsManager;
 
 	EngineDiagRenderer*					m_diagRenderer;
 
