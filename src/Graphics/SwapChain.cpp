@@ -118,6 +118,9 @@ void SwapChain::Present()
 	if (m_manager->GetRenderingType() == RenderingType::Immediate)
 	{
 		m_deviceObj->Present(m_backColorBuffer->m_deviceObj);
+
+		// 一時メモリの解放とかをやっておく
+		m_manager->GetPrimaryRenderingCommandList()->PostExecute();
 	}
 	else
 	{

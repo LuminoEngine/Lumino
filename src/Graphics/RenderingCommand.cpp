@@ -145,7 +145,7 @@ void RenderingCommandList::PostExecute()
 	//LN_RC_TRACE("RenderingCommandList::PostExecute() e %p\n", this);
 	m_commandList.Clear();
 	m_commandDataBufferUsed = 0;
-
+	m_extDataBufferUsed = 0;
 
 	LN_FOREACH(RefObject* obj, m_markGCList)
 	{
