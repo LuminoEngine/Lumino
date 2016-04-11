@@ -199,7 +199,7 @@ int main()
 
 		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
-		appData.RenderingType = RenderingType::Immediate;
+		appData.RenderingType = RenderingType::Deferred;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
@@ -210,7 +210,7 @@ int main()
 		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		
-		tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, Color::Blue, 0, TextAlignment::Left);
+		//tex->DrawText(_T("lumino"), Rect(0, 0, 100, 100), nullptr, Color::Red, Color::Blue, 0, TextAlignment::Left);
 		auto size = Font::GetDefaultFont()->GetTextSize(_T("lumino"));
 		auto sp1 = Sprite2D::Create(tex);
 		//sp1.SafeRelease();
