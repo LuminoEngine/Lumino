@@ -244,9 +244,12 @@ void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, con
 	if (!oldName.IsEmpty())
 	{
 		std::pair<NodeNameMap::iterator, NodeNameMap::iterator> range = m_nodeNameMap.equal_range(oldName);
-		for (NodeNameMap::iterator itr = range.first; itr != range.second; ++itr) {
-			if (itr->second == node) {
+		for (NodeNameMap::iterator itr = range.first; itr != range.second; ++itr)
+		{
+			if (itr->second == node)
+			{
 				m_nodeNameMap.erase(itr);
+				break;
 			}
 		}
 	}
