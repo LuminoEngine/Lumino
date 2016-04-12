@@ -4,6 +4,9 @@
 
 LN_NAMESPACE_BEGIN
 
+class TileLayer;
+typedef RefPtr<TileLayer> TileLayerPtr;
+
 /**
 	@brief	
 */
@@ -12,6 +15,8 @@ class TileLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
+	static TileLayerPtr Create();
+
 	TileLayer();
 	virtual ~TileLayer();
 	

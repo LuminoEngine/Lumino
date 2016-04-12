@@ -4,6 +4,8 @@
 
 LN_NAMESPACE_BEGIN
 class Texture;
+class TileSet;
+typedef RefPtr<TileSet> TileSetPtr;
 
 /**
 	@brief	

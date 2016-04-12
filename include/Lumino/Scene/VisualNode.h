@@ -128,7 +128,7 @@ protected:
 	// レンダリングステートなんかはサブセット単位で設定できるようにすることも可能だけど、
 	// 実際にサブセット単位で設定したいことってあるの？って考えるとノード単位でいいと思う。
 	// ちなみに Unity はシェーダで設定するようだ。
-	RenderState	m_renderState;	///< レンダリングステート
+	RenderState	m_renderState;
 	DepthStencilState	m_depthStencilState;
 	bool					m_isVisible;
 

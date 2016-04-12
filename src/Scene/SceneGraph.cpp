@@ -144,7 +144,7 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 			shader->UpdateCameraParams(camera, viewSize);
 		}
 
-		// このレイヤーのカメラに依るデータを更新する (視錘台カリングやカメラからの距離の更新)
+		// このレイヤーのカメラに依るデータを更新する (視錘台カリングやカメラからの距離の更新
 		GetRootNode()->UpdateViewFlustumHierarchy(camera, &m_renderingNodeList, &m_renderingLightList);
 
 		// ライト行列の更新
@@ -156,6 +156,9 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 		std::stable_sort(m_renderingNodeList.begin(), m_renderingNodeList.end(), SceneNode::CmpZAndPrioritySort);
 
 	}
+
+
+	//Console::WriteLine("{0}", m_renderingNodeList.GetCount());
 
 	{
 		//RenderingParams params;

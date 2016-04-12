@@ -21,6 +21,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualNode, SceneNode);
 //
 //-----------------------------------------------------------------------------
 VisualNode::VisualNode()
+	: m_isVisible(true)
 {
 }
 

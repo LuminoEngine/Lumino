@@ -239,15 +239,6 @@ int main()
 		//cc.Set(100, 0, if2->GetRefCount(), 1);
 		//cc.r = (if2->GetRefCount(), 0, 0, 1);
 
-		//SoundPtr sounds[] =
-		//{
-		//	Sound::Create("D:/Media/Music/Material/em.mk/empty.mp3"),
-		//	Sound::Create("D:/Media/Music/Material/em.mk/akisora.mp3"),
-		//	Sound::Create("D:/Media/Music/Material/em.mk/awake.mp3"),
-		//	Sound::Create("D:/Media/Music/Material/em.mk/a-z.mp3"),
-		//	Sound::Create("D:/Media/Music/Material/em.mk/bdoll.mp3"),
-		//	Sound::Create("D:/Media/Music/Material/em.mk/clock.mp3"),
-		//};
 
 		//for (SoundPtr s : sounds) { s->Play(); }
 
@@ -263,6 +254,7 @@ int main()
 			//}
 
 			//printf("%d\n", t.GetElapsedTime());
+			Console::WriteLine("---");
 
 			if (!Engine::UpdateFrame()) {
 				break;
