@@ -781,6 +781,7 @@ GraphicsManager::GraphicsManager()
 	, m_mainWindow(nullptr)
 	, m_fontManager(nullptr)
 	, m_graphicsDevice(nullptr)
+	, m_mainSwapChain(nullptr)
 	, m_renderingType(RenderingType::Immediate)
 	, m_dummyTexture(nullptr)
 	, m_renderer(nullptr)
@@ -808,6 +809,7 @@ GraphicsManager::~GraphicsManager()
 	LN_SAFE_RELEASE(m_painterEngine);
 	LN_SAFE_RELEASE(m_dummyTexture);
 	LN_SAFE_RELEASE(m_mainViewport);
+	LN_SAFE_RELEASE(m_mainSwapChain);
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_fileManager);
 
@@ -890,8 +892,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_renderer = LN_NEW Details::Renderer(this);
 
 	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
-	if (deviceSwapChain != NULL) {
-		m_mainSwapChain.Attach(LN_NEW SwapChain(this, true/*configData.MainWindow->GetSize(), deviceSwapChain*/));
+	if (deviceSwapChain != nullptr) {
+		m_mainSwapChain = LN_NEW SwapChain(this, true/*configData.MainWindow->GetSize(), deviceSwapChain*/);
 	}
 
 	// MainViewport

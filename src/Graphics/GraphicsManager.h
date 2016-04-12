@@ -155,7 +155,7 @@ private:
 	Array<GraphicsResourceObject*>	m_resourceObjectList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
-	RefPtr<SwapChain>				m_mainSwapChain;
+	SwapChain*						m_mainSwapChain;
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 	Viewport*						m_mainViewport;

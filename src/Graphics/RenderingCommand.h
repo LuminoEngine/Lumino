@@ -53,9 +53,12 @@ class RenderBulkData;
 struct RenderingCommand
 {
 public:
+	virtual ~RenderingCommand();
+
 	typedef size_t	DataHandle;
 
 	virtual void Execute() = 0;
+
 
 protected:
 	inline Driver::IGraphicsDevice* GetDevice() const;

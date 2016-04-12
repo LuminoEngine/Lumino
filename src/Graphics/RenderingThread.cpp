@@ -101,10 +101,11 @@ void RenderingThread::Execute()
 	// 描画スレッド初期化
 	m_device->AttachRenderingThread();
 
-	while (!m_endRequested.IsTrue())
+	// 終了要求が来るまでループし続ける。ただし、実行するべきコマンドは全て実行してから終了する。
+	while (true)
 	{
 		// キューからコマンドリストを1つ取り出してみる
-		RenderingCommandList* commandList = NULL;
+		RenderingCommandList* commandList = nullptr;
 		{
 			Threading::MutexScopedLock lock(m_mutex);
 			if (!m_commandListQueue.IsEmpty()) {
@@ -117,12 +118,18 @@ void RenderingThread::Execute()
 			}
 		}
 
-		if (commandList != NULL)
+		// コマンドリストのキューをチェックした後、キューが空で、かつ終了要求が来ている場合は終了する
+		if (m_running.IsFalse() && m_endRequested.IsTrue())
+		{
+			break;
+		}
+
+		if (commandList != nullptr)
 		{
 			// 基本的に描画スレッドでの例外は、復帰不能なエラーと考える。(か、assert 的な、そもそも API の使い方が間違っている)
 			// エラーはここで保持し、一度でも例外したら Failed 状態にする。
 			//  Failed 状態の間はコマンドを実行しない。
-			if (m_exception == NULL)
+			if (m_exception == nullptr)
 			{
 				try
 				{
@@ -150,64 +157,6 @@ void RenderingThread::Execute()
 	// 描画スレッドデタッチ (GL は MakeContext(NULL) が必要)
 	// https://sites.google.com/site/monshonosuana/opengl/opengl_005
 	m_device->DetachRenderingThread();
-
-#if 0
-	// 描画スレッド初期化
-	m_device->AttachRenderingThread();
-
-	try
-	{
-		while (!m_endRequested.IsTrue())
-		{
-			// キューからコマンドリストを1つ取り出してみる
-			RenderingCommandList* commandList = NULL;
-			{
-				Threading::MutexScopedLock lock(m_mutex);
-				if (!m_commandListQueue.IsEmpty()) {
-					commandList = m_commandListQueue.GetHead();
-					m_commandListQueue.Dequeue();
-				}
-				else {
-					// コマンドリストがなかった。待機状態にする。Mutex でロックされているのでこの直前に true になっていることはない
-					m_running.SetFalse();
-				}
-			}
-
-			if (commandList != NULL)
-			{
-				try
-				{
-					// コマンドリスト実行
-					commandList->Execute(m_renderer);
-					commandList->m_running.SetFalse();
-					commandList->m_idling.SetTrue();
-					commandList->Release();
-				}
-				catch (...)
-				{
-					commandList->m_running.SetFalse();
-					commandList->m_idling.SetTrue();
-					commandList->Release();
-					throw;
-				}
-			}
-			else
-			{
-				// 処理するコマンドがない。true になるまで待機する
-				m_running.Wait();
-			}
-		}
-	}
-	catch (Exception& /*e*/)
-	{
-		m_device->DetachRenderingThread();
-		throw;
-	}
-
-	// 描画スレッドデタッチ (GL は MakeContext(NULL) が必要)
-	// https://sites.google.com/site/monshonosuana/opengl/opengl_005
-	m_device->DetachRenderingThread();
-#endif
 }
 
 LN_NAMESPACE_GRAPHICS_END
