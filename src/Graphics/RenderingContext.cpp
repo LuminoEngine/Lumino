@@ -152,24 +152,29 @@ void RenderingContext2::DrawSquare(
 //-----------------------------------------------------------------------------
 void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
 {
-	Blt(source, dest, nullptr);
-	//Texture* oldTarget = GetRenderTarget(0);
-	//SetRenderTarget(0, dest);
+	BltInternal(source, dest, Matrix::Identity, nullptr);
+}
 
-
-	//m_primitiveRenderer->DrawSquare(
-	//	Vector3(-1, 1, 0), Vector2(0, 0), ColorF::White,
-	//	Vector3(-1, -1, 0), Vector2(0, 1), ColorF::White,
-	//	Vector3(1, 1, 0), Vector2(1, 0), ColorF::White,
-	//	Vector3(1,-1, 0), Vector2(1, 1), ColorF::White);
-
-	//SetRenderTarget(0, oldTarget);
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::Blt(Texture* source, RenderTarget* dest, const Matrix& transform)
+{
+	BltInternal(source, dest, transform, nullptr);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
+{
+	BltInternal(source, dest, Matrix::Identity, shader);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void RenderingContext2::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
 {
 	// TODO: ここで null にしておかないとPrimitiveRendererが古いシェーダを適用してしまう。
 	// が、内部でステートを変えてしまうのはどうなのか。。。
@@ -190,7 +195,7 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 
 
 	OnDrawing(m_primitiveRenderer);
-	m_primitiveRenderer->Blt(source, dest, shader);
+	m_primitiveRenderer->Blt(source, dest, transform, shader);
 
 
 	SetRenderState(oldState1);

@@ -203,7 +203,9 @@ void Viewport::Render()
 		layer->PostRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 	}
 
-	context->Blt(m_primaryLayerTarget, m_renderTarget);
+	Matrix m;
+	MakeViewBoxTransform(m_renderTarget->GetSize(), m_primaryLayerTarget->GetSize(), &m);
+	context->Blt(m_primaryLayerTarget, m_renderTarget, m);
 }
 
 //-----------------------------------------------------------------------------
@@ -223,5 +225,76 @@ void Viewport::TryRemakeLayerTargets()
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Viewport::MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Matrix* mat)
+{
+	//LSize backbufferSize = mWindowSize;
+	//if (isLetterBox()) {
+	//	backbufferSize = getSize();
+	//}
+
+	float sw = static_cast<float>(srcSize.width);   // 転送元
+	float sh = static_cast<float>(srcSize.height);
+	float dw = static_cast<float>(dstSize.width);	// 転送先
+	float dh = static_cast<float>(dstSize.height);
+
+	//if ( isFixedAspect() ) {
+	//	sw = (float)mRequestedBackbufferSize.w;
+	//	sh = (float)mRequestedBackbufferSize.h;
+	//}
+
+	float new_x, new_y;
+	float new_w, new_h;
+
+	float ratio_w;
+	float ratio_h;
+
+	// バックバッファサイズとスクリーンサイズが同じ場合
+	if (sw == dw && sh == dh)
+	{
+		// そのまま設定
+		new_x = 0;
+		new_y = 0;
+		new_w = sw;
+		new_h = sh;
+		ratio_w = 1.0f;
+		ratio_h = 1.0f;
+	}
+	else
+	{
+		// 現在のスクリーンサイズ(デフォルトビューポートのサイズ)と画面サイズの比率計算
+		ratio_w = dw / sw;
+		ratio_h = dh / sh;
+
+		// 縦方向に合わせる ( 左右が余る )
+		if (ratio_w > ratio_h)
+		{
+			new_w = static_cast< float >(sw * ratio_h);
+			new_h = static_cast< float >(dh);
+			new_x = static_cast< float >((dw / 2) - (new_w / 2));
+			new_y = 0;
+		}
+		//横方向にあわせる
+		else
+		{
+			new_w = static_cast< float >(dw);
+			new_h = static_cast< float >(sh * ratio_w);
+			new_x = 0;
+			new_y = static_cast< float >((dh / 2) - (new_h / 2));
+		}
+	}
+
+	//this->mViewDestRect.set((int)new_x, (int)new_y, (int)new_w, (int)new_h);
+
+	//this->mScreenTransform.identity();
+	//this->mScreenTransform.translation(-new_x, -new_y, 0);
+	//this->mScreenTransform.scaling(1.0f / (new_w / sw), 1.0f / (new_h / sh), 1);
+
+	*mat = Matrix::Identity;
+	mat->Scale(new_w / sw, new_h / sh, 1.0f);
+	mat->Translate(new_x, new_y, 0.0f);
+}
 
 LN_NAMESPACE_END

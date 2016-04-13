@@ -86,19 +86,21 @@ struct PrimitiveRendererCore_Blt : public RenderingCommand
 	PrimitiveRendererCore* m_core;
 	Driver::ITexture* m_source;
 	Driver::ITexture* m_dest;
+	Matrix	m_transform;
 	Driver::IShader* m_shader;
 
-	void Create(PrimitiveRendererCore* core, Driver::ITexture* source, Driver::ITexture* dest, Driver::IShader* shader)
+	void Create(PrimitiveRendererCore* core, Driver::ITexture* source, Driver::ITexture* dest, const Matrix& transform, Driver::IShader* shader)
 	{
 		m_core = core;
 		m_source = source;
 		MarkGC(m_source);
 		m_dest = dest;
 		MarkGC(m_dest);
+		m_transform = transform;
 		m_shader = shader;
 		MarkGC(m_shader);
 	}
-	void Execute() { m_core->Blt(m_source, m_dest, m_shader); }
+	void Execute() { m_core->Blt(m_source, m_dest, m_transform, m_shader); }
 };
 
 //=============================================================================
@@ -264,7 +266,7 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest, Driver::IShader* shader)
+void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest, const Matrix& transform, Driver::IShader* shader)
 {
 	// Flush 済みであることが前提。
 
@@ -275,7 +277,7 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 	// シェーダが指定されていなければデフォルトのを使う
 	if (shader == nullptr)
 	{
-		m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
+		m_shader.varWorldMatrix->SetMatrix(transform);
 		m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
 		m_shader.varPixelStep->SetVector(m_pixelStep);
 		m_shader.varTexture->SetTexture(source);
@@ -527,7 +529,7 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
+void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
 {
 	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
 	m_flushRequested = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
@@ -541,6 +543,7 @@ void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 	LN_CALL_CORE_COMMAND(Blt, PrimitiveRendererCore_Blt,
 		(source != nullptr) ? source->GetDeviceObject() : nullptr,
 		(dest != nullptr) ? dest->GetDeviceObject() : nullptr,
+		transform,
 		(shader != nullptr) ? shader->m_deviceObj : nullptr);
 }
 

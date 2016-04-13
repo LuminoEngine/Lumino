@@ -77,6 +77,7 @@ LN_INTERNAL_ACCESS:	// TODO: ‚¢‚Ü‚Í‚Æ‚è‚ ‚¦‚¸“à•”—p“r
 
 private:
 	void TryRemakeLayerTargets();
+	void MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Matrix* mat);
 
 	GraphicsManager*				m_manager;
 	RenderTarget*					m_renderTarget;

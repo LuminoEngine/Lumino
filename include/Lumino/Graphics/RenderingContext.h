@@ -57,6 +57,7 @@ public:
 
 	// ステート固定。
 	void Blt(Texture* source, RenderTarget* dest);
+	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform);
 	void Blt(Texture* source, RenderTarget* dest, Shader* shader);
 
 
@@ -73,6 +74,9 @@ LN_INTERNAL_ACCESS:
 	virtual void OnStateFlushRequested() override;
 
 private:
+	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
+
+
 	GraphicsManager*			m_manager;
 
 	SpriteRenderer*				m_spriteRenderer;

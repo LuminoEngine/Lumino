@@ -646,7 +646,7 @@ bool EngineManager::BeginRendering()
 	renderer->Begin();
 	renderer->SetRenderTarget(0, swap->GetBackBuffer());
 	renderer->SetDepthBuffer(swap->GetBackBufferDepth());
-	renderer->Clear(ClearFlags::All, ColorF::White);
+	renderer->Clear(ClearFlags::All, ColorF::Black);
 
 	m_frameRenderd = true;
 	return true;
