@@ -77,7 +77,9 @@ private:
 	Driver::IShader*		m_userShader;
 	bool					m_useInternalShader;
 
-
+	Matrix					m_worldMatrix;
+	Matrix					m_viewProjMatrix;
+	Vector4					m_pixelStep;
 
 	struct
 	{
@@ -91,15 +93,15 @@ private:
 
 	} m_shader;
 
-	struct
-	{
-		Driver::IShader*			shader;
-		Driver::IShaderTechnique*	technique;
-		Driver::IShaderPass*		pass;
-		Driver::IShaderVariable*	varPixelStep;
-		Driver::IShaderVariable*	varTexture;
+	//struct
+	//{
+	//	Driver::IShader*			shader;
+	//	Driver::IShaderTechnique*	technique;
+	//	Driver::IShaderPass*		pass;
+	//	Driver::IShaderVariable*	varPixelStep;
+	//	Driver::IShaderVariable*	varTexture;
 
-	} m_shaderForBlt;
+	//} m_shaderForBlt;
 };
 
 class PrimitiveRenderer

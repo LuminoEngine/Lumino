@@ -3,17 +3,17 @@
 //=============================================================================
 #ifdef LN_HLSL_DX9
 
-float2          g_viewportSize   : VIEWPORTPIXELSIZE;
-static float2   g_viewportOffset = (float2(0.5, 0.5) / g_viewportSize);
+float2			g_viewportSize   : VIEWPORTPIXELSIZE;
+static float2	g_viewportOffset = (float2(0.5, 0.5) / g_viewportSize);
 
-float       gBlurPower;         // ƒuƒ‰[‚Ì‹­‚³
-float4      gBlurColor;         // ƒuƒ‰[‚ÌF
-float4x4    gBlurMatrix;        // ƒuƒ‰[ƒCƒ[ƒW‚ÌÀ•W•ÏŠ·s—ñ
+float			g_blurPower;	// ãƒ–ãƒ©ãƒ¼ã®å¼·ã•
+float4			g_blurColor;	// ãƒ–ãƒ©ãƒ¼ã®è‰²
+float4x4		g_blurMatrix;	// ãƒ–ãƒ©ãƒ¼ã‚¤ãƒ¡ãƒ¼ã‚¸ã®åº§æ¨™å¤‰æ›è¡Œåˆ—
 
-texture		gSecondaryTexture;
-sampler2D	g_texSampler = sampler_state
+texture			g_secondaryTexture;
+sampler2D		g_texSampler = sampler_state
 {
-	texture = <gSecondaryTexture>;
+	texture = <g_secondaryTexture>;
     MinFilter = POINT;
     MagFilter = POINT;
     MipFilter = NONE;
@@ -35,7 +35,7 @@ VS_OUTPUT vsBasic(
 	float2 inUV		: TEXCOORD0)
 {
     VS_OUTPUT o;
-    o.pos = mul( float4( inPos, 1.0f ), gBlurMatrix );
+    o.pos = mul(float4(inPos, 1.0f), g_blurMatrix);
     o.texUV = inUV;// + g_viewportOffset;
     return o;
 }
@@ -46,14 +46,14 @@ VS_OUTPUT vsBasic(
 float4 psBasic(
 	float2 inUV		: TEXCOORD0) : COLOR0
 {
-    float4 out_color = tex2D( g_texSampler, inUV );
-    out_color.a *= gBlurPower;
-    out_color *= gBlurColor;
+    float4 out_color = tex2D(g_texSampler, inUV);
+    out_color.a *= g_blurPower;
+    out_color *= g_blurColor;
     
-    // ƒuƒ‰[‚ğÂ‚Á‚Û‚­‚·‚é
+    // ãƒ–ãƒ©ãƒ¼ã‚’é’ã£ã½ãã™ã‚‹
     //out_color.rgb *= float3(0, 0, 1);
     
-    // ŠO‘¤‚Ù‚Ç“§–¾‚É‚È‚é‚æ‚¤‚É‚·‚é
+    // å¤–å´ã»ã©é€æ˜ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹
     //float len = length( in_uv_ - 0.5 );
     //color.a *= 1.0 - len;
     
@@ -77,32 +77,35 @@ technique MainDraw
 // PrimitiveRendererForBlt (GLSL)
 //=============================================================================
 #ifdef LN_GLSL_VERTEX
+uniform mat4	g_blurMatrix;
 
 attribute vec3	ln_Vertex0;
-attribute vec4	ln_Color0;
 attribute vec2	ln_MultiTexCoord0;
 
-varying vec4	v_Color;
 varying vec2	v_TexUV;
 
 void main()
 {
-	gl_Position = vec4(ln_Vertex0, 1.0);
-	v_Color = ln_Color0;
+	gl_Position = g_blurMatrix * vec4(ln_Vertex0, 1.0);
 	v_TexUV = ln_MultiTexCoord0;
 }
 #endif
 
 #ifdef LN_GLSL_FRAGMENT
 
-uniform sampler2D	g_texture;
+uniform float		g_blurPower;	// ãƒ–ãƒ©ãƒ¼ã®å¼·ã•
+uniform vec4		g_blurColor;	// ãƒ–ãƒ©ãƒ¼ã®è‰²
+uniform sampler2D	g_secondaryTexture;
+
 varying vec4		v_Color;
 varying vec2		v_TexUV;
 
 void main()
 {
-	vec4 color = texture2D(g_texture, v_TexUV);
-	gl_FragColor = color * v_Color;
+	vec4 color = texture2D(g_secondaryTexture, v_TexUV);
+    color.a *= g_blurPower;
+    color *= g_blurColor;
+	gl_FragColor = color;
 }
 
 #endif

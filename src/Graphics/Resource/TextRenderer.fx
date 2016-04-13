@@ -97,12 +97,12 @@ void main()
 #ifdef LN_GLSL_FRAGMENT
 uniform vec4		g_tone;
 uniform sampler2D	g_texture;
-uniform sampler2D	g_glyphMaskTexture;
+//uniform sampler2D	g_glyphMaskTexture;
 varying vec4		v_Color;
 varying vec2		v_TexUV;
 void main()
 {
-	vec4 outColor = texture2D(g_texture, v_TexUV) * texture2D(g_glyphMaskTexture, v_TexUV) * v_Color;
+	vec4 outColor = texture2D(g_texture, v_TexUV)/* * texture2D(g_glyphMaskTexture, v_TexUV)*/ * v_Color;
 	
 	// êFí≤ÇÃåvéZ
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;

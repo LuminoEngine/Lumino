@@ -792,6 +792,7 @@ if (LN_USE_EXTERNAL_Effekseer)
 	add_subdirectory(external/EffekseerRuntime101/src)
 	link_libraries(effekseer)
 	link_libraries(effekseer_renderer_dx9)
+	link_libraries(effekseer_renderer_gl)
 	link_libraries(effekseer_sound_xaudio2)
 endif()
 

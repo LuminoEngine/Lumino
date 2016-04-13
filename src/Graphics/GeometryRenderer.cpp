@@ -650,7 +650,7 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	// シェーダ (DrawingContext3D)
 	const unsigned char code[] =
 	{
-#include "Resource/DrawingContext3D.fx.h"
+#include "Resource/GeometryRenderer.fx.h"
 	};
 	const size_t codeLen = LN_ARRAY_SIZE_OF(code);
 

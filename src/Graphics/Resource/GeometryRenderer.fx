@@ -5,6 +5,7 @@
 
 float4x4	g_worldMatrix;
 float4x4	g_viewProjMatrix;
+float2		g_pixelStep;
 
 texture		g_texture;
 sampler2D	g_texSampler = sampler_state
@@ -14,32 +15,28 @@ sampler2D	g_texSampler = sampler_state
     MAGFILTER = NONE;
 };
 
-struct VS_OUTPUT
+struct VSOutput
 {
     float4 Pos      : POSITION;
     float4 Color    : COLOR0;
     float2 TexUV    : TEXCOORD0;
 };
 
-//-------------------------------------------------------------------------
-// vertex shader
-//-------------------------------------------------------------------------
-VS_OUTPUT vsBasic(
+VSOutput vsBasic(
 	float3 inPos	: POSITION,
 	float4 inColor	: COLOR0,
 	float2 inUV		: TEXCOORD0)
 {
-	VS_OUTPUT o;
+	VSOutput o;
 	o.Pos   = mul(float4(inPos, 1.0f), g_worldMatrix);
 	o.Pos   = mul(o.Pos, g_viewProjMatrix);
 	o.Color = inColor;
 	o.TexUV = inUV;
+	o.Pos.x -= g_pixelStep.x;
+	o.Pos.y += g_pixelStep.y;
 	return o;
 }
 
-//-------------------------------------------------------------------------
-// pixel shader
-//-------------------------------------------------------------------------
 float4 psBasic(
 	float4 inColor	: COLOR0,
 	float2 inUV		: TEXCOORD0) : COLOR0
@@ -47,9 +44,6 @@ float4 psBasic(
     return tex2D(g_texSampler, inUV) * inColor;
 }
 
-//-------------------------------------------------------------------------
-// technique
-//-------------------------------------------------------------------------
 technique MainDraw
 {
 	pass P0

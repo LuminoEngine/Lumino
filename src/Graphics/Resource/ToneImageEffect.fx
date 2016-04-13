@@ -3,13 +3,16 @@
 //-----------------------------------------------------------------------------
 //=============================================================================
 
+//=============================================================================
+#ifdef LN_HLSL_DX9
+
 float2          gViewportSize   : VIEWPORTPIXELSIZE;
 static float2   gViewportOffset = ( float2( 0.5, 0.5 ) / gViewportSize );
 
-// 色調
+// 濶ｲ隱ｿ
 float4 Tone;
 
-// スクリーン
+// 繧ｹ繧ｯ繝ｪ繝ｼ繝ｳ
 texture ScreenTexture;
 sampler ScreenSampler = sampler_state
 { 
@@ -63,3 +66,41 @@ technique MainDraw
 		PixelShader		= compile ps_2_0 PSMain();
 	}
 }
+#endif
+
+
+//=============================================================================
+#ifdef LN_GLSL_VERTEX
+
+
+
+attribute vec3	ln_Vertex0;
+attribute vec2	ln_MultiTexCoord0;
+
+varying vec2	v_TexUV;
+
+void main()
+{
+	gl_Position = vec4(ln_Vertex0, 1.0);
+	v_TexUV = ln_MultiTexCoord0;
+}
+#endif
+
+#ifdef LN_GLSL_FRAGMENT
+
+uniform vec4 Tone;
+uniform sampler2D ScreenTexture;
+
+varying vec2		v_TexUV;
+
+void main()
+{
+	vec4 outColor = texture2D(ScreenTexture, v_TexUV);
+	
+	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * Tone.w;
+    outColor.rgb = (outColor.rgb * ( 1.0 - Tone.w )) + y + Tone.rgb;
+    
+	gl_FragColor = outColor;
+}
+
+#endif

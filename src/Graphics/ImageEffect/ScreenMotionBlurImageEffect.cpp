@@ -62,9 +62,9 @@ void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
 	m_shader.shader = LN_NEW Shader();
 	m_shader.shader->Initialize(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
-	m_shader.varBlurPower = m_shader.shader->FindVariable(_T("gBlurPower"));
-	m_shader.varBlurColor = m_shader.shader->FindVariable(_T("gBlurColor"));
-	m_shader.varBlurMatrix = m_shader.shader->FindVariable(_T("gBlurMatrix"));
+	m_shader.varBlurPower = m_shader.shader->FindVariable(_T("g_blurPower"));
+	m_shader.varBlurColor = m_shader.shader->FindVariable(_T("g_blurColor"));
+	m_shader.varBlurMatrix = m_shader.shader->FindVariable(_T("g_blurMatrix"));
 	m_shader.varSecondaryTexture = m_shader.shader->FindVariable(_T("gSecondaryTexture"));
 	m_shader.techMainDraw = m_shader.shader->GetTechniques()[0];
 }

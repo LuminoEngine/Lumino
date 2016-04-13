@@ -167,21 +167,29 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 		// 描画用インスタンスの生成
 		m_efkRenderer = ::EffekseerRendererDX9::Renderer::Create(dx9Device->GetIDirect3DDevice9(), maxSpriteCount);
 
-		// 描画用インスタンスから描画機能を設定
-		m_efkManager->SetSpriteRenderer(m_efkRenderer->CreateSpriteRenderer());
-		m_efkManager->SetRibbonRenderer(m_efkRenderer->CreateRibbonRenderer());
-		m_efkManager->SetRingRenderer(m_efkRenderer->CreateRingRenderer());
-		m_efkManager->SetTrackRenderer(m_efkRenderer->CreateTrackRenderer());
-		m_efkManager->SetModelRenderer(m_efkRenderer->CreateModelRenderer());
+	}
+	else
+	{
+		//auto* glDevice = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->GetGraphicsManager()->GetGraphicsDevice());
 
-		// 描画用インスタンスからテクスチャの読込機能を設定
-		m_efkManager->SetTextureLoader(m_efkRenderer->CreateTextureLoader(m_fileInterface));
-		m_efkManager->SetModelLoader(m_efkRenderer->CreateModelLoader(m_fileInterface));
-		m_efkManager->SetEffectLoader(::Effekseer::Effect::CreateEffectLoader(m_fileInterface));
+
+		m_efkManager = ::Effekseer::Manager::Create(2000, false);
+		m_efkRenderer = ::EffekseerRendererGL::Renderer::Create(maxSpriteCount);
+
+		//LN_THROW(0, NotImplementedException);
 	}
-	else {
-		LN_THROW(0, NotImplementedException);
-	}
+
+	// 描画用インスタンスから描画機能を設定
+	m_efkManager->SetSpriteRenderer(m_efkRenderer->CreateSpriteRenderer());
+	m_efkManager->SetRibbonRenderer(m_efkRenderer->CreateRibbonRenderer());
+	m_efkManager->SetRingRenderer(m_efkRenderer->CreateRingRenderer());
+	m_efkManager->SetTrackRenderer(m_efkRenderer->CreateTrackRenderer());
+	m_efkManager->SetModelRenderer(m_efkRenderer->CreateModelRenderer());
+
+	// 描画用インスタンスからテクスチャの読込機能を設定
+	m_efkManager->SetTextureLoader(m_efkRenderer->CreateTextureLoader(m_fileInterface));
+	m_efkManager->SetModelLoader(m_efkRenderer->CreateModelLoader(m_fileInterface));
+	m_efkManager->SetEffectLoader(::Effekseer::Effect::CreateEffectLoader(m_fileInterface));
 
 	// Audio
 	if (m_efkManager != nullptr)

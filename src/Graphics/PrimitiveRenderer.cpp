@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
@@ -112,18 +112,18 @@ struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 //=============================================================================
 // PrimitiveRendererCore
 //=============================================================================
-	
-static const byte_t g_PrimitiveRenderer_fx_Data[] =
-{
-#include "Resource/PrimitiveRenderer.fx.h"
-};
-static const size_t g_PrimitiveRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRenderer_fx_Data);
-
-static const byte_t g_PrimitiveRendererForBlt_fx_Data[] =
-{
-#include "Resource/PrimitiveRendererForBlt.fx.h"
-};
-static const size_t g_PrimitiveRendererForBlt_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRendererForBlt_fx_Data);
+//	
+//static const byte_t g_PrimitiveRenderer_fx_Data[] =
+//{
+//#include "Resource/PrimitiveRenderer.fx.h"
+//};
+//static const size_t g_PrimitiveRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRenderer_fx_Data);
+//
+//static const byte_t g_PrimitiveRendererForBlt_fx_Data[] =
+//{
+//#include "Resource/PrimitiveRendererForBlt.fx.h"
+//};
+//static const size_t g_PrimitiveRendererForBlt_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRendererForBlt_fx_Data);
 
 //-----------------------------------------------------------------------------
 //
@@ -150,7 +150,7 @@ PrimitiveRendererCore::~PrimitiveRendererCore()
 	LN_SAFE_RELEASE(m_foreTexture);
 	LN_SAFE_RELEASE(m_userShader);
 	LN_SAFE_RELEASE(m_shader.shader);
-	LN_SAFE_RELEASE(m_shaderForBlt.shader);
+	//LN_SAFE_RELEASE(m_shaderForBlt.shader);
 	LN_SAFE_RELEASE(m_vertexBufferForBlt);
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
@@ -173,8 +173,16 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	m_vertexCacheUsed = 0;
 	m_indexCache.Reserve(DefaultFaceCount * 6);
 
+	//-----------------------------------------------------
+	// ã‚·ã‚§ãƒ¼ãƒ€ (DrawingContext3D)
+	static const byte_t code_PrimitiveRenderer_fx_Data[] =
+	{
+#include "Resource/PrimitiveRenderer.fx.h"
+	};
+	static const size_t code_PrimitiveRenderer_fx_Len = LN_ARRAY_SIZE_OF(code_PrimitiveRenderer_fx_Data);
+
 	ShaderCompileResult r;
-	m_shader.shader = device->CreateShader(g_PrimitiveRenderer_fx_Data, g_PrimitiveRenderer_fx_Len, &r);
+	m_shader.shader = device->CreateShader(code_PrimitiveRenderer_fx_Data, code_PrimitiveRenderer_fx_Len, &r);
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 	m_shader.technique = m_shader.shader->GetTechnique(0);
 	m_shader.pass = m_shader.technique->GetPass(0);
@@ -183,21 +191,21 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	m_shader.varTexture = m_shader.shader->GetVariableByName(_T("g_texture"));
 	m_shader.varPixelStep = m_shader.shader->GetVariableByName(_T("g_pixelStep"));
 
-	// Blt —p’¸“_ƒoƒbƒtƒ@
+	// Blt ç”¨é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 	Vertex tv[4];
-	tv[0].position.Set(-1,  1, 0); tv[0].color = ColorF::White; tv[0].uv.Set(0, 0);	// ¶ã
-	tv[1].position.Set(-1, -1, 0); tv[1].color = ColorF::White; tv[1].uv.Set(0, 1);	// ¶‰º
-	tv[2].position.Set( 1,  1, 0); tv[2].color = ColorF::White; tv[2].uv.Set(1, 0);	// ‰Eã
-	tv[3].position.Set( 1, -1, 0); tv[3].color = ColorF::White; tv[3].uv.Set(1, 1);	// ‰E‰º
+	tv[0].position.Set(-1,  1, 0); tv[0].color = ColorF::White; tv[0].uv.Set(0, 0);	// å·¦ä¸Š
+	tv[1].position.Set(-1, -1, 0); tv[1].color = ColorF::White; tv[1].uv.Set(0, 1);	// å·¦ä¸‹
+	tv[2].position.Set( 1,  1, 0); tv[2].color = ColorF::White; tv[2].uv.Set(1, 0);	// å³ä¸Š
+	tv[3].position.Set( 1, -1, 0); tv[3].color = ColorF::White; tv[3].uv.Set(1, 1);	// å³ä¸‹
 	m_vertexBufferForBlt = device->CreateVertexBuffer(Vertex::Elements(), Vertex::ElementCount, 4, tv, DeviceResourceUsage_Static);
 
-	// Blt —pƒfƒtƒHƒ‹ƒgƒVƒF[ƒ_
-	m_shaderForBlt.shader = device->CreateShader(g_PrimitiveRendererForBlt_fx_Data, g_PrimitiveRendererForBlt_fx_Len, &r);
-	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
-	m_shaderForBlt.technique = m_shaderForBlt.shader->GetTechnique(0);
-	m_shaderForBlt.pass = m_shaderForBlt.technique->GetPass(0);
-	m_shaderForBlt.varTexture = m_shaderForBlt.shader->GetVariableByName(_T("g_texture"));
-	m_shaderForBlt.varPixelStep = m_shaderForBlt.shader->GetVariableByName(_T("g_pixelStep"));
+	// Blt ç”¨ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚·ã‚§ãƒ¼ãƒ€
+	//m_shaderForBlt.shader = device->CreateShader(g_PrimitiveRendererForBlt_fx_Data, g_PrimitiveRendererForBlt_fx_Len, &r);
+	//LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+	//m_shaderForBlt.technique = m_shaderForBlt.shader->GetTechnique(0);
+	//m_shaderForBlt.pass = m_shaderForBlt.technique->GetPass(0);
+	//m_shaderForBlt.varTexture = m_shaderForBlt.shader->GetVariableByName(_T("g_texture"));
+	//m_shaderForBlt.varPixelStep = m_shaderForBlt.shader->GetVariableByName(_T("g_pixelStep"));
 
 	m_vertexStride = sizeof(Vertex);
 }
@@ -210,10 +218,15 @@ void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj
 	float vw = (viewPixelSize.width != 0.0) ? (0.5f / viewPixelSize.width) : 0.0f;
 	float vh = (viewPixelSize.height != 0.0) ? (0.5f / viewPixelSize.height) : 0.0f;
 
-	m_shader.varWorldMatrix->SetMatrix(world);
-	m_shader.varViewProjMatrix->SetMatrix(viewProj);
-	m_shader.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
-	m_shaderForBlt.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
+	// ã‚·ã‚§ãƒ¼ãƒ€ã¯é€šå¸¸ç”¨ã¨Bltç”¨ã§å…±ç”¨ã—ãŸã„ã€‚ã“ã‚Œã‚‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¯ä¸€åº¦ãƒ¡ãƒ³ãƒå¤‰æ•°ã«ãŠã„ã¦ãŠãã€æœ¬å½“ã«å¿…è¦ã«ãªã£ãŸã¨ãã«ã‚·ã‚§ãƒ¼ãƒ€ã«è¨­å®šã™ã‚‹
+	m_worldMatrix = world;
+	m_viewProjMatrix = viewProj;
+	m_pixelStep = Vector4(vw, vh, 0, 0);
+
+	//m_shader.varWorldMatrix->SetMatrix(world);
+	//m_shader.varViewProjMatrix->SetMatrix(viewProj);
+	//m_shader.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
+	//m_shaderForBlt.varPixelStep->SetVector(Vector4(vw, vh, 0, 0));
 	m_useInternalShader = useInternalShader;
 	m_mode = mode;
 	LN_REFOBJ_SET(m_userShader, userShader);
@@ -253,20 +266,24 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 //-----------------------------------------------------------------------------
 void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest, Driver::IShader* shader)
 {
-	// Flush Ï‚İ‚Å‚ ‚é‚±‚Æ‚ª‘O’ñB
+	// Flush æ¸ˆã¿ã§ã‚ã‚‹ã“ã¨ãŒå‰æã€‚
 
-	// İ’è‚ğ•Û‘¶‚·‚é
+	// è¨­å®šã‚’ä¿å­˜ã™ã‚‹
 	Driver::ITexture* oldRT = m_renderer->GetRenderTarget(0);
 	m_renderer->SetRenderTarget(0, dest);
 
-	// ƒVƒF[ƒ_‚ªw’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg‚Ì‚ğg‚¤
+	// ã‚·ã‚§ãƒ¼ãƒ€ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚’ä½¿ã†
 	if (shader == nullptr)
 	{
-		m_shaderForBlt.varTexture->SetTexture(source);
-		shader = m_shaderForBlt.shader;
+		m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
+		m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
+		m_shader.varPixelStep->SetVector(m_pixelStep);
+		m_shader.varTexture->SetTexture(source);
+		//m_shaderForBlt.varTexture->SetTexture(source);
+		shader = m_shader.shader;//m_shaderForBlt.shader;
 	}
 
-	// ƒpƒX‚²‚Æ‚É•`‰æ
+	// ãƒ‘ã‚¹ã”ã¨ã«æç”»
 	int techCount = shader->GetTechniqueCount();
 	for (int iTech = 0; iTech < techCount; ++iTech)
 	{
@@ -279,7 +296,7 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 		}
 	}
 
-	// İ’è‚ğŒ³‚É–ß‚·
+	// è¨­å®šã‚’å…ƒã«æˆ»ã™
 	m_renderer->SetRenderTarget(0, oldRT);
 }
 
@@ -288,11 +305,11 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 //-----------------------------------------------------------------------------
 void PrimitiveRendererCore::Flush()
 {
-	// •`‰æ‚·‚é
+	// æç”»ã™ã‚‹
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetConstData(), m_vertexCacheUsed);
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
-	// ƒ†[ƒU[ƒVƒF[ƒ_‚ğg‚¤ê‡
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½¿ã†å ´åˆ
 	if (m_userShader != nullptr)
 	{
 		int techCount = m_userShader->GetTechniqueCount();
@@ -315,7 +332,7 @@ void PrimitiveRendererCore::Flush()
 			}
 		}
 	}
-	// ƒ†[ƒU[ƒVƒF[ƒ_‚ğg‚í‚È‚¢ê‡
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½¿ã‚ãªã„å ´åˆ
 	else
 	{
 		if (m_useInternalShader)
@@ -324,6 +341,10 @@ void PrimitiveRendererCore::Flush()
 			if (srcTexture == nullptr) {
 				srcTexture = m_manager->GetDummyTexture();
 			}
+
+			m_shader.varWorldMatrix->SetMatrix(m_worldMatrix);
+			m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
+			m_shader.varPixelStep->SetVector(m_pixelStep);
 			m_shader.varTexture->SetTexture(srcTexture);
 			m_shader.pass->Apply();
 		}
@@ -338,7 +359,7 @@ void PrimitiveRendererCore::Flush()
 		}
 	}
 
-	// ƒLƒƒƒbƒVƒ…ƒNƒŠƒA
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚¯ãƒªã‚¢
 	m_vertexCacheUsed = 0;
 	m_indexCache.Clear();
 }
@@ -508,10 +529,10 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 //-----------------------------------------------------------------------------
 void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 {
-	m_stateModified = true;	// Blt ‚Å‚ÍƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ğØ‚è‘Ö‚¦‚½‚è‚·‚é‚Ì‚ÅAFlush ‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚éB
-	m_flushRequested = true;	// Blt ‚Å‚ÍƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ğØ‚è‘Ö‚¦‚½‚è‚·‚é‚Ì‚ÅAFlush ‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚éB
+	m_stateModified = true;	// Blt ã§ã¯ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’åˆ‡ã‚Šæ›¿ãˆãŸã‚Šã™ã‚‹ã®ã§ã€Flush ã—ã¦ãŠãå¿…è¦ãŒã‚ã‚‹ã€‚
+	m_flushRequested = true;	// Blt ã§ã¯ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’åˆ‡ã‚Šæ›¿ãˆãŸã‚Šã™ã‚‹ã®ã§ã€Flush ã—ã¦ãŠãå¿…è¦ãŒã‚ã‚‹ã€‚
 	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
-	CheckUpdateState();	// TODO: Blt ‚ÉŒÀ‚Á‚Ä‚Í•K—v‚È‚¢‚©‚àH
+	CheckUpdateState();	// TODO: Blt ã«é™ã£ã¦ã¯å¿…è¦ãªã„ã‹ã‚‚ï¼Ÿ
 
 	if (shader)
 	{
