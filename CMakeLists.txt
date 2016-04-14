@@ -849,3 +849,5 @@ if (LN_BUILD_C_API)
 	add_subdirectory(bindings/C/Test)
 	add_subdirectory(tools/ArchiveMaker)
 endif()
+
+add_subdirectory(tools/LNSL)
