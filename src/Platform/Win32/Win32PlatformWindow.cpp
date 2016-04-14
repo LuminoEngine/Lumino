@@ -118,7 +118,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				その後の finalize() 呼び出しで DestroyWindow() を呼び出す。
 				*/
 
-				PlatformEventArgs e(EventType_Close, this);
+				PlatformEventArgs e(PlatformEventType::Close, this);
 				if (NortifyEvent(e)) {
 					*handled = true;
 					return 0;
@@ -205,53 +205,53 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_XBUTTONUP:
 			{
 				PlatformEventArgs e;
-				e.Sender = this;
+				e.sender = this;
 
 				switch (msg)
 				{
 				case WM_LBUTTONDOWN:
-					e.Type = EventType_MouseDown;
-					e.Mouse.Button = MouseButton::Left;
+					e.type = PlatformEventType::MouseDown;
+					e.mouse.button = MouseButton::Left;
 					break;
 				case WM_LBUTTONUP:
-					e.Type = EventType_MouseUp;
-					e.Mouse.Button = MouseButton::Left;
+					e.type = PlatformEventType::MouseUp;
+					e.mouse.button = MouseButton::Left;
 					break;
 				case WM_RBUTTONDOWN:
-					e.Type = EventType_MouseDown;
-					e.Mouse.Button = MouseButton::Right;
+					e.type = PlatformEventType::MouseDown;
+					e.mouse.button = MouseButton::Right;
 					break;
 				case WM_RBUTTONUP:
-					e.Type = EventType_MouseUp;
-					e.Mouse.Button = MouseButton::Right;
+					e.type = PlatformEventType::MouseUp;
+					e.mouse.button = MouseButton::Right;
 					break;
 				case WM_MBUTTONDOWN:
-					e.Type = EventType_MouseDown;
-					e.Mouse.Button = MouseButton::Middle;
+					e.type = PlatformEventType::MouseDown;
+					e.mouse.button = MouseButton::Middle;
 					break;
 				case WM_MBUTTONUP:
-					e.Type = EventType_MouseUp;
-					e.Mouse.Button = MouseButton::Middle;
+					e.type = PlatformEventType::MouseUp;
+					e.mouse.button = MouseButton::Middle;
 					break;
 				case WM_XBUTTONDOWN:
-					e.Type = EventType_MouseDown;
-					e.Mouse.Button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
+					e.type = PlatformEventType::MouseDown;
+					e.mouse.button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
 					break;
 				case WM_XBUTTONUP:
-					e.Type = EventType_MouseUp;
-					e.Mouse.Button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
+					e.type = PlatformEventType::MouseUp;
+					e.mouse.button = (wparam & MK_XBUTTON1) ? MouseButton::X1 : MouseButton::X2;
 					break;
 				}
 
-				e.Mouse.X = LOWORD(lparam);
-				e.Mouse.Y = HIWORD(lparam);
-				e.Mouse.WheelDelta = 0;
-				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
-				e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
+				e.mouse.x = LOWORD(lparam);
+				e.mouse.y = HIWORD(lparam);
+				e.mouse.wheelDelta = 0;
+				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
+				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
 				NortifyEvent(e);
 
-				mLastMouseX = e.Mouse.X;
-				mLastMouseY = e.Mouse.Y;
+				mLastMouseX = e.mouse.x;
+				mLastMouseY = e.mouse.y;
 
 				*handled = true;
 				return 0;
@@ -260,19 +260,19 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_MOUSEMOVE:
 			{
 				PlatformEventArgs e;
-				e.Type = EventType_MouseMove;
-				e.Sender = this;
-				e.Mouse.Button = MouseButton::None;
-				e.Mouse.WheelDelta = 0;
-				e.Mouse.X = static_cast< short >(LOWORD(lparam));     // 一度 short にキャストしないと、
-				e.Mouse.Y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
-				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
-				e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
-				e.Mouse.InClientArea = true;
+				e.type = PlatformEventType::MouseMove;
+				e.sender = this;
+				e.mouse.button = MouseButton::None;
+				e.mouse.wheelDelta = 0;
+				e.mouse.x = static_cast< short >(LOWORD(lparam));     // 一度 short にキャストしないと、
+				e.mouse.y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
+				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
+				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
+				e.mouse.inClientArea = true;
 				NortifyEvent(e);
 
-				mLastMouseX = e.Mouse.X;
-				mLastMouseY = e.Mouse.Y;
+				mLastMouseX = e.mouse.x;
+				mLastMouseY = e.mouse.y;
 
 				*handled = true;
 				return 0;
@@ -289,19 +289,19 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					::ScreenToClient(hwnd, &pt);
 
 					PlatformEventArgs e;
-					e.Type = EventType_MouseMove;
-					e.Sender = this;
-					e.Mouse.Button = MouseButton::None;
-					e.Mouse.WheelDelta = 0;
-					e.Mouse.X = (short)pt.x;
-					e.Mouse.Y = (short)pt.y;
-					e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
-					e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
-					e.Mouse.InClientArea = false;
+					e.type = PlatformEventType::MouseMove;
+					e.sender = this;
+					e.mouse.button = MouseButton::None;
+					e.mouse.wheelDelta = 0;
+					e.mouse.x = (short)pt.x;
+					e.mouse.y = (short)pt.y;
+					e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
+					e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
+					e.mouse.inClientArea = false;
 					NortifyEvent(e);
 
-					mLastMouseX = e.Mouse.X;
-					mLastMouseY = e.Mouse.Y;
+					mLastMouseX = e.mouse.x;
+					mLastMouseY = e.mouse.y;
 
 					*handled = true;
 					return 0;
@@ -311,18 +311,18 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_MOUSEWHEEL:
 			{
 				PlatformEventArgs e;
-				e.Type = EventType_MouseWheel;
-				e.Sender = this;
-				e.Mouse.Button = MouseButton::None;
-				e.Mouse.WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
-				e.Mouse.X = static_cast< short >(LOWORD(lparam));
-				e.Mouse.Y = static_cast< short >(HIWORD(lparam));
-				e.Mouse.MoveX = (mLastMouseX >= 0) ? e.Mouse.X - mLastMouseX : 0;
-				e.Mouse.MoveY = (mLastMouseY >= 0) ? e.Mouse.Y - mLastMouseY : 0;
+				e.type = PlatformEventType::MouseWheel;
+				e.sender = this;
+				e.mouse.button = MouseButton::None;
+				e.mouse.wheelDelta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
+				e.mouse.x = static_cast< short >(LOWORD(lparam));
+				e.mouse.y = static_cast< short >(HIWORD(lparam));
+				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
+				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
 				NortifyEvent(e);
 
-				mLastMouseX = e.Mouse.X;
-				mLastMouseY = e.Mouse.Y;
+				mLastMouseX = e.mouse.x;
+				mLastMouseY = e.mouse.y;
 
 				*handled = true;
 				return 0;
@@ -331,12 +331,12 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_KEYDOWN:
 			{
 				PlatformEventArgs e;
-				e.Type = EventType_KeyDown;
-				e.Sender = this;
-				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.Key.IsAlt = ::GetKeyState(VK_MENU) < 0;
-				e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
+				e.type = PlatformEventType::KeyDown;
+				e.sender = this;
+				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
+				e.key.isAlt = ::GetKeyState(VK_MENU) < 0;
+				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
+				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
 				NortifyEvent(e);
 
 				*handled = true;
@@ -346,12 +346,12 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_KEYUP:
 			{
 				PlatformEventArgs e;
-				e.Type = EventType_KeyUp;
-				e.Sender = this;
-				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.Key.IsAlt = ::GetKeyState(VK_MENU) < 0;
-				e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
+				e.type = PlatformEventType::KeyUp;
+				e.sender = this;
+				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
+				e.key.isAlt = ::GetKeyState(VK_MENU) < 0;
+				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
+				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
 				NortifyEvent(e);
 
 				*handled = true;
@@ -361,12 +361,12 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_SYSKEYDOWN:
 			{
 				PlatformEventArgs e;
-				e.Type = EventType_KeyDown;
-				e.Sender = this;
-				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.Key.IsAlt = true;								// Alt on
-				e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
+				e.type = PlatformEventType::KeyDown;
+				e.sender = this;
+				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
+				e.key.isAlt = true;								// Alt on
+				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
+				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
 				NortifyEvent(e);
 
 				*handled = true;
@@ -376,12 +376,12 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_SYSKEYUP:
 			{
 				PlatformEventArgs e;
-				e.Type = EventType_KeyUp;
-				e.Sender = this;
-				e.Key.KeyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.Key.IsAlt = true;								// Alt on
-				e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
+				e.type = PlatformEventType::KeyUp;
+				e.sender = this;
+				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
+				e.key.isAlt = true;								// Alt on
+				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
+				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
 				NortifyEvent(e);
 				break;	// WM_SYSKEYUPを捕まえた場合、必ずDefWindowProcに行くようにする
 			}
@@ -392,13 +392,13 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				if (0x20 <= wparam && wparam <= 0x7E)
 				{
 					PlatformEventArgs e;
-					e.Type = EventType_KeyChar;
-					e.Sender = this;
-					e.Key.KeyCode = Key::Unknown;
-					e.Key.IsAlt = ::GetKeyState(VK_MENU) < 0;
-					e.Key.IsShift = ::GetKeyState(VK_SHIFT) < 0;
-					e.Key.IsControl = ::GetKeyState(VK_CONTROL) < 0;
-					e.Key.Char = wparam;
+					e.type = PlatformEventType::KeyChar;
+					e.sender = this;
+					e.key.keyCode = Key::Unknown;
+					e.key.isAlt = ::GetKeyState(VK_MENU) < 0;
+					e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
+					e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
+					e.key.keyChar = wparam;
 					NortifyEvent(e);
 					return 0;
 				}
@@ -425,9 +425,9 @@ bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
 		m_mouseCursorVisibility->OnMoveCursor(false);
 	}
 	// クライアント上移動によるマウスカーソル非表示処理
-	else if (e.Type == EventType_MouseMove)
+	else if (e.type == PlatformEventType::MouseMove)
 	{
-		if (e.Mouse.InClientArea) {
+		if (e.mouse.inClientArea) {
 			m_mouseCursorVisibility->OnMoveCursor(true);
 		}
 		else {

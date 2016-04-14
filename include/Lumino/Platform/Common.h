@@ -18,4 +18,4 @@ namespace detail
 
 LN_NAMESPACE_END
 
-#include "EventArgs.h"
+#include "PlatformEventArgs.h"

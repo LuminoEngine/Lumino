@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Base/Array.h>
-#include "EventArgs.h"
+#include "PlatformEventArgs.h"
 
 LN_NAMESPACE_BEGIN
 

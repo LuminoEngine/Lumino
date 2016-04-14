@@ -83,9 +83,9 @@ set(LN_SOURCES_IO
 set(LN_SOURCES_Platform
 	include/Lumino/Platform/Clipboard.h
 	include/Lumino/Platform/Common.h
-	include/Lumino/Platform/EventArgs.h
 	include/Lumino/Platform/EventListener.h
 	include/Lumino/Platform/Ime.h
+	include/Lumino/Platform/PlatformEventArgs.h
 	include/Lumino/Platform/PlatformManager.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/PlatformWindow.h

@@ -766,76 +766,76 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	}
 
 
-	switch (e.Type)
+	switch (e.type)
 	{
-	case EventType_Quit:	///< アプリ終了要求
-	case EventType_Close:			///< ウィンドウが閉じられようとしている
+	case PlatformEventType::Quit:	// アプリ終了要求
+	case PlatformEventType::Close:	// ウィンドウが閉じられようとしている
 		break;
 
-	case EventType_MouseDown:		// ウスボタンが押された
+	case PlatformEventType::MouseDown:		// マウスボタンが押された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (uiView->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case EventType_MouseUp:			// マウスボタンが離された
+	case PlatformEventType::MouseUp:			// マウスボタンが離された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (uiView->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.Mouse.Button, e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case EventType_MouseMove:		// マウスが移動した
+	case PlatformEventType::MouseMove:		// マウスが移動した
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (uiView->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case EventType_MouseWheel:		// マウスホイールが操作された
+	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseWheel(e.Mouse.WheelDelta, e.Mouse.X, e.Mouse.Y)) { return true; }
+			if (uiView->InjectMouseWheel(e.mouse.wheelDelta, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.Mouse.WheelDelta)) { return true; }
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.mouse.wheelDelta)) { return true; }
 		}
 		break;
-	case EventType_KeyDown:	// キー押下
+	case PlatformEventType::KeyDown:	// キー押下
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectKeyDown(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl)) { return true; }
+			if (uiView->InjectKeyDown(e.key.keyCode, e.key.isAlt, e.key.isShift, e.key.isControl)) { return true; }
 		}
 
 		// デバッグ表示切替
 		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
-			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl) &&
+			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.isAlt, e.key.isShift, e.key.isControl) &&
 			m_diagRenderer != nullptr)
 		{
 			m_diagRenderer->SetVisible(!m_diagRenderer->IsVisible());
 		}
 		break;
-	case EventType_KeyUp:		//  キー押し上げ
+	case PlatformEventType::KeyUp:		//  キー押し上げ
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectKeyUp(e.Key.KeyCode, e.Key.IsAlt, e.Key.IsShift, e.Key.IsControl/*, e.Key.Char*/)) { return true; }
+			if (uiView->InjectKeyUp(e.key.keyCode, e.key.isAlt, e.key.isShift, e.key.isControl/*, e.Key.keyChar*/)) { return true; }
 		}
 		break;
-	case EventType_KeyChar:		//  文字入力
+	case PlatformEventType::KeyChar:		//  文字入力
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectTextInput(e.Key.Char)) { return true; }
+			if (uiView->InjectTextInput(e.key.keyChar)) { return true; }
 		}
 		break;
 	default:

@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include "../BindingSupport.h"
-#include "../Platform/EventArgs.h"
 #include "../Graphics/Texture.h"
 #include "Layer.h"
 
