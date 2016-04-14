@@ -199,7 +199,7 @@ int main()
 
 		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
-		appData.RenderingType = RenderingType::Deferred;
+		appData.RenderingType = RenderingType::Immediate;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
@@ -254,7 +254,6 @@ int main()
 			//}
 
 			//printf("%d\n", t.GetElapsedTime());
-			Console::WriteLine("---");
 
 			if (!Engine::UpdateFrame()) {
 				break;

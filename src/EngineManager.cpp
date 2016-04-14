@@ -838,6 +838,12 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (uiView->InjectTextInput(e.key.keyChar)) { return true; }
 		}
 		break;
+	case PlatformEventType::WindowSizeChanged:
+		if (m_graphicsManager != nullptr)
+		{
+			m_graphicsManager->GetMainSwapChain()->Resize(Size(e.size.width, e.size.height));
+		}
+		break;
 	default:
 		break;
 	}

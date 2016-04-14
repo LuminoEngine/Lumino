@@ -27,7 +27,7 @@ enum class PlatformEventType
 	//TOUCH_UP = 14,		/** [ LNEvent::Touch ] 画面から離された */
 	//TOUCH_MOVE = 15,		/** [ LNEvent::Touch ] タッチ中に移動した */
 
-	//WINDOW_SIZE_CHANGED,		/** ウィンドウサイズが変更された */
+	WindowSizeChanged,		/** ウィンドウサイズが変更された */
 
 	//ANDROID_PAUSED = 101,		/** Android APP_CMD_RESUME */
 	//ANDROID_RESUMED = 102,	/** Android APP_CMD_PAUSE */
@@ -64,6 +64,14 @@ struct PlatformEventArgs
 			char		keyChar;	/** 文字 */
 
 		} key;
+
+		/** サイズ情報 */
+		struct
+		{
+			short		width;
+			short		height;
+
+		} size;
 	};
 
 public:

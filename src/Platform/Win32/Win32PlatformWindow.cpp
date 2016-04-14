@@ -153,22 +153,15 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			/////////////////////////////////////////////// ウィンドウサイズが変更された
 			case WM_SIZE:
 			{
+				// ウィンドウサイズを拾っておく
 				mClientSize.Set(lparam & 0xFFFF, (lparam >> 16) & 0xFFFF);
 
+				PlatformEventArgs e(PlatformEventType::WindowSizeChanged, this);
+				e.size.width = (lparam & 0xFFFF);
+				e.size.height = ((lparam >> 16) & 0xFFFF);
+				NortifyEvent(e);
 
-
-				// ウィンドウサイズを拾っておく
-				//RECT rc;
-				//::GetClientRect(mWindowHandle, &rc);
-				//window->mClientSize.Set(rc.right, rc.bottom);
-
-				//PlatformEventArgs e;
-				//e.Type = LN_EVENT_WINDOW_SIZE_CHANGED;
-				//e.Sender = this;
-				//SendEventToAllListener(e);		// 同期処理の場合はこの場で通知
-				//mApplication->PostEvent(&e);	// 非同期処理の場合は一度キューに入れる
-
-				//*handled = true;
+				*handled = true;
 				return 0;
 			}
 			/////////////////////////////////////////////// Alt + Enter 確認
