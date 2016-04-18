@@ -1,0 +1,14 @@
+<category_index>
+	<homepage>
+		<page src="index.md">
+	</homepage>
+	<toc>
+		<page caption="文字列">
+			<page src="string/base_string.md" />
+			<page src="string/base_regex.md" />
+		</page>
+		<page caption="ファイル入出力">
+			<page src="fileio/file.md" />
+		</page>
+	</toc>
+</category_index>

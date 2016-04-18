@@ -1,0 +1,15 @@
+<shelf>
+	<homepage>
+		<page src="index.md" template="template/homepage.html">
+	</homepage>
+	<categories>
+		<category src="about/index.xml" />
+		<category src="download/index.xml" />
+		<category caption="ドキュメント">
+			<category src="documentation_tutorial_lumino/index.xml" />
+			<category src="documentation_sample_lumino/index.xml" />
+			<category src="documentation_sample_lumino_core/index.xml" />
+			<category src="documentation_reference/index.xml" />
+		</category>
+	</categories>
+</shelf>

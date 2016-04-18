@@ -1,0 +1,10 @@
+<category_index>
+	<homepage>
+		<page src="index.md">
+	</homepage>
+	<toc>
+		<page caption="グラフィックス">
+			<page src="graphics/sprite.md" />
+		</page>
+	</toc>
+</category_index>
