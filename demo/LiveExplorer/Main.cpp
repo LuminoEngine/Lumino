@@ -202,7 +202,7 @@ int main()
 		appData.RenderingType = RenderingType::Immediate;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
-
+#if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;
 
@@ -245,6 +245,7 @@ int main()
 
 		//ElapsedTimer t;
 		//t.Start();
+#endif
 
 		while (true)
 		{

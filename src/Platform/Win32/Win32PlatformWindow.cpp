@@ -585,20 +585,14 @@ Key Win32PlatformWindow::ConvertVirtualKeyCode(DWORD winVK)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Win32NativeWindow::Win32NativeWindow(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title)
+Win32NativeWindow::Win32NativeWindow(Win32WindowManager* windowManager)
 	: Win32PlatformWindow(windowManager)
-	, mTitleText(title)
-	, mWindowHandle(hWnd)
-	, mAccelerators(hAccel)
-	, mWindowedStyle(hWindowedStyle)
+	, mTitleText()
+	, mWindowHandle(NULL)
+	, mAccelerators(NULL)
+	, mWindowedStyle(NULL)
 	, mFullScreen(false)
 {
-	// 初期化時のサイズ記憶
-	RECT rc;
-	GetClientRect(mWindowHandle, &rc);
-	mClientSize.width = rc.right - rc.left;
-	mClientSize.height = rc.bottom - rc.top;
-	m_originalClientSize = mClientSize;
 }
 
 //-----------------------------------------------------------------------------
@@ -611,6 +605,76 @@ Win32NativeWindow::~Win32NativeWindow()
 		::DestroyWindow(mWindowHandle);
 		mWindowHandle = NULL;
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void Win32NativeWindow::Initilaize(
+	Win32WindowManager* windowManager,
+	String windowTitle,
+	int width,
+	int height,
+	bool fullscreen,
+	bool resizable)
+{
+	LN_CHECK_ARGS_RETURN(windowManager != nullptr);
+
+
+	mTitleText = windowTitle;
+	// 初期化時のサイズ記憶
+	mClientSize.width = width;
+	mClientSize.height = height;
+	m_originalClientSize = mClientSize;
+
+	/* もともとは Win32Window クラスで生成していたが、
+	* RegisterClassEx() を Manager に移動したことで、ウィンドウスタイルなどの情報も Manager に移った。
+	* ウィンドウも Manager で生成して、HWND を Win32Window クラスに渡したほうが
+	* シンプルに実装できると見込んだためこちらに移動した。
+	*
+	*	↑やっぱり混乱する。
+	*/
+
+	// ウィンドウモードのときのウィンドウスタイルの選択
+	DWORD mWindowedStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+	if (resizable) {
+		mWindowedStyle |= (WS_THICKFRAME | WS_MAXIMIZEBOX);
+	}
+	DWORD dwExStyle = 0;
+	if (windowManager->GetHIcon() == NULL) {
+		dwExStyle |= WS_EX_DLGMODALFRAME;	// アイコンの無いスタイル
+	}
+
+	// ウィンドウの作成
+	mWindowHandle = ::CreateWindowEx(
+		dwExStyle,
+		windowManager->GetWindowClassName().c_str(),
+		windowTitle.c_str(),
+		mWindowedStyle,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		NULL, NULL, windowManager->GetInstanceHandle(), NULL);
+	LN_THROW(mWindowHandle, Win32Exception, GetLastError());
+
+	// アクセラレータの作成 (Alt+Enter の警告音を消す)
+	ACCEL accels[1] =
+	{
+		{ FALT | FVIRTKEY, VK_RETURN, 0 }
+	};
+	mAccelerators = ::CreateAcceleratorTable(accels, 1);
+	LN_THROW(mAccelerators, Win32Exception, GetLastError());
+
+	// ウィンドウサイズをクライアント領域サイズから再設定
+	Win32WindowManager::SetWindowClientSize(mWindowHandle, Size(width, height));
+	Win32WindowManager::AbjustLocationCentering(mWindowHandle);
+
+	// WM_PAINTが呼ばれないようにする
+	::ValidateRect(mWindowHandle, 0);
+
+	// ウィンドウハンドルと Win32Window のポインタを関連付ける
+	BOOL r = ::SetProp(mWindowHandle, Win32WindowManager::PROP_WINPROC, this);
+	LN_THROW((r != FALSE), Win32Exception, GetLastError());
+
 }
 
 //-----------------------------------------------------------------------------

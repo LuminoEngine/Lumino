@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //=============================================================================
 
 const TCHAR*	WINDOW_CLASS_NAME = _T("_LNote_");
-const TCHAR*	Win32WindowManager::PROP_WINPROC = _T("_LNoteProp_");
+const TCHAR*	Win32WindowManager::PROP_WINPROC = _T("_LNWinProp_");
 const DWORD		Win32WindowManager::FULLSCREEN_STYLE = WS_POPUP;
 
 //-----------------------------------------------------------------------------
@@ -84,58 +84,61 @@ Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCr
 {
 	if (data.UserWindow == NULL)
 	{
-		/* もともとは Win32Window クラスで生成していたが、
-		* RegisterClassEx() を Manager に移動したことで、ウィンドウスタイルなどの情報も Manager に移った。
-		* ウィンドウも Manager で生成して、HWND を Win32Window クラスに渡したほうが
-		* シンプルに実装できると見込んだためこちらに移動した。
-		*/
+		///* もともとは Win32Window クラスで生成していたが、
+		//* RegisterClassEx() を Manager に移動したことで、ウィンドウスタイルなどの情報も Manager に移った。
+		//* ウィンドウも Manager で生成して、HWND を Win32Window クラスに渡したほうが
+		//* シンプルに実装できると見込んだためこちらに移動した。
+		//*/
 
-		// ウィンドウモードのときのウィンドウスタイルの選択
-		DWORD dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-		if (data.Resizable) {
-			dwStyle |= (WS_THICKFRAME | WS_MAXIMIZEBOX);
-		}
-		DWORD dwExStyle = 0;
-		if (m_hIcon == NULL) {
-			dwExStyle |= WS_EX_DLGMODALFRAME;	// アイコンの無いスタイル
-		}
+		//// ウィンドウモードのときのウィンドウスタイルの選択
+		//DWORD dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+		//if (data.Resizable) {
+		//	dwStyle |= (WS_THICKFRAME | WS_MAXIMIZEBOX);
+		//}
+		//DWORD dwExStyle = 0;
+		//if (m_hIcon == NULL) {
+		//	dwExStyle |= WS_EX_DLGMODALFRAME;	// アイコンの無いスタイル
+		//}
 
-		// ウィンドウの作成
-		HWND hWnd = ::CreateWindowEx(
-			dwExStyle,
-			m_windowClassName.c_str(),
-			data.TitleText.c_str(),
-			dwStyle,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			NULL, NULL, m_hInst, NULL);
-		LN_THROW(hWnd, Win32Exception, GetLastError());
+		//// ウィンドウの作成
+		//HWND hWnd = ::CreateWindowEx(
+		//	dwExStyle,
+		//	m_windowClassName.c_str(),
+		//	data.TitleText.c_str(),
+		//	dwStyle,
+		//	CW_USEDEFAULT, CW_USEDEFAULT,
+		//	CW_USEDEFAULT, CW_USEDEFAULT,
+		//	NULL, NULL, m_hInst, NULL);
+		//LN_THROW(hWnd, Win32Exception, GetLastError());
 
-		// アクセラレータの作成 (Alt+Enter の警告音を消す)
-		ACCEL accels[1] =
-		{
-			{ FALT | FVIRTKEY, VK_RETURN, 0 }
-		};
-		HACCEL hAccel = ::CreateAcceleratorTable(accels, 1);
-		LN_THROW(hAccel, Win32Exception, GetLastError());
+		//// アクセラレータの作成 (Alt+Enter の警告音を消す)
+		//ACCEL accels[1] =
+		//{
+		//	{ FALT | FVIRTKEY, VK_RETURN, 0 }
+		//};
+		//HACCEL hAccel = ::CreateAcceleratorTable(accels, 1);
+		//LN_THROW(hAccel, Win32Exception, GetLastError());
 
-		// ウィンドウサイズをクライアント領域サイズから再設定
-		SetWindowClientSize(hWnd, Size(data.Width, data.Height));
-		AbjustLocationCentering(hWnd);
+		//// ウィンドウサイズをクライアント領域サイズから再設定
+		//SetWindowClientSize(hWnd, Size(data.Width, data.Height));
+		//AbjustLocationCentering(hWnd);
 
-		// WM_PAINTが呼ばれないようにする
-		::ValidateRect(hWnd, 0);
+		//// WM_PAINTが呼ばれないようにする
+		//::ValidateRect(hWnd, 0);
 
-		// Win32Window 作成
-		RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this, hWnd, dwStyle, hAccel, data.TitleText), false);
+		//// Win32Window 作成
+		//RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this, hWnd, dwStyle, hAccel, data.TitleText), false);
 
-		// ウィンドウハンドルと Win32Window のポインタを関連付ける
-		BOOL r = ::SetProp(hWnd, PROP_WINPROC, window);
-		LN_THROW((r != FALSE), Win32Exception, GetLastError());
+		//// ウィンドウハンドルと Win32Window のポインタを関連付ける
+		//BOOL r = ::SetProp(hWnd, PROP_WINPROC, window);
+		//LN_THROW((r != FALSE), Win32Exception, GetLastError());
 
-		//window->SetFullScreenEnabled(true);
+		////window->SetFullScreenEnabled(true);
+		//window->SetVisible(true);
+
+		RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this), false);
+		window->Initilaize(this, data.TitleText, data.Width, data.Height, data.Fullscreen, data.Resizable);
 		window->SetVisible(true);
-
 		window.SafeAddRef();
 		return window;
 	}

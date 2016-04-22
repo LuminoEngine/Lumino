@@ -58,8 +58,16 @@ class Win32NativeWindow
 	: public Win32PlatformWindow
 {
 public:
-	Win32NativeWindow(Win32WindowManager* windowManager, HWND hWnd, DWORD hWindowedStyle, HACCEL hAccel, const String& title);
+	Win32NativeWindow(Win32WindowManager* windowManager);
 	virtual ~Win32NativeWindow();
+	void Initilaize(
+		Win32WindowManager* windowManager,
+		String windowTitle,
+		int width,
+		int height,
+		bool fullscreen,
+		bool resizable);
+
 
 public:
 	// PlatformWindow interface

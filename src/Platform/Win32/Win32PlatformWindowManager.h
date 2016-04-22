@@ -38,6 +38,7 @@ public:
 public:
 	HINSTANCE GetInstanceHandle() const { return m_hInst; }
 	const String& GetWindowClassName() const { return m_windowClassName; }
+	HICON GetHIcon() const { return m_hIcon; }
 
 	Win32PlatformWindow* CreateNativeWindow(const NativeWindowCreationData& data);
 
