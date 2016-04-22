@@ -86,11 +86,11 @@ set(LN_SOURCES_Platform
 	include/Lumino/Platform/EventListener.h
 	include/Lumino/Platform/Ime.h
 	include/Lumino/Platform/PlatformEventArgs.h
-	include/Lumino/Platform/PlatformManager.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/PlatformWindow.h
 	src/Platform/MouseCursorVisibility.h
 	src/Platform/PlatformManager.cpp
+	src/Platform/PlatformManager.h
 	src/Platform/PlatformWindowManagerBase.cpp
 	src/Platform/PlatformWindowManagerBase.h
 	src/Platform/PlatformWindow.cpp

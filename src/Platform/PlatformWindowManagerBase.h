@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <Lumino/Platform/PlatformManager.h>
+#include "PlatformManager.h"
 
 LN_NAMESPACE_BEGIN
 

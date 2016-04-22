@@ -28,17 +28,17 @@ public:
 public:
 	// PlatformWindow interface
 	virtual Size GetSize() const override;
-	//virtual void SetVisible(bool visible) override;
+	virtual void SetVisible(bool visible) override;
 	virtual void SetFullScreenEnabled(bool enabled) override;
 	virtual bool IsFullScreenEnabled() const override;
 	virtual void CaptureMouse() override;
 	virtual void ReleaseMouseCapture() override;
 	
 private:
-    void _resize( bool fullscreen );
-	static void window_close_callback( GLFWwindow* window );
-	static void window_focus_callback( GLFWwindow* window, int focused );	// ウィンドウアクティブ化/非アクティブ化
-	static void window_key_callback( GLFWwindow* window, int key, int scancode, int action, int mods );
+	void _resize(bool fullscreen);
+	static void window_close_callback(GLFWwindow* window);
+	static void window_focus_callback(GLFWwindow* window, int focused);	// ウィンドウアクティブ化/非アクティブ化
+	static void window_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	
 	GLFWwindow*			m_glfwWindow;
 	bool				m_fullScreen;

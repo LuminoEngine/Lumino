@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
-#include <Lumino/Platform/PlatformManager.h>
+#include "PlatformManager.h"
 #include "PlatformWindowManagerBase.h"
 #include "MouseCursorVisibility.h"
 
@@ -13,10 +13,10 @@ LN_NAMESPACE_BEGIN
 PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
 {
 	WindowCreationSettings data;
-	data.Title = title;
-	data.ClientSize = clientSize;
-	data.Fullscreen = false;
-	data.Resizable = resizable;
+	data.title = title;
+	data.clientSize = clientSize;
+	data.fullscreen = false;
+	data.resizable = resizable;
 	return manager->m_windowManager->CreateSubWindow(data);
 }
 

@@ -72,15 +72,15 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual Size GetSize() const { return mClientSize; }
-	virtual void SetVisible(bool visible);
-	virtual void SetFullScreenEnabled(bool enabled);
-	virtual bool IsFullScreenEnabled() const { return mFullScreen; }
-	virtual void CaptureMouse();
-	virtual void ReleaseMouseCapture();
+	virtual Size GetSize() const override { return mClientSize; }
+	virtual void SetVisible(bool visible) override;
+	virtual void SetFullScreenEnabled(bool enabled) override;
+	virtual bool IsFullScreenEnabled() const override { return mFullScreen; }
+	virtual void CaptureMouse() override;
+	virtual void ReleaseMouseCapture() override;
 
 	// Win32Window interface
-	virtual HWND GetWindowHandle() { return mWindowHandle; }
+	virtual HWND GetWindowHandle() override { return mWindowHandle; }
 
 private:
 	String		mTitleText;				// ウィンドウタイトルの文字列  
@@ -104,15 +104,15 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual Size GetSize() const;
-	virtual void SetVisible(bool visible) {}
-	virtual void SetFullScreenEnabled(bool enabled) {}
-	virtual bool IsFullScreenEnabled() const { return false; }
-	virtual void CaptureMouse();
-	virtual void ReleaseMouseCapture();
+	virtual Size GetSize() const override;
+	virtual void SetVisible(bool visible) override {}
+	virtual void SetFullScreenEnabled(bool enabled) override {}
+	virtual bool IsFullScreenEnabled() const override { return false; }
+	virtual void CaptureMouse() override;
+	virtual void ReleaseMouseCapture() override;
 
 	// Win32Window interface
-	virtual HWND GetWindowHandle() { return m_hWnd; }
+	virtual HWND GetWindowHandle() override { return m_hWnd; }
 
 private:
 	HWND			m_hWnd;

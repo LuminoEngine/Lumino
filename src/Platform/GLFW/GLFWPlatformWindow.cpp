@@ -179,15 +179,15 @@ Size GLFWPlatformWindow::GetSize() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//void GLFWPlatformWindow::SetVisible(bool visible)
-//{
-//	if (visible) {
-//		glfwShowWindow(m_glfwWindow);
-//	}
-//	else {
-//		glfwHideWindow(m_glfwWindow);
-//	}
-//}
+void GLFWPlatformWindow::SetVisible(bool visible)
+{
+	if (visible) {
+		glfwShowWindow(m_glfwWindow);
+	}
+	else {
+		glfwHideWindow(m_glfwWindow);
+	}
+}
 
 //-----------------------------------------------------------------------------
 //

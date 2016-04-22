@@ -5,29 +5,18 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
-#include "Common.h"
+#include <Lumino/Platform/Common.h>
 
 LN_NAMESPACE_BEGIN
-
-/// ウィンドウシステムに使用するAPI・ライブラリ
-enum WindowSystemAPI
-{
-	Default,
-	Win32API,
-	X11,
-	GLFW,
-};
 
 /// ウィンドウを作成するための設定
 struct WindowCreationSettings
 {
-	String	Title;			///< ウィンドウタイトル (default:"")
-	Size	ClientSize;		///< クライアント領域のピクセルサイズ (default:640,480)
-	bool	Fullscreen;		///< フルスクリーンモードで作成するかどうか (default:false)
-	bool	Resizable;		///< 可変ウィンドウとして作成するかどうか (default:true)
-	void*	UserWindow;
-
-	WindowCreationSettings();
+	String	title;							// ウィンドウタイトル
+	Size	clientSize = Size(640, 480);	// クライアント領域のピクセルサイズ
+	bool	fullscreen = false;				// フルスクリーンモードで作成するかどうか
+	bool	resizable = true;				// 可変ウィンドウとして作成するかどうか
+	void*	userWindow = nullptr;
 };
 
 
@@ -38,13 +27,11 @@ public:
 	/// Application を初期化するための設定
 	struct Settings
 	{
-		WindowSystemAPI			API;
-		WindowCreationSettings	MainWindowSettings;		/**< メインウィンドウの作成に使用する設定 */
-		bool					UseInternalUIThread;	/**<  (default:false) */
+		WindowSystemAPI			API = WindowSystemAPI::Default;
+		WindowCreationSettings	MainWindowSettings;
+		bool					UseInternalUIThread = false;
 
 		//void*					ExternalMainWindow;		/**< ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
-
-		Settings();
 	};
 
 public:

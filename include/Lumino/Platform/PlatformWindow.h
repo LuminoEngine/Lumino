@@ -31,6 +31,8 @@ public:
 		@brief		クライアント領域のサイズを取得します。
 	*/
 	virtual Size GetSize() const = 0;
+
+	virtual void SetVisible(bool visible) = 0;
 	
 	/**
 		@brief		フルスクリーンの有効フラグを設定します。

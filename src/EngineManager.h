@@ -5,7 +5,7 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Array.h>
 #include <Lumino/Threading/Thread.h>
-#include <Lumino/Platform/PlatformManager.h>
+#include "Platform/PlatformManager.h"
 #include <Lumino/Platform/EventListener.h>
 #include <Lumino/Physics/PhysicsManager.h>
 #include <Lumino/Documents/DocumentsManager.h>

@@ -9,6 +9,14 @@ class Win32WindowManager;
 class PlatformWindow;
 class Win32PlatformWindow;
 
+/** ウィンドウシステムの API・ライブラリ */
+enum class WindowSystemAPI
+{
+	Default,
+	Win32API,
+	X11,
+	GLFW,
+};
 
 namespace detail
 {

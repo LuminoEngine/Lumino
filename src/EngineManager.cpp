@@ -327,12 +327,12 @@ void EngineManager::InitializePlatformManager()
 		InitializeCommon();
 
 		PlatformManager::Settings data;
-		data.API = WindowSystemAPI::Default;
-		data.MainWindowSettings.Title = m_configData.mainWindowTitle;
-		data.MainWindowSettings.ClientSize = m_configData.mainWindowSize;
-		data.MainWindowSettings.Fullscreen = false;
-		data.MainWindowSettings.Resizable = true;
-		data.MainWindowSettings.UserWindow = m_configData.UserMainWindow;
+		data.API = m_configData.windowSystemAPI;
+		data.MainWindowSettings.title = m_configData.mainWindowTitle;
+		data.MainWindowSettings.clientSize = m_configData.mainWindowSize;
+		data.MainWindowSettings.fullscreen = false;
+		data.MainWindowSettings.resizable = true;
+		data.MainWindowSettings.userWindow = m_configData.UserMainWindow;
 		data.UseInternalUIThread = false;
 
 		m_platformManager.Attach(LN_NEW PlatformManager());

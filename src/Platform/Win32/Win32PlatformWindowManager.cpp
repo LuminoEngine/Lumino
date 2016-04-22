@@ -222,12 +222,12 @@ void Win32WindowManager::AbjustLocationCentering(HWND hWnd)
 void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
-	data.TitleText = settings.Title;
-	data.Width = settings.ClientSize.width;
-	data.Height = settings.ClientSize.height;
-	data.Fullscreen = settings.Fullscreen;
-	data.Resizable = settings.Resizable;
-	data.UserWindow = (HWND)settings.UserWindow;
+	data.TitleText = settings.title;
+	data.Width = settings.clientSize.width;
+	data.Height = settings.clientSize.height;
+	data.Fullscreen = settings.fullscreen;
+	data.Resizable = settings.resizable;
+	data.UserWindow = (HWND)settings.userWindow;
 	m_mainWindow.Attach(CreateNativeWindow(data));
 }
 
@@ -245,11 +245,11 @@ PlatformWindow* Win32WindowManager::GetMainWindow()
 PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
-	data.TitleText = settings.Title;
-	data.Width = settings.ClientSize.width;
-	data.Height = settings.ClientSize.height;
-	data.Fullscreen = settings.Fullscreen;
-	data.Resizable = settings.Resizable;
+	data.TitleText = settings.title;
+	data.Width = settings.clientSize.width;
+	data.Height = settings.clientSize.height;
+	data.Fullscreen = settings.fullscreen;
+	data.Resizable = settings.resizable;
 	return CreateNativeWindow(data);
 }
 

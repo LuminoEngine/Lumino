@@ -62,7 +62,6 @@
 
 #include "../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
-#include <Lumino/Platform/PlatformManager.h>
 #ifdef LN_OS_WIN32
 	#include "Win32/Win32PlatformWindowManager.h"
 	#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
@@ -71,26 +70,10 @@
 	#include "X11/X11WindowManager.h"
 #endif
 #include "GLFW/GLFWPlatformWindowManager.h"
+#include "PlatformManager.h"
 
 
 LN_NAMESPACE_BEGIN
-
-//=============================================================================
-// Settings
-//=============================================================================
-WindowCreationSettings::WindowCreationSettings()
-	: Title()
-	, ClientSize(640, 480)
-	, Fullscreen(false)
-	, Resizable(true)
-	, UserWindow(NULL)
-{}
-
-PlatformManager::Settings::Settings()
-	: API(WindowSystemAPI::Default)
-	, UseInternalUIThread(false)
-	//, ExternalMainWindow(NULL)
-{}
 
 //=============================================================================
 // PlatformManager
@@ -170,6 +153,7 @@ void PlatformManager::Initialize(const Settings& settings)
 		m_windowManager = m.DetachMove();
 	}
 #endif
+	LN_THROW(m_windowManager != nullptr, ArgumentException);
 
 	if (m_useThread) {
 		m_mainWindowThreadInitFinished.SetFalse();

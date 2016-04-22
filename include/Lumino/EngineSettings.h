@@ -62,6 +62,9 @@ public:
 	*/
 	FileAccessPriority	FileAccessPriority;
 
+	/** ウィンドウシステムで使用する API を指定します。 */
+	WindowSystemAPI	windowSystemAPI = WindowSystemAPI::Default;
+
 	/**
 		@brief		グラフィックス機能で使用する描画 API を指定します。
 		@details	初期値は Windows の場合 DirectX9 で、それ以外は OpenGL です。

@@ -41,7 +41,6 @@
 
 #include "Lumino/Platform/PlatformSupport.h"
 #include "Lumino/Platform/PlatformWindow.h"
-#include "Lumino/Platform/PlatformManager.h"
 #include "Lumino/Platform/PlatformEventArgs.h"
 #include "Lumino/Platform/EventListener.h"
 #include "Lumino/Platform/Clipboard.h"

@@ -41,7 +41,7 @@ void GLFWPlatformWindowManager::Initialize()
 void GLFWPlatformWindowManager::CreateMainWindow(const WindowCreationSettings& settings)
 {
 	m_mainWindow.Attach(LN_NEW GLFWPlatformWindow(this), false);
-	m_mainWindow->Initialize(this, settings.Title, settings.ClientSize.width, settings.ClientSize.height, settings.Fullscreen, settings.Resizable);
+	m_mainWindow->Initialize(this, settings.title, settings.clientSize.width, settings.clientSize.height, settings.fullscreen, settings.resizable);
 }
 
 //-----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ PlatformWindow* GLFWPlatformWindowManager::GetMainWindow()
 PlatformWindow* GLFWPlatformWindowManager::CreateSubWindow(const WindowCreationSettings& settings)
 {
 	RefPtr<GLFWPlatformWindow> window(LN_NEW GLFWPlatformWindow(this), false);
-	window->Initialize(this, settings.Title, settings.ClientSize.width, settings.ClientSize.height, settings.Fullscreen, settings.Resizable);
+	window->Initialize(this, settings.title, settings.clientSize.width, settings.clientSize.height, settings.fullscreen, settings.resizable);
 	return window.DetachMove();
 }
 
