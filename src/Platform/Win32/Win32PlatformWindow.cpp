@@ -34,7 +34,6 @@ Win32PlatformWindow::Win32PlatformWindow(Win32WindowManager* app)
 	: PlatformWindow(app)
 	, mLastMouseX(-1)
 	, mLastMouseY(-1)
-	, mIsActive(true)	// 初期値 true。WM_ACTIVATE は初回表示で最前面になった時は呼ばれない
 	, m_systemMouseShown(true)
 {
 }
@@ -117,18 +116,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				代わりに終了フラグだけを立てて、それをメインループで検出、
 				その後の finalize() 呼び出しで DestroyWindow() を呼び出す。
 				*/
-
-				PlatformEventArgs e(PlatformEventType::Close, this);
-				if (NortifyEvent(e)) {
-					*handled = true;
-					return 0;
-				}
-
-				// TODO
-				if (this == m_windowManager->GetMainWindow()) {
-					m_windowManager->Exit();
-				}
-
+				SendPlatformClosingEvent(this);
 				*handled = true;
 				return 0;
 			}
@@ -136,17 +124,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			/////////////////// ウィンドウがアクティブ・非アクティブになった場合
 			case WM_ACTIVATE:
 			{
-				bool active = ((wparam & 0xffff) != 0);
-				if (active != mIsActive)
-				{
-					mIsActive = active;
-
-					//PlatformEventArgs e;
-					//e.Type = (mIsActive) ? LN_EVENT_APP_ACTIVATE : LN_EVENT_APP_DEACTIVATE;
-					//e.Sender = this;
-					//SendEventToAllListener(e);		// 同期処理の場合はこの場で通知
-					//mApplication->PostEvent(&e);	// 非同期処理の場合は一度キューに入れる
-				}
+				SendPlatformActivateChangedEvent(this, ((wparam & 0xffff) != 0));
 				*handled = true;
 				return 0;
 			}
@@ -159,7 +137,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				PlatformEventArgs e(PlatformEventType::WindowSizeChanged, this);
 				e.size.width = (lparam & 0xFFFF);
 				e.size.height = ((lparam >> 16) & 0xFFFF);
-				NortifyEvent(e);
+				SendPlatformEvent(e);
 
 				*handled = true;
 				return 0;
@@ -241,7 +219,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				e.mouse.wheelDelta = 0;
 				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
 				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
-				NortifyEvent(e);
+				SendPlatformEvent(e);
 
 				mLastMouseX = e.mouse.x;
 				mLastMouseY = e.mouse.y;
@@ -262,7 +240,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
 				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
 				e.mouse.inClientArea = true;
-				NortifyEvent(e);
+				SendPlatformEvent(e);
 
 				mLastMouseX = e.mouse.x;
 				mLastMouseY = e.mouse.y;
@@ -291,7 +269,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
 					e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
 					e.mouse.inClientArea = false;
-					NortifyEvent(e);
+					SendPlatformEvent(e);
 
 					mLastMouseX = e.mouse.x;
 					mLastMouseY = e.mouse.y;
@@ -312,7 +290,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				e.mouse.y = static_cast< short >(HIWORD(lparam));
 				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
 				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
-				NortifyEvent(e);
+				SendPlatformEvent(e);
 
 				mLastMouseX = e.mouse.x;
 				mLastMouseY = e.mouse.y;
@@ -323,59 +301,30 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			///////////////////////////////////////////// キー↓
 			case WM_KEYDOWN:
 			{
-				PlatformEventArgs e;
-				e.type = PlatformEventType::KeyDown;
-				e.sender = this;
-				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.key.isAlt = ::GetKeyState(VK_MENU) < 0;
-				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
-				NortifyEvent(e);
-
+				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), ::GetKeyState(VK_MENU) < 0, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
 				*handled = true;
 				return 0;
 			}
 			///////////////////////////////////////////// キー↑
 			case WM_KEYUP:
 			{
-				PlatformEventArgs e;
-				e.type = PlatformEventType::KeyUp;
-				e.sender = this;
-				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.key.isAlt = ::GetKeyState(VK_MENU) < 0;
-				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
-				NortifyEvent(e);
-
+				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), ::GetKeyState(VK_MENU) < 0, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
 				*handled = true;
 				return 0;
 			}
 			///////////////////////////////////////////// Alt + KeyDown
 			case WM_SYSKEYDOWN:
 			{
-				PlatformEventArgs e;
-				e.type = PlatformEventType::KeyDown;
-				e.sender = this;
-				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.key.isAlt = true;								// Alt on
-				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
-				NortifyEvent(e);
-
+				// Alt は ON 扱い
+				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), true, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
 				*handled = true;
 				return 0;
 			}
 			///////////////////////////////////////////// Alt + KeyUp
 			case WM_SYSKEYUP:
 			{
-				PlatformEventArgs e;
-				e.type = PlatformEventType::KeyUp;
-				e.sender = this;
-				e.key.keyCode = ConvertVirtualKeyCode(wparam);	// 仮想キーコード
-				e.key.isAlt = true;								// Alt on
-				e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
-				e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
-				NortifyEvent(e);
+				// Alt は ON 扱い
+				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), true, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
 				break;	// WM_SYSKEYUPを捕まえた場合、必ずDefWindowProcに行くようにする
 			}
 			///////////////////////////////////////////// 文字入力
@@ -384,15 +333,8 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				// 文字のみ送る
 				if (0x20 <= wparam && wparam <= 0x7E)
 				{
-					PlatformEventArgs e;
-					e.type = PlatformEventType::KeyChar;
-					e.sender = this;
-					e.key.keyCode = Key::Unknown;
-					e.key.isAlt = ::GetKeyState(VK_MENU) < 0;
-					e.key.isShift = ::GetKeyState(VK_SHIFT) < 0;
-					e.key.isControl = ::GetKeyState(VK_CONTROL) < 0;
-					e.key.keyChar = wparam;
-					NortifyEvent(e);
+					SendPlatformKeyEvent(PlatformEventType::KeyChar, this, Key::Unknown, ::GetKeyState(VK_MENU) < 0, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, wparam);
+					*handled = true;
 					return 0;
 				}
 			}
@@ -405,7 +347,8 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
+//bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
+void Win32PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
 {
 	/*	マウス非表示はもっと上のレベルで共通処理できるかと思ったけど、
 		割とOSにより変わりそうなので (ウィンドウ上にあるときだけカーソルが変わるのかとか)
@@ -413,7 +356,7 @@ bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
 	*/
 
 	// 非アクティブの場合はクライアント領域外で移動したことにして、カーソルを表示する
-	if (!mIsActive)
+	if (!IsActive())
 	{
 		m_mouseCursorVisibility->OnMoveCursor(false);
 	}
@@ -443,7 +386,7 @@ bool Win32PlatformWindow::NortifyEvent(const PlatformEventArgs& e)
 		m_systemMouseShown = mc_visible;
 	}
 
-	return SendEventToAllListener(e);
+	//return SendEventToAllListener(e);
 }
 
 //-----------------------------------------------------------------------------
@@ -760,7 +703,7 @@ Win32UserHostWindow::~Win32UserHostWindow()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const Size& Win32UserHostWindow::GetSize() const
+Size Win32UserHostWindow::GetSize() const
 {
 	// コンストラクタで mClientSize に格納しておいてもいいと思ったけど、
 	// フルスクリーン化等でウィンドウサイズが変わった時の対応が面倒そうなのでこのまま。

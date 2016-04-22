@@ -70,6 +70,7 @@
 #ifdef LN_X11
 	#include "X11/X11WindowManager.h"
 #endif
+#include "GLFW/GLFWPlatformWindowManager.h"
 
 
 LN_NAMESPACE_BEGIN
@@ -86,7 +87,7 @@ WindowCreationSettings::WindowCreationSettings()
 {}
 
 PlatformManager::Settings::Settings()
-	: API(WindowSystemAPI_Win32API)
+	: API(WindowSystemAPI::Default)
 	, UseInternalUIThread(false)
 	//, ExternalMainWindow(NULL)
 {}
@@ -130,11 +131,44 @@ void PlatformManager::Initialize(const Settings& settings)
 	m_windowCreationSettings = settings.MainWindowSettings;
 	m_useThread = settings.UseInternalUIThread;
 
-#ifdef LN_OS_WIN32
-	m_windowManager = LN_NEW Win32WindowManager(0);
-#endif
-#ifdef LN_X11
-	m_windowManager = LN_NEW X11WindowManager();
+	WindowSystemAPI api = settings.API;
+
+#if defined(LN_OS_WIN32)
+	// select default
+	if (api == WindowSystemAPI::Default)
+	{
+		api = WindowSystemAPI::Win32API;
+	}
+	// create window manager
+	if (api == WindowSystemAPI::Win32API)
+	{
+		auto m = RefPtr<Win32WindowManager>::MakeRef(0);
+		m_windowManager = m.DetachMove();
+	}
+	else if (api == WindowSystemAPI::GLFW)
+	{
+		auto m = RefPtr<GLFWPlatformWindowManager>::MakeRef();
+		m->Initialize();
+		m_windowManager = m.DetachMove();
+	}
+#elif defined(LN_X11)
+	// select default
+	if (api == WindowSystemAPI::Default)
+	{
+		api = WindowSystemAPI::X11;
+	}
+	// create window manager
+	if (api == WindowSystemAPI::X11)
+	{
+		auto m = RefPtr<X11WindowManager>::MakeRef();
+		m_windowManager = m.DetachMove();
+	}
+	else if (api == WindowSystemAPI::GLFW)
+	{
+		auto m = RefPtr<GLFWPlatformWindowManager>::MakeRef();
+		m->Initialize();
+		m_windowManager = m.DetachMove();
+	}
 #endif
 
 	if (m_useThread) {

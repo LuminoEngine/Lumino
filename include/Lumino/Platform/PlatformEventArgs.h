@@ -11,8 +11,8 @@ enum class PlatformEventType
 
 	Quit,					/** アプリ終了要求 */
 	Close,					/** ウィンドウが閉じられようとしている */
-	//AppActivate,			/** ウィンドウがアクティブになった */
-	//AppDeactivate = 4,	/** ウィンドウが非アクティブになった */
+	WindowActivate,			/** ウィンドウがアクティブになった */
+	WindowDeactivate,		/** ウィンドウが非アクティブになった */
 
 	MouseDown,				/** [MouseEventArgs] マウスボタンが押された */
 	MouseUp,				/** [MouseEventArgs] マウスボタンが離された */

@@ -12,8 +12,10 @@ LN_NAMESPACE_BEGIN
 /// ウィンドウシステムに使用するAPI・ライブラリ
 enum WindowSystemAPI
 {
-	WindowSystemAPI_Win32API = 0,		///< WindowsAPI
-	WindowSystemAPI_GLFW,
+	Default,
+	Win32API,
+	X11,
+	GLFW,
 };
 
 /// ウィンドウを作成するための設定

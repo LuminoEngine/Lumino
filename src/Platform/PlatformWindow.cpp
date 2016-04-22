@@ -26,6 +26,7 @@ PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSi
 PlatformWindow::PlatformWindow(WindowManagerBase* windowManager)
 	: m_windowManager(windowManager)
 	, m_mouseCursorVisibility(LN_NEW detail::MouseCursorVisibility)
+	, m_isActive(true)	// 初期値 true。WM_ACTIVATE は初回表示で最前面になった時は呼ばれない TODO: Win32 だけ？
 {
 	/*	Window は Graphics や Input、GUI 等、さまざまなところから参照される。
 		また、WinAPI の UnregisterClass() は全てのウィンドウを DestroyWindow() してから呼ばなければならない。
@@ -67,6 +68,73 @@ void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 void PlatformWindow::DetachEventListener(IEventListener* listener)
 {
 	m_listenerEntryArray.RemoveAllValue(listener);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
+{
+	OnPlatformEvent(e);
+	return SendEventToAllListener(e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool PlatformWindow::SendPlatformClosingEvent(PlatformWindow* sender)
+{
+	PlatformEventArgs e(PlatformEventType::Close, this);
+
+	if (SendPlatformEvent(e)) {
+		return true;
+	}
+
+	// TODO
+	if (this == m_windowManager->GetMainWindow()) {
+		m_windowManager->Exit();
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active)
+{
+	if (active != m_isActive)
+	{
+		m_isActive = active;
+
+		PlatformEventArgs e;
+		e.type = (active) ? PlatformEventType::WindowActivate : PlatformEventType::WindowDeactivate;
+		e.sender = sender;
+		return SendPlatformEvent(e);
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, bool isAlt_, bool isShift_, bool isControl_, char keyChar_)
+{
+	PlatformEventArgs e;
+	e.type = type_;
+	e.sender = sender_;
+	e.key.keyCode = keyCode_;
+	e.key.isAlt = isAlt_;
+	e.key.isShift = isShift_;
+	e.key.isControl = isControl_;
+	e.key.keyChar = keyChar_;
+	return SendPlatformEvent(e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
+{
 }
 
 //-----------------------------------------------------------------------------

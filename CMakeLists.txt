@@ -94,6 +94,10 @@ set(LN_SOURCES_Platform
 	src/Platform/PlatformWindowManagerBase.cpp
 	src/Platform/PlatformWindowManagerBase.h
 	src/Platform/PlatformWindow.cpp
+	src/Platform/GLFW/GLFWPlatformWindow.cpp
+	src/Platform/GLFW/GLFWPlatformWindow.h
+	src/Platform/GLFW/GLFWPlatformWindowManager.cpp
+	src/Platform/GLFW/GLFWPlatformWindowManager.h
 )
 
 set(LN_SOURCES_Input
@@ -723,6 +727,7 @@ set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/external/bullet-2.82
 	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include
 	${PROJECT_SOURCE_DIR}/external/libogg/include
+	${PROJECT_SOURCE_DIR}/external/glfw-3.1.2/include
 	${PROJECT_SOURCE_DIR}/external/EffekseerRuntime101/src/Effekseer
 )
 include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})

@@ -30,7 +30,7 @@ public:
 	/**
 		@brief		クライアント領域のサイズを取得します。
 	*/
-	virtual const Size& GetSize() const = 0;
+	virtual Size GetSize() const = 0;
 	
 	/**
 		@brief		フルスクリーンの有効フラグを設定します。
@@ -48,7 +48,7 @@ public:
 	/**
 		@brief		ウィンドウがアクティブかどうかを示す値を取得します。
 	*/
-	virtual bool IsActive() const = 0;
+	bool IsActive() const { return m_isActive; }
 
 	/**
 		@brief		マウスカーソルがクライアント領域上にある場合に表示するかを設定します。
@@ -79,6 +79,12 @@ protected:
 	PlatformWindow(WindowManagerBase* windowManager);
 	virtual ~PlatformWindow();
 
+	bool SendPlatformEvent(const PlatformEventArgs& e);
+	bool SendPlatformClosingEvent(PlatformWindow* sender);
+	bool SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active);
+	bool SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, bool isAlt_, bool isShift_, bool isControl_, char keyChar_);
+	virtual void OnPlatformEvent(const PlatformEventArgs& e);
+
 	typedef SortedArray<int, IEventListener*>	EventListenerList;
 
 	WindowManagerBase*		m_windowManager;
@@ -88,6 +94,9 @@ LN_INTERNAL_ACCESS:
 	bool SendEventToAllListener(const PlatformEventArgs& e);
 
 	detail::MouseCursorVisibility* m_mouseCursorVisibility;
+
+private:
+	bool	m_isActive;
 };
 
 LN_NAMESPACE_END

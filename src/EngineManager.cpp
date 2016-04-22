@@ -327,7 +327,7 @@ void EngineManager::InitializePlatformManager()
 		InitializeCommon();
 
 		PlatformManager::Settings data;
-		data.API = WindowSystemAPI_Win32API;
+		data.API = WindowSystemAPI::Default;
 		data.MainWindowSettings.Title = m_configData.mainWindowTitle;
 		data.MainWindowSettings.ClientSize = m_configData.mainWindowSize;
 		data.MainWindowSettings.Fullscreen = false;

@@ -20,7 +20,7 @@ public:
 	//tr::DelegateEvent<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
 
 	// override PlatformWindow
-	virtual bool IsActive() const { return mIsActive; }
+	//virtual bool IsActive() const { return mIsActive; }
 	//virtual void HideCursor();
 	//virtual void ShowCursor();
 
@@ -31,10 +31,12 @@ public:
 	///		ホストの場合、メッセージループおよび DefWndProc はユーザー側で呼ぶことになるのでこの中では行わない。代わりに handled でメッセージを処理したことを伝える。
 	LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled);
 
-	bool NortifyEvent(const PlatformEventArgs& e);
+	//bool NortifyEvent(const PlatformEventArgs& e);
 
 	/// ウィンドウハンドルの取得
 	virtual HWND GetWindowHandle() = 0;
+
+	virtual void OnPlatformEvent(const PlatformEventArgs& e) override;
 
 public:
 	static Key ConvertVirtualKeyCode(DWORD winVK);
@@ -43,7 +45,6 @@ protected:
 	Size	mClientSize;        ///< クライアント領域の大きさ
 	int		mLastMouseX;
 	int		mLastMouseY;
-	bool	mIsActive;
 	bool	m_systemMouseShown;
 
 LN_INTERNAL_ACCESS:
@@ -71,7 +72,7 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual const Size& GetSize() const { return mClientSize; }
+	virtual Size GetSize() const { return mClientSize; }
 	virtual void SetVisible(bool visible);
 	virtual void SetFullScreenEnabled(bool enabled);
 	virtual bool IsFullScreenEnabled() const { return mFullScreen; }
@@ -103,7 +104,7 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual const Size& GetSize() const;
+	virtual Size GetSize() const;
 	virtual void SetVisible(bool visible) {}
 	virtual void SetFullScreenEnabled(bool enabled) {}
 	virtual bool IsFullScreenEnabled() const { return false; }

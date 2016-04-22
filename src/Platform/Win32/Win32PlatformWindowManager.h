@@ -51,7 +51,7 @@ public:
 	static void AbjustLocationCentering(HWND hWnd);
 
 public:
-	// override Application
+	// Application interface
 	virtual void CreateMainWindow(const WindowCreationSettings& settings);
 	virtual PlatformWindow* GetMainWindow();
 	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings);
