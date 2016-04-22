@@ -1,7 +1,6 @@
 
 #pragma once
 #include "Common.h"
-#include "../Variant.h"
 
 LN_NAMESPACE_BEGIN
 

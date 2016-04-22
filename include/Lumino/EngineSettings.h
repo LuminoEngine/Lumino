@@ -76,8 +76,8 @@ public:
 	*/
 	RenderingType	RenderingType;
 
-	/** ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
-	void*	UserMainWindow;
+	/** ユーザー定義のウィンドウハンドル (windows の場合は HWND) */
+	void*			userMainWindow = nullptr;
 
 	/**
 		@brief		Direct3D の浮動小数点計算の精度に関する情報です。詳しくは MSDN の D3DCREATE_ENABLE_PRESENTSTATS を参照してください。
@@ -119,7 +119,6 @@ public:
 		, FileAccessPriority(FileAccessPriority_DirectoryFirst)
 		, GraphicsAPI(GraphicsAPI::DirectX9)
 		, RenderingType(RenderingType::Deferred)
-		, UserMainWindow(NULL)
 #ifdef LN_OS_WIN32
 		, D3D9Device(NULL)
 #endif

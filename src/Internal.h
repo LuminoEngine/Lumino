@@ -23,7 +23,6 @@
 #endif
 
 #include "Graphics/Device/OpenGL/LNGL.h"
-#include <Lumino/Variant.h>
 #include <Lumino/Platform/PlatformSupport.h>
 #include <Lumino/AutoReleasePool.h>
 

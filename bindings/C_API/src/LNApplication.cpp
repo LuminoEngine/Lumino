@@ -49,7 +49,7 @@ void LNConfig_SetFileAccessPriority(LNFileAccessPriority priority)
 //-----------------------------------------------------------------------------
 void LNConfig_SetUserWindowHandle(intptr_t windowHandle)
 {
-	LFManager::ConfigData.UserMainWindow = (void*)windowHandle;
+	LFManager::ConfigData.userMainWindow = (void*)windowHandle;
 }
 
 //-----------------------------------------------------------------------------

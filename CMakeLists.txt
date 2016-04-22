@@ -481,7 +481,6 @@ set(LN_SOURCES_Application
 	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
-	include/Lumino/CoreObject.h
 	include/Lumino/Engine.h
 	include/Lumino/EngineDiag.h
 	include/Lumino/EngineSettings.h
@@ -490,12 +489,10 @@ set(LN_SOURCES_Application
 	include/Lumino/Profiler.h
 	include/Lumino/Property.h
 	include/Lumino/RoutedEvent.h
-	include/Lumino/Variant.h
 	include/Lumino/Version.h
 	src/AssetsManager.cpp
 	src/AssetsManager.h
 	src/AutoReleasePool.cpp
-	src/CoreObject.cpp
 	src/Engine.cpp
 	src/EngineDiagCore.cpp
 	src/EngineDiagCore.h

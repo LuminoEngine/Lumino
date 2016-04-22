@@ -332,7 +332,7 @@ void EngineManager::InitializePlatformManager()
 		data.MainWindowSettings.clientSize = m_configData.mainWindowSize;
 		data.MainWindowSettings.fullscreen = false;
 		data.MainWindowSettings.resizable = true;
-		data.MainWindowSettings.userWindow = m_configData.UserMainWindow;
+		data.MainWindowSettings.userWindow = m_configData.userMainWindow;
 		data.UseInternalUIThread = false;
 
 		m_platformManager.Attach(LN_NEW PlatformManager());
@@ -373,7 +373,7 @@ void EngineManager::InitializeAudioManager()
 
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
-		if (m_configData.UserMainWindow != nullptr) {
+		if (m_configData.userMainWindow != nullptr) {
 			InitializePlatformManager();
 		}
 

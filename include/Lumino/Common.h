@@ -23,7 +23,7 @@ LN_ENUM(MouseButton)
 };
 LN_ENUM_DECLARE(MouseButton);
 
-/// キーコード (NumPad はサポートしていない)
+/**< キーコード (NumPad はサポートしていない) */
 enum class Key
 {
 	Unknown = 0,
