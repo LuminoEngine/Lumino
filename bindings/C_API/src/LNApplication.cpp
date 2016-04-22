@@ -14,7 +14,7 @@ extern "C" {
 //-----------------------------------------------------------------------------
 void LNConfig_SetApplicationLogEnabled(LNBool enabled)
 {
-	LFManager::ConfigData.ApplicationLogEnabled = LNC_TO_BOOL(enabled);
+	LFManager::ConfigData.applicationLogEnabled = LNC_TO_BOOL(enabled);
 }
 
 //-----------------------------------------------------------------------------
@@ -31,8 +31,8 @@ void LNConfig_SetConsoleEnabled(LNBool enabled)
 void LNConfig_RegisterArchive(const LNChar* filePath, const LNChar* password)
 {
 	EngineSettings::ArchiveFileEntry e;
-	e.FilePath = filePath;
-	e.Password = password;
+	e.filePath = filePath;
+	e.password = password;
 	LFManager::ConfigData.ArchiveFileEntryList.Add(e);
 }
 

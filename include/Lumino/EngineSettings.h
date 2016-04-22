@@ -15,8 +15,8 @@ class EngineSettings
 public:
 	struct ArchiveFileEntry
 	{
-		PathName	FilePath;
-		String		Password;
+		PathName	filePath;
+		String		password;
 	};
 
 	struct CacheCapacity
@@ -34,25 +34,17 @@ public:
 
 public:
 
-	/**
-		@brief		メインウィンドウのクライアント領域の幅と高さを設定します。(初期値:640x480)
-	*/
+	/** メインウィンドウのクライアント領域の幅と高さです。(初期値:640x480) */
 	Size mainWindowSize = Size(640, 480);
 
-	/**
-		@brief		メインウィンドウに対して作成されるバックバッファのサイズを設定します。(初期値:640x480)
-	*/
-	Size backBufferSize = Size(640, 480);
+	/** メインウィンドウに対して作成されるバックバッファのサイズです。(初期値:640x480) */
+	Size mainBackBufferSize = Size(640, 480);
 
-	/**
-		@brief		メインウィンドウに対して作成されるバックバッファのサイズを設定します。(初期値:640x480)
-	*/
+	/** メインウィンドウのタイトル文字列です。*/
 	String mainWindowTitle = _T("");
 	
-	/**
-		@brief		デバッグ用のログファイルの出力有無を設定します。(初期値:Debugモードの場合true、それ以外は false)
-	*/
-	bool ApplicationLogEnabled;
+	/** デバッグ用のログファイルの出力有無を設定します。(初期値:Debug ビルドの場合true、それ以外は false) */
+	bool applicationLogEnabled = false;
 
 	/**
 		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(初期値:false)
@@ -119,8 +111,7 @@ public:
 
 public:
 	EngineSettings()
-		: ApplicationLogEnabled(false)
-		, ConsoleEnabled(false)
+		: ConsoleEnabled(false)
 		, ArchiveFileEntryList()
 		, FileAccessPriority(FileAccessPriority_DirectoryFirst)
 		, GraphicsAPI(GraphicsAPI::DirectX9)
@@ -132,7 +123,7 @@ public:
 		, DirectMusicReverbLevel(0.75f)
 	{
 #ifdef LN_DEBUG
-		ApplicationLogEnabled = true;
+		applicationLogEnabled = true;
 		acceleratorKeys.toggleShowDiag = InputBinding::Create("ToggleShowDiag", Key::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;

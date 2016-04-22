@@ -277,7 +277,7 @@ void EngineManager::InitializeCommon()
 	if (!m_commonInitied)
 	{
 		// ログファイル出力
-		if (m_configData.ApplicationLogEnabled) {
+		if (m_configData.applicationLogEnabled) {
 			Logger::Initialize(LogFileName);
 		}
 		// コンソール割り当て
@@ -312,7 +312,7 @@ void EngineManager::InitializeFileManager()
 		data.AccessMode = m_configData.FileAccessPriority;
 		m_fileManager = LN_NEW FileManager(data);
 		for (auto& e : m_configData.ArchiveFileEntryList) {
-			m_fileManager->RegisterArchive(e.FilePath, e.Password);
+			m_fileManager->RegisterArchive(e.filePath, e.password);
 		}
 	}
 }
@@ -422,7 +422,7 @@ void EngineManager::InitializeGraphicsManager()
 		data.GraphicsAPI = m_configData.GraphicsAPI;
 		data.RenderingType = m_configData.RenderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
-		data.backBufferSize = m_configData.backBufferSize;
+		data.backBufferSize = m_configData.mainBackBufferSize;
 		data.animationManager = m_animationManager;
 		data.FileManager = m_fileManager;
 		data.PlatformTextureLoading = true;
