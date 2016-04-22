@@ -796,6 +796,17 @@ if (LN_USE_EXTERNAL_Effekseer)
 	link_libraries(effekseer_sound_xaudio2)
 endif()
 
+
+# glfw
+set(GLFW_BUILD_DOCS OFF)
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_INSTALL OFF)
+add_subdirectory(external/glfw-3.1.2)
+link_libraries(glfw)
+set_target_properties(glfw PROPERTIES OUTPUT_NAME "glfw${LN_LIB_POSTFIX}")
+
+
 #------------------------------
 # library. (Unicode)
 
