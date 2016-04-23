@@ -167,155 +167,155 @@ enum class RenderStateId
 // PlainGLSLBuilder
 //=============================================================================
 
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//ShaderCompileResultLevel GLSLUtils::Build(GLGraphicsDevice* device, const void* code, size_t codeByteCount, GLShader** outShader, StringA* outMessage)
+//{
+//	GLuint program;
+//	ShaderCompileResultLevel resultLevel = MakeShaderProgram(code, codeByteCount, &program, outMessage);
+//	if (resultLevel == ShaderCompileResultLevel_Error) {
+//		return resultLevel;
+//	}
+//
+//	RefPtr<GLShader> shader(LN_NEW GLShader(device, program), false);
+//
+//	// uniform 変数の数を調べて、その数分 ShaderVariable 作成
+//	GLint params;
+//	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
+//
+//	Array<GLShaderPassVariableInfo> passVarList;
+//	for (int i = 0; i < params; ++i)
+//	{
+//		GLShaderPassVariableInfo passVar;
+//
+//		GLsizei name_len = 0;
+//		GLsizei var_size = 0;   // 配列サイズっぽい
+//		GLenum  var_type = 0;
+//		GLchar  name[256] = { 0 };
+//		glGetActiveUniform(program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+//
+//		// 変数情報作成
+//		ShaderVariableBase::ShaderVariableTypeDesc desc;
+//		GLShaderVariable::ConvertVariableTypeGLToLN(var_type, var_size, &desc);
+//
+//		// 名前を String 化
+//		String tname;
+//		tname.AssignCStr(name);
+//
+//		// Location
+//		passVar.Location = glGetUniformLocation(program, name); LN_CHECK_GLERROR();
+//
+//		// ShaderVariable を作る
+//		passVar.Variable = shader->TryCreateShaderVariable(desc, tname, String(), passVar.Location);	// TODO:この loc はいらない
+//	
+//		passVarList.Add(passVar);
+//	}
+//
+//	// テクニック作成 (1対の頂点シェーダとフラグメントシェーダだけなので1つで良い)
+//	GLShaderTechnique* tech = shader->CreateShaderTechnique(_T("Main"));
+//
+//	/*
+//		■ attribute 変数への Usage 自動割り当てについて
+//
+//		特定の名前の attribute 変数は、自動的に Usage と UsageIndex を割り当てる。
+//		これは Unity と同じ動作。
+//
+//		HLSL はシェーダコード上で POSITION 等のセマンティクスを指定することで
+//		C++ コードをいじらなくてもレイアウトを作ることができるが、
+//		一方 GLSL は自動レイアウトとかしてくれないので基本的に自分で配置を行うことになる。
+//		ただ、それだと HLSL と GLSL を隠蔽する意味が無くなる。
+//		そこで Unity 等は変数名によって自動割り当てを行っている。
+//
+//		とりあえず昨今最もメジャーな Unity に合わせ、次の名前の変数に自動割り当てをする。
+//		attribute vec4 gl_Vertex;
+//		attribute vec4 gl_Color;
+//		attribute vec3 gl_Normal;
+//		attribute vec4 gl_MultiTexCoord0;
+//		attribute vec4 gl_MultiTexCoord1;
+//
+//		GLSL Programming/Unity/Debugging of Shaders
+//		http://en.wikibooks.org/wiki/GLSL_Programming/Unity/Debugging_of_Shaders
+//
+//		ただ、これだと PMX として最低限必要な TexCoord0～7 をカバーできないので
+//		それぞれ 0～15 (DX9の最大数) で UsageIndex をつけられるようにする。
+//	*/
+//	struct AttrNameData
+//	{
+//		const char* Name;
+//		int			Length;
+//	};
+//	static const AttrNameData attrNameTable[] =
+//	{
+//		{ "",					0 },	// VertexElementUsage_Unknown,
+//		//{ "gl_Vertex",			9 },	// VertexElementUsage_Position,
+//		{ "ln_Vertex",			9 },	// VertexElementUsage_Position,
+//		{ "ln_Normal",			9 },	// VertexElementUsage_Normal,
+//		{ "ln_Color",			8 },	// VertexElementUsage_Color,
+//		{ "ln_MultiTexCoord",	16 },	// VertexElementUsage_TexCoord,
+//		{ "ln_PointSize",		12 },	// VertexElementUsage_PointSize,
+//		{ "ln_BlendIndices",	15 },	// VertexElementUsage_BlendIndices,
+//		{ "ln_BlendWeight",		14 },	// VertexElementUsage_BlendWeight,
+//	};
+//	assert(LN_ARRAY_SIZE_OF(attrNameTable) == VertexElementUsage_Max);
+//
+//	int8_t usageAttrIndexTable[VertexElementUsage_Max][GLShaderPass::MaxUsageIndex];
+//	memset(usageAttrIndexTable, -1, sizeof(usageAttrIndexTable));
+//
+//	// attribute 変数の数
+//	GLint attrCount;
+//	glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attrCount);	LN_CHECK_GLERROR();
+//	for (int i = 0; i < attrCount; ++i)
+//	{
+//		GLsizei name_len = 0;
+//		GLsizei var_size = 0;
+//		GLenum  var_type = 0;
+//		GLchar  name[256] = { 0 };
+//		glGetActiveAttrib(program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+//
+//		for (int iUsage = 1; iUsage < VertexElementUsage_Max; ++iUsage)	// 0 番はダミーなので 1番から
+//		{
+//			// 変数名の一致確認 (UsageIndex の前の部分)
+//			if (strncmp(name, attrNameTable[iUsage].Name, attrNameTable[iUsage].Length) == 0)
+//			{
+//				// UsageIndex チェック (gl_MultiTexCoord0 とかの '0' の部分)
+//				size_t idxLen = name_len - attrNameTable[iUsage].Length;
+//				const char* idxStr = &name[attrNameTable[iUsage].Length];
+//				int usageIndex = -1;
+//				if (idxLen == 0) {
+//					usageIndex = 0;		// 省略されているので 0
+//				}
+//				else if (idxLen == 1 && idxStr[0] == '0') {
+//					usageIndex = 0;		// 1文字で '0' なので 0 (atoi でエラーを確認できるようにするため特別処理)
+//				}
+//				else if (idxLen <= 2) {
+//					usageIndex = atoi(idxStr);
+//				}
+//
+//				if (0 <= usageIndex && usageIndex < GLShaderPass::MaxUsageIndex) {
+//					// TODO: error  不正 UsageIndex
+//				}
+//
+//				// Location 取得
+//				int loc = glGetAttribLocation(program, name); LN_CHECK_GLERROR();
+//				usageAttrIndexTable[iUsage][usageIndex] = glGetAttribLocation(program, name); LN_CHECK_GLERROR();
+//				break;
+//			}
+//		}
+//	}
+//
+//	// パス作成 (1対の頂点シェーダとフラグメントシェーダだけなので1つで良い)
+//	GLShaderPass* pass = tech->CreateShaderPass(_T("Main"), program, (int8_t*)usageAttrIndexTable, passVarList);
+//
+//	shader.SafeAddRef();
+//	*outShader = shader;
+//	return resultLevel;
+//}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ShaderCompileResultLevel PlainGLSLBuilder::Build(GLGraphicsDevice* device, const void* code, size_t codeByteCount, GLShader** outShader, StringA* outMessage)
-{
-	GLuint program;
-	ShaderCompileResultLevel resultLevel = MakeShaderProgram(code, codeByteCount, &program, outMessage);
-	if (resultLevel == ShaderCompileResultLevel_Error) {
-		return resultLevel;
-	}
-
-	RefPtr<GLShader> shader(LN_NEW GLShader(device, program), false);
-
-	// uniform 変数の数を調べて、その数分 ShaderVariable 作成
-	GLint params;
-	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
-
-	Array<GLShaderPassVariableInfo> passVarList;
-	for (int i = 0; i < params; ++i)
-	{
-		GLShaderPassVariableInfo passVar;
-
-		GLsizei name_len = 0;
-		GLsizei var_size = 0;   // 配列サイズっぽい
-		GLenum  var_type = 0;
-		GLchar  name[256] = { 0 };
-		glGetActiveUniform(program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
-
-		// 変数情報作成
-		ShaderVariableBase::ShaderVariableTypeDesc desc;
-		GLShaderVariable::ConvertVariableTypeGLToLN(var_type, var_size, &desc);
-
-		// 名前を String 化
-		String tname;
-		tname.AssignCStr(name);
-
-		// Location
-		passVar.Location = glGetUniformLocation(program, name); LN_CHECK_GLERROR();
-
-		// ShaderVariable を作る
-		passVar.Variable = shader->TryCreateShaderVariable(desc, tname, String(), passVar.Location);	// TODO:この loc はいらない
-	
-		passVarList.Add(passVar);
-	}
-
-	// テクニック作成 (1対の頂点シェーダとフラグメントシェーダだけなので1つで良い)
-	GLShaderTechnique* tech = shader->CreateShaderTechnique(_T("Main"));
-
-	/*
-		■ attribute 変数への Usage 自動割り当てについて
-
-		特定の名前の attribute 変数は、自動的に Usage と UsageIndex を割り当てる。
-		これは Unity と同じ動作。
-
-		HLSL はシェーダコード上で POSITION 等のセマンティクスを指定することで
-		C++ コードをいじらなくてもレイアウトを作ることができるが、
-		一方 GLSL は自動レイアウトとかしてくれないので基本的に自分で配置を行うことになる。
-		ただ、それだと HLSL と GLSL を隠蔽する意味が無くなる。
-		そこで Unity 等は変数名によって自動割り当てを行っている。
-
-		とりあえず昨今最もメジャーな Unity に合わせ、次の名前の変数に自動割り当てをする。
-		attribute vec4 gl_Vertex;
-		attribute vec4 gl_Color;
-		attribute vec3 gl_Normal;
-		attribute vec4 gl_MultiTexCoord0;
-		attribute vec4 gl_MultiTexCoord1;
-
-		GLSL Programming/Unity/Debugging of Shaders
-		http://en.wikibooks.org/wiki/GLSL_Programming/Unity/Debugging_of_Shaders
-
-		ただ、これだと PMX として最低限必要な TexCoord0～7 をカバーできないので
-		それぞれ 0～15 (DX9の最大数) で UsageIndex をつけられるようにする。
-	*/
-	struct AttrNameData
-	{
-		const char* Name;
-		int			Length;
-	};
-	static const AttrNameData attrNameTable[] =
-	{
-		{ "",					0 },	// VertexElementUsage_Unknown,
-		//{ "gl_Vertex",			9 },	// VertexElementUsage_Position,
-		{ "ln_Vertex",			9 },	// VertexElementUsage_Position,
-		{ "ln_Normal",			9 },	// VertexElementUsage_Normal,
-		{ "ln_Color",			8 },	// VertexElementUsage_Color,
-		{ "ln_MultiTexCoord",	16 },	// VertexElementUsage_TexCoord,
-		{ "ln_PointSize",		12 },	// VertexElementUsage_PointSize,
-		{ "ln_BlendIndices",	15 },	// VertexElementUsage_BlendIndices,
-		{ "ln_BlendWeight",		14 },	// VertexElementUsage_BlendWeight,
-	};
-	assert(LN_ARRAY_SIZE_OF(attrNameTable) == VertexElementUsage_Max);
-
-	int8_t usageAttrIndexTable[VertexElementUsage_Max][GLShaderPass::MaxUsageIndex];
-	memset(usageAttrIndexTable, -1, sizeof(usageAttrIndexTable));
-
-	// attribute 変数の数
-	GLint attrCount;
-	glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attrCount);	LN_CHECK_GLERROR();
-	for (int i = 0; i < attrCount; ++i)
-	{
-		GLsizei name_len = 0;
-		GLsizei var_size = 0;
-		GLenum  var_type = 0;
-		GLchar  name[256] = { 0 };
-		glGetActiveAttrib(program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
-
-		for (int iUsage = 1; iUsage < VertexElementUsage_Max; ++iUsage)	// 0 番はダミーなので 1番から
-		{
-			// 変数名の一致確認 (UsageIndex の前の部分)
-			if (strncmp(name, attrNameTable[iUsage].Name, attrNameTable[iUsage].Length) == 0)
-			{
-				// UsageIndex チェック (gl_MultiTexCoord0 とかの '0' の部分)
-				size_t idxLen = name_len - attrNameTable[iUsage].Length;
-				const char* idxStr = &name[attrNameTable[iUsage].Length];
-				int usageIndex = -1;
-				if (idxLen == 0) {
-					usageIndex = 0;		// 省略されているので 0
-				}
-				else if (idxLen == 1 && idxStr[0] == '0') {
-					usageIndex = 0;		// 1文字で '0' なので 0 (atoi でエラーを確認できるようにするため特別処理)
-				}
-				else if (idxLen <= 2) {
-					usageIndex = atoi(idxStr);
-				}
-
-				if (0 <= usageIndex && usageIndex < GLShaderPass::MaxUsageIndex) {
-					// TODO: error  不正 UsageIndex
-				}
-
-				// Location 取得
-				int loc = glGetAttribLocation(program, name); LN_CHECK_GLERROR();
-				usageAttrIndexTable[iUsage][usageIndex] = glGetAttribLocation(program, name); LN_CHECK_GLERROR();
-				break;
-			}
-		}
-	}
-
-	// パス作成 (1対の頂点シェーダとフラグメントシェーダだけなので1つで良い)
-	GLShaderPass* pass = tech->CreateShaderPass(_T("Main"), program, (int8_t*)usageAttrIndexTable, passVarList);
-
-	shader.SafeAddRef();
-	*outShader = shader;
-	return resultLevel;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-ShaderCompileResultLevel PlainGLSLBuilder::MakeShaderProgram(const void* code, size_t codeByteCount, GLuint* outProgram, StringA* outMessage)
+ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const void* code, size_t codeByteCount, GLuint* outProgram, StringA* outMessage)
 {
 	*outProgram = NULL;
 	outMessage->SetEmpty();
@@ -434,7 +434,7 @@ ShaderCompileResultLevel PlainGLSLBuilder::MakeShaderProgram(const void* code, s
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool PlainGLSLBuilder::CompileShader(GLuint shader, int codeCount, const char** codes, const GLint* sizes, StringA* log)
+bool GLSLUtils::CompileShader(GLuint shader, int codeCount, const char** codes, const GLint* sizes, StringA* log)
 {
 	// シェーダオブジェクトにソースプログラムをセット
 	glShaderSource(shader, codeCount, (const GLchar **)codes, sizes);
@@ -474,9 +474,8 @@ bool PlainGLSLBuilder::CompileShader(GLuint shader, int codeCount, const char** 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShader::GLShader(GLGraphicsDevice* device, GLuint program)
-	: m_device(device)
-	, m_glProgram(program)
+GLShader::GLShader()
+	: m_device(nullptr)
 {
 }
 
@@ -557,6 +556,19 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 
 		json.ReadAsEndObject();
 	}
+	else
+	{
+		GLuint vertShader = CompileShader(code, codeByteCount, "Main", GL_VERTEX_SHADER);
+		GLuint fragShader = CompileShader(code, codeByteCount, "Main", GL_FRAGMENT_SHADER);
+		m_glVertexShaderEntryMap[_T("Main")] = vertShader;	// delete のため
+		m_glPixelShaderEntryMap[_T("Main")] = fragShader;	// delete のため
+		auto* tech = LN_NEW GLShaderTechnique();
+		tech->Initialize(this, _T("Main"));
+		m_techniques.Add(tech);
+		auto* pass = LN_NEW GLShaderPass();
+		pass->Initialize(this, _T("Main"), vertShader, fragShader);
+		tech->AddPass(pass);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -593,16 +605,16 @@ GLShaderVariable* GLShader::TryCreateShaderVariable(ShaderVariableBase::ShaderVa
 	return v;
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//GLShaderTechnique* GLShader::CreateShaderTechnique(const String& name)
+//{
+//	GLShaderTechnique* tech = LN_NEW GLShaderTechnique(this, name);
+//	m_techniques.Add(tech);
+//	return tech;
+//}
 //
-//-----------------------------------------------------------------------------
-GLShaderTechnique* GLShader::CreateShaderTechnique(const String& name)
-{
-	GLShaderTechnique* tech = LN_NEW GLShaderTechnique(this, name);
-	m_techniques.Add(tech);
-	return tech;
-}
-
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -658,9 +670,9 @@ GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* ent
 {
 	StringA define;
 	if (type == GL_VERTEX_SHADER)
-		define = StringA::Format("#define LN_GLSL_VERT_{0} 1\n", entryName);
+		define = StringA::Format("#define LN_GLSL_VERTEX_{0} 1\n", entryName);
 	else if (type == GL_FRAGMENT_SHADER)
-		define = StringA::Format("#define LN_GLSL_FLAG_{0} 1\n", entryName);
+		define = StringA::Format("#define LN_GLSL_FRAGMENT_{0} 1\n", entryName);
 
 	const char* codes[] =
 	{
@@ -674,7 +686,7 @@ GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* ent
 	};
 
 	GLuint shader = glCreateShader(type);
-	if (!PlainGLSLBuilder::CompileShader(shader, 2, codes, sizes, &m_lastMessage))
+	if (!GLSLUtils::CompileShader(shader, 2, codes, sizes, &m_lastMessage))	// TODO: エラーメッセージとか
 	{
 		glDeleteShader(shader);
 		LN_THROW(0, InvalidFormatException);
@@ -1036,14 +1048,15 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, JsonRea
 {
 	String name;
 	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	auto tech = RefPtr<GLShaderTechnique>::MakeRef(ownerShader, name);
+	auto tech = RefPtr<GLShaderTechnique>::MakeRef();
+	tech->Initialize(ownerShader, name);
 
 	if (json->ReadAsPropertyName() == _T("passes"))
 	{
 		json->ReadAsStartArray();
 		while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
 		{
-			tech->m_passes.Add(GLShaderPass::Deserialize(json));
+			tech->m_passes.Add(GLShaderPass::Deserialize(ownerShader, json));
 		}
 	}
 	if (json->ReadAsPropertyName() == _T("annotations"))
@@ -1061,9 +1074,8 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, JsonRea
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderTechnique::GLShaderTechnique(GLShader* owner, const String& name)
-	: m_ownerShader(owner)
-	, m_name(name)
+GLShaderTechnique::GLShaderTechnique()
+	: m_ownerShader(nullptr)
 {
 }
 
@@ -1084,11 +1096,10 @@ GLShaderTechnique::~GLShaderTechnique()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderPass* GLShaderTechnique::CreateShaderPass(const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList)
+void GLShaderTechnique::Initialize(GLShader* ownerShader, const String& name)
 {
-	GLShaderPass* pass = LN_NEW GLShaderPass(m_ownerShader, name, program, attrIndexTable, passVarList);
-	m_passes.Add(pass);
-	return pass;
+	m_ownerShader = ownerShader;
+	m_name = name;
 }
 
 //-----------------------------------------------------------------------------
@@ -1106,31 +1117,16 @@ IShaderPass* GLShaderTechnique::GetPass(int index)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderPass* GLShaderPass::Deserialize(JsonReader2* json)
+GLShaderPass* GLShaderPass::Deserialize(GLShader* ownerShader, JsonReader2* json)
 {
 	auto pass = RefPtr<GLShaderPass>::MakeRef();
-	String vsName, psName;
+	String name, vsName, psName;
 
-	if (json->ReadAsPropertyName() == _T("name"))
-	{
-		pass->m_name = json->ReadAsString();
-	}
-	if (json->ReadAsPropertyName() == _T("vertexShader"))
-	{
-		vsName = json->ReadAsString();
-	}
-	if (json->ReadAsPropertyName() == _T("pixelShader"))
-	{
-		psName = json->ReadAsString();
-	}
+	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+	if (json->ReadAsPropertyName() == _T("vertexShader")) vsName = json->ReadAsString();
+	if (json->ReadAsPropertyName() == _T("pixelShader")) psName = json->ReadAsString();
 
-	ShaderDiag diag;
-	if (!pass->LinkShader(vsName, psName, &diag))
-	{
-		LN_THROW(0, InvalidOperationException);	// TODO
-	}
-	pass->Build();
-
+	pass->Initialize(ownerShader, name, vsName, psName);
 
 	if (json->ReadAsPropertyName() == _T("status"))
 	{
@@ -1155,26 +1151,9 @@ GLShaderPass* GLShaderPass::Deserialize(JsonReader2* json)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderPass::GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList)
-	: m_ownerShader(owner)
-	, m_program(program)
-	, m_name(name)
-	, m_passVarList(passVarList)
-	, m_textureVarCount(0)
+GLShaderPass::GLShaderPass()
+	: m_ownerShader(nullptr)
 {
-	memcpy_s(m_usageAttrIndexTable, sizeof(m_usageAttrIndexTable), attrIndexTable, sizeof(m_usageAttrIndexTable));
-
-	// テクスチャ型の変数にステージ番号を振っていく。
-	LN_FOREACH(GLShaderPassVariableInfo& v, m_passVarList)
-	{
-		if (v.Variable->GetType() == ShaderVariableType_DeviceTexture) {
-			v.TextureStageIndex = m_textureVarCount;
-			m_textureVarCount++;
-		}
-		else {
-			v.TextureStageIndex = -1;
-		}
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1191,6 +1170,29 @@ GLShaderPass::~GLShaderPass()
 		glDeleteProgram(m_program);
 		m_program = 0;
 	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader)
+{
+	m_ownerShader = ownerShader;
+	m_name = name;
+	if (LinkShader(vertShader, fragShader, m_ownerShader->GetDiag()))
+	{
+		Build();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName)
+{
+	GLuint vertShader = m_ownerShader->GetVertexShader(vertShaderName);
+	GLuint fragShader = m_ownerShader->GetFlagmentShader(fragShaderName);
+	Initialize(ownerShader, name, vertShader, fragShader);
 }
 
 //-----------------------------------------------------------------------------
@@ -1228,11 +1230,8 @@ void GLShaderPass::Apply()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool GLShaderPass::LinkShader(const String& vsName, const String& fsName, ShaderDiag* diag)
+bool GLShaderPass::LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag)
 {
-	GLuint vertexShader = m_ownerShader->GetVertexShader(vsName);
-	GLuint fragmentShader = m_ownerShader->GetFlagmentShader(fsName);
-
 	// 最初に失敗扱いにしておく
 	diag->level = ShaderCompileResultLevel_Error;
 	
@@ -1241,9 +1240,9 @@ bool GLShaderPass::LinkShader(const String& vsName, const String& fsName, Shader
 	LN_CHECK_GLERROR();
 
 	// シェーダオブジェクトをシェーダプログラムへの登録
-	glAttachShader(m_program, vertexShader);
+	glAttachShader(m_program, vertShader);
 	LN_CHECK_GLERROR();
-	glAttachShader(m_program, fragmentShader);
+	glAttachShader(m_program, fragShader);
 	LN_CHECK_GLERROR();
 
 	// シェーダプログラムのリンク
@@ -1273,10 +1272,9 @@ bool GLShaderPass::LinkShader(const String& vsName, const String& fsName, Shader
 	{
 		diag->level = ShaderCompileResultLevel_Success;
 	}
-	if (linked == GL_FALSE) {
+	if (linked == GL_FALSE)
+	{
 		// リンクエラー
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
 		glDeleteProgram(m_program);
 		m_program = 0;
 		diag->level = ShaderCompileResultLevel_Error;
@@ -1291,11 +1289,12 @@ bool GLShaderPass::LinkShader(const String& vsName, const String& fsName, Shader
 //-----------------------------------------------------------------------------
 void GLShaderPass::Build()
 {
-	// uniform 変数の数を調べて、その数分 ShaderVariable 作成
+	int textureVarCount = 0;
+
+	//---------------------------------------------------------
+	// この Pass にが使っているシェーダ変数の ShaderVariable 作成
 	GLint params;
 	glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
-
-	Array<GLShaderPassVariableInfo> passVarList;
 	for (int i = 0; i < params; ++i)
 	{
 		GLShaderPassVariableInfo passVar;
@@ -1320,36 +1319,47 @@ void GLShaderPass::Build()
 		// ShaderVariable を作る
 		passVar.Variable = m_ownerShader->TryCreateShaderVariable(desc, tname, String(), passVar.Location);	// TODO:この loc はいらない
 
-		passVarList.Add(passVar);
+		// テクスチャ型の変数にステージ番号を振っていく。
+		if (passVar.Variable->GetType() == ShaderVariableType_DeviceTexture)
+		{
+			passVar.TextureStageIndex = textureVarCount;
+			textureVarCount++;
+		}
+		else
+		{
+			passVar.TextureStageIndex = -1;
+		}
+
+		// 格納
+		m_passVarList.Add(passVar);
 	}
-
-	// テクニック作成 (1対の頂点シェーダとフラグメントシェーダだけなので1つで良い)
-	//GLShaderTechnique* tech = shader->CreateShaderTechnique(_T("Main"));
-
+	
+	//---------------------------------------------------------
+	// attribute 割り当て
 	/*
-	■ attribute 変数への Usage 自動割り当てについて
+		■ attribute 変数への Usage 自動割り当てについて
 
-	特定の名前の attribute 変数は、自動的に Usage と UsageIndex を割り当てる。
-	これは Unity と同じ動作。
+		特定の名前の attribute 変数は、自動的に Usage と UsageIndex を割り当てる。
+		これは Unity と同じ動作。
 
-	HLSL はシェーダコード上で POSITION 等のセマンティクスを指定することで
-	C++ コードをいじらなくてもレイアウトを作ることができるが、
-	一方 GLSL は自動レイアウトとかしてくれないので基本的に自分で配置を行うことになる。
-	ただ、それだと HLSL と GLSL を隠蔽する意味が無くなる。
-	そこで Unity 等は変数名によって自動割り当てを行っている。
+		HLSL はシェーダコード上で POSITION 等のセマンティクスを指定することで
+		C++ コードをいじらなくてもレイアウトを作ることができるが、
+		一方 GLSL は自動レイアウトとかしてくれないので基本的に自分で配置を行うことになる。
+		ただ、それだと HLSL と GLSL を隠蔽する意味が無くなる。
+		そこで Unity 等は変数名によって自動割り当てを行っている。
 
-	とりあえず昨今最もメジャーな Unity に合わせ、次の名前の変数に自動割り当てをする。
-	attribute vec4 gl_Vertex;
-	attribute vec4 gl_Color;
-	attribute vec3 gl_Normal;
-	attribute vec4 gl_MultiTexCoord0;
-	attribute vec4 gl_MultiTexCoord1;
+		とりあえず昨今最もメジャーな Unity に合わせ、次の名前の変数に自動割り当てをする。
+		attribute vec4 gl_Vertex;
+		attribute vec4 gl_Color;
+		attribute vec3 gl_Normal;
+		attribute vec4 gl_MultiTexCoord0;
+		attribute vec4 gl_MultiTexCoord1;
 
-	GLSL Programming/Unity/Debugging of Shaders
-	http://en.wikibooks.org/wiki/GLSL_Programming/Unity/Debugging_of_Shaders
+		GLSL Programming/Unity/Debugging of Shaders
+		http://en.wikibooks.org/wiki/GLSL_Programming/Unity/Debugging_of_Shaders
 
-	ただ、これだと PMX として最低限必要な TexCoord0～7 をカバーできないので
-	それぞれ 0～15 (DX9の最大数) で UsageIndex をつけられるようにする。
+		ただ、これだと PMX として最低限必要な TexCoord0～7 をカバーできないので
+		それぞれ 0～15 (DX9の最大数) で UsageIndex をつけられるようにする。
 	*/
 	struct AttrNameData
 	{

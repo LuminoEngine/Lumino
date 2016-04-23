@@ -77,7 +77,7 @@ void GLSwapChain::OnResetDevice()
 		"}\n"
 		"#endif\n";
 	StringA message;
-	ShaderCompileResultLevel r = PlainGLSLBuilder::MakeShaderProgram(code, strlen(code), &m_shaderProgram, &message);
+	ShaderCompileResultLevel r = GLSLUtils::MakeShaderProgram(code, strlen(code), &m_shaderProgram, &message);
 	if (r != ShaderCompileResultLevel_Success) {
 		ShaderCompileResult result;
 		result.Level = r;

@@ -97,7 +97,7 @@ technique MainDraw
 }
 #endif
 //=============================================================================
-#ifdef LN_GLSL_VERTEX
+#ifdef LN_GLSL_VERTEX_Main
 uniform mat4	g_worldMatrix;
 uniform mat4	g_viewProjMatrix;
 attribute vec3	ln_Vertex;			// Pos
@@ -119,7 +119,7 @@ void main()
 
 #endif
 //=============================================================================
-#ifdef LN_GLSL_FRAGMENT
+#ifdef LN_GLSL_FRAGMENT_Main
 uniform vec4		g_tone;
 uniform sampler2D	g_texture;
 uniform sampler2D	g_glyphMaskTexture;

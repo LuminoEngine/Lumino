@@ -27,12 +27,9 @@ struct GLShaderPassVariableInfo
 	int					TextureStageIndex;
 };
 
-/// GLSL コードをコンパイルし、GLShader を作成するクラス
-class PlainGLSLBuilder
+class GLSLUtils
 {
 public:
-	static ShaderCompileResultLevel Build(GLGraphicsDevice* device, const void* code, size_t codeByteCount, GLShader** outShader, StringA* outMessage);
-
 	static ShaderCompileResultLevel MakeShaderProgram(const void* code, size_t codeByteCount, GLuint* outProgram, StringA* outMessage);
 	static bool CompileShader(GLuint shader, int codeCount, const char** codes, const GLint* sizes, StringA* log);
 };
@@ -42,17 +39,12 @@ class GLShader
 	: public IShader
 {
 public:
-	GLShader(GLGraphicsDevice* device, GLuint program);
+	GLShader();
 	virtual ~GLShader();
 	void Initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
 
-public:
-	//void Create();
-
 	GLGraphicsDevice* GetGraphicsDevice() { return m_device; }
-	GLuint GetGLProgram() { return m_glProgram; }
 	GLShaderVariable* TryCreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
-	GLShaderTechnique* CreateShaderTechnique(const String& name);
 
 public:
 	virtual int GetVariableCount() const;
@@ -62,6 +54,7 @@ public:
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
 
+	ShaderDiag* GetDiag() { return &m_diag; }
 	GLuint GetVertexShader(const String& name);
 	GLuint GetFlagmentShader(const String& name);
 
@@ -69,8 +62,11 @@ private:
 	GLuint CompileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
 
 	GLGraphicsDevice*				m_device;
-	GLuint							m_glProgram;
+	//GLuint							m_glProgram;
 	StringA						m_lastMessage;
+
+	ShaderDiag					m_diag;
+
 	Array<GLShaderVariable*>	m_variables;
 	Array<GLShaderTechnique*>	m_techniques;
 	std::map<String, GLuint>	m_glVertexShaderEntryMap;
@@ -129,18 +125,17 @@ public:
 	virtual IShaderVariable* GetAnnotation(int index) { return NULL; }
 };
 
-/// OpenGL 用の GLShaderTechnique の実装
+// Technique
 class GLShaderTechnique
 	: public IShaderTechnique
 {
 public:
 	static GLShaderTechnique* Deserialize(GLShader* ownerShader, JsonReader2* json);
 
-	GLShaderTechnique(GLShader* owner, const String& name);
+	GLShaderTechnique();
 	virtual ~GLShaderTechnique();
-
-public:
-	GLShaderPass* CreateShaderPass(const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList);
+	void Initialize(GLShader* ownerShader, const String& name);
+	void AddPass(GLShaderPass* pass) { m_passes.Add(pass); }
 
 public:
 	virtual const TCHAR* GetName() const { return m_name.c_str(); }
@@ -150,8 +145,8 @@ public:
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 
 private:
-	GLShader*						m_ownerShader;
-	String							m_name;
+	GLShader*					m_ownerShader;
+	String						m_name;
 	Array<GLShaderPass*>		m_passes;
 	Array<GLShaderAnnotation*>	m_annotations;
 };
@@ -164,10 +159,12 @@ public:
 	static const int MaxUsageIndex = 16;		///< UsageIndex の最大 (DX9 にあわせて最大の 16)
 
 public:
-	static GLShaderPass* Deserialize(JsonReader2* json);
+	static GLShaderPass* Deserialize(GLShader* ownerShader, JsonReader2* json);
 
-	GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList);
+	GLShaderPass();
 	virtual ~GLShaderPass();
+	void Initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader);
+	void Initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName);
 
 public:
 	/// glVertexAttribPointer() に指定する attribute インデックスを取得する (-1 の場合は存在しないことを示す)
@@ -181,7 +178,7 @@ public:
 	//virtual void End();
 
 private:
-	bool LinkShader(const String& vsName, const String& fsName, ShaderDiag* diag);
+	bool LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
 	void Build();
 	
 	GLShader*						m_ownerShader;
@@ -189,8 +186,8 @@ private:
 	String							m_name;
 	Array<GLShaderAnnotation*>		m_annotations;
 	int8_t							m_usageAttrIndexTable[VertexElementUsage_Max][MaxUsageIndex];
-	Array<GLShaderPassVariableInfo>	m_passVarList;		///< この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
-	int								m_textureVarCount;
+	Array<GLShaderPassVariableInfo>	m_passVarList;		// この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
+	//int								m_textureVarCount;
 };
 
 } // namespace Driver

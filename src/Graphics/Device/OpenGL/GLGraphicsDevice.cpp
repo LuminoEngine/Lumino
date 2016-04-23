@@ -133,10 +133,17 @@ RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, ui
 //-----------------------------------------------------------------------------
 RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
+	GLShader* shader = LN_NEW GLShader();
+	shader->Initialize(this, textData, size);
+	result->Level = shader->GetDiag()->level;
+	result->Message = shader->GetDiag()->message;
+
 	//printf("▼\n");
 
-	GLShader* shader = NULL;
-	result->Level = PlainGLSLBuilder::Build(this, textData, size, &shader, &result->Message);
+	//GLShader* shader = NULL;
+	//result->Level = GLSLUtils::Build(this, textData, size, &shader, &result->Message);
+
+
 
 	//if (shader != NULL) {
 	//	AddDeviceResource(shader);

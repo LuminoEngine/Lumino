@@ -76,7 +76,7 @@ technique MainDraw
 //=============================================================================
 // PrimitiveRendererForBlt (GLSL)
 //=============================================================================
-#ifdef LN_GLSL_VERTEX
+#ifdef LN_GLSL_VERTEX_Main
 uniform mat4	g_blurMatrix;
 
 attribute vec3	ln_Vertex0;
@@ -91,7 +91,7 @@ void main()
 }
 #endif
 
-#ifdef LN_GLSL_FRAGMENT
+#ifdef LN_GLSL_FRAGMENT_Main
 
 uniform float		g_blurPower;	// ブラーの強さ
 uniform vec4		g_blurColor;	// ブラーの色

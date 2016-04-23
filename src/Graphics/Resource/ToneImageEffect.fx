@@ -70,7 +70,7 @@ technique MainDraw
 
 
 //=============================================================================
-#ifdef LN_GLSL_VERTEX
+#ifdef LN_GLSL_VERTEX_Main
 
 
 
@@ -86,7 +86,7 @@ void main()
 }
 #endif
 
-#ifdef LN_GLSL_FRAGMENT
+#ifdef LN_GLSL_FRAGMENT_Main
 
 uniform vec4 Tone;
 uniform sampler2D ScreenTexture;

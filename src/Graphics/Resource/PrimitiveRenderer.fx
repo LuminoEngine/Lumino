@@ -57,7 +57,7 @@ technique MainDraw
 //=============================================================================
 // GeometryRenderer (GLSL)
 //=============================================================================
-#ifdef LN_GLSL_VERTEX
+#ifdef LN_GLSL_VERTEX_Main
 
 uniform mat4	g_worldMatrix;
 uniform mat4	g_viewProjMatrix;
@@ -77,7 +77,7 @@ void main()
 }
 #endif
 
-#ifdef LN_GLSL_FRAGMENT
+#ifdef LN_GLSL_FRAGMENT_Main
 
 uniform sampler2D	g_texture;
 varying vec4		v_Color;

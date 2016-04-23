@@ -70,7 +70,7 @@ technique MainDraw
 
 #endif
 //=============================================================================
-#ifdef LN_GLSL_VERTEX
+#ifdef LN_GLSL_VERTEX_Main
 uniform mat4	gViewProjMatrix;
 attribute vec3	ln_Vertex;			// POSITION
 attribute vec4	ln_Color0;			// COLOR0
@@ -86,7 +86,7 @@ void main()
 }
 #endif
 //=============================================================================
-#ifdef LN_GLSL_FRAGMENT
+#ifdef LN_GLSL_FRAGMENT_Main
 uniform sampler2D gMaterialTexture;
 varying vec4	v_Color;
 varying vec2	v_TexUV;
