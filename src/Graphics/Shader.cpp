@@ -397,6 +397,16 @@ void ShaderValue::SetString(const char* str)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void ShaderValue::SetString(const String& s)
+{
+	m_type = ShaderVariableType_String;
+	AllocValueBuffer(s.GetByteCount());
+	memcpy(m_value.String, s.c_str(), s.GetByteCount());
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 int ShaderValue::GetArrayLength()
 {
 	if (m_type == ShaderVariableType_VectorArray) {

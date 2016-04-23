@@ -37,6 +37,7 @@ class GLShader
 public:
 	GLShader(GLGraphicsDevice* device, GLuint program);
 	virtual ~GLShader();
+	void Initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
 
 public:
 	//void Create();
@@ -55,10 +56,15 @@ public:
 	virtual void OnResetDevice();
 
 private:
+	GLuint CompileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
+
 	GLGraphicsDevice*				m_device;
 	GLuint							m_glProgram;
+	StringA						m_lastMessage;
 	Array<GLShaderVariable*>	m_variables;
 	Array<GLShaderTechnique*>	m_techniques;
+	std::map<String, GLuint>	m_glVertexShaderEntryMap;
+	std::map<String, GLuint>	m_glPixelShaderEntryMap;
 };
 
 /// OpenGL 用の IShaderVariable の実装
@@ -66,6 +72,8 @@ class GLShaderVariable
 	: public ShaderVariableBase
 {
 public:
+	static GLShaderVariable* Deserialize(JsonReader2* json);
+
 	GLShaderVariable(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
 	virtual ~GLShaderVariable();
 
@@ -81,8 +89,32 @@ public:
 	static void ConvertVariableTypeGLToLN(GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc);
 
 private:
-	GLShader*	m_ownerShader;
-	GLint		m_glUniformLocation;
+	GLShader*					m_ownerShader;
+	GLint						m_glUniformLocation;
+	Array<GLShaderAnnotation*>	m_annotations;
+};
+
+// アノテーション
+class GLShaderAnnotation
+	: public ShaderVariableBase
+{
+public:
+	static GLShaderAnnotation* Deserialize(JsonReader2* json);
+
+	GLShaderAnnotation();
+	virtual ~GLShaderAnnotation();
+	void Initialize(const String& type, const String& name, const String& value);
+
+	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetInt(int value) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetFloat(float value) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void SetTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
+	virtual int GetAnnotationCount() { return 0; }
+	virtual IShaderVariable* GetAnnotation(int index) { return NULL; }
 };
 
 /// OpenGL 用の GLShaderTechnique の実装
@@ -90,6 +122,8 @@ class GLShaderTechnique
 	: public IShaderTechnique
 {
 public:
+	static GLShaderTechnique* Deserialize(JsonReader2* json);
+
 	GLShaderTechnique(GLShader* owner, const String& name);
 	virtual ~GLShaderTechnique();
 
@@ -107,7 +141,7 @@ private:
 	GLShader*						m_ownerShader;
 	String							m_name;
 	Array<GLShaderPass*>		m_passes;
-	Array<GLShaderVariable*>	m_annotations;
+	Array<GLShaderAnnotation*>	m_annotations;
 };
 
 /// OpenGL 用の IShaderPass の実装
@@ -118,6 +152,8 @@ public:
 	static const int MaxUsageIndex = 16;		///< UsageIndex の最大 (DX9 にあわせて最大の 16)
 
 public:
+	static GLShaderPass* Deserialize(JsonReader2* json);
+
 	GLShaderPass(GLShader* owner, const String& name, GLuint program, int8_t* attrIndexTable, const Array<GLShaderPassVariableInfo>& passVarList);
 	virtual ~GLShaderPass();
 
@@ -136,7 +172,7 @@ private:
 	GLShader*						m_ownerShader;
 	GLuint							m_program;
 	String							m_name;
-	Array<GLShaderVariable*>		m_annotations;
+	Array<GLShaderAnnotation*>		m_annotations;
 	int8_t							m_usageAttrIndexTable[VertexElementUsage_Max][MaxUsageIndex];
 	Array<GLShaderPassVariableInfo>	m_passVarList;		///< この Pass が本当に使う変数のリスト。最適化されていれば消えるものもある。
 	int								m_textureVarCount;

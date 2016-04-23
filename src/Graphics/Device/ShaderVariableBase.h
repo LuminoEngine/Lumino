@@ -64,6 +64,7 @@ public:
 	virtual void OnResetDevice();
 
 	void SetString(const char* str);
+	void SetString(const String& str);
   
 protected:
 	ShaderVariableTypeDesc	m_desc;

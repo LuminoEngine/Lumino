@@ -185,6 +185,15 @@ void ShaderVariableBase::SetString(const char* str)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void ShaderVariableBase::SetString(const String& str)
+{
+	m_value.SetString(str);
+	m_modifid = true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 const TCHAR* ShaderVariableBase::GetString()
 {
 	return m_value.GetString();

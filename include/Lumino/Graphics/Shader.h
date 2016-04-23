@@ -149,6 +149,7 @@ public:
 	//void SetManagedTexture(Texture* texture);
 	//Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
 	void SetString(const char* str);
+	void SetString(const String& str);
 	const TCHAR* GetString() const { return m_value.String; }
 
 	int GetArrayLength();
