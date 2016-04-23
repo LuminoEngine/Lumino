@@ -11,6 +11,158 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
+
+//// https://msdn.microsoft.com/ja-jp/library/bb173347%28v=vs.85%29.aspx#Sampler_States
+//enum class SamplerStateId
+//{
+//	AddressU,
+//	AddressV,
+//	AddressW,
+//	BorderColor,
+//	MagFilter,
+//	MaxAnisotropy,
+//	MaxMipLevel,
+//	MinFilter,
+//	MipFilter,
+//	MipMapLodBias,
+//	SRGBTexture,
+//};
+//
+//struct SamplerStatePair
+//{
+//	SamplerStateId	stateId;
+//	uint32_t		value;
+//
+//	static bool Make(const String& name, const String& value, SamplerStatePair* out)
+//	{
+//		struct Item
+//		{
+//			const TCHAR*	name;
+//			const TCHAR*	value;
+//			SamplerStateId	stateId;
+//			uint32_t		stateValue;
+//		};
+//		Item table[] =
+//		{
+//			{ _T("AddressU"), _T("WRAP"), SamplerStateId::AddressU, TextureWrapMode_Repeat },
+//			{ _T("AddressU"), _T("CLAMP"), SamplerStateId::AddressU, TextureWrapMode_Clamp },
+//			{ _T("AddressV"), _T("WRAP"), SamplerStateId::AddressU, TextureWrapMode_Repeat },
+//			{ _T("AddressV"), _T("CLAMP"), SamplerStateId::AddressU, TextureWrapMode_Clamp },
+//			//{ _T("AddressW"),,, },
+//			//{ _T("BorderColor"),,, },
+//			//{ _T("MagFilter"),,, },
+//			//{ _T("MaxAnisotropy"),,, },
+//			//{ _T("MaxMipLevel"),,, },
+//			//{ _T("MinFilter"),,, },
+//			//{ _T("MipFilter"),,, },
+//			//{ _T("MipMapLodBias"),,, },
+//			//{ _T("SRGBTexture"),,, },
+//		};
+//		for (int i = 0; i < LN_ARRAY_SIZE_OF(table); ++i)
+//		{
+//			if (name.Compare(table[i].name, -1, CaseSensitivity::CaseInsensitive) == 0 &&
+//				value.Compare(table[i].value, -1, CaseSensitivity::CaseInsensitive) == 0)
+//			{
+//				out->stateId = table[i].stateId;
+//				out->value = table[i].stateValue;
+//				return true;
+//			}
+//		}
+//		return false;	// 未対応のステート
+//	}
+//};
+
+enum class RenderStateId
+{
+	AlphaBlendEnable,
+	AlphaFunc,
+	AlphaRef,
+	AlphaTestEnable,
+	BlendOp,
+	ColorWriteEnable,
+	DepthBias,
+	DestBlend,
+	DitherEnable,
+	FillMode,
+	LastPixel,
+	ShadeMode,
+	SlopeScaleDepthBias,
+	SrcBlend,
+	StencilEnable,
+	StencilFail,
+	StencilFunc,
+	StencilMask,
+	StencilPass,
+	StencilRef,
+	StencilWriteMask,
+	StencilZFail,
+	TextureFactor,
+	//Wrap0 ～ Wrap15
+	ZEnable,
+	ZFunc,
+	ZWriteEnable,
+};
+
+
+//struct RenderStatePair
+//{
+//	RenderStateId	stateId;
+//	uint32_t		value;
+//
+//	static bool Make(const String& name, const String& value, SamplerStatePair* out)
+//	{
+//		struct Item
+//		{
+//			const TCHAR*	name;
+//			const TCHAR*	value;
+//			RenderStateId	stateId;
+//			uint32_t		stateValue;
+//		};
+//		Item table[] =
+//		{
+//
+//			//{ _T("AlphaBlendEnable"),,, },
+//			//{ _T("AlphaFunc"),,, },
+//			//{ _T("AlphaRef"),,, },
+//			//{ _T("AlphaTestEnable"),,, },
+//			//{ _T("BlendOp"),,, },
+//			//{ _T("ColorWriteEnable"),,, },
+//			//{ _T("DepthBias"),,, },
+//			//{ _T("DestBlend"),,, },
+//			//{ _T("DitherEnable"),,, },
+//			//{ _T("FillMode"),,, },
+//			//{ _T("LastPixel"),,, },
+//			//{ _T("ShadeMode"),,, },
+//			//{ _T("SlopeScaleDepthBias"),,, },
+//			//{ _T("SrcBlend"),,, },
+//			//{ _T("StencilEnable"),,, },
+//			//{ _T("StencilFail"),,, },
+//			//{ _T("StencilFunc"),,, },
+//			//{ _T("StencilMask"),,, },
+//			//{ _T("StencilPass"),,, },
+//			//{ _T("StencilRef"),,, },
+//			//{ _T("StencilWriteMask"),,, },
+//			//{ _T("StencilZFail"),,, },
+//			//{ _T("TextureFactor"),,, },
+//			//Wrap0 ～ Wrap15
+//			//{ _T("ZEnable"),,, },
+//			//{ _T("ZFunc"),,, },
+//			//{ _T("ZWriteEnable"),,, },
+//		};
+//		for (int i = 0; i < LN_ARRAY_SIZE_OF(table); ++i)
+//		{
+//			if (name.Compare(table[i].name, -1, CaseSensitivity::CaseInsensitive) == 0 &&
+//				value.Compare(table[i].value, -1, CaseSensitivity::CaseInsensitive) == 0)
+//			{
+//				out->stateId = table[i].stateId;
+//				out->value = table[i].stateValue;
+//				return true;
+//			}
+//		}
+//		return false;	// 未対応のステート
+//	}
+//};
+
 //=============================================================================
 // PlainGLSLBuilder
 //=============================================================================
@@ -333,6 +485,15 @@ GLShader::GLShader(GLGraphicsDevice* device, GLuint program)
 //-----------------------------------------------------------------------------
 GLShader::~GLShader()
 {
+	for (auto& pair : m_glVertexShaderEntryMap)
+	{
+		glDeleteShader(pair.second);
+	}
+	for (auto& pair : m_glPixelShaderEntryMap)
+	{
+		glDeleteShader(pair.second);
+	}
+
 	LN_FOREACH(GLShaderVariable* v, m_variables) {
 		LN_SAFE_RELEASE(v);
 	}
@@ -381,7 +542,7 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
 			{
-				m_techniques.Add(GLShaderTechnique::Deserialize(&json));
+				m_techniques.Add(GLShaderTechnique::Deserialize(this, &json));
 			}
 		}
 		// techniques
@@ -390,7 +551,7 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
 			{
-				m_variables.Add(GLShaderVariable::Deserialize(&json));
+				m_variables.Add(GLShaderVariable::Deserialize(this, &json));
 			}
 		}
 
@@ -426,7 +587,8 @@ GLShaderVariable* GLShader::TryCreateShaderVariable(ShaderVariableBase::ShaderVa
 	}
 
 	// 新しく作る
-	GLShaderVariable* v = LN_NEW GLShaderVariable(this, desc, name, semanticName, location);
+	GLShaderVariable* v = LN_NEW GLShaderVariable();
+	v->Initialize(this, desc, name, semanticName, location);
 	m_variables.Add(v);
 	return v;
 }
@@ -520,6 +682,26 @@ GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* ent
 	return shader;
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GLuint GLShader::GetVertexShader(const String& name)
+{
+	auto itr = m_glVertexShaderEntryMap.find(name);
+	LN_THROW(itr != m_glVertexShaderEntryMap.end(), KeyNotFoundException);
+	return itr->second;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+GLuint GLShader::GetFlagmentShader(const String& name)
+{
+	auto itr = m_glPixelShaderEntryMap.find(name);
+	LN_THROW(itr != m_glPixelShaderEntryMap.end(), KeyNotFoundException);
+	return itr->second;
+}
+
 //=============================================================================
 // GLShaderVariable
 //=============================================================================
@@ -527,12 +709,15 @@ GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* ent
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderVariable* GLShaderVariable::Deserialize(JsonReader2* json)
+GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, JsonReader2* json)
 {
-	auto var = RefPtr<GLShaderVariable>::MakeRef();
-	String name, semantic, samplerName;	// TODO: この辺、動的なメモリ確保を少なくしたいが・・・
+	String name, semantic, samplerName;
 	bool shared;
 	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+
+	// TODO: ダミーのままでいいものか・・・
+	ShaderVariableTypeDesc dummy;
+	RefPtr<GLShaderVariable> var = ownerShader->TryCreateShaderVariable(dummy, name, String(), 0);	// TODO:この loc はいらない
 
 	while (true)
 	{
@@ -542,7 +727,21 @@ GLShaderVariable* GLShaderVariable::Deserialize(JsonReader2* json)
 		else if (prop == _T("shared")) shared = json->ReadAsBool();
 		else if (prop == _T("samplerStatus"))
 		{
+			json->ReadAsStartArray();
+			while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
+			{
+				String stateName, stateValue;
+				if (json->ReadAsPropertyName() == _T("stateName")) stateName = json->ReadAsString();
+				if (json->ReadAsPropertyName() == _T("value")) stateValue = json->ReadAsString();
 
+				// TODO
+				//SamplerStatePair state;
+				//if (SamplerStatePair::Make(stateName, stateValue, &state))
+				//{
+				//	var->m_samplerStatus.Add(state);
+				//}
+				json->ReadAsEndObject();
+			}
 		}
 		else if (prop == _T("annotations"))
 		{
@@ -554,17 +753,17 @@ GLShaderVariable* GLShaderVariable::Deserialize(JsonReader2* json)
 		}
 	}
 
+	//var->Initialize(ownerShader, , name, semantic, 0);
 	json->ReadAsEndObject();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderVariable::GLShaderVariable(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location)
-	: m_ownerShader(owner)
-	, m_glUniformLocation(location)
+GLShaderVariable::GLShaderVariable()
+	: m_ownerShader(nullptr)
+	, m_glUniformLocation(0)
 {
-	Initialize(desc, name, semanticName);
 }
 
 //-----------------------------------------------------------------------------
@@ -572,6 +771,20 @@ GLShaderVariable::GLShaderVariable(GLShader* owner, ShaderVariableTypeDesc desc,
 //-----------------------------------------------------------------------------
 GLShaderVariable::~GLShaderVariable()
 {
+	for (GLShaderAnnotation* anno : m_annotations)
+	{
+		anno->Release();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLShaderVariable::Initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location)
+{
+	m_ownerShader = owner;
+	m_glUniformLocation = location;
+	ShaderVariableBase::Initialize(desc, name, semanticName);
 }
 
 //-----------------------------------------------------------------------------
@@ -729,8 +942,9 @@ GLShaderAnnotation* GLShaderAnnotation::Deserialize(JsonReader2* json)
 	auto anno = RefPtr<GLShaderAnnotation>::MakeRef();
 	String type, name, value;
 	if (json->ReadAsPropertyName() == _T("type")) type = json->ReadAsString();
-	else if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	else if (json->ReadAsPropertyName() == _T("value")) value = json->ReadAsString();
+	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+	if (json->ReadAsPropertyName() == _T("value")) value = json->ReadAsString();
+	json->ReadAsEndObject();
 	anno->Initialize(type, name, value);
 	return anno.DetachMove();
 }
@@ -786,16 +1000,22 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 			desc.Type = ShaderVariableType_Float;
 			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
 			ShaderVariableBase::SetFloat(StringTraits::ToDouble(value.c_str(), value.GetLength()));
-
 		}
 		else if (type.GetLength() == 6)
 		{
 			// vector
 			desc.Columns = (type[6] - '0');
+
+			StringArray tokens = value.Split(_T(","));
+			Vector4 v;
+			v.x = (tokens.GetCount() >= 1) ? StringTraits::ToDouble(tokens[0].c_str(), tokens[0].GetLength()) : 0;
+			v.y = (tokens.GetCount() >= 2) ? StringTraits::ToDouble(tokens[1].c_str(), tokens[1].GetLength()) : 0;
+			v.z = (tokens.GetCount() >= 3) ? StringTraits::ToDouble(tokens[2].c_str(), tokens[2].GetLength()) : 0;
+			v.w = (tokens.GetCount() >= 4) ? StringTraits::ToDouble(tokens[3].c_str(), tokens[3].GetLength()) : 0;
+
 			desc.Type = ShaderVariableType_Vector;
 			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-			ShaderVariableBase::SetFloat(StringTraits::ToDouble(value.c_str(), value.GetLength()));
-
+			ShaderVariableBase::SetVector(v);
 		}
 		else
 		{
@@ -812,20 +1032,18 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GLShaderTechnique* GLShaderTechnique::Deserialize(JsonReader2* json)
+GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, JsonReader2* json)
 {
-	auto tech = RefPtr<GLShaderTechnique>::MakeRef();
+	String name;
+	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+	auto tech = RefPtr<GLShaderTechnique>::MakeRef(ownerShader, name);
 
-	if (json->ReadAsPropertyName() == _T("name"))
-	{
-		tech->m_name = json->ReadAsString();
-	}
 	if (json->ReadAsPropertyName() == _T("passes"))
 	{
 		json->ReadAsStartArray();
 		while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
 		{
-			tech->m_passes.Add(GLShaderPass::Deserialize(&json));
+			tech->m_passes.Add(GLShaderPass::Deserialize(json));
 		}
 	}
 	if (json->ReadAsPropertyName() == _T("annotations"))
@@ -833,10 +1051,11 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(JsonReader2* json)
 		json->ReadAsStartArray();
 		while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
 		{
-			tech->m_annotations.Add(GLShaderAnnotation::Deserialize(&json));
+			tech->m_annotations.Add(GLShaderAnnotation::Deserialize(json));
 		}
 	}
 	json->ReadAsEndObject();
+	return tech.DetachMove();
 }
 
 //-----------------------------------------------------------------------------
@@ -855,6 +1074,10 @@ GLShaderTechnique::~GLShaderTechnique()
 {
 	LN_FOREACH(GLShaderPass* pass, m_passes) {
 		LN_SAFE_RELEASE(pass);
+	}
+	for (GLShaderAnnotation* anno : m_annotations)
+	{
+		anno->Release();
 	}
 }
 
@@ -900,10 +1123,16 @@ GLShaderPass* GLShaderPass::Deserialize(JsonReader2* json)
 	{
 		psName = json->ReadAsString();
 	}
-	pass->LinkShader(vsName, psName);
+
+	ShaderDiag diag;
+	if (!pass->LinkShader(vsName, psName, &diag))
+	{
+		LN_THROW(0, InvalidOperationException);	// TODO
+	}
+	pass->Build();
 
 
-	if (json->ReadAsPropertyName() == _T("passes"))
+	if (json->ReadAsPropertyName() == _T("status"))
 	{
 		json->ReadAsStartArray();
 		while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
@@ -916,10 +1145,11 @@ GLShaderPass* GLShaderPass::Deserialize(JsonReader2* json)
 		json->ReadAsStartArray();
 		while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
 		{
-			pass->m_annotations.Add(GLShaderAnnotation::Deserialize(&json));
+			pass->m_annotations.Add(GLShaderAnnotation::Deserialize(json));
 		}
 	}
 	json->ReadAsEndObject();
+	return pass.DetachMove();
 }
 
 //-----------------------------------------------------------------------------
@@ -952,6 +1182,10 @@ GLShaderPass::GLShaderPass(GLShader* owner, const String& name, GLuint program, 
 //-----------------------------------------------------------------------------
 GLShaderPass::~GLShaderPass()
 {
+	for (GLShaderAnnotation* anno : m_annotations)
+	{
+		anno->Release();
+	}
 	if (m_program != 0)
 	{
 		glDeleteProgram(m_program);
@@ -990,6 +1224,197 @@ void GLShaderPass::Apply()
 //	glUseProgram(NULL);
 //	static_cast<GLRenderer*>(m_ownerShader->GetGraphicsDevice()->GetRenderer())->SetCurrentShaderPass(NULL);
 //}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool GLShaderPass::LinkShader(const String& vsName, const String& fsName, ShaderDiag* diag)
+{
+	GLuint vertexShader = m_ownerShader->GetVertexShader(vsName);
+	GLuint fragmentShader = m_ownerShader->GetFlagmentShader(fsName);
+
+	// 最初に失敗扱いにしておく
+	diag->level = ShaderCompileResultLevel_Error;
+	
+	// プログラムオブジェクトの作成
+	m_program = glCreateProgram();
+	LN_CHECK_GLERROR();
+
+	// シェーダオブジェクトをシェーダプログラムへの登録
+	glAttachShader(m_program, vertexShader);
+	LN_CHECK_GLERROR();
+	glAttachShader(m_program, fragmentShader);
+	LN_CHECK_GLERROR();
+
+	// シェーダプログラムのリンク
+	glLinkProgram(m_program);
+	LN_CHECK_GLERROR();
+	GLint linked;
+	glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
+	LN_CHECK_GLERROR();
+
+	// ログがあるかチェック
+	int logSize;
+	glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &logSize);
+	LN_CHECK_GLERROR();
+	if (logSize > 1)
+	{
+		char* buf = LN_NEW char[logSize];
+		int length;
+		glGetProgramInfoLog(m_program, logSize, &length, buf);
+		diag->message += "Link info:\n";
+		diag->message += buf;
+		LN_SAFE_DELETE_ARRAY(buf);
+		LN_CHECK_GLERROR();
+
+		diag->level = ShaderCompileResultLevel_Warning;
+	}
+	else
+	{
+		diag->level = ShaderCompileResultLevel_Success;
+	}
+	if (linked == GL_FALSE) {
+		// リンクエラー
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+		glDeleteProgram(m_program);
+		m_program = 0;
+		diag->level = ShaderCompileResultLevel_Error;
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLShaderPass::Build()
+{
+	// uniform 変数の数を調べて、その数分 ShaderVariable 作成
+	GLint params;
+	glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
+
+	Array<GLShaderPassVariableInfo> passVarList;
+	for (int i = 0; i < params; ++i)
+	{
+		GLShaderPassVariableInfo passVar;
+
+		GLsizei name_len = 0;
+		GLsizei var_size = 0;   // 配列サイズっぽい
+		GLenum  var_type = 0;
+		GLchar  name[256] = { 0 };
+		glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+
+		// 変数情報作成
+		ShaderVariableBase::ShaderVariableTypeDesc desc;
+		GLShaderVariable::ConvertVariableTypeGLToLN(var_type, var_size, &desc);
+
+		// 名前を String 化
+		String tname;
+		tname.AssignCStr(name);
+
+		// Location
+		passVar.Location = glGetUniformLocation(m_program, name); LN_CHECK_GLERROR();
+
+		// ShaderVariable を作る
+		passVar.Variable = m_ownerShader->TryCreateShaderVariable(desc, tname, String(), passVar.Location);	// TODO:この loc はいらない
+
+		passVarList.Add(passVar);
+	}
+
+	// テクニック作成 (1対の頂点シェーダとフラグメントシェーダだけなので1つで良い)
+	//GLShaderTechnique* tech = shader->CreateShaderTechnique(_T("Main"));
+
+	/*
+	■ attribute 変数への Usage 自動割り当てについて
+
+	特定の名前の attribute 変数は、自動的に Usage と UsageIndex を割り当てる。
+	これは Unity と同じ動作。
+
+	HLSL はシェーダコード上で POSITION 等のセマンティクスを指定することで
+	C++ コードをいじらなくてもレイアウトを作ることができるが、
+	一方 GLSL は自動レイアウトとかしてくれないので基本的に自分で配置を行うことになる。
+	ただ、それだと HLSL と GLSL を隠蔽する意味が無くなる。
+	そこで Unity 等は変数名によって自動割り当てを行っている。
+
+	とりあえず昨今最もメジャーな Unity に合わせ、次の名前の変数に自動割り当てをする。
+	attribute vec4 gl_Vertex;
+	attribute vec4 gl_Color;
+	attribute vec3 gl_Normal;
+	attribute vec4 gl_MultiTexCoord0;
+	attribute vec4 gl_MultiTexCoord1;
+
+	GLSL Programming/Unity/Debugging of Shaders
+	http://en.wikibooks.org/wiki/GLSL_Programming/Unity/Debugging_of_Shaders
+
+	ただ、これだと PMX として最低限必要な TexCoord0～7 をカバーできないので
+	それぞれ 0～15 (DX9の最大数) で UsageIndex をつけられるようにする。
+	*/
+	struct AttrNameData
+	{
+		const char* Name;
+		int			Length;
+	};
+	static const AttrNameData attrNameTable[] =
+	{
+		{ "",					0 },	// VertexElementUsage_Unknown,
+										//{ "gl_Vertex",			9 },	// VertexElementUsage_Position,
+		{ "ln_Vertex",			9 },	// VertexElementUsage_Position,
+		{ "ln_Normal",			9 },	// VertexElementUsage_Normal,
+		{ "ln_Color",			8 },	// VertexElementUsage_Color,
+		{ "ln_MultiTexCoord",	16 },	// VertexElementUsage_TexCoord,
+		{ "ln_PointSize",		12 },	// VertexElementUsage_PointSize,
+		{ "ln_BlendIndices",	15 },	// VertexElementUsage_BlendIndices,
+		{ "ln_BlendWeight",		14 },	// VertexElementUsage_BlendWeight,
+	};
+	assert(LN_ARRAY_SIZE_OF(attrNameTable) == VertexElementUsage_Max);
+
+	int8_t m_usageAttrIndexTable[VertexElementUsage_Max][GLShaderPass::MaxUsageIndex];
+	memset(m_usageAttrIndexTable, -1, sizeof(m_usageAttrIndexTable));
+
+	// attribute 変数の数
+	GLint attrCount;
+	glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &attrCount);	LN_CHECK_GLERROR();
+	for (int i = 0; i < attrCount; ++i)
+	{
+		GLsizei name_len = 0;
+		GLsizei var_size = 0;
+		GLenum  var_type = 0;
+		GLchar  name[256] = { 0 };
+		glGetActiveAttrib(m_program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+
+		for (int iUsage = 1; iUsage < VertexElementUsage_Max; ++iUsage)	// 0 番はダミーなので 1番から
+		{
+			// 変数名の一致確認 (UsageIndex の前の部分)
+			if (strncmp(name, attrNameTable[iUsage].Name, attrNameTable[iUsage].Length) == 0)
+			{
+				// UsageIndex チェック (gl_MultiTexCoord0 とかの '0' の部分)
+				size_t idxLen = name_len - attrNameTable[iUsage].Length;
+				const char* idxStr = &name[attrNameTable[iUsage].Length];
+				int usageIndex = -1;
+				if (idxLen == 0) {
+					usageIndex = 0;		// 省略されているので 0
+				}
+				else if (idxLen == 1 && idxStr[0] == '0') {
+					usageIndex = 0;		// 1文字で '0' なので 0 (atoi でエラーを確認できるようにするため特別処理)
+				}
+				else if (idxLen <= 2) {
+					usageIndex = atoi(idxStr);
+				}
+
+				if (0 <= usageIndex && usageIndex < GLShaderPass::MaxUsageIndex) {
+					// TODO: error  不正 UsageIndex
+				}
+
+				// Location 取得
+				int loc = glGetAttribLocation(m_program, name); LN_CHECK_GLERROR();
+				m_usageAttrIndexTable[iUsage][usageIndex] = glGetAttribLocation(m_program, name); LN_CHECK_GLERROR();
+				break;
+			}
+		}
+	}
+}
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

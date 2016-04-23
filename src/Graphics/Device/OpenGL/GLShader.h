@@ -9,8 +9,15 @@ namespace Driver
 {
 class GLShader;
 class GLShaderVariable;
+class GLShaderAnnotation;
 class GLShaderTechnique;
 class GLShaderPass;
+
+struct ShaderDiag
+{
+	ShaderCompileResultLevel	level;
+	StringA						message;
+};
 
 /// Pass が利用するシェーダ変数と、その GLSL Location
 struct GLShaderPassVariableInfo
@@ -55,6 +62,9 @@ public:
 	virtual void OnLostDevice();
 	virtual void OnResetDevice();
 
+	GLuint GetVertexShader(const String& name);
+	GLuint GetFlagmentShader(const String& name);
+
 private:
 	GLuint CompileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
 
@@ -72,10 +82,11 @@ class GLShaderVariable
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderVariable* Deserialize(JsonReader2* json);
+	static GLShaderVariable* Deserialize(GLShader* ownerShader, JsonReader2* json);
 
-	GLShaderVariable(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
+	GLShaderVariable();
 	virtual ~GLShaderVariable();
+	void Initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
 
 public:
 	/// 指定された GLSL Location に値を設定する
@@ -91,6 +102,7 @@ public:
 private:
 	GLShader*					m_ownerShader;
 	GLint						m_glUniformLocation;
+	//Array<SamplerStatePair>		m_samplerStatus;
 	Array<GLShaderAnnotation*>	m_annotations;
 };
 
@@ -122,7 +134,7 @@ class GLShaderTechnique
 	: public IShaderTechnique
 {
 public:
-	static GLShaderTechnique* Deserialize(JsonReader2* json);
+	static GLShaderTechnique* Deserialize(GLShader* ownerShader, JsonReader2* json);
 
 	GLShaderTechnique(GLShader* owner, const String& name);
 	virtual ~GLShaderTechnique();
@@ -169,6 +181,9 @@ public:
 	//virtual void End();
 
 private:
+	bool LinkShader(const String& vsName, const String& fsName, ShaderDiag* diag);
+	void Build();
+	
 	GLShader*						m_ownerShader;
 	GLuint							m_program;
 	String							m_name;
