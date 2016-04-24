@@ -27,7 +27,7 @@ public:
 		ConfigData()
 			: MainWindow(NULL)
 			, OpenGLMajorVersion(2)
-			, OpenGLMinorVersion(0)
+			, OpenGLMinorVersion(1)
 		{}
 	};
 

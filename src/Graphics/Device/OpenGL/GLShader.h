@@ -44,7 +44,8 @@ public:
 	void Initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
 
 	GLGraphicsDevice* GetGraphicsDevice() { return m_device; }
-	GLShaderVariable* TryCreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
+	GLShaderVariable* FindShaderVariable(const String& name);
+	GLShaderVariable* CreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName);
 
 public:
 	virtual int GetVariableCount() const;
@@ -78,7 +79,7 @@ class GLShaderVariable
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderVariable* Deserialize(GLShader* ownerShader, JsonReader2* json);
+	static GLShaderVariable* Deserialize(GLShader* ownerShader, JsonReader2* json, bool* outOverwrited);
 
 	GLShaderVariable();
 	virtual ~GLShaderVariable();

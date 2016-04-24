@@ -316,7 +316,7 @@ bool SceneGraph::InjectMouseWheel(int delta)
 
 static const byte_t g_SSBasic2D_Data[] =
 {
-#include "Resource/SSBasic2D.fx.h"
+#include "Resource/SSBasic2D.fxc.h"
 };
 static const size_t g_SSBasic2D_Data_Len = LN_ARRAY_SIZE_OF(g_SSBasic2D_Data);
 

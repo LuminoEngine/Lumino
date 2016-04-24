@@ -277,9 +277,12 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 	// シェーダが指定されていなければデフォルトのを使う
 	if (shader == nullptr)
 	{
+		if (m_shader.varPixelStep != nullptr)	// Dx9 のみ
+		{
+			m_shader.varPixelStep->SetVector(m_pixelStep);
+		}
 		m_shader.varWorldMatrix->SetMatrix(transform);
 		m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
-		m_shader.varPixelStep->SetVector(m_pixelStep);
 		m_shader.varTexture->SetTexture(source);
 		//m_shaderForBlt.varTexture->SetTexture(source);
 		shader = m_shader.shader;//m_shaderForBlt.shader;
@@ -344,9 +347,13 @@ void PrimitiveRendererCore::Flush()
 				srcTexture = m_manager->GetDummyTexture();
 			}
 
+			if (m_shader.varPixelStep != nullptr)	// これは DX9 だけ
+			{
+				m_shader.varPixelStep->SetVector(m_pixelStep);
+			}
+
 			m_shader.varWorldMatrix->SetMatrix(m_worldMatrix);
 			m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
-			m_shader.varPixelStep->SetVector(m_pixelStep);
 			m_shader.varTexture->SetTexture(srcTexture);
 			m_shader.pass->Apply();
 		}

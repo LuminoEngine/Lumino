@@ -18,7 +18,7 @@ float4          gTone           : TONE;
 static float4   gColor          = float4( gColorScale.xyz, gColorScale.a * gOpacity );
 
 texture gMaterialTexture	    : MATERIALTEXTURE;
-sampler gTexSampler = sampler_state
+sampler2D gTexSampler = sampler_state
 {
     texture = < gMaterialTexture >;
     MINFILTER = NONE;

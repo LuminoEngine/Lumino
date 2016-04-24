@@ -869,7 +869,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		Driver::WGLGraphicsDevice::ConfigData data;
 		data.MainWindow = configData.MainWindow;
 		data.OpenGLMajorVersion = 2;
-		data.OpenGLMinorVersion = 0;
+		data.OpenGLMinorVersion = 1;
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();
 		device->Initialize(data);
 		ChangeDevice(device);
