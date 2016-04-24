@@ -244,7 +244,6 @@ void MMEShaderBuilder::CheckVariableRequest(
 	//name = var->getSemanticName();
 	int r;
 
-
 	switch (GetMMESemanticBySemanticName(var->GetSemanticName()))
 	{
 		/////////////////////////////////////// 変換行列

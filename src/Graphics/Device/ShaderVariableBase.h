@@ -29,9 +29,8 @@ protected:
     virtual ~ShaderVariableBase();
 
 protected:
-
-	/// 初期化
-	void Initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName);
+	void Initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName);	// TODO: semanticName 消しとく
+	void SetSemanticName(const String& semanticName) { m_semanticName = semanticName; }
 
 public:
 	// IShaderVariable

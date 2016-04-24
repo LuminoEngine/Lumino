@@ -776,7 +776,7 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, JsonReade
 		if (json->GetTokenType() == JsonToken::PropertyName)
 		{
 			const String& prop = json->GetValue();
-			if (prop == _T("semantic")) semantic = json->ReadAsString();
+			if (prop == _T("semantic")) var->SetSemanticName(json->ReadAsString());
 			else if (prop == _T("samplerName")) samplerName = json->ReadAsString();
 			else if (prop == _T("shared")) shared = json->ReadAsBool();
 			else if (prop == _T("samplerStatus"))
