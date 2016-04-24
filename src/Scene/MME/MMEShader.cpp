@@ -27,11 +27,13 @@ static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeade
 //-----------------------------------------------------------------------------
 MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager)
 {
-	StringA newCode((const char*)MMM_EffectHeader_Data, MMM_EffectHeader_Data_Len);
-	newCode += StringA::GetNewLine();
-	newCode += "#line 1";
-	newCode += StringA::GetNewLine();
-	newCode += StringA(code, codeLength);
+	// TODO: 自動付加するべきだろうか？
+	StringA newCode(code, codeLength);
+	//StringA newCode((const char*)MMM_EffectHeader_Data, MMM_EffectHeader_Data_Len);
+	//newCode += StringA::GetNewLine();
+	//newCode += "#line 1";
+	//newCode += StringA::GetNewLine();
+	//newCode += StringA(code, codeLength);
 
 	RefPtr<Shader> shader(LN_NEW Shader(), false);
 	shader->Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());

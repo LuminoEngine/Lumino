@@ -17,7 +17,7 @@ LN_NAMESPACE_SCENE_BEGIN
 
 static const byte_t g_SSNoLighting_Data[] =
 {
-#include "Resource/SSBasic2D.fx.h"
+#include "Resource/SSBasic2D.fxc.h"
 };
 static const size_t g_SSNoLighting_Data_Len = LN_ARRAY_SIZE_OF(g_SSNoLighting_Data);
 

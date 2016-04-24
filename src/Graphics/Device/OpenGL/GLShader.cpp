@@ -507,11 +507,11 @@ GLShader::~GLShader()
 void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t codeByteCount)
 {
 	const char* code = (const char*)code_;
-	if (memcmp(code, "#define LN_FXC_METADATA", 23) == 0)
+	if (memcmp(code, "#ifdef LN_FXC_METADATA", 22) == 0)
 	{
 		int index = StringTraits::IndexOf(code, codeByteCount, "#endif", 6);
 		LN_THROW(index >= 0, InvalidFormatException);
-		StringReader reader(String::FromNativeCharString(code + 23, index - 23));
+		StringReader reader(String::FromNativeCharString(code + 22, index - 22));
 		JsonReader2 json(&reader);
 		json.ReadAsStartObject();
 
@@ -521,7 +521,7 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
 			{
-				StringA entry = json.ReadAsString();
+				StringA entry = json.GetValue();
 				m_glVertexShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.c_str(), GL_VERTEX_SHADER);
 			}
 		}
@@ -531,7 +531,7 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
 			{
-				StringA entry = json.ReadAsString();
+				StringA entry = json.GetValue();
 				m_glPixelShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.c_str(), GL_FRAGMENT_SHADER);
 			}
 		}
