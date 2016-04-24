@@ -827,7 +827,6 @@ GLShaderVariable::GLShaderVariable()
 //-----------------------------------------------------------------------------
 GLShaderVariable::~GLShaderVariable()
 {
-	printf("GLShaderVariable ~ %p\n", this);
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
 		anno->Release();

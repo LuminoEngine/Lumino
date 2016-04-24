@@ -248,6 +248,7 @@ int main()
 		//ElapsedTimer t;
 		//t.Start();
 #endif
+		Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::BlueViolet);
 
 		while (true)
 		{
