@@ -204,6 +204,9 @@ int main()
 		Engine::Initialize(appData);
 
 
+		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto sp1 = Sprite2D::Create(tex);
+
 #if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;

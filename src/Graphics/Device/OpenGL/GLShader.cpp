@@ -752,7 +752,7 @@ GLuint GLShader::GetFlagmentShader(const String& name)
 //-----------------------------------------------------------------------------
 GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, JsonReader2* json, bool* outOverwrited)
 {
-	String name, semantic, samplerName;
+	String name, semantic/*, samplerName*/;
 	bool shared;
 	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
 
@@ -777,16 +777,17 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, JsonReade
 		{
 			const String& prop = json->GetValue();
 			if (prop == _T("semantic")) var->SetSemanticName(json->ReadAsString());
-			else if (prop == _T("samplerName")) samplerName = json->ReadAsString();
+			//else if (prop == _T("samplerName")) samplerName = json->ReadAsString();
 			else if (prop == _T("shared")) shared = json->ReadAsBool();
 			else if (prop == _T("samplerStatus"))
 			{
-				json->ReadAsStartArray();
-				while (json->Read() && json->GetTokenType() != JsonToken::EndArray)
+				json->ReadAsStartObject();
+				while (json->Read() && json->GetTokenType() != JsonToken::EndObject)
 				{
-					String stateName, stateValue;
-					if (json->ReadAsPropertyName() == _T("stateName")) stateName = json->ReadAsString();
-					if (json->ReadAsPropertyName() == _T("value")) stateValue = json->ReadAsString();
+					String stateName = json->GetValue();
+					String stateValue = json->ReadAsString();
+					//if (json->ReadAsPropertyName() == _T("stateName")) stateName = json->ReadAsString();
+					//if (json->ReadAsPropertyName() == _T("value")) stateValue = json->ReadAsString();
 
 					// TODO
 					//SamplerStatePair state;
@@ -794,7 +795,6 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, JsonReade
 					//{
 					//	var->m_samplerStatus.Add(state);
 					//}
-					json->ReadAsEndObject();
 				}
 			}
 			else if (prop == _T("annotations"))
@@ -883,7 +883,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 			(const GLfloat*)m_value.GetVectorArray());
 		break;
 	case ShaderVariableType_Matrix:
-		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.GetMatrix());
+		glUniformMatrix4fv(location, 1, GL_TRUE, (const GLfloat*)&m_value.GetMatrix());
 		break;
 	case ShaderVariableType_MatrixArray:
 		glUniformMatrix4fv(
@@ -1424,8 +1424,8 @@ void GLShaderPass::Build()
 	*/
 	struct AttrNameData
 	{
-		const char* Name;
-		int			Length;
+		const char* name;
+		int			length;
 	};
 	static const AttrNameData attrNameTable[] =
 	{
@@ -1457,11 +1457,11 @@ void GLShaderPass::Build()
 		for (int iUsage = 1; iUsage < VertexElementUsage_Max; ++iUsage)	// 0 番はダミーなので 1番から
 		{
 			// 変数名の一致確認 (UsageIndex の前の部分)
-			if (strncmp(name, attrNameTable[iUsage].Name, attrNameTable[iUsage].Length) == 0)
+			if (strncmp(name, attrNameTable[iUsage].name, attrNameTable[iUsage].length) == 0)
 			{
 				// UsageIndex チェック (gl_MultiTexCoord0 とかの '0' の部分)
-				size_t idxLen = name_len - attrNameTable[iUsage].Length;
-				const char* idxStr = &name[attrNameTable[iUsage].Length];
+				size_t idxLen = name_len - attrNameTable[iUsage].length;
+				const char* idxStr = &name[attrNameTable[iUsage].length];
 				int usageIndex = -1;
 				if (idxLen == 0) {
 					usageIndex = 0;		// 省略されているので 0

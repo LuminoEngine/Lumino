@@ -3,7 +3,7 @@
 		<page src="index.md">
 	</homepage>
 	<toc>
-		<page caption="文字列">
+		<page src="string/base_string_index.md">
 			<page src="string/base_string.md" />
 			<page src="string/base_regex.md" />
 		</page>
