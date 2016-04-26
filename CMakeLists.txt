@@ -261,6 +261,8 @@ set(LN_SOURCES_Graphics_Device
 	src/Graphics/Device/GraphicsDeviceBase.h
 	src/Graphics/Device/ShaderVariableBase.cpp
 	src/Graphics/Device/ShaderVariableBase.h
+	src/Graphics/Device/OpenGL/GLContext.cpp
+	src/Graphics/Device/OpenGL/GLContext.h
 	src/Graphics/Device/OpenGL/GLGraphicsDevice.cpp
 	src/Graphics/Device/OpenGL/GLGraphicsDevice.h
 	src/Graphics/Device/OpenGL/GLIndexBuffer.cpp
@@ -557,8 +559,6 @@ if (WIN32)
 		src/Graphics/Device/DirectX9/DX9Renderer.h
 		src/Graphics/Device/DirectX9/DX9Shader.h
 		src/Graphics/Device/DirectX9/DX9SwapChain.h
-		src/Graphics/Device/OpenGL/WGLGraphicsDevice.h
-		src/Graphics/Device/OpenGL/WGLSwapChain.h
 	 	src/Graphics/Device/DirectX9/DX9Texture.cpp
 		src/Graphics/Device/DirectX9/DX9VertexBuffer.cpp
 		src/Graphics/Device/DirectX9/DX9GraphicsDevice.cpp
@@ -568,7 +568,7 @@ if (WIN32)
 		src/Graphics/Device/DirectX9/DX9Shader.cpp
 		src/Graphics/Device/DirectX9/DX9SwapChain.cpp
 		src/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
-		src/Graphics/Device/OpenGL/WGLSwapChain.cpp
+		src/Graphics/Device/OpenGL/WGLGraphicsDevice.h
 	)
 
 elseif (APPLE)

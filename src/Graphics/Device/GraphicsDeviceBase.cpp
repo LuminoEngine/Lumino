@@ -77,6 +77,9 @@ void GraphicsDeviceBase::GCDeviceResource()
 	・Create系の内部でエラーが発生し、Release したいときにデッドロックの危険性がある
 	・デストラクタで例外を発生させる可能性がある
 	やりようはいくらでもあるが、シンプルに実装するのは少し難しい。
+
+	作成もメインスレッド・ローディングスレッドなど様々なスレッドからの呼び出しもサポートするし、
+	作成と解放のスレッドを一致させる必要もないわけで、この辺で開放するのが一番シンプル。
 	*/
 	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
 

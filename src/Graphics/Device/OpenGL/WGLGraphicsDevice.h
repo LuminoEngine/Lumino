@@ -1,16 +1,34 @@
 ﻿
 #pragma once 
-
 #include "GLGraphicsDevice.h"
+#include "GLSwapChain.h"
+#include "GLContext.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
-class WGLSwapChain;
-class WGLContext;
+class WGLGraphicsDevice;
 
-/// WGL 固有の GLGraphicsDevice の実装
+// WGL 固有の GLContext の実装
+class WGLContext
+	: public GLContext
+{
+public:
+	WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLContext* parentContext);
+	virtual ~WGLContext();
+	virtual void SwapBuffers() override;
+
+	HDC GetDC() const { return m_hDC; }
+	HGLRC GetGLRC() const { return m_hGLRC; }
+
+private:
+	HWND	m_hWnd;
+	HDC		m_hDC;
+	HGLRC	m_hGLRC;
+};
+
+// WGL 固有の GLGraphicsDevice の実装
 class WGLGraphicsDevice
 	: public GLGraphicsDevice
 {
@@ -50,7 +68,7 @@ private:
 	bool CheckContainsExtensionString(const char* string, const GLubyte* extensions);
 
 private:
-	WGLSwapChain*	m_defaultSwapChain;
+	GLSwapChain*	m_defaultSwapChain;
 	WGLContext*		m_mainContext;
 	WGLContext*		m_mainRenderingContext;
 	bool			m_glInited;

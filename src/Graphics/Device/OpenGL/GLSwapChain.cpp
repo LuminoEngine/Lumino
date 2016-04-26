@@ -1,6 +1,7 @@
 ﻿
 #include "../../../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
+#include "GLGraphicsDevice.h"
 #include "GLTexture.h"
 #include "GLShader.h"
 #include "GLSwapChain.h"
@@ -18,8 +19,16 @@ namespace Driver
 //
 //-----------------------------------------------------------------------------
 GLSwapChain::GLSwapChain()
-	: m_vertexBuffer(NULL)
-	, m_vertexArray(NULL)
+	: m_device(nullptr)
+	, m_context(nullptr)
+	, m_window(nullptr)
+	, m_renderTarget(nullptr)
+	, m_shaderProgram(0)
+	, m_positionLoc(0)
+	, m_texCoordLoc(0)
+	, m_textureLoc(0)
+	, m_vertexBuffer(0)
+	, m_vertexArray(0)
 {
 }
 
@@ -29,13 +38,23 @@ GLSwapChain::GLSwapChain()
 GLSwapChain::~GLSwapChain()
 {
 	OnLostDevice();
+	LN_SAFE_RELEASE(m_renderTarget);
+	LN_SAFE_RELEASE(m_context);
+	LN_SAFE_RELEASE(m_window);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void GLSwapChain::Create()
+void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, PlatformWindow* window)
 {
+	m_device = device;
+	LN_REFOBJ_SET(m_context, context);
+	LN_REFOBJ_SET(m_window, window);
+
+	// TODO: バックバッファサイズ
+	m_renderTarget = LN_NEW GLRenderTargetTexture(m_window->GetSize(), TextureFormat_R8G8B8A8, 1);
+
 	OnResetDevice();
 }
 
@@ -99,6 +118,38 @@ void GLSwapChain::OnResetDevice()
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer); LN_CHECK_GLERROR();
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  LN_CHECK_GLERROR();
 	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLSwapChain::Resize(const Size& size)
+{
+	LN_THROW(0, NotImplementedException);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLSwapChain::Present(ITexture* colorBuffer)
+{
+	try
+	{
+		m_device->MakeCurrentContext(m_context);
+
+		// colorBuffer をバックバッファに描画する
+		InternalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->GetRenderer()));
+
+		// バックバッファをフロントバッファに転送する
+		m_context->SwapBuffers();
+	}
+	catch (...)
+	{
+		m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
+		throw;
+	}
+	m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
+	m_device->GCDeviceResource();
 }
 
 //-----------------------------------------------------------------------------

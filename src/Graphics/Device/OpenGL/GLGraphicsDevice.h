@@ -109,13 +109,6 @@ protected:
 	//Threading::Mutex			m_allDeviceResourceListMutex;
 };
 
-class GLContext
-	: public RefObject
-{
-public:
-	GLContext() {}
-	virtual ~GLContext() {}
-};
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

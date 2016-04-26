@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/UI/UIContext.h>
@@ -64,7 +64,7 @@ bool UILayoutView::UpdateMouseHover(const PointF& mousePos)
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
 	UIElement* old = m_mouseHoverElement;
 
-	// TODO:IME‘¤‚ÌƒCƒxƒ“ƒg‚ğˆ—‚·‚é
+	// TODO:IMEå´ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å‡¦ç†ã™ã‚‹
 	//if ( m_pIme != NULL )
 	//{
 	//	if ( m_pIme->OnMouseHoverCheck( m_MousePosition, &mMouseHoverControl ) )
@@ -73,7 +73,7 @@ bool UILayoutView::UpdateMouseHover(const PointF& mousePos)
 	//	}
 	//}
 
-	// ’Êí‚ÌƒEƒBƒ“ƒhƒE‚ÌƒCƒxƒ“ƒg‚ğˆ—‚·‚é
+	// é€šå¸¸ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å‡¦ç†ã™ã‚‹
 	if (m_rootElement != NULL)
 	{
 		m_mouseHoverElement = m_rootElement->CheckMouseHoverElement(mousePos);
@@ -85,15 +85,15 @@ bool UILayoutView::UpdateMouseHover(const PointF& mousePos)
 	m_mouseHoverElement = nullptr;
 
 EXIT:
-	// V‹Œ‚»‚ê‚¼‚ê‚Ì Element ‚É MouseLeaveAMouseEnter ƒCƒxƒ“ƒg‚ğ‘—‚é
+	// æ–°æ—§ãã‚Œãã‚Œã® Element ã« MouseLeaveã€MouseEnter ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€ã‚‹
 	if (m_mouseHoverElement != old)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, 0, mousePos.x, mousePos.y, 0), false);
+		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, mousePos.x, mousePos.y, 0), false);
 		if (old != nullptr) {
 			old->OnEvent(detail::UIInternalEventType::MouseLeave, args);
 		}
 
-		// ª‚Ì MouseLeave ƒCƒxƒ“ƒg‚Æ‚Åg‚¢‚Ü‚í‚µ‚Ä‚¢‚é‚Ì‚ÅƒŠƒZƒbƒg‚ğ–Y‚ê‚¸‚É
+		// â†‘ã® MouseLeave ã‚¤ãƒ™ãƒ³ãƒˆã¨ã§ä½¿ã„ã¾ã‚ã—ã¦ã„ã‚‹ã®ã§ãƒªã‚»ãƒƒãƒˆã‚’å¿˜ã‚Œãšã«
 		args->handled = false;
 
 		if (m_mouseHoverElement != nullptr) {
@@ -133,16 +133,16 @@ bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 
 	m_mousePosition.Set(clientX, clientY);
 
-	// ƒLƒƒƒvƒ`ƒƒ’†‚ÌƒRƒ“ƒgƒ[ƒ‹‚ª‚ ‚ê‚Î‚»‚¿‚ç‚É‘—‚é
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£ä¸­ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãŒã‚ã‚Œã°ãã¡ã‚‰ã«é€ã‚‹
 	if (m_capturedElement != nullptr)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, 0, clientX, clientY, 0), false);
+		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, clientX, clientY, 0), false);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 	}
 	UpdateMouseHover(PointF(clientX, clientY));
 	if (m_mouseHoverElement == NULL) { return false; }
 
-	RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, 0, clientX, clientY, 0), false);
+	RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(MouseButton::None, clientX, clientY, 0), false);
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 }
 
@@ -155,7 +155,7 @@ bool UILayoutView::InjectMouseButtonDown(MouseButton button, float clientX, floa
 
 	m_mousePosition.Set(clientX, clientY);
 
-	// ƒ}ƒEƒXƒNƒŠƒbƒN‰ñ”‚Ìˆ—
+	// ãƒã‚¦ã‚¹ã‚¯ãƒªãƒƒã‚¯å›æ•°ã®å‡¦ç†
 	MouseClickTracker& tracker = m_mouseClickTrackers[button];
 	tracker.ClickCount++;
 
@@ -170,7 +170,7 @@ bool UILayoutView::InjectMouseButtonDown(MouseButton button, float clientX, floa
 	}
 	tracker.LastTime = curTime;
 
-	// ƒLƒƒƒvƒ`ƒƒ’†‚ÌƒRƒ“ƒgƒ[ƒ‹‚ª‚ ‚ê‚Î‚»‚¿‚ç‚É‘—‚é
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£ä¸­ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãŒã‚ã‚Œã°ãã¡ã‚‰ã«é€ã‚‹
 	if (m_capturedElement != NULL)
 	{
 		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, tracker.ClickCount), false);
@@ -191,13 +191,13 @@ bool UILayoutView::InjectMouseButtonUp(MouseButton button, float clientX, float 
 
 	m_mousePosition.Set(clientX, clientY);
 
-	// ƒLƒƒƒvƒ`ƒƒ’†‚ÌUI—v‘f‚ª‚ ‚ê‚Î‚»‚¿‚ç‚É‘—‚é
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£ä¸­ã®UIè¦ç´ ãŒã‚ã‚Œã°ãã¡ã‚‰ã«é€ã‚‹
 	if (m_capturedElement != nullptr)
 	{
 		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, 0), false);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseButtonUp, args);
 	}
-	// ƒ}ƒEƒXˆÊ’u‚ÉUI—v‘f‚ª‚ ‚ê‚Î‚»‚¿‚ç‚É‘—‚é
+	// ãƒã‚¦ã‚¹ä½ç½®ã«UIè¦ç´ ãŒã‚ã‚Œã°ãã¡ã‚‰ã«é€ã‚‹
 	if (m_mouseHoverElement != nullptr)
 	{
 		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseEventArgs>(button, clientX, clientY, 0), false);
@@ -213,16 +213,16 @@ bool UILayoutView::InjectMouseWheel(int delta)
 {
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
 
-	// ƒLƒƒƒvƒ`ƒƒ’†‚ÌUI—v‘f‚ª‚ ‚ê‚Î‚»‚¿‚ç‚É‘—‚é
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£ä¸­ã®UIè¦ç´ ãŒã‚ã‚Œã°ãã¡ã‚‰ã«é€ã‚‹
 	if (m_capturedElement != NULL)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
+		RefPtr<UIMouseWheelEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
 		return m_capturedElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
-	// ƒ}ƒEƒXˆÊ’u‚ÉUI—v‘f‚ª‚ ‚ê‚Î‚»‚¿‚ç‚É‘—‚é
+	// ãƒã‚¦ã‚¹ä½ç½®ã«UIè¦ç´ ãŒã‚ã‚Œã°ãã¡ã‚‰ã«é€ã‚‹
 	if (m_mouseHoverElement != nullptr)
 	{
-		RefPtr<UIMouseEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
+		RefPtr<UIMouseWheelEventArgs> args(pool->Create<UIMouseWheelEventArgs>(delta), false);
 		return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseWheel, args);
 	}
 	return false;
@@ -233,7 +233,7 @@ bool UILayoutView::InjectMouseWheel(int delta)
 //-----------------------------------------------------------------------------
 bool UILayoutView::InjectKeyDown(Key keyCode, ModifierKeys modifierKeys)
 {
-	// ƒtƒH[ƒJƒX‚ğ‚Á‚Ä‚¢‚éUI—v‘f‚É‘—‚é
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹UIè¦ç´ ã«é€ã‚‹
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
 		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -248,7 +248,7 @@ bool UILayoutView::InjectKeyDown(Key keyCode, ModifierKeys modifierKeys)
 //-----------------------------------------------------------------------------
 bool UILayoutView::InjectKeyUp(Key keyCode, ModifierKeys modifierKeys)
 {
-	// ƒtƒH[ƒJƒX‚ğ‚Á‚Ä‚¢‚éUI—v‘f‚É‘—‚é
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹UIè¦ç´ ã«é€ã‚‹
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
 		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -263,7 +263,7 @@ bool UILayoutView::InjectKeyUp(Key keyCode, ModifierKeys modifierKeys)
 //-----------------------------------------------------------------------------
 bool UILayoutView::InjectTextInput(TCHAR ch)
 {
-	// ƒtƒH[ƒJƒX‚ğ‚Á‚Ä‚¢‚éUI—v‘f‚É‘—‚é
+	// ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹UIè¦ç´ ã«é€ã‚‹
 	if (m_ownerContext->SetFocusElement() != nullptr)
 	{
 		detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
