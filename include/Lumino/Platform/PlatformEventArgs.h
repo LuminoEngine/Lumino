@@ -45,33 +45,37 @@ struct PlatformEventArgs
 		struct
 		{
 			MouseButton::value_type	button;	/** ボタン番号 */
-			short		wheelDelta;			/** マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位) */
-			short		x;					/** マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1) */
-			short		y;					/** マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1) */
-			short		moveX;				/** X 座標の移動量 */
-			short		moveY;				/** Y 座標の移動量 */
-			bool		inClientArea;		/** クライアント領域の内部であるか */
+			short			x;				/** マウスイベント生成時のマウスの X 座標 (クライアント領域外は -1) */
+			short			y;				/** マウスイベント生成時のマウスの Y 座標 (クライアント領域外は -1) */
+			short			moveX;			/** X 座標の移動量 */
+			short			moveY;			/** Y 座標の移動量 */
+			bool			inClientArea;	/** クライアント領域の内部であるか */
 
 		} mouse;
 
 		/** キーボードイベントの引数 */
 		struct
 		{
-			Key			keyCode;	/** キーコード */
-			bool		isAlt;		/** Alt キーが押されている場合 true */
-			bool		isShift;	/** Shift キーが押されている場合 true */
-			bool		isControl;	/** Ctrl キーが押されている場合 true */
-			char		keyChar;	/** 文字 */
+			Key				keyCode;		/** キーコード */
+			ModifierKeys	modifierKeys;	/** 修飾キー */
+			char			keyChar;		/** 文字 */
 
 		} key;
 
 		/** サイズ情報 */
 		struct
 		{
-			short		width;
-			short		height;
+			short			width;
+			short			height;
 
 		} size;
+
+		/** マウスホイールの操作 */
+		struct
+		{
+			short			delta;			/** マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位) */
+
+		} wheel;
 	};
 
 public:

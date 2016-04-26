@@ -37,15 +37,6 @@ enum InputDeviceID
 	InputDeviceID_Joypad4,
 };
 
-/** 修飾キー */
-LN_ENUM_FLAGS(ModifierKeys)
-{
-	None	= 0x0000,
-	Alt		= 0x0001,	/**< Alt キー */
-	Shift	= 0x0001,	/**< Shift キー */
-	Control = 0x0001,	/**< Ctrl キー */
-};
-LN_ENUM_FLAGS_DECLARE(ModifierKeys);
 
 
 namespace detail

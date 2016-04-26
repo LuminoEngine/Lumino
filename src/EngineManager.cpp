@@ -805,34 +805,34 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseWheel(e.mouse.wheelDelta, e.mouse.x, e.mouse.y)) { return true; }
+			if (uiView->InjectMouseWheel(e.wheel.delta)) { return true; }
 		}
 		if (m_sceneGraphManager != nullptr)
 		{
-			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.mouse.wheelDelta)) { return true; }
+			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseWheel(e.wheel.delta)) { return true; }
 		}
 		break;
-	case PlatformEventType::KeyDown:	// キー押下
+	case PlatformEventType::KeyDown:
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectKeyDown(e.key.keyCode, e.key.isAlt, e.key.isShift, e.key.isControl)) { return true; }
+			if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
 		}
 
 		// デバッグ表示切替
 		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
-			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.isAlt, e.key.isShift, e.key.isControl) &&
+			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
 			m_diagRenderer != nullptr)
 		{
 			m_diagRenderer->SetVisible(!m_diagRenderer->IsVisible());
 		}
 		break;
-	case PlatformEventType::KeyUp:		//  キー押し上げ
+	case PlatformEventType::KeyUp:
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectKeyUp(e.key.keyCode, e.key.isAlt, e.key.isShift, e.key.isControl/*, e.Key.keyChar*/)) { return true; }
+			if (uiView->InjectKeyUp(e.key.keyCode, e.key.modifierKeys/*, e.Key.keyChar*/)) { return true; }
 		}
 		break;
-	case PlatformEventType::KeyChar:		//  文字入力
+	case PlatformEventType::KeyChar:
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectTextInput(e.key.keyChar)) { return true; }

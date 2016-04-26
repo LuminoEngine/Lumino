@@ -169,16 +169,6 @@ void GLFWPlatformWindow::Initialize(GLFWPlatformWindowManager* windowManager, St
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Size GLFWPlatformWindow::GetSize() const
-{
-	Size size;
-	glfwGetWindowSize(m_glfwWindow, &size.width, &size.height);
-	return size;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 void GLFWPlatformWindow::SetVisible(bool visible)
 {
 	if (visible) {
@@ -203,21 +193,6 @@ void GLFWPlatformWindow::SetFullScreenEnabled(bool enabled)
 bool GLFWPlatformWindow::IsFullScreenEnabled() const
 {
 	return m_fullScreen;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GLFWPlatformWindow::CaptureMouse()
-{
-	// TODO: GLFW では MouseDown/Upイベントのときに一緒にキャプチャしている。それにあわせるべき？
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void GLFWPlatformWindow::ReleaseMouseCapture()
-{
 }
 
 //-----------------------------------------------------------------------------

@@ -26,7 +26,7 @@ public:
 
 	bool IsNegativeValue() const { return m_negativeValue; }
 
-	bool EqualKeyInput(Key keyCode, bool isAlt, bool isShift, bool isControl);
+	bool EqualKeyInput(Key keyCode, ModifierKeys modifier);
 
 LN_INTERNAL_ACCESS:
 	InputBinding();

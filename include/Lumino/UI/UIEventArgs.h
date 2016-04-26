@@ -30,12 +30,11 @@ class UIMouseEventArgs
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	UIMouseEventArgs();
-	UIMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);
+	UIMouseEventArgs(MouseButton button, float x, float y, int clickCount);
 	virtual ~UIMouseEventArgs();
 
 public:
 	MouseButton	button;			/**< ボタンの種類 */
-	int			wheel;			/**< マウスホイールの回転回数 (正または負の回数) */
 	float		x;				/**< マウスイベント生成時のマウスの X 座標 (コンテキスト内の座標系) */
 	float		y;				/**< マウスイベント生成時のマウスの Y 座標 (コンテキスト内の座標系) */
 	int			clickCount;		/**< ボタンがクリックされた回数。ダブルクリックやトリプルクリックを区別するために使用する。最大3まで。 */
@@ -50,15 +49,29 @@ class UIKeyEventArgs
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	UIKeyEventArgs();
-	UIKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);
+	UIKeyEventArgs(Key keyCode, ModifierKeys modifierKeys);
 	virtual ~UIKeyEventArgs();
 
 public:
-	Key			keyCode;		/**< キーコード */
-	bool		isAlt;			/**< Alt キーが押されている場合 true */
-	bool		isShift;		/**< Shift キーが押されている場合 true */
-	bool		isControl;		/**< Ctrl キーが押されている場合 true */
-	TCHAR		charCode;		/**< TextInput イベントにより通知された場合、その文字コードが格納されます。*/
+	Key				keyCode;		/**< キーコード */
+	ModifierKeys	modifierKeys;	/** 修飾キー */
+	TCHAR			charCode;		/**< TextInput イベントにより通知された場合、その文字コードが格納されます。*/
+};
+
+/**
+	@brief	マウスホイールの移動イベントの引数です。
+*/
+class UIMouseWheelEventArgs
+	: public UIEventArgs
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	UIMouseWheelEventArgs();
+	UIMouseWheelEventArgs(int delta);
+	virtual ~UIMouseWheelEventArgs();
+
+public:
+	int			wheel;			/**< マウスホイールの回転回数 (正または負の回数) */
 };
 
 LN_NAMESPACE_END

@@ -60,11 +60,11 @@ public:
 	/** この要素へのフォーカスの取得を試みます。*/
 	void Focus();
 
-	/** マウスキャプチャを設定します。*/
-	void CaptureMouse();
+	///** マウスキャプチャを設定します。*/
+	//void CaptureMouse();
 
-	/** マウスキャプチャを解除します。*/
-	void ReleaseMouseCapture();
+	///** マウスキャプチャを解除します。*/
+	//void ReleaseMouseCapture();
 
 	/** この要素内の子ビジュアル要素の数を取得します。*/
 	virtual int GetVisualChildrenCount() const;

@@ -44,28 +44,22 @@ public:
 	/**
 		@brief		マウスホイールが操作された時のイベントを受け取ります。
 		@param[in]	delta		: ホイールの移動数
-		@param[in]	clientX		: X 座標
-		@param[in]	clientY		: Y 座標
 	*/
-	virtual bool InjectMouseWheel(int delta, float clientX, float clientY) = 0;
+	virtual bool InjectMouseWheel(int delta) = 0;
 
 	/**
 		@brief		キーが押された時のイベントを受け取ります。
 		@param[in]	keyCode		: キーコード
-		@param[in]	isAlt		: Alt キーが押されている場合は true
-		@param[in]	isShift		: Shift キーが押されている場合は true
-		@param[in]	isControl	: Ctrl キーが押されている場合は true
+		@param[in]	modifierKeys: 修飾キー
 	*/
-	virtual bool InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl) = 0;
+	virtual bool InjectKeyDown(Key keyCode, ModifierKeys modifierKeys) = 0;
 
 	/**
 		@brief		キーが離された時のイベントを受け取ります。
 		@param[in]	keyCode		: キーコード
-		@param[in]	isAlt		: Alt キーが押されている場合は true
-		@param[in]	isShift		: Shift キーが押されている場合は true
-		@param[in]	isControl	: Ctrl キーが押されている場合は true
+		@param[in]	modifierKeys: 修飾キー
 	*/
-	virtual bool InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl) = 0;
+	virtual bool InjectKeyUp(Key keyCode, ModifierKeys modifierKeys) = 0;
 
 	/**
 		@brief		文字が入力された時のイベントを受け取ります。

@@ -42,7 +42,6 @@ public:
 	static Key ConvertVirtualKeyCode(DWORD winVK);
 
 protected:
-	Size	mClientSize;        ///< クライアント領域の大きさ
 	int		mLastMouseX;
 	int		mLastMouseY;
 	bool	m_systemMouseShown;
@@ -72,12 +71,9 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual Size GetSize() const override { return mClientSize; }
 	virtual void SetVisible(bool visible) override;
 	virtual void SetFullScreenEnabled(bool enabled) override;
 	virtual bool IsFullScreenEnabled() const override { return mFullScreen; }
-	virtual void CaptureMouse() override;
-	virtual void ReleaseMouseCapture() override;
 
 	// Win32Window interface
 	virtual HWND GetWindowHandle() override { return mWindowHandle; }
@@ -104,12 +100,9 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual Size GetSize() const override;
 	virtual void SetVisible(bool visible) override {}
 	virtual void SetFullScreenEnabled(bool enabled) override {}
 	virtual bool IsFullScreenEnabled() const override { return false; }
-	virtual void CaptureMouse() override;
-	virtual void ReleaseMouseCapture() override;
 
 	// Win32Window interface
 	virtual HWND GetWindowHandle() override { return m_hWnd; }

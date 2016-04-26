@@ -93,11 +93,13 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 		case WM_MBUTTONDOWN:
+		case WM_XBUTTONDOWN:
 			::SetCapture(hwnd);
 			break;
 		case WM_LBUTTONUP:
 		case WM_RBUTTONUP:
 		case WM_MBUTTONUP:
+		case WM_XBUTTONUP:
 			::ReleaseCapture();
 			break;
 		}
@@ -131,14 +133,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			/////////////////////////////////////////////// ウィンドウサイズが変更された
 			case WM_SIZE:
 			{
-				// ウィンドウサイズを拾っておく
-				mClientSize.Set(lparam & 0xFFFF, (lparam >> 16) & 0xFFFF);
-
-				PlatformEventArgs e(PlatformEventType::WindowSizeChanged, this);
-				e.size.width = (lparam & 0xFFFF);
-				e.size.height = ((lparam >> 16) & 0xFFFF);
-				SendPlatformEvent(e);
-
+				SendPlatformWindowSizeChangedEvent(lparam & 0xFFFF, (lparam >> 16) & 0xFFFF);
 				*handled = true;
 				return 0;
 			}
@@ -216,7 +211,6 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 				e.mouse.x = LOWORD(lparam);
 				e.mouse.y = HIWORD(lparam);
-				e.mouse.wheelDelta = 0;
 				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
 				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
 				SendPlatformEvent(e);
@@ -234,7 +228,6 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				e.type = PlatformEventType::MouseMove;
 				e.sender = this;
 				e.mouse.button = MouseButton::None;
-				e.mouse.wheelDelta = 0;
 				e.mouse.x = static_cast< short >(LOWORD(lparam));     // 一度 short にキャストしないと、
 				e.mouse.y = static_cast< short >(HIWORD(lparam));     // マイナス値になったとき 65535 とか値が入る
 				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
@@ -263,7 +256,6 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 					e.type = PlatformEventType::MouseMove;
 					e.sender = this;
 					e.mouse.button = MouseButton::None;
-					e.mouse.wheelDelta = 0;
 					e.mouse.x = (short)pt.x;
 					e.mouse.y = (short)pt.y;
 					e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
@@ -281,34 +273,29 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			///////////////////////////////////////////// マウスホイールが操作された
 			case WM_MOUSEWHEEL:
 			{
-				PlatformEventArgs e;
-				e.type = PlatformEventType::MouseWheel;
-				e.sender = this;
-				e.mouse.button = MouseButton::None;
-				e.mouse.wheelDelta = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
-				e.mouse.x = static_cast< short >(LOWORD(lparam));
-				e.mouse.y = static_cast< short >(HIWORD(lparam));
-				e.mouse.moveX = (mLastMouseX >= 0) ? e.mouse.x - mLastMouseX : 0;
-				e.mouse.moveY = (mLastMouseY >= 0) ? e.mouse.y - mLastMouseY : 0;
-				SendPlatformEvent(e);
-
-				mLastMouseX = e.mouse.x;
-				mLastMouseY = e.mouse.y;
-
+				SendPlatformMouseWheelEvent(GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA);
 				*handled = true;
 				return 0;
 			}
 			///////////////////////////////////////////// キー↓
 			case WM_KEYDOWN:
 			{
-				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), ::GetKeyState(VK_MENU) < 0, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
+				ModifierKeys mods =
+					(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
+					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
+					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
+				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), mods, 0);
 				*handled = true;
 				return 0;
 			}
 			///////////////////////////////////////////// キー↑
 			case WM_KEYUP:
 			{
-				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), ::GetKeyState(VK_MENU) < 0, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
+				ModifierKeys mods =
+					(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
+					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
+					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
+				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), mods, 0);
 				*handled = true;
 				return 0;
 			}
@@ -316,7 +303,11 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_SYSKEYDOWN:
 			{
 				// Alt は ON 扱い
-				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), true, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
+				ModifierKeys mods =
+					ModifierKeys::Alt |
+					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
+					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
+				SendPlatformKeyEvent(PlatformEventType::KeyDown, this, ConvertVirtualKeyCode(wparam), mods, 0);
 				*handled = true;
 				return 0;
 			}
@@ -324,7 +315,11 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case WM_SYSKEYUP:
 			{
 				// Alt は ON 扱い
-				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), true, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, 0);
+				ModifierKeys mods =
+					ModifierKeys::Alt |
+					(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
+					(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
+				SendPlatformKeyEvent(PlatformEventType::KeyUp, this, ConvertVirtualKeyCode(wparam), mods, 0);
 				break;	// WM_SYSKEYUPを捕まえた場合、必ずDefWindowProcに行くようにする
 			}
 			///////////////////////////////////////////// 文字入力
@@ -333,7 +328,11 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				// 文字のみ送る
 				if (0x20 <= wparam && wparam <= 0x7E)
 				{
-					SendPlatformKeyEvent(PlatformEventType::KeyChar, this, Key::Unknown, ::GetKeyState(VK_MENU) < 0, ::GetKeyState(VK_SHIFT) < 0, ::GetKeyState(VK_CONTROL) < 0, wparam);
+					ModifierKeys mods =
+						(::GetKeyState(VK_MENU) < 0) ? ModifierKeys::Alt : ModifierKeys::None |
+						(::GetKeyState(VK_SHIFT) < 0) ? ModifierKeys::Shift : ModifierKeys::None |
+						(::GetKeyState(VK_CONTROL) < 0) ? ModifierKeys::Control : ModifierKeys::None;
+					SendPlatformKeyEvent(PlatformEventType::KeyChar, this, Key::Unknown, mods, wparam);
 					*handled = true;
 					return 0;
 				}
@@ -562,13 +561,11 @@ void Win32NativeWindow::Initilaize(
 	bool resizable)
 {
 	LN_CHECK_ARGS_RETURN(windowManager != nullptr);
-
+	PlatformWindow::Initialize(Size(width, height));
 
 	mTitleText = windowTitle;
 	// 初期化時のサイズ記憶
-	mClientSize.width = width;
-	mClientSize.height = height;
-	m_originalClientSize = mClientSize;
+	m_originalClientSize.Set(width, height);
 
 	/* もともとは Win32Window クラスで生成していたが、
 	* RegisterClassEx() を Manager に移動したことで、ウィンドウスタイルなどの情報も Manager に移った。
@@ -642,16 +639,16 @@ void Win32NativeWindow::SetFullScreenEnabled(bool flag)
 		//Resize(true);
 
 		// 画面いっぱい
-		mClientSize.width = ::GetSystemMetrics(SM_CXSCREEN);
-		mClientSize.height = ::GetSystemMetrics(SM_CYSCREEN);
+		int width = ::GetSystemMetrics(SM_CXSCREEN);
+		int height = ::GetSystemMetrics(SM_CYSCREEN);
 
 		::SetForegroundWindow(mWindowHandle);
 
-		int x = (::GetSystemMetrics(SM_CXSCREEN) - mClientSize.width) / 2;
-		int y = (::GetSystemMetrics(SM_CYSCREEN) - mClientSize.height) / 2;
+		int x = (::GetSystemMetrics(SM_CXSCREEN) - width) / 2;
+		int y = (::GetSystemMetrics(SM_CYSCREEN) - height) / 2;
 
 		//res = ::SetWindowPos( mWindowHandle, HWND_TOP, 0, 0, mWidth, mHeight, SWP_SHOWWINDOW );
-		::SetWindowPos(mWindowHandle, NULL, x, y, mClientSize.width, mClientSize.height, SWP_SHOWWINDOW);
+		::SetWindowPos(mWindowHandle, NULL, x, y, width, height, SWP_SHOWWINDOW);
 	}
 	// ウィンドウモードにする場合
 	else
@@ -660,24 +657,8 @@ void Win32NativeWindow::SetFullScreenEnabled(bool flag)
 		::SetWindowLong(mWindowHandle, GWL_STYLE, mWindowedStyle);
 		Win32WindowManager::SetWindowClientSize(mWindowHandle, m_originalClientSize);
 		Win32WindowManager::AbjustLocationCentering(mWindowHandle);
-		mClientSize = m_originalClientSize;
+		//mClientSize = m_originalClientSize;
 	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Win32NativeWindow::CaptureMouse()
-{
-	::SetCapture(mWindowHandle);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Win32NativeWindow::ReleaseMouseCapture()
-{
-	::ReleaseCapture();
 }
 
 //=============================================================================
@@ -691,6 +672,10 @@ Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND
 	, m_hWnd(hWnd)
 	, m_clientSize()
 {
+	//// 
+	//RECT rc = { 0, 0, 0, 0 };
+	//::GetClientRect(m_hWnd, &rc);
+	//m_clientSize.Set(rc.right, rc.bottom);
 }
 
 //-----------------------------------------------------------------------------
@@ -698,35 +683,6 @@ Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND
 //-----------------------------------------------------------------------------
 Win32UserHostWindow::~Win32UserHostWindow()
 {
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Size Win32UserHostWindow::GetSize() const
-{
-	// コンストラクタで mClientSize に格納しておいてもいいと思ったけど、
-	// フルスクリーン化等でウィンドウサイズが変わった時の対応が面倒そうなのでこのまま。
-	RECT rc = { 0, 0, 0, 0 };
-	::GetClientRect(m_hWnd, &rc);
-	m_clientSize.Set(rc.right, rc.bottom);
-	return m_clientSize;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Win32UserHostWindow::CaptureMouse()
-{
-	::SetCapture(m_hWnd);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void Win32UserHostWindow::ReleaseMouseCapture()
-{
-	::ReleaseCapture();
 }
 
 LN_NAMESPACE_END

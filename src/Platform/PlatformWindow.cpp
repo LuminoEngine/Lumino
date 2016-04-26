@@ -49,6 +49,14 @@ PlatformWindow::~PlatformWindow()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void PlatformWindow::Initialize(const Size& clientSize)
+{
+	m_clientSize = clientSize;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void PlatformWindow::SetCursorVisible(bool visible)
 {
 	m_mouseCursorVisibility->SetMouseCursorVisibleState(visible, 0);
@@ -100,6 +108,21 @@ bool PlatformWindow::SendPlatformClosingEvent(PlatformWindow* sender)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+bool PlatformWindow::SendPlatformWindowSizeChangedEvent(int width, int height)
+{
+	// ウィンドウサイズを拾っておく
+	m_clientSize.Set(width, height);
+
+	PlatformEventArgs e(PlatformEventType::WindowSizeChanged, this);
+	e.size.width = width;
+	e.size.height = height;
+	SendPlatformEvent(e);
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active)
 {
 	if (active != m_isActive)
@@ -117,16 +140,26 @@ bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bo
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, bool isAlt_, bool isShift_, bool isControl_, char keyChar_)
+bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys	modifierKeys_, char keyChar_)
 {
 	PlatformEventArgs e;
 	e.type = type_;
 	e.sender = sender_;
 	e.key.keyCode = keyCode_;
-	e.key.isAlt = isAlt_;
-	e.key.isShift = isShift_;
-	e.key.isControl = isControl_;
+	e.key.modifierKeys = modifierKeys_;
 	e.key.keyChar = keyChar_;
+	return SendPlatformEvent(e);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool PlatformWindow::SendPlatformMouseWheelEvent(int delta)
+{
+	PlatformEventArgs e;
+	e.type = PlatformEventType::MouseWheel;
+	e.sender = this;
+	e.wheel.delta = delta;
 	return SendPlatformEvent(e);
 }
 

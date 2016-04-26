@@ -69,7 +69,6 @@
 #ifdef LN_X11
 	#include "X11/X11WindowManager.h"
 #endif
-#include "GLFW/GLFWPlatformWindowManager.h"
 #include "PlatformManager.h"
 
 
@@ -128,12 +127,6 @@ void PlatformManager::Initialize(const Settings& settings)
 		auto m = RefPtr<Win32WindowManager>::MakeRef(0);
 		m_windowManager = m.DetachMove();
 	}
-	else if (api == WindowSystemAPI::GLFW)
-	{
-		auto m = RefPtr<GLFWPlatformWindowManager>::MakeRef();
-		m->Initialize();
-		m_windowManager = m.DetachMove();
-	}
 #elif defined(LN_X11)
 	// select default
 	if (api == WindowSystemAPI::Default)
@@ -144,12 +137,6 @@ void PlatformManager::Initialize(const Settings& settings)
 	if (api == WindowSystemAPI::X11)
 	{
 		auto m = RefPtr<X11WindowManager>::MakeRef();
-		m_windowManager = m.DetachMove();
-	}
-	else if (api == WindowSystemAPI::GLFW)
-	{
-		auto m = RefPtr<GLFWPlatformWindowManager>::MakeRef();
-		m->Initialize();
 		m_windowManager = m.DetachMove();
 	}
 #endif

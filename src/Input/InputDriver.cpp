@@ -56,7 +56,7 @@ void InputDriver::OnEvent(const PlatformEventArgs& e)
 		m_mousePoint.y = e.mouse.y;
 		break;
 	case PlatformEventType::MouseWheel:
-		m_mouseWheel = e.mouse.wheelDelta;
+		m_mouseWheel = e.wheel.delta;
 		break;
 	case PlatformEventType::KeyDown:
 		m_keyStatus[(int)e.key.keyCode] = true;

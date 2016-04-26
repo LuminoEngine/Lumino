@@ -30,7 +30,7 @@ public:
 	/**
 		@brief		クライアント領域のサイズを取得します。
 	*/
-	virtual Size GetSize() const = 0;
+	Size GetSize() const { return m_clientSize; }
 
 	virtual void SetVisible(bool visible) = 0;
 	
@@ -58,16 +58,6 @@ public:
 	virtual void SetCursorVisible(bool visible);
 
 	/**
-		@brief		このウィンドウにマウスキャプチャを設定します。
-	*/
-	virtual void CaptureMouse() = 0;
-
-	/**
-		@brief		このウィンドウからマウスキャプチャを削除します。
-	*/
-	virtual void ReleaseMouseCapture() = 0;
-
-	/**
 		@brief		このウィンドウにイベントリスナーをアタッチします。(priority が大きいものが先に処理される。必ずデタッチすること)
 	*/
 	void AttachEventListener(IEventListener* listener, int priority);
@@ -80,11 +70,14 @@ public:
 protected:
 	PlatformWindow(WindowManagerBase* windowManager);
 	virtual ~PlatformWindow();
+	void Initialize(const Size& clientSize);
 
 	bool SendPlatformEvent(const PlatformEventArgs& e);
 	bool SendPlatformClosingEvent(PlatformWindow* sender);
+	bool SendPlatformWindowSizeChangedEvent(int width, int height);
 	bool SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active);
-	bool SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, bool isAlt_, bool isShift_, bool isControl_, char keyChar_);
+	bool SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys modifierKeys_, char keyChar_);
+	bool SendPlatformMouseWheelEvent(int delta);
 	virtual void OnPlatformEvent(const PlatformEventArgs& e);
 
 	typedef SortedArray<int, IEventListener*>	EventListenerList;
@@ -98,6 +91,7 @@ LN_INTERNAL_ACCESS:
 	detail::MouseCursorVisibility* m_mouseCursorVisibility;
 
 private:
+	Size	m_clientSize;
 	bool	m_isActive;
 };
 

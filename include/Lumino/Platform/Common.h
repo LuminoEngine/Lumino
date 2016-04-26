@@ -15,7 +15,7 @@ enum class WindowSystemAPI
 	Default,
 	Win32API,
 	X11,
-	GLFW,
+	//GLFW,
 };
 
 namespace detail

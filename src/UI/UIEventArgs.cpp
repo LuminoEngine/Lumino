@@ -35,7 +35,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseEventArgs, UIEventArgs)
 //-----------------------------------------------------------------------------
 UIMouseEventArgs::UIMouseEventArgs()
 	: button(MouseButton::None)
-	, wheel(0)
 	, x(0)
 	, y(0)
 	, clickCount(0)
@@ -45,9 +44,8 @@ UIMouseEventArgs::UIMouseEventArgs()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIMouseEventArgs::UIMouseEventArgs(MouseButton button_, int wheel_, float x_, float y_, int clickCount_)
+UIMouseEventArgs::UIMouseEventArgs(MouseButton button_, float x_, float y_, int clickCount_)
 	: button(button_)
-	, wheel(wheel_)
 	, x(x_)
 	, y(y_)
 	, clickCount(clickCount_)
@@ -71,9 +69,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 //-----------------------------------------------------------------------------
 UIKeyEventArgs::UIKeyEventArgs()
 	: keyCode(Key::Unknown)
-	, isAlt(false)
-	, isShift(false)
-	, isControl(false)
+	, modifierKeys(ModifierKeys::None)
 	, charCode(0x00)
 {
 }
@@ -81,11 +77,9 @@ UIKeyEventArgs::UIKeyEventArgs()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIKeyEventArgs::UIKeyEventArgs(Key keyCode_, bool isAlt_, bool isShift_, bool isControl_)
+UIKeyEventArgs::UIKeyEventArgs(Key keyCode_, ModifierKeys modifierKeys_)
 	: keyCode(keyCode_)
-	, isAlt(isAlt_)
-	, isShift(isShift_)
-	, isControl(isControl_)
+	, modifierKeys(modifierKeys_)
 	, charCode(0x00)
 {
 }
@@ -94,6 +88,34 @@ UIKeyEventArgs::UIKeyEventArgs(Key keyCode_, bool isAlt_, bool isShift_, bool is
 //
 //-----------------------------------------------------------------------------
 UIKeyEventArgs::~UIKeyEventArgs()
+{
+}
+
+//=============================================================================
+// UIMouseWheelEventArgs
+//=============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseWheelEventArgs, UIEventArgs)
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIMouseWheelEventArgs::UIMouseWheelEventArgs()
+	: wheel(0)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIMouseWheelEventArgs::UIMouseWheelEventArgs(int wheel_)
+	: wheel(wheel_)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 {
 }
 

@@ -46,16 +46,14 @@ InputBinding::~InputBinding()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool InputBinding::EqualKeyInput(Key keyCode, bool isAlt, bool isShift, bool isControl)
+bool InputBinding::EqualKeyInput(Key keyCode, ModifierKeys modifier)
 {
 	if (m_source.id & detail::DeviceInputSource::KeyboardFlag)
 	{
 		uint32_t k = (m_source.id & detail::DeviceInputSource::ValueMask) & 0x0FFF;
 		uint32_t m = ((m_source.id & detail::DeviceInputSource::ValueMask) & 0xF000) >> 24;
 		if ((uint32_t)keyCode != k) return false;
-		if ((m & ModifierKeys::Alt) && !isAlt) return false;
-		if ((m & ModifierKeys::Shift) && !isShift) return false;
-		if ((m & ModifierKeys::Control) && !isControl) return false;
+		if (modifier != m) return false;
 		return true;
 	}
 	return false;

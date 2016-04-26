@@ -23,8 +23,8 @@ LN_INTERNAL_ACCESS:
 	//void Render();
 	const SizeF& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);
-	void CaptureMouse(UIElement* element);
-	void ReleaseMouseCapture(UIElement* element);
+	//void CaptureMouse(UIElement* element);
+	//void ReleaseMouseCapture(UIElement* element);
 
 
 	// Implements IUIInjectedInputReceiver
@@ -32,9 +32,9 @@ LN_INTERNAL_ACCESS:
 	virtual bool InjectMouseMove(float clientX, float clientY) override;
 	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY) override;
 	virtual bool InjectMouseButtonUp(MouseButton button, float clientX, float clientY) override;
-	virtual bool InjectMouseWheel(int delta, float clientX, float clientY) override;
-	virtual bool InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl) override;
-	virtual bool InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl) override;
+	virtual bool InjectMouseWheel(int delta) override;
+	virtual bool InjectKeyDown(Key keyCode, ModifierKeys modifierKeys) override;
+	virtual bool InjectKeyUp(Key keyCode, ModifierKeys modifierKeys) override;
 	virtual bool InjectTextInput(TCHAR ch) override;
 
 private:

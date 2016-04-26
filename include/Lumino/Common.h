@@ -23,7 +23,7 @@ LN_ENUM(MouseButton)
 };
 LN_ENUM_DECLARE(MouseButton);
 
-/**< キーコード (NumPad はサポートしていない) */
+/** キーコード (NumPad はサポートしていない) */
 enum class Key
 {
 	Unknown = 0,
@@ -117,5 +117,15 @@ enum class Key
 
 	TERMINATOR,
 };
+
+/** 修飾キー */
+LN_ENUM_FLAGS(ModifierKeys)
+{
+	None	= 0x0000,
+	Alt		= 0x0001,	/**< Alt キー */
+	Shift	= 0x0002,	/**< Shift キー */
+	Control	= 0x0004,	/**< Ctrl キー */
+};
+LN_ENUM_FLAGS_DECLARE(ModifierKeys);
 
 LN_NAMESPACE_END
