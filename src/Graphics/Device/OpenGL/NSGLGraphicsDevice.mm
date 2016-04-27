@@ -35,7 +35,7 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 #define DONT_CARE -1
 	int major = device->GetOpenGLMajorVersio();
 	int minor = device->GetOpenGLMinorVersio();
-	bool forward = false;
+	bool forward = true;
 	int redBits = 8;
 	int greenBits = 8;
 	int blueBits = 8;

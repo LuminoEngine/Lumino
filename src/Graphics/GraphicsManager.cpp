@@ -699,6 +699,8 @@
 #if defined(LN_OS_WIN32)
 #include "Device/DirectX9/DX9GraphicsDevice.h"
 #include "Device/OpenGL/WGLGraphicsDevice.h"
+#elif defined(LN_OS_MAC)
+#include "Device/OpenGL/NSGLGraphicsDevice.h"
 #elif defined(LN_X11)
 #include "Device/OpenGL/GLXGraphicsDevice.h"
 #endif
@@ -877,7 +879,19 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	}
 	else {
 		LN_THROW(0, ArgumentException);
-	}
+    }
+    
+#elif defined(LN_OS_MAC)
+    Driver::NSGLGraphicsDevice::ConfigData data;
+    data.MainWindow = configData.MainWindow;
+    data.OpenGLMajorVersion = 2;
+    data.OpenGLMinorVersion = 1;
+
+    auto* device = LN_NEW Driver::NSGLGraphicsDevice();
+    device->Initialize(data);
+    ChangeDevice(device);
+    device->Release();
+    
 #elif defined(LN_X11)
 	auto* device = LN_NEW Driver::GLXGraphicsDevice();
 	device->Initialize(data);
