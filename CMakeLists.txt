@@ -572,6 +572,11 @@ if (WIN32)
 	)
 
 elseif (APPLE)
+	set(LN_SOURCES_Graphics
+		${LN_SOURCES_Graphics}
+		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.cpp
+		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
+	)
 
 elseif (UNIX)
 	set(LN_SOURCES_Platform

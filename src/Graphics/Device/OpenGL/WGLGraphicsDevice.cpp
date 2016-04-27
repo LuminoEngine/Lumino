@@ -99,8 +99,7 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 			//WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,//WGL_CONTEXT_CORE_PROFILE_BIT_ARB,//WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB
 			0, 0,
 		};
-		//	HGLRC hGLRC = wglGetCurrentContext();
-		//HGLRC hGLRC = wglCreateContext(hDC);
+
 		m_hGLRC = WGLGraphicsDevice::CreateContextAttribsARB(m_hDC, share, attr);	// wglCreateContextAttribsARB なら wglShareLists は必要ない
 		LN_THROW(m_hGLRC, Win32Exception, ::GetLastError());
 	}
@@ -115,104 +114,6 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 			LN_THROW(r, Win32Exception, ::GetLastError());
 		}
 	}
-
-
-
-
-	// バックバッファは 0 を指定して作成する
-	//MakeCurrentContext();
-	//m_backBuffer = LN_NEW GLBackbufferRenderTarget();
-	//m_backBuffer->Reset(0);
-
-
-	//GLint tt1, tt2;
-	// 失敗
-	//glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &tt);
-	// 成功
-	//glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &tt1); LN_CHECK_GLERROR();
-	//glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &tt2); LN_CHECK_GLERROR();
-	//↑ glGetFramebufferAttachmentParameteriv() のリファレンスには、Depth と Stensil が同じ Renderbuffer であれば成功、
-	//	 そうでなければ失敗、とある。
-	//	つまり、デフォルトで作られる Depth と Stensil は別のオブジェクトということ。
-
-
-	//glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_INTERNAL_FORMAT)
-
-	//glCheckFramebufferStatus
-
-	//// コンテキストは元に戻しておく (できるだけ Main Context をアクティブにする)
-	//if (parentContext != NULL) {
-	//	parentContext->MakeCurrentContext();
-	//}
-
-#if 0
-	// CreateContextAttribsARB が使える場合は wglShareLists() する必要ないみたい。第2引数で指定できるし。
-	//
-
-	if (parentContext == NULL)
-	{
-		printf("make context しないと シェーダ生成も何もできない\n");
-		MakeCurrentContext();
-
-		//GLint curRenderbuffer = 0;
-		//glGetIntegerv(GL_RENDERBUFFER_BINDING, &curRenderbuffer);
-
-		const char* version = (const char*)glGetString(GL_VERSION);
-		printf(version);
-
-		// Main Context のバックバッファは 0 を指定して作成する
-		m_backBuffer = LN_NEW GLBackbufferRenderTarget();
-		m_backBuffer->Reset(0);
-	}
-	else
-	{
-		MakeCurrentContext();
-
-		GLuint newRenderbuffer = 0;
-		glGenRenderbuffers(1, &newRenderbuffer); LN_CHECK_GLERROR();
-
-		GLint curRenderbuffer = 0;
-		glGetIntegerv(GL_RENDERBUFFER_BINDING, &curRenderbuffer);
-
-		//GL_COMPRESSED_TEXTURE_FORMATS
-		//GL_IMPLEMENTATION_COLOR_READ_FORMAT
-
-
-		glBindRenderbuffer(GL_RENDERBUFFER, newRenderbuffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, window->GetSize().Width, window->GetSize().Height);
-
-
-
-		//glGetIntegerv(GL_RENDERBUFFER_BINDING, &curRenderbuffer);
-
-		// GL_FRAMEBUFFER_BINDING
-		// 現在バインドされているフレームバッファの名前を返します。初期値は、デフォルトのフレームバッファを示し、0である。
-		GLint fb;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb); LN_CHECK_GLERROR();
-
-
-		// デフォルトのカラーバッファを別のフレームバッファに接続することはできる。
-		// でも、値は 0 なので別のコンテキストに変えたときに別のデフォルトカラーバッファを示す値になってしまう。
-		//GLuint fb2;
-		//glGenFramebuffers(1, &fb2);
-		//glBindFramebuffer(GL_FRAMEBUFFER, fb2);
-		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, curRenderbuffer); LN_CHECK_GLERROR();
-
-		// デフォルトのフレームバッファにカラーバッファをセットすることはできない
-		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, newRenderbuffer); LN_CHECK_GLERROR();
-		//GL_INVALID_ENUM
-		device->GetRenderer()->Clear(true, false, ColorF(0.5, 0.5, 0.5, 1), 1.0f);
-
-
-		// バックバッファの参照を作成する
-		m_backBuffer = LN_NEW GLBackbufferRenderTarget();
-		m_backBuffer->Reset(newRenderbuffer);
-
-		parentContext->MakeCurrentContext();
-	}
-
-#endif
-
 }
 
 //-----------------------------------------------------------------------------
@@ -236,19 +137,6 @@ void WGLContext::SwapBuffers()
 	BOOL r = ::SwapBuffers(m_hDC);
 	LN_THROW(r, Win32Exception, ::GetLastError());
 }
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-//void WGLContext::MakeCurrentContext(bool attach)
-//{
-//	if (attach) {
-//		wglMakeCurrent(m_hDC, m_hGLRC);
-//	}
-//	else {
-//		wglMakeCurrent(NULL, NULL);
-//	}
-//}
 
 //=============================================================================
 // WGLGraphicsDevice
@@ -348,10 +236,6 @@ void WGLGraphicsDevice::Initialize(const ConfigData& configData)
 	m_defaultSwapChain = LN_NEW GLSwapChain();
 	RefPtr<WGLContext> context(LN_NEW WGLContext(this, m_mainWindow, m_mainContext), false);
 	m_defaultSwapChain->Initialize(this, context, m_mainWindow);
-	//m_defaultSwapChain->MakeCurrentContext();
-
-
-	//MakeCurrentContext(m_mainRenderingContext);
 
 	// Renderer の初期化でもオブジェクトを生成したりするのでメインのコンテキストがアクティブになっているときに初期化する必要がある
 	m_renderer = LN_NEW GLRenderer();
@@ -444,7 +328,6 @@ ISwapChain* WGLGraphicsDevice::GetDefaultSwapChain()
 //-----------------------------------------------------------------------------
 ISwapChain* WGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 {
-	//ScopedContext lock(this);
 	RefPtr<GLSwapChain> obj(LN_NEW GLSwapChain(), false);
 	RefPtr<WGLContext> context(LN_NEW WGLContext(this, window, m_mainContext), false);
 	obj->Initialize(this, context, window);
@@ -452,20 +335,6 @@ ISwapChain* WGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 	obj.SafeAddRef();
 	return obj;
 }
-
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//void WGLGraphicsDevice::OnBeginAccessContext()
-//{
-//}
-//
-////-----------------------------------------------------------------------------
-////
-////-----------------------------------------------------------------------------
-//void WGLGraphicsDevice::OnEndAccessContext()
-//{
-//}
 
 //-----------------------------------------------------------------------------
 //
