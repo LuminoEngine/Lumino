@@ -9,7 +9,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-
+class SwapChain;
 
 namespace Details
 {

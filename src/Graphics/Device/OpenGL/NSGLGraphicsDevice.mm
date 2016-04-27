@@ -1,7 +1,7 @@
 ﻿
 #include "../../../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
-#include "WGLGraphicsDevice.h"
+#include "NSGLGraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -13,7 +13,7 @@ namespace Driver
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-NSGLContext::NSGLContext(NSGLGraphicsDevice* device, PlatformWindow* window, NSGLContext* parentContext)
+NSGLContext::NSGLContext()
 	: m_pixelFormat(nil)
 	, m_context(nil)
 {
@@ -43,11 +43,11 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 	int depthBits = 24;
 	int stencilBits = 8;
 	int samples = 0;
-	int auxBuffers = GLFW_DONT_CARE
-	int accumRedBits = GLFW_DONT_CARE;
-	int accumGreenBits = GLFW_DONT_CARE;
-	int accumBlueBits = GLFW_DONT_CARE;
-	int accumAlphaBits = GLFW_DONT_CARE;
+    int auxBuffers = DONT_CARE;
+	int accumRedBits = DONT_CARE;
+	int accumGreenBits = DONT_CARE;
+	int accumBlueBits = DONT_CARE;
+	int accumAlphaBits = DONT_CARE;
 
     unsigned int attributeCount = 0;
 
@@ -111,13 +111,13 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 
     if (major <= 2)
     {
-        if (auxBuffers != GLFW_DONT_CARE)
+        if (auxBuffers != DONT_CARE)
             ADD_ATTR2(NSOpenGLPFAAuxBuffers, auxBuffers);
 
-        if (accumRedBits != GLFW_DONT_CARE &&
-            accumGreenBits != GLFW_DONT_CARE &&
-            accumBlueBits != GLFW_DONT_CARE &&
-            accumAlphaBits != GLFW_DONT_CARE)
+        if (accumRedBits != DONT_CARE &&
+            accumGreenBits != DONT_CARE &&
+            accumBlueBits != DONT_CARE &&
+            accumAlphaBits != DONT_CARE)
         {
             const int accumBits = accumRedBits +
                                   accumGreenBits +
@@ -234,7 +234,7 @@ void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
 	m_mainContext->Initialize(this, configData.MainWindow, nullptr);
 
 	// レンダリングスレッド用
-	m_mainRenderingContext = LN_NEW WGLContext();
+	m_mainRenderingContext = LN_NEW NSGLContext();
 	m_mainRenderingContext->Initialize(this, configData.MainWindow, m_mainContext);
 
 	// m_defaultSwapChain の初期化でシェーダとか作るので先にアクティブにしておく
@@ -256,31 +256,33 @@ void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
 //-----------------------------------------------------------------------------
 void NSGLGraphicsDevice::MakeCurrentContext(GLContext* context)
 {
-    if (context != nullptr)
-        [context->GetContext() makeCurrentContext];
+    NSGLContext* c = static_cast<NSGLContext*>(context);
+    if (c != nullptr)
+        [c->GetContext() makeCurrentContext];
     else
         [NSOpenGLContext clearCurrentContext];
 }
+
 //-----------------------------------------------------------------------------
-GLContext* GetMainContext()
+GLContext* NSGLGraphicsDevice::GetMainContext()
 {
 	return m_mainContext;
 }
 
 //-----------------------------------------------------------------------------
-GLContext* GetMainRenderingContext()
+GLContext* NSGLGraphicsDevice::GetMainRenderingContext()
 {
 	return m_mainRenderingContext;
 }
 
 //-----------------------------------------------------------------------------
-ISwapChain* GetDefaultSwapChain()
+ISwapChain* NSGLGraphicsDevice::GetDefaultSwapChain()
 {
 	return m_defaultSwapChain;
 }
 
 //-----------------------------------------------------------------------------
-ISwapChain* CreateSwapChain(PlatformWindow* window)
+ISwapChain* NSGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 {
 	RefPtr<GLSwapChain> obj(LN_NEW GLSwapChain(), false);
 	RefPtr<NSGLContext> context(LN_NEW NSGLContext(), false);

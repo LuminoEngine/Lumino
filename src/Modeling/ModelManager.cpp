@@ -111,7 +111,9 @@
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/Texture.h>
 #include "ModelCore.h"
+#if defined(LN_OS_WIN32)
 #include "XFileLoader.h"
+#endif
 //#include "PMXLoader.h"
 //#include "VMDLoader.h"
 #include "ModelManager.h"
@@ -263,6 +265,7 @@ Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
 //-----------------------------------------------------------------------------
 ModelCore* ModelManager::CreateModelCore(const PathName& filePath)
 {
+#if defined(LN_OS_WIN32)
 	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
 
 	//PMXLoader loader;
@@ -274,6 +277,10 @@ ModelCore* ModelManager::CreateModelCore(const PathName& filePath)
 	modelCore->RefreshInitialValues();
 	modelCore.SafeAddRef();
 	return modelCore;
+#else
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+#endif
 }
 
 #if 0

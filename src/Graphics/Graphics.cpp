@@ -83,6 +83,7 @@ void Graphics::Flush()
 //-----------------------------------------------------------------------------
 void Graphics::ChangeDirectX9Device(void* id3d9device)
 {
+#if defined(LN_OS_WIN32)
 	if (id3d9device == NULL)
 	{
 		GraphicsManager::GetInstance()->ChangeDevice(NULL);
@@ -101,6 +102,8 @@ void Graphics::ChangeDirectX9Device(void* id3d9device)
 		GraphicsManager::GetInstance()->ChangeDevice(device);
 		device->Release();
 	}
+    
+#endif
 }
 
 LN_NAMESPACE_GRAPHICS_END

@@ -199,6 +199,7 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…�
 */
 
 #include "Internal.h"
+#include <math.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include "SpriteRendererImpl.h"
@@ -355,7 +356,13 @@ void SpriteRenderer::DrawRequest3D(
 //-----------------------------------------------------------------------------
 void SpriteRenderer::Flush()
 {
-	LN_CALL_COMMAND(Flush, SpriteRendererImpl::FlushCommand);
+	//LN_CALL_COMMAND(Flush, SpriteRendererImpl::FlushCommand);
+    if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+        m_manager->GetPrimaryRenderingCommandList()->AddCommand<SpriteRendererImpl::FlushCommand>(m_internal);
+    }
+    else {
+        m_internal->Flush();
+    }
 }
 
 

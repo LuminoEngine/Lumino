@@ -69,8 +69,8 @@ protected:
 
 	template<typename T>
 	inline void MarkBulkData(RenderingCommandList* commandList, T& value);
-	template<>
-	inline void MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value);
+	//template<>
+	//inline void MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value);
 
 private:
 	friend class RenderingCommandList;

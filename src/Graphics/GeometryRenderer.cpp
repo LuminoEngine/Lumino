@@ -3,6 +3,8 @@
 	http://blogs.msdn.com/b/ito/archive/2011/05/22/no-overwrite-or-discard.aspx
 */
 #include "Internal.h"
+#include <math.h>
+#include <float.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingCommand.h"
 #include "PainterEngine.h"	// for CacheBuffer
@@ -1734,8 +1736,14 @@ void GeometryRenderer::FlushInternal()
 		LN_CALL_COMMAND(DoCommandList, DrawingContextImpl::DoCommandListCommand, m_commandsBuffer.GetConstData(), m_commandsUsingByte, m_currentDrawingClass);
 		m_commandsUsingByte = 0;
 
-		LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
-
+		//LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
+        if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+            m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawingContextImpl::FlushCommand>(m_internal);
+        }
+        else {
+            m_internal->Flush();
+        }
+        
 		m_flushRequested = false;
 	}
 }

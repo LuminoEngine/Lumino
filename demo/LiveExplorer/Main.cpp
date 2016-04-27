@@ -11,7 +11,7 @@
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
-#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
+//#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 //{
@@ -54,11 +54,12 @@ float BezierCurve1(float x1, float x2, float x3, float x4, float t)
 	return t*t*t*x4 + 3.f*t*t*tp*x3 + 3.f*t*tp*tp*x2 + tp*tp*tp*x1;
 }
 
-LRESULT TestWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
-{
-	printf("%x\n", msg);
-	return 0;
-}
+
+//LRESULT TestWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)
+//{
+//	printf("%x\n", msg);
+//	return 0;
+//}
 
 #if 0
 class TestClass1
@@ -881,9 +882,9 @@ DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* name, DemoMainFu
 	info.Group2 = tokens[1];
 	info.Caption = tokens[2];
 	info.Main = func;
-	m_demos.Add(info);
+	//m_demos.Add(info);
 
-	m_demosTable[info.Group1][info.Group2].Add(info);
+	//m_demosTable[info.Group1][info.Group2].Add(info);
 	return func;
 }
 

@@ -141,7 +141,7 @@ public:
 	}
 	void	setRotation( float z  )
 	{
-		rotation = std::fmod( z , 360 ) ;
+		rotation = fmod( z , 360 ) ;
 	}
 
 	float		getRotation() const { return rotation; }

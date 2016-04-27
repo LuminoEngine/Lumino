@@ -88,6 +88,7 @@ set(LN_SOURCES_Platform
 	include/Lumino/Platform/PlatformEventArgs.h
 	include/Lumino/Platform/PlatformSupport.h
 	include/Lumino/Platform/PlatformWindow.h
+	src/Platform/Internal.h
 	src/Platform/MouseCursorVisibility.h
 	src/Platform/PlatformManager.cpp
 	src/Platform/PlatformManager.h
@@ -135,24 +136,12 @@ set(LN_SOURCES_Audio
 	src/Audio/Internal.h
 	src/Audio/MidiDecoder.cpp
 	src/Audio/MidiDecoder.h
-	src/Audio/Mp3Decoder.cpp
-	src/Audio/Mp3Decoder.h
 	src/Audio/OggDecoder.cpp
 	src/Audio/OggDecoder.h
 	src/Audio/Sound.cpp
 	src/Audio/SoundListener.cpp
 	src/Audio/WaveDecoder.cpp
 	src/Audio/WaveDecoder.h
-	src/Audio/XAudio2/XAudio2AudioDevice.cpp
-	src/Audio/XAudio2/XAudio2AudioDevice.h
-	src/Audio/XAudio2/XAudio2AudioPlayer.cpp
-	src/Audio/XAudio2/XAudio2AudioPlayer.h
-	src/Audio/DirectMusic/DirectMusic.cpp
-	src/Audio/DirectMusic/DirectMusic.h
-	src/Audio/DirectMusic/DirectMusicAudioDevice.cpp
-	src/Audio/DirectMusic/DirectMusicAudioDevice.h
-	src/Audio/DirectMusic/DirectMusicAudioPlayer.cpp
-	src/Audio/DirectMusic/DirectMusicAudioPlayer.h
 )
 endif()
 
@@ -310,7 +299,7 @@ set(LN_SOURCES_Effect
 	src/Effect/EffectManager.cpp
 	src/Effect/Internal.h
 )
-	
+
 if (LN_BUILD_SCENE_MODULE)
 set(LN_SOURCES_TileMap
 	include/Lumino/TileMap/Common.h
@@ -334,8 +323,6 @@ set(LN_SOURCES_Modeling
 	src/Modeling/ModelCore.h
 	src/Modeling/ModelManager.cpp
 	src/Modeling/ModelManager.h
-	src/Modeling/XFileLoader.cpp
-	src/Modeling/XFileLoader.h
 )
 
 set(LN_SOURCES_Scene
@@ -515,7 +502,7 @@ set(LN_SOURCES_Foundation
 	src/Foundation/EntryPoint.h
 	src/Foundation/GameSceneManager.cpp
 	src/Foundation/GameSceneManager.h
-	src/Foundation/Main_Win32.cpp
+	#src/Foundation/Main_Win32.cpp
 )
 endif()
 
@@ -570,11 +557,38 @@ if (WIN32)
 		src/Graphics/Device/OpenGL/WGLGraphicsDevice.cpp
 		src/Graphics/Device/OpenGL/WGLGraphicsDevice.h
 	)
+	set(LN_SOURCES_Modeling
+ 		${LN_SOURCES_Modeling}
+		src/Modeling/XFileLoader.cpp
+		src/Modeling/XFileLoader.h
+	)
+	set(LN_SOURCES_Audio
+ 		${LN_SOURCES_Audio}
+		src/Audio/Mp3Decoder.cpp
+		src/Audio/Mp3Decoder.h
+		src/Audio/XAudio2/XAudio2AudioDevice.cpp
+		src/Audio/XAudio2/XAudio2AudioDevice.h
+		src/Audio/XAudio2/XAudio2AudioPlayer.cpp
+		src/Audio/XAudio2/XAudio2AudioPlayer.h
+		src/Audio/DirectMusic/DirectMusic.cpp
+		src/Audio/DirectMusic/DirectMusic.h
+		src/Audio/DirectMusic/DirectMusicAudioDevice.cpp
+		src/Audio/DirectMusic/DirectMusicAudioDevice.h
+		src/Audio/DirectMusic/DirectMusicAudioPlayer.cpp
+		src/Audio/DirectMusic/DirectMusicAudioPlayer.h
+	)
 
 elseif (APPLE)
-	set(LN_SOURCES_Graphics
-		${LN_SOURCES_Graphics}
-		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.cpp
+	set(LN_SOURCES_Platform
+		${LN_SOURCES_Platform}
+		src/Platform/Cocoa/CocoaPlatformWindow.mm
+		src/Platform/Cocoa/CocoaPlatformWindow.h
+		src/Platform/Cocoa/CocoaPlatformWindowManager.mm
+		src/Platform/Cocoa/CocoaPlatformWindowManager.h
+	)
+	set(LN_SOURCES_Graphics_Device
+		${LN_SOURCES_Graphics_Device}
+		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
 	)
 
@@ -585,13 +599,13 @@ elseif (UNIX)
 		src/Platform/X11/X11Window.cpp
 		src/Platform/X11/PlatformSupport_X11.cp
 	)
-	
+
 	set(LN_SOURCES_Graphics
 		${LN_SOURCES_Graphics}
 		src/Graphics/Device/OpenGL/GLXGraphicsDevice.cpp
 		src/Graphics/Device/OpenGL/GLXSwapChain.cpp
 	)
-	
+
 	set(LN_SOURCES_Audio
 		${LN_SOURCES_Audio}
 		src/Audio/XAudio2/XAudio2AudioDevice.cpp
@@ -679,28 +693,41 @@ if (WIN32)
 			endif()
 		endforeach()
 	endif()
-		
+
 	set(CMAKE_DEBUG_POSTFIX "d")
-	
+
 	# platform include dirs.
 	set(LN_PLATFORM_INCLUDE_DIRS "$ENV{DXSDK_DIR}Include")
-	
+
 	# link librarys.
 	list(APPEND LN_LINK_LIBS
 		"imagehlp.lib"
 		"msacm32.lib"
 		"Opengl32.lib")
-		
-		
-	# effekseer Ç™ pragma Ç≈ÉäÉìÉNÇµÇƒÇÈÇÃÇ≈ÅEÅEÅE
+
+
+	# effekseer ÔøΩÔøΩ pragma ÔøΩ≈ÉÔøΩÔøΩÔøΩÔøΩNÔøΩÔøΩÔøΩƒÇÔøΩÔøΩÃÇ≈ÅEÔøΩEÔøΩE
 	link_directories("$ENV{DXSDK_DIR}Lib/x86")
+
+	add_definitions("/EHsc")	# VS2015, cmake ÔøΩ≈êÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ∆âÔøΩÔøΩÃÇÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩƒÇÔøΩÔøΩ‹ÇÔøΩÔøΩÃÇ≈ñÔøΩÔøΩÔøΩÔøΩIÔøΩ…éwÔøΩËÇ∑ÔøΩÔøΩ
 
 elseif (APPLE)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")
-	
+	set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+
+	find_library(COCOA_FRAMEWORK Cocoa)
+    find_library(IOKIT_FRAMEWORK IOKit)
+    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+    find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
+	list(APPEND LN_LINK_LIBS "${COCOA_FRAMEWORK}"
+			  "${OPENGL_gl_LIBRARY}"
+			  "${IOKIT_FRAMEWORK}"
+			  "${CORE_FOUNDATION_FRAMEWORK}"
+			  "${CORE_VIDEO_FRAMEWORK}")
+
 elseif (UNIX)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")
-	
+
 	# link librarys.
 	list(APPEND LN_LINK_LIBS "dl")
 	list(APPEND LN_LINK_LIBS "bfd")
@@ -711,7 +738,7 @@ elseif (UNIX)
 
 	#list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND LN_LINK_LIBS ${OPENGL_gl_LIBRARY})
-	
+
 else()
 	# Not support.
     message(FATAL_ERROR "No supported platform was detected.")
@@ -722,6 +749,7 @@ set(LN_INCLUDE_DIRECTORIES
 	${PROJECT_SOURCE_DIR}/external
 	${PROJECT_SOURCE_DIR}/external/Lumino.Core/include
 	${PROJECT_SOURCE_DIR}/external/Lumino.Math/include
+	${PROJECT_SOURCE_DIR}/external/libpng
 	${PROJECT_SOURCE_DIR}/external/bullet-2.82
 	${PROJECT_SOURCE_DIR}/external/freetype-2.6/include
 	${PROJECT_SOURCE_DIR}/external/libogg/include
@@ -753,7 +781,7 @@ add_subdirectory(external/Lumino.Math)
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
 
-# Effekseer ÇÃê›íË
+# Effekseer ÔøΩÃê›íÔøΩ
 if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
 else()
@@ -777,7 +805,7 @@ link_libraries(zlib)
 link_libraries(libpng)
 link_libraries(freetype)
 
-# Audio ÉÇÉWÉÖÅ[ÉãÇÃàÀë∂
+# Audio ÔøΩÔøΩÔøΩWÔøΩÔøΩÔøΩ[ÔøΩÔøΩÔøΩÃàÀëÔøΩ
 if (LN_BUILD_AUDIO_MODULE)
 	add_subdirectory(external/libogg)
 	add_subdirectory(external/libvorbis)
@@ -785,7 +813,7 @@ if (LN_BUILD_AUDIO_MODULE)
 	link_libraries(libvorbis)
 endif()
 
-# Scene ÉÇÉWÉÖÅ[ÉãÇÃàÀë∂
+# Scene ÔøΩÔøΩÔøΩWÔøΩÔøΩÔøΩ[ÔøΩÔøΩÔøΩÃàÀëÔøΩ
 if (LN_BUILD_SCENE_MODULE)
 	add_subdirectory(external/bullet-2.82)
 	link_libraries(bullet)
@@ -794,9 +822,11 @@ endif()
 if (LN_USE_EXTERNAL_Effekseer)
 	add_subdirectory(external/EffekseerRuntime101/src)
 	link_libraries(effekseer)
-	link_libraries(effekseer_renderer_dx9)
 	link_libraries(effekseer_renderer_gl)
-	link_libraries(effekseer_sound_xaudio2)
+	if (MSVC)
+		link_libraries(effekseer_renderer_dx9)
+		link_libraries(effekseer_sound_xaudio2)
+	endif()
 endif()
 
 
@@ -819,7 +849,6 @@ if (LN_USE_EXTERNAL_Effekseer)
 	add_definitions(-DLN_USE_EXTERNAL_Effekseer)
 endif()
 
-add_definitions("/EHsc")	# VS2015, cmake Ç≈ê∂ê¨Ç∑ÇÈÇ∆âΩåÃÇ©è¡Ç¶ÇƒÇµÇ‹Ç§ÇÃÇ≈ñæé¶ìIÇ…éwíËÇ∑ÇÈ
 
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
@@ -847,11 +876,11 @@ endif()
 #add_subdirectory(sample)
 
 #------------------------------
-# 
+#
 if (LN_BUILD_C_API)
 	add_subdirectory(bindings/C_API)
 	add_subdirectory(bindings/C/Test)
 	add_subdirectory(tools/ArchiveMaker)
 endif()
 
-add_subdirectory(tools/LNSL)
+#add_subdirectory(tools/LNSL)

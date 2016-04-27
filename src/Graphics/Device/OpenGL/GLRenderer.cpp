@@ -522,7 +522,7 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 	}
 
 	// ステンシルテスト処理
-	DWORD stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+	GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
 	if (newState.StencilFailOp != m_currentDepthStencilState.StencilFailOp || 
 		newState.StencilDepthFailOp != m_currentDepthStencilState.StencilDepthFailOp ||
 		newState.StencilPassOp != m_currentDepthStencilState.StencilPassOp ||

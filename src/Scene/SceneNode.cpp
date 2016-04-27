@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <float.h>
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SceneNode.h>
@@ -185,9 +186,10 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
 	// SceneNode 自体は描画機能を持たないので何もせず、子の処理を行う
-	LN_FOREACH(SceneNode* child, *m_children) {
-		child->UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
-	}
+    for (int i = 0; i < m_children->GetCount(); ++i)
+    {
+        m_children->GetAt(i)->UpdateViewFlustumHierarchy(camera, renderingNodeList, renderingLightList);
+    }
 }
 
 //-----------------------------------------------------------------------------

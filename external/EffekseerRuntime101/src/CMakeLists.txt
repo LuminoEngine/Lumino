@@ -1,19 +1,22 @@
-# Debug Release‚ÉŒÀ’è
+# Debug Releaseï¿½ÉŒï¿½ï¿½ï¿½
 set(CMAKE_CONFIGURATION_TYPES Debug Release CACHE TYPE INTERNAL FORCE )
 
-# ƒvƒƒWƒFƒNƒg–¼
+# ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½
 project(Effekseer)
 
-# CMake ƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN
+# CMake ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½N
 cmake_minimum_required(VERSION 2.8)
 
-# MSVCŒü‚¯İ’è
+# MSVCï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
 if (MSVC)
 	option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" OFF)
 endif()
 
 if (MSVC)
 
+elseif (APPLE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	#set(CMAKE_CXX_FLAGS "-std=c++11 " ${CMAKE_CXX_FLAGS})
 else()
 	set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC" ${CMAKE_CXX_FLAGS})
 endif()
@@ -33,7 +36,7 @@ else()
 option(USE_OPENAL "Use OpenAL" ON)
 endif()
 
-# ƒ\[ƒXƒR[ƒhİ’è
+# ï¿½\ï¿½[ï¿½Xï¿½Rï¿½[ï¿½hï¿½İ’ï¿½
 set(effekseer_src
 	Effekseer/Effekseer/Effekseer.Client.cpp
 	Effekseer/Effekseer/Effekseer.Color.cpp
@@ -175,12 +178,12 @@ set(effekseer_sound_xaudio2_src
 	EffekseerSoundXAudio2/EffekseerSound/EffekseerSoundXAudio2.SoundPlayer.cpp
 	EffekseerSoundXAudio2/EffekseerSound/EffekseerSoundXAudio2.SoundVoice.cpp)
 
-# ƒCƒ“ƒNƒ‹[ƒh‚Ìİ’è
+# ï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½hï¿½Ìİ’ï¿½
 include_directories(
 	Effekseer/
 	)
 
-# ƒRƒ“ƒpƒCƒ‹æ‚ğ’Ç‰Á
+# ï¿½Rï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½
 add_library( effekseer STATIC ${effekseer_src} )
 
 if (MSVC)
@@ -196,7 +199,7 @@ if (USE_OPENAL)
 add_library( effekseer_sound_al STATIC ${effekseer_sound_al_src} )
 endif()
 
-# ƒtƒ‰ƒOˆ—
+# ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½
 if (MSVC)
 	if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
 		foreach (flag CMAKE_C_FLAGS
@@ -241,7 +244,7 @@ if (USE_OPENGL3)
 endif()
 
 
-# o—Íæ‚Ìİ’è
+# ï¿½oï¿½Íï¿½ï¿½Ìİ’ï¿½
 if (MSVC)
 set_target_properties(effekseer PROPERTIES OUTPUT_NAME_DEBUG "Effekseer" )
 set_target_properties(effekseer PROPERTIES OUTPUT_NAME_RELEASE "Effekseer" )

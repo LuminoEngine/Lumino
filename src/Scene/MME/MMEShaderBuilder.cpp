@@ -43,7 +43,7 @@ static LNVerNameDesc g_MMESemanticTable[ MME_MAX_SEMANTICS ] =
     { _T( "WORLDVIEWTRANSPOSE" ),                   _T( "g_Matrix_wvt" ) },
     { _T( "VIEWPROJECTIONTRANSPOSE" ),              _T( "g_Matrix_vpt" ) },
     { _T( "WORLDVIEWPROJECTIONTRANSPOSE" ),         _T( "g_Matrix_wvpt" ) },     // [ 18 ]
-         
+
     { _T( "WORLDINVERSETRANSPOSE" ),                _T( "g_Matrix_wit" ) },
     { _T( "VIEWINVERSETRANSPOSE" ),                 _T( "g_Matrix_vit" ) },
     { _T( "PROJECTIONINVERSETRANSPOSE" ),           _T( "g_Matrix_pit" ) },
@@ -129,7 +129,7 @@ static const char* gMMEAnnotationNames[ MME_MAX_ANNOTATIONS ] =
     "SCRIPTOUUTPUT",
     "SCRIPTCLASS",
     "SCRIPTORDER",
-        
+
     "SCRIPT"
 };
 
@@ -426,43 +426,43 @@ void MMEShaderBuilder::CheckVariableRequest(
 			const TCHAR* item = anno->GetString();
 			if (item)
 			{
-				if (_tcsicmp(item, _T("X")) == 0)
+				if (StringTraits::tcsicmp(item, _T("X")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_X;
 				}
-				else if (_tcsicmp(item, _T("Y")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Y")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Y;
 				}
-				else if (_tcsicmp(item, _T("Y")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Y")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Z;
 				}
-				else if (_tcsicmp(item, _T("XYZ")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("XYZ")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_XYZ;
 				}
-				else if (_tcsicmp(item, _T("Rx")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Rx")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Rx;
 				}
-				else if (_tcsicmp(item, _T("Ry")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Ry")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Ry;
 				}
-				else if (_tcsicmp(item, _T("Rz")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Rz")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Rz;
 				}
-				else if (_tcsicmp(item, _T("Rxyz")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Rxyz")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Rxyz;
 				}
-				else if (_tcsicmp(item, _T("Si")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Si")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Si;
 				}
-				else if (_tcsicmp(item, _T("Tr")) == 0)
+				else if (StringTraits::tcsicmp(item, _T("Tr")) == 0)
 				{
 					req = MME_VARREQ_CONTROLOBJECT_Tr;
 				}
@@ -485,7 +485,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 					sv->ItemName = item;
 				}
 			} // if ( item )
-		} // if ( anno ) 
+		} // if ( anno )
 
 		// ここまででまだ req が決まってない場合
 		if (req == MME_VARREQ_NONE)
@@ -510,7 +510,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 			{
 				req = MME_VARREQ_CONTROLOBJECT_World;
 			}
-			
+
 		}
 
 		// ここまでで要求項目が見つかっていたら、有効な CONTROLOBJECT
@@ -573,18 +573,18 @@ void MMEShaderBuilder::CheckVariableRequest(
 
 		// ↑でデフォルト値として代入してるのでコメントアウト
 		//if ( stricmp( script_class, "object" ) ) { MME_SCRCLS_object; }
-		if (_tcsicmp(scriptClassName, _T("scene")) == 0)         {
+		if (StringTraits::tcsicmp(scriptClassName, _T("scene")) == 0)       {
 			*script_class = MME_SCRCLS_scene;
 		}
-		else if (_tcsicmp(scriptClassName, _T("sceneorobject")) == 0) {
+		else if (StringTraits::tcsicmp(scriptClassName, _T("sceneorobject")) == 0) {
 			*script_class = MME_SCRCLS_sceneorobject;
 		}
 
 		//if ( stricmp( script_order, "object" ) ) { MME_SCRORDER_standard; }
-		if (_tcsicmp(scriptOrderName, _T("preprocess")) == 0)    {
+		if (StringTraits::tcsicmp(scriptOrderName, _T("preprocess")) == 0)    {
 			*script_order = MME_SCRORDER_preprocess;
 		}
-		else if (_tcsicmp(scriptOrderName, _T("postprocess")) == 0)   {
+		else if (StringTraits::tcsicmp(scriptOrderName, _T("postprocess")) == 0)   {
 			*script_order = MME_SCRORDER_postprocess;
 		}
 
@@ -731,7 +731,7 @@ bool MMEShaderBuilder::CheckAnnotationCameraOrLight(ShaderVariable* var)
 		return true;	// "Object" アノテーションが見つからなかった
 	}
 
-	if (_tcsicmp(anno->GetString(), _T("Light")) == 0) {
+	if (StringTraits::tcsicmp(anno->GetString(), _T("Light")) == 0) {
 		return false;
 	}
 	return true;	// TODO: とあえず、あてはまらなければ "Camera" 扱いにする
@@ -746,10 +746,10 @@ int MMEShaderBuilder::CheckAnnotationGeometryOrLight(ShaderVariable* var)
 	if (!anno) {
 		return 0;	// "Object" アノテーションが見つからなかった
 	}
-	if (_tcsicmp(anno->GetString(), _T("Geometry")) == 0) {
+	if (StringTraits::tcsicmp(anno->GetString(), _T("Geometry")) == 0) {
 		return 1;
 	}
-	if (_tcsicmp(anno->GetString(), _T("Light")) == 0) {
+	if (StringTraits::tcsicmp(anno->GetString(), _T("Light")) == 0) {
 		return 2;
 	}
 	return 0;

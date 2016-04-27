@@ -1013,7 +1013,13 @@ void ShaderPass::Apply()
 {
 	m_owner->TryCommitChanges();
 
-	LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
+	//LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
+    if (m_owner->GetManager()->GetRenderingType() == RenderingType::Deferred) {
+        m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<ApplyShaderPassCommand>(m_deviceObj);
+    }
+    else {
+        m_deviceObj->Apply();
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -1,72 +1,72 @@
 /*
-[2016/3/9] ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒX
-	ˆê”Ô‚¦‚ç‚¢‚Ì‚Í Viewport ƒNƒ‰ƒX‚É‚µ‚½‚¢B
-	Engine ‚â Window ‚ÍƒRƒŒ‚É‘Î‚µ‚Ä Render() ‚ðŒÄ‚Ô‚¾‚¯‚ÅOKA‚Ý‚½‚¢‚ÈB
+[2016/3/9] ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½pï¿½X
+	ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ç‚¢ï¿½Ì‚ï¿½ Viewport ï¿½Nï¿½ï¿½ï¿½Xï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
+	Engine ï¿½ï¿½ Window ï¿½ÍƒRï¿½ï¿½ï¿½É‘Î‚ï¿½ï¿½ï¿½ Render() ï¿½ï¿½ï¿½Ä‚Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½OKï¿½Aï¿½Ý‚ï¿½ï¿½ï¿½ï¿½ÈB
 
-	Editor ƒ‚[ƒh‚Ì‚Æ‚«AViewport ‚ÅƒyƒCƒ“‚ð•ª‚¯‚é‚ÆÄ•`‰æ‚Ì”ÍˆÍ‚ðŒÀ’è‚Å‚«‚éB
-	1‚Â‚ÌWidget‚ÉÄ•`‰æ‚ª•K—v‚É‚È‚Á‚Ä‚àƒEƒBƒ“ƒhƒE‘S‘Ì‚ðÄ•`‰æ‚·‚é•K—v‚Í‚È‚¢B
-	¨ Viewport ‚Í ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ðŽ‚ÂB
+	Editor ï¿½ï¿½ï¿½[ï¿½hï¿½Ì‚Æ‚ï¿½ï¿½AViewport ï¿½Åƒyï¿½Cï¿½ï¿½ï¿½ð•ª‚ï¿½ï¿½ï¿½ï¿½ÆÄ•`ï¿½ï¿½ï¿½Ì”ÍˆÍ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½B
+	1ï¿½Â‚ï¿½Widgetï¿½ÉÄ•`ï¿½æ‚ªï¿½Kï¿½vï¿½É‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Sï¿½Ì‚ï¿½ï¿½Ä•`ï¿½æ‚·ï¿½ï¿½ï¿½Kï¿½vï¿½Í‚È‚ï¿½ï¿½B
+	ï¿½ï¿½ Viewport ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ÂB
 
-	Game ƒ‚[ƒh‚Ì‚Æ‚«‚ÍŠî–{“I‚É Viewport ‚Í 1‚Â‚¾‚¯‚É‚È‚é‚ÆŽv‚¤B
+	Game ï¿½ï¿½ï¿½[ï¿½hï¿½Ì‚Æ‚ï¿½ï¿½ÍŠï¿½ï¿½{ï¿½Iï¿½ï¿½ Viewport ï¿½ï¿½ 1ï¿½Â‚ï¿½ï¿½ï¿½ï¿½É‚È‚ï¿½ï¿½ÆŽvï¿½ï¿½ï¿½B
 
-	Window “à‚Í Viweport ‚ÌŠK‘w\‘¢B
-	ƒ‹[ƒg‚Ì Viewport ‚Í Window ‘S‘Ì‚ÅAswapchain ‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ðƒAƒ^ƒbƒ`‚·‚é‚Ì‚ª‚¢‚¢‚©‚àB
+	Window ï¿½ï¿½ï¿½ï¿½ Viweport ï¿½ÌŠKï¿½wï¿½\ï¿½ï¿½ï¿½B
+	ï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ Viewport ï¿½ï¿½ Window ï¿½Sï¿½Ì‚ÅAswapchain ï¿½Ìƒï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½ï¿½ï¿½Aï¿½^ï¿½bï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 
-	GameMode (–ˆƒtƒŒ[ƒ€)
-		1.Scene •`‰æBScene “à‚Ì‚·‚×‚Ä‚ÌƒJƒƒ‰‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚É•`‰æ‚·‚é
-		2.Viewport •`‰æBƒ‹[ƒg‚©‚ç‡‚ÉAƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ðƒoƒbƒNƒoƒbƒtƒ@‚É•`‰æ‚·‚é
+	GameMode (ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½)
+		1.Scene ï¿½`ï¿½ï¿½ï¿½BScene ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½×‚Ä‚ÌƒJï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½É•`ï¿½æ‚·ï¿½ï¿½
+		2.Viewport ï¿½`ï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½ç‡ï¿½ÉAï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½[ï¿½^ï¿½[ï¿½Qï¿½bï¿½gï¿½ï¿½ï¿½oï¿½bï¿½Nï¿½oï¿½bï¿½tï¿½@ï¿½É•`ï¿½æ‚·ï¿½ï¿½
 
 	EditorMode
-		Ä•`‰æ—v‹‚ ‚Á‚½‚Æ‚«‚¾‚¯ª‚Ì‚ðs‚¤B
+		ï¿½Ä•`ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½sï¿½ï¿½ï¿½B
 
 	ImageEffect
-		ƒ|ƒXƒgƒGƒtƒFƒNƒgBƒJƒƒ‰‚É‚­‚Á‚Â‚­BUnity ‚Æ“¯‚¶‚©‚ñ‚¶B
+		ï¿½|ï¿½Xï¿½gï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½Bï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½BUnity ï¿½Æ“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ñ‚¶B
 
 
-	ŽQl:UE4
+	ï¿½Qï¿½l:UE4
 	https://shikihuiku.wordpress.com/2014/05/09/%E3%83%A1%E3%83%A2-ue4%E3%81%AErendering%E3%81%AE%E5%91%BC%E3%81%B0%E3%82%8C%E6%96%B9/
 
 
-[2015/8/30] ƒvƒƒpƒeƒB‚ÌŒp³
-	ƒŠƒrƒWƒ‡ƒ“ƒJƒEƒ“ƒg‚ð—p‚¢‚½•û–@
-	Ee`‘·ŠÔ‚Ì—v‘f‚ÌƒvƒƒpƒeƒB‚ª•ÏX‚³‚ê‚½Žž‚ÍH
-		‚»‚ÌƒvƒƒpƒeƒB‚Ì“ÆŽ©Ý’èON/OFF‚ªØ‚è‘Ö‚í‚Á‚½ŽžA‘S‚Ä‚ÌŽq‚Ì“¯‚¶ƒvƒƒpƒeƒB‚ÉÄXVƒtƒ‰ƒO‚ð—§‚Ä‚éB
-		¨‘SŽq‘–¸‚ÍŽžŠÔ‚©‚©‚éEEEe‚ÌƒŠƒrƒWƒ‡ƒ“‚ð‘€ì‚·‚é‚Ì‚ÍH
-			¨ƒ‹[ƒg‚Ü‚ÅƒfƒtƒHƒ‹ƒg‚¾‚Á‚½Žž‘Î‰ž‚Å‚«‚È‚¢
-				¨ƒ‹[ƒg‚ðŒp³Œ³‚Æ‚µ‚ÄŽQÆ‚·‚éB
-	EƒcƒŠ[‚©‚çƒcƒŠ[‚ªØ‚è—£‚³‚ê‚½/’Ç‰Á‚³‚ê‚½Žž‚ÍH
-		Ø‚è—£‚³‚ê‚½/’Ç‰Á‚³‚ê‚½ƒcƒŠ[‚Ì‘Sƒm[ƒh‚ÌƒvƒƒpƒeƒB‚ÌÄXVƒtƒ‰ƒO‚ðON‚É‚·‚éB
+[2015/8/30] ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ÌŒpï¿½ï¿½
+	ï¿½ï¿½ï¿½rï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½gï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@
+	ï¿½Eï¿½eï¿½`ï¿½ï¿½ï¿½Ô‚Ì—vï¿½fï¿½Ìƒvï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ï¿½ï¿½ÏXï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ÍH
+		ï¿½ï¿½ï¿½Ìƒvï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½Ì“ÆŽï¿½ï¿½Ý’ï¿½ON/OFFï¿½ï¿½ï¿½Ø‚ï¿½ï¿½Ö‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Sï¿½Ä‚ÌŽqï¿½Ì“ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ÉÄXï¿½Vï¿½tï¿½ï¿½ï¿½Oï¿½ð—§‚Ä‚ï¿½ï¿½B
+		ï¿½ï¿½ï¿½Sï¿½qï¿½ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½Eï¿½Eï¿½eï¿½Ìƒï¿½ï¿½rï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ð‘€ì‚·ï¿½ï¿½ï¿½Ì‚ÍH
+			ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½gï¿½Ü‚Åƒfï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î‰ï¿½ï¿½Å‚ï¿½ï¿½È‚ï¿½
+				ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ÄŽQï¿½Æ‚ï¿½ï¿½ï¿½ï¿½B
+	ï¿½Eï¿½cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ø‚è—£ï¿½ï¿½ï¿½ê‚½/ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ÍH
+		ï¿½Ø‚è—£ï¿½ï¿½ï¿½ê‚½/ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½cï¿½ï¿½ï¿½[ï¿½Ì‘Sï¿½mï¿½[ï¿½hï¿½Ìƒvï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ÌÄXï¿½Vï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ONï¿½É‚ï¿½ï¿½ï¿½ï¿½B
 
 
-[2015/7/31] ƒgƒbƒvƒŒƒxƒ‹ƒCƒ“ƒ^[ƒtƒFƒCƒX
-	- Œp³‚É‚æ‚éŠg’£
-	- Œ¾ŒêƒoƒCƒ“ƒ_‚ðŽÀ‘•‚·‚éã‚Å‚ÌŽg‚¢‚â‚·‚³
-	- Variant ‚Ö‚Ì•ÛŽ‚µ‚â‚·‚³
-	- ƒAƒvƒŠ‚ðŽÀ‘•‚·‚éã‚Å‚ÌŽg‚¢‚â‚·‚³
+[2015/7/31] ï¿½gï¿½bï¿½vï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½^ï¿½[ï¿½tï¿½Fï¿½Cï¿½X
+	- ï¿½pï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½
+	- ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½Cï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ÌŽgï¿½ï¿½ï¿½â‚·ï¿½ï¿½
+	- Variant ï¿½Ö‚Ì•ÛŽï¿½ï¿½ï¿½ï¿½â‚·ï¿½ï¿½
+	- ï¿½Aï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ÌŽgï¿½ï¿½ï¿½â‚·ï¿½ï¿½
 
-	ˆÈ‰º‚Ì‚æ‚¤‚È•ûj‚ÅB
-	- ƒgƒbƒvƒŒƒxƒ‹ƒIƒuƒWƒFƒNƒg (EngineManager) ‚ÍƒOƒ[ƒoƒ‹B
-	  (Š®‘S‚ÉƒOƒ[ƒoƒ‹‚Å‚Í‚È‚­AƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒ|ƒCƒ“ƒ^‚ðƒOƒ[ƒoƒ‹•Ï”‚É“ü‚ê‚Ä‚¨‚­ƒCƒ[ƒWB•K—v‚É‰ž‚¶‚ÄŒp³‚µAŠg’£‚Å‚«‚é)
-	- 
+	ï¿½È‰ï¿½ï¿½Ì‚æ‚¤ï¿½È•ï¿½ï¿½jï¿½ÅB
+	- ï¿½gï¿½bï¿½vï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g (EngineManager) ï¿½ÍƒOï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½B
+	  (ï¿½ï¿½ï¿½Sï¿½ÉƒOï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½Å‚Í‚È‚ï¿½ï¿½Aï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½Ìƒ|ï¿½Cï¿½ï¿½ï¿½^ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½Ïï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Wï¿½Bï¿½Kï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½ÄŒpï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½gï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½)
+	-
 
 
 
-	EFont font = Font::CreateBitmapFont();
-	
+	ï¿½EFont font = Font::CreateBitmapFont();
 
-	EFontPtr font = Font::CreateBitmapFont();
 
-	- ƒXƒ^ƒbƒN‚Ö‚Ì¶¬‚ð‹–‰Â‚·‚é‚©H
-		Š®‘S‚É‹ÖŽ~‚·‚é‚±‚Æ‚Ío—ˆ‚È‚¢B”h¶‚³‚¹‚ê‚Î‚È‚ñ‚Æ‚Å‚ào—ˆ‚Ä‚µ‚Ü‚¤B
-	
+	ï¿½EFontPtr font = Font::CreateBitmapFont();
 
-	ESiv3DAƒZƒKGameLib
-		ŒöŠJ‚·‚é‚Ì‚ÍƒXƒ}[ƒgƒ|ƒCƒ“ƒ^ƒNƒ‰ƒXBŽÀ‘Ì‚Í‰Â”\‚ÈŒÀ‚èŒ©‚¹‚È‚¢B
-		¨ ”h¶‚³‚¹‚ÄŠg’£‚Å‚«‚È‚¢BGUI ‚Ìƒ†[ƒU[ƒRƒ“ƒgƒ[ƒ‹‚Æ‚©ì‚ê‚È‚¢‚±‚Æ‚É‚È‚éB
-		‚½‚¾ASiv3D ‚Ì GUI ‚Í static Create() ‚ª shared_ptr •Ô‚µ‚Ä‚¢‚½B
+	- ï¿½Xï¿½^ï¿½bï¿½Nï¿½Ö‚Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½é‚©ï¿½H
+		ï¿½ï¿½ï¿½Sï¿½É‹ÖŽ~ï¿½ï¿½ï¿½é‚±ï¿½Æ‚Íoï¿½ï¿½ï¿½È‚ï¿½ï¿½Bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î‚È‚ï¿½ï¿½Æ‚Å‚ï¿½ï¿½oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½B
 
-	ESDL2AGLFWAGDI+ANux ‚È‚ñ‚©‚ÍƒgƒbƒvƒŒƒxƒ‹ƒIƒuƒWƒFƒNƒg‚ÍƒOƒ[ƒoƒ‹ƒCƒ“ƒXƒ^ƒ“ƒXB
-	  OpenSceneGraph ‚à‚½‚Ô‚ñ‚»‚¤B
+
+	ï¿½ESiv3Dï¿½Aï¿½Zï¿½KGameLib
+		ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ÍƒXï¿½}ï¿½[ï¿½gï¿½|ï¿½Cï¿½ï¿½ï¿½^ï¿½Nï¿½ï¿½ï¿½Xï¿½Bï¿½ï¿½ï¿½Ì‚Í‰Â”\ï¿½ÈŒï¿½ï¿½èŒ©ï¿½ï¿½ï¿½È‚ï¿½ï¿½B
+		ï¿½ï¿½ ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄŠgï¿½ï¿½ï¿½Å‚ï¿½ï¿½È‚ï¿½ï¿½BGUI ï¿½Ìƒï¿½ï¿½[ï¿½Uï¿½[ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½Æ‚É‚È‚ï¿½ï¿½B
+		ï¿½ï¿½ï¿½ï¿½ï¿½ASiv3D ï¿½ï¿½ GUI ï¿½ï¿½ static Create() ï¿½ï¿½ shared_ptr ï¿½Ô‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½B
+
+	ï¿½ESDL2ï¿½AGLFWï¿½AGDI+ï¿½ANux ï¿½È‚ñ‚©‚Íƒgï¿½bï¿½vï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÍƒOï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½B
+	  OpenSceneGraph ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ñ‚»‚ï¿½ï¿½B
 */
 
 
@@ -159,17 +159,18 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_comInitialized(false)
 {
 	m_fpsController.SetEnableFpsTest(true);
-	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO 
+	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO
 	Profiler::Instance.SetBaseFrameRate(Profiler::Group_RenderThread, 60.0f);
 
 
-
-	// COM ‰Šú‰»
+#if defined(LN_OS_WIN32)
+	// COM ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (m_configData.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
-		// ƒGƒ‰[‚É‚Í‚µ‚È‚¢B•Ê‚ÌÝ’è‚Å COM ‚ª‰Šú‰»Ï‚Ý‚¾‚Á‚½‚è‚·‚é‚ÆŽ¸”s‚·‚é‚±‚Æ‚ª‚ ‚é‚ªACOM Ž©‘Ì‚ÍŽg‚¦‚é‚æ‚¤‚É‚È‚Á‚Ä‚¢‚é
+		// ï¿½Gï¿½ï¿½ï¿½[ï¿½É‚Í‚ï¿½ï¿½È‚ï¿½ï¿½Bï¿½Ê‚ÌÝ’ï¿½ï¿½ï¿½ COM ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï‚Ý‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‚·ï¿½ï¿½ï¿½ÆŽï¿½ï¿½sï¿½ï¿½ï¿½é‚±ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½é‚ªï¿½ACOM ï¿½ï¿½ï¿½Ì‚ÍŽgï¿½ï¿½ï¿½ï¿½ï¿½æ‚¤ï¿½É‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 		m_comInitialized = true;
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -189,8 +190,8 @@ EngineManager::~EngineManager()
 
 	if (m_graphicsManager != nullptr)
 	{
-		// æ‚É•`‰æƒXƒŒƒbƒh‚ðI—¹‚µ‚Ä‚¨‚­B
-		// ‘¼ƒ‚ƒWƒ…[ƒ‹‚Å”­s‚³‚ê‚½ƒRƒ}ƒ“ƒh‚ª‚Ü‚¾ŽÀs‘Ò‹@’†‚É‚»‚Ìƒ‚ƒWƒ…[ƒ‹‚ª‰ð•ú‚³‚ê‚é‚Æƒ}ƒYƒCB
+		// ï¿½ï¿½ï¿½É•`ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½B
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Å”ï¿½ï¿½sï¿½ï¿½ï¿½ê‚½ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½sï¿½Ò‹@ï¿½ï¿½ï¿½É‚ï¿½ï¿½Ìƒï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æƒ}ï¿½Yï¿½Cï¿½B
 		m_graphicsManager->Finalize();
 	}
 
@@ -236,14 +237,14 @@ EngineManager::~EngineManager()
 
 	LN_SAFE_RELEASE(m_animationManager);
 
-	Console::Free();
 
-
+#if defined(LN_OS_WIN32)
 	if (m_comInitialized)
 	{
 		::CoUninitialize();
 		m_comInitialized = false;
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -263,7 +264,7 @@ void EngineManager::Initialize()
 	InitializeSceneGraphManager();
 #endif
 	InitializeAssetsManager();
-	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: ‚Æ‚è‚ ‚¦‚¸
+	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: ï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½
 	m_application->Initialize(this);
 
 	EngineDiagCore::Instance.Initialize(this);
@@ -276,15 +277,10 @@ void EngineManager::InitializeCommon()
 {
 	if (!m_commonInitied)
 	{
-		// ƒƒOƒtƒ@ƒCƒ‹o—Í
+		// ï¿½ï¿½ï¿½Oï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½oï¿½ï¿½
 		if (m_configData.applicationLogEnabled) {
 			Logger::Initialize(LogFileName);
 		}
-		// ƒRƒ“ƒ\[ƒ‹Š„‚è“–‚Ä
-		if (m_configData.ConsoleEnabled) {
-			Console::Alloc();
-		}
-
 		m_commonInitied = true;
 	}
 }
@@ -338,7 +334,7 @@ void EngineManager::InitializePlatformManager()
 		m_platformManager.Attach(LN_NEW PlatformManager());
 		m_platformManager->Initialize(data);
 
-		// ƒCƒxƒ“ƒgƒŠƒXƒi[“o˜^
+		// ï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Xï¿½iï¿½[ï¿½oï¿½^
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
 	}
 }
@@ -371,8 +367,8 @@ void EngineManager::InitializeAudioManager()
 		InitializeCommon();
 		InitializeFileManager();
 
-		// ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ªŽw’è‚³‚ê‚Ä‚¢‚éê‡A
-		// ƒ_ƒ~[ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ðì‚é‚½‚ß‚É PlatformManager ‚Ì‰Šú‰»‚ª•K—vB
+		// ï¿½ï¿½ï¿½[ï¿½Uï¿½[ï¿½ï¿½ï¿½`ï¿½ÌƒEï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ê‡ï¿½A
+		// ï¿½_ï¿½~ï¿½[ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ß‚ï¿½ PlatformManager ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½B
 		if (m_configData.userMainWindow != nullptr) {
 			InitializePlatformManager();
 		}
@@ -584,14 +580,14 @@ bool EngineManager::UpdateFrame()
 	{
 		m_uiManager->GetDefaultUIContext()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
 
-		{	// ƒvƒƒtƒ@ƒCƒŠƒ“ƒO”ÍˆÍ
+		{	// ï¿½vï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Íˆï¿½
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
 			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(static_cast<float>(size.width), static_cast<float>(size.height)));
 		}
 	}
 
-	// Žè“®•`‰æ‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‚±‚±‚ÅŽ©“®•`‰æ‚·‚é
+	// ï¿½è“®ï¿½`ï¿½æ‚³ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½Î‚ï¿½ï¿½ï¿½ï¿½ÅŽï¿½ï¿½ï¿½ï¿½`ï¿½æ‚·ï¿½ï¿½
 	if (!m_frameRenderd)
 	{
 		if (BeginRendering())
@@ -618,7 +614,7 @@ bool EngineManager::BeginRendering()
 	m_frameRenderingSkip = true;
 	if (m_graphicsManager == nullptr) return false;
 
-	// •`‰æ’x‰„‚ÌŠm”F
+	// ï¿½`ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ÌŠmï¿½F
 	bool delay = false;
 	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
 	{
@@ -638,7 +634,7 @@ bool EngineManager::BeginRendering()
 
 
 	if (m_effectManager != nullptr) {
-		m_effectManager->PreRender();	// Effekseer ‚ÌXVƒXƒŒƒbƒh‚ðŠJŽn‚·‚é‚Ì‚Í‚±‚±
+		m_effectManager->PreRender();	// Effekseer ï¿½ÌXï¿½Vï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Í‚ï¿½ï¿½ï¿½
 	}
 
 	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
@@ -673,7 +669,7 @@ void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		//// •`‰æ’x‰„‚ÌŠm”F
+		//// ï¿½`ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ÌŠmï¿½F
 		//bool delay = false;
 		//if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
 		//{
@@ -692,7 +688,7 @@ void EngineManager::Render()
 
 
 		//if (m_effectManager != nullptr) {
-		//	m_effectManager->PreRender();	// Effekseer ‚ÌXVƒXƒŒƒbƒh‚ðŠJŽn‚·‚é‚Ì‚Í‚±‚±
+		//	m_effectManager->PreRender();	// Effekseer ï¿½ÌXï¿½Vï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Í‚ï¿½ï¿½ï¿½
 		//}
 
 		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
@@ -768,11 +764,11 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 
 	switch (e.type)
 	{
-	case PlatformEventType::Quit:	// ƒAƒvƒŠI—¹—v‹
-	case PlatformEventType::Close:	// ƒEƒBƒ“ƒhƒE‚ª•Â‚¶‚ç‚ê‚æ‚¤‚Æ‚µ‚Ä‚¢‚é
+	case PlatformEventType::Quit:	// ï¿½Aï¿½vï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½vï¿½ï¿½
+	case PlatformEventType::Close:	// ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ‚¤ï¿½Æ‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 		break;
 
-	case PlatformEventType::MouseDown:		// ƒ}ƒEƒXƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½
+	case PlatformEventType::MouseDown:		// ï¿½}ï¿½Eï¿½Xï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
@@ -782,7 +778,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case PlatformEventType::MouseUp:			// ƒ}ƒEƒXƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½
+	case PlatformEventType::MouseUp:			// ï¿½}ï¿½Eï¿½Xï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
@@ -792,7 +788,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case PlatformEventType::MouseMove:		// ƒ}ƒEƒX‚ªˆÚ“®‚µ‚½
+	case PlatformEventType::MouseMove:		// ï¿½}ï¿½Eï¿½Xï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
@@ -802,7 +798,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case PlatformEventType::MouseWheel:		// ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‘€ì‚³‚ê‚½
+	case PlatformEventType::MouseWheel:		// ï¿½}ï¿½Eï¿½Xï¿½zï¿½Cï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì‚³ï¿½ê‚½
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseWheel(e.wheel.delta)) { return true; }
@@ -818,7 +814,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
 		}
 
-		// ƒfƒoƒbƒO•\Ž¦Ø‘Ö
+		// ï¿½fï¿½oï¿½bï¿½Oï¿½\ï¿½ï¿½ï¿½Ø‘ï¿½
 		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
 			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
 			m_diagRenderer != nullptr)

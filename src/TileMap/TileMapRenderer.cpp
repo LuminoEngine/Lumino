@@ -125,10 +125,10 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 	// テーブル配列のどこの範囲を描画したい？
 	BoundingRect renderRange =
 	{
-		l / tileSize.width,
-		t / tileSize.height,
-		r / tileSize.width,
-		b / tileSize.height,
+		static_cast<int>(l / tileSize.width),
+		static_cast<int>(t / tileSize.height),
+		static_cast<int>(r / tileSize.width),
+		static_cast<int>(b / tileSize.height),
 	};
 	//renderRange.left += 2;
 	renderRange.top += 1;

@@ -51,7 +51,7 @@ static std::string Format(const char* format, ...){
 	while (1)
 	{
 		va_copy( args , source );
-		//Windows
+#ifdef _WIN32		//Windows
 		if (_vsnprintf(&tmp[0], tmp.size(), format, args) == -1)
 		{
 			tmp.resize(tmp.size() * 2);
@@ -60,6 +60,17 @@ static std::string Format(const char* format, ...){
 		{
 			break;
 		}
+#else
+        if (vsnprintf(&tmp[0], tmp.size(), format, args) == -1)
+        {
+            tmp.resize(tmp.size() * 2);
+        }
+        else
+        {
+            break;
+        }
+
+#endif
 	}
 	tmp.push_back('\0');
 	std::string ret = &(tmp[0]);
@@ -408,7 +419,7 @@ public:
 protected:
 	void init(const ProjectData* data, const std::string& imageBaseDir, CellCache* cellCache)
 	{
-		SS_ASSERT(data != NULL, "Invalid data");
+		SS_ASSERT2(data != NULL, "Invalid data");
 
 		ToPointer ptr(data);
 
@@ -1189,7 +1200,7 @@ int ResourceManager::getMaxFrame(std::string ssbpName, std::string animeName)
 	if (animeRef == NULL)
 	{
 		std::string msg = Format("Not found animation > anime=%s", animeName.c_str());
-		SS_ASSERT(animeRef != NULL, msg.c_str());
+		SS_ASSERT2(animeRef != NULL, msg.c_str());
 	}
 	rc = animeRef->animationData->numFrames;
 

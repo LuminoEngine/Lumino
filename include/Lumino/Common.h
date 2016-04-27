@@ -87,9 +87,9 @@ enum class Key
 	Right,
 	LShift,
 	RShift,
-	LCtrl,
+	LCtrl,  // TODO: LeftControl
 	RCtrl,
-	LAlt,
+	LAlt,       // mac:option
 	RAlt,
 	Tab,
 	Enter,
@@ -102,12 +102,12 @@ enum class Key
 	End,
 
 	Colon,		///< :	[非推奨 GLFWでは;]
-	SemiColon,	///< ;	[非推奨 GLFWでは=]
+	SemiColon,	///< ;	[非推奨 GLFWでは=]   TODO:Semicolon
 	Comma,		///< ,
 	Period,		///< .
 	Slash,		///< /
 	Minus,		///< -
-	BackSlash,	///< \(バックスラッシュ) [非推奨 GLFWではNOWORD2]
+	BackSlash,	///< \(バックスラッシュ) [非推奨 GLFWではNOWORD2]    TODO:Backslash
 	Yen,		///< \(BaskSpaceキーの左の\キー) [非推奨 GLFWではI]
 	Caret,		///< ^ [非推奨 GLFWではGLFW_KEY_APOSTROPHE(')]
 	LBracket,	///< [

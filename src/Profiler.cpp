@@ -88,7 +88,7 @@ void Profiler::StartSection(int groupIndex, int sectionIndex)
 	if (!m_enabled) { return; }
 	m_groups[groupIndex]->Timer.Start();
 	//Section* s = m_groups[groupIndex]->Sections[sectionIndex];
-	
+
 }
 
 //-----------------------------------------------------------------------------
@@ -97,7 +97,8 @@ void Profiler::StartSection(int groupIndex, int sectionIndex)
 void Profiler::EndSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
-	m_groups[groupIndex]->Sections[sectionIndex]->ElapsedTime = m_groups[groupIndex]->Timer.GetElapsedTimeNS();
+	//TODO:
+	//m_groups[groupIndex]->Sections[sectionIndex]->ElapsedTime = m_groups[groupIndex]->Timer.GetElapsedTimeNS();
 }
 
 //-----------------------------------------------------------------------------

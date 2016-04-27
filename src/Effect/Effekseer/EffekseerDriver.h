@@ -1,15 +1,23 @@
 
 #pragma once
 #include <EffekseerRuntime101/src/Effekseer/Effekseer.h>
+#if defined(LN_OS_WIN32)
 #include <EffekseerRuntime101/src/EffekseerRendererDX9/EffekseerRendererDX9.h>
 #include <EffekseerRuntime101/src/EffekseerSoundXAudio2/EffekseerSoundXAudio2.h>
+#endif
 #include <EffekseerRuntime101/src/EffekseerRendererGL/EffekseerRendererGL.h>
+#include <EffekseerRuntime101/src/EffekseerSoundAL/EffekseerSoundAL.h>
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Math/Matrix.h>
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Effect/VisualEffect.h>
 #include <Lumino/Effect/VisualEffectInstance.h>
 #include "../EffectDriver.h"
+
+namespace EffekseerSound
+{
+    class Sound;
+}
 
 LN_NAMESPACE_BEGIN
 namespace detail

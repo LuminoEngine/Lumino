@@ -35,7 +35,7 @@ public:
 		}
 		obj->handled = false;
 		obj->AddRef();
-		return e;
+		return obj;
 	}
 
 private:

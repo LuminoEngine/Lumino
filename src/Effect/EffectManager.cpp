@@ -25,7 +25,7 @@
 */
 #include "Internal.h"
 #include "../Graphics/GraphicsManager.h"
-#include "Effekseer\EffekseerDriver.h"
+#include "Effekseer/EffekseerDriver.h"
 #include "EffectManager.h"
 
 LN_NAMESPACE_BEGIN

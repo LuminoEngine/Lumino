@@ -266,7 +266,7 @@ FT_Error FontManager::FaceRequester(
 	// ID は自分で好きなように決められる。とりあえず文字列 (ファミリ名)としている
 
 	//String family_name( (lnChar*)face_id );
-	uint32_t key = (uint32_t)face_id;
+	intptr_t key = (intptr_t)face_id;
 	TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.find(key/*family_name*/);
 	if (itr != m_ttfDataEntryMap.end())
 	{

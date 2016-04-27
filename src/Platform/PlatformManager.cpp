@@ -62,11 +62,12 @@
 
 #include "../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
-#ifdef LN_OS_WIN32
+#if defined(LN_OS_WIN32)
 	#include "Win32/Win32PlatformWindowManager.h"
 	#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
-#endif
-#ifdef LN_X11
+#elif defined(LN_OS_MAC)
+    #include "Cocoa/CocoaPlatformWindowManager.h"
+#elif defined(LN_X11)
 	#include "X11/X11WindowManager.h"
 #endif
 #include "PlatformManager.h"
@@ -126,7 +127,21 @@ void PlatformManager::Initialize(const Settings& settings)
 	{
 		auto m = RefPtr<Win32WindowManager>::MakeRef(0);
 		m_windowManager = m.DetachMove();
-	}
+    }
+#elif defined(LN_OS_MAC)
+    // select default
+    if (api == WindowSystemAPI::Default)
+    {
+        api = WindowSystemAPI::Cocoa;
+    }
+    // create window manager
+    if (api == WindowSystemAPI::Cocoa)
+    {
+        auto m = RefPtr<CocoaPlatformWindowManager>::MakeRef();
+        m->Initialize();
+        m_windowManager = m.DetachMove();
+    }
+
 #elif defined(LN_X11)
 	// select default
 	if (api == WindowSystemAPI::Default)

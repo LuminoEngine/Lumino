@@ -150,8 +150,8 @@ private:
 		* 文字列描画は速度的にかなりクリティカルなもの。メモリ上に置きっぱなしでいいと思う。
 		*/
 	};
-	typedef std::map<uint32_t, TTFDataEntry>     TTFDataEntryMap;
-	typedef std::pair<uint32_t, TTFDataEntry>    TTFDataEntryPair;
+	typedef std::map<intptr_t, TTFDataEntry>     TTFDataEntryMap;
+	typedef std::pair<intptr_t, TTFDataEntry>    TTFDataEntryPair;
 	TTFDataEntryMap		m_ttfDataEntryMap;
 
 	RefPtr<FileManager>	m_fileManager;

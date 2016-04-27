@@ -9,7 +9,7 @@
 
 #define GLEW_STATIC
 #include "../external/GL/glew.h"
-#include <GL/gl.h>
+//#include <GL/gl.h>
 #include "../external/GL/glext.h"
 
 #if defined(LN_OS_WIN32)

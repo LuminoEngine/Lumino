@@ -1,6 +1,7 @@
 
-#include <CocoaPlatformWindow.h>
-#include <CocoaPlatformWindowManager.h>
+#include "../Internal.h"
+#include "CocoaPlatformWindow.h"
+#include "CocoaPlatformWindowManager.h"
 
 
 //=============================================================================
@@ -58,6 +59,8 @@
 @end
 
 
+LN_NAMESPACE_BEGIN
+
 //=============================================================================
 // CocoaPlatformWindowManager
 //=============================================================================
@@ -95,14 +98,15 @@ void CocoaPlatformWindowManager::Initialize()
 	LN_THROW(m_appDelegate != nil, InvalidOperationException);
 
 	[NSApp setDelegate:m_appDelegate];
-	[NSApp run];
+    
+    // TODO: 必要？
+	//[NSApp run];
 }
 
 //-----------------------------------------------------------------------------
 void CocoaPlatformWindowManager::CreateMainWindow(const WindowCreationSettings& settings)
 {
-    LN_CHECK_STATE(m_mainWindow == nullptr)
-	m_mainWindow = LN_NEW CocoaPlatformWindowManager(this);
+	m_mainWindow = LN_NEW CocoaPlatformWindow(this);
 	m_mainWindow->Initialize(this, settings.title, settings.clientSize.width, settings.clientSize.height, settings.fullscreen, settings.resizable);
 }
 
@@ -115,7 +119,7 @@ PlatformWindow* CocoaPlatformWindowManager::GetMainWindow()
 //-----------------------------------------------------------------------------
 PlatformWindow* CocoaPlatformWindowManager::CreateSubWindow(const WindowCreationSettings& settings)
 {
-	RefPtr<CocoaPlatformWindowManager> window(LN_NEW CocoaPlatformWindowManager(this), false);
+	RefPtr<CocoaPlatformWindow> window(LN_NEW CocoaPlatformWindow(this), false);
 	window->Initialize(this, settings.title, settings.clientSize.width, settings.clientSize.height, settings.fullscreen, settings.resizable);
 	return window.DetachMove();
 }
@@ -143,10 +147,13 @@ void CocoaPlatformWindowManager::Finalize()
 {
 	LN_SAFE_RELEASE(m_mainWindow);
 
-	if (_glfw.ns.delegate)
+	if (m_appDelegate != 0)
 	{
 		[NSApp setDelegate:nil];
 		[m_appDelegate release];
 		m_appDelegate = nil;
 	}
 }
+
+
+LN_NAMESPACE_END

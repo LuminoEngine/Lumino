@@ -4,9 +4,11 @@
 #include "AudioStream.h"
 #include "WaveDecoder.h"
 #include "OggDecoder.h"
-#include "Mp3Decoder.h"
 #include "MidiDecoder.h"
 #include "AudioUtils.h"
+#if defined(LN_OS_WIN32)
+    #include "Mp3Decoder.h"
+#endif
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN

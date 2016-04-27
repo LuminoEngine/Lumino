@@ -81,8 +81,10 @@
 
 */
 #include "../Internal.h"
+#if defined(LN_OS_WIN32)
 #include "../../Audio/XAudio2/XAudio2AudioDevice.h"
 #include "../../Graphics/Device/DirectX9/DX9GraphicsDevice.h"
+#endif
 #include "../../Audio/AudioManager.h"
 #include "../../Graphics/GraphicsManager.h"
 #include "../EffectManager.h"
@@ -158,6 +160,7 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 	// ファイルIOインターフェイス
 	m_fileInterface = LN_NEW EffekseerFileInterface(m_manager->GetFileManager());
 
+#if defined(LN_OS_WIN32)
 	auto* dx9Device = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->GetGraphicsManager()->GetGraphicsDevice());
 	if (dx9Device != nullptr)
 	{
@@ -169,6 +172,7 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 
 	}
 	else
+#endif
 	{
 		//auto* glDevice = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->GetGraphicsManager()->GetGraphicsDevice());
 
@@ -192,6 +196,7 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 	m_efkManager->SetEffectLoader(::Effekseer::Effect::CreateEffectLoader(m_fileInterface));
 
 	// Audio
+#if defined(LN_OS_WIN32)
 	if (m_efkManager != nullptr)
 	{
 		auto* xa2Device = dynamic_cast<XAudio2AudioDevice*>(m_manager->GetAudioManager()->GetAudioDevice());
@@ -210,6 +215,7 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 			// サウンドドライバが無いときや NullDevice を使用している時
 		}
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

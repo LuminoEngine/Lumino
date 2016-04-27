@@ -561,8 +561,14 @@ void PrimitiveRenderer::Flush()
 {
 	if (m_flushRequested)
 	{
-		LN_CALL_CORE_COMMAND(Flush, PrimitiveRendererCore_FlushCommand);
-		m_flushRequested = false;
+		//LN_CALL_CORE_COMMAND(Flush, PrimitiveRendererCore_FlushCommand);
+        if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+            m_manager->GetPrimaryRenderingCommandList()->AddCommand<PrimitiveRendererCore_FlushCommand>(m_core);
+        }
+        else {
+            m_core->Flush();
+        }
+        m_flushRequested = false;
 	}
 }
 

@@ -76,7 +76,7 @@ RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const Vertex
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
 	obj->Create(vertexElements, elementsCount, vertexCount, data, usage);
-	return obj;
+    return RefPtr<IVertexBuffer>::StaticCast(obj);
 }
 
 //-----------------------------------------------------------------------------
@@ -85,8 +85,8 @@ RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const Vertex
 RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
-	obj->Create(indexCount, initialData, format, usage);
-	return obj;
+    obj->Create(indexCount, initialData, format, usage);
+    return RefPtr<IIndexBuffer>::StaticCast(obj);
 }
 
 //-----------------------------------------------------------------------------
@@ -97,8 +97,8 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
 	if (initialData != nullptr) {
 		obj->SetSubData(Point(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
-	}
-	return obj;
+    }
+    return RefPtr<ITexture>::StaticCast(obj);
 }
 
 //-----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint
 RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(Size(width, height), format, mipLevels), false);
-	return obj;
+    return RefPtr<ITexture>::StaticCast(obj);
 }
 
 //-----------------------------------------------------------------------------
@@ -125,7 +125,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, u
 RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
 	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(Size(width, height), format), false);
-	return obj;
+    return RefPtr<ITexture>::StaticCast(obj);
 }
 
 //-----------------------------------------------------------------------------

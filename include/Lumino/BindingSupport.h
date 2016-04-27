@@ -140,8 +140,8 @@ public:
 		difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
 
 		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
-		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
-		bool operator!=(const const_iterator& right) const	{ return m_internalItr.operator!=(right.m_internalItr); }
+//		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
+//		bool operator!=(const const_iterator& right) const	{ return m_internalItr.operator!=(right.m_internalItr); }
 		bool operator<(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
@@ -181,8 +181,8 @@ public:
 		difference_type operator-(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return 0; }
 
 		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
-		bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
-		bool operator!=(const iterator& right) const		{ return m_internalItr.operator!=(right.m_internalItr); }
+		//bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
+		//bool operator!=(const iterator& right) const		{ return m_internalItr.operator!=(right.m_internalItr); }
 		bool operator<(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator>(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
 		bool operator<=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }

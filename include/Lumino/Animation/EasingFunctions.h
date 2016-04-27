@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <cmath>
 
 LN_NAMESPACE_BEGIN
 

@@ -71,7 +71,8 @@ protected:
 	PlatformWindow(WindowManagerBase* windowManager);
 	virtual ~PlatformWindow();
 	void Initialize(const Size& clientSize);
-
+    
+LN_INTERNAL_ACCESS:
 	bool SendPlatformEvent(const PlatformEventArgs& e);
 	bool SendPlatformClosingEvent(PlatformWindow* sender);
 	bool SendPlatformWindowSizeChangedEvent(int width, int height);

@@ -77,19 +77,19 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, ShaderTechnique* tech, MM
 		const TCHAR* mmd_pass = anno->GetString();
 		if (mmd_pass != NULL)
 		{
-			if (_tcsicmp(mmd_pass, _T("object")) == 0) {
+			if (StringTraits::tcsicmp(mmd_pass, _T("object")) == 0) {
 				m_mmdPass = MMD_PASS_object;
 			}
-			else if (_tcsicmp(mmd_pass, _T("zplot")) == 0) {
+			else if (StringTraits::tcsicmp(mmd_pass, _T("zplot")) == 0) {
 				m_mmdPass = MMD_PASS_zplot;
 			}
-			else if (_tcsicmp(mmd_pass, _T("object_ss")) == 0) {
+			else if (StringTraits::tcsicmp(mmd_pass, _T("object_ss")) == 0) {
 				m_mmdPass = MMD_PASS_object_ss;
 			}
-			else if (_tcsicmp(mmd_pass, _T("shadow")) == 0) {
+			else if (StringTraits::tcsicmp(mmd_pass, _T("shadow")) == 0) {
 				m_mmdPass = MMD_PASS_shadow;
 			}
-			else if (_tcsicmp(mmd_pass, _T("edge")) == 0) {
+			else if (StringTraits::tcsicmp(mmd_pass, _T("edge")) == 0) {
 				m_mmdPass = MMD_PASS_edge;
 			}
 		}
@@ -619,7 +619,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 			StringTraits::StrNCpy(temp, 64, lc, c - lc);
 
 			temp[c - lc] = _T('\0');
-			num = _ttoi(temp);
+            num = StringTraits::ToInt32(temp);
 			lc = c + 1;
 
 			si.Index = num;
@@ -660,7 +660,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<in
 		{
 			StringTraits::StrNCpy(temp, 64, lc, c - lc);
 			temp[c - lc] = _T('\0');
-			last_num = _ttoi(temp);
+			last_num = StringTraits::ToInt32(temp);
 			is_range = true;
 			lc = c + 1;
 

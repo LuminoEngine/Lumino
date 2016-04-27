@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+class GraphicsManager;
 
 namespace detail
 {
@@ -169,7 +170,8 @@ protected:
 
 	virtual void OnStateFlushRequested();
 	virtual void OnPrimitiveFlushRequested();
-
+    
+public: //TODO:
 	friend class ShaderVariable;
 	void OnStateChanging();
 	void OnDrawing(detail::IRendererPloxy* rendererPloxy);

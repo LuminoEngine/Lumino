@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+#include <Lumino/Reflection/TypeInfo.h>
+#include <Lumino/Reflection/Property.h>
 #include <Lumino/Animation/Common.h>
 #include <Lumino/Animation/AnimationUtilities.h>
 
@@ -111,27 +113,33 @@ public:
 
 	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
 	{
-		auto* instance = static_cast<TypedAnimationCurveInstance<TValue>*>(instance_);
-
-		// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
-		// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
-		if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
-		{
-			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
-		}
-		// 時間が 0 以前の場合は初期値
-		else if (time <= 0)
-		{
-			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue, tr::PropertySetSource::ByAnimation);
-		}
-		// 補間で求める
-		else
-		{
-			tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration), tr::PropertySetSource::ByAnimation);
-		}
-
-		return (time < m_duration);
+        return (time < m_duration);
 	}
+    
+    
+     bool ffApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
+    {
+        TypedAnimationCurveInstance<TValue>* instance = static_cast<TypedAnimationCurveInstance<TValue>*>(instance_);
+        
+        // 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
+        // また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
+        if (m_duration == 0 || m_duration <= time || m_easingFunction == nullptr)
+        {
+            tr::Property::SetPropertyValueDirect(instance->targetObject, instance->targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
+        }
+        // 時間が 0 以前の場合は初期値
+        else if (time <= 0)
+        {
+            tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, instance->startValue, tr::PropertySetSource::ByAnimation);
+        }
+        // 補間で求める
+        else
+        {
+            tr::Property::SetPropertyValueDirect<TValue>(instance->targetObject, instance->targetProperty, m_easingFunction(time, instance->startValue, m_targetValue - instance->startValue, m_duration), tr::PropertySetSource::ByAnimation);
+        }
+        
+        return (time < m_duration);
+    }
 
 private:
 	TValue		m_targetValue;

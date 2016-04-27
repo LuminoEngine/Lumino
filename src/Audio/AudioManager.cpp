@@ -5,6 +5,7 @@
 
 */
 #include "Internal.h"
+#include "AudioDevice.h"
 #ifdef LN_OS_WIN32
 	#include "XAudio2/XAudio2AudioDevice.h"
 	#include "DirectMusic/DirectMusicAudioDevice.h"

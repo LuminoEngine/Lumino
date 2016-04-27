@@ -14,6 +14,7 @@ enum class WindowSystemAPI
 {
 	Default,
 	Win32API,
+    Cocoa,
 	X11,
 	//GLFW,
 };

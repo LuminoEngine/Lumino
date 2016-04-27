@@ -4,6 +4,7 @@
 	でもそれでは全く同じ管理クラスが2つできることになり、使用メモリも増える。
 */
 #include "../Internal.h"
+#include <math.h>
 #include <Lumino/Base/Hash.h>
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Utils.h>

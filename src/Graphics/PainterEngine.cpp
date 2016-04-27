@@ -14,6 +14,7 @@
 
 */
 #include "../Internal.h"
+#include <math.h>
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include "PainterEngine.h"
