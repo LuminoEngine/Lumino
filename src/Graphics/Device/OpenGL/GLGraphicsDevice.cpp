@@ -308,6 +308,47 @@ void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 
 	Logger::WriteLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
 }
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLGraphicsDevice::AttachRenderingThread()
+{
+	MakeCurrentContext(GetMainRenderingContext());
+	GraphicsDeviceBase::AttachRenderingThread();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLGraphicsDevice::DetachRenderingThread()
+{
+	MakeCurrentContext(nullptr);
+	GraphicsDeviceBase::DetachRenderingThread();
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLGraphicsDevice::OnBeginAccessContext()
+{
+	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
+	{
+		MakeCurrentContext(GetMainContext());
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void GLGraphicsDevice::OnEndAccessContext()
+{
+	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
+	{
+		MakeCurrentContext(nullptr);
+	}
+}
+
 //
 ////-----------------------------------------------------------------------------
 ////

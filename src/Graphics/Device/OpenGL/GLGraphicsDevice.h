@@ -52,6 +52,11 @@ public:
 	/// メイン描画用コンテキストの取得
 	virtual GLContext* GetMainRenderingContext() = 0;
 
+	virtual void AttachRenderingThread() override;
+	virtual void DetachRenderingThread() override;
+	virtual void OnBeginAccessContext() override;
+	virtual void OnEndAccessContext() override;
+
 public:
 	virtual void Finalize() override;
 	virtual bool IsStandalone() const override { return true; }

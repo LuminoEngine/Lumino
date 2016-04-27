@@ -452,45 +452,20 @@ ISwapChain* WGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 	obj.SafeAddRef();
 	return obj;
 }
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void WGLGraphicsDevice::AttachRenderingThread()
-{
-	MakeCurrentContext(m_mainRenderingContext);
-	GraphicsDeviceBase::AttachRenderingThread();
-}
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void WGLGraphicsDevice::OnBeginAccessContext()
+//{
+//}
 //
-//-----------------------------------------------------------------------------
-void WGLGraphicsDevice::DetachRenderingThread()
-{
-	MakeCurrentContext(nullptr);
-	GraphicsDeviceBase::DetachRenderingThread();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void WGLGraphicsDevice::OnBeginAccessContext()
-{
-	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
-	{
-		MakeCurrentContext(GetMainContext());
-	}
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void WGLGraphicsDevice::OnEndAccessContext()
-{
-	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
-	{
-		MakeCurrentContext(nullptr);
-	}
-}
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//void WGLGraphicsDevice::OnEndAccessContext()
+//{
+//}
 
 //-----------------------------------------------------------------------------
 //

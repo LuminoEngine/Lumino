@@ -35,30 +35,17 @@ class WGLGraphicsDevice
 public:
 	WGLGraphicsDevice();
 	~WGLGraphicsDevice();
-
-public:
-	/// 描画を行うスレッドで初期化する必要がある
 	void Initialize(const ConfigData& configData);
 
-	/// 指定コンテキストをアクティブにする
 	virtual void MakeCurrentContext(GLContext* context);
-
-	/// メインコンテキストの取得
 	virtual GLContext* GetMainContext();
-
-	/// メイン描画用コンテキストの取得
 	virtual GLContext* GetMainRenderingContext();
 
 public:
 	// override IGraphicsDevice
 	virtual ISwapChain* GetDefaultSwapChain() override;
 	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
-	virtual void AttachRenderingThread() override;
-	virtual void DetachRenderingThread() override;
-	virtual void OnBeginAccessContext() override;
-	virtual void OnEndAccessContext() override;
 
-public:
 	static PFNWGLGETEXTENSIONSSTRINGEXTPROC		GetExtensionsStringEXT;
 	static PFNWGLGETEXTENSIONSSTRINGARBPROC		GetExtensionsStringARB;
 	static PFNWGLCREATECONTEXTATTRIBSARBPROC	CreateContextAttribsARB;
@@ -67,7 +54,6 @@ private:
 	int CheckPlatformExtensionSupported(const char* extension);
 	bool CheckContainsExtensionString(const char* string, const GLubyte* extensions);
 
-private:
 	GLSwapChain*	m_defaultSwapChain;
 	WGLContext*		m_mainContext;
 	WGLContext*		m_mainRenderingContext;
