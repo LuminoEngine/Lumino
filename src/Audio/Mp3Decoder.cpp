@@ -113,12 +113,12 @@ void Mp3Decoder::Create(Stream* stream)
 	m_mp3SourceBufferParSec.Resize(mp3_format->wfx.nAvgBytesPerSec);
 
 	// 全体の再生時間を計算する
-	double t = static_cast< double >(m_onmemoryPCMBufferSize) / (static_cast< double >(m_waveFormat.AvgBytesPerSec) * 0.001);
+	double t = static_cast< double >(m_onmemoryPCMBufferSize) / (static_cast< double >(m_waveFormat.avgBytesPerSec) * 0.001);
 	m_totalTime = static_cast< uint32_t >(t);
 
     // 全体の再生サンプル数を求める
-	uint32_t one_channel_bits = (m_onmemoryPCMBufferSize / m_waveFormat.Channels) * 8;	// 1チャンネルあたりの総ビット数
-	m_totalSamples = one_channel_bits / m_waveFormat.BitsPerSample;
+	uint32_t one_channel_bits = (m_onmemoryPCMBufferSize / m_waveFormat.channels) * 8;	// 1チャンネルあたりの総ビット数
+	m_totalSamples = one_channel_bits / m_waveFormat.bitsPerSample;
 }
 
 //-----------------------------------------------------------------------------

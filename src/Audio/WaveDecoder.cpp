@@ -77,12 +77,12 @@ void WaveDecoder::Create(Stream* stream)
 		{
 			uint32_t chunkSize = reader.ReadUInt32();	// チャンクサイズ
 
-			mWaveFormat.FormatTag = reader.ReadUInt16();
-			mWaveFormat.Channels = reader.ReadUInt16();
-			mWaveFormat.SamplesPerSec = reader.ReadUInt32();
-			mWaveFormat.AvgBytesPerSec = reader.ReadUInt32();
-			mWaveFormat.BlockAlign = reader.ReadUInt16();
-			mWaveFormat.BitsPerSample = reader.ReadUInt16();
+			mWaveFormat.formatTag = reader.ReadUInt16();
+			mWaveFormat.channels = reader.ReadUInt16();
+			mWaveFormat.samplesPerSec = reader.ReadUInt32();
+			mWaveFormat.avgBytesPerSec = reader.ReadUInt32();
+			mWaveFormat.blockAlign = reader.ReadUInt16();
+			mWaveFormat.bitsPerSample = reader.ReadUInt16();
 
 			// 拡張部分のあるファイルの場合は読みとばす
 			if (chunkSize > 16) {
@@ -91,7 +91,7 @@ void WaveDecoder::Create(Stream* stream)
 				//mInFile->seek( mWaveFormat.EXSize, SEEK_CUR );
 			}
 			else {
-				mWaveFormat.EXSize = 0;
+				mWaveFormat.exSize = 0;
 			}
 		}
 		else if (strncmp(chunk, "data", 4) == 0)
@@ -106,12 +106,12 @@ void WaveDecoder::Create(Stream* stream)
 			mSourceDataSize = mOnmemoryPCMBufferSize;
 
 			// 全体の再生時間を計算する
-			double t = static_cast< double >(mPCMDataSize) / (static_cast< double >(mWaveFormat.AvgBytesPerSec) * 0.001);
+			double t = static_cast< double >(mPCMDataSize) / (static_cast< double >(mWaveFormat.avgBytesPerSec) * 0.001);
 			mTotalTime = static_cast< uint32_t >(t);
 
 			// 全体の再生サンプル数
-			uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.Channels) * 8;	// 1チャンネルあたりの総ビット数
-			mTotalSamples = one_channel_bits / mWaveFormat.BitsPerSample;
+			uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1チャンネルあたりの総ビット数
+			mTotalSamples = one_channel_bits / mWaveFormat.bitsPerSample;
 
 			break;
 		}

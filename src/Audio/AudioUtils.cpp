@@ -16,13 +16,13 @@ LN_NAMESPACE_AUDIO_BEGIN
 //-----------------------------------------------------------------------------
 void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)
 {
-    wavFmt->wFormatTag       = lnFmt.FormatTag;
-    wavFmt->nChannels        = lnFmt.Channels;
-    wavFmt->nSamplesPerSec   = lnFmt.SamplesPerSec;
-    wavFmt->nAvgBytesPerSec  = lnFmt.AvgBytesPerSec;
-    wavFmt->nBlockAlign      = lnFmt.BlockAlign;
-    wavFmt->wBitsPerSample   = lnFmt.BitsPerSample;
-    wavFmt->cbSize           = lnFmt.EXSize;
+    wavFmt->wFormatTag       = lnFmt.formatTag;
+    wavFmt->nChannels        = lnFmt.channels;
+    wavFmt->nSamplesPerSec   = lnFmt.samplesPerSec;
+    wavFmt->nAvgBytesPerSec  = lnFmt.avgBytesPerSec;
+    wavFmt->nBlockAlign      = lnFmt.blockAlign;
+    wavFmt->wBitsPerSample   = lnFmt.bitsPerSample;
+    wavFmt->cbSize           = lnFmt.exSize;
 }
 
 //-----------------------------------------------------------------------------
@@ -30,13 +30,13 @@ void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVE
 //-----------------------------------------------------------------------------
 void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt)
 {
-    lnFmt->FormatTag      = wavFmt.wFormatTag;
-    lnFmt->Channels       = wavFmt.nChannels;
-    lnFmt->SamplesPerSec  = wavFmt.nSamplesPerSec;
-    lnFmt->AvgBytesPerSec = wavFmt.nAvgBytesPerSec;
-    lnFmt->BlockAlign     = wavFmt.nBlockAlign;
-    lnFmt->BitsPerSample  = wavFmt.wBitsPerSample;
-    lnFmt->EXSize         = wavFmt.cbSize;
+    lnFmt->formatTag      = wavFmt.wFormatTag;
+    lnFmt->channels       = wavFmt.nChannels;
+    lnFmt->samplesPerSec  = wavFmt.nSamplesPerSec;
+    lnFmt->avgBytesPerSec = wavFmt.nAvgBytesPerSec;
+    lnFmt->blockAlign     = wavFmt.nBlockAlign;
+    lnFmt->bitsPerSample  = wavFmt.wBitsPerSample;
+    lnFmt->exSize         = wavFmt.cbSize;
 }   
 
 //-----------------------------------------------------------------------------

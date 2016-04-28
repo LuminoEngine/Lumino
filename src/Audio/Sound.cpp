@@ -358,7 +358,7 @@ int Sound::GetSamplingRate() const
 #endif
 	}
 	if (m_audioStream->CheckCreated()) {
-		return m_audioStream->GetDecoder()->GetWaveFormat()->SamplesPerSec;
+		return m_audioStream->GetDecoder()->GetWaveFormat()->samplesPerSec;
 	}
 	return 0;
 }

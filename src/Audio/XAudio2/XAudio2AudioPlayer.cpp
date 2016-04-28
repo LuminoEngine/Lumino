@@ -42,7 +42,7 @@ void XAudio2AudioPlayerBase::Initialize(AudioStream* audioStream, bool enable3d)
 
 	if (enable3d)
 	{
-		mEmitterState = LN_NEW EmitterState(m_decoder->GetWaveFormat()->Channels);
+		mEmitterState = LN_NEW EmitterState(m_decoder->GetWaveFormat()->channels);
 	}
 }
 
@@ -564,8 +564,8 @@ void XAudio2StreamingAudioPlayer::_addNextBuffer()
     // ループ上で扱うサンプル数は、チャンネル数関係無しになってる。
     // それを正しい値に変換するため、実際の 1 サンプルあたりのバイト数を計算する
     uint32_t smp_size =
-		m_decoder->GetWaveFormat()->Channels *
-		m_decoder->GetWaveFormat()->BitsPerSample / 8;
+		m_decoder->GetWaveFormat()->channels *
+		m_decoder->GetWaveFormat()->bitsPerSample / 8;
 
     if ( mIsLoop )
     {

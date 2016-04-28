@@ -72,19 +72,19 @@ void OggDecoder::Create(Stream* stream)
 	vorbis_info* ogg_info = ov_info(&mOggVorbisFile, -1);
 
 	int bits_per_sample = WORD_BITS;	// とりあえず 16bit 固定
-	mWaveFormat.FormatTag = 1;	// PCM
-	mWaveFormat.Channels = ogg_info->channels;
-	mWaveFormat.SamplesPerSec = ogg_info->rate;
-	mWaveFormat.AvgBytesPerSec = ogg_info->rate * bits_per_sample / 8 * ogg_info->channels;
-	mWaveFormat.BlockAlign = bits_per_sample / 8 * ogg_info->channels;
-	mWaveFormat.BitsPerSample = bits_per_sample;
-	mWaveFormat.EXSize = 0;
+	mWaveFormat.formatTag = 1;	// PCM
+	mWaveFormat.channels = ogg_info->channels;
+	mWaveFormat.samplesPerSec = ogg_info->rate;
+	mWaveFormat.avgBytesPerSec = ogg_info->rate * bits_per_sample / 8 * ogg_info->channels;
+	mWaveFormat.blockAlign = bits_per_sample / 8 * ogg_info->channels;
+	mWaveFormat.bitsPerSample = bits_per_sample;
+	mWaveFormat.exSize = 0;
 
 	ogg_int64_t total = ov_pcm_total(&mOggVorbisFile, -1);
 	LN_THROW((total != OV_EINVAL), InvalidFormatException, "ov_pcm_total %d\n", total);
 
 	// オンメモリに展開する時に必要な PCM サイズ
-	mOnmemoryPCMBufferSize = static_cast<uint32_t>(total)* WORD_SIZE * mWaveFormat.Channels;		// 2 は 16bit なので
+	mOnmemoryPCMBufferSize = static_cast<uint32_t>(total)* WORD_SIZE * mWaveFormat.channels;		// 2 は 16bit なので
 
 	//printf( "(要チェック！！)mOnmemoryPCMBufferSize: %d\n", mOnmemoryPCMBufferSize );
 
@@ -94,12 +94,12 @@ void OggDecoder::Create(Stream* stream)
 	ov_time_seek(&mOggVorbisFile, 0.0);
 
 	// 再生時間
-	double t = static_cast<double>(mOnmemoryPCMBufferSize) / (static_cast<double>(mWaveFormat.AvgBytesPerSec) * 0.001);
+	double t = static_cast<double>(mOnmemoryPCMBufferSize) / (static_cast<double>(mWaveFormat.avgBytesPerSec) * 0.001);
 	mTotalTime = static_cast<uint32_t>(t);
 
 	// 全体の再生サンプル数を求める
-	uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.Channels) * 8;	// 1チャンネルあたりの総ビット数
-	mTotalSamples = one_channel_bits / mWaveFormat.BitsPerSample;
+	uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1チャンネルあたりの総ビット数
+	mTotalSamples = one_channel_bits / mWaveFormat.bitsPerSample;
 
 	// ファイルに埋め込まれている "LOOPSTART" "LOOPLENGTH" コメントを探す
 	vorbis_comment* ogg_comment = ov_comment(&mOggVorbisFile, -1);
@@ -179,7 +179,7 @@ void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 	//}
 	//else
 	{
-		ov_pcm_seek(&mOggVorbisFile, (seekPos / (WORD_SIZE * mWaveFormat.Channels)));
+		ov_pcm_seek(&mOggVorbisFile, (seekPos / (WORD_SIZE * mWaveFormat.channels)));
 
 		// 0 クリア
 		memset(buffer, 0, buffer_size);

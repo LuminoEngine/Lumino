@@ -24,20 +24,18 @@ enum StreamFormat
 	StreamFormat_Mp3,				///< MP3
 	StreamFormat_Ogg,				///< OGG
 	StreamFormat_Midi,				///< MIDI
-
-	StreamFormat_Max,				///< (terminator)
 };
 
 /// PCM フォーマット
 struct WaveFormat
 {
-	uint16_t	FormatTag;
-	uint16_t	Channels;
-	uint32_t	SamplesPerSec;
-	uint32_t	AvgBytesPerSec;
-	uint16_t	BlockAlign;
-	uint16_t	BitsPerSample;
-	uint16_t	EXSize;
+	uint16_t	formatTag;
+	uint16_t	channels;
+	uint32_t	samplesPerSec;
+	uint32_t	avgBytesPerSec;
+	uint16_t	blockAlign;
+	uint16_t	bitsPerSample;
+	uint16_t	exSize;
 };
 
 /** DirectMusic の初期化方法。*/

@@ -23,7 +23,7 @@ public:
 	virtual uint32_t GetTotalUnits() const { return mTotalSamples; }
 	virtual byte_t* GetOnmemoryPCMBuffer() const { return mOnmemoryPCMBuffer; }
 	virtual uint32_t GetOnmemoryPCMBufferSize() const { return mOnmemoryPCMBufferSize; }
-	virtual uint32_t GetBytesPerSec() const { return mWaveFormat.AvgBytesPerSec; }
+	virtual uint32_t GetBytesPerSec() const { return mWaveFormat.avgBytesPerSec; }
 	virtual void GetLoopState(uint32_t* begin, uint32_t* length) const { *begin = 0; *length = 0; }
 	virtual void FillOnmemoryBuffer();
 	virtual void Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize);
