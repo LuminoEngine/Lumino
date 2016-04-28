@@ -26,7 +26,7 @@ namespace Driver
 GLGraphicsDevice::GLGraphicsDevice()
 	: m_deviceState(DeviceState_Lost)
 	, m_renderer(NULL)
-	, m_openGLMajorVersion(2)
+	, m_openGLMajorVersion(3)
 	, m_openGLMinorVersion(1)
 {
 }

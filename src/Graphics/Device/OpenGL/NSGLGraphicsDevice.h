@@ -52,8 +52,11 @@ public:
 	// IGraphicsDevice interface
 	virtual ISwapChain* GetDefaultSwapChain() override;
 	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
-
+    
+    void* GetProcAddress(const char* procname);
+    
 private:
+    CFBundleRef     m_framework;
 	GLSwapChain*	m_defaultSwapChain;
 	NSGLContext*	m_mainContext;
 	NSGLContext*	m_mainRenderingContext;

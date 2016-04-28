@@ -619,6 +619,9 @@ void CocoaPlatformWindow::Initialize(CocoaPlatformWindowManager* windowManager, 
 		[m_window setRestorable:NO];	// とりあえずいらないです
 	}
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
+	// clientSize を覚えておきたい
+	SendPlatformWindowSizeChangedEvent(width, height);
 }
 
 //-----------------------------------------------------------------------------
@@ -629,7 +632,7 @@ void CocoaPlatformWindow::SetVisible(bool visible)
 		// makeKeyAndOrderFront だけだとウィンドウが前面に出ないことがあるようだ
 		// http://xcatsan.blogspot.jp/2009/02/blog-post_12.html
 		// 最終手段はこれ
-		// [NSApp activateIgnoringOtherApps:YES];
+        [NSApp activateIgnoringOtherApps:YES];
 		// GLFW でもこれを行っているが、「表示のたびに毎回やるのはまずいんじゃないの？」みたいな注意書きがある。
 
 	    [m_window makeKeyAndOrderFront:nil];

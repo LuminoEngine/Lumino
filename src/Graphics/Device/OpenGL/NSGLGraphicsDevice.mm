@@ -1,6 +1,6 @@
 ﻿
 #include "../../../Internal.h"
-#include <Lumino/Platform/PlatformWindow.h>
+#include "../../../Platform/Cocoa/CocoaPlatformWindow.h"
 #include "NSGLGraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN
@@ -36,12 +36,12 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 	int major = device->GetOpenGLMajorVersio();
 	int minor = device->GetOpenGLMinorVersio();
 	bool forward = true;
-	int redBits = 8;
-	int greenBits = 8;
-	int blueBits = 8;
-	int alphaBits = 8;
-	int depthBits = 24;
-	int stencilBits = 8;
+	int redBits = DONT_CARE;//8;
+	int greenBits = DONT_CARE;//8;
+	int blueBits = DONT_CARE;//8;
+	int alphaBits = DONT_CARE;//8;
+	int depthBits = DONT_CARE;//24;
+	int stencilBits = DONT_CARE;//8;
 	int samples = DONT_CARE;
     int auxBuffers = DONT_CARE;
 	int accumRedBits = DONT_CARE;
@@ -54,7 +54,7 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (major == 3 && minor < 2)
     {
-		LN_THROW(0, InvalidOperationException, "NSGL: The targeted version of OS X does not support OpenGL 3.0 or 3.1");
+		//LN_THROW(0, InvalidOperationException, "NSGL: The targeted version of OS X does not support OpenGL 3.0 or 3.1");
     }
 
     if (major > 2)
@@ -105,7 +105,8 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     if (major >= 3)
     {
-        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersionLegacy);
+        //ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
@@ -195,6 +196,12 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
     {
 		LN_THROW(0, InvalidOperationException, "NSGL: Failed to create OpenGL context");
     }
+    
+    if (window != nullptr)
+    {
+        id view = static_cast<CocoaPlatformWindow*>(window)->GetView();
+        [m_context setView:view];
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -210,7 +217,8 @@ void NSGLContext::SwapBuffers()
 
 //-----------------------------------------------------------------------------
 NSGLGraphicsDevice::NSGLGraphicsDevice()
-	: m_defaultSwapChain(nullptr)
+	: m_framework(nullptr)
+    , m_defaultSwapChain(nullptr)
 	, m_mainContext(nullptr)
 	, m_mainRenderingContext(nullptr)
 {
@@ -228,6 +236,10 @@ NSGLGraphicsDevice::~NSGLGraphicsDevice()
 void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
 {
 	GLGraphicsDevice::Initialize(configData);
+    
+    
+    m_framework = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
+    LN_THROW(m_framework != nullptr, InvalidOperationException, "NSGL: Failed to locate OpenGL framework");
 
 	// レンダリングスレッド以外から OpenGL の API へアクセスする用
 	m_mainContext = LN_NEW NSGLContext();
@@ -241,6 +253,21 @@ void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
 	// TODO: 共通処理にしていいかも？
 	MakeCurrentContext(m_mainContext);
     
+    //void* fff = GetProcAddress("glBindVertexArrayAPPLE");
+    //fff = GetProcAddress("glDeleteVertexArraysAPPLE");
+    //fff = GetProcAddress("glGenVertexArraysAPPLE");
+    //fff = GetProcAddress("glIsVertexArrayAPPLE");
+    
+    int r = 0;
+    r = ((glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)GetProcAddress("glBindVertexArrayAPPLE")) == NULL) || r;
+    r = ((glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)GetProcAddress("glDeleteVertexArraysAPPLE")) == NULL) || r;
+    r = ((glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)GetProcAddress("glGenVertexArraysAPPLE")) == NULL) || r;
+    r = ((glIsVertexArray = (PFNGLISVERTEXARRAYPROC)GetProcAddress("glIsVertexArrayAPPLE")) == NULL) || r;
+    
+    r = ((glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)GetProcAddress("glCheckFramebufferStatus")) == NULL) || r;
+    
+
+    
     // TODO: バージョン選択
     //SelectGLVersion(configData.OpenGLMajorVersion, configData.OpenGLMajorVersion);
     
@@ -248,6 +275,17 @@ void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
     {
         LN_THROW(0, InvalidOperationException);
     }
+    
+    GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+    if (fs == GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("GL_FRAMEBUFFER_COMPLETE¥n");
+    }
+    if (fs == GL_FRAMEBUFFER_UNSUPPORTED)
+    {
+        printf("GL_FRAMEBUFFER_UNSUPPORTED¥n");
+    }
+
     
     // glewInit() は成功していても、glGetError() がエラーを返す状態になっていることがある。
     // glGetError() はキューのようになっていて、1回呼び出すと溜まっているエラーが消費され、次のエラーを返す。
@@ -310,6 +348,21 @@ ISwapChain* NSGLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
 	obj.SafeAddRef();
 	return obj;
 }
+    
+    //-----------------------------------------------------------------------------
+    void* NSGLGraphicsDevice::GetProcAddress(const char* procname)
+    {
+        CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                           procname,
+                                                           kCFStringEncodingASCII);
+        
+        void* symbol = CFBundleGetFunctionPointerForName(m_framework,
+                                                              symbolName);
+        
+        CFRelease(symbolName);
+        
+        return symbol;
+    }
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

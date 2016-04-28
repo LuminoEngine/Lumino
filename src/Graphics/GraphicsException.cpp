@@ -69,6 +69,9 @@ OpenGLException::OpenGLException(unsigned int gl_enum)
 	case GL_STACK_OVERFLOW:		SetMessage(caption.c_str(), _T("GL_STACK_OVERFLOW")); break;
 	case GL_STACK_UNDERFLOW:	SetMessage(caption.c_str(), _T("GL_STACK_UNDERFLOW")); break;
 	case GL_OUT_OF_MEMORY:		SetMessage(caption.c_str(), _T("GL_OUT_OF_MEMORY")); break;
+            
+        // 0x0506 1286
+        case GL_INVALID_FRAMEBUFFER_OPERATION:SetMessage(caption.c_str(), _T("GL_OUT_OF_MEMORY")); break;
 	default:					SetMessage(caption.c_str(), _T("GLenum %d"), gl_enum); break;
 	}
 }

@@ -160,7 +160,17 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 
 	// 各設定をデフォルトに戻す
 	glUseProgram(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
+    
+    GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+    /*
+     GL_FRAMEBUFFER_COMPLETE	フレームバッファが完全である	36053
+     GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT	フレームバッファのアタッチメントポイントが不完全である。必要なアタッチメントが無いか、テクスチャレンダラーバッファが有効でない	36054
+     GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT	フレームバッファに有効なアタッチメントが無い	36055
+     GL_FRAMEBUFFER_INCOMPLETE_DISMISIONS	アタッチメントの高さか幅が異なる	36057
+     GL_FRAMEBUFFER_INCOMPLETE_FORMATS	アタッチメントが使用している内部フォーマットがレンダリング可能なものではない
+     GL_FRAMEBUFFER_UNSUPPORTED	フレームバッファ内のアタッチメントが使用している内部フォーマットの組み合わせがレンダリングできないターゲットになっている	36061
+     */
 
 	// ブレンドや深度テスト無し。どうせ全部上書きする。
 	glDisable(GL_BLEND);
@@ -206,7 +216,7 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
 
-	// 後始末
+    // 後始末
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);

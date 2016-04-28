@@ -251,7 +251,24 @@ void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t s
 	glClearColor(color.r, color.g, color.b, color.a); LN_CHECK_GLERROR();
 	glClearDepth(z); LN_CHECK_GLERROR();
 	glClearStencil(0); LN_CHECK_GLERROR();
+    
+    /*
+    GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+    if (fs == GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("GL_FRAMEBUFFER_COMPLETE¥n");
+    }
+    if (fs == GL_FRAMEBUFFER_UNSUPPORTED)
+    {
+        printf("GL_FRAMEBUFFER_UNSUPPORTED¥n");
+    }
+    if (fs == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+    {
+        printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT¥n");
+    }
+     */
 
+    // TODO: フレームバッファのサイズが０だと失敗する
 	glClear(
 		((flags.TestFlag(ClearFlags::Color)) ? GL_COLOR_BUFFER_BIT : 0) |
 		((flags.TestFlag(ClearFlags::Depth)) ? GL_DEPTH_BUFFER_BIT : 0) |
@@ -540,10 +557,10 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 void GLRenderer::UpdateFrameBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
-
-	if (m_modifiedFrameBuffer)
-	{
-		// カラーバッファ
+    
+    if (m_modifiedFrameBuffer)
+    {
+        // カラーバッファ
 		for (int i = 0; i < MaxMultiRenderTargets; ++i)
 		{
 			// マルチターゲットの参考:http://ramemiso.hateblo.jp/entry/2013/10/20/001909
@@ -564,13 +581,13 @@ void GLRenderer::UpdateFrameBuffer()
 				LN_CHECK_GLERROR();
 			}
 		}
-
+        
 		// 深度バッファ
 		if (m_currentDepthBuffer != NULL)
-		{
+        {
 			// 深度バッファをセットする
 			glFramebufferRenderbuffer(
-				GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+				GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,//GL_DEPTH_STENCIL_ATTACHMENT,
 				GL_RENDERBUFFER, m_currentDepthBuffer->GetGLTexture());
 			LN_CHECK_GLERROR();
 		}
@@ -587,6 +604,7 @@ void GLRenderer::UpdateFrameBuffer()
 		//printf("");
 	}
 	m_modifiedFrameBuffer = false;
+    
 }
 
 //-----------------------------------------------------------------------------

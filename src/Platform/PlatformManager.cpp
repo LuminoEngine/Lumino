@@ -169,6 +169,8 @@ void PlatformManager::Initialize(const Settings& settings)
 
 	// MainWindow
 	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->GetMainWindow());
+    
+    m_windowManager->GetMainWindow()->SetVisible(true);
 }
 
 //-----------------------------------------------------------------------------
