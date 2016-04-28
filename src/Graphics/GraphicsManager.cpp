@@ -882,6 +882,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     }
     
 #elif defined(LN_OS_MAC)
+    m_platformTextureLoading = false;
+    
     Driver::NSGLGraphicsDevice::ConfigData data;
     data.MainWindow = configData.MainWindow;
     data.OpenGLMajorVersion = 2;
@@ -893,6 +895,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     device->Release();
     
 #elif defined(LN_X11)
+    m_platformTextureLoading = false;
+    
 	auto* device = LN_NEW Driver::GLXGraphicsDevice();
 	device->Initialize(data);
 	ChangeDevice(device);
