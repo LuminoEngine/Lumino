@@ -151,7 +151,7 @@ void Sound::SetLoopEnabled(bool enabled)
 {
 	m_loopEnabled = enabled;
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->loop(enabled);
+		m_audioPlayer->SetLoopEnabled(enabled);
 	}
 }
 
@@ -172,7 +172,7 @@ void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 	m_loopLength = length;
 
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->setLoopState(begin, length);
+		m_audioPlayer->SetLoopState(begin, length);
 	}
 }
 
@@ -184,7 +184,7 @@ void Sound::Play()
 	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayingState::Playing;
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->play();
+		m_audioPlayer->Play();
 	}
 }
 
@@ -196,7 +196,7 @@ void Sound::Stop()
 	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayingState::Stopped;
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->stop();
+		m_audioPlayer->Stop();
 	}
 }
 
@@ -208,7 +208,7 @@ void Sound::Pause()
 	Threading::MutexScopedLock lock(m_mutex);
 	m_playState = SoundPlayingState::Pausing;
 	if (m_audioPlayer != NULL) {
-		m_audioPlayer->pause(true);
+		m_audioPlayer->Pause(true);
 	}
 }
 
@@ -222,7 +222,7 @@ void Sound::Resume()
 	{
 		m_playState = SoundPlayingState::Playing;
 		if (m_audioPlayer != NULL) {
-			m_audioPlayer->pause(false);
+			m_audioPlayer->Pause(false);
 		}
 	}
 }
@@ -340,7 +340,7 @@ int64_t Sound::GetTotalSamples() const
 int64_t Sound::GetPlayedSamples() const
 {
 	if (m_audioPlayer != NULL) {
-		return m_audioPlayer->getPlayedSamples();
+		return m_audioPlayer->GetPlayedSamples();
 	}
 	return 0;
 }
@@ -452,8 +452,8 @@ void Sound::Polling(float elapsedTime)
 		m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
 		m_audioPlayer->SetVolume(m_volume);
 		m_audioPlayer->SetPitch(m_pitch);
-		m_audioPlayer->loop(m_loopEnabled);
-		m_audioPlayer->setLoopState(m_loopBegin, m_loopLength);
+		m_audioPlayer->SetLoopEnabled(m_loopEnabled);
+		m_audioPlayer->SetLoopState(m_loopBegin, m_loopLength);
 		m_audioPlayer->setPosition(m_position);
 		m_audioPlayer->setVelocity(m_velocity);
 		m_audioPlayer->setEmitterDistance(m_maxDistance);
@@ -463,18 +463,18 @@ void Sound::Polling(float elapsedTime)
 		case SoundPlayingState::Stopped:
 			break;
 		case SoundPlayingState::Playing:
-			m_audioPlayer->play();
+			m_audioPlayer->Play();
 			break;
 		case SoundPlayingState::Pausing:
-			m_audioPlayer->play();
-			m_audioPlayer->pause(true);
+			m_audioPlayer->Play();
+			m_audioPlayer->Pause(true);
 			break;
 		}
 	}
 
 	if (m_audioPlayer != NULL)
 	{
-		if (!m_audioPlayer->polling()) {
+		if (!m_audioPlayer->Polling()) {
 			m_playState = SoundPlayingState::Stopped;
 		}
 	}
@@ -506,7 +506,7 @@ void Sound::Polling(float elapsedTime)
 			case SoundFadeBehavior::Stop:
 			case SoundFadeBehavior::StopReset:
 				if (m_audioPlayer != NULL) {
-					m_audioPlayer->stop();
+					m_audioPlayer->Stop();
 				}
 				m_playState = SoundPlayingState::Stopped;
 				break;
@@ -514,7 +514,7 @@ void Sound::Polling(float elapsedTime)
 			case SoundFadeBehavior::Pause:
 			case SoundFadeBehavior::PauseReset:
 				if (m_audioPlayer != NULL) {
-					m_audioPlayer->pause(true);
+					m_audioPlayer->Pause(true);
 				}
 				m_playState = SoundPlayingState::Pausing;
 				break;

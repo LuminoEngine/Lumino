@@ -83,7 +83,7 @@ void DirectMusicAudioPlayer::SetPitch(float pitch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-uint64_t DirectMusicAudioPlayer::getPlayedSamples() const
+uint64_t DirectMusicAudioPlayer::GetPlayedSamples() const
 {
 	if (m_segment) {
 		return m_segment->GetPlayPosition();
@@ -94,7 +94,7 @@ uint64_t DirectMusicAudioPlayer::getPlayedSamples() const
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-void DirectMusicAudioPlayer::setLoopState(uint32_t loopBegin, uint32_t loopLength)
+void DirectMusicAudioPlayer::SetLoopState(uint32_t loopBegin, uint32_t loopLength)
 {
 	mLoopBegin = loopBegin;
 	mLoopLength = loopLength;
@@ -103,7 +103,7 @@ void DirectMusicAudioPlayer::setLoopState(uint32_t loopBegin, uint32_t loopLengt
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicAudioPlayer::play()
+void DirectMusicAudioPlayer::Play()
 {
 	if (!DirectMusicManager::GetInstance()->IsInitialized())
 	{
@@ -131,7 +131,7 @@ void DirectMusicAudioPlayer::play()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicAudioPlayer::stop()
+void DirectMusicAudioPlayer::Stop()
 {
 	if (m_segment) {
 		m_segment->Stop();
@@ -143,7 +143,7 @@ void DirectMusicAudioPlayer::stop()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DirectMusicAudioPlayer::pause(bool isPause)
+void DirectMusicAudioPlayer::Pause(bool isPause)
 {
 	// 再生中の場合
 	if (mIsPlaying)
@@ -169,7 +169,7 @@ void DirectMusicAudioPlayer::pause(bool isPause)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool DirectMusicAudioPlayer::polling()
+bool DirectMusicAudioPlayer::Polling()
 {
 	// 再生中ではない場合は中断
 	if (!mIsPlaying) {
@@ -191,7 +191,7 @@ bool DirectMusicAudioPlayer::polling()
 			// そのため、音が鳴っている事と、再生位置による二重判定を行う。
 			if (!m_segment->IsPlaying() && m_segment->GetPlayPosition() >= m_segment->GetTotalTime())
 			{
-				stop();
+				Stop();
 				return false;
 			}
 		}
@@ -243,7 +243,7 @@ void DirectMusicAudioPlayer::onFinishDMInit(IDirectMusicPerformance8* dmPerforma
 void DirectMusicAudioPlayer::_play()
 {
 	// とりあえず停止
-	stop();
+	Stop();
 
 	if (!m_segment)
 	{

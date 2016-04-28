@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include "DirectMusic.h"
 #include "../AudioPlayer.h"
 
@@ -28,34 +27,33 @@ public:
 	DirectMusicAudioPlayer(AudioDevice* device);
 	virtual ~DirectMusicAudioPlayer();
 
-public:
-	virtual void			Initialize(AudioStream* audioStream, bool enable3d);
-	virtual void			SetVolume(float volume);
-	virtual void			SetPitch(float pitch);
-	virtual void			setLoopState(uint32_t loop_begin, uint32_t loop_length);
-	virtual uint64_t		getPlayedSamples() const;
-	virtual void			play();
-	virtual void			stop();
-	virtual void			pause(bool is_pause);
-	virtual bool			polling();
-	virtual bool			is3DSound() { return false; }
-	virtual void			setPosition(const Vector3& pos) { }
-	virtual const Vector3&	getPosition() { return Vector3::Zero; }
-	virtual void			setVelocity(const Vector3& v) { }
-	virtual void			setEmitterDistance(float distance) { }
-	virtual float			getEmitterDistance() const { return 0; }
+	// AudioPlayer interface
+	virtual void			Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void			SetVolume(float volume) override;
+	virtual void			SetPitch(float pitch) override;
+	virtual void			SetLoopState(uint32_t loop_begin, uint32_t loop_length) override;
+	virtual uint64_t		GetPlayedSamples() const override;
+	virtual void			Play() override;
+	virtual void			Stop() override;
+	virtual void			Pause(bool is_pause) override;
+	virtual bool			Polling() override;
+	virtual bool			Is3DSound()  override { return false; }
+	virtual void			setPosition(const Vector3& pos) override { }
+	virtual const Vector3&	getPosition() override { return Vector3::Zero; }
+	virtual void			setVelocity(const Vector3& v) override { }
+	virtual void			setEmitterDistance(float distance) override { }
+	virtual float			getEmitterDistance() const override { return 0; }
 
     uint32_t getTotalTime() const;
 
-public:
-    virtual void onFinishDMInit( IDirectMusicPerformance8* dm_performance );
+	// DirectMusicManager::PlayerObject interface
+	virtual void onFinishDMInit(IDirectMusicPerformance8* dm_performance) override;
 
 private:
 
 	/// 実際に再生する
     void _play();
 
-private:
 	//AudioDevice*		m_device;		///< 管理クラス
 	MidiDecoder*		m_midiDecoder;	///< MidiDecoder* にキャストした AudioDecoder
     DirectMusicSegment*	m_segment;		///< DirectMusic の再生管理

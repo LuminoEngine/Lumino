@@ -1,12 +1,7 @@
-﻿/*
-	@file	XAudio2AudioPlayer.h
-*/
+﻿
 #pragma once
-//
-//#include "../../../Threading/Mutex.h"
 #include "XAudio2AudioDevice.h"
 #include "../AudioPlayer.h"
-//#include "../../Interface.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
@@ -21,13 +16,13 @@ public:
     virtual ~XAudio2AudioPlayerBase();
 
 public:
-	virtual void			Initialize(AudioStream* audioStream, bool enable3d);
-    virtual bool			is3DSound() { return ( mEmitterState != NULL ); }
-    virtual void			setPosition( const Vector3& pos );
-    virtual const Vector3&	getPosition() { return mEmitterState->Position; }
-    virtual void			setVelocity( const Vector3& v );
-	virtual void			setEmitterDistance(float distance) { if (mEmitterState) mEmitterState->Distance = distance; }
-	virtual float			getEmitterDistance() const { return ( mEmitterState ) ? mEmitterState->Distance : 0; }
+	virtual void			Initialize(AudioStream* audioStream, bool enable3d) override;
+    virtual bool			Is3DSound() override { return ( mEmitterState != NULL ); }
+    virtual void			setPosition( const Vector3& pos ) override;
+    virtual const Vector3&	getPosition() override { return mEmitterState->Position; }
+    virtual void			setVelocity( const Vector3& v ) override;
+	virtual void			setEmitterDistance(float distance) override { if (mEmitterState) mEmitterState->Distance = distance; }
+	virtual float			getEmitterDistance() const override { return ( mEmitterState ) ? mEmitterState->Distance : 0; }
 
 public:
 
@@ -38,8 +33,8 @@ public:
     virtual EmitterState* getEmitterState() const { return mEmitterState; }
 
 protected:
-	XAudio2AudioDevice*    m_XAudio2AudioDevice;	///< 管理クラス
-    EmitterState*			mEmitterState;			///< 3D 音源の情報 (3D音源として初期化された場合に作成される)
+	XAudio2AudioDevice*    m_XAudio2AudioDevice;	// 管理クラス
+    EmitterState*			mEmitterState;			// 3D 音源の情報 (3D音源として初期化された場合に作成される)
 };
 
 /// オンメモリデータの再生クラス
@@ -51,18 +46,18 @@ public:
 	virtual ~XAudio2OnMemoryAudioPlayer();
 
 public:
-	virtual void		Initialize(AudioStream* audioStream, bool enable3d);
-	virtual void		SetVolume(float volume);
-	virtual void		SetPitch(float pitch);
-    virtual uint64_t	getPlayedSamples() const;
-	virtual void		play();
-	virtual void		stop();
-	virtual void		pause( bool is_pause_ );
-	virtual bool        polling();
+	virtual void		Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void		SetVolume(float volume) override;
+	virtual void		SetPitch(float pitch) override;
+    virtual uint64_t	GetPlayedSamples() const override;
+	virtual void		Play() override;
+	virtual void		Stop() override;
+	virtual void		Pause( bool is_pause_ ) override;
+	virtual bool        Polling() override;
 
-public:
-    virtual IXAudio2SourceVoice* getXAudio2SourceVoice() const { return mSourceVoice; }
-    virtual EmitterState* getEmitterState() const { return mEmitterState; }
+	// XAudio2AudioPlayerBase interface
+    virtual IXAudio2SourceVoice* getXAudio2SourceVoice() const override { return mSourceVoice; }
+    virtual EmitterState* getEmitterState() const override { return mEmitterState; }
 
 private:
 	IXAudio2SourceVoice*	    mSourceVoice;
@@ -82,18 +77,18 @@ public:
 	virtual ~XAudio2StreamingAudioPlayer();
 
 public:
-	virtual void		Initialize(AudioStream* audioStream, bool enable3d);
-	virtual void		SetVolume(float volume);
-	virtual void		SetPitch(float pitch);
-	virtual uint64_t	getPlayedSamples() const;
-	virtual void		play();
-	virtual void		stop();
-	virtual void		pause( bool is_pause_ );
-	virtual bool		polling();
+	virtual void		Initialize(AudioStream* audioStream, bool enable3d) override;
+	virtual void		SetVolume(float volume) override;
+	virtual void		SetPitch(float pitch) override;
+	virtual uint64_t	GetPlayedSamples() const override;
+	virtual void		Play() override;
+	virtual void		Stop() override;
+	virtual void		Pause( bool is_pause_ ) override;
+	virtual bool		Polling() override;
 
-public:
-    virtual IXAudio2SourceVoice* getXAudio2SourceVoice() const { return mSourceVoice; }
-    virtual EmitterState* getEmitterState() const { return mEmitterState; }
+	// XAudio2AudioPlayerBase interface
+    virtual IXAudio2SourceVoice* getXAudio2SourceVoice() const  override { return mSourceVoice; }
+    virtual EmitterState* getEmitterState() const override { return mEmitterState; }
 
 private:
 

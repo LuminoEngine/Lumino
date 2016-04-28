@@ -10,6 +10,20 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //=============================================================================
+// AudioPlayerState 
+//=============================================================================
+AudioPlayerState::AudioPlayerState()
+	: m_modified(ModifiedFlags_None)
+	, m_volume(1.0f)
+	, m_pitch(1.0f)
+	, m_loopEnabled(false)
+	, m_loopBegin(0)
+	, m_loopLength(0)
+	, m_playingState(SoundPlayingState::Stopped)
+{
+}
+
+//=============================================================================
 // AudioPlayer 
 //=============================================================================
 
@@ -74,7 +88,7 @@ void AudioPlayer::SetPitch(float pitch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void AudioPlayer::setLoopState(uint32_t loop_begin, uint32_t loop_length)
+void AudioPlayer::SetLoopState(uint32_t loop_begin, uint32_t loop_length)
 {
     if ( loop_begin == 0 && loop_length == 0 )
     {

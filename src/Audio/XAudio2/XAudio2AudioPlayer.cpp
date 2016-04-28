@@ -134,7 +134,7 @@ void XAudio2OnMemoryAudioPlayer::SetPitch(float pitch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-uint64_t XAudio2OnMemoryAudioPlayer::getPlayedSamples() const
+uint64_t XAudio2OnMemoryAudioPlayer::GetPlayedSamples() const
 {
     if ( mSourceVoice )
     {
@@ -148,9 +148,9 @@ uint64_t XAudio2OnMemoryAudioPlayer::getPlayedSamples() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::play()
+void XAudio2OnMemoryAudioPlayer::Play()
 {
-    stop();
+	Stop();
 
     // XAudio のソースボイス作成
 	const WaveFormat* ln_format = m_decoder->GetWaveFormat();
@@ -191,13 +191,13 @@ void XAudio2OnMemoryAudioPlayer::play()
 	mIsPlaying = true;
 	mIsPausing = false;
 
-	polling();	// 3D オーディオの計算を行うため
+	Polling();	// 3D オーディオの計算を行うため
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::stop()
+void XAudio2OnMemoryAudioPlayer::Stop()
 {
     if ( mSourceVoice )
 	{
@@ -215,7 +215,7 @@ void XAudio2OnMemoryAudioPlayer::stop()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::pause( bool isPause )
+void XAudio2OnMemoryAudioPlayer::Pause( bool isPause )
 {
 	// 再生中の場合
 	if ( mSourceVoice && mIsPlaying )
@@ -238,7 +238,7 @@ void XAudio2OnMemoryAudioPlayer::pause( bool isPause )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool XAudio2OnMemoryAudioPlayer::polling()
+bool XAudio2OnMemoryAudioPlayer::Polling()
 {
 	// 再生中ではない場合は中断
 	if (!mSourceVoice || !mIsPlaying) {
@@ -258,7 +258,7 @@ bool XAudio2OnMemoryAudioPlayer::polling()
 		// ボイスキューが空になった場合
 		if ( state.BuffersQueued == 0 )
 		{
-			stop();
+			Stop();
 			return false;
 		}
 	}
@@ -363,7 +363,7 @@ void XAudio2StreamingAudioPlayer::SetPitch(float pitch)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-uint64_t XAudio2StreamingAudioPlayer::getPlayedSamples() const
+uint64_t XAudio2StreamingAudioPlayer::GetPlayedSamples() const
 {
     if ( mSourceVoice )
     {
@@ -377,9 +377,9 @@ uint64_t XAudio2StreamingAudioPlayer::getPlayedSamples() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::play()
+void XAudio2StreamingAudioPlayer::Play()
 {
-    stop();
+	Stop();
 
     // ソースボイス作成
 	const WaveFormat* ln_format = m_decoder->GetWaveFormat();
@@ -415,13 +415,13 @@ void XAudio2StreamingAudioPlayer::play()
 	mIsPlaying = true;
 	mIsPausing = false;
 
-	polling();	// 3D オーディオの計算を行うため
+	Polling();	// 3D オーディオの計算を行うため
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::stop()
+void XAudio2StreamingAudioPlayer::Stop()
 {
 	if ( mSourceVoice )
 	{
@@ -439,7 +439,7 @@ void XAudio2StreamingAudioPlayer::stop()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::pause( bool isPause )
+void XAudio2StreamingAudioPlayer::Pause( bool isPause )
 {
 	// 再生中の場合
 	if ( mSourceVoice && mIsPlaying )
@@ -462,7 +462,7 @@ void XAudio2StreamingAudioPlayer::pause( bool isPause )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool XAudio2StreamingAudioPlayer::polling()
+bool XAudio2StreamingAudioPlayer::Polling()
 {
 	// 再生中ではない場合は中断
 	if ( !mSourceVoice || !mIsPlaying ) {
@@ -510,7 +510,7 @@ bool XAudio2StreamingAudioPlayer::polling()
 		// キューが完全になくなった場合、停止とする
 		if ( voice_state.BuffersQueued == 0 )
 		{
-			stop();
+			Stop();
 			return false;
 		}
 	}
