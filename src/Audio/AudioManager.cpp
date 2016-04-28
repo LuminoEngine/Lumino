@@ -10,6 +10,7 @@
 	#include "XAudio2/XAudio2AudioDevice.h"
 	#include "DirectMusic/DirectMusicAudioDevice.h"
 #endif
+#include "NullAudioDevice.h"
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/ASyncIOObject.h>
 #include <Lumino/Audio/Sound.h>
@@ -109,6 +110,11 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 	}
 #else
 #endif
+	if (m_audioDevice == nullptr)
+	{
+		m_audioDevice = LN_NEW NullAudioDevice();
+	}
+
 	// ƒLƒƒƒbƒVƒ…‰Šú‰»
 	m_audioStreamCache = LN_NEW CacheManager(settings.StreamCacheObjectCount, settings.StreamSourceCacheMemorySize);
 

@@ -255,18 +255,18 @@ void XAudio2AudioDevice::Update()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void XAudio2AudioDevice::SetListenerState(const Vector3& position, const Vector3& front)
-{
-    // 念のために正規化してから設定する
-	Vector3 n = Vector3::Normalize(front);
-
-	mListenerState.OrientFront.x = n.x;
-	mListenerState.OrientFront.y = n.y;
-	mListenerState.OrientFront.z = n.z;
-	mListenerState.Position.x = position.x;
-	mListenerState.Position.y = position.y;
-	mListenerState.Position.z = position.z;
-}
+//void XAudio2AudioDevice::SetListenerState(const Vector3& position, const Vector3& front)
+//{
+//    // 念のために正規化してから設定する
+//	Vector3 n = Vector3::Normalize(front);
+//
+//	mListenerState.OrientFront.x = n.x;
+//	mListenerState.OrientFront.y = n.y;
+//	mListenerState.OrientFront.z = n.z;
+//	mListenerState.Position.x = position.x;
+//	mListenerState.Position.y = position.y;
+//	mListenerState.Position.z = position.z;
+//}
 
 //=============================================================================
 // EmitterState 

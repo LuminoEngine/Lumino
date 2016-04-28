@@ -136,6 +136,8 @@ set(LN_SOURCES_Audio
 	src/Audio/Internal.h
 	src/Audio/MidiDecoder.cpp
 	src/Audio/MidiDecoder.h
+	src/Audio/NullAudioDevice.cpp
+	src/Audio/NullAudioDevice.h
 	src/Audio/OggDecoder.cpp
 	src/Audio/OggDecoder.h
 	src/Audio/Sound.cpp

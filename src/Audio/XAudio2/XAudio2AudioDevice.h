@@ -78,10 +78,10 @@ public:
 	void CalcEmitterState(EmitterState* emitter);
 
 public:
-	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode);
-    virtual void Update();
-    virtual void SetListenerState( const Vector3& position, const Vector3& front );
-    virtual void SetMetreUnitDistance( float d ) { mMetreUnitDistanceInv = 1.0f / d; }
+	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) override;
+    virtual void Update() override;
+    //virtual void SetListenerState( const Vector3& position, const Vector3& front ) override;
+    virtual void SetMetreUnitDistance( float d ) override { mMetreUnitDistanceInv = 1.0f / d; }
 
 private:
 
