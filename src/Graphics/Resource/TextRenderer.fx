@@ -56,7 +56,7 @@ float4 psBasic(
 {
 	float4 outColor = tex2D(g_texSampler, inTexUV)/* * tex2D(g_glyphMaskSampler, inTexUV) */ * inColor;
 	
-	// F’²‚ÌŒvZ (NTSC Œn‰Ád•½‹Ï–@B—Î‚¾‚¯‚ª‚È‚ñ‚Æ‚È‚­–¾‚é‚­Š´‚¶‚é‚Æ‚©‚ğ–h‚®)
+	// è‰²èª¿ã®è¨ˆç®— (NTSC ç³»åŠ é‡å¹³å‡æ³•ã€‚ç·‘ã ã‘ãŒãªã‚“ã¨ãªãæ˜ã‚‹ãæ„Ÿã˜ã‚‹ã¨ã‹ã‚’é˜²ã)
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
     outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
 	
@@ -104,7 +104,7 @@ void main()
 {
 	vec4 outColor = texture2D(g_texture, v_TexUV)/* * texture2D(g_glyphMaskTexture, v_TexUV)*/ * v_Color;
 	
-	// F’²‚ÌŒvZ
+	// è‰²èª¿ã®è¨ˆç®—
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
     outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
 	

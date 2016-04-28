@@ -63,13 +63,13 @@ float4 psBasic(
 	float4 inUVOffset		: TEXCOORD0,
 	float2 inUVTileUnit		: TEXCOORD1) : COLOR0
 {
-	// “]‘—Œ³¶ã UV
+	// è»¢é€å…ƒå·¦ä¸Š UV
 	float2 uvUpperLeft = inUVOffset.xy;//float2(inUVOffset.x, inUVOffset.y);
 	
-	// “]‘—Œ³‹éŒ`‚Ì• UV
+	// è»¢é€å…ƒçŸ©å½¢ã®å¹… UV
 	float2 uvWidth = inUVOffset.zw ;//uvUpperLeft - float2(inUVOffset.zw / inUVTileUnit);
 	
-	// 1‚Â‚ÌlŠpŒ`‚Ì’†‚Ì‚Ç‚±‚É‚¢‚é‚Ì‚© (0.0`1.0)
+	// 1ã¤ã®å››è§’å½¢ã®ä¸­ã®ã©ã“ã«ã„ã‚‹ã®ã‹ (0.0ï½1.0)
 	float2 uvRatio = fmod(inUVTileUnit, 1.0);
 	
 	float2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
@@ -77,7 +77,7 @@ float4 psBasic(
 	
 	float4 outColor = tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
 	
-	// F’²‚ÌŒvZ (NTSC Œn‰Ád•½‹Ï–@B—Î‚¾‚¯‚ª‚È‚ñ‚Æ‚È‚­–¾‚é‚­Š´‚¶‚é‚Æ‚©‚ğ–h‚®)
+	// è‰²èª¿ã®è¨ˆç®— (NTSC ç³»åŠ é‡å¹³å‡æ³•ã€‚ç·‘ã ã‘ãŒãªã‚“ã¨ãªãæ˜ã‚‹ãæ„Ÿã˜ã‚‹ã¨ã‹ã‚’é˜²ã)
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
     outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
 	
@@ -128,13 +128,13 @@ varying vec4		v_UVOffset;
 varying vec2		v_UVTileUnit;
 void main()
 {
-	vec2 uvUpperLeft = v_UVOffset.xy;	// “]‘—Œ³¶ã UV
-	vec2 uvWidth = v_UVOffset.zw;		// “]‘—Œ³‹éŒ`‚Ì• UV
-	vec2 uvRatio = fmod(v_UVTileUnit, 1.0);	// 1‚Â‚ÌlŠpŒ`‚Ì’†‚Ì‚Ç‚±‚É‚¢‚é‚Ì‚© (0.0`1.0)
+	vec2 uvUpperLeft = v_UVOffset.xy;	// è»¢é€å…ƒå·¦ä¸Š UV
+	vec2 uvWidth = v_UVOffset.zw;		// è»¢é€å…ƒçŸ©å½¢ã®å¹… UV
+	vec2 uvRatio = fmod(v_UVTileUnit, 1.0);	// 1ã¤ã®å››è§’å½¢ã®ä¸­ã®ã©ã“ã«ã„ã‚‹ã®ã‹ (0.0ï½1.0)
 	vec2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
 	vec4 outColor = texture2D(g_texture, uv) * tex2D(g_glyphMaskTexture, uv) * v_Color;
 	
-	// F’²‚ÌŒvZ
+	// è‰²èª¿ã®è¨ˆç®—
 	float y = ( 0.208012 * outColor.r + 0.586611 * outColor.g + 0.114478 * outColor.b ) * g_tone.w;
     outColor.rgb = (outColor.rgb * ( 1.0 - g_tone.w )) + y + g_tone.rgb;
 	
