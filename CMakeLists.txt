@@ -588,6 +588,11 @@ elseif (APPLE)
 		src/Platform/Cocoa/CocoaPlatformWindowManager.mm
 		src/Platform/Cocoa/CocoaPlatformWindowManager.h
 	)
+	set(LN_SOURCES_Input
+		${LN_SOURCES_Input}
+		src/Input/CocoaInputDriver.cpp
+		src/Input/CocoaInputDriver.h
+	)
 	set(LN_SOURCES_Graphics_Device
 		${LN_SOURCES_Graphics_Device}
 		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm

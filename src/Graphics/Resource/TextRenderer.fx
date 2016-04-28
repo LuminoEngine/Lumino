@@ -86,7 +86,7 @@ varying vec4	v_Color;
 varying vec2	v_TexUV;
 void main()
 {
-	gl_Position		= g_worldMatrix * vec4(ln_Vertex, 1.0f);
+	gl_Position		= g_worldMatrix * vec4(ln_Vertex, 1.0);
 	gl_Position		= g_viewProjMatrix * gl_Position;
 	v_Color			= ln_Color0;
 	v_TexUV			= ln_MultiTexCoord0;

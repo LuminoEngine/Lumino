@@ -37,7 +37,7 @@ VS_OUTPUT vsBasic(
 {
     VS_OUTPUT o;
 
-    o.Pos = mul( float4( inPos, 1.0f ), gViewProjMatrix );
+    o.Pos = mul( float4( inPos, 1.0 ), gViewProjMatrix );
 	o.Pos.x -= gViewportOffset.x;
 	o.Pos.y += gViewportOffset.y;
     o.Color = inColor;
@@ -80,7 +80,7 @@ varying vec2	v_TexUV;
 
 void main()
 {
-	gl_Position		= vec4(ln_Vertex, 1.0f) * gViewProjMatrix;
+	gl_Position		= vec4(ln_Vertex, 1.0) * gViewProjMatrix;
 	v_Color			= ln_Color0;
 	v_TexUV			= ln_MultiTexCoord0;
 }

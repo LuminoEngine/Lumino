@@ -18,8 +18,10 @@
 #include "Internal.h"
 #include "InputDriver.h"
 #include "InputManager.h"
-#ifdef LN_OS_WIN32
+#if defined(LN_OS_WIN32)
 	#include "Win32InputDriver.h"
+#elif defined(LN_OS_MAC)
+	#include "CocoaInputDriver.h"
 #endif
 #include <Lumino/Input/Input.h>
 #include <Lumino/Input/InputBinding.h>
@@ -62,11 +64,16 @@ InputManager::~InputManager()
 //-----------------------------------------------------------------------------
 void InputManager::Initialize(const Settings& settings)
 {
-#ifdef LN_OS_WIN32
+#if defined(LN_OS_WIN32)
 	RefPtr<Win32InputDriver> driver(LN_NEW Win32InputDriver());
 	driver->Initialize(PlatformSupport::GetWindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
+#elif defined(LN_OS_MAC)
+	RefPtr<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
+	m_inputDriver = driver;
 #endif
+	
+	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
 	auto pad = RefPtr<InputController>::Construct(this);
 	m_defaultVirtualPads[0] = pad;
