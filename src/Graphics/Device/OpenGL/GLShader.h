@@ -30,7 +30,7 @@ struct GLShaderPassVariableInfo
 class GLSLUtils
 {
 public:
-	static ShaderCompileResultLevel MakeShaderProgram(const void* code, size_t codeByteCount, GLuint* outProgram, StringA* outMessage);
+	static ShaderCompileResultLevel MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage);
 	static bool CompileShader(GLuint shader, int codeCount, const char** codes, const GLint* sizes, StringA* log);
 };
 

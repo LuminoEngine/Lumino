@@ -42,7 +42,7 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
 	int alphaBits = 8;
 	int depthBits = 24;
 	int stencilBits = 8;
-	int samples = 0;
+	int samples = DONT_CARE;
     int auxBuffers = DONT_CARE;
 	int accumRedBits = DONT_CARE;
 	int accumGreenBits = DONT_CARE;
@@ -93,7 +93,7 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
     NSOpenGLPixelFormatAttribute attributes[40];
 
     ADD_ATTR(NSOpenGLPFAAccelerated);
-    ADD_ATTR(NSOpenGLPFAClosestPolicy);
+    //ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
@@ -153,7 +153,7 @@ void NSGLContext::Initialize(NSGLGraphicsDevice* device, PlatformWindow* window,
     if (stencilBits != DONT_CARE)
         ADD_ATTR2(NSOpenGLPFAStencilSize, stencilBits);
 
-    ADD_ATTR(NSOpenGLPFAStereo);
+    //ADD_ATTR(NSOpenGLPFAStereo);
     ADD_ATTR(NSOpenGLPFADoubleBuffer);
 
 	// マルチサンプリングの設定
@@ -240,6 +240,24 @@ void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
 	// m_defaultSwapChain の初期化でシェーダとか作るので先にアクティブにしておく
 	// TODO: 共通処理にしていいかも？
 	MakeCurrentContext(m_mainContext);
+    
+    // TODO: バージョン選択
+    //SelectGLVersion(configData.OpenGLMajorVersion, configData.OpenGLMajorVersion);
+    
+    if (glewInit() != GLEW_OK)
+    {
+        LN_THROW(0, InvalidOperationException);
+    }
+    
+    // glewInit() は成功していても、glGetError() がエラーを返す状態になっていることがある。
+    // glGetError() はキューのようになっていて、1回呼び出すと溜まっているエラーが消費され、次のエラーを返す。
+    // なので完全にクリアするには NoError を返すまでループしなければならない。
+    // http://kaworu.jpn.org/doc/FreeBSD/xjman/man3/glGetError.3x.php
+    GLenum lnglerr = glGetError();
+    while (lnglerr != GL_NO_ERROR) {
+        lnglerr = glGetError();
+    }
+
 
 	m_defaultSwapChain = LN_NEW GLSwapChain();
 	RefPtr<NSGLContext> context(LN_NEW NSGLContext(), false);

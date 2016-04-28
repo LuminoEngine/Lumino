@@ -245,7 +245,7 @@ void GLRenderTargetTexture::OnLostDevice()
 void GLRenderTargetTexture::OnResetDevice()
 {
 	if (m_glTexture == 0)
-	{
+	{        
 		glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
 		glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); LN_CHECK_GLERROR();

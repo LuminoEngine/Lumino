@@ -315,7 +315,7 @@ enum class RenderStateId
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const void* code, size_t codeByteCount, GLuint* outProgram, StringA* outMessage)
+ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage)
 {
 	*outProgram = NULL;
 	outMessage->SetEmpty();
@@ -323,25 +323,21 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const void* code, size_t c
 	// 頂点シェーダコード
 	const char* vs_codes[] =
 	{
-		"#define LN_GLSL_VERTEX 1\n",
-		(const char*)code,
+		vsCode,
 	};
 	GLint vs_sizes[] =
 	{
-		(GLint)strlen(vs_codes[0]),
-		(GLint)codeByteCount,
+		(GLint)vsCodeLen,
 	};
 
 	// フラグメントシェーダコード
 	const char* fs_codes[] =
 	{
-		"#define LN_GLSL_FRAGMENT 1\n",
-		(const char*)code,
+		fsCode,
 	};
 	GLint fs_sizes[] =
 	{
-		(GLint)strlen(fs_codes[0]),
-		(GLint)codeByteCount,
+		(GLint)fsCodeLen,
 	};
 
 	GLuint vertexShader = 0;
@@ -356,8 +352,8 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const void* code, size_t c
 		LN_CHECK_GLERROR();
 
 		// シェーダオブジェクトのコンパイル
-		bool vsResult = CompileShader(vertexShader, 2, vs_codes, vs_sizes, outMessage);
-		bool fsResult = CompileShader(fragmentShader, 2, fs_codes, fs_sizes, outMessage);
+		bool vsResult = CompileShader(vertexShader, 1, vs_codes, vs_sizes, outMessage);
+		bool fsResult = CompileShader(fragmentShader, 1, fs_codes, fs_sizes, outMessage);
 		if (!vsResult || !fsResult)
 		{
 			// コンパイルエラー

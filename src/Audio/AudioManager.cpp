@@ -285,7 +285,11 @@ void AudioManagerImpl::Thread_Polling()
 		Threading::MutexScopedLock lock(m_soundListMutex);
 
 		m_audioDevice->Update();
-		m_midiAudioDevice->Update();
+        
+        if (m_midiAudioDevice != nullptr)
+        {
+            m_midiAudioDevice->Update();
+        }
 
 		// GC。このリストからしか参照されてなければ Release する。
 		Array<Sound*>::iterator itr = m_soundList.begin();

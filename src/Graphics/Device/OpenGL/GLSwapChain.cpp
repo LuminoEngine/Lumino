@@ -77,26 +77,24 @@ void GLSwapChain::OnResetDevice()
 	*/
 
 	// シェーダ
-	const char code[] =
-		"#ifdef LN_GLSL_VERTEX\n"
-		"attribute vec3 position;\n"
+	const char vsCode[] =
+        "#version 120\n"            // for mac
+        "attribute vec3 position;\n"
 		"attribute vec2 texCoord;\n"
 		"varying vec2 vTexCoord;\n"
 		"void main() {\n"
 		"	vTexCoord = texCoord;\n"
 		"	gl_Position = vec4(position, 1.0);\n"
-		"}\n"
-		"#endif\n"
-
-		"#ifdef LN_GLSL_FRAGMENT\n"		// Intel HD Graphics 4000 では 「#if <未定義マクロ> 」がエラーになった 
-		"uniform sampler2D texture;"
-		"varying vec2 vTexCoord;\n"
-		"void main() {\n"
-		"	gl_FragColor = texture2D(texture, vTexCoord);\n"
-		"}\n"
-		"#endif\n";
+		"}\n";
+    const char fsCode[] =
+        "#version 120\n"
+        "uniform sampler2D texture;"
+        "varying vec2 vTexCoord;\n"
+        "void main() {\n"
+        "	gl_FragColor = texture2D(texture, vTexCoord);\n"
+        "}\n";
 	StringA message;
-	ShaderCompileResultLevel r = GLSLUtils::MakeShaderProgram(code, strlen(code), &m_shaderProgram, &message);
+	ShaderCompileResultLevel r = GLSLUtils::MakeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
 	if (r != ShaderCompileResultLevel_Success) {
 		ShaderCompileResult result;
 		result.Level = r;
