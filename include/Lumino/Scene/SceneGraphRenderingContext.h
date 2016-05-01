@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "../Graphics/GraphicsContext.h"
@@ -16,7 +16,7 @@ class SceneGraphRenderingContext
 LN_INTERNAL_ACCESS:
 	RenderingPass*				Pass;
 	Camera*						CurrentCamera;
-	MMEShader*					Shader;				// –{“–‚É•K—v‚ÈƒVƒF[ƒ_ (VisualNode::Render() ˆÈ‰º‚Åg—p‰Â”\)
+	MMEShader*					Shader;				// æœ¬å½“ã«å¿…è¦ãªã‚·ã‚§ãƒ¼ãƒ€ (VisualNode::Render() ä»¥ä¸‹ã§ä½¿ç”¨å¯èƒ½)
 
 public:
 	//detail::GeometryRenderer* BeginDrawingContext();
@@ -26,7 +26,7 @@ public:
 
 	Details::Renderer* GetRenderer() { return m_internalContext->Renderer; }
 
-	// view proj ‚Í ƒpƒXŠJn‚ÉƒJƒƒ‰‚Ì‚à‚Ì‚ªİ’è‚³‚ê‚Ä‚¢‚é
+	// view proj ã¯ ãƒ‘ã‚¹é–‹å§‹æ™‚ã«ã‚«ãƒ¡ãƒ©ã®ã‚‚ã®ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹
 	RenderingContext2* GetRenderingContext() { return m_renderingContext; }
 
 protected:
@@ -35,7 +35,7 @@ protected:
 	virtual ~SceneGraphRenderingContext();
 
 private:
-	RenderingContext2*	m_renderingContext;	// TODO: ‚¿‚Ü‚í‚è•û‚Í‚à‚¤­‚µl‚¦‚½‚Ù‚¤‚ª‚¢‚¢‚©‚à
+	RenderingContext2*	m_renderingContext;	// TODO: æŒã¡ã¾ã‚ã‚Šæ–¹ã¯ã‚‚ã†å°‘ã—è€ƒãˆãŸã»ã†ãŒã„ã„ã‹ã‚‚
 	GraphicsContext*	m_internalContext;
 };
 

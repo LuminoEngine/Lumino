@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -29,7 +29,7 @@ public:
 LN_INTERNAL_ACCESS:
 
 private:
-	Array<int>	m_data;		// ƒ}ƒbƒvƒf[ƒ^–{‘ÌBm_size.X*m_size.Y ‚ÌƒTƒCƒY‚ğ‚ÂB
+	Array<int>	m_data;		// ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿æœ¬ä½“ã€‚m_size.X*m_size.Y ã®ã‚µã‚¤ã‚ºã‚’æŒã¤ã€‚
 	Size		m_size;
 };
 

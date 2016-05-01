@@ -1,4 +1,4 @@
-
+ï»¿
 #include <Lumino/Base/Exception.h>
 #include <Lumino/IO/BinaryReader.h>
 #include "WaveDecoder.h"
@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
-/// wave ƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_
+/// wave ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€
 struct WaveFileHeader
 {
 	uint32_t	RIFF;
@@ -51,13 +51,13 @@ void WaveDecoder::Create(Stream* stream)
 	mInStream = stream;
 	mInStream->AddRef();
 
-	// ”O‚Ì‚½‚ßƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğæ“ª‚É–ß‚·
+	// å¿µã®ãŸã‚ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’å…ˆé ­ã«æˆ»ã™
 	mInStream->Seek(0, SeekOrigin_Begin);
 
 	BinaryReader reader(mInStream);
 
 	//-------------------------------------------------------------
-	// ƒwƒbƒ_“Ç‚İ‚ñ‚Å”O‚Ì‚½‚ßƒtƒH[ƒ}ƒbƒgƒ`ƒFƒbƒN
+	// ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã‚“ã§å¿µã®ãŸã‚ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒã‚§ãƒƒã‚¯
 
 	WaveFileHeader rh;
 	reader.Read(&rh, sizeof(WaveFileHeader));
@@ -68,14 +68,14 @@ void WaveDecoder::Create(Stream* stream)
 	}
 
 	//-------------------------------------------------------------
-	// Šeƒ`ƒƒƒ“ƒNƒ`ƒFƒbƒN
+	// å„ãƒãƒ£ãƒ³ã‚¯ãƒã‚§ãƒƒã‚¯
 
 	char chunk[4];
 	while (reader.Read(chunk, 4) == 4)
 	{
 		if (strncmp(chunk, "fmt ", 4) == 0)
 		{
-			uint32_t chunkSize = reader.ReadUInt32();	// ƒ`ƒƒƒ“ƒNƒTƒCƒY
+			uint32_t chunkSize = reader.ReadUInt32();	// ãƒãƒ£ãƒ³ã‚¯ã‚µã‚¤ã‚º
 
 			mWaveFormat.formatTag = reader.ReadUInt16();
 			mWaveFormat.channels = reader.ReadUInt16();
@@ -84,7 +84,7 @@ void WaveDecoder::Create(Stream* stream)
 			mWaveFormat.blockAlign = reader.ReadUInt16();
 			mWaveFormat.bitsPerSample = reader.ReadUInt16();
 
-			// Šg’£•”•ª‚Ì‚ ‚éƒtƒ@ƒCƒ‹‚Ìê‡‚Í“Ç‚İ‚Æ‚Î‚·
+			// æ‹¡å¼µéƒ¨åˆ†ã®ã‚ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆã¯èª­ã¿ã¨ã°ã™
 			if (chunkSize > 16) {
 				reader.Seek(chunkSize - 16);
 				//mWaveFormat.EXSize = FileIO::readU16( mInFile );
@@ -98,24 +98,24 @@ void WaveDecoder::Create(Stream* stream)
 		{
 			uint32_t chunkSize = reader.ReadUInt32();
 
-			// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌŒ»İˆÊ’u (data ƒ`ƒƒƒ“ƒN“à‚Ìƒf[ƒ^ˆÊ’u) ‚ğ‹L‰¯
+			// ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã®ç¾åœ¨ä½ç½® (data ãƒãƒ£ãƒ³ã‚¯å†…ã®ãƒ‡ãƒ¼ã‚¿ä½ç½®) ã‚’è¨˜æ†¶
 			mDataOffset = reader.GetPosition();
 
-			// Œ³ƒf[ƒ^‚ÌƒTƒCƒY‚Í data ƒ`ƒƒƒ“ƒN“à‚Ìƒf[ƒ^‚ÌƒTƒCƒY
+			// å…ƒãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚ºã¯ data ãƒãƒ£ãƒ³ã‚¯å†…ã®ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
 			mOnmemoryPCMBufferSize = mPCMDataSize = chunkSize;
 			mSourceDataSize = mOnmemoryPCMBufferSize;
 
-			// ‘S‘Ì‚ÌÄ¶ŠÔ‚ğŒvZ‚·‚é
+			// å…¨ä½“ã®å†ç”Ÿæ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹
 			double t = static_cast< double >(mPCMDataSize) / (static_cast< double >(mWaveFormat.avgBytesPerSec) * 0.001);
 			mTotalTime = static_cast< uint32_t >(t);
 
-			// ‘S‘Ì‚ÌÄ¶ƒTƒ“ƒvƒ‹”
-			uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1ƒ`ƒƒƒ“ƒlƒ‹‚ ‚½‚è‚Ì‘ƒrƒbƒg”
+			// å…¨ä½“ã®å†ç”Ÿã‚µãƒ³ãƒ—ãƒ«æ•°
+			uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1ãƒãƒ£ãƒ³ãƒãƒ«ã‚ãŸã‚Šã®ç·ãƒ“ãƒƒãƒˆæ•°
 			mTotalSamples = one_channel_bits / mWaveFormat.bitsPerSample;
 
 			break;
 		}
-		// "fmt " ‚Æ "data" ˆÈŠO‚Í‚·‚×‚Ä“Ç‚İ”ò‚Î‚·
+		// "fmt " ã¨ "data" ä»¥å¤–ã¯ã™ã¹ã¦èª­ã¿é£›ã°ã™
 		else
 		{
 			uint32_t chunkSize = reader.ReadUInt32();
@@ -123,7 +123,7 @@ void WaveDecoder::Create(Stream* stream)
 		}
 	}
 
-	// data ƒ`ƒƒƒ“ƒN‚ÍŒ©‚Â‚©‚Á‚Ä‚¢‚é‚Í‚¸
+	// data ãƒãƒ£ãƒ³ã‚¯ã¯è¦‹ã¤ã‹ã£ã¦ã„ã‚‹ã¯ãš
 	LN_THROW(mDataOffset != 0, InvalidFormatException);
 }
 
@@ -136,28 +136,28 @@ void WaveDecoder::FillOnmemoryBuffer()
 
 	if (mOnmemoryPCMBuffer == NULL)
 	{
-		// ƒIƒ“ƒƒ‚ƒŠÄ¶‚·‚é‚Æ‚«‚É•K—v‚Èƒoƒbƒtƒ@‚ÌƒTƒCƒY‚ÍŒ³ƒf[ƒ^‚ÌƒTƒCƒY‚Æ“¯‚¶
+		// ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªå†ç”Ÿã™ã‚‹ã¨ãã«å¿…è¦ãªãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚ºã¯å…ƒãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚ºã¨åŒã˜
 		mOnmemoryPCMBufferSize = mPCMDataSize;
 
-		// ƒƒ‚ƒŠŠm•Û
+		// ãƒ¡ãƒ¢ãƒªç¢ºä¿
 		mOnmemoryPCMBuffer = LN_NEW byte_t[mOnmemoryPCMBufferSize];
 
-		// Œ»İ‚ÌƒV[ƒNˆÊ’u‚ğŠo‚¦‚Ä‚¨‚­
+		// ç¾åœ¨ã®ã‚·ãƒ¼ã‚¯ä½ç½®ã‚’è¦šãˆã¦ãŠã
 		int64_t old_seek = mInStream->GetPosition();
 
-		// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğƒf[ƒ^‚ª‚ ‚éêŠ‚Ìæ“ª‚ÉƒZƒbƒg
+		// ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹å ´æ‰€ã®å…ˆé ­ã«ã‚»ãƒƒãƒˆ
 		mInStream->Seek(mDataOffset, SeekOrigin_Begin);
 
-		// ‘S•”“Ç‚İ‚İ
+		// å…¨éƒ¨èª­ã¿è¾¼ã¿
 		int size = mInStream->Read(mOnmemoryPCMBuffer, mOnmemoryPCMBufferSize);
 
-		// “Ç‚İ‚ñ‚¾ƒTƒCƒY‚ª•Ï‚Èê‡‚ÍƒGƒ‰[
+		// èª­ã¿è¾¼ã‚“ã ã‚µã‚¤ã‚ºãŒå¤‰ãªå ´åˆã¯ã‚¨ãƒ©ãƒ¼
 		LN_THROW(size == mOnmemoryPCMBufferSize, InvalidOperationException, "read file size is incorrect.\nThere is a possibility that the file is corrupted.");
 
-		// ƒV[ƒNˆÊ’u‚ğŒ³‚É–ß‚·
+		// ã‚·ãƒ¼ã‚¯ä½ç½®ã‚’å…ƒã«æˆ»ã™
 		mInStream->Seek(old_seek, SeekOrigin_Begin);
 
-		// ‚à‚¤‚¢‚ç‚È‚¢
+		// ã‚‚ã†ã„ã‚‰ãªã„
 		LN_SAFE_RELEASE(mInStream);
 	}
 }
@@ -167,7 +167,7 @@ void WaveDecoder::FillOnmemoryBuffer()
 //-----------------------------------------------------------------------------
 void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
-	LN_THROW(mInStream != NULL, InvalidOperationException);	// ƒIƒ“ƒƒ‚ƒŠÄ¶‚ÆƒXƒgƒŠ[ƒ~ƒ“ƒOÄ¶‚Å“¯‚¶ AudioStream ‚ğ‹¤—L‚µ‚½‚Æ‚«‚É‚Ô‚Â‚©‚é
+	LN_THROW(mInStream != NULL, InvalidOperationException);	// ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªå†ç”Ÿã¨ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°å†ç”Ÿã§åŒã˜ AudioStream ã‚’å…±æœ‰ã—ãŸã¨ãã«ã¶ã¤ã‹ã‚‹
 	Threading::MutexScopedLock lock(m_mutex);
 
 	mInStream->Seek(mDataOffset + seekPos, SeekOrigin_Begin);
@@ -176,9 +176,9 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 		return;
 	}
 
-	// “Ç‚İ‚ŞƒTƒCƒY
+	// èª­ã¿è¾¼ã‚€ã‚µã‚¤ã‚º
 	uint32_t read_size = buffer_size;
-	// ƒ\[ƒX‚ÌƒTƒCƒY‚ğ’´‚¦‚Ä‚¢‚éê‡‚Íƒ\[ƒXƒTƒCƒY•ª“Ç‚Ş
+	// ã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚ºã‚’è¶…ãˆã¦ã„ã‚‹å ´åˆã¯ã‚½ãƒ¼ã‚¹ã‚µã‚¤ã‚ºåˆ†èª­ã‚€
 	if (((uint64_t)mInStream->GetPosition()) + buffer_size > mDataOffset + mPCMDataSize)
 	{
 		read_size = (mDataOffset + mPCMDataSize) - mInStream->GetPosition();
@@ -186,7 +186,7 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 
 	size_t size = mInStream->Read(buffer, read_size);
 
-	// Œ³ƒf[ƒ^‚©‚ç“Ç‚İ‚ñ‚¾ƒTƒCƒY‚ÆAbuffer_ ‚Ö‘‚«‚ñ‚¾ƒTƒCƒY‚Í“¯‚¶
+	// å…ƒãƒ‡ãƒ¼ã‚¿ã‹ã‚‰èª­ã¿è¾¼ã‚“ã ã‚µã‚¤ã‚ºã¨ã€buffer_ ã¸æ›¸ãè¾¼ã‚“ã ã‚µã‚¤ã‚ºã¯åŒã˜
 	*out_read_size = static_cast<uint32_t>(size);
 	*out_write_size = static_cast<uint32_t>(size);
 }

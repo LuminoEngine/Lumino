@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <BulletCollision/CollisionShapes/btStaticPlaneShape.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
@@ -124,7 +124,7 @@ BoxCollider::~BoxCollider()
 void BoxCollider::Initialize(PhysicsManager* manager, const Vector3& size)
 {
 	Collider::Initialize(manager, new btBoxShape(BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
-	// ¦PMD ‚Ì„‘ÌƒTƒCƒY‚Í bullet ‚Ì‚Æ“¯‚¶‚È‚Ì‚Å’ˆÓ
+	// â€»PMD ã®å‰›ä½“ã‚µã‚¤ã‚ºã¯ bullet ã®ã¨åŒã˜ãªã®ã§æ³¨æ„
 }
 
 //=============================================================================

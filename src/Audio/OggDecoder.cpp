@@ -1,4 +1,4 @@
-
+ï»¿
 #include <Lumino/Base/Exception.h>
 #include <Lumino/IO/BinaryReader.h>
 #include "OggDecoder.h"
@@ -43,17 +43,17 @@ void OggDecoder::Create(Stream* stream)
 	LN_REFOBJ_SET(m_stream, stream);
 	m_stream->Seek(0, SeekOrigin_Begin);
 
-	// ƒR[ƒ‹ƒoƒbƒNŠÖ”
+	// ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	ov_callbacks callbacks = {
 		readOggCallback,
 		seekOggCallback,
 		closeOggCallback,
 		tellOggCallback };
 
-	// ƒR[ƒ‹ƒoƒbƒN‚ğg‚Á‚Ä Ogg ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	// ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ä½¿ã£ã¦ Ogg ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 	int err = ov_open_callbacks(m_stream, &mOggVorbisFile, 0, 0, callbacks);
 
-	// ƒGƒ‰[‚ª”­¶‚µ‚½ê‡
+	// ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãŸå ´åˆ
 	if (err != 0)
 	{
 		const char* es = "";
@@ -68,10 +68,10 @@ void OggDecoder::Create(Stream* stream)
 		LN_THROW(0, InvalidFormatException, "ov_open_callbacks %s\n", es);
 	}
 
-	// Ogg ƒtƒ@ƒCƒ‹‚Ìî•ñæ“¾
+	// Ogg ãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±å–å¾—
 	vorbis_info* ogg_info = ov_info(&mOggVorbisFile, -1);
 
-	int bits_per_sample = WORD_BITS;	// ‚Æ‚è‚ ‚¦‚¸ 16bit ŒÅ’è
+	int bits_per_sample = WORD_BITS;	// ã¨ã‚Šã‚ãˆãš 16bit å›ºå®š
 	mWaveFormat.formatTag = 1;	// PCM
 	mWaveFormat.channels = ogg_info->channels;
 	mWaveFormat.samplesPerSec = ogg_info->rate;
@@ -83,25 +83,25 @@ void OggDecoder::Create(Stream* stream)
 	ogg_int64_t total = ov_pcm_total(&mOggVorbisFile, -1);
 	LN_THROW((total != OV_EINVAL), InvalidFormatException, "ov_pcm_total %d\n", total);
 
-	// ƒIƒ“ƒƒ‚ƒŠ‚É“WŠJ‚·‚é‚É•K—v‚È PCM ƒTƒCƒY
-	mOnmemoryPCMBufferSize = static_cast<uint32_t>(total)* WORD_SIZE * mWaveFormat.channels;		// 2 ‚Í 16bit ‚È‚Ì‚Å
+	// ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªã«å±•é–‹ã™ã‚‹æ™‚ã«å¿…è¦ãª PCM ã‚µã‚¤ã‚º
+	mOnmemoryPCMBufferSize = static_cast<uint32_t>(total)* WORD_SIZE * mWaveFormat.channels;		// 2 ã¯ 16bit ãªã®ã§
 
-	//printf( "(—vƒ`ƒFƒbƒNII)mOnmemoryPCMBufferSize: %d\n", mOnmemoryPCMBufferSize );
+	//printf( "(è¦ãƒã‚§ãƒƒã‚¯ï¼ï¼)mOnmemoryPCMBufferSize: %d\n", mOnmemoryPCMBufferSize );
 
 	mSourceDataSize = mOnmemoryPCMBufferSize;
 
-	// ”O‚Ì‚½‚ßæ“ª‚ÉƒV[ƒN
+	// å¿µã®ãŸã‚å…ˆé ­ã«ã‚·ãƒ¼ã‚¯
 	ov_time_seek(&mOggVorbisFile, 0.0);
 
-	// Ä¶ŠÔ
+	// å†ç”Ÿæ™‚é–“
 	double t = static_cast<double>(mOnmemoryPCMBufferSize) / (static_cast<double>(mWaveFormat.avgBytesPerSec) * 0.001);
 	mTotalTime = static_cast<uint32_t>(t);
 
-	// ‘S‘Ì‚ÌÄ¶ƒTƒ“ƒvƒ‹”‚ğ‹‚ß‚é
-	uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1ƒ`ƒƒƒ“ƒlƒ‹‚ ‚½‚è‚Ì‘ƒrƒbƒg”
+	// å…¨ä½“ã®å†ç”Ÿã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’æ±‚ã‚ã‚‹
+	uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1ãƒãƒ£ãƒ³ãƒãƒ«ã‚ãŸã‚Šã®ç·ãƒ“ãƒƒãƒˆæ•°
 	mTotalSamples = one_channel_bits / mWaveFormat.bitsPerSample;
 
-	// ƒtƒ@ƒCƒ‹‚É–„‚ß‚Ü‚ê‚Ä‚¢‚é "LOOPSTART" "LOOPLENGTH" ƒRƒƒ“ƒg‚ğ’T‚·
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã«åŸ‹ã‚è¾¼ã¾ã‚Œã¦ã„ã‚‹ "LOOPSTART" "LOOPLENGTH" ã‚³ãƒ¡ãƒ³ãƒˆã‚’æ¢ã™
 	vorbis_comment* ogg_comment = ov_comment(&mOggVorbisFile, -1);
 	char* c;
 	char buf[20];
@@ -144,21 +144,21 @@ void OggDecoder::FillOnmemoryBuffer()
 		char* temp_buffer[4096];
 		int bitstream;
 
-		// ƒtƒ@ƒCƒ‹‚Ìæ“ª‚ÉƒV[ƒN
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã«ã‚·ãƒ¼ã‚¯
 		ov_time_seek(&mOggVorbisFile, 0.0);
 
-		// ‘S•”“Ç‚İ‚Ş
+		// å…¨éƒ¨èª­ã¿è¾¼ã‚€
 		while (1)
 		{
-			// •s’è’·`4096 ƒoƒCƒg‚¸‚Â“Ç‚ñ‚Å‚¢‚­
+			// ä¸å®šé•·ï½4096 ãƒã‚¤ãƒˆãšã¤èª­ã‚“ã§ã„ã
 			read_size = ov_read(&mOggVorbisFile, (char*)temp_buffer, 4096, 0, WORD_SIZE, 1, &bitstream);
 
-			// ƒoƒbƒtƒ@‚ÉƒRƒs[
+			// ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼
 			memcpy(&mOnmemoryPCMBuffer[point], temp_buffer, read_size);
 
 			total += read_size;
 
-			// ÅŒã‚Ü‚Å“Ç‚ñ‚¾ê‡‚ÍI—¹
+			// æœ€å¾Œã¾ã§èª­ã‚“ã å ´åˆã¯çµ‚äº†
 			if (read_size == EOF || read_size == 0) break;
 
 			point += read_size;
@@ -181,7 +181,7 @@ void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 	{
 		ov_pcm_seek(&mOggVorbisFile, (seekPos / (WORD_SIZE * mWaveFormat.channels)));
 
-		// 0 ƒNƒŠƒA
+		// 0 ã‚¯ãƒªã‚¢
 		memset(buffer, 0, buffer_size);
 		*out_read_size = 0;
 
@@ -195,7 +195,7 @@ void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 		{
 			size = ov_read(&mOggVorbisFile, (char*)(byte_buffer + com_size), request_size, 0, WORD_SIZE, 1, &bitstream);
 
-			// ƒtƒ@ƒCƒ‹ƒGƒ“ƒh
+			// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¨ãƒ³ãƒ‰
 			if (size == 0)
 			{
 				break;
@@ -203,16 +203,16 @@ void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 
 			com_size += size;
 
-			// ƒoƒbƒtƒ@‚ğ‘S•”–„‚ß‚½ê‡
+			// ãƒãƒƒãƒ•ã‚¡ã‚’å…¨éƒ¨åŸ‹ã‚ãŸå ´åˆ
 			if (com_size >= buffer_size)
 			{
 				break;
 			}
 
-			// ƒoƒbƒtƒ@‚Ìc‚è‚ª 4096 –¢–‚Ìê‡
+			// ãƒãƒƒãƒ•ã‚¡ã®æ®‹ã‚ŠãŒ 4096 æœªæº€ã®å ´åˆ
 			if (buffer_size - com_size < 4096)
 			{
-				// Ÿ‚É“Ç‚ŞƒoƒCƒg”‚ÍAƒoƒbƒtƒ@‚Ìc‚è—Ìˆæ•ª‚¾‚¯
+				// æ¬¡ã«èª­ã‚€ãƒã‚¤ãƒˆæ•°ã¯ã€ãƒãƒƒãƒ•ã‚¡ã®æ®‹ã‚Šé ˜åŸŸåˆ†ã ã‘
 				request_size = buffer_size - com_size;
 			}
 		}
@@ -237,7 +237,7 @@ size_t OggDecoder::readOggCallback(void* buffer, size_t element_size, size_t cou
 //----------------------------------------------------------------------
 int OggDecoder::seekOggCallback(void* stream, ogg_int64_t offset, int whence)
 {
-	if (stream == NULL) return -1; // ˆÙí‚Ì‚Í 0 ˆÈŠO‚Ì’l‚ğ•Ô‚·
+	if (stream == NULL) return -1; // ç•°å¸¸ã®æ™‚ã¯ 0 ä»¥å¤–ã®å€¤ã‚’è¿”ã™
 	Stream* file = (Stream*)stream;
 	file->Seek(static_cast< int >(offset), (SeekOrigin)whence);
 	return 0;
@@ -248,7 +248,7 @@ int OggDecoder::seekOggCallback(void* stream, ogg_int64_t offset, int whence)
 //----------------------------------------------------------------------
 int OggDecoder::closeOggCallback(void* stream)
 {
-	return 0;	// InFile ‚ÌƒfƒXƒgƒ‰ƒNƒ^‚Å•Â‚¶‚é‚Ì‚ÅA‚±‚±‚Å‚Í‰½‚à‚µ‚È‚¢B
+	return 0;	// InFile ã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§é–‰ã˜ã‚‹ã®ã§ã€ã“ã“ã§ã¯ä½•ã‚‚ã—ãªã„ã€‚
 }
 
 //----------------------------------------------------------------------

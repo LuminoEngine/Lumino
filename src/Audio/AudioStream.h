@@ -1,4 +1,4 @@
-/*
+﻿/*
 	@file	AudioStream.h
 */
 #pragma once
@@ -28,15 +28,15 @@ public:
 
 	StreamFormat GetFormat() const { return m_format; }
 
-	/// ���������������Ă��邩�m�F���� (��O���������Ă���΂�������� throw �����)
+	/// 初期化が完了しているか確認する (例外が発生していればここから再 throw される)
 	bool CheckCreated();
 
-	/// �f�R�[�_�̎擾
+	/// デコーダの取得
 	AudioDecoder* GetDecoder() { return m_decoder; }
 	const AudioDecoder* GetDecoder() const { return m_decoder; }
 
 protected:
-	///�@�񓯊����[�h����
+	///　非同期ロード処理
 	virtual void OnASyncIOProc();
 
 private:
@@ -46,7 +46,7 @@ private:
 	AudioDecoder*		m_decoder;
 };
 
-/// �����f�[�^�̃x�[�X�N���X
+/// 音声データのベースクラス
 class AudioDecoder
 	: public RefObject
 {
@@ -55,7 +55,7 @@ protected:
 	virtual ~AudioDecoder();
 
 //public:
-//	/// Create �ς݂����m�F����B��O���ۑ�����Ă���� throw ���� (�񓯊��ǂݍ��ݗp)
+//	/// Create 済みかを確認する。例外が保存されていれば throw する (非同期読み込み用)
 //	bool CheckCreated();
 //
 //protected:
@@ -63,80 +63,80 @@ protected:
 //	void OnCreateFinished(Exception* e);
 
 public:
-	/// �쐬
+	/// 作成
 	virtual void Create(Stream* stream) = 0;
 
-	/// �t�@�C���t�H�[�}�b�g�̎擾
+	/// ファイルフォーマットの取得
 	virtual StreamFormat GetSourceFormat() const = 0;
 
-	/// PCM �t�H�[�}�b�g�̎擾
+	/// PCM フォーマットの取得
 	virtual const WaveFormat* GetWaveFormat() const = 0;
 
-	/// ���f�[�^�̃T�C�Y�̎擾 ( �X�g���[�~���O�Đ��ł̏I�����蓙�Ŏg�� )
+	/// 元データのサイズの取得 ( ストリーミング再生での終了判定等で使う )
 	virtual uint32_t GetSourceDataSize() const = 0;
 
-	/// �S�̂̍Đ����Ԃ̎擾 ( �~���b�B��Ŗ����Ȃ邩�� )
+	/// 全体の再生時間の取得 ( ミリ秒。後で無くなるかも )
 	//virtual uint32_t getTotalTime() const = 0;
 
-	/// �S�̂̃T���v�����̎擾 ( Midi �̏ꍇ�̓~���[�W�b�N�^�C���P�� )
+	/// 全体のサンプル数の取得 ( Midi の場合はミュージックタイム単位 )
 	virtual uint32_t GetTotalUnits() const = 0;
 
-	/// �I���������Đ��p�̃o�b�t�@�̐擪�A�h���X�擾 ( fillBufferAndReleaseStream() ���Ă�ł��Ȃ��ꍇ�� NULL )
+	/// オンメモリ再生用のバッファの先頭アドレス取得 ( fillBufferAndReleaseStream() を呼んでいない場合は NULL )
 	virtual byte_t* GetOnmemoryPCMBuffer() const = 0;
 
-	/// �I���������Đ����̑S�o�b�t�@�T�C�Y�̎擾
+	/// オンメモリ再生時の全バッファサイズの取得
 	virtual uint32_t GetOnmemoryPCMBufferSize() const = 0;
 
-	/// 1 �b���̃\�[�X�f�[�^���f�R�[�h����Ƃ��́A�œK�ȃo�C�g���̎擾
+	/// 1 秒分のソースデータをデコードするときの、最適なバイト数の取得
 	///	
-	///	�ʏ�� PCM �t�H�[�}�b�g����擾�ł��邯�ǁAMP3 �̏ꍇ��
-	///	API �̓s��(?)��A�f�R�[�h�ɍœK�� 1 �b���̃T�C�Y�́A���ʂ�PCM�̂���Ƃ͈قȂ�B
-	///	���̂��߁A�����ƃ`�F�b�N�ł���悤�ɂ��̃��\�b�h��p�ӁB
-	///	���܂̂Ƃ���� MP3 �Ɍ������b�����ǁAGetWaveFormat() ��
-	///	�擾�����l���� 1 �b���̃T�C�Y���v�Z����ƃo�O�̂Œ��ӁB
+	///	通常は PCM フォーマットから取得できるけど、MP3 の場合は
+	///	API の都合(?)上、デコードに最適な 1 秒分のサイズは、普通のPCMのそれとは異なる。
+	///	そのため、ちゃんとチェックできるようにこのメソッドを用意。
+	///	いまのところは MP3 に限った話だけど、GetWaveFormat() で
+	///	取得した値から 1 秒分のサイズを計算するとバグので注意。
 	virtual uint32_t GetBytesPerSec() const = 0;
 
-	/// ���[�v�J�n�ʒu�ƏI���ʒu�̎擾
+	/// ループ開始位置と終了位置の取得
 	///
-	///	Midi �t�@�C���̏ꍇ�͍ŏ��� CC111 �ʒu�̃f���^�^�C���ƃx�[�X�^�C��
+	///	Midi ファイルの場合は最初の CC111 位置のデルタタイムとベースタイム
 	virtual void GetLoopState(uint32_t* begin, uint32_t* length) const = 0;
 
-	/// �I���������Đ��p�ɑS�Ẵf�[�^��ǂݍ���
+	/// オンメモリ再生用に全てのデータを読み込む
 	///
-	/// �f�R�[�h��� PCM �f�[�^�T�C�Y���̃o�b�t�@������Ŋm�ۂ��A
-	/// �����ɑS�Ẵf�[�^��ǂݍ��݂܂��B
-	/// �f�[�^�y�уT�C�Y�� getOnmemoryPCMBuffer()�A
-	/// getOnmemoryPCMBufferSize() �Ŏ擾���Ă��������B<br>
+	/// デコード後の PCM データサイズ分のバッファを内部で確保し、
+	/// そこに全てのデータを読み込みます。
+	/// データ及びサイズは getOnmemoryPCMBuffer()、
+	/// getOnmemoryPCMBufferSize() で取得してください。<br>
 	/// <br>
-	/// ������Ă΂�Ă��A���łɃo�b�t�@���m�ۂ���Ă���ꍇ��
-	/// �Ȃɂ����܂���B<br>
+	/// 複数回呼ばれても、すでにバッファが確保されている場合は
+	/// なにもしません。<br>
 	/// <br>
-	/// �ďo����A�X�g���[���͉������A���̃I�[�f�B�I�\�[�X��
-	/// �X�g���[�~���O�Đ��ɂ͎g�p�ł��Ȃ��Ȃ�܂��B<br>
+	/// 呼出し後、ストリームは解放され、このオーディオソースは
+	/// ストリーミング再生には使用できなくなります。<br>
 	//virtual void fillBufferAndReleaseStream() = 0;
-	/// ���X���b�h�Z�[�t�Ŏ�������
+	/// ※スレッドセーフで実装する
 	virtual void FillOnmemoryBuffer() = 0;
 
 	/*
-		�f�[�^���f�R�[�h���Abuffer �ɏ�������
-		@param[in]	seekPos			: �V�[�N�ʒu
-		@param[out]	buffer			: PCM �f�[�^���������ރo�b�t�@
-		@param[in]	bufferSize		: buffer �̃T�C�Y (�o�C�g�P��)
-		@param[in]	outReadSize		: �\�[�X�X�g���[������ǂݍ��񂾃f�[�^�T�C�Y (���݂̃V�[�N�ʒu�ɂ��̒l�����Z�����l���A���̓ǂݎ��V�[�N�ʒu�ɂȂ�)
-		@param[in]	outWriteSize	: ���ۂ� buffer �ɏ������񂾃T�C�Y (�f�R�[�h���ꂽPCM�f�[�^�̃T�C�Y = �f�o�C�X�ɓn���o�C�g��)
-		@details	�ł��邾�� buffer_size �𖞂����悤�Ƀf�[�^���f�R�[�h���Abuffer �������݂܂��B
-					outReadSize �̓f�R�[�h�ׂ̈Ƀ\�[�X�X�g���[������ǂݍ��񂾃f�[�^�T�C�Y�ł��B
-					�ʏ�Amp3 ���̈��k�t�H�[�}�b�g�ł� outWriteSize �����������l�ɂȂ�܂��B
-					���݂̃t�@�C���|�C���^�� outReadSize �̒l�𑫂����l���A����̓ǂݍ��݈ʒu�ƂȂ�܂��B
-					���̊֐��̓X���b�h�Z�[�t�ł��B
+		データをデコードし、buffer に書き込む
+		@param[in]	seekPos			: シーク位置
+		@param[out]	buffer			: PCM データを書き込むバッファ
+		@param[in]	bufferSize		: buffer のサイズ (バイト単位)
+		@param[in]	outReadSize		: ソースストリームから読み込んだデータサイズ (現在のシーク位置にこの値を加算した値が、次の読み取りシーク位置になる)
+		@param[in]	outWriteSize	: 実際に buffer に書き込んだサイズ (デコードされたPCMデータのサイズ = デバイスに渡すバイト数)
+		@details	できるだけ buffer_size を満たすようにデータをデコードし、buffer 書き込みます。
+					outReadSize はデコードの為にソースストリームから読み込んだデータサイズです。
+					通常、mp3 等の圧縮フォーマットでは outWriteSize よりも小さい値になります。
+					現在のファイルポインタに outReadSize の値を足した値が、次回の読み込み位置となります。
+					この関数はスレッドセーフです。
 	*/
 	virtual void Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) = 0;
 
-	/// �t�@�C���|�C���^�ړ� (�擪����̃o�C�g�I�t�Z�b�g)
-	/// (���̃N���X�Ŏ������Ă��� read() �� seek() �� getOnmemoryPCMBuffer() �ɓǂݍ���ł��鎖���O��)
+	/// ファイルポインタ移動 (先頭からのバイトオフセット)
+	/// (このクラスで実装している read() と seek() は getOnmemoryPCMBuffer() に読み込んでいる事が前提)
 	//virtual void seek(uint32_t offset);
 
-	/// �f�R�[�h��Ԃ̃��Z�b�g(�Đ��J�n���O�ɌĂ΂��BMP3 �p)
+	/// デコード状態のリセット(再生開始直前に呼ばれる。MP3 用)
 	virtual void Reset() = 0;
 
 private:

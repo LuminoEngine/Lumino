@@ -1,11 +1,11 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	Ä¶’†‚Ì‹ŠoŒø‰Ê‚ğ‘€ì‚µ‚Ü‚·B
+	@brief	å†ç”Ÿä¸­ã®è¦–è¦šåŠ¹æœã‚’æ“ä½œã—ã¾ã™ã€‚
 */
 class VisualEffectInstance
 	: public tr::ReflectionObject

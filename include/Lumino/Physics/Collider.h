@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -7,7 +7,7 @@ namespace Physics
 {
 
 /**
-	@brief	Õ“Ë”»’è‚Ì‚½‚ß‚ÌƒIƒuƒWƒFƒNƒgŒ`ó‚Ìƒx[ƒXƒNƒ‰ƒX‚Å‚·B
+	@brief	è¡çªåˆ¤å®šã®ãŸã‚ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå½¢çŠ¶ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class Collider
 	: public tr::ReflectionObject
@@ -29,7 +29,7 @@ private:
 };
 
 /**
-	@brief	–³ŒÀ•½–Ê‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	ç„¡é™å¹³é¢ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class PlaneCollider
 	: public Collider
@@ -38,9 +38,9 @@ class PlaneCollider
 public:
 	
 	/**
-		@brief		PlaneCollider ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	direction	: –Ê‚Ì³–Ê•ûŒü (È—ª‚µ‚½ê‡‚Í Y+ •ûŒü)
-		@details	ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Íg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄQÆ‚ğ‰ğ•ú‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+		@brief		PlaneCollider ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	direction	: é¢ã®æ­£é¢æ–¹å‘ (çœç•¥ã—ãŸå ´åˆã¯ Y+ æ–¹å‘)
+		@details	ä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦å‚ç…§ã‚’è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	static PlaneCollider* Create(const Vector3& direction = Vector3::UnitY);
 	
@@ -51,7 +51,7 @@ protected:
 };
 
 /**
-	@brief	” Œ^‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	ç®±å‹ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class BoxCollider
 	: public Collider
@@ -60,16 +60,16 @@ class BoxCollider
 public:
 	
 	/**
-		@brief		BoxCollider ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	size	: Še•Ó‚Ì•
-		@details	ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Íg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄQÆ‚ğ‰ğ•ú‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+		@brief		BoxCollider ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	size	: å„è¾ºã®å¹…
+		@details	ä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦å‚ç…§ã‚’è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	static BoxCollider* Create(const Vector3& size);
 	
 	/**
-		@brief		BoxCollider ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	x, y, z	: Še•Ó‚Ì•
-		@details	ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Íg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄQÆ‚ğ‰ğ•ú‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+		@brief		BoxCollider ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	x, y, z	: å„è¾ºã®å¹…
+		@details	ä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦å‚ç…§ã‚’è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	static BoxCollider* Create(float x, float y, float z);
 	
@@ -80,7 +80,7 @@ protected:
 };
 
 /**
-	@brief	‹…Œ^‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	çƒå‹ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class SphereCollider
 	: public Collider
@@ -89,9 +89,9 @@ class SphereCollider
 public:
 	
 	/**
-		@brief		CapsuleCollider ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	radius	: ”¼Œa
-		@details	ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Íg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄQÆ‚ğ‰ğ•ú‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+		@brief		CapsuleCollider ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	radius	: åŠå¾„
+		@details	ä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦å‚ç…§ã‚’è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	static SphereCollider* Create(float radius);
 	
@@ -102,7 +102,7 @@ protected:
 };
 
 /**
-	@brief	ƒJƒvƒZƒ‹Œ^‚ÌÕ“Ë”»’èŒ`ó‚Å‚·B
+	@brief	ã‚«ãƒ—ã‚»ãƒ«å‹ã®è¡çªåˆ¤å®šå½¢çŠ¶ã§ã™ã€‚
 */
 class CapsuleCollider
 	: public Collider
@@ -111,10 +111,10 @@ class CapsuleCollider
 public:
 	
 	/**
-		@brief		CapsuleCollider ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
-		@param[in]	radius	: ”¼Œa
-		@param[in]	height	: ‚‚³
-		@details	ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚Íg‚¢I‚¦‚½‚ç Release() ‚ğŒÄ‚Ño‚µ‚ÄQÆ‚ğ‰ğ•ú‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+		@brief		CapsuleCollider ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	radius	: åŠå¾„
+		@param[in]	height	: é«˜ã•
+		@details	ä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ä½¿ã„çµ‚ãˆãŸã‚‰ Release() ã‚’å‘¼ã³å‡ºã—ã¦å‚ç…§ã‚’è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	static CapsuleCollider* Create(float radius, float height);
 	

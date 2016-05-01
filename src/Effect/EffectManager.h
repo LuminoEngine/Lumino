@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <array>
 #include <Lumino/Threading/Task.h>
@@ -48,7 +48,7 @@ private:
 	GraphicsManager*	m_graphicsManager;
 	AudioManagerImpl*		m_audioManager;
 
-	EffectEngine*	m_engine;	// •¡”ƒc[ƒ‹“¯‘Î‰‚Æ‚©‚È‚Á‚½‚ç•¡”‚Å‚«‚é
+	EffectEngine*	m_engine;	// è¤‡æ•°ãƒ„ãƒ¼ãƒ«åŒæ™‚å¯¾å¿œã¨ã‹ãªã£ãŸã‚‰è¤‡æ•°ã§ãã‚‹
 
 	//Threading::DelegateThread	m_threadUpdateFrame;
 	tr::TaskPtr	m_taskUpdateFrame;

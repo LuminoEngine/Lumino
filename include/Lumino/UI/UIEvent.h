@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <functional>
 #include <Lumino/Reflection/Notify.h>
@@ -35,7 +35,7 @@ public:
 };
 ///**
 //	@brief		
-//	@details	RoutedEvent ‚Í UIElement ‹y‚Ñ‚»‚ÌƒTƒuƒNƒ‰ƒX“à•”‚©‚ç‚Ì‚İ”­¶‚³‚¹‚é‚±‚Æ‚ªo—ˆ‚Ü‚·B
+//	@details	RoutedEvent ã¯ UIElement åŠã³ãã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹å†…éƒ¨ã‹ã‚‰ã®ã¿ç™ºç”Ÿã•ã›ã‚‹ã“ã¨ãŒå‡ºæ¥ã¾ã™ã€‚
 //*/
 //template<class TArgs>
 //class UIEventSlot
@@ -48,7 +48,7 @@ public:
 //public:
 //
 //	/**
-//		@brief	ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‰‚ğ’Ç‰Á‚µ‚Ü‚·B
+//		@brief	ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ©ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 //	*/
 //	void AddHandler(const Delegate<void(TArgs*)>& handler)
 //	{
@@ -56,7 +56,7 @@ public:
 //	}
 //	
 //	/**
-//		@brief	w’è‚µ‚½ƒnƒ“ƒhƒ‰‚Éˆê’v‚·‚éƒnƒ“ƒhƒ‰‚ğA‚±‚ÌƒXƒƒbƒg‚©‚çíœ‚µ‚Ü‚·B
+//		@brief	æŒ‡å®šã—ãŸãƒãƒ³ãƒ‰ãƒ©ã«ä¸€è‡´ã™ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã‚’ã€ã“ã®ã‚¹ãƒ­ãƒƒãƒˆã‹ã‚‰å‰Šé™¤ã—ã¾ã™ã€‚
 //	*/
 //	void RemoveHandler(const Delegate<void(TArgs*)>& handler)
 //	{
@@ -64,7 +64,7 @@ public:
 //	}
 //	
 //	/**
-//		@brief	ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‰‚ğ’Ç‰Á‚µ‚Ü‚·B
+//		@brief	ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ©ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 //	*/
 //	void operator += (const std::function<void(TArgs*)>& handler)
 //	{
@@ -77,7 +77,7 @@ public:
 //	}
 //	
 //	/**
-//		@brief	w’è‚µ‚½ƒnƒ“ƒhƒ‰‚Éˆê’v‚·‚éƒnƒ“ƒhƒ‰‚ğA‚±‚ÌƒXƒƒbƒg‚©‚çíœ‚µ‚Ü‚·B
+//		@brief	æŒ‡å®šã—ãŸãƒãƒ³ãƒ‰ãƒ©ã«ä¸€è‡´ã™ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã‚’ã€ã“ã®ã‚¹ãƒ­ãƒƒãƒˆã‹ã‚‰å‰Šé™¤ã—ã¾ã™ã€‚
 //	*/
 //	void operator -= (const Delegate<void(TArgs*)>& handler)
 //	{
@@ -107,8 +107,8 @@ public:
 		: tr::ReflectionEventInfo(ownerClass, name, raiseEvent)
 	{}
 };
-//	// Event ‚ğ’¼ÚQÆ‚µ‚Ä‚Í‚È‚ç‚È‚¢B‚±‚ÌƒNƒ‰ƒX‚Í Property ‚Æ“¯‚¶‚­A•¡”‚Ì UIElement ‚Å‹¤—L‚³‚ê‚éBó‘Ô‚ğ‚Á‚Ä‚Í‚È‚ç‚È‚¢B
-//	// ‚È‚Ì‚ÅAƒCƒxƒ“ƒg‚ğ Raise ‚·‚éŠÖ”ƒ|ƒCƒ“ƒ^‚ğQÆ‚·‚éB
+//	// Event ã‚’ç›´æ¥å‚ç…§ã—ã¦ã¯ãªã‚‰ãªã„ã€‚ã“ã®ã‚¯ãƒ©ã‚¹ã¯ Property ã¨åŒã˜ãã€è¤‡æ•°ã® UIElement ã§å…±æœ‰ã•ã‚Œã‚‹ã€‚çŠ¶æ…‹ã‚’æŒã£ã¦ã¯ãªã‚‰ãªã„ã€‚
+//	// ãªã®ã§ã€ã‚¤ãƒ™ãƒ³ãƒˆã‚’ Raise ã™ã‚‹é–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã‚’å‚ç…§ã™ã‚‹ã€‚
 //
 //	typedef void(*RaiseEventFunc)(UIElement* obj, UIEventArgs* e);
 //

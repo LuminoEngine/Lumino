@@ -1,4 +1,4 @@
-/*
+﻿/*
 	[2016/4/8] Brush? fillStyle?
 
 		- WPF
@@ -9,25 +9,25 @@
 
 
 	[2016/1/29] Begin End Swap
-		�EEnd �� Swap ��1�ɂ܂Ƃ߂Ă������B(OpenGL �Ƃ� Direct2D �͂���Ȃ���)
-		�EBegin �� End �� RenderingContext �� GraphicsContext �Ɋ܂߂Ȃ��ق��������Ǝv���B
+		・End と Swap は1つにまとめてもいい。(OpenGL とか Direct2D はこんなかんじ)
+		・Begin と End は RenderingContext や GraphicsContext に含めないほうがいいと思う。
 
-		�Q�[�����[�h�ł͂����B
+		ゲームモードではこう。
 			Engine::BeginRender();
 			r1 = RenderingContext::GetContext();
-			r1->Draw�`
+			r1->Draw～
 			sceneGraph->Render(r1);
 			Engine::EndRender();
 
-		�c�[�����[�h�ł͂���Ȋ��������R�B
+		ツールモードではこんな感じが自然。
 			window->BeginRender();
 			r1 = RenderingContext::GetContext();
-			r1->Draw�`
+			r1->Draw～
 			sceneGraph->Render(r1);
 			window->EndRender();
 
 
-	�S�̍\��
+	全体構成
 
 		RenderingContext	Renderer	
 							PrimitiveRenderer
@@ -37,53 +37,53 @@
 							TextRenderer
 
 
-		�ŏ�ʂ� RenderingContext �� GraphicsContext�B����ȊO�̓��[�U�[�⑼�̃��W���[���Ɍ��J���Ȃ��B
-		RenderingContext �� GraphicsContext �����X�e�[�g�͔r���B
-		�������ł�1�� IRenderer ���g�����A�݂��̃X�e�[�g�ύX�͉e�����Ȃ��B
+		最上位は RenderingContext と GraphicsContext。これ以外はユーザーや他のモジュールに公開しない。
+		RenderingContext と GraphicsContext が持つステートは排他。
+		根っこでは1つの IRenderer を使うが、互いのステート変更は影響しない。
 
-		�܂��A���������̖��� GraphicsContext �� Renderer �𓯎��Ɏg�������Ƃ������Ƃɂ���B
-		�Ⴆ�΁AScene �̒��� GUI ��`�������Ƃ��B
-		�����łȂ��Ă��A�ŏ��� GraphicsContext �� Renderer �̋@�\���������Ă��܂����Ƃ��Ă������A
-		���ꂾ�Ƃ����Ԃł����g���Ȃ��֐������܂�ɂ������Ȃ邵�A�N���X�̋K�͂��傫���Ȃ�B
-		�܂�y���[�U�[���C��t���Ȃ���΂Ȃ�Ȃ����Ƃ������Ă��܂��B�z
+		まず、そもそもの問題は GraphicsContext と Renderer を同時に使いたいということにある。
+		例えば、Scene の中に GUI を描きたいとか。
+		そうでなくても、最初は GraphicsContext に Renderer の機能を持たせてしまおうとしていたが、
+		それだとある状態でしか使えない関数があまりにも多くなるし、クラスの規模も大きくなる。
+		つまり【ユーザーが気を付けなければならないことが増えてしまう。】
 
-		Context �́AIRenderer �ɐݒ�ł���S�Ă̐ݒ��ێ�����B���ƃV�F�[�_�B
-		Context �� Draw�` �� Flush �ŁA�A�N�e�B�u�ȃR���e�L�X�g�̐؂�ւ����s���B
-		���̂Ƃ��Â��R���e�L�X�g�� Flush ���A�V�����R���e�L�X�g�̃X�e�[�g��S�ēK�p����B
-		�؂�ւ��ʒm�� Context ���x���ɒʒm����B��܂��Ă���e�� Renderer �� Flush ���ĂԂ��߁B
+		Context は、IRenderer に設定できる全ての設定を保持する。あとシェーダ。
+		Context の Draw～ や Flush で、アクティブなコンテキストの切り替えを行う。
+		このとき古いコンテキストは Flush し、新しいコンテキストのステートを全て適用する。
+		切り替え通知は Context レベルに通知する。包含している各種 Renderer の Flush を呼ぶため。
 
 		[2015/1/22]
-			Renderer == RenderingContext �ł͂Ȃ��̂��HRenderingContext �͕K�v�Ȃ̂��H�Ǝv����������Ȃ��B
-			Renderer �ɂ܂Ƃ߂Ă��܂��ƁAGraphicsContext �� Renderer �������x���̃N���X�ƂȂ�B
-			GraphicsContext �͕`���̃����_�����O�^�[�Q�b�g���X�e�[�g�Ƃ��Ď����Ȃ���΂Ȃ�Ȃ����߁ARenderer ���܂���K�v������B
-			Context �̒��ɕʂ� Context ���ł��Ă��܂��Ƃ������ƁB���ɕ��G�B
+			Renderer == RenderingContext ではないのか？RenderingContext は必要なのか？と思うかもしれない。
+			Renderer にまとめてしまうと、GraphicsContext と Renderer が同レベルのクラスとなる。
+			GraphicsContext は描画先のレンダリングターゲットをステートとして持たなければならないため、Renderer を包含する必要がある。
+			Context の中に別の Context ができてしまうということ。非常に複雑。
 
 
-	[2015/1/21] SceneGraph �����ɒ჌�x�� Renderer �͌��J����H
+	[2015/1/21] SceneGraph 向けに低レベル Renderer は公開する？
 		
-		���������e�� Renderer ���B���Ă���̂́A���[�U�[�̒m��Ȃ��Ƃ���ŃX�e�[�g���ς����
-		�����̂킩��ɂ������ɂȂ�Ȃ��悤�ɂ��邽�߁B
+		そもそも各種 Renderer を隠しているのは、ユーザーの知らないところでステートが変わって
+		原因のわかりにくい問題にならないようにするため。
 
 
-	[2015/1/21] �J�����g�� Shader ���Ǘ�����̂͒N�H
-		�~GraphicsContext�B
-		�~�X�� Renderer �ɊǗ�������̂͂��܂��낵���Ȃ��C������B
-		�~�~PrimitiveRenderer �͂܂� SetShader �Ƃ������Ă������Ǝv�����ǁA
-		�~�~GeometryRenderer �� WPF �݂����ɃV�X�e���ɂ���ĕK�����s����� Shader �������āA
-		�~���̌�Ń��[�U�[�� Shader ��������������Ȃ��B
-		�~�i�܂��A���[�U�[ Shader �̒��� GeometryRenderer �p�̊֐����Ă�ł�����Ă��������j
+	[2015/1/21] カレントの Shader を管理するのは誰？
+		×GraphicsContext。
+		×個々の Renderer に管理させるのはあまりよろしくない気がする。
+		××PrimitiveRenderer はまぁ SetShader とかあってもいいと思うけど、
+		××GeometryRenderer は WPF みたいにシステムによって必ず実行される Shader があって、
+		×その後でユーザーの Shader が動くかもしれない。
+		×（まぁ、ユーザー Shader の中で GeometryRenderer 用の関数を呼んでもらってもいいが）
 
-		�E�E�E�ł��A�X��Rendere�ɔC���Ă��܂��Ă����������H
-		Activate �̂Ƃ� GraphicsContext ���ʓ|����K�v�Ȃ��Ƃ������Ƃ����B
-		�Ƃ肠�����������̕����ŁB
+		・・・でも、個々のRendereに任せてしまってもいいかも？
+		Activate のとき GraphicsContext が面倒見る必要ないということだし。
+		とりあえずこっちの方向で。
 
 
-	[2015/1/11] PrimitiveRenderer �Ƃ͂Ȃ���ʂ���H
-		PrimitiveRenderer �͒P���Ȍ`��������E��ʂɕ`�悷�邽�߂Ɏg�p����B
+	[2015/1/11] PrimitiveRenderer とはなぜ区別する？
+		PrimitiveRenderer は単純な形状を高速・大量に描画するために使用する。
 
-	[2015/1/3] �ʒ���ɂ���
-		�Ƃ肠�����˂���p�X�͑z�肵�Ȃ��B����͌y�ʂȑg�ݍ��݃��[�h�Ƃ���B
-		�{���ɂ����Ƃ����̂��g�������v�]����΁AExpandFill ������ poly2tri �Œu�������郂�[�h�����B
+	[2015/1/3] 面張りについて
+		とりあえずねじれパスは想定しない。これは軽量な組み込みモードとする。
+		本当にちゃんとしたのが使いたい要望あれば、ExpandFill だけを poly2tri で置き換えるモードを作る。
 
 	[2015/12/3]
 		Arc
@@ -98,73 +98,73 @@
 		Image
 		Path
 
-		�EPath �ȊO�͔ėp�I�Ȗʒ�����s���������O�Œ��_����Ă��܂����ق��������B
-		�E�X�g���[�N�ƃA���`�G�C���A�X�͖ʒ��肵�Ȃ���΂Ȃ�Ȃ��̂ŁA�O���̒��_�͑f�����Q�Ƃł���悤�ɂ���K�v������B
+		・Path 以外は汎用的な面張りを行うよりも自前で頂点作ってしまったほうが高速。
+		・ストロークとアンチエイリアスは面張りしなければならないので、外周の頂点は素早く参照できるようにする必要がある。
 
-		�A�E�g���C���̃|�C���g���X�g�쐬
-		(Path�ȊO)���_���X�g�쐬
-		(Path)�ʒ���E���_���X�g�쐬
-		Fill���_�o�b�t�@�쐬
-		�`��
-		Stroke���_�o�b�t�@�쐬
-		�`��
+		アウトラインのポイントリスト作成
+		(Path以外)頂点リスト作成
+		(Path)面張り・頂点リスト作成
+		Fill頂点バッファ作成
+		描画
+		Stroke頂点バッファ作成
+		描画
 
-	[2015/12/2] �^�C�����O�`��ɂ���
-		�f�t�H���g�ł͗L���ɂ��Ȃ��B�V�F�[�_�͕�����B
-		�^�C���z�u����u���V���w�肳�ꂽ�ꍇ�A�`�惂�[�h��؂�ւ���B
-		��ɗL���ɂ���ɂ͂��܂�ɂ����G������B
-
-
-	[2015/12/2] �R�}���h�̃L���b�V���ɂ���
-		����X�e�[�g�Ԃ� Primitive �`��R�}���h�͈ꊇ�Ŏ��s�ł���B
-		�܂Ƃ߂ăR�}���h���X�g�ɑ���Ƃ����̂����A�o�b�t�@�͒N�����́H
-		�� �X�e�[�g�̐؂�ւ��͊���ƕp�ɂ��Ǝv����B
-		�ނ��� new �̐��������Ă��܂���������Ȃ��B
-		memcpy �ŃR�}���h���X�g�̈ꎞ�o�b�t�@�փR�s�[����ق����S�̓I�Ɍ��ăp�t�H�[�}���X�ǂ������B
-		sizeof(Matrix) ��1�R�}���h���̕��σT�C�Y�Ƃ��� 10000 �q memcpy ����Ƃ��� 30us ���炢������B
-		1000 �Ȃ� 3us�B
-		���ۂɂ͂���ȂɎg��Ȃ����낤���Amemcpy �Ŗ��Ȃ��͂��B
+	[2015/12/2] タイリング描画について
+		デフォルトでは有効にしない。シェーダは分ける。
+		タイル配置するブラシが指定された場合、描画モードを切り替える。
+		常に有効にするにはあまりにも複雑すぎる。
 
 
-	[2015/12/2] �N���X��
-		���΂炭�ԋ󂢂āA����ς� GeometryRenderer �̂ق��������Ǝv���B
-		���̃��C�u�����͂��Ȃ�჌�x����API�����J����B
-		�����Ȃ��Ă���� DirectX11 �� RenderingContext �̈Ӗ��������Ȃ��Ă���B
-		�����x�����Ă��Ƃō��ʉ�����Ȃ� GeometryRenderer�B
+	[2015/12/2] コマンドのキャッシュについて
+		同一ステート間の Primitive 描画コマンドは一括で実行できる。
+		まとめてコマンドリストに送るといいのだが、バッファは誰が持つの？
+		→ ステートの切り替えは割りと頻繁だと思われる。
+		むしろ new の数が増えてしまうかもしれない。
+		memcpy でコマンドリストの一時バッファへコピーするほうが全体的に見てパフォーマンス良いかも。
+		sizeof(Matrix) を1コマンド分の平均サイズとして 10000 子 memcpy するときは 30us くらいかかる。
+		1000 個なら 3us。
+		実際にはこんなに使わないだろうし、memcpy で問題ないはず。
+
+
+	[2015/12/2] クラス名
+		しばらく間空いて、やっぱり GeometryRenderer のほうがいいと思う。
+		このライブラリはかなり低レベルなAPIも公開する。
+		そうなってくると DirectX11 の RenderingContext の意味が強くなってくる。
+		高レベルってことで差別化するなら GeometryRenderer。
 		
 
 
-	���O�̌��l�^�͂��̂����肩��B
+	名前の元ネタはこのあたりから。
 	https://developer.mozilla.org/ja/docs/Web/API/RenderingContext
 
-	���̃��W���[���� Scene �� GUI �ŋ��L����邪�A
-	GeometryRenderer �� Scene ���� GUI ���B
-	���C�u�����Ƃ��Ă� Scene �̕����Ӗ����傫���BDraw ��� Render ���ȁA�ƁB
+	このモジュールは Scene と GUI で共有されるが、
+	GeometryRenderer は Scene よりも GUI 寄り。
+	ライブラリとしては Scene の方が意味が大きい。Draw より Render かな、と。
 
 
-	Scene �ł́A���炩���� SceneNode �̃V�F�[�_�����[�U�[�V�F�[�_�Ƃ���
-	�ݒ肵�����̂� OnRender() �ɓn���B
+	Scene では、あらかじめ SceneNode のシェーダをユーザーシェーダとして
+	設定したものを OnRender() に渡す。
 
 
 
-	���[�U�[�V�F�[�_�ɗv�����钸�_�錾�́A
-	�EPos0
-	�ETexUV0
-	�EColor0
+	ユーザーシェーダに要求する頂点宣言は、
+	・Pos0
+	・TexUV0
+	・Color0
 
-	���[�U�[�V�F�[�_�ɗv������p�����[�^�́A
-	�EVIEWPORTPIXELSIZE
-	�ELNRC_TONE
-		UI_TONE�ANODE_TONE �Ƃ��̂ق������������H
-	��Tone �̌v�Z�̓��[�U�[�V�F�[�_�ŐF�����܂�����ɍs��Ȃ���΂Ȃ�Ȃ��B
-	�i��Z�����ŕ\���ł��Ȃ��̂Œ��_�錾�����ł͕s���j
-	#include "lumino.fx" �Ƃ����āA�s�N�Z���V�F�[�_�� LNUI_PostPixelShader �݂����Ȋ֐���
-	���[�U�[�ɌĂ�ł��炤�K�v������B
+	ユーザーシェーダに要求するパラメータは、
+	・VIEWPORTPIXELSIZE
+	・LNRC_TONE
+		UI_TONE、NODE_TONE とかのほうがいいかも？
+	↑Tone の計算はユーザーシェーダで色が決まった後に行わなければならない。
+	（乗算だけで表現できないので頂点宣言だけでは不足）
+	#include "lumino.fx" とかして、ピクセルシェーダで LNUI_PostPixelShader みたいな関数を
+	ユーザーに呼んでもらう必要がある。
 
-	�`�������3�B
-	�E�v���~�e�B�u�̂�
-	�E�g�ݍ��݃V�F�[�_���g��
-	�E���[�U�[�V�F�[�_���g��
+	描画方式は3つ。
+	・プリミティブのみ
+	・組み込みシェーダを使う
+	・ユーザーシェーダを使う
 
 	RenderingContext
 	BasicRenderingContext
@@ -185,7 +185,7 @@ LN_NAMESPACE_BEGIN
 
 //=============================================================================
 // GraphicsContext
-/*		GraphicsContext �� JavaFX �̃N���X�B
+/*		GraphicsContext は JavaFX のクラス。
 */
 //=============================================================================
 
@@ -244,7 +244,7 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);
 	m_textRenderer->SetViewPixelSize(size);
-	// ��TODO: OnStateFlushRequested �Ɏ����Ă������ق��������H
+	// ↑TODO: OnStateFlushRequested に持っていったほうがいい？
 }
 
 //-----------------------------------------------------------------------------

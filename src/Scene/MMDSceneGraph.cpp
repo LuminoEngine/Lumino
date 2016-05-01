@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"

@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <math.h>
 #include <Lumino/Base/Size.h>

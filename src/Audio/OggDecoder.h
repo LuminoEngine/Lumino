@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 	@file	OggDecoder.h
 */
 #pragma once
@@ -10,7 +10,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
-/// Ogg ‰¹º—p Decoder
+/// Ogg éŸ³å£°ç”¨ Decoder
 class OggDecoder
 	: public AudioDecoder
 {
@@ -33,38 +33,38 @@ public:
 	virtual void Reset() {}
 
 
-public:	// ˆÈ‰º‚Í ogg API ‚©‚ç‚ÌƒR[ƒ‹ƒoƒbƒN‚Æ‚µ‚Ä“o˜^‚·‚éŠÖ”
+public:	// ä»¥ä¸‹ã¯ ogg API ã‹ã‚‰ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã¨ã—ã¦ç™»éŒ²ã™ã‚‹é–¢æ•°
 
-	/// ogg —p read ƒR[ƒ‹ƒoƒbƒN
+	/// ogg ç”¨ read ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	static size_t readOggCallback(void* buffer, size_t element_size, size_t count, void* stream);
 
-	/// ogg —p seek ƒR[ƒ‹ƒoƒbƒN
+	/// ogg ç”¨ seek ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	static int seekOggCallback(void* stream, ogg_int64_t offset, int whence);
 
-	/// ogg —p close ƒR[ƒ‹ƒoƒbƒN
+	/// ogg ç”¨ close ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	static int closeOggCallback(void* stream);
 
-	/// ogg —p tell ƒR[ƒ‹ƒoƒbƒN
+	/// ogg ç”¨ tell ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 	static long tellOggCallback(void* stream);
 
 private:
-	static const int WORD_SIZE = sizeof(uint16_t);	/// ¦1ƒTƒ“ƒvƒ‹‚ ‚½‚è‚Ìƒrƒbƒg”
+	static const int WORD_SIZE = sizeof(uint16_t);	/// â€»1ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒ“ãƒƒãƒˆæ•°
 	static const int WORD_BITS = WORD_SIZE * 8;
 
-	Stream*			m_stream;				///< “ü—ÍƒXƒgƒŠ[ƒ€
-	WaveFormat		mWaveFormat;			///< PCM —pƒtƒH[ƒ}ƒbƒg
-	uint32_t		mSourceDataSize;		///< ‰¹ºƒf[ƒ^•”•ª‚ÌƒTƒCƒY
-	//uint64_t		mDataOffset;			///< ƒXƒgƒŠ[ƒ€“à‚Ì PCM ƒf[ƒ^‚Ìæ“ª‚Ü‚Å‚ÌƒIƒtƒZƒbƒgƒoƒCƒg”
-	uint32_t		mPCMDataSize;			///< ƒXƒgƒŠ[ƒ€“à‚Ì PCM ƒf[ƒ^‚ÌƒTƒCƒY
-	uint32_t		mTotalTime;				///< ‘S‘Ì‚ÌÄ¶ŠÔ ( ƒ~ƒŠ•b )
-	byte_t*			mOnmemoryPCMBuffer;		///< ƒIƒ“ƒƒ‚ƒŠÄ¶—p‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Şƒoƒbƒtƒ@
-	uint32_t		mOnmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer ‚ÌƒTƒCƒY ( ¡‚Ì‚Æ‚±‚ë mDataOffset ‚Æ“¯‚¶ )
-	uint32_t		mTotalSamples;          ///< ‘S‘Ì‚ÌÄ¶ƒTƒ“ƒvƒ‹”
+	Stream*			m_stream;				///< å…¥åŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ 
+	WaveFormat		mWaveFormat;			///< PCM ç”¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+	uint32_t		mSourceDataSize;		///< éŸ³å£°ãƒ‡ãƒ¼ã‚¿éƒ¨åˆ†ã®ã‚µã‚¤ã‚º
+	//uint64_t		mDataOffset;			///< ã‚¹ãƒˆãƒªãƒ¼ãƒ å†…ã® PCM ãƒ‡ãƒ¼ã‚¿ã®å…ˆé ­ã¾ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆãƒã‚¤ãƒˆæ•°
+	uint32_t		mPCMDataSize;			///< ã‚¹ãƒˆãƒªãƒ¼ãƒ å†…ã® PCM ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
+	uint32_t		mTotalTime;				///< å…¨ä½“ã®å†ç”Ÿæ™‚é–“ ( ãƒŸãƒªç§’ )
+	byte_t*			mOnmemoryPCMBuffer;		///< ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªå†ç”Ÿç”¨ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€ãƒãƒƒãƒ•ã‚¡
+	uint32_t		mOnmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer ã®ã‚µã‚¤ã‚º ( ä»Šã®ã¨ã“ã‚ mDataOffset ã¨åŒã˜ )
+	uint32_t		mTotalSamples;          ///< å…¨ä½“ã®å†ç”Ÿã‚µãƒ³ãƒ—ãƒ«æ•°
 	Threading::Mutex	m_mutex;
 
-	OggVorbis_File		mOggVorbisFile;			///< ƒI[ƒvƒ“Ï‚İ‚Ì Ogg ƒtƒ@ƒCƒ‹
-	uint32_t				mLoopStart;             ///< ƒ‹[ƒv—Ìˆæ‚Ìæ“ªƒTƒ“ƒvƒ‹”
-	uint32_t				mLoopLength;            ///< ƒ‹[ƒv—Ìˆæ‚Ì’·‚³ ( ƒTƒ“ƒvƒ‹” )
+	OggVorbis_File		mOggVorbisFile;			///< ã‚ªãƒ¼ãƒ—ãƒ³æ¸ˆã¿ã® Ogg ãƒ•ã‚¡ã‚¤ãƒ«
+	uint32_t				mLoopStart;             ///< ãƒ«ãƒ¼ãƒ—é ˜åŸŸã®å…ˆé ­ã‚µãƒ³ãƒ—ãƒ«æ•°
+	uint32_t				mLoopLength;            ///< ãƒ«ãƒ¼ãƒ—é ˜åŸŸã®é•·ã• ( ã‚µãƒ³ãƒ—ãƒ«æ•° )
 
 };
 

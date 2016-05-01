@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <wbemidl.h>
 #include <oleauto.h>
@@ -38,7 +38,7 @@ void Win32InputDriver::Initialize(HWND hWnd)
 {
 	m_hWnd = hWnd;
 
-	// DirectInput ‰Šú‰»
+	// DirectInput åˆæœŸåŒ–
 	LN_COMCALL(CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_ALL, IID_IDirectInput8, (void**)&m_directInput));
 	LN_COMCALL(m_directInput->Initialize(::GetModuleHandle(NULL), DIRECTINPUT_VERSION));
 
@@ -93,12 +93,12 @@ void Win32InputDriver::RefreshDevice()
 {
 	ReleaseDevice();
 
-	// Ú‘±Ï‚Ý‚ÌƒQ[ƒ€ƒRƒ“ƒgƒ[ƒ‰[ƒfƒoƒCƒX‚ð—ñ‹“‚·‚é
+	// æŽ¥ç¶šæ¸ˆã¿ã®ã‚²ãƒ¼ãƒ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ãƒ‡ãƒã‚¤ã‚¹ã‚’åˆ—æŒ™ã™ã‚‹
 	m_XInputDeviceCount = 0;
 	LN_COMCALL(
 		m_directInput->EnumDevices(
-			DI8DEVCLASS_GAMECTRL,		// XBox ”FŽ¯‚·‚é‚Á‚Û‚¢
-										//DI8DEVTYPE_JOYSTICK,		// ‘¼‚Ì”FŽ¯‚·‚é‚Á‚Û‚¢
+			DI8DEVCLASS_GAMECTRL,		// XBox èªè­˜ã™ã‚‹ã£ã½ã„
+										//DI8DEVTYPE_JOYSTICK,		// ä»–ã®èªè­˜ã™ã‚‹ã£ã½ã„
 			EnumJoysticksCallback,
 			this,
 			DIEDFL_ATTACHEDONLY));
@@ -133,7 +133,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 {
 	if (IsXInputDevice(&instance->guidProduct))
 	{
-		// ƒfƒoƒCƒX‚Ìî•ñ‚ðŽæ“¾‚·‚é‚½‚ßAˆê“xƒfƒoƒCƒX‚ðì‚é
+		// ãƒ‡ãƒã‚¤ã‚¹ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ãŸã‚ã€ä¸€åº¦ãƒ‡ãƒã‚¤ã‚¹ã‚’ä½œã‚‹
 		IDirectInputDevice8* device = NULL;
 		HRESULT hr = m_directInput->CreateDevice(instance->guidInstance, &device, NULL);
 		if SUCCEEDED(hr)
@@ -155,14 +155,14 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 		HRESULT hr = m_directInput->CreateDevice(instance->guidInstance, &device, NULL);
 		if (SUCCEEDED(hr))
 		{
-			// ƒfƒoƒCƒX‚Ìî•ñŽæ“¾
+			// ãƒ‡ãƒã‚¤ã‚¹ã®æƒ…å ±å–å¾—
 			DIDEVCAPS caps;
 			memset(&caps, 0, sizeof(caps));
 			caps.dwSize = sizeof(caps);
 			if (SUCCEEDED(device->GetCapabilities(&caps)))
 			{
-				//DXST_ERRORLOGFMT_ADDA(( "ƒfƒoƒCƒX‚Ì“o˜^–¼:%s" , State.tszInstanceName )) ;
-				//DXST_ERRORLOGFMT_ADDA(( "ƒfƒoƒCƒX‚Ì»•i“o˜^–¼:%s" , State.tszProductName )) ;
+				//DXST_ERRORLOGFMT_ADDA(( "ãƒ‡ãƒã‚¤ã‚¹ã®ç™»éŒ²å:%s" , State.tszInstanceName )) ;
+				//DXST_ERRORLOGFMT_ADDA(( "ãƒ‡ãƒã‚¤ã‚¹ã®è£½å“ç™»éŒ²å:%s" , State.tszProductName )) ;
 				Win32JoystickDriver* joypad = LN_NEW Win32JoystickDriver();
 				joypad->Initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
 				m_joypadList.Add(joypad);
@@ -170,18 +170,18 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 		}
 	}
 	/*
-	// ƒfƒoƒCƒX‚Ìƒ^ƒCƒv‚ðŽæ“¾‚·‚é ( ‰ºˆÊƒoƒCƒg‚ªƒ^ƒCƒv )
+	// ãƒ‡ãƒã‚¤ã‚¹ã®ã‚¿ã‚¤ãƒ—ã‚’å–å¾—ã™ã‚‹ ( ä¸‹ä½ãƒã‚¤ãƒˆãŒã‚¿ã‚¤ãƒ— )
 	lnU32 type = instance_->dwDevType & 0xff;
-	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚Ìê‡
-	// (DI8DEVTYPE_JOYSTICK ‚¾‚¯‚¾‚Æƒqƒbƒg‚µ‚È‚¢ƒRƒ“ƒgƒ[ƒ‰‚à‚ ‚é‚Ì‚Å DI8DEVTYPE_GAMEPAD‚àƒ`ƒFƒbƒN)
+	// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å ´åˆ
+	// (DI8DEVTYPE_JOYSTICK ã ã‘ã ã¨ãƒ’ãƒƒãƒˆã—ãªã„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã‚‚ã‚ã‚‹ã®ã§ DI8DEVTYPE_GAMEPADã‚‚ãƒã‚§ãƒƒã‚¯)
 	if ( type == DI8DEVTYPE_JOYSTICK || type == DI8DEVTYPE_GAMEPAD )
 	{
-	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚ÌƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg‚ðì¬‚·‚é
+	// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã™ã‚‹
 	IDirectInputDevice8* device = NULL;
 	HRESULT hr = mDirectInput->CreateDevice( instance_->guidInstance, &device, NULL );
 	if ( SUCCEEDED( hr ) )
 	{
-	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚ÌŠÇ—ƒNƒ‰ƒX‚ðì¬‚·‚é
+	// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®ç®¡ç†ã‚¯ãƒ©ã‚¹ã‚’ä½œæˆã™ã‚‹
 	mJoypads[ mJoypadNum ] = NEW JoypadDevice();
 	mJoypads[ mJoypadNum ]->initialize( device, mWindowHandle );
 	++mJoypadNum;

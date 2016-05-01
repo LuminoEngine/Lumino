@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Common.h>
 
@@ -14,7 +14,7 @@ public:
 
 	void Initialize(GraphicsManager* manager);
 
-	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// ƒeƒNƒXƒ`ƒƒ‚Ì DrawText “™Aƒ†[ƒeƒBƒŠƒeƒB“I‚Ég‚¢‚½‚¢‚Æ‚«‚É new ‚ğŒ¸‚ç‚·
+	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã® DrawText ç­‰ã€ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£çš„ã«ä½¿ã„ãŸã„ã¨ãã« new ã‚’æ¸›ã‚‰ã™
 
 	void SetRenderArea(const Rect& area) { m_renderArea = area; }
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }

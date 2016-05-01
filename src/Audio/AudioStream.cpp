@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include "AudioManager.h"
 #include "AudioStream.h"
@@ -65,7 +65,7 @@ bool AudioStream::CheckCreated()
 //-----------------------------------------------------------------------------
 void AudioStream::OnASyncIOProc()
 {
-	// ƒtƒH[ƒ}ƒbƒg‚ğ’²‚×‚ÄƒfƒR[ƒ_‚ğì‚é
+	// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’èª¿ã¹ã¦ãƒ‡ã‚³ãƒ¼ãƒ€ã‚’ä½œã‚‹
 	StreamFormat format = AudioUtils::CheckFormat(m_stream);
 	switch (format)
 	{
@@ -92,7 +92,7 @@ void AudioStream::OnASyncIOProc()
 		break;
 	}
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	m_decoder->Create(m_stream);
 }
 

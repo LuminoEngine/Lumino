@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "../Graphics/Text/Font.h"
@@ -9,8 +9,8 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 enum BrushWrapMode
 {
-	BrushWrapMode_Stretch = 0,	///< ƒCƒ[ƒW‘S‘Ì‚ðˆø‚«‰„‚Î‚·
-	BrushWrapMode_Tile,			///< ƒCƒ[ƒW‚ð•À‚×‚Ä•\Ž¦‚·‚é
+	BrushWrapMode_Stretch = 0,	///< ã‚¤ãƒ¡ãƒ¼ã‚¸å…¨ä½“ã‚’å¼•ãå»¶ã°ã™
+	BrushWrapMode_Tile,			///< ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä¸¦ã¹ã¦è¡¨ç¤ºã™ã‚‹
 
 };
 
@@ -22,7 +22,7 @@ public:
 	virtual ~Brush();
 
 public:
-	virtual BrushType GetType() const = 0;	// TODO: ”ñvirtual ‚É‚µ‚½‚¢
+	virtual BrushType GetType() const = 0;	// TODO: éžvirtual ã«ã—ãŸã„
 };
 
 
@@ -57,7 +57,7 @@ private:
 	ColorF	m_color;
 };
 
-/// Bitmap ‚Íƒ\ƒtƒg“I‚È•`‰æˆ—‚ðs‚¤‚½‚ßABitmapBrush ‚Æ‚¢‚¤–¼‘O‚Í‚Â‚©‚í‚È‚¢
+/// Bitmap ã¯ã‚½ãƒ•ãƒˆçš„ãªæç”»å‡¦ç†ã‚’è¡Œã†ãŸã‚ã€BitmapBrush ã¨ã„ã†åå‰ã¯ã¤ã‹ã‚ãªã„
 class TextureBrush
 	: public Brush
 {
@@ -86,7 +86,7 @@ public:
 
 private:
 	RefPtr<Texture>		m_texture;
-	Rect				m_srcRect;	///< ‰Šú’l‚Í (0, 0, INT_MAX, INT_MAX) ‚ÅA‘S‘Ì‚ð“]‘—‚·‚é‚±‚Æ‚ð•\‚·
+	Rect				m_srcRect;	///< åˆæœŸå€¤ã¯ (0, 0, INT_MAX, INT_MAX) ã§ã€å…¨ä½“ã‚’è»¢é€ã™ã‚‹ã“ã¨ã‚’è¡¨ã™
 	BrushWrapMode		m_wrapMode;
 };
 
@@ -124,14 +124,14 @@ public:
 
 private:
 	RefPtr<Texture>		m_texture;
-	Rect				m_srcRect;	///< ‰Šú’l‚Í (0, 0, INT_MAX, INT_MAX) ‚ÅA‘S‘Ì‚ð“]‘—‚·‚é‚±‚Æ‚ð•\‚·
+	Rect				m_srcRect;	///< åˆæœŸå€¤ã¯ (0, 0, INT_MAX, INT_MAX) ã§ã€å…¨ä½“ã‚’è»¢é€ã™ã‚‹ã“ã¨ã‚’è¡¨ã™
 	Rect				m_innerSrcRect;
 	int					m_frameThickness;
 	BrushWrapMode		m_wrapMode;
 };
 
 /**
-	@brief	}Œ`‚Ì˜gü‚Ì•`‰æ•û–@‚ð•\‚µ‚Ü‚·B
+	@brief	å›³å½¢ã®æž ç·šã®æç”»æ–¹æ³•ã‚’è¡¨ã—ã¾ã™ã€‚
 */
 class Pen
 	: public RefObject

@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÉŠÖ‚·‚é‹@”\‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+	@brief	ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã«é–¢ã™ã‚‹æ©Ÿèƒ½ã‚’æä¾›ã—ã¾ã™ã€‚
 */
 class Graphics
 {
@@ -36,13 +36,13 @@ public:
 	static void Flush();
 
 	/**
-		@brief		ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ğŠJn‚µ‚Ü‚·B
-		@details	Application::UpdateFrame() ‚ğg—p‚·‚éê‡A‚±‚ÌŠÖ”‚ğŒÄ‚Ño‚·•K—v‚Í‚ ‚è‚Ü‚¹‚ñB
+		@brief		ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚’é–‹å§‹ã—ã¾ã™ã€‚
+		@details	Application::UpdateFrame() ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã€ã“ã®é–¢æ•°ã‚’å‘¼ã³å‡ºã™å¿…è¦ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
 	*/
 	//void BeginRendering();
 	
 	/**
-		@brief		ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ğI—¹‚µ‚Ü‚·B
+		@brief		ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚’çµ‚äº†ã—ã¾ã™ã€‚
 	*/
 	//void EndRendering();
 

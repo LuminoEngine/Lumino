@@ -1,19 +1,19 @@
-/*
+ï»¿/*
 	[2015/12/5]
-		ƒ|[ƒŠƒ“ƒO‚Ì“ü—Í”»’è‚Í‚¢‚Ü‚Ü‚Å‚Ç‚¨‚è‚É‚·‚éB
-		1ƒtƒŒ[ƒ€‚ÌŠÔ‚ÉON/OFF‚ª“¯Žž‚É—ˆ‚½‚Æ‚«‚É‚Í ON ‚É‚·‚é‚æ‚¤‚É‚à‚Å‚«‚é‚¯‚ÇA
-		‚¶‚á‚ ‹t‚ÌOFF‚É‚µ‚½‚¢‚Æ‚«‚Í‚Ç‚¤‚·‚é‚ÌH‚Æ‚©l‚¦‚È‚¢‚¯‚ê‚Î‚È‚ç‚È‚¢‚±‚Æ‚ªŠ„‚è‚Æ‚ ‚è‚»‚¤B
-		i‚Ù‚Æ‚ñ‚Ç‚Ìê‡‚ÍON‚¾‚¯‚¾‚ë‚¤‚µAON‚¾‚¯‚Í‘Î‰ž‚µ‚Ä‚à‚¢‚¢‚©‚àH‚¢‚¸‚ê‚É‚µ‚Ä‚àŒã‚Åj
-		ON/OFF‚ª“¯Žž‚É—ˆ‚ÄŒ‹‰Ê‚ªOFF‚É‚µ‚©‚È‚ç‚È‚¢‚Ì‚ªƒCƒ„‚È‚çƒCƒxƒ“ƒg‚ðƒnƒ“ƒhƒŠƒ“ƒO‚·‚éB
+		ãƒãƒ¼ãƒªãƒ³ã‚°ã®å…¥åŠ›åˆ¤å®šã¯ã„ã¾ã¾ã§ã©ãŠã‚Šã«ã™ã‚‹ã€‚
+		1ãƒ•ãƒ¬ãƒ¼ãƒ ã®é–“ã«ON/OFFãŒåŒæ™‚ã«æ¥ãŸã¨ãã«ã¯ ON ã«ã™ã‚‹ã‚ˆã†ã«ã‚‚ã§ãã‚‹ã‘ã©ã€
+		ã˜ã‚ƒã‚é€†ã®OFFã«ã—ãŸã„ã¨ãã¯ã©ã†ã™ã‚‹ã®ï¼Ÿã¨ã‹è€ƒãˆãªã„ã‘ã‚Œã°ãªã‚‰ãªã„ã“ã¨ãŒå‰²ã‚Šã¨ã‚ã‚Šãã†ã€‚
+		ï¼ˆã»ã¨ã‚“ã©ã®å ´åˆã¯ONã ã‘ã ã‚ã†ã—ã€ONã ã‘ã¯å¯¾å¿œã—ã¦ã‚‚ã„ã„ã‹ã‚‚ï¼Ÿã„ãšã‚Œã«ã—ã¦ã‚‚å¾Œã§ï¼‰
+		ON/OFFãŒåŒæ™‚ã«æ¥ã¦çµæžœãŒOFFã«ã—ã‹ãªã‚‰ãªã„ã®ãŒã‚¤ãƒ¤ãªã‚‰ã‚¤ãƒ™ãƒ³ãƒˆã‚’ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ã™ã‚‹ã€‚
 
 	[2015/12/5]
-		ƒL[ƒ{[ƒh‚Æƒ}ƒEƒX‚Ì“ü—Í‚ÍƒEƒBƒ“ƒhƒEƒCƒxƒ“ƒg‚©‚çŽæ‚é•û‚ª‚¢‚¢‚ÆŽv‚¤B
-		GUI ‘€ì’†‚ÉƒLƒƒƒ‰ƒNƒ^[‚ªˆÚ“®‚·‚é‚Ì‚à—Ç‚­‚È‚¢‚µB
+		ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã¨ãƒžã‚¦ã‚¹ã®å…¥åŠ›ã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¤ãƒ™ãƒ³ãƒˆã‹ã‚‰å–ã‚‹æ–¹ãŒã„ã„ã¨æ€ã†ã€‚
+		GUI æ“ä½œä¸­ã«ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒç§»å‹•ã™ã‚‹ã®ã‚‚è‰¯ããªã„ã—ã€‚
 
 	[2015/12/5]
-		ƒCƒxƒ“ƒg‚Íã‘¤‚Ì Manager ‚É‘—‚Á‚Ä‚à‚ç‚¤B
-		InputManager ‚ª’¼Ú MainWindow ‚ÉƒŠƒXƒi[‚ð“o˜^‚·‚é‚ÆAŒãX—Dæ“x‚ð‚¢‚¶‚è‚Ã‚ç‚­‚È‚é‚©‚àB
-		(‚Ü‚Ÿ“à•”ƒNƒ‰ƒX‚È‚Ì‚Å‚Ç‚¤•ÏX‚µ‚Ä‚à—Ç‚¢‚¯‚ÇEEE)
+		ã‚¤ãƒ™ãƒ³ãƒˆã¯ä¸Šå´ã® Manager ã«é€ã£ã¦ã‚‚ã‚‰ã†ã€‚
+		InputManager ãŒç›´æŽ¥ MainWindow ã«ãƒªã‚¹ãƒŠãƒ¼ã‚’ç™»éŒ²ã™ã‚‹ã¨ã€å¾Œã€…å„ªå…ˆåº¦ã‚’ã„ã˜ã‚Šã¥ã‚‰ããªã‚‹ã‹ã‚‚ã€‚
+		(ã¾ãå†…éƒ¨ã‚¯ãƒ©ã‚¹ãªã®ã§ã©ã†å¤‰æ›´ã—ã¦ã‚‚è‰¯ã„ã‘ã©ãƒ»ãƒ»ãƒ»)
 */
 #include "Internal.h"
 #include "InputDriver.h"
@@ -137,7 +137,7 @@ void InputManager::OnEvent(const PlatformEventArgs& e)
 //-----------------------------------------------------------------------------
 float InputManager::GetVirtualButtonState(const detail::DeviceInputSource& input, bool keyboard, bool mouse)
 {
-	// ƒL[ƒ{[ƒh
+	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
 	if (input.id & detail::DeviceInputSource::KeyboardFlag)
 	{
 		uint32_t k = (input.id & detail::DeviceInputSource::ValueMask) & 0x0FFF;
@@ -145,24 +145,24 @@ float InputManager::GetVirtualButtonState(const detail::DeviceInputSource& input
 		if (m != 0) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->GetKeyState((Key)k) ? 1.0f : 0.0f;
 	}
-	// ƒ}ƒEƒX
+	// ãƒžã‚¦ã‚¹
 	if (input.id & detail::DeviceInputSource::MouseFlag)
 	{
 		uint32_t k = input.id & detail::DeviceInputSource::ValueMask;
 		return m_inputDriver->GetMouseState((MouseButton::enum_type)k) ? 1.0f : 0.0f;
 	}
-	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN - ƒ{ƒ^ƒ“
+	// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ - ãƒœã‚¿ãƒ³
 	if (input.id & detail::DeviceInputSource::JoystickButtonFlag)
 	{
 		uint32_t number = (input.id & detail::DeviceInputSource::JoystickNumberMask) >> 12;
 		LN_THROW(0, NotImplementedException);
 	}
-	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN - Ž²
+	// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ - è»¸
 	if (input.id & detail::DeviceInputSource::JoystickAxisFlag)
 	{
 		LN_THROW(0, NotImplementedException);
 	}
-	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN - POV
+	// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ - POV
 	if (input.id & detail::DeviceInputSource::JoystickPovFlag)
 	{
 		LN_THROW(0, NotImplementedException);
@@ -265,7 +265,7 @@ void InputManager::UpdateFrame()
 //-----------------------------------------------------------------------------
 void InputManager::RefreshDevices()
 {
-	// ”FŽ¯Ï‚ÝƒWƒ‡ƒCƒpƒbƒh‚Ì”Ô†‚ðŠ„‚èU‚Á‚Ä‚¢‚­
+	// èªè­˜æ¸ˆã¿ã‚¸ãƒ§ã‚¤ãƒ‘ãƒƒãƒ‰ã®ç•ªå·ã‚’å‰²ã‚ŠæŒ¯ã£ã¦ã„ã
 	int joyCount = m_inputDevice->GetJoypadCount();
 	for (int i = 0; i < MaxJoypads; ++i)
 	{

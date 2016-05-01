@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <array>
 #include <Lumino/Platform/PlatformEventArgs.h>
@@ -31,7 +31,7 @@ public:
 
 	InputController* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }
 
-	/// “ü—Íî•ñ‚ğ 1 ƒtƒŒ[ƒ€•ªXV
+	/// å…¥åŠ›æƒ…å ±ã‚’ 1 ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†æ›´æ–°
 	void UpdateFrame();
 
 	//InputDevice* GetInputDevice() { return m_inputDevice; }

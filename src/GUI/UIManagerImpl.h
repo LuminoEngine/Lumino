@@ -1,4 +1,4 @@
-
+ï»¿
 
 #pragma once
 #include <map>
@@ -15,20 +15,20 @@ namespace Internal { class GUIPainter; }
 
 /**
 	@brief	
-	@note	‚±‚ÌƒNƒ‰ƒX‚ÍƒCƒxƒ“ƒgˆø”‚Ì•p”É‚È new ‚ğ”ğ‚¯‚é‚½‚ß‚Ég—p‚·‚éB
-			—á‚¦‚Î MouseMove ƒCƒxƒ“ƒg‚ÍÅˆ«–ˆƒtƒŒ[ƒ€‚Ì‚æ‚¤‚É”­¶‚·‚é‰Â”\«‚ª‚ ‚èAnew ‚Í‘å‚«‚ÈƒI[ƒo[ƒwƒbƒh‚É‚È‚éB
-			‚»‚ê‚È‚ç union ‚ğ—˜—p‚µ‚½ƒCƒxƒ“ƒgˆø”\‘¢‘Ì‚ğg‚¤‚Ì‚à‚Ğ‚Æ‚Â‚Ìè‚©‚à‚µ‚ê‚È‚¢B
+	@note	ã“ã®ã‚¯ãƒ©ã‚¹ã¯ã‚¤ãƒ™ãƒ³ãƒˆå¼•æ•°ã®é »ç¹ãª new ã‚’é¿ã‘ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ã€‚
+			ä¾‹ãˆã° MouseMove ã‚¤ãƒ™ãƒ³ãƒˆã¯æœ€æ‚ªæ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚ˆã†ã«ç™ºç”Ÿã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã€new ã¯å¤§ããªã‚ªãƒ¼ãƒãƒ¼ãƒ˜ãƒƒãƒ‰ã«ãªã‚‹ã€‚
+			ãã‚Œãªã‚‰ union ã‚’åˆ©ç”¨ã—ãŸã‚¤ãƒ™ãƒ³ãƒˆå¼•æ•°æ§‹é€ ä½“ã‚’ä½¿ã†ã®ã‚‚ã²ã¨ã¤ã®æ‰‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚
 			
-			‚µ‚©‚µA–{ƒ‰ƒCƒuƒ‰ƒŠ‚Í C# ‚â Ruby “™A‘¼‚ÌŒ¾Œê‚Ö‚ÌƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ‘z’è‚µ‚Ä‚¢‚éB
-			“–‘R GUI ƒ‚ƒWƒ…[ƒ‹‚àŒöŠJ‚³‚êAŠg’£‚³‚ê‚é‚±‚Æ‚ª‘O’ñB
-			C# ‘¤‚Åì¬‚µ‚½ƒ†[ƒU[ƒRƒ“ƒgƒ[ƒ‹‚ª MouseEventArgs ‚ğg—p‚·‚é‚±‚Æ‚Í‘z’è‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
+			ã—ã‹ã—ã€æœ¬ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¯ C# ã‚„ Ruby ç­‰ã€ä»–ã®è¨€èªã¸ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’æƒ³å®šã—ã¦ã„ã‚‹ã€‚
+			å½“ç„¶ GUI ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚‚å…¬é–‹ã•ã‚Œã€æ‹¡å¼µã•ã‚Œã‚‹ã“ã¨ãŒå‰æã€‚
+			C# å´ã§ä½œæˆã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãŒ MouseEventArgs ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯æƒ³å®šã—ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
 
-			union ‚â struct ‚É‚µ‚½ê‡A‚±‚ê‚Í‚±‚ê‚ÅŒ¾Œê•Ê‚É—]Œv‚ÈƒI[ƒo[ƒwƒbƒh‚â‡‚í‚¹‚±‚İ‚ÌÀ‘•‚ª‘‚¦‚é‚±‚Æ‚É‚È‚éB
-			—á‚¦‚Î C# ‚ÅB‚Í’l“n‚µ‚Ì‚Ü‚Ü‚Å‚æ‚¢‚Ì‚©Aref ‚ğ‚Â‚¯‚é‚Ì‚©BRuby ‚Å struct ‚Íg‚¦‚È‚¢‚Ì‚ÅŒ‹‹Ç new ‚·‚é‰H–Ú‚É‚È‚é‚ª‚¢‚¢‚Ì‚©B
+			union ã‚„ struct ã«ã—ãŸå ´åˆã€ã“ã‚Œã¯ã“ã‚Œã§è¨€èªåˆ¥ã«ä½™è¨ˆãªã‚ªãƒ¼ãƒãƒ¼ãƒ˜ãƒƒãƒ‰ã‚„åˆã‚ã›ã“ã¿ã®å®Ÿè£…ãŒå¢—ãˆã‚‹ã“ã¨ã«ãªã‚‹ã€‚
+			ä¾‹ãˆã° C# ã§Bã¯å€¤æ¸¡ã—ã®ã¾ã¾ã§ã‚ˆã„ã®ã‹ã€ref ã‚’ã¤ã‘ã‚‹ã®ã‹ã€‚Ruby ã§ struct ã¯ä½¿ãˆãªã„ã®ã§çµå±€ new ã™ã‚‹ç¾½ç›®ã«ãªã‚‹ãŒã„ã„ã®ã‹ã€‚
 
-			Pool ‚µ‚Ä‚¨‚¯‚ÎAáŠ±’¼Š´“I‚Å‚Í‚È‚­‚È‚é‚ªAƒoƒCƒ“ƒ_‘¤‚Ì new ‚à—}‚¦‚é‚±‚Æ‚ª‚Å‚«‚éB
+			Pool ã—ã¦ãŠã‘ã°ã€è‹¥å¹²ç›´æ„Ÿçš„ã§ã¯ãªããªã‚‹ãŒã€ãƒã‚¤ãƒ³ãƒ€å´ã® new ã‚‚æŠ‘ãˆã‚‹ã“ã¨ãŒã§ãã‚‹ã€‚
 
-			ŒãXƒCƒxƒ“ƒg‚Ìí—Ş‚ª‘‚¦‚Ä‚«‚½‚Æ‚«‚ÍŠg’£«‚Ì‚½‚ßAƒCƒxƒ“ƒg–¼‚ğƒL[‚É‚µ‚Ä Create ‚·‚é‚æ‚¤‚Èd‘g‚İ‚ª•K—v‚É‚È‚é‚©‚à‚µ‚ê‚È‚¢B
+			å¾Œã€…ã‚¤ãƒ™ãƒ³ãƒˆã®ç¨®é¡ãŒå¢—ãˆã¦ããŸã¨ãã¯æ‹¡å¼µæ€§ã®ãŸã‚ã€ã‚¤ãƒ™ãƒ³ãƒˆåã‚’ã‚­ãƒ¼ã«ã—ã¦ Create ã™ã‚‹ã‚ˆã†ãªä»•çµ„ã¿ãŒå¿…è¦ã«ãªã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚
 */
 class EventArgsPool
 {
@@ -36,8 +36,8 @@ public:
 	EventArgsPool();
 	~EventArgsPool();
 
-	MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);	// TODO: ‚â‚ß‚é
-	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);	// TODO: ‚â‚ß‚é
+	MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);	// TODO: ã‚„ã‚ã‚‹
+	KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);	// TODO: ã‚„ã‚ã‚‹
 
 	template<class TEventArgs, typename ...TArgs>
 	TEventArgs* Create(TArgs... args)
@@ -68,7 +68,7 @@ private:
 		{
 			for (auto e : (*list))
 			{
-				if (e->GetRefCount() == 1) {	// ‚±‚ÌƒŠƒXƒg‚©‚ç‚µ‚©QÆ‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î•Ô‚·
+				if (e->GetRefCount() == 1) {	// ã“ã®ãƒªã‚¹ãƒˆã‹ã‚‰ã—ã‹å‚ç…§ã•ã‚Œã¦ã„ãªã‘ã‚Œã°è¿”ã™
 					return e;
 				}
 			}
@@ -113,7 +113,7 @@ private:
 
 
 /**
-	@brief		GUI ‹@”\‚ÌŠÇ—ƒNƒ‰ƒX‚Å‚·B
+	@brief		GUI æ©Ÿèƒ½ã®ç®¡ç†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class GUIManagerImpl
 	: public RefObject
@@ -183,7 +183,7 @@ public:
 
 
 
-	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// ‚Æ‚è‚ ‚¦‚¸“à•”—pBŒ¾ŒêƒoƒCƒ“ƒ_‚Ì‚±‚Æ‚ÍŒã‚ÅB
+	void RegisterFactory(const String& typeFullName, ObjectFactory factory);	// ã¨ã‚Šã‚ãˆãšå†…éƒ¨ç”¨ã€‚è¨€èªãƒã‚¤ãƒ³ãƒ€ã®ã“ã¨ã¯å¾Œã§ã€‚
 	CoreObject* CreateObject(const String& typeFullName);
 
 
@@ -201,7 +201,7 @@ public:	// internal
 	Internal::GUIPainter* GetPainter() { return m_painter; }
 
 private:
-	bool UpdateMouseHover(const PointF& mousePos);	// ƒnƒ“ƒhƒŠƒ“ƒO‚µ‚½‚ç true ‚ğ•Ô‚·
+	bool UpdateMouseHover(const PointF& mousePos);	// ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ã—ãŸã‚‰ true ã‚’è¿”ã™
 	void BuildDefaultTheme();
 
 

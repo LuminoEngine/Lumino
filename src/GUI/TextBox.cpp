@@ -1,15 +1,15 @@
-/*
+ï»¿/*
 	[2015/8/25]
-		EÀÛ‚É‰æ–Ê‚É•\¦‚·‚é Inline ‚Í Visual ‚È‚ñ‚½‚ç‚É‚µ‚Ä‚¨‚­B
-		@‚±‚ê‚Í‚¢‚¤‚È‚ê‚Î˜_——v‘f‚É‘Î‚·‚é•¨——v‘fB
-		 @ƒIƒuƒWƒFƒNƒg‰»‚µ‚Ä‚¨‚­‚±‚Æ‚ÅAƒAƒjƒ[ƒVƒ‡ƒ“‚à‚â‚è‚â‚·‚¢B
+		ãƒ»å®Ÿéš›ã«ç”»é¢ã«è¡¨ç¤ºã™ã‚‹ Inline ã¯ Visual ãªã‚“ãŸã‚‰ã«ã—ã¦ãŠãã€‚
+		ã€€ã“ã‚Œã¯ã„ã†ãªã‚Œã°è«–ç†è¦ç´ ã«å¯¾ã™ã‚‹ç‰©ç†è¦ç´ ã€‚
+		 ã€€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåŒ–ã—ã¦ãŠãã“ã¨ã§ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚‚ã‚„ã‚Šã‚„ã™ã„ã€‚
 
-		EAvalonEdit ‚Å‚ÍA•¨—ƒsƒNƒZƒ‹¨˜_—s‚Ì•ÏŠ·‚Í Rendering.HeightTree ‚Ì–ğ–ÚB
-		Rendering.HeightTree ‚ÍA‚±‚Ì•ÏŠ·‚Æ‚¢‚¤‚©ŒŸõ‚ğ‚‘¬‚És‚¤Ô•–ØB
+		ãƒ»AvalonEdit ã§ã¯ã€ç‰©ç†ãƒ”ã‚¯ã‚»ãƒ«â†’è«–ç†è¡Œã®å¤‰æ›ã¯ Rendering.HeightTree ã®å½¹ç›®ã€‚
+		Rendering.HeightTree ã¯ã€ã“ã®å¤‰æ›ã¨ã„ã†ã‹æ¤œç´¢ã‚’é«˜é€Ÿã«è¡Œã†èµ¤é»’æœ¨ã€‚
 
-		EVisual ‚Ìì¬‚Í Measure ‚ÅB
+		ãƒ»Visual ã®ä½œæˆã¯ Measure ã§ã€‚
 
-		E‰üs‚Í1•¶šB\r\n‚à1•¶šB
+		ãƒ»æ”¹è¡Œã¯1æ–‡å­—ã€‚\r\nã‚‚1æ–‡å­—ã€‚
 */
 #include "../Internal.h"
 #include <Lumino/Platform/Clipboard.h>
@@ -30,7 +30,7 @@ LN_NAMESPACE_GUI_BEGIN
 class TextBox::Selection
 {
 public:
-	int	Start;		///< text.GetLength() ‚Í—LŒø’lBSelect(text.GetLength(), 0) ‚ÅƒRƒ“ƒeƒ“ƒc‚Ì––”ö‚ÉƒLƒƒƒŒƒbƒg‚ğˆÚ“®‚·‚é
+	int	Start;		///< text.GetLength() ã¯æœ‰åŠ¹å€¤ã€‚Select(text.GetLength(), 0) ã§ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®æœ«å°¾ã«ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’ç§»å‹•ã™ã‚‹
 	int Length;
 
 public:
@@ -41,9 +41,9 @@ public:
 };
 
 
-// –{Ši“I‚ÈƒeƒLƒXƒgƒGƒfƒBƒ^‚Å‚ ‚ê‚Î‘•ü‚Ì‚½‚ßA‚³‚ç‚É’PŒê’PˆÊ‚É‹æØ‚Á‚½‚è‚·‚éB
-// ‚±‚±‚Ì TextBox ‚Í•¶š‚²‚Æ‚É‘•ü‚Æ‚©‚Íl‚¦‚È‚¢ƒVƒ“ƒvƒ‹‚È‚à‚Ì‚È‚Ì‚ÅA‚Ü‚¸‚Ís’PˆÊB
-// ‚È‚¨A‰üs•¶š‚ÍŠÜ‚Ü‚È‚¢B
+// æœ¬æ ¼çš„ãªãƒ†ã‚­ã‚¹ãƒˆã‚¨ãƒ‡ã‚£ã‚¿ã§ã‚ã‚Œã°è£…é£¾ã®ãŸã‚ã€ã•ã‚‰ã«å˜èªå˜ä½ã«åŒºåˆ‡ã£ãŸã‚Šã™ã‚‹ã€‚
+// ã“ã“ã® TextBox ã¯æ–‡å­—ã”ã¨ã«è£…é£¾ã¨ã‹ã¯è€ƒãˆãªã„ã‚·ãƒ³ãƒ—ãƒ«ãªã‚‚ã®ãªã®ã§ã€ã¾ãšã¯è¡Œå˜ä½ã€‚
+// ãªãŠã€æ”¹è¡Œæ–‡å­—ã¯å«ã¾ãªã„ã€‚
 class TextBox::LineSegment
 	: public RefObject
 {
@@ -78,8 +78,8 @@ public:
 		return loc->OuterTopLeftPosition.X + loc->BitmapSize.Width;
 	}
 
-	// localPt.Y ‚Í‚±‚Ì LineSegment ‚Ì’†‚É‚ ‚é‚±‚Æ‚ª‘O’ñB
-	// –ß‚è’l‚Í‚±‚Ì LineSegment “à‚Ì Index
+	// localPt.Y ã¯ã“ã® LineSegment ã®ä¸­ã«ã‚ã‚‹ã“ã¨ãŒå‰æã€‚
+	// æˆ»ã‚Šå€¤ã¯ã“ã® LineSegment å†…ã® Index
 	int GetContentIndexFromPixel(const Point& localPt)
 	{
 		//const Array<Graphics::TextLayoutResultItem>& items = m_glyphRun->GetImtes();
@@ -88,7 +88,7 @@ public:
 		for (int i = 0; i < items.GetCount(); ++i)
 		{
 			int left;
-			if (i == 0) { // s“ª‚Ì•¶š‚Í¶’[‚©‚ç
+			if (i == 0) { // è¡Œé ­ã®æ–‡å­—ã¯å·¦ç«¯ã‹ã‚‰
 				left = 0; 
 			}
 			else {
@@ -119,7 +119,7 @@ public:
 	GenericStringBuilderCore<UTF32>	m_utf32Text;
 	//int				m_realCharCount;
 
-	RefPtr<GlyphRun>		m_glyphRun;	// –{—ˆ‚È‚ç View ‚Æ•ª‚¯‚é‚×‚«B‚½‚¾A¡‰ñ‚ÍƒVƒ“ƒvƒ‹d‹‚ÅB
+	RefPtr<GlyphRun>		m_glyphRun;	// æœ¬æ¥ãªã‚‰ View ã¨åˆ†ã‘ã‚‹ã¹ãã€‚ãŸã ã€ä»Šå›ã¯ã‚·ãƒ³ãƒ—ãƒ«é‡è¦–ã§ã€‚
 	bool			m_textModified;
 };
 
@@ -131,8 +131,8 @@ public:
 		int Length;
 		int StartLineNumber;
 		int EndLineNumber;
-		RectF StartLineRect;	// Start ‚ÌƒsƒNƒZƒ‹ˆÊ’u‚©‚çs––‚Ü‚Å
-		RectF EndLineRect;		// s“ª‚©‚ç End ‚Ü‚Å
+		RectF StartLineRect;	// Start ã®ãƒ”ã‚¯ã‚»ãƒ«ä½ç½®ã‹ã‚‰è¡Œæœ«ã¾ã§
+		RectF EndLineRect;		// è¡Œé ­ã‹ã‚‰ End ã¾ã§
 	};
 
 public:
@@ -162,7 +162,7 @@ public:
 
 	void Replace(int start, int length, const String& text)
 	{
-		// TODO:‚Æ‚è‚ ‚¦‚¸‰‰ñ‘O’ñ
+		// TODO:ã¨ã‚Šã‚ãˆãšåˆå›å‰æ
 		const TCHAR* pos = text.c_str();
 		const TCHAR* end = pos + text.GetLength();
 		int nlIndex = 0, nlCount = 0;
@@ -170,7 +170,7 @@ public:
 		{
 			RefPtr<TextBox::LineSegment> line(LN_NEW LineSegment(this, pos, nlIndex), false);
 			m_lineSegments.Add(line);
-			pos += (nlIndex + nlCount);	// ‰üs•¶š‚ÌŸ‚Ì•¶š‚ğw‚·
+			pos += (nlIndex + nlCount);	// æ”¹è¡Œæ–‡å­—ã®æ¬¡ã®æ–‡å­—ã‚’æŒ‡ã™
 		}
 		if (pos != end)
 		{
@@ -180,7 +180,7 @@ public:
 		m_selectionRenderingInfoModified = true;
 	}
 
-	// UTF32•¶š”‚ğ•Ô‚·
+	// UTF32æ–‡å­—æ•°ã‚’è¿”ã™
 	int Replace(const Selection* sel, const String& text)
 	{
 		const ByteBuffer& utf32 = m_TCharToUTF32Converter.Convert(text.c_str(), text.GetByteCount());
@@ -206,7 +206,7 @@ public:
 		m_selectionRenderingInfoModified = true;
 	}
 
-	// w’è‚µ‚½ƒRƒ“ƒeƒ“ƒcˆÊ’u (•¶šˆÊ’u) ‚ª‰½s–Ú‚©‚ğ•Ô‚·
+	// æŒ‡å®šã—ãŸã‚³ãƒ³ãƒ†ãƒ³ãƒ„ä½ç½® (æ–‡å­—ä½ç½®) ãŒä½•è¡Œç›®ã‹ã‚’è¿”ã™
 	void GetLineNumber(int contentPos, int* lineNumber, int* lenFromLineHead, int* yLocation = NULL)
 	{
 		int len = 0;
@@ -244,8 +244,8 @@ public:
 		return len;
 	}
 
-	// calet ‚ğ•`‰æ‚·‚é‚×‚«¶ã‚ÌÀ•W
-	// TODO: ƒLƒƒƒŒƒbƒg‚Í RenderSelection ‚Å‘‚­‚æ‚¤‚É‚·‚ê‚Î‚±‚ê‚¢‚ç‚È‚¢
+	// calet ã‚’æç”»ã™ã‚‹ã¹ãå·¦ä¸Šã®åº§æ¨™
+	// TODO: ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã¯ RenderSelection ã§æ›¸ãã‚ˆã†ã«ã™ã‚Œã°ã“ã‚Œã„ã‚‰ãªã„
 	Point GetCaretLocation(int contentPos, int* curLineHeight)
 	{
 		int lineNumber, lenFromLineHead, yLocation;
@@ -272,7 +272,7 @@ public:
 		m_selectionRenderingInfo.EndLineNumber = -1;
 		m_selectionRenderingInfo.Length = sel->Length;
 
-		// start ˆÊ’u‚Ìî•ñ‚ğæ“¾‚·‚é
+		// start ä½ç½®ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 		for (; line < m_lineSegments.GetCount(); ++line)
 		{
 			int head = len;
@@ -288,8 +288,8 @@ public:
 			y += m_lineSegments[line]->GetLinePixelHeight();
 		}
 
-		// end ˆÊ’u‚Ìî•ñ‚ğæ“¾‚·‚é
-		for (; line < m_lineSegments.GetCount(); ++line)	// ŠJnAline ‚Í start ‚Ì‚ ‚és‚Æ‚¨‚È‚¶s‚ğw‚µ‚Ä‚¢‚é
+		// end ä½ç½®ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+		for (; line < m_lineSegments.GetCount(); ++line)	// é–‹å§‹æ™‚ã€line ã¯ start ã®ã‚ã‚‹è¡Œã¨ãŠãªã˜è¡Œã‚’æŒ‡ã—ã¦ã„ã‚‹
 		{
 			int head = len;
 			len += m_lineSegments[line]->GetLength();
@@ -305,12 +305,12 @@ public:
 			y += m_lineSegments[line]->GetLinePixelHeight();
 		}
 
-		// ‚¿‚á‚ñ‚Ææ“¾‚Å‚«‚Ä‚¢‚ê‚Îs”Ô†‚ª‚ ‚é‚Í‚¸
+		// ã¡ã‚ƒã‚“ã¨å–å¾—ã§ãã¦ã„ã‚Œã°è¡Œç•ªå·ãŒã‚ã‚‹ã¯ãš
 		LN_CHECK_STATE(m_selectionRenderingInfo.StartLineNumber != -1);
 		LN_CHECK_STATE(m_selectionRenderingInfo.EndLineNumber != -1);
 	}
 
-	// ‘I‘ğ”ÍˆÍ‚ğ•`‰æ‚·‚éBƒuƒ‰ƒV‚Í‚ ‚ç‚©‚¶‚ßƒZƒbƒg‚µ‚Ä‚¨‚­‚±‚ÆB
+	// é¸æŠç¯„å›²ã‚’æç”»ã™ã‚‹ã€‚ãƒ–ãƒ©ã‚·ã¯ã‚ã‚‰ã‹ã˜ã‚ã‚»ãƒƒãƒˆã—ã¦ãŠãã“ã¨ã€‚
 	void RenderSelection(RenderingContext* painter, const Selection* sel)
 	{
 		if (m_selectionRenderingInfoModified)
@@ -319,7 +319,7 @@ public:
 			m_selectionRenderingInfoModified = false;
 		}
 
-		// ‘I‘ğ”ÍˆÍ‚Ì”wŒi
+		// é¸æŠç¯„å›²ã®èƒŒæ™¯
 		if (m_selectionRenderingInfo.Length > 0)
 		{
 			if (m_selectionRenderingInfo.StartLineNumber == m_selectionRenderingInfo.EndLineNumber)
@@ -479,7 +479,7 @@ SizeF TextBox::MeasureOverride(const SizeF& constraint)
 {
 	if (GUIHelper::UIElement_GetInvalidateFlags(this).TestFlag(InvalidateFlags::Font))
 	{
-		// TODO: OnUpdateFont() ‚Ö
+		// TODO: OnUpdateFont() ã¸
 		GraphicsManager::FontData fontData;
 		fontData.Family = GetFontFamily();
 		fontData.Size = GetFontSize();
@@ -508,10 +508,10 @@ void TextBox::OnRender(RenderingContext* painter)
 
 	m_caretAnimation->SetTime(GetContext()->GetTime());
 
-	// ‘I‘ğ—Ìˆæ
+	// é¸æŠé ˜åŸŸ
 
 
-	// ƒLƒƒƒŒƒbƒg
+	// ã‚­ãƒ£ãƒ¬ãƒƒãƒˆ
 	int caretHeight;
 	Point caretPos = m_document->GetCaretLocation(m_selection->Start + m_selection->Length, &caretHeight);
 	RectF caret((float)caretPos.X, (float)caretPos.Y, 1.0f, (float)caretHeight);
@@ -525,7 +525,7 @@ void TextBox::OnRender(RenderingContext* painter)
 //-----------------------------------------------------------------------------
 void TextBox::set_Text(const String& string)
 {
-	// TODO: ƒvƒƒpƒeƒB‰Šú’lƒZƒbƒg‚³‚ê‚Ä‚È‚¢
+	// TODO: ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£åˆæœŸå€¤ã‚»ãƒƒãƒˆã•ã‚Œã¦ãªã„
 	m_document->Replace(0, 0, string);	// TODO: GetLength()
 }
 
@@ -543,10 +543,10 @@ const String& TextBox::get_Text() const
 void TextBox::Handler_KeyDown(KeyEventArgs* e)
 {
 	/* TODO:
-		–{—ˆ‚Å‚ ‚ê‚ÎAƒVƒ‡[ƒgƒJƒbƒg‚Í UIInputBinding ‚ğg‚Á‚ÄÀŒ»‚·‚é‚×‚«B
-		‚½‚¾AŒ»“_‚ÅƒVƒ‡[ƒgƒJƒbƒg‚ª•K—v‚ÈƒRƒ“ƒgƒ[ƒ‹‚Í TextBox ‚¾‚¯B
-		Menu ‚Æ‚©‚Í’¼‹ß‚Å‚Íl‚¦‚Ä‚¢‚È‚¢B
-		‚»‚ê‚È‚Ì‚ÅAƒVƒ‡[ƒgƒJƒbƒg‚ÌŒŸo‚à‚Æ‚è‚ ‚¦‚¸‚±‚±‚Å‚â‚Á‚Ä‚µ‚Ü‚¤B
+		æœ¬æ¥ã§ã‚ã‚Œã°ã€ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã¯ UIInputBinding ã‚’ä½¿ã£ã¦å®Ÿç¾ã™ã‚‹ã¹ãã€‚
+		ãŸã ã€ç¾æ™‚ç‚¹ã§ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆãŒå¿…è¦ãªã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã¯ TextBox ã ã‘ã€‚
+		Menu ã¨ã‹ã¯ç›´è¿‘ã§ã¯è€ƒãˆã¦ã„ãªã„ã€‚
+		ãã‚Œãªã®ã§ã€ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã®æ¤œå‡ºã‚‚ã¨ã‚Šã‚ãˆãšã“ã“ã§ã‚„ã£ã¦ã—ã¾ã†ã€‚
 	*/
 	if (e->KeyCode == Key::V && e->IsControl)
 	{

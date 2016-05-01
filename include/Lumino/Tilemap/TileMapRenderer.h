@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -74,18 +74,18 @@ private:
 //	virtual ~SpriteTileMapRenderer();
 //
 //	/**
-//		@brief		À•W•ÏŠ·s—ñ‚ğİ’è‚µ‚Ü‚·B
-//		@param[in]	matrix		: À•W•ÏŠ·s—ñ
+//		@brief		åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’è¨­å®šã—ã¾ã™ã€‚
+//		@param[in]	matrix		: åº§æ¨™å¤‰æ›è¡Œåˆ—
 //	*/
 //	void SetTransform(const Matrix& matrix);
 //
 //	/**
-//		@brief		ƒrƒ…[‹y‚ÑƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğİ’è‚µ‚Ü‚·B
+//		@brief		ãƒ“ãƒ¥ãƒ¼åŠã³ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’è¨­å®šã—ã¾ã™ã€‚
 //	*/
 //	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
 //
 //	/**
-//		@brief		ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚ğİ’è‚µ‚Ü‚·B
+//		@brief		ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã‚’è¨­å®šã—ã¾ã™ã€‚
 //	*/
 //	void SetRenderState(const RenderState& state);
 //

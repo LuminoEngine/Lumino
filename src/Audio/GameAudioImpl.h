@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <list>
 
@@ -15,58 +15,58 @@ class GameAudioImpl
 {
 public:
 
-	/// BGM ‚ğ‰‰‘t‚·‚é
+	/// BGM ã‚’æ¼”å¥ã™ã‚‹
 	void PlayBGM(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
-	/// w’è‚³‚ê‚½ Sound ‚ğ BGM ‚Æ‚µ‚Ä‰‰‘t‚·‚é
+	/// æŒ‡å®šã•ã‚ŒãŸ Sound ã‚’ BGM ã¨ã—ã¦æ¼”å¥ã™ã‚‹
 	void PlayBGMFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
-	/// BGM ‚Ì‰‰‘t‚ğ’â~‚·‚é
+	/// BGM ã®æ¼”å¥ã‚’åœæ­¢ã™ã‚‹
 	void StopBGM(double fadeTime = 0.0);
 
-	/// BGS ( ŠÂ‹«‰¹ ) ‚ğ‰‰‘t‚·‚é
+	/// BGS ( ç’°å¢ƒéŸ³ ) ã‚’æ¼”å¥ã™ã‚‹
 	void PlayBGS(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
-	/// w’è‚³‚ê‚½ Sound ‚ğ BGS ‚Æ‚µ‚Ä‰‰‘t‚·‚é
+	/// æŒ‡å®šã•ã‚ŒãŸ Sound ã‚’ BGS ã¨ã—ã¦æ¼”å¥ã™ã‚‹
 	void PlayBGSFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
-	/// BGS ‚Ì‰‰‘t‚ğ’â~‚·‚é
+	/// BGS ã®æ¼”å¥ã‚’åœæ­¢ã™ã‚‹
 	void StopBGS(double fadeTime = 0.0);
 
-	// ME ( Œø‰Ê‰¹Šy ) ‚ğ‰‰‘t‚·‚é
+	// ME ( åŠ¹æœéŸ³æ¥½ ) ã‚’æ¼”å¥ã™ã‚‹
 	void PlayME(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f);
 
-	/// w’è‚³‚ê‚½ Sound ‚ğ ME ‚Æ‚µ‚Ä‰‰‘t‚·‚é
+	/// æŒ‡å®šã•ã‚ŒãŸ Sound ã‚’ ME ã¨ã—ã¦æ¼”å¥ã™ã‚‹
 	void PlayMEFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f);
 
-	/// ME ‚Ì‰‰‘t‚ğ’â~‚·‚é
+	/// ME ã®æ¼”å¥ã‚’åœæ­¢ã™ã‚‹
 	void StopME();
 
-	/// SE ‚ğ‰‰‘t‚·‚é
+	/// SE ã‚’æ¼”å¥ã™ã‚‹
 	void PlaySE(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f);
 
-	/// SE ‚ğ 3D ‹óŠÔã‚Å‰‰‘t‚·‚é
+	/// SE ã‚’ 3D ç©ºé–“ä¸Šã§æ¼”å¥ã™ã‚‹
 	void PlaySE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume = 1.0f, float pitch = 1.0f);
 
-	/// w’è‚³‚ê‚½ Sound ‚ğ SE ‚Æ‚µ‚Ä‰‰‘t‚·‚é
+	/// æŒ‡å®šã•ã‚ŒãŸ Sound ã‚’ SE ã¨ã—ã¦æ¼”å¥ã™ã‚‹
 	void PlaySEFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f);
 
-	/// ‘S‚Ä‚Ì SE ‚Ì‰‰‘t‚ğ’â~‚·‚é
+	/// å…¨ã¦ã® SE ã®æ¼”å¥ã‚’åœæ­¢ã™ã‚‹
 	void StopSE();
 
-	/// ME ‰‰‘t‚Ì BGM ‚ÌƒtƒF[ƒhŠÔ‚ğİ’è‚·‚é
+	/// ME æ¼”å¥æ™‚ã® BGM ã®ãƒ•ã‚§ãƒ¼ãƒ‰æ™‚é–“ã‚’è¨­å®šã™ã‚‹
 	void SetMEFadeState(double begin, double end);
 
-	/// Ä¶’†‚ÌBGM‚Ì‰¹—Ê‚ğİ’è‚·‚é (ƒtƒF[ƒhƒAƒEƒg’†‚Í–³Œø)
+	/// å†ç”Ÿä¸­ã®BGMã®éŸ³é‡ã‚’è¨­å®šã™ã‚‹ (ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆä¸­ã¯ç„¡åŠ¹)
 	void SetBGMVolume(float volume, double fadeTime = 0.0);
 
-	/// Ä¶’†‚ÌBGS‚Ì‰¹—Ê‚ğİ’è‚·‚é (ƒtƒF[ƒhƒAƒEƒg’†‚Í–³Œø)
+	/// å†ç”Ÿä¸­ã®BGSã®éŸ³é‡ã‚’è¨­å®šã™ã‚‹ (ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆä¸­ã¯ç„¡åŠ¹)
 	void SetBGSVolume(float volume, double fadeTime = 0.0);
 
-	/// “¯–¼ BGM ‚Ì‰‰‘tÄŠJƒtƒ‰ƒO‚Ìİ’è
+	/// åŒå BGM ã®æ¼”å¥å†é–‹ãƒ•ãƒ©ã‚°ã®è¨­å®š
 	void SetEnableBGMRestart(bool flag) { mBGMRestart = flag; }
 
-	/// “¯–¼ BGS ‚Ì‰‰‘tÄŠJƒtƒ‰ƒO‚Ìİ’è
+	/// åŒå BGS ã®æ¼”å¥å†é–‹ãƒ•ãƒ©ã‚°ã®è¨­å®š
 	void SetEnableBGSRestart(bool flag) { mBGSRestart = flag; }
 
 private:
@@ -84,7 +84,7 @@ private:
 
 	AudioManagerImpl*			mManager;
 	Threading::Mutex			mLock;
-	ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< Ä¶I—¹‚É‰ğ•ú‚·‚é‰¹ºƒŠƒXƒg
+	ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< å†ç”Ÿçµ‚äº†æ™‚ã«è§£æ”¾ã™ã‚‹éŸ³å£°ãƒªã‚¹ãƒˆ
 	Sound*		                mBGM;
 	Sound*		                mBGS;
 	Sound*						mME;

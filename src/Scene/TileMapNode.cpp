@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/RenderingContext.h>
 #include "SceneGraphManager.h"
@@ -188,7 +188,7 @@ public:
 	//----------------------------------------------------------------------
 	virtual void render(ContextDrawParam& param)
 	{
-		// TODO:preRender “I‚È‚à‚Ì‚ÅA•`‰æƒpƒX‚ÌÅ‰‚Éˆê“x‚¾‚¯ŒÄ‚Î‚ê‚é‚æ‚¤‚È‚Ì‚ÅXV‚µ‚½‚¢
+		// TODO:preRender çš„ãªã‚‚ã®ã§ã€æç”»ãƒ‘ã‚¹ã®æœ€åˆã«ä¸€åº¦ã ã‘å‘¼ã°ã‚Œã‚‹ã‚ˆã†ãªã®ã§æ›´æ–°ã—ãŸã„
 		refreshVertexBuffer();
 		writeVertexUV();
 
@@ -211,7 +211,7 @@ public:
 
 private:
 
-	/// Œ»İ‚Ìó‘Ô‚ğŒ³‚É’¸“_ƒoƒbƒtƒ@‚ğì‚é
+	/// ç¾åœ¨ã®çŠ¶æ…‹ã‚’å…ƒã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œã‚‹
 	void refreshVertexBuffer()
 	{
 		if (mXTileCount != mMapData->getXSize() || mYTileCount != mMapData->getYSize())
@@ -222,14 +222,14 @@ private:
 			mXTileCount = mMapData->getXSize();
 			mYTileCount = mMapData->getYSize();
 
-			// ’¸“_‚Ì‘”
+			// é ‚ç‚¹ã®ç·æ•°
 			mVertexNum = mXTileCount * mYTileCount * 4;
 
-			// OŠpŒ`‚Ì”‚ÍlŠpŒ`‚Ì”‚Ì 2 ”{‚ÅAƒCƒ“ƒfƒbƒNƒX”‚Í‚»‚Ì 3 ”{
+			// ä¸‰è§’å½¢ã®æ•°ã¯å››è§’å½¢ã®æ•°ã® 2 å€ã§ã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã¯ãã® 3 å€
 			mFaceCount = mXTileCount * mYTileCount * 2;
 			int index_num = mFaceCount * 3;
 
-			// ’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ì¬
+			// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 			mVertexBuffer = this->mSceneNode->getSceneGraph()->getGraphicsManager()->getGraphicsDevice()->createVertexBuffer(
 				Graphics::Vertex::PosUV::elements(), mVertexNum, NULL, true);
 
@@ -237,7 +237,7 @@ private:
 				index_num, NULL, true);
 
 			//-----------------------------------------------------
-			// ’¸“_ƒoƒbƒtƒ@‚ÉlŠpŒ`‚ğ‹l‚ß‚Ä‚¢‚­
+			// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«å››è§’å½¢ã‚’è©°ã‚ã¦ã„ã
 
 			Graphics::Vertex::PosUV* vertices = (Graphics::Vertex::PosUV*)mVertexBuffer->lock();
 			lnU32 i, x, y;
@@ -245,17 +245,17 @@ private:
 			dz = 0.0f;
 			switch (mDirection)
 			{
-			default:    // LN_TILEMAPDIR_XYR	// XY •½–Ê‚É‘Î‚µ‚Ä Z+ Œü‚«‚Éì¬‚·‚é (2D ‚Ìê‡‚Í‚±‚ê‚ğw’è‚·‚é)
+			default:    // LN_TILEMAPDIR_XYR	// XY å¹³é¢ã«å¯¾ã—ã¦ Z+ å‘ãã«ä½œæˆã™ã‚‹ (2D ã®å ´åˆã¯ã“ã‚Œã‚’æŒ‡å®šã™ã‚‹)
 			{
 				for (y = 0; y < mYTileCount; ++y)
 				{
 					for (x = 0; x < mXTileCount; ++x)
 					{
-						i = ((mXTileCount * y) + x) * 4;     // ‘‚«‚İˆÊ’u
+						i = ((mXTileCount * y) + x) * 4;     // æ›¸ãè¾¼ã¿ä½ç½®
 						dx = mTileWidth * x;
 						dy = mTileHeight * y;
 
-						// ‡‚ÉA¶ã@‰Eã@¶‰º@‰E‰º
+						// é †ã«ã€å·¦ä¸Šã€€å³ä¸Šã€€å·¦ä¸‹ã€€å³ä¸‹
 						vertices[i + 0].Position.set(dx, dy, dz);
 						vertices[i + 1].Position.set(dx + mTileWidth, dy, dz);
 						vertices[i + 2].Position.set(dx, dy + mTileHeight, dz);
@@ -264,18 +264,18 @@ private:
 				}
 				break;
 			}
-			case LN_TILEMAPDIR_XY:	// XY •½–Ê‚É‘Î‚µ‚ÄAƒ}ƒbƒv‚Ì¶‰º‚ªŒ´“_‚É‚È‚é‚æ‚¤‚Éì¬‚·‚é (‘æˆêÛŒÀ‚Éì¬‚·‚é)
+			case LN_TILEMAPDIR_XY:	// XY å¹³é¢ã«å¯¾ã—ã¦ã€ãƒãƒƒãƒ—ã®å·¦ä¸‹ãŒåŸç‚¹ã«ãªã‚‹ã‚ˆã†ã«ä½œæˆã™ã‚‹ (ç¬¬ä¸€è±¡é™ã«ä½œæˆã™ã‚‹)
 			{
 				lnFloat oy = mTileHeight * mYTileCount;
 				for (y = 0; y < mYTileCount; ++y)
 				{
 					for (x = 0; x < mXTileCount; ++x)
 					{
-						i = ((mXTileCount * y) + x) * 4;     // ‘‚«‚İˆÊ’u
+						i = ((mXTileCount * y) + x) * 4;     // æ›¸ãè¾¼ã¿ä½ç½®
 						dx = mTileWidth * x;
 						dy = -mTileHeight * y + oy;
 
-						// ‡‚ÉA¶ã@‰Eã@¶‰º@‰E‰º
+						// é †ã«ã€å·¦ä¸Šã€€å³ä¸Šã€€å·¦ä¸‹ã€€å³ä¸‹
 						vertices[i + 0].Position.set(dx, dy, dz);
 						vertices[i + 1].Position.set(dx + mTileWidth, dy, dz);
 						vertices[i + 2].Position.set(dx, dy - mTileHeight, dz);
@@ -289,7 +289,7 @@ private:
 
 
 			//-----------------------------------------------------
-			// ƒCƒ“ƒfƒbƒNƒX‚ğ‹l‚ß‚Ä‚¢‚­
+			// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è©°ã‚ã¦ã„ã
 
 			lnU16* indices = (lnU16*)mIndexBuffer->lock();
 			lnU16 vi;
@@ -314,11 +314,11 @@ private:
 	/// 
 	void writeVertexUV()
 	{
-		// ƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚Ì UV ƒTƒCƒY
+		// ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã® UV ã‚µã‚¤ã‚º
 		float uvWidth = static_cast< lnFloat >(mTileWidth) / mTilesetTexture->getRealSize().x;
 		float uvHeight = static_cast< lnFloat >(mTileHeight) / mTilesetTexture->getRealSize().y;
 	
-		// ’¸“_ƒoƒbƒtƒ@‚É‘‚«‚ñ‚Å‚¢‚­
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚“ã§ã„ã
 		Graphics::Vertex::PosUV* vertices = (Graphics::Vertex::PosUV*)mVertexBuffer->lock();
 		lnU32 i, x, y, d;
 		for (y = 0; y < mYTileCount; ++y)
@@ -345,16 +345,16 @@ private:
 	Base::IntTable*				mMapData;
 	Graphics::Texture*			mTilesetTexture;
 	LNTilemapDirection			mDirection;
-	lnFloat						mTileWidth;     ///< ƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚Ì•
-	lnFloat						mTileHeight;    ///< ƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚Ì‚‚³
-	size_t						mTilesetHorizontalTileCount;	/// ƒ^ƒCƒ‹ƒZƒbƒgƒeƒNƒXƒ`ƒƒ‚Ì‰¡•ûŒü‚Ìƒ^ƒCƒ‹”
+	lnFloat						mTileWidth;     ///< ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã®å¹…
+	lnFloat						mTileHeight;    ///< ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã®é«˜ã•
+	size_t						mTilesetHorizontalTileCount;	/// ã‚¿ã‚¤ãƒ«ã‚»ãƒƒãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ¨ªæ–¹å‘ã®ã‚¿ã‚¤ãƒ«æ•°
 
-	lnU32						mVertexNum;     ///< ’¸“_‚Ì‘” (’¸“_ƒoƒbƒtƒ@‚É“ü‚Á‚Ä‚é‚©‚ç‚¢‚ç‚È‚¢‚©‚à)
-	Graphics::IVertexBuffer*	mVertexBuffer;  ///< ’¸“_ƒoƒbƒtƒ@
-	Graphics::IIndexBuffer*		mIndexBuffer;   ///< ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@
+	lnU32						mVertexNum;     ///< é ‚ç‚¹ã®ç·æ•° (é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«å…¥ã£ã¦ã‚‹ã‹ã‚‰ã„ã‚‰ãªã„ã‹ã‚‚)
+	Graphics::IVertexBuffer*	mVertexBuffer;  ///< é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
+	Graphics::IIndexBuffer*		mIndexBuffer;   ///< ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡
 	lnU32						mFaceCount;
-	lnU32						mXTileCount;	///< VertexBuffer ‚Éì¬‚µ‚½ X •ûŒü‚Ìƒ^ƒCƒ‹‚Ì”
-	lnU32						mYTileCount;	///< VertexBuffer ‚Éì¬‚µ‚½ Y •ûŒü‚Ìƒ^ƒCƒ‹‚Ì”
+	lnU32						mXTileCount;	///< VertexBuffer ã«ä½œæˆã—ãŸ X æ–¹å‘ã®ã‚¿ã‚¤ãƒ«ã®æ•°
+	lnU32						mYTileCount;	///< VertexBuffer ã«ä½œæˆã—ãŸ Y æ–¹å‘ã®ã‚¿ã‚¤ãƒ«ã®æ•°
 };
 
 
@@ -398,19 +398,19 @@ void TileMapNode::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir
 	context->initialize( this );
     SceneNode::initialize( 1, LN_DRAWCOORD_2D, context );
 
-    // ƒ^ƒCƒ‹‚Ì”
+    // ã‚¿ã‚¤ãƒ«ã®æ•°
  //   mXSize = w_size_;
 	//mYSize = h_size_;
 
 	mDirection = LN_TILEMAPDIR_XYR/*dir_*/;
 
-    // •\¦‚·‚é‚Æ‚«‚Ìƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚Ì‘å‚«‚³
+    // è¡¨ç¤ºã™ã‚‹ã¨ãã®ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã®å¤§ãã•
 	mTileWidth = DefaultTilePixelSize;
 	mTileHeight = DefaultTilePixelSize;
 
 	mTilesetHorizontalTileCount = 8;
 
-    // Œ»İ‚Ìó‘Ô‚ğŒ³‚É’¸“_ƒoƒbƒtƒ@‚ğì‚é
+    // ç¾åœ¨ã®çŠ¶æ…‹ã‚’å…ƒã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œã‚‹
     //_makeVertexBuffer( dir_ );
 
     LRefPtr<SceneShader> shader( 

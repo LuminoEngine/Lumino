@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "ImageEffect.h"
 
@@ -17,13 +17,13 @@ public:
 public:
 	static ScreenMotionBlurImageEffectPtr Create();
 
-	/// ƒuƒ‰\“K—p (center ‚ÍƒXƒNƒŠ[ƒ“À•W‹óŠÔ‚Åw’è‚·‚é(-1.0`1.0) )
+	/// ãƒ–ãƒ©â€•é©ç”¨ (center ã¯ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ç©ºé–“ã§æŒ‡å®šã™ã‚‹(-1.0ï½1.0) )
 	//void StartBlur(double duration, float power, float scale, const Vector3& center);
 
-	/** ‰æ‘œ“à‚Éc‚·‘O‚ÌƒtƒŒ[ƒ€‚Ì—Ê (0.0`1.0)B’l‚ª‚‚­‚È‚é‚Ù‚ÇAƒ‚[ƒVƒ‡ƒ“ƒgƒŒƒCƒ‹‚ª’·‚­‚È‚è‚Ü‚·B*/
+	/** ç”»åƒå†…ã«æ®‹ã™å‰ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®é‡ (0.0ï½1.0)ã€‚å€¤ãŒé«˜ããªã‚‹ã»ã©ã€ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒˆãƒ¬ã‚¤ãƒ«ãŒé•·ããªã‚Šã¾ã™ã€‚*/
 	void SetAmount(float amount) { tr::Property::SetPropertyValueDirect(this, AmountProperty, amount);/*m_amount = amount;*/ }
 
-	/** ƒuƒ‰[ƒGƒtƒFƒNƒg‚ğ•úËó‚É“K—p‚·‚é‚½‚ß‚Ìî•ñ‚ğİ’è‚µ‚Ü‚·B*/
+	/** ãƒ–ãƒ©ãƒ¼ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’æ”¾å°„çŠ¶ã«é©ç”¨ã™ã‚‹ãŸã‚ã®æƒ…å ±ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	void SetRadialCenter(const Vector2& center) { m_center = center; }
 
 	void SetRadialScale(float scale) { m_scale = scale; }
@@ -38,7 +38,7 @@ protected:
 	void Initialize(GraphicsManager* manager);
 	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) override;
 
-	RenderTarget*	m_accumTexture;	// ‘O‰ñ‚Ì‰æ–Ê•`‰æ“à—e
+	RenderTarget*	m_accumTexture;	// å‰å›ã®ç”»é¢æç”»å†…å®¹
 	float			m_amount;
 	Vector2			m_center;
 	float			m_scale;

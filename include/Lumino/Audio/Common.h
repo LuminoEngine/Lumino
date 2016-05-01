@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 #include <Lumino/Math/Vector3.h>
@@ -16,17 +16,17 @@ class AudioStream;
 class AudioPlayer;
 class Sound;
 
-/// ‰¹ºƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg
+/// éŸ³å£°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 enum StreamFormat
 {
-	StreamFormat_Unknown = 0,		///< •s–¾‚Èƒtƒ@ƒCƒ‹
+	StreamFormat_Unknown = 0,		///< ä¸æ˜ãªãƒ•ã‚¡ã‚¤ãƒ«
 	StreamFormat_Wave,				///< WAVE
 	StreamFormat_Mp3,				///< MP3
 	StreamFormat_Ogg,				///< OGG
 	StreamFormat_Midi,				///< MIDI
 };
 
-/// PCM ƒtƒH[ƒ}ƒbƒg
+/// PCM ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 struct WaveFormat
 {
 	uint16_t	formatTag;
@@ -38,56 +38,56 @@ struct WaveFormat
 	uint16_t	exSize;
 };
 
-/** DirectMusic ‚Ì‰Šú‰»•û–@B*/
+/** DirectMusic ã®åˆæœŸåŒ–æ–¹æ³•ã€‚*/
 enum class DirectMusicMode
 {
-	NotUse = 0,			/**< DirectMusic ‚ğg—p‚µ‚È‚¢ */
-	Normal,				/**< ’Êí */
-	ThreadWait,			/**< •ÊƒXƒŒƒbƒh‚Å‰Šú‰»‚µ‚ÄAÄ¶‚É–¢Š®—¹‚Ìê‡‚Í‘Ò‚Â */
-	ThreadRequest,		/**< •ÊƒXƒŒƒbƒh‚Å‰Šú‰»‚µ‚ÄAÄ¶‚É–¢Š®—¹‚Ìê‡‚ÍÄ¶‚ğ—\–ñ‚·‚é */
+	NotUse = 0,			/**< DirectMusic ã‚’ä½¿ç”¨ã—ãªã„ */
+	Normal,				/**< é€šå¸¸ */
+	ThreadWait,			/**< åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã§åˆæœŸåŒ–ã—ã¦ã€å†ç”Ÿæ™‚ã«æœªå®Œäº†ã®å ´åˆã¯å¾…ã¤ */
+	ThreadRequest,		/**< åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã§åˆæœŸåŒ–ã—ã¦ã€å†ç”Ÿæ™‚ã«æœªå®Œäº†ã®å ´åˆã¯å†ç”Ÿã‚’äºˆç´„ã™ã‚‹ */
 
 	TERMINATOR,
 };
 
-/** ‰¹ºƒf[ƒ^‚Ì“Ç‚İ‚İ•û–@‚ğ•\‚µ‚Ü‚·B*/
+/** éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿æ–¹æ³•ã‚’è¡¨ã—ã¾ã™ã€‚*/
 enum class SoundLoadingMode
 {
-	Sync = 0,		/**< “¯Šú“I‚É“Ç‚İ‚Ş */
-	ASync,			/**< ”ñ“¯Šú“I‚É“Ç‚İ‚Ş */
+	Sync = 0,		/**< åŒæœŸçš„ã«èª­ã¿è¾¼ã‚€ */
+	ASync,			/**< éåŒæœŸçš„ã«èª­ã¿è¾¼ã‚€ */
 
 	TERMINATOR,
 };
 
-/// Ä¶•û–@
+/// å†ç”Ÿæ–¹æ³•
 enum class SoundPlayingMode
 {
-	Unknown = 0,		///< •s–¾‚ÈÄ¶•û–@ (©“®‘I‘ğ)	TODO: –¼‘O‚ğ Auto ‚É‚·‚é
-	//SoundPlayType_Auto,				///< ©“®‘I‘ğ ( ƒfƒtƒHƒ‹ƒg‚Å‚ÍƒfƒR[ƒhŒã‚ÌƒTƒCƒY‚ª 10000 ƒoƒCƒgˆÈã‚É‚È‚éê‡‚ÍƒXƒgƒŠ[ƒ~ƒ“ƒOA‚»‚¤‚Å‚È‚¢ê‡‚ÍƒIƒ“ƒƒ‚ƒŠÄ¶‚É‚È‚è‚Ü‚· )
-	OnMemory,			///< ƒIƒ“ƒƒ‚ƒŠ
-	Streaming,	    ///< ƒXƒgƒŠ[ƒ~ƒ“ƒO
+	Unknown = 0,		///< ä¸æ˜ãªå†ç”Ÿæ–¹æ³• (è‡ªå‹•é¸æŠ)	TODO: åå‰ã‚’ Auto ã«ã™ã‚‹
+	//SoundPlayType_Auto,				///< è‡ªå‹•é¸æŠ ( ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ãƒ‡ã‚³ãƒ¼ãƒ‰å¾Œã®ã‚µã‚¤ã‚ºãŒ 10000 ãƒã‚¤ãƒˆä»¥ä¸Šã«ãªã‚‹å ´åˆã¯ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°ã€ãã†ã§ãªã„å ´åˆã¯ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªå†ç”Ÿã«ãªã‚Šã¾ã™ )
+	OnMemory,			///< ã‚ªãƒ³ãƒ¡ãƒ¢ãƒª
+	Streaming,	    ///< ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°
 	Midi,  			///< SMF
 
 	TERMINATOR,
 };
 
-/** ‰¹º‚ÌÄ¶ó‘Ô‚ğ•\‚µ‚Ü‚·B*/
+/** éŸ³å£°ã®å†ç”ŸçŠ¶æ…‹ã‚’è¡¨ã—ã¾ã™ã€‚*/
 enum class SoundPlayingState
 {
-	Stopped = 0,		/**< ’â~’† */
-	Playing,			/**< Ä¶’† */
-	Pausing,			/**< ˆê’â~’† */
+	Stopped = 0,		/**< åœæ­¢ä¸­ */
+	Playing,			/**< å†ç”Ÿä¸­ */
+	Pausing,			/**< ä¸€æ™‚åœæ­¢ä¸­ */
 
 	TERMINATOR,
 };
 
-/** ‰¹—ÊƒtƒF[ƒhŠ®—¹‚Ì“®ì‚ğ•\‚µ‚Ü‚·B*/
+/** éŸ³é‡ãƒ•ã‚§ãƒ¼ãƒ‰å®Œäº†æ™‚ã®å‹•ä½œã‚’è¡¨ã—ã¾ã™ã€‚*/
 enum class SoundFadeBehavior
 {
-	Continue = 0,		/**< Ä¶‚ğŒp‘±‚·‚é */
-	Stop,				/**< ’â~‚·‚é */
-	StopReset,			/**< ’â~‚µ‚ÄAŸ‚ÌÄ¶‚É”õ‚¦‚ÄƒTƒEƒ“ƒh‚Ì‰¹—Ê‚ğŒ³‚Ì’l‚É–ß‚· */
-	Pause,				/**< ˆê’â~‚·‚é */
-	PauseReset,			/**< ˆê’â~‚µ‚ÄAŸ‚ÌÄ¶‚É”õ‚¦‚ÄƒTƒEƒ“ƒh‚Ì‰¹—Ê‚ğŒ³‚Ì’l‚É–ß‚· */
+	Continue = 0,		/**< å†ç”Ÿã‚’ç¶™ç¶šã™ã‚‹ */
+	Stop,				/**< åœæ­¢ã™ã‚‹ */
+	StopReset,			/**< åœæ­¢ã—ã¦ã€æ¬¡ã®å†ç”Ÿã«å‚™ãˆã¦ã‚µã‚¦ãƒ³ãƒ‰ã®éŸ³é‡ã‚’å…ƒã®å€¤ã«æˆ»ã™ */
+	Pause,				/**< ä¸€æ™‚åœæ­¢ã™ã‚‹ */
+	PauseReset,			/**< ä¸€æ™‚åœæ­¢ã—ã¦ã€æ¬¡ã®å†ç”Ÿã«å‚™ãˆã¦ã‚µã‚¦ãƒ³ãƒ‰ã®éŸ³é‡ã‚’å…ƒã®å€¤ã«æˆ»ã™ */
 
 	TERMINATOR,
 };

@@ -256,15 +256,15 @@ void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t s
     GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
     if (fs == GL_FRAMEBUFFER_COMPLETE)
     {
-        printf("GL_FRAMEBUFFER_COMPLETE¥n");
+        printf("GL_FRAMEBUFFER_COMPLETE\n");
     }
     if (fs == GL_FRAMEBUFFER_UNSUPPORTED)
     {
-        printf("GL_FRAMEBUFFER_UNSUPPORTED¥n");
+        printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
     }
     if (fs == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
     {
-        printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT¥n");
+        printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
     }
      */
 

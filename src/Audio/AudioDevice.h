@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 	@file	AudioDevice.h
 */
 #pragma once
@@ -13,7 +13,7 @@ LN_NAMESPACE_AUDIO_BEGIN
 class AudioStream;
 class AudioPlayer;
 
-/// 3D ƒTƒEƒ“ƒhƒŠƒXƒi[
+/// 3D ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼
 struct SoundListenerData
 {
 	Vector3		Position;
@@ -29,7 +29,7 @@ struct SoundListenerData
 	{}
 };
 
-/// ƒfƒoƒCƒXŠÇ—‚ÆAPlayer ‚Ì¶¬EŠÇ—‚ğs‚¤ƒNƒ‰ƒX‚Ìƒx[ƒXƒNƒ‰ƒX
+/// ãƒ‡ãƒã‚¤ã‚¹ç®¡ç†ã¨ã€Player ã®ç”Ÿæˆãƒ»ç®¡ç†ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹
 class AudioDevice
 	: public RefObject
 {
@@ -38,17 +38,17 @@ public:
 	virtual ~AudioDevice() {}
 public:
 
-	/// 3DƒTƒEƒ“ƒhƒŠƒXƒi[‚Ìæ“¾
+	/// 3Dã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®å–å¾—
 	SoundListenerData* getSoundListenerData() { return &m_soundListenerData; }
 
 public:
 
-	/// AudioPlayer ‚ğì¬‚·‚é (type ‚É LN_SOUNDPLAYTYPE_AUTO ‚Íw’è‚Å‚«‚È‚¢‚Ì‚Å’ˆÓ)
+	/// AudioPlayer ã‚’ä½œæˆã™ã‚‹ (type ã« LN_SOUNDPLAYTYPE_AUTO ã¯æŒ‡å®šã§ããªã„ã®ã§æ³¨æ„)
 	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) = 0;
-	/// XV (XVƒXƒŒƒbƒh‚©‚çŒÄ‚Î‚ê‚é)
+	/// æ›´æ–° (æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹)
 	virtual void Update() = 0;
 	//virtual void SetListenerState(const Vector3& position, const Vector3& front) = 0;
-	/// 3D ‹óŠÔ‚Ì1ƒ[ƒgƒ‹‘Š“–‚Ì‹——£‚Ìİ’è
+	/// 3D ç©ºé–“ã®1ãƒ¡ãƒ¼ãƒˆãƒ«ç›¸å½“ã®è·é›¢ã®è¨­å®š
 	virtual void SetMetreUnitDistance(float d) = 0;
 
 protected:

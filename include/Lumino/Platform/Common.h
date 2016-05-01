@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Common.h"
 
@@ -9,7 +9,7 @@ class Win32WindowManager;
 class PlatformWindow;
 class Win32PlatformWindow;
 
-/** ƒEƒBƒ“ƒhƒEƒVƒXƒeƒ€‚Ì APIEƒ‰ƒCƒuƒ‰ƒŠ */
+/** ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚·ã‚¹ãƒ†ãƒ ã® APIãƒ»ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 enum class WindowSystemAPI
 {
 	Default,

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Input/InputController.h>
 #include "InputManager.h"
@@ -14,7 +14,7 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 InputController::InputController(detail::InputManager* manager)
 	: m_manager(manager)
-	, m_repeatIntervalStart(20)	// TODO —v’²®BŠÔ‚Ì•û‚ª‚¢‚¢‚©‚àH
+	, m_repeatIntervalStart(20)	// TODO è¦èª¿æ•´ã€‚æ™‚é–“ã®æ–¹ãŒã„ã„ã‹ã‚‚ï¼Ÿ
 	, m_repeatIntervalStep(5)
 {
 	m_inputStateForAny.current = 0;
@@ -122,7 +122,7 @@ void InputController::RemoveBinding(InputBinding* binding)
 void InputController::ClearBindings()
 {
 	Array<RefPtr<InputBinding>> list = m_bindings;
-	for (int i = list.GetCount() - 1; i >= 0; ++i)	// Œã‚ë‚©‚ç‰ñ‚µ‚½•û‚ª‚¿‚å‚Á‚Æíœ‚ÌŒø—¦‚ª‚¢‚¢
+	for (int i = list.GetCount() - 1; i >= 0; ++i)	// å¾Œã‚ã‹ã‚‰å›ã—ãŸæ–¹ãŒã¡ã‚‡ã£ã¨å‰Šé™¤ã®åŠ¹ç‡ãŒã„ã„
 	{
 		RemoveBinding(list[i]);
 	}
@@ -152,7 +152,7 @@ void InputController::UpdateFrame()
 	}
 	m_inputStateForAny.current = 0;
 
-	// m_inputStatus ‚ÉŒ»İ‚Ì“ü—Í’l‚ğ“WŠJ‚·‚é
+	// m_inputStatus ã«ç¾åœ¨ã®å…¥åŠ›å€¤ã‚’å±•é–‹ã™ã‚‹
 	for (auto& binding : m_bindings)
 	{
 		float v = m_manager->GetVirtualButtonState(binding->GetDeviceInputSource(), true, true);
@@ -161,12 +161,12 @@ void InputController::UpdateFrame()
 		{
 			v = (binding->IsNegativeValue()) ? -v : v;
 			if (v >= binding->GetMinValidMThreshold()) {
-				state->current = std::max(state->current, v);	// Binding ‚ªd•¡‚µ‚½‚Æ‚©A‚Æ‚è‚ ‚¦‚¸‘å‚«‚¢•û‚ğg‚¤
+				state->current = std::max(state->current, v);	// Binding ãŒé‡è¤‡ã—ãŸã¨ã‹ã€ã¨ã‚Šã‚ãˆãšå¤§ãã„æ–¹ã‚’ä½¿ã†
 			}
 		}
 	}
 
-	// Œ»İ‚Ì“ü—Í’l‚©‚çó‘Ô‚ğ‘JˆÚ‚³‚¹‚é
+	// ç¾åœ¨ã®å…¥åŠ›å€¤ã‹ã‚‰çŠ¶æ…‹ã‚’é·ç§»ã•ã›ã‚‹
 	for (auto& state : m_inputStatus)
 	{
 		UpdateOneInputState(&state.second);
@@ -185,15 +185,15 @@ void InputController::UpdateFrame()
 void InputController::UpdateOneInputState(InputState* state)
 {
 	if (state->current > 0.0f) {
-		state->state++;	// ‰Ÿ‚³‚ê‚Ä‚éŠÔ‚Í–ˆƒtƒŒ[ƒ€ƒCƒ“ƒNƒŠƒƒ“ƒg‚·‚é
+		state->state++;	// æŠ¼ã•ã‚Œã¦ã‚‹é–“ã¯æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã™ã‚‹
 	}
 	else
 	{
 		if (state->state > 0.0f) {
-			state->state = -1;	// —£‚³‚ê‚½uŠÔ‚ÌƒtƒŒ[ƒ€
+			state->state = -1;	// é›¢ã•ã‚ŒãŸç¬é–“ã®ãƒ•ãƒ¬ãƒ¼ãƒ 
 		}
 		else {
-			state->state = 0;		// —£‚³‚ê‚½uŠÔ‚ÌŸ‚ÌƒtƒŒ[ƒ€
+			state->state = 0;		// é›¢ã•ã‚ŒãŸç¬é–“ã®æ¬¡ã®ãƒ•ãƒ¬ãƒ¼ãƒ 
 		}
 	}
 }

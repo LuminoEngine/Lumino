@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 #include "../Internal.h"
 
 LN_NAMESPACE_BEGIN
 class GUIManagerImpl;
 
-/// ƒOƒ[ƒoƒ‹‚È UIManager ‚ğæ“¾‚·‚éB
-/// .h ‚Ì include ‚ğ‘‚â‚µ‚½‚­‚È‚¢‚Ì‚Å•ÊŠÖ”‚Æ‚µ‚Ä—pˆÓ‚µ‚½B
+/// ã‚°ãƒ­ãƒ¼ãƒãƒ«ãª UIManager ã‚’å–å¾—ã™ã‚‹ã€‚
+/// .h ã® include ã‚’å¢—ã‚„ã—ãŸããªã„ã®ã§åˆ¥é–¢æ•°ã¨ã—ã¦ç”¨æ„ã—ãŸã€‚
 GUIManagerImpl* GetUIManager();
 
 LN_NAMESPACE_END

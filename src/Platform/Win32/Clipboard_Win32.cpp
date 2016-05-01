@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../../Internal.h"
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Platform/Clipboard.h>
@@ -45,7 +45,7 @@ void Clipboard::SetText(PlatformWindow* window, const String& text)
 //-----------------------------------------------------------------------------
 String Clipboard::GetText(PlatformWindow* window)
 {
-	// ƒNƒŠƒbƒvƒ{[ƒh‚Ìƒf[ƒ^Œ`®ƒ`ƒFƒbƒN
+	// ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿å½¢å¼ãƒã‚§ãƒƒã‚¯
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT)) {
 		return String::GetEmpty();
 	}

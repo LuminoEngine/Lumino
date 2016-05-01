@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -8,7 +8,7 @@ LN_NAMESPACE_GUI_BEGIN
 /**
 	@brief
 */
-class InputGesture	// TODO: Input ‚ÉˆÚ“®‚·‚é‚Æv‚¤
+class InputGesture	// TODO: Input ã«ç§»å‹•ã™ã‚‹ã¨æ€ã†
 	: public RefObject
 {
 public:

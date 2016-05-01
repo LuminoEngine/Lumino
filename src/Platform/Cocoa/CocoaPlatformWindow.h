@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>

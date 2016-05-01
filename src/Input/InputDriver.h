@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <array>
 #include <Lumino/Platform/PlatformEventArgs.h>
@@ -6,7 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 
-/// �W���C�p�b�h�� POV �̌�����\���t���O
+/// ジョイパッドの POV の向きを表すフラグ
 LN_ENUM_FLAGS(PovDirFlags)
 {
 	None = 0x00,
@@ -17,14 +17,14 @@ LN_ENUM_FLAGS(PovDirFlags)
 };
 LN_ENUM_FLAGS_DECLARE(PovDirFlags);
 
-/// �W���C�p�b�h�̏�Ԃ�\���\����
+/// ジョイパッドの状態を表す構造体
 struct JoypadDeviceState
 {
-	static const int MaxJoypadButtons = 16;    ///< �W���C�p�b�h�̃{�^���̍ő吔
-	static const int MaxJoypadAxis = 8;        ///< �W���C�p�b�h�̎��̍ő吔
+	static const int MaxJoypadButtons = 16;    ///< ジョイパッドのボタンの最大数
+	static const int MaxJoypadAxis = 8;        ///< ジョイパッドの軸の最大数
 
 	float		Axes[MaxJoypadAxis];
-	uint32_t	POV;						        ///< POV ��� (POVDir �̑g�ݍ��킹  GLFW�ł͎��Ȃ�)
+	uint32_t	POV;						        ///< POV 状態 (POVDir の組み合わせ  GLFWでは取れない)
 	uint8_t		Buttons[MaxJoypadButtons];
 };
 

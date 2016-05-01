@@ -1,4 +1,4 @@
-/*
+﻿/*
 	@file	AudioUtils.h
 */
 #pragma once
@@ -10,29 +10,29 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 class AudioStream;
 
-/// Wave �f�[�^ AudioStream
+/// Wave データ AudioStream
 class AudioUtils
 {
 public:
 
 #ifdef _WIN32
-	/// WaveFormat ���� WAVEFORMATEX �ւ̕ϊ�
+	/// WaveFormat から WAVEFORMATEX への変換
 	static void ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt);
 
-	/// WAVEFORMATEX ���� WaveFormat �ւ̕ϊ�
+	/// WAVEFORMATEX から WaveFormat への変換
 	static void ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt);
 
-	/// WAVEFORMATEX �\���̂�W���o��
+	/// WAVEFORMATEX 構造体を標準出力
 	static void PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str = NULL);
 #endif
 
-	/// �����f�[�^�̃t�H�[�}�b�g�`�F�b�N
-	///		�����鉹���t�@�C�����ǂ����𒲂ׂāA���̎�ނ�Ԃ��B
-	///		���ׂ���A�t�@�C���|�C���^�̓t�@�C���̐擪�ɖ߂�B
-	///		MP3 �����`�F�b�N����̂Ƀt�@�C���I�[����� Seek ���邱�Ƃ�����B
+	/// 音声データのフォーマットチェック
+	///		扱える音声ファイルかどうかを調べて、その種類を返す。
+	///		調べた後、ファイルポインタはファイルの先頭に戻る。
+	///		MP3 かをチェックするのにファイル終端を基準に Seek することがある。
 	static StreamFormat CheckFormat(Stream* stream);
 	
-	/// �v�����Ă��� type �� AudioStream ���琳���� type ��Ԃ�
+	/// 要求している type と AudioStream から正しい type を返す
 	static SoundPlayingMode CheckAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize);
 };
 

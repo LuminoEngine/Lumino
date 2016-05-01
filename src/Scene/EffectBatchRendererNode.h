@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Scene/VisualNode.h>
@@ -8,7 +8,7 @@ LN_NAMESPACE_SCENE_BEGIN
 namespace detail { class EffectManager; }
 
 class EffectBatchRendererNode
-	: public VisualNode	// TODO: ’P‚É SceneNode ‚Ì‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚é‚ªEE
+	: public VisualNode	// TODO: å˜ã« SceneNode ã®ã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹ãŒãƒ»ãƒ»
 {
 public:
 	EffectBatchRendererNode();
@@ -20,7 +20,7 @@ protected:
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override {}
 
 private:
-	detail::EffectManager*	m_effectManager;	// TODO: Manager ‚¾‚Æ‚Ù‚ñ‚Æ‚ÉˆêŠ‡•`‰æ‚É‚È‚é‚Ì‚Å Context ‚Æ‚©‚à‚¤­‚µ×‚©‚¢’PˆÊ‚É‚Å‚«‚é‚ÆƒxƒXƒgB
+	detail::EffectManager*	m_effectManager;	// TODO: Manager ã ã¨ã»ã‚“ã¨ã«ä¸€æ‹¬æç”»ã«ãªã‚‹ã®ã§ Context ã¨ã‹ã‚‚ã†å°‘ã—ç´°ã‹ã„å˜ä½ã«ã§ãã‚‹ã¨ãƒ™ã‚¹ãƒˆã€‚
 };
 
 LN_NAMESPACE_SCENE_END

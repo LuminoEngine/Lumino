@@ -1,25 +1,25 @@
-
+ï»¿
 #pragma once
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		ƒQ[ƒ€ƒV[ƒ“‚Ìƒx[ƒXƒNƒ‰ƒX‚Å‚·B
-	@details	ƒQ[ƒ€ƒV[ƒ“‚Íƒ^ƒCƒgƒ‹‰æ–Ê‚âƒQ[ƒ€ƒI[ƒo[‰æ–Ê‚È‚Ç‚Ì‰æ–Ê‘JˆÚ‚Ì’PˆÊ‚Å‚·B
+	@brief		ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
+	@details	ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã¯ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ã‚„ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ç”»é¢ãªã©ã®ç”»é¢é·ç§»ã®å˜ä½ã§ã™ã€‚
 */
 class GameScene
 	: public RefObject
 {
 public:
 
-	/// ŠJnˆ—
+	/// é–‹å§‹å‡¦ç†
 	virtual void OnStart();
 
-	/// ƒtƒŒ[ƒ€XV
+	/// ãƒ•ãƒ¬ãƒ¼ãƒ æ›´æ–°
 	virtual void OnUpdate();
 
-	/// I—¹ˆ—
+	/// çµ‚äº†å‡¦ç†
 	virtual void OnTerminate();
 
 protected:

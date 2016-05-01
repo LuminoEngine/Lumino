@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include <Lumino/Reflection/ReflectionEventArgs.h>
@@ -22,7 +22,7 @@ public:
 };
 
 /**
-	@brief	ƒ}ƒEƒXƒCƒxƒ“ƒg‚Ìˆø”‚Å‚·B
+	@brief	ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã®å¼•æ•°ã§ã™ã€‚
 */
 class UIMouseEventArgs
 	: public UIEventArgs
@@ -34,14 +34,14 @@ public:
 	virtual ~UIMouseEventArgs();
 
 public:
-	MouseButton	button;			/**< ƒ{ƒ^ƒ“‚Ìí—Ş */
-	float		x;				/**< ƒ}ƒEƒXƒCƒxƒ“ƒg¶¬‚Ìƒ}ƒEƒX‚Ì X À•W (ƒRƒ“ƒeƒLƒXƒg“à‚ÌÀ•WŒn) */
-	float		y;				/**< ƒ}ƒEƒXƒCƒxƒ“ƒg¶¬‚Ìƒ}ƒEƒX‚Ì Y À•W (ƒRƒ“ƒeƒLƒXƒg“à‚ÌÀ•WŒn) */
-	int			clickCount;		/**< ƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚½‰ñ”Bƒ_ƒuƒ‹ƒNƒŠƒbƒN‚âƒgƒŠƒvƒ‹ƒNƒŠƒbƒN‚ğ‹æ•Ê‚·‚é‚½‚ß‚Ég—p‚·‚éBÅ‘å3‚Ü‚ÅB */
+	MouseButton	button;			/**< ãƒœã‚¿ãƒ³ã®ç¨®é¡ */
+	float		x;				/**< ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆç”Ÿæˆæ™‚ã®ãƒã‚¦ã‚¹ã® X åº§æ¨™ (ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆå†…ã®åº§æ¨™ç³») */
+	float		y;				/**< ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆç”Ÿæˆæ™‚ã®ãƒã‚¦ã‚¹ã® Y åº§æ¨™ (ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆå†…ã®åº§æ¨™ç³») */
+	int			clickCount;		/**< ãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸå›æ•°ã€‚ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã‚„ãƒˆãƒªãƒ—ãƒ«ã‚¯ãƒªãƒƒã‚¯ã‚’åŒºåˆ¥ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ã€‚æœ€å¤§3ã¾ã§ã€‚ */
 };
 
 /**
-	@brief	ƒL[ƒ{[ƒhƒCƒxƒ“ƒg‚Ìˆø”‚Å‚·B
+	@brief	ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¤ãƒ™ãƒ³ãƒˆã®å¼•æ•°ã§ã™ã€‚
 */
 class UIKeyEventArgs
 	: public UIEventArgs
@@ -53,13 +53,13 @@ public:
 	virtual ~UIKeyEventArgs();
 
 public:
-	Key				keyCode;		/**< ƒL[ƒR[ƒh */
-	ModifierKeys	modifierKeys;	/** CüƒL[ */
-	TCHAR			charCode;		/**< TextInput ƒCƒxƒ“ƒg‚É‚æ‚è’Ê’m‚³‚ê‚½ê‡A‚»‚Ì•¶šƒR[ƒh‚ªŠi”[‚³‚ê‚Ü‚·B*/
+	Key				keyCode;		/**< ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ */
+	ModifierKeys	modifierKeys;	/** ä¿®é£¾ã‚­ãƒ¼ */
+	TCHAR			charCode;		/**< TextInput ã‚¤ãƒ™ãƒ³ãƒˆã«ã‚ˆã‚Šé€šçŸ¥ã•ã‚ŒãŸå ´åˆã€ãã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ãŒæ ¼ç´ã•ã‚Œã¾ã™ã€‚*/
 };
 
 /**
-	@brief	ƒ}ƒEƒXƒzƒC[ƒ‹‚ÌˆÚ“®ƒCƒxƒ“ƒg‚Ìˆø”‚Å‚·B
+	@brief	ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã®ç§»å‹•ã‚¤ãƒ™ãƒ³ãƒˆã®å¼•æ•°ã§ã™ã€‚
 */
 class UIMouseWheelEventArgs
 	: public UIEventArgs
@@ -71,7 +71,7 @@ public:
 	virtual ~UIMouseWheelEventArgs();
 
 public:
-	int			wheel;			/**< ƒ}ƒEƒXƒzƒC[ƒ‹‚Ì‰ñ“]‰ñ” (³‚Ü‚½‚Í•‰‚Ì‰ñ”) */
+	int			wheel;			/**< ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã®å›è»¢å›æ•° (æ­£ã¾ãŸã¯è² ã®å›æ•°) */
 };
 
 LN_NAMESPACE_END

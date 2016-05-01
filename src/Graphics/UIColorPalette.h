@@ -1,4 +1,4 @@
-
+﻿
 // LN_COLOR_DEF(Name, Depth, R, G, B)
 
 /*

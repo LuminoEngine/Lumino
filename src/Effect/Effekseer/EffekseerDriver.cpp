@@ -1,16 +1,16 @@
-/*
-	[2015/12/19] Effekseer ‚ÌŒÂ•Ê•`‰æ‚É‚Â‚¢‚Ä
-		‹@”\‚Æ‚µ‚Ä‚Í—pˆÓ‚³‚ê‚Ä‚¢‚é‚ªŒø—¦‚Í‚ ‚Ü‚è‚æ‚­‚È‚³‚»‚¤B
+ï»¿/*
+	[2015/12/19] Effekseer ã®å€‹åˆ¥æç”»ã«ã¤ã„ã¦
+		æ©Ÿèƒ½ã¨ã—ã¦ã¯ç”¨æ„ã•ã‚Œã¦ã„ã‚‹ãŒåŠ¹ç‡ã¯ã‚ã¾ã‚Šã‚ˆããªã•ãã†ã€‚
 
-		DrawHandle() ‚Ì‚½‚Ñ‚ÉƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚É“ü‚Á‚Ä‚¢‚é‚µAƒnƒ“ƒhƒ‹‚©‚çƒCƒ“ƒXƒ^ƒ“ƒX‚ğ‹‚ß‚é‚Ì‚É set ‚ÌŒŸõ‚ª‘–‚éB
-		(ˆêŠ‡•`‰æ‚È‚çƒCƒeƒŒ[ƒg‚·‚é‚¾‚¯)
-		‚±‚Ìd‘g‚İ‚Í Update() ‚à“¯‚¶B
+		DrawHandle() ã®ãŸã³ã«ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã«å…¥ã£ã¦ã„ã‚‹ã—ã€ãƒãƒ³ãƒ‰ãƒ«ã‹ã‚‰ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’æ±‚ã‚ã‚‹ã®ã« set ã®æ¤œç´¢ãŒèµ°ã‚‹ã€‚
+		(ä¸€æ‹¬æç”»ãªã‚‰ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆã™ã‚‹ã ã‘)
+		ã“ã®ä»•çµ„ã¿ã¯ Update() ã‚‚åŒã˜ã€‚
 
-		‚Ü‚½AŒÂ•Ê‚É BeginRendering()AEndRedering() ‚·‚é•K—v‚ª‚ ‚èA‚±‚±‚Å‘S‚Ä‚ÌƒXƒe[ƒg‚ğ•Û‘¶‚·‚éB
-		(‚±‚ê‚ÍƒXƒe[ƒg‚ğ©“®•Û‘¶‚µ‚È‚¢‚æ‚¤‚É‚·‚é‚±‚Æ‚Í‚Å‚«‚é‚ª)
+		ã¾ãŸã€å€‹åˆ¥ã« BeginRendering()ã€EndRedering() ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã€ã“ã“ã§å…¨ã¦ã®ã‚¹ãƒ†ãƒ¼ãƒˆã‚’ä¿å­˜ã™ã‚‹ã€‚
+		(ã“ã‚Œã¯ã‚¹ãƒ†ãƒ¼ãƒˆã‚’è‡ªå‹•ä¿å­˜ã—ãªã„ã‚ˆã†ã«ã™ã‚‹ã“ã¨ã¯ã§ãã‚‹ãŒ)
 
 
-	[2015/12/15] Effekseer ƒƒ‚
+	[2015/12/15] Effekseer ãƒ¡ãƒ¢
 
 	InstanceContainer
 		InstanceContainer
@@ -19,65 +19,65 @@
 		InstanceContainer
 
 	ManagerImplemented
-		Flip() ‚Å m_renderingDrawSets ‚É DrawSet ‚ª“ü‚ê‚ç‚ê‚éB
-		Draw() ‚Å m_renderingDrawSets ‚É“ü‚Á‚Ä‚¢‚é DrawSet ‚ğ•`‰æ‚·‚éB
-		«
-		Flip() ‚Æ Draw() ‚Í•À—ñÀs‚Å‚«‚È‚¢B
+		Flip() ã§ m_renderingDrawSets ã« DrawSet ãŒå…¥ã‚Œã‚‰ã‚Œã‚‹ã€‚
+		Draw() ã§ m_renderingDrawSets ã«å…¥ã£ã¦ã„ã‚‹ DrawSet ã‚’æç”»ã™ã‚‹ã€‚
+		â†“
+		Flip() ã¨ Draw() ã¯ä¸¦åˆ—å®Ÿè¡Œã§ããªã„ã€‚
 
 	ManagerImplemented::Play()
-		InstanceContainer ‚ğì‚Á‚Ä m_DrawSets ‚É“ü‚ê‚éB
+		InstanceContainer ã‚’ä½œã£ã¦ m_DrawSets ã«å…¥ã‚Œã‚‹ã€‚
 
 	ManagerImplemented::Update()
-		ƒTƒ“ƒvƒ‹‚Å‚Í Play() ‚Æ•À—ñÀs‚Å‚«‚é‚±‚Æ‚É‚È‚Á‚Ä‚¢‚éB
-		’†g‚Í m_renderingDrawSets ‚É‘Î‚µ‚ÄXV‚ğs‚Á‚Ä‚¢‚éB
+		ã‚µãƒ³ãƒ—ãƒ«ã§ã¯ Play() ã¨ä¸¦åˆ—å®Ÿè¡Œã§ãã‚‹ã“ã¨ã«ãªã£ã¦ã„ã‚‹ã€‚
+		ä¸­èº«ã¯ m_renderingDrawSets ã«å¯¾ã—ã¦æ›´æ–°ã‚’è¡Œã£ã¦ã„ã‚‹ã€‚
 
-	‚Ü‚Æ‚ß
-		EPlay() ‚Æ Update() ‚Í•À—ñÀs‚Å‚«‚éB
-		E1ƒtƒŒ[ƒ€‚Í {Flip()} ¨ {Update()} ¨ {Draw()} ‚Ì‡‚ÅÀs‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
-		EPlay() ‚Í Update() ‚Ü‚½‚Í Draw() ‚Æ•À—ñ‚ÅÀs‚Å‚«‚éBFlip() ‚Æ‚Í‚Å‚«‚È‚¢B
+	ã¾ã¨ã‚
+		ãƒ»Play() ã¨ Update() ã¯ä¸¦åˆ—å®Ÿè¡Œã§ãã‚‹ã€‚
+		ãƒ»1ãƒ•ãƒ¬ãƒ¼ãƒ ã¯ {Flip()} â†’ {Update()} â†’ {Draw()} ã®é †ã§å®Ÿè¡Œã—ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
+		ãƒ»Play() ã¯ Update() ã¾ãŸã¯ Draw() ã¨ä¸¦åˆ—ã§å®Ÿè¡Œã§ãã‚‹ã€‚Flip() ã¨ã¯ã§ããªã„ã€‚
 
-	‘Îô
-		EUpdate() ‚ÍXVƒXƒŒƒbƒh‚ğV‚µ‚­—§‚ÄADraw() ‚Í•`‰æƒXƒŒƒbƒh‚©‚çŒÄ‚Ñ‚½‚¢B
-		EUpdate() ‚ª’x‚ê‚Ä‚¢‚é‚©‚ç‚ÆŒ¾‚Á‚ÄADraw() ‚µ‚È‚¢‚Ì‚Í–³‚µB
+	å¯¾ç­–
+		ãƒ»Update() ã¯æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’æ–°ã—ãç«‹ã¦ã€Draw() ã¯æç”»ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å‘¼ã³ãŸã„ã€‚
+		ãƒ»Update() ãŒé…ã‚Œã¦ã„ã‚‹ã‹ã‚‰ã¨è¨€ã£ã¦ã€Draw() ã—ãªã„ã®ã¯ç„¡ã—ã€‚
 
-		‘O’ñ
-		ELumino ‚ÍA•`‰æƒXƒŒƒbƒh‚ª’x‚ê‚Ä‚¢‚é‚È‚ç Draw() ‚ÍŒÄ‚Î‚È‚¢B
+		å‰æ
+		ãƒ»Lumino ã¯ã€æç”»ã‚¹ãƒ¬ãƒƒãƒ‰ãŒé…ã‚Œã¦ã„ã‚‹ãªã‚‰ Draw() ã¯å‘¼ã°ãªã„ã€‚
 
-		E2ƒtƒŒ[ƒ€–ÚˆÈ~‚ÅA
-										[XVƒXƒŒƒbƒh]		[•`‰æƒXƒŒƒbƒh]
-			PreUpdateFrame Flip()	¨	ŠJn ¦1				«
-			UpdateFrame					EEE				«
-			PostUpdateFrame				EEE				«
-			PreDraw						I—¹					ŠJn ¦2
+		ãƒ»2ãƒ•ãƒ¬ãƒ¼ãƒ ç›®ä»¥é™ã§ã€
+										[æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰]		[æç”»ã‚¹ãƒ¬ãƒƒãƒ‰]
+			PreUpdateFrame Flip()	â†’	é–‹å§‹ â€»1				â†“
+			UpdateFrame					ãƒ»ãƒ»ãƒ»				â†“
+			PostUpdateFrame				ãƒ»ãƒ»ãƒ»				â†“
+			PreDraw						çµ‚äº†					é–‹å§‹ â€»2
 			Draw						
-			PostDraw				¨						ƒRƒ}ƒ“ƒhÀsŠJn
+			PostDraw				â†’						ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œé–‹å§‹
 
-			¦1 ‚Ü‚¸‚Í Draw() ‚ªI‚í‚é‚Ü‚Å‘Ò‚ÂB
-			¦2 ‚Ü‚¸‚Í Update() ‚ªI‚í‚é‚Ü‚Å‘Ò‚ÂB
+			â€»1 ã¾ãšã¯ Draw() ãŒçµ‚ã‚ã‚‹ã¾ã§å¾…ã¤ã€‚
+			â€»2 ã¾ãšã¯ Update() ãŒçµ‚ã‚ã‚‹ã¾ã§å¾…ã¤ã€‚
 
-			ª‚à‚µ‚±‚¤‚·‚é‚ÆA•`‰æ‚ª’x‚ê‚Ä‚¢‚é‚ª–â‘è‚É‚È‚è‚»‚¤B
-				XVƒXƒŒƒbƒh‚ÌŠJn‚ÍAŠJn“_‚Å‚Ü‚¾ Draw –¢Às‚¾‚Á‚½‚çÀs‚³‚ê‚é‚Ü‚Å‘Ò‚ÂB
-				‚Ü‚½‚ÍA¡‰ñ‚ÌƒtƒŒ[ƒ€‚Å‚ÍXV‚ğs‚í‚È‚¢B
-				‘Ò‚Âƒpƒ^[ƒ“‚Å‚ÍA•`‰æ’x‰„‚ªƒƒCƒ“ƒXƒŒƒbƒh‚É‹¿‚­‚Ì‚Å‚â‚è‚½‚­‚È‚¢B
-				ƒXƒLƒbƒv‚·‚éê‡AƒXƒLƒbƒv‚µ‚½ƒtƒŒ[ƒ€‚Å’x‰„‚ª‰ğÁ‚µ‚½‚Æ‚«A
-				Ÿ‚É Draw ‚Å‚«‚é‚Æ‚«‚Í Update –¢À{B‚Â‚Ü‚èƒGƒtƒFƒNƒg‚ª~‚Ü‚Á‚ÄŒ©‚¦‚éB
-				’x‰„’†‚Í‰½ƒtƒŒ[ƒ€‚©–ˆ‚É’x‰„‚ª”­¶‚·‚é‚Í‚¸‚¾‚©‚çA
-				’x‰„¨‰ğÁ¨’x‰„¨‰ğÁEEE‚Æ‘±‚­‚Æ‰i‰“‚É~‚Ü‚Á‚ÄŒ©‚¦‚éB
+			â†‘ã‚‚ã—ã“ã†ã™ã‚‹ã¨ã€æç”»ãŒé…ã‚Œã¦ã„ã‚‹æ™‚ãŒå•é¡Œã«ãªã‚Šãã†ã€‚
+				æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã®é–‹å§‹ã¯ã€é–‹å§‹æ™‚ç‚¹ã§ã¾ã  Draw æœªå®Ÿè¡Œã ã£ãŸã‚‰å®Ÿè¡Œã•ã‚Œã‚‹ã¾ã§å¾…ã¤ã€‚
+				ã¾ãŸã¯ã€ä»Šå›ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã¯æ›´æ–°ã‚’è¡Œã‚ãªã„ã€‚
+				å¾…ã¤ãƒ‘ã‚¿ãƒ¼ãƒ³ã§ã¯ã€æç”»é…å»¶ãŒãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã«éŸ¿ãã®ã§ã‚„ã‚ŠãŸããªã„ã€‚
+				ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹å ´åˆã€ã‚¹ã‚­ãƒƒãƒ—ã—ãŸãƒ•ãƒ¬ãƒ¼ãƒ ã§é…å»¶ãŒè§£æ¶ˆã—ãŸã¨ãã€
+				æ¬¡ã« Draw ã§ãã‚‹ã¨ãã¯ Update æœªå®Ÿæ–½ã€‚ã¤ã¾ã‚Šã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒæ­¢ã¾ã£ã¦è¦‹ãˆã‚‹ã€‚
+				é…å»¶ä¸­ã¯ä½•ãƒ•ãƒ¬ãƒ¼ãƒ ã‹æ¯ã«é…å»¶ãŒç™ºç”Ÿã™ã‚‹ã¯ãšã ã‹ã‚‰ã€
+				é…å»¶â†’è§£æ¶ˆâ†’é…å»¶â†’è§£æ¶ˆãƒ»ãƒ»ãƒ»ã¨ç¶šãã¨æ°¸é ã«æ­¢ã¾ã£ã¦è¦‹ãˆã‚‹ã€‚
 
-				‘Îô‚Å‚«‚È‚­‚Í‚È‚¢‚Æv‚¤‚¯‚ÇA•¡G‚·‚¬‚éB
-				‘¼‚ÌˆÄ‚Å‚Ç‚¤‚µ‚Ä‚à‘¬“x‚ª‚Å‚È‚¯‚ê‚Î‰ü‚ß‚Äl‚¦‚éB
+				å¯¾ç­–ã§ããªãã¯ãªã„ã¨æ€ã†ã‘ã©ã€è¤‡é›‘ã™ãã‚‹ã€‚
+				ä»–ã®æ¡ˆã§ã©ã†ã—ã¦ã‚‚é€Ÿåº¦ãŒã§ãªã‘ã‚Œã°æ”¹ã‚ã¦è€ƒãˆã‚‹ã€‚
 
-		EƒVƒ“ƒvƒ‹‚ÅˆÀ‘S‚ÉÀ‘•‚·‚é‚È‚ç Update ‚ğ•`‰æƒXƒŒƒbƒh‚Ås‚¤‚Ì‚ª–³“ïB
-			EƒƒCƒ“ƒXƒŒƒbƒh‚Å Manager::Render() ‚µ‚½‚ç•`‰æƒXƒŒƒbƒh‚ÉƒRƒ}ƒ“ƒh“Š‚°‚éB
-			E“¯‚ÉXVƒXƒŒƒbƒh‚ÉŠJn‚ğ’Ê’m‚·‚éB
-			EƒRƒ}ƒ“ƒhÀs‚ÍXV‚ªI‚í‚é‚Ü‚Å‘Ò‚ÂB
-			«
-			‚Â‚Ü‚èAUpdateFrame ‚ÌI—¹ ` •`‰æƒRƒ}ƒ“ƒh‚ÌÀsŠJn ‚Ü‚Å‚ğ•À—ñ‰»‚·‚é‚Æ‚¢‚¤•û–@B
-			‚ ‚­‚Ü‚Å•`‰æ‚ÌˆêŠÂ‚Æl‚¦ADraw() ‚·‚é‚×‚«‚Í•K‚¸ƒZƒbƒg‚ÅXVŠJn‚·‚éB
+		ãƒ»ã‚·ãƒ³ãƒ—ãƒ«ã§å®‰å…¨ã«å®Ÿè£…ã™ã‚‹ãªã‚‰ Update ã‚’æç”»ã‚¹ãƒ¬ãƒƒãƒ‰ã§è¡Œã†ã®ãŒç„¡é›£ã€‚
+			ãƒ»ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ¬ãƒƒãƒ‰ã§ Manager::Render() ã—ãŸã‚‰æç”»ã‚¹ãƒ¬ãƒƒãƒ‰ã«ã‚³ãƒãƒ³ãƒ‰æŠ•ã’ã‚‹ã€‚
+			ãƒ»åŒæ™‚ã«æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã«é–‹å§‹ã‚’é€šçŸ¥ã™ã‚‹ã€‚
+			ãƒ»ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œã¯æ›´æ–°ãŒçµ‚ã‚ã‚‹ã¾ã§å¾…ã¤ã€‚
+			â†“
+			ã¤ã¾ã‚Šã€UpdateFrame ã®çµ‚äº† ï½ æç”»ã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œé–‹å§‹ ã¾ã§ã‚’ä¸¦åˆ—åŒ–ã™ã‚‹ã¨ã„ã†æ–¹æ³•ã€‚
+			ã‚ãã¾ã§æç”»ã®ä¸€ç’°ã¨è€ƒãˆã€Draw() ã™ã‚‹ã¹ãæ™‚ã¯å¿…ãšã‚»ãƒƒãƒˆã§æ›´æ–°é–‹å§‹ã™ã‚‹ã€‚
 
-			XVƒXƒŒƒbƒh‚ÉŠJn‚ğ’Ê’m‚·‚é‚Ì‚ÍAŒ»İ•`‰æ’x‰„‚µ‚Ä‚¢‚é‚©‚ğ”»•Ê‚µA•`‰æ‚·‚é‚±‚Æ‚É‚È‚Á‚½’¼Œã‚ªƒxƒXƒgB
-			Šù‚É Draw ‚ÍI‚í‚Á‚Ä‚¢‚é‚Ì‚Å‘Ò‚Â‚±‚Æ‚ğl‚¦‚é•K—v‚Í‚È‚¢B
-			‚Ü‚½A•Êƒ‚ƒWƒ…[ƒ‹‚Ì•`‰æŠJn‘O“¯Šúˆ—‚Æ•À—ñ‰»‚Å‚«‚éB
+			æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰ã«é–‹å§‹ã‚’é€šçŸ¥ã™ã‚‹ã®ã¯ã€ç¾åœ¨æç”»é…å»¶ã—ã¦ã„ã‚‹ã‹ã‚’åˆ¤åˆ¥ã—ã€æç”»ã™ã‚‹ã“ã¨ã«ãªã£ãŸç›´å¾ŒãŒãƒ™ã‚¹ãƒˆã€‚
+			æ—¢ã« Draw ã¯çµ‚ã‚ã£ã¦ã„ã‚‹ã®ã§å¾…ã¤ã“ã¨ã‚’è€ƒãˆã‚‹å¿…è¦ã¯ãªã„ã€‚
+			ã¾ãŸã€åˆ¥ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã®æç”»é–‹å§‹å‰åŒæœŸå‡¦ç†ã¨ä¸¦åˆ—åŒ–ã§ãã‚‹ã€‚
 
 */
 #include "../Internal.h"
@@ -157,17 +157,17 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 {
 	EffectEngine::Initialize(manager, cacheObjectCount, cacheMemorySize);
 
-	// ƒtƒ@ƒCƒ‹IOƒCƒ“ƒ^[ƒtƒFƒCƒX
+	// ãƒ•ã‚¡ã‚¤ãƒ«IOã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 	m_fileInterface = LN_NEW EffekseerFileInterface(m_manager->GetFileManager());
 
 #if defined(LN_OS_WIN32)
 	auto* dx9Device = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->GetGraphicsManager()->GetGraphicsDevice());
 	if (dx9Device != nullptr)
 	{
-		// ƒGƒtƒFƒNƒgŠÇ——pƒCƒ“ƒXƒ^ƒ“ƒX‚Ì¶¬(©“®ƒtƒŠƒbƒv‚Ís‚í‚È‚¢)
+		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ç”Ÿæˆ(è‡ªå‹•ãƒ•ãƒªãƒƒãƒ—ã¯è¡Œã‚ãªã„)
 		m_efkManager = ::Effekseer::Manager::Create(2000, false);
 
-		// •`‰æ—pƒCƒ“ƒXƒ^ƒ“ƒX‚Ì¶¬
+		// æç”»ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ç”Ÿæˆ
 		m_efkRenderer = ::EffekseerRendererDX9::Renderer::Create(dx9Device->GetIDirect3DDevice9(), maxSpriteCount);
 
 	}
@@ -183,14 +183,14 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 		//LN_THROW(0, NotImplementedException);
 	}
 
-	// •`‰æ—pƒCƒ“ƒXƒ^ƒ“ƒX‚©‚ç•`‰æ‹@”\‚ğİ’è
+	// æç”»ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‹ã‚‰æç”»æ©Ÿèƒ½ã‚’è¨­å®š
 	m_efkManager->SetSpriteRenderer(m_efkRenderer->CreateSpriteRenderer());
 	m_efkManager->SetRibbonRenderer(m_efkRenderer->CreateRibbonRenderer());
 	m_efkManager->SetRingRenderer(m_efkRenderer->CreateRingRenderer());
 	m_efkManager->SetTrackRenderer(m_efkRenderer->CreateTrackRenderer());
 	m_efkManager->SetModelRenderer(m_efkRenderer->CreateModelRenderer());
 
-	// •`‰æ—pƒCƒ“ƒXƒ^ƒ“ƒX‚©‚çƒeƒNƒXƒ`ƒƒ‚Ì“Ç‹@”\‚ğİ’è
+	// æç”»ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‹ã‚‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­è¾¼æ©Ÿèƒ½ã‚’è¨­å®š
 	m_efkManager->SetTextureLoader(m_efkRenderer->CreateTextureLoader(m_fileInterface));
 	m_efkManager->SetModelLoader(m_efkRenderer->CreateModelLoader(m_fileInterface));
 	m_efkManager->SetEffectLoader(::Effekseer::Effect::CreateEffectLoader(m_fileInterface));
@@ -202,17 +202,17 @@ void EffekseerEffectEngine::Initialize(EffectManager* manager, int cacheObjectCo
 		auto* xa2Device = dynamic_cast<XAudio2AudioDevice*>(m_manager->GetAudioManager()->GetAudioDevice());
 		if (xa2Device != nullptr)
 		{
-			// ‰¹Ä¶—pƒCƒ“ƒXƒ^ƒ“ƒX‚Ì¶¬
+			// éŸ³å†ç”Ÿç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ç”Ÿæˆ
 			m_efkSound = ::EffekseerSound::Sound::Create(xa2Device->GetXAudio2(), 16, 16);
 
-			// ‰¹Ä¶—pƒCƒ“ƒXƒ^ƒ“ƒX‚©‚çÄ¶‹@”\‚ğw’è
+			// éŸ³å†ç”Ÿç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‹ã‚‰å†ç”Ÿæ©Ÿèƒ½ã‚’æŒ‡å®š
 			m_efkManager->SetSoundPlayer(m_efkSound->CreateSoundPlayer());
 
-			// ‰¹Ä¶—pƒCƒ“ƒXƒ^ƒ“ƒX‚©‚çƒTƒEƒ“ƒhƒf[ƒ^‚Ì“Ç‹@”\‚ğİ’è
+			// éŸ³å†ç”Ÿç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‹ã‚‰ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒ¼ã‚¿ã®èª­è¾¼æ©Ÿèƒ½ã‚’è¨­å®š
 			m_efkManager->SetSoundLoader(m_efkSound->CreateSoundLoader(m_fileInterface));
 		}
 		else {
-			// ƒTƒEƒ“ƒhƒhƒ‰ƒCƒo‚ª–³‚¢‚Æ‚«‚â NullDevice ‚ğg—p‚µ‚Ä‚¢‚é
+			// ã‚µã‚¦ãƒ³ãƒ‰ãƒ‰ãƒ©ã‚¤ãƒãŒç„¡ã„ã¨ãã‚„ NullDevice ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹æ™‚
 		}
 	}
 #endif
@@ -225,7 +225,7 @@ void EffekseerEffectEngine::Finalize()
 {
 	EffectEngine::Finalize();
 
-	// Effekseer ‚ÌƒTƒ“ƒvƒ‹‚Å‚Íæ‚ÉƒGƒtƒFƒNƒgŠÇ——pƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚·‚é•K—v‚ª‚ ‚é‚æ‚¤‚¾
+	// Effekseer ã®ã‚µãƒ³ãƒ—ãƒ«ã§ã¯å…ˆã«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã‚ˆã†ã 
 	if (m_efkManager != nullptr) {
 		m_efkManager->Destroy();
 		m_efkManager = NULL;
@@ -255,7 +255,7 @@ void EffekseerEffectEngine::SetViewProjection(const Matrix& view, const Matrix& 
 }
 
 //-----------------------------------------------------------------------------
-// ”ñ“¯ŠúXVE•`‰æ‚Ì“¯ŠúƒtƒF[ƒY‚ÅŒÄ‚Î‚ê‚é
+// éåŒæœŸæ›´æ–°ãƒ»æç”»ã®åŒæœŸãƒ•ã‚§ãƒ¼ã‚ºã§å‘¼ã°ã‚Œã‚‹
 //-----------------------------------------------------------------------------
 void EffekseerEffectEngine::UpdateRenderContents()
 {
@@ -271,17 +271,17 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 {
 	CacheKey key(filePath);
 
-	// ƒLƒƒƒbƒVƒ…ŒŸõ
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ¤œç´¢
 	RefPtr<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->FindObjectAddRef(key)), false);
 	if (core != nullptr) {
 		core.SafeAddRef();
 		return core;
 	}
 
-	// unicode ‚Ö
+	// unicode ã¸
 	ByteBuffer utf16 = m_TCharToUTF16Converter.Convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(TCHAR));
 
-	// ƒGƒtƒFƒNƒg‚Ì“Ç
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®èª­è¾¼
 	Effekseer::Effect* efkEffect = Effekseer::Effect::Create(
 		m_efkManager,
 		(const EFK_CHAR*)utf16.GetConstData());
@@ -289,10 +289,10 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 		return NULL;
 	}
 
-	// EffectCore ì¬
+	// EffectCore ä½œæˆ
 	core.Attach(LN_NEW EffekseerEffectCore(this, efkEffect), false);
 
-	// ƒLƒƒƒbƒVƒ…‚É“o˜^
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ç™»éŒ²
 	if (!key.IsNull()) {
 		m_effectCoreCache->RegisterCacheObject(key, core);
 	}
@@ -309,10 +309,10 @@ void EffekseerEffectEngine::SetViewProjectin(const Matrix& view, const Matrix& p
 	m_efkRenderer->SetCameraMatrix((const ::Effekseer::Matrix44&)view);
 	m_efkRenderer->SetProjectionMatrix((const ::Effekseer::Matrix44&)proj);
 
-	// “Š‰es—ñ‚ğİ’è
+	// æŠ•å½±è¡Œåˆ—ã‚’è¨­å®š
 	//	::Effekseer::Matrix44().PerspectiveFovRH(90.0f / 180.0f * 3.14f, (float)640 / (float)480, 1.0f, 50.0f));
 
-	//// ƒJƒƒ‰s—ñ‚ğİ’è
+	//// ã‚«ãƒ¡ãƒ©è¡Œåˆ—ã‚’è¨­å®š
 	//m_efkRenderer->SetCameraMatrix(
 	//	::Effekseer::Matrix44().LookAtRH(::Effekseer::Vector3D(10.0f, 5.0f, 20.0f), ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
 
@@ -332,13 +332,13 @@ void EffekseerEffectEngine::UpdateFrame(float elapsedTime)
 //-----------------------------------------------------------------------------
 void EffekseerEffectEngine::Render()
 {
-	// ƒGƒtƒFƒNƒg‚Ì•`‰æŠJnˆ—‚ğs‚¤B
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»é–‹å§‹å‡¦ç†ã‚’è¡Œã†ã€‚
 	m_efkRenderer->BeginRendering();
 
-	// ƒGƒtƒFƒNƒg‚Ì•`‰æ‚ğs‚¤B
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»ã‚’è¡Œã†ã€‚
 	m_efkManager->Draw();
 
-	// ƒGƒtƒFƒNƒg‚Ì•`‰æI—¹ˆ—‚ğs‚¤B
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»çµ‚äº†å‡¦ç†ã‚’è¡Œã†ã€‚
 	m_efkRenderer->EndRendering();
 }
 
@@ -399,7 +399,7 @@ EffekseerEffectInstance::~EffekseerEffectInstance()
 //{
 //	if (m_currentHandle != 0)
 //	{
-//		// ¡‚Ìó‘Ô‚ÅXV‚µ‚½ŒãAƒoƒbƒN‚Ö
+//		// ä»Šã®çŠ¶æ…‹ã§æ›´æ–°ã—ãŸå¾Œã€ãƒãƒƒã‚¯ã¸
 //		::Effekseer::Matrix43 efkMat;
 //		LNToEFKMatrix43(m_worldMatrix, &efkMat);
 //		m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->SetMatrix(m_currentHandle, efkMat);

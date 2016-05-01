@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../../Animation/EasingValue.h"
 #include "../Color.h"

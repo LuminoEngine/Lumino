@@ -279,11 +279,11 @@ void NSGLGraphicsDevice::Initialize(const ConfigData& configData)
     GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
     if (fs == GL_FRAMEBUFFER_COMPLETE)
     {
-        printf("GL_FRAMEBUFFER_COMPLETE¥n");
+        printf("GL_FRAMEBUFFER_COMPLETE\n");
     }
     if (fs == GL_FRAMEBUFFER_UNSUPPORTED)
     {
-        printf("GL_FRAMEBUFFER_UNSUPPORTED¥n");
+        printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
     }
 
     

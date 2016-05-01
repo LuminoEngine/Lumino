@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.h"
 #include <Lumino/Graphics/Brush.h>
 
@@ -27,7 +27,7 @@ Brush::~Brush()
 // ColorBrush
 //=============================================================================
 
-// �ȑO�� ColorF �� static �ϐ����Q�Ƃ��Ă������A���ꂾ�Ə������̏��ɂ���Ă͂�����̒l�����ׂ� 0,0,0,0 �ɂȂ��Ă��܂����Ƃ�������
+// 以前は ColorF の static 変数を参照していたが、それだと初期化の順によってはこちらの値がすべて 0,0,0,0 になってしまうことがあった
 static ColorBrush g_ColorBrush_White(1.0, 1.0, 1.0, 1.0);
 static ColorBrush g_ColorBrush_Black(0.0, 0.0, 0.0, 1.0);
 static ColorBrush g_ColorBrush_Gray(0.5, 0.5, 0.5, 1.0);

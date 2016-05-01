@@ -1,4 +1,4 @@
-
+ï»¿
 #include "AudioStream.h"
 #include "AudioUtils.h"
 
@@ -101,8 +101,8 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 
 	if (format == StreamFormat_Unknown)
 	{
-		// mp3 ‚Ìê‡‚Íƒwƒbƒ_‚ª ID3 ‚¾‚Á‚½‚èŒã‚ë‚Ì•û‚É TAG ‚ª‚ ‚Á‚½‚è
-		// “¯Šúƒwƒbƒ_‚¾‚¯‚ ‚Á‚½‚è‚·‚é‚Ì‚Å‘S•”ƒ`ƒFƒbƒN‚·‚é
+		// mp3 ã®å ´åˆã¯ãƒ˜ãƒƒãƒ€ãŒ ID3 ã ã£ãŸã‚Šå¾Œã‚ã®æ–¹ã« TAG ãŒã‚ã£ãŸã‚Š
+		// åŒæœŸãƒ˜ãƒƒãƒ€ã ã‘ã‚ã£ãŸã‚Šã™ã‚‹ã®ã§å…¨éƒ¨ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 		if (head[0] == 0xff && head[1] >> 5 == 0x07)
 		{
 			format = StreamFormat_Mp3;
@@ -128,7 +128,7 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 //-----------------------------------------------------------------------------
 SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize)
 {
-	// ì¬‚·‚éƒI[ƒfƒBƒIƒvƒŒƒCƒ„[‚ÌŽí—Þ‚ðŒˆ‚ß‚Ä‚¢‚­
+	// ä½œæˆã™ã‚‹ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç¨®é¡žã‚’æ±ºã‚ã¦ã„ã
 	if (audioStream->GetDecoder()->GetSourceFormat() == StreamFormat_Midi)
 	{
 		type = SoundPlayingMode::Midi;

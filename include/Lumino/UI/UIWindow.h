@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIElement.h"
 //#include "../Graphics/Viewport.h"
@@ -15,7 +15,7 @@ public:
 
 	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
 
-LN_INTERNAL_ACCESS:	// TODO: ‚¢‚Ü‚Í‚Æ‚è‚ ‚¦‚¸“à•”—p“r
+LN_INTERNAL_ACCESS:	// TODO: ã„ã¾ã¯ã¨ã‚Šã‚ãˆãšå†…éƒ¨ç”¨é€”
 	UIWindow();
 	virtual ~UIWindow();
 	void InitializeDefault(detail::UIManager* manager, PlatformWindow* platformWindow);

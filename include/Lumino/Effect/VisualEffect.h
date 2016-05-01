@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <list>
 #include "Common.h"
@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		‹ŠoŒø‰ÊƒIƒuƒWƒFƒNƒg‚ğ‘€ì‚·‚é‹@”\‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+	@brief		è¦–è¦šåŠ¹æœã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ“ä½œã™ã‚‹æ©Ÿèƒ½ã‚’æä¾›ã—ã¾ã™ã€‚
 */
 class VisualEffect
 	: public tr::ReflectionObject
@@ -15,41 +15,41 @@ class VisualEffect
 public:
 
 	/**
-		@brief		w’è‚µ‚½ƒtƒ@ƒCƒ‹‚©‚ç VisualEffect ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
-		@param[in]	filePath	: ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹
-		@details	‘Î‰‚µ‚Ä‚¢‚éƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚Í Effekseer ‚Ìƒtƒ@ƒCƒ‹ (.efk) ‚Å‚·B
+		@brief		æŒ‡å®šã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ VisualEffect ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
+		@param[in]	filePath	: ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«
+		@details	å¯¾å¿œã—ã¦ã„ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã¯ Effekseer ã®ãƒ•ã‚¡ã‚¤ãƒ« (.efk) ã§ã™ã€‚
 	*/
 	static VisualEffectPtr Create(const StringRef& filePath);
 
 public:
 
 	/**
-		@brief		ƒGƒtƒFƒNƒg‚ÌÄ¶‚ğŠJn‚µ‚Ü‚·B
-		@param[in]	overlap	: true‚Ìê‡‚ÍÄ¶’†‚ÌƒGƒtƒFƒNƒg‚ª‚ ‚ê‚Î’â~‚¹‚¸‚ÉV‚µ‚¢ƒGƒtƒFƒNƒg‚ÌÄ¶‚ğŠJn‚µAfalse ‚Ìê‡‚Í’â~‚µ‚Ä‚©‚çŠJn‚·‚éB
-		@return		ŠJn‚³‚ê‚½ƒGƒtƒFƒNƒg‚ğ¦‚·ƒNƒ‰ƒX (‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ÍŠJ•ú‚µ‚È‚¢‚Å‚­‚¾‚³‚¢)
+		@brief		ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å†ç”Ÿã‚’é–‹å§‹ã—ã¾ã™ã€‚
+		@param[in]	overlap	: trueã®å ´åˆã¯å†ç”Ÿä¸­ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒã‚ã‚Œã°åœæ­¢ã›ãšã«æ–°ã—ã„ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å†ç”Ÿã‚’é–‹å§‹ã—ã€false ã®å ´åˆã¯åœæ­¢ã—ã¦ã‹ã‚‰é–‹å§‹ã™ã‚‹ã€‚
+		@return		é–‹å§‹ã•ã‚ŒãŸã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ç¤ºã™ã‚¯ãƒ©ã‚¹ (ã“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯é–‹æ”¾ã—ãªã„ã§ãã ã•ã„)
 	*/
 	VisualEffectInstance* Play();
 
 	/**
-		@brief		‚±‚ÌƒIƒuƒWƒFƒNƒg‚©‚çÄ¶‚³‚ê‚½ƒGƒtƒFƒNƒg‚ğ’â~‚µ‚Ü‚·B
+		@brief		ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚‰å†ç”Ÿã•ã‚ŒãŸã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’åœæ­¢ã—ã¾ã™ã€‚
 	*/
 	void Stop();
 
 	/**
-		@brief		‚±‚ÌƒIƒuƒWƒFƒNƒg‚©‚çÄ¶‚³‚ê‚½ƒGƒtƒFƒNƒg‚Ì‚¢‚¸‚ê‚©‚ªÄ¶’†‚©‚ğŠm”F‚µ‚Ü‚·B
+		@brief		ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚‰å†ç”Ÿã•ã‚ŒãŸã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ã„ãšã‚Œã‹ãŒå†ç”Ÿä¸­ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚
 	*/
 	bool IsPlaying() const;
 
 	void SetOverlapEffects(bool enabled);
 
 	/**
-		@brief		Ä¶’†‚ÌƒGƒtƒFƒNƒg‚Ìp¨ (ƒ[ƒ‹ƒh•ÏŠ·s—ñ) ‚ğ‚±‚ÌƒIƒuƒWƒFƒNƒg‚Æ“¯Šú‚·‚é‚©‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	enabled	: true ‚Ìê‡A“¯Šú‚·‚é (ƒfƒtƒHƒ‹ƒg true)
+		@brief		å†ç”Ÿä¸­ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å§¿å‹¢ (ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—) ã‚’ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨åŒæœŸã™ã‚‹ã‹ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	enabled	: true ã®å ´åˆã€åŒæœŸã™ã‚‹ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ true)
 	*/
 	void SetSyncEffects(bool enabled);
 
 	/**
-		@brief		‚±‚ÌƒIƒuƒWƒFƒNƒg‚Ìp¨ (ƒ[ƒ‹ƒh•ÏŠ·s—ñ) ‚ğİ’è‚µ‚Ü‚·B
+		@brief		ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å§¿å‹¢ (ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—) ã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void SetWorldMatrix(const Matrix& matrix);
 

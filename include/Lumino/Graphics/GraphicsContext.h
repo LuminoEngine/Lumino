@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "ContextInterface.h"
@@ -16,9 +16,9 @@ class GraphicsContext
 {
 public:	// TODO
 	//RenderingPass*				Pass;
-	Details::Renderer*			Renderer;	// TODO “à•”ƒNƒ‰ƒX
+	Details::Renderer*			Renderer;	// TODO å†…éƒ¨ã‚¯ãƒ©ã‚¹
 	//Camera*						CurrentCamera;
-	//MMEShader*					Shader;				// –{“–‚É•K—v‚ÈƒVƒF[ƒ_ (VisualNode::Render() ˆÈ‰º‚Åg—p‰Â”\)
+	//MMEShader*					Shader;				// æœ¬å½“ã«å¿…è¦ãªã‚·ã‚§ãƒ¼ãƒ€ (VisualNode::Render() ä»¥ä¸‹ã§ä½¿ç”¨å¯èƒ½)
 
 	
 	/**
@@ -48,12 +48,12 @@ public:
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 	
 
-	//// ƒvƒŠƒ~ƒeƒBƒu 
+	//// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ– 
 	//void DrawPrimitiveLine(
 	//	const Vector3& from, const ColorF& fromColor,
 	//	const Vector3& to, const ColorF& toColor);
 
-	//// ¶‰ñ‚è
+	//// å·¦å›ã‚Š
 	//void DrawSquare(
 	//	float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
 	//	float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
@@ -96,7 +96,7 @@ public:
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
 
-	// ‚±‚ÌƒNƒ‰ƒX‚ªŠÇ—‚·‚éƒXƒe[ƒgBVertexBuffer ‚È‚Ç‚Í•`‰æ‚ÉŠeí RendererCore “à‚Å•ÏX‚³‚ê‚é‚©‚ç‚¿‚å‚Á‚Æl‚¦‚é•K—v‚ª‚ ‚è‚»‚¤B
+	// ã“ã®ã‚¯ãƒ©ã‚¹ãŒç®¡ç†ã™ã‚‹ã‚¹ãƒ†ãƒ¼ãƒˆã€‚VertexBuffer ãªã©ã¯æç”»æ™‚ã«å„ç¨® RendererCore å†…ã§å¤‰æ›´ã•ã‚Œã‚‹ã‹ã‚‰ã¡ã‚‡ã£ã¨è€ƒãˆã‚‹å¿…è¦ãŒã‚ã‚Šãã†ã€‚
 	//Shader*						m_shader;
 
 protected:

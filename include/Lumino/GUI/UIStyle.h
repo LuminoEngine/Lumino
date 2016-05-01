@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <map>
 #include "../CoreObject.h"
@@ -47,7 +47,7 @@ public:
 	virtual ~TriggerBase();
 
 public:	// internal
-	/// routedEvent : —á‚¦‚ÎƒTƒuƒNƒ‰ƒX Trigger ‚Í PropertyChangedEvent ‚ğó‚¯æ‚Á‚½‚ç target ‚ÉƒvƒƒpƒeƒB‚ğƒZƒbƒg‚·‚é
+	/// routedEvent : ä¾‹ãˆã°ã‚µãƒ–ã‚¯ãƒ©ã‚¹ Trigger ã¯ PropertyChangedEvent ã‚’å—ã‘å–ã£ãŸã‚‰ target ã«ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	/// tareget : 
 	//virtual void Invoke(const RoutedEvent* prop, const RoutedEventArgs* e, CoreObject* target) = 0;
 
@@ -59,7 +59,7 @@ typedef GenericCoreList<TriggerBase*>		TriggerList;
 /**
 	@brief		
 */
-class Trigger	// TODO: –¼‘O PropertyTrigger ‚Ì‚Ù‚¤‚ª‚í‚©‚è‚â‚·‚¢‹C‚ª‚·‚é
+class Trigger	// TODO: åå‰ PropertyTrigger ã®ã»ã†ãŒã‚ã‹ã‚Šã‚„ã™ã„æ°—ãŒã™ã‚‹
 	: public TriggerBase
 {
 	LN_CORE_OBJECT_TYPE_INFO_DECL();
@@ -74,7 +74,7 @@ public:
 	void SetValue(const Variant& value) { m_value = value; }
 	const Variant& GetValue() const { return m_value; }
 
-	// ƒ†[ƒeƒBƒŠƒeƒB
+	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void AddSetter(const Property* prop, const Variant& value)
 	{
 		RefPtr<Setter> setter = RefPtr<Setter>::Create(prop, value);
@@ -83,7 +83,7 @@ public:
 	}
 
 	// internal
-	/// ƒI[ƒi[ƒIƒuƒWƒFƒNƒg‚ÌƒvƒƒpƒeƒB•ÏX’Ê’m‚ª”­¶‚µ‚½
+	/// ã‚ªãƒ¼ãƒŠãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å¤‰æ›´é€šçŸ¥ãŒç™ºç”Ÿã—ãŸ
 	void TryInvoke(CoreObject* target, PropertyChangedEventArgs* e);
 protected:
 	virtual bool IsPropertyTrigger() const { return true; }
@@ -95,7 +95,7 @@ private:
 };
 
 /**
-	@brief	GUI —v‘f‚ÌƒvƒƒpƒeƒB‚ğ‹¤—L‚µ‚Ü‚·B
+	@brief	GUI è¦ç´ ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å…±æœ‰ã—ã¾ã™ã€‚
 */
 class Style
 	: public CoreObject
@@ -105,8 +105,8 @@ class Style
 public:
 
 	/**
-		@brief	Style ‚ğì¬‚µ‚Ü‚·B
-		@return	ì¬‚³‚ê‚½ StyleB‚±‚ÌƒIƒuƒWƒFƒNƒg‚Í AutoReleasePool ‚ÅŠÇ—‚³‚ê‚Ä‚¢‚Ü‚·B
+		@brief	Style ã‚’ä½œæˆã—ã¾ã™ã€‚
+		@return	ä½œæˆã•ã‚ŒãŸ Styleã€‚ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ AutoReleasePool ã§ç®¡ç†ã•ã‚Œã¦ã„ã¾ã™ã€‚
 	*/
 	static Style* Create();
 
@@ -123,7 +123,7 @@ public:
 	SetterList* GetSetters() const { return m_setterList; }
 	//TriggerList* GetTriggers() const { return m_triggerList; }
 
-	// ƒ†[ƒeƒBƒŠƒeƒB
+	// ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
 	void AddSetter(const Property* prop, const Variant& value) 
 	{
 		auto setter = RefPtr<Setter>::Create(prop, value);
@@ -138,7 +138,7 @@ public:
 	}
 
 
-	/// w’è‚µ‚½—v‘f‚É‚±‚ÌƒXƒ^ƒCƒ‹‚ğ“K—p‚·‚é
+	/// æŒ‡å®šã—ãŸè¦ç´ ã«ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã‚’é©ç”¨ã™ã‚‹
 	void Apply(UIElement* element);
 
 	void NortifyTargetObjectPropertyChanged(CoreObject* target, PropertyChangedEventArgs* e);

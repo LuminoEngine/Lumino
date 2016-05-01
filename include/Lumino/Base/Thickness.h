@@ -1,10 +1,10 @@
-
+ï»¿
 #pragma once
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		lŠpŒ`‚Ì˜g‚Ì‘¾‚³‚ğ•\‚·ƒNƒ‰ƒX‚Å‚·B(•‚“®¬”“_Œ`®)
+	@brief		å››è§’å½¢ã®æ ã®å¤ªã•ã‚’è¡¨ã™ã‚¯ãƒ©ã‚¹ã§ã™ã€‚(æµ®å‹•å°æ•°ç‚¹å½¢å¼)
 */
 class ThicknessF
 {
@@ -12,32 +12,32 @@ public:
 	static const ThicknessF	Zero;	///< ThicknessF(0, 0, 0, 0)
 
 public:
-	float		Left;		/**< lŠpŒ`‚Ì¶•Ó‚Ì• */
-	float		Top;		/**< lŠpŒ`‚Ìã•Ó‚Ì• */
-	float		Right;		/**< lŠpŒ`‚Ì‰E•Ó‚Ì• */
-	float		Bottom;		/**< lŠpŒ`‚Ì’ê•Ó‚Ì• */
+	float		Left;		/**< å››è§’å½¢ã®å·¦è¾ºã®å¹… */
+	float		Top;		/**< å››è§’å½¢ã®ä¸Šè¾ºã®å¹… */
+	float		Right;		/**< å››è§’å½¢ã®å³è¾ºã®å¹… */
+	float		Bottom;		/**< å››è§’å½¢ã®åº•è¾ºã®å¹… */
 
 public:
 
 	/**
-		@brief	‚·‚×‚Ä‚Ì—v‘f‚ğ 0 ‚Å‰Šú‰»‚µ‚Ü‚·B
+		@brief	ã™ã¹ã¦ã®è¦ç´ ã‚’ 0 ã§åˆæœŸåŒ–ã—ã¾ã™ã€‚
 	*/
 	ThicknessF() { Set(0, 0, 0, 0); }
 	
 	/**
-		@brief	¶‰E‹¤’Ê‚Ì•‹y‚Ñã‰º‹¤’Ê‚Ì•‚ğw’è‚µ‚Ä‰Šú‰»‚µ‚Ü‚·B
+		@brief	å·¦å³å…±é€šã®å¹…åŠã³ä¸Šä¸‹å…±é€šã®å¹…ã‚’æŒ‡å®šã—ã¦åˆæœŸåŒ–ã—ã¾ã™ã€‚
 	*/
 	ThicknessF(float leftAndRight, float topAndbottom) { Set(leftAndRight, topAndbottom, leftAndRight, topAndbottom); }
 	
 	/**
-		@brief	Še•Ó‚Ì•‚ğw’è‚µ‚Ä‰Šú‰»‚µ‚Ü‚·B
+		@brief	å„è¾ºã®å¹…ã‚’æŒ‡å®šã—ã¦åˆæœŸåŒ–ã—ã¾ã™ã€‚
 	*/
 	ThicknessF(float left, float top, float right, float bottom) { Set(left, top, right, bottom); }
 
 public:
 	
 	/**
-		@brief	Še—v‘f‚ğİ’è‚µ‚Ü‚·B
+		@brief	å„è¦ç´ ã‚’è¨­å®šã—ã¾ã™ã€‚
 	*/
 	void Set(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
 

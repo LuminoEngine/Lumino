@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Math/Matrix.h>
@@ -10,7 +10,7 @@ namespace detail
 {
 class EffectManager;
 
-// Effect ‚ÌŠÇ—
+// Effect ã®ç®¡ç†
 class EffectEngine
 	: public RefObject
 {
@@ -25,16 +25,16 @@ public:
 	virtual void UpdateFrame(float elapsedTime) = 0;
 	virtual void Render() = 0;
 
-	// Render() ‚ÍA
-	// Deferred •`‰æ		: •`‰æƒRƒ}ƒ“ƒh‚©‚çÀs‚³‚ê‚é
-	// Immediate •`‰æ	: ’¼ÚÀs‚³‚ê‚é
+	// Render() ã¯ã€
+	// Deferred æç”»		: æç”»ã‚³ãƒãƒ³ãƒ‰ã‹ã‚‰å®Ÿè¡Œã•ã‚Œã‚‹
+	// Immediate æç”»	: ç›´æ¥å®Ÿè¡Œã•ã‚Œã‚‹
 
 protected:
 	EffectManager*	m_manager = nullptr;
 	CacheManager*	m_effectCoreCache = nullptr;
 
 public:
-	// ˆêŠ‡•`‰æ‚Ì•`‰æƒRƒ}ƒ“ƒh
+	// ä¸€æ‹¬æç”»ã®æç”»ã‚³ãƒãƒ³ãƒ‰
 	struct RenderCommand : public RenderingCommand
 	{
 		EffectEngine*	m_engine;
@@ -52,7 +52,7 @@ public:
 	};
 };
 
-//// ƒGƒtƒFƒNƒgƒIƒuƒWƒFƒNƒg WrapperBƒLƒƒƒbƒVƒ…ŠÇ—‚³‚ê‚éB
+//// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ Wrapperã€‚ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç®¡ç†ã•ã‚Œã‚‹ã€‚
 //class EffectCore
 //	: public RefObject
 //	, public ICacheObject
@@ -63,7 +63,7 @@ public:
 //	virtual ~EffectCore() = default;
 //};
 //
-//// ƒGƒtƒFƒNƒgƒCƒ“ƒXƒ^ƒ“ƒX Wrapper
+//// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ Wrapper
 //class EffectInstance
 //	: public RefObject
 //{
@@ -79,8 +79,8 @@ public:
 //	virtual void Stop() = 0;
 //	virtual bool IsPlaying() = 0;
 //
-//	virtual void UpdateFrame() = 0;	// XVƒXƒŒƒbƒh
-//	virtual void Draw() = 0;	// •`‰æƒXƒŒƒbƒh
+//	virtual void UpdateFrame() = 0;	// æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰
+//	virtual void Draw() = 0;	// æç”»ã‚¹ãƒ¬ãƒƒãƒ‰
 //
 //protected:
 //	EffectManager*	m_manager = nullptr;

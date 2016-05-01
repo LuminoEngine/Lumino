@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UIEventArgs.h>
 #include <Lumino/UI/UIElement.h>
@@ -111,20 +111,20 @@ void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 //-----------------------------------------------------------------------------
 void UIElement::MeasureLayout(const SizeF& availableSize)
 {
-	// –³Œøî•ñƒtƒ‰ƒO‚ğ‚±‚Ì—v‘f‚É“`”d‚³‚¹‚é
+	// ç„¡åŠ¹æƒ…å ±ãƒ•ãƒ©ã‚°ã‚’ã“ã®è¦ç´ ã«ä¼æ’­ã•ã›ã‚‹
 	if (m_parent != nullptr)
 	{
-		// ƒtƒHƒ“ƒg‚Í MeasureOverride() ‚Ì’†‚ÅXV‚·‚é
+		// ãƒ•ã‚©ãƒ³ãƒˆã¯ MeasureOverride() ã®ä¸­ã§æ›´æ–°ã™ã‚‹
 		m_invalidateFlags |= (m_parent->m_invalidateFlags & detail::InvalidateFlags::Font);
 	}
 
-	// e—v‘f‚©‚çq—v‘f‚ğ”z’u‚Å‚«‚é”ÍˆÍ(availableSize)‚ğó‚¯æ‚èADesiredSize ‚ğXV‚·‚éB
-	// ‡@ Pane \[measure()   c ‚±‚Ì”ÍˆÍ“à‚È‚ç”z’u‚Å‚«‚é‚æ]¨ Button
-	// ‡A Pane ©[DesiredSize c ‚¶‚á‚ ‚±‚ÌƒTƒCƒY‚Å‚¨Šè‚¢‚µ‚Ü‚·]\ Button		¦‚±‚Ì“_‚Å inf ‚ğ•Ô‚·‚±‚Æ‚à‚ ‚è“¾‚éB
-	// ‡B Pane \[arrange()   c ‘¼‚Ìq—v‘f‚Æ‚ÌŒ“‚Ë‡‚¢‚ÅÅIƒTƒCƒY‚ÍƒRƒŒ‚Å]¨ Button
+	// è¦ªè¦ç´ ã‹ã‚‰å­è¦ç´ ã‚’é…ç½®ã§ãã‚‹ç¯„å›²(availableSize)ã‚’å—ã‘å–ã‚Šã€DesiredSize ã‚’æ›´æ–°ã™ã‚‹ã€‚
+	// â‘  Pane â€•[measure()   â€¦ ã“ã®ç¯„å›²å†…ãªã‚‰é…ç½®ã§ãã‚‹ã‚ˆ]â†’ Button
+	// â‘¡ Pane â†[DesiredSize â€¦ ã˜ã‚ƒã‚ã“ã®ã‚µã‚¤ã‚ºã§ãŠé¡˜ã„ã—ã¾ã™]â€• Button		â€»ã“ã®æ™‚ç‚¹ã§ inf ã‚’è¿”ã™ã“ã¨ã‚‚ã‚ã‚Šå¾—ã‚‹ã€‚
+	// â‘¢ Pane â€•[arrange()   â€¦ ä»–ã®å­è¦ç´ ã¨ã®å…¼ã­åˆã„ã§æœ€çµ‚ã‚µã‚¤ã‚ºã¯ã‚³ãƒ¬ã§]â†’ Button
 	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
 
-	// Margin ‚ğl—¶‚·‚é
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
 	SizeF localAvailableSize(
@@ -133,12 +133,12 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 
 	m_desiredSize = MeasureOverride(localAvailableSize);
 
-	// Margin ‚ğl—¶‚·‚é
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹
 	m_desiredSize.width += marginWidth;
 	m_desiredSize.height += marginHeight;
 
-	// ƒtƒHƒ“ƒg‚Ì–³Œøƒtƒ‰ƒO‚ğ—‚Æ‚·
-	// TODO: UITextElement ‚ÖˆÚ“®‚µ‚½•û‚ª—Ç‚¢‚©‚àH
+	// ãƒ•ã‚©ãƒ³ãƒˆã®ç„¡åŠ¹ãƒ•ãƒ©ã‚°ã‚’è½ã¨ã™
+	// TODO: UITextElement ã¸ç§»å‹•ã—ãŸæ–¹ãŒè‰¯ã„ã‹ã‚‚ï¼Ÿ
 	m_invalidateFlags &= ~detail::InvalidateFlags::Font;
 }
 
@@ -147,14 +147,14 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 //-----------------------------------------------------------------------------
 void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 {
-	// finalLocalRect ‚Í‚±‚Ì—v‘f‚ğ”z’u‚Å‚«‚é—ÌˆæƒTƒCƒYB‚ÆAe—v‘f“à‚Å‚ÌƒIƒtƒZƒbƒgB
-	// —v‘f‚É’¼Úİ’è‚³‚ê‚Ä‚¢‚éƒTƒCƒY‚æ‚è‚à‘å‚«‚¢‚±‚Æ‚à‚ ‚éB
-	// TODO: HorizontalAlignment “™‚ğl—¶‚µ‚ÄAÅI“I‚ÈÀ•W‚ÆƒTƒCƒY‚ğŒˆ’è‚·‚éB
-	//		 ‚±‚Ì—v‘f‚ÌƒTƒCƒY‚ªÈ—ª‚³‚ê‚Ä‚¢‚ê‚ÎAStretch ‚È‚çƒTƒCƒY‚ÍÅ‘å‚ÉA‚»‚êˆÈŠO‚È‚çÅ¬‚É‚È‚éB
+	// finalLocalRect ã¯ã“ã®è¦ç´ ã‚’é…ç½®ã§ãã‚‹é ˜åŸŸã‚µã‚¤ã‚ºã€‚ã¨ã€è¦ªè¦ç´ å†…ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã€‚
+	// è¦ç´ ã«ç›´æ¥è¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚µã‚¤ã‚ºã‚ˆã‚Šã‚‚å¤§ãã„ã“ã¨ã‚‚ã‚ã‚‹ã€‚
+	// TODO: HorizontalAlignment ç­‰ã‚’è€ƒæ…®ã—ã¦ã€æœ€çµ‚çš„ãªåº§æ¨™ã¨ã‚µã‚¤ã‚ºã‚’æ±ºå®šã™ã‚‹ã€‚
+	//		 ã“ã®è¦ç´ ã®ã‚µã‚¤ã‚ºãŒçœç•¥ã•ã‚Œã¦ã„ã‚Œã°ã€Stretch ãªã‚‰ã‚µã‚¤ã‚ºã¯æœ€å¤§ã«ã€ãã‚Œä»¥å¤–ãªã‚‰æœ€å°ã«ãªã‚‹ã€‚
 
 	SizeF arrangeSize;
 
-	// ‚±‚Ì—v‘f‚ÌƒTƒCƒY‚ª–¾¦“I‚Éw’è‚³‚ê‚Ä‚¢‚éê‡‚Í‚»‚¿‚ç‚ğ—Dæ‚·‚é
+	// ã“ã®è¦ç´ ã®ã‚µã‚¤ã‚ºãŒæ˜ç¤ºçš„ã«æŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãã¡ã‚‰ã‚’å„ªå…ˆã™ã‚‹
 	arrangeSize.width = Math::IsNaNOrInf(m_size.width) ? finalLocalRect.width : m_size.width;
 	arrangeSize.height = Math::IsNaNOrInf(m_size.height) ? finalLocalRect.height : m_size.height;
 
@@ -163,7 +163,7 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	UIHelper::AdjustHorizontalAlignment(arrangeSize, ds, m_horizontalAlignment, &arrangeRect);
 	UIHelper::AdjustVerticalAlignment(arrangeSize, ds, m_verticalAlignment, &arrangeRect);
 
-	// Margin ‚ğl—¶‚·‚é (0 ˆÈ‰º‚É‚Ío—ˆ‚È‚¢)
+	// Margin ã‚’è€ƒæ…®ã™ã‚‹ (0 ä»¥ä¸‹ã«ã¯å‡ºæ¥ãªã„)
 	float marginWidth = m_margin.Left + m_margin.Right;
 	float marginHeight = m_margin.Top + m_margin.Bottom;
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
@@ -184,12 +184,12 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 //-----------------------------------------------------------------------------
 SizeF UIElement::MeasureOverride(const SizeF& constraint)
 {
-	// –ß‚è’l‚ÍAconstraint ‚Ì§ŒÀ‚Ì’†‚ÅAq—v‘f‚ğƒŒƒCƒAƒEƒg‚·‚é‚½‚ß‚É•K—v‚ÈÅ¬ƒTƒCƒYB
-	// ƒ†[ƒU[w’è‚ÌƒTƒCƒY‚ª‚ ‚éê‡‚Í‚»‚ê‚ğ•Ô‚·B
-	// ‚½‚¾‚µAconstraint ‚ğ’´‚¦‚é‚±‚Æ‚Í‚Å‚«‚È‚¢B
+	// æˆ»ã‚Šå€¤ã¯ã€constraint ã®åˆ¶é™ã®ä¸­ã§ã€å­è¦ç´ ã‚’ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã™ã‚‹ãŸã‚ã«å¿…è¦ãªæœ€å°ã‚µã‚¤ã‚ºã€‚
+	// ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šã®ã‚µã‚¤ã‚ºãŒã‚ã‚‹å ´åˆã¯ãã‚Œã‚’è¿”ã™ã€‚
+	// ãŸã ã—ã€constraint ã‚’è¶…ãˆã‚‹ã“ã¨ã¯ã§ããªã„ã€‚
 
 	SizeF size;
-	// NaN ‚Ìê‡A‚±‚Ì—v‘f‚Æ‚µ‚Ä•K—v‚ÈÅ¬ƒTƒCƒY‚Í 0 ‚Æ‚È‚éB
+	// NaN ã®å ´åˆã€ã“ã®è¦ç´ ã¨ã—ã¦å¿…è¦ãªæœ€å°ã‚µã‚¤ã‚ºã¯ 0 ã¨ãªã‚‹ã€‚
 	size.width = Math::IsNaNOrInf(m_size.width) ? 0.0f : m_size.width;
 	size.height = Math::IsNaNOrInf(m_size.height) ? 0.0f : m_size.height;
 	size.width = std::min(size.width, constraint.width);
@@ -228,7 +228,7 @@ void UIElement::OnTextInput(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(T
 //-----------------------------------------------------------------------------
 void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 {
-	// e‚É‚àƒ}ƒEƒX‚ª‚Í‚¶‚ß‚Äæ‚Á‚½‚Ì‚Å‚ ‚ê‚Îe‚É‚à’Ê’m‚·‚é
+	// è¦ªã«ã‚‚ãƒã‚¦ã‚¹ãŒã¯ã˜ã‚ã¦ä¹—ã£ãŸã®ã§ã‚ã‚Œã°è¦ªã«ã‚‚é€šçŸ¥ã™ã‚‹
 	if (m_parent != NULL && !m_parent->m_isMouseOver) {
 		m_parent->OnMouseEnter(e);
 	}
@@ -243,7 +243,7 @@ void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 //-----------------------------------------------------------------------------
 void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 {
-	// e‚É‚àƒ}ƒEƒX‚ªæ‚Á‚½‚±‚Æ‚É‚È‚Á‚Ä‚¢‚ê‚ÎAƒqƒbƒgƒeƒXƒg‚ğ‚µ‚½ã‚Å’Ê’m‚·‚é
+	// è¦ªã«ã‚‚ãƒã‚¦ã‚¹ãŒä¹—ã£ãŸã“ã¨ã«ãªã£ã¦ã„ã‚Œã°ã€ãƒ’ãƒƒãƒˆãƒ†ã‚¹ãƒˆã‚’ã—ãŸä¸Šã§é€šçŸ¥ã™ã‚‹
 	if (m_parent != NULL && m_parent->m_isMouseOver)
 	{
 		if (!m_parent->m_finalGlobalRect.Contains(PointF(e->x, e->y))) {
@@ -261,8 +261,8 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 //-----------------------------------------------------------------------------
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
-	// Œã‚ë‚©‚çƒ‹[ƒv‚·‚éBŒã‚Ìƒ‚ƒm‚ªã‚É•`‰æ‚³‚ê‚é‚Ì‚ÅA‚±‚Ì•û‚ª©‘RB
-	// TODO: ZƒI[ƒ_[‚Í•Ê‚ÌƒŠƒXƒg‚É‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚éEEE
+	// å¾Œã‚ã‹ã‚‰ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã€‚å¾Œã®ãƒ¢ãƒãŒä¸Šã«æç”»ã•ã‚Œã‚‹ã®ã§ã€ã“ã®æ–¹ãŒè‡ªç„¶ã€‚
+	// TODO: Zã‚ªãƒ¼ãƒ€ãƒ¼ã¯åˆ¥ã®ãƒªã‚¹ãƒˆã«ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹ãƒ»ãƒ»ãƒ»
 	int count = GetVisualChildrenCount();
 	for (int i = count - 1; i >= 0; i--)
 	{
@@ -289,15 +289,15 @@ void UIElement::ActivateInternal(UIElement* child)
 //-----------------------------------------------------------------------------
 bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 {
-	/* ¡‚Ì‚Æ‚±‚ëAƒCƒxƒ“ƒg‚ğÄ‹A‚Å’Ê’m‚µ‚Ä‚¢‚­•K—v‚Í‚È‚¢B
-	ƒ}ƒEƒXƒCƒxƒ“ƒg‚Í Hover ‚µ‚Ä‚¢‚é‚à‚Ì‚Ö Manager ‚ª’¼Ú‘—‚è‚ŞB
-	ƒL[ƒCƒxƒ“ƒg‚ÍƒtƒH[ƒJƒX‚ğ‚Á‚Ä‚¢‚é‚à‚Ì‚Ö Manager ‚ª’¼Ú‘—‚è‚ŞB
+	/* ä»Šã®ã¨ã“ã‚ã€ã‚¤ãƒ™ãƒ³ãƒˆã‚’å†å¸°ã§é€šçŸ¥ã—ã¦ã„ãå¿…è¦ã¯ãªã„ã€‚
+	ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã¯ Hover ã—ã¦ã„ã‚‹ã‚‚ã®ã¸ Manager ãŒç›´æ¥é€ã‚Šè¾¼ã‚€ã€‚
+	ã‚­ãƒ¼ã‚¤ãƒ™ãƒ³ãƒˆã¯ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹ã‚‚ã®ã¸ Manager ãŒç›´æ¥é€ã‚Šè¾¼ã‚€ã€‚
 
-	c‚Æ‚¢‚¤‚©AÄ‹A‚Å’Ê’m‚µ‚Ä‚Í‚È‚ç‚È‚¢Bƒ}ƒEƒXƒCƒxƒ“ƒg‚Æ‚©‚ÍÄ‹A‚µ‚Ä‚µ‚Ü‚¤‚ÆA
-	ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªæ‚Á‚Ä‚¢‚È‚¢—v‘f‚ªƒCƒxƒ“ƒg‚ğó‚¯æ‚Á‚Ä‚µ‚Ü‚¤‚±‚Æ‚É‚È‚éB
+	â€¦ã¨ã„ã†ã‹ã€å†å¸°ã§é€šçŸ¥ã—ã¦ã¯ãªã‚‰ãªã„ã€‚ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã¨ã‹ã¯å†å¸°ã—ã¦ã—ã¾ã†ã¨ã€
+	ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒä¹—ã£ã¦ã„ãªã„è¦ç´ ãŒã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã£ã¦ã—ã¾ã†ã“ã¨ã«ãªã‚‹ã€‚
 	*/
-	// Œã‚ë‚©‚çƒ‹[ƒv‚·‚éBŒã‚Ìƒ‚ƒm‚ªã‚É•`‰æ‚³‚ê‚é‚Ì‚ÅA‚±‚Ì•û‚ª©‘RB
-	// TODO: ZƒI[ƒ_[‚Í•Ê‚ÌƒŠƒXƒg‚É‚µ‚½‚Ù‚¤‚ª‚¢‚¢‹C‚ª‚·‚éEEE
+	// å¾Œã‚ã‹ã‚‰ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã€‚å¾Œã®ãƒ¢ãƒãŒä¸Šã«æç”»ã•ã‚Œã‚‹ã®ã§ã€ã“ã®æ–¹ãŒè‡ªç„¶ã€‚
+	// TODO: Zã‚ªãƒ¼ãƒ€ãƒ¼ã¯åˆ¥ã®ãƒªã‚¹ãƒˆã«ã—ãŸã»ã†ãŒã„ã„æ°—ãŒã™ã‚‹ãƒ»ãƒ»ãƒ»
 	//int count = GetVisualChildrenCount();
 	//for (int i = count - 1; i >= 0; i--)
 	//{
@@ -331,10 +331,10 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 		break;
 	case detail::UIInternalEventType::ElapsedTime:
 		break;
-	case detail::UIInternalEventType::MouseEnter:	// TODO: e—Ìˆæ
+	case detail::UIInternalEventType::MouseEnter:	// TODO: è¦ªé ˜åŸŸ
 		if (m_isEnabled) { OnMouseEnter(static_cast<UIMouseEventArgs*>(args)); }
 		break;
-	case detail::UIInternalEventType::MouseLeave:	// TODO: e—Ìˆæ
+	case detail::UIInternalEventType::MouseLeave:	// TODO: è¦ªé ˜åŸŸ
 		if (m_isEnabled) { OnMouseLeave(static_cast<UIMouseEventArgs*>(args)); }
 		break;
 	default:
@@ -352,12 +352,12 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 //-----------------------------------------------------------------------------
 void UIElement::ApplyTemplate()
 {
-	/// Œ»İ‚Ìƒeƒ“ƒvƒŒ[ƒg‚©‚çƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚ğÄ\’z‚µ‚Ü‚·B
-	/// ‚±‚ÌŠÖ”‚Í•K—v‚Èƒ^ƒCƒ~ƒ“ƒO‚ÅƒŒƒCƒAƒEƒgƒVƒXƒeƒ€‚©‚çŒÄ‚Ño‚³‚ê‚Ü‚·B’ÊíA–¾¦“I‚ÉŒÄ‚Ño‚·•K—v‚Í‚ ‚è‚Ü‚¹‚ñB
-	///		‚Æ‚¢‚¤‚©AŒÄ‚Ño‚µ‚¿‚áƒ_ƒB•K‚¸ƒ‹[ƒg‚©‚çÄ‹A“I‚ÉXV‚µ‚È‚¢‚ÆA‚à‚µe‚ª‚Ü‚¾ ApplyTemplate() ‚µ‚Ä‚È‚¢ó‘Ô‚Å‚±‚ê‚ğŒÄ‚Ô‚Æ
-	///		ƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ª³‚µ‚­XV‚³‚ê‚È‚¢B
-	///		TODO: ‚à‚µ‚©‚µ‚½‚çASetParent ‚µ‚½uŠÔ‚Éƒ[ƒJƒ‹ƒŠƒ\[ƒX‚ğXV‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚àH
-	///		‚»‚¤‚·‚ê‚Î‚¢‚Â ApplyTemplate() ‚ğŒÄ‚Ño‚µ‚Ä‚à—Ç‚¢‚ªc ù—v‚Í–³‚¢‚©B
+	/// ç¾åœ¨ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã‹ã‚‰ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã‚’å†æ§‹ç¯‰ã—ã¾ã™ã€‚
+	/// ã“ã®é–¢æ•°ã¯å¿…è¦ãªã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚·ã‚¹ãƒ†ãƒ ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚é€šå¸¸ã€æ˜ç¤ºçš„ã«å‘¼ã³å‡ºã™å¿…è¦ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
+	///		ã¨ã„ã†ã‹ã€å‘¼ã³å‡ºã—ã¡ã‚ƒãƒ€ãƒ¡ã€‚å¿…ãšãƒ«ãƒ¼ãƒˆã‹ã‚‰å†å¸°çš„ã«æ›´æ–°ã—ãªã„ã¨ã€ã‚‚ã—è¦ªãŒã¾ã  ApplyTemplate() ã—ã¦ãªã„çŠ¶æ…‹ã§ã“ã‚Œã‚’å‘¼ã¶ã¨
+	///		ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ãŒæ­£ã—ãæ›´æ–°ã•ã‚Œãªã„ã€‚
+	///		TODO: ã‚‚ã—ã‹ã—ãŸã‚‰ã€SetParent ã—ãŸç¬é–“ã«ãƒ­ãƒ¼ã‚«ãƒ«ãƒªã‚½ãƒ¼ã‚¹ã‚’æ›´æ–°ã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ï¼Ÿ
+	///		ãã†ã™ã‚Œã°ã„ã¤ ApplyTemplate() ã‚’å‘¼ã³å‡ºã—ã¦ã‚‚è‰¯ã„ãŒâ€¦ éœ€è¦ã¯ç„¡ã„ã‹ã€‚
 
 	ApplyTemplateHierarchy();
 }
@@ -379,8 +379,8 @@ void UIElement::UpdateLayout()
 		Math::IsNaNOrInf(m_size.width) ? m_ownerLayoutView->GetViewPixelSize().width : m_size.width,
 		Math::IsNaNOrInf(m_size.height) ? m_ownerLayoutView->GetViewPixelSize().height : m_size.height);
 
-	// ƒTƒCƒY‚ª’è‚Ü‚Á‚Ä‚¢‚È‚¢ê‡‚ÍƒŒƒCƒAƒEƒg‚ğŒˆ’è‚Å‚«‚È‚¢
-	// TODO: —áŠO‚Ì•û‚ª—Ç‚¢‚©‚àH
+	// ã‚µã‚¤ã‚ºãŒå®šã¾ã£ã¦ã„ãªã„å ´åˆã¯ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’æ±ºå®šã§ããªã„
+	// TODO: ä¾‹å¤–ã®æ–¹ãŒè‰¯ã„ã‹ã‚‚ï¼Ÿ
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
 	MeasureLayout(size);
@@ -396,7 +396,7 @@ void UIElement::UpdateTransformHierarchy()
 	{
 		m_finalGlobalRect.x = m_parent->m_finalGlobalRect.x + m_finalLocalRect.x;
 		m_finalGlobalRect.y = m_parent->m_finalGlobalRect.y + m_finalLocalRect.y;
-		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// •s“§–¾“x‚àƒRƒR‚Å¬‚º‚Ä‚µ‚Ü‚¤
+		m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// ä¸é€æ˜åº¦ã‚‚ã‚³ã‚³ã§æ··ãœã¦ã—ã¾ã†
 	}
 	else
 	{
@@ -407,7 +407,7 @@ void UIElement::UpdateTransformHierarchy()
 	m_finalGlobalRect.width = m_finalLocalRect.width;
 	m_finalGlobalRect.height = m_finalLocalRect.height;
 
-	// q—v‘f
+	// å­è¦ç´ 
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
 }
 
@@ -420,7 +420,7 @@ void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 	LN_VERIFY_RETURN(e != NULL);
 	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
 
-	// this ‚É AddHandler ‚³‚ê‚Ä‚¢‚éƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰‚ğŒÄ‚Ño‚·B
+	// this ã« AddHandler ã•ã‚Œã¦ã„ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ã‚’å‘¼ã³å‡ºã™ã€‚
 	thisType->InvokeReflectionEvent(this, ev, e);
 
 	// bubble

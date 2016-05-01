@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 	@file	MidiDecoder.h
 */
 #pragma once
@@ -10,7 +10,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
-/// MIDI ƒf[ƒ^ AudioStream
+/// MIDI ãƒ‡ãƒ¼ã‚¿ AudioStream
 class MidiDecoder
 	: public AudioDecoder
 {
@@ -19,10 +19,10 @@ public:
 	virtual ~MidiDecoder();
 
 public:
-	/// ƒƒ‚ƒŠã‚É“WŠJ‚³‚ê‚½ MIDI ƒf[ƒ^‚Ìæ“¾
+	/// ãƒ¡ãƒ¢ãƒªä¸Šã«å±•é–‹ã•ã‚ŒãŸ MIDI ãƒ‡ãƒ¼ã‚¿ã®å–å¾—
 	const byte_t* GetSourceData() const { return m_midiFileData.GetData(); }
 
-	/// ‰¹—Ê‚ğ³‹K‰»‚µ‚Ä“Ç‚İ‚Ş‚©‚Ìİ’è ( fillBufferAndReleaseStream() ‚Ì‘O‚ÉŒÄ‚Ô‚±‚Æ )
+	/// éŸ³é‡ã‚’æ­£è¦åŒ–ã—ã¦èª­ã¿è¾¼ã‚€ã‹ã®è¨­å®š ( fillBufferAndReleaseStream() ã®å‰ã«å‘¼ã¶ã“ã¨ )
 	void SetEnableVolumeNormalize(bool flag) { m_volumeNormalize = flag; }
 
 public:
@@ -41,37 +41,37 @@ public:
 
 private:
 
-	/// midi ƒf[ƒ^‚Ì’†‚Ì•K—v‚Èƒf[ƒ^‚ğƒ`ƒFƒbƒN‚·‚é
+	/// midi ãƒ‡ãƒ¼ã‚¿ã®ä¸­ã®å¿…è¦ãªãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	void SearchData();
 
-	/// ƒfƒ‹ƒ^ƒ^ƒCƒ€‚Ì“Ç‚İ‚İ
+	/// ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã®èª­ã¿è¾¼ã¿
 	uint32_t ReadDelta(BinaryReader& reader);
 
-	/// ƒgƒ‰ƒbƒN“à‚Ì CC111 ŒŸõ
+	/// ãƒˆãƒ©ãƒƒã‚¯å†…ã® CC111 æ¤œç´¢
 	bool SearchTrack(BinaryReader& reader, uint32_t* cc111_time);
 
 private:
 
-	/// Midi ƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_
+	/// Midi ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€
 	struct MidiHeader
 	{
-		uint8_t		mChunktype[4];	///< ƒ`ƒƒƒ“ƒNƒ^ƒCƒv (MThd)
-		uint32_t	mLength;		///< ƒf[ƒ^’·
-		uint16_t	mFormat;		///< ƒtƒH[ƒ}ƒbƒgƒ^ƒCƒv
-		uint16_t	mNumtrack;		///< ƒgƒ‰ƒbƒN”
-		uint16_t	mTimebase;		///< ƒ^ƒCƒ€ƒx[ƒX
+		uint8_t		mChunktype[4];	///< ãƒãƒ£ãƒ³ã‚¯ã‚¿ã‚¤ãƒ— (MThd)
+		uint32_t	mLength;		///< ãƒ‡ãƒ¼ã‚¿é•·
+		uint16_t	mFormat;		///< ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚¿ã‚¤ãƒ—
+		uint16_t	mNumtrack;		///< ãƒˆãƒ©ãƒƒã‚¯æ•°
+		uint16_t	mTimebase;		///< ã‚¿ã‚¤ãƒ ãƒ™ãƒ¼ã‚¹
 	};
 
-	/// ƒ{ƒŠƒ…[ƒ€ƒ`ƒFƒ“ƒW‚ÌˆÊ’u‚Æ’l (³‹K‰»‚Ég‚¤)
+	/// ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒã‚§ãƒ³ã‚¸ã®ä½ç½®ã¨å€¤ (æ­£è¦åŒ–ã«ä½¿ã†)
 	struct VolumeEntry
 	{
-		uint32_t	mPosition;		///< ƒ{ƒŠƒ…[ƒ€ƒ`ƒFƒ“ƒW‚Ì’l‚ÌˆÊ’u [ 00 B0 07 46 ] ‚Ì 07
-		uint32_t	mVolume;		///< ƒ{ƒŠƒ…[ƒ€’l
+		uint32_t	mPosition;		///< ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒã‚§ãƒ³ã‚¸ã®å€¤ã®ä½ç½® [ 00 B0 07 46 ] ã® 07
+		uint32_t	mVolume;		///< ãƒœãƒªãƒ¥ãƒ¼ãƒ å€¤
 	};
 
 private:
-	Stream*					m_stream;		///< “ü—ÍƒXƒgƒŠ[ƒ€
-	ByteBuffer				m_midiFileData;	///< MIDI ƒtƒ@ƒCƒ‹‘S‘Ì‚Ìƒf[ƒ^ (m_stream ‚ğ‚·‚×‚Äƒƒ‚ƒŠ‚É“Ç‚İ‚ñ‚¾ƒoƒbƒtƒ@)
+	Stream*					m_stream;		///< å…¥åŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ 
+	ByteBuffer				m_midiFileData;	///< MIDI ãƒ•ã‚¡ã‚¤ãƒ«å…¨ä½“ã®ãƒ‡ãƒ¼ã‚¿ (m_stream ã‚’ã™ã¹ã¦ãƒ¡ãƒ¢ãƒªã«èª­ã¿è¾¼ã‚“ã ãƒãƒƒãƒ•ã‚¡)
 	Threading::Mutex		m_mutex;
 	uint32_t				m_cc111Time;
 	uint32_t				m_baseTime;

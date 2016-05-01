@@ -1,4 +1,4 @@
-
+ï»¿
 #include <Lumino/Base/Exception.h>
 #include <Lumino/IO/BinaryReader.h>
 #include "MidiDecoder.h"
@@ -67,14 +67,14 @@ void MidiDecoder::FillOnmemoryBuffer()
 
 		if (m_volumeNormalize)
 		{
-			// ƒ{ƒŠƒ…[ƒ€‚ÌÅ‘å’l‚ğ’T‚·
+			// ãƒœãƒªãƒ¥ãƒ¼ãƒ ã®æœ€å¤§å€¤ã‚’æ¢ã™
 			uint32_t maxVolume = 0;
 			LN_FOREACH(VolumeEntry& v, m_volumeEntryList)
 			{
 				maxVolume = std::max(maxVolume, v.mVolume);
 			}
 
-			// MIDI ƒf[ƒ^“à‚ÌÅ‘åƒ{ƒŠƒ…[ƒ€‚ğ 127 ‚É‚·‚é‚Ì‚É•K—v‚È’l‚ğ‹‚ßA‘S‚Ä‚Ìƒ{ƒŠƒ…[ƒ€‚É‰ÁZ‚·‚é
+			// MIDI ãƒ‡ãƒ¼ã‚¿å†…ã®æœ€å¤§ãƒœãƒªãƒ¥ãƒ¼ãƒ ã‚’ 127 ã«ã™ã‚‹ã®ã«å¿…è¦ãªå€¤ã‚’æ±‚ã‚ã€å…¨ã¦ã®ãƒœãƒªãƒ¥ãƒ¼ãƒ ã«åŠ ç®—ã™ã‚‹
 			int sub = 127 - maxVolume;
 			LN_FOREACH(VolumeEntry& v, m_volumeEntryList)
 			{
@@ -106,12 +106,12 @@ void MidiDecoder::Reset()
 //----------------------------------------------------------------------
 void MidiDecoder::SearchData()
 {
-	// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğæ“ª‚É–ß‚µ‚Ä‚¨‚­
+	// ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’å…ˆé ­ã«æˆ»ã—ã¦ãŠã
 	m_stream->Seek(0, SeekOrigin_Begin);
 
 	BinaryReader reader(m_stream);
 
-	// Midi ƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_“Ç‚İ‚İ
+	// Midi ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 	MidiHeader header;
 	size_t size = reader.Read(&(header.mChunktype), 4);
 	header.mLength = reader.ReadUInt32(ByteOrder::Big);
@@ -119,13 +119,13 @@ void MidiDecoder::SearchData()
 	header.mNumtrack = reader.ReadUInt16(ByteOrder::Big);
 	header.mTimebase = reader.ReadUInt16(ByteOrder::Big);
 
-	// ƒx[ƒXƒ^ƒCƒ€Ši”[
+	// ãƒ™ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ æ ¼ç´
 	m_baseTime = header.mTimebase;
 
 	m_cc111Time = 0;
 	uint32_t cc111time = 0;
 
-	// ƒgƒ‰ƒbƒN‚Ì”‚¾‚¯ƒ‹[ƒv‚µ‚ÄAcc111 ‚Æƒ{ƒŠƒ…[ƒ€ƒ`ƒFƒ“ƒW‚ğ’T‚·
+	// ãƒˆãƒ©ãƒƒã‚¯ã®æ•°ã ã‘ãƒ«ãƒ¼ãƒ—ã—ã¦ã€cc111 ã¨ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒã‚§ãƒ³ã‚¸ã‚’æ¢ã™
 	for (int i = 0; i < header.mNumtrack; ++i)
 	{
 		SearchTrack(reader, &cc111time);
@@ -149,7 +149,7 @@ uint32_t MidiDecoder::ReadDelta(BinaryReader& reader)
 		size_t size = reader.Read(&t, sizeof(uint8_t));
 		dtime = (dtime << 7) | (t & 0x7f);
 
-		// MSB‚ª—§‚Á‚Ä‚¢‚È‚¢‚È‚ç‚ÎAŸ‚ÌƒoƒCƒg‚Íƒfƒ‹ƒ^ƒ^ƒCƒ€‚Å‚Í‚È‚¢‚Ì‚Å”²‚¯‚é
+		// MSBãŒç«‹ã£ã¦ã„ãªã„ãªã‚‰ã°ã€æ¬¡ã®ãƒã‚¤ãƒˆã¯ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã§ã¯ãªã„ã®ã§æŠœã‘ã‚‹
 		if (!(t & 0x80)) break;
 	}
 	return dtime;
@@ -160,17 +160,17 @@ uint32_t MidiDecoder::ReadDelta(BinaryReader& reader)
 //----------------------------------------------------------------------
 bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 {
-	// ƒgƒ‰ƒbƒNƒ`ƒƒƒ“ƒN‚Ìƒ`ƒFƒbƒN
+	// ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ£ãƒ³ã‚¯ã®ãƒã‚§ãƒƒã‚¯
 	uint8_t chunk[4];
 	size_t read_size = reader.Read(chunk, 4);
 	LN_THROW(read_size == 4, InvalidFormatException);
 	LN_THROW(memcmp(chunk, "MTrk", 4) == 0, InvalidFormatException);
 
-	// ƒgƒ‰ƒbƒN‚Ì’·‚³“Ç‚İ‚İ
+	// ãƒˆãƒ©ãƒƒã‚¯ã®é•·ã•èª­ã¿è¾¼ã¿
 	uint32_t   track_length;
 	track_length = reader.ReadUInt32(ByteOrder::Big);
 
-	uint8_t prev_state = 0; // ‚Ğ‚Æ‚Â‘O‚ÌƒCƒxƒ“ƒg‚ÌƒXƒe[ƒ^ƒXƒoƒCƒg‚ğ‹L‰¯‚·‚é•Ï”
+	uint8_t prev_state = 0; // ã²ã¨ã¤å‰ã®ã‚¤ãƒ™ãƒ³ãƒˆã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒã‚¤ãƒˆã‚’è¨˜æ†¶ã™ã‚‹å¤‰æ•°
 	uint8_t state;
 	uint8_t data1;
 	uint8_t data2;
@@ -178,34 +178,34 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 
 	while (1)
 	{
-		// ƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğ“Ç‚İ‚Ş
+		// ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’èª­ã¿è¾¼ã‚€
 		track_time += ReadDelta(reader);
 
-		// ƒXƒe[ƒ^ƒXƒoƒCƒg‚ğ“Ç‚İ‚Ş
+		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒã‚¤ãƒˆã‚’èª­ã¿è¾¼ã‚€
 		read_size = reader.Read(&state, sizeof(uint8_t));
 		LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
-		// ƒ‰ƒ“ƒjƒ“ƒOƒXƒe[ƒ^ƒX‚Ìê‡
+		// ãƒ©ãƒ³ãƒ‹ãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å ´åˆ
 		if (!(state & 0x80))
 		{
-			// ˆê‚Â‘O‚ÌƒCƒxƒ“ƒg‚ÌƒXƒe[ƒ^ƒXƒoƒCƒg‚ğ‘ã“ü
+			// ä¸€ã¤å‰ã®ã‚¤ãƒ™ãƒ³ãƒˆã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒã‚¤ãƒˆã‚’ä»£å…¥
 			state = prev_state;
-			// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğˆê‚Â–ß‚·
+			// ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’ä¸€ã¤æˆ»ã™
 			reader.Seek(-1);
 		}
 
-		// ƒXƒe[ƒ^ƒXƒoƒCƒg‚ğŠî‚É‚Ç‚ÌƒCƒxƒ“ƒg‚©”»•Ê
+		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒã‚¤ãƒˆã‚’åŸºã«ã©ã®ã‚¤ãƒ™ãƒ³ãƒˆã‹åˆ¤åˆ¥
 		switch (state & 0xf0)
 		{
-			// ƒf[ƒ^ƒoƒCƒg‚ª 2 ƒoƒCƒg‚ÌƒCƒxƒ“ƒg
-		case 0x80:	// ƒm[ƒgƒIƒt
-		case 0x90:	// ƒm[ƒgƒIƒ“
-		case 0xA0:	// ƒ|ƒŠƒtƒHƒjƒbƒNEƒL[EƒvƒŒƒbƒVƒƒ
-		case 0xE0:	// ƒsƒbƒ`ƒxƒ“ƒh
+			// ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒˆãŒ 2 ãƒã‚¤ãƒˆã®ã‚¤ãƒ™ãƒ³ãƒˆ
+		case 0x80:	// ãƒãƒ¼ãƒˆã‚ªãƒ•
+		case 0x90:	// ãƒãƒ¼ãƒˆã‚ªãƒ³
+		case 0xA0:	// ãƒãƒªãƒ•ã‚©ãƒ‹ãƒƒã‚¯ãƒ»ã‚­ãƒ¼ãƒ»ãƒ—ãƒ¬ãƒƒã‚·ãƒ£
+		case 0xE0:	// ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
 			reader.Seek(2);
 			break;
 
-		case 0xB0:	// ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒW
+		case 0xB0:	// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸
 			read_size = reader.Read(&data1, sizeof(uint8_t));
 			LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
@@ -217,48 +217,48 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			{
 				*cc111_time = track_time;
 			}
-			// ƒ{ƒŠƒ…[ƒ€ƒ`ƒFƒ“ƒW
+			// ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒã‚§ãƒ³ã‚¸
 			else if (data1 == 0x07)
 			{
-				// ƒf[ƒ^‚ÌˆÊ’u‚Æƒ{ƒŠƒ…[ƒ€‚ğƒLƒ…[‚É“ü‚ê‚Ä•Û‘¶
+				// ãƒ‡ãƒ¼ã‚¿ã®ä½ç½®ã¨ãƒœãƒªãƒ¥ãƒ¼ãƒ ã‚’ã‚­ãƒ¥ãƒ¼ã«å…¥ã‚Œã¦ä¿å­˜
 				VolumeEntry entry;
 				entry.mPosition = (uint32_t)reader.GetPosition() - 1;
 				entry.mVolume = data2;
 				m_volumeEntryList.Add(entry);
-				//printf("ƒ{ƒŠƒ…[ƒ€ƒ`ƒFƒ“ƒW %d\n", data2);
+				//printf("ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒã‚§ãƒ³ã‚¸ %d\n", data2);
 			}
 			break;
 
-			// ƒf[ƒ^ƒoƒCƒg‚ª 1 ƒoƒCƒg‚ÌƒCƒxƒ“ƒg
-		case 0xC0:	// ƒvƒƒOƒ‰ƒ€ƒ`ƒFƒ“ƒW
-		case 0xD0:	// ƒ`ƒƒƒ“ƒlƒ‹ƒvƒŒƒbƒVƒƒ
+			// ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒˆãŒ 1 ãƒã‚¤ãƒˆã®ã‚¤ãƒ™ãƒ³ãƒˆ
+		case 0xC0:	// ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒã‚§ãƒ³ã‚¸
+		case 0xD0:	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒ—ãƒ¬ãƒƒã‚·ãƒ£
 			reader.Seek(1);
 			break;
 
-			// ƒf[ƒ^ƒoƒCƒg‚ª‰Â•Ï’·‚ÌƒCƒxƒ“ƒg
+			// ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒˆãŒå¯å¤‰é•·ã®ã‚¤ãƒ™ãƒ³ãƒˆ
 		case 0xF0:
-			// SysExƒCƒxƒ“ƒg
+			// SysExã‚¤ãƒ™ãƒ³ãƒˆ
 			if (state == 0xF0)
 			{
 				int data_length = 0;
-				// ƒf[ƒ^’·“Ç‚İ‚İ
+				// ãƒ‡ãƒ¼ã‚¿é•·èª­ã¿è¾¼ã¿
 				read_size = reader.Read(&data_length, sizeof(uint8_t));
 				LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
 				reader.Seek(data_length);
 			}
-			// ƒƒ^ƒCƒxƒ“ƒg
+			// ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆ
 			else if (state == 0xFF)
 			{
 				uint8_t type;
 
-				// type‚Ìæ“¾
+				// typeã®å–å¾—
 				read_size = reader.Read(&type, sizeof(uint8_t));
 				LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
 				uint32_t data_length = -1;
 
-				// type •Ê‚Éƒf[ƒ^ƒoƒCƒg‚Ì’·‚³‚ğæ“¾
+				// type åˆ¥ã«ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒˆã®é•·ã•ã‚’å–å¾—
 				switch (type)
 				{
 				case 0x00:
@@ -276,9 +276,9 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				case 0x21:
 					data_length = 1; break;
 				case 0x2F:
-					data_length = 0; break; // ƒGƒ“ƒhƒIƒuƒgƒ‰ƒbƒN
+					data_length = 0; break; // ã‚¨ãƒ³ãƒ‰ã‚ªãƒ–ãƒˆãƒ©ãƒƒã‚¯
 				case 0x51:
-					data_length = 3; break; // ƒZƒbƒgƒeƒ“ƒ|
+					data_length = 3; break; // ã‚»ãƒƒãƒˆãƒ†ãƒ³ãƒ
 				case 0x54:
 					data_length = 5; break;
 				case 0x58:
@@ -294,7 +294,7 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 
 				uint32_t temp = data_length;
 
-				// ƒf[ƒ^’·‚ªŒÅ’è‚Ìê‡
+				// ãƒ‡ãƒ¼ã‚¿é•·ãŒå›ºå®šã®å ´åˆ
 				if (data_length != -1)
 				{
 					data_length = ReadDelta(reader);
@@ -306,13 +306,13 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				}
 				else
 				{
-					// ”CˆÓ‚Ìƒf[ƒ^’·‚ğæ“¾
+					// ä»»æ„ã®ãƒ‡ãƒ¼ã‚¿é•·ã‚’å–å¾—
 					data_length = ReadDelta(reader);
 				}
 
 				reader.Seek(data_length);
 
-				// ƒgƒ‰ƒbƒN‚ÌI’[‚ªŒ©‚Â‚©‚Á‚½ê‡‚ÍI—¹
+				// ãƒˆãƒ©ãƒƒã‚¯ã®çµ‚ç«¯ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯çµ‚äº†
 				if (type == 0x2F)
 				{
 					return true;
@@ -326,7 +326,7 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			return false;
 
 		}
-		// Ÿ‚ÌƒCƒxƒ“ƒg‚ª‘O‚ÌƒCƒxƒ“ƒg‚ÌƒXƒe[ƒ^ƒXƒoƒCƒg‚ğŠm”F‚Å‚«‚é‚æ‚¤‚É•Û‘¶‚·‚é
+		// æ¬¡ã®ã‚¤ãƒ™ãƒ³ãƒˆãŒå‰ã®ã‚¤ãƒ™ãƒ³ãƒˆã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒã‚¤ãƒˆã‚’ç¢ºèªã§ãã‚‹ã‚ˆã†ã«ä¿å­˜ã™ã‚‹
 		prev_state = state;
 	}
 	return true;

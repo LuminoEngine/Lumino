@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 LN_NAMESPACE_BEGIN
@@ -10,21 +10,21 @@ public:
 
 	struct Section
 	{
-		String		name;			// ƒZƒNƒVƒ‡ƒ“–¼
-		uint64_t	elapsedTime;	// Œo‰ßŠÔ (ns)
+		String		name;			// ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+		uint64_t	elapsedTime;	// çµŒéæ™‚é–“ (ns)
 	};
 
-	// ƒOƒ‹[ƒv‚ÍƒXƒŒƒbƒh‚²‚Æ
+	// ã‚°ãƒ«ãƒ¼ãƒ—ã¯ã‚¹ãƒ¬ãƒƒãƒ‰ã”ã¨
 	struct SectionGroup
 	{
-		String							name;		// ƒOƒ‹[ƒv–¼
+		String							name;		// ã‚°ãƒ«ãƒ¼ãƒ—å
 		SortedArray<String, Section>	sections;
 		ElapsedTimer					timer;
-		//float							limitElapsedTime;	// ‹–—eŠÔ (ns ’PˆÊBƒtƒŒ[ƒ€ƒŒ[ƒg‚Ì‹t”)
+		//float							limitElapsedTime;	// è¨±å®¹æ™‚é–“ (ns å˜ä½ã€‚ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®é€†æ•°)
 	};
 
 public:
-	static EngineDiagCore	Instance;		// ƒOƒ[ƒoƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX
+	static EngineDiagCore	Instance;		// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 
 	void Initialize(EngineManager* manager);
 

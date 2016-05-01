@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <Lumino/Foundation/GameScene.h>
 
@@ -23,7 +23,7 @@ private:
 
 	RefPtr<GameScene>			m_nextScene;
 	RefPtr<GameScene>			m_runningScene;
-	Stack<RefPtr<GameScene>>	m_sceneStack;	// m_runningScene �͊܂܂Ȃ�
+	Stack<RefPtr<GameScene>>	m_sceneStack;	// m_runningScene は含まない
 };
 
 LN_NAMESPACE_END

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "RenderState.h"
@@ -19,7 +19,7 @@ class RenderingContext2
 public:
 	static const int MaxMultiRenderTargets = 4;
 
-	// TODO: Scene‚È‚Ç‚Å“à•”“I‚Ég—p‚·‚é‚à‚Ì‚Æ‹¤—p‚É‚µ‚È‚¢BƒXƒe[ƒg‚ª‚Ç‚±‚Å•Ï‚í‚é‚©‚í‚©‚è‚Ã‚ç‚¢B‚ ‚é‚¢‚Í‚¿‚á‚ñ‚Æ push/pop ‚·‚éB
+	// TODO: Sceneãªã©ã§å†…éƒ¨çš„ã«ä½¿ç”¨ã™ã‚‹ã‚‚ã®ã¨å…±ç”¨ã«ã—ãªã„ã€‚ã‚¹ãƒ†ãƒ¼ãƒˆãŒã©ã“ã§å¤‰ã‚ã‚‹ã‹ã‚ã‹ã‚Šã¥ã‚‰ã„ã€‚ã‚ã‚‹ã„ã¯ã¡ã‚ƒã‚“ã¨ push/pop ã™ã‚‹ã€‚
 	static RenderingContext2* GetContext();
 
 	//void SetBlendMode(BlendMode mode);
@@ -27,23 +27,23 @@ public:
 
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚éƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒgA[“xƒoƒbƒtƒ@‚ğƒNƒŠƒA‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã€æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢ã—ã¾ã™ã€‚
 	*/
 	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚é’¸“_ƒoƒbƒtƒ@‚ğg—p‚µ‚ÄƒvƒŠƒ~ƒeƒBƒu‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½¿ç”¨ã—ã¦ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã—ã¾ã™ã€‚
 	*/
 	void DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
 
 	/**
-		@brief	Œ»İİ’è‚³‚ê‚Ä‚¢‚é’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğg—p‚µ‚ÄƒvƒŠƒ~ƒeƒBƒu‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO‚µ‚Ü‚·B
+		@brief	ç¾åœ¨è¨­å®šã•ã‚Œã¦ã„ã‚‹é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½¿ç”¨ã—ã¦ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã—ã¾ã™ã€‚
 	*/
 	void DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);	// TODO: DrawIndexedPrimitive
 
 
 
-	// pass ‚ª null ‚Ì‚Æ‚«‚Ég‚í‚ê‚éƒfƒtƒHƒ‹ƒgƒVƒF[ƒ_—p
+	// pass ãŒ null ã®ã¨ãã«ä½¿ã‚ã‚Œã‚‹ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚·ã‚§ãƒ¼ãƒ€ç”¨
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
 
 	void DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
@@ -55,7 +55,7 @@ public:
 		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
 
 
-	// ƒXƒe[ƒgŒÅ’èB
+	// ã‚¹ãƒ†ãƒ¼ãƒˆå›ºå®šã€‚
 	void Blt(Texture* source, RenderTarget* dest);
 	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform);
 	void Blt(Texture* source, RenderTarget* dest, Shader* shader);

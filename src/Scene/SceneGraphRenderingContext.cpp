@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>

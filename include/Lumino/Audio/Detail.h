@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 LN_NAMESPACE_BEGIN
@@ -8,9 +8,9 @@ namespace detail
 {
 	
 /*
-	�ʃX���b�h�ł̃f�R�[�h�E�Đ��Ǘ����s�������̂ŁA�ʃX���b�h�ŏ������Ɋe��X�e�[�g��ύX���Ăق����Ȃ��B
-	Polling �ŃX�e�[�g���ۂ��ƃR�s�[���Ă����B
-	Sound �N���X�̎��X�e�[�g��ύX����֐��͑S�� mutex ����Ȃ���΂Ȃ�Ȃ��B�ǂݎ��͖����Ă������B
+	別スレッドでのデコード・再生管理を行いたいので、別スレッドで処理中に各種ステートを変更してほしくない。
+	Polling でステートを丸ごとコピーしておく。
+	Sound クラスの持つステートを変更する関数は全て mutex 張らなければならない。読み取りは無くてもいい。
 */
 class AudioPlayerState
 {
@@ -46,12 +46,12 @@ public:
 
 private:
 	uint32_t			m_modified;			// ModifiedFlags
-	float				m_volume;			// ����
-	float				m_pitch;			// �s�b�`
-	bool			    m_loopEnabled;		// ���[�v�L��
-	uint32_t			m_loopBegin;		// ���[�v�����̈�̍ŏ��̃T���v�� (Midi �Ȃ� �~���[�W�b�N�^�C���P��)
-	uint32_t			m_loopLength;		// ���[�v�̈�̒��� (�T���v�����P��)  (Midi �Ȃ� �~���[�W�b�N�^�C���P��)
-	SoundPlayingState	m_playingState;		// �Đ����
+	float				m_volume;			// 音量
+	float				m_pitch;			// ピッチ
+	bool			    m_loopEnabled;		// ループ有無
+	uint32_t			m_loopBegin;		// ループされる領域の最初のサンプル (Midi なら ミュージックタイム単位)
+	uint32_t			m_loopLength;		// ループ領域の長さ (サンプル数単位)  (Midi なら ミュージックタイム単位)
+	SoundPlayingState	m_playingState;		// 再生状態
 };
 
 } // namespace detail

@@ -1,5 +1,5 @@
-/*
-	¡Ql
+ï»¿/*
+	â– å‚è€ƒ
 	Cri API
 	http://www.criware.jp/adx2le/docs/windows/index_man.html
 
@@ -115,13 +115,13 @@ AudioManagerImpl::AudioManagerImpl(const Settings& settings)
 		m_audioDevice = LN_NEW NullAudioDevice();
 	}
 
-	// ƒLƒƒƒbƒVƒ…‰Šú‰»
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥åˆæœŸåŒ–
 	m_audioStreamCache = LN_NEW CacheManager(settings.StreamCacheObjectCount, settings.StreamSourceCacheMemorySize);
 
 	// GameAudio
 	m_gameAudio = LN_NEW GameAudioImpl(this);
 
-	// ƒ|[ƒŠƒ“ƒOƒXƒŒƒbƒhŠJn
+	// ãƒãƒ¼ãƒªãƒ³ã‚°ã‚¹ãƒ¬ãƒƒãƒ‰é–‹å§‹
 	m_pollingThread.Start(Delegate<void()>(this, &AudioManagerImpl::Thread_Polling));
 
 	Internal::AudioManager = this;
@@ -139,21 +139,21 @@ AudioManagerImpl::~AudioManagerImpl()
 //-----------------------------------------------------------------------------
 void AudioManagerImpl::Finalize()
 {
-	// ƒ|[ƒŠƒ“ƒOƒXƒŒƒbƒh‚ÌI—¹‚ğ‘Ò‚Â
+	// ãƒãƒ¼ãƒªãƒ³ã‚°ã‚¹ãƒ¬ãƒƒãƒ‰ã®çµ‚äº†ã‚’å¾…ã¤
 	m_endRequested.SetTrue();
 	m_pollingThread.Wait();
 
-	// GameAudio ‚ÌƒfƒXƒgƒ‰ƒNƒ^‚Å‚Í Sound::Stop ‚ªŒÄ‚Î‚ê‚é‚Ì‚ÅA
-	// ‚±‚ê‚æ‚è‰º‚Ì Sound íœˆ—‚Ì‘O‚É delete ‚·‚éB
+	// GameAudio ã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§ã¯ Sound::Stop ãŒå‘¼ã°ã‚Œã‚‹ã®ã§ã€
+	// ã“ã‚Œã‚ˆã‚Šä¸‹ã® Sound å‰Šé™¤å‡¦ç†ã®å‰ã« delete ã™ã‚‹ã€‚
 	LN_SAFE_DELETE(m_gameAudio);
 
-	// ‰½‚©c‚Á‚Ä‚¢‚ê‚Îíœ‚·‚é
+	// ä½•ã‹æ®‹ã£ã¦ã„ã‚Œã°å‰Šé™¤ã™ã‚‹
 	for (Sound* sound : m_addingSoundList) {
 		sound->Release();
 	}
 	m_addingSoundList.Clear();
 
-	// ‰½‚©c‚Á‚Ä‚¢‚ê‚Îíœ‚·‚é
+	// ä½•ã‹æ®‹ã£ã¦ã„ã‚Œã°å‰Šé™¤ã™ã‚‹
 	for (Sound* sound : m_soundList) {
 		sound->Release();
 	}
@@ -177,22 +177,22 @@ void AudioManagerImpl::Finalize()
 //-----------------------------------------------------------------------------
 AudioStream* AudioManagerImpl::CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
-	// ƒLƒƒƒbƒVƒ…‚ğŒŸõ‚·‚éB
-	// Œ©‚Â‚©‚Á‚½ AudioStream ‚ÍA‚Ü‚¾”ñ“¯Šú‰Šú‰»’†‚Å‚ ‚é‚±‚Æ‚à‚ ‚éB
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’æ¤œç´¢ã™ã‚‹ã€‚
+	// è¦‹ã¤ã‹ã£ãŸ AudioStream ã¯ã€ã¾ã éåŒæœŸåˆæœŸåŒ–ä¸­ã§ã‚ã‚‹ã“ã¨ã‚‚ã‚ã‚‹ã€‚
 	RefPtr<AudioStream> audioStream((AudioStream*)m_audioStreamCache->FindObjectAddRef(key), false);
 
-	// ƒLƒƒƒbƒVƒ…‚ÉŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚çV‚µ‚­ì‚é
+	// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰æ–°ã—ãä½œã‚‹
 	if (audioStream.IsNull())
 	{
 		audioStream.Attach(LN_NEW AudioStream(this, stream), false);
-		audioStream->Create(loadingMode == SoundLoadingMode::ASync);	// ”ñ“¯Šú“Ç‚İ‚İŠJn
-								// TODO: “¯Šú“Ç‚İ‚İ‚¾‚¯‚É‚µ‚ÄAPolling ƒXƒŒƒbƒh‚Å“Ç‚İ‚ñ‚Å‚à—Ç‚¢‚©‚àH
+		audioStream->Create(loadingMode == SoundLoadingMode::ASync);	// éåŒæœŸèª­ã¿è¾¼ã¿é–‹å§‹
+								// TODO: åŒæœŸèª­ã¿è¾¼ã¿ã ã‘ã«ã—ã¦ã€Polling ã‚¹ãƒ¬ãƒƒãƒ‰ã§èª­ã¿è¾¼ã‚“ã§ã‚‚è‰¯ã„ã‹ã‚‚ï¼Ÿ
 		/*
-			”ñ“¯Šú“Ç‚İ‚İ‚ÌŠJn‚Å FileManager ‚Ìƒ^ƒXƒNƒŠƒXƒg‚É“ü‚ê‚ç‚ê‚éB
-			‚»‚±‚ÅQÆƒJƒEƒ“ƒg‚ª +1 ‚³‚êAˆ—‚ªŠ®—¹‚·‚é‚Ü‚ÅQÆ‚³‚ê‘±‚¯‚éB
+			éåŒæœŸèª­ã¿è¾¼ã¿ã®é–‹å§‹ã§ FileManager ã®ã‚¿ã‚¹ã‚¯ãƒªã‚¹ãƒˆã«å…¥ã‚Œã‚‰ã‚Œã‚‹ã€‚
+			ãã“ã§å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆãŒ +1 ã•ã‚Œã€å‡¦ç†ãŒå®Œäº†ã™ã‚‹ã¾ã§å‚ç…§ã•ã‚Œç¶šã‘ã‚‹ã€‚
 		*/
 
-		// ƒLƒƒƒbƒVƒ…‚É“o˜^
+		// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ç™»éŒ²
 		if (!key.IsNull()) {
 			m_audioStreamCache->RegisterCacheObject(key, audioStream);
 		}
@@ -207,10 +207,10 @@ AudioStream* AudioManagerImpl::CreateAudioStream(Stream* stream, const CacheKey&
 //-----------------------------------------------------------------------------
 AudioPlayer* AudioManagerImpl::CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D)
 {
-	// Ä¶•û–@‚Ì‘I‘ğ
+	// å†ç”Ÿæ–¹æ³•ã®é¸æŠ
 	SoundPlayingMode playerType = AudioUtils::CheckAudioPlayType(mode, stream, mOnMemoryLimitSize);
 
-	// ì¬
+	// ä½œæˆ
 	if (playerType == SoundPlayingMode::Midi) {
 		return m_midiAudioDevice->CreateAudioPlayer(stream, enable3D, playerType);
 	}
@@ -232,11 +232,11 @@ Sound* AudioManagerImpl::CreateSound(Stream* stream, const CacheKey& key, SoundL
 		sound->CreateAudioPlayerSync();
 	}
 
-	// ŠÇ—ƒŠƒXƒg‚É’Ç‰Á
+	// ç®¡ç†ãƒªã‚¹ãƒˆã«è¿½åŠ 
 	Threading::MutexScopedLock lock(m_soundListMutex);
 	m_addingSoundList.Add(sound);
-	sound.SafeAddRef();	// ŠÇ—ƒŠƒXƒg‚ÌQÆ
-	sound.SafeAddRef();	// ŠO‚Éo‚·‚½‚ß‚ÌQÆ
+	sound.SafeAddRef();	// ç®¡ç†ãƒªã‚¹ãƒˆã®å‚ç…§
+	sound.SafeAddRef();	// å¤–ã«å‡ºã™ãŸã‚ã®å‚ç…§
 	return sound;
 }
 
@@ -246,16 +246,16 @@ Sound* AudioManagerImpl::CreateSound(Stream* stream, const CacheKey& key, SoundL
 void AudioManagerImpl::Thread_Polling()
 {
 #ifdef LN_OS_WIN32
-	// COM ‰Šú‰»
+	// COM åˆæœŸåŒ–
 	HRESULT hr = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif
 
 	uint64_t lastTime = Environment::GetTickCount();
 	while (m_endRequested.IsFalse())
 	{
-		Threading::Thread::Sleep(10);	// CPU •‰‰× 100% ‚ğ”ğ‚¯‚é‚½‚ßA‚Æ‚è‚ ‚¦‚¸ 10ms ‘Ò‚Â
+		Threading::Thread::Sleep(10);	// CPU è² è· 100% ã‚’é¿ã‘ã‚‹ãŸã‚ã€ã¨ã‚Šã‚ãˆãš 10ms å¾…ã¤
 
-		// ’Ç‰Á‘Ò‚¿ƒŠƒXƒg‚Ì“à—e‚ğ–{ƒŠƒXƒg‚ÉˆÚ‚·
+		// è¿½åŠ å¾…ã¡ãƒªã‚¹ãƒˆã®å†…å®¹ã‚’æœ¬ãƒªã‚¹ãƒˆã«ç§»ã™
 		{
 			Threading::MutexScopedLock lock(m_soundListMutex);
 			for (Sound* sound : m_addingSoundList) {
@@ -264,7 +264,7 @@ void AudioManagerImpl::Thread_Polling()
 			m_addingSoundList.Clear();
 		}
 
-		// Œo‰ßŠÔ‚ğ‹‚ß‚Ä‘S Sound XV
+		// çµŒéæ™‚é–“ã‚’æ±‚ã‚ã¦å…¨ Sound æ›´æ–°
 		uint64_t curTime = Environment::GetTickCount();
 		float elapsedTime = static_cast<float>(curTime - lastTime) / 1000.0f;
 		for (Sound* sound : m_soundList) {
@@ -272,7 +272,7 @@ void AudioManagerImpl::Thread_Polling()
 		}
 		lastTime = curTime;
 
-		// ‚±‚±‚©‚çƒƒbƒN
+		// ã“ã“ã‹ã‚‰ãƒ­ãƒƒã‚¯
 		Threading::MutexScopedLock lock(m_soundListMutex);
 
 		m_audioDevice->Update();
@@ -282,12 +282,12 @@ void AudioManagerImpl::Thread_Polling()
             m_midiAudioDevice->Update();
         }
 
-		// GCB‚±‚ÌƒŠƒXƒg‚©‚ç‚µ‚©QÆ‚³‚ê‚Ä‚È‚¯‚ê‚Î Release ‚·‚éB
+		// GCã€‚ã“ã®ãƒªã‚¹ãƒˆã‹ã‚‰ã—ã‹å‚ç…§ã•ã‚Œã¦ãªã‘ã‚Œã° Release ã™ã‚‹ã€‚
 		Array<Sound*>::iterator itr = m_soundList.begin();
 		Array<Sound*>::iterator end = m_soundList.end();
 		while (itr != end)
 		{
-			// TODO: ƒtƒF[ƒh’†‚ÍŠJ•ú‚µ‚È‚¢
+			// TODO: ãƒ•ã‚§ãƒ¼ãƒ‰ä¸­ã¯é–‹æ”¾ã—ãªã„
 
 			if ((*itr)->GetRefCount() == 1)
 			{

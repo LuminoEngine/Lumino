@@ -1,46 +1,46 @@
-
+ï»¿
 #ifndef LUMINO_VERSION_H
 #define LUMINO_VERSION_H
 
-#define LUMINO_VERSION_MAJOR		0			/**< ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“ */
-#define LUMINO_VERSION_MINOR		1			/**< ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“ */
-#define LUMINO_MERSION_REVISION		0			/**< ƒpƒbƒ`”Ô† */
-#define LUMINO_VERSION_STRING		_T("0.1.0")	/**< ƒo[ƒWƒ‡ƒ“•¶Žš—ñ */
+#define LUMINO_VERSION_MAJOR		0			/**< ãƒ¡ã‚¸ãƒ£ãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³ */
+#define LUMINO_VERSION_MINOR		1			/**< ãƒžã‚¤ãƒŠãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³ */
+#define LUMINO_MERSION_REVISION		0			/**< ãƒ‘ãƒƒãƒç•ªå· */
+#define LUMINO_VERSION_STRING		_T("0.1.0")	/**< ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ— */
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		ƒ‰ƒCƒuƒ‰ƒŠ‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚Å‚·B
-	@details	‚±‚ÌƒNƒ‰ƒX‚©‚çŽæ“¾‚Å‚«‚é’l‚Íƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒoƒCƒiƒŠƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“”Ô†‚Å‚·B
-				ƒwƒbƒ_ƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“‚âƒvƒŠƒvƒƒZƒX‚ÅŽg—p‚µ‚½‚¢ê‡‚Í 
-				LUMINO_VERSION_MAJOR ‚â LUMINO_VERSION_MINOR ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
+	@brief		ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã§ã™ã€‚
+	@details	ã“ã®ã‚¯ãƒ©ã‚¹ã‹ã‚‰å–å¾—ã§ãã‚‹å€¤ã¯ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒã‚¤ãƒŠãƒªãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·ã§ã™ã€‚
+				ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚„ãƒ—ãƒªãƒ—ãƒ­ã‚»ã‚¹ã§ä½¿ç”¨ã—ãŸã„å ´åˆã¯ 
+				LUMINO_VERSION_MAJOR ã‚„ LUMINO_VERSION_MINOR ã‚’ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚
 */
 namespace Version
 {
 
 /**
-	@brief	ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“‚ðŽæ“¾‚µ‚Ü‚·B
+	@brief	ãƒ¡ã‚¸ãƒ£ãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—ã—ã¾ã™ã€‚
 */
 int GetMajor();
 
 /**
-	@brief	ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“‚ðŽæ“¾‚µ‚Ü‚·B
+	@brief	ãƒžã‚¤ãƒŠãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—ã—ã¾ã™ã€‚
 */
 int GetMinor();
 
 /**
-	@brief	ƒŠƒrƒWƒ‡ƒ“ƒo[ƒWƒ‡ƒ“‚ðŽæ“¾‚µ‚Ü‚·B
+	@brief	ãƒªãƒ“ã‚¸ãƒ§ãƒ³ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—ã—ã¾ã™ã€‚
 */
 int GetRevision();
 
 /**
-	@brief	ƒo[ƒWƒ‡ƒ“•¶Žš—ñ‚ÌŽæ“¾‚ðŽæ“¾‚µ‚Ü‚·B
+	@brief	ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ—ã®å–å¾—ã‚’å–å¾—ã—ã¾ã™ã€‚
 */
 const TCHAR* GetString();
 
 /**
-	@brief	Žw’è‚µ‚½ƒo[ƒWƒ‡ƒ“”Ô†‚ÆAƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚ÌƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“”Ô†‚ð”äŠr‚µ‚Ü‚·B
-	@return	Žw’èƒo[ƒWƒ‡ƒ“ >= ƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“ ‚Å‚ ‚éê‡Atrue ‚ð•Ô‚µ‚Ü‚·B
+	@brief	æŒ‡å®šã—ãŸãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·ã¨ã€ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·ã‚’æ¯”è¼ƒã—ã¾ã™ã€‚
+	@return	æŒ‡å®šãƒãƒ¼ã‚¸ãƒ§ãƒ³ >= ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒãƒ¼ã‚¸ãƒ§ãƒ³ ã§ã‚ã‚‹å ´åˆã€true ã‚’è¿”ã—ã¾ã™ã€‚
 */
 bool IsAtLeast(int major = LUMINO_VERSION_MAJOR, int minor = LUMINO_VERSION_MINOR, int revision = LUMINO_MERSION_REVISION);
 

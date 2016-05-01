@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
@@ -102,7 +102,7 @@ void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, 
 
 	const Size& sourceSize = source->GetSize();
 
-	// m_accumTexture ‚Æ source ‚ÌƒTƒCƒY‚ªˆÙ‚È‚éê‡‚Íì‚è’¼‚·
+	// m_accumTexture ã¨ source ã®ã‚µã‚¤ã‚ºãŒç•°ãªã‚‹å ´åˆã¯ä½œã‚Šç›´ã™
 	if (m_accumTexture == nullptr || m_accumTexture->GetSize() != sourceSize)
 	{
 		m_accumTexture = LN_NEW RenderTarget();

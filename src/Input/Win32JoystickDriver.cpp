@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Internal.h"
 #include <algorithm>
@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 
 GUID GUID_SINE = { 0x13541C23, 0x8E33, 0x11D0, 0x9A, 0xD0, 0x00, 0xA0, 0xC9, 0xA0, 0x6E, 0x35 };
 
-// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚Ì GUID
+// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã® GUID
 GUID GUIDDIJOYSTICK[8] =
 {
 //	Data1		Data2	Data3	Data4
@@ -22,7 +22,7 @@ GUID GUIDDIJOYSTICK[8] =
 	0xa36d02f2,	0xc9f3,	0x11cf,	"\xbf\xc7\x44\x45\x53\x54\x00",
 } ;
 
-// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚ÌƒfƒoƒCƒXƒIƒuƒWƒFƒNƒgƒf[ƒ^
+// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ‡ãƒ¼ã‚¿
 DIOBJECTDATAFORMAT C_ODFDIJOYSTICK[44] =
 {
 //	pguid				dwOfs	dwType		dwFlags
@@ -72,7 +72,7 @@ DIOBJECTDATAFORMAT C_ODFDIJOYSTICK[44] =
 	NULL,				0x4f,	0x80ffff0c,	0x000,
 };
 
-// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚ÌƒfƒoƒCƒXƒf[ƒ^ƒtƒH[ƒ}ƒbƒg
+// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®ãƒ‡ãƒã‚¤ã‚¹ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 const DIDATAFORMAT c_dfDIJoystick =
 {
 	24, 	// dwSize
@@ -122,26 +122,26 @@ void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, in
 
 	if (!IsXInputDevice())
 	{
-		// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚Æ‚µ‚Äƒf[ƒ^ƒtƒH[ƒ}ƒbƒg‚ğİ’è
-		//hr = mDevice->SetDataFormat( &c_dfDIJoystick2 );	// ‚à‚Á‚Æ‚¢‚ë‚ñ‚Èî•ñ‚ª‚Ù‚µ‚¢‚Æ‚«
+		// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã¨ã—ã¦ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®š
+		//hr = mDevice->SetDataFormat( &c_dfDIJoystick2 );	// ã‚‚ã£ã¨ã„ã‚ã‚“ãªæƒ…å ±ãŒã»ã—ã„ã¨ã
 		LN_COMCALL(mDevice->SetDataFormat(&c_dfDIJoystick));
 
-		// ƒtƒHƒAƒOƒ‰ƒEƒ“ƒhE”r‘¼ƒ‚[ƒh
+		// ãƒ•ã‚©ã‚¢ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ãƒ»æ’ä»–ãƒ¢ãƒ¼ãƒ‰
 		LN_COMCALL(mDevice->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE));
 
-		// ƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğg‚Á‚ÄŠe²‚Ìƒ‚[ƒh‚ğİ’è
+		// ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’ä½¿ã£ã¦å„è»¸ã®ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®š
 		LN_COMCALL(mDevice->EnumObjects(EnumAxesCallback, this, DIDFT_AXIS));
 
 		if (forcefeedback)
 		{
-			// ƒGƒtƒFƒNƒgüŠúİ’è
+			// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå‘¨æœŸè¨­å®š
 			ZeroMemory(&mDIPeriodic, sizeof(mDIPeriodic));
-			mDIPeriodic.dwMagnitude = DI_FFNOMINALMAX; // ƒGƒtƒFƒNƒg‚Ì‹­‚³(0`10,000)
+			mDIPeriodic.dwMagnitude = DI_FFNOMINALMAX; // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å¼·ã•(0ï½10,000)
 			mDIPeriodic.lOffset = 0;
 			mDIPeriodic.dwPhase = 0;
-			mDIPeriodic.dwPeriod = (DWORD)(1.5 * DI_SECONDS); // ƒGƒtƒFƒNƒg‚ÌŠÔŠu
+			mDIPeriodic.dwPeriod = (DWORD)(1.5 * DI_SECONDS); // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®é–“éš”
 
-			// ƒGƒ“ƒxƒ[ƒv
+			// ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—
 			ZeroMemory(&mDIEnvelope, sizeof(mDIEnvelope));
 			mDIEnvelope.dwSize = sizeof(DIENVELOPE);
 			mDIEnvelope.dwAttackLevel = 0;
@@ -149,19 +149,19 @@ void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, in
 			mDIEnvelope.dwFadeLevel = 0;
 			mDIEnvelope.dwFadeTime = (DWORD)(1.0 * DI_SECONDS);
 
-			// ƒGƒtƒFƒNƒg²
+			// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè»¸
 			mDIAxes[0] = DIJOFS_X;
 			mDIAxes[1] = DIJOFS_Y;
 
-			// ƒGƒtƒFƒNƒg•ûŒü
+			// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆæ–¹å‘
 			mDIDirection[0] = 0;
 			mDIDirection[1] = 0;
 
-			// U“®ƒGƒtƒFƒNƒgİ’è
+			// æŒ¯å‹•ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¨­å®š
 			ZeroMemory(&mDIEffect, sizeof(mDIEffect));
 			mDIEffect.dwSize = sizeof(mDIEffect);
 			mDIEffect.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;//DIEFF_POLAR | DIEFF_OBJECTOFFSETS;
-			mDIEffect.dwDuration = INFINITE; // ƒGƒtƒFƒNƒgŒp‘±ŠÔ
+			mDIEffect.dwDuration = INFINITE; // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç¶™ç¶šæ™‚é–“
 			mDIEffect.dwSamplePeriod = 0;
 			mDIEffect.dwGain = DI_FFNOMINALMAX;
 			mDIEffect.dwTriggerButton = DIEB_NOTRIGGER;
@@ -169,11 +169,11 @@ void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, in
 			mDIEffect.cAxes = 2;
 			mDIEffect.rgdwAxes = mDIAxes;
 			mDIEffect.rglDirection = mDIDirection;
-			mDIEffect.lpEnvelope = &mDIEnvelope; // ƒGƒ“ƒxƒ[ƒv\‘¢‘Ì
-			mDIEffect.cbTypeSpecificParams = sizeof(mDIPeriodic); // ƒGƒtƒFƒNƒgüŠú\‘¢‘Ì‚ÌƒTƒCƒY
-			mDIEffect.lpvTypeSpecificParams = &mDIPeriodic; // ƒGƒtƒFƒNƒgüŠú\‘¢‘Ì
+			mDIEffect.lpEnvelope = &mDIEnvelope; // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—æ§‹é€ ä½“
+			mDIEffect.cbTypeSpecificParams = sizeof(mDIPeriodic); // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå‘¨æœŸæ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+			mDIEffect.lpvTypeSpecificParams = &mDIPeriodic; // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå‘¨æœŸæ§‹é€ ä½“
 
-			// ƒGƒtƒFƒNƒg¶¬
+			// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç”Ÿæˆ
 			LN_COMCALL(mDevice->CreateEffect(GUID_SINE, &mDIEffect, &mDeviceEffect, NULL));
 
 		}
@@ -193,7 +193,7 @@ void Win32JoystickDriver::Dispose()
         LN_SAFE_RELEASE( mDeviceEffect );
     }
 
-    // “ü—Í‚ğ’â~‚µ‚ÄƒWƒ‡ƒCƒXƒeƒBƒbƒNƒfƒoƒCƒX‚ğ‰ğ•ú
+    // å…¥åŠ›ã‚’åœæ­¢ã—ã¦ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ãƒ‡ãƒã‚¤ã‚¹ã‚’è§£æ”¾
 	if ( mDevice )
 	{
 		mDevice->Unacquire();
@@ -212,7 +212,7 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 		XINPUT_STATE state;
 		if (XInputModule::XInputGetState(mXInputNo, &state) == ERROR_SUCCESS)
 		{
-			// ƒ{ƒ^ƒ“
+			// ãƒœã‚¿ãƒ³
 			joyState->Buttons[0] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;
 			joyState->Buttons[1] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0;
 			joyState->Buttons[2] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0;
@@ -224,7 +224,7 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 			joyState->Buttons[8] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0;
 			joyState->Buttons[9] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0;
 
-			// ²
+			// è»¸
 			float inv_s16 = 1.0f / 32767.f;
 			float inv_u8 = 1.0f / 255.f;
 			joyState->Axes[0] = inv_s16 * static_cast<float>(state.Gamepad.sThumbLX);
@@ -236,7 +236,7 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 			joyState->Axes[6] = 0.0f;
 			joyState->Axes[7] = 0.0f;
 
-			// ²‚Ì”ÍˆÍ‚Í -32768 ` 32767B32767.f ‚ÅŠ„‚é‚¾‚¯‚¾‚Æ -•ûŒü‚ª 1.0f ‚æ‚è‚à‘½‚­‚È‚é‚Ì‚ÅA‚»‚Ì•Ó‚ÌC³
+			// è»¸ã®ç¯„å›²ã¯ -32768 ï½ 32767ã€‚32767.f ã§å‰²ã‚‹ã ã‘ã ã¨ -æ–¹å‘ãŒ 1.0f ã‚ˆã‚Šã‚‚å¤šããªã‚‹ã®ã§ã€ãã®è¾ºã®ä¿®æ­£
 			for (int i = 0; i < 4; ++i)
 			{
 				joyState->Axes[i] = std::max(joyState->Axes[i], -1.0f);
@@ -271,13 +271,13 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 		HRESULT hr = mDevice->GetDeviceState(sizeof(DIJOYSTATE), &state);
 		if (SUCCEEDED(hr))
 		{
-			// ƒ{ƒ^ƒ“
+			// ãƒœã‚¿ãƒ³
 			for (int i = 0; i < JoypadDeviceState::MaxJoypadButtons; ++i)
 			{
 				joyState->Buttons[i] = (state.rgbButtons[i] & 0x80) != 0x00;
 			}
 
-			// ²
+			// è»¸
 			static const float r_range = 1.0f / AXIS_RANGE;
 			joyState->Axes[0] = r_range * state.lX;
 			joyState->Axes[1] = r_range * state.lY;
@@ -294,21 +294,21 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 			if (LOWORD(pov) != 0xffff)
 			{
 				if (pov > 0 && pov < 18000) {
-					dx = 1; 	        // ‰E
+					dx = 1; 	        // å³
 				}
 				else if (pov > 18000) {
 					dx = -1;
-				}		        // ¶
+				}		        // å·¦
 				else {
 					dx = 0;
 				}
 
 				if (pov > 9000 && pov < 27000) {
 					dy = 1;
-				}	    // ‰º
+				}	    // ä¸‹
 				else if (pov < 9000 || pov > 27000) {
 					dy = -1;
-				}	// ã
+				}	// ä¸Š
 				else {
 					dy = 0;
 				}
@@ -340,7 +340,7 @@ void Win32JoystickDriver::GetJoypadDeviceState(JoypadDeviceState* joyState)
 		}
 	}
 
-	// ²‚Ì—V‚Ñ’×‚µ
+	// è»¸ã®éŠã³æ½°ã—
 	//for (int i = 0; i < MAX_AXIS_NUM; ++i)
 	//{
 	//	if (abs(mAxisState[i]) < mPlayRange)
@@ -370,7 +370,7 @@ void Win32JoystickDriver::StartVibration( int power, int time )
 
 			if (time > 0)
 			{
-				mDIPeriodic.dwPeriod = std::max(0, time) * 10000; // •’Ê‚Í 1000 ‚¾‚¯‚ÇA‚È‚ñ‚©“r’†‚ÅU“®‚ªˆêuã‚­‚È‚é
+				mDIPeriodic.dwPeriod = std::max(0, time) * 10000; // æ™®é€šã¯ 1000 ã ã‘ã©ã€ãªã‚“ã‹é€”ä¸­ã§æŒ¯å‹•ãŒä¸€ç¬å¼±ããªã‚‹
 				//mDIEffect.dwDuration = mDIPeriodic.dwPeriod = time_ * 1000;
 			}
 
@@ -419,7 +419,7 @@ void Win32JoystickDriver::StopVibration()
 //-----------------------------------------------------------------------------
 void Win32JoystickDriver::Update()
 {
-	// U“®I—¹‚ÌŠÄ‹
+	// æŒ¯å‹•çµ‚äº†ã®ç›£è¦–
 	if (mVibrationStartTime > 0)
 	{
 		if (::GetTickCount() >= mVibrationStartTime + mVibrationTime)
@@ -436,7 +436,7 @@ BOOL CALLBACK Win32JoystickDriver::EnumAxesCallback( LPCDIDEVICEOBJECTINSTANCE l
 {
 	Win32JoystickDriver* self = static_cast<Win32JoystickDriver*>( thisDevice );
 
-	// ²‚Ì’l‚Ì”ÍˆÍ‚ğİ’è
+	// è»¸ã®å€¤ã®ç¯„å›²ã‚’è¨­å®š
 	DIPROPRANGE diprg;
 	ZeroMemory( &diprg, sizeof( diprg ) );
 	diprg.diph.dwSize		= sizeof( diprg );
@@ -468,8 +468,8 @@ void XInputModule::Initialize()
 {
 	if (!XInputGetState)
 	{
-#if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)	// XINPUT_DLL ‚ª "xinput1_4.dll" ‚È‚Ì‚ÉAŒ©‚Â‚©‚ç‚È‚¢‚±‚Æ‚ª‚ ‚Á‚½B 
-		// ‚ª‚ñ‚Î‚Á‚Ä’T‚·
+#if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)	// XINPUT_DLL ãŒ "xinput1_4.dll" ãªã®ã«ã€è¦‹ã¤ã‹ã‚‰ãªã„ã“ã¨ãŒã‚ã£ãŸã€‚ 
+		// ãŒã‚“ã°ã£ã¦æ¢ã™
 		if (DllLoader::Exists(XINPUT_DLL)) {
 			m_XInputModule.Load(XINPUT_DLL);
 		}

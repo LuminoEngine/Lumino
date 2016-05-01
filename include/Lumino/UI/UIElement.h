@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "UITypeInfo.h"
@@ -16,108 +16,108 @@ class UIElement
 	LN_UI_TYPEINFO_DECLARE();
 
 public:
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				/**< MouseLeave ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(MouseEventArgs,		KeyDownEvent);					/**< KeyDown ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(MouseEventArgs,		KeyUpEvent);					/**< KeyUp ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
-	LN_ROUTED_EVENT(KeyEventArgs,		TextInputEvent);				/**< TextInput ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚ÌŽ¯•ÊŽq */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				/**< MouseLeave ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		KeyDownEvent);					/**< KeyDown ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(MouseEventArgs,		KeyUpEvent);					/**< KeyUp ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
+	LN_ROUTED_EVENT(KeyEventArgs,		TextInputEvent);				/**< TextInput ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ã‚¤ãƒ™ãƒ³ãƒˆã®è­˜åˆ¥å­ */
 
 	//-------------------------------------------------------------------------
 	/** @name RoutedEvents */
 	/** @{ */
 
-	UIEvent<UIMouseEventArgs>		MouseEnter;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘f‚Ì‹«ŠE“à‚É“ü‚Á‚½‚Æ‚«‚É”­¶‚µ‚Ü‚·B*/
-	UIEvent<UIMouseEventArgs>		MouseLeave;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘f‚Ì‹«ŠE‚©‚ço‚½‚Æ‚«‚É”­¶‚µ‚Ü‚·B*/
-	UIEvent<UIMouseEventArgs>		MouseMove;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘fã‚ÅˆÚ“®‚·‚é‚Æ”­¶‚µ‚Ü‚·B */
-	UIEvent<UIMouseEventArgs>		MouseDown;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘fã‚É‚ ‚é‚Æ‚«‚É”CˆÓ‚Ìƒ}ƒEƒXƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
-	UIEvent<UIMouseEventArgs>		MouseUp;		/**< ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ª‚±‚Ì—v‘fã‚É‚ ‚é‚Æ‚«‚É”CˆÓ‚Ìƒ}ƒEƒXƒ{ƒ^ƒ“‚ª—£‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
-	UIEvent<UIKeyEventArgs>			KeyDown;		/**< ‚±‚Ì—v‘f‚ªƒtƒH[ƒJƒX‚ðŽ‚Á‚Ä‚¢‚éŽž‚ÉƒL[ƒ{[ƒh‚ÌƒL[‚ª‰Ÿ‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
-	UIEvent<UIKeyEventArgs>			KeyUp;			/**< ‚±‚Ì—v‘f‚ªƒtƒH[ƒJƒX‚ðŽ‚Á‚Ä‚¢‚éŽž‚ÉƒL[ƒ{[ƒh‚ÌƒL[‚ª—£‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
-	UIEvent<UIKeyEventArgs>			TextInput;		/**< ƒL[‘€ì‚É‚æ‚è•¶Žš‚ª“ü—Í‚³‚ê‚é‚Æ”­¶‚µ‚Ü‚·B*/
+	UIEvent<UIMouseEventArgs>		MouseEnter;		/**< ãƒžã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ã®å¢ƒç•Œå†…ã«å…¥ã£ãŸã¨ãã«ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	UIEvent<UIMouseEventArgs>		MouseLeave;		/**< ãƒžã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ã®å¢ƒç•Œã‹ã‚‰å‡ºãŸã¨ãã«ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	UIEvent<UIMouseEventArgs>		MouseMove;		/**< ãƒžã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ä¸Šã§ç§»å‹•ã™ã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚ */
+	UIEvent<UIMouseEventArgs>		MouseDown;		/**< ãƒžã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ä¸Šã«ã‚ã‚‹ã¨ãã«ä»»æ„ã®ãƒžã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	UIEvent<UIMouseEventArgs>		MouseUp;		/**< ãƒžã‚¦ã‚¹ãƒã‚¤ãƒ³ã‚¿ãŒã“ã®è¦ç´ ä¸Šã«ã‚ã‚‹ã¨ãã«ä»»æ„ã®ãƒžã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	UIEvent<UIKeyEventArgs>			KeyDown;		/**< ã“ã®è¦ç´ ãŒãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹æ™‚ã«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	UIEvent<UIKeyEventArgs>			KeyUp;			/**< ã“ã®è¦ç´ ãŒãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ã‚‹æ™‚ã«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ã‚­ãƒ¼ãŒé›¢ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
+	UIEvent<UIKeyEventArgs>			TextInput;		/**< ã‚­ãƒ¼æ“ä½œã«ã‚ˆã‚Šæ–‡å­—ãŒå…¥åŠ›ã•ã‚Œã‚‹ã¨ç™ºç”Ÿã—ã¾ã™ã€‚*/
 
 	/** @} */
 
 public:
 
-	/** —v‘f‚ÌŽ¯•Ê–¼‚ðŽæ“¾‚µ‚Ü‚·B*/
+	/** è¦ç´ ã®è­˜åˆ¥åã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	const String& GetKeyName() const { return m_keyName; }
 
-	/** ˜_—ã‚Ìe—v‘f‚ðŽæ“¾‚µ‚Ü‚·B*/
+	/** è«–ç†ä¸Šã®è¦ªè¦ç´ ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	UIElement* GetParent() const { return m_parent; }
 
-	/** ‚±‚Ì—v‘f‚ªƒtƒH[ƒJƒX‚ð“¾‚é‚±‚Æ‚ª‚Å‚«‚é‚©‚ðŠm”F‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ãŒãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å¾—ã‚‹ã“ã¨ãŒã§ãã‚‹ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚*/
 	virtual bool IsFocusable() const { return false; }
 
-	/** ƒŒƒCƒAƒEƒgˆ—‚Ì‘ª’èƒpƒX‚ÌŽÀs’†‚É‚±‚Ì—v‘f‚ªŒvŽZ‚µ‚½ƒTƒCƒY‚ðŽæ“¾‚µ‚Ü‚·B‚±‚Ì’l‚ÍŽq—v‘f‚ªe—v‘f‚Ö—v‹‚·‚éAŽq—v‘fŽ©g‚ÌÅ’áƒTƒCƒY‚Å‚·B*/
+	/** ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆå‡¦ç†ã®æ¸¬å®šãƒ‘ã‚¹ã®å®Ÿè¡Œä¸­ã«ã“ã®è¦ç´ ãŒè¨ˆç®—ã—ãŸã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚ã“ã®å€¤ã¯å­è¦ç´ ãŒè¦ªè¦ç´ ã¸è¦æ±‚ã™ã‚‹ã€å­è¦ç´ è‡ªèº«ã®æœ€ä½Žã‚µã‚¤ã‚ºã§ã™ã€‚*/
 	const SizeF& GetDesiredSize() const { return m_desiredSize; }
 
-	/** ‚±‚Ì—v‘f‚ÌÅI“I‚È•`‰æƒTƒCƒY‚ðŽæ“¾‚µ‚Ü‚·B‚±‚Ì’l‚Í Arrange() ‚ÅŠm’è‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ã®æœ€çµ‚çš„ãªæç”»ã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¾ã™ã€‚ã“ã®å€¤ã¯ Arrange() ã§ç¢ºå®šã—ã¾ã™ã€‚*/
 	const SizeF& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
 
-	/** ‚±‚Ì—v‘f‚Ö‚ÌƒtƒH[ƒJƒX‚ÌŽæ“¾‚ðŽŽ‚Ý‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ã¸ã®ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã®å–å¾—ã‚’è©¦ã¿ã¾ã™ã€‚*/
 	void Focus();
 
-	///** ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚ðÝ’è‚µ‚Ü‚·B*/
+	///** ãƒžã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ã‚’è¨­å®šã—ã¾ã™ã€‚*/
 	//void CaptureMouse();
 
-	///** ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚ð‰ðœ‚µ‚Ü‚·B*/
+	///** ãƒžã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ã‚’è§£é™¤ã—ã¾ã™ã€‚*/
 	//void ReleaseMouseCapture();
 
-	/** ‚±‚Ì—v‘f“à‚ÌŽqƒrƒWƒ…ƒAƒ‹—v‘f‚Ì”‚ðŽæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ å†…ã®å­ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã®æ•°ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	virtual int GetVisualChildrenCount() const;
 
-	/** ‚±‚Ì—v‘f“à‚ÌŽw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚éŽqƒrƒWƒ…ƒAƒ‹—v‘f‚ðŽæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ å†…ã®æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã«ã‚ã‚‹å­ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	virtual UIElement* GetVisualChild(int index) const;
 
-	/** ZƒI[ƒ_[‚âƒAƒNƒeƒBƒuó‘Ô‚ðl—¶‚µ‚½‡‚ÅAŽqƒrƒWƒ…ƒAƒ‹—v‘f‚ðŽæ“¾‚µ‚Ü‚·B‰œ‚É‚ ‚é—v‘f‚ªæAŽè‘O‚É‚ ‚é—v‘f‚ªŒã‚É‚È‚è‚Ü‚·B*/
+	/** Zã‚ªãƒ¼ãƒ€ãƒ¼ã‚„ã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã‚’è€ƒæ…®ã—ãŸé †ã§ã€å­ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¦ç´ ã‚’å–å¾—ã—ã¾ã™ã€‚å¥¥ã«ã‚ã‚‹è¦ç´ ãŒå…ˆã€æ‰‹å‰ã«ã‚ã‚‹è¦ç´ ãŒå¾Œã«ãªã‚Šã¾ã™ã€‚*/
 	virtual UIElement* GetVisualChildOrderd(int index) const;
 
-	/** ‚±‚Ì—v‘f‚ªŠÖ˜A•t‚¯‚ç‚ê‚Ä‚¢‚é UILayoutView ‚ðŽæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ãŒé–¢é€£ä»˜ã‘ã‚‰ã‚Œã¦ã„ã‚‹ UILayoutView ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	UILayoutView* GetLayoutView() const;
 
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
 
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒnƒ“ƒhƒ‰‚ÆA(Bubble‚Ìê‡)˜_—ã‚Ìe‚ÖƒCƒxƒ“ƒg‚ð’Ê’m‚·‚é
+	// ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã¨ã€(Bubbleã®å ´åˆ)è«–ç†ä¸Šã®è¦ªã¸ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
 	
 protected:
 	UIElement();
 	virtual ~UIElement();
 
-	/** Žw’è‚µ‚½—v‘f‚ð‚±‚Ì—v‘f‚ÉƒrƒWƒ…ƒAƒ‹Žq—v‘f‚Æ‚µ‚Ä’Ç‰Á‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸè¦ç´ ã‚’ã“ã®è¦ç´ ã«ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«å­è¦ç´ ã¨ã—ã¦è¿½åŠ ã—ã¾ã™ã€‚*/
 	//void AddVisualChild(UIElement* element);
 
-	/** Žw’è‚µ‚½—v‘f‚ð‚±‚Ì—v‘f‚ÌƒrƒWƒ…ƒAƒ‹ƒcƒŠ[‚©‚çíœ‚µ‚Ü‚·B*/
+	/** æŒ‡å®šã—ãŸè¦ç´ ã‚’ã“ã®è¦ç´ ã®ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ„ãƒªãƒ¼ã‹ã‚‰å‰Šé™¤ã—ã¾ã™ã€‚*/
 	//void RemoveVisualChild(UIElement* element);
 
-	/** ƒtƒHƒ“ƒg‚É‚æ‚éƒŒƒCƒAƒEƒgî•ñ‚ð–³Œø‰»‚µ‚Ü‚·BŽŸ‚ÌƒŒƒCƒAƒEƒgXVƒpƒX‚ÅAƒtƒHƒ“ƒgî•ñ‚ªÄ\’z‚³‚ê‚Ü‚·B*/
+	/** ãƒ•ã‚©ãƒ³ãƒˆã«ã‚ˆã‚‹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆæƒ…å ±ã‚’ç„¡åŠ¹åŒ–ã—ã¾ã™ã€‚æ¬¡ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆæ›´æ–°ãƒ‘ã‚¹ã§ã€ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ãŒå†æ§‹ç¯‰ã•ã‚Œã¾ã™ã€‚*/
 	void InvalidateFont() { m_invalidateFlags |= detail::InvalidateFlags::Font; }
 	
 	/**
-		@brief		‚±‚Ì—v‘f‚ð•\Ž¦‚·‚é‚½‚ß‚É•K—v‚ÈƒTƒCƒY‚ðŒv‘ª‚µ‚Ü‚·B
-		@params[in]	constraint	: ‚±‚Ì—v‘f‚ð”z’u‚Å‚«‚é—Ìˆæ‚ÌÅ‘åƒTƒCƒYB’Êí‚Íe—v‘f‚ÌƒTƒCƒY‚ª“n‚³‚ê‚Ü‚·B
-		@return		‚±‚Ì—v‘f‚ÌƒŒƒCƒAƒEƒg‚ÌÛ‚É•K—v‚Æ‚È‚éÅ’áŒÀ‚ÌƒTƒCƒYB‚±‚Ì—v‘f‚ÌƒTƒCƒY‚ÆA‘S‚Ä‚ÌŽq—v‘f‚ÌƒTƒCƒY‚ÉŠî‚Ã‚«Œˆ’è‚µ‚Ü‚·BInf ‚Å‚ ‚Á‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
-		@details	constraint ‚ÍAScrollViewer “™‚ÌƒRƒ“ƒeƒ“ƒc‚Æ‚È‚Á‚½ê‡‚Í Infinity ‚ª“n‚³‚ê‚é‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+		@brief		ã“ã®è¦ç´ ã‚’è¡¨ç¤ºã™ã‚‹ãŸã‚ã«å¿…è¦ãªã‚µã‚¤ã‚ºã‚’è¨ˆæ¸¬ã—ã¾ã™ã€‚
+		@params[in]	constraint	: ã“ã®è¦ç´ ã‚’é…ç½®ã§ãã‚‹é ˜åŸŸã®æœ€å¤§ã‚µã‚¤ã‚ºã€‚é€šå¸¸ã¯è¦ªè¦ç´ ã®ã‚µã‚¤ã‚ºãŒæ¸¡ã•ã‚Œã¾ã™ã€‚
+		@return		ã“ã®è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®éš›ã«å¿…è¦ã¨ãªã‚‹æœ€ä½Žé™ã®ã‚µã‚¤ã‚ºã€‚ã“ã®è¦ç´ ã®ã‚µã‚¤ã‚ºã¨ã€å…¨ã¦ã®å­è¦ç´ ã®ã‚µã‚¤ã‚ºã«åŸºã¥ãæ±ºå®šã—ã¾ã™ã€‚Inf ã§ã‚ã£ã¦ã¯ãªã‚Šã¾ã›ã‚“ã€‚
+		@details	constraint ã¯ã€ScrollViewer ç­‰ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã¨ãªã£ãŸå ´åˆã¯ Infinity ãŒæ¸¡ã•ã‚Œã‚‹ã“ã¨ãŒã‚ã‚Šã¾ã™ã€‚
 	*/
 	virtual SizeF MeasureOverride(const SizeF& constraint);
 
 	/**
-		@brief		Žq—v‘f‚Ì”z’u‚ðŠm’è‚µA‚±‚Ì—v‘f‚ÌÅIƒTƒCƒY‚ð•Ô‚µ‚Ü‚·B
-		@param[in]	finalSize	: e—v‘f‚ª‚±‚Ì—v‘f‚É‘Î‚µ‚ÄŠ„‚è“–‚Ä‚½—Ìˆæ‚ÌƒTƒCƒYB
-		@return		—v‘f‚ÌÅIƒTƒCƒYB—v‘f‚Ì•`‰æŽž‚É‚±‚ÌƒTƒCƒY‚ðŽg—p‚µ‚Ü‚·B
-		@details	”h¶ƒNƒ‰ƒX‚Í finalSize ‚æ‚è‚à‘å‚«‚¢ƒTƒCƒY‚ð•Ô‚·‚ÆA•`‰æŽž‚ÉŒ©Ø‚ê‚ª”­¶‚µ‚Ü‚·B
+		@brief		å­è¦ç´ ã®é…ç½®ã‚’ç¢ºå®šã—ã€ã“ã®è¦ç´ ã®æœ€çµ‚ã‚µã‚¤ã‚ºã‚’è¿”ã—ã¾ã™ã€‚
+		@param[in]	finalSize	: è¦ªè¦ç´ ãŒã“ã®è¦ç´ ã«å¯¾ã—ã¦å‰²ã‚Šå½“ã¦ãŸé ˜åŸŸã®ã‚µã‚¤ã‚ºã€‚
+		@return		è¦ç´ ã®æœ€çµ‚ã‚µã‚¤ã‚ºã€‚è¦ç´ ã®æç”»æ™‚ã«ã“ã®ã‚µã‚¤ã‚ºã‚’ä½¿ç”¨ã—ã¾ã™ã€‚
+		@details	æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã¯ finalSize ã‚ˆã‚Šã‚‚å¤§ãã„ã‚µã‚¤ã‚ºã‚’è¿”ã™ã¨ã€æç”»æ™‚ã«è¦‹åˆ‡ã‚ŒãŒç™ºç”Ÿã—ã¾ã™ã€‚
 	*/
 	virtual SizeF ArrangeOverride(const SizeF& finalSize);
 
-	/** ‚±‚Ì—v‘f‚ÌƒŒƒCƒAƒEƒg‚ÌXV‚ªŠ®—¹‚µ‚½Žž‚ÉŒÄ‚Ño‚³‚ê‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®æ›´æ–°ãŒå®Œäº†ã—ãŸæ™‚ã«å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚*/
 	virtual void OnLayoutUpdated();
 
 	/**
-		@brief	‚±‚Ì—v‘f‚Ì•`‰æ‚ðs‚¢‚Ü‚·B
+		@brief	ã“ã®è¦ç´ ã®æç”»ã‚’è¡Œã„ã¾ã™ã€‚
 	*/
 	//virtual void OnRender(RenderingContext* painter);
 
@@ -140,14 +140,14 @@ LN_INTERNAL_ACCESS:
 	void UpdateTransformHierarchy();
 
 private:
-	// “o˜^‚³‚ê‚Ä‚¢‚éƒnƒ“ƒhƒ‰‚ÆA(Bubble‚Ìê‡)˜_—ã‚Ìe‚ÖƒCƒxƒ“ƒg‚ð’Ê’m‚·‚é
+	// ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ãƒ‰ãƒ©ã¨ã€(Bubbleã®å ´åˆ)è«–ç†ä¸Šã®è¦ªã¸ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
 
 	UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
 	UIElement*				m_parent;
-	SizeF					m_desiredSize;			// MeasureLayout() ‚ÅŒˆ’è‚³‚ê‚é‚±‚ÌƒRƒ“ƒgƒ[ƒ‹‚Ì—v‹ƒTƒCƒY
-	RectF					m_finalLocalRect;		// •`‰æ‚ÉŽg—p‚·‚éÅI‹«ŠE‹éŒ` (ƒOƒ[ƒoƒ‹À•WŒn=RootFrame ‚Ìƒ[ƒJƒ‹À•WŒn)
+	SizeF					m_desiredSize;			// MeasureLayout() ã§æ±ºå®šã•ã‚Œã‚‹ã“ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¦æ±‚ã‚µã‚¤ã‚º
+	RectF					m_finalLocalRect;		// æç”»ã«ä½¿ç”¨ã™ã‚‹æœ€çµ‚å¢ƒç•ŒçŸ©å½¢ (ã‚°ãƒ­ãƒ¼ãƒãƒ«åº§æ¨™ç³»=RootFrame ã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»)
 	RectF					m_finalGlobalRect;
 
 	// Property

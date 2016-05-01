@@ -1,80 +1,80 @@
-/*
+﻿/*
 
-	- Viewport �� Layer �̉�B
-	- Layer �� Camera �� UI �̕`���ƂȂ郌���_�[�^�[�Q�b�g�ƍl����B
+	- Viewport は Layer の塊。
+	- Layer は Camera や UI の描画先となるレンダーターゲットと考える。
 
 
 	Viewport
-	- Viewport �͕K�������_�[�^�[�Q�b�g�����B
+	- Viewport は必ずレンダーターゲットを持つ。
 
 	RenderingUnit (RenderingCompositeItem)
-	- Camera �� UIManager? �̃x�[�X�N���X�ƂȂ�B
-	- RenderingUnit �� Viewport �̎q�BCamera �ȂǂɁu���� RT �ɏ����Ăˁv��`����̂��d���B�|�X�g�G�t�F�N�g�͂��܂��B�ʂ̃N���X�ɕ����Ă��ǂ��B
-	- Render ���Ăׂ΃|�X�g�G�t�F�N�g���݂ŕ`�悳���B
-	- �������ݐ�̃����_�[�^�[�Q�b�g�����B���� RenderingUnit �Ƌ��L���Ă���o�b�N�o�b�t�@��������Ȃ����A�X�i�b�v�V���b�g��ۑ�����Ɨ��������̂�������Ȃ��B
-	- ClearMode �̓���������ōs���B
-	- �|�X�g�G�t�F�N�g�p�� RT �̃L���b�V�����ARenderingUnit �P�ʂƂȂ�BRenderingUnit ���܂����ꍇ�͎g���܂킵�Ă悢�B
-	- �D��x�͊֌W�Ȃ��B���C���[���ŕ`�悷��B
+	- Camera や UIManager? のベースクラスとなる。
+	- RenderingUnit は Viewport の子。Camera などに「この RT に書いてね」を伝えるのが仕事。ポストエフェクトはおまけ。別のクラスに分けても良い。
+	- Render を呼べばポストエフェクト込みで描画される。
+	- 書き込み先のレンダーターゲットを持つ。他の RenderingUnit と共有しているバックバッファかもしれないし、スナップショットを保存する独立したものかもしれない。
+	- ClearMode の動作もここで行う。
+	- ポストエフェクト用の RT のキャッシュも、RenderingUnit 単位となる。RenderingUnit をまたぐ場合は使いまわしてよい。
+	- 優先度は関係なし。レイヤー順で描画する。
 
-	RT �̃L���b�V��
+	RT のキャッシュ
 
-	�P�[�X�F�}���J�[
+	ケース：マリカー
 
-	�P�[�X�FSnapShotCamera ���ʏ�� Camera �ɐ؂�ւ�邱�Ƃ͂���H
-		�Ď��J�����̐؂�ւ��Ƃ��H
-		�� SnapShot �� RT �� Sprite �� 2D �r���[�ɕ\�����܂��傤�B
-
-
-	��	�܂Ƃ�
-
-	Viewport �́u�X�N���[���ɕ\�����邽�߂̃����_�[�^�[�Q�b�g�v�ƍl����B
-	�����_�����O�J�n�O�� Viewport ���W�v���A���̃t���[���ŁA��Ƀ|�X�g�G�t�F�N�g�Ɏg����
-	�����_�[�^�[�Q�b�g���L���b�V������̂��d���B
-
-	���̃����_�[�^�[�Q�b�g�́u���� Viewport ���I�[�i�[�Ƃ��鎩�����T�C�Y���郌���_�[�^�[�Q�b�g�v�Ƃ����
-	Scene �� Camera �Ƃ� ImageEffect �Ƃ�����͓Ɨ����Ďg����B Graphics �ɓ���Ă����Ă������B
+	ケース：SnapShotCamera が通常の Camera に切り替わることはある？
+		監視カメラの切り替えとか？
+		→ SnapShot の RT を Sprite で 2D ビューに表示しましょう。
 
 
-	- �����̃J�����̃����_�����O��1�̃r���[�|�[�g�ɂ܂Ƃ߂����B
-	- �|�X�g�G�t�F�N�g�̓J�����Ɋ��蓖�Ă����B���O�����C�y�ɁB
-	- �����J������1�̃r���[�|�[�g�ɋ��L���ď������ޏꍇ�A��̃J�����̃|�X�g�G�t�F�N�g�͑O�̃J�����̕`�挋�ʂɉe������B
-		���Ȃ��悤�ɂ���͓̂���B�|�X�g�G�t�F�N�g�J�n�O�͊�{�I�ɃN���A������B
-		�������Ȃ��悤�ɂ������Ȃ烌���_�[�^�[�Q�b�g�𕪂��Ă��炤�B
+	↑	まとめ
 
-	-	�N���A�̗L����w�i�F�́AViewport �� Camera ���ꂼ�ꂪ���B
-		Camera �̃N���A�́AViewport �Ƃ͊֌W�Ȃ��AScene �̃X�i�b�v�V���b�g���B�鎞�Ɏg���ׂ��B�f�t�H���g�� OFF�B
-		�P�ɃE�B���h�E�w�i�F��ς������Ƃ��̂Ƃ��� Viewport �̔w�i�F��ύX����B
+	Viewport は「スクリーンに表示するためのレンダーターゲット」と考える。
+	レンダリング開始前に Viewport を集計し、そのフレームで、主にポストエフェクトに使われる
+	レンダーターゲットをキャッシュするのも仕事。
 
-	-	�J�����ɂ́A�|�X�g�G�t�F�N�g�J�n��AScene�̃����_�����O���n�߂�O�ɁA
-		�J�����ɕ`���Ƃ��Ďw�肳��Ă��郌���_�[�^�[�Q�b�g�̓��e�����݂̃����_�[�^�[�Q�b�g�ɓ]������B
-		����ŁA���łɕ`��ς݂̃V�[���ɏ㏑������`�Ń|�X�g�G�t�F�N�g��K�p�ł���B
-		�I�v�V�����ɂ��Ă����������B
-
-	- �J�����̕`�揇�̎w��͂ǂ�����H
-		Viewport �� Camera �͓Ɨ����������B
-		Viewport �͂����܂Łu�����ɏ����Ă˃����_�����O�^�[�Q�b�g�v�����J���邾���B
-		����� Camera �ɃZ�b�g������A���邢�� UI �����ڏ������肷��B
-		Camera �̕`�揇�� Scene ���Ő��䂷��K�v������B
-
-		Unity �� �D��x(Camera.Depth) UE4 �̓T�|�[�g����ĂȂ��Hhttps://answers.unrealengine.com/questions/53233/render-in-offset-order.html
-
-		Viewport �ɂԂ牺���郌�C���[�ŊǗ�����H
-		�� �ł��AViewport ����Ɨ����Ă��� SceneSnapShot �Ƃ��̗D��x�͂ǂ�����Ďw�肷��H
-			�� �����ɂ͕s�\�ȋC������B
-				Scene ���ƁA����̏�ʂɂ��� Viewport+Layer�H
-				Layer �� �X�̗D��x �̏��Ń\�[�g���Ă͂ǂ����H
-				�D��x�� SnapShot �p�J���������ɕt���Ă����������B�E�B���h�E�ɕ`�悷��̂͊�{�I�Ɉ�ԍŌゾ���B
+	このレンダーターゲットは「ある Viewport をオーナーとする自動リサイズするレンダーターゲット」とすれば
+	Scene の Camera とか ImageEffect とかからは独立して使える。 Graphics に入れておいてもいい。
 
 
-	�|�X�g�G�t�F�N�g�̕`�����������T�C�Y������
-	�� �T�C�Y���L�[�Ƃ��ăL���b�V���������B
+	- 複数のカメラのレンダリングを1つのビューポートにまとめたい。
+	- ポストエフェクトはカメラに割り当てたい。取り外しも気軽に。
+	- 複数カメラが1つのビューポートに共有して書き込む場合、後のカメラのポストエフェクトは前のカメラの描画結果に影響する。
+		しないようにするのは難しい。ポストエフェクト開始前は基本的にクリアが走る。
+		もししないようにしたいならレンダーターゲットを分けてもらう。
 
-	- Viewport �� Layer ����������Ȃ�A���� Layer ��1�̃|�X�g�G�t�F�N�g���܂ޕ`��̂܂Ƃ܂�ƂȂ�B
+	-	クリアの有無や背景色は、Viewport と Camera それぞれが持つ。
+		Camera のクリアは、Viewport とは関係ない、Scene のスナップショットを撮る時に使うべき。デフォルトは OFF。
+		単にウィンドウ背景色を変えたいとかのときは Viewport の背景色を変更する。
 
-	- UE4 �� FRCPassPostProcessAA::Process �Ƃ��Q�l�ɂȂ邩���B
+	-	カメラには、ポストエフェクト開始後、Sceneのレンダリングを始める前に、
+		カメラに描画先として指定されているレンダーターゲットの内容を現在のレンダーターゲットに転送する。
+		これで、すでに描画済みのシーンに上書きする形でポストエフェクトを適用できる。
+		オプションにしてもいいかも。
 
-	- UE4 �݂����ɂ���ƁA1�̃|�X�g�G�t�F�N�g�I�u�W�F�N�g�͕����̃J�����Ȃǂ̃r���[����Q�Ƃ����B
-		�� �ŗL�̏�Ԃ����̂͂�낵���Ȃ��B�E�B���h�E�T�C�Y�Ƃ��B
+	- カメラの描画順の指定はどうする？
+		Viewport と Camera は独立させたい。
+		Viewport はあくまで「ここに書いてねレンダリングターゲット」を公開するだけ。
+		これを Camera にセットしたり、あるいは UI が直接書いたりする。
+		Camera の描画順は Scene 側で制御する必要がある。
+
+		Unity は 優先度(Camera.Depth) UE4 はサポートされてない？https://answers.unrealengine.com/questions/53233/render-in-offset-order.html
+
+		Viewport にぶら下がるレイヤーで管理する？
+		→ でも、Viewport から独立している SceneSnapShot とかの優先度はどうやって指定する？
+			→ 同時には不可能な気がする。
+				Scene 内と、それの上位にいる Viewport+Layer？
+				Layer → 個々の優先度 の順でソートしてはどうか？
+				優先度は SnapShot 用カメラだけに付けてもいいかも。ウィンドウに描画するのは基本的に一番最後だし。
+
+
+	ポストエフェクトの描画先を自動リサイズしたい
+	→ サイズをキーとしてキャッシュしたい。
+
+	- Viewport に Layer を持たせるなら、その Layer が1つのポストエフェクトを含む描画のまとまりとなる。
+
+	- UE4 の FRCPassPostProcessAA::Process とか参考になるかも。
+
+	- UE4 みたいにすると、1つのポストエフェクトオブジェクトは複数のカメラなどのビューから参照される。
+		→ 固有の状態を持つのはよろしくない。ウィンドウサイズとか。
 
 
 
@@ -235,9 +235,9 @@ void Viewport::MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Ma
 	//	backbufferSize = getSize();
 	//}
 
-	float sw = static_cast<float>(srcSize.width);   // �]����
+	float sw = static_cast<float>(srcSize.width);   // 転送元
 	float sh = static_cast<float>(srcSize.height);
-	float dw = static_cast<float>(dstSize.width);	// �]����
+	float dw = static_cast<float>(dstSize.width);	// 転送先
 	float dh = static_cast<float>(dstSize.height);
 
 	//if ( isFixedAspect() ) {
@@ -251,10 +251,10 @@ void Viewport::MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Ma
 	float ratio_w;
 	float ratio_h;
 
-	// �o�b�N�o�b�t�@�T�C�Y�ƃX�N���[���T�C�Y�������ꍇ
+	// バックバッファサイズとスクリーンサイズが同じ場合
 	if (sw == dw && sh == dh)
 	{
-		// ���̂܂ܐݒ�
+		// そのまま設定
 		new_x = 0;
 		new_y = 0;
 		new_w = sw;
@@ -264,11 +264,11 @@ void Viewport::MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Ma
 	}
 	else
 	{
-		// ���݂̃X�N���[���T�C�Y(�f�t�H���g�r���[�|�[�g�̃T�C�Y)�Ɖ�ʃT�C�Y�̔䗦�v�Z
+		// 現在のスクリーンサイズ(デフォルトビューポートのサイズ)と画面サイズの比率計算
 		ratio_w = dw / sw;
 		ratio_h = dh / sh;
 
-		// �c�����ɍ��킹�� ( ���E���]�� )
+		// 縦方向に合わせる ( 左右が余る )
 		if (ratio_w > ratio_h)
 		{
 			new_w = static_cast< float >(sw * ratio_h);
@@ -276,7 +276,7 @@ void Viewport::MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Ma
 			new_x = static_cast< float >((dw / 2) - (new_w / 2));
 			new_y = 0;
 		}
-		//�������ɂ��킹��
+		//横方向にあわせる
 		else
 		{
 			new_w = static_cast< float >(dw);

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 
 LN_NAMESPACE_BEGIN
@@ -12,7 +12,7 @@ public:
 
 public:
 
-	// CONTROLOBJECT ƒAƒmƒe[ƒVƒ‡ƒ“ŠÖŒW
+	// CONTROLOBJECT ã‚¢ãƒãƒ†ãƒ¼ã‚·ãƒ§ãƒ³é–¢ä¿‚
 	virtual bool IsVisible() const = 0;
 	virtual const Matrix& GetMatrix() const = 0;
 	virtual float GetOpacity() const = 0;
@@ -20,10 +20,10 @@ public:
 	virtual float FindMorphBlend(const String& name) const = 0;
 
 
-	// ƒIƒuƒWƒFƒNƒg‚Ìƒ[ƒ‹ƒhs—ñ‚ÆAƒJƒƒ‰‚Ü‚½‚Íƒ‰ƒCƒg‚Ìƒrƒ…[EƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğ‹‚ß‚éB
-	// out ‚É’l‚ğŠi”[‚µ‚½ê‡‚Í true ‚ğ•Ô‚·B
+	// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã¨ã€ã‚«ãƒ¡ãƒ©ã¾ãŸã¯ãƒ©ã‚¤ãƒˆã®ãƒ“ãƒ¥ãƒ¼ãƒ»ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹ã€‚
+	// out ã«å€¤ã‚’æ ¼ç´ã—ãŸå ´åˆã¯ true ã‚’è¿”ã™ã€‚
 	//virtual bool GetObjectMatrix(Matrix* out, MMEVariableRequest req, int lightIndex) const = 0;
-	// TODO: «‚Ì‚Í‚Ç‚Ì‚İ‚¿•K—vB‚È‚çAª‚Ì‚Í static ‚É‚Å‚«‚È‚¢H
+	// TODO: â†“ã®ã¯ã©ã®ã¿ã¡å¿…è¦ã€‚ãªã‚‰ã€â†‘ã®ã¯ static ã«ã§ããªã„ï¼Ÿ
 	virtual LightNodeList* GetAffectLightList() = 0;
 };
 

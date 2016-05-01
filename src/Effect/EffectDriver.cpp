@@ -1,6 +1,6 @@
-/*
-	Œ»ó Effekseer ‚¾‚¯‘Î‰ž‚µ‚Ä‚¢‚é‚ªA¡Œã•¡”‚Ìƒc[ƒ‹‚ð“¯ŽžŽg—p‚Æ‚©l‚¦‚é‚Æ
-	ƒLƒƒƒbƒVƒ…‚Í Manager ‚Å‚Í‚È‚­‚±‚¿‚ç‚ÉŽ‚½‚¹‚Ä‚¨‚¢‚½•û‚ª“s‡‚ª‚¢‚¢B
+ï»¿/*
+	ç¾çŠ¶ Effekseer ã ã‘å¯¾å¿œã—ã¦ã„ã‚‹ãŒã€ä»Šå¾Œè¤‡æ•°ã®ãƒ„ãƒ¼ãƒ«ã‚’åŒæ™‚ä½¿ç”¨ã¨ã‹è€ƒãˆã‚‹ã¨
+	ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã¯ Manager ã§ã¯ãªãã“ã¡ã‚‰ã«æŒãŸã›ã¦ãŠã„ãŸæ–¹ãŒéƒ½åˆãŒã„ã„ã€‚
 */
 #include "Internal.h"
 #include "EffectDriver.h"

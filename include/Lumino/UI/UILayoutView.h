@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIInjectedInputReceiver.h"
 
@@ -6,8 +6,8 @@ LN_NAMESPACE_BEGIN
 
 /**
 	@brief		
-	@details	UILayoutView ‚ÍƒlƒCƒeƒBƒuƒEƒBƒ“ƒhƒE‚Æ UI ƒVƒXƒeƒ€‚ÌÚ‡“_‚Æ‚È‚èA
-				UI ƒŒƒCƒAƒEƒg‚Ìƒ‹[ƒg—v‘f‚ğ•Û‚µ‚Ü‚·B
+	@details	UILayoutView ã¯ãƒã‚¤ãƒ†ã‚£ãƒ–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¨ UI ã‚·ã‚¹ãƒ†ãƒ ã®æ¥åˆç‚¹ã¨ãªã‚Šã€
+				UI ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®ãƒ«ãƒ¼ãƒˆè¦ç´ ã‚’ä¿æŒã—ã¾ã™ã€‚
 */
 class UILayoutView
 	: public RefObject
@@ -15,7 +15,7 @@ class UILayoutView
 {
 public:
 
-	/** ‚±‚Ì—v‘f‚ªŠÖ˜A•t‚¯‚ç‚ê‚Ä‚¢‚é UIContext ‚ğæ“¾‚µ‚Ü‚·B*/
+	/** ã“ã®è¦ç´ ãŒé–¢é€£ä»˜ã‘ã‚‰ã‚Œã¦ã„ã‚‹ UIContext ã‚’å–å¾—ã—ã¾ã™ã€‚*/
 	UIContext* GetOwnerContext() { return m_ownerContext; }
 
 LN_INTERNAL_ACCESS:

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -14,7 +14,7 @@ class InputBinding
 public:
 
 	/**
-		@brief		InputBinding ƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+		@brief		InputBinding ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static InputBindingPtr Create(const String& bindingName, Key key, ModifierKeys modifier = ModifierKeys::None);
 

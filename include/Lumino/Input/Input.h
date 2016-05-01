@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 
@@ -12,27 +12,27 @@ class Input
 public:
 
 	/**
-		@brief		ƒ{ƒ^ƒ“‚ªŒ»İ‰Ÿ‚³‚ê‚Ä‚¢‚é‚©‚ğ”»’è‚µ‚Ü‚·B
+		@brief		ãƒœã‚¿ãƒ³ãŒç¾åœ¨æŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹ã‚’åˆ¤å®šã—ã¾ã™ã€‚
 	*/
 	static bool IsPressed(const StringRef& bindingName);
 
 	/**
-		@brief		ƒ{ƒ^ƒ“‚ªV‚µ‚­‰Ÿ‚³‚ê‚½uŠÔ‚ğ”»’è‚µ‚Ü‚·B
+		@brief		ãƒœã‚¿ãƒ³ãŒæ–°ã—ãæŠ¼ã•ã‚ŒãŸç¬é–“ã‚’åˆ¤å®šã—ã¾ã™ã€‚
 	*/
 	static bool IsTriggered(const StringRef& bindingName);
 
 	/**
-		@brief		ƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½uŠÔ‚ğ”»’è‚µ‚Ü‚·B
+		@brief		ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚ŒãŸç¬é–“ã‚’åˆ¤å®šã—ã¾ã™ã€‚
 	*/
 	static bool IsOffTriggered(const StringRef& bindingName);
 
 	/**
-		@brief		ƒ{ƒ^ƒ“‚ªV‚µ‚­‰Ÿ‚³‚ê‚½uŠÔ‚ÆƒŠƒs[ƒgó‘Ô‚ğ”»’è‚µ‚Ü‚·B
+		@brief		ãƒœã‚¿ãƒ³ãŒæ–°ã—ãæŠ¼ã•ã‚ŒãŸç¬é–“ã¨ãƒªãƒ”ãƒ¼ãƒˆçŠ¶æ…‹ã‚’åˆ¤å®šã—ã¾ã™ã€‚
 	*/
 	static bool IsRepeated(const StringRef& bindingName);
 
 	/**
-		@brief		w’è‚µ‚½²‚ÌƒAƒiƒƒO’l‚ğæ“¾‚µ‚Ü‚·B(0.0`1.0)
+		@brief		æŒ‡å®šã—ãŸè»¸ã®ã‚¢ãƒŠãƒ­ã‚°å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚(0.0ï½1.0)
 	*/
 	static float GetAxisValue(const StringRef& bindingName);
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Texture.h"
 #include "ImageEffect/ImageEffect.h"
@@ -11,7 +11,7 @@ public:
 	RenderTarget* RequestRenderTarget(int width, int height);
 };
 
-//// Camera ‚Æ‚©‚ªŒp³‚·‚é
+//// Camera ã¨ã‹ãŒç¶™æ‰¿ã™ã‚‹
 //class IRenderingCompositionItem
 //{
 //public:
@@ -30,13 +30,13 @@ protected:
 	virtual ~ViewportLayer();
 
 
-	///// ‘O•`‰æ
+	///// å‰æç”»
 	//virtual void PreRender(const SizeF& viewSize) {}
 
-	/// –{•`‰æ
+	/// æœ¬æç”»
 	virtual void Render(RenderTarget* renderTarget) = 0;
 
-	/// Œã•`‰æ
+	/// å¾Œæç”»
 	void PostRender(RenderingContext2* renderingContext, RenderTarget** primaryLayerTarget, RenderTarget** secondaryLayerTarget);
 
 private:
@@ -69,7 +69,7 @@ public:
 		}
 	}
 
-LN_INTERNAL_ACCESS:	// TODO: ‚¢‚Ü‚Í‚Æ‚è‚ ‚¦‚¸“à•”—p“r
+LN_INTERNAL_ACCESS:	// TODO: ã„ã¾ã¯ã¨ã‚Šã‚ãˆãšå†…éƒ¨ç”¨é€”
 	Viewport();
 	virtual ~Viewport();
 	void Initialize(GraphicsManager* manager, RenderTarget* renderTarget);

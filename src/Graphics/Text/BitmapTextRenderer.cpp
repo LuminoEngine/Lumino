@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "BitmapTextRenderer.h"
@@ -84,7 +84,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 		Rect dstRect;
 		Rect srcRect;
 
-		// ˜gü—pƒrƒbƒgƒ}ƒbƒv‚ª‚ ‚éê‡‚Íæ‚É•`‰æ‚·‚é
+		// æž ç·šç”¨ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ãŒã‚ã‚‹å ´åˆã¯å…ˆã«æç”»ã™ã‚‹
 		if (gb->OutlineBitmap != nullptr)
 		{
 			dstRect.Set(
@@ -96,7 +96,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 			target->BitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
 		}
 
-		// “à‘¤ (or ’Êí) •”•ª‚Ì•`‰æ
+		// å†…å´ (or é€šå¸¸) éƒ¨åˆ†ã®æç”»
 		if (gb->GlyphBitmap != nullptr)
 		{
 			dstRect.Set(

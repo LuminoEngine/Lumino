@@ -1,4 +1,4 @@
-/*
+Ôªø/*
 	@file	WaveDecoder.h
 */
 #pragma once
@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
-/// Wave ÉfÅ[É^ AudioStream
+/// Wave „Éá„Éº„Çø AudioStream
 class WaveDecoder
 	: public AudioDecoder
 {
@@ -30,15 +30,15 @@ public:
 	virtual void Reset() {}
 
 private:
-	Stream*			mInStream;				///< ì¸óÕÉXÉgÉäÅ[ÉÄ
-	WaveFormat		mWaveFormat;			///< PCM ópÉtÉHÅ[É}ÉbÉg
-	uint32_t		mSourceDataSize;		///< âπê∫ÉfÅ[É^ïîï™ÇÃÉTÉCÉY
-	uint64_t		mDataOffset;			///< ÉXÉgÉäÅ[ÉÄì‡ÇÃ PCM ÉfÅ[É^ÇÃêÊì™Ç‹Ç≈ÇÃÉIÉtÉZÉbÉgÉoÉCÉgêî
-	uint32_t		mPCMDataSize;			///< ÉXÉgÉäÅ[ÉÄì‡ÇÃ PCM ÉfÅ[É^ÇÃÉTÉCÉY
-	uint32_t		mTotalTime;				///< ëSëÃÇÃçƒê∂éûä‘ ( É~Éäïb )
-	uint8_t*		mOnmemoryPCMBuffer;		///< ÉIÉìÉÅÉÇÉäçƒê∂ópÇÃÉfÅ[É^Çì«Ç›çûÇﬁÉoÉbÉtÉ@
-	uint32_t		mOnmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer ÇÃÉTÉCÉY ( ç°ÇÃÇ∆Ç±ÇÎ mDataOffset Ç∆ìØÇ∂ )
-	uint32_t		mTotalSamples;          ///< ëSëÃÇÃçƒê∂ÉTÉìÉvÉãêî
+	Stream*			mInStream;				///< ÂÖ•Âäõ„Çπ„Éà„É™„Éº„É†
+	WaveFormat		mWaveFormat;			///< PCM Áî®„Éï„Ç©„Éº„Éû„ÉÉ„Éà
+	uint32_t		mSourceDataSize;		///< Èü≥Â£∞„Éá„Éº„ÇøÈÉ®ÂàÜ„ÅÆ„Çµ„Ç§„Ç∫
+	uint64_t		mDataOffset;			///< „Çπ„Éà„É™„Éº„É†ÂÜÖ„ÅÆ PCM „Éá„Éº„Çø„ÅÆÂÖàÈ†≠„Åæ„Åß„ÅÆ„Ç™„Éï„Çª„ÉÉ„Éà„Éê„Ç§„ÉàÊï∞
+	uint32_t		mPCMDataSize;			///< „Çπ„Éà„É™„Éº„É†ÂÜÖ„ÅÆ PCM „Éá„Éº„Çø„ÅÆ„Çµ„Ç§„Ç∫
+	uint32_t		mTotalTime;				///< ÂÖ®‰Ωì„ÅÆÂÜçÁîüÊôÇÈñì ( „Éü„É™Áßí )
+	uint8_t*		mOnmemoryPCMBuffer;		///< „Ç™„É≥„É°„É¢„É™ÂÜçÁîüÁî®„ÅÆ„Éá„Éº„Çø„ÇíË™≠„ÅøËæº„ÇÄ„Éê„ÉÉ„Éï„Ç°
+	uint32_t		mOnmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer „ÅÆ„Çµ„Ç§„Ç∫ ( ‰ªä„ÅÆ„Å®„Åì„Çç mDataOffset „Å®Âêå„Åò )
+	uint32_t		mTotalSamples;          ///< ÂÖ®‰Ωì„ÅÆÂÜçÁîü„Çµ„É≥„Éó„É´Êï∞
 	Threading::Mutex	m_mutex;
 
 };

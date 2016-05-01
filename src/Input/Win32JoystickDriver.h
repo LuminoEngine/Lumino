@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #define DIRECTINPUT_VERSION 0x0800
@@ -10,13 +10,13 @@
 
 LN_NAMESPACE_BEGIN
 
-/// �W���C�X�e�B�b�N1��
+/// ジョイスティック1つ分
 class Win32JoystickDriver
     : public RefObject
 {
 public:
 
-	/// �X�e�B�b�N�̏�Ԃ�\���\����
+	/// スティックの状態を表す構造体
 	struct AnalogState
 	{
 		int32_t	X1;
@@ -31,37 +31,37 @@ public:
 
 public:
 
-	/// ������ (xinputNumber �� XInput �p�R���g���[���̊��蓖�Ĕԍ��BXInput �ȊO�̂��̂� -1 ��n������)
+	/// 初期化 (xinputNumber は XInput 用コントローラの割り当て番号。XInput 以外のものは -1 を渡すこと)
 	void Initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
 
-	/// ���
+	/// 解放
 	void Dispose();
 
-	/// �W���C�p�b�h�̏�Ԃ��擾����
+	/// ジョイパッドの状態を取得する
 	void GetJoypadDeviceState(JoypadDeviceState* state);
 
-	/// XInput �f�o�C�X���𔻒肷��
+	/// XInput デバイスかを判定する
 	bool IsXInputDevice() const { return mXInputNo >= 0; }
 
-	/// �W���C�p�b�h�̐U�����J�n����
+	/// ジョイパッドの振動を開始する
 	void StartVibration(int power, int time);
 
-	/// �W���C�p�b�h�̐U�����~����
+	/// ジョイパッドの振動を停止する
 	void StopVibration();
 
-	/// �t���[���X�V
+	/// フレーム更新
 	void Update();
 
 private:
 
-	/// �W���C�X�e�B�b�N�̎���񋓂���֐�
+	/// ジョイスティックの軸を列挙する関数
 	static BOOL CALLBACK EnumAxesCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID thisDevice);
 
 public:
 
-	static const int AXIS_RANGE = 1000;							///< DirectInput �ɐݒ肷�鎲�͈̔� ( -1000�`1000 )
-	static const int MAX_BUTTON_NUM = JoypadDeviceState::MaxJoypadButtons;	///< �{�^���̐�
-	static const int MAX_AXIS_NUM = JoypadDeviceState::MaxJoypadButtons;			///< ���̐�
+	static const int AXIS_RANGE = 1000;							///< DirectInput に設定する軸の範囲 ( -1000～1000 )
+	static const int MAX_BUTTON_NUM = JoypadDeviceState::MaxJoypadButtons;	///< ボタンの数
+	static const int MAX_AXIS_NUM = JoypadDeviceState::MaxJoypadButtons;			///< 軸の数
 	
 
 private:
@@ -80,12 +80,12 @@ private:
 	int                     mXInputNo;
 };
 
-/// XInput DLL ���W���[��
+/// XInput DLL モジュール
 class XInputModule
 {
 public:
 
-	/// ������
+	/// 初期化
 	static void Initialize();
 
 public:
@@ -104,7 +104,7 @@ public:
 	static MD_XInputSetState   XInputSetState;
 
 private:
-	static DllLoader			m_XInputModule;   ///< XINPUT_DLL ("XInput�`.dll")
+	static DllLoader			m_XInputModule;   ///< XINPUT_DLL ("XInput～.dll")
 };
 
 LN_NAMESPACE_END

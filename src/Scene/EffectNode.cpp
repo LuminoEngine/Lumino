@@ -1,23 +1,23 @@
-/*
+﻿/*
 	[2015/12/19]
-�G�t�F�N�g�̃o�b�` (�Ƃ������ق��̃X�v���C�g�⃂�f���̃o�b�`�ɂ����Ă͂܂邩��) �ɂ��āB
+エフェクトのバッチ (というかほかのスプライトやモデルのバッチにも当てはまるかも) について。
 
-�������I�u�W�F�N�g�͌ォ��`�悷��̂��S���B
-�G�t�F�N�g�Ɋւ��Ă͂قƂ�ǂ̃P�[�X��PostRender �ȃ^�C�~���O�ł̃o�b�`�ɂȂ�B
+半透明オブジェクトは後から描画するのが鉄則。
+エフェクトに関してはほとんどのケースでPostRender なタイミングでのバッチになる。
 
-�V�[�����I�u�W�F�N�g�̏����Ƃ��̓Q�[���I�u�W�F�N�g�Ƃ��Ĉ����̂������I�����A
-���g�I�ɂ͂�����o�b�`�`��Ƃ������B
+シーン内オブジェクトの松明とかはゲームオブジェクトとして扱うのが直感的だが、
+中身的にはこれもバッチ描画としたい。
 
-EffectNode �Ƃ���1�̃N���X�Ńo�b�`ON/OFF�̃t���O����������H
-������ł����Ǝv���BON/OFF�ŃN���X�����Ă��A�����悤�Ȍ��J�֐����������N���X��2�ł��邾�������B
+EffectNode という1つのクラスでバッチON/OFFのフラグを持たせる？
+→それでいいと思う。ON/OFFでクラス分けても、同じような公開関数を持ったクラスが2つできるだけだし。
 
-�����A�o�b�`�`����ǂ̃^�C�~���O�ōs�����͐���ł����ق��������Ǝv���B
-�i�G�t�F�N�g�͊�{Post�Ȃ̂ŁA���̃o�b�`�`��p�j
-�� Pre/Post �������ƕs���ȋC������B�D��x��q�m�[�h���Ƃ��Ń^�C�~���O�𐧌�ł���悤�� SceneNode �����ɂ����������B
-	BatchedEffectRenderer�B
-	EffectNode �� Draw() �I�[�o�[���C�h�ŁABatchedEffectRenderer �ɑ΂��ď�������ł����B
-	�� �R���������� BatchedEffectRenderer::Draw �̌�ɌĂ΂ꂽ EffectNode::Draw() �����ۂ͕`����Ȃ����ƂɂȂ�B
-		EffectNode::PreDraw() �ŕ`���̂����������B
+ただ、バッチ描画をどのタイミングで行うかは制御できたほうがいいと思う。
+（エフェクトは基本Postなので、他のバッチ描画用）
+→ Pre/Post だけだと不足な気がする。優先度や子ノード化とかでタイミングを制御できるように SceneNode 扱いにしたいかも。
+	BatchedEffectRenderer。
+	EffectNode は Draw() オーバーライドで、BatchedEffectRenderer に対して書き込んでいく。
+	→ コレだけだと BatchedEffectRenderer::Draw の後に呼ばれた EffectNode::Draw() が実際は描かれないことになる。
+		EffectNode::PreDraw() で描くのがいいかも。
 
 
 */

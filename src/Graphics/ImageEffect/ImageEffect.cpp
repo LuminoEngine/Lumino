@@ -1,20 +1,20 @@
-/*
-	[2016/3/16] ImageEffect �� OnUpdate �͎����Ȃ��B
-		Graphics ���W���[���Ƃ��ẮA�t���[�����[�N�I�Ȏ��ԍX�V�̋@�\�͎��ׂ��ł͂Ȃ��Ǝv���B
-		Particle �� Model �̓��[�U�[�ɒ��� Update �Ăяo���Ă��炤���A
-		Scene ���W���[���Ń��b�v�����N���X����Ăяo�����B
+﻿/*
+	[2016/3/16] ImageEffect は OnUpdate は持たない。
+		Graphics モジュールとしては、フレームワーク的な時間更新の機能は持つべきではないと思う。
+		Particle や Model はユーザーに直接 Update 呼び出してもらうか、
+		Scene モジュールでラップしたクラスから呼び出すか。
 
-		���ł��Ƃ����ƁAEditor ���[�h�ł� OnUpdate �͕��ʎg��Ȃ�����B
-		���Ƀc�[���E�B���h�E�B
-		�`�悪�K�v�ɂȂ����� Invalidate() ���čĕ`�悪�K�v�Ȃ��Ƃ������āA
-		���Ƃł܂Ƃ߂ĕ`�悵�Ă��炤�Ƃ����X�^�C���B
-		���̂Ƃ��̃A�j���[�V�����́AOnUpdate �ł͂Ȃ��A�j���[�V�������Ǘ����郂�W���[����
-		AnimationClock �݂����� (WPF�I��) �̂�o�^���ăv���p�e�B�ɑ΂��ăA�j���[�V��������̂���ʓI�B
+		何でかというと、Editor モードでは OnUpdate は普通使わないから。
+		特にツールウィンドウ。
+		描画が必要になったら Invalidate() して再描画が必要なことを示して、
+		あとでまとめて描画してもらうというスタイル。
+		このときのアニメーションは、OnUpdate ではなくアニメーションを管理するモジュールに
+		AnimationClock みたいな (WPF的な) のを登録してプロパティに対してアニメーションするのが一般的。
 
-		������Ǝg���Â炭�Ȃ邩������Ȃ����ǁA�J�ڎ��Ԃ��w�肵�� OnUpdate �ŃA�j���[�V��������]���̕��@�͔p�~�B
-		�����A����ς�g�������Ȃ邱�Ƃ͏o�Ă���Ǝv���̂ŁA
-		Game ���[�h�p�̃A�j���[�V�����Ǘ����W���[���� AnimationClock ��o�^����悤��
-		���[�e�B���e�B�֐������̂͌�X�K�v�����B
+		ちょっと使いづらくなるかもしれないけど、遷移時間を指定して OnUpdate でアニメーションする従来の方法は廃止。
+		ただ、やっぱり使いたくなることは出てくると思うので、
+		Game モード用のアニメーション管理モジュールに AnimationClock を登録するような
+		ユーティリティ関数を作るのは後々必要そう。
 */
 #include "../Internal.h"
 #include <Lumino/Graphics/ImageEffect/ImageEffect.h>

@@ -1,4 +1,4 @@
-/**
+﻿/**
 	@file	Clipboard.h
 */
 #pragma once
@@ -7,20 +7,20 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	�V�X�e���N���b�v�{�[�h�Ƃ̃f�[�^�]�����s���܂��B
+	@brief	システムクリップボードとのデータ転送を行います。
 */
 class Clipboard
 {
 public:
 
 	/**
-		@brief	�N���b�v�{�[�h�ɕ�����f�[�^���i�[���܂��B
+		@brief	クリップボードに文字列データを格納します。
 	*/
 	static void SetText(PlatformWindow* window, const String& text);
 
 	/**
-		@brief	�N���b�v�{�[�h�Ɋi�[����Ă��镶����f�[�^���擾���܂��B
-		@return	�i�[����Ă���f�[�^��������ł͂Ȃ��ꍇ�A��̕������Ԃ��܂��B
+		@brief	クリップボードに格納されている文字列データを取得します。
+		@return	格納されているデータが文字列ではない場合、空の文字列を返します。
 	*/
 	static String GetText(PlatformWindow* window);
 };

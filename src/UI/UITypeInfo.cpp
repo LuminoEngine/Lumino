@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UITypeInfo.h>
 
@@ -42,13 +42,13 @@ UITypeInfo::UITypeInfo(
 //	{
 //		if (dynamicEvent == ev)
 //		{
-//			// owner ‚É AddHandler ‚³‚ê‚Ä‚¢‚éƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰‚ðŒÄ‚Ño‚·B
+//			// owner ã« AddHandler ã•ã‚Œã¦ã„ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ã‚’å‘¼ã³å‡ºã™ã€‚
 //			dynamicEvent->CallEvent(owner, e);
-//			return e->handled;	// ev ‚Æ“¯‚¶ƒCƒxƒ“ƒg‚Í1‚Â‚µ‚©ƒŠƒXƒg“à‚É–³‚¢‚Í‚¸‚È‚Ì‚Å‚·‚® return
+//			return e->handled;	// ev ã¨åŒã˜ã‚¤ãƒ™ãƒ³ãƒˆã¯1ã¤ã—ã‹ãƒªã‚¹ãƒˆå†…ã«ç„¡ã„ã¯ãšãªã®ã§ã™ã return
 //		}
 //	}
 //
-//	// ƒx[ƒXƒNƒ‰ƒX‚ª UITypeInfo ‚È‚çA‚³‚ç‚Éƒx[ƒXƒNƒ‰ƒX‚ðŒ©‚És‚­
+//	// ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ãŒ UITypeInfo ãªã‚‰ã€ã•ã‚‰ã«ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚’è¦‹ã«è¡Œã
 //	if (GetBaseClass()->GetInternalGroup() == 1)
 //	{
 //		return static_cast<UITypeInfo*>(GetBaseClass())->InvokeRoutedEvent(owner, ev, e);

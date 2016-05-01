@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 LN_NAMESPACE_BEGIN

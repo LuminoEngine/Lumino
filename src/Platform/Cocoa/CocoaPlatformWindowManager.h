@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "../PlatformWindowManagerBase.h"
 #include "CocoaPlatformWindow.h"

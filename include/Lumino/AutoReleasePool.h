@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <vector>
 #include <Lumino/Base/RefObject.h>
@@ -6,29 +6,29 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		©“® Release ‚·‚éƒIƒuƒWƒFƒNƒg‚ğŠÇ—‚·‚éƒv[ƒ‹B
+	@brief		è‡ªå‹• Release ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç®¡ç†ã™ã‚‹ãƒ—ãƒ¼ãƒ«ã€‚
 */
 class AutoReleasePool
 {
 public:
 
 	/**
-		@brief		ƒJƒŒƒ“ƒg‚Ì AutoRseleasePool ‚ğæ“¾‚µ‚Ü‚·B
+		@brief		ã‚«ãƒ¬ãƒ³ãƒˆã® AutoRseleasePool ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static AutoReleasePool* GetCurrent();
 
 	/**
-		@brief		‚±‚Ì AutoRseleasePool ‚ÉƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á‚µ‚Ü‚·B
+		@brief		ã“ã® AutoRseleasePool ã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ ã—ã¾ã™ã€‚
 	*/
 	void AddObject(RefObject* obj);
 
 	/**
-		@brief		’Ç‰Á‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Ì Release() ‚ğŒÄ‚Ño‚µAƒv[ƒ‹‚ğƒNƒŠƒA‚µ‚Ü‚·B
+		@brief		è¿½åŠ ã•ã‚Œã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Release() ã‚’å‘¼ã³å‡ºã—ã€ãƒ—ãƒ¼ãƒ«ã‚’ã‚¯ãƒªã‚¢ã—ã¾ã™ã€‚
 	*/
 	void Clear();
 
 	/**
-		@brief		ƒJƒŒƒ“ƒg‚Ì AutoRseleasePool ‚ÉƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á‚·‚éƒ†[ƒeƒBƒŠƒeƒB‚Å‚·B
+		@brief		ã‚«ãƒ¬ãƒ³ãƒˆã® AutoRseleasePool ã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ ã™ã‚‹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã§ã™ã€‚
 	*/
 	static void AddObjectToCurrent(RefObject* obj);
 

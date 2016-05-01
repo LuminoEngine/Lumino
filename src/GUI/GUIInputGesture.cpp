@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include <Lumino/GUI/GUIInputGesture.h>
 #include <Lumino/GUI/RoutedCommand.h>

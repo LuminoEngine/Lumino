@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include <Lumino/Base/RefObject.h>
@@ -15,20 +15,20 @@ class Sound;
 class GameAudioImpl;
 
 /*
-	@brief	‰¹º‹@”\‚ÌŠÇ—ƒNƒ‰ƒX‚Å‚·B
+	@brief	éŸ³å£°æ©Ÿèƒ½ã®ç®¡ç†ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class AudioManagerImpl
 	: public RefObject
 {
 public:
-	/// initialize() ‚É“n‚·‰Šú‰»ƒf[ƒ^
+	/// initialize() ã«æ¸¡ã™åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿
 	struct Settings
 	{
-		ln::FileManager*		FileManager;					///< ƒtƒ@ƒCƒ‹‚©‚ç‚Ì“Ç‚İ‚İ‚Ég‚¤ƒtƒ@ƒCƒ‹ŠÇ—ƒNƒ‰ƒX
-		uint32_t				StreamCacheObjectCount;			///< ƒLƒƒƒbƒVƒ…ƒTƒCƒY (ƒtƒ@ƒCƒ‹”)
-		uint32_t				StreamSourceCacheMemorySize;	///< ƒLƒƒƒbƒVƒ…ƒTƒCƒY (ƒƒ‚ƒŠ—Ê(byte))
-		DirectMusicMode			DMInitMode;						///< DirectMusic ‚Ì‰Šú‰»•û–@
-		void*					hWnd;							///< DirectMusic ‚Ì‰Šú‰»‚Ég‚¤ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+		ln::FileManager*		FileManager;					///< ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®èª­ã¿è¾¼ã¿ã«ä½¿ã†ãƒ•ã‚¡ã‚¤ãƒ«ç®¡ç†ã‚¯ãƒ©ã‚¹
+		uint32_t				StreamCacheObjectCount;			///< ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚µã‚¤ã‚º (ãƒ•ã‚¡ã‚¤ãƒ«æ•°)
+		uint32_t				StreamSourceCacheMemorySize;	///< ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚µã‚¤ã‚º (ãƒ¡ãƒ¢ãƒªé‡(byte))
+		DirectMusicMode			DMInitMode;						///< DirectMusic ã®åˆæœŸåŒ–æ–¹æ³•
+		void*					hWnd;							///< DirectMusic ã®åˆæœŸåŒ–ã«ä½¿ã†ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 		float					DirectMusicReverbLevel;
 
 		Settings()
@@ -48,10 +48,10 @@ public:
 
 public:
 
-	/// I—¹ˆ—
+	/// çµ‚äº†å‡¦ç†
 	void Finalize();
 
-	/// ƒIƒ“ƒƒ‚ƒŠorƒXƒgƒŠ[ƒ~ƒ“ƒO©“®‘I‘ğ‚Ì‰¹ºƒf[ƒ^ƒoƒCƒg”è‡’l
+	/// ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªorã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°è‡ªå‹•é¸æŠã®éŸ³å£°ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒˆæ•°é–¾å€¤
 	void SetAutoPlayTypeSelectThreshold(uint32_t threshold) { mOnMemoryLimitSize = threshold; }
 
 	GameAudioImpl* GetGameAudio() const { return m_gameAudio; }
@@ -64,15 +64,15 @@ public:	// TODO
 	FileManager* GetFileManager() { return m_fileManager; }
 	//AudioStream* CreateAudioStream(const TCHAR* filePath);
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
-	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// ‰Šú‰»Š®—¹Ï‚İ‚Ì AudioStream ‚ğ“n‚·‚±‚Æ
+	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// åˆæœŸåŒ–å®Œäº†æ¸ˆã¿ã® AudioStream ã‚’æ¸¡ã™ã“ã¨
 	Sound* CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
 
 
 
-	/// ƒL[‚É‘Î‰‚·‚éƒI[ƒfƒBƒIƒ\[ƒX‚ğŒŸõ‚·‚é (Œ©‚Â‚©‚Á‚½ê‡‚Í addRef ‚µ‚Ä•Ô‚·)
+	/// ã‚­ãƒ¼ã«å¯¾å¿œã™ã‚‹ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã‚½ãƒ¼ã‚¹ã‚’æ¤œç´¢ã™ã‚‹ (è¦‹ã¤ã‹ã£ãŸå ´åˆã¯ addRef ã—ã¦è¿”ã™)
 	//AudioStream* FindAudioSource(lnSharingKey key);
 
-	/// ƒI[ƒfƒBƒIƒ\[ƒX‚Ìì¬ TODO:internal ‚Ö
+	/// ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã‚½ãƒ¼ã‚¹ã®ä½œæˆ TODO:internal ã¸
 	//AudioStream* CreateAudioStream(const TCHAR* filePath);
 	//AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key);
 
@@ -80,16 +80,16 @@ public:	// TODO
 
 	//
 
-	///// Sound ‚Ìì¬ ( stream_ = NULL ‚ÅƒL[‚ğg‚Á‚½ŒŸõ‚¾‚¯s‚¤ )
+	///// Sound ã®ä½œæˆ ( stream_ = NULL ã§ã‚­ãƒ¼ã‚’ä½¿ã£ãŸæ¤œç´¢ã ã‘è¡Œã† )
 	//Sound* createSound(FileIO::Stream* stream, SoundPlayType type, bool enable_3d, lnSharingKey key);
 
-	///// Sound ‚Ìì¬ ( ƒtƒ@ƒCƒ‹–¼w’è )
+	///// Sound ã®ä½œæˆ ( ãƒ•ã‚¡ã‚¤ãƒ«åæŒ‡å®š )
 	//Sound* createSound(const lnChar* filename, SoundPlayType type, bool enable_3d);
 
-	///// Sound ‚Ìì¬ ( IAudioSource w’è )
+	///// Sound ã®ä½œæˆ ( IAudioSource æŒ‡å®š )
 	//Sound* createSound(AudioSourceBase* source, SoundPlayType type, bool enable_3d);
 
-	/// ƒOƒ‹[ƒv‚Ì’â~
+	/// ã‚°ãƒ«ãƒ¼ãƒ—ã®åœæ­¢
 	//void stopGroup(lnU32 group);
 
 private:
@@ -100,8 +100,8 @@ private:
 private:
 
 	FileManager*			m_fileManager;
-	AudioDevice*			m_audioDevice;		///< PCM Ä¶—pƒfƒoƒCƒXƒNƒ‰ƒX
-	AudioDevice*			m_midiAudioDevice;	///< MIDI Ä¶—pƒfƒoƒCƒXƒNƒ‰ƒX (“à•”ˆ—‚ª PCM ‚Æ‚Í‘S‘Rˆá‚¤‚Ì‚ÅA1‚Â‚Ì AudioDevice ‚É‚Ü‚Æ‚ß‚È‚¢•û‚ªŠÇ—‚ªŠy)
+	AudioDevice*			m_audioDevice;		///< PCM å†ç”Ÿç”¨ãƒ‡ãƒã‚¤ã‚¹ã‚¯ãƒ©ã‚¹
+	AudioDevice*			m_midiAudioDevice;	///< MIDI å†ç”Ÿç”¨ãƒ‡ãƒã‚¤ã‚¹ã‚¯ãƒ©ã‚¹ (å†…éƒ¨å‡¦ç†ãŒ PCM ã¨ã¯å…¨ç„¶é•ã†ã®ã§ã€1ã¤ã® AudioDevice ã«ã¾ã¨ã‚ãªã„æ–¹ãŒç®¡ç†ãŒæ¥½)
 	GameAudioImpl*				m_gameAudio;
 	uint32_t				mOnMemoryLimitSize;
 	Threading::Mutex			m_resourceMutex;

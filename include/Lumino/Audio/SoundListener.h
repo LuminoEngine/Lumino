@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 	@file	SoundListener.h
 */
 #pragma once
@@ -8,86 +8,86 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 /**
-	@brief		3D ƒTƒEƒ“ƒh‚ÌƒŠƒXƒi[‚ÌƒNƒ‰ƒX‚Å‚·B
+	@brief		3D ã‚µã‚¦ãƒ³ãƒ‰ã®ãƒªã‚¹ãƒŠãƒ¼ã®ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
 */
 class SoundListener
 {
 public:
 	
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	position	: 3D ‹óŠÔã‚ÌÀ•W
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®ä½ç½®ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	position	: 3D ç©ºé–“ä¸Šã®åº§æ¨™
 	*/
 	static void SetPosition(const Vector3& position);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	x			: 3D ‹óŠÔã‚Ì X À•W
-		@param[in]	y			: 3D ‹óŠÔã‚Ì Y À•W
-		@param[in]	z			: 3D ‹óŠÔã‚Ì Z À•W
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®ä½ç½®ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	x			: 3D ç©ºé–“ä¸Šã® X åº§æ¨™
+		@param[in]	y			: 3D ç©ºé–“ä¸Šã® Y åº§æ¨™
+		@param[in]	z			: 3D ç©ºé–“ä¸Šã® Z åº§æ¨™
 	*/
 	static void SetPosition(float x, float y, float z);
 	
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚ÌˆÊ’u‚ğæ“¾‚µ‚Ü‚·B
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®ä½ç½®ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static const Vector3& GetPosition();
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ì³–Ê•ûŒü‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	direction		: Œü‚«
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®æ­£é¢æ–¹å‘ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	direction		: å‘ã
 	*/
 	static void SetDirection(const Vector3& direction);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ì³–Ê•ûŒü‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	x			: Œü‚«‚Ì X ¬•ª
-		@param[in]	y			: Œü‚«‚Ì Y ¬•ª
-		@param[in]	z			: Œü‚«‚Ì Z ¬•ª
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®æ­£é¢æ–¹å‘ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	x			: å‘ãã® X æˆåˆ†
+		@param[in]	y			: å‘ãã® Y æˆåˆ†
+		@param[in]	z			: å‘ãã® Z æˆåˆ†
 	*/
 	static void SetDirection(float x, float y, float z);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ì³–Ê•ûŒü‚ğæ“¾‚µ‚Ü‚·B
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®æ­£é¢æ–¹å‘ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static const Vector3& GetDirection();
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ìã•ûŒü‚ğİ’è‚µ‚Ü‚·B(³–Ê•ûŒü‚Æ‚Í’¼Œğ‚Å‚ ‚é‚±‚Æ)
-		@param[in]	direction	: ã•ûŒü
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®ä¸Šæ–¹å‘ã‚’è¨­å®šã—ã¾ã™ã€‚(æ­£é¢æ–¹å‘ã¨ã¯ç›´äº¤ã§ã‚ã‚‹ã“ã¨)
+		@param[in]	direction	: ä¸Šæ–¹å‘
 	*/
 	static void SetUpDirection(const Vector3& direction);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ìã•ûŒü‚ğİ’è‚µ‚Ü‚·B(³–Ê•ûŒü‚Æ‚Í’¼Œğ‚Å‚ ‚é‚±‚Æ)
-		@param[in]	x			: Œü‚«‚Ì X ¬•ª
-		@param[in]	y			: Œü‚«‚Ì Y ¬•ª
-		@param[in]	z			: Œü‚«‚Ì Z ¬•ª
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®ä¸Šæ–¹å‘ã‚’è¨­å®šã—ã¾ã™ã€‚(æ­£é¢æ–¹å‘ã¨ã¯ç›´äº¤ã§ã‚ã‚‹ã“ã¨)
+		@param[in]	x			: å‘ãã® X æˆåˆ†
+		@param[in]	y			: å‘ãã® Y æˆåˆ†
+		@param[in]	z			: å‘ãã® Z æˆåˆ†
 	*/
 	static void SetUpDirection(float x, float y, float z);
 	
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ìã•ûŒü‚ğæ“¾‚µ‚Ü‚·B
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®ä¸Šæ–¹å‘ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static const Vector3& GetUpDirection(const Vector3& direction);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	velocity	: ‘¬“x
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®é€Ÿåº¦ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	velocity	: é€Ÿåº¦
 	*/
 	static void SetVelocity(const Vector3& velocity);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	x			: ‘¬“x‚Ì X ¬•ª
-		@param[in]	y			: ‘¬“x‚Ì Y ¬•ª
-		@param[in]	z			: ‘¬“x‚Ì Z ¬•ª
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®é€Ÿåº¦ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	x			: é€Ÿåº¦ã® X æˆåˆ†
+		@param[in]	y			: é€Ÿåº¦ã® Y æˆåˆ†
+		@param[in]	z			: é€Ÿåº¦ã® Z æˆåˆ†
 	*/
 	static void SetVelocity(float x, float y, float z);
 
 	/**
-		@brief		3D‰¹º‚ÌƒŠƒXƒi[‚Ì‘¬“x‚ğİ’è‚µ‚Ü‚·B
-		@param[in]	velocity	: ‘¬“x
+		@brief		3DéŸ³å£°ã®ãƒªã‚¹ãƒŠãƒ¼ã®é€Ÿåº¦ã‚’è¨­å®šã—ã¾ã™ã€‚
+		@param[in]	velocity	: é€Ÿåº¦
 	*/
 	static const Vector3& GetVelocity();
 

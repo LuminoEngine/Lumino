@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Text/Font.h>
@@ -41,7 +41,7 @@ private:
 	void AddVertex(const Vector3& pos, const Vector2& uv, const ColorF& color);
 	int GetCurrentVertexCount() const { return m_vertexCacheUsed / m_vertexStride; }
 
-	// TODO ’¸“_éŒ¾‚Æ‚©‚ÍŠO•”‚©‚ç‚à‚ç‚¤‚æ‚¤‚É‚µ‚½‚¢
+	// TODO é ‚ç‚¹å®£è¨€ã¨ã‹ã¯å¤–éƒ¨ã‹ã‚‰ã‚‚ã‚‰ã†ã‚ˆã†ã«ã—ãŸã„
 	struct Vertex
 	{
 	public:
@@ -49,7 +49,7 @@ private:
 		Vector4	color;
 		Vector2	uv;
 
-		// ’¸“_ƒŒƒCƒAƒEƒg
+		// é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
 		static VertexElement* Elements()
 		{
 			static VertexElement elements[] =
@@ -89,7 +89,7 @@ private:
 		Driver::IShaderVariable*	varWorldMatrix;
 		Driver::IShaderVariable*	varViewProjMatrix;
 		Driver::IShaderVariable*	varPixelStep;
-		Driver::IShaderVariable*	varTexture;		// TODO: g‚Á‚Ä‚È‚¢H
+		Driver::IShaderVariable*	varTexture;		// TODO: ä½¿ã£ã¦ãªã„ï¼Ÿ
 
 	} m_shader;
 
@@ -116,7 +116,7 @@ public:
 	void SetTransform(const Matrix& matrix);
 	void SetViewProjMatrix(const Matrix& matrix);
 	void SetViewPixelSize(const Size& size);
-	void SetUseInternalShader(bool useInternalShader);	// TODO: ‚¢‚ç‚È‚¢‚©‚à
+	void SetUseInternalShader(bool useInternalShader);	// TODO: ã„ã‚‰ãªã„ã‹ã‚‚
 	void SetUserShader(Shader* shader);
 	void SetTexture(Texture* texture);
 

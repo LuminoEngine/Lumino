@@ -1,15 +1,15 @@
-/*
-	Manager ‚É‚½‚¹‚ÄA1‚Â‚Ì Cache ‚ğ‚½‚­‚³‚ñ‚Ìƒrƒ…[‚ª‹¤—L‚·‚é‚ÆAGC ‚Ìƒ^ƒCƒ~ƒ“ƒO‚ª“ï‚µ‚­‚È‚éB
-	‚È‚Ì‚ÅA­‚µ–³‘Ê‚Í‚Å‚é‚¯‚Ç Viewport ’PˆÊ‚Å‚ÂB
-	‚»‚¤‚µ‚Ä‚¨‚¯‚ÎAViewport::Render() ‚ÌÅŒã‚Å GC ‚·‚ê‚Î—Ç‚­‚È‚éB
+ï»¿/*
+	Manager ã«æŒãŸã›ã¦ã€1ã¤ã® Cache ã‚’ãŸãã•ã‚“ã®ãƒ“ãƒ¥ãƒ¼ãŒå…±æœ‰ã™ã‚‹ã¨ã€GC ã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ãŒé›£ã—ããªã‚‹ã€‚
+	ãªã®ã§ã€å°‘ã—ç„¡é§„ã¯ã§ã‚‹ã‘ã© Viewport å˜ä½ã§æŒã¤ã€‚
+	ãã†ã—ã¦ãŠã‘ã°ã€Viewport::Render() ã®æœ€å¾Œã§ GC ã™ã‚Œã°è‰¯ããªã‚‹ã€‚
 
 
-	ƒLƒƒƒbƒVƒ…‚Ì—e—Ê‚Æ‰ğ•úƒ^ƒCƒ~ƒ“ƒO‚É‚Â‚¢‚Ä
-		‚ ‚éƒtƒŒ[ƒ€‚Åg‚í‚ê‚È‚©‚Á‚½‚ç‘¦‰ğ•úA‚¾‚Æ­‚µŒø—¦‚ªˆ«‚¢‚©‚à‚µ‚ê‚È‚¢B
-		—á‚¦‚Î•p”É‚É EnableÌDisable ‚ªØ‚è‘Ö‚¦‚ç‚ê‚éƒ|ƒXƒgƒGƒtƒFƒNƒg‚Æ‚©B
+	ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®å®¹é‡ã¨è§£æ”¾ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã«ã¤ã„ã¦
+		ã‚ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ã§ä½¿ã‚ã‚Œãªã‹ã£ãŸã‚‰å³è§£æ”¾ã€ã ã¨å°‘ã—åŠ¹ç‡ãŒæ‚ªã„ã‹ã‚‚ã—ã‚Œãªã„ã€‚
+		ä¾‹ãˆã°é »ç¹ã« Enableâ‡”Disable ãŒåˆ‡ã‚Šæ›¿ãˆã‚‰ã‚Œã‚‹ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã¨ã‹ã€‚
 
-		‚±‚ÌƒLƒƒƒbƒVƒ…‚Ìå‚È—p“r‚Íƒ|ƒXƒgƒGƒtƒFƒNƒg‚Å‚ ‚èAViewport ‚Æ“¯‚¶ƒTƒCƒY‚ª
-		ƒ_ƒEƒ“ƒLƒƒƒXƒg‚Ég‚í‚ê‚éB
+		ã“ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®ä¸»ãªç”¨é€”ã¯ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã§ã‚ã‚Šã€Viewport ã¨åŒã˜ã‚µã‚¤ã‚ºãŒ
+		ãƒ€ã‚¦ãƒ³ã‚­ãƒ£ã‚¹ãƒˆã«ä½¿ã‚ã‚Œã‚‹ã€‚
 */
 #include "../Internal.h"
 #include <Lumino/Graphics/Texture.h>
@@ -45,21 +45,21 @@ RefPtr<RenderTarget> RenderTargetTextureCache::RequestRenderTarget(const Size& s
 {
 	LN_NOTIMPLEMENTED();
 
-	// ŒŸõƒL[‚ğì‚é
+	// æ¤œç´¢ã‚­ãƒ¼ã‚’ä½œã‚‹
 	uint64_t w = (uint64_t)size.width;
 	uint64_t h = (uint64_t)size.height;
 	uint64_t f = (uint64_t)format;
 	uint64_t m = (uint64_t)mipLevel;
 	uint64_t key = m << 40 | f << 32 | h << 16 | w;
 	
-	// g‚¦‚éƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ğ’T‚·
+	// ä½¿ãˆã‚‹ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’æ¢ã™
 	RenderTarget* renderTarget = nullptr;
 	auto itr = m_renderTargetMap.find(key);
 	if (itr != m_renderTargetMap.end())
 	{
 		for (RenderTarget* rt : itr->second)
 		{
-			if (rt->GetRefCount() == 1)	// Cache ‚©‚ç‚µ‚©QÆ‚³‚ê‚Ä‚¢‚È‚¢H
+			if (rt->GetRefCount() == 1)	// Cache ã‹ã‚‰ã—ã‹å‚ç…§ã•ã‚Œã¦ã„ãªã„ï¼Ÿ
 			{
 				renderTarget = rt;
 				break;
@@ -67,7 +67,7 @@ RefPtr<RenderTarget> RenderTargetTextureCache::RequestRenderTarget(const Size& s
 		}
 	}
 
-	// Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚çV‚µ‚­ì‚Á‚Ä map ‚É’Ç‰Á‚·‚é
+	// è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰æ–°ã—ãä½œã£ã¦ map ã«è¿½åŠ ã™ã‚‹
 	if (renderTarget == nullptr)
 	{
 		auto rt = RefPtr<RenderTarget>::MakeRef();
@@ -77,7 +77,7 @@ RefPtr<RenderTarget> RenderTargetTextureCache::RequestRenderTarget(const Size& s
 		m_renderTargetMap[key].push_back(renderTarget);
 	}
 
-	// Œ»İ‚ÌƒtƒŒ[ƒ€‚Åg—p‚³‚ê‚½‚±‚Æ‚ğƒ}[ƒN‚·‚é
+	// ç¾åœ¨ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§ä½¿ç”¨ã•ã‚ŒãŸã“ã¨ã‚’ãƒãƒ¼ã‚¯ã™ã‚‹
 	renderTarget->m_usedCacheOnFrame = true;
 
 	return RefPtr<RenderTarget>(renderTarget, true);

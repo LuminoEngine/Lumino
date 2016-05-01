@@ -1,31 +1,31 @@
-
+ï»¿
 #pragma once
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		ƒQ[ƒ€’†‚ÌŽžŠÔî•ñ‚ð•\‚µ‚Ü‚·B
+	@brief		ã‚²ãƒ¼ãƒ ä¸­ã®æ™‚é–“æƒ…å ±ã‚’è¡¨ã—ã¾ã™ã€‚
 */
 class GameTime final
 {
 public:
 	
 	/**
-		@brief		‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚çŒo‰ß‚µ‚½ƒQ[ƒ€ŽžŠÔ (•b) ‚ðŽæ“¾‚µ‚Ü‚·B
+		@brief		å‰å›žã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰çµŒéŽã—ãŸã‚²ãƒ¼ãƒ æ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static double GetElapsedGameTime();
 
 	/**
-		@brief		‘O‰ñ‚ÌƒtƒŒ[ƒ€‚©‚çŒo‰ß‚µ‚½ŽÀŽžŠÔ (•b) ‚ðŽæ“¾‚µ‚Ü‚·B
+		@brief		å‰å›žã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰çµŒéŽã—ãŸå®Ÿæ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static double GetElapsedRealTime();
 
 	/**
-		@brief		ŠJŽn‚©‚ç‚Ì‘ƒQ[ƒ€ŽžŠÔ (•b) ‚ðŽæ“¾‚µ‚Ü‚·B
+		@brief		é–‹å§‹ã‹ã‚‰ã®ç·ã‚²ãƒ¼ãƒ æ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static double GetTotalGameTime();
 
 	/**
-		@brief		ŠJŽn‚©‚ç‚Ì‘ŽÀŽžŠÔ (•b) ‚ðŽæ“¾‚µ‚Ü‚·B
+		@brief		é–‹å§‹ã‹ã‚‰ã®ç·å®Ÿæ™‚é–“ (ç§’) ã‚’å–å¾—ã—ã¾ã™ã€‚
 	*/
 	static double GetTotalRealTime();
 };

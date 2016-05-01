@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <EffekseerRuntime101/src/Effekseer/Effekseer.h>
 #if defined(LN_OS_WIN32)
@@ -26,7 +26,7 @@ namespace detail
 class EffekseerEffectInstance;
 class EffekseerEffectCore;
 
-// Effekseer::FileReader ‚ÌÀ‘•
+// Effekseer::FileReader ã®å®Ÿè£…
 class EffekseerFileReader
 	: public ::Effekseer::FileReader
 {
@@ -43,7 +43,7 @@ private:
 	RefPtr<Stream>	m_stream;
 };
 
-// Effekseer::FileInterface ‚ÌÀ‘•
+// Effekseer::FileInterface ã®å®Ÿè£…
 class EffekseerFileInterface
 	: public ::Effekseer::FileInterface
 {
@@ -57,7 +57,7 @@ private:
 	FileManager* m_fileManager;
 };
 
-// EffekseerEffect ‚ÌŠÇ—
+// EffekseerEffect ã®ç®¡ç†
 class EffekseerEffectEngine
 	: public EffectEngine
 {
@@ -70,9 +70,9 @@ public:
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
 	void UpdateRenderContents();
 
-	/// EffectCore ‚Ìì¬ (ƒLƒƒƒbƒVƒ…ŒŸõ—LŒø)
-	///		ƒGƒtƒFƒNƒgƒ‰ƒ“ƒ^ƒCƒ€‚ªƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒgƒGƒ‰[‚Æ‚È‚Á‚½ê‡‚Í—áŠO‚É‚¹‚¸ANULL ‚ğ•Ô‚·B
-	///		(‚»‚à‚»‚àƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Í—áŠO‚Æ‚È‚é)
+	/// EffectCore ã®ä½œæˆ (ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ¤œç´¢æœ‰åŠ¹)
+	///		ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ©ãƒ³ã‚¿ã‚¤ãƒ ãŒãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚¨ãƒ©ãƒ¼ã¨ãªã£ãŸå ´åˆã¯ä¾‹å¤–ã«ã›ãšã€NULL ã‚’è¿”ã™ã€‚
+	///		(ãã‚‚ãã‚‚ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ä¾‹å¤–ã¨ãªã‚‹)
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) override;
 
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) override;
@@ -91,7 +91,7 @@ private:
 	EncodingConverter				m_TCharToUTF16Converter;
 };
 
-// Effekseer ‚ÌƒGƒtƒFƒNƒgƒIƒuƒWƒFƒNƒg WrapperBƒLƒƒƒbƒVƒ…ŠÇ—‚³‚ê‚éB
+// Effekseer ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ Wrapperã€‚ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç®¡ç†ã•ã‚Œã‚‹ã€‚
 class EffekseerEffectCore
 	: public VisualEffect
 	, public ICacheObject
@@ -111,7 +111,7 @@ private:
 	::Effekseer::Effect*	m_efkEffect;
 };
 
-// Effekseer ‚ÌƒGƒtƒFƒNƒgƒCƒ“ƒXƒ^ƒ“ƒX Wrapper
+// Effekseer ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ Wrapper
 class EffekseerEffectInstance
 	: public VisualEffectInstance//EffectInstance
 {
@@ -126,8 +126,8 @@ public:
 	virtual bool IsPlaying() override;
 	virtual void SetWorldMatrix(const Matrix& matrix) override;
 
-	void UpdateFrame();	// XVƒXƒŒƒbƒh
-	void Draw();	// •`‰æƒXƒŒƒbƒh
+	void UpdateFrame();	// æ›´æ–°ã‚¹ãƒ¬ãƒƒãƒ‰
+	void Draw();	// æç”»ã‚¹ãƒ¬ãƒƒãƒ‰
 
 	static void LNToEFKMatrix43(const Matrix& mat, ::Effekseer::Matrix43* efkMat);
 

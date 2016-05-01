@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "ContentControl.h"
 
@@ -29,7 +29,7 @@ public:
 public:
 
 	/**
-		@brief		TextBox ‚ğì¬‚µ‚Ü‚·B
+		@brief		TextBox ã‚’ä½œæˆã—ã¾ã™ã€‚
 	*/
 	static TextBox* Create(GUIManagerImpl* manager = NULL);
 
@@ -49,7 +49,7 @@ public:
 
 	void Select(int start, int length);
 
-	/** Œ»İ‚Ì‘I‘ğ‰ÓŠ‚ÉƒNƒŠƒbƒvƒ{[ƒh‚Ì“à—e‚ğ“\‚è•t‚¯‚Ü‚·B*/
+	/** ç¾åœ¨ã®é¸æŠç®‡æ‰€ã«ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®å†…å®¹ã‚’è²¼ã‚Šä»˜ã‘ã¾ã™ã€‚*/
 	void Paste();
 
 protected:
@@ -105,7 +105,7 @@ private:
 	LineUp
 	PageDown
 	ScrollTo...
-	Select	// ƒTƒƒQ[ƒgƒyƒA‚àl—¶‚µ‚½u•¶š”v
+	Select	// ã‚µãƒ­ã‚²ãƒ¼ãƒˆãƒšã‚¢ã‚‚è€ƒæ…®ã—ãŸã€Œæ–‡å­—æ•°ã€
 	*/
 };
 

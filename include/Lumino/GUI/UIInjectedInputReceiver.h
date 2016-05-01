@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "../Common.h"
 #include "Common.h"
@@ -7,77 +7,77 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GUI_BEGIN
 
 /**
-	@brief	GUI ƒVƒXƒeƒ€‚Ö‚Ì“ü—ÍƒCƒxƒ“ƒg‚Ì“ü‚èŒû‚Æ‚È‚éƒCƒ“ƒ^[ƒtƒFƒCƒX‚Å‚·B
+	@brief	GUI ã‚·ã‚¹ãƒ†ãƒ ã¸ã®å…¥åŠ›ã‚¤ãƒ™ãƒ³ãƒˆã®å…¥ã‚Šå£ã¨ãªã‚‹ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã§ã™ã€‚
 */
 class IUIInjectedInputReceiver
 {
 public:
 	
 	/**
-		@brief		•`‰ææ‚ÌƒsƒNƒZƒ‹ƒTƒCƒY•ÏXƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	width		: •
-		@param[in]	height		: ‚‚³
+		@brief		æç”»å…ˆã®ãƒ”ã‚¯ã‚»ãƒ«ã‚µã‚¤ã‚ºå¤‰æ›´ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	width		: å¹…
+		@param[in]	height		: é«˜ã•
 	*/
 	virtual bool InjectViewportSizeChanged(int width, int height) = 0;
 
 	/**
-		@brief		ƒ}ƒEƒXˆÚ“®ƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	clientX		: X À•W
-		@param[in]	clientY		: Y À•W
+		@brief		ãƒã‚¦ã‚¹ç§»å‹•ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	clientX		: X åº§æ¨™
+		@param[in]	clientY		: Y åº§æ¨™
 	*/
 	virtual bool InjectMouseMove(float clientX, float clientY) = 0;
 
 	/**
-		@brief		ƒ}ƒEƒXƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚ÌƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	button		: ‘€ì‚³‚ê‚½ƒ}ƒEƒXƒ{ƒ^ƒ“
-		@param[in]	clientX		: X À•W
-		@param[in]	clientY		: Y À•W
+		@brief		ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	button		: æ“ä½œã•ã‚ŒãŸãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³
+		@param[in]	clientX		: X åº§æ¨™
+		@param[in]	clientY		: Y åº§æ¨™
 	*/
 	virtual bool InjectMouseButtonDown(MouseButton button, float clientX, float clientY) = 0;
 
 	/**
-		@brief		ƒ}ƒEƒXƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½‚ÌƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	button		: ‘€ì‚³‚ê‚½ƒ}ƒEƒXƒ{ƒ^ƒ“
-		@param[in]	clientX		: X À•W
-		@param[in]	clientY		: Y À•W
+		@brief		ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ãŒé›¢ã•ã‚ŒãŸæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	button		: æ“ä½œã•ã‚ŒãŸãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³
+		@param[in]	clientX		: X åº§æ¨™
+		@param[in]	clientY		: Y åº§æ¨™
 	*/
 	virtual bool InjectMouseButtonUp(MouseButton button, float clientX, float clientY) = 0;
 
 	/**
-		@brief		ƒ}ƒEƒXƒzƒC[ƒ‹‚ª‘€ì‚³‚ê‚½‚ÌƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	delta		: ƒzƒC[ƒ‹‚ÌˆÚ“®”
-		@param[in]	clientX		: X À•W
-		@param[in]	clientY		: Y À•W
+		@brief		ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ãŒæ“ä½œã•ã‚ŒãŸæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	delta		: ãƒ›ã‚¤ãƒ¼ãƒ«ã®ç§»å‹•æ•°
+		@param[in]	clientX		: X åº§æ¨™
+		@param[in]	clientY		: Y åº§æ¨™
 	*/
 	virtual bool InjectMouseWheel(int delta, float clientX, float clientY) = 0;
 
 	/**
-		@brief		ƒL[‚ª‰Ÿ‚³‚ê‚½‚ÌƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	keyCode		: ƒL[ƒR[ƒh
-		@param[in]	isAlt		: Alt ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í true
-		@param[in]	isShift		: Shift ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í true
-		@param[in]	isControl	: Ctrl ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í true
+		@brief		ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	keyCode		: ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰
+		@param[in]	isAlt		: Alt ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ true
+		@param[in]	isShift		: Shift ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ true
+		@param[in]	isControl	: Ctrl ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ true
 	*/
 	virtual bool InjectKeyDown(Key keyCode, bool isAlt, bool isShift, bool isControl) = 0;
 
 	/**
-		@brief		ƒL[‚ª—£‚³‚ê‚½‚ÌƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	keyCode		: ƒL[ƒR[ƒh
-		@param[in]	isAlt		: Alt ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í true
-		@param[in]	isShift		: Shift ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í true
-		@param[in]	isControl	: Ctrl ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í true
+		@brief		ã‚­ãƒ¼ãŒé›¢ã•ã‚ŒãŸæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	keyCode		: ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰
+		@param[in]	isAlt		: Alt ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ true
+		@param[in]	isShift		: Shift ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ true
+		@param[in]	isControl	: Ctrl ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ true
 	*/
 	virtual bool InjectKeyUp(Key keyCode, bool isAlt, bool isShift, bool isControl) = 0;
 
 	/**
-		@brief		•¶š‚ª“ü—Í‚³‚ê‚½‚ÌƒCƒxƒ“ƒg‚ğó‚¯æ‚è‚Ü‚·B
-		@param[in]	ch			: “ü—Í‚³‚ê‚½•¶š
+		@brief		æ–‡å­—ãŒå…¥åŠ›ã•ã‚ŒãŸæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™ã€‚
+		@param[in]	ch			: å…¥åŠ›ã•ã‚ŒãŸæ–‡å­—
 	*/
 	virtual bool InjectTextInput(TCHAR ch) = 0;
 
 	/**
-		@brief		ŠÔŒo‰ß‚ª’Ê’m‚³‚ê‚Ü‚·B
-		@param[in]	elapsedTime	: Œo‰ßŠÔ (•b)
+		@brief		æ™‚é–“çµŒéãŒé€šçŸ¥ã•ã‚Œã¾ã™ã€‚
+		@param[in]	elapsedTime	: çµŒéæ™‚é–“ (ç§’)
 	*/
 	virtual void InjectElapsedTime(float elapsedTime) = 0;
 

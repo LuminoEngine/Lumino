@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <Lumino/Base/Exception.h>
 #include <Lumino/Base/ByteBuffer.h>
@@ -60,39 +60,39 @@ void Mp3Decoder::Create(Stream* stream)
 	m_stream = stream;
 	m_stream->AddRef();
 
-	// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğæ“ª‚É–ß‚·
+	// ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’å…ˆé ­ã«æˆ»ã™
 	m_stream->Seek(0, SeekOrigin_Begin);
 
 	m_dataOffset = 0;
 
-	// ID3v Šm”F
+	// ID3v ç¢ºèª
 	CheckId3v();
 		
-	// PCM ƒtƒH[ƒ}ƒbƒgæ“¾
+	// PCM ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå–å¾—
 	GetPCMFormat();
 
-	// mp3 ‚ğ PCM ‚ÉƒfƒR[ƒh‚µ‚½‚Ì wave ƒtƒH[ƒ}ƒbƒg‚ğæ“¾
+	// mp3 ã‚’ PCM ã«ãƒ‡ã‚³ãƒ¼ãƒ‰ã—ãŸæ™‚ã® wave ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’å–å¾—
 	MPEGLAYER3WAVEFORMAT* mp3_format = &m_acmMP3WaveFormat;
 	WAVEFORMATEX wav_fmt_ex;
 	wav_fmt_ex.wFormatTag = WAVE_FORMAT_PCM;
 	MMRESULT mmr = acmFormatSuggest(NULL, &mp3_format->wfx, &wav_fmt_ex, sizeof(WAVEFORMATEX), ACM_FORMATSUGGESTF_WFORMATTAG);
 	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
-	// ACM •ÏŠ·ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ ( mp3 ¨ wave )
+	// ACM å¤‰æ›ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ã ( mp3 â†’ wave )
 	//HACMSTREAM* acm = mACMStreamHandle;//(HACMSTREAM*)&mACMStreamHandle;
 	mmr = acmStreamOpen(&m_hACMStream, NULL, &mp3_format->wfx, &wav_fmt_ex, NULL, 0, 0, 0);
 	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
-	// WAVEFORMATEX ¨ Audio::WaveFormat
+	// WAVEFORMATEX â†’ Audio::WaveFormat
 	AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(wav_fmt_ex, &m_waveFormat);
 
-	// ‘S‘Ì‚ğ•ÏŠ·‚µ‚½‚Ì PCM ƒTƒCƒY‚ğ m_onmemoryPCMBufferSize ‚ÉŠi”[
+	// å…¨ä½“ã‚’å¤‰æ›ã—ãŸæ™‚ã® PCM ã‚µã‚¤ã‚ºã‚’ m_onmemoryPCMBufferSize ã«æ ¼ç´
     DWORD pcm_size = 0;
 	mmr = acmStreamSize(m_hACMStream, m_sourceDataSize, &pcm_size, ACM_STREAMSIZEF_SOURCE);
 	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
     m_onmemoryPCMBufferSize = pcm_size;
 
-	// 1 •b•ª‚Ì mp3 ƒf[ƒ^‚ğ•ÏŠ·‚µ‚½‚ÌAÅ“K‚È“]‘—æ PCM ƒoƒbƒtƒ@ƒTƒCƒY‚ğæ“¾‚·‚é
+	// 1 ç§’åˆ†ã® mp3 ãƒ‡ãƒ¼ã‚¿ã‚’å¤‰æ›ã—ãŸæ™‚ã®ã€æœ€é©ãªè»¢é€å…ˆ PCM ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 	DWORD wave_buffer_size;
 	mmr = acmStreamSize(m_hACMStream, mp3_format->wfx.nAvgBytesPerSec, &wave_buffer_size, ACM_STREAMSIZEF_SOURCE);
 	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
@@ -104,20 +104,20 @@ void Mp3Decoder::Create(Stream* stream)
 	//acmStreamSize( m_hACMStream, mMP3BufferSize, &mMP3BufferSize, ACM_STREAMSIZEF_SOURCE );
 	//acmStreamClose( acm2, 0 );
 
-	//// ƒXƒgƒŠ[ƒ~ƒ“ƒOÄ¶—p‚Ìƒoƒbƒtƒ@‚ÌƒTƒCƒY‚ğæ“¾ ( mp3_format->wfx.nAvgBytesPerSec ‚Í‰¼‚ÌƒTƒCƒY )
+	//// ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°å†ç”Ÿç”¨ã®ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚ºã‚’å–å¾— ( mp3_format->wfx.nAvgBytesPerSec ã¯ä»®ã®ã‚µã‚¤ã‚º )
 	//mMP3SourceBufferSizeParSec = ;
 
 	//
 	//mMP3SourceBufferParSec = LN_NEW byte_t[ mMP3SourceBufferSizeParSec ];
-	// ƒXƒgƒŠ[ƒ~ƒ“ƒOÄ¶—p‚Ì 1 •b•ª‚Ì mp3 ƒf[ƒ^‚ÌƒTƒCƒY•ªAƒƒ‚ƒŠ‚ğŠm•Û
+	// ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°å†ç”Ÿç”¨ã® 1 ç§’åˆ†ã® mp3 ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚ºåˆ†ã€ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 	m_mp3SourceBufferParSec.Resize(mp3_format->wfx.nAvgBytesPerSec);
 
-	// ‘S‘Ì‚ÌÄ¶ŠÔ‚ğŒvZ‚·‚é
+	// å…¨ä½“ã®å†ç”Ÿæ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹
 	double t = static_cast< double >(m_onmemoryPCMBufferSize) / (static_cast< double >(m_waveFormat.avgBytesPerSec) * 0.001);
 	m_totalTime = static_cast< uint32_t >(t);
 
-    // ‘S‘Ì‚ÌÄ¶ƒTƒ“ƒvƒ‹”‚ğ‹‚ß‚é
-	uint32_t one_channel_bits = (m_onmemoryPCMBufferSize / m_waveFormat.channels) * 8;	// 1ƒ`ƒƒƒ“ƒlƒ‹‚ ‚½‚è‚Ì‘ƒrƒbƒg”
+    // å…¨ä½“ã®å†ç”Ÿã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’æ±‚ã‚ã‚‹
+	uint32_t one_channel_bits = (m_onmemoryPCMBufferSize / m_waveFormat.channels) * 8;	// 1ãƒãƒ£ãƒ³ãƒãƒ«ã‚ãŸã‚Šã®ç·ãƒ“ãƒƒãƒˆæ•°
 	m_totalSamples = one_channel_bits / m_waveFormat.bitsPerSample;
 }
 
@@ -132,7 +132,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 	{
 		MMRESULT mmr;
 
-		// mp3 ƒf[ƒ^‘S‘Ì‚ğŠi”[‚·‚éƒoƒbƒtƒ@‚ğì¬‚µ‚Ä“Ç‚İ‚Ş
+		// mp3 ãƒ‡ãƒ¼ã‚¿å…¨ä½“ã‚’æ ¼ç´ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã—ã¦èª­ã¿è¾¼ã‚€
 		//lnU8* mp3_buffer = (lnU8*)malloc(m_sourceDataSize);
 		//LN_THROW_SystemCall(mp3_buffer);
 		ByteBuffer mp3_buffer(m_sourceDataSize);
@@ -141,16 +141,16 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		size_t read_size = m_stream->Read(mp3_buffer.GetData(), m_sourceDataSize);
 		LN_THROW(read_size == m_sourceDataSize, InvalidFormatException);
 
-		// ‘S‘Ì‚ğ•ÏŠ·‚µ‚½‚Ì PCM ƒTƒCƒY‚ğ mPCMSize ‚ÉŠi”[
+		// å…¨ä½“ã‚’å¤‰æ›ã—ãŸæ™‚ã® PCM ã‚µã‚¤ã‚ºã‚’ mPCMSize ã«æ ¼ç´
 		DWORD pcm_size = 0;
 		mmr = acmStreamSize(m_hACMStream, m_sourceDataSize, &pcm_size, ACM_STREAMSIZEF_SOURCE);
 		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 		m_onmemoryPCMBufferSize = pcm_size;
 
-		// æ“¾‚µ‚½ƒTƒCƒY‚Åƒoƒbƒtƒ@Šm•Û
+		// å–å¾—ã—ãŸã‚µã‚¤ã‚ºã§ãƒãƒƒãƒ•ã‚¡ç¢ºä¿
 		m_onmemoryPCMBuffer = LN_NEW byte_t[m_onmemoryPCMBufferSize];
 
-		// ACM ƒwƒbƒ_‚É•ÏŠ·ƒoƒbƒtƒ@İ’è
+		// ACM ãƒ˜ãƒƒãƒ€ã«å¤‰æ›ãƒãƒƒãƒ•ã‚¡è¨­å®š
 		ACMSTREAMHEADER ash;
 		ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
 		ash.cbStruct = sizeof(ACMSTREAMHEADER);
@@ -159,7 +159,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		ash.pbDst = (LPBYTE)m_onmemoryPCMBuffer;
 		ash.cbDstLength = m_onmemoryPCMBufferSize;
 
-		// ƒRƒ“ƒo[ƒgÀs
+		// ã‚³ãƒ³ãƒãƒ¼ãƒˆå®Ÿè¡Œ
 		mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
 		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 		mmr = acmStreamConvert(m_hACMStream, &ash, 0);
@@ -167,7 +167,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
 		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
-		// ÀÛ‚É PCM ƒoƒbƒtƒ@‚É‘‚«‚ñ‚¾ƒf[ƒ^ƒTƒCƒY‚ğ‹L‰¯‚·‚é
+		// å®Ÿéš›ã« PCM ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã‚’è¨˜æ†¶ã™ã‚‹
 		m_onmemoryPCMBufferSize = ash.cbDstLengthUsed;
 
 		LN_SAFE_RELEASE(m_stream);
@@ -179,7 +179,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 //-----------------------------------------------------------------------------
 void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
-	LN_THROW(m_stream != NULL, InvalidOperationException);	// ƒIƒ“ƒƒ‚ƒŠÄ¶‚ÆƒXƒgƒŠ[ƒ~ƒ“ƒOÄ¶‚Å“¯‚¶ AudioStream ‚ğ‹¤—L‚µ‚½‚Æ‚«‚É‚Ô‚Â‚©‚é
+	LN_THROW(m_stream != NULL, InvalidOperationException);	// ã‚ªãƒ³ãƒ¡ãƒ¢ãƒªå†ç”Ÿã¨ã‚¹ãƒˆãƒªãƒ¼ãƒŸãƒ³ã‚°å†ç”Ÿã§åŒã˜ AudioStream ã‚’å…±æœ‰ã—ãŸã¨ãã«ã¶ã¤ã‹ã‚‹
 	Threading::MutexScopedLock lock(m_mutex);
 
 	//if (m_onmemoryPCMBuffer)
@@ -193,19 +193,19 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 
 		ZeroMemory(buffer, buffer_size);
 
-		// ƒtƒ@ƒCƒ‹‚©‚çƒf[ƒ^“Ç‚İ‚İ
+		// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 		size_t read_size = m_stream->Read(m_mp3SourceBufferParSec.GetData(), m_mp3SourceBufferParSec.GetSize());
 
 		DWORD src_length = m_mp3SourceBufferParSec.GetSize();
 
-		// ÀÛ‚É“Ç‚İ‚ñ‚¾ƒTƒCƒY‚ªA“Ç‚Ş‚×‚«ƒTƒCƒY‚æ‚è‚à¬‚³‚©‚Á‚½ê‡
+		// å®Ÿéš›ã«èª­ã¿è¾¼ã‚“ã ã‚µã‚¤ã‚ºãŒã€èª­ã‚€ã¹ãã‚µã‚¤ã‚ºã‚ˆã‚Šã‚‚å°ã•ã‹ã£ãŸå ´åˆ
 		if (read_size < m_mp3SourceBufferParSec.GetSize())
 		{
-			// ‚Æ‚è‚ ‚¦‚¸A“Ç‚İ‚ß‚½ƒTƒCƒY•ªƒRƒ“ƒo[ƒg‚·‚é
+			// ã¨ã‚Šã‚ãˆãšã€èª­ã¿è¾¼ã‚ãŸã‚µã‚¤ã‚ºåˆ†ã‚³ãƒ³ãƒãƒ¼ãƒˆã™ã‚‹
 			src_length = read_size;
 		}
 
-		// ACM ƒwƒbƒ_‚É•ÏŠ·ƒoƒbƒtƒ@İ’è
+		// ACM ãƒ˜ãƒƒãƒ€ã«å¤‰æ›ãƒãƒƒãƒ•ã‚¡è¨­å®š
 		ACMSTREAMHEADER ash;
 		ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
 		ash.cbStruct = sizeof(ACMSTREAMHEADER);
@@ -214,7 +214,7 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 		ash.pbDst = (LPBYTE)buffer;
 		ash.cbDstLength = buffer_size;
 
-		// ƒRƒ“ƒo[ƒgÀs
+		// ã‚³ãƒ³ãƒãƒ¼ãƒˆå®Ÿè¡Œ
 		MMRESULT mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
 		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
@@ -225,7 +225,7 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 		mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
 		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
-		// ƒRƒ“ƒo[ƒg‚µ‚½Œ‹‰ÊAÀÛ‚Ég‚Á‚½—Ìˆæ‚ğ•Ô‚·
+		// ã‚³ãƒ³ãƒãƒ¼ãƒˆã—ãŸçµæœã€å®Ÿéš›ã«ä½¿ã£ãŸé ˜åŸŸã‚’è¿”ã™
 		*out_read_size = ash.cbSrcLengthUsed;
 		*out_write_size = ash.cbDstLengthUsed;
 
@@ -238,37 +238,37 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 //----------------------------------------------------------------------
 void Mp3Decoder::CheckId3v()
 {
-	// ‚Æ‚è‚ ‚¦‚¸Å‰‚ÉAƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğ mp3 ƒf[ƒ^‘S‘Ì‚ÌƒTƒCƒY‚Æ‚·‚é
+	// ã¨ã‚Šã‚ãˆãšæœ€åˆã«ã€ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’ mp3 ãƒ‡ãƒ¼ã‚¿å…¨ä½“ã®ã‚µã‚¤ã‚ºã¨ã™ã‚‹
 	m_sourceDataSize = (uint32_t)m_stream->GetLength();
 
-	// ‚Æ‚è‚ ‚¦‚¸ ID3v2 ‚Æ‚µ‚Äƒwƒbƒ_•”•ª‚ğ“Ç‚İ‚Ş
+	// ã¨ã‚Šã‚ãˆãš ID3v2 ã¨ã—ã¦ãƒ˜ãƒƒãƒ€éƒ¨åˆ†ã‚’èª­ã¿è¾¼ã‚€
 	ID3v2Header header;
 	int read_size = m_stream->Read(&header, sizeof(ID3v2Header));
 	LN_THROW(read_size == sizeof(ID3v2Header), InvalidFormatException, "mp3 file size is invalid.");
 
-	// Id3v2 Œ`®‚Ìê‡
+	// Id3v2 å½¢å¼ã®å ´åˆ
 	if (header.ID[0] == 'I' && header.ID[1] == 'D' && header.ID[2] == '3')
 	{
-		// ƒ^ƒOƒTƒCƒYæ“¾
+		// ã‚¿ã‚°ã‚µã‚¤ã‚ºå–å¾—
 		m_id3vTagFieldSize = ((header.Size[0] << 21) | (header.Size[1] << 14) | (header.Size[2] << 7) | (header.Size[3])) + 10;
 
-		// ‰¹ºƒf[ƒ^‚ª‚ ‚éˆÊ’u‚ÍAƒ^ƒO‚ÌêŠ‚ÌŸ‚©‚ç‚Æ‚·‚é
+		// éŸ³å£°ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹ä½ç½®ã¯ã€ã‚¿ã‚°ã®å ´æ‰€ã®æ¬¡ã‹ã‚‰ã¨ã™ã‚‹
 		m_dataOffset = m_id3vTagFieldSize;
 
-		// ‰¹ºƒf[ƒ^–{‘Ì‚ÌƒTƒCƒY‚ÍAƒtƒ@ƒCƒ‹‘S‘Ì‚ÌƒTƒCƒY‚©‚çƒ^ƒO‚Ì•ª‚ğˆø‚¢‚½‚à‚Ì
+		// éŸ³å£°ãƒ‡ãƒ¼ã‚¿æœ¬ä½“ã®ã‚µã‚¤ã‚ºã¯ã€ãƒ•ã‚¡ã‚¤ãƒ«å…¨ä½“ã®ã‚µã‚¤ã‚ºã‹ã‚‰ã‚¿ã‚°ã®åˆ†ã‚’å¼•ã„ãŸã‚‚ã®
 		m_sourceDataSize -= m_id3vTagFieldSize;
 	}
-	// Id3v2 Œ`®ˆÈŠO ( Id3v1 ) ‚Ìê‡
+	// Id3v2 å½¢å¼ä»¥å¤– ( Id3v1 ) ã®å ´åˆ
 	else
 	{
-		// I’[‚Ìƒ^ƒOî•ñ‚ª‚È‚¢
+		// çµ‚ç«¯ã®ã‚¿ã‚°æƒ…å ±ãŒãªã„
 		LN_THROW(m_stream->GetLength() >= 128, InvalidFormatException, "not found mp3 tag.");
 
-		// ƒ^ƒO‚È‚µ@ƒf[ƒ^‚ª‚ ‚éêŠ‚Íƒtƒ@ƒCƒ‹‚Ìæ“ª‚©‚ç
+		// ã‚¿ã‚°ãªã—ã€€ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹å ´æ‰€ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã‹ã‚‰
 		m_id3vTagFieldSize = 0;
 		m_dataOffset = 0;
 
-		// ƒtƒ@ƒCƒ‹I’[‚©‚ç 128 ƒoƒCƒg–ß‚Á‚½‚Æ‚±‚ë‚ğ’²‚×‚é
+		// ãƒ•ã‚¡ã‚¤ãƒ«çµ‚ç«¯ã‹ã‚‰ 128 ãƒã‚¤ãƒˆæˆ»ã£ãŸã¨ã“ã‚ã‚’èª¿ã¹ã‚‹
 		byte_t data[3];
 		m_stream->Seek(-128, SeekOrigin_End);
 		read_size = m_stream->Read(data, 3);
@@ -276,15 +276,15 @@ void Mp3Decoder::CheckId3v()
 
 		//printf( "%c %c %c %c\n", data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ] );
 
-		// 'TAG' ‚ªŒ©‚Â‚©‚Á‚½
+		// 'TAG' ãŒè¦‹ã¤ã‹ã£ãŸ
 		if (data[0] == 'T' && data[1] == 'A' && data[2] == 'G')
 		{
-			// mp3 ƒf[ƒ^•”•ª‚ÌƒTƒCƒY‚ÍA‘S‘Ì‚©‚çƒ^ƒO‚Ì•ª‚ğˆø‚¢‚½‚à‚Ì
+			// mp3 ãƒ‡ãƒ¼ã‚¿éƒ¨åˆ†ã®ã‚µã‚¤ã‚ºã¯ã€å…¨ä½“ã‹ã‚‰ã‚¿ã‚°ã®åˆ†ã‚’å¼•ã„ãŸã‚‚ã®
 			m_sourceDataSize -= 128;
 		}
 	}
 
-	// ”O‚Ì‚½‚ßAƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğæ“ª‚É–ß‚µ‚Ä‚¨‚­
+	// å¿µã®ãŸã‚ã€ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’å…ˆé ­ã«æˆ»ã—ã¦ãŠã
 	m_stream->Seek(0, SeekOrigin_Begin);
 }
 
@@ -309,15 +309,15 @@ void Mp3Decoder::GetPCMFormat()
 		{ 22050, 24000, 16000 }
 	};
 
-	// ƒtƒŒ[ƒ€ƒwƒbƒ_•”•ª‚ğ“Ç‚İ‚Ş
+	// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ˜ãƒƒãƒ€éƒ¨åˆ†ã‚’èª­ã¿è¾¼ã‚€
 	byte_t data[4];
 	m_stream->Seek(m_id3vTagFieldSize, SeekOrigin_Begin);
 	m_stream->Read(data, 4);
 
-	// data ‚ªƒtƒŒ[ƒ€ƒwƒbƒ_‚ğw‚µ‚Ä‚¢‚é‚©’²‚×‚é
+	// data ãŒãƒ•ãƒ¬ãƒ¼ãƒ ãƒ˜ãƒƒãƒ€ã‚’æŒ‡ã—ã¦ã„ã‚‹ã‹èª¿ã¹ã‚‹
 	if (data[0] != 0xff || data[1] >> 5 != 0x07)
 	{
-		// æ“ª‚É‚È‚¯‚ê‚ÎƒKƒ“ƒKƒ“i‚ß‚È‚ª‚ç’T‚·
+		// å…ˆé ­ã«ãªã‘ã‚Œã°ã‚¬ãƒ³ã‚¬ãƒ³é€²ã‚ãªãŒã‚‰æ¢ã™
 		int rs;
 		int64_t ends = m_stream->GetLength();
 		while (true)
@@ -333,7 +333,7 @@ void Mp3Decoder::GetPCMFormat()
 		}
 	}
 
-	// MP3 ‚Ìƒo[ƒWƒ‡ƒ“‚ÍH
+	// MP3 ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¯ï¼Ÿ
 	switch (data[1] >> 3 & 0x03)
 	{
 	case 3:
@@ -347,30 +347,30 @@ void Mp3Decoder::GetPCMFormat()
 		break;
 	}
 
-	// ƒŒƒCƒ„[ 3 H
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼ 3 ï¼Ÿ
 	if ((data[1] >> 1 & 0x03) != 1)
 	{
 		LN_THROW(0, InvalidFormatException, "( ( data[1] >> 1 & 0x03 ) != 1 )");
 	}
 
-	// ƒe[ƒuƒ‹‚Å’è‹`‚µ‚½ƒrƒbƒgƒŒ[ƒg‚Ì‚¤‚¿A“–‚Ä‚Í‚Ü‚é‚à‚Ì‚ğ‘I‚Ô
+	// ãƒ†ãƒ¼ãƒ–ãƒ«ã§å®šç¾©ã—ãŸãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆã®ã†ã¡ã€å½“ã¦ã¯ã¾ã‚‹ã‚‚ã®ã‚’é¸ã¶
 	index = data[2] >> 4;
 	dwBitRate = dwBitTableLayer3[version - 1][index];
 
 
-	// “¯‚¶‚æ‚¤‚ÉAƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg‚ğ‘I‚Ô
+	// åŒã˜ã‚ˆã†ã«ã€ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆã‚’é¸ã¶
 	index = data[2] >> 2 & 0x03;
 	dwSampleRate = dwSampleTable[version - 1][index];
 
-	// ƒpƒfƒBƒ“ƒO‚Ìæ“¾
+	// ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°ã®å–å¾—
 	padding = data[2] >> 1 & 0x01;
 
-	// ƒ`ƒƒƒ“ƒlƒ‹”‚Ìæ“¾
+	// ãƒãƒ£ãƒ³ãƒãƒ«æ•°ã®å–å¾—
 	channel = ((data[3] >> 6) == 3) ? 1 : 2;
 
 	wBlockSize = (WORD)((1152 * dwBitRate * 1000 / dwSampleRate) / 8) + padding;
 
-	// MPEGLAYER3WAVEFORMAT \‘¢‘Ì‚É‚¢‚ë‚¢‚ëŠi”[‚·‚é
+	// MPEGLAYER3WAVEFORMAT æ§‹é€ ä½“ã«ã„ã‚ã„ã‚æ ¼ç´ã™ã‚‹
 	MPEGLAYER3WAVEFORMAT* format = &m_acmMP3WaveFormat;
 
 	format->wfx.wFormatTag = WAVE_FORMAT_MPEGLAYER3;

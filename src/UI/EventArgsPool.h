@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <Lumino/Base/SortedArray.h>
 #include <Lumino/UI/Common.h>
@@ -46,7 +46,7 @@ private:
 	{
 		for (auto* e : m_poolList)
 		{
-			if (e->GetRefCount() == 1) {	// ���̃��X�g���炵���Q�Ƃ���Ă��Ȃ���ΕԂ�
+			if (e->GetRefCount() == 1) {	// このリストからしか参照されていなければ返す
 				return e;
 			}
 		}
@@ -61,20 +61,20 @@ private:
 
 /**
 	@brief	
-	@note	���̃N���X�̓C�x���g�����̕p�ɂ� new ������邽�߂Ɏg�p����B
-			�Ⴆ�� MouseMove �C�x���g�͍ň����t���[���̂悤�ɔ�������\��������Anew �͑傫�ȃI�[�o�[�w�b�h�ɂȂ�B
-			����Ȃ� union �𗘗p�����C�x���g�����\���̂��g���̂��ЂƂ̎肩������Ȃ��B
+	@note	このクラスはイベント引数の頻繁な new を避けるために使用する。
+			例えば MouseMove イベントは最悪毎フレームのように発生する可能性があり、new は大きなオーバーヘッドになる。
+			それなら union を利用したイベント引数構造体を使うのもひとつの手かもしれない。
 			
-			�������A�{���C�u������ C# �� Ruby ���A���̌���ւ̃o�C���f�B���O��z�肵�Ă���B
-			���R GUI ���W���[�������J����A�g������邱�Ƃ��O��B
-			C# ���ō쐬�������[�U�[�R���g���[���� MouseEventArgs ���g�p���邱�Ƃ͑z�肵�Ȃ���΂Ȃ�Ȃ��B
+			しかし、本ライブラリは C# や Ruby 等、他の言語へのバインディングを想定している。
+			当然 GUI モジュールも公開され、拡張されることが前提。
+			C# 側で作成したユーザーコントロールが MouseEventArgs を使用することは想定しなければならない。
 
-			union �� struct �ɂ����ꍇ�A����͂���Ō���ʂɗ]�v�ȃI�[�o�[�w�b�h�⍇�킹���݂̎����������邱�ƂɂȂ�B
-			�Ⴆ�� C# ��B�͒l�n���̂܂܂ł悢�̂��Aref ������̂��BRuby �� struct �͎g���Ȃ��̂Ō��� new ����H�ڂɂȂ邪�����̂��B
+			union や struct にした場合、これはこれで言語別に余計なオーバーヘッドや合わせこみの実装が増えることになる。
+			例えば C# でBは値渡しのままでよいのか、ref をつけるのか。Ruby で struct は使えないので結局 new する羽目になるがいいのか。
 
-			Pool ���Ă����΁A�኱�����I�ł͂Ȃ��Ȃ邪�A�o�C���_���� new ���}���邱�Ƃ��ł���B
+			Pool しておけば、若干直感的ではなくなるが、バインダ側の new も抑えることができる。
 
-			��X�C�x���g�̎�ނ������Ă����Ƃ��͊g�����̂��߁A�C�x���g�����L�[�ɂ��� Create ����悤�Ȏd�g�݂��K�v�ɂȂ邩������Ȃ��B
+			後々イベントの種類が増えてきたときは拡張性のため、イベント名をキーにして Create するような仕組みが必要になるかもしれない。
 */
 class EventArgsPool
 {
@@ -92,8 +92,8 @@ public:
 		}
 	}
 
-	//MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);	// TODO: ��߂�
-	//KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);	// TODO: ��߂�
+	//MouseEventArgs* CreateMouseEventArgs(MouseButton button, int wheel, float x, float y, int clickCount);	// TODO: やめる
+	//KeyEventArgs* CreateKeyEventArgs(Key keyCode, bool isAlt, bool isShift, bool isControl);	// TODO: やめる
 
 	template<class TEventArgs, typename ...TArgs>
 	TEventArgs* Create(TArgs... args)
@@ -124,7 +124,7 @@ private:
 		{
 			for (auto e : (*list))
 			{
-				if (e->GetRefCount() == 1) {	// ���̃��X�g���炵���Q�Ƃ���Ă��Ȃ���ΕԂ�
+				if (e->GetRefCount() == 1) {	// このリストからしか参照されていなければ返す
 					return e;
 				}
 			}

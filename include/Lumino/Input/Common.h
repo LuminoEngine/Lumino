@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Base/EnumExtension.h>
 #include <Lumino/Reflection/ReflectionObject.h>
@@ -10,7 +10,7 @@ class InputController;
 class InputBinding;
 typedef RefPtr<InputBinding>	InputBindingPtr;
 
-///// ƒ}ƒEƒX‚Ìƒ{ƒ^ƒ“”Ô†
+///// ãƒã‚¦ã‚¹ã®ãƒœã‚¿ãƒ³ç•ªå·
 //enum MouseButton
 //{
 //	MouseButton_1 = 0,
@@ -25,7 +25,7 @@ typedef RefPtr<InputBinding>	InputBindingPtr;
 //	MouseButton_Max,
 //};
 
-/// “ü—ÍƒfƒoƒCƒX‚ğ¯•Ê‚·‚é’l
+/// å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ã‚’è­˜åˆ¥ã™ã‚‹å€¤
 enum InputDeviceID
 {
 	InputDeviceID_Unknown = 0,
@@ -44,12 +44,12 @@ namespace detail
 class InputManager;
 //
 //
-///** “ü—ÍƒfƒoƒCƒX‚©‚çó‚¯æ‚é’l‚Ìí•Ê */
+///** å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ã‹ã‚‰å—ã‘å–ã‚‹å€¤ã®ç¨®åˆ¥ */
 //LN_ENUM(DeviceInputSource)
 //{
 //	Unknown = 0,
 //
-//	/* 255 ˆÈ‘O‚ÍƒL[ƒ{[ƒh */
+//	/* 255 ä»¥å‰ã¯ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ */
 //
 //	Mouse1 = 256,
 //	Mouse2,
@@ -101,7 +101,7 @@ class InputManager;
 //
 //	IDLast,
 //
-//	Keyboard_Begin = 1,        // 1`255 ‚Í‚Æ‚è‚ ‚¦‚¸ƒL[ƒ{[ƒh—p
+//	Keyboard_Begin = 1,        // 1ï½255 ã¯ã¨ã‚Šã‚ãˆãšã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ç”¨
 //	Keyboard_End = 255,
 //	Mouse_Begin = Mouse1,
 //	Mouse_End = Mouse8,

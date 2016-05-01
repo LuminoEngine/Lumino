@@ -1,18 +1,18 @@
-/*
-	[2016/1/31] Style �� Template
-		�ETemplate �̕K�v��
-			�����K�{����Ȃ��B
-			Style �͐F�Ƃ��̃v���p�e�B��ύX���邯�ǁA
-			Template �� UI �v�f�̍\�����̂��̂�ύX���邱�Ƃ��ړI�B
-			�Ⴆ�� Window �ɂ̓f�t�H���g�ł��Ă���N���[�Y�{�^������������Ƃ��B
-			�A�C�R���t���{�^�����������Ƃ��B
+﻿/*
+	[2016/1/31] Style と Template
+		・Template の必要性
+			多分必須じゃない。
+			Style は色とかのプロパティを変更するけど、
+			Template は UI 要素の構造そのものを変更することが目的。
+			例えば Window にはデフォルトでついているクローズボタンを消したりとか。
+			アイコン付きボタンを作ったりとか。
 
-			�ł��A�e�[�}�ύX�ł���A�C�R�����摜�g�����A�t�H���g�g�����Ƃ��ŕς��������Ƃ����邩������Ȃ��B
-			�Ƃ��� Metro �� UI�B
-			Template �̊��S�r���͂�߂����������C������B
+			でも、テーマ変更であるアイコンを画像使うか、フォント使うかとかで変えたいこともあるかもしれない。
+			とくに Metro 風 UI。
+			Template の完全排除はやめた方がいい気がする。
 
-			WPF �ł� CSS �� Border �v���p�e�B����������A�g�t��������� Border �v�f�����ޕK�v������B
-			�Q�[���p�r�Ƃ��Ă͂��܂薳�ʂȃC���X�^���X�͍�肽���Ȃ����E�E�E�B
+			WPF では CSS の Border プロパティが無いから、枠付けたければ Border 要素を挟む必要がある。
+			ゲーム用途としてはあまり無駄なインスタンスは作りたくないが・・・。
 
 			Microsoft.Windows.Themes.ButtonChrome
 			Microsoft.Windows.Themes.ListBoxChrome
@@ -27,84 +27,84 @@
 			System.Windows.Shapes.Polyline
 			System.Windows.Shapes.Rectangle
 
-			�ȉ~�{�^���� border-radius �łł���B
-			���Ƃ��A����ȏ㕡�G�Ȑ}�`�� bitmap �ɂ��Ă��܂��΂����B
+			楕円ボタンも border-radius でできる。
+			矢印とか、それ以上複雑な図形は bitmap にしてしまえばいい。
 
 
 
 
-	[2016/1/31] �X�^�C���E�e�[�}
-		�v���p�e�B�̕ύX�� JSON �Ƃ��̃v���p�e�B�V�[�g�ŁB
-		�ׂ����g������������Δh���N���X������Ă��������E
-		�E�E�E�ł������H
+	[2016/1/31] スタイル・テーマ
+		プロパティの変更は JSON とかのプロパティシートで。
+		細かい拡張をしたければ派生クラスを作ってください・
+		・・・でいいか？
 
-	[2016/1/1] ���낢��ȃC�x���g�n���h�����O
-		�E�I�[�o�[���C�h
-			UIElement �����p�����AOnMouseMove() �����I�[�o�[���C�h������@�B
+	[2016/1/1] いろいろなイベントハンドリング
+		・オーバーライド
+			UIElement 等を継承し、OnMouseMove() 等をオーバーライドする方法。
 
-		�E���I�ȃn���h���o�^
-			button.clicked += handler; �̂悤�ɁA�R���g���[�����g���l���C�x���g��o�^������@�B
+		・動的なハンドラ登録
+			button.clicked += handler; のように、コントロールを使う人がイベントを登録する方法。
 
-		�E�ÓI�ȃn���h���o�^
-			�I�[�o�[���C�h�Ƃ͕ʂɁA�h���N���X���x�[�X�ɑ΂��ăn���h���֐���o�^������@�B
-			�ÓI�ȃn���h���́A���I�ȃn���h�����Ăяo�����O�ɌĂ΂��B
+		・静的なハンドラ登録
+			オーバーライドとは別に、派生クラスがベースに対してハンドラ関数を登録する方法。
+			静的なハンドラは、動的なハンドラが呼び出される前に呼ばれる。
 
-		WPF �ł́AOn�` �͓����� RaiseEvent ���Ăяo���̂��ړI�B
-		�܂�A�q�v�f���烋�[�e�B���O�Œʒm����Ă����C�x���g�� On�` �Ńn���h�����O���邱�Ƃ͂ł��Ȃ��B
+		WPF では、On～ は内部で RaiseEvent を呼び出すのが目的。
+		つまり、子要素からルーティングで通知されてきたイベントを On～ でハンドリングすることはできない。
 
-		Lumino �Ƃ��Ă� On�` �����[�e�B���O�ʒm�ŌĂяo�����悤�ɂ��Ă��܂��Ă����Ǝv���B
-		�킩��₷���d���̕����ŁB
+		Lumino としては On～ をルーティング通知で呼び出されるようにしてしまっていいと思う。
+		わかりやすさ重視の方向で。
 
-	[2016/1/1] �h�b�L���O�E�B���h�E�߂�
-		���C���E�B���h�E�͒ʏ�ʂ�B
-		AvalonDock �̂悤�ɁADockManager �R���g���[����z�u����B
-		�T�u�E�B���h�E�� Platform ���W���[���� NativeWindow ���p�������E�B���h�E������������ǂ���������Ȃ��B
+	[2016/1/1] ドッキングウィンドウめも
+		メインウィンドウは通常通り。
+		AvalonDock のように、DockManager コントロールを配置する。
+		サブウィンドウは Platform モジュールの NativeWindow を継承したウィンドウを作った方が良いかもしれない。
 
 */
 
 /*-----------------------------------------------------------------------------
 
-	���L�[���[�h
-	�E�e���v���[�g
-	�E�o�C���f�B���O
-	�E���[�e�B���O �C�x���g	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
+	★キーワード
+	・テンプレート
+	・バインディング
+	・ルーティング イベント	https://msdn.microsoft.com/ja-jp/library/ms742806.aspx
 
 	[2015/11/3] IsEnabled
-		�e�� IsEnabled �͎q�� IsEnabled �ɓ`�d����B
-		�e�� false �̎��͎q�� false ��Ԃ��B�q�� true ��ݒ肵�Ă� true ��Ԃ��悤�ɂ͂Ȃ�Ȃ��B
-		�e�̕ύX���ɂ͂��� IsEnabledChaged ����������B
+		親の IsEnabled は子の IsEnabled に伝播する。
+		親が false の時は子は false を返す。子に true を設定しても true を返すようにはならない。
+		親の変更時にはこの IsEnabledChaged も発生する。
 
-	[2015/11/1] HorizontalAlignment �� HorizontalContentAlignment
-		�O��̂͂�����ƈ���Ă��B
-		HorizontalContentAlignment �́AContentPresenter ��e�v�f�̂ǂ��ɔz�u���邩���w�肷��B
-		HorizontalAlignment �́A�e�v�f�̓��̂ǂ��ɔz�u���邩���w�肷��B
+	[2015/11/1] HorizontalAlignment と HorizontalContentAlignment
+		前回のはちょっと違ってた。
+		HorizontalContentAlignment は、ContentPresenter を親要素のどこに配置するかを指定する。
+		HorizontalAlignment は、親要素の内のどこに配置するかを指定する。
 
-	[2015/10/12] HorizontalAlignment �� HorizontalContentAlignment
-		HorizontalAlignment �́A�������e�v�f���̂ǂ��ɔz�u����邩�A
-		HorizontalContentAlignment �́A�����������Ă���q�v�f���ǂ��ɔz�u���邩�B
+	[2015/10/12] HorizontalAlignment と HorizontalContentAlignment
+		HorizontalAlignment は、自分が親要素内のどこに配置されるか、
+		HorizontalContentAlignment は、自分が持っている子要素をどこに配置するか。
 
-		�ŁA�|�C���g�ƂȂ�̂� HorizontalContentAlignment �̓K�p��́u�R���e���c�v�ł���Ƃ������ƁB
-		�K�������q�v�f(�r�W���A���c���[)�ł͂Ȃ��B
-		�܂�Ƃ���AContentPresenter �̒��ڂ̎q�v�f���K�p��ƂȂ�B
+		で、ポイントとなるのが HorizontalContentAlignment の適用先は「コンテンツ」であるということ。
+		必ずしも子要素(ビジュアルツリー)ではない。
+		つまるところ、ContentPresenter の直接の子要素が適用先となる。
 
-		Button �Ȃ� Content�AItemsControl �Ȃ� �S Item.Content ���K�p��ƂȂ�B
-		�� ��ʓI�ɂ� TextBlock
-		ContentPresenter �� ListBoxItem �͓K�p��ł͂Ȃ��̂Œ��ӁB
-		�� ListBox �� ListBoxItem �͂��ꂼ�� HorizontalContentAlignment �������Ƃ��ł��A�K�p��͓����B
-			���̏ꍇ�� ListBoxItem �̂��D�悳�ꂽ�B
-			�Ȃ��AHorizontalContentAlignment �͌p���v���p�e�B�ł͂Ȃ��B
-			ListBoxItem �� ListBox ��������p�����Ǝ����f���Ă���݂����B
+		Button なら Content、ItemsControl なら 全 Item.Content が適用先となる。
+		→ 一般的には TextBlock
+		ContentPresenter や ListBoxItem は適用先ではないので注意。
+		※ ListBox と ListBoxItem はそれぞれ HorizontalContentAlignment を持つことができ、適用先は同じ。
+			この場合は ListBoxItem のが優先された。
+			なお、HorizontalContentAlignment は継承プロパティではない。
+			ListBoxItem が ListBox から引き継ぐか独自判断しているみたい。
 
-		�܂��AHorizontalContentAlignment �́u�R���e���c�� RenderRect�v�ɑ΂���z�u���@�ł���_�ɂ����ӁB
-		Arrange �ōl�������B
+		また、HorizontalContentAlignment は「コンテンツの RenderRect」に対する配置方法である点にも注意。
+		Arrange で考慮される。
 
-		����2�̒l�݂͌��ɉe�����Ȃ��B�z�u���ʓI�ɂ͉e�����Ă���悤�Ɍ����邪�B
+		この2つの値は互いに影響しない。配置結果的には影響しているように見えるが。
 
-		HorizontalContentAlignment �� Strach �ȊO�̏ꍇ�ARenderSize �͌��܂��Ă��܂��̂ŁA
-		HorizontalAlignment �͖��Ӗ��Ȃ��̂ƂȂ�B
+		HorizontalContentAlignment が Strach 以外の場合、RenderSize は決まってしまうので、
+		HorizontalAlignment は無意味なものとなる。
 
 
-		�Q�l�\�[�X
+		参考ソース
 		-----------------------
 		<StackPanel>
 			<Button Width="300" HorizontalAlignment="Left" HorizontalContentAlignment="Right">
@@ -128,351 +128,351 @@
 		</StackPanel>	
 		-----------------------
 
-	[2015/10/12] TransitionBrush �͕K�v�H
-		�K�{�ł͂Ȃ��B�������g�p�ʂ�R�[�f�B���O�ʂ����炷���߂̃��[�e�B���e�B�B
-		�A�j���[�V����������Ƃ��́A�u���V���̂� static ���\�[�X�ŁA
-		TransitionBrushAnimation �N���X�����Ηǂ��B
-		�� �~TransitionBrushAnimation �����L�ł��Ȃ��B
-			�� AnimationClockInstance ���� TransitionBrush ������OK�B
+	[2015/10/12] TransitionBrush は必要？
+		必須ではない。メモリ使用量やコーディング量を減らすためのユーティリティ。
+		アニメーションさせるときは、ブラシ自体は static リソースで、
+		TransitionBrushAnimation クラスを作れば良い。
+		→ ×TransitionBrushAnimation が共有できない。
+			→ AnimationClockInstance 内で TransitionBrush を作ればOK。
 
-		�܂��A2�X�e�[�g�ȏ�͕��G�ɂȂ��Ă��܂��C������E�E�E�B
-		Normal��MouseOver��Pressed �ƘA�������ꍇ�͈�u3�X�e�[�g���d�Ȃ�^�C�~���O������킯�Łc
-
-
-	[2015/9/29] MouseEnter MouseLeave �ɂ���
-		�Z��v�f�Ԃł́A�d�Ȃ��Ă��Ă��r���B
-		�e�q�ł́A�q�� IsMouseOver �Ȃ�e�� IsMouseOver�B���̂Ƃ��A�}�E�X���q�̈悩��o�Đe�ɏ���Ă��A�e�� Enter �͔������Ȃ��B
+		また、2ステート以上は複雑になってしまう気がする・・・。
+		Normal→MouseOver→Pressed と連続した場合は一瞬3ステートが重なるタイミングがあるわけで…
 
 
-	[2015/9/14] Variant �͕K�v�H
-		�EContentControl::SetContent() ���̃R���g���[�����������́H
-			��	������ TextBlock ���΂��������B
-				����Ēǉ����郆�[�e�B���e�B�֐��������Ă��悢�B
-			��	XML ���琶������Ƃ��ɂ͎g�������BAddChild �� Valiant �ł����Ăق����B
+	[2015/9/29] MouseEnter MouseLeave について
+		兄弟要素間では、重なっていても排他。
+		親子では、子が IsMouseOver なら親も IsMouseOver。このとき、マウスが子領域から出て親に乗っても、親の Enter は発生しない。
 
-		�EList �̗v�f�� CoreObject ��������Q�ƃJ�E���g�𑀍삵����
-			��	traits �ő�p�B
 
-		�EDataGrid �̗v�f�Ƃ��Ă͂ق����B
+	[2015/9/14] Variant は必要？
+		・ContentControl::SetContent() 等のコントロール自動生成は？
+			→	自分で TextBlock 作ればいいだけ。
+				作って追加するユーティリティ関数があってもよい。
+			→	XML から生成するときには使いたい。AddChild は Valiant であってほしい。
 
-		�EVariantList �́H
-			��	XML ���琶������Ƃ��Ɏg�������B
-			��	�R�[�h���琶������Ƃ��͕K�v�Ȃ��B
-				UIElementFactory �� AddItem ������ŕ��`�F�b�N�Ƃ�����΂��������B
+		・List の要素が CoreObject だったら参照カウントを操作したい
+			→	traits で代用。
 
-	[2015/9/8] �V���[�g�J�b�g�L�[ (UIInputBinding)
+		・DataGrid の要素としてはほしい。
+
+		・VariantList は？
+			→	XML から生成するときに使いたい。
+			→	コードから生成するときは必要なし。
+				UIElementFactory で AddItem した先で方チェックとかすればいいだけ。
+
+	[2015/9/8] ショートカットキー (UIInputBinding)
 		TranslateInput
 
-	[2015/9/8] �R�}���h�ƃt�H�[�J�X
-		WPF �ł́AButton.Command �Ƃ� MenuItem.Command �� Target �́ACommandTarget �v���p�e�B�Ō��܂�B
-		���ꂪ null �̎��̓L�[�{�[�h�t�H�[�J�X�������Ă�����̂��ΏہB
+	[2015/9/8] コマンドとフォーカス
+		WPF では、Button.Command とか MenuItem.Command の Target は、CommandTarget プロパティで決まる。
+		これが null の時はキーボードフォーカスを持っているものが対象。
 		http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_base_command.htm#param
-		����� MS.Internal.Commands.CommandHelpers.CriticalExecuteCommandSource() ��ǂ��Ă����΂킩��B
+		これは MS.Internal.Commands.CommandHelpers.CriticalExecuteCommandSource() を追っていけばわかる。
 
-		MenuItem �͕\�����A�L�[�{�[�h�t�H�[�J�X�����B
-		���������� Click �� Command �̏������s���ƁA�L�[�{�[�h�t�H�[�J�X�������Ă���=MenuItem ���g��
-		Target �ƂȂ��Ă��܂��B
+		MenuItem は表示中、キーボードフォーカスを持つ。
+		何もせずに Click で Command の処理を行うと、キーボードフォーカスを持っている=MenuItem 自身が
+		Target となってしまう。
 
-		WPF �ł́APreviewClick ��H��� MenuBase.RestorePreviousFocus() ���Ă΂��B
-		�L�[�{�[�h�t�H�[�J�X���O���ƁA���j���[��\������O�ɃL�[�{�[�h�t�H�[�J�X�������Ă����v�f��
-		�L�[�{�[�h�t�H�[�J�X���ڂ�B
+		WPF では、PreviewClick を辿ると MenuBase.RestorePreviousFocus() が呼ばれる。
+		キーボードフォーカスを外すと、メニューを表示する前にキーボードフォーカスを持っていた要素に
+		キーボードフォーカスが移る。
 
-		���̌� Command �̏������s�����ƂŁA���j���[��\������O�̗v�f�� Target �ɂ���
-		Command �̏����𐳂����s�����Ƃ��ł���B
+		この後 Command の処理を行うことで、メニューを表示する前の要素を Target にして
+		Command の処理を正しく行うことができる。
 
 
-	[2015/8/16] �}�E�X�J�[�\���C���[�W
-		���z�F
-		button1->Cursor = Cursors::Wait;	// button1 �̏�Ƀ}�E�X�J�[�\������������̃A�C�R�����w�肷��
+	[2015/8/16] マウスカーソルイメージ
+		理想：
+		button1->Cursor = Cursors::Wait;	// button1 の上にマウスカーソルが乗った時のアイコンを指定する
 
-		�c���A�{���C�u�����I�ȃJ�[�\���`��� Context �ɂ���ĈقȂ���̂ŁA
-		�O���[�o���ɂ��邱�Ƃ͂ł��Ȃ��B
+		…が、本ライブラリ的なカーソル形状は Context によって異なるもので、
+		グローバルにすることはできない。
 
-		���U�@�F
+		正攻法：
 		button1->SetCursor(m_guiContext->GetWaitCursor());
 		or
 		button1->SetCursor(m_guiContext->GetCommonCursor(CommonCursor::Wait));
 
-		���[�e�B���e�B�F
+		ユーティリティ：
 		button1->SetCursor(CommonCursor::Wait);
-		button1->SetCursor(m_mycursor);				// ���[�U�[�J�X�^���J�[�\��
+		button1->SetCursor(m_mycursor);				// ユーザーカスタムカーソル
 
-		��{�I�� Context �̑��݂͂��܂�ӎ����������Ȃ��B
-		�Ȃ̂ŁA�����[�e�B���e�B �̕��@�łƂ肠�����s���Ă݂�B
+		基本的に Context の存在はあまり意識させたくない。
+		なので、↑ユーティリティ の方法でとりあえず行ってみる。
 
 
-	[2015/8/15] Shape �̕K�v��
-		VisualState �����Ƃ��� Storyboard ����v���p�e�B�̒l�������邽�߁A
-		�`����v���p�e�B�ŃI���g���[���ł�����̂�����Ɨǂ��B�Ƃ������A������ VisualState �̂��肪���ݔ����B
-		�������A����ł��ł� UIElement �����\�ȑ傫���ɂȂ��Ă���B
-		����A�{���ɕK�v�Ȃ��̂����������āA�Ƃ��Ƃ�y�ʂȕ`��v�f�ɂł��邩���J�M�ƂȂ�B
+	[2015/8/15] Shape の必要性
+		VisualState を作るときは Storyboard からプロパティの値をいじるため、
+		描画をプロパティでオントロールできるものがあると良い。というか、無いと VisualState のありがたみ半減。
+		ただし、現状ですでに UIElement が結構な大きさになっている。
+		今後、本当に必要なものだけ分離して、とことん軽量な描画要素にできるかがカギとなる。
 
 	[2015/8/9] ListModel
-		WPF �� CollectionView �����B
-		ItemsControl.ItemsSource �� NULL �̎��ł������I�ɍ����B
+		WPF の CollectionView 相当。
+		ItemsControl.ItemsSource が NULL の時でも内部的に作られる。
 
-	[2015/8/7] GUI Context �̖��
-		�E���[�_���_�C�A���O
+	[2015/8/7] GUI Context の役目
+		・モーダルダイアログ
 
 
-		��肽�����ƂƂ�
-		�E�V�X�e���t�H�[���r���[(��)�Ƃ��B
-			����̓��C���̃V�[���Ƃ͓Ɨ��������́B
-			�C�x���g�o�H��c���[�͓Ɨ����Ă邯�ǁA���\�[�X�n�͓Ɨ����������Ȃ� (���L���Đߖ񂵂���)
-			�A�j���[�V�����̂��߂̎��ԊǗ����Ɨ����Ă���B
+		やりたいこととか
+		・システムフォームビュー(仮)とか。
+			これはメインのシーンとは独立したもの。
+			イベント経路やツリーは独立してるけど、リソース系は独立させたくない (共有して節約したい)
+			アニメーションのための時間管理も独立している。
 
-		OS�̃E�B���h�E�V�X�e�����ۂ��l����ƁAGUIManagerImpl �͊��S�ɃO���[�o���Ȃ��̂��Ǘ����A
-		GUIContext �̓A�v�����ƂɃ��[�J���Ȃ��̂��Ǘ�����C���[�W�ɂȂ�B
+		OSのウィンドウシステムっぽく考えると、GUIManagerImpl は完全にグローバルなものを管理し、
+		GUIContext はアプリごとにローカルなものを管理するイメージになる。
 		GUIManagerImpl
-			- ���\�[�X
-			- �L�[�{�[�h�t�H�[�J�X
+			- リソース
+			- キーボードフォーカス
 	
 		GUIContext
-			- �_���t�H�[�J�X
-			- �}�E�X�J�[�\��
+			- 論理フォーカス
+			- マウスカーソル
 
-	[2015/7/28] TemplateBinding ���ĕK�v�H
-		VisualTree �̗v�f���� TemplateParent �ɃA�N�Z�X���邽�߂ɕK�v�B
-		Qt �ł������悤�Ȋ����ŃX�^�C����g�ށB
+	[2015/7/28] TemplateBinding って必要？
+		VisualTree の要素から TemplateParent にアクセスするために必要。
+		Qt でも似たような感じでスタイルを組む。
 		http://relog.xii.jp/mt5r/2013/09/qmlqt-quick-controls.html
 
-	[2015/7/25] Documents ���ĕK�v�H
-		�ǂ��炩�Ƃ����Ɠ����f�[�^�ł���B
-		���b�`�e�L�X�g���J�X�^�}�C�Y���������[�U�[�ȊO�A�ʏ�͎g��Ȃ��B
+	[2015/7/25] Documents って必要？
+		どちらかというと内部データである。
+		リッチテキストをカスタマイズしたいユーザー以外、通常は使わない。
 
-		�ł��A�����I�ɂ͉��炩�̎�i�Ń��b�`�e�L�X�g�I�Ȃ��̂�\����i���~�����B
-		�Ⴆ�΃Q�[���̃��b�Z�[�W�E�B���h�E��
-		�E�F����
-		�E�t�H���g
-		�E�n�C�p�[�����N
-		�E�A�C�R��
-		�𕶏����ɖ��ߍ��ނɂ͂ǂ����邩�H
+		でも、内部的には何らかの手段でリッチテキスト的なものを表す手段が欲しい。
+		例えばゲームのメッセージウィンドウで
+		・色分け
+		・フォント
+		・ハイパーリンク
+		・アイコン
+		を文書内に埋め込むにはどうするか？
 
 
-	[2015/7/23] ScrollBar �� ScrollViewer �Ƀ}�E�X�h���b�O�̃X�N���[����ʒm����Ƃ��A
-				���� RoutedEvent �ł͂Ȃ��ARoutedCommand �łȂ���΂Ȃ�Ȃ��̂��H
+	[2015/7/23] ScrollBar → ScrollViewer にマウスドラッグのスクロールを通知するとき、
+				何故 RoutedEvent ではなく、RoutedCommand でなければならないのか？
 
 
 
 	[2015/7/20]
-		RoutedEvent ���A�Ƃ肠���� Lumino ���O��Ԃɂ����Ă݂�B
-		�ł���� GUI �Ɏ����Ă��������ǁACoreObject �� PropertyChanged �ƌ��т��Ă���B
-		PropertyChanged ���� GUI �Ɏ����Ă���̂̓A�������A
-		TypeInfo �ł������Ă���B�������͋�̓I�ȈĂ��ł܂��Ă���ɂ���B
+		RoutedEvent も、とりあえず Lumino 名前空間においてみる。
+		できれば GUI に持ってきたいけど、CoreObject の PropertyChanged と結びついている。
+		PropertyChanged ごと GUI に持ってくるのはアリだが、
+		TypeInfo でも持っている。こっちは具体的な案が固まってからにする。
 
 
-	[2015/7/18] ���ۂ� Style �� Template ��K�p����^�C�~���O
-		WPF�ł́c
-			Style �́AStype.set�B
-			Template �́AMeasureCore�B�������́A�h���ɂ���Ă� Loaded �������� GotFocus ��������B
+	[2015/7/18] 実際に Style と Template を適用するタイミング
+		WPFでは…
+			Style は、Stype.set。
+			Template は、MeasureCore。もしくは、派生によっては Loaded だったり GotFocus だったり。
 
-		�{���C�u�����Ƃ��ẮA���ɉ����ăR���X�g���N�^�ł��O���[�o�����\�[�X���� Style ���擾���A�K�p����B
-		�u�v���p�e�B�Ƀ��[�U�[�ݒ�ς݂��A�f�t�H���g�̂܂܂��v�������t���O�ł������Ă����
-		�x���Őݒ肷�邱�Ƃ͂ł��邪�A�ʂ����Ă����܂ł��Ӗ�������̂��c�B
-
-
-
-		�E�E�E
-		�E�e CoreObject �T�u�N���X�ɂ́A�v���p�e�B�̍X�V�L��������bool�z�����������
-		�ETypeInfo �ɓo�^���ꂽ�v���p�e�B�ɂ̓C���f�b�N�X��U��B
-		�ESet�Ǝ�(SizeProperty, true);
-		�EGet�ɂ��׍H���Ȃ��ƁA�e�v���p�e�B��ύX�����Ƃ��ɐ������l�����Ȃ��Ȃ�B
-			������̋@�\�̐e��Style�B
-			����Ή����悤�Ƃ���ƁAprivate �ł����ڃ����o�ϐ��ɃA�N�Z�X�ł����� GetValue �������A
-			�S�Ă� getter �Ɍp�����l������׍H���K�v�ɂȂ�B
-			Style �� static resource �Ȃ�A���蓖�Ă���ɕς�邱�Ƃ͂Ȃ��ƍl���āA
-			�����������ʓ|�Ȃ��Ƃ͂��Ȃ��čςށB
-
-			��
-			�~�Ƃ肠�����AStyle �������Ɋ��蓖�Ă����ƁAStyle �� Setter �ǉ������肵�Ă��Ӗ��Ȃ���A�ŁB
-
-			��
-			�I�u�W�F�N�g������ Create �ɓ��ꂵ�āA���̒��� Style �����E�K�p���Ă݂�B
-			���̃��W���[���ƃC���^�[�t�F�C�X�𓝈ꂵ�Ă݂����B
-			�E�A�j���[�V��������Z�b�g���ꂽ�l�́A�u���[�U�[�ݒ肳�ꂽ�l�v�ł͂Ȃ��B
-				��͂�v���p�e�B�� getter/setter �̓����o�ϐ��𒼐ڑ��삷��̂ł͂Ȃ��A
-				GetValue/SetValue���Ăяo�������ɂ���悤�ɂ��Ȃ���΂Ȃ�Ȃ����E�E�E�B
-
-			��
-			�t�ɁA���I�e�[�}/�X�^�C���ύX���֎~������V���v���Ɏ����ł���H
-			InitialzeComponet()/SetStyle() �Ńv���p�e�B�̒l�������I�ɏ㏑�����邾���ŗǂ��B
+		本ライブラリとしては、↑に加えてコンストラクタでもグローバルリソースから Style を取得し、適用する。
+		「プロパティにユーザー設定済みか、デフォルトのままか」を示すフラグでも持っていれば
+		遅延で設定することはできるが、果たしてそこまでやる意味があるのか…。
 
 
-	[2015/7/17] WPF �̃f�t�H���g�X�^�C��
-		�v���O���}��Style ���`���Ă��Ȃ����́AFrameworkElement.Style �� null ��Ԃ��B
+
+		・・・
+		・各 CoreObject サブクラスには、プロパティの更新有無を示すbool配列を持たせる
+		・TypeInfo に登録されたプロパティにはインデックスを振る。
+		・Set独自(SizeProperty, true);
+		・Getにも細工しないと、親プロパティを変更したときに正しい値が取れなくなる。
+			※今回の機能の親はStyle。
+			これ対応しようとすると、private でも直接メンバ変数にアクセスできずに GetValue を介したり、
+			全ての getter に継承を考慮する細工が必要になる。
+			Style が static resource なら、割り当てた後に変わることはないと考えて、
+			そういった面倒なことはしなくて済む。
+
+			↓
+			×とりあえず、Style を何かに割り当てたあと、Style に Setter 追加したりしても意味ないよ、で。
+
+			↓
+			オブジェクト生成を Create に統一して、その中で Style 検索・適用してみる。
+			他のモジュールとインターフェイスを統一してみたい。
+			・アニメーションからセットされた値は、「ユーザー設定された値」ではない。
+				やはりプロパティの getter/setter はメンバ変数を直接操作するのではなく、
+				GetValue/SetValueを呼び出すだけにするようにしなければならないか・・・。
+
+			↓
+			逆に、動的テーマ/スタイル変更を禁止したらシンプルに実装できる？
+			InitialzeComponet()/SetStyle() でプロパティの値を強制的に上書きするだけで良い。
+
+
+	[2015/7/17] WPF のデフォルトスタイル
+		プログラマがStyle を定義していない時は、FrameworkElement.Style は null を返す。
 		
-		�Ⴆ�΁A
+		例えば、
 		<Window.Resource>
 			<Style TargetType="Button">
 		</Window.Resource>
 		<Button />
-		�́AButton �̓f�t�H���g�� Style �������Ă���B
-		<Style TargetType="Button"> �������ƁAButton.Style �� null ��Ԃ��B
+		は、Button はデフォルトで Style を持っている。
+		<Style TargetType="Button"> を消すと、Button.Style は null を返す。
 
-		�{���C�u�����Ƃ��ẮA�f�t�H���g�̎��� Style ��Ԃ��A�ł��������B
+		本ライブラリとしては、デフォルトの時も Style を返す、でいいかも。
 
-		���Ȃ݂ɁAStyle �͎w�肵�� TargetType �ɂ̂ݗL���ł���B
-		<Style TargetType="Control"> �Ə����Ă��AButton �ɂ͔��f����Ȃ��B
-
-
-	[2015/7/17] VisualTree �����̂͗ǂ����ǁAStyle �� Template ��p�ӂ���K�v�͂���́H
-		�����Ă���邱�Ƃ͏o���邪�A����� Button �Ȃǂ̃N���X�ɒ��ځA���o�I�ȕ����̎������s��Ȃ���΂Ȃ�Ȃ��Ƃ������ƁB
-		�F��ς�����A�j���[�V�����̎��Ԃ�ς����肷��̂̓v���p�e�B���炢����邯�ǁA
+		ちなみに、Style は指定した TargetType にのみ有効である。
+		<Style TargetType="Control"> と書いても、Button には反映されない。
 
 
-		�e�[�}�ύX��
-		�@WPF�`��
-		�AStyle�ƃX�N���v�g���g����Web����
-
-		Style �͐�ΕK�v�BTemplate �́E�E�E
-
-		�ETemplate vs �X�N���v�g
-			�X�N���v�g�ɂ���΁AOnRender() �Ƃ��I�[�o�[���C�h������ł��A�_��͂����������B
-			�����ǁA����̓��C�u������鑤�ɂ��������S�ɂȂ�B
-
-			�Ƃ������A�������� OnRender() �Ƃ��A�C�x���g���I�[�o�[���C�h����̂���
-			�R���g���[���̓����ς��邱�ƂƓ������Ƃ�����A����͕ʂ̃R���g���[�������ׂ����Ǝv���B
-
-			�����l����ƁATemplate �̕K�v�����Ă����̂́A�u�e�[�}�v�Ƃ����_���猩���Ƃ��A
-			VisualTree �ɑ�����R���g���[���̔z�u��ύX���邱�ƁB
-			�Ⴆ�΃E�B���h�E�̃N���[�Y�{�^���̈ʒu�����炵����Ƃ��A��������Ƃ��B
-			Rectangle �ŏC������̂͂����܂ł��܂��B
+	[2015/7/17] VisualTree を作るのは良いけど、Style や Template を用意する必要はあるの？
+		無くても作ることは出来るが、それは Button などのクラスに直接、視覚的な部分の実装を行わなければならないということ。
+		色を変えたりアニメーションの時間を変えたりするのはプロパティからいじれるけど、
 
 
+		テーマ変更は
+		①WPF形式
+		②Styleとスクリプトを使ったWeb方式
 
-	[2015/7/15] ���X�g�̃v���p�e�B�ɂ���
-		WPF �ł̓R���N�V�����͈ˑ��֌W�v���p�e�B�ɂ���Ă��Ȃ� (�ł��Ȃ��H)
-		�e�R���N�V������ IAddChild ���p�����Ă��Ȃ��B
-		�܂�AXAML ���牽�����Z�b�g����Ƃ��̓��t���N�V�����ŃR���N�V�����^�ł��邩���m�F���Ă���B
+		Style は絶対必要。Template は・・・
 
-		C++ �ł͂���Ȃ��Ƃ͂ł��Ȃ��̂ŁA�{���C�u�����Ƃ��Ă̓R���N�V�������ˑ��֌W�v���p�e�B�Ƃ��ēo�^���Ă���B
+		・Template vs スクリプト
+			スクリプトにすれば、OnRender() とかオーバーライドしたりでき、柔軟性はすごく高い。
+			だけど、それはライブラリ作る側にすごい負担になる。
+
+			というか、そもそも OnRender() とか、イベントをオーバーライドするのって
+			コントロールの動作を変えることと同じことだから、それは別のコントロールを作るべきだと思う。
+
+			そう考えると、Template の必要性っていうのは、「テーマ」という点から見たとき、
+			VisualTree に属するコントロールの配置を変更すること。
+			例えばウィンドウのクローズボタンの位置をずらしたりとか、消したりとか。
+			Rectangle で修飾するのはあくまでおまけ。
+
+
+
+	[2015/7/15] リストのプロパティについて
+		WPF ではコレクションは依存関係プロパティにされていない (できない？)
+		各コレクションは IAddChild を継承していない。
+		つまり、XAML から何かをセットするときはリフレクションでコレクション型であるかを確認している。
+
+		C++ ではそんなことはできないので、本ライブラリとしてはコレクションも依存関係プロパティとして登録している。
 
 
 	[2015/7/10]
-		�ESetPropertyValue() �̃L�[�� Property �̃|�C���^�ɂ���H���O�ɂ���H
-		�E�ˑ��֌W�v���p�e�B�̓|�C���^�Ƃ��Č��J����H���O�ɂ���H
+		・SetPropertyValue() のキーは Property のポインタにする？名前にする？
+		・依存関係プロパティはポインタとして公開する？名前にする？
 
-		�r�n�C���h�R�[�h����A�N�Z�X����ꍇ�̓|�C���^�̕������R�����B
-		XML ����A�N�Z�X����Ƃ��� "�v�f��.�v���p�e�B��" �Ƃ���������Ō�������K�v������B
-		�L�[���|�C���^�ɂ��Ă����ƁA�܂�������A���Ƀ|�C���^�A�Ƃ�����2��̌������K�v�ɂȂ�B
+		ビハインドコードからアクセスする場合はポインタの方が当然高速。
+		XML からアクセスするときは "要素名.プロパティ名" という文字列で検索する必要がある。
+		キーをポインタにしておくと、まず文字列、次にポインタ、といった2回の検索が必要になる。
 		
-		�Ƃ͌����Ă��A2��̌������K�v�ɂȂ�̂͏������������B
-		�ނ���A�j���[�V�����Ƃ��̓��A���^�C���ɃA�N�Z�X����K�v������̂ŁA
-		�|�C���^���邢�̓n�b�V���l�̂悤�Ȑ��l�Ō����ł����ق��������B
+		とは言っても、2回の検索が必要になるのは初期化時だけ。
+		むしろアニメーションとかはリアルタイムにアクセスする必要があるので、
+		ポインタあるいはハッシュ値のような数値で検索できたほうが高速。
 
 
-	[2015/7/8] ���W�̒��l�w��͕K�v�H
-		WinForms �� Location �v���p�e�B�͕K�v���Ƃ������ƁB
-		WPF �x�[�X�Ȃ̂� Canvas.SetLeft(button, 10); �Ƃ����K���B
-		Siv3D ����΍��W�͎����ĂȂ��Ń}�[�W���������Ă����B
+	[2015/7/8] 座標の直値指定は必要？
+		WinForms の Location プロパティは必要かということ。
+		WPF ベースなので Canvas.SetLeft(button, 10); とかが適当。
+		Siv3D も絶対座標は持ってないでマージンを持っていた。
 
 
-	[2015/7/8] �z���g�� VisualTree �K�v�H
+	[2015/7/8] ホントに VisualTree 必要？
 
-		Arrange �ō��u�N���C�A���g�̈�̊O���v�Ɂu�R���g���[���v��z�u����������K�v�B
-		���[�U�[�Ɍ��J���Ȃ��Ƃ��Ă��A�����I�ɂ͎����Ă����������ǂ��B
-		����͖{���C�u������GUI���W���[��1.0�̎�����f�O���������������͂��B
+		Arrange で作る「クライアント領域の外側」に「コントロール」を配置したいから必要。
+		ユーザーに公開しないとしても、内部的には持っておいた方が良い。
+		それは本ライブラリのGUIモジュール1.0の実装を断念した原因だったはず。
 		
 
-	[2015/7/7] RoutedCommand �� RoutedEvent �̈Ⴂ�ɂ���
+	[2015/7/7] RoutedCommand と RoutedEvent の違いについて
 
-		RoutedCommand �� <Button Command="ScrollBar.LineUp" /> �̂悤�Ɏg���B
-		����́A�{�^���N���b�N�Ɂu�X�N���[���o�[�́��ړ��v�Ƃ����Ӗ����������Ă���Ƃ������ƁB
-		����ȊO�ɂ��A�E�B���h�E�̃N���[�Y�Ƃ��R�s�y�Ƃ����낢�날��B
+		RoutedCommand は <Button Command="ScrollBar.LineUp" /> のように使う。
+		これは、ボタンクリックに「スクロールバーの↑移動」という意味を持たせているということ。
+		これ以外にも、ウィンドウのクローズとかコピペとかいろいろある。
 
-		RoutedEvent �͒P�ɃC�x���g��ʒm���邾���B
+		RoutedEvent は単にイベントを通知するだけ。
 
-	[2015/7/5] �C�x���g��������
-		�{���C�u�����Ƃ��ẮA
-		�EOn�` �� RaiseEvent() ���Ăяo�������œ��ꂷ��B
-			����̓p�t�H�[�}���X���l�������Ή��B
-			RaiseEvent() �͗v�f�����n���h����S���������肷�邽�߁A�����ɂ�⎞�Ԃ�������\��������B
-			On�` �ŏ����ς݂��`�F�b�N���A�s�K�v�ȏꍇ�� RaiseEvent() ���Ȃ��悤�ɂ��邱�Ƃ�
-			���ʂȏ������s��Ȃ��悤�ɂ˂炤�B
+	[2015/7/5] イベント処理メモ
+		本ライブラリとしては、
+		・On～ は RaiseEvent() を呼び出す方向で統一する。
+			これはパフォーマンスを考慮した対応。
+			RaiseEvent() は要素が持つハンドラを全検索したりするため、処理にやや時間がかかる可能性がある。
+			On～ で処理済みをチェックし、不必要な場合は RaiseEvent() しないようにすることで
+			無駄な処理を行わないようにねらう。
 		
-		�܂��A���݃R���g���[�������[�e�B���O�C�x���g���n���h�����O������@��2����A
-		1�� AddHandler ���邱�ƁA������� LN_REGISTER_ROUTED_EVENT_HANDLER ���邱�ƁB
-		(WPF �ł͑O�҂��u���I�n���h���v��҂��u�ÓI�n���h���v�ƌĂ�ł���݂���)
+		また、現在コントロールがルーティングイベントをハンドリングする方法は2つあり、
+		1つは AddHandler すること、もう一つは LN_REGISTER_ROUTED_EVENT_HANDLER すること。
+		(WPF では前者を「動的ハンドラ」後者を「静的ハンドラ」と呼んでいるみたい)
 
-		�ÓI�n���h���͓��I�n���h�����Ăяo�����O�ɌĂяo����Ae.Handled ���}�[�N���ꂽ�ꍇ
-		�㑱�̓��I�n���h���Ăяo���y�у��[�e�B���O�͍s���Ȃ��B
+		静的ハンドラは動的ハンドラが呼び出される前に呼び出され、e.Handled がマークされた場合
+		後続の動的ハンドラ呼び出し及びルーティングは行われない。
 		https://msdn.microsoft.com/ja-jp/library/ms597875%28v=vs.110%29.aspx
 
 
-	[2015/7/5] �C�x���g��������
-		�EOn�` �̓��[�e�B���O�C�x���g�̃n���h���B
-			�Ⴆ�΁ARaiseEvent(MouseDown) ����ƁA�������� OnMouseDown() ���Ă΂��B
-			OnMouseDown() �� RaiseEvent(MouseDown) ����̂ł͂Ȃ��_�ɒ��ӁB
-			OnMouseDown() ���� RaiseEvent(Click) �̂悤�ɑ��̃C�x���g�𔭍s����̂͂���B
+	[2015/7/5] イベント処理メモ
+		・On～ はルーティングイベントのハンドラ。
+			例えば、RaiseEvent(MouseDown) すると、そこから OnMouseDown() が呼ばれる。
+			OnMouseDown() が RaiseEvent(MouseDown) するのではない点に注意。
+			OnMouseDown() から RaiseEvent(Click) のように他のイベントを発行するのはあり。
 
-			�����AWPF �̒��ł͓��ꂳ��Ă��Ȃ��݂����B
-			MouseDown �� Raise��On �̂悤�ɂȂ��Ă��邪�AButtonBase.OnClick �� On��Raise�B
-
-
+			ただ、WPF の中では統一されていないみたい。
+			MouseDown は Raise→On のようになっているが、ButtonBase.OnClick は On→Raise。
 
 
-	[2015/6/30] �������� VisualTree �Ȃ�č��K�v����́H
+
+
+	[2015/6/30] そもそも VisualTree なんて作る必要あるの？
 		
-		LogicalTree �ƕ�����d�g�݂͕K�v�B
-		�Ⴆ�΁A�E�B���h�E�̃V�X�e���{�^���B
-		����̓{�^�������ł͂Ȃ�Panel�Ƒg�ݍ��킹�ă��C�A�E�g�𒲐߂��������́B
-		LogicalTree �Ɠ����悤�ȃ��C�A�E�g�̎d�g�݂�����ƕ֗��B
+		LogicalTree と分ける仕組みは必要。
+		例えば、ウィンドウのシステムボタン。
+		これはボタンだけではなくPanelと組み合わせてレイアウトを調節したいもの。
+		LogicalTree と同じようなレイアウトの仕組みがあると便利。
 
-		�e�[�}�̐؂�ւ��� CSS ����_���Ȃ́H
-		�� CSS �ŃE�B���h�E�̃V�X�e���{�^�����J�X�^�}�C�Y�ł���́H
-		�� �E�B���h�E�̃N���C�A���g�̈�̔w�i�Ƙg�������āAGlass �����ɂ������Ƃ��́H
-			�� �w�iON/OFF�v���p�e�B���K�v�ɂȂ肻���E�E�E
+		テーマの切り替えは CSS じゃダメなの？
+		→ CSS でウィンドウのシステムボタンをカスタマイズできるの？
+		→ ウィンドウのクライアント領域の背景と枠を消して、Glass だけにしたいときは？
+			→ 背景ON/OFFプロパティが必要になりそう・・・
 
 
 
-	[2015/6/30] Qt Quick �̂悤�ȃR���g���[���̃J�X�^�}�C�Y�́H
+	[2015/6/30] Qt Quick のようなコントロールのカスタマイズは？
 		
-		Qt Quick �� JavaScript ���C�N�ȃ}�[�N�A�b�v�ŁA
+		Qt Quick は JavaScript ライクなマークアップで、
 		Button {
-			background : <�q�R���g���[��>
-			content : <�R���e���c>
+			background : <子コントロール>
+			content : <コンテンツ>
 		}
-		�݂����Ȃ��񂶂ŃR���g���[���̃J�X�^�}�C�Y���ł���B
-		���ׂāA
-		�Ebackground
-		�Econtent
-		�Eforeground
-		��3���C���[�ŃJ�X�^�}�C�Y�ł���Ώ����V���v���ɂȂ肻�������E�E�E�H
+		みたいなかんじでコントロールのカスタマイズができる。
+		すべて、
+		・background
+		・content
+		・foreground
+		の3レイヤーでカスタマイズできれば少しシンプルになりそうだが・・・？
 		
-		��
+		↓
 
-		�e�R���e�i�� Padding ���l���ł��Ȃ��B
-		BackgroundPadding �Ƃ���p�̃v���p�e�B���K�v�ɂȂ��Ă��܂��B
+		親コンテナの Padding を考慮できない。
+		BackgroundPadding とか専用のプロパティが必要になってしまう。
 
 
 	[2015/6/9] AddChild
-		����͘_���c���[�\�z�p�Ɍ�����B
-		WPF �� ContentControll �� AddChild �́A�����Ŏ󂯎�����I�u�W�F�N�g�� Content �v���p�e�B�ɓ���Ă邾���������B
-		��
-		����ł����B
-		�e���v���[�g�ō�����c���[�͂���܂� Logical �S�R�֌W�Ȃ��Ǝv���Ă����ǁA
-		VisualTree �̗v�f�� LogcalTreeHelper.GetParent() ����ƁAVisualTree ��̐e�v�f������B
+		これは論理ツリー構築用に見える。
+		WPF の ContentControll の AddChild は、引数で受け取ったオブジェクトを Content プロパティに入れてるだけだった。
+		↓
+		それでいい。
+		テンプレートで作ったツリーはこれまで Logical 全然関係ないと思ってたけど、
+		VisualTree の要素に LogcalTreeHelper.GetParent() すると、VisualTree 上の親要素が取れる。
 
 
-	[2015/6/9] �f�t�H���g�� Chrome �̏�ԕω��ɉ����g���H(TemplateBinding �� VisualState �� Trigger)
-		.NET �E�G�ł͌����ڂ̕\���ɂ͂ł��邾�� VisualState ���g�����ق���������˓I�Ȋ����ɂȂ��Ă���B
-		��VisualState �� Silverlight ���� WPF �ɗA�����ꂽ�A
+	[2015/6/9] デフォルトの Chrome の状態変化に何を使う？(TemplateBinding と VisualState と Trigger)
+		.NET 界隈では見た目の表現にはできるだけ VisualState を使ったほうがいいよね的な感じになっている。
+		※VisualState は Silverlight から WPF に輸入された、
 
-		�����A��{�I�� Stopryboard (�A�j���[�V����) �ł����v���p�e�B�ω��������Ȃ��̂ŁATrigger �̕��p���K�v�B
+		ただ、基本的に Stopryboard (アニメーション) でしかプロパティ変化させられないので、Trigger の併用も必要。
 
-		TemplateBinding �͏�Ԃ̒ʒm�Ɍ��炸���낢��Ȃ��̂� Template �̂ǂ��ɒu���������߂�̂ɂ��g���B
-		�������ł̑Ή���D�悵�Ă݂�B
+		TemplateBinding は状態の通知に限らずいろいろなものを Template のどこに置くかを決めるのにも使う。
+		こっちでの対応を優先してみる。
 		
 
 
 
-	[2015/6/9] Binding �� TemplateBinding
-		����2�͎��Ă��邪�A�f�[�^�\�[�X�Ƃ��Ĉ����Ώۂ��Ⴄ�B
-		Binding �� �_���v�f�� DataContext�A
-		TemplateBinding �͘_���v�f���g���\�[�X�Ƃ���B
+	[2015/6/9] Binding と TemplateBinding
+		この2つは似ているが、データソースとして扱う対象が違う。
+		Binding は 論理要素の DataContext、
+		TemplateBinding は論理要素自身をソースとする。
 
-		���̂悤�ȃ}�[�N�A�b�v�́A1�ڂ̃��x���� Button.DataContext ���ς���
-		����ɒǐ����ĕς�邪�A2�ڂ̃��x���͕ς�炸�A��� Button.IsPressed ���Q�Ƃ�������B
+		次のようなマークアップは、1つ目のラベルは Button.DataContext が変われば
+		それに追随して変わるが、2つ目のラベルは変わらず、常に Button.IsPressed を参照し続ける。
 
 		<Button x:Name="_button1" Height="32">
 			<Button.Template>
@@ -486,23 +486,23 @@
 		</Button>
 
 	
-	[2015/6/9] CEGUI �̃v���p�e�B
-		Editbox::addEditboxProperties() ����H��Ƃ������Q�l�ɂȂ�B
+	[2015/6/9] CEGUI のプロパティ
+		Editbox::addEditboxProperties() から辿るとすごく参考になる。
 
 
-	[2015/6/9] CEGUI �̕`��
+	[2015/6/9] CEGUI の描画
 
-		Button ���Ɍ��Ă݂�ƁE�E�E
+		Button を例に見てみると・・・
 
-		PushButton �N���X�͉�������Ԃ��Ǘ����邾���B�`����s���l�͕ʂɂ���B
-		�`����s���̂� FalagardButton �N���X�ŁAWindowRenderer �N���X�̃T�u�N���X�B
+		PushButton クラスは押下中状態を管理するだけ。描画を行う人は別にいる。
+		描画を行うのは FalagardButton クラスで、WindowRenderer クラスのサブクラス。
 
-		WindowRenderer �� Widget ���ƂɃN���X����`����Ă��āA���ɂ� TabControlWindowRenderer �� EditboxWindowRenderer ������B
-		���傤�ǂ��ꂪ����낤�Ƃ��Ă��� Chrome �ɑ����������B
-		Widget �� WindowRenderer �� 1��1�B
+		WindowRenderer は Widget ごとにクラスが定義されていて、他にも TabControlWindowRenderer や EditboxWindowRenderer がある。
+		ちょうどこれが今やろうとしている Chrome に相当しそう。
+		Widget と WindowRenderer は 1対1。
 
 
-		�`��͂��ƕ��G�BFalagardButton::render() ����ȉ��̂悤�ɐ����Ă����B
+		描画はわりと複雑。FalagardButton::render() から以下のように潜っていく。
 		FalagardButton::render()
 			WidgetLookFeel::render()
 				StateImagery::render()
@@ -510,42 +510,42 @@
 						SectionSpecification::render()
 							ImagerySection::render()
 
-		Window �̎��� LookFeel ���؂�ւ��΁AWidgetLookFeel::render() ���؂�ւ��d�g�݁B
+		Window の持つ LookFeel が切り替われば、WidgetLookFeel::render() が切り替わる仕組み。
 
-		ImagerySection::render() �͎���3�����ɕ`�悵�Ă���B���ꂪ CEGUI �̍ŏ��`��P�ʁH
-		�EFrameComponent	�E�E�E �g
-		�EImageryComponent	�E�E�E �w�i
-		�ETextComponent		�E�E�E �e�L�X�g
+		ImagerySection::render() は次の3つを順に描画している。これが CEGUI の最小描画単位？
+		・FrameComponent	・・・ 枠
+		・ImageryComponent	・・・ 背景
+		・TextComponent		・・・ テキスト
 
 
-		WindowRenderer �̓I�[�i�[�R���g���[���𒼐ڎQ�Ƃ��A���̏�Ԃ��g���� StateImagery �������AStateImagery::render() ���Ăяo���B
-		�Ⴆ�� PushButton �Ȃ�AisPushed() �Ȃ� "pushed" ��������L�[�Ɍ������s���B
+		WindowRenderer はオーナーコントロールを直接参照し、その状態を使って StateImagery を検索、StateImagery::render() を呼び出す。
+		例えば PushButton なら、isPushed() なら "pushed" 文字列をキーに検索を行う。
 
-		�f�t�H���g�̃e�[�}�t�@�C���́����ۂ��B
+		デフォルトのテーマファイルは↓っぽい。
 		datafiles\looknfeel\AlfiskoSkin.looknfeel
 	
-		<ImagerySection> �ŁACompnent �̔z�u�����߂Ė��O������B
-		<StateImagery> �ŁA�����Ԃ̂Ƃ��ɂǂ� <ImagerySection> ��\�����邩�����߂�B
-		�悭���Ă݂�΁A���̕��G�ȕ`��p�X���[���ł���B
+		<ImagerySection> で、Compnent の配置を決めて名前をつける。
+		<StateImagery> で、ある状態のときにどの <ImagerySection> を表示するかを決める。
+		よく見てみれば、↑の複雑な描画パスも納得できる。
 	
 
 
 	[2015/6/9] Unity GUI
-		GUI �R���g���[���̃J�X�^�}�C�Y
+		GUI コントロールのカスタマイズ
 		http://docs.unity3d.com/ja/current/Manual/gui-Customization.html
 
-		GUI �X�L��
+		GUI スキン
 		http://docs.unity3d.com/ja/current/Manual/class-GUISkin.html
 	
-		CCS ���ӎ����Ă���B�������P���B
+		CCS を意識している。すごく単純。
 
-	[2015/6/7] Chrome ���̇A
-		WPF �� WindowChrome �� UIElement �ł͂Ȃ��B
-		�^�C�g���o�[�̍�����A�E�B���h�E�g�̕����`����A�P�Ȃ�f�[�^�N���X�B
-		Window �N���X�̓Z�b�g����Ă��� WindowChrome ���炱�̊e��̈���擾���A�^�C�g���o�[��D&D�ړ���
-		���ED&D�ɂ�郊�T�C�Y���s���Ă���B
+	[2015/6/7] Chrome その②
+		WPF の WindowChrome は UIElement ではない。
+		タイトルバーの高さや、ウィンドウ枠の幅を定義する、単なるデータクラス。
+		Window クラスはセットされている WindowChrome からこの各種領域を取得し、タイトルバーのD&D移動や
+		境界D&Dによるリサイズを行っている。
 
-		Button �̊�{�I�ȃe���v���[�g�͂���Ȋ����B
+		Button の基本的なテンプレートはこんな感じ。
 		<Button.Template>
 			<ControlTemplate TargetType="{x:Type Button}">
 				<Microsoft_Windows_Themes:ButtonChrome SnapsToDevicePixels="true" 
@@ -561,39 +561,39 @@
 			</ControlTemplate>
 		</Button.Template>
 
-		Button �� IsMouseOver �� IsPressed �����J���AButtonChrome �͂���Ƀo�C���h���Ă���B
-		�܂�AVisualState �Ƃ������ł͊֌W�Ȃ��B
+		Button は IsMouseOver や IsPressed を公開し、ButtonChrome はそれにバインドしている。
+		つまり、VisualState とかここでは関係ない。
 	
 
 
-	[2015/6/7] Chrome �̍l����
-		ButtonChrome �� WindowChrome �́A�u������x��ʓI�ȃr�W���A����������r�W���A���c���[�\�z���[�e�B���e�B�v�ł���B
+	[2015/6/7] Chrome の考え方
+		ButtonChrome や WindowChrome は、「ある程度一般的なビジュアルを備えたビジュアルツリー構築ユーティリティ」である。
 		
-		�z���g�Ƀ[������J�X�^�}�C�Y�������Ƃ��� Chrome �͎g�킸�ARectangle ���� Shape ����g���Ď��삷��B
+		ホントにゼロからカスタマイズしたいときは Chrome は使わず、Rectangle 等の Shape を駆使して自作する。
 		
-		�������A�قƂ�ǂ̏ꍇ�̓J�X�^�}�C�Y�������ƌ����Ă���肽�����Ƃ̓E�B���h�E�g�̉摜��ς������Ƃ��A
-		���������u�f�t�H���g�R���g���[�����班���ς������v���x�ł���͂��B
-		������x������̂����� Chrome�B
+		しかし、ほとんどの場合はカスタマイズしたいと言ってもやりたいことはウィンドウ枠の画像を変えたいとか、
+		そういう「デフォルトコントロールから少し変えたい」程度であるはず。
+		それを支援するのがこの Chrome。
 
-		�Ⴆ�΁A���삹���Ƀf�t�H���g�� Chrome ���g���Ă���ꍇ�̓E�B���h�E�X�L���� png �������ւ��邾����
-		�e�[�}�ύX��B�����邱�Ƃ��ł���B
+		例えば、自作せずにデフォルトの Chrome を使っている場合はウィンドウスキンの png を差し替えるだけで
+		テーマ変更を達成することができる。
 
 
 	[2015/5/31]
-		�������� VisualTree �͉��ŕK�v�Ȃ́H
-		�� ��ԍŏ��� GUI �݌v�Ŏ��s�����A�u�E�B���h�E�̃V�X�e���{�^���v��������g���Ƃ��������R�ɍ���B
+		そもそも VisualTree は何で必要なの？
+		→ 一番最初の GUI 設計で失敗した、「ウィンドウのシステムボタン」がこれを使うとすごく自然に作れる。
 
 
-		Template �Ƃ��A���\�[�X�V�X�e���̖ړI�́H
-		�����ƃ_���Ȃ́H�����ł��Ȃ��Ȃ�́H
-		�� �Ԃ����Ⴏ�����Ă����Ƃ��Ȃ�B
-			���ۂɕK�v�ɂȂ�̂̓e�[�}�ύX���������ĂȂ��������炢�����B
+		Template とか、リソースシステムの目的は？
+		無いとダメなの？何ができなくなるの？
+		→ ぶっちゃけ無くても何とかなる。
+			実際に必要になるのはテーマ変更したいってなった時くらいかも。
 			
-			���ƁA�f�t�H���g�� VisualTree �̃��C�A�E�g��ύX�������Ƃ��B
-			�R�����R���g���[����ύX���������Ă����̂͂قƂ�ǂȂ��Ǝv���BUI�f�U�C���̊w�K�R�X�g�I�ɁB
-			�ύX����Ƃ�����A�Q�[���ɂ͋��ʂł��邯�ǃ^�C�g�����ƂɃf�U�C���̈Ⴄ���B�Ⴆ�Α����X���b�g�Ƃ��ɂȂ邩�Ȃ��c�B
-			������������� GUI ���W���[���̃R�����R���g���[���Ƃ���Ȃ�Ӗ��������Ă���B
-			�ł��A������ň� VisualTree �𒼐ڂ�����΂����������E�E�E�B
+			あと、デフォルトの VisualTree のレイアウトを変更したいとき。
+			コモンコントロールを変更したいっていうのはほとんどないと思う。UIデザインの学習コスト的に。
+			変更するとしたら、ゲームには共通であるけどタイトルごとにデザインの違う物。例えば装備スロットとかになるかなぁ…。
+			もしそれをこの GUI モジュールのコモンコントロールとするなら意味を持ってくる。
+			でも、これも最悪 VisualTree を直接いじればいいだけか・・・。
 
 
 
@@ -602,58 +602,58 @@
 
 
 	[2015/5/31]
-		�Ή�����r�n�C���h�R�[�h�̂���A�����镁�ʂ�UI�p�[�c�̔z�u�Ɏg�� XML �́A�u���C�A�E�g�v�Ƃ��������������Ă݂�B
-		x:Class �����������Ă����肷��B
+		対応するビハインドコードのある、いわゆる普通にUIパーツの配置に使う XML は、「レイアウト」という言い方をしてみる。
+		x:Class 属性を持っていたりする。
 
-		�R���g���[������������闬��́A
+		コントロールが生成される流れは、
 
 		
-		�Enew Window()
-		�E���C�A�E�g���� LogicalTree �̃C���X�^���X�����B
-			�E�q�v�f�� <Button> �Ƃ������ GUIManagerImpl::CreateUIElement("Button")
-		�EUpdateTemplate() ���ċA�I�Ɏ��s���Ă����B(VisualTree �����)
-			�֐��̈����ɂ� ResourceDictionary ��n���B
+		・new Window()
+		・レイアウトから LogicalTree のインスタンスを作る。
+			・子要素に <Button> とかあれば GUIManagerImpl::CreateUIElement("Button")
+		・UpdateTemplate() を再帰的に実行していく。(VisualTree を作る)
+			関数の引数には ResourceDictionary を渡す。
 
 
 
 
-	[2015/5/31] VisualTree �� UIElement �ł��邩�̋��
+	[2015/5/31] VisualTree の UIElement であるかの区別
 
-		�EControlTemplate �����������̂� VisualTree�B
+		・ControlTemplate から作ったものは VisualTree。
 
 
-	[2015/5/29] �e�[�}�̓��I�ύX
+	[2015/5/29] テーマの動的変更
 		
-		�������S�� MVVM �Ŏ���������Ă���Ȃ�AView �����[�g����S�č�蒼���Ă��܂��Ηǂ��B
-		�E�E�E���A���S�� MVVM �͌����I�ł͂Ȃ��E�E�E�B
-		�uVisualTree���č\�z����v�Ƃ��������ōl���Ă����B
+		もし完全な MVVM で実装がされているなら、View をルートから全て作り直してしまえば良い。
+		・・・が、完全な MVVM は現実的ではない・・・。
+		「VisualTreeを再構築する」という方向で考えていく。
 		
-		VisualTree �� UIElement �͑S�� Release() �����B
-		�΂��āALogicalTree �� UIElement �͎c�葱����B
-		�����e�[�}�̓��I�ύX���ł���悤�ɂ���Ȃ�ALogicalTree �ɂ͕`��Ɋ֌W����I�u�W�F�N�g����ؒu���Ȃ��B
-		�E�E�E�悤�ɂ���K�v�͖������B
-		�u���V�̐F���炢��������
+		VisualTree の UIElement は全て Release() される。
+		対して、LogicalTree の UIElement は残り続ける。
+		もしテーマの動的変更をできるようにするなら、LogicalTree には描画に関係するオブジェクトを一切置かない。
+		・・・ようにする必要は無いか。
+		ブラシの色くらいだったら
 
 
 
-	[2015/5/29] Template �ƌ���o�C���_�ƃ��[�U�[�R���g���[��
+	[2015/5/29] Template と言語バインダとユーザーコントロール
 
-		C# ���� Control ���p���������[�U�[�R���g���[����������Ƃ���B
-		����� XML ��ɏ������Ƃ͂ł���H
+		C# 側で Control を継承したユーザーコントロールを作ったとする。
+		それを XML 上に書くことはできる？
 
-		�� C++ �����m��Ȃ��V�����^��o�^����Ƃ������ƂɂȂ�B���I�Ȍ^���̒ǉ��B
-		�� �܂��́AC++ ���� new �������Ƃ��ɃN���X�����g���ăt�@�N�g���֐����R�[���o�b�N����B
-		   C# ���̓T�u�N���X�� new ���� Control �� Handle ��Ԃ������B
-		   Managed �C���X�^���X�̓O���[�o���Ǘ��z��ɓ���Ă����B���ꂾ���ł��Ԃ�OK
+		→ C++ 側が知らない新しい型を登録するということになる。動的な型情報の追加。
+		→ または、C++ 側で new したいときにクラス名を使ってファクトリ関数をコールバックする。
+		   C# 側はサブクラスを new して Control の Handle を返すだけ。
+		   Managed インスタンスはグローバル管理配列に入れておく。これだけでたぶんOK
 
 
 
-	[2015/5/29] �A�j���[�V����
+	[2015/5/29] アニメーション
 
-		Animation ���W���[���̓��e�͊�{�I�� GUI ���Ń��b�v���� (AnimationTimeline �̃T�u�N���X)
-		����� XML ���炢�낢���`�ł���悤�ɂ��邽�߁B
+		Animation モジュールの内容は基本的に GUI 側でラップする (AnimationTimeline のサブクラス)
+		これは XML からいろいろ定義できるようにするため。
 
-		WPF �̃A�j���[�V�����͂���Ȋ����B
+		WPF のアニメーションはこんな感じ。
 		   System.Windows.Media.Animation.AnimationTimeline
               System.Windows.Media.Animation.BooleanAnimationBase
               System.Windows.Media.Animation.ByteAnimationBase
@@ -678,48 +678,48 @@
               System.Windows.Media.Animation.Vector3DAnimationBase
               System.Windows.Media.Animation.VectorAnimationBase
 
-		���܂̂Ƃ���L�[�t���[���A�j���[�V�����͍l���Ȃ��ėǂ��Ǝv���B
-		2�_�ԂŁA�X�������w��ł���΁B
+		いまのところキーフレームアニメーションは考えなくて良いと思う。
+		2点間で、傾きだけ指定できれば。
 
-		AnimationTimeline �͋��L���\�[�X�B
-		Storyboard �����L���\�[�X�B
+		AnimationTimeline は共有リソース。
+		Storyboard も共有リソース。
 
-		�EStoryboard::Begin() �� AnimationClock �����BAnimationClock �ɂ̓^�[�Q�b�g�v�f�� AnimationTimeline ���Z�b�g�B
-		�EAnimationClock �� GUIManagerImpl �ɓo�^�B
-		�EGUIManagerImpl �ւ� InjectTime() �őS�Ă� AnimationClock ��J�ڂ�����B
-		�EAnimationClock �͌��݂̒l���^�[�Q�b�g�ɃZ�b�g����B
+		・Storyboard::Begin() で AnimationClock を作る。AnimationClock にはターゲット要素と AnimationTimeline をセット。
+		・AnimationClock は GUIManagerImpl に登録。
+		・GUIManagerImpl への InjectTime() で全ての AnimationClock を遷移させる。
+		・AnimationClock は現在の値をターゲットにセットする。
 
-		���Ȃ݂� WPF �� AnimationClock ���^�[�Q�b�g�������Ȃ��݂����B
-		AnimationClock �����L�ł��ă������g�p�ʌ��邩������Ȃ����ǁA
-		�����܂ō�肱�ނƕ��G�ɂȂ肷����C������̂łƂ肠������L���@�Ői�߂�B
+		ちなみに WPF は AnimationClock がターゲットを持たないみたい。
+		AnimationClock も共有できてメモリ使用量減るかもしれないけど、
+		そこまで作りこむと複雑になりすぎる気がするのでとりあえず上記方法で進める。
 
 
 
-	[2015/5/29] �l�C�e�B�u�ȃt���[�e�B���O�E�B���h�E�̕K�v��
+	[2015/5/29] ネイティブなフローティングウィンドウの必要性
 	
-		�E�E�B���h�E���j���[�h���b�v�_�E��
-		�E�R���e�L�X�g���j���[
-		�E�R���{�{�b�N�X�̃h���b�v�_�E��
-		�E�o���[��
-		�EIME
-		�E�h�b�L���O�E�B���h�E
+		・ウィンドウメニュードロップダウン
+		・コンテキストメニュー
+		・コンボボックスのドロップダウン
+		・バルーン
+		・IME
+		・ドッキングウィンドウ
 		
-		�Ⴆ�΃R���{�{�b�N�X�̃h���b�v�_�E���́AVisual �I�Ȑe�q�֌W�͎����Ă��Ȃ��B
+		例えばコンボボックスのドロップダウンは、Visual 的な親子関係は持っていない。
 		
-		�����A�����E�B���h�E���Ɓu�z���g�̃t���X�N���[���v���ł��Ȃ��Ȃ�B
+		ただ、複数ウィンドウ作ると「ホントのフルスクリーン」ができなくなる。
 		
 
-	[2015/5/28] RoutedEvent �̕K�v��
+	[2015/5/28] RoutedEvent の必要性
 		
-		�����v������Ԍ��ʂ��������̂� ItemsControl �� ItemClicked ���Ǝv���B
-		�Ⴆ�΃N���b�N�����Ƃ��̃n�C���C�g���J�X�^�}�C�Y�������ăe���v���[�g��g�񂾂Ƃ���B
-		�P���� ListBox �ł���� ListBoxItem ���N���b�N���ꂽ���A���ڂ̐e�R���g���[���ł��� ListBox ��
-		�C�x���g��ʒm����΂悢�B�������A�e���v���[�g��g�ނƕ��G�� VisualTree ���ł��邱�ƂɂȂ�A
-		���R���� VisualTree �̒��ł��C�x���g���󂯎�肽���B����ɁA����� Handled=false ��
-		�e�R���g���[���֒ʒm����Ă����ׂ��B
+		すぐ思いつく一番効果が高いものは ItemsControl の ItemClicked だと思う。
+		例えばクリックしたときのハイライトをカスタマイズしたくてテンプレートを組んだとする。
+		単純な ListBox であれば ListBoxItem がクリックされた時、直接の親コントロールである ListBox に
+		イベントを通知すればよい。しかし、テンプレートを組むと複雑な VisualTree ができることになり、
+		当然その VisualTree の中でもイベントを受け取りたい。さらに、それは Handled=false で
+		親コントロールへ通知されていくべき。
 
 
-	[2015/5/28] ���ʂ̃C�x���g�� RoutedEvent
+	[2015/5/28] 普通のイベントと RoutedEvent
 
 		<Window x:Class="WpfApplication1.MainWindow"
 				xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -753,245 +753,245 @@
 		}
 
 
-		Button1_Click_CLR �́A_button1 ���N���b�N�����u�ԂɌĂ΂��B
-		���̌�ARoutedEvent �ɂ�肳���̂ڂ��Ă����� Button1_Click_Routed ���Ă΂��B
-		���� Button1_Click_CLR �� e.Handled = true; �Ƃ������� Button1_Click_Routed �͌Ă΂�Ȃ��Ȃ�B
+		Button1_Click_CLR は、_button1 をクリックした瞬間に呼ばれる。
+		その後、RoutedEvent によりさかのぼっていって Button1_Click_Routed が呼ばれる。
+		もし Button1_Click_CLR で e.Handled = true; とか書くと Button1_Click_Routed は呼ばれなくなる。
 
-		�܂��A_button2 ���N���b�N����� Button1_Click_Routed �����Ă΂��B
-
-
+		また、_button2 をクリックすると Button1_Click_Routed だけ呼ばれる。
 
 
-	[2015/5/26] Property �̕K�v��
-		�����ꍇ�A�}�[�N�A�b�v�p�[�T���� SetValue("Width", 10) �����Ƃ����A
-		�v���p�e�B���ɑ΂���l�̊i�[�惁���o�ϐ������߂� if �Ȃ� switch �Ȃ���A
-		�T�u�N���X�ɂ��ׂĎ������Ȃ���΂Ȃ�Ȃ��B
-		C++ �����Ȃ�܂������A�e����o�C���_�ł�������̂͂�����Ǝ��s���ԓI�ȃR�X�g��������c�B
-		�Ȃɂ��߂�ǂ���������B
 
 
-	[2015/5/21] �`��@�\
+	[2015/5/26] Property の必要性
+		無い場合、マークアップパーサから SetValue("Width", 10) したとき等、
+		プロパティ名に対する値の格納先メンバ変数を決める if なり switch なりを、
+		サブクラスにすべて実装しなければならない。
+		C++ だけならまだしも、各言語バインダでそれをやるのはちょっと実行時間的なコストがかかる…。
+		なによりめんどくさすぎる。
 
-		�E�r�b�g�}�b�v�`��
-			�E�r�b�g�}�b�v�x�[�X�̘g�`�� (RGSS �E�B���h�E�X�L��)
-		�E��`
 
-		�E
+	[2015/5/21] 描画機能
 
-	��UIElementTemplate(ControlTemplate) �ƁAUIElementFactory(FrameworkElementFactory) �̈Ⴂ
-		�����Ƃ� SetValue �� Style�ATrigger ��ݒ肷�邱�Ƃ��ł�
-		�Ȃ�ƂȂ����Ă��邪�A�g�p�ړI�͂��񂺂�Ⴄ�B
-		�EUIElementFactory
-			�P����1�� UIElement �����B�������Ƃ������B
-			�q�v�f��ǉ����邱�ƂŁA�c���[���̂��̂�\����B
-			�C���X�^���X���������̂͂��̂܂� Visual�c���[�ɂ�Logical�c���[�ɂ��g����B
-		�EUIElementTemplate
-			1�̘_���I�ȃR���g���[���̍쐬�ɕK�v�ȏ��̏W���B�Ⴆ�� Button �� Chrome �� TextBlock ���琬�藧���Ă��邪�A
-			�g���Ƃ��͂���Ȃ̋C�ɂ��Ȃ��ŁA�ЂƂ� Button �Ƃ��� Visual �܂��� Logical �c���[�Ɍq�����Ƃ��ł���B
-			UIElementTemplate ���K�w�\���ɂ��邱�Ƃ͂ł��Ȃ��B
-			�y�Ή����� Presenter ���K���K�v�ɂȂ�B�z
+		・ビットマップ描画
+			・ビットマップベースの枠描画 (RGSS ウィンドウスキン)
+		・矩形
+
+		・
+
+	■UIElementTemplate(ControlTemplate) と、UIElementFactory(FrameworkElementFactory) の違い
+		両方とも SetValue や Style、Trigger を設定することができ
+		なんとなく似ているが、使用目的はぜんぜん違う。
+		・UIElementFactory
+			単純に1つの UIElement を作る。難しい制約とか無し。
+			子要素を追加することで、ツリーそのものを表せる。
+			インスタンス化したものはそのまま VisualツリーにもLogicalツリーにも使える。
+		・UIElementTemplate
+			1つの論理的なコントロールの作成に必要な情報の集合。例えば Button は Chrome や TextBlock から成り立っているが、
+			使うときはそんなの気にしないで、ひとつの Button として Visual または Logical ツリーに繋ぐことができる。
+			UIElementTemplate を階層構造にすることはできない。
+			【対応する Presenter が必ず必要になる。】
 	
-	��UIElementFactory����̃C���X�^���X��
-		UIElementFactory::createUIElement() �Ŏ��g���쐬�B
-		�q�v�f Factor ������΁A���ꂼ��� createUIElement() ���ĂсA
-		�쐬���ꂽ UIElement ���K�w�\���Ɍ������ĕԂ��B
-		UIElement ���쐬����Ƃ��́A���O�ɂ����Manager ���� UIElementTemplate ���擾���A
-		UIElementTemplate.createUIElement() ���Ăяo���B
-		1�� create ������ UIElementTemplate �� UIElementFactory ���݂��Ⴂ�ɌĂяo����Ă��Ȃ蕡�G�ɂȂ�̂Œ��ӁB
-		�yManager �ɃR���g���[���Ƃ��Ē��ړo�^�����̂� UIElementTemplate �ł���z
+	■UIElementFactoryからのインスタンス化
+		UIElementFactory::createUIElement() で自身を作成。
+		子要素 Factor があれば、それぞれの createUIElement() を呼び、
+		作成された UIElement を階層構造に結合して返す。
+		UIElement を作成するときは、名前によってManager から UIElementTemplate を取得し、
+		UIElementTemplate.createUIElement() を呼び出す。
+		1つの create 処理で UIElementTemplate と UIElementFactory が互い違いに呼び出されてかなり複雑になるので注意。
+		【Manager にコントロールとして直接登録されるのは UIElementTemplate である】
 
-�Evirtual �֐�
-	�EBinderLib �̊֐����R�[���o�b�N�ŌĂяo���B(���̌Ăяo����� BinderLib �̊֐��� Ploxy �֐��ƌĂ�)
-	�EPloxy �֐��� static �֐��ł��邱�ƁB(C# �̏ꍇ�A�����o���\�b�h����GC�Ώۂ���O�����̏������K�v�Ŗʓ|)
-	�EPloxy �֐��̌^�� LFTypedef.h �ɒ�`(typedef)����֐��|�C���^�^�Ɠ����ł��邱�ƁB
-	  �܂�ARefObject ���󂯎��ꍇ�� APILib �������Ă��� Handle ���󂯎�邱�ƂɂȂ�B
-	�EPloxy �֐��� Handle ���� this �ɂ����� Wrapper �I�u�W�F�N�g���O���[�o���� Manager ���猟�����A
-	  �ړI�̃����o���\�b�h���Ăяo���BPloxy �֐��� virtual �֐��� 1:1 �ŌĂяo���B
-	  �܂�Avirtual �֐��̐����� Ploxy �֐�����`����邱�ƂɂȂ�B
+・virtual 関数
+	・BinderLib の関数をコールバックで呼び出す。(この呼び出される BinderLib の関数を Ploxy 関数と呼ぶ)
+	・Ploxy 関数は static 関数であること。(C# の場合、メンバメソッドだとGC対象から外す等の処理が必要で面倒)
+	・Ploxy 関数の型は LFTypedef.h に定義(typedef)する関数ポインタ型と同じであること。
+	  つまり、RefObject を受け取る場合は APILib が握っている Handle を受け取ることになる。
+	・Ploxy 関数は Handle から this にあたる Wrapper オブジェクトをグローバルな Manager から検索し、
+	  目的のメンバメソッドを呼び出す。Ploxy 関数は virtual 関数と 1:1 で呼び出す。
+	  つまり、virtual 関数の数だけ Ploxy 関数が定義されることになる。
 	  
-	�EAPILib �́A���J����S�Ă� RefObject �N���X�ɑ΂��āA�T�u�N���X����������B(���̃T�u�N���X�� Ploxy �N���X�ƌĂ�)
-	  APILib ������J����钼�ڂ̃I�u�W�F�N�g�́A���� Ploxy �ł���B
-	�EPloxy �N���X�́ACoreLib �N���X�����J����S�Ă� virtual �֐����I�[�o�[���C�h����B(�X�[�p�[�N���X���܂߂�)
-	  �Ⴆ�΁ASprite �� SceneNode ���p�����邪�A���̂Ƃ��T�u�N���X SpritePloxy �� DrawSubset() ����������B
-	�EPloxy �̓����o�ϐ��� LFTypedef.h �ɒ�`(typedef)����֐��|�C���^�^�̃����o�ϐ������B
-	  BinderLib ���ɒ�`���� Ploxy �֐��̃|�C���^�́A�����ɐݒ肳���B
-	�E�I�[�o�[���C�h�̎����́A���̊֐��|�C���^���o�R���� Ploxy �֐����Ăяo���B
-	�E���J API �֐��́Asprite->DrawSubset() �̂悤�Ɋ֐����ĂԂ̂ł͂Ȃ��A
-	  sprite->Sprite::DrawSubset() �̂悤�ɁACoreLib �̃N���X�����w�肵�ČĂяo���B
-	  �������Ȃ��ƁA�����ċN�Ăяo���Ɋׂ�B
+	・APILib は、公開する全ての RefObject クラスに対して、サブクラスを実装する。(このサブクラスを Ploxy クラスと呼ぶ)
+	  APILib から公開される直接のオブジェクトは、この Ploxy である。
+	・Ploxy クラスは、CoreLib クラスが公開する全ての virtual 関数をオーバーライドする。(スーパークラスも含めて)
+	  例えば、Sprite は SceneNode を継承するが、このときサブクラス SpritePloxy は DrawSubset() を実装する。
+	・Ploxy はメンバ変数に LFTypedef.h に定義(typedef)する関数ポインタ型のメンバ変数を持つ。
+	  BinderLib 側に定義した Ploxy 関数のポインタは、ここに設定される。
+	・オーバーライドの実装は、この関数ポインタを経由して Ploxy 関数を呼び出す。
+	・公開 API 関数は、sprite->DrawSubset() のように関数を呼ぶのではなく、
+	  sprite->Sprite::DrawSubset() のように、CoreLib のクラス名を指定して呼び出す。
+	  こうしないと、無限再起呼び出しに陥る。
 	  
 	
-�E�R�[���o�b�N�֐�
-	�E��{���j�� virtual �֐��Ɠ������APloxy �N���X�𗘗p������@���g���B
+・コールバック関数
+	・基本方針は virtual 関数と同じく、Ploxy クラスを利用する方法を使う。
 	
-	�ECoreLib �Ɏ�������R�[���o�b�N�� setter ���̈����^�� Delegate �N���X���g�p���Ă悢�B
-	  �Ⴆ�΁AArrayList::Sort(Delegate02<T, T> pred) �� XmlParser::SetFoundElementCallback(Delegate01<XmlElement> callback) �Ƃ��Ē�`���A
-	  Ploxy �N���X�̊֐����Z�b�g����B
+	・CoreLib に実装するコールバックの setter 等の引数型は Delegate クラスを使用してよい。
+	  例えば、ArrayList::Sort(Delegate02<T, T> pred) や XmlParser::SetFoundElementCallback(Delegate01<XmlElement> callback) として定義し、
+	  Ploxy クラスの関数をセットする。
 	
 
-	������Ȏ����ɂ���̂́ACoreLib ���̂̎g������𗎂Ƃ������Ȃ�����BDelegate ���g�������B
-	  Delegate ���g���Ȃ��Ă��Astatic �֐��ƃ��[�U�[�|�C���^��o�^���邱�ƂŎ����͂��̂��B
-	  �������ADelegate ���g���Ȃ��Ƃ���ƁAevent �̊Ǘ������̂������ʓ|�Ȃ��ƂɂȂ�B
+	↑こんな実装にするのは、CoreLib 自体の使い勝手を落としたくないから。Delegate を使いたい。
+	  Delegate が使えなくても、static 関数とユーザーポインタを登録することで実現はかのう。
+	  ただし、Delegate が使えないとすると、event の管理がものすごく面倒なことになる。
 
 	
-	�E�e���v���[�g�^�̃R�[���o�b�N�́H
-	  �^�� RefObject ���p�����Ă��鐧���ɂ���B
+	・テンプレート型のコールバックは？
+	  型は RefObject を継承している制限にする。
 
-�Eevent
+・event
 
-�E���b�Z�[�W�L���[
-�E�I�u�W�F�N�g�z��
-�E�\���̔z��
-	�E���_�z��ADrawLines ���B
+・メッセージキュー
+・オブジェクト配列
+・構造体配列
+	・頂点配列、DrawLines 等。
 	
-	�E�ʒ�`�����������BPointList �݂����ɁB(C# �� PointCollection) �Ƃ��B
-		�E���� List �� RefObject �ł���ق������R�ȋC������B
-			�E��������ƁACoreLib �����ł� Point[] �ł͂Ȃ� PointList �N���X������Ď����Ă����ׂ��B
+	・個別定義がいいかも。PointList みたいに。(C# の PointCollection) とか。
+		・この List は RefObject であるほうが自然な気がする。
+			・そうすると、CoreLib 無いでも Point[] ではなく PointList クラスを作って持っておくべき。
 
-	�E���_�o�b�t�@�̂悤�ȃJ�X�^���^�\���̔z��
-		�ESlimDX �� VertexBuffer.Lock �� DataStream �Ƃ����N���X��Ԃ��B
-		  ����� SetRange() �ɍ\���̔z���n���A�������R�s�[���Ă���B
-		�EXNA �� VertexBuffer.SetData() �ō\���̔z���n���B
-		�E��2�͍\���̔z���O��ɂ��Ă���̂� Ruby �Ƃ��Ɏ����Ă����ɂ͂��܂�����Ȃ������E�E�E�B
+	・頂点バッファのようなカスタム型構造体配列
+		・SlimDX の VertexBuffer.Lock は DataStream というクラスを返す。
+		  これの SetRange() に構造体配列を渡し、メモリコピーしている。
+		・XNA は VertexBuffer.SetData() で構造体配列を渡す。
+		・↑2つは構造体配列を前提にしているので Ruby とかに持っていくにはあまり向かないかも・・・。
 		
-		�ERefObjectList �̑΂ɂȂ� StructList ���K�v��������Ȃ��B
-			�ERefObjectList �͎Q�ƃJ�E���g�����삷��List�B
-			�EStructList �͎��̃R�s�[���s�� List�B
-			  �o�C���_�ł͌^�����Ɏw�肳�ꂽ�^�̃C���X�^���X�� new ���ĕԂ��B
+		・RefObjectList の対になる StructList が必要かもしれない。
+			・RefObjectList は参照カウントも操作するList。
+			・StructList は実体コピーを行う List。
+			  バインダでは型引数に指定された型のインスタンスを new して返す。
 			
-		�E���_�o�b�t�@�͓���ȃ��X�g�ɂ��邵���Ȃ������B
-		  �܂��߂ɂ��Ȃ�A�o�C���_���� set ���悤�Ƃ��Ă���z��̒��g���S�� LNote �̍\���̌^�ł��邱�ƂƁA
-		  �����̃t�B�[���h�����ׂč\���̌^�ł��邱�Ƃ��`�F�b�N���Ȃ���΂Ȃ�Ȃ��B
+		・頂点バッファは特殊なリストにするしかないかも。
+		  まじめにやるなら、バインダ側で set しようとしている配列の中身が全て LNote の構造体型であることと、
+		  かつそのフィールドもすべて構造体型であることをチェックしなければならない。
 		
 
 
 -------------------------------------------------------------------------------
-�� UI�f�U�C���p�^�[���H
+■ UIデザインパターン？
 
-	MVC �Ƃ� MVVM �Ƃ��A����̃p�^�[���͑z�肵�Ȃ��B
-	�^�C�g���ɂ���Ď����p�^�[���͂��Ȃ�ς��͂��Ȃ̂ŁA
-	�l�C�e�B�u��WinAPI �Ƃ� gtk �Ƃ��A�ق�ƂɒP���ȃE�B���h�E�V�X�e���Ƃ��Ă܂Ƃ߂�B
-	
-
--------------------------------------------------------------------------------
-�� ��������XAML�Ȃ�ĕK�v�Ȃ́H
-
-	��肽�����Ƃ�
-	�E�O�ς̃X���[�Y�ȕύX�B
-	�EItemTemplate
-	�EUI�p�[�c�̃��C�A�E�g��XML�Œ�`�������B
-	�E�r�w�C�r�A�������������B
-	
-	���3�̓R�[�h�ł��ł��邪�E�E�E�B
-	
-	���ɂ�肽���̂� ItemTemplate�B
-	�Ƃ������A�f�t�H���g�ŗp�ӂ���Ă���R���g���[���̓����A�C�e����ς������B
-	�c���AMVVM����Ȃ��̂Ƀ\�[�X�f�[�^�ǂ�����H
-	�� ���ʂ� ListBox �Ȃ� string �� Add ���Ă������A����� Control �� Add ����悤�ɂ���B
-	   (Control�u���v���H)
-	
-	���z���́H
-	����΂�����̓R�[���o�b�N�K�{�ɂȂ肻���B
-	WPF�I�ɂ�낤�Ƃ����� UIObject.SetValue("prop", "�l") �݂����Ȃ��Ƃ��āA
-	UIObject �̃R���N�V���������Ȃ��ƃ_���B
-	�m�� ToolKit EX �� DataGrid ���AVirtualizationCollectionView �� �R�[���o�b�N���������c�B
-	�e����p�ɃR�[���o�b�N�̎d�g�݂𐮂��āA���̂����ōl�������������Ǝv���B
-	
-	WPF �� Modarn-UI �݂����ɁA�e�[�}�؂�ւ����ɃA�j���[�V�������������B
-	������̓R�A���̋@�\�B�ύX�̂��������\�[�X���ɃX�g�[���[�{�[�h��}������B
-	
+	MVC とか MVVM とか、特定のパターンは想定しない。
+	タイトルによって実装パターンはかなり変わるはずなので、
+	ネイティブなWinAPI とか gtk とか、ほんとに単純なウィンドウシステムとしてまとめる。
 	
 
 -------------------------------------------------------------------------------
-�� �e�v���O��������ł̃R�[���o�b�N�������@
+■ そもそもXAMLなんて必要なの？
 
+	やりたいことは
+	・外観のスムーズな変更。
+	・ItemTemplate
+	・UIパーツのレイアウトをXMLで定義したい。
+	・ビヘイビアをくっつけたい。
 	
-
-	[2014/11/27] �߂�
-	Ruby �� C# �� GC �̓s���ŁAdelegate �Ƃ��������� C ���Ŏ����Ă������Ƃ͂ł��Ȃ��B
-	�i�撣��΂ł��邪�c�j
-	���AC�ɃR�[���o�b�N�֐��n���Ȃ�����ł͓����d�g�݂��g�����Ƃ��ł��Ȃ��B
+	後者3つはコードでもできるが・・・。
 	
-	�O��c
-	PeekEvent �̃��b�Z�[�W���[�v�͂��ꂼ��̌���Ŏ������A
-	������C�x���g�Ɋ�Â��ă��\�b�h�Ăяo�����胉�x���W�����v�����肷��B
-	�R�[���o�b�N�̌Ăяo���͂��ꂼ��̌���̖�ڂƂ���B
+	特にやりたいのは ItemTemplate。
+	というより、デフォルトで用意されているコントロールの内部アイテムを変えたい。
+	…が、MVVMじゃないのにソースデータどうする？
+	→ 普通の ListBox なら string を Add していくが、これを Control を Add するようにする。
+	   (Control「も」か？)
 	
-	��������
-	���݂̌���o�C���_�́A�Ⴆ�� ViewPane.Layers �v���p�e�B�̂悤�ɁA
-	get �����Ƃ��� C �I�u�W�F�N�g�ɑ΂��� Managed �C���X�^���X�� "�t�B�[���h��" �����Ă��Ȃ����
-	���̏�Ń��b�v���邽�߂� Managed �C���X�^���X�����B
-	�܂�A�ʁX�� Managed �C���X�^���X 2 ������ C �I�u�W�F�N�g���w�����Ƃ�����B
+	仮想化は？
+	こればっかりはコールバック必須になりそう。
+	WPF的にやろうとしたら UIObject.SetValue("prop", "値") みたいなことして、
+	UIObject のコレクションを作らないとダメ。
+	確か ToolKit EX の DataGrid も、VirtualizationCollectionView は コールバックだったし…。
+	各言語用にコールバックの仕組みを整えて、そのうえで考えた方がいいと思う。
 	
-	1��1�őΉ�������ɂ́A���x LNote::C_API �ł���Ă�Q�ƊǗ��Ƃقړ������Ƃ��Ȃ��ƂȂ�Ȃ��B
-	�O���[�o���Ȕz��Ȃ�map�Ȃ�ŁAID�� Managed �I�u�W�F�N�g��S�ĊǗ�����B
+	WPF の Modarn-UI みたいに、テーマ切り替え時にアニメーションもしたい。
+	→これはコア側の機能。変更のあったリソース名にストーリーボードを挿入する。
 	
-	�|�C���g�͍폜�̃^�C�~���O�B
-	�o�C���_���ɃR�[���o�b�N�ł��Ȃ��O�񂾂ƁAC �I�u�W�F�N�g�� C �I�u�W�F�N�g��
-	delete ����̂͌��ցBManaged �I�u�W�F�N�g�������Ă��鎞�͕K�� C �I�u�W�F�N�g�͐����Ă��Ȃ��ƃ_���B
-	�Ⴆ�΁u�q�v�f������delete�v�݂����Ȃ̂͐�΃_���B(�Q�ƃJ�E���g�f�N�������g�Ȃ�OK)
-	
-	��{�͈ȉ���2���B
-	�EDispose �� C�I�u�W�F�N�g�� Release + �O���[�o��map���� this ���폜
-	�E�O���[�o�� map �� Value �� WeakReference �Ŏ��B
-	
-	���O�҂́~�BRelease ���Ă��ASceneNode �Ƃ��͂܂��e�m�[�h����̎Q�Ƃ��c���Ă��邩������Ȃ��B
-	
-	
-	Managed �I�u�W�F�N�g�� �Q�Ƃ��O���Ă����̂́AC_APIManager �̊Ǘ����X�g���� Remove ���ꂽ��B(C�����m���� delete ���ꂽ��)
-	����܂ł� Managed ���̊Ǘ����X�g�ɂ����Ǝ����Ă����K�v������B(�Q�Ƃ������Ă����K�v������)
-	�܂�AWeakRef �ł��_���B�t�@�C�i���C�U�� Release ���ł��Ȃ��B
-	
-	
-	
-	XML ���� C# �ō�����N���X�̃C���X�^���X�����ɂ́H
-	XML�̃p�[�T���C���X�^���X����肽���Ƃ��́c �R�[���o�b�N�����Ȃ��B
-	���̃R�[���o�b�N (C#)�ł́AManaged �C���X�^���X������āA�O���[�o���ȊǗ��z��ɓ���Ă����B
-	
-	�c�ꍇ�ɂ���ẮAC++Core ���ŉ��� new �����炻�̓s�x callback �ĂԂ悤�Ȏd�g�݂����������������̂�������Ȃ��B
 	
 
 -------------------------------------------------------------------------------
-�� WPF �� Visual�AUIElement�AFramworkElement�AControl�AShape �̈Ⴂ
+■ 各プログラム言語でのコールバック実装方法
 
-�E�p���֌W�͂���Ȋ����B
+	
+
+	[2014/11/27] めも
+	Ruby や C# は GC の都合で、delegate とかをずっと C 側で持っておくことはできない。
+	（頑張ればできるが…）
+	第一、Cにコールバック関数渡せない言語では同じ仕組みを使うことができない。
+	
+	前提…
+	PeekEvent のメッセージループはそれぞれの言語で実装し、
+	取ったイベントに基づいてメソッド呼び出したりラベルジャンプしたりする。
+	コールバックの呼び出しはそれぞれの言語の役目とする。
+	
+	※※※※
+	現在の言語バインダは、例えば ViewPane.Layers プロパティのように、
+	get したときに C オブジェクトに対する Managed インスタンスを "フィールドに" もっていなければ
+	その場でラップするための Managed インスタンスを作る。
+	つまり、別々の Managed インスタンス 2 つが同じ C オブジェクトを指すことがある。
+	
+	1対1で対応させるには、丁度 LNote::C_API でやってる参照管理とほぼ同じことしないとならない。
+	グローバルな配列なりmapなりで、IDと Managed オブジェクトを全て管理する。
+	
+	ポイントは削除のタイミング。
+	バインダ側にコールバックできない前提だと、C オブジェクトが C オブジェクトを
+	delete するのは厳禁。Managed オブジェクトが生きている時は必ず C オブジェクトは生きていないとダメ。
+	例えば「子要素を自動delete」みたいなのは絶対ダメ。(参照カウントデクリメントならOK)
+	
+	基本は以下の2択。
+	・Dispose で Cオブジェクトの Release + グローバルmapから this を削除
+	・グローバル map の Value を WeakReference で持つ。
+	
+	↑前者は×。Release しても、SceneNode とかはまだ親ノードからの参照が残っているかもしれない。
+	
+	
+	Managed オブジェクトの 参照を外していいのは、C_APIManager の管理リストから Remove された後。(C側が確実に delete された後)
+	それまでは Managed 側の管理リストにずっと持っておく必要がある。(参照を持っておく必要がある)
+	つまり、WeakRef でもダメ。ファイナライザで Release もできない。
+	
+	
+	
+	XML から C# で作ったクラスのインスタンスを作るには？
+	XMLのパーサがインスタンスを作りたいときは… コールバックしかない。
+	そのコールバック (C#)では、Managed インスタンスを作って、グローバルな管理配列に入れておく。
+	
+	…場合によっては、C++Core 内で何か new したらその都度 callback 呼ぶような仕組みがあった方がいいのかもしれない。
+	
+
+-------------------------------------------------------------------------------
+■ WPF の Visual、UIElement、FramworkElement、Control、Shape の違い
+
+・継承関係はこんな感じ。
 	Control < FramworkElement < UIElement < Visual
 	Shape   < FramworkElement < UIElement < Visual
 	
-�EVisual �͈ȉ��̂悤�ȗv�f������
-	�E�����x
-	�E�N���b�s���O�̈�
-	�EVisual �q�v�f
-	�E�q�b�g�e�X�g
-	�ETransform
-	�EViewport3DVisual��DrawingVisual(�����N���X�H)�ɔh�����Ă���B
+・Visual は以下のような要素を持つ
+	・透明度
+	・クリッピング領域
+	・Visual 子要素
+	・ヒットテスト
+	・Transform
+	・Viewport3DVisualやDrawingVisual(内部クラス？)に派生している。
 
-�EUIElement
-	�E���C�A�E�g�Ɋւ����{��� (measuer ���\�b�h)
-	�EMouseDown �� DragDrop ���قڋ��ʂ̃C�x���g�͂����B
-	�EMSDN��ł͔h���� FramworkElement �̂�
+・UIElement
+	・レイアウトに関する基本情報 (measuer メソッド)
+	・MouseDown や DragDrop 等ほぼ共通のイベントはここ。
+	・MSDN上では派生は FramworkElement のみ
 
-�EFramworkElement
-	�EAcutualHeight�AMaxHeight SizeChanged �C�x���g���A�T�C�Y�Ɋւ����
-	�EDataContext
-	�EStyle
-	�EToolTip
+・FramworkElement
+	・AcutualHeight、MaxHeight SizeChanged イベント等、サイズに関わる情報
+	・DataContext
+	・Style
+	・ToolTip
 
-�EControl �͈ȉ��̂悤�ȗv�f������
-	�E�O�ς̐F (�w�i�F��)
-	�E�t�H���g
-	�ETabIndex
-	�E���� Control �ɓK�p���Ă��� ControlTemplate
+・Control は以下のような要素を持つ
+	・外観の色 (背景色等)
+	・フォント
+	・TabIndex
+	・この Control に適用している ControlTemplate
 	
 
 -------------------------------------------------------------------------------
-��
+■
 
 
 
-�E�I�u�W�F�F�y���X�g
-�E�\���̃��X�g (���_�o�b�t�@�Ƃ�)
-�E�K�w�\��
+・オブジェ宇土リスト
+・構造体リスト (頂点バッファとか)
+・階層構造
 
 
 
@@ -1009,67 +1009,67 @@
 
 
 -------------------------------------------------------------------------------
-�� WPF �� Visual�AUIElement�AFramworkElement�AControl�AShape �̈Ⴂ
+■ WPF の Visual、UIElement、FramworkElement、Control、Shape の違い
 
-�E�p���֌W�͂���Ȋ����B
+・継承関係はこんな感じ。
 	Control < FramworkElement < UIElement < Visual
 	Shape   < FramworkElement < UIElement < Visual
 	
-�EVisual �͈ȉ��̂悤�ȗv�f������
-	�E�����x
-	�E�N���b�s���O�̈�
-	�EVisual �q�v�f
-	�E�q�b�g�e�X�g
-	�ETransform
-	�EViewport3DVisual��DrawingVisual(�����N���X�H)�ɔh�����Ă���B
+・Visual は以下のような要素を持つ
+	・透明度
+	・クリッピング領域
+	・Visual 子要素
+	・ヒットテスト
+	・Transform
+	・Viewport3DVisualやDrawingVisual(内部クラス？)に派生している。
 
-�EUIElement
-	�E���C�A�E�g�Ɋւ����{��� (measuer ���\�b�h)
-	�EMouseDown �� DragDrop ���قڋ��ʂ̃C�x���g�͂����B
-	�EMSDN��ł͔h���� FramworkElement �̂�
+・UIElement
+	・レイアウトに関する基本情報 (measuer メソッド)
+	・MouseDown や DragDrop 等ほぼ共通のイベントはここ。
+	・MSDN上では派生は FramworkElement のみ
 
-�EFramworkElement
-	�EAcutualHeight�AMaxHeight SizeChanged �C�x���g���A�T�C�Y�Ɋւ����
-	�EDataContext
-	�EStyle
-	�EToolTip
+・FramworkElement
+	・AcutualHeight、MaxHeight SizeChanged イベント等、サイズに関わる情報
+	・DataContext
+	・Style
+	・ToolTip
 
-�EControl �͈ȉ��̂悤�ȗv�f������
-	�E�O�ς̐F (�w�i�F��)
-	�E�t�H���g
-	�ETabIndex
-	�E���� Control �ɓK�p���Ă��� ControlTemplate
+・Control は以下のような要素を持つ
+	・外観の色 (背景色等)
+	・フォント
+	・TabIndex
+	・この Control に適用している ControlTemplate
 	
 
 -------------------------------------------------------------------------------
-�� ����o�C���_ (GUI�ɂ�����炸�S�̂ɂ���)
+■ 言語バインダ (GUIにかかわらず全体について)
 
-�����b�v�I�u�W�F�N�g�̓o�C���_���ň�ӂ�ID�����蓖�āA�S�Ẵ��b�v�I�u�W�F�N�g���O���[�o���z��ŊǗ�����B
-	���� ID �� C�I�u�W�F�N�g�̃��[�U�[�f�[�^�Ƃ��Ċ��蓖�āAC�I�u�W�F�N�g����Ή����郉�b�v�I�u�W�F�N�g����肷�邽�߂Ɏg�p����B
-	�ȉ��̂悤�ȏ����ŕK�v�ɂȂ�B
-	�E�C�x���g�n���h�� (�R�[���o�b�N)
-	�Eget/set�ő΂ƂȂ�v���p�e�B�ȊO�̃��[�g����� get (�V�F�[�_�ϐ��ւ� set �� get ��)
+○ラップオブジェクトはバインダ側で一意のIDを割り当て、全てのラップオブジェクトをグローバル配列で管理する。
+	この ID は Cオブジェクトのユーザーデータとして割り当て、Cオブジェクトから対応するラップオブジェクトを特定するために使用する。
+	以下のような処理で必要になる。
+	・イベントハンドラ (コールバック)
+	・get/setで対となるプロパティ以外のルートからの get (シェーダ変数への set → get 等)
 
-	������
-		���b�v�I�u�W�F�N�g �� C�I�u�W�F�N�g ��1�����݂̂̎Q�Ƃŗǂ���΁A��ӂ�ID�Ƃ��K�v�Ȃ��B
-		�������AGUI���W���[���p�̃C�x���g�n���h���̎����ŕK�v�ɂȂ����B
-
-
--------------------------------------------------------------------------------
-�� UI�v�f�̃x�[�X�I�u�W�F�N�g
-
-
-
+	旧実装
+		ラップオブジェクト → Cオブジェクト の1方向のみの参照で良ければ、一意のIDとか必要ない。
+		しかし、GUIモジュール用のイベントハンドラの実装で必要になった。
 
 
 -------------------------------------------------------------------------------
-�� Behavior
+■ UI要素のベースオブジェクト
+
+
+
 
 
 -------------------------------------------------------------------------------
-�� NumUpDown �����[�U�[�R���g���[���Ƃ��č���Ă݂�B
+■ Behavior
 
-�� C#
+
+-------------------------------------------------------------------------------
+■ NumUpDown をユーザーコントロールとして作ってみる。
+
+○ C#
 	class NumUpDown : UserControl
 	{
 		TextBox _textBox;
@@ -1086,49 +1086,49 @@
 
 
 -------------------------------------------------------------------------------
-�� ���ʂ� RepertButton ���e����Ń��[�U�[�R���g���[���Ƃ��č���Ă݂�B
-�E���̗�� RepertButton �̓���
-	�E�w�i�F�ƕ������ݒ�ł���B(������͎q�v�f)
-	�E�����p�� Border ��p�ӂ���B
-	�Eprivate �t�B�[���h�I�� _updateFrames ������ (�ق�Ƃ͎��ԒP�ʂ̕����������ǁA�����ł͗�Ƃ���)
-	�EClicked �C�x���g�����삷��B
-	�E�}�E�X���N���b�N�ŉ�����ԂɂȂ�A���̌�}�E�X�{�^���𗣂��� Click �C�x���g����������B
-	�E���[�U�[�R���g���[���Ƃ��� GUI �V�X�e���ɓo�^���A�ė��p�ł���悤�ɂ���B
+■ 普通の RepertButton を各言語でユーザーコントロールとして作ってみる。
+・この例の RepertButton の動作
+	・背景色と文字列を設定できる。(文字列は子要素)
+	・装飾用の Border を用意する。
+	・private フィールド的な _updateFrames を持つ (ほんとは時間単位の方がいいけど、ここでは例として)
+	・Clicked イベントを自作する。
+	・マウス左クリックで押下状態になり、その後マウスボタンを離すと Click イベントが発生する。
+	・ユーザーコントロールとして GUI システムに登録し、再利用できるようにする。
 
-�� C����
-	// private �ȏ�Ԃ�ێ����郆�[�U�[�f�[�^�B
-	// C++ class ���� private �����o�ϐ��ɂ�����B
+○ C言語
+	// private な状態を保持するユーザーデータ。
+	// C++ class 等の private メンバ変数にあたる。
 	struct MyRepertButtonState
 	{
-		bool IsPressed;		// �}�E�X�_�E����
+		bool IsPressed;		// マウスダウン中
 	};
 	
 	void main()
 	{
-		// ���[�U�[�R���g���[���Ƃ��čė��p�ł���悤�Ƀe���v���[�g�Ƃ��� GUI �V�X�e���ɓo�^����B
+		// ユーザーコントロールとして再利用できるようにテンプレートとして GUI システムに登録する。
 		
 		lnHandle myRepertButtonTemplate;
 		LNUIControlTemplate_Create(&myRepertButtonTemplate);
 		
-		// �g����4px�Ԙg
+		// 枠太さ4px赤枠
 		lnHandle borderFactory;
 		LNUIElementFactory_Create(&borderFactory, "Border");
-		LNUIObject_SetName(&borderFactory, "_border");			// "_border" �Ƃ������O��t����
+		LNUIObject_SetName(&borderFactory, "_border");			// "_border" という名前を付ける
 		LNUIElementFactory_SetValue(&borderFactory, "BorderThickness", "4");
 		LNUIElementFactory_SetValue(&borderFactory, "BorderBrush", "Red");
 		LNUIControlTemplate_AddChild(myRepertButtonTemplate, borderFactory);
 		
-		// ContentPresenter (����� RepertButton �� ContentControl �Ƃ��č�邽�߁A1�K�v)
+		// ContentPresenter (今回の RepertButton は ContentControl として作るため、1つ必要)
 		lnHandle contentPresenterFactory;
 		LNUIElementFactory_Create(&contentPresenterFactory, "ContentPresenter");
-		LNUIElementFactory_SetValue(&contentPresenterFactory, "HorizontalAlignment", "Center");	// ���̗v�f�𒆉�����
-		LNUIElementFactory_AddChild(borderFactory, contentPresenterFactory);			// Border �̎q�Ƃ��Ēǉ�
+		LNUIElementFactory_SetValue(&contentPresenterFactory, "HorizontalAlignment", "Center");	// この要素を中央揃え
+		LNUIElementFactory_AddChild(borderFactory, contentPresenterFactory);			// Border の子として追加
 		
 		
 		LNUIManaer_RegisterUIElement(
-			"MyRepertButton",				// ���̖��O�œo�^����
-			"ContentControl",			// �x�[�X�v�f�� ContentControl
-			myRepertButtonTemplate);		// create ���ɂ��̃e���v���[�g��K�p����
+			"MyRepertButton",				// この名前で登録する
+			"ContentControl",			// ベース要素は ContentControl
+			myRepertButtonTemplate);		// create 時にこのテンプレートを適用する
 		
 		
 		lnHandle button;
@@ -1152,7 +1152,7 @@
 					if (et == LN_EVENT_MOUSE_DOWN)
 					{
 						LNUIEvent_GetEventType(e, &et);
-						LNUIElement_GoToVisualState("Pressed");		// Pressed ��Ԃֈړ� (���̖��O�̏�Ԃ�������Ή������Ȃ�)
+						LNUIElement_GoToVisualState("Pressed");		// Pressed 状態へ移動 (この名前の状態が無ければ何もしない)
 					}
 				}
 			}
@@ -1161,14 +1161,14 @@
 	}
 
 
-�� C++
+○ C++
 
-�� C#
+○ C#
 
 
 
 -------------------------------------------------------------------------------
-�� OnRender
+■ OnRender
 
 */
 #include "Internal.h"

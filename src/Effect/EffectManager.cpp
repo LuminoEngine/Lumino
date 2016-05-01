@@ -1,26 +1,26 @@
-/*
-	[2015/12/14] ���J�N���X�� PImpl? abstruct?
-		EffectInstance �� new ����͓̂����Ȃ̂ŁA���̂Ƃ���͂ǂ����ɂ��Ă� abstruct �ɂȂ�B
-		Effect ���W���[���I�ɂ͌����_�ł͊g�����l�����Ă��Ȃ��̂ł���ł������B
-		�i�C�x���g�R�[���o�b�N���K�v�ɂȂ�����l����K�v������j
+﻿/*
+	[2015/12/14] 公開クラスは PImpl? abstruct?
+		EffectInstance を new するのは内部なので、今のところはどっちにしても abstruct になる。
+		Effect モジュール的には現時点では拡張を考慮していないのでこれでもいい。
+		（イベントコールバックが必要になったら考える必要がある）
 
-�G�t�F�N�g�̍\���ɂ���
-	Core �c �P�Ȃ�f�[�^�N���X�B
+エフェクトの構成について
+	Core … 単なるデータクラス。
 
 	Instance
-		���ۂɍX�V�E�q���������s���B
-		�ŏI�ړI�͕`��̂��߂̏��̐����B(�s��A�Fetc...)
-		�`����s���̂� EmitterCore�B
+		実際に更新・子生成等を行う。
+		最終目的は描画のための情報の生成。(行列、色etc...)
+		描画を行うのは EmitterCore。
 
-	�e�q�֌W�ɂ���
-		update() �Őe����e�����󂯂�p�����[�^�͍s��̂݁B(�����^�C�~���O�͕ʂƂ��āA�X�V���̗v�f)
-		����ȊO�̃p�����[�^(�Ⴆ��Ring �̌a�Ƃ�)�́ANodeInstance �� EmitterCore ��
-		�`�掞�Ɍ��݂̎��Ԃ�`���āA�����Œl���X�V����B
+	親子関係について
+		update() で親から影響を受けるパラメータは行列のみ。(生成タイミングは別として、更新中の要素)
+		これ以外のパラメータ(例えばRing の径とか)は、NodeInstance が EmitterCore に
+		描画時に現在の時間を伝えて、そこで値を更新する。
 
-	�����V�[�h�ɂ���
-		NodeInstance ���ƂɌŗL�̒l�������Ȃ���΂Ȃ�Ȃ��B
-		�{���ł���΃G�f�B�^����ݒ�ł���悤�ɂ���ׂ������A
-		�Ƃ肠���� this ���g���Ă���B
+	乱数シードについて
+		NodeInstance ごとに固有の値を持たなければならない。
+		本来であればエディタから設定できるようにするべきだが、
+		とりあえず this を使っている。
 
 */
 #include "Internal.h"

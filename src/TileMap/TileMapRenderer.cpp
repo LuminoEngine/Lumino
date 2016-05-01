@@ -1,7 +1,7 @@
-/*
+ï»¿/*
 	[2015/12/1]
-		Scene ‚Ì TileMapNode ‘¤‚Å SpriteRenderer g‚¤‚©’¸“_ƒoƒbƒtƒ@‚É’¼Ú‘‚«‚Ş‚©Œˆ‚ß‚½‚¢‚Ì‚ÅA
-		‰¼‘zƒNƒ‰ƒX‚Æ‚µ‚Ä‚¨‚­B
+		Scene ã® TileMapNode å´ã§ SpriteRenderer ä½¿ã†ã‹é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«ç›´æ¥æ›¸ãè¾¼ã‚€ã‹æ±ºã‚ãŸã„ã®ã§ã€
+		ä»®æƒ³ã‚¯ãƒ©ã‚¹ã¨ã—ã¦ãŠãã€‚
 */
 #include "../Internal.h"
 #include <Lumino/Graphics/SpriteRenderer.h>
@@ -88,13 +88,13 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 	m_renderingContext = context;
 	m_spriteRenderer = spriteRenderer;
 
-	// TODO: Œ´“_‚Æ³–Ê•ûŒü
+	// TODO: åŸç‚¹ã¨æ­£é¢æ–¹å‘
 	Plane plane(Vector3(0, 0, 0), Vector3(0, 0, -1));
 	Vector3 corners[8];
 	Vector3 pt;
 	cameraFrustum.GetCornerPoints(corners);
 
-	// TileMap ‚Ì•½–Ê‚ÆƒJƒƒ‰‚Ì‹‘ä‚©‚ç•`‰æ‚·‚é‚×‚«”ÍˆÍ‚ğ‹‚ß‚é
+	// TileMap ã®å¹³é¢ã¨ã‚«ãƒ¡ãƒ©ã®è¦–éŒå°ã‹ã‚‰æç”»ã™ã‚‹ã¹ãç¯„å›²ã‚’æ±‚ã‚ã‚‹
 	float l, t, r, b;
 	for (int i = 0; i < 4; ++i)
 	{
@@ -117,12 +117,12 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 
 	//printf("%f %f %f %f \n", l, t, r, b);
 
-	// TODO: ƒ[ƒJƒ‹À•W¨ƒ^ƒCƒ‹ƒ}ƒbƒv”z—ñƒCƒ“ƒfƒbƒNƒX‚Ö‚ÌÀ•W•ÏŠ·
+	// TODO: ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™â†’ã‚¿ã‚¤ãƒ«ãƒãƒƒãƒ—é…åˆ—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¸ã®åº§æ¨™å¤‰æ›
 
-	// TODO: «‚¢‚Ü‚Ì‚Æ‚±‚ë 3d —p
+	// TODO: â†“ã„ã¾ã®ã¨ã“ã‚ 3d ç”¨
 	const Size& tileSize = tileMap->GetTileSet()->GetTileSize();
 
-	// ƒe[ƒuƒ‹”z—ñ‚Ì‚Ç‚±‚Ì”ÍˆÍ‚ğ•`‰æ‚µ‚½‚¢H
+	// ãƒ†ãƒ¼ãƒ–ãƒ«é…åˆ—ã®ã©ã“ã®ç¯„å›²ã‚’æç”»ã—ãŸã„ï¼Ÿ
 	BoundingRect renderRange =
 	{
 		static_cast<int>(l / tileSize.width),
@@ -149,20 +149,20 @@ void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRen
 	for (TileLayer* layer : *tileMap->GetLayers())
 	{
 		BoundingRect clipd = renderRange;
-		// TODO: 3D ‚Å Y0 ‚ğ‰º’[‚Æ‚·‚é
+		// TODO: 3D ã§ Y0 ã‚’ä¸‹ç«¯ã¨ã™ã‚‹
 		clipd.top = layer->GetSize().height - clipd.top;
 		clipd.bottom = layer->GetSize().height - clipd.bottom;
 		//clipd.Y = layer->GetSize().Height + clipd.Y;
 
-		// ƒ‹[ƒv‚µ‚È‚¢
+		// ãƒ«ãƒ¼ãƒ—ã—ãªã„
 		// TODO:
 		if (1)
 		{
 			const Size& size = layer->GetSize();
 			if (clipd.left < 0) clipd.left = 0;
 			if (clipd.top < 0) clipd.top = 0;
-			if (clipd.right > size.width) clipd.right = size.width;		// •`‰æ‚µ‚½‚¢‚Æ‚±‚ë +1
-			if (clipd.bottom > size.height) clipd.bottom = size.height;	// •`‰æ‚µ‚½‚¢‚Æ‚±‚ë +1
+			if (clipd.right > size.width) clipd.right = size.width;		// æç”»ã—ãŸã„ã¨ã“ã‚ +1
+			if (clipd.bottom > size.height) clipd.bottom = size.height;	// æç”»ã—ãŸã„ã¨ã“ã‚ +1
 		}
 
 
@@ -223,7 +223,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 		m_vertexBuffer = LN_NEW VertexBuffer(m_graphicsManager, TileMapVertex::Elements(), TileMapVertex::ElementCount, tileCount * 4, nullptr, DeviceResourceUsage_Dynamic);
 		m_indexBuffer = LN_NEW IndexBuffer(m_graphicsManager, tileCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 
-		// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Í“r’†‚Å•Ï‚í‚ç‚È‚¢‚Ì‚Åæ‚É–„‚ß‚Ä‚¨‚­
+		// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã¯é€”ä¸­ã§å¤‰ã‚ã‚‰ãªã„ã®ã§å…ˆã«åŸ‹ã‚ã¦ãŠã
 		ByteBuffer* buf = m_indexBuffer->Lock();
 		uint16_t* ib = (uint16_t*)buf->GetData();
 		for (int iTile = 0; iTile < tileCount; ++iTile)
@@ -247,7 +247,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 
 	const Size& tileSize = tileSet->GetTileSize();
 
-	// boundingRect ‘S‘Ì‚ğ–„‚ß‚é‚æ‚¤‚É•`‰æ‚·‚é‚×‚«ƒZƒ‹”ÍˆÍ‚ğŒˆ‚ß‚é
+	// boundingRect å…¨ä½“ã‚’åŸ‹ã‚ã‚‹ã‚ˆã†ã«æç”»ã™ã‚‹ã¹ãã‚»ãƒ«ç¯„å›²ã‚’æ±ºã‚ã‚‹
 	//int ox = boundingRect.X / tileSize.Width;
 	//int oy = boundingRect.Y / tileSize.Height;
 	//int w = (boundingRect.Width + tileSize.Width) / tileSize.Width;
@@ -270,8 +270,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	int plotCount = 0;
 	Vector3 offset(0/*layerSize.X * tileSize.Width*/, layerSize.height * tileSize.height, 0);
 	Vector3 stepX(tileSize.width, 0, 0);
-	Vector3 stepY(0, -tileSize.height, 0);	// 3D ‚È‚Ì‚Å‰º•ûŒü‚Ö
-	float delta = 0.000001;	// TODO: DX9 “Á—LH‚Ù‚ñ‚Ì‚í‚¸‚©‚ÈŒë·‚ÅAc‰¡‚Éü‚ªŒ©‚¦‚Ä‚µ‚Ü‚¤‚±‚Æ‚ª‚ ‚Á‚½
+	Vector3 stepY(0, -tileSize.height, 0);	// 3D ãªã®ã§ä¸‹æ–¹å‘ã¸
+	float delta = 0.000001;	// TODO: DX9 ç‰¹æœ‰ï¼Ÿã»ã‚“ã®ã‚ãšã‹ãªèª¤å·®ã§ã€ç¸¦æ¨ªã«ç·šãŒè¦‹ãˆã¦ã—ã¾ã†ã“ã¨ãŒã‚ã£ãŸ
 	for (int y = renderRange.top; y < renderRange.bottom; ++y)
 	{
 		Vector3 pos = offset + (stepY * y) + (stepX * renderRange.left);
@@ -329,8 +329,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//m_renderingContext->Flush();
 
 
-	// TODO: •¡”ƒeƒNƒXƒ`ƒƒ
-	// (‚ÆŒ¾‚Á‚Ä‚àAÀÛ‚Í1layer‚É1ƒeƒNƒXƒ`ƒƒ‚Å‚¢‚¢‚Æv‚¤BRGSS‚ª­‚µ“Áê‚È‚¾‚¯BÅ‰‚É BitBlt ‚Å1‚Â‚ÌƒeƒNƒXƒ`ƒƒ‚É‚Ü‚Æ‚ß‚Ä‚µ‚Ü‚Á‚Ä‚à‚¢‚¢‚©‚à)
+	// TODO: è¤‡æ•°ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	// (ã¨è¨€ã£ã¦ã‚‚ã€å®Ÿéš›ã¯1layerã«1ãƒ†ã‚¯ã‚¹ãƒãƒ£ã§ã„ã„ã¨æ€ã†ã€‚RGSSãŒå°‘ã—ç‰¹æ®Šãªã ã‘ã€‚æœ€åˆã« BitBlt ã§1ã¤ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ã¾ã¨ã‚ã¦ã—ã¾ã£ã¦ã‚‚ã„ã„ã‹ã‚‚)
 	m_shader.varTexture->SetTexture(tileSetTexture);
 	//m_shader.varViewProjMatrix->SetMatrix(m_viewProj);
 

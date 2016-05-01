@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Tilemap/TileMapRenderer.h>
@@ -86,26 +86,26 @@ public:
 
 public:
 
-	/// ì¬
+	/// ä½œæˆ
     void create(/* lnU32 width, lnU32 height, LNTilemapDirection frontDir */);
 
-	/// •\¦ˆÊ’u‚Ìİ’è
+	/// è¡¨ç¤ºä½ç½®ã®è¨­å®š
 	//virtual void setPosition( int x_, int y_ );
 
-	/// ƒ^ƒCƒ‹ƒZƒbƒgƒeƒNƒXƒ`ƒƒ‚Ìİ’è
+	/// ã‚¿ã‚¤ãƒ«ã‚»ãƒƒãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¨­å®š
     void setTilesetTexture( Graphics::Texture* texture );
 
-	/// ƒ^ƒCƒ‹ƒZƒbƒgƒeƒNƒXƒ`ƒƒ‚Ì‰¡•ûŒü‚Ìƒ^ƒCƒ‹”‚Ìİ’è
+	/// ã‚¿ã‚¤ãƒ«ã‚»ãƒƒãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ¨ªæ–¹å‘ã®ã‚¿ã‚¤ãƒ«æ•°ã®è¨­å®š
 	void setTilesetHorizontalTileCount(size_t count) { mTilesetHorizontalTileCount = count; }
 
-	/// ƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚ÌƒsƒNƒZƒ‹ƒTƒCƒY‚ğİ’è‚·‚é
+	/// ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã®ãƒ”ã‚¯ã‚»ãƒ«ã‚µã‚¤ã‚ºã‚’è¨­å®šã™ã‚‹
 	void setTileSize(size_t width, size_t height);
 
 
 
     //virtual void setMapData( int* mapdata ) { mMapData = mapdata; }
 
-	/// ƒ}ƒbƒvƒf[ƒ^‚Ìİ’è
+	/// ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
 	void setMapData(Base::IntTable* mapData) { LN_REFOBJ_SET(mMapData, mapData); }
 
 
@@ -118,20 +118,20 @@ private:
 	LNTilemapDirection	mDirection;
     Graphics::Texture*	mTilesetTexture;
 	size_t				mTilesetHorizontalTileCount;
-	lnFloat     mTileWidth;     ///< ƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚Ì•
-	lnFloat     mTileHeight;    ///< ƒ^ƒCƒ‹‚Ğ‚Æ‚Â•ª‚Ì‚‚³
+	lnFloat     mTileWidth;     ///< ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã®å¹…
+	lnFloat     mTileHeight;    ///< ã‚¿ã‚¤ãƒ«ã²ã¨ã¤åˆ†ã®é«˜ã•
 
-    //lnU32         mXSize;         ///< X •ûŒü‚Ìƒ^ƒCƒ‹‚Ì”
-    //lnU32         mYSize;         ///< Y •ûŒü‚Ìƒ^ƒCƒ‹‚Ì”
-    //lnU32         mFaceNum;       ///< –Ê”
+    //lnU32         mXSize;         ///< X æ–¹å‘ã®ã‚¿ã‚¤ãƒ«ã®æ•°
+    //lnU32         mYSize;         ///< Y æ–¹å‘ã®ã‚¿ã‚¤ãƒ«ã®æ•°
+    //lnU32         mFaceNum;       ///< é¢æ•°
 
 
-    //lnFloat     mUVWidth;       ///< ƒ}ƒbƒvƒ`ƒbƒv‚Ğ‚Æ‚Â•ª‚ÌƒsƒNƒZƒ‹ƒTƒCƒY‚ğƒeƒNƒXƒ`ƒƒÀ•WŒn‚É•ÏŠ·‚µ‚½‚Æ‚«‚Ì•
-    //lnFloat     mUVHeight;      ///< ƒ}ƒbƒvƒ`ƒbƒv‚Ğ‚Æ‚Â•ª‚ÌƒsƒNƒZƒ‹ƒTƒCƒY‚ğƒeƒNƒXƒ`ƒƒÀ•WŒn‚É•ÏŠ·‚µ‚½‚Æ‚«‚Ì•
+    //lnFloat     mUVWidth;       ///< ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã²ã¨ã¤åˆ†ã®ãƒ”ã‚¯ã‚»ãƒ«ã‚µã‚¤ã‚ºã‚’ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ç³»ã«å¤‰æ›ã—ãŸã¨ãã®å¹…
+    //lnFloat     mUVHeight;      ///< ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã²ã¨ã¤åˆ†ã®ãƒ”ã‚¯ã‚»ãƒ«ã‚µã‚¤ã‚ºã‚’ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ç³»ã«å¤‰æ›ã—ãŸã¨ãã®å¹…
 
     ////int*        mMapData;
 
-    //lnU32         mSrcXNum;       ///< ƒ^ƒCƒ‹ƒZƒbƒg‰æ‘œ‚Ì‰¡•ûŒü‚Ìƒ`ƒbƒv” (RGSS ‚Ìê‡‚Í 8)
+    //lnU32         mSrcXNum;       ///< ã‚¿ã‚¤ãƒ«ã‚»ãƒƒãƒˆç”»åƒã®æ¨ªæ–¹å‘ã®ãƒãƒƒãƒ—æ•° (RGSS ã®å ´åˆã¯ 8)
     
 	class DrawingContext;
 	friend class DrawingContext;

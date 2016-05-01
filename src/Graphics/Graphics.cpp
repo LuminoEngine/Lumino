@@ -1,4 +1,4 @@
-
+﻿
 #include "../Internal.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/GraphicsContext.h>
