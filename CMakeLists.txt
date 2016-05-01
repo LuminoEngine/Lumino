@@ -116,6 +116,7 @@ if (LN_BUILD_AUDIO_MODULE)
 set(LN_SOURCES_Audio
 	include/LuminoAudio.h
 	include/Lumino/Audio/Common.h
+	include/Lumino/Audio/Detail.h
 	include/Lumino/Audio/GameAudio.h
 	include/Lumino/Audio/Sound.h
 	include/Lumino/Audio/SoundListener.h
@@ -168,6 +169,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Base/Point.h
 	include/Lumino/Base/Rect.h
 	include/Lumino/Base/Size.h
+	include/Lumino/Base/Thickness.h
 	include/Lumino/Graphics/Bitmap.h
 	include/Lumino/Graphics/BitmapPainter.h
 	include/Lumino/Graphics/Brush.h
@@ -199,6 +201,7 @@ set(LN_SOURCES_Graphics
 	src/Base/Point.cpp
 	src/Base/Rect.cpp
 	src/Base/Size.cpp
+	src/Base/Thickness.cpp
 	src/Graphics/Bitmap.cpp
 	src/Graphics/BitmapPainter.cpp
 	src/Graphics/Brush.cpp

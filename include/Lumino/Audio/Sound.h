@@ -1,11 +1,9 @@
-﻿/*
-	@file	Sound.h
-*/
+﻿
 #pragma once
-
 #include <Lumino/Math/Vector3.h>
 #include "../Animation/EasingValue.h"
 #include "Common.h"
+#include "Detail.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
@@ -194,16 +192,18 @@ private:
     AudioPlayer*				m_audioPlayer;
 	SoundPlayingMode			m_playingMode;
 
-	float						m_volume;
-	float						m_pitch;
-	bool						m_loopEnabled;
-	uint32_t					m_loopBegin;
-	uint32_t					m_loopLength;
+	//float						m_volume;
+	//float						m_pitch;
+	//bool						m_loopEnabled;
+	//uint32_t					m_loopBegin;
+	//uint32_t					m_loopLength;
+	Threading::Mutex			m_playerStateLock;	// TODO: 性質上、スピンロックの方が効率がいいかもしれない
+	detail::AudioPlayerState	m_playerState;
 	bool						m_is3DSound;
 	Vector3						m_position;
 	Vector3						m_velocity;
 	float						m_maxDistance;
-	SoundPlayingState			m_playState;		// AudioPlayer の遅延作成に対応する
+	//SoundPlayingState			m_playState;		// AudioPlayer の遅延作成に対応する
 
 	uint32_t					m_gameAudioFlags;
 

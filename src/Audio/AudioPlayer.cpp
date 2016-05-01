@@ -8,6 +8,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 //=============================================================================
 // AudioPlayerState 
@@ -22,6 +24,8 @@ AudioPlayerState::AudioPlayerState()
 	, m_playingState(SoundPlayingState::Stopped)
 {
 }
+
+} // namespace detail
 
 //=============================================================================
 // AudioPlayer 
@@ -67,6 +71,66 @@ void AudioPlayer::Initialize(AudioStream* audioStream, bool enable3d)
 	m_decoder->GetLoopState(&loop_begin, &loop_length);
     mLoopBegin  = loop_begin;
 	mLoopLength = loop_length;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AudioPlayer::CommitPlayerState(const detail::AudioPlayerState& newState)
+{
+	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Volume)
+	{
+		SetVolume(newState.GetVolume());
+	}
+	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Pitch)
+	{
+		SetPitch(newState.GetPitch());
+	}
+	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopEnabled)
+	{
+		SetLoopEnabled(newState.IsLoopEnabled());
+	}
+	if ((newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopBegin) ||
+		(newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopLength))
+	{
+		SetLoopState(newState.GetLoopBegin(), newState.GetLoopLength());
+	}
+	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
+	{
+		switch (newState.GetPlayingState())
+		{
+		case SoundPlayingState::Stopped:
+			Stop();
+			break;
+		case SoundPlayingState::Playing:
+			if (m_playerState.GetPlayingState() == SoundPlayingState::Pausing)
+			{
+				Pause(false);
+			}
+			else
+			{
+				Play();
+			}
+			break;
+		case SoundPlayingState::Pausing:
+			Pause(true);
+			break;
+		}
+	}
+
+	m_playerState = newState;
+	m_playerState.SetModifiedFlags(detail::AudioPlayerState::ModifiedFlags_None);	// 同期完了
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void AudioPlayer::DoPolling()
+{
+	if (!Polling())
+	{
+		m_playerState.SetPlayingState(SoundPlayingState::Stopped);
+	}
 }
 
 //-----------------------------------------------------------------------------

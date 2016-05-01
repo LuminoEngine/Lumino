@@ -26,15 +26,6 @@ namespace detail
 		Array<RefPtr<AnimationClock>>	playingAnimationClockList;
 	};
 
-	//static inline RefrectionObjectAnimationData* RequestAnimationData(Object* obj)
-	//{
-	//	auto* data = reinterpret_cast<RefrectionObjectAnimationData*>(tr::ReflectionHelper::GetAnimationData(obj));
-	//	if (data == nullptr)
-	//	{
-	//		data = LN_NEW 
-	//	}
-	//}
-
 } // namespace detail
 
 /**
