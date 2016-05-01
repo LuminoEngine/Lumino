@@ -113,7 +113,6 @@ void FpsController::Process()
 	//	processForMeasure();
 	//	return;
 	//}
-
 	m_currentTime = 0.001f * (Environment::GetTickCount() - m_startTime);
 
 	m_elapsedGameTime = m_currentTime - m_lastTime;
@@ -121,6 +120,7 @@ void FpsController::Process()
 
 	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
 	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
+
 
 	// (frame_rate_)フレームの1回目なら
 	if (m_frameCount == 0)

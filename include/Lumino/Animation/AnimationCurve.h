@@ -111,13 +111,13 @@ public:
 		return LN_NEW TypedAnimationCurveInstance<TValue>(this, targetObject, targetProperty, startValue);
 	}
 
-	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
-	{
-        return (time < m_duration);
-	}
-    
-    
-     bool ffApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
+	//virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time)
+	//{
+ //       return (time < m_duration);
+	//}
+ //   
+ //   
+	virtual bool ApplyPropertyAnimation(AnimationCurveInstance* instance_,/*Object* targetObject, tr::Property* targetProp, const TValue& startValue, */double time) override
     {
         TypedAnimationCurveInstance<TValue>* instance = static_cast<TypedAnimationCurveInstance<TValue>*>(instance_);
         

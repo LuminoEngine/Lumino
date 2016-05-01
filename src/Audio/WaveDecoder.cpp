@@ -179,7 +179,7 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 	// 読み込むサイズ
 	uint32_t read_size = buffer_size;
 	// ソースのサイズを超えている場合はソースサイズ分読む
-	if (mInStream->GetPosition() + buffer_size > mDataOffset + mPCMDataSize)
+	if (((uint64_t)mInStream->GetPosition()) + buffer_size > mDataOffset + mPCMDataSize)
 	{
 		read_size = (mDataOffset + mPCMDataSize) - mInStream->GetPosition();
 	}
