@@ -332,7 +332,6 @@ set(LN_SOURCES_Modeling
 
 set(LN_SOURCES_Scene
 	include/Lumino/Scene/Camera.h
-	include/Lumino/Scene/Collection.h
 	include/Lumino/Scene/Common.h
 	include/Lumino/Scene/EffectNode.h
 	include/Lumino/Scene/Layer.h
