@@ -1,72 +1,72 @@
-/*
-[2016/3/9] �����_�����O�p�X
-	���Ԃ��炢�̂� Viewport �N���X�ɂ������B
-	Engine �� Window �̓R���ɑ΂��� Render() ���ĂԂ�����OK�A�݂����ȁB
+﻿/*
+[2016/3/9] レンダリングパス
+一番えらいのは Viewport クラスにしたい。
+Engine や Window はコレに対して Render() を呼ぶだけでOK、みたいな。
 
-	Editor ���[�h�̂Ƃ��AViewport �Ńy�C���𕪂����ƍĕ`���͈̔͂������ł����B
-	1��Widget�ɍĕ`�悪�K�v�ɂȂ��Ă��E�B���h�E�S�̂��ĕ`�悷���K�v�͂Ȃ��B
-	�� Viewport �� �����_�[�^�[�Q�b�g�����B
+Editor モードのとき、Viewport でペインを分けると再描画の範囲を限定できる。
+1つのWidgetに再描画が必要になってもウィンドウ全体を再描画する必要はない。
+→ Viewport は レンダーターゲットを持つ。
 
-	Game ���[�h�̂Ƃ��͊��{�I�� Viewport �� 1�����ɂȂ��Ǝv���B
+Game モードのときは基本的に Viewport は 1つだけになると思う。
 
-	Window ���� Viweport �̊K�w�\���B
-	���[�g�� Viewport �� Window �S�̂ŁAswapchain �̃����_�[�^�[�Q�b�g���A�^�b�`�����̂����������B
+Window 内は Viweport の階層構造。
+ルートの Viewport は Window 全体で、swapchain のレンダーターゲットをアタッチするのがいいかも。
 
-	GameMode (���t���[��)
-		1.Scene �`���BScene ���̂��ׂẴJ�����̃����_�[�^�[�Q�b�g�ɕ`�悷��
-		2.Viewport �`���B���[�g���珇�ɁA�����_�[�^�[�Q�b�g���o�b�N�o�b�t�@�ɕ`�悷��
+GameMode (毎フレーム)
+1.Scene 描画。Scene 内のすべてのカメラのレンダーターゲットに描画する
+2.Viewport 描画。ルートから順に、レンダーターゲットをバックバッファに描画する
 
-	EditorMode
-		�ĕ`���v���������Ƃ��������̂��s���B
+EditorMode
+再描画要求あったときだけ↑のを行う。
 
-	ImageEffect
-		�|�X�g�G�t�F�N�g�B�J�����ɂ������BUnity �Ɠ������񂶁B
-
-
-	�Q�l:UE4
-	https://shikihuiku.wordpress.com/2014/05/09/%E3%83%A1%E3%83%A2-ue4%E3%81%AErendering%E3%81%AE%E5%91%BC%E3%81%B0%E3%82%8C%E6%96%B9/
+ImageEffect
+ポストエフェクト。カメラにくっつく。Unity と同じかんじ。
 
 
-[2015/8/30] �v���p�e�B�̌p��
-	���r�W�����J�E���g���p�������@
-	�E�e�`���Ԃ̗v�f�̃v���p�e�B���ύX���ꂽ���́H
-		���̃v���p�e�B�̓Ǝ��ݒ�ON/OFF���؂��ւ��������A�S�Ă̎q�̓����v���p�e�B�ɍčX�V�t���O�𗧂Ă��B
-		���S�q�����͎��Ԃ������E�E�E�e�̃��r�W�����𑀍삷���̂́H
-			�����[�g�܂Ńf�t�H���g���������Ή��ł��Ȃ�
-				�����[�g���p�����Ƃ��ĎQ�Ƃ����B
-	�E�c���[�����c���[���؂藣���ꂽ/�ǉ����ꂽ���́H
-		�؂藣���ꂽ/�ǉ����ꂽ�c���[�̑S�m�[�h�̃v���p�e�B�̍čX�V�t���O��ON�ɂ����B
+参考:UE4
+https://shikihuiku.wordpress.com/2014/05/09/%E3%83%A1%E3%83%A2-ue4%E3%81%AErendering%E3%81%AE%E5%91%BC%E3%81%B0%E3%82%8C%E6%96%B9/
 
 
-[2015/7/31] �g�b�v���x���C���^�[�t�F�C�X
-	- �p���ɂ����g��
-	- �����o�C���_�������������ł̎g���₷��
-	- Variant �ւ̕ێ����₷��
-	- �A�v���������������ł̎g���₷��
-
-	�ȉ��̂悤�ȕ��j�ŁB
-	- �g�b�v���x���I�u�W�F�N�g (EngineManager) �̓O���[�o���B
-	  (���S�ɃO���[�o���ł͂Ȃ��A�C���X�^���X�̃|�C���^���O���[�o���ϐ��ɓ����Ă����C���[�W�B�K�v�ɉ����Čp�����A�g���ł���)
-	-
-
+[2015/8/30] プロパティの継承
+リビジョンカウントを用いた方法
+・親～孫間の要素のプロパティが変更された時は？
+そのプロパティの独自設定ON/OFFが切り替わった時、全ての子の同じプロパティに再更新フラグを立てる。
+→全子走査は時間かかる・・・親のリビジョンを操作するのは？
+→ルートまでデフォルトだった時対応できない
+→ルートを継承元として参照する。
+・ツリーからツリーが切り離された/追加された時は？
+切り離された/追加されたツリーの全ノードのプロパティの再更新フラグをONにする。
 
 
-	�EFont font = Font::CreateBitmapFont();
+[2015/7/31] トップレベルインターフェイス
+- 継承による拡張
+- 言語バインダを実装する上での使いやすさ
+- Variant への保持しやすさ
+- アプリを実装する上での使いやすさ
+
+以下のような方針で。
+- トップレベルオブジェクト (EngineManager) はグローバル。
+(完全にグローバルではなく、インスタンスのポインタをグローバル変数に入れておくイメージ。必要に応じて継承し、拡張できる)
+-
 
 
-	�EFontPtr font = Font::CreateBitmapFont();
 
-	- �X�^�b�N�ւ̐����������邩�H
-		���S�ɋ֎~���邱�Ƃ͏o���Ȃ��B�h���������΂Ȃ��Ƃł��o���Ă��܂��B
+・Font font = Font::CreateBitmapFont();
 
 
-	�ESiv3D�A�Z�KGameLib
-		���J�����̂̓X�}�[�g�|�C���^�N���X�B���͉̂\�Ȍ��茩���Ȃ��B
-		�� �h�������Ċg���ł��Ȃ��BGUI �̃��[�U�[�R���g���[���Ƃ������Ȃ����ƂɂȂ��B
-		�����ASiv3D �� GUI �� static Create() �� shared_ptr �Ԃ��Ă����B
+・FontPtr font = Font::CreateBitmapFont();
 
-	�ESDL2�AGLFW�AGDI+�ANux �Ȃ񂩂̓g�b�v���x���I�u�W�F�N�g�̓O���[�o���C���X�^���X�B
-	  OpenSceneGraph �����Ԃ񂻂��B
+- スタックへの生成を許可するか？
+完全に禁止することは出来ない。派生させればなんとでも出来てしまう。
+
+
+・Siv3D、セガGameLib
+公開するのはスマートポインタクラス。実体は可能な限り見せない。
+→ 派生させて拡張できない。GUI のユーザーコントロールとか作れないことになる。
+ただ、Siv3D の GUI は static Create() が shared_ptr 返していた。
+
+・SDL2、GLFW、GDI+、Nux なんかはトップレベルオブジェクトはグローバルインスタンス。
+OpenSceneGraph もたぶんそう。
 */
 
 
@@ -164,10 +164,10 @@ EngineManager::EngineManager(const EngineSettings& configData)
 
 
 #if defined(LN_OS_WIN32)
-	// COM ������
+	// COM 初期化
 	if (m_configData.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
-		// �G���[�ɂ͂��Ȃ��B�ʂ̐ݒ��� COM ���������ς݂������肷���Ǝ��s���邱�Ƃ����邪�ACOM ���͎̂g�����悤�ɂȂ��Ă���
+		// エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
 		m_comInitialized = true;
 	}
 #endif
@@ -190,8 +190,8 @@ EngineManager::~EngineManager()
 
 	if (m_graphicsManager != nullptr)
 	{
-		// ���ɕ`���X���b�h���I�����Ă����B
-		// �����W���[���Ŕ��s���ꂽ�R�}���h���܂����s�ҋ@���ɂ��̃��W���[���������������ƃ}�Y�C�B
+		// 先に描画スレッドを終了しておく。
+		// 他モジュールで発行されたコマンドがまだ実行待機中にそのモジュールが解放されるとマズイ。
 		m_graphicsManager->Finalize();
 	}
 
@@ -264,7 +264,7 @@ void EngineManager::Initialize()
 	InitializeSceneGraphManager();
 #endif
 	InitializeAssetsManager();
-	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: �Ƃ肠����
+	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: とりあえず
 	m_application->Initialize(this);
 
 	EngineDiagCore::Instance.Initialize(this);
@@ -277,7 +277,7 @@ void EngineManager::InitializeCommon()
 {
 	if (!m_commonInitied)
 	{
-		// ���O�t�@�C���o��
+		// ログファイル出力
 		if (m_configData.applicationLogEnabled) {
 			Logger::Initialize(LogFileName);
 		}
@@ -334,7 +334,7 @@ void EngineManager::InitializePlatformManager()
 		m_platformManager.Attach(LN_NEW PlatformManager());
 		m_platformManager->Initialize(data);
 
-		// �C�x���g���X�i�[�o�^
+		// イベントリスナー登録
 		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
 	}
 }
@@ -367,8 +367,8 @@ void EngineManager::InitializeAudioManager()
 		InitializeCommon();
 		InitializeFileManager();
 
-		// ���[�U�[���`�̃E�B���h�E�n���h�����w�肳���Ă����ꍇ�A
-		// �_�~�[�E�B���h�E�N���X�����邽�߂� PlatformManager �̏��������K�v�B
+		// ユーザー定義のウィンドウハンドルが指定されている場合、
+		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
 		if (m_configData.userMainWindow != nullptr) {
 			InitializePlatformManager();
 		}
@@ -580,14 +580,14 @@ bool EngineManager::UpdateFrame()
 	{
 		m_uiManager->GetDefaultUIContext()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
 
-		{	// �v���t�@�C�����O�͈�
+		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
 			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(static_cast<float>(size.width), static_cast<float>(size.height)));
 		}
 	}
 
-	// �蓮�`�悳���Ă��Ȃ����΂����Ŏ����`�悷��
+	// 手動描画されていなければここで自動描画する
 	if (!m_frameRenderd)
 	{
 		if (BeginRendering())
@@ -614,7 +614,7 @@ bool EngineManager::BeginRendering()
 	m_frameRenderingSkip = true;
 	if (m_graphicsManager == nullptr) return false;
 
-	// �`���x���̊m�F
+	// 描画遅延の確認
 	bool delay = false;
 	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
 	{
@@ -634,7 +634,7 @@ bool EngineManager::BeginRendering()
 
 
 	if (m_effectManager != nullptr) {
-		m_effectManager->PreRender();	// Effekseer �̍X�V�X���b�h���J�n�����̂͂���
+		m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
 	}
 
 	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
@@ -669,7 +669,7 @@ void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		//// �`���x���̊m�F
+		//// 描画遅延の確認
 		//bool delay = false;
 		//if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
 		//{
@@ -688,7 +688,7 @@ void EngineManager::Render()
 
 
 		//if (m_effectManager != nullptr) {
-		//	m_effectManager->PreRender();	// Effekseer �̍X�V�X���b�h���J�n�����̂͂���
+		//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
 		//}
 
 		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
@@ -727,7 +727,7 @@ void EngineManager::Render()
 		{
 			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
 			g->Clear(ClearFlags::Depth, ColorF::White);
-			g->Set2DRenderingMode(-1,1);	// TODO
+			g->Set2DRenderingMode(-1, 1);	// TODO
 			m_diagRenderer->Render(g, Vector2(640, 480));	//TODO
 		}
 
@@ -764,11 +764,11 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 
 	switch (e.type)
 	{
-	case PlatformEventType::Quit:	// �A�v���I���v��
-	case PlatformEventType::Close:	// �E�B���h�E���������悤�Ƃ��Ă���
+	case PlatformEventType::Quit:	// アプリ終了要求
+	case PlatformEventType::Close:	// ウィンドウが閉じられようとしている
 		break;
 
-	case PlatformEventType::MouseDown:		// �}�E�X�{�^���������ꂽ
+	case PlatformEventType::MouseDown:		// マウスボタンが押された
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
@@ -778,7 +778,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case PlatformEventType::MouseUp:			// �}�E�X�{�^���������ꂽ
+	case PlatformEventType::MouseUp:			// マウスボタンが離された
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
@@ -788,7 +788,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case PlatformEventType::MouseMove:		// �}�E�X���ړ�����
+	case PlatformEventType::MouseMove:		// マウスが移動した
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
@@ -798,7 +798,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (m_sceneGraphManager->GetDefault3DSceneGraph()->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
-	case PlatformEventType::MouseWheel:		// �}�E�X�z�C�[�������삳�ꂽ
+	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
 		if (uiView != nullptr)
 		{
 			if (uiView->InjectMouseWheel(e.wheel.delta)) { return true; }
@@ -814,7 +814,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 			if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
 		}
 
-		// �f�o�b�O�\���ؑ�
+		// デバッグ表示切替
 		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
 			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
 			m_diagRenderer != nullptr)

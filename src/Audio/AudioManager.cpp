@@ -175,15 +175,6 @@ void AudioManagerImpl::Finalize()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-//AudioStream* AudioManagerImpl::CreateAudioStream(const TCHAR* filePath)
-//{
-//	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath));
-//	return CreateAudioStream(stream, CacheKey(PathName(filePath)));
-//}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 AudioStream* AudioManagerImpl::CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
 	// キャッシュを検索する。

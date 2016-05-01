@@ -340,11 +340,6 @@ SoundPlayingMode Sound::GetPlayingMode() const
 //-----------------------------------------------------------------------------
 void Sound::FadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
 {
-	// 即時更新
-	//if (time <= 0) {
-	//	SetVolume(targetVolume);
-	//}
-
 	Threading::MutexScopedLock lock(m_playerStateLock);
 
 	// 現在の音量から targetVolume への遷移
@@ -398,12 +393,6 @@ void Sound::Polling(float elapsedTime)
 			m_fadeValue.AdvanceTime(elapsedTime);
 			m_playerState.SetVolume(m_fadeValue.GetValue());
 
-			//if (m_audioPlayer != NULL)
-			//{
-			//	m_volume = m_fadeValue.GetValue();
-			//	m_audioPlayer->SetVolume(m_volume);
-			//}
-
 			// フェード完了
 			if (m_fadeValue.IsFinished())
 			{
@@ -431,12 +420,6 @@ void Sound::Polling(float elapsedTime)
 				if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
 				{
 					m_playerState.SetVolume(m_fadeValue.GetStartValue());
-
-					//m_volume = m_fadeValue.GetStartValue();	// SetVolume() を呼ぶとデッドロックするのでここでセット
-					//if (m_audioPlayer != NULL) {
-					//	m_audioPlayer->SetVolume(m_volume);
-					//}
-
 				}
 			}
 		}
@@ -476,9 +459,9 @@ void Sound::Polling(float elapsedTime)
 
 	}
 
+	// 出来上がった newState を AudioPlayer へ送り込む
 	if (m_audioPlayer != nullptr)
 	{
-		// AudioPlayer へ送り込む
 		m_audioPlayer->CommitPlayerState(newState);
 		m_playerState.SetModifiedFlags(detail::AudioPlayerState::ModifiedFlags_None);	// 同期完了
 

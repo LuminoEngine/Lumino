@@ -168,6 +168,8 @@ public:
 		@param[in]	targetVolume	: フェード先音量
 		@param[in]	time			: 変化にかける時間 (秒)
 		@param[in]	state			: 音量フェード完了時の動作
+		@details	現在の音量から targetVolume へ音量の遷移を行います。現在の音量は GetVolume() で取得できる値です。
+					フェード中は音量が変更され、GetVolume() で取得できる値が変わります。
 	*/
 	void FadeVolume(float targetVolume, double time, SoundFadeBehavior behavior);
 
@@ -192,18 +194,12 @@ private:
     AudioPlayer*				m_audioPlayer;
 	SoundPlayingMode			m_playingMode;
 
-	//float						m_volume;
-	//float						m_pitch;
-	//bool						m_loopEnabled;
-	//uint32_t					m_loopBegin;
-	//uint32_t					m_loopLength;
 	Threading::Mutex			m_playerStateLock;	// TODO: 性質上、スピンロックの方が効率がいいかもしれない
 	detail::AudioPlayerState	m_playerState;
 	bool						m_is3DSound;
 	Vector3						m_position;
 	Vector3						m_velocity;
 	float						m_maxDistance;
-	//SoundPlayingState			m_playState;		// AudioPlayer の遅延作成に対応する
 
 	uint32_t					m_gameAudioFlags;
 
