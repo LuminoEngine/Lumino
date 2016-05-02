@@ -24,7 +24,6 @@
 
 #include "Graphics/Device/OpenGL/LNGL.h"
 #include <Lumino/Platform/PlatformSupport.h>
-#include <Lumino/AutoReleasePool.h>
 
 // glGetError() でエラーチェック (各 gl～ の後で必ず呼ばないと正しいエラーが取れないので注意)
 #define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 

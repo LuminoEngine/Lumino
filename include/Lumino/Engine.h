@@ -11,6 +11,11 @@ LN_NAMESPACE_BEGIN
 class Engine
 {
 public:
+	
+	/**
+		@brief		デフォルトの設定でエンジンの初期化処理を行います。
+	*/
+	static void Initialize();
 
 	/**
 		@brief		エンジンの初期化処理を行います。

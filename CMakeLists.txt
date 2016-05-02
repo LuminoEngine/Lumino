@@ -464,9 +464,8 @@ set(LN_SOURCES_Game
 	src/Game/FpsController.cpp
 )
 
-set(LN_SOURCES_Application
+set(LN_SOURCES_Engine
 	include/Lumino/Assets.h
-	include/Lumino/AutoReleasePool.h
 	include/Lumino/BindingSupport.h
 	include/Lumino/Common.h
 	include/Lumino/Engine.h
@@ -480,7 +479,6 @@ set(LN_SOURCES_Application
 	include/Lumino/Version.h
 	src/AssetsManager.cpp
 	src/AssetsManager.h
-	src/AutoReleasePool.cpp
 	src/Engine.cpp
 	src/EngineDiagCore.cpp
 	src/EngineDiagCore.h
@@ -653,7 +651,7 @@ source_group("Scene"			FILES ${LN_SOURCES_Scene})
 source_group("UI"				FILES ${LN_SOURCES_UI})
 source_group("Documents"		FILES ${LN_SOURCES_Documents})
 source_group("Game"				FILES ${LN_SOURCES_Game})
-source_group("Application"		FILES ${LN_SOURCES_Application})
+source_group("Engine"			FILES ${LN_SOURCES_Engine})
 source_group("Foundation"		FILES ${LN_SOURCES_Foundation})
 
 set(LN_SOURCES
@@ -674,7 +672,7 @@ set(LN_SOURCES
 	${LN_SOURCES_UI}
 	#${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
-	${LN_SOURCES_Application}
+	${LN_SOURCES_Engine}
 	${LN_SOURCES_C_API}
 )
 

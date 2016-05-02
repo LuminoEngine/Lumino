@@ -23,8 +23,19 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void Engine::Initialize()
+{
+	LN_CHECK_STATE(EngineManager::Instance == nullptr);
+	EngineSettings settings;
+	Initialize(settings);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Engine::Initialize(const EngineSettings& settings)
 {
+	LN_CHECK_STATE(EngineManager::Instance == nullptr);
 	EngineManager::Instance = EngineManager::Create(settings);
 	EngineManager::Instance->Initialize();
 }

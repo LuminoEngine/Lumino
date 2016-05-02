@@ -79,7 +79,6 @@
 #include "Lumino/Scene/Sprite3D.h"
 #include "Lumino/Scene/TileMapNode.h"
 
-#include "Lumino/AutoReleasePool.h"
 #include "Lumino/Profiler.h"
 #include "Lumino/Engine.h"
 #include "Lumino/GameTime.h"
