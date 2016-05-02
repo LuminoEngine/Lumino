@@ -12,22 +12,24 @@ class UIContext
 	: public RefObject
 {
 public:
+	static UIContext* GetMainContext();
+
+public:
 	UILayoutView* GetMainWindowView() { return m_mainWindowView; }
 
 LN_INTERNAL_ACCESS:
+	UIContext();
+	virtual ~UIContext();
+	void Initialize(detail::UIManager* manager);
+
 	void SetFocusElement(UIElement* element);
 	UIElement* SetFocusElement() { return m_focusElement; }
 	void InjectElapsedTime(float elapsedTime);
 	//void AddElement(UIElement* element) { m_allElementList.Add(element); }
 	//void RemoveElement(UIElement* element) { m_allElementList.Remove(element); }
-	void Render();
 	detail::UIManager* GetManager() { return m_manager; }
 
 private:
-	friend class detail::UIManager;
-	UIContext();
-	virtual ~UIContext();
-	void Initialize(detail::UIManager* manager);
 
 	detail::UIManager*	m_manager;
 	UILayoutView*		m_mainWindowView;

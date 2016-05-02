@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "UIInjectedInputReceiver.h"
+#include "UIElement.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -18,9 +19,12 @@ public:
 	/** この要素が関連付けられている UIContext を取得します。*/
 	UIContext* GetOwnerContext() { return m_ownerContext; }
 
+
+
 LN_INTERNAL_ACCESS:
 	void UpdateLayout(const SizeF& viewSize);
-	//void Render();
+	void Render(GraphicsContext* g);
+	
 	const SizeF& GetViewPixelSize() const { return m_viewPixelSize; }
 	bool UpdateMouseHover(const PointF& mousePos);
 	//void CaptureMouse(UIElement* element);
@@ -54,7 +58,7 @@ private:
 	PlatformWindow*		m_ownerNativeWindow;
 
 	UIContext*			m_ownerContext;
-	UIElement*			m_rootElement;
+	UILayoutRoot*		m_rootElement;
 	UIElement*			m_mouseHoverElement;
 	UIElement*			m_capturedElement;
 

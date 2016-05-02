@@ -199,7 +199,7 @@ int main()
 
 
 		EngineSettings appData;
-		appData.graphicsAPI = GraphicsAPI::OpenGL;
+		appData.graphicsAPI = GraphicsAPI::DirectX9;
 		appData.renderingType = RenderingType::Immediate;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
@@ -209,9 +209,9 @@ int main()
 		auto sp1 = Sprite2D::Create(tex);
 
 		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.2f);
-		auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
-		sound1->SetPitch(1.2f);
-		sound1->Play();
+		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
+		//sound1->SetPitch(1.2f);
+		//sound1->Play();
 #if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;

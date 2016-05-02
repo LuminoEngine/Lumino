@@ -89,6 +89,7 @@ OpenSceneGraph もたぶんそう。
 #include "UI/UIManager.h"
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
+#include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/Foundation/Application.h>
 #include "AssetsManager.h"
 #include "EngineDiagRenderer.h"
@@ -579,12 +580,12 @@ bool EngineManager::UpdateFrame()
 
 	if (m_uiManager != nullptr)
 	{
-		m_uiManager->GetDefaultUIContext()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
+		m_uiManager->GetMainWindow()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 			const Size& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
-			m_uiManager->GetDefaultUIContext()->GetMainWindowView()->UpdateLayout(SizeF(static_cast<float>(size.width), static_cast<float>(size.height)));
+			m_uiManager->GetMainWindow()->UpdateLayout(SizeF(static_cast<float>(size.width), static_cast<float>(size.height)));
 		}
 	}
 
@@ -721,13 +722,16 @@ void EngineManager::Render()
 		}
 
 		if (m_uiManager != nullptr) {
-			m_uiManager->GetDefaultUIContext()->Render();
+			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
+			g->Set2DRenderingMode(-1, 1);	// TODO
+			m_uiManager->GetMainWindow()->Render(g);
 		}
 
 		if (m_diagRenderer != nullptr && m_diagRenderer->IsVisible())
 		{
 			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
-			g->Clear(ClearFlags::Depth, ColorF::White);
+			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
 			g->Set2DRenderingMode(-1, 1);	// TODO
 			m_diagRenderer->Render(g, Vector2(640, 480));	//TODO
 		}
@@ -759,7 +763,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	UILayoutView* uiView = nullptr;
 	if (m_uiManager != nullptr)
 	{
-		uiView = m_uiManager->GetDefaultUIContext()->GetMainWindowView();
+		uiView = m_uiManager->GetMainWindow()->GetMainUIContext()->GetMainWindowView();
 	}
 
 
@@ -840,6 +844,10 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		{
 			m_graphicsManager->GetMainSwapChain()->Resize(Size(e.size.width, e.size.height));
 		}
+		//if (uiView != nullptr)
+		//{
+		//	if (uiView->InjectViewportSizeChanged(e.size.width, e.size.height)) { return true; }
+		//}
 		break;
 	default:
 		break;

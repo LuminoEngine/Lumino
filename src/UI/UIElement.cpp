@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/UI/UIEventArgs.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIContext.h>
@@ -27,8 +28,10 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, TextInputEvent, "TextInput"
 //
 //-----------------------------------------------------------------------------
 UIElement::UIElement()
-	: m_ownerLayoutView(nullptr)
+	: m_manager(nullptr)
+	, m_ownerLayoutView(nullptr)
 	, m_parent(nullptr)
+	, m_size(NAN, NAN)
 	, m_opacity(1.0f)
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(nullptr)
@@ -41,6 +44,15 @@ UIElement::UIElement()
 //-----------------------------------------------------------------------------
 UIElement::~UIElement()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::Initialize(detail::UIManager* manager)
+{
+	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	m_manager = manager;
 }
 
 //-----------------------------------------------------------------------------
@@ -82,11 +94,11 @@ int UIElement::GetVisualChildrenCount() const
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIElement* UIElement::GetVisualChild(int index) const
-{
-	LN_THROW(0, InvalidOperationException);
-	return nullptr;
-}
+//UIElement* UIElement::GetVisualChild(int index) const
+//{
+//	LN_THROW(0, InvalidOperationException);
+//	return nullptr;
+//}
 
 //-----------------------------------------------------------------------------
 //
@@ -259,6 +271,15 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void UIElement::SetParent(UIElement* parent, UILayoutView* ownerLayoutView)
+{
+	m_parent = parent;
+	m_ownerLayoutView = ownerLayoutView;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
@@ -409,6 +430,17 @@ void UIElement::UpdateTransformHierarchy()
 
 	// 子要素
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::Render(GraphicsContext* g)
+{
+	g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,64));
+
+	// 子要素
+	UIHelper::ForEachVisualChildren(this, [g](UIElement* child) { child->Render(g); });
 }
 
 //-----------------------------------------------------------------------------

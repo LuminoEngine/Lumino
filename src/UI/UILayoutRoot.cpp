@@ -1,35 +1,34 @@
-﻿
+
 #include "Internal.h"
-#include <Lumino/UI/UIWindow.h>
+#include <Lumino/UI/UILayoutRoot.h>
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// UIWindow
+// UILayoutRoot
 //=============================================================================
+LN_UI_TYPEINFO_IMPLEMENT(UILayoutRoot, UIPanel)
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIWindow::UIWindow()
-	: m_manager(nullptr)
+UILayoutRoot::UILayoutRoot()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIWindow::~UIWindow()
+UILayoutRoot::~UILayoutRoot()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIWindow::InitializeDefault(detail::UIManager* manager)
+void UILayoutRoot::Initialize(detail::UIManager* manager)
 {
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
-	m_manager = manager;
+	UIPanel::Initialize(manager);
 }
 
 LN_NAMESPACE_END

@@ -1,10 +1,12 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "Detail.h"
 #include "UITypeInfo.h"
 #include "UIEvent.h"
 
 LN_NAMESPACE_BEGIN
+class GraphicsContext;
 
 /**
 	@brief		
@@ -48,6 +50,8 @@ public:
 	/** 論理上の親要素を取得します。*/
 	UIElement* GetParent() const { return m_parent; }
 
+	void SetSize(const SizeF& size) { m_size = size; }
+
 	/** この要素がフォーカスを得ることができるかを確認します。*/
 	virtual bool IsFocusable() const { return false; }
 
@@ -66,17 +70,18 @@ public:
 	///** マウスキャプチャを解除します。*/
 	//void ReleaseMouseCapture();
 
-	/** この要素内の子ビジュアル要素の数を取得します。*/
+	/** この要素内の子ビジュアル要素の数を取得します。(論理要素も含めたすべての子要素) */
 	virtual int GetVisualChildrenCount() const;
 
 	/** この要素内の指定したインデックスにある子ビジュアル要素を取得します。*/
-	virtual UIElement* GetVisualChild(int index) const;
+	//virtual UIElement* GetVisualChild(int index) const;
 
 	/** Zオーダーやアクティブ状態を考慮した順で、子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。*/
 	virtual UIElement* GetVisualChildOrderd(int index) const;
 
 	/** この要素が関連付けられている UILayoutView を取得します。*/
 	UILayoutView* GetLayoutView() const;
+
 
 	virtual void MeasureLayout(const SizeF& availableSize);
 	virtual void ArrangeLayout(const RectF& finalLocalRect);
@@ -87,6 +92,7 @@ public:
 protected:
 	UIElement();
 	virtual ~UIElement();
+	void Initialize(detail::UIManager* manager);
 
 	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
 	//void AddVisualChild(UIElement* element);
@@ -131,6 +137,7 @@ protected:
 	virtual void OnTextInput(UIKeyEventArgs* e);
 
 LN_INTERNAL_ACCESS:
+	void SetParent(UIElement* parent, UILayoutView* ownerLayoutView);
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
@@ -138,11 +145,13 @@ LN_INTERNAL_ACCESS:
 	void ApplyTemplateHierarchy();
 	void UpdateLayout();
 	void UpdateTransformHierarchy();
+	void Render(GraphicsContext* g);
 
 private:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
 
+	detail::UIManager*		m_manager;
 	UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
 	UIElement*				m_parent;
@@ -151,12 +160,20 @@ private:
 	RectF					m_finalGlobalRect;
 
 	// Property
+	// Style の適用先
 	SizeF							m_size;
 	ThicknessF						m_margin;
-	float							m_opacity;
-	//ToneF							m_tone;
+	ThicknessF						m_padding;
 	HorizontalAlignment				m_horizontalAlignment;
 	VerticalAlignment				m_verticalAlignment;
+	BrushPtr						m_background;
+	BrushPtr						m_foreground;
+	detail::BorderInfo				m_border;
+
+
+
+	float							m_opacity;
+	//ToneF							m_tone;
 
 	//RefPtr<Style>					m_style;
 	float							m_combinedOpacity;

@@ -1172,8 +1172,7 @@
 
 */
 #include "Internal.h"
-#include <Lumino/UI/UIContext.h>
-#include <Lumino/UI/UIWindow.h>
+#include <Lumino/UI/UIFrameWindow.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
 
@@ -1184,7 +1183,16 @@ namespace detail
 //=============================================================================
 // UIManager
 //=============================================================================
+static UIManager* g_uiManager = nullptr;
 const float UIManager::MouseButtonClickTimeout = 0.3f;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIManager* UIManager::GetInstance(UIManager* priority)
+{
+	return (priority != nullptr) ? priority : g_uiManager;
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -1193,7 +1201,6 @@ UIManager::UIManager()
 	: m_eventArgsPool(nullptr)
 	, m_graphicsManager(nullptr)
 	, m_mainWindow(nullptr)
-	, m_defaultUIContext(nullptr)
 {
 }
 
@@ -1212,11 +1219,14 @@ void UIManager::Initialize(const Settings& settings)
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_graphicsManager = settings.graphicsManager;
 
-	m_mainWindow = LN_NEW UIWindow();
-	m_mainWindow->InitializeDefault(this, settings.mainWindow);
+	m_mainWindow = LN_NEW UIMainWindow();
+	m_mainWindow->Initialize(this, settings.mainWindow);
 
-	m_defaultUIContext = LN_NEW UIContext();
-	m_defaultUIContext->Initialize(this);
+
+	if (g_uiManager == nullptr)
+	{
+		g_uiManager = this;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1225,8 +1235,12 @@ void UIManager::Initialize(const Settings& settings)
 void UIManager::Finalize()
 {
 	LN_SAFE_RELEASE(m_mainWindow);
-	LN_SAFE_RELEASE(m_defaultUIContext);
 	LN_SAFE_DELETE(m_eventArgsPool);
+
+	if (g_uiManager == this)
+	{
+		g_uiManager = nullptr;
+	}
 }
 
 

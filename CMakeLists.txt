@@ -416,12 +416,18 @@ endif()
 
 set(LN_SOURCES_UI
 	include/Lumino/UI/Common.h
+	include/Lumino/UI/Detail.h
 	include/Lumino/UI/UIContext.h
 	include/Lumino/UI/UIElement.h
+	include/Lumino/UI/UIElementCollection.h
 	include/Lumino/UI/UIEvent.h
 	include/Lumino/UI/UIEventArgs.h
+	include/Lumino/UI/UIFrameWindow.h
 	include/Lumino/UI/UIInjectedInputReceiver.h
+	include/Lumino/UI/UILayoutRoot.h
 	include/Lumino/UI/UILayoutView.h
+	include/Lumino/UI/UIPanel.h
+	include/Lumino/UI/UIStyle.h
 	include/Lumino/UI/UITypeInfo.h
 	include/Lumino/UI/UIWindow.h
 	src/UI/EventArgsPool.h
@@ -430,10 +436,14 @@ set(LN_SOURCES_UI
 	src/UI/UIElement.cpp
 	src/UI/UIEvent.cpp
 	src/UI/UIEventArgs.cpp
+	src/UI/UIFrameWindow.cpp
 	src/UI/UIHelper.h
+	src/UI/UILayoutRoot.cpp
 	src/UI/UILayoutView.cpp
 	src/UI/UIManager.cpp
 	src/UI/UIManager.h
+	src/UI/UIPanel.cpp
+	src/UI/UIStyle.cpp
 	src/UI/UITypeInfo.cpp
 	src/UI/UIWindow.cpp
 )

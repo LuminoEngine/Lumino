@@ -23,6 +23,8 @@ public:
 	static const float MouseButtonClickTimeout;
 
 public:
+	static UIManager* GetInstance(UIManager* priority = nullptr);
+
 	UIManager();
 	virtual ~UIManager();
 
@@ -30,14 +32,12 @@ public:
 	void Finalize();
 	EventArgsPool* GetEventArgsPool() { return m_eventArgsPool; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	UIWindow* GetMainWindow() { return m_mainWindow; }
-	UIContext* GetDefaultUIContext() { return m_defaultUIContext; }
+	UIMainWindow* GetMainWindow() { return m_mainWindow; }
 
 private:
 	EventArgsPool*		m_eventArgsPool;
 	GraphicsManager*	m_graphicsManager;
-	UIWindow*			m_mainWindow;
-	UIContext*			m_defaultUIContext;
+	UIMainWindow*		m_mainWindow;
 };
 
 } // namespace detail

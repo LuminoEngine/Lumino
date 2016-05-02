@@ -10,6 +10,9 @@ class UIContext;
 class UILayoutView;
 class UIElement;
 class UIWindow;
+class UIFrameWindow;
+class UIMainWindow;
+class UILayoutRoot;
 
 
 /** 縦方向の表示位置を示します。*/

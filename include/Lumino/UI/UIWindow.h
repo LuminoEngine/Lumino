@@ -13,17 +13,13 @@ class UIWindow
 {
 public:
 
-	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
-
 LN_INTERNAL_ACCESS:	// TODO: いまはとりあえず内部用途
 	UIWindow();
 	virtual ~UIWindow();
-	void InitializeDefault(detail::UIManager* manager, PlatformWindow* platformWindow);
+	void InitializeDefault(detail::UIManager* manager);
 
 private:
 	detail::UIManager*	m_manager;
-	PlatformWindow*		m_platformWindow;
-	//Viewport*			m_backBufferViewport;
 };
 
 LN_NAMESPACE_END

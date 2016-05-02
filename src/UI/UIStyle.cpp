@@ -1,35 +1,26 @@
-﻿
+
 #include "Internal.h"
-#include <Lumino/UI/UIWindow.h>
+#include <Lumino/UI/UIStyle.h>
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// UIWindow
+// UIStyle
 //=============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStyle, Object);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIWindow::UIWindow()
-	: m_manager(nullptr)
+UIStyle::UIStyle()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIWindow::~UIWindow()
+UIStyle::~UIStyle()
 {
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void UIWindow::InitializeDefault(detail::UIManager* manager)
-{
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
-	m_manager = manager;
 }
 
 LN_NAMESPACE_END

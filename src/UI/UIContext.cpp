@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
-#include <Lumino/UI/UIWindow.h>
+#include <Lumino/UI/UIFrameWindow.h>
 #include "../Graphics/GraphicsManager.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "UIManager.h"
@@ -12,6 +12,14 @@ LN_NAMESPACE_BEGIN
 //=============================================================================
 // UIContext
 //=============================================================================
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+UIContext* UIContext::GetMainContext()
+{
+	return detail::UIManager::GetInstance()->GetMainWindow()->GetMainUIContext();
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -59,16 +67,16 @@ void UIContext::InjectElapsedTime(float elapsedTime)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIContext::Render()
-{
-	//auto* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
-	//auto* d = g->BeginDrawingContext();
-
-	//d->SetViewProjection(Matrix::Identity, Matrix::Perspective2DLH(640, 480, 0, 1));
-
-	//d->DrawRectangle(RectF(10, 10, 20, 30), ColorF::Red);
-
-	//g->Flush();
-}
+//void UIContext::Render()
+//{
+//	//auto* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
+//	//auto* d = g->BeginDrawingContext();
+//
+//	//d->SetViewProjection(Matrix::Identity, Matrix::Perspective2DLH(640, 480, 0, 1));
+//
+//	//d->DrawRectangle(RectF(10, 10, 20, 30), ColorF::Red);
+//
+//	//g->Flush();
+//}
 
 LN_NAMESPACE_END

@@ -4,6 +4,7 @@
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
+#include <Lumino/UI/UILayoutRoot.h>
 #include "UIManager.h"
 #include "EventArgsPool.h"
 
@@ -39,6 +40,10 @@ void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 {
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
+
+	m_rootElement = LN_NEW UILayoutRoot();
+	m_rootElement->Initialize(m_ownerContext->GetManager());
+	m_rootElement->SetParent(nullptr, this);
 }
 
 //-----------------------------------------------------------------------------
@@ -48,11 +53,23 @@ void UILayoutView::UpdateLayout(const SizeF& viewSize)
 {
 	m_viewPixelSize = viewSize;
 
-	if (m_rootElement != NULL)
+	if (m_rootElement != nullptr)
 	{
+		m_rootElement->SetSize(m_viewPixelSize);
 		m_rootElement->ApplyTemplate();
 		m_rootElement->UpdateLayout();
 		m_rootElement->UpdateTransformHierarchy();
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UILayoutView::Render(GraphicsContext* g)
+{
+	if (m_rootElement != nullptr)
+	{
+		m_rootElement->Render(g);
 	}
 }
 
@@ -122,6 +139,15 @@ EXIT:
 //		m_capturedElement = NULL;
 //		m_ownerNativeWindow->ReleaseMouseCapture();
 //	}
+//}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+//bool UILayoutView::InjectViewportSizeChanged(int width, int height)
+//{
+//	m_viewPixelSize.Set(width, height);
+//	return false;
 //}
 
 //-----------------------------------------------------------------------------
