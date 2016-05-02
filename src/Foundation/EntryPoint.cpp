@@ -2,7 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Engine.h>
 
-extern void lnMain();
+extern void Main();
 
 namespace ln
 {
@@ -16,15 +16,7 @@ namespace ln
 //-----------------------------------------------------------------------------
 int EntryPoint()
 {
-	try
-	{
-		lnMain();
-	}
-	catch (...)
-	{
-		return 1;
-	}
-
+	Main();
 	return 0;
 }
 

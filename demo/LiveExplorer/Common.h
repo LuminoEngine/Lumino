@@ -1,6 +1,6 @@
 
 #pragma once
-#include <Lumino.h>
+#include <LuminoEngine.h>
 #include <Lumino/Testing/TestUtils.h>
 using namespace ln;
 

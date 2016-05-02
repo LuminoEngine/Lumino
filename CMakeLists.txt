@@ -40,7 +40,7 @@ option(LN_DxLib_Demo "DX Library demo." OFF)
 # Source files.
 
 set(LN_SOURCES
-	include/Lumino.h
+	include/LuminoEngine.h
 	include/LuminoAudio.h
 	include/LuminoDxLib.h
 	include/LuminoGraphics.h
@@ -505,7 +505,7 @@ set(LN_SOURCES_Foundation
 	src/Foundation/EntryPoint.h
 	src/Foundation/GameSceneManager.cpp
 	src/Foundation/GameSceneManager.h
-	#src/Foundation/Main_Win32.cpp
+	src/Foundation/Main_Win32.cpp
 )
 endif()
 
@@ -675,7 +675,6 @@ set(LN_SOURCES
 	#${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
 	${LN_SOURCES_Application}
-	${LN_SOURCES_Foundation}
 	${LN_SOURCES_C_API}
 )
 
@@ -768,26 +767,50 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
 
 #------------------------------------------------------------------------------
-# Output
+# External
 #------------------------------------------------------------------------------
 
-#set(CMAKE_CXX_FLAGS "")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
-#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")
-#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
-#set(CMAKE_CXX_FLAGS_MINSIZEREL "")
-
-if (LN_EXCEPTION_BACKTRACE)
-	add_definitions(-DLN_EXCEPTION_BACKTRACE)
-endif()
-
-#------------------------------
-# external deps.
 add_subdirectory(external/Lumino.Core)
+set_target_properties(LuminoCore_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+link_libraries(LuminoCore_Static)
+
 add_subdirectory(external/Lumino.Math)
+set_target_properties(LuminoMath_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+link_libraries(LuminoMath_Static)
 
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
+
+add_subdirectory(external/zlib)
+set_target_properties(zlib PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+link_libraries(zlib)
+
+add_subdirectory(external/libpng)
+set_target_properties(libpng PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+link_libraries(libpng)
+
+add_subdirectory(external/freetype-2.6)
+set_target_properties(freetype PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+link_libraries(freetype)
+
+# Audio
+if (LN_BUILD_AUDIO_MODULE)
+	add_subdirectory(external/libogg)
+	set_target_properties(libogg PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+	link_libraries(libogg)
+	
+	add_subdirectory(external/libvorbis)
+	set_target_properties(libvorbis PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+	link_libraries(libvorbis)
+endif()
+
+# Scene
+if (LN_BUILD_SCENE_MODULE)
+	add_subdirectory(external/bullet-2.82)
+	set_target_properties(bullet PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+	link_libraries(bullet)
+endif()
+
 
 # Effekseer
 if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
@@ -804,28 +827,6 @@ set(USE_OPENGLES3 OFF)
 set(USE_OPENGL3 OFF)
 #mark_as_advanced(USE_OPENGLES3)
 
-add_subdirectory(external/zlib)
-add_subdirectory(external/libpng)
-add_subdirectory(external/freetype-2.6)
-link_libraries(LuminoCore_Static)
-link_libraries(LuminoMath_Static)
-link_libraries(zlib)
-link_libraries(libpng)
-link_libraries(freetype)
-
-# Audio
-if (LN_BUILD_AUDIO_MODULE)
-	add_subdirectory(external/libogg)
-	add_subdirectory(external/libvorbis)
-	link_libraries(libogg)
-	link_libraries(libvorbis)
-endif()
-
-# Scene
-if (LN_BUILD_SCENE_MODULE)
-	add_subdirectory(external/bullet-2.82)
-	link_libraries(bullet)
-endif()
 
 if (LN_USE_EXTERNAL_Effekseer)
 	add_subdirectory(external/EffekseerRuntime101/src)
@@ -843,6 +844,19 @@ set_target_properties(effekseer_renderer_dx9 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
 set_target_properties(effekseer_sound_xaudio2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
 
 
+#------------------------------------------------------------------------------
+# Output
+#------------------------------------------------------------------------------
+
+#set(CMAKE_CXX_FLAGS "")
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
+#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")
+#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
+#set(CMAKE_CXX_FLAGS_MINSIZEREL "")
+
+if (LN_EXCEPTION_BACKTRACE)
+	add_definitions(-DLN_EXCEPTION_BACKTRACE)
+endif()
 
 #------------------------------
 # library. (Unicode)
@@ -864,15 +878,19 @@ if (LN_USE_EXTERNAL_Effekseer)
 endif()
 
 
+# Lumino_static
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
-#set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
-add_custom_command(
-	TARGET ${PROJECT_NAME}_Static
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}_Static> "${CMAKE_SOURCE_DIR}/lib")
+
+# Foundation
+add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
+set_target_properties(LuminoFoundation PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
+set_target_properties(LuminoFoundation PROPERTIES OUTPUT_NAME "LuminoFoundation${LN_LIB_POSTFIX}")
+set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+#target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 #------------------------------
 # Unit test.

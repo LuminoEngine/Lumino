@@ -49,15 +49,6 @@ bool Engine::UpdateFrame()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Application* Engine::GetApplication()
-{
-	LN_CHECK_STATE(EngineManager::Instance != NULL);
-	return EngineManager::Instance->GetApplication();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
 bool Engine::BeginRendering()
 {
 	return EngineManager::Instance->BeginRendering();

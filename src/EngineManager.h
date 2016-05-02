@@ -63,7 +63,7 @@ public:
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
 	detail::UIManager* GetUIManager() const { return m_uiManager; }
 	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
-	Application* GetApplication() const { return m_application; }
+	//Application* GetApplication() const { return m_application; }
 
 	const FpsController& GetFpsController() const { return m_fpsController; }
 
@@ -109,7 +109,7 @@ private:
 
 	EngineDiagRenderer*					m_diagRenderer;
 
-	Application*						m_application;
+	//Application*						m_application;
 	
 	//NativeWindowEventListener*			m_nativeWindowEventListener;
 	bool								m_frameRenderingSkip;

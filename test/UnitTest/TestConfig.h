@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <LuminoCore.h>
-#include <Lumino.h>
+#include <LuminoEngine.h>
 #include <Lumino/Testing/TestUtils.h>
 
 //#include "../../../src/Scene/SceneGraphManager.h"

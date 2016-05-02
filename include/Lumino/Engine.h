@@ -30,7 +30,6 @@ public:
 	*/
 	static bool UpdateFrame();
 
-	static Application* GetApplication();
 	static bool BeginRendering();
 	static void EndRendering();
 	static void Render();

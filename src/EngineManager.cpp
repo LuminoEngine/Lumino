@@ -151,7 +151,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_sceneGraphManager(nullptr)
 	, m_assetsManager(nullptr)
 	, m_diagRenderer(nullptr)
-	, m_application(nullptr)
+	//, m_application(nullptr)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
@@ -178,7 +178,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 //-----------------------------------------------------------------------------
 EngineManager::~EngineManager()
 {
-	LN_SAFE_RELEASE(m_application);
+	//LN_SAFE_RELEASE(m_application);
 
 	LN_SAFE_RELEASE(m_diagRenderer);
 
@@ -264,8 +264,8 @@ void EngineManager::Initialize()
 	InitializeSceneGraphManager();
 #endif
 	InitializeAssetsManager();
-	m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: とりあえず
-	m_application->Initialize(this);
+	//m_application = LN_NEW detail::InternalApplicationImpl();	// TODO: とりあえず
+	//m_application->Initialize(this);
 
 	EngineDiagCore::Instance.Initialize(this);
 }
