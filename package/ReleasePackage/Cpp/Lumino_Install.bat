@@ -1,0 +1,1 @@
+setx "LuminoInstallDir" %~dp0
