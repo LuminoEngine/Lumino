@@ -25,8 +25,6 @@ AudioPlayerState::AudioPlayerState()
 {
 }
 
-} // namespace detail
-
 //=============================================================================
 // AudioPlayer 
 //=============================================================================
@@ -169,5 +167,6 @@ void AudioPlayer::SetLoopState(uint32_t loop_begin, uint32_t loop_length)
     }
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

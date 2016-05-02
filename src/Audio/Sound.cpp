@@ -28,7 +28,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, tr::ReflectionObject);
 //-----------------------------------------------------------------------------
 SoundPtr Sound::Create(const TCHAR* filePath)
 {
-	return CreateInternal(Internal::AudioManager, filePath);
+	return CreateInternal(detail::AudioManager::GetInstance(), filePath);
 }
 
 //-----------------------------------------------------------------------------
@@ -36,13 +36,13 @@ SoundPtr Sound::Create(const TCHAR* filePath)
 //-----------------------------------------------------------------------------
 SoundPtr Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
 {
-	return CreateInternal(Internal::AudioManager, stream, loadingMode);
+	return CreateInternal(detail::AudioManager::GetInstance(), stream, loadingMode);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SoundPtr Sound::CreateInternal(AudioManagerImpl* manager, const StringRef& filePath)
+SoundPtr Sound::CreateInternal(detail::AudioManager* manager, const StringRef& filePath)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
 	return SoundPtr(manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
@@ -51,7 +51,7 @@ SoundPtr Sound::CreateInternal(AudioManagerImpl* manager, const StringRef& fileP
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SoundPtr Sound::CreateInternal(AudioManagerImpl* manager, Stream* stream, SoundLoadingMode loadingMode)
+SoundPtr Sound::CreateInternal(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode)
 {
 	return SoundPtr(manager->CreateSound(stream, CacheKey::Null, loadingMode), false);
 }
@@ -87,7 +87,7 @@ Sound::~Sound()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sound::Initialize(AudioManagerImpl* manager, AudioStream* stream)
+void Sound::Initialize(detail::AudioManager* manager, detail::AudioStream* stream)
 {
 	LN_CHECK_ARGS_RETURN(manager != nullptr);
 	LN_CHECK_ARGS_RETURN(stream != nullptr);
@@ -269,7 +269,7 @@ int64_t Sound::GetTotalSamples() const
 	if (m_audioStream->CheckCreated() && m_audioStream->GetFormat() == StreamFormat_Midi) {
 #ifdef LN_OS_WIN32
 		if (m_audioPlayer != NULL) {
-			return static_cast<DirectMusicAudioPlayer*>(m_audioPlayer)->getTotalTime();
+			return static_cast<detail::DirectMusicAudioPlayer*>(m_audioPlayer)->getTotalTime();
 		}
 		return 0;
 #else
@@ -300,7 +300,7 @@ int Sound::GetSamplingRate() const
 {
 	if (m_audioStream->CheckCreated() && m_audioStream->GetFormat() == StreamFormat_Midi) {
 #ifdef LN_OS_WIN32
-		return DirectMusicManager::MusicTimeBase;
+		return detail::DirectMusicManager::MusicTimeBase;
 #else
 		LN_THROW(0, NotImplementedException);
 #endif

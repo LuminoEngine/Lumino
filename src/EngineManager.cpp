@@ -323,13 +323,13 @@ void EngineManager::InitializePlatformManager()
 		InitializeCommon();
 
 		PlatformManager::Settings data;
-		data.API = m_configData.windowSystemAPI;
-		data.MainWindowSettings.title = m_configData.mainWindowTitle;
-		data.MainWindowSettings.clientSize = m_configData.mainWindowSize;
-		data.MainWindowSettings.fullscreen = false;
-		data.MainWindowSettings.resizable = true;
-		data.MainWindowSettings.userWindow = m_configData.userMainWindow;
-		data.UseInternalUIThread = false;
+		data.windowSystemAPI = m_configData.windowSystemAPI;
+		data.mainWindowSettings.title = m_configData.mainWindowTitle;
+		data.mainWindowSettings.clientSize = m_configData.mainWindowSize;
+		data.mainWindowSettings.fullscreen = false;
+		data.mainWindowSettings.resizable = true;
+		data.mainWindowSettings.userWindow = m_configData.userMainWindow;
+		data.useInternalUIThread = false;
 
 		m_platformManager.Attach(LN_NEW PlatformManager());
 		m_platformManager->Initialize(data);
@@ -373,16 +373,17 @@ void EngineManager::InitializeAudioManager()
 			InitializePlatformManager();
 		}
 
-		AudioManagerImpl::Settings data;
-		data.FileManager = m_fileManager;
-		data.StreamCacheObjectCount = m_configData.soundCacheCapacity.objectCount;
-		data.StreamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
-		data.DMInitMode = m_configData.directMusicMode;
+		detail::AudioManager::Settings settings;
+		settings.fileManager = m_fileManager;
+		settings.streamCacheObjectCount = m_configData.soundCacheCapacity.objectCount;
+		settings.streamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
+		settings.directMusicInitMode = m_configData.directMusicMode;
 #ifdef LN_OS_WIN32
-		data.hWnd = (m_platformManager != nullptr) ? PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : nullptr;
+		settings.hWnd = (m_platformManager != nullptr) ? PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : nullptr;
 #endif
-		data.DirectMusicReverbLevel = m_configData.DirectMusicReverbLevel;
-		m_audioManager = AudioManagerImpl::Create(data);
+		settings.directMusicReverbLevel = m_configData.DirectMusicReverbLevel;
+		m_audioManager = LN_NEW detail::AudioManager();
+		m_audioManager->Initialize(settings);
 	}
 #endif
 }
@@ -415,8 +416,8 @@ void EngineManager::InitializeGraphicsManager()
 		InitializePhysicsManager();
 
 		GraphicsManager::ConfigData data;
-		data.GraphicsAPI = m_configData.GraphicsAPI;
-		data.RenderingType = m_configData.RenderingType;
+		data.GraphicsAPI = m_configData.graphicsAPI;
+		data.RenderingType = m_configData.renderingType;
 		data.MainWindow = m_platformManager->GetMainWindow();
 		data.backBufferSize = m_configData.mainBackBufferSize;
 		data.animationManager = m_animationManager;

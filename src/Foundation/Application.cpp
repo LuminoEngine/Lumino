@@ -75,8 +75,8 @@ void GameApplication::Run()
 	try
 	{
 		EngineSettings data;
-		data.GraphicsAPI = GraphicsAPI::DirectX9;
-		data.RenderingType = RenderingType::Immediate;
+		data.graphicsAPI = GraphicsAPI::DirectX9;
+		data.renderingType = RenderingType::Immediate;
 
 		OnConfigure(&data);
 

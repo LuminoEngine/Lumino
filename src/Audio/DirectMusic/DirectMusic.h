@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <list>
 #include <Lumino/Threading/Thread.h>
 #include "../MidiDecoder.h"
@@ -8,6 +7,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 class DirectMusicManager;
 
@@ -196,5 +197,6 @@ private:
 	static DirectMusicManager*	m_instance;
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

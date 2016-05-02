@@ -1,12 +1,12 @@
 ﻿
 #include "../Internal.h"
-//#include "../../../Resource/LNResource.h"
-//#include "../../../Math/LMath.h"
 #include "XAudio2AudioPlayer.h"
 #include "XAudio2AudioDevice.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 //=============================================================================
 // XAudio2AudioPlayerBase 
@@ -352,5 +352,6 @@ void EmitterState::UpdateXAudioEmitter( float scale )
     Emitter.CurveDistanceScaler = Distance * scale;
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

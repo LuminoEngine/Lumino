@@ -4,6 +4,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 //=============================================================================
 // AudioUtils
@@ -151,5 +153,6 @@ SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStre
     return type;
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

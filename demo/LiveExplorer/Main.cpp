@@ -199,8 +199,8 @@ int main()
 
 
 		EngineSettings appData;
-		appData.GraphicsAPI = GraphicsAPI::OpenGL;
-		appData.RenderingType = RenderingType::Immediate;
+		appData.graphicsAPI = GraphicsAPI::OpenGL;
+		appData.renderingType = RenderingType::Immediate;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 

@@ -23,7 +23,7 @@ public:
 		@param[in]	size		: クライアント領域のピクセルサイズ
 		@param[in]	resizable	: 可変ウィンドウとして作成するかどうか
 	*/
-	static PlatformWindow* Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager);
+	//static PlatformWindow* Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager);
 
 public:
 

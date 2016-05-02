@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 class FileManager;
 class GraphicsManager;
-class AudioManagerImpl;
+class AudioManager;
 
 namespace detail
 {
@@ -21,7 +21,7 @@ public:
 	{
 		FileManager*		fileManager = nullptr;
 		GraphicsManager*	graphicsManager = nullptr;
-		AudioManagerImpl*		audioManager = nullptr;
+		AudioManager*		audioManager = nullptr;
 	};
 
 public:
@@ -36,7 +36,7 @@ public:
 
 	FileManager*		GetFileManager() { return m_fileManager; }
 	GraphicsManager*	GetGraphicsManager() { return m_graphicsManager; }
-	AudioManagerImpl*		GetAudioManager() { return m_audioManager; }
+	AudioManager*		GetAudioManager() { return m_audioManager; }
 
 	EffectEngine*		GetEffectEngine() { return m_engine; }
 
@@ -46,7 +46,7 @@ private:
 private:
 	FileManager*		m_fileManager;
 	GraphicsManager*	m_graphicsManager;
-	AudioManagerImpl*		m_audioManager;
+	AudioManager*		m_audioManager;
 
 	EffectEngine*	m_engine;	// 複数ツール同時対応とかなったら複数できる
 

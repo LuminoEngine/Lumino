@@ -7,93 +7,11 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 class AudioDevice;
 class AudioStream;
 class AudioDecoder;
-
-
-/*
-AudioPlayerState newState;
-{
-	ScopedLock lock(m_stateSync);
-	if (m_state.GetModifiedFlags() & ModifiedFlags_Volume)
-	{
-		state.SetVolume(m_state.GetVolume());
-	}
-	if (m_state.GetModifiedFlags() & ModifiedFlags_Pitch)
-	{
-		state.SetPitch(m_state.GetPitch());
-	}
-	if (m_state.GetModifiedFlags() & ModifiedFlags_LoopEnabled)
-	{
-		state.SetLoopEnabled(m_state.IsLoopEnabled());
-	}
-	if (m_state.GetModifiedFlags() & ModifiedFlags_LoopBegin)
-	{
-		state.SetLoopBegin(m_state.GetLoopBegin());
-	}
-	if (m_state.GetModifiedFlags() & ModifiedFlags_LoopLength)
-	{
-		state.SetLoopLength(m_state.GetLoopLength());
-	}
-	if (m_state.GetModifiedFlags() & ModifiedFlags_PlayingState)
-	{
-		// 再生状態が Sound 側から変更されているので、Player へ設定する。
-		// Player 側から変更されている場合も Sound 側の状態を上書きする。
-		state.SetPlayingState(m_state.GetPlayingState());
-	}
-	else if (state.GetModifiedFlags() & ModifiedFlags_PlayingState)
-	{
-		// Player 側からのみ変更されている場合は Sound 側へ設定する。
-		m_state.SetPlayingState(state.GetPlayingState());
-	}
-}
-
-player->CommitState(state);
-m_state.SetModifiedFlags(ModifiedFlags_None);
-
-----
-
-if (newState.GetModifiedFlags() & ModifiedFlags_Volume)
-{
-	SetVolume(newState.GetVolume());
-}
-if (newState.GetModifiedFlags() & ModifiedFlags_Pitch)
-{
-	SetPitch(newState.GetPitch());
-}
-if (newState.GetModifiedFlags() & ModifiedFlags_LoopEnabled)
-{
-	SetLoopEnabled(newState.IsLoopEnabled());
-}
-if ((newState.GetModifiedFlags() & ModifiedFlags_LoopBegin) || (newState.GetModifiedFlags() & ModifiedFlags_LoopLength))
-{
-	SetLoopState(newState.GetLoopBegin(), newState.GetLoopLength());
-}
-if (newState.GetModifiedFlags() & ModifiedFlags_PlayingState)
-{
-	switch (newState.GetPlayingState())
-	{
-	case SoundPlayingState::Stopped:
-		Stop();
-		break;
-	case SoundPlayingState::Playing:
-		if (m_state.GetPlayingState() == SoundPlayingState::Pausing)
-		{
-			Pause(false);
-		}
-		else
-		{
-			Play();
-		}
-		break;
-	case SoundPlayingState::Pausing:
-		Pause(true);
-		break;
-	}
-}
-m_state = state;
-*/
 
 // 音声の再生を行うクラス。
 // 使う側は、複数のスレッドから同時にアクセスしないように注意すること。
@@ -175,5 +93,6 @@ protected:
 	bool			    mIsLoop;
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

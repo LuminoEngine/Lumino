@@ -19,7 +19,7 @@ namespace detail { class InputManager; }
 namespace detail { class EffectManager; }
 namespace detail { class ModelManager; }
 namespace detail { class UIManager; }
-class AudioManagerImpl;
+namespace detail { class AudioManager; }
 class GraphicsManager;
 class SceneGraphManager;
 class Application;
@@ -57,7 +57,7 @@ public:
 
 
 	PlatformManager* GetPlatformManager() const { return m_platformManager; }
-	AudioManagerImpl* GetAudioManager() const { return m_audioManager; }
+	detail::AudioManager* GetAudioManager() const { return m_audioManager; }
 	Physics::PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 	Documents::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
@@ -97,7 +97,7 @@ private:
 	FileManager*						m_fileManager;
 	RefPtr<PlatformManager>	m_platformManager;
 	detail::InputManager*				m_inputManager;
-	AudioManagerImpl*					m_audioManager;
+	detail::AudioManager*				m_audioManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	GraphicsManager*					m_graphicsManager;
 	detail::EffectManager*				m_effectManager;

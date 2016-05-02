@@ -6,7 +6,9 @@ LN_NAMESPACE_BEGIN
 class Vector3;
 
 LN_NAMESPACE_AUDIO_BEGIN
-class AudioManagerImpl;
+namespace detail
+{
+class AudioManager;
 
 /*
 	@brief	
@@ -70,8 +72,8 @@ public:
 	void SetEnableBGSRestart(bool flag) { mBGSRestart = flag; }
 
 private:
-	friend class AudioManagerImpl;
-	GameAudioImpl(AudioManagerImpl* mamager);
+	friend class AudioManager;
+	GameAudioImpl(AudioManager* mamager);
 	~GameAudioImpl();
 
 private:
@@ -82,7 +84,7 @@ private:
 	typedef std::list<Sound*>	ReleaseAtPlayEndList;
 	typedef std::list<Sound*>	SoundList;
 
-	AudioManagerImpl*			mManager;
+	AudioManager*			mManager;
 	Threading::Mutex			mLock;
 	ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< 再生終了時に解放する音声リスト
 	Sound*		                mBGM;
@@ -101,5 +103,6 @@ private:
 	bool                        mBGSRestart;
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

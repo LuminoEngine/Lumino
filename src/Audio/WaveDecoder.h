@@ -1,13 +1,13 @@
-﻿/*
-	@file	WaveDecoder.h
-*/
+﻿
 #pragma once
 #include "AudioStream.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
-/// Wave データ AudioStream
+// Wave データ AudioStream
 class WaveDecoder
 	: public AudioDecoder
 {
@@ -43,5 +43,6 @@ private:
 
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

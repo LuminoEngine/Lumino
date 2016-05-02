@@ -11,9 +11,6 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
-class AudioManagerImpl;
-class AudioStream;
-class AudioPlayer;
 class Sound;
 
 /// 音声ファイルフォーマット
@@ -91,6 +88,14 @@ enum class SoundFadeBehavior
 
 	TERMINATOR,
 };
+
+namespace detail
+{
+class AudioManager;
+class AudioStream;
+class AudioPlayer;
+
+} // namespace detail
 
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

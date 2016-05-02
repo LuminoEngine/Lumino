@@ -5,6 +5,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 //=============================================================================
 // MidiDecoder
@@ -332,5 +334,6 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 	return true;
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

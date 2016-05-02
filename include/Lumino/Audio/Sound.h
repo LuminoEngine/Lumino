@@ -179,19 +179,23 @@ public:
 	bool IsVolumeFading() const;
 
 LN_INTERNAL_ACCESS:
-	static SoundPtr CreateInternal(AudioManagerImpl* manager, const StringRef& filePath);
-	static SoundPtr CreateInternal(AudioManagerImpl* manager, Stream* stream, SoundLoadingMode loadingMode);
+	static SoundPtr CreateInternal(detail::AudioManager* manager, const StringRef& filePath);
+	static SoundPtr CreateInternal(detail::AudioManager* manager, Stream* stream, SoundLoadingMode loadingMode);
 	Sound();
 	virtual ~Sound();
-	void Initialize(AudioManagerImpl* manager, AudioStream* stream);
+	void Initialize(detail::AudioManager* manager, detail::AudioStream* stream);
 	void CreateAudioPlayerSync();
 	void Polling(float elapsedTime);
 
+	void SetGameAudioFlags(uint32_t flags) { m_gameAudioFlags = flags; }
+	uint32_t GetGameAudioFlags() const { return m_gameAudioFlags; }
+	detail::AudioStream* GetAudioStream() const { return m_audioStream; }
+
 private:
-	AudioManagerImpl*			m_manager;
+	detail::AudioManager*		m_manager;
 	Threading::Mutex			m_mutex;
-	AudioStream*				m_audioStream;
-    AudioPlayer*				m_audioPlayer;
+	detail::AudioStream*		m_audioStream;
+	detail::AudioPlayer*		m_audioPlayer;
 	SoundPlayingMode			m_playingMode;
 
 	Threading::Mutex			m_playerStateLock;	// TODO: 性質上、スピンロックの方が効率がいいかもしれない
@@ -206,8 +210,6 @@ private:
 	EasingValue<float, double>	m_fadeValue;
 	SoundFadeBehavior			m_fadeBehavior;
 	bool						m_fading;
-
-	friend class AudioHelper;
 };
 
 LN_NAMESPACE_AUDIO_END

@@ -122,7 +122,6 @@ set(LN_SOURCES_Audio
 	include/Lumino/Audio/SoundListener.h
 	src/Audio/AudioDevice.cpp
 	src/Audio/AudioDevice.h
-	src/Audio/AudioHelper.h
 	src/Audio/AudioManager.cpp
 	src/Audio/AudioManager.h
 	src/Audio/AudioPlayer.cpp
@@ -715,10 +714,10 @@ if (WIN32)
 		"Opengl32.lib")
 
 
-	# effekseer �� pragma �Ń����N���Ă��̂ŁE�E�E
+	# effekseer
 	link_directories("$ENV{DXSDK_DIR}Lib/x86")
 
-	add_definitions("/EHsc")	# VS2015, cmake �Ő��������Ɖ��̂������Ă��܂��̂Ŗ����I�Ɏw�肷��
+	add_definitions("/EHsc")	# for VS2015 error
 
 elseif (APPLE)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")
@@ -790,7 +789,7 @@ add_subdirectory(external/Lumino.Math)
 # Make postfix.
 ln_make_postfix(LN_LIB_POSTFIX)
 
-# Effekseer �̐ݒ�
+# Effekseer
 if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
 else()
@@ -814,7 +813,7 @@ link_libraries(zlib)
 link_libraries(libpng)
 link_libraries(freetype)
 
-# Audio ���W���[���̈ˑ�
+# Audio
 if (LN_BUILD_AUDIO_MODULE)
 	add_subdirectory(external/libogg)
 	add_subdirectory(external/libvorbis)
@@ -822,7 +821,7 @@ if (LN_BUILD_AUDIO_MODULE)
 	link_libraries(libvorbis)
 endif()
 
-# Scene ���W���[���̈ˑ�
+# Scene
 if (LN_BUILD_SCENE_MODULE)
 	add_subdirectory(external/bullet-2.82)
 	link_libraries(bullet)
@@ -837,6 +836,12 @@ if (LN_USE_EXTERNAL_Effekseer)
 		link_libraries(effekseer_sound_xaudio2)
 	endif()
 endif()
+
+set_target_properties(effekseer PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(effekseer_renderer_gl PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(effekseer_renderer_dx9 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(effekseer_sound_xaudio2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+
 
 
 #------------------------------

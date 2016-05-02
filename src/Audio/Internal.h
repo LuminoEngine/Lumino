@@ -20,13 +20,4 @@
 //#define LN_CLAMP(value, minValue, maxValue)		(value > maxValue) ? maxValue : (value < minValue) ? minValue : value;
 
 LN_NAMESPACE_BEGIN
-class AudioManagerImpl;
-
-namespace Internal
-{
-	extern AudioManagerImpl* AudioManager;
-};
-
-
-
 LN_NAMESPACE_END

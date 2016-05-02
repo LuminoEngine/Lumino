@@ -5,8 +5,10 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
-/// wave ファイルのヘッダ
+// wave ファイルのヘッダ
 struct WaveFileHeader
 {
 	uint32_t	RIFF;
@@ -191,6 +193,6 @@ void WaveDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uin
 	*out_write_size = static_cast<uint32_t>(size);
 }
 
-
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

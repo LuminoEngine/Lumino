@@ -10,15 +10,15 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
-{
-	WindowCreationSettings data;
-	data.title = title;
-	data.clientSize = clientSize;
-	data.fullscreen = false;
-	data.resizable = resizable;
-	return manager->m_windowManager->CreateSubWindow(data);
-}
+//PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
+//{
+//	WindowCreationSettings data;
+//	data.title = title;
+//	data.clientSize = clientSize;
+//	data.fullscreen = false;
+//	data.resizable = resizable;
+//	return manager->m_windowManager->CreateSubWindow(data);
+//}
 
 //-----------------------------------------------------------------------------
 //

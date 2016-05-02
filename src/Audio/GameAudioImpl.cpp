@@ -7,6 +7,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 enum GameAudioFlags
 {
@@ -20,7 +22,7 @@ enum GameAudioFlags
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-GameAudioImpl::GameAudioImpl(AudioManagerImpl* mamager)
+GameAudioImpl::GameAudioImpl(AudioManager* mamager)
 	: mManager(mamager)
 	, mBGM(NULL)
 	, mBGS(NULL)
@@ -398,7 +400,7 @@ void GameAudioImpl::PlaySE(const TCHAR* filePath, float volume, float pitch)
 	sound->SetPitch(pitch);
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
+	sound->SetGameAudioFlags(GameAudioFlags_SE);
 	PushReleaseAtPlayEndList(sound);
 
 	// 再生
@@ -423,7 +425,7 @@ void GameAudioImpl::PlaySE3D(const TCHAR* filePath, const Vector3& position, flo
 	sound->SetPitch(pitch);
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
+	sound->SetGameAudioFlags(GameAudioFlags_SE);
 	PushReleaseAtPlayEndList(sound);
 
 	// 再生
@@ -438,7 +440,7 @@ void GameAudioImpl::PlaySEFromSound(Sound* srcSound, float volume, float pitch)
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
 	auto sound = RefPtr<Sound>::MakeRef();
-	sound->Initialize(mManager, AudioHelper::GetAudioStream(srcSound));
+	sound->Initialize(mManager, srcSound->GetAudioStream());
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 	sound->Set3DEnabled(srcSound->Is3DEnabled());
 
@@ -451,7 +453,7 @@ void GameAudioImpl::PlaySEFromSound(Sound* srcSound, float volume, float pitch)
 	}
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	AudioHelper::SetGameAudioFlags(sound, GameAudioFlags_SE);
+	sound->SetGameAudioFlags(GameAudioFlags_SE);
 	PushReleaseAtPlayEndList(sound);
 
 	// 再生
@@ -468,7 +470,7 @@ void GameAudioImpl::StopSE()
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
 	for (; itr != end; ++itr)
 	{
-		if (AudioHelper::GetGameAudioFlags(*itr) & GameAudioFlags_SE)
+		if ((*itr)->GetGameAudioFlags() & GameAudioFlags_SE)
 		{
 			(*itr)->Stop();
 		}
@@ -622,5 +624,6 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 	}
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

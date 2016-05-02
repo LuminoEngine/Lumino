@@ -23,7 +23,7 @@ enum GameAudioFlags
 //-----------------------------------------------------------------------------
 void GameAudio::PlayBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlayBGM(filePath, volume, pitch, fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ void GameAudio::PlayBGM(const TCHAR* filePath, float volume, float pitch, double
 //-----------------------------------------------------------------------------
 void GameAudio::PlayBGMFromSound(Sound* sound, float volume, float pitch, double fadeTime)
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlayBGMFromSound(sound, volume, pitch, fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlayBGMFromSound(sound, volume, pitch, fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ void GameAudio::PlayBGMFromSound(Sound* sound, float volume, float pitch, double
 //-----------------------------------------------------------------------------
 void GameAudio::StopBGM(double fadeTime)
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->StopBGM(fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->StopBGM(fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ void GameAudio::StopBGM(double fadeTime)
 //-----------------------------------------------------------------------------
 void GameAudio::PlayBGS( const TCHAR* filePath, float volume, float pitch, double fadeTime )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlayBGS(filePath, volume, pitch, fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlayBGS(filePath, volume, pitch, fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void GameAudio::PlayBGS( const TCHAR* filePath, float volume, float pitch, doubl
 //-----------------------------------------------------------------------------
 void GameAudio::PlayBGSFromSound( Sound* sound, float volume, float pitch, double fadeTime )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlayBGSFromSound(sound, volume, pitch, fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlayBGSFromSound(sound, volume, pitch, fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void GameAudio::PlayBGSFromSound( Sound* sound, float volume, float pitch, doubl
 //-----------------------------------------------------------------------------
 void GameAudio::StopBGS( double fadeTime )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->StopBGS(fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->StopBGS(fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ void GameAudio::StopBGS( double fadeTime )
 //-----------------------------------------------------------------------------
 void GameAudio::PlayME( const TCHAR* filePath, float volume, float pitch )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlayME(filePath, volume, pitch);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlayME(filePath, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void GameAudio::PlayME( const TCHAR* filePath, float volume, float pitch )
 //-----------------------------------------------------------------------------
 void GameAudio::PlayMEFromSound( Sound* sound, float volume, float pitch )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlayMEFromSound(sound, volume, pitch);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlayMEFromSound(sound, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ void GameAudio::PlayMEFromSound( Sound* sound, float volume, float pitch )
 //-----------------------------------------------------------------------------
 void GameAudio::StopME()
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->StopBGS();
+	detail::AudioManager::GetInstance()->GetGameAudio()->StopBGS();
 }
 
 //-----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ void GameAudio::StopME()
 //-----------------------------------------------------------------------------
 void GameAudio::PlaySE( const TCHAR* filePath, float volume, float pitch )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlaySE(filePath, volume, pitch);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlaySE(filePath, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
@@ -103,7 +103,7 @@ void GameAudio::PlaySE( const TCHAR* filePath, float volume, float pitch )
 //-----------------------------------------------------------------------------
 void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlaySE3D(filePath, position, distance, volume, pitch);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlaySE3D(filePath, position, distance, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
@@ -111,7 +111,7 @@ void GameAudio::PlaySE3D( const TCHAR* filePath, const Vector3& position, float 
 //-----------------------------------------------------------------------------
 void GameAudio::PlaySEFromSound( Sound* srcSound, float volume, float pitch )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->PlaySEFromSound(srcSound, volume, pitch);
+	detail::AudioManager::GetInstance()->GetGameAudio()->PlaySEFromSound(srcSound, volume, pitch);
 }
 
 //-----------------------------------------------------------------------------
@@ -119,7 +119,7 @@ void GameAudio::PlaySEFromSound( Sound* srcSound, float volume, float pitch )
 //-----------------------------------------------------------------------------
 void GameAudio::StopSE()
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->StopSE();
+	detail::AudioManager::GetInstance()->GetGameAudio()->StopSE();
 }
 
 //-----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ void GameAudio::StopSE()
 //-----------------------------------------------------------------------------
 void GameAudio::SetMEFadeState(double begin, double end)
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->SetMEFadeState(begin, end);
+	detail::AudioManager::GetInstance()->GetGameAudio()->SetMEFadeState(begin, end);
 }
 
 //-----------------------------------------------------------------------------
@@ -135,7 +135,7 @@ void GameAudio::SetMEFadeState(double begin, double end)
 //-----------------------------------------------------------------------------
 void GameAudio::SetBGMVolume( float volume, double fadeTime )
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->SetBGMVolume(volume, fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->SetBGMVolume(volume, fadeTime);
 }
 
 //-----------------------------------------------------------------------------
@@ -143,7 +143,7 @@ void GameAudio::SetBGMVolume( float volume, double fadeTime )
 //-----------------------------------------------------------------------------
 void GameAudio::SetBGSVolume(float volume, double fadeTime)
 {
-	AudioManagerImpl::GetInstance()->GetGameAudio()->SetBGSVolume(volume, fadeTime);
+	detail::AudioManager::GetInstance()->GetGameAudio()->SetBGSVolume(volume, fadeTime);
 }
 
 LN_NAMESPACE_AUDIO_END

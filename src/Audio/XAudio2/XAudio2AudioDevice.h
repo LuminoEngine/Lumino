@@ -1,19 +1,13 @@
-﻿/*
-	@file	XAudio2AudioDevice.h
-*/
+﻿
 #pragma once
-
-//#include "../../../Base/Container/NodeList.h"
-//#include "../../../Base/NonCopyable.h"
-//#include "../../../System/Interface.h"
-//#include "../../Interface.h"
-//#include "../DirectMusic/DirectMusicAudioDevice.h"
 #include <xaudio2.h>
 #include <x3daudio.h>
 #include "../AudioDevice.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 class XAudio2AudioPlayerBase;
 
 /// 3D オーディオの計算に必要なパラメータ
@@ -102,5 +96,6 @@ private:
     //DirectMusic::AudioDevice*   mDirectMusicAudioDevice;
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

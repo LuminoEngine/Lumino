@@ -1,15 +1,13 @@
-﻿/*
-	@file	AudioDevice.h
-*/
+﻿
 #pragma once
-
 #include <Lumino/Base/Cache.h>
 #include <Lumino/IO/Stream.h>
 #include <Lumino/Audio/Common.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
-
+namespace detail
+{
 class AudioStream;
 class AudioPlayer;
 
@@ -55,5 +53,6 @@ protected:
 	SoundListenerData		m_soundListenerData;
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

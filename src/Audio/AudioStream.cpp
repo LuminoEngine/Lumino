@@ -12,7 +12,9 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
-	
+namespace detail
+{
+
 //=============================================================================
 // AudioStream
 //=============================================================================
@@ -20,7 +22,7 @@ LN_NAMESPACE_AUDIO_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-AudioStream::AudioStream(AudioManagerImpl* manager, Stream* stream)
+AudioStream::AudioStream(AudioManager* manager, Stream* stream)
 	: m_manager(manager)
 	, m_stream(NULL)
 	, m_format(StreamFormat_Unknown)
@@ -138,5 +140,6 @@ AudioDecoder::~AudioDecoder()
 //}
 //
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

@@ -111,10 +111,10 @@ PlatformManager::~PlatformManager()
 //-----------------------------------------------------------------------------
 void PlatformManager::Initialize(const Settings& settings)
 {
-	m_windowCreationSettings = settings.MainWindowSettings;
-	m_useThread = settings.UseInternalUIThread;
+	m_windowCreationSettings = settings.mainWindowSettings;
+	m_useThread = settings.useInternalUIThread;
 
-	WindowSystemAPI api = settings.API;
+	WindowSystemAPI api = settings.windowSystemAPI;
 
 #if defined(LN_OS_WIN32)
 	// select default

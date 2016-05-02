@@ -1,8 +1,5 @@
-﻿/*
-	@file	AudioStream.h
-*/
+﻿
 #pragma once
-
 #include <Lumino/Base/Exception.h>
 #include <Lumino/Base/Cache.h>
 #include <Lumino/IO/Stream.h>
@@ -12,8 +9,9 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 class AudioDecoder;
-class AudioManagerImpl;
 
 class AudioStream
 	: public ASyncIOObject
@@ -21,7 +19,7 @@ class AudioStream
 {
 	LN_CACHE_OBJECT_DECL;
 public:
-	AudioStream(AudioManagerImpl* manager, Stream* stream);
+	AudioStream(AudioManager* manager, Stream* stream);
 	virtual ~AudioStream();
 
 	void Create(bool async);
@@ -40,7 +38,7 @@ protected:
 	virtual void OnASyncIOProc();
 
 private:
-	AudioManagerImpl*	m_manager;
+	AudioManager*		m_manager;
 	Stream*				m_stream;
 	StreamFormat		m_format;
 	AudioDecoder*		m_decoder;
@@ -144,5 +142,6 @@ private:
 	bool		m_finishedCreate;
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

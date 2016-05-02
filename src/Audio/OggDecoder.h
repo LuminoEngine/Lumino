@@ -1,6 +1,4 @@
-﻿/*
-	@file	OggDecoder.h
-*/
+﻿
 #pragma once
 
 #include "../../external/libogg/include/ogg/ogg.h"
@@ -9,8 +7,10 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
-/// Ogg 音声用 Decoder
+// Ogg 音声用 Decoder
 class OggDecoder
 	: public AudioDecoder
 {
@@ -68,5 +68,6 @@ private:
 
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

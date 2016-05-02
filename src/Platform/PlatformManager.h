@@ -27,9 +27,9 @@ public:
 	/// Application を初期化するための設定
 	struct Settings
 	{
-		WindowSystemAPI			API = WindowSystemAPI::Default;
-		WindowCreationSettings	MainWindowSettings;
-		bool					UseInternalUIThread = false;
+		WindowSystemAPI			windowSystemAPI = WindowSystemAPI::Default;
+		WindowCreationSettings	mainWindowSettings;
+		bool					useInternalUIThread = false;
 
 		//void*					ExternalMainWindow;		/**< ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
 	};
@@ -54,11 +54,9 @@ private:
 	void Thread_MainWindow();
 
 private:
-	friend class PlatformWindow;
 	bool						m_useThread;
 	WindowCreationSettings		m_windowCreationSettings;
 	WindowManagerBase*			m_windowManager;
-	//PlatformWindow*						m_mainWindow;
 	Threading::DelegateThread	m_mainWindowThread;
 	Threading::EventFlag		m_mainWindowThreadInitFinished;
 	Threading::EventFlag		m_mainWindowThreadEndRequested;

@@ -18,6 +18,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 //=============================================================================
 // DirectMusicSegment 
@@ -539,5 +541,6 @@ void DirectMusicManager::Thread_InitPerformance()
 	CoUninitialize();
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

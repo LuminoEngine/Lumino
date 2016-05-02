@@ -1,12 +1,13 @@
 ﻿
 #pragma once
-
 #include "../AudioDevice.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
-///
+// DirectMusic 用の AudioDevice の実装
 class DirectMusicAudioDevice
     : public AudioDevice
 {
@@ -30,5 +31,6 @@ public:
 	virtual void SetMetreUnitDistance(float d);
 };
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END

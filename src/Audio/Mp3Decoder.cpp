@@ -9,6 +9,8 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
+namespace detail
+{
 
 //=============================================================================
 // Mp3Decoder
@@ -388,5 +390,6 @@ void Mp3Decoder::GetPCMFormat()
 	format->nCodecDelay = 0x571;
 }
 
+} // namespace detail
 LN_NAMESPACE_AUDIO_END
 LN_NAMESPACE_END
