@@ -3,7 +3,6 @@
 #include <Lumino/Audio/Sound.h>
 #include "AudioManager.h"
 #include "GameAudioImpl.h"
-#include "AudioHelper.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN

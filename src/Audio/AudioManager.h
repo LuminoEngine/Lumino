@@ -44,10 +44,10 @@ public:
 	/// オンメモリorストリーミング自動選択の音声データバイト数閾値
 	void SetAutoPlayTypeSelectThreshold(uint32_t threshold) { m_onMemoryLimitSize = threshold; }
 
+	FileManager* GetFileManager() { return m_fileManager; }
 	GameAudioImpl* GetGameAudio() const { return m_gameAudio; }
 	AudioDevice* GetAudioDevice() const { return m_audioDevice; }
 
-	FileManager* GetFileManager() { return m_fileManager; }
 	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
 	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// 初期化完了済みの AudioStream を渡すこと
 	Sound* CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);

@@ -255,8 +255,11 @@ void AudioManager::Thread_Polling()
 		}
 		lastTime = curTime;
 
+#if 1	// 同時再整数が多くなると重くなるらしい問題の修正。とりあえずこれで様子を見る。
+#else
 		// ここからロック
 		Threading::MutexScopedLock lock(m_soundListMutex);
+#endif
 
 		m_audioDevice->Update();
         
