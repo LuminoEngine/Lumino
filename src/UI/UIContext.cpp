@@ -3,6 +3,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/UI/UIStyle.h>
 #include "../Graphics/GraphicsManager.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include "UIManager.h"
@@ -26,6 +27,7 @@ UIContext* UIContext::GetMainContext()
 //-----------------------------------------------------------------------------
 UIContext::UIContext()
 	: m_manager(nullptr)
+	, m_rootStyleTable(nullptr)
 	, m_mainWindowView(nullptr)
 	, m_focusElement(nullptr)
 {
@@ -37,6 +39,7 @@ UIContext::UIContext()
 UIContext::~UIContext()
 {
 	LN_SAFE_RELEASE(m_mainWindowView);
+	LN_SAFE_RELEASE(m_rootStyleTable);
 }
 
 //-----------------------------------------------------------------------------
@@ -45,6 +48,9 @@ UIContext::~UIContext()
 void UIContext::Initialize(detail::UIManager* manager)
 {
 	m_manager = manager;
+
+	LN_REFOBJ_SET(m_rootStyleTable, m_manager->GetDefaultStyleTable());
+
 	m_mainWindowView = LN_NEW UILayoutView();
 	m_mainWindowView->Initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
 }

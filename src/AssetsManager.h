@@ -23,9 +23,12 @@ public:
 
 	Texture2DPtr LoadTexture(const StringRef& filePath);
 
+	FontPtr LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias);
+
 private:
 	EngineManager*			m_engineManager;
 	RefPtr<CacheManager>	m_textureCache;
+	RefPtr<CacheManager>	m_fontCache;
 };
 
 LN_NAMESPACE_END

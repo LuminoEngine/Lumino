@@ -58,8 +58,8 @@ void AnimationManager::AdvanceTime(float deltaTime)
 		}
 		else
 		{
-			auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>((*itr)->GetTargetObject().Resolve());
-			data->playingAnimationClockList.Remove((*itr));
+			auto obj = (*itr)->GetTargetObject().Resolve();
+			obj->m_playingAnimationClockList.Remove((*itr));
 			itr = m_clockList.erase(itr);
 			end = m_clockList.end();
 		}

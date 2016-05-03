@@ -3,6 +3,8 @@
 #include "Common.h"
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Animation/AnimationCurve.h>
+#include "AnimatableObject.h"
+
 
 LN_NAMESPACE_BEGIN
 
@@ -12,21 +14,6 @@ struct AnimationClockArgs
 	Object*			targetObject;
 	tr::Property*	targetProperty;
 };
-
-
-namespace detail
-{
-
-	class RefrectionObjectAnimationData
-		: public tr::detail::ReflectionObjectAnimationData
-	{
-	public:
-		virtual ~RefrectionObjectAnimationData() {}
-		virtual void OnPropertyChangedByLocal(Object* owner, const tr::Property* prop);
-		Array<RefPtr<AnimationClock>>	playingAnimationClockList;
-	};
-
-} // namespace detail
 
 /**
 	@brief		
@@ -38,17 +25,17 @@ public:
 	AnimationClock();
 	virtual ~AnimationClock();
 	// TODO: internal
-	void Initialize(Object* targetObject);
-	const tr::WeakRefPtr<Object>& GetTargetObject() const { return m_targetObject; }
+	void Initialize(AnimatableObject* targetObject);
+	const tr::WeakRefPtr<AnimatableObject>& GetTargetObject() const { return m_targetObject; }
 
 	void SetTime(double time);
 	void AdvanceTime(float deltaTime);
 	bool IsFinished() const { return m_isFinished; }
 
 	template<typename TCurve, typename TValue>
-	void AddAnimationCurve(TCurve* curve, Object* targetObject, const tr::Property* targetProperty, const TValue& startValue)
+	void AddAnimationCurve(TCurve* curve, AnimatableObject* targetObject, const tr::Property* targetProperty, const TValue& startValue)
 	{
-		DeactivatePropertyAnimation(targetObject, targetProperty);
+		targetObject->DeactivatePropertyAnimation(targetProperty);
 
 		RefPtr<AnimationCurveInstance> inst(curve->CreateAnimationCurveInstance(targetObject, targetProperty, startValue), false);
 		m_instanceList.Add(inst);
@@ -56,25 +43,11 @@ public:
 		
 	}
 
-	// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
-	static void DeactivatePropertyAnimation(Object* targetObject, const tr::Property* targetProperty)
-	{
-		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(targetObject);
-		for (auto& clock : data->playingAnimationClockList)
-		{
-			for (auto& playingCurveLineInst : clock->m_instanceList)
-			{
-				if (playingCurveLineInst->targetObject == targetObject &&
-					playingCurveLineInst->targetProperty == targetProperty)
-				{
-					playingCurveLineInst->isActive = false;
-				}
-			}
-		}
-	}
 
 private:
-	tr::WeakRefPtr<Object>	m_targetObject;
+	friend class AnimatableObject;
+
+	tr::WeakRefPtr<AnimatableObject>	m_targetObject;
 	Array<RefPtr<AnimationCurveInstance>>	m_instanceList;
 	float					m_currentTime;
 	bool					m_isFinished;

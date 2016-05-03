@@ -1172,6 +1172,7 @@
 
 */
 #include "Internal.h"
+#include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include "EventArgsPool.h"
 #include "UIManager.h"
@@ -1200,6 +1201,8 @@ UIManager* UIManager::GetInstance(UIManager* priority)
 UIManager::UIManager()
 	: m_eventArgsPool(nullptr)
 	, m_graphicsManager(nullptr)
+	, m_assetsManager(nullptr)
+	, m_defaultStyleTable(nullptr)
 	, m_mainWindow(nullptr)
 {
 }
@@ -1216,8 +1219,16 @@ UIManager::~UIManager()
 //-----------------------------------------------------------------------------
 void UIManager::Initialize(const Settings& settings)
 {
+	LN_CHECK_ARGS_RETURN(settings.graphicsManager != nullptr);
+	LN_CHECK_ARGS_RETURN(settings.assetsManager != nullptr);
+	LN_CHECK_ARGS_RETURN(settings.mainWindow != nullptr);
+
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_graphicsManager = settings.graphicsManager;
+	m_assetsManager = settings.assetsManager;
+
+	m_defaultStyleTable = LN_NEW UIStyleTable();
+	MakeDefaultStyle(m_defaultStyleTable);
 
 	m_mainWindow = LN_NEW UIMainWindow();
 	m_mainWindow->Initialize(this, settings.mainWindow);
@@ -1235,6 +1246,7 @@ void UIManager::Initialize(const Settings& settings)
 void UIManager::Finalize()
 {
 	LN_SAFE_RELEASE(m_mainWindow);
+	LN_SAFE_RELEASE(m_defaultStyleTable);
 	LN_SAFE_DELETE(m_eventArgsPool);
 
 	if (g_uiManager == this)
@@ -1243,6 +1255,16 @@ void UIManager::Finalize()
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIManager::MakeDefaultStyle(UIStyleTable* table)
+{
+	auto test = UIStyle::Create();
+	test->m_fontSize = 20;
+	test->m_fontBold = true;
+	table->AddStyle(_T("UITextBlock"), _T(""), test);
+}
 
 
 } // namespace detail

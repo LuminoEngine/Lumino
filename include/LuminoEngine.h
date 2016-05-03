@@ -69,6 +69,11 @@
 //#include "Lumino/GUI/TextBlock.h"
 //#include "Lumino/GUI/TextBox.h"
 
+#include "Lumino/UI/UIContext.h"
+#include "Lumino/UI/UILayoutView.h"
+#include "Lumino/UI/UILayoutRoot.h"
+#include "Lumino/UI/UITextBlock.h"
+
 #include "Lumino/TileMap/TileSet.h"
 #include "Lumino/TileMap/TileLayer.h"
 #include "Lumino/TileMap/TileMapModel.h"

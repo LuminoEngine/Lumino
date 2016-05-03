@@ -505,9 +505,11 @@ void EngineManager::InitializeUIManager()
 		InitializePlatformManager();
 		InitializeGraphicsManager();
 		InitializeDocumentsManager();
+		InitializeAssetsManager();
 
 		detail::UIManager::Settings data;
 		data.graphicsManager = m_graphicsManager;
+		data.assetsManager = m_assetsManager;
 		data.mainWindow = m_platformManager->GetMainWindow();
 		data.documentsManager = m_documentsManager;
 		m_uiManager = LN_NEW detail::UIManager();

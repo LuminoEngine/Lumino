@@ -2,6 +2,7 @@
 #pragma once
 #include <Lumino/Animation/AnimationCurve.h>
 #include <Lumino/Animation/AnimationClock.h>
+#include <Lumino/Animation/AnimatableObject.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail
@@ -20,15 +21,13 @@ public:
 
 	void AdvanceTime(float deltaTime);
 
-	AnimationClock* StartPropertyAnimation(Object* targetObject/*AnimationClockArgs* list, int listCount*/)
+	AnimationClock* StartPropertyAnimation(AnimatableObject* targetObject/*AnimationClockArgs* list, int listCount*/)
 	{
 		auto ac = RefPtr<AnimationClock>::MakeRef();
 		ac->Initialize(targetObject);
 		m_clockList.Add(ac);
 
-		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(targetObject);
-		data->playingAnimationClockList.Add(ac);
-
+		targetObject->m_playingAnimationClockList.Add(ac);
 		return ac;
 	}
 

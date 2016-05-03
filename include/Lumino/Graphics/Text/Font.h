@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/Cache.h>
 #include "../Common.h"
 #include "../Color.h"
 #include "../Bitmap.h"
@@ -52,8 +53,12 @@ struct FontGlyphData
 */
 class Font
 	: public RefObject
+	, public ICacheObject
 {
+	LN_CACHE_OBJECT_DECL;
 public:
+	static const int DefaultSize = 20;
+
 	static FontPtr GetDefaultFont();
 
 	static FontPtr Create();
@@ -64,7 +69,7 @@ public:
 public:
 
 	/// フォント名の設定
-	virtual void SetName(const String& fontName) = 0;
+	virtual void SetName(const String& fontName) = 0;	// TODO: FamiryName
 
 	/// フォント名の取得
 	virtual const String& GetName() const = 0;

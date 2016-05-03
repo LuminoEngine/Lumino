@@ -48,12 +48,14 @@ set(LN_SOURCES
 )
 
 set(LN_SOURCES_Animation
+	include/Lumino/Animation/AnimatableObject.h
 	include/Lumino/Animation/AnimationClock.h
 	include/Lumino/Animation/AnimationCurve.h
 	include/Lumino/Animation/AnimationUtilities.h
 	include/Lumino/Animation/Common.h
 	include/Lumino/Animation/EasingFunctions.h
 	include/Lumino/Animation/EasingValue.h
+	src/Animation/AnimatableObject.cpp
 	src/Animation/AnimationClip.cpp
 	src/Animation/AnimationClip.h
 	src/Animation/AnimationClock.cpp
@@ -428,6 +430,8 @@ set(LN_SOURCES_UI
 	include/Lumino/UI/UILayoutView.h
 	include/Lumino/UI/UIPanel.h
 	include/Lumino/UI/UIStyle.h
+	include/Lumino/UI/UITextBlock.h
+	include/Lumino/UI/UITextElement.h
 	include/Lumino/UI/UITypeInfo.h
 	include/Lumino/UI/UIWindow.h
 	src/UI/EventArgsPool.h
@@ -444,6 +448,8 @@ set(LN_SOURCES_UI
 	src/UI/UIManager.h
 	src/UI/UIPanel.cpp
 	src/UI/UIStyle.cpp
+	src/UI/UITextBlock.cpp
+	src/UI/UITextElement.cpp
 	src/UI/UITypeInfo.cpp
 	src/UI/UIWindow.cpp
 )

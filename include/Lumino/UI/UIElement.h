@@ -94,6 +94,9 @@ protected:
 	virtual ~UIElement();
 	void Initialize(detail::UIManager* manager);
 
+	/** 要素の視覚状態を切り替えます。*/
+	void GoToVisualState(const StringRef& stateName);
+
 	/** 指定した要素をこの要素にビジュアル子要素として追加します。*/
 	//void AddVisualChild(UIElement* element);
 
@@ -125,7 +128,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	//virtual void OnRender(RenderingContext* painter);
+	virtual void OnRender(GraphicsContext* g);
 
 	virtual void OnMouseMove(UIMouseEventArgs* e);
 	virtual void OnMouseDown(UIMouseEventArgs* e);
@@ -136,13 +139,16 @@ protected:
 	virtual void OnKeyUp(UIKeyEventArgs* e);
 	virtual void OnTextInput(UIKeyEventArgs* e);
 
+	virtual void OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags);
+
 LN_INTERNAL_ACCESS:
+	detail::UIManager* GetManager() const { return m_manager; }
 	void SetParent(UIElement* parent, UILayoutView* ownerLayoutView);
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
-	void ApplyTemplate();
-	void ApplyTemplateHierarchy();
+	void ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle);
+	void UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle);
 	void UpdateLayout();
 	void UpdateTransformHierarchy();
 	void Render(GraphicsContext* g);
@@ -155,20 +161,25 @@ private:
 	UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
 	UIElement*				m_parent;
+	UIStyle*				m_localStyle;
 	SizeF					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
+	String					m_elementName;				// 要素名 ("UITextBlock" など)
+	String					m_currentVisualStateName;
+	UIStyle*				m_currentVisualStateStyle;
 
 	// Property
-	// Style の適用先
-	SizeF							m_size;
-	ThicknessF						m_margin;
-	ThicknessF						m_padding;
-	HorizontalAlignment				m_horizontalAlignment;
-	VerticalAlignment				m_verticalAlignment;
-	BrushPtr						m_background;
-	BrushPtr						m_foreground;
-	detail::BorderInfo				m_border;
+	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
+	//		これによって必要にアニメーションを止めたりできる。
+	SizeF					m_size;
+	ThicknessF				m_margin;
+	ThicknessF				m_padding;
+	HorizontalAlignment		m_horizontalAlignment;
+	VerticalAlignment		m_verticalAlignment;
+	BrushPtr				m_background;
+	BrushPtr				m_foreground;
+	//detail::BorderInfo				m_border;
 
 
 
@@ -176,11 +187,11 @@ private:
 	//ToneF							m_tone;
 
 	//RefPtr<Style>					m_style;
-	float							m_combinedOpacity;
+	float					m_combinedOpacity;
 	//Array< RefPtr<AnimationClock> >	m_animationClockList;
-	detail::InvalidateFlags			m_invalidateFlags;
-	bool							m_isEnabled;
-	bool							m_isMouseOver;
+	detail::InvalidateFlags	m_invalidateFlags;
+	bool					m_isEnabled;
+	bool					m_isMouseOver;
 };
 
 LN_NAMESPACE_END

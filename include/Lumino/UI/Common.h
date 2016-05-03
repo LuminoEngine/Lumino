@@ -6,6 +6,8 @@
 LN_NAMESPACE_BEGIN
 class UITypeInfo;
 class UIEventArgs;
+class UIStyle;
+class UIStyleTable;
 class UIContext;
 class UILayoutView;
 class UIElement;
@@ -18,10 +20,10 @@ class UILayoutRoot;
 /** 縦方向の表示位置を示します。*/
 LN_ENUM(VerticalAlignment)
 {
-	Bottom = 0,			/**< 子要素を、親のレイアウト スロットの下端に揃えて配置します。*/
+	Top = 0,			/**< 子要素を、親のレイアウト スロットの上端に揃えて配置します。*/
 	Center,				/**< 子要素を、親のレイアウト スロットの中央に揃えて配置します。*/
+	Bottom,				/**< 子要素を、親のレイアウト スロットの下端に揃えて配置します。*/
 	Stretch,			/**< 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
-	Top,				/**< 子要素を、親のレイアウト スロットの上端に揃えて配置します。*/
 };
 LN_ENUM_DECLARE(VerticalAlignment);
 
@@ -60,7 +62,9 @@ enum class UIInternalEventType
 LN_ENUM_FLAGS(InvalidateFlags)
 {
 	None = 0x0000,
-	Font = 0x0001,
+	Layout = 0x0001,		// レイアウト系プロパティに変更がある
+	Font = 0x0002,			// フォント系プロパティに変更がある
+	VisualState = 0x0004,	// VisualState に変更がある
 };
 LN_ENUM_FLAGS_DECLARE(InvalidateFlags);
 

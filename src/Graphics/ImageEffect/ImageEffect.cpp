@@ -25,7 +25,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //=============================================================================
 // ImageEffect
 //=============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ImageEffect, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ImageEffect, AnimatableObject);
 
 //-----------------------------------------------------------------------------
 //

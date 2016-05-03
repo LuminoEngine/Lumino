@@ -5,6 +5,7 @@
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
+#include <Lumino/UI/UIStyle.h>
 #include "UIHelper.h"
 
 LN_NAMESPACE_BEGIN
@@ -31,7 +32,10 @@ UIElement::UIElement()
 	: m_manager(nullptr)
 	, m_ownerLayoutView(nullptr)
 	, m_parent(nullptr)
+	, m_localStyle(nullptr)
 	, m_size(NAN, NAN)
+	, m_horizontalAlignment(HorizontalAlignment::Left)
+	, m_verticalAlignment(VerticalAlignment::Top)
 	, m_opacity(1.0f)
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(nullptr)
@@ -44,6 +48,7 @@ UIElement::UIElement()
 //-----------------------------------------------------------------------------
 UIElement::~UIElement()
 {
+	LN_SAFE_RELEASE(m_localStyle);
 }
 
 //-----------------------------------------------------------------------------
@@ -53,6 +58,22 @@ void UIElement::Initialize(detail::UIManager* manager)
 {
 	LN_CHECK_ARGS_RETURN(manager != nullptr);
 	m_manager = manager;
+
+	// 要素名を覚えておく。末端のサブクラスの名前となる。
+	m_elementName = tr::TypeInfo::GetTypeInfo(this)->GetName();
+
+	m_localStyle = LN_NEW UIStyle();
+
+	GoToVisualState(String::GetEmpty());
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::GoToVisualState(const StringRef& stateName)
+{
+	m_currentVisualStateName = stateName;
+	m_invalidateFlags = detail::InvalidateFlags::VisualState;
 }
 
 //-----------------------------------------------------------------------------
@@ -228,6 +249,13 @@ void UIElement::OnLayoutUpdated()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+void UIElement::OnRender(GraphicsContext* g)
+{
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void UIElement::OnMouseMove(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 void UIElement::OnMouseDown(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseDownEvent, this, e); } }
 void UIElement::OnMouseUp(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseUpEvent, this, e); } }
@@ -371,24 +399,72 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::ApplyTemplate()
-{
-	/// 現在のテンプレートからビジュアルツリーを再構築します。
-	/// この関数は必要なタイミングでレイアウトシステムから呼び出されます。通常、明示的に呼び出す必要はありません。
-	///		というか、呼び出しちゃダメ。必ずルートから再帰的に更新しないと、もし親がまだ ApplyTemplate() してない状態でこれを呼ぶと
-	///		ローカルリソースが正しく更新されない。
-	///		TODO: もしかしたら、SetParent した瞬間にローカルリソースを更新したほうが良いかも？
-	///		そうすればいつ ApplyTemplate() を呼び出しても良いが… 需要は無いか。
+//void UIElement::ApplyTemplate()
+//{
+//	/// 現在のテンプレートからビジュアルツリーを再構築します。
+//	/// この関数は必要なタイミングでレイアウトシステムから呼び出されます。通常、明示的に呼び出す必要はありません。
+//	///		というか、呼び出しちゃダメ。必ずルートから再帰的に更新しないと、もし親がまだ ApplyTemplate() してない状態でこれを呼ぶと
+//	///		ローカルリソースが正しく更新されない。
+//	///		TODO: もしかしたら、SetParent した瞬間にローカルリソースを更新したほうが良いかも？
+//	///		そうすればいつ ApplyTemplate() を呼び出しても良いが… 需要は無いか。
+//
+//
+//	// VisualState の変更
+//	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
+//	{
+//
+//
+//		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
+//	}
+//
+//	ApplyTemplateHierarchy();
+//}
 
-	ApplyTemplateHierarchy();
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle)
+{
+	// VisualState の変更
+	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
+	{
+		m_currentVisualStateStyle = styleTable->FindStyle(m_elementName, m_currentVisualStateName);
+		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
+	}
+
+	// Style 更新
+	UpdateLocalStyleAndApplyProperties(parentStyle, m_currentVisualStateStyle);
+
+	// 子要素
+	UIStyle* localStyle = m_localStyle;
+	UIHelper::ForEachVisualChildren(this, [styleTable, localStyle](UIElement* child) { child->ApplyTemplateHierarchy(styleTable, localStyle); });
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIElement::ApplyTemplateHierarchy()
+void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle)
 {
+	LN_CHECK_STATE_RETURN(m_localStyle != nullptr);
 
+	// parent → state の順で local へマージする
+	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する
+	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
+	if (parentStyle != nullptr)       invalidate |= m_localStyle->UpdateInherit(parentStyle);
+	if (currentStateStyle != nullptr) invalidate |= m_localStyle->UpdateInherit(currentStateStyle);
+
+	if (invalidate != detail::InvalidateFlags::None)
+	{
+		OnUpdateStyle(m_localStyle, invalidate);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags)
+{
+	// TODO: UITextElement::OnUpdateStyle 参照
 }
 
 //-----------------------------------------------------------------------------
@@ -437,7 +513,9 @@ void UIElement::UpdateTransformHierarchy()
 //-----------------------------------------------------------------------------
 void UIElement::Render(GraphicsContext* g)
 {
-	g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,64));
+	//g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,200));
+
+	OnRender(g);
 
 	// 子要素
 	UIHelper::ForEachVisualChildren(this, [g](UIElement* child) { child->Render(g); });

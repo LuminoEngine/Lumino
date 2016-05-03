@@ -208,6 +208,14 @@ int main()
 		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		auto sp1 = Sprite2D::Create(tex);
 
+
+
+		auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+		auto textBlock1 = UITextBlock::Create();
+		uiRoot->AddChild(textBlock1);
+
+
+
 		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.2f);
 		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//sound1->SetPitch(1.2f);

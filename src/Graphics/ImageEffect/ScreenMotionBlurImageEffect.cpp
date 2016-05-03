@@ -76,8 +76,7 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 {
 	if (duration == 0.0f)
 	{
-		AnimationClock::DeactivatePropertyAnimation(this, AmountProperty);
-		SetAmount(amount);
+		SetAmount(amount);			// アニメーション再生中でも、ここでプロパティを再設定するときに停止される
 		SetRadialCenter(center);
 		SetRadialScale(scale);
 	}

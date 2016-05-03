@@ -17,7 +17,9 @@ class UILayoutView
 public:
 
 	/** この要素が関連付けられている UIContext を取得します。*/
-	UIContext* GetOwnerContext() { return m_ownerContext; }
+	UIContext* GetOwnerContext() const { return m_ownerContext; }
+
+	UILayoutRoot* GetLayoutRoot() const { return m_rootElement; }
 
 
 
