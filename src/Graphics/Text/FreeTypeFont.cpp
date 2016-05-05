@@ -754,6 +754,7 @@ void FreeTypeFont::UpdateImageFlags()
 
 	// アウトライン ON
 	if (m_edgeSize > 0 || m_fontData.IsBold) {
+		// TODO: メモリリークする
 		m_ftImageType.flags = FT_LOAD_NO_BITMAP;
 	}
 	// アウトライン OFF

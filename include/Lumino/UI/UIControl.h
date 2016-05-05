@@ -1,24 +1,25 @@
 
 #pragma once
 #include "UIElement.h"
-#include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief		1つ以上の子 UIElement を持つ UI 要素のベースクラスです。
+	@brief		
+	@note		コントロールは VisualTree のルートを持つことができる。
 */
-class UIPanel
+class UIControl
 	: public UIElement
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:
-	void AddChild(UIElement* element);
-	void RemoveChild(UIElement* element);
+	static const String MouseOverStateName;		/**< "MouseOver" */
 
-LN_PROTECTED_INTERNAL_ACCESS:
-	UIPanel();
-	virtual ~UIPanel();
+public:
+
+protected:
+	UIControl();
+	virtual ~UIControl();
 	void Initialize(detail::UIManager* manager);
 
 	virtual int GetVisualChildrenCount() const override;
@@ -27,11 +28,14 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual SizeF ArrangeOverride(const SizeF& finalSize) override;
 
 LN_INTERNAL_ACCESS:
-	void OnChildElementAdd(UIElement* element);
-	void OnChildElementRemove(UIElement* element);
+	void SetVisualTreeRoot(UIElement* element);
+	UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	RefPtr<UIElementCollection>	m_children;
+	void EventHandler_MouseEnter(UIMouseEventArgs* e);
+	void EventHandler_MouseLeave(UIMouseEventArgs* e);
+
+	UIElement*	m_visualTreeRoot;
 };
 
 LN_NAMESPACE_END

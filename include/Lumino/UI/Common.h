@@ -15,6 +15,7 @@ class UIWindow;
 class UIFrameWindow;
 class UIMainWindow;
 class UILayoutRoot;
+class UIPanel;
 
 
 /** 縦方向の表示位置を示します。*/
@@ -64,7 +65,8 @@ LN_ENUM_FLAGS(InvalidateFlags)
 	None = 0x0000,
 	Layout = 0x0001,		// レイアウト系プロパティに変更がある
 	Font = 0x0002,			// フォント系プロパティに変更がある
-	VisualState = 0x0004,	// VisualState に変更がある
+	Rendering = 0x004,			// 描画系プロパティに変更がある
+	VisualState = 0x0008,	// VisualState に変更がある
 };
 LN_ENUM_FLAGS_DECLARE(InvalidateFlags);
 

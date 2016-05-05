@@ -419,13 +419,17 @@ endif()
 set(LN_SOURCES_UI
 	include/Lumino/UI/Common.h
 	include/Lumino/UI/Detail.h
+	include/Lumino/UI/UIButton.h
+	include/Lumino/UI/UIContentControl.h
 	include/Lumino/UI/UIContext.h
+	include/Lumino/UI/UIControl.h
 	include/Lumino/UI/UIElement.h
 	include/Lumino/UI/UIElementCollection.h
 	include/Lumino/UI/UIEvent.h
 	include/Lumino/UI/UIEventArgs.h
 	include/Lumino/UI/UIFrameWindow.h
 	include/Lumino/UI/UIInjectedInputReceiver.h
+	include/Lumino/UI/UIItemsControl.h
 	include/Lumino/UI/UILayoutRoot.h
 	include/Lumino/UI/UILayoutView.h
 	include/Lumino/UI/UIPanel.h
@@ -436,12 +440,17 @@ set(LN_SOURCES_UI
 	include/Lumino/UI/UIWindow.h
 	src/UI/EventArgsPool.h
 	src/UI/Internal.h
+	src/UI/UIButton.cpp
+	src/UI/UIContentControl.cpp
 	src/UI/UIContext.cpp
+	src/UI/UIControl.cpp
 	src/UI/UIElement.cpp
+	src/UI/UIElementCollection.cpp
 	src/UI/UIEvent.cpp
 	src/UI/UIEventArgs.cpp
 	src/UI/UIFrameWindow.cpp
 	src/UI/UIHelper.h
+	src/UI/UIItemsControl.cpp
 	src/UI/UILayoutRoot.cpp
 	src/UI/UILayoutView.cpp
 	src/UI/UIManager.cpp
@@ -490,7 +499,6 @@ set(LN_SOURCES_Engine
 	include/Lumino/GameTime.h
 	include/Lumino/MultiThreadingObjectList.h
 	include/Lumino/Profiler.h
-	include/Lumino/Property.h
 	include/Lumino/RoutedEvent.h
 	include/Lumino/Version.h
 	src/AssetsManager.cpp

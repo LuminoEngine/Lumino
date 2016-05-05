@@ -1,79 +1,69 @@
 
 #include "Internal.h"
-#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UIControl.h>
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// UIPanel
+// UIControl
 //=============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIPanel, UIElement)
+LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
+
+const String UIControl::MouseOverStateName = _T("MouseOver");
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIPanel::UIPanel()
+UIControl::UIControl()
+	: m_visualTreeRoot(nullptr)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UIPanel::~UIPanel()
+UIControl::~UIControl()
 {
+	LN_SAFE_RELEASE(m_visualTreeRoot);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIPanel::Initialize(detail::UIManager* manager)
+void UIControl::Initialize(detail::UIManager* manager)
 {
 	UIElement::Initialize(manager);
-	m_children = RefPtr<UIElementCollection>::MakeRef(this);
+	MouseEnter += CreateDelegate(this, &UIControl::EventHandler_MouseEnter);
+	MouseLeave += CreateDelegate(this, &UIControl::EventHandler_MouseLeave);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIPanel::AddChild(UIElement* element)
+int UIControl::GetVisualChildrenCount() const
 {
-	m_children->Add(element);
+	return (m_visualTreeRoot != nullptr) ? 1 : 0;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIPanel::RemoveChild(UIElement* element)
+UIElement* UIControl::GetVisualChildOrderd(int index) const
 {
-	m_children->Remove(element);
+	LN_THROW(0 <= index && index < GetVisualChildrenCount(), OutOfRangeException);
+	return m_visualTreeRoot;
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-int UIPanel::GetVisualChildrenCount() const
-{
-	return m_children->GetCount();
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-UIElement* UIPanel::GetVisualChildOrderd(int index) const
-{
-	return m_children->GetAt(index);
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-SizeF UIPanel::MeasureOverride(const SizeF& constraint)
+SizeF UIControl::MeasureOverride(const SizeF& constraint)
 {
 	SizeF desiredSize = UIElement::MeasureOverride(constraint);
-	for (UIElement* child : *m_children)
+	if (m_visualTreeRoot != nullptr)
 	{
-		child->MeasureLayout(constraint);
-		const SizeF& childDesiredSize = child->GetDesiredSize();
+		m_visualTreeRoot->MeasureLayout(constraint);
+		const SizeF& childDesiredSize = m_visualTreeRoot->GetDesiredSize();
 
 		desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 		desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -84,15 +74,15 @@ SizeF UIPanel::MeasureOverride(const SizeF& constraint)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-SizeF UIPanel::ArrangeOverride(const SizeF& finalSize)
+SizeF UIControl::ArrangeOverride(const SizeF& finalSize)
 {
 	RectF childFinal(0, 0, finalSize);
-	for (UIElement* child : *m_children)
+	if (m_visualTreeRoot != nullptr)
 	{
-		SizeF childDesiredSize = child->GetDesiredSize();
+		SizeF childDesiredSize = m_visualTreeRoot->GetDesiredSize();
 		childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 		childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-		child->ArrangeLayout(RectF(0, 0, childDesiredSize));
+		m_visualTreeRoot->ArrangeLayout(RectF(0, 0, childDesiredSize));
 	}
 	return finalSize;
 }
@@ -100,18 +90,35 @@ SizeF UIPanel::ArrangeOverride(const SizeF& finalSize)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIPanel::OnChildElementAdd(UIElement* element)
+void UIControl::SetVisualTreeRoot(UIElement* element)
 {
-	LN_THROW(element->GetParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
-	element->SetParent(this, GetOwnerLayoutView());
+	if (m_visualTreeRoot != nullptr)
+	{
+		m_visualTreeRoot->SetParent(nullptr, nullptr);
+	}
+
+	LN_REFOBJ_SET(m_visualTreeRoot, element);
+
+	if (m_visualTreeRoot != nullptr)
+	{
+		m_visualTreeRoot->SetParent(this, GetOwnerLayoutView());
+	}
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UIPanel::OnChildElementRemove(UIElement* element)
+void UIControl::EventHandler_MouseEnter(UIMouseEventArgs* e)
 {
-	element->SetParent(nullptr, nullptr);
+	GoToVisualState(MouseOverStateName);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIControl::EventHandler_MouseLeave(UIMouseEventArgs* e)
+{
+	GoToVisualState(_T(""));	// TODO: Normal Ç‡íËêîÇ…ÇµÇƒÇ®Ç¢ÇΩï˚Ç™ó«Ç¢
 }
 
 LN_NAMESPACE_END

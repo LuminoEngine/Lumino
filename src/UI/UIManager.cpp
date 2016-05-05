@@ -1260,10 +1260,16 @@ void UIManager::Finalize()
 //-----------------------------------------------------------------------------
 void UIManager::MakeDefaultStyle(UIStyleTable* table)
 {
-	auto test = UIStyle::Create();
-	test->m_fontSize = 20;
-	test->m_fontBold = true;
-	table->AddStyle(_T("UITextBlock"), _T(""), test);
+	{
+		auto test = UIStyle::Create();
+		test->m_fontSize = 20;
+		table->AddStyle(_T("UITextBlock"), _T(""), test);
+	}
+	{
+		auto test = UIStyle::Create();
+		test->m_background = ColorBrush::Blue;
+		table->AddStyle(_T("UIButton"), _T(""), test);
+	}
 }
 
 

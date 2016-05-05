@@ -17,7 +17,11 @@ public:
 
 	static UITextBlockPtr Create();
 
-protected:
+public:
+	void SetText(const StringRef& text);
+
+
+LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBlock();
 	virtual ~UITextBlock();
 	void Initialize(detail::UIManager* manager);
@@ -26,6 +30,7 @@ protected:
 	virtual void OnRender(GraphicsContext* g) override;
 
 private:
+	String	m_text;
 };
 
 LN_NAMESPACE_END

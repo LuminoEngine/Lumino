@@ -154,7 +154,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 	// フェード時間がある場合
 	if (fadeTime > 0)
 	{
-		if (prev_bgm != NULL)
+		if (prev_bgm != nullptr)
 		{
 			// ひとつ前のBGMは、fade_time_ 後に停止、解放するようにする
 			prev_bgm->SetLoopEnabled(false);
@@ -165,7 +165,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 	// フェード時間がない場合はすぐに停止
 	else
 	{
-		if (prev_bgm != NULL)
+		if (prev_bgm != nullptr)
 		{
 			prev_bgm->Stop();
 		}
@@ -260,7 +260,7 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 	// フェード時間がある場合
 	if (fadeTime > 0)
 	{
-		if (prev_bgs != NULL)
+		if (prev_bgs != nullptr)
 		{
 			// ひとつ前のBGSは、fade_time_ 後に停止、解放するようにする
 			prev_bgs->SetLoopEnabled(false);
@@ -271,7 +271,7 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 	// フェード時間がない場合はすぐに停止
 	else
 	{
-		if (prev_bgs != NULL)
+		if (prev_bgs != nullptr)
 		{
 			prev_bgs->Stop();
 		}

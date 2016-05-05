@@ -211,9 +211,11 @@ int main()
 
 
 		auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-		auto textBlock1 = UITextBlock::Create();
-		uiRoot->AddChild(textBlock1);
-
+		//auto textBlock1 = UITextBlock::Create();
+		//uiRoot->AddChild(textBlock1);
+		auto button1 = UIButton::Create();
+		button1->SetText(_T("Lumino"));
+		uiRoot->AddChild(button1);
 
 
 		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.2f);

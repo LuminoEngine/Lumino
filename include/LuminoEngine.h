@@ -73,6 +73,7 @@
 #include "Lumino/UI/UILayoutView.h"
 #include "Lumino/UI/UILayoutRoot.h"
 #include "Lumino/UI/UITextBlock.h"
+#include "Lumino/UI/UIButton.h"
 
 #include "Lumino/TileMap/TileSet.h"
 #include "Lumino/TileMap/TileLayer.h"

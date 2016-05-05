@@ -53,6 +53,11 @@ detail::InvalidateFlags UIStyle::UpdateInherit(UIStyle* parent)
 	if (parent == nullptr) return invalidate;
 
 	bool changed = false;
+	changed |= m_background.UpdateInherit(parent->m_background);
+	//changed |= m_foreground.UpdateInherit(parent->m_foreground);
+	if (changed) invalidate |= detail::InvalidateFlags::Rendering;
+
+	changed = false;
 	changed |= m_fontFamily.UpdateInherit(parent->m_fontFamily);
 	changed |= m_fontSize.UpdateInherit(parent->m_fontSize);
 	changed |= m_fontBold.UpdateInherit(parent->m_fontBold);

@@ -1,81 +1,68 @@
-
+﻿
 #include "Internal.h"
-#include <Lumino/Graphics/GraphicsContext.h>
-#include <Lumino/UI/UITextBlock.h>
-#include "UIManager.h"
+#include <Lumino/UI/UIPanel.h>
+#include <Lumino/UI/UIElementCollection.h>
 
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// UITextBlock
+// UIElementCollection
 //=============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UITextBlock, UITextElement)
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElementCollection, tr::ReflectionObjectList<UIElement*>);
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UITextBlockPtr UITextBlock::Create()
-{
-	auto ptr = UITextBlockPtr::MakeRef();
-	ptr->Initialize(detail::UIManager::GetInstance());
-	return ptr;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-UITextBlock::UITextBlock()
+UIElementCollection::UIElementCollection(UIPanel* owner)
+	: m_owner(owner)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-UITextBlock::~UITextBlock()
+UIElementCollection::~UIElementCollection()
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UITextBlock::Initialize(detail::UIManager* manager)
+void UIElementCollection::InsertItem(int index, const value_type& item)
 {
-	UITextElement::Initialize(manager);
+	m_owner->OnChildElementAdd(item);
+	tr::ReflectionObjectList<UIElement*>::InsertItem(index, item);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UITextBlock::SetText(const StringRef& text)
+void UIElementCollection::ClearItems()
 {
-	m_text = text;
-}
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-SizeF UITextBlock::MeasureOverride(const SizeF& availableSize)
-{
-	SizeF size = UITextElement::MeasureOverride(availableSize);
-
-	if (m_font != nullptr)
-	{
-		Size textSize = m_font->GetTextSize(m_text);
-		size.width = std::max(size.width, (float)textSize.width);
-		size.height = std::max(size.height, (float)textSize.height);
+	for (UIElement* obj : *this) {
+		m_owner->OnChildElementRemove(obj);
 	}
-
-	return size;
+	tr::ReflectionObjectList<UIElement*>::ClearItems();
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void UITextBlock::OnRender(GraphicsContext* g)
+void UIElementCollection::RemoveItem(int index)
 {
-	g->SetBrush(ColorBrush::Blue);
-	g->SetFont(GetActiveFont());
-	g->DrawText(m_text, PointF::Zero);
+	m_owner->OnChildElementRemove(GetAt(index));
+	tr::ReflectionObjectList<UIElement*>::RemoveItem(index);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElementCollection::SetItem(int index, const value_type& item)
+{
+	m_owner->OnChildElementRemove(GetAt(index));
+	m_owner->OnChildElementAdd(item);
+	tr::ReflectionObjectList<UIElement*>::SetItem(index, item);
 }
 
 LN_NAMESPACE_END
+

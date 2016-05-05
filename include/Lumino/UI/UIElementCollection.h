@@ -11,21 +11,22 @@ LN_NAMESPACE_BEGIN
 class UIElementCollection
 	: public tr::ReflectionObjectList<UIElement*>
 {
+	//LN_TR_REFLECTION_TYPEINFO_DECLARE();	// TODO
 public:
 	typedef tr::ReflectionObjectList<UIElement*>::value_type value_type;
 
-LN_INTERNAL_ACCESS:
-	UIElementCollection() = default;
-	virtual ~UIElementCollection() = default;
+protected:
+	virtual void InsertItem(int index, const value_type& item) override;
+	virtual void ClearItems() override;
+	virtual void RemoveItem(int index) override;
+	virtual void SetItem(int index, const value_type& item) override;
 
-//	Event<void(UIElement*)>	ItemAdded;
-//	Event<void(UIElement*)>	ItemRemoved;
-//
-//protected:
-//	virtual void InsertItem(int index, const value_type& item);
-//	virtual void ClearItems();
-//	virtual void RemoveItem(int index);
-//	virtual void SetItem(int index, const value_type& item);
+LN_INTERNAL_ACCESS:
+	UIElementCollection(UIPanel* owner);
+	virtual ~UIElementCollection();
+
+private:
+	UIPanel*	m_owner;
 };
 
 LN_NAMESPACE_END

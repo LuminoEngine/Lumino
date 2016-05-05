@@ -13,7 +13,10 @@ LN_NAMESPACE_BEGIN
 //=============================================================================
 // UIElement
 //=============================================================================
-LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject)
+LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
+
+LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
 
 // Register routed event
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
@@ -38,7 +41,7 @@ UIElement::UIElement()
 	, m_verticalAlignment(VerticalAlignment::Top)
 	, m_opacity(1.0f)
 	, m_combinedOpacity(0.0f)
-	, m_isEnabled(nullptr)
+	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
 {
 }
@@ -144,12 +147,12 @@ void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 //-----------------------------------------------------------------------------
 void UIElement::MeasureLayout(const SizeF& availableSize)
 {
-	// 無効情報フラグをこの要素に伝播させる
-	if (m_parent != nullptr)
-	{
-		// フォントは MeasureOverride() の中で更新する
-		m_invalidateFlags |= (m_parent->m_invalidateFlags & detail::InvalidateFlags::Font);
-	}
+	//// 無効情報フラグをこの要素に伝播させる
+	//if (m_parent != nullptr)
+	//{
+	//	// フォントは MeasureOverride() の中で更新する
+	//	m_invalidateFlags |= (m_parent->m_invalidateFlags & detail::InvalidateFlags::Font);
+	//}
 
 	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
 	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
@@ -251,6 +254,11 @@ void UIElement::OnLayoutUpdated()
 //-----------------------------------------------------------------------------
 void UIElement::OnRender(GraphicsContext* g)
 {
+	if (m_background != nullptr)
+	{
+		g->SetBrush(m_background);
+		g->DrawRectangle(m_finalLocalRect, Color::White);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -425,6 +433,8 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 //-----------------------------------------------------------------------------
 void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle)
 {
+	// TODO: styleTable は多分 Context のルート固定でよい。
+
 	// VisualState の変更
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
@@ -465,6 +475,20 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle
 void UIElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	// TODO: UITextElement::OnUpdateStyle 参照
+	// TODO: アニメーション
+	if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
+		tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
+	if (tr::Property::GetBaseValueSource(this, ForegroundProperty) <= tr::PropertySetSource::ByStyle)
+		tr::Property::SetPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void UIElement::OnUpdatingLayout()
+{
+	// 子要素
+	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->OnUpdatingLayout(); });
 }
 
 //-----------------------------------------------------------------------------
@@ -472,6 +496,10 @@ void UIElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags inval
 //-----------------------------------------------------------------------------
 void UIElement::UpdateLayout()
 {
+	// TODO: ここは GetRootStyleTable を使うべき？
+	// 今は UILayoutView::UpdateLayout() からしか呼ばれていないので問題ないが…。
+	ApplyTemplateHierarchy(m_ownerLayoutView->GetOwnerContext()->GetRootStyleTable(), nullptr);
+
 	SizeF size(
 		Math::IsNaNOrInf(m_size.width) ? m_ownerLayoutView->GetViewPixelSize().width : m_size.width,
 		Math::IsNaNOrInf(m_size.height) ? m_ownerLayoutView->GetViewPixelSize().height : m_size.height);
@@ -479,6 +507,8 @@ void UIElement::UpdateLayout()
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
+
+	OnUpdatingLayout();
 
 	MeasureLayout(size);
 	ArrangeLayout(RectF(0, 0, size.width, size.height));

@@ -18,15 +18,19 @@ class UIElement
 	LN_UI_TYPEINFO_DECLARE();
 
 public:
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(MouseEventArgs,		MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(MouseEventArgs,		KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(MouseEventArgs,		KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
-	LN_ROUTED_EVENT(KeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
+	LN_TR_PROPERTY(BrushPtr, BackgroundProperty);		/**< Background プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr, ForegroundProperty);		/**< Foreground プロパティの識別子 */
 
+	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseMoveEvent);				/**< MouseMove ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseDownEvent);				/**< MouseDown ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseUpEvent);					/**< MouseUp ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyDownEvent);					/**< KeyDown ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIMouseEventArgs,	KeyUpEvent);					/**< KeyUp ルーティングイベントの識別子 */
+	LN_ROUTED_EVENT(UIKeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
+
+public:
 	//-------------------------------------------------------------------------
 	/** @name RoutedEvents */
 	/** @{ */
@@ -80,7 +84,7 @@ public:
 	virtual UIElement* GetVisualChildOrderd(int index) const;
 
 	/** この要素が関連付けられている UILayoutView を取得します。*/
-	UILayoutView* GetLayoutView() const;
+	UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
 
 
 	virtual void MeasureLayout(const SizeF& availableSize);
@@ -88,7 +92,12 @@ public:
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
-	
+
+	void ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle);
+
+	float GetActualWidth() const { return m_finalLocalRect.width; }
+	float GetActualHeight() const { return m_finalLocalRect.height; }
+
 protected:
 	UIElement();
 	virtual ~UIElement();
@@ -140,6 +149,9 @@ protected:
 	virtual void OnTextInput(UIKeyEventArgs* e);
 
 	virtual void OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags);
+	virtual void OnUpdatingLayout();
+
+	UIStyle* GetLocalStyle() const { return m_localStyle; }
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
@@ -147,13 +159,13 @@ LN_INTERNAL_ACCESS:
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
-	void ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle);
-	void UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle);
 	void UpdateLayout();
 	void UpdateTransformHierarchy();
 	void Render(GraphicsContext* g);
 
 private:
+	void UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle);
+
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
 

@@ -41,11 +41,15 @@ UITextElement::~UITextElement()
 //-----------------------------------------------------------------------------
 SizeF UITextElement::MeasureOverride(const SizeF& constraint)
 {
+	// フォント更新
 	if (m_invalidateFont)
 	{
+		//m_font = Font::Create();
+		//m_font->SetSize(20);
 		m_font = GetManager()->GetAssetsManager()->LoadFont(m_fontFamily, m_fontSize, m_fontBold, m_fontItalic, true);
 		m_invalidateFont = false;
 	}
+
 	return UIElement::MeasureOverride(constraint);
 }
 

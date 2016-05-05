@@ -10,6 +10,7 @@
 #include "PainterEngine.h"	// for CacheBuffer
 #include "GraphicsManager.h"
 #include "RendererImpl.h"
+#include <Lumino/Graphics/Brush.h>
 #include "GeometryRenderer.h"
 
 LN_NAMESPACE_BEGIN
@@ -1472,6 +1473,15 @@ void GeometryRenderer::SetTransform(const Matrix& matrix)
 	}
 }
 
+//template<typename T>
+//bool operator != (RefPtr<T>& left, void* ptr) { return (left.GetObjectPtr() != ptr); }
+//
+//template<typename T>
+//bool operator != (const RefPtr<T>& left, T* ptr) { return (left.GetObjectPtr() != ptr); }
+//
+//template<typename T>
+//bool operator != (const RefPtr<T>& left, RefObject* ptr) { return (left.GetObjectPtr() != ptr); }
+//
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

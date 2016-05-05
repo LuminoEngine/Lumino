@@ -118,7 +118,7 @@ private:
 		String	targetName;
 		String	targetState;	// VisualState
 
-		bool operator < (const StyleKey& other) const { return targetName < other.targetName && targetState < other.targetState; }
+		bool operator < (const StyleKey& other) const { return targetName < other.targetName || targetState < other.targetState; }
 		bool operator == (const StyleKey& other) const { return targetName == other.targetName && targetState == other.targetState; }
 	};
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
