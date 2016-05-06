@@ -1,5 +1,6 @@
 
 #pragma once
+#include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN

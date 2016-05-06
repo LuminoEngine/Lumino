@@ -120,7 +120,7 @@ Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring
 {
 	PathName absPath = filePath.CanonicalizePath();
 
-	Stream* stream = NULL;
+	RefPtr<Stream> stream;
 	LN_FOREACH(IArchive* archive, m_archiveList)
 	{
 		if (archive->TryCreateStream(absPath, &stream, isDeferring)) {
@@ -129,7 +129,7 @@ Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring
 	}
 
 	LN_THROW(stream != NULL, FileNotFoundException, absPath);	// ファイルが見つからなかった
-	return stream;
+	return stream.DetachMove();
 }
 
 //-----------------------------------------------------------------------------

@@ -188,7 +188,7 @@ bool Archive::ExistsFile(const PathName& fileFullPath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Archive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring)
+bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -196,7 +196,7 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, 
 		return false;
 	}
 
-	*outStream = LN_NEW ArchiveStream(this, m_stream, itr->second.Offset, itr->second.Size);
+	outStream->Attach(LN_NEW ArchiveStream(this, m_stream, itr->second.Offset, itr->second.Size), false);
 	return true;
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
@@ -429,7 +429,7 @@ bool DummyArchive::ExistsFile(const PathName& fileFullPath)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStream, bool isDeferring)
+bool DummyArchive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
 	if (!FileSystem::ExistsFile(fileFullPath)) {
 		return false;
@@ -438,7 +438,7 @@ bool DummyArchive::TryCreateStream(const PathName& fileFullPath, Stream** outStr
 	FileOpenMode mode = FileOpenMode::Read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
 	FileStreamPtr file = FileStream::Create(fileFullPath, mode);
-	*outStream = file.DetachMove();
+	*outStream = file;
 	return true;
 }
 
