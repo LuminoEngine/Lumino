@@ -383,21 +383,6 @@ set(LN_SOURCES_Scene
 	src/Scene/ViewPane.h
 	src/Scene/VisualNode.cpp
 	src/Scene/VisualNodeParams.cpp
-	src/Scene/MME/MMERenderingPass.cpp
-	src/Scene/MME/MMERenderingPass.h
-	src/Scene/MME/MMESceneShaderManager.cpp
-	src/Scene/MME/MMESceneShaderManager.h
-	src/Scene/MME/ShaderScriptCommandList.cpp
-	src/Scene/MME/ShaderScriptCommandList.h
-	src/Scene/MME/MMEShader.cpp
-	src/Scene/MME/MMEShader.h
-	src/Scene/MME/MMEShaderBuilder.cpp
-	src/Scene/MME/MMEShaderBuilder.h
-	src/Scene/MME/MMEShaderErrorInfo.cpp
-	src/Scene/MME/MMEShaderErrorInfo.h
-	src/Scene/MME/MMEShaderTechnique.cpp
-	src/Scene/MME/MMEShaderTechnique.h
-	src/Scene/MME/MMETypes.h
 	external/ssbpLib/ssShader_frag.h
 	external/ssbpLib/SS5Player.cpp
 	external/ssbpLib/SS5Player.h
@@ -415,6 +400,23 @@ set(LN_SOURCES_Scene
 	external/ssbpLib/common/Animator/ssplayer_matrix.cpp
 	external/ssbpLib/common/Animator/ssplayer_matrix.h
 	external/ssbpLib/common/Animator/ssplayer_PartState.cpp
+)
+set(LN_SOURCES_Scene_MMD
+	src/Scene/MME/MMERenderingPass.cpp
+	src/Scene/MME/MMERenderingPass.h
+	src/Scene/MME/MMESceneShaderManager.cpp
+	src/Scene/MME/MMESceneShaderManager.h
+	src/Scene/MME/ShaderScriptCommandList.cpp
+	src/Scene/MME/ShaderScriptCommandList.h
+	src/Scene/MME/MMEShader.cpp
+	src/Scene/MME/MMEShader.h
+	src/Scene/MME/MMEShaderBuilder.cpp
+	src/Scene/MME/MMEShaderBuilder.h
+	src/Scene/MME/MMEShaderErrorInfo.cpp
+	src/Scene/MME/MMEShaderErrorInfo.h
+	src/Scene/MME/MMEShaderTechnique.cpp
+	src/Scene/MME/MMEShaderTechnique.h
+	src/Scene/MME/MMETypes.h
 )
 endif()
 
@@ -674,6 +676,7 @@ source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
 source_group("Modeling"			FILES ${LN_SOURCES_Modeling})
 source_group("Scene"			FILES ${LN_SOURCES_Scene})
+source_group("Scene_MMD"		FILES ${LN_SOURCES_Scene_MMD})
 source_group("UI"				FILES ${LN_SOURCES_UI})
 source_group("Documents"		FILES ${LN_SOURCES_Documents})
 source_group("Game"				FILES ${LN_SOURCES_Game})
@@ -695,6 +698,7 @@ set(LN_SOURCES
 	${LN_SOURCES_TileMap}
 	${LN_SOURCES_Modeling}
 	${LN_SOURCES_Scene}
+	${LN_SOURCES_Scene_MMD}
 	${LN_SOURCES_UI}
 	#${LN_SOURCES_Documents}
 	${LN_SOURCES_Game}
