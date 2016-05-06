@@ -51,7 +51,7 @@ float4 psBasic(
     float4 in_color_    : COLOR0,
     float2 in_uv_       : TEXCOORD0 ) : COLOR0
 {
-    float4 out_color = tex2D( gTexSampler, in_uv_ );// * in_color_ * gColor;
+    float4 out_color = tex2D( gTexSampler, in_uv_ ) * in_color_ * gColor;
     
     //out_color.rgb = lerp( out_color.rgb, gBlendColor.rgb, gBlendColor.a );
     

@@ -148,5 +148,27 @@ LN_INTERNAL_ACCESS:
 
 } // namespace Details
 
+
+//namespace detail
+//{
+//
+//class VertexBufferRenderer
+//	: public RefObject
+//	, public detail::IRendererPloxy
+//{
+//public:
+//	void SetVertexBuffer(VertexBuffer* vertexBuffer);
+//	void SetIndexBuffer(IndexBuffer* indexBuffer);
+//	void DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
+//	void DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
+//
+//
+//
+//private:
+//
+//};
+
+//} // namespace detail
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -63,6 +63,19 @@ public:
 
 	SpriteRenderer* GetSpriteRenderer() const { return m_spriteRenderer; }
 
+
+
+
+	///**
+	//	@brief	頂点バッファを設定します。
+	//*/
+	//void SetVertexBuffer(VertexBuffer* vertexBuffer);
+
+	///**
+	//	@brief	インデックスバッファを設定します。
+	//*/
+	//void SetIndexBuffer(IndexBuffer* indexBuffer);
+
 LN_INTERNAL_ACCESS:
 	RenderingContext2();
 	virtual ~RenderingContext2();

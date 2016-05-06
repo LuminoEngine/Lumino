@@ -145,16 +145,6 @@ public:
 	*/
 	const Rect& GetViewport() const;
 
-	///**
-	//	@brief	頂点バッファを設定します。
-	//*/
-	//void SetVertexBuffer(VertexBuffer* vertexBuffer);
-
-	///**
-	//	@brief	インデックスバッファを設定します。
-	//*/
-	//void SetIndexBuffer(IndexBuffer* indexBuffer);
-
 	void SetShaderPass(ShaderPass* pass);
 
 	ShaderPass* GetShaderPass() const;

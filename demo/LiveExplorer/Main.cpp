@@ -210,18 +210,33 @@ int main()
 
 
 
-		auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-		//auto textBlock1 = UITextBlock::Create();
-		//uiRoot->AddChild(textBlock1);
-		auto button1 = UIButton::Create();
-		button1->SetText(_T("Lumino"));
-		uiRoot->AddChild(button1);
+		//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
+		////auto textBlock1 = UITextBlock::Create();
+		////uiRoot->AddChild(textBlock1);
+		//auto button1 = UIButton::Create();
+		//button1->SetText(_T("Lumino"));
+		//uiRoot->AddChild(button1);
 
 
 		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.2f);
 		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//sound1->SetPitch(1.2f);
 		//sound1->Play();
+
+		auto particleModel1 = SpriteParticleModel::Create();
+		particleModel1->m_spawnRate = 30;
+		//particleModel1->m_minPosition.Set(-10, 0, 0);
+		//particleModel1->m_maxPosition.Set(10, 0, 0);
+		particleModel1->m_minVelocity.Set(-5, 5, 0);
+		particleModel1->m_maxVelocity.Set(5, 5, 0);
+		particleModel1->m_minAcceleration.Set(0, -8, 0);
+		particleModel1->m_maxAcceleration.Set(0, -8, 0);
+		particleModel1->m_lifeTimeMin = 1.0;
+		particleModel1->m_lifeTimeMax = 1.0;
+		particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
+		auto particle1 = SpriteParticle::Create3D(particleModel1);
+		particle1->SetBlendMode(BlendMode_Add);
+
 #if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
 		//window->UserWndProc = TestWndProc;

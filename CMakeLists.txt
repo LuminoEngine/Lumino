@@ -348,6 +348,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Sprite3D.h
 	include/Lumino/Scene/SpriteBase.h
 	include/Lumino/Scene/SpriteModelObject.h
+	include/Lumino/Scene/SpriteParticle.h
 	include/Lumino/Scene/TileMapNode.h
 	include/Lumino/Scene/ViewPane.h
 	include/Lumino/Scene/VisualNode.h
@@ -378,6 +379,7 @@ set(LN_SOURCES_Scene
 	src/Scene/Sprite3D.cpp
 	src/Scene/SpriteBase.cpp
 	src/Scene/SpriteModelObject.cpp
+	src/Scene/SpriteParticle.cpp
 	src/Scene/TileMapNode.cpp
 	src/Scene/ViewPane.cpp
 	src/Scene/ViewPane.h
