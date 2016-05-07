@@ -336,6 +336,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Common.h
 	include/Lumino/Scene/EffectNode.h
 	include/Lumino/Scene/GpuParticle.h
+	include/Lumino/Scene/Grid.h
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
 	include/Lumino/Scene/MeshModelObject.h
@@ -361,6 +362,7 @@ set(LN_SOURCES_Scene
 	src/Scene/EffectBatchRendererNode.h
 	src/Scene/EffectNode.cpp
 	src/Scene/GpuParticle.cpp
+	src/Scene/Grid.cpp
 	src/Scene/InfomationRenderingPass.cpp
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp

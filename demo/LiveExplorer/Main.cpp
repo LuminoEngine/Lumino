@@ -200,7 +200,7 @@ int main()
 
 		EngineSettings appData;
 		appData.graphicsAPI = GraphicsAPI::DirectX9;
-		appData.renderingType = RenderingType::Immediate;
+		appData.renderingType = RenderingType::Deferred;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
@@ -222,6 +222,12 @@ int main()
 		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//sound1->SetPitch(1.2f);
 		//sound1->Play();
+
+
+		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::Create();
+		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
+
+		auto grid1 = Grid::Create3D();
 
 		auto particleModel1 = SpriteParticleModel::Create();
 		particleModel1->m_spawnRate = 30;
@@ -281,7 +287,7 @@ int main()
 		//ElapsedTimer t;
 		//t.Start();
 #endif
-		Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::BlueViolet);
+		//Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::BlueViolet);
 
 		while (true)
 		{
