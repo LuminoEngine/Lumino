@@ -27,15 +27,15 @@ public:
 	Details::Renderer* GetRenderer() { return m_internalContext->Renderer; }
 
 	// view proj は パス開始時にカメラのものが設定されている
-	RenderingContext2* GetRenderingContext() { return m_renderingContext; }
+	RenderingContext* GetRenderingContext() { return m_renderingContext; }
 
 protected:
 	friend class SceneGraphManager;
-	SceneGraphRenderingContext(RenderingContext2* renderingContext, GraphicsContext* internalContext);
+	SceneGraphRenderingContext(RenderingContext* renderingContext, GraphicsContext* internalContext);
 	virtual ~SceneGraphRenderingContext();
 
 private:
-	RenderingContext2*	m_renderingContext;	// TODO: 持ちまわり方はもう少し考えたほうがいいかも
+	RenderingContext*	m_renderingContext;	// TODO: 持ちまわり方はもう少し考えたほうがいいかも
 	GraphicsContext*	m_internalContext;
 };
 

@@ -21,7 +21,7 @@ protected:
 TEST_F(Test_Graphics_RenderingContext, Clear)
 {
 	Engine::BeginRendering();
-	auto* r = RenderingContext2::GetContext();
+	auto* r = RenderingContext::GetContext();
 	r->Clear(ClearFlags::Color, ColorF::Red);
 	Engine::EndRendering();
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext2.png")));
@@ -42,7 +42,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 		PosColorVertex::GetLayout(), PosColorVertex::LayoutCount, LN_ARRAY_SIZE_OF(vertices), vertices), false);
 
 	Engine::BeginRendering();
-	auto* r = RenderingContext2::GetContext();
+	auto* r = RenderingContext::GetContext();
 	r->SetShaderPass(m_shader->GetTechniques()[0]->GetPasses()[0]);
 	r->DrawPrimitive(vb, PrimitiveType_TriangleList, 0, 1);
 	Engine::EndRendering();
@@ -56,7 +56,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 		{
 			if (Engine::BeginRendering())
 			{
-				auto* r = RenderingContext2::GetContext();
+				auto* r = RenderingContext::GetContext();
 				r->SetVertexBuffer(vb);
 				r->SetDepthBuffer(nullptr);
 				r->Clear(ClearFlags::All, ColorF::Gray);
@@ -98,7 +98,7 @@ TEST_F(Test_Graphics_RenderingContext, Blt)
 	auto t2 = RenderTarget::Create(t1->GetSize());
 
 	Engine::BeginRendering();
-	auto* r = RenderingContext2::GetContext();
+	auto* r = RenderingContext::GetContext();
 
 	r->Blt(t1, t2);
 

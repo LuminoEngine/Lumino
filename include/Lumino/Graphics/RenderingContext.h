@@ -12,7 +12,7 @@ namespace detail { class PrimitiveRenderer; }
 /**
 	@brief		
 */
-class RenderingContext2
+class RenderingContext
 	: public RefObject
 	, public detail::IContext
 {
@@ -20,7 +20,7 @@ public:
 	static const int MaxMultiRenderTargets = 4;
 
 	// TODO: Sceneなどで内部的に使用するものと共用にしない。ステートがどこで変わるかわかりづらい。あるいはちゃんと push/pop する。
-	static RenderingContext2* GetContext();
+	static RenderingContext* GetContext();
 
 	//void SetBlendMode(BlendMode mode);
 
@@ -77,8 +77,8 @@ public:
 	//void SetIndexBuffer(IndexBuffer* indexBuffer);
 
 LN_INTERNAL_ACCESS:
-	RenderingContext2();
-	virtual ~RenderingContext2();
+	RenderingContext();
+	virtual ~RenderingContext();
 	void Initialize(GraphicsManager* manager);
 
 

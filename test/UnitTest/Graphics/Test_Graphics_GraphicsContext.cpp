@@ -14,7 +14,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText)
 {
 	//Engine::BeginRendering();
 	//GraphicsContext::
-	//auto* r = RenderingContext2::GetContext();
+	//auto* r = RenderingContext::GetContext();
 	//r->Clear(ClearFlags::Color, ColorF::Red);
 	//Engine::EndRendering();
 	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext2.png")));

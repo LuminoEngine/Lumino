@@ -82,7 +82,7 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void TileMapRenderer::Draw(RenderingContext2* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
+void TileMapRenderer::Draw(RenderingContext* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
 {
 	LN_CHECK_ARGS_RETURN(tileMap != nullptr);
 	m_renderingContext = context;

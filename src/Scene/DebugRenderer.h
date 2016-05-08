@@ -13,7 +13,7 @@ class DebugRenderer
 	: public Physics::IDebugRenderer
 {
 public:
-	DebugRenderer(RenderingContext2* context/*GraphicsContext* context*/)
+	DebugRenderer(RenderingContext* context/*GraphicsContext* context*/)
 		: m_context(context)
 	{
 	}
@@ -27,7 +27,7 @@ public:
 	}
 
 private:
-	RenderingContext2* /*GraphicsContext**/		m_context;
+	RenderingContext*		m_context;
 };
 
 LN_NAMESPACE_SCENE_END

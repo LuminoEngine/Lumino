@@ -81,7 +81,7 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ToneImageEffect::OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination)
+void ToneImageEffect::OnRender(RenderingContext* renderingContext, RenderTarget* source, RenderTarget* destination)
 {
 	if (m_tone != ToneF::Zero)
 	{

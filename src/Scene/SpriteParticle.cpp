@@ -196,7 +196,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteParticleModel::Render(RenderingContext2* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition)
+void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition)
 {
 	float dt = instance->m_time - instance->m_lastSpawnTime;
 

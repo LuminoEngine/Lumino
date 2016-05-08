@@ -218,7 +218,7 @@ int main()
 		//uiRoot->AddChild(button1);
 
 
-		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 1.2f);
+		GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 0.95f);
 		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//sound1->SetPitch(1.2f);
 		//sound1->Play();
@@ -306,7 +306,7 @@ int main()
 			//{
 			//	Engine::Render();
 
-			//	RenderingContext2* r = RenderingContext2::GetContext();
+			//	RenderingContext* r = RenderingContext::GetContext();
 
 			//	//if (sp->GetTexture() == nullptr)
 			//	//{
@@ -453,7 +453,7 @@ int main()
 			{
 				Engine::Render();
 
-				auto* rc = RenderingContext2::GetContext();
+				auto* rc = RenderingContext::GetContext();
 				rc->SetViewProjection(Matrix::Identity, Matrix::Identity);
 				//rc->Clear(ClearFlags::Color, ColorF::Green);
 				//rc->DrawLine(Vector3(0, 0, 0), ColorF::Red, Vector3(1, 1, 1), ColorF::Red);

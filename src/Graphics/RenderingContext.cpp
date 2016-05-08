@@ -15,13 +15,13 @@
 LN_NAMESPACE_BEGIN
 
 //=============================================================================
-// RenderingContext2
+// RenderingContext
 //=============================================================================
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RenderingContext2* RenderingContext2::GetContext()
+RenderingContext* RenderingContext::GetContext()
 {
 	return GraphicsManager::GetInstance()->GetRenderingContext();
 }
@@ -29,7 +29,7 @@ RenderingContext2* RenderingContext2::GetContext()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RenderingContext2::RenderingContext2()
+RenderingContext::RenderingContext()
 	: m_manager(nullptr)
 	, m_spriteRenderer(nullptr)
 	, m_primitiveRenderer(nullptr)
@@ -39,7 +39,7 @@ RenderingContext2::RenderingContext2()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-RenderingContext2::~RenderingContext2()
+RenderingContext::~RenderingContext()
 {
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_primitiveRenderer);
@@ -48,7 +48,7 @@ RenderingContext2::~RenderingContext2()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::Initialize(GraphicsManager* manager)
+void RenderingContext::Initialize(GraphicsManager* manager)
 {
 	IContext::Initialize(manager);
 
@@ -73,7 +73,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 ////-----------------------------------------------------------------------------
 ////
 ////-----------------------------------------------------------------------------
-//void RenderingContext2::SetBlendMode(BlendMode mode)
+//void RenderingContext::SetBlendMode(BlendMode mode)
 //{
 //	if (mode != m_state.renderState.Blend)
 //	{
@@ -87,7 +87,7 @@ void RenderingContext2::Initialize(GraphicsManager* manager)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
+void RenderingContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->Clear(flags, color, z, stencil);
@@ -96,7 +96,7 @@ void RenderingContext2::Clear(ClearFlags flags, const ColorF& color, float z, ui
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void RenderingContext::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
@@ -105,7 +105,7 @@ void RenderingContext2::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void RenderingContext::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
@@ -114,7 +114,7 @@ void RenderingContext2::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBu
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::SetViewProjection(const Matrix& view, const Matrix& proj)
+void RenderingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
 {
 	OnStateChanging();
 	m_primitiveRenderer->SetViewProjMatrix(view * proj);
@@ -124,7 +124,7 @@ void RenderingContext2::SetViewProjection(const Matrix& view, const Matrix& proj
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+void RenderingContext::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
 {
 	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
@@ -133,7 +133,7 @@ void RenderingContext2::DrawLine(const Vector3& from, const ColorF& fromColor, c
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::DrawSquare(
+void RenderingContext::DrawSquare(
 	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
 	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
 	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
@@ -150,7 +150,7 @@ void RenderingContext2::DrawSquare(
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
+void RenderingContext::Blt(Texture* source, RenderTarget* dest)
 {
 	BltInternal(source, dest, Matrix::Identity, nullptr);
 }
@@ -158,7 +158,7 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::Blt(Texture* source, RenderTarget* dest, const Matrix& transform)
+void RenderingContext::Blt(Texture* source, RenderTarget* dest, const Matrix& transform)
 {
 	BltInternal(source, dest, transform, nullptr);
 }
@@ -166,7 +166,7 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, const Matrix& t
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
+void RenderingContext::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 {
 	BltInternal(source, dest, Matrix::Identity, shader);
 }
@@ -174,7 +174,7 @@ void RenderingContext2::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
+void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
 {
 	// TODO: ここで null にしておかないとPrimitiveRendererが古いシェーダを適用してしまう。
 	// が、内部でステートを変えてしまうのはどうなのか。。。
@@ -205,7 +205,7 @@ void RenderingContext2::BltInternal(Texture* source, RenderTarget* dest, const M
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void RenderingContext2::OnStateFlushRequested()
+void RenderingContext::OnStateFlushRequested()
 {
 	IContext::OnStateFlushRequested();
 

@@ -20,7 +20,7 @@ protected:
 	virtual ~ImageEffect();
 	void Initialize(GraphicsManager* manager);
 
-	virtual void OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination) = 0;
+	virtual void OnRender(RenderingContext* renderingContext, RenderTarget* source, RenderTarget* destination) = 0;
 
 	friend class ViewportLayer;
 

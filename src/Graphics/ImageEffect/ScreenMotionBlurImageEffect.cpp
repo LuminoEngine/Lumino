@@ -91,7 +91,7 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::OnRender(RenderingContext2* renderingContext, RenderTarget* source, RenderTarget* destination)
+void ScreenMotionBlurImageEffect::OnRender(RenderingContext* renderingContext, RenderTarget* source, RenderTarget* destination)
 {
 	if (m_amount == 0.0)
 	{

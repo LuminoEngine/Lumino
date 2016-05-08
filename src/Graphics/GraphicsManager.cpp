@@ -925,7 +925,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
 	m_textRendererCore->Initialize(this);
 
-	m_renderingContext = LN_NEW RenderingContext2();
+	m_renderingContext = LN_NEW RenderingContext();
 	m_renderingContext->Initialize(this);
 
 	m_graphicsContext = LN_NEW GraphicsContext();

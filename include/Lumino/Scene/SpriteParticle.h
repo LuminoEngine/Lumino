@@ -66,7 +66,7 @@ LN_INTERNAL_ACCESS:
 	void UpdateInstance(std::shared_ptr<detail::SpriteParticleModelInstance>& instance, float deltaTime);
 	void SpawnParticle(detail::ParticleData* data, float spawnTime);
 	void UpdateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition);
-	void Render(RenderingContext2* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition);
+	void Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition);
 
 public:	// TODO:
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue);
