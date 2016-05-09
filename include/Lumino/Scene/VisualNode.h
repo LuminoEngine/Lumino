@@ -7,6 +7,18 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+namespace detail
+{
+
+struct VisualNodeRenderState
+{
+	BlendMode	blendMode = BlendMode::BlendMode_Alpha;
+	CullingMode	cullingMode = CullingMode_Back;
+	bool		depthTestEnabled = true;
+	bool		depthWriteEnabled = true;
+};
+
+} // namespace detail 
 
 /// VisualNode
 class VisualNode

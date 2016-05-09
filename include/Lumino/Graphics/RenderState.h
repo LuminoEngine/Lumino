@@ -69,7 +69,7 @@ class RenderState
 {
 public:
 
-	BlendMode		Blend;			///< 合成方法 (default:BlendMode_Alpha)
+	BlendMode		Blend;			///< 合成方法 (default:BlendMode::Alpha)
 	CullingMode		Culling;		///< カリング方法 (default:CullingMode_Back)
 	FillMode		Fill;			///< 塗りつぶし方法 (default:FillMode_Solid。Opengl ES では無効)
 	bool			AlphaTest;      ///< アルファテストの有無 (default:true。Opengl ES では無効)
