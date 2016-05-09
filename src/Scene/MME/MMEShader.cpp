@@ -1,6 +1,7 @@
 ﻿
 #include "../../Internal.h"
 #include "../SceneGraphManager.h"
+#include "MmdMaterial.h"
 #include <Lumino/Scene/SceneNode.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
@@ -513,6 +514,66 @@ void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& param
 		}
 		}
     }
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
+{
+	if (material.m_owner->GetMaterialTypeId() != detail::MmdMaterialTypeId) return;
+
+	MmdMaterial* ownerMaterial = static_cast<MmdMaterial*>(material.m_owner);
+
+	ShaderVariable* var;
+	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
+	{
+		var = sv->Variable;
+
+		switch (sv->Request)
+		{
+			case MME_VARREQ_OBJECT_DIFFUSE:
+				var->SetVector(ownerMaterial->m_diffuse);
+				break;
+			case MME_VARREQ_OBJECT_AMBIENT:
+				var->SetVector(ownerMaterial->m_ambient);
+				break;
+			case MME_VARREQ_OBJECT_EMISSIVE:
+				var->SetVector(ownerMaterial->m_emissive);
+				break;
+			case MME_VARREQ_OBJECT_SPECULAR:
+				var->SetVector(ownerMaterial->m_specular);
+				break;
+			case MME_VARREQ_OBJECT_SPECULARPOWER:
+				var->SetFloat(ownerMaterial->m_power);
+				break;
+			case MME_VARREQ_OBJECT_TOONCOLOR:
+				var->SetVector(ownerMaterial->ToonColor);
+				break;
+			case MME_VARREQ_OBJECT_EDGECOLOR:
+				var->SetVector(ownerMaterial->EdgeColor);
+				break;
+			case MME_VARREQ_OBJECT_MATERIALTEXTURE:
+				var->SetTexture((ownerMaterial->GetTexture() != nullptr) ? ownerMaterial->GetTexture() : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
+				break;
+			case MME_VARREQ_OBJECT_MATERIALSPHEREMAP:
+				var->SetTexture((ownerMaterial->m_sphereTexture != nullptr) ? ownerMaterial->m_sphereTexture : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
+				break;
+			case LN_VARREQ_COLOR_SCALE:
+				var->SetVector(material.m_colorScale);
+				break;
+			case LN_VARREQ_BLEND_COLOR:
+				var->SetVector(material.m_blendColor);
+				break;
+			case LN_VARREQ_TONE:
+				var->SetVector(material.m_tone);
+				break;
+			case LN_VARREQ_UVTRANSFORM:
+				var->SetMatrix(material.GetUVTransform());
+				break;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

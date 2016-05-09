@@ -339,6 +339,7 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/Grid.h
 	include/Lumino/Scene/Layer.h
 	include/Lumino/Scene/Light.h
+	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MeshModelObject.h
 	include/Lumino/Scene/Material.h
 	include/Lumino/Scene/MMDSceneGraph.h
@@ -367,6 +368,7 @@ set(LN_SOURCES_Scene
 	src/Scene/InfomationRenderingPass.h
 	src/Scene/Layer.cpp
 	src/Scene/Light.cpp
+	src/Scene/Material.cpp
 	src/Scene/MeshModelObject.cpp
 	src/Scene/MMDSceneGraph.cpp
 	src/Scene/RenderingPass.cpp
@@ -406,6 +408,8 @@ set(LN_SOURCES_Scene
 	external/ssbpLib/common/Animator/ssplayer_PartState.cpp
 )
 set(LN_SOURCES_Scene_MMD
+	src/Scene/MME/MmdMaterial.cpp
+	src/Scene/MME/MmdMaterial.h
 	src/Scene/MME/MMERenderingPass.cpp
 	src/Scene/MME/MMERenderingPass.h
 	src/Scene/MME/MMESceneShaderManager.cpp

@@ -316,6 +316,7 @@ void PMXLoader::LoadMaterials(BinaryReader* reader)
 		// スフィアテクスチャ
 		int sphereTexture = (int)reader->ReadInt(getTextureIndexSize());
 		m->SphereMode = (enum Graphics::Material::SphereMode)reader->ReadInt8();
+		LN_NOTIMPLEMENTED();	// TODO: sphereTexture 使ってないよ
 
 		// トゥーンテクスチャ
 		int shareToon = reader->ReadInt8();

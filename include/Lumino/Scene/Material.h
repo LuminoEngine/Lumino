@@ -1,39 +1,133 @@
 ﻿
 #pragma once
-#include <Lumino/Graphics/Material.h>
+#include "../Graphics/Color.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+
 /**
-	@brief	マテリアルのクラスです。
+	@brief
 */
-//class Material
-//	: public Graphics::Material
-//{
-//public:
-//	ColorF					EdgeColor;		///< エッジカラー
-//	lnFloat					EdgeSize;		///< エッジサイズ
-//	SphereMode				SphereMode;		///< SphereMode
-//	lnU8					DrawingFlags;	///< 描画オプション
-//
-//	ColorF					TextureCoe;			///< テクスチャ係数
-//	ColorF					SphereTextureCoe;	///< スフィアテクスチャ係数
-//	ColorF					ToonTextureCoe;		///< Toonテクスチャ係数
-//
-//public:
-//
-//	/**
-//		@brief		マテリアルを初期化します。
-//	*/
-//	Material()
-//	{
-//		Diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
-//		Ambient.Set(0.0f, 0.0f, 0.0f, 0.0f);
-//		Specular.Set(0.5f, 0.5f, 0.5f, 0.5f);
-//		Emissive.Set(0.0f, 0.0f, 0.0f, 0.0f);
-//		Power = 50.0f;
-//	}
-//};
-//
+class Material2
+	: public Object
+{
+public:
+	void SetOpacity(float opacity) { m_opacity = opacity; }
+	float GetOpacity() const { return m_opacity; }
+	void SetColorScale(const Color& color) { m_colorScale = color; }
+	const ColorF& GetColorScale() const { return m_colorScale; }
+	void SetBlendColor(const Color& color) { m_blendColor = color; }
+	const ColorF& GetBlendColor() const { return m_blendColor; }
+	void SetTone(const ToneF& tone) { m_tone = tone; }
+	const ToneF& GetTone() const { return m_tone; }
+	void SetTexture(Texture* texture);
+	Texture* GetTexture() const { return m_texture; }
+
+	const Matrix& GetUVTransform() const { return m_uvTransform; }
+	
+	void SetShader(Shader* shader);
+	Shader* GetShader() const { return m_shader; }
+	
+	void SetIntParameter(const StringRef& name, const int value);
+	void SetFloatParameter(const StringRef& name, int value);
+	void SetVectorParameter(const StringRef& name, const Vector4& value);
+	void SetMatrixParameter(const StringRef& name, const Matrix& value);
+	void SetTextureParameter(const StringRef& name, Texture* value);
+	
+LN_INTERNAL_ACCESS:
+	Material2();
+	virtual ~Material2();
+	inline int GetMaterialTypeId() const { return m_materialTypeId; }
+
+private:
+	int			m_materialTypeId;
+	float		m_opacity;
+	ColorF		m_colorScale;
+	ColorF		m_blendColor;
+	ToneF		m_tone;
+	Texture*	m_texture;
+	Matrix		m_uvTransform;	// TODO: Unity のように offset,scale で持ったほうがメモリ効率いい。
+	Shader*		m_shader;
+};
+
+namespace detail
+{
+
+static const int MmdMaterialTypeId = 12345;
+
+struct MaterialInstance
+{
+	Material2*	m_owner;
+	ColorF		m_colorScale;	// 乗算結合済み (opacity 込み)
+	ColorF		m_blendColor;	// 加算結合済み
+	ToneF		m_tone;			// 加算結合済み
+	Shader*		m_shader;
+
+	void Combine(Material2* owner, Material2* parent)
+	{
+		// set
+		m_owner = owner;
+		m_colorScale = m_owner->GetColorScale();
+		m_colorScale.a *= m_owner->GetOpacity();
+		m_blendColor = m_owner->GetBlendColor();
+		m_tone = m_owner->GetTone();
+		m_shader = m_owner->GetShader();
+
+		// combine
+		if (parent != nullptr)
+		{
+			m_colorScale.MultiplyClamp(parent->GetColorScale());
+			m_blendColor.AddClamp(parent->GetBlendColor());
+			m_tone.AddClamp(parent->GetTone());
+			if (m_shader != nullptr) {
+				m_shader = parent->GetShader();
+			}
+		}
+	}
+
+	const Matrix& GetUVTransform() const { return m_owner->GetUVTransform(); }
+
+	//void Combine(Material2* owner, MaterialInstance* parent)
+	//{
+	//	// set
+	//	m_owner = owner;
+	//	m_colorScale = m_owner->GetColorScale();
+	//	m_colorScale.a *= static_cast<float>(m_owner->GetOpacity()) / 255.f;
+	//	m_blendColor = m_owner->GetBlendColor();
+	//	m_tone = m_owner->GetTone();
+	//	m_shader = m_owner->GetShader();
+	//	
+	//	// combine
+	//	m_colorScale.MultiplyClamp(parent->m_colorScale);
+	//	m_blendColor.AddClamp(parent->m_blendColor);
+	//	m_tone.AddClamp(parent->m_tone);
+	//	if (m_shader != nullptr) {
+	//		m_shader = parent->m_shader;
+	//	}
+	//}
+};
+
+} // namespace detail
+
+/**
+	@brief
+*/
+class MaterialList2
+	: public tr::ReflectionObjectList<Material2*>	// SubMaterials (0 の場合もある)
+{
+public:
+	
+LN_INTERNAL_ACCESS:
+	MaterialList2();
+	virtual ~MaterialList2();
+	void UpdateMaterialInstances();
+	int GetMaterialInstanceCount() const { return m_instanceList.GetCount(); }
+	detail::MaterialInstance* GetMaterialInstance(int index) { return &m_instanceList[index]; }
+	
+private:
+	RefPtr<Material2>				m_mainMaterial;
+	Array<detail::MaterialInstance>	m_instanceList;	// SubMaterials が 0 なら mainMaterial からつくり、必ず1個以上ある。
+};
+
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

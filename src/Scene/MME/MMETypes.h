@@ -269,7 +269,7 @@ enum MMEVariableRequest
 	//LN_VARREQ_MATRIX_LIGHT_ORTHOGRAPHIC,
     //LN_VARREQ_MATRIX_PROJECTION2D,
 
-    LN_VARREQ_OPACITY,            ///< 不透明度
+    LN_VARREQ_OPACITY,            ///< 不透明度 (TODO: 廃止)
     LN_VARREQ_COLOR_SCALE,        ///< 乗算する色
     LN_VARREQ_BLEND_COLOR,        ///< ブレンドする色
     LN_VARREQ_TONE,               ///< 色調

@@ -27,6 +27,11 @@
 	- Color32 → ColorF への変換はテーブルで高速化できる。
 	  外部から受け取るときは 32、内部では F でいいかも。
 	- GUI の ColorPicker とかは 0～255 で指定できたほうが操作しやすい。
+
+	- F を使いたいのは頂点バッファを直接操作するときか、シェーダに値をセットするとき。
+
+	あと、型については色系と座標系を一緒に考えないほうがいい。
+	つまり、色系(Color, Tone) 座標系(Size, Rect)
 */
 #include "../Internal.h"
 #include <Lumino/Math/Vector3.h>
