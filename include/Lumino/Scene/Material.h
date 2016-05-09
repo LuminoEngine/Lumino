@@ -3,7 +3,6 @@
 #include "../Graphics/Color.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 /**
 	@brief
@@ -129,5 +128,4 @@ private:
 	Array<detail::MaterialInstance>	m_instanceList;	// SubMaterials が 0 なら mainMaterial からつくり、必ず1個以上ある。
 };
 
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

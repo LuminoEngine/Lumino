@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include "MME/MmdMaterial.h"
 #include "MME/MMEShaderErrorInfo.h"
 #include "MME/MMEShader.h"
 #include "MME/MMERenderingPass.h"
@@ -25,7 +26,8 @@ static const size_t g_SSNoLighting_Data_Len = LN_ARRAY_SIZE_OF(g_SSNoLighting_Da
 //
 //-----------------------------------------------------------------------------
 MMDSceneGraph::MMDSceneGraph()
-	: m_defaultRoot(nullptr)
+	: /*m_defaultMaterial(nullptr)
+	, */m_defaultRoot(nullptr)
 	, m_default3DCamera(nullptr)
 	//, m_mmdRenderingPasses{}
 {
@@ -43,6 +45,7 @@ MMDSceneGraph::~MMDSceneGraph()
 	LN_SAFE_RELEASE(m_effectBatchRendererNode);
 	LN_SAFE_RELEASE(m_defaultRoot);
 	LN_SAFE_RELEASE(m_default3DCamera);
+	LN_SAFE_RELEASE(m_defaultMaterial);
 }
 
 //-----------------------------------------------------------------------------
@@ -51,6 +54,8 @@ MMDSceneGraph::~MMDSceneGraph()
 void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 {
 	SceneGraph::CreateCore(manager);
+
+	//m_defaultMaterial = CreateMaterial();
 
 	m_defaultRoot = LN_NEW SceneNode();
 	m_defaultRoot->CreateCore(manager);
@@ -102,6 +107,23 @@ void MMDSceneGraph::UpdateFrame(float elapsedTime)
 //{
 //	m_default3DCamera->DoMouseWheel(delta);
 //	return true;
+//}
+
+
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//Material2* MMDSceneGraph::GetDefaultMaterial()
+//{
+//
+//}
+//
+////-----------------------------------------------------------------------------
+////
+////-----------------------------------------------------------------------------
+//Material2* MMDSceneGraph::CreateMaterial()
+//{
+//	return LN_NEW MmdMaterial();
 //}
 
 LN_NAMESPACE_SCENE_END

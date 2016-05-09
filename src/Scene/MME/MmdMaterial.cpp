@@ -4,7 +4,6 @@
 #include "MmdMaterial.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // MmdMaterial
@@ -55,7 +54,6 @@ void MmdMaterial::SetSphereTexture(Texture* texture)
 	LN_REFOBJ_SET(m_sphereTexture, texture);
 }
 
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
 
 

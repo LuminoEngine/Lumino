@@ -70,7 +70,6 @@
 #include <Lumino/Scene/Material.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 //=============================================================================
 // Material
@@ -177,8 +176,4 @@ void MaterialList2::UpdateMaterialInstances()
 	}
 }
 
-
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
-
-

@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+class Material2;
 
 class LayerList
 	: public RefObjectList
@@ -62,6 +63,9 @@ protected:
 	SceneGraph();
 	virtual ~SceneGraph();
 	void CreateCore(SceneGraphManager* manager);
+
+	//virtual Material2* GetDefaultMaterial() = 0;
+	//virtual Material2* CreateMaterial() = 0;
 
 LN_INTERNAL_ACCESS:
 	//void AddNode(SceneNode* node) { m_allNodes.Add(node); }

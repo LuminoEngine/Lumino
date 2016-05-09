@@ -4,7 +4,6 @@
 #include <Lumino/Scene/Material.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 /**
 	@brief
@@ -42,5 +41,4 @@ public:	// TODO:
 	int/*Material::SphereMode*/		SphereMode;			///< [PMX] スフィアテクスチャの合成モード
 };
 
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
