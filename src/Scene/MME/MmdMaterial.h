@@ -13,9 +13,9 @@ class MmdMaterial
 {
 public:
 	void SetToonTexture(Texture* texture);
-	Texture* GetToonTexture(Texture* texture) const { return m_toonTexture; }
+	Texture* GetToonTexture() const { return m_toonTexture; }
 	void SetSphereTexture(Texture* texture);
-	Texture* GetSphereTexture(Texture* texture) const { return m_sphereTexture; }
+	Texture* GetSphereTexture() const { return m_sphereTexture; }
 	
 LN_INTERNAL_ACCESS:
 	MmdMaterial();

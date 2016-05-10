@@ -6,6 +6,7 @@
 #include "ShaderScriptCommandList.h"
 #include "MMEShaderTechnique.h"
 #include "MMERenderingPass.h"
+#include "MmdMaterial.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -68,14 +69,27 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 	priorityParams.Shader->UpdateNodeParams(visualNode, dc->CurrentCamera, *visualNode->GetAffectLightList());
 	visualNode->UpdateNodeRenderingParams(priorityParams.Shader);
 
-	const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
+	//const Material& material = visualNode->GetVisualNodeParams().GetCombinedSubsetParams(subset).Material;
+	const detail::MaterialInstance* materialInstance = visualNode->GetMaterialList().GetMaterialInstance(subset);
+	bool useTexture = materialInstance->m_owner->GetTexture() != nullptr;
+	bool useSphereTexture = false;
+	bool useToonTexture = false;
+	if (materialInstance->m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId)
+	{
+		MmdMaterial* mmdMat = static_cast<MmdMaterial*>(materialInstance->m_owner);
+		useSphereTexture = mmdMat->GetSphereTexture() != nullptr;
+		useToonTexture = mmdMat->GetToonTexture() != nullptr;
+	}
+
+		
+	Material2* material = materialInstance->m_owner;
 
 	// テクニックの検索
 	MMEShaderTechnique* tech = priorityParams.Shader->FindTechnique(
 		m_mmdPass,
-		!material.Texture.IsNull(),
-		!material.SphereTexture.IsNull(),
-		!material.ToonTexture.IsNull(),
+		useTexture,
+		useSphereTexture,
+		useToonTexture,
 		false,	// TODO
 		subset);
 
@@ -87,9 +101,9 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 		{
 			tech = dc->Pass->GetDefaultShader()->FindTechnique(
 				m_mmdPass,
-				material.Texture.IsNull(),
-				material.SphereTexture.IsNull(),
-				material.ToonTexture.IsNull(),
+				useTexture,
+				useSphereTexture,
+				useToonTexture,
 				false,	// TODO
 				subset);
 			if (tech == NULL) {
@@ -118,6 +132,10 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	// node の m_internalID 番目のフィルタ情報を設定したものが this ではない。
 	// (node が新しく作成されたオブジェクトであるか、前の RenderingPass が解放され ID が返却された後、新たに作成された RenderingPass が同じ ID を取得した場合)
 	// ノード名をチェックして割り当てるシェーダのインデックスを node に持たせておく。
+	// ・・・
+	// 具体的には、新しい OffscreenRenderTarget が作られたときや、一度破棄され、
+	// あたらしい OffscreenRenderTarget に同じ ID が割り当てられたときこの if の中に入る。
+	// つまり、この if の中は、ある Node に対してこの Pass から初めて描画が行われたときに走る初期化処理。
 	if (data->OwnerPass != this)
 	{
 		data->OwnerPass = this;

@@ -386,7 +386,7 @@ void SpriteParticle::Initialize(SceneGraphManager* manager, SpriteParticleModel*
 	m_instance = m_model->CreateInstane();
 
 	// TODO: なんか良くないやり方な気がする・・・
-	m_visualNodeParams.GetSubsetParams(0).Material.Texture = m_model->GetTexture();
+	m_materialList.GetAt(0)->SetTexture(m_model->GetTexture());
 }
 
 //-----------------------------------------------------------------------------

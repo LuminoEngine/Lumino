@@ -293,6 +293,7 @@ public:
 
 	//void dump(const char* str_ = NULL) const;
 
+	Color To32BitColor() const;
 
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }

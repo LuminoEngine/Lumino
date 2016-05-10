@@ -88,7 +88,7 @@ void SpriteBase::Initialize(SceneGraphManager* manager, SpriteCoord spriteCoord)
 //-----------------------------------------------------------------------------
 void SpriteBase::SetTexture(Texture* texture)
 {
-	m_visualNodeParams.GetSubsetParams(0).Material.Texture = texture;
+	m_materialList.GetAt(0)->SetTexture(texture);
 	UpdateTexUV();
 	UpdateVertexData();
 }
@@ -98,7 +98,7 @@ void SpriteBase::SetTexture(Texture* texture)
 //-----------------------------------------------------------------------------
 Texture* SpriteBase::GetTexture() const
 {
-	return m_visualNodeParams.GetSubsetParams(0).Material.Texture;
+	return m_materialList.GetAt(0)->GetTexture();
 }
 
 //-----------------------------------------------------------------------------

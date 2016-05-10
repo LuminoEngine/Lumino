@@ -390,6 +390,18 @@ void ColorF::MultiplyClamp(const ColorF& color)
 }
 
 //-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+Color ColorF::To32BitColor() const
+{
+	return Color(
+		static_cast<uint8_t>(r * 255),
+		static_cast<uint8_t>(g * 255),
+		static_cast<uint8_t>(b * 255),
+		static_cast<uint8_t>(a * 255));
+}
+
+//-----------------------------------------------------------------------------
 // static
 //-----------------------------------------------------------------------------
 ColorF ColorF::Lerp(const ColorF& color1, const ColorF& color2, float t)

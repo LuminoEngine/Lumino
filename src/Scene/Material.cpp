@@ -86,8 +86,8 @@ LN_NAMESPACE_BEGIN
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Material2::Material2()
-	: m_materialTypeId(0)
+Material2::Material2(int materialTypeId)
+	: m_materialTypeId(materialTypeId)
 	, m_opacity(1.0f)
 	, m_colorScale(1, 1, 1, 1)
 	, m_blendColor(0, 0, 0, 0)
@@ -140,6 +140,24 @@ MaterialList2::MaterialList2()
 //-----------------------------------------------------------------------------
 MaterialList2::~MaterialList2()
 {
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
+{
+	Resize(subMaterialCount);
+	for (int i = 0; i < subMaterialCount; ++i)
+	{
+		auto m = RefPtr<Material2>::MakeRef();
+		SetAt(i, m);
+	}
+
+	if (createMainMaterial)
+	{
+		m_mainMaterial = RefPtr<Material2>::MakeRef();
+	}
 }
 
 //-----------------------------------------------------------------------------

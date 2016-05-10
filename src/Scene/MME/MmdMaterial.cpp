@@ -13,7 +13,8 @@ LN_NAMESPACE_BEGIN
 //
 //-----------------------------------------------------------------------------
 MmdMaterial::MmdMaterial()
-	: m_toonTexture(nullptr)
+	: Material2(detail::MmdMaterialTypeId)
+	, m_toonTexture(nullptr)
 	, m_sphereTexture(nullptr)
 
 {

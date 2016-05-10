@@ -46,10 +46,11 @@ void MeshModelObject::Initialize(SceneGraphManager* manager, const StringRef& fi
 	VisualNode::CreateCore(manager, m_model->GetSubsetCount());
 
 	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
-	for (int i = 0; i < m_model->GetSubsetCount(); i++)
-	{
-		m_visualNodeParams.GetSubsetParams(i).Material = m_model->GetMaterial(i);
-	}
+	//for (int i = 0; i < m_model->GetSubsetCount(); i++)
+	//{
+	//	m_visualNodeParams.GetSubsetParams(i).Material = m_model->GetMaterial(i);
+	//}
+	LN_NOTIMPLEMENTED();
 
 	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);

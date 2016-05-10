@@ -5,6 +5,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include "SceneNode.h"
 #include "VisualNodeParams.h"
+#include "Material.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -21,7 +22,7 @@ public:
 
 	/// 可視状態の判定
 	bool IsVisible() const { return m_isVisible; }
-
+	/*
 	/// 不透明度の設定 (0.0 ～ 1.0)
 	void SetOpacity(float opacity, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Opacity = opacity; }
 
@@ -59,6 +60,32 @@ public:
 	/// シェーダの取得
 	MMEShader* GetShader(int subsetIndex = -1) { return m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader; }
 
+	*/
+
+
+	/// 不透明度の設定 (0.0 ～ 1.0)
+	void SetOpacity(float opacity, int subsetIndex = -1);
+
+
+	/// 乗算色の設定TODO: Color32
+	void SetColorScale(const ColorF& color, int subsetIndex = -1);
+	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
+
+	/// ブレンドカラーの設定 TODO: Color32
+	void SetBlendColor(const ColorF& color, int subsetIndex = -1);
+
+	/// 色調の設定
+	void SetTone(const ToneF& tone, int subsetIndex = -1);
+
+
+	///// UV 変換行列の設定
+	//void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
+
+	///// UV 変換行列の設定
+	//const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
+
+	/// シェーダの設定
+	void SetShader(Shader* shader, int subsetIndex = -1);
 
 
 	//-------------------------------------------------------------------------
@@ -95,7 +122,7 @@ public:
 
 
 	int GetSubsetCount() const { return m_subsetCount; }
-	const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
+	//const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
@@ -125,13 +152,15 @@ protected:
 	void CreateCore(SceneGraphManager* manager, int subsetCount);
 
 LN_INTERNAL_ACCESS:
+	MaterialList2& GetMaterialList() { return m_materialList; }
 	const detail::VisualNodeRenderState& GetVisualNodeRenderState() const { return m_renderState; }
 
 protected:
 	int						m_subsetCount;
 
 	friend class RenderingPass;
-	Internal::VisualNodeParams		m_visualNodeParams;
+	//Internal::VisualNodeParams		m_visualNodeParams;
+	MaterialList2					m_materialList;
 	detail::VisualNodeRenderState	m_renderState;
 	bool					m_isVisible;
 

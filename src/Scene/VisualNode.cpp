@@ -1,5 +1,8 @@
-﻿
-#pragma once
+﻿/*
+	[2016/5/10] マテリアル set に対する get は定義しない。
+		Color を渡す set に対する get が ColorF としなければならないのがイヤなのが元だが・・・。
+		まぁ、GetMainMaterial() から取り出せるし。
+*/
 #include "../Internal.h"
 #include "MME/MMEShaderTechnique.h"
 #include "MME/MMEShader.h"
@@ -38,8 +41,41 @@ VisualNode::~VisualNode()
 void VisualNode::CreateCore(SceneGraphManager* manager, int subsetCount)
 {
 	SceneNode::CreateCore(manager);
-	m_visualNodeParams.Create(subsetCount);
+	m_materialList.Initialize(subsetCount, true);	// TODO: 今はとりあえず必ず mainMaterial 有り (メモリ効率悪い)
 	m_subsetCount = subsetCount;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void VisualNode::SetOpacity(float opacity, int subsetIndex)
+{
+	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	m_materialList.GetMainMaterial()->SetOpacity(opacity);
+}
+void VisualNode::SetColorScale(const ColorF& color, int subsetIndex)
+{
+	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	m_materialList.GetMainMaterial()->SetColorScale(color.To32BitColor());
+}
+void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
+{
+	SetColorScale(ColorF(r, g, b, a));
+}
+void VisualNode::SetBlendColor(const ColorF& color, int subsetIndex)
+{
+	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	m_materialList.GetMainMaterial()->SetBlendColor(color.To32BitColor());
+}
+void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
+{
+	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	m_materialList.GetMainMaterial()->SetTone(tone);
+}
+void VisualNode::SetShader(Shader* shader, int subsetIndex)
+{
+	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);
+	m_materialList.GetMainMaterial()->SetShader(shader);
 }
 
 //-----------------------------------------------------------------------------
@@ -47,14 +83,8 @@ void VisualNode::CreateCore(SceneGraphManager* manager, int subsetCount)
 //-----------------------------------------------------------------------------
 void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
-	// 親が VisualNode であれば Visual 関係のプロパティを継承して更新する
 	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
-	if (parent != NULL && parent->GetSceneNodeType() == SceneNodeType_VisualNode) {
-		m_visualNodeParams.UpdateSubsetRenderParam(&static_cast<VisualNode*>(parent)->m_visualNodeParams);
-	}
-	else {
-		m_visualNodeParams.UpdateSubsetRenderParam(NULL);
-	}
+	m_materialList.UpdateMaterialInstances();
 
 	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }
@@ -192,13 +222,12 @@ void VisualNode::Render(RenderingParams& params)
 void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass)
 {
 	// シェーダのサブセット単位のデータを更新する
-	if (shader != NULL) {
-		shader->UpdateSubsetParams(m_visualNodeParams.GetCombinedSubsetParams(subsetIndex));
+	if (shader != nullptr) {
+		shader->UpdateSubsetParams(*m_materialList.GetMaterialInstance(subsetIndex));
 	}
 
 	// パス開始
-	if (pass != NULL) {
-		//pass->Apply();
+	if (pass != nullptr) {
 		dc->GetRenderingContext()->SetShaderPass(pass);
 	}
 

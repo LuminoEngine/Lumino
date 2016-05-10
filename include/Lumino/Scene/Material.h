@@ -34,7 +34,7 @@ public:
 	void SetTextureParameter(const StringRef& name, Texture* value);
 	
 LN_INTERNAL_ACCESS:
-	Material2();
+	Material2(int materialTypeId = 0);
 	virtual ~Material2();
 	inline int GetMaterialTypeId() const { return m_materialTypeId; }
 
@@ -115,10 +115,12 @@ class MaterialList2
 	: public tr::ReflectionObjectList<Material2*>	// SubMaterials (0 の場合もある)
 {
 public:
+	Material2* GetMainMaterial() const { return m_mainMaterial; }
 	
 LN_INTERNAL_ACCESS:
 	MaterialList2();
 	virtual ~MaterialList2();
+	void Initialize(int subMaterialCount, bool createMainMaterial);
 	void UpdateMaterialInstances();
 	int GetMaterialInstanceCount() const { return m_instanceList.GetCount(); }
 	detail::MaterialInstance* GetMaterialInstance(int index) { return &m_instanceList[index]; }
