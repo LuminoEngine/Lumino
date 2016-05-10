@@ -522,7 +522,7 @@ void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& param
 //-----------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
 {
-	if (material.m_owner->GetMaterialTypeId() != detail::MmdMaterialTypeId) return;
+	LN_CHECK_ARGS_RETURN(material.m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
 
 	MmdMaterial* ownerMaterial = static_cast<MmdMaterial*>(material.m_owner);
 

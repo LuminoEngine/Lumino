@@ -184,6 +184,7 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	{
 		if (m_priorityEntryList.IsEmpty() && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 		{
+			// TODO:
 			//LN_NOTIMPLEMENTED();
 			// 優先パラメータ未設定。 (OFFSCREENRENDERTARGET ではない)
 			// ノードの持っているシェーダを返す。

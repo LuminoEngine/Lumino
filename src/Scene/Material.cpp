@@ -76,6 +76,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Scene/Material.h>
+#include "MME/MmdMaterial.h"	// TODO
 
 LN_NAMESPACE_BEGIN
 
@@ -150,13 +151,13 @@ void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
 	Resize(subMaterialCount);
 	for (int i = 0; i < subMaterialCount; ++i)
 	{
-		auto m = RefPtr<Material2>::MakeRef();
+		auto m = RefPtr<MmdMaterial>::MakeRef();	// TODO
 		SetAt(i, m);
 	}
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = RefPtr<Material2>::MakeRef();
+		m_mainMaterial = RefPtr<MmdMaterial>::MakeRef();	// TODO
 	}
 }
 
