@@ -29,22 +29,6 @@ enum class BlendFactor
 	InverseDestinationAlpha,	/**< ブレンディング係数は、(1-Ad, 1-Ad, 1-Ad, 1-Ad) */
 };
 
-/// 合成方法を表します
-enum BlendMode
-{
-	BlendMode_Normal = 0,		///< 通常 (アルファ無視)
-	BlendMode_Alpha,			///< アルファブレンド
-	BlendMode_Add,				///< 加算
-	BlendMode_AddAlphaDisable,	///< 加算（アルファ無視）
-	BlendMode_Sub,				///< 減算
-	BlendMode_SubAlphaDisable,	///< 減算（アルファ無視）
-	BlendMode_Mul,				///< 乗算
-	BlendMode_Screen,			///< スクリーン
-	//BlendMode_Reverse,			///< リバース
-
-	BlendMode_Max,				///< (terminator)
-};
-
 /// カリング方法を表します
 enum CullingMode
 {
@@ -86,6 +70,19 @@ LN_ENUM(StencilOp)
 	Replace,					///< ステンシルデータをステンシル参照値に設定します。
 };
 LN_ENUM_DECLARE(StencilOp);
+
+
+/** 合成方法を表します */
+enum class BlendMode
+{
+	Normal,						/**< 通常 (アルファ無視) */
+	Alpha,						/**< アルファブレンド */
+	Add,						/**< 加算 */
+	AddAlphaDisabled,			/**< 加算（アルファ無視）*/
+	Subtract,					/**< 減算 */
+	SubtractAlphaDisabled,		/**< 減算（アルファ無視*/
+	MultiplyAlphaDisabled,		/**< 乗算 (アルファ無視) */
+};
 
 /**
 	@brief	グラフィックデバイスのレンダリングステートを表すクラスです。

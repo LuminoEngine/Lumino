@@ -184,7 +184,7 @@ void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Ma
 	DepthStencilState oldState2 = GetDepthStencilState();
 
 	RenderState newState1;
-	newState1.Blend = BlendMode_Alpha;	// TODO:指定できた方がいい？
+	newState1.Blend = BlendMode::Alpha;	// TODO:指定できた方がいい？
 	newState1.AlphaTest = false;
 	SetRenderState(newState1);
 

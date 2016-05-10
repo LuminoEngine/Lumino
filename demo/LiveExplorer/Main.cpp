@@ -187,6 +187,16 @@ int main()
 		}
 		return 0;
 #endif
+#if 1
+		StreamWriter file1(_T("ColorTable.txt"));
+		String line;
+		for (int i = 0; i < 256; ++i)
+		{
+			file1.Write(String::Format(_T("{0}, "), ((double)i) / 255.0));
+			if (i % 16 == 15) file1.WriteLine();
+		}
+		return 0;
+#endif
 
 
 
@@ -241,7 +251,7 @@ int main()
 		particleModel1->m_lifeTimeMax = 1.0;
 		particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
 		auto particle1 = SpriteParticle::Create3D(particleModel1);
-		particle1->SetBlendMode(BlendMode_Add);
+		particle1->SetBlendMode(BlendMode::Add);
 
 #if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());

@@ -83,15 +83,32 @@ TEST_F(IntegrateTest_Scene_Sprite, Basic)
 //-----------------------------------------------------------------------------
 TEST_F(IntegrateTest_Scene_Sprite, BlendMode)
 {
-	auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
-	auto sprite2 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+	auto sprite1 = Sprite2D::Create(tex);
+	auto sprite2 = Sprite2D::Create(tex);
+	auto sprite3 = Sprite2D::Create(tex);
+	auto sprite4 = Sprite2D::Create(tex);
+	auto sprite5 = Sprite2D::Create(tex);
+	auto sprite6 = Sprite2D::Create(tex);
 
-	sprite2->SetPosition(10, 20);
-	sprite2->SetBlendMode(BlendMode_Add);
+	sprite2->SetPosition(10, 10);
+	sprite2->SetBlendMode(BlendMode::Add);
+
+	sprite3->SetPosition(20, 20);
+	sprite3->SetBlendMode(BlendMode::Subtract);
+
+	sprite4->SetPosition(30, 30);
+	sprite4->SetBlendMode(BlendMode::AddAlphaDisabled);
+
+	sprite5->SetPosition(40, 40);
+	sprite5->SetBlendMode(BlendMode::SubtractAlphaDisabled);
+
+	sprite6->SetPosition(50, 50);
+	sprite6->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
 
 	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
 
 	Engine::UpdateFrame();
-	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
-
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png")));
+	//TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png"));
 }

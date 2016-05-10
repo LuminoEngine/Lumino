@@ -12,7 +12,7 @@ namespace detail
 
 struct VisualNodeRenderState
 {
-	BlendMode	blendMode = BlendMode::BlendMode_Alpha;
+	BlendMode	blendMode = BlendMode::Alpha;
 	CullingMode	cullingMode = CullingMode_Back;
 	bool		depthTestEnabled = true;
 	bool		depthWriteEnabled = true;

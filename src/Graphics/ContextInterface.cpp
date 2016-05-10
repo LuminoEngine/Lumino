@@ -177,71 +177,68 @@ void IContext::SetBlendMode(BlendMode mode)
 {
 	switch (mode)
 	{
-	case BlendMode_Normal:
-		SetAlphaBlendEnabled(false);
-		break;
-	case BlendMode_Alpha:
-		SetAlphaBlendEnabled(false);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::SourceAlpha);
-		SetDestinationBlend(BlendFactor::InverseSourceAlpha);
-		break;
-	case BlendMode_Add:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::SourceAlpha);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode_AddAlphaDisable:
-		SetAlphaBlendEnabled(false);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::One);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode_Sub:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::ReverseSubtract);
-		SetSourceBlend(BlendFactor::SourceAlpha);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode_SubAlphaDisable:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::ReverseSubtract);
-		SetSourceBlend(BlendFactor::One);
-		SetDestinationBlend(BlendFactor::One);
-		break;
-	case BlendMode_Mul:
-		SetAlphaBlendEnabled(true);
-		SetBlendOp(BlendOp::Add);
-		SetSourceBlend(BlendFactor::Zero);
-		SetDestinationBlend(BlendFactor::SourceAlpha);
-		break;
-	//case BlendMode_Screen:
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
-	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
-	//	break;
-	//case BlendMode_Reverse:
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
-	//	break;
-	default:
-		LN_CHECK_ARGS_RETURN(0);
-		break;
+		// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
+		case BlendMode::Normal:
+			SetAlphaBlendEnabled(false);
+			SetBlendOp(BlendOp::Add);
+			SetSourceBlend(BlendFactor::One);
+			SetDestinationBlend(BlendFactor::Zero);
+			break;
+		case BlendMode::Alpha:
+			SetAlphaBlendEnabled(true);
+			SetBlendOp(BlendOp::Add);
+			SetSourceBlend(BlendFactor::SourceAlpha);
+			SetDestinationBlend(BlendFactor::InverseSourceAlpha);
+			break;
+		case BlendMode::Add:
+			SetAlphaBlendEnabled(true);
+			SetBlendOp(BlendOp::Add);
+			SetSourceBlend(BlendFactor::SourceAlpha);
+			SetDestinationBlend(BlendFactor::One);
+			break;
+		case BlendMode::AddAlphaDisabled:
+			SetAlphaBlendEnabled(true);
+			SetBlendOp(BlendOp::Add);
+			SetSourceBlend(BlendFactor::One);
+			SetDestinationBlend(BlendFactor::One);
+			break;
+		case BlendMode::Subtract:
+			SetAlphaBlendEnabled(true);
+			SetBlendOp(BlendOp::ReverseSubtract);
+			SetSourceBlend(BlendFactor::SourceAlpha);
+			SetDestinationBlend(BlendFactor::One);
+			break;
+		case BlendMode::SubtractAlphaDisabled:
+			SetAlphaBlendEnabled(true);
+			SetBlendOp(BlendOp::ReverseSubtract);
+			SetSourceBlend(BlendFactor::One);
+			SetDestinationBlend(BlendFactor::One);
+			break;
+		case BlendMode::MultiplyAlphaDisabled:
+			SetAlphaBlendEnabled(true);
+			SetBlendOp(BlendOp::Add);
+			// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
+			SetSourceBlend(BlendFactor::Zero);
+			SetDestinationBlend(BlendFactor::SourceColor);
+			break;
+		//case BlendMode_Screen:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+		//	break;
+		//case BlendMode_Reverse:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
+		//	break;
+		default:
+			LN_CHECK_ARGS_RETURN(0);
+			break;
 	}
-	/*
-	if (m_state.renderState.Blend != mode)
-	{
-		OnStateChanging();
-		m_state.renderState.Blend = mode;
-		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
-	}
-	*/
 }
 void IContext::SetCullingMode(CullingMode mode)
 {
