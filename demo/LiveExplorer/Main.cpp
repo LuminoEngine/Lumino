@@ -187,7 +187,7 @@ int main()
 		}
 		return 0;
 #endif
-#if 1
+#if 0
 		StreamWriter file1(_T("ColorTable.txt"));
 		String line;
 		for (int i = 0; i < 256; ++i)
@@ -210,7 +210,7 @@ int main()
 
 		EngineSettings appData;
 		appData.graphicsAPI = GraphicsAPI::DirectX9;
-		appData.renderingType = RenderingType::Deferred;
+		appData.renderingType = RenderingType::Immediate;
 		appData.directMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 

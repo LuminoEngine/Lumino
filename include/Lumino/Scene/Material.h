@@ -78,7 +78,7 @@ struct MaterialInstance
 			m_colorScale.MultiplyClamp(parent->GetColorScale());
 			m_blendColor.AddClamp(parent->GetBlendColor());
 			m_tone.AddClamp(parent->GetTone());
-			if (m_shader != nullptr) {
+			if (m_shader == nullptr) {
 				m_shader = parent->GetShader();
 			}
 		}

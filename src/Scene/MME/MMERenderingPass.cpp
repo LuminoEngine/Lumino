@@ -127,6 +127,8 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 //-----------------------------------------------------------------------------
 void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams)
 {
+	outParams->Shader = nullptr;
+
 	Internal::RenderingPassClientData* data = &node->m_renderingPassClientDataList[m_internalEntryID];
 
 	// node の m_internalID 番目のフィルタ情報を設定したものが this ではない。
@@ -155,11 +157,12 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 			// このオフスクリーンRTを持つシェーダが設定されているノード自身
 			else if (e.MatchingNameKey == _T("self") && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 			{
-				if (static_cast<VisualNode*>(node)->GetShader(-1) == m_ownerShader)
-				{
-					data->PriorityShaderIndex = i;
-					break;
-				}
+				LN_NOTIMPLEMENTED();
+				//if (static_cast<VisualNode*>(node)->GetShader(-1) == m_ownerShader)
+				//{
+				//	data->PriorityShaderIndex = i;
+				//	break;
+				//}
 			}
 			// ワイルドカード付きの比較
 			else if (StringTraits::Match(e.MatchingNameKey.c_str(), node->GetName().c_str()))
@@ -181,9 +184,10 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	{
 		if (m_priorityEntryList.IsEmpty() && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 		{
+			//LN_NOTIMPLEMENTED();
 			// 優先パラメータ未設定。 (OFFSCREENRENDERTARGET ではない)
 			// ノードの持っているシェーダを返す。
-			outParams->Shader = static_cast<VisualNode*>(node)->GetVisualNodeParams().GetCombinedSubsetParams(subsetIndex).SceneShader;//m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader;
+			//outParams->Shader = static_cast<VisualNode*>(node)->GetVisualNodeParams().GetCombinedSubsetParams(subsetIndex).SceneShader;//m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader;
 		}
 
 		outParams->Hide = false;
