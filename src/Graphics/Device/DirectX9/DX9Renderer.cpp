@@ -520,6 +520,49 @@ void DX9Renderer::RestoreStatus()
 //-----------------------------------------------------------------------------
 void DX9Renderer::InternalSetRenderState(const RenderState& state, bool reset)
 {
+#if 1
+	DWORD blendOpTable[] =
+	{
+		D3DBLENDOP_ADD,
+		D3DBLENDOP_SUBTRACT,
+		D3DBLENDOP_REVSUBTRACT,
+		D3DBLENDOP_MIN,
+		D3DBLENDOP_MAX,
+	};
+	DWORD blendFactorTable[] =
+	{
+		D3DBLEND_ZERO,
+		D3DBLEND_ONE,
+		D3DBLEND_SRCCOLOR,
+		D3DBLEND_INVSRCCOLOR,
+		D3DBLEND_SRCALPHA,
+		D3DBLEND_INVSRCALPHA,
+		D3DBLEND_DESTCOLOR,
+		D3DBLEND_INVDESTCOLOR,
+		D3DBLEND_DESTALPHA,
+		D3DBLEND_INVDESTALPHA,
+	};
+	if (state.alphaBlendEnabled != m_currentRenderState.alphaBlendEnabled || reset)
+	{
+		m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, (state.alphaBlendEnabled) ? TRUE : FALSE);
+		m_currentRenderState.alphaBlendEnabled = state.alphaBlendEnabled;
+	}
+	if (state.blendOp != m_currentRenderState.blendOp || reset)
+	{
+		m_dxDevice->SetRenderState(D3DRS_BLENDOP, blendOpTable[(int)state.blendOp]);
+		m_currentRenderState.blendOp = state.blendOp;
+	}
+	if (state.sourceBlend != m_currentRenderState.sourceBlend || reset)
+	{
+		m_dxDevice->SetRenderState(D3DRS_SRCBLEND, blendFactorTable[(int)state.sourceBlend]);
+		m_currentRenderState.sourceBlend = state.sourceBlend;
+	}
+	if (state.destinationBlend != m_currentRenderState.destinationBlend || reset)
+	{
+		m_dxDevice->SetRenderState(D3DRS_DESTBLEND, blendFactorTable[(int)state.destinationBlend]);
+		m_currentRenderState.destinationBlend = state.destinationBlend;
+	}
+#else
 	// 合成方法
 	if (state.Blend != m_currentRenderState.Blend || reset)
 	{
@@ -590,6 +633,7 @@ void DX9Renderer::InternalSetRenderState(const RenderState& state, bool reset)
 		//	break;
 		}
 	}
+#endif
 
 	// カリング
 	if (state.Culling != m_currentRenderState.Culling || reset)

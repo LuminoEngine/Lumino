@@ -380,6 +380,66 @@ void GLRenderer::UpdateRenderState(const RenderState& newState, bool reset)
 		//glFrontFace(GL_CW); LN_CHECK_GLERROR();
 	}
 
+#if 1
+	/* TODO: https://www.khronos.org/opengles/sdk/docs/man3/html/glBlendFuncSeparate.xhtml
+	Associated Gets
+glGet with argument GL_BLEND_SRC_RGB
+
+glGet with argument GL_BLEND_SRC_ALPHA
+
+glGet with argument GL_BLEND_DST_RGB
+
+glGet with argument GL_BLEND_DST_ALPHA
+
+glIsEnabled with argument GL_BLEND
+	*/
+	GLenum  blendOpTable[] =	// glBlendEquation
+	{
+		GL_FUNC_ADD,
+		GL_FUNC_SUBTRACT,
+		GL_FUNC_REVERSE_SUBTRACT,
+		GL_MIN,
+		GL_MAX,
+	};
+	GLenum blendFactorTable[] =	// glBlendFuncSeparate
+	{
+		GL_ZERO,
+		GL_ONE,
+		GL_SRC_COLOR,
+		GL_ONE_MINUS_SRC_COLOR,
+		GL_SRC_ALPHA,
+		GL_ONE_MINUS_SRC_ALPHA,
+		GL_DST_COLOR,
+		GL_ONE_MINUS_DST_COLOR,
+		GL_DST_ALPHA,
+		GL_ONE_MINUS_DST_ALPHA
+	};
+	if (newState.alphaBlendEnabled != m_currentRenderState.alphaBlendEnabled || reset)
+	{
+		if (newState.alphaBlendEnabled) {
+			glEnable(GL_BLEND); LN_CHECK_GLERROR();
+		}
+		else {
+			glDisable(GL_BLEND); LN_CHECK_GLERROR();
+		}
+		m_currentRenderState.alphaBlendEnabled = newState.alphaBlendEnabled;
+	}
+	if (newState.blendOp != m_currentRenderState.blendOp || reset)
+	{
+		glBlendEquation(blendOpTable[(int)newState.blendOp]); LN_CHECK_GLERROR();
+		m_currentRenderState.blendOp = newState.blendOp;
+	}
+	if (newState.sourceBlend != m_currentRenderState.sourceBlend || newState.destinationBlend != m_currentRenderState.destinationBlend || reset)
+	{
+		glBlendFuncSeparate(
+			blendFactorTable[(int)newState.sourceBlend],
+			blendFactorTable[(int)newState.destinationBlend],
+			blendFactorTable[(int)newState.sourceBlend],
+			blendFactorTable[(int)newState.destinationBlend]); LN_CHECK_GLERROR();
+		m_currentRenderState.sourceBlend = newState.sourceBlend;
+		m_currentRenderState.destinationBlend = newState.destinationBlend;
+	}
+#else
 	// 合成方法
 	if (newState.Blend != m_currentRenderState.Blend || reset)
 	{
@@ -437,7 +497,8 @@ void GLRenderer::UpdateRenderState(const RenderState& newState, bool reset)
 			// http://d.hatena.ne.jp/melpon/20070824/p1
 		}
 	}
-
+#endif
+	
 	// カリング
 	if (newState.Culling != m_currentRenderState.Culling || reset)
 	{

@@ -1,7 +1,7 @@
 #include <TestConfig.h>
 
 
-class Test_Scene_Sprite : public ::testing::Test
+class IntegrateTest_Scene_Sprite : public ::testing::Test
 {
 protected:
 	virtual void SetUp() {}
@@ -10,8 +10,21 @@ protected:
 
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_Scene_Sprite, Basic)
+TEST_F(IntegrateTest_Scene_Sprite, Basic)
 {
+	auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+
+	Engine::UpdateFrame();
+	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+
+	//while (true)
+	//{
+	//	if (!Engine::UpdateFrame()) {
+	//		break;
+	//	}
+	//}
+
+
 #if 0
 
 
@@ -64,4 +77,21 @@ TEST_F(Test_Scene_Sprite, Basic)
 #endif
 	//TestEnv::SaveScreenShot(LOCALFILE("test.png"));
 	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE("TestData/Test_Graphics_IndexBuffer.BasicTriangle.png")));
+}
+
+
+//-----------------------------------------------------------------------------
+TEST_F(IntegrateTest_Scene_Sprite, BlendMode)
+{
+	auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+	auto sprite2 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
+
+	sprite2->SetPosition(10, 20);
+	sprite2->SetBlendMode(BlendMode_Add);
+
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+
+	Engine::UpdateFrame();
+	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+
 }

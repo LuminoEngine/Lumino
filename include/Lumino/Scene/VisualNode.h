@@ -71,34 +71,32 @@ public:
 	MMEShader* GetShader(int subsetIndex = -1) { return m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader; }
 
 	/// 合成方法の設定
-	void SetBlendMode(BlendMode mode) { m_renderState.Blend = mode; }
+	void SetBlendMode(BlendMode mode) { m_renderState.blendMode = mode; }
 
 	/// 合成方法の取得
-	BlendMode GetBlendMode() const { return m_renderState.Blend; }
+	BlendMode GetBlendMode() const { return m_renderState.blendMode; }
 
 	/// 深度テストの有効設定
-	void SetDepthTestEnabled(bool flag) { m_depthStencilState.DepthTestEnabled = flag; }
+	void SetDepthTestEnabled(bool flag) { m_renderState.depthTestEnabled = flag; }
 
 	/// 深度テストの有効判定
-	bool IsDepthTestEnabled() const { return m_depthStencilState.DepthTestEnabled; }
+	bool IsDepthTestEnabled() const { return m_renderState.depthTestEnabled; }
 
 	/// 深度Writeの有効設定
-	void SetDepthWriteEnabled(bool flag) { m_depthStencilState.DepthWriteEnabled = flag; }
+	void SetDepthWriteEnabled(bool flag) { m_renderState.depthWriteEnabled = flag; }
 
 	/// 深度書き込みの有効判定
-	bool IsDepthWriteEnabled() const { return m_depthStencilState.DepthWriteEnabled; }
+	bool IsDepthWriteEnabled() const { return m_renderState.depthWriteEnabled; }
 
 	/// カリング方法の設定
-	void SetCullingMode(CullingMode mode) { m_renderState.Culling = mode; }
+	void SetCullingMode(CullingMode mode) { m_renderState.cullingMode = mode; }
 
 	/// カリング方法の取得
-	CullingMode GetCullingMode() const { return m_renderState.Culling; }
+	CullingMode GetCullingMode() const { return m_renderState.cullingMode; }
 
 public:
 
 
-	const RenderState& GetRenderState() const { return m_renderState; }
-	const DepthStencilState& GetDepthStencilState() const { return m_depthStencilState; }
 	int GetSubsetCount() const { return m_subsetCount; }
 	const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
@@ -129,6 +127,9 @@ protected:
 	virtual ~VisualNode();
 	void CreateCore(SceneGraphManager* manager, int subsetCount);
 
+LN_INTERNAL_ACCESS:
+	const detail::VisualNodeRenderState& GetVisualNodeRenderState() const { return m_renderState; }
+
 protected:
 	int						m_subsetCount;
 
@@ -140,8 +141,9 @@ protected:
 	// レンダリングステートなんかはサブセット単位で設定できるようにすることも可能だけど、
 	// 実際にサブセット単位で設定したいことってあるの？って考えるとノード単位でいいと思う。
 	// ちなみに Unity はシェーダで設定するようだ。
-	RenderState	m_renderState;
-	DepthStencilState	m_depthStencilState;
+	//RenderState	m_renderState;
+	//DepthStencilState	m_depthStencilState;
+	detail::VisualNodeRenderState	m_renderState;
 	bool					m_isVisible;
 
 	LightNodeList			m_affectLightList;

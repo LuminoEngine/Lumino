@@ -41,15 +41,14 @@ void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* nod
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
 
 	// レンダリングステートの設定
-	dc->GetRenderingContext()->SetRenderState(visualNode->GetRenderState());
-	dc->GetRenderingContext()->SetDepthStencilState(visualNode->GetDepthStencilState());
+	const detail::VisualNodeRenderState& state = visualNode->GetVisualNodeRenderState();
+	RenderingContext* r = dc->GetRenderingContext();
+	r->ResetStates();
+	r->SetBlendMode(state.blendMode);
+	r->SetCullingMode(state.cullingMode);
+	r->SetDepthTestEnabled(state.depthTestEnabled);
+	r->SetDepthWriteEnabled(state.depthWriteEnabled);
 	visualNode->OnRender(dc);
-
-	//int subsetCount = visualNode->GetSubsetCount();
-	//for (int iSubset = 0; iSubset < subsetCount; iSubset++)
-	//{
-	//	RenderSubset(params, visualNode, iSubset);
-	//}
 }
 
 //-----------------------------------------------------------------------------

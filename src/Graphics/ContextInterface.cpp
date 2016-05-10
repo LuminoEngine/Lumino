@@ -137,6 +137,140 @@ void IContext::SetRenderState(const RenderState& state)
 	}
 }
 
+void IContext::SetAlphaBlendEnabled(bool enabled)
+{
+	if (m_state.renderState.alphaBlendEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.renderState.alphaBlendEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetBlendOp(BlendOp op)
+{
+	if (m_state.renderState.blendOp != op)
+	{
+		OnStateChanging();
+		m_state.renderState.blendOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetSourceBlend(BlendFactor blend)
+{
+	if (m_state.renderState.sourceBlend != blend)
+	{
+		OnStateChanging();
+		m_state.renderState.sourceBlend = blend;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetDestinationBlend(BlendFactor blend)
+{
+	if (m_state.renderState.destinationBlend != blend)
+	{
+		OnStateChanging();
+		m_state.renderState.destinationBlend = blend;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetBlendMode(BlendMode mode)
+{
+	switch (mode)
+	{
+	case BlendMode_Normal:
+		SetAlphaBlendEnabled(false);
+		break;
+	case BlendMode_Alpha:
+		SetAlphaBlendEnabled(false);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::SourceAlpha);
+		SetDestinationBlend(BlendFactor::InverseSourceAlpha);
+		break;
+	case BlendMode_Add:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::SourceAlpha);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode_AddAlphaDisable:
+		SetAlphaBlendEnabled(false);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::One);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode_Sub:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::ReverseSubtract);
+		SetSourceBlend(BlendFactor::SourceAlpha);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode_SubAlphaDisable:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::ReverseSubtract);
+		SetSourceBlend(BlendFactor::One);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode_Mul:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::Zero);
+		SetDestinationBlend(BlendFactor::SourceAlpha);
+		break;
+	//case BlendMode_Screen:
+	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
+	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+	//	break;
+	//case BlendMode_Reverse:
+	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
+	//	break;
+	default:
+		LN_CHECK_ARGS_RETURN(0);
+		break;
+	}
+	/*
+	if (m_state.renderState.Blend != mode)
+	{
+		OnStateChanging();
+		m_state.renderState.Blend = mode;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+	*/
+}
+void IContext::SetCullingMode(CullingMode mode)
+{
+	if (m_state.renderState.Culling != mode)
+	{
+		OnStateChanging();
+		m_state.renderState.Culling = mode;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetFillMode(FillMode mode)
+{
+	if (m_state.renderState.Fill != mode)
+	{
+		OnStateChanging();
+		m_state.renderState.Fill = mode;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetAlphaTestEnabled(bool enabled)
+{
+	if (m_state.renderState.AlphaTest != enabled)
+	{
+		OnStateChanging();
+		m_state.renderState.AlphaTest = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -156,6 +290,113 @@ void IContext::SetDepthStencilState(const DepthStencilState& state)
 		m_state.depthStencilState = state;
 		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
 	}
+}
+
+void IContext::SetDepthTestEnabled(bool enabled)
+{
+	if (m_state.depthStencilState.DepthTestEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.DepthTestEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetDepthWriteEnabled(bool enabled)
+{
+	if (m_state.depthStencilState.DepthWriteEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.DepthWriteEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetDepthTestFunc(CompareFunc func)
+{
+	if (m_state.depthStencilState.DepthTestFunc != func)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.DepthTestFunc = func;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetStencilEnabled(bool enabled)
+{
+	if (m_state.depthStencilState.StencilEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetStencilFunc(CompareFunc func)
+{
+	if (m_state.depthStencilState.StencilFunc != func)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilFunc = func;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetStencilReferenceValue(uint8_t value)
+{
+	if (m_state.depthStencilState.StencilReferenceValue != value)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilReferenceValue = value;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetStencilFailOp(StencilOp op)
+{
+	if (m_state.depthStencilState.StencilFailOp != op)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilFailOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetStencilDepthFailOp(StencilOp op)
+{
+	if (m_state.depthStencilState.StencilDepthFailOp != op)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilDepthFailOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void IContext::SetStencilPassOp(StencilOp op)
+{
+	if (m_state.depthStencilState.StencilPassOp != op)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilPassOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void IContext::ResetStates()
+{
+	SetAlphaBlendEnabled(RenderState::Default.alphaBlendEnabled);
+	SetBlendOp(RenderState::Default.blendOp);
+	SetSourceBlend(RenderState::Default.sourceBlend);
+	SetDestinationBlend(RenderState::Default.destinationBlend);
+	SetCullingMode(RenderState::Default.Culling);
+	SetFillMode(RenderState::Default.Fill);
+	SetAlphaTestEnabled(RenderState::Default.alphaBlendEnabled);
+
+	SetDepthTestEnabled(DepthStencilState::Default.DepthTestEnabled);
+	SetDepthWriteEnabled(DepthStencilState::Default.DepthWriteEnabled);
+	SetDepthTestFunc(DepthStencilState::Default.DepthTestFunc);
+	SetStencilEnabled(DepthStencilState::Default.StencilEnabled);
+	SetStencilFunc(DepthStencilState::Default.StencilFunc);
+	SetStencilReferenceValue(DepthStencilState::Default.StencilReferenceValue);
+	SetStencilFailOp(DepthStencilState::Default.StencilFailOp);
+	SetStencilDepthFailOp(DepthStencilState::Default.StencilDepthFailOp);
+	SetStencilPassOp(DepthStencilState::Default.StencilPassOp);
 }
 
 //-----------------------------------------------------------------------------

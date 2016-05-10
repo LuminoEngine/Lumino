@@ -5,15 +5,23 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
+//=============================================================================
+// RenderState
+//=============================================================================
+const RenderState RenderState::Default;
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 RenderState::RenderState()
-	: Blend(BlendMode_Alpha)
+	: alphaBlendEnabled(false)
+	, blendOp(BlendOp::Add)
+	, sourceBlend(BlendFactor::One)
+	, destinationBlend(BlendFactor::Zero)
+	, Blend(BlendMode_Alpha)
 	, Culling(CullingMode_Back)
 	, Fill(FillMode_Solid)
 	, AlphaTest(true)
-	//, PointSprite(false)
 {}
 
 //-----------------------------------------------------------------------------
@@ -25,10 +33,10 @@ uint32_t RenderState::GetHashCode() const
 		((uint32_t)Blend) * 1000000 +
 		((uint32_t)Culling) * 100000 +
 		((uint32_t)Fill) * 10000 +
-		((uint32_t)AlphaTest) * 1000/* +
-		((uint32_t)DepthTest) * 100 +
-		((uint32_t)DepthWrite) * 10*/;
-		//((uint32_t)PointSprite);
+		((uint32_t)AlphaTest) * 1000 +
+		((uint32_t)blendOp) * 100 +
+		((uint32_t)sourceBlend) * 10 +
+		((uint32_t)destinationBlend);
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +48,10 @@ bool RenderState::Equals(const RenderState& state) const
 		Blend == state.Blend &&
 		Culling == state.Culling &&
 		Fill == state.Fill &&
-		AlphaTest == state.AlphaTest;
+		AlphaTest == state.AlphaTest &&
+		blendOp == state.blendOp &&
+		sourceBlend == state.sourceBlend &&
+		destinationBlend == state.destinationBlend;
 }
 
 //-----------------------------------------------------------------------------
@@ -52,16 +63,18 @@ bool RenderState::operator == (const RenderState& obj) const
 		Blend == obj.Blend &&
 		Culling == obj.Culling &&
 		Fill == obj.Fill &&
-		AlphaTest == obj.AlphaTest/* &&
-		DepthTest == obj.DepthTest &&
-		DepthWrite == obj.DepthWrite*/;
-		//PointSprite == obj.PointSprite;
+		AlphaTest == obj.AlphaTest &&
+		blendOp == obj.blendOp &&
+		sourceBlend == obj.sourceBlend &&
+		destinationBlend == obj.destinationBlend;
 }
 
 
 //=============================================================================
 // DepthStencilState
 //=============================================================================
+const DepthStencilState DepthStencilState::Default;
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------

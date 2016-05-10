@@ -2,6 +2,12 @@
 /* GLSL : よくあるミス
  * http://kumar.hateblo.jp/entry/2013/08/28/200708
  */
+
+/*
+	HLSL pass render state
+	https://msdn.microsoft.com/en-us/library/windows/desktop/bb173347(v=vs.85).aspx
+
+*/
 #include "../../../Internal.h"
 #include <Lumino/Graphics/GraphicsException.h>
 #include "GLGraphicsDevice.h"

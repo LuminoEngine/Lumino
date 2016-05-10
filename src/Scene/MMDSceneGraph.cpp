@@ -45,7 +45,7 @@ MMDSceneGraph::~MMDSceneGraph()
 	LN_SAFE_RELEASE(m_effectBatchRendererNode);
 	LN_SAFE_RELEASE(m_defaultRoot);
 	LN_SAFE_RELEASE(m_default3DCamera);
-	LN_SAFE_RELEASE(m_defaultMaterial);
+	//LN_SAFE_RELEASE(m_defaultMaterial);
 }
 
 //-----------------------------------------------------------------------------

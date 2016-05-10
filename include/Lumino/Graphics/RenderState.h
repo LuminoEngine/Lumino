@@ -4,6 +4,31 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
+/** ブレンディングの演算方法 */
+enum class BlendOp
+{
+	Add,						/**< 転送元に転送先を加算する。*/
+	Subtract,					/**< 転送元から転送先を減算する。*/
+	ReverseSubtract,			/**< 転送先から転送元を減算する。*/
+	Min,						/**< 転送先と転送元から小さいほうを使用する。*/
+	Max,						/**< 転送先と転送元から大きいほうを使用する。*/
+};
+
+/** ブレンディングの係数 */
+enum class BlendFactor
+{
+	Zero,						/**< ブレンディング係数は、(0, 0, 0, 0) */
+	One,						/**< ブレンディング係数は、(1, 1, 1, 1) */
+	SourceColor,				/**< ブレンディング係数は、(Rs, Gs, Bs, As) */
+	InverseSourceColor,			/**< ブレンディング係数は、(1-Rs, 1-Gs, 1-Bs, 1-As) */
+	SourceAlpha,				/**< ブレンディング係数は、(As, As, As, As) */
+	InverseSourceAlpha,			/**< ブレンディング係数は、(1-As, 1-As, 1-As, 1-As) */
+	DestinationColor,			/**< ブレンディング係数は、(Rd, Gd, Bd, Ad) */
+	InverseDestinationColor,	/**< ブレンディング係数は、(1-Rd, 1-Gd, 1-Bd, 1-Ad) */
+	DestinationAlpha,			/**< ブレンディング係数は、(Ad, Ad, Ad, Ad) */
+	InverseDestinationAlpha,	/**< ブレンディング係数は、(1-Ad, 1-Ad, 1-Ad, 1-Ad) */
+};
+
 /// 合成方法を表します
 enum BlendMode
 {
@@ -68,11 +93,27 @@ LN_ENUM_DECLARE(StencilOp);
 class RenderState
 {
 public:
+	static const RenderState Default;
 
-	BlendMode		Blend;			///< 合成方法 (default:BlendMode::Alpha)
+	//static const bool DefaultAlphaBlendEnabled = false;
+	//static const BlendOp DefaultBlendOp = BlendOp::Add;
+	//static const BlendFactor DefaultSourceBlend = BlendFactor::One;
+	//static const BlendFactor DefaultDestinationBlend = BlendFactor::Zero;
+
+	//static const CullingMode DefaultCullingMode = CullingMode_Back;
+	//static const FillMode DefaultFillMode = FillMode_Solid;
+	//static const bool DefaultAlphaTestEnabled = true;
+
+
+	bool			alphaBlendEnabled;	/**< アルファブレンドの有無 */
+	BlendOp			blendOp;			/**< ブレンディングの演算方法 (default: Add) */
+	BlendFactor		sourceBlend;		/**< ブレンディングの係数 (default: One) */
+	BlendFactor		destinationBlend;	/**< ブレンディングの係数 (default: Zero) */
+	
+	BlendMode		Blend;	/*TODO: 廃止予定*/		///< 合成方法 (default:BlendMode::Alpha)
 	CullingMode		Culling;		///< カリング方法 (default:CullingMode_Back)
-	FillMode		Fill;			///< 塗りつぶし方法 (default:FillMode_Solid。Opengl ES では無効)
-	bool			AlphaTest;      ///< アルファテストの有無 (default:true。Opengl ES では無効)
+	FillMode		Fill;			///< 塗りつぶし方法 (default:FillMode_Solid)
+	bool			AlphaTest;      ///< アルファテストの有無 (default:true)
 	//bool			PointSprite;	///< ポイントスプライトモードの有無 (default:false)
 
 public:
@@ -100,6 +141,8 @@ public:
 class DepthStencilState
 {
 public:
+	static const DepthStencilState Default;
+
 	bool		DepthTestEnabled;		///< 深度テストの有無 (default:true)
 	bool		DepthWriteEnabled;		///< 深度書き込みの有無 (default:true)
 	CompareFunc	DepthTestFunc;			///< 深度テストの比較関数 (default:LessEqual)

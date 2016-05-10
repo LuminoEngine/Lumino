@@ -62,6 +62,14 @@
 		
 		Uity - Material
 		http://docs.unity3d.com/ja/current/ScriptReference/Material.html
+		
+	
+	RenderState は Node に持たせるべきか Material に持たせるべきか
+		- Unity → ShaderのPassから
+		- Ogre → Material
+		
+		Material に持たせる場合、「持っていない」という情報も必要。
+		ほとんどの場合は Node に持たせておけば用は足りる。
 */
 
 #include "Internal.h"

@@ -34,7 +34,7 @@ LN_INTERNAL_ACCESS:
 	//virtual Material2* CreateMaterial() override;
 
 private:
-	Material2*		m_defaultMaterial;
+	//Material2*		m_defaultMaterial;
 	SceneNode*		m_defaultRoot;
 	//SceneNode*		m_default3DRoot;
 	//SceneNode*		m_default2DRoot;
