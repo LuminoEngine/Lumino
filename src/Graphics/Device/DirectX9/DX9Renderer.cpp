@@ -520,7 +520,7 @@ void DX9Renderer::RestoreStatus()
 //-----------------------------------------------------------------------------
 void DX9Renderer::InternalSetRenderState(const RenderState& state, bool reset)
 {
-#if 1
+	// Blending
 	DWORD blendOpTable[] =
 	{
 		D3DBLENDOP_ADD,
@@ -562,84 +562,12 @@ void DX9Renderer::InternalSetRenderState(const RenderState& state, bool reset)
 		m_dxDevice->SetRenderState(D3DRS_DESTBLEND, blendFactorTable[(int)state.destinationBlend]);
 		m_currentRenderState.destinationBlend = state.destinationBlend;
 	}
-#else
-	// 合成方法
-	if (state.Blend != m_currentRenderState.Blend || reset)
-	{
-		switch (state.Blend)
-		{
-		case BlendMode_Normal:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 127);
-			break;
-		case BlendMode_Alpha:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
-			break;
-		case BlendMode_Add:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-			break;
-		case BlendMode_AddAlphaDisable:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-			break;
-		case BlendMode_Sub:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-			break;
-		case BlendMode_SubAlphaDisable:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-			break;
-		case BlendMode_Mul:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCCOLOR);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-			break;
-		case BlendMode_Screen:
-			m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
-			m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
-			m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
-			break;
-		//case BlendMode_Reverse:
-		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
-		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
-		//	break;
-		}
-	}
-#endif
 
 	// カリング
 	if (state.Culling != m_currentRenderState.Culling || reset)
 	{
 		const uint32_t tb[] = { D3DCULL_NONE, D3DCULL_CCW, D3DCULL_CW };
-		m_dxDevice->SetRenderState(D3DRS_CULLMODE, tb[state.Culling]);
+		m_dxDevice->SetRenderState(D3DRS_CULLMODE, tb[(int)state.Culling]);
 	}
 	// 塗りつぶし方法
 	if (state.Fill != m_currentRenderState.Fill || reset)

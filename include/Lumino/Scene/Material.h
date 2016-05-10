@@ -125,7 +125,7 @@ LN_INTERNAL_ACCESS:
 	
 private:
 	RefPtr<Material2>				m_mainMaterial;
-	Array<detail::MaterialInstance>	m_instanceList;	// SubMaterials が 0 なら mainMaterial からつくり、必ず1個以上ある。
+	Array<detail::MaterialInstance>	m_instanceList;
 };
 
 LN_NAMESPACE_END

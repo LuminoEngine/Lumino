@@ -380,8 +380,7 @@ void GLRenderer::UpdateRenderState(const RenderState& newState, bool reset)
 		//glFrontFace(GL_CW); LN_CHECK_GLERROR();
 	}
 
-#if 1
-	/* TODO: https://www.khronos.org/opengles/sdk/docs/man3/html/glBlendFuncSeparate.xhtml
+	/* TODO: ステート保存 https://www.khronos.org/opengles/sdk/docs/man3/html/glBlendFuncSeparate.xhtml
 	Associated Gets
 glGet with argument GL_BLEND_SRC_RGB
 
@@ -393,6 +392,7 @@ glGet with argument GL_BLEND_DST_ALPHA
 
 glIsEnabled with argument GL_BLEND
 	*/
+	// Blending
 	GLenum  blendOpTable[] =	// glBlendEquation
 	{
 		GL_FUNC_ADD,
@@ -439,79 +439,20 @@ glIsEnabled with argument GL_BLEND
 		m_currentRenderState.sourceBlend = newState.sourceBlend;
 		m_currentRenderState.destinationBlend = newState.destinationBlend;
 	}
-#else
-	// 合成方法
-	if (newState.Blend != m_currentRenderState.Blend || reset)
-	{
-		switch (newState.Blend)
-		{
-		case BlendMode_Normal:
-			glDisable(GL_BLEND);                  LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_ADD);         LN_CHECK_GLERROR();
-			glBlendFunc(GL_ONE, GL_ZERO);         LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.5f );        LN_CHECK_GLERROR();
-			break;
-		case BlendMode_Alpha:
-			glEnable(GL_BLEND);                                   LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_ADD);                         LN_CHECK_GLERROR();
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);    LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.01f );                       LN_CHECK_GLERROR();
-			break;
-		case BlendMode_Add:
-			glEnable(GL_BLEND);                   LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_ADD);         LN_CHECK_GLERROR();
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);    LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.0f );        LN_CHECK_GLERROR();
-			break;
-		case BlendMode_AddAlphaDisable:
-			glEnable(GL_BLEND);                   LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_ADD);         LN_CHECK_GLERROR();
-			glBlendFunc(GL_ONE, GL_ONE);          LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.0f );        LN_CHECK_GLERROR();
-			break;
-		case BlendMode_Sub:
-			glEnable(GL_BLEND);                           LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);    LN_CHECK_GLERROR();
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);            LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.0f );                LN_CHECK_GLERROR();
-			break;
-		case BlendMode_SubAlphaDisable:
-			glEnable(GL_BLEND);                           LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);    LN_CHECK_GLERROR();
-			glBlendFunc(GL_ONE, GL_ONE);                  LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.0f );                LN_CHECK_GLERROR();
-			break;
-		case BlendMode_Mul:
-			glEnable(GL_BLEND);                           LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_ADD);                 LN_CHECK_GLERROR();
-			glBlendFunc(GL_BLEND_SRC_RGB, GL_ZERO);       LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.0f );                LN_CHECK_GLERROR();
-			break;
-		case BlendMode_Screen:
-			glEnable(GL_BLEND);                           LN_CHECK_GLERROR();
-			glBlendEquation(GL_FUNC_ADD);                 LN_CHECK_GLERROR();
-			glBlendFunc(GL_ONE, GL_ONE_MINUS_DST_ALPHA);  LN_CHECK_GLERROR();
-			//glAlphaFunc( GL_GREATER, 0.0f );                LN_CHECK_GLERROR();
-			break;
-			// http://memo.devjam.net/clip/538
-			// http://d.hatena.ne.jp/melpon/20070824/p1
-		}
-	}
-#endif
 	
 	// カリング
 	if (newState.Culling != m_currentRenderState.Culling || reset)
 	{
 		switch (newState.Culling)
 		{
-		case CullingMode_None:
+		case CullingMode::None:
 			glDisable(GL_CULL_FACE); LN_CHECK_GLERROR();
 			break;
-		case CullingMode_Front:
+		case CullingMode::Front:
 			glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
 			glCullFace(GL_FRONT); LN_CHECK_GLERROR();
 			break;
-		case CullingMode_Back:
+		case CullingMode::Back:
 			glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
 			glCullFace(GL_BACK); LN_CHECK_GLERROR();
 			break;

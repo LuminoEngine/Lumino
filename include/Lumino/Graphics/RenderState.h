@@ -29,14 +29,12 @@ enum class BlendFactor
 	InverseDestinationAlpha,	/**< ブレンディング係数は、(1-Ad, 1-Ad, 1-Ad, 1-Ad) */
 };
 
-/// カリング方法を表します
-enum CullingMode
+/** カリング方法 */
+enum class CullingMode
 {
-	CullingMode_None = 0,		///< 両面表示
-	CullingMode_Front,			///< 前面を描画しない
-	CullingMode_Back,			///< 裏面を描画しない
-
-	CullingMode_Max,			///< (terminator)
+	None,						/**< 両面表示 */
+	Front,						/**< 前面を描画しない */
+	Back,						/**< 裏面を描画しない */
 };
 
 /// 塗りつぶし方法を表します
@@ -72,7 +70,7 @@ LN_ENUM(StencilOp)
 LN_ENUM_DECLARE(StencilOp);
 
 
-/** 合成方法を表します */
+/** 合成方法 */
 enum class BlendMode
 {
 	Normal,						/**< 通常 (アルファ無視) */
@@ -91,16 +89,6 @@ class RenderState
 {
 public:
 	static const RenderState Default;
-
-	//static const bool DefaultAlphaBlendEnabled = false;
-	//static const BlendOp DefaultBlendOp = BlendOp::Add;
-	//static const BlendFactor DefaultSourceBlend = BlendFactor::One;
-	//static const BlendFactor DefaultDestinationBlend = BlendFactor::Zero;
-
-	//static const CullingMode DefaultCullingMode = CullingMode_Back;
-	//static const FillMode DefaultFillMode = FillMode_Solid;
-	//static const bool DefaultAlphaTestEnabled = true;
-
 
 	bool			alphaBlendEnabled;	/**< アルファブレンドの有無 */
 	BlendOp			blendOp;			/**< ブレンディングの演算方法 (default: Add) */

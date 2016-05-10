@@ -110,5 +110,4 @@ TEST_F(IntegrateTest_Scene_Sprite, BlendMode)
 
 	Engine::UpdateFrame();
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png")));
-	//TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png"));
 }

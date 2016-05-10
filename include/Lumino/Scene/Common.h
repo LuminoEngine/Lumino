@@ -173,8 +173,8 @@ struct RenderingPassClientData
 	int				PriorityShaderIndex;	///< RenderingPass::m_priorityShaderList のインデックス (-1 は一致なし)
 };
 
-};
 
+}
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
 

@@ -1,24 +1,13 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "Detail.h"
 #include <Lumino/Graphics/Texture.h>
 #include "SceneNode.h"
 #include "VisualNodeParams.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
-namespace detail
-{
-
-struct VisualNodeRenderState
-{
-	BlendMode	blendMode = BlendMode::Alpha;
-	CullingMode	cullingMode = CullingMode_Back;
-	bool		depthTestEnabled = true;
-	bool		depthWriteEnabled = true;
-};
-
-} // namespace detail 
 
 /// VisualNode
 class VisualNode
@@ -58,11 +47,11 @@ public:
 	/// 色調の取得
 	const ToneF& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
 
-	/// UV 変換行列の設定
-	void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
+	///// UV 変換行列の設定
+	//void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
 
-	/// UV 変換行列の設定
-	const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
+	///// UV 変換行列の設定
+	//const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
 
 	/// シェーダの設定
 	void SetShader(MMEShader* shader, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader = shader; }
@@ -70,29 +59,37 @@ public:
 	/// シェーダの取得
 	MMEShader* GetShader(int subsetIndex = -1) { return m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader; }
 
-	/// 合成方法の設定
+
+
+	//-------------------------------------------------------------------------
+	/** @name RenderState */
+	/** @{ */
+
+	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Alpha です。*/
 	void SetBlendMode(BlendMode mode) { m_renderState.blendMode = mode; }
 
-	/// 合成方法の取得
+	/** このノードを描画する際の合成方法を取得します。*/
 	BlendMode GetBlendMode() const { return m_renderState.blendMode; }
 
-	/// 深度テストの有効設定
-	void SetDepthTestEnabled(bool flag) { m_renderState.depthTestEnabled = flag; }
-
-	/// 深度テストの有効判定
-	bool IsDepthTestEnabled() const { return m_renderState.depthTestEnabled; }
-
-	/// 深度Writeの有効設定
-	void SetDepthWriteEnabled(bool flag) { m_renderState.depthWriteEnabled = flag; }
-
-	/// 深度書き込みの有効判定
-	bool IsDepthWriteEnabled() const { return m_renderState.depthWriteEnabled; }
-
-	/// カリング方法の設定
+	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
 	void SetCullingMode(CullingMode mode) { m_renderState.cullingMode = mode; }
 
-	/// カリング方法の取得
+	/** このノードを描画する際のカリング方法を取得します。*/
 	CullingMode GetCullingMode() const { return m_renderState.cullingMode; }
+
+	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
+	void SetDepthTestEnabled(bool flag) { m_renderState.depthTestEnabled = flag; }
+
+	/** このノードを描画する際の深度テストの有無を取得します。*/
+	bool IsDepthTestEnabled() const { return m_renderState.depthTestEnabled; }
+
+	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
+	void SetDepthWriteEnabled(bool flag) { m_renderState.depthWriteEnabled = flag; }
+
+	/** このノードを描画する際の深度書き込みの有無を取得します。*/
+	bool IsDepthWriteEnabled() const { return m_renderState.depthWriteEnabled; }
+
+	/** @} */
 
 public:
 
@@ -135,14 +132,6 @@ protected:
 
 	friend class RenderingPass;
 	Internal::VisualNodeParams		m_visualNodeParams;
-
-	// 以下のプロパティはサブセット単位で管理しない。
-	// いずれも、いわゆる設定の継承を考慮する必要があるもの。
-	// レンダリングステートなんかはサブセット単位で設定できるようにすることも可能だけど、
-	// 実際にサブセット単位で設定したいことってあるの？って考えるとノード単位でいいと思う。
-	// ちなみに Unity はシェーダで設定するようだ。
-	//RenderState	m_renderState;
-	//DepthStencilState	m_depthStencilState;
 	detail::VisualNodeRenderState	m_renderState;
 	bool					m_isVisible;
 

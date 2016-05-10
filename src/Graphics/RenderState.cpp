@@ -19,7 +19,7 @@ RenderState::RenderState()
 	, sourceBlend(BlendFactor::One)
 	, destinationBlend(BlendFactor::Zero)
 	, Blend(BlendMode::Alpha)
-	, Culling(CullingMode_Back)
+	, Culling(CullingMode::Back)
 	, Fill(FillMode_Solid)
 	, AlphaTest(true)
 {}
