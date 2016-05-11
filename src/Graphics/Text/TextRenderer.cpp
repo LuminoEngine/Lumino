@@ -34,7 +34,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 
-//=============================================================================
+//==============================================================================
 struct TextRendererCore_SetStateCommand : public RenderingCommand
 {
 	TextRendererCore*	m_core;
@@ -55,7 +55,7 @@ struct TextRendererCore_SetStateCommand : public RenderingCommand
 };
 
 #if 0
-//=============================================================================
+//==============================================================================
 struct TextRendererCore_DrawGlyphRunCommand : public RenderingCommand
 {
 	TextRendererCore* m_core;
@@ -96,7 +96,7 @@ struct TextRendererCore_DrawGlyphRunCommand : public RenderingCommand
 	}
 };
 
-//=============================================================================
+//==============================================================================
 struct TextRendererCore_FlushCommand : public RenderingCommand
 {
 	TextRendererCore* m_core;
@@ -105,9 +105,9 @@ struct TextRendererCore_FlushCommand : public RenderingCommand
 };
 #endif
 
-//=============================================================================
+//==============================================================================
 // TextRendererCore
-//=============================================================================
+//==============================================================================
 	
 static const byte_t g_TextRenderer_fx_Data[] =
 {
@@ -115,9 +115,7 @@ static const byte_t g_TextRenderer_fx_Data[] =
 };
 static const size_t g_TextRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TextRenderer_fx_Data);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextRendererCore::TextRendererCore()
 	: m_manager(nullptr)
 	, m_renderer(nullptr)
@@ -128,9 +126,7 @@ TextRendererCore::TextRendererCore()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextRendererCore::~TextRendererCore()
 {
 	LN_SAFE_RELEASE(m_shader.shader);
@@ -138,9 +134,7 @@ TextRendererCore::~TextRendererCore()
 	LN_SAFE_RELEASE(m_indexBuffer);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRendererCore::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
@@ -167,9 +161,7 @@ void TextRendererCore::Initialize(GraphicsManager* manager)
 	m_shader.varPixelStep = m_shader.shader->GetVariableByName(_T("g_pixelStep"));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize)
 {
 	m_shader.varWorldMatrix->SetMatrix(world);
@@ -177,9 +169,7 @@ void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, con
 	m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Internal::FontGlyphTextureCache* cache, RenderingCommandList* cmdList /*Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture*//*, const ColorF& foreColor, const ColorF& strokeColor*/)
 {
 	//m_glyphsMaskTexture = glyphsTexture;
@@ -218,9 +208,7 @@ void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* 
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 {
 	if (m_indexCache.GetCount() == 0) { return; }
@@ -244,9 +232,7 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	m_indexCache.Clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& srcUVRect)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
@@ -276,13 +262,11 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 	m_vertexCache.Add(v);
 }
 
-//=============================================================================
+//==============================================================================
 // TextRenderer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextRenderer::TextRenderer()
 	: m_manager(nullptr)
 	, m_core(nullptr)
@@ -292,17 +276,13 @@ TextRenderer::TextRenderer()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextRenderer::~TextRenderer()
 {
 	LN_SAFE_RELEASE(m_font);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
@@ -310,45 +290,35 @@ void TextRenderer::Initialize(GraphicsManager* manager)
 	SetFont(m_manager->GetFontManager()->GetDefaultFont());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::SetTransform(const Matrix& matrix)
 {
 	m_transform = matrix;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::SetViewProjMatrix(const Matrix& matrix)
 {
 	m_viewProj = matrix;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::SetViewPixelSize(const Size& size)
 {
 	m_viewPixelSize = size;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::SetFont(Font* font)
 {
 	LN_REFOBJ_SET(m_font, font);
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawGlyphRun(const Point& position, GlyphRun* glyphRun)
 {
 	DrawGlyphRun(PointF((float)position.x, (float)position.y), glyphRun);
@@ -360,17 +330,13 @@ void TextRenderer::DrawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 	DrawGlyphsInternal(position, glyphRun->RequestLayoutItems(), glyphRun->LookupFontGlyphTextureCache());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawString(const String& str, const PointF& position)
 {
 	DrawString(str.c_str(), str.GetLength(), position);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& position)
 {
 	length = (length < 0) ? StringTraits::StrLen(str) : length;
@@ -389,9 +355,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& positi
 	DrawGlyphsInternal(position, result.Items, cache);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
 {
 	length = (length < 0) ? StringTraits::StrLen(str) : length;
@@ -427,9 +391,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, S
 	DrawGlyphsInternal(rect.GetTopLeft(), result.Items, cache);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawGlyphsInternal(const PointF& position, const Array<TextLayoutResultItem>& layoutItems, Internal::FontGlyphTextureCache* cache)
 {
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
@@ -534,9 +496,7 @@ void TextRenderer::DrawGlyphsInternal(const PointF& position, const Array<TextLa
 #endif
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::Flush()
 {
 #if 0
@@ -548,9 +508,7 @@ void TextRenderer::Flush()
 #endif
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりたいこと
 {
 	m_core->ActivateFront(this);
@@ -567,13 +525,11 @@ void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりた
 
 #if 0
 
-//=============================================================================
+//==============================================================================
 // TextRenderer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextRenderer::TextRenderer(Bitmap* targetBitmap, Font* font)
 	: m_targetBitmap(targetBitmap)
 	, m_font(font)
@@ -588,16 +544,12 @@ TextRenderer::TextRenderer(Bitmap* targetBitmap, Font* font)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextRenderer::~TextRenderer()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawText(const char* text, int length)
 {
 	LN_VERIFY_RETURN(text != NULL);
@@ -618,9 +570,7 @@ void TextRenderer::DrawText(const char* text, int length)
 	DrawTextHorizontal((UTF32*)m_utf32Buffer.GetData(), result.BytesUsed / sizeof(UTF32));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawText(const wchar_t* text, int length)
 {
 	LN_VERIFY_RETURN(text != NULL);
@@ -641,9 +591,7 @@ void TextRenderer::DrawText(const wchar_t* text, int length)
 	DrawTextHorizontal((UTF32*)m_utf32Buffer.GetData(), result.BytesUsed / sizeof(UTF32));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawTextHorizontal(const UTF32* text, int length)
 {
 	Rect lineArea(0, 0, m_areaBox.Width, m_font->GetLineHeight());
@@ -683,9 +631,7 @@ void TextRenderer::DrawTextHorizontal(const UTF32* text, int length)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const Rect& lineArea)
 {
 	// 描く必要がない

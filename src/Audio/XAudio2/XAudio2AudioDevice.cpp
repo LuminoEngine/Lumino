@@ -8,9 +8,9 @@ LN_NAMESPACE_AUDIO_BEGIN
 namespace detail
 {
 
-//=============================================================================
+//==============================================================================
 // XAudio2AudioPlayerBase 
-//=============================================================================
+//==============================================================================
 
 // 背面の音源が減衰されるコーンの設定
 static const X3DAUDIO_CONE sListener_DirectionalCone = {
@@ -23,9 +23,7 @@ static const X3DAUDIO_CONE sListener_DirectionalCone = {
 // 音が完全に聞こえなくなる距離 (XACT 使えばこんなのいらないっぽいけど、なんか面倒なので)
 static const float OuterDistance    = 14.0f;
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 XAudio2AudioDevice::XAudio2AudioDevice()
     : mXAudio                   ( NULL )
     , mMasteringVoice           ( NULL )
@@ -38,9 +36,7 @@ XAudio2AudioDevice::XAudio2AudioDevice()
     memset( mX3DInstance, 0, sizeof( mX3DInstance ) );
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 XAudio2AudioDevice::~XAudio2AudioDevice()
 {
     //SAFE_DELETE( mDirectMusicAudioDevice );
@@ -64,9 +60,7 @@ XAudio2AudioDevice::~XAudio2AudioDevice()
     }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 {
     mX3DAudioModule = ::LoadLibrary( _T( "X3DAudio1_7.dll" ) );
@@ -153,9 +147,7 @@ bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
     return true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
 {
     if ( emitter )
@@ -186,9 +178,7 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
     }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<AudioPlayer> audioPlayer;
@@ -231,9 +221,7 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 	return audioPlayer;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void XAudio2AudioDevice::Update()
 {
     mListenerState.OrientFront.x = m_soundListenerData.Direction.x;
@@ -252,9 +240,7 @@ void XAudio2AudioDevice::Update()
     //if ( mDirectMusicAudioDevice ) mDirectMusicAudioDevice->update();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void XAudio2AudioDevice::SetListenerState(const Vector3& position, const Vector3& front)
 //{
 //    // 念のために正規化してから設定する
@@ -268,18 +254,16 @@ void XAudio2AudioDevice::Update()
 //	mListenerState.Position.z = position.z;
 //}
 
-//=============================================================================
+//==============================================================================
 // EmitterState 
-//=============================================================================
+//==============================================================================
 
 static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_LFE_CurvePoints[ 3 ]		= { 0.0f, 1.0f, 0.25f, 0.0f, 1.0f, 0.0f };
 static const X3DAUDIO_DISTANCE_CURVE       Emitter_LFE_Curve				= { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_LFE_CurvePoints[0], 3 };
 static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_Reverb_CurvePoints[ 3 ]	= { 0.0f, 0.5f, 0.75f, 1.0f, 1.0f, 0.0f };
 static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve				= { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_Reverb_CurvePoints[0], 3 };
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 EmitterState::EmitterState(uint32_t input_channels)//, lnU32 output_channels_ )
 {
         
@@ -330,17 +314,13 @@ EmitterState::EmitterState(uint32_t input_channels)//, lnU32 output_channels_ )
 	DSPSettings.pMatrixCoefficients	= MatrixCoefficients;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 EmitterState::~EmitterState()
 {
     LN_SAFE_DELETE_ARRAY( EmitterAzimuths );
 	LN_SAFE_DELETE_ARRAY(MatrixCoefficients);
 }
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void EmitterState::UpdateXAudioEmitter( float scale )
 {
     Emitter.Position.x = Position.x * scale;

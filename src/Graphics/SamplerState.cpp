@@ -14,9 +14,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SamplerState::SamplerState()
 	: FilterMode(TextureFilterMode_Point)
 	, WrapMode(TextureWrapMode_Repeat)

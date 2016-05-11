@@ -20,7 +20,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 
-//=============================================================================
+//==============================================================================
 struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 {
 	PrimitiveRendererCore*	m_core;
@@ -50,7 +50,7 @@ struct PrimitiveRendererCore_SetStateCommand : public RenderingCommand
 	}
 };
 
-//=============================================================================
+//==============================================================================
 struct PrimitiveRendererCore_DrawLine : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
@@ -70,7 +70,7 @@ struct PrimitiveRendererCore_DrawLine : public RenderingCommand
 	void Execute() { m_core->DrawLine(m_from, m_fromColor, m_to, m_toColor); }
 };
 
-//=============================================================================
+//==============================================================================
 struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
@@ -80,7 +80,7 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 	void Execute() { m_core->DrawSquare(m_data); }
 };
 
-//=============================================================================
+//==============================================================================
 struct PrimitiveRendererCore_Blt : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
@@ -103,7 +103,7 @@ struct PrimitiveRendererCore_Blt : public RenderingCommand
 	void Execute() { m_core->Blt(m_source, m_dest, m_transform, m_shader); }
 };
 
-//=============================================================================
+//==============================================================================
 struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 {
 	PrimitiveRendererCore* m_core;
@@ -111,9 +111,9 @@ struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 	void Execute() { m_core->Flush(); }
 };
 
-//=============================================================================
+//==============================================================================
 // PrimitiveRendererCore
-//=============================================================================
+//==============================================================================
 //	
 //static const byte_t g_PrimitiveRenderer_fx_Data[] =
 //{
@@ -127,9 +127,7 @@ struct PrimitiveRendererCore_FlushCommand : public RenderingCommand
 //};
 //static const size_t g_PrimitiveRendererForBlt_fx_Len = LN_ARRAY_SIZE_OF(g_PrimitiveRendererForBlt_fx_Data);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PrimitiveRendererCore::PrimitiveRendererCore()
 	: m_manager(nullptr)
 	, m_renderer(nullptr)
@@ -144,9 +142,7 @@ PrimitiveRendererCore::PrimitiveRendererCore()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PrimitiveRendererCore::~PrimitiveRendererCore()
 {
 	LN_SAFE_RELEASE(m_foreTexture);
@@ -158,9 +154,7 @@ PrimitiveRendererCore::~PrimitiveRendererCore()
 	LN_SAFE_RELEASE(m_indexBuffer);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
@@ -212,9 +206,7 @@ void PrimitiveRendererCore::Initialize(GraphicsManager* manager)
 	m_vertexStride = sizeof(Vertex);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize, bool useInternalShader, PrimitiveRendererMode mode, Driver::IShader* userShader, Driver::ITexture* texture)
 {
 	float vw = (viewPixelSize.width != 0.0) ? (0.5f / viewPixelSize.width) : 0.0f;
@@ -235,18 +227,14 @@ void PrimitiveRendererCore::SetState(const Matrix& world, const Matrix& viewProj
 	LN_REFOBJ_SET(m_foreTexture, texture);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
 {
 	AddVertex(from, Vector2::Zero, fromColor);
 	AddVertex(to, Vector2::Zero, toColor);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 {
 	uint16_t i = GetCurrentVertexCount();
@@ -263,9 +251,7 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 	AddVertex(data.pos[3], data.uv[3], data.color[3]);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest, const Matrix& transform, Driver::IShader* shader)
 {
 	// Flush 済みであることが前提。
@@ -305,9 +291,7 @@ void PrimitiveRendererCore::Blt(Driver::ITexture* source, Driver::ITexture* dest
 	m_renderer->SetRenderTarget(0, oldRT);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::Flush()
 {
 	// 描画する
@@ -373,9 +357,7 @@ void PrimitiveRendererCore::Flush()
 	m_indexCache.Clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, const ColorF& color)
 {
 	uint32_t size = sizeof(Vertex);
@@ -393,13 +375,11 @@ void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, con
 	m_vertexCacheUsed += size;
 }
 
-//=============================================================================
+//==============================================================================
 // PrimitiveRenderer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PrimitiveRenderer::PrimitiveRenderer()
 	: m_manager(nullptr)
 	, m_core(nullptr)
@@ -411,9 +391,7 @@ PrimitiveRenderer::PrimitiveRenderer()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PrimitiveRenderer::~PrimitiveRenderer()
 {
 	LN_SAFE_RELEASE(m_userShader);
@@ -421,9 +399,7 @@ PrimitiveRenderer::~PrimitiveRenderer()
 	LN_SAFE_RELEASE(m_core);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
@@ -432,63 +408,49 @@ void PrimitiveRenderer::Initialize(GraphicsManager* manager)
 	m_core->Initialize(m_manager);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetTransform(const Matrix& matrix)
 {
 	m_transform = matrix;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetViewProjMatrix(const Matrix& matrix)
 {
 	m_viewProj = matrix;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetViewPixelSize(const Size& size)
 {
 	m_viewPixelSize = size;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetUseInternalShader(bool useInternalShader)
 {
 	m_useInternalShader = useInternalShader;
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetUserShader(Shader* shader)
 {
 	LN_REFOBJ_SET(m_userShader, shader);
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetTexture(Texture* texture)
 {
 	LN_REFOBJ_SET(m_texture, texture);
 	m_stateModified = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
 {
 	SetPrimitiveRendererMode(PrimitiveRendererMode::LineList);
@@ -497,9 +459,7 @@ void PrimitiveRenderer::DrawLine(const Vector3& from, const ColorF& fromColor, c
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::DrawSquare(
 	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
 	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
@@ -517,9 +477,7 @@ void PrimitiveRenderer::DrawSquare(
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 {
 	float l = rect.GetLeft();
@@ -533,9 +491,7 @@ void PrimitiveRenderer::DrawRectangle(const RectF& rect)
 		Vector3(r, b, 0), Vector2(1, 1), ColorF::White);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
 {
 	m_stateModified = true;	// Blt ではレンダーターゲットを切り替えたりするので、Flush しておく必要がある。
@@ -554,9 +510,7 @@ void PrimitiveRenderer::Blt(Texture* source, RenderTarget* dest, const Matrix& t
 		(shader != nullptr) ? shader->m_deviceObj : nullptr);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::Flush()
 {
 	if (m_flushRequested)
@@ -572,9 +526,7 @@ void PrimitiveRenderer::Flush()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
 {
 	if (mode != m_mode)
@@ -584,9 +536,7 @@ void PrimitiveRenderer::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveRenderer::CheckUpdateState()
 {
 	if (m_stateModified)

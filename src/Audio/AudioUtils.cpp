@@ -7,15 +7,13 @@ LN_NAMESPACE_AUDIO_BEGIN
 namespace detail
 {
 
-//=============================================================================
+//==============================================================================
 // AudioUtils
-//=============================================================================
+//==============================================================================
 
 #ifdef _WIN32
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)
 {
     wavFmt->wFormatTag       = lnFmt.formatTag;
@@ -27,9 +25,7 @@ void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVE
     wavFmt->cbSize           = lnFmt.exSize;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt)
 {
     lnFmt->formatTag      = wavFmt.wFormatTag;
@@ -41,9 +37,7 @@ void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, W
     lnFmt->exSize         = wavFmt.cbSize;
 }   
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 {
     if ( str )
@@ -65,9 +59,7 @@ void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 
 #endif
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 StreamFormat AudioUtils::CheckFormat(Stream* stream)
 {
 	if (!stream || stream->GetLength() < 4) {
@@ -125,9 +117,7 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 	return format;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize)
 {
 	// 作成するオーディオプレイヤーの種類を決めていく

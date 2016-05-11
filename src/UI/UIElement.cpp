@@ -10,9 +10,9 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // UIElement
-//=============================================================================
+//==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
@@ -28,9 +28,7 @@ LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyDownEvent, "KeyDown", Ke
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, KeyUpEvent, "KeyUp", KeyUp);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIKeyEventArgs, TextInputEvent, "TextInput", TextInput);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UIElement::UIElement()
 	: m_manager(nullptr)
 	, m_ownerLayoutView(nullptr)
@@ -46,17 +44,13 @@ UIElement::UIElement()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UIElement::~UIElement()
 {
 	LN_SAFE_RELEASE(m_localStyle);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::Initialize(detail::UIManager* manager)
 {
 	LN_CHECK_ARGS_RETURN(manager != nullptr);
@@ -70,18 +64,14 @@ void UIElement::Initialize(detail::UIManager* manager)
 	GoToVisualState(String::GetEmpty());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::GoToVisualState(const StringRef& stateName)
 {
 	m_currentVisualStateName = stateName;
 	m_invalidateFlags = detail::InvalidateFlags::VisualState;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::Focus()
 {
 	if (IsFocusable())
@@ -91,60 +81,50 @@ void UIElement::Focus()
 	}
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void UIElement::CaptureMouse()
 //{
 //	m_ownerLayoutView->CaptureMouse(this);
 //}
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void UIElement::ReleaseMouseCapture()
 //{
 //	m_ownerLayoutView->ReleaseMouseCapture(this);
 //}
 //
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int UIElement::GetVisualChildrenCount() const
 {
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //UIElement* UIElement::GetVisualChild(int index) const
 //{
 //	LN_THROW(0, InvalidOperationException);
 //	return nullptr;
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UIElement* UIElement::GetVisualChildOrderd(int index) const
 {
 	LN_THROW(0, InvalidOperationException);
 	return nullptr;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e)
 {
 	e->sender = sender;
 	RaiseEventInternal(ev, e);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::MeasureLayout(const SizeF& availableSize)
 {
 	//// 無効情報フラグをこの要素に伝播させる
@@ -178,9 +158,7 @@ void UIElement::MeasureLayout(const SizeF& availableSize)
 	m_invalidateFlags &= ~detail::InvalidateFlags::Font;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
@@ -215,9 +193,7 @@ void UIElement::ArrangeLayout(const RectF& finalLocalRect)
 	OnLayoutUpdated();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SizeF UIElement::MeasureOverride(const SizeF& constraint)
 {
 	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
@@ -234,24 +210,18 @@ SizeF UIElement::MeasureOverride(const SizeF& constraint)
 	return size;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SizeF UIElement::ArrangeOverride(const SizeF& finalSize)
 {
 	return finalSize;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnLayoutUpdated()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnRender(GraphicsContext* g)
 {
 	if (m_background != nullptr)
@@ -261,9 +231,7 @@ void UIElement::OnRender(GraphicsContext* g)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnMouseMove(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseMoveEvent, this, e); } }
 void UIElement::OnMouseDown(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseDownEvent, this, e); } }
 void UIElement::OnMouseUp(UIMouseEventArgs* e) { if (!e->handled) { RaiseEvent(MouseUpEvent, this, e); } }
@@ -271,9 +239,7 @@ void UIElement::OnKeyDown(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(Key
 void UIElement::OnKeyUp(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(KeyUpEvent, this, e); } }
 void UIElement::OnTextInput(UIKeyEventArgs* e) { if (!e->handled) { RaiseEvent(TextInputEvent, this, e); } }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 {
 	// 親にもマウスがはじめて乗ったのであれば親にも通知する
@@ -286,9 +252,7 @@ void UIElement::OnMouseEnter(UIMouseEventArgs* e)
 	if (!e->handled) { RaiseEvent(MouseEnterEvent, this, e); }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 {
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
@@ -304,18 +268,14 @@ void UIElement::OnMouseLeave(UIMouseEventArgs* e)
 	if (!e->handled) { RaiseEvent(MouseLeaveEvent, this, e); }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::SetParent(UIElement* parent, UILayoutView* ownerLayoutView)
 {
 	m_parent = parent;
 	m_ownerLayoutView = ownerLayoutView;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
@@ -333,17 +293,13 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 	return NULL;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::ActivateInternal(UIElement* child)
 {
 	if (m_parent != NULL) { m_parent->ActivateInternal(this); }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 {
 	/* 今のところ、イベントを再帰で通知していく必要はない。
@@ -404,9 +360,7 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 	return args->handled;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void UIElement::ApplyTemplate()
 //{
 //	/// 現在のテンプレートからビジュアルツリーを再構築します。
@@ -428,9 +382,7 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 //	ApplyTemplateHierarchy();
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle)
 {
 	// TODO: styleTable は多分 Context のルート固定でよい。
@@ -450,9 +402,7 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parent
 	UIHelper::ForEachVisualChildren(this, [styleTable, localStyle](UIElement* child) { child->ApplyTemplateHierarchy(styleTable, localStyle); });
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle)
 {
 	LN_CHECK_STATE_RETURN(m_localStyle != nullptr);
@@ -469,9 +419,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	// TODO: UITextElement::OnUpdateStyle 参照
@@ -482,18 +430,14 @@ void UIElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags inval
 		tr::Property::SetPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::OnUpdatingLayout()
 {
 	// 子要素
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->OnUpdatingLayout(); });
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::UpdateLayout()
 {
 	// TODO: ここは GetRootStyleTable を使うべき？
@@ -514,9 +458,7 @@ void UIElement::UpdateLayout()
 	ArrangeLayout(RectF(0, 0, size.width, size.height));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::UpdateTransformHierarchy()
 {
 	if (m_parent != NULL)
@@ -538,9 +480,7 @@ void UIElement::UpdateTransformHierarchy()
 	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::Render(GraphicsContext* g)
 {
 	//g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,200));
@@ -551,9 +491,7 @@ void UIElement::Render(GraphicsContext* g)
 	UIHelper::ForEachVisualChildren(this, [g](UIElement* child) { child->Render(g); });
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 {
 	LN_VERIFY_RETURN(ev != NULL);

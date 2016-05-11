@@ -5,17 +5,15 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // Win32WindowManager
-//=============================================================================
+//==============================================================================
 
 const TCHAR*	WINDOW_CLASS_NAME = _T("_LNote_");
 const TCHAR*	Win32WindowManager::PROP_WINPROC = _T("_LNWinProp_");
 const DWORD		Win32WindowManager::FULLSCREEN_STYLE = WS_POPUP;
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Win32WindowManager::Win32WindowManager(int IconResourceID)
 	//: m_comInited(false)
 {
@@ -63,9 +61,7 @@ Win32WindowManager::Win32WindowManager(int IconResourceID)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Win32WindowManager::~Win32WindowManager()
 {
 	UnregisterClass(m_windowClassName.c_str(), m_hInst);
@@ -77,9 +73,7 @@ Win32WindowManager::~Win32WindowManager()
 	//}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCreationData& data)
 {
 	if (data.UserWindow == NULL)
@@ -148,9 +142,7 @@ Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCr
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 LRESULT CALLBACK Win32WindowManager::StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//static int i = 0;
@@ -182,9 +174,7 @@ LRESULT CALLBACK Win32WindowManager::StaticWndProc(HWND hwnd, UINT msg, WPARAM w
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Win32WindowManager::SetWindowClientSize(HWND hWnd, const Size& clientSize)
 {
 	RECT rw, rc;
@@ -198,9 +188,7 @@ void Win32WindowManager::SetWindowClientSize(HWND hWnd, const Size& clientSize)
 	LN_THROW((r != FALSE), Win32Exception, GetLastError());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Win32WindowManager::AbjustLocationCentering(HWND hWnd)
 {
 	RECT rcWindow;
@@ -216,9 +204,7 @@ void Win32WindowManager::AbjustLocationCentering(HWND hWnd)
 	::SetWindowPos(hWnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
@@ -231,17 +217,13 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 	m_mainWindow.Attach(CreateNativeWindow(data));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PlatformWindow* Win32WindowManager::GetMainWindow()
 {
 	return m_mainWindow;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
@@ -253,9 +235,7 @@ PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings
 	return CreateNativeWindow(data);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Win32WindowManager::DoEvents()
 {
 	MSG msg;
@@ -272,9 +252,7 @@ void Win32WindowManager::DoEvents()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Win32WindowManager::Finalize()
 {
 	m_mainWindow.SafeRelease();

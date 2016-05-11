@@ -5,13 +5,11 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // InputController
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 InputController::InputController(detail::InputManager* manager)
 	: m_manager(manager)
 	, m_repeatIntervalStart(20)	// TODO 要調整。時間の方がいいかも？
@@ -22,16 +20,12 @@ InputController::InputController(detail::InputManager* manager)
 	m_inputStateForAny.ref = 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 InputController::~InputController()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool InputController::IsPressed(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
@@ -39,9 +33,7 @@ bool InputController::IsPressed(const StringRef& bindingName) const
 	return (state->state > 0);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool InputController::IsTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
@@ -49,9 +41,7 @@ bool InputController::IsTriggered(const StringRef& bindingName) const
 	return (state->state == 1);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool InputController::IsOffTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
@@ -59,9 +49,7 @@ bool InputController::IsOffTriggered(const StringRef& bindingName) const
 	return (state->state == -1);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool InputController::IsRepeated(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
@@ -70,9 +58,7 @@ bool InputController::IsRepeated(const StringRef& bindingName) const
 	return ((s == 1) || (s > m_repeatIntervalStart && (s % m_repeatIntervalStep) == 0));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float InputController::GetAxisValue(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.Find(bindingName);
@@ -80,9 +66,7 @@ float InputController::GetAxisValue(const StringRef& bindingName) const
 	return state->current;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void InputController::AddBinding(InputBinding* binding)
 {
 	m_bindings.Add(RefPtr<InputBinding>(binding));
@@ -102,9 +86,7 @@ void InputController::AddBinding(InputBinding* binding)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void InputController::RemoveBinding(InputBinding* binding)
 {
 	m_bindings.Remove(RefPtr<InputBinding>(binding));
@@ -116,9 +98,7 @@ void InputController::RemoveBinding(InputBinding* binding)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void InputController::ClearBindings()
 {
 	Array<RefPtr<InputBinding>> list = m_bindings;
@@ -128,18 +108,14 @@ void InputController::ClearBindings()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void InputController::SetRepeatInterval(int start, int step)
 {
 	m_repeatIntervalStart = start;
 	m_repeatIntervalStep = step;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void InputController::UpdateFrame()
 {
 	//SortedArray<String, InputState>::iterator itr = m_inputStatus.begin();
@@ -179,9 +155,7 @@ void InputController::UpdateFrame()
 	UpdateOneInputState(&m_inputStateForAny);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void InputController::UpdateOneInputState(InputState* state)
 {
 	if (state->current > 0.0f) {
@@ -198,9 +172,7 @@ void InputController::UpdateOneInputState(InputState* state)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const InputController::InputState* InputController::LockupState(const StringRef& bindingName) const
 {
 	if (bindingName.IsEmpty())

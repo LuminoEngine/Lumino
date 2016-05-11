@@ -183,23 +183,19 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // GraphicsContext
 /*		GraphicsContext は JavaFX のクラス。
 */
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GraphicsContext* GraphicsContext::GetContext()
 {
 	return GraphicsManager::GetInstance()->GetGraphicsContext();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GraphicsContext::GraphicsContext()
 	:/* m_currentRenderer(RendererType::None)
 	, */m_spriteRenderer(nullptr)
@@ -207,9 +203,7 @@ GraphicsContext::GraphicsContext()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GraphicsContext::~GraphicsContext()
 {
 	LN_SAFE_RELEASE(m_textRenderer);
@@ -217,9 +211,7 @@ GraphicsContext::~GraphicsContext()
 	LN_SAFE_RELEASE(m_geometryRenderer);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::Initialize(GraphicsManager* manager)
 {
 	IContext::Initialize(manager);
@@ -233,9 +225,7 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 	m_textRenderer->Initialize(manager);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
@@ -247,141 +237,111 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 	// ↑TODO: OnStateFlushRequested に持っていったほうがいい？
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::SetOpacity(float opacity)
 {
 	m_geometryRenderer->SetOpacity(opacity);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::SetBrush(Brush* brush)
 {
 	m_geometryRenderer->SetBrush(brush);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::SetFont(Font* font)
 {
 	m_textRenderer->SetFont(font);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->Clear(flags, color, z, stencil);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::MoveTo(const Vector3& point, const ColorF& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->MoveTo(point, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::LineTo(const Vector3& point, const ColorF& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->LineTo(point, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->BezierCurveTo(cp1, cp2, endPt, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::ClosePath()
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->ClosePath();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawPoint(point, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawRectangle(const RectF& rect, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawRectangle(rect, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawEllipse(const Vector3& center, const Vector2& radius)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawEllipse(center, radius);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
 {
 	OnDrawing(m_geometryRenderer);
 	m_geometryRenderer->DrawTexture(rect, texture, srcRect, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawText(const StringRef& text, const PointF& position)
 {
 	OnDrawing(m_textRenderer);
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), position);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags)
 {
 	OnDrawing(m_textRenderer);
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), rect, flags);
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void GraphicsContext::Flush()
 //{
 //	m_geometryRenderer->Flush();
@@ -389,9 +349,9 @@ void GraphicsContext::DrawText(const StringRef& text, const RectF& rect, StringF
 //	m_textRenderer->Flush();
 //}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //detail::GeometryRenderer* GraphicsContext::BeginDrawingContext()
 //{
 //	if (m_currentRenderer != RendererType::GeometryRenderer)
@@ -402,9 +362,7 @@ void GraphicsContext::DrawText(const StringRef& text, const RectF& rect, StringF
 //	return m_geometryRenderer;
 //}
 //
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteRenderer* GraphicsContext::BeginSpriteRendering()
 {
 	//if (m_currentRenderer != RendererType::GeometryRenderer)
@@ -415,9 +373,9 @@ SpriteRenderer* GraphicsContext::BeginSpriteRendering()
 	return m_spriteRenderer;
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void GraphicsContext::TryChangeRenderingClass(RendererType dc)
 //{
 //	if (dc != m_currentRenderer)
@@ -429,9 +387,7 @@ SpriteRenderer* GraphicsContext::BeginSpriteRendering()
 
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsContext::OnStateFlushRequested()
 {
 	IContext::OnStateFlushRequested();

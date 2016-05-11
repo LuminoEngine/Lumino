@@ -10,9 +10,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // MMEShaderBuilder
-//=============================================================================
+//==============================================================================
 
 struct LNVerNameDesc
 {
@@ -133,9 +133,7 @@ static const char* gMMEAnnotationNames[ MME_MAX_ANNOTATIONS ] =
     "SCRIPT"
 };
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, MMEShader* shader, MMEShaderErrorInfo* errorInfo)
 {
 	MMEShaderBuilder builder(manager, shader, errorInfo);
@@ -143,9 +141,7 @@ MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, MMEShader* shade
 	return builder.m_mmeShader;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShaderBuilder::MMEShaderBuilder(SceneGraphManager* manager, MMEShader* shader, MMEShaderErrorInfo* errorInfo)
 	: m_mmeShader(NULL)
 	, m_errorInfo(NULL)
@@ -157,9 +153,7 @@ MMEShaderBuilder::~MMEShaderBuilder()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShaderBuilder::Build()
 {
 	//-----------------------------------------------------
@@ -218,9 +212,7 @@ void MMEShaderBuilder::Build()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShaderBuilder::CheckVariableRequest(
 	ShaderVariable* var,
 	MMEShaderVariable* sv,
@@ -697,9 +689,7 @@ void MMEShaderBuilder::CheckVariableRequest(
 	sv->Request = req;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMESemantic MMEShaderBuilder::GetMMESemanticBySemanticName(const String& name)
 {
 	assert(LN_ARRAY_SIZE_OF(g_MMESemanticTable) == MME_MAX_SEMANTICS);
@@ -720,9 +710,7 @@ MMESemantic MMEShaderBuilder::GetMMESemanticBySemanticName(const String& name)
 	return MME_SEMANTIC_NONE;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool MMEShaderBuilder::CheckAnnotationCameraOrLight(ShaderVariable* var)
 {
 	ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
@@ -736,9 +724,7 @@ bool MMEShaderBuilder::CheckAnnotationCameraOrLight(ShaderVariable* var)
 	return true;	// TODO: とあえず、あてはまらなければ "Camera" 扱いにする
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int MMEShaderBuilder::CheckAnnotationGeometryOrLight(ShaderVariable* var)
 {
 	ShaderVariable* anno = GetAnnotationByName(var, _T("Object"));
@@ -754,9 +740,7 @@ int MMEShaderBuilder::CheckAnnotationGeometryOrLight(ShaderVariable* var)
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ShaderVariable* MMEShaderBuilder::GetAnnotationByName(ShaderVariable* var, const TCHAR* name)
 {
 	LN_FOREACH(ShaderVariable* anno, var->GetAnnotations())
@@ -768,9 +752,7 @@ ShaderVariable* MMEShaderBuilder::GetAnnotationByName(ShaderVariable* var, const
 	return NULL;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 uint32_t MMEShaderBuilder::CheckMatrixMask(MMEVariableRequest req)
 {
 	uint32_t flags = 0;

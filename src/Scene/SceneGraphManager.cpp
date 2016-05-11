@@ -1,4 +1,53 @@
 ﻿/*
+	[2016/5/11] Node の名前付け方針
+
+		何がある？
+			Camera
+			Light
+			Sprite
+			Tilemap
+			StaticMesh
+				StaticMesh2D	←これはちょっと・・・
+			SkinnedMesh
+			Skybox
+			Particle
+			Effect
+			連携するツールによって変わると思う。
+			だけどその辺を抽象化するのは割りと Model の役目なんだよな・・・。
+			Grid
+			(Shape) Line Trail
+			(Text)
+			(GUI)
+
+
+		描画空間を「型」として区別する必要ある？
+		Sprite2D と Sprite3D で特化する内容は変わる？
+
+		主に更新・描画中に、座標空間固有の処理をしたくなければ型を分ける必要ない？
+		(初期化は Initilaize2D とかで良いといえば良い。上下反転するとか)
+
+		StaticMesh2D はちょっとあんまり。
+		やっぱりクラス名にすると、そのオブジェクトの性質をイメージする。
+		Sprite2D ならまぁ、y-が上とか、左上が原点とかイメージできる特徴はあるけど。。
+
+		Cocos2d-x を参考にすると、2Dは以下のようなものがメインに使われるようだ。
+		Camera
+		Light?
+		Sprite
+		Particle
+		Tilemap
+		Grid
+		Text
+		Shape
+		こいつらなら2Dつけても確かに違和感ない気はする。
+
+		とりあえず方針
+		- 描画空間でNodeを操作するときに気をつけるべき特徴がある場合はサフィックスつける。
+		- サフィックスをつけるときはは 2D/3Dペアで必ずつける。
+		- 特に特徴なく、どちらか一方の描画空間だけで使うことを前提としている(他はユーザー責任)のであればサフィックスは必要ない。
+
+
+
 	[2015/12/2] RenderingPass::RenderNode/RenderSubset と VisualNote::Render について
 		従来は RenderingPass::RenderNode の中でサブセットループまわしていた。
 		でも、VisualNode を拡張して自前描画したいとき、DrawSubset をオーバーライドするっていうのは少し直感的ではない。
@@ -113,15 +162,13 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 	
-//=============================================================================
+//==============================================================================
 // SceneGraphManager
-//=============================================================================
+//==============================================================================
 
 SceneGraphManager* SceneGraphManager::Instance = NULL;
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	: m_fileManager(configData.FileManager, true)
 	, m_physicsManager(configData.PhysicsManager, true)
@@ -149,17 +196,13 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	m_renderingContext = LN_NEW SceneGraphRenderingContext(m_graphicsManager->GetRenderingContext(), m_graphicsManager->GetGraphicsContext());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SceneGraphManager::~SceneGraphManager()
 {
 	LN_SAFE_DELETE(m_renderingContext);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::CreateDefaultSceneGraph()
 {
 	RefPtr<MMDSceneGraph> sg(LN_NEW MMDSceneGraph(), false);
@@ -179,9 +222,7 @@ void SceneGraphManager::CreateDefaultSceneGraph()
 	m_mainViewport->AddViewportLayer(m_default2DCameraViewportLayer);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::ReleaseDefaultSceneGraph()
 {
 	m_mainViewport->RemoveViewportLayer(m_default3DCameraViewportLayer);
@@ -193,9 +234,7 @@ void SceneGraphManager::ReleaseDefaultSceneGraph()
 	LN_SAFE_RELEASE(m_default2DSceneGraph);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 {
 	if (m_default3DSceneGraph != nullptr) {
@@ -206,9 +245,7 @@ void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void SceneGraphManager::RenderDefaultSceneGraph(Texture* renderTarget)
 //{
 //	for (Camera* camera : m_allCameraList)
@@ -223,9 +260,7 @@ void SceneGraphManager::UpdateFrameDefaultSceneGraph(float elapsedTime)
 //	//}
 //}
 //
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 {
 	NodeNameMap::iterator itr = m_nodeNameMap.find(name);
@@ -235,9 +270,7 @@ SceneNode* SceneGraphManager::FindNodeFirst(const String& name)
 	return NULL;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, const String& newName)
 {
 	// もし古い名前があればリネームされたということ。一度 map から取り除く
@@ -260,9 +293,7 @@ void SceneGraphManager::OnNodeRename(SceneNode* node, const String& oldName, con
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::AddRenderingPass(RenderingPass* pass)
 {
 	// ID 割り当て
@@ -270,26 +301,20 @@ void SceneGraphManager::AddRenderingPass(RenderingPass* pass)
 	m_renderingPassIDStack.Pop();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::RemoveRenderingPass(RenderingPass* pass)
 {
 	// ID 返却
 	m_renderingPassIDStack.Push(pass->m_internalEntryID);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::AddShader(MMEShader* shader)
 {
 	m_sceneShaderList.Add(shader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneGraphManager::RemoveShader(MMEShader* shader)
 {
 	m_sceneShaderList.Remove(shader);

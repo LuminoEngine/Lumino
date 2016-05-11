@@ -573,21 +573,21 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	}; \
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7, param8);
 
-////=============================================================================
+////==============================================================================
 //struct Renderer_BeginCommand : public RenderingCommand
 //{
 //	void Create() { }
 //	void Execute() { GetRenderer()->Begin(); GetRenderer()->EnterRenderState(); }
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct Renderer_EndCommand : public RenderingCommand
 //{
 //	void Create() { }
 //	void Execute() { GetRenderer()->LeaveRenderState(); GetRenderer()->End(); }
 //};
 
-////=============================================================================
+////==============================================================================
 //struct SetRenderStateCommand : public RenderingCommand
 //{
 //	RenderState	m_state;
@@ -595,7 +595,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	void Execute() { GetRenderer()->SetRenderState(m_state); }
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct SetDepthStencilStateCommand : public RenderingCommand
 //{
 //	DepthStencilState	m_state;
@@ -603,7 +603,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	void Execute() { GetRenderer()->SetDepthStencilState(m_state); }
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct SetRenderTargetCommand : public RenderingCommand
 //{
 //	int m_index;
@@ -620,7 +620,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 
-////=============================================================================
+////==============================================================================
 //struct SetDepthBufferCommand : public RenderingCommand
 //{
 //	Driver::ITexture* m_sourceTexture;
@@ -635,7 +635,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct SetViewportCommand : public RenderingCommand
 //{
 //	Rect m_viewportRect;
@@ -643,7 +643,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	void Execute() { GetRenderer()->SetViewport(m_viewportRect); }
 //};
 
-////=============================================================================
+////==============================================================================
 //struct SetVertexBufferCommand : public RenderingCommand
 //{
 //	Driver::IVertexBuffer* m_sourceVertexBuffer;
@@ -658,7 +658,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct SetIndexBufferCommand : public RenderingCommand
 //{
 //	Driver::IIndexBuffer* m_sourceIndexBuffer;
@@ -673,7 +673,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 
-////=============================================================================
+////==============================================================================
 //struct ClearCommand : public RenderingCommand
 //{
 //	ClearFlags m_flags;
@@ -693,7 +693,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct DrawPrimitiveCommand : public RenderingCommand
 //{
 //	PrimitiveType m_primitive;
@@ -711,7 +711,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 //
-////=============================================================================
+////==============================================================================
 //struct DrawPrimitiveIndexedCommand : public RenderingCommand
 //{
 //	PrimitiveType m_primitive;
@@ -729,7 +729,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 //	}
 //};
 //
-//=============================================================================
+//==============================================================================
 struct SetSamplerStateCommand : public RenderingCommand
 {
 	Driver::ITexture* m_targetTexture;
@@ -746,7 +746,7 @@ struct SetSamplerStateCommand : public RenderingCommand
 	}
 };
 
-//=============================================================================
+//==============================================================================
 struct SetShaderVariableCommand : public RenderingCommand
 {
 	union
@@ -862,7 +862,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 	}
 };
 
-//=============================================================================
+//==============================================================================
 struct ApplyShaderPassCommand : public RenderingCommand
 {
 	Driver::IShaderPass* m_pass;
@@ -874,7 +874,7 @@ struct ApplyShaderPassCommand : public RenderingCommand
 	void Execute() { m_pass->Apply(); }
 };
 
-//=============================================================================
+//==============================================================================
 struct PresentCommand : public RenderingCommand
 {
 	SwapChain* m_targetSwapChain;
@@ -900,7 +900,7 @@ struct PresentCommand : public RenderingCommand
 	}
 };
 	
-//=============================================================================
+//==============================================================================
 struct SetSubDataTextureCommand : public RenderingCommand
 {
 	Driver::ITexture*		m_targetTexture;
@@ -926,7 +926,7 @@ struct SetSubDataTextureCommand : public RenderingCommand
 	}
 };
 
-//=============================================================================
+//==============================================================================
 //struct Texture_SetSubDataBitmapCommand : public RenderingCommand	// TODO: Bitmap を中で再構築する必要はない。
 //{
 //	//RefPtr<Device::ITexture> m_targetTexture;
@@ -963,7 +963,7 @@ struct SetSubDataTextureCommand : public RenderingCommand
 //	}
 //};
 //
-//=============================================================================
+//==============================================================================
 struct ReadLockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;
@@ -980,7 +980,7 @@ struct ReadLockTextureCommand : public RenderingCommand
 	}
 };
 
-//=============================================================================
+//==============================================================================
 struct ReadUnlockTextureCommand : public RenderingCommand
 {
 	Texture*	m_targetTexture;

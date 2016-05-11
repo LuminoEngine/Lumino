@@ -7,9 +7,9 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // UITextElement
-//=============================================================================
+//==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UITextElement, UIElement);
 LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamilyProperty, "FontFamily", m_fontFamily, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
 LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSizeProperty, "FontSize", m_fontSize, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
@@ -17,9 +17,7 @@ LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontBoldProperty, "IsFontBold", 
 LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalicProperty, "IsFontItalic", m_fontItalic, tr::PropertyMetadata(_T(""), &UITextElement::OnFontPropertyChanged));
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UITextElement::UITextElement()
 	: m_fontFamily(String::GetEmpty())
 	, m_fontSize(Font::DefaultSize)
@@ -29,16 +27,12 @@ UITextElement::UITextElement()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UITextElement::~UITextElement()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SizeF UITextElement::MeasureOverride(const SizeF& constraint)
 {
 	// フォント更新
@@ -53,9 +47,7 @@ SizeF UITextElement::MeasureOverride(const SizeF& constraint)
 	return UIElement::MeasureOverride(constraint);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UITextElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	UIElement::OnUpdateStyle(localStyle, invalidateFlags);
@@ -69,9 +61,7 @@ void UITextElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags i
 	SetFontItalic(localStyle->m_fontItalic.value);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UITextElement::OnFontPropertyChanged(tr::PropertyChangedEventArgs* e)
 {
 	m_invalidateFont = true;

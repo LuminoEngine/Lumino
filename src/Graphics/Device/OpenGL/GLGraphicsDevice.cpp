@@ -16,13 +16,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
-//=============================================================================
+//==============================================================================
 // GLGraphicsDevice
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLGraphicsDevice::GLGraphicsDevice()
 	: m_deviceState(DeviceState_Lost)
 	, m_renderer(NULL)
@@ -31,17 +29,13 @@ GLGraphicsDevice::GLGraphicsDevice()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLGraphicsDevice::~GLGraphicsDevice()
 {
 	LN_ASSERT(m_renderer == NULL);	// Finalize 済みであること
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::Initialize(const ConfigData& configData)
 {
 	m_mainWindow = configData.MainWindow;
@@ -52,9 +46,7 @@ void GLGraphicsDevice::Initialize(const ConfigData& configData)
 	Logger::WriteLine("    Requested OpenGL version : %d.%d", configData.OpenGLMajorVersion, configData.OpenGLMinorVersion);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なのでデストラクタとは別に開放用関数を用意した
 {
 	OnBeginAccessContext();
@@ -69,9 +61,7 @@ void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なので�
 	//m_allDeviceResourceList.Clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
@@ -79,9 +69,7 @@ RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(const Vertex
     return RefPtr<IVertexBuffer>::StaticCast(obj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
@@ -89,9 +77,7 @@ RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount
     return RefPtr<IIndexBuffer>::StaticCast(obj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipLevels), false);
@@ -101,36 +87,28 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const Size& size, uint
     return RefPtr<ITexture>::StaticCast(obj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //ITexture* GLGraphicsDevice::CreateTexture(const Graphics::Bitmap* bitmap, uint32_t mipLevels, TextureFormat format)
 //{
 //	LN_THROW(0, NotImplementedException);
 //	return 0;
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(Size(width, height), format, mipLevels), false);
     return RefPtr<ITexture>::StaticCast(obj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
 	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(Size(width, height), format), false);
     return RefPtr<ITexture>::StaticCast(obj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	GLShader* shader = LN_NEW GLShader();
@@ -169,61 +147,47 @@ RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, si
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ISwapChain> GLGraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
 {
 	LN_THROW(0, NotImplementedException);
 	return nullptr;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::ResetDevice()
 {
 	// 先に OnLostDevice() を呼ぶこと
 	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::OnLostDevice()
 {
 	m_deviceState = DeviceState_Pausing;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::OnResetDevice()
 {
 	m_deviceState = DeviceState_Enabled;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::LockContext()
 {
 	m_mutex.Lock();
 	OnBeginAccessContext();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::UnlockContext()
 {
 	OnEndAccessContext();
 	m_mutex.Unlock();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor)
 {
 	// GL_VERSION の文字列フォーマットは決まっている。
@@ -244,9 +208,7 @@ void GLGraphicsDevice::ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool GLGraphicsDevice::ContainsExtensionString(const char* extensionString, const char* str)
 {
 	const char* readPos = extensionString;
@@ -276,9 +238,7 @@ bool GLGraphicsDevice::ContainsExtensionString(const char* extensionString, cons
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 {
 	if (requestMajor == 0)
@@ -309,27 +269,21 @@ void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 	Logger::WriteLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::AttachRenderingThread()
 {
 	MakeCurrentContext(GetMainRenderingContext());
 	GraphicsDeviceBase::AttachRenderingThread();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::DetachRenderingThread()
 {
 	MakeCurrentContext(nullptr);
 	GraphicsDeviceBase::DetachRenderingThread();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::OnBeginAccessContext()
 {
 	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
@@ -338,9 +292,7 @@ void GLGraphicsDevice::OnBeginAccessContext()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLGraphicsDevice::OnEndAccessContext()
 {
 	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
@@ -350,9 +302,9 @@ void GLGraphicsDevice::OnEndAccessContext()
 }
 
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void GLGraphicsDevice::AddDeviceResource(IDeviceObject* obj)
 //{
 //	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
@@ -361,9 +313,9 @@ void GLGraphicsDevice::OnEndAccessContext()
 //	obj->AddRef();
 //}
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //// 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void GLGraphicsDevice::GCDeviceResource()
 //{
 //	/*

@@ -32,14 +32,12 @@ struct SpriteParticleVertex
 	static const int ElementCount = 3;
 };
 
-//=============================================================================
+//==============================================================================
 // SpriteParticleModel
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticleModel, Object);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteParticleModelPtr SpriteParticleModel::Create()
 {
 	auto ptr = SpriteParticleModelPtr::MakeRef();
@@ -47,9 +45,7 @@ SpriteParticleModelPtr SpriteParticleModel::Create()
 	return ptr;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteParticleModel::SpriteParticleModel()
 	: m_manager(nullptr)
 	, m_vertexBuffer(nullptr)
@@ -64,9 +60,7 @@ SpriteParticleModel::SpriteParticleModel()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteParticleModel::~SpriteParticleModel()
 {
 	LN_SAFE_RELEASE(m_texture);
@@ -74,25 +68,19 @@ SpriteParticleModel::~SpriteParticleModel()
 	LN_SAFE_RELEASE(m_indexBuffer);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::SetTexture(Texture* texture)
 {
 	LN_REFOBJ_SET(m_texture, texture);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::Commit()
 {
 	if (m_vertexBuffer != nullptr) return;	// Commit済み
@@ -110,9 +98,7 @@ void SpriteParticleModel::Commit()
 	m_indexBuffer = LN_NEW IndexBuffer(m_manager, m_maxParticleCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 std::shared_ptr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 {
 	auto ptr = std::make_shared<detail::SpriteParticleModelInstance>();
@@ -126,17 +112,13 @@ std::shared_ptr<detail::SpriteParticleModelInstance> SpriteParticleModel::Create
 	return ptr;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::UpdateInstance(std::shared_ptr<detail::SpriteParticleModelInstance>& instance, float deltaTime)
 {
 	instance->m_time += deltaTime;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnTime)
 {
 	data->spawnTime = spawnTime;
@@ -157,9 +139,7 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 	data->color = ColorF::Red;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition)
 {
 	float localTime = time - data->spawnTime;
@@ -184,18 +164,14 @@ void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double t
 	data->lastTime = time;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue, float maxValue)
 {
 	// TODO
 	return m_rand.GetFloatRange(minValue, maxValue);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition)
 {
 	float dt = instance->m_time - instance->m_lastSpawnTime;
@@ -343,14 +319,12 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 
 }
 
-//=============================================================================
+//==============================================================================
 // SpriteParticle
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticle, VisualNode);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteParticlePtr SpriteParticle::Create3D(SpriteParticleModel* model)
 {
 	auto ptr = SpriteParticlePtr::MakeRef();
@@ -359,25 +333,19 @@ SpriteParticlePtr SpriteParticle::Create3D(SpriteParticleModel* model)
 	return ptr;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteParticle::SpriteParticle()
 	: m_model(nullptr)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SpriteParticle::~SpriteParticle()
 {
 	LN_SAFE_RELEASE(m_model);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 {
 	VisualNode::Initialize(owner, 1);
@@ -389,9 +357,7 @@ void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 	m_materialList.GetAt(0)->SetTexture(m_model->GetTexture());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticle::OnUpdateFrame(float deltaTime)
 {
 	// TODO: 視錐台カリングでパスしなかったものは呼ぶ必要ない
@@ -399,9 +365,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 	m_model->UpdateInstance(m_instance, deltaTime);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	m_model->Render(dc->GetRenderingContext(), m_instance, dc->CurrentCamera->GetPosition());

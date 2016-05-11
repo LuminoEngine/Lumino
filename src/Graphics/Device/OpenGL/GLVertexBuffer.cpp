@@ -8,13 +8,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
-//=============================================================================
+//==============================================================================
 // GLVertexBuffer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLVertexBuffer::GLVertexBuffer()
 	: m_glVertexBuffer(0)
 	, m_byteCount(0)
@@ -24,18 +22,14 @@ GLVertexBuffer::GLVertexBuffer()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GLVertexBuffer::~GLVertexBuffer()
 {
 	glDeleteBuffers(1, &m_glVertexBuffer);
 	LN_SAFE_DELETE_ARRAY(m_data);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* initialData, DeviceResourceUsage usage)
 {
 	// 頂点宣言作成
@@ -61,9 +55,7 @@ void GLVertexBuffer::Create(const VertexElement* vertexElements, int elementsCou
 	OnResetDevice();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::CreateGLVertexElements(const VertexElement* vertexElements, int elementsCount, Array<LNGLVertexElement>* outList)
 {
 	outList->Reserve(elementsCount);
@@ -90,9 +82,7 @@ void GLVertexBuffer::CreateGLVertexElements(const VertexElement* vertexElements,
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GLVertexBuffer::GetVertexSize(const VertexElement* vertexElements, int elementsCount, int streamIndex)
 {
 	int size = 0;
@@ -105,9 +95,7 @@ int GLVertexBuffer::GetVertexSize(const VertexElement* vertexElements, int eleme
 	return size;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GLVertexBuffer::GetVertexElementTypeSize(VertexElementType type)
 {
 	switch (type)
@@ -125,9 +113,7 @@ int GLVertexBuffer::GetVertexElementTypeSize(VertexElementType type)
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized)
 {
 	static const struct _FormatType
@@ -156,9 +142,7 @@ void GLVertexBuffer::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_ty
 	*normalized	= formatTable[type].Normalize;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
@@ -166,9 +150,7 @@ void GLVertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t
 	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void* GLVertexBuffer::Lock()
 {
 	/*	glMapBuffer は使わない。
@@ -181,9 +163,7 @@ void* GLVertexBuffer::Lock()
 	return m_data;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::Unlock()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
@@ -191,17 +171,13 @@ void GLVertexBuffer::Unlock()
 	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::OnLostDevice()
 {
 	glDeleteBuffers(1, &m_glVertexBuffer); LN_CHECK_GLERROR();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GLVertexBuffer::OnResetDevice()
 {
 	glGenBuffers(1, &m_glVertexBuffer); LN_CHECK_GLERROR();

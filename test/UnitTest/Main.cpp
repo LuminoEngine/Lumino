@@ -1,9 +1,7 @@
 #include "TestConfig.h"
 #include "../../../src/EngineManager.h"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //GTEST_API_ int main(int argc, char **argv)
 //{
 //
@@ -37,9 +35,7 @@ Lumino::Renderer*			TestEnv::Renderer = NULL;
 SwapChain*		TestEnv::MainSwapChain = NULL;
 SceneGraphManager*			TestEnv::MMDSceneGraph = NULL;
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Lumino::Renderer* TestEnv::BeginRendering()
 {
 	Renderer* r = TestEnv::Renderer;
@@ -50,17 +46,13 @@ Lumino::Renderer* TestEnv::BeginRendering()
 	return r;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TestEnv::EndRendering()
 {
 	TestEnv::MainSwapChain->Present();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PathName TestEnv::MakeScreenShotPath(const char* fileName)
 {
 	PathName path(_T("TestData"));
@@ -72,9 +64,7 @@ PathName TestEnv::MakeScreenShotPath(const char* fileName)
 
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<Shader> TestEnv::CreateShader(const TCHAR* filePath)
 {
 	ByteBuffer code = FileSystem::ReadAllBytes(filePath);
@@ -83,9 +73,7 @@ RefPtr<Shader> TestEnv::CreateShader(const TCHAR* filePath)
 }
 #endif
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TestEnv::SetUp()
 {
 	Logger::Initialize(_T("test_log.txt"));
@@ -98,26 +86,20 @@ void TestEnv::SetUp()
 	Engine::Initialize(settings);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TestEnv::TearDown()
 {
 	Engine::Finalize();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TestEnv::SaveScreenShot(const TCHAR* filePath)
 {
 	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock()->Save(filePath);
 	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
 {
 	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock(), filePath);
@@ -125,9 +107,7 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
 	return r;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
 {
 	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath);
@@ -135,9 +115,7 @@ bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
 	return r;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Color MixPixels(Bitmap* bmp, int x, int y)
 {
 	const Color& c = bmp->GetPixel(x, y);
@@ -215,9 +193,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 	return pass >= ((bmp1->GetSize().height * bmp1->GetSize().width) * passRate / 100);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GTEST_API_ int main(int argc, char **argv)
 {
 #ifdef _WIN32

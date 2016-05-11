@@ -9,30 +9,24 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // VertexBuffer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VertexBuffer* VertexBuffer::Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	return Create(GraphicsManager::GetInstance(), vertexElements, elementsCount, vertexCount, data, usage);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VertexBuffer* VertexBuffer::Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	return LN_NEW VertexBuffer(manager, vertexElements, elementsCount, vertexCount, data, usage);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VertexBuffer::VertexBuffer(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 	: m_deviceObj(NULL)
 	, m_vertexElements()
@@ -49,17 +43,13 @@ VertexBuffer::VertexBuffer(GraphicsManager* manager, const VertexElement* vertex
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateVertexBuffer(vertexElements, elementsCount, m_vertexCount, data, usage);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VertexBuffer::~VertexBuffer()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ByteBuffer* VertexBuffer::Lock()
 {
 	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
@@ -72,9 +62,7 @@ ByteBuffer* VertexBuffer::Lock()
 	return &m_lockedBuffer;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VertexBuffer::Unlock()
 {
 	if (m_initialUpdate) {
@@ -85,9 +73,7 @@ void VertexBuffer::Unlock()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)

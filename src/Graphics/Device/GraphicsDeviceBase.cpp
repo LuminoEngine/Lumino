@@ -7,28 +7,22 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
-//=============================================================================
+//==============================================================================
 // GraphicsDeviceBase
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GraphicsDeviceBase::GraphicsDeviceBase()
 	: m_attachRenderingThreadId(0)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GraphicsDeviceBase::~GraphicsDeviceBase()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::Finalize()
 {
 	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
@@ -38,9 +32,7 @@ void GraphicsDeviceBase::Finalize()
 	m_deviceObjectList.Clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::AddDeviceResource(IDeviceObject* obj)
 {
 	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
@@ -48,17 +40,15 @@ void GraphicsDeviceBase::AddDeviceResource(IDeviceObject* obj)
 	obj->AddRef();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void GraphicsDeviceBase::RemoveDeviceResource(IDeviceObject* obj)
 //{
 //	m_deviceObjectList.Remove(obj);
 //}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::GCDeviceResource()
 {
 	/*
@@ -101,27 +91,21 @@ void GraphicsDeviceBase::GCDeviceResource()
 
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::AttachRenderingThread()
 {
 	LN_THROW(m_attachRenderingThreadId == 0, InvalidOperationException);
 	m_attachRenderingThreadId = Threading::Thread::GetCurrentThreadID();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::DetachRenderingThread()
 {
 	LN_THROW(m_attachRenderingThreadId != 0, InvalidOperationException);
 	m_attachRenderingThreadId = 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	ScopedAccessContext lock(this);
@@ -130,9 +114,7 @@ IVertexBuffer* GraphicsDeviceBase::CreateVertexBuffer(const VertexElement* verte
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	ScopedAccessContext lock(this);
@@ -141,9 +123,7 @@ IIndexBuffer* GraphicsDeviceBase::CreateIndexBuffer(int indexCount, const void* 
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ITexture* GraphicsDeviceBase::CreateTexture(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	ScopedAccessContext lock(this);
@@ -152,9 +132,7 @@ ITexture* GraphicsDeviceBase::CreateTexture(const Size& size, uint32_t mipLevels
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, uint32_t mipLevels, TextureFormat format)
 {
 	ScopedAccessContext lock(this);
@@ -163,9 +141,7 @@ ITexture* GraphicsDeviceBase::CreateTexturePlatformLoading(Stream* stream, uint3
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ITexture* GraphicsDeviceBase::CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	ScopedAccessContext lock(this);
@@ -174,9 +150,7 @@ ITexture* GraphicsDeviceBase::CreateRenderTarget(uint32_t width, uint32_t height
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ITexture* GraphicsDeviceBase::CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format)
 {
 	ScopedAccessContext lock(this);
@@ -185,9 +159,7 @@ ITexture* GraphicsDeviceBase::CreateDepthBuffer(uint32_t width, uint32_t height,
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IShader* GraphicsDeviceBase::CreateShader(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	ScopedAccessContext lock(this);
@@ -198,9 +170,7 @@ IShader* GraphicsDeviceBase::CreateShader(const void* textData, size_t size, Sha
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ISwapChain* GraphicsDeviceBase::CreateSwapChain(PlatformWindow* window)
 {
 	ScopedAccessContext lock(this);
@@ -209,16 +179,12 @@ ISwapChain* GraphicsDeviceBase::CreateSwapChain(PlatformWindow* window)
 	return obj.DetachMove();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::OnBeginAccessContext()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GraphicsDeviceBase::OnEndAccessContext()
 {
 }

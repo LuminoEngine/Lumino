@@ -4,9 +4,9 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // Profiler
-//=============================================================================
+//==============================================================================
 
 Profiler	Profiler::Instance;
 
@@ -19,9 +19,7 @@ int		Profiler::Section_MainThread_GUILayput = 2;
 int		Profiler::Section_RenderThread_CommandExecute = 3;
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Profiler::Profiler()
 	: m_groups()
 	, m_mainFPS(0.0f)
@@ -40,9 +38,7 @@ Profiler::Profiler()
 	Section_RenderThread_CommandExecute = RegisterSection(Group_RenderThread, _T("Execute commands"));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int Profiler::RegisterGroup(const TCHAR* name)
 {
 	std::shared_ptr<Group> group(LN_NEW Group());
@@ -56,9 +52,7 @@ int Profiler::RegisterGroup(const TCHAR* name)
 	return m_groups.GetCount() - 1;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 {
 	std::shared_ptr<Section> section(LN_NEW Section());
@@ -72,17 +66,13 @@ int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 	return m_groups[parentGroupIndex]->Sections.GetCount() - 1;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Profiler::SetBaseFrameRate(int group, float baseFrameRate)
 {
 	m_groups[group]->LimitElapsedTime = (1.0f / baseFrameRate) * 1000 * 1000 * 1000;	// ns 単位
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Profiler::StartSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
@@ -91,9 +81,7 @@ void Profiler::StartSection(int groupIndex, int sectionIndex)
 
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Profiler::EndSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
@@ -101,9 +89,7 @@ void Profiler::EndSection(int groupIndex, int sectionIndex)
 	//m_groups[groupIndex]->Sections[sectionIndex]->ElapsedTime = m_groups[groupIndex]->Timer.GetElapsedTimeNS();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Profiler::Commit()
 {
 	Threading::MutexScopedLock lock(m_commitMutex);

@@ -7,9 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
 //{
 //	WindowCreationSettings data;
@@ -20,9 +18,7 @@ LN_NAMESPACE_BEGIN
 //	return manager->m_windowManager->CreateSubWindow(data);
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PlatformWindow::PlatformWindow(WindowManagerBase* windowManager)
 	: m_windowManager(windowManager)
 	, m_mouseCursorVisibility(LN_NEW detail::MouseCursorVisibility)
@@ -37,59 +33,45 @@ PlatformWindow::PlatformWindow(WindowManagerBase* windowManager)
 	LN_SAFE_ADDREF(m_windowManager);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PlatformWindow::~PlatformWindow()
 {
 	LN_SAFE_DELETE(m_mouseCursorVisibility);
 	LN_SAFE_RELEASE(m_windowManager);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::Initialize(const Size& clientSize)
 {
 	m_clientSize = clientSize;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::SetCursorVisible(bool visible)
 {
 	m_mouseCursorVisibility->SetMouseCursorVisibleState(visible, 0);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 {
 	m_listenerEntryArray.Add(priority, listener);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::DetachEventListener(IEventListener* listener)
 {
 	m_listenerEntryArray.RemoveAllValue(listener);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 {
 	OnPlatformEvent(e);
 	return SendEventToAllListener(e);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformClosingEvent(PlatformWindow* sender)
 {
 	PlatformEventArgs e(PlatformEventType::Close, this);
@@ -105,9 +87,7 @@ bool PlatformWindow::SendPlatformClosingEvent(PlatformWindow* sender)
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformWindowSizeChangedEvent(int width, int height)
 {
 	// ウィンドウサイズを拾っておく
@@ -120,9 +100,7 @@ bool PlatformWindow::SendPlatformWindowSizeChangedEvent(int width, int height)
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bool active)
 {
 	if (active != m_isActive)
@@ -137,9 +115,7 @@ bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bo
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys	modifierKeys_, char keyChar_)
 {
 	PlatformEventArgs e;
@@ -151,9 +127,7 @@ bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindo
 	return SendPlatformEvent(e);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendPlatformMouseWheelEvent(int delta)
 {
 	PlatformEventArgs e;
@@ -163,17 +137,15 @@ bool PlatformWindow::SendPlatformMouseWheelEvent(int delta)
 	return SendPlatformEvent(e);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
 {
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // このウィンドウに割り当てられている全てのイベントリスナーにイベントを送信する
 // (ウィンドウシステムに送信するのではない点に注意)
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::SendEventToAllListener(const PlatformEventArgs& e)
 {
 	for (const EventListenerList::Pair& listener : m_listenerEntryArray)
@@ -186,18 +158,14 @@ bool PlatformWindow::SendEventToAllListener(const PlatformEventArgs& e)
 }
 
 #if 0
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PlatformWindow::PlatformWindow(NativeWindow* nativeWindow)
 	: m_nativeWindow(nativeWindow)
 {
 	LN_SAFE_ADDREF(m_nativeWindow);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PlatformWindow::PlatformWindow(const String& title, const Size& clientSize, bool resizable)
 {
 	WindowCreationSettings data;
@@ -208,73 +176,55 @@ PlatformWindow::PlatformWindow(const String& title, const Size& clientSize, bool
 	m_nativeWindow = Internal::ApplicationInstance->m_windowManager->CreateSubWindow(data);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Window::~Window()
 {
 	LN_SAFE_RELEASE(m_nativeWindow);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const Size& PlatformWindow::GetSize() const
 {
 	return m_nativeWindow->GetSize();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::SetFullScreenEnabled(bool enabled)
 {
 	m_nativeWindow->SetFullScreenEnabled(enabled);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::IsFullScreenEnabled() const
 {
 	return m_nativeWindow->IsFullScreenEnabled();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool PlatformWindow::IsActive() const
 {
 	return m_nativeWindow->IsActive();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::CaptureMouse()
 {
 	m_nativeWindow->CaptureMouse();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::ReleaseMouseCapture()
 {
 	m_nativeWindow->ReleaseMouseCapture();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 {
 	m_nativeWindow->AttachEventListener(listener, priority);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PlatformWindow::DetachEventListener(IEventListener* listener)
 {
 	m_nativeWindow->DetachEventListener(listener);

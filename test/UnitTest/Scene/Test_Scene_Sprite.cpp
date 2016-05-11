@@ -9,7 +9,7 @@ protected:
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(IntegrateTest_Scene_Sprite, Basic)
 {
 	auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
@@ -80,7 +80,7 @@ TEST_F(IntegrateTest_Scene_Sprite, Basic)
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(IntegrateTest_Scene_Sprite, BlendMode)
 {
 	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));

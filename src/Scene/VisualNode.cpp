@@ -15,29 +15,23 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // VisualNode
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualNode, SceneNode);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VisualNode::VisualNode()
 	: m_isVisible(true)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VisualNode::~VisualNode()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 {
 	SceneNode::Initialize(owner);
@@ -45,9 +39,7 @@ void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 	m_subsetCount = subsetCount;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::SetOpacity(float opacity, int subsetIndex)
 {
 	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
@@ -78,9 +70,7 @@ void VisualNode::SetShader(Shader* shader, int subsetIndex)
 	m_materialList.GetMainMaterial()->SetShader(shader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
@@ -89,9 +79,7 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
 	if (IsVisible())
@@ -108,9 +96,7 @@ void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* rende
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::UpdateAffectLights(LightNodeList* renderingLightList, int maxCount)
 {
 	/*
@@ -154,9 +140,7 @@ bool VisualNode::CmpLightSort(const Light* left, const Light* right)
 }
 
 #if 0
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::Render(RenderingParams& params)
 {
 	// レンダリングステートの設定
@@ -216,9 +200,7 @@ void VisualNode::Render(RenderingParams& params)
 }
 #endif
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass)
 {
 	// シェーダのサブセット単位のデータを更新する
@@ -235,9 +217,7 @@ void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIn
 	DrawSubset(dc, subsetIndex);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void VisualNode::OnRender(SceneGraphRenderingContext* dc)
 {
 	int subsetCount = GetSubsetCount();

@@ -23,9 +23,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // PainterEngine
-//=============================================================================
+//==============================================================================
 
 static const byte_t g_Painter_fx_Data[] =
 {
@@ -34,16 +34,12 @@ static const byte_t g_Painter_fx_Data[] =
 static const size_t g_Painter_fx_Len = LN_ARRAY_SIZE_OF(g_Painter_fx_Data);
 	
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PainterEngine::PainterEngine()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PainterEngine::~PainterEngine()
 {
 	while (!m_sectionStack.IsEmpty())
@@ -53,9 +49,7 @@ PainterEngine::~PainterEngine()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::Create(GraphicsManager* manager)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -66,9 +60,7 @@ void PainterEngine::Create(GraphicsManager* manager)
 	m_currentInternalGlyphMask = m_dummyTexture;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::CreateInternal()
 {
 	auto* device = m_manager->GetGraphicsDevice();
@@ -113,9 +105,7 @@ void PainterEngine::CreateInternal()
 	m_dummyTexture->Unlock();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
@@ -140,17 +130,13 @@ void PainterEngine::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void PainterEngine::SetTransform(const Matrix& matrix)
 //{
 //
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::Begin()
 {
 	Flush();
@@ -166,9 +152,7 @@ void PainterEngine::Begin()
 	m_currentInternalGlyphMask = m_dummyTexture;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::End()
 {
 	Flush();
@@ -176,9 +160,7 @@ void PainterEngine::End()
 	m_sectionStack.Pop();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::Flush()
 {
 	if (m_indexCache.GetCount() == 0) { return; }
@@ -210,26 +192,20 @@ void PainterEngine::Flush()
 	m_indexCache.Clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::SetTransform(const Matrix& matrix)
 {
 	// TODO: 遅延
 	m_shader.varWorldMatrix->SetMatrix(matrix);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 {
 	m_shader.varViewProjMatrix->SetMatrix(matrix);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void PainterEngine::SetViewPixelSize(const Size& size)
 //{
 //	if (m_shader.varViewportSize != NULL) {
@@ -237,9 +213,7 @@ void PainterEngine::SetViewProjMatrix(const Matrix& matrix)
 //	}
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::SetState(const PainterEngineState& state)
 {
 	Flush();	// 描画設定が変わるのでここでフラッシュ
@@ -247,9 +221,7 @@ void PainterEngine::SetState(const PainterEngineState& state)
 	UpdateCurrentForeColor();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void PainterEngine::SetBrush(const BrushData& data)
 //{
 //	Flush();	// 描画設定が変わるのでここでフラッシュ
@@ -259,9 +231,9 @@ void PainterEngine::SetState(const PainterEngineState& state)
 //	UpdateCurrentForeColor();
 //}
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void PainterEngine::SetOpacity(float opacity)
 //{
 //	Flush();	// 描画設定が変わるのでここでフラッシュ
@@ -273,9 +245,7 @@ void PainterEngine::SetState(const PainterEngineState& state)
 //{
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::DrawRectangle(const RectF& rect)
 {
 	// DrawGlyphRun() 以外は NULL で呼び出しておく
@@ -357,9 +327,7 @@ void PainterEngine::DrawRectangle(const RectF& rect)
 
 
 #if 0
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::DrawFillRectangle(const RectF& rect, Driver::ITexture* srcTexture, const Rect& srcRect, BrushWrapMode wrapMode)
 {
 	m_vertexCache.Clear();
@@ -393,9 +361,7 @@ void PainterEngine::DrawFillRectangle(const RectF& rect, Driver::ITexture* srcTe
 }
 #endif
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Driver::ITexture* srcTexture, const Rect& srcRect_*/)
 {
 	Driver::ITexture* srcTexture = NULL;
@@ -552,9 +518,7 @@ void PainterEngine::DrawFrameRectangle(const RectF& rect, float frameWidth/*, Dr
 	//m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, 16);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Driver::ITexture* strokesTexture/*, const ColorF& foreColor, const ColorF& strokeColor*/)
 {
 	SetInternalGlyphMaskTexture(glyphsTexture);
@@ -583,9 +547,7 @@ void PainterEngine::DrawGlyphRun(const PointF& position, const GlyphRunData* dat
 	//m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF& srcUVRect)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
@@ -615,9 +577,9 @@ void PainterEngine::InternalDrawRectangleStretch(const RectF& rect, const RectF&
 	m_vertexCache.Add(v);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //　Note: srcRect は、rect の中にいくつのタイルを並べられるかを計算するために使用する
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& srcRect, const RectF& srcUVRect, Driver::ITexture* srcTexture)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
@@ -654,9 +616,7 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 	m_vertexCache.Add(v);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void PainterEngine::AttachBrushData()
 //{
 //	m_currentState.ForeColor = ColorF::White;
@@ -674,9 +634,7 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 //	}
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void PainterEngine::DetachBrushData()
 //{
 //	if (m_currentState.Brush.Type == BrushType_Texture) {
@@ -687,9 +645,7 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 //	}
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::SetInternalGlyphMaskTexture(Driver::ITexture* mask)
 {
 	if (m_currentInternalGlyphMask.GetObjectPtr() != mask) 
@@ -704,9 +660,7 @@ void PainterEngine::SetInternalGlyphMaskTexture(Driver::ITexture* mask)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PainterEngine::UpdateCurrentForeColor()
 {
 	PainterEngineState& state = GetCurrentState();

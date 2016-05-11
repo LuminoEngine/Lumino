@@ -8,9 +8,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // Font
-//=============================================================================
+//==============================================================================
 
 static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 {
@@ -18,9 +18,7 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 };
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Font* Font::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
@@ -28,13 +26,13 @@ Font* Font::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
 	return LN_NEW BitmapFont(manager, bitmap);
 }
 
-//=============================================================================
+//==============================================================================
 // BitmapFont
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	: m_manager(NULL)
 	, m_fontBitmap()
@@ -56,18 +54,14 @@ BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	m_fontGlyphBitmap.OutlineOffset = 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 BitmapFont::~BitmapFont()
 {
 	LN_SAFE_RELEASE(m_manager);
 }
 
 #if 0
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void BitmapFont::getTextSize(const char* text, int len, Geometry::Rect* rect)
 {
 	len = (len <= -1) ? len = strlen(text) : len;
@@ -96,9 +90,7 @@ void BitmapFont::getTextSize(const char* text, int len, Geometry::Rect* rect)
 	rect->set(0, 0, m_charWidth * maxLineLength, m_charHeight * lineCount);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 {
 	len = (len <= -1) ? len = wcslen(text) : len;
@@ -128,9 +120,7 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::Rect* rect)
 }
 #endif
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Font* BitmapFont::Copy() const
 {
 	RefPtr<BitmapFont> font(LN_NEW BitmapFont(m_manager, m_fontBitmap), false);
@@ -138,9 +128,7 @@ Font* BitmapFont::Copy() const
 	return font;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData)
 {
 	FontGlyphLocation* locData;
@@ -167,9 +155,7 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, F
 	return locData;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 {
 	// ASCII 部分だけグリフに出来る。それ以外は '?'

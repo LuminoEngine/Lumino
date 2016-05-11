@@ -14,13 +14,11 @@ LN_NAMESPACE_SCENE_BEGIN
     mSceneShader->setErrorMessage( err ); \
 }
 
-//=============================================================================
+//==============================================================================
 // MMEShaderTechnique
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShaderTechnique::MMEShaderTechnique()
 	: m_errorInfo(NULL)
 	, m_ownerShader(NULL)
@@ -35,9 +33,7 @@ MMEShaderTechnique::MMEShaderTechnique()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShaderTechnique::~MMEShaderTechnique()
 {
 	LN_FOREACH(MMEShaderPass* pass, m_mmeShaderPasses) {
@@ -51,9 +47,7 @@ MMEShaderTechnique::~MMEShaderTechnique()
 	//mPassDrawingCommandListArray.clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShaderTechnique::Initialize(MMEShader* shader, ShaderTechnique* tech, MMEShaderErrorInfo* errorInfo)
 {
 	m_errorInfo = errorInfo;
@@ -222,9 +216,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, ShaderTechnique* tech, MM
 #endif
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool MMEShaderTechnique::ContainsSubsetIndex(int subsetIndex) const
 {	
 	// "Subset" が省略されている。全部描画できる。
@@ -238,9 +230,7 @@ bool MMEShaderTechnique::ContainsSubsetIndex(int subsetIndex) const
 	return m_subsetIndexArray.GetAt(subsetIndex);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShaderPass* MMEShaderTechnique::FindMMEShaderPass(const TCHAR* passName)
 {
 	LN_FOREACH(MMEShaderPass* pass, m_mmeShaderPasses)
@@ -252,9 +242,7 @@ MMEShaderPass* MMEShaderTechnique::FindMMEShaderPass(const TCHAR* passName)
 	return NULL;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, ShaderPass* thisPass, ShaderScriptCommandList* commandList)
 {
     TCHAR* str = NULL;
@@ -530,9 +518,7 @@ void MMEShaderTechnique::ParseScriptCommandString(ShaderVariable* scriptAnno, Sh
     }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<bool>* subsetIndexArray, bool* endToRange)
 {
 	*endToRange = false;
@@ -581,9 +567,7 @@ void MMEShaderTechnique::ParseSubsetIndexArray(const String& subsetText, Array<b
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShaderTechnique::ParseSubsetIndexArray(const TCHAR* subsetText, Array<int>* subsetIndexArray)
 {
 	struct SubsetIndexOrder

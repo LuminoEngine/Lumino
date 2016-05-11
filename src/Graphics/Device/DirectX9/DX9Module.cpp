@@ -4,9 +4,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // DX9Module
-//=============================================================================
+//==============================================================================
 
 DX9Module::MD_Direct3DCreate9						DX9Module::Direct3DCreate9 = NULL;
 DX9Module::MD_D3DXCreateTextureFromFileInMemoryEx	DX9Module::D3DXCreateTextureFromFileInMemoryEx = NULL;
@@ -24,9 +24,7 @@ DX9Module::MD_D3DXGetShaderConstantTable			DX9Module::D3DXGetShaderConstantTable
 DllLoader	DX9Module::m_D3D9Module;
 DllLoader	DX9Module::m_D3Dx9Module;
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9Module::Initialize()
 {
 	if (!Direct3DCreate9)
@@ -55,9 +53,7 @@ void DX9Module::Initialize()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const TCHAR* DX9Module::GetDxFormatString(D3DFORMAT Format)
 {
 	switch ( Format )
@@ -185,9 +181,7 @@ const TCHAR* DX9Module::GetDxFormatString(D3DFORMAT Format)
 	return _T( "-" );
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9Module::TranslateElementLNToDX(const VertexElement* element, BYTE* type, BYTE* offset, BYTE* usage)
 {
 	*type = 0;
@@ -269,9 +263,7 @@ void DX9Module::TranslateElementLNToDX(const VertexElement* element, BYTE* type,
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 VertexElement* DX9Module::TranslateElementArrayDXToLN(D3DVERTEXELEMENT9* dx_elm, int* count)
 {
     // 要素数チェック
@@ -371,9 +363,7 @@ VertexElement* DX9Module::TranslateElementArrayDXToLN(D3DVERTEXELEMENT9* dx_elm,
     return ln_elm;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 {
 	/*
@@ -400,9 +390,7 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 	return d3dFormats[format];
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 {
 	switch (dx_format)

@@ -42,9 +42,9 @@ public:
 	static const int ElementCount = 4;
 };
 
-//=============================================================================
+//==============================================================================
 // DrawingCommands
-//=============================================================================
+//==============================================================================
 enum class DrawingCommandType : uint32_t
 {
 	MoveTo,
@@ -121,9 +121,9 @@ struct DrawingCommands_ClosePath
 
 
 
-//=============================================================================
+//==============================================================================
 // PrimitiveCache
-//=============================================================================
+//==============================================================================
 class PrimitiveCache
 {
 public:
@@ -142,34 +142,28 @@ private:
 	CacheBuffer<uint16_t>			m_indexCache;
 };
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PrimitiveCache::PrimitiveCache()
 {
 	m_vertexCache.Reserve(1024);
 	m_indexCache.Reserve(1024);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 PrimitiveCache::~PrimitiveCache()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveCache::Clear()
 {
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void PrimitiveCache::DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 //{
 //	DrawingBasicVertex v;
@@ -185,9 +179,9 @@ void PrimitiveCache::Clear()
 //	m_indexCache.Add(i + 1);
 //}
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void PrimitiveCache::DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color)
 //{
 //	float lu = srcUVRect.GetLeft();
@@ -215,9 +209,7 @@ void PrimitiveCache::Clear()
 //	m_indexCache.Add(i + 3);
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void PrimitiveCache::ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib)
 {
 	vb->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -226,9 +218,9 @@ void PrimitiveCache::ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffe
 
 
 
-//=============================================================================
+//==============================================================================
 // DrawingContextImpl
-//=============================================================================
+//==============================================================================
 class DrawingContextImpl
 	: public RefObject
 {
@@ -627,9 +619,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	: m_manager(manager)
 	, m_pathCreating(false)
@@ -671,9 +661,7 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	m_shader3D.passP0 = m_shader3D.techMainDraw->GetPass(0);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DrawingContextImpl::~DrawingContextImpl()
 {
 	LN_SAFE_RELEASE(m_vertexBuffer);
@@ -681,18 +669,14 @@ DrawingContextImpl::~DrawingContextImpl()
 	LN_SAFE_RELEASE(m_shader3D.shader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::SetViewProjection(const Matrix& view, const Matrix& proj)
 {
 	m_view = view;
 	m_proj = proj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::SetState(const DrawingState& state)
 {
 	m_currentState.Copy(state);
@@ -705,9 +689,7 @@ static float BezierCurve(float x1, float x2, float x3, float x4, float t)
 	return t*t*t*x4 + 3.f*t*t*tp*x3 + 3.f*t*tp*tp*x2 + tp*tp*tp*x1;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, detail::DrawingClass drawingClass)
 {
 	const byte_t* pos = (const byte_t*)commandBuffer;
@@ -859,9 +841,7 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 	EndPath(lastPoint, lastColor, false);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::Flush()
 {
 	if (m_pathes.GetCount() == 0) { return; }
@@ -930,9 +910,7 @@ void DrawingContextImpl::Flush()
 	m_basePoints.Clear();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::AddPath(PathType type)
 {
 	if (!m_pathCreating)
@@ -947,9 +925,7 @@ void DrawingContextImpl::AddPath(PathType type)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void DrawingContextImpl::AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color)
 //{
 //	PathPoint pt;
@@ -960,9 +936,7 @@ void DrawingContextImpl::AddPath(PathType type)
 //	GetCurrentPath()->pointCount++;
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 {
 	BasePoint pt(point, color);
@@ -974,9 +948,7 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color)
 	GetCurrentPath()->pointCount++;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed)
 {
 	BasePoint pt(point, color);
@@ -990,9 +962,7 @@ void DrawingContextImpl::AddBasePoint(const Vector3& point, const ColorF& color,
 	GetCurrentPath()->pointCount++;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose)
 {
 	if (m_pathCreating)
@@ -1039,33 +1009,29 @@ void DrawingContextImpl::EndPath(const Vector3* lastPoint, const ColorF* lastCol
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DrawingContextImpl::Path* DrawingContextImpl::GetCurrentPath()
 {
 	return &m_pathes.GetLast();
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void DrawingContextImpl::PutMoveTo(const Vector3& pt, const ColorF& color)
 //{
 //	AddPathPoint(PathPointAttr::MoveTo, pt, color);
 //}
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void DrawingContextImpl::PutLineTo(const Vector3& pt, const ColorF& color)
 //{
 //	AddPathPoint(PathPointAttr::LineTo, pt, color);
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::ExpandPoints()
 {
 	m_vertexCache.Clear();
@@ -1087,9 +1053,7 @@ void DrawingContextImpl::ExpandPoints()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::ExpandFill()
 {
 	m_vertexCache.Clear();
@@ -1152,9 +1116,7 @@ void DrawingContextImpl::ExpandFill()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 {
 	m_vertexCache.Clear();
@@ -1365,9 +1327,7 @@ void DrawingContextImpl::ExpandStroke(bool vertexOnly)
 	//}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DrawingContextImpl::MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p1)
 {
 	//DrawingBasicVertex v;
@@ -1397,9 +1357,9 @@ void DrawingContextImpl::MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p
 }
 
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void DrawingContextImpl::AddVertex(const Vector3& point, const ColorF& color)
 //{
 //	DrawingBasicVertex v;
@@ -1412,13 +1372,11 @@ void DrawingContextImpl::MakeJoint_Bevel(const BasePoint* p0, const BasePoint* p
 //}
 
 
-//=============================================================================
+//==============================================================================
 // GeometryRenderer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GeometryRenderer::GeometryRenderer()
 	: m_manager(nullptr)
 	, m_commandsUsingByte(0)
@@ -1430,18 +1388,14 @@ GeometryRenderer::GeometryRenderer()
 	m_internalTextureBrush = LN_NEW TextureBrush();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 GeometryRenderer::~GeometryRenderer()
 {
 	LN_SAFE_RELEASE(m_internalTextureBrush);
 	LN_SAFE_RELEASE(m_internal);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
@@ -1449,9 +1403,7 @@ void GeometryRenderer::Initialize(GraphicsManager* manager)
 	m_commandsBuffer.Resize(1024);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj, const Size& viewPixelSize)
 {
 	m_uvParPixel.x = 1.0f / viewPixelSize.width;
@@ -1461,9 +1413,7 @@ void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj,
 	LN_CALL_COMMAND(SetViewProjection, DrawingContextImpl::SetViewProjectionCommand, view, proj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetTransform(const Matrix& matrix)
 {
 	if (m_currentState.transform != matrix)
@@ -1482,9 +1432,7 @@ void GeometryRenderer::SetTransform(const Matrix& matrix)
 //template<typename T>
 //bool operator != (const RefPtr<T>& left, RefObject* ptr) { return (left.GetObjectPtr() != ptr); }
 //
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetBrush(Brush* brush)
 {
 	if (m_currentState.brush != brush)
@@ -1494,9 +1442,7 @@ void GeometryRenderer::SetBrush(Brush* brush)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetPen(Pen* pen)
 {
 	if (m_currentState.pen != pen)
@@ -1506,9 +1452,7 @@ void GeometryRenderer::SetPen(Pen* pen)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetOpacity(float opacity)
 {
 	// TODO: opacity はFlushいらないと思う。直接頂点色に乗算しておいた方が高速？
@@ -1519,9 +1463,7 @@ void GeometryRenderer::SetOpacity(float opacity)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetTone(const ToneF& tone)
 {
 	if (m_currentState.tone != tone)
@@ -1531,9 +1473,7 @@ void GeometryRenderer::SetTone(const ToneF& tone)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetFont(Font* font)
 {
 	if (m_currentState.font != font)
@@ -1543,9 +1483,7 @@ void GeometryRenderer::SetFont(Font* font)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::MoveTo(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
@@ -1557,9 +1495,7 @@ void GeometryRenderer::MoveTo(const Vector3& point, const ColorF& color)
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::LineTo(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
@@ -1571,9 +1507,7 @@ void GeometryRenderer::LineTo(const Vector3& point, const ColorF& color)
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
@@ -1587,9 +1521,7 @@ void GeometryRenderer::BezierCurveTo(const Vector3& cp1, const Vector3& cp2, con
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::ClosePath()
 {
 	SetDrawingClassInternal(detail::DrawingClass::PathStroke);
@@ -1599,9 +1531,7 @@ void GeometryRenderer::ClosePath()
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawPoint(const Vector3& point, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::PointList);
@@ -1613,9 +1543,7 @@ void GeometryRenderer::DrawPoint(const Vector3& point, const ColorF& color)
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {
 	SetDrawingClassInternal(detail::DrawingClass::LineList);
@@ -1631,17 +1559,13 @@ void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const Co
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& color)
 {
 	DrawLine(from, to, color, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
@@ -1654,9 +1578,7 @@ void GeometryRenderer::DrawTriangle(const Vector3& p1, const ColorF& p1Color, co
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawRectangle(const RectF& rect, const ColorF& color)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
@@ -1670,16 +1592,12 @@ void GeometryRenderer::DrawRectangle(const RectF& rect, const ColorF& color)
 	m_flushRequested = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawEllipse(const Vector3& center, const Vector2& radius)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color)
 {
 	bool flish = false;
@@ -1701,17 +1619,13 @@ void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Re
 	DrawRectangle(rect, color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::Flush()
 {
 	FlushInternal();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::AddCommand(const void* command, size_t size)
 {
 	// バッファが足りなければ拡張する
@@ -1732,9 +1646,7 @@ void GeometryRenderer::AddCommand(const void* command, size_t size)
 	m_commandsUsingByte += size;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::FlushInternal()
 {
 	if (m_flushRequested)
@@ -1758,9 +1670,7 @@ void GeometryRenderer::FlushInternal()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void GeometryRenderer::SetDrawingClassInternal(detail::DrawingClass dc)
 {
 	if (m_currentDrawingClass != dc)
@@ -1772,9 +1682,9 @@ void GeometryRenderer::SetDrawingClassInternal(detail::DrawingClass dc)
 	}
 }
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void GeometryRenderer::CheckFlush()
 //{
 //		FlushInternal();

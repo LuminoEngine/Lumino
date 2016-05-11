@@ -13,9 +13,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // MMEShader
-//=============================================================================
+//==============================================================================
 
 static const unsigned char MMM_EffectHeader_Data[] =
 {
@@ -23,9 +23,7 @@ static const unsigned char MMM_EffectHeader_Data[] =
 };
 static const size_t MMM_EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(MMM_EffectHeader_Data) - 1;
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInfo* errorInfo, SceneGraphManager* manager)
 {
 	// TODO: 自動付加するべきだろうか？
@@ -48,9 +46,7 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 	//return mmeShader;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShader::MMEShader(SceneGraphManager* manager)
 	: m_manager(NULL)
 	, m_mmeScriptOutput(MME_SCROUT_color)
@@ -66,9 +62,7 @@ MMEShader::MMEShader(SceneGraphManager* manager)
 	m_manager->AddShader(this);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShader::~MMEShader()
 {
 	LN_FOREACH(MMEShaderTechnique* tech, m_mmeShaderTechniqueList) {
@@ -84,9 +78,7 @@ MMEShader::~MMEShader()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManager* scene)
 {
 	ShaderVariable* var;
@@ -138,9 +130,7 @@ void MMEShader::UpdateSceneParams(const MMESceneParams& params, SceneGraphManage
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 {
 	ShaderVariable* var;
@@ -216,9 +206,7 @@ void MMEShader::UpdateCameraParams(Camera* camera, const SizeF& viewPixelSize)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList)
 {
 	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
@@ -417,9 +405,7 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& params)
 {
     ShaderVariable* var;
@@ -521,9 +507,7 @@ void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& param
 }
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
 {
 	LN_CHECK_ARGS_RETURN(material.m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
@@ -583,9 +567,7 @@ void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMEShader::SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObject* obj)
 {
 	ShaderVariable* var = sv->Variable;
@@ -680,9 +662,7 @@ void MMEShader::SetControllObjectParam(MMEShaderVariable* sv, const IMMESceneObj
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList, MMEVariableRequest req, int lightIndex, Matrix* outMatrix)
 {
 	switch (req)
@@ -815,9 +795,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMEShaderTechnique* MMEShader::FindTechnique(MMDPass mmdPass, bool UseTexture, bool UseSphereMap, bool UseToon, bool UseSelfShadow, int subsetIndex)
 {
 	/* MMM では複数のテクニックがマッチしても、実際に使われるのは

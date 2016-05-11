@@ -9,22 +9,18 @@ LN_NAMESPACE_BEGIN
 namespace Physics
 {
 
-//=============================================================================
+//==============================================================================
 // Joint
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Joint::Joint()
 	: m_manager(NULL)
 	, m_btConstraint(NULL)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Joint::~Joint()
 {
 	if (m_manager != NULL)
@@ -38,9 +34,7 @@ Joint::~Joint()
     }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Joint::Create(PhysicsManager* manager, btTypedConstraint* constraint)
 {
 	LN_REFOBJ_SET(m_manager, manager);
@@ -48,13 +42,11 @@ void Joint::Create(PhysicsManager* manager, btTypedConstraint* constraint)
 	m_manager->AddJoint(this);
 }
 
-//=============================================================================
+//==============================================================================
 // DofSpringJoint
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DofSpringJoint::DofSpringJoint()
 	: m_btDofSpringConstraint(NULL)
 	, m_body0(NULL)
@@ -73,9 +65,7 @@ DofSpringJoint::DofSpringJoint()
 	//memset(m_angularUpperLimit, 0, sizeof(0));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DofSpringJoint::~DofSpringJoint()
 {
 	// コンストレイントを先に解放する必要があるため、ベースのデストラクタより先に解放処理を行う
@@ -92,9 +82,7 @@ DofSpringJoint::~DofSpringJoint()
 	LN_SAFE_RELEASE(m_body1);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::Create(PhysicsManager* manager, RigidBody* body0, RigidBody* body1, const Matrix& localOffset0, const Matrix& localOffset1)
 {
 	LN_ASSERT(manager && body0 && body1);
@@ -117,9 +105,7 @@ void DofSpringJoint::Create(PhysicsManager* manager, RigidBody* body0, RigidBody
 	m_initialUpdate = true;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::EnableSpring(int index, bool enabled)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -130,9 +116,7 @@ void DofSpringJoint::EnableSpring(int index, bool enabled)
 	m_btDofSpringConstraint->enableSpring(index, enabled);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetStiffness(int index, float stiffness)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -142,9 +126,7 @@ void DofSpringJoint::SetStiffness(int index, float stiffness)
 	m_btDofSpringConstraint->setStiffness(index, stiffness);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetDamping(int index, float damping)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -154,18 +136,14 @@ void DofSpringJoint::SetDamping(int index, float damping)
 	m_btDofSpringConstraint->setDamping(index, damping);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetEquilibriumPoint()
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setEquilibriumPoint();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetEquilibriumPoint(int index)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -173,18 +151,14 @@ void DofSpringJoint::SetEquilibriumPoint(int index)
 }
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetLimit(int index, float low, float hi)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setLimit(index, low, hi);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetLinearLowerLimit(const Vector3& linearLower)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -192,9 +166,7 @@ void DofSpringJoint::SetLinearLowerLimit(const Vector3& linearLower)
 		BulletUtil::LNVector3ToBtVector3(linearLower));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetLinearUpperLimit(const Vector3& linearUpper)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -202,9 +174,7 @@ void DofSpringJoint::SetLinearUpperLimit(const Vector3& linearUpper)
 		BulletUtil::LNVector3ToBtVector3(linearUpper));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetAngularLowerLimit(const Vector3& angularLower)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -212,9 +182,7 @@ void DofSpringJoint::SetAngularLowerLimit(const Vector3& angularLower)
 		BulletUtil::LNVector3ToBtVector3(angularLower));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SetAngularUpperLimit(const Vector3& angularUpper)
 {
 	LN_THROW(!m_initialUpdate, InvalidOperationException);	// 初回 StepSimulation() 前のみ可能
@@ -222,9 +190,7 @@ void DofSpringJoint::SetAngularUpperLimit(const Vector3& angularUpper)
 		BulletUtil::LNVector3ToBtVector3(angularUpper));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DofSpringJoint::SyncBeforeStepSimulation()
 {
 }

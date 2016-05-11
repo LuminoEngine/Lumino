@@ -9,8 +9,6 @@ extern "C"
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 LN_API void LCSInternal_GetIntPtrStringLength(int string, int* len)
 {
 	if (string == 0) {
@@ -20,8 +18,6 @@ LN_API void LCSInternal_GetIntPtrStringLength(int string, int* len)
 	*len = _tcslen((const LNChar*)string);
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 LN_API void LCSInternal_GetIntPtrString(int string, LNChar* buf)
 {
@@ -34,8 +30,6 @@ LN_API void LCSInternal_GetIntPtrString(int string, LNChar* buf)
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 LN_API void LHSPInternal_GetIntPtrStringLength(int string, int* len)
 {
 	if (string == 0) {
@@ -45,8 +39,6 @@ LN_API void LHSPInternal_GetIntPtrStringLength(int string, int* len)
 	*len = _tcslen((const LNChar*)string);
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 LN_API void LHSPInternal_GetIntPtrString(int string, LNChar* buf)
 {
@@ -59,8 +51,6 @@ LN_API void LHSPInternal_GetIntPtrString(int string, LNChar* buf)
 }
 
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 LN_API const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len)
 {

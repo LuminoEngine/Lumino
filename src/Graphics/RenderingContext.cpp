@@ -14,21 +14,17 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // RenderingContext
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RenderingContext* RenderingContext::GetContext()
 {
 	return GraphicsManager::GetInstance()->GetRenderingContext();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RenderingContext::RenderingContext()
 	: m_manager(nullptr)
 	, m_spriteRenderer(nullptr)
@@ -36,18 +32,14 @@ RenderingContext::RenderingContext()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RenderingContext::~RenderingContext()
 {
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_primitiveRenderer);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::Initialize(GraphicsManager* manager)
 {
 	IContext::Initialize(manager);
@@ -70,9 +62,9 @@ void RenderingContext::Initialize(GraphicsManager* manager)
 
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void RenderingContext::SetBlendMode(BlendMode mode)
 //{
 //	if (mode != m_state.renderState.Blend)
@@ -84,36 +76,28 @@ void RenderingContext::Initialize(GraphicsManager* manager)
 //}
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->Clear(flags, color, z, stencil);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	OnDrawing(GetCommonRenderer());
 	GetCommonRenderer()->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
 {
 	OnStateChanging();
@@ -121,18 +105,14 @@ void RenderingContext::SetViewProjection(const Matrix& view, const Matrix& proj)
 	m_spriteRenderer->SetViewProjMatrix(view, proj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::DrawLine(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
 {
 	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::DrawSquare(
 	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
 	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
@@ -147,33 +127,25 @@ void RenderingContext::DrawSquare(
 		position4, uv4, color4);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::Blt(Texture* source, RenderTarget* dest)
 {
 	BltInternal(source, dest, Matrix::Identity, nullptr);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::Blt(Texture* source, RenderTarget* dest, const Matrix& transform)
 {
 	BltInternal(source, dest, transform, nullptr);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::Blt(Texture* source, RenderTarget* dest, Shader* shader)
 {
 	BltInternal(source, dest, Matrix::Identity, shader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
 {
 	// TODO: ここで null にしておかないとPrimitiveRendererが古いシェーダを適用してしまう。
@@ -202,9 +174,7 @@ void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Ma
 	SetDepthStencilState(oldState2);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderingContext::OnStateFlushRequested()
 {
 	IContext::OnStateFlushRequested();

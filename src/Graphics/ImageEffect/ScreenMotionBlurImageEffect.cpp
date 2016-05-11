@@ -10,9 +10,9 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // ScreenMotionBlurImageEffect
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ScreenMotionBlurImageEffect, ImageEffect);
 LN_TR_PROPERTY_IMPLEMENT(ScreenMotionBlurImageEffect, float, AmountProperty, "Amount", m_amount, tr::PropertyMetadata());
 
@@ -22,9 +22,7 @@ static const byte_t g_ScreenMotionBlurImageEffect_fx_Data[] =
 };
 static const size_t g_ScreenMotionBlurImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_ScreenMotionBlurImageEffect_fx_Data);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 {
 	ScreenMotionBlurImageEffectPtr obj(LN_NEW ScreenMotionBlurImageEffect(), false);
@@ -32,9 +30,7 @@ ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::Create()
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	: m_accumTexture(nullptr)
 	, m_amount(0)
@@ -43,18 +39,14 @@ ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 {
 	LN_SAFE_RELEASE(m_accumTexture);
 	LN_SAFE_RELEASE(m_shader.shader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
 {
 	ImageEffect::Initialize(manager);
@@ -69,9 +61,7 @@ void ScreenMotionBlurImageEffect::Initialize(GraphicsManager* manager)
 	m_shader.techMainDraw = m_shader.shader->GetTechniques()[0];
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& center, float scale, float duration)
 {
 	if (duration == 0.0f)
@@ -88,9 +78,7 @@ void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& cen
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::OnRender(RenderingContext* renderingContext, RenderTarget* source, RenderTarget* destination)
 {
 	if (m_amount == 0.0)

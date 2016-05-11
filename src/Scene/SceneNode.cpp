@@ -8,23 +8,21 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // SceneNodeRefList
-//=============================================================================
+//==============================================================================
 //LN_REF_OBJECT_LIST_IMPL(SceneNodeRefList, SceneNode);
 //
 //
 //SceneNodeRefList::iterator::reference SceneNodeRefList::iterator::operator*() const { return static_cast<reference>(*m_internalItr); }
 //SceneNodeRefList::iterator::reference SceneNodeRefList::iterator::operator[](difference_type offset) const { return static_cast<reference>(m_internalItr[offset]); }
 
-//=============================================================================
+//==============================================================================
 // SceneNode
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNode, tr::ReflectionObject);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SceneNode::SceneNode()
 	: m_manager(NULL)
 	, m_ownerSceneGraph(nullptr)
@@ -46,9 +44,7 @@ SceneNode::SceneNode()
 	memset(m_renderingPassClientDataList, 0, sizeof(m_renderingPassClientDataList));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SceneNode::~SceneNode()
 {
 	//if (m_ownerSceneGraph != nullptr) {
@@ -57,18 +53,14 @@ SceneNode::~SceneNode()
 	//LN_SAFE_RELEASE(m_manager);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::Initialize(SceneGraph* owner)
 {
 	m_manager = owner->GetManager();
 	SetOwnerSceneGraph(owner);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::SetOwnerSceneGraph(SceneGraph* owner)
 {
 	SceneGraph* old = m_ownerSceneGraph;
@@ -79,9 +71,7 @@ void SceneNode::SetOwnerSceneGraph(SceneGraph* owner)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::SetName(const String& name)
 {
 	if (m_name != name)
@@ -91,9 +81,7 @@ void SceneNode::SetName(const String& name)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::AddChild(SceneNode* child)
 {
 	LN_THROW(child != NULL, ArgumentException);
@@ -114,9 +102,7 @@ void SceneNode::AddChild(SceneNode* child)
 	//child->m_ownerSceneGraph->AddNode(this);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// ワールド行列の更新が必要な場合は再計算
@@ -180,9 +166,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	//}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
 {
 	// SceneNode 自体は描画機能を持たないので何もせず、子の処理を行う
@@ -192,9 +176,7 @@ void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* render
     }
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* right)
 {
 	if (left->m_priority == right->m_priority)
@@ -206,9 +188,7 @@ bool SceneNode::CmpZAndPrioritySort(const SceneNode* left, const SceneNode* righ
 	return left->m_priority > right->m_priority;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOwner)
 {
 	//if (oldOwner != nullptr) {

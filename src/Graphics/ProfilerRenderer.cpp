@@ -6,13 +6,11 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // ProfilerRenderer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ProfilerRenderer::ProfilerRenderer(GraphicsManager* manager, Profiler* profiler)
 	: m_manager(manager)
 	, m_profiler(profiler)
@@ -21,18 +19,14 @@ ProfilerRenderer::ProfilerRenderer(GraphicsManager* manager, Profiler* profiler)
 	m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ProfilerRenderer::~ProfilerRenderer()
 {
 
 }
 
 #if 0
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ProfilerRenderer::Render(const Vector2& viewSize)
 {
 	PointF location(m_windowRect.X, m_windowRect.Y);
@@ -125,9 +119,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	//m_spriteRenderer->Flash();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ProfilerRenderer::DrawGroupList(RenderingContext& painter, const RectF& listRect)
 {
 	int groupCount = m_profiler->GetCommitedGroups().GetCount();
@@ -182,9 +174,7 @@ void ProfilerRenderer::DrawGroupList(RenderingContext& painter, const RectF& lis
 	painter.DrawRectangle(listRect.X, listRect.Y + (groupCount * rowHeight), listRect.Width, 1.0f);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ProfilerRenderer::DrawSectionGraphBar(RenderingContext& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect)
 {
 	float nextX = 0;

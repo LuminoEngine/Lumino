@@ -10,13 +10,11 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // ShaderScriptCommandList
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ShaderScriptCommandList::ShaderScriptCommandList()
 	: m_ownerShader(NULL)
 	, m_commandArray()
@@ -32,9 +30,7 @@ ShaderScriptCommandList::ShaderScriptCommandList()
 	memset(m_oldRenderTarget, 0, sizeof(m_oldRenderTarget));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ShaderScriptCommandList::~ShaderScriptCommandList()
 {
 	//LN_FOREACH(ShaderScriptCommandList* list, m_childCommandListArray) {
@@ -42,34 +38,26 @@ ShaderScriptCommandList::~ShaderScriptCommandList()
 	//}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Initialize(MMEShader* ownerShader)
 {
 	m_ownerShader = ownerShader;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::AddChildPassCommandList(ShaderScriptCommandList* commandList)
 {
 	m_childCommandListArray.Add(commandList);
 	commandList->m_parentList = this;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void ShaderScriptCommandList::SetDrawingSubsetNumbers(const Array<int>& numbers)
 //{
 //	m_drawingSubsetNumbers.CopyFrom(numbers);
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Execute(DrawParams& params)
 {
 	//params.SubsetNumbers = &m_drawingSubsetNumbers;
@@ -78,9 +66,7 @@ void ShaderScriptCommandList::Execute(DrawParams& params)
 	PopCurrentState(params);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::ExecutePreScriptExternal_Color(DrawParams& params)
 {
 	LN_THROW(m_scriptExternalColorPosition >= 0, InvalidOperationException);
@@ -90,9 +76,7 @@ void ShaderScriptCommandList::ExecutePreScriptExternal_Color(DrawParams& params)
 	InternalExecute(params, 0, 0);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::ExecutePostScriptExternal_Color(DrawParams& params)
 {
 	LN_THROW(m_scriptExternalColorPosition >= 0, InvalidOperationException);
@@ -102,9 +86,7 @@ void ShaderScriptCommandList::ExecutePostScriptExternal_Color(DrawParams& params
 	PopCurrentState(params);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MMEScriptClass scriptClass, MMEScriptOrder scriptOrder)
 {
 	bool onTech = !m_childCommandListArray.IsEmpty();
@@ -226,9 +208,7 @@ ShaderScriptCommandList::ValidationError ShaderScriptCommandList::CheckValid(MME
 	return ValidationError_Success;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_RenderColorTarget(int index, ShaderVariable* textureVariable)
 {
 	Command c;
@@ -238,9 +218,7 @@ void ShaderScriptCommandList::Add_RenderColorTarget(int index, ShaderVariable* t
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_RenderDepthStencilTarget(ShaderVariable* textureVariable)
 {
 	Command c;
@@ -249,9 +227,7 @@ void ShaderScriptCommandList::Add_RenderDepthStencilTarget(ShaderVariable* textu
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_ClearSetColor(const Vector4& color)
 {
 	Command c;
@@ -263,9 +239,7 @@ void ShaderScriptCommandList::Add_ClearSetColor(const Vector4& color)
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_ClearSetDepth(float depth)
 {
 	Command c;
@@ -274,9 +248,7 @@ void ShaderScriptCommandList::Add_ClearSetDepth(float depth)
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_ClearColor()
 {
 	Command c;
@@ -284,9 +256,7 @@ void ShaderScriptCommandList::Add_ClearColor()
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_ClearDepth()
 {
 	Command c;
@@ -294,9 +264,7 @@ void ShaderScriptCommandList::Add_ClearDepth()
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_ScriptExternal_Color()
 {
 	Command c;
@@ -307,9 +275,7 @@ void ShaderScriptCommandList::Add_ScriptExternal_Color()
 	m_scriptExternalColorPosition = m_commandArray.GetCount() - 1;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_Pass(ShaderPass* pass, ShaderScriptCommandList* commandList)
 {
 	Command c;
@@ -319,9 +285,7 @@ void ShaderScriptCommandList::Add_Pass(ShaderPass* pass, ShaderScriptCommandList
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_LoopByCount(int count)
 {
 	Command c;
@@ -330,9 +294,7 @@ void ShaderScriptCommandList::Add_LoopByCount(int count)
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_LoopEnd()
 {
 	Command c;
@@ -340,9 +302,7 @@ void ShaderScriptCommandList::Add_LoopEnd()
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_LoopGetIndex(ShaderVariable* variable)
 {
 	Command c;
@@ -351,9 +311,7 @@ void ShaderScriptCommandList::Add_LoopGetIndex(ShaderVariable* variable)
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_DrawGeometry(ShaderPass* pass)
 {
 	Command c;
@@ -362,9 +320,7 @@ void ShaderScriptCommandList::Add_DrawGeometry(ShaderPass* pass)
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::Add_DrawBuffer(ShaderPass* pass)
 {
 	Command c;
@@ -373,9 +329,7 @@ void ShaderScriptCommandList::Add_DrawBuffer(ShaderPass* pass)
 	m_commandArray.Add(c);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int currentLoopCount)
 {
 	int size = m_commandArray.GetCount();
@@ -495,9 +449,7 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 	return pc - 1;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::DrawGeometry(DrawParams& params, ShaderPass* pass)
 {
 	params.RenderingNode->DrawSubsetInternal(params.Params, params.SubsetIndex, m_ownerShader, pass);
@@ -536,9 +488,7 @@ void ShaderScriptCommandList::DrawGeometry(DrawParams& params, ShaderPass* pass)
 #endif
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 {
 	// 現在のレンダリングターゲット&深度バッファを記憶
@@ -558,9 +508,7 @@ void ShaderScriptCommandList::PushCurrentState(DrawParams& params)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void ShaderScriptCommandList::PopCurrentState(DrawParams& params)
 {
 	// レンダリングターゲット&深度バッファを元に戻す

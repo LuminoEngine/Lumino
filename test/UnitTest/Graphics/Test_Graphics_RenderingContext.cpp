@@ -17,7 +17,7 @@ protected:
 
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_RenderingContext, Clear)
 {
 	Engine::BeginRendering();
@@ -28,7 +28,7 @@ TEST_F(Test_Graphics_RenderingContext, Clear)
 	//TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 {
 	// 反時計回りを表とする
@@ -91,7 +91,7 @@ TEST_F(Test_Graphics_RenderingContext, PosColorVertex)
 #endif
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_RenderingContext, Blt)
 {
 	auto t1 = Texture2D::Create(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext1.png"));

@@ -13,13 +13,11 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // SwapChain
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain*/)
 	: m_deviceObj(NULL)
 	, m_isDefault(isDefault)
@@ -29,9 +27,7 @@ SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mai
 	Initialize(/*mainWindowSize*/);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //SwapChain::SwapChain(PlatformWindow* targetWindow)
 //	: m_manager(Internal::Manager)
 //{
@@ -39,9 +35,7 @@ SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mai
 //	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //SwapChain::SwapChain(GraphicsManager* manager, PlatformWindow* targetWindow)
 //	: m_manager(manager)
 //{
@@ -49,9 +43,7 @@ SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mai
 //	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 SwapChain::~SwapChain()
 {
 	// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
@@ -65,9 +57,7 @@ SwapChain::~SwapChain()
 	LN_SAFE_RELEASE(m_deviceObj);;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SwapChain::Initialize(/*const Size& backbufferSize*/)
 {
 	m_commandList = LN_NEW RenderingCommandList();
@@ -97,9 +87,7 @@ void SwapChain::Initialize(/*const Size& backbufferSize*/)
 	m_waiting.SetTrue();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SwapChain::Resize(const Size& newSize)
 {
 	m_deviceObj->Resize(newSize);
@@ -110,9 +98,7 @@ void SwapChain::Resize(const Size& newSize)
 	m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat_D24S8);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SwapChain::Present()
 {
 	if (m_manager->GetRenderingType() == RenderingType::Immediate)
@@ -162,9 +148,7 @@ void SwapChain::Present()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)

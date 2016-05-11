@@ -9,26 +9,20 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	return Create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	LN_THROW(manager != NULL, ArgumentException);
 	return LN_NEW IndexBuffer(manager, indexCount, initialData, format, usage);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 	: m_deviceObj(NULL)
 	, m_indexCount(indexCount)
@@ -47,17 +41,13 @@ IndexBuffer::IndexBuffer(GraphicsManager* manager, int indexCount, const void* i
 	
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 IndexBuffer::~IndexBuffer()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int IndexBuffer::GetIndexStride() const
 {
 	if (m_format == IndexBufferFormat_UInt16) {
@@ -70,9 +60,7 @@ int IndexBuffer::GetIndexStride() const
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ByteBuffer* IndexBuffer::Lock()
 {
 	// まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
@@ -88,9 +76,7 @@ ByteBuffer* IndexBuffer::Lock()
 	return &m_lockedBuffer;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void IndexBuffer::Unlock()
 {
 	if (m_initialUpdate) {
@@ -101,17 +87,13 @@ void IndexBuffer::Unlock()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //void IndexBuffer::SetSubData(uint32_t offsetBytes, void* data, uint32_t dataBytes)
 //{
 //
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)

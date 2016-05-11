@@ -16,13 +16,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
-//=============================================================================
+//==============================================================================
 // DX9GraphicsDevice
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DX9GraphicsDevice::DX9GraphicsDevice()
 	: m_fileManager(NULL)
 	, m_mainWindow()
@@ -48,9 +46,7 @@ DX9GraphicsDevice::DX9GraphicsDevice()
 	memset(&m_dxDisplayMode, 0, sizeof(m_dxDisplayMode));
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DX9GraphicsDevice::~DX9GraphicsDevice()
 {
 	LN_SAFE_RELEASE(m_d3dxEffectPool);
@@ -58,9 +54,7 @@ DX9GraphicsDevice::~DX9GraphicsDevice()
 	LN_SAFE_RELEASE(m_direct3D);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 {
 	m_mainWindow.Attach(configData.MainWindow, true);
@@ -114,9 +108,7 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::Finalize()
 {
 	GraphicsDeviceBase::Finalize();
@@ -124,17 +116,13 @@ void DX9GraphicsDevice::Finalize()
 	LN_SAFE_RELEASE(m_defaultSwapChain);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ISwapChain* DX9GraphicsDevice::GetDefaultSwapChain()
 {
 	return m_defaultSwapChain;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 {
 	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
@@ -142,9 +130,7 @@ RefPtr<IVertexBuffer> DX9GraphicsDevice::CreateVertexBufferImplement(const Verte
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 {
 	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
@@ -152,9 +138,7 @@ RefPtr<IIndexBuffer> DX9GraphicsDevice::CreateIndexBufferImplement(int indexCoun
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const Size& size, uint32_t mipLevels, TextureFormat format, const void* initialData)
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipLevels), false);
@@ -164,9 +148,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const Size& size, uin
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream* stream, uint32_t mipLevels, TextureFormat format)
 {
 	ByteBuffer buffer;
@@ -177,27 +159,21 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> DX9GraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, Size(width, height), format, mipLevels), false);
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ITexture> DX9GraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
 	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, Size(width, height), format), false);
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<IShader> DX9GraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	DX9Shader* shader = NULL;
@@ -209,18 +185,14 @@ RefPtr<IShader> DX9GraphicsDevice::CreateShaderImplement(const void* textData, s
 	return obj;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RefPtr<ISwapChain> DX9GraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
 {
 	LN_THROW(0, NotImplementedException);
 	return nullptr;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::ResetDevice()
 {
 	// 先に OnLostDevice() を呼ぶこと
@@ -229,9 +201,7 @@ void DX9GraphicsDevice::ResetDevice()
 	ResetDevice(false);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::OnLostDevice()
 {
 	m_deviceState = DeviceState_Pausing;
@@ -243,9 +213,7 @@ void DX9GraphicsDevice::OnLostDevice()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::OnResetDevice()
 {
 	for (int i = m_deviceObjectList.GetCount() - 1; i >= 0; i--) {
@@ -257,9 +225,7 @@ void DX9GraphicsDevice::OnResetDevice()
 	m_deviceState = DeviceState_Enabled;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::CheckDeviceInformation()
 {
 	// 使えるデバイスの種類を調べる
@@ -372,9 +338,7 @@ void DX9GraphicsDevice::CheckDeviceInformation()
 	LN_THROW((m_dxCaps.PixelShaderVersion >= D3DPS_VERSION(2, 0)), InvalidOperationException, "Invalid vertex shader version.");
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::ResetDevice(bool fullscreen)
 {
 	// プレゼンテーションパラメータ設定
@@ -409,9 +373,7 @@ void DX9GraphicsDevice::ResetDevice(bool fullscreen)
 	m_deviceState = DeviceState_Enabled;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DX9GraphicsDevice::SetPresentParameters(const Size& backbufferSize, bool fullscreen)
 {
 	// フルスクリーンモードの場合

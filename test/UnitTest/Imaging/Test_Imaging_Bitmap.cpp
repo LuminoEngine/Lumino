@@ -7,7 +7,7 @@ protected:
 	virtual void TearDown() {}
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(Test_Imaging_Bitmap, PngFile)
 {
 	Bitmap bmp1(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
@@ -46,14 +46,14 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 	ASSERT_EQ(0x7F, rb[3]);		// A
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TEST_F(Test_Imaging_Bitmap, Save)
 {
 	Bitmap bmp1(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
 	bmp1.Save(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_cpy.png"));
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //TEST_F(Test_Imaging_Bitmap, BitBlt)
 //{
 //	Bitmap bmp1(Size(32, 32), PixelFormat_BYTE_R8G8B8A8);

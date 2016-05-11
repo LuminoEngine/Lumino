@@ -15,14 +15,12 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
-//=============================================================================
+//==============================================================================
 // Texture
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture, GraphicsResourceObject);
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture::Texture()
 	: m_deviceObj(NULL)
 	, m_size()
@@ -31,58 +29,44 @@ Texture::Texture()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture::~Texture()
 {
 	LN_SAFE_RELEASE(m_deviceObj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const Size& Texture::GetSize() const
 {
 	return m_deviceObj->GetSize();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int Texture::GetWidth() const
 {
 	return m_deviceObj->GetSize().width;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int Texture::GetHeight() const
 {
 	return m_deviceObj->GetSize().height;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 const Size& Texture::GetRealSize() const
 {
 	return m_deviceObj->GetRealSize();
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 TextureFormat Texture::GetFormat() const
 {
 	return m_deviceObj->GetTextureFormat();
 }
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Bitmap* Texture::Lock()
 {
 	// Deferred
@@ -114,9 +98,7 @@ Bitmap* Texture::Lock()
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture::Unlock()
 {
 	// Deferred
@@ -152,9 +134,9 @@ void Texture::Unlock()
 	}
 }
 
-//=============================================================================
+//==============================================================================
 // Texture2D
-//=============================================================================
+//==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture2D, Texture);
 
 //static GraphicsManager* GetManager()
@@ -168,17 +150,13 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture2D, Texture);
 //	return GraphicsManager::Instance->GetGraphicsDevice();
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, int mipLevels)
 {
 	return Create(Size(width, height), format, mipLevels);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	// ロック用のビットマップを作る
@@ -188,9 +166,7 @@ Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLe
 	return tex;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
@@ -198,9 +174,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 	return tex;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
@@ -224,26 +198,20 @@ Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, int mipLeve
 	*/
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(const void* data, size_t size, TextureFormat format, int mipLevels)
 {
 	MemoryStream stream(data, size);
 	return Create(&stream, format, mipLevels);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2D::Texture2D()
 	: m_isPlatformLoaded(false)
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::CreateCore(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -261,18 +229,16 @@ void Texture2D::CreateCore(GraphicsManager* manager, const Size& size, TextureFo
 	//obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::CreateCore(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
 	CreateCore(manager, stream, format, mipLevels);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // プラットフォーム依存用
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -324,26 +290,20 @@ void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureForm
 //}
 
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture2D::~Texture2D()
 {
 	LN_SAFE_RELEASE(m_primarySurface);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::Clear(const Color& color)
 {
 	ScopedTextureLock lock(this);
 	lock.GetBitmap()->Clear(color);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 {
 	ScopedTextureLock lock1(this);
@@ -351,9 +311,7 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 	lock1.GetBitmap()->BitBlt(x, y, lock2.GetBitmap(), srcRect, Color::White, true);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
 void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
@@ -371,9 +329,7 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rec
 }
 #pragma pop_macro("DrawText")
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 {
 	LN_CHECK_ARGS_RETURN(bitmap != NULL);
@@ -387,9 +343,7 @@ void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 		offset, bitmap->GetBitmapBuffer()->GetConstData(), bitmap->GetBitmapBuffer()->GetSize(), bitmap->GetSize());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::SetSubData(const Point& offset, const void* data)
 {
 	LN_CHECK_ARGS_RETURN(data != NULL);
@@ -398,9 +352,7 @@ void Texture2D::SetSubData(const Point& offset, const void* data)
 		offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL)
@@ -424,13 +376,11 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 }
 
 
-//=============================================================================
+//==============================================================================
 // RenderTarget
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RenderTargetPtr RenderTarget::Create(const Size& size, TextureFormat format, int mipLevels)
 {
 	RefPtr<RenderTarget> tex(LN_NEW RenderTarget(), false);
@@ -438,9 +388,7 @@ RenderTargetPtr RenderTarget::Create(const Size& size, TextureFormat format, int
 	return tex;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RenderTarget::RenderTarget()
 	: Texture()
 	, m_mipLevels(0)
@@ -449,9 +397,7 @@ RenderTarget::RenderTarget()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mipLevels, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -462,9 +408,7 @@ void RenderTarget::CreateImpl(GraphicsManager* manager, const Size& size, int mi
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateRenderTarget(m_size.width, m_size.height, m_mipLevels, m_format);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderTarget::CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -473,16 +417,12 @@ void RenderTarget::CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer
 	m_isDefaultBackBuffer = isDefaultBackBuffer;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 RenderTarget::~RenderTarget()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderTarget::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 {
 	assert(m_isDefaultBackBuffer);
@@ -490,9 +430,7 @@ void RenderTarget::AttachDefaultBackBuffer(Driver::ITexture* deviceObj)
 	LN_REFOBJ_SET(m_deviceObj, deviceObj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderTarget::DetachDefaultBackBuffer()
 {
 	assert(m_isDefaultBackBuffer);
@@ -500,9 +438,7 @@ void RenderTarget::DetachDefaultBackBuffer()
 	LN_SAFE_RELEASE(m_deviceObj);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL) {
@@ -513,13 +449,11 @@ void RenderTarget::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
-//=============================================================================
+//==============================================================================
 // DepthBuffer
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
 {
 	RefPtr<DepthBuffer> tex(LN_NEW DepthBuffer(), false);
@@ -528,16 +462,12 @@ Texture* DepthBuffer::Create(const Size& size, TextureFormat format)
 	return tex;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DepthBuffer::DepthBuffer()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -547,16 +477,12 @@ void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, Texture
 	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.width, m_size.height, m_format);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 DepthBuffer::~DepthBuffer()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DepthBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL) {

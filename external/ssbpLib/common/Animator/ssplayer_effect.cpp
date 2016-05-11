@@ -181,8 +181,6 @@ SsEffectRenderAtom* SsEffectRenderer::CreateAtom(unsigned int seed, SsEffectRend
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 bool particleDelete(SsEffectRenderAtom* d)
 {
 
@@ -205,16 +203,12 @@ bool particleDelete(SsEffectRenderAtom* d)
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 bool particleDeleteAll(SsEffectRenderAtom* d)
 {
 	delete d;
 	return true;
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void	SsEffectRenderEmitter::setMySeed( unsigned int seed )
 {
@@ -309,8 +303,6 @@ bool	SsEffectRenderEmitter::genarate( SsEffectRenderer* render )
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 void	SsEffectRenderEmitter::update(float delta)
 {
 
@@ -381,8 +373,6 @@ void	SsEffectRenderParticle::Initialize()
 
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 bool	SsEffectRenderParticle::genarate( SsEffectRenderer* render )
 {
 	SsEffectNode* n = static_cast<SsEffectNode*>(this->data->ctop);
@@ -413,8 +403,6 @@ bool	SsEffectRenderParticle::genarate( SsEffectRenderer* render )
 }
 
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void	SsEffectRenderParticle::update(float delta)
 {
@@ -455,8 +443,6 @@ void	SsEffectRenderParticle::update(float delta)
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 void	SsEffectRenderParticle::updateDelta(float delta)
 {
 #ifdef UP_MINUS
@@ -492,8 +478,6 @@ void	SsEffectRenderParticle::updateDelta(float delta)
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 void 	SsEffectRenderParticle::updateForce(float delta)
 {
 
@@ -521,8 +505,6 @@ void 	SsEffectRenderParticle::updateForce(float delta)
 
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void	SsEffectRenderParticle::draw(SsEffectRenderer* render)
 {
@@ -744,8 +726,6 @@ void	SsEffectRenderer::update(float delta)
 
 }
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 void	SsEffectRenderer::draw()
 {
 
@@ -770,8 +750,6 @@ void	SsEffectRenderer::draw()
 
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 SsEffectRenderer::~SsEffectRenderer()
 {
 	clearUpdateList();
@@ -782,8 +760,6 @@ SsEffectRenderer::~SsEffectRenderer()
 }
 
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void	SsEffectRenderer::clearUpdateList()
 {
@@ -817,8 +793,6 @@ void	SsEffectRenderer::clearUpdateList()
 
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 
 void    SsEffectRenderer::reload()

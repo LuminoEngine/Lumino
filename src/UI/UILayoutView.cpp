@@ -10,12 +10,10 @@
 
 LN_NAMESPACE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // UILayoutView
-//=============================================================================
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//==============================================================================
+//------------------------------------------------------------------------------
 UILayoutView::UILayoutView()
 	: m_ownerNativeWindow(nullptr)
 	, m_ownerContext(nullptr)
@@ -26,17 +24,13 @@ UILayoutView::UILayoutView()
 {
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 UILayoutView::~UILayoutView()
 {
 	LN_SAFE_RELEASE(m_rootElement);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
 	m_ownerContext = ownerContext;
@@ -47,9 +41,7 @@ void UILayoutView::Initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 	m_rootElement->SetParent(nullptr, this);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UILayoutView::UpdateLayout(const SizeF& viewSize)
 {
 	m_viewPixelSize = viewSize;
@@ -62,9 +54,7 @@ void UILayoutView::UpdateLayout(const SizeF& viewSize)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void UILayoutView::Render(GraphicsContext* g)
 {
 	if (m_rootElement != nullptr)
@@ -73,9 +63,7 @@ void UILayoutView::Render(GraphicsContext* g)
 	}
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::UpdateMouseHover(const PointF& mousePos)
 {
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -120,18 +108,18 @@ EXIT:
 	return false;
 }
 
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void UILayoutView::CaptureMouse(UIElement* element)
 //{
 //	m_capturedElement = element;
 //	m_ownerNativeWindow->CaptureMouse();
 //}
 //
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 ////
-////-----------------------------------------------------------------------------
+////------------------------------------------------------------------------------
 //void UILayoutView::ReleaseMouseCapture(UIElement* element)
 //{
 //	if (m_capturedElement == element)
@@ -141,18 +129,14 @@ EXIT:
 //	}
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //bool UILayoutView::InjectViewportSizeChanged(int width, int height)
 //{
 //	m_viewPixelSize.Set(width, height);
 //	return false;
 //}
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 {
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -172,9 +156,7 @@ bool UILayoutView::InjectMouseMove(float clientX, float clientY)
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseMove, args);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseButtonDown(MouseButton button, float clientX, float clientY)
 {
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -208,9 +190,7 @@ bool UILayoutView::InjectMouseButtonDown(MouseButton button, float clientX, floa
 	return m_mouseHoverElement->OnEvent(detail::UIInternalEventType::MouseButtonDown, args);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseButtonUp(MouseButton button, float clientX, float clientY)
 {
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -232,9 +212,7 @@ bool UILayoutView::InjectMouseButtonUp(MouseButton button, float clientX, float 
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectMouseWheel(int delta)
 {
 	detail::EventArgsPool* pool = m_ownerContext->GetManager()->GetEventArgsPool();
@@ -254,9 +232,7 @@ bool UILayoutView::InjectMouseWheel(int delta)
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectKeyDown(Key keyCode, ModifierKeys modifierKeys)
 {
 	// フォーカスを持っているUI要素に送る
@@ -269,9 +245,7 @@ bool UILayoutView::InjectKeyDown(Key keyCode, ModifierKeys modifierKeys)
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectKeyUp(Key keyCode, ModifierKeys modifierKeys)
 {
 	// フォーカスを持っているUI要素に送る
@@ -284,9 +258,7 @@ bool UILayoutView::InjectKeyUp(Key keyCode, ModifierKeys modifierKeys)
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool UILayoutView::InjectTextInput(TCHAR ch)
 {
 	// フォーカスを持っているUI要素に送る

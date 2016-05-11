@@ -11,13 +11,11 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-//=============================================================================
+//==============================================================================
 // RenderingPass
-//=============================================================================
+//==============================================================================
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, MMEShader* ownerShader)
 	: RenderingPass(manager)
 	, m_mmdPass(mmdPass)
@@ -26,17 +24,13 @@ MMERenderingPass::MMERenderingPass(SceneGraphManager* manager, MMDPass mmdPass, 
 	LN_REFOBJ_SET(m_ownerShader, ownerShader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 MMERenderingPass::~MMERenderingPass()
 {
 	LN_SAFE_RELEASE(m_ownerShader);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* node)
 {
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
@@ -52,9 +46,7 @@ void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* nod
 	visualNode->OnRender(dc);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* visualNode, int subset)
 {
 	// 今回のパスで本当に必要な情報 (使用するシェーダ等) を取得する
@@ -122,9 +114,7 @@ void MMERenderingPass::RenderSubset(SceneGraphRenderingContext* dc, VisualNode* 
 	tech->GetDrawingCommandList().Execute(dp);
 }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, RenderingPriorityParams* outParams)
 {
 	outParams->Shader = nullptr;

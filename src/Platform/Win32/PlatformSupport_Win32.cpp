@@ -5,9 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 HWND PlatformSupport::GetWindowHandle(PlatformWindow* window)
 {
 	Win32PlatformWindow* w = dynamic_cast<Win32PlatformWindow*>(window);
