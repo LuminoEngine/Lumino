@@ -77,6 +77,34 @@ void ContextState::SetShaderPass(ShaderPass* pass)
 	}
 }
 
+
+
+//==============================================================================
+// RenderStateBlock
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RenderStateBlock::RenderStateBlock(IContext* context)
+	: m_context(context)
+	, m_renderState(context->m_state.renderState)
+	, m_depthStencilState(context->m_state.depthStencilState)
+{
+}
+
+//------------------------------------------------------------------------------
+RenderStateBlock::~RenderStateBlock()
+{
+	Apply(m_context);
+}
+
+//------------------------------------------------------------------------------
+void RenderStateBlock::Apply(IContext* context)
+{
+	context->SetRenderState(m_renderState);
+	context->SetDepthStencilState(m_depthStencilState);
+}
+
+
 //==============================================================================
 // IContext
 //==============================================================================

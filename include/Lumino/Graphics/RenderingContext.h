@@ -9,6 +9,7 @@ LN_NAMESPACE_BEGIN
 class SpriteRenderer;
 namespace detail { class PrimitiveRenderer; }
 
+
 /**
 	@brief		
 */

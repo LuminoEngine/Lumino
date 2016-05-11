@@ -152,26 +152,31 @@ void RenderingContext::BltInternal(Texture* source, RenderTarget* dest, const Ma
 	// が、内部でステートを変えてしまうのはどうなのか。。。
 	SetShaderPass(nullptr);
 
-	RenderState oldState1 = GetRenderState();
-	DepthStencilState oldState2 = GetDepthStencilState();
+	//RenderState oldState1 = GetRenderState();
+	//DepthStencilState oldState2 = GetDepthStencilState();
 
-	RenderState newState1;
-	newState1.Blend = BlendMode::Alpha;	// TODO:指定できた方がいい？
-	newState1.AlphaTest = false;
-	SetRenderState(newState1);
+	//RenderState newState1;
+	//newState1.Blend = BlendMode::Alpha;	// TODO:指定できた方がいい？
+	//newState1.AlphaTest = false;
+	//SetRenderState(newState1);
 
-	DepthStencilState newState2;
-	newState2.DepthTestEnabled = false;
-	newState2.DepthWriteEnabled = false;
-	SetDepthStencilState(newState2);
+	//DepthStencilState newState2;
+	//newState2.DepthTestEnabled = false;
+	//newState2.DepthWriteEnabled = false;
+	//SetDepthStencilState(newState2);
 
+	detail::RenderStateBlock stateBlock(this);
+	SetBlendMode(BlendMode::Alpha);
+	SetAlphaTestEnabled(false);
+	SetDepthTestEnabled(false);
+	SetDepthWriteEnabled(false);
 
 	OnDrawing(m_primitiveRenderer);
 	m_primitiveRenderer->Blt(source, dest, transform, shader);
 
 
-	SetRenderState(oldState1);
-	SetDepthStencilState(oldState2);
+	//SetRenderState(oldState1);
+	//SetDepthStencilState(oldState2);
 }
 
 //------------------------------------------------------------------------------

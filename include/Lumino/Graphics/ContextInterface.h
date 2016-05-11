@@ -60,6 +60,25 @@ private:
 };
 
 
+
+class IContext;
+
+class RenderStateBlock	// TODO: Scoped は別定義したい
+	: public Object
+{
+public:
+	RenderStateBlock(IContext* context);
+	~RenderStateBlock();
+
+	void Apply(IContext* context);
+
+private:
+	IContext*				m_context;
+	RenderState				m_renderState;
+	DepthStencilState		m_depthStencilState;
+	// TODO: Viewportサイズも必要かな。RenderTarget はいらない気がする。
+};
+
 class IRendererPloxy// : public RefObject
 {
 public:
@@ -205,6 +224,8 @@ public: //TODO:
 
 private:
 	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
+
+	friend class RenderStateBlock;
 
 	GraphicsManager*		m_manager;
 	Details::Renderer*		m_ploxy;
