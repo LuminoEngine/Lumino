@@ -136,9 +136,9 @@ static const char* gMMEAnnotationNames[ MME_MAX_ANNOTATIONS ] =
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo)
+MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, MMEShader* shader, MMEShaderErrorInfo* errorInfo)
 {
-	MMEShaderBuilder builder(manager, coreShader, errorInfo);
+	MMEShaderBuilder builder(manager, shader, errorInfo);
 	builder.Build();
 	return builder.m_mmeShader;
 }
@@ -146,12 +146,11 @@ MMEShader* MMEShaderBuilder::Create(SceneGraphManager* manager, Shader* coreShad
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-MMEShaderBuilder::MMEShaderBuilder(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo)
+MMEShaderBuilder::MMEShaderBuilder(SceneGraphManager* manager, MMEShader* shader, MMEShaderErrorInfo* errorInfo)
 	: m_mmeShader(NULL)
 	, m_errorInfo(NULL)
 {
-	m_mmeShader = LN_NEW MMEShader(manager);
-	m_mmeShader->m_coreShader = coreShader;
+	m_mmeShader = shader;
 }
 
 MMEShaderBuilder::~MMEShaderBuilder()
@@ -165,7 +164,7 @@ void MMEShaderBuilder::Build()
 {
 	//-----------------------------------------------------
 	// シェーダプログラム内のすべての変数をチェックする
-	LN_FOREACH(ShaderVariable* var, m_mmeShader->m_coreShader->GetVariables())
+	LN_FOREACH(ShaderVariable* var, m_mmeShader->GetVariables())
 	{
 		// シェーダ変数。とりあえずでフォルト値を入れておく
 		MMEShaderVariable* sv = LN_NEW MMEShaderVariable();
@@ -211,7 +210,7 @@ void MMEShaderBuilder::Build()
 
 	//-----------------------------------------------------
 	// テクニック情報作成
-	LN_FOREACH(ShaderTechnique* tech, m_mmeShader->m_coreShader->GetTechniques())
+	LN_FOREACH(ShaderTechnique* tech, m_mmeShader->GetTechniques())
 	{
 		MMEShaderTechnique* sstech = LN_NEW MMEShaderTechnique();
 		sstech->Initialize(m_mmeShader, tech, m_errorInfo);

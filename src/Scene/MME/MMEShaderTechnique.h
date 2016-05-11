@@ -86,7 +86,7 @@ private:
 
 	MMEShaderErrorInfo*			m_errorInfo;
 	MMEShader*					m_ownerShader;
-	Shader*			m_coreShader;
+	Shader*			m_coreShader;	// TODO: m_ownerShader と同じ
 	ShaderTechnique*	m_technique;
 
 	MMDPass						m_mmdPass;

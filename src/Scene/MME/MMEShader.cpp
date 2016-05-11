@@ -36,11 +36,16 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 	//newCode += StringA::GetNewLine();
 	//newCode += StringA(code, codeLength);
 
-	RefPtr<Shader> shader(LN_NEW Shader(), false);
-	shader->Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
-	RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo), false);
-	mmeShader.SafeAddRef();
-	return mmeShader;
+	RefPtr<MMEShader> mmeShader(LN_NEW MMEShader(manager), false);
+	mmeShader->Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
+	MMEShaderBuilder::Create(manager, mmeShader, errorInfo);
+	return mmeShader.DetachMove();
+
+	//RefPtr<Shader> shader(LN_NEW Shader(), false);
+	//shader->Initialize(manager->GetGraphicsManager(), newCode.c_str(), newCode.GetLength());
+	//RefPtr<MMEShader> mmeShader(MMEShaderBuilder::Create(manager, shader, errorInfo), false);
+	//mmeShader.SafeAddRef();
+	//return mmeShader;
 }
 
 //-----------------------------------------------------------------------------
@@ -48,7 +53,6 @@ MMEShader* MMEShader::Create(const char* code, int codeLength, MMEShaderErrorInf
 //-----------------------------------------------------------------------------
 MMEShader::MMEShader(SceneGraphManager* manager)
 	: m_manager(NULL)
-	, m_coreShader()
 	, m_mmeScriptOutput(MME_SCROUT_color)
 	, m_mmeScriptClass(MME_SCRCLS_object)
 	, m_mmeScriptOrder(MME_SCRORDER_standard)

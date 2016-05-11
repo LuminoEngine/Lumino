@@ -58,7 +58,7 @@ void MMEShaderTechnique::Initialize(MMEShader* shader, ShaderTechnique* tech, MM
 {
 	m_errorInfo = errorInfo;
 	m_ownerShader = shader;
-	m_coreShader = m_ownerShader->GetCoreShader();
+	m_coreShader = shader;
 	m_technique = tech;
 
 	m_scriptCommandList.Initialize(m_ownerShader);

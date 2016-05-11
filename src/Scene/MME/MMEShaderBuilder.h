@@ -19,10 +19,10 @@ class MMEShaderErrorInfo;
 class MMEShaderBuilder
 {
 public:
-	static MMEShader* Create(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo);
+	static MMEShader* Create(SceneGraphManager* manager, MMEShader* shader, MMEShaderErrorInfo* errorInfo);
 
 private:
-	MMEShaderBuilder(SceneGraphManager* manager, Shader* coreShader, MMEShaderErrorInfo* errorInfo);
+	MMEShaderBuilder(SceneGraphManager* manager, MMEShader* shader, MMEShaderErrorInfo* errorInfo);
 	~MMEShaderBuilder();
 
 	void Build();
