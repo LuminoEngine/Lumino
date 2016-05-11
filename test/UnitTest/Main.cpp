@@ -204,7 +204,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=IntegrateTest_Scene_Sprite.BlendMode"
+		"--gtest_filter=IntegrateTest_Scene_VisualNode.Visible"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

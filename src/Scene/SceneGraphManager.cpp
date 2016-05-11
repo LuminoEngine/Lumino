@@ -170,7 +170,8 @@ SceneGraphManager* SceneGraphManager::Instance = NULL;
 
 //------------------------------------------------------------------------------
 SceneGraphManager::SceneGraphManager(const ConfigData& configData)
-	: m_fileManager(configData.FileManager, true)
+	: m_engineDiag(configData.engineDiag)
+	, m_fileManager(configData.FileManager, true)
 	, m_physicsManager(configData.PhysicsManager, true)
 	, m_graphicsManager(configData.GraphicsManager, true)
 	, m_effectManager(configData.effectManager)

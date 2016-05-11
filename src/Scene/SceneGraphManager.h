@@ -13,6 +13,8 @@
 #include "MME/MMETypes.h"	// TODO: これは別の場所に移動したい・・・
 
 LN_NAMESPACE_BEGIN
+class EngineDiagCore;
+
 LN_NAMESPACE_SCENE_BEGIN
 
 /// SceneGraphManager
@@ -24,6 +26,7 @@ public:
 	/// 初期化データ
 	struct ConfigData
 	{
+		EngineDiagCore*				engineDiag = nullptr;
 		FileManager*		FileManager;
 		Physics::PhysicsManager*	PhysicsManager;
 		GraphicsManager*	GraphicsManager;
@@ -70,7 +73,7 @@ public:
 
 
 public:	// internal
-
+	EngineDiagCore* GetEngineDiag() const { return m_engineDiag; }
 	Physics::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
@@ -94,6 +97,7 @@ private:
 	typedef std::multimap<String, SceneNode*>	NodeNameMap;
 	typedef std::pair<String, SceneNode*>		NodeNamePair;
 
+	EngineDiagCore*						m_engineDiag;
 	RefPtr<FileManager>					m_fileManager;
 	RefPtr<Physics::PhysicsManager>		m_physicsManager;
 	RefPtr<GraphicsManager>	m_graphicsManager;

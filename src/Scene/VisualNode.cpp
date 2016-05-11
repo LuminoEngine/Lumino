@@ -11,6 +11,8 @@
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
+#include "../EngineDiagCore.h"
+#include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -225,6 +227,31 @@ void VisualNode::OnRender(SceneGraphRenderingContext* dc)
 	{
 		dc->Pass->RenderSubset(dc, this, i);
 	}
+}
+
+//------------------------------------------------------------------------------
+Shader* VisualNode::GetPrimaryShader() const
+{
+	// TODO: main が無ければ [0] のをつかう
+	return m_materialList.GetMainMaterial()->GetShader();
+}
+
+//------------------------------------------------------------------------------
+void VisualNode::Render(SceneGraphRenderingContext* dc)
+{
+	// レンダリングステートの設定
+	RenderingContext* r = dc->GetRenderingContext();
+	r->ResetStates();
+	r->SetBlendMode(m_renderState.blendMode);
+	r->SetCullingMode(m_renderState.cullingMode);
+	r->SetDepthTestEnabled(m_renderState.depthTestEnabled);
+	r->SetDepthWriteEnabled(m_renderState.depthWriteEnabled);
+
+	// 描画
+	OnRender(dc);
+
+	// diag
+	if (m_manager->GetEngineDiag() != nullptr) m_manager->GetEngineDiag()->IncreaseVisualNodeDrawCount();
 }
 
 LN_NAMESPACE_SCENE_END

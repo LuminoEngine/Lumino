@@ -34,16 +34,7 @@ MMERenderingPass::~MMERenderingPass()
 void MMERenderingPass::RenderNode(SceneGraphRenderingContext* dc, SceneNode* node)
 {
 	VisualNode* visualNode = static_cast<VisualNode*>(node);
-
-	// レンダリングステートの設定
-	const detail::VisualNodeRenderState& state = visualNode->GetVisualNodeRenderState();
-	RenderingContext* r = dc->GetRenderingContext();
-	r->ResetStates();
-	r->SetBlendMode(state.blendMode);
-	r->SetCullingMode(state.cullingMode);
-	r->SetDepthTestEnabled(state.depthTestEnabled);
-	r->SetDepthWriteEnabled(state.depthWriteEnabled);
-	visualNode->OnRender(dc);
+	visualNode->Render(dc);
 }
 
 //------------------------------------------------------------------------------
@@ -147,12 +138,11 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 			// このオフスクリーンRTを持つシェーダが設定されているノード自身
 			else if (e.MatchingNameKey == _T("self") && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 			{
-				LN_NOTIMPLEMENTED();
-				//if (static_cast<VisualNode*>(node)->GetShader(-1) == m_ownerShader)
-				//{
-				//	data->PriorityShaderIndex = i;
-				//	break;
-				//}
+				if (static_cast<VisualNode*>(node)->GetPrimaryShader() == m_ownerShader)
+				{
+					data->PriorityShaderIndex = i;
+					break;
+				}
 			}
 			// ワイルドカード付きの比較
 			else if (StringTraits::Match(e.MatchingNameKey.c_str(), node->GetName().c_str()))
@@ -174,11 +164,10 @@ void MMERenderingPass::SelectPriorityParams(SceneNode* node, int subsetIndex, Re
 	{
 		if (m_priorityEntryList.IsEmpty() && node->GetSceneNodeType() == SceneNodeType_VisualNode)
 		{
-			// TODO:
-			//LN_NOTIMPLEMENTED();
 			// 優先パラメータ未設定。 (OFFSCREENRENDERTARGET ではない)
 			// ノードの持っているシェーダを返す。
-			//outParams->Shader = static_cast<VisualNode*>(node)->GetVisualNodeParams().GetCombinedSubsetParams(subsetIndex).SceneShader;//m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader;
+			outParams->Shader = dynamic_cast<MMEShader*>(static_cast<VisualNode*>(node)->GetMaterialList().GetMaterialInstance(subsetIndex)->m_shader);
+			// TODO: ↑dynamic_cast はやめたいが・・・
 		}
 
 		outParams->Hide = false;

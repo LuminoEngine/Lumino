@@ -17,57 +17,17 @@ class VisualNode
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	/// 可視状態の設定
+	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
 	void SetVisible(bool visible) { m_isVisible = visible; }
 
-	/// 可視状態の判定
+	/** 可視状態を取得します。*/
 	bool IsVisible() const { return m_isVisible; }
-	/*
-	/// 不透明度の設定 (0.0 ～ 1.0)
-	void SetOpacity(float opacity, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Opacity = opacity; }
-
-	/// 不透明度の取得
-	float GetOpacity(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Opacity; }
-
-	/// 乗算色の設定
-	void SetColorScale(const ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = color; }
-	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale = ColorF(r, g, b, a); }
-
-	/// 乗算色の取得
-	const ColorF& GetColorScale(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).ColorScale; }
-
-	/// ブレンドカラーの設定
-	void SetBlendColor(const ColorF& color, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor = color; }
-
-	/// ブレンドカラーの取得
-	const ColorF& GetBlendColor(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).BlendColor; }
-
-	/// 色調の設定
-	void SetTone(const ToneF& tone, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).Tone = tone; }
-
-	/// 色調の取得
-	const ToneF& GetTone(int subsetIndex = -1) const { return m_visualNodeParams.GetSubsetParams(subsetIndex).Tone; }
-
-	///// UV 変換行列の設定
-	//void SetUVTransform(const Matrix& matrix, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform = matrix; }
-
-	///// UV 変換行列の設定
-	//const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
-
-	/// シェーダの設定
-	void SetShader(MMEShader* shader, int subsetIndex = -1) { m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader = shader; }
-
-	/// シェーダの取得
-	MMEShader* GetShader(int subsetIndex = -1) { return m_visualNodeParams.GetSubsetParams(subsetIndex).SceneShader; }
-
-	*/
 
 	//-------------------------------------------------------------------------
 	/** @name Main material utilities. */
 	/** @{ */
 
 
-	/** @} */
 
 	/** メインマテリアルの不透明度を設定します。(default: 1.0)*/
 	void SetOpacity(float opacity, int subsetIndex = -1);
@@ -94,6 +54,7 @@ public:
 	/// シェーダの設定
 	void SetShader(Shader* shader, int subsetIndex = -1);
 
+	/** @} */
 
 	//-------------------------------------------------------------------------
 	/** @name RenderState */
@@ -160,7 +121,9 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	MaterialList2& GetMaterialList() { return m_materialList; }
-	const detail::VisualNodeRenderState& GetVisualNodeRenderState() const { return m_renderState; }
+	//const detail::VisualNodeRenderState& GetVisualNodeRenderState() const { return m_renderState; }
+	Shader* GetPrimaryShader() const;
+	void Render(SceneGraphRenderingContext* dc);
 
 protected:
 	int						m_subsetCount;

@@ -496,6 +496,7 @@ void EngineManager::InitializeSceneGraphManager()
 		InitializeEffectManager();
 		InitializeModelManager();
 		SceneGraphManager::ConfigData data;
+		data.engineDiag = &EngineDiagCore::Instance;
 		data.FileManager = m_fileManager;
 		data.GraphicsManager = m_graphicsManager;
 		data.PhysicsManager = m_physicsManager;
@@ -674,6 +675,7 @@ void EngineManager::Render()
 
 		if (m_graphicsManager != nullptr)
 		{
+			EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
 			m_graphicsManager->GetMainViewport()->Render();
 		}
 

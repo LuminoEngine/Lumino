@@ -2,12 +2,23 @@
 #include "Internal.h"
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/EngineDiag.h>
 #include "Graphics/GraphicsManager.h"
 #include "EngineManager.h"
 #include "EngineDiagCore.h"
 #include "EngineDiagRenderer.h"
 
 LN_NAMESPACE_BEGIN
+
+//==============================================================================
+// EngineDiag
+//==============================================================================
+
+//------------------------------------------------------------------------------
+int EngineDiag::GetVisualNodeDrawCount()
+{
+	return EngineDiagCore::Instance.GetVisualNodeDrawCount();
+}
 
 //==============================================================================
 // EngineDiagCore

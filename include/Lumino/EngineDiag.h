@@ -14,6 +14,8 @@ LN_NAMESPACE_BEGIN
 class EngineDiag
 {
 public:
+
+	static int GetVisualNodeDrawCount();
 };
 
 LN_NAMESPACE_END
