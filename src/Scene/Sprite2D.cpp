@@ -17,7 +17,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, SpriteBase);
 Sprite2DPtr Sprite2D::Create()
 {
 	auto obj = Sprite2DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance);
+	obj->Initialize(SceneGraphManager::Instance->GetDefault2DSceneGraph());
 	return obj;
 }
 
@@ -57,9 +57,9 @@ Sprite2D::~Sprite2D()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite2D::Initialize(SceneGraphManager* manager)
+void Sprite2D::Initialize(SceneGraph* owner)
 {
-	SpriteBase::Initialize(manager, SpriteCoord_2D);
+	SpriteBase::Initialize(owner, SpriteCoord_2D);
 }
 
 LN_NAMESPACE_SCENE_END

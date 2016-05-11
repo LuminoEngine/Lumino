@@ -20,7 +20,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Grid, VisualNode);
 GridPtr Grid::Create3D()
 {
 	auto ptr = GridPtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
 	SceneGraphManager::Instance->GetDefault3DSceneGraph()->GetRootNode()->AddChild(ptr);
 	return ptr;
 }
@@ -42,9 +42,9 @@ Grid::~Grid()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Grid::Initialize(SceneGraphManager* manager)
+void Grid::Initialize(SceneGraph* owner)
 {
-	VisualNode::CreateCore(manager, 1);
+	VisualNode::Initialize(owner, 1);
 }
 
 //-----------------------------------------------------------------------------

@@ -64,21 +64,22 @@ SpriteBase::~SpriteBase()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteBase::Initialize(SceneGraphManager* manager, SpriteCoord spriteCoord)
+void SpriteBase::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 {
-	VisualNode::CreateCore(manager, 1);
+	VisualNode::Initialize(owner, 1);
 	m_spriteCoord = spriteCoord;
 	m_srcRect.Set(0, 0, -1, -1);
 	SetSize(SizeF(-1, -1));
 
+	// TODO: もらった owner に追加する、で。
 	if (spriteCoord == SpriteCoord_2D)
 	{
-		manager->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
+		owner->GetManager()->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
 		SetAutoRemove(true);
 	}
 	else
 	{
-		manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+		owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 		SetAutoRemove(true);
 	}
 }

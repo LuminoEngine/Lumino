@@ -116,7 +116,7 @@ public:
 protected:
 	SpriteParticle();
 	virtual ~SpriteParticle();
-	void Initialize(SceneGraphManager* manager, SpriteParticleModel* model);
+	void Initialize(SceneGraph* owner, SpriteParticleModel* model);
 
 	virtual void OnUpdateFrame(float deltaTime) override;
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;

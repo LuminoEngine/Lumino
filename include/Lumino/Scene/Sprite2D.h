@@ -29,7 +29,7 @@ public:
 protected:
 	Sprite2D();
 	virtual ~Sprite2D();
-	void Initialize(SceneGraphManager* manager);
+	void Initialize(SceneGraph* owner);
 };
 
 LN_NAMESPACE_SCENE_END

@@ -54,16 +54,16 @@ SceneNode::~SceneNode()
 	//if (m_ownerSceneGraph != nullptr) {
 	//	m_ownerSceneGraph->RemoveNode(this);
 	//}
-	LN_SAFE_RELEASE(m_manager);
+	//LN_SAFE_RELEASE(m_manager);
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SceneNode::CreateCore(SceneGraphManager* manager)
+void SceneNode::Initialize(SceneGraph* owner)
 {
-	LN_REFOBJ_SET(m_manager, manager);
-	//m_manager->AddNode(this);
+	m_manager = owner->GetManager();
+	SetOwnerSceneGraph(owner);
 }
 
 //-----------------------------------------------------------------------------

@@ -58,16 +58,15 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	//m_defaultMaterial = CreateMaterial();
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->CreateCore(manager);
-	m_defaultRoot->SetOwnerSceneGraph(this);
+	m_defaultRoot->Initialize(this);
 
 	m_effectBatchRendererNode = LN_NEW EffectBatchRendererNode();
-	m_effectBatchRendererNode->Initialize(manager, manager->GetEffectManager());
+	m_effectBatchRendererNode->Initialize(this, manager->GetEffectManager());
 	m_effectBatchRendererNode->SetPriority(-1000);
 	m_defaultRoot->AddChild(m_effectBatchRendererNode);
 
 	m_default3DCamera = LN_NEW Camera();
-	m_default3DCamera->CreateCore(manager, CameraProjection_3D);
+	m_default3DCamera->Initialize(this, CameraProjection_3D);
 	m_defaultRoot->AddChild(m_default3DCamera);
 
 

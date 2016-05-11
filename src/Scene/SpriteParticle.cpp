@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 */
 #include "Internal.h"
 #include "../Graphics/GraphicsManager.h"	// TODO:
@@ -95,15 +95,15 @@ void SpriteParticleModel::SetTexture(Texture* texture)
 //-----------------------------------------------------------------------------
 void SpriteParticleModel::Commit()
 {
-	if (m_vertexBuffer != nullptr) return;	// CommitÏ‚İ
+	if (m_vertexBuffer != nullptr) return;	// Commitæ¸ˆã¿
 
 	//LN_SAFE_RELEASE(m_vertexBuffer);
 	//LN_SAFE_RELEASE(m_indexBuffer);
 
-	// 1 ‚Â•úo‚·‚éÅ¬ŠÔ
+	// 1 ã¤æ”¾å‡ºã™ã‚‹æœ€å°æ™‚é–“
 	m_oneSpawnDeltaTime = 1.0f / m_spawnRate;
 
-	// uŠÔÅ‘åƒp[ƒeƒBƒNƒ‹”
+	// ç¬é–“æœ€å¤§ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æ•°
 	m_maxParticleCount = (int)ceil(m_lifeTimeMax * (float)m_spawnRate);
 
 	m_vertexBuffer = LN_NEW VertexBuffer(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount, m_maxParticleCount * 4, nullptr, DeviceResourceUsage_Dynamic);
@@ -116,7 +116,7 @@ void SpriteParticleModel::Commit()
 std::shared_ptr<detail::SpriteParticleModelInstance> SpriteParticleModel::CreateInstane()
 {
 	auto ptr = std::make_shared<detail::SpriteParticleModelInstance>();
-	//ptr->m_owner = this;	// QÆ‚ğ‚Á‚Ä‚¨‚­
+	//ptr->m_owner = this;	// å‚ç…§ã‚’æŒã£ã¦ãŠã
 	ptr->m_particles.Resize(m_maxParticleCount);
 	ptr->m_particleIndices.Resize(m_maxParticleCount);
 	for (int i = 0; i < m_maxParticleCount; ++i)
@@ -167,7 +167,7 @@ void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double t
 	//float t2 = 0.5f * localTime * localTime;
 	//Vector3 newPos = data->startPosition + (data->velocity * localTime) + ((data->acceleration)* t2);
 
-	//// TODO: ‚±‚Ì•Ó‚Å newPos ‚Æ pos ‚Ì·‚©‚çƒgƒŒƒCƒ‹‚ğˆø‚¢‚½‚è‚Å‚«‚é
+	//// TODO: ã“ã®è¾ºã§ newPos ã¨ pos ã®å·®ã‹ã‚‰ãƒˆãƒ¬ã‚¤ãƒ«ã‚’å¼•ã„ãŸã‚Šã§ãã‚‹
 
 	//data->position = newPos;
 
@@ -200,10 +200,10 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 {
 	float dt = instance->m_time - instance->m_lastSpawnTime;
 
-	// ‘O‰ñ‚©‚ç‚Ì·•ªŠÔ‚ªAƒp[ƒeƒBƒNƒ‹1‚Â‚ÌÅ‘åŠÔ‚ğ’´‚¦‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒNB
-	// ‚à‚µ’´‚¦‚Ä‚¢‚½‚çAˆÈ‘O‚Ìƒp[ƒeƒBƒNƒ‹‚Í‚·‚×‚ÄÁ–Å‚µ‚½‚Æ‚¢‚¤‚±‚ÆB
-	// ‚»‚Ì•ª‚ÌŒvZ‚ğs‚¤‚Ì‚Í–³‘Ê‚È‚Ì‚Å (‚Æ‚¢‚¤‚©ˆê“x‚Éì‚éƒp[ƒeƒBƒNƒ‹”‚ª‘½‚­‚È‚è‚·‚¬‚Ä”z—ñ‚ ‚Ó‚ê‚é)A
-	// ÅŒã‚É•úo‚µ‚½ŠÔ (m_lastSpawnTime) ‚ğAŒvZ‚ª•K—v‚ÈŠÔ‚Ü‚Åi‚ß‚éB
+	// å‰å›ã‹ã‚‰ã®å·®åˆ†æ™‚é–“ãŒã€ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«1ã¤ã®æœ€å¤§æ™‚é–“ã‚’è¶…ãˆã¦ã„ãªã„ã‹ãƒã‚§ãƒƒã‚¯ã€‚
+	// ã‚‚ã—è¶…ãˆã¦ã„ãŸã‚‰ã€ä»¥å‰ã®ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã¯ã™ã¹ã¦æ¶ˆæ»…ã—ãŸã¨ã„ã†ã“ã¨ã€‚
+	// ãã®åˆ†ã®è¨ˆç®—ã‚’è¡Œã†ã®ã¯ç„¡é§„ãªã®ã§ (ã¨ã„ã†ã‹ä¸€åº¦ã«ä½œã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æ•°ãŒå¤šããªã‚Šã™ãã¦é…åˆ—ã‚ãµã‚Œã‚‹)ã€
+	// æœ€å¾Œã«æ”¾å‡ºã—ãŸæ™‚é–“ (m_lastSpawnTime) ã‚’ã€è¨ˆç®—ãŒå¿…è¦ãªæ™‚é–“ã¾ã§é€²ã‚ã‚‹ã€‚
 	if (dt > m_lifeTimeMax)
 	{
 		instance->m_lastSpawnTime = instance->m_time - m_lifeTimeMax;
@@ -211,22 +211,22 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	}
 	float spawnStartTime = instance->m_lastSpawnTime;
 
-	// ¡‰ñ‚Í‰½ŒÂì‚ê‚éH
+	// ä»Šå›ã¯ä½•å€‹ä½œã‚Œã‚‹ï¼Ÿ
 	int spawnCount = (int)(dt / m_oneSpawnDeltaTime);
 	int spawned = 0;
 
-	// ƒGƒ~ƒbƒ^‚Ì•úoŠÔ‚ğ‰ß‚¬‚Ä‚¢‚é‚È‚çì‚ç‚È‚¢
+	// ã‚¨ãƒŸãƒƒã‚¿ã®æ”¾å‡ºæ™‚é–“ã‚’éãã¦ã„ã‚‹ãªã‚‰ä½œã‚‰ãªã„
 	if (instance->m_time >= m_emitterDuration)
 	{
 		spawnCount = 0;
 	}
 
-	// ‚Ü‚¸A¡‰ñ‚ÌXV‚Å”ñƒAƒNƒeƒBƒu‚Æ‚È‚é‚à‚Ì‚Í”ñƒAƒNƒeƒBƒu‚É‚·‚éB
-	// ƒf[ƒ^‚Í‘O‰ñ‚Ì Render ‚Éƒ\[ƒg‚³‚êAƒAƒNƒeƒBƒu‚È‚à‚Ì‚ª m_activeCount ˆÈ‘O‚ÉW‚Ü‚Á‚Ä‚¢‚é‚Ì‚Å
-	// 0`m_activeCount-1 ‚Ü‚Å‚ğƒ`ƒFƒbƒNB
-	// ‚Ü‚½A”ñƒAƒNƒeƒBƒu‚É‚È‚Á‚½‚Æ‚±‚ë‚É‚ÍA•K—v‚Å‚ ‚ê‚ÎV‚µ‚¢ƒp[ƒeƒBƒNƒ‹‚ğì‚éB
-	// ‚±‚Ì‚æ‚¤‚É“¯‚És‚¤‚Ì‚Í­‚µ•¡G‚¾‚ªAæ‚É’Ç‰ÁA‚¾‚Æ”z—ñ‚ª‚ ‚Ó‚ê‚é‰Â”\«‚ª‚ ‚é‚µA
-	// Œã‚©‚ç’Ç‰ÁA‚¾‚Æ–³‘Ê‚Èƒ‹[ƒv‚ğ‰ñ‚³‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
+	// ã¾ãšã€ä»Šå›ã®æ›´æ–°ã§éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã¨ãªã‚‹ã‚‚ã®ã¯éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã™ã‚‹ã€‚
+	// ãƒ‡ãƒ¼ã‚¿ã¯å‰å›ã® Render æ™‚ã«ã‚½ãƒ¼ãƒˆã•ã‚Œã€ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªã‚‚ã®ãŒ m_activeCount ä»¥å‰ã«é›†ã¾ã£ã¦ã„ã‚‹ã®ã§
+	// 0ï½m_activeCount-1 ã¾ã§ã‚’ãƒã‚§ãƒƒã‚¯ã€‚
+	// ã¾ãŸã€éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã£ãŸã¨ã“ã‚ã«ã¯ã€å¿…è¦ã§ã‚ã‚Œã°æ–°ã—ã„ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚’ä½œã‚‹ã€‚
+	// ã“ã®ã‚ˆã†ã«åŒæ™‚ã«è¡Œã†ã®ã¯å°‘ã—è¤‡é›‘ã ãŒã€å…ˆã«è¿½åŠ ã€ã ã¨é…åˆ—ãŒã‚ãµã‚Œã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã—ã€
+	// å¾Œã‹ã‚‰è¿½åŠ ã€ã ã¨ç„¡é§„ãªãƒ«ãƒ¼ãƒ—ã‚’å›ã•ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
 	for (int i = 0; i < instance->m_activeCount; ++i)
 	{
 		int idx = instance->m_particleIndices[i];
@@ -235,7 +235,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 		{
 			data.spawnTime = -1;
 
-			// V‚µ‚¢ƒp[ƒeƒBƒNƒ‹‚ğì‚é
+			// æ–°ã—ã„ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚’ä½œã‚‹
 			if (spawned < spawnCount)
 			{
 				SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
@@ -249,7 +249,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 		}
 	}
 
-	// ‚Ü‚¾ì‚é‚×‚«”‚ª‚ ‚ê‚Îì‚é
+	// ã¾ã ä½œã‚‹ã¹ãæ•°ãŒã‚ã‚Œã°ä½œã‚‹
 	int remain = spawnCount - spawned;
 	for (int i = 0; i < remain; ++i)
 	{
@@ -262,7 +262,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	}
 
 
-	// Z ’l‚Ì‘å‚«‚¢•û‚©‚ç¬‚³‚¢•û‚Öƒ\[ƒg‚·‚é”äŠr
+	// Z å€¤ã®å¤§ãã„æ–¹ã‹ã‚‰å°ã•ã„æ–¹ã¸ã‚½ãƒ¼ãƒˆã™ã‚‹æ¯”è¼ƒ
 	class SpriteCmpDepthBackToFront
 	{
 	public:
@@ -273,26 +273,26 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 			const detail::ParticleData& lsp = spriteList->GetAt(left);
 			const detail::ParticleData& rsp = spriteList->GetAt(right);
 
-			// ‚Ç‚¿‚ç‚©ˆê•û‚Å‚à”ñƒAƒNƒeƒBƒu‚È‚ç spawnTime ‚Ì~‡‚É‚·‚éB‚»‚¤‚·‚é‚ÆA•‰’l‚ªŒã‚ë‚ÉW‚Ü‚éB
+			// ã©ã¡ã‚‰ã‹ä¸€æ–¹ã§ã‚‚éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªã‚‰ spawnTime ã®é™é †ã«ã™ã‚‹ã€‚ãã†ã™ã‚‹ã¨ã€è² å€¤ãŒå¾Œã‚ã«é›†ã¾ã‚‹ã€‚
 			if (lsp.spawnTime < 0.0f || rsp.spawnTime < 0.0f)
 			{
 				return lsp.spawnTime > rsp.spawnTime;
 			}
 
-			// z‹——£~‡
+			// zè·é›¢é™é †
 			return lsp.zDistance > rsp.zDistance;
 		}
 	};
 
-	// ƒ\[ƒgÀ{B
-	// ‚±‚±‚Å”ñƒAƒNƒeƒBƒu‚È‚à‚Ì‚Í std::remove ‚Ì‚²‚Æ‚­ƒŠƒXƒg‚ÌŒã‚ë‚ÉˆÚ“®‚µAZƒ\[ƒg‚à“¯‚És‚í‚ê‚éB
-	// ­‚È‚­‚Æ‚àA‘O‰ñƒAƒNƒeƒBƒu‚¾‚Á‚½”+¡‰ñ‚Ì¶¬‚Å‘‚¦‚½”‚ğƒ\[ƒg”ÍˆÍ‚É‚·‚éB
+	// ã‚½ãƒ¼ãƒˆå®Ÿæ–½ã€‚
+	// ã“ã“ã§éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªã‚‚ã®ã¯ std::remove ã®ã”ã¨ããƒªã‚¹ãƒˆã®å¾Œã‚ã«ç§»å‹•ã—ã€Zã‚½ãƒ¼ãƒˆã‚‚åŒæ™‚ã«è¡Œã‚ã‚Œã‚‹ã€‚
+	// å°‘ãªãã¨ã‚‚ã€å‰å›ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã ã£ãŸæ•°+ä»Šå›ã®ç”Ÿæˆã§å¢—ãˆãŸæ•°ã‚’ã‚½ãƒ¼ãƒˆç¯„å›²ã«ã™ã‚‹ã€‚
 	int sortRange = instance->m_activeCount + remain;
 	SpriteCmpDepthBackToFront cmp;
 	cmp.spriteList = &instance->m_particles;
 	std::stable_sort(instance->m_particleIndices.begin(), instance->m_particleIndices.begin() + sortRange, cmp);
 
-	// ’¸“_ƒoƒbƒtƒ@EƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚É”½‰f‚µ‚Ä•`‰æ‚·‚é
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ»ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã«åæ˜ ã—ã¦æç”»ã™ã‚‹
 	if (sortRange > 0)
 	{
 		SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	// TODO: ScopedLock
@@ -303,16 +303,16 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 		{
 			int idx = instance->m_particleIndices[iData];
 			detail::ParticleData& data = instance->m_particles[idx];
-			if (data.spawnTime < 0.0f) break;	// ”ñƒAƒNƒeƒBƒu‚ªŒ©‚Â‚©‚Á‚½‚çI—¹
+			if (data.spawnTime < 0.0f) break;	// éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãŒè¦‹ã¤ã‹ã£ãŸã‚‰çµ‚äº†
 
 			const Vector3& pos = data.position;
 			float hs = data.size / 2;
 
-			// Z- ³–Ê
-			vb[(iData * 4) + 0].position.Set(pos.x - hs, pos.y + hs, 0.0f);	// ¶ã
-			vb[(iData * 4) + 1].position.Set(pos.x - hs, pos.y - hs, 0.0f);	// ¶‰º
-			vb[(iData * 4) + 2].position.Set(pos.x + hs, pos.y + hs, 0.0f);	// ‰Eã
-			vb[(iData * 4) + 3].position.Set(pos.x + hs, pos.y - hs, 0.0f);	// ‰E‰º
+			// Z- æ­£é¢
+			vb[(iData * 4) + 0].position.Set(pos.x - hs, pos.y + hs, 0.0f);	// å·¦ä¸Š
+			vb[(iData * 4) + 1].position.Set(pos.x - hs, pos.y - hs, 0.0f);	// å·¦ä¸‹
+			vb[(iData * 4) + 2].position.Set(pos.x + hs, pos.y + hs, 0.0f);	// å³ä¸Š
+			vb[(iData * 4) + 3].position.Set(pos.x + hs, pos.y - hs, 0.0f);	// å³ä¸‹
 
 			vb[(iData * 4) + 0].texUV.Set(0, 0);
 			vb[(iData * 4) + 1].texUV.Set(0, 1);
@@ -354,7 +354,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticle, VisualNode);
 SpriteParticlePtr SpriteParticle::Create3D(SpriteParticleModel* model)
 {
 	auto ptr = SpriteParticlePtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance, model);
+	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), model);
 	SceneGraphManager::Instance->GetDefault3DSceneGraph()->GetRootNode()->AddChild(ptr);
 	return ptr;
 }
@@ -378,14 +378,14 @@ SpriteParticle::~SpriteParticle()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteParticle::Initialize(SceneGraphManager* manager, SpriteParticleModel* model)
+void SpriteParticle::Initialize(SceneGraph* owner, SpriteParticleModel* model)
 {
-	VisualNode::CreateCore(manager, 1);
+	VisualNode::Initialize(owner, 1);
 	LN_REFOBJ_SET(m_model, model);
 	m_model->Commit();
 	m_instance = m_model->CreateInstane();
 
-	// TODO: ‚È‚ñ‚©—Ç‚­‚È‚¢‚â‚è•û‚È‹C‚ª‚·‚éEEE
+	// TODO: ãªã‚“ã‹è‰¯ããªã„ã‚„ã‚Šæ–¹ãªæ°—ãŒã™ã‚‹ãƒ»ãƒ»ãƒ»
 	m_materialList.GetAt(0)->SetTexture(m_model->GetTexture());
 }
 
@@ -394,7 +394,7 @@ void SpriteParticle::Initialize(SceneGraphManager* manager, SpriteParticleModel*
 //-----------------------------------------------------------------------------
 void SpriteParticle::OnUpdateFrame(float deltaTime)
 {
-	// TODO: ‹‘äƒJƒŠƒ“ƒO‚ÅƒpƒX‚µ‚È‚©‚Á‚½‚à‚Ì‚ÍŒÄ‚Ô•K—v‚È‚¢
+	// TODO: è¦–éŒå°ã‚«ãƒªãƒ³ã‚°ã§ãƒ‘ã‚¹ã—ãªã‹ã£ãŸã‚‚ã®ã¯å‘¼ã¶å¿…è¦ãªã„
 
 	m_model->UpdateInstance(m_instance, deltaTime);
 }

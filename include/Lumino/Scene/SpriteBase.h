@@ -62,7 +62,7 @@ private:
 protected:
 	SpriteBase();
 	virtual ~SpriteBase();
-	void Initialize(SceneGraphManager* manager, SpriteCoord spriteCoord);
+	void Initialize(SceneGraph* owner, SpriteCoord spriteCoord);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

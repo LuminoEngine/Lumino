@@ -18,7 +18,7 @@ LN_NAMESPACE_BEGIN
 RefPtr<MeshModelObject> MeshModelObject::Create(const StringRef& filePath)
 {
 	RefPtr<MeshModelObject> obj(LN_NEW MeshModelObject(), false);
-	obj->Initialize(SceneGraphManager::Instance, filePath);
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), filePath);	// tODO: 3Dだけ？
 	return obj;
 }
 
@@ -39,11 +39,11 @@ MeshModelObject::~MeshModelObject()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void MeshModelObject::Initialize(SceneGraphManager* manager, const StringRef& filePath)
+void MeshModelObject::Initialize(SceneGraph* owner, const StringRef& filePath)
 {
 	m_model.Attach(LN_NEW Model(), false);
-	m_model->Create(manager->GetModelManager(), filePath);
-	VisualNode::CreateCore(manager, m_model->GetSubsetCount());
+	m_model->Create(owner->GetManager()->GetModelManager(), filePath);
+	VisualNode::Initialize(owner, m_model->GetSubsetCount());
 
 	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
 	//for (int i = 0; i < m_model->GetSubsetCount(); i++)
@@ -52,7 +52,7 @@ void MeshModelObject::Initialize(SceneGraphManager* manager, const StringRef& fi
 	//}
 	LN_NOTIMPLEMENTED();
 
-	manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+	owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 }
 

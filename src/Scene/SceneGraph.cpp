@@ -350,11 +350,10 @@ void Basic2DSceneGraph::CreateCore(SceneGraphManager* manager)
 	SceneGraph::CreateCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->CreateCore(manager);
-	m_defaultRoot->SetOwnerSceneGraph(this);
+	m_defaultRoot->Initialize(this);
 
 	m_defaultCamera = LN_NEW Camera();
-	m_defaultCamera->CreateCore(manager, CameraProjection_2D);
+	m_defaultCamera->Initialize(this, CameraProjection_2D);
 	m_defaultRoot->AddChild(m_defaultCamera);
 
 	MMEShaderErrorInfo result;

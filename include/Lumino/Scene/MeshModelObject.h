@@ -25,7 +25,7 @@ public:
 protected:
 	MeshModelObject();
 	virtual ~MeshModelObject();
-	void Initialize(SceneGraphManager* manager, const StringRef& filePath);
+	void Initialize(SceneGraph* owner, const StringRef& filePath);
 
 	virtual void OnUpdateFrame(float elapsedTime) override;
 	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;

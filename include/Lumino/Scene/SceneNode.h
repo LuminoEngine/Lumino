@@ -155,10 +155,12 @@ protected:
 LN_INTERNAL_ACCESS:
 	SceneNode();
 	virtual ~SceneNode();
-	void CreateCore(SceneGraphManager* manager);
-	void SetOwnerSceneGraph(SceneGraph* owner);
+	void Initialize(SceneGraph* owner);
 	void SetAutoRemove(bool enabled) { m_isAutoRemove = enabled; }
 	bool IsAutoRemove() const { return m_isAutoRemove; }
+
+private:
+	void SetOwnerSceneGraph(SceneGraph* owner);
 
 protected:
 	SceneGraphManager*	m_manager;	// TODO: いらない

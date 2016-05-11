@@ -13,7 +13,7 @@ class Light
 public:
 	Light();
 	virtual ~Light();
-	void CreateCore(SceneGraphManager* manager, LightType type);
+	void Initialize(SceneGraph* owner, LightType type);
 
 public:
 

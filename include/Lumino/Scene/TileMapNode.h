@@ -33,7 +33,7 @@ public:
 protected:
 	TileMapNode();
 	virtual ~TileMapNode();
-	void Create3DCore(SceneGraphManager* manager);
+	void Create3DCore(SceneGraph* owner);
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
 
 private:

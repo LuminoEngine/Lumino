@@ -36,9 +36,9 @@ Light::~Light()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Light::CreateCore(SceneGraphManager* manager, LightType type)
+void Light::Initialize(SceneGraph* owner, LightType type)
 {
-	SceneNode::CreateCore(manager);
+	SceneNode::Initialize(owner);
 	m_type = type;
 }
 

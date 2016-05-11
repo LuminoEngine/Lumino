@@ -560,6 +560,9 @@ void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
 			case MME_VARREQ_OBJECT_MATERIALSPHEREMAP:
 				var->SetTexture((ownerMaterial->m_sphereTexture != nullptr) ? ownerMaterial->m_sphereTexture : m_manager->GetDummyTexture());	// テクスチャがなければダミーを設定
 				break;
+			case LN_VARREQ_OPACITY:
+				var->SetFloat(1);	// TODO: 廃止予定
+				break;
 			case LN_VARREQ_COLOR_SCALE:
 				var->SetVector(material.m_colorScale);
 				break;

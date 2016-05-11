@@ -89,7 +89,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void CreateCore(SceneGraphManager* manager, CameraProjection proj);
+	void Initialize(SceneGraph* owner, CameraProjection proj);
 
 	CameraViewportLayer*	m_ownerLayer;
 

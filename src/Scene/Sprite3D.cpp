@@ -17,7 +17,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, SpriteBase);
 Sprite3DPtr Sprite3D::Create()
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance);
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
 	return obj;
 }
 
@@ -27,7 +27,7 @@ Sprite3DPtr Sprite3D::Create()
 Sprite3DPtr Sprite3D::Create(float width, float height)
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance);
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
 	obj->SetSize(SizeF(width, height));
 	return obj;
 }
@@ -38,7 +38,7 @@ Sprite3DPtr Sprite3D::Create(float width, float height)
 Sprite3DPtr Sprite3D::Create(float width, float height, Texture* texture)
 {
 	auto obj = Sprite3DPtr::MakeRef();
-	obj->Initialize(SceneGraphManager::Instance);
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
 	obj->SetSize(SizeF(width, height));
 	obj->SetTexture(texture);
 	return obj;
@@ -61,9 +61,9 @@ Sprite3D::~Sprite3D()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Sprite3D::Initialize(SceneGraphManager* manager)
+void Sprite3D::Initialize(SceneGraph* owner)
 {
-	SpriteBase::Initialize(manager, SpriteCoord_RZ);
+	SpriteBase::Initialize(owner, SpriteCoord_RZ);
 }
 
 LN_NAMESPACE_SCENE_END

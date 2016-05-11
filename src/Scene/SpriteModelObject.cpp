@@ -24,7 +24,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteModelObject, VisualNode);
 RefPtr<SpriteModelObject> SpriteModelObject::Create(const String& filePath)
 {
 	RefPtr<SpriteModelObject> obj(LN_NEW SpriteModelObject(), false);
-	obj->Initialize(SceneGraphManager::Instance, filePath);
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), filePath);
 	return obj;
 }
 
@@ -48,11 +48,11 @@ SpriteModelObject::~SpriteModelObject()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void SpriteModelObject::Initialize(SceneGraphManager* manager, const String& filePath)
+void SpriteModelObject::Initialize(SceneGraph* owner, const String& filePath)
 {
-	VisualNode::CreateCore(manager, 1);
+	VisualNode::Initialize(owner, 1);
 
-	ss::g_graphicsManager = manager->GetGraphicsManager();
+	ss::g_graphicsManager = owner->GetManager()->GetGraphicsManager();
 
 	PathNameA path = StringA(filePath);
 	m_resource = ss::ResourceManager::create();
@@ -68,7 +68,7 @@ void SpriteModelObject::Initialize(SceneGraphManager* manager, const String& fil
 	//	manager->GetDefault2DSceneGraph()->GetRootNode()->AddChild(this);
 	//}
 	//else {
-		manager->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+		owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 		SetAutoRemove(true);
 	//}
 }

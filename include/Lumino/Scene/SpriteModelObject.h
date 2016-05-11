@@ -32,7 +32,7 @@ public:
 protected:
 	SpriteModelObject();
 	virtual ~SpriteModelObject();
-	void Initialize(SceneGraphManager* manager, const String& filePath);
+	void Initialize(SceneGraph* owner, const String& filePath);
 
 	virtual void OnUpdateFrame(float elapsedTime) override;
 	virtual void OnRender(SceneGraphRenderingContext* dc) override;

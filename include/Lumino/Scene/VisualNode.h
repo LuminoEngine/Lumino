@@ -62,11 +62,18 @@ public:
 
 	*/
 
+	//-------------------------------------------------------------------------
+	/** @name Main material utilities. */
+	/** @{ */
 
-	/// 不透明度の設定 (0.0 ～ 1.0)
+
+	/** @} */
+
+	/** メインマテリアルの不透明度を設定します。(default: 1.0)*/
 	void SetOpacity(float opacity, int subsetIndex = -1);
 
 
+	/** メインマテリアルのカラースケールを設定します。(default: )*/
 	/// 乗算色の設定TODO: Color32
 	void SetColorScale(const ColorF& color, int subsetIndex = -1);
 	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
@@ -74,7 +81,7 @@ public:
 	/// ブレンドカラーの設定 TODO: Color32
 	void SetBlendColor(const ColorF& color, int subsetIndex = -1);
 
-	/// 色調の設定
+	/// 色調の設定 TODO: Tone32
 	void SetTone(const ToneF& tone, int subsetIndex = -1);
 
 
@@ -149,7 +156,7 @@ public:
 protected:
 	VisualNode();
 	virtual ~VisualNode();
-	void CreateCore(SceneGraphManager* manager, int subsetCount);
+	void Initialize(SceneGraph* owner, int subsetCount);
 
 LN_INTERNAL_ACCESS:
 	MaterialList2& GetMaterialList() { return m_materialList; }

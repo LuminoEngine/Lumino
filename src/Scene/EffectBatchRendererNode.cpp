@@ -32,9 +32,9 @@ EffectBatchRendererNode::~EffectBatchRendererNode()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void EffectBatchRendererNode::Initialize(SceneGraphManager* manager, detail::EffectManager* effectManager)
+void EffectBatchRendererNode::Initialize(SceneGraph* owner, detail::EffectManager* effectManager)
 {
-	VisualNode::CreateCore(manager, 1);
+	VisualNode::Initialize(owner, 1);
 	m_effectManager = effectManager;
 }
 

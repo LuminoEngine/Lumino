@@ -57,9 +57,9 @@ Camera::~Camera()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Camera::CreateCore(SceneGraphManager* manager, CameraProjection proj)
+void Camera::Initialize(SceneGraph* owner, CameraProjection proj)
 {
-	SceneNode::CreateCore(manager);
+	SceneNode::Initialize(owner);
 	m_projectionMode = proj;
 	m_manager->GetAllCameraList()->Add(this);
 
