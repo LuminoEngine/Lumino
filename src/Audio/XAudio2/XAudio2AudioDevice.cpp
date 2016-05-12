@@ -60,13 +60,40 @@ XAudio2AudioDevice::~XAudio2AudioDevice()
     }
 }
 
+//// XAudio 2.0 (March 2008 SDK)
+//DEFINE_CLSID(XAudio2_2_0_ID, fac23f48, 31f5, 45a8, b4, 9b, 52, 25, d6, 14, 01, aa);
+//// XAudio 2.1 (June 2008 SDK)
+//DEFINE_CLSID(XAudio2_2_1_ID, e21a7345, eb21, 468e, be, 50, 80, 4d, b9, 7c, f7, 08);
+//// XAudio 2.2 (August 2008 SDK)
+//DEFINE_CLSID(XAudio2_2_2_ID, b802058a, 464a, 42db, bc, 10, b6, 50, d6, f2, 58, 6a);
+//// XAudio 2.3 (November 2008 SDK)
+//DEFINE_CLSID(XAudio2_2_3_ID, 4c5e637a, 16c7, 4de3, 9c, 46, 5e, d2, 21, 81, 96, 2d);
+//// XAudio 2.4 (March 2009 SDK)
+//DEFINE_CLSID(XAudio2_2_4_ID, 03219e78, 5bc3, 44d1, b9, 2e, f6, 3d, 89, cc, 65, 26);
+//// XAudio 2.5 (August 2009 SDK)
+//DEFINE_CLSID(XAudio2_2_5_ID, 4c9b6dde, 6809, 46e6, a2, 78, 9b, 6a, 97, 58, 86, 70);
+//// XAudio 2.6 (February 2010 SDK)
+//DEFINE_CLSID(XAudio2_2_6_ID, 3eda9b49, 2085, 498b, 9b, b2, 39, a6, 77, 84, 93, de);
+//// XAudio 2.7 (June 2010 SDK)
+//DEFINE_CLSID(XAudio2_2_7_ID, 5a508685, a254, 4fba, 9b, 82, 9a, 24, b0, 03, 06, af);
+
 //------------------------------------------------------------------------------
 bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 {
+	//std::array<std::pair<REFGUID, const char*>, 8> dllNameTable =
+	//{
+	//	{ XAudio2_2_0_ID, "X3DAudio1_7" }
+	//};
+
     mX3DAudioModule = ::LoadLibrary( _T( "X3DAudio1_7.dll" ) );
 	if ( mX3DAudioModule == NULL ) {
 		return false;
 	}
+
+	//if (IsEqualCLSID(CLSID_XAudio2, CLSID_XAudio2_2_7_ID))
+	//{
+	//	printf("27\n");
+	//}
 
     UINT32 flags = 0;
 

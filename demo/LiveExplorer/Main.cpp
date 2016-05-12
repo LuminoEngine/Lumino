@@ -228,7 +228,7 @@ int main()
 		//uiRoot->AddChild(button1);
 
 
-		GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 0.95f);
+		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 0.95f);
 		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//sound1->SetPitch(1.2f);
 		//sound1->Play();
@@ -237,7 +237,7 @@ int main()
 		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::Create();
 		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
 
-		auto grid1 = Grid::Create3D();
+		//auto grid1 = Grid::Create3D();
 
 		auto particleModel1 = SpriteParticleModel::Create();
 		particleModel1->m_spawnRate = 30;
@@ -252,6 +252,7 @@ int main()
 		particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
 		auto particle1 = SpriteParticle::Create3D(particleModel1);
 		particle1->SetBlendMode(BlendMode::Add);
+
 
 #if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());

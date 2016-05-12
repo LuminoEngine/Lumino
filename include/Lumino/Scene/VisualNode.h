@@ -37,6 +37,10 @@ public:
 	void SetColorScale(const ColorF& color, int subsetIndex = -1);
 	void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
 
+
+	void SetColor(const Color& color);
+	void SetColor(int r, int g, int b, int a = 255);
+
 	/// ブレンドカラーの設定 TODO: Color32
 	void SetBlendColor(const ColorF& color, int subsetIndex = -1);
 

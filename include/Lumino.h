@@ -2,7 +2,13 @@
 #pragma once
 #include "LuminoEngine.h"
 
-#ifdef _DEBUG
+#if defined(_WIN32)
+	#pragma comment(lib, "imagehlp.lib")
+	#pragma comment(lib, "msacm32.lib")
+	#pragma comment(lib, "Opengl32.lib")
+#endif
+
+#if defined(_DEBUG)
 	#pragma comment(lib, "Debug/bullet_msvc140x86u_static_MTd.lib")
 	#pragma comment(lib, "Debug/Effekseerd.lib")
 	#pragma comment(lib, "Debug/EffekseerRendererDX9d.lib")
