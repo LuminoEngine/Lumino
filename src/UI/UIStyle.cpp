@@ -77,7 +77,7 @@ UIStyleTable::~UIStyleTable()
 //------------------------------------------------------------------------------
 void UIStyleTable::AddStyle(const String& targetName, const String& targetState, UIStyle* style)
 {
-	LN_CHECK_ARGS_RETURN(style != nullptr);
+	LN_CHECK_ARG(style != nullptr);
 
 	StyleKey k{ targetName, targetState };
 	m_table.Add(k, style);

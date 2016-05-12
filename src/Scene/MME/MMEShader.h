@@ -39,7 +39,6 @@ public:
 	void UpdateNodeParams(SceneNode* node, Camera* affectCamera, const LightNodeList& affectLightList);
 
 	/// Subset 単位で必要なパラメータを設定する
-	void UpdateSubsetParams(const Internal::VisualNodeSubsetParams& params);
 	void UpdateSubsetParams(const detail::MaterialInstance& material);
 
 	/// CONTROLLOBJECT 設定 (obj は NULL 可能。存在しなければ bool 型変数に false を設定するため)

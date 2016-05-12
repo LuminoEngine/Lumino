@@ -4,7 +4,6 @@
 #include "Detail.h"
 #include <Lumino/Graphics/Texture.h>
 #include "SceneNode.h"
-#include "VisualNodeParams.h"
 #include "Material.h"
 
 LN_NAMESPACE_BEGIN
@@ -90,7 +89,6 @@ public:
 
 
 	int GetSubsetCount() const { return m_subsetCount; }
-	//const Internal::VisualNodeParams& GetVisualNodeParams() const { return m_visualNodeParams; }
 
 	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
 	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
@@ -129,7 +127,6 @@ protected:
 	int						m_subsetCount;
 
 	friend class RenderingPass;
-	//Internal::VisualNodeParams		m_visualNodeParams;
 	MaterialList2					m_materialList;
 	detail::VisualNodeRenderState	m_renderState;
 	bool					m_isVisible;

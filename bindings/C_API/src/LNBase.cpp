@@ -197,7 +197,7 @@ LNResult LNObject_AddRef(LNHandle hadnleObject)
 LNResult LNObject_GetRefCount(LNHandle hadnleObject, int* count)
 {
 	LN_CHECK_ARG_HANDLE(hadnleObject);
-	LN_CHECK_ARG(count != NULL);
+	LN_CHECK_ARG_RETURN(count != NULL);
 	*count = LFManager::GetObjectEntry(hadnleObject)->RefCount;
 	return ::LN_OK;
 }

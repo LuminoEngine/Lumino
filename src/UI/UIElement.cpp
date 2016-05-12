@@ -53,7 +53,7 @@ UIElement::~UIElement()
 //------------------------------------------------------------------------------
 void UIElement::Initialize(detail::UIManager* manager)
 {
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
@@ -405,7 +405,7 @@ void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parent
 //------------------------------------------------------------------------------
 void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle)
 {
-	LN_CHECK_STATE_RETURN(m_localStyle != nullptr);
+	LN_CHECK_STATE(m_localStyle != nullptr);
 
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する
@@ -494,8 +494,8 @@ void UIElement::Render(GraphicsContext* g)
 //------------------------------------------------------------------------------
 void UIElement::RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e)
 {
-	LN_VERIFY_RETURN(ev != NULL);
-	LN_VERIFY_RETURN(e != NULL);
+	LN_CHECK_ARG(ev != NULL);
+	LN_CHECK_ARG(e != NULL);
 	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
 
 	// this に AddHandler されているイベントハンドラを呼び出す。

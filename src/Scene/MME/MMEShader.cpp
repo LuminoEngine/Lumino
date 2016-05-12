@@ -5,7 +5,6 @@
 #include <Lumino/Scene/SceneNode.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
-#include <Lumino/Scene/VisualNodeParams.h>
 #include "MMEShaderBuilder.h"
 #include "MMEShaderTechnique.h"
 #include "MMEShader.h"
@@ -406,111 +405,9 @@ void MMEShader::UpdateNodeParams(SceneNode* node, Camera* affectCamera, const Li
 }
 
 //------------------------------------------------------------------------------
-void MMEShader::UpdateSubsetParams(const Internal::VisualNodeSubsetParams& params)
-{
-    ShaderVariable* var;
-	LN_FOREACH(MMEShaderVariable* sv, m_mmeShaderVariableList)
-	{
-        var = sv->Variable;
-
-		switch (sv->Request)
-		{
-			// ディフューズ色（拡散光）
-		case MME_VARREQ_OBJECT_DIFFUSE:
-			var->SetVector(params.Material.Diffuse);
-			break;
-
-			// アンビエント色（環境光）
-		case MME_VARREQ_OBJECT_AMBIENT:
-			var->SetVector(params.Material.Ambient);
-			break;
-
-			// エミッション色（放射光）
-		case MME_VARREQ_OBJECT_EMISSIVE:
-			var->SetVector(params.Material.Emissive);
-			break;
-
-			// スペキュラ色（鏡面光）
-		case MME_VARREQ_OBJECT_SPECULAR:
-			var->SetVector(params.Material.Specular);
-			break;
-
-			// スペキュラの強度
-		case MME_VARREQ_OBJECT_SPECULARPOWER:
-			var->SetFloat(params.Material.Power);
-			break;
-
-			// トゥーン色
-		case MME_VARREQ_OBJECT_TOONCOLOR:
-			var->SetVector(params.Material.ToonColor);
-			break;
-
-			// 輪郭色
-		case MME_VARREQ_OBJECT_EDGECOLOR:
-			var->SetVector(params.Material.EdgeColor);
-			break;
-
-			// マテリアルに設定されているテクスチャ
-		case MME_VARREQ_OBJECT_MATERIALTEXTURE:
-			if (!params.Material.Texture.IsNull()) {
-				var->SetTexture(params.Material.Texture);
-			}
-			// テクスチャがなければダミーを設定
-			else {
-				var->SetTexture(m_manager->GetDummyTexture());
-			}
-			break;
-
-			// マテリアルに設定されている、スフィアマップテクスチャ
-		case MME_VARREQ_OBJECT_MATERIALSPHEREMAP:
-			if (!params.Material.SphereTexture.IsNull()) {
-				var->SetTexture(params.Material.SphereTexture);
-			}
-			// テクスチャがなければダミーを設定
-			else {
-				var->SetTexture(m_manager->GetDummyTexture());
-			}
-			break;
-
-			// 不透明度
-		case LN_VARREQ_OPACITY:
-		{
-			var->SetFloat(params.Opacity);
-			break;
-		}
-			// 乗算する色
-		case LN_VARREQ_COLOR_SCALE:
-		{
-			var->SetVector(params.ColorScale);
-			break;
-		}
-			// ブレンドする色
-		case LN_VARREQ_BLEND_COLOR:
-		{
-			var->SetVector(params.BlendColor);
-			break;
-		}
-			// 色調
-		case LN_VARREQ_TONE:
-		{
-			var->SetVector(params.Tone);
-			break;
-		}
-			// テクスチャ座標変換行列
-		case LN_VARREQ_UVTRANSFORM:
-		{
-			var->SetMatrix(params.UVTransform);
-			break;
-		}
-		}
-    }
-}
-
-
-//------------------------------------------------------------------------------
 void MMEShader::UpdateSubsetParams(const detail::MaterialInstance& material)
 {
-	LN_CHECK_ARGS_RETURN(material.m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
+	LN_CHECK_ARG(material.m_owner->GetMaterialTypeId() == detail::MmdMaterialTypeId);
 
 	MmdMaterial* ownerMaterial = static_cast<MmdMaterial*>(material.m_owner);
 

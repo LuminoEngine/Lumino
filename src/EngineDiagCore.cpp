@@ -39,7 +39,7 @@ EngineDiagCore::~EngineDiagCore()
 //------------------------------------------------------------------------------
 void EngineDiagCore::Initialize(EngineManager* manager)
 {
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 }
 
@@ -74,7 +74,7 @@ EngineDiagRenderer::~EngineDiagRenderer()
 //------------------------------------------------------------------------------
 void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* diagCore)
 {
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_STATE(m_font == nullptr);
 	m_diagCore = diagCore;
 

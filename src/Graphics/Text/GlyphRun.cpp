@@ -33,7 +33,7 @@ GlyphRun::~GlyphRun()
 //------------------------------------------------------------------------------
 void GlyphRun::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARGS(manager != nullptr);
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 	m_layoutEngine = LN_NEW TextLayoutEngine();
 	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultFont());

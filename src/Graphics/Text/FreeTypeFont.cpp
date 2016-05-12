@@ -168,7 +168,7 @@ Font* FreeTypeFont::Copy() const
 //------------------------------------------------------------------------------
 Size FreeTypeFont::GetTextSize(const char* text, int length)
 {
-	LN_VERIFY_RETURNV(text != NULL, Size::Zero);
+	LN_CHECK_ARG(text != NULL, Size::Zero);
 	if (length == 0) { return Size::Zero; }
 	length = (length < 0) ? strlen(text) : length;
 
@@ -189,7 +189,7 @@ Size FreeTypeFont::GetTextSize(const char* text, int length)
 //------------------------------------------------------------------------------
 Size FreeTypeFont::GetTextSize(const wchar_t* text, int length)
 {
-	LN_VERIFY_RETURNV(text != NULL, Size::Zero);
+	LN_CHECK_ARG(text != NULL, Size::Zero);
 	if (length == 0) { return Size::Zero; }
 	length = (length < 0) ? wcslen(text) : length;
 

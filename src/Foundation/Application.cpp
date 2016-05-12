@@ -24,7 +24,7 @@ Application::~Application()
 //------------------------------------------------------------------------------
 void Application::Initialize(EngineManager* engineManager)
 {
-	LN_CHECK_ARGS_RETURN(engineManager != nullptr);
+	LN_CHECK_ARG(engineManager != nullptr);
 	m_engineManager = engineManager;
 }
 

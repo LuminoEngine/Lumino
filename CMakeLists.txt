@@ -355,7 +355,6 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/TileMapNode.h
 	include/Lumino/Scene/ViewPane.h
 	include/Lumino/Scene/VisualNode.h
-	include/Lumino/Scene/VisualNodeParams.h
 	include/Lumino/Scene/MME/MMESceneObject.h
 	src/Scene/Camera.cpp
 	src/Scene/Internal.h
@@ -389,7 +388,6 @@ set(LN_SOURCES_Scene
 	src/Scene/ViewPane.cpp
 	src/Scene/ViewPane.h
 	src/Scene/VisualNode.cpp
-	src/Scene/VisualNodeParams.cpp
 	external/ssbpLib/ssShader_frag.h
 	external/ssbpLib/SS5Player.cpp
 	external/ssbpLib/SS5Player.h
@@ -527,7 +525,6 @@ set(LN_SOURCES_Engine
 	src/Profiler.cpp
 	src/Property.cpp
 	src/RoutedEvent.cpp
-	src/Variant.cpp
 	src/Version.cpp
 )
 

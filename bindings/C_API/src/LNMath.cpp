@@ -21,7 +21,7 @@ typedef Quaternion LQuaternion;
 //------------------------------------------------------------------------------
 LNResult LNVector2_Set(LNVector2* vec, float x, float y)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	vec->X = x; vec->Y = y;
 	return ::LN_OK;
 }
@@ -29,7 +29,7 @@ LNResult LNVector2_Set(LNVector2* vec, float x, float y)
 //------------------------------------------------------------------------------
 LNResult LNVector2_GetLength(const LNVector2* vec, float* length)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	*length = TO_CORE_STRUCT_CP(LVector2, vec)->GetLength();
 	return ::LN_OK;
 }
@@ -44,7 +44,7 @@ LNResult LNVector2_GetLengthD(const LNVector2* vec, double* length)
 //------------------------------------------------------------------------------
 LNResult LNVector2_GetSquareLength(const LNVector2* vec, float* length)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	*length = (vec->X * vec->X + vec->Y * vec->Y);
 	return ::LN_OK;
 }
@@ -59,13 +59,13 @@ LNResult LNVector2_GetSquareLengthD(const LNVector2* vec, double* length)
 //------------------------------------------------------------------------------
 LNResult LNVector2_Normalize(const LNVector2* vec, LNVector2* outVec)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	*TO_CORE_STRUCT_P(LVector2, outVec) = LVector2::Normalize(*TO_CORE_STRUCT_CP(LVector2, vec));
 	return ::LN_OK;
 }
 LNResult LNVector2_NormalizeV(LNVector2* vec)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	TO_CORE_STRUCT_P(LVector2, vec)->Normalize();
 	return ::LN_OK;
 }
@@ -77,7 +77,7 @@ LNResult LNVector2_NormalizeV(LNVector2* vec)
 //------------------------------------------------------------------------------
 LNResult LNVector3_Set(LNVector3* vec, float x, float y, float z)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	vec->X = x; vec->Y = y; vec->Z = z;
 	return ::LN_OK;
 }
@@ -85,8 +85,8 @@ LNResult LNVector3_Set(LNVector3* vec, float x, float y, float z)
 //------------------------------------------------------------------------------
 LNResult LNVector3_SetVZ(LNVector3* vec, const LNVector2* vec2, float z)
 {
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(vec2 != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec2 != NULL);
 	vec->X = vec2->X; vec->Y = vec2->Y; vec->Z = z;
 	return ::LN_OK;
 }
@@ -94,8 +94,8 @@ LNResult LNVector3_SetVZ(LNVector3* vec, const LNVector2* vec2, float z)
 //------------------------------------------------------------------------------
 LNResult LNVector3_GetLength(const LNVector3* vec, float* length)
 {
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(length != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(length != NULL);
 	*length = cp_cast<LVector3>(vec)->GetLength();
 	return ::LN_OK;
 }
@@ -110,8 +110,8 @@ LNResult LNVector3_GetLengthD(const LNVector3* vec, double* length)
 //------------------------------------------------------------------------------
 LNResult LNVector3_GetSquareLength(const LNVector3* vec, float* length)
 {
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(length != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(length != NULL);
 	*length =(vec->X * vec->X + vec->Y * vec->Y + vec->Z * vec->Z);
 	return ::LN_OK;
 }
@@ -126,8 +126,8 @@ LNResult LNVector3_GetSquareLengthD(const LNVector3* vec, double* length)
 //------------------------------------------------------------------------------
 LNResult LNVector3_Normalize(const LNVector3* vec, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::Normalize(*cp_cast<LVector3>(vec));
 	return ::LN_OK;
 }
@@ -135,7 +135,7 @@ LNResult LNVector3_Normalize(const LNVector3* vec, LNVector3* outVec)
 //------------------------------------------------------------------------------
 LNResult LNVector3_NormalizeV(LNVector3* vec)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	TO_CORE_STRUCT_P(LVector3, vec)->Normalize();
 	return ::LN_OK;
 }
@@ -143,9 +143,9 @@ LNResult LNVector3_NormalizeV(LNVector3* vec)
 //------------------------------------------------------------------------------
 LNResult LNVector3_Dot(const LNVector3* vec1, const LNVector3* vec2, float* dot)
 {
-	LN_CHECK_ARG(vec1 != NULL);
-	LN_CHECK_ARG(vec2 != NULL);
-	LN_CHECK_ARG(dot != NULL);
+	LN_CHECK_ARG_RETURN(vec1 != NULL);
+	LN_CHECK_ARG_RETURN(vec2 != NULL);
+	LN_CHECK_ARG_RETURN(dot != NULL);
 	*dot = LVector3::Dot(*cp_cast<LVector3>(vec1), *cp_cast<LVector3>(vec2));
 	return ::LN_OK;
 }
@@ -160,9 +160,9 @@ LNResult LNVector3_DotD(const LNVector3* vec1, const LNVector3* vec2, double* do
 //------------------------------------------------------------------------------
 LNResult LNVector3_Cross(const LNVector3* vec1, const LNVector3* vec2, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec1 != NULL);
-	LN_CHECK_ARG(vec2 != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec1 != NULL);
+	LN_CHECK_ARG_RETURN(vec2 != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::Cross(*cp_cast<LVector3>(vec1), *cp_cast<LVector3>(vec2));
 	return ::LN_OK;
 }
@@ -170,9 +170,9 @@ LNResult LNVector3_Cross(const LNVector3* vec1, const LNVector3* vec2, LNVector3
 //------------------------------------------------------------------------------
 LNResult LNVector3_Reflect(const LNVector3* vec, const LNVector3* normal, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(normal != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(normal != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::Reflect(*cp_cast<LVector3>(vec), *cp_cast<LVector3>(normal));
 	return ::LN_OK;
 }
@@ -180,9 +180,9 @@ LNResult LNVector3_Reflect(const LNVector3* vec, const LNVector3* normal, LNVect
 //------------------------------------------------------------------------------
 LNResult LNVector3_Slide(const LNVector3* vec, const LNVector3* normal, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(normal != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(normal != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::Slide(*cp_cast<LVector3>(vec), *cp_cast<LVector3>(normal));
 	return ::LN_OK;
 }
@@ -190,9 +190,9 @@ LNResult LNVector3_Slide(const LNVector3* vec, const LNVector3* normal, LNVector
 //------------------------------------------------------------------------------
 LNResult LNVector3_Lerp(const LNVector3* vec1, const LNVector3* vec2, float t, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec1 != NULL);
-	LN_CHECK_ARG(vec2 != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec1 != NULL);
+	LN_CHECK_ARG_RETURN(vec2 != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::Lerp(*cp_cast<LVector3>(vec1), *cp_cast<LVector3>(vec2), t);
 	return ::LN_OK;
 }
@@ -204,11 +204,11 @@ LNResult LNVector3_LerpD(const LNVector3* vec1, const LNVector3* vec2, double t,
 //------------------------------------------------------------------------------
 LNResult LNVector3_CatmullRom(const LNVector3* vec1, const LNVector3* vec2, const LNVector3* vec3, const LNVector3* vec4, float t, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec1 != NULL);
-	LN_CHECK_ARG(vec2 != NULL);
-	LN_CHECK_ARG(vec3 != NULL);
-	LN_CHECK_ARG(vec4 != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec1 != NULL);
+	LN_CHECK_ARG_RETURN(vec2 != NULL);
+	LN_CHECK_ARG_RETURN(vec3 != NULL);
+	LN_CHECK_ARG_RETURN(vec4 != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::CatmullRom(
 		*cp_cast<LVector3>( vec1 ), 
 		*cp_cast<LVector3>( vec2 ), 
@@ -226,9 +226,9 @@ LNResult LNVector3_CatmullRomD(const LNVector3* vec1, const LNVector3* vec2, con
 //------------------------------------------------------------------------------
 LNResult LNVector3_Transform(const LNVector3* vec, const LNMatrix* mat, LNVector4* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*p_cast<LVector4>(outVec) = LVector3::Transform(*cp_cast<LVector3>(vec), *cp_cast<LMatrix>(mat));
 	return ::LN_OK;
 }
@@ -236,9 +236,9 @@ LNResult LNVector3_Transform(const LNVector3* vec, const LNMatrix* mat, LNVector
 //------------------------------------------------------------------------------
 LNResult LNVector3_TransformCoord(const LNVector3* vec, const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*p_cast<LVector3>(outVec) = LVector3::TransformCoord(*cp_cast<LVector3>(vec), *cp_cast<LMatrix>(mat));
 	return ::LN_OK;
 }
@@ -259,9 +259,9 @@ LNOTEAPI LNResult LNVector3_RotateAxis(const LNVector3* vec, const LNVector3* ax
 //------------------------------------------------------------------------------
 LNResult LNVector3_RotateAxis(const LNVector3* vec, const LNVector3* axis, float r, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(axis != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(axis != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::RotateAxis(*cp_cast<LVector3>(vec), *cp_cast<LVector3>(axis), r);
 	return ::LN_OK;
 }
@@ -288,9 +288,9 @@ LNOTEAPI LNResult LNVector3_RotateMatrix(const LNVector3* vec, const LNMatrix* m
 //------------------------------------------------------------------------------
 LNResult LNVector3_RotateMatrix(const LNVector3* vec, const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(outVec != NULL);
-	LN_CHECK_ARG(vec != NULL);
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(outVec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = LVector3::rotate(*cp_cast<LVector3>(vec), *cp_cast<LMatrix>(mat));
 	return ::LN_OK;
 }
@@ -304,7 +304,7 @@ LNResult LNVector3_RotateMatrix(const LNVector3* vec, const LNMatrix* mat, LNVec
 //------------------------------------------------------------------------------
 LNResult LNVector4_Set(LNVector4* vec, float x, float y, float z, float w)
 {
-	LN_CHECK_ARG(vec != NULL);
+	LN_CHECK_ARG_RETURN(vec != NULL);
 	vec->X = x; vec->Y = y; vec->Z = z; vec->W = w;
 	return ::LN_OK;
 }
@@ -317,7 +317,7 @@ LNResult LNVector4_Set(LNVector4* vec, float x, float y, float z, float w)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Identity(LNMatrix* mat)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*p_cast<LMatrix>(mat) = LMatrix::Identity;
 	return ::LN_OK;
 }
@@ -325,7 +325,7 @@ LNResult LNMatrix_Identity(LNMatrix* mat)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Translate(LNMatrix* mat, float x, float y, float z)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->Translate(x, y, z);
 	return ::LN_OK;
 }
@@ -337,7 +337,7 @@ LNResult LNMatrix_TranslateD(LNMatrix* mat, double x, double y, double z)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_TranslateVec3(LNMatrix* mat, const LNVector3* vec)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->Translation(*cp_cast<LVector3>(vec));
 	return ::LN_OK;
 }
@@ -345,7 +345,7 @@ LNResult LNMatrix_TranslateVec3(LNMatrix* mat, const LNVector3* vec)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_RotateX(LNMatrix* mat, float radian)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->RotateX(radian);
 	return ::LN_OK;
 }
@@ -357,7 +357,7 @@ LNResult LNMatrix_RotateXD(LNMatrix* mat, double radian)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_RotateY(LNMatrix* mat, float radian)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->RotateY(radian);
 	return ::LN_OK;
 }
@@ -369,7 +369,7 @@ LNResult LNMatrix_RotateYD(LNMatrix* mat, double radian)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_RotateZ(LNMatrix* mat, float radian)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->RotateZ(radian);
 	return ::LN_OK;
 }
@@ -381,7 +381,7 @@ LNResult LNMatrix_RotateZD(LNMatrix* mat, double radian)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Rotate(LNMatrix* mat, float xRad, float yRad, float zRad, LNRotationOrder rotOrder)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	LMatrix m = LMatrix::RotationEulerAngles(LVector3(xRad, yRad, zRad), (RotationOrder)rotOrder);
 	*(p_cast<LMatrix>(mat)) *= m;
 	//LMatrix::rotation( p_cast<LMatrix>( mat ), xRad, yRad, zRad, (Core::Math::RotationOrder)rotOrder );
@@ -401,7 +401,7 @@ LNResult LNMatrix_RotateVec3(LNMatrix* mat, const LNVector3* vec, LNRotationOrde
 //------------------------------------------------------------------------------
 LNResult LNMatrix_RotateAxis(LNMatrix* mat, const LNVector3* axis, float radian)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>( mat )->RotateAxis( *cp_cast<LVector3>( axis ), radian );
 	return ::LN_OK;
 }
@@ -413,7 +413,7 @@ LNResult LNMatrix_RotateAxisD(LNMatrix* mat, const LNVector3* axis, double radia
 //------------------------------------------------------------------------------
 LNResult LNMatrix_RotateQuaternion(LNMatrix* mat, const LNQuaternion* qua)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->RotateQuaternion(*cp_cast<LQuaternion>(qua));
 	return ::LN_OK;
 }
@@ -421,7 +421,7 @@ LNResult LNMatrix_RotateQuaternion(LNMatrix* mat, const LNQuaternion* qua)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Scale(LNMatrix* mat, float xyz)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>( mat )->Scaling( xyz );
 	return ::LN_OK;
 }
@@ -433,7 +433,7 @@ LNResult LNMatrix_ScaleD(LNMatrix* mat, double xyz)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_ScaleXYZ(LNMatrix* mat, float x, float y, float z)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->Scaling(x, y, z);
 	return ::LN_OK;
 }
@@ -445,7 +445,7 @@ LNResult LNMatrix_ScaleXYZD(LNMatrix* mat, double x, double y, double z)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_ScaleVec3(LNMatrix* mat, const LNVector3* scale)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	p_cast<LMatrix>(mat)->Scaling(*cp_cast<LVector3>(scale));
 	return ::LN_OK;
 }
@@ -453,7 +453,7 @@ LNResult LNMatrix_ScaleVec3(LNMatrix* mat, const LNVector3* scale)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Multiply(const LNMatrix* mat1, const LNMatrix* mat2, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::Multiply(*cp_cast<LMatrix>(mat1), *cp_cast<LMatrix>(mat2));
 	return ::LN_OK;
 }
@@ -461,7 +461,7 @@ LNResult LNMatrix_Multiply(const LNMatrix* mat1, const LNMatrix* mat2, LNMatrix*
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Inverse(const LNMatrix* mat, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::Inverse(*cp_cast<LMatrix>(mat));
 	return ::LN_OK;
 }
@@ -469,7 +469,7 @@ LNResult LNMatrix_Inverse(const LNMatrix* mat, LNMatrix* matOut)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Transpose(const LNMatrix* mat, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::Transpose(*cp_cast<LMatrix>(mat));
 	return ::LN_OK;
 }
@@ -477,7 +477,7 @@ LNResult LNMatrix_Transpose(const LNMatrix* mat, LNMatrix* matOut)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_ViewTransformLH(const LNVector3* pos, const LNVector3* lookAt, const LNVector3* upDir, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::LookAtLH(*cp_cast<LVector3>(pos), *cp_cast<LVector3>(lookAt), *cp_cast<LVector3>(upDir));
 	return ::LN_OK;
 }
@@ -485,7 +485,7 @@ LNResult LNMatrix_ViewTransformLH(const LNVector3* pos, const LNVector3* lookAt,
 //------------------------------------------------------------------------------
 LNResult LNMatrix_ViewTransformRH(const LNVector3* pos, const LNVector3* lookAt, const LNVector3* upDir, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::LookAtRH(*cp_cast<LVector3>(pos), *cp_cast<LVector3>(lookAt), *cp_cast<LVector3>(upDir));
 	return ::LN_OK;
 }
@@ -493,7 +493,7 @@ LNResult LNMatrix_ViewTransformRH(const LNVector3* pos, const LNVector3* lookAt,
 //------------------------------------------------------------------------------
 LNResult LNMatrix_PerspectiveFovLH(float fovY, float aspect, float nearZ, float farZ, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::PerspectiveFovLH(fovY, aspect, nearZ, farZ);
 	return ::LN_OK;
 }
@@ -505,7 +505,7 @@ LNResult LNMatrix_PerspectiveFovLHD(double fovY, double aspect, double nearZ, do
 //------------------------------------------------------------------------------
 LNResult LNMatrix_PerspectiveFovRH(float fovY, float aspect, float nearZ, float farZ, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::PerspectiveFovRH(fovY, aspect, nearZ, farZ);
 	return ::LN_OK;
 }
@@ -517,7 +517,7 @@ LNResult LNMatrix_PerspectiveFovRHD(double fovY, double aspect, double nearZ, do
 //------------------------------------------------------------------------------
 LNResult LNMatrix_OrthoLH(float width, float height, float nearZ, float farZ, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::OrthoLH(width, height, nearZ, farZ);
 	return ::LN_OK;
 }
@@ -529,7 +529,7 @@ LNResult LNMatrix_OrthoLHD(double width, double height, double nearZ, double far
 //------------------------------------------------------------------------------
 LNResult LNMatrix_OrthoRH(float width, float height, float nearZ, float farZ, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*p_cast<LMatrix>(matOut) = LMatrix::OrthoRH(width, height, nearZ, farZ);
 	return ::LN_OK;
 }
@@ -541,7 +541,7 @@ LNResult LNMatrix_OrthoRHD(double width, double height, double nearZ, double far
 //------------------------------------------------------------------------------
 LNResult LNMatrix_GetRight(const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3,  outVec ) = cp_cast<LMatrix>(mat)->GetRight();
 	return ::LN_OK;
 }
@@ -549,7 +549,7 @@ LNResult LNMatrix_GetRight(const LNMatrix* mat, LNVector3* outVec)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_GetUp(const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = cp_cast<LMatrix>(mat)->GetUp();
 	return ::LN_OK;
 }
@@ -557,7 +557,7 @@ LNResult LNMatrix_GetUp(const LNMatrix* mat, LNVector3* outVec)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_GetFront(const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = cp_cast<LMatrix>(mat)->GetFront();
 	return ::LN_OK;
 }
@@ -565,7 +565,7 @@ LNResult LNMatrix_GetFront(const LNMatrix* mat, LNVector3* outVec)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_GetPosition(const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = cp_cast<LMatrix>(mat)->GetPosition();
 	return ::LN_OK;
 }
@@ -573,7 +573,7 @@ LNResult LNMatrix_GetPosition(const LNMatrix* mat, LNVector3* outVec)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_GetEulerAngles(const LNMatrix* mat, LNVector3* outVec)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	*TO_CORE_STRUCT_P(LVector3, outVec) = cp_cast<LMatrix>(mat)->ToEulerAngles();
 	return ::LN_OK;
 }
@@ -581,7 +581,7 @@ LNResult LNMatrix_GetEulerAngles(const LNMatrix* mat, LNVector3* outVec)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_Decompose(const LNMatrix* mat, LNVector3* scale, LNQuaternion* rot, LNVector3* trans)
 {
-	LN_CHECK_ARG(mat != NULL);
+	LN_CHECK_ARG_RETURN(mat != NULL);
 	cp_cast<LMatrix>(mat)->Decompose(p_cast<LVector3>(scale), p_cast<LQuaternion>(rot), p_cast<LVector3>(trans));
 	return ::LN_OK;
 }
@@ -599,7 +599,7 @@ LNOTEAPI LNResult LNMatrix_TransformBasis(const LNMatrix* mat, LNMatrix* matOut)
 //------------------------------------------------------------------------------
 LNResult LNMatrix_TransformBasis(const LNMatrix* mat, LNMatrix* matOut)
 {
-	LN_CHECK_ARG(matOut != NULL);
+	LN_CHECK_ARG_RETURN(matOut != NULL);
 	*matOut = *mat;
 	LMatrix::transformBasis(p_cast<LMatrix>(matOut));
 	return ::LN_OK;
@@ -613,7 +613,7 @@ LNResult LNMatrix_TransformBasis(const LNMatrix* mat, LNMatrix* matOut)
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_Set(LNQuaternion* qua, float x, float y, float z, float w)
 {
-	LN_CHECK_ARG(qua != NULL);
+	LN_CHECK_ARG_RETURN(qua != NULL);
 	qua->X = x; qua->Y = y; qua->Z = z; qua->W = w;
 	return ::LN_OK;
 }
@@ -621,7 +621,7 @@ LNResult LNQuaternion_Set(LNQuaternion* qua, float x, float y, float z, float w)
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_Identity(LNQuaternion* qua)
 {
-	LN_CHECK_ARG(qua != NULL);
+	LN_CHECK_ARG_RETURN(qua != NULL);
 	*p_cast<LQuaternion>(qua) = LQuaternion::Identity;
 	return ::LN_OK;
 }
@@ -629,7 +629,7 @@ LNResult LNQuaternion_Identity(LNQuaternion* qua)
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_RotationAxis(const LNVector3* axis, float r, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::RotationAxis(*cp_cast<LVector3>(axis), r);
 	return ::LN_OK;
 }
@@ -641,7 +641,7 @@ LNResult LNQuaternion_RotationAxisD(const LNVector3* axis, float r, LNQuaternion
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_RotationMatrix(const LNMatrix* mat, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::RotationMatrix(*cp_cast<LMatrix>(mat));
 	return ::LN_OK;
 }
@@ -649,7 +649,7 @@ LNResult LNQuaternion_RotationMatrix(const LNMatrix* mat, LNQuaternion* outQua)
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_RotationYawPitchRoll(float yaw, float pitch, float roll, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::RotationYawPitchRoll(yaw, pitch, roll);
 	return ::LN_OK;
 }
@@ -661,7 +661,7 @@ LNResult LNQuaternion_RotationYawPitchRollD(float yaw, float pitch, float roll, 
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_Normalize(const LNQuaternion* qua, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::Normalize(*cp_cast<LQuaternion>( qua ) );
 	return ::LN_OK;
 }
@@ -669,7 +669,7 @@ LNResult LNQuaternion_Normalize(const LNQuaternion* qua, LNQuaternion* outQua)
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_Conjugate(const LNQuaternion* qua, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::Conjugate(*cp_cast<LQuaternion>(qua));
 	return ::LN_OK;
 }
@@ -677,7 +677,7 @@ LNResult LNQuaternion_Conjugate(const LNQuaternion* qua, LNQuaternion* outQua)
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_Multiply(const LNQuaternion* qua1, const LNQuaternion* qua2, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::Multiply(*cp_cast<LQuaternion>(qua1), *cp_cast<LQuaternion>(qua2));
 	return ::LN_OK;
 }
@@ -685,7 +685,7 @@ LNResult LNQuaternion_Multiply(const LNQuaternion* qua1, const LNQuaternion* qua
 //------------------------------------------------------------------------------
 LNResult LNQuaternion_Slerp(const LNQuaternion* qua1, const LNQuaternion* qua2, float t, LNQuaternion* outQua)
 {
-	LN_CHECK_ARG(outQua != NULL);
+	LN_CHECK_ARG_RETURN(outQua != NULL);
 	*p_cast<LQuaternion>(outQua) = LQuaternion::Slerp(*cp_cast<LQuaternion>(qua1), *cp_cast<LQuaternion>(qua2), t);
 	return ::LN_OK;
 }

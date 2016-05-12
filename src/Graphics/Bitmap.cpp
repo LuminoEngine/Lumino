@@ -222,7 +222,7 @@ void Bitmap::ConvertToDownFlow()
 //------------------------------------------------------------------------------
 void Bitmap::CopyRawData(const void* data, size_t byteCount)
 {
-	LN_CHECK_ARGS_RETURN(m_bitmapData.GetSize() <= byteCount);
+	LN_CHECK_ARG(m_bitmapData.GetSize() <= byteCount);
 	m_bitmapData.Copy(data, byteCount);
 }
 

@@ -185,7 +185,7 @@ void Animator::AdvanceTime(double elapsedTime)
 //------------------------------------------------------------------------------
 void Animator::AddAnimationClip(AnimationClip* animationClip, int layer)
 {
-	LN_CHECK_ARGS_RETURN(animationClip != NULL);
+	LN_CHECK_ARG(animationClip != NULL);
 
 	AnimationState* state = LN_NEW AnimationState(animationClip);
 	m_animationStateList.Add(animationClip->GetName(), state);
@@ -195,7 +195,7 @@ void Animator::AddAnimationClip(AnimationClip* animationClip, int layer)
 //------------------------------------------------------------------------------
 void Animator::RemoveAnimationClip(AnimationClip* animationClip)
 {
-	LN_CHECK_ARGS_RETURN(animationClip != NULL);
+	LN_CHECK_ARG(animationClip != NULL);
 	LN_THROW(0, NotImplementedException);
 }
 
@@ -214,7 +214,7 @@ AnimationTargetAttributeEntity* Animator::FindAnimationTargetAttributeEntity(con
 //------------------------------------------------------------------------------
 AnimationState* Animator::FindAnimationState(const TCHAR* clipName)
 {
-	LN_CHECK_ARGS_RETURNV(clipName != NULL, nullptr);
+	LN_CHECK_ARG(clipName != NULL);
 	AnimationState** state = m_animationStateList.Find(clipName);
 	if (state == nullptr) { return nullptr; }
 	return *state;

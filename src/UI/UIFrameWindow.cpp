@@ -29,7 +29,7 @@ UIFrameWindow::~UIFrameWindow()
 //------------------------------------------------------------------------------
 void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow)
 {
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 	m_platformWindow = platformWindow;
 }

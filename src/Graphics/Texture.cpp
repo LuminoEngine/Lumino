@@ -332,7 +332,7 @@ void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rec
 //------------------------------------------------------------------------------
 void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 {
-	LN_CHECK_ARGS_RETURN(bitmap != NULL);
+	LN_CHECK_ARG(bitmap != NULL);
 
 	// TODO: 現状、ピクセルフォーマットが一致していることが前提
 	if (bitmap->GetPixelFormat() != Utils::TranslatePixelFormat(m_deviceObj->GetTextureFormat())) {
@@ -346,7 +346,7 @@ void Texture2D::SetSubData(const Point& offset, Bitmap* bitmap)
 //------------------------------------------------------------------------------
 void Texture2D::SetSubData(const Point& offset, const void* data)
 {
-	LN_CHECK_ARGS_RETURN(data != NULL);
+	LN_CHECK_ARG(data != NULL);
 	// TODO: m_primarySurface にもセット
 	LN_CALL_TEXTURE_COMMAND(SetSubData, SetSubDataTextureCommand,
 		offset, data, m_primarySurface->GetBitmapBuffer()->GetSize(), m_deviceObj->GetSize());

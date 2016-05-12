@@ -44,12 +44,12 @@ void VisualNode::Initialize(SceneGraph* owner, int subsetCount)
 //------------------------------------------------------------------------------
 void VisualNode::SetOpacity(float opacity, int subsetIndex)
 {
-	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetOpacity(opacity);
 }
 void VisualNode::SetColorScale(const ColorF& color, int subsetIndex)
 {
-	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetColorScale(color.To32BitColor());
 }
 void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetIndex)
@@ -58,17 +58,17 @@ void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetInd
 }
 void VisualNode::SetBlendColor(const ColorF& color, int subsetIndex)
 {
-	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetBlendColor(color.To32BitColor());
 }
 void VisualNode::SetTone(const ToneF& tone, int subsetIndex)
 {
-	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
+	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);	// TODO: サブマテリアルの設定
 	m_materialList.GetMainMaterial()->SetTone(tone);
 }
 void VisualNode::SetShader(Shader* shader, int subsetIndex)
 {
-	LN_CHECK_STATE_RETURN(m_materialList.GetMainMaterial() != nullptr);
+	LN_CHECK_STATE(m_materialList.GetMainMaterial() != nullptr);
 	m_materialList.GetMainMaterial()->SetShader(shader);
 }
 

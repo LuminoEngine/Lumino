@@ -105,7 +105,7 @@ ViewportLayer::~ViewportLayer()
 //------------------------------------------------------------------------------
 const Size& ViewportLayer::GetViewportSize() const
 {
-	LN_CHECK_STATE_RETURNV(m_owner != nullptr, Size::Zero);
+	LN_CHECK_STATE(m_owner != nullptr);
 	return m_owner->GetSize();
 }
 

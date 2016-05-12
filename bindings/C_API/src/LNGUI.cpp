@@ -153,7 +153,7 @@ LN_TYPE_INFO_IMPL(LNGUIRootFrame, GUI::RootFrame);
 //------------------------------------------------------------------------------
 LN_API LNResult LNGUIRootFrame_GetDefaultRootFrame(LN_OUT LN_HANDLE(LNGUIRootFrame)* rootPane)
 {
-	LN_CHECK_ARG(rootPane != NULL);
+	LN_CHECK_ARG_RETURN(rootPane != NULL);
 	*rootPane = LFManager::CheckRegisterObject(LFManager::Engine->GetGUIManager()->GetDefaultRootFrame());
 	return ::LN_OK;
 }

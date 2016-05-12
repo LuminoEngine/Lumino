@@ -552,7 +552,7 @@ TextRenderer::~TextRenderer()
 //------------------------------------------------------------------------------
 void TextRenderer::DrawText(const char* text, int length)
 {
-	LN_VERIFY_RETURN(text != NULL);
+	LN_CHECK_ARG(text != NULL);
 	if (length == 0) { return; }
 	length = (length < 0) ? strlen(text) : length;
 
@@ -573,7 +573,7 @@ void TextRenderer::DrawText(const char* text, int length)
 //------------------------------------------------------------------------------
 void TextRenderer::DrawText(const wchar_t* text, int length)
 {
-	LN_VERIFY_RETURN(text != NULL);
+	LN_CHECK_ARG(text != NULL);
 	if (length == 0) { return; }
 	length = (length < 0) ? wcslen(text) : length;
 

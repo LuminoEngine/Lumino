@@ -74,7 +74,7 @@ void LFManager::Terminate()
 //------------------------------------------------------------------------------
 LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 {
-	LN_CHECK_ARGS_RETURNV(obj != NULL, NULL);
+	LN_CHECK_ARG_RETURN(obj != NULL);
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
 	if (obj->GetUserData() != NULL) {

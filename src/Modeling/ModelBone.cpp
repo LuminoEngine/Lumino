@@ -47,7 +47,7 @@ void ModelBone::UpdateTransformHierarchy(const Matrix& parentMatrix)
 //------------------------------------------------------------------------------
 void ModelBone::SetAnimationTargetValue(ValueType type, const void* value)
 {
-	LN_CHECK_ARGS_RETURN(type == ValueType_SQTTransform);
+	LN_CHECK_ARG(type == ValueType_SQTTransform);
 	m_localTransform = *((SQTTransform*)value);
 }
 

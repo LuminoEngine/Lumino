@@ -1211,9 +1211,9 @@ UIManager::~UIManager()
 //------------------------------------------------------------------------------
 void UIManager::Initialize(const Settings& settings)
 {
-	LN_CHECK_ARGS_RETURN(settings.graphicsManager != nullptr);
-	LN_CHECK_ARGS_RETURN(settings.assetsManager != nullptr);
-	LN_CHECK_ARGS_RETURN(settings.mainWindow != nullptr);
+	LN_CHECK_ARG(settings.graphicsManager != nullptr);
+	LN_CHECK_ARG(settings.assetsManager != nullptr);
+	LN_CHECK_ARG(settings.mainWindow != nullptr);
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_graphicsManager = settings.graphicsManager;

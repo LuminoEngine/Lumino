@@ -124,7 +124,7 @@ IContext::~IContext()
 //------------------------------------------------------------------------------
 void IContext::Initialize(GraphicsManager* manager)
 {
-	LN_CHECK_ARGS_RETURN(manager != nullptr);
+	LN_CHECK_ARG(manager != nullptr);
 	m_manager = manager;
 	m_ploxy = m_manager->GetRenderer();
 	m_activeRendererPloxy = nullptr;
@@ -248,7 +248,7 @@ void IContext::SetBlendMode(BlendMode mode)
 		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
 		//	break;
 		default:
-			LN_CHECK_ARGS_RETURN(0);
+			LN_CHECK_ARG(0);
 			break;
 	}
 }

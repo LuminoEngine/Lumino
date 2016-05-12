@@ -163,8 +163,6 @@ enum InternalRenderingPass
 namespace Internal
 {
 static const int MaxRenderingPass = 32;
-struct VisualNodeSubsetParams;
-class VisualNodeParams;
 class SceneHelper;
 
 struct RenderingPassClientData
