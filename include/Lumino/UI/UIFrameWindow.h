@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 	@brief		
 */
 class UIFrameWindow
-	: public Object
+	: public Object	// TODO: UILayoutRoot のサブクラスのほうが一般的なUIフレームワーク？
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:

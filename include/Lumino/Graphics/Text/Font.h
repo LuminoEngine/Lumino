@@ -66,6 +66,10 @@ public:
 
 	static Font* CreateBuiltInBitmapFontInternal(FontManager* manager, int size);			// TODO: manager を何とかしたい
 
+
+	static void RegisterFontFile(const StringRef& filePath);
+
+
 public:
 
 	/// フォント名の設定

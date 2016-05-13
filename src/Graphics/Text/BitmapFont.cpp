@@ -26,6 +26,12 @@ Font* Font::CreateBuiltInBitmapFontInternal(FontManager* manager, int size)
 	return LN_NEW BitmapFont(manager, bitmap);
 }
 
+//------------------------------------------------------------------------------
+void Font::RegisterFontFile(const StringRef& filePath)
+{
+	GraphicsManager::GetInstance()->GetFontManager()->RegisterFontFile(filePath);
+}
+
 //==============================================================================
 // BitmapFont
 //==============================================================================

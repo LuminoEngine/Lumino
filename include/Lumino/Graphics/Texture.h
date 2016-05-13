@@ -9,6 +9,9 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
 
+class Texture;
+using TexturePtr = RefPtr<Texture>;
+
 /**
 	@brief		テクスチャのクラスです。
 */

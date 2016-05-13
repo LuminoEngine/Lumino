@@ -82,6 +82,8 @@ public:	// TODO:
 	UIStyleAttribute<HorizontalAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				m_background;
 	UIStyleAttribute<BrushPtr>				m_foreground;
+	UIStyleAttribute<TexturePtr>			m_image;
+
 	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
 	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
 	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;

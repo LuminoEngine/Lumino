@@ -1,4 +1,9 @@
-﻿
+﻿/*
+	UIContext って何者？
+		アプリ内のUIシステムの境界。
+		例えば、普通に使う2DのUIと、3Dワールド内に独立したUIを配置したいとき。
+		3Dワールド内のUIでモーダルウィンドウ出しているとき、2Dのが操作不能になるのはちょっといただけない。
+*/
 #include "Internal.h"
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>

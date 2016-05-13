@@ -85,7 +85,7 @@ public:
 	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
 
 
-	/// フォントファイルを追加する (ttf) (初回登録の場合はデフォルトフォント名として登録する)
+	/// フォントファイルを追加する (ttf)
 	void RegisterFontFile(const String& fontFilePath);
 
 	/// デフォルトのフォントをセットする

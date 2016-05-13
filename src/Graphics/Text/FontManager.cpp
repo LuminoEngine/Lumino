@@ -182,10 +182,10 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 
 			Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
-			// 初回登録の場合はデフォルトフォント名として登録する
-			if (m_ttfDataEntryMap.size() == 1) {
-				m_defaultFont->SetName(familyName);
-			}
+			//// 初回登録の場合はデフォルトフォント名として登録する
+			//if (m_ttfDataEntryMap.size() == 1) {
+			//	m_defaultFont->SetName(familyName);
+			//}
 		}
 		FT_Done_Face(face);
 
@@ -219,10 +219,10 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 
 				Logger::WriteLine("Registered font file. [%s]", face->family_name);
 
-				// 初回登録の場合はデフォルトフォント名として登録する
-				if (m_ttfDataEntryMap.size() == 1) {
-					m_defaultFont->SetName(familyName);
-				}
+				//// 初回登録の場合はデフォルトフォント名として登録する
+				//if (m_ttfDataEntryMap.size() == 1) {
+				//	m_defaultFont->SetName(familyName);
+				//}
 			}
 			FT_Done_Face(face);
 		}

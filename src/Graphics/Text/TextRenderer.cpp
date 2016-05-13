@@ -218,6 +218,7 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	//	srcTexture = m_manager->GetDummyTexture();
 	//}
 
+
 	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());

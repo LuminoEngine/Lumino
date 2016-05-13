@@ -84,6 +84,12 @@ void TestEnv::SetUp()
 	settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
 	settings.renderingType = RenderingType::Immediate; //RenderingType::Deferred;//
 	Engine::Initialize(settings);
+
+	Font::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
+	Font::GetDefaultFont()->SetName(_T("VL Gothic"));
+
+	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
 }
 
 //------------------------------------------------------------------------------
@@ -201,10 +207,10 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 0	// 部分的にテストを実行したりする
+#if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=IntegrateTest_Scene_VisualNode.Visible"
+		"--gtest_filter=Test_UI_TextBlock.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

@@ -232,6 +232,9 @@ public:
 
 protected:
 	virtual ~IRenderer() {}
+
+private:
+
 };
 
 /// 頂点バッファのインターフェイス
