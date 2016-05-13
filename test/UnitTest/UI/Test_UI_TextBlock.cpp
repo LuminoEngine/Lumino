@@ -13,8 +13,8 @@ TEST_F(Test_UI_TextBlock, Basic)
 	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
 	auto textBlock1 = UITextBlock::Create();
 	textBlock1->SetText(_T("TextBlock"));
-	uiRoot->AddChild(textBlock1);
-
+	//uiRoot->AddChild(textBlock1);
+	uiRoot->SetContent(textBlock1);
 
 	Engine::UpdateFrame();
 

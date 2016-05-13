@@ -110,31 +110,6 @@ void GLRenderer::End()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::SetRenderState(const RenderState& state)
-{
-	m_requestedRenderState = state;
-	//UpdateRenderState(state, false);
-}
-
-//------------------------------------------------------------------------------
-//const RenderState& GLRenderer::GetRenderState()
-//{
-//	return m_currentRenderState;
-//}
-
-//------------------------------------------------------------------------------
-void GLRenderer::SetDepthStencilState(const DepthStencilState& state)
-{
-	m_requestedDepthStencilState = state;
-}
-
-//------------------------------------------------------------------------------
-//const DepthStencilState& GLRenderer::GetDepthStencilState()
-//{
-//	return m_currentDepthStencilState;
-//}
-
-//------------------------------------------------------------------------------
 void GLRenderer::SetRenderTarget(int index, ITexture* texture)
 {
 	if (texture != nullptr) {
@@ -197,6 +172,8 @@ void GLRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 //------------------------------------------------------------------------------
 void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
+	IRenderer::FlushStates();
+
 	// フレームバッファを最新にする
 	UpdateFrameBuffer();
 
@@ -233,6 +210,8 @@ void GLRenderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t s
 //------------------------------------------------------------------------------
 void GLRenderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	IRenderer::FlushStates();
+
 	// TODO
 	SetVertexBuffer(vertexBuffer);
 
@@ -242,8 +221,8 @@ void GLRenderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primit
 	}
 
 	// 描画に必要な情報を最新にする
-	UpdateRenderState(m_requestedRenderState, m_justSawReset);
-	UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
+	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
+	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
 	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
@@ -276,6 +255,8 @@ void GLRenderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primit
 //------------------------------------------------------------------------------
 void GLRenderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	IRenderer::FlushStates();
+
 	// TODO
 	SetVertexBuffer(vertexBuffer);
 	SetIndexBuffer(indexBuffer);
@@ -288,8 +269,8 @@ void GLRenderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer*
 	}
 
 	// 描画に必要な情報を最新にする
-	UpdateRenderState(m_requestedRenderState, m_justSawReset);
-	UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
+	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
+	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
 	UpdateFrameBuffer();
 	UpdateVAO();
 	UpdateVertexAttribPointer();
@@ -320,7 +301,7 @@ void GLRenderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer*
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::UpdateRenderState(const RenderState& newState, bool reset)
+void GLRenderer::OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset)
 {
 	if (reset)
 	{
@@ -362,7 +343,7 @@ glIsEnabled with argument GL_BLEND
 		GL_DST_ALPHA,
 		GL_ONE_MINUS_DST_ALPHA
 	};
-	if (newState.alphaBlendEnabled != m_currentRenderState.alphaBlendEnabled || reset)
+	if (newState.alphaBlendEnabled != oldState.alphaBlendEnabled || reset)
 	{
 		if (newState.alphaBlendEnabled) {
 			glEnable(GL_BLEND); LN_CHECK_GLERROR();
@@ -370,26 +351,22 @@ glIsEnabled with argument GL_BLEND
 		else {
 			glDisable(GL_BLEND); LN_CHECK_GLERROR();
 		}
-		m_currentRenderState.alphaBlendEnabled = newState.alphaBlendEnabled;
 	}
-	if (newState.blendOp != m_currentRenderState.blendOp || reset)
+	if (newState.blendOp != oldState.blendOp || reset)
 	{
 		glBlendEquation(blendOpTable[(int)newState.blendOp]); LN_CHECK_GLERROR();
-		m_currentRenderState.blendOp = newState.blendOp;
 	}
-	if (newState.sourceBlend != m_currentRenderState.sourceBlend || newState.destinationBlend != m_currentRenderState.destinationBlend || reset)
+	if (newState.sourceBlend != oldState.sourceBlend || newState.destinationBlend != oldState.destinationBlend || reset)
 	{
 		glBlendFuncSeparate(
 			blendFactorTable[(int)newState.sourceBlend],
 			blendFactorTable[(int)newState.destinationBlend],
 			blendFactorTable[(int)newState.sourceBlend],
 			blendFactorTable[(int)newState.destinationBlend]); LN_CHECK_GLERROR();
-		m_currentRenderState.sourceBlend = newState.sourceBlend;
-		m_currentRenderState.destinationBlend = newState.destinationBlend;
 	}
 	
 	// カリング
-	if (newState.Culling != m_currentRenderState.Culling || reset)
+	if (newState.Culling != oldState.Culling || reset)
 	{
 		switch (newState.Culling)
 		{
@@ -408,7 +385,7 @@ glIsEnabled with argument GL_BLEND
 	}
 
 	// 塗りつぶし方法
-	if (newState.Fill != m_currentRenderState.Fill || reset)
+	if (newState.Fill != oldState.Fill || reset)
 	{
 		const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
 		glPolygonMode(GL_FRONT_AND_BACK, tb[newState.Fill]); LN_CHECK_GLERROR();
@@ -417,7 +394,7 @@ glIsEnabled with argument GL_BLEND
 	}
 
 	// アルファテスト
-	if (newState.AlphaTest != m_currentRenderState.AlphaTest || reset)
+	if (newState.AlphaTest != oldState.AlphaTest || reset)
 	{
 		if (newState.AlphaTest) {
 			glEnable(GL_ALPHA_TEST); LN_CHECK_GLERROR();
@@ -426,12 +403,10 @@ glIsEnabled with argument GL_BLEND
 			glDisable(GL_ALPHA_TEST); LN_CHECK_GLERROR();
 		}
 	}
-
-	m_currentRenderState = newState;
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool reset)
+void GLRenderer::OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset)
 {
 	GLenum cmpFuncTable[] =
 	{
@@ -446,7 +421,7 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 	};
 
 	// 深度テスト
-	if (newState.DepthTestEnabled != m_currentDepthStencilState.DepthTestEnabled || reset)
+	if (newState.DepthTestEnabled != oldState.DepthTestEnabled || reset)
 	{
 		if (newState.DepthTestEnabled) {
 			glEnable(GL_DEPTH_TEST); LN_CHECK_GLERROR();
@@ -456,19 +431,19 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 		}
 	}
 	// 深度書き込み
-	if (newState.DepthWriteEnabled != m_currentDepthStencilState.DepthWriteEnabled || reset)
+	if (newState.DepthWriteEnabled != oldState.DepthWriteEnabled || reset)
 	{
 		glDepthMask(newState.DepthWriteEnabled ? GL_TRUE : GL_FALSE); LN_CHECK_GLERROR();
 	}
 	// 深度比較関数
-	if (newState.DepthTestFunc != m_currentDepthStencilState.DepthTestFunc || reset)
+	if (newState.DepthTestFunc != oldState.DepthTestFunc || reset)
 	{
 		glDepthFunc(cmpFuncTable[newState.DepthTestFunc]); LN_CHECK_GLERROR();
 	}
 
 
 	// ステンシルテスト有無
-	if (newState.StencilEnabled != m_currentDepthStencilState.StencilEnabled || reset)
+	if (newState.StencilEnabled != oldState.StencilEnabled || reset)
 	{
 		if (newState.StencilEnabled) {
 			glEnable(GL_STENCIL_TEST); LN_CHECK_GLERROR();
@@ -479,8 +454,8 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 	}
 
 	// ステンシルテスト比較関数・ステンシルテスト参照値
-	if (newState.StencilFunc != m_currentDepthStencilState.StencilFunc ||
-		newState.StencilReferenceValue != m_currentDepthStencilState.StencilReferenceValue ||
+	if (newState.StencilFunc != oldState.StencilFunc ||
+		newState.StencilReferenceValue != oldState.StencilReferenceValue ||
 		reset)
 	{
 		glStencilFunc(cmpFuncTable[newState.StencilFunc], newState.StencilReferenceValue, 0xFFFFFFFF); LN_CHECK_GLERROR();
@@ -488,15 +463,13 @@ void GLRenderer::UpdateDepthStencilState(const DepthStencilState& newState, bool
 
 	// ステンシルテスト処理
 	GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
-	if (newState.StencilFailOp != m_currentDepthStencilState.StencilFailOp || 
-		newState.StencilDepthFailOp != m_currentDepthStencilState.StencilDepthFailOp ||
-		newState.StencilPassOp != m_currentDepthStencilState.StencilPassOp ||
+	if (newState.StencilFailOp != oldState.StencilFailOp ||
+		newState.StencilDepthFailOp != oldState.StencilDepthFailOp ||
+		newState.StencilPassOp != oldState.StencilPassOp ||
 		reset)
 	{
 		glStencilOp(stencilOpTable[newState.StencilFailOp], stencilOpTable[newState.StencilDepthFailOp], stencilOpTable[newState.StencilPassOp]); LN_CHECK_GLERROR();
 	}
-
-	m_currentDepthStencilState = newState;
 }
 
 //------------------------------------------------------------------------------

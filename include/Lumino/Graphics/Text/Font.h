@@ -79,6 +79,7 @@ public:
 	virtual const String& GetName() const = 0;
 
 	/// フォントサイズの設定
+	/** フォントサイズは相対的な値で、最終的なレンダリングサイズはフォントによって異なります。*/
 	virtual void SetSize(int size) = 0;
 
 	/// フォントサイズの取得

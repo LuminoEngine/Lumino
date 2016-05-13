@@ -1,6 +1,6 @@
 
 #pragma once
-#include "UIPanel.h"
+#include "UIContentControl.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 	@brief		
 */
 class UILayoutRoot
-	: public UIPanel
+	: public UIContentControl
 {
 	LN_UI_TYPEINFO_DECLARE();
 public:

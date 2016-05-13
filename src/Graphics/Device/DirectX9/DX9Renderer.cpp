@@ -19,7 +19,6 @@ namespace Driver
 DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 	: m_owner(device)
 	, m_dxDevice(NULL)
-	, m_currentRenderState()
 	, m_currentViewportRect()
 	, m_currentVertexBuffer(NULL)
 	, m_currentIndexBuffer(NULL)
@@ -72,23 +71,6 @@ void DX9Renderer::OnResetDevice()
 {
 }
 
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void DX9Renderer::TryBeginScene()
-//{
-//	if (!m_sceneBegan) {
-//	}
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void DX9Renderer::TryEndScene()
-//{
-//}
-
-
 //------------------------------------------------------------------------------
 void DX9Renderer::EnterRenderState()
 {
@@ -124,8 +106,8 @@ void DX9Renderer::EnterRenderState()
 
 	RestoreStatus();
 
-	InternalSetRenderState(m_currentRenderState, true);
-	InternalSetDepthStencilState(m_currentDepthStencilState, true);
+	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
+	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
 	for (int i = 0; i < MaxMultiRenderTargets; ++i)
 	{
 		if (i != 0 || m_currentRenderTargets[i] != NULL) {	// 0 に NULL を指定することはできない。なのでやむを得ず何もしない
@@ -231,32 +213,6 @@ void DX9Renderer::End()
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::SetRenderState(const RenderState& state)
-{
-	//TryBeginScene();
-	InternalSetRenderState(state, false);
-}
-
-//------------------------------------------------------------------------------
-//const RenderState& DX9Renderer::GetRenderState()
-//{
-//	return m_currentRenderState;
-//}
-
-//------------------------------------------------------------------------------
-void DX9Renderer::SetDepthStencilState(const DepthStencilState& state)
-{
-	//TryBeginScene();
-	InternalSetDepthStencilState(state, false);
-}
-
-//------------------------------------------------------------------------------
-//const DepthStencilState& DX9Renderer::GetDepthStencilState()
-//{
-//	return m_currentDepthStencilState;
-//}
-
-//------------------------------------------------------------------------------
 void DX9Renderer::SetRenderTarget(int index, ITexture* texture)
 {
 	//TryBeginScene();
@@ -312,6 +268,7 @@ void DX9Renderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 //------------------------------------------------------------------------------
 void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
+	IRenderer::FlushStates();
 	//TryBeginScene();
 
 	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
@@ -339,6 +296,8 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 //------------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
+	IRenderer::FlushStates();
+
 	// TODO
 	SetVertexBuffer(vertexBuffer);
 	//TryBeginScene();
@@ -375,6 +334,8 @@ void DX9Renderer::DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primi
 //------------------------------------------------------------------------------
 void DX9Renderer::DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
+	IRenderer::FlushStates();
+
 	// TODO
 	SetVertexBuffer(vertexBuffer);
 	SetIndexBuffer(indexBuffer);
@@ -461,12 +422,12 @@ void DX9Renderer::RestoreStatus()
 	m_dxDevice->SetTexture(0, NULL);
 	m_dxDevice->SetFVF(0);
 
-	InternalSetRenderState(m_currentRenderState, true);
-	InternalSetDepthStencilState(m_currentDepthStencilState, true);
+	OnUpdateRenderState(m_currentRenderState, m_currentRenderState, true);
+	OnUpdateDepthStencilState(m_currentDepthStencilState, m_currentDepthStencilState, true);
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::InternalSetRenderState(const RenderState& state, bool reset)
+void DX9Renderer::OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset)
 {
 	// Blending
 	DWORD blendOpTable[] =
@@ -490,59 +451,45 @@ void DX9Renderer::InternalSetRenderState(const RenderState& state, bool reset)
 		D3DBLEND_DESTALPHA,
 		D3DBLEND_INVDESTALPHA,
 	};
-	if (state.alphaBlendEnabled != m_currentRenderState.alphaBlendEnabled || reset)
+	if (newState.alphaBlendEnabled != oldState.alphaBlendEnabled || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, (state.alphaBlendEnabled) ? TRUE : FALSE);
-		m_currentRenderState.alphaBlendEnabled = state.alphaBlendEnabled;
+		m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, (newState.alphaBlendEnabled) ? TRUE : FALSE);
 	}
-	if (state.blendOp != m_currentRenderState.blendOp || reset)
+	if (newState.blendOp != oldState.blendOp || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_BLENDOP, blendOpTable[(int)state.blendOp]);
-		m_currentRenderState.blendOp = state.blendOp;
+		m_dxDevice->SetRenderState(D3DRS_BLENDOP, blendOpTable[(int)newState.blendOp]);
 	}
-	if (state.sourceBlend != m_currentRenderState.sourceBlend || reset)
+	if (newState.sourceBlend != oldState.sourceBlend || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_SRCBLEND, blendFactorTable[(int)state.sourceBlend]);
-		m_currentRenderState.sourceBlend = state.sourceBlend;
+		m_dxDevice->SetRenderState(D3DRS_SRCBLEND, blendFactorTable[(int)newState.sourceBlend]);
 	}
-	if (state.destinationBlend != m_currentRenderState.destinationBlend || reset)
+	if (newState.destinationBlend != oldState.destinationBlend || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_DESTBLEND, blendFactorTable[(int)state.destinationBlend]);
-		m_currentRenderState.destinationBlend = state.destinationBlend;
+		m_dxDevice->SetRenderState(D3DRS_DESTBLEND, blendFactorTable[(int)newState.destinationBlend]);
 	}
 
 	// カリング
-	if (state.Culling != m_currentRenderState.Culling || reset)
+	if (newState.Culling != oldState.Culling || reset)
 	{
 		const uint32_t tb[] = { D3DCULL_NONE, D3DCULL_CCW, D3DCULL_CW };
-		m_dxDevice->SetRenderState(D3DRS_CULLMODE, tb[(int)state.Culling]);
+		m_dxDevice->SetRenderState(D3DRS_CULLMODE, tb[(int)newState.Culling]);
 	}
 	// 塗りつぶし方法
-	if (state.Fill != m_currentRenderState.Fill || reset)
+	if (newState.Fill != oldState.Fill || reset)
 	{
 		const uint32_t tb[] = { D3DFILL_SOLID, D3DFILL_WIREFRAME, D3DFILL_POINT };
-		m_dxDevice->SetRenderState(D3DRS_FILLMODE, tb[state.Fill]);
+		m_dxDevice->SetRenderState(D3DRS_FILLMODE, tb[newState.Fill]);
 	}
 	// アルファテスト
-	if (state.AlphaTest != m_currentRenderState.AlphaTest || reset)
+	if (newState.AlphaTest != oldState.AlphaTest || reset)
 	{
 		const uint32_t tb[] = { FALSE, TRUE };
-		m_dxDevice->SetRenderState(D3DRS_ALPHATESTENABLE, tb[state.AlphaTest]);
+		m_dxDevice->SetRenderState(D3DRS_ALPHATESTENABLE, tb[newState.AlphaTest]);
 	}
-#if 0	// ポイントスプライトは API 毎の依存が強いのでここでは設定しない。実装に任せる。
-	// ポイントスプライト
-	if (state.PointSprite != m_currentRenderState.PointSprite || reset)
-	{
-		const uint32_t tb[] = { FALSE, TRUE };
-		m_dxDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, tb[state.PointSprite]);
-	}
-#endif
-
-	m_currentRenderState = state;
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::InternalSetDepthStencilState(const DepthStencilState& newState, bool reset)
+void DX9Renderer::OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset)
 {
 	DWORD cmpFuncTable[] =
 	{
@@ -557,55 +504,53 @@ void DX9Renderer::InternalSetDepthStencilState(const DepthStencilState& newState
 	};
 
 	// 深度テスト
-	if (newState.DepthTestEnabled != m_currentDepthStencilState.DepthTestEnabled || reset)
+	if (newState.DepthTestEnabled != oldState.DepthTestEnabled || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_ZENABLE, (newState.DepthTestEnabled) ? TRUE : FALSE);
 	}
 	// 深度書き込み
-	if (newState.DepthWriteEnabled != m_currentDepthStencilState.DepthWriteEnabled || reset)
+	if (newState.DepthWriteEnabled != oldState.DepthWriteEnabled || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_ZWRITEENABLE, (newState.DepthWriteEnabled) ? TRUE : FALSE);
 	}
 	// 深度比較関数
-	if (newState.DepthTestFunc != m_currentDepthStencilState.DepthTestFunc || reset)
+	if (newState.DepthTestFunc != oldState.DepthTestFunc || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_ZFUNC, cmpFuncTable[newState.DepthTestFunc]);
 	}
 
 	// ステンシルテスト有無
-	if (newState.StencilEnabled != m_currentDepthStencilState.StencilEnabled || reset)
+	if (newState.StencilEnabled != oldState.StencilEnabled || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_STENCILENABLE, (newState.StencilEnabled) ? TRUE : FALSE);
 	}
 
 	// ステンシルテスト比較関数
-	if (newState.StencilFunc != m_currentDepthStencilState.StencilFunc || reset)
+	if (newState.StencilFunc != oldState.StencilFunc || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_STENCILFUNC, cmpFuncTable[newState.StencilFunc]);
 	}
 
 	// ステンシルテスト参照値
-	if (newState.StencilReferenceValue != m_currentDepthStencilState.StencilReferenceValue || reset)
+	if (newState.StencilReferenceValue != oldState.StencilReferenceValue || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_STENCILREF, newState.StencilReferenceValue);
 	}
 
 	// ステンシルテスト処理
 	DWORD stencilOpTable[] = { D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE };
-	if (newState.StencilFailOp != m_currentDepthStencilState.StencilFailOp || reset)
+	if (newState.StencilFailOp != oldState.StencilFailOp || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_STENCILFAIL, stencilOpTable[newState.StencilFailOp]);
 	}
-	if (newState.StencilDepthFailOp != m_currentDepthStencilState.StencilDepthFailOp || reset)
+	if (newState.StencilDepthFailOp != oldState.StencilDepthFailOp || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_STENCILZFAIL, stencilOpTable[newState.StencilDepthFailOp]);
 	}
-	if (newState.StencilPassOp != m_currentDepthStencilState.StencilPassOp || reset)
+	if (newState.StencilPassOp != oldState.StencilPassOp || reset)
 	{
 		m_dxDevice->SetRenderState(D3DRS_STENCILPASS, stencilOpTable[newState.StencilPassOp]);
 	}
-
-	m_currentDepthStencilState = newState;
 }
 
 //------------------------------------------------------------------------------

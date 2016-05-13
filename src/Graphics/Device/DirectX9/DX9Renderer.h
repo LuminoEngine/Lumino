@@ -36,10 +36,6 @@ public:
 	virtual void LeaveRenderState();
 	virtual void Begin();
 	virtual void End();
-	virtual void SetRenderState(const RenderState& state);
-	//virtual const RenderState& GetRenderState();
-	virtual void SetDepthStencilState(const DepthStencilState& state);
-	//virtual const DepthStencilState& GetDepthStencilState();
 	virtual void SetRenderTarget(int index, ITexture* texture);
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
@@ -54,8 +50,8 @@ public:
 
 private:
 	void RestoreStatus();
-	void InternalSetRenderState(const RenderState& state, bool reset);
-	void InternalSetDepthStencilState(const DepthStencilState& newState, bool reset);
+	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
+	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
 	void InternalSetRenderTarget(int index, ITexture* texture, bool reset);
 	void InternalSetDepthBuffer(ITexture* texture, bool reset);
 	void InternalSetViewport(const Rect& rect, bool reset);
@@ -65,8 +61,6 @@ private:
 private:
 	DX9GraphicsDevice*		m_owner;
 	IDirect3DDevice9*		m_dxDevice;
-	RenderState				m_currentRenderState;
-	DepthStencilState		m_currentDepthStencilState;
 	Rect					m_currentViewportRect;
 	DX9VertexBuffer*		m_currentVertexBuffer;
 	DX9IndexBuffer*			m_currentIndexBuffer;

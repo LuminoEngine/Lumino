@@ -43,11 +43,21 @@ void EngineDiagCore::Initialize(EngineManager* manager)
 	m_manager = manager;
 }
 
+//------------------------------------------------------------------------------
+void EngineDiagCore::ReportCapability(int indent, const char* name, const char* value)
+{
+	StringA str(indent, '\t');
+	str = StringA::Format("{0}{1} : {2}", str, name, value);
+	Logger::WriteLine(str.c_str());
+}
+
+//------------------------------------------------------------------------------
 float EngineDiagCore::GetMainFPS() const
 {
 	return m_manager->GetFpsController().GetFps();
 }
 
+//------------------------------------------------------------------------------
 float EngineDiagCore::GetMainFPSCapacity() const
 {
 	return m_manager->GetFpsController().GetCapacityFps();

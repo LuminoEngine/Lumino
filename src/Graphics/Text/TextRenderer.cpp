@@ -218,6 +218,14 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	//	srcTexture = m_manager->GetDummyTexture();
 	//}
 
+	// ビットマップフォントからの描画なので、アルファブレンドONでなければ真っ白矩形になってしまう。
+	// ・・・が、TextRendererCore のような低レベルでステートを強制変更してしまうのはいかがなものか・・・。
+	//RenderState oldState = m_renderer->GetRenderState();
+	//RenderState newState = oldState;
+	//newState.alphaBlendEnabled = true;
+	//newState.sourceBlend = BlendFactor::SourceAlpha;
+	//newState.destinationBlend = BlendFactor::InverseSourceAlpha;
+	//m_renderer->SetRenderState(newState);
 
 	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -231,6 +239,8 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	// キャッシュクリア
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
+
+	//m_renderer->SetRenderState(oldState);
 }
 
 //------------------------------------------------------------------------------

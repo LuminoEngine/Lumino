@@ -15,10 +15,13 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
+// Property definition
+LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
 
-// Register routed event
+// Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseEnterEvent, "MouseEnter", MouseEnter);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseLeaveEvent, "MouseLeave", MouseLeave);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIMouseEventArgs, MouseMoveEvent, "MouseMove", MouseMove);
@@ -485,6 +488,7 @@ void UIElement::Render(GraphicsContext* g)
 {
 	//g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,200));
 
+	g->SetBlendMode(BlendMode::Alpha);	// TODO: とりあえず(今、テキスト描画はビットマップなので)
 	OnRender(g);
 
 	// 子要素

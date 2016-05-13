@@ -31,6 +31,9 @@ UIContentControl::~UIContentControl()
 void UIContentControl::Initialize(detail::UIManager* manager)
 {
 	UIControl::Initialize(manager);
+
+	SetVerticalContentAlignment(VerticalAlignment::Stretch);
+	SetHorizontalContentAlignment(HorizontalAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
@@ -61,6 +64,11 @@ void UIContentControl::OnUpdatingLayout()
 	{
 		auto panel = RefPtr<UIPanel>::MakeRef();
 		panel->Initialize(GetManager());
+
+		// ContentAlignment Ý’è
+		panel->SetVerticalAlignment(GetVerticalContentAlignment());
+		panel->SetHorizontalAlignment(GetHorizontalContentAlignment());
+
 		m_contentHost = panel.DetachMove();
 		SetVisualTreeRoot(m_contentHost);
 	}

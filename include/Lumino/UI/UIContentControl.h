@@ -6,6 +6,7 @@ LN_NAMESPACE_BEGIN
 
 /**
 	@brief		
+	@details	VerticalContentAlignment ‚Æ HorizontalContentAlignment ‚Ì‰Šú’l‚Í‚»‚ê‚¼‚ê Stretch ‚Å‚·B
 */
 class UIContentControl
 	: public UIControl

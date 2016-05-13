@@ -8,6 +8,25 @@ namespace Driver
 {
 
 //==============================================================================
+// IRenderer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void IRenderer::FlushStates()
+{
+	if (!m_requestedRenderState.Equals(m_currentRenderState))
+	{
+		OnUpdateRenderState(m_requestedRenderState, m_currentRenderState, false);
+		m_currentRenderState = m_requestedRenderState;
+	}
+	if (!m_requestedDepthStencilState.Equals(m_currentDepthStencilState))
+	{
+		OnUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, false);
+		m_currentDepthStencilState = m_requestedDepthStencilState;
+	}
+}
+
+//==============================================================================
 // IShader
 //==============================================================================
 

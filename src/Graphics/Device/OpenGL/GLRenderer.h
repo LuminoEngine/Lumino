@@ -1,7 +1,6 @@
 ﻿
 #pragma once 
 
-#include "../../../include/Lumino/Graphics/RenderState.h"
 #include "../GraphicsDriverInterface.h"
 #include "GLTexture.h"
 
@@ -39,10 +38,6 @@ public:
 	virtual void LeaveRenderState();
 	virtual void Begin();
 	virtual void End();
-	virtual void SetRenderState(const RenderState& state);
-	//virtual const RenderState& GetRenderState();
-	virtual void SetDepthStencilState(const DepthStencilState& state);
-	//virtual const DepthStencilState& GetDepthStencilState();
 	virtual void SetRenderTarget(int index, ITexture* texture);
 	virtual ITexture* GetRenderTarget(int index);
 	virtual void SetDepthBuffer(ITexture* texture);
@@ -55,19 +50,16 @@ public:
 	virtual void DrawPrimitive(IVertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
 	virtual void DrawPrimitiveIndexed(IVertexBuffer* vertexBuffer, IIndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 
-private:
-	void UpdateRenderState(const RenderState& newState, bool reset);
-	void UpdateDepthStencilState(const DepthStencilState& newState, bool reset);
+protected:
+	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
+	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
+
 	void UpdateFrameBuffer();
 	void UpdateVAO();
 	void UpdateVertexAttribPointer();
 	void GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
 private:
-	RenderState				m_requestedRenderState;
-	RenderState				m_currentRenderState;
-	DepthStencilState		m_requestedDepthStencilState;
-	DepthStencilState		m_currentDepthStencilState;
 	Rect					m_currentViewportRect;
 	GLVertexBuffer*			m_currentVertexBuffer;
 	GLIndexBuffer*			m_currentIndexBuffer;

@@ -78,6 +78,7 @@
 		前回のはちょっと違ってた。
 		HorizontalContentAlignment は、ContentPresenter を親要素のどこに配置するかを指定する。
 		HorizontalAlignment は、親要素の内のどこに配置するかを指定する。
+		子要素がAddとかされた時、子要素の HorizontalAlignment に上書きする。
 
 	[2015/10/12] HorizontalAlignment と HorizontalContentAlignment
 		HorizontalAlignment は、自分が親要素内のどこに配置されるか、

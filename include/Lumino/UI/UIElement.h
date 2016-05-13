@@ -18,8 +18,10 @@ class UIElement
 	LN_UI_TYPEINFO_DECLARE();
 
 public:
-	LN_TR_PROPERTY(BrushPtr, BackgroundProperty);		/**< Background プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr, ForegroundProperty);		/**< Foreground プロパティの識別子 */
+	LN_TR_PROPERTY(VerticalAlignment,	VerticalAlignmentProperty);		/**< VerticalAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(HorizontalAlignment,	HorizontalAlignmentProperty);	/**< HorizontalAlignment プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr,			BackgroundProperty);			/**< Background プロパティの識別子 */
+	LN_TR_PROPERTY(BrushPtr,			ForegroundProperty);			/**< Foreground プロパティの識別子 */
 
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseEnterEvent);				/**< MouseEnter ルーティングイベントの識別子 */
 	LN_ROUTED_EVENT(UIMouseEventArgs,	MouseLeaveEvent);				/**< MouseLeave ルーティングイベントの識別子 */
@@ -31,7 +33,7 @@ public:
 	LN_ROUTED_EVENT(UIKeyEventArgs,		TextInputEvent);				/**< TextInput ルーティングイベントの識別子 */
 
 public:
-	//-------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
 	/** @name RoutedEvents */
 	/** @{ */
 
@@ -46,7 +48,24 @@ public:
 
 	/** @} */
 
+	//--------------------------------------------------------------------------
+	/** @name Properties */
+	/** @{ */
+
+	void SetVerticalAlignment(VerticalAlignment value) { tr::Property::SetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty, value); }
+	VerticalAlignment GetVerticalAlignment() const { return tr::Property::GetPropertyValueDirect<VerticalAlignment>(this, VerticalAlignmentProperty); }
+
+	void SetHorizontalAlignment(HorizontalAlignment value) { tr::Property::SetPropertyValueDirect<HorizontalAlignment>(this, HorizontalAlignmentProperty, value); }
+	HorizontalAlignment GetHorizontalAlignment() const { return tr::Property::GetPropertyValueDirect<HorizontalAlignment>(this, HorizontalAlignmentProperty); }
+
+
+	/** @} */
+
+
 public:
+
+
+
 
 	/** 要素の識別名を取得します。*/
 	const String& GetKeyName() const { return m_keyName; }

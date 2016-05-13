@@ -9,6 +9,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 
+LN_TR_PROPERTY_IMPLEMENT(UIControl, VerticalAlignment, VerticalContentAlignmentProperty, "VerticalContentAlignment", m_verticalContentAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIControl, HorizontalAlignment, HorizontalContentAlignmentProperty, "HorizontalContentAlignment", m_horizontalContentAlignment, tr::PropertyMetadata());
+
 const String UIControl::MouseOverStateName = _T("MouseOver");
 
 //------------------------------------------------------------------------------

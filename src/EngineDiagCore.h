@@ -28,6 +28,15 @@ public:
 
 	void Initialize(EngineManager* manager);
 
+	void ReportCapability(int indent, const char* name, const char* value);
+
+	template<typename... TArgs>
+	void ReportCapability(int indent, const char* name, const char* format, const TArgs&... args)
+	{
+		StringA str = StringA::Format(format, args...);
+		ReportCapability(indent, name, str.c_str());
+	}
+
 	float GetMainFPS() const;
 	float GetMainFPSCapacity() const;
 

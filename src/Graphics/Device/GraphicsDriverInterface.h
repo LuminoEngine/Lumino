@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/Bitmap.h>
@@ -185,17 +186,10 @@ public:
 	virtual void Begin() = 0;
 	virtual void End() = 0;
 
-	/// レンダリングステートの設定
-	virtual void SetRenderState(const RenderState& state) = 0;
-
-	/// レンダリングステートの取得
-	//virtual const RenderState& GetRenderState() = 0;
-
-	/// 深度テスト及びステンシルテストステートの設定
-	virtual void SetDepthStencilState(const DepthStencilState& state) = 0;
-
-	/// 深度テスト及びステンシルテストステートの取得
-	//virtual const DepthStencilState& GetDepthStencilState() = 0;
+	void SetRenderState(const RenderState& state) { m_requestedRenderState = state; }
+	const RenderState& GetRenderState() { return m_requestedRenderState; }
+	virtual void SetDepthStencilState(const DepthStencilState& state) { m_requestedDepthStencilState = state; }
+	const DepthStencilState& GetDepthStencilState() { return m_requestedDepthStencilState; }
 
 	/// レンダリングターゲットの設定
 	virtual void SetRenderTarget(int index, ITexture* texture) = 0;
@@ -233,8 +227,15 @@ public:
 protected:
 	virtual ~IRenderer() {}
 
-private:
+	void FlushStates();
+	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
+	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
 
+protected:	// TODO: private
+	RenderState				m_requestedRenderState;
+	RenderState				m_currentRenderState;
+	DepthStencilState		m_requestedDepthStencilState;
+	DepthStencilState		m_currentDepthStencilState;
 };
 
 /// 頂点バッファのインターフェイス
