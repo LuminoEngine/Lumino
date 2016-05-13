@@ -593,7 +593,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 		// 逆行列
 	case MME_VARREQ_MATRIX_World_I:
 	{
-		*outMatrix = Matrix::Inverse(node->GetMatrix());
+		*outMatrix = Matrix::MakeInverse(node->GetMatrix());
 		return true;
 	}
 	case MME_VARREQ_MATRIX_CAMERA_WorldView_I:
@@ -624,7 +624,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 		// 転置行列
 	case MME_VARREQ_MATRIX_World_T:
 	{
-		*outMatrix = Matrix::Transpose(node->GetMatrix());
+		*outMatrix = Matrix::MakeTranspose(node->GetMatrix());
 		return true;
 	}
 	case MME_VARREQ_MATRIX_CAMERA_WorldView_T:
@@ -655,7 +655,7 @@ bool MMEShader::GetGeometryTransform(SceneNode* node, Camera* affectCamera, cons
 		// 逆行列×転置行列
 	case MME_VARREQ_MATRIX_World_IT:
 	{
-		*outMatrix = Matrix::Inverse(node->GetMatrix());
+		*outMatrix = Matrix::MakeInverse(node->GetMatrix());
 		outMatrix->Transpose();
 		return true;
 	}

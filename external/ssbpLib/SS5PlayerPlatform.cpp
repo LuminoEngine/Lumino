@@ -167,10 +167,10 @@ namespace ss
 		float y = state.mat[13];	/// 表示座標はマトリクスから取得します。
 
 		g_spriteRenderer->SetTransform(
-			ln::Matrix::AffineTransformation(
+			ln::Matrix::MakeAffineTransformation(
 				ln::Vector3(state.scaleX, state.scaleY, 0),
 				ln::Vector3::Zero,
-				ln::Quaternion::RotationEulerAngles(ln::Vector3(state.rotationX, state.rotationY, state.rotationZ)),
+				ln::Quaternion::MakeFromEulerAngles(ln::Vector3(state.rotationX, state.rotationY, state.rotationZ)),
 				ln::Vector3(x, y, 0)));
 		
 

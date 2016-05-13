@@ -21,7 +21,7 @@ void ModelBoneCore::RefreshInitialValues()
 	if (ParentBoneIndex >= 0)
 	{
 		m_offsetFromParent = OrgPosition - m_owner->Bones[ParentBoneIndex]->OrgPosition;
-		m_initialTranstormInv = Matrix::Translation(-OrgPosition);
+		m_initialTranstormInv = Matrix::MakeTranslation(-OrgPosition);
 	}
 }
 	

@@ -137,11 +137,11 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 		}
 
 		// ビュー行列
-		m_viewMatrix = Matrix::LookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, m_upDirection);
+		m_viewMatrix = Matrix::MakeLookAtLH(m_combinedGlobalMatrix.GetPosition(), lookAt, m_upDirection);
 
 		// プロジェクション行列の更新
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::PerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+		m_projMatrix = Matrix::MakePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
@@ -151,15 +151,15 @@ void Camera::UpdateMatrices(const SizeF& viewSize)
 
 	m_viewFrustum = ViewFrustum(m_viewProjMatrix);
 
-	m_viewMatrixI = Matrix::Inverse(m_viewMatrix);
-	m_projMatrixI = Matrix::Inverse(m_projMatrix);
-	m_viewProjMatrixI = Matrix::Inverse(m_viewProjMatrix);
-	m_viewMatrixT = Matrix::Transpose(m_viewMatrix);
-	m_projMatrixT = Matrix::Transpose(m_projMatrix);
-	m_viewProjMatrixT = Matrix::Transpose(m_viewProjMatrix);
-	m_viewMatrixIT = Matrix::Transpose(m_viewMatrixI);
-	m_projMatrixIT = Matrix::Transpose(m_projMatrixI);
-	m_viewProjMatrixIT = Matrix::Transpose(m_viewProjMatrixI);
+	m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
+	m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
+	m_viewProjMatrixI = Matrix::MakeInverse(m_viewProjMatrix);
+	m_viewMatrixT = Matrix::MakeTranspose(m_viewMatrix);
+	m_projMatrixT = Matrix::MakeTranspose(m_projMatrix);
+	m_viewProjMatrixT = Matrix::MakeTranspose(m_viewProjMatrix);
+	m_viewMatrixIT = Matrix::MakeTranspose(m_viewMatrixI);
+	m_projMatrixIT = Matrix::MakeTranspose(m_projMatrixI);
+	m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
 }
 
 
@@ -368,7 +368,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 				//}
 				//printf("%f\n", d);
 
-				m = Matrix::RotationAxis(vaxis, d);
+				m = Matrix::MakeRotationAxis(vaxis, d);
 				view.TransformCoord(m);
 
 

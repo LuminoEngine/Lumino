@@ -229,7 +229,7 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
-	Matrix proj = Matrix::Perspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
+	Matrix proj = Matrix::MakePerspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
 	m_geometryRenderer->SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
 	m_textRenderer->SetViewProjMatrix(proj);

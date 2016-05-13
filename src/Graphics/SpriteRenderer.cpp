@@ -492,7 +492,7 @@ void SpriteRendererImpl::SetTransform(const Matrix& matrix)
 void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
 {
 	m_viewDirection.Set(view.m[0][2], view.m[1][2], view.m[2][2]);
-	m_viewInverseMatrix = Matrix::Inverse(view);
+	m_viewInverseMatrix = Matrix::MakeInverse(view);
 	m_viewPosition = m_viewInverseMatrix.GetPosition();
 	m_viewProjMatrix = (view * proj);
 }
@@ -666,7 +666,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 	{
 		if (m_viewDirection.x > 0.0f)
 		{
-			mat.RotationY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
+			mat.RotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
 		}
 		else if (m_viewDirection.x == 0.0f)
 		{
@@ -674,7 +674,7 @@ void SpriteRendererImpl::DrawRequest3DInternal(
 		}
 		else
 		{
-			mat.RotationY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
+			mat.RotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
 		}
 
 	}

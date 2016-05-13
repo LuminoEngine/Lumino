@@ -1408,7 +1408,7 @@ void GeometryRenderer::SetViewProjection(const Matrix& view, const Matrix& proj,
 {
 	m_uvParPixel.x = 1.0f / viewPixelSize.width;
 	m_uvParPixel.y = 1.0f / viewPixelSize.height;
-	m_invViewProj = Matrix::Inverse(view * proj);
+	m_invViewProj = Matrix::MakeInverse(view * proj);
 	m_viewOnePixelOffset = Vector2::TransformCoord(m_uvParPixel, m_invViewProj);
 	LN_CALL_COMMAND(SetViewProjection, DrawingContextImpl::SetViewProjectionCommand, view, proj);
 }
