@@ -238,6 +238,13 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 }
 
 //------------------------------------------------------------------------------
+void GraphicsContext::SetTransform(const Matrix& matrix)
+{
+	m_geometryRenderer->SetTransform(matrix);
+	m_textRenderer->SetTransform(matrix);
+}
+
+//------------------------------------------------------------------------------
 void GraphicsContext::SetOpacity(float opacity)
 {
 	m_geometryRenderer->SetOpacity(opacity);

@@ -16,8 +16,8 @@ LN_NAMESPACE_BEGIN
 LN_UI_TYPEINFO_IMPLEMENT(UIElement, tr::ReflectionObject);
 
 // Property definition
-LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(UIElement, VerticalAlignment, VerticalAlignmentProperty, "VerticalAlignment", m_verticalAlignment, tr::PropertyMetadata(VerticalAlignment::Center));
+LN_TR_PROPERTY_IMPLEMENT(UIElement, HorizontalAlignment, HorizontalAlignmentProperty, "HorizontalAlignment", m_horizontalAlignment, tr::PropertyMetadata(HorizontalAlignment::Center));
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, BackgroundProperty, "Background", m_background, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, ForegroundProperty, "Foreground", m_foreground, tr::PropertyMetadata());
 
@@ -38,8 +38,8 @@ UIElement::UIElement()
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
 	, m_size(NAN, NAN)
-	, m_horizontalAlignment(HorizontalAlignment::Left)
-	, m_verticalAlignment(VerticalAlignment::Top)
+	, m_horizontalAlignment(HorizontalAlignment::Center)
+	, m_verticalAlignment(VerticalAlignment::Center)
 	, m_opacity(1.0f)
 	, m_combinedOpacity(0.0f)
 	, m_isEnabled(true)
@@ -488,6 +488,9 @@ void UIElement::Render(GraphicsContext* g)
 {
 	//g->DrawRectangle(m_finalGlobalRect, Color(255,0,0,200));
 
+	Matrix mat;
+	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
+	g->SetTransform(mat);
 	g->SetBlendMode(BlendMode::Alpha);	// TODO: とりあえず(今、テキスト描画はビットマップなので)
 	OnRender(g);
 
