@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Engine.h>
+#include <Lumino/Platform/PlatformSupport.h>
 
 extern void Main();
 
@@ -14,7 +15,14 @@ namespace ln
 //------------------------------------------------------------------------------
 int EntryPoint()
 {
-	Main();
+	try
+	{
+		Main();
+	}
+	catch (Exception& e)
+	{
+		PlatformSupport::ShowAlertMessageBox(e.GetMessage());
+	}
 	return 0;
 }
 

@@ -3,6 +3,7 @@
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
 
 /** システムイベントの種類 */
 enum class PlatformEventType

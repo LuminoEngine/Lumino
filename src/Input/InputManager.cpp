@@ -23,6 +23,7 @@
 #elif defined(LN_OS_MAC)
 	#include "CocoaInputDriver.h"
 #endif
+#include <Lumino/Platform/PlatformSupport.h>
 #include <Lumino/Input/Input.h>
 #include <Lumino/Input/InputBinding.h>
 #include <Lumino/Input/InputController.h>

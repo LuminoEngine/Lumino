@@ -524,6 +524,8 @@ set(LN_SOURCES_Engine
 	src/Internal.h
 	src/Profiler.cpp
 	src/Property.cpp
+	src/Resource.cpp
+	src/Resource.h
 	src/RoutedEvent.cpp
 	src/Version.cpp
 )

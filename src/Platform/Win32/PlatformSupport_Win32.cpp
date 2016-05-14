@@ -2,8 +2,28 @@
 #include "../../Internal.h"
 #include <Lumino/Platform/PlatformSupport.h>
 #include <Lumino/Platform/Win32/Win32PlatformWindow.h>
+#include "../PlatformManager.h"
 
 LN_NAMESPACE_BEGIN
+
+//------------------------------------------------------------------------------
+void PlatformSupport::ShowAlertMessageBox(const TCHAR* message) LN_NOEXCEPT
+{
+	HWND owner = NULL;
+	PlatformManager* manager = PlatformManager::GetInstance();
+	if (manager != nullptr)
+	{
+		try
+		{
+			owner = GetWindowHandle(manager->GetMainWindow());
+		}
+		catch (...)
+		{
+		}
+	}
+
+	::MessageBox(owner, message, NULL, MB_ICONERROR);
+}
 
 //------------------------------------------------------------------------------
 HWND PlatformSupport::GetWindowHandle(PlatformWindow* window)

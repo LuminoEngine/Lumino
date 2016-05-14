@@ -1,9 +1,9 @@
 ﻿
 #pragma once
 #include "UIElement.h"
-//#include "../Graphics/Viewport.h"
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
 
 /**
 	@brief		

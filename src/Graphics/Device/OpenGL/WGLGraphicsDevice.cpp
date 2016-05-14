@@ -14,6 +14,7 @@
  */
 #include "../../../Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
+#include <Lumino/Platform/PlatformSupport.h>
 #include "WGLGraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN

@@ -5,7 +5,7 @@
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 
 #include <LuminoCore.h>
-#include "../include/Lumino/Graphics/Common.h"
+#include "../include/Lumino/Graphics/Common.h"	// TODO: Internal.h には置きたくない
 
 #define GLEW_STATIC
 #include "../external/GL/glew.h"
@@ -23,7 +23,6 @@
 #endif
 
 #include "Graphics/Device/OpenGL/LNGL.h"
-#include <Lumino/Platform/PlatformSupport.h>
 
 // glGetError() でエラーチェック (各 gl～ の後で必ず呼ばないと正しいエラーが取れないので注意)
 #define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 

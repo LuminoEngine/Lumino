@@ -11,6 +11,8 @@ LN_NAMESPACE_BEGIN
 class PlatformSupport
 {
 public:
+	static void ShowAlertMessageBox(const TCHAR* message) LN_NOEXCEPT;
+
 #ifdef LN_OS_WIN32
 	/**
 		@brief		ウィンドウのウィンドウハンドルを取得します。

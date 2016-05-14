@@ -5,6 +5,7 @@
 LN_NAMESPACE_BEGIN
 namespace Documents { class DocumentsManager; }
 class AssetsManager;
+class PlatformWindow;
 
 namespace detail
 {

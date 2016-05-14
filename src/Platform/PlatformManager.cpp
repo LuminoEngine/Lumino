@@ -79,6 +79,14 @@ LN_NAMESPACE_BEGIN
 // PlatformManager
 //==============================================================================
 
+static PlatformManager* g_platformManager = nullptr;
+
+//------------------------------------------------------------------------------
+PlatformManager* PlatformManager::GetInstance(PlatformManager* priority)
+{
+	return (priority != nullptr) ? priority : g_platformManager;
+}
+
 //------------------------------------------------------------------------------
 PlatformManager::PlatformManager()
 	: m_useThread(false)
@@ -163,6 +171,11 @@ void PlatformManager::Initialize(const Settings& settings)
 	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->GetMainWindow());
     
     m_windowManager->GetMainWindow()->SetVisible(true);
+
+	if (g_platformManager == nullptr)
+	{
+		g_platformManager = this;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -198,6 +211,11 @@ void PlatformManager::Dispose()
 		}
 		//LN_SAFE_RELEASE(m_mainWindow);
 		LN_SAFE_RELEASE(m_windowManager);
+	}
+
+	if (g_platformManager == this)
+	{
+		g_platformManager = nullptr;
 	}
 }
 

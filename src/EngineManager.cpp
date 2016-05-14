@@ -76,6 +76,7 @@ OpenSceneGraph もたぶんそう。
 #include <Lumino/Profiler.h>
 #include "Animation/AnimationManager.h"
 #include <Lumino/Platform/PlatformWindow.h>
+#include <Lumino/Platform/PlatformSupport.h>
 #include "Input/InputManager.h"
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
@@ -94,6 +95,7 @@ OpenSceneGraph もたぶんそう。
 #include "AssetsManager.h"
 #include "EngineDiagRenderer.h"
 #include "EngineManager.h"
+#include "Resource.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -266,6 +268,8 @@ void EngineManager::InitializeCommon()
 {
 	if (!m_commonInitied)
 	{
+		InternalResource::InitializeEngineResource();
+
 		// ログファイル出力
 		if (m_configData.applicationLogEnabled) {
 			Logger::Initialize(LogFileName);

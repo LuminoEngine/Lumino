@@ -67,10 +67,15 @@ public:
 		DWORD * pNumMaterials,
 		LPD3DXMESH * ppMesh);
 
-	typedef HRESULT(WINAPI *MD_D3DXCreateFontIndirect)(
-		LPDIRECT3DDEVICE9 pDevice,
-		CONST D3DXFONT_DESC * pDesc,
-		LPD3DXFONT * ppFont);
+	//typedef HRESULT(WINAPI *MD_D3DXCreateFontIndirectA)(
+	//	LPDIRECT3DDEVICE9 pDevice,
+	//	CONST D3DXFONT_DESCA * pDesc,
+	//	LPD3DXFONT * ppFont);
+
+	//typedef HRESULT(WINAPI *MD_D3DXCreateFontIndirectW)(
+	//	LPDIRECT3DDEVICE9 pDevice,
+	//	CONST D3DXFONT_DESCW * pDesc,
+	//	LPD3DXFONT * ppFont);
 
 	typedef HRESULT(WINAPI *MD_D3DXDeclaratorFromFVF)(
 		DWORD FVF,
@@ -112,7 +117,7 @@ public:
 	static MD_D3DXCheckTextureRequirements			D3DXCheckTextureRequirements;
 	static MD_D3DXCreateEffect						D3DXCreateEffect;
 	static MD_D3DXLoadMeshFromXInMemory				D3DXLoadMeshFromXInMemory;
-	static MD_D3DXCreateFontIndirect				D3DXCreateFontIndirect;
+	//static MD_D3DXCreateFontIndirectW				D3DXCreateFontIndirectW;
 	static MD_D3DXDeclaratorFromFVF					D3DXDeclaratorFromFVF;
 	static MD_D3DXLoadMeshHierarchyFromXInMemory	D3DXLoadMeshHierarchyFromXInMemory;
 	static MD_D3DXFrameDestroy						D3DXFrameDestroy;

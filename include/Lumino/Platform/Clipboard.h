@@ -5,6 +5,7 @@
 #include <Lumino/Base/String.h>
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
 
 /**
 	@brief	システムクリップボードとのデータ転送を行います。

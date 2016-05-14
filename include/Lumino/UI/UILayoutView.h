@@ -4,6 +4,7 @@
 #include "UIElement.h"
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
 
 /**
 	@brief		

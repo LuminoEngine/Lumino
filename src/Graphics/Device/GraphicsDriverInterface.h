@@ -6,6 +6,8 @@
 #include <Lumino/Graphics/Bitmap.h>
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 namespace Driver
