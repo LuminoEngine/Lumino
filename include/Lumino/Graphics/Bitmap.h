@@ -2,7 +2,6 @@
 #pragma once
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/Rect.h>
-#include <Lumino/IO/Stream.h>
 #include "Color.h"
 
 LN_NAMESPACE_BEGIN

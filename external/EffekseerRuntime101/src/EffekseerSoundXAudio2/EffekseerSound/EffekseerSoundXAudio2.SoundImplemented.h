@@ -8,11 +8,11 @@
 #include <XAudio2.h>
 #include <X3DAudio.h>
 #include "../EffekseerSoundXAudio2.h"
+#include "../../../../../src/Audio/XAudio2/XAudio2Module.h"
 
 //----------------------------------------------------------------------------------
 // Lib
 //----------------------------------------------------------------------------------
-#pragma comment(lib, "X3DAudio.lib" )
 
 //----------------------------------------------------------------------------------
 //
@@ -28,6 +28,7 @@ class SoundVoiceContainer;
 
 class SoundImplemented : public Sound
 {
+	XAudio2Module			m_module;
 	IXAudio2*				m_xaudio2;
 	X3DAUDIO_HANDLE			m_x3daudio;
 	X3DAUDIO_LISTENER		m_listener;

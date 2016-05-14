@@ -1776,7 +1776,7 @@ class Lumino::Texture2D < Texture
 end
 # シーングラフを構成するノードのベースクラスです。
 class Lumino::SceneNode < RefObject
-    # サウンドの 3D 音源としての位置を設定します。
+    # ノードの位置を設定します。
     # @overload position=(position)
     #   @param [Lumino::Vector3] position 座標
     def position=

@@ -25,75 +25,36 @@ static const float OuterDistance    = 14.0f;
 
 //------------------------------------------------------------------------------
 XAudio2AudioDevice::XAudio2AudioDevice()
-    : mXAudio                   ( NULL )
-    , mMasteringVoice           ( NULL )
-    , mDeviceChannels           ( 0 )
-    , mX3DAudioModule           ( NULL )
-    , mMD_X3DAudioCalculate     ( NULL )
-    , mMetreUnitDistanceInv     ( 1.0f )
-    // , mDirectMusicAudioDevice   ( NULL )
+	: m_XAudio(nullptr)
+	, m_masteringVoice(nullptr)
+	, m_deviceChannels(0)
+	, m_metreUnitDistanceInv(1.0f)
 {
-    memset( mX3DInstance, 0, sizeof( mX3DInstance ) );
+	memset(m_X3DInstance, 0, sizeof(m_X3DInstance));
 }
 
 //------------------------------------------------------------------------------
 XAudio2AudioDevice::~XAudio2AudioDevice()
 {
-    //SAFE_DELETE( mDirectMusicAudioDevice );
-
-    if ( mMasteringVoice )
+    if ( m_masteringVoice )
 	{
-		mMasteringVoice->DestroyVoice();
-		mMasteringVoice = NULL;
+		m_masteringVoice->DestroyVoice();
+		m_masteringVoice = NULL;
 	}
 
-    if ( mXAudio )
+    if ( m_XAudio )
     {
-        mXAudio->StopEngine();
-		LN_SAFE_RELEASE( mXAudio );
-    }
-
-    if ( mX3DAudioModule )
-    {
-        ::FreeLibrary( mX3DAudioModule );
-        mX3DAudioModule = NULL;
+		m_XAudio->StopEngine();
+		LN_SAFE_RELEASE(m_XAudio);
     }
 }
-
-//// XAudio 2.0 (March 2008 SDK)
-//DEFINE_CLSID(XAudio2_2_0_ID, fac23f48, 31f5, 45a8, b4, 9b, 52, 25, d6, 14, 01, aa);
-//// XAudio 2.1 (June 2008 SDK)
-//DEFINE_CLSID(XAudio2_2_1_ID, e21a7345, eb21, 468e, be, 50, 80, 4d, b9, 7c, f7, 08);
-//// XAudio 2.2 (August 2008 SDK)
-//DEFINE_CLSID(XAudio2_2_2_ID, b802058a, 464a, 42db, bc, 10, b6, 50, d6, f2, 58, 6a);
-//// XAudio 2.3 (November 2008 SDK)
-//DEFINE_CLSID(XAudio2_2_3_ID, 4c5e637a, 16c7, 4de3, 9c, 46, 5e, d2, 21, 81, 96, 2d);
-//// XAudio 2.4 (March 2009 SDK)
-//DEFINE_CLSID(XAudio2_2_4_ID, 03219e78, 5bc3, 44d1, b9, 2e, f6, 3d, 89, cc, 65, 26);
-//// XAudio 2.5 (August 2009 SDK)
-//DEFINE_CLSID(XAudio2_2_5_ID, 4c9b6dde, 6809, 46e6, a2, 78, 9b, 6a, 97, 58, 86, 70);
-//// XAudio 2.6 (February 2010 SDK)
-//DEFINE_CLSID(XAudio2_2_6_ID, 3eda9b49, 2085, 498b, 9b, b2, 39, a6, 77, 84, 93, de);
-//// XAudio 2.7 (June 2010 SDK)
-//DEFINE_CLSID(XAudio2_2_7_ID, 5a508685, a254, 4fba, 9b, 82, 9a, 24, b0, 03, 06, af);
 
 //------------------------------------------------------------------------------
 bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 {
-	//std::array<std::pair<REFGUID, const char*>, 8> dllNameTable =
-	//{
-	//	{ XAudio2_2_0_ID, "X3DAudio1_7" }
-	//};
-
-    mX3DAudioModule = ::LoadLibrary( _T( "X3DAudio1_7.dll" ) );
-	if ( mX3DAudioModule == NULL ) {
+	if (!m_module.Initialize()) {
 		return false;
 	}
-
-	//if (IsEqualCLSID(CLSID_XAudio2, CLSID_XAudio2_2_7_ID))
-	//{
-	//	printf("27\n");
-	//}
 
     UINT32 flags = 0;
 
@@ -103,24 +64,24 @@ bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
   //  }
 
     // XAudio2 作成
-    HRESULT hr = XAudio2Create( &mXAudio, flags );
-	if ( FAILED( hr ) ) {
+    HRESULT hr = m_module.XAudio2Create(&m_XAudio, flags);
+	if (FAILED(hr)) {
 		return false;
 	}
 
 	// マスターボイス作成
-	hr = mXAudio->CreateMasteringVoice( &mMasteringVoice );
-	if ( FAILED( hr ) ) {
+	hr = m_XAudio->CreateMasteringVoice(&m_masteringVoice);
+	if (FAILED(hr)) {
 		return false;
 	}
 
-    Logger::WriteLine("get XAudio2AudioDevice information..." );
+	Logger::WriteLine("get XAudio2AudioDevice information...");
 
 	// デバイス詳細情報の確認
 	XAUDIO2_DEVICE_DETAILS details;
-	hr = mXAudio->GetDeviceDetails( 0, &details );
-    if ( SUCCEEDED( hr ) )
-    {
+	hr = m_XAudio->GetDeviceDetails(0, &details);
+	if (SUCCEEDED(hr))
+	{
 		Logger::WriteLine(L"    DeviceID    : %s", details.DeviceID);
 		Logger::WriteLine(L"    DisplayName : %s", details.DisplayName);
 		Logger::WriteLine(L"    Role        : %d", details.Role);
@@ -139,37 +100,20 @@ bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
     }
 
     // チャンネル数記憶
-    mDeviceChannels = details.OutputFormat.Format.nChannels;
+    m_deviceChannels = details.OutputFormat.Format.nChannels;
 		
-    // 関数アドレスを取得して 3D オーディオを初期化 ( グローバル情報の作成 )
-    typedef void ( STDAPIVCALLTYPE *DEF_X3DAudioInitialize ) ( UINT32 , FLOAT32 , __out X3DAUDIO_HANDLE );
-    DEF_X3DAudioInitialize md_X3DAudioInitialize = (DEF_X3DAudioInitialize)GetProcAddress( mX3DAudioModule, "X3DAudioInitialize" );
-
-	md_X3DAudioInitialize(
+	m_module.X3DAudioInitialize(
 		details.OutputFormat.dwChannelMask,		// Xbox 360 では SPEAKER_XBOX
-		X3DAUDIO_SPEED_OF_SOUND, mX3DInstance );
+		X3DAUDIO_SPEED_OF_SOUND, m_X3DInstance );
 		//SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER |
         //SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT
 
     // リスナーの設定
-    mListenerState.OrientFront	= D3DXVECTOR3( 0, 0, 1 );	// 前方向の向き
-	mListenerState.OrientTop	= D3DXVECTOR3( 0, 1, 0 );	// 上方向の向き ( OrientFront と正規直交であること )
-	mListenerState.Position		= D3DXVECTOR3( 0, 0, 0 );
-	mListenerState.Velocity		= D3DXVECTOR3( 0, 0, 0 );
-	mListenerState.pCone		= NULL;//(X3DAUDIO_CONE*)&sListener_DirectionalCone;
-
-    // X3DAudioCalculate() の関数アドレス
-    mMD_X3DAudioCalculate = (DEF_X3DAudioCalculate)GetProcAddress( mX3DAudioModule, "X3DAudioCalculate" );
-
-    // DirectMusic を初期化する場合
-    //if ( configData.DMInitMode != DMINITMODE_NOTUSE && configData.Window )
-    //{
-    //    DirectMusic::XAudio2AudioDevice::ConfigData data;
-    //    data.DMInitMode     = configData.DMInitMode;
-    //    data.Window         = configData.Window;
-    //    mDirectMusicAudioDevice = LN_NEW DirectMusic::XAudio2AudioDevice();
-    //    mDirectMusicAudioDevice->initialize( data );
-    //}
+    m_listenerState.OrientFront	= D3DXVECTOR3( 0, 0, 1 );	// 前方向の向き
+	m_listenerState.OrientTop	= D3DXVECTOR3( 0, 1, 0 );	// 上方向の向き ( OrientFront と正規直交であること )
+	m_listenerState.Position	= D3DXVECTOR3( 0, 0, 0 );
+	m_listenerState.Velocity	= D3DXVECTOR3( 0, 0, 0 );
+	m_listenerState.pCone		= NULL;//(X3DAUDIO_CONE*)&sListener_DirectionalCone;
 
     return true;
 }
@@ -185,23 +129,16 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
             X3DAUDIO_CALCULATE_LPF_REVERB   |
             X3DAUDIO_CALCULATE_REVERB       |
             X3DAUDIO_CALCULATE_DOPPLER;
-            //X3DAUDIO_CALCULATE_EMITTER_ANGLE;
-        //if (g_audioState.fUseRedirectToLFE)
-		//{
-		//	// On devices with an LFE channel, allow the mono source data
-		//	// to be routed to the LFE destination channel.
-		//	calc_flags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
-		//}
 
-        emitter->UpdateXAudioEmitter( mMetreUnitDistanceInv );
-        emitter->DSPSettings.DstChannelCount = mDeviceChannels;
+		emitter->UpdateXAudioEmitter(m_metreUnitDistanceInv);
+		emitter->DSPSettings.DstChannelCount = m_deviceChannels;
 
-        mMD_X3DAudioCalculate(
-            mX3DInstance,
-            &mListenerState,
-            &emitter->Emitter,
-            calc_flags,
-            &emitter->DSPSettings );
+		m_module.X3DAudioCalculate(
+			m_X3DInstance,
+			&m_listenerState,
+			&emitter->Emitter,
+			calc_flags,
+			&emitter->DSPSettings);
     }
 }
 
@@ -231,17 +168,7 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
         }
 		default:
 			LN_THROW(0, ArgumentException);
-		// SMF
-		//case SOUNDPLAYTYPE_MIDI:
-  //      {
-		//	LN_THROW_InvalidOperation(mDirectMusicAudioDevice, Resource::String::ERR_DirectMusicNotInit);
-  //          if ( mDirectMusicAudioDevice )
-  //          {
-		//		audio_player.attach(
-		//			mDirectMusicAudioDevice->createAudioPlayer( source, enable_3d, type ) );
-  //          }
-		//	break;
-  //      }
+			break;
 	}
 
 	audioPlayer.SafeAddRef();
@@ -251,35 +178,19 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 //------------------------------------------------------------------------------
 void XAudio2AudioDevice::Update()
 {
-    mListenerState.OrientFront.x = m_soundListenerData.Direction.x;
-    mListenerState.OrientFront.y = m_soundListenerData.Direction.y;
-    mListenerState.OrientFront.z = m_soundListenerData.Direction.z;
-    mListenerState.OrientTop.x = m_soundListenerData.UpDirection.x;
-    mListenerState.OrientTop.y = m_soundListenerData.UpDirection.y;
-    mListenerState.OrientTop.z = m_soundListenerData.UpDirection.z;
-    mListenerState.Position.x = m_soundListenerData.Position.x * mMetreUnitDistanceInv;
-    mListenerState.Position.y = m_soundListenerData.Position.y * mMetreUnitDistanceInv;
-    mListenerState.Position.z = m_soundListenerData.Position.z * mMetreUnitDistanceInv;
-    mListenerState.Velocity.x = m_soundListenerData.Velocity.x * mMetreUnitDistanceInv;
-    mListenerState.Velocity.y = m_soundListenerData.Velocity.y * mMetreUnitDistanceInv;
-    mListenerState.Velocity.z = m_soundListenerData.Velocity.z * mMetreUnitDistanceInv;
-
-    //if ( mDirectMusicAudioDevice ) mDirectMusicAudioDevice->update();
+    m_listenerState.OrientFront.x = m_soundListenerData.Direction.x;
+	m_listenerState.OrientFront.y = m_soundListenerData.Direction.y;
+	m_listenerState.OrientFront.z = m_soundListenerData.Direction.z;
+	m_listenerState.OrientTop.x = m_soundListenerData.UpDirection.x;
+	m_listenerState.OrientTop.y = m_soundListenerData.UpDirection.y;
+	m_listenerState.OrientTop.z = m_soundListenerData.UpDirection.z;
+	m_listenerState.Position.x = m_soundListenerData.Position.x * m_metreUnitDistanceInv;
+	m_listenerState.Position.y = m_soundListenerData.Position.y * m_metreUnitDistanceInv;
+	m_listenerState.Position.z = m_soundListenerData.Position.z * m_metreUnitDistanceInv;
+	m_listenerState.Velocity.x = m_soundListenerData.Velocity.x * m_metreUnitDistanceInv;
+	m_listenerState.Velocity.y = m_soundListenerData.Velocity.y * m_metreUnitDistanceInv;
+	m_listenerState.Velocity.z = m_soundListenerData.Velocity.z * m_metreUnitDistanceInv;
 }
-
-//------------------------------------------------------------------------------
-//void XAudio2AudioDevice::SetListenerState(const Vector3& position, const Vector3& front)
-//{
-//    // 念のために正規化してから設定する
-//	Vector3 n = Vector3::Normalize(front);
-//
-//	mListenerState.OrientFront.x = n.x;
-//	mListenerState.OrientFront.y = n.y;
-//	mListenerState.OrientFront.z = n.z;
-//	mListenerState.Position.x = position.x;
-//	mListenerState.Position.y = position.y;
-//	mListenerState.Position.z = position.z;
-//}
 
 //==============================================================================
 // EmitterState 
@@ -293,7 +204,6 @@ static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve				= { (X3DAUDIO
 //------------------------------------------------------------------------------
 EmitterState::EmitterState(uint32_t input_channels)//, lnU32 output_channels_ )
 {
-        
     EmitterAzimuths = LN_NEW FLOAT32[ input_channels ];
 	MatrixCoefficients = LN_NEW FLOAT32[ input_channels * OUTPUTCHANNELS ];
 
@@ -344,7 +254,7 @@ EmitterState::EmitterState(uint32_t input_channels)//, lnU32 output_channels_ )
 //------------------------------------------------------------------------------
 EmitterState::~EmitterState()
 {
-    LN_SAFE_DELETE_ARRAY( EmitterAzimuths );
+	LN_SAFE_DELETE_ARRAY(EmitterAzimuths);
 	LN_SAFE_DELETE_ARRAY(MatrixCoefficients);
 }
 //------------------------------------------------------------------------------

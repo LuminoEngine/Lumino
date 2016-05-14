@@ -2062,7 +2062,7 @@ namespace Lumino
         public extern static Result LNTexture2D_Create( string filePath, out IntPtr outTexture2D);
 
         /// <summary>
-        /// サウンドの 3D 音源としての位置を設定します。
+        /// ノードの位置を設定します。
         /// </summary>
         /// <param name="sceneNode">シーンノードハンドル</param>
         /// <param name="position">座標</param>

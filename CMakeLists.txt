@@ -605,6 +605,8 @@ if (WIN32)
 		src/Audio/XAudio2/XAudio2AudioDevice.h
 		src/Audio/XAudio2/XAudio2AudioPlayer.cpp
 		src/Audio/XAudio2/XAudio2AudioPlayer.h
+		src/Audio/XAudio2/XAudio2Module.cpp
+		src/Audio/XAudio2/XAudio2Module.h
 		src/Audio/DirectMusic/DirectMusic.cpp
 		src/Audio/DirectMusic/DirectMusic.h
 		src/Audio/DirectMusic/DirectMusicAudioDevice.cpp

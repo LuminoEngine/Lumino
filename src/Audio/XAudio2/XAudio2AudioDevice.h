@@ -1,16 +1,14 @@
 ﻿
 #pragma once
-#include <xaudio2.h>
-#include <x3daudio.h>
+#include "XAudio2Module.h"
 #include "../AudioDevice.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 namespace detail
 {
-class XAudio2AudioPlayerBase;
 
-/// 3D オーディオの計算に必要なパラメータ
+// 3D オーディオの計算に必要なパラメータ
 struct EmitterState
 {
 public:
@@ -36,64 +34,34 @@ public:
     FLOAT32*				MatrixCoefficients;
 };
 
-/// XAudio2
+// XAudio2 用の AudioDevice の実装
 class XAudio2AudioDevice
     : public AudioDevice
 {
 public:
-
-	/// initialize() に渡す初期化データ
-    //struct ConfigData
-    //{
-    //    bool                    EnableDebugFlag;    ///< XAudio2 のデバッグフラグを有効にする場合 true ( Release ビルドの場合は無効 )
-    //    DirectMusicInitMode		DMInitMode;         ///< DirectMusic を初期化する時の方法
-    //    System::Window*        Window;             ///< DirectMusic の初期化に使うウィンドウハンドルを持つウィンドウクラス
-    //};
-
-public:
 	XAudio2AudioDevice();
 	virtual ~XAudio2AudioDevice();
-
-public:
-
-	/// 初期化
-    bool Initialize(/* const ConfigData& configData */);
-
-	/// 終了処理 ( デストラクタでも呼ばれます )
+    bool Initialize();
     void Finalize();
 
-	/// IXAudio2 インスタンスの取得
-	IXAudio2* GetXAudio2() const { return mXAudio; }
-
-	/// マスタリングボイスの取得
-	IXAudio2MasteringVoice* GetMasteringVoice() { return mMasteringVoice; }
-
-	/// 3D 音源の計算をする ( AudioPlayer::polling() から呼ばれる )
+	IXAudio2* GetXAudio2() const { return m_XAudio; }
+	IXAudio2MasteringVoice* GetMasteringVoice() { return m_masteringVoice; }
 	void CalcEmitterState(EmitterState* emitter);
 
 public:
 	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) override;
     virtual void Update() override;
-    //virtual void SetListenerState( const Vector3& position, const Vector3& front ) override;
-    virtual void SetMetreUnitDistance( float d ) override { mMetreUnitDistanceInv = 1.0f / d; }
+    virtual void SetMetreUnitDistance( float d ) override { m_metreUnitDistanceInv = 1.0f / d; }
 
 private:
-
-    typedef void ( *DEF_X3DAudioCalculate ) ( __in const X3DAUDIO_HANDLE, __in const X3DAUDIO_LISTENER*, __in const X3DAUDIO_EMITTER*, UINT32, __inout X3DAUDIO_DSP_SETTINGS* );
-    //typedef Base::NodeList< AudioPlayerBase > AudioPlayerList;
-	Array<XAudio2AudioPlayerBase*> AudioPlayerList;
-
-    IXAudio2*				    mXAudio;			    ///< IXAudio2 インスタンスへのポインタ
-	IXAudio2MasteringVoice*	    mMasteringVoice;	    ///< IXAudio2MasteringVoice インスタンスへのポインタ
-	X3DAUDIO_HANDLE			    mX3DInstance;           ///< 3D オーディオの管理クラス
-    uint32_t						mDeviceChannels;        ///< アクティブなオーディオデバイスの出力チャンネル数
+	XAudio2Module				m_module;
+    IXAudio2*				    m_XAudio;				// IXAudio2 インスタンスへのポインタ
+	IXAudio2MasteringVoice*	    m_masteringVoice;		// IXAudio2MasteringVoice インスタンスへのポインタ
+	X3DAUDIO_HANDLE			    m_X3DInstance;			// 3D オーディオの管理クラス
+    uint32_t					m_deviceChannels;		// アクティブなオーディオデバイスの出力チャンネル数
     
-    X3DAUDIO_LISTENER	        mListenerState;
-    HMODULE                     mX3DAudioModule;        ///< "X3DAudio1_7.dll"
-    DEF_X3DAudioCalculate       mMD_X3DAudioCalculate;  ///< X3DAudioCalculate()
-    float                     mMetreUnitDistanceInv;  ///< 3D 空間の1メートル相当の距離の逆数
-    
-    //DirectMusic::AudioDevice*   mDirectMusicAudioDevice;
+    X3DAUDIO_LISTENER			m_listenerState;
+    float						m_metreUnitDistanceInv;	// 3D 空間の1メートル相当の距離の逆数
 };
 
 } // namespace detail

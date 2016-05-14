@@ -29,5 +29,8 @@
     <Image Include="Resource\icon.ico">
       <Filter>Resource</Filter>
     </Image>
+    <Image Include="Assets\icon256.png">
+      <Filter>Resource</Filter>
+    </Image>
   </ItemGroup>
 </Project>

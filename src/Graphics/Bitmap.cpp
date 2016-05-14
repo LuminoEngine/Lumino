@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <algorithm>
+#include <Lumino/IO/Stream.h>
 #include "PngFile.h"
 #include <Lumino/Graphics/Bitmap.h>
 

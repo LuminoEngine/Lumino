@@ -1513,7 +1513,7 @@ namespace Lumino
     {
     
         /// <summary>
-        /// サウンドの 3D 音源としての位置
+        /// ノードの位置
         /// </summary>
         public Vector3 Position
         {

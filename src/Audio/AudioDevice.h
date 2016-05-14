@@ -1,7 +1,5 @@
 ﻿
 #pragma once
-#include <Lumino/Base/Cache.h>
-#include <Lumino/IO/Stream.h>
 #include <Lumino/Audio/Common.h>
 
 LN_NAMESPACE_BEGIN

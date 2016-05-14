@@ -59,10 +59,14 @@ SoundImplemented::~SoundImplemented()
 //----------------------------------------------------------------------------------
 bool SoundImplemented::Initialize( IXAudio2* xaudio2, int32_t num1chVoices, int32_t num2chVoices )
 {
+	if (!m_module.Initialize()) {
+		return false;
+	}
+
 	m_xaudio2 = xaudio2;
 	
 	// X3DAudioÇèâä˙âª
-	X3DAudioInitialize(SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT, 
+	m_module.X3DAudioInitialize(SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT,
 		X3DAUDIO_SPEED_OF_SOUND, m_x3daudio);
 
 	// ì¸óÕÉ{ÉCÉXÇçÏê¨
@@ -226,7 +230,7 @@ void SoundImplemented::Calculate3DSound(const ::Effekseer::Vector3D& position,
 	settings.SrcChannelCount = input;
 	settings.DstChannelCount = output;
 	settings.pMatrixCoefficients = matrix;
-	X3DAudioCalculate(m_x3daudio, &m_listener, &emitter, 
+	m_module.X3DAudioCalculate(m_x3daudio, &m_listener, &emitter,
 		X3DAUDIO_CALCULATE_MATRIX, &settings);
 }
 
