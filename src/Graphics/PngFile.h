@@ -147,7 +147,7 @@ public:
 		// byte[4] の並びは AA RR GG BB
 		if (colorType == PNG_COLOR_TYPE_RGB_ALPHA && pixelDepth == 32)
 		{
-			m_format = PixelFormat_BYTE_R8G8B8A8;
+			m_format = PixelFormat::R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
 			byte_t* bitmap = m_bitmapData.GetData();
 
@@ -160,7 +160,7 @@ public:
 		// ABGR に拡張して読み込む
 		else if (colorType == PNG_COLOR_TYPE_RGB && pixelDepth == 24)
 		{
-			m_format = PixelFormat_BYTE_R8G8B8A8;
+			m_format = PixelFormat::R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
 			byte_t* bitmap = m_bitmapData.GetData();
 
@@ -182,7 +182,7 @@ public:
 		// Gray
 		else if (colorType == PNG_COLOR_TYPE_GRAY && pixelDepth == 8)
 		{
-			m_format = PixelFormat_A8;
+			m_format = PixelFormat::A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 1);
 			byte_t* bitmap = m_bitmapData.GetData();
 

@@ -54,7 +54,7 @@ BitmapFont::BitmapFont(FontManager* manager, Bitmap* bitmap)
 	m_charHeight = m_fontBitmap->GetSize().height / 16;
 
 	// グリフ用の一時ビットマップ
-	m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_charWidth, m_charHeight), PixelFormat_BYTE_R8G8B8A8));
+	m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
 
 	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
 	m_fontGlyphBitmap.OutlineBitmap = NULL;

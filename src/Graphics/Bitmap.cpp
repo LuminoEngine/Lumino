@@ -17,7 +17,7 @@ Bitmap::Bitmap()
 	: m_bitmapData()
 	, m_size()
 	, m_pitch(0)
-	, m_format(PixelFormat_Unknown)
+	, m_format(PixelFormat::Unknown)
 	, m_upFlow(false)
 {
 }
@@ -100,7 +100,7 @@ void Bitmap::Init()
 	//m_bitmapData;
 	m_size.Set(0, 0);
 	m_pitch = 0;
-	m_format = PixelFormat_Unknown;
+	m_format = PixelFormat::Unknown;
 	m_upFlow = false;
 }
 
@@ -116,12 +116,12 @@ void Bitmap::Clear(const Color& color)
 	{
 		switch (m_format)
 		{
-			case PixelFormat_A1:
+			case PixelFormat::A1:
 				return;
-			case PixelFormat_A8:
+			case PixelFormat::A8:
 				return;
-			case PixelFormat_BYTE_R8G8B8A8:
-			case PixelFormat_BYTE_R8G8B8X8:
+			case PixelFormat::R8G8B8A8:
+			case PixelFormat::R8G8B8X8:
 			{
 				byte_t c[4] = { color.r, color.g, color.b, color.a };
 				uint32_t* dst = (uint32_t*)m_bitmapData.GetData();
@@ -132,8 +132,8 @@ void Bitmap::Clear(const Color& color)
 				}
 				return;
 			}
-			case PixelFormat_BYTE_B8G8R8A8:
-			case PixelFormat_BYTE_B8G8R8X8:
+			case PixelFormat::B8G8R8A8:
+			case PixelFormat::B8G8R8X8:
 				byte_t c[4] = { color.b, color.g, color.r, color.a };
 				uint32_t* dst = (uint32_t*)m_bitmapData.GetData();
 				int count = m_bitmapData.GetSize() / 4;
@@ -164,14 +164,14 @@ void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, 
 void Bitmap::Save(const TCHAR* filePath)
 {
 	// png に保存するときは RGBA
-	Bitmap bitmap(m_size, PixelFormat_BYTE_R8G8B8A8);
+	Bitmap bitmap(m_size, PixelFormat::R8G8B8A8);
 	bitmap.m_upFlow = m_upFlow;
 	ConvertPixelFormat(
 		m_bitmapData.GetData(), m_bitmapData.GetSize(), m_format,
 		bitmap.m_bitmapData.GetData(), bitmap.m_bitmapData.GetSize(), bitmap.m_format);
 
 	// アルファ無しフォーマットであれば、アルファを埋めてから出力する
-	if (m_format == PixelFormat_BYTE_B8G8R8X8) {
+	if (m_format == PixelFormat::B8G8R8X8) {
 		bitmap.FillAlpha(0xFF);
 	}
 
@@ -239,10 +239,10 @@ void Bitmap::SetPixel(int x, int y, const Color& color)
 	LN_CHECK_ARG(0 <= x && x < m_size.width);
 	LN_CHECK_ARG(0 <= y && y < m_size.height);
 	LN_CHECK_STATE(
-		m_format == PixelFormat_BYTE_B8G8R8A8 ||
-		m_format == PixelFormat_BYTE_B8G8R8X8 ||
-		m_format == PixelFormat_BYTE_R8G8B8A8 ||
-		m_format == PixelFormat_BYTE_R8G8B8X8);
+		m_format == PixelFormat::B8G8R8A8 ||
+		m_format == PixelFormat::B8G8R8X8 ||
+		m_format == PixelFormat::R8G8B8A8 ||
+		m_format == PixelFormat::R8G8B8X8);
 
 	struct U32
 	{
@@ -255,14 +255,14 @@ void Bitmap::SetPixel(int x, int y, const Color& color)
 	}
 
 	U32* buf = &((U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
-	if (m_format == PixelFormat_BYTE_B8G8R8A8 || m_format == PixelFormat_BYTE_B8G8R8X8)
+	if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
 	{
 		buf->D[2] = color.r;
 		buf->D[1] = color.g;
 		buf->D[0] = color.b;
 		buf->D[3] = color.a;
 	}
-	else if (m_format == PixelFormat_BYTE_R8G8B8A8 || m_format == PixelFormat_BYTE_R8G8B8X8)
+	else if (m_format == PixelFormat::R8G8B8A8 || m_format == PixelFormat::R8G8B8X8)
 	{
 		buf->D[0] = color.r;
 		buf->D[1] = color.g;
@@ -337,17 +337,17 @@ int Bitmap::GetPixelFormatByteCount(PixelFormat format)
 {
 	const int table[] =
 	{
-		0,	// PixelFormat_Unknown = 0,
-		1,	// PixelFormat_A1,
-		1,	// PixelFormat_A8,
-		4,	// PixelFormat_BYTE_R8G8B8A8,
-		4,	// PixelFormat_BYTE_R8G8B8X8,
-		4,	// PixelFormat_BYTE_B8G8R8A8,
-		4,	// PixelFormat_BYTE_B8G8R8X8,
-		16,	// PixelFormat_R32G32B32A32_Float,
+		0,	// PixelFormat::Unknown = 0,
+		1,	// PixelFormat::A1,
+		1,	// PixelFormat::A8,
+		4,	// PixelFormat::R8G8B8A8,
+		4,	// PixelFormat::R8G8B8X8,
+		4,	// PixelFormat::B8G8R8A8,
+		4,	// PixelFormat::B8G8R8X8,
+		16,	// PixelFormat::FloatR32G32B32A32,
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == PixelFormat_Max);
-	return table[format];
+	assert(LN_ARRAY_SIZE_OF(table) == (int)PixelFormat::_Count);
+	return table[(int)format];
 }
 
 //------------------------------------------------------------------------------
@@ -369,9 +369,9 @@ void Bitmap::ConvertPixelFormat(
 	}
 	// RGBA ⇔ BGRA (R と B を入れ替えるだけなので共用できる)
 	else if (
-		(inputFormat == PixelFormat_BYTE_R8G8B8A8 && outputFormat == PixelFormat_BYTE_B8G8R8A8) ||
-		(inputFormat == PixelFormat_BYTE_B8G8R8A8 && outputFormat == PixelFormat_BYTE_R8G8B8A8) ||
-		(inputFormat == PixelFormat_BYTE_B8G8R8X8 && outputFormat == PixelFormat_BYTE_R8G8B8A8))
+		(inputFormat == PixelFormat::R8G8B8A8 && outputFormat == PixelFormat::B8G8R8A8) ||
+		(inputFormat == PixelFormat::B8G8R8A8 && outputFormat == PixelFormat::R8G8B8A8) ||
+		(inputFormat == PixelFormat::B8G8R8X8 && outputFormat == PixelFormat::R8G8B8A8))
 	{
 		const uint32_t* in = (const uint32_t*)input;
 		uint32_t* out = (uint32_t*)output;
@@ -393,9 +393,9 @@ void Bitmap::ConvertPixelFormat(
 //------------------------------------------------------------------------------
 void Bitmap::FillAlpha(byte_t alpha)
 {
-	if (m_format == PixelFormat_BYTE_R8G8B8A8 ||
-		m_format == PixelFormat_BYTE_B8G8R8A8 ||
-		m_format == PixelFormat_BYTE_B8G8R8X8)
+	if (m_format == PixelFormat::R8G8B8A8 ||
+		m_format == PixelFormat::B8G8R8A8 ||
+		m_format == PixelFormat::B8G8R8X8)
 	{
 		byte_t* buf = m_bitmapData.GetData();
 		size_t count = m_bitmapData.GetSize() / sizeof(uint32_t);
@@ -507,22 +507,22 @@ void Bitmap::BitBltInternalTemplateHelper(
 {
 	switch (src->m_format)
 	{
-	case PixelFormat_A1:
+	case PixelFormat::A1:
 		BitBltInternalTemplate<TDestConverter, ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_A8:
+	case PixelFormat::A8:
 		BitBltInternalTemplate<TDestConverter, ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_R8G8B8A8:
+	case PixelFormat::R8G8B8A8:
 		BitBltInternalTemplate<TDestConverter, ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_R8G8B8X8:
+	case PixelFormat::R8G8B8X8:
 		BitBltInternalTemplate<TDestConverter, ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_B8G8R8A8:
+	case PixelFormat::B8G8R8A8:
 		BitBltInternalTemplate<TDestConverter, ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_B8G8R8X8:
+	case PixelFormat::B8G8R8X8:
 		BitBltInternalTemplate<TDestConverter, ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	//case PixelFormat_R32G32B32A32_Float:
@@ -548,22 +548,22 @@ void Bitmap::BitBltInternal(
 
 	switch (dest->m_format)
 	{
-	case PixelFormat_A1:
+	case PixelFormat::A1:
 		BitBltInternalTemplateHelper<ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_A8:
+	case PixelFormat::A8:
 		BitBltInternalTemplateHelper<ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_R8G8B8A8:
+	case PixelFormat::R8G8B8A8:
 		BitBltInternalTemplateHelper<ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_R8G8B8X8:
+	case PixelFormat::R8G8B8X8:
 		BitBltInternalTemplateHelper<ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_B8G8R8A8:
+	case PixelFormat::B8G8R8A8:
 		BitBltInternalTemplateHelper<ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
-	case PixelFormat_BYTE_B8G8R8X8:
+	case PixelFormat::B8G8R8X8:
 		BitBltInternalTemplateHelper<ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	//case PixelFormat_R32G32B32A32_Float:
@@ -600,11 +600,11 @@ void Bitmap::BitBltInternal(
 		return;
 	}
 	// 双方が 32bit 系フォーマットである
-	else if (PixelFormat_BYTE_R8G8B8A8 <= dest->m_format && dest->m_format <= PixelFormat_BYTE_B8G8R8X8 &&
-		PixelFormat_BYTE_R8G8B8A8 <= src->m_format && src->m_format <= PixelFormat_BYTE_B8G8R8X8)
+	else if (PixelFormat::R8G8B8A8 <= dest->m_format && dest->m_format <= PixelFormat::B8G8R8X8 &&
+		PixelFormat::R8G8B8A8 <= src->m_format && src->m_format <= PixelFormat::B8G8R8X8)
 	{
-		bool destIsRGBALike = (dest->m_format == PixelFormat_BYTE_R8G8B8A8 || dest->m_format == PixelFormat_BYTE_B8G8R8X8);
-		bool srcIsRGBALike = (src->m_format == PixelFormat_BYTE_R8G8B8A8 || src->m_format == PixelFormat_BYTE_B8G8R8X8);
+		bool destIsRGBALike = (dest->m_format == PixelFormat::R8G8B8A8 || dest->m_format == PixelFormat::B8G8R8X8);
+		bool srcIsRGBALike = (src->m_format == PixelFormat::R8G8B8A8 || src->m_format == PixelFormat::B8G8R8X8);
 
 		// 同じバイトシーケンスであればコピーするだけでよい
 		if (destIsRGBALike == srcIsRGBALike)

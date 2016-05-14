@@ -37,9 +37,9 @@ void BitmapPainter::FillRectangle(const Rect& rect, const Color& color)
 	PixelFormat format = m_bitmap->GetPixelFormat();
 
 	// 32bit 系
-	if (format == PixelFormat_BYTE_R8G8B8A8 ||
-		format == PixelFormat_BYTE_B8G8R8A8 ||
-		format == PixelFormat_BYTE_B8G8R8X8)
+	if (format == PixelFormat::R8G8B8A8 ||
+		format == PixelFormat::B8G8R8A8 ||
+		format == PixelFormat::B8G8R8X8)
 	{
 		uint32_t* data = (uint32_t*)m_bitmap->GetBitmapBuffer()->GetData();
 
@@ -62,17 +62,17 @@ uint32_t BitmapPainter::GetColorByteSec(const Color& color, PixelFormat format)
 {
 	switch (format)
 	{
-	case PixelFormat_BYTE_R8G8B8A8:
+	case PixelFormat::R8G8B8A8:
 	{
 		byte_t b[4] = { color.r, color.g, color.b, color.a };
 		return *((uint32_t*)b);
 	}
-	case PixelFormat_BYTE_B8G8R8A8:
+	case PixelFormat::B8G8R8A8:
 	{
 		byte_t b[4] = { color.b, color.g, color.r, color.a };
 		return *((uint32_t*)b);
 	}
-	case PixelFormat_BYTE_B8G8R8X8:
+	case PixelFormat::B8G8R8X8:
 	{
 		byte_t b[4] = { color.b, color.g, color.r, 0xFF };
 		return *((uint32_t*)b);

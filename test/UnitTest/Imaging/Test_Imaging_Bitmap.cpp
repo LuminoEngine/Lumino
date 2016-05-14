@@ -13,7 +13,7 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 	Bitmap bmp1(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
 
 	// png のデフォルトの読み取り
-	ASSERT_EQ(PixelFormat_BYTE_R8G8B8A8, bmp1.GetPixelFormat());
+	ASSERT_EQ(PixelFormat::R8G8B8A8, bmp1.GetPixelFormat());
 
 	ASSERT_EQ(32, bmp1.GetSize().width);
 	ASSERT_EQ(32, bmp1.GetSize().height);

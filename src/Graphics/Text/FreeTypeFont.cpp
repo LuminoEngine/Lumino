@@ -706,8 +706,8 @@ void FreeTypeFont::UpdateFont()
 		UpdateImageFlags();
 
 		// グリフ格納用ビットマップ (仮確保)
-		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat_A8));
-		m_outlineBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat_A8));
+		m_glyphBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_outlineBitmap.Attach(LN_NEW Bitmap(Size(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
 
 		// ラスタライズで使用する
 		//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
@@ -788,10 +788,10 @@ void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 
 	// フォーマット
 	if (ftBitmap->pixel_mode == FT_PIXEL_MODE_MONO) {
-		bitmap->m_format = PixelFormat_A1;
+		bitmap->m_format = PixelFormat::A1;
 	}
 	else if (ftBitmap->pixel_mode == FT_PIXEL_MODE_GRAY) {
-		bitmap->m_format = PixelFormat_A8;
+		bitmap->m_format = PixelFormat::A8;
 	}
 	else {
 		LN_THROW(0, InvalidOperationException, "Invalid pixel format.");
