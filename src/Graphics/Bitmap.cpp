@@ -234,6 +234,44 @@ size_t Bitmap::GetByteCount() const
 }
 
 //------------------------------------------------------------------------------
+void Bitmap::SetPixel(int x, int y, const Color& color)
+{
+	LN_CHECK_ARG(0 <= x && x < m_size.width);
+	LN_CHECK_ARG(0 <= y && y < m_size.height);
+	LN_CHECK_STATE(
+		m_format == PixelFormat_BYTE_B8G8R8A8 ||
+		m_format == PixelFormat_BYTE_B8G8R8X8 ||
+		m_format == PixelFormat_BYTE_R8G8B8A8 ||
+		m_format == PixelFormat_BYTE_R8G8B8X8);
+
+	struct U32
+	{
+		byte_t	D[4];
+	};
+
+	if (m_upFlow)
+	{
+		y = m_size.height - 1 - y;
+	}
+
+	U32* buf = &((U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
+	if (m_format == PixelFormat_BYTE_B8G8R8A8 || m_format == PixelFormat_BYTE_B8G8R8X8)
+	{
+		buf->D[2] = color.r;
+		buf->D[1] = color.g;
+		buf->D[0] = color.b;
+		buf->D[3] = color.a;
+	}
+	else if (m_format == PixelFormat_BYTE_R8G8B8A8 || m_format == PixelFormat_BYTE_R8G8B8X8)
+	{
+		buf->D[0] = color.r;
+		buf->D[1] = color.g;
+		buf->D[2] = color.b;
+		buf->D[3] = color.a;
+	}
+}
+
+//------------------------------------------------------------------------------
 size_t Bitmap::GetSerializeSize() const
 {
 	return

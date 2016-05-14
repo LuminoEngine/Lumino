@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <algorithm>
+#include <Lumino/Graphics/Bitmap.h>
 #include "../GraphicsManager.h"
 #include "FontManager.h"
 #include "BitmapFont.h"

@@ -3,6 +3,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H	/* <freetype/freetype.h> */
 #include FT_CACHE_H	/* <freetype/ftcache.h> */
+#include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Text/Font.h>
 #include "FontManager.h"
 

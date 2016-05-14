@@ -3,9 +3,9 @@
 #include <Lumino/Graphics/RenderState.h>
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Color.h>
-#include <Lumino/Graphics/Bitmap.h>
 
 LN_NAMESPACE_BEGIN
+class Bitmap;
 class PlatformWindow;
 
 LN_NAMESPACE_GRAPHICS_BEGIN

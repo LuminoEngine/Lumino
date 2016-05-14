@@ -2,12 +2,12 @@
 #pragma once
 #include <Lumino/Base/Cache.h>
 #include "Common.h"
-#include "../Graphics/Bitmap.h"
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
+class Bitmap;
 
 class Texture;
 using TexturePtr = RefPtr<Texture>;

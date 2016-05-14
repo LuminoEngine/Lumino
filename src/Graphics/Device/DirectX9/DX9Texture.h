@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <Lumino/Graphics/SamplerState.h>
+#include <Lumino/Graphics/Bitmap.h>
 #include "../GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN

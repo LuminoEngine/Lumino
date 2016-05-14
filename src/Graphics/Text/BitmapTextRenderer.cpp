@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Graphics/Bitmap.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
 #include "BitmapTextRenderer.h"
 #include "../GraphicsManager.h"

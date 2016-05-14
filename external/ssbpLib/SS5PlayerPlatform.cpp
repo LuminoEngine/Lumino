@@ -4,6 +4,7 @@
 #include "SS5PlayerPlatform.h"
 #include <set>
 #include "../../src/Graphics/Internal.h"
+#include "../../include/Lumino/Graphics/Color.h"
 #include "../../include/Lumino/Graphics/Texture.h"
 #include "../../include/Lumino/Graphics/SpriteRenderer.h"
 

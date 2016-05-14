@@ -3,10 +3,10 @@
 #include <Lumino/Base/Cache.h>
 #include "../Common.h"
 #include "../Color.h"
-#include "../Bitmap.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+class Bitmap;
 
 struct FontGlyphLocation
 {

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Texture.h"
+#include "Color.h"
 #include "ImageEffect/ImageEffect.h"
 
 LN_NAMESPACE_BEGIN

@@ -115,6 +115,11 @@ public:
 	void CopyRawData(const void* data, size_t byteCount);
 	size_t GetByteCount() const;
 
+
+
+	// 4Byte フォーマットのみ可
+	void SetPixel(int x, int y, const Color& color);
+
 	// テスト用
 	Color GetPixel(int x, int y) const
 	{
