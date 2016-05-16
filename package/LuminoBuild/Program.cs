@@ -12,6 +12,8 @@ namespace LuminoBuild
         static void Main(string[] args)
         {
             var builder = new Builder("../../../../");
+            builder.BuildEngine();
+            return;
             var cppRule = new CppRule();
             cppRule.Build(builder);
         }

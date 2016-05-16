@@ -12,10 +12,10 @@
 #define LUMINO_ENGINE_VERSION_REVISION		0
 
 /** ビルドバージョン */
-#define LUMINO_ENGINE_VERSION_BUILD			0/*$(BuildVer)*/
+#define LUMINO_ENGINE_VERSION_BUILD			0
 
 /** バージョン文字列 */
-#define LUMINO_ENGINE_VERSION_STRING		_T("0.2.0.$(BuildVer)")
+#define LUMINO_ENGINE_VERSION_STRING		_T("0.2.0.0")
 
 LN_NAMESPACE_BEGIN
 
