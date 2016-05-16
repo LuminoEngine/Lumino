@@ -158,7 +158,7 @@ LN_STATIC_CLASS(LNVersion)
 	
 	/**
 		@brief		ビルドバージョンを取得します。
-		@param[out]	outRevision	: バージョン番号を格納する変数のポインタ
+		@param[out]	outBuild	: バージョン番号を格納する変数のポインタ
 	*/
 	LN_STATIC_API
 	void LNVersion_GetBuild(int* outBuild);
