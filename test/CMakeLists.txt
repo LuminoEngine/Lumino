@@ -7,6 +7,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Base/Test_Base_Point.cpp
 	UnitTest/Base/Test_Base_Rect.cpp
 	UnitTest/Base/Test_Base_Size.cpp
+	UnitTest/Base/Test_Base_Version.cpp
 	UnitTest/IO/Test_IO_ArchiveMaker.cpp
 	UnitTest/IO/Test_IO_ASync.cpp
 	UnitTest/Platform/Test_Platform_Clipboard.cpp

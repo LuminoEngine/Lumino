@@ -184,40 +184,48 @@ void LNApplication_Terminate()
 //------------------------------------------------------------------------------
 void LNVersion_GetMajor(int* outMajor)
 {
-	if (outMajor != NULL) {
-		*outMajor = Version::GetMajor();
+	if (outMajor != nullptr) {
+		*outMajor = Version::Engine::GetMajor();
 	}
 }
 
 //------------------------------------------------------------------------------
 void LNVersion_GetMinor(int* outMinor)
 {
-	if (outMinor != NULL) {
-		*outMinor = Version::GetMinor();
+	if (outMinor != nullptr) {
+		*outMinor = Version::Engine::GetMinor();
 	}
 }
 
 //------------------------------------------------------------------------------
 void LNVersion_GetRevision(int* outRevision)
 {
-	if (outRevision != NULL) {
-		*outRevision = Version::GetRevision();
+	if (outRevision != nullptr) {
+		*outRevision = Version::Engine::GetRevision();
+	}
+}
+
+//------------------------------------------------------------------------------
+void LNVersion_GetBuild(int* outBuild)
+{
+	if (outBuild != nullptr) {
+		*outBuild = Version::Engine::GetBuild();
 	}
 }
 
 //------------------------------------------------------------------------------
 void LNVersion_GetString(const LNChar** outStr)
 {
-	if (outStr != NULL) {
-		*outStr = Version::GetString();
+	if (outStr != nullptr) {
+		*outStr = Version::Engine::GetString();
 	}
 }
 
 //------------------------------------------------------------------------------
 void LNVersion_IsAtLeast(int major, int minor, int revision, LNBool* outResult)
 {
-	if (outResult != NULL) {
-		*outResult = LNC_TO_LNBOOL(Version::IsAtLeast(major, minor, revision));
+	if (outResult != nullptr) {
+		*outResult = LNC_TO_LNBOOL(Version::Engine::IsAtLeast(major, minor, revision));
 	}
 }
 

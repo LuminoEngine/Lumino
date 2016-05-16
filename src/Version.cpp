@@ -7,37 +7,43 @@ namespace Version
 {
 
 //------------------------------------------------------------------------------
-int GetMajor()
+int Engine::GetMajor()
 {
-	return LUMINO_VERSION_MAJOR;
+	return LUMINO_ENGINE_VERSION_MAJOR;
 }
 
 //------------------------------------------------------------------------------
-int GetMinor()
+int Engine::GetMinor()
 {
-	return LUMINO_VERSION_MINOR;
+	return LUMINO_ENGINE_VERSION_MINOR;
 }
 
 //------------------------------------------------------------------------------
-int GetRevision()
+int Engine::GetRevision()
 {
-	return LUMINO_MERSION_REVISION;
+	return LUMINO_ENGINE_VERSION_REVISION;
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* GetString()
+int Engine::GetBuild()
 {
-	return LUMINO_VERSION_STRING;
+	return LUMINO_ENGINE_VERSION_BUILD;
 }
 
 //------------------------------------------------------------------------------
-bool IsAtLeast(int major, int minor, int revision)
+const TCHAR* Engine::GetString()
 {
-	if (LUMINO_VERSION_MAJOR < major) return false;
-	if (LUMINO_VERSION_MAJOR > major) return true;
-	if (LUMINO_VERSION_MINOR < minor) return false;
-	if (LUMINO_VERSION_MINOR > minor) return true;
-	if (LUMINO_MERSION_REVISION < revision) return false;
+	return LUMINO_ENGINE_VERSION_STRING;
+}
+
+//------------------------------------------------------------------------------
+bool Engine::IsAtLeast(int major, int minor, int revision)
+{
+	if (LUMINO_ENGINE_VERSION_MAJOR < major) return false;
+	if (LUMINO_ENGINE_VERSION_MAJOR > major) return true;
+	if (LUMINO_ENGINE_VERSION_MINOR < minor) return false;
+	if (LUMINO_ENGINE_VERSION_MINOR > minor) return true;
+	if (LUMINO_ENGINE_VERSION_REVISION < revision) return false;
 	return true;
 }
 

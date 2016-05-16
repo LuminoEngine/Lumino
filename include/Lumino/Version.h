@@ -1,51 +1,71 @@
 ﻿
-#ifndef LUMINO_VERSION_H
-#define LUMINO_VERSION_H
+#ifndef LUMINO_ENGINE_VERSION_H
+#define LUMINO_ENGINE_VERSION_H
 
-#define LUMINO_VERSION_MAJOR		0			/**< メジャーバージョン */
-#define LUMINO_VERSION_MINOR		1			/**< マイナーバージョン */
-#define LUMINO_MERSION_REVISION		0			/**< パッチ番号 */
-#define LUMINO_VERSION_STRING		_T("0.1.0")	/**< バージョン文字列 */
+/** メジャーバージョン */
+#define LUMINO_ENGINE_VERSION_MAJOR			0
+
+/** マイナーバージョン */
+#define LUMINO_ENGINE_VERSION_MINOR			2
+
+/** リビジョンバージョン */
+#define LUMINO_ENGINE_VERSION_REVISION		0
+
+/** ビルドバージョン */
+#define LUMINO_ENGINE_VERSION_BUILD			0/*$(BuildVer)*/
+
+/** バージョン文字列 */
+#define LUMINO_ENGINE_VERSION_STRING		_T("0.2.0.$(BuildVer)")
 
 LN_NAMESPACE_BEGIN
 
+namespace Version
+{
+	
 /**
 	@brief		ライブラリのバージョン情報です。
 	@details	このクラスから取得できる値はライブラリのバイナリファイルのバージョン番号です。
 				ヘッダファイルのバージョンやプリプロセスで使用したい場合は 
-				LUMINO_VERSION_MAJOR や LUMINO_VERSION_MINOR を使用してください。
+				LUMINO_CORE_VERSION_MAJOR や LUMINO_CORE_VERSION_MINOR を使用してください。
 */
-namespace Version
+class Engine
 {
+public:
 
-/**
-	@brief	メジャーバージョンを取得します。
-*/
-int GetMajor();
+	/**
+		@brief	メジャーバージョンを取得します。
+	*/
+	static int GetMajor();
 
-/**
-	@brief	マイナーバージョンを取得します。
-*/
-int GetMinor();
+	/**
+		@brief	マイナーバージョンを取得します。
+	*/
+	static int GetMinor();
 
-/**
-	@brief	リビジョンバージョンを取得します。
-*/
-int GetRevision();
+	/**
+		@brief	リビジョンバージョンを取得します。
+	*/
+	static int GetRevision();
 
-/**
-	@brief	バージョン文字列の取得を取得します。
-*/
-const TCHAR* GetString();
+	/**
+		@brief	ビルドバージョンを取得します。
+	*/
+	static int GetBuild();
 
-/**
-	@brief	指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
-	@return	指定バージョン >= コンパイルバージョン である場合、true を返します。
-*/
-bool IsAtLeast(int major = LUMINO_VERSION_MAJOR, int minor = LUMINO_VERSION_MINOR, int revision = LUMINO_MERSION_REVISION);
+	/**
+		@brief	バージョン文字列の取得を取得します。
+	*/
+	static const TCHAR* GetString();
 
+	/**
+		@brief	指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+		@return	指定バージョン >= コンパイルバージョン である場合、true を返します。
+	*/
+	static bool IsAtLeast(int major = LUMINO_ENGINE_VERSION_MAJOR, int minor = LUMINO_ENGINE_VERSION_MINOR, int revision = LUMINO_ENGINE_VERSION_REVISION);
+
+};
 
 } // namespace Version
 LN_NAMESPACE_END
 
-#endif // LUMINO_VERSION_H
+#endif // LUMINO_ENGINE_VERSION_H

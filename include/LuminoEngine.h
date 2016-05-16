@@ -4,6 +4,8 @@
 #include <LuminoCore.h>
 #include <LuminoMath.h>
 
+#include "Lumino/Version.h"
+
 #include "Lumino/Animation/AnimationCurve.h"
 
 #include "Lumino/IO/ASyncIOObject.h"
