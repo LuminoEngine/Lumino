@@ -228,7 +228,7 @@ int main()
 		//uiRoot->AddChild(button1);
 
 
-		GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 0.95f);
+		//GameAudio::PlayBGM(_T("D:/tmp/GrandSky.mp3"), 1.0f, 0.95f);
 		//auto sound1 = Sound::Create(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 		//sound1->SetPitch(1.2f);
 		//sound1->Play();
@@ -332,13 +332,13 @@ int main()
 			//}
 
 		}
+		Engine::Finalize();
 	}
 	catch (Exception& e)
 	{
 		printf(e.what());
 	}
 
-	Engine::Finalize();
 	return 0;
 
 

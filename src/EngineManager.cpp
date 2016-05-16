@@ -190,7 +190,9 @@ EngineManager::~EngineManager()
 		m_graphicsManager->Finalize();
 	}
 
-	if (m_platformManager != nullptr) {
+	if (m_platformManager != nullptr)
+	{
+		m_platformManager->GetMainWindow()->DetachEventListener(this);
 		m_platformManager->Dispose();
 	}
 	if (m_sceneGraphManager != nullptr) {

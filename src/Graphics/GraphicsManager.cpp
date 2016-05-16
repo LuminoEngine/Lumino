@@ -736,9 +736,7 @@ GraphicsResourceObject::GraphicsResourceObject()
 //------------------------------------------------------------------------------
 GraphicsResourceObject::~GraphicsResourceObject()
 {
-	if (m_manager != nullptr) {
-		m_manager->RemoveResourceObject(this);
-	}
+	Finalize();
 }
 
 //------------------------------------------------------------------------------
@@ -748,7 +746,15 @@ void GraphicsResourceObject::Initialize(GraphicsManager* manager)
 	m_manager->AddResourceObject(this);
 }
 
-
+//------------------------------------------------------------------------------
+void GraphicsResourceObject::Finalize()
+{
+	if (m_manager != nullptr)
+	{
+		m_manager->RemoveResourceObject(this);
+		m_manager = nullptr;
+	}
+}
 
 //==============================================================================
 // GraphicsManager
@@ -941,9 +947,16 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 //------------------------------------------------------------------------------
 void GraphicsManager::Finalize()
 {
-	if (m_renderingThread != NULL) {
+	if (m_renderingThread != nullptr)
+	{
 		m_renderingThread->Dispose();
 		LN_SAFE_DELETE(m_renderingThread);
+	}
+
+	auto deleteList = m_resourceObjectList;
+	for (auto* obj : deleteList)
+	{
+		obj->Finalize();
 	}
 
 	LN_SAFE_RELEASE(m_graphicsContext);
