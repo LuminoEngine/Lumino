@@ -33,7 +33,7 @@ LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format, LNBoo
 	LN_CHECK_ARG(outTexture2D != nullptr);
 	LN_FUNC_TRY_BEGIN;
 	auto ptr = RefPtr<LNWITexture2D>::MakeRef();
-	ptr->Initialize(LFManager::Engine->GetGraphicsManager(), Size(width, height), TextureFormat::R8G8B8A8, 1);
+	ptr->Initialize(LFManager::Engine->GetGraphicsManager(), Size(width, height), (TextureFormat)format, (mipmap) ? 0 : 1);
 	*outTexture2D = LFManager::CheckRegisterObject(ptr);
 	ptr.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN;

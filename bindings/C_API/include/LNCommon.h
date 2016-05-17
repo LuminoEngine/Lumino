@@ -39,18 +39,7 @@ typedef void*			LNUserData;
 //------------------------------------------------------------------------------
 // C_API
 
-// デフォルト引数定義の細工
-#ifdef LN_DOXYGEN
-	#define LN_DEFAULT_ARG(x)
-#else
-	#ifdef __cplusplus
-		// C++ ビルド時はデフォルト引数を有効にする
-		#define LN_DEFAULT_ARG(x) =x
-	#else
-		// C ビルド時は無効にする
-		#define LN_DEFAULT_ARG(x)
-	#endif
-#endif
+#define LN_DEFAULT_ARG(x)
 
 #define LN_MODULE(x)
 #define LN_MODULE_END

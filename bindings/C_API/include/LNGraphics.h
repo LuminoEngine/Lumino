@@ -47,7 +47,7 @@ LN_CLASS(LNTexture2D, LNTexture)
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format, LNBool mipmap, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D);
+	LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format LN_DEFAULT_ARG(LN_FMT_A8R8G8B8), LNBool mipmap LN_DEFAULT_ARG(LN_FALSE), LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D);
 
 	/**
 		@brief		ファイルから2Dテクスチャを作成します。

@@ -15,6 +15,8 @@ namespace Test
         {
             Application.Initialize();
 
+            GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
+
             var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
             Console.WriteLine(tex1.Size.Width);
 

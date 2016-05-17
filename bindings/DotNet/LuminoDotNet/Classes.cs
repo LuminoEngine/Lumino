@@ -1026,7 +1026,23 @@ namespace Lumino
         internal Texture2D(_LNInternal i) : base(i) {}
         
         /// <summary>
-        /// ファイルから2Dテクスチャオブジェクトを作成します。
+        /// サイズを指定して2Dテクスチャを作成します。
+        /// </summary>
+        /// <param name="width">テクスチャの幅 (ピクセル単位)</param>
+        /// <param name="height">テクスチャの高さ (ピクセル単位)</param>
+        /// <param name="format">テクスチャのピクセルフォーマット</param>
+        /// <param name="mipmap">ミップマップの有無</param>
+        public  Texture2D( int width,  int height,  TextureFormat format = TextureFormat.A8R8G8B8,  bool mipmap = false) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outTexture2D;
+            var result = API.LNTexture2D_Create( width,  height,  format,  mipmap, out outTexture2D);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outTexture2D);
+        
+        }
+        
+        /// <summary>
+        /// ファイルから2Dテクスチャを作成します。
         /// </summary>
         /// <param name="filePath">画像ファイルのパス</param>
         /// <remarks>
@@ -1036,7 +1052,7 @@ namespace Lumino
         public  Texture2D( string filePath) : base(_LNInternal.InternalBlock)
         {
             IntPtr outTexture2D;
-            var result = API.LNTexture2D_Create( filePath, out outTexture2D);
+            var result = API.LNTexture2D_CreateFromFile( filePath, out outTexture2D);
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, outTexture2D);
         

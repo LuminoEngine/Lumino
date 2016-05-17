@@ -34,7 +34,7 @@ LN_CLASS_END
 
 //==============================================================================
 /**
-	@brief	スプライト
+	@brief		スプライトのベースクラスです。
 */
 LN_CLASS(LNSprite, LNSceneNode)
 	
@@ -59,10 +59,9 @@ LN_CLASS(LNSprite, LNSceneNode)
 	
 LN_CLASS_END
 
-
 //==============================================================================
 /**
-	@brief	2Dスプライト
+	@brief		2D 空間に配置されるスプライトのクラスです。
 */
 LN_CLASS(LNSprite2D, LNSprite)
 

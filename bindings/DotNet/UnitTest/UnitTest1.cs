@@ -19,13 +19,24 @@ namespace UnitTest
             Application.Terminate();
         }
 
+        /// <summary>
+        /// getter のテスト
+        /// </summary>
         [TestMethod]
-        public void TestMethod1()
+        public void Test_InstanceGetter()
         {
-            var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
-            var sprite = new Sprite2D();
+            var tex1 = new Texture2D(32, 32);
+            var sprite = new Sprite2D(tex1);
+            Assert.AreEqual(tex1, sprite.Texture);
+            Assert.AreEqual(tex1, sprite.Texture);	// 2回目以降も同じものが返ること
+            Assert.AreEqual(2, TestInterface.GetObjectWeakReferenceCount());
+            
+            tex1 = null;
+            sprite = null;
 
-            Application.UpdateFrame();
+            // TODO: 即GC実行する方法がイマイチわからないのでちょっと保留
+            //GC.Collect(1, GCCollectionMode.Forced, true);
+            //Assert.AreEqual(0, TestInterface.GetObjectWeakReferenceCount());
         }
     }
 }

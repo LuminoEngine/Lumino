@@ -81,7 +81,7 @@ private:
 };
 
 /**
-	@brief	2D 空間に配置されるスプライトです。
+	@brief	2D 空間に配置されるスプライトのクラスです。
 */
 class Sprite2D
 	: public Sprite
@@ -108,7 +108,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 };
 
 /**
-	@brief	3D 空間に配置されるスプライトです。
+	@brief	3D 空間に配置されるスプライトのクラスです。
 */
 class Sprite3D
 	: public Sprite

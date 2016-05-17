@@ -391,9 +391,10 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 
 		D3DFMT_A16B16G16R16F,	// TextureFormat_R16G16B16A16_Float
 		D3DFMT_A32B32G32R32F,	// TextureFormat_R32G32B32A32_Float
-		D3DFMT_D24S8,			// TextureFormat_D24S8
 		D3DFMT_R16F,			// TextureFormat_R16_Float
 		D3DFMT_R32F,			// TextureFormat_R32_Float
+
+		D3DFMT_D24S8,			// TextureFormat_D24S8
 	};
 	assert(LN_ARRAY_SIZE_OF(d3dFormats) == (int)TextureFormat::_Count);
 	return d3dFormats[(int)format];

@@ -109,10 +109,6 @@ public extern static RETURN_TYPE FUNC_NAME(ARGS);
 
                 // 型名と引数名
                 argsText += string.Format("{0} {1}", GetParamTypeName(param), param.Name);
-
-                // デフォルト引数
-                if (!string.IsNullOrEmpty(param.OriginalDefaultValue))
-                    argsText += " = " + CSCommon.ConvertLiteral(param.OriginalDefaultValue, true);
             }
             declText = declText.Replace("ARGS", argsText);
 

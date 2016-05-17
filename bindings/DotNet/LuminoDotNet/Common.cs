@@ -106,8 +106,8 @@ namespace Lumino
         private const int InitialListSize = 1024;
 
         //private static  List<ReferenceObject> _objectList;
-        private static Stack<int> _userDataListIndexStack;
-        private static List<UserData> _userDataList;           // LNObject_SetUserData で登録するのはこのインデックス。0 は無効値 (ユーザーデータ未割り当て)
+        internal static Stack<int> _userDataListIndexStack;
+        internal static List<UserData> _userDataList;           // LNObject_SetUserData で登録するのはこのインデックス。0 は無効値 (ユーザーデータ未割り当て)
 
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
@@ -200,6 +200,14 @@ namespace Lumino
             int index = (int)LNObject_GetUserData(refObj.Handle);
             _userDataList[index].RefObject = null;
             _userDataListIndexStack.Push(index);
+        }
+    }
+    
+    public static class TestInterface
+    {
+        public static int GetObjectWeakReferenceCount()
+        {
+            return InternalManager._userDataList.Count - InternalManager._userDataListIndexStack.Count;
         }
     }
 }
