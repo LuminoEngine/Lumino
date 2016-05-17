@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "Common.h"
+#include "../Graphics/Device/DirectX9/DX9Module.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail

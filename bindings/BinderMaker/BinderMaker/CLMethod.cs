@@ -576,32 +576,32 @@ namespace BinderMaker
 
             if (string.Compare(method.FuncDecl.OriginalName, 0, "Get", 0, 3) == 0)
             {
-                if (Getter != null) throw new InvalidOperationException("get プロパティ割り当て済み");
+                if (Getter != null) Diag.ReportError(Getter, "get プロパティ割り当て済み");
                 Getter = method;
                 Getter.PropertyNameType = PropertyNameType.Get;
             }
             else if (string.Compare(method.FuncDecl.OriginalName, 0, "Is", 0, 2) == 0)
             {
-                if (Getter != null) throw new InvalidOperationException("get プロパティ割り当て済み");
+                if (Getter != null) Diag.ReportError(Getter, "get プロパティ割り当て済み");
                 Getter = method;
                 Getter.PropertyNameType = PropertyNameType.Is;
             }
             else if (string.Compare(method.FuncDecl.OriginalName, 0, "Set", 0, 3) == 0)
             {
-                if (Setter != null) throw new InvalidOperationException("set プロパティ割り当て済み");
+                if (Setter != null) Diag.ReportError(Setter, "set プロパティ割り当て済み");
                 Setter = method;
                 Setter.PropertyNameType = PropertyNameType.Set;
             }
 
             if (Getter != null)
             {
-                if (Getter.ReturnType == null) throw new InvalidOperationException("get プロパティなのに戻り値が無い。");
-                if (Getter.Params.Count != 0) throw new InvalidOperationException("get プロパティなのに引数がある。");
+                if (Getter.ReturnType == null) Diag.ReportError(Getter, "get プロパティなのに戻り値が無い。");
+                if (Getter.Params.Count != 0) Diag.ReportError(Getter, "get プロパティなのに引数がある。");
             }
             if (Setter != null)
             {
-                if (Setter.ReturnType != CLPrimitiveType.Void) throw new InvalidOperationException("set プロパティなのに戻り値がある。");
-                if (Setter.Params.Count != 1) throw new InvalidOperationException("set プロパティなのに引数が1個ではない。");
+                if (Setter.ReturnType != CLPrimitiveType.Void) Diag.ReportError(Setter, "set プロパティなのに戻り値がある。");
+                if (Setter.Params.Count != 1) Diag.ReportError(Setter, "set プロパティなのに引数が1個ではない。");
             }
 
         }

@@ -31,7 +31,7 @@ LN_TYPE_INFO_IMPL(Texture2D, LNTexture2D);
 LNResult LNTexture2D_Create(const LNChar* filePath, LN_OUT LN_HANDLE(Texture2D)* texture2D)
 {
 	LN_FUNC_TRY_BEGIN;
-	RefPtr<Texture2D> obj(LN_NEW Wrapper_Texture2D(), false);
+	RefPtr<LNWITexture2D> obj(LN_NEW LNWITexture2D(), false);
 	obj->CreateCore(LFManager::Engine->GetGraphicsManager(), filePath, TextureFormat_B8G8R8A8, 1);
 	*texture2D = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();

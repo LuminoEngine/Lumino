@@ -12,16 +12,16 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
-// SpriteBase
+// Sprite
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteBase, VisualNode);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite, VisualNode);
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//SpriteBase* SpriteBase::Create()
+//Sprite* Sprite::Create()
 //{
-//	RefPtr<SpriteBase> obj(LN_NEW SpriteBase(), false);
+//	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
 //	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_2D);
 //	obj.SafeAddRef();
 //	return obj;
@@ -30,16 +30,16 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteBase, VisualNode);
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//SpriteBase* SpriteBase::Create3D()
+//Sprite* Sprite::Create3D()
 //{
-//	RefPtr<SpriteBase> obj(LN_NEW SpriteBase(), false);
+//	RefPtr<Sprite> obj(LN_NEW Sprite(), false);
 //	obj->CreateCore(SceneGraphManager::Instance, SpriteCoord_RZ);
 //	obj.SafeAddRef();
 //	return obj;
 //}
 
 //------------------------------------------------------------------------------
-SpriteBase::SpriteBase()
+Sprite::Sprite()
 	: VisualNode()
 	, m_spriteCoord(SpriteCoord_RZ)
 	, m_size()
@@ -53,12 +53,12 @@ SpriteBase::SpriteBase()
 }
 
 //------------------------------------------------------------------------------
-SpriteBase::~SpriteBase()
+Sprite::~Sprite()
 {
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
+void Sprite::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 {
 	VisualNode::Initialize(owner, 1);
 	m_spriteCoord = spriteCoord;
@@ -79,7 +79,7 @@ void SpriteBase::Initialize(SceneGraph* owner, SpriteCoord spriteCoord)
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetTexture(Texture* texture)
+void Sprite::SetTexture(Texture* texture)
 {
 	m_materialList.GetAt(0)->SetTexture(texture);
 	UpdateTexUV();
@@ -87,13 +87,13 @@ void SpriteBase::SetTexture(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-Texture* SpriteBase::GetTexture() const
+Texture* Sprite::GetTexture() const
 {
 	return m_materialList.GetAt(0)->GetTexture();
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetSrcRect(const Rect& rect)
+void Sprite::SetSrcRect(const Rect& rect)
 {
 	m_srcRect = rect;
 	UpdateTexUV();
@@ -101,7 +101,7 @@ void SpriteBase::SetSrcRect(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::UpdateTexUV()
+void Sprite::UpdateTexUV()
 {
 	Texture* tex = GetTexture();
 	if (tex)
@@ -153,7 +153,7 @@ void SpriteBase::UpdateTexUV()
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::UpdateVertexData()
+void Sprite::UpdateVertexData()
 {
 	// サイズが負値     → 転送矩形を使う
 	// 転送矩形が負値   → テクスチャサイズを使う
@@ -224,7 +224,7 @@ void SpriteBase::UpdateVertexData()
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b)
+void Sprite::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b)
 {
 	float tex_rw = 1.0f / textureSize.width;
 	float tex_rh = 1.0f / textureSize.height;
@@ -235,7 +235,7 @@ void SpriteBase::NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, 
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{

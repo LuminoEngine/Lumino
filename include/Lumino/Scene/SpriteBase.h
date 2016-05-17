@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 /**
 	@brief
 */
-class SpriteBase
+class Sprite
 	: public VisualNode
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -60,8 +60,8 @@ private:
 	static void NormalizeSrcRect(const Rect& srcRect, const Size& textureSize, float* l, float* t, float* r, float* b);
 
 protected:
-	SpriteBase();
-	virtual ~SpriteBase();
+	Sprite();
+	virtual ~Sprite();
 	void Initialize(SceneGraph* owner, SpriteCoord spriteCoord);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;

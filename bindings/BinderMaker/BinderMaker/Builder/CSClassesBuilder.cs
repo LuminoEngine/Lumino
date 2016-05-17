@@ -268,15 +268,15 @@ return sb.ToString();".Trim();
                             argsText.AppendCommad("out " + param.Name);
                             // 後処理
                             string format = @"
-{0} = IntenalManager.GetWrapperObject<{1}>({2});
+{0} = InternalManager.GetWrapperObject<{1}>({2});
 return {0};".Trim();
                             returnStmtText = string.Format(format, fieldName, typeName, param.Name);
 
-                            // ラップオブジェクトを保持するメンバを追加
-                            //string modifier = "";
-                            //if (!method.IsInstanceMethod)
-                            //    modifier += "static";
-                            //fieldsOutput.AppendWithIndent(string.Format("{0} {1} {2};", modifier, typeName, fieldName)).NewLine();
+                            // Wrapperオブジェクトを保持するメンバを追加
+                            string modifier = "";
+                            if (!method.IsInstanceMethod)
+                                modifier += "static";
+                            _fieldsText.AppendWithIndent(string.Format("{0} {1} {2};", modifier, typeName, fieldName)).NewLine();
 
                             /* 例)
                             IntPtr viewPane;

@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 // Sprite2D
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, SpriteBase);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, Sprite);
 
 //------------------------------------------------------------------------------
 Sprite2DPtr Sprite2D::Create()
@@ -47,7 +47,7 @@ Sprite2D::~Sprite2D()
 //------------------------------------------------------------------------------
 void Sprite2D::Initialize(SceneGraph* owner)
 {
-	SpriteBase::Initialize(owner, SpriteCoord_2D);
+	Sprite::Initialize(owner, SpriteCoord_2D);
 }
 
 LN_NAMESPACE_SCENE_END

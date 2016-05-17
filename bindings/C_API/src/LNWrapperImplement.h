@@ -1,20 +1,24 @@
-﻿class Wrapper_Sound : public ln::Sound
+﻿class LNWISound : public ln::Sound
 {
 };
 
-class Wrapper_Texture : public ln::Texture
+class LNWITexture : public ln::Texture
 {
 };
 
-class Wrapper_Texture2D : public ln::Texture2D
+class LNWITexture2D : public ln::Texture2D
 {
 };
 
-class Wrapper_SceneNode : public ln::SceneNode
+class LNWISceneNode : public ln::SceneNode
 {
 };
 
-class Wrapper_Sprite : public ln::Sprite2D
+class LNWISprite : public ln::Sprite
+{
+};
+
+class LNWISprite2D : public ln::Sprite2D
 {
 };
 

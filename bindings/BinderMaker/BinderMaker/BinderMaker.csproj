@@ -68,6 +68,7 @@
     <Compile Include="CLModule.cs" />
     <Compile Include="CLOption.cs" />
     <Compile Include="Builder\HSPHeaderBuilder.cs" />
+    <Compile Include="Diag.cs" />
     <Compile Include="LangContext.cs" />
     <Compile Include="Parser\CLAPIHeaderParser.cs" />
     <Compile Include="Parser\CLTypedefHeaderParser.cs" />

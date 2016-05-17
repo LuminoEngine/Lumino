@@ -15,8 +15,6 @@
 #if defined(LN_OS_WIN32)
 	//#include <GL/wglew.h>
 	#include "../external/GL/wglext.h"
-	#include <d3d9.h>
-	#include <d3dx9.h>
 #elif defined(LN_OS_X11)
 	#include <GL/glx.h>
 	#include "../external/GL/glxext.h"

@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 	@brief	2D 空間に配置されるスプライトです。
 */
 class Sprite2D
-	: public SpriteBase
+	: public Sprite
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -26,7 +26,7 @@ public:
 
 	static Sprite2DPtr Create(Texture* texture);
 
-protected:
+LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 	void Initialize(SceneGraph* owner);

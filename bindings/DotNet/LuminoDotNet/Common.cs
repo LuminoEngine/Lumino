@@ -33,6 +33,17 @@ namespace Lumino
         {
             ResultCode = resultCode;
         }
+
+        internal static Exception MakeExceptionFromLastError(Result result)
+        {
+            IntPtr errStr;
+            int errStrLen;
+            API.LNError_GetLastErrorMessage(out errStr);
+            API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
+            var errBuf = new StringBuilder(errStrLen);
+            API.LCSInternal_GetIntPtrString(errStr, errBuf);
+            return new LuminoException(result, errBuf.ToString());
+        }
     }
 
 

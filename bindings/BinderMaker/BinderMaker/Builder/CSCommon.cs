@@ -302,17 +302,7 @@ namespace BinderMaker.Builder
             preErrorStmt = "var result = ";
 
             var post = new OutputBuffer();
-            post.AppendLine("if (result != Result.OK) {");
-            post.IncreaseIndent();
-            post.AppendLine("IntPtr errStr;");
-            post.AppendLine("int errStrLen;");
-            post.AppendLine("API.LNError_GetLastErrorMessage(out errStr);");
-            post.AppendLine("API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);");
-            post.AppendLine("var errBuf = new StringBuilder(errStrLen);");
-            post.AppendLine("API.LCSInternal_GetIntPtrString(errStr, errBuf);");
-            post.AppendLine("throw new LuminoException(result, errBuf.ToString());");
-            post.DecreaseIndent();
-            post.AppendLine("}");
+            post.AppendLine("if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);");
             postErrorStmt = post.ToString();
         }
     }

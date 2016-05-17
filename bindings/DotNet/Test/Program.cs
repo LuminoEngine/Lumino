@@ -18,7 +18,7 @@ namespace Test
             var tex1 = new Texture2D(TestDataFolder + "img1_BYTE_R8G8B8A8_20x20.png");
             Console.WriteLine(tex1.Size.Width);
 
-            var sp1 = new Sprite(tex1);
+            var sp1 = new Sprite2D(tex1);
 
             while (!Application.IsEndRequested())
             {

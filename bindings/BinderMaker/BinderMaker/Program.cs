@@ -11,44 +11,49 @@ namespace BinderMaker
         const string SourcesRootDir = "../../../../C_API/include/";
         const string DotNetOutputDir = "../../../../";
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            new CLManager();
-            CLManager.Instance.Initialize();
-
-            // 各種型情報が定義されているヘッダを解析する
-            var typedefParser = new Parser.CLTypedefHeaderParser();
-            var typedefs = typedefParser.Analyze(SourcesRootDir + "LNTypedef.h");
-
-            // 関数が定義されているヘッダを解析する
-            var apiHeaders = new string[]
+            try
             {
+
+
+                new CLManager();
+                CLManager.Instance.Initialize();
+
+                // 各種型情報が定義されているヘッダを解析する
+                var typedefParser = new Parser.CLTypedefHeaderParser();
+                var typedefs = typedefParser.Analyze(SourcesRootDir + "LNTypedef.h");
+
+                // 関数が定義されているヘッダを解析する
+                var apiHeaders = new string[]
+                {
                 SourcesRootDir + "LNApplication.h",
                 SourcesRootDir + "LNBase.h",
                 SourcesRootDir + "LNMath.h",
                 SourcesRootDir + "LNAudio.h",
                 SourcesRootDir + "LNGraphics.h",
                 SourcesRootDir + "LNScene.h",
-            };
-            var parser = new Parser.CLAPIHeaderParser();
-            var modules = parser.Analyze(apiHeaders);
+                };
+                var parser = new Parser.CLAPIHeaderParser();
+                var modules = parser.Analyze(apiHeaders);
 
-            // 解析結果を Manager に登録する
-            CLManager.Instance.LinkEntities();
+                // 解析結果を Manager に登録する
+                CLManager.Instance.LinkEntities();
 
-            // Wrapper
-            //var wrapperBuilder = new Builder.WrapperImplementBuilder();
-            //wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
-            //return;
+                // Wrapper
+                var wrapperBuilder = new Builder.WrapperImplementBuilder();
+                wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
+                return 0;
 
-            // C#
-            var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
-            csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");
-            var csStructsBuilder = new Builder.CSStructsBuilder();
-            csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Structs.cs");
-            var csClassesBuilder = new Builder.CSClassesBuilder();
-            csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
+                // C#
+                var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
+                csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");
+                var csStructsBuilder = new Builder.CSStructsBuilder();
+                csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Structs.cs");
+                var csClassesBuilder = new Builder.CSClassesBuilder();
+                csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
 
+#if false
             // Ruby
             var rubyEnumBuilder = new Builder.RubyEnumBuilder();
             rubyEnumBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyEnums.cpp");
@@ -72,6 +77,14 @@ namespace BinderMaker
             hspHelpBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.hs");
             var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
             hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/CommandList.txt");
+#endif
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+                return 1;
+            }
+            return 0;
         }
     }
 }

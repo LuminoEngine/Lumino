@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-
+#include <d3d9.h>
 #include <d3dx9.h>
 #include <Lumino/Base/DllLoader.h>
 #include <Lumino/Graphics/Common.h>

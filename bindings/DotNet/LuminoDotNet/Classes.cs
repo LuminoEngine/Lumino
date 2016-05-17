@@ -120,15 +120,7 @@ namespace Lumino
         {
             InternalManager.Initialize();
             var result = API.LNApplication_Initialize();
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -139,15 +131,7 @@ namespace Lumino
         {
             InternalManager.Initialize();
             var result = API.LNApplication_InitializeAudio();
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -160,15 +144,7 @@ namespace Lumino
         public static void UpdateFrame()
         {
             var result = API.LNApplication_UpdateFrame();
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -183,15 +159,7 @@ namespace Lumino
         {
             var outRequested = new bool();
             var result = API.LNApplication_IsEndRequested(out outRequested);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outRequested;
         
         }
@@ -246,6 +214,17 @@ namespace Lumino
             var outRevision = new int();
             API.LNVersion_GetRevision(out outRevision);
             return outRevision;
+        
+        }
+        
+        /// <summary>
+        /// ビルドバージョンを取得します。
+        /// </summary>
+        public static int GetBuild()
+        {
+            var outBuild = new int();
+            API.LNVersion_GetBuild(out outBuild);
+            return outBuild;
         
         }
         
@@ -305,15 +284,7 @@ namespace Lumino
         public static void PlayBGM( string filePath,  float volume = 1.0f,  float pitch = 1.0f,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_PlayBGM( filePath,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -328,15 +299,7 @@ namespace Lumino
         public static void PlayBGMMem( byte[] data,  int dataSize,  float volume = 1.0f,  float pitch = 1.0f,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_PlayBGMMem( data,  dataSize,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -347,15 +310,7 @@ namespace Lumino
         public static void StopBGM( double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_StopBGM( fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -373,15 +328,7 @@ namespace Lumino
         public static void PlayBGS( string filePath,  float volume = 1.0f,  float pitch = 1.0f,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_PlayBGS( filePath,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -396,15 +343,7 @@ namespace Lumino
         public static void PlayBGSMem( byte[] data,  int dataSize,  float volume = 1.0f,  float pitch = 1.0f,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_PlayBGSMem( data,  dataSize,  volume,  pitch,  fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -415,15 +354,7 @@ namespace Lumino
         public static void StopBGS( double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_StopBGS( fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -441,15 +372,7 @@ namespace Lumino
         public static void PlayME( string filePath,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlayME( filePath,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -463,15 +386,7 @@ namespace Lumino
         public static void PlayMEMem( byte[] data,  int dataSize,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlayMEMem( data,  dataSize,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -481,15 +396,7 @@ namespace Lumino
         public static void StopME()
         {
             var result = API.LNGameAudio_StopME();
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -505,15 +412,7 @@ namespace Lumino
         public static void PlaySE( string filePath,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySE( filePath,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -528,15 +427,7 @@ namespace Lumino
         public static void PlaySE3D( string filePath,  Vector3 position,  float distance,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySE3D( filePath, ref position,  distance,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -553,15 +444,7 @@ namespace Lumino
         public static void PlaySE3D( string filePath,  float x,  float y,  float z,  float distance,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySE3DXYZ( filePath,  x,  y,  z,  distance,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -575,15 +458,7 @@ namespace Lumino
         public static void PlaySEMem( byte[] data,  int dataSize,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySEMem( data,  dataSize,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -599,15 +474,7 @@ namespace Lumino
         public static void PlaySE3DMem( byte[] data,  int dataSize,  Vector3 position,  float distance,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySE3DMem( data,  dataSize, ref position,  distance,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -625,15 +492,7 @@ namespace Lumino
         public static void PlaySE3DMem( byte[] data,  int dataSize,  float x,  float y,  float z,  float distance,  float volume = 1.0f,  float pitch = 1.0f)
         {
             var result = API.LNGameAudio_PlaySE3DMemXYZ( data,  dataSize,  x,  y,  z,  distance,  volume,  pitch);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -643,15 +502,7 @@ namespace Lumino
         public static void StopSE()
         {
             var result = API.LNGameAudio_StopSE();
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -663,15 +514,7 @@ namespace Lumino
         public static void SetBGMVolume( float volume,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_SetBGMVolume( volume,  fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -683,15 +526,7 @@ namespace Lumino
         public static void SetBGSVolume( float volume,  double fadeTime = 0.0)
         {
             var result = API.LNGameAudio_SetBGSVolume( volume,  fadeTime);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -712,15 +547,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSoundListener_SetPosition(ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -733,15 +560,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSoundListener_SetDirection(ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -754,15 +573,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSoundListener_SetUpDirection(ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -775,15 +586,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSoundListener_SetVelocity(ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -798,15 +601,7 @@ namespace Lumino
         public static void SetPositionXYZ( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetPositionXYZ( x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -819,15 +614,7 @@ namespace Lumino
         public static void SetDirection( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetDirectionXYZ( x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -840,15 +627,7 @@ namespace Lumino
         public static void SetUpDirection( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetUpDirectionXYZ( x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -861,15 +640,7 @@ namespace Lumino
         public static void SetVelocity( float x,  float y,  float z)
         {
             var result = API.LNSoundListener_SetVelocityXYZ( x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -891,15 +662,7 @@ namespace Lumino
             {
                 var outVolume = new float();
                 var result = API.LNSound_GetVolume( _handle, out outVolume);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outVolume;
             
             }
@@ -907,15 +670,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetVolume( _handle,  value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -929,15 +684,7 @@ namespace Lumino
             {
                 var outPitch = new float();
                 var result = API.LNSound_GetPitch( _handle, out outPitch);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outPitch;
             
             }
@@ -945,15 +692,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetPitch( _handle,  value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -967,15 +706,7 @@ namespace Lumino
             {
                 var outEnabled = new bool();
                 var result = API.LNSound_IsLoopEnabled( _handle, out outEnabled);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outEnabled;
             
             }
@@ -983,15 +714,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetLoopEnabled( _handle,  value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1005,15 +728,7 @@ namespace Lumino
             {
                 var outEnabled = new bool();
                 var result = API.LNSound_Is3DEnabled( _handle, out outEnabled);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outEnabled;
             
             }
@@ -1021,15 +736,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_Set3DEnabled( _handle,  value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1043,15 +750,7 @@ namespace Lumino
             {
                 var outMode = new SoundPlayingMode();
                 var result = API.LNSound_GetPlayingMode( _handle, out outMode);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outMode;
             
             }
@@ -1059,15 +758,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetPlayingMode( _handle,  value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1081,15 +772,7 @@ namespace Lumino
             {
                 var outState = new SoundPlayingState();
                 var result = API.LNSound_GetPlayingState( _handle, out outState);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outState;
             
             }
@@ -1104,15 +787,7 @@ namespace Lumino
             {
                 var outSamples = new long();
                 var result = API.LNSound_GetPlayedSamples( _handle, out outSamples);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outSamples;
             
             }
@@ -1127,15 +802,7 @@ namespace Lumino
             {
                 var outSamples = new long();
                 var result = API.LNSound_GetTotalSamples( _handle, out outSamples);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outSamples;
             
             }
@@ -1150,15 +817,7 @@ namespace Lumino
             {
                 var outRate = new int();
                 var result = API.LNSound_GetSamplingRate( _handle, out outRate);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outRate;
             
             }
@@ -1172,15 +831,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetEmitterPosition( _handle, ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1193,15 +844,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetEmitterVelocity( _handle, ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1214,15 +857,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSound_SetEmitterMaxDistance( _handle,  value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1238,15 +873,7 @@ namespace Lumino
         {
             IntPtr sound;
             var result = API.LNSound_Create( filePath, out sound);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, sound);
         
         }
@@ -1260,15 +887,7 @@ namespace Lumino
         {
             IntPtr sound;
             var result = API.LNSound_CreateMem( data,  dataSize, out sound);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, sound);
         
         }
@@ -1284,15 +903,7 @@ namespace Lumino
         public void SetLoopRange( int begin,  int length)
         {
             var result = API.LNSound_SetLoopRange( _handle,  begin,  length);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1302,15 +913,7 @@ namespace Lumino
         public void Play()
         {
             var result = API.LNSound_Play( _handle);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1320,15 +923,7 @@ namespace Lumino
         public void Stop()
         {
             var result = API.LNSound_Stop( _handle);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1338,15 +933,7 @@ namespace Lumino
         public void Pause()
         {
             var result = API.LNSound_Pause( _handle);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1356,15 +943,7 @@ namespace Lumino
         public void Resume()
         {
             var result = API.LNSound_Resume( _handle);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1377,15 +956,7 @@ namespace Lumino
         public void FadeVolume( float targetVolume,  double time,  SoundFadeBehavior behavior)
         {
             var result = API.LNSound_FadeVolume( _handle,  targetVolume,  time,  behavior);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1398,15 +969,7 @@ namespace Lumino
         public void SetEmitterPosition( float x,  float y,  float z)
         {
             var result = API.LNSound_SetEmitterPositionXYZ( _handle,  x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1419,15 +982,7 @@ namespace Lumino
         public void SetEmitterVelocity( float x,  float y,  float z)
         {
             var result = API.LNSound_SetEmitterVelocityXYZ( _handle,  x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
         
@@ -1449,15 +1004,7 @@ namespace Lumino
             {
                 var outSize = new Size();
                 var result = API.LNTexture_GetSize( _handle, out outSize);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outSize;
             
             }
@@ -1490,15 +1037,7 @@ namespace Lumino
         {
             IntPtr outTexture2D;
             var result = API.LNTexture2D_Create( filePath, out outTexture2D);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, outTexture2D);
         
         }
@@ -1520,15 +1059,7 @@ namespace Lumino
             set
             {
                 var result = API.LNSceneNode_SetPosition( _handle, ref value);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
             }
             
@@ -1544,28 +1075,55 @@ namespace Lumino
     /// </summary>
     public partial class Sprite : SceneNode
     {
+         Texture _GetTexture;
     
+        /// <summary>
+        /// スプライトに設定されているテクスチャ
+        /// </summary>
+        public Texture Texture
+        {
+            get
+            {
+                IntPtr outTexture;
+                var result = API.LNSprite_GetTexture( _handle, out outTexture);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                _GetTexture = InternalManager.GetWrapperObject<Texture>(outTexture);
+                return _GetTexture;
+            }
+            
+            set
+            {
+                var result = API.LNSprite_SetTexture( _handle,  (value != null) ? value.Handle : default(IntPtr));
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+            }
+            
+        }
     
         internal Sprite(_LNInternal i) : base(i) {}
         
+    
+    };
+    
+    /// <summary>
+    /// 2Dスプライト
+    /// </summary>
+    public partial class Sprite2D : Sprite
+    {
+    
+    
+        internal Sprite2D(_LNInternal i) : base(i) {}
+        
         /// <summary>
-        /// スプライトオブジェクトを作成します。
+        /// 2Dスプライトオブジェクトを作成します。
         /// </summary>
-        /// <param name="texture">スプライトが表示するテクスチャのハンドル</param>
-        public  Sprite( Texture texture) : base(_LNInternal.InternalBlock)
+        /// <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
+        public  Sprite2D( Texture texture) : base(_LNInternal.InternalBlock)
         {
-            IntPtr outSprite;
-            var result = API.LNSprite_Create( (texture != null) ? texture.Handle : default(IntPtr), out outSprite);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
-            InternalManager.RegisterWrapperObject(this, outSprite);
+            IntPtr outSprite2D;
+            var result = API.LNSprite2D_Create( (texture != null) ? texture.Handle : default(IntPtr), out outSprite2D);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outSprite2D);
         
         }
         
@@ -1638,6 +1196,16 @@ var _Sprite = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_Sprite);
 LNSprite_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _Sprite2D = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new Sprite2D(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_Sprite2D);
+LNSprite2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -1662,6 +1230,9 @@ private static extern void LNSceneNode_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNSprite_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNSprite2D_SetBindingTypeInfo(IntPtr data);
 
 
     }

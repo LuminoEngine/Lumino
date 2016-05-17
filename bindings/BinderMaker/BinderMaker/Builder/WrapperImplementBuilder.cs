@@ -24,7 +24,7 @@ namespace BinderMaker.Builder
 
             _classText = new OutputBuffer();
 
-            _classText.AppendLine("class Wrapper_{0} : public ln::{0}", classType.Name);
+            _classText.AppendLine("class LNWI{0} : public ln::{0}", classType.Name);
             _classText.AppendLine("{");
 
             return true;

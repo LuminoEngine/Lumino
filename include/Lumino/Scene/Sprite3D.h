@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 	@brief	3D 空間に配置されるスプライトです。
 */
 class Sprite3D
-	: public SpriteBase
+	: public Sprite
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:

@@ -54,15 +54,7 @@ namespace Lumino
             {
                 var outLength = new float();
                 var result = API.LNVector2_GetLength(ref this, out outLength);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outLength;
             }
             
@@ -77,15 +69,7 @@ namespace Lumino
             {
                 var outLength = new float();
                 var result = API.LNVector2_GetSquareLength(ref this, out outLength);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outLength;
             }
             
@@ -109,15 +93,7 @@ namespace Lumino
         public void Set( float x,  float y)
         {
             var result = API.LNVector2_Set(ref this,  x,  y);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -128,15 +104,7 @@ namespace Lumino
         {
             var outVec = new Vector2();
             var result = API.LNVector2_Normalize(ref vec, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -146,15 +114,7 @@ namespace Lumino
         public void Normalize()
         {
             var result = API.LNVector2_NormalizeV(ref this);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
     
@@ -182,15 +142,7 @@ namespace Lumino
             {
                 var outLength = new float();
                 var result = API.LNVector3_GetLength(ref this, out outLength);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outLength;
             }
             
@@ -205,15 +157,7 @@ namespace Lumino
             {
                 var outLength = new float();
                 var result = API.LNVector3_GetSquareLength(ref this, out outLength);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outLength;
             }
             
@@ -239,15 +183,7 @@ namespace Lumino
         public void Set( float x,  float y,  float z)
         {
             var result = API.LNVector3_Set(ref this,  x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -258,15 +194,7 @@ namespace Lumino
         public void Set( Vector2 vec2,  float z)
         {
             var result = API.LNVector3_SetVZ(out this, ref vec2,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -277,15 +205,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Normalize(ref vec, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -295,15 +215,7 @@ namespace Lumino
         public void Normalize()
         {
             var result = API.LNVector3_NormalizeV(ref this);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -315,15 +227,7 @@ namespace Lumino
         {
             var dot = new float();
             var result = API.LNVector3_Dot(ref vec1, ref vec2, out dot);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return dot;
         }
         
@@ -336,15 +240,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Cross(ref vec1, ref vec2, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -357,15 +253,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Reflect(ref vec, ref normal, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -378,15 +266,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Slide(ref vec, ref normal, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -400,15 +280,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_Lerp(ref vec1, ref vec2,  t, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -424,15 +296,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_CatmullRom(ref vec1, ref vec2, ref vec3, ref vec4,  t, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -451,15 +315,7 @@ namespace Lumino
         {
             var outVec = new Vector4();
             var result = API.LNVector3_Transform(ref vec, ref mat, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -476,15 +332,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNVector3_TransformCoord(ref vec, ref mat, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -528,15 +376,7 @@ namespace Lumino
         public void Set( float x,  float y,  float z,  float w)
         {
             var result = API.LNVector4_Set(ref this,  x,  y,  z,  w);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
     
@@ -590,15 +430,7 @@ namespace Lumino
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetRight(ref this, out outVec);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outVec;
             }
             
@@ -613,15 +445,7 @@ namespace Lumino
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetUp(ref this, out outVec);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outVec;
             }
             
@@ -636,15 +460,7 @@ namespace Lumino
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetFront(ref this, out outVec);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outVec;
             }
             
@@ -659,15 +475,7 @@ namespace Lumino
             {
                 var outVec = new Vector3();
                 var result = API.LNMatrix_GetPosition(ref this, out outVec);
-                if (result != Result.OK) {
-                    IntPtr errStr;
-                    int errStrLen;
-                    API.LNError_GetLastErrorMessage(out errStr);
-                    API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                    var errBuf = new StringBuilder(errStrLen);
-                    API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                    throw new LuminoException(result, errBuf.ToString());
-                }
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
                 return outVec;
             }
             
@@ -703,15 +511,7 @@ namespace Lumino
         public void Identity()
         {
             var result = API.LNMatrix_Identity(out this);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -726,15 +526,7 @@ namespace Lumino
         public void Translate( float x,  float y,  float z)
         {
             var result = API.LNMatrix_Translate(ref this,  x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -747,15 +539,7 @@ namespace Lumino
         public void TranslateVec3( Vector3 vec)
         {
             var result = API.LNMatrix_TranslateVec3(ref this, ref vec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -768,15 +552,7 @@ namespace Lumino
         public void RotateX( float radian)
         {
             var result = API.LNMatrix_RotateX(ref this,  radian);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -789,15 +565,7 @@ namespace Lumino
         public void RotateY( float radian)
         {
             var result = API.LNMatrix_RotateY(ref this,  radian);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -810,15 +578,7 @@ namespace Lumino
         public void RotateZ( float radian)
         {
             var result = API.LNMatrix_RotateZ(ref this,  radian);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -834,15 +594,7 @@ namespace Lumino
         public void Rotate( float xRad,  float yRad,  float zRad,  RotationOrder rotOrder = RotationOrder.XYZ)
         {
             var result = API.LNMatrix_Rotate(ref this,  xRad,  yRad,  zRad,  rotOrder);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -856,15 +608,7 @@ namespace Lumino
         public void RotateVec3( Vector3 vec,  RotationOrder rotOrder = RotationOrder.XYZ)
         {
             var result = API.LNMatrix_RotateVec3(ref this, ref vec,  rotOrder);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -879,15 +623,7 @@ namespace Lumino
         public void RotateAxis( Vector3 axis,  float radian)
         {
             var result = API.LNMatrix_RotateAxis(ref this, ref axis,  radian);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -900,15 +636,7 @@ namespace Lumino
         public void RotateQuaternion( Quaternion qua)
         {
             var result = API.LNMatrix_RotateQuaternion(ref this, ref qua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -921,15 +649,7 @@ namespace Lumino
         public void Scale( float xyz)
         {
             var result = API.LNMatrix_Scale(ref this,  xyz);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -944,15 +664,7 @@ namespace Lumino
         public void ScaleXYZ( float x,  float y,  float z)
         {
             var result = API.LNMatrix_ScaleXYZ(ref this,  x,  y,  z);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -965,15 +677,7 @@ namespace Lumino
         public void ScaleVec3( Vector3 scale)
         {
             var result = API.LNMatrix_ScaleVec3(ref this, ref scale);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -985,15 +689,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_Multiply(ref mat1, ref mat2, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1005,15 +701,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_Inverse(ref mat, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1025,15 +713,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_Transpose(ref mat, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1047,15 +727,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_ViewTransformLH(ref pos, ref lookAt, ref upDir, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1069,15 +741,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_ViewTransformRH(ref pos, ref lookAt, ref upDir, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1092,15 +756,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_PerspectiveFovLH( fovY,  aspect,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1115,15 +771,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_PerspectiveFovRH( fovY,  aspect,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1138,15 +786,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_OrthoLH( width,  height,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1161,15 +801,7 @@ namespace Lumino
         {
             var matOut = new Matrix();
             var result = API.LNMatrix_OrthoRH( width,  height,  nearZ,  farZ, out matOut);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return matOut;
         }
         
@@ -1180,15 +812,7 @@ namespace Lumino
         {
             var outVec = new Vector3();
             var result = API.LNMatrix_GetEulerAngles(ref this, out outVec);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outVec;
         }
         
@@ -1201,15 +825,7 @@ namespace Lumino
         {
             var trans = new Vector3();
             var result = API.LNMatrix_Decompose(ref this, out scale, out rot, out trans);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return trans;
         }
         
@@ -1253,15 +869,7 @@ namespace Lumino
         public void Set( float x,  float y,  float z,  float w)
         {
             var result = API.LNQuaternion_Set(ref this,  x,  y,  z,  w);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         }
         
         /// <summary>
@@ -1271,15 +879,7 @@ namespace Lumino
         {
             var qua = new Quaternion();
             var result = API.LNQuaternion_Identity(out qua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return qua;
         }
         
@@ -1295,15 +895,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_RotationAxis(ref axis,  r, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         
@@ -1315,15 +907,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_RotationMatrix(ref mat, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         
@@ -1337,15 +921,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_RotationYawPitchRoll( yaw,  pitch,  roll, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         
@@ -1357,15 +933,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Normalize(ref qua, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         
@@ -1377,15 +945,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Conjugate(ref qua, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         
@@ -1398,15 +958,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Multiply(ref qua1, ref qua2, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         
@@ -1420,15 +972,7 @@ namespace Lumino
         {
             var outQua = new Quaternion();
             var result = API.LNQuaternion_Slerp(ref qua1, ref qua2,  t, out outQua);
-            if (result != Result.OK) {
-                IntPtr errStr;
-                int errStrLen;
-                API.LNError_GetLastErrorMessage(out errStr);
-                API.LCSInternal_GetIntPtrStringLength(errStr, out errStrLen);
-                var errBuf = new StringBuilder(errStrLen);
-                API.LCSInternal_GetIntPtrString(errStr, errBuf);
-                throw new LuminoException(result, errBuf.ToString());
-            }
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outQua;
         }
         

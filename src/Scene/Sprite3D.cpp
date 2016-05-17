@@ -9,7 +9,7 @@ LN_NAMESPACE_SCENE_BEGIN
 //==============================================================================
 // Sprite3D
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, SpriteBase);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, Sprite);
 
 //------------------------------------------------------------------------------
 Sprite3DPtr Sprite3D::Create()
@@ -51,7 +51,7 @@ Sprite3D::~Sprite3D()
 //------------------------------------------------------------------------------
 void Sprite3D::Initialize(SceneGraph* owner)
 {
-	SpriteBase::Initialize(owner, SpriteCoord_RZ);
+	Sprite::Initialize(owner, SpriteCoord_RZ);
 }
 
 LN_NAMESPACE_SCENE_END

@@ -3,6 +3,7 @@
 #include <Lumino/Graphics/SamplerState.h>
 #include <Lumino/Graphics/Bitmap.h>
 #include "../GraphicsDriverInterface.h"
+#include "DX9Module.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

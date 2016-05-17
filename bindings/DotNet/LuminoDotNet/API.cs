@@ -1030,6 +1030,13 @@ namespace Lumino
         public extern static void LNVersion_GetRevision(out int outRevision);
 
         /// <summary>
+        /// ビルドバージョンを取得します。
+        /// </summary>
+        /// <param name="outBuild">バージョン番号を格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNVersion_GetBuild(out int outBuild);
+
+        /// <summary>
         /// バージョン文字列を取得します。
         /// </summary>
         /// <param name="outStr">文字列へのポインタを格納する変数のポインタ</param>
@@ -2070,12 +2077,28 @@ namespace Lumino
         public extern static Result LNSceneNode_SetPosition( IntPtr sceneNode, ref Vector3 position);
 
         /// <summary>
-        /// スプライトオブジェクトを作成します。
+        /// スプライトに設定されているテクスチャを取得します。
         /// </summary>
-        /// <param name="texture">スプライトが表示するテクスチャのハンドル</param>
-        /// <param name="outSprite">作成されたスプライトオブジェクトのハンドルを格納する変数のポインタ</param>
+        /// <param name="sprite">スプライトハンドル</param>
+        /// <param name="outTexture">テクスチャハンドルを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSprite_Create( IntPtr texture, out IntPtr outSprite);
+        public extern static Result LNSprite_GetTexture( IntPtr sprite, out IntPtr outTexture);
+
+        /// <summary>
+        /// スプライトにテクスチャを設定します。
+        /// </summary>
+        /// <param name="sprite">スプライトハンドル</param>
+        /// <param name="texture">テクスチャハンドル</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSprite_SetTexture( IntPtr sprite,  IntPtr texture);
+
+        /// <summary>
+        /// 2Dスプライトオブジェクトを作成します。
+        /// </summary>
+        /// <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
+        /// <param name="outSprite2D">作成された2Dスプライトハンドルを格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSprite2D_Create( IntPtr texture, out IntPtr outSprite2D);
 
 
 
