@@ -11,6 +11,8 @@ namespace LuminoBuild
 
         static void Main(string[] args)
         {
+            Console.WriteLine(Builder.GetLibararyVersion());
+
             var builder = new Builder("../../../../");
             builder.BuildEngine();
             return;

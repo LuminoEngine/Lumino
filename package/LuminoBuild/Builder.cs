@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace LuminoBuild
 {
@@ -40,6 +41,29 @@ namespace LuminoBuild
             Utils.CallProcess("cmake", "-DLN_USE_UNICODE_CHAR_SET=ON -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON ..");
             Utils.CallProcess(MSBuildPath, "/t:Rebuild /p:Configuration=Debug /p:Platform=Win32 /m Lumino.sln");
             Utils.CallProcess(MSBuildPath, "/t:Rebuild /p:Configuration=Release /p:Platform=Win32 /m Lumino.sln");
+        }
+
+
+
+
+        [DllImport("../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private extern static void LNVersion_GetString(out IntPtr outStr);
+
+        [DllImport("../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private extern static void LCSInternal_GetIntPtrStringLength(IntPtr str, out int len);
+
+        [DllImport("../../../../lib/LuminoC_x86uMTd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private extern static void LCSInternal_GetIntPtrString(IntPtr str, StringBuilder buf);
+
+        public static string GetLibararyVersion()
+        {
+            IntPtr str;
+            int len = 0;
+            LNVersion_GetString(out str);
+            LCSInternal_GetIntPtrStringLength(str, out len);
+            var b = new StringBuilder(len);
+            LCSInternal_GetIntPtrString(str, b);
+            return b.ToString();
         }
     }
 }

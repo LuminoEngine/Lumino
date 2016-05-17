@@ -367,7 +367,7 @@ SpriteRendererImpl::SpriteRendererImpl(GraphicsManager* manager, int maxSpriteCo
 	, m_viewPosition()
 	, m_viewProjMatrix()
 	, m_viewPixelSize()
-	, m_spriteSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront)
+	, m_spriteSortMode(SpriteSortMode::Texture | SpriteSortMode::DepthBackToFront)
 	, m_sortingBasis(SortingDistanceBasis_RawZ)
 {
 	GraphicsResourceObject::Initialize(manager);
@@ -901,15 +901,15 @@ void SpriteRendererImpl::Flush()
 	//memcpy(m_spriteIndexList, mSpriteIndexArraySource, sizeof(*m_spriteIndexList) * mLastSpriteNum);
 
 	// インデックスを並び替える
-	if (m_spriteSortMode & SpriteSortMode_Texture)
+	if (m_spriteSortMode & SpriteSortMode::Texture)
 	{
-		if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
+		if (m_spriteSortMode & SpriteSortMode::DepthBackToFront)
 		{
 			SpriteCmpDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else if (m_spriteSortMode & SpriteSortMode_DepthFrontToBack)
+		else if (m_spriteSortMode & SpriteSortMode::DepthFrontToBack)
 		{
 			SpriteCmpDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;
@@ -918,13 +918,13 @@ void SpriteRendererImpl::Flush()
 	}
 	else
 	{
-		if (m_spriteSortMode & SpriteSortMode_DepthBackToFront)
+		if (m_spriteSortMode & SpriteSortMode::DepthBackToFront)
 		{
 			SpriteCmpTexDepthBackToFront cmp;
 			cmp.spriteList = &m_spriteRequestList;
 			std::stable_sort(m_spriteIndexList.begin(), m_spriteIndexList.begin() + spriteCount, cmp);
 		}
-		else if (m_spriteSortMode & SpriteSortMode_DepthFrontToBack)
+		else if (m_spriteSortMode & SpriteSortMode::DepthFrontToBack)
 		{
 			SpriteCmpTexDepthFrontToBack cmp;
 			cmp.spriteList = &m_spriteRequestList;

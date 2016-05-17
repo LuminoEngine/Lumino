@@ -282,14 +282,15 @@ enum SortingDistanceBasis
 	SortingDistanceBasis_ViewPont,		///< オブジェクトの位置と視点との距離
 };
 
-/// スプライトのソート方法
-enum SpriteSortMode
+/** スプライトのソート方法 */
+LN_ENUM_FLAGS(SpriteSortMode)
 {
-	SpriteSortMode_None = 0x00,					///< ソートしない
-	SpriteSortMode_DepthBackToFront = 0x01,		///< Z値が大きいものが先に描画されるようにソートする (アルファブレンド使用時の推奨)
-	SpriteSortMode_DepthFrontToBack = 0x02,		///< Z値が小さいものが先に描画されるようにソートする (SpriteSortMode_DepthBackToFront と同時には使えない)
-	SpriteSortMode_Texture = 0x04,				///< テクスチャを優先してソートする (同じテクスチャを持つスプライトが多数あるとき用。ただし、アルファブレンドが有効な場合は描画が不自然になることがある)
+	None				= 0x00,			/**< ソートしない */
+	DepthBackToFront	= 0x01,			/**< Z値が大きいものが先に描画されるようにソートする (アルファブレンド使用時の推奨) */
+	DepthFrontToBack	= 0x02,			/**< Z値が小さいものが先に描画されるようにソートする (SpriteSortMode_DepthBackToFront と同時には使えない) */
+	Texture				= 0x04,			/**< テクスチャを優先してソートする (同じテクスチャを持つスプライトが多数あるとき用。ただし、アルファブレンドが有効な場合は描画が不自然になることがある) */
 };
+LN_ENUM_FLAGS_DECLARE(SpriteSortMode);
 
 
 enum BrushType
