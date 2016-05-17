@@ -5,7 +5,7 @@
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/SpriteBase.h>
+#include <Lumino/Scene/Sprite.h>
 #include "../Graphics/PrimitiveRenderer.h"	// todo
 
 LN_NAMESPACE_BEGIN
@@ -246,6 +246,101 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 			Vector3(m_lowerRight.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_lowerRightUV.x, m_upperLeftUV.y), ColorF::White);
 	}
 }
+
+
+//==============================================================================
+// Sprite2D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, Sprite);
+
+//------------------------------------------------------------------------------
+Sprite2DPtr Sprite2D::Create()
+{
+	auto obj = Sprite2DPtr::MakeRef();
+	obj->Initialize(SceneGraphManager::Instance->GetDefault2DSceneGraph());
+	return obj;
+}
+
+//------------------------------------------------------------------------------
+Sprite2DPtr Sprite2D::Create(const StringRef& filePath)
+{
+	auto tex = Texture2D::Create(filePath);
+	return Create(tex);
+}
+
+//------------------------------------------------------------------------------
+Sprite2DPtr Sprite2D::Create(Texture* texture)
+{
+	auto obj = Create();
+	obj->SetTexture(texture);
+	return obj;
+}
+
+//------------------------------------------------------------------------------
+Sprite2D::Sprite2D()
+{
+}
+
+//------------------------------------------------------------------------------
+Sprite2D::~Sprite2D()
+{
+}
+
+//------------------------------------------------------------------------------
+void Sprite2D::Initialize(SceneGraph* owner)
+{
+	Sprite::Initialize(owner, SpriteCoord_2D);
+}
+
+
+//==============================================================================
+// Sprite3D
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, Sprite);
+
+//------------------------------------------------------------------------------
+Sprite3DPtr Sprite3D::Create()
+{
+	auto obj = Sprite3DPtr::MakeRef();
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	return obj;
+}
+
+//------------------------------------------------------------------------------
+Sprite3DPtr Sprite3D::Create(float width, float height)
+{
+	auto obj = Sprite3DPtr::MakeRef();
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	obj->SetSize(SizeF(width, height));
+	return obj;
+}
+
+//------------------------------------------------------------------------------
+Sprite3DPtr Sprite3D::Create(float width, float height, Texture* texture)
+{
+	auto obj = Sprite3DPtr::MakeRef();
+	obj->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph());
+	obj->SetSize(SizeF(width, height));
+	obj->SetTexture(texture);
+	return obj;
+}
+
+//------------------------------------------------------------------------------
+Sprite3D::Sprite3D()
+{
+}
+
+//------------------------------------------------------------------------------
+Sprite3D::~Sprite3D()
+{
+}
+
+//------------------------------------------------------------------------------
+void Sprite3D::Initialize(SceneGraph* owner)
+{
+	Sprite::Initialize(owner, SpriteCoord_RZ);
+}
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

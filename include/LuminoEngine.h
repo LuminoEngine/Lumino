@@ -83,8 +83,7 @@
 
 #include "Lumino/Scene/SceneGraph.h"
 #include "Lumino/Scene/Camera.h"
-#include "Lumino/Scene/Sprite2D.h"
-#include "Lumino/Scene/Sprite3D.h"
+#include "Lumino/Scene/Sprite.h"
 #include "Lumino/Scene/TileMapNode.h"
 #include "Lumino/Scene/SpriteParticle.h"
 #include "Lumino/Scene/Grid.h"

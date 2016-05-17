@@ -38,15 +38,27 @@ LN_CLASS_END
 LN_CLASS(LNTexture2D, LNTexture)
 
 	/**
-		@brief		ファイルから2Dテクスチャオブジェクトを作成します。
+		@brief		サイズを指定して2Dテクスチャを作成します。
+		@param[in]	width			: テクスチャの幅 (ピクセル単位)
+		@param[in]	height			: テクスチャの高さ (ピクセル単位)
+		@param[in]	format			: テクスチャのピクセルフォーマット
+		@param[in]	mipmap			: ミップマップの有無
+		@param[out]	outTexture2D	: 作成された2Dテクスチャのハンドルを格納する変数のポインタ
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_CONSTRUCTOR
+	LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format, LNBool mipmap, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D);
+
+	/**
+		@brief		ファイルから2Dテクスチャを作成します。
 		@param[in]	filePath		: 画像ファイルのパス
-		@param[out]	outTexture2D	: 作成された2Dテクスチャオブジェクトのハンドルを格納する変数のポインタ
+		@param[out]	outTexture2D	: 作成された2Dテクスチャのハンドルを格納する変数のポインタ
 		@details	全てのプラットフォームでサポートされているファイルフォーマットは .png です。
 					グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNTexture2D_Create(const LNChar* filePath, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D);
+	LNResult LNTexture2D_CreateFromFile(const LNChar* filePath, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D);
 
 	
 LN_CLASS_END

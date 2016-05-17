@@ -159,10 +159,8 @@ Texture2DPtr Texture2D::Create(int width, int height, TextureFormat format, int 
 //------------------------------------------------------------------------------
 Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLevels)
 {
-	// ロック用のビットマップを作る
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format)), false);
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->CreateCore(GraphicsManager::GetInstance(), size, format, mipLevels, bitmap);
+	tex->Initialize(GraphicsManager::GetInstance(), size, format, mipLevels);
 	return tex;
 }
 
@@ -212,21 +210,19 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::CreateCore(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels, Bitmap* primarySurface)
+void Texture2D::Initialize(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels)
 {
 	GraphicsResourceObject::Initialize(manager);
 
 	m_size = size;
 	m_mipLevels = mipLevels;
 	m_format = format;
-	LN_REFOBJ_SET(m_primarySurface, primarySurface);
+
+	// ロック用のビットマップを作る
+	m_primarySurface = LN_NEW Bitmap(size, Utils::TranslatePixelFormat(format));
 
 	// テクスチャを作る
-	m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexture(primarySurface->GetSize(), mipLevels, format, primarySurface->GetBitmapBuffer()->GetConstData());
-
-	// ビットマップを転送する
-	//Driver::IGraphicsDevice::ScopedLockContext lock(GetDevice());
-	//obj->SetSubData(Point(0, 0), primarySurface->GetBitmapBuffer()->GetConstData(), primarySurface->GetBitmapBuffer()->GetSize(), primarySurface->GetSize());
+	m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexture(size, mipLevels, format, nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -258,8 +254,8 @@ void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureForm
 	// プラットフォーム依存のロードが失敗したら普通の処理
 	if (m_deviceObj == NULL)
 	{
-		RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
-		CreateCore(m_manager, bitmap->GetSize(), format, mipLevels, bitmap);
+		m_primarySurface = LN_NEW Bitmap(stream);
+		m_deviceObj = GraphicsManager::GetInstance()->GetGraphicsDevice()->CreateTexture(m_primarySurface->GetSize(), mipLevels, format, m_primarySurface->GetBitmapBuffer()->GetConstData());
 	}
 
 #if 0

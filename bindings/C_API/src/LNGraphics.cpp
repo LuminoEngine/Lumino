@@ -28,7 +28,19 @@ LNResult LNTexture_GetSize(LN_HANDLE(LNTexture) texture, LN_OUT LNSize* outSize)
 LN_TYPE_INFO_IMPL(Texture2D, LNTexture2D);
 
 //------------------------------------------------------------------------------
-LNResult LNTexture2D_Create(const LNChar* filePath, LN_OUT LN_HANDLE(Texture2D)* texture2D)
+LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format, LNBool mipmap, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D)
+{
+	LN_CHECK_ARG(outTexture2D != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	auto ptr = RefPtr<LNWITexture2D>::MakeRef();
+	ptr->Initialize(LFManager::Engine->GetGraphicsManager(), Size(width, height), TextureFormat_R8G8B8A8, 1);
+	*outTexture2D = LFManager::CheckRegisterObject(ptr);
+	ptr.SafeAddRef();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNTexture2D_CreateFromFile(const LNChar* filePath, LN_OUT LN_HANDLE(LNTexture2D)* texture2D)
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<LNWITexture2D> obj(LN_NEW LNWITexture2D(), false);

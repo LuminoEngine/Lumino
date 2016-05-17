@@ -69,8 +69,8 @@ void Model::Create(detail::ModelManager* manager, const PathName& filePath)
 		m_skinningMatrices = LN_NEW Matrix[boneCount];
 		m_skinningMatricesTexture.Attach(LN_NEW Texture2D(), false);
 		Size size = Size(4, boneCount);
-		RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(TextureFormat_R32G32B32A32_Float)), false);
-		m_skinningMatricesTexture->CreateCore(m_manager->GetGraphicsManager(), size, TextureFormat_R32G32B32A32_Float, 1, bitmap);
+		//RefPtr<Bitmap> bitmap(LN_NEW Bitmap(size, Utils::TranslatePixelFormat(TextureFormat_R32G32B32A32_Float)), false);
+		m_skinningMatricesTexture->Initialize(m_manager->GetGraphicsManager(), size, TextureFormat_R32G32B32A32_Float, 1);
 
 
 		// アニメーション管理

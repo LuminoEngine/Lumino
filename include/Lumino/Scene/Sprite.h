@@ -80,5 +80,55 @@ private:
 	friend class Internal::SceneHelper;
 };
 
+/**
+	@brief	2D 空間に配置されるスプライトです。
+*/
+class Sprite2D
+	: public Sprite
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	
+	/**
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+	*/
+	static Sprite2DPtr Create();
+	
+	/**
+		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
+	*/
+	static Sprite2DPtr Create(const StringRef& filePath);
+
+	static Sprite2DPtr Create(Texture* texture);
+
+LN_PROTECTED_INTERNAL_ACCESS:
+	Sprite2D();
+	virtual ~Sprite2D();
+	void Initialize(SceneGraph* owner);
+};
+
+/**
+	@brief	3D 空間に配置されるスプライトです。
+*/
+class Sprite3D
+	: public Sprite
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	
+	/**
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+	*/
+	static Sprite3DPtr Create();
+
+	static Sprite3DPtr Create(float width, float height);
+	static Sprite3DPtr Create(float width, float height, Texture* texture);
+
+protected:
+	Sprite3D();
+	virtual ~Sprite3D();
+	void Initialize(SceneGraph* owner);
+};
+
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
