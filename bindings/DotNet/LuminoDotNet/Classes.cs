@@ -1087,7 +1087,10 @@ namespace Lumino
                 IntPtr outTexture;
                 var result = API.LNSprite_GetTexture( _handle, out outTexture);
                 if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-                _GetTexture = InternalManager.GetWrapperObject<Texture>(outTexture);
+                if (outTexture == null)
+                    _GetTexture = null;
+                else if (_GetTexture == null || _GetTexture.Handle != outTexture)
+                    _GetTexture = InternalManager.GetWrapperObject<Texture>(outTexture);
                 return _GetTexture;
             }
             

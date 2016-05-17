@@ -27,12 +27,12 @@ namespace BinderMaker
                 // 関数が定義されているヘッダを解析する
                 var apiHeaders = new string[]
                 {
-                SourcesRootDir + "LNApplication.h",
-                SourcesRootDir + "LNBase.h",
-                SourcesRootDir + "LNMath.h",
-                SourcesRootDir + "LNAudio.h",
-                SourcesRootDir + "LNGraphics.h",
-                SourcesRootDir + "LNScene.h",
+                    SourcesRootDir + "LNApplication.h",
+                    SourcesRootDir + "LNBase.h",
+                    SourcesRootDir + "LNMath.h",
+                    SourcesRootDir + "LNAudio.h",
+                    SourcesRootDir + "LNGraphics.h",
+                    SourcesRootDir + "LNScene.h",
                 };
                 var parser = new Parser.CLAPIHeaderParser();
                 var modules = parser.Analyze(apiHeaders);
@@ -41,9 +41,9 @@ namespace BinderMaker
                 CLManager.Instance.LinkEntities();
 
                 // Wrapper
-                var wrapperBuilder = new Builder.WrapperImplementBuilder();
-                wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
-                return 0;
+                //var wrapperBuilder = new Builder.WrapperImplementBuilder();
+                //wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
+                //return 0;
 
                 // C#
                 var csPInvoleBuilder = new Builder.CSPInvokeBuilder();

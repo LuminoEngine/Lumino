@@ -256,9 +256,20 @@ return sb.ToString();".Trim();
                         else
                         {
                             #region 参照オブジェクト型の return
+                            /* (example)
+                                IntPtr outTexture;
+                                var result = API.LNSprite_GetTexture( _handle, out outTexture);
+                                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                                if (outTexture == null)
+                                    _GetTexture = null;
+                                else if (_GetTexture == null || _GetTexture.Handle != outTexture )
+                                    _GetTexture = InternalManager.GetWrapperObject<Texture>(outTexture);
+                                return _GetTexture;
+                             */
                             // やっていることは、
                             // ・Wrap 側に未登録のオブジェクトなら登録する
                             // ・return するオブジェクトを保持するフィールドの作成
+
                             string typeName = CSCommon.MakeTypeName(param.Type);
                             string fieldName = "_" + method.Name; // 現在プロパティ名を受け取っていないのでとりあえずこれを使う
 
@@ -268,7 +279,10 @@ return sb.ToString();".Trim();
                             argsText.AppendCommad("out " + param.Name);
                             // 後処理
                             string format = @"
-{0} = InternalManager.GetWrapperObject<{1}>({2});
+if ({2} == null)
+    {0} = null;
+else if ({0} == null || {0}.Handle != {2})
+    {0} = InternalManager.GetWrapperObject<{1}>({2});
 return {0};".Trim();
                             returnStmtText = string.Format(format, fieldName, typeName, param.Name);
 
@@ -277,19 +291,6 @@ return {0};".Trim();
                             if (!method.IsInstanceMethod)
                                 modifier += "static";
                             _fieldsText.AppendWithIndent(string.Format("{0} {1} {2};", modifier, typeName, fieldName)).NewLine();
-
-                            /* 例)
-                            IntPtr viewPane;
-                            API.LViewPane_GetDefaultViewPane(out viewPane);
-                            if (viewPane == null) {
-                                _viewPane = null;
-                            }
-                            else if (_viewPane == null || _viewPane.Handle != viewPane) {
-                                _viewPane = new ViewPane();
-                                _viewPane._handle = viewPane;
-                            }
-                            return _viewPane;
-                            */
                             #endregion
                         }
                     }
