@@ -47,7 +47,7 @@ void FontGlyphTextureCache::Initialize(GraphicsManager* manager, Font* font)
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(Size(w, w), 1, TextureFormat_R8G8B8A8, nullptr);
+	m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(Size(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
 	//m_glyphsFillTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
 
 	// 検索に使う情報をリセット

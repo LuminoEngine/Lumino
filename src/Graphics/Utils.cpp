@@ -27,8 +27,8 @@ int Utils::GetTextureFormatByteCount(TextureFormat format)
 		2,		// TextureFormat_R16F,
 		4,		// TextureFormat_R32F,
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == TextureFormat_Max);
-	return table[format];
+	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
+	return table[(int)format];
 }
 
 //------------------------------------------------------------------------------
@@ -50,8 +50,8 @@ PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
 		PixelFormat::Unknown,		// TextureFormat_R16F,
 		PixelFormat::Unknown,		// TextureFormat_R32F,
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == TextureFormat_Max);
-	return table[format];
+	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
+	return table[(int)format];
 }
 
 LN_NAMESPACE_GRAPHICS_END

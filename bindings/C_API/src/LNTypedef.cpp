@@ -30,11 +30,13 @@
 #include "LNInternal.h"
 #include "../include/LNTypedef.h"
 
-ln::TextureFormat LNTextureFormat_TranslateTo(LNTextureFormat value);
-LNTextureFormat LNTextureFormat_TranslateFrom(ln::TextureFormat value);
+TextureFormat LNTextureFormat_TranslateTo(LNTextureFormat value);
+LNTextureFormat LNTextureFormat_TranslateFrom(TextureFormat value);
 
 void LNTypeDef_CheckCommonDefinition()
 {
+	//static_assert(LN_FMT__TERMINATOR != (int)TextureFormat::_Count);
+
 	//if (sizeof(LNVariant) >= sizeof(Variant)) goto ERR_EXIT;
 	//if (LN_VARIANTTYPE__TERMINATOR != VariantType_Max) goto ERR_EXIT;
 

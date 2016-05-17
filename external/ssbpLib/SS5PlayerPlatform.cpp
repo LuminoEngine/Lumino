@@ -62,7 +62,7 @@ namespace ss
 
 		ln::RefPtr<ln::Texture2D> tex(LN_NEW ln::Texture2D(), false);
 		ln::String path = ln::String::FromNativeCharString(pszFileName);
-		tex->CreateCore(g_graphicsManager, path.c_str(), ln::TextureFormat_R8G8B8A8, 1);
+		tex->CreateCore(g_graphicsManager, path.c_str(), ln::TextureFormat::R8G8B8A8, 1);
 		
 		ln::Texture2D* p = tex.DetachMove();
 		g_texPtrSet.insert(p);

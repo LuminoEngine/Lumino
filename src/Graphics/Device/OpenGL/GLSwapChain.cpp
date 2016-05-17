@@ -47,7 +47,7 @@ void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, Platf
 	LN_REFOBJ_SET(m_window, window);
 
 	// TODO: バックバッファサイズ
-	m_renderTarget = LN_NEW GLRenderTargetTexture(m_window->GetSize(), TextureFormat_R8G8B8A8, 1);
+	m_renderTarget = LN_NEW GLRenderTargetTexture(m_window->GetSize(), TextureFormat::R8G8B8A8, 1);
 
 	OnResetDevice();
 }

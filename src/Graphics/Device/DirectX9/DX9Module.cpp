@@ -395,8 +395,8 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 		D3DFMT_R16F,			// TextureFormat_R16_Float
 		D3DFMT_R32F,			// TextureFormat_R32_Float
 	};
-	assert(LN_ARRAY_SIZE_OF(d3dFormats) == TextureFormat_Max);
-	return d3dFormats[format];
+	assert(LN_ARRAY_SIZE_OF(d3dFormats) == (int)TextureFormat::_Count);
+	return d3dFormats[(int)format];
 }
 
 //------------------------------------------------------------------------------
@@ -404,19 +404,19 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 {
 	switch (dx_format)
     {
-	case D3DFMT_A8B8G8R8:		return TextureFormat_R8G8B8A8;
-	case D3DFMT_X8B8G8R8:		return TextureFormat_R8G8B8X8;
-	case D3DFMT_A8R8G8B8:		return TextureFormat_B8G8R8A8;
-	case D3DFMT_X8R8G8B8:		return TextureFormat_B8G8R8X8;
+	case D3DFMT_A8B8G8R8:		return TextureFormat::R8G8B8A8;
+	case D3DFMT_X8B8G8R8:		return TextureFormat::R8G8B8X8;
+	case D3DFMT_A8R8G8B8:		return TextureFormat::B8G8R8A8;
+	case D3DFMT_X8R8G8B8:		return TextureFormat::B8G8R8X8;
 
-	case D3DFMT_A16B16G16R16F:	return TextureFormat_R16G16B16A16_Float;
-	case D3DFMT_A32B32G32R32F:	return TextureFormat_R32G32B32A32_Float;
-	case D3DFMT_D24S8:			return TextureFormat_D24S8;
-	case D3DFMT_R16F:			return TextureFormat_R16_Float;
-	case D3DFMT_R32F:			return TextureFormat_R32_Float;
+	case D3DFMT_A16B16G16R16F:	return TextureFormat::R16G16B16A16_Float;
+	case D3DFMT_A32B32G32R32F:	return TextureFormat::R32G32B32A32_Float;
+	case D3DFMT_D24S8:			return TextureFormat::D24S8;
+	case D3DFMT_R16F:			return TextureFormat::R16_Float;
+	case D3DFMT_R32F:			return TextureFormat::R32_Float;
     }
 
-	return TextureFormat_Unknown;
+	return TextureFormat::Unknown;
 }
 
 LN_NAMESPACE_GRAPHICS_END

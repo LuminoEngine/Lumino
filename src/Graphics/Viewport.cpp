@@ -195,9 +195,9 @@ void Viewport::TryRemakeLayerTargets()
 		LN_SAFE_RELEASE(m_secondaryLayerTarget);
 
 		m_primaryLayerTarget = LN_NEW RenderTarget();
-		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat_R8G8B8X8);
+		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
 		m_secondaryLayerTarget = LN_NEW RenderTarget();
-		m_secondaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat_R8G8B8X8);
+		m_secondaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
 	}
 }
 

@@ -63,7 +63,7 @@ Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
 	Texture2DPtr ref = Texture2DPtr::MakeRef();
-	ref->CreateCore(m_engineManager->GetGraphicsManager(), filePath, TextureFormat_R8G8B8A8, 1);
+	ref->CreateCore(m_engineManager->GetGraphicsManager(), filePath, TextureFormat::R8G8B8A8, 1);
 
 	m_textureCache->RegisterCacheObject(key, ref);
 	return ref;

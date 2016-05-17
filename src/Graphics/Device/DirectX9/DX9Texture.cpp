@@ -96,7 +96,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	LN_COMCALL(DX9Module::D3DXGetImageInfoFromFileInMemory(data, size, &imageInfo));
 
 	// テクスチャのフォーマットを決める
-	D3DFORMAT dxFormat = (format == TextureFormat_Unknown) ? imageInfo.Format : DX9Module::TranslateLNFormatToDxFormat(format);
+	D3DFORMAT dxFormat = (format == TextureFormat::Unknown) ? imageInfo.Format : DX9Module::TranslateLNFormatToDxFormat(format);
 
 	D3DCOLOR ck = D3DCOLOR_ARGB(colorKey.a, colorKey.r, colorKey.g, colorKey.b);
 	LN_COMCALL(DX9Module::D3DXCreateTextureFromFileInMemoryEx(
@@ -261,11 +261,11 @@ void DX9RenderTargetTexture::OnResetDevice()
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
 
 	// レンダーターゲットは GDI 互換フォーマットでなければならない (Radeon HD8490)
-	if (m_format == TextureFormat_R8G8B8A8) {
-		m_format = TextureFormat_B8G8R8A8;
+	if (m_format == TextureFormat::R8G8B8A8) {
+		m_format = TextureFormat::B8G8R8A8;
 	}
-	else if (m_format == TextureFormat_R8G8B8X8) {
-		m_format = TextureFormat_B8G8R8X8;
+	else if (m_format == TextureFormat::R8G8B8X8) {
+		m_format = TextureFormat::B8G8R8X8;
 	}
 
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(m_format);
@@ -440,7 +440,7 @@ void DX9DepthBuffer::OnResetDevice()
 DX9BackBufferTexture::DX9BackBufferTexture(DX9GraphicsDevice* device)
 	: DX9TextureBase(device)
 	, m_dxSurface(NULL)
-	, m_format(TextureFormat_Unknown)
+	, m_format(TextureFormat::Unknown)
 	, m_realSize()
 	, m_lockedSystemSurface(NULL)
 {

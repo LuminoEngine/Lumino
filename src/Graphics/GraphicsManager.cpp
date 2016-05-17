@@ -1026,7 +1026,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		}
 
 		// ダミーテクスチャ
-		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat_R8G8B8A8, NULL);
+		m_dummyTexture = m_graphicsDevice->CreateTexture(Size(32, 32), 1, TextureFormat::R8G8B8A8, NULL);
 		{
 			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 			BitmapPainter painter(m_dummyTexture->Lock());

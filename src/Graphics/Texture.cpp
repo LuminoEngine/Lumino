@@ -24,7 +24,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Texture, GraphicsResourceObject);
 Texture::Texture()
 	: m_deviceObj(NULL)
 	, m_size()
-	, m_format(TextureFormat_Unknown)
+	, m_format(TextureFormat::Unknown)
 	, m_primarySurface(NULL)
 {
 }

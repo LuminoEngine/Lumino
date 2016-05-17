@@ -31,10 +31,10 @@ void GLTextureBase::GetGLTextureFormat(TextureFormat format, GLenum* internalFor
 		{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat_R16F,
 		{ GL_R32F,				GL_RED,				GL_DOUBLE },		// TextureFormat_R32F,
 	};
-	assert(LN_ARRAY_SIZE_OF(table) == TextureFormat_Max);
-	*internalFormat = table[format][0];
-	*pixelFormat = table[format][1];
-	*elementType = table[format][2];
+	assert(LN_ARRAY_SIZE_OF(table) == (int)TextureFormat::_Count);
+	*internalFormat = table[(int)format][0];
+	*pixelFormat = table[(int)format][1];
+	*elementType = table[(int)format][2];
 }
 
 void GLTextureBase::SetGLSamplerState(const SamplerState& state)

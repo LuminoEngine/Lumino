@@ -163,24 +163,25 @@ enum IndexBufferFormat
 	IndexBufferFormat_UInt32,
 };
 
-/// テクスチャのピクセルフォーマット
-enum TextureFormat
+/** テクスチャのピクセルフォーマット */
+enum class TextureFormat
 {
-	TextureFormat_Unknown = 0,
+	Unknown = 0,
 
-	TextureFormat_R8G8B8A8,				///< 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM)
-	TextureFormat_R8G8B8X8,				///< 32 ビットのアルファ無しフォーマット
+	R8G8B8A8,				///< 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM)
+	R8G8B8X8,				///< 32 ビットのアルファ無しフォーマット
 
-	TextureFormat_B8G8R8A8,				///< 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している)
-	TextureFormat_B8G8R8X8,				///< 32 ビットのアルファ無しフォーマット
+	B8G8R8A8,				///< 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している)
+	B8G8R8X8,				///< 32 ビットのアルファ無しフォーマット
 	
-	TextureFormat_R16G16B16A16_Float,	///< 64 ビットの浮動小数点フォーマット
-	TextureFormat_R32G32B32A32_Float,	///< 128 ビットの浮動小数点フォーマット
-	TextureFormat_D24S8,				///< S8 32 ビットの Z バッファフォーマット
-	TextureFormat_R16_Float,
-	TextureFormat_R32_Float,
+	R16G16B16A16_Float,	///< 64 ビットの浮動小数点フォーマット
+	R32G32B32A32_Float,	///< 128 ビットの浮動小数点フォーマット
+	R16_Float,
+	R32_Float,
 
-	TextureFormat_Max,					///< (terminator)
+	D24S8,				///< S8 32 ビットの Z バッファフォーマット
+
+	_Count,					///< (terminator)
 
 	/*
 		↑の定数のRGBA の並びは、実際のメモリ上のバイトシーケンス。エンディアンは関係ない。
@@ -190,7 +191,6 @@ enum TextureFormat
 		TIFFやPNGは (RGBA)
 
 		DX9は RGBA フォーマットを扱えない。(D3DFMT_ に定義されていない)
-
 	*/
 };
 
