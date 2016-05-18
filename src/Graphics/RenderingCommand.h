@@ -365,6 +365,26 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 		cmd.Execute(); \
 	}
 
+#define LN_ENQUEUE_RENDER_COMMAND_1(name, manager, type1, param1, code) \
+	class RenderCommand_##name : public RenderingCommand \
+	{ \
+	public: \
+		type1 param1; \
+		RenderCommand_##name( \
+			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1)) \
+			: param1(in_##param1) \
+		{} \
+		void OnEnqueued(RenderingCommandList* commandList) \
+		{ \
+			RenderingCommand::MarkBulkData(commandList, param1); \
+		} \
+		virtual void Execute() override \
+		{ \
+			code; \
+		} \
+	}; \
+	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1);
+
 #define LN_ENQUEUE_RENDER_COMMAND_2(name, manager, type1, param1, type2, param2, code) \
 	class RenderCommand_##name : public RenderingCommand \
 	{ \

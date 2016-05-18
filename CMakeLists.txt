@@ -177,6 +177,7 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/Color.h
 	include/Lumino/Graphics/Common.h
 	include/Lumino/Graphics/ContextInterface.h
+	include/Lumino/Graphics/FrameCapturer.h
 	include/Lumino/Graphics/Graphics.h
 	include/Lumino/Graphics/GraphicsContext.h
 	include/Lumino/Graphics/GraphicsException.h
@@ -208,6 +209,7 @@ set(LN_SOURCES_Graphics
 	src/Graphics/Brush.cpp
 	src/Graphics/Color.cpp
 	src/Graphics/ContextInterface.cpp
+	src/Graphics/FrameCapturer.cpp
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h
 	src/Graphics/Graphics.cpp

@@ -194,6 +194,7 @@ void Viewport::TryRemakeLayerTargets()
 		LN_SAFE_RELEASE(m_primaryLayerTarget);
 		LN_SAFE_RELEASE(m_secondaryLayerTarget);
 
+		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		m_primaryLayerTarget = LN_NEW RenderTarget();
 		m_primaryLayerTarget->CreateImpl(m_manager, m_renderTarget->GetSize(), 1, TextureFormat::R8G8B8X8);
 		m_secondaryLayerTarget = LN_NEW RenderTarget();

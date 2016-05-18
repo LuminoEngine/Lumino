@@ -5,6 +5,7 @@
 #include "Common.h"
 #include "../../src/EngineManager.h"
 #include "../../src/Modeling/ModelManager.h"
+#include "../../src/Graphics/GraphicsManager.h"
 #include <Lumino/Tilemap/TileMapModel.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/TileMapNode.h>
@@ -12,6 +13,7 @@
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>
 //#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
+
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 //{
@@ -300,6 +302,14 @@ int main()
 #endif
 		//Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::BlueViolet);
 
+		//Viewport::GetMainWindowViewport()
+
+		//auto frameCapturer = FrameCapturer::Create();
+		//frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
+		//frameCapturer->StartRecording();
+		
+
+		float fc = 0;
 		while (true)
 		{
 			//if (Input::IsTriggered(InputButtons::Left))
@@ -308,6 +318,12 @@ int main()
 			//}
 
 			//printf("%d\n", t.GetElapsedTime());
+
+			sp1->SetAngles(0, 0, fc);
+
+			fc += 0.01;
+
+			//frameCapturer->Record();
 
 			if (!Engine::UpdateFrame()) {
 				break;
@@ -332,6 +348,9 @@ int main()
 			//}
 
 		}
+
+		//frameCapturer->StopRecording();
+
 		Engine::Finalize();
 	}
 	catch (Exception& e)
