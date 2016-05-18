@@ -199,8 +199,19 @@ int main()
 		}
 		return 0;
 #endif
-
-
+		Bitmap bmp(_T("D:/tmp/110905b_as032.png"));
+		for (int y = 0; y < bmp.GetSize().height; ++y)
+		{
+			for (int x = 0; x < bmp.GetSize().width; ++x)
+			{
+				Color c = bmp.GetPixel(x, y);
+				c.r = (c.r / 31) * 31;
+				c.b = (c.b / 63) * 63;
+				c.g = (c.g / 31) * 31;
+				bmp.SetPixel(x, y, c);
+			}
+		}
+		bmp.Save(_T("110905b_as032.png"));
 
 
 
@@ -304,9 +315,9 @@ int main()
 
 		//Viewport::GetMainWindowViewport()
 
-		//auto frameCapturer = FrameCapturer::Create();
-		//frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
-		//frameCapturer->StartRecording();
+		auto frameCapturer = FrameCapturer::Create();
+		frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
+		frameCapturer->StartRecording();
 		
 
 		float fc = 0;
@@ -323,7 +334,7 @@ int main()
 
 			fc += 0.01;
 
-			//frameCapturer->Record();
+			frameCapturer->Record();
 
 			if (!Engine::UpdateFrame()) {
 				break;
@@ -349,7 +360,7 @@ int main()
 
 		}
 
-		//frameCapturer->StopRecording();
+		frameCapturer->StopRecording();
 
 		Engine::Finalize();
 	}

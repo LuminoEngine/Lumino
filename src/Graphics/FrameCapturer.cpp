@@ -1,6 +1,9 @@
-
+/*
+	GIF フォーマット
+	https://www.w3.org/Graphics/GIF/spec-gif87.txt
+*/
 #include "Internal.h"
-#include "../../../external/jo_gif/jo_gif.c"
+#include "../../../external/jo_gif/jo_gif.cpp"
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/FrameCapturer.h>
 #include "GraphicsManager.h"
@@ -19,6 +22,7 @@ struct FrameCapturer::GifContext
 	jo_gif_t	gif;
 	ByteBuffer	framePixels;
 	Size		frameSize;
+	int			frameCount = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -47,6 +51,7 @@ FrameCapturer::~FrameCapturer()
 
 	if (m_gifContext != nullptr)
 	{
+		jo_gif_write_footer(m_stream.get(), &m_gifContext->gif);
 		jo_gif_end(&m_gifContext->gif);
 	}
 	LN_SAFE_DELETE(m_gifContext);
@@ -105,16 +110,22 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	{
 		if (newState == State::Stoped)
 		{
+			jo_gif_write_footer(m_stream.get(), &m_gifContext->gif);
 			jo_gif_end(&m_gifContext->gif);
+			m_stream = nullptr;//.SafeRelease();
 		}
 		else if (newState == State::Recording)
 		{
-			m_lastTick = 0;
-			PathNameA filePath("FrameCapturer.gif");
+			PathName filePath("FrameCapturer.gif");
+			m_stream = std::make_shared<BinaryWriter>(FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate));//.Attach(LN_NEW BinaryWriter(FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate)), false);
+
 			const Size& size = target->GetSize();
-			m_gifContext->gif = jo_gif_start(filePath, size.width, size.height, 0, 256);
+			m_gifContext->gif = jo_gif_start(size.width, size.height, 0, 256);
 			m_gifContext->framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
 			m_gifContext->frameSize = size;
+			m_lastTick = 0;
+
+			jo_gif_write_header(m_stream.get(), &m_gifContext->gif);
 		}
 		m_currentState = newState;
 	}
@@ -161,7 +172,11 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		if (m_lastTick != 0) deltaTick = curTick - m_lastTick;
 
 		// 書き込み
-		jo_gif_frame(&m_gifContext->gif, (unsigned char*)frame, deltaTick / 10, 0);	// milliseconds to centi-seconds
+		bool local_palette = (m_gifContext->frameCount == 0);
+		jo_gif_frame_t gifFrame;
+		jo_gif_frame(&m_gifContext->gif, &gifFrame, (unsigned char*)frame, m_gifContext->frameCount, local_palette);
+		//jo_gif_frame(&m_gifContext->gif, (unsigned char*)frame, deltaTick / 10, false);	// milliseconds to centi-seconds
+        jo_gif_write_frame(m_stream.get(), &m_gifContext->gif, &gifFrame, nullptr, m_gifContext->frameCount++, deltaTick / 10);
 
 		m_lastTick = curTick;
 	}

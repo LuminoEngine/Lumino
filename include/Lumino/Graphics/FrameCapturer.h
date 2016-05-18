@@ -40,6 +40,7 @@ private:
 	State					m_requestedState;
 	
 	PathNameA				m_savingDir;
+	std::shared_ptr<BinaryWriter>	m_stream;
 	GifContext*				m_gifContext;
 	State					m_currentState;
 	uint64_t				m_lastTick;
