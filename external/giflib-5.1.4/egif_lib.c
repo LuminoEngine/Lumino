@@ -606,6 +606,20 @@ EGifPutExtensionTrailer(GifFileType *GifFile) {
     return GIF_OK;
 }
 
+int EGifPutExtensionRaw(GifFileType *GifFile, int len, const void* data)
+{
+	GifFilePrivateType *Private = (GifFilePrivateType *)GifFile->Private;
+
+	if (!IS_WRITEABLE(Private)) {
+		/* This file was NOT open for writing: */
+		GifFile->Error = E_GIF_ERR_NOT_WRITEABLE;
+		return GIF_ERROR;
+	}
+
+	InternalWrite(GifFile, (const GifByteType*)data, len);
+	return GIF_OK;
+}
+
 /******************************************************************************
  Put an extension block (see GIF manual) into a GIF file.
  Warning: This function is only useful for Extension blocks that have at

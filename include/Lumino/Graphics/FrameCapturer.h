@@ -34,13 +34,13 @@ private:
 
 	void RecordCommand(Driver::ITexture* target, State newState);
 
-	struct GifContext;
+	class GifContext;
 	GraphicsManager*		m_manager;
 	RenderTarget*			m_capturerTarget;
 	State					m_requestedState;
 	
 	PathNameA				m_savingDir;
-	std::shared_ptr<BinaryWriter>	m_stream;
+	//std::shared_ptr<BinaryWriter>	m_stream;
 	GifContext*				m_gifContext;
 	State					m_currentState;
 	uint64_t				m_lastTick;

@@ -445,7 +445,7 @@ void jo_gif_write_frame(ln::BinaryWriter* os, jo_gif_t *gif, jo_gif_frame_t *fda
 		os->WriteUInt8(0);
     }
     else {
-		os->WriteUInt8(0x80 | gif->palSize);
+		os->WriteUInt8(0x80 | gif->palSize);		// 0x80 で <Packed Fields> の Local Color Table Flag を 1 にする。1のときは直後にパレットが続く (Local Color Table)
         os->Write((char*)palette, palette_size);
     }
 	os->WriteUInt8(uint8_t(8)); // block terminator

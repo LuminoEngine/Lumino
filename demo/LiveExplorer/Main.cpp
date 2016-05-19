@@ -199,6 +199,7 @@ int main()
 		}
 		return 0;
 #endif
+#if 0
 		Bitmap bmp(_T("D:/tmp/110905b_as032.png"));
 		for (int y = 0; y < bmp.GetSize().height; ++y)
 		{
@@ -212,6 +213,31 @@ int main()
 			}
 		}
 		bmp.Save(_T("110905b_as032.png"));
+#endif
+#if 0
+		StreamWriter file1(_T("GifPalette1.txt"));
+		int rc = 8;
+		int gc = 4;
+		int bc = 8;
+		int idx = 0;
+		for (int b = 0; b < bc; ++b)
+		{
+			for (int g = 0; g < gc; ++g)
+			{
+				for (int r = 0; r < rc; ++r)
+				{
+					file1.Write(_T("{{ 0x{0:X2}, 0x{1:X2}, 0x{2:X2} }}, "),
+						(r == rc - 1) ? 255 : r * (255 / rc - 1),
+						(g == gc - 1) ? 255 : g * (255 / gc - 1),
+						(b == bc - 1) ? 255 : b * (255 / bc - 1));
+					if (idx % 8 == 7) file1.WriteLine();
+					++idx;
+
+				}
+			}
+		}
+		return 0;
+#endif
 
 
 
