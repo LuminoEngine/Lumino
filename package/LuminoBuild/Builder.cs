@@ -27,10 +27,7 @@ namespace LuminoBuild
             PackageRootDir = Path.Combine(LuminoRootDir, "package");
             SourceCppDir = Path.Combine(PackageRootDir, "PackageSource", "Cpp") + "/";
             ReleaseDir = Path.Combine(PackageRootDir, "ReleasePackage") + "/";
-            ReleaseCppDirName = Path.Combine(ReleaseDir, "LuminoCpp_x.y.z");
-            ReleaseCppDir = ReleaseCppDirName + "/";
 
-            Directory.CreateDirectory(ReleaseCppDir);
         }
 
         public void BuildEngine()
@@ -39,8 +36,14 @@ namespace LuminoBuild
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
             Utils.CallProcess("cmake", "-DLN_USE_UNICODE_CHAR_SET=ON -DLN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME=ON ..");
-            Utils.CallProcess(MSBuildPath, "/t:Rebuild /p:Configuration=Debug /p:Platform=Win32 /m Lumino.sln");
-            Utils.CallProcess(MSBuildPath, "/t:Rebuild /p:Configuration=Release /p:Platform=Win32 /m Lumino.sln");
+            Utils.CallProcess(MSBuildPath, "/p:Configuration=Debug /p:Platform=Win32 /m Lumino.sln");   // /t:Rebuild 
+            Utils.CallProcess(MSBuildPath, "/p:Configuration=Release /p:Platform=Win32 /m Lumino.sln"); // /t:Rebuild 
+
+            // ビルド後、DLL ができてからバージョンを取る
+            ReleaseCppDirName = Path.Combine(ReleaseDir, "LuminoCpp_" + GetLibararyVersion());
+            ReleaseCppDir = ReleaseCppDirName + "/";
+
+            Directory.CreateDirectory(ReleaseCppDir);
         }
 
 
@@ -61,7 +64,7 @@ namespace LuminoBuild
             int len = 0;
             LNVersion_GetString(out str);
             LCSInternal_GetIntPtrStringLength(str, out len);
-            var b = new StringBuilder(len);
+            var b = new StringBuilder(len + 1);
             LCSInternal_GetIntPtrString(str, b);
             return b.ToString();
         }

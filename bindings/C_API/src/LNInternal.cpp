@@ -27,6 +27,7 @@ LN_API void LCSInternal_GetIntPtrString(int string, LNChar* buf)
 	int len;
 	LCSInternal_GetIntPtrStringLength(string, &len);
 	memcpy(buf, (const LNChar*)string, len * sizeof(LNChar));
+	buf[len] = '\0';
 }
 
 //------------------------------------------------------------------------------
