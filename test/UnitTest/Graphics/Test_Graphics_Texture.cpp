@@ -1,40 +1,12 @@
 #include <TestConfig.h>
+#include "../../../../src/Graphics/GraphicsManager.h"
 
 class Test_Graphics_Texture : public ::testing::Test
 {
 protected:
-
-	ByteBuffer m_code;
-	RefPtr<Shader> m_shader;
-	RefPtr<VertexBuffer> m_vb1;
-	RefPtr<VertexBuffer> m_vb2;
-
+	
 	virtual void SetUp() 
 	{
-		// シェーダ
-		m_code = FileSystem::ReadAllBytes(LOCALFILE("TestData/PosUV.glsl"));
-		m_shader.Attach(Shader::Create((char*)m_code.GetData(), m_code.GetSize()));
-
-		// 頂点バッファ
-		PosUVVertex vertices[] =
-		{
-			{ Vector3(-0.8f, 0.8f, 0.0f), Vector2(0, 0) },		// 左上
-			{ Vector3(-0.8f, -0.8f, 0.0f), Vector2(0, 1) },		// 左下
-			{ Vector3(0.8f, 0.8f, 0.0f), Vector2(1, 0) },		// 右上
-			{ Vector3(0.8f, -0.8f, 0.0f), Vector2(1, 1) },		// 右下
-		};
-		m_vb1.Attach(VertexBuffer::Create(PosUVVertex::GetLayout(), 2, LN_ARRAY_SIZE_OF(vertices), vertices, DeviceResourceUsage_Static));
-	
-		// 頂点バッファ2 (右下矩形描画)
-		PosUVVertex vertices2[] =
-		{
-			{ Vector3(0.0f, 0.0f, 0.0f), Vector2(0, 0) },		// 左上
-			{ Vector3(0.0f, -1.0f, 0.0f), Vector2(0, 1) },		// 左下
-			{ Vector3(1.0f, 0.0f, 0.0f), Vector2(1, 0) },		// 右上
-			{ Vector3(1.0f, -1.0f, 0.0f), Vector2(1, 1) },		// 右下
-		};
-		m_vb2.Attach(VertexBuffer::Create(PosUVVertex::GetLayout(), 2, LN_ARRAY_SIZE_OF(vertices2), vertices2, DeviceResourceUsage_Static));
-
 	}
 	virtual void TearDown() 
 	{
@@ -42,87 +14,19 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_Graphics_Texture, BasicTriangle)
+TEST_F(Test_Graphics_Texture, SetSubData)
 {
-	// テクスチャ
-	RefPtr<Texture> tex1(Texture::Create(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png")));
+	RefPtr<Font> font(Font::CreateBuiltInBitmapFontInternal(GraphicsManager::GetInstance()->GetFontManager(), 7));
+	FontGlyphBitmap* fb = font->LookupGlyphBitmap('S', 0);
 
-	Renderer* r = TestEnv::Renderer;
-	SwapChain* swap = TestEnv::MainSwapChain;
+	auto texture = Texture2D::Create(32, 32);
+	auto sprite = Sprite2D::Create(texture);
 
-	m_shader->GetVariables()[0]->SetTexture(tex1);
 
-	//while (TestEnv::Application->DoEvents())
-	{
-		Renderer* r = TestEnv::BeginRendering();
-		r->SetVertexBuffer(m_vb1);
-		m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
-		r->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
-		TestEnv::EndRendering();
 
-		//::Sleep(10);
-	}
+	Engine::UpdateFrame();
 
-	//ASSERT_TRUE(TestEnv::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_VertexBuffer.BasicTriangle.png")));
-	swap->GetBackBuffer()->Lock()->Save(LOCALFILE("Test.png"));
-	swap->GetBackBuffer()->Unlock();
+	TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
 }
 
-
-//-----------------------------------------------------------------------------
-TEST_F(Test_Graphics_Texture, Lock)
-{
-	// テクスチャ
-	RefPtr<Texture> tex1(Texture::Create(LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png")));
-
-	Renderer* r = TestEnv::Renderer;
-	SwapChain* swap = TestEnv::MainSwapChain;
-
-	m_shader->GetVariables()[0]->SetTexture(tex1);
-
-	//while (TestEnv::Application->DoEvents())
-	{
-		Renderer* r = TestEnv::BeginRendering();
-
-		// 黄色い点を置く
-		{
-			Bitmap* bmp = tex1->Lock();
-			byte_t* data = bmp->GetBitmapBuffer()->GetData();
-			data[4] = 0xFF;		// R
-			data[5] = 0xFF;		// G
-			data[6] = 0x00;		// B
-			data[7] = 0xFF;		// A
-			tex1->Unlock();
-		}
-		r->SetVertexBuffer(m_vb1);
-		m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
-		r->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
-
-		// 水色の点を置く
-		{
-			Bitmap* bmp = tex1->Lock();
-			byte_t* data = bmp->GetBitmapBuffer()->GetData();
-			data[8] = 0x00;		// R
-			data[9] = 0xFF;		// G
-			data[10] = 0xFF;	// B
-			data[11] = 0xFF;	// A
-			tex1->Unlock();
-		}
-		r->SetVertexBuffer(m_vb2);
-		m_shader->GetTechniques()[0]->GetPasses()[0]->Apply();
-		r->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
-
-		TestEnv::EndRendering();
-
-		//::Sleep(10);
-	}
-
-	::Sleep(1000);
-	//swap->GetBackBuffer()->Lock();
-	//swap->GetBackBuffer()->Unlock();
-	ASSERT_TRUE(TestEnv::EqualsBitmapFile(swap->GetBackBuffer()->Lock(), LOCALFILE("TestData/Test_Graphics_Texture.Lock.png")));
-	swap->GetBackBuffer()->Unlock();
-	//swap->GetBackBuffer()->Lock()->Save(LOCALFILE("Test.png"));
-	//swap->GetBackBuffer()->Unlock();
-}
 
