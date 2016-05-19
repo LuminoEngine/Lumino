@@ -829,6 +829,10 @@ add_subdirectory(external/freetype-2.6)
 set_target_properties(freetype PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
 link_libraries(freetype)
 
+add_subdirectory(external/giflib-5.1.4)
+set_target_properties(zlib PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+link_libraries(giflib)
+
 # Audio
 if (LN_BUILD_AUDIO_MODULE)
 	add_subdirectory(external/libogg)

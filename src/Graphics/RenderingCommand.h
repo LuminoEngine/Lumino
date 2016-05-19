@@ -319,8 +319,8 @@ private:
 	friend class RenderingThread;
 	friend class UserRenderingCommand;
 	friend struct RenderingCommand;
-	Threading::EventFlag	m_running;	///< 描画キューに入っているか
-	Threading::EventFlag	m_idling;
+	Threading::ConditionFlag	m_running;	///< 描画キューに入っているか
+	Threading::ConditionFlag	m_idling;
 };
 
 

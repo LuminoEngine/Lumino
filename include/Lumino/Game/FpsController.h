@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-#include <Lumino/Base/NonCopyable.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -8,7 +7,6 @@ LN_NAMESPACE_BEGIN
 	@brief		FPS (Frame Par Second) の制御クラス
 */
 class FpsController
-    : public NonCopyable
 {
 public:
 	FpsController();
@@ -88,6 +86,8 @@ public:
 	void RefreshSystemDelay();
 
 private:	// internal
+	LN_DISALLOW_COPY_AND_ASSIGN(FpsController);
+
 	friend class EngineManager;
 	void Process();
     void ProcessForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)

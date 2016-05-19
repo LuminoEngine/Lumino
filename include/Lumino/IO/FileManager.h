@@ -88,8 +88,8 @@ private:
 
 	ASyncIOObjectList			m_asyncTaskList;
 	Threading::Mutex			m_asyncTaskListMutex;
-	Threading::EventFlag		m_endRequested;
-	Threading::EventFlag		m_isASyncTaskListEmpty;
+	Threading::ConditionFlag	m_endRequested;
+	Threading::ConditionFlag	m_isASyncTaskListEmpty;
 	Threading::DelegateThread	m_asyncProcThread;
 };
 

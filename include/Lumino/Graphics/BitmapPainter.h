@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <Lumino/Graphics/Color.h>
 #include "Bitmap.h"
 
@@ -11,7 +10,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 	@brief	 ビットマップへの描画を行うクラスです。
 */
 class BitmapPainter
-	: public NonCopyable
 {
 public:
 
@@ -35,6 +33,8 @@ public:
 	void FillRectangle(const Rect& rect, const Color& color);
 
 private:
+	LN_DISALLOW_COPY_AND_ASSIGN(BitmapPainter);
+
 	uint32_t GetColorByteSec(const Color& color, PixelFormat format);
 
 public:

@@ -62,8 +62,8 @@ private:
 	WindowCreationSettings		m_windowCreationSettings;
 	WindowManagerBase*			m_windowManager;
 	Threading::DelegateThread	m_mainWindowThread;
-	Threading::EventFlag		m_mainWindowThreadInitFinished;
-	Threading::EventFlag		m_mainWindowThreadEndRequested;
+	Threading::ConditionFlag	m_mainWindowThreadInitFinished;
+	Threading::ConditionFlag	m_mainWindowThreadEndRequested;
 };
 
 LN_NAMESPACE_END
