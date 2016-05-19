@@ -1,6 +1,6 @@
 <shelf>
 	<homepage>
-		<page src="index.md" template="template/homepage.html">
+		<page src="index.html" template="homepage.html.template">
 	</homepage>
 	<categories>
 		<category src="about/index.xml" />
