@@ -67,7 +67,7 @@ private:
 	Array<Sound*>				m_addingSoundList;
 	Array<Sound*>				m_soundList;
 	Threading::Mutex			m_soundListMutex;
-	Threading::ConditionFlag	m_endRequested;
+	ConditionFlag				m_endRequested;
 	Threading::DelegateThread	m_pollingThread;
 };
 

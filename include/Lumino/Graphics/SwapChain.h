@@ -45,7 +45,7 @@ LN_INTERNAL_ACCESS:
 
 	Driver::ISwapChain*			m_deviceObj;
 	RenderingCommandList*		m_commandList;
-	Threading::ConditionFlag	m_waiting;		///< コマンド実行していない
+	ConditionFlag				m_waiting;		///< コマンド実行していない
 	RenderTarget*				m_backColorBuffer;
 	DepthBuffer*				m_backDepthBuffer;
 	bool						m_isDefault;

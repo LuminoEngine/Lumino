@@ -200,7 +200,7 @@ int main()
 		return 0;
 #endif
 #if 0
-		Bitmap bmp(_T("D:/tmp/110905b_as032.png"));
+		Bitmap bmp(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
 		for (int y = 0; y < bmp.GetSize().height; ++y)
 		{
 			for (int x = 0; x < bmp.GetSize().width; ++x)
@@ -212,7 +212,8 @@ int main()
 				bmp.SetPixel(x, y, c);
 			}
 		}
-		bmp.Save(_T("110905b_as032.png"));
+		bmp.Save(_T("Test_Graphics_RenderingContext1.png"));
+		return 0;
 #endif
 #if 0
 		StreamWriter file1(_T("GifPalette1.txt"));
@@ -341,9 +342,9 @@ int main()
 
 		//Viewport::GetMainWindowViewport()
 
-		auto frameCapturer = FrameCapturer::Create();
-		frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
-		frameCapturer->StartRecording();
+		//auto frameCapturer = FrameCapturer::Create();
+		//frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
+		//frameCapturer->StartRecording();
 		
 
 		float fc = 0;
@@ -360,7 +361,7 @@ int main()
 
 			fc += 0.01;
 
-			frameCapturer->Record();
+			//frameCapturer->Record();
 
 			if (!Engine::UpdateFrame()) {
 				break;
@@ -386,7 +387,7 @@ int main()
 
 		}
 
-		frameCapturer->StopRecording();
+		//frameCapturer->StopRecording();
 
 		Engine::Finalize();
 	}

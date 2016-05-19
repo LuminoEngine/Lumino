@@ -42,8 +42,8 @@ private:
 	Driver::IRenderer*				m_renderer;
 	Queue<RenderingCommandList*>	m_commandListQueue;
 	Threading::Mutex				m_mutex;
-	Threading::ConditionFlag		m_running;
-	Threading::ConditionFlag		m_endRequested;
+	ConditionFlag					m_running;
+	ConditionFlag					m_endRequested;
 	Exception*						m_exception;
 };
 

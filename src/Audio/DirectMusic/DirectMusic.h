@@ -186,7 +186,7 @@ private:
 	IDirectMusicPerformance8*	m_firstPerformance;	///< 初期化スレッドによって作成された IDirectMusicPerformance8
 
 	Threading::DelegateThread	m_initThread;		///< 初期化スレッド
-    Threading::ConditionFlag	m_performanceInited;     ///< 初期化済みフラグ
+    ConditionFlag				m_performanceInited;     ///< 初期化済みフラグ
     Threading::Mutex			m_mutex;
     Threading::Mutex			m_listLock;
 

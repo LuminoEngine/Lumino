@@ -65,12 +65,14 @@ public:
 		GifFreeMapObject(m_globalPalette);
 	}
 
-	void AddFrame(Bitmap* bitmap, int delayCsec)
+	void AddFrame(Bitmap* bitmap, int delayMS)
 	{
-		// graphics control block
+		if (delayMS > 0) return;
+
+		// Graphic Control Extension
 		byte_t ext[4] = { 0x04, 0x00, 0x00, 0xff };
-		ext[1] = delayCsec % 256;	// TODO: ビット演算で。
-		ext[2] = delayCsec / 256;	// TODO: ビット演算で。
+		ext[1] = (delayMS) % 256;	// TODO: ビット演算で。
+		ext[2] = (delayMS) / 256;	// TODO: ビット演算で。
 		EGifPutExtension(m_gif, GRAPHICS_EXT_FUNC_CODE, 4, ext);
 
 		// Image Descriptor
@@ -102,8 +104,8 @@ public:
 	{
 		return
 			((c.r / 32) & 0x0F) |
-			(((c.g / 64) & 0x03) << 4) |
-			(((c.b / 32) & 0x0F) << 6);
+			(((c.g / 64) & 0x03) << 3) |
+			(((c.b / 32) & 0x0F) << 5);
 	}
 
 	static const GifColorType PaletteGPriority[256];
@@ -151,19 +153,9 @@ const GifColorType FrameCapturer::GifContext::PaletteGPriority[256] =
 	{ 0x00, 0xFF, 0xFF },{ 0x1E, 0xFF, 0xFF },{ 0x3C, 0xFF, 0xFF },{ 0x5A, 0xFF, 0xFF },{ 0x78, 0xFF, 0xFF },{ 0x96, 0xFF, 0xFF },{ 0xB4, 0xFF, 0xFF },{ 0xFF, 0xFF, 0xFF },
 };
 
-
-
 //==============================================================================
 // FrameCapturer
 //==============================================================================
-
-//struct FrameCapturer::GifContext
-//{
-//	jo_gif_t	gif;
-//	ByteBuffer	framePixels;
-//	Size		frameSize;
-//	int			frameCount = 0;
-//};
 
 //------------------------------------------------------------------------------
 FrameCapturerPtr FrameCapturer::Create()
@@ -188,12 +180,6 @@ FrameCapturer::FrameCapturer()
 FrameCapturer::~FrameCapturer()
 {
 	LN_SAFE_RELEASE(m_capturerTarget);
-
-	//if (m_gifContext != nullptr)
-	//{
-	//	jo_gif_write_footer(m_stream.get(), &m_gifContext->gif);
-	//	jo_gif_end(&m_gifContext->gif);
-	//}
 	LN_SAFE_DELETE(m_gifContext);
 }
 
@@ -250,24 +236,13 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	{
 		if (newState == State::Stoped)
 		{
-			//jo_gif_write_footer(m_stream.get(), &m_gifContext->gif);
-			//jo_gif_end(&m_gifContext->gif);
-			//m_stream = nullptr;//.SafeRelease();
 			m_gifContext->Close();
 		}
 		else if (newState == State::Recording)
 		{
 			PathNameA filePath("FrameCapturer.gif");
 			m_gifContext->Open(filePath, target->GetSize());
-			//m_stream = std::make_shared<BinaryWriter>(FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate));//.Attach(LN_NEW BinaryWriter(FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate)), false);
-
-			//const Size& size = target->GetSize();
-			//m_gifContext->gif = jo_gif_start(size.width, size.height, 0, 256);
-			//m_gifContext->framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
-			//m_gifContext->frameSize = size;
 			m_lastTick = 0;
-
-			//jo_gif_write_header(m_stream.get(), &m_gifContext->gif);
 		}
 		m_currentState = newState;
 	}
@@ -275,54 +250,15 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	// 録画
 	if (m_currentState == State::Recording)
 	{
-		struct RGBX
-		{
-			byte_t r, g, b, x;
-		};
-
-
 		// 差分時間計算
 		uint64_t deltaTick = 0;
 		uint64_t curTick = Environment::GetTickCount();
 		if (m_lastTick != 0) deltaTick = curTick - m_lastTick;
 
 		// RenderTarget の内容を読み取る
-		//ScopedTextureLock lock(target);
 		Bitmap* bmp = target->Lock();	//TODO: Scoped
-		m_gifContext->AddFrame(bmp, deltaTick / 10);	// milliseconds to centi-seconds
-		//const Size& bmpSize = bmp->GetSize();
-		//RGBX* frame = (RGBX*)m_gifContext->framePixels.GetData();
-		//for (int y = 0; y < m_gifContext->frameSize.height; ++y)
-		//{
-		//	for (int x = 0; x < m_gifContext->frameSize.width; ++x)
-		//	{
-		//		RGBX* p = &frame[y * m_gifContext->frameSize.width + x];
-		//		if (x >= bmpSize.width || y >= bmpSize.height)
-		//		{
-		//			p->r = 0x00;
-		//			p->g = 0x00;
-		//			p->b = 0x00;
-		//			p->x = 0xFF;
-		//		}
-		//		else
-		//		{
-		//			Color c = bmp->GetPixel(x, y);
-		//			p->r = c.r;
-		//			p->g = c.g;
-		//			p->b = c.b;
-		//			p->x = 0xFF;
-		//		}
-		//	}
-		//}
+		m_gifContext->AddFrame(bmp, deltaTick);
 		target->Unlock();
-
-
-		// 書き込み
-		//bool local_palette = (m_gifContext->frameCount == 0);
-		//jo_gif_frame_t gifFrame;
-		//jo_gif_frame(&m_gifContext->gif, &gifFrame, (unsigned char*)frame, m_gifContext->frameCount, local_palette);
-		////jo_gif_frame(&m_gifContext->gif, (unsigned char*)frame, deltaTick / 10, false);	// milliseconds to centi-seconds
-  //      jo_gif_write_frame(m_stream.get(), &m_gifContext->gif, &gifFrame, nullptr, m_gifContext->frameCount++, deltaTick / 10);
 
 		m_lastTick = curTick;
 	}
