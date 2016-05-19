@@ -200,7 +200,7 @@ Sound* AudioManager::CreateSound(Stream* stream, const CacheKey& key, SoundLoadi
 	}
 
 	// 管理リストに追加
-	Threading::MutexScopedLock lock(m_soundListMutex);
+	MutexScopedLock lock(m_soundListMutex);
 	m_addingSoundList.Add(sound);
 	sound.SafeAddRef();	// 管理リストの参照
 	sound.SafeAddRef();	// 外に出すための参照
@@ -218,11 +218,11 @@ void AudioManager::Thread_Polling()
 	uint64_t lastTime = Environment::GetTickCount();
 	while (m_endRequested.IsFalse())
 	{
-		Threading::Thread::Sleep(10);	// CPU 負荷 100% を避けるため、とりあえず 10ms 待つ
+		Thread::Sleep(10);	// CPU 負荷 100% を避けるため、とりあえず 10ms 待つ
 
 		// 追加待ちリストの内容を本リストに移す
 		{
-			Threading::MutexScopedLock lock(m_soundListMutex);
+			MutexScopedLock lock(m_soundListMutex);
 			for (Sound* sound : m_addingSoundList) {
 				m_soundList.Add(sound);
 			}
@@ -240,7 +240,7 @@ void AudioManager::Thread_Polling()
 #if 1	// 同時再整数が多くなると重くなるらしい問題の修正。とりあえずこれで様子を見る。
 #else
 		// ここからロック
-		Threading::MutexScopedLock lock(m_soundListMutex);
+		MutexScopedLock lock(m_soundListMutex);
 #endif
 
 		m_audioDevice->Update();

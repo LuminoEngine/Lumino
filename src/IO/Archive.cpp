@@ -210,7 +210,7 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outS
 //------------------------------------------------------------------------------
 size_t Archive::ReadArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 	byte_t tmpSrcBuf[16];	// 復号前データ
 	byte_t tmpDstBuf[16];	// 復号後データ
 	size_t readSize = 0;

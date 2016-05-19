@@ -84,8 +84,8 @@ private:
 	typedef std::list<Sound*>	ReleaseAtPlayEndList;
 	typedef std::list<Sound*>	SoundList;
 
-	AudioManager*			mManager;
-	Threading::Mutex			mLock;
+	AudioManager*				mManager;
+	Mutex						mLock;
 	ReleaseAtPlayEndList        mReleaseAtPlayEndList;  ///< 再生終了時に解放する音声リスト
 	Sound*		                mBGM;
 	Sound*		                mBGS;

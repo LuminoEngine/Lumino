@@ -97,7 +97,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 	RefPtr<Sound> prev_bgm(mBGM, false);
 
 	{
-		Threading::MutexScopedLock lock(mLock);
+		MutexScopedLock lock(mLock);
 
 		mBGM = sound;
 		LN_SAFE_ADDREF(mBGM);
@@ -219,7 +219,7 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 	RefPtr<Sound> prev_bgs(mBGS, false);
 
 	{
-		Threading::MutexScopedLock lock(mLock);
+		MutexScopedLock lock(mLock);
 
 		mBGS = sound;
 		LN_SAFE_ADDREF(mBGS);
@@ -462,7 +462,7 @@ void GameAudioImpl::SetMEFadeState(double begin, double end)
 //------------------------------------------------------------------------------
 void GameAudioImpl::SetBGMVolume(float volume, double fadeTime)
 {
-	Threading::MutexScopedLock lock(mLock);
+	MutexScopedLock lock(mLock);
 
 	if (mBGM != NULL)// && !mBGM->IsVolumeFading())
 	{
@@ -474,7 +474,7 @@ void GameAudioImpl::SetBGMVolume(float volume, double fadeTime)
 //------------------------------------------------------------------------------
 void GameAudioImpl::SetBGSVolume(float volume, double fadeTime)
 {
-	Threading::MutexScopedLock lock(mLock);
+	MutexScopedLock lock(mLock);
 
 	// GameAudioImpl 内では SOUNDFADE_STOP_RESET == フェードアウト中
 	if (mBGS != NULL)// && !mBGM->IsVolumeFading())
@@ -502,7 +502,7 @@ void GameAudioImpl::SetBGSVolume(float volume, double fadeTime)
 //------------------------------------------------------------------------------
 void GameAudioImpl::Polling()
 {
-	Threading::MutexScopedLock lock(mLock);
+	MutexScopedLock lock(mLock);
 
 	// 演奏する ME がある場合
 	if (mME)
@@ -575,7 +575,7 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 {
 	if (sound)
 	{
-		Threading::MutexScopedLock lock(mLock);
+		MutexScopedLock lock(mLock);
 		mReleaseAtPlayEndList.push_back(sound);
 		LN_SAFE_ADDREF(sound);
 	}

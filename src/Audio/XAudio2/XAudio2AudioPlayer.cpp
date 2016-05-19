@@ -485,7 +485,7 @@ bool XAudio2StreamingAudioPlayer::Polling()
 //------------------------------------------------------------------------------
 void XAudio2StreamingAudioPlayer::_addNextBuffer()
 {
-	Threading::MutexScopedLock lock(mLock);
+	MutexScopedLock lock(mLock);
 #if 0
     // 読み込み位置に移動
 	mAudioSource->seek( mReadCursor );

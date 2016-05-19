@@ -160,23 +160,6 @@ private:
 
 private:
 
-	//
- //   class PerformanceInitThread
- //       : public Threading::Thread
- //   {
-	//public:
- //       PerformanceInitThread(){}
-
- //       virtual void run()
- //       {
- //           CoInitializeEx( NULL, COINIT_MULTITHREADED );
-	//		DirectMusicManager::getInstance()->_initPerformance();
-	//		CoUninitialize();
- //       }
- //   };
-
-private:
-
 	typedef Array<PlayerObject*> PlayRequestList;
 
     HWND						m_windowHandle;
@@ -185,10 +168,10 @@ private:
 	IDirectMusic8*				m_directMusic;
 	IDirectMusicPerformance8*	m_firstPerformance;	///< 初期化スレッドによって作成された IDirectMusicPerformance8
 
-	Threading::DelegateThread	m_initThread;		///< 初期化スレッド
+	DelegateThread				m_initThread;		///< 初期化スレッド
     ConditionFlag				m_performanceInited;     ///< 初期化済みフラグ
-    Threading::Mutex			m_mutex;
-    Threading::Mutex			m_listLock;
+    Mutex						m_mutex;
+    Mutex						m_listLock;
 
     PlayRequestList				m_playRequestList;
     uint32_t					mErrorState;

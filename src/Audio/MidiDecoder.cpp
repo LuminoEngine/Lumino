@@ -49,7 +49,7 @@ void MidiDecoder::GetLoopState(uint32_t* cc111time, uint32_t* base_time) const
 //------------------------------------------------------------------------------
 void MidiDecoder::FillOnmemoryBuffer()
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 
 	if (m_stream != NULL)
 	{

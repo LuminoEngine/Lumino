@@ -114,7 +114,7 @@ private:
 	Size					m_commitedMainWindowSize;
 	Size					m_commitedMainBackbufferSize;
 
-	Threading::Mutex		m_commitMutex;
+	Mutex					m_commitMutex;
 	bool					m_enabled;
 };
 

@@ -60,11 +60,11 @@ private:
 	byte_t*			mOnmemoryPCMBuffer;		///< オンメモリ再生用のデータを読み込むバッファ
 	uint32_t		mOnmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer のサイズ ( 今のところ mDataOffset と同じ )
 	uint32_t		mTotalSamples;          ///< 全体の再生サンプル数
-	Threading::Mutex	m_mutex;
+	Mutex			m_mutex;
 
-	OggVorbis_File		mOggVorbisFile;			///< オープン済みの Ogg ファイル
-	uint32_t				mLoopStart;             ///< ループ領域の先頭サンプル数
-	uint32_t				mLoopLength;            ///< ループ領域の長さ ( サンプル数 )
+	OggVorbis_File	mOggVorbisFile;			///< オープン済みの Ogg ファイル
+	uint32_t		mLoopStart;             ///< ループ領域の先頭サンプル数
+	uint32_t		mLoopLength;            ///< ループ領域の長さ ( サンプル数 )
 
 };
 

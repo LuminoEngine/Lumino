@@ -25,7 +25,7 @@ GraphicsDeviceBase::~GraphicsDeviceBase()
 //------------------------------------------------------------------------------
 void GraphicsDeviceBase::Finalize()
 {
-	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
+	MutexScopedLock lock(m_deviceObjectListMutex);
 	LN_FOREACH(IDeviceObject* obj, m_deviceObjectList) {
 		obj->Release();
 	}
@@ -35,7 +35,7 @@ void GraphicsDeviceBase::Finalize()
 //------------------------------------------------------------------------------
 void GraphicsDeviceBase::AddDeviceResource(IDeviceObject* obj)
 {
-	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
+	MutexScopedLock lock(m_deviceObjectListMutex);
 	m_deviceObjectList.Add(obj);
 	obj->AddRef();
 }
@@ -71,7 +71,7 @@ void GraphicsDeviceBase::GCDeviceResource()
 	作成もメインスレッド・ローディングスレッドなど様々なスレッドからの呼び出しもサポートするし、
 	作成と解放のスレッドを一致させる必要もないわけで、この辺で開放するのが一番シンプル。
 	*/
-	Threading::MutexScopedLock lock(m_deviceObjectListMutex);
+	MutexScopedLock lock(m_deviceObjectListMutex);
 
 	Array<IDeviceObject*>::iterator itr = m_deviceObjectList.begin();
 	Array<IDeviceObject*>::iterator end = m_deviceObjectList.end();
@@ -95,7 +95,7 @@ void GraphicsDeviceBase::GCDeviceResource()
 void GraphicsDeviceBase::AttachRenderingThread()
 {
 	LN_THROW(m_attachRenderingThreadId == 0, InvalidOperationException);
-	m_attachRenderingThreadId = Threading::Thread::GetCurrentThreadID();
+	m_attachRenderingThreadId = Thread::GetCurrentThreadID();
 }
 
 //------------------------------------------------------------------------------

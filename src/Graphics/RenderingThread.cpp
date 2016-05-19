@@ -39,7 +39,7 @@ void RenderingThread::Dispose()
 	Wait();
 
 	// 残っているコマンドはすべて破棄
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 	LN_FOREACH(RenderingCommandList* c, m_commandListQueue)
 	{
 		c->PostExecute();		// TODO: デストラクタでやるべきかも？
@@ -53,7 +53,7 @@ void RenderingThread::Dispose()
 //------------------------------------------------------------------------------
 void RenderingThread::PushRenderingCommand(RenderingCommandList* commandList)
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 	m_commandListQueue.Enqueue(commandList);
 	commandList->m_running.SetTrue();
 	commandList->m_idling.SetFalse();
@@ -71,7 +71,7 @@ void RenderingThread::PushRenderingCommand(RenderingCommandList* commandList)
 void RenderingThread::RequestPauseAndWait()
 {
 	// TODO: このスピンロックは何とかしたいが…
-	while (m_running.IsTrue()) { Threading::Thread::Sleep(1); }
+	while (m_running.IsTrue()) { Thread::Sleep(1); }
 }
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void RenderingThread::Execute()
 		// キューからコマンドリストを1つ取り出してみる
 		RenderingCommandList* commandList = nullptr;
 		{
-			Threading::MutexScopedLock lock(m_mutex);
+			MutexScopedLock lock(m_mutex);
 			if (!m_commandListQueue.IsEmpty()) {
 				commandList = m_commandListQueue.GetHead();
 				m_commandListQueue.Dequeue();

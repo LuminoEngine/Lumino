@@ -65,7 +65,7 @@ private:
 	uint8_t*				m_onmemoryPCMBuffer;		///< オンメモリ再生用のデータを読み込むバッファ
 	uint32_t				m_onmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer のサイズ ( 今のところ mDataOffset と同じ )
 	uint32_t				m_totalSamples;				///< 全体の再生サンプル数
-	Threading::Mutex		m_mutex;
+	Mutex					m_mutex;
 
 	MPEGLAYER3WAVEFORMAT	m_acmMP3WaveFormat;
 	HACMSTREAM				m_hACMStream;

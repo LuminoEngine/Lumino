@@ -92,7 +92,7 @@ void Profiler::EndSection(int groupIndex, int sectionIndex)
 //------------------------------------------------------------------------------
 void Profiler::Commit()
 {
-	Threading::MutexScopedLock lock(m_commitMutex);
+	MutexScopedLock lock(m_commitMutex);
 
 	m_commitedMainFPS = m_mainFPS;
 	m_commitedMainFPSCapacity = m_mainFPSCapacity;

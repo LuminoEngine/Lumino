@@ -120,7 +120,7 @@ void Mp3Decoder::Create(Stream* stream)
 //------------------------------------------------------------------------------
 void Mp3Decoder::FillOnmemoryBuffer()
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 
 	if (m_onmemoryPCMBuffer == NULL)
 	{
@@ -172,7 +172,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
 	LN_THROW(m_stream != NULL, InvalidOperationException);	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 
 	//if (m_onmemoryPCMBuffer)
 	//{

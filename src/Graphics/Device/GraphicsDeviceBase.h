@@ -75,8 +75,8 @@ protected:
 	
 	uint32_t			m_attachRenderingThreadId;
 	DeviceObjectList	m_deviceObjectList;
-	Threading::Mutex	m_deviceObjectListMutex;
-	Threading::Mutex	m_contextAccessMutex;
+	Mutex				m_deviceObjectListMutex;
+	Mutex				m_contextAccessMutex;
 };
 
 } // namespace Driver

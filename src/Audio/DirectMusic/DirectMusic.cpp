@@ -323,14 +323,14 @@ DirectMusicManager::~DirectMusicManager()
 //------------------------------------------------------------------------------
 uint32_t DirectMusicManager::GetErrorState()
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
     return mErrorState;
 }
 
 //------------------------------------------------------------------------------
 void DirectMusicManager::AddPlayRequest(PlayerObject* obj)
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 
 	// 再生要求リストに追加されていない場合は追加しておく
 	PlayRequestList::iterator pos;
@@ -344,7 +344,7 @@ void DirectMusicManager::AddPlayRequest(PlayerObject* obj)
 //------------------------------------------------------------------------------
 void DirectMusicManager::RemovePlayRequest( PlayerObject* obj )
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 	m_playRequestList.Remove(obj);
 }
 
@@ -389,7 +389,7 @@ void DirectMusicManager::Polling()
 {
 	if (m_performanceInited.IsTrue())
 	{
-		Threading::MutexScopedLock lock(m_mutex);
+		MutexScopedLock lock(m_mutex);
 
 		if (m_playRequestList.GetCount() > 0)
 		{

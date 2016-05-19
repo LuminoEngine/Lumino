@@ -71,7 +71,7 @@ private:
 private:
 	Stream*					m_stream;		///< 入力ストリーム
 	ByteBuffer				m_midiFileData;	///< MIDI ファイル全体のデータ (m_stream をすべてメモリに読み込んだバッファ)
-	Threading::Mutex		m_mutex;
+	Mutex					m_mutex;
 	uint32_t				m_cc111Time;
 	uint32_t				m_baseTime;
 	Array<VolumeEntry>		m_volumeEntryList;

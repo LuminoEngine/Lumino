@@ -230,7 +230,7 @@ void PlatformManager::Thread_MainWindow()
 	while (!m_mainWindowThreadEndRequested.IsTrue())
 	{
 		m_windowManager->DoEvents();
-		Threading::Thread::Sleep(10);
+		Thread::Sleep(10);
 	}
 
 	// 終了処理

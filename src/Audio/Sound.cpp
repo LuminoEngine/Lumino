@@ -84,7 +84,7 @@ void Sound::Initialize(detail::AudioManager* manager, detail::AudioStream* strea
 //------------------------------------------------------------------------------
 void Sound::SetVolume(float volume)
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetVolume(Math::Clamp(volume, 0.0f, 1.0f));
 }
 
@@ -97,7 +97,7 @@ float Sound::GetVolume() const
 //------------------------------------------------------------------------------
 void Sound::SetPitch(float pitch)
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetPitch(Math::Clamp(pitch, 0.5f, 2.0f));
 }
 
@@ -110,7 +110,7 @@ float Sound::GetPitch() const
 //------------------------------------------------------------------------------
 void Sound::SetLoopEnabled(bool enabled)
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetLoopEnabled(enabled);
 }
 
@@ -123,7 +123,7 @@ bool Sound::IsLoopEnabled() const
 //------------------------------------------------------------------------------
 void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetLoopBegin(begin);
 	m_playerState.SetLoopLength(length);
 }
@@ -131,28 +131,28 @@ void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 //------------------------------------------------------------------------------
 void Sound::Play()
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetPlayingState(SoundPlayingState::Playing);
 }
 
 //------------------------------------------------------------------------------
 void Sound::Stop()
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetPlayingState(SoundPlayingState::Stopped);
 }
 
 //------------------------------------------------------------------------------
 void Sound::Pause()
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	m_playerState.SetPlayingState(SoundPlayingState::Pausing);
 }
 
 //------------------------------------------------------------------------------
 void Sound::Resume()
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 	if (m_playerState.GetPlayingState() == SoundPlayingState::Pausing)
 	{
 		m_playerState.SetPlayingState(SoundPlayingState::Playing);
@@ -276,7 +276,7 @@ SoundPlayingMode Sound::GetPlayingMode() const
 //------------------------------------------------------------------------------
 void Sound::FadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
 {
-	Threading::MutexScopedLock lock(m_playerStateLock);
+	MutexScopedLock lock(m_playerStateLock);
 
 	// 現在の音量から targetVolume への遷移
 	targetVolume = Math::Clamp(targetVolume, 0.0f, 1.0f);
@@ -317,7 +317,7 @@ void Sound::Polling(float elapsedTime)
 	// ↓のスコープ内で時間のかかる処理は絶対NG。
 	detail::AudioPlayerState newState;
 	{
-		Threading::MutexScopedLock lock(m_playerStateLock);
+		MutexScopedLock lock(m_playerStateLock);
 
 		// フェード中の場合 (m_playerState の Volume,PlayingState 上書き)
 		if (m_fading)

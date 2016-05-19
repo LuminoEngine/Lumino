@@ -99,18 +99,18 @@ private:
 
 private:
 	IXAudio2SourceVoice*    mSourceVoice;
-	Threading::Mutex		mLock;
+	Mutex					mLock;
 
 	uint8_t*				mPrimaryAudioData;		///< ダブルバッファリング用プライマリ
 	uint8_t*				mSecondaryAudioData;	///< ダブルバッファリング用セカンダリ
-	uint32_t				    mAudioDataBufferSize;	///< プライマリバッファとセランダリバッファのサイズ ( 1 秒分 )
-	uint32_t				    mReadCursor;
+	uint32_t				mAudioDataBufferSize;	///< プライマリバッファとセランダリバッファのサイズ ( 1 秒分 )
+	uint32_t				mReadCursor;
 
-    uint32_t                   mLoopBeginBlockOffset;
-    uint32_t                   mCursorBeginPos;
-    uint32_t                   mCursorEndPos;
+    uint32_t				mLoopBeginBlockOffset;
+    uint32_t				mCursorBeginPos;
+    uint32_t				mCursorEndPos;
 
-    uint32_t                   mWriteSampleNum;
+    uint32_t				mWriteSampleNum;
 	bool					mEOF;			///< ファイルの終端まで再生したフラグ
     bool                    mPassedLoopBeginSample;
 };

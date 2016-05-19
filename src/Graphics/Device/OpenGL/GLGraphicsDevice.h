@@ -109,9 +109,9 @@ protected:
 	GLRenderer*					m_renderer;
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;
-	Threading::Mutex			m_mutex;	// TODO: いらないかな
+	Mutex						m_mutex;	// TODO: いらないかな
 	//Array<IDeviceObject*>		m_allDeviceResourceList;	///< 全てのデバイスリソースのリスト;
-	//Threading::Mutex			m_allDeviceResourceListMutex;
+	//Mutex			m_allDeviceResourceListMutex;
 };
 
 

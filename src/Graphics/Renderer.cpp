@@ -392,7 +392,7 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 	// でも、パッと見原因になりそうなところが見つからなかったので、もしかしたら
 	// キャッシュにリストのポインタが残っていたことが原因かもしれない。
 	// 念のためここでキャッシュをフラッシュし、様子を見る。
-	Threading::MutexScopedLock lock(m_lockPresentCommandList);
+	MutexScopedLock lock(m_lockPresentCommandList);
 
 	m_primaryCommandList->AddCommand<PresentCommand>(swapChain);
 	

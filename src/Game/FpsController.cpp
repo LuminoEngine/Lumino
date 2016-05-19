@@ -170,7 +170,7 @@ void FpsController::Process()
 
 		//::Sleep( 16 );
 
-		Threading::Thread::Sleep(static_cast< uint32_t >(m_term * 1000));
+		Thread::Sleep(static_cast< uint32_t >(m_term * 1000));
 	}
 
 	// 現在の時間
@@ -280,7 +280,7 @@ void FpsController::ProcessForMeasure()
 	// 待つべき時間だけ待つ
 	if (m_term > 0.0)
 	{
-		//Threading::sleep( static_cast< uint32_t >( m_term * 1000 ) );
+		//sleep( static_cast< uint32_t >( m_term * 1000 ) );
 	}
 
 	// 現在の時間

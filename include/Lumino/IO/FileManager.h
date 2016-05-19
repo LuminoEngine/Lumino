@@ -81,16 +81,16 @@ private:
 	typedef Array<IArchive*>		ArchiveList;
 	typedef Array<ASyncIOObject*>	ASyncIOObjectList;
 
-	FileAccessPriority			m_fileAccessPriority;
-	ArchiveList					m_archiveList;
-	IArchive*					m_dummyArchive;
-	Threading::Mutex			m_mutex;
+	FileAccessPriority		m_fileAccessPriority;
+	ArchiveList				m_archiveList;
+	IArchive*				m_dummyArchive;
+	Mutex					m_mutex;
 
-	ASyncIOObjectList			m_asyncTaskList;
-	Threading::Mutex			m_asyncTaskListMutex;
-	ConditionFlag				m_endRequested;
-	ConditionFlag				m_isASyncTaskListEmpty;
-	Threading::DelegateThread	m_asyncProcThread;
+	ASyncIOObjectList		m_asyncTaskList;
+	Mutex					m_asyncTaskListMutex;
+	ConditionFlag			m_endRequested;
+	ConditionFlag			m_isASyncTaskListEmpty;
+	DelegateThread			m_asyncProcThread;
 };
 
 LN_NAMESPACE_END

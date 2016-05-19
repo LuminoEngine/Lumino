@@ -50,7 +50,6 @@ private:
 
 	EffectEngine*	m_engine;	// 複数ツール同時対応とかなったら複数できる
 
-	//Threading::DelegateThread	m_threadUpdateFrame;
 	tr::TaskPtr	m_taskUpdateFrame;
 };
 

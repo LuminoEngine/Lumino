@@ -55,20 +55,20 @@ public:
 private:
 	void Thread_Polling();
 
-	FileManager*				m_fileManager;
-	AudioDevice*				m_audioDevice;		// PCM 再生用デバイスクラス
-	AudioDevice*				m_midiAudioDevice;	// MIDI 再生用デバイスクラス (内部処理が PCM とは全然違うので、1つの AudioDevice にまとめない方が管理が楽)
-	GameAudioImpl*				m_gameAudio;
-	uint32_t					m_onMemoryLimitSize;
-	Threading::Mutex			m_resourceMutex;
+	FileManager*		m_fileManager;
+	AudioDevice*		m_audioDevice;		// PCM 再生用デバイスクラス
+	AudioDevice*		m_midiAudioDevice;	// MIDI 再生用デバイスクラス (内部処理が PCM とは全然違うので、1つの AudioDevice にまとめない方が管理が楽)
+	GameAudioImpl*		m_gameAudio;
+	uint32_t			m_onMemoryLimitSize;
+	Mutex				m_resourceMutex;
 
-	CacheManager*				m_audioStreamCache;
+	CacheManager*		m_audioStreamCache;
 
-	Array<Sound*>				m_addingSoundList;
-	Array<Sound*>				m_soundList;
-	Threading::Mutex			m_soundListMutex;
-	ConditionFlag				m_endRequested;
-	Threading::DelegateThread	m_pollingThread;
+	Array<Sound*>		m_addingSoundList;
+	Array<Sound*>		m_soundList;
+	Mutex				m_soundListMutex;
+	ConditionFlag		m_endRequested;
+	DelegateThread		m_pollingThread;
 };
 
 } // namespace detail

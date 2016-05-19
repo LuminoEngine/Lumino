@@ -163,8 +163,8 @@ int main()
 #if 0
 		for (int i = 0; i < 100; ++i)
 		{
-			Threading::DelegateThread thr1;
-			Threading::DelegateThread thr2;
+			DelegateThread thr1;
+			DelegateThread thr2;
 			thr1.Start(Thread1);
 			thr2.Start(Thread2);
 			thr1.Wait();

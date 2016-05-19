@@ -286,7 +286,7 @@ void GLGraphicsDevice::DetachRenderingThread()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::OnBeginAccessContext()
 {
-	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
+	if (Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
 	{
 		MakeCurrentContext(GetMainContext());
 	}
@@ -295,7 +295,7 @@ void GLGraphicsDevice::OnBeginAccessContext()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::OnEndAccessContext()
 {
-	if (Threading::Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
+	if (Thread::GetCurrentThreadID() != m_attachRenderingThreadId)
 	{
 		MakeCurrentContext(nullptr);
 	}
@@ -307,7 +307,7 @@ void GLGraphicsDevice::OnEndAccessContext()
 ////------------------------------------------------------------------------------
 //void GLGraphicsDevice::AddDeviceResource(IDeviceObject* obj)
 //{
-//	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
+//	MutexScopedLock lock(m_allDeviceResourceListMutex);
 //
 //	m_allDeviceResourceList.Add(obj);
 //	obj->AddRef();
@@ -335,7 +335,7 @@ void GLGraphicsDevice::OnEndAccessContext()
 //		・デストラクタで例外を発生させる可能性がある
 //		やりようはいくらでもあるが、シンプルに実装するのは少し難しい。
 //	*/
-//	Threading::MutexScopedLock lock(m_allDeviceResourceListMutex);
+//	MutexScopedLock lock(m_allDeviceResourceListMutex);
 //
 //	Array<IDeviceObject*>::iterator itr = m_allDeviceResourceList.begin();
 //	Array<IDeviceObject*>::iterator end = m_allDeviceResourceList.end();

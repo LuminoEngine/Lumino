@@ -143,7 +143,7 @@ LN_INTERNAL_ACCESS:
 	Texture*				m_currentDepthBuffer;
 	Rect					m_currentViewport;
 
-	Threading::Mutex		m_lockPresentCommandList;
+	Mutex					m_lockPresentCommandList;
 };
 
 } // namespace Details

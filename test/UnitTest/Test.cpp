@@ -173,7 +173,7 @@
 //		//swap2->Present();
 //
 //		++count;
-//		Threading::Thread::Sleep(32);
+//		Thread::Sleep(32);
 //
 //		if (count == 1)
 //		{

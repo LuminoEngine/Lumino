@@ -61,7 +61,7 @@ private:
 	bool						m_useThread;
 	WindowCreationSettings		m_windowCreationSettings;
 	WindowManagerBase*			m_windowManager;
-	Threading::DelegateThread	m_mainWindowThread;
+	DelegateThread				m_mainWindowThread;
 	ConditionFlag				m_mainWindowThreadInitFinished;
 	ConditionFlag				m_mainWindowThreadEndRequested;
 };

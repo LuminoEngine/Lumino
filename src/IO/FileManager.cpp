@@ -49,7 +49,7 @@ FileManager::~FileManager()
 //------------------------------------------------------------------------------
 void FileManager::RegisterArchive(const PathName& filePath, const String& password)
 {
-	Threading::MutexScopedLock lock(m_mutex);
+	MutexScopedLock lock(m_mutex);
 
 	Archive* archive = LN_NEW Archive();
 	archive->Open(filePath, password);
@@ -131,7 +131,7 @@ void FileManager::RequestASyncTask(ASyncIOObject* task)
 		return;		// 終了要求が来ている場合は追加しない
 	}
 
-	Threading::MutexScopedLock lock(m_asyncTaskListMutex);
+	MutexScopedLock lock(m_asyncTaskListMutex);
 
 	// Idle 状態でなければ追加できない
 	LN_THROW(task->m_ayncIOState == ASyncIOState_Idle, InvalidOperationException);
@@ -182,7 +182,7 @@ void FileManager::Thread_ASyncProc()
 		// 読み込みリクエストを取り出す
 		ASyncIOObject* task = NULL;
 		{
-			Threading::MutexScopedLock lock(m_asyncTaskListMutex);
+			MutexScopedLock lock(m_asyncTaskListMutex);
 			if (!m_asyncTaskList.IsEmpty())
 			{
 				task = m_asyncTaskList.GetFront();
@@ -218,7 +218,7 @@ void FileManager::Thread_ASyncProc()
 
 		// この時点でリストが空ならすべて処理が終わったことにする
 		{
-			Threading::MutexScopedLock lock(m_asyncTaskListMutex);
+			MutexScopedLock lock(m_asyncTaskListMutex);
 			if (m_asyncTaskList.IsEmpty())
 			{
 				m_isASyncTaskListEmpty.SetTrue();
@@ -226,7 +226,7 @@ void FileManager::Thread_ASyncProc()
 		}
 
 		// 適当に待って、CPU 使用率が MAX にならないようにする
-		Threading::Thread::Sleep(10);
+		Thread::Sleep(10);
 	}
 }
 

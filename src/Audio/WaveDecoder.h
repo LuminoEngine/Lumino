@@ -39,7 +39,7 @@ private:
 	uint8_t*		mOnmemoryPCMBuffer;		///< オンメモリ再生用のデータを読み込むバッファ
 	uint32_t		mOnmemoryPCMBufferSize;	///< mOnmemoryPCMBuffer のサイズ ( 今のところ mDataOffset と同じ )
 	uint32_t		mTotalSamples;          ///< 全体の再生サンプル数
-	Threading::Mutex	m_mutex;
+	Mutex			m_mutex;
 
 };
 

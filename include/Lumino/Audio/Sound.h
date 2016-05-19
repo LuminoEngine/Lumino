@@ -193,12 +193,12 @@ LN_INTERNAL_ACCESS:
 
 private:
 	detail::AudioManager*		m_manager;
-	Threading::Mutex			m_mutex;
+	Mutex						m_mutex;
 	detail::AudioStream*		m_audioStream;
 	detail::AudioPlayer*		m_audioPlayer;
 	SoundPlayingMode			m_playingMode;
 
-	Threading::Mutex			m_playerStateLock;	// TODO: 性質上、スピンロックの方が効率がいいかもしれない
+	Mutex						m_playerStateLock;	// TODO: 性質上、スピンロックの方が効率がいいかもしれない
 	detail::AudioPlayerState	m_playerState;
 	bool						m_is3DSound;
 	Vector3						m_position;

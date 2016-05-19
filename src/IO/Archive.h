@@ -131,7 +131,7 @@ private:
 	int					m_fileCount;			///< アーカイブファイル内のファイル数
     String				m_key;				    ///< 復号キー (char)
 	KEY_TABLE_TYPE		m_keyTable;
-    Threading::Mutex	m_mutex;				///< ReadArchiveStream() をスレッドセーフにする
+    Mutex				m_mutex;				///< ReadArchiveStream() をスレッドセーフにする
 };
 
 /**

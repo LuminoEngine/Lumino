@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 class RenderingThread
-	: public Threading::Thread
+	: public Thread
 {
 public:
 	RenderingThread();
@@ -41,7 +41,7 @@ private:
 	Driver::IGraphicsDevice*		m_device;
 	Driver::IRenderer*				m_renderer;
 	Queue<RenderingCommandList*>	m_commandListQueue;
-	Threading::Mutex				m_mutex;
+	Mutex							m_mutex;
 	ConditionFlag					m_running;
 	ConditionFlag					m_endRequested;
 	Exception*						m_exception;
