@@ -310,6 +310,8 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 //------------------------------------------------------------------------------
 void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 {
+	Point point(x, y);
+	Size srcSize = srcBitmap->GetSize();
 	//// TODO: この Blt は基本的にフォントビットマップの転送に使うので、このままだと非常に効率が悪い。が、とりあえずまずは動くものを。
 	//ScopedTextureLock lock1(this);
 	//lock1.GetBitmap()->BitBlt(x, y, srcBitmap, srcRect, Color::White, true);
@@ -329,11 +331,30 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 
 	RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
 
+
+	//RenderBulkData bmpPropData;
+	//bmpPropData.Alloc(cmdList, srcBitmap->GetPropertySerializeSize());
+	//srcBitmap->SerializeProperty(bmpPropData.GetData());
+
 	RenderBulkData bmpRawData;
 	bmpRawData.Alloc(cmdList, Bitmap::GetPixelFormatByteCount(m_primarySurface->GetPixelFormat(), srcBitmap->GetSize()));
 
 	Bitmap bmpTmp(bmpRawData.GetData(), srcBitmap->GetSize(), m_primarySurface->GetPixelFormat());
 	bmpTmp.BitBlt(0, 0, srcBitmap, Rect(0, 0, srcBitmap->GetSize()), Color::White, false);
+
+	Driver::ITexture* deviceTexture = m_deviceObj;
+
+	LN_ENQUEUE_RENDER_COMMAND_4(
+		Texture2D_Blt_Bitmap, m_manager,
+		Point, point,
+		Size, srcSize,
+		//RenderBulkData, bmpPropData,
+		RenderBulkData, bmpRawData,
+		RefPtr<Driver::ITexture>, deviceTexture,
+		{
+			deviceTexture->SetSubData(point, bmpRawData.GetData(), bmpRawData.GetSize(), srcSize);
+		});
+
 }
 
 //------------------------------------------------------------------------------

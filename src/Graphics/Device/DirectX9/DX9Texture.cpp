@@ -160,35 +160,27 @@ DX9Texture::~DX9Texture()
 void DX9Texture::SetSubData(const Point& point, const void* data, size_t dataBytes, const Size& dataBitmapSize)
 {
 	RECT lockRect = { point.x, point.y, point.x + dataBitmapSize.width, point.y + dataBitmapSize.height };
+	if (lockRect.left < 0) lockRect.left = 0;
+	if (lockRect.top < 0) lockRect.top = 0;
+	if (lockRect.right > m_size.width) lockRect.right = m_size.width;
+	if (lockRect.bottom > m_size.height) lockRect.right = m_size.height;
+	if (lockRect.right <= lockRect.left) return;
+	if (lockRect.bottom <= lockRect.top) return;
+
+	int lineWidth = lockRect.right - lockRect.left;
+	int lineHeight = lockRect.bottom - lockRect.top;
+
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, D3DLOCK_DISCARD));
 
 	const byte_t* d = (const byte_t*)data;
 	byte_t* w = (byte_t*)lockedRect.pBits;
-	for (int row = 0; row < dataBitmapSize.height; row++)
+	for (int row = 0; row < lineHeight; ++row)
 	{
-		const byte_t* line = &d[(4 * dataBitmapSize.width) * row];	// TODO format
-		byte_t* wline = &w[lockedRect.Pitch * row];	// TODO format
-		memcpy(wline, line, (4 * dataBitmapSize.width));
+		const byte_t* srcline = &d[(4 * dataBitmapSize.width) * row];	// TODO format
+		byte_t* dstline = &w[lockedRect.Pitch * row];	// TODO format
+		memcpy(dstline, srcline, (4 * lineWidth));
 	}
-
-	//memcpy(lockedRect.pBits, data, lockedRect.Pitch * dataBitmapSize.Height);
-
-	//try
-	//{
-	//	// 参照モードでロック領域を Bitmap 化する (メモリコピーを行わない)
-	//	ByteBuffer refData(lockedRect.pBits, lockedRect.Pitch * m_realSize.Height, true);
-	//	Bitmap lockedBmp(&refData, m_realSize, Graphics::PixelFormat_BYTE_B8G8R8A8);	// GDI 互換フォーマット
-
-	//	// 全体を転送する
-	//	Rect rc(0, 0, m_realSize);
-	//	lockedBmp.BitBlt(rc, bitmap, rc, false);
-	//}
-	//catch (...)
-	//{
-	//	m_dxTexture->UnlockRect(0);
-	//	throw;
-	//}
 
 	m_dxTexture->UnlockRect(0);
 }
