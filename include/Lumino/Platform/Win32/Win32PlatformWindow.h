@@ -72,6 +72,8 @@ public:
 public:
 	// PlatformWindow interface
 	virtual void SetVisible(bool visible) override;
+	virtual void SetTitleText(const StringRef& title) override;
+	virtual const String& GetTitleText() const override { return mTitleText; }
 	virtual void SetFullScreenEnabled(bool enabled) override;
 	virtual bool IsFullScreenEnabled() const override { return mFullScreen; }
 
@@ -101,6 +103,8 @@ public:
 public:
 	// PlatformWindow interface
 	virtual void SetVisible(bool visible) override {}
+	virtual void SetTitleText(const StringRef& title) override;
+	virtual const String& GetTitleText() const override { return m_titleText; }
 	virtual void SetFullScreenEnabled(bool enabled) override {}
 	virtual bool IsFullScreenEnabled() const override { return false; }
 
@@ -109,6 +113,7 @@ public:
 
 private:
 	HWND			m_hWnd;
+	String			m_titleText;
 	mutable Size	m_clientSize;
 };
 

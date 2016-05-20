@@ -515,7 +515,7 @@ set(LN_SOURCES_Engine
 	src/Engine.cpp
 	src/EngineDiagCore.cpp
 	src/EngineDiagCore.h
-	src/EngineDiagRenderer.h
+	src/EngineDiagViewer.h
 	src/EngineManager.cpp
 	src/EngineManager.h
 	src/GameTime.cpp

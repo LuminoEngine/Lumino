@@ -93,7 +93,7 @@ OpenSceneGraph もたぶんそう。
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/Foundation/Application.h>
 #include "AssetsManager.h"
-#include "EngineDiagRenderer.h"
+#include "EngineDiagViewer.h"
 #include "EngineManager.h"
 #include "Resource.h"
 
@@ -147,7 +147,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_uiManager(nullptr)
 	, m_sceneGraphManager(nullptr)
 	, m_assetsManager(nullptr)
-	, m_diagRenderer(nullptr)
+	, m_diagViewer(nullptr)
 	//, m_application(nullptr)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
@@ -175,7 +175,7 @@ EngineManager::~EngineManager()
 {
 	//LN_SAFE_RELEASE(m_application);
 
-	LN_SAFE_RELEASE(m_diagRenderer);
+	LN_SAFE_RELEASE(m_diagViewer);
 
 	if (m_assetsManager != nullptr)
 	{
@@ -410,8 +410,8 @@ void EngineManager::InitializeGraphicsManager()
 		m_graphicsManager = LN_NEW GraphicsManager();
 		m_graphicsManager->Initialize(data);
 
-		m_diagRenderer = LN_NEW EngineDiagRenderer();
-		m_diagRenderer->Initialize(m_graphicsManager, &EngineDiagCore::Instance);
+		m_diagViewer = LN_NEW EngineDiagViewer();
+		m_diagViewer->Initialize(this, &EngineDiagCore::Instance);
 	}
 }
 
@@ -573,6 +573,8 @@ bool EngineManager::UpdateFrame()
 	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
 	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
 
+	m_diagViewer->UpdateFrame();
+
 	m_frameRenderd = false;
 	return !m_endRequested;
 }
@@ -692,12 +694,12 @@ void EngineManager::Render()
 			m_uiManager->GetMainWindow()->Render(g);
 		}
 
-		if (m_diagRenderer != nullptr && m_diagRenderer->IsVisible())
+		if (m_diagViewer != nullptr && m_diagViewer->IsVisible())
 		{
 			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
 			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
 			g->Set2DRenderingMode(-1, 1);	// TODO
-			m_diagRenderer->Render(g, Vector2(640, 480));	//TODO
+			m_diagViewer->Render(g, Vector2(640, 480));	//TODO
 		}
 
 	}
@@ -780,9 +782,9 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		// デバッグ表示切替
 		if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
 			m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
-			m_diagRenderer != nullptr)
+			m_diagViewer != nullptr)
 		{
-			m_diagRenderer->SetVisible(!m_diagRenderer->IsVisible());
+			m_diagViewer->SetVisible(!m_diagViewer->IsVisible());
 		}
 		break;
 	case PlatformEventType::KeyUp:

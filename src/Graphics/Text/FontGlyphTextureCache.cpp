@@ -8,6 +8,7 @@
 #include <Lumino/Base/Hash.h>
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Utils.h>
+#include <Lumino/Graphics/Texture.h>
 #include "../GraphicsManager.h"
 #include "../Device/GraphicsDriverInterface.h"
 #include "FontGlyphTextureCache.h"
@@ -20,14 +21,18 @@ LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
 
 //------------------------------------------------------------------------------
 FontGlyphTextureCache::FontGlyphTextureCache()
-	: m_lockedFillBitmap(nullptr)
+	: m_manager(nullptr)
+	, m_maxCacheGlyphs(0)
+	, m_glyphWidthCount(0)
+	, m_curPrimUsedCount(0)
+	, m_fillGlyphsTexture(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 FontGlyphTextureCache::~FontGlyphTextureCache()
 {
-	LN_SAFE_RELEASE(m_glyphsFillTexture);
+	LN_SAFE_RELEASE(m_fillGlyphsTexture);
 }
 
 //------------------------------------------------------------------------------
@@ -47,8 +52,10 @@ void FontGlyphTextureCache::Initialize(GraphicsManager* manager, Font* font)
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(Size(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
+	//m_glyphsFillTexture = m_manager->GetGraphicsDevice()->CreateTexture(Size(w, w), 1, TextureFormat::R8G8B8A8, nullptr);
 	//m_glyphsFillTexture = Texture2D::Create(Size(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
+	m_fillGlyphsTexture = LN_NEW Texture2D();
+	m_fillGlyphsTexture->Initialize(m_manager, Size(w, w), TextureFormat::R8G8B8A8, 1);
 
 	// 検索に使う情報をリセット
 	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);
@@ -68,7 +75,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 	{
 		const CachedGlyphInfo& info = itr->second;
 		cacheIndex = info.index;
-		outInfo->fillGlyphBitmap = nullptr;
+		//outInfo->fillGlyphBitmap = nullptr;
 		outInfo->outlineOffset = 0;
 		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
 			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
@@ -95,13 +102,21 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		info.size = glyphBitmap->GlyphBitmap->GetSize();
 		m_cachedGlyphInfoMap[ch] = info;
 
-		outInfo->fillGlyphBitmap = glyphBitmap->GlyphBitmap;
+		//outInfo->fillGlyphBitmap = glyphBitmap->GlyphBitmap;
 		outInfo->outlineOffset = glyphBitmap->OutlineOffset;
 		outInfo->srcRect.Set(	// 描画スレッド側で作るといろいろな情報にアクセスしなければならないのでここで作ってしまう
 			((info.index % m_glyphWidthCount) * m_glyphMaxBitmapSize.width),
 			((info.index / m_glyphWidthCount) * m_glyphMaxBitmapSize.height),
 			info.size.width, info.size.height);
 		//printf("p: %d %d\n", outInfo->srcRect.X, outInfo->srcRect.Y);
+
+
+		// Fill
+		//Rect dst(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset, glyphBitmap->GlyphBitmap->GetSize());
+		//Rect src(0, 0, glyphBitmap->GlyphBitmap->GetSize());
+		Point pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
+		m_fillGlyphsTexture->Blt(pt.x, pt.y, glyphBitmap->GlyphBitmap);
+		//m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
 	}
 	//
 
@@ -127,6 +142,7 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 	//printf("p: %p %d %d\n", outInfo->fillGlyphBitmap, outInfo->srcRect.X, outInfo->srcRect.Y);
 }
 
+#if 0
 //------------------------------------------------------------------------------
 void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* srcFillRect, Rect* srcOutlineRect)
 {
@@ -155,18 +171,20 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 		// TODO: Outline
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 Driver::ITexture* FontGlyphTextureCache::GetGlyphsFillTexture()
 {
-	if (m_lockedFillBitmap != nullptr)
-	{
-		//m_lockedFillBitmap->Save("test4.png");
-		m_glyphsFillTexture->Unlock();
-		m_lockedFillBitmap = nullptr;
-	}
-	//printf("--\n");
-	return m_glyphsFillTexture;
+	return m_fillGlyphsTexture->GetDeviceObject();
+	//if (m_lockedFillBitmap != nullptr)
+	//{
+	//	//m_lockedFillBitmap->Save("test4.png");
+	//	m_glyphsFillTexture->Unlock();
+	//	m_lockedFillBitmap = nullptr;
+	//}
+	////printf("--\n");
+	//return m_glyphsFillTexture;
 }
 
 //------------------------------------------------------------------------------
@@ -178,7 +196,7 @@ void FontGlyphTextureCache::OnFlush()
 //------------------------------------------------------------------------------
 const Size& FontGlyphTextureCache::GetGlyphsTextureSize() const
 {
-	return m_glyphsFillTexture->GetRealSize();
+	return m_fillGlyphsTexture->GetRealSize();
 }
 
 //------------------------------------------------------------------------------

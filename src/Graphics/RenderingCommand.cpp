@@ -157,7 +157,7 @@ void RenderingCommandList::PostExecute()
 	//LN_RC_TRACE("RenderingCommandList::PostExecute() e %p\n", this);
 	m_commandList.Clear();
 	m_commandDataBufferUsed = 0;
-	m_extDataBufferUsed = 0;
+	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
 
 	LN_FOREACH(RefObject* obj, m_markGCList)
 	{

@@ -86,7 +86,7 @@ private:
 	DX9Renderer*				m_renderer;
 	DX9SwapChain*				m_defaultSwapChain;
 	volatile DeviceState		m_deviceState;
-
+	
 	IDirect3D9*		            m_direct3D;
 	IDirect3DDevice9*	        m_dxDevice;
 	D3DPRESENT_PARAMETERS       m_presentParameters;	///< プレゼンテーションパラメータ

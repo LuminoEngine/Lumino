@@ -33,6 +33,9 @@ public:
 	Size GetSize() const { return m_clientSize; }
 
 	virtual void SetVisible(bool visible) = 0;
+
+	virtual void SetTitleText(const StringRef& title) = 0;
+	virtual const String& GetTitleText() const = 0;
 	
 	/**
 		@brief		フルスクリーンの有効フラグを設定します。

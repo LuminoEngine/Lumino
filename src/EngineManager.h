@@ -23,7 +23,7 @@ namespace detail { class AudioManager; }
 class GraphicsManager;
 class SceneGraphManager;
 class Application;
-class EngineDiagRenderer;
+class EngineDiagViewer;
 class AssetsManager;
 
 class EngineManager
@@ -107,7 +107,7 @@ private:
 	SceneGraphManager*					m_sceneGraphManager;
 	AssetsManager*						m_assetsManager;
 
-	EngineDiagRenderer*					m_diagRenderer;
+	EngineDiagViewer*					m_diagViewer;
 
 	//Application*						m_application;
 	

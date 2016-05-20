@@ -1,12 +1,13 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/Text/Font.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/EngineDiag.h>
 #include "Graphics/GraphicsManager.h"
 #include "EngineManager.h"
 #include "EngineDiagCore.h"
-#include "EngineDiagRenderer.h"
+#include "EngineDiagViewer.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -64,37 +65,47 @@ float EngineDiagCore::GetMainFPSCapacity() const
 }
 
 //==============================================================================
-// EngineDiagRenderer
+// EngineDiagViewer
 //==============================================================================
 
 //------------------------------------------------------------------------------
-EngineDiagRenderer::EngineDiagRenderer()
+EngineDiagViewer::EngineDiagViewer()
 	: m_diagCore(nullptr)
+	, m_mainWindow(nullptr)
 	, m_font(nullptr)
 	, m_isVisible(false)
 {
 }
 
 //------------------------------------------------------------------------------
-EngineDiagRenderer::~EngineDiagRenderer()
+EngineDiagViewer::~EngineDiagViewer()
 {
 	LN_SAFE_RELEASE(m_font);
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagRenderer::Initialize(GraphicsManager* manager, EngineDiagCore* diagCore)
+void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCore)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_STATE(m_font == nullptr);
 	m_diagCore = diagCore;
+	m_mainWindow = manager->GetPlatformManager()->GetMainWindow();
+	m_originalMainWindowTitle = m_mainWindow->GetTitleText();
 
-	m_font = Font::CreateBuiltInBitmapFontInternal(manager->GetFontManager(), 7);
+	m_font = Font::CreateBuiltInBitmapFontInternal(manager->GetGraphicsManager()->GetFontManager(), 7);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
 	m_windowRect.Set(8, 8, 300, 300);
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagRenderer::Render(GraphicsContext* g, const Vector2& viewSize)
+void EngineDiagViewer::UpdateFrame()
+{
+	String str = String::Format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
+	m_mainWindow->SetTitleText(str);
+}
+
+//------------------------------------------------------------------------------
+void EngineDiagViewer::Render(GraphicsContext* g, const Vector2& viewSize)
 {
 	PointF location(m_windowRect.x, m_windowRect.y);
 	g->SetOpacity(0.5f);

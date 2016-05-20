@@ -177,21 +177,21 @@ void TextRendererCore::DrawGlyphRun(const PointF& position, const GlyphRunData* 
 	SizeF texSizeInv(1.0f / cache->GetGlyphsTextureSize().width, 1.0f / cache->GetGlyphsTextureSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
-		Internal::CacheGlyphInfo info;
-		if (dataList[i].fillBitmapData != 0)
-		{
-			m_tmpBitmap.Deserialize(cmdList->GetExtData(dataList[i].fillBitmapData));
-			info.fillGlyphBitmap = &m_tmpBitmap;
-		}
-		else
-		{
-			info.fillGlyphBitmap = nullptr;
-		}
-		info.srcRect = dataList[i].srcRect;
-		info.outlineOffset = dataList[i].outlineOffset;
+		//Internal::CacheGlyphInfo info;
+		//if (dataList[i].fillBitmapData != 0)
+		//{
+		//	m_tmpBitmap.Deserialize(cmdList->GetExtData(dataList[i].fillBitmapData));
+		//	info.fillGlyphBitmap = &m_tmpBitmap;
+		//}
+		//else
+		//{
+		//	info.fillGlyphBitmap = nullptr;
+		//}
+		//info.srcRect = dataList[i].srcRect;
+		//info.outlineOffset = dataList[i].outlineOffset;
 
-		Rect srcFillRect, srcOutlineRect;
-		cache->CommitCacheGlyphInfo(&info, &srcFillRect, &srcOutlineRect);
+		//Rect srcFillRect, srcOutlineRect;
+		//cache->CommitCacheGlyphInfo(&info, &srcFillRect, &srcOutlineRect);
 
 		// TODO: 以下、srcFillRect, srcOutlineRectを使った方が良い気がする
 
@@ -429,16 +429,16 @@ void TextRenderer::DrawGlyphsInternal(const PointF& position, const Array<TextLa
 		{
 			LN_NOTIMPLEMENTED();
 		}
-		if (info.fillGlyphBitmap != nullptr)
-		{
-			// ビットマップデータを一時メモリへ保存する
-			dataList[i].fillBitmapData = cmdList->AllocExtData(info.fillGlyphBitmap->GetSerializeSize(), nullptr);
-			info.fillGlyphBitmap->Serialize(cmdList->GetExtData(dataList[i].fillBitmapData));
-		}
-		else
-		{
-			dataList[i].fillBitmapData = 0;
-		}
+		//if (info.fillGlyphBitmap != nullptr)
+		//{
+		//	// ビットマップデータを一時メモリへ保存する
+		//	dataList[i].fillBitmapData = cmdList->AllocExtData(info.fillGlyphBitmap->GetSerializeSize(), nullptr);
+		//	info.fillGlyphBitmap->Serialize(cmdList->GetExtData(dataList[i].fillBitmapData));
+		//}
+		//else
+		//{
+		//	dataList[i].fillBitmapData = 0;
+		//}
 		
 		// TODO: Outline
 

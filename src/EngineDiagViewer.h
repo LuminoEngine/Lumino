@@ -5,20 +5,23 @@
 LN_NAMESPACE_BEGIN
 class GraphicsContext;
 
-class EngineDiagRenderer
+class EngineDiagViewer
 	: public Object
 {
 public:
-	EngineDiagRenderer();
-	~EngineDiagRenderer();
-	void Initialize(GraphicsManager* manager, EngineDiagCore* diagCore);
+	EngineDiagViewer();
+	~EngineDiagViewer();
+	void Initialize(EngineManager* manager, EngineDiagCore* diagCore);
 
 	void SetVisible(bool visible) { m_isVisible = visible; }
 	bool IsVisible() const { return m_isVisible; }
+	void UpdateFrame();
 	void Render(GraphicsContext* g, const Vector2& viewSize);
 	
 private:
 	EngineDiagCore*	m_diagCore;
+	PlatformWindow*	m_mainWindow;
+	String			m_originalMainWindowTitle;
 	Font*			m_font;
 	RectF			m_windowRect;
 	bool			m_isVisible;

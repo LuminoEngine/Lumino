@@ -14,7 +14,7 @@ LN_BEGIN_INTERNAL_NAMESPACE(Graphics)
 
 struct CacheGlyphInfo
 {
-	Bitmap*	fillGlyphBitmap;
+	//Bitmap*	fillGlyphBitmap;
 	// TODO: outlinebitmap
 	int		outlineOffset;
 	Rect	srcRect;
@@ -41,7 +41,7 @@ public:
 	// 次に描画スレッドで、LookupFillGlyph() によって取得して CacheGlyphInfo を指定する。
 	// LookupFillGlyph() の呼び出し回数と対応させなければならない。
 	// 同時に、得られた srcRect で頂点バッファを作る。
-	void CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* srcFillRect, Rect* srcOutlineRect);
+	//void CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* srcFillRect, Rect* srcOutlineRect);
 
 	// 最後に、描画するときにこのテクスチャを使う。
 	Driver::ITexture* GetGlyphsFillTexture();
@@ -75,8 +75,9 @@ private:
 	std::vector<bool>		m_curPrimUsedFlags;		// TODO: Array<bool> 1度の Flush 間で、そのインデックスが使われたかどうか
 	int						m_curPrimUsedCount;		// m_curPrimUsedFlags の中の true 数 (m_maxCacheGlyphs に到達したら Flush が必要)
 
-	Driver::ITexture*		m_glyphsFillTexture;
-	Bitmap*					m_lockedFillBitmap;
+	//Driver::ITexture*		m_glyphsFillTexture;
+	Texture2D*				m_fillGlyphsTexture;
+	//Bitmap*					m_lockedFillBitmap;
 
 	TextLayoutEngine		m_layoutEngine;	// TODO: GlyphRun に任せていいかも？
 

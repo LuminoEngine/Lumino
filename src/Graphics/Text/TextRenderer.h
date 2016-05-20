@@ -24,7 +24,7 @@ public:
 		// CacheGlyphInfo から取りだすデータ
 		int			outlineOffset;
 		Rect		srcRect;
-		RenderingCommandList::DataHandle	fillBitmapData;	// 無ければ 0
+		//RenderingCommandList::DataHandle	fillBitmapData;	// 無ければ 0
 	};
 
 	TextRendererCore();
