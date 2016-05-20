@@ -70,7 +70,7 @@ void InputManager::Initialize(const Settings& settings)
 	
 	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
-	auto pad = RefPtr<InputController>::Construct(this);
+	auto pad = RefPtr<InputController>::MakeRef(this);
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->AddRef();
 

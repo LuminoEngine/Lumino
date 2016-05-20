@@ -69,7 +69,7 @@ void EffectManager::Initialize(const Settings& settings)
 	m_audioManager = settings.audioManager;
 
 #ifdef LN_USE_EXTERNAL_Effekseer
-	auto engine = RefPtr<EffekseerEffectEngine>::Create();
+	auto engine = RefPtr<EffekseerEffectEngine>::MakeRef();
 	engine->Initialize(this, 32, 0, 2000);
 	m_engine = engine.DetachMove();
 #endif

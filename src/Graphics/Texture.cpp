@@ -308,6 +308,27 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 }
 
 //------------------------------------------------------------------------------
+void Texture2D::Blt(int x, int y, Bitmap* srcBitmap, const Rect& srcRect)
+{
+	// TODO: この Blt は基本的にフォントビットマップの転送に使うので、このままだと非常に効率が悪い。が、とりあえずまずは動くものを。
+	ScopedTextureLock lock1(this);
+	lock1.GetBitmap()->BitBlt(x, y, srcBitmap, srcRect, Color::White, true);
+
+	//// ビットマップデータをコマンドリストの一時メモリへ保存する
+	//RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
+	////size_t data = cmdList->AllocExtData(srcBitmap->GetSerializeSize(srcRect), nullptr);
+	////srcBitmap->Serialize(cmdList->GetExtData(data), srcRect);
+
+	//Point point(x, y);
+
+	//RenderBulkData data;
+	//data.Alloc(cmdList, srcBitmap->GetSerializeSize(srcRect));
+	//srcBitmap->Serialize(data.GetData(), srcRect);
+
+	//m_deviceObj->SetSubData(point, data.GetData(), )
+}
+
+//------------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
 void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }

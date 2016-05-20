@@ -139,8 +139,10 @@ public:
 	}
 
 	size_t GetSerializeSize() const;
+	size_t GetSerializeSize(const Rect& rect) const;
 	void Serialize(void* buffer);
-	void Deserialize(const void* buffer);
+	void Serialize(void* buffer, const Rect& rect);
+	void Deserialize(void* buffer, bool refMode = false);
 
 public:
 	

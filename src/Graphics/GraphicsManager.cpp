@@ -924,7 +924,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_graphicsContext->Initialize(this);
 
 	// TextRendererCache
-	m_glyphTextureCache = RefPtr<CacheManager>::Create(512, 0);
+	m_glyphTextureCache = RefPtr<CacheManager>::MakeRef(512, 0);
 
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->Initialize(this);

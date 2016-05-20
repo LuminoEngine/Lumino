@@ -274,7 +274,7 @@ int main()
 		//sound1->Play();
 
 
-		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::Create();
+		auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
 		Camera::GetDefault3DCamera()->SetCameraBehavior(cb);
 
 		//auto grid1 = Grid::Create3D();

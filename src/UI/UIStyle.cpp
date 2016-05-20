@@ -97,7 +97,7 @@ UIStyle* UIStyleTable::FindStyle(const String& targetName, const String& targetS
 {
 	StyleKey k{ targetName, targetState };
 	RefPtr<UIStyle>* s = m_table.Find(k);
-	if (s != nullptr) return s->GetObjectPtr();
+	if (s != nullptr) return s->Get();
 	return nullptr;
 }
 

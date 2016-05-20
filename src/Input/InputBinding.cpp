@@ -12,7 +12,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputBinding, tr::ReflectionObject);
 //------------------------------------------------------------------------------
 InputBindingPtr InputBinding::Create(const String& bindingName, Key key, ModifierKeys modifier)
 {
-	return RefPtr<InputBinding>::Construct(bindingName, key, modifier);
+	return RefPtr<InputBinding>::MakeRef(bindingName, key, modifier);
 }
 
 //------------------------------------------------------------------------------

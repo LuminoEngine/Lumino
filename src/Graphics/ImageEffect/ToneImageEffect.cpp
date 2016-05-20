@@ -63,7 +63,7 @@ void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
 {
 	auto anim = ValueEasingCurve<Vector4>::Create(tone, time, EasingMode::Linear);
 	AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
-	ac->AddAnimationCurve(anim.GetObjectPtr(), this, ToneImageEffect::Tone, m_tone);
+	ac->AddAnimationCurve(anim.Get(), this, ToneImageEffect::Tone, m_tone);
 }
 
 //------------------------------------------------------------------------------

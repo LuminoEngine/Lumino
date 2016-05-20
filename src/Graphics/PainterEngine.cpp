@@ -648,7 +648,7 @@ void PainterEngine::InternalDrawRectangleTiling(const RectF& rect, const Rect& s
 //------------------------------------------------------------------------------
 void PainterEngine::SetInternalGlyphMaskTexture(Driver::ITexture* mask)
 {
-	if (m_currentInternalGlyphMask.GetObjectPtr() != mask) 
+	if (m_currentInternalGlyphMask.Get() != mask)
 	{
 		Flush();
 		if (mask != NULL) {

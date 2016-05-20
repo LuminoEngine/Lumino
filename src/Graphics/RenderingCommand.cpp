@@ -29,6 +29,15 @@ RenderingCommand::~RenderingCommand()
 //==============================================================================
 
 //------------------------------------------------------------------------------
+RenderBulkData::RenderBulkData()
+	: m_srcData(nullptr)
+	, m_size(0)
+	, m_commandList(nullptr)
+	, m_dataHandle(0)
+{
+}
+
+//------------------------------------------------------------------------------
 RenderBulkData::RenderBulkData(void* srcData, size_t size)
 	: m_srcData(srcData)
 	, m_size(size)
@@ -51,10 +60,20 @@ void* RenderBulkData::GetData() const
 }
 
 //------------------------------------------------------------------------------
+void RenderBulkData::Alloc(RenderingCommandList* commandList, size_t size)
+{
+	m_size = size;
+	Alloc(commandList);
+}
+
+//------------------------------------------------------------------------------
 void RenderBulkData::Alloc(RenderingCommandList* commandList)
 {
-	m_commandList = commandList;
-	m_dataHandle = m_commandList->AllocExtData(m_size, m_srcData);
+	if (m_dataHandle == 0)
+	{
+		m_commandList = commandList;
+		m_dataHandle = m_commandList->AllocExtData(m_size, m_srcData);
+	}
 }
 
 

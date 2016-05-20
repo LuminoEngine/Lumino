@@ -274,25 +274,63 @@ void Bitmap::SetPixel(int x, int y, const Color& color)
 //------------------------------------------------------------------------------
 size_t Bitmap::GetSerializeSize() const
 {
+	//return
+	//	sizeof(size_t) +
+	//	m_bitmapData.GetSize() +
+	//	sizeof(m_size) +
+	//	sizeof(m_pitch) +
+	//	sizeof(m_format) +
+	//	sizeof(m_upFlow);
+	return GetSerializeSize(Rect(0, 0, m_size));
+}
+
+//------------------------------------------------------------------------------
+size_t Bitmap::GetSerializeSize(const Rect& rect) const
+{
+	Rect clipRect = rect;
+	clipRect.Clip(Rect(0, 0, m_size));
+	
 	return
-		sizeof(size_t) + // m_bitmapData.GetSize()
-		m_bitmapData.GetSize() +
 		sizeof(m_size) +
 		sizeof(m_pitch) +
 		sizeof(m_format) +
-		sizeof(m_upFlow);
+		sizeof(m_upFlow) +
+		sizeof(size_t) +
+		GetPixelFormatByteCount(m_format, clipRect.GetSize());
 }
 
 //------------------------------------------------------------------------------
 void Bitmap::Serialize(void* buffer)
 {
+	//byte_t* b = (byte_t*)buffer;
+
+	//*((size_t*)b) = m_bitmapData.GetSize();
+	//b += sizeof(size_t);
+
+	//memcpy(b, m_bitmapData.GetConstData(), m_bitmapData.GetSize());
+	//b += m_bitmapData.GetSize();
+
+	//*((Size*)b) = m_size;
+	//b += sizeof(m_size);
+
+	//*((int*)b) = m_pitch;
+	//b += sizeof(m_pitch);
+
+	//*((PixelFormat*)b) = m_format;
+	//b += sizeof(m_format);
+
+	//*((bool*)b) = m_upFlow;
+	////b += sizeof(m_upFlow);
+	Serialize(buffer, Rect(0, 0, m_size));
+}
+
+//------------------------------------------------------------------------------
+void Bitmap::Serialize(void* buffer, const Rect& rect)
+{
+	Rect clipRect = rect;
+	clipRect.Clip(Rect(0, 0, m_size));
+	
 	byte_t* b = (byte_t*)buffer;
-
-	*((size_t*)b) = m_bitmapData.GetSize();
-	b += sizeof(size_t);
-
-	memcpy(b, m_bitmapData.GetConstData(), m_bitmapData.GetSize());
-	b += m_bitmapData.GetSize();
 
 	*((Size*)b) = m_size;
 	b += sizeof(m_size);
@@ -304,20 +342,26 @@ void Bitmap::Serialize(void* buffer)
 	b += sizeof(m_format);
 
 	*((bool*)b) = m_upFlow;
-	//b += sizeof(m_upFlow);
+	b += sizeof(m_upFlow);
+	
+	*((size_t*)b) = GetPixelFormatByteCount(m_format, clipRect.GetSize());
+	b += sizeof(size_t);
+	
+	size_t pixelSize = GetPixelFormatByteCount(m_format);
+	size_t srcLineSize = pixelSize * m_size.width;
+	size_t dstLineSize = pixelSize * clipRect.width;
+	for (int y = clipRect.GetTop(); y < clipRect.GetBottom(); ++y)
+	{
+		const byte_t* srcLine = &(m_bitmapData.GetConstData()[srcLineSize * y]);
+		byte_t* dstLine = &(b[dstLineSize * y]);
+		memcpy(dstLine, &srcLine[pixelSize * clipRect.x], pixelSize * clipRect.width);
+	}
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Deserialize(const void* buffer)
+void Bitmap::Deserialize(void* buffer, bool refMode)
 {
-	const byte_t* b = (const byte_t*)buffer;
-
-	size_t size = *((size_t*)b);
-	b += sizeof(size_t);
-
-	m_bitmapData.Resize(size);
-	memcpy(m_bitmapData.GetData(), b, size);
-	b += m_bitmapData.GetSize();
+	byte_t* b = (byte_t*)buffer;
 
 	m_size = *((Size*)b);
 	b += sizeof(m_size);
@@ -329,7 +373,21 @@ void Bitmap::Deserialize(const void* buffer)
 	b += sizeof(m_format);
 
 	m_upFlow = *((bool*)b);
-	//b += sizeof(m_upFlow);
+	b += sizeof(m_upFlow);
+
+	size_t size = *((size_t*)b);
+	b += sizeof(size_t);
+
+	if (refMode)
+	{
+		m_bitmapData.Attach(b, size);
+	}
+	else
+	{
+		m_bitmapData.Resize(size);
+		memcpy(m_bitmapData.GetData(), b, size);
+	}
+	b += m_bitmapData.GetSize();
 }
 
 //------------------------------------------------------------------------------

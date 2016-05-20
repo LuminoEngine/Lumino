@@ -114,9 +114,12 @@ private:
 class RenderBulkData
 {
 public:
+	RenderBulkData();
 	RenderBulkData(void* srcData, size_t size);
 	void* GetData() const;
 	size_t GetSize() const { return m_size; }
+
+	void Alloc(RenderingCommandList* commandList, size_t size);
 
 	// TODO: internal
 	void Alloc(RenderingCommandList* commandList);
