@@ -308,11 +308,11 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Blt(int x, int y, Bitmap* srcBitmap, const Rect& srcRect)
+void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 {
-	// TODO: この Blt は基本的にフォントビットマップの転送に使うので、このままだと非常に効率が悪い。が、とりあえずまずは動くものを。
-	ScopedTextureLock lock1(this);
-	lock1.GetBitmap()->BitBlt(x, y, srcBitmap, srcRect, Color::White, true);
+	//// TODO: この Blt は基本的にフォントビットマップの転送に使うので、このままだと非常に効率が悪い。が、とりあえずまずは動くものを。
+	//ScopedTextureLock lock1(this);
+	//lock1.GetBitmap()->BitBlt(x, y, srcBitmap, srcRect, Color::White, true);
 
 	//// ビットマップデータをコマンドリストの一時メモリへ保存する
 	//RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
@@ -326,6 +326,14 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap, const Rect& srcRect)
 	//srcBitmap->Serialize(data.GetData(), srcRect);
 
 	//m_deviceObj->SetSubData(point, data.GetData(), )
+
+	RenderingCommandList* cmdList = m_manager->GetPrimaryRenderingCommandList();
+
+	RenderBulkData bmpRawData;
+	bmpRawData.Alloc(cmdList, Bitmap::GetPixelFormatByteCount(m_primarySurface->GetPixelFormat(), srcBitmap->GetSize()));
+
+	Bitmap bmpTmp(bmpRawData.GetData(), srcBitmap->GetSize(), m_primarySurface->GetPixelFormat());
+	bmpTmp.BitBlt(0, 0, srcBitmap, Rect(0, 0, srcBitmap->GetSize()), Color::White, false);
 }
 
 //------------------------------------------------------------------------------

@@ -140,9 +140,14 @@ public:
 
 	size_t GetSerializeSize() const;
 	size_t GetSerializeSize(const Rect& rect) const;
+	size_t GetPropertySerializeSize() const;
+
+
 	void Serialize(void* buffer);
 	void Serialize(void* buffer, const Rect& rect);
+	void SerializeProperty(void* buffer);
 	void Deserialize(void* buffer, bool refMode = false);
+	void DeserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode = false);
 
 public:
 	

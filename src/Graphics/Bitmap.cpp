@@ -291,12 +291,19 @@ size_t Bitmap::GetSerializeSize(const Rect& rect) const
 	clipRect.Clip(Rect(0, 0, m_size));
 	
 	return
+		GetPropertySerializeSize() +
+		sizeof(size_t) +
+		GetPixelFormatByteCount(m_format, clipRect.GetSize());
+}
+
+//------------------------------------------------------------------------------
+size_t Bitmap::GetPropertySerializeSize() const
+{
+	return
 		sizeof(m_size) +
 		sizeof(m_pitch) +
 		sizeof(m_format) +
-		sizeof(m_upFlow) +
-		sizeof(size_t) +
-		GetPixelFormatByteCount(m_format, clipRect.GetSize());
+		sizeof(m_upFlow);
 }
 
 //------------------------------------------------------------------------------
@@ -359,6 +366,24 @@ void Bitmap::Serialize(void* buffer, const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
+void Bitmap::SerializeProperty(void* buffer)
+{
+	byte_t* b = (byte_t*)buffer;
+
+	*((Size*)b) = m_size;
+	b += sizeof(m_size);
+
+	*((int*)b) = m_pitch;
+	b += sizeof(m_pitch);
+
+	*((PixelFormat*)b) = m_format;
+	b += sizeof(m_format);
+
+	*((bool*)b) = m_upFlow;
+	b += sizeof(m_upFlow);
+}
+
+//------------------------------------------------------------------------------
 void Bitmap::Deserialize(void* buffer, bool refMode)
 {
 	byte_t* b = (byte_t*)buffer;
@@ -388,6 +413,33 @@ void Bitmap::Deserialize(void* buffer, bool refMode)
 		memcpy(m_bitmapData.GetData(), b, size);
 	}
 	b += m_bitmapData.GetSize();
+}
+
+//------------------------------------------------------------------------------
+void Bitmap::DeserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode)
+{
+	const byte_t* b = (const byte_t*)propData;
+
+	m_size = *((Size*)b);
+	b += sizeof(m_size);
+
+	m_pitch = *((int*)b);
+	b += sizeof(m_pitch);
+
+	m_format = *((PixelFormat*)b);
+	b += sizeof(m_format);
+
+	m_upFlow = *((bool*)b);
+	b += sizeof(m_upFlow);
+
+	if (refMode)
+	{
+		m_bitmapData.Attach(rawData, rawDataSize);
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
 }
 
 //------------------------------------------------------------------------------
