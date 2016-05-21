@@ -396,14 +396,14 @@ void jo_gif_frame(jo_gif_t *gif, jo_gif_frame_t *fdata, unsigned char * rgba, in
         free(ditheredPixels);
     }
 
-    //fdata->indexed_pixels.Alloc((char*)indexedPixels, size);
+    fdata->indexed_pixels.Alloc((char*)indexedPixels, size);
 
-    {
-		fdata->encoded_pixels.Initialize(10);
-		ln::BinaryWriter writer(&fdata->encoded_pixels);
-        jo_gif_lzw_encode(&writer, indexedPixels, size);
-		//printf("s:%lld\n", fdata->encoded_pixels.GetLength());
-    }
+  //  {
+		//fdata->encoded_pixels.Initialize(10);
+		//ln::BinaryWriter writer(&fdata->encoded_pixels);
+  //      jo_gif_lzw_encode(&writer, indexedPixels, size);
+		////printf("s:%lld\n", fdata->encoded_pixels.GetLength());
+  //  }
 
     free(indexedPixels);
 }
