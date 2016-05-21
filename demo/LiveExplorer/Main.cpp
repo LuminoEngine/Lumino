@@ -282,8 +282,8 @@ int main()
 		//particleModel1->m_maxPosition.Set(10, 0, 0);
 		particleModel1->m_minVelocity.Set(-5, 5, 0);
 		particleModel1->m_maxVelocity.Set(5, 5, 0);
-		particleModel1->m_minAcceleration.Set(0, -8, 0);
-		particleModel1->m_maxAcceleration.Set(0, -8, 0);
+		particleModel1->m_minAccel.Set(0, -8, 0);
+		particleModel1->m_maxAccel.Set(0, -8, 0);
 		particleModel1->m_lifeTimeMin = 1.0;
 		particleModel1->m_lifeTimeMax = 1.0;
 		particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));

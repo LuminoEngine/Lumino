@@ -77,13 +77,38 @@ public:	// TODO:
 	Texture*			m_texture;
 	Randomizer			m_rand;
 
+	////////
 	int			m_spawnRate;	// 1秒間に放出するパーティクル数
 	Vector3		m_minPosition;
 	Vector3		m_maxPosition;
 	Vector3		m_minVelocity;
 	Vector3		m_maxVelocity;
-	Vector3		m_minAcceleration;
-	Vector3		m_maxAcceleration;
+	Vector3		m_minAccel;
+	Vector3		m_maxAccel;
+
+
+	//LVector3		Axis;				///< 回転軸
+	//LVector3		AxisRand;           ///< 回転軸のランダム幅
+
+	//lnFloat			Angle;				///< 初期角度 (Axis 軸周りの回転)
+	//lnFloat			AngleRand;          ///< 初期角度のランダム幅
+
+	//lnFloat			AngleVelocity;	    ///< 角速度 (Axis 軸周りの回転)
+	//lnFloat			AngleVelocityRand;  ///< 初期角度のランダム幅
+
+	//lnFloat			AngleAccel;			///< 角加速度
+	//lnFloat			AngleAccelRand;     ///< 角加速度のランダム幅
+
+	//lnFloat			Size;				///< サイズ
+	//lnFloat			SizeRand;           ///< サイズのランダム幅
+
+	//lnFloat			SizeVelocity;	    ///< サイズ変化速度
+	//lnFloat			SizeVelocityRand;   ///< サイズ変化速度のランダム幅
+
+	//lnFloat			SizeAccel;			///< サイズ変化加速度
+	//lnFloat			SizeAccelRand;      ///< サイズ変化加速度のランダム幅
+	//LVector3		GlobalAccel;		///< 全体に適用する加速度 (重力など)
+	//lnFloat			GravityPower;		///< 中心 (ローカル座標の 0, 0, 0) への引力の強さ (負の値で斥力になる)
 
 	
 	float		m_lifeTimeMin;
@@ -93,6 +118,7 @@ public:	// TODO:
 	float		m_fadeOutRatio;
 
 	float		m_emitterDuration;		// エミッタのパーティクル放出時間
+	////////
 
 	int			m_maxParticleCount;
 	float		m_oneSpawnDeltaTime;

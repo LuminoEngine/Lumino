@@ -28,7 +28,7 @@ public:
 /*
 	giflib と jo_gif のハイブリッド実装。
 	giflib はイイ感じのリアルタイム減色機能を持っていないので jo_gif の機能を使う。
-	jo_gif は lzw のデコードが (giflib) と比べて遅いので、デコード&ファイル保存は giflib を使う。
+	jo_gif は lzw のデコードが giflib と比べて遅いので、デコード&ファイル保存は giflib を使う。
 	※速度は 50ms～150ms vs 20ms くらい。写真のように色数が増えると、jo_gif は遅くなっていく。
 */
 class DynamicPaletteGifContext

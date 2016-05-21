@@ -51,11 +51,11 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_vertexBuffer(nullptr)
 	, m_texture(nullptr)
 	, m_spawnRate(0)
-	, m_lifeTimeMin(0.0f)
-	, m_lifeTimeMax(0.0f)
-	, m_fadeInRatio(0.2f)
-	, m_fadeOutRatio(0.8f)
-	, m_emitterDuration(5.0f)
+	, m_lifeTimeMin(1.0f)
+	, m_lifeTimeMax(1.0f)
+	, m_fadeInRatio(0.0f/*0.2f*/)
+	, m_fadeOutRatio(0.0f/*0.8f*/)
+	, m_emitterDuration(1.0f)
 	, m_maxParticleCount(0)
 {
 }
@@ -131,9 +131,9 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 	data->velocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x);
 	data->velocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y);
 	data->velocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z);
-	data->acceleration.x = MakeRandom(data, m_minAcceleration.x, m_maxAcceleration.x);
-	data->acceleration.y = MakeRandom(data, m_minAcceleration.y, m_maxAcceleration.y);
-	data->acceleration.z = MakeRandom(data, m_minAcceleration.z, m_maxAcceleration.z);
+	data->acceleration.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x);
+	data->acceleration.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y);
+	data->acceleration.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z);
 
 	// TODO
 	data->color = ColorF::Red;
@@ -215,7 +215,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 			if (spawned < spawnCount)
 			{
 				SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
-				UpdateOneParticle(&data, instance->m_time, viewPosition);
+				UpdateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
 				++spawned;
 			}
 		}
@@ -233,7 +233,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 		detail::ParticleData& data = instance->m_particles[idx];
 
 		SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
-		UpdateOneParticle(&data, instance->m_time, viewPosition);
+		UpdateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
 		++spawned;
 	}
 

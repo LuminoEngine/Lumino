@@ -23,6 +23,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Graphics/Test_Graphics_Texture.cpp
 	#UnitTest/Graphics/Test_Graphics_VertexBuffer.cpp
 	UnitTest/Scene/Test_Scene_Sprite.cpp
+	UnitTest/Scene/Test_Scene_SpriteParticle.cpp
 	UnitTest/Scene/Test_Scene_VisualNode.cpp
 	UnitTest/UI/Test_UI_TextBlock.cpp
 )
