@@ -3,6 +3,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail { class CapturerContext; }
 class RenderTarget;
 
 class FrameCapturer;
@@ -35,15 +36,15 @@ private:
 	void RecordCommand(Driver::ITexture* target, State newState);
 
 	class GifContext;
-	GraphicsManager*		m_manager;
-	RenderTarget*			m_capturerTarget;
-	State					m_requestedState;
+	GraphicsManager*			m_manager;
+	RenderTarget*				m_capturerTarget;
+	State						m_requestedState;
 	
-	PathNameA				m_savingDir;
+	PathNameA					m_savingDir;
 	//std::shared_ptr<BinaryWriter>	m_stream;
-	GifContext*				m_gifContext;
-	State					m_currentState;
-	uint64_t				m_lastTick;
+	detail::CapturerContext*	m_gifContext;
+	State						m_currentState;
+	uint64_t					m_lastTick;
 };
 
 LN_NAMESPACE_GRAPHICS_END

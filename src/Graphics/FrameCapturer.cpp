@@ -5,6 +5,7 @@
 #include "Internal.h"
 #include <giflib-5.1.4\gif_lib.h>
 #include "../../../external/jo_gif/jo_gif.cpp"
+#include <Lumino/Threading/Task.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/FrameCapturer.h>
 #include "GraphicsManager.h"
@@ -13,10 +14,141 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail
+{
+class CapturerContext
+{
+public:
+	virtual ~CapturerContext() = default;
+	virtual void Open(const PathName& filePath, const Size& size) = 0;
+	virtual void Close() = 0;
+	virtual void AddFrame(Bitmap* bitmap, int delayMS) = 0;
+};
 
 
+class DynamicPaletteGifContext
+	: public CapturerContext
+{
+public:
+
+	DynamicPaletteGifContext()
+		: m_frameCount(0)
+	{
+	}
+
+	virtual ~DynamicPaletteGifContext()
+	{
+		Close();
+	}
+
+	virtual void Open(const PathName& filePath, const Size& size) override
+	{
+		m_imageSize = size;
+		m_framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
+		m_frameCount = 0;
+
+		m_writer = RefPtr<BinaryWriter>::MakeRef(FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate));
+
+		m_gif = jo_gif_start(size.width, size.height, 0, 64);
+		jo_gif_write_header(m_writer, &m_gif);
+	}
+
+	virtual void Close() override
+	{
+		if (m_task != nullptr)
+		{
+			m_task->Wait();
+			m_task.SafeRelease();
+		}
+		jo_gif_write_footer(m_writer, &m_gif);
+		jo_gif_end(&m_gif);
+		m_writer.SafeRelease();
+	}
+
+	virtual void AddFrame(Bitmap* bitmap, int delayMS) override
+	{
+		if (delayMS <= 0) return;
+
+		struct RGBX
+		{
+			byte_t r, g, b, x;
+		};
+
+		//if (m_task == nullptr || m_task->IsCompleted())
+		{
+			const Size& bmpSize = bitmap->GetSize();
+			RGBX* framePixels = (RGBX*)m_framePixels.GetData();
+			for (int y = 0; y < m_imageSize.height; ++y)
+			{
+				for (int x = 0; x < m_imageSize.width; ++x)
+				{
+					RGBX* p = &framePixels[y * m_imageSize.width + x];
+					if (x >= bmpSize.width || y >= bmpSize.height)
+					{
+						p->r = 0x00;
+						p->g = 0x00;
+						p->b = 0x00;
+						p->x = 0xFF;
+					}
+					else
+					{
+						Color c = bitmap->GetPixel(x, y);
+						p->r = c.r;
+						p->g = c.g;
+						p->b = c.b;
+						p->x = 0xFF;
+					}
+				}
+			}
+			//printf("%p\n", framePixels);
+			//printf("%p\n", m_framePixels.GetConstData());
+
+			//auto func = [this/*, framePixels*/, delayMS]()
+			{
+				bool updatePalette = false;
+				jo_gif_frame_t* gifFrame = &m_gifFrame;
+				jo_gif_frame_t* palette = nullptr;//&m_gifLastPaletteFrame;
+				if (m_frameCount % 5 == 0)
+				{
+					updatePalette = true;
+					gifFrame = &m_gifLastPaletteFrame;
+				}
+				if (m_frameCount == 0)
+				{
+					palette = gifFrame;
+				}
+				//printf("%p\n", gifFrame);
+
+				ln::ElapsedTimer te;
+				te.Start();
+				jo_gif_frame(&m_gif, gifFrame, (unsigned char*)m_framePixels.GetConstData(), m_frameCount, updatePalette);
+				printf("%lld\n", te.GetElapsedTime());
+
+				jo_gif_write_frame(m_writer, &m_gif, gifFrame, palette, m_frameCount, delayMS / 10);
+				++m_frameCount;
+			};
+			//m_task = tr::Task::Run(Delegate<void()>(func));
+		}
+	}
+
+
+
+private:
+	jo_gif_t				m_gif;
+	Size					m_imageSize;
+	ByteBuffer				m_framePixels;
+	RefPtr<BinaryWriter>	m_writer;
+	int						m_frameCount;
+	jo_gif_frame_t			m_gifLastPaletteFrame;
+	jo_gif_frame_t			m_gifFrame;		// 1フレームの作業領域。前のフレームを保存するなら配列化する
+	tr::TaskPtr				m_task;
+
+};
+
+} // namespace detail
 
 class FrameCapturer::GifContext
+	: public detail::CapturerContext
 {
 public:
 
@@ -26,18 +158,19 @@ public:
 	{
 	}
 
-	~GifContext()
+	virtual ~GifContext()
 	{
 		Close();
 	}
 
-	void Open(const PathNameA& filePath, const Size& size)
+	virtual void Open(const PathName& filePath, const Size& size) override
 	{
 		m_imageSize = size;
 		m_line.Alloc(sizeof(GifPixelType) * m_imageSize.width);
 
+		StringA f = filePath;
 		int error;
-		m_gif = EGifOpenFileName(filePath.c_str(), false, &error);
+		m_gif = EGifOpenFileName(f.c_str(), false, &error);
 
 		m_globalPalette = GifMakeMapObject(256, PaletteGPriority);
 
@@ -57,7 +190,7 @@ public:
 		EGifPutExtensionTrailer(m_gif);
 	}
 
-	void Close()
+	virtual void Close() override
 	{
 		int error;
 		EGifCloseFile(m_gif, &error);
@@ -65,19 +198,18 @@ public:
 		GifFreeMapObject(m_globalPalette);
 	}
 
-	void AddFrame(Bitmap* bitmap, int delayMS)
+	virtual void AddFrame(Bitmap* bitmap, int delayMS) override
 	{
-		if (delayMS > 0) return;
+		if (delayMS <= 0) return;
 
 		// Graphic Control Extension
 		byte_t ext[4] = { 0x04, 0x00, 0x00, 0xff };
-		ext[1] = (delayMS) % 256;	// TODO: ビット演算で。
-		ext[2] = (delayMS) / 256;	// TODO: ビット演算で。
+		ext[1] = (delayMS / 10) % 256;	// TODO: ビット演算で。
+		ext[2] = (delayMS / 10) / 256;	// TODO: ビット演算で。
 		EGifPutExtension(m_gif, GRAPHICS_EXT_FUNC_CODE, 4, ext);
 
 		// Image Descriptor
 		EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, nullptr);
-
 
 		const Size& bmpSize = bitmap->GetSize();
 		GifPixelType* line = (GifPixelType*)m_line.GetData();
@@ -187,7 +319,7 @@ FrameCapturer::~FrameCapturer()
 void FrameCapturer::Initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_gifContext = LN_NEW GifContext;
+	m_gifContext = LN_NEW detail::DynamicPaletteGifContext();//;GifContext
 }
 
 //------------------------------------------------------------------------------
@@ -240,7 +372,7 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		}
 		else if (newState == State::Recording)
 		{
-			PathNameA filePath("FrameCapturer.gif");
+			PathName filePath(_T("FrameCapturer.gif"));
 			m_gifContext->Open(filePath, target->GetSize());
 			m_lastTick = 0;
 		}
@@ -255,12 +387,15 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		uint64_t curTick = Environment::GetTickCount();
 		if (m_lastTick != 0) deltaTick = curTick - m_lastTick;
 
-		// RenderTarget の内容を読み取る
-		Bitmap* bmp = target->Lock();	//TODO: Scoped
-		m_gifContext->AddFrame(bmp, deltaTick);
-		target->Unlock();
+		if (m_lastTick == 0 || deltaTick > 32)	// FPS30 くらいでプロットする場合はコレ (TODO: fps指定)
+		{
+			// RenderTarget の内容を読み取る
+			Bitmap* bmp = target->Lock();	//TODO: Scoped
+			m_gifContext->AddFrame(bmp, deltaTick);
+			target->Unlock();
 
-		m_lastTick = curTick;
+			m_lastTick = curTick;
+		}
 	}
 }
 

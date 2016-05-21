@@ -28,6 +28,40 @@
 #include <string>
 #include <sstream>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // To get a header file for this, either cut and paste the header,
 // or create jo_gif.h, #define JO_GIF_HEADER_FILE_ONLY, and
 // then include jo_gif.cpp from it.
@@ -362,17 +396,19 @@ void jo_gif_frame(jo_gif_t *gif, jo_gif_frame_t *fdata, unsigned char * rgba, in
         free(ditheredPixels);
     }
 
-    fdata->indexed_pixels.Alloc((char*)indexedPixels, size);
+    //fdata->indexed_pixels.Alloc((char*)indexedPixels, size);
 
     {
+		fdata->encoded_pixels.Initialize(10);
 		ln::BinaryWriter writer(&fdata->encoded_pixels);
         jo_gif_lzw_encode(&writer, indexedPixels, size);
+		//printf("s:%lld\n", fdata->encoded_pixels.GetLength());
     }
 
     free(indexedPixels);
 }
 
-
+#if 0
 void jo_gif_decode(void *o_buf, jo_gif_frame_t *fdata, jo_gif_frame_t *palette_frame)
 {
     // todo: decode lzw instead of using indexed pixels
@@ -389,7 +425,7 @@ void jo_gif_decode(void *o_buf, jo_gif_frame_t *fdata, jo_gif_frame_t *palette_f
         op[i4 + 3] = 255;
     }
 }
-
+#endif
 
 void jo_gif_end(jo_gif_t *)
 {

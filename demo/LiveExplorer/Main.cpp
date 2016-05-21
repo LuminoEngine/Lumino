@@ -1,6 +1,3 @@
-/*
-インタラクティブアート
-*/
 
 #include "Common.h"
 #include "../../src/EngineManager.h"
@@ -255,7 +252,7 @@ int main()
 		Engine::Initialize(appData);
 
 
-		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/Test_Graphics_RenderingContext1.png"));
+		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));
 		auto sp1 = Sprite2D::Create(tex);
 
 
@@ -342,9 +339,9 @@ int main()
 
 		//Viewport::GetMainWindowViewport()
 
-		//auto frameCapturer = FrameCapturer::Create();
-		//frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
-		//frameCapturer->StartRecording();
+		auto frameCapturer = FrameCapturer::Create();
+		frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
+		frameCapturer->StartRecording();
 		
 
 		float fc = 0;
@@ -361,7 +358,7 @@ int main()
 
 			fc += 0.01;
 
-			//frameCapturer->Record();
+			frameCapturer->Record();
 
 			if (!Engine::UpdateFrame()) {
 				break;
@@ -387,7 +384,7 @@ int main()
 
 		}
 
-		//frameCapturer->StopRecording();
+		frameCapturer->StopRecording();
 
 		Engine::Finalize();
 	}
