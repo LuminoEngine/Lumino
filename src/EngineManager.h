@@ -47,6 +47,7 @@ public:
 
 public:
 
+	void SetFixedDeltaTime(float deltaTime) { m_fixedDeltaTime = deltaTime; }
 	bool UpdateFrame();
 	bool BeginRendering();
 	void EndRendering();
@@ -91,6 +92,7 @@ public:
 
 private:
 	//class NativeWindowEventListener;
+
 	EngineSettings						m_configData;
 	FpsController						m_fpsController;
 	detail::AnimationManager*			m_animationManager;
@@ -108,6 +110,9 @@ private:
 	AssetsManager*						m_assetsManager;
 
 	EngineDiagViewer*					m_diagViewer;
+
+
+	float								m_fixedDeltaTime;
 
 	//Application*						m_application;
 	

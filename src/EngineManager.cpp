@@ -148,7 +148,7 @@ EngineManager::EngineManager(const EngineSettings& configData)
 	, m_sceneGraphManager(nullptr)
 	, m_assetsManager(nullptr)
 	, m_diagViewer(nullptr)
-	//, m_application(nullptr)
+	, m_fixedDeltaTime(0.0f)
 	, m_frameRenderingSkip(false)
 	, m_frameRenderd(false)
 	, m_commonInitied(false)
@@ -529,6 +529,12 @@ void EngineManager::InitializeAssetsManager()
 //------------------------------------------------------------------------------
 bool EngineManager::UpdateFrame()
 {
+	float deltaTime = m_fixedDeltaTime;
+	if (deltaTime == 0.0f)
+	{
+		deltaTime = m_fpsController.GetElapsedGameTime();
+	}
+
 	if (!m_platformManager->DoEvents())
 	{
 		m_endRequested = true;
@@ -536,7 +542,7 @@ bool EngineManager::UpdateFrame()
 
 	if (m_animationManager != nullptr)
 	{
-		m_animationManager->AdvanceTime(m_fpsController.GetElapsedGameTime());
+		m_animationManager->AdvanceTime(deltaTime);
 	}
 
 	if (m_inputManager != nullptr) {
@@ -544,12 +550,12 @@ bool EngineManager::UpdateFrame()
 	}
 
 	if (m_sceneGraphManager != nullptr) {
-		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(m_fpsController.GetElapsedGameTime());
+		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(deltaTime);
 	}
 
 	if (m_uiManager != nullptr)
 	{
-		m_uiManager->GetMainWindow()->InjectElapsedTime(m_fpsController.GetElapsedGameTime());
+		m_uiManager->GetMainWindow()->InjectElapsedTime(deltaTime);
 
 		{	// プロファイリング範囲
 			ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);

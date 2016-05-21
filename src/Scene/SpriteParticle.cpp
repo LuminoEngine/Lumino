@@ -50,7 +50,7 @@ SpriteParticleModel::SpriteParticleModel()
 	: m_manager(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_texture(nullptr)
-	, m_spawnRate(0)
+	, m_spawnRate(1)
 	, m_lifeTimeMin(1.0f)
 	, m_lifeTimeMax(1.0f)
 	, m_fadeInRatio(0.0f/*0.2f*/)
@@ -174,6 +174,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition)
 {
+	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
 	float dt = instance->m_time - instance->m_lastSpawnTime;
 
 	// 前回からの差分時間が、パーティクル1つの最大時間を超えていないかチェック。
@@ -189,6 +190,11 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 
 	// 今回は何個作れる？
 	int spawnCount = (int)(dt / m_oneSpawnDeltaTime);
+	if (dt >= 0 && instance->m_time < m_oneSpawnDeltaTime) {	// 開始直後のケア。とにかく1つ作る
+		spawnCount = 1;
+	}
+
+
 	int spawned = 0;
 
 	// エミッタの放出時間を過ぎているなら作らない

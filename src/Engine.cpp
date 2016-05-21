@@ -74,6 +74,12 @@ void Engine::Exit()
 }
 
 //------------------------------------------------------------------------------
+void Engine::SetFixedDeltaTime(float deltaTime)
+{
+	EngineManager::Instance->SetFixedDeltaTime(deltaTime);
+}
+
+//------------------------------------------------------------------------------
 void Engine::ResetFrameDelay()
 {
 	EngineManager::Instance->ResetFrameDelay();
