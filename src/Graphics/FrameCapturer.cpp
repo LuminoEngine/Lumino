@@ -55,7 +55,8 @@ public:
 		m_framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
 		m_frameCount = 0;
 
-		StringA fn = filePath;
+		StringA fn;
+		fn.AssignCStr(filePath.c_str());
 		int error;
 		m_gif = EGifOpenFileName(fn.c_str(), false, &error);
 
