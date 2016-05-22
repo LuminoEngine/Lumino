@@ -1,4 +1,9 @@
 ﻿/*
+	Unityのパーティクルでエフェクトを演出
+	http://qiita.com/yando/items/b6b5c6922b312f1afbd1
+
+	[UE4] パーティクル システムのリファレンス
+	https://docs.unrealengine.com/latest/JPN/Engine/Rendering/ParticleSystems/Reference/index.html
 */
 #include "Internal.h"
 #include "../Graphics/GraphicsManager.h"	// TODO:
@@ -50,7 +55,9 @@ SpriteParticleModel::SpriteParticleModel()
 	: m_manager(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_texture(nullptr)
+	, m_particleDirection(ParticleDirection::Billboard)
 	, m_spawnRate(1)
+	, m_burstCount(1)
 	, m_minRandomBaseValue(0.0f)
 	, m_maxRandomBaseValue(1.0f)
 	, m_minLifeTime(1.0f)
@@ -70,7 +77,8 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_sizeRandomSource(ParticleRandomSource::Self)
 	, m_sizeVelocityRandomSource(ParticleRandomSource::Self)
 	, m_sizeAccelRandomSource(ParticleRandomSource::Self)
-	, m_maxParticleCount(0)
+	, m_maxParticles(100)
+	//, m_maxParticleCount(0)
 	, m_oneSpawnDeltaTime(0)
 {
 }
@@ -107,10 +115,10 @@ void SpriteParticleModel::Commit()
 	m_oneSpawnDeltaTime = 1.0f / m_spawnRate;
 
 	// 瞬間最大パーティクル数
-	m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
+	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
-	m_vertexBuffer = LN_NEW VertexBuffer(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount, m_maxParticleCount * 4, nullptr, DeviceResourceUsage_Dynamic);
-	m_indexBuffer = LN_NEW IndexBuffer(m_manager, m_maxParticleCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
+	m_vertexBuffer = LN_NEW VertexBuffer(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount, m_maxParticles * 4, nullptr, DeviceResourceUsage_Dynamic);
+	m_indexBuffer = LN_NEW IndexBuffer(m_manager, m_maxParticles * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
 }
 
 //------------------------------------------------------------------------------
@@ -118,9 +126,9 @@ std::shared_ptr<detail::SpriteParticleModelInstance> SpriteParticleModel::Create
 {
 	auto ptr = std::make_shared<detail::SpriteParticleModelInstance>();
 	//ptr->m_owner = this;	// 参照を持っておく
-	ptr->m_particles.Resize(m_maxParticleCount);
-	ptr->m_particleIndices.Resize(m_maxParticleCount);
-	for (int i = 0; i < m_maxParticleCount; ++i)
+	ptr->m_particles.Resize(m_maxParticles);
+	ptr->m_particleIndices.Resize(m_maxParticles);
+	for (int i = 0; i < m_maxParticles; ++i)
 	{
 		ptr->m_particleIndices[i] = i;
 	}
@@ -161,7 +169,7 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition)
+void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition)
 {
 	float localTime = time - data->spawnTime;
 	float deltaTime = time - data->lastTime;
@@ -171,6 +179,8 @@ void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double t
 	//// TODO: この辺で newPos と pos の差からトレイルを引いたりできる
 
 	//data->position = newPos;
+
+	Vector3 prevPos = data->position;
 
 	data->positionVelocity += data->positionAccel * deltaTime;
 	data->position += data->positionVelocity * deltaTime;
@@ -184,6 +194,7 @@ void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double t
 	}
 
 	data->lastTime = time;
+	data->currentDirection = Vector3::Normalize(data->position - prevPos);
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +211,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& invViewProj)
+void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv)
 {
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
 	float dt = instance->m_time - instance->m_lastSpawnTime;
@@ -221,7 +232,6 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	if (dt >= 0 && instance->m_time < m_oneSpawnDeltaTime) {	// 開始直後のケア。とにかく1つ作る
 		spawnCount = 1;
 	}
-
 
 	int spawned = 0;
 
@@ -249,25 +259,30 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 			if (spawned < spawnCount)
 			{
 				SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
-				UpdateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
+				SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
 				++spawned;
 			}
 		}
 		else
 		{
-			UpdateOneParticle(&data, instance->m_time, viewPosition);
+			SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
 		}
 	}
 
+
 	// まだ作るべき数があれば作る
 	int remain = spawnCount - spawned;
+	if (remain + instance->m_activeCount >= instance->m_particleIndices.GetCount())	// 生成可能最大数チェック
+	{
+		remain = instance->m_particleIndices.GetCount() - instance->m_activeCount;
+	}
 	for (int i = 0; i < remain; ++i)
 	{
 		int idx = instance->m_particleIndices[instance->m_activeCount + i];
 		detail::ParticleData& data = instance->m_particles[idx];
 
 		SpawnParticle(&data, spawnStartTime + (m_oneSpawnDeltaTime * spawned));
-		UpdateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
+		SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
 		++spawned;
 	}
 
@@ -302,7 +317,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	cmp.spriteList = &instance->m_particles;
 	std::stable_sort(instance->m_particleIndices.begin(), instance->m_particleIndices.begin() + sortRange, cmp);
 
-	Matrix transform = invViewProj;
+	Matrix transform = viewInv;
 	transform.m41 = 0.0f;
 	transform.m42 = 0.0f;
 	transform.m43 = 0.0f;
@@ -323,16 +338,33 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 			const Vector3& pos = data.position;
 			float hs = data.size / 2;
 
-			// Z- 正面
-			vb[(iData * 4) + 0].position.Set(pos.x - hs, pos.y + hs, 0.0f);	// 左上
-			vb[(iData * 4) + 1].position.Set(pos.x - hs, pos.y - hs, 0.0f);	// 左下
-			vb[(iData * 4) + 2].position.Set(pos.x + hs, pos.y + hs, 0.0f);	// 右上
-			vb[(iData * 4) + 3].position.Set(pos.x + hs, pos.y - hs, 0.0f);	// 右下
-			vb[(iData * 4) + 0].position.TransformCoord(transform);
-			vb[(iData * 4) + 1].position.TransformCoord(transform);
-			vb[(iData * 4) + 2].position.TransformCoord(transform);
-			vb[(iData * 4) + 3].position.TransformCoord(transform);
-			
+			if (m_particleDirection == ParticleDirection::MovementDirection &&
+				data.currentDirection != Vector3::Zero)
+			{
+				Vector3 d = Vector3::Normalize(viewPosition - data.position);
+				d = Vector3::Cross(d, data.currentDirection);	// 進行方向に対する右方向
+
+				vb[(iData * 4) + 0].position = pos - (data.currentDirection * hs) + d * hs;	// 後方右
+				vb[(iData * 4) + 1].position = pos + (data.currentDirection * hs) + d * hs;	// 前方右
+				vb[(iData * 4) + 2].position = pos - (data.currentDirection * hs) - d * hs;	// 後方左
+				vb[(iData * 4) + 3].position = pos + (data.currentDirection * hs) - d * hs;	// 前方左
+			}
+			else
+			{
+				// Z- 正面
+				vb[(iData * 4) + 0].position.Set(-hs, hs, 0.0f);	// 左上
+				vb[(iData * 4) + 1].position.Set(-hs, -hs, 0.0f);	// 左下
+				vb[(iData * 4) + 2].position.Set(hs, hs, 0.0f);		// 右上
+				vb[(iData * 4) + 3].position.Set(hs, -hs, 0.0f);	// 右下
+				vb[(iData * 4) + 0].position.TransformCoord(transform);
+				vb[(iData * 4) + 1].position.TransformCoord(transform);
+				vb[(iData * 4) + 2].position.TransformCoord(transform);
+				vb[(iData * 4) + 3].position.TransformCoord(transform);
+			}
+			vb[(iData * 4) + 0].position += pos;
+			vb[(iData * 4) + 1].position += pos;
+			vb[(iData * 4) + 2].position += pos;
+			vb[(iData * 4) + 3].position += pos;
 
 			vb[(iData * 4) + 0].texUV.Set(0, 0);
 			vb[(iData * 4) + 1].texUV.Set(0, 1);

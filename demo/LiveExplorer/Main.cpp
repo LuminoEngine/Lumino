@@ -254,7 +254,7 @@ int main()
 
 		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));
 		auto sp1 = Sprite2D::Create(tex);
-
+		sp1->SetVisible(false);
 
 
 		//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
@@ -276,19 +276,15 @@ int main()
 
 		//auto grid1 = Grid::Create3D();
 
-		auto particleModel1 = SpriteParticleModel::Create();
-		particleModel1->m_spawnRate = 30;
-		//particleModel1->m_minPosition.Set(-10, 0, 0);
-		//particleModel1->m_maxPosition.Set(10, 0, 0);
-		particleModel1->m_minVelocity.Set(-5, 5, 0);
-		particleModel1->m_maxVelocity.Set(5, 5, 0);
-		particleModel1->m_minAccel.Set(0, -8, 0);
-		particleModel1->m_maxAccel.Set(0, -8, 0);
-		particleModel1->m_minLifeTime = 1.0;
-		particleModel1->m_maxLifeTime = 1.0;
-		particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
-		auto particle1 = SpriteParticle::Create3D(particleModel1);
-		particle1->SetBlendMode(BlendMode::Add);
+		auto m = SpriteParticleModel::Create();
+		m->SetSpawnRate(10);
+		m->SetLifeTime(20.0f);
+		m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0));
+		//m->SetVelocity(Vector3(0, 5, 0));
+		//m->SetAccel(Vector3(0, -8, 0));
+		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
+		auto particle1 = SpriteParticle::Create3D(m);
+		particle1->SetBlendMode(BlendMode::Normal);
 
 
 #if 0
@@ -339,9 +335,9 @@ int main()
 
 		//Viewport::GetMainWindowViewport()
 
-		auto frameCapturer = FrameCapturer::Create();
-		frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
-		frameCapturer->StartRecording();
+		//auto frameCapturer = FrameCapturer::Create();
+		//frameCapturer->SetCapturerTarget(GraphicsManager::GetInstance()->GetMainSwapChain()->GetBackBuffer());
+		//frameCapturer->StartRecording();
 		
 
 		float fc = 0;
@@ -358,7 +354,7 @@ int main()
 
 			fc += 0.01;
 
-			frameCapturer->Record();
+			//frameCapturer->Record();
 
 			if (!Engine::UpdateFrame()) {
 				break;
@@ -384,7 +380,7 @@ int main()
 
 		}
 
-		frameCapturer->StopRecording();
+		//frameCapturer->StopRecording();
 
 		Engine::Finalize();
 	}

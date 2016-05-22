@@ -87,7 +87,44 @@ TEST_F(Test_Scene_SpriteParticle, Billboard)
 	Engine::UpdateFrame();
 
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Billboard.png")));
-	//TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Billboard.png"));
 }
 
-// TODO: 小さい粒子ほど～
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_SpriteParticle, MovementDirection)
+{
+	auto m = SpriteParticleModel::Create();
+	m->SetLifeTime(10.0f);
+	m->SetSize(10.0f);
+	m->SetVelocity(Vector3(0.0, 0, 2.0));
+	m->m_particleDirection = ParticleDirection::MovementDirection;
+	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle2.png")));
+	auto particle1 = SpriteParticle::Create3D(m);
+
+	// 斜め上から見下ろす
+	Camera::GetDefault3DCamera()->SetPosition(20, 20, -20.0f);
+
+	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }
+
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MovementDirection.png")));
+	//TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MovementDirection.png"));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_SpriteParticle, MaxParticles)
+{
+	auto m = SpriteParticleModel::Create();
+	m->SetSpawnRate(10);
+	m->SetLifeTime(10.0f);
+	m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0));
+	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetRandomSeed(12345);
+	m->SetMaxParticles(1);
+	auto particle1 = SpriteParticle::Create3D(m);
+
+	Camera::GetDefault3DCamera()->SetPosition(0, 0, -20.0f);
+
+	// 同時表示数は1個。また、繰り返しても配列外アクセスとかしないこと。
+	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }
+
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MaxParticles.png")));
+}

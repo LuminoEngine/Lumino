@@ -29,6 +29,7 @@ struct ParticleData
 	float		lastTime = 0.0f;
 	float		zDistance;			// Zソート用作業変数
 	float		ramdomBaseValue = 0.0f;
+	Vector3		currentDirection;
 };
 
 struct SpriteParticleModelInstance
@@ -56,6 +57,8 @@ enum class ParticleRandomSource : uint8_t
 enum class ParticleDirection : uint8_t
 {
 	Billboard,
+
+	/** 移動方向へ傾ける (テクスチャUVはの V+ 方向を進行方向とする) */
 	MovementDirection,
 };
 
@@ -71,6 +74,9 @@ public:
 
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const { return m_texture; }
+
+	/** 同時に表示できるパーティクルの最大数を設定します。(default: 100) */
+	void SetMaxParticles(int count) { m_maxParticles = count; }
 
 	/** 1秒間に放出するパーティクルの数を設定します。(default: 1) */
 	void SetSpawnRate(int count) { m_spawnRate = count; }
@@ -103,8 +109,8 @@ LN_INTERNAL_ACCESS:
 	std::shared_ptr<detail::SpriteParticleModelInstance> CreateInstane();
 	void UpdateInstance(std::shared_ptr<detail::SpriteParticleModelInstance>& instance, float deltaTime);
 	void SpawnParticle(detail::ParticleData* data, float spawnTime);
-	void UpdateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition);
-	void Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& invViewProj);
+	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition);
+	void Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv);
 
 public:	// TODO:
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
@@ -115,9 +121,12 @@ public:	// TODO:
 	Texture*			m_texture;
 	Randomizer			m_rand;
 
+
 	////////
 
+	ParticleDirection	m_particleDirection;
 	int					m_spawnRate;	// 1秒間に放出するパーティクル数
+	int					m_burstCount;	// 1度の放出タイミングで生成するパーティクル数
 
 	float				m_minRandomBaseValue;
 	float				m_maxRandomBaseValue;
@@ -170,7 +179,7 @@ public:	// TODO:
 	
 
 	float		m_emitterDuration;		// エミッタのパーティクル放出時間
-
+	// TODO: 0 の場合は最初のフレームでだけ生成、とか。(花火用)
 
 	ParticleRandomSource	m_positionRandomSource;
 	ParticleRandomSource	m_velocityRandomSource;
@@ -179,9 +188,11 @@ public:	// TODO:
 	ParticleRandomSource	m_sizeVelocityRandomSource;
 	ParticleRandomSource	m_sizeAccelRandomSource;
 
+	int						m_maxParticles;		// 粒子最大数
+
 	////////
 
-	int			m_maxParticleCount;
+	//int			m_maxParticleCount;
 	float		m_oneSpawnDeltaTime;
 
 };
