@@ -33,3 +33,61 @@ TEST_F(Test_Scene_SpriteParticle, Default)
 	}
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Basic_2.png")));
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_SpriteParticle, PositionVelocityAccel)
+{
+	auto m = SpriteParticleModel::Create();
+	m->SetSpawnRate(10);
+	m->SetLifeTime(10.0f);
+	m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0));
+	m->SetVelocity(Vector3(0, 5, 0));
+	m->SetAccel(Vector3(0, -8, 0));
+	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetRandomSeed(12345);
+	auto particle1 = SpriteParticle::Create3D(m);
+
+	// TODO: カメラ位置固定しておかないと、初期値が変わった時に対応できないかも
+
+	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }
+
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.PositionVelocityAccel.png")));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_SpriteParticle, RandomBaseValue)
+{
+	auto m = SpriteParticleModel::Create();
+	m->SetSpawnRate(10);
+	m->SetLifeTime(10.0f);
+	m->SetRandomBaseValueRange(0.0f, 1.0f);
+	m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0), ParticleRandomSource::ByBaseValue);
+	m->SetSizeRange(0.5f, 3.0f, ParticleRandomSource::ByBaseValue);
+	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	m->SetRandomSeed(12345);
+	auto particle1 = SpriteParticle::Create3D(m);
+
+	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }
+
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.RandomBaseValue.png")));
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_SpriteParticle, Billboard)
+{
+	auto m = SpriteParticleModel::Create();
+	m->SetLifeTime(10.0f);
+	m->SetSize(10.0f);
+	m->SetTexture(Texture2D::Create(LN_LOCALFILE("TestData/Particle1.png")));
+	auto particle1 = SpriteParticle::Create3D(m);
+
+	// 斜め上から見下ろす
+	Camera::GetDefault3DCamera()->SetPosition(20, 20, -20.0f);
+
+	Engine::UpdateFrame();
+
+	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Billboard.png")));
+	//TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.Billboard.png"));
+}
+
+// TODO: 小さい粒子ほど～

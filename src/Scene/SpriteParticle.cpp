@@ -51,12 +51,27 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_vertexBuffer(nullptr)
 	, m_texture(nullptr)
 	, m_spawnRate(1)
-	, m_lifeTimeMin(1.0f)
-	, m_lifeTimeMax(1.0f)
+	, m_minRandomBaseValue(0.0f)
+	, m_maxRandomBaseValue(1.0f)
+	, m_minLifeTime(1.0f)
+	, m_maxLifeTime(1.0f)
 	, m_fadeInRatio(0.0f/*0.2f*/)
 	, m_fadeOutRatio(0.0f/*0.8f*/)
+	, m_minSize(1.0f)
+	, m_maxSize(1.0f)
+	, m_minSizeVelocity(0.0f)
+	, m_maxSizeVelocity(0.0f)
+	, m_minSizeAccel(0.0f)
+	, m_maxSizeAccel(0.0f)
 	, m_emitterDuration(1.0f)
+	, m_positionRandomSource(ParticleRandomSource::Self)
+	, m_velocityRandomSource(ParticleRandomSource::Self)
+	, m_accelRandomSource(ParticleRandomSource::Self)
+	, m_sizeRandomSource(ParticleRandomSource::Self)
+	, m_sizeVelocityRandomSource(ParticleRandomSource::Self)
+	, m_sizeAccelRandomSource(ParticleRandomSource::Self)
 	, m_maxParticleCount(0)
+	, m_oneSpawnDeltaTime(0)
 {
 }
 
@@ -92,7 +107,7 @@ void SpriteParticleModel::Commit()
 	m_oneSpawnDeltaTime = 1.0f / m_spawnRate;
 
 	// 瞬間最大パーティクル数
-	m_maxParticleCount = (int)ceil(m_lifeTimeMax * (float)m_spawnRate);
+	m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
 	m_vertexBuffer = LN_NEW VertexBuffer(m_manager, SpriteParticleVertex::Elements(), SpriteParticleVertex::ElementCount, m_maxParticleCount * 4, nullptr, DeviceResourceUsage_Dynamic);
 	m_indexBuffer = LN_NEW IndexBuffer(m_manager, m_maxParticleCount * 6, nullptr, IndexBufferFormat_UInt16, DeviceResourceUsage_Dynamic);
@@ -121,19 +136,25 @@ void SpriteParticleModel::UpdateInstance(std::shared_ptr<detail::SpriteParticleM
 //------------------------------------------------------------------------------
 void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnTime)
 {
+	data->ramdomBaseValue = m_rand.GetFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
+
 	data->spawnTime = spawnTime;
 	data->lastTime = spawnTime;
-	data->endTime = data->spawnTime + m_lifeTimeMax;	// TODO: Rand
-	data->position.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x);
-	data->position.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y);
-	data->position.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z);
+	data->endTime = data->spawnTime + m_maxLifeTime;	// TODO: Rand
+	data->position.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x, m_positionRandomSource);
+	data->position.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y, m_positionRandomSource);
+	data->position.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z, m_positionRandomSource);
 	data->startPosition = data->position;
-	data->velocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x);
-	data->velocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y);
-	data->velocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z);
-	data->acceleration.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x);
-	data->acceleration.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y);
-	data->acceleration.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z);
+	data->positionVelocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x, m_velocityRandomSource);
+	data->positionVelocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y, m_velocityRandomSource);
+	data->positionVelocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z, m_velocityRandomSource);
+	data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
+	data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
+	data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);
+
+	data->size = MakeRandom(data, m_minSize, m_maxSize, m_sizeRandomSource);
+	data->sizeVelocity = MakeRandom(data, m_minSizeVelocity, m_maxSizeVelocity, m_sizeVelocityRandomSource);
+	data->sizeAccel = MakeRandom(data, m_minSizeAccel, m_maxSizeAccel, m_sizeAccelRandomSource);
 
 	// TODO
 	data->color = ColorF::Red;
@@ -151,10 +172,11 @@ void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double t
 
 	//data->position = newPos;
 
-	data->velocity += data->acceleration * deltaTime;
-	data->position += data->velocity * deltaTime;
+	data->positionVelocity += data->positionAccel * deltaTime;
+	data->position += data->positionVelocity * deltaTime;
 
-	data->size = 1;
+	data->sizeVelocity += data->sizeAccel * deltaTime;
+	data->size += data->sizeVelocity * deltaTime;
 
 	if (time >= data->endTime)
 	{
@@ -165,14 +187,20 @@ void SpriteParticleModel::UpdateOneParticle(detail::ParticleData* data, double t
 }
 
 //------------------------------------------------------------------------------
-float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue, float maxValue)
+float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source)
 {
-	// TODO
-	return m_rand.GetFloatRange(minValue, maxValue);
+	if (source == ParticleRandomSource::ByBaseValue)
+	{
+		return Math::Lerp(minValue, maxValue, data->ramdomBaseValue);
+	}
+	else
+	{
+		return m_rand.GetFloatRange(minValue, maxValue);
+	}
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition)
+void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& invViewProj)
 {
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
 	float dt = instance->m_time - instance->m_lastSpawnTime;
@@ -181,9 +209,9 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	// もし超えていたら、以前のパーティクルはすべて消滅したということ。
 	// その分の計算を行うのは無駄なので (というか一度に作るパーティクル数が多くなりすぎて配列あふれる)、
 	// 最後に放出した時間 (m_lastSpawnTime) を、計算が必要な時間まで進める。
-	if (dt > m_lifeTimeMax)
+	if (dt > m_maxLifeTime)
 	{
-		instance->m_lastSpawnTime = instance->m_time - m_lifeTimeMax;
+		instance->m_lastSpawnTime = instance->m_time - m_maxLifeTime;
 		dt = instance->m_time - instance->m_lastSpawnTime;
 	}
 	float spawnStartTime = instance->m_lastSpawnTime;
@@ -274,6 +302,11 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	cmp.spriteList = &instance->m_particles;
 	std::stable_sort(instance->m_particleIndices.begin(), instance->m_particleIndices.begin() + sortRange, cmp);
 
+	Matrix transform = invViewProj;
+	transform.m41 = 0.0f;
+	transform.m42 = 0.0f;
+	transform.m43 = 0.0f;
+
 	// 頂点バッファ・インデックスバッファに反映して描画する
 	if (sortRange > 0)
 	{
@@ -295,6 +328,11 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 			vb[(iData * 4) + 1].position.Set(pos.x - hs, pos.y - hs, 0.0f);	// 左下
 			vb[(iData * 4) + 2].position.Set(pos.x + hs, pos.y + hs, 0.0f);	// 右上
 			vb[(iData * 4) + 3].position.Set(pos.x + hs, pos.y - hs, 0.0f);	// 右下
+			vb[(iData * 4) + 0].position.TransformCoord(transform);
+			vb[(iData * 4) + 1].position.TransformCoord(transform);
+			vb[(iData * 4) + 2].position.TransformCoord(transform);
+			vb[(iData * 4) + 3].position.TransformCoord(transform);
+			
 
 			vb[(iData * 4) + 0].texUV.Set(0, 0);
 			vb[(iData * 4) + 1].texUV.Set(0, 1);
@@ -374,7 +412,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 //------------------------------------------------------------------------------
 void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	m_model->Render(dc->GetRenderingContext(), m_instance, dc->CurrentCamera->GetPosition());
+	m_model->Render(dc->GetRenderingContext(), m_instance, dc->CurrentCamera->GetPosition(), dc->CurrentCamera->GetViewMatrixI());
 }
 
 LN_NAMESPACE_SCENE_END

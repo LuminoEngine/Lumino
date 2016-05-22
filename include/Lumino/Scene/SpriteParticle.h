@@ -15,16 +15,20 @@ struct ParticleData
 
 
 	Vector3		startPosition;
-	Vector3		velocity;
-	Vector3		acceleration;
+	Vector3		positionVelocity;
+	Vector3		positionAccel;
+
+	float		size;
+	float		sizeVelocity;
+	float		sizeAccel;
 
 	Quaternion	rotation;
 	ColorF		color;
-	float		size = 0.f;
 	float		spawnTime = -1.f;	// 負値の場合は非アクティブ
 	float		endTime = 0.f;
 	float		lastTime = 0.0f;
 	float		zDistance;			// Zソート用作業変数
+	float		ramdomBaseValue = 0.0f;
 };
 
 struct SpriteParticleModelInstance
@@ -42,6 +46,19 @@ struct SpriteParticleModelInstance
 class SpriteParticleModel;
 using SpriteParticleModelPtr = RefPtr<SpriteParticleModel>;
 
+enum class ParticleRandomSource : uint8_t
+{
+	Self,
+	ByBaseValue,
+};
+
+
+enum class ParticleDirection : uint8_t
+{
+	Billboard,
+	MovementDirection,
+};
+
 /**
 	@brief
 */
@@ -55,6 +72,27 @@ public:
 	void SetTexture(Texture* texture);
 	Texture* GetTexture() const { return m_texture; }
 
+	/** 1秒間に放出するパーティクルの数を設定します。(default: 1) */
+	void SetSpawnRate(int count) { m_spawnRate = count; }
+
+	/** パーティクルの生存時間を設定します。(default: 1.0) */
+	void SetLifeTime(float time) { m_minLifeTime = m_maxLifeTime = time; }
+
+	// 0.0f～1.0f
+	void SetRandomBaseValueRange(float minValue, float maxValue) { m_minRandomBaseValue = minValue; m_maxRandomBaseValue = maxValue; }
+
+	void SetPositionRange(const Vector3& minValue, const Vector3& maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minPosition = minValue; m_maxPosition = maxValue; m_positionRandomSource = source; }
+
+	void SetVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
+	void SetAccel(const Vector3& value) { m_minAccel = m_maxAccel = value; }
+
+	void SetSize(float value) { m_minSize = value; m_maxSize = value; }
+
+	void SetSizeRange(float minValue, float maxValue, ParticleRandomSource source) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
+
+	/** パーティクル生成時に使用する乱数シードを設定します。(default: 現在の時間値) */
+	void SetRandomSeed(int seed) { m_rand.SetSeed(seed); }
+
 protected:
 	SpriteParticleModel();
 	virtual ~SpriteParticleModel();
@@ -66,10 +104,10 @@ LN_INTERNAL_ACCESS:
 	void UpdateInstance(std::shared_ptr<detail::SpriteParticleModelInstance>& instance, float deltaTime);
 	void SpawnParticle(detail::ParticleData* data, float spawnTime);
 	void UpdateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition);
-	void Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition);
+	void Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& invViewProj);
 
 public:	// TODO:
-	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue);
+	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
 	
 	GraphicsManager*	m_manager;
 	VertexBuffer*		m_vertexBuffer;	// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よい
@@ -78,13 +116,32 @@ public:	// TODO:
 	Randomizer			m_rand;
 
 	////////
-	int			m_spawnRate;	// 1秒間に放出するパーティクル数
-	Vector3		m_minPosition;
-	Vector3		m_maxPosition;
-	Vector3		m_minVelocity;
-	Vector3		m_maxVelocity;
-	Vector3		m_minAccel;
-	Vector3		m_maxAccel;
+
+	int					m_spawnRate;	// 1秒間に放出するパーティクル数
+
+	float				m_minRandomBaseValue;
+	float				m_maxRandomBaseValue;
+
+	float				m_minLifeTime;
+	float				m_maxLifeTime;
+
+	float				m_fadeInRatio;
+	float				m_fadeOutRatio;
+
+
+	Vector3				m_minPosition;
+	Vector3				m_maxPosition;
+	Vector3				m_minVelocity;
+	Vector3				m_maxVelocity;
+	Vector3				m_minAccel;
+	Vector3				m_maxAccel;
+
+	float				m_minSize;		// TODO: Vec2にして細長いパーティクルも作りたい
+	float				m_maxSize;
+	float				m_minSizeVelocity;
+	float				m_maxSizeVelocity;
+	float				m_minSizeAccel;
+	float				m_maxSizeAccel;
 
 
 	//LVector3		Axis;				///< 回転軸
@@ -111,13 +168,17 @@ public:	// TODO:
 	//lnFloat			GravityPower;		///< 中心 (ローカル座標の 0, 0, 0) への引力の強さ (負の値で斥力になる)
 
 	
-	float		m_lifeTimeMin;
-	float		m_lifeTimeMax;
-
-	float		m_fadeInRatio;
-	float		m_fadeOutRatio;
 
 	float		m_emitterDuration;		// エミッタのパーティクル放出時間
+
+
+	ParticleRandomSource	m_positionRandomSource;
+	ParticleRandomSource	m_velocityRandomSource;
+	ParticleRandomSource	m_accelRandomSource;
+	ParticleRandomSource	m_sizeRandomSource;
+	ParticleRandomSource	m_sizeVelocityRandomSource;
+	ParticleRandomSource	m_sizeAccelRandomSource;
+
 	////////
 
 	int			m_maxParticleCount;

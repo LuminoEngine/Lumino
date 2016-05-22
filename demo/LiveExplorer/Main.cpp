@@ -284,8 +284,8 @@ int main()
 		particleModel1->m_maxVelocity.Set(5, 5, 0);
 		particleModel1->m_minAccel.Set(0, -8, 0);
 		particleModel1->m_maxAccel.Set(0, -8, 0);
-		particleModel1->m_lifeTimeMin = 1.0;
-		particleModel1->m_lifeTimeMax = 1.0;
+		particleModel1->m_minLifeTime = 1.0;
+		particleModel1->m_maxLifeTime = 1.0;
 		particleModel1->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
 		auto particle1 = SpriteParticle::Create3D(particleModel1);
 		particle1->SetBlendMode(BlendMode::Add);
