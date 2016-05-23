@@ -27,8 +27,9 @@ sampler2D gTexSampler = sampler_state
 
 struct VS_OUTPUT 
 {
-    float4 Pos      : POSITION;
-    float2 TexUV    : TEXCOORD0;
+	float4 Pos		: POSITION;
+	float2 TexUV	: TEXCOORD0;
+	float4 Color	: COLOR0;
 };
 
 //-------------------------------------------------------------------------
@@ -47,7 +48,7 @@ VS_OUTPUT vsBasic(
 	//o.Pos.x /= 640;
 	//o.Pos.y /= 480;
     o.TexUV = inUV + gViewportOffset;
-
+	o.Color = inColor;
     return o;
 }
 
@@ -55,9 +56,10 @@ VS_OUTPUT vsBasic(
 // pixel shader
 //-------------------------------------------------------------------------
 float4 psBasic(
-    float2 in_uv_   : TEXCOORD0  ) : COLOR
+    float2 in_uv_   : TEXCOORD0,
+    float4 inColor   : COLOR0   ) : COLOR0
 {
-    float4 out_color = tex2D( gTexSampler, in_uv_ ) * gColor;
+    float4 out_color = tex2D( gTexSampler, in_uv_ ) * gColor * inColor;
     
     // ƒuƒŒƒ“ƒh‚ÌŒvŽZ
     //out_color.rgb = ( gBlendColor.rgb * gBlendColor.a ) + ( out_color.rgb * ( 1.0 - gBlendColor.a ) );

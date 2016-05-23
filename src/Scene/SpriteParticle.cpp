@@ -62,8 +62,8 @@ SpriteParticleModel::SpriteParticleModel()
 	, m_maxRandomBaseValue(1.0f)
 	, m_minLifeTime(1.0f)
 	, m_maxLifeTime(1.0f)
-	, m_fadeInRatio(0.0f/*0.2f*/)
-	, m_fadeOutRatio(0.0f/*0.8f*/)
+	, m_fadeInRatio(0.2f)
+	, m_fadeOutRatio(0.8f)
 	, m_minSize(1.0f)
 	, m_maxSize(1.0f)
 	, m_minSizeVelocity(0.0f)
@@ -165,7 +165,7 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 	data->sizeAccel = MakeRandom(data, m_minSizeAccel, m_maxSizeAccel, m_sizeAccelRandomSource);
 
 	// TODO
-	data->color = ColorF::Red;
+	data->color = ColorF::White;
 }
 
 //------------------------------------------------------------------------------
@@ -197,6 +197,13 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 	data->currentDirection = Vector3::Normalize(data->position - prevPos);
 
 	data->zDistance = (data->position - viewPosition).GetLengthSquared();
+
+	float a = 1.0f;
+	
+	float lifeSpan = data->endTime - data->spawnTime;
+	a *= Math::Clamp01(localTime / (lifeSpan * m_fadeInRatio));
+	a *= Math::Clamp01((data->endTime - time) / (lifeSpan * m_fadeOutRatio));
+	data->color.a = a;
 }
 
 //------------------------------------------------------------------------------
@@ -309,7 +316,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 			}
 		}
 
-		if (!spawned)
+		if (!spawned && iData < m_maxParticles)
 		{
 			int idx = instance->m_particleIndices[iData];
 			detail::ParticleData& data = instance->m_particles[idx];

@@ -278,9 +278,10 @@ int main()
 
 		auto m = SpriteParticleModel::Create();
 		m->SetSpawnRate(100);
-		m->SetLifeTime(1.0f);
+		m->SetLifeTime(3.0f);
+		m->m_maxParticles = 300;
 		m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
-		m->SetVelocity(Vector3(0, -5, 0));
+		m->SetVelocity(Vector3(0, -3, 0));
 		//m->SetAccel(Vector3(0, -8, 0));
 		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
 		auto particle1 = SpriteParticle::Create3D(m);

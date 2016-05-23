@@ -9,6 +9,7 @@
 struct VS_OUTPUT {
     vec4 Pos;
     vec2 TexUV;
+    vec4 Color;
 };
 #line 8
 uniform mat4 gWorldMatrix;
@@ -24,27 +25,30 @@ uniform vec4 gTone;
 vec4 gColor = vec4( gColorScale.xyz, (gColorScale.w * gOpacity));
 #line 20
 uniform sampler2D gMaterialTexture;
-#line 40
-#line 58
-#line 40
+#line 41
+#line 60
+#line 41
 VS_OUTPUT vsBasic( in vec3 inPos, in vec4 inColor, in vec2 inUV ) {
     VS_OUTPUT o;
-    #line 44
+    #line 45
     o.Pos = (vec4( inPos, 1.0) * gWorldMatrix);
     o.Pos = (o.Pos * g2DProjMatrix);
-    #line 49
+    #line 50
     o.TexUV = (inUV + gViewportOffset);
+    o.Color = inColor;
     return o;
 }
 attribute vec3 ln_Vertex;
 attribute vec4 ln_Color0;
 attribute vec2 ln_MultiTexCoord0;
 varying vec2 xlv_TEXCOORD0;
+varying vec4 xlv_COLOR0;
 void main() {
     VS_OUTPUT xl_retval;
     xl_retval = vsBasic( vec3(ln_Vertex), vec4(ln_Color0), vec2(ln_MultiTexCoord0));
     gl_Position = vec4(xl_retval.Pos);
     xlv_TEXCOORD0 = vec2(xl_retval.TexUV);
+    xlv_COLOR0 = vec4(xl_retval.Color);
 }
 
 #endif
@@ -55,6 +59,7 @@ void main() {
 struct VS_OUTPUT {
     vec4 Pos;
     vec2 TexUV;
+    vec4 Color;
 };
 #line 8
 uniform mat4 gWorldMatrix;
@@ -70,28 +75,29 @@ uniform vec4 gTone;
 vec4 gColor = vec4( gColorScale.xyz, (gColorScale.w * gOpacity));
 #line 20
 uniform sampler2D gMaterialTexture;
-#line 40
-#line 58
-#line 58
-vec4 psBasic( in vec2 in_uv_ ) {
-    vec4 out_color = (texture2D( gMaterialTexture, in_uv_) * gColor);
-    #line 64
+#line 41
+#line 60
+#line 60
+vec4 psBasic( in vec2 in_uv_, in vec4 inColor ) {
+    vec4 out_color = ((texture2D( gMaterialTexture, in_uv_) * gColor) * inColor);
+    #line 66
     out_color.xyz = mix( out_color.xyz, gBlendColor.xyz, vec3( gBlendColor.w));
     float y = ((((0.208012 * out_color.x) + (0.586611 * out_color.y)) + (0.114478 * out_color.z)) * gTone.w);
-    #line 68
+    #line 70
     out_color.xyz = (((out_color.xyz * (1.0 - gTone.w)) + y) + gTone.xyz);
     return out_color;
 }
 varying vec2 xlv_TEXCOORD0;
+varying vec4 xlv_COLOR0;
 void main() {
     vec4 xl_retval;
-    xl_retval = psBasic( vec2(xlv_TEXCOORD0));
+    xl_retval = psBasic( vec2(xlv_TEXCOORD0), vec4(xlv_COLOR0));
     gl_FragData[0] = vec4(xl_retval);
 }
 
 #endif
 #ifdef LN_HLSL_DX9
-#line 1 "C://Proj//Lumino//src//Scene//Resource//SSBasic2D.tmp"
+#line 1 "D://Proj//Volkoff//External//Lumino//src//Scene//Resource//SSBasic2D.tmp"
 
 
 #line 8
@@ -119,9 +125,10 @@ struct VS_OUTPUT
 { 
     float4 Pos : POSITION ; 
     float2 TexUV : TEXCOORD0 ; 
+    float4 Color : COLOR0 ; 
 } ; 
 
-#line 37
+#line 38
 VS_OUTPUT vsBasic ( 
 float3 inPos : POSITION , 
 float4 inColor : COLOR0 , 
@@ -132,29 +139,30 @@ float2 inUV : TEXCOORD0 )
     o . Pos = mul ( float4 ( inPos , 1.0 ) , gWorldMatrix ) ; 
     o . Pos = mul ( o . Pos , g2DProjMatrix ) ; 
     
-#line 49
+#line 50
     o . TexUV = inUV + gViewportOffset ; 
-    
+    o . Color = inColor ; 
     return o ; 
 } 
 
-#line 57
+#line 58
 float4 psBasic ( 
-float2 in_uv_ : TEXCOORD0 ) : COLOR 
+float2 in_uv_ : TEXCOORD0 , 
+float4 inColor : COLOR0 ) : COLOR0 
 { 
-    float4 out_color = tex2D ( gTexSampler , in_uv_ ) * gColor ; 
+    float4 out_color = tex2D ( gTexSampler , in_uv_ ) * gColor * inColor ; 
     
-#line 64
+#line 66
     out_color . rgb = lerp ( out_color . rgb , gBlendColor . rgb , gBlendColor . a ) ; 
     
-#line 67
+#line 69
     float y = ( 0.208012 * out_color . r + 0.586611 * out_color . g + 0.114478 * out_color . b ) * gTone . w ; 
     out_color . rgb = ( out_color . rgb * ( 1.0 - gTone . w ) ) + y + gTone . rgb ; 
     
     return out_color ; 
 } 
 
-#line 76
+#line 78
 technique MainDraw 
 { 
     pass P0 
