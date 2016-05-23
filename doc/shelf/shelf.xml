@@ -1,9 +1,9 @@
 <shelf>
 	<homepage>
-		<page src="index.html" template="homepage.html.template">
+		<page src="index.html" template="template/homepage.html">
 	</homepage>
 	<categories>
-		<category src="about/index.xml" />
+		<category src="about/index.xml"　/>
 		<category src="download/index.xml" />
 		<category caption="ドキュメント">
 			<category src="documentation_tutorial_lumino/index.xml" />

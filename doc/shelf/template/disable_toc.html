@@ -8,9 +8,8 @@
 	<title>Bootstrap 101 Template</title>
 
 	<!-- Bootstrap -->
-	<link href="$(LN_TO_ROOT_PATH)/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="$(LN_TO_ROOT_PATH)/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<link href="$(LN_TO_ROOT_PATH)/github-markdown.css" rel="stylesheet">
-  	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
 	<!-- affix-nav style -->
 	<style>
@@ -44,10 +43,10 @@
 	</head>
 	<body>
 		<header>
-			<div class="navbar navbar-inverse">
+			<div class="navbar navbar-default">
 				<div class="container">
 					<div class="navbar-header">
-						<a href="/" class="navbar-brand">Home</a>
+						<a href="/" class="navbar-brand">Honoka</a>
 					</div>
 					<div class="navbar-collapse collapse" id="navbar-main">
 						<ul class="nav navbar-nav">
@@ -58,9 +57,22 @@ $(NAVBAR_ITEMS)
 			</div>
 		</header>
 
-		<!--======== contents ========-->
+		<div class="container">
+			<div class="row">
+				<!--======== contents ========-->
+				<div class="col-md-8">
 $(PAGE_CONTENTS)
-		<!--======== contents ========-->
+				</div>
+				<!--======== contents ========-->
+
+				<!--======== sidenav ========-->
+				<div class="col-md-2">
+$(PAGE_SIDENAV)
+				</div>
+				<!--======== sidenav ========-->
+
+			</div>
+		</div>
 
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
