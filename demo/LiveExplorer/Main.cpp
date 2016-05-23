@@ -277,14 +277,14 @@ int main()
 		//auto grid1 = Grid::Create3D();
 
 		auto m = SpriteParticleModel::Create();
-		m->SetSpawnRate(10);
-		m->SetLifeTime(20.0f);
-		m->SetPositionRange(Vector3(-10, 0, 0), Vector3(10, 0, 0));
-		//m->SetVelocity(Vector3(0, 5, 0));
+		m->SetSpawnRate(100);
+		m->SetLifeTime(1.0f);
+		m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
+		m->SetVelocity(Vector3(0, -5, 0));
 		//m->SetAccel(Vector3(0, -8, 0));
 		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
 		auto particle1 = SpriteParticle::Create3D(m);
-		particle1->SetBlendMode(BlendMode::Normal);
+		particle1->SetBlendMode(BlendMode::Subtract);
 
 
 #if 0

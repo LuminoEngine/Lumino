@@ -195,6 +195,8 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 
 	data->lastTime = time;
 	data->currentDirection = Vector3::Normalize(data->position - prevPos);
+
+	data->zDistance = (data->position - viewPosition).GetLengthSquared();
 }
 
 //------------------------------------------------------------------------------
@@ -213,6 +215,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 //------------------------------------------------------------------------------
 void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv)
 {
+#if 0
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
 	float dt = instance->m_time - instance->m_lastSpawnTime;
 
@@ -285,6 +288,45 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 		SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
 		++spawned;
 	}
+#endif
+
+	int iData = 0;
+	int newIndexCount = 0;
+	while (instance->m_lastSpawnTime <= instance->m_time)
+	{
+		bool spawned = false;
+		for (; iData < instance->m_activeCount; ++iData)
+		{
+			int idx = instance->m_particleIndices[iData];
+			detail::ParticleData& data = instance->m_particles[idx];
+
+			// 
+			if (data.spawnTime >= 0.f && data.endTime <= instance->m_time)
+			{
+				SpawnParticle(&data, instance->m_lastSpawnTime);
+				spawned = true;
+				break;
+			}
+		}
+
+		if (!spawned)
+		{
+			int idx = instance->m_particleIndices[iData];
+			detail::ParticleData& data = instance->m_particles[idx];
+			SpawnParticle(&data, instance->m_lastSpawnTime);
+			++iData;
+			++newIndexCount;
+		}
+
+		instance->m_lastSpawnTime += m_oneSpawnDeltaTime;
+	}
+
+	for (int i = 0; i < instance->m_activeCount + newIndexCount; ++i)
+	{
+		int idx = instance->m_particleIndices[i];
+		detail::ParticleData& data = instance->m_particles[idx];
+		SimulateOneParticle(&data, instance->m_time, viewPosition);	// パーティクル1つ分のシミュレート
+	}
 
 
 	// Z 値の大きい方から小さい方へソートする比較
@@ -310,9 +352,9 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 	};
 
 	// ソート実施。
-	// ここで非アクティブなものは std::remove のごとくリストの後ろに移動し、Zソートも同時に行われる。
+	// ここで非アクティブなものは std::remove のようにリストの後ろに移動し、Zソートも同時に行われる。
 	// 少なくとも、前回アクティブだった数+今回の生成で増えた数をソート範囲にする。
-	int sortRange = instance->m_activeCount + remain;
+	int sortRange = instance->m_activeCount + newIndexCount;
 	SpriteCmpDepthBackToFront cmp;
 	cmp.spriteList = &instance->m_particles;
 	std::stable_sort(instance->m_particleIndices.begin(), instance->m_particleIndices.begin() + sortRange, cmp);
@@ -391,7 +433,7 @@ void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<deta
 		instance->m_activeCount = iData;
 	}
 
-	instance->m_lastSpawnTime += m_oneSpawnDeltaTime * spawnCount;
+	//instance->m_lastSpawnTime += m_oneSpawnDeltaTime * spawnCount;
 
 }
 
