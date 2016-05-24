@@ -4,16 +4,20 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<title>Bootstrap 101 Template</title>
+
+	<title>$(SITE_TITLE) - $(PAGE_TITLE)</title>
+	<link href='$(LN_TO_ROOT_PATH)/favicon.png' rel='shortcut icon' type='image/x-icon'>
 
 	<!-- Bootstrap -->
 	<link href="$(LN_TO_ROOT_PATH)/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="$(LN_TO_ROOT_PATH)/bootstrap/css/sticky-footer.css" rel="stylesheet">
 	<link href="$(LN_TO_ROOT_PATH)/github-markdown.css" rel="stylesheet">
+    <link href="$(LN_TO_ROOT_PATH)/common.css" rel="stylesheet">
 
 	<!-- affix-nav style -->
 	<style>
 		.affix-nav{
+			width: 300px;
 			margin-top:20px;
 		}
 		.affix-nav .nav li{
@@ -46,7 +50,7 @@
 			<div class="navbar navbar-default">
 				<div class="container">
 					<div class="navbar-header">
-						<a href="/" class="navbar-brand">Honoka</a>
+						<a href="/" class="navbar-brand">$(SITE_TITLE)</a>
 					</div>
 					<div class="navbar-collapse collapse" id="navbar-main">
 						<ul class="nav navbar-nav">
@@ -70,10 +74,11 @@ $(PAGE_CONTENTS)
 $(PAGE_SIDENAV)
 				</div>
 				<!--======== sidenav ========-->
-
 			</div>
 		</div>
-
+		<!--======== fotter ========-->
+$(PAGE_FOOTER)
+		<!--======== fotter ========-->
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="$(LN_TO_ROOT_PATH)/bootstrap/js/bootstrap.min.js"></script>

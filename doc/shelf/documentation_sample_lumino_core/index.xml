@@ -1,6 +1,6 @@
 <category_index>
 	<homepage>
-		<page src="index.md">
+		<page src="index.md" />
 	</homepage>
 	<toc>
 		<page src="string/base_string_index.md">
