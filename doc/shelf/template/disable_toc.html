@@ -18,7 +18,6 @@
 	<style>
 		.affix-nav{
 			width: 300px;
-			margin-top:20px;
 		}
 		.affix-nav .nav li{
 			border-left: 2px solid #FFFFFF;
@@ -45,7 +44,7 @@
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
 	</head>
-	<body>
+	<body data-spy="scroll" data-target="#scroll-spy-target">
 		<header>
 			<div class="navbar navbar-default">
 				<div class="container">
@@ -70,7 +69,7 @@ $(PAGE_CONTENTS)
 				<!--======== contents ========-->
 
 				<!--======== sidenav ========-->
-				<div class="col-md-2">
+				<div class="col-md-1 sidenav">
 $(PAGE_SIDENAV)
 				</div>
 				<!--======== sidenav ========-->
@@ -82,29 +81,6 @@ $(PAGE_FOOTER)
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="$(LN_TO_ROOT_PATH)/bootstrap/js/bootstrap.min.js"></script>
-		<script>
-            $(function(){
-                $('nav.affix-nav').affix({
-                    offset:{
-                        top: 70,
-                        bottom:300
-                    }
-                }).on('affix.bs.affix', function () {
-                    $(this).css({
-                            'top': '0'
-                    });
-                    console.log('affix.bs.affix');
-                }).on('affixed.bs.affix', function(){
-                    console.log('affixed.bs.affix');
-                }).on('affix-bottom.bs.affix', function(){
-                    console.log('affix-bottom.bs.affix');
-                }).on('affixed-bottom.bs.affix', function(){
-                    console.log('affixed-bottom.bs.affix');
-                });
-
-                $('body').scrollspy({ target: 'nav.affix-nav' })
-            });
-        </script>
 		<script type="text/javascript">
 			$(document).ready(function () {
 				$('span.tree-toggler').click(function () {
