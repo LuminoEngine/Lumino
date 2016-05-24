@@ -1087,29 +1087,16 @@ namespace Lumino
     };
     
     /// <summary>
-    /// スプライト
+    /// スプライトのベースクラスです。
     /// </summary>
     public partial class Sprite : SceneNode
     {
-         Texture _GetTexture;
     
         /// <summary>
-        /// スプライトに設定されているテクスチャ
+        /// スプライトにテクスチャ
         /// </summary>
         public Texture Texture
         {
-            get
-            {
-                IntPtr outTexture;
-                var result = API.LNSprite_GetTexture( _handle, out outTexture);
-                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-                if (outTexture == null)
-                    _GetTexture = null;
-                else if (_GetTexture == null || _GetTexture.Handle != outTexture)
-                    _GetTexture = InternalManager.GetWrapperObject<Texture>(outTexture);
-                return _GetTexture;
-            }
-            
             set
             {
                 var result = API.LNSprite_SetTexture( _handle,  (value != null) ? value.Handle : default(IntPtr));
@@ -1125,7 +1112,7 @@ namespace Lumino
     };
     
     /// <summary>
-    /// 2Dスプライト
+    /// 2D 空間に配置されるスプライトのクラスです。
     /// </summary>
     public partial class Sprite2D : Sprite
     {

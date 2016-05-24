@@ -38,3 +38,45 @@ extern const char* LNInternal_ConvertToUTF8String(const LNChar* str, int len);
 extern const char* LNGetLastErrorMessage();
 
 } // extern "C"
+
+typedef VALUE(*ObjectFactory)(VALUE klass, LNHandle handle);
+
+struct TypeInfo
+{
+	VALUE			klass;
+	ObjectFactory	factory;
+};
+
+class Manager
+{
+public:
+	static void Initialize();
+	static void Finalize();
+	static VALUE GetWrapperObjectFromHandle(LNHandle handle);
+	static void RegisterWrapperObject(VALUE obj);
+        
+private:
+	static void RegisterTypeInfo();
+	static ln::Array<TypeInfo>	m_typeInfoList;
+	static ln::Array<VALUE>		m_objectList;
+	static ln::Stack<int>		m_objectListIndexStack;
+};
+
+/* BinderMaker が複雑になりすぎないよう、ある程度はマクロでカバーする。*/
+
+// typeName	: "LN" 無しのクラス名
+#define LNRB_REGISTER_TYPEINFO(typeName) \
+	{
+		TypeInfo t;
+		t.klass = g_class_##typeName;
+		t.factory = LN##typeName##_allocateForGetRefObject;
+		m_typeInfoList.Add(t);
+		LN##typeName##_SetBindingTypeInfo(m_typeInfoList.GetCount() - 1);
+	}
+
+
+
+
+
+
+

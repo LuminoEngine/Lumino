@@ -116,6 +116,7 @@ __CONTENTS__
         OutputBuffer _allTypeDefineGlobalVariables = new OutputBuffer();
         OutputBuffer _allFuncDefines = new OutputBuffer();
         OutputBuffer _allModuleDefines = new OutputBuffer(1);
+        OutputBuffer _typeinfoRegisterText = new OutputBuffer(1);    // LNXXXX_SetBindingTypeInfo() による型情報の登録処理
 
         /// <summary>
         /// クラスor構造体 通知 (開始)
@@ -140,6 +141,14 @@ __CONTENTS__
             {
                 // allocate 関数の登録
                 _allModuleDefines.AppendLine(@"rb_define_alloc_func({0}, LN{1}_allocate);", varName, classType.Name);
+            }
+
+            //-------------------------------------------------
+            // クラス型の場合は型情報の登録
+            if (classType.IsReferenceObject)
+            {
+                // 中身はマクロに任せる
+                _typeinfoRegisterText.AppendLine("LNRB_REGISTER_TYPEINFO({0});", classType.Name);
             }
 
             return true;
@@ -259,7 +268,8 @@ __CONTENTS__
                 .Replace("__WRAP_STRUCTS__", _allWrapStructs.ToString())
                 .Replace("__GLOBALS__", _allTypeDefineGlobalVariables.ToString())
                 .Replace("__FUNCTIONS__", _allFuncDefines.ToString())
-                .Replace("__DEFINES__", _allModuleDefines.ToString());
+                .Replace("__DEFINES__", _allModuleDefines.ToString())
+                .Replace("__TYPEINFO_REGISTERS__", _typeinfoRegisterText.ToString());
         }
 
         /// <summary>

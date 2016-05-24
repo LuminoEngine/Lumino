@@ -47,15 +47,6 @@ LN_CLASS(LNSprite, LNSceneNode)
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
 	LNResult LNSprite_SetTexture(LN_HANDLE(LNSprite) sprite, LN_HANDLE(LNTexture) texture);
-		
-	/**
-		@brief		スプライトに設定されているテクスチャを取得します。
-		@param[in]	sprite		: スプライトハンドル
-		@param[out]	outTexture	: テクスチャハンドルを格納する変数のポインタ
-	*/
-	LN_INSTANCE_API
-	LN_ATTR_PROPERTY
-	LNResult LNSprite_GetTexture(LN_HANDLE(LNSprite) sprite, LN_OUT LN_HANDLE(LNTexture)* outTexture);
 	
 LN_CLASS_END
 

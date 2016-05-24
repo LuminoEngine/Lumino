@@ -90,6 +90,13 @@ struct wrapSceneNode
 struct wrapSprite
     : public wrapSceneNode
 {
+    VALUE Texture;
+
+};
+
+struct wrapSprite2D
+    : public wrapSprite
+{
 
 };
 
@@ -106,6 +113,7 @@ VALUE g_class_Texture;
 VALUE g_class_Texture2D;
 VALUE g_class_SceneNode;
 VALUE g_class_Sprite;
+VALUE g_class_Sprite2D;
 
 
 static VALUE static_lnrbLNConfig_SetApplicationLogEnabled(int argc, VALUE *argv, VALUE self)
@@ -345,6 +353,21 @@ static VALUE static_lnrbLNVersion_GetRevision(int argc, VALUE *argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.get_revision - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNVersion_GetBuild(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            int _outBuild;
+            LNVersion_GetBuild(&_outBuild);
+            return toVALUE(_outBuild);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Version.get_build - wrong argument type.");
     return Qnil;
 }
 
@@ -1407,12 +1430,28 @@ static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
 {
     wrapTexture2D* selfObj;
     Data_Get_Struct(self, wrapTexture2D, selfObj);
+    if (2 <= argc && argc <= 4) {
+        VALUE width;
+        VALUE height;
+        VALUE format;
+        VALUE mipmap;
+        rb_scan_args(argc, argv, "22", &width, &height, &format, &mipmap);
+        if (isRbNumber(width) && isRbNumber(height) && isRbNumber(format) && isRbBool(mipmap)) {
+            int _width = FIX2INT(width);
+            int _height = FIX2INT(height);
+            LNTextureFormat _format = (format != Qnil) ? (LNTextureFormat)FIX2INT(format) : LN_FMT_A8R8G8B8;
+            LNBool _mipmap = (mipmap != Qnil) ? RbBooltoBool(mipmap) : LN_FALSE;
+            LNResult errorCode = LNTexture2D_Create(_width, _height, _format, _mipmap, &selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return Qnil;
+        }
+    }
     if (1 <= argc && argc <= 1) {
         VALUE filePath;
         rb_scan_args(argc, argv, "1", &filePath);
         if (isRbString(filePath)) {
             char* _filePath = StringValuePtr(filePath);
-            LNResult errorCode = LNTexture2D_Create(_filePath, &selfObj->Handle);
+            LNResult errorCode = LNTexture2D_CreateFromFile(_filePath, &selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
@@ -1487,6 +1526,7 @@ static void LNSprite_delete(wrapSprite* obj)
 
 static void LNSprite_mark(wrapSprite* obj)
 {
+    rb_gc_mark(obj->Texture);
 
 }
 
@@ -1500,6 +1540,7 @@ static VALUE LNSprite_allocate( VALUE klass )
     obj = Data_Wrap_Struct(klass, LNSprite_mark, LNSprite_delete, internalObj);
     
     memset(internalObj, 0, sizeof(wrapSprite));
+    internalObj->Texture = Qnil;
 
     return obj;
 }
@@ -1514,12 +1555,13 @@ static VALUE LNSprite_allocateForGetRefObject(VALUE klass, LNHandle handle)
     obj = Data_Wrap_Struct(klass, LNSprite_mark, LNSprite_delete, internalObj);
     
     memset(internalObj, 0, sizeof(wrapSprite));
+    internalObj->Texture = Qnil;
 
     internalObj->Handle = handle;
     return obj;
 }
 
-static VALUE lnrbLNSprite_Create(int argc, VALUE *argv, VALUE self)
+static VALUE lnrbLNSprite_SetTexture(int argc, VALUE *argv, VALUE self)
 {
     wrapSprite* selfObj;
     Data_Get_Struct(self, wrapSprite, selfObj);
@@ -1528,12 +1570,70 @@ static VALUE lnrbLNSprite_Create(int argc, VALUE *argv, VALUE self)
         rb_scan_args(argc, argv, "1", &texture);
         if (isRbObject(texture)) {
             LNHandle _texture = RbRefObjToHandle(texture);
-            LNResult errorCode = LNSprite_Create(_texture, &selfObj->Handle);
+            LNResult errorCode = LNSprite_SetTexture(selfObj->Handle, _texture);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Sprite.sprite - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Sprite.texture= - wrong argument type.");
+    return Qnil;
+}
+
+static void LNSprite2D_delete(wrapSprite2D* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    free(obj);
+}
+
+static void LNSprite2D_mark(wrapSprite2D* obj)
+{
+
+}
+
+static VALUE LNSprite2D_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapSprite2D* internalObj;
+
+    internalObj = (wrapSprite2D*)malloc(sizeof(wrapSprite2D));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite2D_allocate" );
+    obj = Data_Wrap_Struct(klass, LNSprite2D_mark, LNSprite2D_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapSprite2D));
+
+    return obj;
+}
+
+static VALUE LNSprite2D_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapSprite2D* internalObj;
+
+    internalObj = (wrapSprite2D*)malloc(sizeof(wrapSprite2D));
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite2D_allocate" );
+    obj = Data_Wrap_Struct(klass, LNSprite2D_mark, LNSprite2D_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(wrapSprite2D));
+
+    internalObj->Handle = handle;
+    return obj;
+}
+
+static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
+{
+    wrapSprite2D* selfObj;
+    Data_Get_Struct(self, wrapSprite2D, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE texture;
+        rb_scan_args(argc, argv, "1", &texture);
+        if (isRbObject(texture)) {
+            LNHandle _texture = RbRefObjToHandle(texture);
+            LNResult errorCode = LNSprite2D_Create(_texture, &selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Sprite2D.sprite_2d - wrong argument type.");
     return Qnil;
 }
 
@@ -1562,6 +1662,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Version, "get_major", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetMajor), -1);
     rb_define_singleton_method(g_class_Version, "get_minor", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetMinor), -1);
     rb_define_singleton_method(g_class_Version, "get_revision", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetRevision), -1);
+    rb_define_singleton_method(g_class_Version, "get_build", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetBuild), -1);
     rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
     rb_define_singleton_method(g_class_Version, "is_at_least", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
 
@@ -1631,8 +1732,27 @@ void InitClasses()
 
     g_class_Sprite = rb_define_class_under(g_luminoModule, "Sprite", rb_cObject);
     rb_define_alloc_func(g_class_Sprite, LNSprite_allocate);
-    rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(lnrbLNSprite_Create), -1);
+    rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(lnrbLNSprite_SetTexture), -1);
 
+    g_class_Sprite2D = rb_define_class_under(g_luminoModule, "Sprite2D", rb_cObject);
+    rb_define_alloc_func(g_class_Sprite2D, LNSprite2D_allocate);
+    rb_define_private_method(g_class_Sprite2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNSprite2D_Create), -1);
+
+
+}
+
+//-----------------------------------------------------------------------------
+// TypeInfo
+
+void Manager::RegisterTypeInfo()
+{
+    LNRB_REGISTER_TYPEINFO(Error);
+    LNRB_REGISTER_TYPEINFO(Sound);
+    LNRB_REGISTER_TYPEINFO(Texture);
+    LNRB_REGISTER_TYPEINFO(Texture2D);
+    LNRB_REGISTER_TYPEINFO(SceneNode);
+    LNRB_REGISTER_TYPEINFO(Sprite);
+    LNRB_REGISTER_TYPEINFO(Sprite2D);
 
 }
 

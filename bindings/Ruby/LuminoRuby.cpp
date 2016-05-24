@@ -3,6 +3,79 @@
 VALUE g_luminoModule;
 VALUE g_luminoError;
 
+ln::Array<TypeInfo>	Manager::m_typeInfoList;
+ln::Array<VALUE>	Manager:m_objectList;
+ln::Stack<int>		Manager:m_objectListIndexStack;
+
+//------------------------------------------------------------------------------
+void Manager::Initialize()
+{
+	// ŠÇ—ƒŠƒXƒg‚Ì‹ó‚«”Ô†‚ğ‹l‚ß‚é
+	for (int i = 0; i < InitialListSize; i++)
+	{
+		m_objectList.Add(Qnil);
+		m_objectListIndexStack.Push(i);
+	}
+	
+	// Ruby Œn‚Ì‰Šú‰»
+	InitEnums();
+	InitStructs();
+	InitClasses();
+	
+	// Œ^î•ñ‚Ì“o˜^
+	m_typeInfoList.Add(TypeInfo());	// ƒ_ƒ~[‚ğ1‚Â‹l‚ß‚Ä‚¨‚­
+	RegisterTypeInfo();
+}
+
+//------------------------------------------------------------------------------
+void Manager::Finalize()
+{
+}
+
+//------------------------------------------------------------------------------
+VALUE Manager::GetWrapperObjectFromHandle(LNHandle handle)
+{
+	int objectIndex = (int)LNObject_GetUserData(handle);
+	if (objectIndex == 0)
+	{
+		int typeinfoIndex = (int)LNObject_GetTypeUserData(handle);
+		VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
+		RegisterWrapperObject(obj);
+		return obj;
+	}
+	else
+	{
+		return m_objectList[objectIndex];
+	}
+}
+
+//------------------------------------------------------------------------------
+void Manager::RegisterWrapperObject(VALUE obj)
+{
+	// ŠÇ—ƒŠƒXƒg‚ªˆê”t‚Ì‚ÍŠg’£‚·‚é
+	if (m_objectListIndexStack.GetCount() == 0)
+	{
+		int growCount = m_objectList.GetCount();
+		for (int i = 0; i < growCount; i++)
+		{
+			m_objectList.Add(Qnil);
+			m_objectListIndexStack.Push(growCount + i);
+		}
+	}
+	
+	int index = m_objectListIndexStack.Pop();
+	m_objectList[index] = obj;
+}
+
+//------------------------------------------------------------------------------
+void Manager::UnregisterWrapperObject(LNHandle handle)
+{
+	int index = (int)LNObject_GetUserData(handle);
+	m_objectList[index] = Qnil;
+	m_objectListIndexStack.Push(index);
+}
+
+//------------------------------------------------------------------------------
 const char* LNGetLastErrorMessage()
 {
 	const LNChar* str;
@@ -19,9 +92,7 @@ extern "C" void Init_Lumino()
     // —áŠO’è‹`
     g_luminoError = rb_define_class_under(g_luminoModule, "LuminoError", rb_eRuntimeError);
 	
-	InitEnums();
-	InitStructs();
-	InitClasses();
+	Manager::Initialize();
 }
 
 

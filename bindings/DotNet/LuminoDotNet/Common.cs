@@ -130,8 +130,8 @@ namespace Lumino
                 // 管理リストの空き番号を詰める
                 for (int i = 0; i < InitialListSize; i++)
                 {
-                    _userDataListIndexStack.Push(i);
                     _userDataList.Add(new UserData());
+                    _userDataListIndexStack.Push(i);
                 }
 
                 // 型情報の登録
@@ -151,11 +151,11 @@ namespace Lumino
         // ハンドルからラップオブジェクトを返す
         public static T GetWrapperObject<T>(IntPtr handle) where T : RefObject
         {
-            int index = (int)LNObject_GetUserData(handle);
-            if (index == 0) // 新しく登録する
+            int objectIndex = (int)LNObject_GetUserData(handle);
+            if (objectIndex == 0) // 新しく登録する
                 return CreateWrapperObject<T>(handle);
             else            // 登録済みのオブジェクトを返す
-                return (T)_userDataList[index].RefObject.Target;
+                return (T)_userDataList[objectIndex].RefObject.Target;
         }
 
         // 新しいハンドルを登録し、ラップオブジェクトを生成する

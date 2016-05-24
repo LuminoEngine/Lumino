@@ -523,6 +523,11 @@ class Lumino::Version
     # @return [Integer] バージョン番号
     def get_revision
     end
+    # ビルドバージョンを取得します。
+    # @overload get_build()
+    # @return [Integer] バージョン番号
+    def get_build
+    end
     # バージョン文字列を取得します。
     # @overload get_string()
     # @return [String] 文字列
@@ -1764,13 +1769,20 @@ class Lumino::Texture < RefObject
 end
 # 2Dテクスチャを操作するためのクラスです。
 class Lumino::Texture2D < Texture
-    # ファイルから2Dテクスチャオブジェクトを作成します。
+    # サイズを指定して2Dテクスチャを作成します。
+    # @overload initialize(width, height, format=A8R8G8B8, mipmap=false)
+    #   サイズを指定して2Dテクスチャを作成します。
+    #   @param [Integer] width テクスチャの幅 (ピクセル単位)
+    #   @param [Integer] height テクスチャの高さ (ピクセル単位)
+    #   @param [Lumino::TextureFormat] format テクスチャのピクセルフォーマット
+    #   @param [Bool] mipmap ミップマップの有無
+    # @return [Lumino::Texture2D] 作成された2Dテクスチャのハンドル
     # @overload initialize(filePath)
-    #   　
+    #   ファイルから2Dテクスチャを作成します。
     #     全てのプラットフォームでサポートされているファイルフォーマットは .png です。
     #     グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
     #   @param [String] filePath 画像ファイルのパス
-    # @return [Lumino::Texture2D] 作成された2Dテクスチャオブジェクトのハンドル
+    # @return [Lumino::Texture2D] 作成された2Dテクスチャのハンドル
     def initialize
     end
 end
@@ -1782,12 +1794,20 @@ class Lumino::SceneNode < RefObject
     def position=
     end
 end
-# スプライト
+# スプライトのベースクラスです。
 class Lumino::Sprite < SceneNode
-    # スプライトオブジェクトを作成します。
+    # スプライトにテクスチャを設定します。
+    # @overload texture=(texture)
+    #   @param [Lumino::Texture] texture テクスチャハンドル
+    def texture=
+    end
+end
+# 2D 空間に配置されるスプライトのクラスです。
+class Lumino::Sprite2D < Sprite
+    # 2Dスプライトオブジェクトを作成します。
     # @overload initialize(texture)
-    #   @param [Lumino::Texture] texture スプライトが表示するテクスチャのハンドル
-    # @return [Lumino::Sprite] 作成されたスプライトオブジェクトのハンドル
+    #   @param [Lumino::Texture] texture 2Dスプライトが表示するテクスチャのハンドル
+    # @return [Lumino::Sprite2D] 作成された2Dスプライトハンドル
     def initialize
     end
 end

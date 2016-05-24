@@ -43,3 +43,11 @@ void InitClasses()
 __DEFINES__
 }
 
+//-----------------------------------------------------------------------------
+// TypeInfo
+
+void Manager::RegisterTypeInfo()
+{
+__TYPEINFO_REGISTERS__
+}
+

@@ -53,18 +53,18 @@ namespace BinderMaker
                 var csClassesBuilder = new Builder.CSClassesBuilder();
                 csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
 
+                // Ruby
+                var rubyEnumBuilder = new Builder.RubyEnumBuilder();
+                rubyEnumBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyEnums.cpp");
+                var rubyStructsBuilder = new Builder.RubyStructsBuilder();
+                rubyStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.cpp");
+                var rubyStructsHeaderBuilder = new Builder.RubyStructsHeaderBuilder();
+                rubyStructsHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.h");
+                var rubyClassesBuilder = new Builder.RubyClassesBuilder();
+                rubyClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyClasses.cpp");
+                var rubyDocBuilder = new Builder.RubyDocBuilder();
+                rubyDocBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyDoc.rb");
 #if false
-            // Ruby
-            var rubyEnumBuilder = new Builder.RubyEnumBuilder();
-            rubyEnumBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyEnums.cpp");
-            var rubyStructsBuilder = new Builder.RubyStructsBuilder();
-            rubyStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.cpp");
-            var rubyStructsHeaderBuilder = new Builder.RubyStructsHeaderBuilder();
-            rubyStructsHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.h");
-            var rubyClassesBuilder = new Builder.RubyClassesBuilder();
-            rubyClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyClasses.cpp");
-            var rubyDocBuilder = new Builder.RubyDocBuilder();
-            rubyDocBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyDoc.rb");
 
             // HSP
             var hspHeaderBuilder = new Builder.HSPHeaderBuilder();

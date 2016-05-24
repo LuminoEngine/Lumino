@@ -2088,14 +2088,6 @@ namespace Lumino
         public extern static Result LNSceneNode_SetPosition( IntPtr sceneNode, ref Vector3 position);
 
         /// <summary>
-        /// スプライトに設定されているテクスチャを取得します。
-        /// </summary>
-        /// <param name="sprite">スプライトハンドル</param>
-        /// <param name="outTexture">テクスチャハンドルを格納する変数のポインタ</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSprite_GetTexture( IntPtr sprite, out IntPtr outTexture);
-
-        /// <summary>
         /// スプライトにテクスチャを設定します。
         /// </summary>
         /// <param name="sprite">スプライトハンドル</param>
