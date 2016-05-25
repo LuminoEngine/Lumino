@@ -1,12 +1,12 @@
 ﻿
 #include "LNInternal.h"
 #include <Lumino/Version.h>
-#include "../include/LNApplication.h"
+#include "../include/LNEngine.h"
 
 extern "C" {
 
 //==============================================================================
-// LNApplication
+// LNConfig
 //==============================================================================
 
 //------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ void LNConfig_SetDirectMusicReverbLevel(float level)
 }
 
 //==============================================================================
-// LNApplication
+// LNEngine
 //==============================================================================
 
 
@@ -73,10 +73,10 @@ void LNConfig_SetDirectMusicReverbLevel(float level)
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
-	LNResult LNApplication_Initialize();
+	LNResult LNEngine_Initialize();
 
 //------------------------------------------------------------------------------
-LNResult LNApplication_Initialize()
+LNResult LNEngine_Initialize()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
@@ -87,7 +87,7 @@ LNResult LNApplication_Initialize()
 #endif
 
 //------------------------------------------------------------------------------
-LNResult LNApplication_Initialize()
+LNResult LNEngine_Initialize()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
@@ -97,7 +97,7 @@ LNResult LNApplication_Initialize()
 }
 
 //------------------------------------------------------------------------------
-LNResult LNApplication_InitializeAudio()
+LNResult LNEngine_InitializeAudio()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::PreInitialize();
@@ -114,7 +114,7 @@ LNResult LNApplication_InitializeAudio()
 					この関数は必ず1フレームに1度だけ呼び出す必要があります。
 	*/
 	LN_STATIC_API
-	LNResult LNApplication_Update();
+	LNResult LNEngine_Update();
 	/*Option
 		@override[hsp]
 		@override_end
@@ -126,7 +126,7 @@ LNResult LNApplication_InitializeAudio()
 					極端なフレームスキップが発生しないようにすることができます。
 	*/
 	LN_STATIC_API
-	LNResult LNApplication_ResetFrameDelay();
+	LNResult LNEngine_ResetFrameDelay();
 
 	/**
 		@brief		アプリケーションを終了するべきかを確認します。
@@ -135,11 +135,11 @@ LNResult LNApplication_InitializeAudio()
 					アプリケーションを終了するべき時には LN_FALSE を返します。
 	*/
 	LN_STATIC_API
-	LNResult LNApplication_IsEndRequested(LNBool* requested);
+	LNResult LNEngine_IsEndRequested(LNBool* requested);
 
 #endif
 //------------------------------------------------------------------------------
-LNResult LNApplication_UpdateFrame()
+LNResult LNEngine_UpdateFrame()
 {
 	LN_FUNC_TRY_BEGIN;
 	LFManager::Engine->UpdateFrame();
@@ -147,14 +147,14 @@ LNResult LNApplication_UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-//LNResult LNApplication_ResetFrameDelay()
+//LNResult LNEngine_ResetFrameDelay()
 //{
 //	LFManager::Engine->ResetFrameDelay();
 //	return ::LN_OK;
 //}
 
 //------------------------------------------------------------------------------
-LNResult LNApplication_IsEndRequested(LNBool* requested)
+LNResult LNEngine_IsEndRequested(LNBool* requested)
 {
 	*requested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->IsEndRequested());
 	return ::LN_OK;
@@ -163,14 +163,14 @@ LNResult LNApplication_IsEndRequested(LNBool* requested)
 //------------------------------------------------------------------------------
 // Note: Finalize という名前から変更した。Finalize は .NET で特殊な名前となってしまう。
 //------------------------------------------------------------------------------
-void LNApplication_Terminate()
+void LNEngine_Terminate()
 {
 	LFManager::Terminate();
 }
 
-//LN_INTERNAL_API void* LNApplication_GetInternalObject();
+//LN_INTERNAL_API void* LNEngine_GetInternalObject();
 //------------------------------------------------------------------------------
-//void* LNApplication_GetInternalObject()
+//void* LNEngine_GetInternalObject()
 //{
 //	return LFManager::CoreManager;
 //}

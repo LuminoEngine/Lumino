@@ -1,4 +1,4 @@
-#include "LuminoRuby.h"
+ï»¿#include "LuminoRuby.h"
 
 VALUE g_luminoModule;
 VALUE g_luminoError;
@@ -10,26 +10,29 @@ std::stack<int>			Manager::m_objectListIndexStack;
 //------------------------------------------------------------------------------
 void Manager::Initialize()
 {
-	// ŠÇ—ƒŠƒXƒg‚Ì‹ó‚«”Ô†‚ğ‹l‚ß‚é
+	// ç®¡ç†ãƒªã‚¹ãƒˆã®ç©ºãç•ªå·ã‚’è©°ã‚ã‚‹
 	for (int i = 0; i < InitialListSize; i++)
 	{
 		m_objectList.push_back(Qnil);
 		m_objectListIndexStack.push(i);
 	}
 	
-	// Ruby Œn‚Ì‰Šú‰»
+	// Ruby ç³»ã®åˆæœŸåŒ–
 	InitEnums();
 	InitStructs();
 	InitClasses();
 	
-	// Œ^î•ñ‚Ì“o˜^
-	m_typeInfoList.push_back(TypeInfo());	// ƒ_ƒ~[‚ğ1‚Â‹l‚ß‚Ä‚¨‚­
+	// å‹æƒ…å ±ã®ç™»éŒ²
+	m_typeInfoList.push_back(TypeInfo());	// ãƒ€ãƒŸãƒ¼ã‚’1ã¤è©°ã‚ã¦ãŠã
 	RegisterTypeInfo();
+	
+	LNApplication_Initialize();
 }
 
 //------------------------------------------------------------------------------
 void Manager::Finalize()
 {
+	LNApplication_Terminate();
 }
 
 //------------------------------------------------------------------------------
@@ -52,7 +55,7 @@ VALUE Manager::GetWrapperObjectFromHandle(LNHandle handle)
 //------------------------------------------------------------------------------
 void Manager::RegisterWrapperObject(VALUE obj)
 {
-	// ŠÇ—ƒŠƒXƒg‚ªˆê”t‚Ì‚ÍŠg’£‚·‚é
+	// ç®¡ç†ãƒªã‚¹ãƒˆãŒä¸€æ¯ã®æ™‚ã¯æ‹¡å¼µã™ã‚‹
 	if (m_objectListIndexStack.size() == 0)
 	{
 		int growCount = m_objectList.size();
@@ -84,14 +87,23 @@ const char* LNGetLastErrorMessage()
 	return LNInternal_ConvertToUTF8String(str, -1);
 }
 
-// ŠÖ”–¼‚Í create_makefile ‚Åw’è‚µ‚½–¼‘O‚Æ‡‚í‚¹‚Ä‚¨‚©‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+//------------------------------------------------------------------------------
+static VALUE Lumino_terminate(VALUE obj)
+{
+	Manager::Finalize();
+}
+
+// é–¢æ•°åã¯ create_makefile ã§æŒ‡å®šã—ãŸåå‰ã¨åˆã‚ã›ã¦ãŠã‹ãªã‘ã‚Œã°ãªã‚‰ãªã„
 extern "C" void Init_Lumino()
 {
-	// ƒ‹[ƒgƒ‚ƒWƒ…[ƒ‹
+	// ãƒ«ãƒ¼ãƒˆãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
 	g_luminoModule = rb_define_module("Lumino");
 	
-    // —áŠO’è‹`
+    // ä¾‹å¤–å®šç¾©
     g_luminoError = rb_define_class_under(g_luminoModule, "LuminoError", rb_eRuntimeError);
+	
+	// çµ‚äº†æ™‚ã«å®Ÿè¡Œã•ã‚Œã‚‹å‡¦ç†ã®ç™»éŒ²
+	rb_set_end_proc((void (*)(VALUE))Lumino_terminate, Qnil);
 	
 	Manager::Initialize();
 }

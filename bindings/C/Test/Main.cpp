@@ -52,7 +52,7 @@ int main()
 	//LNConfig_SetDirectMusicReverbLevel(1.0f);
 
 	//LNConfig_RegisterArchive(_T("D:/Proj/Lumino/build/bindings/C/Test/Debug/audio.lna"), _T("test"));
-	LNApplication_InitializeAudio();
+	LNEngine_InitializeAudio();
 
 	//LNGameAudio_PlayBGM(_T("D:/tmp/ZIGG-ZAGG.mp3"));
 	//::Sleep(2000);
@@ -75,7 +75,7 @@ int main()
 //LNObject_Release(sound1);
 //
 	//::Sleep(2000);
-	LNApplication_Terminate();
+	LNEngine_Terminate();
 	return 0;
 }
 

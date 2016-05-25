@@ -9,18 +9,18 @@ include(../../external/Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
 
 set(LN_SOURCES_C_API
 	include/LuminoC.h
-	include/LNApplication.h
 	include/LNAudio.h
 	include/LNBase.h
 	include/LNCommon.h
+	include/LNEngine.h
 	include/LNGraphics.h
 	include/LNMath.h
 	include/LNPhysics.h
 	include/LNScene.h
 	include/LNTypedef.h
-	src/LNApplication.cpp
 	src/LNAudio.cpp
 	src/LNBase.cpp
+	src/LNEngine.cpp
 	src/LNGraphics.cpp
 	src/LNGUI.cpp
 	src/LNGUI.h

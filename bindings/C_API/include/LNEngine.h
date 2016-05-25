@@ -7,11 +7,11 @@ extern "C" {
 #endif // __cplusplus
 
 /**
-	@defgroup   group_application アプリケーション
+	@defgroup   group_engine エンジン
 	@brief		ライブラリの初期化や更新、終了処理等のアプリケーション全体に関わる機能です。
 	@{
 */
-LN_MODULE(Application)
+LN_MODULE(Engine)
 
 //==============================================================================
 /**
@@ -86,30 +86,30 @@ LN_CLASS_END
 
 //==============================================================================
 /**
-	@brief		ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+	@brief		エンジン全体の初期化や更新等、包括的な処理を行うクラスです。
 */
-LN_STATIC_CLASS(LNApplication)
+LN_STATIC_CLASS(LNEngine)
 
 	/**
 		@brief		ライブラリを初期化します。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
-	LNResult LNApplication_Initialize();
+	LNResult LNEngine_Initialize();
 
 	/**
 		@brief		ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_INITIALIZER
-	LNResult LNApplication_InitializeAudio();
+	LNResult LNEngine_InitializeAudio();
 	
 	/**
 		@brief		1フレーム分の更新処理を行います。
 		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
 	*/
 	LN_STATIC_API
-	LNResult LNApplication_UpdateFrame();
+	LNResult LNEngine_UpdateFrame();
 	
 	/**
 		@brief		アプリケーションを終了するべきかを確認します。
@@ -118,14 +118,14 @@ LN_STATIC_CLASS(LNApplication)
 					アプリケーションを終了するべき時には LN_FALSE を返します。
 	*/
 	LN_STATIC_API
-	LNResult LNApplication_IsEndRequested(LNBool* outRequested);
+	LNResult LNEngine_IsEndRequested(LNBool* outRequested);
 
 	/**
 		@brief		ライブラリの終了処理を行います。
 	*/
 	LN_STATIC_API
 	LN_ATTR_LIBRARY_TERMINATOR
-	void LNApplication_Terminate();
+	void LNEngine_Terminate();
 
 LN_CLASS_END
 

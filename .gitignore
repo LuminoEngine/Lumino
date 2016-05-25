@@ -32,3 +32,6 @@ tmp/
 *.so
 build_*/
 .klocwork*/
+
+# Xamarin Studio
+*.userprefs

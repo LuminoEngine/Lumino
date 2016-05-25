@@ -19,8 +19,8 @@ namespace LuminoBindingsBuild
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>()
             {
-                //new LuminoRubyRule(),
-                new LuminoHSPRule(),
+                new LuminoRubyRule(),
+                //new LuminoHSPRule(),
             };
 
             builder.Build();

@@ -1,9 +1,9 @@
-Lumino for HSP
+﻿Lumino for HSP
 ====================
 
-�z�z���� DLL �����Ȃ����邽�߁ALumino �{�̂͐ÓI�����N���Ă���B
+配布する DLL を少なくするため、Lumino 本体は静的リンクしている。
 
-���̂��ߒǉ��̃��C�u��������ʂɂ��邪�A�X�V����Ƃ��� LuminoC.vcxproj ����R�s�[���Ă���ƊȒP�B
+そのため追加のライブラリが大量にあるが、更新するときは LuminoC.vcxproj からコピーしてくると簡単。
 
 
 
