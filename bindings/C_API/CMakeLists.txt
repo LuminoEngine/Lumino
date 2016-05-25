@@ -1,6 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
 project (LuminoC)
 
+include(../../external/Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
+
 #------------------------------------------------------------------------------
 # Files
 #------------------------------------------------------------------------------
@@ -39,48 +41,19 @@ source_group("C_API"	FILES ${LN_SOURCES_C_API})
 set(LN_SOURCES
 	${LN_SOURCES_C_API})
 
+#------------------------------------------------------------------------------
+# Options
+#------------------------------------------------------------------------------
+
+# include directories.
 set(LN_INCLUDE_DIRECTORIES
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/external/Lumino.Core/include
 	${CMAKE_SOURCE_DIR}/external/Lumino.Math/include)
-
-#------------------------------------------------------------------------------
-# Options
-#------------------------------------------------------------------------------
-# Unicode char set.
-if (LN_USE_UNICODE_CHAR_SET)
-	add_definitions(-DUNICODE)
-	add_definitions(-D_UNICODE)
-endif()
-
-if (WIN32)
-	# ランタイムライブラリ
-	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
-	# 出力ファイルのサフィックス
-	set(LN_OUTPUT_POSTFIX "_")
-	if (${CMAKE_EXE_LINKER_FLAGS} MATCHES "/machine:x64")	# /machine:x64
-		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}x64")
-	else()
-		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}x86")
-	endif()
-	if (${LN_USE_UNICODE_CHAR_SET})
-		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}u")
-	endif()
-	if (LN_MSVC_LINK_MULTI_THREAD_STATIC_RUNTIME)
-		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}MT")
-	else()
-		set(LN_OUTPUT_POSTFIX "${LN_OUTPUT_POSTFIX}MD")
-	endif()
-endif()
+	
+# make postfix.
+ln_make_postfix(LN_STATIC_OUTPUT_POSTFIX)
+ln_make_postfix_for_shared_lib(LN_SHARED_OUTPUT_POSTFIX)
 
 #------------------------------------------------------------------------------
 # Output
@@ -92,20 +65,23 @@ link_libraries(Lumino_Static)
 
 #------------------------------
 # Shared library.
+add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_STATIC_OUTPUT_POSTFIX})
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
+
+#------------------------------
+# Shared library.
 add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_OUTPUT_POSTFIX})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_SHARED_OUTPUT_POSTFIX})
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 
 
-add_custom_command(
-	TARGET ${PROJECT_NAME}
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
-add_custom_command(
-	TARGET ${PROJECT_NAME}
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_LINKER_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
 

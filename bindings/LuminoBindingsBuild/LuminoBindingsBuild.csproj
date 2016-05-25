@@ -41,6 +41,9 @@
     <Compile Include="..\Ruby\LuminoRuby.Build.cs">
       <Link>LuminoRuby.Build.cs</Link>
     </Compile>
+    <Compile Include="..\HSP\LuminoHSP.Build.cs">
+      <Link>LuminoHSP.Build.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

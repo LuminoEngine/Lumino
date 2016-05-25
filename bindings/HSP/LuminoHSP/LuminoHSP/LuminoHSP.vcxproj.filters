@@ -7,9 +7,6 @@
     <Filter Include="Source">
       <UniqueIdentifier>{867e5b30-99fd-442d-9ace-5a2ac269cbad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="C_API">
-      <UniqueIdentifier>{d5eee0c0-9c99-4a39-a8ae-977daf18a569}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hsp3plugin\hsp3plugin.h">
@@ -49,27 +46,6 @@
     </ClCompile>
     <ClCompile Include="HSPCommands.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNTypedef.cpp">
-      <Filter>C_API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNApplication.cpp">
-      <Filter>C_API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNAudio.cpp">
-      <Filter>C_API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNBase.cpp">
-      <Filter>C_API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNInternal.cpp">
-      <Filter>C_API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNManager.cpp">
-      <Filter>C_API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\C_API\src\LNMath.cpp">
-      <Filter>C_API</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

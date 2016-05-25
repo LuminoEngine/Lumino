@@ -1,14 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 
 namespace LuminoBuildTool
 {
 	class Builder
-	{
-		public string RootDir;
+    {
+        public string MSBuildPath;
+        public string RootDir;
 		public string LuminoLibDir;
-	}
+        public List<ModuleRule> Rules = new List<ModuleRule>();
+
+        public void Build()
+        {
+            foreach (var rule in Rules)
+            {
+                var oldDir = Directory.GetCurrentDirectory();
+                rule.Build(this);
+                Directory.SetCurrentDirectory(oldDir);
+            }
+        }
+    }
 		
 	abstract class ModuleRule
 	{

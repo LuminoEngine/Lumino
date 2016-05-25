@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace LuminoBindingsBuild
 {
@@ -7,15 +9,21 @@ namespace LuminoBindingsBuild
 	{
 		public static void Main (string[] args)
 		{
+            Assembly thisAssembly = Assembly.GetEntryAssembly();
+            string exeDir = Path.GetDirectoryName(thisAssembly.Location);
 
 			var builder = new LuminoBuildTool.Builder();
-			builder.RootDir = "../../../";	// .sln のあるフォルダ
-			builder.LuminoLibDir = "../../../../lib/";
+            builder.MSBuildPath = @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe";
+            builder.RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../..")) + "/";	// .sln のあるフォルダ
+            builder.LuminoLibDir = Path.GetFullPath(builder.RootDir + "../lib") + "/";
 
-			var rubyBuilder = new LuminoRubyRule();
-            var oldDir = Directory.GetCurrentDirectory();
-			rubyBuilder.Build(builder);
-            Directory.SetCurrentDirectory(oldDir);
-		}
+            builder.Rules = new List<LuminoBuildTool.ModuleRule>()
+            {
+                //new LuminoRubyRule(),
+                new LuminoHSPRule(),
+            };
+
+            builder.Build();
+        }
 	}
 }

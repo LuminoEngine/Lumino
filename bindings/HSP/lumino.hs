@@ -6,10 +6,10 @@
 Lumino
 
 %ver
-0.1.0g?*
+0.2.0.0
 
 %date
-2015/11/27
+2016/05/25
 
 %author
 lriki
@@ -329,6 +329,24 @@ LNVersion_GetRevision
 %prm
 outRevision
 [out] outRevision : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNVersion_GetBuild
+ƒrƒ‹ƒhƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+%prm
+outBuild
+[out] outBuild : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
 
 %inst
 
@@ -3001,14 +3019,50 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;-----------------------------------------------------------
 %index
 LNTexture2D_Create
-ƒtƒ@ƒCƒ‹‚©‚ç2DƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+ƒTƒCƒY‚ğw’è‚µ‚Ä2DƒeƒNƒXƒ`ƒƒ‚ğì¬‚µ‚Ü‚·B
+
+%group
+ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
+%prm
+width, height, format, mipmap, outTexture2D
+[in]  width                   : ƒeƒNƒXƒ`ƒƒ‚Ì• (ƒsƒNƒZƒ‹’PˆÊ)
+[in]  height                  : ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³ (ƒsƒNƒZƒ‹’PˆÊ)
+[in]  format(LN_FMT_A8R8G8B8) : ƒeƒNƒXƒ`ƒƒ‚ÌƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg
+                                   LN_FMT_UNKNOWN
+                                       •s–¾‚ÈƒtƒH[ƒ}ƒbƒg
+                                   LN_FMT_A8R8G8B8
+                                       32 ƒrƒbƒg‚ÌƒAƒ‹ƒtƒ@•t‚«ƒtƒH[ƒ}ƒbƒg
+                                   LN_FMT_X8R8G8B8
+                                       32 ƒrƒbƒg‚ÌƒAƒ‹ƒtƒ@–³‚µƒtƒH[ƒ}ƒbƒg
+                                   LN_FMT_A16B16G16R16F
+                                       64 ƒrƒbƒg‚Ì•‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
+                                   LN_FMT_A32B32G32R32F
+                                       128 ƒrƒbƒg‚Ì•‚“®¬”“_ƒtƒH[ƒ}ƒbƒg
+                                   LN_FMT_D24S8
+                                       32 ƒrƒbƒg‚Ì Z ƒoƒbƒtƒ@ƒtƒH[ƒ}ƒbƒg
+[in]  mipmap(LN_FALSE)        : ƒ~ƒbƒvƒ}ƒbƒv‚Ì—L–³
+[out] outTexture2D            : ì¬‚³‚ê‚½2DƒeƒNƒXƒ`ƒƒ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNTexture2D_CreateFromFile
+ƒtƒ@ƒCƒ‹‚©‚ç2DƒeƒNƒXƒ`ƒƒ‚ğì¬‚µ‚Ü‚·B
 
 %group
 ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
 %prm
 filePath, outTexture2D
 [in]  filePath     : ‰æ‘œƒtƒ@ƒCƒ‹‚ÌƒpƒX
-[out] outTexture2D : ì¬‚³‚ê‚½2DƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+[out] outTexture2D : ì¬‚³‚ê‚½2DƒeƒNƒXƒ`ƒƒ‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 
@@ -3023,7 +3077,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;-----------------------------------------------------------
 %index
 LNSceneNode_SetPosition
-ƒTƒEƒ“ƒh‚Ì 3D ‰¹Œ¹‚Æ‚µ‚Ä‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
+ƒm[ƒh‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
 
 %group
 ƒV[ƒ“ƒOƒ‰ƒt
@@ -3043,15 +3097,36 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSprite_Create
-ƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+LNSprite_SetTexture
+ƒXƒvƒ‰ƒCƒg‚ÉƒeƒNƒXƒ`ƒƒ‚ğİ’è‚µ‚Ü‚·B
 
 %group
 ƒV[ƒ“ƒOƒ‰ƒt
 %prm
-texture, outSprite
-[in]  texture   : ƒXƒvƒ‰ƒCƒg‚ª•\¦‚·‚éƒeƒNƒXƒ`ƒƒ‚Ìƒnƒ“ƒhƒ‹
-[out] outSprite : ì¬‚³‚ê‚½ƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+sprite, texture
+[in] sprite  : ƒXƒvƒ‰ƒCƒgƒnƒ“ƒhƒ‹
+[in] texture : ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSprite2D_Create
+2DƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+texture, outSprite2D
+[in]  texture     : 2DƒXƒvƒ‰ƒCƒg‚ª•\¦‚·‚éƒeƒNƒXƒ`ƒƒ‚Ìƒnƒ“ƒhƒ‹
+[out] outSprite2D : ì¬‚³‚ê‚½2DƒXƒvƒ‰ƒCƒgƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 

@@ -32,6 +32,7 @@ LNApplication_Terminate        ライブラリの終了処理を行います。
 LNVersion_GetMajor     メジャーバージョンを取得します。
 LNVersion_GetMinor     マイナーバージョンを取得します。
 LNVersion_GetRevision  リビジョンバージョンを取得します。
+LNVersion_GetBuild     ビルドバージョンを取得します。
 LNVersion_GetString    バージョン文字列を取得します。
 LNVersion_IsAtLeast    指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
 
@@ -208,15 +209,21 @@ LNTexture_GetSize  テクスチャのサイズを取得します。
 -------------------------------------------------------------------------------
  ■ [LNTexture2D]  2Dテクスチャを操作するためのモジュールです。
 
-LNTexture2D_Create  ファイルから2Dテクスチャオブジェクトを作成します。
+LNTexture2D_Create          サイズを指定して2Dテクスチャを作成します。
+LNTexture2D_CreateFromFile  ファイルから2Dテクスチャを作成します。
 
 -------------------------------------------------------------------------------
  ■ [LNSceneNode]  シーングラフを構成するノードのベースモジュールです。
 
-LNSceneNode_SetPosition  サウンドの 3D 音源としての位置を設定します。
+LNSceneNode_SetPosition  ノードの位置を設定します。
 
 -------------------------------------------------------------------------------
- ■ [LNSprite]  スプライト
+ ■ [LNSprite]  スプライトのベースモジュールです。
 
-LNSprite_Create  スプライトオブジェクトを作成します。
+LNSprite_SetTexture  スプライトにテクスチャを設定します。
+
+-------------------------------------------------------------------------------
+ ■ [LNSprite2D]  2D 空間に配置されるスプライトのモジュールです。
+
+LNSprite2D_Create  2Dスプライトオブジェクトを作成します。
 

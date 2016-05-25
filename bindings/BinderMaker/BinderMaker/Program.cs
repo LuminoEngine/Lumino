@@ -64,20 +64,18 @@ namespace BinderMaker
                 rubyClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyClasses.cpp");
                 var rubyDocBuilder = new Builder.RubyDocBuilder();
                 rubyDocBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyDoc.rb");
-#if false
 
-            // HSP
-            var hspHeaderBuilder = new Builder.HSPHeaderBuilder();
-            hspHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.as");
-            var hspCommandsBuilder = new Builder.HSPCommandsBuilder();
-            hspCommandsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPCommands.cpp");
-            var hspStructsBuilder = new Builder.HSPStructsBuilder();
-            hspStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPStructs.cpp");
-            var hspHelpBuilder = new Builder.HSPHelpBuilder();
-            hspHelpBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.hs");
-            var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
-            hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/CommandList.txt");
-#endif
+                // HSP
+                var hspHeaderBuilder = new Builder.HSPHeaderBuilder();
+                hspHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.as");
+                var hspCommandsBuilder = new Builder.HSPCommandsBuilder();
+                hspCommandsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPCommands.cpp");
+                var hspStructsBuilder = new Builder.HSPStructsBuilder();
+                hspStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPStructs.cpp");
+                var hspHelpBuilder = new Builder.HSPHelpBuilder();
+                hspHelpBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.hs");
+                var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
+                hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/CommandList.txt");
             }
             catch (Exception e)
             {
