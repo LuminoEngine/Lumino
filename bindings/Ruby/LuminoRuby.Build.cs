@@ -17,18 +17,23 @@ class LuminoRubyRule : ModuleRule
 		var envPath = Environment.GetEnvironmentVariable("PATH");
         Environment.SetEnvironmentVariable("PATH", rubyBin + ";" + mingwBin + ";" + envPath);
 
-
+        // build フォルダへ必要なファイルをコピーする
         Directory.CreateDirectory(rubyBuildDir);
         Utils.CopyFiles(rubyDir, "*.cpp", rubyBuildDir);
         Utils.CopyFiles(rubyDir, "*.h", rubyBuildDir);
         Utils.CopyFile(rubyDir + "extconf.rb", rubyBuildDir);
+        Utils.CopyFile(rubyDir + "LuminoRubyDoc.rb", rubyBuildDir);     // ドキュメント用のソースも。yardoc は readme.md を自動的に取り込んでしまう
         Utils.CopyFile(builder.LuminoLibDir + "LuminoC_x86MT.dll", rubyBuildDir);
 
+        // ビルド
         Directory.SetCurrentDirectory(rubyBuildDir);
         Utils.CallProcess("ruby", "extconf.rb");
         Utils.CallProcess("make");
 
+        // ドキュメントの作成
+        Utils.CallProcessShell("yardoc", "-o doc LuminoRubyDoc.rb");
+
         // プロセスの環境変数を元に戻しておく
-		Environment.SetEnvironmentVariable("PATH", envPath);
+        Environment.SetEnvironmentVariable("PATH", envPath);
 	}
 }

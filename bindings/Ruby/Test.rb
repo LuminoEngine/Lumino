@@ -1,38 +1,64 @@
-#! ruby -EWindows-31J
-# -*- mode:ruby; coding:Windows-31J -*-
+require 'test/unit'
 require './Lumino'
 include Lumino
 
-#p "sssssssssssssssssssssssssssssssssssssssssssssssss"
-#p "�ɂق�"
 
-#raise "������"
+#-------------------------------------------------------------------------------
+class Test_Struct < Test::Unit::TestCase
+  class << self
+    # テスト群の実行前に呼ばれる
+    def startup
+      p :_startup
+    end
 
-#Config.register_archive("audio.lna", "test")
-Application.initialize_audio
-sound1 = Sound.new("audio/ZIGG-ZAGG.mp3")
-sound1.pitch = 105
-sound1.play
+    # テスト群の実行後に呼ばれる
+    def shutdown
+      p :_shutdown
+    end
+  end
 
+  # 毎回テスト実行前に呼ばれる
+  def setup
+    p :setup
+  end
 
-gets
+  # テストがpassedになっている場合に，テスト実行後に呼ばれる．テスト後の状態確認とかに使える
+  def cleanup
+    p :cleanup
+  end
 
-Application.finalize
+  # 毎回テスト実行後に呼ばれる
+  def teardown
+    p :treadown
+  end
 
-p Result::OUT_OF_MEMORY
+  def test_new
+    # デフォルトコンストラクタ
+    vec1 = Vector3.new
+    assert_equal(0, vec1.x)
+    assert_equal(0, vec1.y)
+    assert_equal(0, vec1.z)
 
-vec1 = Vector3.new
-vec2 = Vector3.new(1, 2, 3)
+    # フィールド初期値指定のコンストラクタ
+    vec2 = Vector3.new(1, 2, 3)
+    assert_equal(1, vec2.x)
+    assert_equal(2, vec2.y)
+    assert_equal(3, vec2.z)
 
-p vec1.x
-p vec2.y
-vec2.z = 100
-p vec2.z
+    # フィールドへの代入
+    vec2.z = 100
+    assert_equal(100, vec2.z)
 
+    # インスタンスメソッドの呼び出し
+    vec2.normalize
+    assert_equal(true, vec2.x > 0.009)
+    assert_equal(true, vec2.y > 0.01)
+    assert_equal(true, vec2.z > 0.999)
 
-vec3 = Vector3.normalize(vec2)
-p vec3.x, vec3.y, vec3.z
-
-p vec2.x, vec2.y, vec2.z
-vec2.normalize
-p vec2.x, vec2.y, vec2.z
+    # クラスメソッドの呼び出し（インスタンスメソッドとのオーバーライド）
+    vec3 = Vector3.normalize(vec2)
+    assert_equal(true, vec3.x > 0.009)
+    assert_equal(true, vec3.y > 0.01)
+    assert_equal(true, vec3.z > 0.999)
+  end
+end

@@ -76,5 +76,21 @@ namespace LuminoBuildTool
 					throw new InvalidOperationException("Failed Process.");
 			}
 		}
+
+        public static void CallProcessShell(string program, string args = "")
+        {
+            using (Process p = new Process())
+            {
+                p.StartInfo.FileName = program;
+                p.StartInfo.Arguments = args;
+
+                p.Start();
+
+                p.WaitForExit();
+
+                if (p.ExitCode != 0)
+                    throw new InvalidOperationException("Failed Process.");
+            }
+        }
 	}
 }
