@@ -477,8 +477,8 @@ class Lumino::Config
     def set_direct_music_reverb_level
     end
 end
-# ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
-class Lumino::Application
+# エンジン全体の初期化や更新等、包括的な処理を行うクラスです。
+class Lumino::Engine
     # ライブラリを初期化します。
     # @overload initialize()
     def initialize
@@ -1800,6 +1800,11 @@ class Lumino::Sprite < SceneNode
     # @overload texture=(texture)
     #   @param [Lumino::Texture] texture テクスチャハンドル
     def texture=
+    end
+    # スプライトに設定されているテクスチャを取得します。
+    # @overload texture()
+    # @return [Lumino::Texture] テクスチャハンドル
+    def texture
     end
 end
 # 2D 空間に配置されるスプライトのクラスです。

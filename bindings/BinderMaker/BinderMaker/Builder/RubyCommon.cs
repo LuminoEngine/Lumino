@@ -147,7 +147,8 @@ namespace BinderMaker.Builder
                 // RefObj 型
                 else
                 {
-                    throw new InvalidOperationException();
+                    output.AppendLine("return Manager::GetWrapperObjectFromHandle({0});", varName);
+                    return;
                 }
             }
             throw new InvalidOperationException();
@@ -193,7 +194,7 @@ namespace BinderMaker.Builder
                 else
                 {
                     decl = string.Format("LNHandle {0}", cVarName);
-                    exp = string.Format("RbRefObjToHandle({0})", rubyVarName);
+                    exp = string.Format("Manager::GetHandleFromtWrapperObject({0})", rubyVarName);
                 }
             }
 
@@ -400,6 +401,8 @@ namespace BinderMaker.Builder
             var scan_args_Inits = new OutputBuffer();
             var scan_args_Args = new OutputBuffer();
             string typeCheckExp = "";
+
+            // API 1つの呼び出しの各引数について、宣言、実引数渡し、後処理、return文 を作っていく
             var initStmt = new OutputBuffer();
             var argsText = new OutputBuffer();
             var postStmt = new OutputBuffer();
@@ -429,13 +432,31 @@ namespace BinderMaker.Builder
                 // return として選択されている引数である場合
                 else if (param == method.ReturnParam)
                 {
-                    var varName = "_" + param.Name;
-                    // 宣言
-                    initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
-                    // API実引数
-                    argsText.AppendCommad("&" + varName);
-                    // return
-                    RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
+                    if (method.IsGetterProperty && CLType.CheckRefObjectType(param.Type))
+                    {
+                        var varName = "_" + param.Name;
+                        // 宣言
+                        initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
+                        // API実引数
+                        argsText.AppendCommad("&" + varName);
+                        // post
+                        var propName = method.OwnerProperty.Name;
+                        postStmt.AppendLine("if (checkEqualHandle(selfObj->{0}, {1})) {{", propName, varName);
+                        postStmt.AppendLine("    selfObj->{0} = Manager::GetWrapperObjectFromHandle({1});", propName, varName);
+                        postStmt.AppendLine("}");
+                        // return
+                        returnStmt.AppendLine("return selfObj->{0};", propName);
+                    }
+                    else
+                    {
+                        var varName = "_" + param.Name;
+                        // 宣言
+                        initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
+                        // API実引数
+                        argsText.AppendCommad("&" + varName);
+                        // return
+                        RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
+                    }
                 }
                 // return として選択されていない引数である場合
                 else

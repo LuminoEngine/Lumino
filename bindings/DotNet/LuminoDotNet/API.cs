@@ -981,32 +981,32 @@ namespace Lumino
         /// ライブラリを初期化します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_Initialize();
+        public extern static Result LNEngine_Initialize();
 
         /// <summary>
         /// ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_InitializeAudio();
+        public extern static Result LNEngine_InitializeAudio();
 
         /// <summary>
         /// 1フレーム分の更新処理を行います。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_UpdateFrame();
+        public extern static Result LNEngine_UpdateFrame();
 
         /// <summary>
         /// アプリケーションを終了するべきかを確認します。
         /// </summary>
         /// <param name="outRequested">終了要求の有無を格納する変数</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNApplication_IsEndRequested(out bool outRequested);
+        public extern static Result LNEngine_IsEndRequested(out bool outRequested);
 
         /// <summary>
         /// ライブラリの終了処理を行います。
         /// </summary>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNApplication_Terminate();
+        public extern static void LNEngine_Terminate();
 
         /// <summary>
         /// メジャーバージョンを取得します。
@@ -2086,6 +2086,14 @@ namespace Lumino
         /// <param name="position">座標</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSceneNode_SetPosition( IntPtr sceneNode, ref Vector3 position);
+
+        /// <summary>
+        /// スプライトに設定されているテクスチャを取得します。
+        /// </summary>
+        /// <param name="sprite">スプライトハンドル</param>
+        /// <param name="outTexture">テクスチャハンドルを格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSprite_GetTexture( IntPtr sprite, out IntPtr outTexture);
 
         /// <summary>
         /// スプライトにテクスチャを設定します。

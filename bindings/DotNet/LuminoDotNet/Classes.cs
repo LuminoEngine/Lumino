@@ -107,9 +107,9 @@ namespace Lumino
     };
     
     /// <summary>
-    /// ライブラリ全体の初期化や更新等、包括的な処理を行うクラスです。
+    /// エンジン全体の初期化や更新等、包括的な処理を行うクラスです。
     /// </summary>
-    public partial class Application
+    public partial class Engine
     {
     
     
@@ -119,7 +119,7 @@ namespace Lumino
         public static void Initialize()
         {
             InternalManager.Initialize();
-            var result = API.LNApplication_Initialize();
+            var result = API.LNEngine_Initialize();
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
@@ -130,7 +130,7 @@ namespace Lumino
         public static void InitializeAudio()
         {
             InternalManager.Initialize();
-            var result = API.LNApplication_InitializeAudio();
+            var result = API.LNEngine_InitializeAudio();
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
@@ -143,7 +143,7 @@ namespace Lumino
         /// </remarks>
         public static void UpdateFrame()
         {
-            var result = API.LNApplication_UpdateFrame();
+            var result = API.LNEngine_UpdateFrame();
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
         
         }
@@ -158,7 +158,7 @@ namespace Lumino
         public static bool IsEndRequested()
         {
             var outRequested = new bool();
-            var result = API.LNApplication_IsEndRequested(out outRequested);
+            var result = API.LNEngine_IsEndRequested(out outRequested);
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outRequested;
         
@@ -170,7 +170,7 @@ namespace Lumino
         public static void Terminate()
         {
             InternalManager.Terminate();
-            API.LNApplication_Terminate();
+            API.LNEngine_Terminate();
         
         }
         
@@ -1091,12 +1091,25 @@ namespace Lumino
     /// </summary>
     public partial class Sprite : SceneNode
     {
+         Texture _GetTexture;
     
         /// <summary>
-        /// スプライトにテクスチャ
+        /// スプライトに設定されているテクスチャ
         /// </summary>
         public Texture Texture
         {
+            get
+            {
+                IntPtr outTexture;
+                var result = API.LNSprite_GetTexture( _handle, out outTexture);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                if (outTexture == null)
+                    _GetTexture = null;
+                else if (_GetTexture == null || _GetTexture.Handle != outTexture)
+                    _GetTexture = InternalManager.GetWrapperObject<Texture>(outTexture);
+                return _GetTexture;
+            }
+            
             set
             {
                 var result = API.LNSprite_SetTexture( _handle,  (value != null) ? value.Handle : default(IntPtr));

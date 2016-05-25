@@ -269,11 +269,11 @@
 #cmd LNConfig_SetSoundCacheSize $0069
 #cmd LNConfig_SetDirectMusicMode $006A
 #cmd LNConfig_SetDirectMusicReverbLevel $006B
-#cmd LNApplication_Initialize $006C
-#cmd LNApplication_InitializeAudio $006D
-#cmd LNApplication_UpdateFrame $006E
-#cmd LNApplication_IsEndRequested $006F
-#cmd LNApplication_Terminate $0070
+#cmd LNEngine_Initialize $006C
+#cmd LNEngine_InitializeAudio $006D
+#cmd LNEngine_UpdateFrame $006E
+#cmd LNEngine_IsEndRequested $006F
+#cmd LNEngine_Terminate $0070
 #cmd LNVersion_GetMajor $0071
 #cmd LNVersion_GetMinor $0072
 #cmd LNVersion_GetRevision $0073
@@ -399,8 +399,9 @@
 #cmd LNTexture2D_Create $00EB
 #cmd LNTexture2D_CreateFromFile $00EC
 #cmd LNSceneNode_SetPosition $00ED
-#cmd LNSprite_SetTexture $00EE
-#cmd LNSprite2D_Create $00EF
+#cmd LNSprite_GetTexture $00EE
+#cmd LNSprite_SetTexture $00EF
+#cmd LNSprite2D_Create $00F0
 
 
 #endif // __lumino__

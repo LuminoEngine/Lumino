@@ -85,7 +85,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 	memset(m_keyTable, 0, sizeof(m_keyTable));
 	if (!m_key.IsEmpty())
 	{
-		StringA k(m_key);
+		StringA k = m_key.ToStringA();
 		byte_t key_buf[KEY_SIZE] = { 0 };
 		memcpy(key_buf, k.c_str(), k.GetLength());
 		memset(m_keyTable, 0, sizeof(m_keyTable));

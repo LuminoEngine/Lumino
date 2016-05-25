@@ -151,6 +151,16 @@ namespace BinderMaker
         public PropertyNameType PropertyNameType { get; set; }
 
         /// <summary>
+        /// getter プロパティであるか
+        /// </summary>
+        public bool IsGetterProperty { get { return PropertyNameType == BinderMaker.PropertyNameType.Get || PropertyNameType == BinderMaker.PropertyNameType.Is; } }
+
+        /// <summary>
+        /// setter プロパティであるか
+        /// </summary>
+        public bool IsSetterProperty { get { return PropertyNameType == BinderMaker.PropertyNameType.Set; } }
+
+        /// <summary>
         /// プロパティ
         /// </summary>
         public CLProperty OwnerProperty { get; set; }

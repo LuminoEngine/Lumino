@@ -53,12 +53,19 @@ struct TypeInfo
 	ObjectFactory	factory;
 };
 
+// WrapperObject のベースクラス
+struct wrapRefObject
+{
+	LNHandle	Handle;
+};
+
 class Manager
 {
 public:
 	static void Initialize();
 	static void Finalize();
 	static VALUE GetWrapperObjectFromHandle(LNHandle handle);
+	static LNHandle GetHandleFromtWrapperObject(VALUE obj);
 	static void RegisterWrapperObject(VALUE obj);
 	static void UnregisterWrapperObject(LNHandle handle);
 	
@@ -70,6 +77,7 @@ private:
 	static std::vector<VALUE>		m_objectList;
 	static std::stack<int>			m_objectListIndexStack;
 };
+
 
 /* BinderMaker が複雑になりすぎないよう、ある程度はマクロでカバーする。*/
 
@@ -83,7 +91,6 @@ private:
 		m_typeInfoList.push_back(t); \
 		LN##typeName##_SetBindingTypeInfo((void*)(m_typeInfoList.size() - 1)); \
 	}
-
 
 
 

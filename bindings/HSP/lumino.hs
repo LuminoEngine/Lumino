@@ -31,7 +31,7 @@ LNConfig_SetApplicationLogEnabled
 ƒfƒoƒbƒO—p‚ÌƒƒOƒtƒ@ƒCƒ‹‚Ìo—Í—L–³‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:LN_FALSE)
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 enabled
 [in] enabled : LN_TRUE:o—Í‚·‚é / LN_FALSE:o—Í‚µ‚È‚¢
@@ -49,7 +49,7 @@ LNConfig_SetConsoleEnabled
 •W€“üo—Í—p‚ÌƒRƒ“ƒ\[ƒ‹ƒEƒBƒ“ƒhƒE‚ğŠ„‚è“–‚Ä‚é‚©‚Ç‚¤‚©‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:LN_FALSE)
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 enabled
 [in] enabled : LN_TRUE:Š„‚è“–‚Ä‚é / LN_FALSE:Š„‚è“–‚Ä‚È‚¢
@@ -67,7 +67,7 @@ LNConfig_RegisterArchive
 ƒtƒ@ƒCƒ‹‚ğŠJ‚­‚Æ‚«‚ÉƒAƒNƒZƒX‚·‚éˆÃ†‰»ƒA[ƒJƒCƒu‚ğ“o˜^‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 filePath, password
 [in] filePath : ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹ƒpƒX
@@ -86,7 +86,7 @@ LNConfig_SetFileAccessPriority
 ƒtƒ@ƒCƒ‹‚Ö‚ÌƒAƒNƒZƒX—Dæ‡ˆÊ‚ğİ’è‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 priority
 [in] priority : §ŒÀ•û–@ (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)
@@ -110,7 +110,7 @@ LNConfig_SetUserWindowHandle
 ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:NULL)
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 windowHandle
 [in] windowHandle : ƒ†[ƒU[’è‹`‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
@@ -128,7 +128,7 @@ LNConfig_SetSoundCacheSize
 ƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌƒLƒƒƒbƒVƒ…ƒTƒCƒY‚Ìİ’è
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 objectCount, memorySize
 [in] objectCount : ƒLƒƒƒbƒVƒ…‚Å‚«‚éƒTƒEƒ“ƒhƒIƒuƒWƒFƒNƒg‚ÌÅ‘å” (Šù’è’l:32)
@@ -148,7 +148,7 @@ LNConfig_SetDirectMusicMode
 DirectMusic ‚Ì‰Šú‰»•û–@‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:LN_DIRECTMUSICMODE_NOT_USE)
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 mode
 [in] mode : DirectMusic ‚Ì‰Šú‰»•û–@
@@ -176,7 +176,7 @@ LNConfig_SetDirectMusicReverbLevel
 DirectMusic ‚ÌƒŠƒo[ƒuƒGƒtƒFƒNƒg‚Ì‹­‚³‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:0.75)
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 level
 [in] level : ƒŠƒo[ƒu‚Ì‹­‚³ (0.0 ` 1.0)
@@ -190,11 +190,11 @@ level
 ;
 ;-----------------------------------------------------------
 %index
-LNApplication_Initialize
+LNEngine_Initialize
 ƒ‰ƒCƒuƒ‰ƒŠ‚ğ‰Šú‰»‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 @
 
@@ -209,11 +209,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNApplication_InitializeAudio
+LNEngine_InitializeAudio
 ƒ‰ƒCƒuƒ‰ƒŠ‚ğ‰Šú‰»‚µ‚Ü‚·B‰¹º‹@”\‚Ì‚İ‚ğg—p‚·‚éê‡‚ÉŒÄ‚Ño‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 @
 
@@ -228,11 +228,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNApplication_UpdateFrame
+LNEngine_UpdateFrame
 1ƒtƒŒ[ƒ€•ª‚ÌXVˆ—‚ğs‚¢‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 @
 
@@ -247,11 +247,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNApplication_IsEndRequested
+LNEngine_IsEndRequested
 ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğI—¹‚·‚é‚×‚«‚©‚ğŠm”F‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 outRequested
 [out] outRequested : I—¹—v‹‚Ì—L–³‚ğŠi”[‚·‚é•Ï”
@@ -268,11 +268,11 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNApplication_Terminate
+LNEngine_Terminate
 ƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹ˆ—‚ğs‚¢‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 @
 
@@ -289,7 +289,7 @@ LNVersion_GetMajor
 ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 outMajor
 [out] outMajor : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
@@ -307,7 +307,7 @@ LNVersion_GetMinor
 ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 outMinor
 [out] outMinor : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
@@ -325,7 +325,7 @@ LNVersion_GetRevision
 ƒŠƒrƒWƒ‡ƒ“ƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 outRevision
 [out] outRevision : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
@@ -343,7 +343,7 @@ LNVersion_GetBuild
 ƒrƒ‹ƒhƒo[ƒWƒ‡ƒ“‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 outBuild
 [out] outBuild : ƒo[ƒWƒ‡ƒ“”Ô†‚ğŠi”[‚·‚é•Ï”
@@ -361,7 +361,7 @@ LNVersion_GetString
 ƒo[ƒWƒ‡ƒ“•¶š—ñ‚ğæ“¾‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 outStr
 [out] outStr : •¶š—ñ‚Ö‚ğŠi”[‚·‚é•Ï”
@@ -379,7 +379,7 @@ LNVersion_IsAtLeast
 w’è‚µ‚½ƒo[ƒWƒ‡ƒ“”Ô†‚ÆAƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‚ÌƒRƒ“ƒpƒCƒ‹ƒo[ƒWƒ‡ƒ“”Ô†‚ğ”äŠr‚µ‚Ü‚·B
 
 %group
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“
+ƒGƒ“ƒWƒ“
 %prm
 major, minor, revision, outResult
 [in]  major     : ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“
@@ -3085,6 +3085,27 @@ LNSceneNode_SetPosition
 sceneNode, position
 [in] sceneNode : ƒV[ƒ“ƒm[ƒhƒnƒ“ƒhƒ‹
 [in] position  : À•W
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSprite_GetTexture
+ƒXƒvƒ‰ƒCƒg‚Éİ’è‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+sprite, outTexture
+[in]  sprite     : ƒXƒvƒ‰ƒCƒgƒnƒ“ƒhƒ‹
+[out] outTexture : ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 

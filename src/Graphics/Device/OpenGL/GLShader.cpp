@@ -510,27 +510,27 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 		json.ReadAsStartObject();
 
 		// vertexShaders
-		if (json.ReadAsPropertyName() == "vertexShaders")
+		if (json.ReadAsPropertyName() == _T("vertexShaders"))
 		{
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
 			{
-				StringA entry = json.GetValue();
-				m_glVertexShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.c_str(), GL_VERTEX_SHADER);
+				String entry = json.GetValue();
+				m_glVertexShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.ToStringA().c_str(), GL_VERTEX_SHADER);
 			}
 		}
 		// pixelShaders
-		if (json.ReadAsPropertyName() == "pixelShaders")
+		if (json.ReadAsPropertyName() == _T("pixelShaders"))
 		{
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
 			{
-				StringA entry = json.GetValue();
-				m_glPixelShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.c_str(), GL_FRAGMENT_SHADER);
+				String entry = json.GetValue();
+				m_glPixelShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.ToStringA().c_str(), GL_FRAGMENT_SHADER);
 			}
 		}
 		// techniques
-		if (json.ReadAsPropertyName() == "techniques")
+		if (json.ReadAsPropertyName() == _T("techniques"))
 		{
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)
@@ -539,7 +539,7 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			}
 		}
 		// parameters
-		if (json.ReadAsPropertyName() == "parameters")
+		if (json.ReadAsPropertyName() == _T("parameters"))
 		{
 			json.ReadAsStartArray();
 			while (json.Read() && json.GetTokenType() != JsonToken::EndArray)

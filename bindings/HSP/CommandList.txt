@@ -18,13 +18,13 @@ LNConfig_SetDirectMusicMode         DirectMusic の初期化方法を設定し�
 LNConfig_SetDirectMusicReverbLevel  DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
 
 -------------------------------------------------------------------------------
- ■ [LNApplication]  ライブラリ全体の初期化や更新等、包括的な処理を行うモジュールです。
+ ■ [LNEngine]  エンジン全体の初期化や更新等、包括的な処理を行うモジュールです。
 
-LNApplication_Initialize       ライブラリを初期化します。
-LNApplication_InitializeAudio  ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
-LNApplication_UpdateFrame      1フレーム分の更新処理を行います。
-LNApplication_IsEndRequested   アプリケーションを終了するべきかを確認します。
-LNApplication_Terminate        ライブラリの終了処理を行います。
+LNEngine_Initialize       ライブラリを初期化します。
+LNEngine_InitializeAudio  ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+LNEngine_UpdateFrame      1フレーム分の更新処理を行います。
+LNEngine_IsEndRequested   アプリケーションを終了するべきかを確認します。
+LNEngine_Terminate        ライブラリの終了処理を行います。
 
 -------------------------------------------------------------------------------
  ■ [LNVersion]  バージョン情報です。
@@ -221,6 +221,7 @@ LNSceneNode_SetPosition  ノードの位置を設定します。
  ■ [LNSprite]  スプライトのベースモジュールです。
 
 LNSprite_SetTexture  スプライトにテクスチャを設定します。
+LNSprite_GetTexture  スプライトに設定されているテクスチャを取得します。
 
 -------------------------------------------------------------------------------
  ■ [LNSprite2D]  2D 空間に配置されるスプライトのモジュールです。

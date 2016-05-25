@@ -1,23 +1,8 @@
 ﻿#include "LuminoRuby.h"
 #include "RubyStructs.h"
 
-struct wrapRefObject
-{
-	LNHandle	Handle;
-};
-
 //-----------------------------------------------------------------------------
 // Utils
-
-static LNHandle RbRefObjToHandle(VALUE v)
-{
-    if (v == Qnil) {
-        return NULL;    
-    }
-	wrapRefObject* obj;
-	Data_Get_Struct(v, wrapRefObject, obj);
-	return obj->Handle;
-}
 
 bool checkEqualHandle(VALUE obj, LNHandle handle)
 {
@@ -37,7 +22,7 @@ struct wrapConfig
 
 };
 
-struct wrapApplication
+struct wrapEngine
 {
 
 };
@@ -97,7 +82,7 @@ struct wrapSprite2D
 
 
 VALUE g_class_Config;
-VALUE g_class_Application;
+VALUE g_class_Engine;
 VALUE g_class_Version;
 VALUE g_class_GameAudio;
 VALUE g_class_SoundListener;
@@ -233,74 +218,74 @@ static VALUE static_lnrbLNConfig_SetDirectMusicReverbLevel(int argc, VALUE *argv
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_Initialize(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNEngine_Initialize(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNResult errorCode = LNApplication_Initialize();
+            LNResult errorCode = LNEngine_Initialize();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Application.initialize - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Engine.initialize - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_InitializeAudio(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNEngine_InitializeAudio(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNResult errorCode = LNApplication_InitializeAudio();
+            LNResult errorCode = LNEngine_InitializeAudio();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Application.initialize_audio - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Engine.initialize_audio - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_UpdateFrame(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNEngine_UpdateFrame(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNResult errorCode = LNApplication_UpdateFrame();
+            LNResult errorCode = LNEngine_UpdateFrame();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Application.update_frame - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Engine.update_frame - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_IsEndRequested(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNEngine_IsEndRequested(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
             LNBool _outRequested;
-            LNResult errorCode = LNApplication_IsEndRequested(&_outRequested);
+            LNResult errorCode = LNEngine_IsEndRequested(&_outRequested);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outRequested);
     
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Application.is_end_requested - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Engine.is_end_requested - wrong argument type.");
     return Qnil;
 }
 
-static VALUE static_lnrbLNApplication_Terminate(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNEngine_Terminate(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNApplication_Terminate();
+            LNEngine_Terminate();
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Application.terminate - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Engine.terminate - wrong argument type.");
     return Qnil;
 }
 
@@ -1493,13 +1478,34 @@ static VALUE lnrbLNSprite_SetTexture(int argc, VALUE *argv, VALUE self)
         VALUE texture;
         rb_scan_args(argc, argv, "1", &texture);
         if (isRbObject(texture)) {
-            LNHandle _texture = RbRefObjToHandle(texture);
+            LNHandle _texture = Manager::GetHandleFromtWrapperObject(texture);
             LNResult errorCode = LNSprite_SetTexture(selfObj->Handle, _texture);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sprite.texture= - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE lnrbLNSprite_GetTexture(int argc, VALUE *argv, VALUE self)
+{
+    wrapSprite* selfObj;
+    Data_Get_Struct(self, wrapSprite, selfObj);
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNHandle _outTexture;
+            LNResult errorCode = LNSprite_GetTexture(selfObj->Handle, &_outTexture);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            if (checkEqualHandle(selfObj->Texture, _outTexture)) {
+                selfObj->Texture = Manager::GetWrapperObjectFromHandle(_outTexture);
+            }
+            return selfObj->Texture;
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Sprite.texture - wrong argument type.");
     return Qnil;
 }
 
@@ -1551,7 +1557,7 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
         VALUE texture;
         rb_scan_args(argc, argv, "1", &texture);
         if (isRbObject(texture)) {
-            LNHandle _texture = RbRefObjToHandle(texture);
+            LNHandle _texture = Manager::GetHandleFromtWrapperObject(texture);
             LNResult errorCode = LNSprite2D_Create(_texture, &selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return Qnil;
@@ -1575,12 +1581,12 @@ void InitClasses()
     rb_define_singleton_method(g_class_Config, "set_direct_music_mode", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicMode), -1);
     rb_define_singleton_method(g_class_Config, "set_direct_music_reverb_level", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetDirectMusicReverbLevel), -1);
 
-    g_class_Application = rb_define_class_under(g_luminoModule, "Application", rb_cObject);
-    rb_define_singleton_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Initialize), -1);
-    rb_define_singleton_method(g_class_Application, "initialize_audio", LN_TO_RUBY_FUNC(static_lnrbLNApplication_InitializeAudio), -1);
-    rb_define_singleton_method(g_class_Application, "update_frame", LN_TO_RUBY_FUNC(static_lnrbLNApplication_UpdateFrame), -1);
-    rb_define_singleton_method(g_class_Application, "is_end_requested", LN_TO_RUBY_FUNC(static_lnrbLNApplication_IsEndRequested), -1);
-    rb_define_singleton_method(g_class_Application, "terminate", LN_TO_RUBY_FUNC(static_lnrbLNApplication_Terminate), -1);
+    g_class_Engine = rb_define_class_under(g_luminoModule, "Engine", rb_cObject);
+    rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(static_lnrbLNEngine_Initialize), -1);
+    rb_define_singleton_method(g_class_Engine, "initialize_audio", LN_TO_RUBY_FUNC(static_lnrbLNEngine_InitializeAudio), -1);
+    rb_define_singleton_method(g_class_Engine, "update_frame", LN_TO_RUBY_FUNC(static_lnrbLNEngine_UpdateFrame), -1);
+    rb_define_singleton_method(g_class_Engine, "is_end_requested", LN_TO_RUBY_FUNC(static_lnrbLNEngine_IsEndRequested), -1);
+    rb_define_singleton_method(g_class_Engine, "terminate", LN_TO_RUBY_FUNC(static_lnrbLNEngine_Terminate), -1);
 
     g_class_Version = rb_define_class_under(g_luminoModule, "Version", rb_cObject);
     rb_define_singleton_method(g_class_Version, "get_major", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetMajor), -1);
@@ -1652,6 +1658,7 @@ void InitClasses()
     g_class_Sprite = rb_define_class_under(g_luminoModule, "Sprite", rb_cObject);
     rb_define_alloc_func(g_class_Sprite, LNSprite_allocate);
     rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(lnrbLNSprite_SetTexture), -1);
+    rb_define_method(g_class_Sprite, "texture", LN_TO_RUBY_FUNC(lnrbLNSprite_GetTexture), -1);
 
     g_class_Sprite2D = rb_define_class_under(g_luminoModule, "Sprite2D", rb_cObject);
     rb_define_alloc_func(g_class_Sprite2D, LNSprite2D_allocate);

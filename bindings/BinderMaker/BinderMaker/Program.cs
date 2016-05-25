@@ -27,7 +27,7 @@ namespace BinderMaker
                 // 関数が定義されているヘッダを解析する
                 var apiHeaders = new string[]
                 {
-                    SourcesRootDir + "LNApplication.h",
+                    SourcesRootDir + "LNEngine.h",
                     SourcesRootDir + "LNBase.h",
                     SourcesRootDir + "LNMath.h",
                     SourcesRootDir + "LNAudio.h",

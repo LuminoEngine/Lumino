@@ -125,21 +125,21 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x006C:
     {
     
-        stat = LNApplication_Initialize();
+        stat = LNEngine_Initialize();
     
         return true;
     }
     case 0x006D:
     {
     
-        stat = LNApplication_InitializeAudio();
+        stat = LNEngine_InitializeAudio();
     
         return true;
     }
     case 0x006E:
     {
     
-        stat = LNApplication_UpdateFrame();
+        stat = LNEngine_UpdateFrame();
     
         return true;
     }
@@ -148,14 +148,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
         LNBool p0;
-        stat = LNApplication_IsEndRequested(&p0);
+        stat = LNEngine_IsEndRequested(&p0);
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
     case 0x0070:
     {
     
-        LNApplication_Terminate();
+        LNEngine_Terminate();
     
         return true;
     }
@@ -1372,12 +1372,22 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x00EE:
     {
         intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        intptr_t p1;
+        stat = LNSprite_GetTexture(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00EF:
+    {
+        intptr_t p0 = CodeGetI();
         intptr_t p1 = CodeGetI();
         stat = LNSprite_SetTexture(p0, p1);
     
         return true;
     }
-    case 0x00EF:
+    case 0x00F0:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;

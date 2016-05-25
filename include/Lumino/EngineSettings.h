@@ -124,7 +124,7 @@ public:
 	{
 #ifdef LN_DEBUG
 		applicationLogEnabled = true;
-		acceleratorKeys.toggleShowDiag = InputBinding::Create("ToggleShowDiag", Key::F3);
+		acceleratorKeys.toggleShowDiag = InputBinding::Create(_T("ToggleShowDiag"), Key::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}

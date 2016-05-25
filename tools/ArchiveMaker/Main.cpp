@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 			std::cout << "file :" << absPath.c_str() << std::endl;
 			std::cout << "alias:" << relPath.c_str() << std::endl;
 			//}
-			archive.AddFile(PathName(absPath), relPath.c_str());
+			archive.AddFile(PathName(absPath), relPath.ToString());
 		}
 
 		std::cout << "Succeeded.";

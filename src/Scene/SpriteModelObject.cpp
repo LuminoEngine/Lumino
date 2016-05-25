@@ -46,7 +46,7 @@ void SpriteModelObject::Initialize(SceneGraph* owner, const String& filePath)
 
 	ss::g_graphicsManager = owner->GetManager()->GetGraphicsManager();
 
-	PathNameA path = StringA(filePath);
+	PathNameA path = filePath.ToStringA();
 	m_resource = ss::ResourceManager::create();
 	m_resource->addData(path.c_str());
 	m_player = ss::Player::create();	// TODO: メモリリークあり

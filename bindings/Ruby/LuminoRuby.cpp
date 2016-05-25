@@ -26,13 +26,13 @@ void Manager::Initialize()
 	m_typeInfoList.push_back(TypeInfo());	// ダミーを1つ詰めておく
 	RegisterTypeInfo();
 	
-	LNApplication_Initialize();
+	LNEngine_Initialize();
 }
 
 //------------------------------------------------------------------------------
 void Manager::Finalize()
 {
-	LNApplication_Terminate();
+	LNEngine_Terminate();
 }
 
 //------------------------------------------------------------------------------
@@ -50,6 +50,17 @@ VALUE Manager::GetWrapperObjectFromHandle(LNHandle handle)
 	{
 		return m_objectList[objectIndex];
 	}
+}
+
+//------------------------------------------------------------------------------
+LNHandle Manager::GetHandleFromtWrapperObject(VALUE v)
+{
+	if (v == Qnil) {
+		return NULL;    
+	}
+	wrapRefObject* obj;
+	Data_Get_Struct(v, wrapRefObject, obj);
+	return obj->Handle;
 }
 
 //------------------------------------------------------------------------------

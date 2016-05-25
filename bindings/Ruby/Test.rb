@@ -61,4 +61,25 @@ class Test_Struct < Test::Unit::TestCase
     assert_equal(true, vec3.y > 0.01)
     assert_equal(true, vec3.z > 0.999)
   end
+  
+  def test_get_set_value
+    
+  end
+  
+  def test_get_set_struct
+    
+  end
+  
+  def test_get_set_object
+    tex1 = Texture2D.new(32, 32);
+    spr1 = Sprite2D.new()
+    
+    # set したもとの get で取得したものは同一
+    spr1.texture = tex1;
+    assert_equal(tex1, spr1.texture)
+    
+    # nil にしてみる
+    spr1.texture = nil;
+    assert_equal(nil, spr1.texture)
+  end
 end
