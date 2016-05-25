@@ -125,6 +125,7 @@ __CONTENTS__
         /// <returns>false の場合このクラスの出力を無視する</returns>
         protected override bool OnClassLookedStart(CLClass classType)
         {
+            if (classType.IsExtension) return false;  // 拡張クラスはなにもしない
             if (classType.IsStruct) return false;
             if (classType.Name == "RefObject") return false;
 

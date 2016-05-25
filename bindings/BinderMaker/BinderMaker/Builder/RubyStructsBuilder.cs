@@ -326,6 +326,9 @@ __CONTENTS__
         {
             if (!classType.IsStruct) return false;
 
+            string varName = RubyCommon.GetModuleVariableName(classType);
+
+            _externs.AppendLine("extern VALUE {0};", varName);
             _externs.AppendLine("extern VALUE {0}_allocate(VALUE klass);", classType.OriginalName);
 
             return true;

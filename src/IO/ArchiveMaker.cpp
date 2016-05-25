@@ -105,7 +105,7 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
         }
 
         // アクセス用ファイル名のスラッシュをバックスラッシュ化
-		StringW filename = aliasPath;
+		StringW filename = StringW::FromNativeCharString(aliasPath.c_str());
 		NormalizePath(&filename);
 
         //-------------------------------------------------

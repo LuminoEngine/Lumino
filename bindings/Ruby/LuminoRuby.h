@@ -1,5 +1,11 @@
+#include <vector>
+#include <stack>
 #include "ruby.h"
-#include "../C_API/include/LuminoC.h"
+#include "../../C_API/include/LuminoC.h"
+
+// Internal functions.
+extern "C" LNUserData LNObject_GetBindingTypeData(LNHandle hadnleObject);
+
 
 extern VALUE g_luminoModule;
 extern VALUE g_luminoError;  // exception
@@ -54,24 +60,28 @@ public:
 	static void Finalize();
 	static VALUE GetWrapperObjectFromHandle(LNHandle handle);
 	static void RegisterWrapperObject(VALUE obj);
-        
+	static void UnregisterWrapperObject(LNHandle handle);
+	
 private:
 	static void RegisterTypeInfo();
-	static ln::Array<TypeInfo>	m_typeInfoList;
-	static ln::Array<VALUE>		m_objectList;
-	static ln::Stack<int>		m_objectListIndexStack;
+	
+	static const int InitialListSize = 1024;
+	static std::vector<TypeInfo>	m_typeInfoList;
+	static std::vector<VALUE>		m_objectList;
+	static std::stack<int>			m_objectListIndexStack;
 };
 
 /* BinderMaker が複雑になりすぎないよう、ある程度はマクロでカバーする。*/
 
 // typeName	: "LN" 無しのクラス名
 #define LNRB_REGISTER_TYPEINFO(typeName) \
-	{
-		TypeInfo t;
-		t.klass = g_class_##typeName;
-		t.factory = LN##typeName##_allocateForGetRefObject;
-		m_typeInfoList.Add(t);
-		LN##typeName##_SetBindingTypeInfo(m_typeInfoList.GetCount() - 1);
+	{ \
+		extern void LN##typeName##_SetBindingTypeInfo(void* data); \
+		TypeInfo t; \
+		t.klass = g_class_##typeName; \
+		t.factory = LN##typeName##_allocateForGetRefObject; \
+		m_typeInfoList.push_back(t); \
+		LN##typeName##_SetBindingTypeInfo((void*)(m_typeInfoList.size() - 1)); \
 	}
 
 

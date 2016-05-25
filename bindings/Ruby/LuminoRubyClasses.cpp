@@ -47,12 +47,6 @@ struct wrapVersion
 
 };
 
-struct wrapError
-    : public wrapRefObject
-{
-
-};
-
 struct wrapGameAudio
 {
 
@@ -105,7 +99,6 @@ struct wrapSprite2D
 VALUE g_class_Config;
 VALUE g_class_Application;
 VALUE g_class_Version;
-VALUE g_class_Error;
 VALUE g_class_GameAudio;
 VALUE g_class_SoundListener;
 VALUE g_class_Sound;
@@ -404,75 +397,6 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.is_at_least - wrong argument type.");
-    return Qnil;
-}
-
-static void LNError_delete(wrapError* obj)
-{
-    if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
-}
-
-static void LNError_mark(wrapError* obj)
-{
-
-}
-
-static VALUE LNError_allocate( VALUE klass )
-{
-    VALUE obj;
-    wrapError* internalObj;
-
-    internalObj = (wrapError*)malloc(sizeof(wrapError));
-    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNError_allocate" );
-    obj = Data_Wrap_Struct(klass, LNError_mark, LNError_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapError));
-
-    return obj;
-}
-
-static VALUE LNError_allocateForGetRefObject(VALUE klass, LNHandle handle)
-{
-    VALUE obj;
-    wrapError* internalObj;
-
-    internalObj = (wrapError*)malloc(sizeof(wrapError));
-    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNError_allocate" );
-    obj = Data_Wrap_Struct(klass, LNError_mark, LNError_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapError));
-
-    internalObj->Handle = handle;
-    return obj;
-}
-
-static VALUE static_lnrbLNError_GetLastErrorCode(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNResult errorCode = LNError_GetLastErrorCode();
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Error.get_last_error_code - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNError_GetLastErrorMessage(int argc, VALUE *argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            const LNChar* _outStr;
-            LNError_GetLastErrorMessage(&_outStr);
-            return toVALUE(_outStr);
-    
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Error.get_last_error_message - wrong argument type.");
     return Qnil;
 }
 
@@ -1666,11 +1590,6 @@ void InitClasses()
     rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
     rb_define_singleton_method(g_class_Version, "is_at_least", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
 
-    g_class_Error = rb_define_class_under(g_luminoModule, "Error", rb_cObject);
-    rb_define_alloc_func(g_class_Error, LNError_allocate);
-    rb_define_singleton_method(g_class_Error, "get_last_error_code", LN_TO_RUBY_FUNC(static_lnrbLNError_GetLastErrorCode), -1);
-    rb_define_singleton_method(g_class_Error, "get_last_error_message", LN_TO_RUBY_FUNC(static_lnrbLNError_GetLastErrorMessage), -1);
-
     g_class_GameAudio = rb_define_class_under(g_luminoModule, "GameAudio", rb_cObject);
     rb_define_singleton_method(g_class_GameAudio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlayBGM), -1);
     rb_define_singleton_method(g_class_GameAudio, "stop_bgm", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_StopBGM), -1);
@@ -1746,7 +1665,6 @@ void InitClasses()
 
 void Manager::RegisterTypeInfo()
 {
-    LNRB_REGISTER_TYPEINFO(Error);
     LNRB_REGISTER_TYPEINFO(Sound);
     LNRB_REGISTER_TYPEINFO(Texture);
     LNRB_REGISTER_TYPEINFO(Texture2D);

@@ -3,9 +3,9 @@
 VALUE g_luminoModule;
 VALUE g_luminoError;
 
-ln::Array<TypeInfo>	Manager::m_typeInfoList;
-ln::Array<VALUE>	Manager:m_objectList;
-ln::Stack<int>		Manager:m_objectListIndexStack;
+std::vector<TypeInfo>	Manager::m_typeInfoList;
+std::vector<VALUE>		Manager::m_objectList;
+std::stack<int>			Manager::m_objectListIndexStack;
 
 //------------------------------------------------------------------------------
 void Manager::Initialize()
@@ -13,8 +13,8 @@ void Manager::Initialize()
 	// ŠÇ—ƒŠƒXƒg‚Ì‹ó‚«”Ô†‚ğ‹l‚ß‚é
 	for (int i = 0; i < InitialListSize; i++)
 	{
-		m_objectList.Add(Qnil);
-		m_objectListIndexStack.Push(i);
+		m_objectList.push_back(Qnil);
+		m_objectListIndexStack.push(i);
 	}
 	
 	// Ruby Œn‚Ì‰Šú‰»
@@ -23,7 +23,7 @@ void Manager::Initialize()
 	InitClasses();
 	
 	// Œ^î•ñ‚Ì“o˜^
-	m_typeInfoList.Add(TypeInfo());	// ƒ_ƒ~[‚ğ1‚Â‹l‚ß‚Ä‚¨‚­
+	m_typeInfoList.push_back(TypeInfo());	// ƒ_ƒ~[‚ğ1‚Â‹l‚ß‚Ä‚¨‚­
 	RegisterTypeInfo();
 }
 
@@ -38,7 +38,7 @@ VALUE Manager::GetWrapperObjectFromHandle(LNHandle handle)
 	int objectIndex = (int)LNObject_GetUserData(handle);
 	if (objectIndex == 0)
 	{
-		int typeinfoIndex = (int)LNObject_GetTypeUserData(handle);
+		int typeinfoIndex = (int)LNObject_GetBindingTypeData(handle);
 		VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
 		RegisterWrapperObject(obj);
 		return obj;
@@ -53,17 +53,18 @@ VALUE Manager::GetWrapperObjectFromHandle(LNHandle handle)
 void Manager::RegisterWrapperObject(VALUE obj)
 {
 	// ŠÇ—ƒŠƒXƒg‚ªˆê”t‚Ì‚ÍŠg’£‚·‚é
-	if (m_objectListIndexStack.GetCount() == 0)
+	if (m_objectListIndexStack.size() == 0)
 	{
-		int growCount = m_objectList.GetCount();
+		int growCount = m_objectList.size();
 		for (int i = 0; i < growCount; i++)
 		{
-			m_objectList.Add(Qnil);
-			m_objectListIndexStack.Push(growCount + i);
+			m_objectList.push_back(Qnil);
+			m_objectListIndexStack.push(growCount + i);
 		}
 	}
 	
-	int index = m_objectListIndexStack.Pop();
+	int index = m_objectListIndexStack.top();
+	m_objectListIndexStack.pop();
 	m_objectList[index] = obj;
 }
 
@@ -72,7 +73,7 @@ void Manager::UnregisterWrapperObject(LNHandle handle)
 {
 	int index = (int)LNObject_GetUserData(handle);
 	m_objectList[index] = Qnil;
-	m_objectListIndexStack.Push(index);
+	m_objectListIndexStack.push(index);
 }
 
 //------------------------------------------------------------------------------

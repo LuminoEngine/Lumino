@@ -46,7 +46,7 @@ typedef void*			LNUserData;
 #define LN_CLASS(className, ...)			LN_API void className##_SetBindingTypeInfo(void* data);
 #define LN_STATIC_CLASS(x)
 #define LN_STRUCT_CLASS(x)
-#define LN_EXTENSION_CLASS(x)
+#define LN_EXTENSION_CLASS(x)		// BinderMaker ‚É‚æ‚éƒNƒ‰ƒX©“®¶¬‚ğs‚í‚È‚¢‚±‚Æ‚ğ¦‚·
 #define LN_CLASS_END
 	
 #define LN_INSTANCE_API		LN_API
