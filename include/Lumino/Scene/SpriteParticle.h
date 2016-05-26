@@ -62,6 +62,13 @@ enum class ParticleDirection : uint8_t
 	MovementDirection,
 };
 
+enum class ParticleEmitterShapeType
+{
+	Sphere,		/** パーティクルを球状に放出します。*/
+	Cone,		/** パーティクルをコーン型に放出します。*/
+	Box,
+};
+
 /**
 	@brief
 */
@@ -123,6 +130,8 @@ public:	// TODO:
 
 
 	////////
+	ParticleEmitterShapeType	m_shapeType;
+	Vector3						m_shapeParam;
 
 	ParticleDirection	m_particleDirection;
 	int					m_spawnRate;	// 1秒間に放出するパーティクル数

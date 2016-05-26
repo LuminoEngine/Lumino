@@ -55,6 +55,8 @@ SpriteParticleModel::SpriteParticleModel()
 	: m_manager(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_texture(nullptr)
+	, m_shapeType(ParticleEmitterShapeType::Sphere)
+	, m_shapeParam(1, 1, 1)
 	, m_particleDirection(ParticleDirection::Billboard)
 	, m_spawnRate(1)
 	, m_burstCount(1)
@@ -146,16 +148,52 @@ void SpriteParticleModel::SpawnParticle(detail::ParticleData* data, float spawnT
 {
 	data->ramdomBaseValue = m_rand.GetFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
 
+	switch (m_shapeType)
+	{
+		default:
+		case ParticleEmitterShapeType::Sphere:
+			data->position = Vector3::Zero;
+			data->positionVelocity.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
+			data->positionVelocity.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
+			data->positionVelocity.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
+			data->positionVelocity.Normalize();
+			data->positionVelocity *= m_shapeParam.x;
+			break;
+		case ParticleEmitterShapeType::Cone:
+		{
+			data->position = Vector3::Zero;
+
+			// まず、YX 平面で Z+ を前方として角度制限付きの位置を求める。
+			float r = MakeRandom(data, 0.0f, m_shapeParam.x, ParticleRandomSource::Self);
+			Vector3 vec;
+			vec.y = sinf(r);	// TODO: Asm::sincos
+			vec.z = cosf(r);
+
+			// 次に、Z 軸周りの回転を行う。回転角度は 360度 ランダム。
+			r = MakeRandom(data, 0.0f, Math::PI * 2, ParticleRandomSource::Self);
+			data->positionVelocity.x = sinf(r) * vec.y;
+			data->positionVelocity.y = cosf(r) * vec.y;
+			data->positionVelocity.z = vec.z;
+
+			// 最後に正規化して速度化する。
+			data->positionVelocity.Normalize();
+			data->positionVelocity *= m_shapeParam.y;
+			break;
+		}
+		case ParticleEmitterShapeType::Box:
+			data->position.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x, m_positionRandomSource);
+			data->position.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y, m_positionRandomSource);
+			data->position.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z, m_positionRandomSource);
+			data->positionVelocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x, m_velocityRandomSource);
+			data->positionVelocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y, m_velocityRandomSource);
+			data->positionVelocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z, m_velocityRandomSource);
+			break;
+	}
+
 	data->spawnTime = spawnTime;
 	data->lastTime = spawnTime;
 	data->endTime = data->spawnTime + m_maxLifeTime;	// TODO: Rand
-	data->position.x = MakeRandom(data, m_minPosition.x, m_maxPosition.x, m_positionRandomSource);
-	data->position.y = MakeRandom(data, m_minPosition.y, m_maxPosition.y, m_positionRandomSource);
-	data->position.z = MakeRandom(data, m_minPosition.z, m_maxPosition.z, m_positionRandomSource);
 	data->startPosition = data->position;
-	data->positionVelocity.x = MakeRandom(data, m_minVelocity.x, m_maxVelocity.x, m_velocityRandomSource);
-	data->positionVelocity.y = MakeRandom(data, m_minVelocity.y, m_maxVelocity.y, m_velocityRandomSource);
-	data->positionVelocity.z = MakeRandom(data, m_minVelocity.z, m_maxVelocity.z, m_velocityRandomSource);
 	data->positionAccel.x = MakeRandom(data, m_minAccel.x, m_maxAccel.x, m_accelRandomSource);
 	data->positionAccel.y = MakeRandom(data, m_minAccel.y, m_maxAccel.y, m_accelRandomSource);
 	data->positionAccel.z = MakeRandom(data, m_minAccel.z, m_maxAccel.z, m_accelRandomSource);

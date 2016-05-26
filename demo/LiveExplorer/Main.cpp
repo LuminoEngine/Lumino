@@ -280,7 +280,16 @@ int main()
 		m->SetSpawnRate(100);
 		m->SetLifeTime(3.0f);
 		m->m_maxParticles = 300;
-		m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
+
+		//m->m_shapeType = ParticleEmitterShapeType::Sphere;
+		//m->m_shapeParam.x = 10;
+
+
+		m->m_shapeType = ParticleEmitterShapeType::Cone;
+		m->m_shapeParam.x = Math::PI * 0.1;
+		m->m_shapeParam.y = 2;
+
+		//m->SetPositionRange(Vector3(-10, 10, -10), Vector3(10, 10, 10));
 		m->SetVelocity(Vector3(0, -3, 0));
 		//m->SetAccel(Vector3(0, -8, 0));
 		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
