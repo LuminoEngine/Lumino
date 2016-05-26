@@ -61,13 +61,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\lib\LuminoC_x86uMT.dll">
-      <Link>LuminoC_x86uMT.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\lib\LuminoC_x86uMTd.dll">
+    <Content Include="..\..\..\lib\Debug\LuminoC_x86uMTd.dll">
       <Link>LuminoC_x86uMTd.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\lib\Release\LuminoC_x86uMT.dll">
+      <Link>LuminoC_x86uMT.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Choose>

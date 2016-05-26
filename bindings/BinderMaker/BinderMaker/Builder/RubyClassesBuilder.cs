@@ -41,12 +41,10 @@ static VALUE __MODULE_NAME___allocate( VALUE klass )
     VALUE obj;
     __STRUCT_NAME__* internalObj;
 
-    internalObj = (__STRUCT_NAME__*)malloc(sizeof(__STRUCT_NAME__));
+    internalObj = new __STRUCT_NAME__();
     if (internalObj == NULL) rb_raise( g_luminoModule, ""Faild alloc - __MODULE_NAME___allocate"" );
     obj = Data_Wrap_Struct(klass, __MODULE_NAME___mark, __MODULE_NAME___delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(__STRUCT_NAME__));
-__INIT__
+
     return obj;
 }
 ";
@@ -56,12 +54,10 @@ static VALUE __MODULE_NAME___allocateForGetRefObject(VALUE klass, LNHandle handl
     VALUE obj;
     __STRUCT_NAME__* internalObj;
 
-    internalObj = (__STRUCT_NAME__*)malloc(sizeof(__STRUCT_NAME__));
+    internalObj = new __STRUCT_NAME__();
     if (internalObj == NULL) rb_raise( g_luminoModule, ""Faild alloc - __MODULE_NAME___allocate"" );
     obj = Data_Wrap_Struct(klass, __MODULE_NAME___mark, __MODULE_NAME___delete, internalObj);
     
-    memset(internalObj, 0, sizeof(__STRUCT_NAME__));
-__INIT__
     internalObj->Handle = handle;
     return obj;
 }
@@ -70,7 +66,7 @@ __INIT__
 static void __MODULE_NAME___delete(__STRUCT_NAME__* obj)
 {
     __CONTENTS__
-    free(obj);
+    delete obj;
 }
 ";
         private static string MarkFuncDeclTemplate = @"
@@ -135,8 +131,9 @@ __CONTENTS__
             string varName = RubyCommon.GetModuleVariableName(classType);
             _allTypeDefineGlobalVariables.AppendLine("VALUE {0};", varName);
 
-            // Class 定義 (基底は rb_cObject)
-            _allModuleDefines.AppendLine(@"{0} = rb_define_class_under(g_luminoModule, ""{1}"", rb_cObject);", varName, classType.Name);
+            // Class 定義
+            string varBaseClass = (classType.BaseClass != null) ? "g_class_" + classType.BaseClass.Name : "rb_cObject";
+            _allModuleDefines.AppendLine(@"{0} = rb_define_class_under(g_luminoModule, ""{1}"", {2});", varName, classType.Name, varBaseClass);
 
             if (!classType.IsStatic)
             {
@@ -172,6 +169,16 @@ __CONTENTS__
             _allWrapStructs.AppendLine("{");
             // プロパティフィールド
             _allWrapStructs.AppendLine(_currentClassInfo.AdditionalWrapStructMember.ToString());
+            // コンストラクタと初期化子
+            _allWrapStructs.IncreaseIndent();
+            _allWrapStructs.AppendLine("{0}()", GetWrapStructName(classType));
+            if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
+            {
+                _allWrapStructs.Append("    : ");
+                _allWrapStructs.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+            }
+            _allWrapStructs.AppendLine("{}");
+            _allWrapStructs.DecreaseIndent();
             _allWrapStructs.AppendLine("};").NewLine();
 
             //-------------------------------------------------
@@ -181,7 +188,9 @@ __CONTENTS__
             {
                 string t;
                 // delete
-                string deleteFuncContents = "if (obj->Handle != 0) LNObject_Release(obj->Handle);";
+                string deleteFuncContents = "if (obj->Handle != 0) LNObject_Release(obj->Handle);" + OutputBuffer.NewLineCode;
+                deleteFuncContents += "    Manager::UnregisterWrapperObject(obj->Handle);";
+                
                 t = DeleteFuncDeclTemplate.Trim()
                     .Replace("__MODULE_NAME__", classType.OriginalName)
                     .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
@@ -195,15 +204,13 @@ __CONTENTS__
                 _allFuncDefines.AppendWithIndent(t).NewLine(2);
                 // allocate
                 t = AllocFuncDeclTemplate.Trim()
-                     .Replace("__MODULE_NAME__", classType.OriginalName)
-                     .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
-                     .Replace("__INIT__", _currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+                    .Replace("__MODULE_NAME__", classType.OriginalName)
+                    .Replace("__STRUCT_NAME__", GetWrapStructName(classType));
                 _allFuncDefines.AppendWithIndent(t).NewLine(2);
                 // allocateForGetRefObject
                 t = Alloc2FuncDeclTemplate.Trim()
                     .Replace("__MODULE_NAME__", classType.OriginalName)
-                    .Replace("__STRUCT_NAME__", GetWrapStructName(classType))
-                    .Replace("__INIT__", _currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+                    .Replace("__STRUCT_NAME__", GetWrapStructName(classType));
                 _allFuncDefines.AppendWithIndent(t).NewLine(2);
             }
 
@@ -228,7 +235,7 @@ __CONTENTS__
                 // WrapStruct のメンバを追加する
                 _currentClassInfo.AdditionalWrapStructMember.AppendLine("VALUE {0};", prop.Name);
                 // メンバの初期化
-                _currentClassInfo.AdditionalWrapStructMemberInit.AppendLine("internalObj->{0} = Qnil;", prop.Name);
+                _currentClassInfo.AdditionalWrapStructMemberInit.AppendCommad("{0}(Qnil)", prop.Name);
                 // メンバの GCMark
                 _currentClassInfo.AdditionalWrapStructMemberMark.AppendLine("rb_gc_mark(obj->{0});", prop.Name);
             }

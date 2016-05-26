@@ -1810,7 +1810,11 @@ end
 # 2D 空間に配置されるスプライトのクラスです。
 class Lumino::Sprite2D < Sprite
     # 2Dスプライトオブジェクトを作成します。
+    # @overload initialize()
+    #   2Dスプライトオブジェクトを作成します。
+    # @return [Lumino::Sprite2D] 作成された2Dスプライトハンドル
     # @overload initialize(texture)
+    #   2Dスプライトオブジェクトを作成します。
     #   @param [Lumino::Texture] texture 2Dスプライトが表示するテクスチャのハンドル
     # @return [Lumino::Sprite2D] 作成された2Dスプライトハンドル
     def initialize

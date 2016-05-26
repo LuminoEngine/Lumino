@@ -402,6 +402,7 @@
 #cmd LNSprite_GetTexture $00EE
 #cmd LNSprite_SetTexture $00EF
 #cmd LNSprite2D_Create $00F0
+#cmd LNSprite2D_CreateFromTexture $00F1
 
 
 #endif // __lumino__

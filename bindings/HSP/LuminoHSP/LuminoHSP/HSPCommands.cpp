@@ -1389,11 +1389,20 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00F0:
     {
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        intptr_t p0;
+        stat = LNSprite2D_Create(&p0);
+        int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
+        return true;
+    }
+    case 0x00F1:
+    {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         intptr_t p1;
-        stat = LNSprite2D_Create(p0, &p1);
+        stat = LNSprite2D_CreateFromTexture(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }

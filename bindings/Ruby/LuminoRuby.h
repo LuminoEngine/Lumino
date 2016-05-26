@@ -57,6 +57,8 @@ struct TypeInfo
 struct wrapRefObject
 {
 	LNHandle	Handle;
+	
+	wrapRefObject() : Handle(0) {}
 };
 
 class Manager
@@ -74,7 +76,7 @@ private:
 	
 	static const int InitialListSize = 1024;
 	static std::vector<TypeInfo>	m_typeInfoList;
-	static std::vector<VALUE>		m_objectList;
+	static std::vector<VALUE>		m_objectList;	// 中身はヒープに確保される動的配列なので、mark しなければ弱参照な VALUE として使える
 	static std::stack<int>			m_objectListIndexStack;
 };
 

@@ -67,12 +67,21 @@ LN_CLASS(LNSprite2D, LNSprite)
 
 	/**
 		@brief		2Dスプライトオブジェクトを作成します。
+		@param[out]	outSprite2D	: 作成された2Dスプライトハンドルを格納する変数のポインタ
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_CONSTRUCTOR
+	LNResult LNSprite2D_Create(LN_OUT LN_HANDLE(LNSprite2D)* outSprite2D);
+
+	/**
+		@brief		2Dスプライトオブジェクトを作成します。
 		@param[in]	texture		: 2Dスプライトが表示するテクスチャのハンドル
 		@param[out]	outSprite2D	: 作成された2Dスプライトハンドルを格納する変数のポインタ
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
-	LNResult LNSprite2D_Create(LN_HANDLE(LNTexture) texture, LN_OUT LN_HANDLE(LNSprite2D)* outSprite2D);
+	LN_ATTR_OVERLOAD(LNSprite2D_Create)
+	LNResult LNSprite2D_CreateFromTexture(LN_HANDLE(LNTexture) texture, LN_OUT LN_HANDLE(LNSprite2D)* outSprite2D);
 	
 LN_CLASS_END
 

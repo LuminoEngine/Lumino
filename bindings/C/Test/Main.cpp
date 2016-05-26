@@ -47,26 +47,39 @@ int main()
 
 	LNResult r;
 
+	LNEngine_Initialize();
+
+	LNHandle tex1;
+	LNTexture2D_Create(32, 32, LN_FMT_A8R8G8B8, LN_FALSE, &tex1);
+
+	LNHandle spr1;
+	LNSprite2D_CreateFromTexture(tex1, &spr1);
+	LNSprite_SetTexture(spr1, NULL);
+
+	LNHandle tex2;
+	LNSprite_GetTexture(spr1, &tex2);
+
+
 	//LNConfig_SetUserWindowHandle((intptr_t)GetConsoleHwnd());
 	//LNConfig_SetDirectMusicMode(LN_DIRECTMUSICMODE_NORMAL);
 	//LNConfig_SetDirectMusicReverbLevel(1.0f);
 
 	//LNConfig_RegisterArchive(_T("D:/Proj/Lumino/build/bindings/C/Test/Debug/audio.lna"), _T("test"));
-	LNEngine_InitializeAudio();
+	//LNEngine_InitializeAudio();
 
-	//LNGameAudio_PlayBGM(_T("D:/tmp/ZIGG-ZAGG.mp3"));
-	//::Sleep(2000);
-	//LNGameAudio_PlayME(_T("D:/Proj/Lumino/bindings/DotNet/Samples/Media/lnme_victory1.ogg"));
+	////LNGameAudio_PlayBGM(_T("D:/tmp/ZIGG-ZAGG.mp3"));
+	////::Sleep(2000);
+	////LNGameAudio_PlayME(_T("D:/Proj/Lumino/bindings/DotNet/Samples/Media/lnme_victory1.ogg"));
 
-	LNVector3 pos = { 2, 0, 0 };
+	//LNVector3 pos = { 2, 0, 0 };
 
-	LNHandle sound1;
-	r = LNSound_Create(_T("D:/Proj/Lumino/bindings/Common/Media/water02.wav"), &sound1);
-	//const LNChar* str;
-	//LNError_GetLastErrorMessage(&str);
-	LNSound_Set3DEnabled(sound1, LN_TRUE);
-	LNSound_SetEmitterPosition(sound1, &pos);
-	LNSound_Play(sound1);
+	//LNHandle sound1;
+	//r = LNSound_Create(_T("D:/Proj/Lumino/bindings/Common/Media/water02.wav"), &sound1);
+	////const LNChar* str;
+	////LNError_GetLastErrorMessage(&str);
+	//LNSound_Set3DEnabled(sound1, LN_TRUE);
+	//LNSound_SetEmitterPosition(sound1, &pos);
+	//LNSound_Play(sound1);
 
 	//LNSound_Stop(sound1);
 	//

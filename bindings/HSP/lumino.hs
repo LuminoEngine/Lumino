@@ -9,7 +9,7 @@ Lumino
 0.2.0.0
 
 %date
-2016/05/25
+2016/05/26
 
 %author
 lriki
@@ -3140,6 +3140,26 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;-----------------------------------------------------------
 %index
 LNSprite2D_Create
+2DƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+outSprite2D
+[out] outSprite2D : ì¬‚³‚ê‚½2DƒXƒvƒ‰ƒCƒgƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSprite2D_CreateFromTexture
 2DƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
 
 %group

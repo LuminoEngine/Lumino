@@ -52,7 +52,7 @@ namespace BinderMaker
                 csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Structs.cs");
                 var csClassesBuilder = new Builder.CSClassesBuilder();
                 csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
-
+                
                 // Ruby
                 var rubyEnumBuilder = new Builder.RubyEnumBuilder();
                 rubyEnumBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyEnums.cpp");

@@ -39,6 +39,7 @@ void Manager::Finalize()
 VALUE Manager::GetWrapperObjectFromHandle(LNHandle handle)
 {
 	int objectIndex = (int)LNObject_GetUserData(handle);
+            	printf("objectIndex %d %d\n", handle, objectIndex);
 	if (objectIndex == 0)
 	{
 		int typeinfoIndex = (int)LNObject_GetBindingTypeData(handle);
@@ -80,6 +81,7 @@ void Manager::RegisterWrapperObject(VALUE obj)
 	int index = m_objectListIndexStack.top();
 	m_objectListIndexStack.pop();
 	m_objectList[index] = obj;
+	LNObject_SetUserData(GetHandleFromtWrapperObject(obj), (void*)index);
 }
 
 //------------------------------------------------------------------------------

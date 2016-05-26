@@ -10,29 +10,34 @@ namespace UnitTest
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
-            Application.Initialize();
+            Engine.Initialize();
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            Application.Terminate();
+            Engine.Terminate();
         }
 
         /// <summary>
-        /// getter のテスト
+        /// 
         /// </summary>
         [TestMethod]
-        public void Test_InstanceGetter()
+        public void Test_GetSetObject()
         {
             var tex1 = new Texture2D(32, 32);
-            var sprite = new Sprite2D(tex1);
-            Assert.AreEqual(tex1, sprite.Texture);
-            Assert.AreEqual(tex1, sprite.Texture);	// 2回目以降も同じものが返ること
-            Assert.AreEqual(2, TestInterface.GetObjectWeakReferenceCount());
-            
-            tex1 = null;
-            sprite = null;
+            var spr1 = new Sprite2D();
+
+            // set したもとの get で取得したものは同一
+            spr1.Texture = tex1;
+            Assert.AreEqual(tex1, spr1.Texture);
+
+            //Assert.AreEqual(tex1, sprite.Texture);
+            //Assert.AreEqual(tex1, sprite.Texture);	// 2回目以降も同じものが返ること
+            //Assert.AreEqual(2, TestInterface.GetObjectWeakReferenceCount());
+
+            //tex1 = null;
+            //sprite = null;
 
             // TODO: 即GC実行する方法がイマイチわからないのでちょっと保留
             //GC.Collect(1, GCCollectionMode.Forced, true);

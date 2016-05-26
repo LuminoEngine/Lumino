@@ -2106,10 +2106,17 @@ namespace Lumino
         /// <summary>
         /// 2Dスプライトオブジェクトを作成します。
         /// </summary>
+        /// <param name="outSprite2D">作成された2Dスプライトハンドルを格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSprite2D_Create(out IntPtr outSprite2D);
+
+        /// <summary>
+        /// 2Dスプライトオブジェクトを作成します。
+        /// </summary>
         /// <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
         /// <param name="outSprite2D">作成された2Dスプライトハンドルを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNSprite2D_Create( IntPtr texture, out IntPtr outSprite2D);
+        public extern static Result LNSprite2D_CreateFromTexture( IntPtr texture, out IntPtr outSprite2D);
 
 
 

@@ -1136,11 +1136,23 @@ namespace Lumino
         /// <summary>
         /// 2Dスプライトオブジェクトを作成します。
         /// </summary>
+        public  Sprite2D() : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outSprite2D;
+            var result = API.LNSprite2D_Create(out outSprite2D);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outSprite2D);
+        
+        }
+        
+        /// <summary>
+        /// 2Dスプライトオブジェクトを作成します。
+        /// </summary>
         /// <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
         public  Sprite2D( Texture texture) : base(_LNInternal.InternalBlock)
         {
             IntPtr outSprite2D;
-            var result = API.LNSprite2D_Create( (texture != null) ? texture.Handle : default(IntPtr), out outSprite2D);
+            var result = API.LNSprite2D_CreateFromTexture( (texture != null) ? texture.Handle : default(IntPtr), out outSprite2D);
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             InternalManager.RegisterWrapperObject(this, outSprite2D);
         

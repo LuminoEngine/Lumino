@@ -415,6 +415,9 @@ namespace BinderMaker.Builder
                 if (method.IsRefObjectConstructor && param == method.FuncDecl.Params.Last())
                 {
                     argsText.AppendCommad("&selfObj->Handle");
+
+                    // Handle がアタッチされたので Register
+                    postStmt.AppendLine("Manager::RegisterWrapperObject(self);");
                 }
                 // 第1引数かつインスタンスメソッドの場合は特殊な実引数になる
                 else if (
@@ -432,16 +435,17 @@ namespace BinderMaker.Builder
                 // return として選択されている引数である場合
                 else if (param == method.ReturnParam)
                 {
+                    var varName = "_" + param.Name;
+                    // 宣言
+                    initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
+                    // API実引数
+                    argsText.AppendCommad("&" + varName);
+
                     if (method.IsGetterProperty && CLType.CheckRefObjectType(param.Type))
                     {
-                        var varName = "_" + param.Name;
-                        // 宣言
-                        initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
-                        // API実引数
-                        argsText.AppendCommad("&" + varName);
                         // post
                         var propName = method.OwnerProperty.Name;
-                        postStmt.AppendLine("if (checkEqualHandle(selfObj->{0}, {1})) {{", propName, varName);
+                        postStmt.AppendLine("if (!checkEqualHandle(selfObj->{0}, {1})) {{", propName, varName);
                         postStmt.AppendLine("    selfObj->{0} = Manager::GetWrapperObjectFromHandle({1});", propName, varName);
                         postStmt.AppendLine("}");
                         // return
@@ -449,18 +453,41 @@ namespace BinderMaker.Builder
                     }
                     else
                     {
-                        var varName = "_" + param.Name;
-                        // 宣言
-                        initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
-                        // API実引数
-                        argsText.AppendCommad("&" + varName);
                         // return
                         RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
                     }
                 }
-                // return として選択されていない引数である場合
+                // 普通の in/out の引数はここに来る
                 else
                 {
+                    /*
+                        LNTexture2D_Create(w, h, format, mipmap) の例
+
+                        if (2 <= argc && argc <= 4) {
+
+                            // まず、実引数を取り出す必要がある
+                            VALUE width;
+                            VALUE height;
+                            VALUE format;
+                            VALUE mipmap;
+                            rb_scan_args(argc, argv, "22", &width, &height, &format, &mipmap);
+
+                            // 型チェック
+                            if (isRbNumber(width) && isRbNumber(height) && isRbNumber(format) && isRbBool(mipmap)) {
+
+                                // C言語の型へ変換する
+                                int _width = FIX2INT(width);
+                                int _height = FIX2INT(height);
+                                LNTextureFormat _format = (format != Qnil) ? (LNTextureFormat)FIX2INT(format) : LN_FMT_A8R8G8B8;
+                                LNBool _mipmap = (mipmap != Qnil) ? RbBooltoBool(mipmap) : LN_FALSE;
+
+                                // API 呼び出し
+                                LNResult errorCode = LNTexture2D_Create(_width, _height, _format, _mipmap, &selfObj->Handle);
+                                if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+                                
+                                return Qnil;
+                            }
+                    */
                     // 通常引数とデフォルト引数のカウント
                     if (string.IsNullOrEmpty(param.OriginalDefaultValue))
                         normalArgsCount++;
@@ -492,6 +519,14 @@ namespace BinderMaker.Builder
                             argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
                         else
                             argsText.AppendCommad("_" + param.Name);
+
+                        
+                        if (method.IsSetterProperty && CLType.CheckRefObjectType(param.Type))
+                        {
+                            // post
+                            var propName = method.OwnerProperty.Name;
+                            postStmt.AppendLine("selfObj->{0} = {1};", propName, param.Name);
+                        }
                     }
                 }
             }

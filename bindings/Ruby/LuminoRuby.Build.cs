@@ -23,7 +23,7 @@ class LuminoRubyRule : ModuleRule
         Utils.CopyFiles(rubyDir, "*.h", rubyBuildDir);
         Utils.CopyFile(rubyDir + "extconf.rb", rubyBuildDir);
         Utils.CopyFile(rubyDir + "LuminoRubyDoc.rb", rubyBuildDir);     // ドキュメント用のソースも。yardoc は readme.md を自動的に取り込んでしまう
-        Utils.CopyFile(builder.LuminoLibDir + "Release/LuminoC_x86_MT.dll", rubyBuildDir);
+        Utils.CopyFile(builder.LuminoLibDir + "Release/LuminoC_x86MT.dll", rubyBuildDir);
 
         // ビルド
         Directory.SetCurrentDirectory(rubyBuildDir);
@@ -31,7 +31,7 @@ class LuminoRubyRule : ModuleRule
         Utils.CallProcess("make");
 
         // ドキュメントの作成
-        Utils.CallProcessShell("yardoc", "-o doc LuminoRubyDoc.rb");
+        //Utils.CallProcessShell("yardoc", "-o doc LuminoRubyDoc.rb");
 
         // プロセスの環境変数を元に戻しておく
         Environment.SetEnvironmentVariable("PATH", envPath);

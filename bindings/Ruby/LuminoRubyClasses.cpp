@@ -7,7 +7,7 @@
 bool checkEqualHandle(VALUE obj, LNHandle handle)
 {
 	if (obj == Qnil)
-		return false;
+		return handle == NULL;
 	if (((wrapRefObject*)DATA_PTR(obj))->Handle != handle)
 		return false;
 	return true;
@@ -20,50 +20,68 @@ bool checkEqualHandle(VALUE obj, LNHandle handle)
 struct wrapConfig
 {
 
+    wrapConfig()
+    {}
 };
 
 struct wrapEngine
 {
 
+    wrapEngine()
+    {}
 };
 
 struct wrapVersion
 {
 
+    wrapVersion()
+    {}
 };
 
 struct wrapGameAudio
 {
 
+    wrapGameAudio()
+    {}
 };
 
 struct wrapSoundListener
 {
 
+    wrapSoundListener()
+    {}
 };
 
 struct wrapSound
     : public wrapRefObject
 {
 
+    wrapSound()
+    {}
 };
 
 struct wrapTexture
     : public wrapRefObject
 {
 
+    wrapTexture()
+    {}
 };
 
 struct wrapTexture2D
     : public wrapTexture
 {
 
+    wrapTexture2D()
+    {}
 };
 
 struct wrapSceneNode
     : public wrapRefObject
 {
 
+    wrapSceneNode()
+    {}
 };
 
 struct wrapSprite
@@ -71,16 +89,22 @@ struct wrapSprite
 {
     VALUE Texture;
 
+    wrapSprite()
+    :     Texture(Qnil)
+    {}
 };
 
 struct wrapSprite2D
     : public wrapSprite
 {
 
+    wrapSprite2D()
+    {}
 };
 
 
 
+VALUE g_class_RefObject;
 VALUE g_class_Config;
 VALUE g_class_Engine;
 VALUE g_class_Version;
@@ -740,7 +764,8 @@ static VALUE static_lnrbLNSoundListener_SetPositionXYZ(int argc, VALUE *argv, VA
 static void LNSound_delete(wrapSound* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
 }
 
 static void LNSound_mark(wrapSound* obj)
@@ -753,11 +778,9 @@ static VALUE LNSound_allocate( VALUE klass )
     VALUE obj;
     wrapSound* internalObj;
 
-    internalObj = (wrapSound*)malloc(sizeof(wrapSound));
+    internalObj = new wrapSound();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSound_allocate" );
     obj = Data_Wrap_Struct(klass, LNSound_mark, LNSound_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapSound));
 
     return obj;
 }
@@ -767,12 +790,10 @@ static VALUE LNSound_allocateForGetRefObject(VALUE klass, LNHandle handle)
     VALUE obj;
     wrapSound* internalObj;
 
-    internalObj = (wrapSound*)malloc(sizeof(wrapSound));
+    internalObj = new wrapSound();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSound_allocate" );
     obj = Data_Wrap_Struct(klass, LNSound_mark, LNSound_delete, internalObj);
     
-    memset(internalObj, 0, sizeof(wrapSound));
-
     internalObj->Handle = handle;
     return obj;
 }
@@ -788,6 +809,7 @@ static VALUE lnrbLNSound_Create(int argc, VALUE *argv, VALUE self)
             char* _filePath = StringValuePtr(filePath);
             LNResult errorCode = LNSound_Create(_filePath, &selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            Manager::RegisterWrapperObject(self);
             return Qnil;
         }
     }
@@ -1238,7 +1260,8 @@ static VALUE lnrbLNSound_FadeVolume(int argc, VALUE *argv, VALUE self)
 static void LNTexture_delete(wrapTexture* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
 }
 
 static void LNTexture_mark(wrapTexture* obj)
@@ -1251,11 +1274,9 @@ static VALUE LNTexture_allocate( VALUE klass )
     VALUE obj;
     wrapTexture* internalObj;
 
-    internalObj = (wrapTexture*)malloc(sizeof(wrapTexture));
+    internalObj = new wrapTexture();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture_allocate" );
     obj = Data_Wrap_Struct(klass, LNTexture_mark, LNTexture_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapTexture));
 
     return obj;
 }
@@ -1265,12 +1286,10 @@ static VALUE LNTexture_allocateForGetRefObject(VALUE klass, LNHandle handle)
     VALUE obj;
     wrapTexture* internalObj;
 
-    internalObj = (wrapTexture*)malloc(sizeof(wrapTexture));
+    internalObj = new wrapTexture();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture_allocate" );
     obj = Data_Wrap_Struct(klass, LNTexture_mark, LNTexture_delete, internalObj);
     
-    memset(internalObj, 0, sizeof(wrapTexture));
-
     internalObj->Handle = handle;
     return obj;
 }
@@ -1298,7 +1317,8 @@ static VALUE lnrbLNTexture_GetSize(int argc, VALUE *argv, VALUE self)
 static void LNTexture2D_delete(wrapTexture2D* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
 }
 
 static void LNTexture2D_mark(wrapTexture2D* obj)
@@ -1311,11 +1331,9 @@ static VALUE LNTexture2D_allocate( VALUE klass )
     VALUE obj;
     wrapTexture2D* internalObj;
 
-    internalObj = (wrapTexture2D*)malloc(sizeof(wrapTexture2D));
+    internalObj = new wrapTexture2D();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture2D_allocate" );
     obj = Data_Wrap_Struct(klass, LNTexture2D_mark, LNTexture2D_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapTexture2D));
 
     return obj;
 }
@@ -1325,12 +1343,10 @@ static VALUE LNTexture2D_allocateForGetRefObject(VALUE klass, LNHandle handle)
     VALUE obj;
     wrapTexture2D* internalObj;
 
-    internalObj = (wrapTexture2D*)malloc(sizeof(wrapTexture2D));
+    internalObj = new wrapTexture2D();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture2D_allocate" );
     obj = Data_Wrap_Struct(klass, LNTexture2D_mark, LNTexture2D_delete, internalObj);
     
-    memset(internalObj, 0, sizeof(wrapTexture2D));
-
     internalObj->Handle = handle;
     return obj;
 }
@@ -1352,6 +1368,7 @@ static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
             LNBool _mipmap = (mipmap != Qnil) ? RbBooltoBool(mipmap) : LN_FALSE;
             LNResult errorCode = LNTexture2D_Create(_width, _height, _format, _mipmap, &selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            Manager::RegisterWrapperObject(self);
             return Qnil;
         }
     }
@@ -1362,6 +1379,7 @@ static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
             char* _filePath = StringValuePtr(filePath);
             LNResult errorCode = LNTexture2D_CreateFromFile(_filePath, &selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            Manager::RegisterWrapperObject(self);
             return Qnil;
         }
     }
@@ -1372,7 +1390,8 @@ static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
 static void LNSceneNode_delete(wrapSceneNode* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
 }
 
 static void LNSceneNode_mark(wrapSceneNode* obj)
@@ -1385,11 +1404,9 @@ static VALUE LNSceneNode_allocate( VALUE klass )
     VALUE obj;
     wrapSceneNode* internalObj;
 
-    internalObj = (wrapSceneNode*)malloc(sizeof(wrapSceneNode));
+    internalObj = new wrapSceneNode();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSceneNode_allocate" );
     obj = Data_Wrap_Struct(klass, LNSceneNode_mark, LNSceneNode_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapSceneNode));
 
     return obj;
 }
@@ -1399,12 +1416,10 @@ static VALUE LNSceneNode_allocateForGetRefObject(VALUE klass, LNHandle handle)
     VALUE obj;
     wrapSceneNode* internalObj;
 
-    internalObj = (wrapSceneNode*)malloc(sizeof(wrapSceneNode));
+    internalObj = new wrapSceneNode();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSceneNode_allocate" );
     obj = Data_Wrap_Struct(klass, LNSceneNode_mark, LNSceneNode_delete, internalObj);
     
-    memset(internalObj, 0, sizeof(wrapSceneNode));
-
     internalObj->Handle = handle;
     return obj;
 }
@@ -1430,7 +1445,8 @@ static VALUE lnrbLNSceneNode_SetPosition(int argc, VALUE *argv, VALUE self)
 static void LNSprite_delete(wrapSprite* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
 }
 
 static void LNSprite_mark(wrapSprite* obj)
@@ -1444,12 +1460,9 @@ static VALUE LNSprite_allocate( VALUE klass )
     VALUE obj;
     wrapSprite* internalObj;
 
-    internalObj = (wrapSprite*)malloc(sizeof(wrapSprite));
+    internalObj = new wrapSprite();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite_allocate" );
     obj = Data_Wrap_Struct(klass, LNSprite_mark, LNSprite_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapSprite));
-    internalObj->Texture = Qnil;
 
     return obj;
 }
@@ -1459,13 +1472,10 @@ static VALUE LNSprite_allocateForGetRefObject(VALUE klass, LNHandle handle)
     VALUE obj;
     wrapSprite* internalObj;
 
-    internalObj = (wrapSprite*)malloc(sizeof(wrapSprite));
+    internalObj = new wrapSprite();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite_allocate" );
     obj = Data_Wrap_Struct(klass, LNSprite_mark, LNSprite_delete, internalObj);
     
-    memset(internalObj, 0, sizeof(wrapSprite));
-    internalObj->Texture = Qnil;
-
     internalObj->Handle = handle;
     return obj;
 }
@@ -1481,6 +1491,7 @@ static VALUE lnrbLNSprite_SetTexture(int argc, VALUE *argv, VALUE self)
             LNHandle _texture = Manager::GetHandleFromtWrapperObject(texture);
             LNResult errorCode = LNSprite_SetTexture(selfObj->Handle, _texture);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            selfObj->Texture = texture;
             return Qnil;
         }
     }
@@ -1498,7 +1509,7 @@ static VALUE lnrbLNSprite_GetTexture(int argc, VALUE *argv, VALUE self)
             LNHandle _outTexture;
             LNResult errorCode = LNSprite_GetTexture(selfObj->Handle, &_outTexture);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            if (checkEqualHandle(selfObj->Texture, _outTexture)) {
+            if (!checkEqualHandle(selfObj->Texture, _outTexture)) {
                 selfObj->Texture = Manager::GetWrapperObjectFromHandle(_outTexture);
             }
             return selfObj->Texture;
@@ -1511,8 +1522,10 @@ static VALUE lnrbLNSprite_GetTexture(int argc, VALUE *argv, VALUE self)
 
 static void LNSprite2D_delete(wrapSprite2D* obj)
 {
+	printf("LNTexture_delete\n");
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
-    free(obj);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
 }
 
 static void LNSprite2D_mark(wrapSprite2D* obj)
@@ -1525,11 +1538,9 @@ static VALUE LNSprite2D_allocate( VALUE klass )
     VALUE obj;
     wrapSprite2D* internalObj;
 
-    internalObj = (wrapSprite2D*)malloc(sizeof(wrapSprite2D));
+    internalObj = new wrapSprite2D();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite2D_allocate" );
     obj = Data_Wrap_Struct(klass, LNSprite2D_mark, LNSprite2D_delete, internalObj);
-    
-    memset(internalObj, 0, sizeof(wrapSprite2D));
 
     return obj;
 }
@@ -1539,12 +1550,10 @@ static VALUE LNSprite2D_allocateForGetRefObject(VALUE klass, LNHandle handle)
     VALUE obj;
     wrapSprite2D* internalObj;
 
-    internalObj = (wrapSprite2D*)malloc(sizeof(wrapSprite2D));
+    internalObj = new wrapSprite2D();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite2D_allocate" );
     obj = Data_Wrap_Struct(klass, LNSprite2D_mark, LNSprite2D_delete, internalObj);
     
-    memset(internalObj, 0, sizeof(wrapSprite2D));
-
     internalObj->Handle = handle;
     return obj;
 }
@@ -1553,13 +1562,23 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
 {
     wrapSprite2D* selfObj;
     Data_Get_Struct(self, wrapSprite2D, selfObj);
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNResult errorCode = LNSprite2D_Create(&selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            Manager::RegisterWrapperObject(self);
+            return Qnil;
+        }
+    }
     if (1 <= argc && argc <= 1) {
         VALUE texture;
         rb_scan_args(argc, argv, "1", &texture);
         if (isRbObject(texture)) {
             LNHandle _texture = Manager::GetHandleFromtWrapperObject(texture);
-            LNResult errorCode = LNSprite2D_Create(_texture, &selfObj->Handle);
+            LNResult errorCode = LNSprite2D_CreateFromTexture(_texture, &selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            Manager::RegisterWrapperObject(self);
             return Qnil;
         }
     }
@@ -1571,6 +1590,8 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
 
 void InitClasses()
 {
+    g_class_RefObject = rb_define_class_under(g_luminoModule, "RefObject", rb_cObject);
+    
     g_class_Config = rb_define_class_under(g_luminoModule, "Config", rb_cObject);
     rb_define_singleton_method(g_class_Config, "set_application_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetApplicationLogEnabled), -1);
     rb_define_singleton_method(g_class_Config, "set_console_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetConsoleEnabled), -1);
@@ -1616,7 +1637,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_SoundListener, "velocity=", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetVelocity), -1);
     rb_define_singleton_method(g_class_SoundListener, "set_position_xyz", LN_TO_RUBY_FUNC(static_lnrbLNSoundListener_SetPositionXYZ), -1);
 
-    g_class_Sound = rb_define_class_under(g_luminoModule, "Sound", rb_cObject);
+    g_class_Sound = rb_define_class_under(g_luminoModule, "Sound", g_class_RefObject);
     rb_define_alloc_func(g_class_Sound, LNSound_allocate);
     rb_define_private_method(g_class_Sound, "initialize", LN_TO_RUBY_FUNC(lnrbLNSound_Create), -1);
     rb_define_method(g_class_Sound, "volume=", LN_TO_RUBY_FUNC(lnrbLNSound_SetVolume), -1);
@@ -1643,24 +1664,24 @@ void InitClasses()
     rb_define_method(g_class_Sound, "resume", LN_TO_RUBY_FUNC(lnrbLNSound_Resume), -1);
     rb_define_method(g_class_Sound, "fade_volume", LN_TO_RUBY_FUNC(lnrbLNSound_FadeVolume), -1);
 
-    g_class_Texture = rb_define_class_under(g_luminoModule, "Texture", rb_cObject);
+    g_class_Texture = rb_define_class_under(g_luminoModule, "Texture", g_class_RefObject);
     rb_define_alloc_func(g_class_Texture, LNTexture_allocate);
     rb_define_method(g_class_Texture, "size", LN_TO_RUBY_FUNC(lnrbLNTexture_GetSize), -1);
 
-    g_class_Texture2D = rb_define_class_under(g_luminoModule, "Texture2D", rb_cObject);
+    g_class_Texture2D = rb_define_class_under(g_luminoModule, "Texture2D", g_class_Texture);
     rb_define_alloc_func(g_class_Texture2D, LNTexture2D_allocate);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNTexture2D_Create), -1);
 
-    g_class_SceneNode = rb_define_class_under(g_luminoModule, "SceneNode", rb_cObject);
+    g_class_SceneNode = rb_define_class_under(g_luminoModule, "SceneNode", g_class_RefObject);
     rb_define_alloc_func(g_class_SceneNode, LNSceneNode_allocate);
     rb_define_method(g_class_SceneNode, "position=", LN_TO_RUBY_FUNC(lnrbLNSceneNode_SetPosition), -1);
 
-    g_class_Sprite = rb_define_class_under(g_luminoModule, "Sprite", rb_cObject);
+    g_class_Sprite = rb_define_class_under(g_luminoModule, "Sprite", g_class_SceneNode);
     rb_define_alloc_func(g_class_Sprite, LNSprite_allocate);
     rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(lnrbLNSprite_SetTexture), -1);
     rb_define_method(g_class_Sprite, "texture", LN_TO_RUBY_FUNC(lnrbLNSprite_GetTexture), -1);
 
-    g_class_Sprite2D = rb_define_class_under(g_luminoModule, "Sprite2D", rb_cObject);
+    g_class_Sprite2D = rb_define_class_under(g_luminoModule, "Sprite2D", g_class_Sprite);
     rb_define_alloc_func(g_class_Sprite2D, LNSprite2D_allocate);
     rb_define_private_method(g_class_Sprite2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNSprite2D_Create), -1);
 

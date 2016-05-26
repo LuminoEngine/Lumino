@@ -38,7 +38,7 @@ endif()
 
 #------------------------------
 # external deps.
-link_libraries(LuminoC)
+link_libraries(LuminoC_Static)
 
 #------------------------------
 # 

@@ -13,7 +13,7 @@ namespace Test
 
         static void Main(string[] args)
         {
-            Application.Initialize();
+            Engine.Initialize();
 
             GameAudio.PlayBGM("D:/tmp/GrandSky.mp3");
 
@@ -22,12 +22,12 @@ namespace Test
 
             var sp1 = new Sprite2D(tex1);
 
-            while (!Application.IsEndRequested())
+            while (!Engine.IsEndRequested())
             {
-                Application.UpdateFrame();
+                Engine.UpdateFrame();
             }
 
-            Application.Terminate();
+            Engine.Terminate();
 
 #if false
             var s1 = new Sound(@"D:\tmp\ZIGG-ZrAGG.mp3");
