@@ -350,7 +350,7 @@ void TextRenderer::DrawString(const String& str, const PointF& position)
 //------------------------------------------------------------------------------
 void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& position)
 {
-	length = (length < 0) ? StringTraits::StrLen(str) : length;
+	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
@@ -369,7 +369,7 @@ void TextRenderer::DrawString(const TCHAR* str, int length, const PointF& positi
 //------------------------------------------------------------------------------
 void TextRenderer::DrawString(const TCHAR* str, int length, const RectF& rect, StringFormatFlags flags)
 {
-	length = (length < 0) ? StringTraits::StrLen(str) : length;
+	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);

@@ -408,17 +408,9 @@ void VMDBezierSQTTransformAnimation::UpdateValue(double time)
 
 	// キー検索
 	KeyFrameList::iterator itr = std::find_if(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
-	//if ( itr == m_keyFrameList.end() ) // ありえないはず
-	//{
-	//    m_transform = LSQTTransform::IDENTITY;
-	//}
 
-	//lnU32   k0idx = itr - m_keyFrameList.begin();
-	//lnU32   k1idx = k0idx + 1;
-
-	int k1idx = itr - m_keyFrameList.begin();
-	int k0idx = k1idx - 1;
-
+	size_t k1idx = itr - m_keyFrameList.begin();
+	size_t k0idx = k1idx - 1;
 
 	KeyFrame& k0 = m_keyFrameList[k0idx];
 	KeyFrame& k1 = m_keyFrameList[k1idx];

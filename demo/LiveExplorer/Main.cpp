@@ -157,6 +157,36 @@ int main()
 	//std::weak_ptr
 	try
 	{
+		ElapsedTimer timer;
+
+		ConditionFlag flag;
+		flag.SetFalse();
+
+		timer.Start();
+		Delegate<void()> func([&flag, &timer]()
+		{
+			printf("%llu\n", timer.GetElapsedTimeNS());
+			return;
+			while (true)
+			{
+				flag.Wait();
+				printf("%llu\n", timer.GetElapsedTimeNS());
+				flag.SetFalse();
+			}
+		});
+		DelegateThread thr;
+		thr.Start(func);
+		::Sleep(1000);
+
+		//for (int i = 0; i < 10; ++i)
+		//{
+		//	timer.Start();
+		//	flag.SetTrue();
+		//	Thread::Sleep(10);
+		//}
+
+		return 0;
+
 #if 0
 		for (int i = 0; i < 100; ++i)
 		{

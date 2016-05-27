@@ -5,6 +5,9 @@
 ------------------------------------------------------------
 String::Append() または +, += 演算子で連結することができます。
 
+
+<sync-tabs>
+<sync-tab-pane group="cpp">
 ````````````````````````````````````````cpp
 String str1 = "12";
 String str2 = "56";
@@ -20,10 +23,31 @@ str1.Append("78");
 
 Console::WriteLine(str1);    // "12345678"
 ````````````````````````````````````````
+</sync-tab-pane>
+<sync-tab-pane group="cs">
+````````````````````````````````````````cpp
+String str1 = "12";
+String str2 = "56";
+
+// str1 に文字列 "456" を連結したものを str1 に格納する
+str1 = str1 + "13";
+
+str1 += str2;
+
+str1.Append("78");
+
+Console.WriteLine(str1);    // "12345678"
+````````````````````````````````````````
+</sync-tab-pane>
+</sync-tabs>
+
 
 文字列を置換する
 ------------------------------------------------------------
 String::Replace()　を使い、置換対象となる任意の文字と置換後の文字を指定します。
+
+<sync-tabs>
+<sync-tab-pane group="cpp">
 
 ```````````````````````````````````````` {.cpp}
 String str1 = "abcdcd";
@@ -38,3 +62,20 @@ str1 = str1.Replace(from, to);
 
 Console::WriteLine(str1);    // "12345345"
 ````````````````````````````````````````
+</sync-tab-pane>
+<sync-tab-pane group="cs">
+````````````````````````````````````````cpp
+String str1 = "12";
+String str2 = "56";
+
+// str1 に文字列 "456" を連結したものを str1 に格納する
+str1 = str1 + "13";
+
+str1 += str2;
+
+str1.Append("78");
+
+Console.WriteLine(str1);    // "12345678"
+````````````````````````````````````````
+</sync-tab-pane>
+</sync-tabs>

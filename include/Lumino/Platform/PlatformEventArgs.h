@@ -58,7 +58,7 @@ struct PlatformEventArgs
 		struct
 		{
 			Key				keyCode;		/** キーコード */
-			ModifierKeys	modifierKeys;	/** 修飾キー */
+			ModifierKeys::value_type	modifierKeys;	/** 修飾キー */
 			char			keyChar;		/** 文字 */
 
 		} key;

@@ -116,13 +116,13 @@ bool PlatformWindow::SendPlatformActivateChangedEvent(PlatformWindow* sender, bo
 }
 
 //------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys	modifierKeys_, char keyChar_)
+bool PlatformWindow::SendPlatformKeyEvent(PlatformEventType type_, PlatformWindow* sender_, Key keyCode_, ModifierKeys modifierKeys_, char keyChar_)
 {
 	PlatformEventArgs e;
 	e.type = type_;
 	e.sender = sender_;
 	e.key.keyCode = keyCode_;
-	e.key.modifierKeys = modifierKeys_;
+	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys_.GetValue();
 	e.key.keyChar = keyChar_;
 	return SendPlatformEvent(e);
 }
