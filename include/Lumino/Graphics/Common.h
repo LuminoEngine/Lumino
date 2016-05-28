@@ -253,13 +253,13 @@ enum LockMode
 };
 
 /** 描画方式 */
-LN_ENUM(RenderingType)
+LN_ENUM(GraphicsRenderingType)
 {
-	Immediate = 0,		/**< 即時描画 */
-	Deferred,			/**< 遅延描画 */
+	Immediate,			/**< 即時描画 */
+	Threaded,			/**< 遅延描画 */
 };
-LN_ENUM_REFLECTION(RenderingType, Immediate, Deferred);
-LN_ENUM_DECLARE(RenderingType)
+LN_ENUM_REFLECTION(GraphicsRenderingType, Immediate, Threaded);
+LN_ENUM_DECLARE(GraphicsRenderingType)
 
 
 /// 3D 空間での基準方向を表す値

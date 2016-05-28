@@ -1659,7 +1659,7 @@ void GeometryRenderer::FlushInternal()
 		m_commandsUsingByte = 0;
 
 		//LN_CALL_COMMAND(Flush, DrawingContextImpl::FlushCommand);
-        if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+        if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) {
             m_manager->GetPrimaryRenderingCommandList()->AddCommand<DrawingContextImpl::FlushCommand>(m_internal);
         }
         else {

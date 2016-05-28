@@ -1,5 +1,10 @@
 <category_index>
 	<homepage>
-		<page src="getting_started.md" />
+		<page src="index.md" />
 	</homepage>
+	<toc>
+		<page src="engine/index.md">
+			<page src="engine/basic.md" />
+		</page>
+	</toc>
 </category_index>

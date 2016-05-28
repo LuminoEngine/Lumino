@@ -101,7 +101,7 @@ void SwapChain::Resize(const Size& newSize)
 //------------------------------------------------------------------------------
 void SwapChain::Present()
 {
-	if (m_manager->GetRenderingType() == RenderingType::Immediate)
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
 	{
 		m_deviceObj->Present(m_backColorBuffer->m_deviceObj);
 

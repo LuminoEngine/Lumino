@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/Common.h>
 
 #define LN_CALL_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_internal, __VA_ARGS__); \
 	} \
 	else { \
@@ -12,7 +12,7 @@
 	}
 	
 #define LN_CALL_RENDERER_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_primaryCommandList->AddCommand<command>(__VA_ARGS__); \
 	} \
 	else { \
@@ -20,7 +20,7 @@
 	}
 
 #define LN_CALL_TEXTURE_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_manager->GetRenderer()->m_primaryCommandList->AddCommand<command>(m_deviceObj, __VA_ARGS__); \
 	} \
 	else { \

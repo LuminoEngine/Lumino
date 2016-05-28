@@ -360,7 +360,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
 
 #define LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, commandName, ...) \
-	if (manager->GetRenderingType() == RenderingType::Deferred) { \
+	if (manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		manager->GetPrimaryRenderingCommandList()->EnqueueCommand<commandName>(__VA_ARGS__); \
 	} \
 	else { \

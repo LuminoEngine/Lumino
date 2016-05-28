@@ -49,7 +49,7 @@ GameApplication::~GameApplication()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::OnConfigure(EngineSettings* settings)
+void GameApplication::OnConfigure()
 {
 }
 
@@ -58,13 +58,12 @@ void GameApplication::Run()
 {
 	try
 	{
-		EngineSettings data;
-		data.graphicsAPI = GraphicsAPI::DirectX9;
-		data.renderingType = RenderingType::Immediate;
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
 
-		OnConfigure(&data);
+		OnConfigure();
 
-		Engine::Initialize(data);
+		Engine::Initialize();
 
 		do
 		{
@@ -73,10 +72,10 @@ void GameApplication::Run()
 	}
 	catch (...)
 	{
-		Engine::Finalize();
+		Engine::Terminate();
 		throw;
 	}
-	Engine::Finalize();
+	Engine::Terminate();
 }
 
 LN_NAMESPACE_END

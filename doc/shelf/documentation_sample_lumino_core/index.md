@@ -1,8 +1,7 @@
-Lumino.Core チュートリアル
+サンプル (Lumino.Core)
 ========
 
 testtest
 --------
 
 test3
-

@@ -331,7 +331,7 @@ void SpriteRenderer::DrawRequest3D(
 void SpriteRenderer::Flush()
 {
 	//LN_CALL_COMMAND(Flush, SpriteRendererImpl::FlushCommand);
-    if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+    if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) {
         m_manager->GetPrimaryRenderingCommandList()->AddCommand<SpriteRendererImpl::FlushCommand>(m_internal);
     }
     else {

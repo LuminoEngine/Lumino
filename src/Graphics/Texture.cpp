@@ -70,7 +70,7 @@ TextureFormat Texture::GetFormat() const
 Bitmap* Texture::Lock()
 {
 	// Deferred
-	if (m_manager->GetRenderingType() == RenderingType::Deferred)
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded)
 	{
 		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
 		{
@@ -102,7 +102,7 @@ Bitmap* Texture::Lock()
 void Texture::Unlock()
 {
 	// Deferred
-	if (m_manager->GetRenderingType() == RenderingType::Deferred)
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded)
 	{
 		RenderingCommandList* cmdList = m_manager->GetRenderer()->m_primaryCommandList;
 		if (m_deviceObj->GetTextureType() == Driver::TextureType_Normal)
@@ -404,7 +404,7 @@ void Texture2D::OnChangeDevice(Driver::IGraphicsDevice* device)
 	if (device == NULL)
 	{
 		// Immediate のときは Lock で取得する必要がある。Deferred のときは m_primarySurface が持っている。
-		if (m_manager->GetRenderingType() == RenderingType::Immediate)
+		if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
 		{
 			Driver::ITexture::ScopedLock lock(m_deviceObj);
 			m_primarySurface->CopyRawData(lock.GetBitmap()->GetBitmapBuffer()->GetConstData(), m_primarySurface->GetByteCount());

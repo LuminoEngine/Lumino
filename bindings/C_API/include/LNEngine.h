@@ -24,14 +24,7 @@ LN_STATIC_CLASS(LNConfig)
 		@param[in]	enabled	: LN_TRUE:出力する / LN_FALSE:出力しない
 	*/
 	LN_STATIC_API
-	void LNConfig_SetApplicationLogEnabled(LNBool enabled);
-
-	/**
-		@brief		標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
-		@param[in]	enabled	: LN_TRUE:割り当てる / LN_FALSE:割り当てない
-	*/
-	LN_STATIC_API
-	void LNConfig_SetConsoleEnabled(LNBool enabled);
+	void LNConfig_SetEngineLogEnabled(LNBool enabled);
 
 	/**
 		@brief		ファイルを開くときにアクセスする暗号化アーカイブを登録します。

@@ -67,7 +67,7 @@ Renderer::Renderer(GraphicsManager* manager)
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
 	GraphicsResourceObject::Initialize(manager);
 
-	//if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
 		m_primaryCommandList = LN_NEW RenderingCommandList();
 	//}
 }
@@ -90,7 +90,7 @@ Renderer::~Renderer()
 //------------------------------------------------------------------------------
 void Renderer::Begin()
 {
-	//if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
 	//	m_primaryCommandList->AddCommand<Renderer_BeginCommand>();
 	//}
 	//else {

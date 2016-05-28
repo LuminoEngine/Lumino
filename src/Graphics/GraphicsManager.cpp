@@ -780,7 +780,7 @@ GraphicsManager::GraphicsManager()
 	, m_fontManager(nullptr)
 	, m_graphicsDevice(nullptr)
 	, m_mainSwapChain(nullptr)
-	, m_renderingType(RenderingType::Immediate)
+	, m_renderingType(GraphicsRenderingType::Immediate)
 	, m_dummyTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
@@ -929,7 +929,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->Initialize(this);
 
-	if (m_renderingType == RenderingType::Deferred)
+	if (m_renderingType == GraphicsRenderingType::Threaded)
 	{
 		// 描画スレッドを立ち上げる
 		m_renderingThread = LN_NEW RenderingThread();
@@ -1008,7 +1008,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 
 		if (m_graphicsDevice != NULL)
 		{
-			if (m_renderingType == RenderingType::Immediate) {
+			if (m_renderingType == GraphicsRenderingType::Immediate) {
 				m_graphicsDevice->DetachRenderingThread();
 			}
 
@@ -1021,7 +1021,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		LN_REFOBJ_SET(m_graphicsDevice, device);
 
 		// Immediate の場合は Initialize したスレッドをレンダリングスレッドとする
-		if (m_renderingType == RenderingType::Immediate) {
+		if (m_renderingType == GraphicsRenderingType::Immediate) {
 			m_graphicsDevice->AttachRenderingThread();
 		}
 

@@ -79,11 +79,13 @@ void TestEnv::SetUp()
 	Logger::Initialize(_T("test_log.txt"));
 
 	EngineSettings settings;
-	settings.mainWindowSize = Size(160, 120);
-	settings.mainBackBufferSize = Size(160, 120);
-	settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
-	settings.renderingType = RenderingType::Immediate; //RenderingType::Deferred;//
-	Engine::Initialize(settings);
+	EngineSettings::SetMainWindowSize(Size(160, 120));
+	EngineSettings::SetMainBackBufferSize(Size(160, 120));
+	EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+	//settings.graphicsAPI = GraphicsAPI::DirectX9; //GraphicsAPI::OpenGL;//
+	//settings.renderingType = GraphicsRenderingType::Immediate; //RenderingType::Deferred;//
+	Engine::Initialize();
 
 	Font::RegisterFontFile(LN_LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 	Font::GetDefaultFont()->SetName(_T("VL Gothic"));
@@ -95,7 +97,7 @@ void TestEnv::SetUp()
 //------------------------------------------------------------------------------
 void TestEnv::TearDown()
 {
-	Engine::Finalize();
+	Engine::Terminate();
 }
 
 //------------------------------------------------------------------------------

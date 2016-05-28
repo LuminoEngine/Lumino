@@ -22,7 +22,7 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 #include "FontGlyphTextureCache.h"
 
 #define LN_CALL_CORE_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_core, __VA_ARGS__); \
 	} \
 	else { \

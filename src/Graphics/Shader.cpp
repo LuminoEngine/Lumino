@@ -11,7 +11,7 @@
 
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
-	if (m_owner->GetManager()->GetRenderingType() == RenderingType::Deferred) { \
+	if (m_owner->GetManager()->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<command>(m_deviceObj, __VA_ARGS__); \
 	} \
 	else { \
@@ -868,7 +868,7 @@ void ShaderPass::Apply()
 	m_owner->TryCommitChanges();
 
 	//LN_CALL_SHADER_COMMAND(Apply, ApplyShaderPassCommand);
-    if (m_owner->GetManager()->GetRenderingType() == RenderingType::Deferred) {
+    if (m_owner->GetManager()->GetRenderingType() == GraphicsRenderingType::Threaded) {
         m_owner->GetManager()->GetRenderer()->m_primaryCommandList->AddCommand<ApplyShaderPassCommand>(m_deviceObj);
     }
     else {

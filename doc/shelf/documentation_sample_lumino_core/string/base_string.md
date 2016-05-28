@@ -7,7 +7,6 @@ String::Append() または +, += 演算子で連結することができます�
 
 
 <sync-tabs>
-<sync-tab-pane group="cpp">
 ````````````````````````````````````````cpp
 String str1 = "12";
 String str2 = "56";
@@ -23,9 +22,7 @@ str1.Append("78");
 
 Console::WriteLine(str1);    // "12345678"
 ````````````````````````````````````````
-</sync-tab-pane>
-<sync-tab-pane group="cs">
-````````````````````````````````````````cpp
+````````````````````````````````````````cs
 String str1 = "12";
 String str2 = "56";
 
@@ -38,7 +35,6 @@ str1.Append("78");
 
 Console.WriteLine(str1);    // "12345678"
 ````````````````````````````````````````
-</sync-tab-pane>
 </sync-tabs>
 
 
@@ -47,9 +43,7 @@ Console.WriteLine(str1);    // "12345678"
 String::Replace()　を使い、置換対象となる任意の文字と置換後の文字を指定します。
 
 <sync-tabs>
-<sync-tab-pane group="cpp">
-
-```````````````````````````````````````` {.cpp}
+````````````````````````````````````````cpp
 String str1 = "abcdcd";
 
 // "ab" を "12" に置き換える
@@ -62,9 +56,7 @@ str1 = str1.Replace(from, to);
 
 Console::WriteLine(str1);    // "12345345"
 ````````````````````````````````````````
-</sync-tab-pane>
-<sync-tab-pane group="cs">
-````````````````````````````````````````cpp
+````````````````````````````````````````cs
 String str1 = "12";
 String str2 = "56";
 
@@ -77,5 +69,4 @@ str1.Append("78");
 
 Console.WriteLine(str1);    // "12345678"
 ````````````````````````````````````````
-</sync-tab-pane>
 </sync-tabs>

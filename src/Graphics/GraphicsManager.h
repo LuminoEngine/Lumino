@@ -36,7 +36,7 @@ public:
 	struct ConfigData
 	{
 		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
-		RenderingType			RenderingType;
+		GraphicsRenderingType			RenderingType;
 		PlatformWindow*			MainWindow;				/**< アプリケーションのメインウィンドウ */
 		Size					backBufferSize;			// バックバッファのサイズ
 		detail::AnimationManager*	animationManager = nullptr;
@@ -47,7 +47,7 @@ public:
 
 		ConfigData()
 			: GraphicsAPI(GraphicsAPI::DirectX9)
-			, RenderingType(RenderingType::Deferred)
+			, RenderingType(GraphicsRenderingType::Threaded)
 			, MainWindow(NULL)
 			, FileManager(NULL)
 			, PlatformTextureLoading(false)
@@ -68,7 +68,7 @@ public:
 	GraphicsAPI GetGraphicsAPI() const;
 
 	/** 現在のグラフィックスシステムのレンダリング方法を確認します。*/
-	RenderingType GetRenderingType() const { return m_renderingType; }
+	GraphicsRenderingType GetRenderingType() const { return m_renderingType; }
 
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
 	Details::Renderer* GetRenderer() const { return m_renderer; }
@@ -150,7 +150,7 @@ private:
 	FileManager*					m_fileManager;
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
-	RenderingType					m_renderingType;
+	GraphicsRenderingType			m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
 	Array<GraphicsResourceObject*>	m_resourceObjectList;
 	

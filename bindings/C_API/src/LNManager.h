@@ -59,7 +59,7 @@ public:
 	static ObjectEntry* GetObjectEntry(LNHandle handle);
 
 public:
-	static EngineSettings		ConfigData;
+	static detail::EngineSettings		ConfigData;
 	static EngineManager*		Engine;
 	static bool					IsSystemInitialized;
 	static Exception*			LastException;

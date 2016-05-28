@@ -1,8 +1,7 @@
-Lumino チュートリアル
+サンプル (Lumino)
 ========
 
 testtest
 --------
 
 test3
-

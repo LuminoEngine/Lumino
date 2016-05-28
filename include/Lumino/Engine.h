@@ -16,17 +16,11 @@ public:
 		@brief		デフォルトの設定でエンジンの初期化処理を行います。
 	*/
 	static void Initialize();
-
-	/**
-		@brief		エンジンの初期化処理を行います。
-		@params[in]	settings	: 初期化設定
-	*/
-	static void Initialize(const EngineSettings& settings);
 	
 	/**
 		@brief		エンジンの終了処理を行います。
 	*/
-	static void Finalize();
+	static void Terminate();
 
 	/**
 		@brief		1フレーム分の更新処理を行います。

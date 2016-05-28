@@ -99,16 +99,67 @@ OpenSceneGraph もたぶんそう。
 
 LN_NAMESPACE_BEGIN
 
-////==============================================================================
-//// NativeWindowEventListener
-////==============================================================================
-//class EngineManager::NativeWindowEventListener
-//{
-//public:
-//	NativeWindowEventListener(EngineManager)
-//	{
-//	}
-//};
+//==============================================================================
+// EngineSettings
+//==============================================================================
+
+detail::EngineSettings detail::EngineSettings::instance;
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetMainWindowSize(const Size& size)
+{
+	detail::EngineSettings::instance.mainWindowSize = size;
+}
+void EngineSettings::SetMainWindowSize(int width, int height)
+{
+	detail::EngineSettings::instance.mainWindowSize = Size(width, height);
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetMainBackBufferSize(const Size& size)
+{
+	detail::EngineSettings::instance.mainBackBufferSize = size;
+}
+void EngineSettings::SetMainBackBufferSize(int width, int height)
+{
+	detail::EngineSettings::instance.mainBackBufferSize = Size(width, height);
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetMainWindowTitle(const StringRef& title)
+{
+	detail::EngineSettings::instance.mainWindowTitle = title;
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetEngineLogEnabled(bool enabled)
+{
+	detail::EngineSettings::instance.applicationLogEnabled = enabled;
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetGraphicsAPI(GraphicsAPI graphicsAPI)
+{
+	detail::EngineSettings::instance.graphicsAPI = graphicsAPI;
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType renderingType)
+{
+	detail::EngineSettings::instance.renderingType = renderingType;
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetDirectMusicMode(DirectMusicMode mode)
+{
+	detail::EngineSettings::instance.directMusicMode = mode;
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::SetDirectMusicReverbLevel(float level)
+{
+	detail::EngineSettings::instance.DirectMusicReverbLevel = level;
+}
 
 //==============================================================================
 // EngineManager
@@ -126,7 +177,7 @@ EngineManager* EngineManager::GetInstance(EngineManager* priority)
 }
 
 //------------------------------------------------------------------------------
-EngineManager* EngineManager::Create(const EngineSettings& configData)
+EngineManager* EngineManager::Create(const detail::EngineSettings& configData)
 {
 	RefPtr<EngineManager> app(LN_NEW EngineManager(configData), false);
 	//app->Initialize();
@@ -135,7 +186,7 @@ EngineManager* EngineManager::Create(const EngineSettings& configData)
 }
 
 //------------------------------------------------------------------------------
-EngineManager::EngineManager(const EngineSettings& configData)
+EngineManager::EngineManager(const detail::EngineSettings& configData)
 	: m_configData(configData)
 	, m_animationManager(nullptr)
 	, m_fileManager(nullptr)
@@ -593,7 +644,7 @@ bool EngineManager::BeginRendering()
 
 	// 描画遅延の確認
 	bool delay = false;
-	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
+	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
 	{
 		if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
 			delay = true;
@@ -644,7 +695,7 @@ void EngineManager::Render()
 	{
 		//// 描画遅延の確認
 		//bool delay = false;
-		//if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred)
+		//if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Deferred)
 		//{
 		//	if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
 		//		delay = true;

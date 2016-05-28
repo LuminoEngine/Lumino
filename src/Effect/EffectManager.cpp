@@ -106,7 +106,7 @@ void EffectManager::Render()
 {
 	if (m_engine == nullptr) return;
 
-	if (m_graphicsManager->GetRenderingType() == RenderingType::Deferred) {
+	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded) {
 		m_graphicsManager->GetPrimaryRenderingCommandList()->AddCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
 	}
 	else {

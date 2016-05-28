@@ -47,7 +47,7 @@ public:
 	/**
 		@brief		アプリケーションの初期化設定を構築する際に呼び出されます。
 	*/
-	virtual void OnConfigure(EngineSettings* settings);
+	virtual void OnConfigure();
 
 	/**
 		@brief		アプリケーションを実行します。

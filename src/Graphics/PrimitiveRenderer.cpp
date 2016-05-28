@@ -8,7 +8,7 @@
 #include "PrimitiveRenderer.h"
 
 #define LN_CALL_CORE_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == RenderingType::Deferred) { \
+	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
 		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_core, __VA_ARGS__); \
 	} \
 	else { \
@@ -516,7 +516,7 @@ void PrimitiveRenderer::Flush()
 	if (m_flushRequested)
 	{
 		//LN_CALL_CORE_COMMAND(Flush, PrimitiveRendererCore_FlushCommand);
-        if (m_manager->GetRenderingType() == RenderingType::Deferred) {
+        if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) {
             m_manager->GetPrimaryRenderingCommandList()->AddCommand<PrimitiveRendererCore_FlushCommand>(m_core);
         }
         else {

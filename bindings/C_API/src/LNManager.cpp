@@ -8,7 +8,7 @@
 // LFManager
 //==============================================================================
 
-EngineSettings				LFManager::ConfigData;
+detail::EngineSettings		LFManager::ConfigData;
 EngineManager*				LFManager::Engine = NULL;
 bool						LFManager::IsSystemInitialized = false;
 Exception*					LFManager::LastException = NULL;

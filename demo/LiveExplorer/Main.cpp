@@ -157,35 +157,35 @@ int main()
 	//std::weak_ptr
 	try
 	{
-		ElapsedTimer timer;
+		//ElapsedTimer timer;
 
-		ConditionFlag flag;
-		flag.SetFalse();
+		//ConditionFlag flag;
+		//flag.SetFalse();
 
-		timer.Start();
-		Delegate<void()> func([&flag, &timer]()
-		{
-			printf("%llu\n", timer.GetElapsedTimeNS());
-			return;
-			while (true)
-			{
-				flag.Wait();
-				printf("%llu\n", timer.GetElapsedTimeNS());
-				flag.SetFalse();
-			}
-		});
-		DelegateThread thr;
-		thr.Start(func);
-		::Sleep(1000);
-
-		//for (int i = 0; i < 10; ++i)
+		//timer.Start();
+		//Delegate<void()> func([&flag, &timer]()
 		//{
-		//	timer.Start();
-		//	flag.SetTrue();
-		//	Thread::Sleep(10);
-		//}
+		//	printf("%llu\n", timer.GetElapsedTimeNS());
+		//	return;
+		//	while (true)
+		//	{
+		//		flag.Wait();
+		//		printf("%llu\n", timer.GetElapsedTimeNS());
+		//		flag.SetFalse();
+		//	}
+		//});
+		//DelegateThread thr;
+		//thr.Start(func);
+		//::Sleep(1000);
 
-		return 0;
+		////for (int i = 0; i < 10; ++i)
+		////{
+		////	timer.Start();
+		////	flag.SetTrue();
+		////	Thread::Sleep(10);
+		////}
+
+		//return 0;
 
 #if 0
 		for (int i = 0; i < 100; ++i)
@@ -273,13 +273,11 @@ int main()
 
 
 
-
-
 		EngineSettings appData;
-		appData.graphicsAPI = GraphicsAPI::DirectX9;
-		appData.renderingType = RenderingType::Immediate;
-		appData.directMusicMode = DirectMusicMode::Normal;
-		Engine::Initialize(appData);
+		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Immediate);
+		EngineSettings::SetDirectMusicMode(DirectMusicMode::Normal);
+		Engine::Initialize();
 
 
 		auto tex = Assets::LoadTexture(LN_LOCALFILE("../../test/UnitTest/Graphics/TestData/0129.png"));
@@ -422,7 +420,7 @@ int main()
 
 		//frameCapturer->StopRecording();
 
-		Engine::Finalize();
+		Engine::Terminate();
 	}
 	catch (Exception& e)
 	{
@@ -455,7 +453,7 @@ int main()
 		//auto aa = ColorBrush::Green;
 		EngineSettings appData;
 		appData.GraphicsAPI = GraphicsAPI::DirectX9;
-		appData.RenderingType = RenderingType::Immediate;
+		appData.RenderingType = GraphicsRenderingType::Immediate;
 		//appData.DirectMusicMode = DirectMusicMode::Normal;
 		Engine::Initialize(appData);
 
@@ -709,7 +707,7 @@ int main()
 
 		EngineSettings appData;
 		//appData.GraphicsAPI = Graphics::GraphicsAPI::OpenGL;
-		//appData.RenderingType = Graphics::RenderingType::Immediate;
+		//appData.RenderingType = Graphics::GraphicsRenderingType::Immediate;
 		RefPtr<EngineManager> app(EngineManager::Create(appData));
 		app->Initialize();
 
