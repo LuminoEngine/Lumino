@@ -17,7 +17,7 @@ public:
 	UIStyleAttribute(const T& v) : value(v), isSet(false), m_modified(true) {}
 	UIStyleAttribute(const UIStyleAttribute& v) : value(v.value), isSet(v.isSet), m_modified(true) {}
 
-	operator const T&() const { return val; }
+	operator const T&() const { return value; }
 	UIStyleAttribute& operator=(const T& v) { value = v; isSet = true; m_modified = true; return *this; }
 	UIStyleAttribute& operator=(const UIStyleAttribute& other) { value = other.value; isSet = other.isSet; m_modified = true; return *this; }
 

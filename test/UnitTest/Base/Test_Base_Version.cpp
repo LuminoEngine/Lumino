@@ -17,6 +17,7 @@ TEST_F(Test_Base_Version, Basic)
 		int revison = LUMINO_ENGINE_VERSION_REVISION;
 		int build = LUMINO_ENGINE_VERSION_BUILD;
 		const TCHAR* str = LUMINO_ENGINE_VERSION_STRING;
+        major; minor; revison; build; str;  // ignore warning
 	}
 	{
 		int major = Version::Engine::GetMajor();

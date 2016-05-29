@@ -1,43 +1,45 @@
 #include <iostream>
 #include <LuminoC.h>
 
+#if defined(LN_MSVC)
 #include <Windows.h>
 HWND GetConsoleHwnd(void)
 {
-#define MY_BUFSIZE 1024 // �R���\�[�� �E�B���h�E�̃^�C�g���p�̃o�b�t�@�T�C�Y
-	HWND hwndFound;         // �Ăяo�����֕Ԃ����l
+#define MY_BUFSIZE 1024 // コンソール ウィンドウのタイトル用のバッファサイズ
+	HWND hwndFound;         // 呼び出し側へ返される値
 	TCHAR pszNewWindowTitle[MY_BUFSIZE];
-	// �쐬�����E�B���h�E�̃^�C�g��������܂�
-	TCHAR pszOldWindowTitle[MY_BUFSIZE]; // ���̃E�B���h�E�^�C�g��������܂�
+	// 作成されるウィンドウのタイトルが入ります
+	TCHAR pszOldWindowTitle[MY_BUFSIZE]; // 元のウィンドウタイトルが入ります
 
-	// ���݂̃E�B���h�E�^�C�g�����擾���܂�
+	// 現在のウィンドウタイトルを取得します
 
 	GetConsoleTitle(pszOldWindowTitle, MY_BUFSIZE);
 
-	// �Ǝ��ɁA�E�B���h�E�̐V�K�^�C�g�����t�H�[�}�b�g���܂�
+	// 独自に、ウィンドウの新規タイトルをフォーマットします
 
 	wsprintf(pszNewWindowTitle, _T("%d/%d"),
 		GetTickCount(),
 		GetCurrentProcessId());
 
-	// ���݂̃E�B���h�E�^�C�g����ύX���܂�
+	// 現在のウィンドウタイトルを変更します
 
 	SetConsoleTitle(pszNewWindowTitle);
 
-	// �E�B���h�E�^�C�g���̃A�b�v�f�[�g���m���Ȃ��̂ɂ����܂�
+	// ウィンドウタイトルのアップデートを確実なものにさせます
 
 	Sleep(40);
 
-	// �E�B���h�E�̐V�K�^�C�g����T���ɂ����܂�
+	// ウィンドウの新規タイトルを探しにいきます
 
 	hwndFound = FindWindow(NULL, pszNewWindowTitle);
 
-	// ���̃E�B���h�E�^�C�g���֖߂��܂�
+	// 元のウィンドウタイトルへ戻します
 
 	SetConsoleTitle(pszOldWindowTitle);
 
 	return(hwndFound);
 }
+#endif
 
 int main()
 {

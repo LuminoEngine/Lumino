@@ -521,7 +521,6 @@ CocoaPlatformWindow::CocoaPlatformWindow(CocoaPlatformWindowManager* manager)
     , m_view(nil)
     , m_delegate(nil)
 {
-
 }
 
 //-----------------------------------------------------------------------------
@@ -545,6 +544,8 @@ CocoaPlatformWindow::~CocoaPlatformWindow()
 //-----------------------------------------------------------------------------
 void CocoaPlatformWindow::Initialize(CocoaPlatformWindowManager* windowManager, String windowTitle, int width, int height, bool fullscreen, bool resizable)
 {
+    m_title = windowTitle;
+    
 	// ウィンドウのイベントを受信する delegate
 	m_delegate = [[CocoaPlatformCoreWindowDelegate alloc] initWithPlatformWindow:this];
 	LN_THROW(m_delegate != nil, InvalidOperationException);
@@ -605,7 +606,7 @@ void CocoaPlatformWindow::Initialize(CocoaPlatformWindowManager* windowManager, 
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 #endif
 
-	StringA local = windowTitle;
+	StringA local = windowTitle.ToStringA();
 	const char* title = local.c_str();
 	[m_window setTitle:[NSString stringWithUTF8String:title]];
 	[m_window setDelegate:m_delegate];
@@ -641,6 +642,20 @@ void CocoaPlatformWindow::SetVisible(bool visible)
 	{
 		[m_window orderOut:nil];
 	}
+}
+
+//-----------------------------------------------------------------------------
+void CocoaPlatformWindow::SetTitleText(const StringRef& title)
+{
+    StringA t = StringA::FromNativeCharString(title.GetBegin(), title.GetLength()); // TODO: title.ToStringA();
+    const char* t2 = t.c_str();
+    [m_window setTitle:[NSString stringWithUTF8String:t2]];
+}
+
+//-----------------------------------------------------------------------------
+const String& CocoaPlatformWindow::GetTitleText() const
+{
+    return m_title;
 }
 
 //-----------------------------------------------------------------------------

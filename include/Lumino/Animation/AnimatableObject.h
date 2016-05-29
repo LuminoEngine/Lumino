@@ -1,12 +1,12 @@
 
 #pragma once
 #include "Common.h"
-#include "AnimationClock.h"
 
 LN_NAMESPACE_BEGIN
+class AnimationClock;
 
 /**
-	@brief	ƒvƒƒpƒeƒBƒAƒjƒ[ƒVƒ‡ƒ“‚ğ“K—p‚Å‚«‚éƒNƒ‰ƒX‚Ìƒx[ƒXƒNƒ‰ƒXB
+	@brief	ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é©ç”¨ã§ãã‚‹ã‚¯ãƒ©ã‚¹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã€‚
 */
 class AnimatableObject
 	: public Object

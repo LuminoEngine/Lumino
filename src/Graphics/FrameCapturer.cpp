@@ -1,9 +1,9 @@
 /*
-	GIF ÉtÉHÅ[É}ÉbÉg
+	GIF „Éï„Ç©„Éº„Éû„ÉÉ„Éà
 	https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 */
 #include "Internal.h"
-#include <giflib-5.1.4\gif_lib.h>
+#include <giflib-5.1.4/gif_lib.h>
 #include "../../../external/jo_gif/jo_gif.cpp"
 #include <Lumino/Threading/Task.h>
 #include <Lumino/Graphics/Texture.h>
@@ -26,10 +26,10 @@ public:
 };
 
 /*
-	giflib Ç∆ jo_gif ÇÃÉnÉCÉuÉäÉbÉhé¿ëïÅB
-	giflib ÇÕÉCÉCä¥Ç∂ÇÃÉäÉAÉãÉ^ÉCÉÄå∏êFã@î\ÇéùÇ¡ÇƒÇ¢Ç»Ç¢ÇÃÇ≈ jo_gif ÇÃã@î\ÇégÇ§ÅB
-	jo_gif ÇÕ lzw ÇÃÉfÉRÅ[ÉhÇ™ giflib Ç∆î‰Ç◊ÇƒíxÇ¢ÇÃÇ≈ÅAÉfÉRÅ[Éh&ÉtÉ@ÉCÉãï€ë∂ÇÕ giflib ÇégÇ§ÅB
-	Å¶ë¨ìxÇÕ 50msÅ`150ms vs 20ms Ç≠ÇÁÇ¢ÅBé ê^ÇÃÇÊÇ§Ç…êFêîÇ™ëùÇ¶ÇÈÇ∆ÅAjo_gif ÇÕíxÇ≠Ç»Ç¡ÇƒÇ¢Ç≠ÅB
+	giflib „Å® jo_gif „ÅÆ„Éè„Ç§„Éñ„É™„ÉÉ„ÉâÂÆüË£Ö„ÄÇ
+	giflib „ÅØ„Ç§„Ç§ÊÑü„Åò„ÅÆ„É™„Ç¢„É´„Çø„Ç§„É†Ê∏õËâ≤Ê©üËÉΩ„ÇíÊåÅ„Å£„Å¶„ÅÑ„Å™„ÅÑ„ÅÆ„Åß jo_gif „ÅÆÊ©üËÉΩ„Çí‰Ωø„ÅÜ„ÄÇ
+	jo_gif „ÅØ lzw „ÅÆ„Éá„Ç≥„Éº„Éâ„Åå giflib „Å®ÊØî„Åπ„Å¶ÈÅÖ„ÅÑ„ÅÆ„Åß„ÄÅ„Éá„Ç≥„Éº„Éâ&„Éï„Ç°„Ç§„É´‰øùÂ≠ò„ÅØ giflib „Çí‰Ωø„ÅÜ„ÄÇ
+	‚Äª„Éá„Ç≥„Éº„Éâ„ÅÆÈÄüÂ∫¶„ÅØ 50ms„Äú150ms vs 20ms „Åè„Çâ„ÅÑ„ÄÇÂÜôÁúü„ÅÆ„Çà„ÅÜ„Å´Ëâ≤Êï∞„ÅåÂ¢ó„Åà„Çã„Å®„ÄÅjo_gif „ÅØÈÅÖ„Åè„Å™„Å£„Å¶„ÅÑ„Åè„ÄÇ
 */
 class DynamicPaletteGifContext
 	: public CapturerContext
@@ -87,7 +87,7 @@ public:
 
 		if (m_task == nullptr || m_task->IsCompleted())
 		{
-			// Task ÇÃíÜÇ≈ jo_gif Ç≈å∏êFÇçsÇ§ÇΩÇﬂÅAÉsÉNÉZÉãÉtÉHÅ[É}ÉbÉgÇïœä∑ÇµÇ¬Ç¬çÏã∆óÃàÊÇ…ÉrÉbÉgÉ}ÉbÉvÉfÅ[É^ÇéÊÇËèoÇ∑
+			// Task „ÅÆ‰∏≠„Åß jo_gif „ÅßÊ∏õËâ≤„ÇíË°å„ÅÜ„Åü„ÇÅ„ÄÅ„Éî„ÇØ„Çª„É´„Éï„Ç©„Éº„Éû„ÉÉ„Éà„ÇíÂ§âÊèõ„Åó„Å§„Å§‰ΩúÊ•≠È†òÂüü„Å´„Éì„ÉÉ„Éà„Éû„ÉÉ„Éó„Éá„Éº„Çø„ÇíÂèñ„ÇäÂá∫„Åô
 			const Size& bmpSize = bitmap->GetSize();
 			RGBX* framePixels = (RGBX*)m_framePixels.GetData();
 			for (int y = 0; y < m_imageSize.height; ++y)
@@ -113,32 +113,32 @@ public:
 				}
 			}
 
-			// Ç±ÇÃíÜÇÕï ÉXÉåÉbÉhÇ≈é¿çsÇ≥ÇÍÇÈ
+			// „Åì„ÅÆ‰∏≠„ÅØÂà•„Çπ„É¨„ÉÉ„Éâ„ÅßÂÆüË°å„Åï„Çå„Çã
 			auto func = [this, delayMS]()
 			{
 				bool updatePalette = (m_frameCount % m_keyFrameSpan == 0);
 
-				// ÉrÉbÉgÉ}ÉbÉvÉfÅ[É^Ç©ÇÁÉCÉìÉfÉbÉNÉXÉfÅ[É^Ç∆ÅAïKóvÇ…âûÇ∂ÇƒÉpÉåÉbÉgÇçÏÇÈ
+				// „Éì„ÉÉ„Éà„Éû„ÉÉ„Éó„Éá„Éº„Çø„Åã„Çâ„Ç§„É≥„Éá„ÉÉ„ÇØ„Çπ„Éá„Éº„Çø„Å®„ÄÅÂøÖË¶Å„Å´Âøú„Åò„Å¶„Éë„É¨„ÉÉ„Éà„Çí‰Ωú„Çã
 				jo_gif_frame(&m_joGif, &m_gifFrame, (unsigned char*)m_framePixels.GetConstData(), m_frameCount, updatePalette);
 
-				// égÇ§ÉpÉåÉbÉgÇëIëÇ∑ÇÈ
+				// ‰Ωø„ÅÜ„Éë„É¨„ÉÉ„Éà„ÇíÈÅ∏Êäû„Åô„Çã
 				ColorMapObject* palette = nullptr;
 				if (updatePalette)
 				{
-					// jo_gif ÇÃÉpÉåÉbÉgÇ giflib ÇÃÉpÉåÉbÉgÇ…ïœä∑
+					// jo_gif „ÅÆ„Éë„É¨„ÉÉ„Éà„Çí giflib „ÅÆ„Éë„É¨„ÉÉ„Éà„Å´Â§âÊèõ
 					m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)m_gifFrame.palette.GetConstData()));
 					palette = m_lastPalette.get();
 				}
 
-				// èââÒÉtÉåÅ[ÉÄÇ≈ÇÕÇ¢ÇÎÇ¢ÇÎèÓïÒÇèëÇ´çûÇﬁïKóvÇ™Ç†ÇÈ
+				// ÂàùÂõû„Éï„É¨„Éº„É†„Åß„ÅØ„ÅÑ„Çç„ÅÑ„ÇçÊÉÖÂ†±„ÇíÊõ∏„ÅçËæº„ÇÄÂøÖË¶Å„Åå„ÅÇ„Çã
 				if (m_frameCount == 0)
 				{
-					// Logical Screen Descriptor (ëSëÃÇÃÉTÉCÉYÇ∆ÉOÉçÅ[ÉoÉãÉpÉåÉbÉg)
+					// Logical Screen Descriptor (ÂÖ®‰Ωì„ÅÆ„Çµ„Ç§„Ç∫„Å®„Ç∞„É≠„Éº„Éê„É´„Éë„É¨„ÉÉ„Éà)
 					EGifPutScreenDesc(m_gif, m_imageSize.width, m_imageSize.height, m_colorCount, 0, palette);
 
-					// Netscape Extension (ÉãÅ[ÉvâÒêî)
+					// Netscape Extension („É´„Éº„ÉóÂõûÊï∞)
 					EGifPutExtensionLeader(m_gif, APPLICATION_EXT_FUNC_CODE);
-					EGifPutExtensionBlock(m_gif, 11, "NETSCAPE2.0");	// å≈íË
+					EGifPutExtensionBlock(m_gif, 11, "NETSCAPE2.0");	// Âõ∫ÂÆö
 					char subblock[3];
 					subblock[0] = 1;
 					subblock[2] = m_loopCount % 256;
@@ -156,7 +156,7 @@ public:
 				// Image Descriptor
 				EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, palette);
 				
-				// ÉsÉNÉZÉãÉCÉìÉfÉbÉNÉXèoóÕ
+				// „Éî„ÇØ„Çª„É´„Ç§„É≥„Éá„ÉÉ„ÇØ„ÇπÂá∫Âäõ
 				const byte_t* indices = m_gifFrame.indexed_pixels.GetConstData();
 				for (int y = 0; y < m_imageSize.height; ++y)
 				{
@@ -171,10 +171,10 @@ public:
 
 private:
 	int								m_colorCount;
-	int								m_loopCount;		// 0 Ç≈ñ≥å¿ÉãÅ[Év
-	int								m_keyFrameSpan;		// ÉpÉåÉbÉgÇçXêVÇ∑ÇÈÉtÉåÅ[ÉÄêîä‘äu
+	int								m_loopCount;		// 0 „ÅßÁÑ°Èôê„É´„Éº„Éó
+	int								m_keyFrameSpan;		// „Éë„É¨„ÉÉ„Éà„ÇíÊõ¥Êñ∞„Åô„Çã„Éï„É¨„Éº„É†Êï∞ÈñìÈöî
 
-	GifFileType*					m_gif;				// gifÉtÉ@ÉCÉãÇçÏÇÈÇΩÇﬂÇÃ giflib ÉRÉìÉeÉLÉXÉg
+	GifFileType*					m_gif;				// gif„Éï„Ç°„Ç§„É´„Çí‰Ωú„Çã„Åü„ÇÅ„ÅÆ giflib „Ç≥„É≥„ÉÜ„Ç≠„Çπ„Éà
 	std::shared_ptr<ColorMapObject>	m_lastPalette;
 
 	jo_gif_t						m_joGif;
@@ -182,13 +182,13 @@ private:
 	ByteBuffer						m_framePixels;
 	RefPtr<BinaryWriter>			m_writer;
 	int								m_frameCount;
-	jo_gif_frame_t					m_gifFrame;			// 1ÉtÉåÅ[ÉÄÇÃçÏã∆óÃàÊÅBëOÇÃÉtÉåÅ[ÉÄÇï€ë∂Ç∑ÇÈÇ»ÇÁîzóÒâªÇ∑ÇÈ
+	jo_gif_frame_t					m_gifFrame;			// 1„Éï„É¨„Éº„É†„ÅÆ‰ΩúÊ•≠È†òÂüü„ÄÇÂâç„ÅÆ„Éï„É¨„Éº„É†„Çí‰øùÂ≠ò„Åô„Çã„Å™„ÇâÈÖçÂàóÂåñ„Åô„Çã
 	tr::TaskPtr						m_task;
 };
 
 /*
-	í≤ç∏ópÇ…çÏÇ¡ÇΩÇ‡ÇÃÅBíËã`çœÇ›ÇÃÉpÉåÉbÉgÇ÷å∏êFÇ∑ÇÈÅB
-	îÒèÓÇ…çÇë¨Ç…ìÆçÏÇ∑ÇÈÇ™ÅAâÊéøÇÕÇ®é@ÇµÅB
+	Ë™øÊüªÁî®„Å´‰Ωú„Å£„Åü„ÇÇ„ÅÆ„ÄÇÂÆöÁæ©Ê∏à„Åø„ÅÆ„Éë„É¨„ÉÉ„Éà„Å∏Ê∏õËâ≤„Åô„Çã„ÄÇ
+	ÈùûÊÉÖ„Å´È´òÈÄü„Å´Âãï‰Ωú„Åô„Çã„Åå„ÄÅÁîªË≥™„ÅØ„ÅäÂØü„Åó„ÄÇ
 */
 class GifContext
 	: public CapturerContext
@@ -220,7 +220,7 @@ public:
 		EGifPutScreenDesc(m_gif, size.width, size.height, 256, 0, m_globalPalette);
 
 		EGifPutExtensionLeader(m_gif, APPLICATION_EXT_FUNC_CODE);
-		EGifPutExtensionBlock(m_gif, 11, "NETSCAPE2.0");	// å≈íË
+		EGifPutExtensionBlock(m_gif, 11, "NETSCAPE2.0");	// Âõ∫ÂÆö
 
 		// Data Sub-blocks
 		int loop_count = 0;
@@ -408,7 +408,7 @@ void FrameCapturer::Record()
 //------------------------------------------------------------------------------
 void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 {
-	// ò^âÊèÛë‘ÇÃïœâªämîF
+	// Èå≤ÁîªÁä∂ÊÖã„ÅÆÂ§âÂåñÁ¢∫Ë™ç
 	if (newState != m_currentState)
 	{
 		if (newState == State::Stoped)
@@ -424,17 +424,17 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		m_currentState = newState;
 	}
 
-	// ò^âÊ
+	// Èå≤Áîª
 	if (m_currentState == State::Recording)
 	{
-		// ç∑ï™éûä‘åvéZ
+		// Â∑ÆÂàÜÊôÇÈñìË®àÁÆó
 		uint64_t deltaTick = 0;
 		uint64_t curTick = Environment::GetTickCount();
 		if (m_lastTick != 0) deltaTick = curTick - m_lastTick;
 
-		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 Ç≠ÇÁÇ¢Ç≈ÉvÉçÉbÉgÇ∑ÇÈèÍçáÇÕÉRÉå (TODO: fpséwíË)
+		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 „Åè„Çâ„ÅÑ„Åß„Éó„É≠„ÉÉ„Éà„Åô„ÇãÂ†¥Âêà„ÅØ„Ç≥„É¨ (TODO: fpsÊåáÂÆö)
 		{
-			// RenderTarget ÇÃì‡óeÇì«Ç›éÊÇÈ
+			// RenderTarget „ÅÆÂÜÖÂÆπ„ÇíË™≠„ÅøÂèñ„Çã
 			Bitmap* bmp = target->Lock();	//TODO: Scoped
 			m_gifContext->AddFrame(bmp, deltaTick);
 			target->Unlock();

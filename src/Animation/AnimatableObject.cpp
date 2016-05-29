@@ -1,6 +1,7 @@
 
 #include "../Internal.h"
 #include <Lumino/Reflection/ReflectionEventArgs.h>
+#include <Lumino/Animation/AnimationClock.h>
 #include <Lumino/Animation/AnimatableObject.h>
 
 LN_NAMESPACE_BEGIN
@@ -25,7 +26,7 @@ void AnimatableObject::OnPropertyChanged(tr::PropertyChangedEventArgs* e)
 {
 	Object::OnPropertyChanged(e);
 
-	// Animation �ɂ��ݒ�ȊO�̏ꍇ�͈�x�A�j���[�V�������~����
+	// Animation による設定以外の場合は一度アニメーションを停止する
 	if (e->cause != tr::PropertySetSource::ByAnimation)
 	{
 		DeactivatePropertyAnimation(e->changedProperty);
@@ -35,7 +36,7 @@ void AnimatableObject::OnPropertyChanged(tr::PropertyChangedEventArgs* e)
 //------------------------------------------------------------------------------
 void AnimatableObject::DeactivatePropertyAnimation(const tr::Property* targetProperty)
 {
-	// �Đ����̃A�j���̒��ɓ����^�[�Q�b�g�̓����v���p�e�B���A�j���[�V�������Ă�����̂�����Β�~����
+	// 再生中のアニメの中に同じターゲットの同じプロパティをアニメーションしているものがあれば停止する
 	for (auto& clock : m_playingAnimationClockList)
 	{
 		for (auto& playingCurveLineInst : clock->m_instanceList)

@@ -11,7 +11,7 @@ const String InternalResource::DirectXNotInstalledError(_T("DirectXNotInstalledE
 
 void InternalResource::InitializeEngineResource()
 {
-	SetString(DirectXNotInstalledError, _T("%s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B\nDirectX ƒGƒ“ƒhƒ†[ƒU[ƒ‰ƒ“ƒ^ƒCƒ€ ‚ðƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢B\nhttps://www.microsoft.com/ja-jp/download/details.aspx?id=35&"));
+	SetString(DirectXNotInstalledError, _T("%s ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚\nDirectX ã‚¨ãƒ³ãƒ‰ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ©ãƒ³ã‚¿ã‚¤ãƒ  ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¦ãã ã•ã„ã€‚\nhttps://www.microsoft.com/ja-jp/download/details.aspx?id=35&"));
 }
 
 LN_NAMESPACE_END

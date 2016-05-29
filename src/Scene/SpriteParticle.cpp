@@ -6,6 +6,7 @@
 	https://docs.unrealengine.com/latest/JPN/Engine/Rendering/ParticleSystems/Reference/index.html
 */
 #include "Internal.h"
+#include <math.h>
 #include "../Graphics/GraphicsManager.h"	// TODO:
 #include <Lumino/Graphics/VertexBuffer.h>	// TODO:
 #include <Lumino/Graphics/IndexBuffer.h>	// TODO:

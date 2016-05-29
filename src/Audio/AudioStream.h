@@ -137,9 +137,6 @@ public:
 	/// デコード状態のリセット(再生開始直前に呼ばれる。MP3 用)
 	virtual void Reset() = 0;
 
-private:
-	Exception*	m_exception;
-	bool		m_finishedCreate;
 };
 
 } // namespace detail

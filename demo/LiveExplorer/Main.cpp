@@ -31,9 +31,9 @@ class TestRef1 : public RefObject
 };
 
 /*
-(x1,y1)n“_
-(x2,y2)§Œä“_
-(x3,y3)I“_ 
+(x1,y1)å§‹ç‚¹
+(x2,y2)åˆ¶å¾¡ç‚¹
+(x3,y3)çµ‚ç‚¹ 
 */
 float BezierCurve2D(float x1, float x2, float x3, float t)
 {
@@ -42,10 +42,10 @@ float BezierCurve2D(float x1, float x2, float x3, float t)
 }
 
 /*
-(x1,y1)n“_
-(x2,y2)§Œä“_
-(x3,y3)§Œä“_
-(x4,y4)I“_ 
+(x1,y1)å§‹ç‚¹
+(x2,y2)åˆ¶å¾¡ç‚¹
+(x3,y3)åˆ¶å¾¡ç‚¹
+(x4,y4)çµ‚ç‚¹ 
 */
 float BezierCurve1(float x1, float x2, float x3, float x4, float t)
 {
@@ -539,13 +539,13 @@ int main()
 			Physics::PhysicsManager::Instance->SyncBeforeStepSimulation();
 			Physics::PhysicsManager::Instance->StepSimulation(0.016);
 
-			//// ‚©‚ß‚ç‚Í 0,0,z
+			//// ã‹ã‚ã‚‰ã¯ 0,0,z
 
 			Matrix view = Matrix::LookAtLH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0));
 			Matrix proj = Matrix::PerspectiveFovLH(Camera::GetDefault3DCamera()->GetFovY(), 640.0f / 480.f, 1, 1000);
 			Matrix inv = Matrix::Inverse(view * proj);
-			Vector3 vec1(-1, 1, 1);		// ‹‘ä‚Ì¶ã‰œ
-			vec1.TransformCoord(inv);	// ƒJƒƒ‰(0, 0, 0) ‚©‚ç‹‘ä‚Ì¶ã‰œ‚ğ‚Â‚È‚®ƒŒƒC
+			Vector3 vec1(-1, 1, 1);		// è¦–éŒå°ã®å·¦ä¸Šå¥¥
+			vec1.TransformCoord(inv);	// ã‚«ãƒ¡ãƒ©(0, 0, 0) ã‹ã‚‰è¦–éŒå°ã®å·¦ä¸Šå¥¥ã‚’ã¤ãªããƒ¬ã‚¤
 
 
 			if (Engine::BeginRendering())
@@ -560,10 +560,10 @@ int main()
 				rc->SetShaderPass(shader1->GetTechniques()[0]->GetPasses()[0]);
 
 				rc->DrawSquare(
-					Vector3(-1.0f, 1.0f, 0.0f)/2, Vector2(0.0f, 0.0f), ColorF::Red,		// ¶ã
-					Vector3(1.0f, 1.0f, 0.0f)/2, Vector2(1.0f, 0.0f), ColorF::Green,		// ‰Eã
-					Vector3(1.0f, -1.0f, 0.0f)/2, Vector2(1.0f, 1.0f), ColorF::Blue,		// ‰E‰º
-					Vector3(-1.0f, -1.0f, 0.0f)/2, Vector2(0.0f, 1.0f), ColorF::White);	// ¶‰º
+					Vector3(-1.0f, 1.0f, 0.0f)/2, Vector2(0.0f, 0.0f), ColorF::Red,		// å·¦ä¸Š
+					Vector3(1.0f, 1.0f, 0.0f)/2, Vector2(1.0f, 0.0f), ColorF::Green,		// å³ä¸Š
+					Vector3(1.0f, -1.0f, 0.0f)/2, Vector2(1.0f, 1.0f), ColorF::Blue,		// å³ä¸‹
+					Vector3(-1.0f, -1.0f, 0.0f)/2, Vector2(0.0f, 1.0f), ColorF::White);	// å·¦ä¸‹
 				//rc->Flush();
 
 #if 0
@@ -718,8 +718,8 @@ int main()
 		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 		app->GetGraphicsManager()->GetFontManager()->RegisterFontFile(LOCALFILE("../../tools/VLGothic/VL-PGothic-Regular.ttf"));
 
-		// TODO: RefObject ‚ÌƒfƒXƒgƒ‰ƒNƒ^‚ÅAQÆƒJƒEƒ“ƒg1ˆÈã‚È‚çƒGƒ‰[B
-		RefPtr<Graphics::Font> font1(Graphics::Font::Create(app->GetGraphicsManager()->GetFontManager()));	// TODO: ƒ_ƒT‚·‚¬‚éBƒfƒtƒHƒ‹ƒg‚Ìİ’è•û–@‚àl‚¦‚éB
+		// TODO: RefObject ã®ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§ã€å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆ1ä»¥ä¸Šãªã‚‰ã‚¨ãƒ©ãƒ¼ã€‚
+		RefPtr<Graphics::Font> font1(Graphics::Font::Create(app->GetGraphicsManager()->GetFontManager()));	// TODO: ãƒ€ã‚µã™ãã‚‹ã€‚ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è¨­å®šæ–¹æ³•ã‚‚è€ƒãˆã‚‹ã€‚
 		
 
 
@@ -818,11 +818,11 @@ int main()
 		grid1->GetChildren()->Remove(textBox1);
 		grid1->GetChildren()->Add(textBox1);
 
-		//textBox1->SetFontFamily(_T("MS –¾’©"));
+		//textBox1->SetFontFamily(_T("MS æ˜æœ"));
 		app->GetGUIManager()->GetDefaultRootFrame()->SetFontFamily(_T("MS Gpthic"));
 		_tprintf(textBox1->GetFontFamily());
 		app->GetGUIManager()->GetDefaultRootFrame()->SetFontFamily(_T("MS PGpthic"));
-		_tprintf(textBox1->GetFontFamily());	// TODO: "MS –¾’©" ‚ª•\¦‚Å‚«‚È‚¢EEEH
+		_tprintf(textBox1->GetFontFamily());	// TODO: "MS æ˜æœ" ãŒè¡¨ç¤ºã§ããªã„ãƒ»ãƒ»ãƒ»ï¼Ÿ
 
 
 		RefPtr<Sprite> sprite(Sprite::Create());
@@ -880,7 +880,7 @@ int main()
 		track1->SetViewportSize(25);
 		workbench1->SetContent(track1);
 #endif
-#if 0	// Grid ‚ÌƒeƒXƒg
+#if 0	// Grid ã®ãƒ†ã‚¹ãƒˆ
 		RefPtr<Grid> grid1(LN_NEW Grid(app->GetGUIManager()));
 		RefPtr<ColumnDefinition> col1(LN_NEW ColumnDefinition(app->GetGUIManager()));
 		col1->SetWidth(200);
@@ -909,7 +909,7 @@ int main()
 		Grid::SetColumnSpan(track2, 2);
 		grid1->GetChildren()->Add(track2);
 #endif
-#if 0	// Image ‚ÌƒeƒXƒg
+#if 0	// Image ã®ãƒ†ã‚¹ãƒˆ
 		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("D:/Proj/Lumino/src/GUI/Resource/DefaultSkin.png")));
 		RefPtr<Image> image1(LN_NEW Image(app->GetGUIManager()));
 		image1->SetSourceTexture(tex1);
@@ -926,7 +926,7 @@ int main()
 		RefPtr<ScrollViewer> scrollViewer = ScrollViewer::Create(app->GetGUIManager());
 		workbench1->SetContent(scrollViewer);
 
-		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("C:/Users/admin/Pictures/Ql/5011525.png")));
+		RefPtr<Graphics::Texture> tex1(Graphics::Texture::Create(_T("C:/Users/admin/Pictures/å‚è€ƒ/5011525.png")));
 		RefPtr<Image> image1(LN_NEW Image(app->GetGUIManager()));
 		image1->SetSourceTexture(tex1);
 		scrollViewer->SetContent(image1);
@@ -1007,7 +1007,7 @@ int main()
 //------------------------------------------------------------------------------
 DemoManager::DemoMainFunc DemoManager::RegisterDemo(const char* name, DemoMainFunc func)
 {
-	String t = name;
+    String t = String::FromNativeCharString(name);
 	Array<String> tokens = t.Split(_T("."));
 	DemoInfo info;
 	info.Group1 = tokens[0];

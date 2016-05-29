@@ -273,6 +273,7 @@ static bool ParseHexColor(const StringRef& str, Color* outColor)
 			b = ParseHexChar(str[4]);
 			b = b + b * 16;
 		}
+        // #FFF
 		else if (str.GetLength() >= 4)
 		{
 			r = ParseHexChar(str[1]);
@@ -281,6 +282,7 @@ static bool ParseHexColor(const StringRef& str, Color* outColor)
 			g = g + g * 16;
 			b = ParseHexChar(str[3]);
 			b = b + b * 16;
+            a = 255;
 		}
 		else
 		{

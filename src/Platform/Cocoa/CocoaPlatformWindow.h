@@ -22,7 +22,9 @@ public:
     
 public:
 	// PlatformWindow interface
-	virtual void SetVisible(bool visible) override;
+    virtual void SetVisible(bool visible) override;
+    virtual void SetTitleText(const StringRef& title) override;
+    virtual const String& GetTitleText() const override;
 	virtual void SetFullScreenEnabled(bool enabled) override;
 	virtual bool IsFullScreenEnabled() const override;
 
@@ -30,6 +32,7 @@ private:
 	id		m_window;
     id      m_view;
 	id		m_delegate;
+    String  m_title;
 };
 
 LN_NAMESPACE_END

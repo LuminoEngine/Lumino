@@ -536,9 +536,7 @@ set(LN_SOURCES_Foundation
 	src/Foundation/EntryPoint.cpp
 	src/Foundation/EntryPoint.h
 	src/Foundation/GameSceneManager.cpp
-	src/Foundation/GameSceneManager.h
-	src/Foundation/Main_Win32.cpp
-)
+	src/Foundation/GameSceneManager.h)
 endif()
 
 #--------------------------------------
@@ -615,6 +613,13 @@ if (WIN32)
 		src/Audio/DirectMusic/DirectMusicAudioPlayer.h
 	)
 
+	if (LN_BUILD_FOUNDATION_MODULE)
+	set(LN_SOURCES_Foundation
+		src/Foundation/Main_Win32.cpp
+	)
+	endif()
+
+
 elseif (APPLE)
 	set(LN_SOURCES_Platform
 		${LN_SOURCES_Platform}
@@ -632,7 +637,14 @@ elseif (APPLE)
 		${LN_SOURCES_Graphics_Device}
 		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.mm
 		src/Graphics/Device/OpenGL/NSGLGraphicsDevice.h
+	)	
+
+	if (LN_BUILD_FOUNDATION_MODULE)
+	set(LN_SOURCES_Foundation
+		src/Foundation/Main_Mac.cpp
 	)
+	endif()
+
 
 elseif (UNIX)
 	set(LN_SOURCES_Platform
@@ -880,8 +892,12 @@ endif()
 
 set_target_properties(effekseer PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
 set_target_properties(effekseer_renderer_gl PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
-set_target_properties(effekseer_renderer_dx9 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
-set_target_properties(effekseer_sound_xaudio2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+
+if (MSVC)
+	set_target_properties(effekseer_renderer_dx9 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+	set_target_properties(effekseer_sound_xaudio2 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+endif()
+
 
 
 #------------------------------------------------------------------------------
@@ -952,7 +968,9 @@ endif()
 if (LN_BUILD_C_API)
 	add_subdirectory(bindings/C_API)
 	add_subdirectory(bindings/C/Test)
-	add_subdirectory(tools/ArchiveMaker)
+	if (MSVC)
+		add_subdirectory(tools/ArchiveMaker)
+	endif()
 endif()
 
 #add_subdirectory(tools/LNSL)
