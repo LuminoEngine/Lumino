@@ -1393,7 +1393,7 @@ void GLShaderPass::Build()
 
 				// Location 取得
 				int loc = glGetAttribLocation(m_program, name); LN_CHECK_GLERROR();
-				m_usageAttrIndexTable[iUsage][usageIndex] = glGetAttribLocation(m_program, name); LN_CHECK_GLERROR();
+				m_usageAttrIndexTable[iUsage][usageIndex] = loc; LN_CHECK_GLERROR();
 				break;
 			}
 		}

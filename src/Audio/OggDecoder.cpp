@@ -14,28 +14,33 @@ namespace detail
 	
 //------------------------------------------------------------------------------
 OggDecoder::OggDecoder()
-	: m_stream(NULL)
-	, mSourceDataSize(0)
-	//, mDataOffset(0)
-	, mPCMDataSize(0)
-	, mTotalTime(0)
-	, mOnmemoryPCMBuffer(NULL)
-	, mOnmemoryPCMBufferSize(0)
-	, mTotalSamples(0)
+	: m_stream(nullptr)
+	, m_waveFormat()
+	, m_sourceDataSize(0)
+	, m_totalTime(0)
+	, m_onmemoryPCMBuffer(nullptr)
+	, m_onmemoryPCMBufferSize(0)
+	, m_totalSamples(0)
+	, m_mutex()
+	, m_oggVorbisFile()
+	, m_loopStart(0)
+	, m_loopLength(0)
 {
 }
 
 //------------------------------------------------------------------------------
 OggDecoder::~OggDecoder()
 {
-	LN_SAFE_DELETE_ARRAY(mOnmemoryPCMBuffer);
-	ov_clear(&mOggVorbisFile);
+	LN_SAFE_DELETE_ARRAY(m_onmemoryPCMBuffer);
+	ov_clear(&m_oggVorbisFile);
 	LN_SAFE_RELEASE(m_stream);
 }
 
 //------------------------------------------------------------------------------
 void OggDecoder::Create(Stream* stream)
 {
+	LN_CHECK_ARG(stream != nullptr);
+	
 	LN_REFOBJ_SET(m_stream, stream);
 	m_stream->Seek(0, SeekOrigin_Begin);
 
@@ -47,7 +52,7 @@ void OggDecoder::Create(Stream* stream)
 		tellOggCallback };
 
 	// コールバックを使って Ogg ファイルオープン
-	int err = ov_open_callbacks(m_stream, &mOggVorbisFile, 0, 0, callbacks);
+	int err = ov_open_callbacks(m_stream, &m_oggVorbisFile, 0, 0, callbacks);
 
 	// エラーが発生した場合
 	if (err != 0)
@@ -65,40 +70,38 @@ void OggDecoder::Create(Stream* stream)
 	}
 
 	// Ogg ファイルの情報取得
-	vorbis_info* ogg_info = ov_info(&mOggVorbisFile, -1);
+	vorbis_info* ogg_info = ov_info(&m_oggVorbisFile, -1);
 
 	int bits_per_sample = WORD_BITS;	// とりあえず 16bit 固定
-	mWaveFormat.formatTag = 1;	// PCM
-	mWaveFormat.channels = ogg_info->channels;
-	mWaveFormat.samplesPerSec = ogg_info->rate;
-	mWaveFormat.avgBytesPerSec = ogg_info->rate * bits_per_sample / 8 * ogg_info->channels;
-	mWaveFormat.blockAlign = bits_per_sample / 8 * ogg_info->channels;
-	mWaveFormat.bitsPerSample = bits_per_sample;
-	mWaveFormat.exSize = 0;
+	m_waveFormat.formatTag = 1;	// PCM
+	m_waveFormat.channels = ogg_info->channels;
+	m_waveFormat.samplesPerSec = ogg_info->rate;
+	m_waveFormat.avgBytesPerSec = ogg_info->rate * bits_per_sample / 8 * ogg_info->channels;
+	m_waveFormat.blockAlign = bits_per_sample / 8 * ogg_info->channels;
+	m_waveFormat.bitsPerSample = bits_per_sample;
+	m_waveFormat.exSize = 0;
 
-	ogg_int64_t total = ov_pcm_total(&mOggVorbisFile, -1);
+	ogg_int64_t total = ov_pcm_total(&m_oggVorbisFile, -1);
 	LN_THROW((total != OV_EINVAL), InvalidFormatException, "ov_pcm_total %d\n", total);
 
 	// オンメモリに展開する時に必要な PCM サイズ
-	mOnmemoryPCMBufferSize = static_cast<uint32_t>(total)* WORD_SIZE * mWaveFormat.channels;		// 2 は 16bit なので
+	m_onmemoryPCMBufferSize = static_cast<uint32_t>(total)* WORD_SIZE * m_waveFormat.channels;		// 2 は 16bit なので
 
-	//printf( "(要チェック！！)mOnmemoryPCMBufferSize: %d\n", mOnmemoryPCMBufferSize );
-
-	mSourceDataSize = mOnmemoryPCMBufferSize;
+	m_sourceDataSize = m_onmemoryPCMBufferSize;
 
 	// 念のため先頭にシーク
-	ov_time_seek(&mOggVorbisFile, 0.0);
+	ov_time_seek(&m_oggVorbisFile, 0.0);
 
 	// 再生時間
-	double t = static_cast<double>(mOnmemoryPCMBufferSize) / (static_cast<double>(mWaveFormat.avgBytesPerSec) * 0.001);
-	mTotalTime = static_cast<uint32_t>(t);
+	double t = static_cast<double>(m_onmemoryPCMBufferSize) / (static_cast<double>(m_waveFormat.avgBytesPerSec) * 0.001);
+	m_totalTime = static_cast<uint32_t>(t);
 
 	// 全体の再生サンプル数を求める
-	uint32_t one_channel_bits = (mOnmemoryPCMBufferSize / mWaveFormat.channels) * 8;	// 1チャンネルあたりの総ビット数
-	mTotalSamples = one_channel_bits / mWaveFormat.bitsPerSample;
+	uint32_t one_channel_bits = (m_onmemoryPCMBufferSize / m_waveFormat.channels) * 8;	// 1チャンネルあたりの総ビット数
+	m_totalSamples = one_channel_bits / m_waveFormat.bitsPerSample;
 
 	// ファイルに埋め込まれている "LOOPSTART" "LOOPLENGTH" コメントを探す
-	vorbis_comment* ogg_comment = ov_comment(&mOggVorbisFile, -1);
+	vorbis_comment* ogg_comment = ov_comment(&m_oggVorbisFile, -1);
 	char* c;
 	char buf[20];
 	for (int i = 0; i < ogg_comment->comments; ++i)
@@ -111,13 +114,13 @@ void OggDecoder::Create(Stream* stream)
 			{
 				memset(buf, 0, sizeof(buf));
 				memcpy(buf, (c + 10), (ogg_comment->comment_lengths[i] - 10));
-				mLoopStart = static_cast<uint32_t>(atoi(buf));
+				m_loopStart = static_cast<uint32_t>(atoi(buf));
 			}
 			else if (memcmp(c, "LOOPLENGTH", 10) == 0)
 			{
 				memset(buf, 0, sizeof(buf));
 				memcpy(buf, (c + 11), (ogg_comment->comment_lengths[i] - 11));
-				mLoopLength = static_cast<uint32_t>(atoi(buf));
+				m_loopLength = static_cast<uint32_t>(atoi(buf));
 			}
 		}
 	}
@@ -128,9 +131,9 @@ void OggDecoder::FillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 
-	if (mOnmemoryPCMBuffer == NULL && mOnmemoryPCMBufferSize > 0)
+	if (m_onmemoryPCMBuffer == NULL && m_onmemoryPCMBufferSize > 0)
 	{
-		mOnmemoryPCMBuffer = LN_NEW byte_t[mOnmemoryPCMBufferSize];
+		m_onmemoryPCMBuffer = LN_NEW byte_t[m_onmemoryPCMBufferSize];
 
 		long read_size;
 		long point = 0;
@@ -139,16 +142,16 @@ void OggDecoder::FillOnmemoryBuffer()
 		int bitstream;
 
 		// ファイルの先頭にシーク
-		ov_time_seek(&mOggVorbisFile, 0.0);
+		ov_time_seek(&m_oggVorbisFile, 0.0);
 
 		// 全部読み込む
 		while (1)
 		{
 			// 不定長～4096 バイトずつ読んでいく
-			read_size = ov_read(&mOggVorbisFile, (char*)temp_buffer, 4096, 0, WORD_SIZE, 1, &bitstream);
+			read_size = ov_read(&m_oggVorbisFile, (char*)temp_buffer, 4096, 0, WORD_SIZE, 1, &bitstream);
 
 			// バッファにコピー
-			memcpy(&mOnmemoryPCMBuffer[point], temp_buffer, read_size);
+			memcpy(&m_onmemoryPCMBuffer[point], temp_buffer, read_size);
 
 			total += read_size;
 
@@ -165,68 +168,57 @@ void OggDecoder::FillOnmemoryBuffer()
 //------------------------------------------------------------------------------
 void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
-	//if (mOnmemoryPCMBuffer)
-	//{
-	//	AudioSourceBase::read(buffer, buffer_size, out_read_size, out_write_size);
-	//}
-	//else
-	{
-		ov_pcm_seek(&mOggVorbisFile, (seekPos / (WORD_SIZE * mWaveFormat.channels)));
+    ov_pcm_seek(&m_oggVorbisFile, (seekPos / (WORD_SIZE * m_waveFormat.channels)));
 
-		// 0 クリア
-		memset(buffer, 0, buffer_size);
-		*out_read_size = 0;
+    // 0 クリア
+    memset(buffer, 0, buffer_size);
+    *out_read_size = 0;
 
-		long size = 0;
-		int request_size = 4096;
-		int bitstream = 0;
-		uint32_t com_size = 0;
-		char* byte_buffer = (char*)buffer;
+    long size = 0;
+    int request_size = 4096;
+    int bitstream = 0;
+    uint32_t com_size = 0;
+    char* byte_buffer = (char*)buffer;
 
-		while (1)
-		{
-			size = ov_read(&mOggVorbisFile, (char*)(byte_buffer + com_size), request_size, 0, WORD_SIZE, 1, &bitstream);
+    while (1)
+    {
+		size = ov_read(&m_oggVorbisFile, (char*)(byte_buffer + com_size), request_size, 0, WORD_SIZE, 1, &bitstream);
+            
+        // ファイルエンド
+        if (size == 0)
+        {
+            break;
+        }
 
-			// ファイルエンド
-			if (size == 0)
-			{
-				break;
-			}
+        com_size += size;
+            
+        // バッファを全部埋めた場合
+        if (com_size >= buffer_size)
+        {
+            break;
+        }
 
-			com_size += size;
+        // バッファの残りが 4096 未満の場合
+        if (buffer_size - com_size < 4096)
+        {
+            // 次に読むバイト数は、バッファの残り領域分だけ
+            request_size = buffer_size - com_size;
+        }
+    }
 
-			// バッファを全部埋めた場合
-			if (com_size >= buffer_size)
-			{
-				break;
-			}
-
-			// バッファの残りが 4096 未満の場合
-			if (buffer_size - com_size < 4096)
-			{
-				// 次に読むバイト数は、バッファの残り領域分だけ
-				request_size = buffer_size - com_size;
-			}
-		}
-
-		*out_read_size = com_size;
-		*out_write_size = com_size;
-	}
+    *out_read_size = com_size;
+    *out_write_size = com_size;
 }
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 size_t OggDecoder::readOggCallback(void* buffer, size_t element_size, size_t count, void* stream)
 {
 	Stream* file = (Stream*)stream;
 	size_t read_size = file->Read(buffer, element_size * count);
 	return read_size;
 }
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 int OggDecoder::seekOggCallback(void* stream, ogg_int64_t offset, int whence)
 {
 	if (stream == NULL) return -1; // 異常の時は 0 以外の値を返す
@@ -234,18 +226,14 @@ int OggDecoder::seekOggCallback(void* stream, ogg_int64_t offset, int whence)
 	file->Seek(static_cast< int >(offset), (SeekOrigin)whence);
 	return 0;
 }
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 int OggDecoder::closeOggCallback(void* stream)
 {
 	return 0;	// InFile のデストラクタで閉じるので、ここでは何もしない。
 }
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 long OggDecoder::tellOggCallback(void* stream)
 {
 	Stream* file = (Stream*)stream;

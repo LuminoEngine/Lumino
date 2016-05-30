@@ -1,4 +1,4 @@
-﻿#pragma once
+﻿
 #include "LNInternal.h"
 
 extern "C"
@@ -9,7 +9,7 @@ extern "C"
 //==============================================================================
 
 //------------------------------------------------------------------------------
-LN_API void LCSInternal_GetIntPtrStringLength(int string, int* len)
+LN_API void LCSInternal_GetIntPtrStringLength(intptr_t string, int* len)
 {
 	if (string == 0) {
 		*len = 0;
@@ -19,7 +19,7 @@ LN_API void LCSInternal_GetIntPtrStringLength(int string, int* len)
 }
 
 //------------------------------------------------------------------------------
-LN_API void LCSInternal_GetIntPtrString(int string, LNChar* buf)
+LN_API void LCSInternal_GetIntPtrString(intptr_t string, LNChar* buf)
 {
 	if (string == 0 || buf == NULL)
 		return;
@@ -31,7 +31,7 @@ LN_API void LCSInternal_GetIntPtrString(int string, LNChar* buf)
 }
 
 //------------------------------------------------------------------------------
-LN_API void LHSPInternal_GetIntPtrStringLength(int string, int* len)
+LN_API void LHSPInternal_GetIntPtrStringLength(intptr_t string, int* len)
 {
 	if (string == 0) {
 		*len = 0;
@@ -41,7 +41,7 @@ LN_API void LHSPInternal_GetIntPtrStringLength(int string, int* len)
 }
 
 //------------------------------------------------------------------------------
-LN_API void LHSPInternal_GetIntPtrString(int string, LNChar* buf)
+LN_API void LHSPInternal_GetIntPtrString(intptr_t string, LNChar* buf)
 {
 	if (string == 0 || buf == NULL)
 		return;

@@ -44,7 +44,7 @@ private:
 	AudioDecoder*		m_decoder;
 };
 
-/// 音声データのベースクラス
+// 音声データをデコードするクラスのベースクラス
 class AudioDecoder
 	: public RefObject
 {
@@ -130,9 +130,6 @@ public:
 	*/
 	virtual void Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) = 0;
 
-	/// ファイルポインタ移動 (先頭からのバイトオフセット)
-	/// (このクラスで実装している read() と seek() は getOnmemoryPCMBuffer() に読み込んでいる事が前提)
-	//virtual void seek(uint32_t offset);
 
 	/// デコード状態のリセット(再生開始直前に呼ばれる。MP3 用)
 	virtual void Reset() = 0;

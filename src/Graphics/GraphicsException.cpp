@@ -1,6 +1,4 @@
 ﻿
-#pragma once
-
 #include "../Internal.h"
 #include "../../include/Lumino/Graphics/GraphicsException.h"
 
