@@ -161,6 +161,7 @@ namespace Lumino
         // 新しいハンドルを登録し、ラップオブジェクトを生成する
         public static T CreateWrapperObject<T>(IntPtr handle) where T : RefObject
         {
+            if (handle == IntPtr.Zero) return null;
             var obj = TypeInfo.GetTypeInfoByHandle(handle).Factory(handle);
             RegisterWrapperObject(obj, handle);
             return (T)obj;

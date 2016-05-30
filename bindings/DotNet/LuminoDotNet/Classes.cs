@@ -1265,12 +1265,12 @@ LNSprite2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
         {
-            int index = (int)LNObject_GetTypeUserData(handle);
+            int index = (int)LNObject_GetBindingTypeData(handle);
             return _typeInfos[index];
         }
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-        private static extern IntPtr LNObject_GetTypeUserData(IntPtr handle);
+        private static extern IntPtr LNObject_GetBindingTypeData(IntPtr handle);
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNSound_SetBindingTypeInfo(IntPtr data);
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>$(SITE_TITLE) - $(PAGE_TITLE)</title>
+	<link href='$(LN_TO_ROOT_PATH)/favicon.png' rel='shortcut icon' type='image/x-icon'>
+
+	<!-- Bootstrap -->
+	<link href="$(LN_TO_ROOT_PATH)/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="$(LN_TO_ROOT_PATH)/bootstrap/css/sticky-footer.css" rel="stylesheet">
+	<link href="$(LN_TO_ROOT_PATH)/github-markdown.css" rel="stylesheet">
+    <link href="$(LN_TO_ROOT_PATH)/common.css" rel="stylesheet">
+	
+	<!-- affix-nav style -->
+	<style>
+		.affix-nav{
+			width: 240px;
+		}
+		.affix-nav .nav li{
+			border-left: 2px solid #FFFFFF;
+		}
+		.affix-nav .nav li.active{
+			font-weight: bold;
+			border-left: 2px solid #0288D1;
+		}
+		.nav .cap {
+			font-weight: bold;
+			position: relative;
+			display: block;
+			padding: 10px 15px;
+		}
+		.tree-toggler{
+			margin: 3px;
+		}
+	</style>
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	</head>
+	<body data-spy="scroll" data-target="#scroll-spy-target">
+		<header>
+			<div class="navbar navbar-default">
+				<div class="container">
+					<div class="navbar-header">
+						<a href="/" class="navbar-brand">$(SITE_TITLE)</a>
+					</div>
+					<div class="navbar-collapse collapse" id="navbar-main">
+						<ul class="nav navbar-nav">
+$(NAVBAR_ITEMS)
+						</ul>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<!--======== toc ========-->
+				<div class="col-md-3 toc">
+$(PAGE_TOC)
+				</div>
+				<!--======== toc ========-->
+				
+				<!--======== contents ========-->
+				<div class="col-md-7">
+$(PAGE_CONTENTS)
+				</div>
+				<!--======== contents ========-->
+				
+				<!--======== sidenav ========-->
+				<div class="col-md-2 sidenav">
+$(PAGE_SIDENAV)
+				</div>
+				<!--======== sidenav ========-->
+				
+			</div>
+		</div>
+		<!--======== fotter ========-->
+$(PAGE_FOOTER)
+		<!--======== fotter ========-->
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="$(LN_TO_ROOT_PATH)/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$('span.tree-toggler').click(function () {
+					$(this).parent().children('ul.tree-item').toggle(200);
+					$(this).toggleClass("glyphicon-triangle-bottom");
+					$(this).toggleClass("glyphicon-triangle-right");
+				});
+			});
+		</script>
+		
+		<script type="text/javascript">
+		$('.nav-tabs li a').click(function (e) {
+		    var href = $(this).attr('href');
+			$('.nav-tabs li a[href="'+href+'"]').tab('show');
+		})
+		</script>
+	</body>
+</html>

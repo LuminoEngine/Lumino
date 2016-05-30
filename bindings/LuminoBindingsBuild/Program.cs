@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using LuminoBuildTool;
 
 namespace LuminoBindingsBuild
 {
@@ -17,11 +18,10 @@ namespace LuminoBindingsBuild
             builder.RootDir = Path.GetFullPath(Path.Combine(exeDir, "../../..")) + "/";	// .sln のあるフォルダ
             builder.LuminoLibDir = Path.GetFullPath(builder.RootDir + "../lib") + "/";
 
-            builder.Rules = new List<LuminoBuildTool.ModuleRule>()
-            {
-                new LuminoRubyRule(),
-                //new LuminoHSPRule(),
-            };
+            builder.Rules = new List<LuminoBuildTool.ModuleRule>();
+            builder.Rules.Add(new LuminoDotNetRule());
+            builder.Rules.Add(new LuminoRubyRule());
+            if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
 
             builder.Build();
         }

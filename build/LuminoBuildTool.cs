@@ -103,5 +103,19 @@ namespace LuminoBuildTool
                     throw new InvalidOperationException("Failed Process.");
             }
         }
+
+        /// <summary>
+        /// Windows 上で実行されているか
+        /// </summary>
+        public static bool IsWin32
+        {
+            get
+            {
+                if (Path.DirectorySeparatorChar == '\\')
+                    return true;
+                else
+                    return false;
+            }
+        }
 	}
 }

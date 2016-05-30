@@ -27,6 +27,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 tmp/
 *.opensdf
+*.opendb
 *.sdf
 *.o
 *.so

@@ -1,4 +1,4 @@
-
+﻿
 #include "Internal.h"
 #include "Resource.h"
 

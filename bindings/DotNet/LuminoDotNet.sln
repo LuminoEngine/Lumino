@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuminoDotNet", "LuminoDotNet\LuminoDotNet.csproj", "{A5AF6708-3D6D-43CB-B9F6-F36B0873F508}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{16D50CF4-E3E2-46E8-807A-6906E0584CF3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,10 +21,6 @@ Global
 		{A5AF6708-3D6D-43CB-B9F6-F36B0873F508}.Debug|x86.Build.0 = Debug|x86
 		{A5AF6708-3D6D-43CB-B9F6-F36B0873F508}.Release|x86.ActiveCfg = Release|x86
 		{A5AF6708-3D6D-43CB-B9F6-F36B0873F508}.Release|x86.Build.0 = Release|x86
-		{16D50CF4-E3E2-46E8-807A-6906E0584CF3}.Debug|x86.ActiveCfg = Debug|x86
-		{16D50CF4-E3E2-46E8-807A-6906E0584CF3}.Debug|x86.Build.0 = Debug|x86
-		{16D50CF4-E3E2-46E8-807A-6906E0584CF3}.Release|x86.ActiveCfg = Release|x86
-		{16D50CF4-E3E2-46E8-807A-6906E0584CF3}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

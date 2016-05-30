@@ -8,7 +8,7 @@ def assert_eq(expected, actual)
 end
 
 #---------------------------------------------------------------
-def test_new
+def test_struct
   # デフォルトコンストラクタ
   vec1 = Vector3.new
   assert_eq(0, vec1.x)
@@ -40,7 +40,7 @@ end
 
 
 #---------------------------------------------------------------
-def test_constructor_overload
+def test_refobject_constructor_overload
   tex1 = Texture2D.new(32, 32)
   
   # 実行エラーになら名ければOK
@@ -49,7 +49,7 @@ def test_constructor_overload
 end
 
 #---------------------------------------------------------------
-def test_get_set_value
+def test_refobject_get_set_value
   spr1 = Sprite2D.new()
   
   # get
@@ -61,7 +61,7 @@ def test_get_set_value
 end
 
 #---------------------------------------------------------------
-def test_get_set_struct
+def test_refobject_get_set_struct
   spr1 = Sprite2D.new()
   
   # get
@@ -78,7 +78,7 @@ def test_get_set_struct
 end
 
 #---------------------------------------------------------------
-def test_get_set_object
+def test_refobject_get_set_object
   tex1 = Texture2D.new(32, 32)
   spr1 = Sprite2D.new()
   
@@ -96,23 +96,23 @@ def test_get_set_object
 end
 
 # 実行
-p "test_new"
-test_new
+p "test_struct"
+test_struct
 
-p "test_constructor_overload"
+p "test_refobject_constructor_overload"
 test_constructor_overload
 
-p "test_get_set_value"
+p "test_refobject_get_set_value"
 test_get_set_value
 
-p "test_get_set_struct"
+p "test_refobject_get_set_struct"
 test_get_set_struct
 
-p "test_get_set_object"
+p "test_refobject_get_set_object"
 test_get_set_object
 
 # TODO: GC のテストするなら
 #GC.stress = true	# http://www.slideshare.net/tarui/ss-23517958
 
-p "Test success."
+p "Test succeeded."
 

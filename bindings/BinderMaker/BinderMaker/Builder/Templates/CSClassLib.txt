@@ -30,7 +30,7 @@ TYPE_INFO_REGISTERS
         }
 
         [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-        private static extern IntPtr LNObject_GetTypeUserData(IntPtr handle);
+        private static extern IntPtr LNObject_GetBindingTypeData(IntPtr handle);
 TYPE_INFO_PINVOKES
     }
 
