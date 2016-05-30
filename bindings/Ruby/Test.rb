@@ -100,16 +100,16 @@ p "test_struct"
 test_struct
 
 p "test_refobject_constructor_overload"
-test_constructor_overload
+test_refobject_constructor_overload
 
 p "test_refobject_get_set_value"
-test_get_set_value
+test_refobject_get_set_value
 
 p "test_refobject_get_set_struct"
-test_get_set_struct
+test_refobject_get_set_struct
 
 p "test_refobject_get_set_object"
-test_get_set_object
+test_refobject_get_set_object
 
 # TODO: GC のテストするなら
 #GC.stress = true	# http://www.slideshare.net/tarui/ss-23517958

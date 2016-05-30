@@ -19,8 +19,8 @@ namespace LuminoBindingsBuild
             builder.LuminoLibDir = Path.GetFullPath(builder.RootDir + "../lib") + "/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
-            builder.Rules.Add(new LuminoDotNetRule());
             builder.Rules.Add(new LuminoRubyRule());
+            builder.Rules.Add(new LuminoDotNetRule());
             if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
 
             builder.Build();
