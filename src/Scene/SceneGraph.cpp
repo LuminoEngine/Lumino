@@ -42,9 +42,6 @@ SceneGraph::SceneGraph()
 	, m_time(0)
 	, m_elapsedTime(0)
 {
-	memset(&m_leftMouseState, 0, sizeof(m_leftMouseState));
-	memset(&m_rightMouseState, 0, sizeof(m_rightMouseState));
-	memset(&m_middleMouseState, 0, sizeof(m_middleMouseState));
 }
 
 //------------------------------------------------------------------------------
@@ -143,9 +140,6 @@ void SceneGraph::Render(Texture* renderTarget, Camera* camera)
 
 	}
 
-
-	//Console::WriteLine("{0}", m_renderingNodeList.GetCount());
-
 	{
 		//RenderingParams params;
 		SceneGraphRenderingContext* dc = m_manager->GetRenderingContext();
@@ -218,23 +212,27 @@ bool SceneGraph::InjectMouseMove(int x, int y)
 //------------------------------------------------------------------------------
 bool SceneGraph::InjectMouseButtonDown(MouseButton button, int x, int y)
 {
+	// TODO: マウス位置はSceneGraphよりも Viewport(CameraLayer)に付くようにしたい。
+	// プレビュー用のUIElementに描きたいときどうするの？という話。
+	// なお、offscreenrendertarget については特にサポートしない。というか無理。
+	
 	// シェーダ系
 	switch (button)
 	{
 	case MouseButton::Left:
-		m_leftMouseState.Position = m_mousePosition;
-		m_leftMouseState.Time = static_cast<float>(m_time);
-		m_leftMouseState.IsDown = true;
+		m_leftMouseState.position = m_mousePosition;
+		m_leftMouseState.time = static_cast<float>(m_time);
+		m_leftMouseState.isDown = true;
 		break;
 	case MouseButton::Right:
-		m_rightMouseState.Position = m_mousePosition;
-		m_rightMouseState.Time = static_cast<float>(m_time);
-		m_rightMouseState.IsDown = true;
+		m_rightMouseState.position = m_mousePosition;
+		m_rightMouseState.time = static_cast<float>(m_time);
+		m_rightMouseState.isDown = true;
 		break;
 	case MouseButton::Middle:
-		m_middleMouseState.Position = m_mousePosition;
-		m_middleMouseState.Time = static_cast<float>(m_time);
-		m_middleMouseState.IsDown = true;
+		m_middleMouseState.position = m_mousePosition;
+		m_middleMouseState.time = static_cast<float>(m_time);
+		m_middleMouseState.isDown = true;
 		break;
 	default:
 		break;
@@ -256,13 +254,13 @@ bool SceneGraph::InjectMouseButtonUp(MouseButton button, int x, int y)
 	switch (button)
 	{
 	case MouseButton::Left:
-		m_leftMouseState.IsDown = false;
+		m_leftMouseState.isDown = false;
 		break;
 	case MouseButton::Right:
-		m_leftMouseState.IsDown = false;
+		m_leftMouseState.isDown = false;
 		break;
 	case MouseButton::Middle:
-		m_leftMouseState.IsDown = false;
+		m_leftMouseState.isDown = false;
 		break;
 	default:
 		break;

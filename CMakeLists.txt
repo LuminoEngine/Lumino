@@ -353,7 +353,6 @@ set(LN_SOURCES_Scene
 	include/Lumino/Scene/SpriteModelObject.h
 	include/Lumino/Scene/SpriteParticle.h
 	include/Lumino/Scene/TileMapNode.h
-	include/Lumino/Scene/ViewPane.h
 	include/Lumino/Scene/VisualNode.h
 	include/Lumino/Scene/MME/MMESceneObject.h
 	src/Scene/Camera.cpp
@@ -382,10 +381,7 @@ set(LN_SOURCES_Scene
 	src/Scene/Sprite.cpp
 	src/Scene/SpriteModelObject.cpp
 	src/Scene/SpriteParticle.cpp
-	src/Scene/TileMapNode.cpp
-	src/Scene/ViewPane.cpp
-	src/Scene/ViewPane.h
-	src/Scene/VisualNode.cpp
+	src/Scene/TileMapNode.cpp	src/Scene/VisualNode.cpp
 	external/ssbpLib/ssShader_frag.h
 	external/ssbpLib/SS5Player.cpp
 	external/ssbpLib/SS5Player.h

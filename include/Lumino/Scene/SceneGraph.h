@@ -77,15 +77,15 @@ private:
 	/// マウスボタンの状態
 	struct MouseState
 	{
-		Point	Position;	///< 最後にボタンが押されたときのマウスの座標 (最終的にシェーダに渡すのは -1.0～1.0 だが、スクリーンのリサイズに備えて元の座標で持っておく)
-		float	Time;		///< 最後にボタンが押されたときの時間（秒）
-		bool	IsDown;		///< 現在ボタンが押されているか
+		Point	position;			// 最後にボタンが押されたときのマウスの座標 (最終的にシェーダに渡すのは -1.0～1.0 だが、スクリーンのリサイズに備えて元の座標で持っておく)
+		float	time = 0.0f;		// 最後にボタンが押されたときの時間（秒）
+		bool	isDown = false;		// 現在ボタンが押されているか
 
 		void ToVector4(const SizeF& viewSize, Vector4* v) {
-			v->x = (2.0f * ((float)Position.x) / viewSize.width) - 1.0f;
-			v->y = (2.0f * ((float)Position.y) / viewSize.height) - 1.0f;
-			v->z = (IsDown) ? 1.0f : 0.0f;
-			v->w = Time;
+			v->x = (2.0f * ((float)position.x) / viewSize.width) - 1.0f;
+			v->y = (2.0f * ((float)position.y) / viewSize.height) - 1.0f;
+			v->z = (isDown) ? 1.0f : 0.0f;
+			v->w = time;
 		}
 	};
 
