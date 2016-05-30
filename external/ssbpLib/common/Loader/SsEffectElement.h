@@ -1,4 +1,4 @@
-#ifndef __SSEFFECTELEMENT__
+﻿#ifndef __SSEFFECTELEMENT__
 #define __SSEFFECTELEMENT__
 
 

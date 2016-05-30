@@ -14,3 +14,17 @@ extconf.rb をつかうとどうしても in-source ビルドになってしま�
 ### yardoc
 $ gem install yard
 
+命名規則
+--------------------
+
+Rubyコーディング規約を基本とする。
+https://shugo.net/ruby-codeconv/codeconv.html
+
+### プロパティ
+Ruby の言語仕様にある概念ではないが、C# や RGSS のプロパティのように、
+代入演算子を使って取得 (読み込み) と設定 (書き込み) の両方ができるように定義されているメソッドのことを指す。
+
+### bool を返すメソッド・プロパティ
+コーディング規約に準じて、LNSceneNode_IsVisible のようなメソッド・プロパティは先頭に is_ を付けない。
+ただし、is_3d_enabled のように is_ を削除した結果、識別子の先頭が数値になってしまう場合は is_ を付ける。
+

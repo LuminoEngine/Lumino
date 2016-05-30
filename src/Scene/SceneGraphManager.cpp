@@ -146,7 +146,6 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/Color.h>
-#include "ViewPane.h"
 #include <Lumino/Scene/SceneNode.h>
 #include "SceneGraphManager.h"
 #include "SceneHelper.h"
@@ -183,12 +182,6 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_default2DCameraViewportLayer(nullptr)
 	, m_mainViewport(configData.mainViewport)
 {
-	// ダミーテクスチャ
-	//m_dummyTexture.Attach(Texture2D::Create(Size(32, 32)));
-	//BitmapPainter painter(m_dummyTexture->Lock());
-	//painter.Clear(Color::White);
-	//m_dummyTexture->Unlock();
-
 	// RenderingPass に割り当てる ID
 	for (int i = 0; i < RenderingPass::MaxRenderingPass; ++i) {
 		m_renderingPassIDStack.Push(i);

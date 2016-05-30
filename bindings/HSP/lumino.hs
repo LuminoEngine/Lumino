@@ -9,7 +9,7 @@ Lumino
 0.2.0.0
 
 %date
-2016/05/26
+2016/05/30
 
 %author
 lriki
@@ -27,7 +27,7 @@ http://nnmy.sakura.ne.jp/
 ;
 ;-----------------------------------------------------------
 %index
-LNConfig_SetApplicationLogEnabled
+LNConfig_SetEngineLogEnabled
 ƒfƒoƒbƒO—p‚ÌƒƒOƒtƒ@ƒCƒ‹‚Ìo—Í—L–³‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:LN_FALSE)
 
 %group
@@ -35,24 +35,6 @@ LNConfig_SetApplicationLogEnabled
 %prm
 enabled
 [in] enabled : LN_TRUE:o—Í‚·‚é / LN_FALSE:o—Í‚µ‚È‚¢
-
-%inst
-
-
-%href
-
-;-----------------------------------------------------------
-;
-;-----------------------------------------------------------
-%index
-LNConfig_SetConsoleEnabled
-•W€“üo—Í—p‚ÌƒRƒ“ƒ\[ƒ‹ƒEƒBƒ“ƒhƒE‚ğŠ„‚è“–‚Ä‚é‚©‚Ç‚¤‚©‚ğİ’è‚µ‚Ü‚·B(Šù’è’l:LN_FALSE)
-
-%group
-ƒGƒ“ƒWƒ“
-%prm
-enabled
-[in] enabled : LN_TRUE:Š„‚è“–‚Ä‚é / LN_FALSE:Š„‚è“–‚Ä‚È‚¢
 
 %inst
 
@@ -3076,14 +3058,77 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
+LNSceneNode_IsVisible
+ƒm[ƒh‚Ì‰Â‹ó‘Ô‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+sceneNode, outVisible
+[in]  sceneNode  : ƒm[ƒhƒnƒ“ƒhƒ‹
+[out] outVisible : ‰Â‹ó‘Ô‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSceneNode_SetVisible
+ƒm[ƒh‚Ì‰Â‹ó‘Ô‚ğİ’è‚µ‚Ü‚·B(default: true)
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+sceneNode, visible
+[in] sceneNode : ƒm[ƒhƒnƒ“ƒhƒ‹
+[in] visible   : ‰Â‹ó‘Ô
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+false ‚Ìê‡Aƒm[ƒh‚Ì•`‰æ‚Ís‚í‚ê‚Ü‚¹‚ñB
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNSceneNode_GetPosition
+ƒm[ƒh‚ÌˆÊ’u‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒV[ƒ“ƒOƒ‰ƒt
+%prm
+sceneNode, outPosition
+[in]  sceneNode   : ƒm[ƒhƒnƒ“ƒhƒ‹
+[out] outPosition : À•W‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
 LNSceneNode_SetPosition
-ƒm[ƒh‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B
+ƒm[ƒh‚ÌˆÊ’u‚ğİ’è‚µ‚Ü‚·B(default: 0,0,0)
 
 %group
 ƒV[ƒ“ƒOƒ‰ƒt
 %prm
 sceneNode, position
-[in] sceneNode : ƒV[ƒ“ƒm[ƒhƒnƒ“ƒhƒ‹
+[in] sceneNode : ƒm[ƒhƒnƒ“ƒhƒ‹
 [in] position  : À•W
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)

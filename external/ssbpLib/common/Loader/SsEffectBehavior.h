@@ -1,4 +1,4 @@
-#ifndef __SSEFFECTBEHAVIOR__
+﻿#ifndef __SSEFFECTBEHAVIOR__
 #define __SSEFFECTBEHAVIOR__
 
 #include "SsEffectElement.h"

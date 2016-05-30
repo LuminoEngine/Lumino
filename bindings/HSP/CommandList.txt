@@ -8,8 +8,7 @@
 -------------------------------------------------------------------------------
  ■ [LNConfig]  初期設定を行います。
 
-LNConfig_SetApplicationLogEnabled   デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
-LNConfig_SetConsoleEnabled          標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
+LNConfig_SetEngineLogEnabled        デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
 LNConfig_RegisterArchive            ファイルを開くときにアクセスする暗号化アーカイブを登録します。
 LNConfig_SetFileAccessPriority      ファイルへのアクセス優先順位を設定します。
 LNConfig_SetUserWindowHandle        ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
@@ -202,12 +201,12 @@ LNSound_SetEmitterPositionXYZ  サウンドの 3D 音源としての位置を設
 LNSound_SetEmitterVelocityXYZ  サウンドの 3D 音源としての速度を設定します。
 
 -------------------------------------------------------------------------------
- ■ [LNTexture]  テクスチャを操作するためのベースモジュールです。
+ ■ [LNTexture]  テクスチャのベースモジュールです。
 
 LNTexture_GetSize  テクスチャのサイズを取得します。
 
 -------------------------------------------------------------------------------
- ■ [LNTexture2D]  2Dテクスチャを操作するためのモジュールです。
+ ■ [LNTexture2D]  2Dテクスチャのモジュールです。
 
 LNTexture2D_Create          サイズを指定して2Dテクスチャを作成します。
 LNTexture2D_CreateFromFile  ファイルから2Dテクスチャを作成します。
@@ -215,7 +214,10 @@ LNTexture2D_CreateFromFile  ファイルから2Dテクスチャを作成しま�
 -------------------------------------------------------------------------------
  ■ [LNSceneNode]  シーングラフを構成するノードのベースモジュールです。
 
-LNSceneNode_SetPosition  ノードの位置を設定します。
+LNSceneNode_SetVisible   ノードの可視状態を設定します。(default: true)
+LNSceneNode_IsVisible    ノードの可視状態を取得します。
+LNSceneNode_SetPosition  ノードの位置を設定します。(default: 0,0,0)
+LNSceneNode_GetPosition  ノードの位置を取得します。
 
 -------------------------------------------------------------------------------
  ■ [LNSprite]  スプライトのベースモジュールです。

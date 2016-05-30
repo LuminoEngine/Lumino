@@ -924,14 +924,7 @@ namespace Lumino
         /// </summary>
         /// <param name="enabled">LN_TRUE:出力する / LN_FALSE:出力しない</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNConfig_SetApplicationLogEnabled( bool enabled);
-
-        /// <summary>
-        /// 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:LN_FALSE)
-        /// </summary>
-        /// <param name="enabled">LN_TRUE:割り当てる / LN_FALSE:割り当てない</param>
-        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static void LNConfig_SetConsoleEnabled( bool enabled);
+        public extern static void LNConfig_SetEngineLogEnabled( bool enabled);
 
         /// <summary>
         /// ファイルを開くときにアクセスする暗号化アーカイブを登録します。
@@ -2080,9 +2073,33 @@ namespace Lumino
         public extern static Result LNTexture2D_CreateFromFile( string filePath, out IntPtr outTexture2D);
 
         /// <summary>
-        /// ノードの位置を設定します。
+        /// ノードの可視状態を取得します。
         /// </summary>
-        /// <param name="sceneNode">シーンノードハンドル</param>
+        /// <param name="sceneNode">ノードハンドル</param>
+        /// <param name="outVisible">可視状態を格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNode_IsVisible( IntPtr sceneNode, out bool outVisible);
+
+        /// <summary>
+        /// ノードの可視状態を設定します。(default: true)
+        /// </summary>
+        /// <param name="sceneNode">ノードハンドル</param>
+        /// <param name="visible">可視状態</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNode_SetVisible( IntPtr sceneNode,  bool visible);
+
+        /// <summary>
+        /// ノードの位置を取得します。
+        /// </summary>
+        /// <param name="sceneNode">ノードハンドル</param>
+        /// <param name="outPosition">座標を格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNode_GetPosition( IntPtr sceneNode, out Vector3 outPosition);
+
+        /// <summary>
+        /// ノードの位置を設定します。(default: 0,0,0)
+        /// </summary>
+        /// <param name="sceneNode">ノードハンドル</param>
         /// <param name="position">座標</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSceneNode_SetPosition( IntPtr sceneNode, ref Vector3 position);

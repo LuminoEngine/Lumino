@@ -16,17 +16,28 @@ namespace LuminoBuildTool
         {
             foreach (var rule in Rules)
             {
-                var oldDir = Directory.GetCurrentDirectory();
+                Logger.WriteLine("[{0}] Rule started.", rule.Name);
                 rule.Build(this);
-                Directory.SetCurrentDirectory(oldDir);
+                Logger.WriteLine("[{0}] Rule succeeded.", rule.Name);
             }
         }
     }
-		
-	abstract class ModuleRule
-	{
+
+    abstract class ModuleRule
+    {
+        public abstract string Name { get; }
 		public abstract void Build(Builder builder);
 	}
+
+    static class Logger
+    {
+        public static void WriteLine(string format, params object[] args)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(format, args);
+            Console.ResetColor(); // 色のリセット
+        }
+    }
 
 	static class Utils
     {

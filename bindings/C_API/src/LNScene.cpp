@@ -12,6 +12,25 @@
 LN_TYPE_INFO_IMPL(SceneNode, LNSceneNode);
 
 //------------------------------------------------------------------------------
+LNResult LNSceneNode_SetVisible(LN_HANDLE(LNSceneNode) sceneNode, LNBool visible)
+{
+	LN_CHECK_ARG_HANDLE(sceneNode);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(VisualNode, sceneNode)->SetVisible(LNC_TO_BOOL(visible));
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNSceneNode_IsVisible(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LNBool* outVisible)
+{
+	LN_CHECK_ARG_HANDLE(sceneNode);
+	LN_CHECK_ARG(outVisible != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	*outVisible = LNC_TO_LNBOOL(TO_REFOBJ(VisualNode, sceneNode)->IsVisible());
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
 LNResult LNSceneNode_SetPosition(LN_HANDLE(LNSceneNode) sceneNode, const LNVector3* position)
 {
 	LN_CHECK_ARG_HANDLE(sceneNode);
@@ -21,6 +40,15 @@ LNResult LNSceneNode_SetPosition(LN_HANDLE(LNSceneNode) sceneNode, const LNVecto
 	LN_FUNC_TRY_END_RETURN;
 }
 
+//------------------------------------------------------------------------------
+LNResult LNSceneNode_GetPosition(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LNVector3* outPosition)
+{
+	LN_CHECK_ARG_HANDLE(sceneNode);
+	LN_CHECK_ARG(outPosition != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	*p_cast<Vector3>(outPosition) = TO_REFOBJ(SceneNode, sceneNode)->GetPosition();
+	LN_FUNC_TRY_END_RETURN;
+}
 
 //==============================================================================
 // LNSprite

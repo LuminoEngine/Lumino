@@ -40,4 +40,4 @@ DirectX のエンドユーザーランタイムをインストールする必要
 --------------------
 Lumino は zlib/libpng ライセンスの元でリリースされています。
 
-Lumino 及び、Lumino が使用しているライブラリのライセンスは [Lumino ライセンス](https://github.com/lriki/Lumino/blob/master/README.md) を確認してください。
+Lumino 及び、Lumino が使用しているライブラリのライセンスは [Lumino ライセンス](https://github.com/lriki/Lumino/blob/master/LICENSE) を確認してください。

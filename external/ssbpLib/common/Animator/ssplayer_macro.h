@@ -1,4 +1,4 @@
-#ifndef __SSPLAYER_MACRO__
+﻿#ifndef __SSPLAYER_MACRO__
 #define __SSPLAYER_MACRO__
 
 

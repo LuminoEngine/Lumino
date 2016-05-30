@@ -257,19 +257,24 @@ namespace BinderMaker.Builder
             if (method.OwnerProperty != null)
             {
                 name = GetSnakeStyleName(method.OwnerProperty.Name);
-
-                // 先頭が is の場合は 末尾 ? に変換
-                if (method.PropertyNameType == PropertyNameType.Is && name.IndexOf("is_") == 0)
-                {
-                    //if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
-                        name += "?";                // ? はつけてあげる
-                    //else
-                    //    name = name.Substring(3) + "?";
-                }
             }
             else
             {
                 name = GetSnakeStyleName(method.Name);
+            }
+
+            // is プロパティの場合は is_ を取り除く
+            if (name.IndexOf("is_") == 0)
+            {
+                if (!char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
+                    name = name.Substring(3)/* + "?"*/;
+                //else
+                //    name += "?";                // ? はつけてあげる
+                if (!method.IsSetterProperty)
+                {
+                    name += "?";
+                }
+                // ? はつけてあげる
             }
 
             // まずはスネークスタイルに変換

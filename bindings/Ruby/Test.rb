@@ -50,12 +50,31 @@ end
 
 #---------------------------------------------------------------
 def test_get_set_value
-	
+  spr1 = Sprite2D.new()
+  
+  # get
+  assert_eq(true, spr1.visible?)
+  
+  # set
+  spr1.visible = false
+  assert_eq(false, spr1.visible?)
 end
 
 #---------------------------------------------------------------
 def test_get_set_struct
-
+  spr1 = Sprite2D.new()
+  
+  # get
+  pos = spr1.position
+  assert_eq(0.0, pos.x)
+  assert_eq(0.0, pos.y)
+  assert_eq(0.0, pos.z)
+  
+  # set
+  spr1.position = Vector3.new(1.0, 2.0, 3.0)
+  assert_eq(1.0, spr1.position.x)
+  assert_eq(2.0, spr1.position.y)
+  assert_eq(3.0, spr1.position.z)
 end
 
 #---------------------------------------------------------------
@@ -82,6 +101,12 @@ test_new
 
 p "test_constructor_overload"
 test_constructor_overload
+
+p "test_get_set_value"
+test_get_set_value
+
+p "test_get_set_struct"
+test_get_set_struct
 
 p "test_get_set_object"
 test_get_set_object

@@ -1,4 +1,4 @@
-#ifndef __DEBUG_PRINTF__
+﻿#ifndef __DEBUG_PRINTF__
 #define __DEBUG_PRINTF__
 
 #include <string>

@@ -16,19 +16,9 @@ namespace Lumino
         /// デバッグ用のログファイルの出力有無を設定します。(既定値:false)
         /// </summary>
         /// <param name="enabled">true:出力する / false:出力しない</param>
-        public static void SetApplicationLogEnabled( bool enabled)
+        public static void SetEngineLogEnabled( bool enabled)
         {
-            API.LNConfig_SetApplicationLogEnabled( enabled);
-        
-        }
-        
-        /// <summary>
-        /// 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:false)
-        /// </summary>
-        /// <param name="enabled">true:割り当てる / false:割り当てない</param>
-        public static void SetConsoleEnabled( bool enabled)
-        {
-            API.LNConfig_SetConsoleEnabled( enabled);
+            API.LNConfig_SetEngineLogEnabled( enabled);
         
         }
         
@@ -990,7 +980,7 @@ namespace Lumino
     };
     
     /// <summary>
-    /// テクスチャを操作するためのベースクラスです。
+    /// テクスチャのベースクラスです。
     /// </summary>
     public partial class Texture : RefObject
     {
@@ -1017,7 +1007,7 @@ namespace Lumino
     };
     
     /// <summary>
-    /// 2Dテクスチャを操作するためのクラスです。
+    /// 2Dテクスチャのクラスです。
     /// </summary>
     public partial class Texture2D : Texture
     {
@@ -1068,10 +1058,44 @@ namespace Lumino
     {
     
         /// <summary>
+        /// ノードの可視状態
+        /// </summary>
+        /// <remarks>
+        /// false の場合、ノードの描画は行われません。
+        /// </remarks>
+        public bool IsVisible
+        {
+            get
+            {
+                var outVisible = new bool();
+                var result = API.LNSceneNode_IsVisible( _handle, out outVisible);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                return outVisible;
+            
+            }
+            
+            set
+            {
+                var result = API.LNSceneNode_SetVisible( _handle,  value);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            
+            }
+            
+        }
+        /// <summary>
         /// ノードの位置
         /// </summary>
         public Vector3 Position
         {
+            get
+            {
+                var outPosition = new Vector3();
+                var result = API.LNSceneNode_GetPosition( _handle, out outPosition);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                return outPosition;
+            
+            }
+            
             set
             {
                 var result = API.LNSceneNode_SetPosition( _handle, ref value);

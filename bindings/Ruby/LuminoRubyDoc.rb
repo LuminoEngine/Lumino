@@ -428,14 +428,9 @@ end
 # 初期設定を行います。
 class Lumino::Config
     # デバッグ用のログファイルの出力有無を設定します。(既定値:false)
-    # @overload set_application_log_enabled(enabled)
+    # @overload set_engine_log_enabled(enabled)
     #   @param [Bool] enabled true:出力する / false:出力しない
-    def set_application_log_enabled
-    end
-    # 標準入出力用のコンソールウィンドウを割り当てるかどうかを設定します。(既定値:false)
-    # @overload set_console_enabled(enabled)
-    #   @param [Bool] enabled true:割り当てる / false:割り当てない
-    def set_console_enabled
+    def set_engine_log_enabled
     end
     # ファイルを開くときにアクセスする暗号化アーカイブを登録します。
     # @overload register_archive(filePath, password)
@@ -494,12 +489,12 @@ class Lumino::Engine
     def update_frame
     end
     # アプリケーションを終了するべきかを確認します。
-    # @overload is_end_requested()
+    # @overload end_requested?()
     #   　
     #     ウィンドウのクローズボタンが押された場合等、
     #     アプリケーションを終了するべき時には false を返します。
     # @return [Bool] 終了要求の有無を格納する変数
-    def is_end_requested
+    def end_requested?
     end
     # ライブラリの終了処理を行います。
     # @overload terminate()
@@ -534,14 +529,14 @@ class Lumino::Version
     def get_string
     end
     # 指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
-    # @overload is_at_least(major, minor, revision)
+    # @overload at_least?(major, minor, revision)
     #   　
     #     指定バージョン >= コンパイルバージョン である場合、true となります。
     #   @param [Integer] major メジャーバージョン
     #   @param [Integer] minor マイナーバージョン
     #   @param [Integer] revision リビジョンバージョン
     # @return [Bool] 結果
-    def is_at_least
+    def at_least?
     end
 end
 # エラーに関係する処理を行います。
@@ -1651,14 +1646,14 @@ class Lumino::Sound < RefObject
     def pitch
     end
     # サウンドのループ再生の有無を設定します。
-    # @overload is_loop_enabled=(loopEnable)
+    # @overload loop_enabled=(loopEnable)
     #   @param [Bool] loopEnable true = ループ再生する / false = しない
-    def is_loop_enabled=
+    def loop_enabled=
     end
     # サウンドのループ再生が有効であるかを確認します。
-    # @overload is_loop_enabled?()
+    # @overload loop_enabled?()
     # @return [Bool] ループ再生の有無状態を格納する変数
-    def is_loop_enabled?
+    def loop_enabled?
     end
     # サウンドを 3D 音源であるかを設定します。
     # @overload is_3d_enabled=(enabled)
@@ -1759,7 +1754,7 @@ class Lumino::Sound < RefObject
     def fade_volume
     end
 end
-# テクスチャを操作するためのベースクラスです。
+# テクスチャのベースクラスです。
 class Lumino::Texture < RefObject
     # テクスチャのサイズを取得します。
     # @overload size()
@@ -1767,7 +1762,7 @@ class Lumino::Texture < RefObject
     def size
     end
 end
-# 2Dテクスチャを操作するためのクラスです。
+# 2Dテクスチャのクラスです。
 class Lumino::Texture2D < Texture
     # サイズを指定して2Dテクスチャを作成します。
     # @overload initialize(width, height, format=A8R8G8B8, mipmap=false)
@@ -1788,10 +1783,27 @@ class Lumino::Texture2D < Texture
 end
 # シーングラフを構成するノードのベースクラスです。
 class Lumino::SceneNode < RefObject
-    # ノードの位置を設定します。
+    # ノードの可視状態を設定します。(default: true)
+    # @overload visible=(visible)
+    #   　
+    #     false の場合、ノードの描画は行われません。
+    #   @param [Bool] visible 可視状態
+    def visible=
+    end
+    # ノードの可視状態を取得します。
+    # @overload visible?()
+    # @return [Bool] 可視状態
+    def visible?
+    end
+    # ノードの位置を設定します。(default: 0,0,0)
     # @overload position=(position)
     #   @param [Lumino::Vector3] position 座標
     def position=
+    end
+    # ノードの位置を取得します。
+    # @overload position()
+    # @return [Lumino::Vector3] 座標
+    def position
     end
 end
 # スプライトのベースクラスです。

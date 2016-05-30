@@ -1,4 +1,4 @@
-/**
+﻿/**
 *  SS5PlayerData.h
 */
 

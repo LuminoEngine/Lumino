@@ -4,7 +4,12 @@ using LuminoBuildTool;
 
 class LuminoHSPRule : ModuleRule
 {
-	public override void Build(Builder builder)
+    public override string Name
+    {
+        get { return "HSP"; }
+    }
+
+    public override void Build(Builder builder)
 	{
 		var hspDir = builder.RootDir + "HSP/";
 

@@ -1,4 +1,4 @@
-#ifndef __SSPLAYER_EFFECTFUNCTION__
+﻿#ifndef __SSPLAYER_EFFECTFUNCTION__
 #define __SSPLAYER_EFFECTFUNCTION__
 
 #include "ssplayer_effect.h"

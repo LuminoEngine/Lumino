@@ -1,4 +1,4 @@
-#ifndef __SSPLAYER_CELLMAP__
+﻿#ifndef __SSPLAYER_CELLMAP__
 #define __SSPLAYER_CELLMAP__
 
 #include "../../SS5PlayerTypes.h"

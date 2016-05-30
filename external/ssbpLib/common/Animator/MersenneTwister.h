@@ -1,4 +1,4 @@
-#ifndef __MERSENNETWISTER__
+﻿#ifndef __MERSENNETWISTER__
 #define __MERSENNETWISTER__
 
 /*

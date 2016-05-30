@@ -1,4 +1,4 @@
-#ifndef __SSPLAYER_EFFECT__
+﻿#ifndef __SSPLAYER_EFFECT__
 #define __SSPLAYER_EFFECT__
 
 #include <list>

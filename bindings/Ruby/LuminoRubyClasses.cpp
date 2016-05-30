@@ -118,33 +118,18 @@ VALUE g_class_Sprite;
 VALUE g_class_Sprite2D;
 
 
-static VALUE static_lnrbLNConfig_SetApplicationLogEnabled(int argc, VALUE *argv, VALUE self)
+static VALUE static_lnrbLNConfig_SetEngineLogEnabled(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 1) {
         VALUE enabled;
         rb_scan_args(argc, argv, "1", &enabled);
         if (isRbBool(enabled)) {
             LNBool _enabled = RbBooltoBool(enabled);
-            LNConfig_SetApplicationLogEnabled(_enabled);
+            LNConfig_SetEngineLogEnabled(_enabled);
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Config.set_application_log_enabled - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE static_lnrbLNConfig_SetConsoleEnabled(int argc, VALUE *argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE enabled;
-        rb_scan_args(argc, argv, "1", &enabled);
-        if (isRbBool(enabled)) {
-            LNBool _enabled = RbBooltoBool(enabled);
-            LNConfig_SetConsoleEnabled(_enabled);
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::Config.set_console_enabled - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Config.set_engine_log_enabled - wrong argument type.");
     return Qnil;
 }
 
@@ -296,7 +281,7 @@ static VALUE static_lnrbLNEngine_IsEndRequested(int argc, VALUE *argv, VALUE sel
     
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Engine.is_end_requested - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Engine.end_requested? - wrong argument type.");
     return Qnil;
 }
 
@@ -405,7 +390,7 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
     
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Version.is_at_least - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Version.at_least? - wrong argument type.");
     return Qnil;
 }
 
@@ -903,7 +888,7 @@ static VALUE lnrbLNSound_SetLoopEnabled(int argc, VALUE *argv, VALUE self)
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Sound.is_loop_enabled= - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Sound.loop_enabled= - wrong argument type.");
     return Qnil;
 }
 
@@ -921,7 +906,7 @@ static VALUE lnrbLNSound_IsLoopEnabled(int argc, VALUE *argv, VALUE self)
     
         }
     }
-    rb_raise(rb_eArgError, "Lumino::Sound.is_loop_enabled? - wrong argument type.");
+    rb_raise(rb_eArgError, "Lumino::Sound.loop_enabled? - wrong argument type.");
     return Qnil;
 }
 
@@ -1424,6 +1409,49 @@ static VALUE LNSceneNode_allocateForGetRefObject(VALUE klass, LNHandle handle)
     return obj;
 }
 
+static VALUE lnrbLNSceneNode_SetVisible(int argc, VALUE *argv, VALUE self)
+{
+    wrapSceneNode* selfObj;
+    Data_Get_Struct(self, wrapSceneNode, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE visible;
+        rb_scan_args(argc, argv, "1", &visible);
+        if (isRbBool(visible)) {
+            LNBool _visible = RbBooltoBool(visible);
+            LNResult errorCode = LNSceneNode_SetVisible(selfObj->Handle, _visible);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::SceneNode.visible= - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE lnrbLNSceneNode_IsVisible(int argc, VALUE *argv, VALUE self)
+{
+	printf("lnrbLNSceneNode_IsVisible s\n");
+    wrapSceneNode* selfObj;
+    Data_Get_Struct(self, wrapSceneNode, selfObj);
+	printf("2\n");
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNBool _outVisible;
+	printf("1\n");
+            LNResult errorCode = LNSceneNode_IsVisible(selfObj->Handle, &_outVisible);
+	printf("3 %d\n", _outVisible);
+	printf("3 e %d\n", errorCode);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+	printf("4 %d\n", toVALUE(_outVisible));
+            return toVALUE(_outVisible);
+    
+        }
+    }
+	printf("5\n");
+    rb_raise(rb_eArgError, "Lumino::SceneNode.visible? - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE lnrbLNSceneNode_SetPosition(int argc, VALUE *argv, VALUE self)
 {
     wrapSceneNode* selfObj;
@@ -1439,6 +1467,26 @@ static VALUE lnrbLNSceneNode_SetPosition(int argc, VALUE *argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "Lumino::SceneNode.position= - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE lnrbLNSceneNode_GetPosition(int argc, VALUE *argv, VALUE self)
+{
+    wrapSceneNode* selfObj;
+    Data_Get_Struct(self, wrapSceneNode, selfObj);
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNVector3 _outPosition;
+            LNResult errorCode = LNSceneNode_GetPosition(selfObj->Handle, &_outPosition);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            VALUE retObj = LNVector3_allocate(g_struct_Vector3);
+    *((LNVector3*)DATA_PTR(retObj)) = _outPosition;
+    return retObj;
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::SceneNode.position - wrong argument type.");
     return Qnil;
 }
 
@@ -1522,7 +1570,6 @@ static VALUE lnrbLNSprite_GetTexture(int argc, VALUE *argv, VALUE self)
 
 static void LNSprite2D_delete(wrapSprite2D* obj)
 {
-	printf("LNTexture_delete\n");
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
     Manager::UnregisterWrapperObject(obj->Handle);
     delete obj;
@@ -1593,8 +1640,7 @@ void InitClasses()
     g_class_RefObject = rb_define_class_under(g_luminoModule, "RefObject", rb_cObject);
     
     g_class_Config = rb_define_class_under(g_luminoModule, "Config", rb_cObject);
-    rb_define_singleton_method(g_class_Config, "set_application_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetApplicationLogEnabled), -1);
-    rb_define_singleton_method(g_class_Config, "set_console_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetConsoleEnabled), -1);
+    rb_define_singleton_method(g_class_Config, "set_engine_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetEngineLogEnabled), -1);
     rb_define_singleton_method(g_class_Config, "register_archive", LN_TO_RUBY_FUNC(static_lnrbLNConfig_RegisterArchive), -1);
     rb_define_singleton_method(g_class_Config, "set_file_access_priority", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetFileAccessPriority), -1);
     rb_define_singleton_method(g_class_Config, "set_user_window_handle", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetUserWindowHandle), -1);
@@ -1606,7 +1652,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(static_lnrbLNEngine_Initialize), -1);
     rb_define_singleton_method(g_class_Engine, "initialize_audio", LN_TO_RUBY_FUNC(static_lnrbLNEngine_InitializeAudio), -1);
     rb_define_singleton_method(g_class_Engine, "update_frame", LN_TO_RUBY_FUNC(static_lnrbLNEngine_UpdateFrame), -1);
-    rb_define_singleton_method(g_class_Engine, "is_end_requested", LN_TO_RUBY_FUNC(static_lnrbLNEngine_IsEndRequested), -1);
+    rb_define_singleton_method(g_class_Engine, "end_requested?", LN_TO_RUBY_FUNC(static_lnrbLNEngine_IsEndRequested), -1);
     rb_define_singleton_method(g_class_Engine, "terminate", LN_TO_RUBY_FUNC(static_lnrbLNEngine_Terminate), -1);
 
     g_class_Version = rb_define_class_under(g_luminoModule, "Version", rb_cObject);
@@ -1615,7 +1661,7 @@ void InitClasses()
     rb_define_singleton_method(g_class_Version, "get_revision", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetRevision), -1);
     rb_define_singleton_method(g_class_Version, "get_build", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetBuild), -1);
     rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
-    rb_define_singleton_method(g_class_Version, "is_at_least", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
+    rb_define_singleton_method(g_class_Version, "at_least?", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
 
     g_class_GameAudio = rb_define_class_under(g_luminoModule, "GameAudio", rb_cObject);
     rb_define_singleton_method(g_class_GameAudio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlayBGM), -1);
@@ -1644,8 +1690,8 @@ void InitClasses()
     rb_define_method(g_class_Sound, "volume", LN_TO_RUBY_FUNC(lnrbLNSound_GetVolume), -1);
     rb_define_method(g_class_Sound, "pitch=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPitch), -1);
     rb_define_method(g_class_Sound, "pitch", LN_TO_RUBY_FUNC(lnrbLNSound_GetPitch), -1);
-    rb_define_method(g_class_Sound, "is_loop_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopEnabled), -1);
-    rb_define_method(g_class_Sound, "is_loop_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_IsLoopEnabled), -1);
+    rb_define_method(g_class_Sound, "loop_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_SetLoopEnabled), -1);
+    rb_define_method(g_class_Sound, "loop_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_IsLoopEnabled), -1);
     rb_define_method(g_class_Sound, "is_3d_enabled=", LN_TO_RUBY_FUNC(lnrbLNSound_Set3DEnabled), -1);
     rb_define_method(g_class_Sound, "is_3d_enabled?", LN_TO_RUBY_FUNC(lnrbLNSound_Is3DEnabled), -1);
     rb_define_method(g_class_Sound, "playing_mode=", LN_TO_RUBY_FUNC(lnrbLNSound_SetPlayingMode), -1);
@@ -1674,7 +1720,10 @@ void InitClasses()
 
     g_class_SceneNode = rb_define_class_under(g_luminoModule, "SceneNode", g_class_RefObject);
     rb_define_alloc_func(g_class_SceneNode, LNSceneNode_allocate);
+    rb_define_method(g_class_SceneNode, "visible=", LN_TO_RUBY_FUNC(lnrbLNSceneNode_SetVisible), -1);
+    rb_define_method(g_class_SceneNode, "visible?", LN_TO_RUBY_FUNC(lnrbLNSceneNode_IsVisible), -1);
     rb_define_method(g_class_SceneNode, "position=", LN_TO_RUBY_FUNC(lnrbLNSceneNode_SetPosition), -1);
+    rb_define_method(g_class_SceneNode, "position", LN_TO_RUBY_FUNC(lnrbLNSceneNode_GetPosition), -1);
 
     g_class_Sprite = rb_define_class_under(g_luminoModule, "Sprite", g_class_SceneNode);
     rb_define_alloc_func(g_class_Sprite, LNSprite_allocate);

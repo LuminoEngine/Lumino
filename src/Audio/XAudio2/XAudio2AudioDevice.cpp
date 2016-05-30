@@ -178,18 +178,19 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 //------------------------------------------------------------------------------
 void XAudio2AudioDevice::Update()
 {
-    m_listenerState.OrientFront.x = m_soundListenerData.Direction.x;
-	m_listenerState.OrientFront.y = m_soundListenerData.Direction.y;
-	m_listenerState.OrientFront.z = m_soundListenerData.Direction.z;
-	m_listenerState.OrientTop.x = m_soundListenerData.UpDirection.x;
-	m_listenerState.OrientTop.y = m_soundListenerData.UpDirection.y;
-	m_listenerState.OrientTop.z = m_soundListenerData.UpDirection.z;
-	m_listenerState.Position.x = m_soundListenerData.Position.x * m_metreUnitDistanceInv;
-	m_listenerState.Position.y = m_soundListenerData.Position.y * m_metreUnitDistanceInv;
-	m_listenerState.Position.z = m_soundListenerData.Position.z * m_metreUnitDistanceInv;
-	m_listenerState.Velocity.x = m_soundListenerData.Velocity.x * m_metreUnitDistanceInv;
-	m_listenerState.Velocity.y = m_soundListenerData.Velocity.y * m_metreUnitDistanceInv;
-	m_listenerState.Velocity.z = m_soundListenerData.Velocity.z * m_metreUnitDistanceInv;
+	auto* data = GetSoundListenerData();
+    m_listenerState.OrientFront.x = data->direction.x;
+	m_listenerState.OrientFront.y = data->direction.y;
+	m_listenerState.OrientFront.z = data->direction.z;
+	m_listenerState.OrientTop.x = data->upDirection.x;
+	m_listenerState.OrientTop.y = data->upDirection.y;
+	m_listenerState.OrientTop.z = data->upDirection.z;
+	m_listenerState.Position.x = data->position.x * m_metreUnitDistanceInv;
+	m_listenerState.Position.y = data->position.y * m_metreUnitDistanceInv;
+	m_listenerState.Position.z = data->position.z * m_metreUnitDistanceInv;
+	m_listenerState.Velocity.x = data->velocity.x * m_metreUnitDistanceInv;
+	m_listenerState.Velocity.y = data->velocity.y * m_metreUnitDistanceInv;
+	m_listenerState.Velocity.z = data->velocity.z * m_metreUnitDistanceInv;
 }
 
 //==============================================================================

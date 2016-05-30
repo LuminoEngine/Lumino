@@ -22,13 +22,41 @@ LN_MODULE(Scene)
 LN_CLASS(LNSceneNode, LNObject)
 
 	/**
-		@brief		ノードの位置を設定します。
-		@param[in]	sceneNode	: シーンノードハンドル
+		@brief		ノードの可視状態を設定します。(default: true)
+		@param[in]	sceneNode	: ノードハンドル
+		@param[in]	visible		: 可視状態
+		@details	false の場合、ノードの描画は行われません。
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_PROPERTY
+	LNResult LNSceneNode_SetVisible(LN_HANDLE(LNSceneNode) sceneNode, LNBool visible);
+
+	/**
+		@brief		ノードの可視状態を取得します。
+		@param[in]	sceneNode	: ノードハンドル
+		@param[out]	outVisible	: 可視状態を格納する変数のポインタ
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_PROPERTY
+	LNResult LNSceneNode_IsVisible(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LNBool* outVisible);
+
+	/**
+		@brief		ノードの位置を設定します。(default: 0,0,0)
+		@param[in]	sceneNode	: ノードハンドル
 		@param[in]	position	: 座標
 	*/
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
 	LNResult LNSceneNode_SetPosition(LN_HANDLE(LNSceneNode) sceneNode, const LNVector3* position);
+	
+	/**
+		@brief		ノードの位置を取得します。
+		@param[in]	sceneNode	: ノードハンドル
+		@param[out]	outPosition	: 座標を格納する変数のポインタ
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_PROPERTY
+	LNResult LNSceneNode_GetPosition(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LNVector3* outPosition);
 	
 LN_CLASS_END
 
