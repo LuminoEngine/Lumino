@@ -123,9 +123,10 @@ struct DeviceInputSource
 	static const uint32_t JoystickButtonFlag	= 0x00040000;
 	static const uint32_t JoystickAxisFlag		= 0x00080000;
 	static const uint32_t JoystickPovFlag		= 0x00100000;
+	
 	static const uint32_t ValueMask				= 0x0000FFFF;
 	static const uint32_t JoystickNumberMask	= 0x0000F000;
-	static const uint32_t JoystickValumeMask	= 0x00000FFF;
+	static const uint32_t JoystickValueMask		= 0x00000FFF;
 	// Motion
 	// Gesture
 	// Android

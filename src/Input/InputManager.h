@@ -12,15 +12,14 @@ namespace detail
 class InputManager
 	: public RefObject
 {
-public:
-	static InputManager* Instance;
-
-	static const int MaxJoypads = 4;
+public:	static const int MaxJoypads = 4;
 
 	struct Settings
 	{
 		PlatformWindow*	mainWindow;
 	};
+	
+	static InputManager* GetInstance(InputManager* priority = nullptr);
 
 public:
 	InputManager();

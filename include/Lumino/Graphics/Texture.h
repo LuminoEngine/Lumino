@@ -164,7 +164,7 @@ LN_INTERNAL_ACCESS:
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:
-	friend struct SetRenderTargetCommand;	// TODO: ダサイ
+	friend struct SetRenderTargetCommand;	// TODO
 	friend struct SetDepthBufferCommand;
 	friend struct PresentCommand;	// TODO
 	friend class ShaderVariable;

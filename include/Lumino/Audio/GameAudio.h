@@ -24,7 +24,7 @@ public:
 	/// BGM の演奏を停止する
 	static void StopBGM(double fadeTime = 0.0);
 
-	/// BGS ( 環境音 ) を演奏する
+	/// BGS (環境音) を演奏する
 	static void PlayBGS(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
 	/// 指定された Sound を BGS として演奏する
@@ -33,7 +33,7 @@ public:
 	/// BGS の演奏を停止する
 	static void StopBGS(double fadeTime = 0.0);
 
-	// ME ( 効果音楽 ) を演奏する
+	// ME (効果音楽) を演奏する
 	static void PlayME(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f);
 
 	/// 指定された Sound を ME として演奏する

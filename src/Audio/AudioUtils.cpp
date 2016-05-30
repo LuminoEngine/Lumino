@@ -11,7 +11,7 @@ namespace detail
 // AudioUtils
 //==============================================================================
 
-#ifdef _WIN32
+#if defined(_WIN32)
 
 //------------------------------------------------------------------------------
 void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)

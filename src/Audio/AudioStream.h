@@ -26,15 +26,15 @@ public:
 
 	StreamFormat GetFormat() const { return m_format; }
 
-	/// 初期化が完了しているか確認する (例外が発生していればここから再 throw される)
+	// 初期化が完了しているか確認する (例外が発生していればここから再 throw される)
 	bool CheckCreated();
 
-	/// デコーダの取得
+	// デコーダの取得
 	AudioDecoder* GetDecoder() { return m_decoder; }
 	const AudioDecoder* GetDecoder() const { return m_decoder; }
 
 protected:
-	///　非同期ロード処理
+	//　非同期ロード処理
 	virtual void OnASyncIOProc();
 
 private:

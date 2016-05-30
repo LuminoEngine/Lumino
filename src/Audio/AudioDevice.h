@@ -9,45 +9,43 @@ namespace detail
 class AudioStream;
 class AudioPlayer;
 
-/// 3D サウンドリスナー
+// 3D サウンドリスナー
 struct SoundListenerData
 {
-	Vector3		Position;
-	Vector3		Direction;
-	Vector3		UpDirection;
-	Vector3		Velocity;
+	Vector3		position;
+	Vector3		direction;
+	Vector3		upDirection;
+	Vector3		velocity;
 
 	SoundListenerData()
-		: Position(0, 0, 0)
-		, Direction(0, 0, 1.0f)
-		, UpDirection(0, 1.0f, 0)
-		, Velocity(0, 0, 0)
+		: position(0.0f, 0.0f, 0.0f)
+		, direction(0.0f, 0.0f, 1.0f)
+		, upDirection(0.0f, 1.0f, 0.0f)
+		, velocity(0.0f, 0.0f, 0.0f)
 	{}
 };
 
-/// デバイス管理と、Player の生成・管理を行うクラスのベースクラス
+// デバイス管理と、Player の生成・管理を行うクラスのベースクラス
 class AudioDevice
 	: public RefObject
 {
 public:
 	AudioDevice() {}
 	virtual ~AudioDevice() {}
-public:
 
-	/// 3Dサウンドリスナーの取得
-	SoundListenerData* getSoundListenerData() { return &m_soundListenerData; }
+	// 3Dサウンドリスナーの取得
+	SoundListenerData* GetSoundListenerData() { return &m_soundListenerData; }
 
-public:
-
-	/// AudioPlayer を作成する (type に LN_SOUNDPLAYTYPE_AUTO は指定できないので注意)
+	// AudioPlayer を作成する (type に LN_SOUNDPLAYTYPE_AUTO は指定できないので注意)
 	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) = 0;
-	/// 更新 (更新スレッドから呼ばれる)
+	
+	// 更新 (更新スレッドから呼ばれる)
 	virtual void Update() = 0;
-	//virtual void SetListenerState(const Vector3& position, const Vector3& front) = 0;
-	/// 3D 空間の1メートル相当の距離の設定
+	
+	// 3D 空間の1メートル相当の距離の設定
 	virtual void SetMetreUnitDistance(float d) = 0;
 
-protected:
+private:
 	SoundListenerData		m_soundListenerData;
 };
 

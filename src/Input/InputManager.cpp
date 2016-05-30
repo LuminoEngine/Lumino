@@ -32,18 +32,17 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
-InputManager* GetInputManager(InputManager* priority)
-{
-	if (priority != NULL) return priority;
-	return InputManager::Instance;
-}
-
 //==============================================================================
 // InputManager
 //==============================================================================
 
-InputManager* InputManager::Instance = nullptr;
-
+static InputManager* g_inputManager = nullptr;
+	
+InputManager* InputManager::GetInstance(InputManager* priority)
+{
+	return (priority != nullptr) ? priority : g_inputManager;
+}
+	
 //------------------------------------------------------------------------------
 InputManager::InputManager()
 	: m_inputDriver(nullptr)
@@ -81,8 +80,8 @@ void InputManager::Initialize(const Settings& settings)
 	pad->AddBinding(InputBinding::Create(InputButtons::Ok, Key::Z));
 	pad->AddBinding(InputBinding::Create(InputButtons::Cancel, Key::X));
 
-	if (Instance == nullptr) {
-		Instance = this;
+	if (g_inputManager == nullptr) {
+		g_inputManager = this;
 	}
 }
 
@@ -97,8 +96,8 @@ void InputManager::Finalize()
 		LN_SAFE_RELEASE(m_inputDriver);
 	}
 
-	if (Instance == this) {
-		Instance = nullptr;
+	if (g_inputManager == this) {
+		g_inputManager = nullptr;
 	}
 }
 

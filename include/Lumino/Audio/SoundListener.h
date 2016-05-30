@@ -1,6 +1,4 @@
-﻿/*
-	@file	SoundListener.h
-*/
+﻿
 #pragma once
 #include "Common.h"
 

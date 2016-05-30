@@ -13,37 +13,37 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 bool Input::IsPressed(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsPressed(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsPressed(bindingName);
 }
 
 //------------------------------------------------------------------------------
 bool Input::IsTriggered(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsTriggered(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsTriggered(bindingName);
 }
 
 //------------------------------------------------------------------------------
 bool Input::IsOffTriggered(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsOffTriggered(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsOffTriggered(bindingName);
 }
 
 //------------------------------------------------------------------------------
 bool Input::IsRepeated(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->IsRepeated(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsRepeated(bindingName);
 }
 
 //------------------------------------------------------------------------------
 float Input::GetAxisValue(const StringRef& bindingName)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(0)->GetAxisValue(bindingName);
+	return detail::InputManager::GetInstance()->GetVirtualPad(0)->GetAxisValue(bindingName);
 }
 
 //------------------------------------------------------------------------------
 InputController* Input::GetController(int index)
 {
-	return detail::GetInputManager(nullptr)->GetVirtualPad(index);
+	return detail::InputManager::GetInstance()->GetVirtualPad(index);
 }
 
 //==============================================================================

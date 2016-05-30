@@ -303,6 +303,8 @@ void Sound::CreateAudioPlayerSync()
 //------------------------------------------------------------------------------
 void Sound::Polling(float elapsedTime)
 {
+	// TODO: 例外catch
+	
 	// stream が準備できていれば Player を作成する
 	if (m_audioPlayer == NULL && m_audioStream->CheckCreated())
 	{

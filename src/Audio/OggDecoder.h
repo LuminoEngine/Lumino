@@ -54,9 +54,9 @@ private:
 	uint32_t		m_sourceDataSize;			// 音声データ部分のサイズ
 	uint32_t		m_totalTime;				// 全体の再生時間 (ミリ秒)
 	byte_t*			m_onmemoryPCMBuffer;		// オンメモリ再生用のデータを読み込むバッファ
-	uint32_t		m_onmemoryPCMBufferSize;	// mOnmemoryPCMBuffer のサイズ (今のところ mDataOffset と同じ)
+	uint32_t		m_onmemoryPCMBufferSize;	// mOnmemoryPCMBuffer のサイズ (今のところ m_dataOffset と同じ)
 	uint32_t		m_totalSamples;				// 全体の再生サンプル数
-	Mutex			m_mutex;
+	Mutex			m_mutex;	// TODO: 必要無いかな？
 
 	OggVorbis_File	m_oggVorbisFile;			// オープン済みの Ogg ファイル
 	uint32_t		m_loopStart;				// ループ領域の先頭サンプル数

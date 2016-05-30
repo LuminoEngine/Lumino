@@ -63,14 +63,14 @@ void MidiDecoder::FillOnmemoryBuffer()
 			uint32_t maxVolume = 0;
 			LN_FOREACH(VolumeEntry& v, m_volumeEntryList)
 			{
-				maxVolume = std::max(maxVolume, v.mVolume);
+				maxVolume = std::max(maxVolume, v.volume);
 			}
 
 			// MIDI データ内の最大ボリュームを 127 にするのに必要な値を求め、全てのボリュームに加算する
 			int sub = 127 - maxVolume;
 			LN_FOREACH(VolumeEntry& v, m_volumeEntryList)
 			{
-				m_midiFileData[v.mPosition] += sub;
+				m_midiFileData[v.position] += sub;
 			}
 		}
 
@@ -89,9 +89,8 @@ void MidiDecoder::Reset()
 {
 	LN_THROW(0, InvalidOperationException);
 }
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 void MidiDecoder::SearchData()
 {
 	// ファイルポインタを先頭に戻しておく
@@ -101,20 +100,20 @@ void MidiDecoder::SearchData()
 
 	// Midi ファイルのヘッダ読み込み
 	MidiHeader header;
-	size_t size = reader.Read(&(header.mChunktype), 4);
-	header.mLength = reader.ReadUInt32(ByteOrder::Big);
-	header.mFormat = reader.ReadUInt16(ByteOrder::Big);
-	header.mNumtrack = reader.ReadUInt16(ByteOrder::Big);
-	header.mTimebase = reader.ReadUInt16(ByteOrder::Big);
+	reader.Read(&(header.chunktype), 4);
+	header.length = reader.ReadUInt32(ByteOrder::Big);
+	header.format = reader.ReadUInt16(ByteOrder::Big);
+	header.numtrack = reader.ReadUInt16(ByteOrder::Big);
+	header.timebase = reader.ReadUInt16(ByteOrder::Big);
 
 	// ベースタイム格納
-	m_baseTime = header.mTimebase;
+	m_baseTime = header.timebase;
 
 	m_cc111Time = 0;
 	uint32_t cc111time = 0;
 
 	// トラックの数だけループして、cc111 とボリュームチェンジを探す
-	for (int i = 0; i < header.mNumtrack; ++i)
+	for (int i = 0; i < header.numtrack; ++i)
 	{
 		SearchTrack(reader, &cc111time);
 
@@ -124,17 +123,15 @@ void MidiDecoder::SearchData()
 		}
 	}
 }
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 uint32_t MidiDecoder::ReadDelta(BinaryReader& reader)
 {
 	uint8_t t;
 	uint32_t dtime = 0;
 	for (int i = 0; i < sizeof(uint32_t); ++i)
 	{
-		size_t size = reader.Read(&t, sizeof(uint8_t));
+		reader.Read(&t, sizeof(uint8_t));
 		dtime = (dtime << 7) | (t & 0x7f);
 
 		// MSBが立っていないならば、次のバイトはデルタタイムではないので抜ける
@@ -142,10 +139,8 @@ uint32_t MidiDecoder::ReadDelta(BinaryReader& reader)
 	}
 	return dtime;
 }
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
+	
+//------------------------------------------------------------------------------
 bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 {
 	// トラックチャンクのチェック
@@ -210,8 +205,8 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			{
 				// データの位置とボリュームをキューに入れて保存
 				VolumeEntry entry;
-				entry.mPosition = (uint32_t)reader.GetPosition() - 1;
-				entry.mVolume = data2;
+				entry.position = (uint32_t)reader.GetPosition() - 1;
+				entry.volume = data2;
 				m_volumeEntryList.Add(entry);
 				//printf("ボリュームチェンジ %d\n", data2);
 			}
