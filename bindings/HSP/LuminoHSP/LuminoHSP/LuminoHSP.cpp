@@ -58,7 +58,7 @@ static void *reffunc(int *type_res, int cmd)
 //-----------------------------------------------------------------------------
 static int termfunc(int option)
 {
-	LNApplication_Terminate();
+	LNEngine_Terminate();
 	return 0;
 }
 

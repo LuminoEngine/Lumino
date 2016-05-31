@@ -1429,25 +1429,18 @@ static VALUE lnrbLNSceneNode_SetVisible(int argc, VALUE *argv, VALUE self)
 
 static VALUE lnrbLNSceneNode_IsVisible(int argc, VALUE *argv, VALUE self)
 {
-	printf("lnrbLNSceneNode_IsVisible s\n");
     wrapSceneNode* selfObj;
     Data_Get_Struct(self, wrapSceneNode, selfObj);
-	printf("2\n");
     if (0 <= argc && argc <= 0) {
     
         if (true) {
             LNBool _outVisible;
-	printf("1\n");
             LNResult errorCode = LNSceneNode_IsVisible(selfObj->Handle, &_outVisible);
-	printf("3 %d\n", _outVisible);
-	printf("3 e %d\n", errorCode);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-	printf("4 %d\n", toVALUE(_outVisible));
             return toVALUE(_outVisible);
     
         }
     }
-	printf("5\n");
     rb_raise(rb_eArgError, "Lumino::SceneNode.visible? - wrong argument type.");
     return Qnil;
 }

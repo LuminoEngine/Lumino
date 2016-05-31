@@ -25,7 +25,7 @@ TYPE_INFO_REGISTERS
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
         {
-            int index = (int)LNObject_GetTypeUserData(handle);
+            int index = (int)LNObject_GetBindingTypeData(handle);
             return _typeInfos[index];
         }
 
