@@ -1,2 +1,0 @@
-- "グラフィックス"
-	- graphics/sprite.md

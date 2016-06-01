@@ -7,8 +7,5 @@
 			<page src="string/base_string.md" />
 			<page src="string/base_regex.md" />
 		</page>
-		<page caption="ファイル入出力">
-			<page src="fileio/file.md" />
-		</page>
 	</toc>
 </category_index>

@@ -1,24 +1,24 @@
-
+ï»¿
 #include <Lumino.h>
 using namespace ln;
 
-// Lumino ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg
+// Lumino ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ
 void Main()
 {
-	// Lumino ‚Ì‰Šú‰»ˆ—
+	// Lumino ã®åˆæœŸåŒ–å‡¦ç†
 	Engine::Initialize();
 
-	// ‰æ‘œ‚ğ“Ç‚İ‚İA2DƒXƒvƒ‰ƒCƒg‚ğì¬‚·‚é
+	// ç”»åƒã‚’èª­ã¿è¾¼ã¿ã€2Dã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’ä½œæˆã™ã‚‹
 	auto sprite = Sprite2D::Create("Assets/icon256.png");
 
-	// 2DƒXƒvƒ‰ƒCƒg‚ÌˆÊ’u‚ğİ’è‚·‚é
+	// 2Dã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®ä½ç½®ã‚’è¨­å®šã™ã‚‹
 	sprite->SetPosition(200, 100);
 
-	// Lumino ‚ÌXVˆ— (ƒEƒBƒ“ƒhƒE‚Ö‚Ì•`‰æ‚È‚Ç‚ğs‚¢AƒEƒBƒ“ƒhƒE‚ª•Â‚¶‚ç‚ê‚Ä‚¢‚ê‚Î false ‚ğ•Ô‚·)
+	// Lumino ã®æ›´æ–°å‡¦ç† (ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸ã®æç”»ãªã©ã‚’è¡Œã„ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒé–‰ã˜ã‚‰ã‚Œã¦ã„ã‚Œã° false ã‚’è¿”ã™)
 	while (Engine::UpdateFrame())
 	{
 	}
 
-	// Lumino ‚ÌI—¹ˆ—
+	// Lumino ã®çµ‚äº†å‡¦ç†
 	Engine::Finalize();
 }
