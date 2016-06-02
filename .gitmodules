@@ -4,3 +4,6 @@
 [submodule "external/Lumino.Core"]
 	path = external/Lumino.Core
 	url = https://github.com/lriki/Lumino.Core.git
+[submodule "external/Fluorite"]
+	path = external/Fluorite
+	url = https://github.com/lriki/Fluorite.git
