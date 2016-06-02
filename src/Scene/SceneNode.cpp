@@ -133,7 +133,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 		SceneNode* node = m_children->GetAt(i);
 		node->UpdateFrameHierarchy(this, deltaTime);
 
-		if (node->IsAutoRemove() && node->GetRefCount() == 1)
+		if (node->IsAutoRemove() && node->GetReferenceCount() == 1)
 		{
 			m_children->RemoveAt(i);
 			count = m_children->GetCount();
@@ -153,7 +153,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	//{
 	//	(*itr)->UpdateFrameHierarchy(this, deltaTime);
 
-	//	if ((*itr)->IsAutoRemove() && (*itr)->GetRefCount() == 1)
+	//	if ((*itr)->IsAutoRemove() && (*itr)->GetReferenceCount() == 1)
 	//	{
 	//		itr = m_allNodes.erase(itr);
 	//		end = m_allNodes.end();

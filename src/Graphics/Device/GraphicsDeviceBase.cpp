@@ -77,7 +77,7 @@ void GraphicsDeviceBase::GCDeviceResource()
 	Array<IDeviceObject*>::iterator end = m_deviceObjectList.end();
 	for (; itr != end;)
 	{
-		if ((*itr)->GetRefCount() == 1) {
+		if ((*itr)->GetReferenceCount() == 1) {
 			(*itr)->Release();
 			itr = m_deviceObjectList.erase(itr);
 			end = m_deviceObjectList.end();

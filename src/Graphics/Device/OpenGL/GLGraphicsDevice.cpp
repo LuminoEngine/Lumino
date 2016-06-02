@@ -341,7 +341,7 @@ void GLGraphicsDevice::OnEndAccessContext()
 //	Array<IDeviceObject*>::iterator end = m_allDeviceResourceList.end();
 //	for (; itr != end;)
 //	{
-//		if ((*itr)->GetRefCount() == 1) {
+//		if ((*itr)->GetReferenceCount() == 1) {
 //			(*itr)->Release();
 //			itr = m_allDeviceResourceList.erase(itr);
 //			end = m_allDeviceResourceList.end();
@@ -354,7 +354,7 @@ void GLGraphicsDevice::OnEndAccessContext()
 //
 //	//LN_FOREACH(IDeviceObject* obj, m_allDeviceResourceList)
 //	//{
-//	//	if (obj->GetRefCount() == 1) {
+//	//	if (obj->GetReferenceCount() == 1) {
 //	//		obj->Release();
 //	//	}
 //	//}

@@ -257,7 +257,7 @@ void AudioManager::Thread_Polling()
 		{
 			// TODO: フェード中は開放しない
 
-			if ((*itr)->GetRefCount() == 1)
+			if ((*itr)->GetReferenceCount() == 1)
 			{
 				(*itr)->Release();
 				itr = m_soundList.erase(itr);

@@ -74,7 +74,7 @@ void SceneGraph::UpdateFrame(float deltaTime)
 	//{
 	//	(*itr)->UpdateFrame(deltaTime);
 
-	//	if ((*itr)->IsAutoRemove() && (*itr)->GetRefCount() == 1)
+	//	if ((*itr)->IsAutoRemove() && (*itr)->GetReferenceCount() == 1)
 	//	{
 	//		itr = m_allNodes.erase(itr);
 	//		end = m_allNodes.end();

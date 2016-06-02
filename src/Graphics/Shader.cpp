@@ -386,7 +386,7 @@ void ShaderValue::ReleaseValueBuffer()
 //------------------------------------------------------------------------------
 void ShaderValue::AllocValueBuffer(size_t byteCount)
 {
-	if (byteCount > m_buffer.GetSize()/*m_value.ByteCount*//* || m_buffer.GetRefCount() != 1*/)
+	if (byteCount > m_buffer.GetSize()/*m_value.ByteCount*//* || m_buffer.GetReferenceCount() != 1*/)
 	{
 		//LN_SAFE_DELETE_ARRAY(m_value.Buffer);
 		//m_value.Buffer = LN_NEW byte_t[byteCount];

@@ -359,7 +359,7 @@ int main()
 
 		//Color cc;
 		//cc.r = 1000;
-		//cc.Set(100, 0, if2->GetRefCount(), 1);
+		//cc.Set(100, 0, if2->GetReferenceCount(), 1);
 		//cc.r = (if2->GetRefCount(), 0, 0, 1);
 
 
