@@ -107,6 +107,18 @@ void SwapChain::Present()
 
 		// 一時メモリの解放とかをやっておく
 		m_manager->GetPrimaryRenderingCommandList()->PostExecute();
+
+
+		// デバイスロストのチェック
+		auto* device = m_manager->GetGraphicsDevice();
+		if (device->GetDeviceState() == Driver::DeviceState_Lost)
+		{
+			m_manager->PauseDevice();
+			device->GetRenderer()->LeaveRenderState();
+			device->ResetDevice();
+			device->GetRenderer()->EnterRenderState();
+			m_manager->ResumeDevice();
+		}
 	}
 	else
 	{

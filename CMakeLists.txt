@@ -8,6 +8,7 @@ set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
 set(LN_LIB_POSTFIX "")
+set(LN_OutputDir ${CMAKE_SOURCE_DIR}/lib)
 
 #------------------------------------------------------------------------------
 # Options
@@ -32,6 +33,7 @@ option(LN_USE_EXTERNAL_Effekseer "" ON)
 #option(LN_BUILD_X64 "Architecture." OFF)
 
 option(LN_DxLib_Demo "DX Library demo." OFF)
+
 
 #------------------------------------------------------------------------------
 # Files
@@ -929,19 +931,18 @@ if (LN_USE_EXTERNAL_Effekseer)
 	add_definitions(-DLN_USE_EXTERNAL_Effekseer)
 endif()
 
-
 # Lumino_static
 add_library(${PROJECT_NAME}_Static STATIC ${LN_SOURCES})
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME "${LN_STATIC_LIB_OUTPUT_NAME}${LN_LIB_POSTFIX}")
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_OutputDir}")
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 # Foundation
 add_library(LuminoFoundation STATIC ${LN_SOURCES_Foundation})
 set_target_properties(LuminoFoundation PROPERTIES COMPILE_DEFINITIONS "${my_definitions}")
 set_target_properties(LuminoFoundation PROPERTIES OUTPUT_NAME "LuminoFoundation${LN_LIB_POSTFIX}")
-set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(LuminoFoundation PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_OutputDir}")
 #target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 #------------------------------

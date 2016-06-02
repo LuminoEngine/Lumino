@@ -318,6 +318,18 @@ void EffekseerEffectEngine::Render()
 	m_efkRenderer->EndRendering();
 }
 
+//------------------------------------------------------------------------------
+void EffekseerEffectEngine::OnLostDevice()
+{
+	m_efkRenderer->OnLostDevice();
+}
+
+//------------------------------------------------------------------------------
+void EffekseerEffectEngine::OnResetDevice()
+{
+	m_efkRenderer->OnResetDevice();
+}
+
 //==============================================================================
 // EffekseerEffectCore
 //==============================================================================

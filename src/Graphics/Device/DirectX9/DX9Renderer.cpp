@@ -41,7 +41,12 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 //------------------------------------------------------------------------------
 DX9Renderer::~DX9Renderer()
 {
-	OnLostDevice();
+	LN_SAFE_RELEASE(m_currentVertexBuffer);
+	LN_SAFE_RELEASE(m_currentIndexBuffer);
+	LN_SAFE_RELEASE(m_currentDepthBuffer);
+	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
+		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -58,12 +63,7 @@ void DX9Renderer::OnLostDevice()
 {
 	//TryEndScene();
 
-	LN_SAFE_RELEASE(m_currentVertexBuffer);
-	LN_SAFE_RELEASE(m_currentIndexBuffer);
-	LN_SAFE_RELEASE(m_currentDepthBuffer);
-	for (int i = 0; i < MaxMultiRenderTargets; ++i) {
-		LN_SAFE_RELEASE(m_currentRenderTargets[i]);
-	}
+
 }
 
 //------------------------------------------------------------------------------

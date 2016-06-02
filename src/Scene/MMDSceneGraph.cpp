@@ -27,6 +27,7 @@ MMDSceneGraph::MMDSceneGraph()
 	: /*m_defaultMaterial(nullptr)
 	, */m_defaultRoot(nullptr)
 	, m_default3DCamera(nullptr)
+	, m_effectBatchRendererNode(nullptr)
 	//, m_mmdRenderingPasses{}
 {
 }
@@ -54,10 +55,13 @@ void MMDSceneGraph::CreateCore(SceneGraphManager* manager)
 	m_defaultRoot = LN_NEW SceneNode();
 	m_defaultRoot->Initialize(this);
 
-	m_effectBatchRendererNode = LN_NEW EffectBatchRendererNode();
-	m_effectBatchRendererNode->Initialize(this, manager->GetEffectManager());
-	m_effectBatchRendererNode->SetPriority(-1000);
-	m_defaultRoot->AddChild(m_effectBatchRendererNode);
+	if (manager->GetEffectManager() != nullptr)
+	{
+		m_effectBatchRendererNode = LN_NEW EffectBatchRendererNode();
+		m_effectBatchRendererNode->Initialize(this, manager->GetEffectManager());
+		m_effectBatchRendererNode->SetPriority(-1000);
+		m_defaultRoot->AddChild(m_effectBatchRendererNode);
+	}
 
 	m_default3DCamera = LN_NEW Camera();
 	m_default3DCamera->Initialize(this, CameraProjection_3D);

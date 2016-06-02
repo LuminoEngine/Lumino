@@ -979,6 +979,10 @@ GraphicsAPI GraphicsManager::GetGraphicsAPI() const
 void GraphicsManager::PauseDevice()
 {
 	// TODO: ユーザーコールバック
+	for (auto* listener : m_deviceResetListenerList)
+	{
+		listener->OnLostDevice();
+	}
 	m_graphicsDevice->OnLostDevice();
 }
 
@@ -986,6 +990,10 @@ void GraphicsManager::PauseDevice()
 void GraphicsManager::ResumeDevice()
 {
 	m_graphicsDevice->OnResetDevice();
+	for (auto* listener : m_deviceResetListenerList)
+	{
+		listener->OnResetDevice();
+	}
 	// TODO: ユーザーコールバック
 }
 

@@ -914,7 +914,7 @@ namespace Lumino
 #if DEBUG
     	internal const string DLLName = "LuminoC_x86uMTd.dll";
 #else
-    	internal const string DLLName = "LuminoC_x86uMT.dll";
+    	internal const string DLLName = "LuminoC.dll";
 #endif
         internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;

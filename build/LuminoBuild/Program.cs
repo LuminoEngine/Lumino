@@ -23,7 +23,7 @@ namespace LuminoBuild
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
-            //builder.Rules.Add(new LuminoEngineRule());
+            builder.Rules.Add(new LuminoEngineRule());
             builder.Rules.Add(new CppPackageRule());
             //builder.Rules.Add(new LuminoRubyRule());
             //builder.Rules.Add(new LuminoDotNetRule());

@@ -3,6 +3,7 @@
 #include <array>
 #include <Lumino/Threading/Task.h>
 #include <Lumino/Input/Common.h>
+#include "../Graphics/GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
 class FileManager;
@@ -15,6 +16,7 @@ class EffectEngine;
 
 class EffectManager
 	: public RefObject
+	, public IDeviceResetListener
 {
 public:
 	struct Settings
@@ -33,6 +35,8 @@ public:
 
 	void PreRender();
 	void Render();
+	virtual void OnLostDevice() override;
+	virtual void OnResetDevice() override;
 
 	FileManager*		GetFileManager() { return m_fileManager; }
 	GraphicsManager*	GetGraphicsManager() { return m_graphicsManager; }

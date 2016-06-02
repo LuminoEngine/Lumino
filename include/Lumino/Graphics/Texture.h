@@ -158,9 +158,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void Initialize(GraphicsManager* manager, const Size& size, TextureFormat format, int mipLevels);
-	void CreateCore(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels);
-	void CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
-	void CreateCore(GraphicsManager* manager, bool isDefaultBackBuffer);
+	void Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels);
+	void Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels);
+	void Initialize(GraphicsManager* manager, bool isDefaultBackBuffer);
 	Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
 
 protected:

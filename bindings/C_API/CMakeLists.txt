@@ -70,7 +70,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LN_OutputDir})
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 
 #------------------------------
@@ -80,7 +80,7 @@ set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME ${PROJECT_NA
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LN_OutputDir})
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 

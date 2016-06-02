@@ -24,6 +24,8 @@ public:
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) = 0;
 	virtual void UpdateFrame(float elapsedTime) = 0;
 	virtual void Render() = 0;
+	virtual void OnLostDevice() = 0;
+	virtual void OnResetDevice() = 0;
 
 	// Render() は、
 	// Deferred 描画		: 描画コマンドから実行される

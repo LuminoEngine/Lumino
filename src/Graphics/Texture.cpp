@@ -168,7 +168,7 @@ Texture2DPtr Texture2D::Create(const Size& size, TextureFormat format, int mipLe
 Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->CreateCore(GraphicsManager::GetInstance(), filePath, format, mipLevels);
+	tex->Initialize(GraphicsManager::GetInstance(), filePath, format, mipLevels);
 	return tex;
 }
 
@@ -176,7 +176,7 @@ Texture2DPtr Texture2D::Create(const StringRef& filePath, TextureFormat format, 
 Texture2DPtr Texture2D::Create(Stream* stream, TextureFormat format, int mipLevels)
 {
 	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
-	tex->CreateCore(GraphicsManager::GetInstance(), stream, format, mipLevels);
+	tex->Initialize(GraphicsManager::GetInstance(), stream, format, mipLevels);
 	return tex;
 	/*
 	if (GetManager()->IsPlatformTextureLoading())
@@ -226,16 +226,16 @@ void Texture2D::Initialize(GraphicsManager* manager, const Size& size, TextureFo
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::CreateCore(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels)
+void Texture2D::Initialize(GraphicsManager* manager, const StringRef& filePath, TextureFormat format, int mipLevels)
 {
 	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath), false);
-	CreateCore(manager, stream, format, mipLevels);
+	Initialize(manager, stream, format, mipLevels);
 }
 
 //------------------------------------------------------------------------------
 // プラットフォーム依存用
 //------------------------------------------------------------------------------
-void Texture2D::CreateCore(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
+void Texture2D::Initialize(GraphicsManager* manager, Stream* stream, TextureFormat format, int mipLevels)
 {
 	GraphicsResourceObject::Initialize(manager);
 	m_mipLevels = mipLevels;

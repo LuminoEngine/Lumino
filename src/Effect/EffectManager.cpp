@@ -116,6 +116,24 @@ void EffectManager::Render()
 }
 
 //------------------------------------------------------------------------------
+void EffectManager::OnLostDevice()
+{
+	if (m_engine != nullptr)
+	{
+		m_engine->OnLostDevice();
+	}
+}
+
+//------------------------------------------------------------------------------
+void EffectManager::OnResetDevice()
+{
+	if (m_engine != nullptr)
+	{
+		m_engine->OnResetDevice();
+	}
+}
+
+//------------------------------------------------------------------------------
 void EffectManager::Thread_UpdateFrame()
 {
 	if (m_engine == nullptr) return;

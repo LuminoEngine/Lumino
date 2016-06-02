@@ -78,6 +78,8 @@ public:
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) override;
 	virtual void UpdateFrame(float elapsedTime) override;
 	virtual void Render() override;
+	virtual void OnLostDevice() override;
+	virtual void OnResetDevice() override;
 
 public:
 	::Effekseer::Manager* GetEffekseerManager() { return m_efkManager; }

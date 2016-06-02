@@ -218,6 +218,8 @@ public:
 	void InitializeSceneGraphManager();
 	void InitializeAssetsManager();
 	virtual bool OnEvent(const PlatformEventArgs& e);
+	//void OnLostDevice();
+	//void OnResetDevice();
 
 private:
 	//class NativeWindowEventListener;

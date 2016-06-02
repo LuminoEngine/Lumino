@@ -44,7 +44,7 @@ LNResult LNTexture2D_CreateFromFile(const LNChar* filePath, LN_OUT LN_HANDLE(LNT
 {
 	LN_FUNC_TRY_BEGIN;
 	RefPtr<LNWITexture2D> obj(LN_NEW LNWITexture2D(), false);
-	obj->CreateCore(LFManager::Engine->GetGraphicsManager(), filePath, TextureFormat::B8G8R8A8, 1);
+	obj->Initialize(LFManager::Engine->GetGraphicsManager(), filePath, TextureFormat::B8G8R8A8, 1);
 	*texture2D = LFManager::CheckRegisterObject(obj);
 	obj.SafeAddRef();
 	LN_FUNC_TRY_END_RETURN;

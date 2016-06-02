@@ -11,6 +11,8 @@
 #include <Lumino/Testing/TestUtils.h>
 //#include <Lumino/Platform/Win32/Win32PlatformWindow.h>
 
+#include <thread>
+
 
 //void LN_STDCALL Button1_MouseMove(CoreObject* sender, MouseEventArgs* e)
 //{
@@ -27,7 +29,7 @@ int g_test2 = TestA();
 
 class TestRef1 : public RefObject
 {
-
+	
 };
 
 /*

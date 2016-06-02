@@ -254,7 +254,9 @@ EngineManager::~EngineManager()
 		m_modelManager->Finalize();
 		LN_SAFE_RELEASE(m_modelManager);
 	}
-	if (m_effectManager != nullptr) {
+	if (m_effectManager != nullptr)
+	{
+		m_graphicsManager->RemoveDeviceResetListener(m_effectManager);
 		m_effectManager->Finalize();
 		LN_SAFE_RELEASE(m_effectManager);
 	}
@@ -480,6 +482,8 @@ void EngineManager::InitializeEffectManager()
 		data.graphicsManager = m_graphicsManager;
 		m_effectManager = LN_NEW detail::EffectManager();
 		m_effectManager->Initialize(data);
+
+		m_graphicsManager->AddDeviceResetListener(m_effectManager);
 	}
 }
 
@@ -875,5 +879,23 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	}
 	return false;
 }
+
+////------------------------------------------------------------------------------
+//void EngineManager::OnLostDevice()
+//{
+//	if (m_effectManager != nullptr)
+//	{
+//		m_effectManager->OnLostDevice();
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void EngineManager::OnResetDevice()
+//{
+//	if (m_effectManager != nullptr)
+//	{
+//		m_effectManager->OnResetDevice();
+//	}
+//}
 
 LN_NAMESPACE_END

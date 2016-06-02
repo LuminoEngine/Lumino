@@ -25,6 +25,16 @@ namespace detail
 	class TextRendererCore;
 }
 
+class IDeviceResetListener
+{
+public:
+	virtual void OnLostDevice() = 0;
+	virtual void OnResetDevice() = 0;
+
+protected:
+	virtual ~IDeviceResetListener() = default;
+};
+
 /**
 	@brief		グラフィックス機能の管理クラスです。
 */
@@ -93,6 +103,9 @@ public:
 
 	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
+	void AddDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Add(listener); }
+	void RemoveDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Remove(listener); }
+
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
 	void PauseDevice();
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
@@ -153,6 +166,7 @@ private:
 	GraphicsRenderingType			m_renderingType;
 	RefPtr<CacheManager>			m_glyphTextureCache;
 	Array<GraphicsResourceObject*>	m_resourceObjectList;
+	Array<IDeviceResetListener*>	m_deviceResetListenerList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
 	SwapChain*						m_mainSwapChain;
