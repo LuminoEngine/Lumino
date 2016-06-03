@@ -111,7 +111,7 @@ namespace LuminoBuildTool
         /// <param name="stSourcePath">St source path.</param>
         /// <param name="stDestPath">St destination path.</param>
         /// <param name="bOverwrite">If set to <c>true</c> b overwrite.</param>
-        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite)
+        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true)
         {
             // コピー先のディレクトリがなければ作成する
             if (!System.IO.Directory.Exists(stDestPath))

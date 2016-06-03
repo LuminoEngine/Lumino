@@ -61,9 +61,11 @@ class DotNetPackageRule : ModuleRule
 
         // VSプロジェクトテンプレート
         Logger.WriteLine("make project template...");
+        string templateProjDir = builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCS/";
         Directory.CreateDirectory(releaseDir + "tools");
+        Utils.CopyDirectory(releaseLibDir, templateProjDir + "LuminoLibrary");
         File.Delete(releaseDir + "tools/LuminoProjectCS.zip");  // 既に存在する場合は消さないと例外する
-        ZipFile.CreateFromDirectory(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCS", releaseDir + "tools/LuminoProjectCS.zip", CompressionLevel.Optimal, false);
+        ZipFile.CreateFromDirectory(templateProjDir, releaseDir + "tools/LuminoProjectCS.zip", CompressionLevel.Optimal, false);
 
         // installer
         Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
