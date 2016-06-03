@@ -10,6 +10,7 @@ namespace LuminoBuildTool
         public string VersionString;
         public string LuminoRootDir;
         public string LuminoBuildDir;
+        public string LuminoBindingsDir;
         public string LuminoLibDir;
         public string LuminoToolsDir;
         public string LuminoPackageDir;
@@ -225,6 +226,28 @@ namespace LuminoBuildTool
                     return true;
                 else
                     return false;
+            }
+        }
+
+        /// <summary>
+        /// MSBuild または mono の xbuild を探す
+        /// </summary>
+        /// <returns>The MS build path.</returns>
+        public static string FindMSBuild()
+        {
+            if (Utils.IsWin32)
+            {
+                var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0");
+                return (string)regkey.GetValue("MSBuildToolsPath") + "MSBuild.exe";
+            }
+            else
+            {
+                if (!Utils.ExistsProgram("xbuild"))
+                {
+                    Logger.WriteLineError("Not found xbuild.");
+                    return null;
+                }
+                return "xbuild";
             }
         }
 	}

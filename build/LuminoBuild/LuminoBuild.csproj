@@ -43,6 +43,12 @@
     <Compile Include="..\CppPackage.Build.cs">
       <Link>Rules\CppPackage.Build.cs</Link>
     </Compile>
+    <Compile Include="..\LuminoDotNet.Build.cs">
+      <Link>Rules\LuminoDotNet.Build.cs</Link>
+    </Compile>
+    <Compile Include="..\DotNetPackage.Build.cs">
+      <Link>Rules\DotNetPackage.Build.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

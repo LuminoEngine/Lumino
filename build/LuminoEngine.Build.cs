@@ -13,25 +13,19 @@ class LuminoEngineRule : ModuleRule
 
     public override void CheckPrerequisite()
     {
+        // cmake
         if (!Utils.ExistsProgram("cmake"))
         {
             Logger.WriteLineError("Not found cmake.");
             return;
         }
 
-        if (Utils.IsWin32)
+        // MSBuild
+        _msbuild = Utils.FindMSBuild();
+        if (_msbuild == null)
         {
-            var regkey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\14.0");
-            _msbuild = (string)regkey.GetValue("MSBuildToolsPath") + "MSBuild.exe";
-        }
-        else
-        {
-            if (!Utils.ExistsProgram("xbuild"))
-            {
-                Logger.WriteLineError("Not found xbuild.");
-                return;
-            }
-            _msbuild = "xbuild";
+            Logger.WriteLineError("Not found MSBuild or xbuild.");
+            return;
         }
         
         Buildable = true;

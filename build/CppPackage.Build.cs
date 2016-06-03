@@ -6,16 +6,25 @@ using LuminoBuildTool;
 
 class CppPackageRule : ModuleRule
 {
+    /// <summary>
+    /// ルールの名前
+    /// </summary>
     public override string Name
     {
         get { return "CppPackage"; }
     }
 
+    /// <summary>
+    /// 前提条件の確認
+    /// </summary>
     public override void CheckPrerequisite()
     {
         Buildable = true;
     }
 
+    /// <summary>
+    /// ビルド実行
+    /// </summary>
     public override void Build(Builder builder)
     {
         string releaseDir = builder.LuminoPackageReleaseDir + "LuminoCpp_" + builder.VersionString + "/";
