@@ -20,6 +20,7 @@ namespace LuminoBuild
             builder.LuminoBindingsDir = builder.LuminoRootDir + "bindings/";
             builder.LuminoLibDir = builder.LuminoRootDir + "lib/";
             builder.LuminoToolsDir = builder.LuminoRootDir + "tools/";
+            builder.LuminoDocDir = builder.LuminoRootDir + "doc/";
             builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/";
 

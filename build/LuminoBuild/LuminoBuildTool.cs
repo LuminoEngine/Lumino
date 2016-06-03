@@ -13,6 +13,7 @@ namespace LuminoBuildTool
         public string LuminoBindingsDir;
         public string LuminoLibDir;
         public string LuminoToolsDir;
+        public string LuminoDocDir;
         public string LuminoPackageDir;
         public string LuminoPackageReleaseDir;
         public List<ModuleRule> Rules = new List<ModuleRule>();

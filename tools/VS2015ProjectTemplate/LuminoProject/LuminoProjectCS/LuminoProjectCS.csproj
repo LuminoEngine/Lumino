@@ -54,13 +54,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\icon256.png" />
     <Content Include="LuminoLibrary\LuminoC.dll" />
     <Content Include="LuminoLibrary\LuminoDotNet.dll" />
     <Content Include="LuminoLibrary\LuminoDotNet.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)LuminoLibrary\LuminoC.dll $(ProjectDir)$(OutDir)LuminoC.dll</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)LuminoLibrary\LuminoC.dll" "$(ProjectDir)$(OutDir)LuminoC.dll"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
