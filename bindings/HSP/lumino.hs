@@ -9,7 +9,7 @@ Lumino
 0.2.0.0
 
 %date
-2016/06/02
+2016/06/04
 
 %author
 lriki
@@ -216,12 +216,14 @@ LNEngine_UpdateFrame
 %group
 エンジン
 %prm
-　
+outRequested
+[out] outRequested : 終了要求の有無を格納する変数
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
 この命令はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には LN_FALSE を返します。
 
 %href
 
@@ -241,8 +243,7 @@ outRequested
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
-ウィンドウのクローズボタンが押された場合等、
-アプリケーションを終了するべき時には LN_FALSE を返します。
+ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には LN_FALSE を返します。
 
 %href
 

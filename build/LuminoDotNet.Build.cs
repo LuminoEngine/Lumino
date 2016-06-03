@@ -19,7 +19,7 @@ class LuminoDotNetRule : ModuleRule
     /// <summary>
     /// 前提条件の確認
     /// </summary>
-    public override void CheckPrerequisite()
+    public override void CheckPrerequisite(Builder builder)
     {
         // MSBuild
         _msbuild = Utils.FindMSBuild();

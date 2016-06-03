@@ -17,7 +17,7 @@ class CppPackageRule : ModuleRule
     /// <summary>
     /// 前提条件の確認
     /// </summary>
-    public override void CheckPrerequisite()
+    public override void CheckPrerequisite(Builder builder)
     {
         Buildable = true;
     }

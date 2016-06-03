@@ -5,13 +5,19 @@ using LuminoBuildTool;
 class LuminoEngineRule : ModuleRule
 {
     public string _msbuild;
-    
+
+    /// <summary>
+    /// ルールの名前
+    /// </summary>
     public override string Name
     {
         get { return "LuminoEngine"; }
     }
 
-    public override void CheckPrerequisite()
+    /// <summary>
+    /// 前提条件の確認
+    /// </summary>
+    public override void CheckPrerequisite(Builder builder)
     {
         // cmake
         if (!Utils.ExistsProgram("cmake"))
@@ -31,6 +37,9 @@ class LuminoEngineRule : ModuleRule
         Buildable = true;
     }
 
+    /// <summary>
+    /// ビルド実行
+    /// </summary>
     public override void Build(Builder builder)
     {
         string oldCD = Directory.GetCurrentDirectory();

@@ -985,8 +985,9 @@ namespace Lumino
         /// <summary>
         /// 1フレーム分の更新処理を行います。
         /// </summary>
+        /// <param name="outRequested">終了要求の有無を格納する変数</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
-        public extern static Result LNEngine_UpdateFrame();
+        public extern static Result LNEngine_UpdateFrame(out bool outRequested);
 
         /// <summary>
         /// アプリケーションを終了するべきかを確認します。

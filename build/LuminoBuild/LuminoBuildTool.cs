@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 
 namespace LuminoBuildTool
 {
@@ -22,7 +23,7 @@ namespace LuminoBuildTool
         {
             foreach (var rule in Rules)
             {
-                rule.CheckPrerequisite();
+                rule.CheckPrerequisite(this);
             }
         }
 
@@ -56,7 +57,7 @@ namespace LuminoBuildTool
         /// 前提条件の確認
         /// </summary>
         /// <returns>この Rule を実行できるなら true</returns>
-        public abstract void CheckPrerequisite();
+        public abstract void CheckPrerequisite(Builder builder);
 
         /// <summary>
         /// このルールをビルドする
@@ -176,16 +177,17 @@ namespace LuminoBuildTool
             }
         }
 
-		public static void CallProcess(string program, string args = "")
+		public static string CallProcess(string program, string args = "")
 		{
 			using (Process p = new Process())
 			{
+                var sb = new StringBuilder();
 				p.StartInfo.Arguments = args;
 				p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 				p.StartInfo.UseShellExecute = false;
 				p.StartInfo.FileName = program;
 				p.StartInfo.RedirectStandardOutput = true;
-				p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+				p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
 				p.StartInfo.RedirectStandardError = true;
 				p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
 
@@ -197,8 +199,34 @@ namespace LuminoBuildTool
 
 				if (p.ExitCode != 0)
 					throw new InvalidOperationException("Failed Process.");
+                return sb.ToString();
 			}
 		}
+
+        public static int TryCallProcessStdErr(string program, string args, out string outStdErr)
+        {
+            using (Process p = new Process())
+            {
+                var sb = new StringBuilder();
+                p.StartInfo.Arguments = args;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.FileName = program;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.OutputDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); };
+                p.StartInfo.RedirectStandardError = true;
+                p.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => { Console.WriteLine(e.Data); sb.Append(e.Data); };
+
+                p.Start();
+                p.BeginOutputReadLine();
+                p.BeginErrorReadLine();
+
+                p.WaitForExit();
+
+                outStdErr = sb.ToString();
+                return p.ExitCode;
+            }
+        }
 
         public static void CallProcessShell(string program, string args = "")
         {

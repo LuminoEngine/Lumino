@@ -131,9 +131,11 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x006D:
     {
-    
-        stat = LNEngine_UpdateFrame();
-    
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        LNBool p0;
+        stat = LNEngine_UpdateFrame(&p0);
+        int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
     case 0x006E:

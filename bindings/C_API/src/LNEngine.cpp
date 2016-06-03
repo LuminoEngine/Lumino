@@ -133,10 +133,11 @@ LNResult LNEngine_InitializeAudio()
 
 #endif
 //------------------------------------------------------------------------------
-LNResult LNEngine_UpdateFrame()
+LNResult LNEngine_UpdateFrame(LNBool* outRequested)
 {
+	LN_CHECK_ARG(outRequested != nullptr);
 	LN_FUNC_TRY_BEGIN;
-	LFManager::Engine->UpdateFrame();
+	*outRequested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->UpdateFrame());
 	LN_FUNC_TRY_END_RETURN;
 }
 
@@ -148,9 +149,10 @@ LNResult LNEngine_UpdateFrame()
 //}
 
 //------------------------------------------------------------------------------
-LNResult LNEngine_IsEndRequested(LNBool* requested)
+LNResult LNEngine_IsEndRequested(LNBool* outRequested)
 {
-	*requested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->IsEndRequested());
+	LN_CHECK_ARG(outRequested != nullptr);
+	*outRequested = LNOTE_BOOL_TO_LNBOOL(LFManager::Engine->IsEndRequested());
 	return ::LN_OK;
 }
 

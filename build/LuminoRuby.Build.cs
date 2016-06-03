@@ -4,20 +4,51 @@ using LuminoBuildTool;
 
 class LuminoRubyRule : ModuleRule
 {
+    public string _devKitDir;
+
+    /// <summary>
+    /// ルールの名前
+    /// </summary>
     public override string Name
     {
         get { return "Ruby"; }
     }
 
+    /// <summary>
+    /// 前提条件の確認
+    /// </summary>
+    public override void CheckPrerequisite(Builder builder)
+    {
+        // ruby
+        if (!Utils.ExistsProgram("ruby"))
+        {
+            Logger.WriteLineError("Not found ruby.");
+            return;
+        }
+
+        // devkit
+        string rubyDir = builder.LuminoBindingsDir + "Ruby/";
+        if (Utils.TryCallProcessStdErr("ruby", '"' + rubyDir + "FindDevKit.rb" + '"', out _devKitDir) != 0)
+        {
+            Logger.WriteLineError("Not installed ruby dev kit.");
+            return;
+        }
+        _devKitDir += "/";
+
+        Buildable = true;
+    }
+
+    /// <summary>
+    /// ビルド実行
+    /// </summary>
     public override void Build(Builder builder)
-	{
-		var rubyDir = builder.RootDir + "Ruby/";
-        var rubyDevKitDir = builder.RootDir + "../../DevKit-mingw64-32-4.7.2-20130224-1151-sfx/";
-        var rubyBuildDir = rubyDir + "build/";
+    {
+        string rubyDir = builder.LuminoBindingsDir + "Ruby/";
+        string rubyBuildDir = rubyDir + "build/";
 
         // フルパスにしないと PATH を切れない
-        var rubyBin = Path.GetFullPath(rubyDevKitDir + "bin");
-        var mingwBin = Path.GetFullPath(rubyDevKitDir + "mingw/bin");
+        var rubyBin = Path.GetFullPath(_devKitDir + "bin");
+        var mingwBin = Path.GetFullPath(_devKitDir + "mingw/bin");
 
 		var oldEnv = Environment.GetEnvironmentVariable("PATH");
         Environment.SetEnvironmentVariable("PATH", rubyBin + ";" + mingwBin + ";" + oldEnv);
@@ -27,7 +58,7 @@ class LuminoRubyRule : ModuleRule
         Utils.CopyFiles(rubyDir, "*.cpp", rubyBuildDir);
         Utils.CopyFiles(rubyDir, "*.h", rubyBuildDir);
         Utils.CopyFiles(rubyDir, "*.rb", rubyBuildDir);   // ドキュメント用のソースも。yardoc は readme.md を自動的に取り込んでしまう
-        Utils.CopyFile(builder.LuminoLibDir + "Release/LuminoC_x86MT.dll", rubyBuildDir);
+        File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86MT.dll", rubyBuildDir + "LuminoC.dll", true);
 
         // ビルド
         Logger.WriteLine("Building ext lib...");

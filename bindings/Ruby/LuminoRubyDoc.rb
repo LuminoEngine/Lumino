@@ -486,13 +486,14 @@ class Lumino::Engine
     # @overload update_frame()
     #   　
     #     この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+    #     ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には false を返します。
+    # @return [Bool] 終了要求の有無を格納する変数
     def update_frame
     end
     # アプリケーションを終了するべきかを確認します。
     # @overload end_requested?()
     #   　
-    #     ウィンドウのクローズボタンが押された場合等、
-    #     アプリケーションを終了するべき時には false を返します。
+    #     ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には false を返します。
     # @return [Bool] 終了要求の有無を格納する変数
     def end_requested?
     end

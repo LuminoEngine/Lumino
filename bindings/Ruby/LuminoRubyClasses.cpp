@@ -260,9 +260,11 @@ static VALUE static_lnrbLNEngine_UpdateFrame(int argc, VALUE *argv, VALUE self)
     if (0 <= argc && argc <= 0) {
     
         if (true) {
-            LNResult errorCode = LNEngine_UpdateFrame();
+            LNBool _outRequested;
+            LNResult errorCode = LNEngine_UpdateFrame(&_outRequested);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
+            return toVALUE(_outRequested);
+    
         }
     }
     rb_raise(rb_eArgError, "Lumino::Engine.update_frame - wrong argument type.");

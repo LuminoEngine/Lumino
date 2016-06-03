@@ -130,11 +130,14 @@ namespace Lumino
         /// </summary>
         /// <remarks>
         /// この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+        /// 					ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には false を返します。
         /// </remarks>
-        public static void UpdateFrame()
+        public static bool UpdateFrame()
         {
-            var result = API.LNEngine_UpdateFrame();
+            var outRequested = new bool();
+            var result = API.LNEngine_UpdateFrame(out outRequested);
             if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outRequested;
         
         }
         
@@ -142,8 +145,7 @@ namespace Lumino
         /// アプリケーションを終了するべきかを確認します。
         /// </summary>
         /// <remarks>
-        /// ウィンドウのクローズボタンが押された場合等、
-        /// 					アプリケーションを終了するべき時には false を返します。
+        /// ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には false を返します。
         /// </remarks>
         public static bool IsEndRequested()
         {

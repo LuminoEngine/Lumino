@@ -99,16 +99,17 @@ LN_STATIC_CLASS(LNEngine)
 	
 	/**
 		@brief		1フレーム分の更新処理を行います。
+		@param[out]	outRequested	: 終了要求の有無を格納する変数
 		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+					ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には LN_FALSE を返します。
 	*/
 	LN_STATIC_API
-	LNResult LNEngine_UpdateFrame();
+	LNResult LNEngine_UpdateFrame(LNBool* outRequested);
 	
 	/**
 		@brief		アプリケーションを終了するべきかを確認します。
 		@param[out]	outRequested	: 終了要求の有無を格納する変数
-		@details	ウィンドウのクローズボタンが押された場合等、
-					アプリケーションを終了するべき時には LN_FALSE を返します。
+		@details	ウィンドウのクローズボタンが押された場合等、アプリケーションを終了するべき時には LN_FALSE を返します。
 	*/
 	LN_STATIC_API
 	LNResult LNEngine_IsEndRequested(LNBool* outRequested);
