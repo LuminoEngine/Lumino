@@ -1,0 +1,2940 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LuminoDotNet</name>
+    </assembly>
+    <members>
+        <member name="T:Lumino.Result">
+            <summary>
+            結果・エラーコード
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.OK">
+            <summary>
+            成功
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Unknown">
+            <summary>
+            不明なエラー
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Verify">
+            <summary>
+            前提条件の検証エラー
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Argument">
+            <summary>
+            引数が無効
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.InvalidOperation">
+            <summary>
+            オブジェクトの現在の状態に対して無効な呼び出しが行われた
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.NotImplemented">
+            <summary>
+            未実装の機能を呼び出した
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.OutOfMemory">
+            <summary>
+            メモリ確保に失敗
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.OutOfRange">
+            <summary>
+            値が有効な範囲に存在しない
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.KeyNotFound">
+            <summary>
+            検索に使用したキーが存在しない
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Overflow">
+            <summary>
+            数値演算によるオーバーフローが発生した
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Io">
+            <summary>
+            その他のIOエラー
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.FileNotFound">
+            <summary>
+            ファイルにアクセスしようとして失敗した
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.DirectoryNotFound">
+            <summary>
+            無効なディレクトリにアクセスしようとした
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.InvalidFormat">
+            <summary>
+            ファイルや文字列等の形式が不正
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.EndOfStream">
+            <summary>
+            ストリームの末尾を越えてアクセスしようとした
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Encoding">
+            <summary>
+            文字コードの変換中、マッピングできない文字または不正シーケンスが見つかった
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Win32">
+            <summary>
+            WindowsAPI のエラー
+            </summary>
+        </member>
+        <member name="F:Lumino.Result.Com">
+            <summary>
+            COM のエラー
+            </summary>
+        </member>
+        <member name="T:Lumino.VariantType">
+            <summary>
+            Variant の型識別情報
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.Unknown">
+            <summary>
+            不明な型
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.Bool">
+            <summary>
+            Boolean
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.Int">
+            <summary>
+            32bit 整数
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.Float">
+            <summary>
+            単精度浮動小数
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.String">
+            <summary>
+            文字列
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.List">
+            <summary>
+            配列
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.Object">
+            <summary>
+            オブジェクト
+            </summary>
+        </member>
+        <member name="F:Lumino.VariantType.SizeF">
+            <summary>
+            LNSizeF 構造体
+            </summary>
+        </member>
+        <member name="T:Lumino.FileAccessPriority">
+            <summary>
+            ファイルへのアクセス制限
+            </summary>
+        </member>
+        <member name="F:Lumino.FileAccessPriority.ArchiveFirst">
+            <summary>
+            アーカイブ優先
+            </summary>
+        </member>
+        <member name="F:Lumino.FileAccessPriority.DirectoryFirst">
+            <summary>
+            ディレクトリ優先
+            </summary>
+        </member>
+        <member name="F:Lumino.FileAccessPriority.ArchiveOnly">
+            <summary>
+            アーカイブのみ
+            </summary>
+        </member>
+        <member name="T:Lumino.FileType">
+            <summary>
+            ファイルオープンモード
+            </summary>
+        </member>
+        <member name="F:Lumino.FileType.Binary">
+            <summary>
+            バイナリモードで開く
+            </summary>
+        </member>
+        <member name="F:Lumino.FileType.Text">
+            <summary>
+            テキストモードで開く
+            </summary>
+        </member>
+        <member name="T:Lumino.FileMode">
+            <summary>
+            ファイルを開く方法または作成する方法
+            </summary>
+        </member>
+        <member name="F:Lumino.FileMode.Open">
+            <summary>
+            既存のファイルを開く
+            </summary>
+        </member>
+        <member name="F:Lumino.FileMode.Create">
+            <summary>
+            新しいファイルを作成する。既に存在する場合は上書きされる
+            </summary>
+        </member>
+        <member name="F:Lumino.FileMode.Append">
+            <summary>
+            ファイルを開き、ファイルの末尾をシークする。存在しない場合は新しいファイルを作成する
+            </summary>
+        </member>
+        <member name="T:Lumino.FileAccess">
+            <summary>
+            ファイルにアクセスする方法
+            </summary>
+        </member>
+        <member name="F:Lumino.FileAccess.Read">
+            <summary>
+            読み取りアクセス
+            </summary>
+        </member>
+        <member name="F:Lumino.FileAccess.Readwrite">
+            <summary>
+            読み取り及び書き込みアクセス
+            </summary>
+        </member>
+        <member name="F:Lumino.FileAccess.Write">
+            <summary>
+            書き込みアクセス
+            </summary>
+        </member>
+        <member name="T:Lumino.SeekOrigin">
+            <summary>
+            シーク位置移動の起点
+            </summary>
+        </member>
+        <member name="F:Lumino.SeekOrigin.Begin">
+            <summary>
+            ファイルの先頭
+            </summary>
+        </member>
+        <member name="F:Lumino.SeekOrigin.Current">
+            <summary>
+            現在のシーク位置
+            </summary>
+        </member>
+        <member name="F:Lumino.SeekOrigin.End">
+            <summary>
+            ファイルの末尾
+            </summary>
+        </member>
+        <member name="T:Lumino.AsyncIOState">
+            <summary>
+            非同期処理の状態
+            </summary>
+        </member>
+        <member name="F:Lumino.AsyncIOState.Idle">
+            <summary>
+            待機状態 (初期状態)
+            </summary>
+        </member>
+        <member name="F:Lumino.AsyncIOState.Ready">
+            <summary>
+            実行可能状態 (実際の処理開始を待っている)
+            </summary>
+        </member>
+        <member name="F:Lumino.AsyncIOState.Processing">
+            <summary>
+            実行状態 (処理中)
+            </summary>
+        </member>
+        <member name="F:Lumino.AsyncIOState.Completed">
+            <summary>
+            終了状態 (成功)
+            </summary>
+        </member>
+        <member name="F:Lumino.AsyncIOState.Failed">
+            <summary>
+            終了状態 (処理終了後・処理に失敗した)
+            </summary>
+        </member>
+        <member name="T:Lumino.RotationOrder">
+            <summary>
+            回転順序
+            </summary>
+        </member>
+        <member name="F:Lumino.RotationOrder.XYZ">
+            <summary>
+            X → Y → Z
+            </summary>
+        </member>
+        <member name="F:Lumino.RotationOrder.XZY">
+            <summary>
+            X → Z → Y
+            </summary>
+        </member>
+        <member name="F:Lumino.RotationOrder.YXZ">
+            <summary>
+            Y → X → Z
+            </summary>
+        </member>
+        <member name="F:Lumino.RotationOrder.YZX">
+            <summary>
+            Y → Z → X
+            </summary>
+        </member>
+        <member name="F:Lumino.RotationOrder.ZXY">
+            <summary>
+            Z → X → Y
+            </summary>
+        </member>
+        <member name="F:Lumino.RotationOrder.ZYX">
+            <summary>
+            Z → Y → X
+            </summary>
+        </member>
+        <member name="T:Lumino.KeyCode">
+            <summary>
+            キーボードのキーコード
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Colon">
+            <summary>
+            :	[非推奨 GLFWでは;]
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Semicolon">
+            <summary>
+            ;	[非推奨 GLFWでは=]
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Comma">
+            <summary>
+            ,
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Period">
+            <summary>
+            .
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Slash">
+            <summary>
+            /
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Minus">
+            <summary>
+            -
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Backslash">
+            <summary>
+            \(バックスラッシュ) [非推奨 GLFWではNOWORD2]
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Yen">
+            <summary>
+            \(BaskSpaceキーの左の\キー) [非推奨 GLFWではI]
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Caret">
+            <summary>
+            ^ [非推奨 GLFWではGLFW_KEY_APOSTROPHE(')]
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Lbracket">
+            <summary>
+            [
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.Rbracket">
+            <summary>
+            ]
+            </summary>
+        </member>
+        <member name="F:Lumino.KeyCode.AndroidPlus">
+            <summary>
+            Android '+'
+            </summary>
+        </member>
+        <member name="T:Lumino.AcceleratorKey">
+            <summary>
+            アクセラレータキー
+            </summary>
+        </member>
+        <member name="F:Lumino.AcceleratorKey.ToggleFullscreen">
+            <summary>
+            フルスクリーン切り替えを行うアクセラレータキー
+            </summary>
+        </member>
+        <member name="F:Lumino.AcceleratorKey.ShowDebugStatistics">
+            <summary>
+            デバッグ用の情報を表示切替を行うアクセラレータキー
+            </summary>
+        </member>
+        <member name="T:Lumino.DirectMusicMode">
+            <summary>
+            DirectMusic の初期化方法
+            </summary>
+        </member>
+        <member name="F:Lumino.DirectMusicMode.NotUse">
+            <summary>
+            DirectMusic を使用しない
+            </summary>
+        </member>
+        <member name="F:Lumino.DirectMusicMode.Normal">
+            <summary>
+            通常
+            </summary>
+        </member>
+        <member name="F:Lumino.DirectMusicMode.ThreadWait">
+            <summary>
+            別スレッドで初期化して、再生時に未完了の場合は待つ
+            </summary>
+        </member>
+        <member name="F:Lumino.DirectMusicMode.ThreadRequest">
+            <summary>
+            別スレッドで初期化して、再生時に未完了の場合は再生を予約する
+            </summary>
+        </member>
+        <member name="T:Lumino.SoundPlayingMode">
+            <summary>
+            サウンド再生方法
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingMode.Unknown">
+            <summary>
+            不明な再生方法
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingMode.Auto">
+            <summary>
+            自動選択 (デフォルトではデコード後のサイズが 10000 バイト以上になる場合はストリーミング、そうでない場合はオンメモリ再生になります)
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingMode.Onmemory">
+            <summary>
+            オンメモリ
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingMode.Streaming">
+            <summary>
+            ストリーミング
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingMode.Midi">
+            <summary>
+            SMF
+            </summary>
+        </member>
+        <member name="T:Lumino.SoundPlayingState">
+            <summary>
+            サウンドの再生状態
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingState.Stopped">
+            <summary>
+            停止中
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingState.Playing">
+            <summary>
+            再生中
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundPlayingState.Pausing">
+            <summary>
+            一時停止中
+            </summary>
+        </member>
+        <member name="T:Lumino.SoundFadeBehavior">
+            <summary>
+            音量フェード完了時の動作
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundFadeBehavior.Continue">
+            <summary>
+            継続(なにもしない)
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundFadeBehavior.Stop">
+            <summary>
+            停止する
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundFadeBehavior.StopReset">
+            <summary>
+            停止して、音量を元の値に戻す
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundFadeBehavior.Pause">
+            <summary>
+            一時停止する
+            </summary>
+        </member>
+        <member name="F:Lumino.SoundFadeBehavior.PauseReset">
+            <summary>
+            一時停止して、音量を元の値に戻す
+            </summary>
+        </member>
+        <member name="T:Lumino.BackbufferResizeMode">
+            <summary>
+            ウィンドウとバックバッファのリサイズモード
+            </summary>
+        </member>
+        <member name="F:Lumino.BackbufferResizeMode.Scaling">
+            <summary>
+            バックバッファは初期化時のサイズのまま、ウィンドウサイズに合わせて拡縮を行う
+            </summary>
+        </member>
+        <member name="F:Lumino.BackbufferResizeMode.ScalingWithLetterBox">
+            <summary>
+            バックバッファは初期化時のサイズのまま、レターボックスを表示してアスペクト比を保ち拡縮を行う
+            </summary>
+        </member>
+        <member name="F:Lumino.BackbufferResizeMode.Resize">
+            <summary>
+            バックバッファをウィンドウサイズに合わせてリサイズする
+            </summary>
+        </member>
+        <member name="T:Lumino.TextureFormat">
+            <summary>
+            テクスチャフォーマット
+            </summary>
+        </member>
+        <member name="F:Lumino.TextureFormat.Unknown">
+            <summary>
+            不明なフォーマット
+            </summary>
+        </member>
+        <member name="F:Lumino.TextureFormat.A8R8G8B8">
+            <summary>
+            32 ビットのアルファ付きフォーマット
+            </summary>
+        </member>
+        <member name="F:Lumino.TextureFormat.X8R8G8B8">
+            <summary>
+            32 ビットのアルファ無しフォーマット
+            </summary>
+        </member>
+        <member name="F:Lumino.TextureFormat.A16B16G16R16F">
+            <summary>
+            64 ビットの浮動小数点フォーマット
+            </summary>
+        </member>
+        <member name="F:Lumino.TextureFormat.A32B32G32R32F">
+            <summary>
+            128 ビットの浮動小数点フォーマット
+            </summary>
+        </member>
+        <member name="F:Lumino.TextureFormat.D24S8">
+            <summary>
+            32 ビットの Z バッファフォーマット
+            </summary>
+        </member>
+        <member name="T:Lumino.BlendMode">
+            <summary>
+            合成方法
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Normal">
+            <summary>
+            通常 (アルファ無視)
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Alpha">
+            <summary>
+            アルファブレンド (デフォルト)
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Add">
+            <summary>
+            加算
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.AddAlphaDisable">
+            <summary>
+            加算（アルファチャンネル無視）
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Sub">
+            <summary>
+            減算
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.SubAlphaDisable">
+            <summary>
+            減算（アルファチャンネル無視）
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Mul">
+            <summary>
+            乗算（アルファチャンネル無視）
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Screen">
+            <summary>
+            スクリーン（アルファチャンネル無視）
+            </summary>
+        </member>
+        <member name="F:Lumino.BlendMode.Reverse">
+            <summary>
+            リバース
+            </summary>
+        </member>
+        <member name="T:Lumino.CullingMode">
+            <summary>
+            カリング方法
+            </summary>
+        </member>
+        <member name="F:Lumino.CullingMode.Front">
+            <summary>
+            前面表示
+            </summary>
+        </member>
+        <member name="F:Lumino.CullingMode.Back">
+            <summary>
+            裏面表示
+            </summary>
+        </member>
+        <member name="F:Lumino.CullingMode.Double">
+            <summary>
+            両面表示
+            </summary>
+        </member>
+        <member name="T:Lumino.TextAlign">
+            <summary>
+            テキストアライン
+            </summary>
+        </member>
+        <member name="F:Lumino.TextAlign.Left">
+            <summary>
+            左揃え
+            </summary>
+        </member>
+        <member name="F:Lumino.TextAlign.Center">
+            <summary>
+            中央揃え
+            </summary>
+        </member>
+        <member name="F:Lumino.TextAlign.Right">
+            <summary>
+            右揃え
+            </summary>
+        </member>
+        <member name="T:Lumino.PlacementType">
+            <summary>
+            ノードの配置方法
+            </summary>
+        </member>
+        <member name="F:Lumino.PlacementType.Normal">
+            <summary>
+            通常の配置方法
+            </summary>
+        </member>
+        <member name="F:Lumino.PlacementType.Billboard">
+            <summary>
+            常にカメラの方向を向くビルボード (回転は Z 軸のみ有効)
+            </summary>
+        </member>
+        <member name="F:Lumino.PlacementType.YFixed">
+            <summary>
+            Y 軸固定
+            </summary>
+        </member>
+        <member name="T:Lumino.FrontAxis">
+            <summary>
+            3D 空間での基準方向を表す値
+            </summary>
+        </member>
+        <member name="F:Lumino.FrontAxis.X">
+            <summary>
+            X+ 方向 (右向き)
+            </summary>
+        </member>
+        <member name="F:Lumino.FrontAxis.Y">
+            <summary>
+            Y+ 方向 (上向き)
+            </summary>
+        </member>
+        <member name="F:Lumino.FrontAxis.Z">
+            <summary>
+            Z+ 方向 (奥向き)
+            </summary>
+        </member>
+        <member name="F:Lumino.FrontAxis.Rx">
+            <summary>
+            X- 方向 (左向き)
+            </summary>
+        </member>
+        <member name="F:Lumino.FrontAxis.Ry">
+            <summary>
+            Y- 方向 (下向き)
+            </summary>
+        </member>
+        <member name="F:Lumino.FrontAxis.Rz">
+            <summary>
+            Z- 方向 (手前向き)
+            </summary>
+        </member>
+        <member name="T:Lumino.MeshCreateFlags">
+            <summary>
+            メッシュ生成オプション
+            </summary>
+        </member>
+        <member name="F:Lumino.MeshCreateFlags.SoftwareSkinning">
+            <summary>
+            ソフトウェアスキニング用のモデル (動的な頂点、インデックスバッファを作成)
+            </summary>
+        </member>
+        <member name="F:Lumino.MeshCreateFlags.CollisionMesh">
+            <summary>
+            物理演算のメッシュボディとして扱うメッシュを生成する
+            </summary>
+        </member>
+        <member name="F:Lumino.MeshCreateFlags.IgnoreTextureNotFound">
+            <summary>
+            マテリアルに含まれるテクスチャファイルが見つからなくても無視する
+            </summary>
+        </member>
+        <member name="T:Lumino.CameraType">
+            <summary>
+            カメラ姿勢の設定方法
+            </summary>
+        </member>
+        <member name="F:Lumino.CameraType.PositionAndLookat">
+            <summary>
+            位置と注視点から算出する (3Dカメラのデフォルト。2Dカメラでは無効)
+            </summary>
+        </member>
+        <member name="F:Lumino.CameraType.PositionAndAngle">
+            <summary>
+            位置と各軸の回転角度から算出する (2D カメラのデフォルト)
+            </summary>
+        </member>
+        <member name="F:Lumino.CameraType.TransformMatrix">
+            <summary>
+            行列を使用し、正面(0,0,1) と 上方向(0,1,0) を変換する
+            </summary>
+        </member>
+        <member name="T:Lumino.Coord">
+            <summary>
+            座標系
+            </summary>
+        </member>
+        <member name="F:Lumino.Coord.Space2D">
+            <summary>
+            2D 空間
+            </summary>
+        </member>
+        <member name="F:Lumino.Coord.Space3D">
+            <summary>
+            3D 空間
+            </summary>
+        </member>
+        <member name="T:Lumino.ObjectType">
+            <summary>
+            ハンドルオブジェクトの種類
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNConfig_SetEngineLogEnabled(System.Boolean)">
+            <summary>
+            デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
+            </summary>
+            <param name="enabled">LN_TRUE:出力する / LN_FALSE:出力しない</param>
+        </member>
+        <member name="M:Lumino.API.LNConfig_RegisterArchive(System.String,System.String)">
+            <summary>
+            ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+            </summary>
+            <param name="filePath">アーカイブファイルパス</param>
+            <param name="password">アーカイブファイルを開くためのパスワード</param>
+        </member>
+        <member name="M:Lumino.API.LNConfig_SetFileAccessPriority(Lumino.FileAccessPriority)">
+            <summary>
+            ファイルへのアクセス優先順位を設定します。
+            </summary>
+            <param name="priority">制限方法 (default:LN_FILEACCESSPRIORITY_DIRECTORY_FIRST)</param>
+        </member>
+        <member name="M:Lumino.API.LNConfig_SetUserWindowHandle(System.IntPtr)">
+            <summary>
+            ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
+            </summary>
+            <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNConfig_SetSoundCacheSize(System.Int32,System.Int32)">
+            <summary>
+            サウンドオブジェクトのキャッシュサイズの設定
+            </summary>
+            <param name="objectCount">キャッシュできるサウンドオブジェクトの最大数 (既定値:32)</param>
+            <param name="memorySize">サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (既定値:0)</param>
+        </member>
+        <member name="M:Lumino.API.LNConfig_SetDirectMusicMode(Lumino.DirectMusicMode)">
+            <summary>
+            DirectMusic の初期化方法を設定します。(既定値:LN_DIRECTMUSICMODE_NOT_USE)
+            </summary>
+            <param name="mode">DirectMusic の初期化方法</param>
+        </member>
+        <member name="M:Lumino.API.LNConfig_SetDirectMusicReverbLevel(System.Single)">
+            <summary>
+            DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
+            </summary>
+            <param name="level">リバーブの強さ (0.0 ～ 1.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNEngine_Initialize">
+            <summary>
+            ライブラリを初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNEngine_InitializeAudio">
+            <summary>
+            ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNEngine_UpdateFrame">
+            <summary>
+            1フレーム分の更新処理を行います。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNEngine_IsEndRequested(System.Boolean@)">
+            <summary>
+            アプリケーションを終了するべきかを確認します。
+            </summary>
+            <param name="outRequested">終了要求の有無を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNEngine_Terminate">
+            <summary>
+            ライブラリの終了処理を行います。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNVersion_GetMajor(System.Int32@)">
+            <summary>
+            メジャーバージョンを取得します。
+            </summary>
+            <param name="outMajor">バージョン番号を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNVersion_GetMinor(System.Int32@)">
+            <summary>
+            マイナーバージョンを取得します。
+            </summary>
+            <param name="outMinor">バージョン番号を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNVersion_GetRevision(System.Int32@)">
+            <summary>
+            リビジョンバージョンを取得します。
+            </summary>
+            <param name="outRevision">バージョン番号を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNVersion_GetBuild(System.Int32@)">
+            <summary>
+            ビルドバージョンを取得します。
+            </summary>
+            <param name="outBuild">バージョン番号を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNVersion_GetString(System.IntPtr@)">
+            <summary>
+            バージョン文字列を取得します。
+            </summary>
+            <param name="outStr">文字列へのポインタを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNVersion_IsAtLeast(System.Int32,System.Int32,System.Int32,System.Boolean@)">
+            <summary>
+            指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+            </summary>
+            <param name="major">メジャーバージョン</param>
+            <param name="minor">マイナーバージョン</param>
+            <param name="revision">リビジョンバージョン</param>
+            <param name="outResult">結果を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNError_GetLastErrorCode">
+            <summary>
+            最後に発生したエラーのエラーコードを取得します。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNError_GetLastErrorMessage(System.IntPtr@)">
+            <summary>
+            最後に発生したエラーのエラーメッセージを取得します。
+            </summary>
+            <param name="outStr">メッセージ文字列のポインタを格納する変数のポインタ。</param>
+        </member>
+        <member name="M:Lumino.API.LNObject_Release(System.IntPtr)">
+            <summary>
+            オブジェクトを解放します。
+            </summary>
+            <param name="hadnleObject">オブジェクトハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNObject_AddRef(System.IntPtr)">
+            <summary>
+            オブジェクトの参照カウントをインクリメントします。
+            </summary>
+            <param name="hadnleObject">オブジェクトハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNObject_GetRefCount(System.IntPtr,System.Int32@)">
+            <summary>
+            オブジェクトの参照カウント取得します。
+            </summary>
+            <param name="hadnleObject">オブジェクトハンドル</param>
+            <param name="count">参照カウントを格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNVector2_GetLength(Lumino.Vector2@,System.Single@)">
+            <summary>
+            2D ベクトルの長さを取得します。
+            </summary>
+            <param name="vec">処理の基になる 2D ベクトル</param>
+            <param name="outLength">ベクトルの長さを格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNVector2_GetSquareLength(Lumino.Vector2@,System.Single@)">
+            <summary>
+            2D ベクトルの長さの2乗を取得します。
+            </summary>
+            <param name="vec">処理の基になる 2D ベクトル</param>
+            <param name="outLength">ベクトルの長さの2乗を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNVector2_Set(Lumino.Vector2@,System.Single,System.Single)">
+            <summary>
+            2D ベクトルに値を設定します。
+            </summary>
+            <param name="vec">値を格納する 2D ベクトル変数のポインタ</param>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+        </member>
+        <member name="M:Lumino.API.LNVector2_Normalize(Lumino.Vector2@,Lumino.Vector2@)">
+            <summary>
+            2D ベクトルを正規化します。
+            </summary>
+            <param name="vec">処理の基になる 2D ベクトル</param>
+            <param name="outVec">演算結果を格納する 2D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector2_NormalizeV(Lumino.Vector2@)">
+            <summary>
+            2D ベクトルを正規化します。
+            </summary>
+            <param name="vec">処理対象の 2D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_GetLength(Lumino.Vector3@,System.Single@)">
+            <summary>
+            3Dベクトルの長さを取得します。
+            </summary>
+            <param name="vec">処理の基になるベクトル</param>
+            <param name="outLength">ベクトルの長さを格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_GetSquareLength(Lumino.Vector3@,System.Single@)">
+            <summary>
+            3D ベクトルの長さの2乗を計算する
+            </summary>
+            <param name="vec">処理の基になる Vector3</param>
+            <param name="outLength">ベクトルの長さの2乗を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Set(Lumino.Vector3@,System.Single,System.Single,System.Single)">
+            <summary>
+            3Dベクトルに値を設定します。
+            </summary>
+            <param name="vec">値を格納する 3D ベクトル変数のポインタ</param>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+            <param name="z">Z 値</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_SetVZ(Lumino.Vector3@,Lumino.Vector2@,System.Single)">
+            <summary>
+            2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
+            </summary>
+            <param name="vec">値を格納する 3Dベクトル 変数のポインタ</param>
+            <param name="vec2">2D ベクトル</param>
+            <param name="z">Z 値</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Normalize(Lumino.Vector3@,Lumino.Vector3@)">
+            <summary>
+            3D ベクトルを正規化します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_NormalizeV(Lumino.Vector3@)">
+            <summary>
+            3D ベクトルを正規化します。
+            </summary>
+            <param name="vec">処理対象の 2D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Dot(Lumino.Vector3@,Lumino.Vector3@,System.Single@)">
+            <summary>
+            2 つの 3D ベクトルの内積を計算します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル</param>
+            <param name="vec2">処理の基になる 3D ベクトル</param>
+            <param name="dot">ベクトルの内積を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Cross(Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@)">
+            <summary>
+            2 つの 3D ベクトルの外積を計算します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル</param>
+            <param name="vec2">処理の基になる 3D ベクトル</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Reflect(Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@)">
+            <summary>
+            指定された法線で反射させたベクトルを計算します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="normal">面方向を表す法線 3D ベクトル</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Slide(Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@)">
+            <summary>
+            指定された法線と方向から滑りベクトルを計算します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="normal">面方向を表す法線 3D ベクトル</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Lerp(Lumino.Vector3@,Lumino.Vector3@,System.Single,Lumino.Vector3@)">
+            <summary>
+            2 つの 3D ベクトル間を線形補間します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル ( t = 0.0 のときの値 )</param>
+            <param name="vec2">処理の基になる 3D ベクトル ( t = 1.0 のときの値 )</param>
+            <param name="t">補間値 ( 0.0 ～ 1.0 )</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_CatmullRom(Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@,System.Single,Lumino.Vector3@)">
+            <summary>
+            指定された 3D ベクトルを Catmull-Rom 補間します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル</param>
+            <param name="vec2">処理の基になる 3D ベクトル ( t = 0.0 のときの値 )</param>
+            <param name="vec3">処理の基になる 3D ベクトル ( t = 1.0 のときの値 )</param>
+            <param name="vec4">処理の基になる 3D ベクトル</param>
+            <param name="t">補間値 ( 0.0 ～ 1.0 )</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_Transform(Lumino.Vector3@,Lumino.Matrix@,Lumino.Vector4@)">
+            <summary>
+            指定された行列を使用して座標変換します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="mat">処理の基になる 行列</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector3_TransformCoord(Lumino.Vector3@,Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            指定された行列を使用して座標変換し、結果を w = 1 に射影します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="mat">処理の基になる 行列</param>
+            <param name="outVec">演算結果を格納する 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.API.LNVector4_Set(Lumino.Vector4@,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            4Dベクトルに値を設定します。
+            </summary>
+            <param name="vec">値を格納する4Dベクトル変数のポインタ</param>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+            <param name="z">Z 値</param>
+            <param name="w">W 値</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_GetRight(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            右方向を示す 3D ベクトルを取得します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="outVec">結果を格納する Vector3 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_GetUp(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            上方向を示す 3D ベクトルを取得します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="outVec">結果を格納する Vector3 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_GetFront(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            正面方向を示す 3D ベクトルを取得します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="outVec">結果を格納する Vector3 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_GetPosition(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            位置を示す 3D ベクトルを取得します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="outVec">結果を格納する Vector3 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Identity(Lumino.Matrix@)">
+            <summary>
+            単位行列を作成します。
+            </summary>
+            <param name="mat">結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Translate(Lumino.Matrix@,System.Single,System.Single,System.Single)">
+            <summary>
+            行列を平行移動します。
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="x">X 方向の移動量</param>
+            <param name="y">Y 方向の移動量</param>
+            <param name="z">Z 方向の移動量</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_TranslateVec3(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            行列を平行移動します。
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="vec">移動量</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_RotateX(Lumino.Matrix@,System.Single)">
+            <summary>
+            X 軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="radian">回転角度 ( 軸方向に対して反時計回り )</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_RotateY(Lumino.Matrix@,System.Single)">
+            <summary>
+            Y 軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="radian">回転角度</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_RotateZ(Lumino.Matrix@,System.Single)">
+            <summary>
+            Z 軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="radian">回転角度</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Rotate(Lumino.Matrix@,System.Single,System.Single,System.Single,Lumino.RotationOrder)">
+            <summary>
+            行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="xRad">X 軸を回転軸とした角度</param>
+            <param name="yRad">Y 軸を回転軸とした角度</param>
+            <param name="zRad">Z 軸を回転軸とした角度</param>
+            <param name="rotOrder">回転順序の指定</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_RotateVec3(Lumino.Matrix@,Lumino.Vector3@,Lumino.RotationOrder)">
+            <summary>
+            行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="vec">各軸の回転角度</param>
+            <param name="rotOrder">回転順序の指定</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_RotateAxis(Lumino.Matrix@,Lumino.Vector3@,System.Single)">
+            <summary>
+            任意の軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="axis">回転軸を示す Vector3</param>
+            <param name="radian">回転角度</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_RotateQuaternion(Lumino.Matrix@,Lumino.Quaternion@)">
+            <summary>
+            クォータニオンを使って行列を回転します。
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="qua">処理の基になる Quaternion</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Scale(Lumino.Matrix@,System.Single)">
+            <summary>
+            行列をスケーリングします。
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="xyz">X Y Z 全ての方向に適用する拡大率 (X Y Z を同じ値で拡大)</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_ScaleXYZ(Lumino.Matrix@,System.Single,System.Single,System.Single)">
+            <summary>
+            行列をスケーリングします。
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="x">X 方向の拡大率</param>
+            <param name="y">Y 方向の拡大率</param>
+            <param name="z">Z 方向の拡大率</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_ScaleVec3(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            行列をスケーリングします。
+            </summary>
+            <param name="mat">演算結果を格納する行列</param>
+            <param name="scale">各方向の拡大率</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Multiply(Lumino.Matrix@,Lumino.Matrix@,Lumino.Matrix@)">
+            <summary>
+            行列を乗算します。
+            </summary>
+            <param name="mat1">処理の基になる行列</param>
+            <param name="mat2">処理の基になる行列</param>
+            <param name="matOut">結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Inverse(Lumino.Matrix@,Lumino.Matrix@)">
+            <summary>
+            逆行列を求めます。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Transpose(Lumino.Matrix@,Lumino.Matrix@)">
+            <summary>
+            転置行列を求めます。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_ViewTransformLH(Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@,Lumino.Matrix@)">
+            <summary>
+            左手座標系ビュー行列を作成します。
+            </summary>
+            <param name="pos">視点の位置を示す Vector3</param>
+            <param name="lookAt">注視点を示す Vector3</param>
+            <param name="upDir">上方向を示す Vector3</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_ViewTransformRH(Lumino.Vector3@,Lumino.Vector3@,Lumino.Vector3@,Lumino.Matrix@)">
+            <summary>
+            右手座標系ビュー行列を作成します。
+            </summary>
+            <param name="pos">視点の位置を示す Vector3</param>
+            <param name="lookAt">注視点を示す Vector3</param>
+            <param name="upDir">上方向を示す Vector3</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_PerspectiveFovLH(System.Single,System.Single,System.Single,System.Single,Lumino.Matrix@)">
+            <summary>
+            左手座標系射影行列を作成します。
+            </summary>
+            <param name="fovY">Y 方向への視野角 (ラジアン単位)</param>
+            <param name="aspect">アスペクト比</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_PerspectiveFovRH(System.Single,System.Single,System.Single,System.Single,Lumino.Matrix@)">
+            <summary>
+            右手座標系射影行列作成します。
+            </summary>
+            <param name="fovY">Y 方向への視野角 (ラジアン単位)</param>
+            <param name="aspect">アスペクト比</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_OrthoLH(System.Single,System.Single,System.Single,System.Single,Lumino.Matrix@)">
+            <summary>
+            左手座標系正射影行列作成します。
+            </summary>
+            <param name="width">ビューの幅</param>
+            <param name="height">ビューの高さ</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_OrthoRH(System.Single,System.Single,System.Single,System.Single,Lumino.Matrix@)">
+            <summary>
+            右手座標系正射影行列作成します。
+            </summary>
+            <param name="width">ビューの幅</param>
+            <param name="height">ビューの高さ</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+            <param name="matOut">演算結果を格納する行列</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_GetEulerAngles(Lumino.Matrix@,Lumino.Vector3@)">
+            <summary>
+            回転行列からオイラー角を計算します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="outVec">各軸の回転角度(ラジアン)を格納する Vector3 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNMatrix_Decompose(Lumino.Matrix@,Lumino.Vector3@,Lumino.Quaternion@,Lumino.Vector3@)">
+            <summary>
+            行列をスケーリング、回転、移動成分に分解します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="scale">各軸のスケーリング量を格納する Vector3 変数</param>
+            <param name="rot">各軸の回転情報を格納する Quaternion 変数</param>
+            <param name="trans">各軸の平行移動量を格納する Vector3 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_Set(Lumino.Quaternion@,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            クォータニオンに値を設定します。
+            </summary>
+            <param name="qua">値を格納する Quaternion 変数のポインタ</param>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+            <param name="z">Z 値</param>
+            <param name="w">W 値</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_Identity(Lumino.Quaternion@)">
+            <summary>
+            単位クォータニオンを作成します。
+            </summary>
+            <param name="qua">結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_RotationAxis(Lumino.Vector3@,System.Single,Lumino.Quaternion@)">
+            <summary>
+            任意の軸を回転軸にして回転するクォータニオンを作成します。
+            </summary>
+            <param name="axis">回転軸を示す Vector3 変数</param>
+            <param name="r">回転角度 (ラジアン)</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_RotationMatrix(Lumino.Matrix@,Lumino.Quaternion@)">
+            <summary>
+            回転行列からクォータニオンを作成します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_RotationYawPitchRoll(System.Single,System.Single,System.Single,Lumino.Quaternion@)">
+            <summary>
+            ヨー、ピッチ、およびロールを指定してクォータニオンを作成します。
+            </summary>
+            <param name="yaw">y 軸を中心とするヨー (ラジアン単位)</param>
+            <param name="pitch">x 軸を中心とするピッチ (ラジアン単位)</param>
+            <param name="roll">z 軸を中心とするロール (ラジアン単位)</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_Normalize(Lumino.Quaternion@,Lumino.Quaternion@)">
+            <summary>
+            クォータニオンを正規化します。
+            </summary>
+            <param name="qua">処理の基になるクォータニオン</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_Conjugate(Lumino.Quaternion@,Lumino.Quaternion@)">
+            <summary>
+            クォータニオンの共役を計算します。
+            </summary>
+            <param name="qua">処理の基になるクォータニオン</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_Multiply(Lumino.Quaternion@,Lumino.Quaternion@,Lumino.Quaternion@)">
+            <summary>
+            2 つのクォータニオンの積を計算します。
+            </summary>
+            <param name="qua1">処理の基になるクォータニオン</param>
+            <param name="qua2">処理の基になるクォータニオン</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNQuaternion_Slerp(Lumino.Quaternion@,Lumino.Quaternion@,System.Single,Lumino.Quaternion@)">
+            <summary>
+            2 つのクォータニオンを球面線形補間します。
+            </summary>
+            <param name="qua1">処理の基になるクォータニオン</param>
+            <param name="qua2">処理の基になるクォータニオン</param>
+            <param name="t">補間値</param>
+            <param name="outQua">演算結果を格納する Quaternion 変数</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlayBGM(System.String,System.Single,System.Single,System.Double)">
+            <summary>
+            BGM を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlayBGMMem(System.Byte[],System.Int32,System.Single,System.Single,System.Double)">
+            <summary>
+            メモリ上の音声ファイルデータを使用して BGM を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_StopBGM(System.Double)">
+            <summary>
+            BGM の演奏を停止します。
+            </summary>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlayBGS(System.String,System.Single,System.Single,System.Double)">
+            <summary>
+            BGS を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlayBGSMem(System.Byte[],System.Int32,System.Single,System.Single,System.Double)">
+            <summary>
+            メモリ上の音声ファイルデータから BGS を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_StopBGS(System.Double)">
+            <summary>
+            BGS の演奏を停止します。、
+            </summary>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlayME(System.String,System.Single,System.Single)">
+            <summary>
+            ME を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlayMEMem(System.Byte[],System.Int32,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声ファイルデータから ME を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_StopME">
+            <summary>
+            ME の演奏を停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlaySE(System.String,System.Single,System.Single)">
+            <summary>
+            SE を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlaySE3D(System.String,Lumino.Vector3@,System.Single,System.Single,System.Single)">
+            <summary>
+            SE を演奏します。(3D サウンド)
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="position">3D 空間上の座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlaySE3DXYZ(System.String,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            SE を演奏します。(3D サウンド)
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlaySEMem(System.Byte[],System.Int32,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声データから SE を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlaySE3DMem(System.Byte[],System.Int32,Lumino.Vector3@,System.Single,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="position">3D 空間上の座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_PlaySE3DMemXYZ(System.Byte[],System.Int32,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_StopSE">
+            <summary>
+            すべての SE の演奏を停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_SetBGMVolume(System.Single,System.Double)">
+            <summary>
+            再生中のBGMの音量を設定します。(フェードアウト中は無効)
+            </summary>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNGameAudio_SetBGSVolume(System.Single,System.Double)">
+            <summary>
+            再生中のBGSの音量を設定します。(フェードアウト中は無効)
+            </summary>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetPosition(Lumino.Vector3@)">
+            <summary>
+            3D音声のリスナーの位置を設定します。
+            </summary>
+            <param name="position">3D 空間上の座標</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetDirection(Lumino.Vector3@)">
+            <summary>
+            3D音声のリスナーの正面方向を設定します。
+            </summary>
+            <param name="direction">向き</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetUpDirection(Lumino.Vector3@)">
+            <summary>
+            3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+            </summary>
+            <param name="direction">上方向</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetVelocity(Lumino.Vector3@)">
+            <summary>
+            3D音声のリスナーの速度を設定します。
+            </summary>
+            <param name="velocity">速度</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetPositionXYZ(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの位置を設定します。
+            </summary>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetDirectionXYZ(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの正面方向を設定します。
+            </summary>
+            <param name="x">向きの X 成分</param>
+            <param name="y">向きの Y 成分</param>
+            <param name="z">向きの Z 成分</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetUpDirectionXYZ(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+            </summary>
+            <param name="x">向きの X 成分</param>
+            <param name="y">向きの Y 成分</param>
+            <param name="z">向きの Z 成分</param>
+        </member>
+        <member name="M:Lumino.API.LNSoundListener_SetVelocityXYZ(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの速度を設定します。
+            </summary>
+            <param name="x">速度の X 成分</param>
+            <param name="y">速度の Y 成分</param>
+            <param name="z">速度の Z 成分</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Create(System.String,System.IntPtr@)">
+            <summary>
+            ファイルからサウンドオブジェクトを作成します。
+            </summary>
+            <param name="filePath">音声ファイルのパス</param>
+            <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_CreateMem(System.Byte[],System.Int32,System.IntPtr@)">
+            <summary>
+            メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
+            </summary>
+            <param name="data">メモリ上の音声データへのポインタ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="sound">作成されたサウンドオブジェクトのハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetVolume(System.IntPtr,System.Single@)">
+            <summary>
+            サウンドのボリュームを取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outVolume">ボリュームを格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetVolume(System.IntPtr,System.Single)">
+            <summary>
+            サウンドのボリュームを設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetPitch(System.IntPtr,System.Single@)">
+            <summary>
+            サウンドのピッチを取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outPitch">ピッチを格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetPitch(System.IntPtr,System.Single)">
+            <summary>
+            サウンドのピッチを設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_IsLoopEnabled(System.IntPtr,System.Boolean@)">
+            <summary>
+            サウンドのループ再生が有効であるかを確認します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outEnabled">ループ再生の有無状態を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetLoopEnabled(System.IntPtr,System.Boolean)">
+            <summary>
+            サウンドのループ再生の有無を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="loopEnable">LN_TRUE = ループ再生する / LN_FALSE = しない</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Is3DEnabled(System.IntPtr,System.Boolean@)">
+            <summary>
+            サウンドが 3D 音源であるかを確認します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outEnabled">状態を格納する変数のポインタ (LN_TRUE = 3D音声 / LN_FALSE = 非 3D)</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Set3DEnabled(System.IntPtr,System.Boolean)">
+            <summary>
+            サウンドを 3D 音源であるかを設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="enabled">LN_TRUE = 3D音声 / LN_FALSE = 非3D</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetPlayingMode(System.IntPtr,Lumino.SoundPlayingMode@)">
+            <summary>
+            サウンド再生時の音声データの再生方法を取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outMode">再生方法を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetPlayingMode(System.IntPtr,Lumino.SoundPlayingMode)">
+            <summary>
+            サウンド再生時の音声データの再生方法を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="mode">読み込み方法</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetPlayingState(System.IntPtr,Lumino.SoundPlayingState@)">
+            <summary>
+            サウンドの再生状態を取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outState">状態を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetPlayedSamples(System.IntPtr,System.Int64@)">
+            <summary>
+            サウンドの再生したサンプル数を取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outSamples">再生したサンプル数を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetTotalSamples(System.IntPtr,System.Int64@)">
+            <summary>
+            サウンドの音声データ全体のサンプル数を取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outSamples">音声データ全体のサンプル数を格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_GetSamplingRate(System.IntPtr,System.Int32@)">
+            <summary>
+            サウンドのサンプリングレートを取得します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="outRate">サンプリングレートを格納する変数</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetEmitterPosition(System.IntPtr,Lumino.Vector3@)">
+            <summary>
+            サウンドの 3D 音源としての位置を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="position">3D 空間上の座標</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetEmitterVelocity(System.IntPtr,Lumino.Vector3@)">
+            <summary>
+            サウンドの 3D 音源としての速度を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="velocity">速度</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetEmitterMaxDistance(System.IntPtr,System.Single)">
+            <summary>
+            サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) を設定します。(default:100)
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="distance">距離</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetLoopRange(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            サウンドのループ再生の範囲を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="begin">ループ領域の先頭位置 (サンプル数単位)</param>
+            <param name="length">ループ領域長さ (サンプル数単位)</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Play(System.IntPtr)">
+            <summary>
+            サウンドを再生します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Stop(System.IntPtr)">
+            <summary>
+            サウンドの再生を停止します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Pause(System.IntPtr)">
+            <summary>
+            サウンドの再生を一時停止します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_Resume(System.IntPtr)">
+            <summary>
+            サウンドの再生を一時停止します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_FadeVolume(System.IntPtr,System.Single,System.Double,Lumino.SoundFadeBehavior)">
+            <summary>
+            サウンド音量のフェード操作を行います。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="targetVolume">変更先の音量</param>
+            <param name="time">フェードにかける時間 (秒)</param>
+            <param name="behavior">フェード完了後の動作の指定</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetEmitterPositionXYZ(System.IntPtr,System.Single,System.Single,System.Single)">
+            <summary>
+            サウンドの 3D 音源としての位置を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+        </member>
+        <member name="M:Lumino.API.LNSound_SetEmitterVelocityXYZ(System.IntPtr,System.Single,System.Single,System.Single)">
+            <summary>
+            サウンドの 3D 音源としての速度を設定します。
+            </summary>
+            <param name="sound">サウンドハンドル</param>
+            <param name="x">速度の X 成分</param>
+            <param name="y">速度の Y 成分</param>
+            <param name="z">速度の Z 成分</param>
+        </member>
+        <member name="M:Lumino.API.LNTexture_GetSize(System.IntPtr,Lumino.Size@)">
+            <summary>
+            テクスチャのサイズを取得します。
+            </summary>
+            <param name="texture">テクスチャハンドル</param>
+            <param name="outSize">サイズを格納する変数のアドレス</param>
+        </member>
+        <member name="M:Lumino.API.LNTexture2D_Create(System.Int32,System.Int32,Lumino.TextureFormat,System.Boolean,System.IntPtr@)">
+            <summary>
+            サイズを指定して2Dテクスチャを作成します。
+            </summary>
+            <param name="width">テクスチャの幅 (ピクセル単位)</param>
+            <param name="height">テクスチャの高さ (ピクセル単位)</param>
+            <param name="format">テクスチャのピクセルフォーマット</param>
+            <param name="mipmap">ミップマップの有無</param>
+            <param name="outTexture2D">作成された2Dテクスチャのハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNTexture2D_CreateFromFile(System.String,System.IntPtr@)">
+            <summary>
+            ファイルから2Dテクスチャを作成します。
+            </summary>
+            <param name="filePath">画像ファイルのパス</param>
+            <param name="outTexture2D">作成された2Dテクスチャのハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSceneNode_IsVisible(System.IntPtr,System.Boolean@)">
+            <summary>
+            ノードの可視状態を取得します。
+            </summary>
+            <param name="sceneNode">ノードハンドル</param>
+            <param name="outVisible">可視状態を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSceneNode_SetVisible(System.IntPtr,System.Boolean)">
+            <summary>
+            ノードの可視状態を設定します。(default: true)
+            </summary>
+            <param name="sceneNode">ノードハンドル</param>
+            <param name="visible">可視状態</param>
+        </member>
+        <member name="M:Lumino.API.LNSceneNode_GetPosition(System.IntPtr,Lumino.Vector3@)">
+            <summary>
+            ノードの位置を取得します。
+            </summary>
+            <param name="sceneNode">ノードハンドル</param>
+            <param name="outPosition">座標を格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSceneNode_SetPosition(System.IntPtr,Lumino.Vector3@)">
+            <summary>
+            ノードの位置を設定します。(default: 0,0,0)
+            </summary>
+            <param name="sceneNode">ノードハンドル</param>
+            <param name="position">座標</param>
+        </member>
+        <member name="M:Lumino.API.LNSprite_GetTexture(System.IntPtr,System.IntPtr@)">
+            <summary>
+            スプライトに設定されているテクスチャを取得します。
+            </summary>
+            <param name="sprite">スプライトハンドル</param>
+            <param name="outTexture">テクスチャハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSprite_SetTexture(System.IntPtr,System.IntPtr)">
+            <summary>
+            スプライトにテクスチャを設定します。
+            </summary>
+            <param name="sprite">スプライトハンドル</param>
+            <param name="texture">テクスチャハンドル</param>
+        </member>
+        <member name="M:Lumino.API.LNSprite2D_Create(System.IntPtr@)">
+            <summary>
+            2Dスプライトオブジェクトを作成します。
+            </summary>
+            <param name="outSprite2D">作成された2Dスプライトハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="M:Lumino.API.LNSprite2D_CreateFromTexture(System.IntPtr,System.IntPtr@)">
+            <summary>
+            2Dスプライトオブジェクトを作成します。
+            </summary>
+            <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
+            <param name="outSprite2D">作成された2Dスプライトハンドルを格納する変数のポインタ</param>
+        </member>
+        <member name="T:Lumino.Config">
+            <summary>
+            初期設定を行います。
+            </summary>
+        </member>
+        <member name="M:Lumino.Config.SetEngineLogEnabled(System.Boolean)">
+            <summary>
+            デバッグ用のログファイルの出力有無を設定します。(既定値:false)
+            </summary>
+            <param name="enabled">true:出力する / false:出力しない</param>
+        </member>
+        <member name="M:Lumino.Config.RegisterArchive(System.String,System.String)">
+            <summary>
+            ファイルを開くときにアクセスする暗号化アーカイブを登録します。
+            </summary>
+            <param name="filePath">アーカイブファイルパス</param>
+            <param name="password">アーカイブファイルを開くためのパスワード</param>
+        </member>
+        <member name="M:Lumino.Config.SetFileAccessPriority(Lumino.FileAccessPriority)">
+            <summary>
+            ファイルへのアクセス優先順位を設定します。
+            </summary>
+            <param name="priority">制限方法 (default:FileAccessPriority.DirectoryFirst)</param>
+        </member>
+        <member name="M:Lumino.Config.SetUserWindowHandle(System.IntPtr)">
+            <summary>
+            ユーザー定義のウィンドウハンドルを設定します。(既定値:NULL)
+            </summary>
+            <param name="windowHandle">ユーザー定義のウィンドウハンドル</param>
+        </member>
+        <member name="M:Lumino.Config.SetSoundCacheSize(System.Int32,System.Int32)">
+            <summary>
+            サウンドオブジェクトのキャッシュサイズの設定
+            </summary>
+            <param name="objectCount">キャッシュできるサウンドオブジェクトの最大数 (既定値:32)</param>
+            <param name="memorySize">サウンドオブジェクトのキャッシュが使用できる最大メモリサイズ (既定値:0)</param>
+            <remarks>
+            objectCount が 0 の場合、キャッシュを使用しません。
+            					memorySize が 0 の場合、メモリ使用量に制限を設けません。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Config.SetDirectMusicMode(Lumino.DirectMusicMode)">
+            <summary>
+            DirectMusic の初期化方法を設定します。(既定値:DirectMusicMode.NotUse)
+            </summary>
+            <param name="mode">DirectMusic の初期化方法</param>
+            <remarks>
+            DirectMusic の初期化には比較的時間がかかります。
+            					これを回避するために初期化専用のスレッドで初期化を行うことが出来ます。
+            					なお、DirectMusic を使用するためには LNConfig_SetUserWindowHandle でウィンドウハンドルを設定する必要があります。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Config.SetDirectMusicReverbLevel(System.Single)">
+            <summary>
+            DirectMusic のリバーブエフェクトの強さを設定します。(既定値:0.75)
+            </summary>
+            <param name="level">リバーブの強さ (0.0 ～ 1.0)</param>
+        </member>
+        <member name="T:Lumino.Engine">
+            <summary>
+            エンジン全体の初期化や更新等、包括的な処理を行うクラスです。
+            </summary>
+        </member>
+        <member name="M:Lumino.Engine.Initialize">
+            <summary>
+            ライブラリを初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Engine.InitializeAudio">
+            <summary>
+            ライブラリを初期化します。音声機能のみを使用する場合に呼び出します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Engine.UpdateFrame">
+            <summary>
+            1フレーム分の更新処理を行います。
+            </summary>
+            <remarks>
+            この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Engine.IsEndRequested">
+            <summary>
+            アプリケーションを終了するべきかを確認します。
+            </summary>
+            <remarks>
+            ウィンドウのクローズボタンが押された場合等、
+            					アプリケーションを終了するべき時には false を返します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Engine.Terminate">
+            <summary>
+            ライブラリの終了処理を行います。
+            </summary>
+        </member>
+        <member name="T:Lumino.Version">
+            <summary>
+            バージョン情報です。
+            </summary>
+        </member>
+        <member name="M:Lumino.Version.GetMajor">
+            <summary>
+            メジャーバージョンを取得します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Version.GetMinor">
+            <summary>
+            マイナーバージョンを取得します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Version.GetRevision">
+            <summary>
+            リビジョンバージョンを取得します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Version.GetBuild">
+            <summary>
+            ビルドバージョンを取得します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Version.GetString">
+            <summary>
+            バージョン文字列を取得します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Version.IsAtLeast(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。
+            </summary>
+            <param name="major">メジャーバージョン</param>
+            <param name="minor">マイナーバージョン</param>
+            <param name="revision">リビジョンバージョン</param>
+            <remarks>
+            指定バージョン >= コンパイルバージョン である場合、true となります。
+            </remarks>
+        </member>
+        <member name="T:Lumino.GameAudio">
+            <summary>
+            ゲーム向け音声再生のユーティリティクラスです。
+            </summary>
+        </member>
+        <member name="M:Lumino.GameAudio.PlayBGM(System.String,System.Single,System.Single,System.Double)">
+            <summary>
+            BGM を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+            <remarks>
+            BGM はひとつだけ演奏することができ、ループ再生します。
+            					新しい BGM を演奏ようとした場合、再生中の BGM は停止します。
+            					フェードイン時間を指定した場合はクロスフェードしながら音声を切り替えます。
+            </remarks>
+        </member>
+        <member name="M:Lumino.GameAudio.PlayBGMMem(System.Byte[],System.Int32,System.Single,System.Single,System.Double)">
+            <summary>
+            メモリ上の音声ファイルデータを使用して BGM を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.StopBGM(System.Double)">
+            <summary>
+            BGM の演奏を停止します。
+            </summary>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.PlayBGS(System.String,System.Single,System.Single,System.Double)">
+            <summary>
+            BGS を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+            <remarks>
+            BGS は風や滝の音などの環境音です。
+            					BGM と同様、ひとつだけ演奏することができ、ループ再生します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.GameAudio.PlayBGSMem(System.Byte[],System.Int32,System.Single,System.Single,System.Double)">
+            <summary>
+            メモリ上の音声ファイルデータから BGS を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <param name="fadeTime">フェードインにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.StopBGS(System.Double)">
+            <summary>
+            BGS の演奏を停止します。、
+            </summary>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.PlayME(System.String,System.Single,System.Single)">
+            <summary>
+            ME を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <remarks>
+            ME は レベルアップやアイテム取得時のファンファーレ等の効果音楽です。
+            					ME はひとつだけ演奏することができ、ループ再生せずに一度だけ演奏されます。
+            					BGM が再生中であれば一時停止し、ME 終了後に再開させます。
+            </remarks>
+        </member>
+        <member name="M:Lumino.GameAudio.PlayMEMem(System.Byte[],System.Int32,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声ファイルデータから ME を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.StopME">
+            <summary>
+            ME の演奏を停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.GameAudio.PlaySE(System.String,System.Single,System.Single)">
+            <summary>
+            SE を演奏します。
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+            <remarks>
+            SE はゲーム中の効果音です。 SE は同時に複数再生することができ、同じ音声を演奏した場合は 重ねがけされて演奏されます。
+            </remarks>
+        </member>
+        <member name="M:Lumino.GameAudio.PlaySE3D(System.String,Lumino.Vector3,System.Single,System.Single,System.Single)">
+            <summary>
+            SE を演奏します。(3D サウンド)
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="position">3D 空間上の座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.PlaySE3D(System.String,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            SE を演奏します。(3D サウンド)
+            </summary>
+            <param name="filePath">ファイルパス</param>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.PlaySEMem(System.Byte[],System.Int32,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声データから SE を演奏します。
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.PlaySE3DMem(System.Byte[],System.Int32,Lumino.Vector3,System.Single,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="position">3D 空間上の座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.PlaySE3DMem(System.Byte[],System.Int32,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
+            </summary>
+            <param name="data">メモリ上の音声ファイルデータ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+            <param name="distance">減衰距離</param>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="pitch">ピッチ (0.5～2.0)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.StopSE">
+            <summary>
+            すべての SE の演奏を停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.GameAudio.SetBGMVolume(System.Single,System.Double)">
+            <summary>
+            再生中のBGMの音量を設定します。(フェードアウト中は無効)
+            </summary>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="M:Lumino.GameAudio.SetBGSVolume(System.Single,System.Double)">
+            <summary>
+            再生中のBGSの音量を設定します。(フェードアウト中は無効)
+            </summary>
+            <param name="volume">ボリューム (0.0～1.0)</param>
+            <param name="fadeTime">フェードアウトにかける時間 (秒)</param>
+        </member>
+        <member name="T:Lumino.SoundListener">
+            <summary>
+            3D音声のリスナーに関する情報を操作します。
+            </summary>
+        </member>
+        <member name="P:Lumino.SoundListener.Position">
+            <summary>
+            3D音声のリスナーの位置
+            </summary>
+        </member>
+        <member name="P:Lumino.SoundListener.Direction">
+            <summary>
+            3D音声のリスナーの正面方向
+            </summary>
+        </member>
+        <member name="P:Lumino.SoundListener.UpDirection">
+            <summary>
+            3D音声のリスナーの上方向(正面方向とは直交であること)
+            </summary>
+        </member>
+        <member name="P:Lumino.SoundListener.Velocity">
+            <summary>
+            3D音声のリスナーの速度
+            </summary>
+        </member>
+        <member name="M:Lumino.SoundListener.SetPositionXYZ(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの位置を設定します。
+            </summary>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+        </member>
+        <member name="M:Lumino.SoundListener.SetDirection(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの正面方向を設定します。
+            </summary>
+            <param name="x">向きの X 成分</param>
+            <param name="y">向きの Y 成分</param>
+            <param name="z">向きの Z 成分</param>
+        </member>
+        <member name="M:Lumino.SoundListener.SetUpDirection(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの上方向を設定します。(正面方向とは直交であること)
+            </summary>
+            <param name="x">向きの X 成分</param>
+            <param name="y">向きの Y 成分</param>
+            <param name="z">向きの Z 成分</param>
+        </member>
+        <member name="M:Lumino.SoundListener.SetVelocity(System.Single,System.Single,System.Single)">
+            <summary>
+            3D音声のリスナーの速度を設定します。
+            </summary>
+            <param name="x">速度の X 成分</param>
+            <param name="y">速度の Y 成分</param>
+            <param name="z">速度の Z 成分</param>
+        </member>
+        <member name="T:Lumino.Sound">
+            <summary>
+            音声データひとつ分を表し、再生などの操作を行うクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.Volume">
+            <summary>
+            サウンドのボリューム
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.Pitch">
+            <summary>
+            サウンドのピッチ
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.IsLoopEnabled">
+            <summary>
+            サウンドのループ再生が有効であるか
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.Is3DEnabled">
+            <summary>
+            サウンドが 3D 音源であるか
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.PlayingMode">
+            <summary>
+            サウンド再生時の音声データの再生方法
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.PlayingState">
+            <summary>
+            サウンドの再生状態
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.PlayedSamples">
+            <summary>
+            サウンドの再生したサンプル数
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.TotalSamples">
+            <summary>
+            サウンドの音声データ全体のサンプル数
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.SamplingRate">
+            <summary>
+            サウンドのサンプリングレート
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.EmitterPosition">
+            <summary>
+            サウンドの 3D 音源としての位置
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.EmitterVelocity">
+            <summary>
+            サウンドの 3D 音源としての速度
+            </summary>
+        </member>
+        <member name="P:Lumino.Sound.EmitterMaxDistance">
+            <summary>
+            サウンドの 3D 音源の減衰距離 (聴こえなくなる距離) (default:100)
+            </summary>
+        </member>
+        <member name="M:Lumino.Sound.#ctor(System.String)">
+            <summary>
+            ファイルからサウンドオブジェクトを作成します。
+            </summary>
+            <param name="filePath">音声ファイルのパス</param>
+        </member>
+        <member name="M:Lumino.Sound.#ctor(System.Byte[],System.Int32)">
+            <summary>
+            メモリ上の音声ファイルデータからサウンドオブジェクトを作成します。
+            </summary>
+            <param name="data">メモリ上の音声データへのポインタ</param>
+            <param name="dataSize">データサイズ (バイト単位)</param>
+        </member>
+        <member name="M:Lumino.Sound.SetLoopRange(System.Int32,System.Int32)">
+            <summary>
+            サウンドのループ再生の範囲を設定します。
+            </summary>
+            <param name="begin">ループ領域の先頭位置 (サンプル数単位)</param>
+            <param name="length">ループ領域長さ (サンプル数単位)</param>
+            <remarks>
+            begin と length に 0 を指定すると、全体をループ領域として設定します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Sound.Play">
+            <summary>
+            サウンドを再生します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Sound.Stop">
+            <summary>
+            サウンドの再生を停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Sound.Pause">
+            <summary>
+            サウンドの再生を一時停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Sound.Resume">
+            <summary>
+            サウンドの再生を一時停止します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Sound.FadeVolume(System.Single,System.Double,Lumino.SoundFadeBehavior)">
+            <summary>
+            サウンド音量のフェード操作を行います。
+            </summary>
+            <param name="targetVolume">変更先の音量</param>
+            <param name="time">フェードにかける時間 (秒)</param>
+            <param name="behavior">フェード完了後の動作の指定</param>
+        </member>
+        <member name="M:Lumino.Sound.SetEmitterPosition(System.Single,System.Single,System.Single)">
+            <summary>
+            サウンドの 3D 音源としての位置を設定します。
+            </summary>
+            <param name="x">3D 空間上の X 座標</param>
+            <param name="y">3D 空間上の Y 座標</param>
+            <param name="z">3D 空間上の Z 座標</param>
+        </member>
+        <member name="M:Lumino.Sound.SetEmitterVelocity(System.Single,System.Single,System.Single)">
+            <summary>
+            サウンドの 3D 音源としての速度を設定します。
+            </summary>
+            <param name="x">速度の X 成分</param>
+            <param name="y">速度の Y 成分</param>
+            <param name="z">速度の Z 成分</param>
+        </member>
+        <member name="T:Lumino.Texture">
+            <summary>
+            テクスチャのベースクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.Texture.Size">
+            <summary>
+            テクスチャのサイズ
+            </summary>
+        </member>
+        <member name="T:Lumino.Texture2D">
+            <summary>
+            2Dテクスチャのクラスです。
+            </summary>
+        </member>
+        <member name="M:Lumino.Texture2D.#ctor(System.Int32,System.Int32,Lumino.TextureFormat,System.Boolean)">
+            <summary>
+            サイズを指定して2Dテクスチャを作成します。
+            </summary>
+            <param name="width">テクスチャの幅 (ピクセル単位)</param>
+            <param name="height">テクスチャの高さ (ピクセル単位)</param>
+            <param name="format">テクスチャのピクセルフォーマット</param>
+            <param name="mipmap">ミップマップの有無</param>
+        </member>
+        <member name="M:Lumino.Texture2D.#ctor(System.String)">
+            <summary>
+            ファイルから2Dテクスチャを作成します。
+            </summary>
+            <param name="filePath">画像ファイルのパス</param>
+            <remarks>
+            全てのプラットフォームでサポートされているファイルフォーマットは .png です。
+            					グラフィックスAPI に DirectX9 を使用している場合は MSDN の D3DXCreateTextureFromFileEx を参照してください。
+            </remarks>
+        </member>
+        <member name="T:Lumino.SceneNode">
+            <summary>
+            シーングラフを構成するノードのベースクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.SceneNode.IsVisible">
+            <summary>
+            ノードの可視状態
+            </summary>
+            <remarks>
+            false の場合、ノードの描画は行われません。
+            </remarks>
+        </member>
+        <member name="P:Lumino.SceneNode.Position">
+            <summary>
+            ノードの位置
+            </summary>
+        </member>
+        <member name="T:Lumino.Sprite">
+            <summary>
+            スプライトのベースクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.Sprite.Texture">
+            <summary>
+            スプライトに設定されているテクスチャ
+            </summary>
+        </member>
+        <member name="T:Lumino.Sprite2D">
+            <summary>
+            2D 空間に配置されるスプライトのクラスです。
+            </summary>
+        </member>
+        <member name="M:Lumino.Sprite2D.#ctor">
+            <summary>
+            2Dスプライトオブジェクトを作成します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Sprite2D.#ctor(Lumino.Texture)">
+            <summary>
+            2Dスプライトオブジェクトを作成します。
+            </summary>
+            <param name="texture">2Dスプライトが表示するテクスチャのハンドル</param>
+        </member>
+        <member name="T:Lumino.LuminoException">
+            <summary>
+            ライブラリ内部で発生した例外
+            </summary>
+        </member>
+        <member name="P:Lumino.LuminoException.ResultCode">
+            <summary>
+            結果コード
+            </summary>
+        </member>
+        <!-- 正しくない形式の XML コメントがメンバー "M:Lumino.LuminoException.#ctor(Lumino.Result)" で無視されました -->
+        <!-- 正しくない形式の XML コメントがメンバー "M:Lumino.LuminoException.#ctor(Lumino.Result,System.String)" で無視されました -->
+        <member name="T:Lumino.RefObject">
+            <summary>
+            参照カウントを持つオブジェクトをラップする
+            </summary>
+        </member>
+        <member name="P:Lumino.RefObject.Handle">
+            <summary>
+            ハンドルの取得
+            </summary>
+        </member>
+        <member name="M:Lumino.RefObject.Finalize">
+            <summary>
+            デストラクタ
+            </summary>
+        </member>
+        <member name="M:Lumino.RefObject.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="T:Lumino.Size">
+            <summary>
+            オブジェクトの幅と高さを表します。
+            </summary>
+        </member>
+        <member name="F:Lumino.Size.Width">
+            <summary>
+            幅
+            </summary>
+        </member>
+        <member name="F:Lumino.Size.Height">
+            <summary>
+            高さ
+            </summary>
+        </member>
+        <member name="M:Lumino.Size.#ctor(System.Int32,System.Int32)">
+            <summary>
+            各要素を指定して初期化します。
+            </summary>
+        </member>
+        <member name="T:Lumino.Vector2">
+            <summary>
+            2次元のベクトルのクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.Vector2.Length">
+            <summary>
+            2D ベクトルの長さ
+            </summary>
+        </member>
+        <member name="P:Lumino.Vector2.SquareLength">
+            <summary>
+            2D ベクトルの長さの2乗
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector2.#ctor(System.Single,System.Single)">
+            <summary>
+            各要素を指定して初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector2.Set(System.Single,System.Single)">
+            <summary>
+            2D ベクトルに値を設定します。
+            </summary>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+        </member>
+        <member name="M:Lumino.Vector2.Normalize(Lumino.Vector2)">
+            <summary>
+            2D ベクトルを正規化します。
+            </summary>
+            <param name="vec">処理の基になる 2D ベクトル</param>
+        </member>
+        <member name="M:Lumino.Vector2.Normalize">
+            <summary>
+            2D ベクトルを正規化します。
+            </summary>
+        </member>
+        <member name="T:Lumino.Vector3">
+            <summary>
+            3 次元ベクトルのクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.Vector3.Length">
+            <summary>
+            3Dベクトルの長さ
+            </summary>
+        </member>
+        <member name="P:Lumino.Vector3.SquareLength">
+            <summary>
+            3D ベクトルの長さの2乗を計算する
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector3.#ctor(System.Single,System.Single,System.Single)">
+            <summary>
+            各要素を指定して初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector3.Set(System.Single,System.Single,System.Single)">
+            <summary>
+            3Dベクトルに値を設定します。
+            </summary>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+            <param name="z">Z 値</param>
+        </member>
+        <member name="M:Lumino.Vector3.Set(Lumino.Vector2,System.Single)">
+            <summary>
+            2D ベクトル と Z値 を指定して、3Dベクトルに値を設定します。
+            </summary>
+            <param name="vec2">2D ベクトル</param>
+            <param name="z">Z 値</param>
+        </member>
+        <member name="M:Lumino.Vector3.Normalize(Lumino.Vector3)">
+            <summary>
+            3D ベクトルを正規化します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.Vector3.Normalize">
+            <summary>
+            3D ベクトルを正規化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector3.Dot(Lumino.Vector3,Lumino.Vector3)">
+            <summary>
+            2 つの 3D ベクトルの内積を計算します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル</param>
+            <param name="vec2">処理の基になる 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.Vector3.Cross(Lumino.Vector3,Lumino.Vector3)">
+            <summary>
+            2 つの 3D ベクトルの外積を計算します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル</param>
+            <param name="vec2">処理の基になる 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.Vector3.Reflect(Lumino.Vector3,Lumino.Vector3)">
+            <summary>
+            指定された法線で反射させたベクトルを計算します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="normal">面方向を表す法線 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.Vector3.Slide(Lumino.Vector3,Lumino.Vector3)">
+            <summary>
+            指定された法線と方向から滑りベクトルを計算します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="normal">面方向を表す法線 3D ベクトル</param>
+        </member>
+        <member name="M:Lumino.Vector3.Lerp(Lumino.Vector3,Lumino.Vector3,System.Single)">
+            <summary>
+            2 つの 3D ベクトル間を線形補間します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル ( t = 0.0 のときの値 )</param>
+            <param name="vec2">処理の基になる 3D ベクトル ( t = 1.0 のときの値 )</param>
+            <param name="t">補間値 ( 0.0 ～ 1.0 )</param>
+        </member>
+        <member name="M:Lumino.Vector3.CatmullRom(Lumino.Vector3,Lumino.Vector3,Lumino.Vector3,Lumino.Vector3,System.Single)">
+            <summary>
+            指定された 3D ベクトルを Catmull-Rom 補間します。
+            </summary>
+            <param name="vec1">処理の基になる 3D ベクトル</param>
+            <param name="vec2">処理の基になる 3D ベクトル ( t = 0.0 のときの値 )</param>
+            <param name="vec3">処理の基になる 3D ベクトル ( t = 1.0 のときの値 )</param>
+            <param name="vec4">処理の基になる 3D ベクトル</param>
+            <param name="t">補間値 ( 0.0 ～ 1.0 )</param>
+        </member>
+        <member name="M:Lumino.Vector3.Transform(Lumino.Vector3,Lumino.Matrix)">
+            <summary>
+            指定された行列を使用して座標変換します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="mat">処理の基になる 行列</param>
+            <remarks>
+            ベクトルを ( x, y, z, 1 ) として座標変換します。
+            		            結果の w は出力されません。
+            		            結果を w = 1 に射影する (x y z を w で除算) 場合は
+            		            Vector3TransformCoord() を使用してください。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Vector3.TransformCoord(Lumino.Vector3,Lumino.Matrix)">
+            <summary>
+            指定された行列を使用して座標変換し、結果を w = 1 に射影します。
+            </summary>
+            <param name="vec">処理の基になる 3D ベクトル</param>
+            <param name="mat">処理の基になる 行列</param>
+            <remarks>
+            ベクトルを ( x, y, z, 1 ) として座標変換し、
+            		            結果を w = 1 に射影 (x y z を w で除算) します。
+            </remarks>
+        </member>
+        <member name="T:Lumino.Vector4">
+            <summary>
+            4 次元ベクトルのクラスです。
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector4.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            各要素を指定して初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Vector4.Set(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            4Dベクトルに値を設定します。
+            </summary>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+            <param name="z">Z 値</param>
+            <param name="w">W 値</param>
+        </member>
+        <member name="T:Lumino.Matrix">
+            <summary>
+            4x4 行列のクラスです。
+            </summary>
+        </member>
+        <member name="P:Lumino.Matrix.Right">
+            <summary>
+            右方向を示す 3D ベクトル
+            </summary>
+        </member>
+        <member name="P:Lumino.Matrix.Up">
+            <summary>
+            上方向を示す 3D ベクトル
+            </summary>
+        </member>
+        <member name="P:Lumino.Matrix.Front">
+            <summary>
+            正面方向を示す 3D ベクトル
+            </summary>
+        </member>
+        <member name="P:Lumino.Matrix.Position">
+            <summary>
+            位置を示す 3D ベクトル
+            </summary>
+        </member>
+        <member name="M:Lumino.Matrix.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            各要素を指定して初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Matrix.Identity">
+            <summary>
+            単位行列を作成します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Matrix.Translate(System.Single,System.Single,System.Single)">
+            <summary>
+            行列を平行移動します。
+            </summary>
+            <param name="x">X 方向の移動量</param>
+            <param name="y">Y 方向の移動量</param>
+            <param name="z">Z 方向の移動量</param>
+            <remarks>
+            与えられた引数から平行移動行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.TranslateVec3(Lumino.Vector3)">
+            <summary>
+            行列を平行移動します。
+            </summary>
+            <param name="vec">移動量</param>
+            <remarks>
+            与えられた引数から平行移動行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.RotateX(System.Single)">
+            <summary>
+            X 軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="radian">回転角度 ( 軸方向に対して反時計回り )</param>
+            <remarks>
+            与えられた引数から回転行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.RotateY(System.Single)">
+            <summary>
+            Y 軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="radian">回転角度</param>
+            <remarks>
+            与えられた引数から回転行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.RotateZ(System.Single)">
+            <summary>
+            Z 軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="radian">回転角度</param>
+            <remarks>
+            与えられた引数から回転行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.Rotate(System.Single,System.Single,System.Single,Lumino.RotationOrder)">
+            <summary>
+            行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="xRad">X 軸を回転軸とした角度</param>
+            <param name="yRad">Y 軸を回転軸とした角度</param>
+            <param name="zRad">Z 軸を回転軸とした角度</param>
+            <param name="rotOrder">回転順序の指定</param>
+            <remarks>
+            与えられた引数から回転行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.RotateVec3(Lumino.Vector3,Lumino.RotationOrder)">
+            <summary>
+            行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="vec">各軸の回転角度</param>
+            <param name="rotOrder">回転順序の指定</param>
+            <remarks>
+            与えられた引数から回転行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.RotateAxis(Lumino.Vector3,System.Single)">
+            <summary>
+            任意の軸を回転軸にして行列を回転します。 (ラジアン単位)
+            </summary>
+            <param name="axis">回転軸を示す Vector3</param>
+            <param name="radian">回転角度</param>
+            <remarks>
+            与えられた引数から回転行列を作り、現在の行列に乗算します。
+            						与えられた軸が正規化されていない場合は正規化したものを使って計算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.RotateQuaternion(Lumino.Quaternion)">
+            <summary>
+            クォータニオンを使って行列を回転します。
+            </summary>
+            <param name="qua">処理の基になる Quaternion</param>
+            <remarks>
+            クォータニオンから回転行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.Scale(System.Single)">
+            <summary>
+            行列をスケーリングします。
+            </summary>
+            <param name="xyz">X Y Z 全ての方向に適用する拡大率 (X Y Z を同じ値で拡大)</param>
+            <remarks>
+            与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.ScaleXYZ(System.Single,System.Single,System.Single)">
+            <summary>
+            行列をスケーリングします。
+            </summary>
+            <param name="x">X 方向の拡大率</param>
+            <param name="y">Y 方向の拡大率</param>
+            <param name="z">Z 方向の拡大率</param>
+            <remarks>
+            与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.ScaleVec3(Lumino.Vector3)">
+            <summary>
+            行列をスケーリングします。
+            </summary>
+            <param name="scale">各方向の拡大率</param>
+            <remarks>
+            与えられた引数からスケーリング行列を作り、現在の行列に乗算します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Matrix.Multiply(Lumino.Matrix,Lumino.Matrix)">
+            <summary>
+            行列を乗算します。
+            </summary>
+            <param name="mat1">処理の基になる行列</param>
+            <param name="mat2">処理の基になる行列</param>
+        </member>
+        <member name="M:Lumino.Matrix.Inverse(Lumino.Matrix)">
+            <summary>
+            逆行列を求めます。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+        </member>
+        <member name="M:Lumino.Matrix.Transpose(Lumino.Matrix)">
+            <summary>
+            転置行列を求めます。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+        </member>
+        <member name="M:Lumino.Matrix.ViewTransformLH(Lumino.Vector3,Lumino.Vector3,Lumino.Vector3)">
+            <summary>
+            左手座標系ビュー行列を作成します。
+            </summary>
+            <param name="pos">視点の位置を示す Vector3</param>
+            <param name="lookAt">注視点を示す Vector3</param>
+            <param name="upDir">上方向を示す Vector3</param>
+        </member>
+        <member name="M:Lumino.Matrix.ViewTransformRH(Lumino.Vector3,Lumino.Vector3,Lumino.Vector3)">
+            <summary>
+            右手座標系ビュー行列を作成します。
+            </summary>
+            <param name="pos">視点の位置を示す Vector3</param>
+            <param name="lookAt">注視点を示す Vector3</param>
+            <param name="upDir">上方向を示す Vector3</param>
+        </member>
+        <member name="M:Lumino.Matrix.PerspectiveFovLH(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            左手座標系射影行列を作成します。
+            </summary>
+            <param name="fovY">Y 方向への視野角 (ラジアン単位)</param>
+            <param name="aspect">アスペクト比</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+        </member>
+        <member name="M:Lumino.Matrix.PerspectiveFovRH(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            右手座標系射影行列作成します。
+            </summary>
+            <param name="fovY">Y 方向への視野角 (ラジアン単位)</param>
+            <param name="aspect">アスペクト比</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+        </member>
+        <member name="M:Lumino.Matrix.OrthoLH(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            左手座標系正射影行列作成します。
+            </summary>
+            <param name="width">ビューの幅</param>
+            <param name="height">ビューの高さ</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+        </member>
+        <member name="M:Lumino.Matrix.OrthoRH(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            右手座標系正射影行列作成します。
+            </summary>
+            <param name="width">ビューの幅</param>
+            <param name="height">ビューの高さ</param>
+            <param name="nearZ">近くのビュー平面の Z 値</param>
+            <param name="farZ">遠くのビュー平面の Z 値</param>
+        </member>
+        <member name="M:Lumino.Matrix.GetEulerAngles">
+            <summary>
+            回転行列からオイラー角を計算します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Matrix.Decompose(Lumino.Vector3@,Lumino.Quaternion@)">
+            <summary>
+            行列をスケーリング、回転、移動成分に分解します。
+            </summary>
+            <param name="scale">各軸のスケーリング量を格納する Vector3 変数</param>
+            <param name="rot">各軸の回転情報を格納する Quaternion 変数</param>
+        </member>
+        <member name="T:Lumino.Quaternion">
+            <summary>
+            クォータニオンのクラスです。
+            </summary>
+        </member>
+        <member name="M:Lumino.Quaternion.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            各要素を指定して初期化します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Quaternion.Set(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            クォータニオンに値を設定します。
+            </summary>
+            <param name="x">X 値</param>
+            <param name="y">Y 値</param>
+            <param name="z">Z 値</param>
+            <param name="w">W 値</param>
+        </member>
+        <member name="M:Lumino.Quaternion.Identity">
+            <summary>
+            単位クォータニオンを作成します。
+            </summary>
+        </member>
+        <member name="M:Lumino.Quaternion.RotationAxis(Lumino.Vector3,System.Single)">
+            <summary>
+            任意の軸を回転軸にして回転するクォータニオンを作成します。
+            </summary>
+            <param name="axis">回転軸を示す Vector3 変数</param>
+            <param name="r">回転角度 (ラジアン)</param>
+            <remarks>
+            与えられた軸が正規化されていない場合は正規化された軸を使用します。
+            </remarks>
+        </member>
+        <member name="M:Lumino.Quaternion.RotationMatrix(Lumino.Matrix)">
+            <summary>
+            回転行列からクォータニオンを作成します。
+            </summary>
+            <param name="mat">処理の基になる行列</param>
+        </member>
+        <member name="M:Lumino.Quaternion.RotationYawPitchRoll(System.Single,System.Single,System.Single)">
+            <summary>
+            ヨー、ピッチ、およびロールを指定してクォータニオンを作成します。
+            </summary>
+            <param name="yaw">y 軸を中心とするヨー (ラジアン単位)</param>
+            <param name="pitch">x 軸を中心とするピッチ (ラジアン単位)</param>
+            <param name="roll">z 軸を中心とするロール (ラジアン単位)</param>
+        </member>
+        <member name="M:Lumino.Quaternion.Normalize(Lumino.Quaternion)">
+            <summary>
+            クォータニオンを正規化します。
+            </summary>
+            <param name="qua">処理の基になるクォータニオン</param>
+        </member>
+        <member name="M:Lumino.Quaternion.Conjugate(Lumino.Quaternion)">
+            <summary>
+            クォータニオンの共役を計算します。
+            </summary>
+            <param name="qua">処理の基になるクォータニオン</param>
+        </member>
+        <member name="M:Lumino.Quaternion.Multiply(Lumino.Quaternion,Lumino.Quaternion)">
+            <summary>
+            2 つのクォータニオンの積を計算します。
+            </summary>
+            <param name="qua1">処理の基になるクォータニオン</param>
+            <param name="qua2">処理の基になるクォータニオン</param>
+        </member>
+        <member name="M:Lumino.Quaternion.Slerp(Lumino.Quaternion,Lumino.Quaternion,System.Single)">
+            <summary>
+            2 つのクォータニオンを球面線形補間します。
+            </summary>
+            <param name="qua1">処理の基になるクォータニオン</param>
+            <param name="qua2">処理の基になるクォータニオン</param>
+            <param name="t">補間値</param>
+        </member>
+    </members>
+</doc>

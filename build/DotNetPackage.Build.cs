@@ -42,19 +42,32 @@ class DotNetPackageRule : ModuleRule
         Utils.CopyFile(outputDir + "LuminoDotNet.dll", releaseLibDir);
         Utils.CopyFile(outputDir + "LuminoDotNet.XML", releaseLibDir);
         if (Utils.IsWin32)
-            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86uMT.dll", releaseLibDir + "LuminoC.dll");
+            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86uMT.dll", releaseLibDir + "LuminoC.dll", true);
         else
-            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86u.so", releaseLibDir + "LuminoC.so");
+            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86u.so", releaseLibDir + "LuminoC.so", true);
         
         // Help
-        Logger.WriteLine("copy Help files...");
-        Directory.CreateDirectory(releaseDir + "doc");
-        Utils.CopyDirectory(dotnetDir + "Help", releaseDir + "doc", true);
+        if (Utils.IsWin32)
+        {
+            Logger.WriteLine("copy Help files...");
+            Directory.CreateDirectory(releaseDir + "doc");
+            Utils.CopyDirectory(dotnetDir + "Help", releaseDir + "doc", true);
+        }
 
         // Readme.txt (バージョン名を埋め込む)
         string text = File.ReadAllText(pkgSrcDir + "Readme.txt");
         text = text.Replace("$(LuminoVersion)", builder.VersionString);
         File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
+
+        // VSプロジェクトテンプレート
+        Logger.WriteLine("make project template...");
+        Directory.CreateDirectory(releaseDir + "tools");
+        File.Delete(releaseDir + "tools/LuminoProjectCS.zip");  // 既に存在する場合は消さないと例外する
+        ZipFile.CreateFromDirectory(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCS", releaseDir + "tools/LuminoProjectCS.zip", CompressionLevel.Optimal, false);
+
+        // installer
+        Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
+        Utils.CopyFile(pkgSrcDir + "Lumino_Uninstall.bat", releaseDir);
 
         // .zip に圧縮する
         Logger.WriteLine("compressing files...");
