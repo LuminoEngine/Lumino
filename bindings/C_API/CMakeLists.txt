@@ -66,11 +66,12 @@ link_libraries(Lumino_Static)
 #------------------------------
 # Shared library.
 add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_SHARED_OUTPUT_POSTFIX})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN_STATIC_OUTPUT_POSTFIX})
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LN_OutputDir})
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${LN_OutputDir}/${LN_ARCH}")	# .dll
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_OutputDir}/${LN_ARCH}")	# .lib (linker)
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 
 #------------------------------
@@ -80,7 +81,7 @@ set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME ${PROJECT_NA
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${LN_OutputDir})
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_OutputDir}/${LN_ARCH}")
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 

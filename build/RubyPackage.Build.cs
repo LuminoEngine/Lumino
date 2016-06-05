@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using LuminoBuildTool;
 using System.Text;
+using System.IO.Compression;
 
 class RubyPackageRule : ModuleRule
 {
@@ -29,6 +30,7 @@ class RubyPackageRule : ModuleRule
         string rubyDir = builder.LuminoBindingsDir + "Ruby/";
         string rubyBuildDir = rubyDir + "build/";
         string releaseDir = builder.LuminoPackageReleaseDir + "LuminoRuby_" + builder.VersionString + "/";
+        string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoRuby_" + builder.VersionString + ".zip";
         string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/Ruby/";
         Directory.CreateDirectory(releaseDir);
 
@@ -44,5 +46,13 @@ class RubyPackageRule : ModuleRule
         string text = File.ReadAllText(pkgSrcDir + "Readme.txt");
         text = text.Replace("$(LuminoVersion)", builder.VersionString);
         File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
+
+        // sample
+        Utils.CopyDirectory(rubyDir + "Samples", releaseDir + "sample");
+
+        // .zip に圧縮する
+        Logger.WriteLine("compressing files...");
+        File.Delete(zipFilePath);
+        ZipFile.CreateFromDirectory(releaseDir, zipFilePath, CompressionLevel.Optimal, true);
     }
 }

@@ -34,6 +34,12 @@
     <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CPackage.Build.cs">
+      <Link>Rules\CPackage.Build.cs</Link>
+    </Compile>
+    <Compile Include="..\LuminoC.Build.cs">
+      <Link>Rules\LuminoC.Build.cs</Link>
+    </Compile>
     <Compile Include="..\LuminoRuby.Build.cs">
       <Link>Rules\LuminoRuby.Build.cs</Link>
     </Compile>
