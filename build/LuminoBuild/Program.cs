@@ -32,8 +32,9 @@ namespace LuminoBuild
             //builder.Rules.Add(new LuminoRubyRule());
             //builder.Rules.Add(new RubyPackageRule());
             //builder.Rules.Add(new LuminoCRule());
-            builder.Rules.Add(new CPackageRule());
+            //builder.Rules.Add(new CPackageRule());
             //if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
+            if (Utils.IsWin32) builder.Rules.Add(new HSPPackageRule());
 
             builder.CheckPrerequisite();
             builder.Build();
