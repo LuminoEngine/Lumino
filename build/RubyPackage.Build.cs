@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using LuminoBuildTool;
+using System.Text;
 
 class RubyPackageRule : ModuleRule
 {
@@ -27,7 +28,7 @@ class RubyPackageRule : ModuleRule
     {
         string rubyDir = builder.LuminoBindingsDir + "Ruby/";
         string rubyBuildDir = rubyDir + "build/";
-        string releaseDir = builder.LuminoPackageReleaseDir + "Ruby_" + builder.VersionString + "/";
+        string releaseDir = builder.LuminoPackageReleaseDir + "LuminoRuby_" + builder.VersionString + "/";
         string pkgSrcDir = builder.LuminoPackageDir + "PackageSource/Ruby/";
         Directory.CreateDirectory(releaseDir);
 
@@ -38,5 +39,10 @@ class RubyPackageRule : ModuleRule
         // doc
         Directory.CreateDirectory(releaseDir + "doc");
         Utils.CopyDirectory(rubyBuildDir + "doc", releaseDir + "doc");
+
+        // Readme.txt (バージョン名を埋め込む)
+        string text = File.ReadAllText(pkgSrcDir + "Readme.txt");
+        text = text.Replace("$(LuminoVersion)", builder.VersionString);
+        File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
     }
 }
