@@ -1093,8 +1093,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00CF:
     {
+		::MessageBoxA(0, "", "", 0);
         void* p0 = (void*)CodeGetS();
         int p1 = CodeGetI();
+		std::string ss(CodeGetS(), p1);
         PVal* pval_p2;
         APTR aptr_p2 = code_getva(&pval_p2);
         intptr_t p2;

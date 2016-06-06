@@ -69,9 +69,9 @@ class LuminoDotNetRule : ModuleRule
         // テスト出力場所に dll をコピーする
         string testOutputDir = dotnetDir + "Test/bin/x86/Release/";
         if (Utils.IsWin32)
-            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86uMT.dll", testOutputDir + "LuminoC.dll");
+            File.Copy(builder.LuminoLibDir + "x86/Release/LuminoCU.dll", testOutputDir + "LuminoCU.dll", true);
         else
-            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86u.so", testOutputDir + "LuminoC.so");
+            File.Copy(builder.LuminoLibDir + "x86/Release/LuminoCU.so", testOutputDir + "LuminoCU.so", true);
 
         // テスト実行
         Logger.WriteLine("Running test...");

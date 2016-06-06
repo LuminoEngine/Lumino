@@ -1,5 +1,6 @@
 #include <iostream>
 #include <LuminoC.h>
+#include "../../../external/Lumino.Core/include/LuminoCore.h"
 
 #if defined(LN_MSVC)
 #include <Windows.h>
@@ -47,9 +48,18 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+
 	LNResult r;
 
 	LNEngine_Initialize();
+
+	ln::ByteBuffer buf = ln::FileSystem::ReadAllBytes("D:/tmp/GrandSky.mp3");
+	LNHandle s;
+	printf("a");
+	r = LNSound_CreateMem(buf.GetConstData(), buf.GetSize(), &s);
+	printf("g");
+	LNSound_Play(s);
+
 
 	LNHandle tex1;
 	LNTexture2D_Create(32, 32, LN_FMT_A8R8G8B8, LN_FALSE, &tex1);

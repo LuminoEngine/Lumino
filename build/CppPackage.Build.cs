@@ -48,9 +48,10 @@ class CppPackageRule : ModuleRule
         // インストールスクリプトとか、プロジェクトテンプレート
         Logger.WriteLine("copy other files...");
         Directory.CreateDirectory(releaseDir + "tools");
-        Utils.CopyFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProject.zip", releaseDir + "tools");
+        //Utils.CopyFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProject.zip", releaseDir + "tools");
         Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
         Utils.CopyFile(pkgSrcDir + "Lumino_Uninstall.bat", releaseDir);
+        ZipFile.CreateFromDirectory(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/LuminoProjectCpp.zip", CompressionLevel.Optimal, false);
 
         // Readme.txt (バージョン名を埋め込む)
         string text = File.ReadAllText(pkgSrcDir + "Readme.txt");
