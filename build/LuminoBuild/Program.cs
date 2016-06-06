@@ -25,8 +25,8 @@ namespace LuminoBuild
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
-            //builder.Rules.Add(new LuminoEngineRule());
-            //builder.Rules.Add(new CppPackageRule());
+            builder.Rules.Add(new LuminoEngineRule());
+            builder.Rules.Add(new CppPackageRule());
             //builder.Rules.Add(new LuminoDotNetRule());
             //builder.Rules.Add(new DotNetPackageRule());
             //builder.Rules.Add(new LuminoRubyRule());
@@ -34,7 +34,7 @@ namespace LuminoBuild
             //builder.Rules.Add(new LuminoCRule());
             //builder.Rules.Add(new CPackageRule());
             //if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
-            if (Utils.IsWin32) builder.Rules.Add(new HSPPackageRule());
+            //if (Utils.IsWin32) builder.Rules.Add(new HSPPackageRule());
 
             builder.CheckPrerequisite();
             builder.Build();

@@ -42,9 +42,9 @@ class DotNetPackageRule : ModuleRule
         Utils.CopyFile(outputDir + "LuminoDotNet.dll", releaseLibDir);
         Utils.CopyFile(outputDir + "LuminoDotNet.XML", releaseLibDir);
         if (Utils.IsWin32)
-            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86uMT.dll", releaseLibDir + "LuminoC.dll", true);
+            File.Copy(builder.LuminoLibDir + "x86/Release/LuminoCU.dll", releaseLibDir + "LuminoCU.dll", true);
         else
-            File.Copy(builder.LuminoLibDir + "Release/LuminoC_x86u.so", releaseLibDir + "LuminoC.so", true);
+            File.Copy(builder.LuminoLibDir + "x86/Release/LuminoCU.so", releaseLibDir + "LuminoCU.so", true);
         
         // Help
         if (Utils.IsWin32)
