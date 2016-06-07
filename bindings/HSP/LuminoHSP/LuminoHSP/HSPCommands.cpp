@@ -1094,9 +1094,20 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     case 0x00CF:
     {
 		::MessageBoxA(0, "", "", 0);
-        void* p0 = (void*)CodeGetS();
+		void* p0 = 0;// (void*)CodeGetS();
+
+		PVal *MemoryArray = exinfo->HspFunc_prm_getpval();
+
+		HspVarProc *vpSTR; //代入のためにHspVarProc構造体を用意
+		vpSTR = exinfo->HspFunc_getproc(HSPVAR_FLAG_STR);
+
+		HspVarCoreReset(MemoryArray); //配列参照次元をリセット(必ず下記で使用する場合は、最初にこれをする事。)
+		exinfo->HspFunc_array(MemoryArray, 0); //一次元目設定
+		PDAT* MemoryData = vpSTR->GetPtr(MemoryArray);
+		p0 = MemoryData;
+
         int p1 = CodeGetI();
-		std::string ss(CodeGetS(), p1);
+		std::string ss((char*)p0, p1);
         PVal* pval_p2;
         APTR aptr_p2 = code_getva(&pval_p2);
         intptr_t p2;
