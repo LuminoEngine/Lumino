@@ -7,12 +7,14 @@ using System.IO.Compression;
 class RubyPackageRule : ModuleRule
 {
     /// <summary>
-    /// ルールの名前
+    /// ルールを実行するためのコマンド名
     /// </summary>
-    public override string Name
-    {
-        get { return "Ruby"; }
-    }
+    public override string CommandName { get { return "ruby-p"; } }
+
+    /// <summary>
+    /// ルールの説明
+    /// </summary>
+    public override string Description { get { return "Make package for Ruby."; } }
 
     /// <summary>
     /// 前提条件の確認

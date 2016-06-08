@@ -9,12 +9,14 @@ class LuminoDotNetRule : ModuleRule
     private string _SHFBROOT;
 
     /// <summary>
-    /// ルールの名前
+    /// ルールを実行するためのコマンド名
     /// </summary>
-    public override string Name
-    {
-        get { return "csb"; }
-    }
+    public override string CommandName { get { return "cs-b"; } }
+
+    /// <summary>
+    /// ルールの説明
+    /// </summary>
+    public override string Description { get { return "Build engine for C# (.Net)."; } }
 
     /// <summary>
     /// 前提条件の確認

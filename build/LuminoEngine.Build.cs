@@ -7,12 +7,14 @@ class LuminoEngineRule : ModuleRule
     public string _msbuild;
 
     /// <summary>
-    /// ルールの名前
+    /// ルールを実行するためのコマンド名
     /// </summary>
-    public override string Name
-    {
-        get { return "LuminoEngine"; }
-    }
+    public override string CommandName { get { return "cpp-b"; } }
+
+    /// <summary>
+    /// ルールの説明
+    /// </summary>
+    public override string Description { get { return "Build engine for C++."; } }
 
     /// <summary>
     /// 前提条件の確認

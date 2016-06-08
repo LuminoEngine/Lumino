@@ -40,6 +40,17 @@ const char* CodeGetS(const char* defaultValue)
 {
 	return code_getds(defaultValue);
 }
+void* CodeGetData()
+{
+	// HspFunc_ ???яo?????????B??????O????B
+	PVal* MemoryArray = exinfo->HspFunc_prm_getpval();
+	HspVarProc* vpSTR = exinfo->HspFunc_getproc(HSPVAR_FLAG_STR);
+
+	HspVarCoreReset(MemoryArray); 			// ?z??Q?????????Z?b?g(?K?????L??g?p???????A???????????鎖)
+	exinfo->HspFunc_array(MemoryArray, 0);	// ????????
+	
+	return vpSTR->GetPtr(MemoryArray);
+}
 
 #define CodeGetVA_TypeChecked(ppval, type) \
 	code_getva(ppval); \
@@ -855,7 +866,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00B5:
     {
-        void* p0 = (void*)CodeGetS();
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
         float p2 = CodeGetD(1.0f);
         float p3 = CodeGetD(1.0f);
@@ -883,7 +894,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00B8:
     {
-        void* p0 = (void*)CodeGetS();
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
         float p2 = CodeGetD(1.0f);
         float p3 = CodeGetD(1.0f);
@@ -910,7 +921,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00BB:
     {
-        void* p0 = (void*)CodeGetS();
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
         float p2 = CodeGetD(1.0f);
         float p3 = CodeGetD(1.0f);
@@ -960,7 +971,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00C0:
     {
-        void* p0 = (void*)CodeGetS();
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
         float p2 = CodeGetD(1.0f);
         float p3 = CodeGetD(1.0f);
@@ -970,7 +981,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00C1:
     {
-        void* p0 = (void*)CodeGetS();
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
         PVal* pval_p2; CodeGetVA_TypeChecked(&pval_p2, LNVector3);
         float p3 = CodeGetD();
@@ -982,7 +993,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00C2:
     {
-        void* p0 = (void*)CodeGetS();
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
         float p2 = CodeGetD();
         float p3 = CodeGetD();
@@ -1093,21 +1104,8 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00CF:
     {
-		::MessageBoxA(0, "", "", 0);
-		void* p0 = 0;// (void*)CodeGetS();
-
-		PVal *MemoryArray = exinfo->HspFunc_prm_getpval();
-
-		HspVarProc *vpSTR; //代入のためにHspVarProc構造体を用意
-		vpSTR = exinfo->HspFunc_getproc(HSPVAR_FLAG_STR);
-
-		HspVarCoreReset(MemoryArray); //配列参照次元をリセット(必ず下記で使用する場合は、最初にこれをする事。)
-		exinfo->HspFunc_array(MemoryArray, 0); //一次元目設定
-		PDAT* MemoryData = vpSTR->GetPtr(MemoryArray);
-		p0 = MemoryData;
-
+        void* p0 = CodeGetData();
         int p1 = CodeGetI();
-		std::string ss((char*)p0, p1);
         PVal* pval_p2;
         APTR aptr_p2 = code_getva(&pval_p2);
         intptr_t p2;

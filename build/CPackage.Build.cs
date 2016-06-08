@@ -7,12 +7,14 @@ using System.IO.Compression;
 class CPackageRule : ModuleRule
 {
     /// <summary>
-    /// ルールの名前
+    /// ルールを実行するためのコマンド名
     /// </summary>
-    public override string Name
-    {
-        get { return "cp"; }
-    }
+    public override string CommandName { get { return "c-p"; } }
+
+    /// <summary>
+    /// ルールの説明
+    /// </summary>
+    public override string Description { get { return "Make package for C."; } }
 
     /// <summary>
     /// 前提条件の確認

@@ -42,7 +42,7 @@ case [ID]:
             { CLPrimitiveType.Int64,        new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
             { CLPrimitiveType.Float,        new TypeInfo("CodeGetD({1})", "double rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_DOUBLE, &rp{0});") },
             { CLPrimitiveType.Double,       new TypeInfo("CodeGetD({1})", "double rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_DOUBLE, &rp{0});") },
-            { CLPrimitiveType.VoidPtr,      new TypeInfo("(void*)CodeGetS({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
+            { CLPrimitiveType.VoidPtr,      new TypeInfo("CodeGetData({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
             { CLPrimitiveType.IntPtr,       new TypeInfo("CodeGetI({1})", "int rp{0} = p{0}; code_setva(pval_p{0}, aptr_p{0}, HSPVAR_FLAG_INT, &rp{0});") },
         };
 

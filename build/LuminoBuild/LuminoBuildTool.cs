@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Text;
+using System.ComponentModel;
 
 namespace LuminoBuildTool
 {
@@ -19,6 +20,31 @@ namespace LuminoBuildTool
         public string LuminoPackageReleaseDir;
         public List<ModuleRule> Rules = new List<ModuleRule>();
 
+        public void Execute(string commands)
+        {
+            string[] list = commands.Split(',');
+            var rules = new List<ModuleRule>();
+            foreach (var cmd in list)
+            {
+                var rule = Rules.Find((r) => r.CommandName == cmd);
+                if (rule != null) rules.Add(rule);
+            }
+
+            foreach (var rule in rules)
+            {
+                rule.CheckPrerequisite(this);
+            }
+            foreach (var rule in rules)
+            {
+                if (rule.Buildable)
+                {
+                    Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
+                    rule.Build(this);
+                    Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
+                }
+            }
+        }
+
         public void CheckPrerequisite()
         {
             foreach (var rule in Rules)
@@ -33,9 +59,9 @@ namespace LuminoBuildTool
             {
                 if (rule.Buildable)
                 {
-                    Logger.WriteLine("[{0}] Rule started.", rule.Name);
+                    Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
                     rule.Build(this);
-                    Logger.WriteLine("[{0}] Rule succeeded.", rule.Name);
+                    Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
                 }
             }
         }
@@ -44,9 +70,14 @@ namespace LuminoBuildTool
     abstract class ModuleRule
     {
         /// <summary>
-        /// ルールの名前
+        /// ルールを実行するためのコマンド名
         /// </summary>
-        public abstract string Name { get; }
+        public abstract string CommandName { get; }
+
+        /// <summary>
+        /// ルールの説明
+        /// </summary>
+        public abstract string Description { get; }
 
         /// <summary>
         /// ビルドできるか (CheckPrerequisite() で確定する)

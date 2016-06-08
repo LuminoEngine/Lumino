@@ -7,12 +7,14 @@ using LuminoBuildTool;
 class CppPackageRule : ModuleRule
 {
     /// <summary>
-    /// ルールの名前
+    /// ルールを実行するためのコマンド名
     /// </summary>
-    public override string Name
-    {
-        get { return "CppPackage"; }
-    }
+    public override string CommandName { get { return "cpp-p"; } }
+
+    /// <summary>
+    /// ルールの説明
+    /// </summary>
+    public override string Description { get { return "Make package for C++."; } }
 
     /// <summary>
     /// 前提条件の確認
