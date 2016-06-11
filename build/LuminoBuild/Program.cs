@@ -22,6 +22,7 @@ namespace LuminoBuild
             builder.LuminoToolsDir = builder.LuminoRootDir + "tools/";
             builder.LuminoDocDir = builder.LuminoRootDir + "doc/";
             builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
+            builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
@@ -36,19 +37,24 @@ namespace LuminoBuild
             if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
             if (Utils.IsWin32) builder.Rules.Add(new HSPPackageRule());
 
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine("{0,-8}   {1}", "Command", "Description");
-            foreach (var rule in builder.Rules)
+            while (true)
             {
-                Console.WriteLine("{0,-8} : {1}", rule.CommandName, rule.Description);
-            }
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine("Enter commands:");
-            string commands = Console.ReadLine();
+                Console.WriteLine("----------------------------------------");
+                Console.WriteLine("{0,-8}   {1}", "Command", "Description");
+                foreach (var rule in builder.Rules)
+                {
+                    Console.WriteLine("{0,-8} : {1}", rule.CommandName, rule.Description);
+                }
+                Console.WriteLine("all      : Build all.");
+                Console.WriteLine("exit     : Exit.");
+                Console.WriteLine("----------------------------------------");
+                Console.Write("Enter commands:");
+                string commands = Console.ReadLine();
 
-            builder.Execute(commands);
-            //builder.CheckPrerequisite();
-            //builder.Build();
+                if (commands == "exit") break;
+
+                builder.Execute(commands);
+            }
         }
     }
 }

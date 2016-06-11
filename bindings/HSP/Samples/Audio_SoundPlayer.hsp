@@ -13,7 +13,7 @@
 	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_THREAD_REQUEST
 	LNConfig_SetUserWindowHandle hwnd
 	
-	LNApplication_InitializeAudio
+	LNEngine_InitializeAudio
 	if stat != LN_OK : end
 
 	dialog "wav;*.ogg;*.mp3;*.mid", 16

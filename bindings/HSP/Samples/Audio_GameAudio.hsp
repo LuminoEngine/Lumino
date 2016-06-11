@@ -15,7 +15,7 @@
 
 	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_NORMAL
 	LNConfig_SetUserWindowHandle hwnd
-	LNApplication_InitializeAudio
+	LNEngine_InitializeAudio
 	
 	objsize 128, 24
 	button "BGM ‰‰‘t", *play_bgm

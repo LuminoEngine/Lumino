@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.IO;
-using System.IO.Compression;
 using LuminoBuildTool;
 
 class CppPackageRule : ModuleRule
@@ -53,16 +52,18 @@ class CppPackageRule : ModuleRule
         //Utils.CopyFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProject.zip", releaseDir + "tools");
         Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
         Utils.CopyFile(pkgSrcDir + "Lumino_Uninstall.bat", releaseDir);
-        ZipFile.CreateFromDirectory(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/LuminoProjectCpp.zip", CompressionLevel.Optimal, false);
+        Utils.CreateZipFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "tools/LuminoProjectCpp.zip");
 
         // Readme.txt (バージョン名を埋め込む)
         string text = File.ReadAllText(pkgSrcDir + "Readme.txt");
         text = text.Replace("$(LuminoVersion)", builder.VersionString);
         File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
+        
+        // ReleaseNote
+        Utils.CopyFile(builder.LuminoPackageSourceDir + "ReleaseNote.txt", releaseDir);
 
         // .zip に圧縮する
         Logger.WriteLine("compressing files...");
-        File.Delete(zipFilePath);
-        ZipFile.CreateFromDirectory(releaseDir, zipFilePath, CompressionLevel.Optimal, true);
+        Utils.CreateZipFile(releaseDir, zipFilePath);
     }
 }

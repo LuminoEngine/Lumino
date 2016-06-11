@@ -1,8 +1,8 @@
-Lumino for C $(LuminoVersion)
+ï»¿Lumino for C $(LuminoVersion)
 ====================
 
 
-˜A—æ
+é€£çµ¡å…ˆ
 --------------------
 - E-mail: lriki.net@gmail.com
 - GitHub: https://github.com/lriki/Lumino

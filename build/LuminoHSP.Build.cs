@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 class LuminoHSPRule : ModuleRule
 {
     private string _msbuild;
-    private string _SHFBROOT;
 
     /// <summary>
     /// ルールを実行するためのコマンド名
@@ -42,5 +41,8 @@ class LuminoHSPRule : ModuleRule
         var hspDir = builder.LuminoBindingsDir + "HSP/";
 
         Utils.CallProcess(_msbuild, hspDir + "LuminoHSP/LuminoHSP.sln /t:Build /p:Configuration=\"Release\" /p:Platform=\"Win32\" /m");
+
+        // sample (Media)
+        Utils.CopyDirectory(builder.LuminoPackageSourceDir + "Common/Media", hspDir + "Samples/Media");
     }
 }

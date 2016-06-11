@@ -4,6 +4,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text;
 using System.ComponentModel;
+using System.IO.Compression;
 
 namespace LuminoBuildTool
 {
@@ -17,17 +18,29 @@ namespace LuminoBuildTool
         public string LuminoToolsDir;
         public string LuminoDocDir;
         public string LuminoPackageDir;
+        public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
         public List<ModuleRule> Rules = new List<ModuleRule>();
 
         public void Execute(string commands)
         {
-            string[] list = commands.Split(',');
             var rules = new List<ModuleRule>();
-            foreach (var cmd in list)
+
+            if (commands == "all")
             {
-                var rule = Rules.Find((r) => r.CommandName == cmd);
-                if (rule != null) rules.Add(rule);
+                foreach (var rule in Rules)
+                {
+                    rules.Add(rule);
+                }
+            }
+            else
+            {
+                string[] list = commands.Split(',');
+                foreach (var cmd in list)
+                {
+                    var rule = Rules.Find((r) => r.CommandName == cmd);
+                    if (rule != null) rules.Add(rule);
+                }
             }
 
             foreach (var rule in rules)
@@ -113,7 +126,7 @@ namespace LuminoBuildTool
         }
     }
 
-	static class Utils
+    static class Utils
     {
         /// <summary>
         /// ファイルを別のフォルダへコピーする (ファイル名は変更しない)
@@ -183,6 +196,15 @@ namespace LuminoBuildTool
                 string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
                 CopyDirectory(stCopyFrom, stCopyTo, bOverwrite);
             }
+        }
+
+        /// <summary>
+        /// フォルダから .zip を作る
+        /// </summary>
+        public static void CreateZipFile(string dirPath, string zipFilePath, bool includeBaseDirectory = true)
+        {
+            File.Delete(zipFilePath);
+            ZipFile.CreateFromDirectory(dirPath, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory);
         }
 
         /// <summary>

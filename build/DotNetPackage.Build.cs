@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.IO;
-using System.IO.Compression;
 using LuminoBuildTool;
 
 class DotNetPackageRule : ModuleRule
@@ -61,6 +60,9 @@ class DotNetPackageRule : ModuleRule
         text = text.Replace("$(LuminoVersion)", builder.VersionString);
         File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
 
+        // ReleaseNote
+        Utils.CopyFile(builder.LuminoPackageSourceDir + "ReleaseNote.txt", releaseDir);
+
         // VSプロジェクトテンプレート
         Logger.WriteLine("make project template...");
         string templateProjDir = builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCS/";
@@ -68,8 +70,7 @@ class DotNetPackageRule : ModuleRule
         Directory.CreateDirectory(releaseDir + "tools");
         Utils.CopyFile(builder.LuminoDocDir + "Logo/icon256.png", templateProjDir + "Assets");
         Utils.CopyDirectory(releaseLibDir, templateProjDir + "LuminoLibrary");
-        File.Delete(releaseDir + "tools/LuminoProjectCS.zip");  // 既に存在する場合は消さないと例外する
-        ZipFile.CreateFromDirectory(templateProjDir, releaseDir + "tools/LuminoProjectCS.zip", CompressionLevel.Optimal, false);
+        Utils.CreateZipFile(templateProjDir, releaseDir + "tools/LuminoProjectCS.zip", false);
 
         // installer
         Utils.CopyFile(pkgSrcDir + "Lumino_Install.bat", releaseDir);
@@ -77,7 +78,6 @@ class DotNetPackageRule : ModuleRule
 
         // .zip に圧縮する
         Logger.WriteLine("compressing files...");
-        File.Delete(zipFilePath);
-        ZipFile.CreateFromDirectory(releaseDir, zipFilePath, CompressionLevel.Optimal, true);
+        Utils.CreateZipFile(releaseDir, zipFilePath);
     }
 }

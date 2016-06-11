@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using LuminoBuildTool;
 using System.Text;
-using System.IO.Compression;
 
 class HSPPackageRule : ModuleRule
 {
@@ -51,9 +50,11 @@ class HSPPackageRule : ModuleRule
         text = text.Replace("$(LuminoVersion)", builder.VersionString);
         File.WriteAllText(releaseDir + "Readme.txt", text, new UTF8Encoding(true));
 
+        // ReleaseNote
+        Utils.CopyFile(builder.LuminoPackageSourceDir + "ReleaseNote.txt", releaseDir);
+
         // .zip Ç…à≥èkÇ∑ÇÈ
         Logger.WriteLine("compressing files...");
-        File.Delete(zipFilePath);
-        ZipFile.CreateFromDirectory(releaseDir, zipFilePath, CompressionLevel.Optimal, true);
+        Utils.CreateZipFile(releaseDir, zipFilePath);
     }
 }

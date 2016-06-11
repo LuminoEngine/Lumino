@@ -14,7 +14,7 @@
 	LNConfig_SetDirectMusicMode LN_DIRECTMUSICMODE_THREAD_REQUEST
 	LNConfig_SetUserWindowHandle hwnd
 
-	LNApplication_InitializeAudio
+	LNEngine_InitializeAudio
 
 	color 128, 128, 128
 	line -1, 150, 300, 150

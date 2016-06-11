@@ -11,7 +11,7 @@
 	//LNConfig_SetUserWindowHandle hwnd
 	
 	// 音声機能を初期化する
-	LNApplication_InitializeAudio
+	LNEngine_InitializeAudio
 	if stat != LN_OK : end	// error
 
 	// ファイルを選択する

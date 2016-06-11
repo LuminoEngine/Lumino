@@ -80,5 +80,8 @@ class LuminoRubyRule : ModuleRule
         // 変更したものを元に戻す
         Directory.SetCurrentDirectory(oldDir);
         Environment.SetEnvironmentVariable("PATH", oldEnv);
+
+        // sample (Media)
+        Utils.CopyDirectory(builder.LuminoPackageSourceDir + "Common/Media", rubyDir + "sample/Media");
     }
 }

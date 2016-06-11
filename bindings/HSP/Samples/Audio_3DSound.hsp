@@ -18,7 +18,7 @@
 	listener_dir_x = 0.0
 	listener_dir_z = 1.0
 
-	LNApplication_InitializeAudio
+	LNEngine_InitializeAudio
 
 	LNSound_Create "Media/water02.wav", sound
 	LNSound_Set3DEnabled sound, LN_TRUE
