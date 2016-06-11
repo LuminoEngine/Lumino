@@ -95,6 +95,8 @@ def test_refobject_get_set_object
   assert_eq(tex1, spr2.texture)
 end
 
+Engine.initialize
+
 # 実行
 p "test_struct"
 test_struct

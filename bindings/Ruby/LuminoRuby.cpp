@@ -25,8 +25,6 @@ void Manager::Initialize()
 	// 型情報の登録
 	m_typeInfoList.push_back(TypeInfo());	// ダミーを1つ詰めておく
 	RegisterTypeInfo();
-	
-	LNEngine_Initialize();
 }
 
 //------------------------------------------------------------------------------

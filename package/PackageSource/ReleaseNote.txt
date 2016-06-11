@@ -12,6 +12,7 @@
 変更点:
 - Application クラスを Engine クラスに変更しました。
 - LNApplication クラスを LNEngine クラスに変更しました。
+- Ruby の各メソッド名から "is_" を取り除きました。
 
 修正点:
 - 音声の再生中、LNAudio または LNSound の各 API 呼び出しが非常に重くなる問題を修正しました。
