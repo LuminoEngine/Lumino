@@ -100,18 +100,6 @@ void DirectMusicAudioPlayer::Play()
 		return;
 	}
 
-	// 初期化完了前にユーザーによってループ位置が設定されていなければ
-	// CC111 を目印とした位置に設定する
-	if (mLoopBegin == 0 && mLoopLength == 0)
-	{
-		uint32_t cc111time;
-		uint32_t base_time;
-		m_midiDecoder->GetLoopState(&cc111time, &base_time);
-
-		mLoopBegin = cc111time * LN_MUSIC_TIME_BASE / base_time;
-		mLoopLength = 0;
-	}
-
 	// 再生開始
 	_play();
 }
@@ -201,19 +189,6 @@ void DirectMusicAudioPlayer::onFinishDMInit(IDirectMusicPerformance8* dmPerforma
 	SetVolume(mVolume);
 	SetPitch(mPitch);
 
-	// 初期化完了前にユーザーによってループ位置が設定されていなければ
-	// CC111 を目印とした位置に設定する
-	if (mLoopBegin == 0 && mLoopLength == 0)
-	{
-		uint32_t cc111time;
-		uint32_t base_time;
-		m_midiDecoder->GetLoopState(&cc111time, &base_time);
-
-		mLoopBegin = cc111time * LN_MUSIC_TIME_BASE / base_time;
-		mLoopLength = 0;
-
-	}
-
 	_play();
 }
 
@@ -238,8 +213,15 @@ void DirectMusicAudioPlayer::_play()
 	}
 
 	// ループ再生する場合
-	if (mIsLoop) {
-		m_segment->SetLoopState(true, mLoopBegin, mLoopLength);
+	if (mIsLoop)
+	{
+		// MIDI のループ位置計算は他のとはちょっと違うのでここで、mLoopBegin とかには格納せずここで計算してしまう
+		uint32_t cc111time;
+		uint32_t base_time;
+		m_midiDecoder->GetLoopState(&cc111time, &base_time);
+
+		uint32_t begin = cc111time * LN_MUSIC_TIME_BASE / base_time;
+		m_segment->SetLoopState(true, begin, 0);	// length=0 で終端まで再生する
 	}
 	// ループ再生しない場合
 	else {

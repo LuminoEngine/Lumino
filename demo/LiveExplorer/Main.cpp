@@ -326,6 +326,8 @@ int main()
 		auto particle1 = SpriteParticle::Create3D(m);
 		particle1->SetBlendMode(BlendMode::Subtract);
 
+		//GameAudio::PlayBGM("D:/Proj/Lumino/bindings/Ruby/sample/Media/ln21.mid");
+		//GameAudio::PlayBGM("D:/tmp/GrandSky.mp3");
 
 #if 0
 		//auto* window = dynamic_cast<Win32NativeWindow*>(Engine::GetApplication()->GetNativeMainWindow());
