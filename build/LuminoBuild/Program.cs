@@ -23,7 +23,7 @@ namespace LuminoBuild
             builder.LuminoDocDir = builder.LuminoRootDir + "doc/";
             builder.LuminoPackageDir = builder.LuminoRootDir + "package/";
             builder.LuminoPackageSourceDir = builder.LuminoRootDir + "package/PackageSource/";
-            builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/";
+            builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "package/Release/" + builder.VersionString + "/";
 
             builder.Rules = new List<LuminoBuildTool.ModuleRule>();
             builder.Rules.Add(new LuminoEngineRule());

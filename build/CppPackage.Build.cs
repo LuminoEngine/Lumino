@@ -61,6 +61,7 @@ class CppPackageRule : ModuleRule
         
         // ReleaseNote
         Utils.CopyFile(builder.LuminoPackageSourceDir + "ReleaseNote.txt", releaseDir);
+        Utils.CopyFile(builder.LuminoPackageSourceDir + "ReleaseNote.txt", builder.LuminoPackageReleaseDir);
 
         // .zip に圧縮する
         Logger.WriteLine("compressing files...");
