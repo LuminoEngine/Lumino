@@ -231,3 +231,13 @@ LNSprite_GetTexture  スプライトに設定されているテクスチャを�
 LNSprite2D_Create             2Dスプライトオブジェクトを作成します。
 LNSprite2D_CreateFromTexture  2Dスプライトオブジェクトを作成します。
 
+-------------------------------------------------------------------------------
+ ■ [LNUIFrameWindow]  フレームウィンドウのベースモジュールです。
+
+
+-------------------------------------------------------------------------------
+ ■ [LNUINativeHostWindow]  ネイティブウィンドウをホストするフレームウィンドウのモジュールです。
+
+LNUINativeHostWindow_Create  UINativeHostWindow オブジェクトを作成します。
+LNUINativeHostWindow_Render  ウィンドウの内容を描画します。
+

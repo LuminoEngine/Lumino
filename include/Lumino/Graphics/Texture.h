@@ -229,6 +229,8 @@ public:
 	*/
 	static Texture* Create(const Size& size, TextureFormat format = TextureFormat::D24S8);
 
+	void Resize(const Size& newSize);
+
 LN_INTERNAL_ACCESS:
 	DepthBuffer();
 	void CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format);
@@ -238,8 +240,7 @@ protected:
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	//Size			m_size;
-	//TextureFormat	m_format;
+	void RefreshDeviceResource();
 };
 
 class ScopedTextureLock

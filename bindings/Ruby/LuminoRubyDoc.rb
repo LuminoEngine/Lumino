@@ -1833,5 +1833,21 @@ class Lumino::Sprite2D < Sprite
     def initialize
     end
 end
+# フレームウィンドウのベースクラスです。
+class Lumino::UIFrameWindow < RefObject
+end
+# ネイティブウィンドウをホストするフレームウィンドウのクラスです。
+class Lumino::UINativeHostWindow < UIFrameWindow
+    # UINativeHostWindow オブジェクトを作成します。
+    # @overload initialize(windowHandle)
+    #   @param [Integer] windowHandle ネイティブウィンドウの識別子 (Windows では HWND)
+    # @return [Lumino::UINativeHostWindow] 作成された フレームウィンドウのハンドル 
+    def initialize
+    end
+    # ウィンドウの内容を描画します。
+    # @overload render()
+    def render
+    end
+end
 
 

@@ -92,10 +92,14 @@ void SwapChain::Resize(const Size& newSize)
 {
 	m_deviceObj->Resize(newSize);
 
+	// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
+
+	//m_backDepthBuffer->Resize(newSize);
+
 	// m_backColorBuffer は特殊なので Device 層でリサイズされるが、深度バッファはこちらで確保しなおす必要がある。
-	LN_SAFE_RELEASE(m_backDepthBuffer);
-	m_backDepthBuffer = LN_NEW DepthBuffer();
-	m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
+	//LN_SAFE_RELEASE(m_backDepthBuffer);
+	//m_backDepthBuffer = LN_NEW DepthBuffer();
+	//m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
 }
 
 //------------------------------------------------------------------------------
@@ -113,11 +117,14 @@ void SwapChain::Present()
 		auto* device = m_manager->GetGraphicsDevice();
 		if (device->GetDeviceState() == Driver::DeviceState_Lost)
 		{
-			m_manager->PauseDevice();
 			device->GetRenderer()->LeaveRenderState();
+			m_manager->PauseDevice();
 			device->ResetDevice();
-			device->GetRenderer()->EnterRenderState();
 			m_manager->ResumeDevice();
+			device->GetRenderer()->EnterRenderState();
+
+			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
+			m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
 		}
 	}
 	else
@@ -133,6 +140,8 @@ void SwapChain::Present()
 
 			// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
 			thread->RequestPauseAndWait();
+
+			// リセット
 			try
 			{
 				m_manager->PauseDevice();
@@ -144,6 +153,9 @@ void SwapChain::Present()
 				throw;
 			}
 			thread->RequestResume();
+
+			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
+			m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
 		}
 
 

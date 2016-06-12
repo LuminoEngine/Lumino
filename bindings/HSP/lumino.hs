@@ -9,7 +9,7 @@ Lumino
 0.2.0.0
 
 %date
-2016/06/08
+2016/06/12
 
 %author
 lriki
@@ -3214,6 +3214,47 @@ LNSprite2D_CreateFromTexture
 texture, outSprite2D
 [in]  texture     : 2Dスプライトが表示するテクスチャのハンドル
 [out] outSprite2D : 作成された2Dスプライトハンドルを格納する変数
+
+stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNUINativeHostWindow_Create
+UINativeHostWindow オブジェクトを作成します。
+
+%group
+ユーザーインターフェイス機能
+%prm
+windowHandle, outUIFrameWindow
+[in]  windowHandle     : ネイティブウィンドウの識別子 (Windows では HWND)
+[out] outUIFrameWindow : 作成された フレームウィンドウのハンドル を格納する変数
+
+stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNUINativeHostWindow_Render
+ウィンドウの内容を描画します。
+
+%group
+ユーザーインターフェイス機能
+%prm
+frameWindow
+[in] frameWindow : LNUIFrameWindow ハンドル
 
 stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 

@@ -12,8 +12,10 @@ class DX9SwapChain
 	: public ISwapChain
 {
 public:
-	DX9SwapChain(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize);
+	DX9SwapChain();
 	virtual ~DX9SwapChain();
+	void InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize);
+	void InitializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize);
 
 public:
 
@@ -35,10 +37,12 @@ public:
 
 private:
 	DX9GraphicsDevice*			m_graphicsDevice;
+	IDirect3DSwapChain9*		m_dxSwapChain;
 	PlatformWindow*				m_targetWindow;
 	HWND						m_targetHWnd;
 	Size						m_backBufferSize;
 	DX9BackBufferTexture*		m_backBuffer;
+	bool						m_isDefault;
 };
 
 } // namespace Driver

@@ -273,6 +273,10 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 
 	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	//   していない場合、エラーとならないがクリアされない。
+	if (m_currentDepthBuffer != nullptr)
+	{
+		LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize());
+	}
 
 	DWORD flag = 0;
 	if (flags.TestFlag(ClearFlags::Color)) { flag |= D3DCLEAR_TARGET; }

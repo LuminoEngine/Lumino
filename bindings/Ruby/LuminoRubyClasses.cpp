@@ -102,6 +102,22 @@ struct wrapSprite2D
     {}
 };
 
+struct wrapUIFrameWindow
+    : public wrapRefObject
+{
+
+    wrapUIFrameWindow()
+    {}
+};
+
+struct wrapUINativeHostWindow
+    : public wrapUIFrameWindow
+{
+
+    wrapUINativeHostWindow()
+    {}
+};
+
 
 
 VALUE g_class_RefObject;
@@ -116,6 +132,8 @@ VALUE g_class_Texture2D;
 VALUE g_class_SceneNode;
 VALUE g_class_Sprite;
 VALUE g_class_Sprite2D;
+VALUE g_class_UIFrameWindow;
+VALUE g_class_UINativeHostWindow;
 
 
 static VALUE static_lnrbLNConfig_SetEngineLogEnabled(int argc, VALUE *argv, VALUE self)
@@ -1628,6 +1646,115 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+static void LNUIFrameWindow_delete(wrapUIFrameWindow* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
+}
+
+static void LNUIFrameWindow_mark(wrapUIFrameWindow* obj)
+{
+
+}
+
+static VALUE LNUIFrameWindow_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapUIFrameWindow* internalObj;
+
+    internalObj = new wrapUIFrameWindow();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNUIFrameWindow_allocate" );
+    obj = Data_Wrap_Struct(klass, LNUIFrameWindow_mark, LNUIFrameWindow_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LNUIFrameWindow_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapUIFrameWindow* internalObj;
+
+    internalObj = new wrapUIFrameWindow();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNUIFrameWindow_allocate" );
+    obj = Data_Wrap_Struct(klass, LNUIFrameWindow_mark, LNUIFrameWindow_delete, internalObj);
+    
+    internalObj->Handle = handle;
+    return obj;
+}
+
+static void LNUINativeHostWindow_delete(wrapUINativeHostWindow* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
+}
+
+static void LNUINativeHostWindow_mark(wrapUINativeHostWindow* obj)
+{
+
+}
+
+static VALUE LNUINativeHostWindow_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapUINativeHostWindow* internalObj;
+
+    internalObj = new wrapUINativeHostWindow();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNUINativeHostWindow_allocate" );
+    obj = Data_Wrap_Struct(klass, LNUINativeHostWindow_mark, LNUINativeHostWindow_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LNUINativeHostWindow_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapUINativeHostWindow* internalObj;
+
+    internalObj = new wrapUINativeHostWindow();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNUINativeHostWindow_allocate" );
+    obj = Data_Wrap_Struct(klass, LNUINativeHostWindow_mark, LNUINativeHostWindow_delete, internalObj);
+    
+    internalObj->Handle = handle;
+    return obj;
+}
+
+static VALUE lnrbLNUINativeHostWindow_Create(int argc, VALUE *argv, VALUE self)
+{
+    wrapUINativeHostWindow* selfObj;
+    Data_Get_Struct(self, wrapUINativeHostWindow, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE windowHandle;
+        rb_scan_args(argc, argv, "1", &windowHandle);
+        if (isRbNumber(windowHandle)) {
+            intptr_t _windowHandle = FIX2INT(windowHandle);
+            LNResult errorCode = LNUINativeHostWindow_Create(_windowHandle, &selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            Manager::RegisterWrapperObject(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::UINativeHostWindow.ui_native_host_window - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE lnrbLNUINativeHostWindow_Render(int argc, VALUE *argv, VALUE self)
+{
+    wrapUINativeHostWindow* selfObj;
+    Data_Get_Struct(self, wrapUINativeHostWindow, selfObj);
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNResult errorCode = LNUINativeHostWindow_Render(selfObj->Handle);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::UINativeHostWindow.render - wrong argument type.");
+    return Qnil;
+}
+
 
 
 void InitClasses()
@@ -1729,6 +1856,14 @@ void InitClasses()
     rb_define_alloc_func(g_class_Sprite2D, LNSprite2D_allocate);
     rb_define_private_method(g_class_Sprite2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNSprite2D_Create), -1);
 
+    g_class_UIFrameWindow = rb_define_class_under(g_luminoModule, "UIFrameWindow", g_class_RefObject);
+    rb_define_alloc_func(g_class_UIFrameWindow, LNUIFrameWindow_allocate);
+
+    g_class_UINativeHostWindow = rb_define_class_under(g_luminoModule, "UINativeHostWindow", g_class_UIFrameWindow);
+    rb_define_alloc_func(g_class_UINativeHostWindow, LNUINativeHostWindow_allocate);
+    rb_define_private_method(g_class_UINativeHostWindow, "initialize", LN_TO_RUBY_FUNC(lnrbLNUINativeHostWindow_Create), -1);
+    rb_define_method(g_class_UINativeHostWindow, "render", LN_TO_RUBY_FUNC(lnrbLNUINativeHostWindow_Render), -1);
+
 
 }
 
@@ -1743,6 +1878,8 @@ void Manager::RegisterTypeInfo()
     LNRB_REGISTER_TYPEINFO(SceneNode);
     LNRB_REGISTER_TYPEINFO(Sprite);
     LNRB_REGISTER_TYPEINFO(Sprite2D);
+    LNRB_REGISTER_TYPEINFO(UIFrameWindow);
+    LNRB_REGISTER_TYPEINFO(UINativeHostWindow);
 
 }
 

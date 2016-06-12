@@ -912,9 +912,9 @@ namespace Lumino
     {
     
 #if DEBUG
-    	internal const string DLLName = "LuminoC_x86uMTd.dll";
+    	internal const string DLLName = "LuminoCUd";
 #else
-    	internal const string DLLName = "LuminoCU.dll";
+    	internal const string DLLName = "LuminoCU";
 #endif
         internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
@@ -2135,6 +2135,21 @@ namespace Lumino
         /// <param name="outSprite2D">作成された2Dスプライトハンドルを格納する変数のポインタ</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNSprite2D_CreateFromTexture( IntPtr texture, out IntPtr outSprite2D);
+
+        /// <summary>
+        /// UINativeHostWindow オブジェクトを作成します。
+        /// </summary>
+        /// <param name="windowHandle">ネイティブウィンドウの識別子 (Windows では HWND)</param>
+        /// <param name="outUIFrameWindow">作成された フレームウィンドウのハンドル を格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNUINativeHostWindow_Create( IntPtr windowHandle, out IntPtr outUIFrameWindow);
+
+        /// <summary>
+        /// ウィンドウの内容を描画します。
+        /// </summary>
+        /// <param name="frameWindow">LNUIFrameWindow ハンドル</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNUINativeHostWindow_Render( IntPtr frameWindow);
 
 
 

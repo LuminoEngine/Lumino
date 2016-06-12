@@ -73,7 +73,8 @@ void DX9GraphicsDevice::Initialize(const ConfigData& configData)
 		CheckDeviceInformation();
 
 		// デフォルトの SwapChain
-		m_defaultSwapChain = LN_NEW DX9SwapChain(this, m_mainWindow, configData.BackbufferSize);
+		m_defaultSwapChain = LN_NEW DX9SwapChain();
+		m_defaultSwapChain->InitializeDefault(this, m_mainWindow, configData.BackbufferSize);
 
 		// 基本的に変化のないプレゼンテーションパラメータの設定
 		// ( PresentationInterval は D3DPRESENT_INTERVAL_IMMEDIATE 以外の場合、

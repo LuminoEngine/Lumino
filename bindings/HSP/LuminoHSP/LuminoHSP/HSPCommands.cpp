@@ -1440,6 +1440,23 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
+    case 0x00F4:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        intptr_t p1;
+        stat = LNUINativeHostWindow_Create(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00F5:
+    {
+        intptr_t p0 = CodeGetI();
+        stat = LNUINativeHostWindow_Render(p0);
+    
+        return true;
+    }
 
 	default:
 		puterror(HSPERR_UNSUPPORTED_FUNCTION);

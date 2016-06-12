@@ -535,6 +535,7 @@ void EngineManager::InitializeUIManager()
 		InitializeAssetsManager();
 
 		detail::UIManager::Settings data;
+		data.platformManager = m_platformManager;
 		data.graphicsManager = m_graphicsManager;
 		data.assetsManager = m_assetsManager;
 		data.mainWindow = m_platformManager->GetMainWindow();
@@ -644,7 +645,7 @@ bool EngineManager::UpdateFrame()
 bool EngineManager::BeginRendering()
 {
 	m_frameRenderingSkip = true;
-	if (m_graphicsManager == nullptr) return false;
+	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return false;
 
 	// 描画遅延の確認
 	bool delay = false;
@@ -667,14 +668,10 @@ bool EngineManager::BeginRendering()
 
 	if (m_effectManager != nullptr) {
 		m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
+		// TODO: これも UIMainWindow::BeginRendring の中かなぁ・・・
 	}
 
-	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
-	SwapChain* swap = m_graphicsManager->GetMainSwapChain();
-	renderer->Begin();
-	renderer->SetRenderTarget(0, swap->GetBackBuffer());
-	renderer->SetDepthBuffer(swap->GetBackBufferDepth());
-	renderer->Clear(ClearFlags::All, ColorF::Black);
+	m_uiManager->GetMainWindow()->BeginRendering();
 
 	m_frameRenderd = true;
 	return true;
@@ -685,11 +682,7 @@ void EngineManager::EndRendering()
 {
 	if (m_graphicsManager == nullptr || m_frameRenderingSkip) return;
 
-	Details::Renderer* renderer = m_graphicsManager->GetRenderer();
-	SwapChain* swap = m_graphicsManager->GetMainSwapChain();
-	m_graphicsManager->SwitchActiveContext(nullptr);
-	renderer->End();
-	swap->Present();
+	m_uiManager->GetMainWindow()->EndRendering();
 }
 
 //------------------------------------------------------------------------------
@@ -697,51 +690,6 @@ void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		//// 描画遅延の確認
-		//bool delay = false;
-		//if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Deferred)
-		//{
-		//	if (m_graphicsManager->GetRenderingThread()->IsRunning()) {
-		//		delay = true;
-		//	}
-		//}
-		//else {
-		//	// TODO:
-		//}
-		//if (delay) {
-		//	m_frameRenderingSkip = true;
-		//	return;
-		//}
-		//m_frameRenderingSkip = false;
-
-
-		//if (m_effectManager != nullptr) {
-		//	m_effectManager->PreRender();	// Effekseer の更新スレッドを開始するのはここ
-		//}
-
-		Details::Renderer* renderer = m_graphicsManager->GetRenderer();
-		SwapChain* swap = m_graphicsManager->GetMainSwapChain();
-
-
-
-		//renderer->Begin();
-		//renderer->SetRenderTarget(0, swap->GetBackBuffer());
-		//renderer->SetDepthBuffer(swap->GetBackBufferDepth());
-		//renderer->Clear(ClearFlags::All, ColorF::White);
-
-
-		//m_graphicsManager->GetRenderer()->Clear(Graphics::ClearFlags::All, Graphics::ColorF::White);
-
-		//Graphics::DepthStencilState state;
-		//state.DepthEnable = false;
-		//state.DepthWriteEnable = false;
-		//state.StencilEnable = false;
-		//m_graphicsManager->GetRenderer()->SetDepthStencilState(state);
-
-		//if (m_sceneGraphManager != nullptr) {
-		//	m_sceneGraphManager->RenderDefaultSceneGraph(swap->GetBackBuffer());
-		//}
-
 		if (m_graphicsManager != nullptr)
 		{
 			EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
@@ -749,14 +697,12 @@ void EngineManager::Render()
 		}
 
 		if (m_uiManager != nullptr) {
-			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
-			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
-			g->Set2DRenderingMode(-1, 1);	// TODO
-			m_uiManager->GetMainWindow()->Render(g);
+			m_uiManager->GetMainWindow()->RenderUI();
 		}
 
 		if (m_diagViewer != nullptr && m_diagViewer->IsVisible())
 		{
+			// TODO: このあたりも GetMainWindow()->Render() の中に持っていくべき？
 			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
 			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
 			g->Set2DRenderingMode(-1, 1);	// TODO

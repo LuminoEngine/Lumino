@@ -33,6 +33,7 @@ namespace BinderMaker
                     SourcesRootDir + "LNAudio.h",
                     SourcesRootDir + "LNGraphics.h",
                     SourcesRootDir + "LNScene.h",
+                    SourcesRootDir + "LNUI.h",
                 };
                 var parser = new Parser.CLAPIHeaderParser();
                 var modules = parser.Analyze(apiHeaders);

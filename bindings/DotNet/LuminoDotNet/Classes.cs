@@ -1187,6 +1187,53 @@ namespace Lumino
     
     };
     
+    /// <summary>
+    /// フレームウィンドウのベースクラスです。
+    /// </summary>
+    public partial class UIFrameWindow : RefObject
+    {
+    
+    
+        internal UIFrameWindow(_LNInternal i) : base(i) {}
+        
+    
+    };
+    
+    /// <summary>
+    /// ネイティブウィンドウをホストするフレームウィンドウのクラスです。
+    /// </summary>
+    public partial class UINativeHostWindow : UIFrameWindow
+    {
+    
+    
+        internal UINativeHostWindow(_LNInternal i) : base(i) {}
+        
+        /// <summary>
+        /// UINativeHostWindow オブジェクトを作成します。
+        /// </summary>
+        /// <param name="windowHandle">ネイティブウィンドウの識別子 (Windows では HWND)</param>
+        public  UINativeHostWindow( IntPtr windowHandle) : base(_LNInternal.InternalBlock)
+        {
+            IntPtr outUIFrameWindow;
+            var result = API.LNUINativeHostWindow_Create( windowHandle, out outUIFrameWindow);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            InternalManager.RegisterWrapperObject(this, outUIFrameWindow);
+        
+        }
+        
+        /// <summary>
+        /// ウィンドウの内容を描画します。
+        /// </summary>
+        public void Render()
+        {
+            var result = API.LNUINativeHostWindow_Render( _handle);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        
+        }
+        
+    
+    };
+    
 	
 
     
@@ -1263,6 +1310,26 @@ var _Sprite2D = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_Sprite2D);
 LNSprite2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _UIFrameWindow = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new UIFrameWindow(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_UIFrameWindow);
+LNUIFrameWindow_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+var _UINativeHostWindow = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new UINativeHostWindow(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_UINativeHostWindow);
+LNUINativeHostWindow_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -1290,6 +1357,12 @@ private static extern void LNSprite_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNSprite2D_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNUIFrameWindow_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNUINativeHostWindow_SetBindingTypeInfo(IntPtr data);
 
 
     }

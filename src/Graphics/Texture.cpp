@@ -517,15 +517,21 @@ DepthBuffer::DepthBuffer()
 void DepthBuffer::CreateImpl(GraphicsManager* manager, const Size& size, TextureFormat format)
 {
 	GraphicsResourceObject::Initialize(manager);
-
 	m_size = size;
 	m_format = format;
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.width, m_size.height, m_format);
+	RefreshDeviceResource();
 }
 
 //------------------------------------------------------------------------------
 DepthBuffer::~DepthBuffer()
 {
+}
+
+//------------------------------------------------------------------------------
+void DepthBuffer::Resize(const Size& newSize)
+{
+	m_size = newSize;
+	RefreshDeviceResource();
 }
 
 //------------------------------------------------------------------------------
@@ -535,8 +541,15 @@ void DepthBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		LN_SAFE_RELEASE(m_deviceObj);
 	}
 	else {
-		m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.width, m_size.height, m_format);
+		RefreshDeviceResource();
 	}
+}
+
+//------------------------------------------------------------------------------
+void DepthBuffer::RefreshDeviceResource()
+{
+	LN_SAFE_RELEASE(m_deviceObj);
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateDepthBuffer(m_size.width, m_size.height, m_format);
 }
 
 LN_NAMESPACE_GRAPHICS_END

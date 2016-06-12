@@ -18,12 +18,11 @@ set(LN_SOURCES_C_API
 	include/LNPhysics.h
 	include/LNScene.h
 	include/LNTypedef.h
+	include/LNUI.h
 	src/LNAudio.cpp
 	src/LNBase.cpp
 	src/LNEngine.cpp
 	src/LNGraphics.cpp
-	src/LNGUI.cpp
-	src/LNGUI.h
 	src/LNInternal.cpp
 	src/LNInternal.h
 	src/LNManager.cpp
@@ -33,6 +32,7 @@ set(LN_SOURCES_C_API
 	src/LNPhysics.cpp
 	src/LNScene.cpp
 	src/LNTypedef.cpp
+	src/LNUI.cpp
 	src/LNWrapperImplement.h
 )
 

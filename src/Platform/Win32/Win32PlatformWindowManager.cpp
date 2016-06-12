@@ -232,6 +232,7 @@ PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings
 	data.Height = settings.clientSize.height;
 	data.Fullscreen = settings.fullscreen;
 	data.Resizable = settings.resizable;
+	data.UserWindow = (HWND)settings.userWindow;
 	return CreateNativeWindow(data);
 }
 
