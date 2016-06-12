@@ -623,6 +623,23 @@ namespace Lumino
     }
 
     /// <summary>
+    /// グラフィックの描画方式
+    /// </summary>
+    public enum GraphicsRenderingType
+    {
+        /// <summary>
+        /// レンダリングをメインスレッドで行う。
+        /// </summary>
+        Immediate = 0,
+
+        /// <summary>
+        /// レンダリングを専用スレッドで行う。
+        /// </summary>
+        Threaded = 1,
+
+    }
+
+    /// <summary>
     /// ウィンドウとバックバッファのリサイズモード
     /// </summary>
     public enum BackbufferResizeMode
@@ -919,6 +936,13 @@ namespace Lumino
         internal const CharSet DLLCharSet = CharSet.Unicode;
         internal const CallingConvention DefaultCallingConvention = CallingConvention.Cdecl;
         
+        /// <summary>
+        /// グラフィックス機能で使用するレンダリング方法を設定します。(default: LN_GRAPHICSRENDERINGTYPE_THREADED)
+        /// </summary>
+        /// <param name="renderingType">レンダリング方法</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static void LNConfig_SetGraphicsRenderingType( GraphicsRenderingType renderingType);
+
         /// <summary>
         /// デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
         /// </summary>

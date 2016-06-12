@@ -20,6 +20,13 @@ LN_MODULE(Engine)
 LN_STATIC_CLASS(LNConfig)
 
 	/**
+		@brief		グラフィックス機能で使用するレンダリング方法を設定します。(default: LN_GRAPHICSRENDERINGTYPE_THREADED)
+		@param[in]	renderingType	: レンダリング方法
+	*/
+	LN_STATIC_API
+	void LNConfig_SetGraphicsRenderingType(LNGraphicsRenderingType renderingType);
+
+	/**
 		@brief		デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
 		@param[in]	enabled	: LN_TRUE:出力する / LN_FALSE:出力しない
 	*/

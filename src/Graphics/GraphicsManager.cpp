@@ -903,7 +903,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
 	if (deviceSwapChain != nullptr) {
-		m_mainSwapChain = LN_NEW SwapChain(this, true/*configData.MainWindow->GetSize(), deviceSwapChain*/);
+		m_mainSwapChain = LN_NEW SwapChain();
+		m_mainSwapChain->InitializeDefault(this);
 	}
 
 	// MainViewport

@@ -13,6 +13,16 @@ namespace Lumino
     
     
         /// <summary>
+        /// グラフィックス機能で使用するレンダリング方法を設定します。(default: GraphicsRenderingType.Threaded)
+        /// </summary>
+        /// <param name="renderingType">レンダリング方法</param>
+        public static void SetGraphicsRenderingType( GraphicsRenderingType renderingType)
+        {
+            API.LNConfig_SetGraphicsRenderingType( renderingType);
+        
+        }
+        
+        /// <summary>
         /// デバッグ用のログファイルの出力有無を設定します。(既定値:false)
         /// </summary>
         /// <param name="enabled">true:出力する / false:出力しない</param>

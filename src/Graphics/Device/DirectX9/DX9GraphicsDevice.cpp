@@ -189,8 +189,9 @@ RefPtr<IShader> DX9GraphicsDevice::CreateShaderImplement(const void* textData, s
 //------------------------------------------------------------------------------
 RefPtr<ISwapChain> DX9GraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
 {
-	LN_THROW(0, NotImplementedException);
-	return nullptr;
+	RefPtr<DX9SwapChain> obj(LN_NEW DX9SwapChain(), false);
+	obj->InitializeSub(this, window, window->GetSize());
+	return obj;
 }
 
 //------------------------------------------------------------------------------

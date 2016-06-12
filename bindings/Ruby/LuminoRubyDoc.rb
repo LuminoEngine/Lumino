@@ -308,6 +308,13 @@ module Lumino::SoundFadeBehavior
     # 一時停止して、音量を元の値に戻す
     PAUSE_RESET = 4
 end
+# GRAPHICSRENDERINGTYPE
+module Lumino::GraphicsRenderingType
+    # レンダリングをメインスレッドで行う。
+    IMMEDIATE = 0
+    # レンダリングを専用スレッドで行う。
+    THREADED = 1
+end
 # BACKBUFFERRESIZEMODE
 module Lumino::BackbufferResizeMode
     # バックバッファは初期化時のサイズのまま、ウィンドウサイズに合わせて拡縮を行う
@@ -427,6 +434,11 @@ module Lumino::ObjectType
 end
 # 初期設定を行います。
 class Lumino::Config
+    # グラフィックス機能で使用するレンダリング方法を設定します。(default: GraphicsRenderingType::THREADED)
+    # @overload set_graphics_rendering_type(renderingType)
+    #   @param [Lumino::GraphicsRenderingType] renderingType レンダリング方法
+    def set_graphics_rendering_type
+    end
     # デバッグ用のログファイルの出力有無を設定します。(既定値:false)
     # @overload set_engine_log_enabled(enabled)
     #   @param [Bool] enabled true:出力する / false:出力しない

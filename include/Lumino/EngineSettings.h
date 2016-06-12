@@ -30,7 +30,7 @@ public:
 	/** グラフィックス機能で使用する描画 API を設定します。(default: Windows の場合 DirectX9、それ以外は OpenGL) */
 	static void SetGraphicsAPI(GraphicsAPI graphicsAPI);
 
-	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threading) */
+	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
 	static void SetGraphicsRenderingType(GraphicsRenderingType renderingType);
 	
 	/** DirectMusic の初期化方法を設定します。(default: NotUse) */

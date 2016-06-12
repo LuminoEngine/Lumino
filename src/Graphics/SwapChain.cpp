@@ -18,30 +18,11 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SwapChain::SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain*/)
-	: m_deviceObj(NULL)
-	, m_isDefault(isDefault)
+SwapChain::SwapChain()
+	: m_deviceObj(nullptr)
+	, m_isDefault(true)
 {
-	GraphicsResourceObject::Initialize(manager);
-	//m_deviceObj->AddRef();
-	Initialize(/*mainWindowSize*/);
 }
-
-//------------------------------------------------------------------------------
-//SwapChain::SwapChain(PlatformWindow* targetWindow)
-//	: m_manager(Internal::Manager)
-//{
-//	Initialize(targetWindow->GetSize());
-//	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
-//}
-
-//------------------------------------------------------------------------------
-//SwapChain::SwapChain(GraphicsManager* manager, PlatformWindow* targetWindow)
-//	: m_manager(manager)
-//{
-//	Initialize(targetWindow->GetSize());
-//	m_deviceObj = Helper::GetGraphicsDevice(m_manager)->CreateSwapChain(targetWindow);
-//}
 
 //------------------------------------------------------------------------------
 SwapChain::~SwapChain()
@@ -58,31 +39,42 @@ SwapChain::~SwapChain()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::Initialize(/*const Size& backbufferSize*/)
+void SwapChain::InitializeDefault(GraphicsManager* manager)
+{
+	GraphicsResourceObject::Initialize(manager);
+
+	m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
+	m_deviceObj->AddRef();
+	PostInitialize();
+}
+
+//------------------------------------------------------------------------------
+void SwapChain::InitializeSub(GraphicsManager* manager, PlatformWindow* window)
+{
+	GraphicsResourceObject::Initialize(manager);
+
+	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(window);
+	PostInitialize();
+}
+
+//------------------------------------------------------------------------------
+void SwapChain::PostInitialize()
 {
 	m_commandList = LN_NEW RenderingCommandList();
 
-	if (m_isDefault)
-	{
-		// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
-		// こちら側でレンダリングターゲット作って、Present で全体転送してもらえばいいし。
+	// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
+	// こちら側でレンダリングターゲット作って、Present で全体転送してもらえばいいし。
 
-		m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
-		m_deviceObj->AddRef();
-		//Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
-		//m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
-		m_backColorBuffer = LN_NEW RenderTarget();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
-		m_backColorBuffer->CreateCore(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);
-		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+	//Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
+	//m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
+	m_backColorBuffer = LN_NEW RenderTarget();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
+	m_backColorBuffer->CreateCore(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);
+	m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
 
-		// 独自管理できる深度バッファを作る。
-		// これがないと、OpenGL のバックバッファはレンダリングターゲットと深度バッファを分離することが出来ないため、本Lib的に不都合が起こる。
-		m_backDepthBuffer = LN_NEW DepthBuffer();
-		m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
-	}
-	else {
-		LN_THROW(0, NotImplementedException);
-	}
+	// 独自管理できる深度バッファを作る。
+	// これがないと、OpenGL のバックバッファはレンダリングターゲットと深度バッファを分離することが出来ないため、本Lib的に不都合が起こる。
+	m_backDepthBuffer = LN_NEW DepthBuffer();
+	m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
 
 	m_waiting.SetTrue();
 }
@@ -91,15 +83,7 @@ void SwapChain::Initialize(/*const Size& backbufferSize*/)
 void SwapChain::Resize(const Size& newSize)
 {
 	m_deviceObj->Resize(newSize);
-
 	// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
-
-	//m_backDepthBuffer->Resize(newSize);
-
-	// m_backColorBuffer は特殊なので Device 層でリサイズされるが、深度バッファはこちらで確保しなおす必要がある。
-	//LN_SAFE_RELEASE(m_backDepthBuffer);
-	//m_backDepthBuffer = LN_NEW DepthBuffer();
-	//m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
 }
 
 //------------------------------------------------------------------------------

@@ -444,6 +444,16 @@ typedef struct tagLNTone
 
 } LNTone;
 
+/** グラフィックの描画方式 */
+typedef enum tagGraphicsRenderingType
+{
+	LN_GRAPHICSRENDERINGTYPE_IMMEDIATE = 0,		/**< レンダリングをメインスレッドで行う。*/
+	LN_GRAPHICSRENDERINGTYPE_THREADED,			/**< レンダリングを専用スレッドで行う。*/
+	
+	LN_GRAPHICSRENDERINGTYPE__TERMINATOR,
+
+} LNGraphicsRenderingType;
+
 /** ウィンドウとバックバッファのリサイズモード */
 typedef enum tagLNBackbufferResizeMode
 {

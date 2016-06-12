@@ -6,7 +6,6 @@
 #include <Lumino/Platform/Common.h>
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/Text/Font.h>
-#include <Lumino/Graphics/SwapChain.h>
 
 LN_NAMESPACE_BEGIN
 class FileManager;
@@ -18,6 +17,7 @@ class GraphicsContext;
 class PainterEngine;
 class TextRenderer;
 class BitmapTextRenderer;
+class SwapChain;
 
 namespace detail
 {

@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/ContextInterface.h>
 #include "RendererImpl.h"
 #include "GraphicsManager.h"

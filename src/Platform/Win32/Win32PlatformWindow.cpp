@@ -656,10 +656,10 @@ Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND
 	, m_hWnd(hWnd)
 	, m_clientSize()
 {
-	//// 
-	//RECT rc = { 0, 0, 0, 0 };
-	//::GetClientRect(m_hWnd, &rc);
-	//m_clientSize.Set(rc.right, rc.bottom);
+	RECT rc = { 0, 0, 0, 0 };
+	::GetClientRect(m_hWnd, &rc);
+	m_clientSize.Set(rc.right, rc.bottom);
+	SendPlatformWindowSizeChangedEvent(rc.right, rc.bottom);
 
 	TCHAR text[256];
 	::GetWindowText(m_hWnd, text, 256);

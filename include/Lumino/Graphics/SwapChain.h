@@ -4,6 +4,8 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
+class PlatformWindow;
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
@@ -39,13 +41,17 @@ public:
 	void Present();
 
 LN_INTERNAL_ACCESS:
-	SwapChain(GraphicsManager* manager, bool isDefault/*, const Size& mainWindowSize, Driver::ISwapChain* deviceSwapChain*/);
-	void Initialize(/*const Size& backbufferSize*/);
+	SwapChain();
+	void InitializeDefault(GraphicsManager* manager);
+	void InitializeSub(GraphicsManager* manager, PlatformWindow* window);
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+
+//private:
+	void PostInitialize();
 
 	Driver::ISwapChain*			m_deviceObj;
 	RenderingCommandList*		m_commandList;
-	ConditionFlag				m_waiting;		///< コマンド実行していない
+	ConditionFlag				m_waiting;		// コマンド実行していない
 	RenderTarget*				m_backColorBuffer;
 	DepthBuffer*				m_backDepthBuffer;
 	bool						m_isDefault;

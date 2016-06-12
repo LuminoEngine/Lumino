@@ -52,6 +52,9 @@ void DX9SwapChain::InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* 
 //------------------------------------------------------------------------------
 void DX9SwapChain::InitializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const Size& backBufferSize)
 {
+	InitializeDefault(device, window, backBufferSize);
+	m_isDefault = false;
+	PostInitialize();
 }
 
 //------------------------------------------------------------------------------
@@ -74,13 +77,19 @@ void DX9SwapChain::OnLostDevice()
 //------------------------------------------------------------------------------
 void DX9SwapChain::OnResetDevice()
 {
+	LN_CHECK_STATE(m_dxSwapChain == nullptr);
+
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
 	if (m_isDefault)
 	{
-		LN_COMCALL(m_graphicsDevice->GetIDirect3DDevice9()->GetSwapChain(0, &m_dxSwapChain));
+		LN_COMCALL(dxDevice->GetSwapChain(0, &m_dxSwapChain));
 	}
 	else
 	{
-		LN_NOTIMPLEMENTED();
+		D3DPRESENT_PARAMETERS pp = m_graphicsDevice->GetPresentParameters();
+		pp.BackBufferWidth = m_backBufferSize.width;
+		pp.BackBufferHeight = m_backBufferSize.height;
+		LN_COMCALL(dxDevice->CreateAdditionalSwapChain(&pp, &m_dxSwapChain));
 	}
 
 	// バックバッファサーフェイスを保持

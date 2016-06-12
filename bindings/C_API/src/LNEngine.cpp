@@ -10,6 +10,12 @@ extern "C" {
 //==============================================================================
 
 //------------------------------------------------------------------------------
+void LNConfig_SetGraphicsRenderingType(LNGraphicsRenderingType renderingType)
+{
+	LFManager::ConfigData.renderingType = (GraphicsRenderingType::value_type)renderingType;
+}
+
+//------------------------------------------------------------------------------
 void LNConfig_SetEngineLogEnabled(LNBool enabled)
 {
 	LFManager::ConfigData.applicationLogEnabled = LNC_TO_BOOL(enabled);

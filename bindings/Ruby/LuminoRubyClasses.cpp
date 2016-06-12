@@ -136,6 +136,21 @@ VALUE g_class_UIFrameWindow;
 VALUE g_class_UINativeHostWindow;
 
 
+static VALUE static_lnrbLNConfig_SetGraphicsRenderingType(int argc, VALUE *argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE renderingType;
+        rb_scan_args(argc, argv, "1", &renderingType);
+        if (isRbNumber(renderingType)) {
+            LNGraphicsRenderingType _renderingType = (LNGraphicsRenderingType)FIX2INT(renderingType);
+            LNConfig_SetGraphicsRenderingType(_renderingType);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Config.set_graphics_rendering_type - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE static_lnrbLNConfig_SetEngineLogEnabled(int argc, VALUE *argv, VALUE self)
 {
     if (1 <= argc && argc <= 1) {
@@ -1762,6 +1777,7 @@ void InitClasses()
     g_class_RefObject = rb_define_class_under(g_luminoModule, "RefObject", rb_cObject);
     
     g_class_Config = rb_define_class_under(g_luminoModule, "Config", rb_cObject);
+    rb_define_singleton_method(g_class_Config, "set_graphics_rendering_type", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetGraphicsRenderingType), -1);
     rb_define_singleton_method(g_class_Config, "set_engine_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetEngineLogEnabled), -1);
     rb_define_singleton_method(g_class_Config, "register_archive", LN_TO_RUBY_FUNC(static_lnrbLNConfig_RegisterArchive), -1);
     rb_define_singleton_method(g_class_Config, "set_file_access_priority", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetFileAccessPriority), -1);

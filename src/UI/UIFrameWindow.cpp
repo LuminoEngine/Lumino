@@ -2,6 +2,7 @@
 #include "Internal.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
@@ -29,6 +30,8 @@ UIFrameWindow::UIFrameWindow()
 //------------------------------------------------------------------------------
 UIFrameWindow::~UIFrameWindow()
 {
+	LN_SAFE_RELEASE(m_swapChain);
+	LN_SAFE_RELEASE(m_platformWindow);
 }
 
 //------------------------------------------------------------------------------
@@ -38,8 +41,8 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	LN_CHECK_ARG(platformWindow != nullptr);
 	LN_CHECK_ARG(swapChain != nullptr);
 	m_manager = manager;
-	m_platformWindow = platformWindow;
-	m_swapChain = swapChain;
+	LN_REFOBJ_SET(m_platformWindow, platformWindow);
+	LN_REFOBJ_SET(m_swapChain, swapChain);
 }
 
 //------------------------------------------------------------------------------
@@ -134,14 +137,12 @@ UINativeHostWindowPtr UINativeHostWindow::Create(void* windowHandle)
 
 //------------------------------------------------------------------------------
 UINativeHostWindow::UINativeHostWindow()
-	: m_platformWindow(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 UINativeHostWindow::~UINativeHostWindow()
 {
-	LN_SAFE_RELEASE(m_platformWindow);
 }
 
 //------------------------------------------------------------------------------
@@ -156,7 +157,12 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, void* windowHand
 	//bool	fullscreen = false;				// フルスクリーンモードで作成するかどうか
 	//bool	resizable = true;				// 可変ウィンドウとして作成するかどうか
 	ws.userWindow = windowHandle;
-	m_platformWindow = manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws);
+	RefPtr<PlatformWindow> window(manager->GetPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
+
+	auto swap = RefPtr<SwapChain>::MakeRef();
+	swap->InitializeSub(manager->GetGraphicsManager(), window);
+
+	UIFrameWindow::Initialize(manager, window, swap);
 }
 
 //------------------------------------------------------------------------------

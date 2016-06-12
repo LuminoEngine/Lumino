@@ -27,6 +27,28 @@ http://nnmy.sakura.ne.jp/
 ;
 ;-----------------------------------------------------------
 %index
+LNConfig_SetGraphicsRenderingType
+グラフィックス機能で使用するレンダリング方法を設定します。(default: LN_GRAPHICSRENDERINGTYPE_THREADED)
+
+%group
+エンジン
+%prm
+renderingType
+[in] renderingType : レンダリング方法
+                        LN_GRAPHICSRENDERINGTYPE_IMMEDIATE
+                            レンダリングをメインスレッドで行う。
+                        LN_GRAPHICSRENDERINGTYPE_THREADED
+                            レンダリングを専用スレッドで行う。
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
 LNConfig_SetEngineLogEnabled
 デバッグ用のログファイルの出力有無を設定します。(既定値:LN_FALSE)
 

@@ -53,6 +53,7 @@ public:
 	/// デバイスロスト状態を通知する
 	void SetDeviceLostFlag() { m_deviceState = DeviceState_Lost; }
 
+	const D3DPRESENT_PARAMETERS& GetPresentParameters() const { return m_presentParameters; }
 
 public:
 	virtual void Finalize() override;
@@ -89,7 +90,7 @@ private:
 	
 	IDirect3D9*		            m_direct3D;
 	IDirect3DDevice9*	        m_dxDevice;
-	D3DPRESENT_PARAMETERS       m_presentParameters;	///< プレゼンテーションパラメータ
+	D3DPRESENT_PARAMETERS       m_presentParameters;
 	ID3DXEffectPool*			m_d3dxEffectPool;
 
 	bool                        m_enableFPUPreserve;

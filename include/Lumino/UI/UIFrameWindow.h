@@ -86,7 +86,6 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::UIManager* manager, void* windowHandle);
 
 private:
-	PlatformWindow*	m_platformWindow;
 };
 
 LN_NAMESPACE_END
