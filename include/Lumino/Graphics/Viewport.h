@@ -53,6 +53,7 @@ private:
 class Viewport
 	: public Object
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
 	static Viewport* GetMainWindowViewport();

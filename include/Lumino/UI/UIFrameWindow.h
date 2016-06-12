@@ -16,6 +16,7 @@ public:
 
 	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
 
+	Viewport* GetViewport() const { return m_mainViewport; }
 
 protected:
 	UIFrameWindow();
@@ -24,14 +25,16 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
+	void Render();
 	void BeginRendering();
 	void EndRendering();
+	void RenderContents();
 
 private:
 	detail::UIManager*	m_manager;
 	PlatformWindow*		m_platformWindow;
 	SwapChain*			m_swapChain;
-	//Viewport*			m_backBufferViewport;
+	Viewport*			m_mainViewport;
 };
 
 
@@ -78,7 +81,6 @@ public:
 	*/
 	static UINativeHostWindowPtr Create(void* windowHandle);
 
-	void Render();
 
 LN_INTERNAL_ACCESS:
 	UINativeHostWindow();

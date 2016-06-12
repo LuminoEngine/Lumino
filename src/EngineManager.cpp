@@ -557,6 +557,8 @@ void EngineManager::InitializeSceneGraphManager()
 		InitializePhysicsManager();
 		InitializeEffectManager();
 		InitializeModelManager();
+		InitializeUIManager();
+
 		SceneGraphManager::ConfigData data;
 		data.engineDiag = &EngineDiagCore::Instance;
 		data.FileManager = m_fileManager;
@@ -564,7 +566,7 @@ void EngineManager::InitializeSceneGraphManager()
 		data.PhysicsManager = m_physicsManager;
 		data.effectManager = m_effectManager;
 		data.modelManager = m_modelManager;
-		data.mainViewport = m_graphicsManager->GetMainViewport();
+		data.mainViewport = m_uiManager->GetMainWindow()->GetViewport();
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
 		m_sceneGraphManager->CreateDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
@@ -693,7 +695,7 @@ void EngineManager::Render()
 		if (m_graphicsManager != nullptr)
 		{
 			EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
-			m_graphicsManager->GetMainViewport()->Render();
+			m_uiManager->GetMainWindow()->RenderContents();
 		}
 
 		if (m_uiManager != nullptr) {

@@ -3,6 +3,7 @@
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/SwapChain.h>
+#include <Lumino/Graphics/Viewport.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
@@ -24,12 +25,14 @@ UIFrameWindow::UIFrameWindow()
 	: m_manager(nullptr)
 	, m_platformWindow(nullptr)
 	, m_swapChain(nullptr)
+	, m_mainViewport(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 UIFrameWindow::~UIFrameWindow()
 {
+	LN_SAFE_RELEASE(m_mainViewport);
 	LN_SAFE_RELEASE(m_swapChain);
 	LN_SAFE_RELEASE(m_platformWindow);
 }
@@ -43,6 +46,18 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	m_manager = manager;
 	LN_REFOBJ_SET(m_platformWindow, platformWindow);
 	LN_REFOBJ_SET(m_swapChain, swapChain);
+
+	// MainViewport
+	m_mainViewport = LN_NEW Viewport();
+	m_mainViewport->Initialize(m_manager->GetGraphicsManager(), m_swapChain->GetBackBuffer());
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::Render()
+{
+	BeginRendering();
+	RenderContents();
+	EndRendering();
 }
 
 //------------------------------------------------------------------------------
@@ -62,6 +77,12 @@ void UIFrameWindow::EndRendering()
 	m_manager->GetGraphicsManager()->SwitchActiveContext(nullptr);
 	renderer->End();
 	m_swapChain->Present();
+}
+
+//------------------------------------------------------------------------------
+void UIFrameWindow::RenderContents()
+{
+	m_mainViewport->Render();
 }
 
 
@@ -163,13 +184,6 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, void* windowHand
 	swap->InitializeSub(manager->GetGraphicsManager(), window);
 
 	UIFrameWindow::Initialize(manager, window, swap);
-}
-
-//------------------------------------------------------------------------------
-void UINativeHostWindow::Render()
-{
-	BeginRendering();
-	EndRendering();
 }
 
 LN_NAMESPACE_END

@@ -81,8 +81,10 @@
 */
 #include "Internal.h"
 #include "GraphicsManager.h"
+#include "../UI/UIManager.h"
 #include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/Viewport.h>
+#include <Lumino/UI/UIFrameWindow.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -122,11 +124,12 @@ void ViewportLayer::PostRender(RenderingContext* renderingContext, RenderTarget*
 //==============================================================================
 // Viewport
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 
 //------------------------------------------------------------------------------
 Viewport* Viewport::GetMainWindowViewport()
 {
-	return GraphicsManager::GetInstance()->GetMainViewport();
+	return detail::UIManager::GetInstance()->GetMainWindow()->GetViewport();
 }
 
 //------------------------------------------------------------------------------

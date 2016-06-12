@@ -63,6 +63,14 @@ LN_CLASS(LNTexture2D, LNTexture)
 	
 LN_CLASS_END
 
+//==============================================================================
+/**
+	@brief	ビューポートのクラスです。
+*/
+LN_CLASS(LNViewport, LNObject)
+	
+LN_CLASS_END
+
 LN_MODULE_END /** @} */
 
 #ifdef __cplusplus

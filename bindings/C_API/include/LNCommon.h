@@ -61,5 +61,6 @@ typedef void*			LNUserData;
 #define LN_ATTR_OVERLOAD(ownerFunc)
 //#define LN_ATTR_STRUCT_CONSTRUCTOR
 
-#define LN_HANDLE(x) LNHandle
+#define LN_HANDLE(classType)				LNHandle
+#define LN_LIST_HANDLE(classType, itemType) LNHandle
 #define LN_OUT
