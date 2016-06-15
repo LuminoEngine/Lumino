@@ -325,6 +325,13 @@ int main()
 		m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png")));
 		auto particle1 = SpriteParticle::Create3D(m);
 		particle1->SetBlendMode(BlendMode::Subtract);
+		particle1->SetPosition(2, 0, 0);
+
+		auto particle2 = SpriteParticle::Create3D(m);
+		particle2->SetBlendMode(BlendMode::Subtract);
+		particle2->SetPosition(3, 0, 0);
+
+		particle1->AddChild(particle2);
 
 		//GameAudio::PlayBGM("D:/Proj/Lumino/bindings/Ruby/sample/Media/ln21.mid");
 		//GameAudio::PlayBGM("D:/tmp/GrandSky.mp3");

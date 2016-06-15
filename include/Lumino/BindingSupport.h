@@ -3,7 +3,7 @@
 #include <Lumino/Base/Array.h>
 
 LN_NAMESPACE_BEGIN
-#if 1	// Scene モジュールを修正したら削除する予定
+#if 1	// TODO: Scene モジュールを修正したら削除する予定
 
 /**
 	@brief	

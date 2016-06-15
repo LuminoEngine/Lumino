@@ -9,6 +9,12 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
+// ListObject
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ListObject, Object);
+
+
+//==============================================================================
 // SceneNodeRefList
 //==============================================================================
 //LN_REF_OBJECT_LIST_IMPL(SceneNodeRefList, SceneNode);
@@ -24,7 +30,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNode, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
 SceneNode::SceneNode()
-	: m_manager(NULL)
+	: m_manager(nullptr)
 	, m_ownerSceneGraph(nullptr)
 	, m_name()
 	, m_localMatrix()
@@ -37,7 +43,7 @@ SceneNode::SceneNode()
 	, m_transformModified(true)
 	, m_isAutoUpdate(false)
 	, m_isAutoRemove(false)
-	, m_children(LN_NEW SceneNodeRefList(), false)
+	, m_children(RefPtr<ObjectList<SceneNode*>>::MakeRef())
 	, m_parentNode(NULL)
 	, m_zDistance(FLT_MAX)
 {
@@ -84,22 +90,32 @@ void SceneNode::SetName(const String& name)
 //------------------------------------------------------------------------------
 void SceneNode::AddChild(SceneNode* child)
 {
-	LN_THROW(child != NULL, ArgumentException);
-	LN_THROW(child->m_parentNode == NULL, InvalidOperationException);	// 既に別のノードの子になっている
+	LN_CHECK_ARG(child != nullptr);
 
-	//if (child->m_ownerSceneGraph != nullptr) {
-	//	child->m_ownerSceneGraph->RemoveNode(this);
-	//	child->m_ownerSceneGraph = nullptr;
-	//}
+	// 別のノードの子であれば外す
+	// ※ WPF などでは既に別ノードの子であれば例外するが、この SceneGraph ではしない。
+	//    ノードは作成と同時にツリーに追加されるため、別ノードに AddChild したいときは一度 Remove しなければならないがさすがに煩わしい。
+	if (child->m_parentNode != nullptr) {
+		RemoveChild(child);
+	}
 
+	// 子として追加
 	m_children->Add(child);
 	child->m_parentNode = this;
 
 	// 子要素は this と同じ SceneGraph に属するようになる
 	child->SetOwnerSceneGraph(m_ownerSceneGraph);
+}
 
-	//child->m_ownerSceneGraph = m_ownerSceneGraph;
-	//child->m_ownerSceneGraph->AddNode(this);
+//------------------------------------------------------------------------------
+void SceneNode::RemoveChild(SceneNode* child)
+{
+	LN_CHECK_ARG(child != nullptr);
+	if (child->m_parentNode == this)
+	{
+		m_children->Remove(child);
+		child->m_parentNode = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------

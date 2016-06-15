@@ -9,14 +9,120 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-class SceneNodeRefList
-	: public RefObjectListBase<SceneNode>
+
+
+class ListObject
+	: public Object
 {
-public:
-	SceneNodeRefList() {}
-	virtual ~SceneNodeRefList() {}
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+protected:
+	virtual ~ListObject() = default;
+
+LN_PROTECTED_INTERNAL_ACCESS:	// TODO: friend のほうがいいかな
+	virtual void SetAtByVoidPtr(int index, void* item) = 0;
+	virtual void* GetAtByVoidPtr(int index) = 0;
+	virtual void AddByVoidPtr(void* item) = 0;
+	virtual void InsertByVoidPtr(int index, void* item) = 0;
+	virtual bool RemoveByVoidPtr(void* item) = 0;
 };
 
+template<typename T>
+class PrimitiveListObject
+	: public ListObject
+	, public Collection<T>
+{
+public:
+	PrimitiveListObject() = default;
+	virtual ~PrimitiveListObject() = default;
+
+private:
+	virtual void SetAtByVoidPtr(int index, void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		Collection<T>::SetAt(index, *((T*)item));
+	}
+	virtual void* GetAtByVoidPtr(int index) override
+	{
+		reference item = Collection<T>::GetAt(index);
+		return &item;
+	}
+	virtual void AddByVoidPtr(void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		Collection<T>::Add(*((T*)item));
+	}
+	virtual void InsertByVoidPtr(int index, void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		Collection<T>::Insert(index, *((T*)item));
+	}
+	virtual bool RemoveByVoidPtr(void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		return Collection<T>::Remove(*((T*)item));
+	}
+};
+
+
+template<typename T>
+class ObjectList
+	: public PrimitiveListObject<T>
+{
+public:
+	typedef typename Collection<T>::value_type	value_type;
+
+public:
+	ObjectList()
+	{}
+
+	virtual ~ObjectList()
+	{
+		Collection<T>::Clear();
+	}
+
+protected:
+	virtual void InsertItem(int index, const value_type& item) override
+	{
+		Collection<T>::InsertItem(index, item);
+		LN_SAFE_ADDREF(item);
+	}
+	virtual void ClearItems() override
+	{
+		for (auto* item : *this) {
+			LN_SAFE_RELEASE(item);
+		}
+		Collection<T>::ClearItems();
+	}
+	virtual void RemoveItem(int index) override
+	{
+		if (Collection<T>::GetAt(index) != nullptr) {
+			Collection<T>::GetAt(index)->Release();
+		}
+		Collection<T>::RemoveItem(index);
+	}
+	virtual void SetItem(int index, const value_type& item) override
+	{
+		LN_SAFE_ADDREF(item);
+		if (Collection<T>::GetAt(index) != nullptr) {
+			Collection<T>::GetAt(index)->Release();
+		}
+		Collection<T>::SetItem(index, item);
+	}
+
+private:
+};
+
+
+
+
+//class SceneNodeRefList
+//	: public ReflectionObjectList<SceneNode*>
+//{
+//public:
+//	SceneNodeRefList() {}
+//	virtual ~SceneNodeRefList() {}
+//};
+//
 
 
 /// SceneNode
@@ -100,7 +206,8 @@ public:
 	bool IsEnableAutoUpdate() const { return m_isAutoUpdate; }
 
 	/// 子ノードの追加 (WPF の StakPanel.Children みたいに Collection を返すのも良いけど、AddChild() はよく使うのでユーティリティとして定義s手置くのが良いかも)
-	void AddChild(SceneNode* node);
+	void AddChild(SceneNode* child);
+	void RemoveChild(SceneNode* child);
 
 	SceneGraph* GetOwnerSceneGraph() { return m_ownerSceneGraph; }
 
@@ -178,7 +285,7 @@ protected:
 	bool				m_isAutoUpdate;
 	bool				m_isAutoRemove;
 
-	RefPtr<SceneNodeRefList>	m_children;
+	RefPtr<ObjectList<SceneNode*>>	m_children;
 	SceneNode*			m_parentNode;
 
 	Matrix				m_combinedGlobalMatrix;
