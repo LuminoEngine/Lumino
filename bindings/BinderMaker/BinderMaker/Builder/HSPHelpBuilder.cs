@@ -112,7 +112,7 @@ _HREF_
         /// <param name="enumType"></param>
         protected override void OnMethodLooked(CLMethod method)
         {
-            if (method.Option.CheckDisabled(LangFlags.HSP)) return;
+            if (!Context.CheckEnabled(method)) return;
 
             // 関数
             string allFuncText = "";

@@ -23,14 +23,14 @@ namespace BinderMaker.Parser2
 
         // ルート要素
         public static readonly Parser<BinderMaker.Decls.ModuleDecl> CompileUnit =
-            from lead       in Parse.AnyChar.Except(CLAPIDocument.CommentStart).Many()   // ファイル先頭から最初のドキュメントコメントまでを読み飛ばす。("/**" は消費しない)
+            from lead       in Parse.AnyChar.Except(ApiDocument.CommentStart).Many()   // ファイル先頭から最初のドキュメントコメントまでを読み飛ばす。("/**" は消費しない)
             from module     in Module               // 1 つの Module
             from any        in Parse.AnyChar.Many()     // 後は適当な文字
             select module;
 
         // body
         public static readonly Parser<IEnumerable<ClassDecl>> ModuleBody =
-            from lead       in Parse.AnyChar.Except(CLAPIDocument.CommentStart).Many()  // 最初のドキュメントコメントまでを読み飛ばす (/** は消費しない)
+            from lead       in Parse.AnyChar.Except(ApiDocument.CommentStart).Many()  // 最初のドキュメントコメントまでを読み飛ばす (/** は消費しない)
             from classes    in ApiClass.ClassDecl.Many()                              // 任意の数のクラス定義
             select classes;
         

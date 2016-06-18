@@ -48,14 +48,17 @@
     <Compile Include="Builder\CppCommon.cs" />
     <Compile Include="Builder\CSClassesBuilder.cs" />
     <Compile Include="Builder\CSCommon.cs" />
+    <Compile Include="Builder\CSContext.cs" />
     <Compile Include="Builder\CSPInvokeBuilder.cs" />
     <Compile Include="Builder\CSStructsBuilder.cs" />
     <Compile Include="Builder\HSPCommandsBuilder.cs" />
+    <Compile Include="Builder\HSPContext.cs" />
     <Compile Include="Builder\HSPHelpBuilder.cs" />
     <Compile Include="Builder\HSPStructsBuilder.cs" />
     <Compile Include="Builder\OutputBuffer.cs" />
     <Compile Include="Builder\RubyClassesBuilder.cs" />
     <Compile Include="Builder\RubyCommon.cs" />
+    <Compile Include="Builder\RubyContext.cs" />
     <Compile Include="Builder\RubyDocBuilder.cs" />
     <Compile Include="Builder\RubyEnumBuilder.cs" />
     <Compile Include="Builder\RubyStructsBuilder.cs" />
@@ -70,6 +73,7 @@
     <Compile Include="Builder\HSPHeaderBuilder.cs" />
     <Compile Include="CLGeneric.cs" />
     <Compile Include="Decls\ClassDecl.cs" />
+    <Compile Include="Decls\DeclsTreeVisitor.cs" />
     <Compile Include="Decls\DocumentDecl.cs" />
     <Compile Include="Decls\FuncDecl.cs" />
     <Compile Include="Decls\ModuleDecl.cs" />
@@ -81,7 +85,6 @@
     <Compile Include="Parser2\ApiDocument.cs" />
     <Compile Include="Parser2\ApiFunc.cs" />
     <Compile Include="Parser2\ApiModule.cs" />
-    <Compile Include="Parser\CLAPIHeaderParser.cs" />
     <Compile Include="Parser\CLTypedefHeaderParser.cs" />
     <Compile Include="Parser\ParserUtils.cs" />
     <Compile Include="Program.cs" />

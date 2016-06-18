@@ -561,14 +561,19 @@ namespace BinderMaker
         #endregion
 
         #region Methods
-        public CLDelegate(CLDocument doc, string returnType, string name, IEnumerable<CLParam> params1)
+        //public CLDelegate(CLDocument doc, string returnType, string name, IEnumerable<CLParam> params1)
+        public CLDelegate(Decls.DocumentDecl doc, string returnType, string name, IEnumerable<Decls.ParamDecl> params1)
         {
             _originalReturnTypeName = returnType;
             OriginalName = name;
 
-            Document = doc;
+            Document = new CLDocument(doc);
             Name = name.Substring(2);   // プレフィックスを取り除く
-            Params = new List<CLParam>(params1);
+            Params = new List<CLParam>();
+            foreach (var p in params1)
+            {
+                Params.Add(new CLParam(null, p));
+            }
 
             // 登録
             Manager.AllDelegates.Add(this);

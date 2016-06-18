@@ -1064,6 +1064,18 @@ namespace Lumino
     };
     
     /// <summary>
+    /// ビューポートのクラスです。
+    /// </summary>
+    public partial class Viewport : RefObject
+    {
+    
+    
+        internal Viewport(_LNInternal i) : base(i) {}
+        
+    
+    };
+    
+    /// <summary>
     /// シーングラフを構成するノードのベースクラスです。
     /// </summary>
     public partial class SceneNode : RefObject
@@ -1290,6 +1302,16 @@ var _Texture2D = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_Texture2D);
 LNTexture2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _Viewport = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new Viewport(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_Viewport);
+LNViewport_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
 var _SceneNode = new TypeInfo(){ Factory = (handle) =>
     {
         var obj = new SceneNode(_LNInternal.InternalBlock);
@@ -1358,6 +1380,9 @@ private static extern void LNTexture_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNTexture2D_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNViewport_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNSceneNode_SetBindingTypeInfo(IntPtr data);

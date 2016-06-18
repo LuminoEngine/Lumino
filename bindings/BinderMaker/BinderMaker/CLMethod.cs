@@ -171,26 +171,27 @@ namespace BinderMaker
         /// コンストラクタ
         /// </summary>
         public CLMethod(
-            string docText,
-            string funcText,
-            string optionText)
+            CLClass ownerClass,
+            Decls.FuncDecl funcDecl)
+            //string docText,
+            //string funcText,
+            //string optionText)
             //CLDocument document,
             //CLFuncDecl funcDecl,
             //CLOption option)
         {
-            Document = (string.IsNullOrEmpty(docText)) ? new CLDocument() : Parser.CLAPIDocument.DocumentComment.Parse(docText);
-            FuncDecl =  Parser.CLAPIMethod.FuncDecl.Parse(funcText);
-            Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
+            OwnerClass = ownerClass;
+            Document = new CLDocument(funcDecl.Document);
+            FuncDecl = new CLFuncDecl(this, funcDecl);
+            //Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
             Overloads = new List<CLMethod>();
-
-            FuncDecl.OwnerMethod = this;
 
             // internal の場合はドキュメント無し。ダミーを作る
             if (FuncDecl.Modifier == MethodModifier.Internal)
             {
                 foreach (var param in FuncDecl.Params)
                 {
-                    var doc = new CLParamDocument("in", param.Name, "");
+                    var doc = new CLParamDocument(IOModifier.In, param.Name, "");
                     Document.OriginalParams.Add(doc);
                     param.Document = doc;
                 }
@@ -296,7 +297,7 @@ namespace BinderMaker
         /// <summary>
         /// 親メソッド
         /// </summary>
-        public CLMethod OwnerMethod { get; set; }
+        public CLMethod OwnerMethod { get; private set; }
 
         /// <summary>
         /// オリジナルの完全関数名 (LNAudio_PlayBGM 等)
@@ -350,56 +351,49 @@ namespace BinderMaker
         /// コンストラクタ
         /// </summary>
         public CLFuncDecl(
-            IEnumerable<char> apiModifier,
-            IEnumerable<string> apiAtribute,
-            string returnType,
-            string name,
-            IEnumerable<CLParam> params1)
+            CLMethod ownerMethod,
+            Decls.FuncDecl funcDecl)
+            //IEnumerable<char> apiModifier,
+            //IEnumerable<string> apiAtribute,
+            //string returnType,
+            //string name,
+            //IEnumerable<CLParam> params1)
         {
+            OwnerMethod = ownerMethod;
+            Modifier = funcDecl.Modifier;
+
             // 修飾子の決定
-            string modifier = new string(apiModifier.ToArray());
-            if (modifier.Contains(CLManager.APIModifier_Instance))
-                Modifier = MethodModifier.Instance;
-            else if (modifier.Contains(CLManager.APIModifier_Static))
-                Modifier = MethodModifier.Static;
-            else
-                Modifier = MethodModifier.Internal;
+            //string modifier = new string(apiModifier.ToArray());
+            //if (modifier.Contains(CLManager.APIModifier_Instance))
+            //    Modifier = MethodModifier.Instance;
+            //else if (modifier.Contains(CLManager.APIModifier_Static))
+            //    Modifier = MethodModifier.Static;
+            //else
+            //    Modifier = MethodModifier.Internal;
 
-            _originalReturnTypeName = returnType;
+            _originalReturnTypeName = funcDecl.ReturnTypeName;
 
-            OriginalFullName = name;
-            var tokens = name.Trim().Split('_');
+            OriginalFullName = funcDecl.OriginalFullName;
+            var tokens = OriginalFullName.Trim().Split('_');
             OriginalName = tokens[1];
 
-            Params = new List<CLParam>(params1);
-            Params.ForEach((param) => param.OwnerFunc = this);  // 所持クラス割り当て
+            Params = new List<CLParam>();
+            foreach (var p in funcDecl.Params)
+            {
+                Params.Add(new CLParam(this, p));
+            }
+            //Params.ForEach((param) => param.OwnerFunc = this);  // 所持クラス割り当て
 
             Name = OriginalName;
 
             // 属性の決定
-            foreach (string attr in apiAtribute)
-            {
-                //string attr = new string(apiAtribute.ToArray());
-                Attribute = MethodAttribute.None;
-                if (attr.Contains(CLManager.APIAttribute_Property))
-                    Attribute = MethodAttribute.Property;
-                if (attr.Contains(CLManager.APIAttribute_Constructor))
-                    Attribute = MethodAttribute.Constructor;
-                if (attr.Contains(CLManager.APIAttribute_LibraryInitializer))
-                    Attribute = MethodAttribute.LibraryInitializer;
-                if (attr.Contains(CLManager.APIAttribute_LibraryTerminator))
-                    Attribute = MethodAttribute.LibraryTerminator;
+            Attribute = funcDecl.Attribute;
 
-                // オーバーロードチェック (_ や サフィックスの含まない名前を作る)
-                //string newName;
-                //IsOverload = Manager.RemoveOverloadSuffix(OriginalName, out newName);
-                //Name = newName;
-                if (attr.Contains(CLManager.APIAttribute_Overload))
-                {
-                    string ovName = attr.Substring(CLManager.APIAttribute_Overload.Length).Replace("(", "").Replace(")", "").Trim();
-                    var tokens2 = ovName.Trim().Split('_');
-                    Name = tokens2[1];
-                }
+            // オーバーロード
+            if (!string.IsNullOrEmpty(funcDecl.OverloadSourceName))
+            {
+                var tokens2 = funcDecl.OverloadSourceName.Trim().Split('_');
+                Name = tokens2[1];
             }
 
             // 先頭が Create ならコンストラクタ関数
@@ -447,7 +441,7 @@ namespace BinderMaker
         /// <summary>
         /// 親関数
         /// </summary>
-        public CLFuncDecl OwnerFunc { get; set; }
+        public CLFuncDecl OwnerFunc { get; private set; }
 
         /// <summary>
         /// ドキュメントコメント
@@ -477,13 +471,22 @@ namespace BinderMaker
         /// <param name="typeName"></param>
         /// <param name="varName"></param>
         /// <param name="defaultValue"></param>
-        public CLParam(string attr, string typeName, string varName, string defaultValue)
+        public CLParam(CLFuncDecl ownerFunc, Decls.ParamDecl paramDecl)
         {
-            _originalAttrText = attr;
-            _originalTypeName = typeName.Trim();
-            Name = varName.Trim();
-            OriginalDefaultValue = defaultValue.Trim();
+            OwnerFunc = ownerFunc;
+            _originalAttrText = paramDecl.AttributeText;
+            _originalTypeName = paramDecl.TypeName;
+            Name = paramDecl.Name;
+            OriginalDefaultValue = paramDecl.DefaultValue;
         }
+
+        //public CLParam(string attr, string typeName, string varName, string defaultValue)
+        //{
+        //    _originalAttrText = attr;
+        //    _originalTypeName = typeName.Trim();
+        //    Name = varName.Trim();
+        //    OriginalDefaultValue = defaultValue.Trim();
+        //}
 
         /// <summary>
         /// 必要に応じてサブクラスでオーバーライドされ、オリジナルの型名から CLType を検索して参照する

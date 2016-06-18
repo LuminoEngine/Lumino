@@ -37,11 +37,14 @@ namespace BinderMaker
                 };
                 var parser2 = new Parser2.ApiDeclParser();
                 var modules2 = parser2.Analyze(apiHeaders);
+                
 
-                return 0;
+                //var parser = new Parser.CLAPIHeaderParser();
+                //var modules = parser.Analyze(apiHeaders);
 
-                var parser = new Parser.CLAPIHeaderParser();
-                var modules = parser.Analyze(apiHeaders);
+                var modules = new List<CLModule>();
+                modules2.ForEach((m) => modules.Add(new CLModule(m)));
+                
 
                 // 解析結果を Manager に登録する
                 CLManager.Instance.LinkEntities();
@@ -52,36 +55,39 @@ namespace BinderMaker
                 //return 0;
 
                 // C#
+                var csContet = new Builder.CSContext();
                 var csPInvoleBuilder = new Builder.CSPInvokeBuilder();
-                csPInvoleBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");
+                csPInvoleBuilder.Build(CLManager.Instance, csContet, DotNetOutputDir + "DotNet/LuminoDotNet/API.cs");
                 var csStructsBuilder = new Builder.CSStructsBuilder();
-                csStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Structs.cs");
+                csStructsBuilder.Build(CLManager.Instance, csContet, DotNetOutputDir + "DotNet/LuminoDotNet/Structs.cs");
                 var csClassesBuilder = new Builder.CSClassesBuilder();
-                csClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
-                
+                csClassesBuilder.Build(CLManager.Instance, csContet, DotNetOutputDir + "DotNet/LuminoDotNet/Classes.cs");
+
                 // Ruby
+                var rubyContet = new Builder.RubyContext();
                 var rubyEnumBuilder = new Builder.RubyEnumBuilder();
-                rubyEnumBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyEnums.cpp");
+                rubyEnumBuilder.Build(CLManager.Instance, rubyContet, DotNetOutputDir + "Ruby/RubyEnums.cpp");
                 var rubyStructsBuilder = new Builder.RubyStructsBuilder();
-                rubyStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.cpp");
+                rubyStructsBuilder.Build(CLManager.Instance, rubyContet, DotNetOutputDir + "Ruby/RubyStructs.cpp");
                 var rubyStructsHeaderBuilder = new Builder.RubyStructsHeaderBuilder();
-                rubyStructsHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/RubyStructs.h");
+                rubyStructsHeaderBuilder.Build(CLManager.Instance, rubyContet, DotNetOutputDir + "Ruby/RubyStructs.h");
                 var rubyClassesBuilder = new Builder.RubyClassesBuilder();
-                rubyClassesBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyClasses.cpp");
+                rubyClassesBuilder.Build(CLManager.Instance, rubyContet, DotNetOutputDir + "Ruby/LuminoRubyClasses.cpp");
                 var rubyDocBuilder = new Builder.RubyDocBuilder();
-                rubyDocBuilder.Build(CLManager.Instance, DotNetOutputDir + "Ruby/LuminoRubyDoc.rb");
+                rubyDocBuilder.Build(CLManager.Instance, rubyContet, DotNetOutputDir + "Ruby/LuminoRubyDoc.rb");
 
                 // HSP
+                var hspContet = new Builder.HSPContext();
                 var hspHeaderBuilder = new Builder.HSPHeaderBuilder();
-                hspHeaderBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.as");
+                hspHeaderBuilder.Build(CLManager.Instance, hspContet, DotNetOutputDir + "HSP/lumino.as");
                 var hspCommandsBuilder = new Builder.HSPCommandsBuilder();
-                hspCommandsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPCommands.cpp");
+                hspCommandsBuilder.Build(CLManager.Instance, hspContet, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPCommands.cpp");
                 var hspStructsBuilder = new Builder.HSPStructsBuilder();
-                hspStructsBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPStructs.cpp");
+                hspStructsBuilder.Build(CLManager.Instance, hspContet, DotNetOutputDir + "HSP/LuminoHSP/LuminoHSP/HSPStructs.cpp");
                 var hspHelpBuilder = new Builder.HSPHelpBuilder();
-                hspHelpBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/lumino.hs");
+                hspHelpBuilder.Build(CLManager.Instance, hspContet, DotNetOutputDir + "HSP/lumino.hs");
                 var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
-                hspFuncListBuilder.Build(CLManager.Instance, DotNetOutputDir + "HSP/CommandList.txt");
+                hspFuncListBuilder.Build(CLManager.Instance, hspContet, DotNetOutputDir + "HSP/CommandList.txt");
             }
             catch (Exception e)
             {

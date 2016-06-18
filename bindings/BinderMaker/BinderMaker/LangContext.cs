@@ -163,11 +163,14 @@ namespace BinderMaker
         /// メソッドが有効であるかを確認
         /// </summary>
         /// <returns></returns>
-        public bool CheckEnabled(CLMethod method)
+        public virtual bool CheckEnabled(CLMethod method)
         {
-            var b = method.Option.DisableOptions.Find((opt) => opt.LangFlags == _langFlags);
-            return b == null;
+            return true;
         }
+        //{
+        //    var b = method.Option.DisableOptions.Find((opt) => opt.LangFlags == _langFlags);
+        //    return b == null;
+        //}
 
         /// <summary>
         /// メソッドのオーバーライドコード
@@ -176,12 +179,12 @@ namespace BinderMaker
         /// <returns></returns>
         public bool TryGetOverrideCode(CLMethod method, out string code)
         {
-            var d = method.Option.OverrideOptions.Find((opt) => opt.LangFlags == _langFlags);
-            if (d != null)
-            {
-                code = d.Code;
-                return true;
-            }
+            //var d = method.Option.OverrideOptions.Find((opt) => opt.LangFlags == _langFlags);
+            //if (d != null)
+            //{
+            //    code = d.Code;
+            //    return true;
+            //}
             code = "";
             return false;
         }

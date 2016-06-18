@@ -35,16 +35,32 @@ namespace BinderMaker
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="bodyText"></param>
-        public CLModule(string name, string docText, string bodyText)
+        public CLModule(Decls.ModuleDecl moduleDecl)
         {
-            Name = name;
-            Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
-            Classes = new List<CLClass>(Parser.CLAPIModule.ModuleBody.Parse(bodyText));
-            foreach (var c in Classes)
+            Name = moduleDecl.Name;
+            Document = new CLDocument(moduleDecl.Document);
+            Classes = new List<CLClass>();
+            foreach (var c in moduleDecl.Classes)
             {
-                c.OwnerModule = this;
+                Classes.Add(new CLClass(this, c));
             }
         }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="bodyText"></param>
+        //public CLModule(string name, string docText, string bodyText)
+        //{
+        //    Name = name;
+        //    Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
+        //    Classes = new List<CLClass>(Parser.CLAPIModule.ModuleBody.Parse(bodyText));
+        //    foreach (var c in Classes)
+        //    {
+        //        c.OwnerModule = this;
+        //    }
+        //}
 
         #endregion
 

@@ -76,6 +76,14 @@ struct wrapTexture2D
     {}
 };
 
+struct wrapViewport
+    : public wrapRefObject
+{
+
+    wrapViewport()
+    {}
+};
+
 struct wrapSceneNode
     : public wrapRefObject
 {
@@ -129,6 +137,7 @@ VALUE g_class_SoundListener;
 VALUE g_class_Sound;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
+VALUE g_class_Viewport;
 VALUE g_class_SceneNode;
 VALUE g_class_Sprite;
 VALUE g_class_Sprite2D;
@@ -1407,6 +1416,43 @@ static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+static void LNViewport_delete(wrapViewport* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
+}
+
+static void LNViewport_mark(wrapViewport* obj)
+{
+
+}
+
+static VALUE LNViewport_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapViewport* internalObj;
+
+    internalObj = new wrapViewport();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewport_allocate" );
+    obj = Data_Wrap_Struct(klass, LNViewport_mark, LNViewport_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LNViewport_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapViewport* internalObj;
+
+    internalObj = new wrapViewport();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewport_allocate" );
+    obj = Data_Wrap_Struct(klass, LNViewport_mark, LNViewport_delete, internalObj);
+    
+    internalObj->Handle = handle;
+    return obj;
+}
+
 static void LNSceneNode_delete(wrapSceneNode* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
@@ -1856,6 +1902,9 @@ void InitClasses()
     rb_define_alloc_func(g_class_Texture2D, LNTexture2D_allocate);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNTexture2D_Create), -1);
 
+    g_class_Viewport = rb_define_class_under(g_luminoModule, "Viewport", g_class_RefObject);
+    rb_define_alloc_func(g_class_Viewport, LNViewport_allocate);
+
     g_class_SceneNode = rb_define_class_under(g_luminoModule, "SceneNode", g_class_RefObject);
     rb_define_alloc_func(g_class_SceneNode, LNSceneNode_allocate);
     rb_define_method(g_class_SceneNode, "visible=", LN_TO_RUBY_FUNC(lnrbLNSceneNode_SetVisible), -1);
@@ -1891,6 +1940,7 @@ void Manager::RegisterTypeInfo()
     LNRB_REGISTER_TYPEINFO(Sound);
     LNRB_REGISTER_TYPEINFO(Texture);
     LNRB_REGISTER_TYPEINFO(Texture2D);
+    LNRB_REGISTER_TYPEINFO(Viewport);
     LNRB_REGISTER_TYPEINFO(SceneNode);
     LNRB_REGISTER_TYPEINFO(Sprite);
     LNRB_REGISTER_TYPEINFO(Sprite2D);

@@ -83,7 +83,7 @@ namespace BinderMaker.Parser2
 
         // 関数宣言
         public static readonly Parser<FuncDecl> FuncDeclUnit =
-            from docText    in (CLAPIDocument.CommentText.GenericToken()).Or(Parse.Return(""))  // コメント文字列 (/** ～ */)
+            from docText    in (ApiDocument.CommentText.GenericToken()).Or(Parse.Return(""))  // コメント文字列 (/** ～ */)
             from apiMod     in APIModifier.GenericToken()
             from attr       in FuncAttribute.GenericToken().Many()//FuncAttribute.Or(Parse.Return(""))             // 属性(opt)
             from type1      in ParserUtils.TypeName.GenericToken()                  // 戻り値型

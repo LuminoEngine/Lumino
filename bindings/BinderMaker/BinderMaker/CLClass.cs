@@ -26,7 +26,7 @@ namespace BinderMaker
         /// <summary>
         /// 属しているモジュール
         /// </summary>
-        public CLModule OwnerModule { get; set; }
+        public CLModule OwnerModule { get; private set; }
 
         /// <summary>
         /// ドキュメント
@@ -119,31 +119,52 @@ namespace BinderMaker
         /// <param name="doc"></param>
         /// <param name="methods"></param>
         /// <param name="option"></param>
-        public CLClass(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText, string optionText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
+        public CLClass(CLModule ownerModule, Decls.ClassDecl classDecl)
         {
-            Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
-            OriginalName = originalName.Trim();
-            BaseClassOriginalName = baseClassName;
+            OwnerModule = ownerModule;
+            Document = new CLDocument(classDecl.Document);
+            OriginalName = classDecl.OriginalName;
+            BaseClassOriginalName = classDecl.BaseClassOriginalName;
             Name = OriginalName.Substring(2);
-            Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
-            Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
+            Methods = new List<CLMethod>();
+            foreach (var f in classDecl.FuncDecls)
+            {
+                Methods.Add(new CLMethod(this, f));
+            }
 
-            Methods.ForEach((m) => m.OwnerClass = this);
-
-            // クラス種別チェック
-            string t = new string(startTag.ToArray());
-            if (t.IndexOf("LN_STATIC_CLASS") >= 0)
-                IsStatic = true;
-            if (t.IndexOf("LN_GENERIC_CLASS") >= 0)
-                IsGeneric = true;
-            if (t.IndexOf("LN_STRUCT_CLASS") >= 0)
-                IsStruct = true;
-            if (t.IndexOf("LN_EXTENSION_CLASS") >= 0)
-                IsExtension = true;
+            IsStatic = classDecl.IsStatic;
+            IsGeneric = classDecl.IsGeneric;
+            IsStruct = classDecl.IsStruct;
+            IsExtension = classDecl.IsExtension;
 
             // 登録
             Manager.AllClasses.Add(this);
         }
+        //public CLClass(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText, string optionText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
+        //{
+        //    Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
+        //    OriginalName = originalName.Trim();
+        //    BaseClassOriginalName = baseClassName;
+        //    Name = OriginalName.Substring(2);
+        //    Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
+        //    Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
+
+        //    Methods.ForEach((m) => m.OwnerClass = this);
+
+        //    // クラス種別チェック
+        //    string t = new string(startTag.ToArray());
+        //    if (t.IndexOf("LN_STATIC_CLASS") >= 0)
+        //        IsStatic = true;
+        //    if (t.IndexOf("LN_GENERIC_CLASS") >= 0)
+        //        IsGeneric = true;
+        //    if (t.IndexOf("LN_STRUCT_CLASS") >= 0)
+        //        IsStruct = true;
+        //    if (t.IndexOf("LN_EXTENSION_CLASS") >= 0)
+        //        IsExtension = true;
+
+        //    // 登録
+        //    Manager.AllClasses.Add(this);
+        //}
 
         /// <summary>
         /// 組み込みクラス型を定義するために使用する。例えば Array。

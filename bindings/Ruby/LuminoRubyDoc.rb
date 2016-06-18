@@ -1794,6 +1794,9 @@ class Lumino::Texture2D < Texture
     def initialize
     end
 end
+# ビューポートのクラスです。
+class Lumino::Viewport < RefObject
+end
 # シーングラフを構成するノードのベースクラスです。
 class Lumino::SceneNode < RefObject
     # ノードの可視状態を設定します。(default: true)

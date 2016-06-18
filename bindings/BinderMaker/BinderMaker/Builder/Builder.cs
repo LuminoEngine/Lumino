@@ -17,12 +17,18 @@ namespace BinderMaker.Builder
         protected CLManager Manager { get; private set; }
 
         /// <summary>
+        /// LangContext
+        /// </summary>
+        protected LangContext Context { get; private set; }
+
+        /// <summary>
         /// ソースファイル作成
         /// </summary>
         /// <param name="analyzer"></param>
-        public void Build(CLManager manager, string outputFilePath)
+        public void Build(CLManager manager, LangContext context, string outputFilePath)
         {
             Manager = manager;
+            Context = context;
 
             OnInitialize();
 

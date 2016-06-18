@@ -116,6 +116,8 @@ namespace BinderMaker
         /// コンストラクタ
         /// </summary>
         public CLDocument(
+            Decls.DocumentDecl docDecl
+            /*
             string group,
             string briefText,
             IEnumerable<CLParamDocument> paramDocs,
@@ -125,19 +127,34 @@ namespace BinderMaker
             IEnumerable<CLReplaceDocument> replaceDocs,
             IEnumerable<CLPostscriptDocument> postscriptDocs,
             IEnumerable<CLOverwriteDocument> overwriteDocs,
-            IEnumerable<CLExampleDocument> exampleDocs)
+            IEnumerable<CLExampleDocument> exampleDocs*/
+            )
+            : this()
         {
-            OriginalGroup = group.Trim();
-            OriginalBriefText = briefText.Trim();   // 渡されるテキストは前後に空白が入っていたりするので Trim() とかしておく
-            OriginalParams = new List<CLParamDocument>(paramDocs);
-            OriginalReturnText = returnText.Trim();
-            OriginalDetailsText = detailsText.Trim();
+            if (docDecl != null)
+            {
+                OriginalGroup = docDecl.OriginalGroup;
+                OriginalBriefText = docDecl.OriginalBriefText;
+                OriginalReturnText = docDecl.OriginalReturnText;
+                OriginalDetailsText = docDecl.OriginalDetailsText;
+                OriginalParams = new List<CLParamDocument>();
+                foreach (var p in docDecl.OriginalParams)
+                {
+                    OriginalParams.Add(new CLParamDocument(p));
+                }
 
-            ExtendsDocs = new List<CLExtendsDocument>(extendsDocs);
-            ReplaceDocs = new List<CLReplaceDocument>(replaceDocs);
-            PostscriptDocs = new List<CLPostscriptDocument>(postscriptDocs);
-            OverwriteDocs = new List<CLOverwriteDocument>(overwriteDocs);
-            ExampleDocs = new List<CLExampleDocument>(exampleDocs);
+                //OriginalGroup = group.Trim();
+                //OriginalBriefText = briefText.Trim();   // 渡されるテキストは前後に空白が入っていたりするので Trim() とかしておく
+                //OriginalParams = new List<CLParamDocument>(paramDocs);
+                //OriginalReturnText = returnText.Trim();
+                //OriginalDetailsText = detailsText.Trim();
+
+                //ExtendsDocs = new List<CLExtendsDocument>(extendsDocs);
+                //ReplaceDocs = new List<CLReplaceDocument>(replaceDocs);
+                //PostscriptDocs = new List<CLPostscriptDocument>(postscriptDocs);
+                //OverwriteDocs = new List<CLOverwriteDocument>(overwriteDocs);
+                //ExampleDocs = new List<CLExampleDocument>(exampleDocs);
+            }
         }
 
         /// <summary>
@@ -222,17 +239,19 @@ namespace BinderMaker
         /// <param name="io"></param>
         /// <param name="name"></param>
         /// <param name="text"></param>
-        public CLParamDocument(string io, string name, string text)
+        public CLParamDocument(Decls.ParamDocumentDecl docDecl)
         {
-            // io は "[]" が含まれている。IndexOf で探す
-            IOModifier = 0;
-            IOModifier |= (io.IndexOf("in") >= 0) ? IOModifier.In : 0;
-            IOModifier |= (io.IndexOf("out") >= 0) ? IOModifier.Out : 0;
-            if (IOModifier == 0)
-                throw new InvalidOperationException("io empty");  // IO が空等
+            IOModifier = docDecl.IOModifier;
+            Name = docDecl.Name;
+            OriginalText = docDecl.OriginalText;
+        }
 
-            Name = name.Trim();
-            OriginalText = text.Trim();
+        // ダミー用
+        public CLParamDocument(IOModifier io, string name, string text)
+        {
+            IOModifier = io;
+            Name = name;
+            OriginalText = text;
         }
 
         #endregion

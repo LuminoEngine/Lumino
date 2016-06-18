@@ -250,7 +250,7 @@ __CONTENTS__
         /// <param name="enumType"></param>
         protected override void OnMethodLooked(CLMethod method)
         {
-            if (method.Option.CheckDisabled(LangFlags.Ruby)) return;
+            if (!Context.CheckEnabled(method)) return;
             // Ruby として出力できるメソッドであるか
             if (!RubyCommon.CheckInvalidMethod(method)) return;
 

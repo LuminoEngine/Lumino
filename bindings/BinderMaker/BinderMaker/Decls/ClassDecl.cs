@@ -61,7 +61,7 @@ namespace BinderMaker.Decls
         /// <param name="doc"></param>
         /// <param name="methods"></param>
         /// <param name="option"></param>
-        public ClassDecl(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText, string optionText)
+        public ClassDecl(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText)
         {
             Document = Parser2.ApiDocument.DoParse(docText);
             OriginalName = originalName.Trim();
