@@ -79,9 +79,9 @@ namespace BinderMaker
         public bool IsStatic { get; private set; }
 
         /// <summary>
-        /// ジェネリッククラス であるか
+        /// ジェネリックからインスタンス化したクラス であるか
         /// </summary>
-        public bool IsGeneric { get; private set; }
+        public bool IsGenericinstance { get; private set; }
 
         /// <summary>
         /// ジェネリッククラスの型引数 (null の場合もある。その場合、バインドされていない(インスタンス化されていない))
@@ -108,6 +108,11 @@ namespace BinderMaker
         /// </summary>
         public bool IsPreDefined { get; private set; }
 
+        /// <summary>
+        /// ジェネリック型引数の対応表
+        /// </summary>
+        public Dictionary<string, CLType> GenericTypeArgsMap { get; private set; }
+
         #endregion
 
         #region Methods
@@ -126,45 +131,58 @@ namespace BinderMaker
             OriginalName = classDecl.OriginalName;
             BaseClassOriginalName = classDecl.BaseClassOriginalName;
             Name = OriginalName.Substring(2);
+            IsStatic = classDecl.IsStatic;
+            IsStruct = classDecl.IsStruct;
+            IsExtension = classDecl.IsExtension;
+
             Methods = new List<CLMethod>();
             foreach (var f in classDecl.FuncDecls)
             {
                 Methods.Add(new CLMethod(this, f));
             }
 
-            IsStatic = classDecl.IsStatic;
-            IsGeneric = classDecl.IsGeneric;
-            IsStruct = classDecl.IsStruct;
-            IsExtension = classDecl.IsExtension;
 
             // 登録
             Manager.AllClasses.Add(this);
         }
-        //public CLClass(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText, string optionText /*CLDocument doc, string name, IEnumerable<CLMethod> methods, CLOption option*/)
-        //{
-        //    Document = Parser.CLAPIDocument.DocumentComment.Parse(docText);
-        //    OriginalName = originalName.Trim();
-        //    BaseClassOriginalName = baseClassName;
-        //    Name = OriginalName.Substring(2);
-        //    Methods = new List<CLMethod>(Parser.CLAPIClass.ClassBody.Parse(bodyText));
-        //    Option = (string.IsNullOrEmpty(optionText)) ? new CLOption() : Parser.CLAPIOptions.OptionComment.Parse(optionText);
 
-        //    Methods.ForEach((m) => m.OwnerClass = this);
+        /// <summary>
+        /// コンストラクタ (ジェネリックのインスタンス化)
+        /// </summary>
+        /// <param name="ownerModule"></param>
+        /// <param name="classDecl"></param>
+        public CLClass(CLModule ownerModule, Decls.ClassDecl classDecl, List<string> typeParams)
+        {
+            OwnerModule = ownerModule;
+            Document = new CLDocument(classDecl.Document);
 
-        //    // クラス種別チェック
-        //    string t = new string(startTag.ToArray());
-        //    if (t.IndexOf("LN_STATIC_CLASS") >= 0)
-        //        IsStatic = true;
-        //    if (t.IndexOf("LN_GENERIC_CLASS") >= 0)
-        //        IsGeneric = true;
-        //    if (t.IndexOf("LN_STRUCT_CLASS") >= 0)
-        //        IsStruct = true;
-        //    if (t.IndexOf("LN_EXTENSION_CLASS") >= 0)
-        //        IsExtension = true;
+            BaseClassOriginalName = classDecl.BaseClassOriginalName;
+            IsStatic = classDecl.IsStatic;
+            IsStruct = classDecl.IsStruct;
+            IsExtension = classDecl.IsExtension;
 
-        //    // 登録
-        //    Manager.AllClasses.Add(this);
-        //}
+            OriginalName = MakeGenericInstanceName(classDecl.OriginalName, typeParams);//"LN" + typeParams[0].Substring(2) + classDecl.OriginalName.Substring(2); // TODO: とりあえず [0] で名前を作るだけ
+            Name = OriginalName.Substring(2);
+
+            // ジェネリック型引数情報を作る
+            IsGenericinstance = true;
+            GenericTypeArgsMap = new Dictionary<string, CLType>();
+            for (int i = 0; i < classDecl.GenericTypeParams.Count; i++)
+            {
+                GenericTypeArgsMap.Add(
+                    classDecl.GenericTypeParams[i],
+                    CLManager.Instance.FindType(typeParams[i]));
+            }
+
+            Methods = new List<CLMethod>();
+            //foreach (var f in classDecl.FuncDecls)
+            //{
+            //    Methods.Add(new CLMethod(this, f));
+            //}
+
+            // 登録
+            Manager.AllClasses.Add(this);
+        }
 
         /// <summary>
         /// 組み込みクラス型を定義するために使用する。例えば Array。
@@ -177,6 +195,11 @@ namespace BinderMaker
             IsPreDefined = true;
             Methods = new List<CLMethod>();
             Manager.AllClasses.Add(this);
+        }
+
+        public static string MakeGenericInstanceName(string originalClassName, List<string> originalTypeName)
+        {
+            return "LN" + originalTypeName[0].Substring(2) + originalClassName.Substring(2); // TODO: とりあえず [0] で名前を作るだけ
         }
 
         /// <summary>

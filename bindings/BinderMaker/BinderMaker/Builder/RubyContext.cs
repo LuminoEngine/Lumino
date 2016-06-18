@@ -13,6 +13,12 @@ namespace BinderMaker.Builder
         {
         }
 
+        //public override bool IsIgnoredClass(CLClass classType)
+        //{
+        //    if (classType.IsGenericSource) return true;   // ジェネリックは無視
+        //    return false;
+        //}
+
         public override bool CheckEnabled(CLMethod method)
         {
             var ignore = new string[]

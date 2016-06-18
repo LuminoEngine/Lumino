@@ -77,6 +77,80 @@ LN_EXTENSION_CLASS(LNObject)
 LN_CLASS_END
 
 
+//==============================================================================
+/**
+	@brief		要素の集合 (可変長配列) を表すクラスです。
+*/
+LN_GENERIC_CLASS(LNList, LN_T1)
+
+	/**
+		@brief		リストに格納されているオブジェクトの数を取得します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[out]	outCount	: 要素の数を格納する変数
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_GetCount(LN_HANDLE(LNList) listObject, int* outCount);
+
+	/**
+		@brief		オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[in]	index		: インデックス(要素番号)
+		@param[in]	itemPtr		: 設定するオブジェクト
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_SetAt(LN_HANDLE(LNList) listObject, int index, LN_T1 itemPtr);
+
+	/**
+		@brief		オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[in]	index		: インデックス(要素番号)
+		@param[out]	outItemPtr	: オブジェクトを格納する変数
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_GetAt(LN_HANDLE(LNList) listObject, int index, LN_OUT LN_T1* outItemPtr);
+
+	/**
+		@brief		オブジェクトリストの末尾にオブジェクトを追加します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[in]	itemPtr		: 追加するオブジェクト
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_Add(LN_HANDLE(LNList) listObject, LN_T1 itemPtr);
+
+	/**
+		@brief		オブジェクトリストから全てのオブジェクトを削除します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_Clear(LN_HANDLE(LNList) listObject);
+
+	/**
+		@brief		オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[in]	index		: item を挿入するインデックス
+		@param[in]	itemPtr		: 挿入するオブジェクト
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_Insert(LN_HANDLE(LNList) listObject, int index, LN_T1 itemPtr);
+
+	/**
+		@brief		オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[in]	itemPtr		: リストから削除するオブジェクト
+		@param[out]	outRemoved	: 要素を削除したかどうかを示す値 (削除できた場合は LN_TRUE) を格納する変数のアドレス。
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_Remove(LN_HANDLE(LNList) listObject, LN_T1 itemPtr, LN_OUT LNBool* outRemoved);
+
+	/**
+		@brief		オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
+		@param[in]	listObject	: オブジェクトリストハンドル
+		@param[in]	index		: 削除するオブジェクトのインデックス番号
+	*/
+	LN_INSTANCE_API
+	LNResult LNList_RemoveAt(LN_HANDLE(LNList) listObject, int index);
+
+LN_CLASS_END
 
 //==============================================================================
 /**

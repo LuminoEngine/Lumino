@@ -13,7 +13,7 @@ namespace BinderMaker
 
         static int Main(string[] args)
         {
-            try
+            //try
             {
 
 
@@ -37,14 +37,25 @@ namespace BinderMaker
                 };
                 var parser2 = new Parser2.ApiDeclParser();
                 var modules2 = parser2.Analyze(apiHeaders);
-                
+
 
                 //var parser = new Parser.CLAPIHeaderParser();
                 //var modules = parser.Analyze(apiHeaders);
 
                 var modules = new List<CLModule>();
                 modules2.ForEach((m) => modules.Add(new CLModule(m)));
-                
+
+
+                // インスタンス化が必要なジェネリッククラスを調べる
+                var genericInstanceFind = new GenericInstanceFindVisitor();
+                genericInstanceFind.Run(modules2);
+                foreach (var pair in genericInstanceFind.GenericInstanceMap)
+                {
+                    var classDecl = genericInstanceFind.AllClasses.Find((item) => item.OriginalName == pair.Key);
+                    var module = modules.Find((item) => item.Name == "Base");   // とりあえず Base モジュールに追加する
+                    module.Classes.Add(new CLClass(module, classDecl, pair.Value));
+                }
+
 
                 // 解析結果を Manager に登録する
                 CLManager.Instance.LinkEntities();
@@ -89,11 +100,11 @@ namespace BinderMaker
                 var hspFuncListBuilder = new Builder.HSPFuncListBuilder();
                 hspFuncListBuilder.Build(CLManager.Instance, hspContet, DotNetOutputDir + "HSP/CommandList.txt");
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: " + e.Message);
-                return 1;
-            }
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("Error: " + e.Message);
+            //    return 1;
+            //}
             return 0;
         }
     }

@@ -51,6 +51,7 @@
     <Compile Include="Builder\CSContext.cs" />
     <Compile Include="Builder\CSPInvokeBuilder.cs" />
     <Compile Include="Builder\CSStructsBuilder.cs" />
+    <Compile Include="Builder\C\GenericInstanceBuilder.cs" />
     <Compile Include="Builder\HSPCommandsBuilder.cs" />
     <Compile Include="Builder\HSPContext.cs" />
     <Compile Include="Builder\HSPHelpBuilder.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Decls\ModuleDecl.cs" />
     <Compile Include="Decls\ParamDecl.cs" />
     <Compile Include="Diag.cs" />
+    <Compile Include="GenericInstanceFindVisitor.cs" />
     <Compile Include="LangContext.cs" />
     <Compile Include="Parser2\ApiClass.cs" />
     <Compile Include="Parser2\ApiDeclParser.cs" />

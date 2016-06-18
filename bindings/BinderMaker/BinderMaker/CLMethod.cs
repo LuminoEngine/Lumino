@@ -398,6 +398,12 @@ namespace BinderMaker
 
             // 先頭が Create ならコンストラクタ関数
             IsRefObjectConstructor = (string.Compare(Name, 0, "Create", 0, 6) == 0);
+
+
+            if (OriginalFullName == "LNList_GetCount")
+            {
+                Console.Write(3);
+            }
         }
 
         /// <summary>
@@ -419,6 +425,7 @@ namespace BinderMaker
 
         private string _originalTypeName;
         private string _originalAttrText;
+        private Decls.ParamDecl _paramDecl;
 
         #endregion
 
@@ -462,6 +469,7 @@ namespace BinderMaker
         /// out RefObject 型であるか
         /// </summary>
         public bool IsOutRefObjectType { get { return (CLType.CheckRefObjectType(Type) && IOModifier == BinderMaker.IOModifier.Out); } }
+
         #endregion
 
         #region Methods
@@ -474,8 +482,9 @@ namespace BinderMaker
         public CLParam(CLFuncDecl ownerFunc, Decls.ParamDecl paramDecl)
         {
             OwnerFunc = ownerFunc;
+            _paramDecl = paramDecl;
             _originalAttrText = paramDecl.AttributeText;
-            _originalTypeName = paramDecl.TypeName;
+            _originalTypeName = paramDecl.OriginalTypeName;
             Name = paramDecl.Name;
             OriginalDefaultValue = paramDecl.DefaultValue;
         }
@@ -498,6 +507,10 @@ namespace BinderMaker
             {
                 if (Document.IOModifier != BinderMaker.IOModifier.Out)
                     throw new InvalidOperationException("引数コメントと仮引数属性の入出力属性が異なります。");
+            }
+            if (_paramDecl.IsGeneric)
+            {
+                _originalTypeName = CLClass.MakeGenericInstanceName(_paramDecl.GenericClassName, _paramDecl.GenericTypeParams);
             }
 
             Type = Manager.FindType(_originalTypeName);

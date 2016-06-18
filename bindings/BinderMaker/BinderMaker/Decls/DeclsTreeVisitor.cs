@@ -19,6 +19,10 @@ namespace BinderMaker.Decls
                     foreach (var f in c.FuncDecls)
                     {
                         OnFunc(f);
+                        foreach (var p in f.Params)
+                        {
+                            OnParam(p);
+                        }
                     }
                 }
             }
@@ -29,5 +33,7 @@ namespace BinderMaker.Decls
         protected abstract void OnClass(ClassDecl c);
 
         protected abstract void OnFunc(FuncDecl f);
+
+        protected abstract void OnParam(ParamDecl p);
     }
 }

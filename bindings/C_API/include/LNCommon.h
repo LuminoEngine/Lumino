@@ -47,7 +47,11 @@ typedef void*			LNUserData;
 #define LN_STATIC_CLASS(x)
 #define LN_STRUCT_CLASS(x)
 #define LN_EXTENSION_CLASS(x)		// BinderMaker Ç…ÇÊÇÈÉNÉâÉXé©ìÆê∂ê¨ÇçsÇÌÇ»Ç¢Ç±Ç∆Çé¶Ç∑
+#define LN_GENERIC_CLASS(x, ...)
 #define LN_CLASS_END
+
+#define LN_T1	void*
+#define LN_T2	void*
 	
 #define LN_INSTANCE_API		LN_API
 #define LN_INTERNAL_API		LN_API
@@ -62,5 +66,5 @@ typedef void*			LNUserData;
 //#define LN_ATTR_STRUCT_CONSTRUCTOR
 
 #define LN_HANDLE(classType)				LNHandle
-#define LN_LIST_HANDLE(classType, itemType) LNHandle
+#define LN_GENERIC_HANDLE(classType, t1)	LNHandle
 #define LN_OUT

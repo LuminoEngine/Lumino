@@ -57,6 +57,15 @@ LN_CLASS(LNSceneNode, LNObject)
 	LN_INSTANCE_API
 	LN_ATTR_PROPERTY
 	LNResult LNSceneNode_GetPosition(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LNVector3* outPosition);
+
+	/**
+		@brief		ノードの子要素のリストを取得します。
+		@param[in]	sceneNode	: ノードハンドル
+		@param[out]	outList		: SceneNodeList オブジェクトのハンドルを格納する変数のポインタ
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_PROPERTY
+	LNResult LNSceneNode_GetChildren(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LN_GENERIC_HANDLE(LNList, LNSceneNode)* outList);
 	
 LN_CLASS_END
 

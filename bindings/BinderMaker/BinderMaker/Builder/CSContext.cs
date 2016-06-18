@@ -25,7 +25,8 @@ namespace BinderMaker.Builder
                 "LNGameAudio_PlaySE3DMemXYZ",
                 "LNSound_CreateMem",
             };
-            return !ignore.Contains(method.FuncDecl.OriginalFullName);
+            if (ignore.Contains(method.FuncDecl.OriginalFullName)) return false;
+            return true;
         }
     }
 }

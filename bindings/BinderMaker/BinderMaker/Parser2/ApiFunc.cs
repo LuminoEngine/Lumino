@@ -45,18 +45,20 @@ namespace BinderMaker.Parser2
 
         
         // Handle 型
-        public static readonly Parser<string> GenericReferenceType =
-            from start      in Parse.String("LN_GENERIC_REFERENCE").Text()
+        public static readonly Parser<string> GenericHandleType =
+            from start      in Parse.String("LN_GENERIC_HANDLE").Text()
             from lparen     in Parse.Char('(').GenericToken()
             from name       in ParserUtils.Identifier.GenericToken()
+            from comma      in Parse.Char(',').GenericToken()
+            from type1      in ParserUtils.Identifier.GenericToken()    // 実型引数 (TODO: とりあえず今は1つだけ)
             from rparen     in Parse.Char(')')
             from ptr        in Parse.String("*").Or(Parse.Return(""))       // opt
-            select start + lparen + name + rparen + new string(ptr.ToArray());  // とりあえずこの形式を許可したいだけなので文字列として返す
+            select start + '(' + name + ',' + type1 + ')' + new string(ptr.ToArray());  // とりあえずこの形式を許可したいだけなので文字列として返す
 
         // 仮引数用の型名 (LN_HANDLE() または型名。LN_HANDLE は Identifer なので TypeName とのorの左側で先にパースする)
         private static readonly Parser<string> ParamType =
             HandleType
-            .Or(GenericReferenceType)
+            .Or(GenericHandleType)
             .Or(ParserUtils.TypeName);
         
         // デフォルト引数

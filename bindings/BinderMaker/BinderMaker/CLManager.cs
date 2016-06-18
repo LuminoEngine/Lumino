@@ -31,7 +31,7 @@ namespace BinderMaker
         public const string APIAttribute_Overload = "LN_ATTR_OVERLOAD";
 
         public const string HandleTypeParamMacro = "LN_HANDLE";
-        public const string GenericHandleTypeParamMacro = "LN_HANDLE_GENERIC";
+        public const string GenericHandleTypeParamMacro = "LN_GENERIC_HANDLE";
 
         public const string EnumTerminatorName = "TERMINATOR";
 
@@ -246,28 +246,39 @@ namespace BinderMaker
                 }
                 throw new InvalidOperationException("invalid class type. LN_HANDLE() に指定された型が見つからない。");
             }
-
-            // ジェネリッククラス型を検索
-            idx = name.IndexOf(GenericHandleTypeParamMacro);
-            if (idx >= 0)
+            else
             {
-                // LN_HANDLE と () を削除
-                name = name
-                    .Substring(idx + GenericHandleTypeParamMacro.Length)
-                    .Replace("(", "")
-                    .Replace(")", "")
-                    .Replace("*", "")
-                    .Trim();
                 foreach (var t in AllTypes)
                 {
                     CLClass c = t as CLClass;
-                    if (c != null && c.IsGeneric && c.OriginalName == name)
+                    if (c != null && c.OriginalName == name)
                     {
                         return c;
                     }
                 }
-                throw new InvalidOperationException("invalid generic class type.");
             }
+
+            //// ジェネリッククラス型を検索
+            //idx = name.IndexOf(GenericHandleTypeParamMacro);
+            //if (idx >= 0)
+            //{
+            //    // LN_HANDLE と () を削除
+            //    name = name
+            //        .Substring(idx + GenericHandleTypeParamMacro.Length)
+            //        .Replace("(", "")
+            //        .Replace(")", "")
+            //        .Replace("*", "")
+            //        .Trim();
+            //    foreach (var t in AllTypes)
+            //    {
+            //        CLClass c = t as CLClass;
+            //        if (c != null && c.IsGenericinstance && c.OriginalName == name)
+            //        {
+            //            return c;
+            //        }
+            //    }
+            //    throw new InvalidOperationException("invalid generic class type.");
+            //}
 
             // 基本的な型テーブルから検索
             CLType type;

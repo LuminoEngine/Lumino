@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BinderMaker.Decls
@@ -50,6 +51,11 @@ namespace BinderMaker.Decls
         /// </summary>
         public bool IsExtension { get; private set; }
 
+        /// <summary>
+        /// ジェネリック型引数
+        /// </summary>
+        public List<string> GenericTypeParams { get; private set; }
+
         #endregion
 
         #region Methods
@@ -61,11 +67,13 @@ namespace BinderMaker.Decls
         /// <param name="doc"></param>
         /// <param name="methods"></param>
         /// <param name="option"></param>
-        public ClassDecl(IEnumerable<char> startTag, string docText, string originalName, string baseClassName, string bodyText)
+        public ClassDecl(IEnumerable<char> startTag, string docText, IEnumerable<string> args, string bodyText)
         {
+            var argList = new List<string>(args);
+
             Document = Parser2.ApiDocument.DoParse(docText);
-            OriginalName = originalName.Trim();
-            BaseClassOriginalName = baseClassName;
+            OriginalName = argList[0].Trim();
+            BaseClassOriginalName = (argList.Count >= 2) ? argList[1].Trim() : "";
             FuncDecls = new List<FuncDecl>(Parser2.ApiClass.DoParseClassBody(bodyText));
 
             // クラス種別チェック
@@ -78,6 +86,18 @@ namespace BinderMaker.Decls
                 IsStruct = true;
             if (t.IndexOf("LN_EXTENSION_CLASS") >= 0)
                 IsExtension = true;
+
+            // ジェネリックなら型引数名を取り出す
+            if (IsGeneric)
+            {
+                GenericTypeParams = new List<string>();
+                for (int i = 1; i < argList.Count; ++i)
+                {
+                    GenericTypeParams.Add(argList[i].Trim());
+                }
+
+                BaseClassOriginalName = "";
+            }
         }
 
         #endregion

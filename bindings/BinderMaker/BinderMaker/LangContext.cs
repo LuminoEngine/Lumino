@@ -160,6 +160,14 @@ namespace BinderMaker
         }
 
         /// <summary>
+        /// 指定したクラスの処理を無視するか
+        /// </summary>
+        public virtual bool IsIgnoredClass(CLClass classType)
+        {
+            return false;
+        }
+
+        /// <summary>
         /// メソッドが有効であるかを確認
         /// </summary>
         /// <returns></returns>
@@ -167,10 +175,6 @@ namespace BinderMaker
         {
             return true;
         }
-        //{
-        //    var b = method.Option.DisableOptions.Find((opt) => opt.LangFlags == _langFlags);
-        //    return b == null;
-        //}
 
         /// <summary>
         /// メソッドのオーバーライドコード

@@ -21,7 +21,7 @@ namespace BinderMaker.Decls
         /// <summary>
         /// 型名 ("LN_HANDLE()" などの修飾文字列を含む)
         /// </summary>
-        public string TypeName { get; private set; }
+        public string OriginalTypeName { get; private set; }
 
         /// <summary>
         /// 仮引数名
@@ -33,6 +33,21 @@ namespace BinderMaker.Decls
         /// </summary>
         public string DefaultValue { get; private set; }
 
+        /// <summary>
+        /// 型がジェネリックか
+        /// </summary>
+        public bool IsGeneric { get { return GenericTypeParams != null; } }
+        
+        /// <summary>
+        /// ジェネリッククス名 (LNList など)
+        /// </summary>
+        public string GenericClassName { get; private set; }
+
+        /// <summary>
+        /// ジェネリック型引数
+        /// </summary>
+        public List<string> GenericTypeParams { get; private set; }
+
         #endregion
 
         #region Methods
@@ -43,9 +58,22 @@ namespace BinderMaker.Decls
         public ParamDecl(string attr, string typeName, string varName, string defaultValue)
         {
             AttributeText = attr;
-            TypeName = typeName.Trim();
+            OriginalTypeName = typeName.Trim();
             Name = varName.Trim();
             DefaultValue = defaultValue.Trim();
+
+            // ジェネリックなら型引数名を取り出す
+            if (OriginalTypeName.Contains("LN_GENERIC_HANDLE"))
+            {
+                string typeParamsText = OriginalTypeName.Replace("LN_GENERIC_HANDLE", "").Replace("(", "").Replace(")", "").Replace("*", "");
+                var tokens = typeParamsText.Split(',');
+                GenericTypeParams = new List<string>();
+                for (int i = 1; i < tokens.Length; ++i)
+                {
+                    GenericTypeParams.Add(tokens[i].Trim());
+                }
+                GenericClassName = tokens[0];
+            }
         }
 
         #endregion

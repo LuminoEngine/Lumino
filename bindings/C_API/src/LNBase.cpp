@@ -112,89 +112,12 @@ LN_INTERNAL_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
 	return LFManager::GetObjectEntry(hadnleObject)->UserData;
 }
 
-
-
 //==============================================================================
-/**
-	@brief		要素の集合 (可変長配列) を表すクラスです。
-*/
-LN_EXTENSION_CLASS(LNListObject)
-
-	/**
-		@brief		リストに格納されているオブジェクトの数を取得します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[out]	outCount	: 要素の数を格納する変数
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_GetCount(LN_HANDLE(LNListObject) listObject, int* outCount);
-
-	/**
-		@brief		オブジェクトリストの指定したインデックスにオブジェクトを設定します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[in]	index		: インデックス(要素番号)
-		@param[in]	itemPtr		: 設定するオブジェクト
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_SetAt(LN_HANDLE(LNListObject) listObject, int index, void* itemPtr);
-
-	/**
-		@brief		オブジェクトリストの指定したインデックスのオブジェクトを取得します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[in]	index		: インデックス(要素番号)
-		@param[out]	outItemPtr	: オブジェクトを格納する変数
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_GetAt(LN_HANDLE(LNListObject) listObject, int index, LN_OUT void** outItemPtr);
-
-	/**
-		@brief		オブジェクトリストの末尾にオブジェクトを追加します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[in]	itemPtr		: 追加するオブジェクト
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_Add(LN_HANDLE(LNListObject) listObject, void* itemPtr);
-
-	/**
-		@brief		オブジェクトリストから全てのオブジェクトを削除します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_Clear(LN_HANDLE(LNListObject) listObject);
-
-	/**
-		@brief		オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[in]	index		: item を挿入するインデックス
-		@param[in]	itemPtr		: 挿入するオブジェクト
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_Insert(LN_HANDLE(LNListObject) listObject, int index, void* itemPtr);
-
-	/**
-		@brief		オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[in]	itemPtr		: リストから削除するオブジェクト
-		@param[out]	outRemoved	: 要素を削除したかどうかを示す値 (削除できた場合は LN_TRUE) を格納する変数のアドレス。
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_Remove(LN_HANDLE(LNListObject) listObject, void* itemPtr, LN_OUT LNBool* outRemoved);
-
-	/**
-		@brief		オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
-		@param[in]	listObject	: オブジェクトリストハンドル
-		@param[in]	index		: 削除するオブジェクトのインデックス番号
-	*/
-	LN_INSTANCE_API
-	LNResult LNListObject_RemoveAt(LN_HANDLE(LNListObject) listObject, int index);
-
-LN_CLASS_END
-
-//==============================================================================
-// LNObject
+// LNList
 //==============================================================================
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_GetCount(LN_HANDLE(LNListObject) listObject, int* outCount)
+LNResult LNList_GetCount(LN_HANDLE(LNList) listObject, int* outCount)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(outCount != nullptr);
@@ -203,7 +126,7 @@ LNResult LNListObject_GetCount(LN_HANDLE(LNListObject) listObject, int* outCount
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_SetAt(LN_HANDLE(LNListObject) listObject, int index, void* itemPtr)
+LNResult LNList_SetAt(LN_HANDLE(LNList) listObject, int index, void* itemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -213,7 +136,7 @@ LNResult LNListObject_SetAt(LN_HANDLE(LNListObject) listObject, int index, void*
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_GetAt(LN_HANDLE(LNListObject) listObject, int index, LN_OUT void** outItemPtr)
+LNResult LNList_GetAt(LN_HANDLE(LNList) listObject, int index, LN_OUT void** outItemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(outItemPtr != nullptr);
@@ -223,7 +146,7 @@ LNResult LNListObject_GetAt(LN_HANDLE(LNListObject) listObject, int index, LN_OU
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_Add(LN_HANDLE(LNListObject) listObject, void* itemPtr)
+LNResult LNList_Add(LN_HANDLE(LNList) listObject, void* itemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -233,7 +156,7 @@ LNResult LNListObject_Add(LN_HANDLE(LNListObject) listObject, void* itemPtr)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_Clear(LN_HANDLE(LNListObject) listObject)
+LNResult LNList_Clear(LN_HANDLE(LNList) listObject)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_FUNC_TRY_BEGIN;
@@ -242,7 +165,7 @@ LNResult LNListObject_Clear(LN_HANDLE(LNListObject) listObject)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_Insert(LN_HANDLE(LNListObject) listObject, int index, void* itemPtr)
+LNResult LNList_Insert(LN_HANDLE(LNList) listObject, int index, void* itemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -252,7 +175,7 @@ LNResult LNListObject_Insert(LN_HANDLE(LNListObject) listObject, int index, void
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_Remove(LN_HANDLE(LNListObject) listObject, void* itemPtr, LN_OUT LNBool* outRemoved)
+LNResult LNList_Remove(LN_HANDLE(LNList) listObject, void* itemPtr, LN_OUT LNBool* outRemoved)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -263,7 +186,7 @@ LNResult LNListObject_Remove(LN_HANDLE(LNListObject) listObject, void* itemPtr, 
 }
 
 //------------------------------------------------------------------------------
-LNResult LNListObject_RemoveAt(LN_HANDLE(LNListObject) listObject, int index)
+LNResult LNList_RemoveAt(LN_HANDLE(LNList) listObject, int index)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_FUNC_TRY_BEGIN;

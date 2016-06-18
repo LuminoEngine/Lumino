@@ -229,6 +229,8 @@ public:
 	SceneNodeRenderingMode GetRenderingMode() const { return m_renderingMode; }
 	void SetRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
 
+	ObjectList<SceneNode*>* GetChildren() const { return m_children; }
+	
 public:
 
 	/// ノード種別の取得

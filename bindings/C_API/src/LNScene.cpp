@@ -50,6 +50,16 @@ LNResult LNSceneNode_GetPosition(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LNVect
 	LN_FUNC_TRY_END_RETURN;
 }
 
+//------------------------------------------------------------------------------
+LNResult LNSceneNode_GetChildren(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LN_GENERIC_HANDLE(LNList, LNSceneNode)* outList)
+{
+	LN_CHECK_ARG_HANDLE(sceneNode);
+	LN_CHECK_ARG(outList != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	*outList = TO_HANDLE(TO_REFOBJ(SceneNode, sceneNode)->GetChildren());
+	LN_FUNC_TRY_END_RETURN;
+}
+
 //==============================================================================
 // LNSprite
 //==============================================================================

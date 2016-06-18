@@ -42,7 +42,10 @@ namespace BinderMaker.Builder
             foreach (var classType in Manager.AllClasses)
             {
                 // 組み込みクラスは対象としない
-                if (classType.IsPreDefined) continue;  
+                if (classType.IsPreDefined) continue;
+
+                // 無視するクラスか？
+                if (Context.IsIgnoredClass(classType)) continue;
 
                 if (OnClassLookedStart(classType))
                 {

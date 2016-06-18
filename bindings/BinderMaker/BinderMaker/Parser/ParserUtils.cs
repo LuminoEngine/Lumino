@@ -42,6 +42,13 @@ namespace BinderMaker.Parser
             from sp in GenericSpaceToken.Many()
             select EmToString(sp);
 
+        // , 区切りの識別子列　https://github.com/sprache/Sprache/blob/master/src/Sprache.Tests/Scenarios/CsvTests.cs
+        public static readonly Parser<IEnumerable<string>> CommadIdentifiers =
+            from leading    in ParserUtils.Identifier.GenericToken()
+            from rest       in Parse.Char(',').Then(_ => ParserUtils.Identifier.GenericToken()).Many()
+            select Cons(leading, rest);
+        
+
 
         /// <summary>
         /// 型名 (識別子と、const、ポインタの * を含む)

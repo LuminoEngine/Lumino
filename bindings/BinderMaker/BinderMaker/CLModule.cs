@@ -42,7 +42,14 @@ namespace BinderMaker
             Classes = new List<CLClass>();
             foreach (var c in moduleDecl.Classes)
             {
-                Classes.Add(new CLClass(this, c));
+                if (c.IsGeneric)
+                {
+
+                }
+                else
+                {
+                    Classes.Add(new CLClass(this, c));
+                }
             }
         }
 
