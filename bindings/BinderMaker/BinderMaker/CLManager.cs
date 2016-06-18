@@ -136,7 +136,7 @@ namespace BinderMaker
             CLPrimitiveType.VoidPtr = new CLPrimitiveType("VoidPtr");
             CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
 
-            CLClass.Array = new CLClass("Array", false);
+            CLClass.Array = new CLClass("Array");
             //CLClass.ByteArray = new CLClass(CLClass.Array, CLPrimitiveType.Byte);
             //CLClass.IntArray = new CLClass("Array", CLPrimitiveType.Int);
 

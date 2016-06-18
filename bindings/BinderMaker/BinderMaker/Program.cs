@@ -35,6 +35,11 @@ namespace BinderMaker
                     SourcesRootDir + "LNScene.h",
                     SourcesRootDir + "LNUI.h",
                 };
+                var parser2 = new Parser2.ApiDeclParser();
+                var modules2 = parser2.Analyze(apiHeaders);
+
+                return 0;
+
                 var parser = new Parser.CLAPIHeaderParser();
                 var modules = parser.Analyze(apiHeaders);
 

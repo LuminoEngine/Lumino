@@ -149,10 +149,10 @@ namespace BinderMaker
         /// 組み込みクラス型を定義するために使用する。例えば Array。
         /// </summary>
         /// <param name="name"></param>
-        public CLClass(string name, bool generic)
+        public CLClass(string name)
         {
             OriginalName = name;
-            IsGeneric = generic;
+            //IsGeneric = generic;
             IsPreDefined = true;
             Methods = new List<CLMethod>();
             Manager.AllClasses.Add(this);
@@ -165,15 +165,15 @@ namespace BinderMaker
         /// </summary>
         /// <param name="name"></param>
         /// <param name="?"></param>
-        public CLClass(CLClass ownerGenericClass, CLType bindingType)
-        {
-            OriginalName = ownerGenericClass.Name;
-            BindingType = bindingType;
-            IsGeneric = true;
-            IsPreDefined = true;
-            Methods = new List<CLMethod>();
-            Manager.AllClasses.Add(this);
-        }
+        //public CLClass(CLClass ownerGenericClass, CLType bindingType)
+        //{
+        //    OriginalName = ownerGenericClass.Name;
+        //    BindingType = bindingType;
+        //    IsGeneric = true;
+        //    IsPreDefined = true;
+        //    Methods = new List<CLMethod>();
+        //    Manager.AllClasses.Add(this);
+        //}
 
         /// <summary>
         /// 必要に応じてサブクラスでオーバーライドされ、オリジナルの型名から CLType を検索して参照する

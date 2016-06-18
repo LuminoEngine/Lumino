@@ -42,9 +42,6 @@ LN_STATIC_CLASS(LNGameAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlayBGMMem(const void* data, int dataSize, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f), double fadeTime LN_DEFAULT_ARG(0.0));
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief		BGM の演奏を停止します。
@@ -75,9 +72,6 @@ LN_STATIC_CLASS(LNGameAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlayBGSMem(const void* data, int dataSize, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f), double fadeTime LN_DEFAULT_ARG(0.0));
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief		BGS の演奏を停止します。、
@@ -107,9 +101,6 @@ LN_STATIC_CLASS(LNGameAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlayMEMem(const void* data, int dataSize, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f));
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief	  ME の演奏を停止します。
@@ -161,9 +152,6 @@ LN_STATIC_CLASS(LNGameAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlaySEMem(const void* data, int dataSize, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f));
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief		メモリ上の音声ファイルデータから SE を演奏します。 (3D サウンド)
@@ -176,9 +164,6 @@ LN_STATIC_CLASS(LNGameAudio)
 	*/
 	LN_STATIC_API
 	LNResult LNGameAudio_PlaySE3DMem(const void* data, int dataSize, const LNVector3* position, float distance, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f));
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief		メモリ上の音声ファイルデータから SE を演奏します。(3D サウンド)
@@ -194,9 +179,6 @@ LN_STATIC_CLASS(LNGameAudio)
 	LN_STATIC_API
 	LN_ATTR_OVERLOAD(LNGameAudio_PlaySE3DMem)
 	LNResult LNGameAudio_PlaySE3DMemXYZ(const void* data, int dataSize, float x, float y, float z, float distance, float volume LN_DEFAULT_ARG(1.0f), float pitch LN_DEFAULT_ARG(1.0f));
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief		すべての SE の演奏を停止します。
@@ -331,9 +313,6 @@ LN_CLASS(LNSound, LNObject)
 	LN_INSTANCE_API
 	LN_ATTR_CONSTRUCTOR
 	LNResult LNSound_CreateMem(const void* data, int dataSize, LN_OUT LN_HANDLE(LNSound)* sound);
-	/*Option
-		@disable[cs,ruby]
-	Option*/
 
 	/**
 		@brief		サウンドのボリュームを設定します。
