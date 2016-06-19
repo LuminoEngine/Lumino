@@ -172,7 +172,8 @@ namespace BinderMaker
         /// </summary>
         public CLMethod(
             CLClass ownerClass,
-            Decls.FuncDecl funcDecl)
+            Decls.FuncDecl funcDecl,
+            Dictionary<string, CLType> genericTypeArgs = null)
             //string docText,
             //string funcText,
             //string optionText)
@@ -344,6 +345,8 @@ namespace BinderMaker
         /// </summary>
         public bool IsOverload { get; private set; }
 
+        public Decls.FuncDecl CoreFuncDecl { get; private set; }
+
         #endregion
 
         #region Methods
@@ -360,6 +363,7 @@ namespace BinderMaker
             //IEnumerable<CLParam> params1)
         {
             OwnerMethod = ownerMethod;
+            CoreFuncDecl = funcDecl;
             Modifier = funcDecl.Modifier;
 
             // 修飾子の決定
@@ -373,9 +377,21 @@ namespace BinderMaker
 
             _originalReturnTypeName = funcDecl.ReturnTypeName;
 
-            OriginalFullName = funcDecl.OriginalFullName;
+            // 関数名を決めていく
+            if (OwnerMethod.OwnerClass.IsGenericinstance)
+            {
+                // インスタンス化されたジェネリッククラスのメソッドは、すべて "クラス名_メソッド名" に書き直す。
+                // 例えば、LNList_GetCount は LNSceneNodeList_GetCount になる。
+                var t = funcDecl.OriginalFullName.Split('_');
+                OriginalFullName = OwnerMethod.OwnerClass.OriginalName + "_" + t[1];
+            }
+            else
+            {
+                OriginalFullName = funcDecl.OriginalFullName;
+            }
             var tokens = OriginalFullName.Trim().Split('_');
             OriginalName = tokens[1];
+
 
             Params = new List<CLParam>();
             foreach (var p in funcDecl.Params)
@@ -400,10 +416,10 @@ namespace BinderMaker
             IsRefObjectConstructor = (string.Compare(Name, 0, "Create", 0, 6) == 0);
 
 
-            if (OriginalFullName == "LNList_GetCount")
-            {
-                Console.Write(3);
-            }
+            //if (OriginalFullName == "LNList_GetCount")
+            //{
+            //    Console.Write(3);
+            //}
         }
 
         /// <summary>
@@ -425,7 +441,7 @@ namespace BinderMaker
 
         private string _originalTypeName;
         private string _originalAttrText;
-        private Decls.ParamDecl _paramDecl;
+        private string _typeName;
 
         #endregion
 
@@ -469,6 +485,13 @@ namespace BinderMaker
         /// out RefObject 型であるか
         /// </summary>
         public bool IsOutRefObjectType { get { return (CLType.CheckRefObjectType(Type) && IOModifier == BinderMaker.IOModifier.Out); } }
+        
+        /// <summary>
+        /// ジェネリッククラスに属するメソッドのジェネリック仮引数であるか (LN_T1 など)
+        /// </summary>
+        public bool IsGenericTemplate { get; private set; }
+
+        public Decls.ParamDecl ParamDecl { get; private set; }
 
         #endregion
 
@@ -479,14 +502,17 @@ namespace BinderMaker
         /// <param name="typeName"></param>
         /// <param name="varName"></param>
         /// <param name="defaultValue"></param>
-        public CLParam(CLFuncDecl ownerFunc, Decls.ParamDecl paramDecl)
+        public CLParam(
+            CLFuncDecl ownerFunc,
+            Decls.ParamDecl paramDecl)
         {
             OwnerFunc = ownerFunc;
-            _paramDecl = paramDecl;
+            ParamDecl = paramDecl;
             _originalAttrText = paramDecl.AttributeText;
             _originalTypeName = paramDecl.OriginalTypeName;
             Name = paramDecl.Name;
             OriginalDefaultValue = paramDecl.DefaultValue;
+            _typeName = _originalTypeName.Replace("*", "");
         }
 
         //public CLParam(string attr, string typeName, string varName, string defaultValue)
@@ -508,12 +534,31 @@ namespace BinderMaker
                 if (Document.IOModifier != BinderMaker.IOModifier.Out)
                     throw new InvalidOperationException("引数コメントと仮引数属性の入出力属性が異なります。");
             }
-            if (_paramDecl.IsGeneric)
+            if (ParamDecl.IsGenericInstance)
             {
-                _originalTypeName = CLClass.MakeGenericInstanceName(_paramDecl.GenericClassName, _paramDecl.GenericTypeParams);
+                _originalTypeName = CLClass.MakeGenericInstanceName(ParamDecl.GenericClassName, ParamDecl.GenericTypeParams);
+                
             }
 
-            Type = Manager.FindType(_originalTypeName);
+            if (OwnerFunc != null && // delegate の場合は null になっている
+                OwnerFunc.OwnerMethod.OwnerClass.IsGenericinstance &&
+                this == OwnerFunc.OwnerMethod.ThisParam)
+            {
+                // インスタンス化されたインスタンスメソッドの第一引数(this)の型は、クラスの OriginalName から検索する
+                Type = Manager.FindType(OwnerFunc.OwnerMethod.OwnerClass.OriginalName);
+            }
+            else if (OwnerFunc != null && 
+                OwnerFunc.OwnerMethod.OwnerClass.IsGenericinstance &&
+                OwnerFunc.OwnerMethod.OwnerClass.GenericTypeArgsMap.ContainsKey(_typeName))
+            {
+                // Generic 型であれば、親クラスの型引数名と一致する型を取りだす
+                Type = OwnerFunc.OwnerMethod.OwnerClass.GenericTypeArgsMap[_typeName];
+                IsGenericTemplate = true;
+            }
+            else
+            {
+                Type = Manager.FindType(_originalTypeName);
+            }
         }
         #endregion
     }

@@ -5,3 +5,4 @@
 #include "LNGraphics.h"
 #include "LNScene.h"
 #include "LNEngine.h"
+#include "LNGenericInstance.generated.h"

@@ -1080,6 +1080,7 @@ namespace Lumino
     /// </summary>
     public partial class SceneNode : RefObject
     {
+         SceneNodeObjectList _GetChildren;
     
         /// <summary>
         /// ノードの可視状態
@@ -1125,6 +1126,24 @@ namespace Lumino
                 var result = API.LNSceneNode_SetPosition( _handle, ref value);
                 if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
             
+            }
+            
+        }
+        /// <summary>
+        /// ノードの子要素のリスト
+        /// </summary>
+        public SceneNodeObjectList Children
+        {
+            get
+            {
+                IntPtr outList;
+                var result = API.LNSceneNode_GetChildren( _handle, out outList);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                if (outList == null)
+                    _GetChildren = null;
+                else if (_GetChildren == null || _GetChildren.Handle != outList)
+                    _GetChildren = InternalManager.GetWrapperObject<SceneNodeObjectList>(outList);
+                return _GetChildren;
             }
             
         }
@@ -1256,6 +1275,116 @@ namespace Lumino
     
     };
     
+    /// <summary>
+    /// 要素の集合 (可変長配列) を表すクラスです。
+    /// </summary>
+    public partial class SceneNodeObjectList : RefObject
+    {
+         SceneNode _GetAt;
+    
+    
+        internal SceneNodeObjectList(_LNInternal i) : base(i) {}
+        
+        /// <summary>
+        /// リストに格納されているオブジェクトの数を取得します。
+        /// </summary>
+        public int GetCount()
+        {
+            var outCount = new int();
+            var result = API.LNSceneNodeObjectList_GetCount( _handle, out outCount);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outCount;
+        
+        }
+        
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+        /// </summary>
+        /// <param name="index">インデックス(要素番号)</param>
+        /// <param name="itemPtr">設定するオブジェクト</param>
+        public void SetAt( int index,  SceneNode itemPtr)
+        {
+            var result = API.LNSceneNodeObjectList_SetAt( _handle,  index,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr));
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        
+        }
+        
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+        /// </summary>
+        /// <param name="index">インデックス(要素番号)</param>
+        public SceneNode GetAt( int index)
+        {
+            IntPtr outItemPtr;
+            var result = API.LNSceneNodeObjectList_GetAt( _handle,  index, out outItemPtr);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            if (outItemPtr == null)
+                _GetAt = null;
+            else if (_GetAt == null || _GetAt.Handle != outItemPtr)
+                _GetAt = InternalManager.GetWrapperObject<SceneNode>(outItemPtr);
+            return _GetAt;
+        }
+        
+        /// <summary>
+        /// オブジェクトリストの末尾にオブジェクトを追加します。
+        /// </summary>
+        /// <param name="itemPtr">追加するオブジェクト</param>
+        public void Add( SceneNode itemPtr)
+        {
+            var result = API.LNSceneNodeObjectList_Add( _handle,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr));
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        
+        }
+        
+        /// <summary>
+        /// オブジェクトリストから全てのオブジェクトを削除します。
+        /// </summary>
+        public void Clear()
+        {
+            var result = API.LNSceneNodeObjectList_Clear( _handle);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        
+        }
+        
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+        /// </summary>
+        /// <param name="index">item を挿入するインデックス</param>
+        /// <param name="itemPtr">挿入するオブジェクト</param>
+        public void Insert( int index,  SceneNode itemPtr)
+        {
+            var result = API.LNSceneNodeObjectList_Insert( _handle,  index,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr));
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        
+        }
+        
+        /// <summary>
+        /// オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+        /// </summary>
+        /// <param name="itemPtr">リストから削除するオブジェクト</param>
+        public bool Remove( SceneNode itemPtr)
+        {
+            var outRemoved = new bool();
+            var result = API.LNSceneNodeObjectList_Remove( _handle,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr), out outRemoved);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outRemoved;
+        
+        }
+        
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
+        /// </summary>
+        /// <param name="index">削除するオブジェクトのインデックス番号</param>
+        public void RemoveAt( int index)
+        {
+            var result = API.LNSceneNodeObjectList_RemoveAt( _handle,  index);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        
+        }
+        
+    
+    };
+    
 	
 
     
@@ -1362,6 +1491,16 @@ var _UINativeHostWindow = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_UINativeHostWindow);
 LNUINativeHostWindow_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _SceneNodeObjectList = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new SceneNodeObjectList(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_SceneNodeObjectList);
+LNSceneNodeObjectList_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
         }
 
         public static TypeInfo GetTypeInfoByHandle(IntPtr handle)
@@ -1398,6 +1537,9 @@ private static extern void LNUIFrameWindow_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNUINativeHostWindow_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNSceneNodeObjectList_SetBindingTypeInfo(IntPtr data);
 
 
     }

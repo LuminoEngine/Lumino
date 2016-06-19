@@ -19,6 +19,7 @@ set(LN_SOURCES_C_API
 	include/LNScene.h
 	include/LNTypedef.h
 	include/LNUI.h
+	include/LNGenericInstance.generated.h
 	src/LNAudio.cpp
 	src/LNBase.cpp
 	src/LNEngine.cpp
@@ -33,6 +34,7 @@ set(LN_SOURCES_C_API
 	src/LNScene.cpp
 	src/LNTypedef.cpp
 	src/LNUI.cpp
+	src/LNGenericInstance.generated.cpp
 	src/LNWrapperImplement.h
 )
 

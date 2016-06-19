@@ -223,6 +223,7 @@ LNSceneNode_SetVisible   ノードの可視状態を設定します。(default: 
 LNSceneNode_IsVisible    ノードの可視状態を取得します。
 LNSceneNode_SetPosition  ノードの位置を設定します。(default: 0,0,0)
 LNSceneNode_GetPosition  ノードの位置を取得します。
+LNSceneNode_GetChildren  ノードの子要素のリストを取得します。
 
 -------------------------------------------------------------------------------
  ■ [LNSprite]  スプライトのベースモジュールです。
@@ -245,4 +246,16 @@ LNSprite2D_CreateFromTexture  2Dスプライトオブジェクトを作成しま
 
 LNUINativeHostWindow_Create  UINativeHostWindow オブジェクトを作成します。
 LNUINativeHostWindow_Render  ウィンドウの内容を描画します。
+
+-------------------------------------------------------------------------------
+ ■ [LNSceneNodeObjectList]  要素の集合 (可変長配列) を表すモジュールです。
+
+LNSceneNodeObjectList_GetCount  リストに格納されているオブジェクトの数を取得します。
+LNSceneNodeObjectList_SetAt     オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+LNSceneNodeObjectList_GetAt     オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+LNSceneNodeObjectList_Add       オブジェクトリストの末尾にオブジェクトを追加します。
+LNSceneNodeObjectList_Clear     オブジェクトリストから全てのオブジェクトを削除します。
+LNSceneNodeObjectList_Insert    オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+LNSceneNodeObjectList_Remove    オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+LNSceneNodeObjectList_RemoveAt  オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
 

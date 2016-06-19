@@ -1821,6 +1821,11 @@ class Lumino::SceneNode < RefObject
     # @return [Lumino::Vector3] 座標
     def position
     end
+    # ノードの子要素のリストを取得します。
+    # @overload children()
+    # @return [Lumino::SceneNodeObjectList] SceneNodeList オブジェクトのハンドル
+    def children
+    end
 end
 # スプライトのベースクラスです。
 class Lumino::Sprite < SceneNode
@@ -1862,6 +1867,52 @@ class Lumino::UINativeHostWindow < UIFrameWindow
     # ウィンドウの内容を描画します。
     # @overload render()
     def render
+    end
+end
+# 要素の集合 (可変長配列) を表すクラスです。
+class Lumino::SceneNodeObjectList < RefObject
+    # リストに格納されているオブジェクトの数を取得します。
+    # @overload get_count()
+    # @return [Integer] 要素の数を格納する変数
+    def get_count
+    end
+    # オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+    # @overload set_at(index, itemPtr)
+    #   @param [Integer] index インデックス(要素番号)
+    #   @param [Lumino::SceneNode] itemPtr 設定するオブジェクト
+    def set_at
+    end
+    # オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+    # @overload get_at(index)
+    #   @param [Integer] index インデックス(要素番号)
+    # @return [Lumino::SceneNode] オブジェクトを格納する変数
+    def get_at
+    end
+    # オブジェクトリストの末尾にオブジェクトを追加します。
+    # @overload add(itemPtr)
+    #   @param [Lumino::SceneNode] itemPtr 追加するオブジェクト
+    def add
+    end
+    # オブジェクトリストから全てのオブジェクトを削除します。
+    # @overload clear()
+    def clear
+    end
+    # オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+    # @overload insert(index, itemPtr)
+    #   @param [Integer] index item を挿入するインデックス
+    #   @param [Lumino::SceneNode] itemPtr 挿入するオブジェクト
+    def insert
+    end
+    # オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+    # @overload remove(itemPtr)
+    #   @param [Lumino::SceneNode] itemPtr リストから削除するオブジェクト
+    # @return [Bool] 要素を削除したかどうかを示す値 (削除できた場合は true) を格納する変数のアドレス。
+    def remove
+    end
+    # オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
+    # @overload remove_at(index)
+    #   @param [Integer] index 削除するオブジェクトのインデックス番号
+    def remove_at
     end
 end
 

@@ -88,5 +88,27 @@ namespace BinderMaker.Builder
 
             throw new InvalidOperationException();
         }
+
+
+        /// <summary>
+        /// C言語の型名への変換 (out は * つけたり、Class は LN_HANDLE() つけたり)
+        /// </summary>
+        public static string ConvertTypeToCNameModified(CLParam param)
+        {
+            string typeName = ConvertTypeToCName(param.Type);
+
+            var classType = param.Type as CLClass;
+            if (classType != null)
+            {
+                typeName = string.Format("LN_HANDLE({0})", classType.OriginalName);
+            }
+
+            if (param.IOModifier == IOModifier.Out)
+            {
+                typeName += "*";
+            }
+
+            return typeName;
+        }
     }
 }

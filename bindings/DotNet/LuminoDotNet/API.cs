@@ -2130,6 +2130,14 @@ namespace Lumino
         public extern static Result LNSceneNode_SetPosition( IntPtr sceneNode, ref Vector3 position);
 
         /// <summary>
+        /// ノードの子要素のリストを取得します。
+        /// </summary>
+        /// <param name="sceneNode">ノードハンドル</param>
+        /// <param name="outList">SceneNodeList オブジェクトのハンドルを格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNode_GetChildren( IntPtr sceneNode, out IntPtr outList);
+
+        /// <summary>
         /// スプライトに設定されているテクスチャを取得します。
         /// </summary>
         /// <param name="sprite">スプライトハンドル</param>
@@ -2174,6 +2182,73 @@ namespace Lumino
         /// <param name="frameWindow">LNUIFrameWindow ハンドル</param>
         [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
         public extern static Result LNUINativeHostWindow_Render( IntPtr frameWindow);
+
+        /// <summary>
+        /// リストに格納されているオブジェクトの数を取得します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="outCount">要素の数を格納する変数</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_GetCount( IntPtr listObject, out int outCount);
+
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="index">インデックス(要素番号)</param>
+        /// <param name="itemPtr">設定するオブジェクト</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_SetAt( IntPtr listObject,  int index,  IntPtr itemPtr);
+
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="index">インデックス(要素番号)</param>
+        /// <param name="outItemPtr">オブジェクトを格納する変数</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_GetAt( IntPtr listObject,  int index, out IntPtr outItemPtr);
+
+        /// <summary>
+        /// オブジェクトリストの末尾にオブジェクトを追加します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="itemPtr">追加するオブジェクト</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_Add( IntPtr listObject,  IntPtr itemPtr);
+
+        /// <summary>
+        /// オブジェクトリストから全てのオブジェクトを削除します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_Clear( IntPtr listObject);
+
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="index">item を挿入するインデックス</param>
+        /// <param name="itemPtr">挿入するオブジェクト</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_Insert( IntPtr listObject,  int index,  IntPtr itemPtr);
+
+        /// <summary>
+        /// オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="itemPtr">リストから削除するオブジェクト</param>
+        /// <param name="outRemoved">要素を削除したかどうかを示す値 (削除できた場合は LN_TRUE) を格納する変数のアドレス。</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_Remove( IntPtr listObject,  IntPtr itemPtr, out bool outRemoved);
+
+        /// <summary>
+        /// オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
+        /// </summary>
+        /// <param name="listObject">オブジェクトリストハンドル</param>
+        /// <param name="index">削除するオブジェクトのインデックス番号</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNSceneNodeObjectList_RemoveAt( IntPtr listObject,  int index);
 
 
 

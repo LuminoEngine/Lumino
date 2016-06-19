@@ -1416,11 +1416,21 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         intptr_t p1;
-        stat = LNSprite_GetTexture(p0, &p1);
+        stat = LNSceneNode_GetChildren(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
     case 0x00F2:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        intptr_t p1;
+        stat = LNSprite_GetTexture(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00F3:
     {
         intptr_t p0 = CodeGetI();
         intptr_t p1 = CodeGetI();
@@ -1428,7 +1438,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00F3:
+    case 0x00F4:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -1437,7 +1447,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x00F4:
+    case 0x00F5:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1447,7 +1457,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00F5:
+    case 0x00F6:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1457,10 +1467,83 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00F6:
+    case 0x00F7:
     {
         intptr_t p0 = CodeGetI();
         stat = LNUINativeHostWindow_Render(p0);
+    
+        return true;
+    }
+    case 0x00F8:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNSceneNodeObjectList_GetCount(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00F9:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        intptr_t p2 = CodeGetI();
+        stat = LNSceneNodeObjectList_SetAt(p0, p1, p2);
+    
+        return true;
+    }
+    case 0x00FA:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        intptr_t p2;
+        stat = LNSceneNodeObjectList_GetAt(p0, p1, &p2);
+        int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
+        return true;
+    }
+    case 0x00FB:
+    {
+        intptr_t p0 = CodeGetI();
+        intptr_t p1 = CodeGetI();
+        stat = LNSceneNodeObjectList_Add(p0, p1);
+    
+        return true;
+    }
+    case 0x00FC:
+    {
+        intptr_t p0 = CodeGetI();
+        stat = LNSceneNodeObjectList_Clear(p0);
+    
+        return true;
+    }
+    case 0x00FD:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        intptr_t p2 = CodeGetI();
+        stat = LNSceneNodeObjectList_Insert(p0, p1, p2);
+    
+        return true;
+    }
+    case 0x00FE:
+    {
+        intptr_t p0 = CodeGetI();
+        intptr_t p1 = CodeGetI();
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNBool p2;
+        stat = LNSceneNodeObjectList_Remove(p0, p1, &p2);
+        int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
+        return true;
+    }
+    case 0x00FF:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        stat = LNSceneNodeObjectList_RemoveAt(p0, p1);
     
         return true;
     }

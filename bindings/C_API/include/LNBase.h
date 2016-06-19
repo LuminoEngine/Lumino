@@ -81,7 +81,7 @@ LN_CLASS_END
 /**
 	@brief		要素の集合 (可変長配列) を表すクラスです。
 */
-LN_GENERIC_CLASS(LNList, LN_T1)
+LN_GENERIC_CLASS(LNObjectList, LN_T1_HANDLE)
 
 	/**
 		@brief		リストに格納されているオブジェクトの数を取得します。
@@ -89,7 +89,7 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[out]	outCount	: 要素の数を格納する変数
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_GetCount(LN_HANDLE(LNList) listObject, int* outCount);
+	LNResult LNObjectList_GetCount(LN_HANDLE(LNObjectList) listObject, int* outCount);
 
 	/**
 		@brief		オブジェクトリストの指定したインデックスにオブジェクトを設定します。
@@ -98,7 +98,7 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[in]	itemPtr		: 設定するオブジェクト
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_SetAt(LN_HANDLE(LNList) listObject, int index, LN_T1 itemPtr);
+	LNResult LNObjectList_SetAt(LN_HANDLE(LNObjectList) listObject, int index, LN_T1_HANDLE itemPtr);
 
 	/**
 		@brief		オブジェクトリストの指定したインデックスのオブジェクトを取得します。
@@ -107,7 +107,7 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[out]	outItemPtr	: オブジェクトを格納する変数
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_GetAt(LN_HANDLE(LNList) listObject, int index, LN_OUT LN_T1* outItemPtr);
+	LNResult LNObjectList_GetAt(LN_HANDLE(LNObjectList) listObject, int index, LN_OUT LN_T1_HANDLE* outItemPtr);
 
 	/**
 		@brief		オブジェクトリストの末尾にオブジェクトを追加します。
@@ -115,14 +115,14 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[in]	itemPtr		: 追加するオブジェクト
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_Add(LN_HANDLE(LNList) listObject, LN_T1 itemPtr);
+	LNResult LNObjectList_Add(LN_HANDLE(LNObjectList) listObject, LN_T1_HANDLE itemPtr);
 
 	/**
 		@brief		オブジェクトリストから全てのオブジェクトを削除します。
 		@param[in]	listObject	: オブジェクトリストハンドル
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_Clear(LN_HANDLE(LNList) listObject);
+	LNResult LNObjectList_Clear(LN_HANDLE(LNObjectList) listObject);
 
 	/**
 		@brief		オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
@@ -131,7 +131,7 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[in]	itemPtr		: 挿入するオブジェクト
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_Insert(LN_HANDLE(LNList) listObject, int index, LN_T1 itemPtr);
+	LNResult LNObjectList_Insert(LN_HANDLE(LNObjectList) listObject, int index, LN_T1_HANDLE itemPtr);
 
 	/**
 		@brief		オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
@@ -140,7 +140,7 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[out]	outRemoved	: 要素を削除したかどうかを示す値 (削除できた場合は LN_TRUE) を格納する変数のアドレス。
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_Remove(LN_HANDLE(LNList) listObject, LN_T1 itemPtr, LN_OUT LNBool* outRemoved);
+	LNResult LNObjectList_Remove(LN_HANDLE(LNObjectList) listObject, LN_T1_HANDLE itemPtr, LN_OUT LNBool* outRemoved);
 
 	/**
 		@brief		オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
@@ -148,7 +148,7 @@ LN_GENERIC_CLASS(LNList, LN_T1)
 		@param[in]	index		: 削除するオブジェクトのインデックス番号
 	*/
 	LN_INSTANCE_API
-	LNResult LNList_RemoveAt(LN_HANDLE(LNList) listObject, int index);
+	LNResult LNObjectList_RemoveAt(LN_HANDLE(LNObjectList) listObject, int index);
 
 LN_CLASS_END
 

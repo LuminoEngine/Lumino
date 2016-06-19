@@ -31,7 +31,7 @@ namespace BinderMaker
 
         protected override void OnParam(ParamDecl p)
         {
-            if (p.IsGeneric)
+            if (p.IsGenericInstance)
             {
                 GenericInstanceMap.Add(p.GenericClassName, p.GenericTypeParams);
             }

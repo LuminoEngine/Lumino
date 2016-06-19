@@ -113,11 +113,11 @@ LN_INTERNAL_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
 }
 
 //==============================================================================
-// LNList
+// LNValueList
 //==============================================================================
 
 //------------------------------------------------------------------------------
-LNResult LNList_GetCount(LN_HANDLE(LNList) listObject, int* outCount)
+LNResult LNValueList_GetCount(LN_HANDLE(LNValueList) listObject, int* outCount)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(outCount != nullptr);
@@ -126,7 +126,7 @@ LNResult LNList_GetCount(LN_HANDLE(LNList) listObject, int* outCount)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_SetAt(LN_HANDLE(LNList) listObject, int index, void* itemPtr)
+LNResult LNValueList_SetAt(LN_HANDLE(LNValueList) listObject, int index, void* itemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -136,7 +136,7 @@ LNResult LNList_SetAt(LN_HANDLE(LNList) listObject, int index, void* itemPtr)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_GetAt(LN_HANDLE(LNList) listObject, int index, LN_OUT void** outItemPtr)
+LNResult LNValueList_GetAt(LN_HANDLE(LNValueList) listObject, int index, LN_OUT void** outItemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(outItemPtr != nullptr);
@@ -146,7 +146,7 @@ LNResult LNList_GetAt(LN_HANDLE(LNList) listObject, int index, LN_OUT void** out
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_Add(LN_HANDLE(LNList) listObject, void* itemPtr)
+LNResult LNValueList_Add(LN_HANDLE(LNValueList) listObject, void* itemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -156,7 +156,7 @@ LNResult LNList_Add(LN_HANDLE(LNList) listObject, void* itemPtr)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_Clear(LN_HANDLE(LNList) listObject)
+LNResult LNValueList_Clear(LN_HANDLE(LNValueList) listObject)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_FUNC_TRY_BEGIN;
@@ -165,7 +165,7 @@ LNResult LNList_Clear(LN_HANDLE(LNList) listObject)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_Insert(LN_HANDLE(LNList) listObject, int index, void* itemPtr)
+LNResult LNValueList_Insert(LN_HANDLE(LNValueList) listObject, int index, void* itemPtr)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -175,7 +175,7 @@ LNResult LNList_Insert(LN_HANDLE(LNList) listObject, int index, void* itemPtr)
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_Remove(LN_HANDLE(LNList) listObject, void* itemPtr, LN_OUT LNBool* outRemoved)
+LNResult LNValueList_Remove(LN_HANDLE(LNValueList) listObject, void* itemPtr, LN_OUT LNBool* outRemoved)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_CHECK_ARG(itemPtr != nullptr);
@@ -186,7 +186,94 @@ LNResult LNList_Remove(LN_HANDLE(LNList) listObject, void* itemPtr, LN_OUT LNBoo
 }
 
 //------------------------------------------------------------------------------
-LNResult LNList_RemoveAt(LN_HANDLE(LNList) listObject, int index)
+LNResult LNValueList_RemoveAt(LN_HANDLE(LNValueList) listObject, int index)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(ListObject, listObject)->RemoveAtInternal(index);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LNObjectList
+//==============================================================================
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_GetCount(LN_HANDLE(LNObjectList) listObject, int* outCount)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_CHECK_ARG(outCount != nullptr);
+	*outCount = TO_REFOBJ(ListObject, listObject)->GetCountInternal();
+	return LN_OK;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_SetAt(LN_HANDLE(LNObjectList) listObject, int index, LN_T1_HANDLE itemPtr)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_CHECK_ARG(itemPtr != 0);
+	LN_FUNC_TRY_BEGIN;
+	Object* ptr = TO_REFOBJ(Object, itemPtr);
+	TO_REFOBJ(ListObject, listObject)->SetAtByVoidPtr(index, &ptr);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_GetAt(LN_HANDLE(LNObjectList) listObject, int index, LN_OUT LN_T1_HANDLE* outItemPtr)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_CHECK_ARG(outItemPtr != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	Object** ptr = (Object**)TO_REFOBJ(ListObject, listObject)->GetAtByVoidPtr(index);
+	*outItemPtr = TO_HANDLE(*ptr);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_Add(LN_HANDLE(LNObjectList) listObject, LN_T1_HANDLE itemPtr)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_CHECK_ARG(itemPtr != 0);
+	LN_FUNC_TRY_BEGIN;
+	Object* ptr = TO_REFOBJ(Object, itemPtr);
+	TO_REFOBJ(ListObject, listObject)->AddByVoidPtr(&ptr);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_Clear(LN_HANDLE(LNObjectList) listObject)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_FUNC_TRY_BEGIN;
+	TO_REFOBJ(ListObject, listObject)->ClearInternal();
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_Insert(LN_HANDLE(LNObjectList) listObject, int index, LN_T1_HANDLE itemPtr)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_CHECK_ARG(itemPtr != 0);
+	LN_FUNC_TRY_BEGIN;
+	Object* ptr = TO_REFOBJ(Object, itemPtr);
+	TO_REFOBJ(ListObject, listObject)->InsertByVoidPtr(index, &ptr);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_Remove(LN_HANDLE(LNObjectList) listObject, LN_T1_HANDLE itemPtr, LN_OUT LNBool* outRemoved)
+{
+	LN_CHECK_ARG_HANDLE(listObject);
+	LN_CHECK_ARG(itemPtr != 0);
+	LN_FUNC_TRY_BEGIN;
+	Object* ptr = TO_REFOBJ(Object, itemPtr);
+	bool removed = TO_REFOBJ(ListObject, listObject)->RemoveByVoidPtr(&ptr);
+	if (outRemoved != nullptr) *outRemoved = LNC_TO_LNBOOL(removed);
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
+LNResult LNObjectList_RemoveAt(LN_HANDLE(LNObjectList) listObject, int index)
 {
 	LN_CHECK_ARG_HANDLE(listObject);
 	LN_FUNC_TRY_BEGIN;

@@ -52,7 +52,10 @@ typedef void*			LNUserData;
 
 #define LN_T1	void*
 #define LN_T2	void*
-	
+
+#define LN_T1_HANDLE	LNHandle
+#define LN_T2_HANDLE	LNHandle
+
 #define LN_INSTANCE_API		LN_API
 #define LN_INTERNAL_API		LN_API
 #define LN_STATIC_API		LN_API

@@ -64,6 +64,11 @@ namespace BinderMaker
                 //var wrapperBuilder = new Builder.WrapperImplementBuilder();
                 //wrapperBuilder.Build(CLManager.Instance, DotNetOutputDir + "C_API/src/LNWrapperImplement.h");
                 //return 0;
+                {
+                    var context = new Builder.CSContext();
+                    var builder = new Builder.C.GenericInstanceBuilder(DotNetOutputDir + "C_API/include/LNGenericInstance.generated.h");
+                    builder.Build(CLManager.Instance, context, DotNetOutputDir + "C_API/src/LNGenericInstance.generated.cpp");
+                }
 
                 // C#
                 var csContet = new Builder.CSContext();

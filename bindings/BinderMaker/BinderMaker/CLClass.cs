@@ -174,11 +174,12 @@ namespace BinderMaker
                     CLManager.Instance.FindType(typeParams[i]));
             }
 
+            // メソッドをインスタンス化
             Methods = new List<CLMethod>();
-            //foreach (var f in classDecl.FuncDecls)
-            //{
-            //    Methods.Add(new CLMethod(this, f));
-            //}
+            foreach (var f in classDecl.FuncDecls)
+            {
+                Methods.Add(new CLMethod(this, f, GenericTypeArgsMap));
+            }
 
             // 登録
             Manager.AllClasses.Add(this);

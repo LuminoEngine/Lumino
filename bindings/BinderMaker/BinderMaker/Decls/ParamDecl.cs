@@ -36,7 +36,7 @@ namespace BinderMaker.Decls
         /// <summary>
         /// 型がジェネリックか
         /// </summary>
-        public bool IsGeneric { get { return GenericTypeParams != null; } }
+        public bool IsGenericInstance { get { return GenericTypeParams != null; } }
         
         /// <summary>
         /// ジェネリッククス名 (LNList など)

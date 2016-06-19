@@ -72,6 +72,19 @@ int main()
 	LNSprite_GetTexture(spr1, &tex2);
 
 
+	LNHandle spr2;
+	r = LNSprite2D_CreateFromTexture(tex1, &spr2);
+
+	LNHandle list1;
+	r = LNSceneNode_GetChildren(spr1, &list1);
+
+	r = LNSceneNodeObjectList_Add(list1, spr2);
+
+	LNHandle spr22;
+	r = LNSceneNodeObjectList_GetAt(list1, 0, &spr22);
+
+
+
 	//LNConfig_SetUserWindowHandle((intptr_t)GetConsoleHwnd());
 	//LNConfig_SetDirectMusicMode(LN_DIRECTMUSICMODE_NORMAL);
 	//LNConfig_SetDirectMusicReverbLevel(1.0f);

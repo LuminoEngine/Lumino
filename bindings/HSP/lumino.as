@@ -406,12 +406,21 @@
 #cmd LNSceneNode_SetVisible $00EE
 #cmd LNSceneNode_GetPosition $00EF
 #cmd LNSceneNode_SetPosition $00F0
-#cmd LNSprite_GetTexture $00F1
-#cmd LNSprite_SetTexture $00F2
-#cmd LNSprite2D_Create $00F3
-#cmd LNSprite2D_CreateFromTexture $00F4
-#cmd LNUINativeHostWindow_Create $00F5
-#cmd LNUINativeHostWindow_Render $00F6
+#cmd LNSceneNode_GetChildren $00F1
+#cmd LNSprite_GetTexture $00F2
+#cmd LNSprite_SetTexture $00F3
+#cmd LNSprite2D_Create $00F4
+#cmd LNSprite2D_CreateFromTexture $00F5
+#cmd LNUINativeHostWindow_Create $00F6
+#cmd LNUINativeHostWindow_Render $00F7
+#cmd LNSceneNodeObjectList_GetCount $00F8
+#cmd LNSceneNodeObjectList_SetAt $00F9
+#cmd LNSceneNodeObjectList_GetAt $00FA
+#cmd LNSceneNodeObjectList_Add $00FB
+#cmd LNSceneNodeObjectList_Clear $00FC
+#cmd LNSceneNodeObjectList_Insert $00FD
+#cmd LNSceneNodeObjectList_Remove $00FE
+#cmd LNSceneNodeObjectList_RemoveAt $00FF
 
 
 #endif // __lumino__

@@ -84,6 +84,8 @@ namespace BinderMaker.Builder
             string output = OnMakeOutoutFileText();
             output = output.Replace("\r\n", "\n").Replace("\n", "\r\n");
             System.IO.File.WriteAllText(outputFilePath, output, GetOutputEncoding());
+
+            OnFinished();
         }
 
         /// <summary>
@@ -98,8 +100,12 @@ namespace BinderMaker.Builder
         /// <summary>
         /// ビルド開始前(初期化)通知
         /// </summary>
-        /// <param name="enumType"></param>
         protected virtual void OnInitialize() { }
+        
+        /// <summary>
+        /// ビルド終了通知
+        /// </summary>
+        protected virtual void OnFinished() { }
 
         /// <summary>
         /// enum 通知
