@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../BindingSupport.h"
 #include "Texture.h"
 #include "Color.h"
 #include "ImageEffect/ImageEffect.h"
@@ -62,10 +63,12 @@ public:
 
 	void SetBackgroundColor(const Color& color);
 
-	void AddViewportLayer(ViewportLayer* layer) { m_viewportLayerList.Add(layer); layer->m_owner = this; }
+	ObjectList<ViewportLayer*>* GetLayers() const { return m_viewportLayerList; }
+
+	void AddViewportLayer(ViewportLayer* layer) { m_viewportLayerList->Add(layer); layer->m_owner = this; }
 	void RemoveViewportLayer(ViewportLayer* layer)
 	{
-		if (m_viewportLayerList.Remove(RefPtr<ViewportLayer>(layer)))
+		if (m_viewportLayerList->Remove(RefPtr<ViewportLayer>(layer)))
 		{
 			layer->m_owner = nullptr;
 		}
@@ -81,12 +84,13 @@ private:
 	void TryRemakeLayerTargets();
 	void MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Matrix* mat);
 
-	GraphicsManager*				m_manager;
-	RenderTarget*					m_renderTarget;
-	Array<RefPtr<ViewportLayer>>	m_viewportLayerList;
-	ColorF							m_backgroundColor;
-	RenderTarget*					m_primaryLayerTarget;
-	RenderTarget*					m_secondaryLayerTarget;
+	GraphicsManager*					m_manager;
+	RenderTarget*						m_renderTarget;
+
+	RefPtr<ObjectList<ViewportLayer*>>	m_viewportLayerList;
+	ColorF								m_backgroundColor;
+	RenderTarget*						m_primaryLayerTarget;
+	RenderTarget*						m_secondaryLayerTarget;
 };
 
 LN_NAMESPACE_END

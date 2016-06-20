@@ -136,6 +136,7 @@ Viewport* Viewport::GetMainWindowViewport()
 Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_renderTarget(nullptr)
+	, m_viewportLayerList(RefPtr<ObjectList<ViewportLayer*>>::MakeRef())
 	, m_backgroundColor(ColorF::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)
@@ -178,7 +179,7 @@ void Viewport::Render()
 	m_manager->GetRenderingContext()->SetRenderTarget(0, m_primaryLayerTarget);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
-	for (auto& layer : m_viewportLayerList)
+	for (auto& layer : *m_viewportLayerList)
 	{
 		layer->Render(m_primaryLayerTarget);
 		layer->PostRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);

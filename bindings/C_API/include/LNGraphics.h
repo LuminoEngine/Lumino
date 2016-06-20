@@ -65,10 +65,27 @@ LN_CLASS_END
 
 //==============================================================================
 /**
+	@brief	ビューポートを構成するレイヤーのクラスです。
+*/
+LN_CLASS(LNViewportLayer, LNObject)
+	
+LN_CLASS_END
+
+//==============================================================================
+/**
 	@brief	ビューポートのクラスです。
 */
 LN_CLASS(LNViewport, LNObject)
 	
+	/**
+		@brief		ビューポートを構成するレイヤーのリストを取得します。
+		@param[in]	viewport	: Viewport オブジェクトのハンドル
+		@param[out]	outList		: ViewportLayerList オブジェクトのハンドルを格納する変数のポインタ
+	*/
+	LN_INSTANCE_API
+	LN_ATTR_PROPERTY
+	LNResult LNViewport_GetLayers(LN_HANDLE(LNViewport) viewport, LN_OUT LN_GENERIC_HANDLE(LNObjectList, LNViewportLayer)* outList);
+
 LN_CLASS_END
 
 LN_MODULE_END /** @} */

@@ -209,4 +209,121 @@ public:
 };
 #endif
 
+
+class ListObject
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+protected:
+	virtual ~ListObject() = default;
+
+LN_PROTECTED_INTERNAL_ACCESS:	// TODO: friend のほうがいいかな
+	virtual int GetCountInternal() = 0;
+	virtual void SetAtByVoidPtr(int index, void* item) = 0;
+	virtual void* GetAtByVoidPtr(int index) = 0;
+	virtual void AddByVoidPtr(void* item) = 0;
+	virtual void ClearInternal() = 0;
+	virtual void InsertByVoidPtr(int index, void* item) = 0;
+	virtual bool RemoveByVoidPtr(void* item) = 0;
+	virtual void RemoveAtInternal(int index) = 0;
+};
+
+template<typename T>
+class PrimitiveListObject
+	: public ListObject
+	, public Collection<T>
+{
+public:
+	PrimitiveListObject() = default;
+	virtual ~PrimitiveListObject() = default;
+
+private:
+	virtual int GetCountInternal() override
+	{
+		return Collection<T>::GetCount();
+	}
+	virtual void SetAtByVoidPtr(int index, void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		Collection<T>::SetAt(index, *((T*)item));
+	}
+	virtual void* GetAtByVoidPtr(int index) override
+	{
+		Collection<T>::reference item = Collection<T>::GetAt(index);
+		return &item;
+	}
+	virtual void ClearInternal() override
+	{
+		Collection<T>::Clear();
+	}
+	virtual void AddByVoidPtr(void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		Collection<T>::Add(*((T*)item));
+	}
+	virtual void InsertByVoidPtr(int index, void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		Collection<T>::Insert(index, *((T*)item));
+	}
+	virtual bool RemoveByVoidPtr(void* item) override
+	{
+		LN_CHECK_ARG(item != nullptr);
+		return Collection<T>::Remove(*((T*)item));
+	}
+	virtual void RemoveAtInternal(int index) override
+	{
+		Collection<T>::RemoveAt(index);
+	}
+};
+
+
+template<typename T>
+class ObjectList
+	: public PrimitiveListObject<T>
+{
+public:
+	typedef typename Collection<T>::value_type	value_type;
+
+public:
+	ObjectList()
+	{}
+
+	virtual ~ObjectList()
+	{
+		Collection<T>::Clear();
+	}
+
+protected:
+	virtual void InsertItem(int index, const value_type& item) override
+	{
+		Collection<T>::InsertItem(index, item);
+		LN_SAFE_ADDREF(item);
+	}
+	virtual void ClearItems() override
+	{
+		for (auto* item : *this) {
+			LN_SAFE_RELEASE(item);
+		}
+		Collection<T>::ClearItems();
+	}
+	virtual void RemoveItem(int index) override
+	{
+		if (Collection<T>::GetAt(index) != nullptr) {
+			Collection<T>::GetAt(index)->Release();
+		}
+		Collection<T>::RemoveItem(index);
+	}
+	virtual void SetItem(int index, const value_type& item) override
+	{
+		LN_SAFE_ADDREF(item);
+		if (Collection<T>::GetAt(index) != nullptr) {
+			Collection<T>::GetAt(index)->Release();
+		}
+		Collection<T>::SetItem(index, item);
+	}
+
+private:
+};
+
 LN_NAMESPACE_END

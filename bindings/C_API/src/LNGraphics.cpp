@@ -67,6 +67,21 @@ LNResult LNTexture2D_CreateEx(const LNChar* filePath, LNTextureFormat foramt, LN
 }
 
 //==============================================================================
+// LNViewportLayer
+//==============================================================================
+LN_TYPE_INFO_IMPL(ln::ViewportLayer, LNViewportLayer);
+
+//==============================================================================
 // LNViewport
 //==============================================================================
 LN_TYPE_INFO_IMPL(ln::Viewport, LNViewport);
+
+//------------------------------------------------------------------------------
+LNResult LNViewport_GetLayers(LN_HANDLE(LNViewport) viewport, LN_OUT LN_GENERIC_HANDLE(LNObjectList, LNViewportLayer)* outList)
+{
+	LN_CHECK_ARG_HANDLE(viewport);
+	LN_CHECK_ARG(outList != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	*outList = TO_HANDLE_ADDREF(TO_REFOBJ(ln::Viewport, viewport)->GetLayers());
+	LN_FUNC_TRY_END_RETURN;
+}
