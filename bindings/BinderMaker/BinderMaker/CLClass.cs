@@ -204,7 +204,14 @@ namespace BinderMaker
 
         public static string MakeGenericInstanceName(string originalClassName, List<string> originalTypeName)
         {
-            return "LN" + originalTypeName[0].Substring(2) + originalClassName.Substring(2); // TODO: とりあえず [0] で名前を作るだけ
+            string baseName = originalClassName;
+            if (originalClassName == "LNObjectList" ||
+                originalClassName == "LNValueList")
+            {
+                baseName = "LNList";
+            }
+
+            return "LN" + originalTypeName[0].Substring(2) + baseName.Substring(2); // TODO: とりあえず [0] で名前を作るだけ
         }
 
         /// <summary>

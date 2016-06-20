@@ -102,6 +102,7 @@ namespace Test
         }
 
         //--------------------------------------------------------------
+        // 明示的破棄のテスト
         static void Test_Dispose()
         {
             int c = Diag.GetHandleCount();
@@ -115,6 +116,54 @@ namespace Test
             AssertEq(c, Diag.GetHandleCount());
         }
 
+        //--------------------------------------------------------------
+        // オブジェクトリストのテスト
+        static void Test_ObjectList()
+        {
+            var tex1 = new Texture2D(32, 32);
+            var spr1 = new Sprite2D(tex1);
+            var spr2 = new Sprite2D(tex1);
+            var spr3 = new Sprite2D(tex1);
+            var children = spr1.Children;
+
+            // とりあえず機能を呼び出してみる
+            AssertEq(0, children.Count);
+
+            // 要素を追加する
+            children.Add(spr2);
+            
+            // 要素数が増えている
+            AssertEq(1, children.Count);
+
+            // 要素を get してみる
+            AssertEq(spr2, children[0]);
+
+            // 要素を set してみる
+            children[0] = spr3;
+
+            // 要素を get してみる
+            AssertEq(spr3, children[0]);
+
+            // 要素を削除してみる
+            children.RemoveAt(0);
+            AssertEq(0, children.Count);
+
+            // foreach
+            children.Add(spr2);
+            children.Add(spr3);
+            int i = 0;
+            foreach (var item in children)
+            {
+                if (i == 0) AssertEq(spr2, item);
+                if (i == 1) AssertEq(spr3, item);
+                i++;
+            }
+
+            // 別の変数に取り出してみる
+            var children2 = spr1.Children;
+            AssertEq(children, children2);
+        }
+
         static void Main(string[] args)
         {
             Engine.Initialize();
@@ -124,6 +173,7 @@ namespace Test
             Test_RefObjectGetSetStruct();
             Test_RefObjectGetSetRefObject();
             Test_Dispose();
+            Test_ObjectList();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
         }

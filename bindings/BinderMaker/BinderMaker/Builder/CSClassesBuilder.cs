@@ -46,22 +46,13 @@ namespace BinderMaker.Builder
             if (classType.IsExtension) return false;  // 拡張クラスはなにもしない
             if (classType.IsStruct) return false;
 
+           
+
             _classText = new OutputBuffer();
             _fieldsText = new OutputBuffer();
             _methodsText = new OutputBuffer();
             _propertiesText = new OutputBuffer();
 
-            // XMLコメント
-            CSCommon.MakeSummaryXMLComment(_classText, _context.GetBriefText(classType));
-            CSCommon.MakeRemarksXMLComment(_classText, _context.GetDetailsText(classType));
-
-            // クラスヘッダ
-            _classText.Append("public partial class {0}", classType.Name);
-
-            // ベースクラス
-            if (classType.BaseClass != null)
-                _classText.Append(" : " + classType.BaseClass.Name);
-            _classText.NewLine();
 
             // ReferenceObject なら型情報を作る
             if (classType.IsReferenceObject)
@@ -82,6 +73,33 @@ var _{0} = new TypeInfo(){{ Factory = (handle) =>
                 _typeInfoPInvolesText.AppendLine("private static extern void {0}_SetBindingTypeInfo(IntPtr data);", classType.OriginalName).NewLine();
                 // internal コンストラクタ
                 _methodsText.AppendLine("internal {0}(_LNInternal i) : base(i) {{}}", classType.Name).NewLine();
+            }
+
+            // XMLコメント
+            CSCommon.MakeSummaryXMLComment(_classText, _context.GetBriefText(classType));
+            CSCommon.MakeRemarksXMLComment(_classText, _context.GetDetailsText(classType));
+
+            // クラスヘッダ
+            _classText.Append("public partial class {0}", classType.Name);
+
+            // LNObjectList は特殊扱い
+            // TODO: もうちょっといい方法あるかも…
+            if (classType.IsGenericinstance &&
+                classType.ClassDecl.OriginalName == "LNObjectList")
+            {
+                // ベースクラスは ObjectList
+                _classText.Append(" : ObjectList<{0}>", classType.GenericTypeArgsMap.First().Value.Name);
+
+                // クラスの終了処理だけ行ってメソッド生成はしない
+                OnClassLookedEnd(classType);
+                return false;
+            }
+            else
+            {
+                // ベースクラス
+                if (classType.BaseClass != null)
+                    _classText.Append(" : " + classType.BaseClass.Name);
+                _classText.NewLine();
             }
 
             return true;

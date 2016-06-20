@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -209,6 +210,181 @@ namespace Lumino
         public static int GetObjectWeakReferenceCount()
         {
             return InternalManager._userDataList.Count - InternalManager._userDataListIndexStack.Count;
+        }
+    }
+
+    internal static class InternalAPI
+    {
+    	internal const string DLLName = API.DLLName;
+        internal const CharSet DLLCharSet = API.DLLCharSet;
+        internal const CallingConvention DefaultCallingConvention = API.DefaultCallingConvention;
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_GetCount(IntPtr listObject, out int outCount);
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_SetAt(IntPtr listObject, int index, IntPtr itemPtr);
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_GetAt(IntPtr listObject, int index, out IntPtr outItemPtr);
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_Add(IntPtr listObject, IntPtr itemPtr);
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_Clear(IntPtr listObject);
+        
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_Insert(IntPtr listObject, int index, IntPtr itemPtr);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_Remove(IntPtr listObject, IntPtr itemPtr, out bool outRemoved);
+
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNObjectList_RemoveAt(IntPtr listObject, int index);
+    }
+
+    /// <summary>
+    /// オブジェクトのコレクション
+    /// </summary>
+    public class ObjectList<T> : RefObject, IEnumerable<T>
+        where T : RefObject
+    {
+        private List<T> _cacheList;
+
+        internal ObjectList(_LNInternal i) { }
+
+        internal override void SetHandle(IntPtr handle)
+        {
+            base.SetHandle(handle);
+
+            _cacheList = new List<T>();
+            SyncItems();
+
+            //int count = Count;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    IntPtr item;
+            //    API.LNObjectList_GetAt(_handle, i, out item);
+            //    var t = TypeInfo.GetTypeInfoByHandle(item).Factory(item);
+            //    t.SetHandle(item);
+            //    _cacheList.Add(t);
+            //}
+        }
+
+        public int Count
+        {
+            get
+            {
+                int count;
+                var result = InternalAPI.LNObjectList_GetCount(_handle, out count);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                return count;
+            }
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                SyncItems();
+                return (T)_cacheList[index];
+            }
+            set
+            {
+                SyncItems();
+                var result = InternalAPI.LNObjectList_SetAt(_handle, index, value.Handle);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                _cacheList[index] = value;
+            }
+        }
+
+        public void Add(T item)
+        {
+            SyncItems();
+            var result = InternalAPI.LNObjectList_Add(_handle, item.Handle);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            _cacheList.Add(item);
+        }
+
+        public void Clear()
+        {
+            var result = InternalAPI.LNObjectList_Clear(_handle);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            _cacheList.Clear();
+        }
+
+        public void Insert(int index, T item)
+        {
+            SyncItems();
+            var result = InternalAPI.LNObjectList_Insert(_handle, index, item.Handle);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            _cacheList.Insert(index, item);
+        }
+
+        public bool Remove(T item)
+        {
+            SyncItems();
+            bool removed;
+            var result = InternalAPI.LNObjectList_Remove(_handle, item.Handle, out removed);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            _cacheList.Remove(item);
+            return removed;
+        }
+
+        // TODO
+        //public void RemoveAll(T item)
+        //{
+        //    SyncItems();
+        //    var result = InternalAPI.LNObjectList_RemoveAll(_handle, item.Handle);
+        //    if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+        //    _cacheList.RemoveAll((i) => i == item);
+        //}
+
+        public void RemoveAt(int index)
+        {
+            SyncItems();
+            var result = InternalAPI.LNObjectList_RemoveAt(_handle, index);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            _cacheList.RemoveAt(index);
+        }
+
+        private void SyncItems()
+        {
+            int count = Count;
+            if (_cacheList.Count < count)
+            {
+                // 足りない分を詰める
+                for (int i = 0; i < count - _cacheList.Count; ++i)
+                {
+                    _cacheList.Add(null);
+                }
+
+                // リスト内容を同期する
+                for (int i = 0; i < count; ++i)
+                {
+                    IntPtr item;
+                    var result = InternalAPI.LNObjectList_GetAt(_handle, i, out item);
+                    if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+
+                    if (_cacheList[i] == null || _cacheList[i].Handle != item)
+                    {
+                        var t = TypeInfo.GetTypeInfoByHandle(item).Factory(item);
+                        t.SetHandle(item);
+                        _cacheList.Add((T)t);
+                    }
+                }
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _cacheList.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _cacheList.GetEnumerator();
         }
     }
 }

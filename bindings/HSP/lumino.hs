@@ -3330,7 +3330,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_GetCount
+LNSceneNodeList_GetCount
 ƒŠƒXƒg‚ÉŠi”[‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Ì”‚ğæ“¾‚µ‚Ü‚·B
 
 %group
@@ -3351,7 +3351,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_SetAt
+LNSceneNodeList_SetAt
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÉƒIƒuƒWƒFƒNƒg‚ğİ’è‚µ‚Ü‚·B
 
 %group
@@ -3373,7 +3373,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_GetAt
+LNSceneNodeList_GetAt
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾‚µ‚Ü‚·B
 
 %group
@@ -3395,7 +3395,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_Add
+LNSceneNodeList_Add
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ì––”ö‚ÉƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á‚µ‚Ü‚·B
 
 %group
@@ -3416,7 +3416,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_Clear
+LNSceneNodeList_Clear
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚©‚ç‘S‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚·B
 
 %group
@@ -3436,7 +3436,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_Insert
+LNSceneNodeList_Insert
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚ÉƒIƒuƒWƒFƒNƒg‚ğ‘}“ü‚µ‚Ü‚·B
 
 %group
@@ -3458,7 +3458,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_Remove
+LNSceneNodeList_Remove
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg“à‚Åw’è‚µ‚½ƒnƒ“ƒhƒ‹‚Æˆê’v‚·‚éÅ‰‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚·B
 
 %group
@@ -3480,7 +3480,7 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
-LNSceneNodeObjectList_RemoveAt
+LNSceneNodeList_RemoveAt
 ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚éƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚·B
 
 %group

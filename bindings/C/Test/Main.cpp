@@ -78,10 +78,10 @@ int main()
 	LNHandle list1;
 	r = LNSceneNode_GetChildren(spr1, &list1);
 
-	r = LNSceneNodeObjectList_Add(list1, spr2);
+	r = LNSceneNodeList_Add(list1, spr2);
 
 	LNHandle spr22;
-	r = LNSceneNodeObjectList_GetAt(list1, 0, &spr22);
+	r = LNSceneNodeList_GetAt(list1, 0, &spr22);
 
 
 

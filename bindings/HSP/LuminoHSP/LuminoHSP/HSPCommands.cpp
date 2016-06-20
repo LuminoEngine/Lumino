@@ -1489,7 +1489,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
         int p1;
-        stat = LNSceneNodeObjectList_GetCount(p0, &p1);
+        stat = LNSceneNodeList_GetCount(p0, &p1);
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
@@ -1498,7 +1498,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
         intptr_t p2 = CodeGetI();
-        stat = LNSceneNodeObjectList_SetAt(p0, p1, p2);
+        stat = LNSceneNodeList_SetAt(p0, p1, p2);
     
         return true;
     }
@@ -1509,7 +1509,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         PVal* pval_p2;
         APTR aptr_p2 = code_getva(&pval_p2);
         intptr_t p2;
-        stat = LNSceneNodeObjectList_GetAt(p0, p1, &p2);
+        stat = LNSceneNodeList_GetAt(p0, p1, &p2);
         int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
         return true;
     }
@@ -1517,14 +1517,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     {
         intptr_t p0 = CodeGetI();
         intptr_t p1 = CodeGetI();
-        stat = LNSceneNodeObjectList_Add(p0, p1);
+        stat = LNSceneNodeList_Add(p0, p1);
     
         return true;
     }
     case 0x00FD:
     {
         intptr_t p0 = CodeGetI();
-        stat = LNSceneNodeObjectList_Clear(p0);
+        stat = LNSceneNodeList_Clear(p0);
     
         return true;
     }
@@ -1533,7 +1533,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
         intptr_t p2 = CodeGetI();
-        stat = LNSceneNodeObjectList_Insert(p0, p1, p2);
+        stat = LNSceneNodeList_Insert(p0, p1, p2);
     
         return true;
     }
@@ -1544,7 +1544,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         PVal* pval_p2;
         APTR aptr_p2 = code_getva(&pval_p2);
         LNBool p2;
-        stat = LNSceneNodeObjectList_Remove(p0, p1, &p2);
+        stat = LNSceneNodeList_Remove(p0, p1, &p2);
         int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
         return true;
     }
@@ -1552,7 +1552,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
-        stat = LNSceneNodeObjectList_RemoveAt(p0, p1);
+        stat = LNSceneNodeList_RemoveAt(p0, p1);
     
         return true;
     }

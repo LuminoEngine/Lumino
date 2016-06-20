@@ -1102,7 +1102,7 @@ namespace Lumino
     /// </summary>
     public partial class SceneNode : RefObject
     {
-         SceneNodeObjectList _GetChildren;
+         SceneNodeList _GetChildren;
     
         /// <summary>
         /// ノードの可視状態
@@ -1154,7 +1154,7 @@ namespace Lumino
         /// <summary>
         /// ノードの子要素のリスト
         /// </summary>
-        public SceneNodeObjectList Children
+        public SceneNodeList Children
         {
             get
             {
@@ -1164,7 +1164,7 @@ namespace Lumino
                 if (outList == null)
                     _GetChildren = null;
                 else if (_GetChildren == null || _GetChildren.Handle != outList)
-                    _GetChildren = InternalManager.GetWrapperObject<SceneNodeObjectList>(outList);
+                    _GetChildren = InternalManager.GetWrapperObject<SceneNodeList>(outList);
                 return _GetChildren;
             }
             
@@ -1300,109 +1300,10 @@ namespace Lumino
     /// <summary>
     /// 要素の集合 (可変長配列) を表すクラスです。
     /// </summary>
-    public partial class SceneNodeObjectList : RefObject
-    {
-         SceneNode _GetAt;
+    public partial class SceneNodeList : ObjectList<SceneNode>{
     
     
-        internal SceneNodeObjectList(_LNInternal i) : base(i) {}
-        
-        /// <summary>
-        /// リストに格納されているオブジェクトの数を取得します。
-        /// </summary>
-        public int GetCount()
-        {
-            var outCount = new int();
-            var result = API.LNSceneNodeObjectList_GetCount( _handle, out outCount);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return outCount;
-        
-        }
-        
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスにオブジェクトを設定します。
-        /// </summary>
-        /// <param name="index">インデックス(要素番号)</param>
-        /// <param name="itemPtr">設定するオブジェクト</param>
-        public void SetAt( int index,  SceneNode itemPtr)
-        {
-            var result = API.LNSceneNodeObjectList_SetAt( _handle,  index,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr));
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-        
-        }
-        
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスのオブジェクトを取得します。
-        /// </summary>
-        /// <param name="index">インデックス(要素番号)</param>
-        public SceneNode GetAt( int index)
-        {
-            IntPtr outItemPtr;
-            var result = API.LNSceneNodeObjectList_GetAt( _handle,  index, out outItemPtr);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            if (outItemPtr == null)
-                _GetAt = null;
-            else if (_GetAt == null || _GetAt.Handle != outItemPtr)
-                _GetAt = InternalManager.GetWrapperObject<SceneNode>(outItemPtr);
-            return _GetAt;
-        }
-        
-        /// <summary>
-        /// オブジェクトリストの末尾にオブジェクトを追加します。
-        /// </summary>
-        /// <param name="itemPtr">追加するオブジェクト</param>
-        public void Add( SceneNode itemPtr)
-        {
-            var result = API.LNSceneNodeObjectList_Add( _handle,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr));
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-        
-        }
-        
-        /// <summary>
-        /// オブジェクトリストから全てのオブジェクトを削除します。
-        /// </summary>
-        public void Clear()
-        {
-            var result = API.LNSceneNodeObjectList_Clear( _handle);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-        
-        }
-        
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
-        /// </summary>
-        /// <param name="index">item を挿入するインデックス</param>
-        /// <param name="itemPtr">挿入するオブジェクト</param>
-        public void Insert( int index,  SceneNode itemPtr)
-        {
-            var result = API.LNSceneNodeObjectList_Insert( _handle,  index,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr));
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-        
-        }
-        
-        /// <summary>
-        /// オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
-        /// </summary>
-        /// <param name="itemPtr">リストから削除するオブジェクト</param>
-        public bool Remove( SceneNode itemPtr)
-        {
-            var outRemoved = new bool();
-            var result = API.LNSceneNodeObjectList_Remove( _handle,  (itemPtr != null) ? itemPtr.Handle : default(IntPtr), out outRemoved);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return outRemoved;
-        
-        }
-        
-        /// <summary>
-        /// オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
-        /// </summary>
-        /// <param name="index">削除するオブジェクトのインデックス番号</param>
-        public void RemoveAt( int index)
-        {
-            var result = API.LNSceneNodeObjectList_RemoveAt( _handle,  index);
-            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
-        
-        }
+        internal SceneNodeList(_LNInternal i) : base(i) {}
         
     
     };
@@ -1422,6 +1323,9 @@ namespace Lumino
 
         public static void Register()
         {
+        	// [0] はダミー
+            _typeInfos.Add(null);
+            
 
 var _Sound = new TypeInfo(){ Factory = (handle) =>
     {
@@ -1513,15 +1417,15 @@ var _UINativeHostWindow = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_UINativeHostWindow);
 LNUINativeHostWindow_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
-var _SceneNodeObjectList = new TypeInfo(){ Factory = (handle) =>
+var _SceneNodeList = new TypeInfo(){ Factory = (handle) =>
     {
-        var obj = new SceneNodeObjectList(_LNInternal.InternalBlock);
+        var obj = new SceneNodeList(_LNInternal.InternalBlock);
         obj.SetHandle(handle);
         return obj;
     }
 };
-_typeInfos.Add(_SceneNodeObjectList);
-LNSceneNodeObjectList_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+_typeInfos.Add(_SceneNodeList);
+LNSceneNodeList_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
         }
 
@@ -1561,131 +1465,8 @@ private static extern void LNUIFrameWindow_SetBindingTypeInfo(IntPtr data);
 private static extern void LNUINativeHostWindow_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
-private static extern void LNSceneNodeObjectList_SetBindingTypeInfo(IntPtr data);
+private static extern void LNSceneNodeList_SetBindingTypeInfo(IntPtr data);
 
 
     }
-
-#if false
-    /// <summary>
-    /// オブジェクトのコレクション
-    /// </summary>
-    public class ObjectList<T> : ReferenceObject
-        where T : ReferenceObject
-    {
-        private List<ReferenceObject> _list;
-        
-        internal ObjectList(_LNInternal i) {}
-
-        internal override void SetHandle(IntPtr handle)
-        {
-            _list = new List<ReferenceObject>();
-            _handle = handle;
-            int count = Count;
-            for (int i = 0; i < count; i++)
-            {
-                IntPtr item;
-                API.LNObjectList_GetAt(_handle, i, out item);
-                var t = TypeInfo.GetTypeInfoByHandle(item).Factory(item);
-                t.SetHandle(item);
-                _list.Add(t);
-            }
-        }
-        
-        public int Count
-        {
-            get
-            {
-                int count;
-                API.LNObjectList_GetCount(_handle, out count);
-                return count;
-            }
-        }
-        
-        public T this[int index]
-        {
-            get
-            {
-                SyncItems();
-                return (T)_list[index];
-            }
-            set
-            {
-                SyncItems();
-                _list[index] = value;
-                API.LNObjectList_SetAt(_handle, index, value.Handle);
-            }
-        }
-        
-        public void Add(T item)
-        {
-            SyncItems();
-            _list.Add(item);
-            API.LNObjectList_Add(_handle, item.Handle);
-        }
-        
-        public void Clear()
-        {
-            _list.Clear();
-            API.LNObjectList_Clear(_handle);
-        }
-        
-        public void Insert(int index, T item)
-        {
-            SyncItems();
-            _list.Insert(index, item);
-            API.LNObjectList_Insert(_handle, index, item.Handle);
-        }
-        
-        public void Remove(T item)
-        {
-            SyncItems();
-            _list.Remove(item);
-            API.LNObjectList_Remove(_handle, item.Handle);
-        }
-        
-        public void RemoveAll(T item)
-        {
-            SyncItems();
-            _list.RemoveAll((i) => i == item);
-            API.LNObjectList_RemoveAll(_handle, item.Handle);
-        }
-        
-        public void RemoveAt(int index)
-        {
-            SyncItems();
-            _list.RemoveAt(index);
-            API.LNObjectList_RemoveAt(_handle, index);
-        }
-
-        private void SyncItems() 
-        {
-            int count = Count;
-            if (_list.Count < count)
-            {
-                // 足りない分を詰める
-                for (int i = 0; i < count - _list.Count; ++i)
-		        {
-                    _list.Add(null);
-                }
-
-                // リスト内容を同期する
-                for (int i = 0; i < count; ++i)
-		        {
-                    IntPtr item;
-                    API.LNObjectList_GetAt(_handle, i, out item);
-			        if (_list[i] == null || _list[i].Handle != item)
-			        {
-                        var t = TypeInfo.GetTypeInfoByHandle(item).Factory(item);
-                        t.SetHandle(item);
-                        _list.Add(t);
-			        }
-		        }
-            }
-        }
-    }
-#endif
-
-	
-
 }

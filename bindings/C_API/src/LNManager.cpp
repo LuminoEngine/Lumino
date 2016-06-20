@@ -80,7 +80,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	if (obj->GetUserData() != NULL)
 	{
 		ObjectRegisterData* data = (ObjectRegisterData*)obj->GetUserData();
-		m_objectEntryList[data->Index].RefCount++;	// AddRef
+		obj->AddRef();
 		return data->Index;
 	}
 
@@ -100,6 +100,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		data->Index = e.Index;
 		obj->SetUserData(data);
 
+		obj->AddRef();
 		return e.Index;
 	}
 	else
@@ -120,6 +121,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		data->Index = e.Index;
 		obj->SetUserData(data);
 
+		obj->AddRef();
 		return e.Index;
 	}
 }

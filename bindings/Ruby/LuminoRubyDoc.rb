@@ -1831,7 +1831,7 @@ class Lumino::SceneNode < RefObject
     end
     # ノードの子要素のリストを取得します。
     # @overload children()
-    # @return [Lumino::SceneNodeObjectList] SceneNodeList オブジェクトのハンドル
+    # @return [Lumino::SceneNodeList] SceneNodeList オブジェクトのハンドル
     def children
     end
 end
@@ -1878,7 +1878,7 @@ class Lumino::UINativeHostWindow < UIFrameWindow
     end
 end
 # 要素の集合 (可変長配列) を表すクラスです。
-class Lumino::SceneNodeObjectList < RefObject
+class Lumino::SceneNodeList < RefObject
     # リストに格納されているオブジェクトの数を取得します。
     # @overload get_count()
     # @return [Integer] 要素の数を格納する変数

@@ -253,14 +253,14 @@ LNUINativeHostWindow_Create  UINativeHostWindow オブジェクトを作成し�
 LNUINativeHostWindow_Render  ウィンドウの内容を描画します。
 
 -------------------------------------------------------------------------------
- ■ [LNSceneNodeObjectList]  要素の集合 (可変長配列) を表すモジュールです。
+ ■ [LNSceneNodeList]  要素の集合 (可変長配列) を表すモジュールです。
 
-LNSceneNodeObjectList_GetCount  リストに格納されているオブジェクトの数を取得します。
-LNSceneNodeObjectList_SetAt     オブジェクトリストの指定したインデックスにオブジェクトを設定します。
-LNSceneNodeObjectList_GetAt     オブジェクトリストの指定したインデックスのオブジェクトを取得します。
-LNSceneNodeObjectList_Add       オブジェクトリストの末尾にオブジェクトを追加します。
-LNSceneNodeObjectList_Clear     オブジェクトリストから全てのオブジェクトを削除します。
-LNSceneNodeObjectList_Insert    オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
-LNSceneNodeObjectList_Remove    オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
-LNSceneNodeObjectList_RemoveAt  オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
+LNSceneNodeList_GetCount  リストに格納されているオブジェクトの数を取得します。
+LNSceneNodeList_SetAt     オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+LNSceneNodeList_GetAt     オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+LNSceneNodeList_Add       オブジェクトリストの末尾にオブジェクトを追加します。
+LNSceneNodeList_Clear     オブジェクトリストから全てのオブジェクトを削除します。
+LNSceneNodeList_Insert    オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+LNSceneNodeList_Remove    オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+LNSceneNodeList_RemoveAt  オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
 

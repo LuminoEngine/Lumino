@@ -414,14 +414,14 @@
 #cmd LNSprite2D_CreateFromTexture $00F6
 #cmd LNUINativeHostWindow_Create $00F7
 #cmd LNUINativeHostWindow_Render $00F8
-#cmd LNSceneNodeObjectList_GetCount $00F9
-#cmd LNSceneNodeObjectList_SetAt $00FA
-#cmd LNSceneNodeObjectList_GetAt $00FB
-#cmd LNSceneNodeObjectList_Add $00FC
-#cmd LNSceneNodeObjectList_Clear $00FD
-#cmd LNSceneNodeObjectList_Insert $00FE
-#cmd LNSceneNodeObjectList_Remove $00FF
-#cmd LNSceneNodeObjectList_RemoveAt $0100
+#cmd LNSceneNodeList_GetCount $00F9
+#cmd LNSceneNodeList_SetAt $00FA
+#cmd LNSceneNodeList_GetAt $00FB
+#cmd LNSceneNodeList_Add $00FC
+#cmd LNSceneNodeList_Clear $00FD
+#cmd LNSceneNodeList_Insert $00FE
+#cmd LNSceneNodeList_Remove $00FF
+#cmd LNSceneNodeList_RemoveAt $0100
 
 
 #endif // __lumino__
