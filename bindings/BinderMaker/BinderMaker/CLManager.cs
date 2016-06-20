@@ -137,8 +137,6 @@ namespace BinderMaker
             CLPrimitiveType.IntPtr = new CLPrimitiveType("IntPtr");
 
             CLClass.Array = new CLClass("Array");
-            //CLClass.ByteArray = new CLClass(CLClass.Array, CLPrimitiveType.Byte);
-            //CLClass.IntArray = new CLClass("Array", CLPrimitiveType.Int);
 
             _typeInfoTable = new Dictionary<string, CLType>()
             {
@@ -258,28 +256,6 @@ namespace BinderMaker
                 }
             }
 
-            //// ジェネリッククラス型を検索
-            //idx = name.IndexOf(GenericHandleTypeParamMacro);
-            //if (idx >= 0)
-            //{
-            //    // LN_HANDLE と () を削除
-            //    name = name
-            //        .Substring(idx + GenericHandleTypeParamMacro.Length)
-            //        .Replace("(", "")
-            //        .Replace(")", "")
-            //        .Replace("*", "")
-            //        .Trim();
-            //    foreach (var t in AllTypes)
-            //    {
-            //        CLClass c = t as CLClass;
-            //        if (c != null && c.IsGenericinstance && c.OriginalName == name)
-            //        {
-            //            return c;
-            //        }
-            //    }
-            //    throw new InvalidOperationException("invalid generic class type.");
-            //}
-
             // 基本的な型テーブルから検索
             CLType type;
             if (_typeInfoTable.TryGetValue(name, out type))
@@ -306,44 +282,6 @@ namespace BinderMaker
             }
 
             throw new InvalidOperationException("invalid type.");
-        }
-
-        /// <summary>
-        /// 指定した名前の末尾が OverloadSuffix に含まれているかをチェックし、
-        /// それを取り除いた名前を返す
-        /// </summary>
-        /// <returns>OverloadSuffix をが含まれていた場合は true</returns>
-        //public bool RemoveOverloadSuffix(string name, out string newName)
-        //{
-        //    foreach (var s in OverloadSuffix)
-        //    {
-        //        if (name.EndsWith(s, false, System.Globalization.CultureInfo.DefaultThreadCurrentCulture))
-        //        {
-        //            newName = name.Substring(0, name.Length - s.Length);
-        //            return true;
-        //        }
-        //    }
-        //    newName = name;
-        //    return false;
-        //}
-
-        
-        [DllImport("../../../../../lib/x86/Release/LuminoCU.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        private extern static void LNVersion_GetString(out IntPtr outStr);
-
-        [DllImport("../../../../../lib/x86/Release/LuminoCU.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        private extern static void LCSInternal_GetIntPtrStringLength(IntPtr str, out int len);
-        
-        [DllImport("../../../../../lib/x86/Release/LuminoCU.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        private extern static void LCSInternal_GetIntPtrString(IntPtr str, StringBuilder buf);
-
-        public static string GetLibararyVersion()
-        {
-            IntPtr str;
-            var b = new StringBuilder(128);
-            LNVersion_GetString(out str);
-            LCSInternal_GetIntPtrString(str, b);
-            return b.ToString();
         }
 
         #endregion

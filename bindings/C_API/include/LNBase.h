@@ -37,6 +37,22 @@ LN_EXTENSION_CLASS(LNError)
 	
 LN_CLASS_END
 
+
+//==============================================================================
+/**
+	@brief	Lumino の実行情報を取得するためのクラスです。
+*/
+LN_STATIC_CLASS(LNDiag)
+
+	/**
+		@brief		作成されているハンドルの数を取得します。
+		@param[out]	outCount	: ハンドル数 を格納する変数のポインタ
+	*/
+	LN_STATIC_API
+	LNResult LNDiag_GetHandleCount(int* outCount);
+
+LN_CLASS_END
+
 //==============================================================================
 /**
 	@brief	全てのオブジェクトのベースオブジェクトです。

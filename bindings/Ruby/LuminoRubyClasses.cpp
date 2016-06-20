@@ -38,6 +38,13 @@ struct wrapVersion
     {}
 };
 
+struct wrapDiag
+{
+
+    wrapDiag()
+    {}
+};
+
 struct wrapGameAudio
 {
 
@@ -142,6 +149,7 @@ VALUE g_class_RefObject;
 VALUE g_class_Config;
 VALUE g_class_Engine;
 VALUE g_class_Version;
+VALUE g_class_Diag;
 VALUE g_class_GameAudio;
 VALUE g_class_SoundListener;
 VALUE g_class_Sound;
@@ -446,6 +454,22 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.at_least? - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE static_lnrbLNDiag_GetHandleCount(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            int _outCount;
+            LNResult errorCode = LNDiag_GetHandleCount(&_outCount);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            return toVALUE(_outCount);
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Diag.get_handle_count - wrong argument type.");
     return Qnil;
 }
 
@@ -2066,6 +2090,9 @@ void InitClasses()
     rb_define_singleton_method(g_class_Version, "get_build", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetBuild), -1);
     rb_define_singleton_method(g_class_Version, "get_string", LN_TO_RUBY_FUNC(static_lnrbLNVersion_GetString), -1);
     rb_define_singleton_method(g_class_Version, "at_least?", LN_TO_RUBY_FUNC(static_lnrbLNVersion_IsAtLeast), -1);
+
+    g_class_Diag = rb_define_class_under(g_luminoModule, "Diag", rb_cObject);
+    rb_define_singleton_method(g_class_Diag, "get_handle_count", LN_TO_RUBY_FUNC(static_lnrbLNDiag_GetHandleCount), -1);
 
     g_class_GameAudio = rb_define_class_under(g_luminoModule, "GameAudio", rb_cObject);
     rb_define_singleton_method(g_class_GameAudio, "play_bgm", LN_TO_RUBY_FUNC(static_lnrbLNGameAudio_PlayBGM), -1);

@@ -265,6 +265,28 @@ namespace Lumino
     };
     
     /// <summary>
+    /// Lumino の実行情報を取得するためのクラスです。
+    /// </summary>
+    public partial class Diag
+    {
+    
+    
+        /// <summary>
+        /// 作成されているハンドルの数を取得します。
+        /// </summary>
+        public static int GetHandleCount()
+        {
+            var outCount = new int();
+            var result = API.LNDiag_GetHandleCount(out outCount);
+            if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outCount;
+        
+        }
+        
+    
+    };
+    
+    /// <summary>
     /// ゲーム向け音声再生のユーティリティクラスです。
     /// </summary>
     public partial class GameAudio

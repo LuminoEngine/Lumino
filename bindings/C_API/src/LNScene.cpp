@@ -56,7 +56,7 @@ LNResult LNSceneNode_GetChildren(LN_HANDLE(LNSceneNode) sceneNode, LN_OUT LN_GEN
 	LN_CHECK_ARG_HANDLE(sceneNode);
 	LN_CHECK_ARG(outList != nullptr);
 	LN_FUNC_TRY_BEGIN;
-	*outList = TO_HANDLE(TO_REFOBJ(SceneNode, sceneNode)->GetChildren());
+	*outList = TO_HANDLE_ADDREF(TO_REFOBJ(SceneNode, sceneNode)->GetChildren());
 	LN_FUNC_TRY_END_RETURN;
 }
 
@@ -81,7 +81,7 @@ LNResult LNSprite_GetTexture(LN_HANDLE(LNSprite) sprite, LN_OUT LN_HANDLE(LNText
 	LN_CHECK_ARG(outTexture != nullptr);
 	LN_FUNC_TRY_BEGIN;
 	Texture* tex = TO_REFOBJ(Sprite, sprite)->GetTexture();
-	*outTexture = TO_HANDLE(tex);
+	*outTexture = TO_HANDLE_ADDREF(tex);
 	LN_FUNC_TRY_END_RETURN;
 }
 

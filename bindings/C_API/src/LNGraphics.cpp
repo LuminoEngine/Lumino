@@ -8,7 +8,7 @@
 //==============================================================================
 // LNTexture
 //==============================================================================
-LN_TYPE_INFO_IMPL(Texture, LNTexture);
+LN_TYPE_INFO_IMPL(ln::Texture, LNTexture);
 
 //------------------------------------------------------------------------------
 LNResult LNTexture_GetSize(LN_HANDLE(LNTexture) texture, LN_OUT LNSize* outSize)
@@ -25,7 +25,7 @@ LNResult LNTexture_GetSize(LN_HANDLE(LNTexture) texture, LN_OUT LNSize* outSize)
 //==============================================================================
 // LNTexture2D
 //==============================================================================
-LN_TYPE_INFO_IMPL(Texture2D, LNTexture2D);
+LN_TYPE_INFO_IMPL(ln::Texture2D, LNTexture2D);
 
 //------------------------------------------------------------------------------
 LNResult LNTexture2D_Create(int width, int height, LNTextureFormat format, LNBool mipmap, LN_OUT LN_HANDLE(LNTexture2D)* outTexture2D)
@@ -65,3 +65,8 @@ LNResult LNTexture2D_CreateEx(const LNChar* filePath, LNTextureFormat foramt, LN
 {
 	return ::LN_OK;
 }
+
+//==============================================================================
+// LNViewport
+//==============================================================================
+LN_TYPE_INFO_IMPL(ln::Viewport, LNViewport);

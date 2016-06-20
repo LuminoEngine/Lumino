@@ -564,6 +564,14 @@ class Lumino::Error < RefObject
     def get_last_error_message
     end
 end
+# Lumino の実行情報を取得するためのクラスです。
+class Lumino::Diag
+    # 作成されているハンドルの数を取得します。
+    # @overload get_handle_count()
+    # @return [Integer] ハンドル数 
+    def get_handle_count
+    end
+end
 # 全てのオブジェクトのベースオブジェクトです。
 class Lumino::RefObject < RefObject
     # オブジェクトを解放します。

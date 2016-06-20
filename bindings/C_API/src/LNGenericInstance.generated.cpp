@@ -2,6 +2,10 @@
 #include "../include/LNBase.h"
 #include "../include/LNGenericInstance.generated.h"
 
+extern "C" {
+
+LN_API void LNSceneNodeObjectList_SetBindingTypeInfo(void* data) { LNObjectList_SetBindingTypeInfo(data); }
+
 LN_API LNResult LNSceneNodeObjectList_GetCount(LN_HANDLE(LNSceneNodeObjectList) listObject, int* outCount)
 {
     return LNObjectList_GetCount(listObject, outCount);
@@ -42,3 +46,4 @@ LN_API LNResult LNSceneNodeObjectList_RemoveAt(LN_HANDLE(LNSceneNodeObjectList) 
     return LNObjectList_RemoveAt(listObject, index);
 }
 
+} // extern "C"

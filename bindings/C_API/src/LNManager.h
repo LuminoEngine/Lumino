@@ -58,6 +58,8 @@ public:
 	/// handle ‚É‘Î‚·‚é ObjectEntry ‚ðŽæ“¾‚·‚é
 	static ObjectEntry* GetObjectEntry(LNHandle handle);
 
+	static int GetHandleCount();
+
 public:
 	static detail::EngineSettings		ConfigData;
 	static EngineManager*		Engine;

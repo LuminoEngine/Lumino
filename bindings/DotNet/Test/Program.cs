@@ -101,6 +101,20 @@ namespace Test
             AssertEq(tex1, spr2.Texture);
         }
 
+        //--------------------------------------------------------------
+        static void Test_Dispose()
+        {
+            int c = Diag.GetHandleCount();
+
+            // 1つ作ると Handle が1つ増える
+            var tex1 = new Texture2D(32, 32);
+            AssertEq(c + 1, Diag.GetHandleCount());
+
+            // 明示的に Dispose するとHandle が1つ減る
+            tex1.Dispose();
+            AssertEq(c, Diag.GetHandleCount());
+        }
+
         static void Main(string[] args)
         {
             Engine.Initialize();
@@ -109,6 +123,7 @@ namespace Test
             Test_RefObjectGetSetValue();
             Test_RefObjectGetSetStruct();
             Test_RefObjectGetSetRefObject();
+            Test_Dispose();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
         }

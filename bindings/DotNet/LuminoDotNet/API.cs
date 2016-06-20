@@ -1085,6 +1085,13 @@ namespace Lumino
         public extern static void LNError_GetLastErrorMessage(out IntPtr outStr);
 
         /// <summary>
+        /// 作成されているハンドルの数を取得します。
+        /// </summary>
+        /// <param name="outCount">ハンドル数 を格納する変数のポインタ</param>
+        [DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]
+        public extern static Result LNDiag_GetHandleCount(out int outCount);
+
+        /// <summary>
         /// オブジェクトを解放します。
         /// </summary>
         /// <param name="hadnleObject">オブジェクトハンドル</param>

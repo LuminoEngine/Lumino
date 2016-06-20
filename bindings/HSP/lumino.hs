@@ -6,10 +6,10 @@
 Lumino
 
 %ver
-0.2.0.0
+_LIBRARY_VERSION_
 
 %date
-2016/06/19
+2016/06/20
 
 %author
 lriki
@@ -465,6 +465,26 @@ LNError_GetLastErrorMessage
 %prm
 outStr
 [out] outStr : メッセージ文字列を格納する変数。
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNDiag_GetHandleCount
+作成されているハンドルの数を取得します。
+
+%group
+基本機能
+%prm
+outCount
+[out] outCount : ハンドル数 を格納する変数
+
+stat : エラーコード (エラーコードについては LNError_GetLastErrorCode を参照してください)
 
 %inst
 

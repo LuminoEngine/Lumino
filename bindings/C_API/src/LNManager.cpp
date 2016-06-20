@@ -77,8 +77,11 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	if (obj == nullptr) return NULL;
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
-	if (obj->GetUserData() != NULL) {
-		return ((ObjectRegisterData*)obj->GetUserData())->Index;
+	if (obj->GetUserData() != NULL)
+	{
+		ObjectRegisterData* data = (ObjectRegisterData*)obj->GetUserData();
+		m_objectEntryList[data->Index].RefCount++;	// AddRef
+		return data->Index;
 	}
 
 	// 管理配列がすべて埋まっている場合
@@ -170,10 +173,15 @@ void LFManager::ReleaseObject(LNHandle handle)
 	int index = TO_INDEX(handle);
 	ObjectEntry& e = m_objectEntryList[index];
 
-	if (e.Object != NULL) {
+	if (e.Object != NULL)
+	{
 		e.RefCount--;
-		if (e.RefCount <= 0) {
+		if (e.RefCount <= 0)
+		{
 			LN_SAFE_RELEASE(e.Object);
+
+			// Index 返却
+			m_objectIndexStack.Push(index);
 		}
 	}
 }
@@ -192,4 +200,10 @@ void LFManager::AddRefObject(LNHandle handle)
 ObjectEntry* LFManager::GetObjectEntry(LNHandle handle)
 {
 	return &m_objectEntryList[TO_INDEX(handle)];
+}
+
+//------------------------------------------------------------------------------
+int LFManager::GetHandleCount()
+{
+	return m_objectEntryList.GetCount() - m_objectIndexStack.GetCount();
 }

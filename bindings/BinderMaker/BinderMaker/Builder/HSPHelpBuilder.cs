@@ -70,7 +70,7 @@ _HREF_
         {
             // ヘッダ
             string t = HeaderTemplate.TrimStart();
-            t = t.Replace("_LIBRARY_VERSION_", CLManager.GetLibararyVersion());
+            //t = t.Replace("_LIBRARY_VERSION_", CLManager.GetLibararyVersion());
             t = t.Replace("_BUILD_TIME_", DateTime.Today.ToString("yyyy/MM/dd"));
             _output.AppendWithIndent(t);
         }

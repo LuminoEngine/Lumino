@@ -59,6 +59,18 @@ void LNError_GetLastErrorMessage(const LNChar** outStr)
 }
 
 //==============================================================================
+// LNDiag
+//==============================================================================
+
+//------------------------------------------------------------------------------
+LNResult LNDiag_GetHandleCount(int* outCount)
+{
+	LN_CHECK_ARG_RETURN(outCount != NULL);
+	*outCount = LFManager::GetHandleCount();
+	return LN_OK;
+}
+
+//==============================================================================
 // LNObject
 //==============================================================================
 
@@ -197,6 +209,7 @@ LNResult LNValueList_RemoveAt(LN_HANDLE(LNValueList) listObject, int index)
 //==============================================================================
 // LNObjectList
 //==============================================================================
+LN_TYPE_INFO_IMPL(ln::ListObject, LNObjectList);
 
 //------------------------------------------------------------------------------
 LNResult LNObjectList_GetCount(LN_HANDLE(LNObjectList) listObject, int* outCount)
@@ -225,7 +238,7 @@ LNResult LNObjectList_GetAt(LN_HANDLE(LNObjectList) listObject, int index, LN_OU
 	LN_CHECK_ARG(outItemPtr != nullptr);
 	LN_FUNC_TRY_BEGIN;
 	Object** ptr = (Object**)TO_REFOBJ(ListObject, listObject)->GetAtByVoidPtr(index);
-	*outItemPtr = TO_HANDLE(*ptr);
+	*outItemPtr = TO_HANDLE_ADDREF(*ptr);
 	LN_FUNC_TRY_END_RETURN;
 }
 

@@ -15,10 +15,17 @@ namespace BinderMaker.Builder.C
         public GenericInstanceBuilder(string outputHeaderPath)
         {
             _outputHeaderPath = outputHeaderPath;
+            
+            // .h
+            _declsText.AppendLine("extern \"C\" {");
+            _declsText.NewLine();
 
+            // .cpp
             _implesText.AppendLine("#include \"LNInternal.h\"");
             _implesText.AppendLine("#include \"../include/LNBase.h\"");
             _implesText.AppendLine("#include \"../include/LNGenericInstance.generated.h\"");
+            _implesText.NewLine();
+            _implesText.AppendLine("extern \"C\" {");
             _implesText.NewLine();
         }
 
@@ -26,7 +33,14 @@ namespace BinderMaker.Builder.C
         {
             // ジェネリックインスタンスだけが処理対象
             if (!classType.IsGenericinstance) return false;
-            
+
+            _implesText.AppendLine("LN_API void {0}_SetBindingTypeInfo(void* data) {{ {1}_SetBindingTypeInfo(data); }}", classType.OriginalName, classType.ClassDecl.OriginalName);
+            _implesText.NewLine();
+
+ //           extern "C" LN_API void apiClassName##_SetBindingTypeInfo(void* data) \
+ //{ \
+ //	tr::TypeInfo::GetTypeInfo<coreClassName>()->SetBindingTypeInfo(data); \
+ //}
 
             //_classText = new OutputBuffer();
 
@@ -87,6 +101,8 @@ namespace BinderMaker.Builder.C
 
         protected override string OnMakeOutoutFileText()
         {
+            _declsText.AppendLine("} // extern \"C\"");
+            _implesText.AppendLine("} // extern \"C\"");
             return _implesText.ToString();
         }
 

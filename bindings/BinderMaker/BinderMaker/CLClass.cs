@@ -113,6 +113,8 @@ namespace BinderMaker
         /// </summary>
         public Dictionary<string, CLType> GenericTypeArgsMap { get; private set; }
 
+        public Decls.ClassDecl ClassDecl { get; private set; }
+
         #endregion
 
         #region Methods
@@ -127,6 +129,7 @@ namespace BinderMaker
         public CLClass(CLModule ownerModule, Decls.ClassDecl classDecl)
         {
             OwnerModule = ownerModule;
+            ClassDecl = classDecl;
             Document = new CLDocument(classDecl.Document);
             OriginalName = classDecl.OriginalName;
             BaseClassOriginalName = classDecl.BaseClassOriginalName;
@@ -154,6 +157,7 @@ namespace BinderMaker
         public CLClass(CLModule ownerModule, Decls.ClassDecl classDecl, List<string> typeParams)
         {
             OwnerModule = ownerModule;
+            ClassDecl = classDecl;
             Document = new CLDocument(classDecl.Document);
 
             BaseClassOriginalName = classDecl.BaseClassOriginalName;

@@ -119,29 +119,8 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 #define TO_CORE_STRUCT_P(t, p)	reinterpret_cast<t*>(p)
 #define TO_CORE_STRUCT_CP(t, p)	reinterpret_cast<const t*>(p)
 
-//#define TO_OBJECT( h )		FuncLibManager::getObject( static_cast<int>( h ) )
-//#define TO_INTERFACE( h )	FuncLibManager::getInterface( static_cast<int>( h ) )
-
-//#define TO_IN_FILE( h )		static_cast<FileIO::InFile*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_OUT_FILE( h )	static_cast<FileIO::OutFile*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//
-////#define TO_TEXTURE( h )		static_cast<Core::Graphics::ITexture*>( FuncLibManager::getInterface( static_cast<int>( h ) ) )
-////#define TO_FONT( h )		static_cast<Core::Graphics::IFont*>( FuncLibManager::getInterface( static_cast<int>( h ) ) )
-//
-//#define TO_SOUND( h )		static_cast<Core::Audio::Sound*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//
-//#define TO_SCENENODE( h )	static_cast<Core::Scene::SceneNode*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_VISUAL_NODE( h )	static_cast<Core::Scene::VisualNode*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_SPRITE( h )		static_cast<Core::Scene::Sprite*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_SPRITE_PATH( h )	static_cast<Core::Scene::SpritePath*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_EFFECT( h )		static_cast<Core::Scene::Effect*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_SHADER( h )		static_cast<Core::Scene::SceneShader*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_VIEW_PANE( h )	static_cast<Core::Scene::Pane*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//#define TO_CAMERA( h )		static_cast<Core::Scene::Camera*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
-//↓今後コレに変更
 #define TO_REFOBJ(type, h)		static_cast<type*>((h != NULL) ? LFManager::GetObjectEntry(h)->Object : NULL)
-#define TO_HANDLE(ptr)			LFManager::CheckRegisterObject(ptr);
-//#define TO_INTERFACE( type, h )	static_cast<type*>( FuncLibManager::getReferenceObject( static_cast<int>( h ) ) )
+#define TO_HANDLE_ADDREF(ptr)	LFManager::CheckRegisterObject(ptr);
 
 #define TO_SAFE_VARIANT(p)		(p != NULL) ? (*reinterpret_cast<Variant*>(p)) : Variant()
 
