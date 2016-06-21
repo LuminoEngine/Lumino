@@ -42,10 +42,10 @@ class CPackageRule : ModuleRule
         
         // lib
         Directory.CreateDirectory(releaseDir + "lib/x86");
-        Utils.CopyFile(builder.LuminoLibDir + "x86/Debug/LuminoCd.dll", releaseDir + "lib/x86");
-        Utils.CopyFile(builder.LuminoLibDir + "x86/Debug/LuminoCd.lib", releaseDir + "lib/x86");
-        Utils.CopyFile(builder.LuminoLibDir + "x86/Release/LuminoC.dll", releaseDir + "lib/x86");
-        Utils.CopyFile(builder.LuminoLibDir + "x86/Release/LuminoC.lib", releaseDir + "lib/x86");
+        Utils.CopyFile(builder.LuminoLibDir + "MSVC140/x86/Debug/LuminoCd.dll", releaseDir + "lib/x86");
+        Utils.CopyFile(builder.LuminoLibDir + "MSVC140/x86/Debug/LuminoCd.lib", releaseDir + "lib/x86");
+        Utils.CopyFile(builder.LuminoLibDir + "MSVC140/x86/Release/LuminoC.dll", releaseDir + "lib/x86");
+        Utils.CopyFile(builder.LuminoLibDir + "MSVC140/x86/Release/LuminoC.lib", releaseDir + "lib/x86");
 
         // doc
         Directory.CreateDirectory(releaseDir + "doc");

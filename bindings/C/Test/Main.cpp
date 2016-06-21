@@ -53,12 +53,12 @@ int main()
 
 	LNEngine_Initialize();
 
-	ln::ByteBuffer buf = ln::FileSystem::ReadAllBytes("D:/tmp/GrandSky.mp3");
-	LNHandle s;
-	printf("a");
-	r = LNSound_CreateMem(buf.GetConstData(), buf.GetSize(), &s);
-	printf("g");
-	LNSound_Play(s);
+	//ln::ByteBuffer buf = ln::FileSystem::ReadAllBytes("D:/tmp/GrandSky.mp3");
+	//LNHandle s;
+	//printf("a");
+	//r = LNSound_CreateMem(buf.GetConstData(), buf.GetSize(), &s);
+	//printf("g");
+	//LNSound_Play(s);
 
 
 	LNHandle tex1;
@@ -83,6 +83,13 @@ int main()
 	LNHandle spr22;
 	r = LNSceneNodeList_GetAt(list1, 0, &spr22);
 
+
+	LNHandle vp1;
+	LNViewport_GetMainViewport(&vp1);
+	LNHandle lyaers1;
+	LNViewport_GetLayers(vp1, &lyaers1);
+	LNHandle item1 = 999;
+	LNObjectList_GetAt(lyaers1, 0, &item1);
 
 
 	//LNConfig_SetUserWindowHandle((intptr_t)GetConsoleHwnd());

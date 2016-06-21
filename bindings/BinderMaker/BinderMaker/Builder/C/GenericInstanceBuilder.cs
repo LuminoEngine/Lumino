@@ -37,9 +37,11 @@ namespace BinderMaker.Builder.C
 
             _declsText.AppendLine("// " + classType.OriginalName);
             _declsText.NewLine();
+            _declsText.AppendLine("LN_CLASS({0}, LNObject);", classType.OriginalName);
+            _declsText.NewLine();
+
             _implesText.AppendLine("// " + classType.OriginalName);
             _implesText.NewLine();
-
             _implesText.AppendLine("LN_TYPE_INFO_IMPL({0}, {1});", classType.Name, classType.OriginalName);
             _implesText.NewLine();
 

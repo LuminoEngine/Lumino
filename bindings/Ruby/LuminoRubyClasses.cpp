@@ -12,12 +12,14 @@ struct wrapConfig
     {}
 };
 
+
 struct wrapEngine
 {
 
     wrapEngine()
     {}
 };
+
 
 struct wrapVersion
 {
@@ -26,12 +28,14 @@ struct wrapVersion
     {}
 };
 
+
 struct wrapDiag
 {
 
     wrapDiag()
     {}
 };
+
 
 struct wrapGameAudio
 {
@@ -40,12 +44,14 @@ struct wrapGameAudio
     {}
 };
 
+
 struct wrapSoundListener
 {
 
     wrapSoundListener()
     {}
 };
+
 
 struct wrapSound
     : public wrapRefObject
@@ -55,6 +61,7 @@ struct wrapSound
     {}
 };
 
+
 struct wrapTexture
     : public wrapRefObject
 {
@@ -62,6 +69,7 @@ struct wrapTexture
     wrapTexture()
     {}
 };
+
 
 struct wrapTexture2D
     : public wrapTexture
@@ -71,6 +79,7 @@ struct wrapTexture2D
     {}
 };
 
+
 struct wrapViewportLayer
     : public wrapRefObject
 {
@@ -78,6 +87,7 @@ struct wrapViewportLayer
     wrapViewportLayer()
     {}
 };
+
 
 struct wrapViewport
     : public wrapRefObject
@@ -90,6 +100,8 @@ struct wrapViewport
     {}
 };
 
+VALUE wrapViewport::MainViewport = Qnil;
+
 struct wrapSceneNode
     : public wrapRefObject
 {
@@ -99,6 +111,7 @@ struct wrapSceneNode
     :     Children(Qnil)
     {}
 };
+
 
 struct wrapSprite
     : public wrapSceneNode
@@ -110,6 +123,7 @@ struct wrapSprite
     {}
 };
 
+
 struct wrapSprite2D
     : public wrapSprite
 {
@@ -117,6 +131,7 @@ struct wrapSprite2D
     wrapSprite2D()
     {}
 };
+
 
 struct wrapUIFrameWindow
     : public wrapRefObject
@@ -126,6 +141,7 @@ struct wrapUIFrameWindow
     {}
 };
 
+
 struct wrapUINativeHostWindow
     : public wrapUIFrameWindow
 {
@@ -134,21 +150,24 @@ struct wrapUINativeHostWindow
     {}
 };
 
+
 struct wrapViewportLayerList
-    : public wrapRefObject
+    : public wrapObjectList
 {
 
     wrapViewportLayerList()
     {}
 };
 
+
 struct wrapSceneNodeList
-    : public wrapRefObject
+    : public wrapObjectList
 {
 
     wrapSceneNodeList()
     {}
 };
+
 
 
 
@@ -299,7 +318,7 @@ static VALUE static_lnrbLNConfig_SetDirectMusicReverbLevel(int argc, VALUE *argv
 static VALUE static_lnrbLNEngine_Initialize(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNEngine_Initialize();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -313,7 +332,7 @@ static VALUE static_lnrbLNEngine_Initialize(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNEngine_InitializeAudio(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNEngine_InitializeAudio();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -327,13 +346,13 @@ static VALUE static_lnrbLNEngine_InitializeAudio(int argc, VALUE *argv, VALUE se
 static VALUE static_lnrbLNEngine_UpdateFrame(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNBool _outRequested;
             LNResult errorCode = LNEngine_UpdateFrame(&_outRequested);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outRequested);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Engine.update_frame - wrong argument type.");
@@ -343,13 +362,13 @@ static VALUE static_lnrbLNEngine_UpdateFrame(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNEngine_IsEndRequested(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNBool _outRequested;
             LNResult errorCode = LNEngine_IsEndRequested(&_outRequested);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outRequested);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Engine.end_requested? - wrong argument type.");
@@ -359,7 +378,7 @@ static VALUE static_lnrbLNEngine_IsEndRequested(int argc, VALUE *argv, VALUE sel
 static VALUE static_lnrbLNEngine_Terminate(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNEngine_Terminate();
             return Qnil;
@@ -372,12 +391,12 @@ static VALUE static_lnrbLNEngine_Terminate(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNVersion_GetMajor(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int _outMajor;
             LNVersion_GetMajor(&_outMajor);
             return toVALUE(_outMajor);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.get_major - wrong argument type.");
@@ -387,12 +406,12 @@ static VALUE static_lnrbLNVersion_GetMajor(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNVersion_GetMinor(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int _outMinor;
             LNVersion_GetMinor(&_outMinor);
             return toVALUE(_outMinor);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.get_minor - wrong argument type.");
@@ -402,12 +421,12 @@ static VALUE static_lnrbLNVersion_GetMinor(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNVersion_GetRevision(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int _outRevision;
             LNVersion_GetRevision(&_outRevision);
             return toVALUE(_outRevision);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.get_revision - wrong argument type.");
@@ -417,12 +436,12 @@ static VALUE static_lnrbLNVersion_GetRevision(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNVersion_GetBuild(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int _outBuild;
             LNVersion_GetBuild(&_outBuild);
             return toVALUE(_outBuild);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.get_build - wrong argument type.");
@@ -432,12 +451,12 @@ static VALUE static_lnrbLNVersion_GetBuild(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNVersion_GetString(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             const LNChar* _outStr;
             LNVersion_GetString(&_outStr);
             return toVALUE(_outStr);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.get_string - wrong argument type.");
@@ -458,7 +477,7 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
             LNBool _outResult;
             LNVersion_IsAtLeast(_major, _minor, _revision, &_outResult);
             return toVALUE(_outResult);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Version.at_least? - wrong argument type.");
@@ -468,13 +487,13 @@ static VALUE static_lnrbLNVersion_IsAtLeast(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNDiag_GetHandleCount(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int _outCount;
             LNResult errorCode = LNDiag_GetHandleCount(&_outCount);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outCount);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Diag.get_handle_count - wrong argument type.");
@@ -580,7 +599,7 @@ static VALUE static_lnrbLNGameAudio_PlayME(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNGameAudio_StopME(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNGameAudio_StopME();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -660,7 +679,7 @@ static VALUE static_lnrbLNGameAudio_PlaySE3D(int argc, VALUE *argv, VALUE self)
 static VALUE static_lnrbLNGameAudio_StopSE(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNGameAudio_StopSE();
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -865,7 +884,7 @@ static VALUE LNSound_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapSound();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSound_allocate" );
     obj = Data_Wrap_Struct(klass, LNSound_mark, LNSound_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -912,13 +931,13 @@ static VALUE lnrbLNSound_GetVolume(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             float _outVolume;
             LNResult errorCode = LNSound_GetVolume(selfObj->Handle, &_outVolume);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outVolume);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.volume - wrong argument type.");
@@ -948,13 +967,13 @@ static VALUE lnrbLNSound_GetPitch(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             float _outPitch;
             LNResult errorCode = LNSound_GetPitch(selfObj->Handle, &_outPitch);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outPitch);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.pitch - wrong argument type.");
@@ -984,13 +1003,13 @@ static VALUE lnrbLNSound_IsLoopEnabled(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNBool _outEnabled;
             LNResult errorCode = LNSound_IsLoopEnabled(selfObj->Handle, &_outEnabled);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outEnabled);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.loop_enabled? - wrong argument type.");
@@ -1020,13 +1039,13 @@ static VALUE lnrbLNSound_Is3DEnabled(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNBool _outEnabled;
             LNResult errorCode = LNSound_Is3DEnabled(selfObj->Handle, &_outEnabled);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outEnabled);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.is_3d_enabled? - wrong argument type.");
@@ -1056,13 +1075,13 @@ static VALUE lnrbLNSound_GetPlayingMode(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNSoundPlayingMode _outMode;
             LNResult errorCode = LNSound_GetPlayingMode(selfObj->Handle, &_outMode);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return INT2FIX(_outMode);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.playing_mode - wrong argument type.");
@@ -1074,13 +1093,13 @@ static VALUE lnrbLNSound_GetPlayingState(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNSoundPlayingState _outState;
             LNResult errorCode = LNSound_GetPlayingState(selfObj->Handle, &_outState);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return INT2FIX(_outState);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.playing_state - wrong argument type.");
@@ -1092,13 +1111,13 @@ static VALUE lnrbLNSound_GetPlayedSamples(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int64_t _outSamples;
             LNResult errorCode = LNSound_GetPlayedSamples(selfObj->Handle, &_outSamples);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outSamples);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.played_samples - wrong argument type.");
@@ -1110,13 +1129,13 @@ static VALUE lnrbLNSound_GetTotalSamples(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int64_t _outSamples;
             LNResult errorCode = LNSound_GetTotalSamples(selfObj->Handle, &_outSamples);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outSamples);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.total_samples - wrong argument type.");
@@ -1128,13 +1147,13 @@ static VALUE lnrbLNSound_GetSamplingRate(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             int _outRate;
             LNResult errorCode = LNSound_GetSamplingRate(selfObj->Handle, &_outRate);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outRate);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sound.sampling_rate - wrong argument type.");
@@ -1248,7 +1267,7 @@ static VALUE lnrbLNSound_Play(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNSound_Play(selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -1264,7 +1283,7 @@ static VALUE lnrbLNSound_Stop(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNSound_Stop(selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -1280,7 +1299,7 @@ static VALUE lnrbLNSound_Pause(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNSound_Pause(selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -1296,7 +1315,7 @@ static VALUE lnrbLNSound_Resume(int argc, VALUE *argv, VALUE self)
     wrapSound* selfObj;
     Data_Get_Struct(self, wrapSound, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNSound_Resume(selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -1361,7 +1380,7 @@ static VALUE LNTexture_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapTexture();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture_allocate" );
     obj = Data_Wrap_Struct(klass, LNTexture_mark, LNTexture_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1371,7 +1390,7 @@ static VALUE lnrbLNTexture_GetSize(int argc, VALUE *argv, VALUE self)
     wrapTexture* selfObj;
     Data_Get_Struct(self, wrapTexture, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNSize _outSize;
             LNResult errorCode = LNTexture_GetSize(selfObj->Handle, &_outSize);
@@ -1379,7 +1398,7 @@ static VALUE lnrbLNTexture_GetSize(int argc, VALUE *argv, VALUE self)
             VALUE retObj = LNSize_allocate(g_struct_Size);
     *((LNSize*)DATA_PTR(retObj)) = _outSize;
     return retObj;
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Texture.size - wrong argument type.");
@@ -1418,7 +1437,7 @@ static VALUE LNTexture2D_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapTexture2D();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNTexture2D_allocate" );
     obj = Data_Wrap_Struct(klass, LNTexture2D_mark, LNTexture2D_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1491,7 +1510,9 @@ static VALUE LNViewportLayer_allocateForGetRefObject(VALUE klass, LNHandle handl
     internalObj = new wrapViewportLayer();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewportLayer_allocate" );
     obj = Data_Wrap_Struct(klass, LNViewportLayer_mark, LNViewportLayer_delete, internalObj);
-    
+
+	printf("LNViewportLayer_allocateForGetRefObject\n");
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1529,7 +1550,7 @@ static VALUE LNViewport_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapViewport();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewport_allocate" );
     obj = Data_Wrap_Struct(klass, LNViewport_mark, LNViewport_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1537,7 +1558,7 @@ static VALUE LNViewport_allocateForGetRefObject(VALUE klass, LNHandle handle)
 static VALUE static_lnrbLNViewport_GetMainViewport(int argc, VALUE *argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNHandle _outViewport;
             LNResult errorCode = LNViewport_GetMainViewport(&_outViewport);
@@ -1546,7 +1567,7 @@ static VALUE static_lnrbLNViewport_GetMainViewport(int argc, VALUE *argv, VALUE 
                 wrapViewport::MainViewport = Manager::GetWrapperObjectFromHandle(_outViewport);
             }
             return wrapViewport::MainViewport;
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Viewport.main_viewport - wrong argument type.");
@@ -1558,7 +1579,7 @@ static VALUE lnrbLNViewport_GetLayers(int argc, VALUE *argv, VALUE self)
     wrapViewport* selfObj;
     Data_Get_Struct(self, wrapViewport, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNHandle _outList;
             LNResult errorCode = LNViewport_GetLayers(selfObj->Handle, &_outList);
@@ -1567,7 +1588,7 @@ static VALUE lnrbLNViewport_GetLayers(int argc, VALUE *argv, VALUE self)
                 selfObj->Layers = Manager::GetWrapperObjectFromHandle(_outList);
             }
             return selfObj->Layers;
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Viewport.layers - wrong argument type.");
@@ -1607,7 +1628,7 @@ static VALUE LNSceneNode_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapSceneNode();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSceneNode_allocate" );
     obj = Data_Wrap_Struct(klass, LNSceneNode_mark, LNSceneNode_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1635,13 +1656,13 @@ static VALUE lnrbLNSceneNode_IsVisible(int argc, VALUE *argv, VALUE self)
     wrapSceneNode* selfObj;
     Data_Get_Struct(self, wrapSceneNode, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNBool _outVisible;
             LNResult errorCode = LNSceneNode_IsVisible(selfObj->Handle, &_outVisible);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
             return toVALUE(_outVisible);
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::SceneNode.visible? - wrong argument type.");
@@ -1671,7 +1692,7 @@ static VALUE lnrbLNSceneNode_GetPosition(int argc, VALUE *argv, VALUE self)
     wrapSceneNode* selfObj;
     Data_Get_Struct(self, wrapSceneNode, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNVector3 _outPosition;
             LNResult errorCode = LNSceneNode_GetPosition(selfObj->Handle, &_outPosition);
@@ -1679,7 +1700,7 @@ static VALUE lnrbLNSceneNode_GetPosition(int argc, VALUE *argv, VALUE self)
             VALUE retObj = LNVector3_allocate(g_struct_Vector3);
     *((LNVector3*)DATA_PTR(retObj)) = _outPosition;
     return retObj;
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::SceneNode.position - wrong argument type.");
@@ -1691,7 +1712,7 @@ static VALUE lnrbLNSceneNode_GetChildren(int argc, VALUE *argv, VALUE self)
     wrapSceneNode* selfObj;
     Data_Get_Struct(self, wrapSceneNode, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNHandle _outList;
             LNResult errorCode = LNSceneNode_GetChildren(selfObj->Handle, &_outList);
@@ -1700,7 +1721,7 @@ static VALUE lnrbLNSceneNode_GetChildren(int argc, VALUE *argv, VALUE self)
                 selfObj->Children = Manager::GetWrapperObjectFromHandle(_outList);
             }
             return selfObj->Children;
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::SceneNode.children - wrong argument type.");
@@ -1740,7 +1761,7 @@ static VALUE LNSprite_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapSprite();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite_allocate" );
     obj = Data_Wrap_Struct(klass, LNSprite_mark, LNSprite_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1769,7 +1790,7 @@ static VALUE lnrbLNSprite_GetTexture(int argc, VALUE *argv, VALUE self)
     wrapSprite* selfObj;
     Data_Get_Struct(self, wrapSprite, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNHandle _outTexture;
             LNResult errorCode = LNSprite_GetTexture(selfObj->Handle, &_outTexture);
@@ -1778,7 +1799,7 @@ static VALUE lnrbLNSprite_GetTexture(int argc, VALUE *argv, VALUE self)
                 selfObj->Texture = Manager::GetWrapperObjectFromHandle(_outTexture);
             }
             return selfObj->Texture;
-    
+
         }
     }
     rb_raise(rb_eArgError, "Lumino::Sprite.texture - wrong argument type.");
@@ -1817,7 +1838,7 @@ static VALUE LNSprite2D_allocateForGetRefObject(VALUE klass, LNHandle handle)
     internalObj = new wrapSprite2D();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSprite2D_allocate" );
     obj = Data_Wrap_Struct(klass, LNSprite2D_mark, LNSprite2D_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1827,7 +1848,7 @@ static VALUE lnrbLNSprite2D_Create(int argc, VALUE *argv, VALUE self)
     wrapSprite2D* selfObj;
     Data_Get_Struct(self, wrapSprite2D, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNSprite2D_Create(&selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -1882,7 +1903,7 @@ static VALUE LNUIFrameWindow_allocateForGetRefObject(VALUE klass, LNHandle handl
     internalObj = new wrapUIFrameWindow();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNUIFrameWindow_allocate" );
     obj = Data_Wrap_Struct(klass, LNUIFrameWindow_mark, LNUIFrameWindow_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1919,7 +1940,7 @@ static VALUE LNUINativeHostWindow_allocateForGetRefObject(VALUE klass, LNHandle 
     internalObj = new wrapUINativeHostWindow();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNUINativeHostWindow_allocate" );
     obj = Data_Wrap_Struct(klass, LNUINativeHostWindow_mark, LNUINativeHostWindow_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -1948,7 +1969,7 @@ static VALUE lnrbLNUINativeHostWindow_Render(int argc, VALUE *argv, VALUE self)
     wrapUINativeHostWindow* selfObj;
     Data_Get_Struct(self, wrapUINativeHostWindow, selfObj);
     if (0 <= argc && argc <= 0) {
-    
+
         if (true) {
             LNResult errorCode = LNUINativeHostWindow_Render(selfObj->Handle);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
@@ -1991,7 +2012,7 @@ static VALUE LNViewportLayerList_allocateForGetRefObject(VALUE klass, LNHandle h
     internalObj = new wrapViewportLayerList();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewportLayerList_allocate" );
     obj = Data_Wrap_Struct(klass, LNViewportLayerList_mark, LNViewportLayerList_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -2028,7 +2049,7 @@ static VALUE LNSceneNodeList_allocateForGetRefObject(VALUE klass, LNHandle handl
     internalObj = new wrapSceneNodeList();
     if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNSceneNodeList_allocate" );
     obj = Data_Wrap_Struct(klass, LNSceneNodeList_mark, LNSceneNodeList_delete, internalObj);
-    
+
     internalObj->Handle = handle;
     return obj;
 }
@@ -2181,4 +2202,3 @@ void Manager::RegisterTypeInfo()
     LNRB_REGISTER_TYPEINFO(SceneNodeList);
 
 }
-

@@ -55,12 +55,18 @@ struct TypeInfo
 	ObjectFactory	factory;
 };
 
-// WrapperObject ‚Ìƒx[ƒXƒNƒ‰ƒX
+// WrapperObject ï¿½Ìƒxï¿½[ï¿½Xï¿½Nï¿½ï¿½ï¿½X
 struct wrapRefObject
 {
 	LNHandle	Handle;
-	
+
 	wrapRefObject() : Handle(0) {}
+};
+
+struct wrapObjectList
+    : public wrapRefObject
+{
+    std::vector<VALUE> m_cacheList;
 };
 
 class Manager
@@ -72,23 +78,22 @@ public:
 	static LNHandle GetHandleFromtWrapperObject(VALUE obj);
 	static void RegisterWrapperObject(VALUE obj);
 	static void UnregisterWrapperObject(LNHandle handle);
-	
+
 private:
 	static void RegisterTypeInfo();
-	
+
 	static const int InitialListSize = 1024;
 	static std::vector<TypeInfo>	m_typeInfoList;
-	static std::vector<VALUE>		m_objectList;	// ’†g‚Íƒq[ƒv‚ÉŠm•Û‚³‚ê‚é“®“I”z—ñ‚È‚Ì‚ÅAmark ‚µ‚È‚¯‚ê‚ÎãQÆ‚È VALUE ‚Æ‚µ‚Äg‚¦‚é
+	static std::vector<VALUE>		m_objectList;	// ï¿½ï¿½ï¿½gï¿½Íƒqï¿½[ï¿½vï¿½ÉŠmï¿½Û‚ï¿½ï¿½ï¿½ï¿½é“®ï¿½Iï¿½zï¿½ï¿½ï¿½È‚Ì‚ÅAmark ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½Îï¿½ï¿½Qï¿½Æ‚ï¿½ VALUE ï¿½Æ‚ï¿½ï¿½Ägï¿½ï¿½ï¿½ï¿½
 	static std::stack<int>			m_objectListIndexStack;
 };
 
 
-/* BinderMaker ‚ª•¡G‚É‚È‚è‚·‚¬‚È‚¢‚æ‚¤A‚ ‚é’ö“x‚Íƒ}ƒNƒ‚ÅƒJƒo[‚·‚éB*/
+/* BinderMaker ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½É‚È‚è‚·ï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½Íƒ}ï¿½Nï¿½ï¿½ï¿½ÅƒJï¿½oï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½B*/
 
-// typeName	: "LN" –³‚µ‚ÌƒNƒ‰ƒX–¼
+// typeName	: "LN" ï¿½ï¿½ï¿½ï¿½ï¿½ÌƒNï¿½ï¿½ï¿½Xï¿½ï¿½
 #define LNRB_REGISTER_TYPEINFO(typeName) \
 	{ \
-		extern void LN##typeName##_SetBindingTypeInfo(void* data); \
 		TypeInfo t; \
 		t.klass = g_class_##typeName; \
 		t.factory = LN##typeName##_allocateForGetRefObject; \
@@ -99,6 +104,3 @@ private:
 
 // Utils
 extern bool checkEqualHandle(VALUE obj, LNHandle handle);
-
-
-

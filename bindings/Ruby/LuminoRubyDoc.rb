@@ -1893,9 +1893,9 @@ end
 # 要素の集合 (可変長配列) を表すクラスです。
 class Lumino::ViewportLayerList < RefObject
     # リストに格納されているオブジェクトの数を取得します。
-    # @overload get_count()
+    # @overload count()
     # @return [Integer] 要素の数を格納する変数
-    def get_count
+    def count
     end
     # オブジェクトリストの指定したインデックスにオブジェクトを設定します。
     # @overload set_at(index, itemPtr)
@@ -1939,9 +1939,9 @@ end
 # 要素の集合 (可変長配列) を表すクラスです。
 class Lumino::SceneNodeList < RefObject
     # リストに格納されているオブジェクトの数を取得します。
-    # @overload get_count()
+    # @overload count()
     # @return [Integer] 要素の数を格納する変数
-    def get_count
+    def count
     end
     # オブジェクトリストの指定したインデックスにオブジェクトを設定します。
     # @overload set_at(index, itemPtr)

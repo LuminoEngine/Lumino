@@ -42,9 +42,9 @@ class CppPackageRule : ModuleRule
 
         // .lib
         Logger.WriteLine("copy lib files...");
-        Directory.CreateDirectory(releaseDir + "lib");
-        Utils.CopyFiles(builder.LuminoLibDir + "Debug", "*.lib", releaseDir + "lib");
-        Utils.CopyFiles(builder.LuminoLibDir + "Release", "*.lib", releaseDir + "lib");
+        Directory.CreateDirectory(releaseDir + "lib/MSVC140/x86");
+        Utils.CopyFiles(builder.LuminoLibDir + "MSVC140/x86/Debug", "*.lib", releaseDir + "lib/MSVC140/x86");
+        Utils.CopyFiles(builder.LuminoLibDir + "MSVC140/x86/Release", "*.lib", releaseDir + "lib/MSVC140/x86");
 
         // インストールスクリプトとか、プロジェクトテンプレート
         Logger.WriteLine("copy other files...");

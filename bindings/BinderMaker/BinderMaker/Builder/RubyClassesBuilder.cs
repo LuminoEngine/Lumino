@@ -99,6 +99,11 @@ __CONTENTS__
             /// </summary>
             public OutputBuffer AdditionalWrapStructMemberMark = new OutputBuffer();
 
+            /// <summary>
+            /// static メンバ変数の定義
+            /// </summary>
+            public OutputBuffer AdditionalClassStaticVariables = new OutputBuffer();
+
             public CurrentClassInfo()
             {
                 AdditionalWrapStructMember.IncreaseIndent();
@@ -197,7 +202,7 @@ __CONTENTS__
             */
             _allWrapStructs.AppendLine("struct {0}", GetWrapStructName(classType));
             if (classType.BaseClass != null)  // 継承
-                _allWrapStructs.AppendLine("    : public " + GetWrapStructName(classType.BaseClass));
+                _allWrapStructs.AppendLine("    : public " + GetBaseClassWrapStructName(classType));
             _allWrapStructs.AppendLine("{");
             // プロパティフィールド
             _allWrapStructs.AppendLine(_currentClassInfo.AdditionalWrapStructMember.ToString());
@@ -212,6 +217,7 @@ __CONTENTS__
             _allWrapStructs.AppendLine("{}");
             _allWrapStructs.DecreaseIndent();
             _allWrapStructs.AppendLine("};").NewLine();
+            _allWrapStructs.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
 
             //-------------------------------------------------
             // フレームワーク関数
@@ -277,6 +283,8 @@ __CONTENTS__
                 {
                     // static プロパティの場合は static を付け、mark などは必要なし。
                     _currentClassInfo.AdditionalWrapStructMember.AppendLine("static VALUE {0};", prop.Name);
+                    // static 変数は定義が必要
+                    _currentClassInfo.AdditionalClassStaticVariables.AppendLine("VALUE {0}::{1} = Qnil;", GetWrapStructName((CLClass)prop.Type), prop.Name);
                 }
             }
 
@@ -328,6 +336,13 @@ __CONTENTS__
         private string GetWrapStructName(CLClass classType)
         {
             return "wrap" + classType.Name;
+        }
+
+        private string GetBaseClassWrapStructName(CLClass classType)
+        {
+            if (classType.ClassDecl.OriginalName == "LNObjectList")    // TODO
+                return "wrapObjectList";
+            return GetWrapStructName(classType.BaseClass);
         }
 
 

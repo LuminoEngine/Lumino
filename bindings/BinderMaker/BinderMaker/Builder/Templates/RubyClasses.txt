@@ -21,6 +21,12 @@ __DEFINES__
 
 void Manager::RegisterTypeInfo()
 {
+	// dummy
+	TypeInfo t;
+	t.klass = Qnil;
+	t.factory = NULL;
+	m_typeInfoList.push_back(t);
+	
 __TYPEINFO_REGISTERS__
 }
 

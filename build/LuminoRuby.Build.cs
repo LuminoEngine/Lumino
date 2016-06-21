@@ -60,7 +60,7 @@ class LuminoRubyRule : ModuleRule
         Utils.CopyFiles(rubyDir, "*.cpp", rubyBuildDir);
         Utils.CopyFiles(rubyDir, "*.h", rubyBuildDir);
         Utils.CopyFiles(rubyDir, "*.rb", rubyBuildDir);   // ドキュメント用のソースも。yardoc は readme.md を自動的に取り込んでしまう
-        File.Copy(builder.LuminoLibDir + "x86/Release/LuminoC.dll", rubyBuildDir + "LuminoC.dll", true);
+        File.Copy(builder.LuminoLibDir + "MSVC140/x86/Release/LuminoC.dll", rubyBuildDir + "LuminoC.dll", true);
 
         // ビルド
         Logger.WriteLine("Building ext lib...");

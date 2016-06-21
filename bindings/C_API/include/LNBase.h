@@ -105,6 +105,7 @@ LN_GENERIC_CLASS(LNObjectList, LN_T1_HANDLE)
 		@param[out]	outCount	: 要素の数を格納する変数
 	*/
 	LN_INSTANCE_API
+	LN_ATTR_PROPERTY
 	LNResult LNObjectList_GetCount(LN_HANDLE(LNObjectList) listObject, int* outCount);
 
 	/**

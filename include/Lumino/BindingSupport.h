@@ -237,7 +237,7 @@ public:
 	PrimitiveListObject() = default;
 	virtual ~PrimitiveListObject() = default;
 
-private:
+LN_PROTECTED_INTERNAL_ACCESS:
 	virtual int GetCountInternal() override
 	{
 		return Collection<T>::GetCount();

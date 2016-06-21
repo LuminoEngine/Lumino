@@ -9,11 +9,6 @@ extern "C" {
 
 LN_TYPE_INFO_IMPL(ViewportLayerList, LNViewportLayerList);
 
-LN_API LNResult LNViewportLayerList_GetCount(LN_HANDLE(LNViewportLayerList) listObject, int* outCount)
-{
-    return LNObjectList_GetCount(listObject, outCount);
-}
-
 LN_API LNResult LNViewportLayerList_SetAt(LN_HANDLE(LNViewportLayerList) listObject, int index, LN_HANDLE(LNViewportLayer) itemPtr)
 {
     return LNObjectList_SetAt(listObject, index, itemPtr);
@@ -52,11 +47,6 @@ LN_API LNResult LNViewportLayerList_RemoveAt(LN_HANDLE(LNViewportLayerList) list
 // LNSceneNodeList
 
 LN_TYPE_INFO_IMPL(SceneNodeList, LNSceneNodeList);
-
-LN_API LNResult LNSceneNodeList_GetCount(LN_HANDLE(LNSceneNodeList) listObject, int* outCount)
-{
-    return LNObjectList_GetCount(listObject, outCount);
-}
 
 LN_API LNResult LNSceneNodeList_SetAt(LN_HANDLE(LNSceneNodeList) listObject, int index, LN_HANDLE(LNSceneNode) itemPtr)
 {
