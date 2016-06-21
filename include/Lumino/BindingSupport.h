@@ -210,7 +210,7 @@ public:
 #endif
 
 
-class ListObject
+class ListObject	// TODO: detail
 	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -226,6 +226,15 @@ LN_PROTECTED_INTERNAL_ACCESS:	// TODO: friend のほうがいいかな
 	virtual void InsertByVoidPtr(int index, void* item) = 0;
 	virtual bool RemoveByVoidPtr(void* item) = 0;
 	virtual void RemoveAtInternal(int index) = 0;
+
+	virtual int GetCount_Object() = 0;
+	virtual void SetAt_Object(int index, Object* item) = 0;
+	virtual Object* GetAt_Object(int index) = 0;
+	virtual void Add_Object(Object* item) = 0;
+	virtual void Clear_Object() = 0;
+	virtual void Insert_Object(int index, Object* item) = 0;
+	virtual bool Remove_Object(Object* item) = 0;
+	virtual void RemoveAt_Object(int index) = 0;
 };
 
 template<typename T>
@@ -322,6 +331,16 @@ protected:
 		}
 		Collection<T>::SetItem(index, item);
 	}
+
+	// IObjectListObject interface
+	virtual int GetCount_Object() override { return Collection<T>::GetCount(); }
+	virtual void SetAt_Object(int index, Object* item) override { Collection<T>::SetAt(index, static_cast<T>(item)); }
+	virtual Object* GetAt_Object(int index) override { return Collection<T>::GetAt(index); }
+	virtual void Add_Object(Object* item) override { Collection<T>::Add(static_cast<T>(item)); }
+	virtual void Clear_Object() override { Collection<T>::Clear(); }
+	virtual void Insert_Object(int index, Object* item) override { auto t = static_cast<T>(item); Collection<T>::Insert(index, t); }
+	virtual bool Remove_Object(Object* item) override { return Collection<T>::Remove(static_cast<T>(item)); }
+	virtual void RemoveAt_Object(int index) override { Collection<T>::RemoveAt(index); }
 
 private:
 };

@@ -154,21 +154,14 @@ def test_default_object_list
   vp1 = Viewport.main_viewport
   list1 = vp1.layers
 
-  p vp1
-  p list1
-
   # 最初から何個か入っている
-  p "test 1"
   assert_eq(true, list1.size > 0)  # Ruby 的には count じゃなくて size も使えたほうがいいかな。
 
   # 要素を get してみる
-  p "test 2"
   l1 = list1[0]
 
   # もう一度 get してみる
-  p "test 3"
   l2 = list1[0]
-  p "test 4"
   assert_eq(l1, l2)
 end
 
