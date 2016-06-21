@@ -1086,11 +1086,61 @@ namespace Lumino
     };
     
     /// <summary>
+    /// ビューポートを構成するレイヤーのクラスです。
+    /// </summary>
+    public partial class ViewportLayer : RefObject
+    {
+    
+    
+        internal ViewportLayer(_LNInternal i) : base(i) {}
+        
+    
+    };
+    
+    /// <summary>
     /// ビューポートのクラスです。
     /// </summary>
     public partial class Viewport : RefObject
     {
+        static Viewport _GetMainViewport;
+         ViewportLayerList _GetLayers;
     
+        /// <summary>
+        /// メインウィンドウのビューポート
+        /// </summary>
+        public static Viewport MainViewport
+        {
+            get
+            {
+                IntPtr outViewport;
+                var result = API.LNViewport_GetMainViewport(out outViewport);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                if (outViewport == null)
+                    _GetMainViewport = null;
+                else if (_GetMainViewport == null || _GetMainViewport.Handle != outViewport)
+                    _GetMainViewport = InternalManager.GetWrapperObject<Viewport>(outViewport);
+                return _GetMainViewport;
+            }
+            
+        }
+        /// <summary>
+        /// ビューポートを構成するレイヤーのリスト
+        /// </summary>
+        public ViewportLayerList Layers
+        {
+            get
+            {
+                IntPtr outList;
+                var result = API.LNViewport_GetLayers( _handle, out outList);
+                if (result != Result.OK) throw LuminoException.MakeExceptionFromLastError(result);
+                if (outList == null)
+                    _GetLayers = null;
+                else if (_GetLayers == null || _GetLayers.Handle != outList)
+                    _GetLayers = InternalManager.GetWrapperObject<ViewportLayerList>(outList);
+                return _GetLayers;
+            }
+            
+        }
     
         internal Viewport(_LNInternal i) : base(i) {}
         
@@ -1300,6 +1350,17 @@ namespace Lumino
     /// <summary>
     /// 要素の集合 (可変長配列) を表すクラスです。
     /// </summary>
+    public partial class ViewportLayerList : ObjectList<ViewportLayer>{
+    
+    
+        internal ViewportLayerList(_LNInternal i) : base(i) {}
+        
+    
+    };
+    
+    /// <summary>
+    /// 要素の集合 (可変長配列) を表すクラスです。
+    /// </summary>
     public partial class SceneNodeList : ObjectList<SceneNode>{
     
     
@@ -1356,6 +1417,16 @@ var _Texture2D = new TypeInfo(){ Factory = (handle) =>
 };
 _typeInfos.Add(_Texture2D);
 LNTexture2D_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
+var _ViewportLayer = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new ViewportLayer(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_ViewportLayer);
+LNViewportLayer_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
 var _Viewport = new TypeInfo(){ Factory = (handle) =>
     {
@@ -1417,6 +1488,16 @@ var _UINativeHostWindow = new TypeInfo(){ Factory = (handle) =>
 _typeInfos.Add(_UINativeHostWindow);
 LNUINativeHostWindow_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
 
+var _ViewportLayerList = new TypeInfo(){ Factory = (handle) =>
+    {
+        var obj = new ViewportLayerList(_LNInternal.InternalBlock);
+        obj.SetHandle(handle);
+        return obj;
+    }
+};
+_typeInfos.Add(_ViewportLayerList);
+LNViewportLayerList_SetBindingTypeInfo((IntPtr)(_typeInfos.Count - 1));
+
 var _SceneNodeList = new TypeInfo(){ Factory = (handle) =>
     {
         var obj = new SceneNodeList(_LNInternal.InternalBlock);
@@ -1447,6 +1528,9 @@ private static extern void LNTexture_SetBindingTypeInfo(IntPtr data);
 private static extern void LNTexture2D_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNViewportLayer_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNViewport_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
@@ -1463,6 +1547,9 @@ private static extern void LNUIFrameWindow_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNUINativeHostWindow_SetBindingTypeInfo(IntPtr data);
+
+[DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
+private static extern void LNViewportLayerList_SetBindingTypeInfo(IntPtr data);
 
 [DllImport(API.DLLName, CallingConvention = API.DefaultCallingConvention)]
 private static extern void LNSceneNodeList_SetBindingTypeInfo(IntPtr data);

@@ -2,18 +2,6 @@
 #include "RubyStructs.h"
 
 //-----------------------------------------------------------------------------
-// Utils
-
-bool checkEqualHandle(VALUE obj, LNHandle handle)
-{
-	if (obj == Qnil)
-		return handle == NULL;
-	if (((wrapRefObject*)DATA_PTR(obj))->Handle != handle)
-		return false;
-	return true;
-}
-
-//-----------------------------------------------------------------------------
 // WrapStructs
 
 
@@ -83,11 +71,22 @@ struct wrapTexture2D
     {}
 };
 
-struct wrapViewport
+struct wrapViewportLayer
     : public wrapRefObject
 {
 
+    wrapViewportLayer()
+    {}
+};
+
+struct wrapViewport
+    : public wrapRefObject
+{
+    VALUE MainViewport;
+    VALUE Layers;
+
     wrapViewport()
+    :     MainViewport(Qnil), Layers(Qnil)
     {}
 };
 
@@ -135,6 +134,14 @@ struct wrapUINativeHostWindow
     {}
 };
 
+struct wrapViewportLayerList
+    : public wrapRefObject
+{
+
+    wrapViewportLayerList()
+    {}
+};
+
 struct wrapSceneNodeList
     : public wrapRefObject
 {
@@ -145,7 +152,6 @@ struct wrapSceneNodeList
 
 
 
-VALUE g_class_RefObject;
 VALUE g_class_Config;
 VALUE g_class_Engine;
 VALUE g_class_Version;
@@ -155,12 +161,14 @@ VALUE g_class_SoundListener;
 VALUE g_class_Sound;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
+VALUE g_class_ViewportLayer;
 VALUE g_class_Viewport;
 VALUE g_class_SceneNode;
 VALUE g_class_Sprite;
 VALUE g_class_Sprite2D;
 VALUE g_class_UIFrameWindow;
 VALUE g_class_UINativeHostWindow;
+VALUE g_class_ViewportLayerList;
 VALUE g_class_SceneNodeList;
 
 
@@ -1451,6 +1459,43 @@ static VALUE lnrbLNTexture2D_Create(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+static void LNViewportLayer_delete(wrapViewportLayer* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
+}
+
+static void LNViewportLayer_mark(wrapViewportLayer* obj)
+{
+
+}
+
+static VALUE LNViewportLayer_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapViewportLayer* internalObj;
+
+    internalObj = new wrapViewportLayer();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewportLayer_allocate" );
+    obj = Data_Wrap_Struct(klass, LNViewportLayer_mark, LNViewportLayer_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LNViewportLayer_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapViewportLayer* internalObj;
+
+    internalObj = new wrapViewportLayer();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewportLayer_allocate" );
+    obj = Data_Wrap_Struct(klass, LNViewportLayer_mark, LNViewportLayer_delete, internalObj);
+    
+    internalObj->Handle = handle;
+    return obj;
+}
+
 static void LNViewport_delete(wrapViewport* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
@@ -1460,6 +1505,8 @@ static void LNViewport_delete(wrapViewport* obj)
 
 static void LNViewport_mark(wrapViewport* obj)
 {
+    rb_gc_mark(obj->MainViewport);
+    rb_gc_mark(obj->Layers);
 
 }
 
@@ -1486,6 +1533,46 @@ static VALUE LNViewport_allocateForGetRefObject(VALUE klass, LNHandle handle)
     
     internalObj->Handle = handle;
     return obj;
+}
+
+static VALUE static_lnrbLNViewport_GetMainViewport(int argc, VALUE *argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNHandle _outViewport;
+            LNResult errorCode = LNViewport_GetMainViewport(&_outViewport);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            if (!checkEqualHandle(selfObj->MainViewport, _outViewport)) {
+                selfObj->MainViewport = Manager::GetWrapperObjectFromHandle(_outViewport);
+            }
+            return selfObj->MainViewport;
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Viewport.main_viewport - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE lnrbLNViewport_GetLayers(int argc, VALUE *argv, VALUE self)
+{
+    wrapViewport* selfObj;
+    Data_Get_Struct(self, wrapViewport, selfObj);
+    if (0 <= argc && argc <= 0) {
+    
+        if (true) {
+            LNHandle _outList;
+            LNResult errorCode = LNViewport_GetLayers(selfObj->Handle, &_outList);
+            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
+            if (!checkEqualHandle(selfObj->Layers, _outList)) {
+                selfObj->Layers = Manager::GetWrapperObjectFromHandle(_outList);
+            }
+            return selfObj->Layers;
+    
+        }
+    }
+    rb_raise(rb_eArgError, "Lumino::Viewport.layers - wrong argument type.");
+    return Qnil;
 }
 
 static void LNSceneNode_delete(wrapSceneNode* obj)
@@ -1873,6 +1960,43 @@ static VALUE lnrbLNUINativeHostWindow_Render(int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+static void LNViewportLayerList_delete(wrapViewportLayerList* obj)
+{
+    if (obj->Handle != 0) LNObject_Release(obj->Handle);
+    Manager::UnregisterWrapperObject(obj->Handle);
+    delete obj;
+}
+
+static void LNViewportLayerList_mark(wrapViewportLayerList* obj)
+{
+
+}
+
+static VALUE LNViewportLayerList_allocate( VALUE klass )
+{
+    VALUE obj;
+    wrapViewportLayerList* internalObj;
+
+    internalObj = new wrapViewportLayerList();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewportLayerList_allocate" );
+    obj = Data_Wrap_Struct(klass, LNViewportLayerList_mark, LNViewportLayerList_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LNViewportLayerList_allocateForGetRefObject(VALUE klass, LNHandle handle)
+{
+    VALUE obj;
+    wrapViewportLayerList* internalObj;
+
+    internalObj = new wrapViewportLayerList();
+    if (internalObj == NULL) rb_raise( g_luminoModule, "Faild alloc - LNViewportLayerList_allocate" );
+    obj = Data_Wrap_Struct(klass, LNViewportLayerList_mark, LNViewportLayerList_delete, internalObj);
+    
+    internalObj->Handle = handle;
+    return obj;
+}
+
 static void LNSceneNodeList_delete(wrapSceneNodeList* obj)
 {
     if (obj->Handle != 0) LNObject_Release(obj->Handle);
@@ -1910,162 +2034,10 @@ static VALUE LNSceneNodeList_allocateForGetRefObject(VALUE klass, LNHandle handl
     return obj;
 }
 
-static VALUE lnrbLNSceneNodeList_GetCount(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            int _outCount;
-            LNResult errorCode = LNSceneNodeList_GetCount(selfObj->Handle, &_outCount);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return toVALUE(_outCount);
-    
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.get_count - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_SetAt(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE index;
-        VALUE itemPtr;
-        rb_scan_args(argc, argv, "2", &index, &itemPtr);
-        if (isRbNumber(index) && isRbObject(itemPtr)) {
-            int _index = FIX2INT(index);
-            LNHandle _itemPtr = Manager::GetHandleFromtWrapperObject(itemPtr);
-            LNResult errorCode = LNSceneNodeList_SetAt(selfObj->Handle, _index, _itemPtr);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.set_at - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_GetAt(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE index;
-        rb_scan_args(argc, argv, "1", &index);
-        if (isRbNumber(index)) {
-            int _index = FIX2INT(index);
-            LNHandle _outItemPtr;
-            LNResult errorCode = LNSceneNodeList_GetAt(selfObj->Handle, _index, &_outItemPtr);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Manager::GetWrapperObjectFromHandle(_outItemPtr);
-    
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.get_at - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_Add(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE itemPtr;
-        rb_scan_args(argc, argv, "1", &itemPtr);
-        if (isRbObject(itemPtr)) {
-            LNHandle _itemPtr = Manager::GetHandleFromtWrapperObject(itemPtr);
-            LNResult errorCode = LNSceneNodeList_Add(selfObj->Handle, _itemPtr);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.add - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_Clear(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (0 <= argc && argc <= 0) {
-    
-        if (true) {
-            LNResult errorCode = LNSceneNodeList_Clear(selfObj->Handle);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.clear - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_Insert(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE index;
-        VALUE itemPtr;
-        rb_scan_args(argc, argv, "2", &index, &itemPtr);
-        if (isRbNumber(index) && isRbObject(itemPtr)) {
-            int _index = FIX2INT(index);
-            LNHandle _itemPtr = Manager::GetHandleFromtWrapperObject(itemPtr);
-            LNResult errorCode = LNSceneNodeList_Insert(selfObj->Handle, _index, _itemPtr);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.insert - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_Remove(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE itemPtr;
-        rb_scan_args(argc, argv, "1", &itemPtr);
-        if (isRbObject(itemPtr)) {
-            LNHandle _itemPtr = Manager::GetHandleFromtWrapperObject(itemPtr);
-            LNBool _outRemoved;
-            LNResult errorCode = LNSceneNodeList_Remove(selfObj->Handle, _itemPtr, &_outRemoved);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return toVALUE(_outRemoved);
-    
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.remove - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE lnrbLNSceneNodeList_RemoveAt(int argc, VALUE *argv, VALUE self)
-{
-    wrapSceneNodeList* selfObj;
-    Data_Get_Struct(self, wrapSceneNodeList, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE index;
-        rb_scan_args(argc, argv, "1", &index);
-        if (isRbNumber(index)) {
-            int _index = FIX2INT(index);
-            LNResult errorCode = LNSceneNodeList_RemoveAt(selfObj->Handle, _index);
-            if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "Lumino::SceneNodeList.remove_at - wrong argument type.");
-    return Qnil;
-}
-
 
 
 void InitClasses()
 {
-    g_class_RefObject = rb_define_class_under(g_luminoModule, "RefObject", rb_cObject);
-    
     g_class_Config = rb_define_class_under(g_luminoModule, "Config", rb_cObject);
     rb_define_singleton_method(g_class_Config, "set_graphics_rendering_type", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetGraphicsRenderingType), -1);
     rb_define_singleton_method(g_class_Config, "set_engine_log_enabled", LN_TO_RUBY_FUNC(static_lnrbLNConfig_SetEngineLogEnabled), -1);
@@ -2149,8 +2121,13 @@ void InitClasses()
     rb_define_alloc_func(g_class_Texture2D, LNTexture2D_allocate);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(lnrbLNTexture2D_Create), -1);
 
+    g_class_ViewportLayer = rb_define_class_under(g_luminoModule, "ViewportLayer", g_class_RefObject);
+    rb_define_alloc_func(g_class_ViewportLayer, LNViewportLayer_allocate);
+
     g_class_Viewport = rb_define_class_under(g_luminoModule, "Viewport", g_class_RefObject);
     rb_define_alloc_func(g_class_Viewport, LNViewport_allocate);
+    rb_define_singleton_method(g_class_Viewport, "main_viewport", LN_TO_RUBY_FUNC(static_lnrbLNViewport_GetMainViewport), -1);
+    rb_define_method(g_class_Viewport, "layers", LN_TO_RUBY_FUNC(lnrbLNViewport_GetLayers), -1);
 
     g_class_SceneNode = rb_define_class_under(g_luminoModule, "SceneNode", g_class_RefObject);
     rb_define_alloc_func(g_class_SceneNode, LNSceneNode_allocate);
@@ -2177,16 +2154,11 @@ void InitClasses()
     rb_define_private_method(g_class_UINativeHostWindow, "initialize", LN_TO_RUBY_FUNC(lnrbLNUINativeHostWindow_Create), -1);
     rb_define_method(g_class_UINativeHostWindow, "render", LN_TO_RUBY_FUNC(lnrbLNUINativeHostWindow_Render), -1);
 
-    g_class_SceneNodeList = rb_define_class_under(g_luminoModule, "SceneNodeList", g_class_RefObject);
+    g_class_ViewportLayerList = rb_define_class_under(g_luminoModule, "ViewportLayerList", g_class_ObjectList);
+    rb_define_alloc_func(g_class_ViewportLayerList, LNViewportLayerList_allocate);
+
+    g_class_SceneNodeList = rb_define_class_under(g_luminoModule, "SceneNodeList", g_class_ObjectList);
     rb_define_alloc_func(g_class_SceneNodeList, LNSceneNodeList_allocate);
-    rb_define_method(g_class_SceneNodeList, "get_count", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_GetCount), -1);
-    rb_define_method(g_class_SceneNodeList, "set_at", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_SetAt), -1);
-    rb_define_method(g_class_SceneNodeList, "get_at", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_GetAt), -1);
-    rb_define_method(g_class_SceneNodeList, "add", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_Add), -1);
-    rb_define_method(g_class_SceneNodeList, "clear", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_Clear), -1);
-    rb_define_method(g_class_SceneNodeList, "insert", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_Insert), -1);
-    rb_define_method(g_class_SceneNodeList, "remove", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_Remove), -1);
-    rb_define_method(g_class_SceneNodeList, "remove_at", LN_TO_RUBY_FUNC(lnrbLNSceneNodeList_RemoveAt), -1);
 
 
 }
@@ -2199,12 +2171,14 @@ void Manager::RegisterTypeInfo()
     LNRB_REGISTER_TYPEINFO(Sound);
     LNRB_REGISTER_TYPEINFO(Texture);
     LNRB_REGISTER_TYPEINFO(Texture2D);
+    LNRB_REGISTER_TYPEINFO(ViewportLayer);
     LNRB_REGISTER_TYPEINFO(Viewport);
     LNRB_REGISTER_TYPEINFO(SceneNode);
     LNRB_REGISTER_TYPEINFO(Sprite);
     LNRB_REGISTER_TYPEINFO(Sprite2D);
     LNRB_REGISTER_TYPEINFO(UIFrameWindow);
     LNRB_REGISTER_TYPEINFO(UINativeHostWindow);
+    LNRB_REGISTER_TYPEINFO(ViewportLayerList);
     LNRB_REGISTER_TYPEINFO(SceneNodeList);
 
 }

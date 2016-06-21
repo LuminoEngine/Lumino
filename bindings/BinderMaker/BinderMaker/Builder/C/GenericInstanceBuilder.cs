@@ -22,6 +22,7 @@ namespace BinderMaker.Builder.C
 
             // .cpp
             _implesText.AppendLine("#include \"LNInternal.h\"");
+            _implesText.AppendLine("#include <LuminoEngine.h>");
             _implesText.AppendLine("#include \"../include/LNBase.h\"");
             _implesText.AppendLine("#include \"../include/LNGenericInstance.generated.h\"");
             _implesText.NewLine();
@@ -34,27 +35,19 @@ namespace BinderMaker.Builder.C
             // ジェネリックインスタンスだけが処理対象
             if (!classType.IsGenericinstance) return false;
 
-            _implesText.AppendLine("LN_API void {0}_SetBindingTypeInfo(void* data) {{ {1}_SetBindingTypeInfo(data); }}", classType.OriginalName, classType.ClassDecl.OriginalName);
+            _declsText.AppendLine("// " + classType.OriginalName);
+            _declsText.NewLine();
+            _implesText.AppendLine("// " + classType.OriginalName);
             _implesText.NewLine();
 
- //           extern "C" LN_API void apiClassName##_SetBindingTypeInfo(void* data) \
- //{ \
- //	tr::TypeInfo::GetTypeInfo<coreClassName>()->SetBindingTypeInfo(data); \
- //}
-
-            //_classText = new OutputBuffer();
-
-            //_classText.AppendLine("class LNWI{0} : public ln::{0}", classType.Name);
-            //_classText.AppendLine("{");
+            _implesText.AppendLine("LN_TYPE_INFO_IMPL({0}, {1});", classType.Name, classType.OriginalName);
+            _implesText.NewLine();
 
             return true;
         }
 
         protected override void OnClassLookedEnd(CLClass classType)
         {
-            //_classText.AppendLine("};");
-            //_classText.NewLine();
-            //_outputText.AppendWithIndent(_classText.ToString());
         }
 
         protected override void OnMethodLooked(CLMethod method)
@@ -88,7 +81,6 @@ namespace BinderMaker.Builder.C
             foreach (var param in method.FuncDecl.Params)
             {
                 if (param != method.FuncDecl.Params.First()) _implesText.Append(", ");
-                //if (param.IsGenericTemplate) _implesText.Append("&");     // boxing というか void* にする
                 _implesText.Append(param.ParamDecl.Name);
             }
             _implesText.Append(");");

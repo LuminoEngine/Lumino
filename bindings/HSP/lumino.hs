@@ -9,7 +9,7 @@ Lumino
 _LIBRARY_VERSION_
 
 %date
-2016/06/20
+2016/06/21
 
 %author
 lriki
@@ -3101,6 +3101,47 @@ stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚
 ;
 ;-----------------------------------------------------------
 %index
+LNViewport_GetMainViewport
+ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìƒrƒ…[ƒ|[ƒg‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
+%prm
+outViewport
+[out] outViewport : Viewport ƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewport_GetLayers
+ƒrƒ…[ƒ|[ƒg‚ğ\¬‚·‚éƒŒƒCƒ„[‚ÌƒŠƒXƒg‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+ƒOƒ‰ƒtƒBƒbƒNƒX‹@”\
+%prm
+viewport, outList
+[in]  viewport : Viewport ƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹
+[out] outList  : ViewportLayerList ƒIƒuƒWƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
 LNSceneNode_IsVisible
 ƒm[ƒh‚Ì‰Â‹ó‘Ô‚ğæ“¾‚µ‚Ü‚·B
 
@@ -3318,6 +3359,177 @@ LNUINativeHostWindow_Render
 %prm
 frameWindow
 [in] frameWindow : LNUIFrameWindow ƒnƒ“ƒhƒ‹
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_GetCount
+ƒŠƒXƒg‚ÉŠi”[‚³‚ê‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Ì”‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, outCount
+[in]  listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[out] outCount   : —v‘f‚Ì”‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_SetAt
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÉƒIƒuƒWƒFƒNƒg‚ğİ’è‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, index, itemPtr
+[in] listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[in] index      : ƒCƒ“ƒfƒbƒNƒX(—v‘f”Ô†)
+[in] itemPtr    : İ’è‚·‚éƒIƒuƒWƒFƒNƒg
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_GetAt
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, index, outItemPtr
+[in]  listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[in]  index      : ƒCƒ“ƒfƒbƒNƒX(—v‘f”Ô†)
+[out] outItemPtr : ƒIƒuƒWƒFƒNƒg‚ğŠi”[‚·‚é•Ï”
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_Add
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ì––”ö‚ÉƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, itemPtr
+[in] listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[in] itemPtr    : ’Ç‰Á‚·‚éƒIƒuƒWƒFƒNƒg
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_Clear
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚©‚ç‘S‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject
+[in] listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_Insert
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌˆÊ’u‚ÉƒIƒuƒWƒFƒNƒg‚ğ‘}“ü‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, index, itemPtr
+[in] listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[in] index      : item ‚ğ‘}“ü‚·‚éƒCƒ“ƒfƒbƒNƒX
+[in] itemPtr    : ‘}“ü‚·‚éƒIƒuƒWƒFƒNƒg
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_Remove
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg“à‚Åw’è‚µ‚½ƒnƒ“ƒhƒ‹‚Æˆê’v‚·‚éÅ‰‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, itemPtr, outRemoved
+[in]  listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[in]  itemPtr    : ƒŠƒXƒg‚©‚çíœ‚·‚éƒIƒuƒWƒFƒNƒg
+[out] outRemoved : —v‘f‚ğíœ‚µ‚½‚©‚Ç‚¤‚©‚ğ¦‚·’l (íœ‚Å‚«‚½ê‡‚Í LN_TRUE) ‚ğŠi”[‚·‚é•Ï”‚ÌƒAƒhƒŒƒXB
+
+stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
+
+%inst
+
+
+%href
+
+;-----------------------------------------------------------
+;
+;-----------------------------------------------------------
+%index
+LNViewportLayerList_RemoveAt
+ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìw’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚É‚ ‚éƒIƒuƒWƒFƒNƒg‚ğíœ‚µ‚Ü‚·B
+
+%group
+Šî–{‹@”\
+%prm
+listObject, index
+[in] listObject : ƒIƒuƒWƒFƒNƒgƒŠƒXƒgƒnƒ“ƒhƒ‹
+[in] index      : íœ‚·‚éƒIƒuƒWƒFƒNƒg‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
 
 stat : ƒGƒ‰[ƒR[ƒh (ƒGƒ‰[ƒR[ƒh‚É‚Â‚¢‚Ä‚Í LNError_GetLastErrorCode ‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢)
 

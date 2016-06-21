@@ -20,6 +20,7 @@ set(LN_SOURCES_C_API
 	include/LNTypedef.h
 	include/LNUI.h
 	include/LNGenericInstance.generated.h
+	include/LuminoC.h
 	src/LNAudio.cpp
 	src/LNBase.cpp
 	src/LNEngine.cpp

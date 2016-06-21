@@ -91,6 +91,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // ViewportLayer
 //==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 
 //------------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
@@ -122,6 +123,21 @@ void ViewportLayer::PostRender(RenderingContext* renderingContext, RenderTarget*
 }
 
 //==============================================================================
+// ViewportLayerList
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayerList, ObjectList<ViewportLayer*>);
+
+//------------------------------------------------------------------------------
+ViewportLayerList::ViewportLayerList()
+{
+}
+
+//------------------------------------------------------------------------------
+ViewportLayerList::~ViewportLayerList()
+{
+}
+
+//==============================================================================
 // Viewport
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
@@ -136,7 +152,7 @@ Viewport* Viewport::GetMainWindowViewport()
 Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_renderTarget(nullptr)
-	, m_viewportLayerList(RefPtr<ObjectList<ViewportLayer*>>::MakeRef())
+	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
 	, m_backgroundColor(ColorF::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)

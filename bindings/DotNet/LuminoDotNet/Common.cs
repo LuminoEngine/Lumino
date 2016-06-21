@@ -355,7 +355,8 @@ namespace Lumino
             if (_cacheList.Count < count)
             {
                 // 足りない分を詰める
-                for (int i = 0; i < count - _cacheList.Count; ++i)
+                int ro = count - _cacheList.Count;
+                for (int i = 0; i < ro; ++i)
                 {
                     _cacheList.Add(null);
                 }
@@ -371,7 +372,7 @@ namespace Lumino
                     {
                         var t = TypeInfo.GetTypeInfoByHandle(item).Factory(item);
                         t.SetHandle(item);
-                        _cacheList.Add((T)t);
+                        _cacheList[i] = ((T)t);
                     }
                 }
             }

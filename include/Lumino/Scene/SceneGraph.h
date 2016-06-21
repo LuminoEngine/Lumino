@@ -94,9 +94,8 @@ private:
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-	//SceneNodeList		m_allNodes;
 	Array<Camera*>		m_allCameraList;
-	SceneNodeList		m_renderingNodeList;	// 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
+	SceneNodeArray		m_renderingNodeList;	// 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
 	LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態

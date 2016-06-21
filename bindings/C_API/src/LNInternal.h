@@ -85,24 +85,6 @@ const T* cp_cast(const U* p) { return reinterpret_cast<const T*>(p); }
 //------------------------------------------------------------------------------
 // 関数ライブラリ内で共通のもの
 
-//namespace LNote
-//{
-//namespace Core
-//{
-//namespace Function
-//{
-//    extern Core::Manager* gFramework;
-//    extern Graphics::IGraphicsDevice* gGraphicsDevice;
-//    extern Graphics::IRenderer* gRenderer;
-//}
-//}
-//}
-
-
-
-//#define LN_TYPE_INFO_DECL(className) \
-//	LN_API void className##_SetBindingTypeInfo(void* data);
-
 // CoreObject から Managed 側の型情報を取り出すための機能を実装する。
 // LNXXXX_SetBindingTypeData
 #define LN_TYPE_INFO_IMPL(coreClassName, apiClassName) \

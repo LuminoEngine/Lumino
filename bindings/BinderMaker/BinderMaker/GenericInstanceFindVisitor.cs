@@ -7,12 +7,18 @@ using BinderMaker.Decls;
 
 namespace BinderMaker
 {
+    class GenericInstanceInfo
+    {
+        public string GenericClassName;
+        public List<string> TypeArgs;
+    }
+
     class GenericInstanceFindVisitor : Decls.DeclsTreeVisitor
     {
         /// <summary>
         /// インスタンス化するクラス名と、型実引数リストのマップ (LN付き)
         /// </summary>
-        public Dictionary<string, List<string>> GenericInstanceMap = new Dictionary<string, List<string>>();
+        public List<GenericInstanceInfo> GenericInstanceInfoList = new List<GenericInstanceInfo>();
 
         public List<ClassDecl> AllClasses = new List<ClassDecl>();
         
@@ -33,7 +39,12 @@ namespace BinderMaker
         {
             if (p.IsGenericInstance)
             {
-                GenericInstanceMap.Add(p.GenericClassName, p.GenericTypeParams);
+                GenericInstanceInfoList.Add(
+                    new GenericInstanceInfo()
+                    {
+                        GenericClassName = p.GenericClassName,
+                        TypeArgs = p.GenericTypeArgs,
+                    });
             }
         }
     }

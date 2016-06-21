@@ -1385,6 +1385,25 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     }
     case 0x00EE:
     {
+        PVal* pval_p0;
+        APTR aptr_p0 = code_getva(&pval_p0);
+        intptr_t p0;
+        stat = LNViewport_GetMainViewport(&p0);
+        int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
+        return true;
+    }
+    case 0x00EF:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        intptr_t p1;
+        stat = LNViewport_GetLayers(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00F0:
+    {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
         APTR aptr_p1 = code_getva(&pval_p1);
@@ -1393,7 +1412,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00EF:
+    case 0x00F1:
     {
         intptr_t p0 = CodeGetI();
         LNBool p1 = (LNBool)CodeGetI();
@@ -1401,7 +1420,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00F0:
+    case 0x00F2:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1411,7 +1430,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         code_setva(pval_p1, aptr_p1, hspLNVector3_typeid(), &p1);
         return true;
     }
-    case 0x00F1:
+    case 0x00F3:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1; CodeGetVA_TypeChecked(&pval_p1, LNVector3);
@@ -1419,7 +1438,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00F2:
+    case 0x00F4:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1429,7 +1448,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00F3:
+    case 0x00F5:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1439,7 +1458,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00F4:
+    case 0x00F6:
     {
         intptr_t p0 = CodeGetI();
         intptr_t p1 = CodeGetI();
@@ -1447,7 +1466,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00F5:
+    case 0x00F7:
     {
         PVal* pval_p0;
         APTR aptr_p0 = code_getva(&pval_p0);
@@ -1456,7 +1475,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp0 = p0; code_setva(pval_p0, aptr_p0, HSPVAR_FLAG_INT, &rp0);
         return true;
     }
-    case 0x00F6:
+    case 0x00F8:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1466,7 +1485,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00F7:
+    case 0x00F9:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1476,14 +1495,87 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00F8:
+    case 0x00FA:
     {
         intptr_t p0 = CodeGetI();
         stat = LNUINativeHostWindow_Render(p0);
     
         return true;
     }
-    case 0x00F9:
+    case 0x00FB:
+    {
+        intptr_t p0 = CodeGetI();
+        PVal* pval_p1;
+        APTR aptr_p1 = code_getva(&pval_p1);
+        int p1;
+        stat = LNViewportLayerList_GetCount(p0, &p1);
+        int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
+        return true;
+    }
+    case 0x00FC:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        intptr_t p2 = CodeGetI();
+        stat = LNViewportLayerList_SetAt(p0, p1, p2);
+    
+        return true;
+    }
+    case 0x00FD:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        intptr_t p2;
+        stat = LNViewportLayerList_GetAt(p0, p1, &p2);
+        int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
+        return true;
+    }
+    case 0x00FE:
+    {
+        intptr_t p0 = CodeGetI();
+        intptr_t p1 = CodeGetI();
+        stat = LNViewportLayerList_Add(p0, p1);
+    
+        return true;
+    }
+    case 0x00FF:
+    {
+        intptr_t p0 = CodeGetI();
+        stat = LNViewportLayerList_Clear(p0);
+    
+        return true;
+    }
+    case 0x0100:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        intptr_t p2 = CodeGetI();
+        stat = LNViewportLayerList_Insert(p0, p1, p2);
+    
+        return true;
+    }
+    case 0x0101:
+    {
+        intptr_t p0 = CodeGetI();
+        intptr_t p1 = CodeGetI();
+        PVal* pval_p2;
+        APTR aptr_p2 = code_getva(&pval_p2);
+        LNBool p2;
+        stat = LNViewportLayerList_Remove(p0, p1, &p2);
+        int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
+        return true;
+    }
+    case 0x0102:
+    {
+        intptr_t p0 = CodeGetI();
+        int p1 = CodeGetI();
+        stat = LNViewportLayerList_RemoveAt(p0, p1);
+    
+        return true;
+    }
+    case 0x0103:
     {
         intptr_t p0 = CodeGetI();
         PVal* pval_p1;
@@ -1493,7 +1585,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp1 = p1; code_setva(pval_p1, aptr_p1, HSPVAR_FLAG_INT, &rp1);
         return true;
     }
-    case 0x00FA:
+    case 0x0104:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -1502,7 +1594,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00FB:
+    case 0x0105:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -1513,7 +1605,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
         return true;
     }
-    case 0x00FC:
+    case 0x0106:
     {
         intptr_t p0 = CodeGetI();
         intptr_t p1 = CodeGetI();
@@ -1521,14 +1613,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00FD:
+    case 0x0107:
     {
         intptr_t p0 = CodeGetI();
         stat = LNSceneNodeList_Clear(p0);
     
         return true;
     }
-    case 0x00FE:
+    case 0x0108:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();
@@ -1537,7 +1629,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     
         return true;
     }
-    case 0x00FF:
+    case 0x0109:
     {
         intptr_t p0 = CodeGetI();
         intptr_t p1 = CodeGetI();
@@ -1548,7 +1640,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         int rp2 = p2; code_setva(pval_p2, aptr_p2, HSPVAR_FLAG_INT, &rp2);
         return true;
     }
-    case 0x0100:
+    case 0x010A:
     {
         intptr_t p0 = CodeGetI();
         int p1 = CodeGetI();

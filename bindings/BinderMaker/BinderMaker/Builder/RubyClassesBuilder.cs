@@ -131,9 +131,21 @@ __CONTENTS__
             string varName = RubyCommon.GetModuleVariableName(classType);
             _allTypeDefineGlobalVariables.AppendLine("VALUE {0};", varName);
 
-            // Class 定義
-            string varBaseClass = (classType.BaseClass != null) ? "g_class_" + classType.BaseClass.Name : "rb_cObject";
-            _allModuleDefines.AppendLine(@"{0} = rb_define_class_under(g_luminoModule, ""{1}"", {2});", varName, classType.Name, varBaseClass);
+            // LNObjectList は特殊扱い
+            // TODO: もうちょっといい方法あるかも…
+            bool specialized = false;
+            if (classType.IsGenericinstance &&
+                classType.ClassDecl.OriginalName == "LNObjectList")
+            {
+                specialized = true;
+                _allModuleDefines.AppendLine(@"{0} = rb_define_class_under(g_luminoModule, ""{1}"", g_class_ObjectList);", varName, classType.Name);
+            }
+            else
+            {
+                // Class 定義
+                string varBaseClass = (classType.BaseClass != null) ? "g_class_" + classType.BaseClass.Name : "rb_cObject";
+                _allModuleDefines.AppendLine(@"{0} = rb_define_class_under(g_luminoModule, ""{1}"", {2});", varName, classType.Name, varBaseClass);
+            }
 
             if (!classType.IsStatic)
             {
@@ -149,7 +161,15 @@ __CONTENTS__
                 _typeinfoRegisterText.AppendLine("LNRB_REGISTER_TYPEINFO({0});", classType.Name);
             }
 
-            return true;
+            if (specialized)
+            {
+                OnClassLookedEnd(classType);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>

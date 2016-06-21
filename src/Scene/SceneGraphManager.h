@@ -112,7 +112,6 @@ private:
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
 	//SceneNode*							m_rootNode;
 	LightNodeList						m_lightNodeList;		///< 全ての Light のリスト
-	//SceneNodeList						m_renderingNodeList;	///< (いらないかも？)最後の UpdateFrame() で抽出された描画可能なノードのリスト
 	SceneShaderList						m_sceneShaderList;
 
 	Array<Camera*>	m_allCameraList;

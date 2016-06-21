@@ -76,7 +76,15 @@ LN_CLASS_END
 	@brief	ビューポートのクラスです。
 */
 LN_CLASS(LNViewport, LNObject)
-	
+
+	/**
+		@brief		メインウィンドウのビューポートを取得します。
+		@param[out]	outViewport	: Viewport オブジェクトのハンドルを格納する変数のポインタ
+	*/
+	LN_STATIC_API
+	LN_ATTR_PROPERTY
+	LNResult LNViewport_GetMainViewport(LN_OUT LN_HANDLE(LNViewport)* outViewport);
+
 	/**
 		@brief		ビューポートを構成するレイヤーのリストを取得します。
 		@param[in]	viewport	: Viewport オブジェクトのハンドル

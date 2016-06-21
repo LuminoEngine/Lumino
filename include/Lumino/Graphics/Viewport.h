@@ -23,6 +23,7 @@ public:
 class ViewportLayer
 	: public Object
 {
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	const Size& GetViewportSize() const;
 	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
@@ -46,6 +47,15 @@ private:
 	RefPtr<ImageEffectList>	m_imageEffects;
 
 	friend class Viewport;
+};
+
+class ViewportLayerList
+	: public ObjectList<ViewportLayer*>
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+LN_INTERNAL_ACCESS:
+	ViewportLayerList();
+	virtual ~ViewportLayerList();
 };
 
 /**
@@ -84,13 +94,13 @@ private:
 	void TryRemakeLayerTargets();
 	void MakeViewBoxTransform(const Size& dstSize, const Size& srcSize, Matrix* mat);
 
-	GraphicsManager*					m_manager;
-	RenderTarget*						m_renderTarget;
+	GraphicsManager*			m_manager;
+	RenderTarget*				m_renderTarget;
 
-	RefPtr<ObjectList<ViewportLayer*>>	m_viewportLayerList;
-	ColorF								m_backgroundColor;
-	RenderTarget*						m_primaryLayerTarget;
-	RenderTarget*						m_secondaryLayerTarget;
+	RefPtr<ViewportLayerList>	m_viewportLayerList;
+	ColorF						m_backgroundColor;
+	RenderTarget*				m_primaryLayerTarget;
+	RenderTarget*				m_secondaryLayerTarget;
 };
 
 LN_NAMESPACE_END

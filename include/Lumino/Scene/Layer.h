@@ -64,7 +64,7 @@ private:
 	SceneNode*						m_renderingRootNode;
 	RefPtr<RenderingPassRefList>	m_renderingPassList;
 
-	SceneNodeList					m_renderingNodeList;	///< 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
+	SceneNodeArray					m_renderingNodeList;	///< 視錘台カリング等を行った後の、実際に描画するべきノードのリスト
 	LightNodeList					m_renderingLightList;	///< 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 };
 

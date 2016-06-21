@@ -164,6 +164,23 @@ namespace Test
             AssertEq(children, children2);
         }
 
+        //--------------------------------------------------------------
+        // デフォルトで作成されるオブジェクトリストのテスト
+        static void Test_DefaultObjectList()
+        {
+            var vp1 = Viewport.MainViewport;
+            var list1 = vp1.Layers;
+
+            // 最初から何個か入っている
+            AssertEq(true, list1.Count > 0);
+
+            // 要素を get してみる
+            var l1 = list1[0];
+
+            // もう一度 get してみる
+            AssertEq(l1, list1[0]);
+        }
+
         static void Main(string[] args)
         {
             Engine.Initialize();
@@ -174,6 +191,7 @@ namespace Test
             Test_RefObjectGetSetRefObject();
             Test_Dispose();
             Test_ObjectList();
+            Test_DefaultObjectList();
             Engine.Terminate();
             Console.WriteLine("Test succeeded.");
         }

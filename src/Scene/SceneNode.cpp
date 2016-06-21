@@ -43,7 +43,7 @@ SceneNode::SceneNode()
 	, m_transformModified(true)
 	, m_isAutoUpdate(false)
 	, m_isAutoRemove(false)
-	, m_children(RefPtr<ObjectList<SceneNode*>>::MakeRef())
+	, m_children(RefPtr<SceneNodeList>::MakeRef())
 	, m_parentNode(NULL)
 	, m_zDistance(FLT_MAX)
 {
@@ -183,7 +183,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
+void SceneNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList)
 {
 	// SceneNode 自体は描画機能を持たないので何もせず、子の処理を行う
     for (int i = 0; i < m_children->GetCount(); ++i)
@@ -213,6 +213,22 @@ void SceneNode::OnOwnerSceneGraphChanged(SceneGraph* newOwner, SceneGraph* oldOw
 	//if (newOwner != nullptr) {
 	//	newOwner->AddNode(this);
 	//}
+}
+
+
+//==============================================================================
+// SceneNodeList
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneNodeList, ObjectList<SceneNode*>);
+
+//------------------------------------------------------------------------------
+SceneNodeList::SceneNodeList()
+{
+}
+
+//------------------------------------------------------------------------------
+SceneNodeList::~SceneNodeList()
+{
 }
 
 LN_NAMESPACE_SCENE_END

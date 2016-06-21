@@ -9,21 +9,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-
-
-
-
-
-
-//class SceneNodeRefList
-//	: public ReflectionObjectList<SceneNode*>
-//{
-//public:
-//	SceneNodeRefList() {}
-//	virtual ~SceneNodeRefList() {}
-//};
-//
-
+class SceneNodeList;
 
 /// SceneNode
 class SceneNode
@@ -114,7 +100,7 @@ public:
 	SceneNodeRenderingMode GetRenderingMode() const { return m_renderingMode; }
 	void SetRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
 
-	ObjectList<SceneNode*>* GetChildren() const { return m_children; }
+	SceneNodeList* GetChildren() const { return m_children; }
 	
 public:
 
@@ -133,7 +119,7 @@ public:
 	///		renderingNodeList	: この視点の中で実際に描画するものはこのリストに追加する (視錘台カリングなど)
 	///		renderingLightList	: this 以下の Light はこのリストに追加する
 	///		この処理は1フレーム内で、レイヤー単位の描画開始時に呼ばれる。
-	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
+	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList);
 
 	/// このノードの近いライトを選択する
 	///		UpdateViewFlustumHierarchy() で、今回の描画で必要なライトが求まる。
@@ -187,7 +173,7 @@ protected:
 	bool				m_isAutoUpdate;
 	bool				m_isAutoRemove;
 
-	RefPtr<ObjectList<SceneNode*>>	m_children;
+	RefPtr<SceneNodeList>	m_children;
 	SceneNode*			m_parentNode;
 
 	Matrix				m_combinedGlobalMatrix;
@@ -199,6 +185,15 @@ protected:
 	Internal::RenderingPassClientData	m_renderingPassClientDataList[Internal::MaxRenderingPass];
 
 	friend class Internal::SceneHelper;
+};
+
+class SceneNodeList
+	: public ObjectList<SceneNode*>
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+LN_INTERNAL_ACCESS:
+	SceneNodeList();
+	virtual ~SceneNodeList();
 };
 
 LN_NAMESPACE_SCENE_END

@@ -77,6 +77,15 @@ LN_TYPE_INFO_IMPL(ln::ViewportLayer, LNViewportLayer);
 LN_TYPE_INFO_IMPL(ln::Viewport, LNViewport);
 
 //------------------------------------------------------------------------------
+LNResult LNViewport_GetMainViewport(LN_OUT LN_HANDLE(LNViewport)* outViewport)
+{
+	LN_CHECK_ARG(outViewport != nullptr);
+	LN_FUNC_TRY_BEGIN;
+	*outViewport = TO_HANDLE_ADDREF(ln::Viewport::GetMainWindowViewport());
+	LN_FUNC_TRY_END_RETURN;
+}
+
+//------------------------------------------------------------------------------
 LNResult LNViewport_GetLayers(LN_HANDLE(LNViewport) viewport, LN_OUT LN_GENERIC_HANDLE(LNObjectList, LNViewportLayer)* outList)
 {
 	LN_CHECK_ARG_HANDLE(viewport);

@@ -9,6 +9,8 @@ extern "C" LNUserData LNObject_GetBindingTypeData(LNHandle hadnleObject);
 
 extern VALUE g_luminoModule;
 extern VALUE g_luminoError;  // exception
+extern VALUE g_class_RefObject;
+extern VALUE g_class_ObjectList;
 
 extern void InitEnums();
 extern void InitStructs();
@@ -95,7 +97,8 @@ private:
 	}
 
 
-
+// Utils
+extern bool checkEqualHandle(VALUE obj, LNHandle handle);
 
 
 

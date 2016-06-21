@@ -90,7 +90,7 @@ void VisualNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList)
+void VisualNode::UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList)
 {
 	if (IsVisible())
 	{

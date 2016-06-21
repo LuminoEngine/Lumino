@@ -536,7 +536,7 @@ namespace BinderMaker
             }
             if (ParamDecl.IsGenericInstance)
             {
-                _originalTypeName = CLClass.MakeGenericInstanceName(ParamDecl.GenericClassName, ParamDecl.GenericTypeParams);
+                _originalTypeName = CLClass.MakeGenericInstanceName(ParamDecl.GenericClassName, ParamDecl.GenericTypeArgs);
                 
             }
 

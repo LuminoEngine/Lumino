@@ -218,8 +218,14 @@ LNTexture2D_Create          サイズを指定して2Dテクスチャを作成�
 LNTexture2D_CreateFromFile  ファイルから2Dテクスチャを作成します。
 
 -------------------------------------------------------------------------------
+ ■ [LNViewportLayer]  ビューポートを構成するレイヤーのモジュールです。
+
+
+-------------------------------------------------------------------------------
  ■ [LNViewport]  ビューポートのモジュールです。
 
+LNViewport_GetMainViewport  メインウィンドウのビューポートを取得します。
+LNViewport_GetLayers        ビューポートを構成するレイヤーのリストを取得します。
 
 -------------------------------------------------------------------------------
  ■ [LNSceneNode]  シーングラフを構成するノードのベースモジュールです。
@@ -251,6 +257,18 @@ LNSprite2D_CreateFromTexture  2Dスプライトオブジェクトを作成しま
 
 LNUINativeHostWindow_Create  UINativeHostWindow オブジェクトを作成します。
 LNUINativeHostWindow_Render  ウィンドウの内容を描画します。
+
+-------------------------------------------------------------------------------
+ ■ [LNViewportLayerList]  要素の集合 (可変長配列) を表すモジュールです。
+
+LNViewportLayerList_GetCount  リストに格納されているオブジェクトの数を取得します。
+LNViewportLayerList_SetAt     オブジェクトリストの指定したインデックスにオブジェクトを設定します。
+LNViewportLayerList_GetAt     オブジェクトリストの指定したインデックスのオブジェクトを取得します。
+LNViewportLayerList_Add       オブジェクトリストの末尾にオブジェクトを追加します。
+LNViewportLayerList_Clear     オブジェクトリストから全てのオブジェクトを削除します。
+LNViewportLayerList_Insert    オブジェクトリストの指定したインデックスの位置にオブジェクトを挿入します。
+LNViewportLayerList_Remove    オブジェクトリスト内で指定したハンドルと一致する最初のオブジェクトを削除します。
+LNViewportLayerList_RemoveAt  オブジェクトリストの指定したインデックスにあるオブジェクトを削除します。
 
 -------------------------------------------------------------------------------
  ■ [LNSceneNodeList]  要素の集合 (可変長配列) を表すモジュールです。

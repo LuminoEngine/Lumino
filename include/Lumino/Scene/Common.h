@@ -37,7 +37,7 @@ class CameraBehavior;
 
 typedef Array<RenderingPass*>	RenderingPassList;
 typedef Array<Light*>			LightNodeList;
-typedef Array<SceneNode*>		SceneNodeList;
+typedef Array<SceneNode*>		SceneNodeArray;
 typedef Array<MMEShader*>		SceneShaderList;
 
 /// ノード種別

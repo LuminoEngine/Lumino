@@ -36,7 +36,7 @@ namespace BinderMaker.Decls
         /// <summary>
         /// 型がジェネリックか
         /// </summary>
-        public bool IsGenericInstance { get { return GenericTypeParams != null; } }
+        public bool IsGenericInstance { get { return GenericTypeArgs != null; } }
         
         /// <summary>
         /// ジェネリッククス名 (LNList など)
@@ -46,7 +46,7 @@ namespace BinderMaker.Decls
         /// <summary>
         /// ジェネリック型引数
         /// </summary>
-        public List<string> GenericTypeParams { get; private set; }
+        public List<string> GenericTypeArgs { get; private set; }
 
         #endregion
 
@@ -67,10 +67,10 @@ namespace BinderMaker.Decls
             {
                 string typeParamsText = OriginalTypeName.Replace("LN_GENERIC_HANDLE", "").Replace("(", "").Replace(")", "").Replace("*", "");
                 var tokens = typeParamsText.Split(',');
-                GenericTypeParams = new List<string>();
+                GenericTypeArgs = new List<string>();
                 for (int i = 1; i < tokens.Length; ++i)
                 {
-                    GenericTypeParams.Add(tokens[i].Trim());
+                    GenericTypeArgs.Add(tokens[i].Trim());
                 }
                 GenericClassName = tokens[0];
             }

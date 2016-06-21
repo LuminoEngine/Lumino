@@ -2,32 +2,17 @@
 #include "RubyStructs.h"
 
 //-----------------------------------------------------------------------------
-// Utils
-
-bool checkEqualHandle(VALUE obj, LNHandle handle)
-{
-	if (obj == Qnil)
-		return handle == NULL;
-	if (((wrapRefObject*)DATA_PTR(obj))->Handle != handle)
-		return false;
-	return true;
-}
-
-//-----------------------------------------------------------------------------
 // WrapStructs
 
 
 __WRAP_STRUCTS__
 
-VALUE g_class_RefObject;
 __GLOBALS__
 
 __FUNCTIONS__
 
 void InitClasses()
 {
-    g_class_RefObject = rb_define_class_under(g_luminoModule, "RefObject", rb_cObject);
-    
 __DEFINES__
 }
 

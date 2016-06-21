@@ -53,7 +53,16 @@ namespace LuminoBuild
 
                 if (commands == "exit") break;
 
-                builder.Execute(commands);
+                try
+                {
+                    builder.Execute(commands);
+                }
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(e.ToString());
+                    Console.ResetColor(); // 色のリセット
+                }
             }
         }
     }

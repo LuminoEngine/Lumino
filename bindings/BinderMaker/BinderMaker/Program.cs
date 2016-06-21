@@ -49,11 +49,11 @@ namespace BinderMaker
                 // インスタンス化が必要なジェネリッククラスを調べる
                 var genericInstanceFind = new GenericInstanceFindVisitor();
                 genericInstanceFind.Run(modules2);
-                foreach (var pair in genericInstanceFind.GenericInstanceMap)
+                foreach (var info in genericInstanceFind.GenericInstanceInfoList)
                 {
-                    var classDecl = genericInstanceFind.AllClasses.Find((item) => item.OriginalName == pair.Key);
+                    var classDecl = genericInstanceFind.AllClasses.Find((item) => item.OriginalName == info.GenericClassName);
                     var module = modules.Find((item) => item.Name == "Base");   // とりあえず Base モジュールに追加する
-                    module.Classes.Add(new CLClass(module, classDecl, pair.Value));
+                    module.Classes.Add(new CLClass(module, classDecl, info.TypeArgs));
                 }
 
 

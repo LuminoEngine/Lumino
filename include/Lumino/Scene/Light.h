@@ -73,7 +73,7 @@ public:	// internal
 	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 protected:
-	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeList* renderingNodeList, LightNodeList* renderingLightList);
+	virtual void UpdateViewFlustumHierarchy(Camera* camera, SceneNodeArray* renderingNodeList, LightNodeList* renderingLightList);
 
 private:
 	friend class VisualNode;
