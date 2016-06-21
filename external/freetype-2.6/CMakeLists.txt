@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (freetype)
 
+include(../Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
+
 set(LN_FREETYPE_SOURCES
 	src/autofit/autofit.c
 	src/base/ftadvanc.c
@@ -74,11 +76,8 @@ add_definitions(-DFT_DEBUG_LEVEL_TRACE)
 add_definitions(-DFT2_BUILD_LIBRARY)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
-add_custom_command(
-	TARGET ${PROJECT_NAME}
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
 
 if (MSVC)
 	add_definitions("/wd4996")		# pragma warning disable

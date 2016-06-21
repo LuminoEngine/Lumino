@@ -183,6 +183,18 @@ __CONTENTS__
 
             //-------------------------------------------------
             // モジュールをラップする構造体
+            /* 例:
+                struct wrapViewport
+                    : public wrapRefObject
+                {
+                    VALUE MainViewport;
+                    VALUE Layers;
+
+                    wrapViewport()
+                    :     MainViewport(Qnil), Layers(Qnil)
+                    {}
+                };
+            */
             _allWrapStructs.AppendLine("struct {0}", GetWrapStructName(classType));
             if (classType.BaseClass != null)  // 継承
                 _allWrapStructs.AppendLine("    : public " + GetWrapStructName(classType.BaseClass));
@@ -252,12 +264,20 @@ __CONTENTS__
             // RefObj型のプロパティは、フィールドに保持したい
             if (prop.Type is CLClass && ((CLClass)prop.Type).IsReferenceObject)
             {
-                // WrapStruct のメンバを追加する
-                _currentClassInfo.AdditionalWrapStructMember.AppendLine("VALUE {0};", prop.Name);
-                // メンバの初期化
-                _currentClassInfo.AdditionalWrapStructMemberInit.AppendCommad("{0}(Qnil)", prop.Name);
-                // メンバの GCMark
-                _currentClassInfo.AdditionalWrapStructMemberMark.AppendLine("rb_gc_mark(obj->{0});", prop.Name);
+                if (!prop.IsStatic)
+                {
+                    // WrapStruct のメンバを追加する
+                    _currentClassInfo.AdditionalWrapStructMember.AppendLine("VALUE {0};", prop.Name);
+                    // メンバの初期化
+                    _currentClassInfo.AdditionalWrapStructMemberInit.AppendCommad("{0}(Qnil)", prop.Name);
+                    // メンバの GCMark
+                    _currentClassInfo.AdditionalWrapStructMemberMark.AppendLine("rb_gc_mark(obj->{0});", prop.Name);
+                }
+                else
+                {
+                    // static プロパティの場合は static を付け、mark などは必要なし。
+                    _currentClassInfo.AdditionalWrapStructMember.AppendLine("static VALUE {0};", prop.Name);
+                }
             }
 
             if (prop.Setter != null) OnMethodLooked(prop.Setter);
@@ -324,7 +344,7 @@ __CONTENTS__
             // 関数名
             string funcName = "lnrb" + baseMethod.FuncDecl.OriginalFullName;
             if (baseMethod.IsStatic) funcName = "static_" + funcName;    // static メソッドの場合は先頭に static_ を付ける
-
+            
             // 関数ヘッダ
             _allFuncDefines.AppendLine("static VALUE {0}(int argc, VALUE *argv, VALUE self)", funcName);
             _allFuncDefines.AppendLine("{");

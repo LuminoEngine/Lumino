@@ -446,15 +446,23 @@ namespace BinderMaker.Builder
                     // API実引数
                     argsText.AppendCommad("&" + varName);
 
+                    // getプロパティの場合はメンバにキャッシュする
                     if (method.IsGetterProperty && CLType.CheckRefObjectType(param.Type))
                     {
-                        // post
+                        // variable に、キャッシュ先の変数名を作る
                         var propName = method.OwnerProperty.Name;
-                        postStmt.AppendLine("if (!checkEqualHandle(selfObj->{0}, {1})) {{", propName, varName);
-                        postStmt.AppendLine("    selfObj->{0} = Manager::GetWrapperObjectFromHandle({1});", propName, varName);
+                        string variable;
+                        if (method.IsStatic)
+                            variable = string.Format("wrap{0}::{1}", method.OwnerClass.Name, propName);
+                        else
+                            variable = string.Format("selfObj->{0}", propName);
+
+                        // post
+                        postStmt.AppendLine("if (!checkEqualHandle({0}, {1})) {{", variable, varName);
+                        postStmt.AppendLine("    {0} = Manager::GetWrapperObjectFromHandle({1});", variable, varName);
                         postStmt.AppendLine("}");
                         // return
-                        returnStmt.AppendLine("return selfObj->{0};", propName);
+                        returnStmt.AppendLine("return {0};", variable);
                     }
                     else
                     {

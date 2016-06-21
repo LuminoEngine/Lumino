@@ -82,11 +82,11 @@ struct wrapViewportLayer
 struct wrapViewport
     : public wrapRefObject
 {
-    VALUE MainViewport;
+    static VALUE MainViewport;
     VALUE Layers;
 
     wrapViewport()
-    :     MainViewport(Qnil), Layers(Qnil)
+    :     Layers(Qnil)
     {}
 };
 
@@ -1505,7 +1505,6 @@ static void LNViewport_delete(wrapViewport* obj)
 
 static void LNViewport_mark(wrapViewport* obj)
 {
-    rb_gc_mark(obj->MainViewport);
     rb_gc_mark(obj->Layers);
 
 }
@@ -1543,10 +1542,10 @@ static VALUE static_lnrbLNViewport_GetMainViewport(int argc, VALUE *argv, VALUE 
             LNHandle _outViewport;
             LNResult errorCode = LNViewport_GetMainViewport(&_outViewport);
             if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-            if (!checkEqualHandle(selfObj->MainViewport, _outViewport)) {
-                selfObj->MainViewport = Manager::GetWrapperObjectFromHandle(_outViewport);
+            if (!checkEqualHandle(wrapViewport::MainViewport, _outViewport)) {
+                wrapViewport::MainViewport = Manager::GetWrapperObjectFromHandle(_outViewport);
             }
-            return selfObj->MainViewport;
+            return wrapViewport::MainViewport;
     
         }
     }

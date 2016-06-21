@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (libogg)
 
+include(../Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
+
 set(LN_SOURCES_libogg
 	include/ogg/os_types.h
 	include/ogg/config_types.h
@@ -19,12 +21,7 @@ include_directories(
 
 # Output name setting.
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
-
-# Copy lib (post build event)
-add_custom_command(
-	TARGET ${PROJECT_NAME}
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
 if (MSVC)
 	add_definitions("/wd4996")		# pragma warning disable

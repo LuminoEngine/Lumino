@@ -57,6 +57,7 @@ set(LN_INCLUDE_DIRECTORIES
 # make postfix.
 ln_make_postfix(LN_STATIC_OUTPUT_POSTFIX)
 ln_make_postfix_for_shared_lib(LN_SHARED_OUTPUT_POSTFIX)
+ln_make_output_dir(LN_LIB_OUTPUT_DIR)
 
 #------------------------------------------------------------------------------
 # Output
@@ -73,8 +74,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${LN
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${LN_OutputDir}/${LN_ARCH}")	# .dll
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_OutputDir}/${LN_ARCH}")	# .lib (linker)
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")	# .dll
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")	# .lib (linker)
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 
 #------------------------------
@@ -84,7 +85,7 @@ set_target_properties(${PROJECT_NAME}_Static PROPERTIES OUTPUT_NAME ${PROJECT_NA
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES COMPILE_DEFINITIONS "LN_BUILD_DLL")
 set_target_properties(${PROJECT_NAME}_Static PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
-set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_OutputDir}/${LN_ARCH}")
+set_target_properties(${PROJECT_NAME}_Static PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 target_link_libraries(${PROJECT_NAME}_Static ${LN_LINK_LIBS})
 
 

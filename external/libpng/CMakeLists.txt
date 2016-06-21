@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8.7)
 project (libpng)
 
+include(../Lumino.Core/cmake/LNCommon.cmake NO_POLICY_SCOPE)
+
 set(LN_LIBPNG_SOURCES
 	pngwtran.c
 	pngwutil.c
@@ -25,13 +27,8 @@ include_directories(${PROJECT_SOURCE_DIR}/../zlib)
 
 # Output name setting.
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}${LN_LIB_POSTFIX}")
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 
-# Copy lib (post build event)
-add_custom_command(
-	TARGET ${PROJECT_NAME}
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/lib")
-	
 if (MSVC)
 	add_definitions("/wd4996")		# pragma warning disable
 endif()
