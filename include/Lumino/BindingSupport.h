@@ -218,15 +218,6 @@ protected:
 	virtual ~ListObject() = default;
 
 LN_PROTECTED_INTERNAL_ACCESS:	// TODO: friend のほうがいいかな
-	virtual int GetCountInternal() = 0;
-	virtual void SetAtByVoidPtr(int index, void* item) = 0;
-	virtual void* GetAtByVoidPtr(int index) = 0;
-	virtual void AddByVoidPtr(void* item) = 0;
-	virtual void ClearInternal() = 0;
-	virtual void InsertByVoidPtr(int index, void* item) = 0;
-	virtual bool RemoveByVoidPtr(void* item) = 0;
-	virtual void RemoveAtInternal(int index) = 0;
-
 	virtual int GetCount_Object() = 0;
 	virtual void SetAt_Object(int index, Object* item) = 0;
 	virtual Object* GetAt_Object(int index) = 0;
@@ -245,45 +236,6 @@ class PrimitiveListObject
 public:
 	PrimitiveListObject() = default;
 	virtual ~PrimitiveListObject() = default;
-
-LN_PROTECTED_INTERNAL_ACCESS:
-	virtual int GetCountInternal() override
-	{
-		return Collection<T>::GetCount();
-	}
-	virtual void SetAtByVoidPtr(int index, void* item) override
-	{
-		LN_CHECK_ARG(item != nullptr);
-		Collection<T>::SetAt(index, *((T*)item));
-	}
-	virtual void* GetAtByVoidPtr(int index) override
-	{
-		Collection<T>::reference item = Collection<T>::GetAt(index);
-		return &item;
-	}
-	virtual void ClearInternal() override
-	{
-		Collection<T>::Clear();
-	}
-	virtual void AddByVoidPtr(void* item) override
-	{
-		LN_CHECK_ARG(item != nullptr);
-		Collection<T>::Add(*((T*)item));
-	}
-	virtual void InsertByVoidPtr(int index, void* item) override
-	{
-		LN_CHECK_ARG(item != nullptr);
-		Collection<T>::Insert(index, *((T*)item));
-	}
-	virtual bool RemoveByVoidPtr(void* item) override
-	{
-		LN_CHECK_ARG(item != nullptr);
-		return Collection<T>::Remove(*((T*)item));
-	}
-	virtual void RemoveAtInternal(int index) override
-	{
-		Collection<T>::RemoveAt(index);
-	}
 };
 
 

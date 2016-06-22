@@ -127,7 +127,7 @@ LN_INTERNAL_API LNUserData LNObject_GetUserData(LNHandle hadnleObject)
 //==============================================================================
 // LNValueList
 //==============================================================================
-
+#if 0
 //------------------------------------------------------------------------------
 LNResult LNValueList_GetCount(LN_HANDLE(LNValueList) listObject, int* outCount)
 {
@@ -205,6 +205,7 @@ LNResult LNValueList_RemoveAt(LN_HANDLE(LNValueList) listObject, int index)
 	TO_REFOBJ(ListObject, listObject)->RemoveAtInternal(index);
 	LN_FUNC_TRY_END_RETURN;
 }
+#endif
 
 //==============================================================================
 // LNObjectList
