@@ -9,7 +9,7 @@ Lumino
 _LIBRARY_VERSION_
 
 %date
-2016/06/21
+2016/06/23
 
 %author
 lriki

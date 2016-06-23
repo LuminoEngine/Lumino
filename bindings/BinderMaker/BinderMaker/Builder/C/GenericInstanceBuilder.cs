@@ -92,6 +92,12 @@ namespace BinderMaker.Builder.C
             _implesText.AppendLine("}");
             _implesText.NewLine();
         }
+        
+        protected override void OnPropertyLooked(CLProperty prop)
+        {
+            if (prop.Getter != null) OnMethodLooked(prop.Getter);
+            if (prop.Setter != null) OnMethodLooked(prop.Setter);
+        }
 
         protected override string OnMakeOutoutFileText()
         {

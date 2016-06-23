@@ -4,6 +4,8 @@
 
 LN_CLASS(LNViewportLayerList, LNObject);
 
+LN_API LNResult LNViewportLayerList_GetCount(LN_HANDLE(LNViewportLayerList) listObject, int* outCount);
+
 LN_API LNResult LNViewportLayerList_SetAt(LN_HANDLE(LNViewportLayerList) listObject, int index, LN_HANDLE(LNViewportLayer) itemPtr);
 
 LN_API LNResult LNViewportLayerList_GetAt(LN_HANDLE(LNViewportLayerList) listObject, int index, LN_HANDLE(LNViewportLayer)* outItemPtr);
@@ -21,6 +23,8 @@ LN_API LNResult LNViewportLayerList_RemoveAt(LN_HANDLE(LNViewportLayerList) list
 // LNSceneNodeList
 
 LN_CLASS(LNSceneNodeList, LNObject);
+
+LN_API LNResult LNSceneNodeList_GetCount(LN_HANDLE(LNSceneNodeList) listObject, int* outCount);
 
 LN_API LNResult LNSceneNodeList_SetAt(LN_HANDLE(LNSceneNodeList) listObject, int index, LN_HANDLE(LNSceneNode) itemPtr);
 
