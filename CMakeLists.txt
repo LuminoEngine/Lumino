@@ -187,7 +187,6 @@ set(LN_SOURCES_Graphics
 	include/Lumino/Graphics/IndexBuffer.h
 	include/Lumino/Graphics/Material.h
 	include/Lumino/Graphics/Renderer.h
-	include/Lumino/Graphics/RenderingContext.h
 	include/Lumino/Graphics/RenderState.h
 	include/Lumino/Graphics/SamplerState.h
 	include/Lumino/Graphics/Shader.h
@@ -233,7 +232,6 @@ set(LN_SOURCES_Graphics
 	src/Graphics/RendererImpl.h
 	src/Graphics/RenderingCommand.cpp
 	src/Graphics/RenderingCommand.h
-	src/Graphics/RenderingContext.cpp
 	src/Graphics/RenderingThread.cpp
 	src/Graphics/RenderingThread.h
 	src/Graphics/RenderState.cpp

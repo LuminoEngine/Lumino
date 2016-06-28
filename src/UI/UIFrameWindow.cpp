@@ -65,9 +65,11 @@ void UIFrameWindow::BeginRendering()
 {
 	Details::Renderer* renderer = m_manager->GetGraphicsManager()->GetRenderer();
 	renderer->Begin();
-	renderer->SetRenderTarget(0, m_swapChain->GetBackBuffer());
-	renderer->SetDepthBuffer(m_swapChain->GetBackBufferDepth());
-	renderer->Clear(ClearFlags::All, ColorF::Black);
+
+	GraphicsContext* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
+	g->SetRenderTarget(0, m_swapChain->GetBackBuffer());
+	g->SetDepthBuffer(m_swapChain->GetBackBufferDepth());
+	g->Clear(ClearFlags::All, ColorF::Black);
 }
 
 //------------------------------------------------------------------------------
