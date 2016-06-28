@@ -1,7 +1,7 @@
 #include <TestConfig.h>
 
 
-class IntegrateTest_Scene_Sprite : public ::testing::Test
+class Test_Scene_Sprite : public ::testing::Test
 {
 protected:
 	virtual void SetUp() {}
@@ -10,7 +10,7 @@ protected:
 
 
 //------------------------------------------------------------------------------
-TEST_F(IntegrateTest_Scene_Sprite, Basic)
+TEST_F(Test_Scene_Sprite, Basic)
 {
 	auto sprite1 = Sprite2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 
@@ -81,7 +81,7 @@ TEST_F(IntegrateTest_Scene_Sprite, Basic)
 
 
 //------------------------------------------------------------------------------
-TEST_F(IntegrateTest_Scene_Sprite, BlendMode)
+TEST_F(Test_Scene_Sprite, BlendMode)
 {
 	auto tex = Texture2D::Create(LN_LOCALFILE("TestData/Sprite1.png"));
 	auto sprite1 = Sprite2D::Create(tex);

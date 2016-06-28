@@ -29,6 +29,7 @@ public:	// TODO
 public:
 
 	void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
+	void SetViewProjectionTransform(const Matrix& view, const Matrix& proj);
 
 	void SetTransform(const Matrix& matrix);
 	void SetOpacity(float opacity);	// 0~1
@@ -67,13 +68,35 @@ public:
 
 	//void Flush();
 
+	/**
+		@brief	頂点バッファを使用してプリミティブをレンダリングします。
+	*/
+	void DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
+
+	/**
+		@brief	頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
+	*/
+	void DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);	// TODO: DrawIndexedPrimitive
 
 
+
+	void DrawLinePrimitive(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor);
+
+	void DrawSquarePrimitive(
+		const Vector3& position1, const Vector2& uv1, const ColorF& color1,
+		const Vector3& position2, const Vector2& uv2, const ColorF& color2,
+		const Vector3& position3, const Vector2& uv3, const ColorF& color3,
+		const Vector3& position4, const Vector2& uv4, const ColorF& color4);
+
+	// ステート固定。
+	void Blt(Texture* source, RenderTarget* dest);
+	void Blt(Texture* source, RenderTarget* dest, const Matrix& transform);
+	void Blt(Texture* source, RenderTarget* dest, Shader* shader);
 
 
 
 	//detail::GeometryRenderer* BeginDrawingContext();
-	SpriteRenderer* BeginSpriteRendering();
+	SpriteRenderer* GetSpriteRenderer() const { return m_spriteRenderer; }
 
 
 public:
@@ -93,6 +116,7 @@ public:
 
 
 	//RendererType				m_currentRenderer;
+	detail::PrimitiveRenderer*	m_primitiveRenderer;
 	detail::GeometryRenderer*	m_geometryRenderer;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
@@ -105,7 +129,7 @@ protected:
 	virtual void OnStateFlushRequested() override;
 
 private:
-	//void TryChangeRenderingClass(RendererType dc);
+	void BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader);
 };
 
 LN_NAMESPACE_END

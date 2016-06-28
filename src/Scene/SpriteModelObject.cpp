@@ -80,7 +80,7 @@ void SpriteModelObject::OnUpdateFrame(float elapsedTime)
 //------------------------------------------------------------------------------
 void SpriteModelObject::OnRender(SceneGraphRenderingContext* dc)
 {
-	auto sr = dc->BeginSpriteRendering();
+	auto* sr = dc->BeginGraphicsContext()->GetSpriteRenderer();
 	sr->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 	sr->SetViewPixelSize(Size(640, 480));
 	ss::g_spriteRenderer = sr;

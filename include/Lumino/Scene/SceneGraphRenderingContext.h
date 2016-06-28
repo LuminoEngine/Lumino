@@ -19,8 +19,6 @@ LN_INTERNAL_ACCESS:
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
 public:
-	//detail::GeometryRenderer* BeginDrawingContext();
-	SpriteRenderer* BeginSpriteRendering();
 	GraphicsContext* BeginGraphicsContext() { return m_internalContext; }
 	void Flush();
 

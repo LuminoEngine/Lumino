@@ -33,12 +33,12 @@ public:
 	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/**
-		@brief	現在設定されている頂点バッファを使用してプリミティブをレンダリングします。
+		@brief	頂点バッファを使用してプリミティブをレンダリングします。
 	*/
 	void DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
 
 	/**
-		@brief	現在設定されている頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
+		@brief	頂点バッファとインデックスバッファを使用してプリミティブをレンダリングします。
 	*/
 	void DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);	// TODO: DrawIndexedPrimitive
 

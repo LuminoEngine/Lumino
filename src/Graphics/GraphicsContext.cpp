@@ -197,8 +197,8 @@ GraphicsContext* GraphicsContext::GetContext()
 
 //------------------------------------------------------------------------------
 GraphicsContext::GraphicsContext()
-	:/* m_currentRenderer(RendererType::None)
-	, */m_spriteRenderer(nullptr)
+	: m_primitiveRenderer(nullptr)
+	, m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
 {
 }
@@ -209,6 +209,7 @@ GraphicsContext::~GraphicsContext()
 	LN_SAFE_RELEASE(m_textRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_geometryRenderer);
+	LN_SAFE_RELEASE(m_primitiveRenderer);
 }
 
 //------------------------------------------------------------------------------
@@ -217,8 +218,14 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 	IContext::Initialize(manager);
 
 	Renderer = manager->GetRenderer();
+
+	m_primitiveRenderer = LN_NEW detail::PrimitiveRenderer();
+	m_primitiveRenderer->Initialize(manager);
+	m_primitiveRenderer->SetUseInternalShader(true);	// TODO
+
 	m_geometryRenderer = LN_NEW detail::GeometryRenderer();
 	m_geometryRenderer->Initialize(manager);
+
 	m_spriteRenderer = LN_NEW SpriteRenderer(manager, 2048);	// TODO:
 
 	m_textRenderer = LN_NEW detail::TextRenderer();
@@ -230,11 +237,20 @@ void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
 	Matrix proj = Matrix::MakePerspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
+	m_primitiveRenderer->SetViewPixelSize(size);
 	m_geometryRenderer->SetViewProjection(Matrix::Identity, proj, size);
 	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
+	m_spriteRenderer->SetViewPixelSize(size);
 	m_textRenderer->SetViewProjMatrix(proj);
 	m_textRenderer->SetViewPixelSize(size);
 	// ↑TODO: OnStateFlushRequested に持っていったほうがいい？
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetViewProjectionTransform(const Matrix& view, const Matrix& proj)
+{
+	OnStateChanging();
+	m_spriteRenderer->SetViewProjMatrix(view, proj);
 }
 
 //------------------------------------------------------------------------------
@@ -346,59 +362,100 @@ void GraphicsContext::DrawText(const StringRef& text, const RectF& rect, StringF
 	m_textRenderer->DrawString(text.GetBegin(), text.GetLength(), rect, flags);
 }
 
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void GraphicsContext::Flush()
-//{
-//	m_geometryRenderer->Flush();
-//	m_spriteRenderer->Flush();
-//	m_textRenderer->Flush();
-//}
-
 //------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//detail::GeometryRenderer* GraphicsContext::BeginDrawingContext()
-//{
-//	if (m_currentRenderer != RendererType::GeometryRenderer)
-//	{
-//		Flush();
-//		m_currentRenderer = RendererType::GeometryRenderer;
-//	}
-//	return m_geometryRenderer;
-//}
-//
-//------------------------------------------------------------------------------
-SpriteRenderer* GraphicsContext::BeginSpriteRendering()
+void GraphicsContext::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	//if (m_currentRenderer != RendererType::GeometryRenderer)
-	//{
-		Flush();
-	//	m_currentRenderer = RendererType::SpriteRenderer;
-	//}
-	return m_spriteRenderer;
+	OnDrawing(GetCommonRenderer());
+	GetCommonRenderer()->DrawPrimitive(vertexBuffer, primitive, startVertex, primitiveCount);
 }
 
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void GraphicsContext::TryChangeRenderingClass(RendererType dc)
-//{
-//	if (dc != m_currentRenderer)
-//	{
-//		Flush();
-//		m_currentRenderer = dc;
-//	}
-//
+//------------------------------------------------------------------------------
+void GraphicsContext::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+{
+	OnDrawing(GetCommonRenderer());
+	GetCommonRenderer()->DrawPrimitiveIndexed(vertexBuffer, indexBuffer, primitive, startIndex, primitiveCount);
+}
 
-//}
+//------------------------------------------------------------------------------
+void GraphicsContext::DrawLinePrimitive(const Vector3& from, const ColorF& fromColor, const Vector3& to, const ColorF& toColor)
+{
+	OnDrawing(m_primitiveRenderer);
+	m_primitiveRenderer->DrawLine(from, fromColor, to, toColor);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::DrawSquarePrimitive(
+	const Vector3& position1, const Vector2& uv1, const ColorF& color1,
+	const Vector3& position2, const Vector2& uv2, const ColorF& color2,
+	const Vector3& position3, const Vector2& uv3, const ColorF& color3,
+	const Vector3& position4, const Vector2& uv4, const ColorF& color4)
+{
+	OnDrawing(m_primitiveRenderer);
+	m_primitiveRenderer->DrawSquare(
+		position1, uv1, color1,
+		position2, uv2, color2,
+		position3, uv3, color3,
+		position4, uv4, color4);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::Blt(Texture* source, RenderTarget* dest)
+{
+	BltInternal(source, dest, Matrix::Identity, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::Blt(Texture* source, RenderTarget* dest, const Matrix& transform)
+{
+	BltInternal(source, dest, transform, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::Blt(Texture* source, RenderTarget* dest, Shader* shader)
+{
+	BltInternal(source, dest, Matrix::Identity, shader);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::BltInternal(Texture* source, RenderTarget* dest, const Matrix& transform, Shader* shader)
+{
+	// TODO: ここで null にしておかないとPrimitiveRendererが古いシェーダを適用してしまう。
+	// が、内部でステートを変えてしまうのはどうなのか。。。
+	SetShaderPass(nullptr);
+
+	//RenderState oldState1 = GetRenderState();
+	//DepthStencilState oldState2 = GetDepthStencilState();
+
+	//RenderState newState1;
+	//newState1.Blend = BlendMode::Alpha;	// TODO:指定できた方がいい？
+	//newState1.AlphaTest = false;
+	//SetRenderState(newState1);
+
+	//DepthStencilState newState2;
+	//newState2.DepthTestEnabled = false;
+	//newState2.DepthWriteEnabled = false;
+	//SetDepthStencilState(newState2);
+
+	detail::RenderStateBlock stateBlock(this);
+	SetBlendMode(BlendMode::Alpha);
+	SetAlphaTestEnabled(false);
+	SetDepthTestEnabled(false);
+	SetDepthWriteEnabled(false);
+
+	OnDrawing(m_primitiveRenderer);
+	m_primitiveRenderer->Blt(source, dest, transform, shader);
+
+
+	//SetRenderState(oldState1);
+	//SetDepthStencilState(oldState2);
+}
 
 //------------------------------------------------------------------------------
 void GraphicsContext::OnStateFlushRequested()
 {
 	IContext::OnStateFlushRequested();
 
+	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
 }
 
 LN_NAMESPACE_END

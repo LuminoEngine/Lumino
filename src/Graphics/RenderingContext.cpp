@@ -55,11 +55,6 @@ void RenderingContext::Initialize(GraphicsManager* manager)
 	m_primitiveRenderer->Initialize(manager);
 	m_primitiveRenderer->SetUseInternalShader(true);	// TODO
 
-
-	//const Size& size = m_state.GetRenderTarget(0)->GetSize();
-	//m_primitiveRenderer->SetViewPixelSize(size);
-	//m_spriteRenderer->SetViewPixelSize(size);
-
 }
 
 ////------------------------------------------------------------------------------
