@@ -27,8 +27,8 @@ public:
 
 private:
 #if 0
-	void DrawGroupList(RenderingContext& painter, const RectF& listRect);
-	void DrawSectionGraphBar(RenderingContext& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect);
+	void DrawGroupList(GraphicsContext& painter, const RectF& listRect);
+	void DrawSectionGraphBar(GraphicsContext& painter, const Profiler::CommitedGroup& group, float x, float y, const RectF& listRect);
 #endif
 
 private:

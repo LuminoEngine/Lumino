@@ -1,6 +1,6 @@
 ﻿
 #include "../../Internal.h"
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/VisualNode.h>
 #include "ShaderScriptCommandList.h"

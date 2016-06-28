@@ -1,7 +1,7 @@
 ﻿
 #include "../../Internal.h"
 #include <Lumino/Graphics/Texture.h>
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneNode.h>
 #include "ShaderScriptCommandList.h"
@@ -434,10 +434,10 @@ int ShaderScriptCommandList::InternalExecute(DrawParams& params, int pc, int cur
 		case COMMAND_DrawBuffer:
 		{
 			if (cmd->DrawBuffer.Pass != nullptr) {
-				params.Params->GetRenderingContext()->SetShaderPass(cmd->DrawBuffer.Pass);
+				params.Params->BeginGraphicsContext()->SetShaderPass(cmd->DrawBuffer.Pass);
 			}
 
-			params.Params->GetRenderingContext()->DrawSquare(
+			params.Params->BeginGraphicsContext()->DrawSquarePrimitive(
 				Vector3(-1.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f), ColorF::White,		// 左上
 				Vector3(1.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f), ColorF::White,		// 右上
 				Vector3(1.0f, -1.0f, 0.0f), Vector2(1.0f, 1.0f), ColorF::White,		// 右下

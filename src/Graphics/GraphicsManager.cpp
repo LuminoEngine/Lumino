@@ -717,7 +717,6 @@
 #include "Text/TextRenderer.h"
 #include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
-#include <Lumino/Graphics/RenderingContext.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 
 LN_NAMESPACE_BEGIN
@@ -785,7 +784,6 @@ GraphicsManager::GraphicsManager()
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
 	, m_activeContext(nullptr)
-	, m_renderingContext(nullptr)
 	, m_graphicsContext(nullptr)
 	, m_painterEngine(nullptr)
 	, m_textRendererCore(nullptr)
@@ -913,9 +911,6 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
 	m_textRendererCore->Initialize(this);
 
-	m_renderingContext = LN_NEW RenderingContext();
-	m_renderingContext->Initialize(this);
-
 	m_graphicsContext = LN_NEW GraphicsContext();
 	m_graphicsContext->Initialize(this);
 
@@ -956,7 +951,6 @@ void GraphicsManager::Finalize()
 	}
 
 	LN_SAFE_RELEASE(m_graphicsContext);
-	LN_SAFE_RELEASE(m_renderingContext);
 }
 
 //------------------------------------------------------------------------------

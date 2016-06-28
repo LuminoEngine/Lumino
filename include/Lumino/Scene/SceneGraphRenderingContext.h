@@ -19,22 +19,18 @@ LN_INTERNAL_ACCESS:
 	MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::Render() 以下で使用可能)
 
 public:
-	GraphicsContext* BeginGraphicsContext() { return m_internalContext; }
+	GraphicsContext* BeginGraphicsContext() { return m_graphicsContext; }
 	void Flush();
 
-	Details::Renderer* GetRenderer() { return m_internalContext->Renderer; }
-
-	// view proj は パス開始時にカメラのものが設定されている
-	RenderingContext* GetRenderingContext() { return m_renderingContext; }
+	Details::Renderer* GetRenderer() { return m_graphicsContext->Renderer; }
 
 protected:
 	friend class SceneGraphManager;
-	SceneGraphRenderingContext(RenderingContext* renderingContext, GraphicsContext* internalContext);
+	SceneGraphRenderingContext(GraphicsContext* graphicsContext);
 	virtual ~SceneGraphRenderingContext();
 
 private:
-	RenderingContext*	m_renderingContext;	// TODO: 持ちまわり方はもう少し考えたほうがいいかも
-	GraphicsContext*	m_internalContext;
+	GraphicsContext*	m_graphicsContext;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include "SceneGraphManager.h"
 #include "RenderingPass.h"
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
@@ -239,7 +239,7 @@ void Sprite::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
 	if (subsetIndex == 0)
 	{
-		dc->GetRenderingContext()->DrawSquare(
+		dc->BeginGraphicsContext()->DrawSquarePrimitive(
 			Vector3(m_upperLeft.x, m_upperLeft.y, m_upperLeft.z), Vector2(m_upperLeftUV.x, m_upperLeftUV.y), ColorF::White,
 			Vector3(m_upperLeft.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_upperLeftUV.x, m_lowerRightUV.y), ColorF::White,
 			Vector3(m_lowerRight.x, m_lowerRight.y, m_lowerRight.z), Vector2(m_lowerRightUV.x, m_lowerRightUV.y), ColorF::White,

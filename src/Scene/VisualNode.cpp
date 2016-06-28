@@ -7,7 +7,7 @@
 #include "MME/MMEShaderTechnique.h"
 #include "MME/MMEShader.h"
 #include "RenderingPass.h"
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
@@ -220,7 +220,7 @@ void VisualNode::DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIn
 
 	// パス開始
 	if (pass != nullptr) {
-		dc->GetRenderingContext()->SetShaderPass(pass);
+		dc->BeginGraphicsContext()->SetShaderPass(pass);
 	}
 
 	// サブセット描画の本体
@@ -248,7 +248,7 @@ Shader* VisualNode::GetPrimaryShader() const
 void VisualNode::Render(SceneGraphRenderingContext* dc)
 {
 	// レンダリングステートの設定
-	RenderingContext* r = dc->GetRenderingContext();
+	GraphicsContext* r = dc->BeginGraphicsContext();
 	r->ResetStates();
 	r->SetBlendMode(m_renderState.blendMode);
 	r->SetCullingMode(m_renderState.cullingMode);

@@ -14,7 +14,7 @@ class TileMapRenderer
 {
 public:
 	void SetTransform(const Matrix& world, const Matrix& viewProj);
-	void Draw(RenderingContext* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum);
+	void Draw(GraphicsContext* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum);
 
 protected:
 	void Begin();
@@ -43,7 +43,7 @@ private:
 	void DrawLayer(TileLayer* layer, const RectF& boundingRect, TileSet* tileSet, const BoundingRect& renderRange);
 
 	GraphicsManager*	m_graphicsManager;
-	RenderingContext*	m_renderingContext;
+	GraphicsContext*	m_graphicsContext;
 	VertexBuffer*		m_vertexBuffer;
 	IndexBuffer*		m_indexBuffer;
 	Matrix				m_viewProj;

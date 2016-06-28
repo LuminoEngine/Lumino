@@ -9,7 +9,7 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/TileMap/TileMapRenderer.h>
 #include <Lumino/TileMap/TileMapModel.h>
 
@@ -74,10 +74,10 @@ void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Draw(RenderingContext* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
+void TileMapRenderer::Draw(GraphicsContext* context, SpriteRenderer* spriteRenderer, TileMap* tileMap, const RectF& boundingRect, const ViewFrustum& cameraFrustum)
 {
 	LN_CHECK_ARG(tileMap != nullptr);
-	m_renderingContext = context;
+	m_graphicsContext = context;
 	m_spriteRenderer = spriteRenderer;
 
 	// TODO: 原点と正面方向
@@ -324,8 +324,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const RectF& boundingRect, Til
 	//s.Culling = CullingMode_None;
 	//m_renderingContext->SetRenderState(s);
 
-	m_renderingContext->SetShaderPass(m_shader.pass);
-	m_renderingContext->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
+	m_graphicsContext->SetShaderPass(m_shader.pass);
+	m_graphicsContext->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
 
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->SetVertexBuffer(nullptr);

@@ -1,6 +1,6 @@
 
 #include "Internal.h"
-#include <Lumino/Graphics/RenderingContext.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Grid.h>
@@ -49,14 +49,14 @@ void Grid::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 
 	for (int x = 0; x <= divCount; ++x)
 	{
-		dc->GetRenderingContext()->DrawLine(
+		dc->BeginGraphicsContext()->DrawLinePrimitive(
 			Vector3(planeMin.x + step.x * x, 0, planeMin.z), ColorF::DimGray,
 			Vector3(planeMin.x + step.x * x, 0, planeMax.z), ColorF::DimGray);
 	}
 
 	for (int z = 0; z <= divCount; ++z)
 	{
-		dc->GetRenderingContext()->DrawLine(
+		dc->BeginGraphicsContext()->DrawLinePrimitive(
 			Vector3(planeMin.x, 0, planeMin.z + step.z * z), ColorF::DimGray,
 			Vector3(planeMax.x, 0, planeMin.z + step.z * z), ColorF::DimGray);
 	}

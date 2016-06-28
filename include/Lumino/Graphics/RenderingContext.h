@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 class SpriteRenderer;
 namespace detail { class PrimitiveRenderer; }
 
-
+#if 0
 /**
 	@brief		
 */
@@ -98,5 +98,6 @@ private:
 
 	//bool						m_stateModified;
 };
+#endif
 
 LN_NAMESPACE_END

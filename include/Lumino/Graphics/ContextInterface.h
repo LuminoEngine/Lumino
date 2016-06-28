@@ -33,6 +33,11 @@ struct ContextState
 	//VertexBuffer*			vertexBuffer = nullptr;
 	//IndexBuffer*			indexBuffer = nullptr;
 
+	// TODO: あとで IContex は GraphicsContext と統合する。なのでこれらはこのままここに置いておく
+	Matrix					worldTransform;
+	Matrix					viewTransform;
+	Matrix					projectionTransform;
+
 	ContextStateFlags		modifiedFlags = ContextStateFlags::None;
 
 	~ContextState();
@@ -222,7 +227,7 @@ public: //TODO:
 //LN_INTERNAL_ACCESS:
 //	virtual ShaderPass* GetShaderPass() const = 0;
 
-private:
+protected:	// TODO
 	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
 
 	friend class RenderStateBlock;

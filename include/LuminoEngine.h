@@ -32,7 +32,7 @@
 #include "Lumino/Graphics/Shader.h"
 #include "Lumino/Graphics/SpriteRenderer.h"
 #include "Lumino/Graphics/Bitmap.h"
-#include "Lumino/Graphics/RenderingContext.h"
+#include "Lumino/Graphics/GraphicsContext.h"
 #include "Lumino/Graphics/FrameCapturer.h"
 #include "Lumino/Graphics/Text/Font.h"
 #include "Lumino/Graphics/ImageEffect/ImageEffect.h"

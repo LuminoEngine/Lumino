@@ -198,7 +198,8 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 		}
 	}
 
-	return pass >= ((bmp1->GetSize().height * bmp1->GetSize().width) * passRate / 100);
+	int thr = ((bmp1->GetSize().height * bmp1->GetSize().width) * passRate / 100);
+	return pass >= thr;
 }
 
 //------------------------------------------------------------------------------

@@ -235,22 +235,21 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
 {
+	OnStateChanging();
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
-	Matrix proj = Matrix::MakePerspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
-	m_primitiveRenderer->SetViewPixelSize(size);
-	m_geometryRenderer->SetViewProjection(Matrix::Identity, proj, size);
-	m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
-	m_spriteRenderer->SetViewPixelSize(size);
-	m_textRenderer->SetViewProjMatrix(proj);
-	m_textRenderer->SetViewPixelSize(size);
-	// ↑TODO: OnStateFlushRequested に持っていったほうがいい？
+	m_state.viewTransform = Matrix::Identity;
+	m_state.projectionTransform = Matrix::MakePerspective2DLH((float)size.width, (float)size.height, minZ, maxZ);
+
 }
 
 //------------------------------------------------------------------------------
 void GraphicsContext::SetViewProjectionTransform(const Matrix& view, const Matrix& proj)
 {
 	OnStateChanging();
-	m_spriteRenderer->SetViewProjMatrix(view, proj);
+	m_state.viewTransform = view;
+	m_state.projectionTransform = proj;
+
+	//m_spriteRenderer->SetViewProjMatrix(view, proj);
 }
 
 //------------------------------------------------------------------------------
@@ -454,6 +453,14 @@ void GraphicsContext::BltInternal(Texture* source, RenderTarget* dest, const Mat
 void GraphicsContext::OnStateFlushRequested()
 {
 	IContext::OnStateFlushRequested();
+
+	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
+	m_primitiveRenderer->SetViewPixelSize(size);
+	m_geometryRenderer->SetViewProjection(m_state.viewTransform, m_state.projectionTransform, size);
+	m_spriteRenderer->SetViewProjMatrix(m_state.viewTransform, m_state.projectionTransform);
+	m_spriteRenderer->SetViewPixelSize(size);
+	m_textRenderer->SetViewProjMatrix(m_state.viewTransform * m_state.projectionTransform);
+	m_textRenderer->SetViewPixelSize(size);
 
 	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
 }

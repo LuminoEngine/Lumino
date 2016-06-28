@@ -14,6 +14,8 @@
 
 LN_NAMESPACE_BEGIN
 
+#if 0
+
 //==============================================================================
 // RenderingContext
 //==============================================================================
@@ -186,6 +188,6 @@ void RenderingContext::OnStateFlushRequested()
 	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
 }
 
-
+#endif
 
 LN_NAMESPACE_END

@@ -10,7 +10,7 @@
 #include "../Graphics/GraphicsManager.h"	// TODO:
 #include <Lumino/Graphics/VertexBuffer.h>	// TODO:
 #include <Lumino/Graphics/IndexBuffer.h>	// TODO:
-#include <Lumino/Graphics/RenderingContext.h>	// TODO:
+#include <Lumino/Graphics/GraphicsContext.h>	// TODO:
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/SpriteParticle.h>
@@ -259,7 +259,7 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(RenderingContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv)
+void SpriteParticleModel::Render(GraphicsContext* context, std::shared_ptr<detail::SpriteParticleModelInstance>& instance, const Vector3& viewPosition, const Matrix& viewInv)
 {
 #if 0
 	// dt は負値になることもある。instance->m_lastSpawnTime は次に生成するべき粒子の生成時間を示す。
@@ -532,7 +532,7 @@ void SpriteParticle::OnUpdateFrame(float deltaTime)
 //------------------------------------------------------------------------------
 void SpriteParticle::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 {
-	m_model->Render(dc->GetRenderingContext(), m_instance, dc->CurrentCamera->GetPosition(), dc->CurrentCamera->GetViewMatrixI());
+	m_model->Render(dc->BeginGraphicsContext(), m_instance, dc->CurrentCamera->GetPosition(), dc->CurrentCamera->GetViewMatrixI());
 }
 
 LN_NAMESPACE_SCENE_END
