@@ -94,6 +94,30 @@ void ContextState::SetFillBrush(Brush* brush)
 	modifiedFlags |= ContextStateFlags::CommonState;
 }
 
+//------------------------------------------------------------------------------
+void ContextState::Copy(const ContextState& obj)
+{
+
+	renderState = obj.renderState;
+	depthStencilState = obj.depthStencilState;
+	LN_REFOBJ_SET(depthBuffer, obj.depthBuffer);
+
+	viewport = obj.viewport;
+
+	worldTransform = obj.worldTransform;
+	viewTransform = obj.viewTransform;
+	projectionTransform = obj.projectionTransform;
+	modifiedFlags = obj.modifiedFlags;
+
+	for (int i = 0; i < m_renderTargets.size(); ++i)
+	{
+		LN_REFOBJ_SET(m_renderTargets[i], obj.m_renderTargets[i]);
+	}
+
+	LN_REFOBJ_SET(m_ownerShader, obj.m_ownerShader);
+	LN_REFOBJ_SET(m_shaderPass, obj.m_shaderPass);
+	LN_REFOBJ_SET(m_fillBrush, obj.m_fillBrush);
+}
 
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END

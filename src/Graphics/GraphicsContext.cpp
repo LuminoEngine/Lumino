@@ -673,6 +673,20 @@ void GraphicsContext::SetFont(Font* font)
 }
 
 //------------------------------------------------------------------------------
+void GraphicsContext::PushState()
+{
+	m_stateStack.push(m_state);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::PopState()
+{
+	m_state = m_stateStack.top();
+	m_stateStack.pop();
+	m_state.modifiedFlags = detail::ContextStateFlags::All;
+}
+
+//------------------------------------------------------------------------------
 void GraphicsContext::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t stencil)
 {
 	OnDrawing(GetCommonRenderer());

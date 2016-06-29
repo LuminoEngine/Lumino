@@ -21,7 +21,12 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 
 	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
 	auto* g = Engine::BeginRendering();
-	//Engine::Render();
+
+	g->PushState();
+
+	Engine::Render();
+
+	g->PopState();
 
 	g->Set2DRenderingMode();
 	g->Clear(ClearFlags::All, ColorF::Gray);

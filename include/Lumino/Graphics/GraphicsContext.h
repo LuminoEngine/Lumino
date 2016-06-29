@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <stack>
 #include "Common.h"
 #include "ContextInterface.h"
 #include "Brush.h"
@@ -99,8 +100,6 @@ public:
 	void ResetStates();
 
 
-	/** @} */
-
 	
 
 	/**
@@ -146,6 +145,7 @@ public:
 
 
 
+
 	void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 	void SetViewProjectionTransform(const Matrix& view, const Matrix& proj);
 
@@ -153,6 +153,11 @@ public:
 	void SetOpacity(float opacity);	// 0~1
 	void SetBrush(Brush* brush);
 	void SetFont(Font* font);
+
+	void PushState();
+	void PopState();
+
+	/** @} */
 
 	void Clear(ClearFlags flags, const ColorF& color, float z = 1.0f, uint8_t stencil = 0x00);
 
@@ -255,10 +260,11 @@ private:
 
 	friend class detail::RenderStateBlock;	// TODO
 
-	GraphicsManager*		m_manager;
-	Details::Renderer*		m_ploxy;
-	detail::ContextState	m_state;
-	detail::IRendererPloxy*	m_activeRendererPloxy;
+	GraphicsManager*			m_manager;
+	Details::Renderer*			m_ploxy;
+	detail::ContextState		m_state;
+	std::stack<detail::ContextState>	m_stateStack;
+	detail::IRendererPloxy*		m_activeRendererPloxy;
 };
 
 LN_NAMESPACE_END

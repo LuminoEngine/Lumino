@@ -30,10 +30,7 @@ struct ContextState
 	DepthStencilState		depthStencilState;
 	Texture*				depthBuffer = nullptr;
 	Rect					viewport;
-	//VertexBuffer*			vertexBuffer = nullptr;
-	//IndexBuffer*			indexBuffer = nullptr;
 
-	// TODO: あとで IContex は GraphicsContext と統合する。なのでこれらはこのままここに置いておく
 	Matrix					worldTransform;
 	Matrix					viewTransform;
 	Matrix					projectionTransform;
@@ -43,6 +40,9 @@ struct ContextState
 
 	ContextState();
 	~ContextState();
+
+	ContextState(const ContextState& obj) : ContextState() { Copy(obj); }
+	ContextState& operator=(const ContextState& obj) { Copy(obj); return *this; }
 
 
 	void SetRenderTarget(int index, Texture* texture);
@@ -62,6 +62,8 @@ struct ContextState
 		//vertexBuffer = nullptr;
 		//indexBuffer = nullptr;
 	}
+
+	void Copy(const ContextState& obj);
 
 private:
 	std::array<Texture*, MaxMultiRenderTargets>	m_renderTargets = {};
