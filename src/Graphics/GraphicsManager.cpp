@@ -1040,7 +1040,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::SwitchActiveContext(detail::IContext* context)
+void GraphicsManager::SwitchActiveContext(GraphicsContext* context)
 {
 	if (context != m_activeContext)
 	{

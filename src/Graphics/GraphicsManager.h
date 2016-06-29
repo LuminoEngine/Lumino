@@ -20,7 +20,6 @@ class SwapChain;
 
 namespace detail
 {
-	class IContext;
 	class TextRendererCore;
 }
 
@@ -111,8 +110,8 @@ public:
 
 	void ChangeDevice(Driver::IGraphicsDevice* device);
 
-	void SwitchActiveContext(detail::IContext* context);
-	detail::IContext* GetActiveContext() const { return m_activeContext; }
+	void SwitchActiveContext(GraphicsContext* context);
+	GraphicsContext* GetActiveContext() const { return m_activeContext; }
 
 public:	// TODO: internal
 	struct FontData
@@ -170,7 +169,7 @@ private:
 	Details::Renderer*				m_renderer;
 	RenderingThread*				m_renderingThread;
 
-	detail::IContext*				m_activeContext;
+	GraphicsContext*				m_activeContext;
 	GraphicsContext*				m_graphicsContext;
 	detail::TextRendererCore*		m_textRendererCore;
 	PainterEngine*					m_painterEngine;

@@ -48,8 +48,8 @@ VS_OUTPUT vsBasic(
 	o.Color			= inColor;
 	o.UVOffset		= inUVOffset;
 	o.UVTileUnit	= inUVTileUnit;
-	//o.Pos.x -= g_pixelStep.x;
-	//o.Pos.y += g_pixelStep.y;
+	o.Pos.x -= g_pixelStep.x;
+	o.Pos.y += g_pixelStep.y;
 	return o;
 }
 
@@ -70,12 +70,8 @@ float4 psBasic(
 	// 1つの四角形の中のどこにいるのか (0.0～1.0)
 	float2 uvRatio = fmod(inUVTileUnit, 1.0);
 	
-	//float2 uv = uvUpperLeft + lerp(float2(0.0, 0.0), uvSize, uvRatio);
+	float2 uv = uvUpperLeft + lerp(float2(0.0, 0.0), uvSize, uvRatio);
 	//uv -= g_pixelStep;
-	
-	float2 uv = float2(
-		uvUpperLeft.x + lerp(0.0, uvSize.x, uvRatio.x),
-		uvUpperLeft.y + lerp(0.0, uvSize.y, uvRatio.y));
 	
 	float4 outColor = tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
 	

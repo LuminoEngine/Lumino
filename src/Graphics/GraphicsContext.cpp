@@ -176,6 +176,7 @@
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
+#include <Lumino/Graphics/Shader.h>
 #include "Text/TextRenderer.h"
 #include "PrimitiveRenderer.h"
 #include "GeometryRenderer.h"
@@ -183,6 +184,36 @@
 #include "FrameRectRenderer.h"
 
 LN_NAMESPACE_BEGIN
+
+
+namespace detail
+{
+//==============================================================================
+// RenderStateBlock
+//==============================================================================
+
+//------------------------------------------------------------------------------
+RenderStateBlock::RenderStateBlock(GraphicsContext* context)
+	: m_context(context)
+	, m_renderState(context->m_state.renderState)
+	, m_depthStencilState(context->m_state.depthStencilState)
+{
+}
+
+//------------------------------------------------------------------------------
+RenderStateBlock::~RenderStateBlock()
+{
+	Apply(m_context);
+}
+
+//------------------------------------------------------------------------------
+void RenderStateBlock::Apply(GraphicsContext* context)
+{
+	context->SetRenderState(m_renderState);
+	context->SetDepthStencilState(m_depthStencilState);
+}
+} // namespace detail
+
 
 //==============================================================================
 // GraphicsContext
@@ -202,6 +233,10 @@ GraphicsContext::GraphicsContext()
 	, m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
 	, m_frameRectRenderer(nullptr)
+
+
+	, m_manager(nullptr)
+	, m_activeRendererPloxy(nullptr)
 {
 }
 
@@ -218,7 +253,19 @@ GraphicsContext::~GraphicsContext()
 //------------------------------------------------------------------------------
 void GraphicsContext::Initialize(GraphicsManager* manager)
 {
-	IContext::Initialize(manager);
+	LN_CHECK_ARG(manager != nullptr);
+	m_manager = manager;
+	m_ploxy = m_manager->GetRenderer();
+	m_activeRendererPloxy = nullptr;
+
+	// ステート初期値
+	m_state.SetRenderTarget(0, m_manager->GetMainSwapChain()->GetBackBuffer());
+	LN_REFOBJ_SET(m_state.depthBuffer, m_manager->GetMainSwapChain()->GetBackBufferDepth());
+
+	// 最初は全部変更状態
+	m_state.modifiedFlags = detail::ContextStateFlags::All;
+
+
 
 	Renderer = manager->GetRenderer();
 
@@ -237,6 +284,347 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 	m_frameRectRenderer = LN_NEW detail::FrameRectRenderer();
 	m_frameRectRenderer->Initialize(manager);
 }
+
+
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetRenderState(const RenderState& state)
+{
+	if (!m_state.renderState.Equals(state))
+	{
+		OnStateChanging();
+		m_state.renderState = state;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
+void GraphicsContext::SetAlphaBlendEnabled(bool enabled)
+{
+	if (m_state.renderState.alphaBlendEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.renderState.alphaBlendEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetBlendOp(BlendOp op)
+{
+	if (m_state.renderState.blendOp != op)
+	{
+		OnStateChanging();
+		m_state.renderState.blendOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetSourceBlend(BlendFactor blend)
+{
+	if (m_state.renderState.sourceBlend != blend)
+	{
+		OnStateChanging();
+		m_state.renderState.sourceBlend = blend;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetDestinationBlend(BlendFactor blend)
+{
+	if (m_state.renderState.destinationBlend != blend)
+	{
+		OnStateChanging();
+		m_state.renderState.destinationBlend = blend;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetBlendMode(BlendMode mode)
+{
+	switch (mode)
+	{
+		// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
+	case BlendMode::Normal:
+		SetAlphaBlendEnabled(false);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::One);
+		SetDestinationBlend(BlendFactor::Zero);
+		break;
+	case BlendMode::Alpha:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::SourceAlpha);
+		SetDestinationBlend(BlendFactor::InverseSourceAlpha);
+		break;
+	case BlendMode::Add:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::SourceAlpha);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode::AddAlphaDisabled:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::Add);
+		SetSourceBlend(BlendFactor::One);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode::Subtract:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::ReverseSubtract);
+		SetSourceBlend(BlendFactor::SourceAlpha);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode::SubtractAlphaDisabled:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::ReverseSubtract);
+		SetSourceBlend(BlendFactor::One);
+		SetDestinationBlend(BlendFactor::One);
+		break;
+	case BlendMode::MultiplyAlphaDisabled:
+		SetAlphaBlendEnabled(true);
+		SetBlendOp(BlendOp::Add);
+		// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
+		SetSourceBlend(BlendFactor::Zero);
+		SetDestinationBlend(BlendFactor::SourceColor);
+		break;
+		//case BlendMode_Screen:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+		//	break;
+		//case BlendMode_Reverse:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
+		//	break;
+	default:
+		LN_CHECK_ARG(0);
+		break;
+	}
+}
+void GraphicsContext::SetCullingMode(CullingMode mode)
+{
+	if (m_state.renderState.Culling != mode)
+	{
+		OnStateChanging();
+		m_state.renderState.Culling = mode;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetFillMode(FillMode mode)
+{
+	if (m_state.renderState.Fill != mode)
+	{
+		OnStateChanging();
+		m_state.renderState.Fill = mode;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetAlphaTestEnabled(bool enabled)
+{
+	if (m_state.renderState.AlphaTest != enabled)
+	{
+		OnStateChanging();
+		m_state.renderState.AlphaTest = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
+//------------------------------------------------------------------------------
+const RenderState& GraphicsContext::GetRenderState() const
+{
+	return m_state.renderState;
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetDepthStencilState(const DepthStencilState& state)
+{
+	if (!m_state.depthStencilState.Equals(state))
+	{
+		OnStateChanging();
+		m_state.depthStencilState = state;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
+void GraphicsContext::SetDepthTestEnabled(bool enabled)
+{
+	if (m_state.depthStencilState.DepthTestEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.DepthTestEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetDepthWriteEnabled(bool enabled)
+{
+	if (m_state.depthStencilState.DepthWriteEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.DepthWriteEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetDepthTestFunc(CompareFunc func)
+{
+	if (m_state.depthStencilState.DepthTestFunc != func)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.DepthTestFunc = func;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetStencilEnabled(bool enabled)
+{
+	if (m_state.depthStencilState.StencilEnabled != enabled)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilEnabled = enabled;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetStencilFunc(CompareFunc func)
+{
+	if (m_state.depthStencilState.StencilFunc != func)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilFunc = func;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetStencilReferenceValue(uint8_t value)
+{
+	if (m_state.depthStencilState.StencilReferenceValue != value)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilReferenceValue = value;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetStencilFailOp(StencilOp op)
+{
+	if (m_state.depthStencilState.StencilFailOp != op)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilFailOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetStencilDepthFailOp(StencilOp op)
+{
+	if (m_state.depthStencilState.StencilDepthFailOp != op)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilDepthFailOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+void GraphicsContext::SetStencilPassOp(StencilOp op)
+{
+	if (m_state.depthStencilState.StencilPassOp != op)
+	{
+		OnStateChanging();
+		m_state.depthStencilState.StencilPassOp = op;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+const DepthStencilState& GraphicsContext::GetDepthStencilState() const
+{
+	return m_state.depthStencilState;
+}
+
+void GraphicsContext::ResetStates()
+{
+	SetAlphaBlendEnabled(RenderState::Default.alphaBlendEnabled);
+	SetBlendOp(RenderState::Default.blendOp);
+	SetSourceBlend(RenderState::Default.sourceBlend);
+	SetDestinationBlend(RenderState::Default.destinationBlend);
+	SetCullingMode(RenderState::Default.Culling);
+	SetFillMode(RenderState::Default.Fill);
+	SetAlphaTestEnabled(RenderState::Default.alphaBlendEnabled);
+
+	SetDepthTestEnabled(DepthStencilState::Default.DepthTestEnabled);
+	SetDepthWriteEnabled(DepthStencilState::Default.DepthWriteEnabled);
+	SetDepthTestFunc(DepthStencilState::Default.DepthTestFunc);
+	SetStencilEnabled(DepthStencilState::Default.StencilEnabled);
+	SetStencilFunc(DepthStencilState::Default.StencilFunc);
+	SetStencilReferenceValue(DepthStencilState::Default.StencilReferenceValue);
+	SetStencilFailOp(DepthStencilState::Default.StencilFailOp);
+	SetStencilDepthFailOp(DepthStencilState::Default.StencilDepthFailOp);
+	SetStencilPassOp(DepthStencilState::Default.StencilPassOp);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetRenderTarget(int index, Texture* texture)
+{
+	if (texture != m_state.GetRenderTarget(index))
+	{
+		OnStateChanging();
+		m_state.SetRenderTarget(index, texture);
+	}
+}
+
+//------------------------------------------------------------------------------
+Texture* GraphicsContext::GetRenderTarget(int index) const
+{
+	return m_state.GetRenderTarget(index);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetDepthBuffer(Texture* depthBuffer)
+{
+	if (m_state.depthBuffer != depthBuffer)
+	{
+		OnStateChanging();
+		LN_REFOBJ_SET(m_state.depthBuffer, depthBuffer);
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
+//------------------------------------------------------------------------------
+Texture* GraphicsContext::GetDepthBuffer() const
+{
+	return m_state.depthBuffer;
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetViewport(const Rect& rect)
+{
+	if (m_state.viewport != rect)
+	{
+		OnStateChanging();
+		m_state.viewport = rect;
+		m_state.modifiedFlags |= detail::ContextStateFlags::CommonState;
+	}
+}
+
+//------------------------------------------------------------------------------
+const Rect& GraphicsContext::GetViewport() const
+{
+	return m_state.viewport;
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SetShaderPass(ShaderPass* pass)
+{
+	if (pass != m_state.GetShaderPass() || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
+	{
+		OnStateChanging();
+		m_state.SetShaderPass(pass);
+	}
+}
+
+//------------------------------------------------------------------------------
+ShaderPass* GraphicsContext::GetShaderPass() const
+{
+	return m_state.GetShaderPass();
+}
+
+
+
+
+
+
+
 
 //------------------------------------------------------------------------------
 void GraphicsContext::Set2DRenderingMode(float minZ, float maxZ)
@@ -413,6 +801,13 @@ void GraphicsContext::DrawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
+void GraphicsContext::Flush()
+{
+	m_manager->SwitchActiveContext(this);
+	OnPrimitiveFlushRequested();
+}
+
+//------------------------------------------------------------------------------
 void GraphicsContext::Blt(Texture* source, RenderTarget* dest)
 {
 	BltInternal(source, dest, Matrix::Identity, nullptr);
@@ -467,7 +862,7 @@ void GraphicsContext::BltInternal(Texture* source, RenderTarget* dest, const Mat
 //------------------------------------------------------------------------------
 void GraphicsContext::OnStateFlushRequested()
 {
-	IContext::OnStateFlushRequested();
+	m_ploxy->FlushState(GetContextState());
 
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
 	Matrix viewProj = m_state.viewTransform * m_state.projectionTransform;
@@ -486,6 +881,71 @@ void GraphicsContext::OnStateFlushRequested()
 	}
 
 	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
+}
+
+
+
+//------------------------------------------------------------------------------
+void GraphicsContext::OnPrimitiveFlushRequested()
+{
+	if (m_activeRendererPloxy != nullptr)
+	{
+		m_activeRendererPloxy->Flush();
+	}
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::OnStateChanging()
+{
+	m_manager->SwitchActiveContext(this);
+	OnPrimitiveFlushRequested();
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::OnDrawing(detail::IRendererPloxy* rendererPloxy)
+{
+	m_manager->SwitchActiveContext(this);
+	if (m_state.modifiedFlags != detail::ContextStateFlags::None)
+	{
+		OnStateFlushRequested();
+		m_state.modifiedFlags = detail::ContextStateFlags::None;
+	}
+	SwitchActiveRendererPloxy(rendererPloxy);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::OnDeactivated()
+{
+	SwitchActiveRendererPloxy(nullptr);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::OnActivated()
+{
+	// ステート強制送信
+	//m_state.Reset();
+	m_state.modifiedFlags = detail::ContextStateFlags::All;
+	//m_ploxy->FlushState(m_state);
+	//m_state.modifiedFlags = detail::ContextStateFlags::None;
+}
+
+//------------------------------------------------------------------------------
+void GraphicsContext::SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy)
+{
+	if (rendererPloxy != m_activeRendererPloxy)
+	{
+		if (m_activeRendererPloxy != nullptr)
+		{
+			m_activeRendererPloxy->OnDeactivated();	// 古いものを Deactivate
+		}
+
+		m_activeRendererPloxy = rendererPloxy;
+
+		if (m_activeRendererPloxy != nullptr)
+		{
+			m_activeRendererPloxy->OnActivated();	// 新しいものを Activate
+		}
+	}
 }
 
 LN_NAMESPACE_END

@@ -3,6 +3,7 @@
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/Shader.h>
+#include <Lumino/Graphics/GraphicsContext.h>
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Texture.h>
 #include "RendererImpl.h"
@@ -688,7 +689,7 @@ void ShaderVariable::ChangeDevice(Driver::IShaderVariable* obj)
 //------------------------------------------------------------------------------
 void ShaderVariable::SetModified()
 {
-	detail::IContext* activeContext = m_owner->GetManager()->GetActiveContext();
+	GraphicsContext* activeContext = m_owner->GetManager()->GetActiveContext();
 	if (activeContext->GetShaderPass() != nullptr && activeContext->GetShaderPass()->GetOwnerShader() == m_owner)
 	{
 		activeContext->OnStateChanging();
