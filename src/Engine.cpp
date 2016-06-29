@@ -42,7 +42,7 @@ bool Engine::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-bool Engine::BeginRendering()
+GraphicsContext* Engine::BeginRendering()
 {
 	return EngineManager::Instance->BeginRendering();
 }

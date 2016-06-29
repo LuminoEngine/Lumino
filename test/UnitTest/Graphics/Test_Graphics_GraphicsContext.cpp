@@ -10,14 +10,28 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_GraphicsContext, DrawText)
+TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 {
-	//Engine::BeginRendering();
-	//GraphicsContext::
-	//auto* r = RenderingContext::GetContext();
-	//r->Clear(ClearFlags::Color, ColorF::Red);
-	//Engine::EndRendering();
-	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Graphics_RenderingContext2.png")));
-	//TestEnv::SaveScreenShot(LN_TEMPFILE("test.png"));
+	auto brush1 = FrameTextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+	brush1->SetSourceRect(Rect(0, 192, 32, 32));
+	brush1->SetInnerAreaSourceRect(Rect(0, 64, 64, 64));
+	brush1->SetWrapMode(BrushWrapMode_Stretch);
+	brush1->SetThickness(8);
+
+
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+	auto* g = Engine::BeginRendering();
+	//Engine::Render();
+
+	g->Set2DRenderingMode();
+	g->Clear(ClearFlags::All, ColorF::Gray);
+	g->SetBrush(brush1);
+	//g->DrawRectangle(Rect(0, 0, 43 * 3, 43*2), Color::White);
+	g->DrawRectangle(Rect(0, 0, 83, 83), Color::White);
+	g->Flush();
+
+	Engine::EndRendering();
+
+	TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/test.png"));
 }
 

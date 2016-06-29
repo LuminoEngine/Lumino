@@ -54,7 +54,7 @@ public:
 	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
 	void ClosePath();
 
-	void DrawPoint(const Vector3& point, const ColorF& color);
+	//void DrawPoint(const Vector3& point, const ColorF& color);
 
 	/**
 		@brief		直線を描画します。

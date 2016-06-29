@@ -9,6 +9,7 @@ class SpriteRenderer;
 namespace detail { class TextRenderer; }
 namespace detail { class PrimitiveRenderer; }
 namespace detail { class GeometryRenderer; }
+namespace detail { class FrameRectRenderer; }
 
 class GraphicsContext
 	: public RefObject
@@ -43,25 +44,12 @@ public:
 	void BezierCurveTo(const Vector3& cp1, const Vector3& cp2, const Vector3& endPt, const ColorF& color);
 	void ClosePath();
 
-	void DrawPoint(const Vector3& point, const ColorF& color);
+	//void DrawPoint(const Vector3& point, const ColorF& color);
 	void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 	void DrawRectangle(const RectF& rect, const Color& color);
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
 	void DrawTexture(const RectF& rect, Texture* texture, const Rect& srcRect, const ColorF& color);
 	
-
-	//// プリミティブ 
-	//void DrawPrimitiveLine(
-	//	const Vector3& from, const ColorF& fromColor,
-	//	const Vector3& to, const ColorF& toColor);
-
-	//// 左回り
-	//void DrawSquare(
-	//	float x1, float y1, float z1, float u1, float v1, const ColorF& c1,
-	//	float x2, float y2, float z2, float u2, float v2, const ColorF& c2,
-	//	float x3, float y3, float z3, float u3, float v3, const ColorF& c3,
-	//	float x4, float y4, float z4, float u4, float v4, const ColorF& c4);
-
 
 	void DrawText(const StringRef& text, const PointF& position);
 	void DrawText(const StringRef& text, const RectF& rect, StringFormatFlags flags);
@@ -120,6 +108,7 @@ public:
 	detail::GeometryRenderer*	m_geometryRenderer;
 	SpriteRenderer*				m_spriteRenderer;
 	detail::TextRenderer*		m_textRenderer;
+	detail::FrameRectRenderer*	m_frameRectRenderer;
 
 	// このクラスが管理するステート。VertexBuffer などは描画時に各種 RendererCore 内で変更されるからちょっと考える必要がありそう。
 	//Shader*						m_shader;

@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/ContextInterface.h>
+#include <Lumino/Graphics/Brush.h>
 #include "RendererImpl.h"
 #include "GraphicsManager.h"
 
@@ -18,6 +19,13 @@ namespace detail
 // ContextState
 //==============================================================================
 
+
+//------------------------------------------------------------------------------
+ContextState::ContextState()
+	: m_fillBrush(nullptr)
+{
+}
+
 //------------------------------------------------------------------------------
 ContextState::~ContextState()
 {
@@ -28,6 +36,7 @@ ContextState::~ContextState()
 	//LN_SAFE_RELEASE(vertexBuffer);
 	//LN_SAFE_RELEASE(indexBuffer);
 	LN_SAFE_RELEASE(m_ownerShader);
+	LN_SAFE_RELEASE(m_fillBrush);
 }
 
 //------------------------------------------------------------------------------
@@ -78,7 +87,12 @@ void ContextState::SetShaderPass(ShaderPass* pass)
 	}
 }
 
-
+//------------------------------------------------------------------------------
+void ContextState::SetFillBrush(Brush* brush)
+{
+	LN_REFOBJ_SET(m_fillBrush, brush);
+	modifiedFlags |= ContextStateFlags::CommonState;
+}
 
 //==============================================================================
 // RenderStateBlock

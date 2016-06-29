@@ -29,7 +29,7 @@ public:
 	*/
 	static bool UpdateFrame();
 
-	static bool BeginRendering();
+	static GraphicsContext* BeginRendering();
 	static void EndRendering();
 	static void Render();
 	static void Exit();

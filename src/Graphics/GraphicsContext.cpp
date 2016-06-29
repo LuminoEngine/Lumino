@@ -180,6 +180,7 @@
 #include "PrimitiveRenderer.h"
 #include "GeometryRenderer.h"
 #include "RendererImpl.h"
+#include "FrameRectRenderer.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -200,12 +201,14 @@ GraphicsContext::GraphicsContext()
 	: m_primitiveRenderer(nullptr)
 	, m_spriteRenderer(nullptr)
 	, m_textRenderer(nullptr)
+	, m_frameRectRenderer(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
 GraphicsContext::~GraphicsContext()
 {
+	LN_SAFE_RELEASE(m_frameRectRenderer);
 	LN_SAFE_RELEASE(m_textRenderer);
 	LN_SAFE_RELEASE(m_spriteRenderer);
 	LN_SAFE_RELEASE(m_geometryRenderer);
@@ -230,6 +233,9 @@ void GraphicsContext::Initialize(GraphicsManager* manager)
 
 	m_textRenderer = LN_NEW detail::TextRenderer();
 	m_textRenderer->Initialize(manager);
+
+	m_frameRectRenderer = LN_NEW detail::FrameRectRenderer();
+	m_frameRectRenderer->Initialize(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -269,6 +275,7 @@ void GraphicsContext::SetOpacity(float opacity)
 void GraphicsContext::SetBrush(Brush* brush)
 {
 	m_geometryRenderer->SetBrush(brush);
+	m_state.SetFillBrush(brush);
 }
 
 //------------------------------------------------------------------------------
@@ -313,11 +320,11 @@ void GraphicsContext::ClosePath()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
-{
-	OnDrawing(m_geometryRenderer);
-	m_geometryRenderer->DrawPoint(point, color);
-}
+//void GraphicsContext::DrawPoint(const Vector3& point, const ColorF& color)
+//{
+//	OnDrawing(m_geometryRenderer);
+//	m_geometryRenderer->DrawPoint(point, color);
+//}
 
 //------------------------------------------------------------------------------
 void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
@@ -330,7 +337,15 @@ void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, con
 void GraphicsContext::DrawRectangle(const RectF& rect, const Color& color)
 {
 	OnDrawing(m_geometryRenderer);
-	m_geometryRenderer->DrawRectangle(rect, color);
+
+	if (m_state.GetFillBrush()->GetType() == BrushType_FrameTexture)
+	{
+		m_frameRectRenderer->Draw(rect);	// TODO: Color
+	}
+	else
+	{
+		m_geometryRenderer->DrawRectangle(rect, color);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -455,12 +470,20 @@ void GraphicsContext::OnStateFlushRequested()
 	IContext::OnStateFlushRequested();
 
 	const Size& size = Renderer->GetRenderTarget(0)->GetSize();
+	Matrix viewProj = m_state.viewTransform * m_state.projectionTransform;
+
 	m_primitiveRenderer->SetViewPixelSize(size);
 	m_geometryRenderer->SetViewProjection(m_state.viewTransform, m_state.projectionTransform, size);
 	m_spriteRenderer->SetViewProjMatrix(m_state.viewTransform, m_state.projectionTransform);
 	m_spriteRenderer->SetViewPixelSize(size);
-	m_textRenderer->SetViewProjMatrix(m_state.viewTransform * m_state.projectionTransform);
+	m_textRenderer->SetViewProjMatrix(viewProj);
 	m_textRenderer->SetViewPixelSize(size);
+
+	if (m_state.GetFillBrush() != nullptr &&
+		m_state.GetFillBrush()->GetType() == BrushType_FrameTexture)
+	{
+		m_frameRectRenderer->SetState(static_cast<FrameTextureBrush*>(m_state.GetFillBrush()), m_state.worldTransform, viewProj);
+	}
 
 	m_primitiveRenderer->SetUseInternalShader(GetShaderPass() == nullptr);
 }

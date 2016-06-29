@@ -644,10 +644,10 @@ bool EngineManager::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-bool EngineManager::BeginRendering()
+GraphicsContext* EngineManager::BeginRendering()
 {
 	m_frameRenderingSkip = true;
-	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return false;
+	if (m_graphicsManager == nullptr || m_uiManager == nullptr) return nullptr;
 
 	// 描画遅延の確認
 	bool delay = false;
@@ -676,7 +676,7 @@ bool EngineManager::BeginRendering()
 	m_uiManager->GetMainWindow()->BeginRendering();
 
 	m_frameRenderd = true;
-	return true;
+	return m_graphicsManager->GetGraphicsContext();
 }
 
 //------------------------------------------------------------------------------

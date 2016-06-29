@@ -178,7 +178,7 @@ public:
 
 	void SetFixedDeltaTime(float deltaTime) { m_fixedDeltaTime = deltaTime; }
 	bool UpdateFrame();
-	bool BeginRendering();
+	GraphicsContext* BeginRendering();
 	void EndRendering();
 	void Render();
 	void ResetFrameDelay();

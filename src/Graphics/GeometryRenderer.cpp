@@ -709,65 +709,65 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 			switch (type)
 			{
 				////////////////////////////////////////////////////////////
-			case DrawingCommandType::MoveTo:
-			{
-				AddPath(PathType::Path);
-				auto* cmd = (const DrawingCommands_MoveTo*)pos;
-				lastPoint = &cmd->point;
-				lastColor = &cmd->color;
-				pos += sizeof(*cmd);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::LineTo:
-			{
-				auto* cmd = (const DrawingCommands_LineTo*)pos;
-				if (!GetCurrentPath()->closed)
+				case DrawingCommandType::MoveTo:
 				{
-					AddBasePoint(*lastPoint, *lastColor);
+					AddPath(PathType::Path);
+					auto* cmd = (const DrawingCommands_MoveTo*)pos;
 					lastPoint = &cmd->point;
 					lastColor = &cmd->color;
+					pos += sizeof(*cmd);
+					break;
 				}
-				pos += sizeof(*cmd);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::BezierCurveTo:
-			{
-				auto* cmd = (const DrawingCommands_BezierCurveTo*)pos;
-				if (!GetCurrentPath()->closed)
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::LineTo:
 				{
-					// 
-					float lenMax = ((*lastPoint) - cmd->endPoint).GetLength() * 2;
-					int divCount = (int)(lenMax / 10);// TODO:pixel
-					for (float i = 0; i < divCount; i += 1.f)
+					auto* cmd = (const DrawingCommands_LineTo*)pos;
+					if (!GetCurrentPath()->closed)
 					{
-						float t = i / divCount;
-						AddBasePoint(
-							Vector3(
-								BezierCurve(lastPoint->x, cmd->cp1.x, cmd->cp2.x, cmd->endPoint.x, t),
-								BezierCurve(lastPoint->y, cmd->cp1.y, cmd->cp2.y, cmd->endPoint.y, t),
-								cmd->endPoint.z),	// TODO
-							ColorF::Lerp(*lastColor, cmd->color, t));
+						AddBasePoint(*lastPoint, *lastColor);
+						lastPoint = &cmd->point;
+						lastColor = &cmd->color;
 					}
-					lastPoint = &cmd->endPoint;
-					lastColor = &cmd->color;
+					pos += sizeof(*cmd);
+					break;
 				}
-				pos += sizeof(*cmd);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::ClosePath:
-			{
-				auto* cmd = (const DrawingCommands_ClosePath*)pos;
-				EndPath(lastPoint, lastColor, true);
-				pos += sizeof(*cmd);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			default:
-				LN_THROW(0, InvalidOperationException);
-				return;
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::BezierCurveTo:
+				{
+					auto* cmd = (const DrawingCommands_BezierCurveTo*)pos;
+					if (!GetCurrentPath()->closed)
+					{
+						// 
+						float lenMax = ((*lastPoint) - cmd->endPoint).GetLength() * 2;
+						int divCount = (int)(lenMax / 10);// TODO:単純に1/10で分割しているだけ。ピクセル単位にしたい
+						for (float i = 0; i < divCount; i += 1.f)
+						{
+							float t = i / divCount;
+							AddBasePoint(
+								Vector3(
+									BezierCurve(lastPoint->x, cmd->cp1.x, cmd->cp2.x, cmd->endPoint.x, t),
+									BezierCurve(lastPoint->y, cmd->cp1.y, cmd->cp2.y, cmd->endPoint.y, t),
+									cmd->endPoint.z),	// TODO
+								ColorF::Lerp(*lastColor, cmd->color, t));
+						}
+						lastPoint = &cmd->endPoint;
+						lastColor = &cmd->color;
+					}
+					pos += sizeof(*cmd);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::ClosePath:
+				{
+					auto* cmd = (const DrawingCommands_ClosePath*)pos;
+					EndPath(lastPoint, lastColor, true);
+					pos += sizeof(*cmd);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				default:
+					LN_THROW(0, InvalidOperationException);
+					return;
 			}
 		}
 		else
@@ -775,66 +775,66 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 			switch (type)
 			{
 				////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawPoint:
-			{
-				// Point は連続する DrawingCommandType::DrawPoint を全て1つの Path にまとめる
-				AddPath(PathType::Point);
-				do
+				case DrawingCommandType::DrawPoint:
 				{
-					auto* cmd = (const DrawingCommands_DrawPoint*)pos;
-					AddBasePoint(cmd->point, cmd->color);
-					pos += sizeof(DrawingCommands_DrawPoint);
+					// Point は連続する DrawingCommandType::DrawPoint を全て1つの Path にまとめる
+					AddPath(PathType::Point);
+					do
+					{
+						auto* cmd = (const DrawingCommands_DrawPoint*)pos;
+						AddBasePoint(cmd->point, cmd->color);
+						pos += sizeof(DrawingCommands_DrawPoint);
 
-				} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
+					} while (pos < end && *((const DrawingCommandType*)pos) == DrawingCommandType::DrawPoint);
 
-				EndPath(nullptr, nullptr, false);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawLine:
-			{
-				auto* cmd = (const DrawingCommands_DrawLine*)pos;
+					EndPath(nullptr, nullptr, false);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawLine:
+				{
+					auto* cmd = (const DrawingCommands_DrawLine*)pos;
 
-				AddPath(PathType::Line);
-				AddBasePoint(cmd->from, cmd->fromColor);
-				AddBasePoint(cmd->to, cmd->toColor);
-				EndPath(nullptr, nullptr, false);
+					AddPath(PathType::Line);
+					AddBasePoint(cmd->from, cmd->fromColor);
+					AddBasePoint(cmd->to, cmd->toColor);
+					EndPath(nullptr, nullptr, false);
 
-				pos += sizeof(DrawingCommands_DrawLine);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawTriangle:
-			{
-				auto* cmd = (const DrawingCommands_DrawTriangle*)pos;
-				AddPath(PathType::Path);
-				AddBasePoint(cmd->p1, cmd->p1Color);
-				AddBasePoint(cmd->p2, cmd->p2Color);
-				AddBasePoint(cmd->p3, cmd->p3Color);
-				EndPath(nullptr, nullptr, true);
-				pos += sizeof(DrawingCommands_DrawTriangle);
-				break;
-			}
-			////////////////////////////////////////////////////////////
-			case DrawingCommandType::DrawRectangle:
-			{
-				auto* cmd = (const DrawingCommands_DrawRectangle*)pos;
-				const RectF& rect = cmd->rect;
+					pos += sizeof(DrawingCommands_DrawLine);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawTriangle:
+				{
+					auto* cmd = (const DrawingCommands_DrawTriangle*)pos;
+					AddPath(PathType::Path);
+					AddBasePoint(cmd->p1, cmd->p1Color);
+					AddBasePoint(cmd->p2, cmd->p2Color);
+					AddBasePoint(cmd->p3, cmd->p3Color);
+					EndPath(nullptr, nullptr, true);
+					pos += sizeof(DrawingCommands_DrawTriangle);
+					break;
+				}
+				////////////////////////////////////////////////////////////
+				case DrawingCommandType::DrawRectangle:
+				{
+					auto* cmd = (const DrawingCommands_DrawRectangle*)pos;
+					const RectF& rect = cmd->rect;
 
-				AddPath(PathType::Rectangle);
-				AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
-				AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
-				AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
-				AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
-				EndPath(nullptr, nullptr, true);
+					AddPath(PathType::Rectangle);
+					AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
+					AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
+					EndPath(nullptr, nullptr, true);
 
-				pos += sizeof(DrawingCommands_DrawRectangle);
-				break;
-			}
-			default:
-				LN_THROW(0, InvalidOperationException);
-				return;
-			}
+					pos += sizeof(DrawingCommands_DrawRectangle);
+					break;
+				}
+				default:
+					LN_THROW(0, InvalidOperationException);
+					return;
+				}
 		}
 	}
 
@@ -1112,6 +1112,31 @@ void DrawingContextImpl::ExpandFill()
 				i0 = i1;
 				++i1;
 			}
+			/*
+				↑の概要：
+					頂点は反時計回りに並んでいることを前提とし、
+					前後それぞれの方向からカーソルを進めるようにして三角形を作っていく。
+
+				- 0回目、0,1,5 を結ぶ
+					0-5 4
+					|/
+					1 2 3
+
+				- 1回目、1,2,5 を結ぶ
+					0-5 4
+					|/|
+					1-2 3
+
+				- 3回目、5,2,4 を結ぶ
+					0-5-4
+					|/|/
+					1-2 3
+
+				- 4回目、2,3,4 を結ぶ
+					0-5-4
+					|/|/|
+					1-2-3
+			*/
 		}
 	}
 }
@@ -1532,17 +1557,17 @@ void GeometryRenderer::ClosePath()
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawPoint(const Vector3& point, const ColorF& color)
-{
-	SetDrawingClassInternal(detail::DrawingClass::PointList);
-	DrawingCommands_DrawPoint cmd;
-	cmd.type = DrawingCommandType::DrawPoint;
-	cmd.point = point;
-	cmd.color = color;
-	AddCommand(&cmd, sizeof(cmd));
-	m_flushRequested = true;
-}
-
+//void GeometryRenderer::DrawPoint(const Vector3& point, const ColorF& color)
+//{
+//	SetDrawingClassInternal(detail::DrawingClass::PointList);
+//	DrawingCommands_DrawPoint cmd;
+//	cmd.type = DrawingCommandType::DrawPoint;
+//	cmd.point = point;
+//	cmd.color = color;
+//	AddCommand(&cmd, sizeof(cmd));
+//	m_flushRequested = true;
+//}
+//
 //------------------------------------------------------------------------------
 void GeometryRenderer::DrawLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
 {

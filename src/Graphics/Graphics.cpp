@@ -45,10 +45,10 @@ void Graphics::ClosePath()
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->ClosePath();
 }
-void Graphics::DrawPoint(const Vector3& point, const ColorF& color)
-{
-	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawPoint(point, color);
-}
+//void Graphics::DrawPoint(const Vector3& point, const ColorF& color)
+//{
+//	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawPoint(point, color);
+//}
 void Graphics::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color)
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);

@@ -38,8 +38,10 @@ struct ContextState
 	Matrix					viewTransform;
 	Matrix					projectionTransform;
 
+
 	ContextStateFlags		modifiedFlags = ContextStateFlags::None;
 
+	ContextState();
 	~ContextState();
 
 
@@ -47,6 +49,9 @@ struct ContextState
 	Texture* GetRenderTarget(int index) const;
 	void SetShaderPass(ShaderPass* pass);
 	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+
+	void SetFillBrush(Brush* brush);
+	Brush* GetFillBrush() const { return m_fillBrush; }
 
 	void Reset()
 	{
@@ -62,6 +67,7 @@ private:
 	std::array<Texture*, MaxMultiRenderTargets>	m_renderTargets = {};
 	Shader*		m_ownerShader = nullptr;
 	ShaderPass*	m_shaderPass = nullptr;
+	Brush*		m_fillBrush;
 };
 
 

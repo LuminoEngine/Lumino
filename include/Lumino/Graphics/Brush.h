@@ -114,7 +114,7 @@ public:
 
 
 	void SetThickness(int thickness) { m_frameThickness = thickness; }
-	int GetThickness() const { return m_frameThickness; }
+	int GetThickness() const { return m_frameThickness; }	// TODO: Thickness クラスにできない？
 
 	virtual BrushType GetType() const { return BrushType_FrameTexture; }
 

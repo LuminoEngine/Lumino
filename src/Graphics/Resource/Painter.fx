@@ -4,7 +4,7 @@
 float4x4	g_worldMatrix;
 float4x4	g_viewProjMatrix;
 
-float2 g_viewportSize = float2(640, 480);
+float2 g_viewportSize = float2(0.5, 0.5);
 static float2 g_pixelStep = (float2(0.5, 0.5) / g_viewportSize);
 
 float4		g_tone;
@@ -42,16 +42,14 @@ VS_OUTPUT vsBasic(
 	float4 inUVOffset	: TEXCOORD0,
 	float2 inUVTileUnit	: TEXCOORD1)
 {
-	//inPos.x -= 0.5;
-	//inPos.y += 0.5;
 	VS_OUTPUT o;
 	o.Pos			= mul(float4(inPos, 1.0f), g_worldMatrix);
 	o.Pos			= mul(o.Pos, g_viewProjMatrix);
 	o.Color			= inColor;
 	o.UVOffset		= inUVOffset;
 	o.UVTileUnit	= inUVTileUnit;
-	o.Pos.x -= g_pixelStep.x;
-	o.Pos.y += g_pixelStep.y;
+	//o.Pos.x -= g_pixelStep.x;
+	//o.Pos.y += g_pixelStep.y;
 	return o;
 }
 
@@ -64,16 +62,20 @@ float4 psBasic(
 	float2 inUVTileUnit		: TEXCOORD1) : COLOR0
 {
 	// 転送元左上 UV
-	float2 uvUpperLeft = inUVOffset.xy;//float2(inUVOffset.x, inUVOffset.y);
+	float2 uvUpperLeft = inUVOffset.xy;
 	
 	// 転送元矩形の幅 UV
-	float2 uvWidth = inUVOffset.zw ;//uvUpperLeft - float2(inUVOffset.zw / inUVTileUnit);
+	float2 uvSize = inUVOffset.zw;
 	
 	// 1つの四角形の中のどこにいるのか (0.0～1.0)
 	float2 uvRatio = fmod(inUVTileUnit, 1.0);
 	
-	float2 uv = lerp(uvUpperLeft, uvUpperLeft + uvWidth, uvRatio);
+	//float2 uv = uvUpperLeft + lerp(float2(0.0, 0.0), uvSize, uvRatio);
 	//uv -= g_pixelStep;
+	
+	float2 uv = float2(
+		uvUpperLeft.x + lerp(0.0, uvSize.x, uvRatio.x),
+		uvUpperLeft.y + lerp(0.0, uvSize.y, uvRatio.y));
 	
 	float4 outColor = tex2D(g_texSampler, uv) * tex2D(g_glyphMaskSampler, uv) * inColor;
 	
