@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 
-class TileMap;
+class TileMapModel;
 class TileSet;
 class TileLayer;
 class TileMapRenderer;

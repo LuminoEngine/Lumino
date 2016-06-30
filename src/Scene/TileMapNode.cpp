@@ -62,7 +62,7 @@ void TileMapNode::Create3DCore(SceneGraph* owner)
 }
 
 //------------------------------------------------------------------------------
-void TileMapNode::SetTileMap(TileMap* tileMap)
+void TileMapNode::SetTileMap(TileMapModel* tileMap)
 {
 	LN_REFOBJ_SET(m_tileMap, tileMap);
 }

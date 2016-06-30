@@ -9,13 +9,13 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief	
 */
-class TileMap
+class TileMapModel
 	: public tr::ReflectionObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	TileMap();
-	virtual ~TileMap();
+	TileMapModel();
+	virtual ~TileMapModel();
 	void CreateCore();
 
 

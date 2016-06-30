@@ -6,30 +6,30 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// TileMap
+// TileMapModel
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMapModel, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-TileMap::TileMap()
+TileMapModel::TileMapModel()
 	: m_tileSet(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-TileMap::~TileMap()
+TileMapModel::~TileMapModel()
 {
 	LN_SAFE_RELEASE(m_tileSet);
 }
 
 //------------------------------------------------------------------------------
-TileSet* TileMap::GetTileSet()
+TileSet* TileMapModel::GetTileSet()
 {
 	return m_tileSet;
 }
 
 //------------------------------------------------------------------------------
-void TileMap::SetTileSet(TileSet* tileSet)
+void TileMapModel::SetTileSet(TileSet* tileSet)
 {
 	LN_REFOBJ_SET(m_tileSet, tileSet);
 }
