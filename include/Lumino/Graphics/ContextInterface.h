@@ -72,9 +72,6 @@ private:
 	Brush*		m_fillBrush;
 };
 
-
-
-
 class IRendererPloxy// : public RefObject
 {
 public:
@@ -83,29 +80,7 @@ public:
 	virtual void OnDeactivated() = 0;
 };
 
-class HiLevelRendererCore : public RefObject
-{
-public:
-
-	void ActivateFront(IRendererPloxy* renderer)
-	{
-		if (renderer != m_rendererFront)
-		{
-			if (m_rendererFront != nullptr)
-			{
-				m_rendererFront->Flush();
-			}
-			m_rendererFront = renderer;
-		}
-	}
-
-private:
-	IRendererPloxy*	m_rendererFront = nullptr;
-};
-
 } // namespace detail
-
-
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

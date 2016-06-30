@@ -9,7 +9,6 @@
 #include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
-#include "GraphicsHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -309,7 +308,7 @@ void Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t ste
 //------------------------------------------------------------------------------
 void Renderer::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? Helper::GetDeviceObject(vertexBuffer) : nullptr;
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		DrawPrimitive, m_manager,
 		Driver::IRenderer*, m_internal,
@@ -327,8 +326,8 @@ void Renderer::DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive
 //------------------------------------------------------------------------------
 void Renderer::DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? Helper::GetDeviceObject(vertexBuffer) : nullptr;
-	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? Helper::GetDeviceObject(indexBuffer) : nullptr;
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->GetDeviceObject() : nullptr;
+	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->GetDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_6(
 		DrawPrimitiveIndexed, m_manager,
 		Driver::IRenderer*, m_internal,

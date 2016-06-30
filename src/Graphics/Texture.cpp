@@ -5,11 +5,11 @@
 #include "../../include/Lumino/Graphics/Texture.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Utils.h>
+#include <Lumino/Graphics/Text/GlyphRun.h>
 #include "RendererImpl.h"
 #include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
-#include "GraphicsHelper.h"
 #include "Text/BitmapTextRenderer.h"
 
 LN_NAMESPACE_BEGIN

@@ -55,6 +55,7 @@ LN_INTERNAL_ACCESS:
 	VertexBuffer(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage);
 	virtual ~VertexBuffer();
 	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
 
 private:	// TODO
 	friend struct SetVertexBufferCommand;
@@ -65,7 +66,6 @@ private:	// TODO
 	GraphicsResourcePool	m_pool;
 	ByteBuffer				m_lockedBuffer;
 	bool					m_initialUpdate;
-	friend class Helper;
 };
 
 /**

@@ -33,9 +33,7 @@ protected:
 	virtual ~IDeviceResetListener() = default;
 };
 
-/**
-	@brief		グラフィックス機能の管理クラスです。
-*/
+// グラフィックス機能の管理クラス
 class GraphicsManager
 	: public RefObject
 {
@@ -43,24 +41,15 @@ public:
 
 	struct ConfigData
 	{
-		GraphicsAPI				GraphicsAPI;			/**< レンダリングに使用する API の種類 */
-		GraphicsRenderingType			RenderingType;
-		PlatformWindow*			MainWindow;				/**< アプリケーションのメインウィンドウ */
-		Size					backBufferSize;			// バックバッファのサイズ
+		GraphicsAPI					graphicsAPI = GraphicsAPI::DirectX9;				// レンダリングに使用する API の種類
+		GraphicsRenderingType		renderingType = GraphicsRenderingType::Threaded;
+		PlatformWindow*				mainWindow = nullptr;								// アプリケーションのメインウィンドウ
+		Size						backBufferSize = Size(640, 480);					// バックバッファのサイズ
 		detail::AnimationManager*	animationManager = nullptr;
-		FileManager*				FileManager;			/**< FileManager */
-		bool						PlatformTextureLoading;	/**< 画像リソースの読み込みにプラットフォーム固有の機能を使用するか */
-		void*						D3D9Device;				/**< 作成済みの IDirect3DDevice9 インターフェイス */
+		FileManager*				fileManager = nullptr;								// FileManager
+		bool						platformTextureLoading = false;						// 画像リソースの読み込みにプラットフォーム固有の機能を使用するか
+		void*						D3D9Device = nullptr;								// 作成済みの IDirect3DDevice9 インターフェイス
 		bool						fpuPreserveEnabled = false;
-
-		ConfigData()
-			: GraphicsAPI(GraphicsAPI::DirectX9)
-			, RenderingType(GraphicsRenderingType::Threaded)
-			, MainWindow(NULL)
-			, FileManager(NULL)
-			, PlatformTextureLoading(false)
-			, D3D9Device(NULL)
-		{}
 	};
 
 	static GraphicsManager*	GetInstance(GraphicsManager* priority = nullptr);

@@ -16,7 +16,6 @@ https://msdn.microsoft.com/ja-jp/library/ms752098%28v=vs.110%29.aspx
 #include "../RendererImpl.h"
 #include "../RenderingCommand.h"
 #include "TextRenderer.h"
-#include "../GraphicsHelper.h"
 #include "FontManager.h"
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
@@ -522,8 +521,6 @@ void TextRenderer::Flush()
 //------------------------------------------------------------------------------
 void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりたいこと
 {
-	m_core->ActivateFront(this);
-
 	if (m_stateModified)
 	{
 		Flush();

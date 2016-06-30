@@ -827,37 +827,37 @@ GraphicsManager::~GraphicsManager()
 //------------------------------------------------------------------------------
 void GraphicsManager::Initialize(const ConfigData& configData)
 {
-	m_renderingType = configData.RenderingType;
+	m_renderingType = configData.renderingType;
 	m_animationManager = configData.animationManager;
-	LN_REFOBJ_SET(m_fileManager, configData.FileManager);
-	m_mainWindow = configData.MainWindow;
-	m_platformTextureLoading = configData.PlatformTextureLoading;
+	LN_REFOBJ_SET(m_fileManager, configData.fileManager);
+	m_mainWindow = configData.mainWindow;
+	m_platformTextureLoading = configData.platformTextureLoading;
 
 	// フォント管理
 	m_fontManager = LN_NEW FontManager();
 	m_fontManager->Initialize(m_fileManager, this);
 
 #if defined(LN_OS_WIN32)
-	if (configData.GraphicsAPI == GraphicsAPI::DirectX9)
+	if (configData.graphicsAPI == GraphicsAPI::DirectX9)
 	{
 		Driver::DX9GraphicsDevice::ConfigData data;
-		data.MainWindow = configData.MainWindow;
-		data.FileManager = configData.FileManager;
+		data.MainWindow = configData.mainWindow;
+		data.FileManager = configData.fileManager;
 		data.D3D9Device = (IDirect3DDevice9*)configData.D3D9Device;
-		data.BackbufferSize = configData.backBufferSize;	// TODO
+		data.BackbufferSize = configData.backBufferSize;
 		data.EnableVSyncWait = false;			// TODO
-		data.EnableFPUPreserve = configData.fpuPreserveEnabled;			// TODO
+		data.EnableFPUPreserve = configData.fpuPreserveEnabled;
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
 		device->Initialize(data);
 		ChangeDevice(device);
 		device->Release();
 	}
-	else if (configData.GraphicsAPI == GraphicsAPI::OpenGL)
+	else if (configData.graphicsAPI == GraphicsAPI::OpenGL)
 	{
 		m_platformTextureLoading = false;
 
 		Driver::WGLGraphicsDevice::ConfigData data;
-		data.MainWindow = configData.MainWindow;
+		data.MainWindow = configData.mainWindow;
 		data.OpenGLMajorVersion = 2;
 		data.OpenGLMinorVersion = 1;
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();

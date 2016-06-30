@@ -8,7 +8,6 @@
 #include <Lumino/Graphics/Texture.h>
 #include "RendererImpl.h"
 #include "RenderingCommand.h"
-#include "GraphicsHelper.h"
 
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \

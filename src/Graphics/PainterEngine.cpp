@@ -18,7 +18,6 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include "PainterEngine.h"
-#include "GraphicsHelper.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

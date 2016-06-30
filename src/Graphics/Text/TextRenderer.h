@@ -13,7 +13,7 @@ namespace detail
 {
 
 class TextRendererCore
-	: public HiLevelRendererCore
+	: public RefObject
 {
 public:
 	struct GlyphRunData

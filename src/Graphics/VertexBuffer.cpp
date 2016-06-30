@@ -4,7 +4,6 @@
 #include <Lumino/Graphics/VertexBuffer.h>
 #include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
-#include "GraphicsHelper.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

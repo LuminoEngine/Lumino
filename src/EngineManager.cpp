@@ -450,13 +450,13 @@ void EngineManager::InitializeGraphicsManager()
 		InitializePhysicsManager();
 
 		GraphicsManager::ConfigData data;
-		data.GraphicsAPI = m_configData.graphicsAPI;
-		data.RenderingType = m_configData.renderingType;
-		data.MainWindow = m_platformManager->GetMainWindow();
+		data.graphicsAPI = m_configData.graphicsAPI;
+		data.renderingType = m_configData.renderingType;
+		data.mainWindow = m_platformManager->GetMainWindow();
 		data.backBufferSize = m_configData.mainBackBufferSize;
 		data.animationManager = m_animationManager;
-		data.FileManager = m_fileManager;
-		data.PlatformTextureLoading = true;
+		data.fileManager = m_fileManager;
+		data.platformTextureLoading = true;
 #ifdef LN_OS_WIN32
 		data.D3D9Device = m_configData.D3D9Device;
 #endif

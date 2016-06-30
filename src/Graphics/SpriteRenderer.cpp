@@ -203,7 +203,6 @@ Selene ではスプライトひとつ毎に drawPrimitive 読んでたけど…�
 #include <Lumino/Graphics/GraphicsException.h>
 #include <Lumino/Graphics/SpriteRenderer.h>
 #include "SpriteRendererImpl.h"
-#include "GraphicsHelper.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN

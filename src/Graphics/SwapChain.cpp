@@ -8,7 +8,6 @@
 #include "RendererImpl.h"
 #include "RenderingThread.h"
 #include "RenderingCommand.h"
-#include "GraphicsHelper.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
