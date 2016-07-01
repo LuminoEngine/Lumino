@@ -5,7 +5,7 @@
 #include "../../src/Graphics/GraphicsManager.h"
 #include <Lumino/Tilemap/TileMapModel.h>
 #include <Lumino/Graphics/GraphicsContext.h>
-#include <Lumino/Scene/TileMapNode.h>
+#include <Lumino/Scene/TileMap.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/SpriteModelObject.h>
 #include <Lumino/Testing/TestUtils.h>

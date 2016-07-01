@@ -7,7 +7,7 @@
 #include <Lumino/Scene/SceneGraphRenderingContext.h>
 #include <Lumino/Tilemap/TileMapRenderer.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/TileMapNode.h>
+#include <Lumino/Scene/TileMap.h>
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
