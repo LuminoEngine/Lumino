@@ -697,12 +697,12 @@ void EngineManager::Render()
 
 		EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
 		m_uiManager->GetMainWindow()->RenderContents();
-		
-		if (m_uiManager != nullptr) {
-			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
-			g->Set2DRenderingMode(-1, 1);	// TODO
-			m_uiManager->GetMainWindow()->RenderUI();
-		}
+		//
+		//if (m_uiManager != nullptr) {
+		//	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
+		//	g->Set2DRenderingMode(-1, 1);	// TODO
+		//	m_uiManager->GetMainWindow()->RenderUI();
+		//}
 
 		if (m_diagViewer != nullptr && m_diagViewer->IsVisible())
 		{

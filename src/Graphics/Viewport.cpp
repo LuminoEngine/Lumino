@@ -195,6 +195,7 @@ void Viewport::Render()
 	context->SetRenderTarget(0, m_primaryLayerTarget);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
+	// TODO: ZIndex を実装してソートしたい。今、UI Lyaer が一番奥にいる
 	for (auto& layer : *m_viewportLayerList)
 	{
 		layer->Render(m_primaryLayerTarget);

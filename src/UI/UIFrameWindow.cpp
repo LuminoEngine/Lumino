@@ -16,6 +16,38 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// UIViewportLayer
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, ViewportLayer);
+
+//------------------------------------------------------------------------------
+UIViewportLayer::UIViewportLayer(UILayoutView* view)
+	: m_view(view)
+{
+	assert(view != nullptr);
+}
+
+//------------------------------------------------------------------------------
+UIViewportLayer::~UIViewportLayer()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIViewportLayer::Render(RenderTarget* renderTarget)
+{
+	GraphicsContext* g = m_view->GetOwnerContext()->GetManager()->GetGraphicsManager()->GetGraphicsContext();
+
+
+	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
+	g->Set2DRenderingMode(-1, 1);	// TODO
+
+	// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
+
+	m_view->Render(g);
+}
+
+
+//==============================================================================
 // UIFrameWindow
 //==============================================================================
 LN_UI_TYPEINFO_IMPLEMENT(UIFrameWindow, Object)
@@ -38,7 +70,7 @@ UIFrameWindow::~UIFrameWindow()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain)
+void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UILayoutView* view)
 {
 	LN_CHECK_ARG(manager != nullptr);
 	LN_CHECK_ARG(platformWindow != nullptr);
@@ -50,6 +82,10 @@ void UIFrameWindow::Initialize(detail::UIManager* manager, PlatformWindow* platf
 	// MainViewport
 	m_mainViewport = LN_NEW Viewport();
 	m_mainViewport->Initialize(m_manager->GetGraphicsManager(), m_swapChain->GetBackBuffer());
+
+	// UI Layer
+	m_uiLayer.Attach(LN_NEW UIViewportLayer(view), false);
+	m_mainViewport->AddViewportLayer(m_uiLayer);
 }
 
 //------------------------------------------------------------------------------
@@ -109,10 +145,12 @@ UIMainWindow::~UIMainWindow()
 void UIMainWindow::Initialize(detail::UIManager* manager, PlatformWindow* platformWindow)
 {
 	LN_CHECK_ARG(manager != nullptr);
-	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain());
 
 	m_mainUIContext = LN_NEW UIContext();
 	m_mainUIContext->Initialize(manager);
+
+	UIFrameWindow::Initialize(manager, platformWindow, manager->GetGraphicsManager()->GetMainSwapChain(), m_mainUIContext->GetMainWindowView());
+
 
 	//m_mainUIContext->GetMainWindowView()->InjectViewportSizeChanged(
 	//	platformWindow->GetSize().width, platformWindow->GetSize().height);
@@ -133,15 +171,6 @@ void UIMainWindow::UpdateLayout(const SizeF& viewSize)
 //------------------------------------------------------------------------------
 void UIMainWindow::RenderUI()
 {
-	GraphicsContext* g = GetManager()->GetGraphicsManager()->GetGraphicsContext();
-
-
-	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
-	g->Set2DRenderingMode(-1, 1);	// TODO
-
-	// TODO: このへんで、このウィンドウが持っている SwapChain のバックバッファを g にセットする
-
-	m_mainUIContext->GetMainWindowView()->Render(g);
 }
 
 
@@ -166,6 +195,7 @@ UINativeHostWindow::UINativeHostWindow()
 //------------------------------------------------------------------------------
 UINativeHostWindow::~UINativeHostWindow()
 {
+	LN_SAFE_RELEASE(m_mainUIContext);
 }
 
 //------------------------------------------------------------------------------
@@ -185,7 +215,11 @@ void UINativeHostWindow::Initialize(detail::UIManager* manager, void* windowHand
 	auto swap = RefPtr<SwapChain>::MakeRef();
 	swap->InitializeSub(manager->GetGraphicsManager(), window);
 
-	UIFrameWindow::Initialize(manager, window, swap);
+
+	m_mainUIContext = LN_NEW UIContext();
+	m_mainUIContext->Initialize(manager);
+
+	UIFrameWindow::Initialize(manager, window, swap, m_mainUIContext->GetMainWindowView());
 }
 
 LN_NAMESPACE_END

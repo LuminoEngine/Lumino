@@ -15,8 +15,8 @@ TEST_F(Test_UI_TextBlock, Basic)
 	textBlock1->SetText(_T("TextBlock"));
 	uiRoot->SetContent(textBlock1);
 
-	while(Engine::UpdateFrame());
+	Engine::UpdateFrame();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_UI_TextBlock.Basic.png"), 100, true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_UI_TextBlock.Basic.png")));
 }
 

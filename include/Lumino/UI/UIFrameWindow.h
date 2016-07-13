@@ -1,9 +1,29 @@
 ﻿
 #pragma once
+#include "../Graphics/Viewport.h"
 #include "UIElement.h"
 
 LN_NAMESPACE_BEGIN
 class PlatformWindow;
+
+
+/**
+	@brief		
+*/
+class UIViewportLayer
+	: public ViewportLayer
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+protected:
+	friend class UIFrameWindow;
+	UIViewportLayer(UILayoutView* view);
+	virtual ~UIViewportLayer();
+	virtual void Render(RenderTarget* renderTarget) override;
+
+private:
+	UILayoutView*	m_view;
+};
+
 
 /**
 	@brief		
@@ -21,7 +41,7 @@ public:
 protected:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain);
+	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UILayoutView* view);
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
@@ -31,10 +51,11 @@ LN_INTERNAL_ACCESS:
 	void RenderContents();
 
 private:
-	detail::UIManager*	m_manager;
-	PlatformWindow*		m_platformWindow;
-	SwapChain*			m_swapChain;
-	Viewport*			m_mainViewport;
+	detail::UIManager*		m_manager;
+	PlatformWindow*			m_platformWindow;
+	SwapChain*				m_swapChain;
+	Viewport*				m_mainViewport;
+	RefPtr<UIViewportLayer>	m_uiLayer;
 };
 
 
@@ -88,6 +109,7 @@ LN_INTERNAL_ACCESS:
 	void Initialize(detail::UIManager* manager, void* windowHandle);
 
 private:
+	UIContext*	m_mainUIContext;
 };
 
 LN_NAMESPACE_END
