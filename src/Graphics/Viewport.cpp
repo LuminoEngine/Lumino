@@ -97,6 +97,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 ViewportLayer::ViewportLayer()
 	: m_owner(nullptr)
 	, m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
+	, m_zIndex(0)
 {
 }
 
@@ -195,7 +196,10 @@ void Viewport::Render()
 	context->SetRenderTarget(0, m_primaryLayerTarget);
 	context->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0x00);
 
-	// TODO: ZIndex を実装してソートしたい。今、UI Lyaer が一番奥にいる
+	// ZIndex でソート
+	std::stable_sort(m_viewportLayerList->begin(), m_viewportLayerList->end(),
+		[](const ViewportLayer* lhs, const ViewportLayer* rhs) { return lhs->GetZIndex() < rhs->GetZIndex(); });
+
 	for (auto& layer : *m_viewportLayerList)
 	{
 		layer->Render(m_primaryLayerTarget);

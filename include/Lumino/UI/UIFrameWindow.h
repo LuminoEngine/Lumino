@@ -14,6 +14,9 @@ class UIViewportLayer
 	: public ViewportLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	static const int DefaultZIndex = 100;
+
 protected:
 	friend class UIFrameWindow;
 	UIViewportLayer(UILayoutView* view);

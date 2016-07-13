@@ -2,7 +2,6 @@
 set(LN_TEST_SOURCES
 	gtest/src/gtest-all.cc
 	UnitTest/Main.cpp
-	UnitTest/Test.cpp
 	UnitTest/TestConfig.h
 	UnitTest/Base/Test_Base_Point.cpp
 	UnitTest/Base/Test_Base_Rect.cpp

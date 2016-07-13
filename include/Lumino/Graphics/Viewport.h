@@ -28,6 +28,10 @@ public:
 	const Size& GetViewportSize() const;
 	ImageEffectList* GetImageEffects() const { return m_imageEffects; }
 
+	void SetZIndex(int zIndex) { m_zIndex = zIndex; }
+
+	int GetZIndex() const { return m_zIndex; }
+
 protected:
 	ViewportLayer();
 	virtual ~ViewportLayer();
@@ -45,6 +49,7 @@ protected:
 private:
 	Viewport*				m_owner;
 	RefPtr<ImageEffectList>	m_imageEffects;
+	int						m_zIndex;
 
 	friend class Viewport;
 };

@@ -25,6 +25,7 @@ UIViewportLayer::UIViewportLayer(UILayoutView* view)
 	: m_view(view)
 {
 	assert(view != nullptr);
+	SetZIndex(DefaultZIndex);
 }
 
 //------------------------------------------------------------------------------
