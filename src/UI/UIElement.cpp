@@ -492,7 +492,6 @@ void UIElement::Render(GraphicsContext* g)
 	Matrix mat;
 	mat.Translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->SetTransform(mat);
-	g->SetBlendMode(BlendMode::Alpha);	// TODO: とりあえず(今、テキスト描画はビットマップなので)
 	OnRender(g);
 
 	// 子要素

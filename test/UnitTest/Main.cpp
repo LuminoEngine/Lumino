@@ -108,9 +108,9 @@ void TestEnv::SaveScreenShot(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
+bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
 {
-	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock(), filePath);
+	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock(), filePath, passRate);
 	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
 	return r;
 }
@@ -118,7 +118,7 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath)
 //------------------------------------------------------------------------------
 bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
 {
-	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath);
+	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath, 90);
 	texture->Unlock();
 	return r;
 }
@@ -172,11 +172,10 @@ Color MixPixels(Bitmap* bmp, int x, int y)
 	return Color(r / count, g / count, b / count, a / count);
 }
 
-bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
+bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate)
 {
 	Bitmap bmp2(filePath);
 
-	int passRate = 90;
 	bool ignoreAlpha = true;
 
 	int colorRange = 255 - (255 * passRate / 100);
@@ -202,6 +201,19 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath)
 	return pass >= thr;
 }
 
+bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
+{
+	if (save)
+	{
+		SaveScreenShot(filePath);
+		return true;
+	}
+	else
+	{
+		return EqualsScreenShot(filePath, passRate);
+	}
+}
+
 //------------------------------------------------------------------------------
 GTEST_API_ int main(int argc, char **argv)
 {
@@ -213,7 +225,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_GraphicsContext.*"
+		"--gtest_filter=Test_UI_TextBlock.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

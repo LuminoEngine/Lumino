@@ -31,24 +31,13 @@ using namespace ln;
 
 class TestEnv : public ::testing::Environment
 {
-//public:
-//	static Platform::PlatformManager*	Platform;
-//	static Physics::PhysicsManager*	PhysicsManager;
-//	static GraphicsManagerPtr			Manager;
-//	static Lumino::Renderer*		Renderer;
-//	static SwapChain*		MainSwapChain;
-//	static SceneGraphManager*		MMDSceneGraph;
-//
 public:
-//	static Lumino::Renderer* BeginRendering();
-//	static void EndRendering();
-//	static PathName MakeScreenShotPath(const char* fileName);
 	static void SaveScreenShot(const TCHAR* filePath);
-	static bool EqualsScreenShot(const TCHAR* filePath);
+	static bool EqualsScreenShot(const TCHAR* filePath, int passRate = 100);
 	static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
-	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath);
-//	static RefPtr<Shader> CreateShader(const TCHAR* filePath);
-//
+	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
+	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 100, bool save = false);
+
 protected:
 	virtual void SetUp();
 	virtual void TearDown();

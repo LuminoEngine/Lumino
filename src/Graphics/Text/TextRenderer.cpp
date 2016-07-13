@@ -163,7 +163,7 @@ void TextRendererCore::Initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const Size& viewPixelSize)
 {
-	m_shader.varWorldMatrix->SetMatrix(world);
+	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity/*world*/);
 	m_shader.varViewProjMatrix->SetMatrix(viewProj);
 	m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
 }
@@ -219,12 +219,23 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 
 	// ビットマップフォントからの描画なので、アルファブレンドONでなければ真っ白矩形になってしまう。
 	// ・・・が、TextRendererCore のような低レベルでステートを強制変更してしまうのはいかがなものか・・・。
-	//RenderState oldState = m_renderer->GetRenderState();
-	//RenderState newState = oldState;
-	//newState.alphaBlendEnabled = true;
-	//newState.sourceBlend = BlendFactor::SourceAlpha;
-	//newState.destinationBlend = BlendFactor::InverseSourceAlpha;
-	//m_renderer->SetRenderState(newState);
+	RenderState oldState = m_renderer->GetRenderState();
+	RenderState newState = oldState;
+	newState.alphaBlendEnabled = true;
+	newState.sourceBlend = BlendFactor::SourceAlpha;
+	newState.destinationBlend = BlendFactor::InverseSourceAlpha;
+
+	newState.Culling = CullingMode::None;
+	m_renderer->SetRenderState(newState);
+
+
+
+	DepthStencilState s2;
+	s2.DepthTestEnabled = false;
+	s2.DepthWriteEnabled = false;
+	s2.StencilEnabled = false;
+	m_renderer->SetDepthStencilState(s2);
+
 
 	// 描画する
 	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
@@ -239,7 +250,8 @@ void TextRendererCore::Flush(Internal::FontGlyphTextureCache* cache)
 	m_vertexCache.Clear();
 	m_indexCache.Clear();
 
-	//m_renderer->SetRenderState(oldState);
+	// 変更したステートを元に戻す
+	m_renderer->SetRenderState(oldState);
 }
 
 //------------------------------------------------------------------------------
@@ -262,7 +274,7 @@ void TextRendererCore::InternalDrawRectangle(const RectF& rect, const RectF& src
 
 	Vertex v;
 	v.color = ColorF::White;	// TODO
-	v.position.Set(rect.GetLeft(), rect.GetTop(), 0);	v.uv.Set(lu, tv);	// 左上
+	v.position.Set(0, 0, 0);	v.uv.Set(lu, tv);	// 左上
 	m_vertexCache.Add(v);
 	v.position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.Set(lu, bv);	// 左下
 	m_vertexCache.Add(v);

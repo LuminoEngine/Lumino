@@ -62,6 +62,7 @@ void UITextBlock::OnRender(GraphicsContext* g)
 	g->SetBrush(ColorBrush::Blue);
 	g->SetFont(GetActiveFont());
 	g->DrawText(m_text, PointF::Zero);
+	g->Flush();
 }
 
 LN_NAMESPACE_END

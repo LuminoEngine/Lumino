@@ -692,25 +692,27 @@ void EngineManager::Render()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		if (m_graphicsManager != nullptr)
-		{
-			EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
-			m_uiManager->GetMainWindow()->RenderContents();
-		}
+		GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+		g->PushState();
 
+		EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
+		m_uiManager->GetMainWindow()->RenderContents();
+		
 		if (m_uiManager != nullptr) {
+			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
+			g->Set2DRenderingMode(-1, 1);	// TODO
 			m_uiManager->GetMainWindow()->RenderUI();
 		}
 
 		if (m_diagViewer != nullptr && m_diagViewer->IsVisible())
 		{
 			// TODO: このあたりも GetMainWindow()->Render() の中に持っていくべき？
-			GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
 			g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
 			g->Set2DRenderingMode(-1, 1);	// TODO
 			m_diagViewer->Render(g, Vector2(640, 480));	//TODO
 		}
 
+		g->PopState();
 	}
 }
 
