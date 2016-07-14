@@ -124,7 +124,7 @@ public:
 
 public:
 
-	void Clear(const Color& color);
+	void Clear(const Color32& color);
 
 	void Blt(int x, int y, Texture* srcTexture, const Rect& srcRect);	// TODO: アルファブレンド有無
 	
@@ -132,8 +132,8 @@ public:
 
 #pragma push_macro("DrawText")
 #undef DrawText
-	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment);
-	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment);
+	void DrawText(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 #pragma pop_macro("DrawText")
 	

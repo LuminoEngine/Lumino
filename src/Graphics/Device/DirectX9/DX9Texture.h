@@ -36,7 +36,7 @@ public:
 	DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureFormat format, uint32_t levels);
 
 	/// テクスチャ作成 (メモリに展開された画像データから)
-	DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t size, const Color& colorKey, uint32_t levels, TextureFormat format);
+	DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t size, const Color32& colorKey, uint32_t levels, TextureFormat format);
 
 	virtual ~DX9Texture();
 

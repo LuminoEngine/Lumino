@@ -86,7 +86,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const Size& size, TextureForma
 }
 
 //------------------------------------------------------------------------------
-DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t size, const Color& colorKey, uint32_t levels, TextureFormat format)
+DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t size, const Color32& colorKey, uint32_t levels, TextureFormat format)
 	: DX9TextureBase(device)
 	, m_dxTexture(NULL)
 	, m_dxSurface(NULL)

@@ -736,7 +736,7 @@ void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, con
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawRectangle(const RectF& rect, const Color& color)
+void GraphicsContext::DrawRectangle(const RectF& rect, const Color32& color)
 {
 	OnDrawing(m_geometryRenderer);
 

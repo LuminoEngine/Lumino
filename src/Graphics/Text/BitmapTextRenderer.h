@@ -18,7 +18,7 @@ public:
 
 	void SetRenderArea(const Rect& area) { m_renderArea = area; }
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
-	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color& fillColor, const Color& strokeColor, int strokeThickness);
+	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness);
 
 private:
 	GraphicsManager*	m_manager;

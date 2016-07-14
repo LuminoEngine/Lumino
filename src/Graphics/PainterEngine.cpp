@@ -100,7 +100,7 @@ void PainterEngine::CreateInternal()
 	m_dummyTexture.Attach(device->CreateTexture(Size(32, 32), 1, TextureFormat::R8G8B8A8, NULL), false);
 	Driver::IGraphicsDevice::ScopedLockContext lock(device);
 	BitmapPainter painter(m_dummyTexture->Lock());
-	painter.Clear(Color::White);
+	painter.Clear(Color32::White);
 	m_dummyTexture->Unlock();
 }
 

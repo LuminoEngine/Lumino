@@ -76,7 +76,7 @@ public:
 
 	const Size& GetSize() const;
 
-	void SetBackgroundColor(const Color& color);
+	void SetBackgroundColor(const Color32& color);
 
 	ObjectList<ViewportLayer*>* GetLayers() const { return m_viewportLayerList; }
 

@@ -1,38 +1,4 @@
-﻿/*
-	- UE4
-		FColor		32bit
-		FLinerColor	float
-	- Unity
-		Color		float
-		Color32		32bit
-	- cocos2d-x
-		Color4B		32bit
-		Color4F		float
-	- WPF
-		Color		32bit
-	- XNA
-		Color		32bit
-	- Qt
-		QColor		32bit
-	- Ogre
-		ColourValue	float
-	- siv3d
-		Color		32bit
-		ColorF		float(double)
-	- altseed
-		Color		32bit
-	- dxruby
-		Color		32bit
-	
-	- Color32 → ColorF への変換はテーブルで高速化できる。
-	  外部から受け取るときは 32、内部では F でいいかも。
-	- GUI の ColorPicker とかは 0～255 で指定できたほうが操作しやすい。
-
-	- F を使いたいのは頂点バッファを直接操作するときか、シェーダに値をセットするとき。
-
-	あと、型については色系と座標系を一緒に考えないほうがいい。
-	つまり、色系(Color, Tone) 座標系(Size, Rect)
-*/
+﻿
 #include "../Internal.h"
 #include <Lumino/Math/Vector3.h>
 #include <Lumino/Math/Vector4.h>
@@ -42,160 +8,160 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
-// Color
+// Color32
 //==============================================================================
-const Color Color::Transparency = Color(0, 0, 0, 0);
-const Color Color::TransparencyWhite = Color(255, 255, 255, 0);
-//const const Color Color::Black = Color(0, 0, 0, 255);
-//const const Color Color::White = Color(255, 255, 255, 255);
-//const const Color Color::Gray = Color(127, 127, 127, 255);
-//const const Color Color::Red = Color(255, 0, 0, 255);
-//const const Color Color::Green = Color(0, 255, 0, 255);
-//const const Color Color::Blue = Color(0, 0, 255, 255);
-const Color Color::AliceBlue(240, 248, 255);
-const Color Color::AntiqueWhite(250, 235, 215);
-const Color Color::Aqua(0, 255, 255);
-const Color Color::Aquamarine(127, 255, 212);
-const Color Color::Azure(240, 255, 255);
-const Color Color::Beige(245, 245, 220);
-const Color Color::Bisque(255, 228, 196);
-const Color Color::Black(0, 0, 0);
-const Color Color::BlanchedAlmond(255, 235, 205);
-const Color Color::Blue(0, 0, 255);
-const Color Color::BlueViolet(138, 43, 226);
-const Color Color::Brown(165, 42, 42);
-const Color Color::BurlyWood(222, 184, 135);
-const Color Color::CadetBlue(95, 158, 160);
-const Color Color::Chartreuse(127, 255, 0);
-const Color Color::Chocolate(210, 105, 30);
-const Color Color::Coral(255, 127, 80);
-const Color Color::CornflowerBlue(100, 149, 237);
-const Color Color::Cornsilk(255, 248, 220);
-const Color Color::Crimson(220, 20, 60);
-const Color Color::Cyan(0, 255, 255);
-const Color Color::DarkBlue(0, 0, 139);
-const Color Color::DarkCyan(0, 139, 139);
-const Color Color::DarkGoldenrod(184, 134, 11);
-const Color Color::DarkGray(169, 169, 169);
-const Color Color::DarkGreen(0, 100, 0);
-const Color Color::DarkKhaki(189, 183, 107);
-const Color Color::DarkMagenta(139, 0, 139);
-const Color Color::DarkOliveGreen(85, 107, 47);
-const Color Color::DarkOrange(255, 140, 0);
-const Color Color::DarkOrchid(153, 50, 204);
-const Color Color::DarkRed(139, 0, 0);
-const Color Color::DarkSalmon(233, 150, 122);
-const Color Color::DarkSeaGreen(143, 188, 143);
-const Color Color::DarkSlateBlue(72, 61, 139);
-const Color Color::DarkSlateGray(47, 79, 79);
-const Color Color::DarkTurquoise(0, 206, 209);
-const Color Color::DarkViolet(148, 0, 211);
-const Color Color::DeepPink(255, 20, 147);
-const Color Color::DeepSkyBlue(0, 191, 255);
-const Color Color::DimGray(105, 105, 105);
-const Color Color::DodgerBlue(30, 144, 255);
-const Color Color::Firebrick(178, 34, 34);
-const Color Color::FloralWhite(255, 250, 240);
-const Color Color::ForestGreen(34, 139, 34);
-const Color Color::Fuchsia(255, 0, 255);
-const Color Color::Gainsboro(220, 220, 220);
-const Color Color::GhostWhite(248, 248, 255);
-const Color Color::Gold(255, 215, 0);
-const Color Color::Goldenrod(218, 165, 32);
-const Color Color::Gray(128, 128, 128);
-const Color Color::Green(0, 128, 0);
-const Color Color::GreenYellow(173, 255, 47);
-const Color Color::Honeydew(240, 255, 240);
-const Color Color::HotPink(255, 105, 180);
-const Color Color::IndianRed(205, 92, 92);
-const Color Color::Indigo(75, 0, 130);
-const Color Color::Ivory(255, 255, 240);
-const Color Color::Khaki(240, 230, 140);
-const Color Color::Lavender(230, 230, 250);
-const Color Color::LavenderBlush(255, 240, 245);
-const Color Color::LawnGreen(124, 252, 0);
-const Color Color::LemonChiffon(255, 250, 205);
-const Color Color::LightBlue(173, 216, 230);
-const Color Color::LightCoral(240, 128, 128);
-const Color Color::LightCyan(224, 255, 255);
-const Color Color::LightGoldenrodYellow(250, 250, 210);
-const Color Color::LightGray(211, 211, 211);
-const Color Color::LightGreen(144, 238, 144);
-const Color Color::LightPink(255, 182, 193);
-const Color Color::LightSalmon(255, 160, 122);
-const Color Color::LightSeaGreen(32, 178, 170);
-const Color Color::LightSkyBlue(135, 206, 250);
-const Color Color::LightSlateGray(119, 136, 153);
-const Color Color::LightSteelBlue(176, 196, 222);
-const Color Color::LightYellow(255, 255, 224);
-const Color Color::Lime(0, 255, 0);
-const Color Color::LimeGreen(50, 205, 50);
-const Color Color::Linen(250, 240, 230);
-const Color Color::Magenta(255, 0, 255);
-const Color Color::Maroon(128, 0, 0);
-const Color Color::MediumAquamarine(102, 205, 170);
-const Color Color::MediumBlue(0, 0, 205);
-const Color Color::MediumOrchid(186, 85, 211);
-const Color Color::MediumPurple(147, 112, 219);
-const Color Color::MediumSeaGreen(60, 179, 113);
-const Color Color::MediumSlateBlue(123, 104, 238);
-const Color Color::MediumSpringGreen(0, 250, 154);
-const Color Color::MediumTurquoise(72, 209, 204);
-const Color Color::MediumVioletRed(199, 21, 133);
-const Color Color::MidnightBlue(25, 25, 112);
-const Color Color::MintCream(245, 255, 250);
-const Color Color::MistyRose(255, 228, 225);
-const Color Color::Moccasin(255, 228, 181);
-const Color Color::NavajoWhite(255, 222, 173);
-const Color Color::Navy(0, 0, 128);
-const Color Color::OldLace(253, 245, 230);
-const Color Color::Olive(128, 128, 0);
-const Color Color::OliveDrab(107, 142, 35);
-const Color Color::Orange(255, 165, 0);
-const Color Color::OrangeRed(255, 69, 0);
-const Color Color::Orchid(218, 112, 214);
-const Color Color::PaleGoldenrod(238, 232, 170);
-const Color Color::PaleGreen(152, 251, 152);
-const Color Color::PaleTurquoise(175, 238, 238);
-const Color Color::PaleVioletRed(219, 112, 147);
-const Color Color::PapayaWhip(255, 239, 213);
-const Color Color::PeachPuff(255, 218, 185);
-const Color Color::Peru(205, 133, 63);
-const Color Color::Pink(255, 192, 203);
-const Color Color::Plum(221, 160, 221);
-const Color Color::PowderBlue(176, 224, 230);
-const Color Color::Purple(128, 0, 128);
-const Color Color::Red(255, 0, 0);
-const Color Color::RosyBrown(188, 143, 143);
-const Color Color::RoyalBlue(65, 105, 225);
-const Color Color::SaddleBrown(139, 69, 19);
-const Color Color::Salmon(250, 128, 114);
-const Color Color::SandyBrown(244, 164, 96);
-const Color Color::SeaGreen(46, 139, 87);
-const Color Color::SeaShell(255, 245, 238);
-const Color Color::Sienna(160, 82, 45);
-const Color Color::Silver(192, 192, 192);
-const Color Color::SkyBlue(135, 206, 235);
-const Color Color::SlateBlue(106, 90, 205);
-const Color Color::SlateGray(112, 128, 144);
-const Color Color::Snow(255, 250, 250);
-const Color Color::SpringGreen(0, 255, 127);
-const Color Color::SteelBlue(70, 130, 180);
-const Color Color::Tan(210, 180, 140);
-const Color Color::Teal(0, 128, 128);
-const Color Color::Thistle(216, 191, 216);
-const Color Color::Tomato(255, 99, 71);
-const Color Color::Transparent(255, 255, 255);
-const Color Color::Turquoise(64, 224, 208);
-const Color Color::Violet(238, 130, 238);
-const Color Color::Wheat(245, 222, 179);
-const Color Color::White(255, 255, 255);
-const Color Color::WhiteSmoke(245, 245, 245);
-const Color Color::Yellow(255, 255, 0);
-const Color Color::YellowGreen(154, 205, 50);
+const Color32 Color32::Transparency = Color32(0, 0, 0, 0);
+const Color32 Color32::TransparencyWhite = Color32(255, 255, 255, 0);
+//const const Color32 Color32::Black = Color32(0, 0, 0, 255);
+//const const Color32 Color32::White = Color32(255, 255, 255, 255);
+//const const Color32 Color32::Gray = Color32(127, 127, 127, 255);
+//const const Color32 Color32::Red = Color32(255, 0, 0, 255);
+//const const Color32 Color32::Green = Color32(0, 255, 0, 255);
+//const const Color32 Color32::Blue = Color32(0, 0, 255, 255);
+const Color32 Color32::AliceBlue(240, 248, 255);
+const Color32 Color32::AntiqueWhite(250, 235, 215);
+const Color32 Color32::Aqua(0, 255, 255);
+const Color32 Color32::Aquamarine(127, 255, 212);
+const Color32 Color32::Azure(240, 255, 255);
+const Color32 Color32::Beige(245, 245, 220);
+const Color32 Color32::Bisque(255, 228, 196);
+const Color32 Color32::Black(0, 0, 0);
+const Color32 Color32::BlanchedAlmond(255, 235, 205);
+const Color32 Color32::Blue(0, 0, 255);
+const Color32 Color32::BlueViolet(138, 43, 226);
+const Color32 Color32::Brown(165, 42, 42);
+const Color32 Color32::BurlyWood(222, 184, 135);
+const Color32 Color32::CadetBlue(95, 158, 160);
+const Color32 Color32::Chartreuse(127, 255, 0);
+const Color32 Color32::Chocolate(210, 105, 30);
+const Color32 Color32::Coral(255, 127, 80);
+const Color32 Color32::CornflowerBlue(100, 149, 237);
+const Color32 Color32::Cornsilk(255, 248, 220);
+const Color32 Color32::Crimson(220, 20, 60);
+const Color32 Color32::Cyan(0, 255, 255);
+const Color32 Color32::DarkBlue(0, 0, 139);
+const Color32 Color32::DarkCyan(0, 139, 139);
+const Color32 Color32::DarkGoldenrod(184, 134, 11);
+const Color32 Color32::DarkGray(169, 169, 169);
+const Color32 Color32::DarkGreen(0, 100, 0);
+const Color32 Color32::DarkKhaki(189, 183, 107);
+const Color32 Color32::DarkMagenta(139, 0, 139);
+const Color32 Color32::DarkOliveGreen(85, 107, 47);
+const Color32 Color32::DarkOrange(255, 140, 0);
+const Color32 Color32::DarkOrchid(153, 50, 204);
+const Color32 Color32::DarkRed(139, 0, 0);
+const Color32 Color32::DarkSalmon(233, 150, 122);
+const Color32 Color32::DarkSeaGreen(143, 188, 143);
+const Color32 Color32::DarkSlateBlue(72, 61, 139);
+const Color32 Color32::DarkSlateGray(47, 79, 79);
+const Color32 Color32::DarkTurquoise(0, 206, 209);
+const Color32 Color32::DarkViolet(148, 0, 211);
+const Color32 Color32::DeepPink(255, 20, 147);
+const Color32 Color32::DeepSkyBlue(0, 191, 255);
+const Color32 Color32::DimGray(105, 105, 105);
+const Color32 Color32::DodgerBlue(30, 144, 255);
+const Color32 Color32::Firebrick(178, 34, 34);
+const Color32 Color32::FloralWhite(255, 250, 240);
+const Color32 Color32::ForestGreen(34, 139, 34);
+const Color32 Color32::Fuchsia(255, 0, 255);
+const Color32 Color32::Gainsboro(220, 220, 220);
+const Color32 Color32::GhostWhite(248, 248, 255);
+const Color32 Color32::Gold(255, 215, 0);
+const Color32 Color32::Goldenrod(218, 165, 32);
+const Color32 Color32::Gray(128, 128, 128);
+const Color32 Color32::Green(0, 128, 0);
+const Color32 Color32::GreenYellow(173, 255, 47);
+const Color32 Color32::Honeydew(240, 255, 240);
+const Color32 Color32::HotPink(255, 105, 180);
+const Color32 Color32::IndianRed(205, 92, 92);
+const Color32 Color32::Indigo(75, 0, 130);
+const Color32 Color32::Ivory(255, 255, 240);
+const Color32 Color32::Khaki(240, 230, 140);
+const Color32 Color32::Lavender(230, 230, 250);
+const Color32 Color32::LavenderBlush(255, 240, 245);
+const Color32 Color32::LawnGreen(124, 252, 0);
+const Color32 Color32::LemonChiffon(255, 250, 205);
+const Color32 Color32::LightBlue(173, 216, 230);
+const Color32 Color32::LightCoral(240, 128, 128);
+const Color32 Color32::LightCyan(224, 255, 255);
+const Color32 Color32::LightGoldenrodYellow(250, 250, 210);
+const Color32 Color32::LightGray(211, 211, 211);
+const Color32 Color32::LightGreen(144, 238, 144);
+const Color32 Color32::LightPink(255, 182, 193);
+const Color32 Color32::LightSalmon(255, 160, 122);
+const Color32 Color32::LightSeaGreen(32, 178, 170);
+const Color32 Color32::LightSkyBlue(135, 206, 250);
+const Color32 Color32::LightSlateGray(119, 136, 153);
+const Color32 Color32::LightSteelBlue(176, 196, 222);
+const Color32 Color32::LightYellow(255, 255, 224);
+const Color32 Color32::Lime(0, 255, 0);
+const Color32 Color32::LimeGreen(50, 205, 50);
+const Color32 Color32::Linen(250, 240, 230);
+const Color32 Color32::Magenta(255, 0, 255);
+const Color32 Color32::Maroon(128, 0, 0);
+const Color32 Color32::MediumAquamarine(102, 205, 170);
+const Color32 Color32::MediumBlue(0, 0, 205);
+const Color32 Color32::MediumOrchid(186, 85, 211);
+const Color32 Color32::MediumPurple(147, 112, 219);
+const Color32 Color32::MediumSeaGreen(60, 179, 113);
+const Color32 Color32::MediumSlateBlue(123, 104, 238);
+const Color32 Color32::MediumSpringGreen(0, 250, 154);
+const Color32 Color32::MediumTurquoise(72, 209, 204);
+const Color32 Color32::MediumVioletRed(199, 21, 133);
+const Color32 Color32::MidnightBlue(25, 25, 112);
+const Color32 Color32::MintCream(245, 255, 250);
+const Color32 Color32::MistyRose(255, 228, 225);
+const Color32 Color32::Moccasin(255, 228, 181);
+const Color32 Color32::NavajoWhite(255, 222, 173);
+const Color32 Color32::Navy(0, 0, 128);
+const Color32 Color32::OldLace(253, 245, 230);
+const Color32 Color32::Olive(128, 128, 0);
+const Color32 Color32::OliveDrab(107, 142, 35);
+const Color32 Color32::Orange(255, 165, 0);
+const Color32 Color32::OrangeRed(255, 69, 0);
+const Color32 Color32::Orchid(218, 112, 214);
+const Color32 Color32::PaleGoldenrod(238, 232, 170);
+const Color32 Color32::PaleGreen(152, 251, 152);
+const Color32 Color32::PaleTurquoise(175, 238, 238);
+const Color32 Color32::PaleVioletRed(219, 112, 147);
+const Color32 Color32::PapayaWhip(255, 239, 213);
+const Color32 Color32::PeachPuff(255, 218, 185);
+const Color32 Color32::Peru(205, 133, 63);
+const Color32 Color32::Pink(255, 192, 203);
+const Color32 Color32::Plum(221, 160, 221);
+const Color32 Color32::PowderBlue(176, 224, 230);
+const Color32 Color32::Purple(128, 0, 128);
+const Color32 Color32::Red(255, 0, 0);
+const Color32 Color32::RosyBrown(188, 143, 143);
+const Color32 Color32::RoyalBlue(65, 105, 225);
+const Color32 Color32::SaddleBrown(139, 69, 19);
+const Color32 Color32::Salmon(250, 128, 114);
+const Color32 Color32::SandyBrown(244, 164, 96);
+const Color32 Color32::SeaGreen(46, 139, 87);
+const Color32 Color32::SeaShell(255, 245, 238);
+const Color32 Color32::Sienna(160, 82, 45);
+const Color32 Color32::Silver(192, 192, 192);
+const Color32 Color32::SkyBlue(135, 206, 235);
+const Color32 Color32::SlateBlue(106, 90, 205);
+const Color32 Color32::SlateGray(112, 128, 144);
+const Color32 Color32::Snow(255, 250, 250);
+const Color32 Color32::SpringGreen(0, 255, 127);
+const Color32 Color32::SteelBlue(70, 130, 180);
+const Color32 Color32::Tan(210, 180, 140);
+const Color32 Color32::Teal(0, 128, 128);
+const Color32 Color32::Thistle(216, 191, 216);
+const Color32 Color32::Tomato(255, 99, 71);
+const Color32 Color32::Transparent(255, 255, 255);
+const Color32 Color32::Turquoise(64, 224, 208);
+const Color32 Color32::Violet(238, 130, 238);
+const Color32 Color32::Wheat(245, 222, 179);
+const Color32 Color32::White(255, 255, 255);
+const Color32 Color32::WhiteSmoke(245, 245, 245);
+const Color32 Color32::Yellow(255, 255, 0);
+const Color32 Color32::YellowGreen(154, 205, 50);
 
 //------------------------------------------------------------------------------
-//Color::Color(const ColorF& colorF)
+//Color32::Color32(const ColorF& colorF)
 //{
 //	r = static_cast<uint8_t>(colorF.r * 255);
 //	g = static_cast<uint8_t>(colorF.g * 255);
@@ -240,7 +206,7 @@ static int ParseHexChar(int c)
 	LN_THROW(0, InvalidFormatException);
 }
 
-static bool ParseHexColor(const StringRef& str, Color* outColor)
+static bool ParseHexColor(const StringRef& str, Color32* outColor)
 {
 	uint8_t r, g, b, a;
 	if (str.GetLength() >= 3 && str[0] == _T('#'))
@@ -296,9 +262,9 @@ static bool ParseHexColor(const StringRef& str, Color* outColor)
 }
 
 //------------------------------------------------------------------------------
-Color Color::FromString(const StringRef& str)
+Color32 Color32::FromString(const StringRef& str)
 {
-	Color c;
+	Color32 c;
 	if (!ParseHexColor(str, &c))
 	{
 		LN_THROW(0, InvalidFormatException);
@@ -340,7 +306,7 @@ static const float g_color255Table[256] =
 };
 
 //------------------------------------------------------------------------------
-ColorF::ColorF(const Color& color)
+ColorF::ColorF(const Color32& color)
 {
 	r = g_color255Table[color.r];
 	g = g_color255Table[color.g];
@@ -378,9 +344,9 @@ void ColorF::MultiplyClamp(const ColorF& color)
 }
 
 //------------------------------------------------------------------------------
-Color ColorF::To32BitColor() const
+Color32 ColorF::To32BitColor() const
 {
-	return Color(
+	return Color32(
 		static_cast<uint8_t>(r * 255),
 		static_cast<uint8_t>(g * 255),
 		static_cast<uint8_t>(b * 255),
@@ -420,12 +386,12 @@ void ToneF::AddClamp(const ToneF& tone)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Color HSVColor::ToColor() const
+Color32 HSVColor::ToColor() const
 {
 	unsigned char c1, c2, c3;
 	if (S == 0)
 	{
-		return Color(V, V, V, a);
+		return Color32(V, V, V, a);
 	}
 	else
 	{
@@ -435,21 +401,21 @@ Color HSVColor::ToColor() const
 		c3 = (V*(255 - (S*(360 - t)) / 360)) / 255;
 		switch (H / 60)
 		{
-		case 0: return Color(V, c3, c1, a);
-		case 1: return Color(c2, V, c1, a);
-		case 2: return Color(c1, V, c3, a);
-		case 3: return Color(c1, c2, V, a);
-		case 4: return Color(c3, c1, V, a);
-		case 5: return Color(V, c1, c2, a);
+		case 0: return Color32(V, c3, c1, a);
+		case 1: return Color32(c2, V, c1, a);
+		case 2: return Color32(c1, V, c3, a);
+		case 3: return Color32(c1, c2, V, a);
+		case 4: return Color32(c3, c1, V, a);
+		case 5: return Color32(V, c1, c2, a);
 		}
 	}
-	return Color(0, 0, 0, a);
+	return Color32(0, 0, 0, a);
 }
 
 //------------------------------------------------------------------------------
 ColorF HSVColor::ToColorF() const
 {
-	Color c = ToColor();
+	Color32 c = ToColor();
 	return ColorF(c);
 }
 

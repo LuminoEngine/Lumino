@@ -56,13 +56,13 @@ void VisualNode::SetColorScale(float r, float g, float b, float a, int subsetInd
 {
 	SetColorScale(ColorF(r, g, b, a));
 }
-void VisualNode::SetColor(const Color& color)
+void VisualNode::SetColor(const Color32& color)
 {
 	SetColorScale(ColorF(color));
 }
 void VisualNode::SetColor(int r, int g, int b, int a)
 {
-	SetColor(Color(r, g, b, a));
+	SetColor(Color32(r, g, b, a));
 }
 void VisualNode::SetBlendColor(const ColorF& color, int subsetIndex)
 {

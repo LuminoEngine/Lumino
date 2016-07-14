@@ -25,17 +25,17 @@ public:
 	/**
 		@brief		指定した色でビットマップ全体を塗りつぶします。
 	*/
-	void Clear(const Color& color);
+	void Clear(const Color32& color);
 
 	/**
 		@brief		矩形を塗りつぶします。
 	*/
-	void FillRectangle(const Rect& rect, const Color& color);
+	void FillRectangle(const Rect& rect, const Color32& color);
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(BitmapPainter);
 
-	uint32_t GetColorByteSec(const Color& color, PixelFormat format);
+	uint32_t GetColorByteSec(const Color32& color, PixelFormat format);
 
 public:
 	Bitmap*	m_bitmap;

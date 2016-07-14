@@ -77,14 +77,14 @@ public:
 	/// ピクセルフォーマットの取得
 	PixelFormat GetPixelFormat() const { return m_format; }
 
-	void Clear(const Color& color);
+	void Clear(const Color32& color);
 
 	/**
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
 		(Painter へ移動するべき？)
 	*/
-	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend);
-	void BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend);
+	void BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend);
+	void BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend);
 
 	/**
 		@brief		指定したファイルにビットマップを保存します。
@@ -114,10 +114,10 @@ public:
 
 
 	// 4Byte フォーマットのみ可
-	void SetPixel(int x, int y, const Color& color);
+	void SetPixel(int x, int y, const Color32& color);
 
 	// テスト用
-	Color GetPixel(int x, int y) const
+	Color32 GetPixel(int x, int y) const
 	{
 		struct U32
 		{
@@ -131,10 +131,10 @@ public:
 		const U32* buf = &((const U32*)m_bitmapData.GetConstData())[y * m_size.width + x];
 		if (m_format == PixelFormat::B8G8R8A8 || m_format == PixelFormat::B8G8R8X8)
 		{
-			return Color(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
+			return Color32(buf->D[2], buf->D[1], buf->D[0], buf->D[3]);
 		}
 		else {
-			return *((const Color*)buf);
+			return *((const Color32*)buf);
 		}
 	}
 

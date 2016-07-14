@@ -156,7 +156,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexturePlatformLoadingImplement(Stream
 	buffer.Resize((size_t)stream->GetLength(), false);
 	stream->Read(buffer.GetData(), buffer.GetSize());
 
-	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color::Transparency, mipLevels, format), false);
+	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.GetData(), buffer.GetSize(), Color32::Transparency, mipLevels, format), false);
 	return obj;
 }
 

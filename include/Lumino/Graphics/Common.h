@@ -29,7 +29,7 @@ class DepthStencilState;
 class SamplerState;
 class ShaderValue;
 
-class Color;
+class Color32;
 class ColorF;
 
 class GraphicsResourceObject;

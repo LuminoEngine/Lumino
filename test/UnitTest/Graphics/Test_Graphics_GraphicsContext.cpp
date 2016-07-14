@@ -19,13 +19,13 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 	brush1->SetThickness(8);
 
 
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 	auto* g = Engine::BeginRendering();
 
 	g->Set2DRenderingMode();	// TODO: デフォルトは 2D にして、明示の必要ないようにしたいなぁ・・・
 	g->Clear(ClearFlags::All, ColorF::Gray);
 	g->SetBrush(brush1);
-	g->DrawRectangle(Rect(0, 0, 83, 83), Color::White);
+	g->DrawRectangle(Rect(0, 0, 83, 83), Color32::White);
 
 	Engine::EndRendering();
 
@@ -50,6 +50,7 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText1)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 {
+	// TODO: Register しなくても直接読みたい
 	Font::RegisterFontFile(LN_LOCALFILE("../../../tools/VLGothic/VL-Gothic-Regular.ttf"));
 	auto font = Font::Create();
 	font->SetName(_T("VL Gothic"));
@@ -64,6 +65,6 @@ TEST_F(Test_Graphics_GraphicsContext, DrawText_UserFont)
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawText_UserFont.png"), true));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawText_UserFont.png")));
 }
 

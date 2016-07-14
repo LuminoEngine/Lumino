@@ -105,7 +105,7 @@ void Bitmap::Init()
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Clear(const Color& color)
+void Bitmap::Clear(const Color32& color)
 {
 	// 完全に透明にクリアする場合はバッファクリアでよい。
 	if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
@@ -149,13 +149,13 @@ void Bitmap::Clear(const Color& color)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
+void Bitmap::BitBlt(const Rect& destRect, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend)
 {
 	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color& mulColor, bool alphaBlend)
+void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const Rect& srcRect, const Color32& mulColor, bool alphaBlend)
 {
 	BitBltInternal(this, Rect(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
@@ -234,7 +234,7 @@ size_t Bitmap::GetByteCount() const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::SetPixel(int x, int y, const Color& color)
+void Bitmap::SetPixel(int x, int y, const Color32& color)
 {
 	LN_CHECK_ARG(0 <= x && x < m_size.width);
 	LN_CHECK_ARG(0 <= y && y < m_size.height);

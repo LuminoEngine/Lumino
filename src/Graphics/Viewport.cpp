@@ -182,7 +182,7 @@ const Size& Viewport::GetSize() const
 }
 
 //------------------------------------------------------------------------------
-void Viewport::SetBackgroundColor(const Color& color)
+void Viewport::SetBackgroundColor(const Color32& color)
 {
 	m_backgroundColor = color;
 }

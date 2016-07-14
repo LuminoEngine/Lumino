@@ -104,7 +104,7 @@ public:
 					}
 					else
 					{
-						Color c = bitmap->GetPixel(x, y);
+						Color32 c = bitmap->GetPixel(x, y);
 						p->r = c.r;
 						p->g = c.g;
 						p->b = c.b;
@@ -275,7 +275,7 @@ public:
 		}
 	}
 
-	uint8_t PeekR4G2B4Index(const Color& c)
+	uint8_t PeekR4G2B4Index(const Color32& c)
 	{
 		return
 			((c.r / 32) & 0x0F) |

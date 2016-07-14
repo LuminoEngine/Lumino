@@ -1028,7 +1028,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		{
 			Driver::IGraphicsDevice::ScopedLockContext lock(m_graphicsDevice);
 			BitmapPainter painter(m_dummyTexture->Lock());
-			painter.Clear(Color::White);
+			painter.Clear(Color32::White);
 			m_dummyTexture->Unlock();
 		}
 

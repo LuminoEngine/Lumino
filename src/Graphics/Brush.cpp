@@ -40,7 +40,7 @@ ColorBrush*	ColorBrush::Blue = &g_ColorBrush_Blue;
 ColorBrush*	ColorBrush::DimGray = &g_ColorBrush_DimGray;
 
 //------------------------------------------------------------------------------
-ColorBrush::ColorBrush(const Color& color)
+ColorBrush::ColorBrush(const Color32& color)
 	: m_color(color)
 {
 }

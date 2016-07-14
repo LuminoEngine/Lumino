@@ -293,7 +293,7 @@ Texture2D::~Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::Clear(const Color& color)
+void Texture2D::Clear(const Color32& color)
 {
 	ScopedTextureLock lock(this);
 	lock.GetBitmap()->Clear(color);
@@ -304,7 +304,7 @@ void Texture2D::Blt(int x, int y, Texture* srcTexture, const Rect& srcRect)
 {
 	ScopedTextureLock lock1(this);
 	ScopedTextureLock lock2(srcTexture);
-	lock1.GetBitmap()->BitBlt(x, y, lock2.GetBitmap(), srcRect, Color::White, true);
+	lock1.GetBitmap()->BitBlt(x, y, lock2.GetBitmap(), srcRect, Color32::White, true);
 }
 
 //------------------------------------------------------------------------------
@@ -340,7 +340,7 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 	bmpRawData.Alloc(cmdList, Bitmap::GetPixelFormatByteCount(m_primarySurface->GetPixelFormat(), srcBitmap->GetSize()));
 
 	Bitmap bmpTmp(bmpRawData.GetData(), srcBitmap->GetSize(), m_primarySurface->GetPixelFormat());
-	bmpTmp.BitBlt(0, 0, srcBitmap, Rect(0, 0, srcBitmap->GetSize()), Color::White, false);
+	bmpTmp.BitBlt(0, 0, srcBitmap, Rect(0, 0, srcBitmap->GetSize()), Color32::White, false);
 
 	Driver::ITexture* deviceTexture = m_deviceObj;
 
@@ -360,8 +360,8 @@ void Texture2D::Blt(int x, int y, Bitmap* srcBitmap/*, const Rect& srcRect*/)
 //------------------------------------------------------------------------------
 #pragma push_macro("DrawText")
 #undef DrawText
-void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
-void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color& fillColor, const Color& strokeColor, int strokeThickness, TextAlignment alignment)
+void Texture2D::DrawText(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(DrawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
+void Texture2D::LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const Rect& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment)
 {
 	ScopedTextureLock lock(this);
 	auto* r = m_manager->GetBitmapTextRenderer();

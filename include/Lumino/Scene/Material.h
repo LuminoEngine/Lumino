@@ -13,9 +13,9 @@ class Material2
 public:
 	void SetOpacity(float opacity) { m_opacity = opacity; }
 	float GetOpacity() const { return m_opacity; }
-	void SetColorScale(const Color& color) { m_colorScale = color; }
+	void SetColorScale(const Color32& color) { m_colorScale = color; }
 	const ColorF& GetColorScale() const { return m_colorScale; }
-	void SetBlendColor(const Color& color) { m_blendColor = color; }
+	void SetBlendColor(const Color32& color) { m_blendColor = color; }
 	const ColorF& GetBlendColor() const { return m_blendColor; }
 	void SetTone(const ToneF& tone) { m_tone = tone; }
 	const ToneF& GetTone() const { return m_tone; }

@@ -284,7 +284,7 @@ void DX9Renderer::Clear(ClearFlags flags, const ColorF& color, float z, uint8_t 
 	if (m_currentDepthBuffer && flags.TestFlag(ClearFlags::Stencil)) { flag |= (D3DCLEAR_STENCIL); }
 	if (flag == 0) { return; }
 
-	Color c;
+	Color32 c;
 	c.r = static_cast<uint8_t>(color.r * 255);
 	c.g = static_cast<uint8_t>(color.g * 255);
 	c.b = static_cast<uint8_t>(color.b * 255);

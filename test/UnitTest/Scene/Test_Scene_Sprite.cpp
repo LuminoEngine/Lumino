@@ -106,7 +106,7 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 	sprite6->SetPosition(50, 50);
 	sprite6->SetBlendMode(BlendMode::MultiplyAlphaDisabled);
 
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 
 	Engine::UpdateFrame();
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png")));

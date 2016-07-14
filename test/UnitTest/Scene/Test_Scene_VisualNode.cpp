@@ -36,7 +36,7 @@ TEST_F(IntegrateTest_Scene_VisualNode, MaterialUtilities)
 
 	//sprite2->SetPosition(10, 10);
 
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::UpdateFrame();
 	int defaultCount2 = EngineDiag::GetVisualNodeDrawCount();
 

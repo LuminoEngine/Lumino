@@ -707,7 +707,7 @@ ModelCore* XFileLoader::Load(ModelManager* manager, Stream* stream, const PathNa
 						vertices[vi].Position = dx_vertices[i].Position;
 						vertices[vi].Normal = dx_vertices[i].Normal;
 						vertices[vi].TexUV = dx_vertices[i].TexUV;
-						Color c(
+						Color32 c(
 							(dx_vertices[i].Color >> 24) & 0xFF,
 							(dx_vertices[i].Color >> 16) & 0xFF,
 							(dx_vertices[i].Color >> 8) & 0xFF,

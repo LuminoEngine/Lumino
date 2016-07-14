@@ -42,7 +42,7 @@ public:
 	static ColorBrush*	DimGray;
 
 public:
-	ColorBrush(const Color& color);
+	ColorBrush(const Color32& color);
 	ColorBrush(const ColorF& color);
 	ColorBrush(float r, float g, float b, float a);
 	virtual ~ColorBrush();

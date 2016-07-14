@@ -91,7 +91,7 @@ void TestEnv::SetUp()
 	Font::GetDefaultFont()->SetName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color::Gray);
+	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 }
 
 //------------------------------------------------------------------------------
@@ -124,52 +124,52 @@ bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-Color MixPixels(Bitmap* bmp, int x, int y)
+Color32 MixPixels(Bitmap* bmp, int x, int y)
 {
-	const Color& c = bmp->GetPixel(x, y);
+	const Color32& c = bmp->GetPixel(x, y);
 	int r = c.r; int g = c.g; int b = c.b; int a = c.a;
 	int count = 1;
 
 	if (y > 0) {
 		if (x > 0) {
-			const Color& c = bmp->GetPixel(x - 1, y - 1);
+			const Color32& c = bmp->GetPixel(x - 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color& c = bmp->GetPixel(x, y - 1);
+			const Color32& c = bmp->GetPixel(x, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->GetSize().width - 1) {
-			const Color& c = bmp->GetPixel(x + 1, y - 1);
+			const Color32& c = bmp->GetPixel(x + 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	{
 		if (x > 0) {
-			const Color& c = bmp->GetPixel(x - 1, y);
+			const Color32& c = bmp->GetPixel(x - 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->GetSize().width - 1) {
-			const Color& c = bmp->GetPixel(x + 1, y);
+			const Color32& c = bmp->GetPixel(x + 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	if (y < bmp->GetSize().height - 1) {
 		if (x > 0) {
-			const Color& c = bmp->GetPixel(x - 1, y + 1);
+			const Color32& c = bmp->GetPixel(x - 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color& c = bmp->GetPixel(x, y + 1);
+			const Color32& c = bmp->GetPixel(x, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->GetSize().width - 1) {
-			const Color& c = bmp->GetPixel(x + 1, y + 1);
+			const Color32& c = bmp->GetPixel(x + 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 
-	return Color(r / count, g / count, b / count, a / count);
+	return Color32(r / count, g / count, b / count, a / count);
 }
 
 bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate)
@@ -185,8 +185,8 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 	{
 		for (int x = 0; x < bmp1->GetSize().width; ++x)
 		{
-			Color c1 = MixPixels(bmp1, x, y);
-			Color c2 = MixPixels(&bmp2, x, y);
+			Color32 c1 = MixPixels(bmp1, x, y);
+			Color32 c2 = MixPixels(&bmp2, x, y);
 			if (abs(c1.r - c2.r) <= colorRange &&
 				abs(c1.g - c2.g) <= colorRange &&
 				abs(c1.b - c2.b) <= colorRange &&
@@ -225,7 +225,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_UI_TextBlock.*"
+		"--gtest_filter=Test_Graphics_GraphicsContext.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

@@ -231,7 +231,7 @@ void UIElement::OnRender(GraphicsContext* g)
 	if (m_background != nullptr)
 	{
 		g->SetBrush(m_background);
-		g->DrawRectangle(m_finalLocalRect, Color::White);
+		g->DrawRectangle(m_finalLocalRect, Color32::White);
 	}
 }
 
