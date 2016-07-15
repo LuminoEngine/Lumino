@@ -177,13 +177,6 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	if (srcPixelRect.IsEmpty()) return;
 	assert(srcTexture != nullptr);
 
-	//if (srcRect.width == INT_MAX) {
-	//	srcRect.width = srcTexture->GetSize().width;
-	//}
-	//if (srcRect.height == INT_MAX) {
-	//	srcRect.height = srcTexture->GetSize().height;
-	//}
-
 	SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
 	texSize.width = 1.0f / texSize.width;
 	texSize.height = 1.0f / texSize.height;
@@ -224,11 +217,12 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	// 左上	■□□
 	//		□　□
 	//		□□□
-	//ExpandFillAndUV_FrameRectangle_Sub(
-	//	RectF(outerRect.GetLeft(), outerRect.GetTop(), frameWidthH, frameWidthV),
-	//	Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
-	//	RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(outerRect.GetLeft(), outerRect.GetTop(), frameWidthH, frameWidthV),
+		Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
+		RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
+		srcTexture);
 
 	// 上	□■□
 	//		□　□
@@ -243,12 +237,12 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	// 右上	□□■
 	//		□　□
 	//		□□□
-	//ExpandFillAndUV_FrameRectangle_Sub(
-	//	vb, ib,
-	//	RectF(innerRect.GetRight(), outerRect.GetTop(), frameWidthH, frameWidthV),
-	//	Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
-	//	RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(innerRect.GetRight(), outerRect.GetTop(), frameWidthH, frameWidthV),
+		Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
+		RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
+		srcTexture);
 
 	// 右	□□□
 	//		□　■
@@ -263,12 +257,12 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	// 右下	□□□
 	//		□　□
 	//		□□■
-	//ExpandFillAndUV_FrameRectangle_Sub(
-	//	vb, ib,
-	//	RectF(innerRect.GetRight(), innerRect.GetBottom(), frameWidthH, frameWidthV),
-	//	Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
-	//	RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(innerRect.GetRight(), innerRect.GetBottom(), frameWidthH, frameWidthV),
+		Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
+		RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
+		srcTexture);
 
 	// 下	□□□
 	//		□　□
@@ -283,12 +277,12 @@ void GeometryData::ExpandFillAndUV_FrameRectangle(
 	// 左下	□□□
 	//		□　□
 	//		■□□
-	//ExpandFillAndUV_FrameRectangle_Sub(
-	//	vb, ib,
-	//	RectF(outerRect.GetLeft(), innerRect.GetBottom(), frameWidthH, frameWidthV),
-	//	Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
-	//	RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
-	//	srcTexture);
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(outerRect.GetLeft(), innerRect.GetBottom(), frameWidthH, frameWidthV),
+		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
+		RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
+		srcTexture);
 
 	// 左	□□□
 	//		■　□
@@ -425,55 +419,6 @@ struct DrawingCommands_ClosePath
 {
 	DrawingCommandType	type;
 };
-
-
-
-//==============================================================================
-// PrimitiveCache
-//==============================================================================
-class PrimitiveCache
-{
-public:
-	PrimitiveCache();
-	virtual ~PrimitiveCache();
-
-	void Clear();
-	void DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor);
-	void DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color);
-
-	void ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib);
-	int GetIndexCount() const { return m_indexCache.GetCount(); }
-private:
-
-	CacheBuffer<DrawingBasicVertex>	m_vertexCache;
-	CacheBuffer<uint16_t>			m_indexCache;
-};
-
-//------------------------------------------------------------------------------
-PrimitiveCache::PrimitiveCache()
-{
-	m_vertexCache.Reserve(1024);
-	m_indexCache.Reserve(1024);
-}
-
-//------------------------------------------------------------------------------
-PrimitiveCache::~PrimitiveCache()
-{
-}
-
-//------------------------------------------------------------------------------
-void PrimitiveCache::Clear()
-{
-	m_vertexCache.Clear();
-	m_indexCache.Clear();
-}
-
-//------------------------------------------------------------------------------
-void PrimitiveCache::ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib)
-{
-	vb->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	ib->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-}
 
 
 
@@ -842,7 +787,6 @@ private:
 	}
 
 	GraphicsManager*		m_manager;
-	//PrimitiveCache			m_primitiveCache;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
 	Matrix					m_view;

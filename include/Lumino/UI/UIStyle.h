@@ -9,6 +9,7 @@ LN_NAMESPACE_BEGIN
 class UIStyle;
 using UIStylePtr = RefPtr<UIStyle>;
 
+#if 0
 template<typename T>
 class UIStyleAttribute
 {
@@ -53,6 +54,81 @@ public:
 	//EasingMode	easingMode;
 	//double		time;
 };
+#endif
+
+
+class UIStyleAttribute
+{
+public:
+	//UIStyleAttribute() : value(), isSet(false), m_modified(true) {}
+	UIStyleAttribute(const tr::Property* targetProperty, const tr::Variant& v) : m_targetProperty(targetProperty), value(v), isSet(false), m_modified(true) {}
+	//UIStyleAttribute(const UIStyleAttribute& v) : value(v.value), isSet(v.isSet), m_modified(true) {}
+
+	//operator const T&() const { return value; }
+	//UIStyleAttribute& operator=(const T& v) { value = v; isSet = true; m_modified = true; return *this; }
+	//UIStyleAttribute& operator=(const UIStyleAttribute& other) { value = other.value; isSet = other.isSet; m_modified = true; return *this; }
+
+	bool UpdateInherit(const UIStyleAttribute& parent)
+	{
+		if (isSet)
+		{
+			bool changed = m_modified;
+			m_modified = false;
+			return changed;
+		}
+		else if (!parent.isSet)
+		{
+			return false;
+		}
+		else
+		{
+			bool changed = false;
+			if (value.Equals(parent.value))
+			{
+				value = parent.value;
+				changed = true;
+			}
+			return changed;
+		}
+	}
+
+	const tr::Property*	m_targetProperty;
+	tr::Variant			value;
+	bool				isSet;
+	bool				m_modified;
+
+
+	//EasingMode	easingMode;
+	//double		time;
+
+	bool				m_mergedMark;	// UIStylePropertyTable::UpdateInherit の中で使う作業用変数
+};
+
+
+/**
+	@brief		
+*/
+class UIStylePropertyTable
+	: public Object
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+public:
+	void AddValue(const tr::Property* targetProperty, const tr::Variant& value);
+
+LN_INTERNAL_ACCESS:
+	UIStylePropertyTable();
+	virtual ~UIStylePropertyTable();
+	void Initialize(const StringRef& visualStateName);
+	detail::InvalidateFlags UpdateInherit(UIStylePropertyTable* parent);
+	void Apply(UIElement* targetElement);
+
+private:
+	String						m_visualStateName;
+	Array<UIStyleAttribute>		m_attributes;
+
+	//UIStylePropertyTable*		m_lastInheritedParent;
+	Array<UIStyleAttribute*>	m_parentRefAttributes;
+};
 
 /**
 	@brief		
@@ -68,32 +144,40 @@ public:
 	UIStyle();
 	virtual ~UIStyle();
 
+	void AddValue(const StringRef& visualStateName, const tr::Property* targetProperty, const tr::Variant& value);
+
+
 LN_INTERNAL_ACCESS:
-	detail::InvalidateFlags UpdateInherit(UIStyle* parent);
+	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
+	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
+	//void Apply(UIElement* targetElement);
 
 public:	// TODO:
+
+	SortedArray<String, RefPtr<UIStylePropertyTable>>	m_propertyTableMap;
+
 	//UIStyle*	m_lastUpdateParent;
 	//int			m_revisionCount;
 
 
-	UIStyleAttribute<ThicknessF>			m_margin;
-	UIStyleAttribute<ThicknessF>			m_padding;
-	UIStyleAttribute<VerticalAlignment>		m_verticalAlignment;
-	UIStyleAttribute<HorizontalAlignment>	m_horizontalAlignment;
-	UIStyleAttribute<BrushPtr>				m_background;
-	UIStyleAttribute<BrushPtr>				m_foreground;
-	UIStyleAttribute<TexturePtr>			m_image;
+	//UIStyleAttribute<ThicknessF>			m_margin;
+	//UIStyleAttribute<ThicknessF>			m_padding;
+	//UIStyleAttribute<VerticalAlignment>		m_verticalAlignment;
+	//UIStyleAttribute<HorizontalAlignment>	m_horizontalAlignment;
+	//UIStyleAttribute<BrushPtr>				m_background;
+	//UIStyleAttribute<BrushPtr>				m_foreground;
+	//UIStyleAttribute<TexturePtr>			m_image;
 
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
-	//UIStyleAttribute<FontPtr>				m_font;
+	////UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
+	////UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
+	////UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
+	////UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
+	////UIStyleAttribute<FontPtr>				m_font;
 
-	UIStyleAttribute<String>				m_fontFamily;
-	UIStyleAttribute<int>					m_fontSize;
-	UIStyleAttribute<bool>					m_fontBold;
-	UIStyleAttribute<bool>					m_fontItalic;
+	//UIStyleAttribute<String>				m_fontFamily;
+	//UIStyleAttribute<int>					m_fontSize;
+	//UIStyleAttribute<bool>					m_fontBold;
+	//UIStyleAttribute<bool>					m_fontItalic;
 
 };
 
@@ -108,20 +192,21 @@ public:
 	UIStyleTable();
 	virtual ~UIStyleTable();
 
-	void AddStyle(const String& targetName, const String& targetState, UIStyle* style);
+	void AddStyle(const String& targetName, UIStyle* style);
 
 	// 見つからなければ nullptr
 	// TODO: 名前だけじゃダメ。サブクラスに対応するスタイルが見つからなければ基底クラスのも探したい。UIElement のインスタンスを渡すようにする。
-	UIStyle* FindStyle(const String& targetName, const String& targetState);
+	UIStyle* FindStyle(const String& targetName);
 
 private:
+	// TODO: 名前だけだからいらないかな
 	struct StyleKey
 	{
 		String	targetName;
-		String	targetState;	// VisualState
+		//String	targetState;	// VisualState
 
-		bool operator < (const StyleKey& other) const { return targetName < other.targetName || targetState < other.targetState; }
-		bool operator == (const StyleKey& other) const { return targetName == other.targetName && targetState == other.targetState; }
+		bool operator < (const StyleKey& other) const { return targetName < other.targetName; }
+		bool operator == (const StyleKey& other) const { return targetName == other.targetName; }
 	};
 	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
 };

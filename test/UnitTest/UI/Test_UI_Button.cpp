@@ -11,9 +11,9 @@ protected:
 TEST_F(Test_UI_Button, Basic)
 {
 	auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	auto textBlock1 = UITextBlock::Create();
-	textBlock1->SetText(_T("TextBlock"));
-	uiRoot->SetContent(textBlock1);
+	auto button1 = UIButton::Create();
+	button1->SetText(_T("Button"));
+	uiRoot->SetContent(button1);
 
 	while (Engine::UpdateFrame());
 

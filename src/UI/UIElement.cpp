@@ -38,6 +38,7 @@ UIElement::UIElement()
 	, m_ownerLayoutView(nullptr)
 	, m_parent(nullptr)
 	, m_localStyle(nullptr)
+	, m_currentVisualStateStyle(nullptr)
 	, m_size(NAN, NAN)
 	, m_horizontalAlignment(HorizontalAlignment::Center)
 	, m_verticalAlignment(VerticalAlignment::Center)
@@ -63,7 +64,7 @@ void UIElement::Initialize(detail::UIManager* manager)
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::GetTypeInfo(this)->GetName();
 
-	m_localStyle = LN_NEW UIStyle();
+	m_localStyle = LN_NEW UIStylePropertyTable();
 
 	GoToVisualState(String::GetEmpty());
 }
@@ -387,32 +388,40 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 //}
 
 //------------------------------------------------------------------------------
-void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle)
+void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle)
 {
 	// TODO: styleTable は多分 Context のルート固定でよい。
 
-	// VisualState の変更
+	// VisualState の変更がある場合
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
-		m_currentVisualStateStyle = styleTable->FindStyle(m_elementName, m_currentVisualStateName);
-		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
+		UIStyle* style = styleTable->FindStyle(m_elementName);
+		if (style != nullptr)
+		{
+			m_currentVisualStateStyle = style->FindStylePropertyTable(m_currentVisualStateName);
+			m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
+		}
+		else
+		{
+			m_currentVisualStateStyle = nullptr;
+		}
 	}
 
 	// Style 更新
 	UpdateLocalStyleAndApplyProperties(parentStyle, m_currentVisualStateStyle);
 
 	// 子要素
-	UIStyle* localStyle = m_localStyle;
+	UIStylePropertyTable* localStyle = m_localStyle;
 	UIHelper::ForEachVisualChildren(this, [styleTable, localStyle](UIElement* child) { child->ApplyTemplateHierarchy(styleTable, localStyle); });
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle)
+void UIElement::UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle)
 {
 	LN_CHECK_STATE(m_localStyle != nullptr);
 
 	// parent → state の順で local へマージする
-	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する
+	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
 	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
 	if (parentStyle != nullptr)       invalidate |= m_localStyle->UpdateInherit(parentStyle);
 	if (currentStateStyle != nullptr) invalidate |= m_localStyle->UpdateInherit(currentStateStyle);
@@ -424,14 +433,15 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags)
+void UIElement::OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags)
 {
+	localStyle->Apply(this);
 	// TODO: UITextElement::OnUpdateStyle 参照
 	// TODO: アニメーション
-	if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
-		tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
-	if (tr::Property::GetBaseValueSource(this, ForegroundProperty) <= tr::PropertySetSource::ByStyle)
-		tr::Property::SetPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
+	//if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
+	//	tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
+	//if (tr::Property::GetBaseValueSource(this, ForegroundProperty) <= tr::PropertySetSource::ByStyle)
+	//	tr::Property::SetPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
 }
 
 //------------------------------------------------------------------------------

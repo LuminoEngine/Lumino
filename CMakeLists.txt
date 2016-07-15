@@ -213,6 +213,8 @@ set(LN_SOURCES_Graphics
 	src/Graphics/FrameCapturer.cpp
 	src/Graphics/FrameRectRenderer.cpp
 	src/Graphics/FrameRectRenderer.h
+	src/Graphics/Geometry.cpp
+	src/Graphics/Geometry.h
 	src/Graphics/GeometryRenderer.cpp
 	src/Graphics/GeometryRenderer.h
 	src/Graphics/Graphics.cpp

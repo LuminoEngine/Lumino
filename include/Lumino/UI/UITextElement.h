@@ -49,7 +49,7 @@ protected:
 	Font* GetActiveFont() const { return m_font; }
 
 	virtual SizeF MeasureOverride(const SizeF& constraint) override;
-	virtual void OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags) override;
+	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags) override;
 
 LN_INTERNAL_ACCESS:
 	void OnFontPropertyChanged(tr::PropertyChangedEventArgs* e);

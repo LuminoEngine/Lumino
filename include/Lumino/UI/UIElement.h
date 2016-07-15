@@ -8,6 +8,7 @@
 
 LN_NAMESPACE_BEGIN
 class GraphicsContext;
+class UIStylePropertyTable;
 
 /**
 	@brief		
@@ -113,7 +114,7 @@ public:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
 
-	void ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStyle* parentStyle);
+	void ApplyTemplateHierarchy(UIStyleTable* styleTable, UIStylePropertyTable* parentStyle);
 
 	float GetActualWidth() const { return m_finalLocalRect.width; }
 	float GetActualHeight() const { return m_finalLocalRect.height; }
@@ -168,14 +169,15 @@ protected:
 	virtual void OnKeyUp(UIKeyEventArgs* e);
 	virtual void OnTextInput(UIKeyEventArgs* e);
 
-	virtual void OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags);
+	virtual void OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void OnUpdatingLayout();
 
-	UIStyle* GetLocalStyle() const { return m_localStyle; }
+	UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* GetManager() const { return m_manager; }
 	void SetParent(UIElement* parent, UILayoutView* ownerLayoutView);
+	const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	UIElement* CheckMouseHoverElement(const PointF& globalPt);
 	void ActivateInternal(UIElement* child);
 	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
@@ -184,7 +186,7 @@ LN_INTERNAL_ACCESS:
 	void Render(GraphicsContext* g);
 
 private:
-	void UpdateLocalStyleAndApplyProperties(UIStyle* parentStyle, UIStyle* currentStateStyle);
+	void UpdateLocalStyleAndApplyProperties(UIStylePropertyTable* parentStyle, UIStylePropertyTable* currentStateStyle);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEventInternal(const UIEventInfo* ev, UIEventArgs* e);
@@ -193,13 +195,13 @@ private:
 	UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;
 	UIElement*				m_parent;
-	UIStyle*				m_localStyle;
+	UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	SizeF					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
 	RectF					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	RectF					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など)
 	String					m_currentVisualStateName;
-	UIStyle*				m_currentVisualStateStyle;
+	UIStylePropertyTable*	m_currentVisualStateStyle;
 
 	// Property
 	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。

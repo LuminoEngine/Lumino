@@ -38,8 +38,6 @@ SizeF UITextElement::MeasureOverride(const SizeF& constraint)
 	// フォント更新
 	if (m_invalidateFont)
 	{
-		//m_font = Font::Create();
-		//m_font->SetSize(20);
 		m_font = GetManager()->GetAssetsManager()->LoadFont(m_fontFamily, m_fontSize, m_fontBold, m_fontItalic, true);
 		m_invalidateFont = false;
 	}
@@ -48,17 +46,17 @@ SizeF UITextElement::MeasureOverride(const SizeF& constraint)
 }
 
 //------------------------------------------------------------------------------
-void UITextElement::OnUpdateStyle(UIStyle* localStyle, detail::InvalidateFlags invalidateFlags)
+void UITextElement::OnUpdateStyle(UIStylePropertyTable* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	UIElement::OnUpdateStyle(localStyle, invalidateFlags);
 
 	// TODO: 本来はStyle 用の優先順位で設定するべき。
 	// https://msdn.microsoft.com/ja-jp/library/ms743230%28v=vs.110%29.aspx#Anchor_3
 	// また、アニメーションする場合はここで起動する。
-	SetFontFamily(localStyle->m_fontFamily.value);
-	SetFontSize(localStyle->m_fontSize.value);
-	SetFontBold(localStyle->m_fontBold.value);
-	SetFontItalic(localStyle->m_fontItalic.value);
+	//SetFontFamily(localStyle->m_fontFamily.value);
+	//SetFontSize(localStyle->m_fontSize.value);
+	//SetFontBold(localStyle->m_fontBold.value);
+	//SetFontItalic(localStyle->m_fontItalic.value);
 }
 
 //------------------------------------------------------------------------------
