@@ -114,10 +114,10 @@ void EngineDiagViewer::Render(GraphicsContext* g, const Vector2& viewSize)
 	//g->SetBrush(ColorBrush::DimGray);
 
 	// ウィンドウ背景
-	g->DrawRectangle(m_windowRect, Color32::DimGray);
+	g->DrawRectangle(m_windowRect);
 
 	// キャプションバー
-	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.width, 20), Color32::Black);
+	g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.width, 20));
 
 
 	g->SetBrush(ColorBrush::White);

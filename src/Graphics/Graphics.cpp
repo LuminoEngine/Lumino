@@ -53,9 +53,9 @@ void Graphics::DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vect
 {
 	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawTriangle(p1, p1Color, p2, p2Color, p3, p3Color);
 }
-void Graphics::DrawRectangle(const RectF& rect, const Color32& color)
+void Graphics::DrawRectangle(const RectF& rect)
 {
-	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawRectangle(rect, color);
+	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawRectangle(rect);
 }
 void Graphics::DrawEllipse(const Vector3& center, const Vector2& radius)
 {

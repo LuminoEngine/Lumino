@@ -24,8 +24,8 @@ public:
 
 	Vector3	Position;			///< 位置
 	Vector4	Color;				///< 頂点カラー
-	Vector2	UVOffset;		///< テクスチャUV (転送元のUV情報)
-	Vector4	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
+	Vector4	UVOffset;		///< テクスチャUV (転送元のUV情報)		// TODO: UVSrcRect とかの名前のほうがいい
+	Vector2	UVTileUnit;		///< テクスチャUV (タイリング空間のどこにいるか)
 
 							/// 頂点レイアウト
 	static VertexElement* Elements()
@@ -34,13 +34,113 @@ public:
 		{
 			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
 			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
-			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 1 },
+			{ 0, VertexElementType_Float4, VertexElementUsage_TexCoord, 0 },
+			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 1 },
 		};
 		return elements;
 	}
 	static const int ElementCount = 4;
 };
+
+
+
+struct VertexExpandResult
+{
+	Vector2 posMin = Vector2(FLT_MAX, FLT_MAX);
+	Vector2 posMax = Vector2(FLT_MIN, FLT_MIN);
+};
+
+enum class GeometryType
+{
+	Rectangle,
+};
+
+struct GeometryData
+{
+	GeometryType	type;
+
+	union
+	{
+		// Rectangle
+		struct
+		{
+			float	x, y, w, h;
+
+		} rectangle;
+	};
+
+	void ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const ColorF& color, VertexExpandResult* outResult);
+	void ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
+};
+
+
+//------------------------------------------------------------------------------
+void GeometryData::ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const ColorF& color, VertexExpandResult* outResult)
+{
+	RectF* rect = (RectF*)&rectangle;
+
+	uint16_t i = vb->GetCount();
+	ib->Add(i + 0);
+	ib->Add(i + 1);
+	ib->Add(i + 2);
+	ib->Add(i + 2);
+	ib->Add(i + 1);
+	ib->Add(i + 3);
+
+	DrawingBasicVertex v;
+	v.Color = color;
+	v.Position.Set(rect->GetLeft(), rect->GetTop(), 0);		// 左上
+	vb->Add(v);
+	v.Position.Set(rect->GetLeft(), rect->GetBottom(), 0);	// 左下
+	vb->Add(v);
+	v.Position.Set(rect->GetRight(), rect->GetTop(), 0);	// 右上
+	vb->Add(v);
+	v.Position.Set(rect->GetRight(), rect->GetBottom(), 0);	// 右下
+	vb->Add(v);
+
+	outResult->posMin.x = rect->GetLeft();
+	outResult->posMin.y = rect->GetTop();
+	outResult->posMax.x = rect->GetRight();
+	outResult->posMax.y = rect->GetBottom();
+}
+
+//------------------------------------------------------------------------------
+void GeometryData::ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax)
+{
+	Vector2 range(posMax.x - posMin);
+	//Vector2 uvSpan(srcUVRect.width / range.x, srcUVRect.height / range.y);
+	float blockCountW = (srcPixelRect.width != 0)  ? (range.x / srcPixelRect.width) : 0;	// 横方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+	float blockCountH = (srcPixelRect.height != 0) ? (range.y / srcPixelRect.height) : 0;	// 縦方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+	// ↑TODO: スクリーン1 に対して srcRect 1px に対応付けているので、3D空間に描くときは調整が必要
+
+	for (DrawingBasicVertex* v = begin; v < end; ++v)
+	{
+		v->UVOffset.x = srcUVRect.x;
+		v->UVOffset.y = srcUVRect.y;
+		v->UVOffset.z = srcUVRect.width;
+		v->UVOffset.w = srcUVRect.height;
+
+		// Geometry の境界ボックス内のどこにある点かを 0.0 ～ 1.0 であらわす
+		Vector2 geoLocal(v->Position.x - posMin.x, v->Position.y - posMin.y);
+
+		v->UVTileUnit.x = 1.0f + (geoLocal.x * blockCountW);	// 0 だとシェーダ内で0除算するので +1
+		v->UVTileUnit.y = 1.0f + (geoLocal.y * blockCountH);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //==============================================================================
 // DrawingCommands
@@ -106,7 +206,6 @@ struct DrawingCommands_DrawRectangle
 {
 	DrawingCommandType	type;
 	RectF				rect;
-	ColorF				color;
 };
 //struct DrawingCommands_DrawEllipse
 //{
@@ -508,12 +607,6 @@ public:
 
 private:
 
-	//enum class PathPointAttr
-	//{
-	//	MoveTo,
-	//	LineTo,
-	//};
-
 
 	enum class PathType
 	{
@@ -522,13 +615,6 @@ private:
 		Rectangle,	// TODO: いらないかも
 		Path,	// ExpandFill などを実行して面張りを行う
 	};
-
-	//struct PathPoint
-	//{
-	//	PathPointAttr	attr;
-	//	Vector3			point;
-	//	ColorF			color;
-	//};
 
 	struct BasePoint
 	{
@@ -556,12 +642,17 @@ private:
 		bool			closed;			// パスが閉じているか (false は線分)
 	};
 
+
+
+	void ExpandGeometriesFill();
+
 	void AddPath(PathType type);
 	Path* GetCurrentPath();
 	void AddBasePoint(const Vector3& point, const ColorF& color);
 	void AddBasePoint(const Vector3& point, const ColorF& color, const Vector2& userUV, bool userUVUsed);
 	//void AddPathPoint(PathPointAttr attr, const Vector3& point, const ColorF& color);
 	void EndPath(const Vector3* lastPoint, const ColorF* lastColor, bool pathClose);
+
 
 	void ExpandPoints();
 
@@ -593,6 +684,7 @@ private:
 	Matrix					m_view;
 	Matrix					m_proj;
 	DrawingState			m_currentState;
+	CacheBuffer<GeometryData>	m_geometryDataList;
 
 	//CacheBuffer<PathPoint>	m_pathPoints;
 	CacheBuffer<Path>		m_pathes;
@@ -612,6 +704,7 @@ private:
 		Driver::IShaderVariable*    varViewProjMatrix;
 		Driver::IShaderVariable*    varPixelStep;
 		Driver::IShaderVariable*    varTexture;
+		Driver::IShaderVariable*    varGlyphMaskSampler;
 		Driver::IShaderTechnique*   techMainDraw;
 		Driver::IShaderPass*        passP0;
 
@@ -627,6 +720,7 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	, m_indexBuffer(nullptr)
 {
 	//m_pathPoints.Reserve(1024);
+	m_geometryDataList.Reserve(1024);
 	m_pathes.Reserve(1024);
 	m_basePoints.Reserve(1024);
 	m_vertexCache.Reserve(1024);
@@ -657,6 +751,7 @@ DrawingContextImpl::DrawingContextImpl(GraphicsManager* manager)
 	m_shader3D.varViewProjMatrix = m_shader3D.shader->GetVariableByName(_T("g_viewProjMatrix"));
 	m_shader3D.varPixelStep = m_shader3D.shader->GetVariableByName(_T("g_pixelStep"));
 	m_shader3D.varTexture = m_shader3D.shader->GetVariableByName(_T("g_texture"));
+	m_shader3D.varGlyphMaskSampler = m_shader3D.shader->GetVariableByName(_T("g_glyphMaskTexture"));
 	m_shader3D.techMainDraw = m_shader3D.shader->GetTechnique(0);
 	m_shader3D.passP0 = m_shader3D.techMainDraw->GetPass(0);
 }
@@ -821,12 +916,13 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 					auto* cmd = (const DrawingCommands_DrawRectangle*)pos;
 					const RectF& rect = cmd->rect;
 
-					AddPath(PathType::Rectangle);
-					AddBasePoint(Vector3(rect.GetLeft(), rect.GetTop(), 0), cmd->color);
-					AddBasePoint(Vector3(rect.GetLeft(), rect.GetBottom(), 0), cmd->color);
-					AddBasePoint(Vector3(rect.GetRight(), rect.GetBottom(), 0), cmd->color);
-					AddBasePoint(Vector3(rect.GetRight(), rect.GetTop(), 0), cmd->color);
-					EndPath(nullptr, nullptr, true);
+					GeometryData g;
+					g.type = GeometryType::Rectangle;
+					g.rectangle.x = rect.x;
+					g.rectangle.y = rect.y;
+					g.rectangle.w = rect.width;
+					g.rectangle.h = rect.height;
+					m_geometryDataList.Add(g);
 
 					pos += sizeof(DrawingCommands_DrawRectangle);
 					break;
@@ -844,7 +940,8 @@ void DrawingContextImpl::DoCommandList(const void* commandBuffer, size_t size, d
 //------------------------------------------------------------------------------
 void DrawingContextImpl::Flush()
 {
-	if (m_pathes.GetCount() == 0) { return; }
+	//if (m_pathes.GetCount() == 0) { return; }
+	if (m_geometryDataList.GetCount() == 0) return;
 
 
 	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
@@ -859,31 +956,32 @@ void DrawingContextImpl::Flush()
 		m_shader3D.varPixelStep->SetVector(Vector4(0.5f / size.width, 0.5f / size.height, 0, 0));
 	}
 
-	if (m_currentState.drawingClass == detail::DrawingClass::PathStroke)
+	//if (m_currentState.drawingClass == detail::DrawingClass::PathStroke)
+	//{
+	//	ExpandStroke(false);	// TODO test
+	//	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	//	m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
+	//	m_shader3D.passP0->Apply();
+	//	renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount() - 2);
+	//}
+	//// PointList
+	//else if (m_currentState.drawingClass == detail::DrawingClass::PointList)
+	//{
+	//	ExpandPoints();
+	//	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
+	//	m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
+	//	m_shader3D.passP0->Apply();
+	//	renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_PointList, 0, m_vertexCache.GetCount());
+	//}
+	//else
 	{
-		ExpandStroke(false);	// TODO test
-		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
-		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_TriangleStrip, 0, m_vertexCache.GetCount() - 2);
-	}
-	// PointList
-	else if (m_currentState.drawingClass == detail::DrawingClass::PointList)
-	{
-		ExpandPoints();
-		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
-		m_shader3D.passP0->Apply();
-		renderer->DrawPrimitive(m_vertexBuffer, PrimitiveType_PointList, 0, m_vertexCache.GetCount());
-	}
-	else
-	{
-		ExpandFill();
+		ExpandGeometriesFill();
 
 		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
 		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
 
 		m_shader3D.varTexture->SetTexture(m_currentState.Brush.SelectTexutre(m_manager->GetDummyTexture()));
+		m_shader3D.varGlyphMaskSampler->SetTexture(m_manager->GetDummyTexture());
 		m_shader3D.passP0->Apply();
 		renderer->DrawPrimitiveIndexed(m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, m_indexCache.GetCount() / 3);
 	}
@@ -908,6 +1006,35 @@ void DrawingContextImpl::Flush()
 	m_pathes.Clear();
 	//m_pathPoints.Clear();
 	m_basePoints.Clear();
+	m_geometryDataList.Clear();
+}
+
+void DrawingContextImpl::ExpandGeometriesFill()
+{
+	m_vertexCache.Clear();
+	m_indexCache.Clear();
+
+	ColorF fillColor = ColorF::White;
+	if (m_currentState.Brush.Type == BrushType_SolidColor)
+		fillColor = *((ColorF*)m_currentState.Brush.SolidColorBrush.Color);
+	
+
+	for (int i = 0; i < m_geometryDataList.GetCount(); ++i)
+	{
+		GeometryData& g = m_geometryDataList.GetAt(i);
+		VertexExpandResult result;
+		DrawingBasicVertex* begin = &m_vertexCache.GetAt(m_vertexCache.GetCount());
+
+		switch (g.type)
+		{
+		case GeometryType::Rectangle:
+			g.ExpandFill_Rectangle(&m_vertexCache, &m_indexCache, fillColor, &result);
+			g.ExpandUV_Stretch(begin, begin + m_vertexCache.GetCount(), RectF(0, 0, 0, 0), RectF(0, 0, 0, 0), result.posMin, result.posMax);
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1604,7 +1731,7 @@ void GeometryRenderer::DrawTriangle(const Vector3& p1, const ColorF& p1Color, co
 }
 
 //------------------------------------------------------------------------------
-void GeometryRenderer::DrawRectangle(const RectF& rect, const ColorF& color)
+void GeometryRenderer::DrawRectangle(const RectF& rect)
 {
 	SetDrawingClassInternal(detail::DrawingClass::TriangleList);
 	//CheckFlush();
@@ -1612,7 +1739,6 @@ void GeometryRenderer::DrawRectangle(const RectF& rect, const ColorF& color)
 	DrawingCommands_DrawRectangle cmd;
 	cmd.type = DrawingCommandType::DrawRectangle;
 	cmd.rect = rect;
-	cmd.color = color;
 	AddCommand(&cmd, sizeof(cmd));
 	m_flushRequested = true;
 }
@@ -1641,7 +1767,7 @@ void GeometryRenderer::DrawTexture(const RectF& rect, Texture* texture, const Re
 		m_currentState.brush = m_internalTextureBrush;
 	}
 	m_internalTextureBrush->SetSourceRect(srcRect);
-	DrawRectangle(rect, color);
+	DrawRectangle(rect);
 }
 
 //------------------------------------------------------------------------------

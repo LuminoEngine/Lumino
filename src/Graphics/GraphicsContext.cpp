@@ -736,17 +736,17 @@ void GraphicsContext::DrawTriangle(const Vector3& p1, const ColorF& p1Color, con
 }
 
 //------------------------------------------------------------------------------
-void GraphicsContext::DrawRectangle(const RectF& rect, const Color32& color)
+void GraphicsContext::DrawRectangle(const RectF& rect)
 {
 	OnDrawing(m_geometryRenderer);
 
 	if (m_state.GetFillBrush()->GetType() == BrushType_FrameTexture)
 	{
-		m_frameRectRenderer->Draw(rect);	// TODO: Color
+		m_frameRectRenderer->Draw(rect);
 	}
 	else
 	{
-		m_geometryRenderer->DrawRectangle(rect, color);
+		m_geometryRenderer->DrawRectangle(rect);
 	}
 }
 

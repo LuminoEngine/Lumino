@@ -67,7 +67,7 @@ public:
 	/**
 		@brief		矩形を描画します。
 	*/
-	void DrawRectangle(const RectF& rect, const ColorF& color);
+	void DrawRectangle(const RectF& rect);
 
 	void DrawEllipse(const Vector3& center, const Vector2& radius);
 

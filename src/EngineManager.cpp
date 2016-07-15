@@ -676,7 +676,9 @@ GraphicsContext* EngineManager::BeginRendering()
 	m_uiManager->GetMainWindow()->BeginRendering();
 
 	m_frameRenderd = true;
-	return m_graphicsManager->GetGraphicsContext();
+	GraphicsContext* g = m_graphicsManager->GetGraphicsContext();
+	g->Set2DRenderingMode();
+	return g;
 }
 
 //------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ public:
 
 	static void DrawTriangle(const Vector3& p1, const ColorF& p1Color, const Vector3& p2, const ColorF& p2Color, const Vector3& p3, const ColorF& p3Color);
 
-	static void DrawRectangle(const RectF& rect, const Color32& color);
+	static void DrawRectangle(const RectF& rect);
 
 	static void DrawEllipse(const Vector3& center, const Vector2& radius);
 

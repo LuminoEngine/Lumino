@@ -10,6 +10,33 @@ protected:
 };
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
+{
+	// <Test>
+	{
+		auto* g = Engine::BeginRendering();
+		g->Clear(ClearFlags::All, ColorF::Gray);
+		g->SetBrush(ColorBrush::Red);
+		g->DrawRectangle(RectF(10, 20, 30, 40));
+		Engine::EndRendering();
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle.png")));
+	}
+	// <Test>
+	{
+		auto brush = TextureBrush::Create(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png"));
+
+		auto* g = Engine::BeginRendering();
+		g->Clear(ClearFlags::All, ColorF::Gray);
+		g->SetBrush(brush);
+		g->DrawRectangle(RectF(10, 20, 30, 40));
+		Engine::EndRendering();
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle1.png"), 100, true));
+	}
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 {
 	auto brush1 = FrameTextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
@@ -25,7 +52,7 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 	g->Set2DRenderingMode();	// TODO: デフォルトは 2D にして、明示の必要ないようにしたいなぁ・・・
 	g->Clear(ClearFlags::All, ColorF::Gray);
 	g->SetBrush(brush1);
-	g->DrawRectangle(Rect(0, 0, 83, 83), Color32::White);
+	g->DrawRectangle(Rect(0, 0, 83, 83));
 
 	Engine::EndRendering();
 
