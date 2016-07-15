@@ -22,17 +22,17 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle.png")));
 	}
-	// <Test>
+	// <Test> テクスチャ全体を拡大して描画する
 	{
 		auto brush = TextureBrush::Create(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8_20x20.png"));
 
 		auto* g = Engine::BeginRendering();
-		g->Clear(ClearFlags::All, ColorF::Gray);
+		g->Clear(ClearFlags::All, ColorF::White);
 		g->SetBrush(brush);
 		g->DrawRectangle(RectF(10, 20, 30, 40));
 		Engine::EndRendering();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle1.png"), 100, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle2.png")));
 	}
 }
 

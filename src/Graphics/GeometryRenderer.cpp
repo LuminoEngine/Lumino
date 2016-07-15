@@ -71,6 +71,7 @@ struct GeometryData
 
 	void ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const ColorF& color, VertexExpandResult* outResult);
 	void ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
+	void ExpandUV_Tilling(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
 };
 
 
@@ -107,9 +108,29 @@ void GeometryData::ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, Cac
 //------------------------------------------------------------------------------
 void GeometryData::ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax)
 {
-	Vector2 range(posMax.x - posMin);
-	//Vector2 uvSpan(srcUVRect.width / range.x, srcUVRect.height / range.y);
-	float blockCountW = (srcPixelRect.width != 0)  ? (range.x / srcPixelRect.width) : 0;	// 横方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+	Vector2 range = posMax - posMin;
+
+	for (DrawingBasicVertex* v = begin; v < end; ++v)
+	{
+		v->UVOffset.x = srcUVRect.x;
+		v->UVOffset.y = srcUVRect.y;
+		v->UVOffset.z = srcUVRect.width;
+		v->UVOffset.w = srcUVRect.height;
+
+		// Geometry の境界ボックス内のどこにある点かを 0.0 ～ 1.0 であらわす
+		Vector2 geoLocal((v->Position.x - posMin.x) / range.x, (v->Position.y - posMin.y) / range.y);
+
+		v->UVTileUnit.x = 1.0f + geoLocal.x;	// 0 だとシェーダ内で0除算するので +1
+		v->UVTileUnit.y = 1.0f + geoLocal.y;
+	}
+}
+
+//------------------------------------------------------------------------------
+void GeometryData::ExpandUV_Tilling(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax)
+{
+	Vector2 range = posMax - posMin;
+
+	float blockCountW = (srcPixelRect.width != 0) ? (range.x / srcPixelRect.width) : 0;	// 横方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
 	float blockCountH = (srcPixelRect.height != 0) ? (range.y / srcPixelRect.height) : 0;	// 縦方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
 	// ↑TODO: スクリーン1 に対して srcRect 1px に対応付けているので、3D空間に描くときは調整が必要
 
@@ -121,13 +142,12 @@ void GeometryData::ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVerte
 		v->UVOffset.w = srcUVRect.height;
 
 		// Geometry の境界ボックス内のどこにある点かを 0.0 ～ 1.0 であらわす
-		Vector2 geoLocal(v->Position.x - posMin.x, v->Position.y - posMin.y);
+		Vector2 geoLocal((v->Position.x - posMin.x) / range.x, (v->Position.y - posMin.y) / range.y);
 
 		v->UVTileUnit.x = 1.0f + (geoLocal.x * blockCountW);	// 0 だとシェーダ内で0除算するので +1
 		v->UVTileUnit.y = 1.0f + (geoLocal.y * blockCountH);
 	}
 }
-
 
 
 
@@ -1017,6 +1037,22 @@ void DrawingContextImpl::ExpandGeometriesFill()
 	ColorF fillColor = ColorF::White;
 	if (m_currentState.Brush.Type == BrushType_SolidColor)
 		fillColor = *((ColorF*)m_currentState.Brush.SolidColorBrush.Color);
+
+	RectF srcPixelRect = RectF::Zero;
+	RectF srcUVRect = RectF::Zero;
+	if (m_currentState.Brush.Type == BrushType_Texture)
+	{
+		const Size& size = m_currentState.Brush.TextureBrush.Texture->GetRealSize();
+		int* rc = m_currentState.Brush.TextureBrush.SourceRect;
+		srcPixelRect.x = rc[0];
+		srcPixelRect.y = rc[1];
+		srcPixelRect.width = std::min(rc[2], size.width);
+		srcPixelRect.height = std::min(rc[3], size.width);
+		srcUVRect.x = srcPixelRect.x / size.width;
+		srcUVRect.y = srcPixelRect.y / size.width;
+		srcUVRect.width= srcPixelRect.width / size.width;
+		srcUVRect.height = srcPixelRect.height / size.width;
+	}
 	
 
 	for (int i = 0; i < m_geometryDataList.GetCount(); ++i)
@@ -1029,7 +1065,7 @@ void DrawingContextImpl::ExpandGeometriesFill()
 		{
 		case GeometryType::Rectangle:
 			g.ExpandFill_Rectangle(&m_vertexCache, &m_indexCache, fillColor, &result);
-			g.ExpandUV_Stretch(begin, begin + m_vertexCache.GetCount(), RectF(0, 0, 0, 0), RectF(0, 0, 0, 0), result.posMin, result.posMax);
+			g.ExpandUV_Stretch(begin, begin + m_vertexCache.GetCount(), srcPixelRect, srcUVRect, result.posMin, result.posMax);
 			break;
 		default:
 			break;
