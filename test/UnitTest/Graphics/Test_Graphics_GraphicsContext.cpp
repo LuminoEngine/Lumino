@@ -34,6 +34,21 @@ TEST_F(Test_Graphics_GraphicsContext, DrawRectangle)
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle2.png")));
 	}
+	{
+		auto brush1 = TextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
+		brush1->SetSourceRect(Rect(0, 192, 32, 32));
+		brush1->SetWrapMode(BrushWrapMode_Stretch);	// TODO:
+		brush1->SetImageDrawMode(BrushImageDrawMode::BorderFrame);
+		brush1->SetBorderThickness(ThicknessF(8, 8, 8, 8));
+
+		auto* g = Engine::BeginRendering();
+		g->Clear(ClearFlags::All, ColorF::Gray);
+		g->SetBrush(brush1);
+		g->DrawRectangle(RectF(0, 0, 83, 83));
+		Engine::EndRendering();
+
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.DrawRectangle3.png"), 100, true));
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -42,21 +57,19 @@ TEST_F(Test_Graphics_GraphicsContext, FrameTextureBrush)
 	auto brush1 = FrameTextureBrush::Create(LN_LOCALFILE("TestData/Window.png"));
 	brush1->SetSourceRect(Rect(0, 192, 32, 32));
 	brush1->SetInnerAreaSourceRect(Rect(0, 64, 64, 64));
-	brush1->SetWrapMode(BrushWrapMode_Stretch);
+	brush1->SetWrapMode(BrushWrapMode_Stretch);	// TODO:
 	brush1->SetThickness(8);
 
 
-	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
 	auto* g = Engine::BeginRendering();
 
-	g->Set2DRenderingMode();	// TODO: デフォルトは 2D にして、明示の必要ないようにしたいなぁ・・・
 	g->Clear(ClearFlags::All, ColorF::Gray);
 	g->SetBrush(brush1);
 	g->DrawRectangle(Rect(0, 0, 83, 83));
 
 	Engine::EndRendering();
 
-	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush.png")));
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestData/Test_Graphics_GraphicsContext.FrameTextureBrush_test.png"), 100, true));
 }
 
 //------------------------------------------------------------------------------

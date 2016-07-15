@@ -72,6 +72,22 @@ struct GeometryData
 	void ExpandFill_Rectangle(CacheBuffer<DrawingBasicVertex>* vb, CacheBuffer<uint16_t>* ib, const ColorF& color, VertexExpandResult* outResult);
 	void ExpandUV_Stretch(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
 	void ExpandUV_Tilling(DrawingBasicVertex* begin, DrawingBasicVertex* end, const RectF& srcPixelRect, const RectF& srcUVRect, const Vector2& posMin, const Vector2& posMax);
+
+	static void ExpandFillAndUV_FrameRectangle(
+		CacheBuffer<DrawingBasicVertex>* vb,
+		CacheBuffer<uint16_t>* ib,
+		const RectF& rect,
+		float frameWidth,
+		Driver::ITexture* srcTexture,
+		const RectF& srcPixelRect);
+
+	static void ExpandFillAndUV_FrameRectangle_Sub(
+		CacheBuffer<DrawingBasicVertex>* vb,
+		CacheBuffer<uint16_t>* ib,
+		const RectF& rect,
+		const Rect& srcPixelRect,
+		const RectF& srcUVRect,
+		Driver::ITexture* srcTexture);
 };
 
 
@@ -149,10 +165,182 @@ void GeometryData::ExpandUV_Tilling(DrawingBasicVertex* begin, DrawingBasicVerte
 	}
 }
 
+//------------------------------------------------------------------------------
+void GeometryData::ExpandFillAndUV_FrameRectangle(
+	CacheBuffer<DrawingBasicVertex>* vb,
+	CacheBuffer<uint16_t>* ib,
+	const RectF& rect,
+	float frameWidth,
+	Driver::ITexture* srcTexture,
+	const RectF& srcPixelRect)
+{
+	if (srcPixelRect.IsEmpty()) return;
+	assert(srcTexture != nullptr);
+
+	//if (srcRect.width == INT_MAX) {
+	//	srcRect.width = srcTexture->GetSize().width;
+	//}
+	//if (srcRect.height == INT_MAX) {
+	//	srcRect.height = srcTexture->GetSize().height;
+	//}
+
+	SizeF texSize((float)srcTexture->GetRealSize().width, (float)srcTexture->GetRealSize().height);
+	texSize.width = 1.0f / texSize.width;
+	texSize.height = 1.0f / texSize.height;
+	RectF uvSrcRect(srcPixelRect.x * texSize.width, srcPixelRect.y * texSize.height, srcPixelRect.width * texSize.width, srcPixelRect.height * texSize.height);
 
 
+	float frameWidthH = frameWidth;
+	float frameWidthV = frameWidth;
+	float uvFrameWidthH = frameWidth * texSize.width;
+	float uvFrameWidthV = frameWidth * texSize.height;
+	int frameWidthHI = (int)frameWidth;	// 型変換回数を減らすため、あらかじめ int 化しておく
+	int frameWidthVI = (int)frameWidth;
 
+	// 横幅が小さいため、枠幅も狭めなければならない
+	if (rect.width < frameWidthH * 2)
+	{
+		float ratio = rect.width / (frameWidthH * 2);	// 元の幅から何 % になるか
+		frameWidthH *= ratio;
+		uvFrameWidthH *= ratio;
+		frameWidthHI = (int)ceil(ratio * frameWidthHI);
+	}
+	// 縦幅が小さいため、枠幅も狭めなければならない
+	if (rect.height < frameWidthV * 2)
+	{
+		float ratio = rect.height / (frameWidthV * 2);	// 元の幅から何 % になるか
+		frameWidthV *= ratio;
+		uvFrameWidthV *= ratio;
+		frameWidthVI = (int)ceil(ratio * frameWidthVI);
+	}
 
+	RectF outerRect = rect;
+	RectF innerRect(outerRect.x + frameWidthH, outerRect.y + frameWidthV, outerRect.width - frameWidthH * 2, outerRect.height - frameWidthV * 2);
+	RectF outerUVRect = uvSrcRect;
+	RectF innerUVRect(outerUVRect.x + uvFrameWidthH, outerUVRect.y + uvFrameWidthV, outerUVRect.width - uvFrameWidthH * 2, outerUVRect.height - uvFrameWidthV * 2);
+	RectF  outerSrcRect = srcPixelRect;
+	RectF  innerSrcRect(outerSrcRect.x + frameWidthHI, outerSrcRect.y + frameWidthVI, outerSrcRect.width - frameWidthHI * 2, outerSrcRect.height - frameWidthVI * 2);
+
+	// 左上	■□□
+	//		□　□
+	//		□□□
+	//ExpandFillAndUV_FrameRectangle_Sub(
+	//	RectF(outerRect.GetLeft(), outerRect.GetTop(), frameWidthH, frameWidthV),
+	//	Rect(outerSrcRect.GetLeft(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
+	//	RectF(outerUVRect.GetLeft(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
+	//	srcTexture);
+
+	// 上	□■□
+	//		□　□
+	//		□□□
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(innerRect.GetLeft(), outerRect.GetTop(), innerRect.width, frameWidth),
+		Rect(innerSrcRect.GetLeft(), outerSrcRect.GetTop(), innerSrcRect.width, frameWidthVI),
+		RectF(innerUVRect.GetLeft(), outerUVRect.GetTop(), innerUVRect.width, uvFrameWidthV),
+		srcTexture);
+
+	// 右上	□□■
+	//		□　□
+	//		□□□
+	//ExpandFillAndUV_FrameRectangle_Sub(
+	//	vb, ib,
+	//	RectF(innerRect.GetRight(), outerRect.GetTop(), frameWidthH, frameWidthV),
+	//	Rect(innerSrcRect.GetRight(), outerSrcRect.GetTop(), frameWidthHI, frameWidthVI),
+	//	RectF(innerUVRect.GetRight(), outerUVRect.GetTop(), uvFrameWidthH, uvFrameWidthV),
+	//	srcTexture);
+
+	// 右	□□□
+	//		□　■
+	//		□□□
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(innerRect.GetRight(), innerRect.GetTop(), frameWidthH, innerRect.height),
+		Rect(innerSrcRect.GetRight(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
+		RectF(innerUVRect.GetRight(), innerUVRect.GetTop(), uvFrameWidthH, innerUVRect.height),
+		srcTexture);
+
+	// 右下	□□□
+	//		□　□
+	//		□□■
+	//ExpandFillAndUV_FrameRectangle_Sub(
+	//	vb, ib,
+	//	RectF(innerRect.GetRight(), innerRect.GetBottom(), frameWidthH, frameWidthV),
+	//	Rect(innerSrcRect.GetRight(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
+	//	RectF(innerUVRect.GetRight(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
+	//	srcTexture);
+
+	// 下	□□□
+	//		□　□
+	//		□■□
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, frameWidthV),
+		Rect(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, frameWidthVI),
+		RectF(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrameWidthV),
+		srcTexture);
+
+	// 左下	□□□
+	//		□　□
+	//		■□□
+	//ExpandFillAndUV_FrameRectangle_Sub(
+	//	vb, ib,
+	//	RectF(outerRect.GetLeft(), innerRect.GetBottom(), frameWidthH, frameWidthV),
+	//	Rect(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), frameWidthHI, frameWidthVI),
+	//	RectF(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrameWidthH, uvFrameWidthV),
+	//	srcTexture);
+
+	// 左	□□□
+	//		■　□
+	//		□□□
+	ExpandFillAndUV_FrameRectangle_Sub(
+		vb, ib,
+		RectF(outerRect.GetLeft(), innerRect.GetTop(), frameWidthH, innerRect.height),
+		Rect(outerSrcRect.GetLeft(), innerSrcRect.GetTop(), frameWidthHI, innerSrcRect.height),
+		RectF(outerUVRect.GetLeft(), innerUVRect.GetTop(), uvFrameWidthH, innerUVRect.height),
+		srcTexture);
+}
+
+//------------------------------------------------------------------------------
+void GeometryData::ExpandFillAndUV_FrameRectangle_Sub(
+	CacheBuffer<DrawingBasicVertex>* vb,
+	CacheBuffer<uint16_t>* ib,
+	const RectF& rect,
+	const Rect& srcPixelRect,
+	const RectF& srcUVRect,
+	Driver::ITexture* srcTexture)
+{
+	if (rect.IsEmpty()) return;		// 矩形がつぶれているので書く必要はない
+
+	float uvX = srcUVRect.x;
+	float uvY = srcUVRect.y;
+	float uvWidth = srcUVRect.width;
+	float uvHeight = srcUVRect.height;
+	float blockCountW = (rect.width / srcPixelRect.width);		// 横方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+	float blockCountH = (rect.height / srcPixelRect.height);	// 縦方向にいくつのタイルを並べられるか (0.5 など、端数も含む)
+
+	float lu = uvX;
+	float tv = uvY;
+
+	uint16_t i = vb->GetCount();
+	ib->Add(i + 0);
+	ib->Add(i + 1);
+	ib->Add(i + 2);
+	ib->Add(i + 2);
+	ib->Add(i + 1);
+	ib->Add(i + 3);
+
+	DrawingBasicVertex v;
+	v.Color.Set(1, 1, 1, 1);	// TODO:
+	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f, 1.0f);	// 左上
+	vb->Add(v);
+	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f, 1.0f + blockCountH);	// 左下
+	vb->Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);		v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f);	// 右上
+	vb->Add(v);
+	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0);	v.UVOffset.Set(lu, tv, uvWidth, uvHeight); v.UVTileUnit.Set(1.0f + blockCountW, 1.0f + blockCountH);	// 右下
+	vb->Add(v);
+}
 
 
 
@@ -280,54 +468,6 @@ void PrimitiveCache::Clear()
 	m_indexCache.Clear();
 }
 
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void PrimitiveCache::DrawSimpleLine(const Vector3& from, const Vector3& to, const ColorF& fromColor, const ColorF& toColor)
-//{
-//	DrawingBasicVertex v;
-//	v.Position = from;
-//	v.Color = fromColor;
-//	m_vertexCache.Add(v);
-//	v.Position = to;
-//	v.Color = toColor;
-//	m_vertexCache.Add(v);
-//
-//	uint16_t i = m_vertexCache.GetCount();
-//	m_indexCache.Add(i + 0);
-//	m_indexCache.Add(i + 1);
-//}
-//
-////------------------------------------------------------------------------------
-////
-////------------------------------------------------------------------------------
-//void PrimitiveCache::DrawRectangle(const RectF& rect, const RectF& srcUVRect, const ColorF& color)
-//{
-//	float lu = srcUVRect.GetLeft();
-//	float tv = srcUVRect.GetTop();
-//	float uvWidth = srcUVRect.Width;
-//	float uvHeight = srcUVRect.Height;
-//
-//	DrawingBasicVertex v;
-//	v.Color = color;
-//	v.Position.Set(rect.GetLeft(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 1);	// 左上
-//	m_vertexCache.Add(v);
-//	v.Position.Set(rect.GetRight(), rect.GetTop(), 0);    v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 1);	// 右上
-//	m_vertexCache.Add(v);
-//	v.Position.Set(rect.GetLeft(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(1, 2);	// 左下
-//	m_vertexCache.Add(v);
-//	v.Position.Set(rect.GetRight(), rect.GetBottom(), 0); v.UVOffset.Set(lu, tv, uvWidth, uvHeight); //v.UVTileUnit.Set(2, 2);	// 右下
-//	m_vertexCache.Add(v);
-//
-//	uint16_t i = m_vertexCache.GetCount();
-//	m_indexCache.Add(i + 0);
-//	m_indexCache.Add(i + 1);
-//	m_indexCache.Add(i + 2);
-//	m_indexCache.Add(i + 2);
-//	m_indexCache.Add(i + 1);
-//	m_indexCache.Add(i + 3);
-//}
-
 //------------------------------------------------------------------------------
 void PrimitiveCache::ApplyBuffers(Driver::IVertexBuffer* vb, Driver::IIndexBuffer* ib)
 {
@@ -362,6 +502,8 @@ public:
 				Driver::ITexture*	Texture;
 				int					SourceRect[4];	///< XYWH
 				BrushWrapMode		WrapMode;
+				BrushImageDrawMode	imageDrawMode;
+				float				borderThickness[4];
 
 			} TextureBrush;
 
@@ -404,6 +546,8 @@ public:
 					TextureBrush.SourceRect[2] = r.width;
 					TextureBrush.SourceRect[3] = r.height;
 					TextureBrush.WrapMode = t->GetWrapMode();
+					TextureBrush.imageDrawMode = t->GetImageDrawMode();
+					t->GetBorderThickness().ToArray(TextureBrush.borderThickness);
 				}
 				else if (Type == BrushType_FrameTexture)
 				{
@@ -1040,6 +1184,9 @@ void DrawingContextImpl::ExpandGeometriesFill()
 
 	RectF srcPixelRect = RectF::Zero;
 	RectF srcUVRect = RectF::Zero;
+	bool isImageBorder = false;
+	ThicknessF imageBorderThickness;
+	Driver::ITexture* texture = m_manager->GetDummyTexture();
 	if (m_currentState.Brush.Type == BrushType_Texture)
 	{
 		const Size& size = m_currentState.Brush.TextureBrush.Texture->GetRealSize();
@@ -1052,6 +1199,12 @@ void DrawingContextImpl::ExpandGeometriesFill()
 		srcUVRect.y = srcPixelRect.y / size.width;
 		srcUVRect.width= srcPixelRect.width / size.width;
 		srcUVRect.height = srcPixelRect.height / size.width;
+
+		isImageBorder = m_currentState.Brush.TextureBrush.imageDrawMode != BrushImageDrawMode::Image;
+		imageBorderThickness = ThicknessF::FromArray(m_currentState.Brush.TextureBrush.borderThickness);
+
+		if (m_currentState.Brush.TextureBrush.Texture != nullptr)
+			texture = m_currentState.Brush.TextureBrush.Texture;
 	}
 	
 
@@ -1064,8 +1217,18 @@ void DrawingContextImpl::ExpandGeometriesFill()
 		switch (g.type)
 		{
 		case GeometryType::Rectangle:
-			g.ExpandFill_Rectangle(&m_vertexCache, &m_indexCache, fillColor, &result);
-			g.ExpandUV_Stretch(begin, begin + m_vertexCache.GetCount(), srcPixelRect, srcUVRect, result.posMin, result.posMax);
+			if (isImageBorder)
+			{
+				RectF dstRect(g.rectangle.x, g.rectangle.y, g.rectangle.w, g.rectangle.h);
+				// TOOD: Thickness
+				// TODO: Texture じゃなくてそのサイズがあればいいかも？
+				g.ExpandFillAndUV_FrameRectangle(&m_vertexCache, &m_indexCache, dstRect, imageBorderThickness.Left, texture, srcPixelRect);
+			}
+			else
+			{
+				g.ExpandFill_Rectangle(&m_vertexCache, &m_indexCache, fillColor, &result);
+				g.ExpandUV_Stretch(begin, begin + m_vertexCache.GetCount(), srcPixelRect, srcUVRect, result.posMin, result.posMax);
+			}
 			break;
 		default:
 			break;

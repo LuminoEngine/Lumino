@@ -78,6 +78,7 @@ RefPtr<TextureBrush> TextureBrush::Create(const StringRef& filePath)
 TextureBrush::TextureBrush()
 	: m_srcRect(0, 0, INT_MAX, INT_MAX)
 	, m_wrapMode(BrushWrapMode_Stretch)
+	, m_imageDrawMode(BrushImageDrawMode::Image)
 {
 }
 

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include "../Base/Thickness.h"
 #include "../Graphics/Text/Font.h"
 #include "Texture.h"
 
@@ -12,6 +13,13 @@ enum BrushWrapMode
 	BrushWrapMode_Stretch = 0,	///< イメージ全体を引き延ばす
 	BrushWrapMode_Tile,			///< イメージを並べて表示する
 
+};
+
+enum class BrushImageDrawMode
+{
+	Image,
+	BoxFrame,
+	BorderFrame,
 };
 
 class Brush
@@ -78,9 +86,16 @@ public:
 	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
 	const Rect& GetSourceRect() const { return m_srcRect; }
 
+
 	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }
 	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
 
+	void SetImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
+	BrushImageDrawMode GetImageDrawMode() const { return m_imageDrawMode; }
+
+	void SetBorderThickness(ThicknessF thickness) { m_borderThickness = thickness; }
+	const ThicknessF& GetBorderThickness() const { return m_borderThickness; }
+	
 
 	virtual BrushType GetType() const { return BrushType_Texture; }
 
@@ -88,6 +103,8 @@ private:
 	RefPtr<Texture>		m_texture;
 	Rect				m_srcRect;	///< 初期値は (0, 0, INT_MAX, INT_MAX) で、全体を転送することを表す
 	BrushWrapMode		m_wrapMode;
+	BrushImageDrawMode	m_imageDrawMode;
+	ThicknessF			m_borderThickness;
 };
 
 
