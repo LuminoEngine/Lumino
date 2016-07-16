@@ -82,6 +82,8 @@ void UIContentControl::OnUpdatingLayout()
 		m_contentHost->ApplyTemplateHierarchy(GetOwnerLayoutView()->GetOwnerContext()->GetRootStyleTable(), GetLocalStyle());
 		m_contentElementModified = false;
 	}
+
+	UIElement::OnUpdatingLayout();
 }
 
 LN_NAMESPACE_END
